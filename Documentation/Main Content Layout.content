@@ -1,0 +1,37 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Topics>
+  <Topic id="192cb007-e293-44d5-a0c5-da2061201663" visible="True" noFile="true" isExpanded="true" title="Conceptual">
+    <Topic id="64d7d98a-eb1c-47ab-8fdf-f2411f237efc" visible="True" isDefault="true" title="Introduction" />
+    <Topic id="27a8f4cf-42c2-4be4-aa2b-c04dee943d5c" visible="True">
+      <Topic id="cddbb660-4e69-46c1-90b0-75bbe752a748" visible="True" noFile="true" title="Aims">
+        <Topic id="2db9f191-ecdf-4db5-b63d-99ba96a370fd" visible="True" />
+        <Topic id="f7111363-020f-4d68-ae8c-80c099f8bbca" visible="True" />
+      </Topic>
+      <Topic id="0b8ffb70-9e07-430e-81a3-a454c1dfc44e" visible="True" noFile="true" title="Ideas">
+        <Topic id="6a2037f4-d95a-442f-a663-03e3d8efff6a" visible="True" />
+        <Topic id="149280e9-ed0a-4c6f-b627-ffeacc843b25" visible="True" />
+        <Topic id="693983a0-1da1-498d-8c54-714cb36813c5" visible="True" />
+        <Topic id="c5ac0cca-4806-4053-8988-3caf76f826a0" visible="True" />
+        <Topic id="bbf1b7fa-154f-4b88-9a16-201a9db6d954" visible="True" />
+      </Topic>
+    </Topic>
+    <Topic id="e0e1d083-640e-4bf8-b96d-4a6493dbf53a" visible="True" isExpanded="true">
+      <Topic id="2ab7af0a-7eb4-46c9-85b6-565b3ab7693b" visible="True" />
+      <Topic id="c6e4fa96-1037-4c8d-b9c5-bfee5405b5b4" visible="True" />
+    </Topic>
+    <Topic id="200c5f4e-6f7a-462f-a3ca-f19a77d877e5" visible="True" />
+    <Topic id="c4d22cdf-f32a-4d25-b1b6-e0af2d2e9d4d" visible="True" isExpanded="true">
+      <Topic id="6c243d95-5c13-48ab-b514-81e74a4e9389" visible="True" noFile="true" isExpanded="true" title="Handling the C# Standard Libraries">
+        <Topic id="1a4ef707-ef74-43bd-9bd7-979cd9331d0c" visible="True" />
+        <Topic id="fb639778-c718-4c56-9ba4-0ad324d35114" visible="True" />
+      </Topic>
+      <Topic id="2472d53d-6c80-4c02-a0b2-92a809b7e6b0" visible="True" noFile="true" isExpanded="true" title="Kernel Sections">
+        <Topic id="51f15cbb-34a6-4448-bd60-606cff987183" visible="True" noFile="true" isExpanded="true" title="Built-in">
+          <Topic id="2955b2a5-e33a-4139-aa5f-859cfca8a72b" visible="True" isSelected="true" />
+          <Topic id="116d6354-a0a0-4715-b0c5-d91bb88e2e54" visible="True" />
+        </Topic>
+      </Topic>
+    </Topic>
+  </Topic>
+  <Topic id="f3ab03ab-15e7-44ce-9165-d4cdd26697a1" visible="True" noFile="true" apiParentMode="InsertAsChild" title="Technical" />
+</Topics>

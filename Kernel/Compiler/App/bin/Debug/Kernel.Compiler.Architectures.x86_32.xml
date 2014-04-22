@@ -1,0 +1,606 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Kernel.Compiler.Architectures.x86_32</name>
+    </assembly>
+    <members>
+        <member name="T:Kernel.Compiler.Architectures.x86_32.Newobj">
+            <summary>
+            See base class documentation.
+            </summary>
+        </member>
+        <member name="M:Kernel.Compiler.Architectures.x86_32.Newobj.Convert(Kernel.Compiler.ILOpInfo,Kernel.Compiler.ILScannerState)">
+            <summary>
+            See base class documentation.
+            </summary>
+            <param name="anILOpInfo">See base class documentation.</param>
+            <param name="aScannerState">See base class documentation.</param>
+            <returns>See base class documentation.</returns>
+        </member>
+        <member name="T:Kernel.Compiler.Architectures.x86_32.Ldtoken">
+            <summary>
+            See base class documentation.
+            </summary>
+        </member>
+        <member name="M:Kernel.Compiler.Architectures.x86_32.Ldtoken.Convert(Kernel.Compiler.ILOpInfo,Kernel.Compiler.ILScannerState)">
+            <summary>
+            See base class documentation.
+            </summary>
+            <param name="anILOpInfo">See base class documentation.</param>
+            <param name="aScannerState">See base class documentation.</param>
+            <returns>See base class documentation.</returns>
+            <exception cref="T:System.NotSupportedException">
+            Thrown when the metadata token is not for method metadata.
+            </exception>
+        </member>
+        <member name="T:Kernel.Compiler.Architectures.x86_32.Sizeof">
+            <summary>
+            See base class documentation.
+            </summary>
+        </member>
+        <member name="M:Kernel.Compiler.Architectures.x86_32.Sizeof.Convert(Kernel.Compiler.ILOpInfo,Kernel.Compiler.ILScannerState)">
+            <summary>
+            See base class documentation.
+            </summary>
+            <param name="anILOpInfo">See base class documentation.</param>
+            <param name="aScannerState">See base class documentation.</param>
+            <returns>See base class documentation.</returns>
+        </member>
+        <member name="T:Kernel.Compiler.Architectures.x86_32.Dup">
+            <summary>
+            See base class documentation.
+            </summary>
+        </member>
+        <member name="M:Kernel.Compiler.Architectures.x86_32.Dup.Convert(Kernel.Compiler.ILOpInfo,Kernel.Compiler.ILScannerState)">
+            <summary>
+            See base class documentation.
+            </summary>
+            <param name="anILOpInfo">See base class documentation.</param>
+            <param name="aScannerState">See base class documentation.</param>
+            <returns>See base class documentation.</returns>
+            <exception cref="T:System.NotSupportedException">
+            If either value is &lt; 4 bytes in length or
+            operands are not of the same size.
+            </exception>
+        </member>
+        <member name="T:Kernel.Compiler.Architectures.x86_32.Ldnull">
+            <summary>
+            See base class documentation.
+            </summary>
+        </member>
+        <member name="M:Kernel.Compiler.Architectures.x86_32.Ldnull.Convert(Kernel.Compiler.ILOpInfo,Kernel.Compiler.ILScannerState)">
+            <summary>
+            See base class documentation.
+            </summary>
+            <param name="anILOpInfo">See base class documentation.</param>
+            <param name="aScannerState">See base class documentation.</param>
+            <returns>See base class documentation.</returns>
+        </member>
+        <member name="T:Kernel.Compiler.Architectures.x86_32.Ldftn">
+            <summary>
+            See base class documentation.
+            </summary>
+        </member>
+        <member name="M:Kernel.Compiler.Architectures.x86_32.Ldftn.Convert(Kernel.Compiler.ILOpInfo,Kernel.Compiler.ILScannerState)">
+            <summary>
+            See base class documentation.
+            </summary>
+            <param name="anILOpInfo">See base class documentation.</param>
+            <param name="aScannerState">See base class documentation.</param>
+            <returns>See base class documentation.</returns>
+        </member>
+        <member name="T:Kernel.Compiler.Architectures.x86_32.Ldfld">
+            <summary>
+            See base class documentation.
+            </summary>
+        </member>
+        <member name="M:Kernel.Compiler.Architectures.x86_32.Ldfld.Convert(Kernel.Compiler.ILOpInfo,Kernel.Compiler.ILScannerState)">
+            <summary>
+            See base class documentation.
+            </summary>
+            <param name="anILOpInfo">See base class documentation.</param>
+            <param name="aScannerState">See base class documentation.</param>
+            <returns>See base class documentation.</returns>
+            <exception cref="T:System.NotSupportedException">
+            Thrown if field to load is a floating value or the field to load
+            is not of size 4 or 8 bytes.
+            </exception>
+        </member>
+        <member name="T:Kernel.Compiler.Architectures.x86_32.Stfld">
+            <summary>
+            See base class documentation.
+            </summary>
+        </member>
+        <member name="M:Kernel.Compiler.Architectures.x86_32.Stfld.Convert(Kernel.Compiler.ILOpInfo,Kernel.Compiler.ILScannerState)">
+            <summary>
+            See base class documentation.
+            </summary>
+            <param name="anILOpInfo">See base class documentation.</param>
+            <param name="aScannerState">See base class documentation.</param>
+            <returns>See base class documentation.</returns>
+            <exception cref="T:System.NotSupportedException">
+            Thrown if the value to store is floating point or
+            if the value is not 4 or 8 bytes in size.
+            </exception>
+        </member>
+        <member name="T:Kernel.Compiler.Architectures.x86_32.Stsfld">
+            <summary>
+            See base class documentation.
+            </summary>
+        </member>
+        <member name="M:Kernel.Compiler.Architectures.x86_32.Stsfld.Convert(Kernel.Compiler.ILOpInfo,Kernel.Compiler.ILScannerState)">
+            <summary>
+            See base class documentation.
+            </summary>
+            <param name="anILOpInfo">See base class documentation.</param>
+            <param name="aScannerState">See base class documentation.</param>
+            <returns>See base class documentation.</returns>
+            <exception cref="T:System.NotSupportedException">
+            Thrown if the value to store is floating point.
+            </exception>
+        </member>
+        <member name="T:Kernel.Compiler.Architectures.x86_32.Ldsfld">
+            <summary>
+            See base class documentation.
+            </summary>
+        </member>
+        <member name="M:Kernel.Compiler.Architectures.x86_32.Ldsfld.Convert(Kernel.Compiler.ILOpInfo,Kernel.Compiler.ILScannerState)">
+            <summary>
+            See base class documentation.
+            </summary>
+            <param name="anILOpInfo">See base class documentation.</param>
+            <param name="aScannerState">See base class documentation.</param>
+            <returns>See base class documentation.</returns>
+            <exception cref="T:System.NotSupportedException">
+            Thrown when loading a static float field.
+            </exception>
+        </member>
+        <member name="T:Kernel.Compiler.Architectures.x86_32.Starg">
+            <summary>
+            See base class documentation.
+            </summary>
+        </member>
+        <member name="M:Kernel.Compiler.Architectures.x86_32.Starg.Convert(Kernel.Compiler.ILOpInfo,Kernel.Compiler.ILScannerState)">
+            <summary>
+            See base class documentation.
+            <para>To Do's:</para>
+            <list type="bullet">
+            <item>
+            <term>To do</term>
+            <description>Implement storing of float arguments.</description>
+            </item>
+            </list>
+            </summary>
+            <param name="anILOpInfo">See base class documentation.</param>
+            <param name="aScannerState">See base class documentation.</param>
+            <returns>See base class documentation.</returns>
+            <exception cref="T:System.NotImplementedException">
+            Thrown when storing a float argument is required as it currently hasn't been
+            implemented.
+            </exception>
+            <exception cref="T:System.ArgumentException">
+            Thrown when an invalid number of bytes is specified for the argument to store.
+            </exception>
+        </member>
+        <member name="T:Kernel.Compiler.Architectures.x86_32.Sub">
+            <summary>
+            See base class documentation.
+            </summary>
+        </member>
+        <member name="M:Kernel.Compiler.Architectures.x86_32.Sub.Convert(Kernel.Compiler.ILOpInfo,Kernel.Compiler.ILScannerState)">
+            <summary>
+            See base class documentation.
+            </summary>
+            <param name="anILOpInfo">See base class documentation.</param>
+            <param name="aScannerState">See base class documentation.</param>
+            <returns>See base class documentation.</returns>
+            <exception cref="T:System.NotSupportedException">
+            Thrown if the either of the values to add are floating point.
+            </exception>
+            <exception cref="T:System.InvalidOperationException">
+            Thrown if the either of the values to add are less than 4 bytes in size
+            or if they are of different sizes.
+            </exception>
+        </member>
+        <member name="T:Kernel.Compiler.Architectures.x86_32.Ceq">
+            <summary>
+            See base class documentation.
+            </summary>
+        </member>
+        <member name="M:Kernel.Compiler.Architectures.x86_32.Ceq.Convert(Kernel.Compiler.ILOpInfo,Kernel.Compiler.ILScannerState)">
+            <summary>
+            See base class documentation.
+            </summary>
+            <param name="anILOpInfo">See base class documentation.</param>
+            <param name="aScannerState">See base class documentation.</param>
+            <returns>See base class documentation.</returns>
+            <exception cref="T:System.NotSupportedException">
+            Thrown if compare operands are floating point numbers or if either value is &lt; 4 bytes in length or
+            operands are not of the same size.
+            </exception>
+        </member>
+        <member name="T:Kernel.Compiler.Architectures.x86_32.Cgt">
+            <summary>
+            See base class documentation.
+            </summary>
+        </member>
+        <member name="M:Kernel.Compiler.Architectures.x86_32.Cgt.Convert(Kernel.Compiler.ILOpInfo,Kernel.Compiler.ILScannerState)">
+            <summary>
+            See base class documentation.
+            </summary>
+            <param name="anILOpInfo">See base class documentation.</param>
+            <param name="aScannerState">See base class documentation.</param>
+            <returns>See base class documentation.</returns>
+            <exception cref="T:System.NotSupportedException">
+            Thrown if compare operands are floating point numbers or if either value is &lt; 4 bytes in length or
+            operands are not of the same size.
+            </exception>
+        </member>
+        <member name="T:Kernel.Compiler.Architectures.x86_32.Convu">
+            <summary>
+            See base class documentation.
+            </summary>
+        </member>
+        <member name="M:Kernel.Compiler.Architectures.x86_32.Convu.Convert(Kernel.Compiler.ILOpInfo,Kernel.Compiler.ILScannerState)">
+            <summary>
+            See base class documentation.
+            </summary>
+            <param name="anILOpInfo">See base class documentation.</param>
+            <param name="aScannerState">See base class documentation.</param>
+            <returns>See base class documentation.</returns>
+        </member>
+        <member name="T:Kernel.Compiler.Architectures.x86_32.Or">
+            <summary>
+            See base class documentation.
+            </summary>
+        </member>
+        <member name="M:Kernel.Compiler.Architectures.x86_32.Or.Convert(Kernel.Compiler.ILOpInfo,Kernel.Compiler.ILScannerState)">
+            <summary>
+            See base class documentation.
+            </summary>
+            <param name="anILOpInfo">See base class documentation.</param>
+            <param name="aScannerState">See base class documentation.</param>
+            <returns>See base class documentation.</returns>
+            <exception cref="T:System.NotSupportedException">
+            Thrown if either or both values to 'or' are floating point values.
+            </exception>
+            <exception cref="T:System.InvalidOperationException">
+            Thrown if either or both values to multiply are not 4 or 8 bytes
+            in size or if the values are of different size.
+            </exception>
+        </member>
+        <member name="T:Kernel.Compiler.Architectures.x86_32.Shl">
+            <summary>
+            See base class documentation.
+            </summary>
+        </member>
+        <member name="M:Kernel.Compiler.Architectures.x86_32.Shl.Convert(Kernel.Compiler.ILOpInfo,Kernel.Compiler.ILScannerState)">
+            <summary>
+            See base class documentation.
+            </summary>
+            <param name="anILOpInfo">See base class documentation.</param>
+            <param name="aScannerState">See base class documentation.</param>
+            <returns>See base class documentation.</returns>
+            <exception cref="T:System.NotSupportedException">
+            Thrown if either or both values to shift left are floating point values or
+            if the values are 8 bytes in size.
+            </exception>
+            <exception cref="T:System.InvalidOperationException">
+            Thrown if either or both values to multiply are not 4 or 8 bytes
+            in size or if the values are of different size.
+            </exception>
+        </member>
+        <member name="T:Kernel.Compiler.Architectures.x86_32.Mul">
+            <summary>
+            See base class documentation.
+            </summary>
+        </member>
+        <member name="M:Kernel.Compiler.Architectures.x86_32.Mul.Convert(Kernel.Compiler.ILOpInfo,Kernel.Compiler.ILScannerState)">
+            <summary>
+            See base class documentation.
+            </summary>
+            <param name="anILOpInfo">See base class documentation.</param>
+            <param name="aScannerState">See base class documentation.</param>
+            <returns>See base class documentation.</returns>
+            <exception cref="T:System.NotSupportedException">
+            Thrown if either or both values to multiply are floating point values or
+            if the values are 8 bytes in size.
+            </exception>
+            <exception cref="T:System.InvalidOperationException">
+            Thrown if either or both values to multiply are not 4 or 8 bytes
+            in size or if the values are of different size.
+            </exception>
+        </member>
+        <member name="T:Kernel.Compiler.Architectures.x86_32.Div">
+            <summary>
+            See base class documentation.
+            </summary>
+        </member>
+        <member name="M:Kernel.Compiler.Architectures.x86_32.Div.Convert(Kernel.Compiler.ILOpInfo,Kernel.Compiler.ILScannerState)">
+            <summary>
+            See base class documentation.
+            </summary>
+            <param name="anILOpInfo">See base class documentation.</param>
+            <param name="aScannerState">See base class documentation.</param>
+            <returns>See base class documentation.</returns>
+            <exception cref="T:System.NotSupportedException">
+            Thrown if divide operands are floating point numbers or if attempting to divide 64-bit numbers.
+            </exception>
+            <exception cref="T:System.InvalidOperationException">
+            Thrown if either operand is &lt; 4 bytes long.
+            </exception>
+        </member>
+        <member name="T:Kernel.Compiler.Architectures.x86_32.Clt">
+            <summary>
+            See base class documentation.
+            </summary>
+        </member>
+        <member name="M:Kernel.Compiler.Architectures.x86_32.Clt.Convert(Kernel.Compiler.ILOpInfo,Kernel.Compiler.ILScannerState)">
+            <summary>
+            See base class documentation.
+            </summary>
+            <param name="anILOpInfo">See base class documentation.</param>
+            <param name="aScannerState">See base class documentation.</param>
+            <returns>See base class documentation.</returns>
+            <exception cref="T:System.NotSupportedException">
+            Thrown if compare operands are floating point numbers or if either value is &lt; 4 bytes in length or
+            operands are not of the same size.
+            </exception>
+        </member>
+        <member name="T:Kernel.Compiler.Architectures.x86_32.Add">
+            <summary>
+            See base class documentation.
+            </summary>
+        </member>
+        <member name="M:Kernel.Compiler.Architectures.x86_32.Add.Convert(Kernel.Compiler.ILOpInfo,Kernel.Compiler.ILScannerState)">
+            <summary>
+            See base class documentation.
+            </summary>
+            <param name="anILOpInfo">See base class documentation.</param>
+            <param name="aScannerState">See base class documentation.</param>
+            <returns>See base class documentation.</returns>
+            <exception cref="T:System.NotSupportedException">
+            Thrown if attempt to add a floating point number since floats are not supported yet.
+            </exception>
+            <exception cref="T:System.InvalidOperationException">
+            Thrown if either stack argument is &lt; 4 bytes in size.
+            </exception>
+        </member>
+        <member name="T:Kernel.Compiler.Architectures.x86_32.Br">
+            <summary>
+            See base class documentation.
+            </summary>
+        </member>
+        <member name="M:Kernel.Compiler.Architectures.x86_32.Br.Convert(Kernel.Compiler.ILOpInfo,Kernel.Compiler.ILScannerState)">
+            <summary>
+            See base class documentation.
+            </summary>
+            <param name="anILOpInfo">See base class documentation.</param>
+            <param name="aScannerState">See base class documentation.</param>
+            <returns>See base class documentation.</returns>
+            <exception cref="T:System.NotSupportedException">
+            Thrown if branch test operand value is a floating point value.
+            </exception>
+        </member>
+        <member name="T:Kernel.Compiler.Architectures.x86_32.Call">
+            <summary>
+            See base class documentation.
+            </summary>
+        </member>
+        <member name="M:Kernel.Compiler.Architectures.x86_32.Call.Convert(Kernel.Compiler.ILOpInfo,Kernel.Compiler.ILScannerState)">
+            <summary>
+            See base class documentation.
+            </summary>
+            <param name="anILOpInfo">See base class documentation.</param>
+            <param name="aScannerState">See base class documentation.</param>
+            <returns>See base class documentation.</returns>
+            <exception cref="T:System.NotSupportedException">
+            Thrown if any argument or the return value is a floating point number.
+            </exception>
+        </member>
+        <member name="T:Kernel.Compiler.Architectures.x86_32.Convi">
+            <summary>
+            See base class documentation.
+            </summary>
+        </member>
+        <member name="M:Kernel.Compiler.Architectures.x86_32.Convi.Convert(Kernel.Compiler.ILOpInfo,Kernel.Compiler.ILScannerState)">
+            <summary>
+            See base class documentation.
+            </summary>
+            <param name="anILOpInfo">See base class documentation.</param>
+            <param name="aScannerState">See base class documentation.</param>
+            <returns>See base class documentation.</returns>
+        </member>
+        <member name="T:Kernel.Compiler.Architectures.x86_32.Ldarg">
+            <summary>
+            See base class documentation.
+            </summary>
+        </member>
+        <member name="M:Kernel.Compiler.Architectures.x86_32.Ldarg.Convert(Kernel.Compiler.ILOpInfo,Kernel.Compiler.ILScannerState)">
+            <summary>
+            See base class documentation.
+            <para>To Do's:</para>
+            <list type="bullet">
+            <item>
+            <term>To do</term>
+            <description>Implement loading of float arguments.</description>
+            </item>
+            </list>
+            </summary>
+            <param name="anILOpInfo">See base class documentation.</param>
+            <param name="aScannerState">See base class documentation.</param>
+            <returns>See base class documentation.</returns>
+            <exception cref="T:System.NotSupportedException">
+            Thrown when loading a float argument is required as it currently hasn't been
+            implemented.
+            </exception>
+            <exception cref="T:System.ArgumentException">
+            Thrown when an invalid number of bytes is specified for the argument to load.
+            </exception>
+        </member>
+        <member name="T:Kernel.Compiler.Architectures.x86_32.Ldc">
+            <summary>
+            See base class documentation.
+            </summary>
+        </member>
+        <member name="M:Kernel.Compiler.Architectures.x86_32.Ldc.Convert(Kernel.Compiler.ILOpInfo,Kernel.Compiler.ILScannerState)">
+            <summary>
+            See base class documentation.
+            </summary>
+            <param name="anILOpInfo">See base class documentation.</param>
+            <param name="aScannerState">See base class documentation.</param>
+            <returns>See base class documentation.</returns>
+            <exception cref="T:System.NotSupportedException">
+            Thrown if constant is a floating point number.
+            </exception>
+        </member>
+        <member name="T:Kernel.Compiler.Architectures.x86_32.Ldloc">
+            <summary>
+            See base class documentation.
+            </summary>
+        </member>
+        <member name="M:Kernel.Compiler.Architectures.x86_32.Ldloc.Convert(Kernel.Compiler.ILOpInfo,Kernel.Compiler.ILScannerState)">
+            <summary>
+            See base class documentation.
+            </summary>
+            <param name="anILOpInfo">See base class documentation.</param>
+            <param name="aScannerState">See base class documentation.</param>
+            <returns>See base class documentation.</returns>
+            <exception cref="T:System.NotSupportedException">
+            Thrown when loading a float local is required as it currently hasn't been
+            implemented.
+            Also thrown if arguments are not of size 4 or 8 bytes.
+            </exception>
+        </member>
+        <member name="T:Kernel.Compiler.Architectures.x86_32.Ldstr">
+            <summary>
+            See base class documentation.
+            </summary>
+        </member>
+        <member name="M:Kernel.Compiler.Architectures.x86_32.Ldstr.Convert(Kernel.Compiler.ILOpInfo,Kernel.Compiler.ILScannerState)">
+            <summary>
+            See base class documentation.
+            </summary>
+            <param name="anILOpInfo">See base class documentation.</param>
+            <param name="aScannerState">See base class documentation.</param>
+            <returns>See base class documentation.</returns>
+        </member>
+        <member name="T:Kernel.Compiler.Architectures.x86_32.MethodEnd">
+            <summary>
+            See base class documentation.
+            </summary>
+        </member>
+        <member name="M:Kernel.Compiler.Architectures.x86_32.MethodEnd.Convert(Kernel.Compiler.ILOpInfo,Kernel.Compiler.ILScannerState)">
+            <summary>
+            See base class documentation.
+            </summary>
+            <param name="anILOpInfo">See base class documentation.</param>
+            <param name="aScannerState">See base class documentation.</param>
+            <returns>See base class documentation.</returns>
+            <exception cref="T:System.NotSupportedException">
+            Thrown when the return value is a float or the size on the stack
+            in bytes is not 4 or 8 bytes.
+            </exception>
+        </member>
+        <member name="T:Kernel.Compiler.Architectures.x86_32.MethodStart">
+            <summary>
+            See base class documentation.
+            </summary>
+        </member>
+        <member name="M:Kernel.Compiler.Architectures.x86_32.MethodStart.Convert(Kernel.Compiler.ILOpInfo,Kernel.Compiler.ILScannerState)">
+            <summary>
+            See base class documentation.
+            </summary>
+            <param name="anILOpInfo">See base class documentation.</param>
+            <param name="aScannerState">See base class documentation.</param>
+            <returns>See base class documentation.</returns>
+        </member>
+        <member name="T:Kernel.Compiler.Architectures.x86_32.Nop">
+            <summary>
+            See base class documentation.
+            </summary>
+        </member>
+        <member name="M:Kernel.Compiler.Architectures.x86_32.Nop.Convert(Kernel.Compiler.ILOpInfo,Kernel.Compiler.ILScannerState)">
+            <summary>
+            See base class documentation.
+            </summary>
+            <param name="anILOpInfo">See base class documentation.</param>
+            <param name="aScannerState">See base class documentation.</param>
+            <returns>See base class documentation.</returns>
+        </member>
+        <member name="T:Kernel.Compiler.Architectures.x86_32.Pop">
+            <summary>
+            See base class documentation.
+            </summary>
+        </member>
+        <member name="M:Kernel.Compiler.Architectures.x86_32.Pop.Convert(Kernel.Compiler.ILOpInfo,Kernel.Compiler.ILScannerState)">
+            <summary>
+            See base class documentation.
+            </summary>
+            <param name="anILOpInfo">See base class documentation.</param>
+            <param name="aScannerState">See base class documentation.</param>
+            <returns>See base class documentation.</returns>
+        </member>
+        <member name="T:Kernel.Compiler.Architectures.x86_32.Ret">
+            <summary>
+            See base class documentation.
+            </summary>
+        </member>
+        <member name="M:Kernel.Compiler.Architectures.x86_32.Ret.Convert(Kernel.Compiler.ILOpInfo,Kernel.Compiler.ILScannerState)">
+            <summary>
+            See base class documentation.
+            </summary>
+            <param name="anILOpInfo">See base class documentation.</param>
+            <param name="aScannerState">See base class documentation.</param>
+            <returns>See base class documentation.</returns>
+        </member>
+        <member name="T:Kernel.Compiler.Architectures.x86_32.Ldind">
+            <summary>
+            See base class documentation.
+            </summary>
+        </member>
+        <member name="M:Kernel.Compiler.Architectures.x86_32.Ldind.Convert(Kernel.Compiler.ILOpInfo,Kernel.Compiler.ILScannerState)">
+            <summary>
+            See base class documentation.
+            </summary>
+            <param name="anILOpInfo">See base class documentation.</param>
+            <param name="aScannerState">See base class documentation.</param>
+            <returns>See base class documentation.</returns>
+        </member>
+        <member name="T:Kernel.Compiler.Architectures.x86_32.Stind">
+            <summary>
+            See base class documentation.
+            </summary>
+        </member>
+        <member name="M:Kernel.Compiler.Architectures.x86_32.Stind.Convert(Kernel.Compiler.ILOpInfo,Kernel.Compiler.ILScannerState)">
+            <summary>
+            See base class documentation.
+            </summary>
+            <param name="anILOpInfo">See base class documentation.</param>
+            <param name="aScannerState">See base class documentation.</param>
+            <returns>See base class documentation.</returns>
+            <exception cref="T:System.NotSupportedException">
+            Thrown if the value to store is floating point.
+            </exception>
+            <exception cref="T:System.NotImplementedException">
+            Thrown if the op is 'StIndRef'.
+            </exception>
+        </member>
+        <member name="T:Kernel.Compiler.Architectures.x86_32.Stloc">
+            <summary>
+            See base class documentation.
+            </summary>
+        </member>
+        <member name="M:Kernel.Compiler.Architectures.x86_32.Stloc.Convert(Kernel.Compiler.ILOpInfo,Kernel.Compiler.ILScannerState)">
+            <summary>
+            See base class documentation.
+            </summary>
+            <param name="anILOpInfo">See base class documentation.</param>
+            <param name="aScannerState">See base class documentation.</param>
+            <returns>See base class documentation.</returns>
+            <exception cref="T:System.NotSupportedException">
+            Thrown if the value to store is floating point.
+            </exception>
+        </member>
+    </members>
+</doc>

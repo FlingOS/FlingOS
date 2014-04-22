@@ -1,0 +1,158 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<topic id="c4d22cdf-f32a-4d25-b1b6-e0af2d2e9d4d" revisionNumber="1">
+  <developerConceptualDocument
+    xmlns="http://ddue.schemas.microsoft.com/authoring/2003/5"
+    xmlns:xlink="http://www.w3.org/1999/xlink">
+
+    <introduction>
+      <para>The following sections cover all the kernel specification in increasing detail the deeper you go.</para>
+
+      <autoOutline>0</autoOutline>
+    </introduction>
+
+    <section address="Introduction">
+      <title>Introduction</title>
+      <content>
+        <para>
+          The kernel is the core part of any operating system (of significance). It provides the 
+          lowest level code that sends commands to the hardware and handles interrupts etc. For 
+          this reason, its design has a very big influence on the entire operating system and so 
+          requires very detailed attention.
+        </para>
+      </content>
+    </section>
+
+    <section address="Language">
+      <title>Language</title>
+      <content>
+        <para>
+          The kernel will, so far as possible, be written in C#. For the bits which need to be 
+          written in assembler, they should be separated into separate, module-like projects 
+          that clearly states which architecture they are written for (e.g. x86-32, x86-64, 
+          etc.)
+        </para>
+        <para>
+          The assembly projects should be designed so that any other matching assembly project 
+          can be substituted in to target a different assembler version (i.e. CPU architecture).
+        </para>
+      </content>
+    </section>
+
+    <section address="HandlingTheCSStandardLibraries">
+      <title>Handling the C# Standard Libraries</title>
+      <content>
+        <para>
+          Microsoft’s C# development tools come with the standard set of Windows-based libraries
+          such as the System library. Clearly, these libraries are not available on Fling OS and
+          so they must be programmed as part of the kernel.
+        </para>
+        <para>
+          There are two approaches to solving this issue that will be discussed below. (For the
+          purposes of these discussions, when classes or methods are mentioned, also take into
+          consideration fields, properties etc.)
+        </para>
+        <para>
+          For the discussions of the various solutions to the issue please see:
+        </para>
+        <list class="bullet">
+          <listItem>
+            <para>
+              <link xlink:href="1a4ef707-ef74-43bd-9bd7-979cd9331d0c" />
+            </para>
+          </listItem>
+          <listItem>
+            <para>
+              <link xlink:href="fb639778-c718-4c56-9ba4-0ad324d35114" />
+            </para>
+          </listItem>
+        </list>
+        <para>
+          The conclusion drawn from the above dicussions is that Fling OS will use Approach 1 - DIY 
+          as it offers the best long-term prospects though use the Microsoft standard C# 
+          libraries as a rough guide / aid.
+        </para>
+      </content>
+    </section>
+
+
+    <section address="KernelSections">
+      <title>Kernel Sections</title>
+      <content>
+        <para>
+          The built-in kernel sections are sections of the architecture which are compiled into 
+          the OS for release. In contrast to dynamically loaded sections which are compiled for 
+          release but stored as executable/binary files and loaded on demand at runtime.
+        </para>
+      </content>
+
+      <sections>
+        <section address="KernelSections.BuiltIn">
+          <title>Built-in</title>
+          <content>
+            <list class="bullet">
+              <listItem>
+                <para>
+                  <link xlink:href="2955b2a5-e33a-4139-aa5f-859cfca8a72b" /> – very initial 
+                  code which runs after second-stage boot loader
+                </para>
+              </listItem>
+              <listItem>
+                <para>
+                  <link xlink:href="116d6354-a0a0-4715-b0c5-d91bb88e2e54" /> – code which 
+                  allows the lowest level of debugging from immediately after the Bootstrap 
+                  runs
+                </para>
+              </listItem>
+            </list>
+          </content>
+        </section>
+        <section address="KernelSections.DynamicallyLoaded">
+          <title>Dynamically Loaded</title>
+          <content>
+            <para>
+              (To be filled in future.)
+            </para>
+          </content>
+        </section>
+      </sections>
+    </section>
+
+    <relatedTopics>
+      <!-- One or more of the following:
+           - A local link
+           - An external link
+           - A code entity reference
+
+      <link xlink:href="Other Topic's ID"/>
+      <link xlink:href="Other Topic's ID">Link inner text</link>
+
+      <externalLink>
+          <linkText>Link text</linkText>
+          <linkAlternateText>Optional alternate link text</linkAlternateText>
+          <linkUri>URI</linkUri>
+      </externalLink>
+
+      <codeEntityReference>API member ID</codeEntityReference>
+
+      Examples:
+
+      <link xlink:href="00e97994-e9e6-46e0-b420-5be86b2f8270" />
+      <link xlink:href="00e97994-e9e6-46e0-b420-5be86b2f8278">Some other topic</link>
+
+      <externalLink>
+          <linkText>SHFB on CodePlex</linkText>
+          <linkAlternateText>Go to CodePlex</linkAlternateText>
+          <linkUri>http://shfb.codeplex.com</linkUri>
+      </externalLink>
+
+      <codeEntityReference>T:TestDoc.TestClass</codeEntityReference>
+      <codeEntityReference>P:TestDoc.TestClass.SomeProperty</codeEntityReference>
+      <codeEntityReference>M:TestDoc.TestClass.#ctor</codeEntityReference>
+      <codeEntityReference>M:TestDoc.TestClass.#ctor(System.String,System.Int32)</codeEntityReference>
+      <codeEntityReference>M:TestDoc.TestClass.ToString</codeEntityReference>
+      <codeEntityReference>M:TestDoc.TestClass.FirstMethod</codeEntityReference>
+      <codeEntityReference>M:TestDoc.TestClass.SecondMethod(System.Int32,System.String)</codeEntityReference>
+      -->
+    </relatedTopics>
+  </developerConceptualDocument>
+</topic>

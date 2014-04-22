@@ -1,0 +1,99 @@
+﻿<?xml version="1.0" encoding="utf-8"?><Database Name="Database" Class="DatabaseDataContext" xmlns="http://schemas.microsoft.com/linqtosql/dbml/2007">
+  <Connection Mode="AppSettings" ConnectionString="Data Source=(LocalDB)\v11.0;AttachDbFilename=&quot;G:\Fling OS\Fling OS\Kernel\Debug\Kernel.Debug.Data\Database.mdf&quot;;Integrated Security=True;Connect Timeout=30" SettingsObjectName="Kernel.Debug.Data.Properties.Settings" SettingsPropertyName="DatabaseConnectionString" Provider="System.Data.SqlClient" />
+  <Table Name="dbo.IlOpInfos" Member="DB_ILOpInfos">
+    <Type Name="DB_ILOpInfo">
+      <Column Name="Id" Type="System.Guid" DbType="UniqueIdentifier NOT NULL" IsPrimaryKey="true" CanBeNull="false" />
+      <Column Name="MethodID" Type="System.String" DbType="NVarChar(500) NOT NULL" CanBeNull="false" />
+      <Column Name="Position" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+      <Column Name="NextPosition" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+      <Column Name="OpCode" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+      <Column Name="ValueBytes" Type="System.Data.Linq.Binary" DbType="Binary(50)" CanBeNull="true" UpdateCheck="Never" />
+      <Column Name="CustomOpCode" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+      <Column Name="ASMStartPos" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+      <Column Name="ASMEndPos" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+      <Column Name="ASMInsertLabel" Type="System.Boolean" DbType="Bit NOT NULL" CanBeNull="false" />
+      <Column Name="IsDebugOp" Type="System.Boolean" DbType="Bit NOT NULL" CanBeNull="false" />
+      <Column Name="DebugOpMeta" Type="System.String" DbType="NVarChar(50)" CanBeNull="true" />
+      <Association Name="DB_ILOpInfo_DB_StringLiteral" Member="DB_StringLiterals" ThisKey="Id" OtherKey="ILOpInfoID" Type="DB_StringLiteral" />
+      <Association Name="DB_Method_DB_ILOpInfo" Member="DB_Method" ThisKey="MethodID" OtherKey="Id" Type="DB_Method" IsForeignKey="true" />
+    </Type>
+  </Table>
+  <Table Name="dbo.StringLiterals" Member="DB_StringLiterals">
+    <Type Name="DB_StringLiteral">
+      <Column Name="Id" Type="System.Guid" DbType="UniqueIdentifier NOT NULL" IsPrimaryKey="true" CanBeNull="false" />
+      <Column Name="Value" Type="System.String" DbType="NVarChar(MAX) NOT NULL" CanBeNull="false" />
+      <Column Name="ILOpInfoID" Type="System.Guid" DbType="UniqueIdentifier" CanBeNull="true" />
+      <Association Name="DB_ILOpInfo_DB_StringLiteral" Member="DB_ILOpInfo" ThisKey="ILOpInfoID" OtherKey="Id" Type="DB_ILOpInfo" IsForeignKey="true" />
+    </Type>
+  </Table>
+  <Table Name="dbo.Methods" Member="DB_Methods">
+    <Type Name="DB_Method">
+      <Column Name="Id" Type="System.String" DbType="NVarChar(500) NOT NULL" IsPrimaryKey="true" CanBeNull="false" />
+      <Column Name="MethodSignature" Type="System.String" DbType="NVarChar(500) NOT NULL" CanBeNull="false" />
+      <Column Name="ASMStartPos" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+      <Column Name="ASMEndPos" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+      <Column Name="Plugged" Type="System.Boolean" DbType="Bit" CanBeNull="true" />
+      <Association Name="DB_Method_DB_ILOpInfo" Member="DB_ILOpInfos" ThisKey="Id" OtherKey="MethodID" Type="DB_ILOpInfo" />
+      <Association Name="DB_Method_DB_Argument" Member="DB_Arguments" ThisKey="Id" OtherKey="MethodID" Type="DB_Argument" />
+      <Association Name="DB_Method_DB_LocalVariable" Member="DB_LocalVariables" Storage="_LocalVariables" ThisKey="Id" OtherKey="MethodID" Type="DB_LocalVariable" />
+    </Type>
+  </Table>
+  <Table Name="dbo.Arguments" Member="DB_Arguments">
+    <Type Name="DB_Argument">
+      <Column Name="Id" Type="System.Guid" DbType="UniqueIdentifier NOT NULL" IsPrimaryKey="true" CanBeNull="false" />
+      <Column Name="TypeID" Type="System.Guid" DbType="UniqueIdentifier NOT NULL" CanBeNull="false" />
+      <Column Name="[Index]" Member="Index" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+      <Column Name="BytesSize" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+      <Column Name="MethodID" Type="System.String" DbType="NVarChar(500) NOT NULL" CanBeNull="false" />
+      <Column Name="IsReturnArg" Type="System.Boolean" DbType="Bit NOT NULL" CanBeNull="false" />
+      <Association Name="DB_Method_DB_Argument" Member="DB_Method" ThisKey="MethodID" OtherKey="Id" Type="DB_Method" IsForeignKey="true" />
+      <Association Name="DB_Type_DB_Argument" Member="DB_Type" ThisKey="TypeID" OtherKey="Id" Type="DB_Type" IsForeignKey="true" />
+    </Type>
+  </Table>
+  <Table Name="dbo.ComplexTypeLinks" Member="DB_ComplexTypeLinks">
+    <Type Name="DB_ComplexTypeLink">
+      <Column Name="Id" Type="System.Guid" DbType="UniqueIdentifier NOT NULL" IsPrimaryKey="true" CanBeNull="false" />
+      <Column Name="ParentTypeID" Type="System.Guid" DbType="UniqueIdentifier NOT NULL" CanBeNull="false" />
+      <Column Name="ChildTypeID" Type="System.Guid" DbType="UniqueIdentifier NOT NULL" CanBeNull="false" />
+      <Column Name="ParentIndex" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+      <Column Name="FieldId" Type="System.String" DbType="NVarChar(500)" CanBeNull="true" />
+      <Association Name="DB_Type_DB_ComplexTypeLink" Member="ChildType" Storage="_Type" ThisKey="ChildTypeID" OtherKey="Id" Type="DB_Type" IsForeignKey="true" />
+      <Association Name="DB_Type_DB_ComplexTypeLink1" Member="ParentType" Storage="_DB_Type" ThisKey="ParentTypeID" OtherKey="Id" Type="DB_Type" IsForeignKey="true" />
+    </Type>
+  </Table>
+  <Table Name="dbo.LocalVariables" Member="DB_LocalVariables">
+    <Type Name="DB_LocalVariable">
+      <Column Name="Id" Type="System.Guid" DbType="UniqueIdentifier NOT NULL" IsPrimaryKey="true" CanBeNull="false" />
+      <Column Name="TypeID" Type="System.Guid" DbType="UniqueIdentifier NOT NULL" CanBeNull="false" />
+      <Column Name="[Index]" Member="Index" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+      <Column Name="BytesSize" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+      <Column Name="MethodID" Type="System.String" DbType="NVarChar(500) NOT NULL" CanBeNull="false" />
+      <Association Name="DB_Method_DB_LocalVariable" Member="DB_Method" ThisKey="MethodID" OtherKey="Id" Type="DB_Method" IsForeignKey="true" />
+      <Association Name="DB_Type_DB_LocalVariable" Member="DB_Type" ThisKey="TypeID" OtherKey="Id" Type="DB_Type" IsForeignKey="true" />
+    </Type>
+  </Table>
+  <Table Name="dbo.Types" Member="DB_Types">
+    <Type Name="DB_Type">
+      <Column Name="Id" Type="System.Guid" DbType="UniqueIdentifier NOT NULL" IsPrimaryKey="true" CanBeNull="false" />
+      <Column Name="Signature" Type="System.String" DbType="NVarChar(500) NOT NULL" CanBeNull="false" />
+      <Column Name="BytesSize" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+      <Column Name="StackBytesSize" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+      <Column Name="IsValueType" Type="System.Boolean" DbType="Bit NOT NULL" CanBeNull="false" />
+      <Association Name="DB_Type_DB_Argument" Member="DB_Arguments" ThisKey="Id" OtherKey="TypeID" Type="DB_Argument" />
+      <Association Name="DB_Type_DB_ComplexTypeLink" Member="ParentTypes" Storage="_DB_ComplexTypeLinks" ThisKey="Id" OtherKey="ChildTypeID" Type="DB_ComplexTypeLink" />
+      <Association Name="DB_Type_DB_ComplexTypeLink1" Member="ChildTypes" Storage="_DB_ComplexTypeLinks1" ThisKey="Id" OtherKey="ParentTypeID" Type="DB_ComplexTypeLink" />
+      <Association Name="DB_Type_DB_LocalVariable" Member="DB_LocalVariables" Storage="_LocalVariables" ThisKey="Id" OtherKey="TypeID" Type="DB_LocalVariable" />
+      <Association Name="DB_Type_DB_StaticField" Member="StaticFields" ThisKey="Id" OtherKey="TypeID" Type="DB_StaticField" />
+      <Association Name="DB_Type_DB_StaticField1" Member="DB_StaticFields" Storage="_StaticFields1" ThisKey="Id" OtherKey="DeclaringTypeID" Type="DB_StaticField" />
+    </Type>
+  </Table>
+  <Table Name="dbo.StaticFields" Member="DB_StaticFields">
+    <Type Name="DB_StaticField">
+      <Column Name="Id" Type="System.String" DbType="NVarChar(500) NOT NULL" IsPrimaryKey="true" CanBeNull="false" />
+      <Column Name="TypeID" Type="System.Guid" DbType="UniqueIdentifier NOT NULL" CanBeNull="false" />
+      <Column Name="DeclaringTypeID" Type="System.Guid" DbType="UniqueIdentifier NOT NULL" CanBeNull="false" />
+      <Association Name="DB_Type_DB_StaticField" Member="DB_Type" ThisKey="TypeID" OtherKey="Id" Type="DB_Type" IsForeignKey="true" />
+      <Association Name="DB_Type_DB_StaticField1" Member="DB_Type1" ThisKey="DeclaringTypeID" OtherKey="Id" Type="DB_Type" IsForeignKey="true" />
+    </Type>
+  </Table>
+</Database>

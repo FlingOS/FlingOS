@@ -1,0 +1,84 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<topic id="27a8f4cf-42c2-4be4-aa2b-c04dee943d5c" revisionNumber="1">
+  <developerConceptualDocument
+    xmlns="http://ddue.schemas.microsoft.com/authoring/2003/5"
+    xmlns:xlink="http://www.w3.org/1999/xlink">
+
+    <introduction>
+      <!-- Uncomment this to generate an outline of the section and sub-section
+           titles.  Specify a numeric value as the inner text to limit it to
+           a specific number of sub-topics when creating the outline.  Specify
+           zero (0) to limit it to top-level sections only.  -->
+      <!-- <autoOutline /> -->
+
+      <para>
+        While clearly an operating system has main tasks to fulfill, especially in the modern era, 
+        it is important to have a set basic aims and ideas to work towards. Therefore, this content
+        is grouped into two sections: 
+        <link xlink:href="cddbb660-4e69-46c1-90b0-75bbe752a748">Aims</link> and
+      <link xlink:href="0b8ffb70-9e07-430e-81a3-a454c1dfc44e">Ideas</link>.
+      </para>
+    </introduction>
+
+    <!-- Add one or more top-level section elements.  These are collapsible.
+         If using <autoOutline />, add an address attribute to identify it
+         and specify a title so that it can be jumped to with a hyperlink. -->
+    <section address="Aims">
+      <title>Aims</title>
+      <content>
+        <para>Aims are ideals that Fling OS should try to achieve.</para>
+        <list class="bullet">
+          <listItem>
+            <para>
+              <link xlink:href="2db9f191-ecdf-4db5-b63d-99ba96a370fd">Kernel Modularisation</link>
+            </para>
+          </listItem>
+          <listItem>
+            <para>
+              <link xlink:href="f7111363-020f-4d68-ae8c-80c099f8bbca">Well-documented code</link>
+            </para>
+          </listItem>
+        </list>
+      </content>
+    </section>
+    <section address="Ideas">
+      <title>Ideas</title>
+      <content>
+        <para>
+          Ideas are well..ideas. They the inspiration for the design of Fling OS and what sets
+          it apart from existing operating systems.
+        </para>
+        <list class="bullet">
+          <listItem>
+            <para>
+              <link xlink:href="6a2037f4-d95a-442f-a663-03e3d8efff6a">App-hardware independence</link>
+            </para>
+          </listItem>
+          <listItem>
+            <para>
+              <link xlink:href="149280e9-ed0a-4c6f-b627-ffeacc843b25">Flinging</link>
+            </para>
+          </listItem>
+          <listItem>
+            <para>
+              <link xlink:href="693983a0-1da1-498d-8c54-714cb36813c5">Low-level managed memory</link>
+            </para>
+          </listItem>
+          <listItem>
+            <para>
+              <link xlink:href="c5ac0cca-4806-4053-8988-3caf76f826a0">Remoting</link>
+            </para>
+          </listItem>
+          <listItem>
+            <para>
+              <link xlink:href="bbf1b7fa-154f-4b88-9a16-201a9db6d954">Total memory virtualisation</link>
+            </para>
+          </listItem>
+        </list>
+      </content>
+    </section>
+
+    <relatedTopics>
+    </relatedTopics>
+  </developerConceptualDocument>
+</topic>

@@ -1,0 +1,359 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<topic id="2ab7af0a-7eb4-46c9-85b6-565b3ab7693b" revisionNumber="1">
+  <developerConceptualDocument
+    xmlns="http://ddue.schemas.microsoft.com/authoring/2003/5"
+    xmlns:xlink="http://www.w3.org/1999/xlink">
+
+    <introduction>
+      <para>Detailed information about the main kernel compiler architecture presented below.</para>
+
+      <autoOutline>0</autoOutline>
+    </introduction>
+
+    <section address="Step1">
+      <title>1. Start - Post MSBuild</title>
+      <content>
+        <para>
+          The kernel compiler happens after the Microsoft compiler has compiled the operating system C# 
+          code into IL code.
+        </para>
+        <para>
+          Initial ideas were to integrate the kernel compiler as an MSBuild task so that it was automatically 
+          built after the C# code was compiled to IL. However, this approach was ditched after careful 
+          consideration for these reasons:
+        </para>
+        <list class="bullet">
+          <listItem>
+            <para>Using MSBuild ties the compiler functionality into MSBuild / Visual Studio too much</para>
+          </listItem>
+          <listItem>
+            <para>Very difficult to write / maintain MSBuild tasks</para>
+          </listItem>
+          <listItem>
+            <para>May not want to build the OS after every C# compile since compiling the OS could take a long time</para>
+          </listItem>
+          <listItem>
+            <para>Creating a separate, small, C# application to manage the kernel compiler will allow an easier shift to running the compiler on Fling OS itself in future.</para>
+          </listItem>
+          <listItem>
+            <para>Despite this adding an extra step to the build process, it can be automatically started using Visual Studio’s Post Build events.</para>
+          </listItem>
+        </list>
+        <para>
+          Update (2014-03-14): Limited compatiblity with MSBuild was added so the main kernel project could be auto-built but
+                               the intenion was as a short-term convenience until a more customisable build tool-chain was
+                               constructed.
+        </para>
+        <para>
+          The kernel compiler was built, therefore, as a primarily command-line based tool.
+        </para>
+        <para>
+          The kernel compiler, having been started by either a post-build task, MSBuild or directly by a user (i.e. developer) 
+          should then proceed with the following steps:
+        </para>
+        <list class="ordered">
+          <listItem>
+            <para>
+              Parse any arguments that were passed when the compiler process was started (i.e. the args parameter of the Main method). 
+              The list of supported arguments can be found in the specification.
+            </para>
+          </listItem>
+          <listItem>
+            <para>
+              If necessary, open a console window / UI and/or open output streams for messages, warnings and errors to file(s).
+            </para>
+          </listItem>
+          <listItem>
+            <para>Proceed with the steps below.</para>
+          </listItem>
+        </list>
+      </content>
+    </section>
+
+    <section address="Step2">
+      <title>2. IL Compiler Initialise</title>
+      <content>
+        <para>
+          The IL Compiler is the main overall manager class which handles the conversion from IL code to assembler code. 
+          Its main functions are:
+        </para>
+        <list class="bullet">
+          <listItem>
+            <para>
+              To initialize the compiler’s execution environment (e.g. ensuring reference DLLs are loaded)
+            </para>
+          </listItem>
+          <listItem>
+            <para>To initialize and call into the IL Reader</para>
+          </listItem>
+          <listItem>
+            <para>To initialize and call into the IL Scanner</para>
+          </listItem>
+          <listItem>
+            <para>To pass the IL Reader to the IL Scanner</para>
+          </listItem>
+          <listItem>
+            <para>
+              To handle errors and warnings and output them to the user via command line or callbacks 
+              depending on the execution environment (e.g. command line, MSBuild task, ...)
+            </para>
+          </listItem>
+          <listItem>
+            <para>To feedback progress information to the user via command line or callbacks</para>
+          </listItem>
+        </list>
+        <para>
+          So the compiler initialize must do the first three steps in the list. The initializations 
+          should not actually start any processing – just initialize what is required so that 
+          processing can immediately be started.
+        </para>
+      </content>
+    </section>
+
+    <section address="Step3">
+      <title>3. Initialising the compiler's execution environment</title>
+      <content>
+        <para>
+          The compiler’s execution environment contains many of the usual things but the main one 
+          specific to this application is the list of assemblies to be built into the kernel / OS. 
+          The list of assemblies includes all the Fling OS standard libraries along with the actual 
+          OS code itself such as built-in drivers etc.
+        </para>
+        <para>
+          The IL Compiler should have been passed handlers to the process’ output message, warning 
+          and error methods but it should check at this point that they are not null. If they are null, 
+          it should set them to dummy/empty methods.
+        </para>
+      </content>
+    </section>
+
+    <section address="Step4">
+      <title>4. IL Reader Initialise</title>
+      <content>
+        <para>
+          The IL Reader is the class which primarily handles reading IL code from an assembly but this also 
+          encompasses: finding classes; finding methods within a class.
+        </para>
+        <para>
+          The IL Reader should have been passed handlers to the process’ output message, warning and error 
+          methods but it should check at this point that they are not null. If they are null, it should set 
+          them to dummy/empty methods.
+        </para>
+      </content>
+    </section>
+    
+    <section address="Step5">
+      <title>5. Find Assemblies</title>
+      <content>
+        <para>
+          Once the IL Reader and IL Compiler have been initialized, the IL Reader can being to search for classes 
+          to be compiled into the kernel. The first step of this is to find all the assemblies included and 
+          referenced in/by the compiled kernel .DLL.
+        </para>
+        <para>
+          When the compiler process was started it should be have passed an argument specifying the path to the .DLL 
+          file hat MSBuild compiled from C#. This .DLL file will be the main OS code including the OS entry point. 
+          The assemblies in the .DLL file and all assemblies that the .DLL references should be included in the full list of assemblies.
+        </para>
+        <para>
+          The compiler will always try and include the standard C# libraries (since Microsoft’s well document NoStdLib option doesn’t seem to 
+          work with newer version of the .Net Framework / CSC.EXE). So all non-standard C# libraries / assemblies should be loaded and any standard 
+          types ignored except for those explicitly added by the IL Compiler (e.g. value types such as Int32). Fling OS will create its own standard 
+          libraries which follow similar names to Microsoft’s but will be preceded by “FOS”. When the kernel compiler comes across a type, it should 
+          check whether the type is in the standard libraries and if it is, ignore it.
+        </para>
+        <para>
+          The assemblies and referenced assemblies can be found using classes in C#’s System.Relfection namespace.
+        </para>
+      </content>
+    </section>
+
+    <section address="Step6">
+      <title>6. Find all classes</title>
+      <content>
+        <para>
+          Having created a full list of assemblies to include, the IL Reader can then search all these assemblies for classes. This essentially means 
+          creating a large list of every class type in the assemblies. This is so that the IL Compiler can quickly go through all types, converting them 
+          to assembler.
+        </para>
+      </content>
+    </section>
+    
+    <section address="Step7">
+      <title>7. Find classes marked as containing plugs</title>
+      <content>
+        <para>
+          A second search should then be made for all classes marked as containing a plugged method. As discussed earlier in this document, classes can 
+          contain empty methods which are marked (using custom attributes) as plugged. However, to save scanning every method in every type for whether 
+          it is plugged, any class containing a plugged method should have a custom attribute indicating that it does. This means that only the 
+          (comparatively limited) number of methods from these classes are checked.
+        </para>
+        <para>
+          To find the plugged classes, the IL Reader should use Reflection to search for classes with the custom attribute.
+        </para>
+      </content>
+    </section>
+    
+    <section address="Step8">
+      <title>8. IL Scanner Initialise</title>
+      <content>
+        <para>
+          The IL Scanner is the class whose main task is to scan all the IL ops in the methods found and convert them to architecture specific assembler. Its 
+          functions are defined in steps below.
+        </para>
+        <para>
+          The IL Scanner should have been passed handlers to the process’ output message, warning and error methods but it should check at this point that they 
+          are not null. If they are null, it should set them to dummy/empty methods.
+        </para>
+      </content>
+    </section>
+    
+    <section address="Step9">
+      <title>9. Loop through plugged classes</title>
+      <content>
+        <para>
+          It probably doesn’t matter whether plugged classes or normal classes are looped through first but since plugged classes (/methods) are lower level than 
+          normal classes / methods, it makes sense to do them first.
+        </para>
+        <para>
+          When looping through plugged classes, we loop through all methods. Ones which are not plugged get processed like normal methods so are, for the sake of 
+          this description, included under All Classes.
+        </para>
+        <para>
+          For each plugged class, loop through all the plugged methods performing the steps below.
+        </para>
+      </content>
+    
+      <sections>
+        <section address="Step9.1">
+          <title>9.1. Loop through plugged methods</title>
+          <content>
+            <para>
+              Using Reflection a list of methods with the plugged method custom attribute can be obtained for a given class. The attribute will indicate the base 
+              name of the file to load which contains the ASM to plug the method with.
+            </para>
+            <para>
+              Since different architectures could be targeted, the kernel compiler process should have been passed an argument when it was started indicating which 
+              architecture to target. A separate ASM plug file will exist for each target architecture. These files will have a common naming scheme where the base 
+              name can be appended to giving the actual file name for the ASM plug file to load for the current compile task.
+            </para>
+            <para>
+              For each plugged method, its relevant ASM plug file should be loaded.
+            </para>
+          </content>
+        </section>
+      
+        <section address="Step9.2">
+          <title>9.2. Loop through ASM chunks from files</title>
+          <content>
+            <para>
+              Once the ASM file has been loaded, the ASM should be used to create an ASM chunk (described later) and added to the full list of ASM chunks. It should be 
+              given an additional flag to indicate it came from an ASM plug file and a property to store which ASM plug file it came from.
+            </para>
+          </content>
+        </section>
+      </sections>
+    </section>
+    
+    <section address="Step10">
+      <title>10. Loop through all classes</title>
+      <content>
+        <para>
+          The All Classes list is described as including all the found classes, but in reality it should not contain plugged classes. However, all unplugged methods (even 
+          in plugged classes) get processed as per steps below.
+        </para>
+      </content>
+    
+      <sections>
+        <section address="Step10.1">
+          <title>10.1. Loop through methods</title>
+          <content>
+            <para>
+              Using Reflection a list of methods (which are not plugged) can be obtained for a given class. For each method, perform steps 2 and 3.
+            </para>
+          </content>
+        </section>
+      
+        <section address="Step10.2">
+          <title>10.2. Loop through IL Ops constructing ASM</title>
+          <content>
+            <para>
+              Every method will (or should) contain some IL ops. These IL ops must be converted to zero, one or more valid lines of assembler for the current target architecture. 
+              So for each method, we go through all the IL ops in that method (in order) and convert them into assembler. Combining the lines of assembler, in order, into one 
+              contains piece of assembler forms a chunk.
+            </para>
+            <para>
+              Each IL op will have a corresponding class in the compiler. These IL ops classes will be abstract since they will not be able to convert an IL op to ASM since they will 
+              be architecture independent. A separate class library will then be created for each target architecture which will contain implementations of all the IL op classes. The 
+              IL op classes will have one main function: to take its given IL op and the current code/compiler context and convert it into assembler (for the target architecture).
+            </para>
+            <para>
+              So for each IL op, the correct compiler IL op class will be loaded from the architecture library specified when the compiler process was started. The compiler IL op’s 
+              conversion method should then be called and the resulting assembler added to the current ASM chunk text.
+            </para>
+          </content>
+        </section>
+      
+        <section address="Step10.3">
+          <title>10.3. Create and add ASM chunks</title>
+          <content>
+            <para>
+              The final ASM text should be used to create the ASM chunk which should then be added to the full list of ASM chunks. In future, some ASM chunks will have additional information 
+              (for example, to indicate where they should be sequenced to in the final ASM file) but that is not detailed in this processing flow description.
+            </para>
+          </content>
+        </section>
+      </sections>
+    </section>
+    
+    <section address="Step11">
+      <title>11. Sequence ASM Chunks</title>
+      <content>
+        <para>
+          In theory, all the assembler would appear in the full ASM chunks list in the order it should appear in the final ASM file. However, since the ASM chunks are found by just searching 
+          classes for methods, they will not be added to the list in the order they should be executed in. Things like boot signature/bootstrap code need to appear at the very top of the ASM 
+          file but other general code can appear in any order. For this reason, the sequencing step is included to re-order the ASM chunks into the final output order.
+        </para>
+        <para>
+          In practice, this step may be programmable so that it finds chunks and outputs them at the same time, so that we don’t have to loop through all the chunks more times than necessary.
+        </para>
+        <para>
+          The ASM chunks should be sequenced (ordered) based on:
+        </para>
+        <list class="bullet">
+          <listItem>
+            <para>Any extra information supplied with the ASM chunk</para>
+          </listItem>
+          <listItem>
+            <para>The ASM chunk identifier (such as a method label)</para>
+          </listItem>
+          <listItem>
+            <para>Existing position in the ASM chunks list</para>
+          </listItem>
+        </list>
+      </content>
+    </section>
+    
+    <section address="Step12">
+      <title>12. Ouptut ASM chunks to file</title>
+      <content>
+        <para>
+          This step is small and simple. It is simply a matter of looping through all the ASM chunks in the final, ordered, full ASM chunks list and outputting the ASM text to the output file.
+        </para>
+      </content>
+    </section>
+    
+    <section address="Step13">
+      <title>13. Invoke NASM</title>
+      <content>
+        <para>
+          The final step is to convert the .ASM file into something that can actually be used as a bootable operating system. For the purposes of this description, we shall simply say this involves 
+          calling NASM, with the correct parameters for the target architecture, to convert the .ASM file into a .ISO file which can be used in virtualization software such as VMWare or Bochs.
+        </para>
+      </content>
+    </section>
+    
+    <relatedTopics>
+    </relatedTopics>
+  </developerConceptualDocument>
+</topic>

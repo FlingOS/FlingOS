@@ -1,0 +1,121 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<topic id="fb639778-c718-4c56-9ba4-0ad324d35114" revisionNumber="1">
+  <developerConceptualDocument
+    xmlns="http://ddue.schemas.microsoft.com/authoring/2003/5"
+    xmlns:xlink="http://www.w3.org/1999/xlink">
+
+    <introduction>
+      <para>
+        A discussion of the approach to solving the issue of the Microsoft Standard C#
+        Libraries involving writing custom libraries from scratch.
+      </para>
+    </introduction>
+
+
+    <section address="Description">
+      <title>Description</title>
+      <content>
+        <para>
+          The Plugs approach is harder conceptually and requires a little background of how 
+          Microsoft’s standard C# libraries are structured.
+        </para>
+        <para>
+          Microsoft’s standard C# libraries are not purely to provide low-level code for higher 
+          level code to use. In fact, for the most part, they are IL code that references other 
+          bits of code within the standard libraries. Only a few core classes and functions call 
+          into lower level code such as the Microsoft Win32 libraries.
+        </para>
+        <para>
+          The implication of this is that you can keep some of the Microsoft standard C# 
+          libraries’ code and just plug the calls to the lower level code (e.g. calls to Win32 
+          libraries). Unfortunately, most of the basic standard libraries were designed to be 
+          used as user-mode code not kernel code, so most of the basic library classes and 
+          functions need to be plugged to be able to compile the kernel.
+        </para>
+      </content>
+    </section>
+    <section address="Advantages">
+      <title>Advantages</title>
+      <content>
+        <list class="bullet">
+          <listItem>
+            <para>Uses Microsoft’s existing standard C# libraries saving work in:</para>
+            <list class="bullet">
+              <listItem>
+                <para>Programming</para>
+              </listItem>
+              <listItem>
+                <para>Structure design</para>
+              </listItem>
+              <listItem>
+                <para>Research of required classes etc.</para>
+              </listItem>
+            </list>
+          </listItem>
+          <listItem>
+            <para>Reduces the amount of code needed to be programmed</para>
+          </listItem>
+          <listItem>
+            <para>
+              Allows two development teams to work dependently but simultaneously – one on the 
+              kernel code, one on plugging the stuff used by the kernel code.
+            </para>
+          </listItem>
+        </list>
+      </content>
+    </section>
+    <section address="Disadvantages">
+      <title>Disadvantages</title>
+      <content>
+        <list class="bullet">
+          <listItem>
+            <para>
+              Complicates the kernel compiler hugely as it has to deal with “plugged” methods 
+              and classes etc.
+            </para>
+          </listItem>
+          <listItem>
+            <para>
+              Potentially doubles the compile time since plugs might have to be scanned before 
+              the rest of the compile can necessarily happen
+            </para>
+          </listItem>
+          <listItem>
+            <para>
+              Ties Fling OS into Microsoft’s libraries’ structures and any “intern hack” code 
+              they have!
+            </para>
+          </listItem>
+          <listItem>
+            <para>
+              No control over the inner code of the libraries and tied into MS .Net versions 
+              which may become unavailable.
+            </para>
+          </listItem>
+          <listItem>
+            <para>Hard to maintain</para>
+          </listItem>
+          <listItem>
+            <para>Very complex conceptually and to program</para>
+          </listItem>
+          <listItem>
+            <para>
+              Requires additional work to find out what needs plugging, how to plug it to match 
+              MS’s original functionality etc.
+            </para>
+          </listItem>
+          <listItem>
+            <para>May cause problems later with MS IP</para>
+          </listItem>
+          <listItem>
+            <para>Probably some more stuff that can’t be thought of right now…</para>
+          </listItem>
+        </list>
+      </content>
+    </section>
+
+    <relatedTopics>
+      <link xlink:href="1a4ef707-ef74-43bd-9bd7-979cd9331d0c" />
+    </relatedTopics>
+  </developerConceptualDocument>
+</topic>

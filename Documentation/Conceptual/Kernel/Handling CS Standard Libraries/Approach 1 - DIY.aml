@@ -1,0 +1,78 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<topic id="1a4ef707-ef74-43bd-9bd7-979cd9331d0c" revisionNumber="1">
+  <developerConceptualDocument
+    xmlns="http://ddue.schemas.microsoft.com/authoring/2003/5"
+    xmlns:xlink="http://www.w3.org/1999/xlink">
+
+    <introduction>
+      <para>
+        A discussion of the approach to solving the issue of the Microsoft Standard C#
+        Libraries involving writing custom libraries from scratch.
+      </para>
+    </introduction>
+
+    <section address="Description">
+      <title>Description</title>
+      <content>
+        <para>
+          The DIY approach is the simplest conceptually. The standard libraries must be, at 
+          some level, re-programmed, since they are not compiled all the way to assembler for 
+          us. So this approach forgets they exist at all. Instead, program new libraries of 
+          low-level code, building them up from scratch with no dependency on the Windows 
+          libraries.
+        </para>
+      </content>
+    </section>
+    <section address="Advantages">
+      <title>Advantages</title>
+      <content>
+        <list class="bullet">
+          <listItem>
+            <para>Simple to implement = simpler to maintain</para>
+          </listItem>
+          <listItem>
+            <para>Allows completely customized structure and access to all levels of code = maximum control</para>
+          </listItem>
+          <listItem>
+            <para>Easy to maintain as anyone can grasp the idea and program as normal</para>
+          </listItem>
+          <listItem>
+            <para>Simple compiler architecture implications</para>
+          </listItem>
+          <listItem>
+            <para>Much greater independence of Microsoft code and .Net versions</para>
+          </listItem>
+          <listItem>
+            <para>Not constrained to Microsoft structure, Microsoft “intern hacks”</para>
+          </listItem>
+        </list>
+      </content>
+    </section>
+    <section address="Disadvantages">
+      <title>Disadvantages</title>
+      <content>
+        <list class="bullet">
+          <listItem>
+            <para>
+              Requires a total re-program of libraries equivalent to system libraries = more 
+              work
+            </para>
+          </listItem>
+          <listItem>
+            <para>Loses the experience and structure of Microsoft’s standard libraries</para>
+          </listItem>
+          <listItem>
+            <para>
+              Longer to implement before any useful working operating system can be 
+              written/tested.
+            </para>
+          </listItem>
+        </list>
+      </content>
+    </section>
+
+    <relatedTopics>
+      <link xlink:href="fb639778-c718-4c56-9ba4-0ad324d35114" />
+    </relatedTopics>
+  </developerConceptualDocument>
+</topic>

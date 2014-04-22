@@ -1,0 +1,205 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
+  <PropertyGroup>
+    <!-- The configuration and platform will be used to determine which assemblies to include from solution and
+				 project documentation sources -->
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{040b4922-9973-4bc6-b63d-11ce1389a86a}</ProjectGuid>
+    <SHFBSchemaVersion>1.9.9.0</SHFBSchemaVersion>
+    <!-- AssemblyName, Name, and RootNamespace are not used by SHFB but Visual Studio adds them anyway -->
+    <AssemblyName>Documentation</AssemblyName>
+    <RootNamespace>Documentation</RootNamespace>
+    <Name>Documentation</Name>
+    <!-- SHFB properties -->
+    <FrameworkVersion>.NET Framework 4.5</FrameworkVersion>
+    <OutputPath>.\Help\</OutputPath>
+    <HtmlHelpName>Documentation</HtmlHelpName>
+    <Language>en-US</Language>
+    <BuildAssemblerVerbosity>OnlyWarningsAndErrors</BuildAssemblerVerbosity>
+    <HelpFileFormat>HtmlHelp1, Website</HelpFileFormat>
+    <IndentHtml>True</IndentHtml>
+    <KeepLogFile>False</KeepLogFile>
+    <DisableCodeBlockComponent>False</DisableCodeBlockComponent>
+    <CppCommentsFixup>False</CppCommentsFixup>
+    <CleanIntermediates>True</CleanIntermediates>
+    <DocumentationSources>
+      <DocumentationSource sourceFile="..\FlingOS.sln" xmlns="" />
+    </DocumentationSources>
+    <MissingTags>Summary, Parameter, Returns, AutoDocumentCtors, Namespace, TypeParameter, AutoDocumentDispose</MissingTags>
+    <VisibleItems>Attributes, ExplicitInterfaceImplementations, InheritedMembers, Privates, PrivateFields, Protected, SealedProtected</VisibleItems>
+    <PlugInConfigurations>
+      <PlugInConfig id="Output Deployment" enabled="False">
+        <configuration deleteAfterDeploy="false">
+          <deploymentLocation id="help1x" location="">
+            <userCredentials useDefault="true" userName="" password="" />
+            <proxyCredentials useProxy="false" proxyServer="">
+              <userCredentials useDefault="true" userName="" password="" />
+            </proxyCredentials>
+          </deploymentLocation>
+          <deploymentLocation id="help2x" location="">
+            <userCredentials useDefault="true" userName="" password="" />
+            <proxyCredentials useProxy="false" proxyServer="">
+              <userCredentials useDefault="true" userName="" password="" />
+            </proxyCredentials>
+          </deploymentLocation>
+          <deploymentLocation id="helpViewer" location="" renameMSHA="false">
+            <userCredentials useDefault="true" userName="" password="" />
+            <proxyCredentials useProxy="false" proxyServer="">
+              <userCredentials useDefault="true" userName="" password="" />
+            </proxyCredentials>
+          </deploymentLocation>
+          <deploymentLocation id="website" location="ftp://ftp.edward.nutting.me.uk/wwwroot/Fling%20OS/">
+            <userCredentials useDefault="false" userName="edwardn" password="c56sfhf4EwnU" />
+            <proxyCredentials useProxy="false" proxyServer="">
+              <userCredentials useDefault="true" userName="" password="" />
+            </proxyCredentials>
+          </deploymentLocation>
+        </configuration>
+      </PlugInConfig>
+    </PlugInConfigurations>
+    <TransformComponentArguments>
+      <Argument Key="logoFile" Value="" />
+      <Argument Key="logoHeight" Value="" />
+      <Argument Key="logoWidth" Value="" />
+      <Argument Key="logoAltText" Value="" />
+      <Argument Key="logoPlacement" Value="left" />
+      <Argument Key="logoAlignment" Value="left" />
+      <Argument Key="maxVersionParts" Value="" />
+    </TransformComponentArguments>
+    <ComponentConfigurations>
+      <ComponentConfig id="Code Block Component" enabled="True">
+        <component id="Code Block Component">
+          <basePath value="{@HtmlEncProjectFolder}" />
+          <outputPaths>{@HelpFormatOutputPaths}</outputPaths>
+          <allowMissingSource value="false" />
+          <removeRegionMarkers value="false" />
+          <colorizer syntaxFile="{@SHFBFolder}Colorizer\highlight.xml" styleFile="{@SHFBFolder}Colorizer\highlight.xsl" stylesheet="{@SHFBFolder}Colorizer\highlight.css" scriptFile="{@SHFBFolder}Colorizer\highlight.js" language="cs" tabSize="0" numberLines="true" outlining="true" keepSeeTags="false" defaultTitle="true" />
+        </component>
+      </ComponentConfig>
+      <ComponentConfig id="API Token Resolution" enabled="True">
+        <component id="API Token Resolution">{@TokenFiles}
+<replace elements="/*//token" item="string(.)" /></component>
+      </ComponentConfig>
+    </ComponentConfigurations>
+    <MaximumGroupParts>4</MaximumGroupParts>
+    <NamespaceGrouping>True</NamespaceGrouping>
+    <SyntaxFilters>C#</SyntaxFilters>
+    <SdkLinkTarget>Blank</SdkLinkTarget>
+    <RootNamespaceContainer>False</RootNamespaceContainer>
+    <PresentationStyle>VS2010</PresentationStyle>
+    <Preliminary>False</Preliminary>
+    <NamingMethod>Guid</NamingMethod>
+    <HelpTitle>Fling OS</HelpTitle>
+    <ContentPlacement>AboveNamespaces</ContentPlacement>
+    <NamespaceSummaries>
+      <NamespaceSummaryItem name="Kernel" isDocumented="True">Contains the main classes for the Fling OS kernel implementation.</NamespaceSummaryItem>
+      <NamespaceSummaryItem name="Kernel.Compiler" isDocumented="True">Contains the code for compiling kernel IL code into the final assembler file.</NamespaceSummaryItem>
+      <NamespaceSummaryItem name="Kernel.Compiler.App" isDocumented="True">The basic compiler application that uses Kernel.Compiler.</NamespaceSummaryItem>
+      <NamespaceSummaryItem name="Kernel.Compiler.Architectures.x86_32" isDocumented="True">Contains the Il Op conversion class implementations for converting IL op to valid x86 - 32 bit assembler.</NamespaceSummaryItem>
+      <NamespaceSummaryItem name="Kernel.Compiler.ILOps" isDocumented="True">Contains all the IL to ASM conversion classes for supported IL ops.</NamespaceSummaryItem>
+      <NamespaceSummaryItem name="Kernel.Debug" isDocumented="True">Contains code related to debugging the Fling OS kernel.</NamespaceSummaryItem>
+      <NamespaceSummaryItem name="Kernel.Debug.Data" isDocumented="True">Contains the classes for creating, managing and accessing the kernel debug database.</NamespaceSummaryItem>
+      <NamespaceSummaryItem name="Kernel.Debug.Debugger" isDocumented="True">The Fling OS Kernel Debugger application used for debugging the Fling OS kernel (currently over a serial pipe form a virtual machine).</NamespaceSummaryItem>
+      <NamespaceSummaryItem name="Kernel.Compiler (Group)" isGroup="True" isDocumented="True">Contains namespaces related to the kernel compiler.</NamespaceSummaryItem>
+      <NamespaceSummaryItem name="Kernel.Debug (Group)" isGroup="True" isDocumented="True">Contains namespaces related to the kernel debugging tools.</NamespaceSummaryItem>
+      <NamespaceSummaryItem name="Kernel (Group)" isGroup="True" isDocumented="True">Contains the main namespaces for the Fling OS kernel implementation.</NamespaceSummaryItem>
+      <NamespaceSummaryItem name="Kernel.FOS_System" isDocumented="True">The kernel's System namespace that largely replaces .Net's System namespace.</NamespaceSummaryItem>
+      <NamespaceSummaryItem name="Kernel.FOS_System.Exceptions" isDocumented="True">Contains the standard exceptions for the kernel.</NamespaceSummaryItem>
+    </NamespaceSummaries>
+    <ApiFilter>
+      <Filter entryType="Namespace" fullName="Kernel.Debug.Data" isExposed="False">
+  <Filter entryType="Class" fullName="Kernel.Debug.Data.DebugDatabase" filterName="DebugDatabase" isExposed="True" />
+  <Filter entryType="Class" fullName="Kernel.Debug.Data.ElfMap" filterName="ElfMap" isExposed="True" />
+  <Filter entryType="Class" fullName="Kernel.Debug.Data.PDB_LineInfo" filterName="PDB_LineInfo" isExposed="True" />
+  <Filter entryType="Class" fullName="Kernel.Debug.Data.PDB_MethodInfo" filterName="PDB_MethodInfo" isExposed="True" />
+  <Filter entryType="Class" fullName="Kernel.Debug.Data.PDB_SymbolInfo" filterName="PDB_SymbolInfo" isExposed="True" />
+  <Filter entryType="Class" fullName="Kernel.Debug.Data.PDBDumpReader" filterName="PDBDumpReader" isExposed="True" />
+</Filter>
+<Filter entryType="Namespace" fullName="Kernel.Debug.Debugger" isExposed="True">
+  <Filter entryType="Class" fullName="Kernel.Debug.Debugger.MainForm" filterName="MainForm" isExposed="False" />
+  <Filter entryType="Enumeration" fullName="Kernel.Debug.Debugger.MainForm.DebuggerStates" filterName="MainForm.DebuggerStates" isExposed="False" />
+  <Filter entryType="Delegate" fullName="Kernel.Debug.Debugger.MainForm.GetTextDelegate" filterName="MainForm.GetTextDelegate" isExposed="False" />
+  <Filter entryType="Delegate" fullName="Kernel.Debug.Debugger.MainForm.LoadMemoryCompletedDelegate" filterName="MainForm.LoadMemoryCompletedDelegate" isExposed="False" />
+  <Filter entryType="Delegate" fullName="Kernel.Debug.Debugger.MainForm.SetEnabledDelegate" filterName="MainForm.SetEnabledDelegate" isExposed="False" />
+  <Filter entryType="Delegate" fullName="Kernel.Debug.Debugger.MainForm.SetTextDelegate" filterName="MainForm.SetTextDelegate" isExposed="False" />
+  <Filter entryType="Delegate" fullName="Kernel.Debug.Debugger.MainForm.VoidDelegate" filterName="MainForm.VoidDelegate" isExposed="False" />
+</Filter></ApiFilter>
+    <FeedbackEMailLinkText>Edward Nutting</FeedbackEMailLinkText>
+    <FeedbackEMailAddress>edwardnutting%40outlook.com</FeedbackEMailAddress>
+    <CopyrightText>Copyright Edward Nutting 2014</CopyrightText>
+    <SccProjectName>SAK</SccProjectName>
+    <SccProvider>SAK</SccProvider>
+    <SccAuxPath>SAK</SccAuxPath>
+    <SccLocalPath>SAK</SccLocalPath>
+  </PropertyGroup>
+  <!-- There are no properties for these groups.  AnyCPU needs to appear in order for Visual Studio to perform
+			 the build.  The others are optional common platform types that may appear. -->
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x64' ">
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x64' ">
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|Win32' ">
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|Win32' ">
+  </PropertyGroup>
+  <ItemGroup>
+    <ContentLayout Include="Main Content Layout.content" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Conceptual" />
+    <Folder Include="Conceptual\Aims and Ideas\Aims" />
+    <Folder Include="Conceptual\Aims and Ideas\Ideas" />
+    <Folder Include="Conceptual\Introduction" />
+    <Folder Include="Conceptual\Aims and Ideas" />
+    <Folder Include="Conceptual\Kernel Compiler" />
+    <Folder Include="Conceptual\Kernel Compiler\Architecture" />
+    <Folder Include="Conceptual\Kernel" />
+    <Folder Include="Conceptual\Kernel Debugger\" />
+    <Folder Include="Conceptual\Kernel\Handling CS Standard Libraries" />
+    <Folder Include="Conceptual\Kernel\Kernel Sections" />
+    <Folder Include="Conceptual\Kernel\Kernel Sections\Built-in" />
+    <Folder Include="Conceptual\Kernel\Kernel Sections\Dynamically Loaded" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Conceptual\Aims and Ideas\Aims and Ideas.aml" />
+    <None Include="Conceptual\Aims and Ideas\Aims\Kernel modularisation.aml" />
+    <None Include="Conceptual\Aims and Ideas\Aims\Well documented code.aml" />
+    <None Include="Conceptual\Aims and Ideas\Ideas\App-hardware independence.aml" />
+    <None Include="Conceptual\Aims and Ideas\Ideas\Flinging.aml" />
+    <None Include="Conceptual\Aims and Ideas\Ideas\Low-level managed memory.aml" />
+    <None Include="Conceptual\Aims and Ideas\Ideas\Remoting.aml" />
+    <None Include="Conceptual\Aims and Ideas\Ideas\Total memory virtualisation.aml" />
+    <None Include="Conceptual\Introduction\Introduction.aml" />
+    <None Include="Conceptual\Kernel Compiler\Architecture\Processing Flow Details.aml" />
+    <None Include="Conceptual\Kernel Compiler\Kernel Compiler.aml" />
+    <None Include="Conceptual\Kernel Compiler\Using the compiler.aml" />
+    <None Include="Conceptual\Kernel Debugger\Kernel Debugger.aml" />
+    <None Include="Conceptual\Kernel\Handling CS Standard Libraries\Approach 1 - DIY.aml" />
+    <None Include="Conceptual\Kernel\Handling CS Standard Libraries\Approach 2 - Plugs.aml" />
+    <None Include="Conceptual\Kernel\Kernel Sections\Built-in\Basic Debugger.aml" />
+    <None Include="Conceptual\Kernel\Kernel Sections\Built-in\Pre-reqs.aml" />
+    <None Include="Conceptual\Kernel\Kernel.aml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="Conceptual\Kernel Compiler\Architecture\Fling OS - Kernel Compiler Model 1.png">
+      <ImageId>Fling OS - Kernel Compiler Model 1</ImageId>
+      <AlternateText>Fling OS - Kernel Compiler Model 1</AlternateText>
+    </Image>
+    <Image Include="Conceptual\Kernel Debugger\Fling OS - Debug Architecture.png">
+      <ImageId>Fling OS - Debug Architecture</ImageId>
+      <AlternateText>Fling OS - Debug Architecture</AlternateText>
+    </Image>
+  </ItemGroup>
+  <!-- Import the SHFB build targets -->
+  <Import Project="$(SHFBROOT)\SandcastleHelpFileBuilder.targets" />
+</Project>

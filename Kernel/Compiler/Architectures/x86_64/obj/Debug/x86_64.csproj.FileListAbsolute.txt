@@ -1,0 +1,7 @@
+G:\Fling OS\Fling OS\Kernel\Compiler\Architectures\x86_64\bin\Debug\x86_64.dll
+G:\Fling OS\Fling OS\Kernel\Compiler\Architectures\x86_64\bin\Debug\x86_64.pdb
+G:\Fling OS\Fling OS\Kernel\Compiler\Architectures\x86_64\bin\Debug\Kernel.Compiler.dll
+G:\Fling OS\Fling OS\Kernel\Compiler\Architectures\x86_64\bin\Debug\Kernel.Compiler.pdb
+G:\Fling OS\Fling OS\Kernel\Compiler\Architectures\x86_64\obj\Debug\x86_64.csprojResolveAssemblyReference.cache
+G:\Fling OS\Fling OS\Kernel\Compiler\Architectures\x86_64\obj\Debug\x86_64.dll
+G:\Fling OS\Fling OS\Kernel\Compiler\Architectures\x86_64\obj\Debug\x86_64.pdb

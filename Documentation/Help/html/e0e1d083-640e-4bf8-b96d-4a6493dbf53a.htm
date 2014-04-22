@@ -1,0 +1,155 @@
+﻿<html xmlns:MSHelp="http://msdn.microsoft.com/mshelp" xmlns:mshelp="http://msdn.microsoft.com/mshelp">
+  <head>
+    <link rel="SHORTCUT ICON" href="./../icons/favicon.ico" />
+    <style type="text/css">.OH_CodeSnippetContainerTabLeftActive, .OH_CodeSnippetContainerTabLeft,.OH_CodeSnippetContainerTabLeftDisabled { }.OH_CodeSnippetContainerTabRightActive, .OH_CodeSnippetContainerTabRight,.OH_CodeSnippetContainerTabRightDisabled { }.OH_footer { }</style>
+    <link rel="stylesheet" type="text/css" href="./../styles/branding.css" />
+    <link rel="stylesheet" type="text/css" href="./../styles/branding-en-US.css" />
+    <style type="text/css">
+			body
+			{
+			border-left:5px solid #e6e6e6;
+			overflow-x:scroll;
+			overflow-y:scroll;
+			}
+		</style>
+    <script src="./../scripts/branding.js" type="text/javascript">
+      <!---->
+    </script>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <title>Kernel Compiler</title>
+    <meta name="Language" content="en-us" />
+    <meta name="Microsoft.Help.Id" content="e0e1d083-640e-4bf8-b96d-4a6493dbf53a" />
+    <meta name="Description" content="An overview of the Kernel Compiler and its architecture are presented below." />
+    <meta name="Microsoft.Help.ContentType" content="Concepts" />
+    <meta name="BrandingAware" content="'true'" />
+    
+    
+    <meta name="SelfBranded" content="true" />
+  </head>
+  <body onload="onLoad()" class="primary-mtps-offline-document">
+    <div class="OH_outerDiv">
+      <div class="OH_outerContent">
+        <table class="TitleTable">
+          <tr>
+            <td class="OH_tdTitleColumn">Kernel Compiler</td>
+            <td class="OH_tdRunningTitleColumn">Fling OS</td>
+          </tr>
+        </table>
+        <div id="mainSection">
+          <div id="mainBody">
+            <span class="introStyle"></span>
+            <div class="introduction">
+              <p>
+        An overview of the Kernel Compiler and its architecture are 
+        presented below.
+      </p>
+            </div>
+            <a id="GeneralOverview">
+              <!---->
+            </a>
+            <div class="OH_CollapsibleAreaRegion">
+              <div class="OH_regiontitle">General Overview</div>
+              <div class="OH_CollapsibleArea_HrDiv">
+                <hr class="OH_CollapsibleArea_Hr" />
+              </div>
+            </div>
+            <div class="OH_clear"></div>
+            <p>
+          The Kernel Compiler is an IL to assembly (ASM) language compiler. The Microsoft MSBuild 
+          compiler handles much of the complex compilation from C# to IL. IL language itself is 
+          very close to assembly language and so the compilation from IL to ASM is relatively simple. 
+          Most of the work comes from:
+        </p>
+            <ul>
+              <li>Scanning all the IL code and converting it to ASM</li>
+              <li>Finding methods that are ASM plugged and loading/inserting the ASM plugs </li>
+              <li>Sequencing the ASM into one continuous .ASM (text) file</li>
+              <li>Saving debug information into a .PDB (database) file</li>
+            </ul>
+            <a id="ProcessingFlowOverview">
+              <!---->
+            </a>
+            <div class="OH_CollapsibleAreaRegion">
+              <div class="OH_regiontitle">Processing Flow</div>
+              <div class="OH_CollapsibleArea_HrDiv">
+                <hr class="OH_CollapsibleArea_Hr" />
+              </div>
+            </div>
+            <div class="OH_clear"></div>
+            <p>
+          This section is given in much more detail in <a href="2ab7af0a-7eb4-46c9-85b6-565b3ab7693b.htm" target="">Processing Flow Details</a>.
+        </p>
+            <p>
+              <span class="media">
+                <img alt="Fling OS - Kernel Compiler Model 1" src="./../media/Fling OS - Kernel Compiler Model 1.png" />
+              </span>
+            </p>
+            <p>
+          This model gives a short overview of how the Kernel Compiler should work. Initially, MSBuild converts C# to IL code. The Kernel Compiler then reads in that IL code (IL Reader) into a full list of classes (List of classes) and a list of classes that contain one or more plugged methods (List of plugged classes). These two lists are handed to the IL Scanner. The IL Scanner then loops through:
+        </p>
+            <ol>
+              <li>
+                <p>The list of plugged classes</p>
+                <ol>
+                  <li>For each class, loop through all plugged methods</li>
+                  <li>Load the relevant plug ASM file</li>
+                  <li>Create an ASM chunk and add it to the full list of ASM chunks (List of ASM chunks)</li>
+                </ol>
+              </li>
+              <li>
+                <p>The list of all classes</p>
+                <ol>
+                  <li>For each class, loop through all not-plugged methods</li>
+                  <li>Loop through all the IL ops for each method</li>
+                  <li>Convert the IL ops to ASM</li>
+                  <li>Create an ASM chunk and add it to the full list of ASM chunks (List of ASM 
+                chunks)</li>
+                </ol>
+              </li>
+            </ol>
+            <p>
+          N.B. An ASM chunk is essentially a piece of ASM text but may have / require peripheral 
+          information.
+        </p>
+            <p>
+          After the full list of ASM chunks has been compiled (List of ASM chunks), each chunk is 
+          sequenced into the continuous ASM file and written to the file. By sequencing the chunks, 
+          we mean placing them in the correct order. Some chunks, such as the initial boot code, 
+          needs to go first. Other chunks may not matter where they go in the file.
+        </p>
+            <p>
+          Finally, once the ASM file has been written, an existing tool, such as NASM, can compile 
+          it from ASM into actually binary code and thus into something like a .ISO file which can 
+          be run in a virtual machine for testing.
+        </p>
+            <p>
+          One thing missed by this model is the output of debug information. The debug information 
+          must contain things like method signatures, stack info, type info, and relation of ASM 
+          line to C# line/method etc. However, none of this is central to the compiler so is not 
+          included in this model.
+        </p>
+            <a name="seeAlsoSection">
+              <!---->
+            </a>
+            <div class="OH_CollapsibleAreaRegion">
+              <div class="OH_regiontitle">See Also</div>
+              <div class="OH_CollapsibleArea_HrDiv">
+                <hr class="OH_CollapsibleArea_Hr" />
+              </div>
+            </div>
+            <div class="OH_clear"></div>
+            <h4 class="subHeading">Other Resources</h4>
+            <div class="seeAlsoStyle">
+              <a href="2ab7af0a-7eb4-46c9-85b6-565b3ab7693b.htm" target="">Processing Flow Details</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div id="OH_footer" class="OH_footer">
+      <p>Copyright Edward Nutting 2014</p>
+      <div class="OH_feedbacklink">
+        <a href="mailto:edwardnutting@outlook.com?subject=Fling+OS+Kernel+Compiler+100+EN-US&amp;body=Your%20feedback%20is%20used%20to%20improve%20the%20documentation%20and%20the%20product.%20Your%20e-mail%20address%20will%20not%20be%20used%20for%20any%20other%20purpose%20and%20is%20disposed%20of%20after%20the%20issue%20you%20report%20is%20resolved.%20While%20working%20to%20resolve%20the%20issue%20that%20you%20report%2c%20you%20may%20be%20contacted%20via%20e-mail%20to%20get%20further%20details%20or%20clarification%20on%20the%20feedback%20you%20sent.%20After%20the%20issue%20you%20report%20has%20been%20addressed%2c%20you%20may%20receive%20an%20e-mail%20to%20let%20you%20know%20that%20your%20feedback%20has%20been%20addressed.">Send Feedback</a> on this topic to Edward Nutting.</div>
+    </div>
+  </body>
+</html>

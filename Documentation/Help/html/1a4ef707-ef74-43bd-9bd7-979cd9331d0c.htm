@@ -1,0 +1,127 @@
+﻿<html xmlns:MSHelp="http://msdn.microsoft.com/mshelp" xmlns:mshelp="http://msdn.microsoft.com/mshelp">
+  <head>
+    <link rel="SHORTCUT ICON" href="./../icons/favicon.ico" />
+    <style type="text/css">.OH_CodeSnippetContainerTabLeftActive, .OH_CodeSnippetContainerTabLeft,.OH_CodeSnippetContainerTabLeftDisabled { }.OH_CodeSnippetContainerTabRightActive, .OH_CodeSnippetContainerTabRight,.OH_CodeSnippetContainerTabRightDisabled { }.OH_footer { }</style>
+    <link rel="stylesheet" type="text/css" href="./../styles/branding.css" />
+    <link rel="stylesheet" type="text/css" href="./../styles/branding-en-US.css" />
+    <style type="text/css">
+			body
+			{
+			border-left:5px solid #e6e6e6;
+			overflow-x:scroll;
+			overflow-y:scroll;
+			}
+		</style>
+    <script src="./../scripts/branding.js" type="text/javascript">
+      <!---->
+    </script>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <title>Approach 1 - DIY</title>
+    <meta name="Language" content="en-us" />
+    <meta name="Microsoft.Help.Id" content="1a4ef707-ef74-43bd-9bd7-979cd9331d0c" />
+    <meta name="Description" content="A discussion of the approach to solving the issue of the Microsoft Standard C# Libraries involving writing custom libraries from scratch." />
+    <meta name="Microsoft.Help.ContentType" content="Concepts" />
+    <meta name="BrandingAware" content="'true'" />
+    
+    
+    <meta name="SelfBranded" content="true" />
+  </head>
+  <body onload="onLoad()" class="primary-mtps-offline-document">
+    <div class="OH_outerDiv">
+      <div class="OH_outerContent">
+        <table class="TitleTable">
+          <tr>
+            <td class="OH_tdTitleColumn">Approach 1 - DIY</td>
+            <td class="OH_tdRunningTitleColumn">Fling OS</td>
+          </tr>
+        </table>
+        <div id="mainSection">
+          <div id="mainBody">
+            <span class="introStyle"></span>
+            <div class="introduction">
+              <p>
+        A discussion of the approach to solving the issue of the Microsoft Standard C#
+        Libraries involving writing custom libraries from scratch.
+      </p>
+            </div>
+            <a id="Description">
+              <!---->
+            </a>
+            <div class="OH_CollapsibleAreaRegion">
+              <div class="OH_regiontitle">Description</div>
+              <div class="OH_CollapsibleArea_HrDiv">
+                <hr class="OH_CollapsibleArea_Hr" />
+              </div>
+            </div>
+            <div class="OH_clear"></div>
+            <p>
+          The DIY approach is the simplest conceptually. The standard libraries must be, at 
+          some level, re-programmed, since they are not compiled all the way to assembler for 
+          us. So this approach forgets they exist at all. Instead, program new libraries of 
+          low-level code, building them up from scratch with no dependency on the Windows 
+          libraries.
+        </p>
+            <a id="Advantages">
+              <!---->
+            </a>
+            <div class="OH_CollapsibleAreaRegion">
+              <div class="OH_regiontitle">Advantages</div>
+              <div class="OH_CollapsibleArea_HrDiv">
+                <hr class="OH_CollapsibleArea_Hr" />
+              </div>
+            </div>
+            <div class="OH_clear"></div>
+            <ul>
+              <li>Simple to implement = simpler to maintain</li>
+              <li>Allows completely customized structure and access to all levels of code = maximum control</li>
+              <li>Easy to maintain as anyone can grasp the idea and program as normal</li>
+              <li>Simple compiler architecture implications</li>
+              <li>Much greater independence of Microsoft code and .Net versions</li>
+              <li>Not constrained to Microsoft structure, Microsoft “intern hacks”</li>
+            </ul>
+            <a id="Disadvantages">
+              <!---->
+            </a>
+            <div class="OH_CollapsibleAreaRegion">
+              <div class="OH_regiontitle">Disadvantages</div>
+              <div class="OH_CollapsibleArea_HrDiv">
+                <hr class="OH_CollapsibleArea_Hr" />
+              </div>
+            </div>
+            <div class="OH_clear"></div>
+            <ul>
+              <li>
+              Requires a total re-program of libraries equivalent to system libraries = more 
+              work
+            </li>
+              <li>Loses the experience and structure of Microsoft’s standard libraries</li>
+              <li>
+              Longer to implement before any useful working operating system can be 
+              written/tested.
+            </li>
+            </ul>
+            <a name="seeAlsoSection">
+              <!---->
+            </a>
+            <div class="OH_CollapsibleAreaRegion">
+              <div class="OH_regiontitle">See Also</div>
+              <div class="OH_CollapsibleArea_HrDiv">
+                <hr class="OH_CollapsibleArea_Hr" />
+              </div>
+            </div>
+            <div class="OH_clear"></div>
+            <h4 class="subHeading">Other Resources</h4>
+            <div class="seeAlsoStyle">
+              <a href="fb639778-c718-4c56-9ba4-0ad324d35114.htm" target="">Approach 2 - Plugs</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div id="OH_footer" class="OH_footer">
+      <p>Copyright Edward Nutting 2014</p>
+      <div class="OH_feedbacklink">
+        <a href="mailto:edwardnutting@outlook.com?subject=Fling+OS+Approach+1+-+DIY+100+EN-US&amp;body=Your%20feedback%20is%20used%20to%20improve%20the%20documentation%20and%20the%20product.%20Your%20e-mail%20address%20will%20not%20be%20used%20for%20any%20other%20purpose%20and%20is%20disposed%20of%20after%20the%20issue%20you%20report%20is%20resolved.%20While%20working%20to%20resolve%20the%20issue%20that%20you%20report%2c%20you%20may%20be%20contacted%20via%20e-mail%20to%20get%20further%20details%20or%20clarification%20on%20the%20feedback%20you%20sent.%20After%20the%20issue%20you%20report%20has%20been%20addressed%2c%20you%20may%20receive%20an%20e-mail%20to%20let%20you%20know%20that%20your%20feedback%20has%20been%20addressed.">Send Feedback</a> on this topic to Edward Nutting.</div>
+    </div>
+  </body>
+</html>

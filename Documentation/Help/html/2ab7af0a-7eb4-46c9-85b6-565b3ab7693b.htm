@@ -1,0 +1,473 @@
+﻿<html xmlns:MSHelp="http://msdn.microsoft.com/mshelp" xmlns:mshelp="http://msdn.microsoft.com/mshelp">
+  <head>
+    <link rel="SHORTCUT ICON" href="./../icons/favicon.ico" />
+    <style type="text/css">.OH_CodeSnippetContainerTabLeftActive, .OH_CodeSnippetContainerTabLeft,.OH_CodeSnippetContainerTabLeftDisabled { }.OH_CodeSnippetContainerTabRightActive, .OH_CodeSnippetContainerTabRight,.OH_CodeSnippetContainerTabRightDisabled { }.OH_footer { }</style>
+    <link rel="stylesheet" type="text/css" href="./../styles/branding.css" />
+    <link rel="stylesheet" type="text/css" href="./../styles/branding-en-US.css" />
+    <style type="text/css">
+			body
+			{
+			border-left:5px solid #e6e6e6;
+			overflow-x:scroll;
+			overflow-y:scroll;
+			}
+		</style>
+    <script src="./../scripts/branding.js" type="text/javascript">
+      <!---->
+    </script>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <title>Processing Flow Details</title>
+    <meta name="Language" content="en-us" />
+    <meta name="Microsoft.Help.Id" content="2ab7af0a-7eb4-46c9-85b6-565b3ab7693b" />
+    <meta name="Description" content="Detailed information about the main kernel compiler architecture presented below." />
+    <meta name="Microsoft.Help.ContentType" content="Concepts" />
+    <meta name="BrandingAware" content="'true'" />
+    
+    
+    <meta name="SelfBranded" content="true" />
+  </head>
+  <body onload="onLoad()" class="primary-mtps-offline-document">
+    <div class="OH_outerDiv">
+      <div class="OH_outerContent">
+        <table class="TitleTable">
+          <tr>
+            <td class="OH_tdTitleColumn">Processing Flow Details</td>
+            <td class="OH_tdRunningTitleColumn">Fling OS</td>
+          </tr>
+        </table>
+        <div id="mainSection">
+          <div id="mainBody">
+            <span class="introStyle"></span>
+            <div class="introduction">
+              <p>Detailed information about the main kernel compiler architecture presented below.</p>
+              <p>This topic contains the following sections.</p>
+              <ul class="autoOutline">
+                <li class="outlineSectionEntry">
+                  <a href="#Step1" target="">1. Start - Post MSBuild</a>
+                </li>
+                <li class="outlineSectionEntry">
+                  <a href="#Step2" target="">2. IL Compiler Initialise</a>
+                </li>
+                <li class="outlineSectionEntry">
+                  <a href="#Step3" target="">3. Initialising the compiler's execution environment</a>
+                </li>
+                <li class="outlineSectionEntry">
+                  <a href="#Step4" target="">4. IL Reader Initialise</a>
+                </li>
+                <li class="outlineSectionEntry">
+                  <a href="#Step5" target="">5. Find Assemblies</a>
+                </li>
+                <li class="outlineSectionEntry">
+                  <a href="#Step6" target="">6. Find all classes</a>
+                </li>
+                <li class="outlineSectionEntry">
+                  <a href="#Step7" target="">7. Find classes marked as containing plugs</a>
+                </li>
+                <li class="outlineSectionEntry">
+                  <a href="#Step8" target="">8. IL Scanner Initialise</a>
+                </li>
+                <li class="outlineSectionEntry">
+                  <a href="#Step9" target="">9. Loop through plugged classes</a>
+                </li>
+                <li class="outlineSectionEntry">
+                  <a href="#Step10" target="">10. Loop through all classes</a>
+                </li>
+                <li class="outlineSectionEntry">
+                  <a href="#Step11" target="">11. Sequence ASM Chunks</a>
+                </li>
+                <li class="outlineSectionEntry">
+                  <a href="#Step12" target="">12. Ouptut ASM chunks to file</a>
+                </li>
+                <li class="outlineSectionEntry">
+                  <a href="#Step13" target="">13. Invoke NASM</a>
+                </li>
+              </ul>
+            </div>
+            <a id="Step1">
+              <!---->
+            </a>
+            <div class="OH_CollapsibleAreaRegion">
+              <div class="OH_regiontitle">1. Start - Post MSBuild</div>
+              <div class="OH_CollapsibleArea_HrDiv">
+                <hr class="OH_CollapsibleArea_Hr" />
+              </div>
+            </div>
+            <div class="OH_clear"></div>
+            <p>
+          The kernel compiler happens after the Microsoft compiler has compiled the operating system C# 
+          code into IL code.
+        </p>
+            <p>
+          Initial ideas were to integrate the kernel compiler as an MSBuild task so that it was automatically 
+          built after the C# code was compiled to IL. However, this approach was ditched after careful 
+          consideration for these reasons:
+        </p>
+            <ul>
+              <li>Using MSBuild ties the compiler functionality into MSBuild / Visual Studio too much</li>
+              <li>Very difficult to write / maintain MSBuild tasks</li>
+              <li>May not want to build the OS after every C# compile since compiling the OS could take a long time</li>
+              <li>Creating a separate, small, C# application to manage the kernel compiler will allow an easier shift to running the compiler on Fling OS itself in future.</li>
+              <li>Despite this adding an extra step to the build process, it can be automatically started using Visual Studio’s Post Build events.</li>
+            </ul>
+            <p>
+          Update (2014-03-14): Limited compatiblity with MSBuild was added so the main kernel project could be auto-built but
+                               the intenion was as a short-term convenience until a more customisable build tool-chain was
+                               constructed.
+        </p>
+            <p>
+          The kernel compiler was built, therefore, as a primarily command-line based tool.
+        </p>
+            <p>
+          The kernel compiler, having been started by either a post-build task, MSBuild or directly by a user (i.e. developer) 
+          should then proceed with the following steps:
+        </p>
+            <ol>
+              <li>
+              Parse any arguments that were passed when the compiler process was started (i.e. the args parameter of the Main method). 
+              The list of supported arguments can be found in the specification.
+            </li>
+              <li>
+              If necessary, open a console window / UI and/or open output streams for messages, warnings and errors to file(s).
+            </li>
+              <li>Proceed with the steps below.</li>
+            </ol>
+            <a id="Step2">
+              <!---->
+            </a>
+            <div class="OH_CollapsibleAreaRegion">
+              <div class="OH_regiontitle">2. IL Compiler Initialise</div>
+              <div class="OH_CollapsibleArea_HrDiv">
+                <hr class="OH_CollapsibleArea_Hr" />
+              </div>
+            </div>
+            <div class="OH_clear"></div>
+            <p>
+          The IL Compiler is the main overall manager class which handles the conversion from IL code to assembler code. 
+          Its main functions are:
+        </p>
+            <ul>
+              <li>
+              To initialize the compiler’s execution environment (e.g. ensuring reference DLLs are loaded)
+            </li>
+              <li>To initialize and call into the IL Reader</li>
+              <li>To initialize and call into the IL Scanner</li>
+              <li>To pass the IL Reader to the IL Scanner</li>
+              <li>
+              To handle errors and warnings and output them to the user via command line or callbacks 
+              depending on the execution environment (e.g. command line, MSBuild task, ...)
+            </li>
+              <li>To feedback progress information to the user via command line or callbacks</li>
+            </ul>
+            <p>
+          So the compiler initialize must do the first three steps in the list. The initializations 
+          should not actually start any processing – just initialize what is required so that 
+          processing can immediately be started.
+        </p>
+            <a id="Step3">
+              <!---->
+            </a>
+            <div class="OH_CollapsibleAreaRegion">
+              <div class="OH_regiontitle">3. Initialising the compiler's execution environment</div>
+              <div class="OH_CollapsibleArea_HrDiv">
+                <hr class="OH_CollapsibleArea_Hr" />
+              </div>
+            </div>
+            <div class="OH_clear"></div>
+            <p>
+          The compiler’s execution environment contains many of the usual things but the main one 
+          specific to this application is the list of assemblies to be built into the kernel / OS. 
+          The list of assemblies includes all the Fling OS standard libraries along with the actual 
+          OS code itself such as built-in drivers etc.
+        </p>
+            <p>
+          The IL Compiler should have been passed handlers to the process’ output message, warning 
+          and error methods but it should check at this point that they are not null. If they are null, 
+          it should set them to dummy/empty methods.
+        </p>
+            <a id="Step4">
+              <!---->
+            </a>
+            <div class="OH_CollapsibleAreaRegion">
+              <div class="OH_regiontitle">4. IL Reader Initialise</div>
+              <div class="OH_CollapsibleArea_HrDiv">
+                <hr class="OH_CollapsibleArea_Hr" />
+              </div>
+            </div>
+            <div class="OH_clear"></div>
+            <p>
+          The IL Reader is the class which primarily handles reading IL code from an assembly but this also 
+          encompasses: finding classes; finding methods within a class.
+        </p>
+            <p>
+          The IL Reader should have been passed handlers to the process’ output message, warning and error 
+          methods but it should check at this point that they are not null. If they are null, it should set 
+          them to dummy/empty methods.
+        </p>
+            <a id="Step5">
+              <!---->
+            </a>
+            <div class="OH_CollapsibleAreaRegion">
+              <div class="OH_regiontitle">5. Find Assemblies</div>
+              <div class="OH_CollapsibleArea_HrDiv">
+                <hr class="OH_CollapsibleArea_Hr" />
+              </div>
+            </div>
+            <div class="OH_clear"></div>
+            <p>
+          Once the IL Reader and IL Compiler have been initialized, the IL Reader can being to search for classes 
+          to be compiled into the kernel. The first step of this is to find all the assemblies included and 
+          referenced in/by the compiled kernel .DLL.
+        </p>
+            <p>
+          When the compiler process was started it should be have passed an argument specifying the path to the .DLL 
+          file hat MSBuild compiled from C#. This .DLL file will be the main OS code including the OS entry point. 
+          The assemblies in the .DLL file and all assemblies that the .DLL references should be included in the full list of assemblies.
+        </p>
+            <p>
+          The compiler will always try and include the standard C# libraries (since Microsoft’s well document NoStdLib option doesn’t seem to 
+          work with newer version of the .Net Framework / CSC.EXE). So all non-standard C# libraries / assemblies should be loaded and any standard 
+          types ignored except for those explicitly added by the IL Compiler (e.g. value types such as Int32). Fling OS will create its own standard 
+          libraries which follow similar names to Microsoft’s but will be preceded by “FOS”. When the kernel compiler comes across a type, it should 
+          check whether the type is in the standard libraries and if it is, ignore it.
+        </p>
+            <p>
+          The assemblies and referenced assemblies can be found using classes in C#’s System.Relfection namespace.
+        </p>
+            <a id="Step6">
+              <!---->
+            </a>
+            <div class="OH_CollapsibleAreaRegion">
+              <div class="OH_regiontitle">6. Find all classes</div>
+              <div class="OH_CollapsibleArea_HrDiv">
+                <hr class="OH_CollapsibleArea_Hr" />
+              </div>
+            </div>
+            <div class="OH_clear"></div>
+            <p>
+          Having created a full list of assemblies to include, the IL Reader can then search all these assemblies for classes. This essentially means 
+          creating a large list of every class type in the assemblies. This is so that the IL Compiler can quickly go through all types, converting them 
+          to assembler.
+        </p>
+            <a id="Step7">
+              <!---->
+            </a>
+            <div class="OH_CollapsibleAreaRegion">
+              <div class="OH_regiontitle">7. Find classes marked as containing plugs</div>
+              <div class="OH_CollapsibleArea_HrDiv">
+                <hr class="OH_CollapsibleArea_Hr" />
+              </div>
+            </div>
+            <div class="OH_clear"></div>
+            <p>
+          A second search should then be made for all classes marked as containing a plugged method. As discussed earlier in this document, classes can 
+          contain empty methods which are marked (using custom attributes) as plugged. However, to save scanning every method in every type for whether 
+          it is plugged, any class containing a plugged method should have a custom attribute indicating that it does. This means that only the 
+          (comparatively limited) number of methods from these classes are checked.
+        </p>
+            <p>
+          To find the plugged classes, the IL Reader should use Reflection to search for classes with the custom attribute.
+        </p>
+            <a id="Step8">
+              <!---->
+            </a>
+            <div class="OH_CollapsibleAreaRegion">
+              <div class="OH_regiontitle">8. IL Scanner Initialise</div>
+              <div class="OH_CollapsibleArea_HrDiv">
+                <hr class="OH_CollapsibleArea_Hr" />
+              </div>
+            </div>
+            <div class="OH_clear"></div>
+            <p>
+          The IL Scanner is the class whose main task is to scan all the IL ops in the methods found and convert them to architecture specific assembler. Its 
+          functions are defined in steps below.
+        </p>
+            <p>
+          The IL Scanner should have been passed handlers to the process’ output message, warning and error methods but it should check at this point that they 
+          are not null. If they are null, it should set them to dummy/empty methods.
+        </p>
+            <a id="Step9">
+              <!---->
+            </a>
+            <div class="OH_CollapsibleAreaRegion">
+              <div class="OH_regiontitle">9. Loop through plugged classes</div>
+              <div class="OH_CollapsibleArea_HrDiv">
+                <hr class="OH_CollapsibleArea_Hr" />
+              </div>
+            </div>
+            <div class="OH_clear"></div>
+            <p>
+          It probably doesn’t matter whether plugged classes or normal classes are looped through first but since plugged classes (/methods) are lower level than 
+          normal classes / methods, it makes sense to do them first.
+        </p>
+            <p>
+          When looping through plugged classes, we loop through all methods. Ones which are not plugged get processed like normal methods so are, for the sake of 
+          this description, included under All Classes.
+        </p>
+            <p>
+          For each plugged class, loop through all the plugged methods performing the steps below.
+        </p>
+            <a id="Step9.1">
+              <!---->
+            </a>
+            <div class="OH_CollapsibleAreaRegion">
+              <div class="OH_regiontitle">9.1. Loop through plugged methods</div>
+              <div class="OH_CollapsibleArea_HrDiv">
+                <hr class="OH_CollapsibleArea_Hr" />
+              </div>
+            </div>
+            <div class="OH_clear"></div>
+            <p>
+              Using Reflection a list of methods with the plugged method custom attribute can be obtained for a given class. The attribute will indicate the base 
+              name of the file to load which contains the ASM to plug the method with.
+            </p>
+            <p>
+              Since different architectures could be targeted, the kernel compiler process should have been passed an argument when it was started indicating which 
+              architecture to target. A separate ASM plug file will exist for each target architecture. These files will have a common naming scheme where the base 
+              name can be appended to giving the actual file name for the ASM plug file to load for the current compile task.
+            </p>
+            <p>
+              For each plugged method, its relevant ASM plug file should be loaded.
+            </p>
+            <a id="Step9.2">
+              <!---->
+            </a>
+            <div class="OH_CollapsibleAreaRegion">
+              <div class="OH_regiontitle">9.2. Loop through ASM chunks from files</div>
+              <div class="OH_CollapsibleArea_HrDiv">
+                <hr class="OH_CollapsibleArea_Hr" />
+              </div>
+            </div>
+            <div class="OH_clear"></div>
+            <p>
+              Once the ASM file has been loaded, the ASM should be used to create an ASM chunk (described later) and added to the full list of ASM chunks. It should be 
+              given an additional flag to indicate it came from an ASM plug file and a property to store which ASM plug file it came from.
+            </p>
+            <a id="Step10">
+              <!---->
+            </a>
+            <div class="OH_CollapsibleAreaRegion">
+              <div class="OH_regiontitle">10. Loop through all classes</div>
+              <div class="OH_CollapsibleArea_HrDiv">
+                <hr class="OH_CollapsibleArea_Hr" />
+              </div>
+            </div>
+            <div class="OH_clear"></div>
+            <p>
+          The All Classes list is described as including all the found classes, but in reality it should not contain plugged classes. However, all unplugged methods (even 
+          in plugged classes) get processed as per steps below.
+        </p>
+            <a id="Step10.1">
+              <!---->
+            </a>
+            <div class="OH_CollapsibleAreaRegion">
+              <div class="OH_regiontitle">10.1. Loop through methods</div>
+              <div class="OH_CollapsibleArea_HrDiv">
+                <hr class="OH_CollapsibleArea_Hr" />
+              </div>
+            </div>
+            <div class="OH_clear"></div>
+            <p>
+              Using Reflection a list of methods (which are not plugged) can be obtained for a given class. For each method, perform steps 2 and 3.
+            </p>
+            <a id="Step10.2">
+              <!---->
+            </a>
+            <div class="OH_CollapsibleAreaRegion">
+              <div class="OH_regiontitle">10.2. Loop through IL Ops constructing ASM</div>
+              <div class="OH_CollapsibleArea_HrDiv">
+                <hr class="OH_CollapsibleArea_Hr" />
+              </div>
+            </div>
+            <div class="OH_clear"></div>
+            <p>
+              Every method will (or should) contain some IL ops. These IL ops must be converted to zero, one or more valid lines of assembler for the current target architecture. 
+              So for each method, we go through all the IL ops in that method (in order) and convert them into assembler. Combining the lines of assembler, in order, into one 
+              contains piece of assembler forms a chunk.
+            </p>
+            <p>
+              Each IL op will have a corresponding class in the compiler. These IL ops classes will be abstract since they will not be able to convert an IL op to ASM since they will 
+              be architecture independent. A separate class library will then be created for each target architecture which will contain implementations of all the IL op classes. The 
+              IL op classes will have one main function: to take its given IL op and the current code/compiler context and convert it into assembler (for the target architecture).
+            </p>
+            <p>
+              So for each IL op, the correct compiler IL op class will be loaded from the architecture library specified when the compiler process was started. The compiler IL op’s 
+              conversion method should then be called and the resulting assembler added to the current ASM chunk text.
+            </p>
+            <a id="Step10.3">
+              <!---->
+            </a>
+            <div class="OH_CollapsibleAreaRegion">
+              <div class="OH_regiontitle">10.3. Create and add ASM chunks</div>
+              <div class="OH_CollapsibleArea_HrDiv">
+                <hr class="OH_CollapsibleArea_Hr" />
+              </div>
+            </div>
+            <div class="OH_clear"></div>
+            <p>
+              The final ASM text should be used to create the ASM chunk which should then be added to the full list of ASM chunks. In future, some ASM chunks will have additional information 
+              (for example, to indicate where they should be sequenced to in the final ASM file) but that is not detailed in this processing flow description.
+            </p>
+            <a id="Step11">
+              <!---->
+            </a>
+            <div class="OH_CollapsibleAreaRegion">
+              <div class="OH_regiontitle">11. Sequence ASM Chunks</div>
+              <div class="OH_CollapsibleArea_HrDiv">
+                <hr class="OH_CollapsibleArea_Hr" />
+              </div>
+            </div>
+            <div class="OH_clear"></div>
+            <p>
+          In theory, all the assembler would appear in the full ASM chunks list in the order it should appear in the final ASM file. However, since the ASM chunks are found by just searching 
+          classes for methods, they will not be added to the list in the order they should be executed in. Things like boot signature/bootstrap code need to appear at the very top of the ASM 
+          file but other general code can appear in any order. For this reason, the sequencing step is included to re-order the ASM chunks into the final output order.
+        </p>
+            <p>
+          In practice, this step may be programmable so that it finds chunks and outputs them at the same time, so that we don’t have to loop through all the chunks more times than necessary.
+        </p>
+            <p>
+          The ASM chunks should be sequenced (ordered) based on:
+        </p>
+            <ul>
+              <li>Any extra information supplied with the ASM chunk</li>
+              <li>The ASM chunk identifier (such as a method label)</li>
+              <li>Existing position in the ASM chunks list</li>
+            </ul>
+            <a id="Step12">
+              <!---->
+            </a>
+            <div class="OH_CollapsibleAreaRegion">
+              <div class="OH_regiontitle">12. Ouptut ASM chunks to file</div>
+              <div class="OH_CollapsibleArea_HrDiv">
+                <hr class="OH_CollapsibleArea_Hr" />
+              </div>
+            </div>
+            <div class="OH_clear"></div>
+            <p>
+          This step is small and simple. It is simply a matter of looping through all the ASM chunks in the final, ordered, full ASM chunks list and outputting the ASM text to the output file.
+        </p>
+            <a id="Step13">
+              <!---->
+            </a>
+            <div class="OH_CollapsibleAreaRegion">
+              <div class="OH_regiontitle">13. Invoke NASM</div>
+              <div class="OH_CollapsibleArea_HrDiv">
+                <hr class="OH_CollapsibleArea_Hr" />
+              </div>
+            </div>
+            <div class="OH_clear"></div>
+            <p>
+          The final step is to convert the .ASM file into something that can actually be used as a bootable operating system. For the purposes of this description, we shall simply say this involves 
+          calling NASM, with the correct parameters for the target architecture, to convert the .ASM file into a .ISO file which can be used in virtualization software such as VMWare or Bochs.
+        </p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div id="OH_footer" class="OH_footer">
+      <p>Copyright Edward Nutting 2014</p>
+      <div class="OH_feedbacklink">
+        <a href="mailto:edwardnutting@outlook.com?subject=Fling+OS+Processing+Flow+Details+100+EN-US&amp;body=Your%20feedback%20is%20used%20to%20improve%20the%20documentation%20and%20the%20product.%20Your%20e-mail%20address%20will%20not%20be%20used%20for%20any%20other%20purpose%20and%20is%20disposed%20of%20after%20the%20issue%20you%20report%20is%20resolved.%20While%20working%20to%20resolve%20the%20issue%20that%20you%20report%2c%20you%20may%20be%20contacted%20via%20e-mail%20to%20get%20further%20details%20or%20clarification%20on%20the%20feedback%20you%20sent.%20After%20the%20issue%20you%20report%20has%20been%20addressed%2c%20you%20may%20receive%20an%20e-mail%20to%20let%20you%20know%20that%20your%20feedback%20has%20been%20addressed.">Send Feedback</a> on this topic to Edward Nutting.</div>
+    </div>
+  </body>
+</html>

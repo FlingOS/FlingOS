@@ -1,0 +1,205 @@
+﻿<html xmlns:MSHelp="http://msdn.microsoft.com/mshelp" xmlns:mshelp="http://msdn.microsoft.com/mshelp">
+  <head>
+    <link rel="SHORTCUT ICON" href="./../icons/favicon.ico" />
+    <style type="text/css">.OH_CodeSnippetContainerTabLeftActive, .OH_CodeSnippetContainerTabLeft,.OH_CodeSnippetContainerTabLeftDisabled { }.OH_CodeSnippetContainerTabRightActive, .OH_CodeSnippetContainerTabRight,.OH_CodeSnippetContainerTabRightDisabled { }.OH_footer { }</style>
+    <link rel="stylesheet" type="text/css" href="./../styles/branding.css" />
+    <link rel="stylesheet" type="text/css" href="./../styles/branding-en-US.css" />
+    <style type="text/css">
+			body
+			{
+			border-left:5px solid #e6e6e6;
+			overflow-x:scroll;
+			overflow-y:scroll;
+			}
+		</style>
+    <script src="./../scripts/branding.js" type="text/javascript">
+      <!---->
+    </script>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <title>DebugDatabase Class</title>
+    <meta name="Language" content="en-us" />
+    <meta name="System.Keywords" content="DebugDatabase class" />
+    <meta name="System.Keywords" content="Kernel.Debug.Data.DebugDatabase class" />
+    <meta name="System.Keywords" content="DebugDatabase class, about DebugDatabase class" />
+    <meta name="Microsoft.Help.F1" content="Kernel.Debug.Data.DebugDatabase" />
+    <meta name="Microsoft.Help.Id" content="T:Kernel.Debug.Data.DebugDatabase" />
+    <meta name="Description" content="Provides a set of managed methods to interface to the Fling OS debug database. To Do's:To do Add an invisble caching mechanism. To do Extend the invisible caching mechanism to adds/removes to improve efficiency." />
+    <meta name="Microsoft.Help.ContentType" content="Reference" />
+    <meta name="BrandingAware" content="'true'" />
+    <meta name="container" content="Kernel.Debug.Data" />
+    <meta name="file" content="74b086ad-16bd-2d47-16eb-fbe000ad8c44" />
+    <meta name="guid" content="74b086ad-16bd-2d47-16eb-fbe000ad8c44" />
+    
+    
+    <link type="text/css" rel="stylesheet" href="./../styles/highlight.css" />
+    <script type="text/javascript" src="../scripts/highlight.js">
+      <!---->
+    </script>
+    <meta name="SelfBranded" content="true" />
+  </head>
+  <body onload="onLoad()" class="primary-mtps-offline-document">
+    <div class="OH_outerDiv">
+      <div class="OH_outerContent">
+        <table class="TitleTable">
+          <tr>
+            <td class="OH_tdTitleColumn">DebugDatabase Class</td>
+            <td class="OH_tdRunningTitleColumn">Fling OS</td>
+          </tr>
+        </table>
+        <div id="mainSection">
+          <div id="mainBody">
+            <span class="introStyle"></span>
+            <div class="summary">
+            Provides a set of managed methods to interface to the Fling OS debug database.
+            <p>To Do's:</p><ul><li><strong>To do</strong> - 
+            Add an invisble caching mechanism.
+            </li><li><strong>To do</strong> - 
+            Extend the invisible caching mechanism to adds/removes
+            to improve efficiency.
+            </li><li><strong>To do</strong> - 
+            Use InsertAllOnSubmit / DeleteAllOnSubmit with caching mechanism if 
+            they are faster / more efficient.
+            </li><li><strong>To do</strong> - 
+            Create extra Add methods that take required fields as arguments to
+            increase ease of coding elsewhere / reduce code duplication.
+            </li></ul></div>
+            <div class="OH_CollapsibleAreaRegion">
+              <div class="OH_regiontitle">Inheritance Hierarchy</div>
+              <div class="OH_CollapsibleArea_HrDiv">
+                <hr class="OH_CollapsibleArea_Hr" />
+              </div>
+            </div>
+            <div class="OH_clear"></div>
+            <a href="http://msdn2.microsoft.com/en-us/library/e5kfa45b" target="_blank">System<span id="ID0EBESAAAAA"> </span><script type="text/javascript">
+					addToLanSpecTextIdSet("ID0EBESAAAAA?vb=.|cpp=::|cs=.|fs=.|nu=.");
+				</script>Object</a>
+            <br />  <span class="selflink">Kernel.Debug.Data<span id="ID0EBBSAAAAA"> </span><script type="text/javascript">
+					addToLanSpecTextIdSet("ID0EBBSAAAAA?vb=.|cpp=::|cs=.|fs=.|nu=.");
+				</script>DebugDatabase</span><br /><p></p><strong>Namespace:</strong> <a href="98b9f5e8-228c-2c5b-e579-13e7a0916404.htm" target="">Kernel.Debug.Data</a><br /><strong>Assembly:</strong> <span sdata="assembly">Kernel.Debug.Data</span> (in Kernel.Debug.Data.dll) Version: 1.0.0.0 (1.0.0.0)<div class="OH_CollapsibleAreaRegion"><div class="OH_regiontitle">Syntax</div><div class="OH_CollapsibleArea_HrDiv"><hr class="OH_CollapsibleArea_Hr" /></div></div><div class="OH_clear"></div><div id="snippetGroup_Syntax" class="code"><div id="ID0EAAIAAAAA" class="OH_CodeSnippetContainer"><div class="OH_CodeSnippetContainerTabs" id="ID0EAAIAAAAA_tabs"><div class="OH_CodeSnippetContainerTabLeftActive" id="ID0EAAIAAAAA_tabimgleft"></div><div id="ID0EAAIAAAAA_tab1" class="OH_CodeSnippetContainerTabActive" EnableCopyCode="true"><a href="#" onclick="javascript:ChangeTab('ID0EAAIAAAAA','C#','1','4');return false;">C#</a></div><div id="ID0EAAIAAAAA_tab2" class="OH_CodeSnippetContainerTabDisabledNotFirst" EnableCopyCode="true" disabled="true"><a>VB</a></div><div id="ID0EAAIAAAAA_tab3" class="OH_CodeSnippetContainerTabDisabledNotFirst" EnableCopyCode="true" disabled="true"><a>C++</a></div><div id="ID0EAAIAAAAA_tab4" class="OH_CodeSnippetContainerTabDisabledNotFirst" EnableCopyCode="true" disabled="true"><a>F#</a></div><div class="OH_CodeSnippetContainerTabRight" id="ID0EAAIAAAAA_tabimgright"></div></div><div id="ID0EAAIAAAAA_codecollection" class="OH_CodeSnippetContainerCodeCollection"><div class="OH_CodeSnippetToolBar"><div class="OH_CodeSnippetToolBarText"><a id="ID0EAAIAAAAA_ViewColorized" href="#" onclick="javascript:ExchangeTitleContent('ID0EAAIAAAAA','4')" title="View Colorized" style="display: none">View Colorized</a><a id="ID0EAAIAAAAA_copycode" href="#" onclick="javascript:CopyToClipboard('ID0EAAIAAAAA','4')" title="Copy to Clipboard">Copy to Clipboard</a><a id="ID0EAAIAAAAA_PrintText" class="OH_PrintText" href="#" onclick="javascript:Print('ID0EAAIAAAAA','4')" title="Print">Print</a></div></div><div id="ID0EAAIAAAAA_code_Div1" class="OH_CodeSnippetContainerCode" style="display: block"><pre><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">class</span> <span class="identifier">DebugDatabase</span></pre></div><div id="ID0EAAIAAAAA_code_Plain_Div1" class="OH_CodeSnippetContainerCode" style="display: none"><pre>public static class DebugDatabase</pre></div><div id="ID0EAAIAAAAA_code_Div2" class="OH_CodeSnippetContainerCode" style="display: none"><pre /></div><div id="ID0EAAIAAAAA_code_Plain_Div2" class="OH_CodeSnippetContainerCode" style="display: none"><pre /></div><div id="ID0EAAIAAAAA_code_Div3" class="OH_CodeSnippetContainerCode" style="display: none"><pre /></div><div id="ID0EAAIAAAAA_code_Plain_Div3" class="OH_CodeSnippetContainerCode" style="display: none"><pre /></div><div id="ID0EAAIAAAAA_code_Div4" class="OH_CodeSnippetContainerCode" style="display: none"><pre /></div><div id="ID0EAAIAAAAA_code_Plain_Div4" class="OH_CodeSnippetContainerCode" style="display: none"><pre /></div></div></div><script>addSpecificTextLanguageTagSet('ID0EAAIAAAAA');</script></div><p>The <span class="selflink">DebugDatabase</span> type exposes the following members.</p><div class="OH_CollapsibleAreaRegion"><div class="OH_regiontitle">Constructors</div><div class="OH_CollapsibleArea_HrDiv"><hr class="OH_CollapsibleArea_Hr" /></div></div><div class="OH_clear"></div><table id="memberList" class="members"><tr><th class="ps_iconColumn">
+							 
+						</th><th class="ps_nameColumn">Name</th><th class="ps_descriptionColumn">Description</th></tr><tr data="private;static;declared;notNetfw;"><td><img src="./../icons/privmethod.gif" alt="Private method" title="Private method" /><img src="./../icons/static.gif" alt="Static member" title="Static member" /></td><td><a href="28ea922f-9af3-2582-325a-d0528c063cd3.htm" target="">DebugDatabase</a></td><td></td></tr></table><a href="#mainBody" target="">Top</a><div class="OH_CollapsibleAreaRegion"><div class="OH_regiontitle">Methods</div><div class="OH_CollapsibleArea_HrDiv"><hr class="OH_CollapsibleArea_Hr" /></div></div><div class="OH_clear"></div><table id="memberList" class="members"><tr><th class="ps_iconColumn">
+							 
+						</th><th class="ps_nameColumn">Name</th><th class="ps_descriptionColumn">Description</th></tr><tr data="public;static;declared;notNetfw;"><td><img src="./../icons/pubmethod.gif" alt="Public method" title="Public method" /><img src="./../icons/static.gif" alt="Static member" title="Static member" /></td><td><a href="526b9c1d-933e-329b-6b6a-7cc9e46b18c4.htm" target="">AddArgument</a></td><td><div class="summary">
+            Adds the pre-created argument to the database. All the entries's
+            required parameters (i.e. ones which cannot be null) should 
+            be set.
+            <p>To Do's: See <a href="7831177b-83cd-9d7c-6e1a-6730d8cdeb06.htm" target="">AddMethod(DB_Method)</a>'s to do's.</p></div></td></tr><tr data="public;static;declared;notNetfw;"><td><img src="./../icons/pubmethod.gif" alt="Public method" title="Public method" /><img src="./../icons/static.gif" alt="Static member" title="Static member" /></td><td><a href="9843ba91-7e98-8864-ca8e-371067fecd4a.htm" target="">AddComplexTypeLink</a></td><td><div class="summary">
+            Adds the pre-created complex type link to the database. All the entries's
+            required parameters (i.e. ones which cannot be null) should 
+            be set.
+            <p>To Do's: See <a href="7831177b-83cd-9d7c-6e1a-6730d8cdeb06.htm" target="">AddMethod(DB_Method)</a>'s to do's.</p></div></td></tr><tr data="public;static;declared;notNetfw;"><td><img src="./../icons/pubmethod.gif" alt="Public method" title="Public method" /><img src="./../icons/static.gif" alt="Static member" title="Static member" /></td><td><a href="bed18e39-35e0-d74a-a617-4a0da5f806b5.htm" target="">AddILOpInfo</a></td><td><div class="summary">
+            Adds the pre-created IL op info to the database. All the entries's
+            required parameters (i.e. ones which cannot be null) should 
+            be set.
+            <p>To Do's: See <a href="7831177b-83cd-9d7c-6e1a-6730d8cdeb06.htm" target="">AddMethod(DB_Method)</a>'s to do's.</p></div></td></tr><tr data="public;static;declared;notNetfw;"><td><img src="./../icons/pubmethod.gif" alt="Public method" title="Public method" /><img src="./../icons/static.gif" alt="Static member" title="Static member" /></td><td><a href="c937272e-6dad-c09f-36f8-cfe31706ef9c.htm" target="">AddLocalVariable</a></td><td><div class="summary">
+            Adds the pre-created local variable to the database. All the entries's
+            required parameters (i.e. ones which cannot be null) should 
+            be set.
+            <p>To Do's: See <a href="7831177b-83cd-9d7c-6e1a-6730d8cdeb06.htm" target="">AddMethod(DB_Method)</a>'s to do's.</p></div></td></tr><tr data="public;static;declared;notNetfw;"><td><img src="./../icons/pubmethod.gif" alt="Public method" title="Public method" /><img src="./../icons/static.gif" alt="Static member" title="Static member" /></td><td><a href="7831177b-83cd-9d7c-6e1a-6730d8cdeb06.htm" target="">AddMethod</a></td><td><div class="summary">
+            Adds the pre-created method to the database. All the entries's
+            required parameters (i.e. ones which cannot be null) should 
+            be set.
+            <p>To Do's:</p><ul><li><strong>To do</strong> - 
+            Add validation of fields and throw a pre-emptive exception if any 
+            invalid or missing data is found.
+            </li><li><strong>To do</strong> - 
+            Check whether changes must be submitted before the 
+            <a href="4437df54-88e5-6dcf-2721-0040ee658891.htm" target="">GetMethod(String)</a> method can return methods added by Add.
+            </li></ul></div></td></tr><tr data="public;static;declared;notNetfw;"><td><img src="./../icons/pubmethod.gif" alt="Public method" title="Public method" /><img src="./../icons/static.gif" alt="Static member" title="Static member" /></td><td><a href="7421db71-fcde-5447-9c42-438c3dee84ac.htm" target="">AddStaticField</a></td><td><div class="summary">
+            Adds the pre-created static field to the database. All the entries's
+            required parameters (i.e. ones which cannot be null) should 
+            be set.
+            <p>To Do's: See <a href="7831177b-83cd-9d7c-6e1a-6730d8cdeb06.htm" target="">AddMethod(DB_Method)</a>'s to do's.</p></div></td></tr><tr data="public;static;declared;notNetfw;"><td><img src="./../icons/pubmethod.gif" alt="Public method" title="Public method" /><img src="./../icons/static.gif" alt="Static member" title="Static member" /></td><td><a href="674a5eb3-8097-52a1-9fa1-b0a10ae5ac02.htm" target="">AddStringLiteral</a></td><td><div class="summary">
+            Adds the pre-created string literal to the database. All the entries's
+            required parameters (i.e. ones which cannot be null) should 
+            be set.
+            <p>To Do's: See <a href="7831177b-83cd-9d7c-6e1a-6730d8cdeb06.htm" target="">AddMethod(DB_Method)</a>'s to do's.</p></div></td></tr><tr data="public;static;declared;notNetfw;"><td><img src="./../icons/pubmethod.gif" alt="Public method" title="Public method" /><img src="./../icons/static.gif" alt="Static member" title="Static member" /></td><td><a href="eca39b00-fe5b-48d4-a1b5-6d14683eda13.htm" target="">AddType</a></td><td><div class="summary">
+            Adds the pre-created type to the database. All the entries's
+            required parameters (i.e. ones which cannot be null) should 
+            be set.
+            <p>To Do's: See <a href="7831177b-83cd-9d7c-6e1a-6730d8cdeb06.htm" target="">AddMethod(DB_Method)</a>'s to do's.</p></div></td></tr><tr data="public;static;declared;notNetfw;"><td><img src="./../icons/pubmethod.gif" alt="Public method" title="Public method" /><img src="./../icons/static.gif" alt="Static member" title="Static member" /></td><td><a href="16fd0f1b-5ec7-4d3b-2f17-8a4890ce3fb5.htm" target="">Empty</a></td><td><div class="summary">
+            Empties all the database's tables.
+            </div></td></tr><tr data="public;static;declared;notNetfw;"><td><img src="./../icons/pubmethod.gif" alt="Public method" title="Public method" /><img src="./../icons/static.gif" alt="Static member" title="Static member" /></td><td><a href="4e038f43-20da-89e8-85ad-54567264c8b8.htm" target="">GetArgument</a></td><td><div class="summary">
+            Gets the specified argument from the database.
+            <p>To Do's: See <a href="4437df54-88e5-6dcf-2721-0040ee658891.htm" target="">GetMethod(String)</a>'s to do's.</p></div></td></tr><tr data="public;static;declared;notNetfw;"><td><img src="./../icons/pubmethod.gif" alt="Public method" title="Public method" /><img src="./../icons/static.gif" alt="Static member" title="Static member" /></td><td><a href="05a5e060-a580-5b78-7ae8-e949f9e4c2a0.htm" target="">GetComplexTypeLink</a></td><td><div class="summary">
+            Gets the specified complex type link from the database.
+            <p>To Do's: See <a href="4437df54-88e5-6dcf-2721-0040ee658891.htm" target="">GetMethod(String)</a>'s to do's.</p></div></td></tr><tr data="public;static;declared;notNetfw;"><td><img src="./../icons/pubmethod.gif" alt="Public method" title="Public method" /><img src="./../icons/static.gif" alt="Static member" title="Static member" /></td><td><a href="db910ace-0949-eace-5bf6-f5c02e144cc8.htm" target="">GetILOpInfo</a></td><td><div class="summary">
+            Gets the specified IL op info from the database.
+            <p>To Do's: See <a href="4437df54-88e5-6dcf-2721-0040ee658891.htm" target="">GetMethod(String)</a>'s to do's.</p></div></td></tr><tr data="public;static;declared;notNetfw;"><td><img src="./../icons/pubmethod.gif" alt="Public method" title="Public method" /><img src="./../icons/static.gif" alt="Static member" title="Static member" /></td><td><a href="7418cf11-cb62-186f-588f-0c4d7030127a.htm" target="">GetLocalVariable</a></td><td><div class="summary">
+            Gets the specified local variable from the database.
+            <p>To Do's: See <a href="4437df54-88e5-6dcf-2721-0040ee658891.htm" target="">GetMethod(String)</a>'s to do's.</p></div></td></tr><tr data="public;static;declared;notNetfw;"><td><img src="./../icons/pubmethod.gif" alt="Public method" title="Public method" /><img src="./../icons/static.gif" alt="Static member" title="Static member" /></td><td><a href="4437df54-88e5-6dcf-2721-0040ee658891.htm" target="">GetMethod</a></td><td><div class="summary">
+            Gets the specified method from the database.
+            <p>To Do's:</p><ul><li><strong>To do</strong> - Caching mechanism.</li></ul></div></td></tr><tr data="public;static;declared;notNetfw;"><td><img src="./../icons/pubmethod.gif" alt="Public method" title="Public method" /><img src="./../icons/static.gif" alt="Static member" title="Static member" /></td><td><a href="ff27f80e-78a3-a109-9d38-9516c2423cd4.htm" target="">GetStaticField</a></td><td><div class="summary">
+            Gets the specified static field from the database.
+            <p>To Do's: See <a href="4437df54-88e5-6dcf-2721-0040ee658891.htm" target="">GetMethod(String)</a>'s to do's.</p></div></td></tr><tr data="public;static;declared;notNetfw;"><td><img src="./../icons/pubmethod.gif" alt="Public method" title="Public method" /><img src="./../icons/static.gif" alt="Static member" title="Static member" /></td><td><a href="8e57ef34-06d8-f726-a7c2-f2ab017f2912.htm" target="">GetStringLiteral</a></td><td><div class="summary">
+            Gets the specified string literal from the database.
+            <p>To Do's: See <a href="4437df54-88e5-6dcf-2721-0040ee658891.htm" target="">GetMethod(String)</a>'s to do's.</p></div></td></tr><tr data="public;static;declared;notNetfw;"><td><img src="./../icons/pubmethod.gif" alt="Public method" title="Public method" /><img src="./../icons/static.gif" alt="Static member" title="Static member" /></td><td><a href="cfc07695-1057-f11b-159e-f9085c7aa815.htm" target="">GetType(Guid)</a></td><td><div class="summary">
+            Gets the specified type from the database.
+            <p>To Do's: See <a href="4437df54-88e5-6dcf-2721-0040ee658891.htm" target="">GetMethod(String)</a>'s to do's.</p></div></td></tr><tr data="public;static;declared;notNetfw;"><td><img src="./../icons/pubmethod.gif" alt="Public method" title="Public method" /><img src="./../icons/static.gif" alt="Static member" title="Static member" /></td><td><a href="70ffba22-d2d0-bcf7-c8c4-44e04ccbea6c.htm" target="">GetType(String)</a></td><td><div class="summary">
+            Gets the specified type from the database.
+            <p>To Do's: See <a href="4437df54-88e5-6dcf-2721-0040ee658891.htm" target="">GetMethod(String)</a>'s to do's.</p></div></td></tr><tr data="public;static;declared;notNetfw;"><td><img src="./../icons/pubmethod.gif" alt="Public method" title="Public method" /><img src="./../icons/static.gif" alt="Static member" title="Static member" /></td><td><a href="8ef31544-52f4-cbf5-a494-2bc2c54d50bc.htm" target="">RemoveArgument</a></td><td><div class="summary">
+            Removes the specified argument from the database.
+            <p>To Do's: See <a href="efc9739b-d79a-1bbb-226f-eb6993b54fc6.htm" target="">RemoveMethod(DB_Method)</a>'s to do's.</p></div></td></tr><tr data="public;static;declared;notNetfw;"><td><img src="./../icons/pubmethod.gif" alt="Public method" title="Public method" /><img src="./../icons/static.gif" alt="Static member" title="Static member" /></td><td><a href="b1304712-387a-c6fb-1f55-3f05f6017128.htm" target="">RemoveComplexTypeLink</a></td><td><div class="summary">
+            Removes the specified complex type link from the database.
+            <p>To Do's: See <a href="efc9739b-d79a-1bbb-226f-eb6993b54fc6.htm" target="">RemoveMethod(DB_Method)</a>'s to do's.</p></div></td></tr><tr data="public;static;declared;notNetfw;"><td><img src="./../icons/pubmethod.gif" alt="Public method" title="Public method" /><img src="./../icons/static.gif" alt="Static member" title="Static member" /></td><td><a href="005b7bca-b7bb-1f86-bdf2-25f82889157c.htm" target="">RemoveILOpInfo</a></td><td><div class="summary">
+            Removes the specified IL op info from the database.
+            <p>To Do's: See <a href="efc9739b-d79a-1bbb-226f-eb6993b54fc6.htm" target="">RemoveMethod(DB_Method)</a>'s to do's.</p></div></td></tr><tr data="public;static;declared;notNetfw;"><td><img src="./../icons/pubmethod.gif" alt="Public method" title="Public method" /><img src="./../icons/static.gif" alt="Static member" title="Static member" /></td><td><a href="19b0d27f-e5ea-219b-9b8f-0aac19976a0e.htm" target="">RemoveLocalVariable</a></td><td><div class="summary">
+            Removes the specified local variable from the database.
+            <p>To Do's: See <a href="efc9739b-d79a-1bbb-226f-eb6993b54fc6.htm" target="">RemoveMethod(DB_Method)</a>'s to do's.</p></div></td></tr><tr data="public;static;declared;notNetfw;"><td><img src="./../icons/pubmethod.gif" alt="Public method" title="Public method" /><img src="./../icons/static.gif" alt="Static member" title="Static member" /></td><td><a href="efc9739b-d79a-1bbb-226f-eb6993b54fc6.htm" target="">RemoveMethod</a></td><td><div class="summary">
+            Removes the specified method from the database.
+            <p>To Do's:</p><ul><li><strong>To do</strong> - 
+            Check for entries in other tables that link to the one being 
+            deleted. If the dependent entries are not being deleted, throw an 
+            error.
+            </li><li><strong>To do</strong> - 
+            Add an option to automatically delete dependent entries.
+            </li></ul></div></td></tr><tr data="public;static;declared;notNetfw;"><td><img src="./../icons/pubmethod.gif" alt="Public method" title="Public method" /><img src="./../icons/static.gif" alt="Static member" title="Static member" /></td><td><a href="ea1f2d2b-f16b-68e8-a27a-09c97688f24b.htm" target="">RemoveStaticField</a></td><td><div class="summary">
+            Removes the specified static field from the database.
+            <p>To Do's: See <a href="efc9739b-d79a-1bbb-226f-eb6993b54fc6.htm" target="">RemoveMethod(DB_Method)</a>'s to do's.</p></div></td></tr><tr data="public;static;declared;notNetfw;"><td><img src="./../icons/pubmethod.gif" alt="Public method" title="Public method" /><img src="./../icons/static.gif" alt="Static member" title="Static member" /></td><td><a href="591f376f-3be3-99ff-3c3b-73dc7e560e1a.htm" target="">RemoveStringLiteral</a></td><td><div class="summary">
+            Removes the specified string literal from the database.
+            <p>To Do's: See <a href="efc9739b-d79a-1bbb-226f-eb6993b54fc6.htm" target="">RemoveMethod(DB_Method)</a>'s to do's.</p></div></td></tr><tr data="public;static;declared;notNetfw;"><td><img src="./../icons/pubmethod.gif" alt="Public method" title="Public method" /><img src="./../icons/static.gif" alt="Static member" title="Static member" /></td><td><a href="a810944f-bae8-e22d-b3af-113c3d9717b7.htm" target="">RemoveType</a></td><td><div class="summary">
+            Removes the specified type from the database.
+            <p>To Do's: See <a href="efc9739b-d79a-1bbb-226f-eb6993b54fc6.htm" target="">RemoveMethod(DB_Method)</a>'s to do's.</p></div></td></tr><tr data="public;static;declared;notNetfw;"><td><img src="./../icons/pubmethod.gif" alt="Public method" title="Public method" /><img src="./../icons/static.gif" alt="Static member" title="Static member" /></td><td><a href="c7eb8c75-e005-c1a2-6295-546a1dd547a4.htm" target="">SubmitChanges</a></td><td><div class="summary">
+            Submits all changes to the database.
+            </div></td></tr></table><a href="#mainBody" target="">Top</a><div class="OH_CollapsibleAreaRegion"><div class="OH_regiontitle">Fields</div><div class="OH_CollapsibleArea_HrDiv"><hr class="OH_CollapsibleArea_Hr" /></div></div><div class="OH_clear"></div><table id="memberList" class="members"><tr><th class="ps_iconColumn">
+							 
+						</th><th class="ps_nameColumn">Name</th><th class="ps_descriptionColumn">Description</th></tr><tr data="private;static;declared;notNetfw;"><td><img src="./../icons/privfield.gif" alt="Private field" title="Private field" /><img src="./../icons/static.gif" alt="Static member" title="Static member" /></td><td><a href="81c96aaa-351e-dc79-6259-e84f0e6bd459.htm" target="">DB</a></td><td><div class="summary">
+            The underlying data context (generated by the VS designer)
+            used to access the local Debug Database.
+            </div></td></tr></table><a href="#mainBody" target="">Top</a><div class="OH_CollapsibleAreaRegion"><div class="OH_regiontitle">Remarks</div><div class="OH_CollapsibleArea_HrDiv"><hr class="OH_CollapsibleArea_Hr" /></div></div><div class="OH_clear"></div><p>
+            The output database has a fixed path. It is not any of the output databases in the output directories 
+            of this project or any referenced projects.
+            </p><p>
+            The data in the output database can be viewed directly in VS2013.
+            </p><p>Steps for viewing debug database entries in VS2013</p><ol><li><strong>Open the server explorer</strong> - Open the server explorer by going to View -&gt; Server Explorer</li><li><strong>Add Connection...</strong> - Right click on Data Connections and choose "Add Connection..."</li><li><strong>Change the Data Source</strong> - Change the Data Source to "Microsoft SQL Server Database File".</li><li><strong>Select the database file</strong> - Browse for and select the debug database file.</li><li><strong>Done!</strong> - Done! Browse the data in the database as normal.</li></ol><p>
+            To modify the debug database structure (e.g. tables), add a connection
+            (as above) to the Database.mdf file in this project. Then double click
+            on any table to modify its structure and use the standard "Update table"
+            features.
+            </p><div class="OH_CollapsibleAreaRegion"><div class="OH_regiontitle">Examples</div><div class="OH_CollapsibleArea_HrDiv"><hr class="OH_CollapsibleArea_Hr" /></div></div><div class="OH_clear"></div>
+            Adding a new entry to the Methods table. 
+            Note: No data is submitted to the database until 
+            <span class="code">DebugDatabase.SubmitChanges()</span> is called.
+            <div id="ID0EACAAAAA" class="OH_CodeSnippetContainer"><div class="OH_CodeSnippetContainerTabs" id="ID0EACAAAAA_tabs"></div><div id="ID0EACAAAAA_codecollection" class="OH_CodeSnippetContainerCodeCollection"><div class="OH_CodeSnippetToolBar"><div class="OH_CodeSnippetToolBarText"><a id="ID0EACAAAAA_ViewColorized" href="#" onclick="javascript:ExchangeTitleContent('ID0EACAAAAA','4')" title="View Colorized" style="display: none">View Colorized</a><a id="ID0EACAAAAA_copycode" href="#" onclick="javascript:CopyToClipboard('ID0EACAAAAA','4')" title="Copy to Clipboard">Copy to Clipboard</a><a id="ID0EACAAAAA_PrintText" class="OH_PrintText" href="#" onclick="javascript:Print('ID0EACAAAAA','4')" title="Print">Print</a></div></div><div id="ID0EACAAAAA_code_Div1" class="OH_CodeSnippetContainerCode" style="display: block"><pre><span class="highlight-lineno">1</span><span class="highlight-lnborder"></span><span class="highlight-spacerShort"></span>DB_Method dbMethod = <span class="highlight-keyword">new</span> DB_Method();
+<span class="highlight-lineno">2</span><span class="highlight-lnborder"></span><span class="highlight-spacerShort"></span>dbMethod.Id = MethodID;
+<span class="highlight-lineno">3</span><span class="highlight-lnborder"></span><span class="highlight-spacerShort"></span>dbMethod.MethodSignature = methodSignature;
+<span class="highlight-lineno">4</span><span class="highlight-lnborder"></span><span class="highlight-spacerShort"></span>dbMethod.Plugged = <span class="highlight-keyword">false</span>;
+<span class="highlight-lineno">5</span><span class="highlight-lnborder"></span><span class="highlight-spacerShort"></span>dbMethod.ASMStartPos = <span class="highlight-number">-1</span>;
+<span class="highlight-lineno">6</span><span class="highlight-lnborder"></span><span class="highlight-spacerShort"></span>dbMethod.ASMEndPos = <span class="highlight-number">-1</span>;
+<span class="highlight-lineno">7</span><span class="highlight-lnborder"></span><span class="highlight-spacerShort"></span>DebugDatabase.AddMethod(dbMethod);</pre></div><div id="ID0EACAAAAA_code_Plain_Div1" class="OH_CodeSnippetContainerCode" style="display: none"><pre>DB_Method dbMethod = new DB_Method();
+dbMethod.Id = MethodID;
+dbMethod.MethodSignature = methodSignature;
+dbMethod.Plugged = false;
+dbMethod.ASMStartPos = -1;
+dbMethod.ASMEndPos = -1;
+DebugDatabase.AddMethod(dbMethod);</pre></div></div></div><script>addSpecificTextLanguageTagSet('ID0EACAAAAA');</script><a name="seeAlsoSection"><!----></a><div class="OH_CollapsibleAreaRegion"><div class="OH_regiontitle">See Also</div><div class="OH_CollapsibleArea_HrDiv"><hr class="OH_CollapsibleArea_Hr" /></div></div><div class="OH_clear"></div><div class="seeAlsoStyle"><a href="98b9f5e8-228c-2c5b-e579-13e7a0916404.htm" target="">Kernel.Debug.Data Namespace</a></div></div>
+        </div>
+      </div>
+    </div>
+    <div id="OH_footer" class="OH_footer">
+      <p>Copyright Edward Nutting 2014</p>
+      <div class="OH_feedbacklink">
+        <a href="mailto:edwardnutting@outlook.com?subject=Fling+OS+DebugDatabase+Class+100+EN-US&amp;body=Your%20feedback%20is%20used%20to%20improve%20the%20documentation%20and%20the%20product.%20Your%20e-mail%20address%20will%20not%20be%20used%20for%20any%20other%20purpose%20and%20is%20disposed%20of%20after%20the%20issue%20you%20report%20is%20resolved.%20While%20working%20to%20resolve%20the%20issue%20that%20you%20report%2c%20you%20may%20be%20contacted%20via%20e-mail%20to%20get%20further%20details%20or%20clarification%20on%20the%20feedback%20you%20sent.%20After%20the%20issue%20you%20report%20has%20been%20addressed%2c%20you%20may%20receive%20an%20e-mail%20to%20let%20you%20know%20that%20your%20feedback%20has%20been%20addressed.">Send Feedback</a> on this topic to Edward Nutting.</div>
+    </div>
+  </body>
+</html>

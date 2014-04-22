@@ -1,0 +1,159 @@
+﻿<html xmlns:MSHelp="http://msdn.microsoft.com/mshelp" xmlns:mshelp="http://msdn.microsoft.com/mshelp">
+  <head>
+    <link rel="SHORTCUT ICON" href="./../icons/favicon.ico" />
+    <style type="text/css">.OH_CodeSnippetContainerTabLeftActive, .OH_CodeSnippetContainerTabLeft,.OH_CodeSnippetContainerTabLeftDisabled { }.OH_CodeSnippetContainerTabRightActive, .OH_CodeSnippetContainerTabRight,.OH_CodeSnippetContainerTabRightDisabled { }.OH_footer { }</style>
+    <link rel="stylesheet" type="text/css" href="./../styles/branding.css" />
+    <link rel="stylesheet" type="text/css" href="./../styles/branding-en-US.css" />
+    <style type="text/css">
+			body
+			{
+			border-left:5px solid #e6e6e6;
+			overflow-x:scroll;
+			overflow-y:scroll;
+			}
+		</style>
+    <script src="./../scripts/branding.js" type="text/javascript">
+      <!---->
+    </script>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <title>Approach 2 - Plugs</title>
+    <meta name="Language" content="en-us" />
+    <meta name="Microsoft.Help.Id" content="fb639778-c718-4c56-9ba4-0ad324d35114" />
+    <meta name="Description" content="A discussion of the approach to solving the issue of the Microsoft Standard C# Libraries involving writing custom libraries from scratch." />
+    <meta name="Microsoft.Help.ContentType" content="Concepts" />
+    <meta name="BrandingAware" content="'true'" />
+    
+    
+    <meta name="SelfBranded" content="true" />
+  </head>
+  <body onload="onLoad()" class="primary-mtps-offline-document">
+    <div class="OH_outerDiv">
+      <div class="OH_outerContent">
+        <table class="TitleTable">
+          <tr>
+            <td class="OH_tdTitleColumn">Approach 2 - Plugs</td>
+            <td class="OH_tdRunningTitleColumn">Fling OS</td>
+          </tr>
+        </table>
+        <div id="mainSection">
+          <div id="mainBody">
+            <span class="introStyle"></span>
+            <div class="introduction">
+              <p>
+        A discussion of the approach to solving the issue of the Microsoft Standard C#
+        Libraries involving writing custom libraries from scratch.
+      </p>
+            </div>
+            <a id="Description">
+              <!---->
+            </a>
+            <div class="OH_CollapsibleAreaRegion">
+              <div class="OH_regiontitle">Description</div>
+              <div class="OH_CollapsibleArea_HrDiv">
+                <hr class="OH_CollapsibleArea_Hr" />
+              </div>
+            </div>
+            <div class="OH_clear"></div>
+            <p>
+          The Plugs approach is harder conceptually and requires a little background of how 
+          Microsoft’s standard C# libraries are structured.
+        </p>
+            <p>
+          Microsoft’s standard C# libraries are not purely to provide low-level code for higher 
+          level code to use. In fact, for the most part, they are IL code that references other 
+          bits of code within the standard libraries. Only a few core classes and functions call 
+          into lower level code such as the Microsoft Win32 libraries.
+        </p>
+            <p>
+          The implication of this is that you can keep some of the Microsoft standard C# 
+          libraries’ code and just plug the calls to the lower level code (e.g. calls to Win32 
+          libraries). Unfortunately, most of the basic standard libraries were designed to be 
+          used as user-mode code not kernel code, so most of the basic library classes and 
+          functions need to be plugged to be able to compile the kernel.
+        </p>
+            <a id="Advantages">
+              <!---->
+            </a>
+            <div class="OH_CollapsibleAreaRegion">
+              <div class="OH_regiontitle">Advantages</div>
+              <div class="OH_CollapsibleArea_HrDiv">
+                <hr class="OH_CollapsibleArea_Hr" />
+              </div>
+            </div>
+            <div class="OH_clear"></div>
+            <ul>
+              <li>
+                <p>Uses Microsoft’s existing standard C# libraries saving work in:</p>
+                <ul>
+                  <li>Programming</li>
+                  <li>Structure design</li>
+                  <li>Research of required classes etc.</li>
+                </ul>
+              </li>
+              <li>Reduces the amount of code needed to be programmed</li>
+              <li>
+              Allows two development teams to work dependently but simultaneously – one on the 
+              kernel code, one on plugging the stuff used by the kernel code.
+            </li>
+            </ul>
+            <a id="Disadvantages">
+              <!---->
+            </a>
+            <div class="OH_CollapsibleAreaRegion">
+              <div class="OH_regiontitle">Disadvantages</div>
+              <div class="OH_CollapsibleArea_HrDiv">
+                <hr class="OH_CollapsibleArea_Hr" />
+              </div>
+            </div>
+            <div class="OH_clear"></div>
+            <ul>
+              <li>
+              Complicates the kernel compiler hugely as it has to deal with “plugged” methods 
+              and classes etc.
+            </li>
+              <li>
+              Potentially doubles the compile time since plugs might have to be scanned before 
+              the rest of the compile can necessarily happen
+            </li>
+              <li>
+              Ties Fling OS into Microsoft’s libraries’ structures and any “intern hack” code 
+              they have!
+            </li>
+              <li>
+              No control over the inner code of the libraries and tied into MS .Net versions 
+              which may become unavailable.
+            </li>
+              <li>Hard to maintain</li>
+              <li>Very complex conceptually and to program</li>
+              <li>
+              Requires additional work to find out what needs plugging, how to plug it to match 
+              MS’s original functionality etc.
+            </li>
+              <li>May cause problems later with MS IP</li>
+              <li>Probably some more stuff that can’t be thought of right now…</li>
+            </ul>
+            <a name="seeAlsoSection">
+              <!---->
+            </a>
+            <div class="OH_CollapsibleAreaRegion">
+              <div class="OH_regiontitle">See Also</div>
+              <div class="OH_CollapsibleArea_HrDiv">
+                <hr class="OH_CollapsibleArea_Hr" />
+              </div>
+            </div>
+            <div class="OH_clear"></div>
+            <h4 class="subHeading">Other Resources</h4>
+            <div class="seeAlsoStyle">
+              <a href="1a4ef707-ef74-43bd-9bd7-979cd9331d0c.htm" target="">Approach 1 - DIY</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div id="OH_footer" class="OH_footer">
+      <p>Copyright Edward Nutting 2014</p>
+      <div class="OH_feedbacklink">
+        <a href="mailto:edwardnutting@outlook.com?subject=Fling+OS+Approach+2+-+Plugs+100+EN-US&amp;body=Your%20feedback%20is%20used%20to%20improve%20the%20documentation%20and%20the%20product.%20Your%20e-mail%20address%20will%20not%20be%20used%20for%20any%20other%20purpose%20and%20is%20disposed%20of%20after%20the%20issue%20you%20report%20is%20resolved.%20While%20working%20to%20resolve%20the%20issue%20that%20you%20report%2c%20you%20may%20be%20contacted%20via%20e-mail%20to%20get%20further%20details%20or%20clarification%20on%20the%20feedback%20you%20sent.%20After%20the%20issue%20you%20report%20has%20been%20addressed%2c%20you%20may%20receive%20an%20e-mail%20to%20let%20you%20know%20that%20your%20feedback%20has%20been%20addressed.">Send Feedback</a> on this topic to Edward Nutting.</div>
+    </div>
+  </body>
+</html>

@@ -1,0 +1,125 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<topic id="e0e1d083-640e-4bf8-b96d-4a6493dbf53a" revisionNumber="1">
+  <developerConceptualDocument
+    xmlns="http://ddue.schemas.microsoft.com/authoring/2003/5"
+    xmlns:xlink="http://www.w3.org/1999/xlink">
+
+    <!--
+    <summary>
+      <para>Optional summary abstract</para>
+    </summary>
+    -->
+
+    <introduction>
+      <para>
+        An overview of the Kernel Compiler and its architecture are 
+        presented below.
+      </para>
+    </introduction>
+
+    <!-- Add one or more top-level section elements.  These are collapsible.
+         If using <autoOutline />, add an address attribute to identify it
+         and specify a title so that it can be jumped to with a hyperlink. -->
+    <section address="GeneralOverview">
+      <title>General Overview</title>
+      <content>
+        <para>
+          The Kernel Compiler is an IL to assembly (ASM) language compiler. The Microsoft MSBuild 
+          compiler handles much of the complex compilation from C# to IL. IL language itself is 
+          very close to assembly language and so the compilation from IL to ASM is relatively simple. 
+          Most of the work comes from:
+        </para>
+        <list class="bullet">
+          <listItem>
+            <para>Scanning all the IL code and converting it to ASM</para>
+          </listItem>
+          <listItem>
+            <para>Finding methods that are ASM plugged and loading/inserting the ASM plugs </para>
+          </listItem>
+          <listItem>
+            <para>Sequencing the ASM into one continuous .ASM (text) file</para>
+          </listItem>
+          <listItem>
+            <para>Saving debug information into a .PDB (database) file</para>
+          </listItem>
+        </list>
+      </content>
+    </section>
+
+    <section address="ProcessingFlowOverview">
+      <title>Processing Flow</title>
+      <content>
+        <para>
+          This section is given in much more detail in <link xlink:href="2ab7af0a-7eb4-46c9-85b6-565b3ab7693b">Processing Flow Details</link>.
+        </para>
+        <para>
+          <mediaLinkInline>
+            <image xlink:href="Fling OS - Kernel Compiler Model 1" />
+          </mediaLinkInline>
+        </para>
+        <para>
+          This model gives a short overview of how the Kernel Compiler should work. Initially, MSBuild converts C# to IL code. The Kernel Compiler then reads in that IL code (IL Reader) into a full list of classes (List of classes) and a list of classes that contain one or more plugged methods (List of plugged classes). These two lists are handed to the IL Scanner. The IL Scanner then loops through:
+        </para>
+        <list class="ordered">
+          <listItem>
+            <para>The list of plugged classes</para>
+            <list class="ordered">
+              <listItem>
+                <para>For each class, loop through all plugged methods</para>
+              </listItem>
+              <listItem>
+                <para>Load the relevant plug ASM file</para>
+              </listItem>
+              <listItem>
+                <para>Create an ASM chunk and add it to the full list of ASM chunks (List of ASM chunks)</para>
+              </listItem>
+            </list>
+          </listItem>
+          <listItem>
+            <para>The list of all classes</para>
+            <list class="ordered">
+              <listItem>
+                <para>For each class, loop through all not-plugged methods</para>
+              </listItem>
+              <listItem>
+                <para>Loop through all the IL ops for each method</para>
+              </listItem>
+              <listItem>
+                <para>Convert the IL ops to ASM</para>
+              </listItem>
+              <listItem>
+                <para>Create an ASM chunk and add it to the full list of ASM chunks (List of ASM 
+                chunks)</para>
+              </listItem>
+            </list>
+          </listItem>
+        </list>
+        <para>
+          N.B. An ASM chunk is essentially a piece of ASM text but may have / require peripheral 
+          information.
+        </para>
+        <para>
+          After the full list of ASM chunks has been compiled (List of ASM chunks), each chunk is 
+          sequenced into the continuous ASM file and written to the file. By sequencing the chunks, 
+          we mean placing them in the correct order. Some chunks, such as the initial boot code, 
+          needs to go first. Other chunks may not matter where they go in the file.
+        </para>
+        <para>
+          Finally, once the ASM file has been written, an existing tool, such as NASM, can compile 
+          it from ASM into actually binary code and thus into something like a .ISO file which can 
+          be run in a virtual machine for testing.
+        </para>
+        <para>
+          One thing missed by this model is the output of debug information. The debug information 
+          must contain things like method signatures, stack info, type info, and relation of ASM 
+          line to C# line/method etc. However, none of this is central to the compiler so is not 
+          included in this model.
+        </para>
+      </content>
+    </section>
+      
+    <relatedTopics>
+      <link xlink:href="2ab7af0a-7eb4-46c9-85b6-565b3ab7693b" />
+    </relatedTopics>
+  </developerConceptualDocument>
+</topic>
