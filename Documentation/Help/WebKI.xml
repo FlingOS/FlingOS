@@ -8,6 +8,7 @@
   <HelpKINode Title="AddILOpInfo method" Url="html/bed18e39-35e0-d74a-a617-4a0da5f806b5.htm" />
   <HelpKINode Title="AddLocalVariable method" Url="html/c937272e-6dad-c09f-36f8-cfe31706ef9c.htm" />
   <HelpKINode Title="AddMethod method" Url="html/7831177b-83cd-9d7c-6e1a-6730d8cdeb06.htm" />
+  <HelpKINode Title="AddressToBytes method" Url="html/358c8296-827e-2dac-dea5-4fe85175235b.htm" />
   <HelpKINode Title="AddStaticField method" Url="html/7421db71-fcde-5447-9c42-438c3dee84ac.htm" />
   <HelpKINode Title="AddStringLiteral method" Url="html/674a5eb3-8097-52a1-9fa1-b0a10ae5ac02.htm" />
   <HelpKINode Title="AddType method" Url="html/eca39b00-fe5b-48d4-a1b5-6d14683eda13.htm" />
@@ -17,11 +18,10 @@
     <HelpKINode Title="about Argument class" Url="html/8b5e0c46-88e1-0756-1f6e-c498e773134a.htm" />
     <HelpKINode Title="constructor" Url="html/756c0a53-fdd2-14cf-e861-4aea543c7612.htm" />
     <HelpKINode Title="fields" Url="html/7aa0ad42-e9f1-b1b2-65bd-68f7de23f8bb.htm" />
+    <HelpKINode Title="methods" Url="html/cb6b7d1f-b938-29fa-8a7c-8f33a3cd5d95.htm" />
   </HelpKINode>
   <HelpKINode Title="Argument.Argument constructor" Url="html/756c0a53-fdd2-14cf-e861-4aea543c7612.htm" />
-  <HelpKINode Title="Argument.dbType field" Url="html/9d57d13e-6ccf-27bf-4165-7ff6a8682105.htm" />
   <HelpKINode Title="Argument.isReturnArg field" Url="html/dd7b9ce2-a091-da06-a86f-e824212aa275.htm" />
-  <HelpKINode Title="Argument.value field" Url="html/b3bc3d70-635e-0990-ceed-3c6b9f54dbaf.htm" />
   <HelpKINode Title="arguments field" Url="html/afe4daf7-8506-1241-b38c-964321f2038a.htm" />
   <HelpKINode Title="Arguments property" Url="html/f9bfc7e1-bd23-6a97-cd59-c8e8918b713f.htm" />
   <HelpKINode Title="ASM field" Url="html/f75307e7-c9f6-a4cb-df27-3ae0763c7595.htm" />
@@ -77,24 +77,28 @@
   <HelpKINode Title="BasicDebug.Serial_WriteUInt16 method" Url="html/7795f93a-e1ab-9985-11f4-3e5f42fd7e65.htm" />
   <HelpKINode Title="BasicDebug.Serial_WriteUInt32 method" Url="html/4a97ec28-9b72-4b9c-b0a2-bd9463de9ccc.htm" />
   <HelpKINode Title="BasicDebug.WaitForCommand method" Url="html/34c3ff4c-eb01-2654-b661-0f3454f66116.htm" />
+  <HelpKINode Title="BeginBreak method" Url="html/80e3cb7a-6a2e-f0a3-995c-10e31d6a22d0.htm" />
   <HelpKINode Title="BeginRead method" Url="html/bda57179-c912-d508-9df8-fcca47cc672d.htm" />
   <HelpKINode Title="Break enumeration member" Url="html/14444533-b045-c1c8-07a7-65a3a5b42cdc.htm" />
   <HelpKINode Title="breakAddress field" Url="html/760871d7-7038-31fd-c1bb-44b7e3106a03.htm" />
   <HelpKINode Title="BreakAddress property" Url="html/eb80479f-c9c8-222d-d94c-b136a9c4581c.htm" />
   <HelpKINode Title="BreakHandler delegate" Url="html/be10f0bd-16f3-a0ec-693a-76c3970e8fec.htm" />
+  <HelpKINode Title="Breaking enumeration member" Url="html/e297a684-74a5-dfcc-0b2b-e4f3d51f5ddc.htm" />
+  <HelpKINode Title="Broken enumeration member" Url="html/e297a684-74a5-dfcc-0b2b-e4f3d51f5ddc.htm" />
   <HelpKINode Title="bsize field" Url="html/2d8980bf-b7b6-dc63-f869-daf6b6b8b8c2.htm" />
   <HelpKINode Title="BytesRead field" Url="html/0c9766b2-ef12-4f99-4fd4-198bd260f52f.htm" />
+  <HelpKINode Title="BytesToAddress method" Url="html/459f7673-5c91-e8e5-233f-02ac71c33264.htm" />
   <HelpKINode Title="cachedCS field" Url="html/5d31642a-f6ea-ddaa-24f7-b7de7fd5fc25.htm" />
   <HelpKINode Title="CallStaticConstructors method" Url="html/7b80c67c-154d-1cea-58a4-ff98a666f662.htm" />
   <HelpKINode Title="CheckSignature method" Url="html/02f3d0ab-2e21-0f10-f68d-e664e208bde8.htm" />
   <HelpKINode Title="Checksum field" Url="html/155b0af6-07cf-cc3e-5b68-fee8faf2a86f.htm" />
   <HelpKINode Title="Clear method" Url="html/2d7da816-66ea-53f3-28a2-e9fa79a0674e.htm" />
   <HelpKINode Title="ClearInt3 enumeration member" Url="html/14444533-b045-c1c8-07a7-65a3a5b42cdc.htm" />
-  <HelpKINode Title="ClearInt3 method" Url="html/b5495368-d1b4-83c3-4a3a-b9d8fc4c374d.htm" />
+  <HelpKINode Title="ClearInt3 method" Url="html/8274b9c1-b90b-abc1-de7e-37727e0b4f25.htm" />
   <HelpKINode Title="ClearMessage method" Url="html/d2a089c7-8e08-dd29-abd4-98dc6d049bd1.htm" />
   <HelpKINode Title="CloseVixObject method" Url="html/ecaa6f25-a4cc-da74-667b-e58b43d70e38.htm" />
   <HelpKINode Title="Connected property" Url="html/61660c7d-e736-b8d9-9099-95751bf6777a.htm" />
-  <HelpKINode Title="ContainsExactAddress method" Url="html/b7de110b-e11b-e09e-588b-88db7c14e374.htm" />
+  <HelpKINode Title="ContainsExactAddress method" Url="html/67ecb51b-7c10-52e5-1a97-b7c4c1ea716b.htm" />
   <HelpKINode Title="Continue enumeration member" Url="html/14444533-b045-c1c8-07a7-65a3a5b42cdc.htm" />
   <HelpKINode Title="Continue method" Url="html/f294ca82-41fb-2118-49a1-fa12637509e7.htm" />
   <HelpKINode Title="CSLineNum field" Url="html/8edfc074-9853-2d30-2bcd-b4d40ff5e117.htm" />
@@ -120,10 +124,7 @@
   <HelpKINode Title="CurrentNearestMethodBasedLabel property" Url="html/ff2df69e-c7fa-3825-dd61-f920cc5aab0a.htm" />
   <HelpKINode Title="CurrentNearestMethodLabel property" Url="html/34475f69-bddd-c9a7-65f4-6a28843f6c92.htm" />
   <HelpKINode Title="DB field" Url="html/81c96aaa-351e-dc79-6259-e84f0e6bd459.htm" />
-  <HelpKINode Title="dbType field">
-    <HelpKINode Title="Argument.dbType Field" Url="html/9d57d13e-6ccf-27bf-4165-7ff6a8682105.htm" />
-    <HelpKINode Title="Local.dbType Field" Url="html/d99fb296-0567-f5ff-4e1e-e63c3c9ee29c.htm" />
-  </HelpKINode>
+  <HelpKINode Title="dbType field" Url="html/575f4b8a-0352-94b2-61fe-1b38a0ec71c7.htm" />
   <HelpKINode Title="DebugCommands enumeration" Url="html/14444533-b045-c1c8-07a7-65a3a5b42cdc.htm" />
   <HelpKINode Title="DebugDatabase class">
     <HelpKINode Title="DebugDatabase Class" Url="html/74b086ad-16bd-2d47-16eb-fbe000ad8c44.htm" />
@@ -171,9 +172,10 @@
   </HelpKINode>
   <HelpKINode Title="Debugger.arguments field" Url="html/afe4daf7-8506-1241-b38c-964321f2038a.htm" />
   <HelpKINode Title="Debugger.Arguments property" Url="html/f9bfc7e1-bd23-6a97-cd59-c8e8918b713f.htm" />
+  <HelpKINode Title="Debugger.BeginBreak method" Url="html/80e3cb7a-6a2e-f0a3-995c-10e31d6a22d0.htm" />
   <HelpKINode Title="Debugger.breakAddress field" Url="html/760871d7-7038-31fd-c1bb-44b7e3106a03.htm" />
   <HelpKINode Title="Debugger.BreakAddress property" Url="html/eb80479f-c9c8-222d-d94c-b136a9c4581c.htm" />
-  <HelpKINode Title="Debugger.ClearInt3 method" Url="html/b5495368-d1b4-83c3-4a3a-b9d8fc4c374d.htm" />
+  <HelpKINode Title="Debugger.ClearInt3 method" Url="html/8274b9c1-b90b-abc1-de7e-37727e0b4f25.htm" />
   <HelpKINode Title="Debugger.Continue method" Url="html/f294ca82-41fb-2118-49a1-fa12637509e7.htm" />
   <HelpKINode Title="Debugger.CurrentASMLineLength property" Url="html/501bbdbd-150d-2c0e-1638-b1a515af1e83.htm" />
   <HelpKINode Title="Debugger.CurrentASMLineStartOffset property" Url="html/68cc8f68-e356-684a-f6e7-da0f7c1b4b81.htm" />
@@ -196,10 +198,11 @@
   <HelpKINode Title="Debugger.CurrentNearestMethodLabel property" Url="html/34475f69-bddd-c9a7-65f4-6a28843f6c92.htm" />
   <HelpKINode Title="Debugger.Debugger constructor" Url="html/81ba7330-5a8c-16e1-ff21-dba77fa2f42e.htm" />
   <HelpKINode Title="Debugger.Dispose method" Url="html/9265eb06-5c93-71fb-f633-4787917509ce.htm" />
+  <HelpKINode Title="Debugger.EndBreak method" Url="html/f76addc8-03c3-0f92-3041-7ac1e2a2f288.htm" />
   <HelpKINode Title="Debugger.GetArguments method" Url="html/e2e1dd50-40b0-b992-f86a-05a9f97e0287.htm" />
   <HelpKINode Title="Debugger.GetBreakAddress method" Url="html/252b9d47-e3fd-739e-c6c9-3583c1caf0fa.htm" />
   <HelpKINode Title="Debugger.GetLocals method" Url="html/b6fd91d8-5deb-9cde-455b-032ff5785b02.htm" />
-  <HelpKINode Title="Debugger.GetMemory method" Url="html/0bd74518-5b67-6349-1862-8558762c93ad.htm" />
+  <HelpKINode Title="Debugger.GetMemory method" Url="html/568a0713-f5e9-ff6e-82b9-0ec7d2031201.htm" />
   <HelpKINode Title="Debugger.GetMemory_Data field" Url="html/d0178ed4-39e3-e838-b038-a3a3a7fb8478.htm" />
   <HelpKINode Title="Debugger.GetMemory_Length field" Url="html/ad5a6421-5119-84c3-1ab2-e76cec9de00e.htm" />
   <HelpKINode Title="Debugger.GetRegisters method" Url="html/bae59941-2913-8974-7e71-853d72dc2c59.htm" />
@@ -227,8 +230,13 @@
   <HelpKINode Title="Debugger.LoadCurrentMethodASM_Plugged method" Url="html/92927b11-c5ad-8cc0-aa12-b43bba83674c.htm" />
   <HelpKINode Title="Debugger.LoadCurrentMethodASM_Unplugged method" Url="html/28aa3895-86b2-b058-0020-0f880d77044a.htm" />
   <HelpKINode Title="Debugger.LoadCurrentMethodCS method" Url="html/70c48e7e-87a5-7e4a-e491-69d2d9a789a4.htm" />
+  <HelpKINode Title="Debugger.LoadMemoryCompletedDelegate delegate" Url="html/33fa7c3a-9ceb-8849-f084-77b0c41580d9.htm" />
+  <HelpKINode Title="Debugger.LoadMemoryRequests field" Url="html/b2a76e1f-7478-837d-07fc-13cee4783f83.htm" />
+  <HelpKINode Title="Debugger.LoadMemoryValue method" Url="html/17f44347-1e4d-4167-a156-cb76b71f6cec.htm" />
+  <HelpKINode Title="Debugger.LoadMemoryValue_Run method" Url="html/5cf84194-47d9-8258-b239-5a1da90e508b.htm" />
   <HelpKINode Title="Debugger.locals field" Url="html/4ba7e7e9-0b09-1d14-3d2e-b4b4af58cba7.htm" />
   <HelpKINode Title="Debugger.Locals property" Url="html/6c3dffe0-0d72-95bd-b9df-b1ae5147fb26.htm" />
+  <HelpKINode Title="Debugger.Mode_64bit field" Url="html/1cb64ff3-a66e-4f21-2182-21b0048d5cef.htm" />
   <HelpKINode Title="Debugger.OnBreak event" Url="html/c4d3fffc-9f7f-3f68-bdc5-dffcaa61f547.htm" />
   <HelpKINode Title="Debugger.OnBreak field" Url="html/6c5ddba5-88c8-e080-2009-1491e4285c82.htm" />
   <HelpKINode Title="Debugger.OnConnected event" Url="html/196b5174-1b13-7b4c-2a9e-e26285cbb43c.htm" />
@@ -240,7 +248,9 @@
   <HelpKINode Title="Debugger.registers field" Url="html/08bef7b0-03aa-da0f-9563-ed40b1093241.htm" />
   <HelpKINode Title="Debugger.Registers property" Url="html/bf731327-ae20-7b25-4bc0-c06228e48857.htm" />
   <HelpKINode Title="Debugger.SendPendingInt3Changes method" Url="html/47426c4a-e664-45d1-9100-9f93900f2d17.htm" />
-  <HelpKINode Title="Debugger.SetInt3 method" Url="html/1c7e9b77-4c51-1386-0e59-cb6d198b95f9.htm" />
+  <HelpKINode Title="Debugger.SetInt3 method" Url="html/a57f5188-dcd0-60c7-f561-a94070bcb790.htm" />
+  <HelpKINode Title="Debugger.State field" Url="html/aa13678d-2c1f-d9dd-bfc3-86a0c08c1435.htm" />
+  <HelpKINode Title="Debugger.States enumeration" Url="html/e297a684-74a5-dfcc-0b2b-e4f3d51f5ddc.htm" />
   <HelpKINode Title="Debugger.StepNext method" Url="html/5f3288d7-9f07-3d52-b76a-296e5485db67.htm" />
   <HelpKINode Title="Debugger.StepToNextIL method" Url="html/d27801da-74aa-692e-33c7-0da975956f4f.htm" />
   <HelpKINode Title="Debugger.Stop method" Url="html/5e6abded-b418-bd4e-382a-d6dfb1ec57a6.htm" />
@@ -299,15 +309,16 @@
     <HelpKINode Title="fields" Url="html/95668cf7-79c5-cb88-e623-9cbb8a8dd3a0.htm" />
     <HelpKINode Title="methods" Url="html/e3ebd458-b108-2606-7687-ad95f8170573.htm" />
   </HelpKINode>
-  <HelpKINode Title="ElfMap.ContainsExactAddress method" Url="html/b7de110b-e11b-e09e-588b-88db7c14e374.htm" />
+  <HelpKINode Title="ElfMap.ContainsExactAddress method" Url="html/67ecb51b-7c10-52e5-1a97-b7c4c1ea716b.htm" />
   <HelpKINode Title="ElfMap.ElfMap constructor" Url="html/bff1dbe7-ea4f-db53-291d-cb5d5af72d4d.htm" />
   <HelpKINode Title="ElfMap.GetAddress method" Url="html/82027c32-6949-57da-b45e-3e6091ceaace.htm" />
-  <HelpKINode Title="ElfMap.GetNearestLabels method" Url="html/6894ed07-2f87-721a-1e1b-cc45f7854c3e.htm" />
+  <HelpKINode Title="ElfMap.GetNearestLabels method" Url="html/676760e7-ca7b-c75e-2213-228abf3dca2d.htm" />
   <HelpKINode Title="ElfMap.Map field" Url="html/9902b371-86c4-38d1-744e-a4aa8b02caf0.htm" />
   <HelpKINode Title="ElfMap.minAddress field" Url="html/f0f1b136-a4a7-fa76-efb0-09574975dec2.htm" />
   <HelpKINode Title="ElfMap.ReadFile method" Url="html/be037e59-6ccb-ef5f-18b8-3f13a776c78e.htm" />
   <HelpKINode Title="Empty method" Url="html/16fd0f1b-5ec7-4d3b-2f17-8a4890ce3fb5.htm" />
   <HelpKINode Title="EnableDebug method" Url="html/152b1ed1-0687-f63f-8c8d-39fd05ef5bd9.htm" />
+  <HelpKINode Title="EndBreak method" Url="html/f76addc8-03c3-0f92-3041-7ac1e2a2f288.htm" />
   <HelpKINode Title="EndRead method" Url="html/efb52459-1467-32fd-ea9a-97172f44d89e.htm" />
   <HelpKINode Title="Equality operator" Url="html/f5ed92c3-72d2-57db-8f5b-dd854e51abdf.htm" />
   <HelpKINode Title="ESI enumeration member" Url="html/23b49dc2-5f7b-b753-26a1-15b976436dbd.htm" />
@@ -360,6 +371,7 @@
   <HelpKINode Title="Exceptions.UnhandledException_PanicMessage field" Url="html/174f10b7-66de-a63f-ee7a-7bbaddd512bb.htm" />
   <HelpKINode Title="Execute method" Url="html/31fd50f7-30db-5e26-0f18-4c218864d569.htm" />
   <HelpKINode Title="fblock field" Url="html/d99de76d-f50c-0b8f-ad72-73c1d32a9b36.htm" />
+  <HelpKINode Title="Fields field" Url="html/c506e2c7-0efe-ae52-2119-445907a5198b.htm" />
   <HelpKINode Title="filePath field" Url="html/0777285d-50ec-a9a8-2c80-5ab298f30160.htm" />
   <HelpKINode Title="FilterAddress field" Url="html/a57127a2-975e-e147-6e3b-fc87ed39001b.htm" />
   <HelpKINode Title="FixedHeapInitialised field" Url="html/4731ca2c-7a85-c448-4ab7-23d2c5caa562.htm" />
@@ -413,18 +425,19 @@
   <HelpKINode Title="GetLocals method" Url="html/b6fd91d8-5deb-9cde-455b-032ff5785b02.htm" />
   <HelpKINode Title="GetLocalVariable method" Url="html/7418cf11-cb62-186f-588f-0c4d7030127a.htm" />
   <HelpKINode Title="GetMemory enumeration member" Url="html/14444533-b045-c1c8-07a7-65a3a5b42cdc.htm" />
-  <HelpKINode Title="GetMemory method" Url="html/0bd74518-5b67-6349-1862-8558762c93ad.htm" />
+  <HelpKINode Title="GetMemory method" Url="html/568a0713-f5e9-ff6e-82b9-0ec7d2031201.htm" />
   <HelpKINode Title="GetMemory_Data field" Url="html/d0178ed4-39e3-e838-b038-a3a3a7fb8478.htm" />
   <HelpKINode Title="GetMemory_Length field" Url="html/ad5a6421-5119-84c3-1ab2-e76cec9de00e.htm" />
   <HelpKINode Title="GetMethod method" Url="html/4437df54-88e5-6dcf-2721-0040ee658891.htm" />
   <HelpKINode Title="GetMethodASM method" Url="html/f0b8ac2a-4931-8e8a-13c1-5390efc1d8f9.htm" />
-  <HelpKINode Title="GetNearestLabels method" Url="html/6894ed07-2f87-721a-1e1b-cc45f7854c3e.htm" />
+  <HelpKINode Title="GetNearestLabels method" Url="html/676760e7-ca7b-c75e-2213-228abf3dca2d.htm" />
   <HelpKINode Title="GetNID method" Url="html/2f031af1-c080-9c40-10cd-f2e517a3e824.htm" />
   <HelpKINode Title="GetRegisters enumeration member" Url="html/14444533-b045-c1c8-07a7-65a3a5b42cdc.htm" />
   <HelpKINode Title="GetRegisters method" Url="html/bae59941-2913-8974-7e71-853d72dc2c59.htm" />
   <HelpKINode Title="GetStaticField method" Url="html/ff27f80e-78a3-a109-9d38-9516c2423cd4.htm" />
   <HelpKINode Title="GetStringLiteral method" Url="html/8e57ef34-06d8-f726-a7c2-f2ab017f2912.htm" />
   <HelpKINode Title="GetType method" Url="html/0406fb60-ecee-fe20-faf7-c219c498706d.htm" />
+  <HelpKINode Title="GetValueStr method" Url="html/3089e271-a9cc-b97a-4958-305e2d624941.htm" />
   <HelpKINode Title="Halt method" Url="html/8c186fa4-a969-7795-c28a-2ce5051260c3.htm" />
   <HelpKINode Title="HandleCommand method" Url="html/624072d5-2fec-e341-a01f-345f6c1be9cf.htm" />
   <HelpKINode Title="HandleEndFinally method" Url="html/b9706c5c-30a7-f6ff-1530-f007050eb7c9.htm" />
@@ -552,6 +565,8 @@
   <HelpKINode Title="Kernel.Debug.Debugger.BreakHandler delegate" Url="html/be10f0bd-16f3-a0ec-693a-76c3970e8fec.htm" />
   <HelpKINode Title="Kernel.Debug.Debugger.DebugCommands enumeration" Url="html/14444533-b045-c1c8-07a7-65a3a5b42cdc.htm" />
   <HelpKINode Title="Kernel.Debug.Debugger.Debugger class" Url="html/744fa894-82fe-1425-263a-ca3fff2091c3.htm" />
+  <HelpKINode Title="Kernel.Debug.Debugger.Debugger.LoadMemoryCompletedDelegate delegate" Url="html/33fa7c3a-9ceb-8849-f084-77b0c41580d9.htm" />
+  <HelpKINode Title="Kernel.Debug.Debugger.Debugger.States enumeration" Url="html/e297a684-74a5-dfcc-0b2b-e4f3d51f5ddc.htm" />
   <HelpKINode Title="Kernel.Debug.Debugger.InvalidCommandHandler delegate" Url="html/f487912b-1eb1-7413-8679-c54f08c46131.htm" />
   <HelpKINode Title="Kernel.Debug.Debugger.IVirtualMachine interface" Url="html/ff50db4f-cdfb-2eeb-7b96-a839102e8f2b.htm" />
   <HelpKINode Title="Kernel.Debug.Debugger.Local class" Url="html/0b3766a0-dc93-9001-a909-8a7acc242d75.htm" />
@@ -559,6 +574,9 @@
   <HelpKINode Title="Kernel.Debug.Debugger.Register class" Url="html/33a6ee96-4f4d-4e7d-80fb-83bde4d51833.htm" />
   <HelpKINode Title="Kernel.Debug.Debugger.Registers enumeration" Url="html/23b49dc2-5f7b-b753-26a1-15b976436dbd.htm" />
   <HelpKINode Title="Kernel.Debug.Debugger.Serial class" Url="html/8662ab13-1589-6809-9287-7658dc178969.htm" />
+  <HelpKINode Title="Kernel.Debug.Debugger.Utils class" Url="html/4bd36b72-6316-6ed7-c776-f2ac78eb50b0.htm" />
+  <HelpKINode Title="Kernel.Debug.Debugger.Variable class" Url="html/847f8772-5776-094e-59a8-1092eadb34eb.htm" />
+  <HelpKINode Title="Kernel.Debug.Debugger.Variable.OnLoadFieldsCompleteDelegate delegate" Url="html/ab246278-fee3-3cb6-72e0-3a1bf8585b15.htm" />
   <HelpKINode Title="Kernel.Debug.Debugger.VMWare_VM class" Url="html/c3525f03-d668-2b19-b6bc-ad774fda9a2e.htm" />
   <HelpKINode Title="Kernel.Dummy class" Url="html/70634fc0-f8cb-a2a1-153e-202a44cefa52.htm" />
   <HelpKINode Title="Kernel.ExceptionHandlerInfo structure" Url="html/dfda22ec-8e8e-8b2b-cea1-f442d073e31d.htm" />
@@ -597,16 +615,19 @@
   <HelpKINode Title="LoadCurrentMethodASM_Plugged method" Url="html/92927b11-c5ad-8cc0-aa12-b43bba83674c.htm" />
   <HelpKINode Title="LoadCurrentMethodASM_Unplugged method" Url="html/28aa3895-86b2-b058-0020-0f880d77044a.htm" />
   <HelpKINode Title="LoadCurrentMethodCS method" Url="html/70c48e7e-87a5-7e4a-e491-69d2d9a789a4.htm" />
+  <HelpKINode Title="LoadFields method" Url="html/232b7eed-105c-d8e7-de14-45d09163146a.htm" />
+  <HelpKINode Title="LoadMemoryRequests field" Url="html/b2a76e1f-7478-837d-07fc-13cee4783f83.htm" />
+  <HelpKINode Title="LoadMemoryValue method" Url="html/17f44347-1e4d-4167-a156-cb76b71f6cec.htm" />
+  <HelpKINode Title="LoadMemoryValue_Run method" Url="html/5cf84194-47d9-8258-b239-5a1da90e508b.htm" />
   <HelpKINode Title="Local class">
     <HelpKINode Title="Local Class" Url="html/0b3766a0-dc93-9001-a909-8a7acc242d75.htm" />
     <HelpKINode Title="about Local class" Url="html/0b3766a0-dc93-9001-a909-8a7acc242d75.htm" />
     <HelpKINode Title="constructor" Url="html/185dbd13-d732-6c27-7b15-872b0bdba0bc.htm" />
     <HelpKINode Title="fields" Url="html/279573e6-bf0d-6b3a-d3e1-2cb36cf36530.htm" />
+    <HelpKINode Title="methods" Url="html/4dd1c1c8-cb88-cdb6-3841-5b97489547cc.htm" />
   </HelpKINode>
-  <HelpKINode Title="Local.dbType field" Url="html/d99fb296-0567-f5ff-4e1e-e63c3c9ee29c.htm" />
   <HelpKINode Title="Local.isTemporary field" Url="html/c06ff6dd-0e32-8686-a88e-619f30ea586b.htm" />
   <HelpKINode Title="Local.Local constructor" Url="html/185dbd13-d732-6c27-7b15-872b0bdba0bc.htm" />
-  <HelpKINode Title="Local.value field" Url="html/48b03491-c64d-9cc0-ff1a-86aad4beeae2.htm" />
   <HelpKINode Title="locals field" Url="html/4ba7e7e9-0b09-1d14-3d2e-b4b4af58cba7.htm" />
   <HelpKINode Title="Locals property" Url="html/6c3dffe0-0d72-95bd-b9df-b1ae5147fb26.htm" />
   <HelpKINode Title="Main method" Url="html/2f86e7fc-f4db-fcdd-14af-bb40e50982bd.htm" />
@@ -621,9 +642,11 @@
   <HelpKINode Title="Message field" Url="html/e7354534-f906-61ed-7a1f-4afc036b1a85.htm" />
   <HelpKINode Title="Methods field" Url="html/138675d8-6836-a961-d541-518c22bccf59.htm" />
   <HelpKINode Title="minAddress field" Url="html/f0f1b136-a4a7-fa76-efb0-09574975dec2.htm" />
+  <HelpKINode Title="Mode_64bit field" Url="html/1cb64ff3-a66e-4f21-2182-21b0048d5cef.htm" />
   <HelpKINode Title="MultibootSignature method" Url="html/95554066-ce72-5541-2ad0-a4a4b717761c.htm" />
   <HelpKINode Title="NewObj method" Url="html/60cefcc1-6451-17c2-7f1f-23dcbaf3772a.htm" />
   <HelpKINode Title="next field" Url="html/f3cedb5f-c870-a2f3-e795-dfc4c50c2732.htm" />
+  <HelpKINode Title="None enumeration member" Url="html/e297a684-74a5-dfcc-0b2b-e4f3d51f5ddc.htm" />
   <HelpKINode Title="NumObjs field" Url="html/679d3e8f-bbf0-09b0-38e0-6ceda71cc249.htm" />
   <HelpKINode Title="Object class">
     <HelpKINode Title="Object Class" Url="html/d6c554c0-edb5-6771-a2ee-17f7dc96adfc.htm" />
@@ -773,6 +796,7 @@
   <HelpKINode Title="RemoveType method" Url="html/a810944f-bae8-e22d-b3af-113c3d9717b7.htm" />
   <HelpKINode Title="Reset method" Url="html/86aeade5-6cb4-016f-c3be-86d4e7b5eee1.htm" />
   <HelpKINode Title="Rethrow method" Url="html/fa0e15be-ae31-8b1e-b57c-89da015a6137.htm" />
+  <HelpKINode Title="Running enumeration member" Url="html/e297a684-74a5-dfcc-0b2b-e4f3d51f5ddc.htm" />
   <HelpKINode Title="SectionsData field" Url="html/e802de56-01c3-cf2c-a8ca-6bb91eee4d12.htm" />
   <HelpKINode Title="SendArguments enumeration member" Url="html/14444533-b045-c1c8-07a7-65a3a5b42cdc.htm" />
   <HelpKINode Title="SendArguments method" Url="html/87f17048-50c6-88b6-f442-0ff43ee366f7.htm" />
@@ -816,7 +840,7 @@
   <HelpKINode Title="Serial_WriteUInt16 method" Url="html/7795f93a-e1ab-9985-11f4-3e5f42fd7e65.htm" />
   <HelpKINode Title="Serial_WriteUInt32 method" Url="html/4a97ec28-9b72-4b9c-b0a2-bd9463de9ccc.htm" />
   <HelpKINode Title="SetInt3 enumeration member" Url="html/14444533-b045-c1c8-07a7-65a3a5b42cdc.htm" />
-  <HelpKINode Title="SetInt3 method" Url="html/1c7e9b77-4c51-1386-0e59-cb6d198b95f9.htm" />
+  <HelpKINode Title="SetInt3 method" Url="html/a57f5188-dcd0-60c7-f561-a94070bcb790.htm" />
   <HelpKINode Title="SetSignature method" Url="html/d6f22a0e-27be-50da-fd50-afeeb0d502ea.htm" />
   <HelpKINode Title="Sig1 field" Url="html/8a5caf41-c191-7bca-325b-d2ef50ae61ef.htm" />
   <HelpKINode Title="Sig2 field" Url="html/3a9ecb05-0a46-dc2c-aa9f-31cdb43dd7c7.htm" />
@@ -831,10 +855,13 @@
     <HelpKINode Title="fields" Url="html/ea315241-625c-15ee-6c68-669cecfd9715.htm" />
   </HelpKINode>
   <HelpKINode Title="StackException.StackException constructor" Url="html/91df0715-8699-8aeb-f45a-de5599c998b9.htm" />
+  <HelpKINode Title="State field" Url="html/aa13678d-2c1f-d9dd-bfc3-86a0c08c1435.htm" />
   <HelpKINode Title="StepNext enumeration member" Url="html/14444533-b045-c1c8-07a7-65a3a5b42cdc.htm" />
   <HelpKINode Title="StepNext method" Url="html/5f3288d7-9f07-3d52-b76a-296e5485db67.htm" />
+  <HelpKINode Title="Stepping enumeration member" Url="html/e297a684-74a5-dfcc-0b2b-e4f3d51f5ddc.htm" />
   <HelpKINode Title="StepToNextIL method" Url="html/d27801da-74aa-692e-33c7-0da975956f4f.htm" />
   <HelpKINode Title="Stop method" Url="html/5e6abded-b418-bd4e-382a-d6dfb1ec57a6.htm" />
+  <HelpKINode Title="Stopping enumeration member" Url="html/e297a684-74a5-dfcc-0b2b-e4f3d51f5ddc.htm" />
   <HelpKINode Title="String class">
     <HelpKINode Title="String Class" Url="html/d2614dcb-1a07-6fc2-02c7-abe64e32e7b5.htm" />
     <HelpKINode Title="about String class" Url="html/d2614dcb-1a07-6fc2-02c7-abe64e32e7b5.htm" />
@@ -862,6 +889,7 @@
   <HelpKINode Title="Throw_PageFaultException method" Url="html/f63bf2ee-93b6-dada-bc77-43138e176b94.htm" />
   <HelpKINode Title="Throw_PanicMessage field" Url="html/1b1cc792-37a9-b2d4-157f-dbfa0561084a.htm" />
   <HelpKINode Title="Throw_StackException method" Url="html/f1a32174-843a-5c78-4025-69dda16481f5.htm" />
+  <HelpKINode Title="ToString method" Url="html/ed184acb-a426-af59-58e0-46a26663943b.htm" />
   <HelpKINode Title="TryLoadCurrentPluggedMethod method" Url="html/d0bc40b9-b2ad-a22a-53c8-13605806f0a2.htm" />
   <HelpKINode Title="TryLoadCurrentUnpluggedMethod method" Url="html/905c9e4f-c5cc-4e0e-f9e6-b1dacef0bdcf.htm" />
   <HelpKINode Title="Type class">
@@ -878,11 +906,32 @@
   <HelpKINode Title="Type.Type constructor" Url="html/3cb8d77a-f8fb-f1bf-2de7-2b7b19f823fb.htm" />
   <HelpKINode Title="UnhandledException_PanicMessage field" Url="html/174f10b7-66de-a63f-ee7a-7bbaddd512bb.htm" />
   <HelpKINode Title="used field" Url="html/b6fc486f-4797-5634-8616-fff8ed63120b.htm" />
-  <HelpKINode Title="value field">
-    <HelpKINode Title="Argument.value Field" Url="html/b3bc3d70-635e-0990-ceed-3c6b9f54dbaf.htm" />
-    <HelpKINode Title="Local.value Field" Url="html/48b03491-c64d-9cc0-ff1a-86aad4beeae2.htm" />
-    <HelpKINode Title="Register.value Field" Url="html/3e3fd51c-7e37-3a20-0586-6c518e72f474.htm" />
+  <HelpKINode Title="Utils class">
+    <HelpKINode Title="Utils Class" Url="html/4bd36b72-6316-6ed7-c776-f2ac78eb50b0.htm" />
+    <HelpKINode Title="about Utils class" Url="html/4bd36b72-6316-6ed7-c776-f2ac78eb50b0.htm" />
+    <HelpKINode Title="methods" Url="html/3c3aa5cb-cc41-30bc-0456-78d1b6ff66e8.htm" />
   </HelpKINode>
+  <HelpKINode Title="Utils.AddressToBytes method" Url="html/358c8296-827e-2dac-dea5-4fe85175235b.htm" />
+  <HelpKINode Title="Utils.BytesToAddress method" Url="html/459f7673-5c91-e8e5-233f-02ac71c33264.htm" />
+  <HelpKINode Title="Utils.GetValueStr method" Url="html/3089e271-a9cc-b97a-4958-305e2d624941.htm" />
+  <HelpKINode Title="value field">
+    <HelpKINode Title="Register.value Field" Url="html/3e3fd51c-7e37-3a20-0586-6c518e72f474.htm" />
+    <HelpKINode Title="Variable.value Field" Url="html/cdc533aa-c106-5979-e9f2-b4ea586b54f5.htm" />
+  </HelpKINode>
+  <HelpKINode Title="Variable class">
+    <HelpKINode Title="Variable Class" Url="html/847f8772-5776-094e-59a8-1092eadb34eb.htm" />
+    <HelpKINode Title="about Variable class" Url="html/847f8772-5776-094e-59a8-1092eadb34eb.htm" />
+    <HelpKINode Title="constructor" Url="html/fa1ba4c7-e4be-3fa1-b14c-0fd3185ef007.htm" />
+    <HelpKINode Title="fields" Url="html/c8a240ab-45ee-b4eb-8a3f-26d634c359c5.htm" />
+    <HelpKINode Title="methods" Url="html/f2fba5cf-29b7-3c8c-ebda-3d0bdfa72316.htm" />
+  </HelpKINode>
+  <HelpKINode Title="Variable.dbType field" Url="html/575f4b8a-0352-94b2-61fe-1b38a0ec71c7.htm" />
+  <HelpKINode Title="Variable.Fields field" Url="html/c506e2c7-0efe-ae52-2119-445907a5198b.htm" />
+  <HelpKINode Title="Variable.LoadFields method" Url="html/232b7eed-105c-d8e7-de14-45d09163146a.htm" />
+  <HelpKINode Title="Variable.OnLoadFieldsCompleteDelegate delegate" Url="html/ab246278-fee3-3cb6-72e0-3a1bf8585b15.htm" />
+  <HelpKINode Title="Variable.ToString method" Url="html/ed184acb-a426-af59-58e0-46a26663943b.htm" />
+  <HelpKINode Title="Variable.value field" Url="html/cdc533aa-c106-5979-e9f2-b4ea586b54f5.htm" />
+  <HelpKINode Title="Variable.Variable constructor" Url="html/fa1ba4c7-e4be-3fa1-b14c-0fd3185ef007.htm" />
   <HelpKINode Title="VIX_Lib field" Url="html/7c786c68-db2a-0e2f-4fe6-5443e031e760.htm" />
   <HelpKINode Title="vmPoweredOn field" Url="html/7ac87632-cbf2-e456-a5db-6480e1bc56fc.htm" />
   <HelpKINode Title="VMWare_VM class">

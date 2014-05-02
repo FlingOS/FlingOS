@@ -62,7 +62,21 @@
                   <img src="./../icons/pubmethod.gif" alt="Public method" title="Public method" />
                 </td>
                 <td>
-                  <a href="b5495368-d1b4-83c3-4a3a-b9d8fc4c374d.htm" target="">ClearInt3</a>
+                  <a href="80e3cb7a-6a2e-f0a3-995c-10e31d6a22d0.htm" target="">BeginBreak</a>
+                </td>
+                <td>
+                  <div class="summary">
+            Breaks OS execution at the nearest possible moment.
+            Note: EndBreak has to be called unless execution is immediately continued.
+            </div>
+                </td>
+              </tr>
+              <tr data="public;declared;notNetfw;">
+                <td>
+                  <img src="./../icons/pubmethod.gif" alt="Public method" title="Public method" />
+                </td>
+                <td>
+                  <a href="8274b9c1-b90b-abc1-de7e-37727e0b4f25.htm" target="">ClearInt3</a>
                 </td>
                 <td>
                   <div class="summary">
@@ -79,7 +93,7 @@
                 </td>
                 <td>
                   <div class="summary">
-            Continues kernel execution
+            Continues OS execution - can be called immediately after OnBreak without EndBreak being called.
             </div>
                 </td>
               </tr>
@@ -93,6 +107,20 @@
                 <td>
                   <div class="summary">
             Disposes of the debugger instance cleanly.
+            </div>
+                </td>
+              </tr>
+              <tr data="public;declared;notNetfw;">
+                <td>
+                  <img src="./../icons/pubmethod.gif" alt="Public method" title="Public method" />
+                </td>
+                <td>
+                  <a href="f76addc8-03c3-0f92-3041-7ac1e2a2f288.htm" target="">EndBreak</a>
+                </td>
+                <td>
+                  <div class="summary">
+            Completes breaking of OS execution. Must be called immediately after OnBreak event is fired unless Continue 
+            is immediately called.
             </div>
                 </td>
               </tr>
@@ -140,7 +168,7 @@
                   <img src="./../icons/pubmethod.gif" alt="Public method" title="Public method" />
                 </td>
                 <td>
-                  <a href="0bd74518-5b67-6349-1862-8558762c93ad.htm" target="">GetMemory</a>
+                  <a href="568a0713-f5e9-ff6e-82b9-0ec7d2031201.htm" target="">GetMemory</a>
                 </td>
                 <td>
                   <div class="summary">
@@ -461,6 +489,32 @@
             </div>
                 </td>
               </tr>
+              <tr data="public;declared;notNetfw;">
+                <td>
+                  <img src="./../icons/pubmethod.gif" alt="Public method" title="Public method" />
+                </td>
+                <td>
+                  <a href="17f44347-1e4d-4167-a156-cb76b71f6cec.htm" target="">LoadMemoryValue</a>
+                </td>
+                <td>
+                  <div class="summary">
+            Adds a memory request to the queue of memory requests.
+            </div>
+                </td>
+              </tr>
+              <tr data="private;declared;notNetfw;">
+                <td>
+                  <img src="./../icons/privmethod.gif" alt="Private method" title="Private method" />
+                </td>
+                <td>
+                  <a href="5cf84194-47d9-8258-b239-5a1da90e508b.htm" target="">LoadMemoryValue_Run</a>
+                </td>
+                <td>
+                  <div class="summary">
+            Underlying method that asynchronously executes all the memory requests.
+            </div>
+                </td>
+              </tr>
               <tr data="private;declared;notNetfw;">
                 <td>
                   <img src="./../icons/privmethod.gif" alt="Private method" title="Private method" />
@@ -475,7 +529,7 @@
                   <img src="./../icons/pubmethod.gif" alt="Public method" title="Public method" />
                 </td>
                 <td>
-                  <a href="1c7e9b77-4c51-1386-0e59-cb6d198b95f9.htm" target="">SetInt3</a>
+                  <a href="a57f5188-dcd0-60c7-f561-a94070bcb790.htm" target="">SetInt3</a>
                 </td>
                 <td>
                   <div class="summary">
