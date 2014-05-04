@@ -33,6 +33,26 @@
             Thrown when the metadata token is not for method metadata.
             </exception>
         </member>
+        <member name="T:Kernel.Compiler.Architectures.x86_32.And">
+            <summary>
+            See base class documentation.
+            </summary>
+        </member>
+        <member name="M:Kernel.Compiler.Architectures.x86_32.And.Convert(Kernel.Compiler.ILOpInfo,Kernel.Compiler.ILScannerState)">
+            <summary>
+            See base class documentation.
+            </summary>
+            <param name="anILOpInfo">See base class documentation.</param>
+            <param name="aScannerState">See base class documentation.</param>
+            <returns>See base class documentation.</returns>
+            <exception cref="T:System.NotSupportedException">
+            Thrown if either or both values to 'or' are floating point values.
+            </exception>
+            <exception cref="T:System.InvalidOperationException">
+            Thrown if either or both values to multiply are not 4 or 8 bytes
+            in size or if the values are of different size.
+            </exception>
+        </member>
         <member name="T:Kernel.Compiler.Architectures.x86_32.Sizeof">
             <summary>
             See base class documentation.

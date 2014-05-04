@@ -132,16 +132,6 @@
             <param name="aString">The string to get the length of.</param>
             <returns>The length of the specified string.</returns>
         </member>
-        <member name="M:Kernel.FOS_System.String.GetBytePointer(System.String)">
-            <summary>
-            Gets a pointer to the first byte (that represents a character) of the specified string.
-            </summary>
-            <param name="aString">The string to get a pointer to.</param>
-            <returns>A pointer to the first byte (that represents a character) of the specified string.</returns>
-            <remarks>
-            Skips over the length dword at the start of the string.
-            </remarks>
-        </member>
         <member name="M:Kernel.FOS_System.String.GetCharPointer(System.String)">
             <summary>
             Gets a pointer to the first char (that represents a character) of the specified string.

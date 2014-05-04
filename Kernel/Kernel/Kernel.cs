@@ -39,6 +39,12 @@ namespace Kernel
             Exceptions.AddExceptionHandlerInfo((void*)0, (void*)0);
 
             BasicConsole.Clear();
+
+            for (int i = 0; i < 1000; i++)
+            {
+                BasicConsole.Write("Test");
+            }
+
             BasicConsole.WriteLine("Fling OS Running...");
 
             try

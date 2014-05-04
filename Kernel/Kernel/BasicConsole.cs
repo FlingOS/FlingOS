@@ -5,13 +5,41 @@ namespace Kernel
     /// <summary>
     /// A basic console implementation - uses the BIOS's fixed text-video memory to output ASCII text.
     /// </summary>
-    public static class BasicConsole
+    public static unsafe class BasicConsole
     {
         /// <summary>
         /// The offset from the start of the memory (in characters) to write the next character to.
         /// </summary>
         static int offset = 0;
-        
+        /// <summary>
+        /// The offset from the start of the memory (in characters) to write the next character to.
+        /// </summary>
+        public static int Offset
+        {
+            get
+            {
+                return offset;
+            }
+        }
+
+        /// <summary>
+        /// A pointer to the start of the (character-based) video memory.
+        /// </summary>
+        public static char* vidMemBasePtr = (char*)0xB8000;
+
+        /// <summary>
+        /// Numbers of rows in the video memory.
+        /// </summary>
+        public static int rows = 25;
+        /// <summary>
+        /// Number of columns in the video memory.
+        /// </summary>
+        public static int cols = 80;
+        /// <summary>
+        /// Default colour to print characters in.
+        /// </summary>
+        public static char colour = (char)0x0200;
+
         /// <summary>
         /// Clears the output to all black.
         /// </summary>
@@ -19,9 +47,8 @@ namespace Kernel
         [Compiler.NoGC]
         public static unsafe void Clear()
         {
-            //Rows = 25, Cols = 80
-            int numToClear = 25 * 80;
-            char* vidMemPtr = (char*)0xB8000;
+            int numToClear = rows * cols;
+            char* vidMemPtr = vidMemBasePtr;
             while (numToClear > 0)
             {
                 vidMemPtr[0] = (char)(0x0000);
@@ -44,42 +71,29 @@ namespace Kernel
         public static unsafe void Write(string str)
         {
             int strLength = FOS_System.String.GetLength(str);
-            int maxOffset = 80 * 25;
+            int maxOffset = rows * cols;
 
             if(offset + strLength > maxOffset)
             {
-                int linesToShift = 1;
-                offset -= 80;
-                int strLengthCpy = strLength;
+                int amountToShift = (offset + strLength) - maxOffset;
+                offset -= amountToShift;
 
-                while (offset + strLengthCpy > maxOffset)
-                {
-                    strLengthCpy -= 80;
-                    offset -= 80;
-                    linesToShift++;
-                }
-
-                char* vidMemPtr_Old = (char*)(0xB8000);
-                char* vidMemPtr_New = (char*)(0xB8000 + (linesToShift * 80 * 2));
-                char* maxVidMemPtr = (char*)(0xB8000 + (80 * 50));
+                char* vidMemPtr_Old = vidMemBasePtr;
+                char* vidMemPtr_New = vidMemBasePtr + amountToShift;
+                char* maxVidMemPtr = vidMemBasePtr + (cols * rows);
                 while(vidMemPtr_New < maxVidMemPtr)
                 {
                     vidMemPtr_Old[0] = vidMemPtr_New[0];
                     vidMemPtr_Old++;
                     vidMemPtr_New++;
                 }
-                while (vidMemPtr_Old < maxVidMemPtr)
-                {
-                    vidMemPtr_Old[0] = (char)0x0000;
-                    vidMemPtr_Old++;
-                }
             }
             
-            char* vidMemPtr = (char*)(0xB8000 + (offset * 2));
-            byte* strPtr = FOS_System.String.GetBytePointer(str);
+            char* vidMemPtr = vidMemBasePtr + offset;
+            char* strPtr = FOS_System.String.GetCharPointer(str);
             while (strLength > 0)
             {
-                vidMemPtr[0] = (char)(*strPtr | 0x0200);
+                vidMemPtr[0] = (char)((*strPtr & 0x00FF) | colour);
 
                 strLength--;
                 vidMemPtr++;
@@ -98,16 +112,30 @@ namespace Kernel
         [Compiler.NoGC]
         public static unsafe void WriteLine(string str)
         {
+            if (offset == BasicConsole.cols * BasicConsole.rows)
+            {
+                char* vidMemPtr_Old = vidMemBasePtr;
+                char* vidMemPtr_New = vidMemBasePtr + cols;
+                char* maxVidMemPtr = vidMemBasePtr + (cols * rows);
+                while (vidMemPtr_New < maxVidMemPtr)
+                {
+                    vidMemPtr_Old[0] = vidMemPtr_New[0];
+                    vidMemPtr_Old++;
+                    vidMemPtr_New++;
+                }
+                offset -= cols;
+            }
+
             Write(str);
 
             int diff = offset;
-            while(diff > 80)
+            while(diff > cols)
             {
-                diff -= 80;
+                diff -= cols;
             }
-            diff = 80 - diff;
+            diff = cols - diff;
 
-            char* vidMemPtr = (char*)(0xB8000 + (offset * 2));
+            char* vidMemPtr = vidMemBasePtr + offset;
             while (diff > 0)
             {
                 vidMemPtr[0] = (char)(0x0000);
@@ -126,11 +154,11 @@ namespace Kernel
         {
             string str = "1234567890!\"£$%^&*()qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM[];'#,./{}:@~<>?\\|`¬¦";
             int strLength = FOS_System.String.GetLength(str);
-            byte* strPtr = FOS_System.String.GetBytePointer(str);
-            char* vidMemPtr = (char*)0xB8000;
+            char* strPtr = FOS_System.String.GetCharPointer(str);
+            char* vidMemPtr = vidMemBasePtr;
             while (strLength > 0)
             {
-                vidMemPtr[0] = (char)(*strPtr | 0x0200);
+                vidMemPtr[0] = (char)((*strPtr & 0x00FF) | colour);
 
                 strPtr++;
                 vidMemPtr++;

@@ -1,0 +1,3 @@
+﻿method_System_Void_RETEND_Kernel_Debug_BasicDebug_DECLEND_EnableDebug_NAMEEND___:
+mov dword [BasicDebug_Enabled], 1
+ret

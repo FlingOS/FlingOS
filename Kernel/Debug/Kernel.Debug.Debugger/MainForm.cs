@@ -319,7 +319,7 @@ namespace Kernel.Debug.Debugger
                 object[] nodeData = new object[3];
                 nodeData[0] = i;
                 nodeData[1] = cArg.dbType.Signature;
-                nodeData[2] = Utils.GetValueStr(cArg.value, cArg.dbType.Signature);
+                nodeData[2] = Utils.GetValueStr(cArg.value, cArg.dbType.Signature == "System.String" ? null : cArg.dbType.Signature);
 
                 if (!cArg.dbType.IsValueType)
                 {
@@ -361,7 +361,7 @@ namespace Kernel.Debug.Debugger
                 object[] nodeData = new object[3];
                 nodeData[0] = i;
                 nodeData[1] = cLoc.dbType.Signature;
-                nodeData[2] = Utils.GetValueStr(cLoc.value, cLoc.dbType.Signature);
+                nodeData[2] = Utils.GetValueStr(cLoc.value, cLoc.dbType.Signature == "System.String" ? null : cLoc.dbType.Signature);
 
                 if(!cLoc.dbType.IsValueType)
                 {

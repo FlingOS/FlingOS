@@ -82,7 +82,7 @@ namespace Kernel.Debug.Debugger
                     result = "";
                     break;
                 case "System.String":
-                    result = "\"" + Encoding.ASCII.GetString(bytes) + "\"";
+                    result = "\"" + Encoding.Unicode.GetString(bytes) + "\"";
                     break;
 
                 case "System.Boolean":

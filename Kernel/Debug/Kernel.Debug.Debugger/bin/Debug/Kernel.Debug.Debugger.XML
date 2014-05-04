@@ -662,6 +662,11 @@
             Represents any variable e.g. arguments or locals
             </summary>
         </member>
+        <member name="F:Kernel.Debug.Debugger.Variable.StringValueLoaded">
+            <summary>
+            Inidicates whether the value of the string has been loaded or only the address.
+            </summary>
+        </member>
         <member name="F:Kernel.Debug.Debugger.Variable.value">
             <summary>
             The bytes value of the variable

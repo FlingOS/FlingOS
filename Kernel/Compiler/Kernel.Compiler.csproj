@@ -76,6 +76,7 @@
     <Compile Include="ILOpInfo.cs" />
     <Compile Include="ILOps\NewObj.cs" />
     <Compile Include="ILOps\Ldtoken.cs" />
+    <Compile Include="ILOps\And.cs" />
     <Compile Include="ILOps\Sizeof.cs" />
     <Compile Include="ILOps\Dup.cs" />
     <Compile Include="ILOps\Ldnull.cs" />

@@ -196,9 +196,18 @@ namespace Kernel.Compiler
             Array.Copy(BitConverter.GetBytes(value.Length), 0, stringData, 0, 4);
             Array.Copy(xEncoding.GetBytes(value), 0, stringData, 4, NumBytes);
 
-            //TODO - Is this x86 (32bit) specific...?
-            StringLiteralsDataBlock.ASM.Append(string.Format("{0}: db ", label));
-            for (int i = 0; i < (stringData.Length - 1); i++)
+            //This is UTF-16 (Unicode)/ASCII text
+            //Put  in string length bytes
+            StringLiteralsDataBlock.ASM.Append(string.Format("{0}:\ndb ", label));
+            for (int i = 0; i < 3; i++)
+            {
+                StringLiteralsDataBlock.ASM.Append(stringData[i]);
+                StringLiteralsDataBlock.ASM.Append(", ");
+            }
+            StringLiteralsDataBlock.ASM.Append(stringData[3]);
+            //Put in string characters (as words)
+            StringLiteralsDataBlock.ASM.Append("\ndw ");
+            for (int i = 4; i < (stringData.Length - 1); i++)
             {
                 StringLiteralsDataBlock.ASM.Append(stringData[i]);
                 StringLiteralsDataBlock.ASM.Append(", ");

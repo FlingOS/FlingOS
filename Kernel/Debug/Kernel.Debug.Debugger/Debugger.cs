@@ -1469,6 +1469,11 @@ namespace Kernel.Debug.Debugger
     public class Variable
     {
         /// <summary>
+        /// Inidicates whether the value of the string has been loaded or only the address.
+        /// </summary>
+        public bool StringValueLoaded = false;
+
+        /// <summary>
         /// The bytes value of the variable
         /// </summary>
         public byte[] value;
@@ -1490,8 +1495,46 @@ namespace Kernel.Debug.Debugger
         /// <param name="debugger">The debugger to use for loading.</param>
         public void LoadFields(Debugger debugger, OnLoadFieldsCompleteDelegate callback, bool recursive = false)
         {
+            if (dbType.Signature == "System.String")
+            {
+                #region String Load
+
+                StringValueLoaded = false;
+                debugger.LoadMemoryValue(value, (uint)dbType.StackBytesSize, delegate(byte[] data, Tuple<byte[], uint, Debugger.LoadMemoryCompletedDelegate, object> state)
+                {
+                    Variable fieldVar1 = (Variable)state.Item4;
+
+                    //This stuff relies entirely on how string data is compiled into the kernel
+
+                    uint stringLength = BitConverter.ToUInt32(data, 0);
+
+                    //TODO - Create a proper test condition
+                    //This was inserted because when stepping into a method,
+                    //the first two instructions set up EBP/ESP correctly
+                    //but during that time the returned values are all screwy
+                    //usually resulting in incorrect values, in this case the length 
+                    //ends up insanely big!
+                    if (stringLength < 500)
+                    {
+                        Tuple<ulong, byte> fieldAddress1 = Utils.BytesToAddress(fieldVar1.value);
+                        fieldAddress1 = new Tuple<ulong, byte>(fieldAddress1.Item1 + 4, fieldAddress1.Item2);
+                        fieldVar1.value = Utils.AddressToBytes(fieldAddress1);
+
+                        debugger.LoadMemoryValue(fieldVar1.value, stringLength * 2, delegate(byte[] data1, Tuple<byte[], uint, Debugger.LoadMemoryCompletedDelegate, object> state1)
+                        {
+                            Variable fieldVar2 = (Variable)state1.Item4;
+                            fieldVar2.value = data1;
+                            fieldVar2.StringValueLoaded = true;
+
+                            callback();
+                        }, fieldVar1);
+                    }
+                }, this);
+
+                #endregion
+            }
             //If this is a reference type, it will have fields / further data to load
-            if (!dbType.IsValueType)
+            else if (!dbType.IsValueType)
             {
                 //The value bytes are in fact a reference (pointer)
                 byte[] thisAddressBytes = value;
@@ -1524,6 +1567,7 @@ namespace Kernel.Debug.Debugger
                             {
                                 #region String Load
 
+                                fieldVar.StringValueLoaded = false;
                                 debugger.LoadMemoryValue(fieldVar.value, (uint)fieldVar.dbType.StackBytesSize, delegate(byte[] data, Tuple<byte[], uint, Debugger.LoadMemoryCompletedDelegate, object> state)
                                 {
                                     Variable fieldVar1 = (Variable)state.Item4;
@@ -1538,13 +1582,13 @@ namespace Kernel.Debug.Debugger
                                     //but during that time the returned values are all screwy
                                     //usually resulting in incorrect values, in this case the length 
                                     //ends up insanely big!
-                                    if (stringLength > 500)
+                                    if (stringLength < 500)
                                     {
                                         Tuple<ulong, byte> fieldAddress1 = Utils.BytesToAddress(fieldVar1.value);
                                         fieldAddress1 = new Tuple<ulong, byte>(fieldAddress1.Item1 + 4, fieldAddress1.Item2);
                                         fieldVar1.value = Utils.AddressToBytes(fieldAddress1);
 
-                                        debugger.LoadMemoryValue(fieldVar1.value, stringLength, delegate(byte[] data1, Tuple<byte[], uint, Debugger.LoadMemoryCompletedDelegate, object> state1)
+                                        debugger.LoadMemoryValue(fieldVar1.value, stringLength * 2, delegate(byte[] data1, Tuple<byte[], uint, Debugger.LoadMemoryCompletedDelegate, object> state1)
                                         {
                                             Variable fieldVar2 = (Variable)state1.Item4;
                                             fieldVar2.value = data1;
@@ -1566,6 +1610,7 @@ namespace Kernel.Debug.Debugger
                                 {
                                     Variable fieldVar1 = (Variable)state.Item4;
                                     fieldVar1.value = data;
+                                    fieldVar1.StringValueLoaded = true;
 
                                     fieldsLoading--;
                                     if (fieldsLoading == 0)
@@ -1607,7 +1652,21 @@ namespace Kernel.Debug.Debugger
         /// <returns>The variable's value represented as a string</returns>
         public override string ToString()
         {
-            return Utils.GetValueStr(value, dbType.Signature);
+            if (dbType.Signature == "System.String")
+            {
+                if (StringValueLoaded)
+                {
+                    return Utils.GetValueStr(value, dbType.Signature);
+                }
+                else
+                {
+                    return Utils.GetValueStr(value);
+                }
+            }
+            else
+            {
+                return Utils.GetValueStr(value, dbType.Signature);
+            }
         }
     }
     /// <summary>

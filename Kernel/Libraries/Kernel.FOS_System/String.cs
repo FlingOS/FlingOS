@@ -17,22 +17,10 @@ namespace Kernel.FOS_System
         [Kernel.Compiler.PluggedMethod(ASMFilePath=@"ASM\String\GetLength")]
         public static int GetLength(string aString)
         {
-            return 0;
+            //Stub for use by testing frameworks.
+            return aString.Length;
         }
 
-        /// <summary>
-        /// Gets a pointer to the first byte (that represents a character) of the specified string.
-        /// </summary>
-        /// <param name="aString">The string to get a pointer to.</param>
-        /// <returns>A pointer to the first byte (that represents a character) of the specified string.</returns>
-        /// <remarks>
-        /// Skips over the length dword at the start of the string.
-        /// </remarks>
-        [Kernel.Compiler.PluggedMethod(ASMFilePath = @"ASM\String\GetPointer")]
-        public static unsafe byte* GetBytePointer(string aString)
-        {
-            return null;
-        }
         /// <summary>
         /// Gets a pointer to the first char (that represents a character) of the specified string.
         /// </summary>
@@ -41,10 +29,11 @@ namespace Kernel.FOS_System
         /// <remarks>
         /// Skips over the length dword at the start of the string.
         /// </remarks>
-        [Kernel.Compiler.PluggedMethod(ASMFilePath = null)]
+        [Kernel.Compiler.PluggedMethod(ASMFilePath = @"ASM\String\GetPointer")]
         public static unsafe char* GetCharPointer(string aString)
         {
-            return null;
+            //Stub for use by testing frameworks.
+            return (char*)System.Runtime.InteropServices.Marshal.StringToHGlobalAuto(aString);
         }
     }
 }

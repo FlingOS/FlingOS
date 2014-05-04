@@ -1,0 +1,5 @@
+G:\Fling OS\Fling OS\Testing\Testing.Utilities\bin\Debug\Testing.Utilities.dll
+G:\Fling OS\Fling OS\Testing\Testing.Utilities\bin\Debug\Testing.Utilities.pdb
+G:\Fling OS\Fling OS\Testing\Testing.Utilities\obj\Debug\Testing.Utilities.csprojResolveAssemblyReference.cache
+G:\Fling OS\Fling OS\Testing\Testing.Utilities\obj\Debug\Testing.Utilities.dll
+G:\Fling OS\Fling OS\Testing\Testing.Utilities\obj\Debug\Testing.Utilities.pdb

@@ -1760,6 +1760,16 @@
             </remarks>
             <seealso cref="F:System.Reflection.Emit.OpCodes.Ldtoken"/>
         </member>
+        <member name="T:Kernel.Compiler.ILOps.And">
+            <summary>
+            Handles the <see cref="F:System.Reflection.Emit.OpCodes.And"/> 
+            IL op.
+            </summary>
+            <remarks>
+            See MSDN for details of these ops.
+            </remarks>
+            <seealso cref="F:System.Reflection.Emit.OpCodes.And"/>
+        </member>
         <member name="T:Kernel.Compiler.ILOps.Sizeof">
             <summary>
             Handles the <see cref="F:System.Reflection.Emit.OpCodes.Sizeof"/> 

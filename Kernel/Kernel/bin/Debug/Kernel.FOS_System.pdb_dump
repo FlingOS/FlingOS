@@ -148,43 +148,34 @@ Custom         :   (none)
 ** Module: Kernel.FOS_System.String
 
 
-Function       : In MetaData, [00000098][0001:00000098], len = 00000007, GetLength
+Function       : In MetaData, [00000098][0001:00000098], len = 0000000C, GetLength
                  Function attribute:
                  Function info:
 FuncDebugStart :   
 FuncDebugEnd   :   
-Block          :   static, [00000098][0001:00000098], len = 00000007, (none)
+Block          :   static, [00000098][0001:00000098], len = 0000000C, (none)
 UsingNamespace :     USystem
 Data           :     Slot, [00000000], Local, CS$1$0000
 Custom         :   (none)
 
-Function       : In MetaData, [0000009F][0001:0000009F], len = 00000008, GetBytePointer
+Function       : In MetaData, [000000A4][0001:000000A4], len = 00000011, GetCharPointer
                  Function attribute:
                  Function info:
 FuncDebugStart :   
 FuncDebugEnd   :   
-Block          :   static, [0000009F][0001:0000009F], len = 00000008, (none)
-Data           :     Slot, [00000000], Local, CS$1$0000
-Custom         :   (none)
-
-Function       : In MetaData, [000000A7][0001:000000A7], len = 00000008, GetCharPointer
-                 Function attribute:
-                 Function info:
-FuncDebugStart :   
-FuncDebugEnd   :   
-Block          :   static, [000000A7][0001:000000A7], len = 00000008, (none)
+Block          :   static, [000000A4][0001:000000A4], len = 00000011, (none)
 Data           :     Slot, [00000000], Local, CS$1$0000
 Custom         :   (none)
 
 ** Module: Kernel.FOS_System.Type
 
 
-Function       : In MetaData, [000000AF][0001:000000AF], len = 00000014, op_Equality
+Function       : In MetaData, [000000B5][0001:000000B5], len = 00000014, op_Equality
                  Function attribute:
                  Function info:
 FuncDebugStart :   
 FuncDebugEnd   :   
-Block          :   static, [000000AF][0001:000000AF], len = 00000014, (none)
+Block          :   static, [000000B5][0001:000000B5], len = 00000014, (none)
 UsingNamespace :     USystem
 UsingNamespace :     USystem.Collections.Generic
 UsingNamespace :     USystem.Linq
@@ -193,12 +184,12 @@ UsingNamespace :     USystem.Threading.Tasks
 Data           :     Slot, [00000000], Local, CS$1$0000
 Custom         :   (none)
 
-Function       : In MetaData, [000000C3][0001:000000C3], len = 00000017, op_Inequality
+Function       : In MetaData, [000000C9][0001:000000C9], len = 00000017, op_Inequality
                  Function attribute:
                  Function info:
 FuncDebugStart :   
 FuncDebugEnd   :   
-Block          :   static, [000000C3][0001:000000C3], len = 00000017, (none)
+Block          :   static, [000000C9][0001:000000C9], len = 00000017, (none)
 Data           :     Slot, [00000000], Local, CS$1$0000
 Custom         :   (none)
 
@@ -212,13 +203,12 @@ Function: [0000002A][0001:0000002A] .ctor
 Function: [0000003F][0001:0000003F] .ctor
 Function: [00000000][0001:00000000] .ctor
 Function: [00000069][0001:00000069] .ctor
-Function: [0000009F][0001:0000009F] GetBytePointer
 Function: [00000098][0001:00000098] GetLength
-Function: [000000A7][0001:000000A7] GetCharPointer
+Function: [000000A4][0001:000000A4] GetCharPointer
 Function: [0000007E][0001:0000007E] get_MaxValue
 Function: [0000008D][0001:0000008D] get_MaxValue
-Function: [000000C3][0001:000000C3] op_Inequality
-Function: [000000AF][0001:000000AF] op_Equality
+Function: [000000C9][0001:000000C9] op_Inequality
+Function: [000000B5][0001:000000B5] op_Equality
 
 
 
@@ -354,32 +344,26 @@ Compiland = Kernel.FOS_System.Type
 ** GetLength
 
 	line 19 at [00000098][0001:00000098], len = 0x1	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.FOS_System\String.cs
-	line 20 at [00000099][0001:00000099], len = 0x4
-	line 21 at [0000009D][0001:0000009D], len = 0x2
-
-** GetBytePointer
-
-	line 33 at [0000009F][0001:0000009F], len = 0x1	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.FOS_System\String.cs
-	line 34 at [000000A0][0001:000000A0], len = 0x5
-	line 35 at [000000A5][0001:000000A5], len = 0x2
+	line 21 at [00000099][0001:00000099], len = 0x9
+	line 22 at [000000A2][0001:000000A2], len = 0x2
 
 ** GetCharPointer
 
-	line 46 at [000000A7][0001:000000A7], len = 0x1	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.FOS_System\String.cs
-	line 47 at [000000A8][0001:000000A8], len = 0x5
-	line 48 at [000000AD][0001:000000AD], len = 0x2
+	line 34 at [000000A4][0001:000000A4], len = 0x1	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.FOS_System\String.cs
+	line 36 at [000000A5][0001:000000A5], len = 0xE
+	line 37 at [000000B3][0001:000000B3], len = 0x2
 
 ** op_Equality
 
-	line 30 at [000000AF][0001:000000AF], len = 0x1	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.FOS_System\Type.cs
-	line 31 at [000000B0][0001:000000B0], len = 0x11
-	line 32 at [000000C1][0001:000000C1], len = 0x2
+	line 30 at [000000B5][0001:000000B5], len = 0x1	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.FOS_System\Type.cs
+	line 31 at [000000B6][0001:000000B6], len = 0x11
+	line 32 at [000000C7][0001:000000C7], len = 0x2
 
 ** op_Inequality
 
-	line 40 at [000000C3][0001:000000C3], len = 0x1	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.FOS_System\Type.cs
-	line 41 at [000000C4][0001:000000C4], len = 0x14
-	line 42 at [000000D8][0001:000000D8], len = 0x2
+	line 40 at [000000C9][0001:000000C9], len = 0x1	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.FOS_System\Type.cs
+	line 41 at [000000CA][0001:000000CA], len = 0x14
+	line 42 at [000000DE][0001:000000DE], len = 0x2
 
 
 
@@ -394,18 +378,17 @@ Compiland = Kernel.FOS_System.Type
   00000069  0001:00000069  00000015  Kernel.FOS_System.Exceptions.DivideByZeroException
   0000007E  0001:0000007E  0000000F  Kernel.FOS_System.Int64
   0000008D  0001:0000008D  0000000B  Kernel.FOS_System.Int32
-  00000098  0001:00000098  00000007  Kernel.FOS_System.String
-  0000009F  0001:0000009F  00000008  Kernel.FOS_System.String
-  000000A7  0001:000000A7  00000008  Kernel.FOS_System.String
-  000000AF  0001:000000AF  00000014  Kernel.FOS_System.Type
-  000000C3  0001:000000C3  00000017  Kernel.FOS_System.Type
+  00000098  0001:00000098  0000000C  Kernel.FOS_System.String
+  000000A4  0001:000000A4  00000011  Kernel.FOS_System.String
+  000000B5  0001:000000B5  00000014  Kernel.FOS_System.Type
+  000000C9  0001:000000C9  00000017  Kernel.FOS_System.Type
 
 
 
 *** DEBUG STREAMS
 
 Stream: SECTIONHEADERS(1)
-00 00 00 00 00 00 00 00 - DA 00 00 00 00 00 00 00 - DA 00 00 00 00 00 00 00 - 00 00 00 00 00 00 00 00 - 00 00 00 00 00 00 00 00 | ........┌.......┌.......................
+00 00 00 00 00 00 00 00 - E0 00 00 00 00 00 00 00 - E0 00 00 00 00 00 00 00 - 00 00 00 00 00 00 00 00 - 00 00 00 00 00 00 00 00 | ........Ó.......Ó.......................
 Summary :
 	No of Elems = 1
 	Sizeof(Elem) = 40

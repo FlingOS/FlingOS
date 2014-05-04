@@ -654,14 +654,14 @@
             </summary>
             <param name="fileName">The file to read.</param>
         </member>
-        <member name="M:Kernel.Debug.Data.ElfMap.ContainsExactAddress(System.UInt32)">
+        <member name="M:Kernel.Debug.Data.ElfMap.ContainsExactAddress(System.UInt64)">
             <summary>
             Determines whether the map contains exactly the specified address
             </summary>
             <param name="address">The address to look for.</param>
             <returns>Whether the map contains exactly the specified address or not.</returns>
         </member>
-        <member name="M:Kernel.Debug.Data.ElfMap.GetNearestLabels(System.UInt32)">
+        <member name="M:Kernel.Debug.Data.ElfMap.GetNearestLabels(System.UInt64)">
             <summary>
             Gets the labels that are at or the nearest before the specified address.
             </summary>
