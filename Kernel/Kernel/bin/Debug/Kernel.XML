@@ -417,10 +417,19 @@
             Increments the ref count of a GC managed object.
             </summary>
             <remarks>
+            Uses underlying increment ref count method.
+            </remarks>
+            <param name="anObj">The object to increment the ref count of.</param>
+        </member>
+        <member name="M:Kernel.GC._IncrementRefCount(System.Byte*)">
+            <summary>
+            Underlying method that increments the ref count of a GC managed object.
+            </summary>
+            <remarks>
             This method checks that the pointer is not a null pointer and also checks for the GC signature 
             so string literals and the like don't accidentally get treated as normal GC managed strings.
             </remarks>
-            <param name="anObj">The object to increment the ref count of.</param>
+            <param name="objPtr">Pointer to the object to increment the ref count of.</param>
         </member>
         <member name="M:Kernel.GC.DecrementRefCount(Kernel.FOS_System.Object)">
             <summary>
@@ -431,6 +440,16 @@
             so string literals and the like don't accidentally get treated as normal GC managed strings.
             </remarks>
             <param name="anObj">The object to decrement the ref count of.</param>
+        </member>
+        <member name="M:Kernel.GC._DecrementRefCount(System.Byte*)">
+            <summary>
+            Underlying method that decrements the ref count of a GC managed object.
+            </summary>
+            <remarks>
+            This method checks that the pointer is not a null pointer and also checks for the GC signature 
+            so string literals and the like don't accidentally get treated as normal GC managed strings.
+            </remarks>
+            <param name="objPtr">A pointer to the object to decrement the ref count of.</param>
         </member>
         <member name="M:Kernel.GC.CheckSignature(Kernel.GCHeader*)">
             <summary>

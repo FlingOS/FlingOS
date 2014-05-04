@@ -105,7 +105,6 @@ namespace Testing._Kernel
         /// </summary>
         [TestMethod]
         [TestCategory("Memory")]
-        [TestProperty("Duration", "Long")]
         public void Alloc_Test()
         {
             //Repeat the test many times
@@ -143,7 +142,6 @@ namespace Testing._Kernel
         /// </summary>
         [TestMethod]
         [TestCategory("Memory")]
-        [TestProperty("Duration", "Long")]
         public void Free_Test()
         {
             uint memSize = 524288;

@@ -113,8 +113,7 @@ namespace Kernel
         /// Increments the ref count of a GC managed object.
         /// </summary>
         /// <remarks>
-        /// This method checks that the pointer is not a null pointer and also checks for the GC signature 
-        /// so string literals and the like don't accidentally get treated as normal GC managed strings.
+        /// Uses underlying increment ref count method.
         /// </remarks>
         /// <param name="anObj">The object to increment the ref count of.</param>
         [Compiler.IncrementRefCountMethod]
@@ -130,15 +129,30 @@ namespace Kernel
             InsideGC = true;
 
             byte* objPtr = (byte*)GetHandle(anObj);
+            _IncrementRefCount(objPtr);
+
+            InsideGC = false;
+        }
+        /// <summary>
+        /// Underlying method that increments the ref count of a GC managed object.
+        /// </summary>
+        /// <remarks>
+        /// This method checks that the pointer is not a null pointer and also checks for the GC signature 
+        /// so string literals and the like don't accidentally get treated as normal GC managed strings.
+        /// </remarks>
+        /// <param name="objPtr">Pointer to the object to increment the ref count of.</param>
+        [Compiler.NoDebug]
+        [Compiler.NoGC]
+        public static unsafe void _IncrementRefCount(byte* objPtr)
+        {
             objPtr -= sizeof(GCHeader);
             GCHeader* gcHeaderPtr = (GCHeader*)objPtr;
             if (CheckSignature(gcHeaderPtr))
             {
                 gcHeaderPtr->RefCount++;
             }
-
-            InsideGC = false;
         }
+
         /// <summary>
         /// Decrements the ref count of a GC managed object.
         /// </summary>
@@ -160,6 +174,22 @@ namespace Kernel
             InsideGC = true;
 
             byte* objPtr = (byte*)GetHandle(anObj);
+            _DecrementRefCount(objPtr);
+
+            InsideGC = false;
+        }
+        /// <summary>
+        /// Underlying method that decrements the ref count of a GC managed object.
+        /// </summary>
+        /// <remarks>
+        /// This method checks that the pointer is not a null pointer and also checks for the GC signature 
+        /// so string literals and the like don't accidentally get treated as normal GC managed strings.
+        /// </remarks>
+        /// <param name="objPtr">A pointer to the object to decrement the ref count of.</param>
+        [Compiler.NoDebug]
+        [Compiler.NoGC]
+        public static unsafe void _DecrementRefCount(byte* objPtr)
+        {
             objPtr = (byte*)(objPtr - sizeof(GCHeader));
             GCHeader* gcHeaderPtr = (GCHeader*)objPtr;
             if (CheckSignature(gcHeaderPtr))
@@ -173,10 +203,8 @@ namespace Kernel
                     NumObjs--;
                 }
             }
-
-            InsideGC = false;
         }
-        
+
         /// <summary>
         /// Checks the GC header is valid by checking for the GC signature.
         /// </summary>
@@ -184,7 +212,7 @@ namespace Kernel
         /// <returns>True if the signature is found and is correct.</returns>
         [Compiler.NoDebug]
         [Compiler.NoGC]
-        private static unsafe bool CheckSignature(GCHeader* headerPtr)
+        public static unsafe bool CheckSignature(GCHeader* headerPtr)
         {
             bool OK = headerPtr->Sig1 == 0x5C0EADE2U;
             OK = OK && headerPtr->Sig2 == 0x5C0EADE2U;
@@ -197,7 +225,7 @@ namespace Kernel
         /// <param name="headerPtr">A pointer to the header to set the signature in.</param>
         [Compiler.NoDebug]
         [Compiler.NoGC]
-        private static unsafe void SetSignature(GCHeader* headerPtr)
+        public static unsafe void SetSignature(GCHeader* headerPtr)
         {
             headerPtr->Sig1 = 0x5C0EADE2U;
             headerPtr->Sig2 = 0x5C0EADE2U;

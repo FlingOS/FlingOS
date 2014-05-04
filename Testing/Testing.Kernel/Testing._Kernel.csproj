@@ -54,11 +54,16 @@
     <Compile Include="BasicConsoleTest.cs" />
     <Compile Include="HeapTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="GCTest.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Kernel\Kernel\Kernel.csproj">
       <Project>{e4076f67-686f-48e3-a5af-55b841665f77}</Project>
       <Name>Kernel</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Kernel\Libraries\Kernel.FOS_System\Kernel.FOS_System.csproj">
+      <Project>{66c9b617-b6d9-4006-a7f9-e1df62ed30ad}</Project>
+      <Name>Kernel.FOS_System</Name>
     </ProjectReference>
   </ItemGroup>
   <Choose>
