@@ -20,7 +20,7 @@ namespace Testing._Kernel
         /// Pointer to the end of the memory to use for the simulated video memory for use by the console.
         /// </summary>
         private static char* vidMemoryMax;
-
+        
         /// <summary>
         /// Initialises the test class.
         /// </summary>
@@ -130,8 +130,18 @@ namespace Testing._Kernel
             }
         }
 
-        //TODO: Colour test
-        //TODO: Rows / cols tests
-        //TODO: 
+        /// <summary>
+        /// Tests the "colour" field is used properly.
+        /// </summary>
+        [TestMethod]
+        public void Colour_Test()
+        {
+            BasicConsole.colour = (char)0x0100;
+            Write_Test("Test");
+            BasicConsole.colour = (char)0x0200;
+            Write_Test("Test");
+            BasicConsole.colour = (char)0x0300;
+            Write_Test("Test");
+        }
     }
 }
