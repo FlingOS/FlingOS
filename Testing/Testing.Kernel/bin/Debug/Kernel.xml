@@ -568,6 +568,11 @@
             </summary>
             <param name="ptr">A pointer to the memory to free.</param>
         </member>
+        <member name="P:Kernel.Heap.FBlock">
+            <summary>
+            A pointer to the most-recently added heap block.
+            </summary>
+        </member>
         <member name="T:Kernel.PreReqs">
             <summary>
             Contains plugged methos that are pre-requisites for the kernel to boot.

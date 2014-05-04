@@ -45,6 +45,17 @@ namespace Kernel
         private static HeapBlock* fblock;
 
         /// <summary>
+        /// A pointer to the most-recently added heap block.
+        /// </summary>
+        public static HeapBlock* FBlock
+        {
+            get
+            {
+                return fblock;
+            }
+        }
+
+        /// <summary>
         /// Whether the kernel's fixed heap has been initialised or not.
         /// </summary>
         private static bool FixedHeapInitialised = false;
@@ -56,7 +67,8 @@ namespace Kernel
         [Compiler.PluggedMethod(ASMFilePath=@"ASM\Heap\GetFixedHeapPtr")]
         public static UInt32* GetFixedHeapPtr()
         {
-            return null;
+            //Stub for use by testing framework
+            return (UInt32*)System.Runtime.InteropServices.Marshal.AllocHGlobal((int)GetFixedHeapSize());
         }
         /// <summary>
         /// Gets the size of the block of memory to allocate to the kernel's fixed heap.
@@ -65,7 +77,9 @@ namespace Kernel
         [Compiler.PluggedMethod(ASMFilePath = null)]
         public static UInt32 GetFixedHeapSize()
         {
-            return 0;
+            //Stub for use by testing framework
+            //Exact 0.5MB
+            return 524288;
         }
 
         /// <summary>
@@ -83,12 +97,13 @@ namespace Kernel
             }
         }
 
+
         /// <summary>
         /// Intialises the heap.
         /// </summary>
         [Compiler.NoDebug]
         [Compiler.NoGC]
-        private static void Init()
+        public static void Init()
         {
             fblock = (HeapBlock*)0;
         }
@@ -101,7 +116,7 @@ namespace Kernel
         /// <returns>Returns 1 if the block was added successfully.</returns>
         [Compiler.NoDebug]
         [Compiler.NoGC]
-        private static int AddBlock(UInt32* addr, UInt32 size, UInt32 bsize)
+        public static int AddBlock(UInt32* addr, UInt32 size, UInt32 bsize)
         {
             HeapBlock* b;
             UInt32 bcnt;
@@ -146,7 +161,7 @@ namespace Kernel
         /// <returns>Umm...the NID I guess... :)</returns>
         [Compiler.NoDebug]
         [Compiler.NoGC]
-        private static byte GetNID(byte a, byte b)
+        public static byte GetNID(byte a, byte b)
         {
             byte c;
             for (c = (byte)(a + 1); c == b || c == 0; ++c) ;

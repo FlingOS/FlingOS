@@ -44,6 +44,7 @@ namespace Testing._Kernel
         /// Tests the Clear() method.
         /// </summary>
         [TestMethod]
+        [TestCategory("Video - Text")]
         public void Clear_Test()
         {
             BasicConsole.Clear();
@@ -58,6 +59,7 @@ namespace Testing._Kernel
         /// Tests the Write() method.
         /// </summary>
         [TestMethod]
+        [TestCategory("Video - Text")]
         public void Write_Test()
         {
             BasicConsole.Clear();
@@ -94,6 +96,7 @@ namespace Testing._Kernel
         /// Tests the WriteLine() method.
         /// </summary>
         [TestMethod]
+        [TestCategory("Video - Text")]
         public void WriteLine_Test()
         {
             BasicConsole.Clear();
@@ -134,6 +137,7 @@ namespace Testing._Kernel
         /// Tests the "colour" field is used properly.
         /// </summary>
         [TestMethod]
+        [TestCategory("Video - Text")]
         public void Colour_Test()
         {
             BasicConsole.colour = (char)0x0100;

@@ -52,6 +52,7 @@
   </Choose>
   <ItemGroup>
     <Compile Include="BasicConsoleTest.cs" />
+    <Compile Include="HeapTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
