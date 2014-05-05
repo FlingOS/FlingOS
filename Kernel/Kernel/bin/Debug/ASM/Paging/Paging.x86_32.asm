@@ -46,8 +46,33 @@ pop dword ebp
 ret
 
 
+
+method_System_UInt32__RETEND_Kernel_Paging_DECLEND_GetKernelMemStartPtr_NAMEEND___:
+
+push dword ebp
+mov dword ebp, esp
+
+mov dword [ebp+8], Kernel_MemStart
+
+pop dword ebp
+
+ret
+method_System_UInt32__RETEND_Kernel_Paging_DECLEND_GetKernelMemEndPtr_NAMEEND___:
+
+push dword ebp
+mov dword ebp, esp
+
+mov dword [ebp+8], Kernel_MemEnd
+
+pop dword ebp
+
+ret
+
+
 align 4096
 Page_Directory: TIMES 1024 dd 0
 Page_Table1: TIMES 1048576 dd 0
+
+Kernel_MemEnd:
 
 ; END - Paging

@@ -20,6 +20,8 @@ MultibootGraphicsRuntime_VbeMode dd 2147483647
 MultiBootInfo_Memory_High dd 0
 MultiBootInfo_Memory_Low dd 0
 
+Kernel_MemStart:
+
 global Before_Kernel_Stack
 Before_Kernel_Stack: TIMES 65535 db 0
 Kernel_Stack:

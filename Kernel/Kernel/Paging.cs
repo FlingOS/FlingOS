@@ -56,5 +56,15 @@ namespace Kernel
         {
             return null;
         }
+        [Compiler.PluggedMethod(ASMFilePath = null)]
+        public static uint* GetKernelMemStartPtr()
+        {
+            return null;
+        }
+        [Compiler.PluggedMethod(ASMFilePath = null)]
+        public static uint* GetKernelMemEndPtr()
+        {
+            return null;
+        }
     }
 }
