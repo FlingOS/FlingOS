@@ -1,3 +1,6 @@
+G:\Fling OS\Fling OS\Testing\Testing.Kernel\bin\Debug\Mosa.Utility.IsoImage.dll
+G:\Fling OS\Fling OS\Testing\Testing.Kernel\bin\Debug\ASM\String\GetPointer.x86_32.asm
+G:\Fling OS\Fling OS\Testing\Testing.Kernel\bin\Debug\ASM\String\GetLength.x86_32.asm
 G:\Fling OS\Fling OS\Testing\Testing.Kernel\bin\Debug\ASM\Debug\Commands.x86_32.asm
 G:\Fling OS\Fling OS\Testing\Testing.Kernel\bin\Debug\ASM\Debug\EnableDebug.x86_32.asm
 G:\Fling OS\Fling OS\Testing\Testing.Kernel\bin\Debug\ASM\Debug\Execute.x86_32.asm
@@ -30,7 +33,6 @@ G:\Fling OS\Fling OS\Testing\Testing.Kernel\bin\Debug\Kernel.dll
 G:\Fling OS\Fling OS\Testing\Testing.Kernel\bin\Debug\Kernel.FOS_System.dll
 G:\Fling OS\Fling OS\Testing\Testing.Kernel\bin\Debug\Kernel.Compiler.dll
 G:\Fling OS\Fling OS\Testing\Testing.Kernel\bin\Debug\Kernel.Debug.Data.dll
-G:\Fling OS\Fling OS\Testing\Testing.Kernel\bin\Debug\Mosa.Utility.IsoImage.dll
 G:\Fling OS\Fling OS\Testing\Testing.Kernel\bin\Debug\Kernel.pdb
 G:\Fling OS\Fling OS\Testing\Testing.Kernel\bin\Debug\Kernel.xml
 G:\Fling OS\Fling OS\Testing\Testing.Kernel\bin\Debug\Kernel.FOS_System.pdb
@@ -42,5 +44,4 @@ G:\Fling OS\Fling OS\Testing\Testing.Kernel\bin\Debug\Kernel.Debug.Data.xml
 G:\Fling OS\Fling OS\Testing\Testing.Kernel\obj\Debug\Testing._Kernel.csprojResolveAssemblyReference.cache
 G:\Fling OS\Fling OS\Testing\Testing.Kernel\obj\Debug\Testing.Kernel.dll
 G:\Fling OS\Fling OS\Testing\Testing.Kernel\obj\Debug\Testing.Kernel.pdb
-G:\Fling OS\Fling OS\Testing\Testing.Kernel\bin\Debug\ASM\String\GetPointer.x86_32.asm
-G:\Fling OS\Fling OS\Testing\Testing.Kernel\bin\Debug\ASM\String\GetLength.x86_32.asm
+G:\Fling OS\Fling OS\Testing\Testing.Kernel\bin\Debug\Testing.Kernel.XML

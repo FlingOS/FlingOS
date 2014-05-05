@@ -20,7 +20,7 @@ namespace Testing._Kernel
         /// Pointer to the end of the memory to use for the simulated video memory for use by the console.
         /// </summary>
         private static char* vidMemoryMax;
-        
+
         /// <summary>
         /// Initialises the test class.
         /// </summary>

@@ -17,11 +17,11 @@ namespace Testing._Kernel
         /// List of IntPtrs to memory allocated during tests that needs cleaning up
         /// </summary>
         static List<IntPtr> MemoryToCleanup = new List<IntPtr>();
-        
+
         /// <summary>
         /// Initialises the test class before each test.
         /// </summary>
-        [TestInitialize()]
+        [TestInitialize]
         public void TestInit()
         {
             Heap.Init();
@@ -29,7 +29,7 @@ namespace Testing._Kernel
         /// <summary>
         /// Cleans up the test class after each test.
         /// </summary>
-        [TestCleanup()]
+        [TestCleanup]
         public void TestCleanup()
         {
             foreach (IntPtr memBlock in MemoryToCleanup)
