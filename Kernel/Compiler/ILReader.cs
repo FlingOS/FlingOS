@@ -622,6 +622,13 @@ namespace Kernel.Compiler
                     default:
                         throw new Exception("Unrecognised operand type!");
                 }
+                
+                //Update the previous op with next position now that we
+                //  know what that is...
+                if (prevInfo != null)
+                {
+                    prevInfo.NextPosition = PrevILBytesPos;
+                }
 
                 //The IL reader pre-loads any methods that should be called by, for example, a call op
                 //This was added so that the MethodToCall could be set by the IL reader to inject call ops
@@ -909,12 +916,6 @@ namespace Kernel.Compiler
                 }
 
                 //Add the IL op
-                //Update the previous op with next position now that we
-                //  know what that is...
-                if (prevInfo != null)
-                {
-                    prevInfo.NextPosition = PrevILBytesPos;
-                }
                 result.ILOpInfos.Add(prevInfo = new ILOpInfo()
                 {
                     opCode = currOpCode,

@@ -278,7 +278,7 @@ namespace Kernel.Compiler
             //Make them appear just before then end 
             // - not right at the end since the end file stuff has to go there
             //      (See ILScanner.Execute():endChunk)
-            StringLiteralsDataBlock.SequencePriority = long.MaxValue - 2;
+            StringLiteralsDataBlock.SequencePriority = (long.MaxValue / 2) - 2;
         }
         /// <summary>
         /// Finalises the string literals data block (adds ending labels).
@@ -297,7 +297,7 @@ namespace Kernel.Compiler
             //Make them appear just before then end 
             // - not right at the end since the end file stuff has to go there
             //      (See ILScanner.Execute():endChunk)
-            StaticFieldsDataBlock.SequencePriority = long.MaxValue - 1;
+            StaticFieldsDataBlock.SequencePriority = (long.MaxValue / 2) - 1;
         }
         /// <summary>
         /// Finalises the string literals data block (adds ending labels).
@@ -316,7 +316,7 @@ namespace Kernel.Compiler
             //Make them appear just before then end 
             // - not right at the end since the end file stuff has to go there
             //      (See ILScanner.Execute():endChunk)
-            TypesTableDataBlock.SequencePriority = long.MaxValue - 2;
+            TypesTableDataBlock.SequencePriority = (long.MaxValue / 2) - 2;
         }
         /// <summary>
         /// Finalises the string literals data block (adds ending labels).
