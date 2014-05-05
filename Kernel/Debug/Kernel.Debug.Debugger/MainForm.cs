@@ -634,7 +634,7 @@ namespace Kernel.Debug.Debugger
                 {
                 }
             }).Start();
-        }        
+        }
         private void TheDebugger_OnBreak()
         {
             try

@@ -46,6 +46,7 @@
     <Compile Include="Exceptions.cs" />
     <Compile Include="GC.cs" />
     <Compile Include="Heap.cs" />
+    <Compile Include="Paging.cs" />
     <Compile Include="PreReqs.cs" />
     <Compile Include="Kernel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -131,6 +132,9 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="ASM\PreReqs\MultibootSignature.x86_32.asm">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="ASM\Paging\Paging.x86_32.asm">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="ASM\PreReqs\Reset.x86_32.asm">

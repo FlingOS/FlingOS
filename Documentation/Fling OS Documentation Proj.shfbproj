@@ -111,24 +111,25 @@
     </NamespaceSummaries>
     <ApiFilter>
       <Filter entryType="Namespace" fullName="" isExposed="False" />
-<Filter entryType="Namespace" fullName="Kernel.Debug.Data" isExposed="False">
-  <Filter entryType="Class" fullName="Kernel.Debug.Data.DebugDatabase" filterName="DebugDatabase" isExposed="True" />
-  <Filter entryType="Class" fullName="Kernel.Debug.Data.ElfMap" filterName="ElfMap" isExposed="True" />
-  <Filter entryType="Class" fullName="Kernel.Debug.Data.PDB_LineInfo" filterName="PDB_LineInfo" isExposed="True" />
-  <Filter entryType="Class" fullName="Kernel.Debug.Data.PDB_MethodInfo" filterName="PDB_MethodInfo" isExposed="True" />
-  <Filter entryType="Class" fullName="Kernel.Debug.Data.PDB_SymbolInfo" filterName="PDB_SymbolInfo" isExposed="True" />
-  <Filter entryType="Class" fullName="Kernel.Debug.Data.PDBDumpReader" filterName="PDBDumpReader" isExposed="True" />
-</Filter>
-<Filter entryType="Namespace" fullName="Kernel.Debug.Debugger" isExposed="True">
-  <Filter entryType="Class" fullName="Kernel.Debug.Debugger.MainForm" filterName="MainForm" isExposed="False" />
-  <Filter entryType="Delegate" fullName="Kernel.Debug.Debugger.MainForm.GetTextDelegate" filterName="MainForm.GetTextDelegate" isExposed="False" />
-  <Filter entryType="Delegate" fullName="Kernel.Debug.Debugger.MainForm.SetEnabledDelegate" filterName="MainForm.SetEnabledDelegate" isExposed="False" />
-  <Filter entryType="Delegate" fullName="Kernel.Debug.Debugger.MainForm.SetTextDelegate" filterName="MainForm.SetTextDelegate" isExposed="False" />
-  <Filter entryType="Delegate" fullName="Kernel.Debug.Debugger.MainForm.VoidDelegate" filterName="MainForm.VoidDelegate" isExposed="False" />
-</Filter>
-<Filter entryType="Namespace" fullName="Testing._Kernel" isExposed="True">
-  <Filter entryType="Class" fullName="Testing._Kernel.TestType" filterName="TestType" isExposed="False" />
-</Filter></ApiFilter>
+      <Filter entryType="Namespace" fullName="Kernel.Debug.Data" isExposed="False">
+        <Filter entryType="Class" fullName="Kernel.Debug.Data.DebugDatabase" filterName="DebugDatabase" isExposed="True" />
+        <Filter entryType="Class" fullName="Kernel.Debug.Data.ElfMap" filterName="ElfMap" isExposed="True" />
+        <Filter entryType="Class" fullName="Kernel.Debug.Data.PDB_LineInfo" filterName="PDB_LineInfo" isExposed="True" />
+        <Filter entryType="Class" fullName="Kernel.Debug.Data.PDB_MethodInfo" filterName="PDB_MethodInfo" isExposed="True" />
+        <Filter entryType="Class" fullName="Kernel.Debug.Data.PDB_SymbolInfo" filterName="PDB_SymbolInfo" isExposed="True" />
+        <Filter entryType="Class" fullName="Kernel.Debug.Data.PDBDumpReader" filterName="PDBDumpReader" isExposed="True" />
+      </Filter>
+      <Filter entryType="Namespace" fullName="Kernel.Debug.Debugger" isExposed="True">
+        <Filter entryType="Class" fullName="Kernel.Debug.Debugger.MainForm" filterName="MainForm" isExposed="False" />
+        <Filter entryType="Delegate" fullName="Kernel.Debug.Debugger.MainForm.GetTextDelegate" filterName="MainForm.GetTextDelegate" isExposed="False" />
+        <Filter entryType="Delegate" fullName="Kernel.Debug.Debugger.MainForm.SetEnabledDelegate" filterName="MainForm.SetEnabledDelegate" isExposed="False" />
+        <Filter entryType="Delegate" fullName="Kernel.Debug.Debugger.MainForm.SetTextDelegate" filterName="MainForm.SetTextDelegate" isExposed="False" />
+        <Filter entryType="Delegate" fullName="Kernel.Debug.Debugger.MainForm.VoidDelegate" filterName="MainForm.VoidDelegate" isExposed="False" />
+      </Filter>
+      <Filter entryType="Namespace" fullName="Testing._Kernel" isExposed="True">
+        <Filter entryType="Class" fullName="Testing._Kernel.TestType" filterName="TestType" isExposed="False" />
+      </Filter>
+    </ApiFilter>
     <FeedbackEMailLinkText>Edward Nutting</FeedbackEMailLinkText>
     <FeedbackEMailAddress>edwardnutting%40outlook.com</FeedbackEMailAddress>
     <CopyrightText>Copyright Edward Nutting 2014</CopyrightText>
@@ -172,6 +173,7 @@
     <Folder Include="Conceptual\Kernel\Kernel Sections" />
     <Folder Include="Conceptual\Kernel\Kernel Sections\Built-in" />
     <Folder Include="Conceptual\Kernel\Kernel Sections\Dynamically Loaded" />
+    <Folder Include="Conceptual\Testing" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Conceptual\Aims and Ideas\Aims and Ideas.aml" />

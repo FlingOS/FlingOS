@@ -33,6 +33,8 @@ namespace Kernel
         [Compiler.NoGC]
         static unsafe void Main()
         {
+            Paging.Init();
+
             //Necessary for exception handling stuff to work
             //  - We must have an intial, empty handler to always 
             //    "return" to.

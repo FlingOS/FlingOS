@@ -32,5 +32,4 @@ global _NATIVE_IDT_Contents
 _NATIVE_IDT_Contents: TIMES 2048 db 0
 _NATIVE_IDT_Pointer db 0, 8, 0, 0, 0, 0
 
-StringLiteral_FlingOSText dw 00, 16, 70, 108, 105, 110, 103, 32, 79, 83, 32, 66, 111, 111, 116, 101, 100, 33
 ; END - Multiboot Signature
