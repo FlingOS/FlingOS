@@ -13,10 +13,21 @@ namespace Kernel.FOS_System.Exceptions
     public class PageFaultException : FOS_System.Exception
     {
         /// <summary>
+        /// The error code passed with the exception.
+        /// </summary>
+        public uint errorCode;
+        /// <summary>
+        /// The (virtual) address that caused the exception.
+        /// </summary>
+        public uint address;
+
+        /// <summary>
         /// Sets the message to "Page fault"
         /// </summary>
-        public PageFaultException()
+        public PageFaultException(uint anErrorCode, uint anAddress)
         {
+            errorCode = anErrorCode;
+            address = anAddress;
             Message = "Page fault";
         }
     }

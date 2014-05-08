@@ -33,8 +33,6 @@ namespace Kernel
         [Compiler.NoGC]
         static unsafe void Main()
         {
-            Paging.Init();
-
             //Necessary for exception handling stuff to work
             //  - We must have an intial, empty handler to always 
             //    "return" to.
@@ -42,20 +40,24 @@ namespace Kernel
 
             BasicConsole.Clear();
 
-            for (int i = 0; i < 1000; i++)
-            {
-                BasicConsole.Write("Test");
-            }
-
             BasicConsole.WriteLine("Fling OS Running...");
 
             try
             {
+                Paging.Init();
+
                 ManagedMain();
             }
             catch
             {
-                BasicConsole.WriteLine("Unhandled exception caught in Main()!");
+                if (Exceptions.CurrentException._Type == (FOS_System.Type)typeof(FOS_System.Exceptions.PageFaultException))
+                {
+                    BasicConsole.WriteLine("Page fault exception unhandled!");
+                }
+                else
+                {
+                    BasicConsole.WriteLine("Unhandled exception caught in Main()!");
+                }
                 BasicConsole.WriteLine("Fling OS forced to halt!");
             }
 
@@ -117,6 +119,8 @@ namespace Kernel
             }
             catch
             {
+                BasicConsole.WriteLine(Exceptions.CurrentException.Message);
+
                 if (Exceptions.CurrentException._Type == (FOS_System.Type)typeof(FOS_System.Exceptions.DivideByZeroException))
                 {
                     BasicConsole.WriteLine("Handled divide by zero exception.");
@@ -126,6 +130,7 @@ namespace Kernel
                     Exceptions.Rethrow();
                 }
             }
+
             BasicConsole.WriteLine("End of managed main!");
         }
     }

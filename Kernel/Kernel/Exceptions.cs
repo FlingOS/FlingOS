@@ -164,9 +164,9 @@ namespace Kernel
         /// <remarks>
         /// Used by CPU interrupts to handle the creation of the exception object and calling Throw.
         /// </remarks>
-        public static void Throw_PageFaultException()
+        public static void Throw_PageFaultException(uint errorCode, uint address)
         {
-            Throw(new FOS_System.Exceptions.PageFaultException());
+            Throw(new FOS_System.Exceptions.PageFaultException(errorCode, address));
         }
     }
 
