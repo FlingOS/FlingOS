@@ -212,63 +212,52 @@ Interrupt12Handler:
 call method_System_Void_RETEND_Kernel_Exceptions_DECLEND_Throw_StackException_NAMEEND___
 
 Interrupt14Handler:
-call method_System_Void_RETEND_Kernel_Exceptions_DECLEND_Throw_PageFaultException_NAMEEND___
+mov dword eax, CR2
+push eax
+call method_System_Void_RETEND_Kernel_FOS_System_Exceptions_PageFaultException_DECLEND__ctor_NAMEEND__System_UInt32_System_UInt32_
+IRet
 
 ; END - Proper exception handlers 
 
 ; BEGIN - Message-only Interrupt Handlers
  
-Interrupt5HandlerMsg: 
-db 11, 0, 0, 0
-dw 073, 110, 116, 101, 114, 114, 117, 112, 116, 032, 053
+Interrupt5HandlerMsg db 11, 0, 0, 0, 073, 110, 116, 101, 114, 114, 117, 112, 116, 032, 053
 Interrupt5Handler:
 pushad
 mov dword eax, Interrupt5HandlerMsg
 jmp MessageOnlyInterruptHandler
 
-Interrupt7HandlerMsg: 
-db 11, 0, 0, 0 
-dw 073, 110, 116, 101, 114, 114, 117, 112, 116, 032, 055
+Interrupt7HandlerMsg db 11, 0, 0, 0, 073, 110, 116, 101, 114, 114, 117, 112, 116, 032, 055
 Interrupt7Handler:
 pushad
 mov dword eax, Interrupt7HandlerMsg
 jmp MessageOnlyInterruptHandler
   
-Interrupt9HandlerMsg:
-db 11, 0, 0, 0
-dw 073, 110, 116, 101, 114, 114, 117, 112, 116, 032, 057
+Interrupt9HandlerMsg db 11, 0, 0, 0, 073, 110, 116, 101, 114, 114, 117, 112, 116, 032, 057
 Interrupt9Handler:
 pushad
 mov dword eax, Interrupt9HandlerMsg
 jmp MessageOnlyInterruptHandler
  
-Interrupt10HandlerMsg:
-db 12, 0, 0, 0
-dw 073, 110, 116, 101, 114, 114, 117, 112, 116, 032, 049, 048
+Interrupt10HandlerMsg db 12, 0, 0, 0, 073, 110, 116, 101, 114, 114, 117, 112, 116, 032, 049, 048
 Interrupt10Handler:
 pushad
 mov dword eax, Interrupt10HandlerMsg
 jmp MessageOnlyInterruptHandler
  
-Interrupt11HandlerMsg:
-db 12, 0, 0, 0
-dw 073, 110, 116, 101, 114, 114, 117, 112, 116, 032, 049, 049
+Interrupt11HandlerMsg db 12, 0, 0, 0, 073, 110, 116, 101, 114, 114, 117, 112, 116, 032, 049, 049
 Interrupt11Handler:
 pushad
 mov dword eax, Interrupt11HandlerMsg
 jmp MessageOnlyInterruptHandler
  
-Interrupt16HandlerMsg: 
-db 12, 0, 0, 0
-dw 073, 110, 116, 101, 114, 114, 117, 112, 116, 032, 049, 054
+Interrupt16HandlerMsg db 12, 0, 0, 0, 073, 110, 116, 101, 114, 114, 117, 112, 116, 032, 049, 054
 Interrupt16Handler:
 pushad
 mov dword eax, Interrupt16HandlerMsg
 jmp MessageOnlyInterruptHandler
  
-Interrupt124HandlerMsg: 
-db 13, 0, 0, 0
-dw 073, 110, 116, 101, 114, 114, 117, 112, 116, 032, 049, 050, 052
+Interrupt124HandlerMsg db 13, 0, 0, 0, 073, 110, 116, 101, 114, 114, 117, 112, 116, 032, 049, 050, 052
 Interrupt124Handler:
 pushad
 mov dword eax, Interrupt124HandlerMsg

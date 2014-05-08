@@ -809,15 +809,15 @@
             as a debug interrupt e.g. Int3 on x86 architecture
             </example>
         </member>
-        <member name="T:Kernel.Compiler.ILOps.Newobj">
+        <member name="T:Kernel.Compiler.ILOps.StackSwitch">
             <summary>
-            Handles the 
-            <see cref="F:System.Reflection.Emit.OpCodes.Newobj"/> IL op.
+            Custom IL op that switches the top two stack items with eacother.
             </summary>
             <remarks>
-            See MSDN for details of these ops.
+            This must at least have an empty stub implementation or the compiler
+            will fail to execute. It was added so the ILScanner could optimise 
+            some code injections that it has to make.
             </remarks>
-            <seealso cref="F:System.Reflection.Emit.OpCodes.Newobj"/>
         </member>
         <member name="T:Kernel.Compiler.ILOps.ILOp">
             <summary>
@@ -1750,6 +1750,26 @@
             <summary> - </summary>
             <remarks></remarks> 
         </member>
+        <member name="T:Kernel.Compiler.ILOps.Shr">
+            <summary>
+            Handles the <see cref="F:System.Reflection.Emit.OpCodes.Shr_Un"/> 
+            IL op.
+            </summary>
+            <remarks>
+            See MSDN for details of these ops.
+            </remarks>
+            <seealso cref="F:System.Reflection.Emit.OpCodes.Shr_Un"/>
+        </member>
+        <member name="T:Kernel.Compiler.ILOps.Newobj">
+            <summary>
+            Handles the 
+            <see cref="F:System.Reflection.Emit.OpCodes.Newobj"/> IL op.
+            </summary>
+            <remarks>
+            See MSDN for details of these ops.
+            </remarks>
+            <seealso cref="F:System.Reflection.Emit.OpCodes.Newobj"/>
+        </member>
         <member name="T:Kernel.Compiler.ILOps.Ldtoken">
             <summary>
             Handles the <see cref="F:System.Reflection.Emit.OpCodes.Ldtoken"/> 
@@ -2387,6 +2407,11 @@
         <member name="F:Kernel.Compiler.ILScanner.MethodEndOp">
             <summary>
             A cache of the target architecture's custom IL op for inserting ASM at the end of a method (before Ret).
+            </summary>
+        </member>
+        <member name="F:Kernel.Compiler.ILScanner.StackSwitchOp">
+            <summary>
+            A cache of the target architecture's custom IL op for inserting ASM to switch stack items.
             </summary>
         </member>
         <member name="F:Kernel.Compiler.ILScanner.ASMChunks">

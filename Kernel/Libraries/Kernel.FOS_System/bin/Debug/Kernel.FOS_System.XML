@@ -61,7 +61,17 @@
             Usually thrown by the hardware interrupt.
             </summary>
         </member>
-        <member name="M:Kernel.FOS_System.Exceptions.PageFaultException.#ctor">
+        <member name="F:Kernel.FOS_System.Exceptions.PageFaultException.errorCode">
+            <summary>
+            The error code passed with the exception.
+            </summary>
+        </member>
+        <member name="F:Kernel.FOS_System.Exceptions.PageFaultException.address">
+            <summary>
+            The (virtual) address that caused the exception.
+            </summary>
+        </member>
+        <member name="M:Kernel.FOS_System.Exceptions.PageFaultException.#ctor(System.UInt32,System.UInt32)">
             <summary>
             Sets the message to "Page fault"
             </summary>

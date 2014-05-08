@@ -59,12 +59,12 @@ Custom         :   (none)
 ** Module: Kernel.FOS_System.Exceptions.PageFaultException
 
 
-Function       : In MetaData, [0000002A][0001:0000002A], len = 00000015, .ctor
+Function       : In MetaData, [0000002A][0001:0000002A], len = 00000023, .ctor
                  Function attribute:
                  Function info:
 FuncDebugStart :   
 FuncDebugEnd   :   
-Block          :   static, [0000002A][0001:0000002A], len = 00000015, (none)
+Block          :   static, [0000002A][0001:0000002A], len = 00000023, (none)
 UsingNamespace :     USystem
 UsingNamespace :     USystem.Collections.Generic
 UsingNamespace :     USystem.Linq
@@ -75,12 +75,12 @@ Custom         :   (none)
 ** Module: Kernel.FOS_System.Exceptions.StackException
 
 
-Function       : In MetaData, [0000003F][0001:0000003F], len = 00000015, .ctor
+Function       : In MetaData, [0000004D][0001:0000004D], len = 00000015, .ctor
                  Function attribute:
                  Function info:
 FuncDebugStart :   
 FuncDebugEnd   :   
-Block          :   static, [0000003F][0001:0000003F], len = 00000015, (none)
+Block          :   static, [0000004D][0001:0000004D], len = 00000015, (none)
 UsingNamespace :     USystem
 UsingNamespace :     USystem.Collections.Generic
 UsingNamespace :     USystem.Linq
@@ -91,12 +91,12 @@ Custom         :   (none)
 ** Module: Kernel.FOS_System.Exceptions.OverflowException
 
 
-Function       : In MetaData, [00000054][0001:00000054], len = 00000015, .ctor
+Function       : In MetaData, [00000062][0001:00000062], len = 00000015, .ctor
                  Function attribute:
                  Function info:
 FuncDebugStart :   
 FuncDebugEnd   :   
-Block          :   static, [00000054][0001:00000054], len = 00000015, (none)
+Block          :   static, [00000062][0001:00000062], len = 00000015, (none)
 UsingNamespace :     USystem
 UsingNamespace :     USystem.Collections.Generic
 UsingNamespace :     USystem.Linq
@@ -107,12 +107,12 @@ Custom         :   (none)
 ** Module: Kernel.FOS_System.Exceptions.DivideByZeroException
 
 
-Function       : In MetaData, [00000069][0001:00000069], len = 00000015, .ctor
+Function       : In MetaData, [00000077][0001:00000077], len = 00000015, .ctor
                  Function attribute:
                  Function info:
 FuncDebugStart :   
 FuncDebugEnd   :   
-Block          :   static, [00000069][0001:00000069], len = 00000015, (none)
+Block          :   static, [00000077][0001:00000077], len = 00000015, (none)
 UsingNamespace :     USystem
 UsingNamespace :     USystem.Collections.Generic
 UsingNamespace :     USystem.Linq
@@ -123,12 +123,12 @@ Custom         :   (none)
 ** Module: Kernel.FOS_System.Int64
 
 
-Function       : In MetaData, [0000007E][0001:0000007E], len = 0000000F, get_MaxValue
+Function       : In MetaData, [0000008C][0001:0000008C], len = 0000000F, get_MaxValue
                  Function attribute:
                  Function info:
 FuncDebugStart :   
 FuncDebugEnd   :   
-Block          :   static, [0000007E][0001:0000007E], len = 0000000F, (none)
+Block          :   static, [0000008C][0001:0000008C], len = 0000000F, (none)
 UsingNamespace :     USystem
 Data           :     Slot, [00000000], Local, CS$1$0000
 Custom         :   (none)
@@ -136,46 +136,46 @@ Custom         :   (none)
 ** Module: Kernel.FOS_System.Int32
 
 
-Function       : In MetaData, [0000008D][0001:0000008D], len = 0000000B, get_MaxValue
+Function       : In MetaData, [0000009B][0001:0000009B], len = 0000000B, get_MaxValue
                  Function attribute:
                  Function info:
 FuncDebugStart :   
 FuncDebugEnd   :   
-Block          :   static, [0000008D][0001:0000008D], len = 0000000B, (none)
+Block          :   static, [0000009B][0001:0000009B], len = 0000000B, (none)
 Data           :     Slot, [00000000], Local, CS$1$0000
 Custom         :   (none)
 
 ** Module: Kernel.FOS_System.String
 
 
-Function       : In MetaData, [00000098][0001:00000098], len = 0000000C, GetLength
+Function       : In MetaData, [000000A6][0001:000000A6], len = 0000000C, GetLength
                  Function attribute:
                  Function info:
 FuncDebugStart :   
 FuncDebugEnd   :   
-Block          :   static, [00000098][0001:00000098], len = 0000000C, (none)
+Block          :   static, [000000A6][0001:000000A6], len = 0000000C, (none)
 UsingNamespace :     USystem
 Data           :     Slot, [00000000], Local, CS$1$0000
 Custom         :   (none)
 
-Function       : In MetaData, [000000A4][0001:000000A4], len = 00000011, GetCharPointer
+Function       : In MetaData, [000000B2][0001:000000B2], len = 00000011, GetCharPointer
                  Function attribute:
                  Function info:
 FuncDebugStart :   
 FuncDebugEnd   :   
-Block          :   static, [000000A4][0001:000000A4], len = 00000011, (none)
+Block          :   static, [000000B2][0001:000000B2], len = 00000011, (none)
 Data           :     Slot, [00000000], Local, CS$1$0000
 Custom         :   (none)
 
 ** Module: Kernel.FOS_System.Type
 
 
-Function       : In MetaData, [000000B5][0001:000000B5], len = 00000014, op_Equality
+Function       : In MetaData, [000000C3][0001:000000C3], len = 00000014, op_Equality
                  Function attribute:
                  Function info:
 FuncDebugStart :   
 FuncDebugEnd   :   
-Block          :   static, [000000B5][0001:000000B5], len = 00000014, (none)
+Block          :   static, [000000C3][0001:000000C3], len = 00000014, (none)
 UsingNamespace :     USystem
 UsingNamespace :     USystem.Collections.Generic
 UsingNamespace :     USystem.Linq
@@ -184,12 +184,12 @@ UsingNamespace :     USystem.Threading.Tasks
 Data           :     Slot, [00000000], Local, CS$1$0000
 Custom         :   (none)
 
-Function       : In MetaData, [000000C9][0001:000000C9], len = 00000017, op_Inequality
+Function       : In MetaData, [000000D7][0001:000000D7], len = 00000017, op_Inequality
                  Function attribute:
                  Function info:
 FuncDebugStart :   
 FuncDebugEnd   :   
-Block          :   static, [000000C9][0001:000000C9], len = 00000017, (none)
+Block          :   static, [000000D7][0001:000000D7], len = 00000017, (none)
 Data           :     Slot, [00000000], Local, CS$1$0000
 Custom         :   (none)
 
@@ -197,18 +197,18 @@ Custom         :   (none)
 
 *** GLOBALS
 
-Function: [00000054][0001:00000054] .ctor
+Function: [00000062][0001:00000062] .ctor
 Function: [00000015][0001:00000015] .ctor
 Function: [0000002A][0001:0000002A] .ctor
-Function: [0000003F][0001:0000003F] .ctor
+Function: [0000004D][0001:0000004D] .ctor
 Function: [00000000][0001:00000000] .ctor
-Function: [00000069][0001:00000069] .ctor
-Function: [00000098][0001:00000098] GetLength
-Function: [000000A4][0001:000000A4] GetCharPointer
-Function: [0000007E][0001:0000007E] get_MaxValue
-Function: [0000008D][0001:0000008D] get_MaxValue
-Function: [000000C9][0001:000000C9] op_Inequality
-Function: [000000B5][0001:000000B5] op_Equality
+Function: [00000077][0001:00000077] .ctor
+Function: [000000A6][0001:000000A6] GetLength
+Function: [000000B2][0001:000000B2] GetCharPointer
+Function: [0000008C][0001:0000008C] get_MaxValue
+Function: [0000009B][0001:0000009B] get_MaxValue
+Function: [000000D7][0001:000000D7] op_Inequality
+Function: [000000C3][0001:000000C3] op_Equality
 
 
 
@@ -303,67 +303,69 @@ Compiland = Kernel.FOS_System.Type
 
 ** .ctor
 
-	line 18 at [0000002A][0001:0000002A], len = 0x7	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.FOS_System\Exceptions\PageFaultException.cs
-	line 19 at [00000031][0001:00000031], len = 0x1
-	line 20 at [00000032][0001:00000032], len = 0xB
-	line 21 at [0000003D][0001:0000003D], len = 0x2
+	line 27 at [0000002A][0001:0000002A], len = 0x7	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.FOS_System\Exceptions\PageFaultException.cs
+	line 28 at [00000031][0001:00000031], len = 0x1
+	line 29 at [00000032][0001:00000032], len = 0x7
+	line 30 at [00000039][0001:00000039], len = 0x7
+	line 31 at [00000040][0001:00000040], len = 0xB
+	line 32 at [0000004B][0001:0000004B], len = 0x2
 
 ** .ctor
 
-	line 18 at [0000003F][0001:0000003F], len = 0x7	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.FOS_System\Exceptions\StackException.cs
-	line 19 at [00000046][0001:00000046], len = 0x1
-	line 20 at [00000047][0001:00000047], len = 0xB
-	line 21 at [00000052][0001:00000052], len = 0x2
+	line 18 at [0000004D][0001:0000004D], len = 0x7	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.FOS_System\Exceptions\StackException.cs
+	line 19 at [00000054][0001:00000054], len = 0x1
+	line 20 at [00000055][0001:00000055], len = 0xB
+	line 21 at [00000060][0001:00000060], len = 0x2
 
 ** .ctor
 
-	line 18 at [00000054][0001:00000054], len = 0x7	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.FOS_System\Exceptions\OverflowException.cs
-	line 19 at [0000005B][0001:0000005B], len = 0x1
-	line 20 at [0000005C][0001:0000005C], len = 0xB
-	line 21 at [00000067][0001:00000067], len = 0x2
+	line 18 at [00000062][0001:00000062], len = 0x7	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.FOS_System\Exceptions\OverflowException.cs
+	line 19 at [00000069][0001:00000069], len = 0x1
+	line 20 at [0000006A][0001:0000006A], len = 0xB
+	line 21 at [00000075][0001:00000075], len = 0x2
 
 ** .ctor
 
-	line 18 at [00000069][0001:00000069], len = 0x7	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.FOS_System\Exceptions\DivideByZeroException.cs
-	line 19 at [00000070][0001:00000070], len = 0x1
-	line 20 at [00000071][0001:00000071], len = 0xB
-	line 21 at [0000007C][0001:0000007C], len = 0x2
+	line 18 at [00000077][0001:00000077], len = 0x7	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.FOS_System\Exceptions\DivideByZeroException.cs
+	line 19 at [0000007E][0001:0000007E], len = 0x1
+	line 20 at [0000007F][0001:0000007F], len = 0xB
+	line 21 at [0000008A][0001:0000008A], len = 0x2
 
 ** get_MaxValue
 
-	line 15 at [0000007E][0001:0000007E], len = 0x1	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.FOS_System\Int64.cs
-	line 16 at [0000007F][0001:0000007F], len = 0xC
-	line 17 at [0000008B][0001:0000008B], len = 0x2
+	line 15 at [0000008C][0001:0000008C], len = 0x1	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.FOS_System\Int64.cs
+	line 16 at [0000008D][0001:0000008D], len = 0xC
+	line 17 at [00000099][0001:00000099], len = 0x2
 
 ** get_MaxValue
 
-	line 14 at [0000008D][0001:0000008D], len = 0x1	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.FOS_System\Int32.cs
-	line 15 at [0000008E][0001:0000008E], len = 0x8
-	line 16 at [00000096][0001:00000096], len = 0x2
+	line 14 at [0000009B][0001:0000009B], len = 0x1	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.FOS_System\Int32.cs
+	line 15 at [0000009C][0001:0000009C], len = 0x8
+	line 16 at [000000A4][0001:000000A4], len = 0x2
 
 ** GetLength
 
-	line 19 at [00000098][0001:00000098], len = 0x1	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.FOS_System\String.cs
-	line 21 at [00000099][0001:00000099], len = 0x9
-	line 22 at [000000A2][0001:000000A2], len = 0x2
+	line 19 at [000000A6][0001:000000A6], len = 0x1	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.FOS_System\String.cs
+	line 21 at [000000A7][0001:000000A7], len = 0x9
+	line 22 at [000000B0][0001:000000B0], len = 0x2
 
 ** GetCharPointer
 
-	line 34 at [000000A4][0001:000000A4], len = 0x1	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.FOS_System\String.cs
-	line 36 at [000000A5][0001:000000A5], len = 0xE
-	line 37 at [000000B3][0001:000000B3], len = 0x2
+	line 34 at [000000B2][0001:000000B2], len = 0x1	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.FOS_System\String.cs
+	line 36 at [000000B3][0001:000000B3], len = 0xE
+	line 37 at [000000C1][0001:000000C1], len = 0x2
 
 ** op_Equality
 
-	line 30 at [000000B5][0001:000000B5], len = 0x1	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.FOS_System\Type.cs
-	line 31 at [000000B6][0001:000000B6], len = 0x11
-	line 32 at [000000C7][0001:000000C7], len = 0x2
+	line 30 at [000000C3][0001:000000C3], len = 0x1	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.FOS_System\Type.cs
+	line 31 at [000000C4][0001:000000C4], len = 0x11
+	line 32 at [000000D5][0001:000000D5], len = 0x2
 
 ** op_Inequality
 
-	line 40 at [000000C9][0001:000000C9], len = 0x1	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.FOS_System\Type.cs
-	line 41 at [000000CA][0001:000000CA], len = 0x14
-	line 42 at [000000DE][0001:000000DE], len = 0x2
+	line 40 at [000000D7][0001:000000D7], len = 0x1	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.FOS_System\Type.cs
+	line 41 at [000000D8][0001:000000D8], len = 0x14
+	line 42 at [000000EC][0001:000000EC], len = 0x2
 
 
 
@@ -372,23 +374,23 @@ Compiland = Kernel.FOS_System.Type
     RVA        Address       Size    Module
   00000000  0001:00000000  00000015  Kernel.FOS_System.Exceptions.InvalidOpCodeException
   00000015  0001:00000015  00000015  Kernel.FOS_System.Exceptions.DoubleFaultException
-  0000002A  0001:0000002A  00000015  Kernel.FOS_System.Exceptions.PageFaultException
-  0000003F  0001:0000003F  00000015  Kernel.FOS_System.Exceptions.StackException
-  00000054  0001:00000054  00000015  Kernel.FOS_System.Exceptions.OverflowException
-  00000069  0001:00000069  00000015  Kernel.FOS_System.Exceptions.DivideByZeroException
-  0000007E  0001:0000007E  0000000F  Kernel.FOS_System.Int64
-  0000008D  0001:0000008D  0000000B  Kernel.FOS_System.Int32
-  00000098  0001:00000098  0000000C  Kernel.FOS_System.String
-  000000A4  0001:000000A4  00000011  Kernel.FOS_System.String
-  000000B5  0001:000000B5  00000014  Kernel.FOS_System.Type
-  000000C9  0001:000000C9  00000017  Kernel.FOS_System.Type
+  0000002A  0001:0000002A  00000023  Kernel.FOS_System.Exceptions.PageFaultException
+  0000004D  0001:0000004D  00000015  Kernel.FOS_System.Exceptions.StackException
+  00000062  0001:00000062  00000015  Kernel.FOS_System.Exceptions.OverflowException
+  00000077  0001:00000077  00000015  Kernel.FOS_System.Exceptions.DivideByZeroException
+  0000008C  0001:0000008C  0000000F  Kernel.FOS_System.Int64
+  0000009B  0001:0000009B  0000000B  Kernel.FOS_System.Int32
+  000000A6  0001:000000A6  0000000C  Kernel.FOS_System.String
+  000000B2  0001:000000B2  00000011  Kernel.FOS_System.String
+  000000C3  0001:000000C3  00000014  Kernel.FOS_System.Type
+  000000D7  0001:000000D7  00000017  Kernel.FOS_System.Type
 
 
 
 *** DEBUG STREAMS
 
 Stream: SECTIONHEADERS(1)
-00 00 00 00 00 00 00 00 - E0 00 00 00 00 00 00 00 - E0 00 00 00 00 00 00 00 - 00 00 00 00 00 00 00 00 - 00 00 00 00 00 00 00 00 | ........Ó.......Ó.......................
+00 00 00 00 00 00 00 00 - EE 00 00 00 00 00 00 00 - EE 00 00 00 00 00 00 00 - 00 00 00 00 00 00 00 00 - 00 00 00 00 00 00 00 00 | ........¯.......¯.......................
 Summary :
 	No of Elems = 1
 	Sizeof(Elem) = 40

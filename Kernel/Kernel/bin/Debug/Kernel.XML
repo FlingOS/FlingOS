@@ -311,7 +311,7 @@
             Used by CPU interrupts to handle the creation of the exception object and calling Throw.
             </remarks>
         </member>
-        <member name="M:Kernel.Exceptions.Throw_PageFaultException">
+        <member name="M:Kernel.Exceptions.Throw_PageFaultException(System.UInt32,System.UInt32)">
             <summary>
             Throws a page fault exception.
             </summary>
