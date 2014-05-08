@@ -46,9 +46,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="StackSwitch.cs" />
     <Compile Include="NewObj.cs" />
     <Compile Include="Ldtoken.cs" />
     <Compile Include="And.cs" />
+    <Compile Include="Shr.cs" />
     <Compile Include="Sizeof.cs" />
     <Compile Include="Dup.cs" />
     <Compile Include="Ldnull.cs" />

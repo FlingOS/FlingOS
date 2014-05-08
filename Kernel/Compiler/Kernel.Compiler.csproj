@@ -74,6 +74,8 @@
     <Compile Include="ILChunk.cs" />
     <Compile Include="ILCompiler.cs" />
     <Compile Include="ILOpInfo.cs" />
+    <Compile Include="ILOps\StackSwitch.cs" />
+    <Compile Include="ILOps\Shr.cs" />
     <Compile Include="ILOps\NewObj.cs" />
     <Compile Include="ILOps\Ldtoken.cs" />
     <Compile Include="ILOps\And.cs" />

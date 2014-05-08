@@ -847,11 +847,13 @@ namespace Kernel.Compiler
                             //If there was nothing to cleanup, we need to remove 
                             //  the ops and locals etc. that got added earlier.
                             result.ILOpInfos.RemoveAt(result.ILOpInfos.Count - 1);
+                            PrevILBytesPos--;
 
                             if(returnValVariable != null)
                             {
                                 result.LocalVariables.Remove(returnValVariable);
                                 result.ILOpInfos.RemoveAt(result.ILOpInfos.Count - 1);
+                                PrevILBytesPos--;
                             }
                         }
                     }

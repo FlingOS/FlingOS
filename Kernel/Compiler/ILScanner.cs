@@ -51,6 +51,10 @@ namespace Kernel.Compiler
         /// A cache of the target architecture's custom IL op for inserting ASM at the end of a method (before Ret).
         /// </summary>
         private ILOps.MethodEnd MethodEndOp;
+        /// <summary>
+        /// A cache of the target architecture's custom IL op for inserting ASM to switch stack items.
+        /// </summary>
+        private ILOps.StackSwitch StackSwitchOp;
 
         /// <summary>
         /// The resulting list of ASM chunks.
@@ -292,6 +296,10 @@ namespace Kernel.Compiler
                     else if (aType.IsSubclassOf(typeof(ILOps.MethodEnd)))
                     {
                         MethodEndOp = (ILOps.MethodEnd)aType.GetConstructor(new Type[0]).Invoke(new object[0]);
+                    }
+                    else if (aType.IsSubclassOf(typeof(ILOps.StackSwitch)))
+                    {
+                        StackSwitchOp = (ILOps.StackSwitch)aType.GetConstructor(new Type[0]).Invoke(new object[0]);
                     }
                     else
                     {
@@ -1095,10 +1103,40 @@ namespace Kernel.Compiler
                                             FieldInfo theField = aChunk.Method.Module.ResolveField(metadataToken);
                                             if (Utils.IsGCManaged(theField.FieldType))
                                             {
+                                                // Items on stack:
+                                                //  - Object reference
+                                                //  - (New) Value to store
+                                                //
+                                                // We want to load the current value of the field
+                                                //  for which we must duplicate the object ref
+                                                // But first, we must remove the (new) value to store
+                                                //  off the stack, while also storing it to put back
+                                                //  on the stack after so the store can continue
+                                                //
+                                                // So:
+                                                //      1. Switch value to store and object ref on stack
+                                                //      3. Duplicate the object ref
+                                                //      4. Load the field value
+                                                //      5. Call dec ref count
+                                                //      6. Switch value to store and object ref back again
+
+                                                //USE A SWITCH STACK ITEMS OP!!
+
+                                                asm += "\r\n" + StackSwitchOp.Convert(new ILOpInfo()
+                                                {
+                                                }, TheScannerState);
                                                 asm += "\r\n" + TargetILOps[ILOps.ILOp.OpCodes.Dup].Convert(new ILOpInfo()
                                                 {
                                                     opCode = System.Reflection.Emit.OpCodes.Dup
                                                 }, TheScannerState);
+
+                                                ////Temp op
+                                                //asm += "\r\n" + TargetILOps[ILOps.ILOp.OpCodes.Pop].Convert(new ILOpInfo()
+                                                //{
+                                                //    opCode = System.Reflection.Emit.OpCodes.Pop
+                                                //}, TheScannerState);
+                                                ////End temp op
+
                                                 asm += "\r\n" + TargetILOps[ILOps.ILOp.OpCodes.Ldfld].Convert(new ILOpInfo()
                                                 {
                                                     opCode = System.Reflection.Emit.OpCodes.Ldfld,
@@ -1108,6 +1146,9 @@ namespace Kernel.Compiler
                                                 {
                                                     opCode = System.Reflection.Emit.OpCodes.Call,
                                                     MethodToCall = TheScannerState.DecrementRefCountMethod
+                                                }, TheScannerState);
+                                                asm += "\r\n" + StackSwitchOp.Convert(new ILOpInfo()
+                                                {
                                                 }, TheScannerState);
 
                                                 IncRefCount = true;
