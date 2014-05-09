@@ -133,6 +133,11 @@
             SendMemory command
             </summary>
         </member>
+        <member name="F:Kernel.Debug.Debugger.DebugCommands.Connected">
+            <summary>
+            Connected command (notification)
+            </summary>
+        </member>
         <member name="T:Kernel.Debug.Debugger.BreakHandler">
             <summary>
             Handler for the OnBreak event.
@@ -260,6 +265,11 @@
             to connect to.</param>
             <param name="buildFolder">The folder path that the kernel was built to.</param>
             <returns>True if connected. Otherwise false.</returns>
+        </member>
+        <member name="M:Kernel.Debug.Debugger.Debugger.EndInit">
+            <summary>
+            Finishes off connecting to the OS.
+            </summary>
         </member>
         <member name="M:Kernel.Debug.Debugger.Debugger.Stop">
             <summary>
@@ -389,6 +399,11 @@
         <member name="M:Kernel.Debug.Debugger.Debugger.Handle_SendMemoryCmd">
             <summary>
             Handles a received SendMemory command.
+            </summary>
+        </member>
+        <member name="M:Kernel.Debug.Debugger.Debugger.Handle_ConnectedCmd">
+            <summary>
+            Handles a received Connected command.
             </summary>
         </member>
         <member name="M:Kernel.Debug.Debugger.Debugger.Handle_StepNextCmd">

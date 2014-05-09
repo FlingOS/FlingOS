@@ -31,8 +31,45 @@
         </member>
         <member name="F:Kernel.BasicConsole.colour">
             <summary>
+            The colour to print characters in. Do not set directly, use SetTextColour/SetBackgroundColour.
+            </summary>
+        </member>
+        <member name="F:Kernel.BasicConsole.bg_colour">
+            <summary>
+            The background colour. Do not set directly, use SetTextColour/SetBackgroundColour.
+            </summary>
+        </member>
+        <member name="F:Kernel.BasicConsole.default_colour">
+            <summary>
             Default colour to print characters in.
             </summary>
+        </member>
+        <member name="F:Kernel.BasicConsole.warning_colour">
+            <summary>
+            Colour to print warning characters in.
+            </summary>
+        </member>
+        <member name="F:Kernel.BasicConsole.error_colour">
+            <summary>
+            Colour to print error characters in.
+            </summary>
+        </member>
+        <member name="M:Kernel.BasicConsole.Init">
+            <summary>
+            Initialises the BasicConsole class.
+            </summary>
+        </member>
+        <member name="M:Kernel.BasicConsole.SetTextColour(System.Char)">
+            <summary>
+            Sets the console text colour.
+            </summary>
+            <param name="aText_colour">The text colour to use.</param>
+        </member>
+        <member name="M:Kernel.BasicConsole.SetBgColour(System.Char)">
+            <summary>
+            Sets the console background colour.
+            </summary>
+            <param name="aBg_colour">The background colour to use.</param>
         </member>
         <member name="M:Kernel.BasicConsole.Clear">
             <summary>
@@ -57,6 +94,11 @@
             <remarks>
             This also blanks out the rest of the line to make sure no artifacts are left behind.
             </remarks>
+        </member>
+        <member name="M:Kernel.BasicConsole.WriteLine">
+            <summary>
+            Writes a blank line (line with a space).
+            </summary>
         </member>
         <member name="M:Kernel.BasicConsole.PrintTestString">
             <summary>
@@ -87,9 +129,14 @@
             Initialises COM1 as serial connection to debug over
             </summary>
         </member>
-        <member name="M:Kernel.Debug.BasicDebug.EnableDebug">
+        <member name="M:Kernel.Debug.BasicDebug.BeginEnableDebug">
             <summary>
-            Enables the debug interrupt handler
+            Begins enabling the debug interrupt handler
+            </summary>
+        </member>
+        <member name="M:Kernel.Debug.BasicDebug.EndEnableDebug">
+            <summary>
+            Ends enabling the debug interrupt handler
             </summary>
         </member>
         <member name="M:Kernel.Debug.BasicDebug.Execute">
@@ -139,43 +186,49 @@
         </member>
         <member name="M:Kernel.Debug.BasicDebug.Serial_WriteByte(System.Byte)">
             <summary>
-            Writes the specified value to the debug serial port
+            Writes the specified value to the debug serial port. Not callable from C#.
             </summary>
             <param name="value">The value to write.</param>
         </member>
         <member name="M:Kernel.Debug.BasicDebug.Serial_WriteUInt16(System.UInt16)">
             <summary>
-            Writes the specified value to the debug serial port
+            Writes the specified value to the debug serial port. Not callable from C#.
             </summary>
             <param name="value">The value to write.</param>
         </member>
         <member name="M:Kernel.Debug.BasicDebug.Serial_WriteUInt32(System.UInt32)">
             <summary>
-            Writes the specified value to the debug serial port
+            Writes the specified value to the debug serial port. Not callable from C#.
             </summary>
             <param name="value">The value to write.</param>
         </member>
         <member name="M:Kernel.Debug.BasicDebug.Serial_WriteString(System.String)">
             <summary>
-            Writes the specified value to the debug serial port
+            Writes the specified value to the debug serial port. Not callable from C#.
             </summary>
             <param name="value">The value to write.</param>
         </member>
         <member name="M:Kernel.Debug.BasicDebug.Serial_ReadByte">
             <summary>
-            Reads a byte from the debug serial port
+            Reads a byte from the debug serial port. Not callable from C#.
             </summary>
             <returns>The byte read.</returns>
         </member>
         <member name="M:Kernel.Debug.BasicDebug.Serial_ReadUInt16">
             <summary>
-            Reads a UInt16 from the debug serial port
+            Reads a UInt16 from the debug serial port. Not callable from C#.
             </summary>
             <returns>The UInt16 read.</returns>
         </member>
         <member name="M:Kernel.Debug.BasicDebug.Serial_ReadUInt32">
             <summary>
-            Reads a UInt32 from the debug serial port
+            Reads a UInt32 from the debug serial port. Not callable from C#.
+            </summary>
+            <returns>The UInt32 read.</returns>
+        </member>
+        <member name="M:Kernel.Debug.BasicDebug.Serial_SafeReadUInt32">
+            <summary>
+            Safely reads a UInt32 from the debug serial port
             </summary>
             <returns>The UInt32 read.</returns>
         </member>

@@ -1,5 +1,16 @@
 ﻿; BEGIN - Basic Debug : Send Commands
 
+BasicDebug_SendConnectedCmd:
+push eax
+
+mov al, [BasicDebug_ConnectedCmd]
+call BasicDebug_SendCmd
+
+pop eax
+ret
+
+
+
 BasicDebug_SendBreakCmd:
 push eax
 
