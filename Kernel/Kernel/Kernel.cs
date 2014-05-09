@@ -14,8 +14,13 @@ namespace Kernel
         /// </summary>
         static Kernel()
         {
+            BasicConsole.Init();
+            BasicConsole.Clear();
+
             GC.Init();
             Debug.BasicDebug.Init();
+
+            BasicConsole.WriteLine();
         }
 
         /// <summary>
@@ -37,9 +42,7 @@ namespace Kernel
             //  - We must have an intial, empty handler to always 
             //    "return" to.
             Exceptions.AddExceptionHandlerInfo((void*)0, (void*)0);
-
-            BasicConsole.Clear();
-
+            
             BasicConsole.WriteLine("Fling OS Running...");
 
             try
@@ -50,6 +53,7 @@ namespace Kernel
             }
             catch
             {
+                BasicConsole.SetTextColour(BasicConsole.error_colour);
                 if (Exceptions.CurrentException._Type == (FOS_System.Type)typeof(FOS_System.Exceptions.PageFaultException))
                 {
                     BasicConsole.WriteLine("Page fault exception unhandled!");
@@ -59,8 +63,10 @@ namespace Kernel
                     BasicConsole.WriteLine("Unhandled exception caught in Main()!");
                 }
                 BasicConsole.WriteLine("Fling OS forced to halt!");
+                BasicConsole.SetTextColour(BasicConsole.default_colour);
             }
 
+            BasicConsole.SetTextColour(BasicConsole.error_colour);
             if (GC.NumObjs > 0)
             {
                 BasicConsole.WriteLine("Num Objs > 0");
@@ -69,6 +75,7 @@ namespace Kernel
             {
                 BasicConsole.WriteLine("Num Objs < 0");
             }
+            BasicConsole.SetTextColour(BasicConsole.default_colour);
 
             BasicConsole.WriteLine("Fling OS Ended.");
 
@@ -87,7 +94,9 @@ namespace Kernel
         [Compiler.NoGC]
         public static void Halt()
         {
+            BasicConsole.SetTextColour(BasicConsole.error_colour);
             BasicConsole.WriteLine("Kernel halting!");
+            BasicConsole.SetTextColour(BasicConsole.default_colour);
             PreReqs.Reset();
         }
 
@@ -119,7 +128,9 @@ namespace Kernel
             }
             catch
             {
+                BasicConsole.SetTextColour(BasicConsole.warning_colour);
                 BasicConsole.WriteLine(Exceptions.CurrentException.Message);
+                BasicConsole.SetTextColour(BasicConsole.default_colour);
 
                 if (Exceptions.CurrentException._Type == (FOS_System.Type)typeof(FOS_System.Exceptions.DivideByZeroException))
                 {

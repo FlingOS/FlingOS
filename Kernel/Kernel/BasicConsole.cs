@@ -36,9 +36,56 @@ namespace Kernel
         /// </summary>
         public static int cols = 80;
         /// <summary>
+        /// The colour to print characters in. Do not set directly, use SetTextColour/SetBackgroundColour.
+        /// </summary>
+        public static char colour;
+        /// <summary>
+        /// The background colour. Do not set directly, use SetTextColour/SetBackgroundColour.
+        /// </summary>
+        public static char bg_colour;
+        /// <summary>
         /// Default colour to print characters in.
         /// </summary>
-        public static char colour = (char)0x0200;
+        public static char default_colour;
+        /// <summary>
+        /// Colour to print warning characters in.
+        /// </summary>
+        public static char warning_colour;
+        /// <summary>
+        /// Colour to print error characters in.
+        /// </summary>
+        public static char error_colour;
+
+        /// <summary>
+        /// Initialises the BasicConsole class.
+        /// </summary>
+        public static void Init()
+        {
+            bg_colour = (char)0xF000;
+            default_colour = (char)0x0000;
+            warning_colour = (char)0x0E00;
+            error_colour = (char)0x0C00;
+
+            colour = (char)0xFF00;//(char)(bg_colour | default_colour);
+        }
+
+        /// <summary>
+        /// Sets the console text colour.
+        /// </summary>
+        /// <param name="aText_colour">The text colour to use.</param>
+        public static void SetTextColour(char aText_colour)
+        {
+            colour = (char)(bg_colour | (aText_colour & 0x0F00));
+        }
+        /// <summary>
+        /// Sets the console background colour.
+        /// </summary>
+        /// <param name="aBg_colour">The background colour to use.</param>
+        public static void SetBgColour(char aBg_colour)
+        {
+            bg_colour = (char)(aBg_colour & 0xF000);
+            colour = (char)(bg_colour | (colour & 0x0F00));
+        }
 
         /// <summary>
         /// Clears the output to all black.
@@ -51,7 +98,7 @@ namespace Kernel
             char* vidMemPtr = vidMemBasePtr;
             while (numToClear > 0)
             {
-                vidMemPtr[0] = (char)(0x0000);
+                vidMemPtr[0] = bg_colour;
                 vidMemPtr++;
                 numToClear--;
             }
@@ -138,14 +185,22 @@ namespace Kernel
             char* vidMemPtr = vidMemBasePtr + offset;
             while (diff > 0)
             {
-                vidMemPtr[0] = (char)(0x0000);
+                vidMemPtr[0] = bg_colour;
 
                 diff--;
                 vidMemPtr++;
                 offset++;
             }
         }
-        
+
+        /// <summary>
+        /// Writes a blank line (line with a space).
+        /// </summary>
+        public static void WriteLine()
+        {
+            WriteLine(" ");
+        }
+
         /// <summary>
         /// Prints the test string (all the keyboard characters) to the start of the output - overwrites any existing text.
         /// </summary>

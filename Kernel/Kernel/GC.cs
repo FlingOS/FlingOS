@@ -37,8 +37,12 @@ namespace Kernel
         [Compiler.NoGC]
         public static void Init()
         {
+            BasicConsole.WriteLine("Initialising GC...");
+
             Heap.InitFixedHeap();
             GCInitialised = true;
+
+            BasicConsole.WriteLine("GC initialised.");
         }
 
         /// <summary>
