@@ -82,7 +82,11 @@ namespace Kernel.Debug.Debugger
         /// <summary>
         /// SendMemory command
         /// </summary>
-        SendMemory = 16
+        SendMemory = 16,
+        /// <summary>
+        /// Connected command (notification)
+        /// </summary>
+        Connected = 17
     }
 
     /// <summary>
@@ -498,6 +502,8 @@ namespace Kernel.Debug.Debugger
             GC.SuppressFinalize(this);
         }
 
+        private bool sendConnectValue = true;
+
         /// <summary>
         /// Initialises the debugger, connects to the specified pipe and loads debug info
         /// from the build directory.
@@ -522,8 +528,9 @@ namespace Kernel.Debug.Debugger
                 TheSerial.OnConnected += delegate()
                 {
                     State = States.Running;
-                    new Task(LoadMemoryValue_Run).Start();
 
+                    new Task(LoadMemoryValue_Run).Start();
+                    
                     OnConnected();
                 };
 
@@ -538,6 +545,17 @@ namespace Kernel.Debug.Debugger
             }
           
             return OK;
+        }
+        /// <summary>
+        /// Finishes off connecting to the OS.
+        /// </summary>
+        public void EndInit()
+        {
+            while (sendConnectValue)
+            {
+                TheSerial.Write(0xDEADBEEF);
+                Thread.Sleep(100);
+            }
         }
         /// <summary>
         /// Stops the debugger and closes the connection.
@@ -634,6 +652,9 @@ namespace Kernel.Debug.Debugger
                     break;
                 case DebugCommands.SendMemory:
                     Handle_SendMemoryCmd();
+                    break;
+                case DebugCommands.Connected:
+                    Handle_ConnectedCmd();
                     break;
                 default:
                     OnInvalidCommand((byte)cmd);
@@ -1061,6 +1082,13 @@ namespace Kernel.Debug.Debugger
         private void Handle_SendMemoryCmd()
         {
             GetMemory_Data = TheSerial.ReadBytes((int)GetMemory_Length);
+        }
+        /// <summary>
+        /// Handles a received Connected command.
+        /// </summary>
+        private void Handle_ConnectedCmd()
+        {
+            sendConnectValue = false;
         }
 
         /// <summary>

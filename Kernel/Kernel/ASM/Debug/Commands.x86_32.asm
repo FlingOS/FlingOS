@@ -14,3 +14,4 @@ BasicDebug_SetInt3Cmd db 13
 BasicDebug_ClearInt3Cmd db 14
 BasicDebug_GetMemoryCmd db 15
 BasicDebug_SendMemoryCmd db 16
+BasicDebug_ConnectedCmd db 17

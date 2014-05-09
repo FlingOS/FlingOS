@@ -191,7 +191,13 @@ namespace Kernel.Debug.Debugger
             {
                 ThePipe.BeginWrite(BitConverter.GetBytes(anInt), 0, 4, new AsyncCallback(delegate(IAsyncResult result)
                 {
-                    ThePipe.EndWrite(result);
+                    try
+                    {
+                        ThePipe.EndWrite(result);
+                    }
+                    catch
+                    {
+                    }
                 }), null);
             }
         }

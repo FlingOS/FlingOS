@@ -467,6 +467,9 @@ namespace Kernel.Debug.Debugger
                     
                     TheDebugger.OnConnected += delegate()
                     {
+                        WaitForCommand();
+                        TheDebugger.EndInit();
+
                         if (BreakOnStart)
                         {
                             TheDebugger.BeginBreak();
