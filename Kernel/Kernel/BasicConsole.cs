@@ -61,12 +61,12 @@ namespace Kernel
         /// </summary>
         public static void Init()
         {
-            bg_colour = (char)0xF000;
-            default_colour = (char)0x0000;
+            bg_colour = (char)0x0000;
+            default_colour = (char)0x0F00;
             warning_colour = (char)0x0E00;
-            error_colour = (char)0x0C00;
+            error_colour = (char)0x0400;
 
-            colour = (char)0xFF00;//(char)(bg_colour | default_colour);
+            colour = (char)(bg_colour | default_colour);
         }
 
         /// <summary>
