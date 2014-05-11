@@ -81,7 +81,8 @@ namespace Kernel
             SetSignature(newObjPtr);
             newObjPtr->RefCount = 1;
             //Initialise the object _Type field
-            ((UInt32*)newObjPtr)[sizeof(GCHeader) / 4] = (UInt32)Utilities.ObjectUtilities.GetHandle(theType);
+            FOS_System.ObjectWithType newObj = (FOS_System.ObjectWithType)Utilities.ObjectUtilities.GetObject(newObjPtr + 1);
+            newObj._Type = theType;
             
             byte* newObjBytePtr = (byte*)newObjPtr;
             for (int i = sizeof(GCHeader) + 4/*For _Type field*/; i < totalSize; i++)
@@ -143,19 +144,12 @@ namespace Kernel
             //Initialise the GCHeader
             SetSignature(newObjPtr);
             newObjPtr->RefCount = 1;
-            
-            //Initialise the object _Type field
-            int _TypeFieldIndex = sizeof(GCHeader) / 4;
-            ((UInt32*)newObjPtr)[_TypeFieldIndex] = (UInt32)Utilities.ObjectUtilities.GetHandle(typeof(FOS_System.Array));
 
-            //Initialise the "length" field
-            int lengthFieldIndex = _TypeFieldIndex + 1;
-            ((Int32*)newObjPtr)[lengthFieldIndex] = length;
+            FOS_System.Array newArr = (FOS_System.Array)Utilities.ObjectUtilities.GetObject(newObjPtr + 1);
+            newArr._Type = (FOS_System.Type)typeof(FOS_System.Array);
+            newArr.length = length;
+            newArr.elemType = elemType;
             
-            //Initialise the "elemType" field
-            int elemTypeFieldIndex = lengthFieldIndex + 1;
-            ((UInt32*)newObjPtr)[elemTypeFieldIndex] = (UInt32)Utilities.ObjectUtilities.GetHandle(elemType);
-
             byte* newObjBytePtr = (byte*)newObjPtr;
             for (int i = sizeof(GCHeader) + arrayObjSize + 4/*For _Type field*/; i < totalSize; i++)
             {

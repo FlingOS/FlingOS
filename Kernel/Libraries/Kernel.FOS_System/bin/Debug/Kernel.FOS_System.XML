@@ -55,6 +55,26 @@
             Sets the message to "Double fault exception."
             </summary>
         </member>
+        <member name="T:Kernel.FOS_System.Exceptions.NullReferenceException">
+            <summary>
+            Represents a null reference exception.
+            </summary>
+        </member>
+        <member name="M:Kernel.FOS_System.Exceptions.NullReferenceException.#ctor">
+            <summary>
+            Sets the message to "Null reference exception."
+            </summary>
+        </member>
+        <member name="T:Kernel.FOS_System.Exceptions.IndexOutOfRangeException">
+            <summary>
+            Represents an index out of range exception.
+            </summary>
+        </member>
+        <member name="M:Kernel.FOS_System.Exceptions.IndexOutOfRangeException.#ctor">
+            <summary>
+            Sets the message to "Index out of range exception."
+            </summary>
+        </member>
         <member name="T:Kernel.FOS_System.Exceptions.PageFaultException">
             <summary>
             Represents a page fault exception.
@@ -74,6 +94,16 @@
         <member name="M:Kernel.FOS_System.Exceptions.PageFaultException.#ctor(System.UInt32,System.UInt32)">
             <summary>
             Sets the message to "Page fault"
+            </summary>
+        </member>
+        <member name="T:Kernel.FOS_System.Exceptions.ArrayTypeMismatchException">
+            <summary>
+            Represents a array type mismatch exception.
+            </summary>
+        </member>
+        <member name="M:Kernel.FOS_System.Exceptions.ArrayTypeMismatchException.#ctor">
+            <summary>
+            Sets the message to "Array type mismatch exception."
             </summary>
         </member>
         <member name="T:Kernel.FOS_System.Exceptions.StackException">

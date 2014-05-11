@@ -54,6 +54,7 @@
     <Compile Include="AssemblyManager.cs" />
     <Compile Include="Attributes\ArrayConstructorMethodAttribute.cs" />
     <Compile Include="Attributes\DecrementRefCountMethodAttribute.cs" />
+    <Compile Include="Attributes\TypeClassAttribute.cs" />
     <Compile Include="Attributes\IncrementRefCountMethodAttribute.cs" />
     <Compile Include="Attributes\HaltMethodAttribute.cs" />
     <Compile Include="Attributes\NewArrMethodAttribute.cs" />
@@ -61,6 +62,9 @@
     <Compile Include="Attributes\ExceptionsHandleEndFinallyMethodAttribute.cs" />
     <Compile Include="Attributes\HandleExceptionMethodAttribute.cs" />
     <Compile Include="Attributes\NoGCAttribute.cs" />
+    <Compile Include="Attributes\ThrowArrayTypeMismatchExceptionMethodAttribute.cs" />
+    <Compile Include="Attributes\ThrowIndexOutOfRangeExceptionMethodAttribute.cs" />
+    <Compile Include="Attributes\ThrowNullReferenceExceptionMethodAttribute.cs" />
     <Compile Include="Attributes\ThrowExceptionMethodAttribute.cs" />
     <Compile Include="Attributes\ExceptionsHandleLeaveMethodAttribute.cs" />
     <Compile Include="Attributes\CallStaticConstructorsMethodAttribute.cs" />
@@ -76,6 +80,7 @@
     <Compile Include="ILChunk.cs" />
     <Compile Include="ILCompiler.cs" />
     <Compile Include="ILOpInfo.cs" />
+    <Compile Include="ILOps\Ldelem.cs" />
     <Compile Include="ILOps\NewArr.cs" />
     <Compile Include="ILOps\StackSwitch.cs" />
     <Compile Include="ILOps\Shr.cs" />

@@ -42,7 +42,10 @@
     <Compile Include="Exception.cs" />
     <Compile Include="Exceptions\InvalidOpCodeException.cs" />
     <Compile Include="Exceptions\DoubleFaultException.cs" />
+    <Compile Include="Exceptions\NullReferenceException.cs" />
+    <Compile Include="Exceptions\IndexOutOfRangeException.cs" />
     <Compile Include="Exceptions\PageFaultException.cs" />
+    <Compile Include="Exceptions\ArrayTypeMismatchException.cs" />
     <Compile Include="Exceptions\StackException.cs" />
     <Compile Include="Exceptions\OverflowException.cs" />
     <Compile Include="Exceptions\DivideByZeroException.cs" />

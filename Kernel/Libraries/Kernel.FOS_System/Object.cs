@@ -24,6 +24,6 @@ namespace Kernel.FOS_System
         /// <summary>
         /// The underlying, specific type of the object specified when it was created.
         /// </summary>
-        public readonly Type _Type;   
+        public Type _Type;   
     }
 }

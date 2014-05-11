@@ -109,9 +109,9 @@ namespace Kernel
             try
             {
                 int[] testArray = new int[1024];
-                //int x = testArray[5];
+                int x = testArray[5];
 
-                int x = 1;
+                x = 1;
                 int y = 0;
                 int z = 0;
 

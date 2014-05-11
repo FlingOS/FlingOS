@@ -9,6 +9,7 @@ namespace Kernel.FOS_System
     /// <summary>
     /// Represents an object type specification.
     /// </summary>
+    [Compiler.TypeClass]
     public abstract class Type : System.Type
     {
         /// <summary>

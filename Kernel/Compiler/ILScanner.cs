@@ -181,7 +181,16 @@ namespace Kernel.Compiler
                                                select chunks).First().Method;
                 TheScannerState.ExceptionsHandleEndFinallyMethod = (from chunks in ILChunks
                                                where (chunks.IsExceptionsHandleEndFinallyMethod)
-                                               select chunks).First().Method;
+                                                                    select chunks).First().Method;
+                TheScannerState.ThrowNullReferenceExceptionMethod = (from chunks in ILChunks
+                                                                     where (chunks.IsExceptionsThrowNullReferenceMethod)
+                                                                     select chunks).First().Method;
+                TheScannerState.ThrowArrayTypeMismatchExceptionMethod = (from chunks in ILChunks
+                                                                     where (chunks.IsExceptionsThrowArrayTypeMismatchMethod)
+                                                                     select chunks).First().Method;
+                TheScannerState.ThrowIndexOutOfRangeExceptionMethod = (from chunks in ILChunks
+                                                                     where (chunks.IsExceptionsThrowIndexOutOfRangeMethod)
+                                                                     select chunks).First().Method;
                 TheScannerState.NewObjMethod = (from chunks in ILChunks
                                                 where (chunks.IsNewObjMethod)
                                                 select chunks).First().Method;
@@ -1406,6 +1415,12 @@ namespace Kernel.Compiler
                 if (!theType.AssemblyQualifiedName.Contains("mscorlib"))
                 {
                     ProcessStaticFields(theType);
+                }
+
+                TypeClassAttribute typeClassAttr = (TypeClassAttribute)theType.GetCustomAttribute(typeof(TypeClassAttribute));
+                if (typeClassAttr != null)
+                {
+                    TheScannerState.TypeClass = theType;
                 }
 
                 return TheDBType;

@@ -1056,6 +1056,21 @@ namespace Kernel.Compiler
             {
                 aChunk.IsExceptionsThrowMethod = true;
             }
+            ThrowNullReferenceExceptionMethodAttribute throwNullReferenceExceptionMethodAttr = (ThrowNullReferenceExceptionMethodAttribute)aMethod.GetCustomAttribute(typeof(ThrowNullReferenceExceptionMethodAttribute));
+            if (throwNullReferenceExceptionMethodAttr != null)
+            {
+                aChunk.IsExceptionsThrowNullReferenceMethod = true;
+            }
+            ThrowArrayTypeMismatchExceptionMethodAttribute throwArrayTypeMismatchExceptionMethodAttr = (ThrowArrayTypeMismatchExceptionMethodAttribute)aMethod.GetCustomAttribute(typeof(ThrowArrayTypeMismatchExceptionMethodAttribute));
+            if (throwArrayTypeMismatchExceptionMethodAttr != null)
+            {
+                aChunk.IsExceptionsThrowArrayTypeMismatchMethod = true;
+            }
+            ThrowIndexOutOfRangeExceptionMethodAttribute throwIndexOutOfRangeExceptionMethodAttr = (ThrowIndexOutOfRangeExceptionMethodAttribute)aMethod.GetCustomAttribute(typeof(ThrowIndexOutOfRangeExceptionMethodAttribute));
+            if (throwIndexOutOfRangeExceptionMethodAttr != null)
+            {
+                aChunk.IsExceptionsThrowIndexOutOfRangeMethod = true;
+            }
             HandleExceptionMethodAttribute handleExceptionMethodAttr = (HandleExceptionMethodAttribute)aMethod.GetCustomAttribute(typeof(HandleExceptionMethodAttribute));
             if (handleExceptionMethodAttr != null)
             {

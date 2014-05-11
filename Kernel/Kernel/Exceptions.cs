@@ -168,6 +168,40 @@ namespace Kernel
         {
             Throw(new FOS_System.Exceptions.PageFaultException(errorCode, address));
         }
+
+        /// <summary>
+        /// Throws a Null Reference exception.
+        /// </summary>
+        /// <remarks>
+        /// Used by compiler to handle the creation of the exception object and calling Throw.
+        /// </remarks>
+        [Compiler.ThrowNullReferenceExceptionMethod]
+        public static void Throw_NullReferenceException()
+        {
+            Throw(new FOS_System.Exceptions.NullReferenceException());
+        }
+        /// <summary>
+        /// Throws an Array Type Mismatch exception.
+        /// </summary>
+        /// <remarks>
+        /// Used by compiler to handle the creation of the exception object and calling Throw.
+        /// </remarks>
+        [Compiler.ThrowArrayTypeMismatchExceptionMethod]
+        public static void Throw_ArrayTypeMismatchException()
+        {
+            Throw(new FOS_System.Exceptions.ArrayTypeMismatchException());
+        }
+        /// <summary>
+        /// Throws a Index Out Of Range exception.
+        /// </summary>
+        /// <remarks>
+        /// Used by compiler to handle the creation of the exception object and calling Throw.
+        /// </remarks>
+        [Compiler.ThrowIndexOutOfRangeExceptionMethod]
+        public static void Throw_IndexOutOfRangeException()
+        {
+            Throw(new FOS_System.Exceptions.IndexOutOfRangeException());
+        }        
     }
 
     /// <summary>

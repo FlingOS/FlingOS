@@ -82,6 +82,21 @@ namespace Kernel.Compiler
         public bool IsExceptionsThrowMethod = false;
         /// <summary>
         /// Indicates whether the method used to create this ILChunk was 
+        /// marked as the method to call to throw a NullReference exception.
+        /// </summary>
+        public bool IsExceptionsThrowNullReferenceMethod = false;
+        /// <summary>
+        /// Indicates whether the method used to create this ILChunk was 
+        /// marked as the method to call to throw a ArrayTypeMismatch exception.
+        /// </summary>
+        public bool IsExceptionsThrowArrayTypeMismatchMethod = false;
+        /// <summary>
+        /// Indicates whether the method used to create this ILChunk was 
+        /// marked as the method to call to throw a IndexOutOfRange exception.
+        /// </summary>
+        public bool IsExceptionsThrowIndexOutOfRangeMethod = false;
+        /// <summary>
+        /// Indicates whether the method used to create this ILChunk was 
         /// marked as the method to call to create a new object.
         /// </summary>
         public bool IsNewObjMethod = false;

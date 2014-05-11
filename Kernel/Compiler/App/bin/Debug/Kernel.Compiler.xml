@@ -163,6 +163,12 @@
             Note: There should only ever be one of these used!
             </summary>
         </member>
+        <member name="T:Kernel.Compiler.TypeClassAttribute">
+            <summary>
+            Indicates the class is the kernel's Type class. 
+            Note: There should only ever be one of these used!
+            </summary>
+        </member>
         <member name="T:Kernel.Compiler.IncrementRefCountMethodAttribute">
             <summary>
             Indicates the method is the kernel's GC.IncrementRefCount method. 
@@ -203,6 +209,24 @@
             <summary>
             Indicates to the compiler that a method should not have GC
             applied to it.
+            </summary>
+        </member>
+        <member name="T:Kernel.Compiler.ThrowArrayTypeMismatchExceptionMethodAttribute">
+            <summary>
+            Indicates the method is the kernel's exception ThrowArrayTypeMismatch method. 
+            Note: There should only ever be one of these used!
+            </summary>
+        </member>
+        <member name="T:Kernel.Compiler.ThrowIndexOutOfRangeExceptionMethodAttribute">
+            <summary>
+            Indicates the method is the kernel's exception ThrowIndexOutOfRange method. 
+            Note: There should only ever be one of these used!
+            </summary>
+        </member>
+        <member name="T:Kernel.Compiler.ThrowNullReferenceExceptionMethodAttribute">
+            <summary>
+            Indicates the method is the kernel's exception ThrowNullReference method. 
+            Note: There should only ever be one of these used!
             </summary>
         </member>
         <member name="T:Kernel.Compiler.ThrowExceptionMethodAttribute">
@@ -502,6 +526,24 @@
             <summary>
             Indicates whether the method used to create this ILChunk was 
             marked as the method to call to throw an exception.
+            </summary>
+        </member>
+        <member name="F:Kernel.Compiler.ILChunk.IsExceptionsThrowNullReferenceMethod">
+            <summary>
+            Indicates whether the method used to create this ILChunk was 
+            marked as the method to call to throw a NullReference exception.
+            </summary>
+        </member>
+        <member name="F:Kernel.Compiler.ILChunk.IsExceptionsThrowArrayTypeMismatchMethod">
+            <summary>
+            Indicates whether the method used to create this ILChunk was 
+            marked as the method to call to throw a ArrayTypeMismatch exception.
+            </summary>
+        </member>
+        <member name="F:Kernel.Compiler.ILChunk.IsExceptionsThrowIndexOutOfRangeMethod">
+            <summary>
+            Indicates whether the method used to create this ILChunk was 
+            marked as the method to call to throw a IndexOutOfRange exception.
             </summary>
         </member>
         <member name="F:Kernel.Compiler.ILChunk.IsNewObjMethod">
@@ -833,15 +875,37 @@
             as a debug interrupt e.g. Int3 on x86 architecture
             </example>
         </member>
-        <member name="T:Kernel.Compiler.ILOps.Newarr">
+        <member name="T:Kernel.Compiler.ILOps.Ldelem">
             <summary>
             Handles the 
-            <see cref="F:System.Reflection.Emit.OpCodes.Newarr"/> IL op.
+            <see cref="F:System.Reflection.Emit.OpCodes.Ldelem"/>, 
+            <see cref="F:System.Reflection.Emit.OpCodes.Ldelem_I"/>, 
+            <see cref="F:System.Reflection.Emit.OpCodes.Ldelem_I1"/>, 
+            <see cref="F:System.Reflection.Emit.OpCodes.Ldelem_I2"/>, 
+            <see cref="F:System.Reflection.Emit.OpCodes.Ldelem_I4"/>, 
+            <see cref="F:System.Reflection.Emit.OpCodes.Ldelem_I8"/>,
+            <see cref="F:System.Reflection.Emit.OpCodes.Ldelem_R4"/>, 
+            <see cref="F:System.Reflection.Emit.OpCodes.Ldelem_R8"/>, 
+            <see cref="F:System.Reflection.Emit.OpCodes.Ldelem_U1"/>, 
+            <see cref="F:System.Reflection.Emit.OpCodes.Ldelem_U2"/>, 
+            <see cref="F:System.Reflection.Emit.OpCodes.Ldelem_U4"/> and 
+            <see cref="F:System.Reflection.Emit.OpCodes.Ldelema"/> IL ops.
             </summary>
             <remarks>
             See MSDN for details of these ops.
             </remarks>
-            <seealso cref="F:System.Reflection.Emit.OpCodes.Newarr"/>
+            <seealso cref="F:System.Reflection.Emit.OpCodes.Ldelem"/> 
+            <seealso cref="F:System.Reflection.Emit.OpCodes.Ldelem_I"/> 
+            <seealso cref="F:System.Reflection.Emit.OpCodes.Ldelem_I1"/> 
+            <seealso cref="F:System.Reflection.Emit.OpCodes.Ldelem_I2"/> 
+            <seealso cref="F:System.Reflection.Emit.OpCodes.Ldelem_I4"/> 
+            <seealso cref="F:System.Reflection.Emit.OpCodes.Ldelem_I8"/>
+            <seealso cref="F:System.Reflection.Emit.OpCodes.Ldelem_R4"/> 
+            <seealso cref="F:System.Reflection.Emit.OpCodes.Ldelem_R8"/> 
+            <seealso cref="F:System.Reflection.Emit.OpCodes.Ldelem_U1"/> 
+            <seealso cref="F:System.Reflection.Emit.OpCodes.Ldelem_U2"/> 
+            <seealso cref="F:System.Reflection.Emit.OpCodes.Ldelem_U4"/>
+            <seealso cref="F:System.Reflection.Emit.OpCodes.Ldelema"/>
         </member>
         <member name="T:Kernel.Compiler.ILOps.ILOp">
             <summary>
@@ -1774,6 +1838,16 @@
             <summary> - </summary>
             <remarks></remarks> 
         </member>
+        <member name="T:Kernel.Compiler.ILOps.Newarr">
+            <summary>
+            Handles the 
+            <see cref="F:System.Reflection.Emit.OpCodes.Newarr"/> IL op.
+            </summary>
+            <remarks>
+            See MSDN for details of these ops.
+            </remarks>
+            <seealso cref="F:System.Reflection.Emit.OpCodes.Newarr"/>
+        </member>
         <member name="T:Kernel.Compiler.ILOps.StackSwitch">
             <summary>
             Custom IL op that switches the top two stack items with eacother.
@@ -2597,6 +2671,26 @@
         <member name="F:Kernel.Compiler.ILScannerState.ArrayConstructorMethod">
             <summary>
             The method to use as the new Array constructor method.
+            </summary>
+        </member>
+        <member name="F:Kernel.Compiler.ILScannerState.ThrowNullReferenceExceptionMethod">
+            <summary>
+            The method to use to throw a NullReferenceException.
+            </summary>
+        </member>
+        <member name="F:Kernel.Compiler.ILScannerState.ThrowArrayTypeMismatchExceptionMethod">
+            <summary>
+            The method to use to throw a ArrayTypeMismatchException.
+            </summary>
+        </member>
+        <member name="F:Kernel.Compiler.ILScannerState.ThrowIndexOutOfRangeExceptionMethod">
+            <summary>
+            The method to use to throw a IndexOutOfRangeException.
+            </summary>
+        </member>
+        <member name="F:Kernel.Compiler.ILScannerState.TypeClass">
+            <summary>
+            The class to use as the kernel's Type class.
             </summary>
         </member>
         <member name="F:Kernel.Compiler.ILScannerState.StringLiteralsDataBlock">
