@@ -34,22 +34,63 @@ namespace Kernel.Compiler.Architectures.x86_32
             switch ((OpCodes)anILOpInfo.opCode.Value)
             {
                 case OpCodes.Ldelem:
-                case OpCodes.Ldelem_I1:
-                case OpCodes.Ldelem_I2:
-                case OpCodes.Ldelem_I8:
+                    {
+                        signExtend = false;
+                        //Load the metadata token used to get the type info
+                        int metadataToken = Utils.ReadInt32(anILOpInfo.ValueBytes, 0);
+                        //Get the type info for the element type
+                        elementType = aScannerState.CurrentILChunk.Method.Module.ResolveType(metadataToken);
+                    }
+                    break;
+
+                case OpCodes.Ldelema:
+                    {
+                        signExtend = false;
+                        //Load the metadata token used to get the type info
+                        int metadataToken = Utils.ReadInt32(anILOpInfo.ValueBytes, 0);
+                        //Get the type info for the element type
+                        elementType = aScannerState.CurrentILChunk.Method.Module.ResolveType(metadataToken);
+                    }
+                    break;
+
                 case OpCodes.Ldelem_R4:
                 case OpCodes.Ldelem_R8:
-                case OpCodes.Ldelem_Ref:
-                case OpCodes.Ldelem_U1:
-                case OpCodes.Ldelem_U2:
-                case OpCodes.Ldelem_U4:
-                case OpCodes.Ldelema:
                     //TODO - Add more LdElem op variants support
                     throw new NotSupportedException("Ldelem op variant not supported yet!");
                     break;
 
+                case OpCodes.Ldelem_I1:
+                    sizeToPush = 1;
+                    elementType = typeof(sbyte);
+                    break;
+                case OpCodes.Ldelem_I2:
+                    sizeToPush = 2;
+                    elementType = typeof(Int16);
+                    break;
+
+                case OpCodes.Ldelem_U1:
+                    sizeToPush = 1;
+                    signExtend = false;
+                    elementType = typeof(byte);
+                    break;
+                case OpCodes.Ldelem_U2:
+                    sizeToPush = 2;
+                    signExtend = false;
+                    elementType = typeof(UInt16);
+                    break;
+
+                case OpCodes.Ldelem_Ref:
+                case OpCodes.Ldelem_U4:
+                    signExtend = false;
+                    elementType = typeof(UInt32);
+                    break;
+
                 case OpCodes.Ldelem_I4:
                     elementType = typeof(Int32);
+                    break;
+
+                case OpCodes.Ldelem_I8:
+                    elementType = typeof(Int64);
                     break;
             }
 
