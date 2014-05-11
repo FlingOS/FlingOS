@@ -27,7 +27,7 @@ namespace Kernel.Compiler.Architectures.x86_32
             
             //New obj must:
             // - Allocate memory on the heap for the object
-            //          - Throw a panic attack because we're out of memory...
+            //          - If no memory is left, throw a panic attack because we're out of memory...
             // - Call the specified constructor
 
             //The label to jump to if allocated memory isn't null
@@ -85,16 +85,20 @@ namespace Kernel.Compiler.Architectures.x86_32
             result.AppendLine("mov dword ebx, esp");
             if (sizeOfArgs > 0)
             {
-                result.AppendLine(string.Format("mov dword ecx, {0}", sizeOfArgs));
+                if (sizeOfArgs % 4 != 0)
+                {
+                    throw new InvalidOperationException("sizeOfArgs not exact multiple of 4!");
+                }
+
+                result.AppendLine(string.Format("mov dword ecx, {0}", sizeOfArgs / 4));
                 string ShiftArgsLoopLabel = string.Format("{0}.IL_{1}_ShiftArgsLoop",
                         aScannerState.GetMethodID(aScannerState.CurrentILChunk.Method),
                         anILOpInfo.Position);
                 result.AppendLine(ShiftArgsLoopLabel + ":");
-                result.AppendLine("mov dword edx, [ebx+1]");
+                result.AppendLine("mov dword edx, [ebx+4]");
                 result.AppendLine("mov dword [ebx], edx");
-                result.AppendLine("add ebx, 1");
+                result.AppendLine("add ebx, 4");
                 result.AppendLine(string.Format("loop {0}", ShiftArgsLoopLabel));
-                result.AppendLine("sub ebx, 4");
             }
             result.AppendLine("mov dword [ebx], eax");
             result.AppendLine(string.Format("call {0}", aScannerState.GetMethodID(constructorMethod)));

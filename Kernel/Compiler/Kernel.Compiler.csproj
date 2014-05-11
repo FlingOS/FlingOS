@@ -52,9 +52,11 @@
     <Compile Include="ASMChunk.cs" />
     <Compile Include="ASMSequencer.cs" />
     <Compile Include="AssemblyManager.cs" />
+    <Compile Include="Attributes\ArrayConstructorMethodAttribute.cs" />
     <Compile Include="Attributes\DecrementRefCountMethodAttribute.cs" />
     <Compile Include="Attributes\IncrementRefCountMethodAttribute.cs" />
     <Compile Include="Attributes\HaltMethodAttribute.cs" />
+    <Compile Include="Attributes\NewArrMethodAttribute.cs" />
     <Compile Include="Attributes\NewObjMethodAttribute.cs" />
     <Compile Include="Attributes\ExceptionsHandleEndFinallyMethodAttribute.cs" />
     <Compile Include="Attributes\HandleExceptionMethodAttribute.cs" />
@@ -74,6 +76,7 @@
     <Compile Include="ILChunk.cs" />
     <Compile Include="ILCompiler.cs" />
     <Compile Include="ILOpInfo.cs" />
+    <Compile Include="ILOps\NewArr.cs" />
     <Compile Include="ILOps\StackSwitch.cs" />
     <Compile Include="ILOps\Shr.cs" />
     <Compile Include="ILOps\NewObj.cs" />

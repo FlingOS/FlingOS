@@ -87,6 +87,11 @@ namespace Kernel.Compiler
         public bool IsNewObjMethod = false;
         /// <summary>
         /// Indicates whether the method used to create this ILChunk was 
+        /// marked as the method to call to create a new array.
+        /// </summary>
+        public bool IsNewArrMethod = false;
+        /// <summary>
+        /// Indicates whether the method used to create this ILChunk was 
         /// marked as the method to call to increment a GC managed object's
         /// ref count.
         /// </summary>
@@ -97,6 +102,11 @@ namespace Kernel.Compiler
         /// ref count.
         /// </summary>
         public bool IsDecrementRefCountMethod = false;
+        /// <summary>
+        /// Indicates whether the method used to create this ILChunk was 
+        /// marked as the method to call to as the Array constructor.
+        /// </summary>
+        public bool IsArrayConstructorMethod = false;
 
         /// <summary>
         /// Whether to apply Garbage Collection stuff to the IL chunk or not.

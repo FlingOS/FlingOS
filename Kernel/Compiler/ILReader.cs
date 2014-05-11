@@ -1066,6 +1066,11 @@ namespace Kernel.Compiler
             {
                 aChunk.IsNewObjMethod = true;
             }
+            NewArrMethodAttribute newArrMethodAttr = (NewArrMethodAttribute)aMethod.GetCustomAttribute(typeof(NewArrMethodAttribute));
+            if (newArrMethodAttr != null)
+            {
+                aChunk.IsNewArrMethod = true;
+            }
             IncrementRefCountMethodAttribute incrementRefCountMethodAttr = (IncrementRefCountMethodAttribute)aMethod.GetCustomAttribute(typeof(IncrementRefCountMethodAttribute));
             if (incrementRefCountMethodAttr != null)
             {
@@ -1080,6 +1085,11 @@ namespace Kernel.Compiler
             if (haltMethodAttr != null)
             {
                 aChunk.IsHaltMethod = true;
+            }
+            ArrayConstructorMethodAttribute arrayConstructorMethodAttr = (ArrayConstructorMethodAttribute)aMethod.GetCustomAttribute(typeof(ArrayConstructorMethodAttribute));
+            if (arrayConstructorMethodAttr != null)
+            {
+                aChunk.IsArrayConstructorMethod = true;
             }
         }
     }

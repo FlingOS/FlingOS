@@ -455,15 +455,14 @@
             <param name="theType">The type of object to create.</param>
             <returns>A pointer to the new object in memory.</returns>
         </member>
-        <member name="M:Kernel.GC.GetHandle(System.Object)">
+        <member name="M:Kernel.GC.NewArr(System.Int32,Kernel.FOS_System.Type)">
             <summary>
-            Gets a handle for the specified object - basically, a round-about way of casting an object to a pointer.
+            Creates a new array with specified element type (but does not call the default constructor).
             </summary>
-            <remarks>
-            All the plug does is to set the return value to the argument value!
-            </remarks>
-            <param name="anObj">The object to get a handle of.</param>
-            <returns>The pointer to the object.</returns>
+            <remarks>"length" param placed first so that calling NewArr method is simple
+            with regards to pushing params onto the stack.</remarks>
+            <param name="theType">The type of element in the array to create.</param>
+            <returns>A pointer to the new array in memory.</returns>
         </member>
         <member name="M:Kernel.GC.IncrementRefCount(Kernel.FOS_System.Object)">
             <summary>

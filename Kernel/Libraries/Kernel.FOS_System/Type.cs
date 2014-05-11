@@ -19,6 +19,14 @@ namespace Kernel.FOS_System
         /// The type ID.
         /// </summary>
         public uint Id;
+        /// <summary>
+        /// The size of the type when on the stack or in an array.
+        /// </summary>
+        public uint StackSize;
+        /// <summary>
+        /// Whether the type is a value type or not.
+        /// </summary>
+        public new bool IsValueType;
         
         /// <summary>
         /// Compares two types by ID to see if they represent the same type.

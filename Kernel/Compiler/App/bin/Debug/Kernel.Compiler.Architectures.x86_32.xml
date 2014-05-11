@@ -4,6 +4,19 @@
         <name>Kernel.Compiler.Architectures.x86_32</name>
     </assembly>
     <members>
+        <member name="T:Kernel.Compiler.Architectures.x86_32.Newarr">
+            <summary>
+            See base class documentation.
+            </summary>
+        </member>
+        <member name="M:Kernel.Compiler.Architectures.x86_32.Newarr.Convert(Kernel.Compiler.ILOpInfo,Kernel.Compiler.ILScannerState)">
+            <summary>
+            See base class documentation.
+            </summary>
+            <param name="anILOpInfo">See base class documentation.</param>
+            <param name="aScannerState">See base class documentation.</param>
+            <returns>See base class documentation.</returns>
+        </member>
         <member name="T:Kernel.Compiler.Architectures.x86_32.StackSwitch">
             <summary>
             See base class documentation.

@@ -151,6 +151,12 @@
             All of the types (plugged and unplugged) that the assembly manager has loaded.
             </summary>
         </member>
+        <member name="T:Kernel.Compiler.ArrayConstructorMethodAttribute">
+            <summary>
+            Indicates the method is the kernel's array constructor method. 
+            Note: There should only ever be one of these used!
+            </summary>
+        </member>
         <member name="T:Kernel.Compiler.DecrementRefCountMethodAttribute">
             <summary>
             Indicates the method is the kernel's GC.DecrementRefCount method. 
@@ -166,6 +172,12 @@
         <member name="T:Kernel.Compiler.HaltMethodAttribute">
             <summary>
             Indicates the method is the kernel's Halt method. 
+            Note: There should only ever be one of these used!
+            </summary>
+        </member>
+        <member name="T:Kernel.Compiler.NewArrMethodAttribute">
+            <summary>
+            Indicates the method is the kernel's GC.NewArr method. 
             Note: There should only ever be one of these used!
             </summary>
         </member>
@@ -207,7 +219,7 @@
         </member>
         <member name="T:Kernel.Compiler.CallStaticConstructorsMethodAttribute">
             <summary>
-            Indicates the method is the kernel's main method. 
+            Indicates the method is the kernel's static constructors method. 
             Note: There should only ever be one of these used!
             </summary>
         </member>
@@ -498,6 +510,12 @@
             marked as the method to call to create a new object.
             </summary>
         </member>
+        <member name="F:Kernel.Compiler.ILChunk.IsNewArrMethod">
+            <summary>
+            Indicates whether the method used to create this ILChunk was 
+            marked as the method to call to create a new array.
+            </summary>
+        </member>
         <member name="F:Kernel.Compiler.ILChunk.IsIncrementRefCountMethod">
             <summary>
             Indicates whether the method used to create this ILChunk was 
@@ -510,6 +528,12 @@
             Indicates whether the method used to create this ILChunk was 
             marked as the method to call to decrement a GC managed object's
             ref count.
+            </summary>
+        </member>
+        <member name="F:Kernel.Compiler.ILChunk.IsArrayConstructorMethod">
+            <summary>
+            Indicates whether the method used to create this ILChunk was 
+            marked as the method to call to as the Array constructor.
             </summary>
         </member>
         <member name="F:Kernel.Compiler.ILChunk.ApplyGC">
@@ -809,15 +833,15 @@
             as a debug interrupt e.g. Int3 on x86 architecture
             </example>
         </member>
-        <member name="T:Kernel.Compiler.ILOps.StackSwitch">
+        <member name="T:Kernel.Compiler.ILOps.Newarr">
             <summary>
-            Custom IL op that switches the top two stack items with eacother.
+            Handles the 
+            <see cref="F:System.Reflection.Emit.OpCodes.Newarr"/> IL op.
             </summary>
             <remarks>
-            This must at least have an empty stub implementation or the compiler
-            will fail to execute. It was added so the ILScanner could optimise 
-            some code injections that it has to make.
+            See MSDN for details of these ops.
             </remarks>
+            <seealso cref="F:System.Reflection.Emit.OpCodes.Newarr"/>
         </member>
         <member name="T:Kernel.Compiler.ILOps.ILOp">
             <summary>
@@ -1750,6 +1774,16 @@
             <summary> - </summary>
             <remarks></remarks> 
         </member>
+        <member name="T:Kernel.Compiler.ILOps.StackSwitch">
+            <summary>
+            Custom IL op that switches the top two stack items with eacother.
+            </summary>
+            <remarks>
+            This must at least have an empty stub implementation or the compiler
+            will fail to execute. It was added so the ILScanner could optimise 
+            some code injections that it has to make.
+            </remarks>
+        </member>
         <member name="T:Kernel.Compiler.ILOps.Shr">
             <summary>
             Handles the <see cref="F:System.Reflection.Emit.OpCodes.Shr_Un"/> 
@@ -2540,6 +2574,11 @@
             The method to use as the kernel's GC New Obj method.
             </summary>
         </member>
+        <member name="F:Kernel.Compiler.ILScannerState.NewArrMethod">
+            <summary>
+            The method to use as the kernel's GC New Arr method.
+            </summary>
+        </member>
         <member name="F:Kernel.Compiler.ILScannerState.IncrementRefCountMethod">
             <summary>
             The method to use as the kernel's GC Incremenet Ref Count method.
@@ -2553,6 +2592,11 @@
         <member name="F:Kernel.Compiler.ILScannerState.HaltMethod">
             <summary>
             The method to use as the kernel's Halt method.
+            </summary>
+        </member>
+        <member name="F:Kernel.Compiler.ILScannerState.ArrayConstructorMethod">
+            <summary>
+            The method to use as the new Array constructor method.
             </summary>
         </member>
         <member name="F:Kernel.Compiler.ILScannerState.StringLiteralsDataBlock">

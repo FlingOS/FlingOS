@@ -48,7 +48,7 @@ namespace Kernel
             try
             {
                 Paging.Init();
-
+                
                 ManagedMain();
             }
             catch
@@ -108,6 +108,9 @@ namespace Kernel
         {
             try
             {
+                int[] testArray = new int[1024];
+                //int x = testArray[5];
+
                 int x = 1;
                 int y = 0;
                 int z = 0;

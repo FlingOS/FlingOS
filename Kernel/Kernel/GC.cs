@@ -78,13 +78,13 @@ namespace Kernel
             NumObjs++;
 
             //Initialise the GCHeader
-            //Initialise the object _Type field
             SetSignature(newObjPtr);
             newObjPtr->RefCount = 1;
-            ((UInt32*)newObjPtr)[sizeof(GCHeader) / 4] = (UInt32)GetHandle(theType);
+            //Initialise the object _Type field
+            ((UInt32*)newObjPtr)[sizeof(GCHeader) / 4] = (UInt32)Utilities.ObjectUtilities.GetHandle(theType);
             
             byte* newObjBytePtr = (byte*)newObjPtr;
-            for (int i = sizeof(GCHeader) + 4; i < totalSize; i++)
+            for (int i = sizeof(GCHeader) + 4/*For _Type field*/; i < totalSize; i++)
             {
                 newObjBytePtr[i] = 0;
             }
@@ -98,19 +98,76 @@ namespace Kernel
         }
 
         /// <summary>
-        /// Gets a handle for the specified object - basically, a round-about way of casting an object to a pointer.
+        /// Creates a new array with specified element type (but does not call the default constructor).
         /// </summary>
-        /// <remarks>
-        /// All the plug does is to set the return value to the argument value!
-        /// </remarks>
-        /// <param name="anObj">The object to get a handle of.</param>
-        /// <returns>The pointer to the object.</returns>
-        [Compiler.PluggedMethod(ASMFilePath = @"ASM\GC\GetHandle")]
+        /// <remarks>"length" param placed first so that calling NewArr method is simple
+        /// with regards to pushing params onto the stack.</remarks>
+        /// <param name="theType">The type of element in the array to create.</param>
+        /// <returns>A pointer to the new array in memory.</returns>
+        [Compiler.NewArrMethod]
         [Compiler.NoDebug]
         [Compiler.NoGC]
-        public static unsafe void* GetHandle(object anObj)
+        public static unsafe void* NewArr(int length, FOS_System.Type elemType)
         {
-            return null;
+            int arrayObjSize = 8;
+
+            if (!GCInitialised || InsideGC)
+            {
+                return null;
+            }
+
+            if (length < 0)
+            {
+                Exceptions.Throw_OverflowException();
+            }
+
+            InsideGC = true;
+
+            //Alloc space for GC header that prefixes object data
+            //Alloc space for new array object
+            //Alloc space for new array elems
+
+            uint totalSize = ((FOS_System.Type)typeof(FOS_System.Array)).Size;
+            totalSize += elemType.StackSize * (uint)length;
+            totalSize += (uint)sizeof(GCHeader);
+
+            GCHeader* newObjPtr = (GCHeader*)Heap.Alloc(totalSize);
+
+            if ((UInt32)newObjPtr == 0)
+            {
+                return null;
+            }
+
+            NumObjs++;
+
+            //Initialise the GCHeader
+            SetSignature(newObjPtr);
+            newObjPtr->RefCount = 1;
+            
+            //Initialise the object _Type field
+            int _TypeFieldIndex = sizeof(GCHeader) / 4;
+            ((UInt32*)newObjPtr)[_TypeFieldIndex] = (UInt32)Utilities.ObjectUtilities.GetHandle(typeof(FOS_System.Array));
+
+            //Initialise the "length" field
+            int lengthFieldIndex = _TypeFieldIndex + 1;
+            ((Int32*)newObjPtr)[lengthFieldIndex] = length;
+            
+            //Initialise the "elemType" field
+            int elemTypeFieldIndex = lengthFieldIndex + 1;
+            ((UInt32*)newObjPtr)[elemTypeFieldIndex] = (UInt32)Utilities.ObjectUtilities.GetHandle(elemType);
+
+            byte* newObjBytePtr = (byte*)newObjPtr;
+            for (int i = sizeof(GCHeader) + arrayObjSize + 4/*For _Type field*/; i < totalSize; i++)
+            {
+                newObjBytePtr[i] = 0;
+            }
+
+            //Move past GCHeader
+            newObjBytePtr = (byte*)(newObjBytePtr + sizeof(GCHeader));
+
+            InsideGC = false;
+
+            return newObjBytePtr;
         }
 
         /// <summary>
@@ -132,7 +189,7 @@ namespace Kernel
 
             InsideGC = true;
 
-            byte* objPtr = (byte*)GetHandle(anObj);
+            byte* objPtr = (byte*)Utilities.ObjectUtilities.GetHandle(anObj);
             _IncrementRefCount(objPtr);
 
             InsideGC = false;
@@ -177,7 +234,7 @@ namespace Kernel
 
             InsideGC = true;
 
-            byte* objPtr = (byte*)GetHandle(anObj);
+            byte* objPtr = (byte*)Utilities.ObjectUtilities.GetHandle(anObj);
             _DecrementRefCount(objPtr);
 
             InsideGC = false;

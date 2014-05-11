@@ -46,6 +46,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="NewArr.cs" />
     <Compile Include="StackSwitch.cs" />
     <Compile Include="NewObj.cs" />
     <Compile Include="Ldtoken.cs" />

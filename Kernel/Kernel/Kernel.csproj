@@ -60,6 +60,10 @@
       <Project>{66c9b617-b6d9-4006-a7f9-e1df62ed30ad}</Project>
       <Name>Kernel.FOS_System</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Libraries\Kernel.Utilities\Kernel.Utilities.csproj">
+      <Project>{97702b40-af74-4df8-b2ac-9438f85e6b46}</Project>
+      <Name>Kernel.Utilities</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -111,9 +115,6 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="ASM\Exceptions\HandleLeave.x86_32.asm">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="ASM\GC\GetHandle.x86_32.asm">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="ASM\Heap\GetFixedHeapPtr.x86_32.asm">
