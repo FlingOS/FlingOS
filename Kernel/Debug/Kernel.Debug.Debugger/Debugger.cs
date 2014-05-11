@@ -1124,8 +1124,8 @@ namespace Kernel.Debug.Debugger
             SendPendingInt3Changes();
 
             LoadMemoryRequests.Clear();
-            TheSerial.Write((byte)DebugCommands.Continue);
             State = States.Running;
+            TheSerial.Write((byte)DebugCommands.Continue);
         }
 
         /// <summary>
@@ -1134,8 +1134,8 @@ namespace Kernel.Debug.Debugger
         public void StepNext()
         {
             LoadMemoryRequests.Clear();
-            TheSerial.Write((byte)DebugCommands.StepNext);
             State = States.Stepping;
+            TheSerial.Write((byte)DebugCommands.StepNext);
         }
 
         /// <summary>
@@ -1353,7 +1353,7 @@ namespace Kernel.Debug.Debugger
                             string debugNopLabel = parts[1];
                             ulong NopAddress = TheElfMap.GetAddress(debugNopLabel);
                             //If it is a valid address - see GetAddress implementation
-                            if(NopAddress != uint.MaxValue)
+                            if(NopAddress != ulong.MaxValue)
                             {
                                 StepToAddress = NopAddress;
 

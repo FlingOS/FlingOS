@@ -521,7 +521,7 @@ namespace Kernel.Debug.Debugger
         
         private void BreakButton_Click(object sender, EventArgs e)
         {
-            StepToAddress = uint.MaxValue;
+            StepToAddress = ulong.MaxValue;
 
             TheDebugger.BeginBreak();
 
@@ -599,7 +599,7 @@ namespace Kernel.Debug.Debugger
 
             AddText("Step next IL...");
             StepToAddress = TheDebugger.StepToNextIL();
-            if (StepToAddress != uint.MaxValue)
+            if (StepToAddress != ulong.MaxValue)
             {
                 //+1 as the StepToAddress is the op after the Int3
                 StepToAddress += 1;
@@ -664,11 +664,12 @@ namespace Kernel.Debug.Debugger
                 AddText(string.Format("Break address : 0x{0:X8}", TheDebugger.BreakAddress));
 
                 if (TheDebugger.State == Debugger.States.Stepping &&
-                    StepToAddress != uint.MaxValue)
+                    StepToAddress != ulong.MaxValue)
                 {
                     if (TheDebugger.BreakAddress != StepToAddress)
                     {
                         TheDebugger.Continue();
+                        TheDebugger.State = Debugger.States.Stepping;
                         WaitForCommand();
 
                         SetEnabled(false, ContinueButton);
@@ -683,7 +684,7 @@ namespace Kernel.Debug.Debugger
                     {
                         //-1 as the StepToAddress is the op after the Int3
                         TheDebugger.ClearInt3(StepToAddress - 1);
-                        StepToAddress = uint.MaxValue;
+                        StepToAddress = ulong.MaxValue;
                     }
                 }
 
