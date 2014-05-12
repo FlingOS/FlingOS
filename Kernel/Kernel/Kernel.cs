@@ -111,32 +111,27 @@ namespace Kernel
                 FOS_System.Object[] objArr = new FOS_System.Object[10];
                 objArr[0] = new FOS_System.Object();
                 objArr[0]._Type.Size = 5;
-                if (objArr[0]._Type.Size == 5)
+                if (objArr[0] != null)
                 {
-                    Console.WriteLine("Success!");
+                    BasicConsole.WriteLine("Set object in array success!");
                 }
 
                 int[] testArray = new int[1024];
                 testArray[5] = 10;
                 int x = testArray[5];
 
-                x = 1;
-                int y = 0;
-                int z = 0;
-
                 Dummy obj = new Dummy();
                 new Dummy();
-
                 obj = new Dummy();
-
                 obj.x = obj.x + obj.y;
-
                 if (obj.x == 21)
                 {
                     BasicConsole.WriteLine("Addition success!");
                 }
 
-                z = x / y;
+                int y = 0;
+                int z = 0;
+                //z = x / y;
             }
             catch
             {

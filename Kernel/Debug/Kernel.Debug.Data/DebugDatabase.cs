@@ -102,7 +102,33 @@ namespace Kernel.Debug.Data
         /// on this class to wrap it. This will allow extended management / 
         /// optimisation in future.
         /// </remarks>
-        private static DatabaseDataContext DB = new DatabaseDataContext();
+        private static DatabaseDataContext DB
+        {
+            get
+            {
+                if(_DB == null)
+                {
+                    _DB = new DatabaseDataContext();
+                }
+                return _DB;
+            }
+            set
+            {
+                _DB = value;
+            }
+        }
+        private static DatabaseDataContext _DB;
+
+        /// <summary>
+        /// Submits changes and disposes of the underlying database connection.
+        /// </summary>
+        public static void Dispose()
+        {
+            SubmitChanges();
+            DB.Connection.Close();
+            DB.Dispose();
+            DB = null;
+        }
 
         /// <summary>
         /// Empties all the database's tables.

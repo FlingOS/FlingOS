@@ -4,11 +4,6 @@
         <name>Kernel.FOS_System</name>
     </assembly>
     <members>
-        <member name="T:Kernel.FOS_System.Exception">
-            <summary>
-            An exception object.
-            </summary>
-        </member>
         <member name="T:Kernel.FOS_System.Object">
             <summary>
             All objects (that are GC managed) should derive from this type.
@@ -26,6 +21,11 @@
         <member name="F:Kernel.FOS_System.ObjectWithType._Type">
             <summary>
             The underlying, specific type of the object specified when it was created.
+            </summary>
+        </member>
+        <member name="T:Kernel.FOS_System.Exception">
+            <summary>
+            An exception object.
             </summary>
         </member>
         <member name="F:Kernel.FOS_System.Exception.Message">
@@ -55,15 +55,55 @@
             Sets the message to "Double fault exception."
             </summary>
         </member>
+        <member name="T:Kernel.FOS_System.Exceptions.NullReferenceException">
+            <summary>
+            Represents a null reference exception.
+            </summary>
+        </member>
+        <member name="M:Kernel.FOS_System.Exceptions.NullReferenceException.#ctor">
+            <summary>
+            Sets the message to "Null reference exception."
+            </summary>
+        </member>
+        <member name="T:Kernel.FOS_System.Exceptions.IndexOutOfRangeException">
+            <summary>
+            Represents an index out of range exception.
+            </summary>
+        </member>
+        <member name="M:Kernel.FOS_System.Exceptions.IndexOutOfRangeException.#ctor">
+            <summary>
+            Sets the message to "Index out of range exception."
+            </summary>
+        </member>
         <member name="T:Kernel.FOS_System.Exceptions.PageFaultException">
             <summary>
             Represents a page fault exception.
             Usually thrown by the hardware interrupt.
             </summary>
         </member>
-        <member name="M:Kernel.FOS_System.Exceptions.PageFaultException.#ctor">
+        <member name="F:Kernel.FOS_System.Exceptions.PageFaultException.errorCode">
+            <summary>
+            The error code passed with the exception.
+            </summary>
+        </member>
+        <member name="F:Kernel.FOS_System.Exceptions.PageFaultException.address">
+            <summary>
+            The (virtual) address that caused the exception.
+            </summary>
+        </member>
+        <member name="M:Kernel.FOS_System.Exceptions.PageFaultException.#ctor(System.UInt32,System.UInt32)">
             <summary>
             Sets the message to "Page fault"
+            </summary>
+        </member>
+        <member name="T:Kernel.FOS_System.Exceptions.ArrayTypeMismatchException">
+            <summary>
+            Represents a array type mismatch exception.
+            </summary>
+        </member>
+        <member name="M:Kernel.FOS_System.Exceptions.ArrayTypeMismatchException.#ctor">
+            <summary>
+            Sets the message to "Array type mismatch exception."
             </summary>
         </member>
         <member name="T:Kernel.FOS_System.Exceptions.StackException">
@@ -155,6 +195,16 @@
         <member name="F:Kernel.FOS_System.Type.Id">
             <summary>
             The type ID.
+            </summary>
+        </member>
+        <member name="F:Kernel.FOS_System.Type.StackSize">
+            <summary>
+            The size of the type when on the stack or in an array.
+            </summary>
+        </member>
+        <member name="F:Kernel.FOS_System.Type.IsValueType">
+            <summary>
+            Whether the type is a value type or not.
             </summary>
         </member>
         <member name="M:Kernel.FOS_System.Type.op_Equality(Kernel.FOS_System.Type,Kernel.FOS_System.Type)">

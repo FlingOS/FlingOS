@@ -884,8 +884,9 @@
             <see cref="F:System.Reflection.Emit.OpCodes.Stelem_I2"/>, 
             <see cref="F:System.Reflection.Emit.OpCodes.Stelem_I4"/>, 
             <see cref="F:System.Reflection.Emit.OpCodes.Stelem_I8"/>,
-            <see cref="F:System.Reflection.Emit.OpCodes.Stelem_R4"/> and 
-            <see cref="F:System.Reflection.Emit.OpCodes.Stelem_R8"/> IL ops.
+            <see cref="F:System.Reflection.Emit.OpCodes.Stelem_R4"/>,
+            <see cref="F:System.Reflection.Emit.OpCodes.Stelem_R8"/> and 
+            <see cref="F:System.Reflection.Emit.OpCodes.Stelem_Ref"/> IL ops.
             </summary>
             <remarks>
             See MSDN for details of these ops.
@@ -897,7 +898,8 @@
             <seealso cref="F:System.Reflection.Emit.OpCodes.Stelem_I4"/> 
             <seealso cref="F:System.Reflection.Emit.OpCodes.Stelem_I8"/>
             <seealso cref="F:System.Reflection.Emit.OpCodes.Stelem_R4"/> 
-            <seealso cref="F:System.Reflection.Emit.OpCodes.Stelem_R8"/>
+            <seealso cref="F:System.Reflection.Emit.OpCodes.Stelem_R8"/> 
+            <seealso cref="F:System.Reflection.Emit.OpCodes.Stelem_Ref"/>
         </member>
         <member name="T:Kernel.Compiler.ILOps.ILOp">
             <summary>

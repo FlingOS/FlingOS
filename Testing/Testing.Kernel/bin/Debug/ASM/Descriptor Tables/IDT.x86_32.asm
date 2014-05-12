@@ -212,7 +212,10 @@ Interrupt12Handler:
 call method_System_Void_RETEND_Kernel_Exceptions_DECLEND_Throw_StackException_NAMEEND___
 
 Interrupt14Handler:
-call method_System_Void_RETEND_Kernel_Exceptions_DECLEND_Throw_PageFaultException_NAMEEND___
+mov dword eax, CR2
+push eax
+call method_System_Void_RETEND_Kernel_FOS_System_Exceptions_PageFaultException_DECLEND__ctor_NAMEEND__System_UInt32_System_UInt32_
+IRet
 
 ; END - Proper exception handlers 
 

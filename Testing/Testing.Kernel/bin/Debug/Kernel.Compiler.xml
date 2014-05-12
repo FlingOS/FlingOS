@@ -151,9 +151,21 @@
             All of the types (plugged and unplugged) that the assembly manager has loaded.
             </summary>
         </member>
+        <member name="T:Kernel.Compiler.ArrayConstructorMethodAttribute">
+            <summary>
+            Indicates the method is the kernel's array constructor method. 
+            Note: There should only ever be one of these used!
+            </summary>
+        </member>
         <member name="T:Kernel.Compiler.DecrementRefCountMethodAttribute">
             <summary>
             Indicates the method is the kernel's GC.DecrementRefCount method. 
+            Note: There should only ever be one of these used!
+            </summary>
+        </member>
+        <member name="T:Kernel.Compiler.TypeClassAttribute">
+            <summary>
+            Indicates the class is the kernel's Type class. 
             Note: There should only ever be one of these used!
             </summary>
         </member>
@@ -166,6 +178,12 @@
         <member name="T:Kernel.Compiler.HaltMethodAttribute">
             <summary>
             Indicates the method is the kernel's Halt method. 
+            Note: There should only ever be one of these used!
+            </summary>
+        </member>
+        <member name="T:Kernel.Compiler.NewArrMethodAttribute">
+            <summary>
+            Indicates the method is the kernel's GC.NewArr method. 
             Note: There should only ever be one of these used!
             </summary>
         </member>
@@ -193,6 +211,24 @@
             applied to it.
             </summary>
         </member>
+        <member name="T:Kernel.Compiler.ThrowArrayTypeMismatchExceptionMethodAttribute">
+            <summary>
+            Indicates the method is the kernel's exception ThrowArrayTypeMismatch method. 
+            Note: There should only ever be one of these used!
+            </summary>
+        </member>
+        <member name="T:Kernel.Compiler.ThrowIndexOutOfRangeExceptionMethodAttribute">
+            <summary>
+            Indicates the method is the kernel's exception ThrowIndexOutOfRange method. 
+            Note: There should only ever be one of these used!
+            </summary>
+        </member>
+        <member name="T:Kernel.Compiler.ThrowNullReferenceExceptionMethodAttribute">
+            <summary>
+            Indicates the method is the kernel's exception ThrowNullReference method. 
+            Note: There should only ever be one of these used!
+            </summary>
+        </member>
         <member name="T:Kernel.Compiler.ThrowExceptionMethodAttribute">
             <summary>
             Indicates the method is the kernel's exception Throw method. 
@@ -207,7 +243,7 @@
         </member>
         <member name="T:Kernel.Compiler.CallStaticConstructorsMethodAttribute">
             <summary>
-            Indicates the method is the kernel's main method. 
+            Indicates the method is the kernel's static constructors method. 
             Note: There should only ever be one of these used!
             </summary>
         </member>
@@ -492,10 +528,34 @@
             marked as the method to call to throw an exception.
             </summary>
         </member>
+        <member name="F:Kernel.Compiler.ILChunk.IsExceptionsThrowNullReferenceMethod">
+            <summary>
+            Indicates whether the method used to create this ILChunk was 
+            marked as the method to call to throw a NullReference exception.
+            </summary>
+        </member>
+        <member name="F:Kernel.Compiler.ILChunk.IsExceptionsThrowArrayTypeMismatchMethod">
+            <summary>
+            Indicates whether the method used to create this ILChunk was 
+            marked as the method to call to throw a ArrayTypeMismatch exception.
+            </summary>
+        </member>
+        <member name="F:Kernel.Compiler.ILChunk.IsExceptionsThrowIndexOutOfRangeMethod">
+            <summary>
+            Indicates whether the method used to create this ILChunk was 
+            marked as the method to call to throw a IndexOutOfRange exception.
+            </summary>
+        </member>
         <member name="F:Kernel.Compiler.ILChunk.IsNewObjMethod">
             <summary>
             Indicates whether the method used to create this ILChunk was 
             marked as the method to call to create a new object.
+            </summary>
+        </member>
+        <member name="F:Kernel.Compiler.ILChunk.IsNewArrMethod">
+            <summary>
+            Indicates whether the method used to create this ILChunk was 
+            marked as the method to call to create a new array.
             </summary>
         </member>
         <member name="F:Kernel.Compiler.ILChunk.IsIncrementRefCountMethod">
@@ -510,6 +570,12 @@
             Indicates whether the method used to create this ILChunk was 
             marked as the method to call to decrement a GC managed object's
             ref count.
+            </summary>
+        </member>
+        <member name="F:Kernel.Compiler.ILChunk.IsArrayConstructorMethod">
+            <summary>
+            Indicates whether the method used to create this ILChunk was 
+            marked as the method to call to as the Array constructor.
             </summary>
         </member>
         <member name="F:Kernel.Compiler.ILChunk.ApplyGC">
@@ -809,15 +875,31 @@
             as a debug interrupt e.g. Int3 on x86 architecture
             </example>
         </member>
-        <member name="T:Kernel.Compiler.ILOps.Newobj">
+        <member name="T:Kernel.Compiler.ILOps.Stelem">
             <summary>
             Handles the 
-            <see cref="F:System.Reflection.Emit.OpCodes.Newobj"/> IL op.
+            <see cref="F:System.Reflection.Emit.OpCodes.Stelem"/>, 
+            <see cref="F:System.Reflection.Emit.OpCodes.Stelem_I"/>, 
+            <see cref="F:System.Reflection.Emit.OpCodes.Stelem_I1"/>, 
+            <see cref="F:System.Reflection.Emit.OpCodes.Stelem_I2"/>, 
+            <see cref="F:System.Reflection.Emit.OpCodes.Stelem_I4"/>, 
+            <see cref="F:System.Reflection.Emit.OpCodes.Stelem_I8"/>,
+            <see cref="F:System.Reflection.Emit.OpCodes.Stelem_R4"/>,
+            <see cref="F:System.Reflection.Emit.OpCodes.Stelem_R8"/> and 
+            <see cref="F:System.Reflection.Emit.OpCodes.Stelem_Ref"/> IL ops.
             </summary>
             <remarks>
             See MSDN for details of these ops.
             </remarks>
-            <seealso cref="F:System.Reflection.Emit.OpCodes.Newobj"/>
+            <seealso cref="F:System.Reflection.Emit.OpCodes.Stelem"/> 
+            <seealso cref="F:System.Reflection.Emit.OpCodes.Stelem_I"/> 
+            <seealso cref="F:System.Reflection.Emit.OpCodes.Stelem_I1"/> 
+            <seealso cref="F:System.Reflection.Emit.OpCodes.Stelem_I2"/> 
+            <seealso cref="F:System.Reflection.Emit.OpCodes.Stelem_I4"/> 
+            <seealso cref="F:System.Reflection.Emit.OpCodes.Stelem_I8"/>
+            <seealso cref="F:System.Reflection.Emit.OpCodes.Stelem_R4"/> 
+            <seealso cref="F:System.Reflection.Emit.OpCodes.Stelem_R8"/> 
+            <seealso cref="F:System.Reflection.Emit.OpCodes.Stelem_Ref"/>
         </member>
         <member name="T:Kernel.Compiler.ILOps.ILOp">
             <summary>
@@ -1750,6 +1832,81 @@
             <summary> - </summary>
             <remarks></remarks> 
         </member>
+        <member name="T:Kernel.Compiler.ILOps.Ldelem">
+            <summary>
+            Handles the 
+            <see cref="F:System.Reflection.Emit.OpCodes.Ldelem"/>, 
+            <see cref="F:System.Reflection.Emit.OpCodes.Ldelem_I"/>, 
+            <see cref="F:System.Reflection.Emit.OpCodes.Ldelem_I1"/>, 
+            <see cref="F:System.Reflection.Emit.OpCodes.Ldelem_I2"/>, 
+            <see cref="F:System.Reflection.Emit.OpCodes.Ldelem_I4"/>, 
+            <see cref="F:System.Reflection.Emit.OpCodes.Ldelem_I8"/>,
+            <see cref="F:System.Reflection.Emit.OpCodes.Ldelem_R4"/>, 
+            <see cref="F:System.Reflection.Emit.OpCodes.Ldelem_R8"/>, 
+            <see cref="F:System.Reflection.Emit.OpCodes.Ldelem_U1"/>, 
+            <see cref="F:System.Reflection.Emit.OpCodes.Ldelem_U2"/>, 
+            <see cref="F:System.Reflection.Emit.OpCodes.Ldelem_U4"/> and 
+            <see cref="F:System.Reflection.Emit.OpCodes.Ldelema"/> IL ops.
+            </summary>
+            <remarks>
+            See MSDN for details of these ops.
+            </remarks>
+            <seealso cref="F:System.Reflection.Emit.OpCodes.Ldelem"/> 
+            <seealso cref="F:System.Reflection.Emit.OpCodes.Ldelem_I"/> 
+            <seealso cref="F:System.Reflection.Emit.OpCodes.Ldelem_I1"/> 
+            <seealso cref="F:System.Reflection.Emit.OpCodes.Ldelem_I2"/> 
+            <seealso cref="F:System.Reflection.Emit.OpCodes.Ldelem_I4"/> 
+            <seealso cref="F:System.Reflection.Emit.OpCodes.Ldelem_I8"/>
+            <seealso cref="F:System.Reflection.Emit.OpCodes.Ldelem_R4"/> 
+            <seealso cref="F:System.Reflection.Emit.OpCodes.Ldelem_R8"/> 
+            <seealso cref="F:System.Reflection.Emit.OpCodes.Ldelem_U1"/> 
+            <seealso cref="F:System.Reflection.Emit.OpCodes.Ldelem_U2"/> 
+            <seealso cref="F:System.Reflection.Emit.OpCodes.Ldelem_U4"/>
+            <seealso cref="F:System.Reflection.Emit.OpCodes.Ldelema"/>
+        </member>
+        <member name="T:Kernel.Compiler.ILOps.Newarr">
+            <summary>
+            Handles the 
+            <see cref="F:System.Reflection.Emit.OpCodes.Newarr"/> IL op.
+            </summary>
+            <remarks>
+            See MSDN for details of these ops.
+            </remarks>
+            <seealso cref="F:System.Reflection.Emit.OpCodes.Newarr"/>
+        </member>
+        <member name="T:Kernel.Compiler.ILOps.StackSwitch">
+            <summary>
+            Custom IL op that rotates (upwards) the specified number of top-most stack items with eachother. 
+            Does not alter compiler record of stack - caller must do that. 
+            Acts totally ignorant of item types (e.g. int or float). Only moves dwords. Number of dwords to move should be in value 
+            bytes. Null value bytes indicates rotate (switch) top two items.
+            </summary>
+            <remarks>
+            This must at least have an empty stub implementation or the compiler
+            will fail to execute. It was added so the ILScanner could optimise 
+            some code injections that it has to make.
+            </remarks>
+        </member>
+        <member name="T:Kernel.Compiler.ILOps.Shr">
+            <summary>
+            Handles the <see cref="F:System.Reflection.Emit.OpCodes.Shr_Un"/> 
+            IL op.
+            </summary>
+            <remarks>
+            See MSDN for details of these ops.
+            </remarks>
+            <seealso cref="F:System.Reflection.Emit.OpCodes.Shr_Un"/>
+        </member>
+        <member name="T:Kernel.Compiler.ILOps.Newobj">
+            <summary>
+            Handles the 
+            <see cref="F:System.Reflection.Emit.OpCodes.Newobj"/> IL op.
+            </summary>
+            <remarks>
+            See MSDN for details of these ops.
+            </remarks>
+            <seealso cref="F:System.Reflection.Emit.OpCodes.Newobj"/>
+        </member>
         <member name="T:Kernel.Compiler.ILOps.Ldtoken">
             <summary>
             Handles the <see cref="F:System.Reflection.Emit.OpCodes.Ldtoken"/> 
@@ -2389,6 +2546,11 @@
             A cache of the target architecture's custom IL op for inserting ASM at the end of a method (before Ret).
             </summary>
         </member>
+        <member name="F:Kernel.Compiler.ILScanner.StackSwitchOp">
+            <summary>
+            A cache of the target architecture's custom IL op for inserting ASM to switch stack items.
+            </summary>
+        </member>
         <member name="F:Kernel.Compiler.ILScanner.ASMChunks">
             <summary>
             The resulting list of ASM chunks.
@@ -2515,6 +2677,11 @@
             The method to use as the kernel's GC New Obj method.
             </summary>
         </member>
+        <member name="F:Kernel.Compiler.ILScannerState.NewArrMethod">
+            <summary>
+            The method to use as the kernel's GC New Arr method.
+            </summary>
+        </member>
         <member name="F:Kernel.Compiler.ILScannerState.IncrementRefCountMethod">
             <summary>
             The method to use as the kernel's GC Incremenet Ref Count method.
@@ -2528,6 +2695,31 @@
         <member name="F:Kernel.Compiler.ILScannerState.HaltMethod">
             <summary>
             The method to use as the kernel's Halt method.
+            </summary>
+        </member>
+        <member name="F:Kernel.Compiler.ILScannerState.ArrayConstructorMethod">
+            <summary>
+            The method to use as the new Array constructor method.
+            </summary>
+        </member>
+        <member name="F:Kernel.Compiler.ILScannerState.ThrowNullReferenceExceptionMethod">
+            <summary>
+            The method to use to throw a NullReferenceException.
+            </summary>
+        </member>
+        <member name="F:Kernel.Compiler.ILScannerState.ThrowArrayTypeMismatchExceptionMethod">
+            <summary>
+            The method to use to throw a ArrayTypeMismatchException.
+            </summary>
+        </member>
+        <member name="F:Kernel.Compiler.ILScannerState.ThrowIndexOutOfRangeExceptionMethod">
+            <summary>
+            The method to use to throw a IndexOutOfRangeException.
+            </summary>
+        </member>
+        <member name="F:Kernel.Compiler.ILScannerState.TypeClass">
+            <summary>
+            The class to use as the kernel's Type class.
             </summary>
         </member>
         <member name="F:Kernel.Compiler.ILScannerState.StringLiteralsDataBlock">

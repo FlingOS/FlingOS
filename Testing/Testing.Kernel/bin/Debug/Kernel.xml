@@ -31,8 +31,45 @@
         </member>
         <member name="F:Kernel.BasicConsole.colour">
             <summary>
+            The colour to print characters in. Do not set directly, use SetTextColour/SetBackgroundColour.
+            </summary>
+        </member>
+        <member name="F:Kernel.BasicConsole.bg_colour">
+            <summary>
+            The background colour. Do not set directly, use SetTextColour/SetBackgroundColour.
+            </summary>
+        </member>
+        <member name="F:Kernel.BasicConsole.default_colour">
+            <summary>
             Default colour to print characters in.
             </summary>
+        </member>
+        <member name="F:Kernel.BasicConsole.warning_colour">
+            <summary>
+            Colour to print warning characters in.
+            </summary>
+        </member>
+        <member name="F:Kernel.BasicConsole.error_colour">
+            <summary>
+            Colour to print error characters in.
+            </summary>
+        </member>
+        <member name="M:Kernel.BasicConsole.Init">
+            <summary>
+            Initialises the BasicConsole class.
+            </summary>
+        </member>
+        <member name="M:Kernel.BasicConsole.SetTextColour(System.Char)">
+            <summary>
+            Sets the console text colour.
+            </summary>
+            <param name="aText_colour">The text colour to use.</param>
+        </member>
+        <member name="M:Kernel.BasicConsole.SetBgColour(System.Char)">
+            <summary>
+            Sets the console background colour.
+            </summary>
+            <param name="aBg_colour">The background colour to use.</param>
         </member>
         <member name="M:Kernel.BasicConsole.Clear">
             <summary>
@@ -57,6 +94,11 @@
             <remarks>
             This also blanks out the rest of the line to make sure no artifacts are left behind.
             </remarks>
+        </member>
+        <member name="M:Kernel.BasicConsole.WriteLine">
+            <summary>
+            Writes a blank line (line with a space).
+            </summary>
         </member>
         <member name="M:Kernel.BasicConsole.PrintTestString">
             <summary>
@@ -87,9 +129,19 @@
             Initialises COM1 as serial connection to debug over
             </summary>
         </member>
-        <member name="M:Kernel.Debug.BasicDebug.EnableDebug">
+        <member name="M:Kernel.Debug.BasicDebug.BeginEnableDebug">
             <summary>
-            Enables the debug interrupt handler
+            Begins enabling the debug interrupt handler
+            </summary>
+        </member>
+        <member name="M:Kernel.Debug.BasicDebug.EndEnableDebug">
+            <summary>
+            Ends enabling the debug interrupt handler
+            </summary>
+        </member>
+        <member name="M:Kernel.Debug.BasicDebug.Int3">
+            <summary>
+            Invokes interrupt 3.
             </summary>
         </member>
         <member name="M:Kernel.Debug.BasicDebug.Execute">
@@ -139,43 +191,49 @@
         </member>
         <member name="M:Kernel.Debug.BasicDebug.Serial_WriteByte(System.Byte)">
             <summary>
-            Writes the specified value to the debug serial port
+            Writes the specified value to the debug serial port. Not callable from C#.
             </summary>
             <param name="value">The value to write.</param>
         </member>
         <member name="M:Kernel.Debug.BasicDebug.Serial_WriteUInt16(System.UInt16)">
             <summary>
-            Writes the specified value to the debug serial port
+            Writes the specified value to the debug serial port. Not callable from C#.
             </summary>
             <param name="value">The value to write.</param>
         </member>
         <member name="M:Kernel.Debug.BasicDebug.Serial_WriteUInt32(System.UInt32)">
             <summary>
-            Writes the specified value to the debug serial port
+            Writes the specified value to the debug serial port. Not callable from C#.
             </summary>
             <param name="value">The value to write.</param>
         </member>
         <member name="M:Kernel.Debug.BasicDebug.Serial_WriteString(System.String)">
             <summary>
-            Writes the specified value to the debug serial port
+            Writes the specified value to the debug serial port. Not callable from C#.
             </summary>
             <param name="value">The value to write.</param>
         </member>
         <member name="M:Kernel.Debug.BasicDebug.Serial_ReadByte">
             <summary>
-            Reads a byte from the debug serial port
+            Reads a byte from the debug serial port. Not callable from C#.
             </summary>
             <returns>The byte read.</returns>
         </member>
         <member name="M:Kernel.Debug.BasicDebug.Serial_ReadUInt16">
             <summary>
-            Reads a UInt16 from the debug serial port
+            Reads a UInt16 from the debug serial port. Not callable from C#.
             </summary>
             <returns>The UInt16 read.</returns>
         </member>
         <member name="M:Kernel.Debug.BasicDebug.Serial_ReadUInt32">
             <summary>
-            Reads a UInt32 from the debug serial port
+            Reads a UInt32 from the debug serial port. Not callable from C#.
+            </summary>
+            <returns>The UInt32 read.</returns>
+        </member>
+        <member name="M:Kernel.Debug.BasicDebug.Serial_SafeReadUInt32">
+            <summary>
+            Safely reads a UInt32 from the debug serial port
             </summary>
             <returns>The UInt32 read.</returns>
         </member>
@@ -311,12 +369,36 @@
             Used by CPU interrupts to handle the creation of the exception object and calling Throw.
             </remarks>
         </member>
-        <member name="M:Kernel.Exceptions.Throw_PageFaultException">
+        <member name="M:Kernel.Exceptions.Throw_PageFaultException(System.UInt32,System.UInt32)">
             <summary>
             Throws a page fault exception.
             </summary>
             <remarks>
             Used by CPU interrupts to handle the creation of the exception object and calling Throw.
+            </remarks>
+        </member>
+        <member name="M:Kernel.Exceptions.Throw_NullReferenceException">
+            <summary>
+            Throws a Null Reference exception.
+            </summary>
+            <remarks>
+            Used by compiler to handle the creation of the exception object and calling Throw.
+            </remarks>
+        </member>
+        <member name="M:Kernel.Exceptions.Throw_ArrayTypeMismatchException">
+            <summary>
+            Throws an Array Type Mismatch exception.
+            </summary>
+            <remarks>
+            Used by compiler to handle the creation of the exception object and calling Throw.
+            </remarks>
+        </member>
+        <member name="M:Kernel.Exceptions.Throw_IndexOutOfRangeException">
+            <summary>
+            Throws a Index Out Of Range exception.
+            </summary>
+            <remarks>
+            Used by compiler to handle the creation of the exception object and calling Throw.
             </remarks>
         </member>
         <member name="T:Kernel.ExceptionHandlerInfo">
@@ -402,15 +484,14 @@
             <param name="theType">The type of object to create.</param>
             <returns>A pointer to the new object in memory.</returns>
         </member>
-        <member name="M:Kernel.GC.GetHandle(System.Object)">
+        <member name="M:Kernel.GC.NewArr(System.Int32,Kernel.FOS_System.Type)">
             <summary>
-            Gets a handle for the specified object - basically, a round-about way of casting an object to a pointer.
+            Creates a new array with specified element type (but does not call the default constructor).
             </summary>
-            <remarks>
-            All the plug does is to set the return value to the argument value!
-            </remarks>
-            <param name="anObj">The object to get a handle of.</param>
-            <returns>The pointer to the object.</returns>
+            <remarks>"length" param placed first so that calling NewArr method is simple
+            with regards to pushing params onto the stack.</remarks>
+            <param name="theType">The type of element in the array to create.</param>
+            <returns>A pointer to the new array in memory.</returns>
         </member>
         <member name="M:Kernel.GC.IncrementRefCount(Kernel.FOS_System.Object)">
             <summary>
@@ -440,6 +521,17 @@
             so string literals and the like don't accidentally get treated as normal GC managed strings.
             </remarks>
             <param name="anObj">The object to decrement the ref count of.</param>
+        </member>
+        <member name="M:Kernel.GC.DecrementRefCount(Kernel.FOS_System.Object,System.Boolean)">
+            <summary>
+            Decrements the ref count of a GC managed object.
+            </summary>
+            <remarks>
+            This method checks that the pointer is not a null pointer and also checks for the GC signature 
+            so string literals and the like don't accidentally get treated as normal GC managed strings.
+            </remarks>
+            <param name="anObj">The object to decrement the ref count of.</param>
+            <param name="overrideInside">Whether to ignore the InsideGC test or not.</param>
         </member>
         <member name="M:Kernel.GC._DecrementRefCount(System.Byte*)">
             <summary>

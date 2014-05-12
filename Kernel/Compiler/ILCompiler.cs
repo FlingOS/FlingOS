@@ -598,6 +598,8 @@ namespace Kernel.Compiler
         /// </summary>
         public void Cleanup()
         {
+            Debug.Data.DebugDatabase.Dispose();
+
             string outputFilePath = TheSettings[Settings.OutputFileKey];
             if (File.Exists(outputFilePath + ".obj"))
             {

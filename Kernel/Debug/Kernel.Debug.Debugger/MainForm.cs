@@ -431,7 +431,9 @@ namespace Kernel.Debug.Debugger
             AddText("Terminating...");
             Terminating = true;
 
-            Stop();            
+            Stop();
+
+            Debug.Data.DebugDatabase.Dispose();
         }
 
         private void StartButton_Click(object sender, EventArgs e)
