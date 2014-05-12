@@ -1210,6 +1210,21 @@ namespace Kernel.Compiler
                                                 //      7. Call GC.DecrementRefCount
                                                 //      8. Switch (rotate) 1 times the top 3 values so that the stack is in its original state
                                                 //      (9. Continue to incremenet ref count as normal)
+                                                //
+                                                // The following is a diagram of the stack manipulation occurring here:
+                                                //      Key: A=Array ref, I=Index, V=Value to store, E=Loaded element
+                                                //      Top-most stack item appears last
+                                                //  
+                                                //        Rotate x 1       Duplicate           Rot x 2             Dup
+                                                //  A,I,V ---------> V,A,I ---------> V,A,I,I ---------> I,I,V,A ---------> I,I,V,A,A
+                                                //
+                                                //
+                                                //             Rot x 4              Ldelem          Call GC (Dec)
+                                                //  I,I,V,A,A ---------> I,V,A,A,I ---------> I,V,A,E ---------> I,V,A
+                                                //
+                                                //
+                                                //         Rot x 1            Dup            Call GC (Inc)
+                                                //  I,V,A ---------> A,I,V ---------> A,I,V,V ---------> A,I,V
 
                                                 #region 1.
                                                 asm += "\r\n" + StackSwitchOp.Convert(new ILOpInfo()
