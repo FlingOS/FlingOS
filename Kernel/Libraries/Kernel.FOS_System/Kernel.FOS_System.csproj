@@ -40,6 +40,7 @@
   <ItemGroup>
     <Compile Include="Array.cs" />
     <Compile Include="Exception.cs" />
+    <Compile Include="ExceptionMethods.cs" />
     <Compile Include="Exceptions\InvalidOpCodeException.cs" />
     <Compile Include="Exceptions\DoubleFaultException.cs" />
     <Compile Include="Exceptions\NullReferenceException.cs" />
@@ -49,6 +50,8 @@
     <Compile Include="Exceptions\StackException.cs" />
     <Compile Include="Exceptions\OverflowException.cs" />
     <Compile Include="Exceptions\DivideByZeroException.cs" />
+    <Compile Include="GC.cs" />
+    <Compile Include="Heap.cs" />
     <Compile Include="Int64.cs" />
     <Compile Include="Int32.cs" />
     <Compile Include="Object.cs" />
@@ -61,11 +64,33 @@
       <Project>{061e5f53-5eff-4e12-94ee-9e18459e5cf4}</Project>
       <Name>Kernel.Compiler</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Kernel.Utilities\Kernel.Utilities.csproj">
+      <Project>{97702b40-af74-4df8-b2ac-9438f85e6b46}</Project>
+      <Name>Kernel.Utilities</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="ASM\Exceptions\AddExceptionHandlerInfo.x86_32.asm">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="ASM\Exceptions\HandleEndFinally.x86_32.asm">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="ASM\Exceptions\HandleException.x86_32.asm">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="ASM\Exceptions\HandleLeave.x86_32.asm">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="ASM\Exceptions\Throw.x86_32.asm">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="ASM\Heap\GetFixedHeapPtr.x86_32.asm">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="ASM\String\GetPointer.x86_32.asm">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>

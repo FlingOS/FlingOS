@@ -35,5 +35,19 @@ namespace Kernel.FOS_System
             //Stub for use by testing frameworks.
             return (char*)System.Runtime.InteropServices.Marshal.StringToHGlobalAuto(aString);
         }
+
+        public static unsafe string New(int length)
+        {
+            if(length < 0)
+            {
+                new Exceptions.IndexOutOfRangeException();
+            }
+            return null;
+        }
+
+        public static unsafe string Concat(string str1, string str2)
+        {
+            return null;
+        }
     }
 }

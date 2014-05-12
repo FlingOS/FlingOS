@@ -10,7 +10,7 @@ namespace Kernel
     /// Implements the lowest-level kernel exception handling.
     /// </summary>
     [Compiler.PluggedClass]
-    public static unsafe class Exceptions
+    public static unsafe class ExceptionMethods
     {
         /// <summary>
         /// The message to display when the Throw method panics.
@@ -104,7 +104,7 @@ namespace Kernel
         public static void Rethrow()
         {
             PendingException = true;
-            GC.IncrementRefCount(CurrentException);
+            FOS_System.GC.IncrementRefCount(CurrentException);
             Throw(CurrentException);
         }
 

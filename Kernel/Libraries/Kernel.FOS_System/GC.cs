@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Kernel
+namespace Kernel.FOS_System
 {
     /// <summary>
     /// The garbage collector.
@@ -37,12 +37,8 @@ namespace Kernel
         [Compiler.NoGC]
         public static void Init()
         {
-            BasicConsole.WriteLine("Initialising GC...");
-
             Heap.InitFixedHeap();
             GCInitialised = true;
-
-            BasicConsole.WriteLine("GC initialised.");
         }
 
         /// <summary>
@@ -119,7 +115,7 @@ namespace Kernel
 
             if (length < 0)
             {
-                Exceptions.Throw_OverflowException();
+                ExceptionMethods.Throw_OverflowException();
             }
 
             InsideGC = true;

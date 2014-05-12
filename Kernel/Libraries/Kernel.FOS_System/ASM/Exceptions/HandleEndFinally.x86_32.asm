@@ -1,4 +1,4 @@
-﻿method_System_Void_RETEND_Kernel_Exceptions_DECLEND_HandleEndFinally_NAMEEND___:
+﻿method_System_Void_RETEND_Kernel_ExceptionMethods_DECLEND_HandleEndFinally_NAMEEND___:
 
 ; Leaving a "finally" critical section cleanly
 ; We need to handle 2 cases:
@@ -31,11 +31,11 @@
 ; 1. Set current handler to previous handler
 ; Load address of current handler into eax
 ; Current Handler points to last element in structure (i.e. "ESP")
-mov dword eax, [staticfield_Kernel_ExceptionHandlerInfo__Kernel_Exceptions_CurrentHandlerPtr]
+mov dword eax, [staticfield_Kernel_ExceptionHandlerInfo__Kernel_ExceptionMethods_CurrentHandlerPtr]
 ; Load previous handler address
 mov dword ebx, [eax+16]
 ; Move into CurrentHandlerPtr
-mov dword [staticfield_Kernel_ExceptionHandlerInfo__Kernel_Exceptions_CurrentHandlerPtr], ebx
+mov dword [staticfield_Kernel_ExceptionHandlerInfo__Kernel_ExceptionMethods_CurrentHandlerPtr], ebx
 
 ; Set InHandler to false
 mov dword [eax+20], 0
@@ -62,19 +62,19 @@ add esp, 24
 ; Zero-out eax
 xor eax, eax
 ; Load boolean indicating if there is a pending exception or not
-mov dword eax, [staticfield_System_Boolean_Kernel_Exceptions_PendingException]
+mov dword eax, [staticfield_System_Boolean_Kernel_ExceptionMethods_PendingException]
 ; Compare to 0, 0 = false, 1 = true
 cmp eax, 0
 ; If false i.e. no pending exception, jump to 2.2
-jz method_System_Void_RETEND_Kernel_Exceptions_DECLEND_HandleEndFinally_NAMEEND___NoPendingException
+jz method_System_Void_RETEND_Kernel_ExceptionMethods_DECLEND_HandleEndFinally_NAMEEND___NoPendingException
 
 
 ; 4.1. If true i.e. there is a pending exception, Call HandleException
-call method_System_Void_RETEND_Kernel_Exceptions_DECLEND_HandleException_NAMEEND__
+call method_System_Void_RETEND_Kernel_ExceptionMethods_DECLEND_HandleException_NAMEEND__
 
 
 ; 4.2. Else, return control to Return Address (temp stored)
-method_System_Void_RETEND_Kernel_Exceptions_DECLEND_HandleEndFinally_NAMEEND___NoPendingException:
+method_System_Void_RETEND_Kernel_ExceptionMethods_DECLEND_HandleEndFinally_NAMEEND___NoPendingException:
 ; Push the return address (temp stored)
 push dword edx
 

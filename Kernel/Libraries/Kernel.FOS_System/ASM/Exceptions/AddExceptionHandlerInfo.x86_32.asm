@@ -1,4 +1,4 @@
-﻿method_System_Void_RETEND_Kernel_Exceptions_DECLEND_AddExceptionHandlerInfo_NAMEEND__System_Void__System_Void__:
+﻿method_System_Void_RETEND_Kernel_ExceptionMethods_DECLEND_AddExceptionHandlerInfo_NAMEEND__System_Void__System_Void__:
 
 ; 1. Push new ExceptionHandler structure to stack
 ; 2. Store return address
@@ -12,7 +12,7 @@
 ; Push InHandler (as false i.e. 0)
 push dword 0
 ; Push Previous Handler Address
-push dword [staticfield_Kernel_ExceptionHandlerInfo__Kernel_Exceptions_CurrentHandlerPtr]
+push dword [staticfield_Kernel_ExceptionHandlerInfo__Kernel_ExceptionMethods_CurrentHandlerPtr]
 ; Push Filter Address which is arg 1 (0-based indexing)
 ; Arg 1 = ESP + 4 (for Previous Handler Address) + 4 (for InHandler) + 4 (for ret address) = +12
 push dword [ESP+12]
@@ -97,7 +97,7 @@ mov [ESP+12], eax
 ; "ESP" is at ESP+12 (last moved value), thus:
 mov eax, esp
 add eax, 12
-mov [staticfield_Kernel_ExceptionHandlerInfo__Kernel_Exceptions_CurrentHandlerPtr], eax
+mov [staticfield_Kernel_ExceptionHandlerInfo__Kernel_ExceptionMethods_CurrentHandlerPtr], eax
 
 
 

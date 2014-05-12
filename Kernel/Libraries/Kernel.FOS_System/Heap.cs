@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Kernel
+namespace Kernel.FOS_System
 {
     //This implementation is based off of Leonard Kevin McGuire Jr's Binary Heap Implementation
     //found at http://wiki.osdev.org/User:Pancakes/BitmapHeapImplementation
@@ -91,13 +91,9 @@ namespace Kernel
         {
             if (!FixedHeapInitialised)
             {
-                BasicConsole.WriteLine("Initialising fixed heap...");
-
                 Heap.Init();
                 Heap.AddBlock(Heap.GetFixedHeapPtr(), Heap.GetFixedHeapSize(), 16);
                 FixedHeapInitialised = true;
-                
-                BasicConsole.WriteLine("Fixed heap initialised.");
             }
         }
 

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 using Kernel;
+using Kernel.FOS_System;
 
 namespace Testing._Kernel
 {
@@ -19,7 +20,7 @@ namespace Testing._Kernel
         [ClassInitialize]
         public static void Init(TestContext context)
         {
-            Kernel.GC.Init();
+            Kernel.FOS_System.GC.Init();
         }
         /// <summary>
         /// Cleans up the test class.
@@ -38,7 +39,7 @@ namespace Testing._Kernel
         public void SetSignature_Test()
         {
             GCHeader* newObjHeaderPtr = (GCHeader*)Heap.Alloc((uint)sizeof(GCHeader));
-            Kernel.GC.SetSignature(newObjHeaderPtr);
+            Kernel.FOS_System.GC.SetSignature(newObjHeaderPtr);
             Assert.AreEqual(newObjHeaderPtr->Sig1, 0x5C0EADE2U, "Sig1 not set properly!");
             Assert.AreEqual(newObjHeaderPtr->Sig2, 0x5C0EADE2U, "Sig2 not set properly!");
             Assert.AreEqual(newObjHeaderPtr->Checksum, 0xB81D5BC4U, "Checksum not set properly!");
@@ -51,16 +52,16 @@ namespace Testing._Kernel
         public void CheckSignature_Test()
         {
             GCHeader* newObjHeaderPtr = (GCHeader*)Heap.Alloc((uint)sizeof(GCHeader));
-            Kernel.GC.SetSignature(newObjHeaderPtr);
-            Assert.IsTrue(Kernel.GC.CheckSignature(newObjHeaderPtr), "Correct GC header signature not recognised!");
+            Kernel.FOS_System.GC.SetSignature(newObjHeaderPtr);
+            Assert.IsTrue(Kernel.FOS_System.GC.CheckSignature(newObjHeaderPtr), "Correct GC header signature not recognised!");
             newObjHeaderPtr->Sig1 = 0;
-            Assert.IsTrue(!Kernel.GC.CheckSignature(newObjHeaderPtr), "Incorrect GC header signature recognised mistakenly!");
+            Assert.IsTrue(!Kernel.FOS_System.GC.CheckSignature(newObjHeaderPtr), "Incorrect GC header signature recognised mistakenly!");
             newObjHeaderPtr->Sig1 = newObjHeaderPtr->Sig2;
             newObjHeaderPtr->Sig2 = 0;
-            Assert.IsTrue(!Kernel.GC.CheckSignature(newObjHeaderPtr), "Incorrect GC header signature recognised mistakenly!");
+            Assert.IsTrue(!Kernel.FOS_System.GC.CheckSignature(newObjHeaderPtr), "Incorrect GC header signature recognised mistakenly!");
             newObjHeaderPtr->Sig2 = newObjHeaderPtr->Sig1;
             newObjHeaderPtr->Checksum = 0;
-            Assert.IsTrue(!Kernel.GC.CheckSignature(newObjHeaderPtr), "Incorrect GC header signature recognised mistakenly!");
+            Assert.IsTrue(!Kernel.FOS_System.GC.CheckSignature(newObjHeaderPtr), "Incorrect GC header signature recognised mistakenly!");
         }
 
         /// <summary>
@@ -70,14 +71,14 @@ namespace Testing._Kernel
         [TestCategory("Memory")]
         public void NewObj_Test()
         {
-            int startNumObjs = Kernel.GC.NumObjs;
+            int startNumObjs = Kernel.FOS_System.GC.NumObjs;
 
             Kernel.FOS_System.Type newObjType = new TestType();
-            byte* newObjPtr = (byte*)Kernel.GC.NewObj(newObjType);
+            byte* newObjPtr = (byte*)Kernel.FOS_System.GC.NewObj(newObjType);
             GCHeader* newObjHeaderPtr = (GCHeader*)(newObjPtr - sizeof(GCHeader));
-            Assert.IsTrue(Kernel.GC.CheckSignature(newObjHeaderPtr), "Signature not set properly!");
+            Assert.IsTrue(Kernel.FOS_System.GC.CheckSignature(newObjHeaderPtr), "Signature not set properly!");
             Assert.AreEqual(1u, newObjHeaderPtr->RefCount, "Ref count not set to 1!");
-            Assert.AreEqual(startNumObjs + 1, Kernel.GC.NumObjs, "NumObjs not set correctly!");
+            Assert.AreEqual(startNumObjs + 1, Kernel.FOS_System.GC.NumObjs, "NumObjs not set correctly!");
 
             for (int i = 0; i < newObjType.Size; i++)
             {
@@ -93,10 +94,10 @@ namespace Testing._Kernel
         public void IncrementRefCount_Test()
         {
             Kernel.FOS_System.Type newObjType = new TestType();
-            byte* newObjPtr = (byte*)Kernel.GC.NewObj(newObjType);
+            byte* newObjPtr = (byte*)Kernel.FOS_System.GC.NewObj(newObjType);
             GCHeader* newObjHeaderPtr = (GCHeader*)(newObjPtr - sizeof(GCHeader));
             Assert.AreEqual(1u, newObjHeaderPtr->RefCount, "Ref count not set to 1!");
-            Kernel.GC._IncrementRefCount(newObjPtr);
+            Kernel.FOS_System.GC._IncrementRefCount(newObjPtr);
             Assert.AreEqual(2u, newObjHeaderPtr->RefCount, "Ref count not incremented!");
         }
         /// <summary>
@@ -107,15 +108,15 @@ namespace Testing._Kernel
         public void DecrementRefCount_Test()
         {
             uint minUsedBlocks = Heap.FBlock->used;
-            int startNumObjs = Kernel.GC.NumObjs;
+            int startNumObjs = Kernel.FOS_System.GC.NumObjs;
 
             Kernel.FOS_System.Type newObjType = new TestType();
-            byte* newObjPtr = (byte*)Kernel.GC.NewObj(newObjType);
+            byte* newObjPtr = (byte*)Kernel.FOS_System.GC.NewObj(newObjType);
             GCHeader* newObjHeaderPtr = (GCHeader*)(newObjPtr - sizeof(GCHeader));
             Assert.AreEqual(1u, newObjHeaderPtr->RefCount, "Ref count not set to 1!");
-            Kernel.GC._DecrementRefCount(newObjPtr);
+            Kernel.FOS_System.GC._DecrementRefCount(newObjPtr);
             Assert.AreEqual(0u, newObjHeaderPtr->RefCount, "Ref count not decremented!");
-            Assert.AreEqual(startNumObjs, Kernel.GC.NumObjs, "Num objs not decremented!");
+            Assert.AreEqual(startNumObjs, Kernel.FOS_System.GC.NumObjs, "Num objs not decremented!");
 
             Assert.AreEqual(minUsedBlocks, Heap.FBlock->used, "Memory not free'd after ref count hit 0!");
         }
@@ -131,11 +132,11 @@ namespace Testing._Kernel
         {
             get { throw new NotImplementedException(); }
         }
-        public override Type BaseType
+        public override System.Type BaseType
         {
             get { throw new NotImplementedException(); }
         }
-        public override bool IsDefined(Type attributeType, bool inherit)
+        public override bool IsDefined(System.Type attributeType, bool inherit)
         {
             throw new NotImplementedException();
         }
@@ -143,7 +144,7 @@ namespace Testing._Kernel
         {
             throw new NotImplementedException();
         }
-        public override object[] GetCustomAttributes(Type attributeType, bool inherit)
+        public override object[] GetCustomAttributes(System.Type attributeType, bool inherit)
         {
             throw new NotImplementedException();
         }
@@ -151,7 +152,7 @@ namespace Testing._Kernel
         {
             get { throw new NotImplementedException(); }
         }
-        public override Type UnderlyingSystemType
+        public override System.Type UnderlyingSystemType
         {
             get { throw new NotImplementedException(); }
         }
@@ -159,7 +160,7 @@ namespace Testing._Kernel
         {
             throw new NotImplementedException();
         }
-        public override Type GetElementType()
+        public override System.Type GetElementType()
         {
             throw new NotImplementedException();
         }
@@ -195,11 +196,11 @@ namespace Testing._Kernel
         {
             throw new NotImplementedException();
         }
-        public override Type GetNestedType(string name, System.Reflection.BindingFlags bindingAttr)
+        public override System.Type GetNestedType(string name, System.Reflection.BindingFlags bindingAttr)
         {
             throw new NotImplementedException();
         }
-        public override Type[] GetNestedTypes(System.Reflection.BindingFlags bindingAttr)
+        public override System.Type[] GetNestedTypes(System.Reflection.BindingFlags bindingAttr)
         {
             throw new NotImplementedException();
         }
@@ -207,7 +208,7 @@ namespace Testing._Kernel
         {
             throw new NotImplementedException();
         }
-        protected override System.Reflection.PropertyInfo GetPropertyImpl(string name, System.Reflection.BindingFlags bindingAttr, System.Reflection.Binder binder, Type returnType, Type[] types, System.Reflection.ParameterModifier[] modifiers)
+        protected override System.Reflection.PropertyInfo GetPropertyImpl(string name, System.Reflection.BindingFlags bindingAttr, System.Reflection.Binder binder, System.Type returnType, System.Type[] types, System.Reflection.ParameterModifier[] modifiers)
         {
             throw new NotImplementedException();
         }
@@ -219,11 +220,11 @@ namespace Testing._Kernel
         {
             throw new NotImplementedException();
         }
-        public override Type[] GetInterfaces()
+        public override System.Type[] GetInterfaces()
         {
             throw new NotImplementedException();
         }
-        public override Type GetInterface(string name, bool ignoreCase)
+        public override System.Type GetInterface(string name, bool ignoreCase)
         {
             throw new NotImplementedException();
         }
@@ -239,7 +240,7 @@ namespace Testing._Kernel
         {
             throw new NotImplementedException();
         }
-        protected override System.Reflection.MethodInfo GetMethodImpl(string name, System.Reflection.BindingFlags bindingAttr, System.Reflection.Binder binder, System.Reflection.CallingConventions callConvention, Type[] types, System.Reflection.ParameterModifier[] modifiers)
+        protected override System.Reflection.MethodInfo GetMethodImpl(string name, System.Reflection.BindingFlags bindingAttr, System.Reflection.Binder binder, System.Reflection.CallingConventions callConvention, System.Type[] types, System.Reflection.ParameterModifier[] modifiers)
         {
             throw new NotImplementedException();
         }
@@ -247,7 +248,7 @@ namespace Testing._Kernel
         {
             throw new NotImplementedException();
         }
-        protected override System.Reflection.ConstructorInfo GetConstructorImpl(System.Reflection.BindingFlags bindingAttr, System.Reflection.Binder binder, System.Reflection.CallingConventions callConvention, Type[] types, System.Reflection.ParameterModifier[] modifiers)
+        protected override System.Reflection.ConstructorInfo GetConstructorImpl(System.Reflection.BindingFlags bindingAttr, System.Reflection.Binder binder, System.Reflection.CallingConventions callConvention, System.Type[] types, System.Reflection.ParameterModifier[] modifiers)
         {
             throw new NotImplementedException();
         }

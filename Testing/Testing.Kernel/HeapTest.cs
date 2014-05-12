@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 using Kernel;
+using Kernel.FOS_System;
 
 namespace Testing._Kernel
 {

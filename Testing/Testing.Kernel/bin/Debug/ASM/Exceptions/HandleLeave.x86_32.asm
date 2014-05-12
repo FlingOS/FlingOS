@@ -1,4 +1,4 @@
-﻿method_System_Void_RETEND_Kernel_Exceptions_DECLEND_HandleLeave_NAMEEND__System_Void__:
+﻿method_System_Void_RETEND_Kernel_ExceptionMethods_DECLEND_HandleLeave_NAMEEND__System_Void__:
 
 ; Leaving a critical section cleanly
 ; We need to handle 2 cases:
@@ -29,21 +29,21 @@
 
 
 ; 0. If current exception exists, decrement exception ref count and clear current exception
-mov dword eax, [staticfield_Kernel_FOS_System_Exception_Kernel_Exceptions_CurrentException]
+mov dword eax, [staticfield_Kernel_FOS_System_Exception_Kernel_ExceptionMethods_CurrentException]
 cmp eax, 0
-jz method_System_Void_RETEND_Kernel_Exceptions_DECLEND_HandleLeave_NAMEEND__System_Void__.NoCurrentException
+jz method_System_Void_RETEND_Kernel_ExceptionMethods_DECLEND_HandleLeave_NAMEEND__System_Void__.NoCurrentException
 
-push dword [staticfield_Kernel_FOS_System_Exception_Kernel_Exceptions_CurrentException]
-call method_System_Void_RETEND_Kernel_GC_DECLEND_DecrementRefCount_NAMEEND__Kernel_FOS_System_Object_
+push dword [staticfield_Kernel_FOS_System_Exception_Kernel_ExceptionMethods_CurrentException]
+call method_System_Void_RETEND_Kernel_FOS_System_GC_DECLEND_DecrementRefCount_NAMEEND__Kernel_FOS_System_Object_
 add esp, 4
-mov dword [staticfield_Kernel_FOS_System_Exception_Kernel_Exceptions_CurrentException], 0
+mov dword [staticfield_Kernel_FOS_System_Exception_Kernel_ExceptionMethods_CurrentException], 0
 
-method_System_Void_RETEND_Kernel_Exceptions_DECLEND_HandleLeave_NAMEEND__System_Void__.NoCurrentException:
+method_System_Void_RETEND_Kernel_ExceptionMethods_DECLEND_HandleLeave_NAMEEND__System_Void__.NoCurrentException:
 
 
 ; Load address of current handler into eax
 ; Current Handler points to last element in structure (i.e. "ESP")
-mov dword eax, [staticfield_Kernel_ExceptionHandlerInfo__Kernel_Exceptions_CurrentHandlerPtr]
+mov dword eax, [staticfield_Kernel_ExceptionHandlerInfo__Kernel_ExceptionMethods_CurrentHandlerPtr]
 
 ; Set InHandler to false
 mov dword [eax+20], 0
@@ -55,7 +55,7 @@ mov dword [eax+20], 0
 mov dword ebx, [eax+12]
 ; Check to see if filter address == 0 i.e. if it is finally handler
 cmp ebx, 0
-jnz method_System_Void_RETEND_Kernel_Exceptions_DECLEND_HandleLeave_NAMEEND__System_Void__NotFinallyHandler
+jnz method_System_Void_RETEND_Kernel_ExceptionMethods_DECLEND_HandleLeave_NAMEEND__System_Void__NotFinallyHandler
 ; If we get to here, it is a finally handler
 
 ; 1.1. If it is, set continue address to handler address
@@ -67,21 +67,21 @@ mov dword [esp+4], ebx
 ; And set InHandler to true
 mov dword [eax+20], 1
 ; Continue at common code
-jmp method_System_Void_RETEND_Kernel_Exceptions_DECLEND_HandleLeave_NAMEEND__System_Void__Common
+jmp method_System_Void_RETEND_Kernel_ExceptionMethods_DECLEND_HandleLeave_NAMEEND__System_Void__Common
 
 
 ; 1.2. Else, set current exception handler to previous handler
-method_System_Void_RETEND_Kernel_Exceptions_DECLEND_HandleLeave_NAMEEND__System_Void__NotFinallyHandler:
+method_System_Void_RETEND_Kernel_ExceptionMethods_DECLEND_HandleLeave_NAMEEND__System_Void__NotFinallyHandler:
 ; If we get to here, it is not a finally handler
 ; Load previous handler address
 mov dword ebx, [eax+16]
 ; Move into CurrentHandlerPtr
-mov dword [staticfield_Kernel_ExceptionHandlerInfo__Kernel_Exceptions_CurrentHandlerPtr], ebx
+mov dword [staticfield_Kernel_ExceptionHandlerInfo__Kernel_ExceptionMethods_CurrentHandlerPtr], ebx
 
 
 
 ; Common code for case 1 and 2 after this point
-method_System_Void_RETEND_Kernel_Exceptions_DECLEND_HandleLeave_NAMEEND__System_Void__Common:
+method_System_Void_RETEND_Kernel_ExceptionMethods_DECLEND_HandleLeave_NAMEEND__System_Void__Common:
 
 ; 2. Temporaily store Continue Address (in edx)
 ; Continue address is arg 0 at ESP+4
@@ -93,7 +93,7 @@ mov dword edx, [esp+4]
 
 ; Load address of current handler into eax
 ; Current Handler points to last element in structure (i.e. "ESP")
-mov dword eax, [staticfield_Kernel_ExceptionHandlerInfo__Kernel_Exceptions_CurrentHandlerPtr]
+mov dword eax, [staticfield_Kernel_ExceptionHandlerInfo__Kernel_ExceptionMethods_CurrentHandlerPtr]
 
 ; Load EBP
 mov dword ebx, [eax+4]

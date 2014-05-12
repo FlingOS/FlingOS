@@ -3,7 +3,7 @@
 KernelFixedHeap_Start: TIMES 524288 db 0
 KernelFixedHeap_End:
 
-method_System_UInt32__RETEND_Kernel_Heap_DECLEND_GetFixedHeapPtr_NAMEEND___:
+method_System_UInt32__RETEND_Kernel_FOS_System_Heap_DECLEND_GetFixedHeapPtr_NAMEEND___:
 
 push ebp
 mov ebp, esp
@@ -16,7 +16,7 @@ pop ebp
 ret
 
 
-method_System_UInt32_RETEND_Kernel_Heap_DECLEND_GetFixedHeapSize_NAMEEND___:
+method_System_UInt32_RETEND_Kernel_FOS_System_Heap_DECLEND_GetFixedHeapSize_NAMEEND___:
 
 push ebp
 mov ebp, esp

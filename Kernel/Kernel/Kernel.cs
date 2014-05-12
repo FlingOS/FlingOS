@@ -17,7 +17,7 @@ namespace Kernel
             BasicConsole.Init();
             BasicConsole.Clear();
 
-            GC.Init();
+            FOS_System.GC.Init();
             Debug.BasicDebug.Init();
 
             BasicConsole.WriteLine();
@@ -41,7 +41,7 @@ namespace Kernel
             //Necessary for exception handling stuff to work
             //  - We must have an intial, empty handler to always 
             //    "return" to.
-            Exceptions.AddExceptionHandlerInfo((void*)0, (void*)0);
+            ExceptionMethods.AddExceptionHandlerInfo((void*)0, (void*)0);
             
             BasicConsole.WriteLine("Fling OS Running...");
 
@@ -54,7 +54,7 @@ namespace Kernel
             catch
             {
                 BasicConsole.SetTextColour(BasicConsole.error_colour);
-                if (Exceptions.CurrentException._Type == (FOS_System.Type)typeof(FOS_System.Exceptions.PageFaultException))
+                if (ExceptionMethods.CurrentException._Type == (FOS_System.Type)typeof(FOS_System.Exceptions.PageFaultException))
                 {
                     BasicConsole.WriteLine("Page fault exception unhandled!");
                 }
@@ -67,11 +67,11 @@ namespace Kernel
             }
 
             BasicConsole.SetTextColour(BasicConsole.error_colour);
-            if (GC.NumObjs > 0)
+            if (FOS_System.GC.NumObjs > 0)
             {
                 BasicConsole.WriteLine("Num Objs > 0");
             }
-            else if (GC.NumObjs < 0)
+            else if (FOS_System.GC.NumObjs < 0)
             {
                 BasicConsole.WriteLine("Num Objs < 0");
             }
@@ -129,23 +129,27 @@ namespace Kernel
                     BasicConsole.WriteLine("Addition success!");
                 }
 
+                string testStr = "test1";
+                
+                BasicConsole.WriteLine(testStr);
+
                 int y = 0;
                 int z = 0;
-                //z = x / y;
+                z = x / y;
             }
             catch
             {
                 BasicConsole.SetTextColour(BasicConsole.warning_colour);
-                BasicConsole.WriteLine(Exceptions.CurrentException.Message);
+                BasicConsole.WriteLine(ExceptionMethods.CurrentException.Message);
                 BasicConsole.SetTextColour(BasicConsole.default_colour);
 
-                if (Exceptions.CurrentException._Type == (FOS_System.Type)typeof(FOS_System.Exceptions.DivideByZeroException))
+                if (ExceptionMethods.CurrentException._Type == (FOS_System.Type)typeof(FOS_System.Exceptions.DivideByZeroException))
                 {
                     BasicConsole.WriteLine("Handled divide by zero exception.");
                 }
                 else
                 {
-                    Exceptions.Rethrow();
+                    ExceptionMethods.Rethrow();
                 }
             }
 
