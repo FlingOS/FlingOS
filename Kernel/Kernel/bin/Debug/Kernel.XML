@@ -139,6 +139,11 @@
             Ends enabling the debug interrupt handler
             </summary>
         </member>
+        <member name="M:Kernel.Debug.BasicDebug.Int3">
+            <summary>
+            Invokes interrupt 3.
+            </summary>
+        </member>
         <member name="M:Kernel.Debug.BasicDebug.Execute">
             <summary>
             The main execute method for the basic debugger
@@ -516,6 +521,17 @@
             so string literals and the like don't accidentally get treated as normal GC managed strings.
             </remarks>
             <param name="anObj">The object to decrement the ref count of.</param>
+        </member>
+        <member name="M:Kernel.GC.DecrementRefCount(Kernel.FOS_System.Object,System.Boolean)">
+            <summary>
+            Decrements the ref count of a GC managed object.
+            </summary>
+            <remarks>
+            This method checks that the pointer is not a null pointer and also checks for the GC signature 
+            so string literals and the like don't accidentally get treated as normal GC managed strings.
+            </remarks>
+            <param name="anObj">The object to decrement the ref count of.</param>
+            <param name="overrideInside">Whether to ignore the InsideGC test or not.</param>
         </member>
         <member name="M:Kernel.GC._DecrementRefCount(System.Byte*)">
             <summary>

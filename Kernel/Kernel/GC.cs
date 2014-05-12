@@ -160,7 +160,7 @@ namespace Kernel
             newObjBytePtr = (byte*)(newObjBytePtr + sizeof(GCHeader));
 
             InsideGC = false;
-
+            
             return newObjBytePtr;
         }
 
@@ -221,17 +221,38 @@ namespace Kernel
         [Compiler.NoGC]
         public static unsafe void DecrementRefCount(FOS_System.Object anObj)
         {
-            if (!GCInitialised || InsideGC || anObj == null)
+            DecrementRefCount(anObj, false);
+        }
+        /// <summary>
+        /// Decrements the ref count of a GC managed object.
+        /// </summary>
+        /// <remarks>
+        /// This method checks that the pointer is not a null pointer and also checks for the GC signature 
+        /// so string literals and the like don't accidentally get treated as normal GC managed strings.
+        /// </remarks>
+        /// <param name="anObj">The object to decrement the ref count of.</param>
+        /// <param name="overrideInside">Whether to ignore the InsideGC test or not.</param>
+        [Compiler.NoDebug]
+        [Compiler.NoGC]
+        public static unsafe void DecrementRefCount(FOS_System.Object anObj, bool overrideInside)
+        {
+            if (!GCInitialised || (InsideGC && !overrideInside) || anObj == null)
             {
                 return;
             }
 
-            InsideGC = true;
+            if (!overrideInside)
+            {
+                InsideGC = true;
+            }
 
             byte* objPtr = (byte*)Utilities.ObjectUtilities.GetHandle(anObj);
             _DecrementRefCount(objPtr);
 
-            InsideGC = false;
+            if (!overrideInside)
+            {
+                InsideGC = false;
+            }
         }
         /// <summary>
         /// Underlying method that decrements the ref count of a GC managed object.
@@ -245,11 +266,25 @@ namespace Kernel
         [Compiler.NoGC]
         public static unsafe void _DecrementRefCount(byte* objPtr)
         {
-            objPtr = (byte*)(objPtr - sizeof(GCHeader));
-            GCHeader* gcHeaderPtr = (GCHeader*)objPtr;
+            GCHeader* gcHeaderPtr = (GCHeader*)(objPtr - sizeof(GCHeader));
             if (CheckSignature(gcHeaderPtr))
             {
                 gcHeaderPtr->RefCount--;
+
+                FOS_System.Object obj = (FOS_System.Object)Utilities.ObjectUtilities.GetObject(objPtr);
+                if (obj._Type == (FOS_System.Type)typeof(FOS_System.Array))
+                {
+                    //Decrement ref count of elements
+                    FOS_System.Array arr = (FOS_System.Array)obj;
+                    if (!arr.elemType.IsValueType)
+                    {
+                        FOS_System.Object[] objArr = (FOS_System.Object[])Utilities.ObjectUtilities.GetObject(objPtr);
+                        for (int i = 0; i < arr.length; i++)
+                        {
+                            DecrementRefCount(objArr[i], true);
+                        }
+                    }
+                }
 
                 if (gcHeaderPtr->RefCount <= 0)
                 {

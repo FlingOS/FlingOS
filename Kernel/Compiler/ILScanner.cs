@@ -1140,18 +1140,14 @@ namespace Kernel.Compiler
                                                 asm += "\r\n" + StackSwitchOp.Convert(new ILOpInfo()
                                                 {
                                                 }, TheScannerState);
+                                                StackItem switchItem1 = TheScannerState.CurrentStackFrame.Stack.Pop();
+                                                StackItem switchItem2 = TheScannerState.CurrentStackFrame.Stack.Pop();
+                                                TheScannerState.CurrentStackFrame.Stack.Push(switchItem1);
+                                                TheScannerState.CurrentStackFrame.Stack.Push(switchItem2);
                                                 asm += "\r\n" + TargetILOps[ILOps.ILOp.OpCodes.Dup].Convert(new ILOpInfo()
                                                 {
                                                     opCode = System.Reflection.Emit.OpCodes.Dup
                                                 }, TheScannerState);
-
-                                                ////Temp op
-                                                //asm += "\r\n" + TargetILOps[ILOps.ILOp.OpCodes.Pop].Convert(new ILOpInfo()
-                                                //{
-                                                //    opCode = System.Reflection.Emit.OpCodes.Pop
-                                                //}, TheScannerState);
-                                                ////End temp op
-
                                                 asm += "\r\n" + TargetILOps[ILOps.ILOp.OpCodes.Ldfld].Convert(new ILOpInfo()
                                                 {
                                                     opCode = System.Reflection.Emit.OpCodes.Ldfld,
@@ -1165,6 +1161,130 @@ namespace Kernel.Compiler
                                                 asm += "\r\n" + StackSwitchOp.Convert(new ILOpInfo()
                                                 {
                                                 }, TheScannerState);
+                                                switchItem1 = TheScannerState.CurrentStackFrame.Stack.Pop();
+                                                switchItem2 = TheScannerState.CurrentStackFrame.Stack.Pop();
+                                                TheScannerState.CurrentStackFrame.Stack.Push(switchItem1);
+                                                TheScannerState.CurrentStackFrame.Stack.Push(switchItem2);
+
+                                                IncRefCount = true;
+                                            }
+                                        }
+                                        break;
+                                    case ILOps.ILOp.OpCodes.Stelem:
+                                    case ILOps.ILOp.OpCodes.Stelem_Ref:
+                                        {
+                                            bool doDecrement = false;
+                                            bool isRefOp = false;
+                                            if ((ILOps.ILOp.OpCodes)anILOpInfo.opCode.Value == ILOps.ILOp.OpCodes.Stelem_Ref)
+                                            {
+                                                doDecrement = true;
+                                                isRefOp = true;
+                                            }
+                                            else
+                                            {
+                                                int metadataToken = Utils.ReadInt32(anILOpInfo.ValueBytes, 0);
+                                                Type elementType = aChunk.Method.Module.ResolveType(metadataToken);
+                                                doDecrement = Utils.IsGCManaged(elementType);
+                                            }
+
+                                            if (doDecrement)
+                                            {
+                                                // Items on stack:
+                                                //  - Array reference
+                                                //  - Index
+                                                //  - (New) Value to store
+                                                //
+                                                // We want to load the current value of the element at Index in the array
+                                                //  for which we must duplicate the array ref and index
+                                                // But first, we must remove the (new) value to store
+                                                //  off the stack, while also storing it to put back
+                                                //  on the stack after so the store can continue
+                                                //
+                                                // So:
+                                                //      1. Switch (rotate) 1 times the top 3 values so that index is on top
+                                                //      2. Duplicate the index
+                                                //      3. Switch (rotate) 2 times the top 4 values so that array ref is on top
+                                                //      4. Duplicate the array ref
+                                                //      5. Switch (rotate) 4 times the top 5 values so that duplicate array ref and index are on top
+                                                //      6. Do LdElem op to load existing element value
+                                                //      7. Call GC.DecrementRefCount
+                                                //      8. Switch (rotate) 1 times the top 3 values so that the stack is in its original state
+                                                //      (9. Continue to incremenet ref count as normal)
+
+                                                #region 1.
+                                                asm += "\r\n" + StackSwitchOp.Convert(new ILOpInfo()
+                                                {
+                                                    ValueBytes = BitConverter.GetBytes(3)
+                                                }, TheScannerState);
+
+                                                rotateStackItems(3, 1);
+                                                #endregion
+                                                #region 2.
+                                                    asm += "\r\n" + TargetILOps[ILOps.ILOp.OpCodes.Dup].Convert(new ILOpInfo()
+                                                    {
+                                                        opCode = System.Reflection.Emit.OpCodes.Dup
+                                                    }, TheScannerState);
+                                                #endregion
+                                                #region 3.
+                                                asm += "\r\n" + StackSwitchOp.Convert(new ILOpInfo()
+                                                {
+                                                    ValueBytes = BitConverter.GetBytes(4)
+                                                }, TheScannerState);
+                                                asm += "\r\n" + StackSwitchOp.Convert(new ILOpInfo()
+                                                {
+                                                    ValueBytes = BitConverter.GetBytes(4)
+                                                }, TheScannerState);
+
+                                                rotateStackItems(4, 2);
+                                                #endregion
+                                                #region 4.
+                                                asm += "\r\n" + TargetILOps[ILOps.ILOp.OpCodes.Dup].Convert(new ILOpInfo()
+                                                {
+                                                    opCode = System.Reflection.Emit.OpCodes.Dup
+                                                }, TheScannerState);
+                                                #endregion
+                                                #region 5.
+                                                asm += "\r\n" + StackSwitchOp.Convert(new ILOpInfo()
+                                                {
+                                                    ValueBytes = BitConverter.GetBytes(5)
+                                                }, TheScannerState);
+                                                asm += "\r\n" + StackSwitchOp.Convert(new ILOpInfo()
+                                                {
+                                                    ValueBytes = BitConverter.GetBytes(5)
+                                                }, TheScannerState);
+                                                asm += "\r\n" + StackSwitchOp.Convert(new ILOpInfo()
+                                                {
+                                                    ValueBytes = BitConverter.GetBytes(5)
+                                                }, TheScannerState);
+                                                asm += "\r\n" + StackSwitchOp.Convert(new ILOpInfo()
+                                                {
+                                                    ValueBytes = BitConverter.GetBytes(5)
+                                                }, TheScannerState);
+
+                                                rotateStackItems(5, 4);
+                                                #endregion
+                                                #region 6.
+                                                asm += "\r\n" + TargetILOps[isRefOp ? ILOps.ILOp.OpCodes.Ldelem_Ref : ILOps.ILOp.OpCodes.Ldelem].Convert(new ILOpInfo()
+                                                {
+                                                    opCode = isRefOp ? System.Reflection.Emit.OpCodes.Ldelem_Ref : System.Reflection.Emit.OpCodes.Ldelem,
+                                                    ValueBytes = anILOpInfo.ValueBytes
+                                                }, TheScannerState);
+                                                #endregion
+                                                #region 7.
+                                                asm += "\r\n" + TargetILOps[ILOps.ILOp.OpCodes.Call].Convert(new ILOpInfo()
+                                                {
+                                                    opCode = System.Reflection.Emit.OpCodes.Call,
+                                                    MethodToCall = TheScannerState.DecrementRefCountMethod
+                                                }, TheScannerState);
+                                                #endregion
+                                                #region 8.
+                                                asm += "\r\n" + StackSwitchOp.Convert(new ILOpInfo()
+                                                {
+                                                    ValueBytes = BitConverter.GetBytes(3)
+                                                }, TheScannerState);
+
+                                                rotateStackItems(3, 1);
+                                                #endregion
 
                                                 IncRefCount = true;
                                             }
@@ -1316,6 +1436,27 @@ namespace Kernel.Compiler
             #endregion
 
             return result;
+        }
+
+        private void rotateStackItems(int items, int distance)
+        {
+            if (distance >= items)
+            {
+                throw new IndexOutOfRangeException("IlScanner.rotateStackItems: distance >= items invalid!");
+            }
+            List<StackItem> poppedItems = new List<StackItem>();
+            for (int i = 0; i < items; i++)
+            {
+                poppedItems.Add(TheScannerState.CurrentStackFrame.Stack.Pop());
+            }
+            for (int i = distance; i > -1; i--)
+            {
+                TheScannerState.CurrentStackFrame.Stack.Push(poppedItems[i]);
+            }
+            for (int i = items - 1; i > distance; i--)
+            {
+                TheScannerState.CurrentStackFrame.Stack.Push(poppedItems[i]);
+            }
         }
 
         /// <summary>

@@ -108,7 +108,16 @@ namespace Kernel
         {
             try
             {
+                FOS_System.Object[] objArr = new FOS_System.Object[10];
+                objArr[0] = new FOS_System.Object();
+                objArr[0]._Type.Size = 5;
+                if (objArr[0]._Type.Size == 5)
+                {
+                    Console.WriteLine("Success!");
+                }
+
                 int[] testArray = new int[1024];
+                testArray[5] = 10;
                 int x = testArray[5];
 
                 x = 1;

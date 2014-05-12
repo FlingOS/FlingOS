@@ -80,6 +80,7 @@
     <Compile Include="ILChunk.cs" />
     <Compile Include="ILCompiler.cs" />
     <Compile Include="ILOpInfo.cs" />
+    <Compile Include="ILOps\Stelem.cs" />
     <Compile Include="ILOps\Ldelem.cs" />
     <Compile Include="ILOps\NewArr.cs" />
     <Compile Include="ILOps\StackSwitch.cs" />

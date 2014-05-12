@@ -46,6 +46,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Stelem.cs" />
     <Compile Include="Ldelem.cs" />
     <Compile Include="NewArr.cs" />
     <Compile Include="StackSwitch.cs" />

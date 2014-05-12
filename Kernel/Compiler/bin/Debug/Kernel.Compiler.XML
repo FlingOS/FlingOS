@@ -875,37 +875,29 @@
             as a debug interrupt e.g. Int3 on x86 architecture
             </example>
         </member>
-        <member name="T:Kernel.Compiler.ILOps.Ldelem">
+        <member name="T:Kernel.Compiler.ILOps.Stelem">
             <summary>
             Handles the 
-            <see cref="F:System.Reflection.Emit.OpCodes.Ldelem"/>, 
-            <see cref="F:System.Reflection.Emit.OpCodes.Ldelem_I"/>, 
-            <see cref="F:System.Reflection.Emit.OpCodes.Ldelem_I1"/>, 
-            <see cref="F:System.Reflection.Emit.OpCodes.Ldelem_I2"/>, 
-            <see cref="F:System.Reflection.Emit.OpCodes.Ldelem_I4"/>, 
-            <see cref="F:System.Reflection.Emit.OpCodes.Ldelem_I8"/>,
-            <see cref="F:System.Reflection.Emit.OpCodes.Ldelem_R4"/>, 
-            <see cref="F:System.Reflection.Emit.OpCodes.Ldelem_R8"/>, 
-            <see cref="F:System.Reflection.Emit.OpCodes.Ldelem_U1"/>, 
-            <see cref="F:System.Reflection.Emit.OpCodes.Ldelem_U2"/>, 
-            <see cref="F:System.Reflection.Emit.OpCodes.Ldelem_U4"/> and 
-            <see cref="F:System.Reflection.Emit.OpCodes.Ldelema"/> IL ops.
+            <see cref="F:System.Reflection.Emit.OpCodes.Stelem"/>, 
+            <see cref="F:System.Reflection.Emit.OpCodes.Stelem_I"/>, 
+            <see cref="F:System.Reflection.Emit.OpCodes.Stelem_I1"/>, 
+            <see cref="F:System.Reflection.Emit.OpCodes.Stelem_I2"/>, 
+            <see cref="F:System.Reflection.Emit.OpCodes.Stelem_I4"/>, 
+            <see cref="F:System.Reflection.Emit.OpCodes.Stelem_I8"/>,
+            <see cref="F:System.Reflection.Emit.OpCodes.Stelem_R4"/> and 
+            <see cref="F:System.Reflection.Emit.OpCodes.Stelem_R8"/> IL ops.
             </summary>
             <remarks>
             See MSDN for details of these ops.
             </remarks>
-            <seealso cref="F:System.Reflection.Emit.OpCodes.Ldelem"/> 
-            <seealso cref="F:System.Reflection.Emit.OpCodes.Ldelem_I"/> 
-            <seealso cref="F:System.Reflection.Emit.OpCodes.Ldelem_I1"/> 
-            <seealso cref="F:System.Reflection.Emit.OpCodes.Ldelem_I2"/> 
-            <seealso cref="F:System.Reflection.Emit.OpCodes.Ldelem_I4"/> 
-            <seealso cref="F:System.Reflection.Emit.OpCodes.Ldelem_I8"/>
-            <seealso cref="F:System.Reflection.Emit.OpCodes.Ldelem_R4"/> 
-            <seealso cref="F:System.Reflection.Emit.OpCodes.Ldelem_R8"/> 
-            <seealso cref="F:System.Reflection.Emit.OpCodes.Ldelem_U1"/> 
-            <seealso cref="F:System.Reflection.Emit.OpCodes.Ldelem_U2"/> 
-            <seealso cref="F:System.Reflection.Emit.OpCodes.Ldelem_U4"/>
-            <seealso cref="F:System.Reflection.Emit.OpCodes.Ldelema"/>
+            <seealso cref="F:System.Reflection.Emit.OpCodes.Stelem"/> 
+            <seealso cref="F:System.Reflection.Emit.OpCodes.Stelem_I"/> 
+            <seealso cref="F:System.Reflection.Emit.OpCodes.Stelem_I1"/> 
+            <seealso cref="F:System.Reflection.Emit.OpCodes.Stelem_I2"/> 
+            <seealso cref="F:System.Reflection.Emit.OpCodes.Stelem_I4"/> 
+            <seealso cref="F:System.Reflection.Emit.OpCodes.Stelem_I8"/>
+            <seealso cref="F:System.Reflection.Emit.OpCodes.Stelem_R4"/> 
+            <seealso cref="F:System.Reflection.Emit.OpCodes.Stelem_R8"/>
         </member>
         <member name="T:Kernel.Compiler.ILOps.ILOp">
             <summary>
@@ -1838,6 +1830,38 @@
             <summary> - </summary>
             <remarks></remarks> 
         </member>
+        <member name="T:Kernel.Compiler.ILOps.Ldelem">
+            <summary>
+            Handles the 
+            <see cref="F:System.Reflection.Emit.OpCodes.Ldelem"/>, 
+            <see cref="F:System.Reflection.Emit.OpCodes.Ldelem_I"/>, 
+            <see cref="F:System.Reflection.Emit.OpCodes.Ldelem_I1"/>, 
+            <see cref="F:System.Reflection.Emit.OpCodes.Ldelem_I2"/>, 
+            <see cref="F:System.Reflection.Emit.OpCodes.Ldelem_I4"/>, 
+            <see cref="F:System.Reflection.Emit.OpCodes.Ldelem_I8"/>,
+            <see cref="F:System.Reflection.Emit.OpCodes.Ldelem_R4"/>, 
+            <see cref="F:System.Reflection.Emit.OpCodes.Ldelem_R8"/>, 
+            <see cref="F:System.Reflection.Emit.OpCodes.Ldelem_U1"/>, 
+            <see cref="F:System.Reflection.Emit.OpCodes.Ldelem_U2"/>, 
+            <see cref="F:System.Reflection.Emit.OpCodes.Ldelem_U4"/> and 
+            <see cref="F:System.Reflection.Emit.OpCodes.Ldelema"/> IL ops.
+            </summary>
+            <remarks>
+            See MSDN for details of these ops.
+            </remarks>
+            <seealso cref="F:System.Reflection.Emit.OpCodes.Ldelem"/> 
+            <seealso cref="F:System.Reflection.Emit.OpCodes.Ldelem_I"/> 
+            <seealso cref="F:System.Reflection.Emit.OpCodes.Ldelem_I1"/> 
+            <seealso cref="F:System.Reflection.Emit.OpCodes.Ldelem_I2"/> 
+            <seealso cref="F:System.Reflection.Emit.OpCodes.Ldelem_I4"/> 
+            <seealso cref="F:System.Reflection.Emit.OpCodes.Ldelem_I8"/>
+            <seealso cref="F:System.Reflection.Emit.OpCodes.Ldelem_R4"/> 
+            <seealso cref="F:System.Reflection.Emit.OpCodes.Ldelem_R8"/> 
+            <seealso cref="F:System.Reflection.Emit.OpCodes.Ldelem_U1"/> 
+            <seealso cref="F:System.Reflection.Emit.OpCodes.Ldelem_U2"/> 
+            <seealso cref="F:System.Reflection.Emit.OpCodes.Ldelem_U4"/>
+            <seealso cref="F:System.Reflection.Emit.OpCodes.Ldelema"/>
+        </member>
         <member name="T:Kernel.Compiler.ILOps.Newarr">
             <summary>
             Handles the 
@@ -1850,7 +1874,10 @@
         </member>
         <member name="T:Kernel.Compiler.ILOps.StackSwitch">
             <summary>
-            Custom IL op that switches the top two stack items with eacother.
+            Custom IL op that rotates (upwards) the specified number of top-most stack items with eachother. 
+            Does not alter compiler record of stack - caller must do that. 
+            Acts totally ignorant of item types (e.g. int or float). Only moves dwords. Number of dwords to move should be in value 
+            bytes. Null value bytes indicates rotate (switch) top two items.
             </summary>
             <remarks>
             This must at least have an empty stub implementation or the compiler

@@ -21,25 +21,28 @@ namespace Kernel.Compiler.Architectures.x86_32
         {
             StringBuilder result = new StringBuilder();
 
-            StackItem itemA = aScannerState.CurrentStackFrame.Stack.Pop();
-            StackItem itemB = aScannerState.CurrentStackFrame.Stack.Pop();
-
-            if (itemA.isFloat || itemB.isFloat)
+            int dwordsToRotate = anILOpInfo.ValueBytes == null ? 2 : BitConverter.ToInt32(anILOpInfo.ValueBytes, 0);
+            
+            int bytesShift = 0;
+            for (int i = 0; i < dwordsToRotate; i++)
             {
-                throw new NotSupportedException("Switching floats not supported!");
+                if (i == 0)
+                {
+                    result.AppendLine(string.Format("mov eax, [esp+{0}]", bytesShift));
+                    result.AppendLine(string.Format("mov dword ebx, [esp+{0}]", bytesShift + 4));
+                    result.AppendLine(string.Format("mov dword [esp+{0}], ebx", bytesShift));
+                }
+                else if (i == dwordsToRotate - 1)
+                {
+                    result.AppendLine(string.Format("mov [esp+{0}], eax", bytesShift));
+                }
+                else
+                {
+                    result.AppendLine(string.Format("mov dword ebx, [esp+{0}]", bytesShift + 4));
+                    result.AppendLine(string.Format("mov dword [esp+{0}], ebx", bytesShift));
+                }
+                bytesShift += 4;
             }
-            else if (itemA.sizeOnStackInBytes != 4 || itemB.sizeOnStackInBytes != 4)
-            {
-                throw new NotSupportedException("Switching non int32 values not supported!");
-            }
-
-            result.AppendLine("mov eax, [esp]");
-            result.AppendLine("mov ebx, [esp+4]");
-            result.AppendLine("mov [esp+4], eax");
-            result.AppendLine("mov [esp], ebx");
-
-            aScannerState.CurrentStackFrame.Stack.Push(itemA);
-            aScannerState.CurrentStackFrame.Stack.Push(itemB);
 
             return result.ToString().Trim();
         }

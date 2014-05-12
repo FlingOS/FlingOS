@@ -68,3 +68,4 @@ G:\Fling OS\Fling OS\Kernel\Kernel\bin\Debug\ASM\ObjectUtilities\GetObject.x86_3
 G:\Fling OS\Fling OS\Kernel\Kernel\bin\Debug\ASM\ObjectUtilities\GetHandle.x86_32.asm
 G:\Fling OS\Fling OS\Kernel\Kernel\bin\Debug\Kernel.Utilities.dll
 G:\Fling OS\Fling OS\Kernel\Kernel\bin\Debug\Kernel.Utilities.pdb
+G:\Fling OS\Fling OS\Kernel\Kernel\bin\Debug\ASM\Debug\Break.x86_32.asm

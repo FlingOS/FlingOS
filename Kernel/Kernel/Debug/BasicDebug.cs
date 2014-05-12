@@ -69,6 +69,14 @@ namespace Kernel.Debug
         }
 
         /// <summary>
+        /// Invokes interrupt 3.
+        /// </summary>
+        [Compiler.PluggedMethod(ASMFilePath = @"ASM\Debug\Break")]
+        public static void Int3()
+        {
+        }
+
+        /// <summary>
         /// The main execute method for the basic debugger
         /// </summary>
         [Compiler.PluggedMethod(ASMFilePath=@"..\..\ASM\Debug\Execute")]
