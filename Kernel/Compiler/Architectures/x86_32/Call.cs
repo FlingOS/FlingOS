@@ -75,15 +75,19 @@ namespace Kernel.Compiler.Architectures.x86_32
                 //Stores the number of bytes to add
                 int bytesToAdd = 0;
                 //All the parameters for the method that was called
-                ParameterInfo[] allParams = ((MethodInfo)methodToCall).GetParameters();
+                List<Type> allParams = ((MethodInfo)methodToCall).GetParameters().Select(x => x.ParameterType).ToList();
                 //Go through each one
-                foreach (ParameterInfo aParam in allParams)
+                if (!methodToCall.IsStatic)
+                {
+                    allParams.Insert(0, methodToCall.DeclaringType);
+                }
+                foreach (Type aParam in allParams)
                 {
                     //Pop the paramter off our stack 
                     //(Note: Return value was never pushed onto our stack. See above)
                     aScannerState.CurrentStackFrame.Stack.Pop();
                     //Add the size of the paramter to the total number of bytes to pop
-                    bytesToAdd += Utils.GetNumBytesForType(aParam.ParameterType);
+                    bytesToAdd += Utils.GetNumBytesForType(aParam);
                 }
                 //If the number of bytes to add to skip over params is > 0
                 if (bytesToAdd > 0)
