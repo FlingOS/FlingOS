@@ -230,6 +230,16 @@
             Whether execution is currently inside the try-section or the handler-section of this exception handler info.
             </summary>
         </member>
+        <member name="T:Kernel.FOS_System.Exceptions.ArgumentException">
+            <summary>
+            Represents an argument exception.
+            </summary>
+        </member>
+        <member name="M:Kernel.FOS_System.Exceptions.ArgumentException.#ctor(System.String)">
+            <summary>
+            Sets the message to "Argument exception."
+            </summary>
+        </member>
         <member name="T:Kernel.FOS_System.Exceptions.InvalidOpCodeException">
             <summary>
             Represents an invalid op-code exception.
@@ -378,6 +388,13 @@
             with regards to pushing params onto the stack.</remarks>
             <param name="theType">The type of element in the array to create.</param>
             <returns>A pointer to the new array in memory.</returns>
+        </member>
+        <member name="M:Kernel.FOS_System.GC.NewString(System.Int32)">
+            <summary>
+            DO NOT CALL DIRECTLY. Use FOS_System.String.New
+            Creates a new string with specified length (but does not call the default constructor).
+            </summary>
+            <returns>A pointer to the new string in memory.</returns>
         </member>
         <member name="M:Kernel.FOS_System.GC.IncrementRefCount(Kernel.FOS_System.Object)">
             <summary>
@@ -612,6 +629,16 @@
             <remarks>
             Skips over the length dword at the start of the string.
             </remarks>
+        </member>
+        <member name="M:Kernel.FOS_System.String.New(System.Int32)">
+            <summary>
+            Creates a new, blank FOS_System.String of specified length.
+            IMPORTANT NOTE: You MUST assign the return value of this to a variable / local / arg / 
+            field etc. You may not use IL or C# that results in an IL Pop op of the return value
+            of this method as it will screw up the GC RefCount handling.
+            </summary>
+            <param name="length">The length of the string to create.</param>
+            <returns>The new string.</returns>
         </member>
         <member name="T:Kernel.FOS_System.Type">
             <summary>

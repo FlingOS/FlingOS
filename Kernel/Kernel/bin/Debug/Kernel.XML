@@ -76,7 +76,7 @@
             Clears the output to all black.
             </summary>
         </member>
-        <member name="M:Kernel.BasicConsole.Write(System.String)">
+        <member name="M:Kernel.BasicConsole.Write(Kernel.FOS_System.String)">
             <summary>
             Writes the specified string to the output at the current offset. 
             </summary>
@@ -86,7 +86,7 @@
             of the screen.
             </remarks>
         </member>
-        <member name="M:Kernel.BasicConsole.WriteLine(System.String)">
+        <member name="M:Kernel.BasicConsole.WriteLine(Kernel.FOS_System.String)">
             <summary>
             Writes the specified string to the output at the current offset then moves the offset to the end of the line.
             </summary>
@@ -237,17 +237,6 @@
             </summary>
             <returns>The UInt32 read.</returns>
         </member>
-        <member name="M:Kernel.Debug.BasicDebug.ClearMessage">
-            <summary>
-            Clears the screen
-            </summary>
-        </member>
-        <member name="M:Kernel.Debug.BasicDebug.DisplayMessage(System.String)">
-            <summary>
-            Displays the specified message to the screen.
-            </summary>
-            <param name="message">The message to display.</param>
-        </member>
         <member name="M:Kernel.Debug.BasicDebug.InterruptHandler">
             <summary>
             Inserts the plug for the Int1 and Int3 interrupt handler.
@@ -309,7 +298,8 @@
         </member>
         <member name="M:Kernel.PreReqs.WriteDebugVideo(System.String,System.UInt32)">
             <summary>
-            Writes a piece of text to the first line of the screen
+            Writes a piece of text to the first line of the screen. Note: Does not use same string memory structure as C# so cannot be called
+            from C#. Uses format of: Length as DWORD, Characters as BYTE
             </summary>
             <param name="aText">The text to write. First dword should be the length of the string. (Inserted by compiler for string literals)</param>
             <param name="aColour">The foreground/background (DOS) colour to write in - 0xXY where X is background colour and Y is foreground colour.</param>

@@ -2174,12 +2174,14 @@
         </member>
         <member name="T:Kernel.Compiler.ILOps.Call">
             <summary>
-            Handles the <see cref="F:System.Reflection.Emit.OpCodes.Call"/> IL op.
+            Handles the <see cref="F:System.Reflection.Emit.OpCodes.Call"/> and 
+            Handles the <see cref="F:System.Reflection.Emit.OpCodes.Callvirt"/> IL ops.
             </summary>
             <remarks>
             See MSDN for details of this op.
             </remarks>
             <seealso cref="F:System.Reflection.Emit.OpCodes.Call"/>
+            <seealso cref="F:System.Reflection.Emit.OpCodes.Callvirt"/>
         </member>
         <member name="T:Kernel.Compiler.ILOps.Clt">
             <summary>
