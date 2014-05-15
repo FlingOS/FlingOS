@@ -524,14 +524,14 @@ FuncDebugStart :
 FuncDebugEnd   :   
 Custom         :   (none)
 
-Function       : In MetaData, [000007D6][0001:000007D6], len = 000001AF, ManagedMain
+Function       : In MetaData, [000007D6][0001:000007D6], len = 00000201, ManagedMain
                  Function attribute:
                  Function info:
 FuncDebugStart :   
 FuncDebugEnd   :   
-Block          :   static, [000007D6][0001:000007D6], len = 000001AF, (none)
+Block          :   static, [000007D6][0001:000007D6], len = 00000201, (none)
 Data           :     Slot, [00000009], Local, CS$4$0000
-Block          :     static, [000007D7][0001:000007D7], len = 000000D3, (none)
+Block          :     static, [000007D7][0001:000007D7], len = 00000125, (none)
 Data           :       Slot, [00000000], Local, testStr
 Data           :       Slot, [00000001], Local, objArr
 Data           :       Slot, [00000002], Local, testArray
@@ -540,23 +540,23 @@ Data           :       Slot, [00000004], Local, obj
 Data           :       Slot, [00000005], Local, x
 Data           :       Slot, [00000006], Local, y
 Data           :       Slot, [00000007], Local, z
-Block          :     static, [000008B0][0001:000008B0], len = 000000C1, (none)
+Block          :     static, [00000902][0001:00000902], len = 000000C1, (none)
 Data           :       Slot, [00000008], Local, currExceptionType
 Custom         :   (none)
 
 ** Module: Kernel.Dummy
 
 
-Function       : In MetaData, [00000985][0001:00000985], len = 00000013, Add
+Function       : In MetaData, [000009D7][0001:000009D7], len = 00000013, Add
                  Function attribute:
                  Function info:
 FuncDebugStart :   
 FuncDebugEnd   :   
-Block          :   static, [00000985][0001:00000985], len = 00000013, (none)
+Block          :   static, [000009D7][0001:000009D7], len = 00000013, (none)
 Data           :     Slot, [00000000], Local, CS$1$0000
 Custom         :   (none)
 
-Function       : In MetaData, [00000998][0001:00000998], len = 00000018, .ctor
+Function       : In MetaData, [000009EA][0001:000009EA], len = 0000001F, .ctor
                  Function attribute:
                  Function info:
 FuncDebugStart :   
@@ -568,7 +568,7 @@ Custom         :   (none)
 *** GLOBALS
 
 Function: [000005B3][0001:000005B3] MainEntrypoint
-Function: [00000985][0001:00000985] Add
+Function: [000009D7][0001:000009D7] Add
 Function: [00000590][0001:00000590] GetKernelMemStartPtr
 Function: [0000029A][0001:0000029A] WriteLine
 Function: [000001A6][0001:000001A6] WriteLine
@@ -580,7 +580,7 @@ Function: [0000007D][0001:0000007D] Clear
 Function: [000005DD][0001:000005DD] Main
 Function: [00000598][0001:00000598] GetKernelMemEndPtr
 Function: [000003CF][0001:000003CF] BeginEnableDebug
-Function: [00000998][0001:00000998] .ctor
+Function: [000009EA][0001:000009EA] .ctor
 Function: [000005DB][0001:000005DB] CallStaticConstructors
 Function: [000003E5][0001:000003E5] Serial_WriteByte
 Function: [000003E9][0001:000003E9] Serial_WriteUInt32
@@ -1276,51 +1276,63 @@ Compiland = Kernel.Dummy
 	line 154 at [00000887][0001:00000887], len = 0x1
 	line 155 at [00000888][0001:00000888], len = 0x10
 	line 156 at [00000898][0001:00000898], len = 0x1
-	line 158 at [00000899][0001:00000899], len = 0x3
-	line 159 at [0000089C][0001:0000089C], len = 0x3
-	line 160 at [0000089F][0001:0000089F], len = 0x3
-	line 161 at [000008A2][0001:000008A2], len = 0x7
-	line 162 at [000008A9][0001:000008A9], len = 0x1
-	line 16707566 at [000008AA][0001:000008AA], len = 0x5
-	line 163 at [000008AF][0001:000008AF], len = 0x1
-	line 164 at [000008B0][0001:000008B0], len = 0x1
-	line 165 at [000008B1][0001:000008B1], len = 0xB
-	line 166 at [000008BC][0001:000008BC], len = 0x15
-	line 167 at [000008D1][0001:000008D1], len = 0xB
-	line 169 at [000008DC][0001:000008DC], len = 0xC
-	line 170 at [000008E8][0001:000008E8], len = 0x1B
-	line 16707566 at [00000903][0001:00000903], len = 0x4
-	line 171 at [00000907][0001:00000907], len = 0x1
-	line 172 at [00000908][0001:00000908], len = 0x10
-	line 173 at [00000918][0001:00000918], len = 0x1
-	line 16707566 at [00000919][0001:00000919], len = 0x2
-	line 174 at [0000091B][0001:0000091B], len = 0x1B
-	line 16707566 at [00000936][0001:00000936], len = 0x4
-	line 175 at [0000093A][0001:0000093A], len = 0x1
-	line 176 at [0000093B][0001:0000093B], len = 0x10
-	line 177 at [0000094B][0001:0000094B], len = 0x1A
-	line 178 at [00000965][0001:00000965], len = 0x1
-	line 16707566 at [00000966][0001:00000966], len = 0x2
-	line 180 at [00000968][0001:00000968], len = 0x1
-	line 181 at [00000969][0001:00000969], len = 0x6
-	line 182 at [0000096F][0001:0000096F], len = 0x1
-	line 183 at [00000970][0001:00000970], len = 0x1
-	line 16707566 at [00000971][0001:00000971], len = 0x2
-	line 16707566 at [00000973][0001:00000973], len = 0x1
-	line 185 at [00000974][0001:00000974], len = 0x10
-	line 186 at [00000984][0001:00000984], len = 0x1
+	line 158 at [00000899][0001:00000899], len = 0xF
+	line 16707566 at [000008A8][0001:000008A8], len = 0x4
+	line 159 at [000008AC][0001:000008AC], len = 0x1
+	line 160 at [000008AD][0001:000008AD], len = 0x10
+	line 161 at [000008BD][0001:000008BD], len = 0x1
+	line 162 at [000008BE][0001:000008BE], len = 0x8
+	line 163 at [000008C6][0001:000008C6], len = 0xF
+	line 16707566 at [000008D5][0001:000008D5], len = 0x4
+	line 164 at [000008D9][0001:000008D9], len = 0x1
+	line 165 at [000008DA][0001:000008DA], len = 0x10
+	line 166 at [000008EA][0001:000008EA], len = 0x1
+	line 168 at [000008EB][0001:000008EB], len = 0x3
+	line 169 at [000008EE][0001:000008EE], len = 0x3
+	line 170 at [000008F1][0001:000008F1], len = 0x3
+	line 171 at [000008F4][0001:000008F4], len = 0x7
+	line 172 at [000008FB][0001:000008FB], len = 0x1
+	line 16707566 at [000008FC][0001:000008FC], len = 0x5
+	line 173 at [00000901][0001:00000901], len = 0x1
+	line 174 at [00000902][0001:00000902], len = 0x1
+	line 175 at [00000903][0001:00000903], len = 0xB
+	line 176 at [0000090E][0001:0000090E], len = 0x15
+	line 177 at [00000923][0001:00000923], len = 0xB
+	line 179 at [0000092E][0001:0000092E], len = 0xC
+	line 180 at [0000093A][0001:0000093A], len = 0x1B
+	line 16707566 at [00000955][0001:00000955], len = 0x4
+	line 181 at [00000959][0001:00000959], len = 0x1
+	line 182 at [0000095A][0001:0000095A], len = 0x10
+	line 183 at [0000096A][0001:0000096A], len = 0x1
+	line 16707566 at [0000096B][0001:0000096B], len = 0x2
+	line 184 at [0000096D][0001:0000096D], len = 0x1B
+	line 16707566 at [00000988][0001:00000988], len = 0x4
+	line 185 at [0000098C][0001:0000098C], len = 0x1
+	line 186 at [0000098D][0001:0000098D], len = 0x10
+	line 187 at [0000099D][0001:0000099D], len = 0x1A
+	line 188 at [000009B7][0001:000009B7], len = 0x1
+	line 16707566 at [000009B8][0001:000009B8], len = 0x2
+	line 190 at [000009BA][0001:000009BA], len = 0x1
+	line 191 at [000009BB][0001:000009BB], len = 0x6
+	line 192 at [000009C1][0001:000009C1], len = 0x1
+	line 193 at [000009C2][0001:000009C2], len = 0x1
+	line 16707566 at [000009C3][0001:000009C3], len = 0x2
+	line 16707566 at [000009C5][0001:000009C5], len = 0x1
+	line 195 at [000009C6][0001:000009C6], len = 0x10
+	line 196 at [000009D6][0001:000009D6], len = 0x1
 
 ** Add
 
-	line 195 at [00000985][0001:00000985], len = 0x1	g:\Fling OS\Fling OS\Kernel\Kernel\Kernel.cs
-	line 196 at [00000986][0001:00000986], len = 0x10
-	line 197 at [00000996][0001:00000996], len = 0x2
+	line 215 at [000009D7][0001:000009D7], len = 0x1	g:\Fling OS\Fling OS\Kernel\Kernel\Kernel.cs
+	line 216 at [000009D8][0001:000009D8], len = 0x10
+	line 217 at [000009E8][0001:000009E8], len = 0x2
 
 ** .ctor
 
-	line 191 at [00000998][0001:00000998], len = 0x8	g:\Fling OS\Fling OS\Kernel\Kernel\Kernel.cs
-	line 192 at [000009A0][0001:000009A0], len = 0x8
-	line 16707566 at [000009A8][0001:000009A8], len = 0x8
+	line 209 at [000009EA][0001:000009EA], len = 0x7	g:\Fling OS\Fling OS\Kernel\Kernel\Kernel.cs
+	line 211 at [000009F1][0001:000009F1], len = 0x8
+	line 212 at [000009F9][0001:000009F9], len = 0x8
+	line 16707566 at [00000A01][0001:00000A01], len = 0x8
 
 
 
@@ -1383,9 +1395,9 @@ Compiland = Kernel.Dummy
   000005DB  0001:000005DB  00000002  Kernel.Kernel
   000005DD  0001:000005DD  000001CB  Kernel.Kernel
   000007A8  0001:000007A8  0000002E  Kernel.Kernel
-  000007D6  0001:000007D6  000001AF  Kernel.Kernel
-  00000985  0001:00000985  00000013  Kernel.Dummy
-  00000998  0001:00000998  00000018  Kernel.Dummy
+  000007D6  0001:000007D6  00000201  Kernel.Kernel
+  000009D7  0001:000009D7  00000013  Kernel.Dummy
+  000009EA  0001:000009EA  0000001F  Kernel.Dummy
 
 
 
@@ -1457,7 +1469,7 @@ Summary :
 	Sizeof(Elem) = 4
 
 Stream: SECTIONHEADERS(1)
-00 00 00 00 00 00 00 00 - B0 09 00 00 00 00 00 00 - B0 09 00 00 00 00 00 00 - 00 00 00 00 00 00 00 00 - 00 00 00 00 00 00 00 00 | ........░.......░.......................
+00 00 00 00 00 00 00 00 - 09 0A 00 00 00 00 00 00 - 09 0A 00 00 00 00 00 00 - 00 00 00 00 00 00 00 00 - 00 00 00 00 00 00 00 00 | ........................................
 Summary :
 	No of Elems = 1
 	Sizeof(Elem) = 40

@@ -3121,6 +3121,23 @@
             <param name="aMethod">The method to get the signature of.</param>
             <returns>The method's siganture string.</returns>
         </member>
+        <member name="M:Kernel.Compiler.Utils.GetMethodSignature(System.String,System.String,System.String,System.String[])">
+            <summary>
+            Gets the signature of the specified method using specified method information. A method's signature will (probably) always be unique.
+            </summary>
+            <param name="returnType">The fully qualified name of the type of the return value.</param>
+            <param name="declaringType">The fully qualified name of the type that declares the method.</param>
+            <param name="methodName">The name of the method.</param>
+            <param name="paramTypes">The fully qualified names of the types of the paramters of the method.</param>
+            <returns>The method's siganture string.</returns>
+        </member>
+        <member name="M:Kernel.Compiler.Utils.CreateMethodID(System.String)">
+            <summary>
+            Creates a method ID string (ASM label) from the specified method signature.
+            </summary>
+            <param name="methodSignature">The method signature to use.</param>
+            <returns>The method ID (ASM label).</returns>
+        </member>
         <member name="M:Kernel.Compiler.Utils.ReverseMethodSignature(System.String)">
             <summary>
             Reverse the method signature i.e. returns a string array of:

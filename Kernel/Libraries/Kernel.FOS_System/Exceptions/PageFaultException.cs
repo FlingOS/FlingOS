@@ -25,10 +25,10 @@ namespace Kernel.FOS_System.Exceptions
         /// Sets the message to "Page fault"
         /// </summary>
         public PageFaultException(uint anErrorCode, uint anAddress)
+            : base("Page fault")
         {
             errorCode = anErrorCode;
             address = anAddress;
-            Message = "Page fault";
         }
     }
 }

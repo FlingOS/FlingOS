@@ -33,6 +33,17 @@
             The exception message.
             </summary>
         </member>
+        <member name="M:Kernel.FOS_System.Exception.#ctor">
+            <summary>
+            Creates a new, empty exception.
+            </summary>
+        </member>
+        <member name="M:Kernel.FOS_System.Exception.#ctor(System.String)">
+            <summary>
+            Creates a new exception with specified message.
+            </summary>
+            <param name="aMessage">The exception message.</param>
+        </member>
         <member name="T:Kernel.ExceptionMethods">
             <summary>
             Implements the lowest-level kernel exception handling.

@@ -16,8 +16,8 @@ namespace Kernel.FOS_System.Exceptions
         /// Sets the message to "Double fault exception."
         /// </summary>
         public DoubleFaultException()
+            : base("Double fault exception.")
         {
-            Message = "Double fault exception.";
         }
     }
 }

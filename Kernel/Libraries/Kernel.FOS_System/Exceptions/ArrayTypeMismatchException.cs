@@ -15,8 +15,8 @@ namespace Kernel.FOS_System.Exceptions
         /// Sets the message to "Array type mismatch exception."
         /// </summary>
         public ArrayTypeMismatchException()
+            : base("Array type mismatch exception.")
         {
-            Message = "Array type mismatch exception.";
         }
     }
 }

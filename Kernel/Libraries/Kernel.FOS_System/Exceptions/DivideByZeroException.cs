@@ -16,8 +16,8 @@ namespace Kernel.FOS_System.Exceptions
         /// Sets the message to "Attempt to divide by zero invalid."
         /// </summary>
         public DivideByZeroException()
+            : base("Attempt to divide by zero invalid.")
         {
-            Message = "Attempt to divide by zero invalid.";
         }
     }
 }

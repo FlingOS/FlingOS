@@ -155,6 +155,16 @@ namespace Kernel
                     BasicConsole.WriteLine("Addition success!");
                 }
 
+                if (obj.testEnum == Dummy.TestEnum.First)
+                {
+                    BasicConsole.WriteLine("TestEnum.First pre-assigned.");
+                }
+                obj.testEnum = Dummy.TestEnum.Second;
+                if (obj.testEnum == Dummy.TestEnum.Second)
+                {
+                    BasicConsole.WriteLine("TestEnum.Second assignment worked.");
+                }
+
                 int x = 0;
                 int y = 0;
                 int z = 0;
@@ -188,6 +198,16 @@ namespace Kernel
 
     public class Dummy : FOS_System.Object
     {
+        public enum TestEnum
+        {
+            First = 1,
+            Second = 2,
+            Third = 3,
+            NULL = 0
+        }
+
+        public TestEnum testEnum = TestEnum.First;
+
         public int x = 10;
         public int y = 11;
 

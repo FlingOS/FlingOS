@@ -16,8 +16,8 @@ namespace Kernel.FOS_System.Exceptions
         /// Sets the message to "Attempted to execute an invalid op code."
         /// </summary>
         public InvalidOpCodeException()
+            : base("Attempted to execute an invalid op code.")
         {
-            Message = "Attempted to execute an invalid op code.";
         }
     }
 }

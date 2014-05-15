@@ -17,8 +17,8 @@ namespace Kernel.FOS_System.Exceptions
         /// Sets the message to "Argument exception."
         /// </summary>
         public ArgumentException(string anExtendedMessage)
+            : base("Argument exception.")
         {
-            Message = "Argument exception.";
             ExtendedMessage = anExtendedMessage;
         }
     }

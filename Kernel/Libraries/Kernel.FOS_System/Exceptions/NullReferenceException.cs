@@ -15,8 +15,8 @@ namespace Kernel.FOS_System.Exceptions
         /// Sets the message to "Null reference exception."
         /// </summary>
         public NullReferenceException()
+            : base("Null reference exception.")
         {
-            Message = "Null reference exception.";
         }
     }
 }

@@ -16,8 +16,8 @@ namespace Kernel.FOS_System.Exceptions
         /// Sets the message to "Stack error."
         /// </summary>
         public StackException()
+            : base("Stack error.")
         {
-            Message = "Stack error.";
         }
     }
 }

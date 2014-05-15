@@ -14,9 +14,9 @@ namespace Kernel.FOS_System.Exceptions
         /// <summary>
         /// Sets the message to "Index out of range exception."
         /// </summary>
-        public IndexOutOfRangeException()
+        public IndexOutOfRangeException() 
+            : base("Index out of range exception.")
         {
-            Message = "Index out of range exception.";
         }
     }
 }
