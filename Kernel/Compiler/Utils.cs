@@ -38,18 +38,39 @@ namespace Kernel.Compiler
         /// <returns>The method's siganture string.</returns>
         public static string GetMethodSignature(MethodBase aMethod)
         {
-            string aMethodSignature = "";
+            string[] paramTypes = aMethod.GetParameters().Select(x => x.ParameterType).Select(x => x.FullName).ToArray();
+            string returnType = "";
+            string declaringType = "";
+            string methodName = "";
             if (aMethod.IsConstructor || aMethod is ConstructorInfo)
             {
-                aMethodSignature = typeof(void).FullName + "_RETEND_" + aMethod.DeclaringType.FullName + "_DECLEND_" + aMethod.Name + "_NAMEEND_(";
+                returnType = typeof(void).FullName;
+                declaringType = aMethod.DeclaringType.FullName;
+                methodName = aMethod.Name;
             }
             else
             {
-                aMethodSignature = ((MethodInfo)aMethod).ReturnType.FullName + "_RETEND_" + aMethod.DeclaringType.FullName + "_DECLEND_" + aMethod.Name + "_NAMEEND_(";
+                returnType = ((MethodInfo)aMethod).ReturnType.FullName;
+                declaringType = aMethod.DeclaringType.FullName;
+                methodName = aMethod.Name;
             }
-            ParameterInfo[] Params = aMethod.GetParameters();
+            
+            return GetMethodSignature(returnType, declaringType, methodName, paramTypes);
+        }
+        /// <summary>
+        /// Gets the signature of the specified method using specified method information. A method's signature will (probably) always be unique.
+        /// </summary>
+        /// <param name="returnType">The fully qualified name of the type of the return value.</param>
+        /// <param name="declaringType">The fully qualified name of the type that declares the method.</param>
+        /// <param name="methodName">The name of the method.</param>
+        /// <param name="paramTypes">The fully qualified names of the types of the paramters of the method.</param>
+        /// <returns>The method's siganture string.</returns>
+        public static string GetMethodSignature(string returnType, string declaringType, string methodName, string[] paramTypes)
+        {
+            string aMethodSignature = "";
+            aMethodSignature = returnType + "_RETEND_" + declaringType + "_DECLEND_" + methodName + "_NAMEEND_(";
             bool firstParam = true;
-            foreach (ParameterInfo aParam in Params)
+            foreach (string aParam in paramTypes)
             {
                 if (!firstParam)
                 {
@@ -57,11 +78,21 @@ namespace Kernel.Compiler
                 }
                 firstParam = false;
 
-                aMethodSignature += aParam.ParameterType.FullName;
+                aMethodSignature += aParam;
             }
             aMethodSignature += ")";
             return aMethodSignature;
         }
+        /// <summary>
+        /// Creates a method ID string (ASM label) from the specified method signature.
+        /// </summary>
+        /// <param name="methodSignature">The method signature to use.</param>
+        /// <returns>The method ID (ASM label).</returns>
+        public static string CreateMethodID(string methodSignature)
+        {
+            return "method_" + FilterIdentifierForInvalidChars(methodSignature);
+        }
+
         /// <summary>
         /// Reverse the method signature i.e. returns a string array of:
         /// Return type full name,

@@ -127,8 +127,7 @@ namespace Kernel.Compiler
             }
             else
             {
-                result = methodSignature;
-                result = "method_" + Utils.FilterIdentifierForInvalidChars(result);
+                result = Utils.CreateMethodID(methodSignature);
                 MethodIDs.Add(methodSignature, result);
             }
             return result;

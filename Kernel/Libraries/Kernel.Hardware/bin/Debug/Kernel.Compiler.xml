@@ -1,0 +1,3212 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Kernel.Compiler</name>
+    </assembly>
+    <members>
+        <member name="T:Kernel.Compiler.ASMChunk">
+            <summary>
+            Represents a section of assembler  (e.g. ASM for a method) to be included in the final .asm file
+            </summary>
+        </member>
+        <member name="F:Kernel.Compiler.ASMChunk.DBMethod">
+            <summary>
+            The debug database method that relates to this ASM chunk
+            </summary>
+        </member>
+        <member name="M:Kernel.Compiler.ASMChunk.#ctor">
+            <summary>
+            Initialises a new ASM with no text.
+            </summary>
+        </member>
+        <member name="M:Kernel.Compiler.ASMChunk.Output(System.IO.StreamWriter)">
+            <summary>
+            Outputs the assembler chunk to the specified text stream.
+            </summary>
+            <param name="writer">The text stream to output to.</param>
+        </member>
+        <member name="P:Kernel.Compiler.ASMChunk.SequencePriority">
+            <summary>
+            The priority of the ASMChunk - used in sequencing the final assembler code.
+            </summary>
+        </member>
+        <member name="P:Kernel.Compiler.ASMChunk.ASM">
+            <summary>
+            The actual assembler code of the ASM chunk.
+            </summary>
+        </member>
+        <member name="T:Kernel.Compiler.ASMSequencer">
+            <summary>
+            Used to sequence (order) the ASM chunks into the order they will be outputted to the final .asm file.
+            </summary>
+        </member>
+        <member name="F:Kernel.Compiler.ASMSequencer.OutputError">
+            <summary>
+            Stores a reference to the method to call for outputting an error message.
+            </summary>
+        </member>
+        <member name="F:Kernel.Compiler.ASMSequencer.OutputMessage">
+            <summary>
+            Stores a reference to the method to call for outputting a standard message.
+            </summary>
+        </member>
+        <member name="F:Kernel.Compiler.ASMSequencer.OutputWarning">
+            <summary>
+            Stores a reference to the method to call for outputting a warning message.
+            </summary>
+        </member>
+        <member name="F:Kernel.Compiler.ASMSequencer.TheSettings">
+            <summary>
+            The compiler settings to use.
+            </summary>
+        </member>
+        <member name="F:Kernel.Compiler.ASMSequencer.SequencedASMChunks">
+            <summary>
+            The ordered list of ASM chunks.
+            </summary>
+        </member>
+        <member name="M:Kernel.Compiler.ASMSequencer.#ctor(Kernel.Compiler.Settings,Kernel.Compiler.OutputErrorDelegate,Kernel.Compiler.OutputMessageDelegate,Kernel.Compiler.OutputWarningDelegate)">
+            <summary>
+            Initialises a new ASM squencer with specified settings and handlers.
+            </summary>
+            <param name="aSettings">The settings to use.</param>
+            <param name="anOutputError">The reference to the method to call to output an error message.</param>
+            <param name="anOutputMessage">The reference to the method to call to output a standard message.</param>
+            <param name="anOutputWarning">The reference to the method to call to output a warning message.</param>
+        </member>
+        <member name="M:Kernel.Compiler.ASMSequencer.Execute(System.Collections.Generic.List{Kernel.Compiler.ASMChunk})">
+            <summary>
+            Takes the list of ASM chunks and executes the sequencing process on them. The ordered result is stored in SequencedASMChunks.
+            </summary>
+            <param name="inASMChunks">The ASM chunks to sequence.</param>
+            <returns>True if sequencing was successful. Otherwise false.</returns>
+        </member>
+        <member name="M:Kernel.Compiler.ASMSequencer.GetOrder(Kernel.Compiler.ASMChunk,Kernel.Compiler.ASMChunk)">
+            <summary>
+            Compares the two ASM chunks and returns a number indicating how to order them.
+            </summary>
+            <param name="a">The first ASM chunk.</param>
+            <param name="b">The second ASM chunk.</param>
+            <returns>Returns &lt; 0 if a goes before b. 0 if it doesn't matter. &gt; 0 if a goes after b.</returns>
+        </member>
+        <member name="T:Kernel.Compiler.AssemblyManager">
+            <summary>
+            Manages loading root and referenced assemblies and the types 
+            they declare.
+            </summary>
+            <remarks>
+            Assemblies are loaded into the current execution context so that 
+            attributes can easily be scanned.
+            </remarks>
+        </member>
+        <member name="F:Kernel.Compiler.AssemblyManager.Assemblies">
+            <summary>
+            The dictionary of all the assemblies loaded by the assembly manager.
+            The key is the assembly’s full name. The value is the loaded assembly.
+            </summary>
+        </member>
+        <member name="F:Kernel.Compiler.AssemblyManager.UnpluggedTypes">
+            <summary>
+            The list of all the types that don’t contain plugs loaded by the assembly manager.
+            The key is the type’s full name. The value is the loaded type.
+            </summary>
+        </member>
+        <member name="F:Kernel.Compiler.AssemblyManager.PluggedTypes">
+            <summary>
+            The list of all the types that contain plugs loaded by the assembly manager.
+            The key is the type’s full name. The value is the loaded type.
+            </summary>
+        </member>
+        <member name="M:Kernel.Compiler.AssemblyManager.#ctor">
+            <summary>
+            Empty constructor – no need to do anything in constructor as this class has no initialisation.
+            </summary>
+        </member>
+        <member name="M:Kernel.Compiler.AssemblyManager.LoadAssembly(System.String)">
+            <summary>
+            Loads an assembly from the specified path. The path should be to a valid .Net .DLL or .EXE file.
+            </summary>
+            <param name="path">The path to the assembly to load.</param>
+            <returns>The loaded assembly.</returns>
+            <exception cref="T:System.IO.FileNotFoundException">
+            Thrown if the assembly file specified cannot be found.
+            </exception>
+        </member>
+        <member name="M:Kernel.Compiler.AssemblyManager.LoadReferences(System.Reflection.Assembly)">
+            <summary>
+            Recursively loads all the referenced assemblies of the specified assembly.
+            </summary>
+            <param name="theAssembly">The assembly to load references of.</param>
+            <remarks>
+            Ignores any references to the kernel compiler or mscorlib.
+            </remarks>
+        </member>
+        <member name="M:Kernel.Compiler.AssemblyManager.LoadAllTypes">
+            <summary>
+            Loads all the modules that are in the loaded the assemblies.
+            </summary>
+        </member>
+        <member name="P:Kernel.Compiler.AssemblyManager.AllTypes">
+            <summary>
+            All of the types (plugged and unplugged) that the assembly manager has loaded.
+            </summary>
+        </member>
+        <member name="T:Kernel.Compiler.ArrayConstructorMethodAttribute">
+            <summary>
+            Indicates the method is the kernel's array constructor method. 
+            Note: There should only ever be one of these used!
+            </summary>
+        </member>
+        <member name="T:Kernel.Compiler.DecrementRefCountMethodAttribute">
+            <summary>
+            Indicates the method is the kernel's GC.DecrementRefCount method. 
+            Note: There should only ever be one of these used!
+            </summary>
+        </member>
+        <member name="T:Kernel.Compiler.TypeClassAttribute">
+            <summary>
+            Indicates the class is the kernel's Type class. 
+            Note: There should only ever be one of these used!
+            </summary>
+        </member>
+        <member name="T:Kernel.Compiler.IncrementRefCountMethodAttribute">
+            <summary>
+            Indicates the method is the kernel's GC.IncrementRefCount method. 
+            Note: There should only ever be one of these used!
+            </summary>
+        </member>
+        <member name="T:Kernel.Compiler.HaltMethodAttribute">
+            <summary>
+            Indicates the method is the kernel's Halt method. 
+            Note: There should only ever be one of these used!
+            </summary>
+        </member>
+        <member name="T:Kernel.Compiler.NewArrMethodAttribute">
+            <summary>
+            Indicates the method is the kernel's GC.NewArr method. 
+            Note: There should only ever be one of these used!
+            </summary>
+        </member>
+        <member name="T:Kernel.Compiler.NewObjMethodAttribute">
+            <summary>
+            Indicates the method is the kernel's GC.NewObj method. 
+            Note: There should only ever be one of these used!
+            </summary>
+        </member>
+        <member name="T:Kernel.Compiler.ExceptionsHandleEndFinallyMethodAttribute">
+            <summary>
+            Indicates the method is the kernel's AddExceptionHandlerInfo method. 
+            Note: There should only ever be one of these used!
+            </summary>
+        </member>
+        <member name="T:Kernel.Compiler.HandleExceptionMethodAttribute">
+            <summary>
+            Indicates the method is the kernel's exception Throw method. 
+            Note: There should only ever be one of these used!
+            </summary>
+        </member>
+        <member name="T:Kernel.Compiler.NoGCAttribute">
+            <summary>
+            Indicates to the compiler that a method should not have GC
+            applied to it.
+            </summary>
+        </member>
+        <member name="T:Kernel.Compiler.ThrowArrayTypeMismatchExceptionMethodAttribute">
+            <summary>
+            Indicates the method is the kernel's exception ThrowArrayTypeMismatch method. 
+            Note: There should only ever be one of these used!
+            </summary>
+        </member>
+        <member name="T:Kernel.Compiler.ThrowIndexOutOfRangeExceptionMethodAttribute">
+            <summary>
+            Indicates the method is the kernel's exception ThrowIndexOutOfRange method. 
+            Note: There should only ever be one of these used!
+            </summary>
+        </member>
+        <member name="T:Kernel.Compiler.ThrowNullReferenceExceptionMethodAttribute">
+            <summary>
+            Indicates the method is the kernel's exception ThrowNullReference method. 
+            Note: There should only ever be one of these used!
+            </summary>
+        </member>
+        <member name="T:Kernel.Compiler.ThrowExceptionMethodAttribute">
+            <summary>
+            Indicates the method is the kernel's exception Throw method. 
+            Note: There should only ever be one of these used!
+            </summary>
+        </member>
+        <member name="T:Kernel.Compiler.ExceptionsHandleLeaveMethodAttribute">
+            <summary>
+            Indicates the method is the kernel's AddExceptionHandlerInfo method. 
+            Note: There should only ever be one of these used!
+            </summary>
+        </member>
+        <member name="T:Kernel.Compiler.CallStaticConstructorsMethodAttribute">
+            <summary>
+            Indicates the method is the kernel's static constructors method. 
+            Note: There should only ever be one of these used!
+            </summary>
+        </member>
+        <member name="T:Kernel.Compiler.AddExceptionHandlerInfoMethodAttribute">
+            <summary>
+            Indicates the method is the kernel's AddExceptionHandlerInfo method. 
+            Note: There should only ever be one of these used!
+            </summary>
+        </member>
+        <member name="T:Kernel.Compiler.NoDebugAttribute">
+            <summary>
+            Indicates to the compiler that a method should not have debug ops
+            emitted for it.
+            </summary>
+        </member>
+        <member name="T:Kernel.Compiler.ILOpTargetAttribute">
+            <summary>
+            Indicates to the compiler which IL op an ILOp implementation targets.
+            </summary>
+        </member>
+        <member name="F:Kernel.Compiler.ILOpTargetAttribute.Target">
+            <summary>
+            The IL op code to target.
+            </summary>
+        </member>
+        <member name="T:Kernel.Compiler.KernelMainMethodAttribute">
+            <summary>
+            Indicates the method is the kernel's main method. 
+            Note: There should only ever be one of these used!
+            </summary>
+        </member>
+        <member name="T:Kernel.Compiler.PluggedMethodAttribute">
+            <summary>
+            <para>
+            Indicates a method is plugged. 
+            </para>
+            <para>
+            Use the ASMFilePath without any file extensions to specify the path 
+            to the ASM file that contains the plug. The extension is automatically
+            added based on the target architecture. E.g. "PlugFileName.x86_32.asm".
+            See remarks for more info.
+            </para>
+            </summary>
+            <remarks>
+            <para>
+            This attribute must be applied to a method which is plugged to tell
+            the compiler where the ASM for the plug can be found.
+            </para>
+            <para>
+            The file name should be a relative path, relative to the build directory.
+            The file name extension is added automatically so different ASM plugs
+            can be used for different target architectures.
+            </para>
+            </remarks>
+        </member>
+        <member name="P:Kernel.Compiler.PluggedMethodAttribute.ASMFilePath">
+            <summary>
+            The relative path to the ASM plug file, excluding extension(s).
+            </summary>
+            <remarks>
+            Please see class remarks for details.
+            </remarks>
+        </member>
+        <member name="T:Kernel.Compiler.PluggedClassAttribute">
+            <summary>
+            Indicates a class contains a plugged methods.
+            </summary>
+            <remarks>
+            <para>
+            This attribute must be applied to a class containing plugged methods
+            otherwise the plugged methods are not detected.
+            </para>
+            <para>
+            This is a compiler optimisation so we don't have to scan every method
+            to see if it is marked as plugged.
+            </para>
+            </remarks>
+        </member>
+        <member name="T:Kernel.Compiler.SequencePriorityAttribute">
+            <summary>
+            Specifies the priority of a method when it is sequenced in the final 
+            assembly file.
+            <para>Value meanings:</para>
+            <list type="bullet">
+            <item>
+            <term>long.MinValue</term>
+            <description>The lowest possible priority. Indicates the method should 
+            be the first bit of ASM in the final file.
+            </description>
+            </item>
+            <item>
+            <term>0</term>
+            <description>The default priority. Indicates it doesn't matter where 
+            the method appears in the final ASM file.
+            </description>
+            </item>
+            <item>
+            <term>long.MaxValue</term>
+            <description>The highest possible priority. Indicates the method should 
+            be the last bit of ASM in the final file.
+            </description>
+            </item>
+            </list>
+            </summary>
+            <remarks>
+            <para>
+            Low priority = close to start of file
+            High priority = close to end of file
+            </para>
+            <para>
+            This is expected to be used for:
+            </para>
+            <list type="bullet">
+            <item>
+            <term>Plugged methods</term>
+            <description>
+            Plugs such as MultibootSignature or entry points which must appear at 
+            the start of the file for the OS to be bootable.
+            </description>
+            </item>
+            <item>
+            <term>Data blocks</term>
+            <description>
+            Data blocks such as StringLiterals which are nice to have at 
+            the end of the file for debugging etc.
+            </description>
+            </item>
+            </list>
+            </remarks>
+        </member>
+        <member name="M:Kernel.Compiler.SequencePriorityAttribute.#ctor">
+            <summary>
+            Initialises a new SequencePriorityAttribute with priority 0.
+            </summary>
+            <remarks>
+            0 is the default (/standard) priority. 
+            </remarks>
+        </member>
+        <member name="P:Kernel.Compiler.SequencePriorityAttribute.Priority">
+            <summary>
+            The priority of the targetted method.
+            </summary>
+            <remarks>
+            Please see class remarks.
+            </remarks>
+        </member>
+        <member name="T:Kernel.Compiler.OutputErrorDelegate">
+            <summary>
+            A delegate for a method that can output an error message.
+            </summary>
+            <param name="ex">The exception to output.</param>
+        </member>
+        <member name="T:Kernel.Compiler.OutputMessageDelegate">
+            <summary>
+            A delegate for a method that can output an standard message.
+            </summary>
+            <param name="message">The message to output.</param>
+        </member>
+        <member name="T:Kernel.Compiler.OutputWarningDelegate">
+            <summary>
+            A delegate for a method that can output an warning message.
+            </summary>
+            <param name="ex">The warning to output.</param>
+        </member>
+        <member name="T:Kernel.Compiler.ExceptionHandledBlock">
+            <summary>
+            Describes a block of IL code where exceptions are handled.
+            This block sets the start offset and length of the try-block
+            and lists the catch and finally blocks for the try block.
+            </summary>
+        </member>
+        <member name="F:Kernel.Compiler.ExceptionHandledBlock.Offset">
+            <summary>
+            The offset (in IL bytes) from the start of the method.
+            </summary>
+        </member>
+        <member name="F:Kernel.Compiler.ExceptionHandledBlock.Length">
+            <summary>
+            The length (in IL bytes) of the try-block.
+            </summary>
+        </member>
+        <member name="F:Kernel.Compiler.ExceptionHandledBlock.CatchBlocks">
+            <summary>
+            The catch-blocks for the try-block.
+            </summary>
+        </member>
+        <member name="F:Kernel.Compiler.ExceptionHandledBlock.FinallyBlocks">
+            <summary>
+            The finally-blocks for the try-block.
+            </summary>
+        </member>
+        <member name="T:Kernel.Compiler.CatchBlock">
+            <summary>
+            Describes an IL catch block for a try-block.
+            </summary>
+        </member>
+        <member name="F:Kernel.Compiler.CatchBlock.Offset">
+            <summary>
+            The offset (in IL bytes) from the start of the method to 
+            the first IL op of the catch handler.
+            </summary>
+        </member>
+        <member name="F:Kernel.Compiler.CatchBlock.Length">
+            <summary>
+            The length (in IL bytes) of the catch handler.
+            </summary>
+        </member>
+        <member name="F:Kernel.Compiler.CatchBlock.FilterType">
+            <summary>
+            The type of exception to catch - this is not actually implemented
+            / used yet!
+            </summary>
+        </member>
+        <member name="T:Kernel.Compiler.FinallyBlock">
+            <summary>
+            Describes an IL finally block for a try-block.
+            </summary>
+        </member>
+        <member name="F:Kernel.Compiler.FinallyBlock.Offset">
+            <summary>
+            The offset (in IL bytes) from the start of the method to 
+            the first IL op of the finally handler.
+            </summary>
+        </member>
+        <member name="F:Kernel.Compiler.FinallyBlock.Length">
+            <summary>
+            The length (in IL bytes) of the finally handler.
+            </summary>
+        </member>
+        <member name="T:Kernel.Compiler.ILChunk">
+            <summary>
+            Represents a chunk of IL code (e.g. a method) that will later be compiled to ASM.
+            </summary>
+        </member>
+        <member name="F:Kernel.Compiler.ILChunk.IsMainMethod">
+            <summary>
+            Indicates whether the method used to create this ILChunk was 
+            marked as the kernel's main entry point.
+            </summary>
+        </member>
+        <member name="F:Kernel.Compiler.ILChunk.IsHaltMethod">
+            <summary>
+            Indicates whether the method used to create this ILChunk was 
+            marked as the kernel's halt method.
+            </summary>
+        </member>
+        <member name="F:Kernel.Compiler.ILChunk.IsCallStaticConstructorsMethod">
+            <summary>
+            Indicates whether the method used to create this ILChunk was 
+            marked as the method to fill in to call all the 
+            static constructors.
+            </summary>
+        </member>
+        <member name="F:Kernel.Compiler.ILChunk.IsAddExceptionHandlerInfoMethod">
+            <summary>
+            Indicates whether the method used to create this ILChunk was 
+            marked as the method to call to add a new ExceptionHandlerInfo.
+            </summary>
+        </member>
+        <member name="F:Kernel.Compiler.ILChunk.IsExceptionsHandleLeaveMethod">
+            <summary>
+            Indicates whether the method used to create this ILChunk was 
+            marked as the method to call to handle leaving an exception 
+            handled block (i.e. a try or catch block not finally)
+            </summary>
+        </member>
+        <member name="F:Kernel.Compiler.ILChunk.IsExceptionsHandleEndFinallyMethod">
+            <summary>
+            Indicates whether the method used to create this ILChunk was 
+            marked as the method to call to handle an EndFinally Il op.
+            </summary>
+        </member>
+        <member name="F:Kernel.Compiler.ILChunk.IsExceptionsHandleExceptionMethod">
+            <summary>
+            Indicates whether the method used to create this ILChunk was 
+            marked as the method to call to handle an exception.
+            </summary>
+        </member>
+        <member name="F:Kernel.Compiler.ILChunk.IsExceptionsThrowMethod">
+            <summary>
+            Indicates whether the method used to create this ILChunk was 
+            marked as the method to call to throw an exception.
+            </summary>
+        </member>
+        <member name="F:Kernel.Compiler.ILChunk.IsExceptionsThrowNullReferenceMethod">
+            <summary>
+            Indicates whether the method used to create this ILChunk was 
+            marked as the method to call to throw a NullReference exception.
+            </summary>
+        </member>
+        <member name="F:Kernel.Compiler.ILChunk.IsExceptionsThrowArrayTypeMismatchMethod">
+            <summary>
+            Indicates whether the method used to create this ILChunk was 
+            marked as the method to call to throw a ArrayTypeMismatch exception.
+            </summary>
+        </member>
+        <member name="F:Kernel.Compiler.ILChunk.IsExceptionsThrowIndexOutOfRangeMethod">
+            <summary>
+            Indicates whether the method used to create this ILChunk was 
+            marked as the method to call to throw a IndexOutOfRange exception.
+            </summary>
+        </member>
+        <member name="F:Kernel.Compiler.ILChunk.IsNewObjMethod">
+            <summary>
+            Indicates whether the method used to create this ILChunk was 
+            marked as the method to call to create a new object.
+            </summary>
+        </member>
+        <member name="F:Kernel.Compiler.ILChunk.IsNewArrMethod">
+            <summary>
+            Indicates whether the method used to create this ILChunk was 
+            marked as the method to call to create a new array.
+            </summary>
+        </member>
+        <member name="F:Kernel.Compiler.ILChunk.IsIncrementRefCountMethod">
+            <summary>
+            Indicates whether the method used to create this ILChunk was 
+            marked as the method to call to increment a GC managed object's
+            ref count.
+            </summary>
+        </member>
+        <member name="F:Kernel.Compiler.ILChunk.IsDecrementRefCountMethod">
+            <summary>
+            Indicates whether the method used to create this ILChunk was 
+            marked as the method to call to decrement a GC managed object's
+            ref count.
+            </summary>
+        </member>
+        <member name="F:Kernel.Compiler.ILChunk.IsArrayConstructorMethod">
+            <summary>
+            Indicates whether the method used to create this ILChunk was 
+            marked as the method to call to as the Array constructor.
+            </summary>
+        </member>
+        <member name="F:Kernel.Compiler.ILChunk.ApplyGC">
+            <summary>
+            Whether to apply Garbage Collection stuff to the IL chunk or not.
+            </summary>
+        </member>
+        <member name="F:Kernel.Compiler.ILChunk.ExceptionHandledBlocks">
+            <summary>
+            The exception handled blocks for the IL chunk.
+            </summary>
+            <remarks>
+            For methods with GC applied, they will almost always have at least
+            1 exception handled block around the entire method so that args 
+            / locals can be cleaned up.
+            </remarks>
+        </member>
+        <member name="F:Kernel.Compiler.ILChunk.ILOpInfos">
+            <summary>
+            The ILOpInfos for the IL chunk.
+            </summary>
+        </member>
+        <member name="F:Kernel.Compiler.ILChunk.LocalVariables">
+            <summary>
+            A list of the local variables in the method that the ILChunk represents. Only used by ILChunks which represent methods.
+            </summary>
+        </member>
+        <member name="F:Kernel.Compiler.ILChunk.NoDebugOps">
+            <summary>
+            Whether this IL chunk should or should not have debug ops
+            emitted.
+            </summary>
+        </member>
+        <member name="M:Kernel.Compiler.ILChunk.GetExactExceptionHandledBlock(System.Int32)">
+            <summary>
+            Gets the exception handled block that starts at exactly 
+            the specified offset (if one exists).
+            </summary>
+            <param name="Offset">The start offset (in IL bytes) of the block to get.</param>
+            <returns>The block or null if no block starts at the specified offset.</returns>
+        </member>
+        <member name="M:Kernel.Compiler.ILChunk.GetExceptionHandledBlock(System.Int32)">
+            <summary>
+            Gets the inner-most exception handled block that starts at or 
+            contains the specified offset or has a handler that starts at or
+            contains the specified offset.
+            </summary>
+            <param name="Offset">The offset to look for (in IL bytes).</param>
+            <returns>The exception handled block or null if none found.</returns>
+        </member>
+        <member name="P:Kernel.Compiler.ILChunk.Plugged">
+            <summary>
+            Whether the ILChunk is plugged or not.
+            </summary>
+        </member>
+        <member name="P:Kernel.Compiler.ILChunk.PlugASMFilePath">
+            <summary>
+            The relative, non-architecture-specific ASM plug path.
+            </summary>
+        </member>
+        <member name="P:Kernel.Compiler.ILChunk.SequencePriority">
+            <summary>
+            The priority of the ILChunk - used in sequencing the final assembler code.
+            </summary>
+        </member>
+        <member name="P:Kernel.Compiler.ILChunk.Method">
+            <summary>
+            The method info that was used to create this ILChunk
+            </summary>
+        </member>
+        <member name="T:Kernel.Compiler.ILCompiler">
+            <summary>
+            The main compiler class - all the magic starts here ;)
+            </summary>
+        </member>
+        <member name="F:Kernel.Compiler.ILCompiler.OutputError">
+            <summary>
+            Stores a reference to the method to call for outputting an error message.
+            </summary>
+        </member>
+        <member name="F:Kernel.Compiler.ILCompiler.OutputMessage">
+            <summary>
+            Stores a reference to the method to call for outputting a standard message.
+            </summary>
+        </member>
+        <member name="F:Kernel.Compiler.ILCompiler.OutputWarning">
+            <summary>
+            Stores a reference to the method to call for outputting a warning message.
+            </summary>
+        </member>
+        <member name="F:Kernel.Compiler.ILCompiler.TheSettings">
+            <summary>
+            The compiler settings to use.
+            </summary>
+        </member>
+        <member name="F:Kernel.Compiler.ILCompiler.TheAssemblyManager">
+            <summary>
+            The assembly manager to use. (Where "assembly" means a ".dll"/"library", not "assembler" the language.)
+            </summary>
+        </member>
+        <member name="F:Kernel.Compiler.ILCompiler.TheILReader">
+            <summary>
+            The IL reader to use.
+            </summary>
+        </member>
+        <member name="F:Kernel.Compiler.ILCompiler.TheILScanner">
+            <summary>
+            The IL scanner to use.
+            </summary>
+        </member>
+        <member name="F:Kernel.Compiler.ILCompiler.TheASMSequencer">
+            <summary>
+            The ASM sequencer to use.
+            </summary>
+        </member>
+        <member name="F:Kernel.Compiler.ILCompiler.ThePDBManager">
+            <summary>
+            The PDB manager to use.
+            </summary>
+        </member>
+        <member name="M:Kernel.Compiler.ILCompiler.#ctor(Kernel.Compiler.Settings)">
+            <summary>
+            Initialises a new ILCompiler instance with the specified settings and empty output handlers.
+            </summary>
+            <param name="aSettings">The settings to use for the ILCompiler.</param>
+        </member>
+        <member name="M:Kernel.Compiler.ILCompiler.#ctor(Kernel.Compiler.Settings,Kernel.Compiler.OutputErrorDelegate,Kernel.Compiler.OutputMessageDelegate,Kernel.Compiler.OutputWarningDelegate)">
+            <summary>
+            Initialises a new ILCompiler instance with the specified settings and output handlers.
+            </summary>
+            <param name="aSettings">The settings to use for the ILCompiler.</param>
+            <param name="anOutputError">The reference to the method to call to output an error message.</param>
+            <param name="anOutputMessage">The reference to the method to call to output a standard message.</param>
+            <param name="anOutputWarning">The reference to the method to call to output a warning message.</param>
+        </member>
+        <member name="M:Kernel.Compiler.ILCompiler.InitEnvironment">
+            <summary>
+            Initialises the compiler environment including initialising TheAssemblyManager.
+            </summary>
+            <returns>True if initialisation completed successfully. Otherwise false.</returns>
+        </member>
+        <member name="M:Kernel.Compiler.ILCompiler.InitILReader">
+            <summary>
+            Intialises TheILReader.
+            </summary>
+            <returns>True if initialisation completed successfully. Otherwise false.</returns>
+        </member>
+        <member name="M:Kernel.Compiler.ILCompiler.InitILScanner">
+            <summary>
+            Intialises TheILScanner.
+            </summary>
+            <returns>True if initialisation completed successfully. Otherwise false.</returns>
+        </member>
+        <member name="M:Kernel.Compiler.ILCompiler.InitASMSequencer">
+            <summary>
+            Intialises TheASMSequencer.
+            </summary>
+            <returns>True if initialisation completed successfully. Otherwise false.</returns>
+        </member>
+        <member name="M:Kernel.Compiler.ILCompiler.ExecuteILReader">
+            <summary>
+            Initialises the ILReader then executes the ILReader
+            </summary>
+            <returns>True if execution completed successfully. Otherwise false.</returns>
+            <exception cref="T:System.Exception">
+            Thrown if either the environment or the IL Readder fail to initialise.
+            </exception>
+        </member>
+        <member name="M:Kernel.Compiler.ILCompiler.ExecuteILScanner">
+            <summary>
+            Initialises the ILScanner then executes the ILScanner. It is assumed the ILReader has been executed successfully.
+            </summary>
+            <returns>True if execution completed successfully. Otherwise false.</returns>
+        </member>
+        <member name="M:Kernel.Compiler.ILCompiler.ExecuteASMSequencer">
+            <summary>
+            Initialises the ASMSequencer then executes the ASMSequencer. It is assumed the ILScanner has been executed successfully.
+            It will then output all the ASM chunks from the ASMSequencer to file.
+            </summary>
+            <returns>True if execution completed successfully. Otherwise false.</returns>
+        </member>
+        <member name="M:Kernel.Compiler.ILCompiler.ExecuteNASM">
+            <summary>
+            Executes NASM on the output file. It is assumed the output file now exists.
+            </summary>
+            <returns>True if execution completed successfully. Otherwise false.</returns>
+        </member>
+        <member name="M:Kernel.Compiler.ILCompiler.ExecuteProcess(System.String,System.String,System.String,System.String,System.Boolean,System.String)">
+            <summary>
+            Uses Process class to start a new instance of the specified process on the machine with specified start arguments.
+            Note: This is a blocking function.
+            Note: Waits a maximum of 15 minutes before assuming the process has failed to execute.
+            </summary>
+            <param name="workingDir">The working directory for the new process instance.</param>
+            <param name="processFile">The process file (.EXE file)</param>
+            <param name="args">The start arguments to pass the process.</param>
+            <param name="displayName">The display name of the process to show in messages.</param>
+            <param name="ignoreErrors">Whether to ignore messages and errors from the process or not.</param>
+            <param name="outputMessagesToFileName">A file path to output error and standard messages to instead of the console window. 
+            Ignore errors should be set to false.</param>
+            <returns>True if process executed successfully without errors. Otherwise false.</returns>
+        </member>
+        <member name="M:Kernel.Compiler.ILCompiler.Finalise">
+            <summary>
+            Finalises the compilation by turning the .BIn file into a usable .ISO file.
+            </summary>
+            <returns>True if finalisation completed successfully. Otherwise false.</returns>
+        </member>
+        <member name="M:Kernel.Compiler.ILCompiler.Cleanup">
+            <summary>
+            Cleans up any temporary files, directories or streams.
+            </summary>
+        </member>
+        <member name="T:Kernel.Compiler.ILOpInfo">
+            <summary>
+            Represents an individual IL op.
+            </summary>
+        </member>
+        <member name="F:Kernel.Compiler.ILOpInfo.opCode">
+            <summary>
+            The OpCode (from System.Reflection.Emit) for this IL op.
+            Note: opCode.Value == IlOps.ILOp.OpCodes - they can be used interchangeably.
+            </summary>
+        </member>
+        <member name="F:Kernel.Compiler.ILOpInfo.Position">
+            <summary>
+            The position of this IL op in its method.
+            </summary>
+        </member>
+        <member name="F:Kernel.Compiler.ILOpInfo.NextPosition">
+            <summary>
+            The position of the next IL op in the same method. (-1 if none)
+            </summary>
+        </member>
+        <member name="F:Kernel.Compiler.ILOpInfo.ValueBytes">
+            <summary>
+            The value bytes loaded with this IL op (which, for example, are used to specify string values.)
+            </summary>
+        </member>
+        <member name="F:Kernel.Compiler.ILOpInfo.MethodToCall">
+             <summary>
+             When the IL op is a Call, this field holds the value of the method base to call. It should be used
+             in preference to getting the method base from the metadata token in the ValueBytes.
+            
+             When the IL op is a Ldftn, this field holds the value of the method base to load. It should be used
+             in preference to getting the method base from the metadata token in the ValueBytes.
+             </summary>
+             <remarks>
+             This field was added so that ILOpInfos could be generated by the compiler without them originating
+             from IL code. This field will either contain a manually-set method base (in which case ValueBytes 
+             will be null) or it will contain the method base obtained from the metadata token in ValueBytes.
+             </remarks>
+        </member>
+        <member name="F:Kernel.Compiler.ILOpInfo.SetToGCDecRefCountMethod">
+            <summary>
+            Whether to set the MethodToCall to the kernel's GC Decrement Ref Count method.
+            </summary>
+            <remarks>
+            Used by ILReader as an instruction to ILScanner.
+            </remarks>
+        </member>
+        <member name="F:Kernel.Compiler.ILOpInfo.LoadAtILOffset">
+            <summary>
+            The offset (in IL bytes) to load the method token at.
+            </summary>
+            <remarks>
+            Used by exception handling to load catch / finally 
+            handler addresses using LdToken IL op.
+            </remarks>
+        </member>
+        <member name="F:Kernel.Compiler.ILOpInfo.ASMStartPos">
+            <summary>
+            The ASM (text) index where the ASM for this ILOp starts.
+            </summary>
+        </member>
+        <member name="F:Kernel.Compiler.ILOpInfo.ASMEndPos">
+            <summary>
+            The ASM (text) index where the ASM for this ILOp ends.
+            </summary>
+        </member>
+        <member name="F:Kernel.Compiler.ILOpInfo.ASMInsertLabel">
+            <summary>
+            Whether the ILScanner should insert a label for this ILOp.
+            </summary>
+        </member>
+        <member name="F:Kernel.Compiler.ILOpInfo.DBILOpInfo">
+            <summary>
+            The debug database record asscoiated with this IL op.
+            </summary>
+        </member>
+        <member name="F:Kernel.Compiler.ILOpInfo.IsDebugOp">
+            <summary>
+            Indicates whether the IL Op is a debug op. 
+            </summary>
+            <example>
+            Nops with IsDebugNop set to true should be outputted
+            as a debug interrupt e.g. Int3 on x86 architecture
+            </example>
+        </member>
+        <member name="T:Kernel.Compiler.ILOps.Stelem">
+            <summary>
+            Handles the 
+            <see cref="F:System.Reflection.Emit.OpCodes.Stelem"/>, 
+            <see cref="F:System.Reflection.Emit.OpCodes.Stelem_I"/>, 
+            <see cref="F:System.Reflection.Emit.OpCodes.Stelem_I1"/>, 
+            <see cref="F:System.Reflection.Emit.OpCodes.Stelem_I2"/>, 
+            <see cref="F:System.Reflection.Emit.OpCodes.Stelem_I4"/>, 
+            <see cref="F:System.Reflection.Emit.OpCodes.Stelem_I8"/>,
+            <see cref="F:System.Reflection.Emit.OpCodes.Stelem_R4"/>,
+            <see cref="F:System.Reflection.Emit.OpCodes.Stelem_R8"/> and 
+            <see cref="F:System.Reflection.Emit.OpCodes.Stelem_Ref"/> IL ops.
+            </summary>
+            <remarks>
+            See MSDN for details of these ops.
+            </remarks>
+            <seealso cref="F:System.Reflection.Emit.OpCodes.Stelem"/> 
+            <seealso cref="F:System.Reflection.Emit.OpCodes.Stelem_I"/> 
+            <seealso cref="F:System.Reflection.Emit.OpCodes.Stelem_I1"/> 
+            <seealso cref="F:System.Reflection.Emit.OpCodes.Stelem_I2"/> 
+            <seealso cref="F:System.Reflection.Emit.OpCodes.Stelem_I4"/> 
+            <seealso cref="F:System.Reflection.Emit.OpCodes.Stelem_I8"/>
+            <seealso cref="F:System.Reflection.Emit.OpCodes.Stelem_R4"/> 
+            <seealso cref="F:System.Reflection.Emit.OpCodes.Stelem_R8"/> 
+            <seealso cref="F:System.Reflection.Emit.OpCodes.Stelem_Ref"/>
+        </member>
+        <member name="T:Kernel.Compiler.ILOps.ILOp">
+            <summary>
+            Base class for IL op classes that are used to convert from IL code to ASM.
+            </summary>
+            <remarks>
+            <para> 
+            Some IL OP implementations may throw specific exceptions so make sure they are 
+            handled cleanly and outputted to the user.
+            </para>
+            </remarks>
+        </member>
+        <member name="M:Kernel.Compiler.ILOps.ILOp.Convert(Kernel.Compiler.ILOpInfo,Kernel.Compiler.ILScannerState)">
+            <summary>
+            Converts the IL op into assembly code.
+            </summary>
+            <param name="anILOpInfo">The ILOpInfo for the specific conversion.</param>
+            <param name="aScannerState">The current scanner state.</param>
+            <returns>ASM code in a string or null if the conversion failed.</returns>
+        </member>
+        <member name="T:Kernel.Compiler.ILOps.ILOp.OpCodes">
+            <summary>
+            The full list of supported Il ops. Please see remarks for important info.
+            </summary>
+            <remarks>
+            Enum values here = System.Reflection.OpCode.Value - they can be used interchangeably.
+            </remarks>
+        </member>
+        <member name="F:Kernel.Compiler.ILOps.ILOp.OpCodes.Nop">
+            <summary> - </summary>
+            <remarks></remarks>
+        </member>
+        <member name="F:Kernel.Compiler.ILOps.ILOp.OpCodes.Break">
+            <summary> - </summary>
+            <remarks></remarks>
+        </member>
+        <member name="F:Kernel.Compiler.ILOps.ILOp.OpCodes.Ldarg_0">
+            <summary> - </summary>
+            <remarks></remarks>
+        </member>
+        <member name="F:Kernel.Compiler.ILOps.ILOp.OpCodes.Ldarg_1">
+            <summary> - </summary>
+            <remarks></remarks>
+        </member>
+        <member name="F:Kernel.Compiler.ILOps.ILOp.OpCodes.Ldarg_2">
+            <summary> - </summary>
+            <remarks></remarks>
+        </member>
+        <member name="F:Kernel.Compiler.ILOps.ILOp.OpCodes.Ldarg_3">
+            <summary> - </summary>
+            <remarks></remarks>
+        </member>
+        <member name="F:Kernel.Compiler.ILOps.ILOp.OpCodes.Ldloc_0">
+            <summary> - </summary>
+            <remarks></remarks>
+        </member>
+        <member name="F:Kernel.Compiler.ILOps.ILOp.OpCodes.Ldloc_1">
+            <summary> - </summary>
+            <remarks></remarks>
+        </member>
+        <member name="F:Kernel.Compiler.ILOps.ILOp.OpCodes.Ldloc_2">
+            <summary> - </summary>
+            <remarks></remarks>
+        </member>
+        <member name="F:Kernel.Compiler.ILOps.ILOp.OpCodes.Ldloc_3">
+            <summary> - </summary>
+            <remarks></remarks>
+        </member>
+        <member name="F:Kernel.Compiler.ILOps.ILOp.OpCodes.Stloc_0">
+            <summary> - </summary>
+            <remarks></remarks>
+        </member>
+        <member name="F:Kernel.Compiler.ILOps.ILOp.OpCodes.Stloc_1">
+            <summary> - </summary>
+            <remarks></remarks>
+        </member>
+        <member name="F:Kernel.Compiler.ILOps.ILOp.OpCodes.Stloc_2">
+            <summary> - </summary>
+            <remarks></remarks>
+        </member>
+        <member name="F:Kernel.Compiler.ILOps.ILOp.OpCodes.Stloc_3">
+            <summary> - </summary>
+            <remarks></remarks>
+        </member>
+        <member name="F:Kernel.Compiler.ILOps.ILOp.OpCodes.Ldarg_S">
+            <summary> - </summary>
+            <remarks></remarks>
+        </member>
+        <member name="F:Kernel.Compiler.ILOps.ILOp.OpCodes.Ldarga_S">
+            <summary> - </summary>
+            <remarks></remarks>
+        </member>
+        <member name="F:Kernel.Compiler.ILOps.ILOp.OpCodes.Starg_S">
+            <summary> - </summary>
+            <remarks></remarks>
+        </member>
+        <member name="F:Kernel.Compiler.ILOps.ILOp.OpCodes.Ldloc_S">
+            <summary> - </summary>
+            <remarks></remarks>
+        </member>
+        <member name="F:Kernel.Compiler.ILOps.ILOp.OpCodes.Ldloca_S">
+            <summary> - </summary>
+            <remarks></remarks>
+        </member>
+        <member name="F:Kernel.Compiler.ILOps.ILOp.OpCodes.Stloc_S">
+            <summary> - </summary>
+            <remarks></remarks>
+        </member>
+        <member name="F:Kernel.Compiler.ILOps.ILOp.OpCodes.Ldnull">
+            <summary> - </summary>
+            <remarks></remarks>
+        </member>
+        <member name="F:Kernel.Compiler.ILOps.ILOp.OpCodes.Ldc_I4_M1">
+            <summary> - </summary>
+            <remarks></remarks>
+        </member>
+        <member name="F:Kernel.Compiler.ILOps.ILOp.OpCodes.Ldc_I4_0">
+            <summary> - </summary>
+            <remarks></remarks>
+        </member>
+        <member name="F:Kernel.Compiler.ILOps.ILOp.OpCodes.Ldc_I4_1">
+            <summary> - </summary>
+            <remarks></remarks>
+        </member>
+        <member name="F:Kernel.Compiler.ILOps.ILOp.OpCodes.Ldc_I4_2">
+            <summary> - </summary>
+            <remarks></remarks>
+        </member>
+        <member name="F:Kernel.Compiler.ILOps.ILOp.OpCodes.Ldc_I4_3">
+            <summary> - </summary>
+            <remarks></remarks>
+        </member>
+        <member name="F:Kernel.Compiler.ILOps.ILOp.OpCodes.Ldc_I4_4">
+            <summary> - </summary>
+            <remarks></remarks>
+        </member>
+        <member name="F:Kernel.Compiler.ILOps.ILOp.OpCodes.Ldc_I4_5">
+            <summary> - </summary>
+            <remarks></remarks>
+        </member>
+        <member name="F:Kernel.Compiler.ILOps.ILOp.OpCodes.Ldc_I4_6">
+            <summary> - </summary>
+            <remarks></remarks>
+        </member>
+        <member name="F:Kernel.Compiler.ILOps.ILOp.OpCodes.Ldc_I4_7">
+            <summary> - </summary>
+            <remarks></remarks>
+        </member>
+        <member name="F:Kernel.Compiler.ILOps.ILOp.OpCodes.Ldc_I4_8">
+            <summary> - </summary>
+            <remarks></remarks>
+        </member>
+        <member name="F:Kernel.Compiler.ILOps.ILOp.OpCodes.Ldc_I4_S">
+            <summary> - </summary>
+            <remarks></remarks>
+        </member>
+        <member name="F:Kernel.Compiler.ILOps.ILOp.OpCodes.Ldc_I4">
+            <summary> - </summary>
+            <remarks></remarks>
+        </member>
+        <member name="F:Kernel.Compiler.ILOps.ILOp.OpCodes.Ldc_I8">
+            <summary> - </summary>
+            <remarks></remarks>
+        </member>
+        <member name="F:Kernel.Compiler.ILOps.ILOp.OpCodes.Ldc_R4">
+            <summary> - </summary>
+            <remarks></remarks>
+        </member>
+        <member name="F:Kernel.Compiler.ILOps.ILOp.OpCodes.Ldc_R8">
+            <summary> - </summary>
+            <remarks></remarks>
+        </member>
+        <member name="F:Kernel.Compiler.ILOps.ILOp.OpCodes.Dup">
+            <summary> - </summary>
+            <remarks></remarks>
+        </member>
+        <member name="F:Kernel.Compiler.ILOps.ILOp.OpCodes.Pop">
+            <summary> - </summary>
+            <remarks></remarks>
+        </member>
+        <member name="F:Kernel.Compiler.ILOps.ILOp.OpCodes.Jmp">
+            <summary> - </summary>
+            <remarks></remarks>
+        </member>
+        <member name="F:Kernel.Compiler.ILOps.ILOp.OpCodes.Call">
+            <summary> - </summary>
+            <remarks></remarks>
+        </member>
+        <member name="F:Kernel.Compiler.ILOps.ILOp.OpCodes.Calli">
+            <summary> - </summary>
+            <remarks></remarks>
+        </member>
+        <member name="F:Kernel.Compiler.ILOps.ILOp.OpCodes.Ret">
+            <summary> - </summary>
+            <remarks></remarks>
+        </member>
+        <member name="F:Kernel.Compiler.ILOps.ILOp.OpCodes.Br_S">
+            <summary> - </summary>
+            <remarks></remarks>
+        </member>
+        <member name="F:Kernel.Compiler.ILOps.ILOp.OpCodes.Brfalse_S">
+            <summary> - </summary>
+            <remarks></remarks>
+        </member>
+        <member name="F:Kernel.Compiler.ILOps.ILOp.OpCodes.Brtrue_S">
+            <summary> - </summary>
+            <remarks></remarks>
+        </member>
+        <member name="F:Kernel.Compiler.ILOps.ILOp.OpCodes.Beq_S">
+            <summary> - </summary>
+            <remarks></remarks>
+        </member>
+        <member name="F:Kernel.Compiler.ILOps.ILOp.OpCodes.Bge_S">
+            <summary> - </summary>
+            <remarks></remarks>
+        </member>
+        <member name="F:Kernel.Compiler.ILOps.ILOp.OpCodes.Bgt_S">
+            <summary> - </summary>
+            <remarks></remarks>
+        </member>
+        <member name="F:Kernel.Compiler.ILOps.ILOp.OpCodes.Ble_S">
+            <summary> - </summary>
+            <remarks></remarks>
+        </member>
+        <member name="F:Kernel.Compiler.ILOps.ILOp.OpCodes.Blt_S">
+            <summary> - </summary>
+            <remarks></remarks>
+        </member>
+        <member name="F:Kernel.Compiler.ILOps.ILOp.OpCodes.Bne_Un_S">
+            <summary> - </summary>
+            <remarks></remarks>
+        </member>
+        <member name="F:Kernel.Compiler.ILOps.ILOp.OpCodes.Bge_Un_S">
+            <summary> - </summary>
+            <remarks></remarks>
+        </member>
+        <member name="F:Kernel.Compiler.ILOps.ILOp.OpCodes.Bgt_Un_S">
+            <summary> - </summary>
+            <remarks></remarks>
+        </member>
+        <member name="F:Kernel.Compiler.ILOps.ILOp.OpCodes.Ble_Un_S">
+            <summary> - </summary>
+            <remarks></remarks>
+        </member>
+        <member name="F:Kernel.Compiler.ILOps.ILOp.OpCodes.Blt_Un_S">
+            <summary> - </summary>
+            <remarks></remarks>
+        </member>
+        <member name="F:Kernel.Compiler.ILOps.ILOp.OpCodes.Br">
+            <summary> - </summary>
+            <remarks></remarks>
+        </member>
+        <member name="F:Kernel.Compiler.ILOps.ILOp.OpCodes.Brfalse">
+            <summary> - </summary>
+            <remarks></remarks>
+        </member>
+        <member name="F:Kernel.Compiler.ILOps.ILOp.OpCodes.Brtrue">
+            <summary> - </summary>
+            <remarks></remarks>
+        </member>
+        <member name="F:Kernel.Compiler.ILOps.ILOp.OpCodes.Beq">
+            <summary> - </summary>
+            <remarks></remarks>
+        </member>
+        <member name="F:Kernel.Compiler.ILOps.ILOp.OpCodes.Bge">
+            <summary> - </summary>
+            <remarks></remarks>
+        </member>
+        <member name="F:Kernel.Compiler.ILOps.ILOp.OpCodes.Bgt">
+            <summary> - </summary>
+            <remarks></remarks>
+        </member>
+        <member name="F:Kernel.Compiler.ILOps.ILOp.OpCodes.Ble">
+            <summary> - </summary>
+            <remarks></remarks>
+        </member>
+        <member name="F:Kernel.Compiler.ILOps.ILOp.OpCodes.Blt">
+            <summary> - </summary>
+            <remarks></remarks>
+        </member>
+        <member name="F:Kernel.Compiler.ILOps.ILOp.OpCodes.Bne_Un">
+            <summary> - </summary>
+            <remarks></remarks>
+        </member>
+        <member name="F:Kernel.Compiler.ILOps.ILOp.OpCodes.Bge_Un">
+            <summary> - </summary>
+            <remarks></remarks>
+        </member>
+        <member name="F:Kernel.Compiler.ILOps.ILOp.OpCodes.Bgt_Un">
+            <summary> - </summary>
+            <remarks></remarks>
+        </member>
+        <member name="F:Kernel.Compiler.ILOps.ILOp.OpCodes.Ble_Un">
+            <summary> - </summary>
+            <remarks></remarks>
+        </member>
+        <member name="F:Kernel.Compiler.ILOps.ILOp.OpCodes.Blt_Un">
+            <summary> - </summary>
+            <remarks></remarks>
+        </member>
+        <member name="F:Kernel.Compiler.ILOps.ILOp.OpCodes.Switch">
+            <summary> - </summary>
+            <remarks></remarks>
+        </member>
+        <member name="F:Kernel.Compiler.ILOps.ILOp.OpCodes.Ldind_I1">
+            <summary> - </summary>
+            <remarks></remarks>
+        </member>
+        <member name="F:Kernel.Compiler.ILOps.ILOp.OpCodes.Ldind_U1">
+            <summary> - </summary>
+            <remarks></remarks>
+        </member>
+        <member name="F:Kernel.Compiler.ILOps.ILOp.OpCodes.Ldind_I2">
+            <summary> - </summary>
+            <remarks></remarks>
+        </member>
+        <member name="F:Kernel.Compiler.ILOps.ILOp.OpCodes.Ldind_U2">
+            <summary> - </summary>
+            <remarks></remarks>
+        </member>
+        <member name="F:Kernel.Compiler.ILOps.ILOp.OpCodes.Ldind_I4">
+            <summary> - </summary>
+            <remarks></remarks>
+        </member>
+        <member name="F:Kernel.Compiler.ILOps.ILOp.OpCodes.Ldind_U4">
+            <summary> - </summary>
+            <remarks></remarks>
+        </member>
+        <member name="F:Kernel.Compiler.ILOps.ILOp.OpCodes.Ldind_I8">
+            <summary> - </summary>
+            <remarks></remarks>
+        </member>
+        <member name="F:Kernel.Compiler.ILOps.ILOp.OpCodes.Ldind_I">
+            <summary> - </summary>
+            <remarks></remarks>
+        </member>
+        <member name="F:Kernel.Compiler.ILOps.ILOp.OpCodes.Ldind_R4">
+            <summary> - </summary>
+            <remarks></remarks>
+        </member>
+        <member name="F:Kernel.Compiler.ILOps.ILOp.OpCodes.Ldind_R8">
+            <summary> - </summary>
+            <remarks></remarks>
+        </member>
+        <member name="F:Kernel.Compiler.ILOps.ILOp.OpCodes.Ldind_Ref">
+            <summary> - </summary>
+            <remarks></remarks>
+        </member>
+        <member name="F:Kernel.Compiler.ILOps.ILOp.OpCodes.Stind_Ref">
+            <summary> - </summary>
+            <remarks></remarks>
+        </member>
+        <member name="F:Kernel.Compiler.ILOps.ILOp.OpCodes.Stind_I1">
+            <summary> - </summary>
+            <remarks></remarks>
+        </member>
+        <member name="F:Kernel.Compiler.ILOps.ILOp.OpCodes.Stind_I2">
+            <summary> - </summary>
+            <remarks></remarks>
+        </member>
+        <member name="F:Kernel.Compiler.ILOps.ILOp.OpCodes.Stind_I4">
+            <summary> - </summary>
+            <remarks></remarks>
+        </member>
+        <member name="F:Kernel.Compiler.ILOps.ILOp.OpCodes.Stind_I8">
+            <summary> - </summary>
+            <remarks></remarks>
+        </member>
+        <member name="F:Kernel.Compiler.ILOps.ILOp.OpCodes.Stind_R4">
+            <summary> - </summary>
+            <remarks></remarks>
+        </member>
+        <member name="F:Kernel.Compiler.ILOps.ILOp.OpCodes.Stind_R8">
+            <summary> - </summary>
+            <remarks></remarks>
+        </member>
+        <member name="F:Kernel.Compiler.ILOps.ILOp.OpCodes.Add">
+            <summary> - </summary>
+            <remarks></remarks>
+        </member>
+        <member name="F:Kernel.Compiler.ILOps.ILOp.OpCodes.Sub">
+            <summary> - </summary>
+            <remarks></remarks>
+        </member>
+        <member name="F:Kernel.Compiler.ILOps.ILOp.OpCodes.Mul">
+            <summary> - </summary>
+            <remarks></remarks>
+        </member>
+        <member name="F:Kernel.Compiler.ILOps.ILOp.OpCodes.Div">
+            <summary> - </summary>
+            <remarks></remarks>
+        </member>
+        <member name="F:Kernel.Compiler.ILOps.ILOp.OpCodes.Div_Un">
+            <summary> - </summary>
+            <remarks></remarks>
+        </member>
+        <member name="F:Kernel.Compiler.ILOps.ILOp.OpCodes.Rem">
+            <summary> - </summary>
+            <remarks></remarks>
+        </member>
+        <member name="F:Kernel.Compiler.ILOps.ILOp.OpCodes.Rem_Un">
+            <summary> - </summary>
+            <remarks></remarks>
+        </member>
+        <member name="F:Kernel.Compiler.ILOps.ILOp.OpCodes.And">
+            <summary> - </summary>
+            <remarks></remarks>
+        </member>
+        <member name="F:Kernel.Compiler.ILOps.ILOp.OpCodes.Or">
+            <summary> - </summary>
+            <remarks></remarks>
+        </member>
+        <member name="F:Kernel.Compiler.ILOps.ILOp.OpCodes.Xor">
+            <summary> - </summary>
+            <remarks></remarks>
+        </member>
+        <member name="F:Kernel.Compiler.ILOps.ILOp.OpCodes.Shl">
+            <summary> - </summary>
+            <remarks></remarks>
+        </member>
+        <member name="F:Kernel.Compiler.ILOps.ILOp.OpCodes.Shr">
+            <summary> - </summary>
+            <remarks></remarks>
+        </member>
+        <member name="F:Kernel.Compiler.ILOps.ILOp.OpCodes.Shr_Un">
+            <summary> - </summary>
+            <remarks></remarks>
+        </member>
+        <member name="F:Kernel.Compiler.ILOps.ILOp.OpCodes.Neg">
+            <summary> - </summary>
+            <remarks></remarks>
+        </member>
+        <member name="F:Kernel.Compiler.ILOps.ILOp.OpCodes.Not">
+            <summary> - </summary>
+            <remarks></remarks>
+        </member>
+        <member name="F:Kernel.Compiler.ILOps.ILOp.OpCodes.Conv_I1">
+            <summary> - </summary>
+            <remarks></remarks>
+        </member>
+        <member name="F:Kernel.Compiler.ILOps.ILOp.OpCodes.Conv_I2">
+            <summary> - </summary>
+            <remarks></remarks>
+        </member>
+        <member name="F:Kernel.Compiler.ILOps.ILOp.OpCodes.Conv_I4">
+            <summary> - </summary>
+            <remarks></remarks>
+        </member>
+        <member name="F:Kernel.Compiler.ILOps.ILOp.OpCodes.Conv_I8">
+            <summary> - </summary>
+            <remarks></remarks>
+        </member>
+        <member name="F:Kernel.Compiler.ILOps.ILOp.OpCodes.Conv_R4">
+            <summary> - </summary>
+            <remarks></remarks>
+        </member>
+        <member name="F:Kernel.Compiler.ILOps.ILOp.OpCodes.Conv_R8">
+            <summary> - </summary>
+            <remarks></remarks>
+        </member>
+        <member name="F:Kernel.Compiler.ILOps.ILOp.OpCodes.Conv_U4">
+            <summary> - </summary>
+            <remarks></remarks>
+        </member>
+        <member name="F:Kernel.Compiler.ILOps.ILOp.OpCodes.Conv_U8">
+            <summary> - </summary>
+            <remarks></remarks>
+        </member>
+        <member name="F:Kernel.Compiler.ILOps.ILOp.OpCodes.Callvirt">
+            <summary> - </summary>
+            <remarks></remarks>
+        </member>
+        <member name="F:Kernel.Compiler.ILOps.ILOp.OpCodes.Cpobj">
+            <summary> - </summary>
+            <remarks></remarks>
+        </member>
+        <member name="F:Kernel.Compiler.ILOps.ILOp.OpCodes.Ldobj">
+            <summary> - </summary>
+            <remarks></remarks>
+        </member>
+        <member name="F:Kernel.Compiler.ILOps.ILOp.OpCodes.Ldstr">
+            <summary> - </summary>
+            <remarks></remarks>
+        </member>
+        <member name="F:Kernel.Compiler.ILOps.ILOp.OpCodes.Newobj">
+            <summary> - </summary>
+            <remarks></remarks>
+        </member>
+        <member name="F:Kernel.Compiler.ILOps.ILOp.OpCodes.Castclass">
+            <summary> - </summary>
+            <remarks></remarks>
+        </member>
+        <member name="F:Kernel.Compiler.ILOps.ILOp.OpCodes.Isinst">
+            <summary> - </summary>
+            <remarks></remarks>
+        </member>
+        <member name="F:Kernel.Compiler.ILOps.ILOp.OpCodes.Conv_R_Un">
+            <summary> - </summary>
+            <remarks></remarks>
+        </member>
+        <member name="F:Kernel.Compiler.ILOps.ILOp.OpCodes.Unbox">
+            <summary> - </summary>
+            <remarks></remarks>
+        </member>
+        <member name="F:Kernel.Compiler.ILOps.ILOp.OpCodes.Throw">
+            <summary> - </summary>
+            <remarks></remarks>
+        </member>
+        <member name="F:Kernel.Compiler.ILOps.ILOp.OpCodes.Ldfld">
+            <summary> - </summary>
+            <remarks></remarks>
+        </member>
+        <member name="F:Kernel.Compiler.ILOps.ILOp.OpCodes.Ldflda">
+            <summary> - </summary>
+            <remarks></remarks>
+        </member>
+        <member name="F:Kernel.Compiler.ILOps.ILOp.OpCodes.Stfld">
+            <summary> - </summary>
+            <remarks></remarks>
+        </member>
+        <member name="F:Kernel.Compiler.ILOps.ILOp.OpCodes.Ldsfld">
+            <summary> - </summary>
+            <remarks></remarks>
+        </member>
+        <member name="F:Kernel.Compiler.ILOps.ILOp.OpCodes.Ldsflda">
+            <summary> - </summary>
+            <remarks></remarks>
+        </member>
+        <member name="F:Kernel.Compiler.ILOps.ILOp.OpCodes.Stsfld">
+            <summary> - </summary>
+            <remarks></remarks>
+        </member>
+        <member name="F:Kernel.Compiler.ILOps.ILOp.OpCodes.Stobj">
+            <summary> - </summary>
+            <remarks></remarks>
+        </member>
+        <member name="F:Kernel.Compiler.ILOps.ILOp.OpCodes.Conv_Ovf_I1_Un">
+            <summary> - </summary>
+            <remarks></remarks>
+        </member>
+        <member name="F:Kernel.Compiler.ILOps.ILOp.OpCodes.Conv_Ovf_I2_Un">
+            <summary> - </summary>
+            <remarks></remarks> 
+        </member>
+        <member name="F:Kernel.Compiler.ILOps.ILOp.OpCodes.Conv_Ovf_I4_Un">
+            <summary> - </summary>
+            <remarks></remarks> 
+        </member>
+        <member name="F:Kernel.Compiler.ILOps.ILOp.OpCodes.Conv_Ovf_I8_Un">
+            <summary> - </summary>
+            <remarks></remarks> 
+        </member>
+        <member name="F:Kernel.Compiler.ILOps.ILOp.OpCodes.Conv_Ovf_U1_Un">
+            <summary> - </summary>
+            <remarks></remarks> 
+        </member>
+        <member name="F:Kernel.Compiler.ILOps.ILOp.OpCodes.Conv_Ovf_U2_Un">
+            <summary> - </summary>
+            <remarks></remarks> 
+        </member>
+        <member name="F:Kernel.Compiler.ILOps.ILOp.OpCodes.Conv_Ovf_U4_Un">
+            <summary> - </summary>
+            <remarks></remarks> 
+        </member>
+        <member name="F:Kernel.Compiler.ILOps.ILOp.OpCodes.Conv_Ovf_U8_Un">
+            <summary> - </summary>
+            <remarks></remarks> 
+        </member>
+        <member name="F:Kernel.Compiler.ILOps.ILOp.OpCodes.Conv_Ovf_I_Un">
+            <summary> - </summary>
+            <remarks></remarks> 
+        </member>
+        <member name="F:Kernel.Compiler.ILOps.ILOp.OpCodes.Conv_Ovf_U_Un">
+            <summary> - </summary>
+            <remarks></remarks> 
+        </member>
+        <member name="F:Kernel.Compiler.ILOps.ILOp.OpCodes.Box">
+            <summary> - </summary>
+            <remarks></remarks> 
+        </member>
+        <member name="F:Kernel.Compiler.ILOps.ILOp.OpCodes.Newarr">
+            <summary> - </summary>
+            <remarks></remarks> 
+        </member>
+        <member name="F:Kernel.Compiler.ILOps.ILOp.OpCodes.Ldlen">
+            <summary> - </summary>
+            <remarks></remarks> 
+        </member>
+        <member name="F:Kernel.Compiler.ILOps.ILOp.OpCodes.Ldelema">
+            <summary> - </summary>
+            <remarks></remarks> 
+        </member>
+        <member name="F:Kernel.Compiler.ILOps.ILOp.OpCodes.Ldelem_I1">
+            <summary> - </summary>
+            <remarks></remarks> 
+        </member>
+        <member name="F:Kernel.Compiler.ILOps.ILOp.OpCodes.Ldelem_U1">
+            <summary> - </summary>
+            <remarks></remarks> 
+        </member>
+        <member name="F:Kernel.Compiler.ILOps.ILOp.OpCodes.Ldelem_I2">
+            <summary> - </summary>
+            <remarks></remarks> 
+        </member>
+        <member name="F:Kernel.Compiler.ILOps.ILOp.OpCodes.Ldelem_U2">
+            <summary> - </summary>
+            <remarks></remarks> 
+        </member>
+        <member name="F:Kernel.Compiler.ILOps.ILOp.OpCodes.Ldelem_I4">
+            <summary> - </summary>
+            <remarks></remarks> 
+        </member>
+        <member name="F:Kernel.Compiler.ILOps.ILOp.OpCodes.Ldelem_U4">
+            <summary> - </summary>
+            <remarks></remarks> 
+        </member>
+        <member name="F:Kernel.Compiler.ILOps.ILOp.OpCodes.Ldelem_I8">
+            <summary> - </summary>
+            <remarks></remarks> 
+        </member>
+        <member name="F:Kernel.Compiler.ILOps.ILOp.OpCodes.Ldelem_I">
+            <summary> - </summary>
+            <remarks></remarks> 
+        </member>
+        <member name="F:Kernel.Compiler.ILOps.ILOp.OpCodes.Ldelem_R4">
+            <summary> - </summary>
+            <remarks></remarks> 
+        </member>
+        <member name="F:Kernel.Compiler.ILOps.ILOp.OpCodes.Ldelem_R8">
+            <summary> - </summary>
+            <remarks></remarks> 
+        </member>
+        <member name="F:Kernel.Compiler.ILOps.ILOp.OpCodes.Ldelem_Ref">
+            <summary> - </summary>
+            <remarks></remarks> 
+        </member>
+        <member name="F:Kernel.Compiler.ILOps.ILOp.OpCodes.Stelem_I">
+            <summary> - </summary>
+            <remarks></remarks> 
+        </member>
+        <member name="F:Kernel.Compiler.ILOps.ILOp.OpCodes.Stelem_I1">
+            <summary> - </summary>
+            <remarks></remarks> 
+        </member>
+        <member name="F:Kernel.Compiler.ILOps.ILOp.OpCodes.Stelem_I2">
+            <summary> - </summary>
+            <remarks></remarks> 
+        </member>
+        <member name="F:Kernel.Compiler.ILOps.ILOp.OpCodes.Stelem_I4">
+            <summary> - </summary>
+            <remarks></remarks> 
+        </member>
+        <member name="F:Kernel.Compiler.ILOps.ILOp.OpCodes.Stelem_I8">
+            <summary> - </summary>
+            <remarks></remarks> 
+        </member>
+        <member name="F:Kernel.Compiler.ILOps.ILOp.OpCodes.Stelem_R4">
+            <summary> - </summary>
+            <remarks></remarks> 
+        </member>
+        <member name="F:Kernel.Compiler.ILOps.ILOp.OpCodes.Stelem_R8">
+            <summary> - </summary>
+            <remarks></remarks> 
+        </member>
+        <member name="F:Kernel.Compiler.ILOps.ILOp.OpCodes.Stelem_Ref">
+            <summary> - </summary>
+            <remarks></remarks> 
+        </member>
+        <member name="F:Kernel.Compiler.ILOps.ILOp.OpCodes.Ldelem">
+            <summary> - </summary>
+            <remarks></remarks> 
+        </member>
+        <member name="F:Kernel.Compiler.ILOps.ILOp.OpCodes.Stelem">
+            <summary> - </summary>
+            <remarks></remarks> 
+        </member>
+        <member name="F:Kernel.Compiler.ILOps.ILOp.OpCodes.Unbox_Any">
+            <summary> - </summary>
+            <remarks></remarks> 
+        </member>
+        <member name="F:Kernel.Compiler.ILOps.ILOp.OpCodes.Conv_Ovf_I1">
+            <summary> - </summary>
+            <remarks></remarks> 
+        </member>
+        <member name="F:Kernel.Compiler.ILOps.ILOp.OpCodes.Conv_Ovf_U1">
+            <summary> - </summary>
+            <remarks></remarks> 
+        </member>
+        <member name="F:Kernel.Compiler.ILOps.ILOp.OpCodes.Conv_Ovf_I2">
+            <summary> - </summary>
+            <remarks></remarks> 
+        </member>
+        <member name="F:Kernel.Compiler.ILOps.ILOp.OpCodes.Conv_Ovf_U2">
+            <summary> - </summary>
+            <remarks></remarks> 
+        </member>
+        <member name="F:Kernel.Compiler.ILOps.ILOp.OpCodes.Conv_Ovf_I4">
+            <summary> - </summary>
+            <remarks></remarks> 
+        </member>
+        <member name="F:Kernel.Compiler.ILOps.ILOp.OpCodes.Conv_Ovf_U4">
+            <summary> - </summary>
+            <remarks></remarks> 
+        </member>
+        <member name="F:Kernel.Compiler.ILOps.ILOp.OpCodes.Conv_Ovf_I8">
+            <summary> - </summary>
+            <remarks></remarks> 
+        </member>
+        <member name="F:Kernel.Compiler.ILOps.ILOp.OpCodes.Conv_Ovf_U8">
+            <summary> - </summary>
+            <remarks></remarks> 
+        </member>
+        <member name="F:Kernel.Compiler.ILOps.ILOp.OpCodes.Refanyval">
+            <summary> - </summary>
+            <remarks></remarks> 
+        </member>
+        <member name="F:Kernel.Compiler.ILOps.ILOp.OpCodes.Ckfinite">
+            <summary> - </summary>
+            <remarks></remarks> 
+        </member>
+        <member name="F:Kernel.Compiler.ILOps.ILOp.OpCodes.Mkrefany">
+            <summary> - </summary>
+            <remarks></remarks> 
+        </member>
+        <member name="F:Kernel.Compiler.ILOps.ILOp.OpCodes.Ldtoken">
+            <summary> - </summary>
+            <remarks></remarks> 
+        </member>
+        <member name="F:Kernel.Compiler.ILOps.ILOp.OpCodes.Conv_U2">
+            <summary> - </summary>
+            <remarks></remarks> 
+        </member>
+        <member name="F:Kernel.Compiler.ILOps.ILOp.OpCodes.Conv_U1">
+            <summary> - </summary>
+            <remarks></remarks> 
+        </member>
+        <member name="F:Kernel.Compiler.ILOps.ILOp.OpCodes.Conv_I">
+            <summary> - </summary>
+            <remarks></remarks> 
+        </member>
+        <member name="F:Kernel.Compiler.ILOps.ILOp.OpCodes.Conv_Ovf_I">
+            <summary> - </summary>
+            <remarks></remarks> 
+        </member>
+        <member name="F:Kernel.Compiler.ILOps.ILOp.OpCodes.Conv_Ovf_U">
+            <summary> - </summary>
+            <remarks></remarks> 
+        </member>
+        <member name="F:Kernel.Compiler.ILOps.ILOp.OpCodes.Add_Ovf">
+            <summary> - </summary>
+            <remarks></remarks> 
+        </member>
+        <member name="F:Kernel.Compiler.ILOps.ILOp.OpCodes.Add_Ovf_Un">
+            <summary> - </summary>
+            <remarks></remarks> 
+        </member>
+        <member name="F:Kernel.Compiler.ILOps.ILOp.OpCodes.Mul_Ovf">
+            <summary> - </summary>
+            <remarks></remarks> 
+        </member>
+        <member name="F:Kernel.Compiler.ILOps.ILOp.OpCodes.Mul_Ovf_Un">
+            <summary> - </summary>
+            <remarks></remarks> 
+        </member>
+        <member name="F:Kernel.Compiler.ILOps.ILOp.OpCodes.Sub_Ovf">
+            <summary> - </summary>
+            <remarks></remarks> 
+        </member>
+        <member name="F:Kernel.Compiler.ILOps.ILOp.OpCodes.Sub_Ovf_Un">
+            <summary> - </summary>
+            <remarks></remarks> 
+        </member>
+        <member name="F:Kernel.Compiler.ILOps.ILOp.OpCodes.Endfinally">
+            <summary> - </summary>
+            <remarks></remarks> 
+        </member>
+        <member name="F:Kernel.Compiler.ILOps.ILOp.OpCodes.Leave">
+            <summary> - </summary>
+            <remarks></remarks> 
+        </member>
+        <member name="F:Kernel.Compiler.ILOps.ILOp.OpCodes.Leave_S">
+            <summary> - </summary>
+            <remarks></remarks> 
+        </member>
+        <member name="F:Kernel.Compiler.ILOps.ILOp.OpCodes.Stind_I">
+            <summary> - </summary>
+            <remarks></remarks> 
+        </member>
+        <member name="F:Kernel.Compiler.ILOps.ILOp.OpCodes.Conv_U">
+            <summary> - </summary>
+            <remarks></remarks> 
+        </member>
+        <member name="F:Kernel.Compiler.ILOps.ILOp.OpCodes.Prefix7">
+            <summary> - </summary>
+            <remarks></remarks> 
+        </member>
+        <member name="F:Kernel.Compiler.ILOps.ILOp.OpCodes.Prefix6">
+            <summary> - </summary>
+            <remarks></remarks> 
+        </member>
+        <member name="F:Kernel.Compiler.ILOps.ILOp.OpCodes.Prefix5">
+            <summary> - </summary>
+            <remarks></remarks> 
+        </member>
+        <member name="F:Kernel.Compiler.ILOps.ILOp.OpCodes.Prefix4">
+            <summary> - </summary>
+            <remarks></remarks> 
+        </member>
+        <member name="F:Kernel.Compiler.ILOps.ILOp.OpCodes.Prefix3">
+            <summary> - </summary>
+            <remarks></remarks> 
+        </member>
+        <member name="F:Kernel.Compiler.ILOps.ILOp.OpCodes.Prefix2">
+            <summary> - </summary>
+            <remarks></remarks> 
+        </member>
+        <member name="F:Kernel.Compiler.ILOps.ILOp.OpCodes.Prefix1">
+            <summary> - </summary>
+            <remarks></remarks> 
+        </member>
+        <member name="F:Kernel.Compiler.ILOps.ILOp.OpCodes.Prefixref">
+            <summary> - </summary>
+            <remarks></remarks> 
+        </member>
+        <member name="F:Kernel.Compiler.ILOps.ILOp.OpCodes.Arglist">
+            <summary> - </summary>
+            <remarks></remarks> 
+        </member>
+        <member name="F:Kernel.Compiler.ILOps.ILOp.OpCodes.Ceq">
+            <summary> - </summary>
+            <remarks></remarks> 
+        </member>
+        <member name="F:Kernel.Compiler.ILOps.ILOp.OpCodes.Cgt">
+            <summary> - </summary>
+            <remarks></remarks> 
+        </member>
+        <member name="F:Kernel.Compiler.ILOps.ILOp.OpCodes.Cgt_Un">
+            <summary> - </summary>
+            <remarks></remarks> 
+        </member>
+        <member name="F:Kernel.Compiler.ILOps.ILOp.OpCodes.Clt">
+            <summary> - </summary>
+            <remarks></remarks> 
+        </member>
+        <member name="F:Kernel.Compiler.ILOps.ILOp.OpCodes.Clt_Un">
+            <summary> - </summary>
+            <remarks></remarks> 
+        </member>
+        <member name="F:Kernel.Compiler.ILOps.ILOp.OpCodes.Ldftn">
+            <summary> - </summary>
+            <remarks></remarks> 
+        </member>
+        <member name="F:Kernel.Compiler.ILOps.ILOp.OpCodes.Ldvirtftn">
+            <summary> - </summary>
+            <remarks></remarks> 
+        </member>
+        <member name="F:Kernel.Compiler.ILOps.ILOp.OpCodes.Ldarg">
+            <summary> - </summary>
+            <remarks></remarks> 
+        </member>
+        <member name="F:Kernel.Compiler.ILOps.ILOp.OpCodes.Ldarga">
+            <summary> - </summary>
+            <remarks></remarks> 
+        </member>
+        <member name="F:Kernel.Compiler.ILOps.ILOp.OpCodes.Starg">
+            <summary> - </summary>
+            <remarks></remarks> 
+        </member>
+        <member name="F:Kernel.Compiler.ILOps.ILOp.OpCodes.Ldloc">
+            <summary> - </summary>
+            <remarks></remarks> 
+        </member>
+        <member name="F:Kernel.Compiler.ILOps.ILOp.OpCodes.Ldloca">
+            <summary> - </summary>
+            <remarks></remarks> 
+        </member>
+        <member name="F:Kernel.Compiler.ILOps.ILOp.OpCodes.Stloc">
+            <summary> - </summary>
+            <remarks></remarks> 
+        </member>
+        <member name="F:Kernel.Compiler.ILOps.ILOp.OpCodes.Localloc">
+            <summary> - </summary>
+            <remarks></remarks> 
+        </member>
+        <member name="F:Kernel.Compiler.ILOps.ILOp.OpCodes.Endfilter">
+            <summary> - </summary>
+            <remarks></remarks> 
+        </member>
+        <member name="F:Kernel.Compiler.ILOps.ILOp.OpCodes.Unaligned">
+            <summary> - </summary>
+            <remarks></remarks> 
+        </member>
+        <member name="F:Kernel.Compiler.ILOps.ILOp.OpCodes.Volatile">
+            <summary> - </summary>
+            <remarks></remarks> 
+        </member>
+        <member name="F:Kernel.Compiler.ILOps.ILOp.OpCodes.Tailcall">
+            <summary> - </summary>
+            <remarks></remarks> 
+        </member>
+        <member name="F:Kernel.Compiler.ILOps.ILOp.OpCodes.Initobj">
+            <summary> - </summary>
+            <remarks></remarks> 
+        </member>
+        <member name="F:Kernel.Compiler.ILOps.ILOp.OpCodes.Constrained">
+            <summary> - </summary>
+            <remarks></remarks> 
+        </member>
+        <member name="F:Kernel.Compiler.ILOps.ILOp.OpCodes.Cpblk">
+            <summary> - </summary>
+            <remarks></remarks> 
+        </member>
+        <member name="F:Kernel.Compiler.ILOps.ILOp.OpCodes.Initblk">
+            <summary> - </summary>
+            <remarks></remarks> 
+        </member>
+        <member name="F:Kernel.Compiler.ILOps.ILOp.OpCodes.Rethrow">
+            <summary> - </summary>
+            <remarks></remarks> 
+        </member>
+        <member name="F:Kernel.Compiler.ILOps.ILOp.OpCodes.Sizeof">
+            <summary> - </summary>
+            <remarks></remarks> 
+        </member>
+        <member name="F:Kernel.Compiler.ILOps.ILOp.OpCodes.Refanytype">
+            <summary> - </summary>
+            <remarks></remarks> 
+        </member>
+        <member name="F:Kernel.Compiler.ILOps.ILOp.OpCodes.Readonly">
+            <summary> - </summary>
+            <remarks></remarks> 
+        </member>
+        <member name="T:Kernel.Compiler.ILOps.Ldelem">
+            <summary>
+            Handles the 
+            <see cref="F:System.Reflection.Emit.OpCodes.Ldelem"/>, 
+            <see cref="F:System.Reflection.Emit.OpCodes.Ldelem_I"/>, 
+            <see cref="F:System.Reflection.Emit.OpCodes.Ldelem_I1"/>, 
+            <see cref="F:System.Reflection.Emit.OpCodes.Ldelem_I2"/>, 
+            <see cref="F:System.Reflection.Emit.OpCodes.Ldelem_I4"/>, 
+            <see cref="F:System.Reflection.Emit.OpCodes.Ldelem_I8"/>,
+            <see cref="F:System.Reflection.Emit.OpCodes.Ldelem_R4"/>, 
+            <see cref="F:System.Reflection.Emit.OpCodes.Ldelem_R8"/>, 
+            <see cref="F:System.Reflection.Emit.OpCodes.Ldelem_U1"/>, 
+            <see cref="F:System.Reflection.Emit.OpCodes.Ldelem_U2"/>, 
+            <see cref="F:System.Reflection.Emit.OpCodes.Ldelem_U4"/> and 
+            <see cref="F:System.Reflection.Emit.OpCodes.Ldelema"/> IL ops.
+            </summary>
+            <remarks>
+            See MSDN for details of these ops.
+            </remarks>
+            <seealso cref="F:System.Reflection.Emit.OpCodes.Ldelem"/> 
+            <seealso cref="F:System.Reflection.Emit.OpCodes.Ldelem_I"/> 
+            <seealso cref="F:System.Reflection.Emit.OpCodes.Ldelem_I1"/> 
+            <seealso cref="F:System.Reflection.Emit.OpCodes.Ldelem_I2"/> 
+            <seealso cref="F:System.Reflection.Emit.OpCodes.Ldelem_I4"/> 
+            <seealso cref="F:System.Reflection.Emit.OpCodes.Ldelem_I8"/>
+            <seealso cref="F:System.Reflection.Emit.OpCodes.Ldelem_R4"/> 
+            <seealso cref="F:System.Reflection.Emit.OpCodes.Ldelem_R8"/> 
+            <seealso cref="F:System.Reflection.Emit.OpCodes.Ldelem_U1"/> 
+            <seealso cref="F:System.Reflection.Emit.OpCodes.Ldelem_U2"/> 
+            <seealso cref="F:System.Reflection.Emit.OpCodes.Ldelem_U4"/>
+            <seealso cref="F:System.Reflection.Emit.OpCodes.Ldelema"/>
+        </member>
+        <member name="T:Kernel.Compiler.ILOps.Newarr">
+            <summary>
+            Handles the 
+            <see cref="F:System.Reflection.Emit.OpCodes.Newarr"/> IL op.
+            </summary>
+            <remarks>
+            See MSDN for details of these ops.
+            </remarks>
+            <seealso cref="F:System.Reflection.Emit.OpCodes.Newarr"/>
+        </member>
+        <member name="T:Kernel.Compiler.ILOps.StackSwitch">
+            <summary>
+            Custom IL op that rotates (upwards) the specified number of top-most stack items with eachother. 
+            Does not alter compiler record of stack - caller must do that. 
+            Acts totally ignorant of item types (e.g. int or float). Only moves dwords. Number of dwords to move should be in value 
+            bytes. Null value bytes indicates rotate (switch) top two items.
+            </summary>
+            <remarks>
+            This must at least have an empty stub implementation or the compiler
+            will fail to execute. It was added so the ILScanner could optimise 
+            some code injections that it has to make.
+            </remarks>
+        </member>
+        <member name="T:Kernel.Compiler.ILOps.Shr">
+            <summary>
+            Handles the <see cref="F:System.Reflection.Emit.OpCodes.Shr_Un"/> 
+            IL op.
+            </summary>
+            <remarks>
+            See MSDN for details of these ops.
+            </remarks>
+            <seealso cref="F:System.Reflection.Emit.OpCodes.Shr_Un"/>
+        </member>
+        <member name="T:Kernel.Compiler.ILOps.Newobj">
+            <summary>
+            Handles the 
+            <see cref="F:System.Reflection.Emit.OpCodes.Newobj"/> IL op.
+            </summary>
+            <remarks>
+            See MSDN for details of these ops.
+            </remarks>
+            <seealso cref="F:System.Reflection.Emit.OpCodes.Newobj"/>
+        </member>
+        <member name="T:Kernel.Compiler.ILOps.Ldtoken">
+            <summary>
+            Handles the <see cref="F:System.Reflection.Emit.OpCodes.Ldtoken"/> 
+            IL op.
+            </summary>
+            <remarks>
+            See MSDN for details of these ops.
+            </remarks>
+            <seealso cref="F:System.Reflection.Emit.OpCodes.Ldtoken"/>
+        </member>
+        <member name="T:Kernel.Compiler.ILOps.And">
+            <summary>
+            Handles the <see cref="F:System.Reflection.Emit.OpCodes.And"/> 
+            IL op.
+            </summary>
+            <remarks>
+            See MSDN for details of these ops.
+            </remarks>
+            <seealso cref="F:System.Reflection.Emit.OpCodes.And"/>
+        </member>
+        <member name="T:Kernel.Compiler.ILOps.Sizeof">
+            <summary>
+            Handles the <see cref="F:System.Reflection.Emit.OpCodes.Sizeof"/> 
+            IL op.
+            </summary>
+            <remarks>
+            See MSDN for details of these ops.
+            </remarks>
+            <seealso cref="F:System.Reflection.Emit.OpCodes.Sizeof"/>
+        </member>
+        <member name="T:Kernel.Compiler.ILOps.Dup">
+            <summary>
+            Handles the <see cref="F:System.Reflection.Emit.OpCodes.Dup"/> 
+            IL op.
+            </summary>
+            <remarks>
+            See MSDN for details of these ops.
+            </remarks>
+            <seealso cref="F:System.Reflection.Emit.OpCodes.Dup"/>
+        </member>
+        <member name="T:Kernel.Compiler.ILOps.Ldnull">
+            <summary>
+            Handles the 
+            <see cref="F:System.Reflection.Emit.OpCodes.Ldnull"/> IL op.
+            </summary>
+            <remarks>
+            See MSDN for details of these ops.
+            </remarks>
+            <seealso cref="F:System.Reflection.Emit.OpCodes.Ldnull"/>
+        </member>
+        <member name="T:Kernel.Compiler.ILOps.Ldftn">
+            <summary>
+            Handles the 
+            <see cref="F:System.Reflection.Emit.OpCodes.Ldftn"/> IL op.
+            </summary>
+            <remarks>
+            See MSDN for details of these ops.
+            </remarks>
+            <seealso cref="F:System.Reflection.Emit.OpCodes.Ldftn"/>
+        </member>
+        <member name="T:Kernel.Compiler.ILOps.Ldsfld">
+            <summary>
+            Handles the 
+            <see cref="F:System.Reflection.Emit.OpCodes.Ldsfld"/> and
+            <see cref="F:System.Reflection.Emit.OpCodes.Ldsflda"/>
+            IL ops.
+            </summary>
+            <remarks>
+            See MSDN for details of these ops.
+            </remarks>
+            <seealso cref="F:System.Reflection.Emit.OpCodes.Ldsfld"/>
+            <seealso cref="F:System.Reflection.Emit.OpCodes.Ldsflda"/>
+        </member>
+        <member name="T:Kernel.Compiler.ILOps.Ldfld">
+            <summary>
+            Handles the <see cref="F:System.Reflection.Emit.OpCodes.Ldfld"/> IL op.
+            </summary>
+            <remarks>
+            See MSDN for details of these ops.
+            </remarks>
+            <seealso cref="F:System.Reflection.Emit.OpCodes.Ldfld"/>
+        </member>
+        <member name="T:Kernel.Compiler.ILOps.Stfld">
+            <summary>
+            Handles the <see cref="F:System.Reflection.Emit.OpCodes.Stfld"/> IL op.
+            </summary>
+            <remarks>
+            See MSDN for details of these ops.
+            </remarks>
+            <seealso cref="F:System.Reflection.Emit.OpCodes.Stfld"/>
+        </member>
+        <member name="T:Kernel.Compiler.ILOps.Stsfld">
+            <summary>
+            Handles the <see cref="F:System.Reflection.Emit.OpCodes.Stsfld"/> IL op.
+            </summary>
+            <remarks>
+            See MSDN for details of these ops.
+            </remarks>
+            <seealso cref="F:System.Reflection.Emit.OpCodes.Stsfld"/>
+        </member>
+        <member name="T:Kernel.Compiler.ILOps.Starg">
+            <summary>
+            Handles the
+            <see cref="F:System.Reflection.Emit.OpCodes.Starg"/> and 
+            <see cref="F:System.Reflection.Emit.OpCodes.Starg_S"/> IL ops.
+            </summary>
+            <remarks>
+            See MSDN for details of these ops.
+            </remarks>
+            <seealso cref="F:System.Reflection.Emit.OpCodes.Starg"/>
+            <seealso cref="F:System.Reflection.Emit.OpCodes.Starg_S"/>
+        </member>
+        <member name="T:Kernel.Compiler.ILOps.Sub">
+            <summary>
+            Handles the <see cref="F:System.Reflection.Emit.OpCodes.Sub"/> 
+            IL op.
+            </summary>
+            <remarks>
+            See MSDN for details of these ops.
+            </remarks>
+            <seealso cref="F:System.Reflection.Emit.OpCodes.Sub"/>
+        </member>
+        <member name="T:Kernel.Compiler.ILOps.Ceq">
+            <summary>
+            Handles the <see cref="F:System.Reflection.Emit.OpCodes.Ceq"/> 
+            IL op.
+            </summary>
+            <remarks>
+            See MSDN for details of these ops.
+            </remarks>
+            <seealso cref="F:System.Reflection.Emit.OpCodes.Ceq"/>
+        </member>
+        <member name="T:Kernel.Compiler.ILOps.Cgt">
+            <summary>
+            Handles the <see cref="F:System.Reflection.Emit.OpCodes.Cgt"/> and
+            <see cref="F:System.Reflection.Emit.OpCodes.Cgt_Un"/> IL ops.
+            </summary>
+            <remarks>
+            See MSDN for details of these ops.
+            </remarks>
+            <seealso cref="F:System.Reflection.Emit.OpCodes.Cgt"/>
+            <seealso cref="F:System.Reflection.Emit.OpCodes.Cgt_Un"/>
+        </member>
+        <member name="T:Kernel.Compiler.ILOps.Convu">
+            <summary>
+            Handles the 
+            <see cref="F:System.Reflection.Emit.OpCodes.Conv_U"/>, 
+            <see cref="F:System.Reflection.Emit.OpCodes.Conv_U1"/>, 
+            <see cref="F:System.Reflection.Emit.OpCodes.Conv_U2"/>, 
+            <see cref="F:System.Reflection.Emit.OpCodes.Conv_U4"/> and 
+            <see cref="F:System.Reflection.Emit.OpCodes.Conv_U8"/> IL ops.
+            </summary>
+            <remarks>
+            See MSDN for details of these ops.
+            </remarks>
+            <seealso cref="F:System.Reflection.Emit.OpCodes.Conv_U"/>
+            <seealso cref="F:System.Reflection.Emit.OpCodes.Conv_U1"/>
+            <seealso cref="F:System.Reflection.Emit.OpCodes.Conv_U2"/>
+            <seealso cref="F:System.Reflection.Emit.OpCodes.Conv_U4"/>
+            <seealso cref="F:System.Reflection.Emit.OpCodes.Conv_U8"/>
+        </member>
+        <member name="T:Kernel.Compiler.ILOps.Or">
+            <summary>
+            Handles the <see cref="F:System.Reflection.Emit.OpCodes.Or"/> 
+            IL op.
+            </summary>
+            <remarks>
+            See MSDN for details of these ops.
+            </remarks>
+            <seealso cref="F:System.Reflection.Emit.OpCodes.Or"/>
+        </member>
+        <member name="T:Kernel.Compiler.ILOps.Shl">
+            <summary>
+            Handles the <see cref="F:System.Reflection.Emit.OpCodes.Shl"/> IL op.
+            </summary>
+            <remarks>
+            See MSDN for details of these ops.
+            </remarks>
+            <seealso cref="F:System.Reflection.Emit.OpCodes.Shl"/>
+        </member>
+        <member name="T:Kernel.Compiler.ILOps.Mul">
+            <summary>
+            Handles the <see cref="F:System.Reflection.Emit.OpCodes.Mul"/> 
+            IL op.
+            </summary>
+            <remarks>
+            See MSDN for details of these ops.
+            </remarks>
+            <seealso cref="F:System.Reflection.Emit.OpCodes.Mul"/>
+        </member>
+        <member name="T:Kernel.Compiler.ILOps.Div">
+            <summary>
+            Handles the <see cref="F:System.Reflection.Emit.OpCodes.Div"/> and
+            <see cref="F:System.Reflection.Emit.OpCodes.Div_Un"/> 
+            IL ops.
+            </summary>
+            <remarks>
+            See MSDN for details of these ops.
+            </remarks>
+            <seealso cref="F:System.Reflection.Emit.OpCodes.Div"/>
+            <seealso cref="F:System.Reflection.Emit.OpCodes.Div_Un"/>
+        </member>
+        <member name="T:Kernel.Compiler.ILOps.Add">
+            <summary>
+            Handles the <see cref="F:System.Reflection.Emit.OpCodes.Add"/> 
+            IL op.
+            </summary>
+            <remarks>
+            See MSDN for details of these ops.
+            </remarks>
+            <seealso cref="F:System.Reflection.Emit.OpCodes.Add"/>
+        </member>
+        <member name="T:Kernel.Compiler.ILOps.Br">
+            <summary>
+            Handles the 
+            <see cref="F:System.Reflection.Emit.OpCodes.Br"/>, 
+            <see cref="F:System.Reflection.Emit.OpCodes.Br_S"/>, 
+            <see cref="F:System.Reflection.Emit.OpCodes.Brtrue"/>, 
+            <see cref="F:System.Reflection.Emit.OpCodes.Brtrue_S"/>, 
+            <see cref="F:System.Reflection.Emit.OpCodes.Brfalse"/>,  
+            <see cref="F:System.Reflection.Emit.OpCodes.Brfalse_S"/>, 
+            <see cref="F:System.Reflection.Emit.OpCodes.Beq"/>, 
+            <see cref="F:System.Reflection.Emit.OpCodes.Beq_S"/>, 
+            <see cref="F:System.Reflection.Emit.OpCodes.Bne_Un"/>, 
+            <see cref="F:System.Reflection.Emit.OpCodes.Bne_Un_S"/>, 
+            <see cref="F:System.Reflection.Emit.OpCodes.Bge"/>, 
+            <see cref="F:System.Reflection.Emit.OpCodes.Bge_S"/>, 
+            <see cref="F:System.Reflection.Emit.OpCodes.Bge_Un"/>, 
+            <see cref="F:System.Reflection.Emit.OpCodes.Bge_Un_S"/>, 
+            <see cref="F:System.Reflection.Emit.OpCodes.Ble"/>, 
+            <see cref="F:System.Reflection.Emit.OpCodes.Ble_S"/>, 
+            <see cref="F:System.Reflection.Emit.OpCodes.Ble_Un"/>, 
+            <see cref="F:System.Reflection.Emit.OpCodes.Ble_Un_S"/>, 
+            <see cref="F:System.Reflection.Emit.OpCodes.Blt"/>, 
+            <see cref="F:System.Reflection.Emit.OpCodes.Blt_S"/>, 
+            <see cref="F:System.Reflection.Emit.OpCodes.Blt_Un"/> and
+            <see cref="F:System.Reflection.Emit.OpCodes.Blt_Un_S"/> 
+            IL ops.
+            </summary>
+            <remarks>
+            See MSDN for details of these ops.
+            </remarks>
+            <seealso cref="F:System.Reflection.Emit.OpCodes.Br"/>
+            <seealso cref="F:System.Reflection.Emit.OpCodes.Br_S"/>
+            <seealso cref="F:System.Reflection.Emit.OpCodes.Brtrue"/>
+            <seealso cref="F:System.Reflection.Emit.OpCodes.Brtrue_S"/>
+            <seealso cref="F:System.Reflection.Emit.OpCodes.Brfalse"/>
+            <seealso cref="F:System.Reflection.Emit.OpCodes.Brfalse_S"/>
+            <seealso cref="F:System.Reflection.Emit.OpCodes.Beq"/>
+            <seealso cref="F:System.Reflection.Emit.OpCodes.Beq_S"/>
+            <seealso cref="F:System.Reflection.Emit.OpCodes.Bne_Un"/>
+            <seealso cref="F:System.Reflection.Emit.OpCodes.Bne_Un_S"/>
+            <seealso cref="F:System.Reflection.Emit.OpCodes.Bge"/>
+            <seealso cref="F:System.Reflection.Emit.OpCodes.Bge_S"/>
+            <seealso cref="F:System.Reflection.Emit.OpCodes.Bge_Un"/>
+            <seealso cref="F:System.Reflection.Emit.OpCodes.Bge_Un_S"/>
+            <seealso cref="F:System.Reflection.Emit.OpCodes.Ble"/>
+            <seealso cref="F:System.Reflection.Emit.OpCodes.Ble_S"/>
+            <seealso cref="F:System.Reflection.Emit.OpCodes.Ble_Un"/>
+            <seealso cref="F:System.Reflection.Emit.OpCodes.Ble_Un_S"/>
+            <seealso cref="F:System.Reflection.Emit.OpCodes.Blt"/>
+            <seealso cref="F:System.Reflection.Emit.OpCodes.Blt_S"/>
+            <seealso cref="F:System.Reflection.Emit.OpCodes.Blt_Un"/>
+            <seealso cref="F:System.Reflection.Emit.OpCodes.Blt_Un_S"/>
+        </member>
+        <member name="T:Kernel.Compiler.ILOps.Call">
+            <summary>
+            Handles the <see cref="F:System.Reflection.Emit.OpCodes.Call"/> and 
+            Handles the <see cref="F:System.Reflection.Emit.OpCodes.Callvirt"/> IL ops.
+            </summary>
+            <remarks>
+            See MSDN for details of this op.
+            </remarks>
+            <seealso cref="F:System.Reflection.Emit.OpCodes.Call"/>
+            <seealso cref="F:System.Reflection.Emit.OpCodes.Callvirt"/>
+        </member>
+        <member name="T:Kernel.Compiler.ILOps.Clt">
+            <summary>
+            Handles the <see cref="F:System.Reflection.Emit.OpCodes.Clt"/> and
+            <see cref="F:System.Reflection.Emit.OpCodes.Clt_Un"/> IL ops.
+            </summary>
+            <remarks>
+            See MSDN for details of these ops.
+            </remarks>
+            <seealso cref="F:System.Reflection.Emit.OpCodes.Clt"/>
+            <seealso cref="F:System.Reflection.Emit.OpCodes.Clt_Un"/>
+        </member>
+        <member name="T:Kernel.Compiler.ILOps.Convi">
+            <summary>
+            Handles the 
+            <see cref="F:System.Reflection.Emit.OpCodes.Conv_I"/>, 
+            <see cref="F:System.Reflection.Emit.OpCodes.Conv_I1"/>, 
+            <see cref="F:System.Reflection.Emit.OpCodes.Conv_I2"/>, 
+            <see cref="F:System.Reflection.Emit.OpCodes.Conv_I4"/> and 
+            <see cref="F:System.Reflection.Emit.OpCodes.Conv_I8"/> IL ops.
+            </summary>
+            <remarks>
+            See MSDN for details of these ops.
+            </remarks>
+            <seealso cref="F:System.Reflection.Emit.OpCodes.Conv_I"/>
+            <seealso cref="F:System.Reflection.Emit.OpCodes.Conv_I1"/>
+            <seealso cref="F:System.Reflection.Emit.OpCodes.Conv_I2"/>
+            <seealso cref="F:System.Reflection.Emit.OpCodes.Conv_I4"/>
+            <seealso cref="F:System.Reflection.Emit.OpCodes.Conv_I8"/>
+        </member>
+        <member name="T:Kernel.Compiler.ILOps.Ldarg">
+            <summary>
+            Handles the
+            <see cref="F:System.Reflection.Emit.OpCodes.Ldarg"/>, 
+            <see cref="F:System.Reflection.Emit.OpCodes.Ldarg_0"/>, 
+            <see cref="F:System.Reflection.Emit.OpCodes.Ldarg_1"/>, 
+            <see cref="F:System.Reflection.Emit.OpCodes.Ldarg_2"/>, 
+            <see cref="F:System.Reflection.Emit.OpCodes.Ldarg_3"/> and 
+            <see cref="F:System.Reflection.Emit.OpCodes.Ldarg_S"/> IL ops.
+            </summary>
+            <remarks>
+            See MSDN for details of these ops.
+            </remarks>
+            <seealso cref="F:System.Reflection.Emit.OpCodes.Ldarg"/>
+            <seealso cref="F:System.Reflection.Emit.OpCodes.Ldarg_0"/>
+            <seealso cref="F:System.Reflection.Emit.OpCodes.Ldarg_1"/>
+            <seealso cref="F:System.Reflection.Emit.OpCodes.Ldarg_2"/>
+            <seealso cref="F:System.Reflection.Emit.OpCodes.Ldarg_3"/>
+            <seealso cref="F:System.Reflection.Emit.OpCodes.Ldarg_S"/>
+        </member>
+        <member name="T:Kernel.Compiler.ILOps.Ldc">
+            <summary>
+            Handles the 
+            <see cref="F:System.Reflection.Emit.OpCodes.Ldc_I4"/>, 
+            <see cref="F:System.Reflection.Emit.OpCodes.Ldc_I4_0"/>, 
+            <see cref="F:System.Reflection.Emit.OpCodes.Ldc_I4_1"/>, 
+            <see cref="F:System.Reflection.Emit.OpCodes.Ldc_I4_2"/>, 
+            <see cref="F:System.Reflection.Emit.OpCodes.Ldc_I4_3"/>, 
+            <see cref="F:System.Reflection.Emit.OpCodes.Ldc_I4_4"/>, 
+            <see cref="F:System.Reflection.Emit.OpCodes.Ldc_I4_5"/>, 
+            <see cref="F:System.Reflection.Emit.OpCodes.Ldc_I4_6"/>, 
+            <see cref="F:System.Reflection.Emit.OpCodes.Ldc_I4_7"/>, 
+            <see cref="F:System.Reflection.Emit.OpCodes.Ldc_I4_8"/>, 
+            <see cref="F:System.Reflection.Emit.OpCodes.Ldc_I4_M1"/> and 
+            <see cref="F:System.Reflection.Emit.OpCodes.Ldc_I4_S"/> IL ops.
+            </summary>
+            <remarks>
+            See MSDN for details of these ops.
+            </remarks>
+            <seealso cref="F:System.Reflection.Emit.OpCodes.Ldc_I4"/>
+            <seealso cref="F:System.Reflection.Emit.OpCodes.Ldc_I4_0"/>
+            <seealso cref="F:System.Reflection.Emit.OpCodes.Ldc_I4_1"/>
+            <seealso cref="F:System.Reflection.Emit.OpCodes.Ldc_I4_2"/>
+            <seealso cref="F:System.Reflection.Emit.OpCodes.Ldc_I4_3"/>
+            <seealso cref="F:System.Reflection.Emit.OpCodes.Ldc_I4_4"/>
+            <seealso cref="F:System.Reflection.Emit.OpCodes.Ldc_I4_5"/>
+            <seealso cref="F:System.Reflection.Emit.OpCodes.Ldc_I4_6"/>
+            <seealso cref="F:System.Reflection.Emit.OpCodes.Ldc_I4_7"/>
+            <seealso cref="F:System.Reflection.Emit.OpCodes.Ldc_I4_8"/>
+            <seealso cref="F:System.Reflection.Emit.OpCodes.Ldc_I4_M1"/>
+            <seealso cref="F:System.Reflection.Emit.OpCodes.Ldc_I4_S"/>
+        </member>
+        <member name="T:Kernel.Compiler.ILOps.Ldloc">
+            <summary>
+            Handles the 
+            <see cref="F:System.Reflection.Emit.OpCodes.Ldloc"/>, 
+            <see cref="F:System.Reflection.Emit.OpCodes.Ldloc_0"/>, 
+            <see cref="F:System.Reflection.Emit.OpCodes.Ldloc_1"/>, 
+            <see cref="F:System.Reflection.Emit.OpCodes.Ldloc_2"/>, 
+            <see cref="F:System.Reflection.Emit.OpCodes.Ldloc_3"/> and 
+            <see cref="F:System.Reflection.Emit.OpCodes.Ldloc_S"/> IL ops.
+            </summary>
+            <remarks>
+            See MSDN for details of these ops.
+            </remarks>
+            <seealso cref="F:System.Reflection.Emit.OpCodes.Ldloc"/>
+            <seealso cref="F:System.Reflection.Emit.OpCodes.Ldloc_0"/>
+            <seealso cref="F:System.Reflection.Emit.OpCodes.Ldloc_1"/>
+            <seealso cref="F:System.Reflection.Emit.OpCodes.Ldloc_2"/>
+            <seealso cref="F:System.Reflection.Emit.OpCodes.Ldloc_3"/>
+            <seealso cref="F:System.Reflection.Emit.OpCodes.Ldloc_S"/>
+        </member>
+        <member name="T:Kernel.Compiler.ILOps.Ldstr">
+            <summary>
+            Handles the <see cref="F:System.Reflection.Emit.OpCodes.Ldstr"/> IL op.
+            </summary>
+            <remarks>
+            See MSDN for details of this op.
+            </remarks>
+            <seealso cref="F:System.Reflection.Emit.OpCodes.Ldstr"/>
+        </member>
+        <member name="T:Kernel.Compiler.ILOps.MethodEnd">
+            <summary>
+            Custom IL op that is inserted as the last IL op before the 
+            <see cref="T:Kernel.Compiler.ILOps.Ret"/> op in a method.
+            </summary>
+            <remarks>
+            This must at least have an empty stub implementation or the compiler
+            will fail to execute. It was added so x86_32 architecture could
+            do some stack management at the end of the method (e.g. restoring 
+            the base pointer).
+            </remarks>
+        </member>
+        <member name="T:Kernel.Compiler.ILOps.MethodStart">
+            <summary>
+            Custom IL op that is inserted as the first IL op in a method.
+            </summary>
+            <remarks>
+            This must at least have an empty stub implementation or the compiler
+            will fail to execute. It was added so x86_32 architecture could
+            do some stack management at the start of the method (e.g. allocating
+            space for local variables).
+            </remarks>
+        </member>
+        <member name="T:Kernel.Compiler.ILOps.Nop">
+            <summary>
+            Handles the <see cref="F:System.Reflection.Emit.OpCodes.Nop"/> IL op.
+            </summary>
+            <remarks>
+            See MSDN for details of this op.
+            </remarks>
+            <seealso cref="F:System.Reflection.Emit.OpCodes.Nop"/>
+        </member>
+        <member name="T:Kernel.Compiler.ILOps.Pop">
+            <summary>
+            Handles the <see cref="F:System.Reflection.Emit.OpCodes.Pop"/> IL op.
+            </summary>
+            <remarks>
+            See MSDN for details of this op.
+            </remarks>
+            <seealso cref="F:System.Reflection.Emit.OpCodes.Pop"/>
+        </member>
+        <member name="T:Kernel.Compiler.ILOps.Ret">
+            <summary>
+            Handles the <see cref="F:System.Reflection.Emit.OpCodes.Ret"/> IL op.
+            </summary>
+            <remarks>
+            See MSDN for details of this op.
+            </remarks>
+            <seealso cref="F:System.Reflection.Emit.OpCodes.Ret"/>
+        </member>
+        <member name="T:Kernel.Compiler.ILOps.Ldind">
+            <summary>
+            Handles the 
+            <see cref="F:System.Reflection.Emit.OpCodes.Ldind_U1"/>,  
+            <see cref="F:System.Reflection.Emit.OpCodes.Ldind_U2"/> and 
+            <see cref="F:System.Reflection.Emit.OpCodes.Ldind_U4"/> IL ops.
+            </summary>
+            <remarks>
+            See MSDN for details of these ops.
+            </remarks>
+            <seealso cref="F:System.Reflection.Emit.OpCodes.Ldind_U1"/>
+            <seealso cref="F:System.Reflection.Emit.OpCodes.Ldind_U2"/>
+            <seealso cref="F:System.Reflection.Emit.OpCodes.Ldind_U4"/>
+        </member>
+        <member name="T:Kernel.Compiler.ILOps.Stind">
+            <summary>
+            Handles the 
+            <see cref="F:System.Reflection.Emit.OpCodes.Stind_I"/>, 
+            <see cref="F:System.Reflection.Emit.OpCodes.Stind_I1"/>, 
+            <see cref="F:System.Reflection.Emit.OpCodes.Stind_I2"/>, 
+            <see cref="F:System.Reflection.Emit.OpCodes.Stind_I4"/>, 
+            <see cref="F:System.Reflection.Emit.OpCodes.Stind_I8"/>, 
+            <see cref="F:System.Reflection.Emit.OpCodes.Stind_R4"/>, 
+            <see cref="F:System.Reflection.Emit.OpCodes.Stind_R8"/> and 
+            <see cref="F:System.Reflection.Emit.OpCodes.Stind_Ref"/> IL ops.
+            </summary>
+            <remarks>
+            See MSDN for details of these ops.
+            </remarks>
+            <seealso cref="F:System.Reflection.Emit.OpCodes.Stind_I"/>
+            <seealso cref="F:System.Reflection.Emit.OpCodes.Stind_I1"/>
+            <seealso cref="F:System.Reflection.Emit.OpCodes.Stind_I2"/>
+            <seealso cref="F:System.Reflection.Emit.OpCodes.Stind_I4"/>
+            <seealso cref="F:System.Reflection.Emit.OpCodes.Stind_I8"/>
+            <seealso cref="F:System.Reflection.Emit.OpCodes.Stind_R4"/>
+            <seealso cref="F:System.Reflection.Emit.OpCodes.Stind_R8"/>
+            <seealso cref="F:System.Reflection.Emit.OpCodes.Stind_Ref"/>
+        </member>
+        <member name="T:Kernel.Compiler.ILOps.Stloc">
+            <summary>
+            Handles the 
+            <see cref="F:System.Reflection.Emit.OpCodes.Stloc"/>, 
+            <see cref="F:System.Reflection.Emit.OpCodes.Stloc_0"/>, 
+            <see cref="F:System.Reflection.Emit.OpCodes.Stloc_1"/>, 
+            <see cref="F:System.Reflection.Emit.OpCodes.Stloc_2"/>, 
+            <see cref="F:System.Reflection.Emit.OpCodes.Stloc_3"/> and 
+            <see cref="F:System.Reflection.Emit.OpCodes.Stloc_S"/> IL ops.
+            </summary>
+            <remarks>
+            See MSDN for details of these ops.
+            </remarks>
+            <seealso cref="F:System.Reflection.Emit.OpCodes.Stloc"/>
+            <seealso cref="F:System.Reflection.Emit.OpCodes.Stloc_0"/>
+            <seealso cref="F:System.Reflection.Emit.OpCodes.Stloc_1"/>
+            <seealso cref="F:System.Reflection.Emit.OpCodes.Stloc_2"/>
+            <seealso cref="F:System.Reflection.Emit.OpCodes.Stloc_3"/>
+            <seealso cref="F:System.Reflection.Emit.OpCodes.Stloc_S"/>
+        </member>
+        <member name="T:Kernel.Compiler.ILReader">
+            <summary>
+            Used to read: method infos from types, plugs info from method attributes, IL code into ILOpInfos from unplugged-methods' bodies
+            </summary>
+        </member>
+        <member name="F:Kernel.Compiler.ILReader.OutputError">
+            <summary>
+            Stores a reference to the method to call for outputting an error message.
+            </summary>
+        </member>
+        <member name="F:Kernel.Compiler.ILReader.OutputMessage">
+            <summary>
+            Stores a reference to the method to call for outputting a standard message.
+            </summary>
+        </member>
+        <member name="F:Kernel.Compiler.ILReader.OutputWarning">
+            <summary>
+            Stores a reference to the method to call for outputting a warning message.
+            </summary>
+        </member>
+        <member name="F:Kernel.Compiler.ILReader.ILChunks">
+            <summary>
+            The list of ILChunks created by the ILReader.
+            </summary>
+        </member>
+        <member name="F:Kernel.Compiler.ILReader.TheSettings">
+            <summary>
+            The compiler settings to use.
+            </summary>
+        </member>
+        <member name="F:Kernel.Compiler.ILReader.TheAssemblyManager">
+            <summary>
+            The assembly manager to use.
+            </summary>
+        </member>
+        <member name="F:Kernel.Compiler.ILReader.AllOpCodes">
+            <summary>
+            A cached array of all the OpCodes from System.Reflection.Emit.OpCodes.
+            Note: Array index = OpCode.Value i.e. index into the array by op code enumeration value.
+            </summary>
+        </member>
+        <member name="F:Kernel.Compiler.ILReader.TheStaticConstructorDependencyTree">
+            <summary>
+            The static constructor dependency tree generated by the IL reader when it scanned unplugged methods.
+            </summary>
+        </member>
+        <member name="M:Kernel.Compiler.ILReader.#ctor(Kernel.Compiler.Settings,Kernel.Compiler.AssemblyManager,Kernel.Compiler.OutputErrorDelegate,Kernel.Compiler.OutputMessageDelegate,Kernel.Compiler.OutputWarningDelegate)">
+            <summary>
+            Initialises a new ILReader with the specified assembly manager and output handlers.
+            </summary>
+            <param name="aSettings">The settings to use.</param>
+            <param name="anAssemblyManager">The assembly manager to use.</param>
+            <param name="anOutputError">The reference to the method to call to output an error message.</param>
+            <param name="anOutputMessage">The reference to the method to call to output a standard message.</param>
+            <param name="anOutputWarning">The reference to the method to call to output a warning message.</param>
+            <exception cref="T:System.Exception">
+            Thrown if the IL op types fail to load.
+            </exception>
+        </member>
+        <member name="M:Kernel.Compiler.ILReader.LoadILOpTypes">
+            <summary>
+            Loads the cached list of all op codes (AllOpCodes).
+            </summary>
+            <returns>True if the load completed successfully.</returns>
+        </member>
+        <member name="M:Kernel.Compiler.ILReader.Execute">
+            <summary>
+            Executes the ILReader.
+            </summary>
+            <returns>True if execution completed successfully. Otherwise false.</returns>
+        </member>
+        <member name="M:Kernel.Compiler.ILReader.ProcessPluggedMethod(System.Reflection.MethodBase)">
+            <summary>
+            Process a plugged method.
+            </summary>
+            <param name="aMethod">The method to process.</param>
+            <returns>A new ILChunk marked as plugged with common attribites loaded. Null if any errors occur.</returns>
+        </member>
+        <member name="M:Kernel.Compiler.ILReader.ProcessUnpluggedMethod(System.Reflection.MethodBase,Kernel.Compiler.StaticConstructorDependency)">
+            <summary>
+            Process an unplugged method.
+            </summary>
+            <param name="aMethod">The method to process.</param>
+            <param name="staticConstructorDependencyRoot">Null if method scanning is not a static constructor. Otherwise, the root node that represents the static constructor being scanned.</param>
+            <returns>A new ILChunk with ILOpInfos and common attribites loaded. Null if any errors occur.</returns>
+            <exception cref="T:System.Exception">
+            Thrown when an unrecognised operand type is read. Can occur if MSBuild has been 
+            updated/extended from when the kernel compiler was last updated.
+            </exception>
+        </member>
+        <member name="M:Kernel.Compiler.ILReader.ProcessCommonMethodAttributes(System.Reflection.MethodBase,Kernel.Compiler.ILChunk)">
+            <summary>
+            Processes attributes that are common to both plugged and unplugged methods.
+            </summary>
+            <param name="aMethod">The method to process attributes of.</param>
+            <param name="aChunk">The ILChunk to load attributes' info into.</param>
+        </member>
+        <member name="T:Kernel.Compiler.ILScanner">
+            <summary>
+            Used to scan all the IL ops in an ILChunk and handle the conversion from IL to ASM.
+            </summary>
+        </member>
+        <member name="F:Kernel.Compiler.ILScanner.OutputError">
+            <summary>
+            Stores a reference to the method to call for outputting an error message.
+            </summary>
+        </member>
+        <member name="F:Kernel.Compiler.ILScanner.OutputMessage">
+            <summary>
+            Stores a reference to the method to call for outputting a standard message.
+            </summary>
+        </member>
+        <member name="F:Kernel.Compiler.ILScanner.OutputWarning">
+            <summary>
+            Stores a reference to the method to call for outputting a warning message.
+            </summary>
+        </member>
+        <member name="F:Kernel.Compiler.ILScanner.TheSettings">
+            <summary>
+            The settings to use.
+            </summary>
+        </member>
+        <member name="F:Kernel.Compiler.ILScanner.TheScannerState">
+            <summary>
+            The scanner's current state.
+            </summary>
+        </member>
+        <member name="F:Kernel.Compiler.ILScanner.TargetArchitectureAssembly">
+            <summary>
+            The assembly (library) of the target (ASM) architecture.
+            </summary>
+        </member>
+        <member name="F:Kernel.Compiler.ILScanner.TargetILOps">
+            <summary>
+            A cached dictionary (OpCode->ILOp) of all the IL ops in (/supported by) the target architecture.
+            </summary>
+        </member>
+        <member name="F:Kernel.Compiler.ILScanner.MethodStartOp">
+            <summary>
+            A cache of the target architecture's custom IL op for inserting ASM at the start of a method.
+            </summary>
+        </member>
+        <member name="F:Kernel.Compiler.ILScanner.MethodEndOp">
+            <summary>
+            A cache of the target architecture's custom IL op for inserting ASM at the end of a method (before Ret).
+            </summary>
+        </member>
+        <member name="F:Kernel.Compiler.ILScanner.StackSwitchOp">
+            <summary>
+            A cache of the target architecture's custom IL op for inserting ASM to switch stack items.
+            </summary>
+        </member>
+        <member name="F:Kernel.Compiler.ILScanner.ASMChunks">
+            <summary>
+            The resulting list of ASM chunks.
+            </summary>
+        </member>
+        <member name="F:Kernel.Compiler.ILScanner.ThePDBManager">
+            <summary>
+            The PDB dump manager to use.
+            </summary>
+        </member>
+        <member name="M:Kernel.Compiler.ILScanner.#ctor(Kernel.Compiler.Settings,Kernel.Compiler.OutputErrorDelegate,Kernel.Compiler.OutputMessageDelegate,Kernel.Compiler.OutputWarningDelegate)">
+            <summary>
+            Initialises a new IL scanner with specified settings and output handlers.
+            </summary>
+            <param name="aSettings">The settings to use.</param>
+            <param name="anOutputError">The reference to the method to call to output an error message.</param>
+            <param name="anOutputMessage">The reference to the method to call to output a standard message.</param>
+            <param name="anOutputWarning">The reference to the method to call to output a warning message.</param>
+        </member>
+        <member name="M:Kernel.Compiler.ILScanner.Execute(System.Collections.Generic.List{System.Type},System.Collections.Generic.List{Kernel.Compiler.ILChunk},Kernel.Compiler.PDBDumpManager,Kernel.Compiler.StaticConstructorDependency)">
+            <summary>
+            Executes the IL scanner on the specified IL chunks. Loads plug ASM for target architecture and converts unplugged IL to ASM.
+            </summary>
+            <param name="ILChunks">The IL chunks to scan.</param>
+            <param name="Types">The types to scan.</param>
+            <param name="aPDBManager">The PDBManager to use to scan.</param>
+            <param name="TheStaticConstructorDependencyTree">The static constructor dependency tree (generated by the IL reader) to use.</param>
+            <returns>True if scanning completed successfully. Otherwise false.</returns>
+            <exception cref="T:System.Exception">
+            Thrown if: 
+            <list type="bullet">
+            <item>
+            <term>Multiple kernel main methods found.</term>
+            </item>
+            <item>
+            <term>No kernel main method found.</term>
+            </item>
+            </list>
+            </exception>
+        </member>
+        <member name="M:Kernel.Compiler.ILScanner.LoadTargetArchitectureAssembly">
+            <summary>
+            Loads the target architecture's assembly (library). 
+            Note: This must be updated for each new, supported architecture.
+            Note: A reference to all target architectures' libraries should be added to the compiler project.
+            </summary>
+            <returns>True if the target architecture was loaded successfully. Otherwise false.</returns>
+            <exception cref="T:System.ArgumentException">
+            Thrown if an unrecognised target architecture is specified in the compiler settings.
+            </exception>
+        </member>
+        <member name="M:Kernel.Compiler.ILScanner.LoadIlOpTypes">
+            <summary>
+            Loads the target architecture's IL ops.
+            </summary>
+            <exception cref="T:System.Exception">
+            Thrown if target architecture fails to load. See <see cref="M:Kernel.Compiler.ILScanner.LoadTargetArchitectureAssembly"/>
+            </exception>
+        </member>
+        <member name="M:Kernel.Compiler.ILScanner.ProcessILChunk(Kernel.Compiler.ILChunk)">
+            <summary>
+            Process any IL chunk (plugged or unplugged).
+            </summary>
+            <param name="aChunk">The IL chunk to process.</param>
+            <returns>The resulting ASM chunk or null if processing failed.</returns>
+        </member>
+        <member name="M:Kernel.Compiler.ILScanner.ProcessPluggedILChunk(Kernel.Compiler.ILChunk)">
+            <summary>
+            Process a plugged IL chunk.
+            </summary>
+            <param name="aChunk">The chunk to process.</param>
+            <returns>The resulting ASM chunk or null if processing failed.</returns>
+            <exception cref="T:System.IO.FileNotFoundException">
+            Thrown if the plug file for the ILChunk could not be found.
+            </exception>
+        </member>
+        <member name="M:Kernel.Compiler.ILScanner.ProcessUnpluggedILChunk(Kernel.Compiler.ILChunk)">
+            <summary>
+            Process an unplugged IL chunk.
+            </summary>
+            <param name="aChunk">The chunk to process.</param>
+            <returns>The resulting ASM chunk or null if processing failed.</returns>
+        </member>
+        <member name="F:Kernel.Compiler.ILScanner.ProcessedTypes">
+            <summary>
+            All of the types processed by the IL Scanner.
+            </summary>
+        </member>
+        <member name="M:Kernel.Compiler.ILScanner.ProcessType(System.Type)">
+            <summary>
+            Processes the specified type.
+            </summary>
+            <param name="theType">The type to process.</param>
+            <returns>The debug database type info created during processing.</returns>
+        </member>
+        <member name="M:Kernel.Compiler.ILScanner.ProcessStaticFields(System.Type)">
+            <summary>
+            Processes the static fields on the specified type.
+            </summary>
+            <param name="theType">The type to process.</param>
+        </member>
+        <member name="T:Kernel.Compiler.ILScannerState">
+            <summary>
+            Represents an IL scanner's current state (such as current method that is being scanned, Method IDs etc.)
+            </summary>
+        </member>
+        <member name="F:Kernel.Compiler.ILScannerState.AddExceptionHandlerInfoMethod">
+            <summary>
+            The method to use as the kernel's Add Exception Handler Info method.
+            </summary>
+        </member>
+        <member name="F:Kernel.Compiler.ILScannerState.ExceptionsHandleLeaveMethod">
+            <summary>
+            The method to use as the kernel's Handle Leave method.
+            </summary>
+        </member>
+        <member name="F:Kernel.Compiler.ILScannerState.ExceptionsHandleEndFinallyMethod">
+            <summary>
+            The method to use as the kernel's Handle End Finally method.
+            </summary>
+        </member>
+        <member name="F:Kernel.Compiler.ILScannerState.NewObjMethod">
+            <summary>
+            The method to use as the kernel's GC New Obj method.
+            </summary>
+        </member>
+        <member name="F:Kernel.Compiler.ILScannerState.NewArrMethod">
+            <summary>
+            The method to use as the kernel's GC New Arr method.
+            </summary>
+        </member>
+        <member name="F:Kernel.Compiler.ILScannerState.IncrementRefCountMethod">
+            <summary>
+            The method to use as the kernel's GC Incremenet Ref Count method.
+            </summary>
+        </member>
+        <member name="F:Kernel.Compiler.ILScannerState.DecrementRefCountMethod">
+            <summary>
+            The method to use as the kernel's GC Decremenet Ref Count method.
+            </summary>
+        </member>
+        <member name="F:Kernel.Compiler.ILScannerState.HaltMethod">
+            <summary>
+            The method to use as the kernel's Halt method.
+            </summary>
+        </member>
+        <member name="F:Kernel.Compiler.ILScannerState.ArrayConstructorMethod">
+            <summary>
+            The method to use as the new Array constructor method.
+            </summary>
+        </member>
+        <member name="F:Kernel.Compiler.ILScannerState.ThrowNullReferenceExceptionMethod">
+            <summary>
+            The method to use to throw a NullReferenceException.
+            </summary>
+        </member>
+        <member name="F:Kernel.Compiler.ILScannerState.ThrowArrayTypeMismatchExceptionMethod">
+            <summary>
+            The method to use to throw a ArrayTypeMismatchException.
+            </summary>
+        </member>
+        <member name="F:Kernel.Compiler.ILScannerState.ThrowIndexOutOfRangeExceptionMethod">
+            <summary>
+            The method to use to throw a IndexOutOfRangeException.
+            </summary>
+        </member>
+        <member name="F:Kernel.Compiler.ILScannerState.TypeClass">
+            <summary>
+            The class to use as the kernel's Type class.
+            </summary>
+        </member>
+        <member name="F:Kernel.Compiler.ILScannerState.StringLiteralsDataBlock">
+            <summary>
+            The ASM chunk that contains the String Literals data (hard-coded string values generated by "AString" in C# code.)
+            </summary>
+        </member>
+        <member name="F:Kernel.Compiler.ILScannerState.StaticFieldsDataBlock">
+            <summary>
+            The ASM chunk that contains the Static Fields data.
+            </summary>
+        </member>
+        <member name="F:Kernel.Compiler.ILScannerState.TypesTableDataBlock">
+            <summary>
+            The ASM chunk that contains the Type Table data.
+            </summary>
+        </member>
+        <member name="F:Kernel.Compiler.ILScannerState.CurrentStackFrame">
+            <summary>
+            The stack frame for the method currently being scanned.
+            </summary>
+        </member>
+        <member name="F:Kernel.Compiler.ILScannerState.CurrentILChunk">
+            <summary>
+            The IL chunk that is currently being scanned.
+            </summary>
+        </member>
+        <member name="F:Kernel.Compiler.ILScannerState.MethodIDs">
+            <summary>
+            A dictionary of all the method signatures to method IDs scanned so far.
+            </summary>
+        </member>
+        <member name="F:Kernel.Compiler.ILScannerState.StaticFieldIDs">
+            <summary>
+            A dictionary of all the field signatures to field IDs scanned so far.
+            </summary>
+        </member>
+        <member name="F:Kernel.Compiler.ILScannerState.TypeIDs">
+            <summary>
+            A dictionary of all the types to type IDs scanned so far.
+            </summary>
+        </member>
+        <member name="M:Kernel.Compiler.ILScannerState.#ctor">
+            <summary>
+            Initialises a new, empty scanner state.
+            </summary>
+        </member>
+        <member name="M:Kernel.Compiler.ILScannerState.GetMethodID(System.Reflection.MethodBase)">
+            <summary>
+            Gets the specified method's ID. If the method has not been scanned already, a new ID is created.
+            </summary>
+            <param name="aMethod">The method to get the ID of.</param>
+            <returns>The method's ID.</returns>
+        </member>
+        <member name="M:Kernel.Compiler.ILScannerState.GetStaticFieldID(System.Reflection.FieldInfo)">
+            <summary>
+            Gets the specified field's ID. If the field has not been scanned already, a new ID is created.
+            </summary>
+            <param name="aField">The field to get the ID of.</param>
+            <returns>The field's ID.</returns>
+        </member>
+        <member name="M:Kernel.Compiler.ILScannerState.ContainsStaticFieldID(System.Reflection.FieldInfo)">
+            <summary>
+            Retruns whether the specified static field has an ID yet or not.
+            </summary>
+            <param name="theField">The static field to get the ID of.</param>
+            <returns>Whether the specified static field has an ID yet or not.</returns>
+        </member>
+        <member name="M:Kernel.Compiler.ILScannerState.GetTypeID(System.Type)">
+            <summary>
+            Gets the specified type's ID. If the type has not been scanned already, a new ID is created.
+            </summary>
+            <param name="theType">The type to get the ID of.</param>
+            <returns>The type's ID.</returns>
+        </member>
+        <member name="M:Kernel.Compiler.ILScannerState.ContainsTypeID(System.Type)">
+            <summary>
+            Retruns whether the specified type has an ID yet or not.
+            </summary>
+            <param name="theType">The type to get the ID of.</param>
+            <returns>Whether the specified type has an ID yet or not.</returns>
+        </member>
+        <member name="M:Kernel.Compiler.ILScannerState.GetTypeIdString(System.Guid)">
+            <summary>
+            Get's the Id string (assembler label) of the specified type ID.
+            </summary>
+            <param name="typeId">The type ID to convert to a label.</param>
+            <returns>The ID string.</returns>
+        </member>
+        <member name="M:Kernel.Compiler.ILScannerState.AddStringLiteral(System.String,Kernel.Compiler.ILOpInfo)">
+            <summary>
+            Adds a new string literal of specified value to the string literals data block.
+            </summary>
+            <param name="value">The value of the string to add.</param>
+            <param name="ilOpInfo">The ILOpInfo that is adding the string literal.</param>
+            <returns>The ID (label) of the string.</returns>
+        </member>
+        <member name="M:Kernel.Compiler.ILScannerState.AddStaticField(System.Reflection.FieldInfo)">
+            <summary>
+            Adds the specified static field to the static fields data block.
+            </summary>
+            <param name="aField">The field info to add.</param>
+            <returns>The ID (label) of the static field.</returns>
+        </member>
+        <member name="F:Kernel.Compiler.ILScannerState.TypesTable_TotalNumEntries">
+            <summary>
+            A count of the total number of entries added to the Types Table.
+            Used for allocating FOS_System.Type.Id numbers.
+            </summary>
+        </member>
+        <member name="M:Kernel.Compiler.ILScannerState.AddType(Kernel.Debug.Data.DB_Type)">
+            <summary>
+            Adds the specified type to the Types Table.
+            </summary>
+            <param name="TheDBType">The type to add.</param>
+        </member>
+        <member name="M:Kernel.Compiler.ILScannerState.InitStringLiteralsDataBlock">
+            <summary>
+            Initialises the string literals data block.
+            </summary>
+        </member>
+        <member name="M:Kernel.Compiler.ILScannerState.FinaliseStringLiteralsDataBlock">
+            <summary>
+            Finalises the string literals data block (adds ending labels).
+            </summary>
+        </member>
+        <member name="M:Kernel.Compiler.ILScannerState.InitStaticFieldsDataBlock">
+            <summary>
+            Initialises the static fields data block.
+            </summary>
+        </member>
+        <member name="M:Kernel.Compiler.ILScannerState.FinaliseStaticFieldsDataBlock">
+            <summary>
+            Finalises the string literals data block (adds ending labels).
+            </summary>
+        </member>
+        <member name="M:Kernel.Compiler.ILScannerState.InitTypesTablesDataBlock">
+            <summary>
+            Initialises the types tables data block.
+            </summary>
+        </member>
+        <member name="M:Kernel.Compiler.ILScannerState.FinaliseTypesTablesDataBlock">
+            <summary>
+            Finalises the string literals data block (adds ending labels).
+            </summary>
+        </member>
+        <member name="M:Kernel.Compiler.ILScannerState.Finalise">
+            <summary>
+            Finalises the IL scanner state so the IL scanner is ready for use in an ASM sequencer.
+            </summary>
+        </member>
+        <member name="T:Kernel.Compiler.StackFrame">
+            <summary>
+            Represents a stack frame.
+            </summary>
+        </member>
+        <member name="F:Kernel.Compiler.StackFrame.Stack">
+            <summary>
+            The stack of items in the current stack frame.
+            </summary>
+        </member>
+        <member name="T:Kernel.Compiler.StackItem">
+            <summary>
+            Represents an item on a stack.
+            </summary>
+        </member>
+        <member name="F:Kernel.Compiler.StackItem.sizeOnStackInBytes">
+            <summary>
+            The size of the item (in bytes) on the stack.
+            </summary>
+        </member>
+        <member name="F:Kernel.Compiler.StackItem.isFloat">
+            <summary>
+            Whether the item represents a floating point number (single or double precision).
+            </summary>
+        </member>
+        <member name="F:Kernel.Compiler.StackItem.isNewGCObject">
+            <summary>
+            Whether the item on the stack is actually a pointer to an object
+            that has just been created by a NewObj IL op.
+            </summary>
+            <remarks>
+            Used for correctly decrementing / incrementing GC ref count
+            when a new object is created and either stored or the reference
+            is popped off the stack.
+            </remarks>
+        </member>
+        <member name="T:Kernel.Compiler.LocalVariable">
+            <summary>
+            Represents a local variable.
+            </summary>
+        </member>
+        <member name="F:Kernel.Compiler.LocalVariable.TheType">
+            <summary>
+            The type of the local variable.
+            </summary>
+        </member>
+        <member name="T:Kernel.Compiler.PDBDumpManager">
+            <summary>
+            Manages reading the ObjDump file generated from a C# debug database (.pdb) file.
+            </summary>
+        </member>
+        <member name="F:Kernel.Compiler.PDBDumpManager.TheAssemblyManager">
+            <summary>
+            The assembly manager used by the PDB Dump manager.
+            </summary>
+        </member>
+        <member name="F:Kernel.Compiler.PDBDumpManager.Symbols">
+            <summary>
+            All the loaded symbols from the PDB file.
+            </summary>
+        </member>
+        <member name="M:Kernel.Compiler.PDBDumpManager.#ctor(System.String)">
+            <summary>
+            Initialises a new PDB Dump Manager loading the specified DLL
+            as the root assembly of the assembly manager.
+            </summary>
+            <param name="rootDLLFileName">The path to the DLL to use as the root assembly.</param>
+        </member>
+        <member name="M:Kernel.Compiler.PDBDumpManager.#ctor(Kernel.Compiler.AssemblyManager)">
+            <summary>
+            Initialises a new PDB Dump Manager using the specified assembly
+            manager.
+            </summary>
+            <param name="anAssemblyManager">The assembly manager to use.</param>
+        </member>
+        <member name="M:Kernel.Compiler.PDBDumpManager.Init">
+            <summary>
+            Initialise the PDB Dump manager (called by constructors for you).
+            Loads all the pdb dumps for the root assembly and referenced assemblies.
+            </summary>
+        </member>
+        <member name="T:Kernel.Compiler.PlugLoader">
+            <summary>
+            Used to load plugs ASM for a specified target architecture from plug files.
+            </summary>
+        </member>
+        <member name="M:Kernel.Compiler.PlugLoader.LoadPlugASM(System.String,Kernel.Compiler.Settings)">
+            <summary>
+            Loads the plug's ASM from the specified file path (which should not included target architecture or file extension)
+            </summary>
+            <param name="anASMPlugFilePath">The file path to the plug to load.</param>
+            <param name="aSettings">The current compiler settings - used to get the target architecture.</param>
+            <returns>The ASM for the plug or null if loading failed.</returns>
+            <exception cref="T:System.Exception">
+            Thrown if the specified plug file fails to load.
+            </exception>
+        </member>
+        <member name="M:Kernel.Compiler.PlugLoader.GetFullASMPlugFilePath(System.String,Kernel.Compiler.Settings)">
+            <summary>
+            Gets the full (usable) path to a specified plug.
+            </summary>
+            <param name="anASMPlugFilePath">The file path to the plug to load.</param>
+            <param name="aSettings">The current compiler settings - used to get the target architecture.</param>
+            <returns>The full (usable) file path to the specified plug.</returns>
+        </member>
+        <member name="T:Kernel.Compiler.Settings">
+            <summary>
+            Represents the compiler's settings.
+            </summary>
+        </member>
+        <member name="F:Kernel.Compiler.Settings.InputFileKey">
+            <summary>
+            The setting key for the setting “InputFile”. The “InputFile” setting is used to specify the path to the .DLL to compile.
+            </summary>
+        </member>
+        <member name="F:Kernel.Compiler.Settings.HelpKey">
+            <summary>
+            The setting key for the setting “Help”. The “Help” setting can be set to “on” or “off”. “on” indicates the help text should be outputted. “off” is the default value and indicates the help text should not be outputted.
+            </summary>
+        </member>
+        <member name="F:Kernel.Compiler.Settings.TargetArchitectureKey">
+            <summary>
+            The setting key for the setting “TargetArchitecture”. The “TargetArchitecture” setting is used to specify the target architecture to compile for.
+            </summary>
+        </member>
+        <member name="F:Kernel.Compiler.Settings.OutputFileKey">
+            <summary>
+            The setting key for the setting “OuptutFile”. The “OuptutFile” setting is used to specify the path to the .ASM file to output.
+            </summary>
+        </member>
+        <member name="F:Kernel.Compiler.Settings.KernelMainMethodKey">
+            <summary>
+            The setting key for the setting “Kernel_Main_Method”. The “Kernel_Main_Method” setting is used to specify the label name of the kernel's main method.
+            </summary>
+        </member>
+        <member name="F:Kernel.Compiler.Settings.CallStaticConstructorsMethodKey">
+            <summary>
+            The setting key for the setting “Call_Static_Constructors_Method”. The “Call_Static_Constructors_Method” setting is used to specify the label name of the kernel's method that calls all the static constructors.
+            </summary>
+        </member>
+        <member name="F:Kernel.Compiler.Settings.ToolsPathKey">
+            <summary>
+            The setting key for the setting “ToolsPath”. The “ToolsPath” setting is used to specify the path to the tool apps folder.
+            </summary>
+        </member>
+        <member name="F:Kernel.Compiler.Settings.allArgs">
+            <summary>
+            The underlying dictionary of all the settings (arguments) stored.
+            </summary>
+        </member>
+        <member name="M:Kernel.Compiler.Settings.#ctor">
+            <summary>
+            Constructor for Settings - creates empty settings instance.
+            </summary>
+        </member>
+        <member name="M:Kernel.Compiler.Settings.#ctor(System.String[])">
+            <summary>
+            Constructor for Settings takes a list of arguments and parses.
+            </summary>
+            <param name="aArgs">The list of arguments to parse.</param>
+        </member>
+        <member name="M:Kernel.Compiler.Settings.ParseArgs(System.String[])">
+            <summary>
+            Parses a list of arguments and adds them to the dictionary.
+            </summary>
+            <param name="args">The args to parse.</param>
+            <exception cref="T:System.ArgumentException">
+            Thrown if the first argument is invalid.
+            </exception>
+        </member>
+        <member name="M:Kernel.Compiler.Settings.CheckIfArgsValid">
+            <summary>
+            Checks all the arguments are valid.
+            </summary>
+            <returns>True if all args are valid. Otherwise, false.</returns>
+        </member>
+        <member name="M:Kernel.Compiler.Settings.CheckForRequiredArgs">
+            <summary>
+            Checks all the required arguments are present.
+            </summary>
+            <returns>True if all required args are present. Otherwise, false.</returns>
+        </member>
+        <member name="P:Kernel.Compiler.Settings.Item(System.String)">
+            <summary>
+            Gets or sets a setting by key.
+            </summary>
+            <param name="key">The key of the setting to retrieve.</param>
+            <returns>Null if key not present, value otherwise.</returns>
+        </member>
+        <member name="T:Kernel.Compiler.StaticConstructorDependency">
+            <summary>
+            A node in a static constructor dependency tree.
+            </summary>
+            <remarks>
+            This class is used to create a tree structure of which static constructors depend on which other
+            static constructors. The tree is later flattened into a list where children appear before parents.
+            That list is then used to generate the IL code that calls all the static constructors in the 
+            necessary order before any of the rest of the kernel executes.
+            </remarks>
+        </member>
+        <member name="F:Kernel.Compiler.StaticConstructorDependency.Children">
+            <summary>
+            A list of the child-nodes i.e. static constructors that TheConstructor depends upon.
+            </summary>
+        </member>
+        <member name="F:Kernel.Compiler.StaticConstructorDependency.TheConstructor">
+            <summary>
+            The constructor represented by this node.
+            </summary>
+        </member>
+        <member name="M:Kernel.Compiler.StaticConstructorDependency.Flatten">
+            <summary>
+            Flattens the tree such that deepest-children appear first, shallowest-parents appear last.
+            Also removes any duplicates so that first instance only appears in the list.
+            </summary>
+            <returns>The flattened list.</returns>
+        </member>
+        <member name="P:Kernel.Compiler.StaticConstructorDependency.Item(System.Reflection.ConstructorInfo)">
+            <summary>
+            Returns the first node representing of the specified constructor - full-depth search.
+            </summary>
+            <param name="inf">The constructor to search for.</param>
+            <returns>The first node representing of the specified constructor - full-depth search.</returns>
+        </member>
+        <member name="T:Kernel.Compiler.Utils">
+            <summary>
+            Static utility methods used throughout the compiler.
+            </summary>
+        </member>
+        <member name="F:Kernel.Compiler.Utils.IllegalIdentifierChars">
+            <summary>
+            The string of characters which are illegal to use in ASM labels.
+            </summary>
+        </member>
+        <member name="M:Kernel.Compiler.Utils.FilterIdentifierForInvalidChars(System.String)">
+            <summary>
+            Replaces illegal characters from an ASM label (identifier) with an underscore ('_')
+            </summary>
+            <param name="x">The label to filter.</param>
+            <returns>The filtered label.</returns>
+        </member>
+        <member name="M:Kernel.Compiler.Utils.GetMethodSignature(System.Reflection.MethodBase)">
+            <summary>
+            Gets the signature of the specified method. A method's signature will (probably) always be unique.
+            </summary>
+            <param name="aMethod">The method to get the signature of.</param>
+            <returns>The method's siganture string.</returns>
+        </member>
+        <member name="M:Kernel.Compiler.Utils.ReverseMethodSignature(System.String)">
+            <summary>
+            Reverse the method signature i.e. returns a string array of:
+            Return type full name,
+            Declaring type full name,
+            Method name
+            </summary>
+            <param name="methodSig">The method signature to reverse.</param>
+            <returns>See summary.</returns>
+        </member>
+        <member name="M:Kernel.Compiler.Utils.GetFieldSignature(System.Reflection.FieldInfo)">
+            <summary>
+            Gets the signature of the specified field. A field's signature will (probably) always be unique.
+            </summary>
+            <param name="aField">The field to get the signature of.</param>
+            <returns>The field's siganture string.</returns>
+        </member>
+        <member name="M:Kernel.Compiler.Utils.GetNumBytesForType(System.Type)">
+            <summary>
+            Gets the number of bytes used by a given type when it is represented on the stack.
+            </summary>
+            <param name="theType">The type to get the size of.</param>
+            <returns>The number of bytes used to represent the specified type on the stack.</returns>
+        </member>
+        <member name="M:Kernel.Compiler.Utils.GetOpSizeString(System.Int32)">
+            <summary>
+            Gets the mnemonic for a given number of bytes (e.g. 1 = byte, 2 = word, 4 = dword, 8 = qword)
+            </summary>
+            <param name="numBytes">The number of bytes. Shouldbe a power of 2.</param>
+            <returns>The mnemonic or null if the number of bytes was not recognised.</returns>
+        </member>
+        <member name="M:Kernel.Compiler.Utils.IsFloat(System.Type)">
+            <summary>
+            Determines whether the specified type is a floating point number (inc. single and double precision).
+            </summary>
+            <param name="aType">The type to check.</param>
+            <returns>True if the type is a flaoting point type. Otherwise false.</returns>
+        </member>
+        <member name="M:Kernel.Compiler.Utils.ReadInt16(System.Byte[],System.Int32)">
+            <summary>
+            Reads a signed integer 16 from the specified bytes starting at the specified offset.
+            </summary>
+            <param name="bytes">The bytes to read from.</param>
+            <param name="offset">The offset in the bytes to read from.</param>
+            <returns>The number.</returns>
+        </member>
+        <member name="M:Kernel.Compiler.Utils.ReadInt32(System.Byte[],System.Int32)">
+            <summary>
+            Reads a signed integer 32 from the specified bytes starting at the specified offset.
+            </summary>
+            <param name="bytes">The bytes to read from.</param>
+            <param name="offset">The offset in the bytes to read from.</param>
+            <returns>The number.</returns>
+        </member>
+        <member name="M:Kernel.Compiler.Utils.ReadInt64(System.Byte[],System.Int32)">
+            <summary>
+            Reads a signed integer 64 from the specified bytes starting at the specified offset.
+            </summary>
+            <param name="bytes">The bytes to read from.</param>
+            <param name="offset">The offset in the bytes to read from.</param>
+            <returns>The number.</returns>
+        </member>
+        <member name="M:Kernel.Compiler.Utils.ReadFloat32(System.Byte[],System.Int32)">
+            <summary>
+            Reads a single-precision (32-bit) floating point number from the specified bytes starting at the specified offset.
+            </summary>
+            <param name="bytes">The bytes to read from.</param>
+            <param name="offset">The offset in the bytes to read from.</param>
+            <returns>The number.</returns>
+        </member>
+        <member name="M:Kernel.Compiler.Utils.ReadFloat64(System.Byte[],System.Int32)">
+            <summary>
+            Reads a double-precision (64-bit) floating point number from the specified bytes starting at the specified offset.
+            </summary>
+            <param name="bytes">The bytes to read from.</param>
+            <param name="offset">The offset in the bytes to read from.</param>
+            <returns>The number.</returns>
+        </member>
+        <member name="M:Kernel.Compiler.Utils.IsGCManaged(System.Type)">
+            <summary>
+            Determines whether the specified type is managed by the 
+            garbage collector or not.
+            </summary>
+            <param name="theType">The type to check for GC management.</param>
+            <returns>Whether the specified type is managed by the 
+            garbage collector or not.</returns>
+        </member>
+    </members>
+</doc>
