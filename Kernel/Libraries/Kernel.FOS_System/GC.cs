@@ -10,7 +10,7 @@ namespace Kernel.FOS_System
     /// The garbage collector.
     /// </summary>
     [Compiler.PluggedClass]
-    public static class GC
+    public static unsafe class GC
     {
         /// <summary>
         /// The total number of objects currently allocated by the GC.
@@ -27,7 +27,10 @@ namespace Kernel.FOS_System
         /// </summary>
         private static bool InsideGC = false;
 
-        //TODO - GC needs an object list to scan down quickly to find missed 0-ref count objects
+        public static int numStrings = 0;
+
+        private static ObjectToCleanup* CleanupList;
+
         //TODO - GC needs an object reference tree to do a thorough scan to find reference loops
 
         /// <summary>
@@ -49,7 +52,7 @@ namespace Kernel.FOS_System
         [Compiler.NewObjMethod]
         [Compiler.NoDebug]
         [Compiler.NoGC]
-        public static unsafe void* NewObj(FOS_System.Type theType)
+        public static void* NewObj(FOS_System.Type theType)
         {
             if(!GCInitialised || InsideGC)
             {
@@ -104,7 +107,7 @@ namespace Kernel.FOS_System
         [Compiler.NewArrMethod]
         [Compiler.NoDebug]
         [Compiler.NoGC]
-        public static unsafe void* NewArr(int length, FOS_System.Type elemType)
+        public static void* NewArr(int length, FOS_System.Type elemType)
         {
             int arrayObjSize = 8;
 
@@ -161,6 +164,78 @@ namespace Kernel.FOS_System
         }
 
         /// <summary>
+        /// DO NOT CALL DIRECTLY. Use FOS_System.String.New
+        /// Creates a new string with specified length (but does not call the default constructor).
+        /// </summary>
+        /// <returns>A pointer to the new string in memory.</returns>
+        [Compiler.NoDebug]
+        [Compiler.NoGC]
+        public static void* NewString(int length)
+        {
+            int strObjSize = 4;
+
+            if (!GCInitialised || InsideGC)
+            {
+                return null;
+            }
+
+            if (length < 0)
+            {
+                ExceptionMethods.Throw_OverflowException();
+            }
+
+            InsideGC = true;
+
+            //Alloc space for GC header that prefixes object data
+            //Alloc space for new string object
+            //Alloc space for new string chars
+
+            uint totalSize = ((FOS_System.Type)typeof(FOS_System.String)).Size;
+            totalSize += /*char size in bytes*/2 * (uint)length;
+            totalSize += (uint)sizeof(GCHeader);
+
+            GCHeader* newObjPtr = (GCHeader*)Heap.Alloc(totalSize);
+
+            if ((UInt32)newObjPtr == 0)
+            {
+                return null;
+            }
+
+            NumObjs++;
+            numStrings++;
+
+            //Initialise the GCHeader
+            SetSignature(newObjPtr);
+            //RefCount to 0 initially because of FOS_System.String.New should be used
+            //      - In theory, New should be called, creates new string and passes it back to caller
+            //        Caller is then required to store the string in a variable resulting in inc.
+            //        ref count so ref count = 1 in only stored location. 
+            //        Caller is not allowed to just "discard" (i.e. use Pop IL op or C# that generates
+            //        Pop IL op) so ref count will always at some point be incremented and later
+            //        decremented by managed code. OR the variable will stay in a static var until
+            //        the OS exits...
+
+            newObjPtr->RefCount = 0;
+
+            FOS_System.String newStr = (FOS_System.String)Utilities.ObjectUtilities.GetObject(newObjPtr + 1);
+            newStr._Type = (FOS_System.Type)typeof(FOS_System.String);
+            newStr.length = length;
+            
+            byte* newObjBytePtr = (byte*)newObjPtr;
+            for (int i = sizeof(GCHeader) + strObjSize + 4/*For _Type field*/; i < totalSize; i++)
+            {
+                newObjBytePtr[i] = 0;
+            }
+
+            //Move past GCHeader
+            newObjBytePtr = (byte*)(newObjBytePtr + sizeof(GCHeader));
+
+            InsideGC = false;
+
+            return newObjBytePtr;
+        }
+
+        /// <summary>
         /// Increments the ref count of a GC managed object.
         /// </summary>
         /// <remarks>
@@ -170,7 +245,7 @@ namespace Kernel.FOS_System
         [Compiler.IncrementRefCountMethod]
         [Compiler.NoDebug]
         [Compiler.NoGC]
-        public static unsafe void IncrementRefCount(FOS_System.Object anObj)
+        public static void IncrementRefCount(FOS_System.Object anObj)
         {
             if (!GCInitialised || InsideGC || anObj == null)
             {
@@ -194,13 +269,18 @@ namespace Kernel.FOS_System
         /// <param name="objPtr">Pointer to the object to increment the ref count of.</param>
         [Compiler.NoDebug]
         [Compiler.NoGC]
-        public static unsafe void _IncrementRefCount(byte* objPtr)
+        public static void _IncrementRefCount(byte* objPtr)
         {
             objPtr -= sizeof(GCHeader);
             GCHeader* gcHeaderPtr = (GCHeader*)objPtr;
             if (CheckSignature(gcHeaderPtr))
             {
                 gcHeaderPtr->RefCount++;
+
+                if (gcHeaderPtr->RefCount > 0)
+                {
+                    RemoveObjectToCleanup(gcHeaderPtr);
+                }
             }
         }
 
@@ -215,7 +295,7 @@ namespace Kernel.FOS_System
         [Compiler.DecrementRefCountMethod]
         [Compiler.NoDebug]
         [Compiler.NoGC]
-        public static unsafe void DecrementRefCount(FOS_System.Object anObj)
+        public static void DecrementRefCount(FOS_System.Object anObj)
         {
             DecrementRefCount(anObj, false);
         }
@@ -230,7 +310,7 @@ namespace Kernel.FOS_System
         /// <param name="overrideInside">Whether to ignore the InsideGC test or not.</param>
         [Compiler.NoDebug]
         [Compiler.NoGC]
-        public static unsafe void DecrementRefCount(FOS_System.Object anObj, bool overrideInside)
+        public static void DecrementRefCount(FOS_System.Object anObj, bool overrideInside)
         {
             if (!GCInitialised || (InsideGC && !overrideInside) || anObj == null)
             {
@@ -260,33 +340,31 @@ namespace Kernel.FOS_System
         /// <param name="objPtr">A pointer to the object to decrement the ref count of.</param>
         [Compiler.NoDebug]
         [Compiler.NoGC]
-        public static unsafe void _DecrementRefCount(byte* objPtr)
+        public static void _DecrementRefCount(byte* objPtr)
         {
             GCHeader* gcHeaderPtr = (GCHeader*)(objPtr - sizeof(GCHeader));
             if (CheckSignature(gcHeaderPtr))
             {
                 gcHeaderPtr->RefCount--;
 
-                FOS_System.Object obj = (FOS_System.Object)Utilities.ObjectUtilities.GetObject(objPtr);
-                if (obj._Type == (FOS_System.Type)typeof(FOS_System.Array))
-                {
-                    //Decrement ref count of elements
-                    FOS_System.Array arr = (FOS_System.Array)obj;
-                    if (!arr.elemType.IsValueType)
-                    {
-                        FOS_System.Object[] objArr = (FOS_System.Object[])Utilities.ObjectUtilities.GetObject(objPtr);
-                        for (int i = 0; i < arr.length; i++)
-                        {
-                            DecrementRefCount(objArr[i], true);
-                        }
-                    }
-                }
-
                 if (gcHeaderPtr->RefCount <= 0)
                 {
-                    Heap.Free(objPtr);
+                    FOS_System.Object obj = (FOS_System.Object)Utilities.ObjectUtilities.GetObject(objPtr);
+                    if (obj._Type == (FOS_System.Type)typeof(FOS_System.Array))
+                    {
+                        //Decrement ref count of elements
+                        FOS_System.Array arr = (FOS_System.Array)obj;
+                        if (!arr.elemType.IsValueType)
+                        {
+                            FOS_System.Object[] objArr = (FOS_System.Object[])Utilities.ObjectUtilities.GetObject(objPtr);
+                            for (int i = 0; i < arr.length; i++)
+                            {
+                                DecrementRefCount(objArr[i], true);
+                            }
+                        }
+                    }
 
-                    NumObjs--;
+                    AddObjectToCleanup(gcHeaderPtr, objPtr);
                 }
             }
         }
@@ -311,11 +389,89 @@ namespace Kernel.FOS_System
         /// <param name="headerPtr">A pointer to the header to set the signature in.</param>
         [Compiler.NoDebug]
         [Compiler.NoGC]
-        public static unsafe void SetSignature(GCHeader* headerPtr)
+        public static void SetSignature(GCHeader* headerPtr)
         {
             headerPtr->Sig1 = 0x5C0EADE2U;
             headerPtr->Sig2 = 0x5C0EADE2U;
             headerPtr->Checksum = 0xB81D5BC4U;
+        }
+
+
+        [Compiler.NoDebug]
+        [Compiler.NoGC]
+        public static void Cleanup()
+        {
+            if (!GCInitialised || InsideGC)
+            {
+                return;
+            }
+
+            ObjectToCleanup* currObjToCleanupPtr = CleanupList;
+            while (currObjToCleanupPtr != null)
+            {
+                GCHeader* objHeaderPtr = currObjToCleanupPtr->objHeaderPtr;
+                void* objPtr = currObjToCleanupPtr->objPtr;
+                if(objHeaderPtr->RefCount <= 0)
+                {
+                    FOS_System.Object obj = (FOS_System.Object)Utilities.ObjectUtilities.GetObject(objPtr);
+                    if (obj._Type == (FOS_System.Type)typeof(FOS_System.String))
+                    {
+                        numStrings--;
+                    }
+
+                    Heap.Free(objPtr);
+
+                    NumObjs--;
+                }
+
+                RemoveObjectToCleanup(currObjToCleanupPtr);
+                currObjToCleanupPtr = currObjToCleanupPtr->prevPtr;
+            }
+        }
+
+        [Compiler.NoDebug]
+        [Compiler.NoGC]
+        private static void AddObjectToCleanup(GCHeader* objHeaderPtr, void* objPtr)
+        {
+            ObjectToCleanup* newObjToCleanupPtr = (ObjectToCleanup*)Heap.Alloc((uint)sizeof(ObjectToCleanup));
+            newObjToCleanupPtr->objHeaderPtr = objHeaderPtr;
+            newObjToCleanupPtr->objPtr = objPtr;
+
+            newObjToCleanupPtr->prevPtr = CleanupList;
+            CleanupList->nextPtr = newObjToCleanupPtr;
+
+            CleanupList = newObjToCleanupPtr;
+        }
+        [Compiler.NoDebug]
+        [Compiler.NoGC]
+        private static void RemoveObjectToCleanup(GCHeader* objHeaderPtr)
+        {
+            ObjectToCleanup* currObjToCleanupPtr = CleanupList;
+            while (currObjToCleanupPtr != null)
+            {
+                if (currObjToCleanupPtr->objHeaderPtr == objHeaderPtr)
+                {
+                    RemoveObjectToCleanup(currObjToCleanupPtr);
+                    return;
+                }
+                currObjToCleanupPtr = currObjToCleanupPtr->prevPtr;
+            }
+        }
+        [Compiler.NoDebug]
+        [Compiler.NoGC]
+        private static void RemoveObjectToCleanup(ObjectToCleanup* objToCleanupPtr)
+        {
+            ObjectToCleanup* prevPtr = objToCleanupPtr->prevPtr;
+            ObjectToCleanup* nextPtr = objToCleanupPtr->nextPtr;
+            prevPtr->nextPtr = nextPtr;
+            nextPtr->prevPtr = prevPtr;
+
+            if(CleanupList == objToCleanupPtr)
+            {
+                CleanupList = prevPtr;
+            }
+            
+            Heap.Free(objToCleanupPtr);
         }
     }
     
@@ -341,5 +497,13 @@ namespace Kernel.FOS_System
         /// The current reference count for the object associated with this header.
         /// </summary>
         public uint RefCount;
+    }
+
+    public unsafe struct ObjectToCleanup
+    {
+        public void* objPtr;
+        public GCHeader* objHeaderPtr;
+        public ObjectToCleanup* prevPtr;
+        public ObjectToCleanup* nextPtr;
     }
 }

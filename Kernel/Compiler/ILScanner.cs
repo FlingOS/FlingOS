@@ -546,6 +546,7 @@ namespace Kernel.Compiler
             if (aChunk.ApplyGC)
             {
                 //Inc ref count of all args passed to the method 
+                //      - see ILReader for GC cleanup / dec ref count (use search: "Dec ref count" exc. quotes)
                 List<Type> allParams = aChunk.Method.GetParameters()
                     .Select(x => x.ParameterType)
                     .ToList();
@@ -899,6 +900,9 @@ namespace Kernel.Compiler
                     {
                         //This IL op is ignored for now. We assume the the Microsoft compiler (csc.exe) 
                         //makes the correct casting checks etc
+                        //And even if it doesn't, at the kernel level it is useful to be able to play
+                        //  tricks with converting objects to/from MS types and custom kernel types 
+                        //  e.g. System.String to Kernel.FOS_System.String
                     }
                     else
                     {

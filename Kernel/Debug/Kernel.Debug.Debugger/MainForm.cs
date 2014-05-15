@@ -170,7 +170,7 @@ namespace Kernel.Debug.Debugger
             bool foundCurBreakLine = false;
             bool shouldAddText = false;
             
-            if (TheDebugger.CurrentMethod != oldMethod)
+            //if (TheDebugger.CurrentMethod != oldMethod)
             {
                 oldMethod = TheDebugger.CurrentMethod;
                 shouldAddText = true;

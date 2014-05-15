@@ -217,26 +217,25 @@ namespace Kernel.Debug
             return 0;
         }
         
-
-        /// <summary>
-        /// Clears the screen
-        /// </summary>
-        [Compiler.NoDebug]
-        [Compiler.NoGC]
-        public static void ClearMessage()
-        {
-            PreReqs.WriteDebugVideo(" ", 0x00);
-        }
-        /// <summary>
-        /// Displays the specified message to the screen.
-        /// </summary>
-        /// <param name="message">The message to display.</param>
-        [Compiler.NoDebug]
-        [Compiler.NoGC]
-        public static void DisplayMessage(string message)
-        {
-            PreReqs.WriteDebugVideo(message, 0x02);
-        }
+        ///// <summary>
+        ///// Clears the screen
+        ///// </summary>
+        //[Compiler.NoDebug]
+        //[Compiler.NoGC]
+        //public static void ClearMessage()
+        //{
+        //    PreReqs.WriteDebugVideo(" ", 0x00);
+        //}
+        ///// <summary>
+        ///// Displays the specified message to the screen.
+        ///// </summary>
+        ///// <param name="message">The message to display.</param>
+        //[Compiler.NoDebug]
+        //[Compiler.NoGC]
+        //public static void DisplayMessage(string message)
+        //{
+        //    PreReqs.WriteDebugVideo(message, 0x02);
+        //}
         
         /// <summary>
         /// Inserts the plug for the Int1 and Int3 interrupt handler.

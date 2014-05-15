@@ -9,6 +9,13 @@ namespace Kernel.FOS_System
     [Kernel.Compiler.PluggedClass]
     public class String : Object
     {
+        /* If you add more fields here, remember to update the compiler and all the ASM files that depend on the string
+           class structure ( i.e. do all the hard work! ;) )
+         */
+        public int length;
+
+        /*   ----------- DO NOT CREATE A CONSTRUCTOR FOR THIS CLASS - IT WILL NEVER BE CALLED IF YOU DO ----------- */
+
         /// <summary>
         /// Gets the length of the specified string.
         /// </summary>
@@ -36,18 +43,71 @@ namespace Kernel.FOS_System
             return (char*)System.Runtime.InteropServices.Marshal.StringToHGlobalAuto(aString);
         }
 
-        public static unsafe string New(int length)
+        /// <summary>
+        /// Creates a new, blank FOS_System.String of specified length.
+        /// IMPORTANT NOTE: You MUST assign the return value of this to a variable / local / arg / 
+        /// field etc. You may not use IL or C# that results in an IL Pop op of the return value
+        /// of this method as it will screw up the GC RefCount handling.
+        /// </summary>
+        /// <param name="length">The length of the string to create.</param>
+        /// <returns>The new string.</returns>
+        [Compiler.NoGC]
+        public static unsafe FOS_System.String New(int length)
         {
             if(length < 0)
             {
-                new Exceptions.IndexOutOfRangeException();
+                ExceptionMethods.Throw(new Exceptions.ArgumentException("Parameter \"length\" cannot be less than 0 in FOS_System.String.New(int length)."));
             }
-            return null;
+            return (FOS_System.String)Utilities.ObjectUtilities.GetObject(GC.NewString(length));
         }
 
-        public static unsafe string Concat(string str1, string str2)
+        public static unsafe FOS_System.String Concat(FOS_System.String str1, FOS_System.String str2)
         {
-            return null;
+            FOS_System.String newStr = New(str1.length + str2.length);
+            for (int i = 0; i < str1.length; i++)
+            {
+                newStr[i] = str1[i];
+            }
+            for (int i = 0; i < str2.length; i++)
+            {
+                newStr[i + str1.length] = str2[i];
+            }
+            return newStr;
+        }
+
+        public unsafe char this[int index]
+        {
+            get
+            {
+                byte* thisPtr = (byte*)Utilities.ObjectUtilities.GetHandle(this);
+                thisPtr += 8; /*For fields inc. inherited*/
+                return ((char*)thisPtr)[index];
+            }
+            set
+            {
+                byte* thisPtr = (byte*)Utilities.ObjectUtilities.GetHandle(this);
+                thisPtr += 8; /*For fields inc. inherited*/
+                ((char*)thisPtr)[index] = value;
+            }
+        }
+        [Compiler.NoDebug]
+        [Compiler.NoGC]
+        public unsafe char* GetCharPointer()
+        {
+            return (char*)(((byte*)Utilities.ObjectUtilities.GetHandle(this)) + 8/*For fields*/);
+        }
+
+        [Compiler.NoDebug]
+        [Compiler.NoGC]
+        public static implicit operator FOS_System.String(string x)
+        {
+            return (FOS_System.String)(object)x;
+        }
+        [Compiler.NoDebug]
+        [Compiler.NoGC]
+        public static implicit operator string(FOS_System.String x)
+        {
+            return (string)(object)x;
         }
     }
 }

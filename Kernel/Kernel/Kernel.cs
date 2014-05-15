@@ -17,8 +17,8 @@ namespace Kernel
             BasicConsole.Init();
             BasicConsole.Clear();
 
-            FOS_System.GC.Init();
             Debug.BasicDebug.Init();
+            FOS_System.GC.Init();
 
             BasicConsole.WriteLine();
         }
@@ -50,11 +50,14 @@ namespace Kernel
                 Paging.Init();
                 
                 ManagedMain();
+
+                FOS_System.GC.Cleanup();
             }
             catch
             {
                 BasicConsole.SetTextColour(BasicConsole.error_colour);
-                if (ExceptionMethods.CurrentException._Type == (FOS_System.Type)typeof(FOS_System.Exceptions.PageFaultException))
+                FOS_System.Type currExceptionType = ExceptionMethods.CurrentException._Type;
+                if (currExceptionType == (FOS_System.Type)typeof(FOS_System.Exceptions.PageFaultException))
                 {
                     BasicConsole.WriteLine("Page fault exception unhandled!");
                 }
@@ -67,13 +70,33 @@ namespace Kernel
             }
 
             BasicConsole.SetTextColour(BasicConsole.error_colour);
-            if (FOS_System.GC.NumObjs > 0)
+            if (FOS_System.GC.NumObjs > 3)
+            {
+                BasicConsole.WriteLine("Num Objs > 3");
+            } 
+            else if (FOS_System.GC.NumObjs > 2)
+            {
+                BasicConsole.WriteLine("Num Objs > 2");
+            }
+            else if (FOS_System.GC.NumObjs > 1)
+            {
+                BasicConsole.WriteLine("Num Objs > 1");
+            }
+            else if (FOS_System.GC.NumObjs > 0)
             {
                 BasicConsole.WriteLine("Num Objs > 0");
             }
             else if (FOS_System.GC.NumObjs < 0)
             {
                 BasicConsole.WriteLine("Num Objs < 0");
+            }
+            if (FOS_System.GC.numStrings > 0)
+            {
+                BasicConsole.WriteLine("Num strings > 0");
+            }
+            else if (FOS_System.GC.numStrings < 0)
+            {
+                BasicConsole.WriteLine("Num strings < 0");
             }
             BasicConsole.SetTextColour(BasicConsole.default_colour);
 
@@ -108,6 +131,9 @@ namespace Kernel
         {
             try
             {
+                FOS_System.String testStr = FOS_System.String.Concat("test1", " test2");
+                BasicConsole.WriteLine(testStr);
+
                 FOS_System.Object[] objArr = new FOS_System.Object[10];
                 objArr[0] = new FOS_System.Object();
                 objArr[0]._Type.Size = 5;
@@ -118,7 +144,7 @@ namespace Kernel
 
                 int[] testArray = new int[1024];
                 testArray[5] = 10;
-                int x = testArray[5];
+                int q = testArray[5];
 
                 Dummy obj = new Dummy();
                 new Dummy();
@@ -129,10 +155,7 @@ namespace Kernel
                     BasicConsole.WriteLine("Addition success!");
                 }
 
-                string testStr = "test1";
-                
-                BasicConsole.WriteLine(testStr);
-
+                int x = 0;
                 int y = 0;
                 int z = 0;
                 z = x / y;
@@ -143,9 +166,15 @@ namespace Kernel
                 BasicConsole.WriteLine(ExceptionMethods.CurrentException.Message);
                 BasicConsole.SetTextColour(BasicConsole.default_colour);
 
-                if (ExceptionMethods.CurrentException._Type == (FOS_System.Type)typeof(FOS_System.Exceptions.DivideByZeroException))
+                FOS_System.Type currExceptionType = ExceptionMethods.CurrentException._Type;
+                if (currExceptionType == (FOS_System.Type)typeof(FOS_System.Exceptions.DivideByZeroException))
                 {
                     BasicConsole.WriteLine("Handled divide by zero exception.");
+                }
+                else if (currExceptionType == (FOS_System.Type)typeof(FOS_System.Exceptions.ArgumentException))
+                {
+                    BasicConsole.WriteLine("Handled argument exception.");
+                    BasicConsole.WriteLine(((FOS_System.Exceptions.ArgumentException)(ExceptionMethods.CurrentException)).ExtendedMessage);
                 }
                 else
                 {

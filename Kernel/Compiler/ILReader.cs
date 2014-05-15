@@ -783,6 +783,7 @@ namespace Kernel.Compiler
                             }
                         }
                         //Add cleanup code for each arg
+                        //Dec ref count of all args passed to the method 
                         for (int i = 0; i < allParams.Count; i++)
                         {
                             Type aVarType = allParams[i];

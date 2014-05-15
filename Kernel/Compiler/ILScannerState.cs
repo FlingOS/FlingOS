@@ -222,8 +222,13 @@ namespace Kernel.Compiler
             Array.Copy(xEncoding.GetBytes(value), 0, stringData, 4, NumBytes);
 
             //This is UTF-16 (Unicode)/ASCII text
-            //Put  in string length bytes
             StringLiteralsDataBlock.ASM.Append(string.Format("{0}:\ndb ", label));
+            //Put in dummy fields info
+            for (int i = 0; i < 4/*For fields inc. inherited excl. length*/; i++)
+            {
+                StringLiteralsDataBlock.ASM.Append("0, ");
+            }
+            //Put in string length bytes
             for (int i = 0; i < 3; i++)
             {
                 StringLiteralsDataBlock.ASM.Append(stringData[i]);

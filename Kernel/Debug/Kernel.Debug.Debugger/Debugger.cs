@@ -1253,10 +1253,11 @@ namespace Kernel.Debug.Debugger
             GetMemory_Length = length;
 
             TheSerial.Write((byte)DebugCommands.GetMemory);
-            for (int i = 0; i < address.Length; i++)
-            {
-                TheSerial.Write(address[i]);
-            }
+            TheSerial.Write(0x020970c3);
+            //for (int i = 0; i < address.Length; i++)
+            //{
+            //    TheSerial.Write(address[i]);
+            //}
             TheSerial.Write(length);
 
             WaitForCommand();
@@ -1420,8 +1421,14 @@ namespace Kernel.Debug.Debugger
 
                             request.Item3.BeginInvoke(data, request, new AsyncCallback(delegate(IAsyncResult result)
                             {
-                                LoadMemoryCompletedDelegate state = (LoadMemoryCompletedDelegate)result.AsyncState;
-                                state.EndInvoke(result);
+                                try
+                                {
+                                    LoadMemoryCompletedDelegate state = (LoadMemoryCompletedDelegate)result.AsyncState;
+                                    state.EndInvoke(result);
+                                }
+                                catch
+                                {
+                                }
                             }), request.Item3);
                         }
                     }

@@ -41,6 +41,7 @@
     <Compile Include="Array.cs" />
     <Compile Include="Exception.cs" />
     <Compile Include="ExceptionMethods.cs" />
+    <Compile Include="Exceptions\ArgumentException.cs" />
     <Compile Include="Exceptions\InvalidOpCodeException.cs" />
     <Compile Include="Exceptions\DoubleFaultException.cs" />
     <Compile Include="Exceptions\NullReferenceException.cs" />

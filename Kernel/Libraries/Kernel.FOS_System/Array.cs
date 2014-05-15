@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Kernel.FOS_System
 {
-    public class Array : Object
+    public unsafe class Array : Object
     {
         /* If changing the fields in this class, remember to update the 
          * Kernel.GC.NewArr method implementation. */

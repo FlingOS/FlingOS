@@ -102,13 +102,14 @@ namespace Kernel
         }
 
         /// <summary>
-        /// Writes a piece of text to the first line of the screen
+        /// Writes a piece of text to the first line of the screen. Note: Does not use same string memory structure as C# so cannot be called
+        /// from C#. Uses format of: Length as DWORD, Characters as BYTE
         /// </summary>
         /// <param name="aText">The text to write. First dword should be the length of the string. (Inserted by compiler for string literals)</param>
         /// <param name="aColour">The foreground/background (DOS) colour to write in - 0xXY where X is background colour and Y is foreground colour.</param>
         [Compiler.PluggedMethod(ASMFilePath = @"ASM\PreReqs\WriteDebugVideo")]
         [Compiler.SequencePriority(Priority = long.MinValue + 9)]
-        public static void WriteDebugVideo(string aText, UInt32 aColour)
+        private static void WriteDebugVideo(string aText, UInt32 aColour)
         {
         }
     }

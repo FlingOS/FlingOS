@@ -59,6 +59,8 @@ namespace Kernel
         /// <summary>
         /// Initialises the BasicConsole class.
         /// </summary>
+        [Compiler.NoDebug]
+        [Compiler.NoGC]
         public static void Init()
         {
             bg_colour = (char)0x0000;
@@ -73,6 +75,8 @@ namespace Kernel
         /// Sets the console text colour.
         /// </summary>
         /// <param name="aText_colour">The text colour to use.</param>
+        [Compiler.NoDebug]
+        [Compiler.NoGC]
         public static void SetTextColour(char aText_colour)
         {
             colour = (char)(bg_colour | (aText_colour & 0x0F00));
@@ -81,6 +85,8 @@ namespace Kernel
         /// Sets the console background colour.
         /// </summary>
         /// <param name="aBg_colour">The background colour to use.</param>
+        [Compiler.NoDebug]
+        [Compiler.NoGC]
         public static void SetBgColour(char aBg_colour)
         {
             bg_colour = (char)(aBg_colour & 0xF000);
@@ -115,9 +121,14 @@ namespace Kernel
         /// </remarks>
         [Compiler.NoDebug]
         [Compiler.NoGC]
-        public static unsafe void Write(string str)
+        public static unsafe void Write(FOS_System.String str)
         {
-            int strLength = FOS_System.String.GetLength(str);
+            if (str == null)
+            {
+                return;
+            }
+
+            int strLength = str.length;
             int maxOffset = rows * cols;
 
             if(offset + strLength > maxOffset)
@@ -135,9 +146,9 @@ namespace Kernel
                     vidMemPtr_New++;
                 }
             }
-            
+
             char* vidMemPtr = vidMemBasePtr + offset;
-            char* strPtr = FOS_System.String.GetCharPointer(str);
+            char* strPtr = str.GetCharPointer();
             while (strLength > 0)
             {
                 vidMemPtr[0] = (char)((*strPtr & 0x00FF) | colour);
@@ -157,8 +168,13 @@ namespace Kernel
         /// </remarks>
         [Compiler.NoDebug]
         [Compiler.NoGC]
-        public static unsafe void WriteLine(string str)
+        public static unsafe void WriteLine(FOS_System.String str)
         {
+            if (str == null)
+            {
+                return;
+            }
+
             if (offset == BasicConsole.cols * BasicConsole.rows)
             {
                 char* vidMemPtr_Old = vidMemBasePtr;
@@ -172,7 +188,7 @@ namespace Kernel
                 }
                 offset -= cols;
             }
-
+            
             Write(str);
 
             int diff = offset;
@@ -196,6 +212,8 @@ namespace Kernel
         /// <summary>
         /// Writes a blank line (line with a space).
         /// </summary>
+        [Compiler.NoDebug]
+        [Compiler.NoGC]
         public static void WriteLine()
         {
             WriteLine(" ");
@@ -207,9 +225,9 @@ namespace Kernel
         [Compiler.NoGC]
         public static unsafe void PrintTestString()
         {
-            string str = "1234567890!\"£$%^&*()qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM[];'#,./{}:@~<>?\\|`¬¦";
-            int strLength = FOS_System.String.GetLength(str);
-            char* strPtr = FOS_System.String.GetCharPointer(str);
+            FOS_System.String str = "1234567890!\"£$%^&*()qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM[];'#,./{}:@~<>?\\|`¬¦";
+            int strLength = str.length;
+            char* strPtr = str.GetCharPointer();
             char* vidMemPtr = vidMemBasePtr;
             while (strLength > 0)
             {
