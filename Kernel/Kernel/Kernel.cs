@@ -131,9 +131,65 @@ namespace Kernel
         {
             try
             {
+                StringConcatTest();
+                ObjectArrayTest();
+                IntArrayTest();
+                DummyObjectTest();
+                DivideByZeroTest();
+
+                EmptyTest();
+            }
+            catch
+            {
+                BasicConsole.SetTextColour(BasicConsole.warning_colour);
+                BasicConsole.WriteLine(ExceptionMethods.CurrentException.Message);
+                BasicConsole.SetTextColour(BasicConsole.default_colour);
+            }
+
+            BasicConsole.WriteLine("End of managed main!");
+        }
+
+        private static void EmptyTest()
+        {
+            try
+            {
+            }
+            catch
+            {
+            }
+            BasicConsole.WriteLine("Empty test end.");
+        }
+
+        /// <summary>
+        /// Tests dynamic string creation and string concatentation.
+        /// </summary>
+        private static void StringConcatTest()
+        {
+            BasicConsole.WriteLine("String concat test...");
+
+            try
+            {
                 FOS_System.String testStr = FOS_System.String.Concat("test1", " test2");
                 BasicConsole.WriteLine(testStr);
+            }
+            catch
+            {
+                BasicConsole.SetTextColour(BasicConsole.warning_colour);
+                BasicConsole.WriteLine(ExceptionMethods.CurrentException.Message);
+                BasicConsole.SetTextColour(BasicConsole.default_colour);
+            }
 
+            BasicConsole.WriteLine("End string concat test.");
+        }
+        /// <summary>
+        /// Tests creating arrays where elements are reference-type and Gc managed.
+        /// </summary>
+        private static void ObjectArrayTest()
+        {
+            BasicConsole.WriteLine("Object array test...");
+
+            try
+            {
                 FOS_System.Object[] objArr = new FOS_System.Object[10];
                 objArr[0] = new FOS_System.Object();
                 objArr[0]._Type.Size = 5;
@@ -141,11 +197,47 @@ namespace Kernel
                 {
                     BasicConsole.WriteLine("Set object in array success!");
                 }
+            }
+            catch
+            {
+                BasicConsole.SetTextColour(BasicConsole.warning_colour);
+                BasicConsole.WriteLine(ExceptionMethods.CurrentException.Message);
+                BasicConsole.SetTextColour(BasicConsole.default_colour);
+            }
 
+            BasicConsole.WriteLine("End object array test.");
+        }
+        /// <summary>
+        /// Tests creating an array of integers (element of type from MSCorLib type and value type)
+        /// </summary>
+        private static void IntArrayTest()
+        {
+            BasicConsole.WriteLine("Int array test...");
+
+            try
+            {
                 int[] testArray = new int[1024];
                 testArray[5] = 10;
                 int q = testArray[5];
+            }
+            catch
+            {
+                BasicConsole.SetTextColour(BasicConsole.warning_colour);
+                BasicConsole.WriteLine(ExceptionMethods.CurrentException.Message);
+                BasicConsole.SetTextColour(BasicConsole.default_colour);
+            }
 
+            BasicConsole.WriteLine("Int array test.");
+        }
+        /// <summary>
+        /// Tests creating  GC-managed reference-type object and  setting properties and enums.
+        /// </summary>
+        private static void DummyObjectTest()
+        {
+            BasicConsole.WriteLine("Dummy object test...");
+
+            try
+            {
                 Dummy obj = new Dummy();
                 new Dummy();
                 obj = new Dummy();
@@ -164,7 +256,25 @@ namespace Kernel
                 {
                     BasicConsole.WriteLine("TestEnum.Second assignment worked.");
                 }
+            }
+            catch
+            {
+                BasicConsole.SetTextColour(BasicConsole.warning_colour);
+                BasicConsole.WriteLine(ExceptionMethods.CurrentException.Message);
+                BasicConsole.SetTextColour(BasicConsole.default_colour);
+            }
 
+            BasicConsole.WriteLine("Dummy object test.");
+        }
+        /// <summary>
+        /// Tests managed exception sub-system by deliberately causing hardware-level divide-by-zero exception.
+        /// </summary>
+        private static void DivideByZeroTest()
+        {
+            BasicConsole.WriteLine("Divide by zero test...");
+
+            try
+            {
                 int x = 0;
                 int y = 0;
                 int z = 0;
@@ -181,18 +291,9 @@ namespace Kernel
                 {
                     BasicConsole.WriteLine("Handled divide by zero exception.");
                 }
-                else if (currExceptionType == (FOS_System.Type)typeof(FOS_System.Exceptions.ArgumentException))
-                {
-                    BasicConsole.WriteLine("Handled argument exception.");
-                    BasicConsole.WriteLine(((FOS_System.Exceptions.ArgumentException)(ExceptionMethods.CurrentException)).ExtendedMessage);
-                }
-                else
-                {
-                    ExceptionMethods.Rethrow();
-                }
             }
 
-            BasicConsole.WriteLine("End of managed main!");
+            BasicConsole.WriteLine("Divide by zero test.");
         }
     }
 
