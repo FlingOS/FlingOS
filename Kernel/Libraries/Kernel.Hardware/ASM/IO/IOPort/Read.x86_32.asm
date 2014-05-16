@@ -16,7 +16,7 @@ mov [ebp+8], ax
 pop dword ebp
 ret
 
-method_System_UInt32_RETEND_Kernel_Hardware_IO_IOPort_DECLEND_doRead_UInt32_NAMEEND__System_UInt32_:
+method_System_UInt32_RETEND_Kernel_Hardware_IO_IOPort_DECLEND_doRead_UInt32_NAMEEND__System_UInt16_:
 push dword ebp
 mov dword ebp, esp
 mov dword edx, [ebp+12]
@@ -25,7 +25,7 @@ mov [ebp+8], eax
 pop dword ebp
 ret
 
-method_System_UInt64_RETEND_Kernel_Hardware_IO_IOPort_DECLEND_doRead_UInt64_NAMEEND__System_UInt64_:
+method_System_UInt64_RETEND_Kernel_Hardware_IO_IOPort_DECLEND_doRead_UInt64_NAMEEND__System_UInt16_:
 push dword ebp
 mov dword ebp, esp
 mov dword edx, [ebp+16]

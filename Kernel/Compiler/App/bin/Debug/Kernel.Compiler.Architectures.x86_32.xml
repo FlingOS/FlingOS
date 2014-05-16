@@ -4,6 +4,22 @@
         <name>Kernel.Compiler.Architectures.x86_32</name>
     </assembly>
     <members>
+        <member name="T:Kernel.Compiler.Architectures.x86_32.Callvirt">
+            <summary>
+            See base class documentation.
+            </summary>
+        </member>
+        <member name="M:Kernel.Compiler.Architectures.x86_32.Callvirt.Convert(Kernel.Compiler.ILOpInfo,Kernel.Compiler.ILScannerState)">
+            <summary>
+            See base class documentation.
+            </summary>
+            <param name="anILOpInfo">See base class documentation.</param>
+            <param name="aScannerState">See base class documentation.</param>
+            <returns>See base class documentation.</returns>
+            <exception cref="T:System.NotSupportedException">
+            Thrown if any argument or the return value is a floating point number.
+            </exception>
+        </member>
         <member name="T:Kernel.Compiler.Architectures.x86_32.Stelem">
             <summary>
             See base class documentation.

@@ -7,14 +7,14 @@ using System.Threading.Tasks;
 namespace Kernel.Compiler.ILOps
 {
     /// <summary>
-    /// Handles the <see cref="System.Reflection.Emit.OpCodes.Call"/> IL op.
+    /// Handles the <see cref="System.Reflection.Emit.OpCodes.Callvirt"/> IL op.
     /// </summary>
     /// <remarks>
     /// See MSDN for details of this op.
     /// </remarks>
-    /// <seealso cref="System.Reflection.Emit.OpCodes.Call"/>
-    [ILOpTarget(Target = ILOp.OpCodes.Call)]
-    public abstract class Call : ILOp
+    /// <seealso cref="System.Reflection.Emit.OpCodes.Callvirt"/>
+    [ILOpTarget(Target = ILOp.OpCodes.Callvirt)]
+    public abstract class Callvirt : ILOp
     {
     }
 }

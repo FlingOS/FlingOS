@@ -676,6 +676,11 @@
             Whether the type is a value type or not.
             </summary>
         </member>
+        <member name="F:Kernel.FOS_System.Type.MethodTablePtr">
+            <summary>
+            A pointer to the start of the method table.
+            </summary>
+        </member>
         <member name="M:Kernel.FOS_System.Type.op_Equality(Kernel.FOS_System.Type,Kernel.FOS_System.Type)">
             <summary>
             Compares two types by ID to see if they represent the same type.

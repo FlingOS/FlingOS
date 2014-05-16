@@ -7,6 +7,7 @@ namespace Kernel.FOS_System
     /// Also contains utility methods for low-level string manipulation.
     /// </summary>
     [Kernel.Compiler.PluggedClass]
+    [Kernel.Compiler.StringClass]
     public class String : Object
     {
         /* If you add more fields here, remember to update the compiler and all the ASM files that depend on the string

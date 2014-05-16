@@ -1,3 +1,5 @@
+G:\Fling OS\Fling OS\Kernel\Compiler\App\bin\Debug\Kernel.Compiler.dll
+G:\Fling OS\Fling OS\Kernel\Compiler\App\obj\Debug\Kernel.Compiler.App.csprojResolveAssemblyReference.cache
 G:\Fling OS\Fling OS\Kernel\Compiler\App\bin\Debug\Mosa.Utility.IsoImage.dll
 G:\Fling OS\Fling OS\Kernel\Compiler\App\bin\Debug\Dia2Dump\Dia2Dump.exe
 G:\Fling OS\Fling OS\Kernel\Compiler\App\bin\Debug\Dia2Dump\Dia2Dump.pdb
@@ -26,7 +28,6 @@ G:\Fling OS\Fling OS\Kernel\Compiler\App\bin\Debug\Kernel.Compiler.App.XML
 G:\Fling OS\Fling OS\Kernel\Compiler\App\bin\Debug\Kernel.Compiler.App.exe
 G:\Fling OS\Fling OS\Kernel\Compiler\App\bin\Debug\Kernel.Compiler.App.pdb
 G:\Fling OS\Fling OS\Kernel\Compiler\App\bin\Debug\Kernel.Compiler.Architectures.x86_32.dll
-G:\Fling OS\Fling OS\Kernel\Compiler\App\bin\Debug\Kernel.Compiler.dll
 G:\Fling OS\Fling OS\Kernel\Compiler\App\bin\Debug\Kernel.Debug.Data.dll
 G:\Fling OS\Fling OS\Kernel\Compiler\App\bin\Debug\Kernel.Compiler.Architectures.x86_32.pdb
 G:\Fling OS\Fling OS\Kernel\Compiler\App\bin\Debug\Kernel.Compiler.Architectures.x86_32.xml
@@ -34,6 +35,5 @@ G:\Fling OS\Fling OS\Kernel\Compiler\App\bin\Debug\Kernel.Compiler.pdb
 G:\Fling OS\Fling OS\Kernel\Compiler\App\bin\Debug\Kernel.Compiler.xml
 G:\Fling OS\Fling OS\Kernel\Compiler\App\bin\Debug\Kernel.Debug.Data.pdb
 G:\Fling OS\Fling OS\Kernel\Compiler\App\bin\Debug\Kernel.Debug.Data.xml
-G:\Fling OS\Fling OS\Kernel\Compiler\App\obj\Debug\Kernel.Compiler.App.csprojResolveAssemblyReference.cache
 G:\Fling OS\Fling OS\Kernel\Compiler\App\obj\Debug\Kernel.Compiler.App.exe
 G:\Fling OS\Fling OS\Kernel\Compiler\App\obj\Debug\Kernel.Compiler.App.pdb

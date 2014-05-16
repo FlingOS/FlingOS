@@ -54,6 +54,7 @@
     <Compile Include="AssemblyManager.cs" />
     <Compile Include="Attributes\ArrayConstructorMethodAttribute.cs" />
     <Compile Include="Attributes\DecrementRefCountMethodAttribute.cs" />
+    <Compile Include="Attributes\StringClassAttribute.cs" />
     <Compile Include="Attributes\TypeClassAttribute.cs" />
     <Compile Include="Attributes\IncrementRefCountMethodAttribute.cs" />
     <Compile Include="Attributes\HaltMethodAttribute.cs" />
@@ -80,6 +81,7 @@
     <Compile Include="ILChunk.cs" />
     <Compile Include="ILCompiler.cs" />
     <Compile Include="ILOpInfo.cs" />
+    <Compile Include="ILOps\Callvirt.cs" />
     <Compile Include="ILOps\Stelem.cs" />
     <Compile Include="ILOps\Ldelem.cs" />
     <Compile Include="ILOps\NewArr.cs" />

@@ -551,7 +551,8 @@ namespace Kernel.Debug.Debugger
         /// </summary>
         public void EndInit()
         {
-            while (sendConnectValue)
+            int tries = 20;
+            while (sendConnectValue && tries-- > 0)
             {
                 TheSerial.Write(0xDEADBEEF);
                 Thread.Sleep(100);

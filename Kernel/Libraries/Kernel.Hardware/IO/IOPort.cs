@@ -7,16 +7,16 @@ using System.Threading.Tasks;
 namespace Kernel.Hardware.IO
 {
     [Compiler.PluggedClass]
-    public class IOPort
+    public class IOPort : FOS_System.Object
     {
         public readonly UInt16 Port;
-        
+
 
         protected internal IOPort(UInt16 aPort)
         {
             Port = aPort;
         }
-        
+
 
         [Compiler.PluggedMethod(ASMFilePath = @"ASM\IO\IOPort\Read")]
         private static byte doRead_Byte(UInt16 port)
@@ -24,17 +24,17 @@ namespace Kernel.Hardware.IO
             return 0;
         }
         [Compiler.PluggedMethod(ASMFilePath = null)]
-        private static byte doRead_UInt16(UInt16 port)
+        private static UInt16 doRead_UInt16(UInt16 port)
         {
             return 0;
         }
         [Compiler.PluggedMethod(ASMFilePath = null)]
-        private static byte doRead_UInt32(UInt16 port)
+        private static UInt32 doRead_UInt32(UInt16 port)
         {
             return 0;
         }
         [Compiler.PluggedMethod(ASMFilePath = null)]
-        private static byte doRead_UInt64(UInt16 port)
+        private static UInt64 doRead_UInt64(UInt16 port)
         {
             return 0;
         }
@@ -74,7 +74,7 @@ namespace Kernel.Hardware.IO
         {
         }
         
-        public void Write(byte aVal)
+        public virtual void Write(byte aVal)
         {
             doWrite(this.Port, aVal);
         }
@@ -89,6 +89,20 @@ namespace Kernel.Hardware.IO
         public void Write(UInt64 aVal)
         {
             doWrite(this.Port, aVal);
+        }
+    }
+
+    public class IOPortRead : IOPort
+    {
+        public IOPortRead()
+            : base(5)
+        {
+        }
+
+        public override void Write(byte aVal)
+        {
+            Kernel.ExceptionMethods.Throw(new FOS_System.Exception("Not implemented exception!"));
+            base.Write(aVal);
         }
     }
 }

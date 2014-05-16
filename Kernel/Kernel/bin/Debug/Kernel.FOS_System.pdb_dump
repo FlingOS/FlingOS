@@ -1692,95 +1692,95 @@ Compiland = Kernel.FOS_System.Type
 
 ** GetLength
 
-	line 26 at [00000BCF][0001:00000BCF], len = 0x1	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.FOS_System\String.cs
-	line 28 at [00000BD0][0001:00000BD0], len = 0x9
-	line 29 at [00000BD9][0001:00000BD9], len = 0x2
+	line 27 at [00000BCF][0001:00000BCF], len = 0x1	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.FOS_System\String.cs
+	line 29 at [00000BD0][0001:00000BD0], len = 0x9
+	line 30 at [00000BD9][0001:00000BD9], len = 0x2
 
 ** GetCharPointer
 
-	line 41 at [00000BDB][0001:00000BDB], len = 0x1	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.FOS_System\String.cs
-	line 43 at [00000BDC][0001:00000BDC], len = 0xE
-	line 44 at [00000BEA][0001:00000BEA], len = 0x2
+	line 42 at [00000BDB][0001:00000BDB], len = 0x1	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.FOS_System\String.cs
+	line 44 at [00000BDC][0001:00000BDC], len = 0xE
+	line 45 at [00000BEA][0001:00000BEA], len = 0x2
 
 ** New
 
-	line 56 at [00000BEC][0001:00000BEC], len = 0x1	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.FOS_System\String.cs
-	line 57 at [00000BED][0001:00000BED], len = 0x8
+	line 57 at [00000BEC][0001:00000BEC], len = 0x1	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.FOS_System\String.cs
+	line 58 at [00000BED][0001:00000BED], len = 0x8
 	line 16707566 at [00000BF5][0001:00000BF5], len = 0x3
-	line 58 at [00000BF8][0001:00000BF8], len = 0x1
-	line 59 at [00000BF9][0001:00000BF9], len = 0x10
-	line 60 at [00000C09][0001:00000C09], len = 0x1
-	line 61 at [00000C0A][0001:00000C0A], len = 0x13
-	line 62 at [00000C1D][0001:00000C1D], len = 0x2
+	line 59 at [00000BF8][0001:00000BF8], len = 0x1
+	line 60 at [00000BF9][0001:00000BF9], len = 0x10
+	line 61 at [00000C09][0001:00000C09], len = 0x1
+	line 62 at [00000C0A][0001:00000C0A], len = 0x13
+	line 63 at [00000C1D][0001:00000C1D], len = 0x2
 
 ** Concat
 
-	line 65 at [00000C1F][0001:00000C1F], len = 0x1	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.FOS_System\String.cs
-	line 66 at [00000C20][0001:00000C20], len = 0x13
-	line 67 at [00000C33][0001:00000C33], len = 0x2
+	line 66 at [00000C1F][0001:00000C1F], len = 0x1	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.FOS_System\String.cs
+	line 67 at [00000C20][0001:00000C20], len = 0x13
+	line 68 at [00000C33][0001:00000C33], len = 0x2
 	line 16707566 at [00000C35][0001:00000C35], len = 0x2
-	line 68 at [00000C37][0001:00000C37], len = 0x1
-	line 69 at [00000C38][0001:00000C38], len = 0xF
-	line 70 at [00000C47][0001:00000C47], len = 0x1
-	line 67 at [00000C48][0001:00000C48], len = 0x4
-	line 67 at [00000C4C][0001:00000C4C], len = 0xA
+	line 69 at [00000C37][0001:00000C37], len = 0x1
+	line 70 at [00000C38][0001:00000C38], len = 0xF
+	line 71 at [00000C47][0001:00000C47], len = 0x1
+	line 68 at [00000C48][0001:00000C48], len = 0x4
+	line 68 at [00000C4C][0001:00000C4C], len = 0xA
 	line 16707566 at [00000C56][0001:00000C56], len = 0x3
-	line 71 at [00000C59][0001:00000C59], len = 0x2
+	line 72 at [00000C59][0001:00000C59], len = 0x2
 	line 16707566 at [00000C5B][0001:00000C5B], len = 0x2
-	line 72 at [00000C5D][0001:00000C5D], len = 0x1
-	line 73 at [00000C5E][0001:00000C5E], len = 0x16
-	line 74 at [00000C74][0001:00000C74], len = 0x1
-	line 71 at [00000C75][0001:00000C75], len = 0x4
-	line 71 at [00000C79][0001:00000C79], len = 0xA
+	line 73 at [00000C5D][0001:00000C5D], len = 0x1
+	line 74 at [00000C5E][0001:00000C5E], len = 0x16
+	line 75 at [00000C74][0001:00000C74], len = 0x1
+	line 72 at [00000C75][0001:00000C75], len = 0x4
+	line 72 at [00000C79][0001:00000C79], len = 0xA
 	line 16707566 at [00000C83][0001:00000C83], len = 0x3
-	line 75 at [00000C86][0001:00000C86], len = 0x4
-	line 76 at [00000C8A][0001:00000C8A], len = 0x2
+	line 76 at [00000C86][0001:00000C86], len = 0x4
+	line 77 at [00000C8A][0001:00000C8A], len = 0x2
 
 ** get_Item
 
-	line 81 at [00000C8C][0001:00000C8C], len = 0x1	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.FOS_System\String.cs
-	line 82 at [00000C8D][0001:00000C8D], len = 0x7
-	line 83 at [00000C94][0001:00000C94], len = 0x5
-	line 84 at [00000C99][0001:00000C99], len = 0xA
-	line 85 at [00000CA3][0001:00000CA3], len = 0x2
+	line 82 at [00000C8C][0001:00000C8C], len = 0x1	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.FOS_System\String.cs
+	line 83 at [00000C8D][0001:00000C8D], len = 0x7
+	line 84 at [00000C94][0001:00000C94], len = 0x5
+	line 85 at [00000C99][0001:00000C99], len = 0xA
+	line 86 at [00000CA3][0001:00000CA3], len = 0x2
 
 ** set_Item
 
-	line 87 at [00000CA5][0001:00000CA5], len = 0x1	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.FOS_System\String.cs
-	line 88 at [00000CA6][0001:00000CA6], len = 0x7
-	line 89 at [00000CAD][0001:00000CAD], len = 0x5
-	line 90 at [00000CB2][0001:00000CB2], len = 0x8
-	line 91 at [00000CBA][0001:00000CBA], len = 0x1
+	line 88 at [00000CA5][0001:00000CA5], len = 0x1	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.FOS_System\String.cs
+	line 89 at [00000CA6][0001:00000CA6], len = 0x7
+	line 90 at [00000CAD][0001:00000CAD], len = 0x5
+	line 91 at [00000CB2][0001:00000CB2], len = 0x8
+	line 92 at [00000CBA][0001:00000CBA], len = 0x1
 
 ** GetCharPointer
 
-	line 96 at [00000CBB][0001:00000CBB], len = 0x1	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.FOS_System\String.cs
-	line 97 at [00000CBC][0001:00000CBC], len = 0xC
-	line 98 at [00000CC8][0001:00000CC8], len = 0x2
+	line 97 at [00000CBB][0001:00000CBB], len = 0x1	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.FOS_System\String.cs
+	line 98 at [00000CBC][0001:00000CBC], len = 0xC
+	line 99 at [00000CC8][0001:00000CC8], len = 0x2
 
 ** op_Implicit
 
-	line 103 at [00000CCA][0001:00000CCA], len = 0x1	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.FOS_System\String.cs
-	line 104 at [00000CCB][0001:00000CCB], len = 0x9
-	line 105 at [00000CD4][0001:00000CD4], len = 0x2
+	line 104 at [00000CCA][0001:00000CCA], len = 0x1	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.FOS_System\String.cs
+	line 105 at [00000CCB][0001:00000CCB], len = 0x9
+	line 106 at [00000CD4][0001:00000CD4], len = 0x2
 
 ** op_Implicit
 
-	line 109 at [00000CD6][0001:00000CD6], len = 0x1	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.FOS_System\String.cs
-	line 110 at [00000CD7][0001:00000CD7], len = 0x9
-	line 111 at [00000CE0][0001:00000CE0], len = 0x2
+	line 110 at [00000CD6][0001:00000CD6], len = 0x1	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.FOS_System\String.cs
+	line 111 at [00000CD7][0001:00000CD7], len = 0x9
+	line 112 at [00000CE0][0001:00000CE0], len = 0x2
 
 ** op_Equality
 
-	line 39 at [00000CE2][0001:00000CE2], len = 0x1	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.FOS_System\Type.cs
-	line 40 at [00000CE3][0001:00000CE3], len = 0x11
-	line 41 at [00000CF4][0001:00000CF4], len = 0x2
+	line 44 at [00000CE2][0001:00000CE2], len = 0x1	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.FOS_System\Type.cs
+	line 45 at [00000CE3][0001:00000CE3], len = 0x11
+	line 46 at [00000CF4][0001:00000CF4], len = 0x2
 
 ** op_Inequality
 
-	line 49 at [00000CF6][0001:00000CF6], len = 0x1	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.FOS_System\Type.cs
-	line 50 at [00000CF7][0001:00000CF7], len = 0x14
-	line 51 at [00000D0B][0001:00000D0B], len = 0x2
+	line 54 at [00000CF6][0001:00000CF6], len = 0x1	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.FOS_System\Type.cs
+	line 55 at [00000CF7][0001:00000CF7], len = 0x14
+	line 56 at [00000D0B][0001:00000D0B], len = 0x2
 
 
 

@@ -10,7 +10,7 @@ namespace Kernel.FOS_System
     /// Represents an object type specification.
     /// </summary>
     [Compiler.TypeClass]
-    public abstract class Type : System.Type
+    public unsafe abstract class Type : System.Type
     {
         /// <summary>
         /// The size of the object in memory.
@@ -28,7 +28,12 @@ namespace Kernel.FOS_System
         /// Whether the type is a value type or not.
         /// </summary>
         public new bool IsValueType;
-        
+
+        /// <summary>
+        /// A pointer to the start of the method table.
+        /// </summary>
+        public byte* MethodTablePtr;
+
         /// <summary>
         /// Compares two types by ID to see if they represent the same type.
         /// </summary>

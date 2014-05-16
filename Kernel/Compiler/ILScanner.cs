@@ -234,8 +234,13 @@ namespace Kernel.Compiler
                         OutputError(ex);
                     }
                 }
-
+                
                 TheScannerState.Finalise();
+
+                foreach (ASMChunk aChunk in TheScannerState.MethodTablesDataBlock)
+                {
+                    ASMChunks.Add(aChunk);
+                }
                 
                 ASMChunk endChunk = new ASMChunk();
                 endChunk.ASM.AppendLine("_end_code:");                
@@ -1571,6 +1576,7 @@ namespace Kernel.Compiler
                 DebugDatabase.SubmitChanges();
 
                 TheScannerState.AddType(TheDBType);
+                TheScannerState.AddTypeMethods(theType);
 
                 if (!theType.AssemblyQualifiedName.Contains("mscorlib"))
                 {
@@ -1581,6 +1587,12 @@ namespace Kernel.Compiler
                 if (typeClassAttr != null)
                 {
                     TheScannerState.TypeClass = theType;
+                }
+
+                StringClassAttribute stringClassAttr = (StringClassAttribute)theType.GetCustomAttribute(typeof(StringClassAttribute));
+                if (stringClassAttr != null)
+                {
+                    TheScannerState.StringClass = theType;
                 }
 
                 return TheDBType;

@@ -163,6 +163,12 @@
             Note: There should only ever be one of these used!
             </summary>
         </member>
+        <member name="T:Kernel.Compiler.StringClassAttribute">
+            <summary>
+            Indicates the class is the kernel's String class. 
+            Note: There should only ever be one of these used!
+            </summary>
+        </member>
         <member name="T:Kernel.Compiler.TypeClassAttribute">
             <summary>
             Indicates the class is the kernel's Type class. 
@@ -875,31 +881,14 @@
             as a debug interrupt e.g. Int3 on x86 architecture
             </example>
         </member>
-        <member name="T:Kernel.Compiler.ILOps.Stelem">
+        <member name="T:Kernel.Compiler.ILOps.Callvirt">
             <summary>
-            Handles the 
-            <see cref="F:System.Reflection.Emit.OpCodes.Stelem"/>, 
-            <see cref="F:System.Reflection.Emit.OpCodes.Stelem_I"/>, 
-            <see cref="F:System.Reflection.Emit.OpCodes.Stelem_I1"/>, 
-            <see cref="F:System.Reflection.Emit.OpCodes.Stelem_I2"/>, 
-            <see cref="F:System.Reflection.Emit.OpCodes.Stelem_I4"/>, 
-            <see cref="F:System.Reflection.Emit.OpCodes.Stelem_I8"/>,
-            <see cref="F:System.Reflection.Emit.OpCodes.Stelem_R4"/>,
-            <see cref="F:System.Reflection.Emit.OpCodes.Stelem_R8"/> and 
-            <see cref="F:System.Reflection.Emit.OpCodes.Stelem_Ref"/> IL ops.
+            Handles the <see cref="F:System.Reflection.Emit.OpCodes.Callvirt"/> IL op.
             </summary>
             <remarks>
-            See MSDN for details of these ops.
+            See MSDN for details of this op.
             </remarks>
-            <seealso cref="F:System.Reflection.Emit.OpCodes.Stelem"/> 
-            <seealso cref="F:System.Reflection.Emit.OpCodes.Stelem_I"/> 
-            <seealso cref="F:System.Reflection.Emit.OpCodes.Stelem_I1"/> 
-            <seealso cref="F:System.Reflection.Emit.OpCodes.Stelem_I2"/> 
-            <seealso cref="F:System.Reflection.Emit.OpCodes.Stelem_I4"/> 
-            <seealso cref="F:System.Reflection.Emit.OpCodes.Stelem_I8"/>
-            <seealso cref="F:System.Reflection.Emit.OpCodes.Stelem_R4"/> 
-            <seealso cref="F:System.Reflection.Emit.OpCodes.Stelem_R8"/> 
-            <seealso cref="F:System.Reflection.Emit.OpCodes.Stelem_Ref"/>
+            <seealso cref="F:System.Reflection.Emit.OpCodes.Callvirt"/>
         </member>
         <member name="T:Kernel.Compiler.ILOps.ILOp">
             <summary>
@@ -1832,6 +1821,32 @@
             <summary> - </summary>
             <remarks></remarks> 
         </member>
+        <member name="T:Kernel.Compiler.ILOps.Stelem">
+            <summary>
+            Handles the 
+            <see cref="F:System.Reflection.Emit.OpCodes.Stelem"/>, 
+            <see cref="F:System.Reflection.Emit.OpCodes.Stelem_I"/>, 
+            <see cref="F:System.Reflection.Emit.OpCodes.Stelem_I1"/>, 
+            <see cref="F:System.Reflection.Emit.OpCodes.Stelem_I2"/>, 
+            <see cref="F:System.Reflection.Emit.OpCodes.Stelem_I4"/>, 
+            <see cref="F:System.Reflection.Emit.OpCodes.Stelem_I8"/>,
+            <see cref="F:System.Reflection.Emit.OpCodes.Stelem_R4"/>,
+            <see cref="F:System.Reflection.Emit.OpCodes.Stelem_R8"/> and 
+            <see cref="F:System.Reflection.Emit.OpCodes.Stelem_Ref"/> IL ops.
+            </summary>
+            <remarks>
+            See MSDN for details of these ops.
+            </remarks>
+            <seealso cref="F:System.Reflection.Emit.OpCodes.Stelem"/> 
+            <seealso cref="F:System.Reflection.Emit.OpCodes.Stelem_I"/> 
+            <seealso cref="F:System.Reflection.Emit.OpCodes.Stelem_I1"/> 
+            <seealso cref="F:System.Reflection.Emit.OpCodes.Stelem_I2"/> 
+            <seealso cref="F:System.Reflection.Emit.OpCodes.Stelem_I4"/> 
+            <seealso cref="F:System.Reflection.Emit.OpCodes.Stelem_I8"/>
+            <seealso cref="F:System.Reflection.Emit.OpCodes.Stelem_R4"/> 
+            <seealso cref="F:System.Reflection.Emit.OpCodes.Stelem_R8"/> 
+            <seealso cref="F:System.Reflection.Emit.OpCodes.Stelem_Ref"/>
+        </member>
         <member name="T:Kernel.Compiler.ILOps.Ldelem">
             <summary>
             Handles the 
@@ -2174,14 +2189,12 @@
         </member>
         <member name="T:Kernel.Compiler.ILOps.Call">
             <summary>
-            Handles the <see cref="F:System.Reflection.Emit.OpCodes.Call"/> and 
-            Handles the <see cref="F:System.Reflection.Emit.OpCodes.Callvirt"/> IL ops.
+            Handles the <see cref="F:System.Reflection.Emit.OpCodes.Call"/> IL op.
             </summary>
             <remarks>
             See MSDN for details of this op.
             </remarks>
             <seealso cref="F:System.Reflection.Emit.OpCodes.Call"/>
-            <seealso cref="F:System.Reflection.Emit.OpCodes.Callvirt"/>
         </member>
         <member name="T:Kernel.Compiler.ILOps.Clt">
             <summary>
@@ -2724,6 +2737,11 @@
             The class to use as the kernel's Type class.
             </summary>
         </member>
+        <member name="F:Kernel.Compiler.ILScannerState.StringClass">
+            <summary>
+            The class to use as the kernel's String class.
+            </summary>
+        </member>
         <member name="F:Kernel.Compiler.ILScannerState.StringLiteralsDataBlock">
             <summary>
             The ASM chunk that contains the String Literals data (hard-coded string values generated by "AString" in C# code.)
@@ -2736,7 +2754,12 @@
         </member>
         <member name="F:Kernel.Compiler.ILScannerState.TypesTableDataBlock">
             <summary>
-            The ASM chunk that contains the Type Table data.
+            The ASM chunk that contains the Types Table data.
+            </summary>
+        </member>
+        <member name="F:Kernel.Compiler.ILScannerState.MethodTablesDataBlock">
+            <summary>
+            The ASM chunk that contains the Methods Table data.
             </summary>
         </member>
         <member name="F:Kernel.Compiler.ILScannerState.CurrentStackFrame">
@@ -2752,6 +2775,11 @@
         <member name="F:Kernel.Compiler.ILScannerState.MethodIDs">
             <summary>
             A dictionary of all the method signatures to method IDs scanned so far.
+            </summary>
+        </member>
+        <member name="F:Kernel.Compiler.ILScannerState.MethodIDValues">
+            <summary>
+            A dictionary of all the method signatures to method ID values scanned so far.
             </summary>
         </member>
         <member name="F:Kernel.Compiler.ILScannerState.StaticFieldIDs">
@@ -2775,6 +2803,13 @@
             </summary>
             <param name="aMethod">The method to get the ID of.</param>
             <returns>The method's ID.</returns>
+        </member>
+        <member name="M:Kernel.Compiler.ILScannerState.GetMethodIDValue(System.Reflection.MethodInfo)">
+            <summary>
+            Gets the specified method's ID Value. If the method has not been scanned already, a new ID Value is created.
+            </summary>
+            <param name="aMethod">The method to get the ID Value of.</param>
+            <returns>The method's ID Value.</returns>
         </member>
         <member name="M:Kernel.Compiler.ILScannerState.GetStaticFieldID(System.Reflection.FieldInfo)">
             <summary>
@@ -2838,6 +2873,19 @@
             </summary>
             <param name="TheDBType">The type to add.</param>
         </member>
+        <member name="M:Kernel.Compiler.ILScannerState.AddTypeMethods(System.Type)">
+            <summary>
+            Adds the methods of the specified type to the type table.
+            </summary>
+            <param name="TheType">The type to process.</param>
+        </member>
+        <member name="M:Kernel.Compiler.ILScannerState.GetInstanceMethods(System.Type)">
+            <summary>
+            Returns all the instance (i.e. non-static) methods (including private methods) of the specified type excluding inherited methods.
+            </summary>
+            <param name="TheType">The type to get methods of.</param>
+            <returns>All the instance methods.</returns>
+        </member>
         <member name="M:Kernel.Compiler.ILScannerState.InitStringLiteralsDataBlock">
             <summary>
             Initialises the string literals data block.
@@ -2855,7 +2903,7 @@
         </member>
         <member name="M:Kernel.Compiler.ILScannerState.FinaliseStaticFieldsDataBlock">
             <summary>
-            Finalises the string literals data block (adds ending labels).
+            Finalises the static fields data block (adds ending labels).
             </summary>
         </member>
         <member name="M:Kernel.Compiler.ILScannerState.InitTypesTablesDataBlock">
@@ -2865,7 +2913,7 @@
         </member>
         <member name="M:Kernel.Compiler.ILScannerState.FinaliseTypesTablesDataBlock">
             <summary>
-            Finalises the string literals data block (adds ending labels).
+            Finalises the types table data block (adds ending labels).
             </summary>
         </member>
         <member name="M:Kernel.Compiler.ILScannerState.Finalise">
@@ -3120,6 +3168,23 @@
             </summary>
             <param name="aMethod">The method to get the signature of.</param>
             <returns>The method's siganture string.</returns>
+        </member>
+        <member name="M:Kernel.Compiler.Utils.GetMethodSignature(System.String,System.String,System.String,System.String[])">
+            <summary>
+            Gets the signature of the specified method using specified method information. A method's signature will (probably) always be unique.
+            </summary>
+            <param name="returnType">The fully qualified name of the type of the return value.</param>
+            <param name="declaringType">The fully qualified name of the type that declares the method.</param>
+            <param name="methodName">The name of the method.</param>
+            <param name="paramTypes">The fully qualified names of the types of the paramters of the method.</param>
+            <returns>The method's siganture string.</returns>
+        </member>
+        <member name="M:Kernel.Compiler.Utils.CreateMethodID(System.String)">
+            <summary>
+            Creates a method ID string (ASM label) from the specified method signature.
+            </summary>
+            <param name="methodSignature">The method signature to use.</param>
+            <returns>The method ID (ASM label).</returns>
         </member>
         <member name="M:Kernel.Compiler.Utils.ReverseMethodSignature(System.String)">
             <summary>
