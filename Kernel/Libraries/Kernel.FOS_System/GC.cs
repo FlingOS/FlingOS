@@ -9,6 +9,11 @@ namespace Kernel.FOS_System
     /// <summary>
     /// The garbage collector.
     /// </summary>
+    /// <remarks>
+    /// Make sure all methods that the GC calls are marked with [Compiler.NoGC] (including
+    /// get-set property methods! Apply the attribute to the get/set keywords not the property
+    /// declaration (/name).
+    /// </remarks>
     [Compiler.PluggedClass]
     public static unsafe class GC
     {
@@ -25,7 +30,7 @@ namespace Kernel.FOS_System
         /// Whether the GC is currently executing. Used to prevent the GC calling itself (or ending up in loops with
         /// called methods re-calling the GC!)
         /// </summary>
-        private static bool InsideGC = false;
+        public static bool InsideGC = false;
 
         public static int numStrings = 0;
 
@@ -71,6 +76,8 @@ namespace Kernel.FOS_System
             
             if((UInt32)newObjPtr == 0)
             {
+                InsideGC = false;
+
                 return null;
             }
 
@@ -135,6 +142,8 @@ namespace Kernel.FOS_System
 
             if ((UInt32)newObjPtr == 0)
             {
+                InsideGC = false;
+
                 return null;
             }
 
@@ -198,6 +207,8 @@ namespace Kernel.FOS_System
 
             if ((UInt32)newObjPtr == 0)
             {
+                InsideGC = false;
+
                 return null;
             }
 
@@ -406,7 +417,10 @@ namespace Kernel.FOS_System
                 return;
             }
 
+            InsideGC = true;
+
             ObjectToCleanup* currObjToCleanupPtr = CleanupList;
+            ObjectToCleanup* prevObjToCleanupPtr = null;
             while (currObjToCleanupPtr != null)
             {
                 GCHeader* objHeaderPtr = currObjToCleanupPtr->objHeaderPtr;
@@ -424,9 +438,12 @@ namespace Kernel.FOS_System
                     NumObjs--;
                 }
 
-                RemoveObjectToCleanup(currObjToCleanupPtr);
+                prevObjToCleanupPtr = currObjToCleanupPtr;
                 currObjToCleanupPtr = currObjToCleanupPtr->prevPtr;
+                RemoveObjectToCleanup(prevObjToCleanupPtr);
             }
+
+            InsideGC = false;
         }
 
         [Compiler.NoDebug]

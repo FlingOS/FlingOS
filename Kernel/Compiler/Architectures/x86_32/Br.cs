@@ -205,6 +205,38 @@ namespace Kernel.Compiler.Architectures.x86_32
                     isNegativeTest = true;
                     break;
 
+                case OpCodes.Bgt:
+                    //See above
+                    ILOffset = Utils.ReadInt32(anILOpInfo.ValueBytes, 0);
+                    //Branch-if-greater-than means we want to do the jump if the operand is greater than
+                    //the other operand
+                    //i.e. A > B
+                    //Set the jump op to jg - Jump if greater than
+                    jumpOp = "jg";
+                    isNegativeTest = true;
+                    break;
+                case OpCodes.Bgt_S:
+                    //See above
+                    ILOffset = (int)(sbyte)anILOpInfo.ValueBytes[0];
+                    //See above
+                    jumpOp = "jg";
+                    isNegativeTest = true;
+                    break;
+                case OpCodes.Bgt_Un:
+                    //See above : This is unsigned variant
+                    ILOffset = Utils.ReadInt32(anILOpInfo.ValueBytes, 0);
+                    //See above
+                    jumpOp = "ja";
+                    isNegativeTest = true;
+                    break;
+                case OpCodes.Bgt_Un_S:
+                    //See above
+                    ILOffset = (int)(sbyte)anILOpInfo.ValueBytes[0];
+                    //See above
+                    jumpOp = "ja";
+                    isNegativeTest = true;
+                    break;
+
             }
 
             if (ILOffset == 0)
@@ -218,10 +250,11 @@ namespace Kernel.Compiler.Architectures.x86_32
                 int startILNum = anILOpInfo.NextPosition;
                 //Add the offset to get the IL op num to jump to
                 int ILNumToGoTo = startILNum + ILOffset;
-                //Find and mark the IL op to jump to as requiring a label.
-                (from ops in aScannerState.CurrentILChunk.ILOpInfos
-                 where (ops.Position == ILNumToGoTo)
-                 select ops).First().ASMInsertLabel = true;
+                
+                ////Find and mark the IL op to jump to as requiring a label.
+                //(from ops in aScannerState.CurrentILChunk.ILOpInfos
+                // where (ops.Position == ILNumToGoTo)
+                // select ops).First().ASMInsertLabel = true;
 
                 //Pre-work out the asm label for jumping to
                 string jumpToLabel = string.Format("{0}.IL_{1}_0", 
@@ -304,7 +337,8 @@ namespace Kernel.Compiler.Architectures.x86_32
                 else if (jumpOp == "je" || jumpOp == "jne" ||
                          jumpOp == "jge" || jumpOp == "jae" ||
                          jumpOp == "jle" || jumpOp == "jbe" ||
-                         jumpOp == "jl" || jumpOp == "jb")
+                         jumpOp == "jl" || jumpOp == "jb" ||
+                         jumpOp == "jg" || jumpOp == "ja")
                 {
                     //Pop from our stack the test items to use in the condition
                     StackItem itemB = aScannerState.CurrentStackFrame.Stack.Pop();
@@ -339,6 +373,9 @@ namespace Kernel.Compiler.Architectures.x86_32
                             result.AppendLine("cmp eax, ebx");
                             //Do the specified jump
                             result.AppendLine(string.Format("{0} {1}", jumpOp, jumpToLabel));
+
+                            //Insert the end label to be jumped to if condition is not met (see above)
+                            result.AppendLine(string.Format("{0}:", endLabelName));
                         }
                         else
                         {

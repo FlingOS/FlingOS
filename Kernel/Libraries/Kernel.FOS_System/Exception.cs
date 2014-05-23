@@ -14,7 +14,7 @@ namespace Kernel.FOS_System
         /// <summary>
         /// The exception message.
         /// </summary>
-        public string Message;
+        public FOS_System.String Message;
 
         /// <summary>
         /// Creates a new, empty exception.
@@ -27,7 +27,7 @@ namespace Kernel.FOS_System
         /// Creates a new exception with specified message.
         /// </summary>
         /// <param name="aMessage">The exception message.</param>
-        public Exception(string aMessage)
+        public Exception(FOS_System.String aMessage)
             : base()
         {
             Message = aMessage;

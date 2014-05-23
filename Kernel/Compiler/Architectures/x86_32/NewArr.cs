@@ -72,9 +72,7 @@ namespace Kernel.Compiler.Architectures.x86_32
             result.AppendLine(string.Format("call {0}", aScannerState.GetMethodID(aScannerState.HaltMethod)));
             //Insert the not null label
             result.AppendLine(NotNullLabel + ":");
-
-            result.AppendLine("int3");
-            
+                        
             //Call the array constructor
             //This involves:
             // - (Length arg already on the stack)

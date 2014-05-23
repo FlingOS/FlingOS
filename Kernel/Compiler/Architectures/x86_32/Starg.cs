@@ -51,18 +51,22 @@ namespace Kernel.Compiler.Architectures.x86_32
             //Used to store the number of bytes to subtract from EBP to get to the arg
             int BytesOffsetFromEBP = 0;
             //Get all the params for the current method
-            ParameterInfo[] allParams = aScannerState.CurrentILChunk.Method.GetParameters();
+            List<Type> allParams = aScannerState.CurrentILChunk.Method.GetParameters().Select(x => x.ParameterType).ToList();
+            if (!aScannerState.CurrentILChunk.Method.IsStatic)
+            {
+                allParams.Insert(0, aScannerState.CurrentILChunk.Method.DeclaringType);
+            }
             //Check whether the arg we are going to load is float or not
-            if (Utils.IsFloat(allParams[index].ParameterType))
+            if (Utils.IsFloat(allParams[index]))
             {
                 //SUPPORT - floats
                 throw new NotSupportedException("Float arguments not supported yet!");
             }
             //For all the parameters pushed on the stack after the param we want
-            for (int i = allParams.Length - 1; i > -1 && i > index; i--)
+            for (int i = allParams.Count - 1; i > -1 && i > index; i--)
             {
                 //Add the param stack size to the EBP offset
-                BytesOffsetFromEBP += Utils.GetNumBytesForType(allParams[i].ParameterType);
+                BytesOffsetFromEBP += Utils.GetNumBytesForType(allParams[i]);
             }
 
             //Add 8 for return address and value of EBP (both pushed at start of method call)
@@ -78,7 +82,7 @@ namespace Kernel.Compiler.Architectures.x86_32
             BytesOffsetFromEBP += retSize;
         
             //Pop the argument value from the stack
-            int bytesForArg = Utils.GetNumBytesForType(allParams[index].ParameterType);
+            int bytesForArg = Utils.GetNumBytesForType(allParams[index]);
             if(bytesForArg == 4)
             {
                 result.AppendLine(string.Format("pop dword [ebp+{0}]", BytesOffsetFromEBP));

@@ -862,11 +862,6 @@
             The ASM (text) index where the ASM for this ILOp ends.
             </summary>
         </member>
-        <member name="F:Kernel.Compiler.ILOpInfo.ASMInsertLabel">
-            <summary>
-            Whether the ILScanner should insert a label for this ILOp.
-            </summary>
-        </member>
         <member name="F:Kernel.Compiler.ILOpInfo.DBILOpInfo">
             <summary>
             The debug database record asscoiated with this IL op.
@@ -1821,6 +1816,47 @@
             <summary> - </summary>
             <remarks></remarks> 
         </member>
+        <member name="T:Kernel.Compiler.ILOps.Ldlen">
+            <summary>
+            Handles the <see cref="F:System.Reflection.Emit.OpCodes.Ldlen"/> IL op.
+            </summary>
+            <remarks>
+            See MSDN for details of these ops.
+            </remarks>
+            <seealso cref="F:System.Reflection.Emit.OpCodes.Ldlen"/>
+        </member>
+        <member name="T:Kernel.Compiler.ILOps.Rem">
+            <summary>
+            Handles the <see cref="F:System.Reflection.Emit.OpCodes.Rem"/> and
+            <see cref="F:System.Reflection.Emit.OpCodes.Rem_Un"/> 
+            IL ops.
+            </summary>
+            <remarks>
+            See MSDN for details of these ops.
+            </remarks>
+            <seealso cref="F:System.Reflection.Emit.OpCodes.Rem"/>
+            <seealso cref="!:System.Reflection.Emit.OpCodes.Re,_Un"/>
+        </member>
+        <member name="T:Kernel.Compiler.ILOps.Not">
+            <summary>
+            Handles the <see cref="F:System.Reflection.Emit.OpCodes.Not"/> 
+            IL op.
+            </summary>
+            <remarks>
+            See MSDN for details of these ops.
+            </remarks>
+            <seealso cref="F:System.Reflection.Emit.OpCodes.Not"/>
+        </member>
+        <member name="T:Kernel.Compiler.ILOps.Switch">
+            <summary>
+            Handles the <see cref="F:System.Reflection.Emit.OpCodes.Switch"/> 
+            IL op.
+            </summary>
+            <remarks>
+            See MSDN for details of these ops.
+            </remarks>
+            <seealso cref="F:System.Reflection.Emit.OpCodes.Switch"/>
+        </member>
         <member name="T:Kernel.Compiler.ILOps.Stelem">
             <summary>
             Handles the 
@@ -1904,12 +1940,13 @@
         </member>
         <member name="T:Kernel.Compiler.ILOps.Shr">
             <summary>
-            Handles the <see cref="F:System.Reflection.Emit.OpCodes.Shr_Un"/> 
-            IL op.
+            Handles the <see cref="F:System.Reflection.Emit.OpCodes.Shr"/> and 
+            <see cref="F:System.Reflection.Emit.OpCodes.Shr_Un"/> IL ops.
             </summary>
             <remarks>
             See MSDN for details of these ops.
             </remarks>
+            <seealso cref="F:System.Reflection.Emit.OpCodes.Shr"/>
             <seealso cref="F:System.Reflection.Emit.OpCodes.Shr_Un"/>
         </member>
         <member name="T:Kernel.Compiler.ILOps.Newobj">
@@ -2150,7 +2187,11 @@
             <see cref="F:System.Reflection.Emit.OpCodes.Bge"/>, 
             <see cref="F:System.Reflection.Emit.OpCodes.Bge_S"/>, 
             <see cref="F:System.Reflection.Emit.OpCodes.Bge_Un"/>, 
-            <see cref="F:System.Reflection.Emit.OpCodes.Bge_Un_S"/>, 
+            <see cref="F:System.Reflection.Emit.OpCodes.Bge_Un_S"/>,
+            <see cref="F:System.Reflection.Emit.OpCodes.Bgt"/>, 
+            <see cref="F:System.Reflection.Emit.OpCodes.Bgt_S"/>,
+            <see cref="F:System.Reflection.Emit.OpCodes.Bgt_Un"/>, 
+            <see cref="F:System.Reflection.Emit.OpCodes.Bgt_Un_S"/>, 
             <see cref="F:System.Reflection.Emit.OpCodes.Ble"/>, 
             <see cref="F:System.Reflection.Emit.OpCodes.Ble_S"/>, 
             <see cref="F:System.Reflection.Emit.OpCodes.Ble_Un"/>, 
@@ -2178,6 +2219,10 @@
             <seealso cref="F:System.Reflection.Emit.OpCodes.Bge_S"/>
             <seealso cref="F:System.Reflection.Emit.OpCodes.Bge_Un"/>
             <seealso cref="F:System.Reflection.Emit.OpCodes.Bge_Un_S"/>
+            <seealso cref="F:System.Reflection.Emit.OpCodes.Bgt"/>
+            <seealso cref="F:System.Reflection.Emit.OpCodes.Bgt_S"/>
+            <seealso cref="F:System.Reflection.Emit.OpCodes.Bgt_Un"/>
+            <seealso cref="F:System.Reflection.Emit.OpCodes.Bgt_Un_S"/>
             <seealso cref="F:System.Reflection.Emit.OpCodes.Ble"/>
             <seealso cref="F:System.Reflection.Emit.OpCodes.Ble_S"/>
             <seealso cref="F:System.Reflection.Emit.OpCodes.Ble_Un"/>
@@ -2566,6 +2611,11 @@
             A cache of the target architecture's custom IL op for inserting ASM to switch stack items.
             </summary>
         </member>
+        <member name="F:Kernel.Compiler.ILScanner.AllTypes">
+            <summary>
+            All the types passed from the assembly manager.
+            </summary>
+        </member>
         <member name="F:Kernel.Compiler.ILScanner.ASMChunks">
             <summary>
             The resulting list of ASM chunks.
@@ -2652,6 +2702,11 @@
         <member name="F:Kernel.Compiler.ILScanner.ProcessedTypes">
             <summary>
             All of the types processed by the IL Scanner.
+            </summary>
+        </member>
+        <member name="F:Kernel.Compiler.ILScanner.ProcessingTypes">
+            <summary>
+            All of the types currently being processed by the IL Scanner.
             </summary>
         </member>
         <member name="M:Kernel.Compiler.ILScanner.ProcessType(System.Type)">

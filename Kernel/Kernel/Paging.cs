@@ -11,6 +11,7 @@ namespace Kernel
     {
         static bool LoadedPaging = false;
 
+        [Compiler.NoDebug]
         public static void Init()
         {
             LoadPaging();
@@ -83,7 +84,10 @@ namespace Kernel
 
             if (endPDIndex != startPDIndex)
             {
-                BasicConsole.WriteLine("Unable to set up paging! endPDIndex != startPDIndex");
+                ExceptionMethods.Throw(new FOS_System.Exception(
+                    ((FOS_System.String)"Unable to set up paging! endPDIndex != startPDIndex : ") +
+                    startPDIndex + ", " + endPDIndex
+                    ));
             }
             else
             {

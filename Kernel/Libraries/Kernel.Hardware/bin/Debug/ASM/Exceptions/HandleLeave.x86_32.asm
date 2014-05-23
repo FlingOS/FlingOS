@@ -19,7 +19,7 @@
 ; 4. Return control to Finally Handler Address
 
 ; So, overall we:
-; 0. If current exception exists, decrement exception ref count and clear current exception
+; 0. If catch handler, and if current exception exists, decrement exception ref count and clear current exception
 ; 1. Temporaily store Continue Address (in edx)
 ; 2. Restore EBP and ESP to current handler places
 ; 3. Check if handler is a finally handler (Filter Address == 0? Then it is try-finally)
@@ -29,7 +29,17 @@
 
 
 
-; 0. If current exception exists, decrement exception ref count and clear current exception
+; 0. If catch handler, and if current exception exists, decrement exception ref count and clear current exception
+; Check if handler is a finally handler 
+; Load current handler ptr into eax
+mov dword eax, [staticfield_Kernel_ExceptionHandlerInfo__Kernel_ExceptionMethods_CurrentHandlerPtr]
+; Load Filter Address of current handler into ebx
+mov dword ebx, [eax+12]
+; Check to see if filter address == 0 i.e. if it is finally handler
+cmp ebx, 0
+jz method_System_Void_RETEND_Kernel_ExceptionMethods_DECLEND_HandleLeave_NAMEEND__System_Void__IsFinallyHandler1
+; If we get to here, it is a catch handler
+
 mov dword eax, [staticfield_Kernel_FOS_System_Exception_Kernel_ExceptionMethods_CurrentException]
 cmp eax, 0
 jz method_System_Void_RETEND_Kernel_ExceptionMethods_DECLEND_HandleLeave_NAMEEND__System_Void__.NoCurrentException
@@ -41,6 +51,8 @@ mov dword [staticfield_Kernel_FOS_System_Exception_Kernel_ExceptionMethods_Curre
 
 method_System_Void_RETEND_Kernel_ExceptionMethods_DECLEND_HandleLeave_NAMEEND__System_Void__.NoCurrentException:
 
+
+method_System_Void_RETEND_Kernel_ExceptionMethods_DECLEND_HandleLeave_NAMEEND__System_Void__IsFinallyHandler1:
 
 ; Load address of current handler into eax
 ; Current Handler points to last element in structure (i.e. "ESP")
@@ -78,7 +90,7 @@ mov dword esp, ebx
 mov dword ebx, [eax+12]
 ; Check to see if filter address == 0 i.e. if it is finally handler
 cmp ebx, 0
-jnz method_System_Void_RETEND_Kernel_ExceptionMethods_DECLEND_HandleLeave_NAMEEND__System_Void__NotFinallyHandler
+jnz method_System_Void_RETEND_Kernel_ExceptionMethods_DECLEND_HandleLeave_NAMEEND__System_Void__NotFinallyHandler1
 ; If we get to here, it is a finally handler
 
 ; 3.1. If it is, set continue address to handler address
@@ -91,7 +103,7 @@ mov dword [eax+20], 1
 jmp method_System_Void_RETEND_Kernel_ExceptionMethods_DECLEND_HandleLeave_NAMEEND__System_Void__Common
 
 ; 3.2. Else, set current exception handler to previous handler
-method_System_Void_RETEND_Kernel_ExceptionMethods_DECLEND_HandleLeave_NAMEEND__System_Void__NotFinallyHandler:
+method_System_Void_RETEND_Kernel_ExceptionMethods_DECLEND_HandleLeave_NAMEEND__System_Void__NotFinallyHandler1:
 ; If we get to here, it is not a finally handler
 ; Load previous handler address
 mov dword ebx, [eax+16]

@@ -134,6 +134,7 @@ namespace Kernel
             if(offset + strLength > maxOffset)
             {
                 int amountToShift = (offset + strLength) - maxOffset;
+                amountToShift = amountToShift + (80 - (amountToShift % 80));
                 offset -= amountToShift;
 
                 char* vidMemPtr_Old = vidMemBasePtr;
@@ -190,7 +191,7 @@ namespace Kernel
             }
             
             Write(str);
-
+            
             int diff = offset;
             while(diff > cols)
             {
@@ -236,6 +237,17 @@ namespace Kernel
                 strPtr++;
                 vidMemPtr++;
                 strLength--;
+            }
+        }
+
+        /// <summary>
+        /// Synchronous processing delay.
+        /// </summary>
+        public static void DelayOutput()
+        {
+            for (int i = 0; i < 10000000; i++)
+            {
+                ;
             }
         }
     }

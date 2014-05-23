@@ -121,7 +121,7 @@ namespace Kernel.Compiler.Architectures.x86_32
             // 0. Index of element to get as Int32 (dword)
             // 1. Array object reference as address (dword)
 
-            string ContinueExecutionLabelBase = string.Format("{0}.IL_{1}_ContinueExecution",
+            string ContinueExecutionLabelBase = string.Format("{0}.IL_{1}_Load_ContinueExecution",
                     aScannerState.GetMethodID(aScannerState.CurrentILChunk.Method),
                     anILOpInfo.Position);
             DB_Type arrayDBType = DebugDatabase.GetType(aScannerState.GetTypeID(aScannerState.ArrayConstructorMethod.DeclaringType));
@@ -150,9 +150,8 @@ namespace Kernel.Compiler.Architectures.x86_32
             //      2.4. If the same, jump to continue execution further down
             //      2.5. Otherwise, call Exceptions.ThrowArrayTypeMismatchException
 
-            result.AppendLine("int3");
-            string ContinueExecutionLabel2 = ContinueExecutionLabelBase + "2";
-            //      2.1. Move element type ref into eax
+            //string ContinueExecutionLabel2 = ContinueExecutionLabelBase + "2";
+            ////      2.1. Move element type ref into eax
             int elemTypeOffset = 0;
             #region Offset calculation
             {
@@ -170,23 +169,23 @@ namespace Kernel.Compiler.Architectures.x86_32
                 elemTypeOffset = allChildLinks.Sum(x => x.ChildType.StackBytesSize);
             }
             #endregion
-            if (elementType != null)
-            {
-                result.AppendLine(string.Format("mov eax, {0}", aScannerState.GetTypeIdString(aScannerState.GetTypeID(elementType))));
-                //      2.2. Move element type ref from array object into ebx
-                //              - Calculate the offset of the field from the start of the array object
-                //              - Move array ref into ebx
-                result.AppendLine("mov ebx, [esp+4]");
-                //              - Move elemType ref ([ebx+offset]) into ebx
-                result.AppendLine(string.Format("mov ebx, [ebx+{0}]", elemTypeOffset));
-                //      2.3. Compare eax to ebx
-                result.AppendLine("cmp eax, ebx");
-                //      2.4. If the same, jump to continue execution further down
-                result.AppendLine("je " + ContinueExecutionLabel2);
-                //      2.5. Otherwise, call Exceptions.ThrowArrayTypeMismatchException
-                result.AppendLine(string.Format("call {0}", aScannerState.GetMethodID(aScannerState.ThrowArrayTypeMismatchExceptionMethod)));
-                result.AppendLine(ContinueExecutionLabel2 + ":");
-            }
+            //if (elementType != null)
+            //{
+            //    result.AppendLine(string.Format("mov eax, {0}", aScannerState.GetTypeIdString(aScannerState.GetTypeID(elementType))));
+            //    //      2.2. Move element type ref from array object into ebx
+            //    //              - Calculate the offset of the field from the start of the array object
+            //    //              - Move array ref into ebx
+            //    result.AppendLine("mov ebx, [esp+4]");
+            //    //              - Move elemType ref ([ebx+offset]) into ebx
+            //    result.AppendLine(string.Format("mov ebx, [ebx+{0}]", elemTypeOffset));
+            //    //      2.3. Compare eax to ebx
+            //    result.AppendLine("cmp eax, ebx");
+            //    //      2.4. If the same, jump to continue execution further down
+            //    result.AppendLine("je " + ContinueExecutionLabel2);
+            //    //      2.5. Otherwise, call Exceptions.ThrowArrayTypeMismatchException
+            //    result.AppendLine(string.Format("call {0}", aScannerState.GetMethodID(aScannerState.ThrowArrayTypeMismatchExceptionMethod)));
+            //    result.AppendLine(ContinueExecutionLabel2 + ":");
+            //}
 
             // 3. Check index to get is > -1 and < array length
             //      3.1. Move index into eax
@@ -342,7 +341,7 @@ namespace Kernel.Compiler.Architectures.x86_32
             //      5.3. Push element onto our stack
             aScannerState.CurrentStackFrame.Stack.Push(new StackItem()
             {
-                sizeOnStackInBytes = sizeToPush,
+                sizeOnStackInBytes = sizeToPush > 4 ? 8 : 4,
                 isFloat = isFloat,
                 isNewGCObject = false
             });

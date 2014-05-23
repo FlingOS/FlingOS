@@ -67,10 +67,10 @@ namespace Kernel.Compiler
         /// The ASM (text) index where the ASM for this ILOp ends.
         /// </summary>
         public int ASMEndPos = -1;
-        /// <summary>
-        /// Whether the ILScanner should insert a label for this ILOp.
-        /// </summary>
-        public bool ASMInsertLabel = false;
+        ///// <summary>
+        ///// Whether the ILScanner should insert a label for this ILOp.
+        ///// </summary>
+        //public bool ASMInsertLabel = false;
 
         /// <summary>
         /// The debug database record asscoiated with this IL op.

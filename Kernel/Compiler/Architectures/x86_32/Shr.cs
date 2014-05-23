@@ -64,12 +64,36 @@ namespace Kernel.Compiler.Architectures.x86_32
                         sizeOnStackInBytes = 4
                     });
                 }
-                else if ((itemA.sizeOnStackInBytes == 8 &&
-                    itemB.sizeOnStackInBytes == 4) ||
-                    (itemA.sizeOnStackInBytes == 4 &&
+                else if ((itemA.sizeOnStackInBytes == 4 &&
                     itemB.sizeOnStackInBytes == 8))
                 {
-                    throw new InvalidOperationException("Invalid stack operand sizes! They should be the same size.");
+                    throw new InvalidOperationException("Invalid stack operand sizes! 4,8 not supported.");
+                }
+                else if ((itemA.sizeOnStackInBytes == 8 &&
+                    itemB.sizeOnStackInBytes == 4))
+                {
+                    if ((OpCodes)anILOpInfo.opCode.Value != OpCodes.Shr_Un)
+                    {
+                        throw new InvalidOperationException("Invalid stack operand sizes! 8,4 not supported for signed shift.");
+                    }
+
+                    //Pop item B
+                    result.AppendLine("pop dword ecx");
+                    //Pop item A (8 bytes)
+                    result.AppendLine("pop dword eax");
+                    result.AppendLine("pop dword edx");
+                    //Shrd
+                    result.AppendLine("shrd eax, edx, cl");
+                    result.AppendLine("shr edx, cl");
+                    //Push result
+                    result.AppendLine("push dword edx");
+                    result.AppendLine("push dword eax");
+
+                    aScannerState.CurrentStackFrame.Stack.Push(new StackItem()
+                    {
+                        isFloat = false,
+                        sizeOnStackInBytes = 8
+                    });
                 }
                 else if (itemA.sizeOnStackInBytes == 8 &&
                     itemB.sizeOnStackInBytes == 8)

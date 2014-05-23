@@ -1,4 +1,6 @@
 ﻿using Kernel.FOS_System;
+using Kernel.FOS_System.Collections;
+using Kernel.FOS_System.IO;
 using System;
 
 namespace Kernel
@@ -12,6 +14,7 @@ namespace Kernel
         /// <summary>
         /// Initialises static stuff within the kernel (such as calling GC.Init and BasicDebug.Init)
         /// </summary>
+        [Compiler.NoDebug]
         static Kernel()
         {
             BasicConsole.Init();
@@ -36,6 +39,7 @@ namespace Kernel
         /// </summary>
         [Compiler.KernelMainMethod]
         [Compiler.NoGC]
+        [Compiler.NoDebug]
         static unsafe void Main()
         {
             //Necessary for exception handling stuff to work
@@ -50,8 +54,6 @@ namespace Kernel
                 Paging.Init();
                 
                 ManagedMain();
-
-                FOS_System.GC.Cleanup();
             }
             catch
             {
@@ -63,41 +65,18 @@ namespace Kernel
                 }
                 else
                 {
-                    BasicConsole.WriteLine("Unhandled exception caught in Main()!");
+                    BasicConsole.WriteLine("Startup error! " + ExceptionMethods.CurrentException.Message);
                 }
                 BasicConsole.WriteLine("Fling OS forced to halt!");
                 BasicConsole.SetTextColour(BasicConsole.default_colour);
             }
 
+            BasicConsole.WriteLine("Cleaning up...");
+            FOS_System.GC.Cleanup();
+
             BasicConsole.SetTextColour(BasicConsole.error_colour);
-            if (FOS_System.GC.NumObjs > 3)
-            {
-                BasicConsole.WriteLine("Num Objs > 3");
-            } 
-            else if (FOS_System.GC.NumObjs > 2)
-            {
-                BasicConsole.WriteLine("Num Objs > 2");
-            }
-            else if (FOS_System.GC.NumObjs > 1)
-            {
-                BasicConsole.WriteLine("Num Objs > 1");
-            }
-            else if (FOS_System.GC.NumObjs > 0)
-            {
-                BasicConsole.WriteLine("Num Objs > 0");
-            }
-            else if (FOS_System.GC.NumObjs < 0)
-            {
-                BasicConsole.WriteLine("Num Objs < 0");
-            }
-            if (FOS_System.GC.numStrings > 0)
-            {
-                BasicConsole.WriteLine("Num strings > 0");
-            }
-            else if (FOS_System.GC.numStrings < 0)
-            {
-                BasicConsole.WriteLine("Num strings < 0");
-            }
+            BasicConsole.WriteLine(FOS_System.GC.NumObjs);
+            BasicConsole.WriteLine(FOS_System.GC.numStrings);
             BasicConsole.SetTextColour(BasicConsole.default_colour);
 
             BasicConsole.WriteLine("Fling OS Ended.");
@@ -117,49 +96,414 @@ namespace Kernel
         [Compiler.NoGC]
         public static void Halt()
         {
+            if(ExceptionMethods.CurrentException != null)
+            {
+                BasicConsole.WriteLine(ExceptionMethods.CurrentException.Message);
+            }
+
             BasicConsole.SetTextColour(BasicConsole.error_colour);
             BasicConsole.WriteLine("Kernel halting!");
             BasicConsole.SetTextColour(BasicConsole.default_colour);
             PreReqs.Reset();
         }
 
+        private static Hardware.Devices.DiskDevice disk0;
         /// <summary>
         /// The actual main method for the kernel - by this point, all memory management, exception handling 
         /// etc has been set up properly.
         /// </summary>
+        //[Compiler.NoDebug]
         private static void ManagedMain()
         {
             try
             {
-                StringConcatTest();
-                ObjectArrayTest();
-                IntArrayTest();
-                DummyObjectTest();
-                DivideByZeroTest();
+                //StringConcatTest();
+                //ObjectArrayTest();
+                //IntArrayTest();
+                //DummyObjectTest();
+                //DivideByZeroTest();
 
-                EmptyTest();
+                //ExceptionsTestP1();
+
+                InitATA();
+                //InitPCI();
+                InitFileSystem();
+
+                OutputFileSystemsInfo();
+                
+                FOS_System.GC.Cleanup();
+
+                BasicConsole.DelayOutput();
+                BasicConsole.DelayOutput();
+                BasicConsole.DelayOutput();
+
+                FileSystemMapping A_FSMapping = FileSystemManager.GetMapping("A:/");
+                FOS_System.IO.FAT.FATFileSystem A_FS = (FOS_System.IO.FAT.FATFileSystem)A_FSMapping.TheFileSystem;
+
+                Directory P1D2Dir = Directory.Find("A:/P1D2");
+                if (P1D2Dir == null)
+                {
+                    BasicConsole.WriteLine("Creating P1D2 directory...");
+                    P1D2Dir = A_FS.NewDirectory("P1D2", A_FS.RootDirectory_FAT32);
+                }
+                else
+                {
+                    BasicConsole.WriteLine("Found P1D2 directory.");
+                }
+
+                File longNameTestFile = File.Open("A:/P1D2/LongNameTest.txt");
+                if (longNameTestFile == null)
+                {
+                    BasicConsole.WriteLine("Creating LongNameTest.txt file...");
+                    longNameTestFile = P1D2Dir.TheFileSystem.NewFile("LongNameTest.txt", P1D2Dir);
+                }
+                else
+                {
+                    BasicConsole.WriteLine("Found LongNameTest.txt file.");
+                }
+
+                File shortNameTestFile = File.Open("A:/P1D2/ShrtTest.txt");
+                if (shortNameTestFile == null)
+                {
+                    BasicConsole.WriteLine("Creating ShrtTest.txt file...");
+                    shortNameTestFile = P1D2Dir.TheFileSystem.NewFile("ShrtTest.txt", P1D2Dir);
+                }
+                else
+                {
+                    BasicConsole.WriteLine("Found ShrtTest.txt file.");
+                }
+
+                if (longNameTestFile != null)
+                {
+                    BasicConsole.WriteLine("Opening stream...");
+                    FOS_System.IO.Streams.FileStream fileStream = longNameTestFile.GetStream();
+
+                    FOS_System.String testStr = "This is some test file contents.";
+                    byte[] testStrBytes = ByteConverter.GetASCIIBytes(testStr);
+
+                    BasicConsole.WriteLine("Writing data...");
+                    fileStream.Position = 0;
+                    int size = 0;
+                    //for (int i = 0; i < 20; i++)
+                    {
+                        fileStream.Write(testStrBytes, 0, testStrBytes.Length);
+                        size += testStrBytes.Length;
+                    }
+
+                    BasicConsole.WriteLine("Reading data...");
+                    fileStream.Position = 0;
+                    byte[] readBytes = new byte[size];
+                    fileStream.Read(readBytes, 0, readBytes.Length);
+                    FOS_System.String readStr = ByteConverter.GetAsciiString(readBytes, 0u, (uint)readBytes.Length);
+                    BasicConsole.WriteLine("\"" + readStr + "\"");
+
+                    OutputDivider();
+                }
+                else
+                {
+                    BasicConsole.WriteLine("LongNameTest.txt file not found.");
+                }
+
+                if (shortNameTestFile != null)
+                {
+                    BasicConsole.WriteLine("Opening stream...");
+                    FOS_System.IO.Streams.FileStream fileStream = shortNameTestFile.GetStream();
+
+                    FOS_System.String testStr = "This is some test file contents.";
+                    byte[] testStrBytes = ByteConverter.GetASCIIBytes(testStr);
+
+                    BasicConsole.WriteLine("Writing data...");
+                    fileStream.Position = 0;
+                    int size = 0;
+                    //for (int i = 0; i < 20; i++)
+                    {
+                        fileStream.Write(testStrBytes, 0, testStrBytes.Length);
+                        size += testStrBytes.Length;
+                    }
+
+                    BasicConsole.WriteLine("Reading data...");
+                    fileStream.Position = 0;
+                    byte[] readBytes = new byte[size];
+                    fileStream.Read(readBytes, 0, readBytes.Length);
+                    FOS_System.String readStr = ByteConverter.GetAsciiString(readBytes, 0u, (uint)readBytes.Length);
+                    BasicConsole.WriteLine("\"" + readStr + "\"");
+
+                    OutputDivider();
+                }
+                else
+                {
+                    BasicConsole.WriteLine("ShortNameTest.txt file not found.");
+                }
             }
             catch
             {
                 BasicConsole.SetTextColour(BasicConsole.warning_colour);
                 BasicConsole.WriteLine(ExceptionMethods.CurrentException.Message);
+                
+                FOS_System.Type currExceptionType = ExceptionMethods.CurrentException._Type;
+                if (currExceptionType == (FOS_System.Type)typeof(FOS_System.Exceptions.ArgumentException))
+                {
+                    BasicConsole.WriteLine(((FOS_System.Exceptions.ArgumentException)ExceptionMethods.CurrentException).ExtendedMessage);
+                }
+                
                 BasicConsole.SetTextColour(BasicConsole.default_colour);
             }
 
-            BasicConsole.WriteLine("End of managed main!");
+            BasicConsole.WriteLine();
+            OutputDivider();
+            BasicConsole.WriteLine();
+            BasicConsole.WriteLine("End of managed main.");
         }
 
-        private static void EmptyTest()
+        /// <summary>
+        /// Tests the exception handling sub-system.
+        /// </summary>
+        /// <remarks>
+        /// If the mechanism appears to work but code in Main() stops working then
+        /// it is because one of the GC methods is calling a method / get-set property
+        /// that is not marked with [Comnpiler.NoGC]. Make sure all methods that the 
+        /// GC calls are marked with [Compiler.NoGC] attribute. See example.
+        /// </remarks>
+        /// <example>
+        /// public int x
+        /// {
+        ///     [Compiler.NoGC]
+        ///     get
+        ///     {
+        ///         return 0;
+        ///     }
+        /// }
+        /// </example>
+        private static void ExceptionsTestP1()
         {
+            ExceptionsTestP2();
+        }
+        /// <summary>
+        /// Secondary method used in testing the exception handling sub-system.
+        /// </summary>
+        private static void ExceptionsTestP2()
+        {
+            FOS_System.Object obj = new FOS_System.Object();
+
             try
             {
+                ExceptionMethods.Throw(new FOS_System.Exception("An exception."));
             }
-            catch
+            finally
             {
+                BasicConsole.WriteLine("Finally ran.");
             }
-            BasicConsole.WriteLine("Empty test end.");
         }
 
+        /// <summary>
+        /// Initialises PCI sub-system.
+        /// </summary>
+        private static void InitPCI()
+        {
+            BasicConsole.WriteLine("Initialising PCI...");
+            Hardware.PCI.PCI.Init();
+            BasicConsole.WriteLine(((FOS_System.String)"PCI initialised. Devices: ") + Hardware.PCI.PCI.NumDevices);
+            OutputDivider();
+        }
+        /// <summary>
+        /// Intialises the ATA sub-system.
+        /// </summary>
+        private static void InitATA()
+        {
+            BasicConsole.WriteLine();
+            OutputDivider();
+            BasicConsole.WriteLine("Initiailsing ATA...");
+            Hardware.ATA.ATAManager.Init();
+            BasicConsole.WriteLine(((FOS_System.String)"ATA initialised. Devices: ") + Hardware.DeviceManager.Devices.Count);
+            OutputDivider();
+
+            disk0 = (Hardware.Devices.DiskDevice)Hardware.DeviceManager.Devices[0];
+        }
+        /// <summary>
+        /// Initialises the file-system.
+        /// </summary>
+        private static void InitFileSystem()
+        {
+            BasicConsole.WriteLine("Initialising file system...");
+            FOS_System.IO.FileSystemManager.Init();
+            BasicConsole.WriteLine(((FOS_System.String)"File system initialised. Mappings: ") + FOS_System.IO.FileSystemManager.FileSystemMappings.Count);
+            OutputDivider();
+        }
+
+        /// <summary>
+        /// Outputs file systems info (including listings for the A:/ drive)
+        /// </summary>
+        private static void OutputFileSystemsInfo()
+        {
+            for (int i = 0; i < FileSystemManager.FileSystemMappings.Count; i++)
+            {
+                FileSystemMapping fsMapping = (FileSystemMapping)FileSystemManager.FileSystemMappings[i];
+                if (fsMapping.TheFileSystem._Type == ((FOS_System.Type)typeof(FOS_System.IO.FAT.FATFileSystem)))
+                {
+                    FOS_System.IO.FAT.FATFileSystem fs = (FOS_System.IO.FAT.FATFileSystem)fsMapping.TheFileSystem;
+                    List Listings = fs.GetRootDirectoryTable();
+
+                    if (fs.ThePartition.VolumeID == "[NO ID]")
+                    {
+                        fs.ThePartition.VolumeID = "TestID";
+                        fs.RootDirectory_FAT32.WriteListings();
+
+                        BasicConsole.WriteLine("Set volume ID.");
+                    }
+
+                    BasicConsole.WriteLine(((FOS_System.String)"Volume ID: ") + fs.ThePartition.VolumeID);
+                        
+                    if (fsMapping.Prefix == "A:/")
+                    {
+                        BasicConsole.WriteLine("Mapping: " + fsMapping.Prefix);
+                        OutputDivider();
+                        
+                        OutputListings(Listings);
+                    }
+                }
+                else
+                {
+                    BasicConsole.WriteLine("Non-FAT file-system added! (???)");
+                }
+            }
+        }
+        /// <summary>
+        /// Outputs specified listings.
+        /// </summary>
+        /// <param name="Listings">The listings to output.</param>
+        private static void OutputListings(List Listings)
+        {
+            for (int j = 0; j < Listings.Count; j++)
+            {
+                FOS_System.IO.Base xItem = (FOS_System.IO.Base)Listings[j];
+
+                if (xItem._Type == (FOS_System.Type)(typeof(FOS_System.IO.FAT.FATDirectory)))
+                {
+                    FOS_System.String name = ((FOS_System.IO.FAT.FATDirectory)Listings[j]).Name;
+                    BasicConsole.WriteLine(((FOS_System.String)"<DIR> ") + name);
+
+                    OutputListings(((FOS_System.IO.FAT.FATDirectory)Listings[j]).GetListings());
+                }
+                else if (xItem._Type == (FOS_System.Type)(typeof(FOS_System.IO.FAT.FATFile)))
+                {
+                    FOS_System.IO.FAT.FATFile file = ((FOS_System.IO.FAT.FATFile)Listings[j]);
+                    BasicConsole.WriteLine(((FOS_System.String)"<FILE> ") + file.Name + " (" + file.Size + ")");
+                }
+            }
+        }
+        /// <summary>
+        /// Outputs the content of the specified file as ASCII text.
+        /// </summary>
+        /// <param name="fileName">The file to output.</param>
+        private static void OutputFileContents(FOS_System.String fileName)
+        {
+            OutputDivider();
+            File aFile = File.Open(fileName);
+            if (aFile != null)
+            {
+                if (aFile.Size > 0)
+                {
+                    BasicConsole.WriteLine(fileName);
+
+                    FOS_System.IO.Streams.FileStream fileStream = FOS_System.IO.Streams.FileStream.Create(aFile);
+                    byte[] xData = new byte[(int)(uint)aFile.Size];
+                    int actuallyRead = fileStream.Read(xData, 0, xData.Length);
+                    FOS_System.String xText = ByteConverter.GetAsciiString(xData, 0u, (uint)actuallyRead);
+                    BasicConsole.WriteLine(xText);
+                }
+                else
+                {
+                    BasicConsole.WriteLine("(empty file)");
+                }
+            }
+            else
+            {
+                BasicConsole.WriteLine("Failed to open file: " + fileName);
+            }
+            OutputDivider();
+        }
+        /// <summary>
+        /// Outputs the contents of the specified directory as a list of files and sub-directories.
+        /// </summary>
+        /// <param name="dir">The directory to output.</param>
+        private static void OutputDirectoryContents(FOS_System.String dir)
+        {
+            OutputDivider();
+            Directory aDir = Directory.Find(dir);
+            if (aDir != null)
+            {
+                BasicConsole.WriteLine(dir);
+                List Listings = aDir.GetListings();
+                if (Listings.Count > 0)
+                {
+                    for (int j = 0; j < Listings.Count; j++)
+                    {
+                        FOS_System.IO.Base xItem = (FOS_System.IO.Base)Listings[j];
+
+                        if (xItem._Type == (FOS_System.Type)(typeof(FOS_System.IO.FAT.FATDirectory)))
+                        {
+                            BasicConsole.WriteLine(((FOS_System.String)"<DIR> ") + ((FOS_System.IO.FAT.FATDirectory)Listings[j]).Name);
+                        }
+                        else if (xItem._Type == (FOS_System.Type)(typeof(FOS_System.IO.FAT.FATFile)))
+                        {
+                            FOS_System.IO.FAT.FATFile file = ((FOS_System.IO.FAT.FATFile)Listings[j]);
+                            BasicConsole.WriteLine(((FOS_System.String)"<FILE> ") + file.Name + " (" + file.Size + ")");
+                        }
+                    }
+                }
+                else
+                {
+                    BasicConsole.WriteLine("(empty directory)");
+                }
+            }
+            else
+            {
+                BasicConsole.WriteLine("Failed to find directory: " + dir);
+            }
+            OutputDivider();
+        }
+
+        /// <summary>
+        /// Outputs a divider line.
+        /// </summary>
+        private static void OutputDivider()
+        {
+            BasicConsole.WriteLine("---------------------");
+        }
+        /// <summary>
+        /// Outputs information about the ATA devices found.
+        /// </summary>
+        private static void OutputATAInfo()
+        {
+            int numDrives = 0;
+            for (int i = 0; i < Hardware.DeviceManager.Devices.Count; i++)
+            {
+                Hardware.Device aDevice = (Hardware.Device)Hardware.DeviceManager.Devices[i];
+                if (aDevice._Type == (FOS_System.Type)(typeof(Hardware.ATA.ATAPio)))
+                {
+                    BasicConsole.WriteLine();
+                    BasicConsole.WriteLine("ATAPio device found.");
+                    Hardware.ATA.ATAPio theATA = (Hardware.ATA.ATAPio)aDevice;
+
+                    //OutputDivider();
+                    //Info
+                    //BasicConsole.WriteLine(((FOS_System.String)"Type: ") + (theATA.DriveType == Hardware.ATA.ATAPio.SpecLevel.ATA ? "ATA" : "ATAPI"));
+                    //BasicConsole.WriteLine(((FOS_System.String)"Serial No: ") + theATA.SerialNo);
+                    //BasicConsole.WriteLine(((FOS_System.String)"Firmware Rev: ") + theATA.FirmwareRev);
+                    //BasicConsole.WriteLine(((FOS_System.String)"Model No: ") + theATA.ModelNo);
+                    //BasicConsole.WriteLine(((FOS_System.String)"Block Size: ") + theATA.BlockSize + " bytes");
+                    //BasicConsole.WriteLine(((FOS_System.String)"Block Count: ") + theATA.BlockCount);
+                    //TODO - Remove the uint castings here
+                    BasicConsole.WriteLine(((FOS_System.String)"Size: ") + (((uint)theATA.BlockCount) * ((uint)theATA.BlockSize) / 1024 / 1024) + " MB");
+                    //OutputDivider();
+
+                    numDrives++;
+                }
+            }
+            
+            BasicConsole.WriteLine(((FOS_System.String)"Total # of drives: ") + numDrives);
+        }
+        
         /// <summary>
         /// Tests dynamic string creation and string concatentation.
         /// </summary>

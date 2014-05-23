@@ -96,7 +96,7 @@ namespace Kernel.Compiler.Architectures.x86_32
             // 1. Index of element to get as Int32 (dword)
             // 2. Array object reference as address (dword)
 
-            string ContinueExecutionLabelBase = string.Format("{0}.IL_{1}_ContinueExecution",
+            string ContinueExecutionLabelBase = string.Format("{0}.IL_{1}_Store_ContinueExecution",
                     aScannerState.GetMethodID(aScannerState.CurrentILChunk.Method),
                     anILOpInfo.Position);
             DB_Type arrayDBType = DebugDatabase.GetType(aScannerState.GetTypeID(aScannerState.ArrayConstructorMethod.DeclaringType));
@@ -125,43 +125,42 @@ namespace Kernel.Compiler.Architectures.x86_32
             //      2.4. If the same, jump to continue execution further down
             //      2.5. Otherwise, call Exceptions.ThrowArrayTypeMismatchException
 
-            result.AppendLine("int3");
-            string ContinueExecutionLabel2 = ContinueExecutionLabelBase + "2";
-            //      2.1. Move element type ref into eax
-            if (elementType != null)
-            {
-                result.AppendLine(string.Format("mov eax, {0}", aScannerState.GetTypeIdString(aScannerState.GetTypeID(elementType))));
-            }
-            else
-            {
-                //Should be the same for all classes since they are (indirectly) derived from ObjectWithType
-                int typeOffset = 0;
-                #region Offset calculation
-                {
-                    //Get the child links of the type (i.e. the fields of the type)
-                    List<DB_ComplexTypeLink> allChildLinks = arrayDBType.ChildTypes.OrderBy(x => x.ParentIndex).ToList();
-                    //Get the DB type information for the field we want to load
-                    DB_ComplexTypeLink theTypeLink = (from links in arrayDBType.ChildTypes
-                                                      where links.FieldId == "_Type"
-                                                      select links).First();
-                    //Get all the fields that come before the field we want to load
-                    //This is so we can calculate the offset (in memory, in bytes) from the start of the object
-                    allChildLinks = allChildLinks.Where(x => x.ParentIndex < theTypeLink.ParentIndex).ToList();
-                    //Calculate the offset
-                    //We use StackBytesSize since fields that are reference types are only stored as a pointer
-                    typeOffset = allChildLinks.Sum(x => x.ChildType.StackBytesSize);
-                }
-                #endregion
+            //string ContinueExecutionLabel2 = ContinueExecutionLabelBase + "2";
+            ////      2.1. Move element type ref into eax
+            //if (elementType != null)
+            //{
+            //    result.AppendLine(string.Format("mov eax, {0}", aScannerState.GetTypeIdString(aScannerState.GetTypeID(elementType))));
+            //}
+            //else
+            //{
+            //    //Should be the same for all classes since they are (indirectly) derived from ObjectWithType
+            //    int typeOffset = 0;
+            //    #region Offset calculation
+            //    {
+            //        //Get the child links of the type (i.e. the fields of the type)
+            //        List<DB_ComplexTypeLink> allChildLinks = arrayDBType.ChildTypes.OrderBy(x => x.ParentIndex).ToList();
+            //        //Get the DB type information for the field we want to load
+            //        DB_ComplexTypeLink theTypeLink = (from links in arrayDBType.ChildTypes
+            //                                          where links.FieldId == "_Type"
+            //                                          select links).First();
+            //        //Get all the fields that come before the field we want to load
+            //        //This is so we can calculate the offset (in memory, in bytes) from the start of the object
+            //        allChildLinks = allChildLinks.Where(x => x.ParentIndex < theTypeLink.ParentIndex).ToList();
+            //        //Calculate the offset
+            //        //We use StackBytesSize since fields that are reference types are only stored as a pointer
+            //        typeOffset = allChildLinks.Sum(x => x.ChildType.StackBytesSize);
+            //    }
+            //    #endregion
             
-                //      - Move value (which is a ref) into eax
-                result.AppendLine("mov eax, [esp]");
-                //      - Move value type ref (from value (ref)) into eax
-                result.AppendLine(string.Format("mov eax, [eax+{0}]", typeOffset));
-            }
-            //      2.2. Move element type ref from array object into ebx
-            //              - Move array ref into ebx
-            result.AppendLine(string.Format("mov ebx, [esp+{0}]", sizeToPop == 8 ? 12 : 8));
-            //              - Move elemType ref ([ebx+offset]) into ebx
+            //    //      - Move value (which is a ref) into eax
+            //    result.AppendLine("mov eax, [esp]");
+            //    //      - Move value type ref (from value (ref)) into eax
+            //    result.AppendLine(string.Format("mov eax, [eax+{0}]", typeOffset));
+            //}
+            ////      2.2. Move element type ref from array object into ebx
+            ////              - Move array ref into ebx
+            //result.AppendLine(string.Format("mov ebx, [esp+{0}]", sizeToPop == 8 ? 12 : 8));
+            ////              - Move elemType ref ([ebx+offset]) into ebx
             int elemTypeOffset = 0;
             #region Offset calculation
             {
@@ -179,14 +178,14 @@ namespace Kernel.Compiler.Architectures.x86_32
                 elemTypeOffset = allChildLinks.Sum(x => x.ChildType.StackBytesSize);
             }
             #endregion
-            result.AppendLine(string.Format("mov ebx, [ebx+{0}]", elemTypeOffset));
-            //      2.3. Compare eax to ebx
-            result.AppendLine("cmp eax, ebx");
-            //      2.4. If the same, jump to continue execution further down
-            result.AppendLine("je " + ContinueExecutionLabel2);
-            //      2.5. Otherwise, call Exceptions.ThrowArrayTypeMismatchException
-            result.AppendLine(string.Format("call {0}", aScannerState.GetMethodID(aScannerState.ThrowArrayTypeMismatchExceptionMethod)));
-            result.AppendLine(ContinueExecutionLabel2 + ":");
+            //result.AppendLine(string.Format("mov ebx, [ebx+{0}]", elemTypeOffset));
+            ////      2.3. Compare eax to ebx
+            //result.AppendLine("cmp eax, ebx");
+            ////      2.4. If the same, jump to continue execution further down
+            //result.AppendLine("je " + ContinueExecutionLabel2);
+            ////      2.5. Otherwise, call Exceptions.ThrowArrayTypeMismatchException
+            //result.AppendLine(string.Format("call {0}", aScannerState.GetMethodID(aScannerState.ThrowArrayTypeMismatchExceptionMethod)));
+            //result.AppendLine(ContinueExecutionLabel2 + ":");
 
             // 3. Check index to get is > -1 and < array length
             //      3.1. Move index into eax
@@ -250,7 +249,7 @@ namespace Kernel.Compiler.Architectures.x86_32
             //      4.6. Move array ref into ebx
             //      4.7. Add enough to go past Kernel.FOS_System.Array fields
             //      4.8. Add eax and ebx (array ref + fields + (index * element size))
-
+            
             //      4.0. Pop value into ecx:edx
             result.AppendLine("pop ecx");
             if (sizeToPop == 8)

@@ -40,9 +40,23 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ATA\ATA.cs" />
+    <Compile Include="ATA\ATAIO.cs" />
+    <Compile Include="ATA\ATAManager.cs" />
+    <Compile Include="ATA\ATAPio.cs" />
+    <Compile Include="BlockDevice.cs" />
+    <Compile Include="Device.cs" />
+    <Compile Include="DeviceManager.cs" />
+    <Compile Include="Devices\DiskDevice.cs" />
     <Compile Include="DMA\DMABlock.cs" />
     <Compile Include="IO\IO.cs" />
     <Compile Include="IO\IOPort.cs" />
+    <Compile Include="PCI\PCI.cs" />
+    <Compile Include="PCI\PCIBaseAddressBar.cs" />
+    <Compile Include="PCI\PCIDevice.cs" />
+    <Compile Include="PCI\PCIDeviceBridge.cs" />
+    <Compile Include="PCI\PCIDeviceCardbus.cs" />
+    <Compile Include="PCI\PCIDeviceNormal.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -67,9 +81,7 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="PCI\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

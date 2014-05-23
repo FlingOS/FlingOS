@@ -82,6 +82,10 @@
     <Compile Include="ILCompiler.cs" />
     <Compile Include="ILOpInfo.cs" />
     <Compile Include="ILOps\Callvirt.cs" />
+    <Compile Include="ILOps\Ldlen.cs" />
+    <Compile Include="ILOps\Rem.cs" />
+    <Compile Include="ILOps\Not.cs" />
+    <Compile Include="ILOps\Switch.cs" />
     <Compile Include="ILOps\Stelem.cs" />
     <Compile Include="ILOps\Ldelem.cs" />
     <Compile Include="ILOps\NewArr.cs" />

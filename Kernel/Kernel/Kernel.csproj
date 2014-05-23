@@ -41,7 +41,6 @@
     <RunPostBuildEvent>OnBuildSuccess</RunPostBuildEvent>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="BasicConsole.cs" />
     <Compile Include="Debug\BasicDebug.cs" />
     <Compile Include="Paging.cs" />
     <Compile Include="PreReqs.cs" />
@@ -52,6 +51,10 @@
     <ProjectReference Include="..\Compiler\Kernel.Compiler.csproj">
       <Project>{061e5f53-5eff-4e12-94ee-9e18459e5cf4}</Project>
       <Name>Kernel.Compiler</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Libraries\Kernel.FOS_System.IO\Kernel.FOS_System.IO.csproj">
+      <Project>{5c9fdb7d-604e-4927-9d3f-e2c599b20797}</Project>
+      <Name>Kernel.FOS_System.IO</Name>
     </ProjectReference>
     <ProjectReference Include="..\Libraries\Kernel.FOS_System\Kernel.FOS_System.csproj">
       <Project>{66c9b617-b6d9-4006-a7f9-e1df62ed30ad}</Project>

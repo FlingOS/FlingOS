@@ -12,9 +12,15 @@ namespace Kernel.Hardware.IO
         public readonly UInt16 Port;
 
 
+        [Compiler.NoDebug]
         protected internal IOPort(UInt16 aPort)
         {
             Port = aPort;
+        }
+        [Compiler.NoDebug]
+        protected internal IOPort(UInt16 aBase, UInt16 anOffset)
+        {
+            Port = (UInt16)(aBase + anOffset);
         }
 
 
@@ -38,19 +44,23 @@ namespace Kernel.Hardware.IO
         {
             return 0;
         }
-        
+
+        [Compiler.NoDebug]
         public byte Read_Byte()
         {
             return doRead_Byte(this.Port);
         }
+        [Compiler.NoDebug]
         public UInt16 Read_UInt16()
         {
             return doRead_UInt16(this.Port);
         }
+        [Compiler.NoDebug]
         public UInt32 Read_UInt32()
         {
             return doRead_UInt32(this.Port);
         }
+        [Compiler.NoDebug]
         public UInt64 Read_UInt64()
         {
             return doRead_UInt64(this.Port);
@@ -73,36 +83,54 @@ namespace Kernel.Hardware.IO
         private static void doWrite(UInt16 port, UInt64 aVal)
         {
         }
-        
+
+        [Compiler.NoDebug]
         public virtual void Write(byte aVal)
         {
             doWrite(this.Port, aVal);
         }
+        [Compiler.NoDebug]
         public void Write(UInt16 aVal)
         {
             doWrite(this.Port, aVal);
         }
+        [Compiler.NoDebug]
         public void Write(UInt32 aVal)
         {
             doWrite(this.Port, aVal);
         }
+        [Compiler.NoDebug]
         public void Write(UInt64 aVal)
         {
             doWrite(this.Port, aVal);
         }
-    }
 
-    public class IOPortRead : IOPort
-    {
-        public IOPortRead()
-            : base(5)
+        [Compiler.NoDebug]
+        public void Read8(byte[] aData)
         {
+            UInt16 xValue;
+            for (int i = 0; i < aData.Length / 2; i++)
+            {
+                xValue = Read_UInt16();
+                aData[i * 2] = (byte)xValue;
+                aData[i * 2 + 1] = (byte)(xValue >> 8);
+            }
         }
-
-        public override void Write(byte aVal)
+        [Compiler.NoDebug]
+        public void Read16(UInt16[] aData)
         {
-            Kernel.ExceptionMethods.Throw(new FOS_System.Exception("Not implemented exception!"));
-            base.Write(aVal);
+            for (int i = 0; i < aData.Length; i++)
+            {
+                aData[i] = Read_UInt16();
+            }
+        }
+        [Compiler.NoDebug]
+        public void Read32(UInt32[] aData)
+        {
+            for (int i = 0; i < aData.Length; i++)
+            {
+                aData[i] = Read_UInt32();
+            }
         }
     }
 }

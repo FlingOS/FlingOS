@@ -23,6 +23,117 @@
             The underlying, specific type of the object specified when it was created.
             </summary>
         </member>
+        <member name="T:Kernel.BasicConsole">
+            <summary>
+            A basic console implementation - uses the BIOS's fixed text-video memory to output ASCII text.
+            </summary>
+        </member>
+        <member name="F:Kernel.BasicConsole.offset">
+            <summary>
+            The offset from the start of the memory (in characters) to write the next character to.
+            </summary>
+        </member>
+        <member name="F:Kernel.BasicConsole.vidMemBasePtr">
+            <summary>
+            A pointer to the start of the (character-based) video memory.
+            </summary>
+        </member>
+        <member name="F:Kernel.BasicConsole.rows">
+            <summary>
+            Numbers of rows in the video memory.
+            </summary>
+        </member>
+        <member name="F:Kernel.BasicConsole.cols">
+            <summary>
+            Number of columns in the video memory.
+            </summary>
+        </member>
+        <member name="F:Kernel.BasicConsole.colour">
+            <summary>
+            The colour to print characters in. Do not set directly, use SetTextColour/SetBackgroundColour.
+            </summary>
+        </member>
+        <member name="F:Kernel.BasicConsole.bg_colour">
+            <summary>
+            The background colour. Do not set directly, use SetTextColour/SetBackgroundColour.
+            </summary>
+        </member>
+        <member name="F:Kernel.BasicConsole.default_colour">
+            <summary>
+            Default colour to print characters in.
+            </summary>
+        </member>
+        <member name="F:Kernel.BasicConsole.warning_colour">
+            <summary>
+            Colour to print warning characters in.
+            </summary>
+        </member>
+        <member name="F:Kernel.BasicConsole.error_colour">
+            <summary>
+            Colour to print error characters in.
+            </summary>
+        </member>
+        <member name="M:Kernel.BasicConsole.Init">
+            <summary>
+            Initialises the BasicConsole class.
+            </summary>
+        </member>
+        <member name="M:Kernel.BasicConsole.SetTextColour(System.Char)">
+            <summary>
+            Sets the console text colour.
+            </summary>
+            <param name="aText_colour">The text colour to use.</param>
+        </member>
+        <member name="M:Kernel.BasicConsole.SetBgColour(System.Char)">
+            <summary>
+            Sets the console background colour.
+            </summary>
+            <param name="aBg_colour">The background colour to use.</param>
+        </member>
+        <member name="M:Kernel.BasicConsole.Clear">
+            <summary>
+            Clears the output to all black.
+            </summary>
+        </member>
+        <member name="M:Kernel.BasicConsole.Write(Kernel.FOS_System.String)">
+            <summary>
+            Writes the specified string to the output at the current offset. 
+            </summary>
+            <param name="str">The string to output.</param>
+            <remarks>
+            If necessary, this method will move all existing text up the necessary number of lines to fit the new text on the bottom 
+            of the screen.
+            </remarks>
+        </member>
+        <member name="M:Kernel.BasicConsole.WriteLine(Kernel.FOS_System.String)">
+            <summary>
+            Writes the specified string to the output at the current offset then moves the offset to the end of the line.
+            </summary>
+            <param name="str">The string to output.</param>
+            <remarks>
+            This also blanks out the rest of the line to make sure no artifacts are left behind.
+            </remarks>
+        </member>
+        <member name="M:Kernel.BasicConsole.WriteLine">
+            <summary>
+            Writes a blank line (line with a space).
+            </summary>
+        </member>
+        <member name="M:Kernel.BasicConsole.PrintTestString">
+            <summary>
+            Prints the test string (all the keyboard characters) to the start of the output - overwrites any existing text.
+            </summary>
+        </member>
+        <member name="M:Kernel.BasicConsole.DelayOutput">
+            <summary>
+            Synchronous processing delay.
+            </summary>
+        </member>
+        <member name="P:Kernel.BasicConsole.Offset">
+            <summary>
+            The offset from the start of the memory (in characters) to write the next character to.
+            </summary>
+        </member>
         <member name="T:Kernel.FOS_System.Exception">
             <summary>
             An exception object.
@@ -38,7 +149,7 @@
             Creates a new, empty exception.
             </summary>
         </member>
-        <member name="M:Kernel.FOS_System.Exception.#ctor(System.String)">
+        <member name="M:Kernel.FOS_System.Exception.#ctor(Kernel.FOS_System.String)">
             <summary>
             Creates a new exception with specified message.
             </summary>
@@ -241,12 +352,22 @@
             Whether execution is currently inside the try-section or the handler-section of this exception handler info.
             </summary>
         </member>
+        <member name="T:Kernel.FOS_System.Exceptions.NotSupportedException">
+            <summary>
+            Represents a not supported exception.
+            </summary>
+        </member>
+        <member name="M:Kernel.FOS_System.Exceptions.NotSupportedException.#ctor(Kernel.FOS_System.String)">
+            <summary>
+            Sets the message to "Argument exception."
+            </summary>
+        </member>
         <member name="T:Kernel.FOS_System.Exceptions.ArgumentException">
             <summary>
             Represents an argument exception.
             </summary>
         </member>
-        <member name="M:Kernel.FOS_System.Exceptions.ArgumentException.#ctor(System.String)">
+        <member name="M:Kernel.FOS_System.Exceptions.ArgumentException.#ctor(Kernel.FOS_System.String)">
             <summary>
             Sets the message to "Argument exception."
             </summary>
@@ -361,6 +482,11 @@
             <summary>
             The garbage collector.
             </summary>
+            <remarks>
+            Make sure all methods that the GC calls are marked with [Compiler.NoGC] (including
+            get-set property methods! Apply the attribute to the get/set keywords not the property
+            declaration (/name).
+            </remarks>
         </member>
         <member name="F:Kernel.FOS_System.GC.NumObjs">
             <summary>
@@ -696,6 +822,16 @@
             <param name="x">The first type to compare with the second.</param>
             <param name="y">The second type to compare with the first.</param>
             <returns>True if they are not equal, otherwise false.</returns>
+        </member>
+        <member name="T:Kernel.FOS_System.Stubs.UInt32">
+            <summary>
+            Replacement class for methods, properties and fields usually found on standard System.Int32 type.
+            </summary>
+        </member>
+        <member name="P:Kernel.FOS_System.Stubs.UInt32.MaxValue">
+            <summary>
+            Returns the maximum value of an Int32.
+            </summary>
         </member>
     </members>
 </doc>

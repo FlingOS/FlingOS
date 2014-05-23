@@ -1,6 +1,6 @@
 ﻿global KernelFixedHeap_Start
-; 524288 bytes = 0.5MB (using proper powers of 2 not the powers of 10 crap...)
-KernelFixedHeap_Start: TIMES 524288 db 0
+; 1048576 bytes = 1MiB (using proper powers of 2 not the powers of 10 crap...)
+KernelFixedHeap_Start: TIMES 1048576 db 0
 KernelFixedHeap_End:
 
 method_System_UInt32__RETEND_Kernel_FOS_System_Heap_DECLEND_GetFixedHeapPtr_NAMEEND___:

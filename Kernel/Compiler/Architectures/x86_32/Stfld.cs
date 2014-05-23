@@ -60,8 +60,8 @@ namespace Kernel.Compiler.Architectures.x86_32
             }
             else if(value.sizeOnStackInBytes == 8)
             {
-                result.AppendLine("pop dword eax");
                 result.AppendLine("pop dword edx");
+                result.AppendLine("pop dword eax");
             }
             //Pop object pointer
             result.AppendLine("pop dword ecx");
@@ -69,7 +69,7 @@ namespace Kernel.Compiler.Architectures.x86_32
             result.AppendLine(string.Format("mov dword [ecx+{0}], eax", offset));
             if(value.sizeOnStackInBytes == 8)
             {
-                result.AppendLine(string.Format("mov dword [ecx+{0}], eax", offset + 4));
+                result.AppendLine(string.Format("mov dword [ecx+{0}], edx", offset + 4));
             }
 
             return result.ToString().Trim();

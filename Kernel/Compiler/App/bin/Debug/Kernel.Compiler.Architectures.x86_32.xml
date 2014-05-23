@@ -20,6 +20,82 @@
             Thrown if any argument or the return value is a floating point number.
             </exception>
         </member>
+        <member name="T:Kernel.Compiler.Architectures.x86_32.Ldlen">
+            <summary>
+            See base class documentation.
+            </summary>
+        </member>
+        <member name="M:Kernel.Compiler.Architectures.x86_32.Ldlen.Convert(Kernel.Compiler.ILOpInfo,Kernel.Compiler.ILScannerState)">
+            <summary>
+            See base class documentation.
+            </summary>
+            <param name="anILOpInfo">See base class documentation.</param>
+            <param name="aScannerState">See base class documentation.</param>
+            <returns>See base class documentation.</returns>
+            <exception cref="T:System.NotSupportedException">
+            Thrown if field to load is a floating value or the field to load
+            is not of size 4 or 8 bytes.
+            </exception>
+        </member>
+        <member name="T:Kernel.Compiler.Architectures.x86_32.Rem">
+            <summary>
+            See base class documentation.
+            </summary>
+        </member>
+        <member name="M:Kernel.Compiler.Architectures.x86_32.Rem.Convert(Kernel.Compiler.ILOpInfo,Kernel.Compiler.ILScannerState)">
+            <summary>
+            See base class documentation.
+            </summary>
+            <param name="anILOpInfo">See base class documentation.</param>
+            <param name="aScannerState">See base class documentation.</param>
+            <returns>See base class documentation.</returns>
+            <exception cref="T:System.NotSupportedException">
+            Thrown if divide operands are floating point numbers or if attempting to divide 64-bit numbers.
+            </exception>
+            <exception cref="T:System.InvalidOperationException">
+            Thrown if either operand is &lt; 4 bytes long.
+            </exception>
+        </member>
+        <member name="T:Kernel.Compiler.Architectures.x86_32.Not">
+            <summary>
+            See base class documentation.
+            </summary>
+        </member>
+        <member name="M:Kernel.Compiler.Architectures.x86_32.Not.Convert(Kernel.Compiler.ILOpInfo,Kernel.Compiler.ILScannerState)">
+            <summary>
+            See base class documentation.
+            </summary>
+            <param name="anILOpInfo">See base class documentation.</param>
+            <param name="aScannerState">See base class documentation.</param>
+            <returns>See base class documentation.</returns>
+            <exception cref="T:System.NotSupportedException">
+            Thrown if either or both values to shift left are floating point values or
+            if the values are 8 bytes in size.
+            </exception>
+            <exception cref="T:System.InvalidOperationException">
+            Thrown if either or both values to multiply are not 4 or 8 bytes
+            in size or if the values are of different size.
+            </exception>
+        </member>
+        <member name="T:Kernel.Compiler.Architectures.x86_32.Switch">
+            <summary>
+            See base class documentation.
+            </summary>
+        </member>
+        <member name="M:Kernel.Compiler.Architectures.x86_32.Switch.Convert(Kernel.Compiler.ILOpInfo,Kernel.Compiler.ILScannerState)">
+            <summary>
+            See base class documentation.
+            </summary>
+            <param name="anILOpInfo">See base class documentation.</param>
+            <param name="aScannerState">See base class documentation.</param>
+            <returns>See base class documentation.</returns>
+            <exception cref="T:System.NotSupportedException">
+            Thrown if divide operands are floating point numbers or if attempting to divide 64-bit numbers.
+            </exception>
+            <exception cref="T:System.InvalidOperationException">
+            Thrown if either operand is &lt; 4 bytes long.
+            </exception>
+        </member>
         <member name="T:Kernel.Compiler.Architectures.x86_32.Stelem">
             <summary>
             See base class documentation.

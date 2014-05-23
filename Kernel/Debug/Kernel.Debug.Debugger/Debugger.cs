@@ -1531,6 +1531,8 @@ namespace Kernel.Debug.Debugger
         /// <param name="debugger">The debugger to use for loading.</param>
         public void LoadFields(Debugger debugger, OnLoadFieldsCompleteDelegate callback, bool recursive = false)
         {
+            return;
+
             if (dbType.Signature == "System.String")
             {
                 #region String Load

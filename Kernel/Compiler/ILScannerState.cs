@@ -361,9 +361,12 @@ namespace Kernel.Compiler
                 MethodInfo[] OwnMethods = GetInstanceMethods(TheType);
                 foreach (MethodInfo anOwnMethod in OwnMethods)
                 {
-                    string methodID = GetMethodID(anOwnMethod);
-                    string methodIDValue = GetMethodIDValue(anOwnMethod);
-                    methodTable.ASM.AppendLine("dd " + methodIDValue + ", " + methodID);
+                    if (!anOwnMethod.IsAbstract)
+                    {
+                        string methodID = GetMethodID(anOwnMethod);
+                        string methodIDValue = GetMethodIDValue(anOwnMethod);
+                        methodTable.ASM.AppendLine("dd " + methodIDValue + ", " + methodID);
+                    }
                 }
             }
 

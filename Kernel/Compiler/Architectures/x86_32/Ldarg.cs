@@ -60,7 +60,7 @@ namespace Kernel.Compiler.Architectures.x86_32
                     break;
             }
 
-            //Used to store the number of bytes to subtract from EBP to get to the arg
+            //Used to store the number of bytes to add to EBP to get to the arg
             int BytesOffsetFromEBP = 0;
             //Get all the params for the current method
             List<Type> allParams = aScannerState.CurrentILChunk.Method.GetParameters().Select(x => x.ParameterType).ToList();

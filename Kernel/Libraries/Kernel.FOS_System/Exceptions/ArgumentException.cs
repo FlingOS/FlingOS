@@ -11,12 +11,12 @@ namespace Kernel.FOS_System.Exceptions
     /// </summary>
     public class ArgumentException : FOS_System.Exception
     {
-        public string ExtendedMessage;
+        public FOS_System.String ExtendedMessage;
 
         /// <summary>
         /// Sets the message to "Argument exception."
         /// </summary>
-        public ArgumentException(string anExtendedMessage)
+        public ArgumentException(FOS_System.String anExtendedMessage)
             : base("Argument exception.")
         {
             ExtendedMessage = anExtendedMessage;

@@ -1,3 +1,4 @@
+G:\Fling OS\Fling OS\Kernel\Kernel\obj\Debug\Kernel.csprojResolveAssemblyReference.cache
 G:\Fling OS\Fling OS\Kernel\Kernel\bin\Debug\Mosa.Utility.IsoImage.dll
 G:\Fling OS\Fling OS\Kernel\Kernel\bin\Debug\Dia2Dump\Dia2Dump.exe
 G:\Fling OS\Fling OS\Kernel\Kernel\bin\Debug\Dia2Dump\Dia2Dump.pdb
@@ -59,17 +60,18 @@ G:\Fling OS\Fling OS\Kernel\Kernel\bin\Debug\Kernel.dll
 G:\Fling OS\Fling OS\Kernel\Kernel\bin\Debug\Kernel.pdb
 G:\Fling OS\Fling OS\Kernel\Kernel\bin\Debug\Kernel.Compiler.dll
 G:\Fling OS\Fling OS\Kernel\Kernel\bin\Debug\Kernel.FOS_System.dll
+G:\Fling OS\Fling OS\Kernel\Kernel\bin\Debug\Kernel.FOS_System.IO.dll
 G:\Fling OS\Fling OS\Kernel\Kernel\bin\Debug\Kernel.Hardware.dll
 G:\Fling OS\Fling OS\Kernel\Kernel\bin\Debug\Kernel.Utilities.dll
 G:\Fling OS\Fling OS\Kernel\Kernel\bin\Debug\Kernel.Debug.Data.dll
 G:\Fling OS\Fling OS\Kernel\Kernel\bin\Debug\Kernel.Compiler.pdb
 G:\Fling OS\Fling OS\Kernel\Kernel\bin\Debug\Kernel.Compiler.xml
+G:\Fling OS\Fling OS\Kernel\Kernel\bin\Debug\Kernel.FOS_System.IO.pdb
 G:\Fling OS\Fling OS\Kernel\Kernel\bin\Debug\Kernel.FOS_System.pdb
 G:\Fling OS\Fling OS\Kernel\Kernel\bin\Debug\Kernel.FOS_System.xml
 G:\Fling OS\Fling OS\Kernel\Kernel\bin\Debug\Kernel.Hardware.pdb
 G:\Fling OS\Fling OS\Kernel\Kernel\bin\Debug\Kernel.Utilities.pdb
 G:\Fling OS\Fling OS\Kernel\Kernel\bin\Debug\Kernel.Debug.Data.pdb
 G:\Fling OS\Fling OS\Kernel\Kernel\bin\Debug\Kernel.Debug.Data.xml
-G:\Fling OS\Fling OS\Kernel\Kernel\obj\Debug\Kernel.csprojResolveAssemblyReference.cache
 G:\Fling OS\Fling OS\Kernel\Kernel\obj\Debug\Kernel.dll
 G:\Fling OS\Fling OS\Kernel\Kernel\obj\Debug\Kernel.pdb

@@ -153,7 +153,7 @@ namespace Kernel.Compiler
                     try
                     {
                         //Ignore inherited methods - we don't want to process a method twice
-                        if (aMethod.DeclaringType != aType)
+                        if (aMethod.DeclaringType != aType || aMethod.IsAbstract)
                         {
                             continue;
                         }
@@ -199,7 +199,7 @@ namespace Kernel.Compiler
                     try
                     {
                         //Ignore inherited constructors - we don't want to process a method twice
-                        if (aConstructor.DeclaringType != aType)
+                        if (aConstructor.DeclaringType != aType || aConstructor.IsAbstract)
                         {
                             continue;
                         }
@@ -255,7 +255,7 @@ namespace Kernel.Compiler
                     try
                     {
                         //Ignore inherited constructors - we don't want to process a method twice
-                        if (aConstructor.DeclaringType != aType)
+                        if (aConstructor.DeclaringType != aType || aConstructor.IsAbstract)
                         {
                             continue;
                         }
@@ -311,7 +311,7 @@ namespace Kernel.Compiler
                         }
 
                         //Ignore inherited methods - we don't want to process a method twice
-                        if (aMethod.DeclaringType != aType)
+                        if (aMethod.DeclaringType != aType || aMethod.IsAbstract)
                         {
                             continue;
                         }
@@ -348,7 +348,7 @@ namespace Kernel.Compiler
                     try
                     {
                         //Ignore inherited constructors - we don't want to process a method twice
-                        if (aConstructor.DeclaringType != aType)
+                        if (aConstructor.DeclaringType != aType || aConstructor.IsAbstract)
                         {
                             continue;
                         }
@@ -393,7 +393,7 @@ namespace Kernel.Compiler
                     try
                     {
                         //Ignore inherited constructors - we don't want to process a method twice
-                        if (aConstructor.DeclaringType != aType)
+                        if (aConstructor.DeclaringType != aType || aConstructor.IsAbstract)
                         {
                             continue;
                         }

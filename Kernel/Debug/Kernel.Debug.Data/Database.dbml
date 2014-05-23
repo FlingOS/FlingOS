@@ -7,13 +7,13 @@
       <Column Name="Position" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
       <Column Name="NextPosition" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
       <Column Name="OpCode" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
-      <Column Name="ValueBytes" Type="System.Data.Linq.Binary" DbType="Binary(50)" CanBeNull="true" UpdateCheck="Never" />
+      <Column Name="ValueBytes" Type="System.Data.Linq.Binary" DbType="VarBinary(MAX)" CanBeNull="true" UpdateCheck="Never" />
       <Column Name="CustomOpCode" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
       <Column Name="ASMStartPos" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
       <Column Name="ASMEndPos" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
       <Column Name="ASMInsertLabel" Type="System.Boolean" DbType="Bit NOT NULL" CanBeNull="false" />
       <Column Name="IsDebugOp" Type="System.Boolean" DbType="Bit NOT NULL" CanBeNull="false" />
-      <Column Name="DebugOpMeta" Type="System.String" DbType="NVarChar(50)" CanBeNull="true" />
+      <Column Name="DebugOpMeta" Type="System.String" DbType="NVarChar(500)" CanBeNull="true" />
       <Association Name="DB_ILOpInfo_DB_StringLiteral" Member="DB_StringLiterals" ThisKey="Id" OtherKey="ILOpInfoID" Type="DB_StringLiteral" />
       <Association Name="DB_Method_DB_ILOpInfo" Member="DB_Method" ThisKey="MethodID" OtherKey="Id" Type="DB_Method" IsForeignKey="true" />
     </Type>

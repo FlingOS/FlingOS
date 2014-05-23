@@ -21,7 +21,11 @@ namespace Kernel.Compiler.ILOps
     /// <see cref="System.Reflection.Emit.OpCodes.Bge"/>, 
     /// <see cref="System.Reflection.Emit.OpCodes.Bge_S"/>, 
     /// <see cref="System.Reflection.Emit.OpCodes.Bge_Un"/>, 
-    /// <see cref="System.Reflection.Emit.OpCodes.Bge_Un_S"/>, 
+    /// <see cref="System.Reflection.Emit.OpCodes.Bge_Un_S"/>,
+    /// <see cref="System.Reflection.Emit.OpCodes.Bgt"/>, 
+    /// <see cref="System.Reflection.Emit.OpCodes.Bgt_S"/>,
+    /// <see cref="System.Reflection.Emit.OpCodes.Bgt_Un"/>, 
+    /// <see cref="System.Reflection.Emit.OpCodes.Bgt_Un_S"/>, 
     /// <see cref="System.Reflection.Emit.OpCodes.Ble"/>, 
     /// <see cref="System.Reflection.Emit.OpCodes.Ble_S"/>, 
     /// <see cref="System.Reflection.Emit.OpCodes.Ble_Un"/>, 
@@ -49,6 +53,10 @@ namespace Kernel.Compiler.ILOps
     /// <seealso cref="System.Reflection.Emit.OpCodes.Bge_S"/>
     /// <seealso cref="System.Reflection.Emit.OpCodes.Bge_Un"/>
     /// <seealso cref="System.Reflection.Emit.OpCodes.Bge_Un_S"/>
+    /// <seealso cref="System.Reflection.Emit.OpCodes.Bgt"/>
+    /// <seealso cref="System.Reflection.Emit.OpCodes.Bgt_S"/>
+    /// <seealso cref="System.Reflection.Emit.OpCodes.Bgt_Un"/>
+    /// <seealso cref="System.Reflection.Emit.OpCodes.Bgt_Un_S"/>
     /// <seealso cref="System.Reflection.Emit.OpCodes.Ble"/>
     /// <seealso cref="System.Reflection.Emit.OpCodes.Ble_S"/>
     /// <seealso cref="System.Reflection.Emit.OpCodes.Ble_Un"/>
@@ -71,6 +79,10 @@ namespace Kernel.Compiler.ILOps
     [ILOpTarget(Target = ILOp.OpCodes.Bge_S)]
     [ILOpTarget(Target = ILOp.OpCodes.Bge_Un)]
     [ILOpTarget(Target = ILOp.OpCodes.Bge_Un_S)]
+    [ILOpTarget(Target = ILOp.OpCodes.Bgt)]
+    [ILOpTarget(Target = ILOp.OpCodes.Bgt_S)]
+    [ILOpTarget(Target = ILOp.OpCodes.Bgt_Un)]
+    [ILOpTarget(Target = ILOp.OpCodes.Bgt_Un_S)]
     [ILOpTarget(Target = ILOp.OpCodes.Ble)]
     [ILOpTarget(Target = ILOp.OpCodes.Ble_S)]
     [ILOpTarget(Target = ILOp.OpCodes.Ble_Un)]

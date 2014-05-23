@@ -109,6 +109,10 @@ namespace Kernel.Debug.Data
                 if(_DB == null)
                 {
                     _DB = new DatabaseDataContext();
+                    if (!_DB.DatabaseExists())
+                    {
+                        _DB.CreateDatabase();
+                    }
                 }
                 return _DB;
             }
@@ -326,6 +330,7 @@ namespace Kernel.Debug.Data
         /// </remarks>
         public static void AddILOpInfo(DB_ILOpInfo anILOpInfo)
         {
+            anILOpInfo.ValueBytes = null;
             DB.DB_ILOpInfos.InsertOnSubmit(anILOpInfo);
         }
         /// <summary>
