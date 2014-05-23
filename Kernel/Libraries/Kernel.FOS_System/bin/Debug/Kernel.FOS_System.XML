@@ -124,7 +124,7 @@
             Prints the test string (all the keyboard characters) to the start of the output - overwrites any existing text.
             </summary>
         </member>
-        <member name="M:Kernel.BasicConsole.DelayOutput">
+        <member name="M:Kernel.BasicConsole.DelayOutput(System.Int32)">
             <summary>
             Synchronous processing delay.
             </summary>

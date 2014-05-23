@@ -13,7 +13,7 @@ namespace Kernel.Hardware.ATA
 
         public static void Init()
         {
-            //Try to initialise primary (S)ATA drives.
+            //Try to initialise primary IDE:ATA drives.
             InitDrive(ATA.ControllerId.Primary, ATA.BusPosition.Slave);
             InitDrive(ATA.ControllerId.Primary, ATA.BusPosition.Master);
         }

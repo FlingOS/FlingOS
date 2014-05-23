@@ -532,78 +532,68 @@ Custom         :   (none)
 ** Module: Kernel.Hardware.PCI.PCI
 
 
-Function       : In MetaData, [00000765][0001:00000765], len = 0000000D, get_NumDevices
+Function       : In MetaData, [00000765][0001:00000765], len = 00000008, Init
                  Function attribute:
                  Function info:
 FuncDebugStart :   
 FuncDebugEnd   :   
-Block          :   static, [00000765][0001:00000765], len = 0000000D, (none)
+Block          :   static, [00000765][0001:00000765], len = 00000008, (none)
 UsingNamespace :     USystem
-UsingNamespace :     USystem.Collections.Generic
-UsingNamespace :     USystem.Linq
-UsingNamespace :     USystem.Text
-UsingNamespace :     USystem.Threading.Tasks
-Data           :     Slot, [00000000], Local, CS$1$0000
+UsingNamespace :     UKernel.FOS_System
+UsingNamespace :     UKernel.FOS_System.Collections
 Custom         :   (none)
 
-Function       : In MetaData, [00000772][0001:00000772], len = 00000008, Init
+Function       : In MetaData, [0000076D][0001:0000076D], len = 00000070, GetDevice
                  Function attribute:
                  Function info:
 FuncDebugStart :   
 FuncDebugEnd   :   
-Custom         :   (none)
-
-Function       : In MetaData, [0000077A][0001:0000077A], len = 0000005A, GetDevice
-                 Function attribute:
-                 Function info:
-FuncDebugStart :   
-FuncDebugEnd   :   
-Block          :   static, [0000077A][0001:0000077A], len = 0000005A, (none)
+Block          :   static, [0000076D][0001:0000076D], len = 00000070, (none)
 Data           :     Slot, [00000001], Local, CS$1$0000
 Data           :     Slot, [00000002], Local, CS$4$0001
-Block          :     static, [0000077B][0001:0000077B], len = 00000053, (none)
+Block          :     static, [0000076E][0001:0000076E], len = 00000069, (none)
 Data           :       Slot, [00000000], Local, i
 Custom         :   (none)
 
-Function       : In MetaData, [000007D4][0001:000007D4], len = 00000019, EnumerateDevices
+Function       : In MetaData, [000007DD][0001:000007DD], len = 0000000A, EnumerateDevices
                  Function attribute:
                  Function info:
 FuncDebugStart :   
 FuncDebugEnd   :   
 Custom         :   (none)
 
-Function       : In MetaData, [000007ED][0001:000007ED], len = 000000B5, EnumerateBus
+Function       : In MetaData, [000007E7][0001:000007E7], len = 000000B5, EnumerateBus
                  Function attribute:
                  Function info:
 FuncDebugStart :   
 FuncDebugEnd   :   
-Block          :   static, [000007ED][0001:000007ED], len = 000000B5, (none)
+Block          :   static, [000007E7][0001:000007E7], len = 000000B5, (none)
 Data           :     Slot, [00000003], Local, CS$4$0000
-Block          :     static, [000007EE][0001:000007EE], len = 000000B3, (none)
+Block          :     static, [000007E8][0001:000007E8], len = 000000B3, (none)
 Data           :       Slot, [00000000], Local, xDevice
-Block          :       static, [000007F5][0001:000007F5], len = 0000009C, (none)
+Block          :       static, [000007EF][0001:000007EF], len = 0000009C, (none)
 Data           :         Slot, [00000001], Local, xPCIDevice
-Block          :         static, [00000821][0001:00000821], len = 00000037, (none)
+Block          :         static, [0000081B][0001:0000081B], len = 00000037, (none)
 Data           :           Slot, [00000002], Local, xFunction
 Custom         :   (none)
 
-Function       : In MetaData, [000008A2][0001:000008A2], len = 0000004D, AddDevice
+Function       : In MetaData, [0000089C][0001:0000089C], len = 00000051, AddDevice
                  Function attribute:
                  Function info:
 FuncDebugStart :   
 FuncDebugEnd   :   
-Block          :   static, [000008A2][0001:000008A2], len = 0000004D, (none)
+Block          :   static, [0000089C][0001:0000089C], len = 00000051, (none)
 Data           :     Slot, [00000000], Local, CS$4$0000
 Custom         :   (none)
 
-Function       : In MetaData, [000008EF][0001:000008EF], len = 00000007, .cctor
+Function       : In MetaData, [000008ED][0001:000008ED], len = 0000000B, .cctor
                  Function attribute:
                  Function info:
 FuncDebugStart :   
 FuncDebugEnd   :   
 Custom         :   (none)
 
-Function       : In MetaData, [000008F6][0001:000008F6], len = 00000028, .ctor
+Function       : In MetaData, [000008F8][0001:000008F8], len = 00000028, .ctor
                  Function attribute:
                  Function info:
 FuncDebugStart :   
@@ -613,12 +603,12 @@ Custom         :   (none)
 ** Module: Kernel.Hardware.PCI.PCIBaseAddressBar
 
 
-Function       : In MetaData, [0000091E][0001:0000091E], len = 00000096, .ctor
+Function       : In MetaData, [00000920][0001:00000920], len = 00000096, .ctor
                  Function attribute:
                  Function info:
 FuncDebugStart :   
 FuncDebugEnd   :   
-Block          :   static, [0000091E][0001:0000091E], len = 00000096, (none)
+Block          :   static, [00000920][0001:00000920], len = 00000096, (none)
 UsingNamespace :     USystem
 UsingNamespace :     USystem.Collections.Generic
 UsingNamespace :     USystem.Linq
@@ -627,43 +617,43 @@ Data           :     Slot, [00000000], Local, CS$4$0000
 Data           :     Slot, [00000001], Local, CS$4$0001
 Custom         :   (none)
 
-Function       : In MetaData, [000009B4][0001:000009B4], len = 00000012, pci_size
+Function       : In MetaData, [000009B6][0001:000009B6], len = 00000012, pci_size
                  Function attribute:
                  Function info:
 FuncDebugStart :   
 FuncDebugEnd   :   
-Block          :   static, [000009B4][0001:000009B4], len = 00000012, (none)
+Block          :   static, [000009B6][0001:000009B6], len = 00000012, (none)
 Data           :     Slot, [00000001], Local, CS$1$0000
 Data           :     Slot, [00000000], Local, size
 Custom         :   (none)
 
-Function       : In MetaData, [000009C6][0001:000009C6], len = 0000000C, BaseAddress
+Function       : In MetaData, [000009C8][0001:000009C8], len = 0000000C, BaseAddress
                  Function attribute:
                  Function info:
 FuncDebugStart :   
 FuncDebugEnd   :   
-Block          :   static, [000009C6][0001:000009C6], len = 0000000C, (none)
+Block          :   static, [000009C8][0001:000009C8], len = 0000000C, (none)
 Data           :     Slot, [00000000], Local, CS$1$0000
 Custom         :   (none)
 
-Function       : In MetaData, [000009D2][0001:000009D2], len = 0000000C, IsIO
+Function       : In MetaData, [000009D4][0001:000009D4], len = 0000000C, IsIO
                  Function attribute:
                  Function info:
 FuncDebugStart :   
 FuncDebugEnd   :   
-Block          :   static, [000009D2][0001:000009D2], len = 0000000C, (none)
+Block          :   static, [000009D4][0001:000009D4], len = 0000000C, (none)
 Data           :     Slot, [00000000], Local, CS$1$0000
 Custom         :   (none)
 
 ** Module: Kernel.Hardware.PCI.PCIDevice
 
 
-Function       : In MetaData, [000009DE][0001:000009DE], len = 0000000E, get_Command
+Function       : In MetaData, [000009E0][0001:000009E0], len = 0000000E, get_Command
                  Function attribute:
                  Function info:
 FuncDebugStart :   
 FuncDebugEnd   :   
-Block          :   static, [000009DE][0001:000009DE], len = 0000000E, (none)
+Block          :   static, [000009E0][0001:000009E0], len = 0000000E, (none)
 UsingNamespace :     USystem
 UsingNamespace :     USystem.Collections.Generic
 UsingNamespace :     USystem.Linq
@@ -672,122 +662,122 @@ UsingNamespace :     USystem.Threading.Tasks
 Data           :     Slot, [00000000], Local, CS$1$0000
 Custom         :   (none)
 
-Function       : In MetaData, [000009EC][0001:000009EC], len = 0000000C, set_Command
+Function       : In MetaData, [000009EE][0001:000009EE], len = 0000000C, set_Command
                  Function attribute:
                  Function info:
 FuncDebugStart :   
 FuncDebugEnd   :   
 Custom         :   (none)
 
-Function       : In MetaData, [000009F8][0001:000009F8], len = 0000000D, get_Status
+Function       : In MetaData, [000009FA][0001:000009FA], len = 0000000D, get_Status
                  Function attribute:
                  Function info:
 FuncDebugStart :   
 FuncDebugEnd   :   
-Block          :   static, [000009F8][0001:000009F8], len = 0000000D, (none)
+Block          :   static, [000009FA][0001:000009FA], len = 0000000D, (none)
 Data           :     Slot, [00000000], Local, CS$1$0000
 Custom         :   (none)
 
-Function       : In MetaData, [00000A05][0001:00000A05], len = 0000000C, set_Status
+Function       : In MetaData, [00000A07][0001:00000A07], len = 0000000C, set_Status
                  Function attribute:
                  Function info:
 FuncDebugStart :   
 FuncDebugEnd   :   
 Custom         :   (none)
 
-Function       : In MetaData, [00000A11][0001:00000A11], len = 00000118, .ctor
+Function       : In MetaData, [00000A13][0001:00000A13], len = 00000118, .ctor
                  Function attribute:
                  Function info:
 FuncDebugStart :   
 FuncDebugEnd   :   
 Custom         :   (none)
 
-Function       : In MetaData, [00000B29][0001:00000B29], len = 0000001E, GetAddressBase
+Function       : In MetaData, [00000B2B][0001:00000B2B], len = 0000001E, GetAddressBase
                  Function attribute:
                  Function info:
 FuncDebugStart :   
 FuncDebugEnd   :   
-Block          :   static, [00000B29][0001:00000B29], len = 0000001E, (none)
+Block          :   static, [00000B2B][0001:00000B2B], len = 0000001E, (none)
 Data           :     Slot, [00000000], Local, CS$1$0000
 Custom         :   (none)
 
-Function       : In MetaData, [00000B47][0001:00000B47], len = 0000002B, EnableMemory
+Function       : In MetaData, [00000B49][0001:00000B49], len = 0000002B, EnableMemory
                  Function attribute:
                  Function info:
 FuncDebugStart :   
 FuncDebugEnd   :   
-Block          :   static, [00000B47][0001:00000B47], len = 0000002B, (none)
+Block          :   static, [00000B49][0001:00000B49], len = 0000002B, (none)
 Data           :     Slot, [00000002], Local, CS$4$0000
 Data           :     Slot, [00000000], Local, command
 Data           :     Slot, [00000001], Local, flags
 Custom         :   (none)
 
-Function       : In MetaData, [00000B72][0001:00000B72], len = 00000059, ReadRegister8
+Function       : In MetaData, [00000B74][0001:00000B74], len = 00000059, ReadRegister8
                  Function attribute:
                  Function info:
 FuncDebugStart :   
 FuncDebugEnd   :   
-Block          :   static, [00000B72][0001:00000B72], len = 00000059, (none)
+Block          :   static, [00000B74][0001:00000B74], len = 00000059, (none)
 Data           :     Slot, [00000001], Local, CS$1$0000
 Data           :     Slot, [00000000], Local, xAddr
 Custom         :   (none)
 
-Function       : In MetaData, [00000BCB][0001:00000BCB], len = 00000047, WriteRegister8
+Function       : In MetaData, [00000BCD][0001:00000BCD], len = 00000047, WriteRegister8
                  Function attribute:
                  Function info:
 FuncDebugStart :   
 FuncDebugEnd   :   
-Block          :   static, [00000BCB][0001:00000BCB], len = 00000047, (none)
+Block          :   static, [00000BCD][0001:00000BCD], len = 00000047, (none)
 Data           :     Slot, [00000000], Local, xAddr
 Custom         :   (none)
 
-Function       : In MetaData, [00000C12][0001:00000C12], len = 00000059, ReadRegister16
+Function       : In MetaData, [00000C14][0001:00000C14], len = 00000059, ReadRegister16
                  Function attribute:
                  Function info:
 FuncDebugStart :   
 FuncDebugEnd   :   
-Block          :   static, [00000C12][0001:00000C12], len = 00000059, (none)
+Block          :   static, [00000C14][0001:00000C14], len = 00000059, (none)
 Data           :     Slot, [00000001], Local, CS$1$0000
 Data           :     Slot, [00000000], Local, xAddr
 Custom         :   (none)
 
-Function       : In MetaData, [00000C6B][0001:00000C6B], len = 00000047, WriteRegister16
+Function       : In MetaData, [00000C6D][0001:00000C6D], len = 00000047, WriteRegister16
                  Function attribute:
                  Function info:
 FuncDebugStart :   
 FuncDebugEnd   :   
-Block          :   static, [00000C6B][0001:00000C6B], len = 00000047, (none)
+Block          :   static, [00000C6D][0001:00000C6D], len = 00000047, (none)
 Data           :     Slot, [00000000], Local, xAddr
 Custom         :   (none)
 
-Function       : In MetaData, [00000CB2][0001:00000CB2], len = 00000049, ReadRegister32
+Function       : In MetaData, [00000CB4][0001:00000CB4], len = 00000049, ReadRegister32
                  Function attribute:
                  Function info:
 FuncDebugStart :   
 FuncDebugEnd   :   
-Block          :   static, [00000CB2][0001:00000CB2], len = 00000049, (none)
+Block          :   static, [00000CB4][0001:00000CB4], len = 00000049, (none)
 Data           :     Slot, [00000001], Local, CS$1$0000
 Data           :     Slot, [00000000], Local, xAddr
 Custom         :   (none)
 
-Function       : In MetaData, [00000CFB][0001:00000CFB], len = 00000047, WriteRegister32
+Function       : In MetaData, [00000CFD][0001:00000CFD], len = 00000047, WriteRegister32
                  Function attribute:
                  Function info:
 FuncDebugStart :   
 FuncDebugEnd   :   
-Block          :   static, [00000CFB][0001:00000CFB], len = 00000047, (none)
+Block          :   static, [00000CFD][0001:00000CFD], len = 00000047, (none)
 Data           :     Slot, [00000000], Local, xAddr
 Custom         :   (none)
 
 ** Module: Kernel.Hardware.PCI.PCIDevice.DeviceClass
 
 
-Function       : In MetaData, [00000D42][0001:00000D42], len = 0000038A, GetString
+Function       : In MetaData, [00000D44][0001:00000D44], len = 0000038A, GetString
                  Function attribute:
                  Function info:
 FuncDebugStart :   
 FuncDebugEnd   :   
-Block          :   static, [00000D42][0001:00000D42], len = 0000038A, (none)
+Block          :   static, [00000D44][0001:00000D44], len = 0000038A, (none)
 Data           :     Slot, [00000001], Local, CS$1$0000
 Data           :     Slot, [00000002], Local, CS$4$0001
 Data           :     Slot, [00000003], Local, CS$4$0002
@@ -798,12 +788,12 @@ Custom         :   (none)
 ** Module: Kernel.Hardware.PCI.PCIDeviceBridge
 
 
-Function       : In MetaData, [000010CC][0001:000010CC], len = 00000152, .ctor
+Function       : In MetaData, [000010CE][0001:000010CE], len = 00000152, .ctor
                  Function attribute:
                  Function info:
 FuncDebugStart :   
 FuncDebugEnd   :   
-Block          :   static, [000010CC][0001:000010CC], len = 00000152, (none)
+Block          :   static, [000010CE][0001:000010CE], len = 00000152, (none)
 UsingNamespace :     USystem
 UsingNamespace :     USystem.Collections.Generic
 UsingNamespace :     USystem.Linq
@@ -813,12 +803,12 @@ Custom         :   (none)
 ** Module: Kernel.Hardware.PCI.PCIDeviceCardbus
 
 
-Function       : In MetaData, [0000121E][0001:0000121E], len = 0000012A, .ctor
+Function       : In MetaData, [00001220][0001:00001220], len = 0000012A, .ctor
                  Function attribute:
                  Function info:
 FuncDebugStart :   
 FuncDebugEnd   :   
-Block          :   static, [0000121E][0001:0000121E], len = 0000012A, (none)
+Block          :   static, [00001220][0001:00001220], len = 0000012A, (none)
 UsingNamespace :     USystem
 UsingNamespace :     USystem.Collections.Generic
 UsingNamespace :     USystem.Linq
@@ -828,23 +818,16 @@ Custom         :   (none)
 ** Module: Kernel.Hardware.PCI.PCIDeviceNormal
 
 
-Function       : In MetaData, [00001348][0001:00001348], len = 00000101, .ctor
+Function       : In MetaData, [0000134A][0001:0000134A], len = 00000101, .ctor
                  Function attribute:
                  Function info:
 FuncDebugStart :   
 FuncDebugEnd   :   
-Block          :   static, [00001348][0001:00001348], len = 00000101, (none)
+Block          :   static, [0000134A][0001:0000134A], len = 00000101, (none)
 UsingNamespace :     USystem
 UsingNamespace :     USystem.Collections.Generic
 UsingNamespace :     USystem.Linq
 UsingNamespace :     USystem.Text
-Custom         :   (none)
-
-Function       : In MetaData, [00001449][0001:00001449], len = 00000012, EnableDevice
-                 Function attribute:
-                 Function info:
-FuncDebugStart :   
-FuncDebugEnd   :   
 Custom         :   (none)
 
 
@@ -852,58 +835,57 @@ Custom         :   (none)
 *** GLOBALS
 
 Function: [0000066E][0001:0000066E] Read_Byte
-Function: [000008A2][0001:000008A2] AddDevice
-Function: [000009D2][0001:000009D2] IsIO
-Function: [000009EC][0001:000009EC] set_Command
-Function: [000009DE][0001:000009DE] get_Command
-Function: [00000C12][0001:00000C12] ReadRegister16
+Function: [0000089C][0001:0000089C] AddDevice
+Function: [000009D4][0001:000009D4] IsIO
+Function: [000009EE][0001:000009EE] set_Command
+Function: [000009E0][0001:000009E0] get_Command
+Function: [00000C14][0001:00000C14] ReadRegister16
 Function: [00000175][0001:00000175] get_FirmwareRev
-Function: [000007D4][0001:000007D4] EnumerateDevices
+Function: [000007DD][0001:000007DD] EnumerateDevices
 Function: [00000416][0001:00000416] SendCmd
 Function: [00000408][0001:00000408] SendCmd
 Function: [0000000C][0001:0000000C] get_BlockSize
-Function: [00000BCB][0001:00000BCB] WriteRegister8
-Function: [0000121E][0001:0000121E] .ctor
+Function: [00000BCD][0001:00000BCD] WriteRegister8
+Function: [00001220][0001:00001220] .ctor
 Function: [0000002D][0001:0000002D] .ctor
-Function: [00001348][0001:00001348] .ctor
-Function: [00000A11][0001:00000A11] .ctor
+Function: [0000134A][0001:0000134A] .ctor
+Function: [00000A13][0001:00000A13] .ctor
 Function: [0000063D][0001:0000063D] .ctor
 Function: [0000062C][0001:0000062C] .ctor
-Function: [000010CC][0001:000010CC] .ctor
+Function: [000010CE][0001:000010CE] .ctor
 Function: [0000018D][0001:0000018D] .ctor
 Function: [0000005B][0001:0000005B] .ctor
-Function: [000008F6][0001:000008F6] .ctor
+Function: [000008F8][0001:000008F8] .ctor
 Function: [000005B1][0001:000005B1] .ctor
-Function: [0000091E][0001:0000091E] .ctor
+Function: [00000920][0001:00000920] .ctor
 Function: [00000045][0001:00000045] .ctor
-Function: [00000765][0001:00000765] get_NumDevices
-Function: [0000077A][0001:0000077A] GetDevice
+Function: [0000076D][0001:0000076D] GetDevice
 Function: [0000051E][0001:0000051E] WriteBlock
 Function: [000001E7][0001:000001E7] SelectDrive
 Function: [000005FC][0001:000005FC] set_Item
 Function: [000005C9][0001:000005C9] get_Item
-Function: [00000CB2][0001:00000CB2] ReadRegister32
+Function: [00000CB4][0001:00000CB4] ReadRegister32
 Function: [00000260][0001:00000260] DiscoverDrive
-Function: [00000B47][0001:00000B47] EnableMemory
-Function: [000009B4][0001:000009B4] pci_size
+Function: [00000B49][0001:00000B49] EnableMemory
+Function: [000009B6][0001:000009B6] pci_size
 Function: [0000015D][0001:0000015D] get_DriveType
-Function: [00000772][0001:00000772] Init
+Function: [00000765][0001:00000765] Init
 Function: [000000FD][0001:000000FD] Init
-Function: [00000B72][0001:00000B72] ReadRegister8
-Function: [000009C6][0001:000009C6] BaseAddress
+Function: [00000B74][0001:00000B74] ReadRegister8
+Function: [000009C8][0001:000009C8] BaseAddress
 Function: [000006B8][0001:000006B8] doWrite
 Function: [000006B6][0001:000006B6] doWrite
 Function: [000006B4][0001:000006B4] doWrite
 Function: [000006B2][0001:000006B2] doWrite
 Function: [00000181][0001:00000181] get_ModelNo
 Function: [00000169][0001:00000169] get_SerialNo
-Function: [000007ED][0001:000007ED] EnumerateBus
+Function: [000007E7][0001:000007E7] EnumerateBus
 Function: [0000021A][0001:0000021A] Wait
 Function: [00000484][0001:00000484] SelectSector
 Function: [0000065F][0001:0000065F] doRead_UInt32
-Function: [00000CFB][0001:00000CFB] WriteRegister32
+Function: [00000CFD][0001:00000CFD] WriteRegister32
 Function: [000006A1][0001:000006A1] Read_UInt64
-Function: [000008EF][0001:000008EF] .cctor
+Function: [000008ED][0001:000008ED] .cctor
 Function: [000005A4][0001:000005A4] .cctor
 Function: [00000146][0001:00000146] .cctor
 Function: [00000000][0001:00000000] get_BlockCount
@@ -911,7 +893,7 @@ Function: [000002F4][0001:000002F4] InitDrive
 Function: [0000010F][0001:0000010F] InitDrive
 Function: [00000727][0001:00000727] Read16
 Function: [00000658][0001:00000658] doRead_UInt16
-Function: [00000C6B][0001:00000C6B] WriteRegister16
+Function: [00000C6D][0001:00000C6D] WriteRegister16
 Function: [000006E7][0001:000006E7] Write
 Function: [000006D8][0001:000006D8] Write
 Function: [000006C9][0001:000006C9] Write
@@ -920,16 +902,15 @@ Function: [000004F8][0001:000004F8] ReadBlock
 Function: [00000666][0001:00000666] doRead_UInt64
 Function: [00000690][0001:00000690] Read_UInt32
 Function: [00000018][0001:00000018] NewBlockArray
-Function: [00001449][0001:00001449] EnableDevice
 Function: [000006F6][0001:000006F6] Read8
 Function: [00000651][0001:00000651] doRead_Byte
 Function: [000003C3][0001:000003C3] GetString
-Function: [00000D42][0001:00000D42] GetString
+Function: [00000D44][0001:00000D44] GetString
 Function: [0000067F][0001:0000067F] Read_UInt16
-Function: [00000B29][0001:00000B29] GetAddressBase
+Function: [00000B2B][0001:00000B2B] GetAddressBase
 Function: [00000746][0001:00000746] Read32
-Function: [00000A05][0001:00000A05] set_Status
-Function: [000009F8][0001:000009F8] get_Status
+Function: [00000A07][0001:00000A07] set_Status
+Function: [000009FA][0001:000009FA] get_Status
 
 
 
@@ -1484,406 +1465,394 @@ Compiland = Kernel.Hardware.PCI.PCIDeviceNormal
 	line 16707566 at [00000761][0001:00000761], len = 0x3
 	line 134 at [00000764][0001:00000764], len = 0x1
 
-** get_NumDevices
-
-	line 20 at [00000765][0001:00000765], len = 0x1	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.Hardware\PCI\PCI.cs
-	line 21 at [00000766][0001:00000766], len = 0xA
-	line 22 at [00000770][0001:00000770], len = 0x2
-
 ** Init
 
-	line 26 at [00000772][0001:00000772], len = 0x1	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.Hardware\PCI\PCI.cs
-	line 27 at [00000773][0001:00000773], len = 0x6
-	line 28 at [00000779][0001:00000779], len = 0x1
+	line 15 at [00000765][0001:00000765], len = 0x1	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.Hardware\PCI\PCI.cs
+	line 16 at [00000766][0001:00000766], len = 0x6
+	line 17 at [0000076C][0001:0000076C], len = 0x1
 
 ** GetDevice
 
-	line 31 at [0000077A][0001:0000077A], len = 0x1	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.Hardware\PCI\PCI.cs
-	line 32 at [0000077B][0001:0000077B], len = 0x2
-	line 16707566 at [0000077D][0001:0000077D], len = 0x2
-	line 33 at [0000077F][0001:0000077F], len = 0x1
-	line 34 at [00000780][0001:00000780], len = 0x26
-	line 16707566 at [000007A6][0001:000007A6], len = 0x3
-	line 35 at [000007A9][0001:000007A9], len = 0xA
-	line 36 at [000007B3][0001:000007B3], len = 0x1
-	line 32 at [000007B4][0001:000007B4], len = 0x4
-	line 32 at [000007B8][0001:000007B8], len = 0x13
-	line 16707566 at [000007CB][0001:000007CB], len = 0x3
-	line 37 at [000007CE][0001:000007CE], len = 0x4
-	line 38 at [000007D2][0001:000007D2], len = 0x2
+	line 20 at [0000076D][0001:0000076D], len = 0x1	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.Hardware\PCI\PCI.cs
+	line 21 at [0000076E][0001:0000076E], len = 0x2
+	line 16707566 at [00000770][0001:00000770], len = 0x2
+	line 22 at [00000772][0001:00000772], len = 0x1
+	line 23 at [00000773][0001:00000773], len = 0x38
+	line 16707566 at [000007AB][0001:000007AB], len = 0x3
+	line 24 at [000007AE][0001:000007AE], len = 0x13
+	line 25 at [000007C1][0001:000007C1], len = 0x1
+	line 21 at [000007C2][0001:000007C2], len = 0x4
+	line 21 at [000007C6][0001:000007C6], len = 0xE
+	line 16707566 at [000007D4][0001:000007D4], len = 0x3
+	line 26 at [000007D7][0001:000007D7], len = 0x4
+	line 27 at [000007DB][0001:000007DB], len = 0x2
 
 ** EnumerateDevices
 
-	line 42 at [000007D4][0001:000007D4], len = 0x1	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.Hardware\PCI\PCI.cs
-	line 43 at [000007D5][0001:000007D5], len = 0xF
-	line 44 at [000007E4][0001:000007E4], len = 0x8
-	line 45 at [000007EC][0001:000007EC], len = 0x1
+	line 31 at [000007DD][0001:000007DD], len = 0x1	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.Hardware\PCI\PCI.cs
+	line 32 at [000007DE][0001:000007DE], len = 0x8
+	line 33 at [000007E6][0001:000007E6], len = 0x1
 
 ** EnumerateBus
 
-	line 49 at [000007ED][0001:000007ED], len = 0x1	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.Hardware\PCI\PCI.cs
-	line 50 at [000007EE][0001:000007EE], len = 0x2
-	line 16707566 at [000007F0][0001:000007F0], len = 0x5
-	line 51 at [000007F5][0001:000007F5], len = 0x1
-	line 52 at [000007F6][0001:000007F6], len = 0x9
-	line 53 at [000007FF][0001:000007FF], len = 0xA
-	line 16707566 at [00000809][0001:00000809], len = 0x6
-	line 54 at [0000080F][0001:0000080F], len = 0x1
-	line 55 at [00000810][0001:00000810], len = 0xD
-	line 16707566 at [0000081D][0001:0000081D], len = 0x3
-	line 56 at [00000820][0001:00000820], len = 0x1
-	line 57 at [00000821][0001:00000821], len = 0x2
-	line 16707566 at [00000823][0001:00000823], len = 0x2
-	line 58 at [00000825][0001:00000825], len = 0x1
-	line 59 at [00000826][0001:00000826], len = 0x9
-	line 60 at [0000082F][0001:0000082F], len = 0xA
-	line 16707566 at [00000839][0001:00000839], len = 0x3
-	line 61 at [0000083C][0001:0000083C], len = 0xF
-	line 62 at [0000084B][0001:0000084B], len = 0x1
-	line 57 at [0000084C][0001:0000084C], len = 0x4
-	line 57 at [00000850][0001:00000850], len = 0x5
-	line 16707566 at [00000855][0001:00000855], len = 0x3
-	line 63 at [00000858][0001:00000858], len = 0x1
-	line 16707566 at [00000859][0001:00000859], len = 0x2
-	line 64 at [0000085B][0001:0000085B], len = 0xD
-	line 16707566 at [00000868][0001:00000868], len = 0x3
-	line 65 at [0000086B][0001:0000086B], len = 0x1
-	line 66 at [0000086C][0001:0000086C], len = 0xF
-	line 67 at [0000087B][0001:0000087B], len = 0x1
-	line 16707566 at [0000087C][0001:0000087C], len = 0x2
-	line 69 at [0000087E][0001:0000087E], len = 0x1
-	line 70 at [0000087F][0001:0000087F], len = 0xF
-	line 71 at [0000088E][0001:0000088E], len = 0x1
-	line 72 at [0000088F][0001:0000088F], len = 0x1
-	line 73 at [00000890][0001:00000890], len = 0x1
-	line 50 at [00000891][0001:00000891], len = 0x4
-	line 50 at [00000895][0001:00000895], len = 0x6
-	line 16707566 at [0000089B][0001:0000089B], len = 0x6
-	line 74 at [000008A1][0001:000008A1], len = 0x1
+	line 37 at [000007E7][0001:000007E7], len = 0x1	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.Hardware\PCI\PCI.cs
+	line 38 at [000007E8][0001:000007E8], len = 0x2
+	line 16707566 at [000007EA][0001:000007EA], len = 0x5
+	line 39 at [000007EF][0001:000007EF], len = 0x1
+	line 40 at [000007F0][0001:000007F0], len = 0x9
+	line 41 at [000007F9][0001:000007F9], len = 0xA
+	line 16707566 at [00000803][0001:00000803], len = 0x6
+	line 42 at [00000809][0001:00000809], len = 0x1
+	line 43 at [0000080A][0001:0000080A], len = 0xD
+	line 16707566 at [00000817][0001:00000817], len = 0x3
+	line 44 at [0000081A][0001:0000081A], len = 0x1
+	line 45 at [0000081B][0001:0000081B], len = 0x2
+	line 16707566 at [0000081D][0001:0000081D], len = 0x2
+	line 46 at [0000081F][0001:0000081F], len = 0x1
+	line 47 at [00000820][0001:00000820], len = 0x9
+	line 48 at [00000829][0001:00000829], len = 0xA
+	line 16707566 at [00000833][0001:00000833], len = 0x3
+	line 49 at [00000836][0001:00000836], len = 0xF
+	line 50 at [00000845][0001:00000845], len = 0x1
+	line 45 at [00000846][0001:00000846], len = 0x4
+	line 45 at [0000084A][0001:0000084A], len = 0x5
+	line 16707566 at [0000084F][0001:0000084F], len = 0x3
+	line 51 at [00000852][0001:00000852], len = 0x1
+	line 16707566 at [00000853][0001:00000853], len = 0x2
+	line 52 at [00000855][0001:00000855], len = 0xD
+	line 16707566 at [00000862][0001:00000862], len = 0x3
+	line 53 at [00000865][0001:00000865], len = 0x1
+	line 54 at [00000866][0001:00000866], len = 0xF
+	line 55 at [00000875][0001:00000875], len = 0x1
+	line 16707566 at [00000876][0001:00000876], len = 0x2
+	line 57 at [00000878][0001:00000878], len = 0x1
+	line 58 at [00000879][0001:00000879], len = 0xF
+	line 59 at [00000888][0001:00000888], len = 0x1
+	line 60 at [00000889][0001:00000889], len = 0x1
+	line 61 at [0000088A][0001:0000088A], len = 0x1
+	line 38 at [0000088B][0001:0000088B], len = 0x4
+	line 38 at [0000088F][0001:0000088F], len = 0x6
+	line 16707566 at [00000895][0001:00000895], len = 0x6
+	line 62 at [0000089B][0001:0000089B], len = 0x1
 
 ** AddDevice
 
-	line 78 at [000008A2][0001:000008A2], len = 0x1	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.Hardware\PCI\PCI.cs
-	line 79 at [000008A3][0001:000008A3], len = 0x14
-	line 81 at [000008B7][0001:000008B7], len = 0x1E
-	line 16707566 at [000008D5][0001:000008D5], len = 0x3
-	line 82 at [000008D8][0001:000008D8], len = 0x1
-	line 83 at [000008D9][0001:000008D9], len = 0x14
-	line 84 at [000008ED][0001:000008ED], len = 0x1
-	line 85 at [000008EE][0001:000008EE], len = 0x1
+	line 66 at [0000089C][0001:0000089C], len = 0x1	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.Hardware\PCI\PCI.cs
+	line 67 at [0000089D][0001:0000089D], len = 0xC
+	line 68 at [000008A9][0001:000008A9], len = 0xC
+	line 70 at [000008B5][0001:000008B5], len = 0x1E
+	line 16707566 at [000008D3][0001:000008D3], len = 0x3
+	line 71 at [000008D6][0001:000008D6], len = 0x1
+	line 72 at [000008D7][0001:000008D7], len = 0x14
+	line 73 at [000008EB][0001:000008EB], len = 0x1
+	line 74 at [000008EC][0001:000008EC], len = 0x1
 
 ** .cctor
 
-	line 15 at [000008EF][0001:000008EF], len = 0x6	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.Hardware\PCI\PCI.cs
-	line 16707566 at [000008F5][0001:000008F5], len = 0x1
+	line 12 at [000008ED][0001:000008ED], len = 0xA	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.Hardware\PCI\PCI.cs
+	line 16707566 at [000008F7][0001:000008F7], len = 0x1
 
 ** .ctor
 
-	line 11 at [000008F6][0001:000008F6], len = 0x10	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.Hardware\PCI\PCI.cs
-	line 12 at [00000906][0001:00000906], len = 0x10
-	line 16707566 at [00000916][0001:00000916], len = 0x8
+	line 9 at [000008F8][0001:000008F8], len = 0x10	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.Hardware\PCI\PCI.cs
+	line 10 at [00000908][0001:00000908], len = 0x10
+	line 16707566 at [00000918][0001:00000918], len = 0x8
 
 ** .ctor
 
-	line 10 at [0000091E][0001:0000091E], len = 0x7	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.Hardware\PCI\PCIBaseAddressBar.cs
-	line 11 at [00000925][0001:00000925], len = 0x7
-	line 12 at [0000092C][0001:0000092C], len = 0x7
-	line 13 at [00000933][0001:00000933], len = 0x7
-	line 15 at [0000093A][0001:0000093A], len = 0x7
-	line 17 at [00000941][0001:00000941], len = 0x1
-	line 18 at [00000942][0001:00000942], len = 0xC
-	line 20 at [0000094E][0001:0000094E], len = 0xA
-	line 16707566 at [00000958][0001:00000958], len = 0x3
-	line 21 at [0000095B][0001:0000095B], len = 0x1
-	line 22 at [0000095C][0001:0000095C], len = 0xA
-	line 23 at [00000966][0001:00000966], len = 0x1
-	line 16707566 at [00000967][0001:00000967], len = 0x2
-	line 25 at [00000969][0001:00000969], len = 0x1
-	line 26 at [0000096A][0001:0000096A], len = 0xC
-	line 27 at [00000976][0001:00000976], len = 0xC
-	line 28 at [00000982][0001:00000982], len = 0x7
-	line 16707566 at [00000989][0001:00000989], len = 0x10
-	line 31 at [00000999][0001:00000999], len = 0xA
-	line 32 at [000009A3][0001:000009A3], len = 0x2
-	line 34 at [000009A5][0001:000009A5], len = 0xA
-	line 35 at [000009AF][0001:000009AF], len = 0x2
-	line 37 at [000009B1][0001:000009B1], len = 0x1
-	line 38 at [000009B2][0001:000009B2], len = 0x2
+	line 10 at [00000920][0001:00000920], len = 0x7	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.Hardware\PCI\PCIBaseAddressBar.cs
+	line 11 at [00000927][0001:00000927], len = 0x7
+	line 12 at [0000092E][0001:0000092E], len = 0x7
+	line 13 at [00000935][0001:00000935], len = 0x7
+	line 15 at [0000093C][0001:0000093C], len = 0x7
+	line 17 at [00000943][0001:00000943], len = 0x1
+	line 18 at [00000944][0001:00000944], len = 0xC
+	line 20 at [00000950][0001:00000950], len = 0xA
+	line 16707566 at [0000095A][0001:0000095A], len = 0x3
+	line 21 at [0000095D][0001:0000095D], len = 0x1
+	line 22 at [0000095E][0001:0000095E], len = 0xA
+	line 23 at [00000968][0001:00000968], len = 0x1
+	line 16707566 at [00000969][0001:00000969], len = 0x2
+	line 25 at [0000096B][0001:0000096B], len = 0x1
+	line 26 at [0000096C][0001:0000096C], len = 0xC
+	line 27 at [00000978][0001:00000978], len = 0xC
+	line 28 at [00000984][0001:00000984], len = 0x7
+	line 16707566 at [0000098B][0001:0000098B], len = 0x10
+	line 31 at [0000099B][0001:0000099B], len = 0xA
+	line 32 at [000009A5][0001:000009A5], len = 0x2
+	line 34 at [000009A7][0001:000009A7], len = 0xA
+	line 35 at [000009B1][0001:000009B1], len = 0x2
+	line 37 at [000009B3][0001:000009B3], len = 0x1
+	line 38 at [000009B4][0001:000009B4], len = 0x2
 
 ** pci_size
 
-	line 40 at [000009B4][0001:000009B4], len = 0x1	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.Hardware\PCI\PCIBaseAddressBar.cs
-	line 41 at [000009B5][0001:000009B5], len = 0x4
-	line 42 at [000009B9][0001:000009B9], len = 0x7
-	line 43 at [000009C0][0001:000009C0], len = 0x4
-	line 44 at [000009C4][0001:000009C4], len = 0x2
+	line 40 at [000009B6][0001:000009B6], len = 0x1	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.Hardware\PCI\PCIBaseAddressBar.cs
+	line 41 at [000009B7][0001:000009B7], len = 0x4
+	line 42 at [000009BB][0001:000009BB], len = 0x7
+	line 43 at [000009C2][0001:000009C2], len = 0x4
+	line 44 at [000009C6][0001:000009C6], len = 0x2
 
 ** BaseAddress
 
-	line 47 at [000009C6][0001:000009C6], len = 0x1	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.Hardware\PCI\PCIBaseAddressBar.cs
-	line 48 at [000009C7][0001:000009C7], len = 0x9
-	line 49 at [000009D0][0001:000009D0], len = 0x2
+	line 47 at [000009C8][0001:000009C8], len = 0x1	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.Hardware\PCI\PCIBaseAddressBar.cs
+	line 48 at [000009C9][0001:000009C9], len = 0x9
+	line 49 at [000009D2][0001:000009D2], len = 0x2
 
 ** IsIO
 
-	line 52 at [000009D2][0001:000009D2], len = 0x1	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.Hardware\PCI\PCIBaseAddressBar.cs
-	line 53 at [000009D3][0001:000009D3], len = 0x9
-	line 54 at [000009DC][0001:000009DC], len = 0x2
+	line 52 at [000009D4][0001:000009D4], len = 0x1	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.Hardware\PCI\PCIBaseAddressBar.cs
+	line 53 at [000009D5][0001:000009D5], len = 0x9
+	line 54 at [000009DE][0001:000009DE], len = 0x2
 
 ** get_Command
 
-	line 69 at [000009DE][0001:000009DE], len = 0x1	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.Hardware\PCI\PCIDevice.cs
-	line 69 at [000009DF][0001:000009DF], len = 0xB
-	line 69 at [000009EA][0001:000009EA], len = 0x2
+	line 69 at [000009E0][0001:000009E0], len = 0x1	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.Hardware\PCI\PCIDevice.cs
+	line 69 at [000009E1][0001:000009E1], len = 0xB
+	line 69 at [000009EC][0001:000009EC], len = 0x2
 
 ** set_Command
 
-	line 69 at [000009EC][0001:000009EC], len = 0x1	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.Hardware\PCI\PCIDevice.cs
-	line 69 at [000009ED][0001:000009ED], len = 0xA
-	line 69 at [000009F7][0001:000009F7], len = 0x1
+	line 69 at [000009EE][0001:000009EE], len = 0x1	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.Hardware\PCI\PCIDevice.cs
+	line 69 at [000009EF][0001:000009EF], len = 0xA
+	line 69 at [000009F9][0001:000009F9], len = 0x1
 
 ** get_Status
 
-	line 70 at [000009F8][0001:000009F8], len = 0x1	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.Hardware\PCI\PCIDevice.cs
-	line 70 at [000009F9][0001:000009F9], len = 0xA
-	line 70 at [00000A03][0001:00000A03], len = 0x2
+	line 70 at [000009FA][0001:000009FA], len = 0x1	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.Hardware\PCI\PCIDevice.cs
+	line 70 at [000009FB][0001:000009FB], len = 0xA
+	line 70 at [00000A05][0001:00000A05], len = 0x2
 
 ** set_Status
 
-	line 70 at [00000A05][0001:00000A05], len = 0x1	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.Hardware\PCI\PCIDevice.cs
-	line 70 at [00000A06][0001:00000A06], len = 0xA
-	line 70 at [00000A10][0001:00000A10], len = 0x1
+	line 70 at [00000A07][0001:00000A07], len = 0x1	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.Hardware\PCI\PCIDevice.cs
+	line 70 at [00000A08][0001:00000A08], len = 0xA
+	line 70 at [00000A12][0001:00000A12], len = 0x1
 
 ** .ctor
 
-	line 92 at [00000A11][0001:00000A11], len = 0x7	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.Hardware\PCI\PCIDevice.cs
-	line 93 at [00000A18][0001:00000A18], len = 0x7
-	line 94 at [00000A1F][0001:00000A1F], len = 0x7
-	line 96 at [00000A26][0001:00000A26], len = 0xB
-	line 97 at [00000A31][0001:00000A31], len = 0x7
-	line 99 at [00000A38][0001:00000A38], len = 0x1
-	line 100 at [00000A39][0001:00000A39], len = 0x7
-	line 101 at [00000A40][0001:00000A40], len = 0x7
-	line 102 at [00000A47][0001:00000A47], len = 0x7
-	line 104 at [00000A4E][0001:00000A4E], len = 0xE
-	line 105 at [00000A5C][0001:00000A5C], len = 0xE
-	line 107 at [00000A6A][0001:00000A6A], len = 0xE
-	line 108 at [00000A78][0001:00000A78], len = 0xF
-	line 109 at [00000A87][0001:00000A87], len = 0xF
-	line 110 at [00000A96][0001:00000A96], len = 0xF
-	line 112 at [00000AA5][0001:00000AA5], len = 0xF
-	line 113 at [00000AB4][0001:00000AB4], len = 0xF
-	line 114 at [00000AC3][0001:00000AC3], len = 0xF
-	line 115 at [00000AD2][0001:00000AD2], len = 0xF
-	line 117 at [00000AE1][0001:00000AE1], len = 0xF
-	line 118 at [00000AF0][0001:00000AF0], len = 0xF
-	line 120 at [00000AFF][0001:00000AFF], len = 0x28
-	line 121 at [00000B27][0001:00000B27], len = 0x2
+	line 92 at [00000A13][0001:00000A13], len = 0x7	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.Hardware\PCI\PCIDevice.cs
+	line 93 at [00000A1A][0001:00000A1A], len = 0x7
+	line 94 at [00000A21][0001:00000A21], len = 0x7
+	line 96 at [00000A28][0001:00000A28], len = 0xB
+	line 97 at [00000A33][0001:00000A33], len = 0x7
+	line 99 at [00000A3A][0001:00000A3A], len = 0x1
+	line 100 at [00000A3B][0001:00000A3B], len = 0x7
+	line 101 at [00000A42][0001:00000A42], len = 0x7
+	line 102 at [00000A49][0001:00000A49], len = 0x7
+	line 104 at [00000A50][0001:00000A50], len = 0xE
+	line 105 at [00000A5E][0001:00000A5E], len = 0xE
+	line 107 at [00000A6C][0001:00000A6C], len = 0xE
+	line 108 at [00000A7A][0001:00000A7A], len = 0xF
+	line 109 at [00000A89][0001:00000A89], len = 0xF
+	line 110 at [00000A98][0001:00000A98], len = 0xF
+	line 112 at [00000AA7][0001:00000AA7], len = 0xF
+	line 113 at [00000AB6][0001:00000AB6], len = 0xF
+	line 114 at [00000AC5][0001:00000AC5], len = 0xF
+	line 115 at [00000AD4][0001:00000AD4], len = 0xF
+	line 117 at [00000AE3][0001:00000AE3], len = 0xF
+	line 118 at [00000AF2][0001:00000AF2], len = 0xF
+	line 120 at [00000B01][0001:00000B01], len = 0x28
+	line 121 at [00000B29][0001:00000B29], len = 0x2
 
 ** GetAddressBase
 
-	line 125 at [00000B29][0001:00000B29], len = 0x1	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.Hardware\PCI\PCIDevice.cs
-	line 128 at [00000B2A][0001:00000B2A], len = 0x1B
-	line 137 at [00000B45][0001:00000B45], len = 0x2
+	line 125 at [00000B2B][0001:00000B2B], len = 0x1	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.Hardware\PCI\PCIDevice.cs
+	line 128 at [00000B2C][0001:00000B2C], len = 0x1B
+	line 137 at [00000B47][0001:00000B47], len = 0x2
 
 ** EnableMemory
 
-	line 140 at [00000B47][0001:00000B47], len = 0x1	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.Hardware\PCI\PCIDevice.cs
-	line 141 at [00000B48][0001:00000B48], len = 0x8
-	line 143 at [00000B50][0001:00000B50], len = 0x2
-	line 145 at [00000B52][0001:00000B52], len = 0x5
-	line 16707566 at [00000B57][0001:00000B57], len = 0x3
-	line 146 at [00000B5A][0001:00000B5A], len = 0x5
-	line 16707566 at [00000B5F][0001:00000B5F], len = 0x2
-	line 148 at [00000B61][0001:00000B61], len = 0x7
-	line 150 at [00000B68][0001:00000B68], len = 0x9
-	line 151 at [00000B71][0001:00000B71], len = 0x1
+	line 140 at [00000B49][0001:00000B49], len = 0x1	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.Hardware\PCI\PCIDevice.cs
+	line 141 at [00000B4A][0001:00000B4A], len = 0x8
+	line 143 at [00000B52][0001:00000B52], len = 0x2
+	line 145 at [00000B54][0001:00000B54], len = 0x5
+	line 16707566 at [00000B59][0001:00000B59], len = 0x3
+	line 146 at [00000B5C][0001:00000B5C], len = 0x5
+	line 16707566 at [00000B61][0001:00000B61], len = 0x2
+	line 148 at [00000B63][0001:00000B63], len = 0x7
+	line 150 at [00000B6A][0001:00000B6A], len = 0x9
+	line 151 at [00000B73][0001:00000B73], len = 0x1
 
 ** ReadRegister8
 
-	line 158 at [00000B72][0001:00000B72], len = 0x1	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.Hardware\PCI\PCIDevice.cs
-	line 159 at [00000B73][0001:00000B73], len = 0x21
-	line 160 at [00000B94][0001:00000B94], len = 0x12
-	line 161 at [00000BA6][0001:00000BA6], len = 0x23
-	line 162 at [00000BC9][0001:00000BC9], len = 0x2
+	line 158 at [00000B74][0001:00000B74], len = 0x1	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.Hardware\PCI\PCIDevice.cs
+	line 159 at [00000B75][0001:00000B75], len = 0x21
+	line 160 at [00000B96][0001:00000B96], len = 0x12
+	line 161 at [00000BA8][0001:00000BA8], len = 0x23
+	line 162 at [00000BCB][0001:00000BCB], len = 0x2
 
 ** WriteRegister8
 
-	line 166 at [00000BCB][0001:00000BCB], len = 0x1	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.Hardware\PCI\PCIDevice.cs
-	line 167 at [00000BCC][0001:00000BCC], len = 0x21
-	line 168 at [00000BED][0001:00000BED], len = 0x12
-	line 169 at [00000BFF][0001:00000BFF], len = 0x12
-	line 170 at [00000C11][0001:00000C11], len = 0x1
+	line 166 at [00000BCD][0001:00000BCD], len = 0x1	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.Hardware\PCI\PCIDevice.cs
+	line 167 at [00000BCE][0001:00000BCE], len = 0x21
+	line 168 at [00000BEF][0001:00000BEF], len = 0x12
+	line 169 at [00000C01][0001:00000C01], len = 0x12
+	line 170 at [00000C13][0001:00000C13], len = 0x1
 
 ** ReadRegister16
 
-	line 174 at [00000C12][0001:00000C12], len = 0x1	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.Hardware\PCI\PCIDevice.cs
-	line 175 at [00000C13][0001:00000C13], len = 0x21
-	line 176 at [00000C34][0001:00000C34], len = 0x12
-	line 177 at [00000C46][0001:00000C46], len = 0x23
-	line 178 at [00000C69][0001:00000C69], len = 0x2
+	line 174 at [00000C14][0001:00000C14], len = 0x1	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.Hardware\PCI\PCIDevice.cs
+	line 175 at [00000C15][0001:00000C15], len = 0x21
+	line 176 at [00000C36][0001:00000C36], len = 0x12
+	line 177 at [00000C48][0001:00000C48], len = 0x23
+	line 178 at [00000C6B][0001:00000C6B], len = 0x2
 
 ** WriteRegister16
 
-	line 182 at [00000C6B][0001:00000C6B], len = 0x1	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.Hardware\PCI\PCIDevice.cs
-	line 183 at [00000C6C][0001:00000C6C], len = 0x21
-	line 184 at [00000C8D][0001:00000C8D], len = 0x12
-	line 185 at [00000C9F][0001:00000C9F], len = 0x12
-	line 186 at [00000CB1][0001:00000CB1], len = 0x1
+	line 182 at [00000C6D][0001:00000C6D], len = 0x1	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.Hardware\PCI\PCIDevice.cs
+	line 183 at [00000C6E][0001:00000C6E], len = 0x21
+	line 184 at [00000C8F][0001:00000C8F], len = 0x12
+	line 185 at [00000CA1][0001:00000CA1], len = 0x12
+	line 186 at [00000CB3][0001:00000CB3], len = 0x1
 
 ** ReadRegister32
 
-	line 190 at [00000CB2][0001:00000CB2], len = 0x1	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.Hardware\PCI\PCIDevice.cs
-	line 191 at [00000CB3][0001:00000CB3], len = 0x21
-	line 192 at [00000CD4][0001:00000CD4], len = 0x12
-	line 193 at [00000CE6][0001:00000CE6], len = 0x13
-	line 194 at [00000CF9][0001:00000CF9], len = 0x2
+	line 190 at [00000CB4][0001:00000CB4], len = 0x1	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.Hardware\PCI\PCIDevice.cs
+	line 191 at [00000CB5][0001:00000CB5], len = 0x21
+	line 192 at [00000CD6][0001:00000CD6], len = 0x12
+	line 193 at [00000CE8][0001:00000CE8], len = 0x13
+	line 194 at [00000CFB][0001:00000CFB], len = 0x2
 
 ** WriteRegister32
 
-	line 198 at [00000CFB][0001:00000CFB], len = 0x1	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.Hardware\PCI\PCIDevice.cs
-	line 199 at [00000CFC][0001:00000CFC], len = 0x21
-	line 200 at [00000D1D][0001:00000D1D], len = 0x12
-	line 201 at [00000D2F][0001:00000D2F], len = 0x12
-	line 202 at [00000D41][0001:00000D41], len = 0x1
+	line 198 at [00000CFD][0001:00000CFD], len = 0x1	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.Hardware\PCI\PCIDevice.cs
+	line 199 at [00000CFE][0001:00000CFE], len = 0x21
+	line 200 at [00000D1F][0001:00000D1F], len = 0x12
+	line 201 at [00000D31][0001:00000D31], len = 0x12
+	line 202 at [00000D43][0001:00000D43], len = 0x1
 
 ** GetString
 
-	line 210 at [00000D42][0001:00000D42], len = 0x1	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.Hardware\PCI\PCIDevice.cs
-	line 211 at [00000D43][0001:00000D43], len = 0x7
-	line 16707566 at [00000D4A][0001:00000D4A], len = 0x40
-	line 214 at [00000D8A][0001:00000D8A], len = 0x7
-	line 16707566 at [00000D91][0001:00000D91], len = 0xA
-	line 217 at [00000D9B][0001:00000D9B], len = 0x10
-	line 219 at [00000DAB][0001:00000DAB], len = 0x5
-	line 221 at [00000DB0][0001:00000DB0], len = 0x7
-	line 16707566 at [00000DB7][0001:00000DB7], len = 0xA
-	line 224 at [00000DC1][0001:00000DC1], len = 0x10
-	line 226 at [00000DD1][0001:00000DD1], len = 0x5
-	line 228 at [00000DD6][0001:00000DD6], len = 0x7
-	line 16707566 at [00000DDD][0001:00000DDD], len = 0xA
-	line 231 at [00000DE7][0001:00000DE7], len = 0x10
-	line 233 at [00000DF7][0001:00000DF7], len = 0x5
-	line 235 at [00000DFC][0001:00000DFC], len = 0x7
-	line 16707566 at [00000E03][0001:00000E03], len = 0x2C
-	line 238 at [00000E2F][0001:00000E2F], len = 0x10
-	line 240 at [00000E3F][0001:00000E3F], len = 0x10
-	line 242 at [00000E4F][0001:00000E4F], len = 0x10
-	line 244 at [00000E5F][0001:00000E5F], len = 0x10
-	line 246 at [00000E6F][0001:00000E6F], len = 0x2
-	line 248 at [00000E71][0001:00000E71], len = 0x7
-	line 16707566 at [00000E78][0001:00000E78], len = 0x2E
-	line 251 at [00000EA6][0001:00000EA6], len = 0x10
-	line 253 at [00000EB6][0001:00000EB6], len = 0x10
-	line 255 at [00000EC6][0001:00000EC6], len = 0x10
-	line 257 at [00000ED6][0001:00000ED6], len = 0x10
-	line 259 at [00000EE6][0001:00000EE6], len = 0x2
-	line 262 at [00000EE8][0001:00000EE8], len = 0x7
-	line 16707566 at [00000EEF][0001:00000EEF], len = 0x51
-	line 267 at [00000F40][0001:00000F40], len = 0xE
-	line 16707566 at [00000F4E][0001:00000F4E], len = 0x4
-	line 268 at [00000F52][0001:00000F52], len = 0x1
-	line 269 at [00000F53][0001:00000F53], len = 0x10
-	line 272 at [00000F63][0001:00000F63], len = 0x1
-	line 273 at [00000F64][0001:00000F64], len = 0x10
-	line 276 at [00000F74][0001:00000F74], len = 0x10
-	line 278 at [00000F84][0001:00000F84], len = 0x10
-	line 280 at [00000F94][0001:00000F94], len = 0x10
-	line 282 at [00000FA4][0001:00000FA4], len = 0x10
-	line 284 at [00000FB4][0001:00000FB4], len = 0x10
-	line 286 at [00000FC4][0001:00000FC4], len = 0x10
-	line 288 at [00000FD4][0001:00000FD4], len = 0x10
-	line 290 at [00000FE4][0001:00000FE4], len = 0x10
-	line 292 at [00000FF4][0001:00000FF4], len = 0x10
-	line 294 at [00001004][0001:00001004], len = 0x10
-	line 296 at [00001014][0001:00001014], len = 0x10
-	line 298 at [00001024][0001:00001024], len = 0x10
-	line 300 at [00001034][0001:00001034], len = 0x10
-	line 302 at [00001044][0001:00001044], len = 0xD
-	line 304 at [00001051][0001:00001051], len = 0xD
-	line 306 at [0000105E][0001:0000105E], len = 0xD
-	line 310 at [0000106B][0001:0000106B], len = 0xB
-	line 311 at [00001076][0001:00001076], len = 0x50
-	line 312 at [000010C6][0001:000010C6], len = 0x4
-	line 313 at [000010CA][0001:000010CA], len = 0x2
+	line 210 at [00000D44][0001:00000D44], len = 0x1	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.Hardware\PCI\PCIDevice.cs
+	line 211 at [00000D45][0001:00000D45], len = 0x7
+	line 16707566 at [00000D4C][0001:00000D4C], len = 0x40
+	line 214 at [00000D8C][0001:00000D8C], len = 0x7
+	line 16707566 at [00000D93][0001:00000D93], len = 0xA
+	line 217 at [00000D9D][0001:00000D9D], len = 0x10
+	line 219 at [00000DAD][0001:00000DAD], len = 0x5
+	line 221 at [00000DB2][0001:00000DB2], len = 0x7
+	line 16707566 at [00000DB9][0001:00000DB9], len = 0xA
+	line 224 at [00000DC3][0001:00000DC3], len = 0x10
+	line 226 at [00000DD3][0001:00000DD3], len = 0x5
+	line 228 at [00000DD8][0001:00000DD8], len = 0x7
+	line 16707566 at [00000DDF][0001:00000DDF], len = 0xA
+	line 231 at [00000DE9][0001:00000DE9], len = 0x10
+	line 233 at [00000DF9][0001:00000DF9], len = 0x5
+	line 235 at [00000DFE][0001:00000DFE], len = 0x7
+	line 16707566 at [00000E05][0001:00000E05], len = 0x2C
+	line 238 at [00000E31][0001:00000E31], len = 0x10
+	line 240 at [00000E41][0001:00000E41], len = 0x10
+	line 242 at [00000E51][0001:00000E51], len = 0x10
+	line 244 at [00000E61][0001:00000E61], len = 0x10
+	line 246 at [00000E71][0001:00000E71], len = 0x2
+	line 248 at [00000E73][0001:00000E73], len = 0x7
+	line 16707566 at [00000E7A][0001:00000E7A], len = 0x2E
+	line 251 at [00000EA8][0001:00000EA8], len = 0x10
+	line 253 at [00000EB8][0001:00000EB8], len = 0x10
+	line 255 at [00000EC8][0001:00000EC8], len = 0x10
+	line 257 at [00000ED8][0001:00000ED8], len = 0x10
+	line 259 at [00000EE8][0001:00000EE8], len = 0x2
+	line 262 at [00000EEA][0001:00000EEA], len = 0x7
+	line 16707566 at [00000EF1][0001:00000EF1], len = 0x51
+	line 267 at [00000F42][0001:00000F42], len = 0xE
+	line 16707566 at [00000F50][0001:00000F50], len = 0x4
+	line 268 at [00000F54][0001:00000F54], len = 0x1
+	line 269 at [00000F55][0001:00000F55], len = 0x10
+	line 272 at [00000F65][0001:00000F65], len = 0x1
+	line 273 at [00000F66][0001:00000F66], len = 0x10
+	line 276 at [00000F76][0001:00000F76], len = 0x10
+	line 278 at [00000F86][0001:00000F86], len = 0x10
+	line 280 at [00000F96][0001:00000F96], len = 0x10
+	line 282 at [00000FA6][0001:00000FA6], len = 0x10
+	line 284 at [00000FB6][0001:00000FB6], len = 0x10
+	line 286 at [00000FC6][0001:00000FC6], len = 0x10
+	line 288 at [00000FD6][0001:00000FD6], len = 0x10
+	line 290 at [00000FE6][0001:00000FE6], len = 0x10
+	line 292 at [00000FF6][0001:00000FF6], len = 0x10
+	line 294 at [00001006][0001:00001006], len = 0x10
+	line 296 at [00001016][0001:00001016], len = 0x10
+	line 298 at [00001026][0001:00001026], len = 0x10
+	line 300 at [00001036][0001:00001036], len = 0x10
+	line 302 at [00001046][0001:00001046], len = 0xD
+	line 304 at [00001053][0001:00001053], len = 0xD
+	line 306 at [00001060][0001:00001060], len = 0xD
+	line 310 at [0000106D][0001:0000106D], len = 0xB
+	line 311 at [00001078][0001:00001078], len = 0x50
+	line 312 at [000010C8][0001:000010C8], len = 0x4
+	line 313 at [000010CC][0001:000010CC], len = 0x2
 
 ** .ctor
 
-	line 40 at [000010CC][0001:000010CC], len = 0xA	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.Hardware\PCI\PCIDeviceBridge.cs
-	line 42 at [000010D6][0001:000010D6], len = 0x1
-	line 43 at [000010D7][0001:000010D7], len = 0xD
-	line 44 at [000010E4][0001:000010E4], len = 0x15
-	line 45 at [000010F9][0001:000010F9], len = 0x15
-	line 47 at [0000110E][0001:0000110E], len = 0xF
-	line 48 at [0000111D][0001:0000111D], len = 0xF
-	line 49 at [0000112C][0001:0000112C], len = 0xF
-	line 50 at [0000113B][0001:0000113B], len = 0xF
-	line 52 at [0000114A][0001:0000114A], len = 0xF
-	line 53 at [00001159][0001:00001159], len = 0xF
-	line 54 at [00001168][0001:00001168], len = 0xF
-	line 56 at [00001177][0001:00001177], len = 0xF
-	line 57 at [00001186][0001:00001186], len = 0xF
-	line 59 at [00001195][0001:00001195], len = 0xF
-	line 60 at [000011A4][0001:000011A4], len = 0xF
-	line 62 at [000011B3][0001:000011B3], len = 0xF
-	line 63 at [000011C2][0001:000011C2], len = 0xF
-	line 65 at [000011D1][0001:000011D1], len = 0xF
-	line 66 at [000011E0][0001:000011E0], len = 0xF
-	line 68 at [000011EF][0001:000011EF], len = 0xF
-	line 70 at [000011FE][0001:000011FE], len = 0xF
-	line 72 at [0000120D][0001:0000120D], len = 0xF
-	line 73 at [0000121C][0001:0000121C], len = 0x2
+	line 40 at [000010CE][0001:000010CE], len = 0xA	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.Hardware\PCI\PCIDeviceBridge.cs
+	line 42 at [000010D8][0001:000010D8], len = 0x1
+	line 43 at [000010D9][0001:000010D9], len = 0xD
+	line 44 at [000010E6][0001:000010E6], len = 0x15
+	line 45 at [000010FB][0001:000010FB], len = 0x15
+	line 47 at [00001110][0001:00001110], len = 0xF
+	line 48 at [0000111F][0001:0000111F], len = 0xF
+	line 49 at [0000112E][0001:0000112E], len = 0xF
+	line 50 at [0000113D][0001:0000113D], len = 0xF
+	line 52 at [0000114C][0001:0000114C], len = 0xF
+	line 53 at [0000115B][0001:0000115B], len = 0xF
+	line 54 at [0000116A][0001:0000116A], len = 0xF
+	line 56 at [00001179][0001:00001179], len = 0xF
+	line 57 at [00001188][0001:00001188], len = 0xF
+	line 59 at [00001197][0001:00001197], len = 0xF
+	line 60 at [000011A6][0001:000011A6], len = 0xF
+	line 62 at [000011B5][0001:000011B5], len = 0xF
+	line 63 at [000011C4][0001:000011C4], len = 0xF
+	line 65 at [000011D3][0001:000011D3], len = 0xF
+	line 66 at [000011E2][0001:000011E2], len = 0xF
+	line 68 at [000011F1][0001:000011F1], len = 0xF
+	line 70 at [00001200][0001:00001200], len = 0xF
+	line 72 at [0000120F][0001:0000120F], len = 0xF
+	line 73 at [0000121E][0001:0000121E], len = 0x2
 
 ** .ctor
 
-	line 37 at [0000121E][0001:0000121E], len = 0xA	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.Hardware\PCI\PCIDeviceCardbus.cs
-	line 39 at [00001228][0001:00001228], len = 0x1
-	line 40 at [00001229][0001:00001229], len = 0xF
-	line 42 at [00001238][0001:00001238], len = 0xF
-	line 43 at [00001247][0001:00001247], len = 0xF
-	line 45 at [00001256][0001:00001256], len = 0xF
-	line 46 at [00001265][0001:00001265], len = 0xF
-	line 47 at [00001274][0001:00001274], len = 0xF
-	line 48 at [00001283][0001:00001283], len = 0xF
-	line 50 at [00001292][0001:00001292], len = 0xF
-	line 51 at [000012A1][0001:000012A1], len = 0xF
-	line 52 at [000012B0][0001:000012B0], len = 0xF
-	line 53 at [000012BF][0001:000012BF], len = 0xF
-	line 55 at [000012CE][0001:000012CE], len = 0xF
-	line 56 at [000012DD][0001:000012DD], len = 0xF
-	line 57 at [000012EC][0001:000012EC], len = 0xF
-	line 58 at [000012FB][0001:000012FB], len = 0xF
-	line 60 at [0000130A][0001:0000130A], len = 0xF
-	line 62 at [00001319][0001:00001319], len = 0xF
-	line 63 at [00001328][0001:00001328], len = 0xF
-	line 65 at [00001337][0001:00001337], len = 0xF
-	line 66 at [00001346][0001:00001346], len = 0x2
+	line 37 at [00001220][0001:00001220], len = 0xA	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.Hardware\PCI\PCIDeviceCardbus.cs
+	line 39 at [0000122A][0001:0000122A], len = 0x1
+	line 40 at [0000122B][0001:0000122B], len = 0xF
+	line 42 at [0000123A][0001:0000123A], len = 0xF
+	line 43 at [00001249][0001:00001249], len = 0xF
+	line 45 at [00001258][0001:00001258], len = 0xF
+	line 46 at [00001267][0001:00001267], len = 0xF
+	line 47 at [00001276][0001:00001276], len = 0xF
+	line 48 at [00001285][0001:00001285], len = 0xF
+	line 50 at [00001294][0001:00001294], len = 0xF
+	line 51 at [000012A3][0001:000012A3], len = 0xF
+	line 52 at [000012B2][0001:000012B2], len = 0xF
+	line 53 at [000012C1][0001:000012C1], len = 0xF
+	line 55 at [000012D0][0001:000012D0], len = 0xF
+	line 56 at [000012DF][0001:000012DF], len = 0xF
+	line 57 at [000012EE][0001:000012EE], len = 0xF
+	line 58 at [000012FD][0001:000012FD], len = 0xF
+	line 60 at [0000130C][0001:0000130C], len = 0xF
+	line 62 at [0000131B][0001:0000131B], len = 0xF
+	line 63 at [0000132A][0001:0000132A], len = 0xF
+	line 65 at [00001339][0001:00001339], len = 0xF
+	line 66 at [00001348][0001:00001348], len = 0x2
 
 ** .ctor
 
-	line 24 at [00001348][0001:00001348], len = 0xA	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.Hardware\PCI\PCIDeviceNormal.cs
-	line 27 at [00001352][0001:00001352], len = 0x1
-	line 28 at [00001353][0001:00001353], len = 0xD
-	line 29 at [00001360][0001:00001360], len = 0x15
-	line 30 at [00001375][0001:00001375], len = 0x15
-	line 31 at [0000138A][0001:0000138A], len = 0x15
-	line 32 at [0000139F][0001:0000139F], len = 0x15
-	line 33 at [000013B4][0001:000013B4], len = 0x15
-	line 34 at [000013C9][0001:000013C9], len = 0x15
-	line 36 at [000013DE][0001:000013DE], len = 0xF
-	line 38 at [000013ED][0001:000013ED], len = 0xF
-	line 39 at [000013FC][0001:000013FC], len = 0xF
-	line 41 at [0000140B][0001:0000140B], len = 0xF
-	line 43 at [0000141A][0001:0000141A], len = 0xF
-	line 45 at [00001429][0001:00001429], len = 0xF
-	line 46 at [00001438][0001:00001438], len = 0xF
-	line 47 at [00001447][0001:00001447], len = 0x2
-
-** EnableDevice
-
-	line 50 at [00001449][0001:00001449], len = 0x1	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.Hardware\PCI\PCIDeviceNormal.cs
-	line 51 at [0000144A][0001:0000144A], len = 0x10
-	line 52 at [0000145A][0001:0000145A], len = 0x1
+	line 24 at [0000134A][0001:0000134A], len = 0xA	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.Hardware\PCI\PCIDeviceNormal.cs
+	line 27 at [00001354][0001:00001354], len = 0x1
+	line 28 at [00001355][0001:00001355], len = 0xD
+	line 29 at [00001362][0001:00001362], len = 0x15
+	line 30 at [00001377][0001:00001377], len = 0x15
+	line 31 at [0000138C][0001:0000138C], len = 0x15
+	line 32 at [000013A1][0001:000013A1], len = 0x15
+	line 33 at [000013B6][0001:000013B6], len = 0x15
+	line 34 at [000013CB][0001:000013CB], len = 0x15
+	line 36 at [000013E0][0001:000013E0], len = 0xF
+	line 38 at [000013EF][0001:000013EF], len = 0xF
+	line 39 at [000013FE][0001:000013FE], len = 0xF
+	line 41 at [0000140D][0001:0000140D], len = 0xF
+	line 43 at [0000141C][0001:0000141C], len = 0xF
+	line 45 at [0000142B][0001:0000142B], len = 0xF
+	line 46 at [0000143A][0001:0000143A], len = 0xF
+	line 47 at [00001449][0001:00001449], len = 0x2
 
 
 
@@ -1939,42 +1908,40 @@ Compiland = Kernel.Hardware.PCI.PCIDeviceNormal
   000006F6  0001:000006F6  00000031  Kernel.Hardware.IO.IOPort
   00000727  0001:00000727  0000001F  Kernel.Hardware.IO.IOPort
   00000746  0001:00000746  0000001F  Kernel.Hardware.IO.IOPort
-  00000765  0001:00000765  0000000D  Kernel.Hardware.PCI.PCI
-  00000772  0001:00000772  00000008  Kernel.Hardware.PCI.PCI
-  0000077A  0001:0000077A  0000005A  Kernel.Hardware.PCI.PCI
-  000007D4  0001:000007D4  00000019  Kernel.Hardware.PCI.PCI
-  000007ED  0001:000007ED  000000B5  Kernel.Hardware.PCI.PCI
-  000008A2  0001:000008A2  0000004D  Kernel.Hardware.PCI.PCI
-  000008EF  0001:000008EF  00000007  Kernel.Hardware.PCI.PCI
-  000008F6  0001:000008F6  00000028  Kernel.Hardware.PCI.PCI
-  0000091E  0001:0000091E  00000096  Kernel.Hardware.PCI.PCIBaseAddressBar
-  000009B4  0001:000009B4  00000012  Kernel.Hardware.PCI.PCIBaseAddressBar
-  000009C6  0001:000009C6  0000000C  Kernel.Hardware.PCI.PCIBaseAddressBar
-  000009D2  0001:000009D2  0000000C  Kernel.Hardware.PCI.PCIBaseAddressBar
-  000009DE  0001:000009DE  0000000E  Kernel.Hardware.PCI.PCIDevice
-  000009EC  0001:000009EC  0000000C  Kernel.Hardware.PCI.PCIDevice
-  000009F8  0001:000009F8  0000000D  Kernel.Hardware.PCI.PCIDevice
-  00000A05  0001:00000A05  0000000C  Kernel.Hardware.PCI.PCIDevice
-  00000A11  0001:00000A11  00000118  Kernel.Hardware.PCI.PCIDevice
-  00000B29  0001:00000B29  0000001E  Kernel.Hardware.PCI.PCIDevice
-  00000B47  0001:00000B47  0000002B  Kernel.Hardware.PCI.PCIDevice
-  00000B72  0001:00000B72  00000059  Kernel.Hardware.PCI.PCIDevice
-  00000BCB  0001:00000BCB  00000047  Kernel.Hardware.PCI.PCIDevice
-  00000C12  0001:00000C12  00000059  Kernel.Hardware.PCI.PCIDevice
-  00000C6B  0001:00000C6B  00000047  Kernel.Hardware.PCI.PCIDevice
-  00000CB2  0001:00000CB2  00000049  Kernel.Hardware.PCI.PCIDevice
-  00000CFB  0001:00000CFB  00000047  Kernel.Hardware.PCI.PCIDevice
-  00000D42  0001:00000D42  0000038A  Kernel.Hardware.PCI.PCIDevice.DeviceClass
-  000010CC  0001:000010CC  00000152  Kernel.Hardware.PCI.PCIDeviceBridge
-  0000121E  0001:0000121E  0000012A  Kernel.Hardware.PCI.PCIDeviceCardbus
-  00001348  0001:00001348  00000101  Kernel.Hardware.PCI.PCIDeviceNormal
-  00001449  0001:00001449  00000012  Kernel.Hardware.PCI.PCIDeviceNormal
+  00000765  0001:00000765  00000008  Kernel.Hardware.PCI.PCI
+  0000076D  0001:0000076D  00000070  Kernel.Hardware.PCI.PCI
+  000007DD  0001:000007DD  0000000A  Kernel.Hardware.PCI.PCI
+  000007E7  0001:000007E7  000000B5  Kernel.Hardware.PCI.PCI
+  0000089C  0001:0000089C  00000051  Kernel.Hardware.PCI.PCI
+  000008ED  0001:000008ED  0000000B  Kernel.Hardware.PCI.PCI
+  000008F8  0001:000008F8  00000028  Kernel.Hardware.PCI.PCI
+  00000920  0001:00000920  00000096  Kernel.Hardware.PCI.PCIBaseAddressBar
+  000009B6  0001:000009B6  00000012  Kernel.Hardware.PCI.PCIBaseAddressBar
+  000009C8  0001:000009C8  0000000C  Kernel.Hardware.PCI.PCIBaseAddressBar
+  000009D4  0001:000009D4  0000000C  Kernel.Hardware.PCI.PCIBaseAddressBar
+  000009E0  0001:000009E0  0000000E  Kernel.Hardware.PCI.PCIDevice
+  000009EE  0001:000009EE  0000000C  Kernel.Hardware.PCI.PCIDevice
+  000009FA  0001:000009FA  0000000D  Kernel.Hardware.PCI.PCIDevice
+  00000A07  0001:00000A07  0000000C  Kernel.Hardware.PCI.PCIDevice
+  00000A13  0001:00000A13  00000118  Kernel.Hardware.PCI.PCIDevice
+  00000B2B  0001:00000B2B  0000001E  Kernel.Hardware.PCI.PCIDevice
+  00000B49  0001:00000B49  0000002B  Kernel.Hardware.PCI.PCIDevice
+  00000B74  0001:00000B74  00000059  Kernel.Hardware.PCI.PCIDevice
+  00000BCD  0001:00000BCD  00000047  Kernel.Hardware.PCI.PCIDevice
+  00000C14  0001:00000C14  00000059  Kernel.Hardware.PCI.PCIDevice
+  00000C6D  0001:00000C6D  00000047  Kernel.Hardware.PCI.PCIDevice
+  00000CB4  0001:00000CB4  00000049  Kernel.Hardware.PCI.PCIDevice
+  00000CFD  0001:00000CFD  00000047  Kernel.Hardware.PCI.PCIDevice
+  00000D44  0001:00000D44  0000038A  Kernel.Hardware.PCI.PCIDevice.DeviceClass
+  000010CE  0001:000010CE  00000152  Kernel.Hardware.PCI.PCIDeviceBridge
+  00001220  0001:00001220  0000012A  Kernel.Hardware.PCI.PCIDeviceCardbus
+  0000134A  0001:0000134A  00000101  Kernel.Hardware.PCI.PCIDeviceNormal
 
 
 
 *** DEBUG STREAMS
 
-Stream: TOKENRIDMAP(205)
+Stream: TOKENRIDMAP(203)
 00 00 00 00 | ....
 01 00 00 00 | ....
 02 00 00 00 | ....
@@ -2033,7 +2000,7 @@ Stream: TOKENRIDMAP(205)
 39 00 00 00 | 9...
 3A 00 00 00 | :...
 3B 00 00 00 | ;...
-3C 00 00 00 | <...
+3D 00 00 00 | =...
 3E 00 00 00 | >...
 3F 00 00 00 | ?...
 40 00 00 00 | @...
@@ -2175,17 +2142,15 @@ C7 00 00 00 | Ã...
 C8 00 00 00 | ╚...
 C9 00 00 00 | ╔...
 CA 00 00 00 | ╩...
-CB 00 00 00 | ╦...
-CC 00 00 00 | ╠...
 0D 00 00 00 | ....
 1D 00 00 00 | ....
-3D 00 00 00 | =...
+3C 00 00 00 | <...
 Summary :
-	No of Elems = 205
+	No of Elems = 203
 	Sizeof(Elem) = 4
 
 Stream: SECTIONHEADERS(1)
-00 00 00 00 00 00 00 00 - 5B 14 00 00 00 00 00 00 - 5B 14 00 00 00 00 00 00 - 00 00 00 00 00 00 00 00 - 00 00 00 00 00 00 00 00 | ........[.......[.......................
+00 00 00 00 00 00 00 00 - 4B 14 00 00 00 00 00 00 - 4B 14 00 00 00 00 00 00 - 00 00 00 00 00 00 00 00 - 00 00 00 00 00 00 00 00 | ........K.......K.......................
 Summary :
 	No of Elems = 1
 	Sizeof(Elem) = 40

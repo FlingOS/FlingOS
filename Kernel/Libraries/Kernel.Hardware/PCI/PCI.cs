@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Kernel.FOS_System;
+using Kernel.FOS_System.Collections;
 
 namespace Kernel.Hardware.PCI
 {
@@ -11,16 +9,7 @@ namespace Kernel.Hardware.PCI
         public IO.IOPort ConfigAddressPort = new IO.IOPort(0xCF8);
         public IO.IOPort ConfigDataPort = new IO.IOPort(0xCFC);
 
-        private static PCIDevice[] devices;
-        private static int currDeviceIndex = 0;
-
-        public static int NumDevices
-        {
-            get
-            {
-                return currDeviceIndex + 1;
-            }
-        }
+        public static List Devices = new List();
 
         public static void Init()
         {
@@ -29,10 +18,10 @@ namespace Kernel.Hardware.PCI
 
         public static PCIDevice GetDevice(ushort VendorID, ushort DeviceID)
         {
-            for (int i = 0; i < ((FOS_System.Array)devices).length; i++)
+            for (int i = 0; i < Devices.Count; i++)
             {
-                if (devices[i].VendorID == VendorID && devices[i].DeviceID == DeviceID)
-                    return devices[i];
+                if (((PCIDevice)Devices[i]).VendorID == VendorID && ((PCIDevice)Devices[i]).DeviceID == DeviceID)
+                    return ((PCIDevice)Devices[i]);
             }
             return null;
         }
@@ -40,7 +29,6 @@ namespace Kernel.Hardware.PCI
         [Compiler.NoDebug]
         private static void EnumerateDevices()
         {
-            devices = new PCIDevice[1024];
             EnumerateBus(0, 0);
         }
 
@@ -76,7 +64,8 @@ namespace Kernel.Hardware.PCI
         [Compiler.NoDebug]
         private static void AddDevice(PCIDevice device, uint step)
         {
-            devices[currDeviceIndex++] = device;
+            Devices.Add(device);
+            DeviceManager.Devices.Add(device);
 
             if (device._Type == (FOS_System.Type)(typeof(PCIDeviceBridge)))
             {

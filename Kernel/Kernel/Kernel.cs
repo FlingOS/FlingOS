@@ -20,7 +20,7 @@ namespace Kernel
             BasicConsole.Init();
             BasicConsole.Clear();
 
-            Debug.BasicDebug.Init();
+            //Debug.BasicDebug.Init();
             FOS_System.GC.Init();
 
             BasicConsole.WriteLine();
@@ -117,6 +117,7 @@ namespace Kernel
         {
             try
             {
+                ULongMultiplicationTest();
                 //StringConcatTest();
                 //ObjectArrayTest();
                 //IntArrayTest();
@@ -126,16 +127,42 @@ namespace Kernel
                 //ExceptionsTestP1();
 
                 InitATA();
-                //InitPCI();
+
+                try
+                {
+                    OutputPCIInfo();
+                    BasicConsole.DelayOutput(5);
+                }
+                catch
+                {
+                    OutputCurrentExceptionInfo();
+                }
+
+                InitPCI();
+
+                try
+                {
+                    OutputATAInfo();
+                    BasicConsole.DelayOutput(5);
+                }
+                catch
+                {
+                    OutputCurrentExceptionInfo();
+                }
+
                 InitFileSystem();
 
-                OutputFileSystemsInfo();
-                
-                FOS_System.GC.Cleanup();
+                try
+                {
+                    OutputFileSystemsInfo();
+                    BasicConsole.DelayOutput(20);
+                }
+                catch
+                {
+                    OutputCurrentExceptionInfo();
+                }
 
-                BasicConsole.DelayOutput();
-                BasicConsole.DelayOutput();
-                BasicConsole.DelayOutput();
+                FOS_System.GC.Cleanup();
 
                 FileSystemMapping A_FSMapping = FileSystemManager.GetMapping("A:/");
                 FOS_System.IO.FAT.FATFileSystem A_FS = (FOS_System.IO.FAT.FATFileSystem)A_FSMapping.TheFileSystem;
@@ -237,22 +264,33 @@ namespace Kernel
             }
             catch
             {
-                BasicConsole.SetTextColour(BasicConsole.warning_colour);
-                BasicConsole.WriteLine(ExceptionMethods.CurrentException.Message);
-                
-                FOS_System.Type currExceptionType = ExceptionMethods.CurrentException._Type;
-                if (currExceptionType == (FOS_System.Type)typeof(FOS_System.Exceptions.ArgumentException))
-                {
-                    BasicConsole.WriteLine(((FOS_System.Exceptions.ArgumentException)ExceptionMethods.CurrentException).ExtendedMessage);
-                }
-                
-                BasicConsole.SetTextColour(BasicConsole.default_colour);
+                OutputCurrentExceptionInfo();
             }
 
             BasicConsole.WriteLine();
             OutputDivider();
             BasicConsole.WriteLine();
             BasicConsole.WriteLine("End of managed main.");
+        }
+
+        /// <summary>
+        /// Outputs the current exception information.
+        /// </summary>
+        [Compiler.NoDebug]
+        private static void OutputCurrentExceptionInfo()
+        {
+            BasicConsole.SetTextColour(BasicConsole.warning_colour);
+            BasicConsole.WriteLine(ExceptionMethods.CurrentException.Message);
+
+            FOS_System.Type currExceptionType = ExceptionMethods.CurrentException._Type;
+            if (currExceptionType == (FOS_System.Type)typeof(FOS_System.Exceptions.ArgumentException))
+            {
+                BasicConsole.WriteLine(((FOS_System.Exceptions.ArgumentException)ExceptionMethods.CurrentException).ExtendedMessage);
+            }
+
+            BasicConsole.SetTextColour(BasicConsole.default_colour);
+
+            ExceptionMethods.CurrentException = null;
         }
 
         /// <summary>
@@ -302,7 +340,7 @@ namespace Kernel
         {
             BasicConsole.WriteLine("Initialising PCI...");
             Hardware.PCI.PCI.Init();
-            BasicConsole.WriteLine(((FOS_System.String)"PCI initialised. Devices: ") + Hardware.PCI.PCI.NumDevices);
+            BasicConsole.WriteLine(((FOS_System.String)"PCI initialised. Devices: ") + Hardware.PCI.PCI.Devices.Count);
             OutputDivider();
         }
         /// <summary>
@@ -471,6 +509,18 @@ namespace Kernel
             BasicConsole.WriteLine("---------------------");
         }
         /// <summary>
+        /// Outputs PCI information.
+        /// </summary>
+        private static void OutputPCIInfo()
+        {
+            for (int i = 0; i < Hardware.PCI.PCI.Devices.Count; i++)
+            {
+                Hardware.PCI.PCIDevice aDevice = (Hardware.PCI.PCIDevice)Hardware.PCI.PCI.Devices[i];
+                BasicConsole.WriteLine(Hardware.PCI.PCIDevice.DeviceClass.GetString(aDevice));
+                BasicConsole.DelayOutput(2);
+            }
+        }
+        /// <summary>
         /// Outputs information about the ATA devices found.
         /// </summary>
         private static void OutputATAInfo()
@@ -485,17 +535,18 @@ namespace Kernel
                     BasicConsole.WriteLine("ATAPio device found.");
                     Hardware.ATA.ATAPio theATA = (Hardware.ATA.ATAPio)aDevice;
 
-                    //OutputDivider();
+                    OutputDivider();
                     //Info
-                    //BasicConsole.WriteLine(((FOS_System.String)"Type: ") + (theATA.DriveType == Hardware.ATA.ATAPio.SpecLevel.ATA ? "ATA" : "ATAPI"));
-                    //BasicConsole.WriteLine(((FOS_System.String)"Serial No: ") + theATA.SerialNo);
-                    //BasicConsole.WriteLine(((FOS_System.String)"Firmware Rev: ") + theATA.FirmwareRev);
-                    //BasicConsole.WriteLine(((FOS_System.String)"Model No: ") + theATA.ModelNo);
-                    //BasicConsole.WriteLine(((FOS_System.String)"Block Size: ") + theATA.BlockSize + " bytes");
-                    //BasicConsole.WriteLine(((FOS_System.String)"Block Count: ") + theATA.BlockCount);
-                    //TODO - Remove the uint castings here
-                    BasicConsole.WriteLine(((FOS_System.String)"Size: ") + (((uint)theATA.BlockCount) * ((uint)theATA.BlockSize) / 1024 / 1024) + " MB");
-                    //OutputDivider();
+                    BasicConsole.WriteLine(((FOS_System.String)"Type: ") + (theATA.DriveType == Hardware.ATA.ATAPio.SpecLevel.ATA ? "ATA" : "ATAPI"));
+                    BasicConsole.WriteLine(((FOS_System.String)"Serial No: ") + theATA.SerialNo);
+                    BasicConsole.WriteLine(((FOS_System.String)"Firmware Rev: ") + theATA.FirmwareRev);
+                    BasicConsole.WriteLine(((FOS_System.String)"Model No: ") + theATA.ModelNo);
+                    BasicConsole.WriteLine(((FOS_System.String)"Block Size: ") + theATA.BlockSize + " bytes");
+                    BasicConsole.WriteLine(((FOS_System.String)"Block Count: ") + theATA.BlockCount);
+                    BasicConsole.WriteLine(((FOS_System.String)"Size: ") + ((theATA.BlockCount * theATA.BlockSize) >> 20) + " MB");
+                    OutputDivider();
+
+                    BasicConsole.DelayOutput(5);
 
                     numDrives++;
                 }
@@ -503,7 +554,47 @@ namespace Kernel
             
             BasicConsole.WriteLine(((FOS_System.String)"Total # of drives: ") + numDrives);
         }
-        
+
+        /// <summary>
+        /// Tests multiplying two 64-bit numbers together
+        /// </summary>
+        private static void ULongMultiplicationTest()
+        {
+            ulong a = 0x00000000UL;
+            ulong b = 0x00000000UL;
+            ulong c = a * b;
+            bool test1OK = c == 0x0UL;
+            
+            a = 0x00000001UL;
+            b = 0x00000001UL;
+            c = a * b;
+            bool test2OK = c == 0x1;
+            
+            a = 0x00000010UL;
+            b = 0x00000010UL;
+            c = a * b;
+            bool test3OK = c == 0x100UL;
+            
+            a = 0x10000000UL;
+            b = 0x00000010UL;
+            c = a * b;
+            bool test4OK = c == 0x100000000UL;
+            
+            a = 0x100000000UL;
+            b = 0x00000011UL;
+            c = a * b;
+            bool test5OK = c == 0x1100000000UL;
+            
+            a = 0x100000000UL;
+            b = 0x100000000UL;
+            c = a * b;
+            bool test6OK = c == 0x0UL;
+
+            BasicConsole.WriteLine(((FOS_System.String)"Tests OK: ") + test1OK + ", " + test2OK +
+                                                                ", " + test3OK + ", " + test4OK +
+                                                                ", " + test5OK + ", " + test6OK);
+            BasicConsole.DelayOutput(10);
+        }
         /// <summary>
         /// Tests dynamic string creation and string concatentation.
         /// </summary>

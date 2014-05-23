@@ -243,12 +243,33 @@ namespace Kernel
         /// <summary>
         /// Synchronous processing delay.
         /// </summary>
-        public static void DelayOutput()
+        public static void DelayOutput(int amount)
         {
-            for (int i = 0; i < 10000000; i++)
+            WriteLine();
+            int a = 0;
+            amount *= 1000000;
+            for (int i = 0; i < amount; i++)
             {
-                ;
+                if (i % 100000 == 0)
+                {
+                    if (a == 10)
+                    {
+                        a = 0;
+                        offset -= 10;
+                        Write("          ");
+                        offset -= 10;
+                    }
+                    Write(".");
+                    a++;
+                }
             }
+            offset -= a;
+            for (int i = 0; i < a; i++)
+            {
+                Write(" ");
+            }
+            offset -= a;
+            offset -= 80;
         }
     }
 }

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Kernel.Hardware.PCI
 {
-    public class PCIDevice : FOS_System.Object
+    public class PCIDevice : Device
     {
         public enum PCIHeaderType : byte
         {

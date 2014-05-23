@@ -76,8 +76,105 @@ namespace Kernel.Compiler.Architectures.x86_32
                 else if (itemA.sizeOnStackInBytes == 8 &&
                     itemB.sizeOnStackInBytes == 8)
                 {
-                    //SUPPORT - Support 64-bit division
-                    throw new NotSupportedException("64-bit by 64-bit multiplication not supported yet!.");
+                    //SUPPORT - Support 64-bit multiplication
+
+                    //A = item a, B = item B
+                    //L = low bits, H = high bits
+                    // => A = AL + AH, B = BL + BH
+                    
+                    // A * B = (AL + AH) * (BL + BH)
+                    //       = (AL * BL) + (AL * BH) + (AH * BL) (Ignore: + (AH * BH))
+
+                    // AH = [ESP+12]
+                    // AL = [ESP+8]
+                    // BH = [ESP+4]
+                    // BL = [ESP+0]
+
+                    // mov eax, 0        - Zero out registers
+                    result.AppendLine("mov eax, 0");
+                    // mov ebx, 0
+                    result.AppendLine("mov ebx, 0");
+                    // mov ecx, 0
+                    result.AppendLine("mov ecx, 0");
+                    // mov edx, 0
+                    result.AppendLine("mov edx, 0");
+
+                    // mov eax, [ESP+0]  - Load BL
+                    result.AppendLine("mov eax, [ESP+0]");
+                    // mov ebx, [ESP+8] - Load AL
+                    result.AppendLine("mov ebx, [ESP+8]");
+                    // mul ebx           - BL * AL, result in eax:edx
+                    result.AppendLine("mul ebx");
+                    // push edx          - Push result keeping high bits
+                    result.AppendLine("push edx");
+                    // push eax
+                    result.AppendLine("push eax");
+
+                    //                   - Add 8 to offsets for result(s)
+
+                    // mov eax, 0        - Zero out registers
+                    result.AppendLine("mov eax, 0");
+                    // mov edx, 0
+                    result.AppendLine("mov edx, 0");
+                    // mov eax [ESP+4+8] - Load BH
+                    result.AppendLine("mov eax, [ESP+12]");
+                    // mul ebx           - BH * AL, result in eax:edx
+                    result.AppendLine("mul ebx");
+                    // push eax          - Push result truncating high bits
+                    result.AppendLine("push eax");
+
+                    //                   - Add 12 to offsets for result(s)
+
+                    // mov eax, 0        - Zero out registers
+                    result.AppendLine("mov eax, 0");
+                    // mov edx, 0
+                    result.AppendLine("mov edx, 0");
+                    // mov eax, [ESP+0+12] - Load BL
+                    result.AppendLine("mov eax, [ESP+12]");
+                    // mov ebx, [ESP+12+12] - Load AH
+                    result.AppendLine("mov ebx, [ESP+24]");
+                    // mul ebx             - BL * AH, result in eax:edx
+                    result.AppendLine("mul ebx");
+                    // push eax            - Push result truncating high bits
+                    result.AppendLine("push eax");
+
+                    //                     - Add 16 to offsets for result(s)
+                    
+                    // AL * BL = [ESP+8] , 64 bits
+                    // AL * BH = [ESP+4] , 32 bits - high bits
+                    // AH * BL = [ESP+0] , 32 bits - high bits
+                    
+                    // mov eax, [ESP+8]  - Load AL * BL
+                    result.AppendLine("mov eax, [ESP+8]");
+                    // mov edx, [ESP+12]
+                    result.AppendLine("mov edx, [ESP+12]");
+                    // mov ebx, 0
+                    result.AppendLine("mov ebx, 0");
+                    // mov ecx, [ESP+4]   - Load AL * BH
+                    result.AppendLine("mov ecx, [ESP+4]");
+                    // add edx, ecx       - Add (AL * BL) + (AL * BH), result in eax:edx
+                    result.AppendLine("add edx, ecx");
+                    // mov ecx, [ESP+0]   - Load AH * BL
+                    result.AppendLine("mov ecx, [ESP+0]");
+                    // add edx, ecx       - Add ((AL * BL) + (AL * BH)) + (AH * BL), result in eax:edx
+                    result.AppendLine("add edx, ecx");
+                    
+                    // add esp, 16+16     - Remove temp results and input values from stack
+                    result.AppendLine("add ESP, 32");
+
+                    // push edx           - Push final result
+                    result.AppendLine("push edx");
+                    // push eax
+                    result.AppendLine("push eax");
+
+                    aScannerState.CurrentStackFrame.Stack.Push(new StackItem()
+                    {
+                        isFloat = false,
+                        isNewGCObject = false,
+                        sizeOnStackInBytes = 8
+                    });
+
+                    //throw new NotSupportedException("64-bit by 64-bit multiplication not supported yet!.");
                 }
             }
 
