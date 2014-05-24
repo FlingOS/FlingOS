@@ -11,7 +11,7 @@ namespace Kernel.FOS_System.IO
     {
         public const char PathDelimiter = '/';
 
-        internal static List Partitions = new List(2);
+        public static List Partitions = new List(2);
         public static List FileSystemMappings = new List(2);
 
         public static void Init()
@@ -21,7 +21,18 @@ namespace Kernel.FOS_System.IO
                 Device aDevice = (Device)DeviceManager.Devices[i];
                 if (aDevice._Type == (FOS_System.Type)(typeof(Hardware.ATA.ATAPio)))
                 {
-                    InitDisk((DiskDevice)aDevice);
+                    try
+                    {
+                        InitDisk((DiskDevice)aDevice);
+                    }
+                    catch
+                    {
+                        BasicConsole.WriteLine("Error initialising disk: " + ExceptionMethods.CurrentException.Message);
+                        if (ExceptionMethods.CurrentException._Type == (FOS_System.Type)typeof(Exceptions.NotSupportedException))
+                        {
+                            BasicConsole.WriteLine(((Exceptions.NotSupportedException)ExceptionMethods.CurrentException).ExtendedMessage);
+                        }
+                    }
                 }
             }
             

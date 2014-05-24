@@ -250,7 +250,7 @@ namespace Kernel
             amount *= 1000000;
             for (int i = 0; i < amount; i++)
             {
-                if (i % 100000 == 0)
+                if (i % 500000 == 0)
                 {
                     if (a == 10)
                     {

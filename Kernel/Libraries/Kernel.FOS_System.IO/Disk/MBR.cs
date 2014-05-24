@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Kernel.FOS_System;
+using Kernel.FOS_System.Collections;
 
 namespace Kernel.FOS_System.IO.Disk
 {
@@ -70,33 +68,34 @@ namespace Kernel.FOS_System.IO.Disk
         }
         public MBR(byte[] aMBR)
         {
-            //Verify this is a "valid bootsector"
-            //if (aMBR[0x1FE] != 0x55 || aMBR[0x1FF] != 0xAA)
-            //{
-            //    return;
-            //}
+            //See whether this is a valid MBR
+            if (aMBR[0x1FE] != 0x55 || aMBR[0x1FF] != 0xAA)
+            {
+                IsValid = false;
+                return;
+            }
 
             IsValid = true;
 
-            PartitionInfo partInfo = ParsePartition(aMBR, 446);
+            PartitionInfo partInfo = ParsePartition(aMBR, 0x1BE);
             if (partInfo != null)
             {
-                AddPartition(partInfo);
+                AddPartitionToList(partInfo);
             }
-            partInfo = ParsePartition(aMBR, 462);
+            partInfo = ParsePartition(aMBR, 0x1CE);
             if (partInfo != null)
             {
-                AddPartition(partInfo);
+                AddPartitionToList(partInfo);
             }
-            partInfo = ParsePartition(aMBR, 478);
+            partInfo = ParsePartition(aMBR, 0x1DE);
             if (partInfo != null)
             {
-                AddPartition(partInfo);
+                AddPartitionToList(partInfo);
             }
-            partInfo = ParsePartition(aMBR, 494);
+            partInfo = ParsePartition(aMBR, 0x1EE);
             if (partInfo != null)
             {
-                AddPartition(partInfo);
+                AddPartitionToList(partInfo);
             }
         }
 
@@ -123,11 +122,15 @@ namespace Kernel.FOS_System.IO.Disk
                 UInt32 startSector = FOS_System.ByteConverter.ToUInt32(aMBR, aLoc + 8);
                 UInt32 sectorCount = FOS_System.ByteConverter.ToUInt32(aMBR, aLoc + 12);
 
+                BasicConsole.WriteLine(((FOS_System.String)"startSector: ") + startSector);
+                BasicConsole.WriteLine(((FOS_System.String)"sectorCount: ") + sectorCount);
+                BasicConsole.DelayOutput(5);
+
                 bool bootable = aMBR[aLoc + 0] == 0x81;
                 return new PartitionInfo(bootable, systemID, startSector, sectorCount);
             }
         }
-        protected void AddPartition(PartitionInfo partInfo)
+        protected void AddPartitionToList(PartitionInfo partInfo)
         {
             if (numPartitions >= PartitionsCapacity)
             {
@@ -140,6 +143,69 @@ namespace Kernel.FOS_System.IO.Disk
             }
 
             Partitions[numPartitions++] = partInfo;
+        }
+
+        public static PartitionInfo CreateFAT32PartitionInfo(Hardware.Devices.DiskDevice aDisk, bool bootable)
+        {
+            return new PartitionInfo(bootable, 0xC, 2U, (uint)(aDisk.BlockCount - 1));
+        }
+        public static void FormatDisk(Hardware.Devices.DiskDevice aDisk, List partitions)
+        {
+            BasicConsole.WriteLine("Creating new MBR data...");
+            byte[] newMBRData = new byte[512];
+
+            newMBRData[0x1FE] = 0x55;
+            newMBRData[0x1FF] = 0xAA;
+
+            BasicConsole.WriteLine(((FOS_System.String)"Set signature: ") + newMBRData[0x1FE] + " " + newMBRData[0x1FF]);
+            BasicConsole.DelayOutput(1);
+
+            BasicConsole.WriteLine(((FOS_System.String)"Num new partitions: ") + partitions.Count);
+            BasicConsole.DelayOutput(1);
+
+            uint part1Offset = 0x1BE;
+            for (uint i = 0; i < partitions.Count; i++)
+            {
+                PartitionInfo partInfo = (PartitionInfo)partitions[(int)i];
+                uint partOffset = part1Offset + (0x10 * i);
+                BasicConsole.WriteLine(((FOS_System.String)"Partition ") + i + " @ " + partOffset);
+                BasicConsole.WriteLine(((FOS_System.String)"Bootable : ") + partInfo.Bootable);
+                BasicConsole.WriteLine(((FOS_System.String)"SystemID : ") + partInfo.SystemID);
+                BasicConsole.WriteLine(((FOS_System.String)"StartSector : ") + partInfo.StartSector);
+                BasicConsole.WriteLine(((FOS_System.String)"SectorCount : ") + partInfo.SectorCount);
+                BasicConsole.DelayOutput(10);
+
+                //Bootable / active
+                newMBRData[partOffset + 0] = (byte)(partInfo.Bootable ? 0x81 : 0x00);
+                //[File] System ID
+                newMBRData[partOffset + 4] = partInfo.SystemID;
+                //Start sector
+                newMBRData[partOffset + 8] = (byte)(partInfo.StartSector);
+                newMBRData[partOffset + 9] = (byte)(partInfo.StartSector >> 8);
+                newMBRData[partOffset + 10] = (byte)(partInfo.StartSector >> 16);
+                newMBRData[partOffset + 11] = (byte)(partInfo.StartSector >> 24);
+                //Sector count
+                newMBRData[partOffset + 12] = (byte)(partInfo.SectorCount);
+                newMBRData[partOffset + 13] = (byte)(partInfo.SectorCount >> 8);
+                newMBRData[partOffset + 14] = (byte)(partInfo.SectorCount >> 16);
+                newMBRData[partOffset + 15] = (byte)(partInfo.SectorCount >> 24);
+
+                BasicConsole.WriteLine("Reading back data...");
+                byte bootable = newMBRData[partOffset + 0];
+                byte systemID = newMBRData[partOffset + 4];
+                UInt32 startSector = ByteConverter.ToUInt32(newMBRData, partOffset + 8);
+                UInt32 sectorCount = ByteConverter.ToUInt32(newMBRData, partOffset + 12);
+                BasicConsole.WriteLine(((FOS_System.String)"Bootable : ") + bootable);
+                BasicConsole.WriteLine(((FOS_System.String)"SystemID : ") + systemID);
+                BasicConsole.WriteLine(((FOS_System.String)"StartSector : ") + startSector);
+                BasicConsole.WriteLine(((FOS_System.String)"SectorCount : ") + sectorCount);
+                BasicConsole.DelayOutput(10);
+            }
+
+            BasicConsole.WriteLine("Writing data...");
+            aDisk.WriteBlock(0UL, 1U, newMBRData);
+            BasicConsole.WriteLine("Data written.");
+            BasicConsole.DelayOutput(5);
         }
     }
 }

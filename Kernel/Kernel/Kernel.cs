@@ -117,7 +117,7 @@ namespace Kernel
         {
             try
             {
-                ULongMultiplicationTest();
+                //ULongMultiplicationTest();
                 //StringConcatTest();
                 //ObjectArrayTest();
                 //IntArrayTest();
@@ -127,6 +127,48 @@ namespace Kernel
                 //ExceptionsTestP1();
 
                 InitATA();
+
+                if (Hardware.DeviceManager.Devices.Count > 0)
+                {
+                    try
+                    {
+                        OutputATAInfo();
+                        BasicConsole.DelayOutput(5);
+                    }
+                    catch
+                    {
+                        OutputCurrentExceptionInfo();
+                    }
+
+                    InitFileSystem();
+
+                    if (FOS_System.IO.FileSystemManager.Partitions.Count == 0)
+                    {
+                        BasicConsole.WriteLine("Disk found but no partitions found on disk.");
+                        BasicConsole.WriteLine("Formatting disk as MBR with one, primary FAT32 partition...");
+
+                        List newPartitions = new List(1);
+                        newPartitions.Add(FOS_System.IO.Disk.MBR.CreateFAT32PartitionInfo(disk0, false));
+                        FOS_System.IO.Disk.MBR.FormatDisk(disk0, newPartitions);
+
+                        BasicConsole.WriteLine("MBR format done.");
+                        BasicConsole.WriteLine("TODO: Format new partition as FAT32.");
+
+                        InitFileSystem();
+                    }
+
+                    try
+                    {
+                        OutputFileSystemsInfo();
+                        BasicConsole.DelayOutput(20);
+                    }
+                    catch
+                    {
+                        OutputCurrentExceptionInfo();
+                    }
+                }
+
+                InitPCI();
 
                 try
                 {
@@ -138,128 +180,113 @@ namespace Kernel
                     OutputCurrentExceptionInfo();
                 }
 
-                InitPCI();
-
-                try
-                {
-                    OutputATAInfo();
-                    BasicConsole.DelayOutput(5);
-                }
-                catch
-                {
-                    OutputCurrentExceptionInfo();
-                }
-
-                InitFileSystem();
-
-                try
-                {
-                    OutputFileSystemsInfo();
-                    BasicConsole.DelayOutput(20);
-                }
-                catch
-                {
-                    OutputCurrentExceptionInfo();
-                }
+                OutputDivider();
 
                 FOS_System.GC.Cleanup();
 
                 FileSystemMapping A_FSMapping = FileSystemManager.GetMapping("A:/");
-                FOS_System.IO.FAT.FATFileSystem A_FS = (FOS_System.IO.FAT.FATFileSystem)A_FSMapping.TheFileSystem;
+                if (A_FSMapping != null)
+                {
+                    FOS_System.IO.FAT.FATFileSystem A_FS = (FOS_System.IO.FAT.FATFileSystem)A_FSMapping.TheFileSystem;
 
-                Directory P1D2Dir = Directory.Find("A:/P1D2");
-                if (P1D2Dir == null)
-                {
-                    BasicConsole.WriteLine("Creating P1D2 directory...");
-                    P1D2Dir = A_FS.NewDirectory("P1D2", A_FS.RootDirectory_FAT32);
-                }
-                else
-                {
-                    BasicConsole.WriteLine("Found P1D2 directory.");
-                }
-
-                File longNameTestFile = File.Open("A:/P1D2/LongNameTest.txt");
-                if (longNameTestFile == null)
-                {
-                    BasicConsole.WriteLine("Creating LongNameTest.txt file...");
-                    longNameTestFile = P1D2Dir.TheFileSystem.NewFile("LongNameTest.txt", P1D2Dir);
-                }
-                else
-                {
-                    BasicConsole.WriteLine("Found LongNameTest.txt file.");
-                }
-
-                File shortNameTestFile = File.Open("A:/P1D2/ShrtTest.txt");
-                if (shortNameTestFile == null)
-                {
-                    BasicConsole.WriteLine("Creating ShrtTest.txt file...");
-                    shortNameTestFile = P1D2Dir.TheFileSystem.NewFile("ShrtTest.txt", P1D2Dir);
-                }
-                else
-                {
-                    BasicConsole.WriteLine("Found ShrtTest.txt file.");
-                }
-
-                if (longNameTestFile != null)
-                {
-                    BasicConsole.WriteLine("Opening stream...");
-                    FOS_System.IO.Streams.FileStream fileStream = longNameTestFile.GetStream();
-
-                    FOS_System.String testStr = "This is some test file contents.";
-                    byte[] testStrBytes = ByteConverter.GetASCIIBytes(testStr);
-
-                    BasicConsole.WriteLine("Writing data...");
-                    fileStream.Position = 0;
-                    int size = 0;
-                    //for (int i = 0; i < 20; i++)
+                    Directory P1D2Dir = Directory.Find("A:/P1D2");
+                    if (P1D2Dir == null)
                     {
-                        fileStream.Write(testStrBytes, 0, testStrBytes.Length);
-                        size += testStrBytes.Length;
+                        BasicConsole.WriteLine("Creating P1D2 directory...");
+                        P1D2Dir = A_FS.NewDirectory("P1D2", A_FS.RootDirectory_FAT32);
+                    }
+                    else
+                    {
+                        BasicConsole.WriteLine("Found P1D2 directory.");
                     }
 
-                    BasicConsole.WriteLine("Reading data...");
-                    fileStream.Position = 0;
-                    byte[] readBytes = new byte[size];
-                    fileStream.Read(readBytes, 0, readBytes.Length);
-                    FOS_System.String readStr = ByteConverter.GetAsciiString(readBytes, 0u, (uint)readBytes.Length);
-                    BasicConsole.WriteLine("\"" + readStr + "\"");
-
-                    OutputDivider();
-                }
-                else
-                {
-                    BasicConsole.WriteLine("LongNameTest.txt file not found.");
-                }
-
-                if (shortNameTestFile != null)
-                {
-                    BasicConsole.WriteLine("Opening stream...");
-                    FOS_System.IO.Streams.FileStream fileStream = shortNameTestFile.GetStream();
-
-                    FOS_System.String testStr = "This is some test file contents.";
-                    byte[] testStrBytes = ByteConverter.GetASCIIBytes(testStr);
-
-                    BasicConsole.WriteLine("Writing data...");
-                    fileStream.Position = 0;
-                    int size = 0;
-                    //for (int i = 0; i < 20; i++)
+                    File longNameTestFile = File.Open("A:/P1D2/LongNameTest.txt");
+                    if (longNameTestFile == null)
                     {
-                        fileStream.Write(testStrBytes, 0, testStrBytes.Length);
-                        size += testStrBytes.Length;
+                        BasicConsole.WriteLine("Creating LongNameTest.txt file...");
+                        longNameTestFile = P1D2Dir.TheFileSystem.NewFile("LongNameTest.txt", P1D2Dir);
+                    }
+                    else
+                    {
+                        BasicConsole.WriteLine("Found LongNameTest.txt file.");
                     }
 
-                    BasicConsole.WriteLine("Reading data...");
-                    fileStream.Position = 0;
-                    byte[] readBytes = new byte[size];
-                    fileStream.Read(readBytes, 0, readBytes.Length);
-                    FOS_System.String readStr = ByteConverter.GetAsciiString(readBytes, 0u, (uint)readBytes.Length);
-                    BasicConsole.WriteLine("\"" + readStr + "\"");
+                    File shortNameTestFile = File.Open("A:/P1D2/ShrtTest.txt");
+                    if (shortNameTestFile == null)
+                    {
+                        BasicConsole.WriteLine("Creating ShrtTest.txt file...");
+                        shortNameTestFile = P1D2Dir.TheFileSystem.NewFile("ShrtTest.txt", P1D2Dir);
+                    }
+                    else
+                    {
+                        BasicConsole.WriteLine("Found ShrtTest.txt file.");
+                    }
 
-                    OutputDivider();
+                    if (longNameTestFile != null)
+                    {
+                        BasicConsole.WriteLine("Opening stream...");
+                        FOS_System.IO.Streams.FileStream fileStream = longNameTestFile.GetStream();
+
+                        FOS_System.String testStr = "This is some test file contents.";
+                        byte[] testStrBytes = ByteConverter.GetASCIIBytes(testStr);
+
+                        BasicConsole.WriteLine("Writing data...");
+                        fileStream.Position = 0;
+                        int size = 0;
+                        //for (int i = 0; i < 20; i++)
+                        {
+                            fileStream.Write(testStrBytes, 0, testStrBytes.Length);
+                            size += testStrBytes.Length;
+                        }
+
+                        BasicConsole.WriteLine("Reading data...");
+                        fileStream.Position = 0;
+                        byte[] readBytes = new byte[size];
+                        fileStream.Read(readBytes, 0, readBytes.Length);
+                        FOS_System.String readStr = ByteConverter.GetAsciiString(readBytes, 0u, (uint)readBytes.Length);
+                        BasicConsole.WriteLine("\"" + readStr + "\"");
+
+                        OutputDivider();
+                    }
+                    else
+                    {
+                        BasicConsole.WriteLine("LongNameTest.txt file not found.");
+                    }
+
+                    if (shortNameTestFile != null)
+                    {
+                        BasicConsole.WriteLine("Opening stream...");
+                        FOS_System.IO.Streams.FileStream fileStream = shortNameTestFile.GetStream();
+
+                        FOS_System.String testStr = "This is some test file contents.";
+                        byte[] testStrBytes = ByteConverter.GetASCIIBytes(testStr);
+
+                        BasicConsole.WriteLine("Writing data...");
+                        fileStream.Position = 0;
+                        int size = 0;
+                        //for (int i = 0; i < 20; i++)
+                        {
+                            fileStream.Write(testStrBytes, 0, testStrBytes.Length);
+                            size += testStrBytes.Length;
+                        }
+
+                        BasicConsole.WriteLine("Reading data...");
+                        fileStream.Position = 0;
+                        byte[] readBytes = new byte[size];
+                        fileStream.Read(readBytes, 0, readBytes.Length);
+                        FOS_System.String readStr = ByteConverter.GetAsciiString(readBytes, 0u, (uint)readBytes.Length);
+                        BasicConsole.WriteLine("\"" + readStr + "\"");
+
+                        OutputDivider();
+                    }
+                    else
+                    {
+                        BasicConsole.WriteLine("ShortNameTest.txt file not found.");
+                    }
                 }
                 else
                 {
-                    BasicConsole.WriteLine("ShortNameTest.txt file not found.");
+                    BasicConsole.WriteLine("Could not find \"A:/\" mapping.");
                 }
             }
             catch
@@ -373,6 +400,9 @@ namespace Kernel
         /// </summary>
         private static void OutputFileSystemsInfo()
         {
+            BasicConsole.WriteLine(((FOS_System.String)"Num partitions: ") + FOS_System.IO.FileSystemManager.Partitions.Count);
+            BasicConsole.DelayOutput(3);
+
             for (int i = 0; i < FileSystemManager.FileSystemMappings.Count; i++)
             {
                 FileSystemMapping fsMapping = (FileSystemMapping)FileSystemManager.FileSystemMappings[i];
