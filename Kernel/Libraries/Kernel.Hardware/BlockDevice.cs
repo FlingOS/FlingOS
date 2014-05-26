@@ -21,6 +21,9 @@ namespace Kernel.Hardware
         }
 
         public abstract void ReadBlock(UInt64 aBlockNo, UInt32 aBlockCount, byte[] aData);
+        /// <remarks>
+        /// If data is null, all data to be written should be assumed to be 0.
+        /// </remarks>
         public abstract void WriteBlock(UInt64 aBlockNo, UInt32 aBlockCount, byte[] aData);
 
         public byte[] NewBlockArray(UInt32 aBlockCount)

@@ -206,6 +206,87 @@ namespace Kernel.Compiler
 
             return result;
         }
+        /// <summary>
+        /// Gets the number of bytes used by a given type when it is represented in memory such as in an array.
+        /// </summary>
+        /// <param name="theType">The type to get the size of.</param>
+        /// <returns>The number of bytes used to represent the specified type in an array.</returns>
+        public static int GetSizeForType(Type theType)
+        {
+            //Assume its a 32-bit pointer/reference unless it is:
+            // - A value type
+            //TODO - this should be moved to the target architecture's library
+            int result = 4;
+
+            if (theType.IsValueType)
+            {
+                if (theType.AssemblyQualifiedName == typeof(void).AssemblyQualifiedName)
+                {
+                    result = 0;
+                }
+                else if (theType.AssemblyQualifiedName == typeof(byte).AssemblyQualifiedName ||
+                         theType.AssemblyQualifiedName == typeof(sbyte).AssemblyQualifiedName)
+                {
+                    result = 1;
+                }
+                else if (theType.AssemblyQualifiedName == typeof(UInt16).AssemblyQualifiedName ||
+                         theType.AssemblyQualifiedName == typeof(Int16).AssemblyQualifiedName)
+                {
+                    result = 2;
+                }
+                else if (theType.AssemblyQualifiedName == typeof(UInt32).AssemblyQualifiedName ||
+                         theType.AssemblyQualifiedName == typeof(Int32).AssemblyQualifiedName)
+                {
+                    result = 4;
+                }
+                else if (theType.AssemblyQualifiedName == typeof(UInt64).AssemblyQualifiedName ||
+                         theType.AssemblyQualifiedName == typeof(Int64).AssemblyQualifiedName)
+                {
+                    result = 8;
+                }
+                else if (theType.AssemblyQualifiedName == typeof(string).AssemblyQualifiedName)
+                {
+                    result = 4;
+                }
+                else if (theType.AssemblyQualifiedName == typeof(char).AssemblyQualifiedName)
+                {
+                    result = 2;
+                }
+                else if (theType.AssemblyQualifiedName == typeof(float).AssemblyQualifiedName)
+                {
+                    result = 4;
+                }
+                else if (theType.AssemblyQualifiedName == typeof(double).AssemblyQualifiedName)
+                {
+                    result = 8;
+                }
+                else if (theType.AssemblyQualifiedName == typeof(bool).AssemblyQualifiedName)
+                {
+                    result = 1;
+                }
+                else if (theType.AssemblyQualifiedName == typeof(decimal).AssemblyQualifiedName)
+                {
+                    result = 16;
+                }
+                else if (theType.AssemblyQualifiedName == typeof(IntPtr).AssemblyQualifiedName)
+                {
+                    result = 4;
+                }
+                else
+                {
+                    List<FieldInfo> AllFields = theType.GetFields(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic).ToList();
+
+                    //This is a value type from a struct
+                    result = 0;
+                    foreach (FieldInfo anInfo in AllFields)
+                    {
+                        result += GetSizeForType(anInfo.FieldType);
+                    }
+                }
+            }
+
+            return result;
+        }
 
         /// <summary>
         /// Gets the mnemonic for a given number of bytes (e.g. 1 = byte, 2 = word, 4 = dword, 8 = qword)

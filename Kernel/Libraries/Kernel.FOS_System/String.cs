@@ -183,7 +183,6 @@ namespace Kernel.FOS_System
         {
             if (startIndex >= this.length)
             {
-                BasicConsole.WriteLine("Index out of range exception.");
                 ExceptionMethods.Throw_IndexOutOfRangeException();
             }
             else if (aLength > length - startIndex)

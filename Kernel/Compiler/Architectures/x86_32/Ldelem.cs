@@ -243,19 +243,71 @@ namespace Kernel.Compiler.Architectures.x86_32
             //      4.1. Pop index into ebx
             //      4.2. Pop array ref into eax
             //      4.3. Move element type ref (from array ref) into eax
-            //      4.4. Move StackSize (from element type ref) into eax
-            //      4.5. Mulitply eax by ebx (index by element size)
-            //      4.6. Move array ref into ebx
-            //      4.7. Add enough to go past Kernel.FOS_System.Array fields
-            //      4.8. Add eax and ebx (array ref + fields + (index * element size))
+            //      4.4. Move IsValueType (from element ref type) into ecx
+            //      4.5. If IsValueType, continue to 4.6., else goto 4.8.
+            //      4.6. Move Size (from element type ref) into eax
+            //      4.7. Skip over 4.8.
+            //      4.8. Move StackSize (from element type ref) into eax
+            //      4.9. Mulitply eax by ebx (index by element size)
+            //      4.10. Move array ref into ebx
+            //      4.11. Add enough to go past Kernel.FOS_System.Array fields
+            //      4.12. Add eax and ebx (array ref + fields + (index * element size))
 
+            string ContinueExecutionLabel4_1 = ContinueExecutionLabelBase + "4_1";
+            string ContinueExecutionLabel4_2 = ContinueExecutionLabelBase + "4_2";
             //      4.1. Pop index into ebx
             result.AppendLine("pop ebx");
             //      4.2. Move array ref into eax
             result.AppendLine("mov eax, [esp]");
             //      4.3. Move element type ref (from array ref) into eax
             result.AppendLine(string.Format("mov eax, [eax+{0}]", elemTypeOffset));
-            //      4.4. Move StackSize (from element type ref) into eax
+            //      4.4. Move IsValueType (from element ref type) into ecx
+            int isValueTypeOffset = 0;
+            #region Offset calculation
+            {
+                DB_Type typeDBType = DebugDatabase.GetType(aScannerState.GetTypeID(aScannerState.TypeClass));
+                //Get the child links of the type (i.e. the fields of the type)
+                List<DB_ComplexTypeLink> allChildLinks = typeDBType.ChildTypes.OrderBy(x => x.ParentIndex).ToList();
+                //Get the DB type information for the field we want to load
+                DB_ComplexTypeLink theTypeLink = (from links in typeDBType.ChildTypes
+                                                  where links.FieldId == "IsValueType"
+                                                  select links).First();
+                //Get all the fields that come before the field we want to load
+                //This is so we can calculate the offset (in memory, in bytes) from the start of the object
+                allChildLinks = allChildLinks.Where(x => x.ParentIndex < theTypeLink.ParentIndex).ToList();
+                //Calculate the offset
+                //We use StackBytesSize since fields that are reference types are only stored as a pointer
+                isValueTypeOffset = allChildLinks.Sum(x => x.ChildType.StackBytesSize);
+            }
+            #endregion
+            result.AppendLine(string.Format("mov ecx, [eax+{0}]", isValueTypeOffset));
+            //      4.5. If IsValueType, continue to 4.6., else goto 4.8.
+            result.AppendLine("cmp ecx, 0");
+            result.AppendLine("jz " + ContinueExecutionLabel4_1);
+            //      4.6. Move Size (from element type ref) into eax
+            int sizeOffset = 0;
+            #region Offset calculation
+            {
+                DB_Type typeDBType = DebugDatabase.GetType(aScannerState.GetTypeID(aScannerState.TypeClass));
+                //Get the child links of the type (i.e. the fields of the type)
+                List<DB_ComplexTypeLink> allChildLinks = typeDBType.ChildTypes.OrderBy(x => x.ParentIndex).ToList();
+                //Get the DB type information for the field we want to load
+                DB_ComplexTypeLink theTypeLink = (from links in typeDBType.ChildTypes
+                                                  where links.FieldId == "Size"
+                                                  select links).First();
+                //Get all the fields that come before the field we want to load
+                //This is so we can calculate the offset (in memory, in bytes) from the start of the object
+                allChildLinks = allChildLinks.Where(x => x.ParentIndex < theTypeLink.ParentIndex).ToList();
+                //Calculate the offset
+                //We use StackBytesSize since fields that are reference types are only stored as a pointer
+                sizeOffset = allChildLinks.Sum(x => x.ChildType.StackBytesSize);
+            }
+            #endregion
+            result.AppendLine(string.Format("mov eax, [eax+{0}]", sizeOffset));
+            //      4.7. Skip over 4.8.
+            result.AppendLine("jmp " + ContinueExecutionLabel4_2);
+            //      4.8. Move StackSize (from element type ref) into eax
+            result.AppendLine(ContinueExecutionLabel4_1 + ":");
             int stackSizeOffset = 0;
             #region Offset calculation
             {
@@ -275,11 +327,12 @@ namespace Kernel.Compiler.Architectures.x86_32
             }
             #endregion
             result.AppendLine(string.Format("mov eax, [eax+{0}]", stackSizeOffset));
-            //      4.5. Mulitply eax by ebx (index by element size)
+            //      4.9. Mulitply eax by ebx (index by element size)
+            result.AppendLine(ContinueExecutionLabel4_2 + ":");
             result.AppendLine("mul ebx");
-            //      4.6. Pop array ref into ebx
+            //      4.10. Pop array ref into ebx
             result.AppendLine("pop ebx");
-            //      4.7. Add enough to go past Kernel.FOS_System.Array fields
+            //      4.11. Add enough to go past Kernel.FOS_System.Array fields
             int allFieldsOffset = 0;
             #region Offset calculation
             {
@@ -291,7 +344,7 @@ namespace Kernel.Compiler.Architectures.x86_32
             }
             #endregion
             result.AppendLine(string.Format("add ebx, {0}", allFieldsOffset));
-            //      4.8. Add eax and ebx (array ref + fields + (index * element size))
+            //      4.12. Add eax and ebx (array ref + fields + (index * element size))
             result.AppendLine("add eax, ebx");
 
             // 5. Push the element onto the stack

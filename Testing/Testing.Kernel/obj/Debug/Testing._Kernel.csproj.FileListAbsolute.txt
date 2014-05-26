@@ -48,3 +48,7 @@ G:\Fling OS\Fling OS\Testing\Testing.Kernel\bin\Debug\Kernel.Debug.Data.pdb
 G:\Fling OS\Fling OS\Testing\Testing.Kernel\bin\Debug\Kernel.Debug.Data.xml
 G:\Fling OS\Fling OS\Testing\Testing.Kernel\obj\Debug\Testing.Kernel.dll
 G:\Fling OS\Fling OS\Testing\Testing.Kernel\obj\Debug\Testing.Kernel.pdb
+G:\Fling OS\Fling OS\Testing\Testing.Kernel\bin\Debug\Kernel.Hardware.dll
+G:\Fling OS\Fling OS\Testing\Testing.Kernel\bin\Debug\Kernel.FOS_System.IO.dll
+G:\Fling OS\Fling OS\Testing\Testing.Kernel\bin\Debug\Kernel.Hardware.pdb
+G:\Fling OS\Fling OS\Testing\Testing.Kernel\bin\Debug\Kernel.FOS_System.IO.pdb

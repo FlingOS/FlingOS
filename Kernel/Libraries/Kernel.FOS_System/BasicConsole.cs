@@ -241,10 +241,19 @@ namespace Kernel
         }
 
         /// <summary>
+        /// Whether to disable the delay output method. Used when debugging is enabled.
+        /// </summary>
+        public static bool DisableDelayOutput = false;
+        /// <summary>
         /// Synchronous processing delay.
         /// </summary>
         public static void DelayOutput(int amount)
         {
+            if (DisableDelayOutput)
+            {
+                return;
+            }
+
             WriteLine();
             int a = 0;
             amount *= 1000000;

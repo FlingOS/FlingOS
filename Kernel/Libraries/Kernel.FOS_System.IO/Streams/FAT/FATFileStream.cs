@@ -7,7 +7,6 @@ namespace Kernel.FOS_System.IO.Streams.FAT
 {
     public class FATFileStream : FileStream
     {
-        protected byte[] readBuffer;
         protected UInt32List ClusterNums;
 
         public FATFileSystem TheFATFileSystem
@@ -73,7 +72,9 @@ namespace Kernel.FOS_System.IO.Streams.FAT
         {
             if (TheFATFile.FirstClusterNum > 0 || IgnoreFileSize)
             {
+                //BasicConsole.WriteLine("Reading cluster chain...");
                 ClusterNums = TheFATFileSystem.ReadClusterChain(TheFile.Size, TheFATFile.FirstClusterNum);
+                //BasicConsole.WriteLine("Read cluster chain.");
             }
         }
         
@@ -91,12 +92,9 @@ namespace Kernel.FOS_System.IO.Streams.FAT
                 }
 
                 FATFileSystem mFS = (FATFileSystem)TheFile.TheFileSystem;
-                if (readBuffer == null)
-                {
-                    readBuffer = mFS.NewClusterArray();
-                }
-
                 FATFile mFile = TheFATFile;
+
+                //BasicConsole.WriteLine("Checking params...");
 
                 if (count < 0)
                 {
@@ -124,12 +122,14 @@ namespace Kernel.FOS_System.IO.Streams.FAT
                     // EOF
                     return 0;
                 }
+
+                //BasicConsole.WriteLine("Params OK.");
                                 
-                // Reduce count, so that no out of bound exception occur
+                // Reduce count, so that no out of bounds exceptions occur
                 ulong fileSize = 0;
                 if (IgnoreFileSize)
                 {
-                    fileSize = (uint)ClusterNums.Count * TheFATFileSystem.BytesPerCluster;
+                    fileSize = (ulong)ClusterNums.Count * TheFATFileSystem.BytesPerCluster;
                 }
                 else
                 {
@@ -142,10 +142,14 @@ namespace Kernel.FOS_System.IO.Streams.FAT
                     xCount = xMaxReadableBytes;
                 }
 
+                //BasicConsole.WriteLine("Creating new cluster array...");
+
                 byte[] xCluster = mFS.NewClusterArray();
                 UInt32 xClusterSize = mFS.BytesPerCluster;
 
                 int read = 0;
+
+                //BasicConsole.WriteLine("Reading data...");
 
                 while (xCount > 0)
                 {
@@ -195,22 +199,32 @@ namespace Kernel.FOS_System.IO.Streams.FAT
             {
                 ExceptionMethods.Throw(new Exceptions.ArgumentException("FATFileStream.Write: Invalid offset / length values!"));
             }
-            
+
+            //BasicConsole.WriteLine("Checks passed.");
 
             FATFileSystem mFS = (FATFileSystem)TheFile.TheFileSystem;
             FATFile mFile = TheFATFile;
 
             if (ClusterNums == null)
             {
+                //BasicConsole.WriteLine("Getting cluster nums...");
+
                 GetClusterNums();
                 if (ClusterNums == null)
                 {
+                    //BasicConsole.WriteLine("Failed to get cluster nums.");
                     return;
                 }
+
+                //BasicConsole.WriteLine("Got cluster nums.");
             }
-            
+
+            //BasicConsole.WriteLine("Creating write buffer...");
+
             UInt32 xClusterSize = mFS.BytesPerCluster;
-            byte[] writeBuffer = new byte[xClusterSize];
+            byte[] writeBuffer = mFS.NewClusterArray();
+
+            //BasicConsole.WriteLine("Writing data...");
 
             while(count > 0)
             {
@@ -220,8 +234,13 @@ namespace Kernel.FOS_System.IO.Streams.FAT
                 bool newCluster = false;
                 while (clusterIdx >= ClusterNums.Count)
                 {
+                    //BasicConsole.WriteLine("Expanding clusters...");
+
                     UInt32 lastClusterNum = ClusterNums[ClusterNums.Count];
                     UInt32 nextClusterNum = mFS.GetNextFreeCluster(lastClusterNum);
+
+                    //Clear cluster
+                    mFS.WriteCluster(nextClusterNum, null);
 
                     //Set last FAT entry to point to next cluster
                     mFS.SetFATEntryAndSave(lastClusterNum, nextClusterNum);
@@ -236,19 +255,30 @@ namespace Kernel.FOS_System.IO.Streams.FAT
 
                 if((posInCluster != 0 || count < xClusterSize) && !newCluster)
                 {
+                    //BasicConsole.WriteLine("Reading existing data...");
+
                     mFS.ReadCluster(ClusterNums[(int)clusterIdx], writeBuffer);
+
+                    //BasicConsole.WriteLine("Read existing data.");
                 }
 
+                //BasicConsole.WriteLine("Calculating write size...");
                 int writeSize = count < (xClusterSize - posInCluster) ? count : 
                                             (int)(xClusterSize - posInCluster);
+                //BasicConsole.WriteLine("Calculated write size. Copying data to write...");
                 Array.Copy(buffer, offset, writeBuffer, (int)posInCluster, writeSize);
+                //BasicConsole.WriteLine("Data copied. Writing data to disk...");
 
                 mFS.WriteCluster(ClusterNums[(int)clusterIdx], writeBuffer);
+
+                //BasicConsole.WriteLine("Written data.");
 
                 count -= writeSize;
                 offset += writeSize;
                 mPosition += (uint)writeSize;
             }
+
+            //BasicConsole.WriteLine("Write completed.");
 
             if (!IgnoreFileSize)
             {

@@ -25,6 +25,7 @@ namespace Kernel.Debug.Debugger
         IVirtualMachine theVM;
         
         ulong StepToAddress = ulong.MaxValue;
+        bool isASMStep = false;
 
         /// <summary>
         /// Initialises the window
@@ -156,100 +157,70 @@ namespace Kernel.Debug.Debugger
                 return;
             }
 
+            bool methodChanged = TheDebugger.CurrentMethod != oldMethod;
+            if (methodChanged)
+            {
+                oldMethod = TheDebugger.CurrentMethod;
+            }
+
             StoreASMScrollPos();
             HideSelection(true);
-
+            ASMBox.Visible = false;
+            
             int currentBreakLineOffset = TheDebugger.CurrentASMLineStartOffset;
             int currentBreakLineLength = TheDebugger.CurrentASMLineLength;
 
-            int actualCurrBreakLineOffset = -1;
+            string newText1 = TheDebugger.CurrentMethodASM.Substring(0, currentBreakLineOffset);
+            string newText2 = TheDebugger.CurrentMethodASM.Substring(currentBreakLineOffset);
+            ASMBox.Text = newText1;
+            int selectionStart = ASMBox.Text.Length;
+            ASMBox.Text += newText2;
             
-            string[] Lines = TheDebugger.CurrentMethodASM.Split('\n');
-            int offset = 0;
-            int actualOffset = 0;
-            bool foundCurBreakLine = false;
-            bool shouldAddText = false;
-            
-            //if (TheDebugger.CurrentMethod != oldMethod)
+            string[] lines = ASMBox.Text.Split('\n');
+            int totalOffset = 0;
+            for (int i = 0; i < lines.Length; i++)
             {
-                oldMethod = TheDebugger.CurrentMethod;
-                shouldAddText = true;
-                ASMBox.Text = "";
-            }
-            
-            //Set to new text and colour it all
-
-            ASMBox.SelectionBackColor = Color.Transparent;
-
-            for (int i = 0; i < Lines.Length; i++)
-            {
-                string line = Lines[i];
-
-                if (!shouldAddText)
+                string cLine = lines[i];
+                if (cLine.StartsWith(";"))
                 {
-                    ASMBox.SelectionStart = actualOffset;
-                    ASMBox.SelectionLength = line.Length;
-                }
-
-                if (line.Trim().StartsWith(";"))
-                {
-                    //Comment
+                    ASMBox.SelectionStart = totalOffset;
+                    ASMBox.SelectionLength = cLine.Length;
                     ASMBox.SelectionColor = Color.Green;
                 }
-                else if (line.Split(';')[0].Trim().EndsWith(":"))
+                else if (cLine.EndsWith(":"))
                 {
-                    //Label
+                    ASMBox.SelectionStart = totalOffset;
+                    ASMBox.SelectionLength = cLine.Length;
                     ASMBox.SelectionColor = Color.DarkBlue;
                 }
                 else
                 {
-                    //Code
+                    ASMBox.SelectionStart = totalOffset;
+                    ASMBox.SelectionLength = cLine.Length;
                     ASMBox.SelectionColor = Color.Black;
-                    
-                    if (currentBreakLineOffset != -1)
-                    {
-                        if (!foundCurBreakLine && offset >= currentBreakLineOffset)
-                        {
-                            foundCurBreakLine = true;
-                            ASMBox.SelectionBackColor = Color.Pink;
-                            actualCurrBreakLineOffset = actualOffset;
-                        }
-                        else
-                        {
-                            ASMBox.SelectionBackColor = Color.Transparent;
-                        }
-                    }
-                    else
-                    {
-                        ASMBox.SelectionBackColor = Color.Transparent;
-                    }
                 }
 
-                if (shouldAddText)
-                {
-                    //Add a space before newline to replace "\r"
-                    //since RTF box doesn't support \r (or at least
-                    //not like a normal text box!)
-                    ASMBox.AppendText(line + "\n");
-                }
-                offset += line.Length + 1;
-                //Not +1 because line contains \r
-                //and actual text doesn't...
-                actualOffset += line.Length;
+                //+1 for \n
+                totalOffset += lines[i].Length + 1;
             }
 
-            HideSelection(false);
-
-            if (actualCurrBreakLineOffset != -1)
-            {
-                ASMBox.SelectionStart = actualCurrBreakLineOffset;
-            }
+            ASMBox.SelectionStart = selectionStart;
+            ASMBox.SelectionLength = currentBreakLineLength;
+            ASMBox.SelectionBackColor = Color.Pink;
             ASMBox.SelectionLength = 0;
 
-            if (!shouldAddText && TheDebugger.State == Debugger.States.Stepping)
+            if (isASMStep && TheDebugger.State == Debugger.States.Stepping && !methodChanged)
             {
-                //RestoreASMScrollPos();
+                RestoreASMScrollPos();
             }
+            else
+            {
+                ASMBox.ScrollToCaret();
+            }
+
+            ASMBox.Visible = true;
+            HideSelection(false);
+
         }
 
         int oldCurrCSLineHighlightStartPos = -1;
@@ -525,6 +496,8 @@ namespace Kernel.Debug.Debugger
         {
             StepToAddress = ulong.MaxValue;
 
+            isASMStep = false;
+
             TheDebugger.BeginBreak();
 
             SetEnabled(true, ContinueButton);
@@ -570,6 +543,8 @@ namespace Kernel.Debug.Debugger
             SetEnabled(false, StepToInt3Button);
             SetEnabled(false, BreakButton);
 
+            isASMStep = false;
+
             AddText("Step to Int3...");
             TheDebugger.Continue();
             TheDebugger.BeginBreak();
@@ -585,6 +560,8 @@ namespace Kernel.Debug.Debugger
             SetEnabled(false, StepToInt3Button);
             SetEnabled(false, BreakButton);
 
+            isASMStep = true;
+
             AddText("Step next...");
             TheDebugger.StepNext();
             AddText("");
@@ -598,6 +575,8 @@ namespace Kernel.Debug.Debugger
             SetEnabled(false, StepNextILButton);
             SetEnabled(false, StepToInt3Button);
             SetEnabled(false, BreakButton);
+
+            isASMStep = false;
 
             AddText("Step next IL...");
             StepToAddress = TheDebugger.StepToNextIL();
@@ -745,6 +724,27 @@ namespace Kernel.Debug.Debugger
             SetEnabled(true, StepNextButton);
             SetEnabled(true, StepNextILButton);
             SetEnabled(true, BreakButton);
+        }
+
+        private void GoButton_Click(object sender, EventArgs e)
+        {
+            SetEnabled(false, ContinueButton);
+            SetEnabled(false, StepNextButton);
+            SetEnabled(false, StepNextILButton);
+            SetEnabled(false, StepToInt3Button);
+            SetEnabled(false, BreakButton);
+
+            StepToAddress = (ulong)RunToAddressBox.Value;
+            TheDebugger.SetInt3(StepToAddress);
+            //+1 - see StepToNext IL method
+            StepToAddress += 1;
+
+            TheDebugger.Continue();
+            TheDebugger.State = Debugger.States.Stepping;
+
+            AddText(string.Format("Step to: {0:X8}", StepToAddress));
+            AddText("");
+            WaitForCommand();
         }
 
     }

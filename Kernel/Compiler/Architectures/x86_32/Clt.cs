@@ -90,7 +90,7 @@ namespace Kernel.Compiler.Architectures.x86_32
                 //A high bytes < B high bytes? Jump to true case.
                 if (unsignedComparison)
                 {
-                    result.AppendLine(string.Format("jb {0}", elseLabelName));
+                    result.AppendLine(string.Format("jb {0}", trueLabelName));
                 }
                 else
                 {

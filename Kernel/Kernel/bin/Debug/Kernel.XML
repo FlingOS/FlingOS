@@ -313,6 +313,11 @@
             Outputs information about the ATA devices found.
             </summary>
         </member>
+        <member name="M:Kernel.Kernel.ULongLTComparisonTest">
+            <summary>
+            Tests unsigned less-than comparison of ulongs.
+            </summary>
+        </member>
         <member name="M:Kernel.Kernel.ULongMultiplicationTest">
             <summary>
             Tests multiplying two 64-bit numbers together

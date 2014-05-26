@@ -135,7 +135,14 @@ namespace Kernel.FOS_System
             //Alloc space for new array elems
 
             uint totalSize = ((FOS_System.Type)typeof(FOS_System.Array)).Size;
-            totalSize += elemType.StackSize * (uint)length;
+            if (elemType.IsValueType)
+            {
+                totalSize += elemType.Size * (uint)length;
+            }
+            else
+            {
+                totalSize += elemType.StackSize * (uint)length;
+            }
             totalSize += (uint)sizeof(GCHeader);
 
             GCHeader* newObjPtr = (GCHeader*)Heap.Alloc(totalSize);
@@ -144,6 +151,7 @@ namespace Kernel.FOS_System
             {
                 InsideGC = false;
 
+                ExceptionMethods.Throw(new FOS_System.Exception("Out of memory!"));
                 return null;
             }
 
@@ -209,6 +217,7 @@ namespace Kernel.FOS_System
             {
                 InsideGC = false;
 
+                ExceptionMethods.Throw(new FOS_System.Exception("Out of memory!"));
                 return null;
             }
 

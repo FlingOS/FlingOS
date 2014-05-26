@@ -16,6 +16,9 @@ namespace Kernel.FOS_System.IO
 
         public static void Init()
         {
+            Partitions.Empty();
+            FileSystemMappings.Empty();
+
             for (int i = 0; i < DeviceManager.Devices.Count; i++)
             {
                 Device aDevice = (Device)DeviceManager.Devices[i];
