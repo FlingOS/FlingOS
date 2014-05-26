@@ -59,6 +59,7 @@
     <Compile Include="Heap.cs" />
     <Compile Include="Int64.cs" />
     <Compile Include="Int32.cs" />
+    <Compile Include="Math.cs" />
     <Compile Include="Object.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="String.cs" />
@@ -95,6 +96,9 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="ASM\Heap\GetFixedHeapPtr.x86_32.asm">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="ASM\Math\Divide.x86_32.asm">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="ASM\String\GetPointer.x86_32.asm">

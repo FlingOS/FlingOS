@@ -38,6 +38,8 @@ namespace Kernel.Debug
                 }
                 EndEnableDebug();
                 BasicConsole.WriteLine("enabled.");
+
+                BasicConsole.DisableDelayOutput = true;
             }
             else
             {

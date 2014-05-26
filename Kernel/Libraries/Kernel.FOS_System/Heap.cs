@@ -56,6 +56,31 @@ namespace Kernel.FOS_System
         }
 
         /// <summary>
+        /// Calculates the total amount of free memory in the heap.
+        /// </summary>
+        /// <returns>The total amount of free memory in the heap.</returns>
+        public static UInt32 GetTotalFreeMem()
+        {
+            HeapBlock* cBlock = fblock;
+            UInt32 result = 0;
+            while (cBlock != null)
+            {
+                result += GetFreeMem(cBlock);
+                cBlock = cBlock->next;
+            }
+            return result;
+        }
+        /// <summary>
+        /// Calculates the amount of free memory in the specified block.
+        /// </summary>
+        /// <param name="aBlock">The block to calculate free mem of.</param>
+        /// <returns>The amount of free memory in bytes.</returns>
+        public static UInt32 GetFreeMem(HeapBlock* aBlock)
+        {
+            return aBlock->size - (aBlock->used * aBlock->bsize);
+        }
+
+        /// <summary>
         /// Whether the kernel's fixed heap has been initialised or not.
         /// </summary>
         private static bool FixedHeapInitialised = false;

@@ -281,18 +281,22 @@ namespace Kernel.Hardware.ATA
             SelectSector(aBlockNo, aBlockCount);
             SendCmd(Cmd.WritePio);
 
-            UInt16 xValue;
-
-            for (int i = 0; i < aData.Length / 2; i++)
+            if (aData == null)
             {
-                xValue = (UInt16)((aData[i * 2 + 1] << 8) | aData[i * 2]);
-                IO.Data.Write(xValue);
-                
-                if (i % 256 == 0 && i != 0)
+                ulong size = (aBlockCount / 2) * blockSize;
+                for (ulong i = 0; i < size; i++)
                 {
-                    for (int j = 0; j < 1000000; j++)
-                    {
-                    }
+                    IO.Data.Write(0);
+                }
+            }
+            else
+            {
+                UInt16 xValue;
+
+                for (int i = 0; i < aData.Length / 2; i++)
+                {
+                    xValue = (UInt16)((aData[i * 2 + 1] << 8) | aData[i * 2]);
+                    IO.Data.Write(xValue);
                 }
             }
 

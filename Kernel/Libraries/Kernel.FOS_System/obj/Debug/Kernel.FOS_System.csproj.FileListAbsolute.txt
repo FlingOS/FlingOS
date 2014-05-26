@@ -45,3 +45,4 @@ G:\Fling OS\Fling OS\Kernel\Libraries\Kernel.FOS_System\bin\Debug\Kernel.Debug.D
 G:\Fling OS\Fling OS\Kernel\Libraries\Kernel.FOS_System\obj\Debug\Kernel.FOS_System.csprojResolveAssemblyReference.cache
 G:\Fling OS\Fling OS\Kernel\Libraries\Kernel.FOS_System\obj\Debug\Kernel.FOS_System.dll
 G:\Fling OS\Fling OS\Kernel\Libraries\Kernel.FOS_System\obj\Debug\Kernel.FOS_System.pdb
+G:\Fling OS\Fling OS\Kernel\Libraries\Kernel.FOS_System\bin\Debug\ASM\Math\Divide.x86_32.asm

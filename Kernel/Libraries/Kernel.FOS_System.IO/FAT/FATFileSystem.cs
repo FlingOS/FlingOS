@@ -83,7 +83,7 @@ namespace Kernel.FOS_System.IO.FAT
                 FATSectorCount = ByteConverter.ToUInt32(BPBData, 36);
             }
             
-            DataSectorCount = TotalSectorCount - (ReservedSectorCount + (NumberOfFATs * FATSectorCount) + ReservedSectorCount);
+            DataSectorCount = TotalSectorCount - (ReservedSectorCount + (NumberOfFATs * FATSectorCount));
 
             // Computation rounds down. 
             ClusterCount = DataSectorCount / SectorsPerCluster;
@@ -119,9 +119,13 @@ namespace Kernel.FOS_System.IO.FAT
             DataSector = ReservedSectorCount + (NumberOfFATs * FATSectorCount) + RootSectorCount;
         }
         
-        public byte[] NewClusterArray()
+        public unsafe byte[] NewClusterArray()
         {
-            return new byte[BytesPerCluster];
+            //BasicConsole.WriteLine(((FOS_System.String)"Attempting to allocate ") + BytesPerCluster + " bytes");
+            //BasicConsole.WriteLine(((FOS_System.String)"Heap free mem (bytes): ") + (Heap.FBlock->size - (Heap.FBlock->used * Heap.FBlock->bsize)));
+            byte[] result = new byte[BytesPerCluster];
+            //BasicConsole.WriteLine(((FOS_System.String)"Heap free mem (bytes): ") + (Heap.FBlock->size - (Heap.FBlock->used * Heap.FBlock->bsize)));
+            return result;
         }
         public void ReadCluster(UInt32 aCluster, byte[] aData)
         {
@@ -404,6 +408,8 @@ namespace Kernel.FOS_System.IO.FAT
         {
             List xResult = new List();
 
+            //BasicConsole.WriteLine("Parsing listings...");
+
             FOS_System.String xLongName = "";
             for (UInt32 i = 0; i < xDataLength; i = i + 32)
             {
@@ -571,7 +577,6 @@ namespace Kernel.FOS_System.IO.FAT
             }
             LongFilenamesSize *= 32;
 
-            //TODO: Include VolumeID
             //                       +32 for VolumeID entry                         + 32 for end entry
             byte[] result = new byte[32 + (listings.Count * 32) + LongFilenamesSize + 32];
 
@@ -819,18 +824,30 @@ namespace Kernel.FOS_System.IO.FAT
                 ExceptionMethods.Throw(new Exceptions.NotSupportedException("FATFileSystem.NewDirectory parent directory must be of type FATDirectory!"));
             }
 
+            //BasicConsole.WriteLine("Getting listings...");
             List listings = parent.GetListings();
 
+            //BasicConsole.WriteLine("Got listings. Converting name to upper...");
             name = name.ToUpper();
 
+            //BasicConsole.WriteLine("Name converted. Checking listing exists...");
             bool exists = Directory.ListingExists(name, listings);
+            //BasicConsole.WriteLine("Checked.");
             if (!exists)
             {
+                //BasicConsole.WriteLine("Getting next free cluster...");
                 UInt32 freeCluster = GetNextFreeCluster(2);
+                //BasicConsole.WriteLine("Got next free. Clearing cluster...");
+                WriteCluster(freeCluster, null);
+                //BasicConsole.WriteLine("Cleared. Setting FAT entry...");
                 SetFATEntryAndSave(freeCluster, GetFATEntryEOFValue(FATType));
+                //BasicConsole.WriteLine("Set FAT entry. Creating new directory...");
                 FATDirectory newDir = new FATDirectory(this, (FATDirectory)parent, name, freeCluster);
+                //BasicConsole.WriteLine("Adding listing to parent...");
                 parent.AddListing(newDir);
+                //BasicConsole.WriteLine("Added listing. Writing listings...");
                 parent.WriteListings();
+                //BasicConsole.WriteLine("Written listings.");
                 return newDir;
             }
             else
@@ -854,6 +871,8 @@ namespace Kernel.FOS_System.IO.FAT
                 ExceptionMethods.Throw(new Exceptions.NotSupportedException("FATFileSystem.NewFile parent directory must be of type FATDirectory!"));
             }
 
+            //BasicConsole.WriteLine("Getting directory listings...");
+            
             List listings = null;
             if (parent == null)
             {
@@ -864,24 +883,40 @@ namespace Kernel.FOS_System.IO.FAT
                 listings = parent.GetListings();
             }
 
+            //BasicConsole.WriteLine("Got directory listings. Converting name...");
+
             name = name.ToUpper();
 
+            //BasicConsole.WriteLine("Converted name. Checking if file exists...");
+
             bool exists = Directory.ListingExists(name, listings);
+
+            //BasicConsole.WriteLine("Check done.");
+
             if (!exists)
             {
+                //BasicConsole.WriteLine("Getting next free cluster...");
                 UInt32 freeCluster = GetNextFreeCluster(2);
+                //BasicConsole.WriteLine("Got next free. Clearing cluster...");
+                WriteCluster(freeCluster, null);
+                //BasicConsole.WriteLine("Cleared. Setting FAT entry...");
                 SetFATEntryAndSave(freeCluster, GetFATEntryEOFValue(FATType));
+                //BasicConsole.WriteLine("Set FAT entry. Creating new file...");
                 File newFile = new FATFile(this, (FATDirectory)parent, name, 0, freeCluster);
+                //BasicConsole.WriteLine("File created. Adding listing to parent...");
                 if (parent == null)
                 {
                     listings.Add(newFile);
+                    //BasicConsole.WriteLine("Added. Writing listings...");
                     _rootDirectoryFAT32.WriteListings();
                 }
                 else
                 {
                     parent.AddListing(newFile);
+                    //BasicConsole.WriteLine("Added. Writing listings...");
                     parent.WriteListings();
                 }
+                //BasicConsole.WriteLine("Written listings.");
                 return newFile;
             }
             else
@@ -891,5 +926,158 @@ namespace Kernel.FOS_System.IO.FAT
             return null;
         }
 
+        public static void FormatPartitionAsFAT32(Partition thePartition)
+        {
+            byte[] newBPBData = thePartition.TheDiskDevice.NewBlockArray(1);
+            
+            //FAT signature
+            newBPBData[510] = 0x55;
+            newBPBData[511] = 0xAA;
+
+            //Bytes per sector - 512
+            UInt16 bytesPerSector = 512;
+            newBPBData[11] = (byte)(bytesPerSector);
+            newBPBData[12] = (byte)(bytesPerSector >> 8);
+            ulong partitionSize = thePartition.BlockCount * thePartition.BlockSize;
+
+            //BasicConsole.WriteLine(((FOS_System.String)"partitionSize: ") + partitionSize);
+            
+            byte sectorsPerCluster = 0x1;
+            //See http://www.win.tue.nl/~aeb/linux/fs/fat/fat-1.html
+            if (partitionSize < 0x10400000UL /*(260MiB)*/)
+            {
+                sectorsPerCluster = 0x1; //1
+            }
+            else if (partitionSize < 0x200000000 /*(8GiB)*/)
+            {
+                sectorsPerCluster = 0x8; //8
+            }
+            else if (partitionSize < 0x400000000UL /*(16GiB)*/)
+            {
+                sectorsPerCluster = 0x10; //16
+            }
+            else if (partitionSize < 0x800000000UL /*(32GiB)*/)
+            {
+                sectorsPerCluster = 0x20; //32
+            }
+            else if (partitionSize < 0x20000000000UL /*(2TiB)*/)
+            {
+                sectorsPerCluster = 0x40; //64
+            }
+            //Max. 2TB - if greater, then error!
+            else
+            {
+                ExceptionMethods.Throw(new Exceptions.NotSupportedException("Drive too big! Max. size 2TB for FAT32."));
+            }
+            //Sectors per cluster - 32 KiB clusters = 64 sectors per cluster
+            newBPBData[13] = sectorsPerCluster;
+            //Reserved sector count - 32 for FAT32 (by convention... and FAT32 does not imply 32 sectors)
+            UInt16 reservedSectors = 32;
+            newBPBData[14] = (byte)(reservedSectors);
+            newBPBData[15] = (byte)(reservedSectors >> 8);
+            //Number of FATs - always 2
+            newBPBData[16] = 0x02;
+            //Root entry count - always 0 for FAT32
+            // - Do nothing
+            
+            //Total sector count
+            // - At newBPBData[19] - N/A for FAT32
+            //      - Do nothing
+            // - At newBPBData[32] - Total number of sectors in the file system
+            uint totalSectors = (uint)thePartition.BlockCount;
+            newBPBData[32] = (byte)(totalSectors);
+            newBPBData[33] = (byte)(totalSectors >> 8);
+            newBPBData[34] = (byte)(totalSectors >> 16);
+            newBPBData[35] = (byte)(totalSectors >> 24);
+
+
+            //FAT sector count
+            // - At newBPBData[22] - always 0 for FAT32
+            // - At newBPBData[36] - See calculation below
+
+            //FAT sector count = 2 * RoundUp(Number of bytes for 1 FAT / Bytes per sector)
+
+            //BasicConsole.WriteLine(((FOS_System.String)"totalSectors: ") + totalSectors +
+            //                                           ", reservedSectors: " + reservedSectors +
+            //                                           ", sectorsPerCluster: " + sectorsPerCluster +
+            //                                           ", bytesPerSector: " + bytesPerSector);
+
+            // Number of bytes for 2 FAT  = 4 * Number of data clusters
+            //                            = 4 * (RndDown((totalSectors - ReservedSectors) / sectorsPerCluster) - RndUp(Clusters for 2 FATs))
+            //               bytesPer2FAT = 4 * (X - RndUp((bytesPerFAT * 2) / bytesPerCluster))
+            //               bytesPer2FAT = (4 * X * bytesPerCluster) / (bytesPerCluster + 8)
+            uint dataClusters = (totalSectors - reservedSectors) / sectorsPerCluster;
+            //BasicConsole.WriteLine(((FOS_System.String)"dataClusters: ") + dataClusters);
+            uint bytesPerCluster = (uint)sectorsPerCluster * bytesPerSector;
+            //BasicConsole.WriteLine(((FOS_System.String)"bytesPerCluster: ") + bytesPerCluster);
+            //BasicConsole.WriteLine(((FOS_System.String)"4 * dataClusters: ") + (4 * dataClusters));
+            //BasicConsole.WriteLine(((FOS_System.String)"4 * dataClusters * bytesPerCluster: ") + (4 * dataClusters * bytesPerCluster));
+            //BasicConsole.WriteLine(((FOS_System.String)"bytesPerCluster + 8: ") + (bytesPerCluster + 8));
+            
+            uint bytesPer2FAT = (uint)Math.Divide((4 * (ulong)dataClusters * bytesPerCluster), (bytesPerCluster + 8)); //Calculation rounds down
+            //BasicConsole.WriteLine(((FOS_System.String)"bytesPerFAT: ") + bytesPerFAT);
+            uint FATSectorCount = bytesPer2FAT / bytesPerSector;
+            //BasicConsole.WriteLine(((FOS_System.String)"FATSectorCount: ") + FATSectorCount);
+            newBPBData[36] = (byte)(FATSectorCount);
+            newBPBData[37] = (byte)(FATSectorCount >> 8);
+            newBPBData[38] = (byte)(FATSectorCount >> 16);
+            newBPBData[39] = (byte)(FATSectorCount >> 24);
+
+            //BasicConsole.WriteLine(((FOS_System.String)"totalSectors: ") + totalSectors +
+            //                                           ", reservedSectors: " + reservedSectors +
+            //                                           ", sectorsPerCluster: " + sectorsPerCluster +
+            //                                           ", bytesPerSector: " + bytesPerSector +
+            //                                           ", bytesPerCluster: " + bytesPerCluster +
+            //                                           ", dataClusters: " + dataClusters +
+            //                                           ", bytesPer2FAT: " + bytesPer2FAT +
+            //                                           ", FATSectorCount: " + FATSectorCount);
+            //BasicConsole.DelayOutput(10);
+
+            //Root cluster (number/index - min value is 2)
+            newBPBData[44] = 0x02;
+
+            //BasicConsole.WriteLine("Writing new BPB...");
+            //BasicConsole.DelayOutput(1);
+
+            thePartition.WriteBlock(0UL, 1U, newBPBData);
+
+            //BasicConsole.WriteLine("Written new BPB. Attempting to load new file system...");
+
+            FATFileSystem fs = new FATFileSystem(thePartition);
+            if (!fs.IsValid)
+            {
+                //BasicConsole.WriteLine("Failed to format properly. Scrubbing new BPB...");
+                byte[] scrubBPB = thePartition.TheDiskDevice.NewBlockArray(1);
+                thePartition.WriteBlock(0UL, 1U, scrubBPB);
+                //BasicConsole.WriteLine("Scrub done.");
+
+                ExceptionMethods.Throw(new FOS_System.Exception("Failed to format properly! FATFileSystem did not recognise system as valid."));
+            }
+            else if (fs.FATType != FATTypeEnum.FAT32)
+            {
+                //BasicConsole.WriteLine("Failed to format properly. Scrubbing new BPB...");
+                byte[] scrubBPB = thePartition.TheDiskDevice.NewBlockArray(1);
+                thePartition.WriteBlock(0UL, 1U, scrubBPB);
+                //BasicConsole.WriteLine("Scrub done.");
+
+                ExceptionMethods.Throw(new FOS_System.Exception(((FOS_System.String)"Failed to format properly! FATFileSystem recognised incorrect FAT type. Type recognised: ") + (uint)fs.FATType));
+            }
+
+            //BasicConsole.WriteLine("FAT recognised. Setting up empty FAT table...");
+
+            //Mark all clusters as empty
+            uint FATStartSector = fs.ReservedSectorCount;
+            fs.ThePartition.WriteBlock(FATSectorCount, FATSectorCount, null);
+
+            //BasicConsole.WriteLine("Marking root directory cluster as used...");
+            //Mark root cluster as being 1 cluster in size.
+            fs.SetFATEntryAndSave(2 , GetFATEntryEOFValue(FATTypeEnum.FAT32));
+
+            //BasicConsole.WriteLine("Done. Clearing the root directory...");
+            //Empty the root directory (in case of junk data)
+            fs.WriteCluster(2, null);
+
+            //BasicConsole.WriteLine("Format complete.");
+        }
     }
 }

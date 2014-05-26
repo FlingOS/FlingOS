@@ -75,3 +75,4 @@ G:\Fling OS\Fling OS\Kernel\Kernel\bin\Debug\Kernel.Debug.Data.xml
 G:\Fling OS\Fling OS\Kernel\Kernel\obj\Debug\Kernel.csprojResolveAssemblyReference.cache
 G:\Fling OS\Fling OS\Kernel\Kernel\obj\Debug\Kernel.dll
 G:\Fling OS\Fling OS\Kernel\Kernel\obj\Debug\Kernel.pdb
+G:\Fling OS\Fling OS\Kernel\Kernel\bin\Debug\ASM\Math\Divide.x86_32.asm

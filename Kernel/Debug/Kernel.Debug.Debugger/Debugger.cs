@@ -262,14 +262,30 @@ namespace Kernel.Debug.Debugger
                 if(CurrentILOpInfo != null)
                 {
                     string currLabel = CurrentNearestMethodBasedLabel;
-                    int ASMLineNum = int.Parse(currLabel.Split('.')[1].Split('_')[2]);
-
+                    
                     string currASM = TheASMFile.GetILOpASM(CurrentILOpInfo);
-                    //+3 for ":\r\n" at end of the label...
-                    //We guess that line immediately after label is code 
-                    // - properly sorted for display by MainForm later
-                    int totalOffset = CurrentILOpInfo.ASMStartPos + currASM.IndexOf(currLabel) + currLabel.Length + 3;
-                    return totalOffset;
+                    string[] currASMLines = currASM.Split('\n');
+
+                    int offset = CurrentILOpInfo.ASMStartPos;
+
+                    bool retNext = false;
+                    for (int i = 0; i < currASMLines.Length; i++)
+                    {
+                        if (retNext)
+                        {
+                            return offset;
+                        }
+
+                        string currLine = currASMLines[i];
+                        string currLineTrimmed = currLine.Trim();
+                        if (currLineTrimmed.StartsWith(currLabel))
+                        {
+                            retNext = true;
+                        }
+
+                        //+1 for \n
+                        offset += currLine.Length + 1;
+                    }
                 }
                 return -1;
             }
@@ -284,22 +300,23 @@ namespace Kernel.Debug.Debugger
                 if (CurrentILOpInfo != null)
                 {
                     string currLabel = CurrentNearestMethodBasedLabel;
-                    int ASMLineNum = int.Parse(currLabel.Split('.')[1].Split('_')[2]);
-
+                    
                     string currASM = TheASMFile.GetILOpASM(CurrentILOpInfo);
-                    string[] currASMLines = currASM.Replace("\r", "").Split('\n');
+                    string[] currASMLines = currASM.Split('\n');
 
-                    int asmLineNum = 0;
+                    bool retNext = false;
                     for (int i = 0; i < currASMLines.Length; i++)
                     {
                         string currLine = currASMLines[i].Trim();
-                        if (!currLine.StartsWith(";"))
+
+                        if (retNext)
                         {
-                            if (asmLineNum == ASMLineNum)
-                            {
-                                return currLine.Length;
-                            }
-                            asmLineNum++;
+                            return currLine.Length;
+                        }
+
+                        if (currLine.StartsWith(currLabel))
+                        {
+                            retNext = true;
                         }
                     }
                 }

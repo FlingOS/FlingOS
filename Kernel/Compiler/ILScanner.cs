@@ -1617,7 +1617,7 @@ namespace Kernel.Compiler
 
                         if (theType.IsValueType && totalMemSize == 0)
                         {
-                            totalMemSize = TheDBType.StackBytesSize;
+                            totalMemSize = Utils.GetSizeForType(theType);
                         }
 
                         TheDBType.BytesSize = totalMemSize;

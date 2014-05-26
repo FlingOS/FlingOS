@@ -49,3 +49,4 @@ G:\Fling OS\Fling OS\Kernel\Libraries\Kernel.Hardware\bin\Debug\Kernel.Debug.Dat
 G:\Fling OS\Fling OS\Kernel\Libraries\Kernel.Hardware\obj\Debug\Kernel.Hardware.csprojResolveAssemblyReference.cache
 G:\Fling OS\Fling OS\Kernel\Libraries\Kernel.Hardware\obj\Debug\Kernel.Hardware.dll
 G:\Fling OS\Fling OS\Kernel\Libraries\Kernel.Hardware\obj\Debug\Kernel.Hardware.pdb
+G:\Fling OS\Fling OS\Kernel\Libraries\Kernel.Hardware\bin\Debug\ASM\Math\Divide.x86_32.asm

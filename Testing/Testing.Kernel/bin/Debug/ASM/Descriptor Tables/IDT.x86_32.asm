@@ -269,7 +269,8 @@ push dword ebp
 mov dword ebp, esp
 
 push dword eax
-call method_System_Void_RETEND_Kernel_Debug_BasicDebug_DECLEND_DisplayMessage_NAMEEND__System_String_
+push dword 0x02
+call method_System_Void_RETEND_Kernel_PreReqs_DECLEND_WriteDebugVideo_NAMEEND__System_String_System_UInt32_
 add esp, 4
 
 mov ecx, 0x0F0FFFFF

@@ -124,6 +124,11 @@
             Prints the test string (all the keyboard characters) to the start of the output - overwrites any existing text.
             </summary>
         </member>
+        <member name="F:Kernel.BasicConsole.DisableDelayOutput">
+            <summary>
+            Whether to disable the delay output method. Used when debugging is enabled.
+            </summary>
+        </member>
         <member name="M:Kernel.BasicConsole.DelayOutput(System.Int32)">
             <summary>
             Synchronous processing delay.
@@ -660,6 +665,19 @@
             <summary>
             A pointer to the most-recently added heap block.
             </summary>
+        </member>
+        <member name="M:Kernel.FOS_System.Heap.GetTotalFreeMem">
+            <summary>
+            Calculates the total amount of free memory in the heap.
+            </summary>
+            <returns>The total amount of free memory in the heap.</returns>
+        </member>
+        <member name="M:Kernel.FOS_System.Heap.GetFreeMem(Kernel.FOS_System.HeapBlock*)">
+            <summary>
+            Calculates the amount of free memory in the specified block.
+            </summary>
+            <param name="aBlock">The block to calculate free mem of.</param>
+            <returns>The amount of free memory in bytes.</returns>
         </member>
         <member name="F:Kernel.FOS_System.Heap.FixedHeapInitialised">
             <summary>

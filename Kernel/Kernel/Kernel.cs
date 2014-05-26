@@ -113,10 +113,11 @@ namespace Kernel
         /// etc has been set up properly.
         /// </summary>
         //[Compiler.NoDebug]
-        private static void ManagedMain()
+        private static unsafe void ManagedMain()
         {
             try
             {
+                //ULongLTComparisonTest();
                 //ULongMultiplicationTest();
                 //StringConcatTest();
                 //ObjectArrayTest();
@@ -152,7 +153,17 @@ namespace Kernel
                         FOS_System.IO.Disk.MBR.FormatDisk(disk0, newPartitions);
 
                         BasicConsole.WriteLine("MBR format done.");
-                        BasicConsole.WriteLine("TODO: Format new partition as FAT32.");
+                        BasicConsole.DelayOutput(2);
+
+                        InitFileSystem();
+                    }
+                    if (FOS_System.IO.FileSystemManager.FileSystemMappings.Count == 0)
+                    {
+                        BasicConsole.WriteLine("Formatting first partition as FAT32...");
+                        Partition thePart = (Partition)FOS_System.IO.FileSystemManager.Partitions[0];
+                        FOS_System.IO.FAT.FATFileSystem.FormatPartitionAsFAT32(thePart);
+                        BasicConsole.WriteLine("Format done.");
+                        BasicConsole.DelayOutput(2);
 
                         InitFileSystem();
                     }
@@ -194,21 +205,23 @@ namespace Kernel
                     {
                         BasicConsole.WriteLine("Creating P1D2 directory...");
                         P1D2Dir = A_FS.NewDirectory("P1D2", A_FS.RootDirectory_FAT32);
+                        BasicConsole.WriteLine("Directory created.");
                     }
                     else
                     {
                         BasicConsole.WriteLine("Found P1D2 directory.");
                     }
 
-                    File longNameTestFile = File.Open("A:/P1D2/LongNameTest.txt");
+                    BasicConsole.WriteLine("Finding P1D2 directory...");
+                    File longNameTestFile = File.Open("A:/P1D2/LongNameTest2.txt");
                     if (longNameTestFile == null)
                     {
-                        BasicConsole.WriteLine("Creating LongNameTest.txt file...");
-                        longNameTestFile = P1D2Dir.TheFileSystem.NewFile("LongNameTest.txt", P1D2Dir);
+                        BasicConsole.WriteLine("Creating LongNameTest2.txt file...");
+                        longNameTestFile = P1D2Dir.TheFileSystem.NewFile("LongNameTest2.txt", P1D2Dir);
                     }
                     else
                     {
-                        BasicConsole.WriteLine("Found LongNameTest.txt file.");
+                        BasicConsole.WriteLine("Found LongNameTest2.txt file.");
                     }
 
                     File shortNameTestFile = File.Open("A:/P1D2/ShrtTest.txt");
@@ -250,7 +263,7 @@ namespace Kernel
                     }
                     else
                     {
-                        BasicConsole.WriteLine("LongNameTest.txt file not found.");
+                        BasicConsole.WriteLine("LongNameTest2.txt file not found.");
                     }
 
                     if (shortNameTestFile != null)
@@ -313,6 +326,10 @@ namespace Kernel
             if (currExceptionType == (FOS_System.Type)typeof(FOS_System.Exceptions.ArgumentException))
             {
                 BasicConsole.WriteLine(((FOS_System.Exceptions.ArgumentException)ExceptionMethods.CurrentException).ExtendedMessage);
+            }
+            else if (currExceptionType == (FOS_System.Type)typeof(FOS_System.Exceptions.NotSupportedException))
+            {
+                BasicConsole.WriteLine(((FOS_System.Exceptions.NotSupportedException)ExceptionMethods.CurrentException).ExtendedMessage);
             }
 
             BasicConsole.SetTextColour(BasicConsole.default_colour);
@@ -408,8 +425,11 @@ namespace Kernel
                 FileSystemMapping fsMapping = (FileSystemMapping)FileSystemManager.FileSystemMappings[i];
                 if (fsMapping.TheFileSystem._Type == ((FOS_System.Type)typeof(FOS_System.IO.FAT.FATFileSystem)))
                 {
+                    BasicConsole.WriteLine("Found FAT file system.");
                     FOS_System.IO.FAT.FATFileSystem fs = (FOS_System.IO.FAT.FATFileSystem)fsMapping.TheFileSystem;
+                    BasicConsole.WriteLine("Getting root directory table...");
                     List Listings = fs.GetRootDirectoryTable();
+                    BasicConsole.WriteLine("Got root directory table.");
 
                     if (fs.ThePartition.VolumeID == "[NO ID]")
                     {
@@ -585,6 +605,32 @@ namespace Kernel
             BasicConsole.WriteLine(((FOS_System.String)"Total # of drives: ") + numDrives);
         }
 
+        /// <summary>
+        /// Tests unsigned less-than comparison of ulongs.
+        /// </summary>
+        private static void ULongLTComparisonTest()
+        {
+            ulong x = 0x01;
+            ulong y = 0x20000000000;
+            bool c = x < y;
+            if (!c)
+            {
+                BasicConsole.WriteLine("Test 1 failed.");
+            }
+            x = 0x01000000000;
+            c = x < y;
+            if (!c)
+            {
+                BasicConsole.WriteLine("Test 2 failed.");
+            }
+            x = 0x20000000000;
+            c = x < y;
+            if (c)
+            {
+                BasicConsole.WriteLine("Test 3 failed.");
+            }
+            BasicConsole.DelayOutput(10);
+        }
         /// <summary>
         /// Tests multiplying two 64-bit numbers together
         /// </summary>

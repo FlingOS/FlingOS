@@ -78,6 +78,15 @@ namespace Kernel.FOS_System.Collections
             currIndex--;
         }
 
+        public void Empty()
+        {
+            for (int i = 0; i < currIndex; i++)
+            {
+                _array[i] = null;
+            }
+            currIndex = 0;
+        }
+
         private void ExpandCapacity(int amount)
         {
             FOS_System.Object[] newArray = new FOS_System.Object[_array.Length + amount];
