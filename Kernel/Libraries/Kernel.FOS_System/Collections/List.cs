@@ -9,21 +9,25 @@ namespace Kernel.FOS_System.Collections
 
         public int Count
         {
+            [Compiler.NoDebug]
             get
             {
                 return currIndex;
             }
         }
 
+        [Compiler.NoDebug]
         public List()
         {
             _array = new FOS_System.Object[5];
         }
+        [Compiler.NoDebug]
         public List(int capacity)
         {
             _array = new FOS_System.Object[capacity];
         }
 
+        [Compiler.NoDebug]
         public void Add(FOS_System.Object obj)
         {
             if (currIndex >= _array.Length)
@@ -32,6 +36,7 @@ namespace Kernel.FOS_System.Collections
             }
             _array[currIndex++] = obj;
         }
+        [Compiler.NoDebug]
         public void Remove(FOS_System.Object obj)
         {
             bool setObjectToNull = false;
@@ -56,6 +61,7 @@ namespace Kernel.FOS_System.Collections
                 }
             }
         }
+        [Compiler.NoDebug]
         public void RemoveAt(int index)
         {
             if (index >= currIndex)
@@ -78,6 +84,7 @@ namespace Kernel.FOS_System.Collections
             currIndex--;
         }
 
+        [Compiler.NoDebug]
         public void Empty()
         {
             for (int i = 0; i < currIndex; i++)
@@ -87,6 +94,7 @@ namespace Kernel.FOS_System.Collections
             currIndex = 0;
         }
 
+        [Compiler.NoDebug]
         private void ExpandCapacity(int amount)
         {
             FOS_System.Object[] newArray = new FOS_System.Object[_array.Length + amount];
@@ -99,10 +107,12 @@ namespace Kernel.FOS_System.Collections
 
         public FOS_System.Object this[int index]
         {
+            [Compiler.NoDebug]
             get
             {
                 return _array[index];
             }
+            [Compiler.NoDebug]
             set
             {
                 _array[index] = value;
@@ -117,21 +127,25 @@ namespace Kernel.FOS_System.Collections
 
         public int Count
         {
+            [Compiler.NoDebug]
             get
             {
                 return currIndex;
             }
         }
 
+        [Compiler.NoDebug]
         public UInt32List()
         {
             _array = new UInt32[5];
         }
+        [Compiler.NoDebug]
         public UInt32List(int capacity)
         {
             _array = new UInt32[capacity];
         }
 
+        [Compiler.NoDebug]
         public void Add(UInt32 obj)
         {
             if (currIndex >= _array.Length)
@@ -140,6 +154,7 @@ namespace Kernel.FOS_System.Collections
             }
             _array[currIndex++] = obj;
         }
+        [Compiler.NoDebug]
         public void Remove(UInt32 obj)
         {
             bool setObjectToNull = false;
@@ -160,6 +175,7 @@ namespace Kernel.FOS_System.Collections
             }
         }
 
+        [Compiler.NoDebug]
         private void ExpandCapacity(int amount)
         {
             UInt32[] newArray = new UInt32[_array.Length + amount];
@@ -172,10 +188,12 @@ namespace Kernel.FOS_System.Collections
 
         public UInt32 this[int index]
         {
+            [Compiler.NoDebug]
             get
             {
                 return _array[index];
             }
+            [Compiler.NoDebug]
             set
             {
                 _array[index] = value;
