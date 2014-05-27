@@ -293,8 +293,8 @@ namespace Kernel.Compiler.Architectures.x86_32
             }
             #endregion
             result.AppendLine(string.Format("mov eax, [eax+{0}]", isValueTypeOffset));
-            //      4.6. If IsValueType, continue to 4.6., else goto 4.9.
-            result.AppendLine("cmp ecx, 0");
+            //      4.6. If IsValueType, continue to 4.7., else goto 4.9.
+            result.AppendLine("cmp eax, 0");
             result.AppendLine("jz " + ContinueExecutionLabel4_1);
             //      4.7. Pop eax
             result.AppendLine("pop eax");

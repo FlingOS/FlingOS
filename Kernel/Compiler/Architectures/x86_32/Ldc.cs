@@ -81,7 +81,7 @@ namespace Kernel.Compiler.Architectures.x86_32
                     numBytes = 4;
                     break;
                 case OpCodes.Ldc_I4_S:
-                    iValue = (Int32)anILOpInfo.ValueBytes[0];
+                    iValue = (Int32)(sbyte)anILOpInfo.ValueBytes[0];
                     numBytes = 4;
                     break;
                 case OpCodes.Ldc_I8:
