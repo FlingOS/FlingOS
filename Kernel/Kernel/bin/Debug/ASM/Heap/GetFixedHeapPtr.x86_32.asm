@@ -1,5 +1,5 @@
 ﻿global KernelFixedHeap_Start
-; 3145728 bytes = 2MiB (using proper powers of 2 not the powers of 10 crap...)
+; 3145728 bytes = 3MiB (using proper powers of 2 not the powers of 10 crap...)
 KernelFixedHeap_Start: TIMES 3145728 db 0
 KernelFixedHeap_End:
 
