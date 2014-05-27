@@ -204,7 +204,7 @@ namespace Kernel.Hardware.PCI
         #endregion
 
 
-        public class DeviceClass : FOS_System.Object
+        public static class DeviceClassInfo
         {
             public static FOS_System.String GetString(PCIDevice device)
             {
@@ -261,8 +261,13 @@ namespace Kernel.Hardware.PCI
 
                 switch (device.ClassCode)
                 {
-                    //case 0x00:
-                    //    return "Any device";
+                    case 0x00:
+                        if (device.Subclass == 0x01)
+                        {
+                            return "VGA-Compatible Device";
+                        }
+                        //return "Any device (not VGA-Compatible)";
+                        break;
                     case 0x01:
                         if (device.Subclass == 0x01)
                         {
@@ -293,6 +298,23 @@ namespace Kernel.Hardware.PCI
                     case 0x0B:
                         return "Processor";
                     case 0x0C:
+                        if (device.Subclass == 0x03)
+                        {
+                            //UHCI = 0x00
+                            switch(device.ProgIF)
+                            {
+                                case 0x00:
+                                    return "USB Universal Host Controller Interface";
+                                case 0x10:
+                                    return "USB Open Host Controller Interface";
+                                case 0x20:
+                                    return "USB Extended Host Controller Interface";
+                                case 0x80:
+                                    return "USB (Unknown)";
+                                case 0xFE:
+                                    return "USB (Not host controller)";
+                            }
+                        }
                         return "Serial Bus Controller";
                     case 0x0D:
                         return "Wireless Controller";
