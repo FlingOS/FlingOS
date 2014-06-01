@@ -64,7 +64,11 @@
                 <td>
                   <a href="86baa3e9-88cc-f75f-6387-712530f7605b.htm" target="">DiscoverDrive</a>
                 </td>
-                <td></td>
+                <td>
+                  <div class="summary">
+            Attempts to discover the ATA drive.
+            </div>
+                </td>
               </tr>
               <tr data="protected;declared;notNetfw;">
                 <td>
@@ -73,7 +77,11 @@
                 <td>
                   <a href="112e19e5-4ed7-ff17-95c3-adc0c00a567c.htm" target="">GetString</a>
                 </td>
-                <td></td>
+                <td>
+                  <div class="summary">
+            Gets a string from the specified UInt16. Equivalent of ASCII byte array conversion.
+            </div>
+                </td>
               </tr>
               <tr data="protected;declared;notNetfw;">
                 <td>
@@ -82,7 +90,11 @@
                 <td>
                   <a href="3c42bb4c-6f2e-7338-16d7-b1f36c33e085.htm" target="">InitDrive</a>
                 </td>
-                <td></td>
+                <td>
+                  <div class="summary">
+            Attempts to initialise the ATA drive.
+            </div>
+                </td>
               </tr>
               <tr data="public;inherited;notNetfw;">
                 <td>
@@ -91,7 +103,10 @@
                 <td>
                   <a href="fa577f2f-722b-9dd4-6909-77d9ada47e92.htm" target="">NewBlockArray</a>
                 </td>
-                <td> (Inherited from <a href="b6d49855-509f-1701-c3d0-15e2c0aa6b37.htm" target="">BlockDevice</a>.)</td>
+                <td>
+                  <div class="summary">
+            Creates a new byte array sized to fit the specified number of blocks.
+            </div> (Inherited from <a href="b6d49855-509f-1701-c3d0-15e2c0aa6b37.htm" target="">BlockDevice</a>.)</td>
               </tr>
               <tr data="public;declared;notNetfw;">
                 <td>
@@ -100,7 +115,10 @@
                 <td>
                   <a href="fb73042f-267f-a414-53cd-2550abd79625.htm" target="">ReadBlock</a>
                 </td>
-                <td> (Overrides <a href="f2cc7f22-fdd2-f70a-8a66-568aca53892d.htm" target="">BlockDevice<span id="ID0EFBAGBCAAAAA"> </span><script type="text/javascript">
+                <td>
+                  <div class="summary">
+            Reads contiguous blocks from the drive.
+            </div> (Overrides <a href="f2cc7f22-fdd2-f70a-8a66-568aca53892d.htm" target="">BlockDevice<span id="ID0EFBAGBCAAAAA"> </span><script type="text/javascript">
 					addToLanSpecTextIdSet("ID0EFBAGBCAAAAA?vb=.|cpp=::|cs=.|fs=.|nu=.");
 				</script>ReadBlock(UInt64, UInt32, <span id="ID0EDBAGBCAAAAA"> </span><script type="text/javascript">
 					addToLanSpecTextIdSet("ID0EDBAGBCAAAAA?vb=|cpp=array&lt;|cs=|fs=|nu=");
@@ -115,7 +133,11 @@
                 <td>
                   <a href="1b3d44f0-2ec3-810d-d197-c6fc4d7e9e3a.htm" target="">SelectDrive</a>
                 </td>
-                <td></td>
+                <td>
+                  <div class="summary">
+            Sends the drive select command.
+            </div>
+                </td>
               </tr>
               <tr data="protected;declared;notNetfw;">
                 <td>
@@ -124,7 +146,11 @@
                 <td>
                   <a href="52669638-2f2f-7b7e-5e92-5972fd6214e2.htm" target="">SelectSector</a>
                 </td>
-                <td></td>
+                <td>
+                  <div class="summary">
+            Selects the specified contiguous sectors on the drive.
+            </div>
+                </td>
               </tr>
               <tr data="public;declared;notNetfw;">
                 <td>
@@ -135,7 +161,11 @@
 					addToLanSpecTextIdSet("ID0EBABDBCAAAAA?vb=.|cpp=::|cs=.|fs=.|nu=.");
 				</script>Cmd)</a>
                 </td>
-                <td></td>
+                <td>
+                  <div class="summary">
+            Sends the specified command (with ThrowOnError=true).
+            </div>
+                </td>
               </tr>
               <tr data="public;declared;notNetfw;">
                 <td>
@@ -146,7 +176,11 @@
 					addToLanSpecTextIdSet("ID0EBABCBCAAAAA?vb=.|cpp=::|cs=.|fs=.|nu=.");
 				</script>Cmd, Boolean)</a>
                 </td>
-                <td></td>
+                <td>
+                  <div class="summary">
+            Sends the specified command.
+            </div>
+                </td>
               </tr>
               <tr data="protected;declared;notNetfw;">
                 <td>
@@ -155,7 +189,11 @@
                 <td>
                   <a href="59cc69ad-d130-6c4d-0dd2-707db088929f.htm" target="">Wait</a>
                 </td>
-                <td></td>
+                <td>
+                  <div class="summary">
+            Waits by performing 4 reads (see remarks / ATA spec)
+            </div>
+                </td>
               </tr>
               <tr data="public;declared;notNetfw;">
                 <td>
@@ -164,7 +202,10 @@
                 <td>
                   <a href="36e36101-241e-8bd5-d97b-074376d5c790.htm" target="">WriteBlock</a>
                 </td>
-                <td> (Overrides <a href="ef6e03b7-1776-d089-b249-cbd0508c7fc7.htm" target="">BlockDevice<span id="ID0EFBAABCAAAAA"> </span><script type="text/javascript">
+                <td>
+                  <div class="summary">
+            Writes contiguous blocks to the drive.
+            </div> (Overrides <a href="ef6e03b7-1776-d089-b249-cbd0508c7fc7.htm" target="">BlockDevice<span id="ID0EFBAABCAAAAA"> </span><script type="text/javascript">
 					addToLanSpecTextIdSet("ID0EFBAABCAAAAA?vb=.|cpp=::|cs=.|fs=.|nu=.");
 				</script>WriteBlock(UInt64, UInt32, <span id="ID0EDBAABCAAAAA"> </span><script type="text/javascript">
 					addToLanSpecTextIdSet("ID0EDBAABCAAAAA?vb=|cpp=array&lt;|cs=|fs=|nu=");

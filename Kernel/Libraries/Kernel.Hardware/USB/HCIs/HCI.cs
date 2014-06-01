@@ -6,10 +6,20 @@ using System.Threading.Tasks;
 
 namespace Kernel.Hardware.USB.HCIs
 {
-    public class HCI : Device
+    /// <summary>
+    /// Represents a generic USB Host Controller Interface.
+    /// </summary>
+    public abstract class HCI : Device
     {
+        /// <summary>
+        /// The underlying PCI device for the host controller.
+        /// </summary>
         protected PCI.PCIDeviceNormal pciDevice;
 
+        /// <summary>
+        /// Initialises a new generic host controller interface using the specified PCI device.
+        /// </summary>
+        /// <param name="aPCIDevice"></param>
         public HCI(PCI.PCIDeviceNormal aPCIDevice)
             : base()
         {

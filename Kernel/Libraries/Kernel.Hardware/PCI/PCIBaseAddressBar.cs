@@ -5,13 +5,32 @@ using System.Text;
 
 namespace Kernel.Hardware.PCI
 {
+    /// <summary>
+    /// Represents a PCI base address.
+    /// </summary>
     public unsafe class PCIBaseAddressBar : FOS_System.Object
     {
+        /// <summary>
+        /// The underlying base address pointer.
+        /// </summary>
         private byte* baseAddress;
+        /// <summary>
+        /// Whether the data is prefetchable or not.
+        /// </summary>
         private ushort prefetchable = 0;
+        /// <summary>
+        /// The base address type.
+        /// </summary>
         private byte type = 0;
+        /// <summary>
+        /// Whether the base address is an IO address.
+        /// </summary>
         private bool isIO = false;
 
+        /// <summary>
+        /// Initialises a new PCI base address.
+        /// </summary>
+        /// <param name="raw">The raw address value.</param>
         [Compiler.NoDebug]
         internal PCIBaseAddressBar(uint raw)
         {
@@ -36,18 +55,20 @@ namespace Kernel.Hardware.PCI
                 }
             }
         }
-        private static int pci_size(int b, int mask) 
-        {
-            int size = mask & b;
-            size = size & ~(size - 1);
-            return size;
-        }
 
+        /// <summary>
+        /// The base address byte pointer.
+        /// </summary>
+        /// <returns>Returns the base address byte pointer.</returns>
         public byte* BaseAddress()
         {
             return baseAddress;
         }
 
+        /// <summary>
+        /// Whether the base address is IO or not.
+        /// </summary>
+        /// <returns>Whether the base address is IO or not.</returns>
         public bool IsIO()
         {
             return isIO;

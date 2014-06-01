@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 
 namespace Kernel.Hardware.Devices
 {
+    /// <summary>
+    /// Represents a disk device.
+    /// </summary>
     public abstract class DiskDevice : BlockDevice
     {
     }

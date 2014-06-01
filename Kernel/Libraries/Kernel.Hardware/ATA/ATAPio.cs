@@ -6,111 +6,312 @@ using System.Threading.Tasks;
 
 namespace Kernel.Hardware.ATA
 {
+    /// <summary>
+    /// Represents an ATA Pio device.
+    /// </summary>
     public class ATAPio : ATA
     {
+        /// <summary>
+        /// Device statuses.
+        /// </summary>
         [Flags]
         public enum Status : byte
         {
+            /// <summary>
+            /// No status.
+            /// </summary>
             None = 0x00,
+            /// <summary>
+            /// Busy status.
+            /// </summary>
             Busy = 0x80,
+            /// <summary>
+            /// ATA_SR_DRD status.
+            /// </summary>
             ATA_SR_DRD = 0x40,
+            /// <summary>
+            /// ATA_SR_DF status.
+            /// </summary>
             ATA_SR_DF = 0x20,
+            /// <summary>
+            /// ATA_SR_DSC status.
+            /// </summary>
             ATA_SR_DSC = 0x10,
+            /// <summary>
+            /// DRQ status.
+            /// </summary>
             DRQ = 0x08,
+            /// <summary>
+            /// ATA_SR_COR status.
+            /// </summary>
             ATA_SR_COR = 0x04,
+            /// <summary>
+            /// ATA_SR_IDX status.
+            /// </summary>
             ATA_SR_IDX = 0x02,
+            /// <summary>
+            /// Error status.
+            /// </summary>
             Error = 0x01
         };
+        /// <summary>
+        /// Error masks.
+        /// </summary>
         [Flags]
         enum Error : byte
         {
+            /// <summary>
+            /// BBK error.
+            /// </summary>
             ATA_ER_BBK = 0x80,
+            /// <summary>
+            /// UNC error.
+            /// </summary>
             ATA_ER_UNC = 0x40,
+            /// <summary>
+            /// MC error.
+            /// </summary>
             ATA_ER_MC = 0x20,
+            /// <summary>
+            /// IDNF error.
+            /// </summary>
             ATA_ER_IDNF = 0x10,
+            /// <summary>
+            /// MCR error.
+            /// </summary>
             ATA_ER_MCR = 0x08,
+            /// <summary>
+            /// ABRT error.
+            /// </summary>
             ATA_ER_ABRT = 0x04,
+            /// <summary>
+            /// TK0NF error.
+            /// </summary>
             ATA_ER_TK0NF = 0x02,
+            /// <summary>
+            /// AMNF error.
+            /// </summary>
             ATA_ER_AMNF = 0x01
         };
+        /// <summary>
+        /// Dvc Sel values.
+        /// </summary>
         [Flags]
         enum DvcSelVal : byte
         {
             // Bits 0-3: Head Number for CHS.
             // Bit 4: Slave Bit. (0: Selecting Master Drive, 1: Selecting Slave Drive).
+            /// <summary>
+            /// Slave value.
+            /// </summary>
             Slave = 0x10,
             //* Bit 6: LBA (0: CHS, 1: LBA).
+            /// <summary>
+            /// LBA value.
+            /// </summary>
             LBA = 0x40,
             //* Bit 5: Obsolete and isn't used, but should be set.
             //* Bit 7: Obsolete and isn't used, but should be set. 
+            /// <summary>
+            /// Default value.
+            /// </summary>
             Default = 0xA0
         };
+        /// <summary>
+        /// ATA Pio commands.
+        /// </summary>
         public enum Cmd : byte
         {
+            /// <summary>
+            /// Read Pio command.
+            /// </summary>
             ReadPio = 0x20,
+            /// <summary>
+            /// Read Pio extended command.
+            /// </summary>
             ReadPioExt = 0x24,
+            /// <summary>
+            /// Read direct memory access command.
+            /// </summary>
             ReadDma = 0xC8,
+            /// <summary>
+            /// Read direct memory access extended command.
+            /// </summary>
             ReadDmaExt = 0x25,
+            /// <summary>
+            /// Write Pio command.
+            /// </summary>
             WritePio = 0x30,
+            /// <summary>
+            /// Write Pio extended command.
+            /// </summary>
             WritePioExt = 0x34,
+            /// <summary>
+            /// Write direct memory access command.
+            /// </summary>
             WriteDma = 0xCA,
+            /// <summary>
+            /// Write direct memory access extended command.
+            /// </summary>
             WriteDmaExt = 0x35,
+            /// <summary>
+            /// Cache flush command.
+            /// </summary>
             CacheFlush = 0xE7,
+            /// <summary>
+            /// Cache flush extended command.
+            /// </summary>
             CacheFlushExt = 0xEA,
+            /// <summary>
+            /// Packet command.
+            /// </summary>
             Packet = 0xA0,
+            /// <summary>
+            /// Identify packet command.
+            /// </summary>
             IdentifyPacket = 0xA1,
+            /// <summary>
+            /// Identify command.
+            /// </summary>
             Identify = 0xEC,
+            /// <summary>
+            /// Read command.
+            /// </summary>
             Read = 0xA8,
+            /// <summary>
+            /// Eject command.
+            /// </summary>
             Eject = 0x1B
         }
+        /// <summary>
+        /// Identity values.
+        /// </summary>
         public enum Ident : byte
         {
+            /// <summary>
+            /// Device type
+            /// </summary>
             DEVICETYPE = 0,
+            /// <summary>
+            /// Cylinders
+            /// </summary>
             CYLINDERS = 2,
+            /// <summary>
+            /// Heads
+            /// </summary>
             HEADS = 6,
+            /// <summary>
+            /// Sectors
+            /// </summary>
             SECTORS = 12,
+            /// <summary>
+            /// Serial
+            /// </summary>
             SERIAL = 20,
+            /// <summary>
+            /// Model
+            /// </summary>
             MODEL = 54,
+            /// <summary>
+            /// Capabilities
+            /// </summary>
             CAPABILITIES = 98,
+            /// <summary>
+            /// Field valid
+            /// </summary>
             FIELDVALID = 106,
+            /// <summary>
+            /// Max LBA
+            /// </summary>
             MAX_LBA = 120,
+            /// <summary>
+            /// Command sets
+            /// </summary>
             COMMANDSETS = 164,
+            /// <summary>
+            /// Max LBA extended
+            /// </summary>
             MAX_LBA_EXT = 200
         }
+        /// <summary>
+        /// Specification levels
+        /// </summary>
         public enum SpecLevel
         {
+            /// <summary>
+            /// Null
+            /// </summary>
             Null,
+            /// <summary>
+            /// ATA
+            /// </summary>
             ATA,
+            /// <summary>
+            /// ATAPI
+            /// </summary>
             ATAPI
         }
 
+        /// <summary>
+        /// IO ports for this device.
+        /// </summary>
         protected ATAIO IO;
 
+        /// <summary>
+        /// Pio drive type.
+        /// </summary>
         protected SpecLevel mDriveType = SpecLevel.Null;
+        /// <summary>
+        /// Pio drive type.
+        /// </summary>
         public SpecLevel DriveType
         {
             get { return mDriveType; }
         }
 
+        /// <summary>
+        /// Drive's serial number.
+        /// </summary>
         protected FOS_System.String mSerialNo;
+        /// <summary>
+        /// Drive's .
+        /// </summary>
         public FOS_System.String SerialNo
         {
             get { return mSerialNo; }
         }
 
+        /// <summary>
+        /// Drive's .
+        /// </summary>
         protected FOS_System.String mFirmwareRev;
+        /// <summary>
+        /// Drive's .
+        /// </summary>
         public FOS_System.String FirmwareRev
         {
             get { return mFirmwareRev; }
         }
 
+        /// <summary>
+        /// Drive's model number.
+        /// </summary>
         protected FOS_System.String mModelNo;
+        /// <summary>
+        /// Drive's model number.
+        /// </summary>
         public FOS_System.String ModelNo
         {
             get { return mModelNo; }
         }
 
-        public ATAPio(ATAIO anIO, ATA.ControllerId aControllerId, ATA.BusPosition aBusPosition)
+        /// <summary>
+        /// Initialises a new ATA pio device.
+        /// </summary>
+        /// <param name="anIO">The IO ports for the new Pio device.</param>
+        /// <param name="aControllerId">The controller ID for the new device.</param>
+        /// <param name="aBusPosition">The bus position of the new device.</param>
+        public ATAPio(ATAIO anIO, ATA.ControllerID aControllerId, ATA.BusPosition aBusPosition)
         {
             IO = anIO;
             controllerId = aControllerId;
@@ -125,17 +326,27 @@ namespace Kernel.Hardware.ATA
             }
         }
 
+        /// <summary>
+        /// Sends the drive select command.
+        /// </summary>
+        /// <param name="aLbaHigh4">LBA High 4 bits</param>
         public void SelectDrive(byte aLbaHigh4)
         {
             IO.DeviceSelect.Write((byte)((byte)(DvcSelVal.Default | DvcSelVal.LBA | (busPosition == BusPosition.Slave ? DvcSelVal.Slave : 0)) | aLbaHigh4));
             Wait();
         }
-        // ATA requires a wait of 400 nanoseconds.
-        // Read the Status register FIVE TIMES, and only pay attention to the value 
-        // returned by the last one -- after selecting a new master or slave device. The point being that 
-        // you can assume an IO port read takes approximately 100ns, so doing the first four creates a 400ns 
-        // delay -- which allows the drive time to push the correct voltages onto the bus. 
-        // Since we read status again later, we wait by reading it 4 times.
+        
+        /// <summary>
+        /// Waits by performing 4 reads (see remarks / ATA spec)
+        /// </summary>
+        /// <remarks>
+        /// ATA requires a wait of 400 nanoseconds.
+        /// Read the Status register FIVE TIMES, and only pay attention to the value 
+        /// returned by the last one -- after selecting a new master or slave device. The point being that 
+        /// you can assume an IO port read takes approximately 100ns, so doing the first four creates a 400ns 
+        /// delay -- which allows the drive time to push the correct voltages onto the bus. 
+        /// Since we read status again later, we wait by reading it 4 times.
+        /// </remarks>
         protected void Wait()
         {
             // Wait 400 ns
@@ -145,6 +356,10 @@ namespace Kernel.Hardware.ATA
             xVoid = IO.Status.Read_Byte();
             xVoid = IO.Status.Read_Byte();
         }
+        /// <summary>
+        /// Attempts to discover the ATA drive.
+        /// </summary>
+        /// <returns></returns>
         public SpecLevel DiscoverDrive()
         {
             SelectDrive(0);
@@ -177,6 +392,9 @@ namespace Kernel.Hardware.ATA
             }
             return SpecLevel.ATA;
         }
+        /// <summary>
+        /// Attempts to initialise the ATA drive.
+        /// </summary>
         protected void InitDrive()
         {
             if (mDriveType == SpecLevel.ATA)
@@ -223,6 +441,13 @@ namespace Kernel.Hardware.ATA
             }
         }
 
+        /// <summary>
+        /// Gets a string from the specified UInt16. Equivalent of ASCII byte array conversion.
+        /// </summary>
+        /// <param name="aBuffer">The data to convert.</param>
+        /// <param name="anIndexStart">The index to start converting at.</param>
+        /// <param name="aStringLength">The length of the string to create.</param>
+        /// <returns>The new string.</returns>
         protected FOS_System.String GetString(UInt16[] aBuffer, int anIndexStart, int aStringLength)
         {
             FOS_System.String newStr = FOS_System.String.New(aStringLength);
@@ -235,10 +460,24 @@ namespace Kernel.Hardware.ATA
             return newStr;
         }
 
+        /// <summary>
+        /// Sends the specified command (with ThrowOnError=true).
+        /// </summary>
+        /// <param name="aCmd">The command to send.</param>
+        /// <returns>The device status.</returns>
         public Status SendCmd(Cmd aCmd)
         {
             return SendCmd(aCmd, true);
         }
+        /// <summary>
+        /// Sends the specified command.
+        /// </summary>
+        /// <param name="aCmd">The command to send.</param>
+        /// <param name="aThrowOnError">
+        /// Whether to throw an exception if the device reports 
+        /// an error status.
+        /// </param>
+        /// <returns>The device status.</returns>
         public Status SendCmd(Cmd aCmd, bool aThrowOnError)
         {
             IO.Command.Write((byte)aCmd);
@@ -258,6 +497,11 @@ namespace Kernel.Hardware.ATA
             return xStatus;
         }
         
+        /// <summary>
+        /// Selects the specified contiguous sectors on the drive.
+        /// </summary>
+        /// <param name="aSectorNo">The first sector to select.</param>
+        /// <param name="aSectorCount">The number of contiguous sectors to select.</param>
         protected void SelectSector(UInt64 aSectorNo, UInt32 aSectorCount)
         {
             //TODO: Check for 48 bit sectorno mode and select 48 bits
@@ -270,12 +514,24 @@ namespace Kernel.Hardware.ATA
             IO.LBA2.Write((byte)((aSectorNo & 0xFF0000) >> 16));
             //TODO LBA3  ...
         }
+        /// <summary>
+        /// Reads contiguous blocks from the drive.
+        /// </summary>
+        /// <param name="aBlockNo">The number of the first block to read.</param>
+        /// <param name="aBlockCount">The number of contiguous blocks to read.</param>
+        /// <param name="aData">The data array to read into.</param>
         public override void ReadBlock(UInt64 aBlockNo, UInt32 aBlockCount, byte[] aData)
         {
             SelectSector(aBlockNo, aBlockCount);
             SendCmd(Cmd.ReadPio);
             IO.Data.Read8(aData);
         }
+        /// <summary>
+        /// Writes contiguous blocks to the drive.
+        /// </summary>
+        /// <param name="aBlockNo">The number of the first block to write.</param>
+        /// <param name="aBlockCount">The number of contiguous blocks to write.</param>
+        /// <param name="aData">The data to write.</param>
         public override void WriteBlock(UInt64 aBlockNo, UInt32 aBlockCount, byte[] aData)
         {
             SelectSector(aBlockNo, aBlockCount);

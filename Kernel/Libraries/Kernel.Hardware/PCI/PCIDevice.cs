@@ -12,80 +12,244 @@ namespace Kernel.Hardware.PCI
     /// </summary>
     public class PCIDevice : Device
     {
+        /// <summary>
+        /// Enumeration of PCI header types.
+        /// </summary>
         public enum PCIHeaderType : byte
         {
+            /// <summary>
+            /// Indicates a normal PCI devise.
+            /// </summary>
             Normal = 0x00,
+            /// <summary>
+            /// Indicates a bridge PCI devise.
+            /// </summary>
             Bridge = 0x01,
+            /// <summary>
+            /// Indicates a cardbus PCI devise.
+            /// </summary>
             Cardbus = 0x02
         }
+        /// <summary>
+        /// Built-in Self Test status byte masks.
+        /// </summary>
         [Flags]
-        public enum PCIBist : byte
+        public enum PCIBISTs : byte
         {
-            CocdMask = 0x0f,   /* Return result */
-            Start = 0x40,   /* 1 to start BIST, 2 secs or less */
-            Capable = 0x80    /* 1 if BIST capable */
+            /// <summary>
+            /// Return result mask.
+            /// </summary>
+            CocdMask = 0x0f,
+            /// <summary>
+            /// Start mask.
+            /// </summary>
+            Start = 0x40,
+            /// <summary>
+            /// BIST Capable mask.
+            /// </summary>
+            Capable = 0x80
         }
+        /// <summary>
+        /// PCI command masks.
+        /// </summary>
         [Flags]
-        public enum PCICommand : short
+        public enum PCICommand : ushort
         {
-            IO = 0x1,     /* Enable response in I/O space */
-            Memory = 0x2,     /* Enable response in Memory space */
-            Master = 0x4,     /* Enable bus mastering */
-            Special = 0x8,     /* Enable response to special cycles */
-            Invalidate = 0x10,    /* Use memory write and invalidate */
-            VGA_Pallete = 0x20,   /* Enable palette snooping */
-            Parity = 0x40,    /* Enable parity checking */
-            Wait = 0x80,    /* Enable address/data stepping */
-            SERR = 0x100,   /* Enable SERR */
-            Fast_Back = 0x200,   /* Enable back-to-back writes */
+            /// <summary>
+            /// Enable response in I/O space command.
+            /// </summary>
+            IO = 0x1,
+            /// <summary>
+            /// Enable response in memory space command.
+            /// </summary>
+            Memory = 0x2,
+            /// <summary>
+            /// Enable bus mastering command.
+            /// </summary>
+            Master = 0x4,
+            /// <summary>
+            /// Enable response to special cycles command.
+            /// </summary>
+            Special = 0x8,
+            /// <summary>
+            /// Use memory write and invalidate command.
+            /// </summary>
+            Invalidate = 0x10,
+            /// <summary>
+            /// Enable palette snooping command.
+            /// </summary>
+            VGA_Pallete = 0x20,
+            /// <summary>
+            /// Enable parity checking command.
+            /// </summary>
+            Parity = 0x40,
+            /// <summary>
+            /// Enable address/data stepping command.
+            /// </summary>
+            Wait = 0x80,
+            /// <summary>
+            /// Enable SERR command.
+            /// </summary>
+            SERR = 0x100,
+            /// <summary>
+            /// Enable back-to-back writes command.
+            /// </summary>
+            Fast_Back = 0x200
         }
+        /// <summary>
+        /// PCI status masks.
+        /// </summary>
         [Flags]
-        public enum PCIStatus : int
+        public enum PCIStatus : uint
         {
-            CAP_LIST = 0x10,   /* Support Capability List */
-            SUPPORT_66MHZ = 0x20,    /* Support 66 Mhz PCI 2.1 bus */
-            UDF = 0x40,    /* Support User Definable Features [obsolete] */
-            FAST_BACK = 0x80,    /* Accept fast-back to back */
-            PARITY = 0x100,   /* Detected parity error */
-            DEVSEL_MASK = 0x600,   /* DEVSEL timing */
+            /// <summary>
+            /// Support capability list.
+            /// </summary>
+            CAP_LIST = 0x10,
+            /// <summary>
+            /// Support 66 Mhz PCI 2.1 bus
+            /// </summary>
+            SUPPORT_66MHZ = 0x20,
+            /// <summary>
+            /// Support User Definable Features [obsolete]
+            /// </summary>
+            UDF = 0x40,
+            /// <summary>
+            /// Accept fast-back (back-to-back writes)
+            /// </summary>
+            FAST_BACK = 0x80,
+            /// <summary>
+            /// Detected parity error.
+            /// </summary>
+            PARITY = 0x100,
+            /// <summary>
+            /// DEVSEL timing.
+            /// </summary>
+            DEVSEL_MASK = 0x600,
+            /// <summary>
+            /// DEVSEL timing - fast.
+            /// </summary>
             DEVSEL_FAST = 0x000,
+            /// <summary>
+            /// DEVSEL timing - medium.
+            /// </summary>
             DEVSEL_MEDIUM = 0x200,
+            /// <summary>
+            /// DEVSEL timing - slow.
+            /// </summary>
             DEVSEL_SLOW = 0x400,
-            SIG_TARGET_ABORT = 0x800, /* Set on target abort */
-            REC_TARGET_ABORT = 0x1000, /* Master ack of */
-            REC_MASTER_ABORT = 0x2000, /* Set on master abort */
-            SIG_SYSTEM_ERROR = 0x4000, /* Set when we drive SERR */
-            DETECTED_PARITY = 0x8000 /* Set on parity error */
+            /// <summary>
+            /// Set on target abort.
+            /// </summary>
+            SIG_TARGET_ABORT = 0x800,
+            /// <summary>
+            /// Master ack off.
+            /// </summary>
+            REC_TARGET_ABORT = 0x1000,
+            /// <summary>
+            /// Set on master abort.
+            /// </summary>
+            REC_MASTER_ABORT = 0x2000,
+            /// <summary>
+            /// Set when we drive SERR.
+            /// </summary>
+            SIG_SYSTEM_ERROR = 0x4000,
+            /// <summary>
+            /// Set on parity error.
+            /// </summary>
+            DETECTED_PARITY = 0x8000
         }
+        /// <summary>
+        /// PCI interrupt pin numbers.
+        /// </summary>
         public enum PCIInterruptPIN : byte
         {
+            /// <summary>
+            /// None.
+            /// </summary>
             None = 0x00,
+            /// <summary>
+            /// INTA
+            /// </summary>
             INTA = 0x01,
+            /// <summary>
+            /// INTB
+            /// </summary>
             INTB = 0x02,
+            /// <summary>
+            /// INTC
+            /// </summary>
             INTC = 0x03,
+            /// <summary>
+            /// INTD
+            /// </summary>
             INTD = 0x04
         }
 
-
+        /// <summary>
+        /// The device's VendorID.
+        /// </summary>
         public ushort VendorID { get; private set; }
+        /// <summary>
+        /// The device's DeviceID.
+        /// </summary>
         public ushort DeviceID { get; private set; }
 
+        /// <summary>
+        /// Reads / writes the command register.
+        /// </summary>
         public PCICommand Command { get { return (PCICommand)ReadRegister16(0x04); } set { WriteRegister16(0x04, (ushort)value); } }
+        /// <summary>
+        /// Reads / writes the status register.
+        /// </summary>
         public PCIStatus Status { get { return (PCIStatus)ReadRegister16(0x06); } set { WriteRegister16(0x06, (ushort)value); } }
 
+        /// <summary>
+        /// The device's RevisionID.
+        /// </summary>
         public byte RevisionID { get; private set; }
+        /// <summary>
+        /// The device's ProgIF.
+        /// </summary>
         public byte ProgIF { get; private set; }
+        /// <summary>
+        /// The device's Subclass.
+        /// </summary>
         public byte Subclass { get; private set; }
+        /// <summary>
+        /// The device's ClassCode.
+        /// </summary>
         public byte ClassCode { get; private set; }
 
+        /// <summary>
+        /// The device's CacheLineSize.
+        /// </summary>
         public byte CacheLineSize { get; private set; }
+        /// <summary>
+        /// The device's LatencyTimer.
+        /// </summary>
         public byte LatencyTimer { get; private set; }
+        /// <summary>
+        /// The device's HeaderType.
+        /// </summary>
         public PCIHeaderType HeaderType { get; private set; }
-        public PCIBist BIST { get; private set; }
+        /// <summary>
+        /// The device's BIST.
+        /// </summary>
+        public PCIBISTs BIST { get; private set; }
 
+        /// <summary>
+        /// The device's InterruptLine.
+        /// </summary>
         public byte InterruptLine { get; private set; }
+        /// <summary>
+        /// The device's InterruptPIN.
+        /// </summary>
         public PCIInterruptPIN InterruptPIN { get; private set; }
 
+        /// <summary>
+        /// The device's DeviceExists.
+        /// </summary>
         public bool DeviceExists { get; private set; }
 
         /// <summary>
@@ -93,10 +257,25 @@ namespace Kernel.Hardware.PCI
         /// </summary>
         public bool Claimed { get; set; }
 
+        /// <summary>
+        /// The device's bus number.
+        /// </summary>
         public uint bus = 0;
+        /// <summary>
+        /// The device's slot number.
+        /// </summary>
         public uint slot = 0;
+        /// <summary>
+        /// The device's function number.
+        /// </summary>
         public uint function = 0;
 
+        /// <summary>
+        /// Initialises a new, generic PCI device.
+        /// </summary>
+        /// <param name="bus">The PCI bus number.</param>
+        /// <param name="slot">The PCI slot number.</param>
+        /// <param name="function">The PCI function number.</param>
         [Compiler.NoDebug]
         public PCIDevice(uint bus, uint slot, uint function)
         {
@@ -115,7 +294,7 @@ namespace Kernel.Hardware.PCI
             CacheLineSize = ReadRegister8(0x0C);
             LatencyTimer = ReadRegister8(0x0D);
             HeaderType = (PCIHeaderType)ReadRegister8(0x0E);
-            BIST = (PCIBist)ReadRegister8(0x0F);
+            BIST = (PCIBISTs)ReadRegister8(0x0F);
 
             InterruptLine = ReadRegister8(0x3C);
             InterruptPIN = (PCIInterruptPIN)ReadRegister8(0x3D);
@@ -123,8 +302,15 @@ namespace Kernel.Hardware.PCI
             DeviceExists = (uint)VendorID != 0xFFFF && (uint)DeviceID != 0xFFFF;
         }
 
+        /// <summary>
+        /// Calculates the base address for a PCI device.
+        /// </summary>
+        /// <param name="aBus">PCI bus number.</param>
+        /// <param name="aSlot">PCI slot number.</param>
+        /// <param name="aFunction">PCI function number.</param>
+        /// <returns>The base address.</returns>
         [Compiler.NoDebug]
-        protected UInt32 GetAddressBase(uint aBus, uint aSlot, uint aFunction)
+        protected static UInt32 GetAddressBase(uint aBus, uint aSlot, uint aFunction)
         {
             // 31 	        30 - 24    23 - 16      15 - 11 	    10 - 8 	          7 - 2 	        1 - 0
             // Enable Bit 	Reserved   Bus Number 	Device Number 	Function Number   Register Number 	00 
@@ -139,9 +325,13 @@ namespace Kernel.Hardware.PCI
                 | ((aFunction & 0x07) << 8));
         }
 
+        /// <summary>
+        /// Enables or disables memory.
+        /// </summary>
+        /// <param name="enable">Whether to enable memory or not.</param>
         public void EnableMemory(bool enable)
         {
-            UInt16 command = ReadRegister16(0x04);
+            UInt16 command = (UInt16)Command;
 
             UInt16 flags = 0x0007;
 
@@ -150,12 +340,17 @@ namespace Kernel.Hardware.PCI
             else
                 command &= (ushort)~flags;
 
-            WriteRegister16(0x04, command);
+            Command = (PCICommand)command;
         }
 
 
         #region IOReadWrite
 
+        /// <summary>
+        /// Reads a byte from the specified register.
+        /// </summary>
+        /// <param name="aRegister">The register to read.</param>
+        /// <returns>The byte that has been read.</returns>
         [Compiler.NoDebug]
         internal byte ReadRegister8(byte aRegister)
         {
@@ -164,6 +359,11 @@ namespace Kernel.Hardware.PCI
             return (byte)(PCI_IO.ConfigDataPort.Read_UInt32() >> ((aRegister % 4) * 8) & 0xFF);
         }
 
+        /// <summary>
+        /// Writes a byte to the specified register.
+        /// </summary>
+        /// <param name="aRegister">The register to write.</param>
+        /// <param name="value">The value to write.</param>
         [Compiler.NoDebug]
         internal void WriteRegister8(byte aRegister, byte value)
         {
@@ -172,6 +372,11 @@ namespace Kernel.Hardware.PCI
             PCI_IO.ConfigDataPort.Write(value);
         }
 
+        /// <summary>
+        /// Reads a UInt16 from the specified register.
+        /// </summary>
+        /// <param name="aRegister">The register to read.</param>
+        /// <returns>The UInt16 that has been read.</returns>
         [Compiler.NoDebug]
         internal UInt16 ReadRegister16(byte aRegister)
         {
@@ -180,6 +385,11 @@ namespace Kernel.Hardware.PCI
             return (UInt16)(PCI_IO.ConfigDataPort.Read_UInt32() >> ((aRegister % 4) * 8) & 0xFFFF); ;
         }
 
+        /// <summary>
+        /// Writes a UInt16 to the specified register.
+        /// </summary>
+        /// <param name="aRegister">The register to write.</param>
+        /// <param name="value">The value to write.</param>
         [Compiler.NoDebug]
         internal void WriteRegister16(byte aRegister, ushort value)
         {
@@ -188,6 +398,11 @@ namespace Kernel.Hardware.PCI
             PCI_IO.ConfigDataPort.Write(value);
         }
 
+        /// <summary>
+        /// Reads a UInt32 from the specified register.
+        /// </summary>
+        /// <param name="aRegister">The register to read.</param>
+        /// <returns>The UInt32 that has been read.</returns>
         [Compiler.NoDebug]
         internal UInt32 ReadRegister32(byte aRegister)
         {
@@ -196,6 +411,11 @@ namespace Kernel.Hardware.PCI
             return PCI_IO.ConfigDataPort.Read_UInt32();
         }
 
+        /// <summary>
+        /// Writes a UInt32 to the specified register.
+        /// </summary>
+        /// <param name="aRegister">The register to write.</param>
+        /// <param name="value">The value to write.</param>
         [Compiler.NoDebug]
         internal void WriteRegister32(byte aRegister, uint value)
         {
@@ -206,9 +426,16 @@ namespace Kernel.Hardware.PCI
 
         #endregion
 
-
+        /// <summary>
+        /// Provides device class information for PCI devices.
+        /// </summary>
         public static class DeviceClassInfo
         {
+            /// <summary>
+            /// Gets a string that represents the specified PCI device.
+            /// </summary>
+            /// <param name="device">The device to get a string for.</param>
+            /// <returns>The string.</returns>
             public static FOS_System.String GetString(PCIDevice device)
             {
                 switch (device.VendorID)

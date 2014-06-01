@@ -6,22 +6,52 @@ using System.Threading.Tasks;
 
 namespace Kernel.Hardware.ATA
 {
+    /// <summary>
+    /// Represents an ATA device.
+    /// </summary>
     public abstract class ATA : Devices.DiskDevice
     {
-        public enum ControllerId
+        /// <summary>
+        /// The ATA controller IDs.
+        /// </summary>
+        public enum ControllerID
         { 
-            Primary, 
+            /// <summary>
+            /// Primary ATA controller.
+            /// </summary>
+            Primary,
+            /// <summary>
+            /// Secondary ATA controller.
+            /// </summary>
             Secondary 
         }
+        /// <summary>
+        /// The ATA bus positions.
+        /// </summary>
         public enum BusPosition
         { 
-            Master, 
+            /// <summary>
+            /// Master device.
+            /// </summary>
+            Master,
+            /// <summary>
+            /// Slave device.
+            /// </summary>
             Slave 
         }
 
-        public ControllerId controllerId;
+        /// <summary>
+        /// The device's controller ID.
+        /// </summary>
+        public ControllerID controllerId;
+        /// <summary>
+        /// The device's bus position.
+        /// </summary>
         public BusPosition busPosition;
 
+        /// <summary>
+        /// Initialises a new ATA device with block size 512.
+        /// </summary>
         internal ATA()
         {
             blockSize = 512;

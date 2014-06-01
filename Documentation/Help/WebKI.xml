@@ -61,7 +61,7 @@
   <HelpKINode Title="ATA.ATA constructor" Url="html/6d74c342-241d-f155-c4b1-d480efe91564.htm" />
   <HelpKINode Title="ATA.BusPosition enumeration" Url="html/e17c9892-946e-d32c-3a0f-ecb6dadb4c6c.htm" />
   <HelpKINode Title="ATA.busPosition field" Url="html/af5ce0d0-bed6-5eed-ab5d-b0c19564b3fb.htm" />
-  <HelpKINode Title="ATA.ControllerId enumeration" Url="html/46dea8ca-65d2-50af-e3b7-9861c01a8968.htm" />
+  <HelpKINode Title="ATA.ControllerID enumeration" Url="html/f1cfe898-23c5-159a-f94e-7e2f4170a50d.htm" />
   <HelpKINode Title="ATA.controllerId field" Url="html/507820e2-98a1-e684-67b7-c0d0dfc46a9f.htm" />
   <HelpKINode Title="ATAIO class">
     <HelpKINode Title="ATAIO Class" Url="html/f8fae5fe-e85e-f956-036a-c9ef7b5f7b62.htm" />
@@ -92,17 +92,17 @@
   <HelpKINode Title="ATAManager.ATAIO2 field" Url="html/a44eba37-e42b-b285-6db6-be42df7fe40f.htm" />
   <HelpKINode Title="ATAManager.ATAManager constructor" Url="html/8ad7f98b-f6f9-8cb1-1860-893fed1b6aec.htm" />
   <HelpKINode Title="ATAManager.Init method" Url="html/f46fca82-630c-a1b8-7b36-7b95c02f4aa2.htm" />
-  <HelpKINode Title="ATAManager.InitDrive method" Url="html/d285e654-9ebb-49d9-d9b1-d197405f3850.htm" />
+  <HelpKINode Title="ATAManager.InitDrive method" Url="html/6ae3cda9-43bf-9233-c6cd-9450978d8d9e.htm" />
   <HelpKINode Title="ATAPI enumeration member" Url="html/c6fb7265-006e-aafa-a314-45fcddca8e24.htm" />
   <HelpKINode Title="ATAPio class">
     <HelpKINode Title="ATAPio Class" Url="html/bdd66a65-6ced-e0d8-fdee-2afe25124e6d.htm" />
     <HelpKINode Title="about ATAPio class" Url="html/bdd66a65-6ced-e0d8-fdee-2afe25124e6d.htm" />
-    <HelpKINode Title="constructor" Url="html/80132c7c-6307-f7bf-cb65-87f121219de5.htm" />
+    <HelpKINode Title="constructor" Url="html/ce9fed13-2636-ab6c-3bc0-40b3a6d40e7e.htm" />
     <HelpKINode Title="fields" Url="html/c7f13a9f-4dd0-0d08-8a91-7fe74195fba1.htm" />
     <HelpKINode Title="methods" Url="html/352b8cbd-fa14-6034-e7a5-e661b460a1b6.htm" />
     <HelpKINode Title="properties" Url="html/3f1851eb-8a5b-7458-017e-80578bb62f1f.htm" />
   </HelpKINode>
-  <HelpKINode Title="ATAPio.ATAPio constructor" Url="html/80132c7c-6307-f7bf-cb65-87f121219de5.htm" />
+  <HelpKINode Title="ATAPio.ATAPio constructor" Url="html/ce9fed13-2636-ab6c-3bc0-40b3a6d40e7e.htm" />
   <HelpKINode Title="ATAPio.Cmd enumeration" Url="html/6007a9b7-5aa8-5fc4-3f12-4e5870961450.htm" />
   <HelpKINode Title="ATAPio.DiscoverDrive method" Url="html/86baa3e9-88cc-f75f-6387-712530f7605b.htm" />
   <HelpKINode Title="ATAPio.DriveType property" Url="html/deb2fcde-7837-8e8b-c72c-940a24713f13.htm" />
@@ -274,7 +274,7 @@
   <HelpKINode Title="CapabilitiesRegsLength field" Url="html/4165cba2-16d1-6790-966c-53a3a2cabaaa.htm" />
   <HelpKINode Title="CapabilityID property" Url="html/6bba4623-a9dd-1dce-49dc-f31433c44c21.htm" />
   <HelpKINode Title="CapabilityPointer property" Url="html/5b88d460-aab0-70cf-c261-948ba60a6ed1.htm" />
-  <HelpKINode Title="Capable enumeration member" Url="html/5a9c53c4-571c-99fa-e6b3-442f7e7586f7.htm" />
+  <HelpKINode Title="Capable enumeration member" Url="html/6cb1c820-0faa-ec8a-cfb1-c456d33350ee.htm" />
   <HelpKINode Title="capOffset field" Url="html/65566bdf-19f0-4426-a2a7-73b1e6e7ce33.htm" />
   <HelpKINode Title="CAP_LIST enumeration member" Url="html/10de0a4e-86fb-6d28-adbc-5affabc7f76f.htm" />
   <HelpKINode Title="Cardbus enumeration member" Url="html/8a2d9acd-b0a1-ed6b-7354-93a923e26d83.htm" />
@@ -293,7 +293,7 @@
   <HelpKINode Title="Clear method" Url="html/2d7da816-66ea-53f3-28a2-e9fa79a0674e.htm" />
   <HelpKINode Title="ClusterCount field" Url="html/911cd401-9385-3873-1b5b-14222f85ff63.htm" />
   <HelpKINode Title="ClusterNums field" Url="html/ab209afa-ae63-a177-8778-a27b39e8cb7e.htm" />
-  <HelpKINode Title="CocdMask enumeration member" Url="html/5a9c53c4-571c-99fa-e6b3-442f7e7586f7.htm" />
+  <HelpKINode Title="CocdMask enumeration member" Url="html/6cb1c820-0faa-ec8a-cfb1-c456d33350ee.htm" />
   <HelpKINode Title="colour field" Url="html/9771836b-6271-fe8f-e60e-4c938cbf56ce.htm" />
   <HelpKINode Title="cols field" Url="html/c27faf8b-69f7-3bdd-d904-6f6f3f43f1a4.htm" />
   <HelpKINode Title="Command field" Url="html/3a6c0714-e487-3e9c-ce7b-f23a8da07bc3.htm" />
@@ -611,8 +611,8 @@
     <HelpKINode Title="PCIDeviceBridge.ExpansionROMBaseAddress Property " Url="html/006715bd-4bc4-ffda-140b-a9bee9dd856b.htm" />
     <HelpKINode Title="PCIDeviceNormal.ExpansionROMBaseAddress Property " Url="html/9d62cebc-116b-bdc6-6705-a8249b2b677c.htm" />
   </HelpKINode>
-  <HelpKINode Title="FAST_BACK enumeration member" Url="html/10de0a4e-86fb-6d28-adbc-5affabc7f76f.htm" />
   <HelpKINode Title="Fast_Back enumeration member" Url="html/84f47421-56cd-bb43-1d98-ac5abe1d4982.htm" />
+  <HelpKINode Title="FAST_BACK enumeration member" Url="html/10de0a4e-86fb-6d28-adbc-5affabc7f76f.htm" />
   <HelpKINode Title="FAT12 enumeration member" Url="html/99a130f8-56e4-eb64-5e7f-d481abcc01d5.htm" />
   <HelpKINode Title="FAT16 enumeration member" Url="html/99a130f8-56e4-eb64-5e7f-d481abcc01d5.htm" />
   <HelpKINode Title="FAT32 enumeration member" Url="html/99a130f8-56e4-eb64-5e7f-d481abcc01d5.htm" />
@@ -875,7 +875,6 @@
   <HelpKINode Title="GetASCIIStringFromUTF16 method" Url="html/33120580-2b6c-a8c2-8d56-23216ee0d7f4.htm" />
   <HelpKINode Title="GetCharPointer method" Url="html/7bf4448e-d612-fe37-b2ab-e4d8a9214050.htm" />
   <HelpKINode Title="GetClusterNums method" Url="html/646120d9-2288-11a8-2771-b3afb4b29b29.htm" />
-  <HelpKINode Title="GetDevice method" Url="html/9ae27d7a-7308-2f50-b94f-2043a3931a8b.htm" />
   <HelpKINode Title="GetFATEntryEOFValue method" Url="html/29bbcbf4-d2b5-b881-2efb-9f59900d47e6.htm" />
   <HelpKINode Title="GetFATTableSectorPosition method" Url="html/5aaf3eea-6ccf-47a6-0667-1ab0553e3753.htm" />
   <HelpKINode Title="GetFirstPageTablePtr method" Url="html/bd8dcb51-2a6d-c9c4-7d1a-6147c9d0771e.htm" />
@@ -1006,7 +1005,7 @@
   <HelpKINode Title="InitATA method" Url="html/89ccf570-b01f-c012-7fc7-a97de311b9bc.htm" />
   <HelpKINode Title="InitDisk method" Url="html/613c7f95-4afb-45bc-fc82-9d574dde7e7a.htm" />
   <HelpKINode Title="InitDrive method">
-    <HelpKINode Title="ATAManager.InitDrive Method " Url="html/d285e654-9ebb-49d9-d9b1-d197405f3850.htm" />
+    <HelpKINode Title="ATAManager.InitDrive Method " Url="html/6ae3cda9-43bf-9233-c6cd-9450978d8d9e.htm" />
     <HelpKINode Title="ATAPio.InitDrive Method " Url="html/3c42bb4c-6f2e-7338-16d7-b1f36c33e085.htm" />
   </HelpKINode>
   <HelpKINode Title="InitFileSystem method" Url="html/49be1f87-0a64-7048-3b81-52b62ae8efcc.htm" />
@@ -1055,10 +1054,6 @@
     <HelpKINode Title="fields" Url="html/53023d6c-de0f-d26c-e614-5dd1de8b8535.htm" />
   </HelpKINode>
   <HelpKINode Title="InvalidOpCodeException.InvalidOpCodeException constructor" Url="html/0ce86302-d840-7101-7d5a-8f9076fc16d9.htm" />
-  <HelpKINode Title="IO class">
-    <HelpKINode Title="IO Class" Url="html/fd00291a-5ff7-7c3a-4e34-2ec5c6042e25.htm" />
-    <HelpKINode Title="about IO class" Url="html/fd00291a-5ff7-7c3a-4e34-2ec5c6042e25.htm" />
-  </HelpKINode>
   <HelpKINode Title="IO enumeration member" Url="html/84f47421-56cd-bb43-1d98-ac5abe1d4982.htm" />
   <HelpKINode Title="IO field" Url="html/f0862bc7-9d66-66f4-eac4-21c240978bf2.htm" />
   <HelpKINode Title="IOBase property" Url="html/3b5143d4-b6cd-fb11-bf6b-8faadfc224a3.htm" />
@@ -1198,7 +1193,7 @@
   <HelpKINode Title="Kernel.Hardware.ATA namespace" Url="html/8622ab5a-cc92-7138-350a-4d56f1de5ee4.htm" />
   <HelpKINode Title="Kernel.Hardware.ATA.ATA class" Url="html/2b358254-a571-8d7e-3b96-45af8fed33b1.htm" />
   <HelpKINode Title="Kernel.Hardware.ATA.ATA.BusPosition enumeration" Url="html/e17c9892-946e-d32c-3a0f-ecb6dadb4c6c.htm" />
-  <HelpKINode Title="Kernel.Hardware.ATA.ATA.ControllerId enumeration" Url="html/46dea8ca-65d2-50af-e3b7-9861c01a8968.htm" />
+  <HelpKINode Title="Kernel.Hardware.ATA.ATA.ControllerID enumeration" Url="html/f1cfe898-23c5-159a-f94e-7e2f4170a50d.htm" />
   <HelpKINode Title="Kernel.Hardware.ATA.ATAIO class" Url="html/f8fae5fe-e85e-f956-036a-c9ef7b5f7b62.htm" />
   <HelpKINode Title="Kernel.Hardware.ATA.ATAManager class" Url="html/5cdd3e1a-5111-ce48-809c-94a81da0a777.htm" />
   <HelpKINode Title="Kernel.Hardware.ATA.ATAPio class" Url="html/bdd66a65-6ced-e0d8-fdee-2afe25124e6d.htm" />
@@ -1216,14 +1211,13 @@
   <HelpKINode Title="Kernel.Hardware.DMA namespace" Url="html/73ce3178-f816-e14d-d311-3395220bf242.htm" />
   <HelpKINode Title="Kernel.Hardware.DMA.DMABlock class" Url="html/58defae7-e29f-8757-2643-bd07de2d2909.htm" />
   <HelpKINode Title="Kernel.Hardware.IO namespace" Url="html/0ec0de43-4533-152c-6d6c-fd664043918a.htm" />
-  <HelpKINode Title="Kernel.Hardware.IO.IO class" Url="html/fd00291a-5ff7-7c3a-4e34-2ec5c6042e25.htm" />
   <HelpKINode Title="Kernel.Hardware.IO.IOPort class" Url="html/673257d6-91e9-2b14-3595-94d6870144db.htm" />
   <HelpKINode Title="Kernel.Hardware.PCI namespace" Url="html/cd86e817-8368-e810-dbfb-48a8961324c3.htm" />
   <HelpKINode Title="Kernel.Hardware.PCI.PCI class" Url="html/d44a7926-433f-5f4c-f19f-fc5d8606ccac.htm" />
   <HelpKINode Title="Kernel.Hardware.PCI.PCIBaseAddressBar class" Url="html/8ee8abaf-a214-3dfa-fbc7-5cd3a0661690.htm" />
   <HelpKINode Title="Kernel.Hardware.PCI.PCIDevice class" Url="html/da3fbac2-d7aa-36e4-40ac-af10cc9ae264.htm" />
   <HelpKINode Title="Kernel.Hardware.PCI.PCIDevice.DeviceClassInfo class" Url="html/c5823be0-f48b-5254-58cb-c7478d583e0b.htm" />
-  <HelpKINode Title="Kernel.Hardware.PCI.PCIDevice.PCIBist enumeration" Url="html/5a9c53c4-571c-99fa-e6b3-442f7e7586f7.htm" />
+  <HelpKINode Title="Kernel.Hardware.PCI.PCIDevice.PCIBISTs enumeration" Url="html/6cb1c820-0faa-ec8a-cfb1-c456d33350ee.htm" />
   <HelpKINode Title="Kernel.Hardware.PCI.PCIDevice.PCICommand enumeration" Url="html/84f47421-56cd-bb43-1d98-ac5abe1d4982.htm" />
   <HelpKINode Title="Kernel.Hardware.PCI.PCIDevice.PCIHeaderType enumeration" Url="html/8a2d9acd-b0a1-ed6b-7354-93a923e26d83.htm" />
   <HelpKINode Title="Kernel.Hardware.PCI.PCIDevice.PCIInterruptPIN enumeration" Url="html/84002da8-f7ec-946d-fb27-dca718ceabb8.htm" />
@@ -1516,8 +1510,8 @@
   <HelpKINode Title="Paging.LoadPaging method" Url="html/b84e77fc-258f-46c3-4cce-df396b9b510c.htm" />
   <HelpKINode Title="Paging.Paging constructor" Url="html/bd060e2a-245a-b2e7-1b30-e263487d1f0a.htm" />
   <HelpKINode Title="Parent field" Url="html/1224cf41-ba47-eb57-c568-18c3fd21fa37.htm" />
-  <HelpKINode Title="Parity enumeration member" Url="html/84f47421-56cd-bb43-1d98-ac5abe1d4982.htm" />
   <HelpKINode Title="PARITY enumeration member" Url="html/10de0a4e-86fb-6d28-adbc-5affabc7f76f.htm" />
+  <HelpKINode Title="Parity enumeration member" Url="html/84f47421-56cd-bb43-1d98-ac5abe1d4982.htm" />
   <HelpKINode Title="ParseDirectoryTable method" Url="html/4c02f2af-ba0b-efb5-b3ab-551b30af48f6.htm" />
   <HelpKINode Title="ParsePartition method" Url="html/21dba603-81f3-4666-1bb5-90885086e944.htm" />
   <HelpKINode Title="Partition class">
@@ -1555,7 +1549,6 @@
   <HelpKINode Title="PCI.Devices field" Url="html/574a0bcd-455e-a638-d525-06c780eb9d29.htm" />
   <HelpKINode Title="PCI.EnumerateBus method" Url="html/2e91eeeb-b971-1e11-4c18-62530b49e4ad.htm" />
   <HelpKINode Title="PCI.EnumerateDevices method" Url="html/763b5d6a-ecf1-4429-2e84-8076cbb2da4a.htm" />
-  <HelpKINode Title="PCI.GetDevice method" Url="html/9ae27d7a-7308-2f50-b94f-2043a3931a8b.htm" />
   <HelpKINode Title="PCI.Init method" Url="html/e211f81f-e0a6-2b2c-7521-5a7bb7121f2c.htm" />
   <HelpKINode Title="PCI.PCI constructor" Url="html/b2c9b31e-4252-41bd-1548-c9059be21eb6.htm" />
   <HelpKINode Title="PCIBaseAddressBar class">
@@ -1570,7 +1563,6 @@
   <HelpKINode Title="PCIBaseAddressBar.isIO field" Url="html/312159e0-4534-0a09-674b-4968a279295a.htm" />
   <HelpKINode Title="PCIBaseAddressBar.IsIO method" Url="html/0e015946-e869-6e02-3d16-97d14b693e4a.htm" />
   <HelpKINode Title="PCIBaseAddressBar.PCIBaseAddressBar constructor" Url="html/be70aa42-b9d8-ef0f-2ecb-3014e6c502b1.htm" />
-  <HelpKINode Title="PCIBaseAddressBar.pci_size method" Url="html/54dea1f3-26fe-cd4b-fab5-47df977f7938.htm" />
   <HelpKINode Title="PCIBaseAddressBar.prefetchable field" Url="html/a12507b0-0c85-8e7b-5885-b78e09a0597e.htm" />
   <HelpKINode Title="PCIBaseAddressBar.type field" Url="html/b05fd96a-2340-451d-3737-87cc3c292541.htm" />
   <HelpKINode Title="PCIBusNumber property" Url="html/44abf447-944b-5d52-7fcd-5e425fdd4e19.htm" />
@@ -1604,7 +1596,7 @@
   <HelpKINode Title="PCIDevice.InterruptLine property" Url="html/e0182371-f004-639c-7b62-ec8a0be02c8e.htm" />
   <HelpKINode Title="PCIDevice.InterruptPIN property" Url="html/f1ebd5df-c35b-eb65-d59c-9fc3a965fbdd.htm" />
   <HelpKINode Title="PCIDevice.LatencyTimer property" Url="html/11e59ac8-0bf4-3a5a-31d9-6512472ec1c1.htm" />
-  <HelpKINode Title="PCIDevice.PCIBist enumeration" Url="html/5a9c53c4-571c-99fa-e6b3-442f7e7586f7.htm" />
+  <HelpKINode Title="PCIDevice.PCIBISTs enumeration" Url="html/6cb1c820-0faa-ec8a-cfb1-c456d33350ee.htm" />
   <HelpKINode Title="PCIDevice.PCICommand enumeration" Url="html/84f47421-56cd-bb43-1d98-ac5abe1d4982.htm" />
   <HelpKINode Title="PCIDevice.PCIDevice constructor" Url="html/282d3c89-5089-88da-cbc4-f6e5d0b031e5.htm" />
   <HelpKINode Title="PCIDevice.PCIHeaderType enumeration" Url="html/8a2d9acd-b0a1-ed6b-7354-93a923e26d83.htm" />
@@ -1695,7 +1687,6 @@
   <HelpKINode Title="PCIDeviceNormal.PCIDeviceNormal constructor" Url="html/e48e780d-ce11-c5fc-1ba6-bcb80873a6cb.htm" />
   <HelpKINode Title="PCIDeviceNormal.SubsystemID property" Url="html/cf7dca63-566a-bcd0-c40e-1ef77fdca466.htm" />
   <HelpKINode Title="PCIDeviceNormal.SubsystemVendorID property" Url="html/6f7feeb6-9d2c-9805-75cf-1c12288830ce.htm" />
-  <HelpKINode Title="pci_size method" Url="html/54dea1f3-26fe-cd4b-fab5-47df977f7938.htm" />
   <HelpKINode Title="PendingException field" Url="html/da02eb0c-b585-5a28-a3ff-aee3f455cf8e.htm" />
   <HelpKINode Title="PERIODICLISTBASE property" Url="html/a267499f-b62e-4eca-861f-370f991531f7.htm" />
   <HelpKINode Title="PIDCode property" Url="html/6fbdacb9-447d-c0d3-9fb5-2a3f2877a41e.htm" />
@@ -1731,7 +1722,7 @@
   <HelpKINode Title="PreReqs.WriteDebugVideo method" Url="html/338c3ac7-476a-8ecc-6a77-2efc761f7a31.htm" />
   <HelpKINode Title="PrevHandlerAddress field" Url="html/93150e8e-05c8-b2c0-bc2c-d1d48ae8a669.htm" />
   <HelpKINode Title="prevPtr field" Url="html/16f287f2-23a0-15a4-b03b-3cc3931c488a.htm" />
-  <HelpKINode Title="Primary enumeration member" Url="html/46dea8ca-65d2-50af-e3b7-9861c01a8968.htm" />
+  <HelpKINode Title="Primary enumeration member" Url="html/f1cfe898-23c5-159a-f94e-7e2f4170a50d.htm" />
   <HelpKINode Title="PrimaryBusNumber property" Url="html/f9c43204-d6af-8475-e095-a7aa5f81c635.htm" />
   <HelpKINode Title="PrintTestString method" Url="html/7828065d-9b77-12e1-7e2d-7f6af99b35c4.htm" />
   <HelpKINode Title="ProcessMBR method" Url="html/27553616-1673-3e6c-a06a-ffbb35948268.htm" />
@@ -1873,7 +1864,7 @@
   <HelpKINode Title="rows field" Url="html/91d9128a-5e63-a583-048d-5ee44971deb3.htm" />
   <HelpKINode Title="SBRN field" Url="html/913e9ece-9fd6-3a31-c50e-e711c04f3d94.htm" />
   <HelpKINode Title="Second enumeration member" Url="html/7f52ef41-7138-32b2-d240-4a7bd5691a72.htm" />
-  <HelpKINode Title="Secondary enumeration member" Url="html/46dea8ca-65d2-50af-e3b7-9861c01a8968.htm" />
+  <HelpKINode Title="Secondary enumeration member" Url="html/f1cfe898-23c5-159a-f94e-7e2f4170a50d.htm" />
   <HelpKINode Title="SecondaryBusNumber property" Url="html/3a90a5f7-07b3-c502-0810-88edcf286c5e.htm" />
   <HelpKINode Title="SecondaryLatencyTimer property" Url="html/e4373777-915e-0c7a-9820-2b1c33cbbc01.htm" />
   <HelpKINode Title="SecondaryStatus property">
@@ -1937,7 +1928,7 @@
   </HelpKINode>
   <HelpKINode Title="StackException.StackException constructor" Url="html/91df0715-8699-8aeb-f45a-de5599c998b9.htm" />
   <HelpKINode Title="StackSize field" Url="html/028f4f30-0db3-412c-1a04-ffcba4f95d7e.htm" />
-  <HelpKINode Title="Start enumeration member" Url="html/5a9c53c4-571c-99fa-e6b3-442f7e7586f7.htm" />
+  <HelpKINode Title="Start enumeration member" Url="html/6cb1c820-0faa-ec8a-cfb1-c456d33350ee.htm" />
   <HelpKINode Title="StartingSector field" Url="html/eeb22878-fc82-e611-cad8-e3c4a113dceb.htm" />
   <HelpKINode Title="StartSector field" Url="html/196009a6-9fee-83ab-2f80-2a3faf51e51a.htm" />
   <HelpKINode Title="StartsWith method" Url="html/795c065c-4a66-b660-b852-0fe7b95bc147.htm" />

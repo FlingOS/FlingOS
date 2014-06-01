@@ -51,7 +51,6 @@
     <Compile Include="DeviceManager.cs" />
     <Compile Include="Devices\DiskDevice.cs" />
     <Compile Include="DMA\DMABlock.cs" />
-    <Compile Include="IO\IO.cs" />
     <Compile Include="IO\IOPort.cs" />
     <Compile Include="PCI\PCI.cs" />
     <Compile Include="PCI\PCIBaseAddressBar.cs" />

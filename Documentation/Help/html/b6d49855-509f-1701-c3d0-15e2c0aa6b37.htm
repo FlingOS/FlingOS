@@ -23,7 +23,7 @@
     <meta name="System.Keywords" content="BlockDevice class, about BlockDevice class" />
     <meta name="Microsoft.Help.F1" content="Kernel.Hardware.BlockDevice" />
     <meta name="Microsoft.Help.Id" content="T:Kernel.Hardware.BlockDevice" />
-    <meta name="Description" content="summaryT:Kernel.Hardware.BlockDevice" />
+    <meta name="Description" content="Represents a logical block based device." />
     <meta name="Microsoft.Help.ContentType" content="Reference" />
     <meta name="BrandingAware" content="'true'" />
     <meta name="container" content="Kernel.Hardware" />
@@ -46,7 +46,7 @@
           <div id="mainBody">
             <span class="introStyle"></span>
             <div class="summary">
-              <p style="color: #dc143c; font-size: 8.5pt; font-weight: bold;">[Missing &lt;summary&gt; documentation for "T:Kernel.Hardware.BlockDevice"]</p>
+            Represents a logical block based device.
             </div>
             <div class="OH_CollapsibleAreaRegion">
               <div class="OH_regiontitle">Inheritance Hierarchy</div>
@@ -72,13 +72,27 @@
 							 
 						</th><th class="ps_nameColumn">Name</th><th class="ps_descriptionColumn">Description</th></tr><tr data="protected;declared;notNetfw;"><td><img src="./../icons/protmethod.gif" alt="Protected method" title="Protected method" /></td><td><a href="17b7a8a5-46ec-b986-9394-5e617dfdda40.htm" target="">BlockDevice</a></td><td><div class="summary">Initializes a new instance of the <span class="selflink">BlockDevice</span> class</div></td></tr></table><a href="#mainBody" target="">Top</a><div class="OH_CollapsibleAreaRegion"><div class="OH_regiontitle">Methods</div><div class="OH_CollapsibleArea_HrDiv"><hr class="OH_CollapsibleArea_Hr" /></div></div><div class="OH_clear"></div><table id="memberList" class="members"><tr><th class="ps_iconColumn">
 							 
-						</th><th class="ps_nameColumn">Name</th><th class="ps_descriptionColumn">Description</th></tr><tr data="public;declared;notNetfw;"><td><img src="./../icons/pubmethod.gif" alt="Public method" title="Public method" /></td><td><a href="fa577f2f-722b-9dd4-6909-77d9ada47e92.htm" target="">NewBlockArray</a></td><td></td></tr><tr data="public;declared;notNetfw;"><td><img src="./../icons/pubmethod.gif" alt="Public method" title="Public method" /></td><td><a href="f2cc7f22-fdd2-f70a-8a66-568aca53892d.htm" target="">ReadBlock</a></td><td></td></tr><tr data="public;declared;notNetfw;"><td><img src="./../icons/pubmethod.gif" alt="Public method" title="Public method" /></td><td><a href="ef6e03b7-1776-d089-b249-cbd0508c7fc7.htm" target="">WriteBlock</a></td><td></td></tr></table><a href="#mainBody" target="">Top</a><div class="OH_CollapsibleAreaRegion"><div class="OH_regiontitle">Fields</div><div class="OH_CollapsibleArea_HrDiv"><hr class="OH_CollapsibleArea_Hr" /></div></div><div class="OH_clear"></div><table id="memberList" class="members"><tr><th class="ps_iconColumn">
+						</th><th class="ps_nameColumn">Name</th><th class="ps_descriptionColumn">Description</th></tr><tr data="public;declared;notNetfw;"><td><img src="./../icons/pubmethod.gif" alt="Public method" title="Public method" /></td><td><a href="fa577f2f-722b-9dd4-6909-77d9ada47e92.htm" target="">NewBlockArray</a></td><td><div class="summary">
+            Creates a new byte array sized to fit the specified number of blocks.
+            </div></td></tr><tr data="public;declared;notNetfw;"><td><img src="./../icons/pubmethod.gif" alt="Public method" title="Public method" /></td><td><a href="f2cc7f22-fdd2-f70a-8a66-568aca53892d.htm" target="">ReadBlock</a></td><td><div class="summary">
+            Reads contiguous logical blocks from the device.
+            </div></td></tr><tr data="public;declared;notNetfw;"><td><img src="./../icons/pubmethod.gif" alt="Public method" title="Public method" /></td><td><a href="ef6e03b7-1776-d089-b249-cbd0508c7fc7.htm" target="">WriteBlock</a></td><td><div class="summary">
+            Writes contiguous logical blocks to the device.
+            </div></td></tr></table><a href="#mainBody" target="">Top</a><div class="OH_CollapsibleAreaRegion"><div class="OH_regiontitle">Fields</div><div class="OH_CollapsibleArea_HrDiv"><hr class="OH_CollapsibleArea_Hr" /></div></div><div class="OH_clear"></div><table id="memberList" class="members"><tr><th class="ps_iconColumn">
 							 
 						</th><th class="ps_nameColumn">Name</th><th class="ps_descriptionColumn">Description</th></tr><tr data="public;inherited;notNetfw;"><td><img src="./../icons/pubfield.gif" alt="Public field" title="Public field" /></td><td><a href="319b7241-a5ca-02b2-c216-b877e53644bd.htm" target="">_Type</a></td><td><div class="summary">
             The underlying, specific type of the object specified when it was created.
-            </div> (Inherited from <a href="b76e4a75-d10f-181c-419a-3c5bced4b53b.htm" target="">ObjectWithType</a>.)</td></tr><tr data="protected;declared;notNetfw;"><td><img src="./../icons/protfield.gif" alt="Protected field" title="Protected field" /></td><td><a href="16369a5a-a6fd-4f2a-44ab-f6de1352e699.htm" target="">blockCount</a></td><td></td></tr><tr data="protected;declared;notNetfw;"><td><img src="./../icons/protfield.gif" alt="Protected field" title="Protected field" /></td><td><a href="223472eb-f8a1-04c4-fa1f-f2259c632fe7.htm" target="">blockSize</a></td><td></td></tr></table><a href="#mainBody" target="">Top</a><div class="OH_CollapsibleAreaRegion"><div class="OH_regiontitle">Properties</div><div class="OH_CollapsibleArea_HrDiv"><hr class="OH_CollapsibleArea_Hr" /></div></div><div class="OH_clear"></div><table id="memberList" class="members"><tr><th class="ps_iconColumn">
+            </div> (Inherited from <a href="b76e4a75-d10f-181c-419a-3c5bced4b53b.htm" target="">ObjectWithType</a>.)</td></tr><tr data="protected;declared;notNetfw;"><td><img src="./../icons/protfield.gif" alt="Protected field" title="Protected field" /></td><td><a href="16369a5a-a6fd-4f2a-44ab-f6de1352e699.htm" target="">blockCount</a></td><td><div class="summary">
+            The number of logical blocks in the device.
+            </div></td></tr><tr data="protected;declared;notNetfw;"><td><img src="./../icons/protfield.gif" alt="Protected field" title="Protected field" /></td><td><a href="223472eb-f8a1-04c4-fa1f-f2259c632fe7.htm" target="">blockSize</a></td><td><div class="summary">
+            The size of the logical blocks.
+            </div></td></tr></table><a href="#mainBody" target="">Top</a><div class="OH_CollapsibleAreaRegion"><div class="OH_regiontitle">Properties</div><div class="OH_CollapsibleArea_HrDiv"><hr class="OH_CollapsibleArea_Hr" /></div></div><div class="OH_clear"></div><table id="memberList" class="members"><tr><th class="ps_iconColumn">
 							 
-						</th><th class="ps_nameColumn">Name</th><th class="ps_descriptionColumn">Description</th></tr><tr data="public;declared;notNetfw;"><td><img src="./../icons/pubproperty.gif" alt="Public property" title="Public property" /></td><td><a href="2ae37eb0-e05a-cbda-5adf-76a0afb25e35.htm" target="">BlockCount</a></td><td></td></tr><tr data="public;declared;notNetfw;"><td><img src="./../icons/pubproperty.gif" alt="Public property" title="Public property" /></td><td><a href="aa674701-a99a-3eb5-6e4e-08f8116894ba.htm" target="">BlockSize</a></td><td></td></tr></table><a href="#mainBody" target="">Top</a><a name="seeAlsoSection"><!----></a><div class="OH_CollapsibleAreaRegion"><div class="OH_regiontitle">See Also</div><div class="OH_CollapsibleArea_HrDiv"><hr class="OH_CollapsibleArea_Hr" /></div></div><div class="OH_clear"></div><div class="seeAlsoStyle"><a href="3e3911b0-7fd6-94b6-b7ae-f5a0893dd34e.htm" target="">Kernel.Hardware Namespace</a></div></div>
+						</th><th class="ps_nameColumn">Name</th><th class="ps_descriptionColumn">Description</th></tr><tr data="public;declared;notNetfw;"><td><img src="./../icons/pubproperty.gif" alt="Public property" title="Public property" /></td><td><a href="2ae37eb0-e05a-cbda-5adf-76a0afb25e35.htm" target="">BlockCount</a></td><td><div class="summary">
+            The number of logical blocks in the device.
+            </div></td></tr><tr data="public;declared;notNetfw;"><td><img src="./../icons/pubproperty.gif" alt="Public property" title="Public property" /></td><td><a href="aa674701-a99a-3eb5-6e4e-08f8116894ba.htm" target="">BlockSize</a></td><td><div class="summary">
+            The size of the logical blocks.
+            </div></td></tr></table><a href="#mainBody" target="">Top</a><a name="seeAlsoSection"><!----></a><div class="OH_CollapsibleAreaRegion"><div class="OH_regiontitle">See Also</div><div class="OH_CollapsibleArea_HrDiv"><hr class="OH_CollapsibleArea_Hr" /></div></div><div class="OH_clear"></div><div class="seeAlsoStyle"><a href="3e3911b0-7fd6-94b6-b7ae-f5a0893dd34e.htm" target="">Kernel.Hardware Namespace</a></div></div>
         </div>
       </div>
     </div>
