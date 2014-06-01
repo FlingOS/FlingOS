@@ -3265,6 +3265,13 @@
             <param name="theType">The type to get the size of.</param>
             <returns>The number of bytes used to represent the specified type on the stack.</returns>
         </member>
+        <member name="M:Kernel.Compiler.Utils.GetSizeForType(System.Type)">
+            <summary>
+            Gets the number of bytes used by a given type when it is represented in memory such as in an array.
+            </summary>
+            <param name="theType">The type to get the size of.</param>
+            <returns>The number of bytes used to represent the specified type in an array.</returns>
+        </member>
         <member name="M:Kernel.Compiler.Utils.GetOpSizeString(System.Int32)">
             <summary>
             Gets the mnemonic for a given number of bytes (e.g. 1 = byte, 2 = word, 4 = dword, 8 = qword)

@@ -29,7 +29,7 @@ namespace Kernel.Compiler.Architectures.x86_32
 
             aScannerState.CurrentStackFrame.Stack.Pop();
 
-            DB_Type arrayDBType = DebugDatabase.GetType(aScannerState.GetTypeID(aScannerState.ArrayConstructorMethod.DeclaringType));
+            DB_Type arrayDBType = DebugDatabase.GetType(aScannerState.GetTypeID(aScannerState.ArrayClass));
             int lengthOffset = 0;
             #region Offset calculation
             {

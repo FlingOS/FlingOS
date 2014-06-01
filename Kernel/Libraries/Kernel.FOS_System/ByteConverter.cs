@@ -6,20 +6,40 @@ using System.Threading.Tasks;
 
 namespace Kernel.FOS_System
 {
+    /// <summary>
+    /// Methods for converting to and from byte arrays.
+    /// </summary>
     public static class ByteConverter
     {
+        /// <summary>
+        /// Converts 2 bytes from the specified byte array at the specified index into a UInt16.
+        /// </summary>
+        /// <param name="n">The byte array from which to convert bytes.</param>
+        /// <param name="aPos">The index of the first of the two bytes to convert.</param>
+        /// <returns>The converted UInt16.</returns>
         [Compiler.NoDebug]
         [Compiler.NoGC]
         public static UInt16 ToUInt16(byte[] n, UInt32 aPos)
         {
             return (UInt16)(n[aPos + 1] << 8 | n[aPos]);
         }
+        /// <summary>
+        /// Converts 4 bytes from the specified byte array at the specified index into a UInt32.
+        /// </summary>
+        /// <param name="n">The byte array from which to convert bytes.</param>
+        /// <param name="aPos">The index of the first of the four bytes to convert.</param>
+        /// <returns>The converted UInt32.</returns>
         [Compiler.NoDebug]
         [Compiler.NoGC]
         public static UInt32 ToUInt32(byte[] n, UInt32 aPos)
         {
             return (UInt32)(n[aPos + 3] << 24 | n[aPos + 2] << 16 | n[aPos + 1] << 8 | n[aPos]);
         }
+        /// <summary>
+        /// Converts the specified ASCII encoded string into an array of ASCII encoded bytes.
+        /// </summary>
+        /// <param name="asciiString">The ASCII encoded string to convert.</param>
+        /// <returns>The ASCII encoded bytes.</returns>
         [Compiler.NoDebug]
         public static byte[] GetASCIIBytes(FOS_System.String asciiString)
         {
@@ -30,6 +50,13 @@ namespace Kernel.FOS_System
             }
             return result;
         }
+        /// <summary>
+        /// Converts the specified ASCII encoded string into an array of UTF16 encoded bytes.
+        /// </summary>
+        /// <param name="asciiString">The ASCII encoded string to convert.</param>
+        /// <param name="offset">The offset within the ASCII string at which to start converting.</param>
+        /// <param name="count">The number of characters to convert.</param>
+        /// <returns>The UTF16 encoded bytes.</returns>
         [Compiler.NoDebug]
         public static byte[] GetUTF16Bytes(FOS_System.String asciiString, int offset, int count)
         {
@@ -50,8 +77,15 @@ namespace Kernel.FOS_System
             }
             return result;
         }
+        /// <summary>
+        /// Converts the specified bytes to an ASCII encoded string, treating the bytes as ASCII encoded bytes.
+        /// </summary>
+        /// <param name="n">The bytes to convert.</param>
+        /// <param name="aStart">The index in the array at which to start converting bytes.</param>
+        /// <param name="aCharCount">The number of characters to convert.</param>
+        /// <returns>The ASCII encoded string.</returns>
         [Compiler.NoDebug]
-        public static FOS_System.String GetAsciiString(byte[] n, UInt32 aStart, UInt32 aCharCount)
+        public static FOS_System.String GetASCIIStringFromASCII(byte[] n, UInt32 aStart, UInt32 aCharCount)
         {
             FOS_System.String result = FOS_System.String.New((int)aCharCount);
             for (int i = 0; i < aCharCount; i++)
@@ -67,8 +101,15 @@ namespace Kernel.FOS_System
 
             return result;
         }
+        /// <summary>
+        /// Converts the specified bytes to an ASCII encoded string, treating the bytes as UTF16 encoded bytes.
+        /// </summary>
+        /// <param name="n">The bytes to convert.</param>
+        /// <param name="aStart">The index in the array at which to start converting bytes.</param>
+        /// <param name="aCharCount">The number of characters to convert.</param>
+        /// <returns>The ASCII encoded string.</returns>
         [Compiler.NoDebug]
-        public static FOS_System.String GetUtf16String(byte[] n, UInt32 aStart, UInt32 aCharCount)
+        public static FOS_System.String GetASCIIStringFromUTF16(byte[] n, UInt32 aStart, UInt32 aCharCount)
         {
             FOS_System.String result = FOS_System.String.New((int)aCharCount);
             for (int i = 0; i < aCharCount; i++)

@@ -10,14 +10,23 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kernel.Compiler", "Kernel\Compiler\Kernel.Compiler.csproj", "{061E5F53-5EFF-4E12-94EE-9E18459E5CF4}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kernel.Compiler.App", "Kernel\Compiler\App\Kernel.Compiler.App.csproj", "{B8F06B4D-C068-4802-8E06-02022F955D7B}"
+	ProjectSection(ProjectDependencies) = postProject
+		{FB67CEE3-2563-43D2-9124-E1357B836CEB} = {FB67CEE3-2563-43D2-9124-E1357B836CEB}
+	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Architectures", "Architectures", "{C7A0D7C2-2AE8-4B13-BB95-AAB3ABADC277}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Libraries", "Libraries", "{4A8B3E99-15F3-4567-BDDB-11F4057DC3BF}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kernel.FOS_System", "Kernel\Libraries\Kernel.FOS_System\Kernel.FOS_System.csproj", "{66C9B617-B6D9-4006-A7F9-E1DF62ED30AD}"
+	ProjectSection(ProjectDependencies) = postProject
+		{B8F06B4D-C068-4802-8E06-02022F955D7B} = {B8F06B4D-C068-4802-8E06-02022F955D7B}
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kernel", "Kernel\Kernel\Kernel.csproj", "{E4076F67-686F-48E3-A5AF-55B841665F77}"
+	ProjectSection(ProjectDependencies) = postProject
+		{B8F06B4D-C068-4802-8E06-02022F955D7B} = {B8F06B4D-C068-4802-8E06-02022F955D7B}
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kernel.Compiler.Architectures.x86_32", "Kernel\Compiler\Architectures\x86_32\Kernel.Compiler.Architectures.x86_32.csproj", "{E48F7F1A-9794-4D71-87FE-0711ECD3BEAA}"
 EndProject
@@ -46,8 +55,14 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Testing._Kernel", "Testing\Testing.Kernel\Testing._Kernel.csproj", "{33394183-45ED-4BA7-A92B-09858B5D4929}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kernel.Utilities", "Kernel\Libraries\Kernel.Utilities\Kernel.Utilities.csproj", "{97702B40-AF74-4DF8-B2AC-9438F85E6B46}"
+	ProjectSection(ProjectDependencies) = postProject
+		{B8F06B4D-C068-4802-8E06-02022F955D7B} = {B8F06B4D-C068-4802-8E06-02022F955D7B}
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kernel.Hardware", "Kernel\Libraries\Kernel.Hardware\Kernel.Hardware.csproj", "{F59B042C-435D-48ED-AD7B-23666931A952}"
+	ProjectSection(ProjectDependencies) = postProject
+		{B8F06B4D-C068-4802-8E06-02022F955D7B} = {B8F06B4D-C068-4802-8E06-02022F955D7B}
+	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tools", "Tools", "{9CC7D8B1-30B5-4099-ADAD-F32067871179}"
 EndProject
@@ -56,6 +71,10 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ASM Method Label Builder", "Tools\Kernel\ASM Method Label Builder\ASM Method Label Builder.csproj", "{A58080B9-2E1D-4F12-8ABA-35E4E6E4E3FE}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kernel.FOS_System.IO", "Kernel\Libraries\Kernel.FOS_System.IO\Kernel.FOS_System.IO.csproj", "{5C9FDB7D-604E-4927-9D3F-E2C599B20797}"
+	ProjectSection(ProjectDependencies) = postProject
+		{B8F06B4D-C068-4802-8E06-02022F955D7B} = {B8F06B4D-C068-4802-8E06-02022F955D7B}
+		{061E5F53-5EFF-4E12-94EE-9E18459E5CF4} = {061E5F53-5EFF-4E12-94EE-9E18459E5CF4}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -81,18 +100,15 @@ Global
 		{E48F7F1A-9794-4D71-87FE-0711ECD3BEAA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E48F7F1A-9794-4D71-87FE-0711ECD3BEAA}.Release|Any CPU.Build.0 = Release|Any CPU
 		{19FEE260-45A1-46DB-AFD8-A5C19B76C3AB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{19FEE260-45A1-46DB-AFD8-A5C19B76C3AB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{19FEE260-45A1-46DB-AFD8-A5C19B76C3AB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{19FEE260-45A1-46DB-AFD8-A5C19B76C3AB}.Release|Any CPU.Build.0 = Release|Any CPU
 		{FB67CEE3-2563-43D2-9124-E1357B836CEB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{FB67CEE3-2563-43D2-9124-E1357B836CEB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{FB67CEE3-2563-43D2-9124-E1357B836CEB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{FB67CEE3-2563-43D2-9124-E1357B836CEB}.Release|Any CPU.Build.0 = Release|Any CPU
 		{040B4922-9973-4BC6-B63D-11CE1389A86A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{040B4922-9973-4BC6-B63D-11CE1389A86A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{040B4922-9973-4BC6-B63D-11CE1389A86A}.Release|Any CPU.Build.0 = Release|Any CPU
 		{33394183-45ED-4BA7-A92B-09858B5D4929}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{33394183-45ED-4BA7-A92B-09858B5D4929}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{33394183-45ED-4BA7-A92B-09858B5D4929}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{33394183-45ED-4BA7-A92B-09858B5D4929}.Release|Any CPU.Build.0 = Release|Any CPU
 		{97702B40-AF74-4DF8-B2AC-9438F85E6B46}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
@@ -104,7 +120,6 @@ Global
 		{F59B042C-435D-48ED-AD7B-23666931A952}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F59B042C-435D-48ED-AD7B-23666931A952}.Release|Any CPU.Build.0 = Release|Any CPU
 		{A58080B9-2E1D-4F12-8ABA-35E4E6E4E3FE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{A58080B9-2E1D-4F12-8ABA-35E4E6E4E3FE}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A58080B9-2E1D-4F12-8ABA-35E4E6E4E3FE}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A58080B9-2E1D-4F12-8ABA-35E4E6E4E3FE}.Release|Any CPU.Build.0 = Release|Any CPU
 		{5C9FDB7D-604E-4927-9D3F-E2C599B20797}.Debug|Any CPU.ActiveCfg = Debug|Any CPU

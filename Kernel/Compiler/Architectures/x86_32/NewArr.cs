@@ -22,8 +22,6 @@ namespace Kernel.Compiler.Architectures.x86_32
         {
             StringBuilder result = new StringBuilder();
 
-            MethodBase constructorMethod = aScannerState.ArrayConstructorMethod;
-
             //Load the metadata token used to get the type info
             int metadataToken = Utils.ReadInt32(anILOpInfo.ValueBytes, 0);
             //Get the type info for the element type
@@ -59,8 +57,8 @@ namespace Kernel.Compiler.Architectures.x86_32
             result.AppendLine(string.Format("call {0}", methodLabel));
             //Pop the return value (i.e. new array pointer)
             result.AppendLine("pop dword eax");
-            //Remove arg 1 from stack
-            result.AppendLine("add esp, 4");
+            //Remove args from stack
+            result.AppendLine("add esp, 8");
             //Check if pointer == 0?
             result.AppendLine("cmp eax, 0");
             //If it isn't 0, not out of memory so continue execution
@@ -72,55 +70,7 @@ namespace Kernel.Compiler.Architectures.x86_32
             result.AppendLine(string.Format("call {0}", aScannerState.GetMethodID(aScannerState.HaltMethod)));
             //Insert the not null label
             result.AppendLine(NotNullLabel + ":");
-                        
-            //Call the array constructor
-            //This involves:
-            // - (Length arg already on the stack)
-            // - Push element type ref onto stack
-            // - Push empty dword onto stack
-            // - Move all args (i.e. length and element type args) down by one dword
-            // - Move array reference into dword as first arg
-            // - Call constructor
             
-            result.AppendLine(string.Format("push dword {0}", typeIdStr));
-            aScannerState.CurrentStackFrame.Stack.Push(new StackItem()
-            {
-                sizeOnStackInBytes = 4,
-                isFloat = false,
-                isNewGCObject = false
-            });
-
-            result.AppendLine("push dword 0");
-            int sizeOfArgs = 0;
-            ParameterInfo[] allParams = constructorMethod.GetParameters();
-            foreach(ParameterInfo aParam in allParams)
-            {
-                sizeOfArgs += Utils.GetNumBytesForType(aParam.ParameterType);
-                aScannerState.CurrentStackFrame.Stack.Pop();
-            }
-            result.AppendLine("mov dword ebx, esp");
-            if (sizeOfArgs > 0)
-            {
-                if (sizeOfArgs % 4 != 0)
-                {
-                    throw new InvalidOperationException("sizeOfArgs not exact multiple of 4!");
-                }
-
-                result.AppendLine(string.Format("mov dword ecx, {0}", sizeOfArgs / 4));
-                string ShiftArgsLoopLabel = string.Format("{0}.IL_{1}_ShiftArgsLoop",
-                        aScannerState.GetMethodID(aScannerState.CurrentILChunk.Method),
-                        anILOpInfo.Position);
-                result.AppendLine(ShiftArgsLoopLabel + ":");
-                result.AppendLine("mov dword edx, [ebx+4]");
-                result.AppendLine("mov dword [ebx], edx");
-                result.AppendLine("add ebx, 4");
-                result.AppendLine(string.Format("loop {0}", ShiftArgsLoopLabel));
-            }
-            result.AppendLine("mov dword [ebx], eax");
-            result.AppendLine(string.Format("call {0}", aScannerState.GetMethodID(constructorMethod)));
-            //Only remove args from stack - we want the object pointer to remain on the stack
-            result.AppendLine(string.Format("add esp, {0}", sizeOfArgs));
-
             aScannerState.CurrentStackFrame.Stack.Push(new StackItem()
             {
                 isFloat = false,

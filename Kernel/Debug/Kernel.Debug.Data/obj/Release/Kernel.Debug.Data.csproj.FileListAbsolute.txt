@@ -1,0 +1,6 @@
+G:\Fling OS\Fling OS\Kernel\Debug\Kernel.Debug.Data\bin\Release\Kernel.Debug.Data.dll.config
+G:\Fling OS\Fling OS\Kernel\Debug\Kernel.Debug.Data\bin\Release\Kernel.Debug.Data.dll
+G:\Fling OS\Fling OS\Kernel\Debug\Kernel.Debug.Data\bin\Release\Kernel.Debug.Data.pdb
+G:\Fling OS\Fling OS\Kernel\Debug\Kernel.Debug.Data\obj\Release\Kernel.Debug.Data.csprojResolveAssemblyReference.cache
+G:\Fling OS\Fling OS\Kernel\Debug\Kernel.Debug.Data\obj\Release\Kernel.Debug.Data.dll
+G:\Fling OS\Fling OS\Kernel\Debug\Kernel.Debug.Data\obj\Release\Kernel.Debug.Data.pdb

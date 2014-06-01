@@ -4,6 +4,11 @@
         <name>Kernel.FOS_System</name>
     </assembly>
     <members>
+        <member name="T:Kernel.FOS_System.Array">
+            <summary>
+            Represents the underlying type of any array within the Kernel.
+            </summary>
+        </member>
         <member name="T:Kernel.FOS_System.Object">
             <summary>
             All objects (that are GC managed) should derive from this type.
@@ -22,6 +27,35 @@
             <summary>
             The underlying, specific type of the object specified when it was created.
             </summary>
+        </member>
+        <member name="F:Kernel.FOS_System.Array.length">
+            <summary>
+            The length of the array. Can also use standard System.Array.Length e.g. new object[5].Length.
+            </summary>
+        </member>
+        <member name="F:Kernel.FOS_System.Array.elemType">
+            <summary>
+            The type of the elements within the array. Do NOT change this except during array setup 
+            (i.e. in GC.NewArr method).
+            </summary>
+        </member>
+        <member name="M:Kernel.FOS_System.Array.op_Implicit(System.Object[])~Kernel.FOS_System.Array">
+            <summary>
+            Implicitly converts a System.Array to an FOS_System.Array. The two are one and the same thing within the 
+            kernel just Fos_System.Array allows access to actual fields.
+            </summary>
+            <param name="x">The System.Array to convert.</param>
+            <returns>The FOS_System.Array (a reference to the exact same object).</returns>
+        </member>
+        <member name="M:Kernel.FOS_System.Array.Copy(System.Byte[],System.Int32,System.Byte[],System.Int32,System.Int32)">
+            <summary>
+            Copies the number of elements ("count") at sourceOffset from source to elements in dest at destOffset.
+            </summary>
+            <param name="source">The array to copy elements from.</param>
+            <param name="sourceOffset">The offset in the source array to start copying at.</param>
+            <param name="dest">The array to copy elements to.</param>
+            <param name="destOffset">The offset in the destination array to start copying to.</param>
+            <param name="count">The number of elements to copy.</param>
         </member>
         <member name="T:Kernel.BasicConsole">
             <summary>
@@ -138,6 +172,200 @@
             <summary>
             The offset from the start of the memory (in characters) to write the next character to.
             </summary>
+        </member>
+        <member name="T:Kernel.FOS_System.ByteConverter">
+            <summary>
+            Methods for converting to and from byte arrays.
+            </summary>
+        </member>
+        <member name="M:Kernel.FOS_System.ByteConverter.ToUInt16(System.Byte[],System.UInt32)">
+            <summary>
+            Converts 2 bytes from the specified byte array at the specified index into a UInt16.
+            </summary>
+            <param name="n">The byte array from which to convert bytes.</param>
+            <param name="aPos">The index of the first of the two bytes to convert.</param>
+            <returns>The converted UInt16.</returns>
+        </member>
+        <member name="M:Kernel.FOS_System.ByteConverter.ToUInt32(System.Byte[],System.UInt32)">
+            <summary>
+            Converts 4 bytes from the specified byte array at the specified index into a UInt32.
+            </summary>
+            <param name="n">The byte array from which to convert bytes.</param>
+            <param name="aPos">The index of the first of the four bytes to convert.</param>
+            <returns>The converted UInt32.</returns>
+        </member>
+        <member name="M:Kernel.FOS_System.ByteConverter.GetASCIIBytes(Kernel.FOS_System.String)">
+            <summary>
+            Converts the specified ASCII encoded string into an array of ASCII encoded bytes.
+            </summary>
+            <param name="asciiString">The ASCII encoded string to convert.</param>
+            <returns>The ASCII encoded bytes.</returns>
+        </member>
+        <member name="M:Kernel.FOS_System.ByteConverter.GetUTF16Bytes(Kernel.FOS_System.String,System.Int32,System.Int32)">
+            <summary>
+            Converts the specified ASCII encoded string into an array of UTF16 encoded bytes.
+            </summary>
+            <param name="asciiString">The ASCII encoded string to convert.</param>
+            <param name="offset">The offset within the ASCII string at which to start converting.</param>
+            <param name="count">The number of characters to convert.</param>
+            <returns>The UTF16 encoded bytes.</returns>
+        </member>
+        <member name="M:Kernel.FOS_System.ByteConverter.GetASCIIStringFromASCII(System.Byte[],System.UInt32,System.UInt32)">
+            <summary>
+            Converts the specified bytes to an ASCII encoded string, treating the bytes as ASCII encoded bytes.
+            </summary>
+            <param name="n">The bytes to convert.</param>
+            <param name="aStart">The index in the array at which to start converting bytes.</param>
+            <param name="aCharCount">The number of characters to convert.</param>
+            <returns>The ASCII encoded string.</returns>
+        </member>
+        <member name="M:Kernel.FOS_System.ByteConverter.GetASCIIStringFromUTF16(System.Byte[],System.UInt32,System.UInt32)">
+            <summary>
+            Converts the specified bytes to an ASCII encoded string, treating the bytes as UTF16 encoded bytes.
+            </summary>
+            <param name="n">The bytes to convert.</param>
+            <param name="aStart">The index in the array at which to start converting bytes.</param>
+            <param name="aCharCount">The number of characters to convert.</param>
+            <returns>The ASCII encoded string.</returns>
+        </member>
+        <member name="T:Kernel.FOS_System.Collections.List">
+            <summary>
+            Represents a weakly typed list of objects (which must be derived from FOS_System.Object) that can be accessed by 
+            index. Provides methods to search and manipulate lists.
+            </summary>
+            <remarks>
+            The job of knowing which type of object is contained within the list is left to the developer. This is a 
+            significant issue but one which we can't solve yet since generics aren't supported properly yet.
+            </remarks>
+        </member>
+        <member name="F:Kernel.FOS_System.Collections.List._array">
+            <summary>
+            The underlying object array.
+            </summary>
+        </member>
+        <member name="F:Kernel.FOS_System.Collections.List.currIndex">
+            <summary>
+            The "currentIndex" is the index to insert the next new item.
+            It is the index immediately after the last-set item in the array.
+            It thus also acts as an item count.
+            </summary>
+        </member>
+        <member name="M:Kernel.FOS_System.Collections.List.#ctor">
+            <summary>
+            Creates a new list with initial capacity of 5.
+            </summary>
+        </member>
+        <member name="M:Kernel.FOS_System.Collections.List.#ctor(System.Int32)">
+            <summary>
+            Creates a new list with specified initial capacity. Use this to optimise memory usage.
+            </summary>
+            <param name="capacity">The initial capacity of the list.</param>
+        </member>
+        <member name="M:Kernel.FOS_System.Collections.List.Add(Kernel.FOS_System.Object)">
+            <summary>
+            Adds the specified object to the list.
+            </summary>
+            <param name="obj">The object to add.</param>
+        </member>
+        <member name="M:Kernel.FOS_System.Collections.List.Remove(Kernel.FOS_System.Object)">
+            <summary>
+            Removes the specified object from the list.
+            </summary>
+            <param name="obj">The object to remove.</param>
+        </member>
+        <member name="M:Kernel.FOS_System.Collections.List.RemoveAt(System.Int32)">
+            <summary>
+            The removes the object at the specified index from the list.
+            </summary>
+            <param name="index">The index of the object to remove.</param>
+        </member>
+        <member name="M:Kernel.FOS_System.Collections.List.Empty">
+            <summary>
+            Empties the list of all objects but does not alter the list capacity.
+            </summary>
+        </member>
+        <member name="M:Kernel.FOS_System.Collections.List.ExpandCapacity(System.Int32)">
+            <summary>
+            Expands the capacity of the internel array that stores the objects.
+            </summary>
+            <param name="amount">The amount to expand the capacity by.</param>
+        </member>
+        <member name="P:Kernel.FOS_System.Collections.List.Count">
+            <summary>
+            The number of elements in the list.
+            </summary>
+        </member>
+        <member name="P:Kernel.FOS_System.Collections.List.Item(System.Int32)">
+            <summary>
+            Gets the object at the specified index.
+            </summary>
+            <param name="index">The index of the object to get.</param>
+            <returns>The object at the specified index.</returns>
+            <exception cref="T:Kernel.FOS_System.Exceptions.IndexOutOfRangeException">
+            Throws IndexOutOfRangeException if "index" is &lt; 0 or greater than the length of the list.
+            </exception>
+        </member>
+        <member name="T:Kernel.FOS_System.Collections.UInt32List">
+            <summary>
+            Represents a strongly typed list of UInt32s that can be accessed by 
+            index. Provides methods to search and manipulate lists.
+            </summary>
+        </member>
+        <member name="F:Kernel.FOS_System.Collections.UInt32List._array">
+            <summary>
+            The underlying object array.
+            </summary>
+        </member>
+        <member name="F:Kernel.FOS_System.Collections.UInt32List.currIndex">
+            <summary>
+            The "currentIndex" is the index to insert the next new item.
+            It is the index immediately after the last-set item in the array.
+            It thus also acts as an item count.
+            </summary>
+        </member>
+        <member name="M:Kernel.FOS_System.Collections.UInt32List.#ctor">
+            <summary>
+            Creates a new list with initial capacity of 5.
+            </summary>
+        </member>
+        <member name="M:Kernel.FOS_System.Collections.UInt32List.#ctor(System.Int32)">
+            <summary>
+            Creates a new list with specified initial capacity. Use this to optimise memory usage.
+            </summary>
+            <param name="capacity">The initial capacity of the list.</param>
+        </member>
+        <member name="M:Kernel.FOS_System.Collections.UInt32List.Add(System.UInt32)">
+            <summary>
+            Adds the specified UInt32 to the list.
+            </summary>
+            <param name="obj">The UInt32 to add.</param>
+        </member>
+        <member name="M:Kernel.FOS_System.Collections.UInt32List.Remove(System.UInt32)">
+            <summary>
+            Removes the first equal value of the specified UInt32 from the list.
+            </summary>
+            <param name="obj">The UInt32 to remove.</param>
+        </member>
+        <member name="M:Kernel.FOS_System.Collections.UInt32List.ExpandCapacity(System.Int32)">
+            <summary>
+            Expands the capacity of the internel array that stores the UInt32s.
+            </summary>
+            <param name="amount">The amount to expand the capacity by.</param>
+        </member>
+        <member name="P:Kernel.FOS_System.Collections.UInt32List.Count">
+            <summary>
+            The number of elements in the list.
+            </summary>
+        </member>
+        <member name="P:Kernel.FOS_System.Collections.UInt32List.Item(System.Int32)">
+            <summary>
+            Gets the UInt32 at the specified index.
+            </summary>
+            <param name="index">The index of the UInt32 to get.</param>
+            <returns>The UInt32 at the specified index.</returns>
+            <exception cref="T:Kernel.FOS_System.Exceptions.IndexOutOfRangeException">
+            Throws IndexOutOfRangeException if "index" is &lt; 0 or greater than the length of the list.
+            </exception>
         </member>
         <member name="T:Kernel.FOS_System.Exception">
             <summary>
@@ -364,8 +592,9 @@
         </member>
         <member name="M:Kernel.FOS_System.Exceptions.NotSupportedException.#ctor(Kernel.FOS_System.String)">
             <summary>
-            Sets the message to "Argument exception."
+            Sets the message to "Not supported exception."
             </summary>
+            <param name="anExtendedMessage">The extended message to append to the main message.</param>
         </member>
         <member name="T:Kernel.FOS_System.Exceptions.ArgumentException">
             <summary>
@@ -374,8 +603,11 @@
         </member>
         <member name="M:Kernel.FOS_System.Exceptions.ArgumentException.#ctor(Kernel.FOS_System.String)">
             <summary>
-            Sets the message to "Argument exception."
+            Sets the message to "Argument exception".
             </summary>
+            <param name="anExtendedMessage">
+            The extended message to append to the main message. Should specify which argument caused the exception.
+            </param>
         </member>
         <member name="T:Kernel.FOS_System.Exceptions.InvalidOpCodeException">
             <summary>
@@ -510,6 +742,16 @@
             called methods re-calling the GC!)
             </summary>
         </member>
+        <member name="F:Kernel.FOS_System.GC.NumStrings">
+            <summary>
+            The number of strings currently allocated on the heap.
+            </summary>
+        </member>
+        <member name="F:Kernel.FOS_System.GC.CleanupList">
+            <summary>
+            The linked-list of objects to clean up.
+            </summary>
+        </member>
         <member name="M:Kernel.FOS_System.GC.Init">
             <summary>
             Intialises the GC.
@@ -528,7 +770,8 @@
             </summary>
             <remarks>"length" param placed first so that calling NewArr method is simple
             with regards to pushing params onto the stack.</remarks>
-            <param name="theType">The type of element in the array to create.</param>
+            <param name="length">The length of the array to create.</param>
+            <param name="elemType">The type of element in the array to create.</param>
             <returns>A pointer to the new array in memory.</returns>
         </member>
         <member name="M:Kernel.FOS_System.GC.NewString(System.Int32)">
@@ -601,6 +844,30 @@
             </summary>
             <param name="headerPtr">A pointer to the header to set the signature in.</param>
         </member>
+        <member name="M:Kernel.FOS_System.GC.Cleanup">
+            <summary>
+            Scans the CleanupList to free objects from memory.
+            </summary>
+        </member>
+        <member name="M:Kernel.FOS_System.GC.AddObjectToCleanup(Kernel.FOS_System.GCHeader*,System.Void*)">
+            <summary>
+            Adds an object to the cleanup list.
+            </summary>
+            <param name="objHeaderPtr">A pointer to the object's header.</param>
+            <param name="objPtr">A pointer to the object.</param>
+        </member>
+        <member name="M:Kernel.FOS_System.GC.RemoveObjectToCleanup(Kernel.FOS_System.GCHeader*)">
+            <summary>
+            Removes an object from the cleanup list.
+            </summary>
+            <param name="objHeaderPtr">A pointer to the object's header.</param>
+        </member>
+        <member name="M:Kernel.FOS_System.GC.RemoveObjectToCleanup(Kernel.FOS_System.ObjectToCleanup*)">
+            <summary>
+            Removes an object from the cleanup list.
+            </summary>
+            <param name="objToCleanupPtr">A pointer to the cleanup-list element.</param>
+        </member>
         <member name="T:Kernel.FOS_System.GCHeader">
             <summary>
             Represents the GC header that is put in memory in front of every object so the GC can manage the object.
@@ -624,6 +891,31 @@
         <member name="F:Kernel.FOS_System.GCHeader.RefCount">
             <summary>
             The current reference count for the object associated with this header.
+            </summary>
+        </member>
+        <member name="T:Kernel.FOS_System.ObjectToCleanup">
+            <summary>
+            Represents an object to be garbage collected (i.e. freed from memory).
+            </summary>
+        </member>
+        <member name="F:Kernel.FOS_System.ObjectToCleanup.objPtr">
+            <summary>
+            The pointer to the object.
+            </summary>
+        </member>
+        <member name="F:Kernel.FOS_System.ObjectToCleanup.objHeaderPtr">
+            <summary>
+            The pointer to the object's header.
+            </summary>
+        </member>
+        <member name="F:Kernel.FOS_System.ObjectToCleanup.prevPtr">
+            <summary>
+            A pointer to the previous item in the cleanup list.
+            </summary>
+        </member>
+        <member name="F:Kernel.FOS_System.ObjectToCleanup.nextPtr">
+            <summary>
+            A pointer to the next item in the cleanup list.
             </summary>
         </member>
         <member name="T:Kernel.FOS_System.HeapBlock">
@@ -762,10 +1054,29 @@
             Returns the maximum value of an Int32.
             </summary>
         </member>
+        <member name="T:Kernel.FOS_System.Math">
+            <summary>
+            Provides constants and static methods for common mathematical functions and some operations not supported by 
+            IL code.
+            </summary>
+        </member>
+        <member name="M:Kernel.FOS_System.Math.Divide(System.UInt64,System.UInt32)">
+            <summary>
+            Divides a UInt64 by a UInt32.
+            </summary>
+            <param name="dividend">The UInt64 to be divided.</param>
+            <param name="divisor">The UInt32 to divide.</param>
+            <returns>The quotient of the division.</returns>
+        </member>
         <member name="T:Kernel.FOS_System.String">
             <summary>
             Replacement class for methods, properties and fields usually found on standard System.String type.
             Also contains utility methods for low-level string manipulation.
+            </summary>
+        </member>
+        <member name="F:Kernel.FOS_System.String.length">
+            <summary>
+            The length of the string.
             </summary>
         </member>
         <member name="M:Kernel.FOS_System.String.GetLength(System.String)">
@@ -794,6 +1105,180 @@
             </summary>
             <param name="length">The length of the string to create.</param>
             <returns>The new string.</returns>
+        </member>
+        <member name="M:Kernel.FOS_System.String.Concat(Kernel.FOS_System.String,Kernel.FOS_System.String)">
+            <summary>
+            Concatenates two strings into one new string.
+            </summary>
+            <param name="str1">The first part of the new string.</param>
+            <param name="str2">The second part of the new string.</param>
+            <returns>The new string.</returns>
+        </member>
+        <member name="M:Kernel.FOS_System.String.GetCharPointer">
+            <summary>
+            Gets a pointer to the first character in the string.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Kernel.FOS_System.String.PadLeft(System.Int32,System.Char)">
+            <summary>
+            Creates a new string and pads the left side of the string with the specified character until the 
+            whole string is of the specified length.
+            </summary>
+            <param name="totalLength">The final length of the whole string.</param>
+            <param name="padChar">The character to pad with.</param>
+            <returns>The new, padded string.</returns>
+        </member>
+        <member name="M:Kernel.FOS_System.String.PadRight(System.Int32,System.Char)">
+            <summary>
+            Creates a new string and pads the right side of the string with the specified character until the 
+            whole string is of the specified length.
+            </summary>
+            <param name="totalLength">The final length of the whole string.</param>
+            <param name="padChar">The character to pad with.</param>
+            <returns>The new, padded string.</returns>
+        </member>
+        <member name="M:Kernel.FOS_System.String.Trim">
+            <summary>
+            Creates a new string and trims all spaces from the beginning and end of the string.
+            </summary>
+            <returns>The new, trimmed string.</returns>
+        </member>
+        <member name="M:Kernel.FOS_System.String.TrimEnd">
+            <summary>
+            Creates a new string and trims all spaces from the end of the string.
+            </summary>
+            <returns>The new, trimmed string.</returns>
+        </member>
+        <member name="M:Kernel.FOS_System.String.Substring(System.Int32,System.Int32)">
+            <summary>
+            Creates a new string that is a copy of the current string starting at the specified index for specified length.
+            </summary>
+            <param name="startIndex">The index to start copying at.</param>
+            <param name="aLength">The number of characters to copy.</param>
+            <returns>The new string.</returns>
+        </member>
+        <member name="M:Kernel.FOS_System.String.StartsWith(Kernel.FOS_System.String)">
+            <summary>
+            Determines whether the string starts with the specified string.
+            </summary>
+            <param name="prefix">The string to test for.</param>
+            <returns>Whether the string starts with the prefix.</returns>
+        </member>
+        <member name="M:Kernel.FOS_System.String.Split(System.Char)">
+            <summary>
+            Splits the string at every index where splitChar occurs and adds the splits parts (excluding splitChar)
+            to a list of strings.
+            </summary>
+            <param name="splitChar">The char to split with.</param>
+            <returns>The list of split parts.</returns>
+        </member>
+        <member name="M:Kernel.FOS_System.String.ToUpper">
+            <summary>
+            Copies the current string then converts all the alpha-characters to upper-case.
+            </summary>
+            <returns>The new, upper-case string.</returns>
+        </member>
+        <member name="M:Kernel.FOS_System.String.op_Addition(Kernel.FOS_System.String,Kernel.FOS_System.String)">
+            <summary>
+            Concatenates two strings using "+" operator.
+            </summary>
+            <param name="x">The first string.</param>
+            <param name="y">The second string.</param>
+            <returns>The new contenated string.</returns>
+        </member>
+        <member name="M:Kernel.FOS_System.String.op_Equality(Kernel.FOS_System.String,Kernel.FOS_System.String)">
+            <summary>
+            Tests whether all the characters of two strings are equal.
+            </summary>
+            <param name="x">The first string.</param>
+            <param name="y">The second string.</param>
+            <returns>Whether the two strings are identical or not.</returns>
+        </member>
+        <member name="M:Kernel.FOS_System.String.op_Inequality(Kernel.FOS_System.String,Kernel.FOS_System.String)">
+            <summary>
+            Tests whether any of the characters of two strings are not equal.
+            </summary>
+            <param name="x">The first string.</param>
+            <param name="y">The second string.</param>
+            <returns>Whether the two strings mismatch in any place.</returns>
+        </member>
+        <member name="M:Kernel.FOS_System.String.op_Implicit(System.Boolean)~Kernel.FOS_System.String">
+            <summary>
+            Implicitly converts the specified value to an FOS_System.String.
+            </summary>
+            <param name="x">The value to convert.</param>
+            <returns>The FOS_System.String value.</returns>
+        </member>
+        <member name="M:Kernel.FOS_System.String.op_Implicit(System.String)~Kernel.FOS_System.String">
+            <summary>
+            Implicitly converts the specified value to an FOS_System.String.
+            </summary>
+            <param name="x">The value to convert.</param>
+            <returns>The FOS_System.String value.</returns>
+        </member>
+        <member name="M:Kernel.FOS_System.String.op_Explicit(Kernel.FOS_System.String)~System.String">
+            <summary>
+            Implicitly converts the specified FOS_System.String to a System.String.
+            </summary>
+            <param name="x">The value to convert.</param>
+            <returns>The System.String.</returns>
+        </member>
+        <member name="M:Kernel.FOS_System.String.op_Implicit(System.Byte)~Kernel.FOS_System.String">
+            <summary>
+            Implicitly converts the specified value to a hex FOS_System.String.
+            </summary>
+            <param name="x">The value to convert.</param>
+            <returns>The FOS_System.String value.</returns>
+        </member>
+        <member name="M:Kernel.FOS_System.String.op_Implicit(System.UInt16)~Kernel.FOS_System.String">
+            <summary>
+            Implicitly converts the specified value to a hex FOS_System.String.
+            </summary>
+            <param name="x">The value to convert.</param>
+            <returns>The FOS_System.String value.</returns>
+        </member>
+        <member name="M:Kernel.FOS_System.String.op_Implicit(System.Int16)~Kernel.FOS_System.String">
+            <summary>
+            Implicitly converts the specified value to a hex FOS_System.String.
+            </summary>
+            <param name="x">The value to convert.</param>
+            <returns>The FOS_System.String value.</returns>
+        </member>
+        <member name="M:Kernel.FOS_System.String.op_Implicit(System.UInt32)~Kernel.FOS_System.String">
+            <summary>
+            Implicitly converts the specified value to a hex FOS_System.String.
+            </summary>
+            <param name="x">The value to convert.</param>
+            <returns>The FOS_System.String value.</returns>
+        </member>
+        <member name="M:Kernel.FOS_System.String.op_Implicit(System.Int32)~Kernel.FOS_System.String">
+            <summary>
+            Implicitly converts the specified value to a hex FOS_System.String.
+            </summary>
+            <param name="x">The value to convert.</param>
+            <returns>The FOS_System.String value.</returns>
+        </member>
+        <member name="M:Kernel.FOS_System.String.op_Implicit(System.UInt64)~Kernel.FOS_System.String">
+            <summary>
+            Implicitly converts the specified value to a hex FOS_System.String.
+            </summary>
+            <param name="x">The value to convert.</param>
+            <returns>The FOS_System.String value.</returns>
+        </member>
+        <member name="M:Kernel.FOS_System.String.op_Implicit(System.Int64)~Kernel.FOS_System.String">
+            <summary>
+            Implicitly converts the specified value to a hex FOS_System.String.
+            </summary>
+            <param name="x">The value to convert.</param>
+            <returns>The FOS_System.String value.</returns>
+        </member>
+        <member name="P:Kernel.FOS_System.String.Item(System.Int32)">
+            <summary>
+            Gets the character at the specified index.
+            </summary>
+            <param name="index">The index of the character to get.</param>
+            <returns>The character at the specified index.</returns>
         </member>
         <member name="T:Kernel.FOS_System.Type">
             <summary>

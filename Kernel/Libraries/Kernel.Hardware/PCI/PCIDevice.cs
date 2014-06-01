@@ -3,9 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using PCI_IO = Kernel.Hardware.PCI.PCI;
 
 namespace Kernel.Hardware.PCI
 {
+    /// <summary>
+    /// Represents any PCI device.
+    /// </summary>
     public class PCIDevice : Device
     {
         public enum PCIHeaderType : byte
@@ -93,7 +97,6 @@ namespace Kernel.Hardware.PCI
         public uint slot = 0;
         public uint function = 0;
 
-        protected PCI IO = new PCI();
         [Compiler.NoDebug]
         public PCIDevice(uint bus, uint slot, uint function)
         {
@@ -154,51 +157,51 @@ namespace Kernel.Hardware.PCI
         #region IOReadWrite
 
         [Compiler.NoDebug]
-        protected byte ReadRegister8(byte aRegister)
+        internal byte ReadRegister8(byte aRegister)
         {
             UInt32 xAddr = GetAddressBase(bus, slot, function) | ((UInt32)(aRegister & 0xFC));
-            IO.ConfigAddressPort.Write(xAddr);
-            return (byte)(IO.ConfigDataPort.Read_UInt32() >> ((aRegister % 4) * 8) & 0xFF);
+            PCI_IO.ConfigAddressPort.Write(xAddr);
+            return (byte)(PCI_IO.ConfigDataPort.Read_UInt32() >> ((aRegister % 4) * 8) & 0xFF);
         }
 
         [Compiler.NoDebug]
-        protected void WriteRegister8(byte aRegister, byte value)
+        internal void WriteRegister8(byte aRegister, byte value)
         {
             UInt32 xAddr = GetAddressBase(bus, slot, function) | ((UInt32)(aRegister & 0xFC));
-            IO.ConfigAddressPort.Write(xAddr);
-            IO.ConfigDataPort.Write(value);
+            PCI_IO.ConfigAddressPort.Write(xAddr);
+            PCI_IO.ConfigDataPort.Write(value);
         }
 
         [Compiler.NoDebug]
-        protected UInt16 ReadRegister16(byte aRegister)
+        internal UInt16 ReadRegister16(byte aRegister)
         {
             UInt32 xAddr = GetAddressBase(bus, slot, function) | ((UInt32)(aRegister & 0xFC));
-            IO.ConfigAddressPort.Write(xAddr);
-            return (UInt16)(IO.ConfigDataPort.Read_UInt32() >> ((aRegister % 4) * 8) & 0xFFFF); ;
+            PCI_IO.ConfigAddressPort.Write(xAddr);
+            return (UInt16)(PCI_IO.ConfigDataPort.Read_UInt32() >> ((aRegister % 4) * 8) & 0xFFFF); ;
         }
 
         [Compiler.NoDebug]
-        protected void WriteRegister16(byte aRegister, ushort value)
+        internal void WriteRegister16(byte aRegister, ushort value)
         {
             UInt32 xAddr = GetAddressBase(bus, slot, function) | ((UInt32)(aRegister & 0xFC));
-            IO.ConfigAddressPort.Write(xAddr);
-            IO.ConfigDataPort.Write(value);
+            PCI_IO.ConfigAddressPort.Write(xAddr);
+            PCI_IO.ConfigDataPort.Write(value);
         }
 
         [Compiler.NoDebug]
-        protected UInt32 ReadRegister32(byte aRegister)
+        internal UInt32 ReadRegister32(byte aRegister)
         {
             UInt32 xAddr = GetAddressBase(bus, slot, function) | ((UInt32)(aRegister & 0xFC));
-            IO.ConfigAddressPort.Write(xAddr);
-            return IO.ConfigDataPort.Read_UInt32();
+            PCI_IO.ConfigAddressPort.Write(xAddr);
+            return PCI_IO.ConfigDataPort.Read_UInt32();
         }
 
         [Compiler.NoDebug]
-        protected void WriteRegister32(byte aRegister, uint value)
+        internal void WriteRegister32(byte aRegister, uint value)
         {
             UInt32 xAddr = GetAddressBase(bus, slot, function) | ((UInt32)(aRegister & 0xFC));
-            IO.ConfigAddressPort.Write(xAddr);
-            IO.ConfigDataPort.Write(value);
+            PCI_IO.ConfigAddressPort.Write(xAddr);
+            PCI_IO.ConfigDataPort.Write(value);
         }
 
         #endregion

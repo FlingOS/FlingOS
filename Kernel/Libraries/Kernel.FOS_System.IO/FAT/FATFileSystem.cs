@@ -427,7 +427,7 @@ namespace Kernel.FOS_System.IO.FAT
                         //TODO: Check LDIR_Ord for ordering and throw exception
                         // if entries are found out of order.
                         // Also save buffer and only copy name if a end Ord marker is found.
-                        FOS_System.String xLongPart = ByteConverter.GetUtf16String(xData, i + 1, 5);
+                        FOS_System.String xLongPart = ByteConverter.GetASCIIStringFromUTF16(xData, i + 1, 5);
                         //BasicConsole.WriteLine("xLongPart1: " + xLongPart);
                         // We have to check the length because 0xFFFF is a valid Unicode codepoint.
                         // So we only want to stop if the 0xFFFF is AFTER a 0x0000. We can determin
@@ -435,11 +435,11 @@ namespace Kernel.FOS_System.IO.FAT
                         // is rarely evaluated.
                         if (xLongPart.length == 5)
                         {
-                            xLongPart = xLongPart + ByteConverter.GetUtf16String(xData, i + 14, 6);
+                            xLongPart = xLongPart + ByteConverter.GetASCIIStringFromUTF16(xData, i + 14, 6);
                             //BasicConsole.WriteLine("xLongPart2: " + xLongPart);
                             if (xLongPart.length == 11)
                             {
-                                xLongPart = xLongPart + ByteConverter.GetUtf16String(xData, i + 28, 2);
+                                xLongPart = xLongPart + ByteConverter.GetASCIIStringFromUTF16(xData, i + 28, 2);
                                 //BasicConsole.WriteLine("xLongPart3: " + xLongPart);
                             }
                         }
@@ -496,7 +496,7 @@ namespace Kernel.FOS_System.IO.FAT
                         }
                         else
                         {
-                            FOS_System.String xEntry = ByteConverter.GetAsciiString(xData, i, 11);
+                            FOS_System.String xEntry = ByteConverter.GetASCIIStringFromASCII(xData, i, 11);
                             //Volume ID does not have same format as file-name.
                             if (xTest == ListingAttribs.VolumeID)
                             {

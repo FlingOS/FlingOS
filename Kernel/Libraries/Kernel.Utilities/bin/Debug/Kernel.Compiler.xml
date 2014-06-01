@@ -169,6 +169,12 @@
             Note: There should only ever be one of these used!
             </summary>
         </member>
+        <member name="T:Kernel.Compiler.ArrayClassAttribute">
+            <summary>
+            Indicates the class is the kernel's Array class. 
+            Note: There should only ever be one of these used!
+            </summary>
+        </member>
         <member name="T:Kernel.Compiler.TypeClassAttribute">
             <summary>
             Indicates the class is the kernel's Type class. 
@@ -2405,8 +2411,12 @@
             <summary>
             Handles the 
             <see cref="F:System.Reflection.Emit.OpCodes.Ldind_U1"/>,  
-            <see cref="F:System.Reflection.Emit.OpCodes.Ldind_U2"/> and 
-            <see cref="F:System.Reflection.Emit.OpCodes.Ldind_U4"/> IL ops.
+            <see cref="F:System.Reflection.Emit.OpCodes.Ldind_U2"/>,  
+            <see cref="F:System.Reflection.Emit.OpCodes.Ldind_U4"/>,  
+            <see cref="F:System.Reflection.Emit.OpCodes.Ldind_I1"/>,  
+            <see cref="F:System.Reflection.Emit.OpCodes.Ldind_I2"/>,  
+            <see cref="F:System.Reflection.Emit.OpCodes.Ldind_I4"/> and 
+            <see cref="F:System.Reflection.Emit.OpCodes.Ldind_I8"/> IL ops.
             </summary>
             <remarks>
             See MSDN for details of these ops.
@@ -2414,6 +2424,10 @@
             <seealso cref="F:System.Reflection.Emit.OpCodes.Ldind_U1"/>
             <seealso cref="F:System.Reflection.Emit.OpCodes.Ldind_U2"/>
             <seealso cref="F:System.Reflection.Emit.OpCodes.Ldind_U4"/>
+            <seealso cref="F:System.Reflection.Emit.OpCodes.Ldind_I1"/>
+            <seealso cref="F:System.Reflection.Emit.OpCodes.Ldind_I2"/>
+            <seealso cref="F:System.Reflection.Emit.OpCodes.Ldind_I4"/>
+            <seealso cref="F:System.Reflection.Emit.OpCodes.Ldind_I8"/>
         </member>
         <member name="T:Kernel.Compiler.ILOps.Stind">
             <summary>
@@ -2767,11 +2781,6 @@
             The method to use as the kernel's Halt method.
             </summary>
         </member>
-        <member name="F:Kernel.Compiler.ILScannerState.ArrayConstructorMethod">
-            <summary>
-            The method to use as the new Array constructor method.
-            </summary>
-        </member>
         <member name="F:Kernel.Compiler.ILScannerState.ThrowNullReferenceExceptionMethod">
             <summary>
             The method to use to throw a NullReferenceException.
@@ -2790,6 +2799,11 @@
         <member name="F:Kernel.Compiler.ILScannerState.TypeClass">
             <summary>
             The class to use as the kernel's Type class.
+            </summary>
+        </member>
+        <member name="F:Kernel.Compiler.ILScannerState.ArrayClass">
+            <summary>
+            The class to use as the kernel's Array class.
             </summary>
         </member>
         <member name="F:Kernel.Compiler.ILScannerState.StringClass">

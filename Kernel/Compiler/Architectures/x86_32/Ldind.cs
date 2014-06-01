@@ -31,13 +31,19 @@ namespace Kernel.Compiler.Architectures.x86_32
             switch ((OpCodes)anILOpInfo.opCode.Value)
             {
                 case OpCodes.Ldind_U1:
+                case OpCodes.Ldind_I1:
                     bytesToLoad = 1;
                     break;
                 case OpCodes.Ldind_U2:
+                case OpCodes.Ldind_I2:
                     bytesToLoad = 2;
                     break;
                 case OpCodes.Ldind_U4:
+                case OpCodes.Ldind_I4:
                     bytesToLoad = 4;
+                    break;
+                case OpCodes.Ldind_I8:
+                    bytesToLoad = 8;
                     break;
             }
 
@@ -60,10 +66,15 @@ namespace Kernel.Compiler.Architectures.x86_32
             {
                 result.AppendLine("push dword [ebx]");
             }
+            else if (bytesToLoad == 8)
+            {
+                result.AppendLine("push dword [ebx+4]");
+                result.AppendLine("push dword [ebx]");
+            }
 
             aScannerState.CurrentStackFrame.Stack.Push(new StackItem()
             {
-                sizeOnStackInBytes = 4,
+                sizeOnStackInBytes = bytesToLoad == 8 ? 8 : 4,
                 isFloat = false
             });
 

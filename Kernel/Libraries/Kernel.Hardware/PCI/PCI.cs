@@ -4,10 +4,13 @@ using Kernel.FOS_System.Collections;
 
 namespace Kernel.Hardware.PCI
 {
-    public class PCI : FOS_System.Object
+    /// <summary>
+    /// 
+    /// </summary>
+    public static class PCI
     {
-        public IO.IOPort ConfigAddressPort = new IO.IOPort(0xCF8);
-        public IO.IOPort ConfigDataPort = new IO.IOPort(0xCFC);
+        internal static IO.IOPort ConfigAddressPort = new IO.IOPort(0xCF8);
+        internal static IO.IOPort ConfigDataPort = new IO.IOPort(0xCFC);
 
         public static List Devices = new List();
 

@@ -234,32 +234,6 @@
             Outputs the current exception information.
             </summary>
         </member>
-        <member name="M:Kernel.Kernel.ExceptionsTestP1">
-            <summary>
-            Tests the exception handling sub-system.
-            </summary>
-            <remarks>
-            If the mechanism appears to work but code in Main() stops working then
-            it is because one of the GC methods is calling a method / get-set property
-            that is not marked with [Comnpiler.NoGC]. Make sure all methods that the 
-            GC calls are marked with [Compiler.NoGC] attribute. See example.
-            </remarks>
-            <example>
-            public int x
-            {
-                [Compiler.NoGC]
-                get
-                {
-                    return 0;
-                }
-            }
-            </example>
-        </member>
-        <member name="M:Kernel.Kernel.ExceptionsTestP2">
-            <summary>
-            Secondary method used in testing the exception handling sub-system.
-            </summary>
-        </member>
         <member name="M:Kernel.Kernel.InitPCI">
             <summary>
             Initialises PCI sub-system.
@@ -273,6 +247,16 @@
         <member name="M:Kernel.Kernel.InitFileSystem">
             <summary>
             Initialises the file-system.
+            </summary>
+        </member>
+        <member name="M:Kernel.Kernel.CheckDiskFormatting">
+            <summary>
+            Checks for usable FAT32 partitions. If none found, formats "disk0" as MBR, 1 FAT32 partiton.
+            </summary>
+        </member>
+        <member name="M:Kernel.Kernel.InitUSB">
+            <summary>
+            Initialises USB sub-system.
             </summary>
         </member>
         <member name="M:Kernel.Kernel.OutputFileSystemsInfo">
@@ -313,6 +297,16 @@
             Outputs information about the ATA devices found.
             </summary>
         </member>
+        <member name="M:Kernel.Kernel.FileSystemTests">
+            <summary>
+            Runs a series of tests on the file system, currently:
+             - Finds or creates A:/ drive
+             - Attempts to use FAT file system for A drive
+             - Finds or creates a folder called "P1D2"
+             - Finds or creates short and long name files in "P1D2"
+             - Writes and reads from above test files.
+            </summary>
+        </member>
         <member name="M:Kernel.Kernel.ULongLTComparisonTest">
             <summary>
             Tests unsigned less-than comparison of ulongs.
@@ -346,6 +340,32 @@
         <member name="M:Kernel.Kernel.DivideByZeroTest">
             <summary>
             Tests managed exception sub-system by deliberately causing hardware-level divide-by-zero exception.
+            </summary>
+        </member>
+        <member name="M:Kernel.Kernel.ExceptionsTestP1">
+            <summary>
+            Tests the exception handling sub-system.
+            </summary>
+            <remarks>
+            If the mechanism appears to work but code in Main() stops working then
+            it is because one of the GC methods is calling a method / get-set property
+            that is not marked with [Comnpiler.NoGC]. Make sure all methods that the 
+            GC calls are marked with [Compiler.NoGC] attribute. See example.
+            </remarks>
+            <example>
+            public int x
+            {
+                [Compiler.NoGC]
+                get
+                {
+                    return 0;
+                }
+            }
+            </example>
+        </member>
+        <member name="M:Kernel.Kernel.ExceptionsTestP2">
+            <summary>
+            Secondary method used in testing the exception handling sub-system.
             </summary>
         </member>
     </members>

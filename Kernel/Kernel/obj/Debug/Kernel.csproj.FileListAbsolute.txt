@@ -76,3 +76,6 @@ G:\Fling OS\Fling OS\Kernel\Kernel\obj\Debug\Kernel.csprojResolveAssemblyReferen
 G:\Fling OS\Fling OS\Kernel\Kernel\obj\Debug\Kernel.dll
 G:\Fling OS\Fling OS\Kernel\Kernel\obj\Debug\Kernel.pdb
 G:\Fling OS\Fling OS\Kernel\Kernel\bin\Debug\ASM\Math\Divide.x86_32.asm
+G:\Fling OS\Fling OS\Kernel\Kernel\bin\Debug\Kernel.FOS_System.IO.xml
+G:\Fling OS\Fling OS\Kernel\Kernel\bin\Debug\Kernel.Hardware.xml
+G:\Fling OS\Fling OS\Kernel\Kernel\bin\Debug\Kernel.Utilities.xml

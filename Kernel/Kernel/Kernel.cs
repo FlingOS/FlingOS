@@ -76,7 +76,7 @@ namespace Kernel
 
             BasicConsole.SetTextColour(BasicConsole.error_colour);
             BasicConsole.WriteLine(FOS_System.GC.NumObjs);
-            BasicConsole.WriteLine(FOS_System.GC.numStrings);
+            BasicConsole.WriteLine(FOS_System.GC.NumStrings);
             BasicConsole.SetTextColour(BasicConsole.default_colour);
 
             BasicConsole.WriteLine("Fling OS Ended.");
@@ -117,190 +117,58 @@ namespace Kernel
         {
             try
             {
-                //ULongLTComparisonTest();
-                //ULongMultiplicationTest();
-                //StringConcatTest();
-                //ObjectArrayTest();
-                //IntArrayTest();
-                //DummyObjectTest();
-                //DivideByZeroTest();
-
-                //ExceptionsTestP1();
-
                 InitATA();
+                
+                OutputDivider();
 
                 if (Hardware.DeviceManager.Devices.Count > 0)
                 {
-                    try
-                    {
-                        OutputATAInfo();
-                        BasicConsole.DelayOutput(5);
-                    }
-                    catch
-                    {
-                        OutputCurrentExceptionInfo();
-                    }
+                    //try
+                    //{
+                    //    OutputATAInfo();
+                    //}
+                    //catch
+                    //{
+                    //    OutputCurrentExceptionInfo();
+                    //}
 
                     InitFileSystem();
 
-                    if (FOS_System.IO.FileSystemManager.Partitions.Count == 0)
-                    {
-                        BasicConsole.WriteLine("Disk found but no partitions found on disk.");
-                        BasicConsole.WriteLine("Formatting disk as MBR with one, primary FAT32 partition...");
+                    OutputDivider();
 
-                        List newPartitions = new List(1);
-                        newPartitions.Add(FOS_System.IO.Disk.MBR.CreateFAT32PartitionInfo(disk0, false));
-                        FOS_System.IO.Disk.MBR.FormatDisk(disk0, newPartitions);
+                    CheckDiskFormatting();
 
-                        BasicConsole.WriteLine("MBR format done.");
-                        BasicConsole.DelayOutput(2);
+                    OutputDivider();
 
-                        InitFileSystem();
-                    }
-                    if (FOS_System.IO.FileSystemManager.FileSystemMappings.Count == 0)
-                    {
-                        BasicConsole.WriteLine("Formatting first partition as FAT32...");
-                        Partition thePart = (Partition)FOS_System.IO.FileSystemManager.Partitions[0];
-                        FOS_System.IO.FAT.FATFileSystem.FormatPartitionAsFAT32(thePart);
-                        BasicConsole.WriteLine("Format done.");
-                        BasicConsole.DelayOutput(2);
-
-                        InitFileSystem();
-                    }
-
-                    try
-                    {
-                        OutputFileSystemsInfo();
-                        BasicConsole.DelayOutput(20);
-                    }
-                    catch
-                    {
-                        OutputCurrentExceptionInfo();
-                    }
+                    //try
+                    //{
+                    //    OutputFileSystemsInfo();
+                    //}
+                    //catch
+                    //{
+                    //    OutputCurrentExceptionInfo();
+                    //}
                 }
 
                 InitPCI();
 
+                OutputDivider();
+
                 try
                 {
                     OutputPCIInfo();
-                    BasicConsole.DelayOutput(5);
+                    OutputDivider();
                 }
                 catch
                 {
                     OutputCurrentExceptionInfo();
                 }
 
-                OutputDivider();
-
                 FOS_System.GC.Cleanup();
 
-                FileSystemMapping A_FSMapping = FileSystemManager.GetMapping("A:/");
-                if (A_FSMapping != null)
-                {
-                    FOS_System.IO.FAT.FATFileSystem A_FS = (FOS_System.IO.FAT.FATFileSystem)A_FSMapping.TheFileSystem;
+                InitUSB();
 
-                    Directory P1D2Dir = Directory.Find("A:/P1D2");
-                    if (P1D2Dir == null)
-                    {
-                        BasicConsole.WriteLine("Creating P1D2 directory...");
-                        P1D2Dir = A_FS.NewDirectory("P1D2", A_FS.RootDirectory_FAT32);
-                        BasicConsole.WriteLine("Directory created.");
-                    }
-                    else
-                    {
-                        BasicConsole.WriteLine("Found P1D2 directory.");
-                    }
-
-                    BasicConsole.WriteLine("Finding P1D2 directory...");
-                    File longNameTestFile = File.Open("A:/P1D2/LongNameTest2.txt");
-                    if (longNameTestFile == null)
-                    {
-                        BasicConsole.WriteLine("Creating LongNameTest2.txt file...");
-                        longNameTestFile = P1D2Dir.TheFileSystem.NewFile("LongNameTest2.txt", P1D2Dir);
-                    }
-                    else
-                    {
-                        BasicConsole.WriteLine("Found LongNameTest2.txt file.");
-                    }
-
-                    File shortNameTestFile = File.Open("A:/P1D2/ShrtTest.txt");
-                    if (shortNameTestFile == null)
-                    {
-                        BasicConsole.WriteLine("Creating ShrtTest.txt file...");
-                        shortNameTestFile = P1D2Dir.TheFileSystem.NewFile("ShrtTest.txt", P1D2Dir);
-                    }
-                    else
-                    {
-                        BasicConsole.WriteLine("Found ShrtTest.txt file.");
-                    }
-
-                    if (longNameTestFile != null)
-                    {
-                        BasicConsole.WriteLine("Opening stream...");
-                        FOS_System.IO.Streams.FileStream fileStream = longNameTestFile.GetStream();
-
-                        FOS_System.String testStr = "This is some test file contents.";
-                        byte[] testStrBytes = ByteConverter.GetASCIIBytes(testStr);
-
-                        BasicConsole.WriteLine("Writing data...");
-                        fileStream.Position = 0;
-                        int size = 0;
-                        //for (int i = 0; i < 20; i++)
-                        {
-                            fileStream.Write(testStrBytes, 0, testStrBytes.Length);
-                            size += testStrBytes.Length;
-                        }
-
-                        BasicConsole.WriteLine("Reading data...");
-                        fileStream.Position = 0;
-                        byte[] readBytes = new byte[size];
-                        fileStream.Read(readBytes, 0, readBytes.Length);
-                        FOS_System.String readStr = ByteConverter.GetAsciiString(readBytes, 0u, (uint)readBytes.Length);
-                        BasicConsole.WriteLine("\"" + readStr + "\"");
-
-                        OutputDivider();
-                    }
-                    else
-                    {
-                        BasicConsole.WriteLine("LongNameTest2.txt file not found.");
-                    }
-
-                    if (shortNameTestFile != null)
-                    {
-                        BasicConsole.WriteLine("Opening stream...");
-                        FOS_System.IO.Streams.FileStream fileStream = shortNameTestFile.GetStream();
-
-                        FOS_System.String testStr = "This is some test file contents.";
-                        byte[] testStrBytes = ByteConverter.GetASCIIBytes(testStr);
-
-                        BasicConsole.WriteLine("Writing data...");
-                        fileStream.Position = 0;
-                        int size = 0;
-                        //for (int i = 0; i < 20; i++)
-                        {
-                            fileStream.Write(testStrBytes, 0, testStrBytes.Length);
-                            size += testStrBytes.Length;
-                        }
-
-                        BasicConsole.WriteLine("Reading data...");
-                        fileStream.Position = 0;
-                        byte[] readBytes = new byte[size];
-                        fileStream.Read(readBytes, 0, readBytes.Length);
-                        FOS_System.String readStr = ByteConverter.GetAsciiString(readBytes, 0u, (uint)readBytes.Length);
-                        BasicConsole.WriteLine("\"" + readStr + "\"");
-
-                        OutputDivider();
-                    }
-                    else
-                    {
-                        BasicConsole.WriteLine("ShortNameTest.txt file not found.");
-                    }
-                }
-                else
-                {
-                    BasicConsole.WriteLine("Could not find \"A:/\" mapping.");
-                }
+                OutputDivider();
             }
             catch
             {
@@ -322,59 +190,9 @@ namespace Kernel
             BasicConsole.SetTextColour(BasicConsole.warning_colour);
             BasicConsole.WriteLine(ExceptionMethods.CurrentException.Message);
 
-            FOS_System.Type currExceptionType = ExceptionMethods.CurrentException._Type;
-            if (currExceptionType == (FOS_System.Type)typeof(FOS_System.Exceptions.ArgumentException))
-            {
-                BasicConsole.WriteLine(((FOS_System.Exceptions.ArgumentException)ExceptionMethods.CurrentException).ExtendedMessage);
-            }
-            else if (currExceptionType == (FOS_System.Type)typeof(FOS_System.Exceptions.NotSupportedException))
-            {
-                BasicConsole.WriteLine(((FOS_System.Exceptions.NotSupportedException)ExceptionMethods.CurrentException).ExtendedMessage);
-            }
-
             BasicConsole.SetTextColour(BasicConsole.default_colour);
 
             ExceptionMethods.CurrentException = null;
-        }
-
-        /// <summary>
-        /// Tests the exception handling sub-system.
-        /// </summary>
-        /// <remarks>
-        /// If the mechanism appears to work but code in Main() stops working then
-        /// it is because one of the GC methods is calling a method / get-set property
-        /// that is not marked with [Comnpiler.NoGC]. Make sure all methods that the 
-        /// GC calls are marked with [Compiler.NoGC] attribute. See example.
-        /// </remarks>
-        /// <example>
-        /// public int x
-        /// {
-        ///     [Compiler.NoGC]
-        ///     get
-        ///     {
-        ///         return 0;
-        ///     }
-        /// }
-        /// </example>
-        private static void ExceptionsTestP1()
-        {
-            ExceptionsTestP2();
-        }
-        /// <summary>
-        /// Secondary method used in testing the exception handling sub-system.
-        /// </summary>
-        private static void ExceptionsTestP2()
-        {
-            FOS_System.Object obj = new FOS_System.Object();
-
-            try
-            {
-                ExceptionMethods.Throw(new FOS_System.Exception("An exception."));
-            }
-            finally
-            {
-                BasicConsole.WriteLine("Finally ran.");
-            }
         }
 
         /// <summary>
@@ -385,20 +203,16 @@ namespace Kernel
             BasicConsole.WriteLine("Initialising PCI...");
             Hardware.PCI.PCI.Init();
             BasicConsole.WriteLine(((FOS_System.String)"PCI initialised. Devices: ") + Hardware.PCI.PCI.Devices.Count);
-            OutputDivider();
         }
         /// <summary>
         /// Intialises the ATA sub-system.
         /// </summary>
         private static void InitATA()
         {
-            BasicConsole.WriteLine();
-            OutputDivider();
             BasicConsole.WriteLine("Initiailsing ATA...");
             Hardware.ATA.ATAManager.Init();
             BasicConsole.WriteLine(((FOS_System.String)"ATA initialised. Devices: ") + Hardware.DeviceManager.Devices.Count);
-            OutputDivider();
-
+            
             disk0 = (Hardware.Devices.DiskDevice)Hardware.DeviceManager.Devices[0];
         }
         /// <summary>
@@ -409,7 +223,46 @@ namespace Kernel
             BasicConsole.WriteLine("Initialising file system...");
             FOS_System.IO.FileSystemManager.Init();
             BasicConsole.WriteLine(((FOS_System.String)"File system initialised. Mappings: ") + FOS_System.IO.FileSystemManager.FileSystemMappings.Count);
-            OutputDivider();
+        }
+        /// <summary>
+        /// Checks for usable FAT32 partitions. If none found, formats "disk0" as MBR, 1 FAT32 partiton.
+        /// </summary>
+        private static void CheckDiskFormatting()
+        {
+            if (FOS_System.IO.FileSystemManager.Partitions.Count == 0)
+            {
+                BasicConsole.WriteLine("Disk found but no partitions found on disk.");
+                BasicConsole.WriteLine("Formatting disk as MBR with one, primary FAT32 partition...");
+
+                List newPartitions = new List(1);
+                newPartitions.Add(FOS_System.IO.Disk.MBR.CreateFAT32PartitionInfo(disk0, false));
+                FOS_System.IO.Disk.MBR.FormatDisk(disk0, newPartitions);
+
+                BasicConsole.WriteLine("MBR format done.");
+                BasicConsole.DelayOutput(2);
+
+                InitFileSystem();
+            }
+            if (FOS_System.IO.FileSystemManager.FileSystemMappings.Count == 0)
+            {
+                BasicConsole.WriteLine("Formatting first partition as FAT32...");
+                Partition thePart = (Partition)FOS_System.IO.FileSystemManager.Partitions[0];
+                FOS_System.IO.FAT.FATFileSystem.FormatPartitionAsFAT32(thePart);
+                BasicConsole.WriteLine("Format done.");
+                BasicConsole.DelayOutput(2);
+
+                InitFileSystem();
+            }
+        }
+
+        /// <summary>
+        /// Initialises USB sub-system.
+        /// </summary>
+        private static void InitUSB()
+        {
+            BasicConsole.WriteLine("Initialising USB system...");
+            Hardware.USB.USBManager.Init();
+            BasicConsole.WriteLine(((FOS_System.String)"USB system initialised. HCI devices: ") + Hardware.USB.USBManager.HCIDevices.Count);
         }
 
         /// <summary>
@@ -496,7 +349,7 @@ namespace Kernel
                     FOS_System.IO.Streams.FileStream fileStream = FOS_System.IO.Streams.FileStream.Create(aFile);
                     byte[] xData = new byte[(int)(uint)aFile.Size];
                     int actuallyRead = fileStream.Read(xData, 0, xData.Length);
-                    FOS_System.String xText = ByteConverter.GetAsciiString(xData, 0u, (uint)actuallyRead);
+                    FOS_System.String xText = ByteConverter.GetASCIIStringFromASCII(xData, 0u, (uint)actuallyRead);
                     BasicConsole.WriteLine(xText);
                 }
                 else
@@ -566,9 +419,9 @@ namespace Kernel
             for (int i = 0; i < Hardware.PCI.PCI.Devices.Count; i++)
             {
                 Hardware.PCI.PCIDevice aDevice = (Hardware.PCI.PCIDevice)Hardware.PCI.PCI.Devices[i];
-                BasicConsole.WriteLine(Hardware.PCI.PCIDevice.DeviceClass.GetString(aDevice));
-                BasicConsole.DelayOutput(2);
+                BasicConsole.WriteLine(Hardware.PCI.PCIDevice.DeviceClassInfo.GetString(aDevice));
             }
+            BasicConsole.DelayOutput(2);
         }
         /// <summary>
         /// Outputs information about the ATA devices found.
@@ -596,7 +449,7 @@ namespace Kernel
                     BasicConsole.WriteLine(((FOS_System.String)"Size: ") + ((theATA.BlockCount * theATA.BlockSize) >> 20) + " MB");
                     OutputDivider();
 
-                    BasicConsole.DelayOutput(5);
+                    BasicConsole.DelayOutput(1);
 
                     numDrives++;
                 }
@@ -605,6 +458,133 @@ namespace Kernel
             BasicConsole.WriteLine(((FOS_System.String)"Total # of drives: ") + numDrives);
         }
 
+        /// <summary>
+        /// Runs a series of tests on the file system, currently:
+        ///  - Finds or creates A:/ drive
+        ///  - Attempts to use FAT file system for A drive
+        ///  - Finds or creates a folder called "P1D2"
+        ///  - Finds or creates short and long name files in "P1D2"
+        ///  - Writes and reads from above test files.
+        /// </summary>
+        private static void FileSystemTests()
+        {
+            try
+            {
+                FileSystemMapping A_FSMapping = FileSystemManager.GetMapping("A:/");
+                if (A_FSMapping != null)
+                {
+                    FOS_System.IO.FAT.FATFileSystem A_FS = (FOS_System.IO.FAT.FATFileSystem)A_FSMapping.TheFileSystem;
+
+                    Directory P1D2Dir = Directory.Find("A:/P1D2");
+                    if (P1D2Dir == null)
+                    {
+                        BasicConsole.WriteLine("Creating P1D2 directory...");
+                        P1D2Dir = A_FS.NewDirectory("P1D2", A_FS.RootDirectory_FAT32);
+                        BasicConsole.WriteLine("Directory created.");
+                    }
+                    else
+                    {
+                        BasicConsole.WriteLine("Found P1D2 directory.");
+                    }
+
+                    BasicConsole.WriteLine("Finding P1D2 directory...");
+                    File longNameTestFile = File.Open("A:/P1D2/LongNameTest.txt");
+                    if (longNameTestFile == null)
+                    {
+                        BasicConsole.WriteLine("Creating LongNameTest.txt file...");
+                        longNameTestFile = P1D2Dir.TheFileSystem.NewFile("LongNameTest.txt", P1D2Dir);
+                    }
+                    else
+                    {
+                        BasicConsole.WriteLine("Found LongNameTest.txt file.");
+                    }
+
+                    File shortNameTestFile = File.Open("A:/P1D2/ShrtTest.txt");
+                    if (shortNameTestFile == null)
+                    {
+                        BasicConsole.WriteLine("Creating ShrtTest.txt file...");
+                        shortNameTestFile = P1D2Dir.TheFileSystem.NewFile("ShrtTest.txt", P1D2Dir);
+                    }
+                    else
+                    {
+                        BasicConsole.WriteLine("Found ShrtTest.txt file.");
+                    }
+
+                    if (longNameTestFile != null)
+                    {
+                        BasicConsole.WriteLine("Opening stream...");
+                        FOS_System.IO.Streams.FileStream fileStream = longNameTestFile.GetStream();
+
+                        FOS_System.String testStr = "This is some test file contents.";
+                        byte[] testStrBytes = ByteConverter.GetASCIIBytes(testStr);
+
+                        BasicConsole.WriteLine("Writing data...");
+                        fileStream.Position = 0;
+                        int size = 0;
+                        //for (int i = 0; i < 20; i++)
+                        {
+                            fileStream.Write(testStrBytes, 0, testStrBytes.Length);
+                            size += testStrBytes.Length;
+                        }
+
+                        BasicConsole.WriteLine("Reading data...");
+                        fileStream.Position = 0;
+                        byte[] readBytes = new byte[size];
+                        fileStream.Read(readBytes, 0, readBytes.Length);
+                        FOS_System.String readStr = ByteConverter.GetASCIIStringFromASCII(readBytes, 0u, (uint)readBytes.Length);
+                        BasicConsole.WriteLine("\"" + readStr + "\"");
+
+                        OutputDivider();
+                    }
+                    else
+                    {
+                        BasicConsole.WriteLine("LongNameTest2.txt file not found.");
+                    }
+
+                    if (shortNameTestFile != null)
+                    {
+                        BasicConsole.WriteLine("Opening stream...");
+                        FOS_System.IO.Streams.FileStream fileStream = shortNameTestFile.GetStream();
+
+                        FOS_System.String testStr = "This is some test file contents.";
+                        byte[] testStrBytes = ByteConverter.GetASCIIBytes(testStr);
+
+                        BasicConsole.WriteLine("Writing data...");
+                        fileStream.Position = 0;
+                        int size = 0;
+                        //for (int i = 0; i < 20; i++)
+                        {
+                            fileStream.Write(testStrBytes, 0, testStrBytes.Length);
+                            size += testStrBytes.Length;
+                        }
+
+                        BasicConsole.WriteLine("Reading data...");
+                        fileStream.Position = 0;
+                        byte[] readBytes = new byte[size];
+                        fileStream.Read(readBytes, 0, readBytes.Length);
+                        FOS_System.String readStr = ByteConverter.GetASCIIStringFromASCII(readBytes, 0u, (uint)readBytes.Length);
+                        BasicConsole.WriteLine("\"" + readStr + "\"");
+
+                        OutputDivider();
+                    }
+                    else
+                    {
+                        BasicConsole.WriteLine("ShortNameTest.txt file not found.");
+                    }
+                }
+                else
+                {
+                    BasicConsole.WriteLine("Could not find \"A:/\" mapping.");
+                }
+
+            }
+            catch
+            {
+                BasicConsole.SetTextColour(BasicConsole.warning_colour);
+                BasicConsole.WriteLine(ExceptionMethods.CurrentException.Message);
+                BasicConsole.SetTextColour(BasicConsole.default_colour);
+            }
+        }
         /// <summary>
         /// Tests unsigned less-than comparison of ulongs.
         /// </summary>
@@ -805,6 +785,45 @@ namespace Kernel
             }
 
             BasicConsole.WriteLine("Divide by zero test.");
+        }
+        /// <summary>
+        /// Tests the exception handling sub-system.
+        /// </summary>
+        /// <remarks>
+        /// If the mechanism appears to work but code in Main() stops working then
+        /// it is because one of the GC methods is calling a method / get-set property
+        /// that is not marked with [Comnpiler.NoGC]. Make sure all methods that the 
+        /// GC calls are marked with [Compiler.NoGC] attribute. See example.
+        /// </remarks>
+        /// <example>
+        /// public int x
+        /// {
+        ///     [Compiler.NoGC]
+        ///     get
+        ///     {
+        ///         return 0;
+        ///     }
+        /// }
+        /// </example>
+        private static void ExceptionsTestP1()
+        {
+            ExceptionsTestP2();
+        }
+        /// <summary>
+        /// Secondary method used in testing the exception handling sub-system.
+        /// </summary>
+        private static void ExceptionsTestP2()
+        {
+            FOS_System.Object obj = new FOS_System.Object();
+
+            try
+            {
+                ExceptionMethods.Throw(new FOS_System.Exception("An exception."));
+            }
+            finally
+            {
+                BasicConsole.WriteLine("Finally ran.");
+            }
         }
     }
 

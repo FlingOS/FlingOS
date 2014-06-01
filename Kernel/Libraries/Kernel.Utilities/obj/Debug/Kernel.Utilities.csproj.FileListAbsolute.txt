@@ -34,3 +34,4 @@ G:\Fling OS\Fling OS\Kernel\Libraries\Kernel.Utilities\bin\Debug\Kernel.Debug.Da
 G:\Fling OS\Fling OS\Kernel\Libraries\Kernel.Utilities\obj\Debug\Kernel.Utilities.csprojResolveAssemblyReference.cache
 G:\Fling OS\Fling OS\Kernel\Libraries\Kernel.Utilities\obj\Debug\Kernel.Utilities.dll
 G:\Fling OS\Fling OS\Kernel\Libraries\Kernel.Utilities\obj\Debug\Kernel.Utilities.pdb
+G:\Fling OS\Fling OS\Kernel\Libraries\Kernel.Utilities\bin\Debug\Kernel.Utilities.XML

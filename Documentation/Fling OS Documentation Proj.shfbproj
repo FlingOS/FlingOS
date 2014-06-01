@@ -30,7 +30,7 @@
     <MissingTags>Summary, Parameter, Returns, AutoDocumentCtors, Namespace, TypeParameter, AutoDocumentDispose</MissingTags>
     <VisibleItems>Attributes, ExplicitInterfaceImplementations, InheritedMembers, Internals, Privates, PrivateFields, Protected, SealedProtected</VisibleItems>
     <PlugInConfigurations>
-      <PlugInConfig id="Output Deployment" enabled="True">
+      <PlugInConfig id="Output Deployment" enabled="False">
         <configuration deleteAfterDeploy="false">
           <deploymentLocation id="help1x" location="">
             <userCredentials useDefault="true" userName="" password="" />

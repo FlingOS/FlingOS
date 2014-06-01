@@ -99,7 +99,7 @@ namespace Kernel.Compiler.Architectures.x86_32
             string ContinueExecutionLabelBase = string.Format("{0}.IL_{1}_Store_ContinueExecution",
                     aScannerState.GetMethodID(aScannerState.CurrentILChunk.Method),
                     anILOpInfo.Position);
-            DB_Type arrayDBType = DebugDatabase.GetType(aScannerState.GetTypeID(aScannerState.ArrayConstructorMethod.DeclaringType));
+            DB_Type arrayDBType = DebugDatabase.GetType(aScannerState.GetTypeID(aScannerState.ArrayClass));
 
             // 1. Check array reference is not null
             //      1.1. Move array ref into eax

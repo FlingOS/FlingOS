@@ -33,3 +33,5 @@ G:\Fling OS\Fling OS\Tools\Kernel\ASM Method Label Builder\bin\Debug\Kernel.Debu
 G:\Fling OS\Fling OS\Tools\Kernel\ASM Method Label Builder\bin\Debug\Kernel.Debug.Data.xml
 G:\Fling OS\Fling OS\Tools\Kernel\ASM Method Label Builder\obj\Debug\ASM Method Label Builder.exe
 G:\Fling OS\Fling OS\Tools\Kernel\ASM Method Label Builder\obj\Debug\ASM Method Label Builder.pdb
+G:\Fling OS\Fling OS\Tools\Kernel\ASM Method Label Builder\bin\Debug\ASM Method Label Builder.exe.CodeAnalysisLog.xml
+G:\Fling OS\Fling OS\Tools\Kernel\ASM Method Label Builder\bin\Debug\ASM Method Label Builder.exe.lastcodeanalysissucceeded

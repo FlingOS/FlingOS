@@ -5,35 +5,101 @@ using System.Text;
 
 namespace Kernel.Hardware.PCI
 {
+    /// <summary>
+    /// Represents a cardbus PCI device.
+    /// </summary>
     public class PCIDeviceCardbus : PCIDevice
     {
+        /// <summary>
+        /// The device's CardbusBaseAddress.
+        /// </summary>
         public uint CardbusBaseAddress { get; private set; }
 
+        /// <summary>
+        /// The device's OffsetOfCapabilityList.
+        /// </summary>
         public byte OffsetOfCapabilityList { get; private set; }
+        /// <summary>
+        /// The device's SecondaryStatus.
+        /// </summary>
         public ushort SecondaryStatus { get; private set; }
 
+        /// <summary>
+        /// The device's PCIBusNumber.
+        /// </summary>
         public byte PCIBusNumber { get; private set; }
+        /// <summary>
+        /// The device's CardbusBusNumber.
+        /// </summary>
         public byte CardbusBusNumber { get; private set; }
+        /// <summary>
+        /// The device's SubordinateBusNumber.
+        /// </summary>
         public byte SubordinateBusNumber { get; private set; }
+        /// <summary>
+        /// The device's CardbusLatencyTimer.
+        /// </summary>
         public byte CardbusLatencyTimer { get; private set; }
 
+        /// <summary>
+        /// The device's MemoryBaseAddress0.
+        /// </summary>
         public uint MemoryBaseAddress0 { get; private set; }
+        /// <summary>
+        /// The device's MemoryLimit0.
+        /// </summary>
         public uint MemoryLimit0 { get; private set; }
+        /// <summary>
+        /// The device's MemoryBaseAddress1.
+        /// </summary>
         public uint MemoryBaseAddress1 { get; private set; }
+        /// <summary>
+        /// The device's MemoryLimit1.
+        /// </summary>
         public uint MemoryLimit1 { get; private set; }
 
+        /// <summary>
+        /// The device's IOBaseAddress0.
+        /// </summary>
         public uint IOBaseAddress0 { get; private set; }
+        /// <summary>
+        /// The device's IOLimit0.
+        /// </summary>
         public uint IOLimit0 { get; private set; }
+        /// <summary>
+        /// The device's IOBaseAddress1.
+        /// </summary>
         public uint IOBaseAddress1 { get; private set; }
+        /// <summary>
+        /// The device's IOLimit1.
+        /// </summary>
         public uint IOLimit1 { get; private set; }
 
+        /// <summary>
+        /// The device's BridgeControl.
+        /// </summary>
         public ushort BridgeControl { get; private set; }
 
+        /// <summary>
+        /// The device's SubsystemDeviceID.
+        /// </summary>
         public ushort SubsystemDeviceID { get; private set; }
+        /// <summary>
+        /// The device's SubsystemVendorID.
+        /// </summary>
         public ushort SubsystemVendorID { get; private set; }
 
+        /// <summary>
+        /// The device's PCCardBaseAddress.
+        /// </summary>
         public uint PCCardBaseAddress { get; private set; }
 
+        /// <summary>
+        /// Initialises a new PCIDeviceCardbus instance.
+        /// </summary>
+        /// <param name="bus">The PCI device's Bus number.</param>
+        /// <param name="slot">The PCI device's Slot number.</param>
+        /// <param name="function">The PCI device's Function number.</param>
         public PCIDeviceCardbus(uint bus, uint slot, uint function)
             : base(bus, slot, function)
         {

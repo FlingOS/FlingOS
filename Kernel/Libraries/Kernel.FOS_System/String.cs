@@ -13,6 +13,10 @@ namespace Kernel.FOS_System
         /* If you add more fields here, remember to update the compiler and all the ASM files that depend on the string
            class structure ( i.e. do all the hard work! ;) )
          */
+        
+        /// <summary>
+        /// The length of the string.
+        /// </summary>
         public int length;
 
         /*   ----------- DO NOT CREATE A CONSTRUCTOR FOR THIS CLASS - IT WILL NEVER BE CALLED IF YOU DO ----------- */
@@ -63,6 +67,12 @@ namespace Kernel.FOS_System
             return (FOS_System.String)Utilities.ObjectUtilities.GetObject(GC.NewString(length));
         }
 
+        /// <summary>
+        /// Concatenates two strings into one new string.
+        /// </summary>
+        /// <param name="str1">The first part of the new string.</param>
+        /// <param name="str2">The second part of the new string.</param>
+        /// <returns>The new string.</returns>
         [Compiler.NoDebug]
         public static unsafe FOS_System.String Concat(FOS_System.String str1, FOS_System.String str2)
         {
@@ -78,6 +88,11 @@ namespace Kernel.FOS_System
             return newStr;
         }
 
+        /// <summary>
+        /// Gets the character at the specified index.
+        /// </summary>
+        /// <param name="index">The index of the character to get.</param>
+        /// <returns>The character at the specified index.</returns>
         public unsafe char this[int index]
         {
             [Compiler.NoDebug]
@@ -95,6 +110,10 @@ namespace Kernel.FOS_System
                 ((char*)thisPtr)[index] = value;
             }
         }
+        /// <summary>
+        /// Gets a pointer to the first character in the string.
+        /// </summary>
+        /// <returns></returns>
         [Compiler.NoDebug]
         [Compiler.NoGC]
         public unsafe char* GetCharPointer()
@@ -102,6 +121,13 @@ namespace Kernel.FOS_System
             return (char*)(((byte*)Utilities.ObjectUtilities.GetHandle(this)) + 8/*For fields*/);
         }
 
+        /// <summary>
+        /// Creates a new string and pads the left side of the string with the specified character until the 
+        /// whole string is of the specified length.
+        /// </summary>
+        /// <param name="totalLength">The final length of the whole string.</param>
+        /// <param name="padChar">The character to pad with.</param>
+        /// <returns>The new, padded string.</returns>
         [Compiler.NoDebug]
         public FOS_System.String PadLeft(int totalLength, char padChar)
         {
@@ -117,6 +143,13 @@ namespace Kernel.FOS_System
             }
             return result;
         }
+        /// <summary>
+        /// Creates a new string and pads the right side of the string with the specified character until the 
+        /// whole string is of the specified length.
+        /// </summary>
+        /// <param name="totalLength">The final length of the whole string.</param>
+        /// <param name="padChar">The character to pad with.</param>
+        /// <returns>The new, padded string.</returns>
         [Compiler.NoDebug]
         public FOS_System.String PadRight(int totalLength, char padChar)
         {
@@ -132,6 +165,10 @@ namespace Kernel.FOS_System
             }
             return result;
         }
+        /// <summary>
+        /// Creates a new string and trims all spaces from the beginning and end of the string.
+        /// </summary>
+        /// <returns>The new, trimmed string.</returns>
         [Compiler.NoDebug]
         public FOS_System.String Trim()
         {
@@ -159,6 +196,10 @@ namespace Kernel.FOS_System
             }
             return result;
         }
+        /// <summary>
+        /// Creates a new string and trims all spaces from the end of the string.
+        /// </summary>
+        /// <returns>The new, trimmed string.</returns>
         [Compiler.NoDebug]
         public FOS_System.String TrimEnd()
         {
@@ -178,6 +219,12 @@ namespace Kernel.FOS_System
             }
             return result;
         }
+        /// <summary>
+        /// Creates a new string that is a copy of the current string starting at the specified index for specified length.
+        /// </summary>
+        /// <param name="startIndex">The index to start copying at.</param>
+        /// <param name="aLength">The number of characters to copy.</param>
+        /// <returns>The new string.</returns>
         [Compiler.NoDebug]
         public FOS_System.String Substring(int startIndex, int aLength)
         {
@@ -197,6 +244,11 @@ namespace Kernel.FOS_System
             }
             return result;
         }
+        /// <summary>
+        /// Determines whether the string starts with the specified string.
+        /// </summary>
+        /// <param name="prefix">The string to test for.</param>
+        /// <returns>Whether the string starts with the prefix.</returns>
         [Compiler.NoDebug]
         [Compiler.NoGC]
         public bool StartsWith(FOS_System.String prefix)
@@ -217,6 +269,12 @@ namespace Kernel.FOS_System
                 return true;
             }
         }
+        /// <summary>
+        /// Splits the string at every index where splitChar occurs and adds the splits parts (excluding splitChar)
+        /// to a list of strings.
+        /// </summary>
+        /// <param name="splitChar">The char to split with.</param>
+        /// <returns>The list of split parts.</returns>
         [Compiler.NoDebug]
         [Compiler.NoGC]
         public Collections.List Split(char splitChar)
@@ -239,6 +297,10 @@ namespace Kernel.FOS_System
 
             return result;
         }
+        /// <summary>
+        /// Copies the current string then converts all the alpha-characters to upper-case.
+        /// </summary>
+        /// <returns>The new, upper-case string.</returns>
         [Compiler.NoDebug]
         public FOS_System.String ToUpper()
         {
@@ -257,12 +319,24 @@ namespace Kernel.FOS_System
             return result;
         }
         
+        /// <summary>
+        /// Concatenates two strings using "+" operator.
+        /// </summary>
+        /// <param name="x">The first string.</param>
+        /// <param name="y">The second string.</param>
+        /// <returns>The new contenated string.</returns>
         [Compiler.NoDebug]
         [Compiler.NoGC]
         public static FOS_System.String operator +(FOS_System.String x, FOS_System.String y)
         {
             return FOS_System.String.Concat(x, y);
         }
+        /// <summary>
+        /// Tests whether all the characters of two strings are equal.
+        /// </summary>
+        /// <param name="x">The first string.</param>
+        /// <param name="y">The second string.</param>
+        /// <returns>Whether the two strings are identical or not.</returns>
         [Compiler.NoDebug]
         [Compiler.NoGC]
         public static bool operator ==(FOS_System.String x, FOS_System.String y)
@@ -287,6 +361,12 @@ namespace Kernel.FOS_System
 
             return equal;
         }
+        /// <summary>
+        /// Tests whether any of the characters of two strings are not equal.
+        /// </summary>
+        /// <param name="x">The first string.</param>
+        /// <param name="y">The second string.</param>
+        /// <returns>Whether the two strings mismatch in any place.</returns>
         [Compiler.NoDebug]
         [Compiler.NoGC]
         public static bool operator !=(FOS_System.String x, FOS_System.String y)
@@ -294,24 +374,44 @@ namespace Kernel.FOS_System
             return !(x == y);
         }
 
+        /// <summary>
+        /// Implicitly converts the specified value to an FOS_System.String.
+        /// </summary>
+        /// <param name="x">The value to convert.</param>
+        /// <returns>The FOS_System.String value.</returns>
         [Compiler.NoDebug]
         [Compiler.NoGC]
         public static implicit operator FOS_System.String(bool x)
         {
             return x ? "True" : "False";
         }
+        /// <summary>
+        /// Implicitly converts the specified value to an FOS_System.String.
+        /// </summary>
+        /// <param name="x">The value to convert.</param>
+        /// <returns>The FOS_System.String value.</returns>
         [Compiler.NoDebug]
         [Compiler.NoGC]
         public static implicit operator FOS_System.String(string x)
         {
             return (FOS_System.String)(object)x;
         }
+        /// <summary>
+        /// Implicitly converts the specified FOS_System.String to a System.String.
+        /// </summary>
+        /// <param name="x">The value to convert.</param>
+        /// <returns>The System.String.</returns>
         [Compiler.NoDebug]
         [Compiler.NoGC]
         public static explicit operator string(FOS_System.String x)
         {
             return (string)(object)x;
         }
+        /// <summary>
+        /// Implicitly converts the specified value to a hex FOS_System.String.
+        /// </summary>
+        /// <param name="x">The value to convert.</param>
+        /// <returns>The FOS_System.String value.</returns>
         [Compiler.NoDebug]
         [Compiler.NoGC]
         public static implicit operator FOS_System.String(byte x)
@@ -377,6 +477,11 @@ namespace Kernel.FOS_System
             result = "0x" + result.PadLeft(2, '0');
             return result;
         }
+        /// <summary>
+        /// Implicitly converts the specified value to a hex FOS_System.String.
+        /// </summary>
+        /// <param name="x">The value to convert.</param>
+        /// <returns>The FOS_System.String value.</returns>
         [Compiler.NoDebug]
         [Compiler.NoGC]
         public static implicit operator FOS_System.String(UInt16 x)
@@ -441,12 +546,22 @@ namespace Kernel.FOS_System
             }
             return "0x" + result.PadLeft(4, '0');
         }
+        /// <summary>
+        /// Implicitly converts the specified value to a hex FOS_System.String.
+        /// </summary>
+        /// <param name="x">The value to convert.</param>
+        /// <returns>The FOS_System.String value.</returns>
         [Compiler.NoDebug]
         [Compiler.NoGC]
         public static implicit operator FOS_System.String(Int16 x)
         {
             return (UInt16)x;
         }
+        /// <summary>
+        /// Implicitly converts the specified value to a hex FOS_System.String.
+        /// </summary>
+        /// <param name="x">The value to convert.</param>
+        /// <returns>The FOS_System.String value.</returns>
         [Compiler.NoDebug]
         [Compiler.NoGC]
         public static implicit operator FOS_System.String(uint x)
@@ -511,12 +626,22 @@ namespace Kernel.FOS_System
             }
             return "0x" + result.PadLeft(8, '0');
         }
+        /// <summary>
+        /// Implicitly converts the specified value to a hex FOS_System.String.
+        /// </summary>
+        /// <param name="x">The value to convert.</param>
+        /// <returns>The FOS_System.String value.</returns>
         [Compiler.NoDebug]
         [Compiler.NoGC]
         public static implicit operator FOS_System.String(int x)
         {
             return (uint)x;
         }
+        /// <summary>
+        /// Implicitly converts the specified value to a hex FOS_System.String.
+        /// </summary>
+        /// <param name="x">The value to convert.</param>
+        /// <returns>The FOS_System.String value.</returns>
         [Compiler.NoDebug]
         [Compiler.NoGC]
         public static implicit operator FOS_System.String(ulong x)
@@ -525,6 +650,11 @@ namespace Kernel.FOS_System
             uint part2 = (uint)(x >> 16 >> 16);
             return ((FOS_System.String)part2) + " " + ((FOS_System.String)part1);
         }
+        /// <summary>
+        /// Implicitly converts the specified value to a hex FOS_System.String.
+        /// </summary>
+        /// <param name="x">The value to convert.</param>
+        /// <returns>The FOS_System.String value.</returns>
         [Compiler.NoDebug]
         [Compiler.NoGC]
         public static implicit operator FOS_System.String(long x)

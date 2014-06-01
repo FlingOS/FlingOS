@@ -422,207 +422,213 @@ Block          :   static, [00000408][0001:00000408], len = 0000004C, (none)
 Data           :     Slot, [00000000], Local, CS$4$0000
 Custom         :   (none)
 
-Function       : In MetaData, [00000454][0001:00000454], len = 00000500, ManagedMain
+Function       : In MetaData, [00000454][0001:00000454], len = 000000A8, ManagedMain
                  Function attribute:
                  Function info:
 FuncDebugStart :   
 FuncDebugEnd   :   
-Block          :   static, [00000454][0001:00000454], len = 00000500, (none)
-Data           :     Slot, [0000000D], Local, CS$4$0000
-Block          :     static, [00000455][0001:00000455], len = 000004CE, (none)
-Data           :       Slot, [00000002], Local, A_FSMapping
-Block          :       static, [000004AF][0001:000004AF], len = 00000064, (none)
-Data           :         Slot, [00000000], Local, newPartitions
-Block          :       static, [00000529][0001:00000529], len = 00000047, (none)
-Data           :         Slot, [00000001], Local, thePart
-Block          :       static, [000005DB][0001:000005DB], len = 00000333, (none)
-Data           :         Slot, [00000003], Local, A_FS
-Data           :         Slot, [00000004], Local, P1D2Dir
-Data           :         Slot, [00000005], Local, longNameTestFile
-Data           :         Slot, [00000006], Local, shortNameTestFile
-Block          :         static, [00000731][0001:00000731], len = 000000D3, (none)
-Data           :           Slot, [00000007], Local, fileStream
-Data           :           Slot, [00000008], Local, testStr
-Data           :           Slot, [00000009], Local, testStrBytes
-Data           :           Slot, [0000000A], Local, size
-Data           :           Slot, [0000000B], Local, readBytes
-Data           :           Slot, [0000000C], Local, readStr
-Block          :         static, [00000826][0001:00000826], len = 000000D3, (none)
-Data           :           Slot, [00000007], Local, fileStream
-Data           :           Slot, [00000008], Local, testStr
-Data           :           Slot, [00000009], Local, testStrBytes
-Data           :           Slot, [0000000A], Local, size
-Data           :           Slot, [0000000B], Local, readBytes
-Data           :           Slot, [0000000C], Local, readStr
+Block          :   static, [00000454][0001:00000454], len = 000000A8, (none)
+Data           :     Slot, [00000000], Local, CS$4$0000
 Custom         :   (none)
 
-Function       : In MetaData, [00000954][0001:00000954], len = 000000A1, OutputCurrentExceptionInfo
-                 Function attribute:
-                 Function info:
-FuncDebugStart :   
-FuncDebugEnd   :   
-Block          :   static, [00000954][0001:00000954], len = 000000A1, (none)
-Data           :     Slot, [00000001], Local, CS$4$0000
-Data           :     Slot, [00000000], Local, currExceptionType
-Custom         :   (none)
-
-Function       : In MetaData, [000009F5][0001:000009F5], len = 00000008, ExceptionsTestP1
+Function       : In MetaData, [000004FC][0001:000004FC], len = 0000002E, OutputCurrentExceptionInfo
                  Function attribute:
                  Function info:
 FuncDebugStart :   
 FuncDebugEnd   :   
 Custom         :   (none)
 
-Function       : In MetaData, [000009FD][0001:000009FD], len = 00000035, ExceptionsTestP2
-                 Function attribute:
-                 Function info:
-FuncDebugStart :   
-FuncDebugEnd   :   
-Block          :   static, [000009FD][0001:000009FD], len = 00000035, (none)
-Data           :     Slot, [00000000], Local, obj
-Custom         :   (none)
-
-Function       : In MetaData, [00000A32][0001:00000A32], len = 00000042, InitPCI
+Function       : In MetaData, [0000052A][0001:0000052A], len = 0000003C, InitPCI
                  Function attribute:
                  Function info:
 FuncDebugStart :   
 FuncDebugEnd   :   
 Custom         :   (none)
 
-Function       : In MetaData, [00000A74][0001:00000A74], len = 00000063, InitATA
+Function       : In MetaData, [00000566][0001:00000566], len = 00000051, InitATA
                  Function attribute:
                  Function info:
 FuncDebugStart :   
 FuncDebugEnd   :   
 Custom         :   (none)
 
-Function       : In MetaData, [00000AD7][0001:00000AD7], len = 00000042, InitFileSystem
+Function       : In MetaData, [000005B7][0001:000005B7], len = 0000003C, InitFileSystem
                  Function attribute:
                  Function info:
 FuncDebugStart :   
 FuncDebugEnd   :   
 Custom         :   (none)
 
-Function       : In MetaData, [00000B19][0001:00000B19], len = 000001A3, OutputFileSystemsInfo
+Function       : In MetaData, [000005F3][0001:000005F3], len = 000000D5, CheckDiskFormatting
                  Function attribute:
                  Function info:
 FuncDebugStart :   
 FuncDebugEnd   :   
-Block          :   static, [00000B19][0001:00000B19], len = 000001A3, (none)
+Block          :   static, [000005F3][0001:000005F3], len = 000000D5, (none)
+Data           :     Slot, [00000002], Local, CS$4$0000
+Block          :     static, [00000608][0001:00000608], len = 00000064, (none)
+Data           :       Slot, [00000000], Local, newPartitions
+Block          :     static, [00000680][0001:00000680], len = 00000047, (none)
+Data           :       Slot, [00000001], Local, thePart
+Custom         :   (none)
+
+Function       : In MetaData, [000006C8][0001:000006C8], len = 0000003C, InitUSB
+                 Function attribute:
+                 Function info:
+FuncDebugStart :   
+FuncDebugEnd   :   
+Custom         :   (none)
+
+Function       : In MetaData, [00000704][0001:00000704], len = 000001A3, OutputFileSystemsInfo
+                 Function attribute:
+                 Function info:
+FuncDebugStart :   
+FuncDebugEnd   :   
+Block          :   static, [00000704][0001:00000704], len = 000001A3, (none)
 Data           :     Slot, [00000004], Local, CS$4$0000
-Block          :     static, [00000B45][0001:00000B45], len = 00000176, (none)
+Block          :     static, [00000730][0001:00000730], len = 00000176, (none)
 Data           :       Slot, [00000000], Local, i
-Block          :       static, [00000B4C][0001:00000B4C], len = 00000155, (none)
+Block          :       static, [00000737][0001:00000737], len = 00000155, (none)
 Data           :         Slot, [00000001], Local, fsMapping
-Block          :         static, [00000B89][0001:00000B89], len = 00000103, (none)
+Block          :         static, [00000774][0001:00000774], len = 00000103, (none)
 Data           :           Slot, [00000002], Local, fs
 Data           :           Slot, [00000003], Local, Listings
 Custom         :   (none)
 
-Function       : In MetaData, [00000CBC][0001:00000CBC], len = 0000010F, OutputListings
+Function       : In MetaData, [000008A7][0001:000008A7], len = 0000010F, OutputListings
                  Function attribute:
                  Function info:
 FuncDebugStart :   
 FuncDebugEnd   :   
-Block          :   static, [00000CBC][0001:00000CBC], len = 0000010F, (none)
+Block          :   static, [000008A7][0001:000008A7], len = 0000010F, (none)
 Data           :     Slot, [00000004], Local, CS$4$0000
-Block          :     static, [00000CBD][0001:00000CBD], len = 0000010D, (none)
+Block          :     static, [000008A8][0001:000008A8], len = 0000010D, (none)
 Data           :       Slot, [00000000], Local, j
-Block          :       static, [00000CC4][0001:00000CC4], len = 000000F0, (none)
+Block          :       static, [000008AF][0001:000008AF], len = 000000F0, (none)
 Data           :         Slot, [00000001], Local, xItem
-Block          :         static, [00000CF5][0001:00000CF5], len = 00000041, (none)
+Block          :         static, [000008E0][0001:000008E0], len = 00000041, (none)
 Data           :           Slot, [00000002], Local, name
-Block          :         static, [00000D5B][0001:00000D5B], len = 00000058, (none)
+Block          :         static, [00000946][0001:00000946], len = 00000058, (none)
 Data           :           Slot, [00000003], Local, file
 Custom         :   (none)
 
-Function       : In MetaData, [00000DCB][0001:00000DCB], len = 0000009D, OutputFileContents
+Function       : In MetaData, [000009B6][0001:000009B6], len = 0000009D, OutputFileContents
                  Function attribute:
                  Function info:
 FuncDebugStart :   
 FuncDebugEnd   :   
-Block          :   static, [00000DCB][0001:00000DCB], len = 0000009D, (none)
+Block          :   static, [000009B6][0001:000009B6], len = 0000009D, (none)
 Data           :     Slot, [00000005], Local, CS$4$0000
 Data           :     Slot, [00000000], Local, aFile
-Block          :     static, [00000DF7][0001:00000DF7], len = 0000003B, (none)
+Block          :     static, [000009E2][0001:000009E2], len = 0000003B, (none)
 Data           :       Slot, [00000001], Local, fileStream
 Data           :       Slot, [00000002], Local, xData
 Data           :       Slot, [00000003], Local, actuallyRead
 Data           :       Slot, [00000004], Local, xText
 Custom         :   (none)
 
-Function       : In MetaData, [00000E68][0001:00000E68], len = 0000016E, OutputDirectoryContents
+Function       : In MetaData, [00000A53][0001:00000A53], len = 0000016E, OutputDirectoryContents
                  Function attribute:
                  Function info:
 FuncDebugStart :   
 FuncDebugEnd   :   
-Block          :   static, [00000E68][0001:00000E68], len = 0000016E, (none)
+Block          :   static, [00000A53][0001:00000A53], len = 0000016E, (none)
 Data           :     Slot, [00000005], Local, CS$4$0000
 Data           :     Slot, [00000000], Local, aDir
-Block          :     static, [00000E83][0001:00000E83], len = 00000132, (none)
+Block          :     static, [00000A6E][0001:00000A6E], len = 00000132, (none)
 Data           :       Slot, [00000001], Local, Listings
-Block          :       static, [00000EA8][0001:00000EA8], len = 000000F7, (none)
+Block          :       static, [00000A93][0001:00000A93], len = 000000F7, (none)
 Data           :         Slot, [00000002], Local, j
-Block          :         static, [00000EAF][0001:00000EAF], len = 000000DA, (none)
+Block          :         static, [00000A9A][0001:00000A9A], len = 000000DA, (none)
 Data           :           Slot, [00000003], Local, xItem
-Block          :           static, [00000F2D][0001:00000F2D], len = 0000005B, (none)
+Block          :           static, [00000B18][0001:00000B18], len = 0000005B, (none)
 Data           :             Slot, [00000004], Local, file
 Custom         :   (none)
 
-Function       : In MetaData, [00000FD6][0001:00000FD6], len = 00000012, OutputDivider
+Function       : In MetaData, [00000BC1][0001:00000BC1], len = 00000012, OutputDivider
                  Function attribute:
                  Function info:
 FuncDebugStart :   
 FuncDebugEnd   :   
 Custom         :   (none)
 
-Function       : In MetaData, [00000FE8][0001:00000FE8], len = 00000041, OutputPCIInfo
+Function       : In MetaData, [00000BD3][0001:00000BD3], len = 00000041, OutputPCIInfo
                  Function attribute:
                  Function info:
 FuncDebugStart :   
 FuncDebugEnd   :   
-Block          :   static, [00000FE8][0001:00000FE8], len = 00000041, (none)
+Block          :   static, [00000BD3][0001:00000BD3], len = 00000041, (none)
 Data           :     Slot, [00000002], Local, CS$4$0000
-Block          :     static, [00000FE9][0001:00000FE9], len = 0000003F, (none)
+Block          :     static, [00000BD4][0001:00000BD4], len = 00000038, (none)
 Data           :       Slot, [00000000], Local, i
-Block          :       static, [00000FED][0001:00000FED], len = 00000026, (none)
+Block          :       static, [00000BD8][0001:00000BD8], len = 0000001F, (none)
 Data           :         Slot, [00000001], Local, aDevice
 Custom         :   (none)
 
-Function       : In MetaData, [00001029][0001:00001029], len = 000001B8, OutputATAInfo
+Function       : In MetaData, [00000C14][0001:00000C14], len = 000001B8, OutputATAInfo
                  Function attribute:
                  Function info:
 FuncDebugStart :   
 FuncDebugEnd   :   
-Block          :   static, [00001029][0001:00001029], len = 000001B8, (none)
+Block          :   static, [00000C14][0001:00000C14], len = 000001B8, (none)
 Data           :     Slot, [00000004], Local, CS$4$0000
 Data           :     Slot, [00000000], Local, numDrives
-Block          :     static, [0000102C][0001:0000102C], len = 00000199, (none)
+Block          :     static, [00000C17][0001:00000C17], len = 00000199, (none)
 Data           :       Slot, [00000001], Local, i
-Block          :       static, [00001033][0001:00001033], len = 00000178, (none)
+Block          :       static, [00000C1E][0001:00000C1E], len = 00000178, (none)
 Data           :         Slot, [00000002], Local, aDevice
-Block          :         static, [0000106B][0001:0000106B], len = 0000013F, (none)
+Block          :         static, [00000C56][0001:00000C56], len = 0000013F, (none)
 Data           :           Slot, [00000003], Local, theATA
 Custom         :   (none)
 
-Function       : In MetaData, [000011E1][0001:000011E1], len = 00000082, ULongLTComparisonTest
+Function       : In MetaData, [00000DCC][0001:00000DCC], len = 0000038A, FileSystemTests
                  Function attribute:
                  Function info:
 FuncDebugStart :   
 FuncDebugEnd   :   
-Block          :   static, [000011E1][0001:000011E1], len = 00000082, (none)
+Block          :   static, [00000DCC][0001:00000DCC], len = 0000038A, (none)
+Data           :     Slot, [0000000B], Local, CS$4$0000
+Block          :     static, [00000DCD][0001:00000DCD], len = 0000035A, (none)
+Data           :       Slot, [00000000], Local, A_FSMapping
+Block          :       static, [00000DEB][0001:00000DEB], len = 00000327, (none)
+Data           :         Slot, [00000001], Local, A_FS
+Data           :         Slot, [00000002], Local, P1D2Dir
+Data           :         Slot, [00000003], Local, longNameTestFile
+Data           :         Slot, [00000004], Local, shortNameTestFile
+Block          :         static, [00000F36][0001:00000F36], len = 000000D2, (none)
+Data           :           Slot, [00000005], Local, fileStream
+Data           :           Slot, [00000006], Local, testStr
+Data           :           Slot, [00000007], Local, testStrBytes
+Data           :           Slot, [00000008], Local, size
+Data           :           Slot, [00000009], Local, readBytes
+Data           :           Slot, [0000000A], Local, readStr
+Block          :         static, [0000102A][0001:0000102A], len = 000000D3, (none)
+Data           :           Slot, [00000005], Local, fileStream
+Data           :           Slot, [00000006], Local, testStr
+Data           :           Slot, [00000007], Local, testStrBytes
+Data           :           Slot, [00000008], Local, size
+Data           :           Slot, [00000009], Local, readBytes
+Data           :           Slot, [0000000A], Local, readStr
+Custom         :   (none)
+
+Function       : In MetaData, [00001156][0001:00001156], len = 00000082, ULongLTComparisonTest
+                 Function attribute:
+                 Function info:
+FuncDebugStart :   
+FuncDebugEnd   :   
+Block          :   static, [00001156][0001:00001156], len = 00000082, (none)
 Data           :     Slot, [00000003], Local, CS$4$0000
 Data           :     Slot, [00000000], Local, x
 Data           :     Slot, [00000001], Local, y
 Data           :     Slot, [00000002], Local, c
 Custom         :   (none)
 
-Function       : In MetaData, [00001263][0001:00001263], len = 00000140, ULongMultiplicationTest
+Function       : In MetaData, [000011D8][0001:000011D8], len = 00000140, ULongMultiplicationTest
                  Function attribute:
                  Function info:
 FuncDebugStart :   
 FuncDebugEnd   :   
-Block          :   static, [00001263][0001:00001263], len = 00000140, (none)
+Block          :   static, [000011D8][0001:000011D8], len = 00000140, (none)
 Data           :     Slot, [00000000], Local, a
 Data           :     Slot, [00000001], Local, b
 Data           :     Slot, [00000002], Local, c
@@ -634,77 +640,93 @@ Data           :     Slot, [00000007], Local, test5OK
 Data           :     Slot, [00000008], Local, test6OK
 Custom         :   (none)
 
-Function       : In MetaData, [000013A3][0001:000013A3], len = 00000073, StringConcatTest
+Function       : In MetaData, [00001318][0001:00001318], len = 00000073, StringConcatTest
                  Function attribute:
                  Function info:
 FuncDebugStart :   
 FuncDebugEnd   :   
-Block          :   static, [000013A3][0001:000013A3], len = 00000073, (none)
-Block          :     static, [000013B4][0001:000013B4], len = 00000023, (none)
+Block          :   static, [00001318][0001:00001318], len = 00000073, (none)
+Block          :     static, [00001329][0001:00001329], len = 00000023, (none)
 Data           :       Slot, [00000000], Local, testStr
 Custom         :   (none)
 
-Function       : In MetaData, [00001416][0001:00001416], len = 0000008C, ObjectArrayTest
+Function       : In MetaData, [0000138B][0001:0000138B], len = 0000008C, ObjectArrayTest
                  Function attribute:
                  Function info:
 FuncDebugStart :   
 FuncDebugEnd   :   
-Block          :   static, [00001416][0001:00001416], len = 0000008C, (none)
+Block          :   static, [0000138B][0001:0000138B], len = 0000008C, (none)
 Data           :     Slot, [00000001], Local, CS$4$0000
-Block          :     static, [00001427][0001:00001427], len = 0000003C, (none)
+Block          :     static, [0000139C][0001:0000139C], len = 0000003C, (none)
 Data           :       Slot, [00000000], Local, objArr
 Custom         :   (none)
 
-Function       : In MetaData, [000014A2][0001:000014A2], len = 00000066, IntArrayTest
+Function       : In MetaData, [00001417][0001:00001417], len = 00000066, IntArrayTest
                  Function attribute:
                  Function info:
 FuncDebugStart :   
 FuncDebugEnd   :   
-Block          :   static, [000014A2][0001:000014A2], len = 00000066, (none)
-Block          :     static, [000014B3][0001:000014B3], len = 00000016, (none)
+Block          :   static, [00001417][0001:00001417], len = 00000066, (none)
+Block          :     static, [00001428][0001:00001428], len = 00000016, (none)
 Data           :       Slot, [00000000], Local, testArray
 Data           :       Slot, [00000001], Local, q
 Custom         :   (none)
 
-Function       : In MetaData, [00001508][0001:00001508], len = 000000E5, DummyObjectTest
+Function       : In MetaData, [0000147D][0001:0000147D], len = 000000E5, DummyObjectTest
                  Function attribute:
                  Function info:
 FuncDebugStart :   
 FuncDebugEnd   :   
-Block          :   static, [00001508][0001:00001508], len = 000000E5, (none)
+Block          :   static, [0000147D][0001:0000147D], len = 000000E5, (none)
 Data           :     Slot, [00000001], Local, CS$4$0000
-Block          :     static, [00001519][0001:00001519], len = 00000095, (none)
+Block          :     static, [0000148E][0001:0000148E], len = 00000095, (none)
 Data           :       Slot, [00000000], Local, obj
 Custom         :   (none)
 
-Function       : In MetaData, [000015ED][0001:000015ED], len = 00000097, DivideByZeroTest
+Function       : In MetaData, [00001562][0001:00001562], len = 00000097, DivideByZeroTest
                  Function attribute:
                  Function info:
 FuncDebugStart :   
 FuncDebugEnd   :   
-Block          :   static, [000015ED][0001:000015ED], len = 00000097, (none)
+Block          :   static, [00001562][0001:00001562], len = 00000097, (none)
 Data           :     Slot, [00000004], Local, CS$4$0000
-Block          :     static, [000015FE][0001:000015FE], len = 0000000C, (none)
+Block          :     static, [00001573][0001:00001573], len = 0000000C, (none)
 Data           :       Slot, [00000000], Local, x
 Data           :       Slot, [00000001], Local, y
 Data           :       Slot, [00000002], Local, z
-Block          :     static, [0000160D][0001:0000160D], len = 00000063, (none)
+Block          :     static, [00001582][0001:00001582], len = 00000063, (none)
 Data           :       Slot, [00000003], Local, currExceptionType
+Custom         :   (none)
+
+Function       : In MetaData, [000015F9][0001:000015F9], len = 00000008, ExceptionsTestP1
+                 Function attribute:
+                 Function info:
+FuncDebugStart :   
+FuncDebugEnd   :   
+Custom         :   (none)
+
+Function       : In MetaData, [00001601][0001:00001601], len = 00000035, ExceptionsTestP2
+                 Function attribute:
+                 Function info:
+FuncDebugStart :   
+FuncDebugEnd   :   
+Block          :   static, [00001601][0001:00001601], len = 00000035, (none)
+Data           :     Slot, [00000000], Local, obj
 Custom         :   (none)
 
 ** Module: Kernel.Dummy
 
 
-Function       : In MetaData, [00001684][0001:00001684], len = 00000013, Add
+Function       : In MetaData, [00001636][0001:00001636], len = 00000013, Add
                  Function attribute:
                  Function info:
 FuncDebugStart :   
 FuncDebugEnd   :   
-Block          :   static, [00001684][0001:00001684], len = 00000013, (none)
+Block          :   static, [00001636][0001:00001636], len = 00000013, (none)
 Data           :     Slot, [00000000], Local, CS$1$0000
 Custom         :   (none)
 
-Function       : In MetaData, [00001697][0001:00001697], len = 0000001F, .ctor
+Function       : In MetaData, [00001649][0001:00001649], len = 0000001F, .ctor
                  Function attribute:
                  Function info:
 FuncDebugStart :   
@@ -716,74 +738,77 @@ Custom         :   (none)
 *** GLOBALS
 
 Function: [000002CB][0001:000002CB] MainEntrypoint
-Function: [00001684][0001:00001684] Add
-Function: [00000FE8][0001:00000FE8] OutputPCIInfo
+Function: [00001636][0001:00001636] Add
+Function: [00000BD3][0001:00000BD3] OutputPCIInfo
 Function: [000002A8][0001:000002A8] GetKernelMemStartPtr
+Function: [00000DCC][0001:00000DCC] FileSystemTests
 Function: [00000137][0001:00000137] LoadPaging
-Function: [000009F5][0001:000009F5] ExceptionsTestP1
+Function: [000015F9][0001:000015F9] ExceptionsTestP1
 Function: [00000298][0001:00000298] GetFirstPageTablePtr
 Function: [000000EE][0001:000000EE] Serial_SafeReadUInt32
-Function: [000015ED][0001:000015ED] DivideByZeroTest
+Function: [00001562][0001:00001562] DivideByZeroTest
 Function: [00000290][0001:00000290] GetPageDirectoryPtr
 Function: [000002EF][0001:000002EF] Main
 Function: [000002B0][0001:000002B0] GetKernelMemEndPtr
 Function: [000000BB][0001:000000BB] BeginEnableDebug
-Function: [00001697][0001:00001697] .ctor
+Function: [00001649][0001:00001649] .ctor
 Function: [000002ED][0001:000002ED] CallStaticConstructors
 Function: [000000D1][0001:000000D1] Serial_WriteByte
 Function: [000000D5][0001:000000D5] Serial_WriteUInt32
-Function: [00000A74][0001:00000A74] InitATA
+Function: [00000566][0001:00000566] InitATA
 Function: [000002C7][0001:000002C7] InitIDT
 Function: [000002C5][0001:000002C5] InitGDT
 Function: [000000BF][0001:000000BF] Int3
 Function: [000000C1][0001:000000C1] Execute
-Function: [000009FD][0001:000009FD] ExceptionsTestP2
+Function: [00001601][0001:00001601] ExceptionsTestP2
 Function: [000002A0][0001:000002A0] GetKernelPageTablePtr
-Function: [00000A32][0001:00000A32] InitPCI
+Function: [0000052A][0001:0000052A] InitPCI
+Function: [000006C8][0001:000006C8] InitUSB
 Function: [000000D7][0001:000000D7] Serial_WriteString
 Function: [00000454][0001:00000454] ManagedMain
 Function: [000002D1][0001:000002D1] WriteDebugVideo
 Function: [000001AF][0001:000001AF] InitKernelPages
-Function: [00001029][0001:00001029] OutputATAInfo
+Function: [00000C14][0001:00000C14] OutputATAInfo
 Function: [000000F5][0001:000000F5] InterruptHandler
-Function: [00001263][0001:00001263] ULongMultiplicationTest
-Function: [00001508][0001:00001508] DummyObjectTest
+Function: [000011D8][0001:000011D8] ULongMultiplicationTest
+Function: [000005F3][0001:000005F3] CheckDiskFormatting
+Function: [0000147D][0001:0000147D] DummyObjectTest
 Function: [000000C7][0001:000000C7] SendBreakAddress
 Function: [000000C9][0001:000000C9] SendRegisters
 Function: [000000D3][0001:000000D3] Serial_WriteUInt16
 Function: [00000000][0001:00000000] Init
 Function: [000000F7][0001:000000F7] Init
 Function: [000002CF][0001:000002CF] HandleNoMultiboot
-Function: [000013A3][0001:000013A3] StringConcatTest
+Function: [00001318][0001:00001318] StringConcatTest
 Function: [000000D9][0001:000000D9] Serial_ReadByte
 Function: [000002C3][0001:000002C3] InitStack
-Function: [00000AD7][0001:00000AD7] InitFileSystem
+Function: [000005B7][0001:000005B7] InitFileSystem
 Function: [00000408][0001:00000408] Halt
-Function: [00000E68][0001:00000E68] OutputDirectoryContents
-Function: [00001416][0001:00001416] ObjectArrayTest
+Function: [00000A53][0001:00000A53] OutputDirectoryContents
+Function: [0000138B][0001:0000138B] ObjectArrayTest
 Function: [000002D3][0001:000002D3] .cctor
 Function: [000002B8][0001:000002B8] .cctor
-Function: [000014A2][0001:000014A2] IntArrayTest
+Function: [00001417][0001:00001417] IntArrayTest
 Function: [000000C5][0001:000000C5] SendBreakCmd
 Function: [0000028E][0001:0000028E] EnablePaging
 Function: [000000CD][0001:000000CD] SendLocals
-Function: [00000FD6][0001:00000FD6] OutputDivider
+Function: [00000BC1][0001:00000BC1] OutputDivider
 Function: [000000C3][0001:000000C3] InsertCommandsList
 Function: [000000BD][0001:000000BD] EndEnableDebug
 Function: [000000CB][0001:000000CB] SendArguments
 Function: [000000E7][0001:000000E7] Serial_ReadUInt32
 Function: [000000B9][0001:000000B9] InitSerial
-Function: [00000DCB][0001:00000DCB] OutputFileContents
+Function: [000009B6][0001:000009B6] OutputFileContents
 Function: [000002CD][0001:000002CD] Reset
 Function: [000002BF][0001:000002BF] MultibootSignature
-Function: [00000954][0001:00000954] OutputCurrentExceptionInfo
+Function: [000004FC][0001:000004FC] OutputCurrentExceptionInfo
 Function: [000000E0][0001:000000E0] Serial_ReadUInt16
 Function: [000002C1][0001:000002C1] Kernel_Start
-Function: [00000B19][0001:00000B19] OutputFileSystemsInfo
-Function: [00000CBC][0001:00000CBC] OutputListings
+Function: [00000704][0001:00000704] OutputFileSystemsInfo
+Function: [000008A7][0001:000008A7] OutputListings
 Function: [000000CF][0001:000000CF] WaitForCommand
 Function: [000002C9][0001:000002C9] SSEInit
-Function: [000011E1][0001:000011E1] ULongLTComparisonTest
+Function: [00001156][0001:00001156] ULongLTComparisonTest
 
 
 
@@ -1214,657 +1239,653 @@ Compiland = Kernel.Dummy
 
 	line 117 at [00000454][0001:00000454], len = 0x1	g:\Fling OS\Fling OS\Kernel\Kernel\Kernel.cs
 	line 119 at [00000455][0001:00000455], len = 0x1
-	line 130 at [00000456][0001:00000456], len = 0x6
-	line 132 at [0000045C][0001:0000045C], len = 0x12
-	line 16707566 at [0000046E][0001:0000046E], len = 0x7
-	line 133 at [00000475][0001:00000475], len = 0x1
-	line 135 at [00000476][0001:00000476], len = 0x1
-	line 136 at [00000477][0001:00000477], len = 0x6
-	line 137 at [0000047D][0001:0000047D], len = 0x7
-	line 138 at [00000484][0001:00000484], len = 0x1
-	line 16707566 at [00000485][0001:00000485], len = 0x2
-	line 139 at [00000487][0001:00000487], len = 0x1
-	line 140 at [00000488][0001:00000488], len = 0x1
+	line 120 at [00000456][0001:00000456], len = 0x6
+	line 122 at [0000045C][0001:0000045C], len = 0x6
+	line 124 at [00000462][0001:00000462], len = 0x11
+	line 16707566 at [00000473][0001:00000473], len = 0x3
+	line 125 at [00000476][0001:00000476], len = 0x1
+	line 135 at [00000477][0001:00000477], len = 0x6
+	line 137 at [0000047D][0001:0000047D], len = 0x6
+	line 139 at [00000483][0001:00000483], len = 0x6
 	line 141 at [00000489][0001:00000489], len = 0x6
-	line 142 at [0000048F][0001:0000048F], len = 0x1
-	line 16707566 at [00000490][0001:00000490], len = 0x2
-	line 16707566 at [00000492][0001:00000492], len = 0x1
-	line 144 at [00000493][0001:00000493], len = 0x6
-	line 146 at [00000499][0001:00000499], len = 0x12
-	line 16707566 at [000004AB][0001:000004AB], len = 0x4
-	line 147 at [000004AF][0001:000004AF], len = 0x1
-	line 148 at [000004B0][0001:000004B0], len = 0x10
-	line 149 at [000004C0][0001:000004C0], len = 0x10
-	line 151 at [000004D0][0001:000004D0], len = 0x7
-	line 152 at [000004D7][0001:000004D7], len = 0x12
-	line 153 at [000004E9][0001:000004E9], len = 0xC
-	line 155 at [000004F5][0001:000004F5], len = 0x10
-	line 156 at [00000505][0001:00000505], len = 0x7
-	line 158 at [0000050C][0001:0000050C], len = 0x6
-	line 159 at [00000512][0001:00000512], len = 0x1
-	line 160 at [00000513][0001:00000513], len = 0x12
-	line 16707566 at [00000525][0001:00000525], len = 0x4
-	line 161 at [00000529][0001:00000529], len = 0x1
-	line 162 at [0000052A][0001:0000052A], len = 0x10
-	line 163 at [0000053A][0001:0000053A], len = 0x11
-	line 164 at [0000054B][0001:0000054B], len = 0x7
-	line 165 at [00000552][0001:00000552], len = 0x10
-	line 166 at [00000562][0001:00000562], len = 0x7
-	line 168 at [00000569][0001:00000569], len = 0x6
-	line 169 at [0000056F][0001:0000056F], len = 0x1
-	line 172 at [00000570][0001:00000570], len = 0x1
-	line 173 at [00000571][0001:00000571], len = 0x6
-	line 174 at [00000577][0001:00000577], len = 0x8
-	line 175 at [0000057F][0001:0000057F], len = 0x1
-	line 16707566 at [00000580][0001:00000580], len = 0x2
-	line 176 at [00000582][0001:00000582], len = 0x1
-	line 177 at [00000583][0001:00000583], len = 0x1
-	line 178 at [00000584][0001:00000584], len = 0x6
-	line 179 at [0000058A][0001:0000058A], len = 0x1
-	line 16707566 at [0000058B][0001:0000058B], len = 0x2
-	line 16707566 at [0000058D][0001:0000058D], len = 0x1
-	line 180 at [0000058E][0001:0000058E], len = 0x1
-	line 182 at [0000058F][0001:0000058F], len = 0x6
-	line 185 at [00000595][0001:00000595], len = 0x1
-	line 186 at [00000596][0001:00000596], len = 0x6
-	line 187 at [0000059C][0001:0000059C], len = 0x7
-	line 188 at [000005A3][0001:000005A3], len = 0x1
-	line 16707566 at [000005A4][0001:000005A4], len = 0x2
-	line 189 at [000005A6][0001:000005A6], len = 0x1
-	line 190 at [000005A7][0001:000005A7], len = 0x1
-	line 191 at [000005A8][0001:000005A8], len = 0x6
-	line 192 at [000005AE][0001:000005AE], len = 0x1
-	line 16707566 at [000005AF][0001:000005AF], len = 0x2
-	line 16707566 at [000005B1][0001:000005B1], len = 0x1
-	line 194 at [000005B2][0001:000005B2], len = 0x6
-	line 196 at [000005B8][0001:000005B8], len = 0x6
-	line 198 at [000005BE][0001:000005BE], len = 0x10
-	line 199 at [000005CE][0001:000005CE], len = 0x6
-	line 16707566 at [000005D4][0001:000005D4], len = 0x7
-	line 200 at [000005DB][0001:000005DB], len = 0x1
-	line 201 at [000005DC][0001:000005DC], len = 0xC
-	line 203 at [000005E8][0001:000005E8], len = 0x11
-	line 204 at [000005F9][0001:000005F9], len = 0xA
-	line 16707566 at [00000603][0001:00000603], len = 0x4
-	line 205 at [00000607][0001:00000607], len = 0x1
-	line 206 at [00000608][0001:00000608], len = 0x10
-	line 207 at [00000618][0001:00000618], len = 0x18
-	line 208 at [00000630][0001:00000630], len = 0x10
-	line 209 at [00000640][0001:00000640], len = 0x1
-	line 16707566 at [00000641][0001:00000641], len = 0x2
-	line 211 at [00000643][0001:00000643], len = 0x1
-	line 212 at [00000644][0001:00000644], len = 0x10
-	line 213 at [00000654][0001:00000654], len = 0x1
-	line 215 at [00000655][0001:00000655], len = 0x10
-	line 216 at [00000665][0001:00000665], len = 0x11
-	line 217 at [00000676][0001:00000676], len = 0xA
-	line 16707566 at [00000680][0001:00000680], len = 0x4
-	line 218 at [00000684][0001:00000684], len = 0x1
-	line 219 at [00000685][0001:00000685], len = 0x10
-	line 220 at [00000695][0001:00000695], len = 0x1A
-	line 221 at [000006AF][0001:000006AF], len = 0x1
-	line 16707566 at [000006B0][0001:000006B0], len = 0x2
-	line 223 at [000006B2][0001:000006B2], len = 0x1
-	line 224 at [000006B3][0001:000006B3], len = 0x10
-	line 225 at [000006C3][0001:000006C3], len = 0x1
-	line 227 at [000006C4][0001:000006C4], len = 0x11
-	line 228 at [000006D5][0001:000006D5], len = 0xA
-	line 16707566 at [000006DF][0001:000006DF], len = 0x4
-	line 229 at [000006E3][0001:000006E3], len = 0x1
-	line 230 at [000006E4][0001:000006E4], len = 0x10
-	line 231 at [000006F4][0001:000006F4], len = 0x1A
-	line 232 at [0000070E][0001:0000070E], len = 0x1
-	line 16707566 at [0000070F][0001:0000070F], len = 0x2
-	line 234 at [00000711][0001:00000711], len = 0x1
-	line 235 at [00000712][0001:00000712], len = 0x10
-	line 236 at [00000722][0001:00000722], len = 0x1
-	line 238 at [00000723][0001:00000723], len = 0x7
-	line 16707566 at [0000072A][0001:0000072A], len = 0x7
-	line 239 at [00000731][0001:00000731], len = 0x1
-	line 240 at [00000732][0001:00000732], len = 0x10
-	line 241 at [00000742][0001:00000742], len = 0x9
-	line 243 at [0000074B][0001:0000074B], len = 0xC
-	line 244 at [00000757][0001:00000757], len = 0x9
-	line 246 at [00000760][0001:00000760], len = 0x10
-	line 247 at [00000770][0001:00000770], len = 0xA
-	line 248 at [0000077A][0001:0000077A], len = 0x3
-	line 250 at [0000077D][0001:0000077D], len = 0x1
-	line 251 at [0000077E][0001:0000077E], len = 0xF
-	line 252 at [0000078D][0001:0000078D], len = 0x9
-	line 253 at [00000796][0001:00000796], len = 0x1
-	line 255 at [00000797][0001:00000797], len = 0x10
-	line 256 at [000007A7][0001:000007A7], len = 0xA
-	line 257 at [000007B1][0001:000007B1], len = 0x9
-	line 258 at [000007BA][0001:000007BA], len = 0xF
-	line 259 at [000007C9][0001:000007C9], len = 0xE
-	line 260 at [000007D7][0001:000007D7], len = 0x26
-	line 262 at [000007FD][0001:000007FD], len = 0x6
-	line 263 at [00000803][0001:00000803], len = 0x1
-	line 16707566 at [00000804][0001:00000804], len = 0x2
-	line 265 at [00000806][0001:00000806], len = 0x1
-	line 266 at [00000807][0001:00000807], len = 0x10
-	line 267 at [00000817][0001:00000817], len = 0x1
-	line 269 at [00000818][0001:00000818], len = 0x7
-	line 16707566 at [0000081F][0001:0000081F], len = 0x7
-	line 270 at [00000826][0001:00000826], len = 0x1
-	line 271 at [00000827][0001:00000827], len = 0x10
-	line 272 at [00000837][0001:00000837], len = 0x9
-	line 274 at [00000840][0001:00000840], len = 0xC
-	line 275 at [0000084C][0001:0000084C], len = 0x9
-	line 277 at [00000855][0001:00000855], len = 0x10
-	line 278 at [00000865][0001:00000865], len = 0xA
-	line 279 at [0000086F][0001:0000086F], len = 0x3
-	line 281 at [00000872][0001:00000872], len = 0x1
-	line 282 at [00000873][0001:00000873], len = 0xF
-	line 283 at [00000882][0001:00000882], len = 0x9
-	line 284 at [0000088B][0001:0000088B], len = 0x1
-	line 286 at [0000088C][0001:0000088C], len = 0x10
-	line 287 at [0000089C][0001:0000089C], len = 0xA
-	line 288 at [000008A6][0001:000008A6], len = 0x9
-	line 289 at [000008AF][0001:000008AF], len = 0xF
-	line 290 at [000008BE][0001:000008BE], len = 0xE
-	line 291 at [000008CC][0001:000008CC], len = 0x26
-	line 293 at [000008F2][0001:000008F2], len = 0x6
-	line 294 at [000008F8][0001:000008F8], len = 0x1
-	line 16707566 at [000008F9][0001:000008F9], len = 0x2
-	line 296 at [000008FB][0001:000008FB], len = 0x1
-	line 297 at [000008FC][0001:000008FC], len = 0x10
-	line 298 at [0000090C][0001:0000090C], len = 0x1
-	line 299 at [0000090D][0001:0000090D], len = 0x1
-	line 16707566 at [0000090E][0001:0000090E], len = 0x2
-	line 301 at [00000910][0001:00000910], len = 0x1
-	line 302 at [00000911][0001:00000911], len = 0x10
-	line 303 at [00000921][0001:00000921], len = 0x1
-	line 304 at [00000922][0001:00000922], len = 0x1
-	line 16707566 at [00000923][0001:00000923], len = 0x2
-	line 305 at [00000925][0001:00000925], len = 0x1
-	line 306 at [00000926][0001:00000926], len = 0x1
-	line 307 at [00000927][0001:00000927], len = 0x6
-	line 308 at [0000092D][0001:0000092D], len = 0x1
-	line 16707566 at [0000092E][0001:0000092E], len = 0x2
-	line 16707566 at [00000930][0001:00000930], len = 0x1
-	line 310 at [00000931][0001:00000931], len = 0x6
-	line 311 at [00000937][0001:00000937], len = 0x6
-	line 312 at [0000093D][0001:0000093D], len = 0x6
-	line 313 at [00000943][0001:00000943], len = 0x10
-	line 314 at [00000953][0001:00000953], len = 0x1
+	line 151 at [0000048F][0001:0000048F], len = 0x1
+	line 153 at [00000490][0001:00000490], len = 0x6
+	line 155 at [00000496][0001:00000496], len = 0x6
+	line 158 at [0000049C][0001:0000049C], len = 0x1
+	line 159 at [0000049D][0001:0000049D], len = 0x6
+	line 160 at [000004A3][0001:000004A3], len = 0x6
+	line 161 at [000004A9][0001:000004A9], len = 0x1
+	line 16707566 at [000004AA][0001:000004AA], len = 0x2
+	line 162 at [000004AC][0001:000004AC], len = 0x1
+	line 163 at [000004AD][0001:000004AD], len = 0x1
+	line 164 at [000004AE][0001:000004AE], len = 0x6
+	line 165 at [000004B4][0001:000004B4], len = 0x1
+	line 16707566 at [000004B5][0001:000004B5], len = 0x2
+	line 16707566 at [000004B7][0001:000004B7], len = 0x1
+	line 167 at [000004B8][0001:000004B8], len = 0x6
+	line 169 at [000004BE][0001:000004BE], len = 0x6
+	line 171 at [000004C4][0001:000004C4], len = 0x6
+	line 172 at [000004CA][0001:000004CA], len = 0x1
+	line 16707566 at [000004CB][0001:000004CB], len = 0x2
+	line 173 at [000004CD][0001:000004CD], len = 0x1
+	line 174 at [000004CE][0001:000004CE], len = 0x1
+	line 175 at [000004CF][0001:000004CF], len = 0x6
+	line 176 at [000004D5][0001:000004D5], len = 0x1
+	line 16707566 at [000004D6][0001:000004D6], len = 0x2
+	line 16707566 at [000004D8][0001:000004D8], len = 0x1
+	line 178 at [000004D9][0001:000004D9], len = 0x6
+	line 179 at [000004DF][0001:000004DF], len = 0x6
+	line 180 at [000004E5][0001:000004E5], len = 0x6
+	line 181 at [000004EB][0001:000004EB], len = 0x10
+	line 182 at [000004FB][0001:000004FB], len = 0x1
 
 ** OutputCurrentExceptionInfo
 
-	line 321 at [00000954][0001:00000954], len = 0x1	g:\Fling OS\Fling OS\Kernel\Kernel\Kernel.cs
-	line 322 at [00000955][0001:00000955], len = 0xB
-	line 323 at [00000960][0001:00000960], len = 0x10
-	line 325 at [00000970][0001:00000970], len = 0xB
-	line 326 at [0000097B][0001:0000097B], len = 0x19
-	line 16707566 at [00000994][0001:00000994], len = 0x3
-	line 327 at [00000997][0001:00000997], len = 0x1
-	line 328 at [00000998][0001:00000998], len = 0x15
-	line 329 at [000009AD][0001:000009AD], len = 0x1
-	line 16707566 at [000009AE][0001:000009AE], len = 0x2
-	line 330 at [000009B0][0001:000009B0], len = 0x19
-	line 16707566 at [000009C9][0001:000009C9], len = 0x3
-	line 331 at [000009CC][0001:000009CC], len = 0x1
-	line 332 at [000009CD][0001:000009CD], len = 0x15
-	line 333 at [000009E2][0001:000009E2], len = 0x1
-	line 335 at [000009E3][0001:000009E3], len = 0xB
-	line 337 at [000009EE][0001:000009EE], len = 0x6
-	line 338 at [000009F4][0001:000009F4], len = 0x1
-
-** ExceptionsTestP1
-
-	line 360 at [000009F5][0001:000009F5], len = 0x1	g:\Fling OS\Fling OS\Kernel\Kernel\Kernel.cs
-	line 361 at [000009F6][0001:000009F6], len = 0x6
-	line 362 at [000009FC][0001:000009FC], len = 0x1
-
-** ExceptionsTestP2
-
-	line 367 at [000009FD][0001:000009FD], len = 0x1	g:\Fling OS\Fling OS\Kernel\Kernel\Kernel.cs
-	line 368 at [000009FE][0001:000009FE], len = 0x6
-	line 371 at [00000A04][0001:00000A04], len = 0x1
-	line 372 at [00000A05][0001:00000A05], len = 0x15
-	line 373 at [00000A1A][0001:00000A1A], len = 0x1
-	line 16707566 at [00000A1B][0001:00000A1B], len = 0x2
-	line 375 at [00000A1D][0001:00000A1D], len = 0x1
-	line 376 at [00000A1E][0001:00000A1E], len = 0x10
-	line 377 at [00000A2E][0001:00000A2E], len = 0x1
-	line 16707566 at [00000A2F][0001:00000A2F], len = 0x1
-	line 16707566 at [00000A30][0001:00000A30], len = 0x1
-	line 378 at [00000A31][0001:00000A31], len = 0x1
+	line 189 at [000004FC][0001:000004FC], len = 0x1	g:\Fling OS\Fling OS\Kernel\Kernel\Kernel.cs
+	line 190 at [000004FD][0001:000004FD], len = 0xB
+	line 191 at [00000508][0001:00000508], len = 0x10
+	line 193 at [00000518][0001:00000518], len = 0xB
+	line 195 at [00000523][0001:00000523], len = 0x6
+	line 196 at [00000529][0001:00000529], len = 0x1
 
 ** InitPCI
 
-	line 384 at [00000A32][0001:00000A32], len = 0x1	g:\Fling OS\Fling OS\Kernel\Kernel\Kernel.cs
-	line 385 at [00000A33][0001:00000A33], len = 0x10
-	line 386 at [00000A43][0001:00000A43], len = 0x6
-	line 387 at [00000A49][0001:00000A49], len = 0x24
-	line 388 at [00000A6D][0001:00000A6D], len = 0x6
-	line 389 at [00000A73][0001:00000A73], len = 0x1
+	line 202 at [0000052A][0001:0000052A], len = 0x1	g:\Fling OS\Fling OS\Kernel\Kernel\Kernel.cs
+	line 203 at [0000052B][0001:0000052B], len = 0x10
+	line 204 at [0000053B][0001:0000053B], len = 0x6
+	line 205 at [00000541][0001:00000541], len = 0x24
+	line 206 at [00000565][0001:00000565], len = 0x1
 
 ** InitATA
 
-	line 394 at [00000A74][0001:00000A74], len = 0x1	g:\Fling OS\Fling OS\Kernel\Kernel\Kernel.cs
-	line 395 at [00000A75][0001:00000A75], len = 0x6
-	line 396 at [00000A7B][0001:00000A7B], len = 0x6
-	line 397 at [00000A81][0001:00000A81], len = 0x10
-	line 398 at [00000A91][0001:00000A91], len = 0x6
-	line 399 at [00000A97][0001:00000A97], len = 0x24
-	line 400 at [00000ABB][0001:00000ABB], len = 0x6
-	line 402 at [00000AC1][0001:00000AC1], len = 0x15
-	line 403 at [00000AD6][0001:00000AD6], len = 0x1
+	line 211 at [00000566][0001:00000566], len = 0x1	g:\Fling OS\Fling OS\Kernel\Kernel\Kernel.cs
+	line 212 at [00000567][0001:00000567], len = 0x10
+	line 213 at [00000577][0001:00000577], len = 0x6
+	line 214 at [0000057D][0001:0000057D], len = 0x24
+	line 216 at [000005A1][0001:000005A1], len = 0x15
+	line 217 at [000005B6][0001:000005B6], len = 0x1
 
 ** InitFileSystem
 
-	line 408 at [00000AD7][0001:00000AD7], len = 0x1	g:\Fling OS\Fling OS\Kernel\Kernel\Kernel.cs
-	line 409 at [00000AD8][0001:00000AD8], len = 0x10
-	line 410 at [00000AE8][0001:00000AE8], len = 0x6
-	line 411 at [00000AEE][0001:00000AEE], len = 0x24
-	line 412 at [00000B12][0001:00000B12], len = 0x6
-	line 413 at [00000B18][0001:00000B18], len = 0x1
+	line 222 at [000005B7][0001:000005B7], len = 0x1	g:\Fling OS\Fling OS\Kernel\Kernel\Kernel.cs
+	line 223 at [000005B8][0001:000005B8], len = 0x10
+	line 224 at [000005C8][0001:000005C8], len = 0x6
+	line 225 at [000005CE][0001:000005CE], len = 0x24
+	line 226 at [000005F2][0001:000005F2], len = 0x1
+
+** CheckDiskFormatting
+
+	line 231 at [000005F3][0001:000005F3], len = 0x1	g:\Fling OS\Fling OS\Kernel\Kernel\Kernel.cs
+	line 232 at [000005F4][0001:000005F4], len = 0x11
+	line 16707566 at [00000605][0001:00000605], len = 0x3
+	line 233 at [00000608][0001:00000608], len = 0x1
+	line 234 at [00000609][0001:00000609], len = 0x10
+	line 235 at [00000619][0001:00000619], len = 0x10
+	line 237 at [00000629][0001:00000629], len = 0x7
+	line 238 at [00000630][0001:00000630], len = 0x12
+	line 239 at [00000642][0001:00000642], len = 0xC
+	line 241 at [0000064E][0001:0000064E], len = 0x10
+	line 242 at [0000065E][0001:0000065E], len = 0x7
+	line 244 at [00000665][0001:00000665], len = 0x6
+	line 245 at [0000066B][0001:0000066B], len = 0x1
+	line 246 at [0000066C][0001:0000066C], len = 0x11
+	line 16707566 at [0000067D][0001:0000067D], len = 0x3
+	line 247 at [00000680][0001:00000680], len = 0x1
+	line 248 at [00000681][0001:00000681], len = 0x10
+	line 249 at [00000691][0001:00000691], len = 0x11
+	line 250 at [000006A2][0001:000006A2], len = 0x7
+	line 251 at [000006A9][0001:000006A9], len = 0x10
+	line 252 at [000006B9][0001:000006B9], len = 0x7
+	line 254 at [000006C0][0001:000006C0], len = 0x6
+	line 255 at [000006C6][0001:000006C6], len = 0x1
+	line 256 at [000006C7][0001:000006C7], len = 0x1
+
+** InitUSB
+
+	line 262 at [000006C8][0001:000006C8], len = 0x1	g:\Fling OS\Fling OS\Kernel\Kernel\Kernel.cs
+	line 263 at [000006C9][0001:000006C9], len = 0x10
+	line 264 at [000006D9][0001:000006D9], len = 0x6
+	line 265 at [000006DF][0001:000006DF], len = 0x24
+	line 266 at [00000703][0001:00000703], len = 0x1
 
 ** OutputFileSystemsInfo
 
-	line 419 at [00000B19][0001:00000B19], len = 0x1	g:\Fling OS\Fling OS\Kernel\Kernel\Kernel.cs
-	line 420 at [00000B1A][0001:00000B1A], len = 0x24
-	line 421 at [00000B3E][0001:00000B3E], len = 0x7
-	line 423 at [00000B45][0001:00000B45], len = 0x2
-	line 16707566 at [00000B47][0001:00000B47], len = 0x5
-	line 424 at [00000B4C][0001:00000B4C], len = 0x1
-	line 425 at [00000B4D][0001:00000B4D], len = 0x11
-	line 426 at [00000B5E][0001:00000B5E], len = 0x24
-	line 16707566 at [00000B82][0001:00000B82], len = 0x7
-	line 427 at [00000B89][0001:00000B89], len = 0x1
-	line 428 at [00000B8A][0001:00000B8A], len = 0x10
-	line 429 at [00000B9A][0001:00000B9A], len = 0xC
-	line 430 at [00000BA6][0001:00000BA6], len = 0x10
-	line 431 at [00000BB6][0001:00000BB6], len = 0x7
-	line 432 at [00000BBD][0001:00000BBD], len = 0x10
-	line 434 at [00000BCD][0001:00000BCD], len = 0x1F
-	line 16707566 at [00000BEC][0001:00000BEC], len = 0x4
-	line 435 at [00000BF0][0001:00000BF0], len = 0x1
-	line 436 at [00000BF1][0001:00000BF1], len = 0x15
-	line 437 at [00000C06][0001:00000C06], len = 0xC
-	line 439 at [00000C12][0001:00000C12], len = 0x10
-	line 440 at [00000C22][0001:00000C22], len = 0x1
-	line 442 at [00000C23][0001:00000C23], len = 0x20
-	line 444 at [00000C43][0001:00000C43], len = 0x1A
-	line 16707566 at [00000C5D][0001:00000C5D], len = 0x4
-	line 445 at [00000C61][0001:00000C61], len = 0x1
-	line 446 at [00000C62][0001:00000C62], len = 0x1B
-	line 447 at [00000C7D][0001:00000C7D], len = 0x6
-	line 449 at [00000C83][0001:00000C83], len = 0x7
-	line 450 at [00000C8A][0001:00000C8A], len = 0x1
-	line 451 at [00000C8B][0001:00000C8B], len = 0x1
-	line 16707566 at [00000C8C][0001:00000C8C], len = 0x2
-	line 453 at [00000C8E][0001:00000C8E], len = 0x1
-	line 454 at [00000C8F][0001:00000C8F], len = 0x10
-	line 455 at [00000C9F][0001:00000C9F], len = 0x1
-	line 456 at [00000CA0][0001:00000CA0], len = 0x1
-	line 423 at [00000CA1][0001:00000CA1], len = 0x4
-	line 423 at [00000CA5][0001:00000CA5], len = 0xF
-	line 16707566 at [00000CB4][0001:00000CB4], len = 0x7
-	line 457 at [00000CBB][0001:00000CBB], len = 0x1
+	line 272 at [00000704][0001:00000704], len = 0x1	g:\Fling OS\Fling OS\Kernel\Kernel\Kernel.cs
+	line 273 at [00000705][0001:00000705], len = 0x24
+	line 274 at [00000729][0001:00000729], len = 0x7
+	line 276 at [00000730][0001:00000730], len = 0x2
+	line 16707566 at [00000732][0001:00000732], len = 0x5
+	line 277 at [00000737][0001:00000737], len = 0x1
+	line 278 at [00000738][0001:00000738], len = 0x11
+	line 279 at [00000749][0001:00000749], len = 0x24
+	line 16707566 at [0000076D][0001:0000076D], len = 0x7
+	line 280 at [00000774][0001:00000774], len = 0x1
+	line 281 at [00000775][0001:00000775], len = 0x10
+	line 282 at [00000785][0001:00000785], len = 0xC
+	line 283 at [00000791][0001:00000791], len = 0x10
+	line 284 at [000007A1][0001:000007A1], len = 0x7
+	line 285 at [000007A8][0001:000007A8], len = 0x10
+	line 287 at [000007B8][0001:000007B8], len = 0x1F
+	line 16707566 at [000007D7][0001:000007D7], len = 0x4
+	line 288 at [000007DB][0001:000007DB], len = 0x1
+	line 289 at [000007DC][0001:000007DC], len = 0x15
+	line 290 at [000007F1][0001:000007F1], len = 0xC
+	line 292 at [000007FD][0001:000007FD], len = 0x10
+	line 293 at [0000080D][0001:0000080D], len = 0x1
+	line 295 at [0000080E][0001:0000080E], len = 0x20
+	line 297 at [0000082E][0001:0000082E], len = 0x1A
+	line 16707566 at [00000848][0001:00000848], len = 0x4
+	line 298 at [0000084C][0001:0000084C], len = 0x1
+	line 299 at [0000084D][0001:0000084D], len = 0x1B
+	line 300 at [00000868][0001:00000868], len = 0x6
+	line 302 at [0000086E][0001:0000086E], len = 0x7
+	line 303 at [00000875][0001:00000875], len = 0x1
+	line 304 at [00000876][0001:00000876], len = 0x1
+	line 16707566 at [00000877][0001:00000877], len = 0x2
+	line 306 at [00000879][0001:00000879], len = 0x1
+	line 307 at [0000087A][0001:0000087A], len = 0x10
+	line 308 at [0000088A][0001:0000088A], len = 0x1
+	line 309 at [0000088B][0001:0000088B], len = 0x1
+	line 276 at [0000088C][0001:0000088C], len = 0x4
+	line 276 at [00000890][0001:00000890], len = 0xF
+	line 16707566 at [0000089F][0001:0000089F], len = 0x7
+	line 310 at [000008A6][0001:000008A6], len = 0x1
 
 ** OutputListings
 
-	line 463 at [00000CBC][0001:00000CBC], len = 0x1	g:\Fling OS\Fling OS\Kernel\Kernel\Kernel.cs
-	line 464 at [00000CBD][0001:00000CBD], len = 0x2
-	line 16707566 at [00000CBF][0001:00000CBF], len = 0x5
-	line 465 at [00000CC4][0001:00000CC4], len = 0x1
-	line 466 at [00000CC5][0001:00000CC5], len = 0xD
-	line 468 at [00000CD2][0001:00000CD2], len = 0x1F
-	line 16707566 at [00000CF1][0001:00000CF1], len = 0x4
-	line 469 at [00000CF5][0001:00000CF5], len = 0x1
-	line 470 at [00000CF6][0001:00000CF6], len = 0x12
-	line 471 at [00000D08][0001:00000D08], len = 0x16
-	line 473 at [00000D1E][0001:00000D1E], len = 0x17
-	line 474 at [00000D35][0001:00000D35], len = 0x1
-	line 16707566 at [00000D36][0001:00000D36], len = 0x2
-	line 475 at [00000D38][0001:00000D38], len = 0x1F
-	line 16707566 at [00000D57][0001:00000D57], len = 0x4
-	line 476 at [00000D5B][0001:00000D5B], len = 0x1
-	line 477 at [00000D5C][0001:00000D5C], len = 0xD
-	line 478 at [00000D69][0001:00000D69], len = 0x49
-	line 479 at [00000DB2][0001:00000DB2], len = 0x1
-	line 480 at [00000DB3][0001:00000DB3], len = 0x1
-	line 464 at [00000DB4][0001:00000DB4], len = 0x4
-	line 464 at [00000DB8][0001:00000DB8], len = 0xB
-	line 16707566 at [00000DC3][0001:00000DC3], len = 0x7
-	line 481 at [00000DCA][0001:00000DCA], len = 0x1
+	line 316 at [000008A7][0001:000008A7], len = 0x1	g:\Fling OS\Fling OS\Kernel\Kernel\Kernel.cs
+	line 317 at [000008A8][0001:000008A8], len = 0x2
+	line 16707566 at [000008AA][0001:000008AA], len = 0x5
+	line 318 at [000008AF][0001:000008AF], len = 0x1
+	line 319 at [000008B0][0001:000008B0], len = 0xD
+	line 321 at [000008BD][0001:000008BD], len = 0x1F
+	line 16707566 at [000008DC][0001:000008DC], len = 0x4
+	line 322 at [000008E0][0001:000008E0], len = 0x1
+	line 323 at [000008E1][0001:000008E1], len = 0x12
+	line 324 at [000008F3][0001:000008F3], len = 0x16
+	line 326 at [00000909][0001:00000909], len = 0x17
+	line 327 at [00000920][0001:00000920], len = 0x1
+	line 16707566 at [00000921][0001:00000921], len = 0x2
+	line 328 at [00000923][0001:00000923], len = 0x1F
+	line 16707566 at [00000942][0001:00000942], len = 0x4
+	line 329 at [00000946][0001:00000946], len = 0x1
+	line 330 at [00000947][0001:00000947], len = 0xD
+	line 331 at [00000954][0001:00000954], len = 0x49
+	line 332 at [0000099D][0001:0000099D], len = 0x1
+	line 333 at [0000099E][0001:0000099E], len = 0x1
+	line 317 at [0000099F][0001:0000099F], len = 0x4
+	line 317 at [000009A3][0001:000009A3], len = 0xB
+	line 16707566 at [000009AE][0001:000009AE], len = 0x7
+	line 334 at [000009B5][0001:000009B5], len = 0x1
 
 ** OutputFileContents
 
-	line 487 at [00000DCB][0001:00000DCB], len = 0x1	g:\Fling OS\Fling OS\Kernel\Kernel\Kernel.cs
-	line 488 at [00000DCC][0001:00000DCC], len = 0x6
-	line 489 at [00000DD2][0001:00000DD2], len = 0x7
-	line 490 at [00000DD9][0001:00000DD9], len = 0x6
-	line 16707566 at [00000DDF][0001:00000DDF], len = 0x4
-	line 491 at [00000DE3][0001:00000DE3], len = 0x1
-	line 492 at [00000DE4][0001:00000DE4], len = 0xF
-	line 16707566 at [00000DF3][0001:00000DF3], len = 0x4
-	line 493 at [00000DF7][0001:00000DF7], len = 0x1
-	line 494 at [00000DF8][0001:00000DF8], len = 0x7
-	line 496 at [00000DFF][0001:00000DFF], len = 0x7
-	line 497 at [00000E06][0001:00000E06], len = 0xD
-	line 498 at [00000E13][0001:00000E13], len = 0xC
-	line 499 at [00000E1F][0001:00000E1F], len = 0xA
-	line 500 at [00000E29][0001:00000E29], len = 0x8
-	line 501 at [00000E31][0001:00000E31], len = 0x1
-	line 16707566 at [00000E32][0001:00000E32], len = 0x2
-	line 503 at [00000E34][0001:00000E34], len = 0x1
-	line 504 at [00000E35][0001:00000E35], len = 0x10
-	line 505 at [00000E45][0001:00000E45], len = 0x1
-	line 506 at [00000E46][0001:00000E46], len = 0x1
-	line 16707566 at [00000E47][0001:00000E47], len = 0x2
-	line 508 at [00000E49][0001:00000E49], len = 0x1
-	line 509 at [00000E4A][0001:00000E4A], len = 0x16
-	line 510 at [00000E60][0001:00000E60], len = 0x1
-	line 511 at [00000E61][0001:00000E61], len = 0x6
-	line 512 at [00000E67][0001:00000E67], len = 0x1
+	line 340 at [000009B6][0001:000009B6], len = 0x1	g:\Fling OS\Fling OS\Kernel\Kernel\Kernel.cs
+	line 341 at [000009B7][0001:000009B7], len = 0x6
+	line 342 at [000009BD][0001:000009BD], len = 0x7
+	line 343 at [000009C4][0001:000009C4], len = 0x6
+	line 16707566 at [000009CA][0001:000009CA], len = 0x4
+	line 344 at [000009CE][0001:000009CE], len = 0x1
+	line 345 at [000009CF][0001:000009CF], len = 0xF
+	line 16707566 at [000009DE][0001:000009DE], len = 0x4
+	line 346 at [000009E2][0001:000009E2], len = 0x1
+	line 347 at [000009E3][0001:000009E3], len = 0x7
+	line 349 at [000009EA][0001:000009EA], len = 0x7
+	line 350 at [000009F1][0001:000009F1], len = 0xD
+	line 351 at [000009FE][0001:000009FE], len = 0xC
+	line 352 at [00000A0A][0001:00000A0A], len = 0xA
+	line 353 at [00000A14][0001:00000A14], len = 0x8
+	line 354 at [00000A1C][0001:00000A1C], len = 0x1
+	line 16707566 at [00000A1D][0001:00000A1D], len = 0x2
+	line 356 at [00000A1F][0001:00000A1F], len = 0x1
+	line 357 at [00000A20][0001:00000A20], len = 0x10
+	line 358 at [00000A30][0001:00000A30], len = 0x1
+	line 359 at [00000A31][0001:00000A31], len = 0x1
+	line 16707566 at [00000A32][0001:00000A32], len = 0x2
+	line 361 at [00000A34][0001:00000A34], len = 0x1
+	line 362 at [00000A35][0001:00000A35], len = 0x16
+	line 363 at [00000A4B][0001:00000A4B], len = 0x1
+	line 364 at [00000A4C][0001:00000A4C], len = 0x6
+	line 365 at [00000A52][0001:00000A52], len = 0x1
 
 ** OutputDirectoryContents
 
-	line 518 at [00000E68][0001:00000E68], len = 0x1	g:\Fling OS\Fling OS\Kernel\Kernel\Kernel.cs
-	line 519 at [00000E69][0001:00000E69], len = 0x6
-	line 520 at [00000E6F][0001:00000E6F], len = 0x7
-	line 521 at [00000E76][0001:00000E76], len = 0x6
-	line 16707566 at [00000E7C][0001:00000E7C], len = 0x7
-	line 522 at [00000E83][0001:00000E83], len = 0x1
-	line 523 at [00000E84][0001:00000E84], len = 0x7
-	line 524 at [00000E8B][0001:00000E8B], len = 0x7
-	line 525 at [00000E92][0001:00000E92], len = 0xE
-	line 16707566 at [00000EA0][0001:00000EA0], len = 0x7
-	line 526 at [00000EA7][0001:00000EA7], len = 0x1
-	line 527 at [00000EA8][0001:00000EA8], len = 0x2
-	line 16707566 at [00000EAA][0001:00000EAA], len = 0x5
-	line 528 at [00000EAF][0001:00000EAF], len = 0x1
-	line 529 at [00000EB0][0001:00000EB0], len = 0xD
-	line 531 at [00000EBD][0001:00000EBD], len = 0x1F
-	line 16707566 at [00000EDC][0001:00000EDC], len = 0x4
-	line 532 at [00000EE0][0001:00000EE0], len = 0x1
-	line 533 at [00000EE1][0001:00000EE1], len = 0x26
-	line 534 at [00000F07][0001:00000F07], len = 0x1
-	line 16707566 at [00000F08][0001:00000F08], len = 0x2
-	line 535 at [00000F0A][0001:00000F0A], len = 0x1F
-	line 16707566 at [00000F29][0001:00000F29], len = 0x4
-	line 536 at [00000F2D][0001:00000F2D], len = 0x1
-	line 537 at [00000F2E][0001:00000F2E], len = 0xE
-	line 538 at [00000F3C][0001:00000F3C], len = 0x4B
-	line 539 at [00000F87][0001:00000F87], len = 0x1
-	line 540 at [00000F88][0001:00000F88], len = 0x1
-	line 527 at [00000F89][0001:00000F89], len = 0x4
-	line 527 at [00000F8D][0001:00000F8D], len = 0xB
-	line 16707566 at [00000F98][0001:00000F98], len = 0x7
-	line 541 at [00000F9F][0001:00000F9F], len = 0x1
-	line 16707566 at [00000FA0][0001:00000FA0], len = 0x2
-	line 543 at [00000FA2][0001:00000FA2], len = 0x1
-	line 544 at [00000FA3][0001:00000FA3], len = 0x10
-	line 545 at [00000FB3][0001:00000FB3], len = 0x1
-	line 546 at [00000FB4][0001:00000FB4], len = 0x1
-	line 16707566 at [00000FB5][0001:00000FB5], len = 0x2
-	line 548 at [00000FB7][0001:00000FB7], len = 0x1
-	line 549 at [00000FB8][0001:00000FB8], len = 0x16
-	line 550 at [00000FCE][0001:00000FCE], len = 0x1
-	line 551 at [00000FCF][0001:00000FCF], len = 0x6
-	line 552 at [00000FD5][0001:00000FD5], len = 0x1
+	line 371 at [00000A53][0001:00000A53], len = 0x1	g:\Fling OS\Fling OS\Kernel\Kernel\Kernel.cs
+	line 372 at [00000A54][0001:00000A54], len = 0x6
+	line 373 at [00000A5A][0001:00000A5A], len = 0x7
+	line 374 at [00000A61][0001:00000A61], len = 0x6
+	line 16707566 at [00000A67][0001:00000A67], len = 0x7
+	line 375 at [00000A6E][0001:00000A6E], len = 0x1
+	line 376 at [00000A6F][0001:00000A6F], len = 0x7
+	line 377 at [00000A76][0001:00000A76], len = 0x7
+	line 378 at [00000A7D][0001:00000A7D], len = 0xE
+	line 16707566 at [00000A8B][0001:00000A8B], len = 0x7
+	line 379 at [00000A92][0001:00000A92], len = 0x1
+	line 380 at [00000A93][0001:00000A93], len = 0x2
+	line 16707566 at [00000A95][0001:00000A95], len = 0x5
+	line 381 at [00000A9A][0001:00000A9A], len = 0x1
+	line 382 at [00000A9B][0001:00000A9B], len = 0xD
+	line 384 at [00000AA8][0001:00000AA8], len = 0x1F
+	line 16707566 at [00000AC7][0001:00000AC7], len = 0x4
+	line 385 at [00000ACB][0001:00000ACB], len = 0x1
+	line 386 at [00000ACC][0001:00000ACC], len = 0x26
+	line 387 at [00000AF2][0001:00000AF2], len = 0x1
+	line 16707566 at [00000AF3][0001:00000AF3], len = 0x2
+	line 388 at [00000AF5][0001:00000AF5], len = 0x1F
+	line 16707566 at [00000B14][0001:00000B14], len = 0x4
+	line 389 at [00000B18][0001:00000B18], len = 0x1
+	line 390 at [00000B19][0001:00000B19], len = 0xE
+	line 391 at [00000B27][0001:00000B27], len = 0x4B
+	line 392 at [00000B72][0001:00000B72], len = 0x1
+	line 393 at [00000B73][0001:00000B73], len = 0x1
+	line 380 at [00000B74][0001:00000B74], len = 0x4
+	line 380 at [00000B78][0001:00000B78], len = 0xB
+	line 16707566 at [00000B83][0001:00000B83], len = 0x7
+	line 394 at [00000B8A][0001:00000B8A], len = 0x1
+	line 16707566 at [00000B8B][0001:00000B8B], len = 0x2
+	line 396 at [00000B8D][0001:00000B8D], len = 0x1
+	line 397 at [00000B8E][0001:00000B8E], len = 0x10
+	line 398 at [00000B9E][0001:00000B9E], len = 0x1
+	line 399 at [00000B9F][0001:00000B9F], len = 0x1
+	line 16707566 at [00000BA0][0001:00000BA0], len = 0x2
+	line 401 at [00000BA2][0001:00000BA2], len = 0x1
+	line 402 at [00000BA3][0001:00000BA3], len = 0x16
+	line 403 at [00000BB9][0001:00000BB9], len = 0x1
+	line 404 at [00000BBA][0001:00000BBA], len = 0x6
+	line 405 at [00000BC0][0001:00000BC0], len = 0x1
 
 ** OutputDivider
 
-	line 558 at [00000FD6][0001:00000FD6], len = 0x1	g:\Fling OS\Fling OS\Kernel\Kernel\Kernel.cs
-	line 559 at [00000FD7][0001:00000FD7], len = 0x10
-	line 560 at [00000FE7][0001:00000FE7], len = 0x1
+	line 411 at [00000BC1][0001:00000BC1], len = 0x1	g:\Fling OS\Fling OS\Kernel\Kernel\Kernel.cs
+	line 412 at [00000BC2][0001:00000BC2], len = 0x10
+	line 413 at [00000BD2][0001:00000BD2], len = 0x1
 
 ** OutputPCIInfo
 
-	line 565 at [00000FE8][0001:00000FE8], len = 0x1	g:\Fling OS\Fling OS\Kernel\Kernel\Kernel.cs
-	line 566 at [00000FE9][0001:00000FE9], len = 0x2
-	line 16707566 at [00000FEB][0001:00000FEB], len = 0x2
-	line 567 at [00000FED][0001:00000FED], len = 0x1
-	line 568 at [00000FEE][0001:00000FEE], len = 0x11
-	line 569 at [00000FFF][0001:00000FFF], len = 0xC
-	line 570 at [0000100B][0001:0000100B], len = 0x7
-	line 571 at [00001012][0001:00001012], len = 0x1
-	line 566 at [00001013][0001:00001013], len = 0x4
-	line 566 at [00001017][0001:00001017], len = 0xE
-	line 16707566 at [00001025][0001:00001025], len = 0x3
-	line 572 at [00001028][0001:00001028], len = 0x1
+	line 418 at [00000BD3][0001:00000BD3], len = 0x1	g:\Fling OS\Fling OS\Kernel\Kernel\Kernel.cs
+	line 419 at [00000BD4][0001:00000BD4], len = 0x2
+	line 16707566 at [00000BD6][0001:00000BD6], len = 0x2
+	line 420 at [00000BD8][0001:00000BD8], len = 0x1
+	line 421 at [00000BD9][0001:00000BD9], len = 0x11
+	line 422 at [00000BEA][0001:00000BEA], len = 0xC
+	line 423 at [00000BF6][0001:00000BF6], len = 0x1
+	line 419 at [00000BF7][0001:00000BF7], len = 0x4
+	line 419 at [00000BFB][0001:00000BFB], len = 0xE
+	line 16707566 at [00000C09][0001:00000C09], len = 0x3
+	line 424 at [00000C0C][0001:00000C0C], len = 0x7
+	line 425 at [00000C13][0001:00000C13], len = 0x1
 
 ** OutputATAInfo
 
-	line 577 at [00001029][0001:00001029], len = 0x1	g:\Fling OS\Fling OS\Kernel\Kernel\Kernel.cs
-	line 578 at [0000102A][0001:0000102A], len = 0x2
-	line 579 at [0000102C][0001:0000102C], len = 0x2
-	line 16707566 at [0000102E][0001:0000102E], len = 0x5
-	line 580 at [00001033][0001:00001033], len = 0x1
-	line 581 at [00001034][0001:00001034], len = 0x11
-	line 582 at [00001045][0001:00001045], len = 0x1F
-	line 16707566 at [00001064][0001:00001064], len = 0x7
-	line 583 at [0000106B][0001:0000106B], len = 0x1
-	line 584 at [0000106C][0001:0000106C], len = 0x6
-	line 585 at [00001072][0001:00001072], len = 0x10
-	line 586 at [00001082][0001:00001082], len = 0x7
-	line 588 at [00001089][0001:00001089], len = 0x6
-	line 590 at [0000108F][0001:0000108F], len = 0x30
-	line 591 at [000010BF][0001:000010BF], len = 0x1B
-	line 592 at [000010DA][0001:000010DA], len = 0x1B
-	line 593 at [000010F5][0001:000010F5], len = 0x1B
-	line 594 at [00001110][0001:00001110], len = 0x2F
-	line 595 at [0000113F][0001:0000113F], len = 0x20
-	line 596 at [0000115F][0001:0000115F], len = 0x39
-	line 597 at [00001198][0001:00001198], len = 0x6
-	line 599 at [0000119E][0001:0000119E], len = 0x7
-	line 601 at [000011A5][0001:000011A5], len = 0x4
-	line 602 at [000011A9][0001:000011A9], len = 0x1
-	line 603 at [000011AA][0001:000011AA], len = 0x1
-	line 579 at [000011AB][0001:000011AB], len = 0x4
-	line 579 at [000011AF][0001:000011AF], len = 0xF
-	line 16707566 at [000011BE][0001:000011BE], len = 0x7
-	line 605 at [000011C5][0001:000011C5], len = 0x1B
-	line 606 at [000011E0][0001:000011E0], len = 0x1
+	line 430 at [00000C14][0001:00000C14], len = 0x1	g:\Fling OS\Fling OS\Kernel\Kernel\Kernel.cs
+	line 431 at [00000C15][0001:00000C15], len = 0x2
+	line 432 at [00000C17][0001:00000C17], len = 0x2
+	line 16707566 at [00000C19][0001:00000C19], len = 0x5
+	line 433 at [00000C1E][0001:00000C1E], len = 0x1
+	line 434 at [00000C1F][0001:00000C1F], len = 0x11
+	line 435 at [00000C30][0001:00000C30], len = 0x1F
+	line 16707566 at [00000C4F][0001:00000C4F], len = 0x7
+	line 436 at [00000C56][0001:00000C56], len = 0x1
+	line 437 at [00000C57][0001:00000C57], len = 0x6
+	line 438 at [00000C5D][0001:00000C5D], len = 0x10
+	line 439 at [00000C6D][0001:00000C6D], len = 0x7
+	line 441 at [00000C74][0001:00000C74], len = 0x6
+	line 443 at [00000C7A][0001:00000C7A], len = 0x30
+	line 444 at [00000CAA][0001:00000CAA], len = 0x1B
+	line 445 at [00000CC5][0001:00000CC5], len = 0x1B
+	line 446 at [00000CE0][0001:00000CE0], len = 0x1B
+	line 447 at [00000CFB][0001:00000CFB], len = 0x2F
+	line 448 at [00000D2A][0001:00000D2A], len = 0x20
+	line 449 at [00000D4A][0001:00000D4A], len = 0x39
+	line 450 at [00000D83][0001:00000D83], len = 0x6
+	line 452 at [00000D89][0001:00000D89], len = 0x7
+	line 454 at [00000D90][0001:00000D90], len = 0x4
+	line 455 at [00000D94][0001:00000D94], len = 0x1
+	line 456 at [00000D95][0001:00000D95], len = 0x1
+	line 432 at [00000D96][0001:00000D96], len = 0x4
+	line 432 at [00000D9A][0001:00000D9A], len = 0xF
+	line 16707566 at [00000DA9][0001:00000DA9], len = 0x7
+	line 458 at [00000DB0][0001:00000DB0], len = 0x1B
+	line 459 at [00000DCB][0001:00000DCB], len = 0x1
+
+** FileSystemTests
+
+	line 470 at [00000DCC][0001:00000DCC], len = 0x1	g:\Fling OS\Fling OS\Kernel\Kernel\Kernel.cs
+	line 472 at [00000DCD][0001:00000DCD], len = 0x1
+	line 473 at [00000DCE][0001:00000DCE], len = 0x10
+	line 474 at [00000DDE][0001:00000DDE], len = 0x6
+	line 16707566 at [00000DE4][0001:00000DE4], len = 0x7
+	line 475 at [00000DEB][0001:00000DEB], len = 0x1
+	line 476 at [00000DEC][0001:00000DEC], len = 0xC
+	line 478 at [00000DF8][0001:00000DF8], len = 0x10
+	line 479 at [00000E08][0001:00000E08], len = 0x9
+	line 16707566 at [00000E11][0001:00000E11], len = 0x4
+	line 480 at [00000E15][0001:00000E15], len = 0x1
+	line 481 at [00000E16][0001:00000E16], len = 0x10
+	line 482 at [00000E26][0001:00000E26], len = 0x17
+	line 483 at [00000E3D][0001:00000E3D], len = 0x10
+	line 484 at [00000E4D][0001:00000E4D], len = 0x1
+	line 16707566 at [00000E4E][0001:00000E4E], len = 0x2
+	line 486 at [00000E50][0001:00000E50], len = 0x1
+	line 487 at [00000E51][0001:00000E51], len = 0x10
+	line 488 at [00000E61][0001:00000E61], len = 0x1
+	line 490 at [00000E62][0001:00000E62], len = 0x10
+	line 491 at [00000E72][0001:00000E72], len = 0x10
+	line 492 at [00000E82][0001:00000E82], len = 0x9
+	line 16707566 at [00000E8B][0001:00000E8B], len = 0x4
+	line 493 at [00000E8F][0001:00000E8F], len = 0x1
+	line 494 at [00000E90][0001:00000E90], len = 0x10
+	line 495 at [00000EA0][0001:00000EA0], len = 0x17
+	line 496 at [00000EB7][0001:00000EB7], len = 0x1
+	line 16707566 at [00000EB8][0001:00000EB8], len = 0x2
+	line 498 at [00000EBA][0001:00000EBA], len = 0x1
+	line 499 at [00000EBB][0001:00000EBB], len = 0x10
+	line 500 at [00000ECB][0001:00000ECB], len = 0x1
+	line 502 at [00000ECC][0001:00000ECC], len = 0x11
+	line 503 at [00000EDD][0001:00000EDD], len = 0xA
+	line 16707566 at [00000EE7][0001:00000EE7], len = 0x4
+	line 504 at [00000EEB][0001:00000EEB], len = 0x1
+	line 505 at [00000EEC][0001:00000EEC], len = 0x10
+	line 506 at [00000EFC][0001:00000EFC], len = 0x18
+	line 507 at [00000F14][0001:00000F14], len = 0x1
+	line 16707566 at [00000F15][0001:00000F15], len = 0x2
+	line 509 at [00000F17][0001:00000F17], len = 0x1
+	line 510 at [00000F18][0001:00000F18], len = 0x10
+	line 511 at [00000F28][0001:00000F28], len = 0x1
+	line 513 at [00000F29][0001:00000F29], len = 0x6
+	line 16707566 at [00000F2F][0001:00000F2F], len = 0x7
+	line 514 at [00000F36][0001:00000F36], len = 0x1
+	line 515 at [00000F37][0001:00000F37], len = 0x10
+	line 516 at [00000F47][0001:00000F47], len = 0x8
+	line 518 at [00000F4F][0001:00000F4F], len = 0xC
+	line 519 at [00000F5B][0001:00000F5B], len = 0x9
+	line 521 at [00000F64][0001:00000F64], len = 0x10
+	line 522 at [00000F74][0001:00000F74], len = 0xA
+	line 523 at [00000F7E][0001:00000F7E], len = 0x3
+	line 525 at [00000F81][0001:00000F81], len = 0x1
+	line 526 at [00000F82][0001:00000F82], len = 0xF
+	line 527 at [00000F91][0001:00000F91], len = 0x9
+	line 528 at [00000F9A][0001:00000F9A], len = 0x1
+	line 530 at [00000F9B][0001:00000F9B], len = 0x10
+	line 531 at [00000FAB][0001:00000FAB], len = 0xA
+	line 532 at [00000FB5][0001:00000FB5], len = 0x9
+	line 533 at [00000FBE][0001:00000FBE], len = 0xF
+	line 534 at [00000FCD][0001:00000FCD], len = 0xE
+	line 535 at [00000FDB][0001:00000FDB], len = 0x26
+	line 537 at [00001001][0001:00001001], len = 0x6
+	line 538 at [00001007][0001:00001007], len = 0x1
+	line 16707566 at [00001008][0001:00001008], len = 0x2
+	line 540 at [0000100A][0001:0000100A], len = 0x1
+	line 541 at [0000100B][0001:0000100B], len = 0x10
+	line 542 at [0000101B][0001:0000101B], len = 0x1
+	line 544 at [0000101C][0001:0000101C], len = 0x7
+	line 16707566 at [00001023][0001:00001023], len = 0x7
+	line 545 at [0000102A][0001:0000102A], len = 0x1
+	line 546 at [0000102B][0001:0000102B], len = 0x10
+	line 547 at [0000103B][0001:0000103B], len = 0x9
+	line 549 at [00001044][0001:00001044], len = 0xC
+	line 550 at [00001050][0001:00001050], len = 0x9
+	line 552 at [00001059][0001:00001059], len = 0x10
+	line 553 at [00001069][0001:00001069], len = 0xA
+	line 554 at [00001073][0001:00001073], len = 0x3
+	line 556 at [00001076][0001:00001076], len = 0x1
+	line 557 at [00001077][0001:00001077], len = 0xF
+	line 558 at [00001086][0001:00001086], len = 0x9
+	line 559 at [0000108F][0001:0000108F], len = 0x1
+	line 561 at [00001090][0001:00001090], len = 0x10
+	line 562 at [000010A0][0001:000010A0], len = 0xA
+	line 563 at [000010AA][0001:000010AA], len = 0x9
+	line 564 at [000010B3][0001:000010B3], len = 0xF
+	line 565 at [000010C2][0001:000010C2], len = 0xE
+	line 566 at [000010D0][0001:000010D0], len = 0x26
+	line 568 at [000010F6][0001:000010F6], len = 0x6
+	line 569 at [000010FC][0001:000010FC], len = 0x1
+	line 16707566 at [000010FD][0001:000010FD], len = 0x2
+	line 571 at [000010FF][0001:000010FF], len = 0x1
+	line 572 at [00001100][0001:00001100], len = 0x10
+	line 573 at [00001110][0001:00001110], len = 0x1
+	line 574 at [00001111][0001:00001111], len = 0x1
+	line 16707566 at [00001112][0001:00001112], len = 0x2
+	line 576 at [00001114][0001:00001114], len = 0x1
+	line 577 at [00001115][0001:00001115], len = 0x10
+	line 578 at [00001125][0001:00001125], len = 0x1
+	line 580 at [00001126][0001:00001126], len = 0x1
+	line 16707566 at [00001127][0001:00001127], len = 0x2
+	line 581 at [00001129][0001:00001129], len = 0x1
+	line 582 at [0000112A][0001:0000112A], len = 0x1
+	line 583 at [0000112B][0001:0000112B], len = 0xB
+	line 584 at [00001136][0001:00001136], len = 0x10
+	line 585 at [00001146][0001:00001146], len = 0xB
+	line 586 at [00001151][0001:00001151], len = 0x1
+	line 16707566 at [00001152][0001:00001152], len = 0x2
+	line 16707566 at [00001154][0001:00001154], len = 0x1
+	line 587 at [00001155][0001:00001155], len = 0x1
 
 ** ULongLTComparisonTest
 
-	line 612 at [000011E1][0001:000011E1], len = 0x1	g:\Fling OS\Fling OS\Kernel\Kernel\Kernel.cs
-	line 613 at [000011E2][0001:000011E2], len = 0x3
-	line 614 at [000011E5][0001:000011E5], len = 0xA
-	line 615 at [000011EF][0001:000011EF], len = 0x5
-	line 616 at [000011F4][0001:000011F4], len = 0x2
-	line 16707566 at [000011F6][0001:000011F6], len = 0x3
-	line 617 at [000011F9][0001:000011F9], len = 0x1
-	line 618 at [000011FA][0001:000011FA], len = 0x10
-	line 619 at [0000120A][0001:0000120A], len = 0x1
-	line 620 at [0000120B][0001:0000120B], len = 0xA
-	line 621 at [00001215][0001:00001215], len = 0x5
-	line 622 at [0000121A][0001:0000121A], len = 0x2
-	line 16707566 at [0000121C][0001:0000121C], len = 0x3
-	line 623 at [0000121F][0001:0000121F], len = 0x1
-	line 624 at [00001220][0001:00001220], len = 0x10
-	line 625 at [00001230][0001:00001230], len = 0x1
-	line 626 at [00001231][0001:00001231], len = 0xA
-	line 627 at [0000123B][0001:0000123B], len = 0x5
-	line 628 at [00001240][0001:00001240], len = 0x5
-	line 16707566 at [00001245][0001:00001245], len = 0x3
-	line 629 at [00001248][0001:00001248], len = 0x1
-	line 630 at [00001249][0001:00001249], len = 0x10
-	line 631 at [00001259][0001:00001259], len = 0x1
-	line 632 at [0000125A][0001:0000125A], len = 0x8
-	line 633 at [00001262][0001:00001262], len = 0x1
+	line 592 at [00001156][0001:00001156], len = 0x1	g:\Fling OS\Fling OS\Kernel\Kernel\Kernel.cs
+	line 593 at [00001157][0001:00001157], len = 0x3
+	line 594 at [0000115A][0001:0000115A], len = 0xA
+	line 595 at [00001164][0001:00001164], len = 0x5
+	line 596 at [00001169][0001:00001169], len = 0x2
+	line 16707566 at [0000116B][0001:0000116B], len = 0x3
+	line 597 at [0000116E][0001:0000116E], len = 0x1
+	line 598 at [0000116F][0001:0000116F], len = 0x10
+	line 599 at [0000117F][0001:0000117F], len = 0x1
+	line 600 at [00001180][0001:00001180], len = 0xA
+	line 601 at [0000118A][0001:0000118A], len = 0x5
+	line 602 at [0000118F][0001:0000118F], len = 0x2
+	line 16707566 at [00001191][0001:00001191], len = 0x3
+	line 603 at [00001194][0001:00001194], len = 0x1
+	line 604 at [00001195][0001:00001195], len = 0x10
+	line 605 at [000011A5][0001:000011A5], len = 0x1
+	line 606 at [000011A6][0001:000011A6], len = 0xA
+	line 607 at [000011B0][0001:000011B0], len = 0x5
+	line 608 at [000011B5][0001:000011B5], len = 0x5
+	line 16707566 at [000011BA][0001:000011BA], len = 0x3
+	line 609 at [000011BD][0001:000011BD], len = 0x1
+	line 610 at [000011BE][0001:000011BE], len = 0x10
+	line 611 at [000011CE][0001:000011CE], len = 0x1
+	line 612 at [000011CF][0001:000011CF], len = 0x8
+	line 613 at [000011D7][0001:000011D7], len = 0x1
 
 ** ULongMultiplicationTest
 
-	line 638 at [00001263][0001:00001263], len = 0x1	g:\Fling OS\Fling OS\Kernel\Kernel\Kernel.cs
-	line 639 at [00001264][0001:00001264], len = 0x3
-	line 640 at [00001267][0001:00001267], len = 0x3
-	line 641 at [0000126A][0001:0000126A], len = 0x4
-	line 642 at [0000126E][0001:0000126E], len = 0x6
-	line 644 at [00001274][0001:00001274], len = 0x3
-	line 645 at [00001277][0001:00001277], len = 0x3
-	line 646 at [0000127A][0001:0000127A], len = 0x4
-	line 647 at [0000127E][0001:0000127E], len = 0x7
-	line 649 at [00001285][0001:00001285], len = 0x4
-	line 650 at [00001289][0001:00001289], len = 0x4
-	line 651 at [0000128D][0001:0000128D], len = 0x4
-	line 652 at [00001291][0001:00001291], len = 0xB
-	line 654 at [0000129C][0001:0000129C], len = 0x7
-	line 655 at [000012A3][0001:000012A3], len = 0x4
-	line 656 at [000012A7][0001:000012A7], len = 0x4
-	line 657 at [000012AB][0001:000012AB], len = 0xE
-	line 659 at [000012B9][0001:000012B9], len = 0xA
-	line 660 at [000012C3][0001:000012C3], len = 0x4
-	line 661 at [000012C7][0001:000012C7], len = 0x4
-	line 662 at [000012CB][0001:000012CB], len = 0xE
-	line 664 at [000012D9][0001:000012D9], len = 0xA
-	line 665 at [000012E3][0001:000012E3], len = 0xA
-	line 666 at [000012ED][0001:000012ED], len = 0x4
-	line 667 at [000012F1][0001:000012F1], len = 0x7
-	line 669 at [000012F8][0001:000012F8], len = 0xA2
-	line 672 at [0000139A][0001:0000139A], len = 0x8
-	line 673 at [000013A2][0001:000013A2], len = 0x1
+	line 618 at [000011D8][0001:000011D8], len = 0x1	g:\Fling OS\Fling OS\Kernel\Kernel\Kernel.cs
+	line 619 at [000011D9][0001:000011D9], len = 0x3
+	line 620 at [000011DC][0001:000011DC], len = 0x3
+	line 621 at [000011DF][0001:000011DF], len = 0x4
+	line 622 at [000011E3][0001:000011E3], len = 0x6
+	line 624 at [000011E9][0001:000011E9], len = 0x3
+	line 625 at [000011EC][0001:000011EC], len = 0x3
+	line 626 at [000011EF][0001:000011EF], len = 0x4
+	line 627 at [000011F3][0001:000011F3], len = 0x7
+	line 629 at [000011FA][0001:000011FA], len = 0x4
+	line 630 at [000011FE][0001:000011FE], len = 0x4
+	line 631 at [00001202][0001:00001202], len = 0x4
+	line 632 at [00001206][0001:00001206], len = 0xB
+	line 634 at [00001211][0001:00001211], len = 0x7
+	line 635 at [00001218][0001:00001218], len = 0x4
+	line 636 at [0000121C][0001:0000121C], len = 0x4
+	line 637 at [00001220][0001:00001220], len = 0xE
+	line 639 at [0000122E][0001:0000122E], len = 0xA
+	line 640 at [00001238][0001:00001238], len = 0x4
+	line 641 at [0000123C][0001:0000123C], len = 0x4
+	line 642 at [00001240][0001:00001240], len = 0xE
+	line 644 at [0000124E][0001:0000124E], len = 0xA
+	line 645 at [00001258][0001:00001258], len = 0xA
+	line 646 at [00001262][0001:00001262], len = 0x4
+	line 647 at [00001266][0001:00001266], len = 0x7
+	line 649 at [0000126D][0001:0000126D], len = 0xA2
+	line 652 at [0000130F][0001:0000130F], len = 0x8
+	line 653 at [00001317][0001:00001317], len = 0x1
 
 ** StringConcatTest
 
-	line 678 at [000013A3][0001:000013A3], len = 0x1	g:\Fling OS\Fling OS\Kernel\Kernel\Kernel.cs
-	line 679 at [000013A4][0001:000013A4], len = 0x10
-	line 682 at [000013B4][0001:000013B4], len = 0x1
-	line 683 at [000013B5][0001:000013B5], len = 0x1A
-	line 684 at [000013CF][0001:000013CF], len = 0x7
-	line 685 at [000013D6][0001:000013D6], len = 0x1
-	line 16707566 at [000013D7][0001:000013D7], len = 0x2
-	line 686 at [000013D9][0001:000013D9], len = 0x1
-	line 687 at [000013DA][0001:000013DA], len = 0x1
-	line 688 at [000013DB][0001:000013DB], len = 0xB
-	line 689 at [000013E6][0001:000013E6], len = 0x10
-	line 690 at [000013F6][0001:000013F6], len = 0xB
-	line 691 at [00001401][0001:00001401], len = 0x1
-	line 16707566 at [00001402][0001:00001402], len = 0x2
-	line 16707566 at [00001404][0001:00001404], len = 0x1
-	line 693 at [00001405][0001:00001405], len = 0x10
-	line 694 at [00001415][0001:00001415], len = 0x1
+	line 658 at [00001318][0001:00001318], len = 0x1	g:\Fling OS\Fling OS\Kernel\Kernel\Kernel.cs
+	line 659 at [00001319][0001:00001319], len = 0x10
+	line 662 at [00001329][0001:00001329], len = 0x1
+	line 663 at [0000132A][0001:0000132A], len = 0x1A
+	line 664 at [00001344][0001:00001344], len = 0x7
+	line 665 at [0000134B][0001:0000134B], len = 0x1
+	line 16707566 at [0000134C][0001:0000134C], len = 0x2
+	line 666 at [0000134E][0001:0000134E], len = 0x1
+	line 667 at [0000134F][0001:0000134F], len = 0x1
+	line 668 at [00001350][0001:00001350], len = 0xB
+	line 669 at [0000135B][0001:0000135B], len = 0x10
+	line 670 at [0000136B][0001:0000136B], len = 0xB
+	line 671 at [00001376][0001:00001376], len = 0x1
+	line 16707566 at [00001377][0001:00001377], len = 0x2
+	line 16707566 at [00001379][0001:00001379], len = 0x1
+	line 673 at [0000137A][0001:0000137A], len = 0x10
+	line 674 at [0000138A][0001:0000138A], len = 0x1
 
 ** ObjectArrayTest
 
-	line 699 at [00001416][0001:00001416], len = 0x1	g:\Fling OS\Fling OS\Kernel\Kernel\Kernel.cs
-	line 700 at [00001417][0001:00001417], len = 0x10
-	line 703 at [00001427][0001:00001427], len = 0x1
-	line 704 at [00001428][0001:00001428], len = 0x8
-	line 705 at [00001430][0001:00001430], len = 0x8
-	line 706 at [00001438][0001:00001438], len = 0xE
-	line 707 at [00001446][0001:00001446], len = 0x7
-	line 16707566 at [0000144D][0001:0000144D], len = 0x3
-	line 708 at [00001450][0001:00001450], len = 0x1
-	line 709 at [00001451][0001:00001451], len = 0x10
-	line 710 at [00001461][0001:00001461], len = 0x1
-	line 711 at [00001462][0001:00001462], len = 0x1
-	line 16707566 at [00001463][0001:00001463], len = 0x2
-	line 712 at [00001465][0001:00001465], len = 0x1
-	line 713 at [00001466][0001:00001466], len = 0x1
-	line 714 at [00001467][0001:00001467], len = 0xB
-	line 715 at [00001472][0001:00001472], len = 0x10
-	line 716 at [00001482][0001:00001482], len = 0xB
-	line 717 at [0000148D][0001:0000148D], len = 0x1
-	line 16707566 at [0000148E][0001:0000148E], len = 0x2
-	line 16707566 at [00001490][0001:00001490], len = 0x1
-	line 719 at [00001491][0001:00001491], len = 0x10
-	line 720 at [000014A1][0001:000014A1], len = 0x1
+	line 679 at [0000138B][0001:0000138B], len = 0x1	g:\Fling OS\Fling OS\Kernel\Kernel\Kernel.cs
+	line 680 at [0000138C][0001:0000138C], len = 0x10
+	line 683 at [0000139C][0001:0000139C], len = 0x1
+	line 684 at [0000139D][0001:0000139D], len = 0x8
+	line 685 at [000013A5][0001:000013A5], len = 0x8
+	line 686 at [000013AD][0001:000013AD], len = 0xE
+	line 687 at [000013BB][0001:000013BB], len = 0x7
+	line 16707566 at [000013C2][0001:000013C2], len = 0x3
+	line 688 at [000013C5][0001:000013C5], len = 0x1
+	line 689 at [000013C6][0001:000013C6], len = 0x10
+	line 690 at [000013D6][0001:000013D6], len = 0x1
+	line 691 at [000013D7][0001:000013D7], len = 0x1
+	line 16707566 at [000013D8][0001:000013D8], len = 0x2
+	line 692 at [000013DA][0001:000013DA], len = 0x1
+	line 693 at [000013DB][0001:000013DB], len = 0x1
+	line 694 at [000013DC][0001:000013DC], len = 0xB
+	line 695 at [000013E7][0001:000013E7], len = 0x10
+	line 696 at [000013F7][0001:000013F7], len = 0xB
+	line 697 at [00001402][0001:00001402], len = 0x1
+	line 16707566 at [00001403][0001:00001403], len = 0x2
+	line 16707566 at [00001405][0001:00001405], len = 0x1
+	line 699 at [00001406][0001:00001406], len = 0x10
+	line 700 at [00001416][0001:00001416], len = 0x1
 
 ** IntArrayTest
 
-	line 725 at [000014A2][0001:000014A2], len = 0x1	g:\Fling OS\Fling OS\Kernel\Kernel\Kernel.cs
-	line 726 at [000014A3][0001:000014A3], len = 0x10
-	line 729 at [000014B3][0001:000014B3], len = 0x1
-	line 730 at [000014B4][0001:000014B4], len = 0xB
-	line 731 at [000014BF][0001:000014BF], len = 0x5
-	line 732 at [000014C4][0001:000014C4], len = 0x4
-	line 733 at [000014C8][0001:000014C8], len = 0x1
-	line 16707566 at [000014C9][0001:000014C9], len = 0x2
-	line 734 at [000014CB][0001:000014CB], len = 0x1
-	line 735 at [000014CC][0001:000014CC], len = 0x1
-	line 736 at [000014CD][0001:000014CD], len = 0xB
-	line 737 at [000014D8][0001:000014D8], len = 0x10
-	line 738 at [000014E8][0001:000014E8], len = 0xB
-	line 739 at [000014F3][0001:000014F3], len = 0x1
-	line 16707566 at [000014F4][0001:000014F4], len = 0x2
-	line 16707566 at [000014F6][0001:000014F6], len = 0x1
-	line 741 at [000014F7][0001:000014F7], len = 0x10
-	line 742 at [00001507][0001:00001507], len = 0x1
+	line 705 at [00001417][0001:00001417], len = 0x1	g:\Fling OS\Fling OS\Kernel\Kernel\Kernel.cs
+	line 706 at [00001418][0001:00001418], len = 0x10
+	line 709 at [00001428][0001:00001428], len = 0x1
+	line 710 at [00001429][0001:00001429], len = 0xB
+	line 711 at [00001434][0001:00001434], len = 0x5
+	line 712 at [00001439][0001:00001439], len = 0x4
+	line 713 at [0000143D][0001:0000143D], len = 0x1
+	line 16707566 at [0000143E][0001:0000143E], len = 0x2
+	line 714 at [00001440][0001:00001440], len = 0x1
+	line 715 at [00001441][0001:00001441], len = 0x1
+	line 716 at [00001442][0001:00001442], len = 0xB
+	line 717 at [0000144D][0001:0000144D], len = 0x10
+	line 718 at [0000145D][0001:0000145D], len = 0xB
+	line 719 at [00001468][0001:00001468], len = 0x1
+	line 16707566 at [00001469][0001:00001469], len = 0x2
+	line 16707566 at [0000146B][0001:0000146B], len = 0x1
+	line 721 at [0000146C][0001:0000146C], len = 0x10
+	line 722 at [0000147C][0001:0000147C], len = 0x1
 
 ** DummyObjectTest
 
-	line 747 at [00001508][0001:00001508], len = 0x1	g:\Fling OS\Fling OS\Kernel\Kernel\Kernel.cs
-	line 748 at [00001509][0001:00001509], len = 0x10
-	line 751 at [00001519][0001:00001519], len = 0x1
-	line 752 at [0000151A][0001:0000151A], len = 0x6
-	line 753 at [00001520][0001:00001520], len = 0x6
-	line 754 at [00001526][0001:00001526], len = 0x6
-	line 755 at [0000152C][0001:0000152C], len = 0x13
-	line 756 at [0000153F][0001:0000153F], len = 0xE
-	line 16707566 at [0000154D][0001:0000154D], len = 0x3
-	line 757 at [00001550][0001:00001550], len = 0x1
+	line 727 at [0000147D][0001:0000147D], len = 0x1	g:\Fling OS\Fling OS\Kernel\Kernel\Kernel.cs
+	line 728 at [0000147E][0001:0000147E], len = 0x10
+	line 731 at [0000148E][0001:0000148E], len = 0x1
+	line 732 at [0000148F][0001:0000148F], len = 0x6
+	line 733 at [00001495][0001:00001495], len = 0x6
+	line 734 at [0000149B][0001:0000149B], len = 0x6
+	line 735 at [000014A1][0001:000014A1], len = 0x13
+	line 736 at [000014B4][0001:000014B4], len = 0xE
+	line 16707566 at [000014C2][0001:000014C2], len = 0x3
+	line 737 at [000014C5][0001:000014C5], len = 0x1
+	line 738 at [000014C6][0001:000014C6], len = 0x10
+	line 739 at [000014D6][0001:000014D6], len = 0x1
+	line 741 at [000014D7][0001:000014D7], len = 0xD
+	line 16707566 at [000014E4][0001:000014E4], len = 0x3
+	line 742 at [000014E7][0001:000014E7], len = 0x1
+	line 743 at [000014E8][0001:000014E8], len = 0x10
+	line 744 at [000014F8][0001:000014F8], len = 0x1
+	line 745 at [000014F9][0001:000014F9], len = 0x7
+	line 746 at [00001500][0001:00001500], len = 0xD
+	line 16707566 at [0000150D][0001:0000150D], len = 0x3
+	line 747 at [00001510][0001:00001510], len = 0x1
+	line 748 at [00001511][0001:00001511], len = 0x10
+	line 749 at [00001521][0001:00001521], len = 0x1
+	line 750 at [00001522][0001:00001522], len = 0x1
+	line 16707566 at [00001523][0001:00001523], len = 0x2
+	line 751 at [00001525][0001:00001525], len = 0x1
+	line 752 at [00001526][0001:00001526], len = 0x1
+	line 753 at [00001527][0001:00001527], len = 0xB
+	line 754 at [00001532][0001:00001532], len = 0x10
+	line 755 at [00001542][0001:00001542], len = 0xB
+	line 756 at [0000154D][0001:0000154D], len = 0x1
+	line 16707566 at [0000154E][0001:0000154E], len = 0x2
+	line 16707566 at [00001550][0001:00001550], len = 0x1
 	line 758 at [00001551][0001:00001551], len = 0x10
 	line 759 at [00001561][0001:00001561], len = 0x1
-	line 761 at [00001562][0001:00001562], len = 0xD
-	line 16707566 at [0000156F][0001:0000156F], len = 0x3
-	line 762 at [00001572][0001:00001572], len = 0x1
-	line 763 at [00001573][0001:00001573], len = 0x10
-	line 764 at [00001583][0001:00001583], len = 0x1
-	line 765 at [00001584][0001:00001584], len = 0x7
-	line 766 at [0000158B][0001:0000158B], len = 0xD
-	line 16707566 at [00001598][0001:00001598], len = 0x3
-	line 767 at [0000159B][0001:0000159B], len = 0x1
-	line 768 at [0000159C][0001:0000159C], len = 0x10
-	line 769 at [000015AC][0001:000015AC], len = 0x1
-	line 770 at [000015AD][0001:000015AD], len = 0x1
-	line 16707566 at [000015AE][0001:000015AE], len = 0x2
-	line 771 at [000015B0][0001:000015B0], len = 0x1
-	line 772 at [000015B1][0001:000015B1], len = 0x1
-	line 773 at [000015B2][0001:000015B2], len = 0xB
-	line 774 at [000015BD][0001:000015BD], len = 0x10
-	line 775 at [000015CD][0001:000015CD], len = 0xB
-	line 776 at [000015D8][0001:000015D8], len = 0x1
-	line 16707566 at [000015D9][0001:000015D9], len = 0x2
-	line 16707566 at [000015DB][0001:000015DB], len = 0x1
-	line 778 at [000015DC][0001:000015DC], len = 0x10
-	line 779 at [000015EC][0001:000015EC], len = 0x1
 
 ** DivideByZeroTest
 
-	line 784 at [000015ED][0001:000015ED], len = 0x1	g:\Fling OS\Fling OS\Kernel\Kernel\Kernel.cs
-	line 785 at [000015EE][0001:000015EE], len = 0x10
-	line 788 at [000015FE][0001:000015FE], len = 0x1
-	line 789 at [000015FF][0001:000015FF], len = 0x2
-	line 790 at [00001601][0001:00001601], len = 0x2
-	line 791 at [00001603][0001:00001603], len = 0x2
-	line 792 at [00001605][0001:00001605], len = 0x4
-	line 793 at [00001609][0001:00001609], len = 0x1
-	line 16707566 at [0000160A][0001:0000160A], len = 0x2
-	line 794 at [0000160C][0001:0000160C], len = 0x1
-	line 795 at [0000160D][0001:0000160D], len = 0x1
-	line 796 at [0000160E][0001:0000160E], len = 0xB
-	line 797 at [00001619][0001:00001619], len = 0x10
-	line 798 at [00001629][0001:00001629], len = 0xB
-	line 800 at [00001634][0001:00001634], len = 0xB
-	line 801 at [0000163F][0001:0000163F], len = 0x1A
-	line 16707566 at [00001659][0001:00001659], len = 0x4
-	line 802 at [0000165D][0001:0000165D], len = 0x1
-	line 803 at [0000165E][0001:0000165E], len = 0x10
-	line 804 at [0000166E][0001:0000166E], len = 0x1
-	line 805 at [0000166F][0001:0000166F], len = 0x1
-	line 16707566 at [00001670][0001:00001670], len = 0x2
-	line 16707566 at [00001672][0001:00001672], len = 0x1
-	line 807 at [00001673][0001:00001673], len = 0x10
-	line 808 at [00001683][0001:00001683], len = 0x1
+	line 764 at [00001562][0001:00001562], len = 0x1	g:\Fling OS\Fling OS\Kernel\Kernel\Kernel.cs
+	line 765 at [00001563][0001:00001563], len = 0x10
+	line 768 at [00001573][0001:00001573], len = 0x1
+	line 769 at [00001574][0001:00001574], len = 0x2
+	line 770 at [00001576][0001:00001576], len = 0x2
+	line 771 at [00001578][0001:00001578], len = 0x2
+	line 772 at [0000157A][0001:0000157A], len = 0x4
+	line 773 at [0000157E][0001:0000157E], len = 0x1
+	line 16707566 at [0000157F][0001:0000157F], len = 0x2
+	line 774 at [00001581][0001:00001581], len = 0x1
+	line 775 at [00001582][0001:00001582], len = 0x1
+	line 776 at [00001583][0001:00001583], len = 0xB
+	line 777 at [0000158E][0001:0000158E], len = 0x10
+	line 778 at [0000159E][0001:0000159E], len = 0xB
+	line 780 at [000015A9][0001:000015A9], len = 0xB
+	line 781 at [000015B4][0001:000015B4], len = 0x1A
+	line 16707566 at [000015CE][0001:000015CE], len = 0x4
+	line 782 at [000015D2][0001:000015D2], len = 0x1
+	line 783 at [000015D3][0001:000015D3], len = 0x10
+	line 784 at [000015E3][0001:000015E3], len = 0x1
+	line 785 at [000015E4][0001:000015E4], len = 0x1
+	line 16707566 at [000015E5][0001:000015E5], len = 0x2
+	line 16707566 at [000015E7][0001:000015E7], len = 0x1
+	line 787 at [000015E8][0001:000015E8], len = 0x10
+	line 788 at [000015F8][0001:000015F8], len = 0x1
+
+** ExceptionsTestP1
+
+	line 809 at [000015F9][0001:000015F9], len = 0x1	g:\Fling OS\Fling OS\Kernel\Kernel\Kernel.cs
+	line 810 at [000015FA][0001:000015FA], len = 0x6
+	line 811 at [00001600][0001:00001600], len = 0x1
+
+** ExceptionsTestP2
+
+	line 816 at [00001601][0001:00001601], len = 0x1	g:\Fling OS\Fling OS\Kernel\Kernel\Kernel.cs
+	line 817 at [00001602][0001:00001602], len = 0x6
+	line 820 at [00001608][0001:00001608], len = 0x1
+	line 821 at [00001609][0001:00001609], len = 0x15
+	line 822 at [0000161E][0001:0000161E], len = 0x1
+	line 16707566 at [0000161F][0001:0000161F], len = 0x2
+	line 824 at [00001621][0001:00001621], len = 0x1
+	line 825 at [00001622][0001:00001622], len = 0x10
+	line 826 at [00001632][0001:00001632], len = 0x1
+	line 16707566 at [00001633][0001:00001633], len = 0x1
+	line 16707566 at [00001634][0001:00001634], len = 0x1
+	line 827 at [00001635][0001:00001635], len = 0x1
 
 ** Add
 
-	line 827 at [00001684][0001:00001684], len = 0x1	g:\Fling OS\Fling OS\Kernel\Kernel\Kernel.cs
-	line 828 at [00001685][0001:00001685], len = 0x10
-	line 829 at [00001695][0001:00001695], len = 0x2
+	line 846 at [00001636][0001:00001636], len = 0x1	g:\Fling OS\Fling OS\Kernel\Kernel\Kernel.cs
+	line 847 at [00001637][0001:00001637], len = 0x10
+	line 848 at [00001647][0001:00001647], len = 0x2
 
 ** .ctor
 
-	line 821 at [00001697][0001:00001697], len = 0x7	g:\Fling OS\Fling OS\Kernel\Kernel\Kernel.cs
-	line 823 at [0000169E][0001:0000169E], len = 0x8
-	line 824 at [000016A6][0001:000016A6], len = 0x8
-	line 16707566 at [000016AE][0001:000016AE], len = 0x8
+	line 840 at [00001649][0001:00001649], len = 0x7	g:\Fling OS\Fling OS\Kernel\Kernel\Kernel.cs
+	line 842 at [00001650][0001:00001650], len = 0x8
+	line 843 at [00001658][0001:00001658], len = 0x8
+	line 16707566 at [00001660][0001:00001660], len = 0x8
 
 
 
@@ -1917,35 +1938,38 @@ Compiland = Kernel.Dummy
   000002ED  0001:000002ED  00000002  Kernel.Kernel
   000002EF  0001:000002EF  00000119  Kernel.Kernel
   00000408  0001:00000408  0000004C  Kernel.Kernel
-  00000454  0001:00000454  00000500  Kernel.Kernel
-  00000954  0001:00000954  000000A1  Kernel.Kernel
-  000009F5  0001:000009F5  00000008  Kernel.Kernel
-  000009FD  0001:000009FD  00000035  Kernel.Kernel
-  00000A32  0001:00000A32  00000042  Kernel.Kernel
-  00000A74  0001:00000A74  00000063  Kernel.Kernel
-  00000AD7  0001:00000AD7  00000042  Kernel.Kernel
-  00000B19  0001:00000B19  000001A3  Kernel.Kernel
-  00000CBC  0001:00000CBC  0000010F  Kernel.Kernel
-  00000DCB  0001:00000DCB  0000009D  Kernel.Kernel
-  00000E68  0001:00000E68  0000016E  Kernel.Kernel
-  00000FD6  0001:00000FD6  00000012  Kernel.Kernel
-  00000FE8  0001:00000FE8  00000041  Kernel.Kernel
-  00001029  0001:00001029  000001B8  Kernel.Kernel
-  000011E1  0001:000011E1  00000082  Kernel.Kernel
-  00001263  0001:00001263  00000140  Kernel.Kernel
-  000013A3  0001:000013A3  00000073  Kernel.Kernel
-  00001416  0001:00001416  0000008C  Kernel.Kernel
-  000014A2  0001:000014A2  00000066  Kernel.Kernel
-  00001508  0001:00001508  000000E5  Kernel.Kernel
-  000015ED  0001:000015ED  00000097  Kernel.Kernel
-  00001684  0001:00001684  00000013  Kernel.Dummy
-  00001697  0001:00001697  0000001F  Kernel.Dummy
+  00000454  0001:00000454  000000A8  Kernel.Kernel
+  000004FC  0001:000004FC  0000002E  Kernel.Kernel
+  0000052A  0001:0000052A  0000003C  Kernel.Kernel
+  00000566  0001:00000566  00000051  Kernel.Kernel
+  000005B7  0001:000005B7  0000003C  Kernel.Kernel
+  000005F3  0001:000005F3  000000D5  Kernel.Kernel
+  000006C8  0001:000006C8  0000003C  Kernel.Kernel
+  00000704  0001:00000704  000001A3  Kernel.Kernel
+  000008A7  0001:000008A7  0000010F  Kernel.Kernel
+  000009B6  0001:000009B6  0000009D  Kernel.Kernel
+  00000A53  0001:00000A53  0000016E  Kernel.Kernel
+  00000BC1  0001:00000BC1  00000012  Kernel.Kernel
+  00000BD3  0001:00000BD3  00000041  Kernel.Kernel
+  00000C14  0001:00000C14  000001B8  Kernel.Kernel
+  00000DCC  0001:00000DCC  0000038A  Kernel.Kernel
+  00001156  0001:00001156  00000082  Kernel.Kernel
+  000011D8  0001:000011D8  00000140  Kernel.Kernel
+  00001318  0001:00001318  00000073  Kernel.Kernel
+  0000138B  0001:0000138B  0000008C  Kernel.Kernel
+  00001417  0001:00001417  00000066  Kernel.Kernel
+  0000147D  0001:0000147D  000000E5  Kernel.Kernel
+  00001562  0001:00001562  00000097  Kernel.Kernel
+  000015F9  0001:000015F9  00000008  Kernel.Kernel
+  00001601  0001:00001601  00000035  Kernel.Kernel
+  00001636  0001:00001636  00000013  Kernel.Dummy
+  00001649  0001:00001649  0000001F  Kernel.Dummy
 
 
 
 *** DEBUG STREAMS
 
-Stream: TOKENRIDMAP(70)
+Stream: TOKENRIDMAP(73)
 00 00 00 00 | ....
 01 00 00 00 | ....
 02 00 00 00 | ....
@@ -2015,13 +2039,16 @@ Stream: TOKENRIDMAP(70)
 43 00 00 00 | C...
 44 00 00 00 | D...
 45 00 00 00 | E...
+46 00 00 00 | F...
+47 00 00 00 | G...
+48 00 00 00 | H...
 20 00 00 00 |  ...
 Summary :
-	No of Elems = 70
+	No of Elems = 73
 	Sizeof(Elem) = 4
 
 Stream: SECTIONHEADERS(1)
-00 00 00 00 00 00 00 00 - B6 16 00 00 00 00 00 00 - B6 16 00 00 00 00 00 00 - 00 00 00 00 00 00 00 00 - 00 00 00 00 00 00 00 00 | ........Â.......Â.......................
+00 00 00 00 00 00 00 00 - 68 16 00 00 00 00 00 00 - 68 16 00 00 00 00 00 00 - 00 00 00 00 00 00 00 00 - 00 00 00 00 00 00 00 00 | ........h.......h.......................
 Summary :
 	No of Elems = 1
 	Sizeof(Elem) = 40

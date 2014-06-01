@@ -42,3 +42,5 @@ G:\Fling OS\Fling OS\Kernel\Debug\Kernel.Debug.Debugger\obj\Debug\Kernel.Debug.D
 G:\Fling OS\Fling OS\Kernel\Debug\Kernel.Debug.Debugger\obj\Debug\Kernel.Debug.Debugger.exe
 G:\Fling OS\Fling OS\Kernel\Debug\Kernel.Debug.Debugger\obj\Debug\Kernel.Debug.Debugger.pdb
 G:\Fling OS\Fling OS\Kernel\Debug\Kernel.Debug.Debugger\bin\Debug\CommonTools.dll
+G:\Fling OS\Fling OS\Kernel\Debug\Kernel.Debug.Debugger\bin\Debug\Kernel.Debug.Debugger.exe.CodeAnalysisLog.xml
+G:\Fling OS\Fling OS\Kernel\Debug\Kernel.Debug.Debugger\bin\Debug\Kernel.Debug.Debugger.exe.lastcodeanalysissucceeded

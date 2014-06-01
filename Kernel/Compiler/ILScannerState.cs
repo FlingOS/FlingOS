@@ -46,10 +46,6 @@ namespace Kernel.Compiler
         /// </summary>
         public MethodBase HaltMethod;
         /// <summary>
-        /// The method to use as the new Array constructor method.
-        /// </summary>
-        public MethodBase ArrayConstructorMethod;
-        /// <summary>
         /// The method to use to throw a NullReferenceException.
         /// </summary>
         public MethodBase ThrowNullReferenceExceptionMethod;
@@ -66,6 +62,10 @@ namespace Kernel.Compiler
         /// The class to use as the kernel's Type class.
         /// </summary>
         public Type TypeClass;
+        /// <summary>
+        /// The class to use as the kernel's Array class.
+        /// </summary>
+        public Type ArrayClass;
         /// <summary>
         /// The class to use as the kernel's String class.
         /// </summary>

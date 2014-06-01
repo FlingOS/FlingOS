@@ -186,9 +186,9 @@
             </div>
                 </td>
               </tr>
-              <tr data="public;static;declared;notNetfw;">
+              <tr data="private;static;declared;notNetfw;">
                 <td>
-                  <img src="./../icons/pubmethod.gif" alt="Public method" title="Public method" />
+                  <img src="./../icons/privmethod.gif" alt="Private method" title="Private method" />
                   <img src="./../icons/static.gif" alt="Static member" title="Static member" />
                 </td>
                 <td>
@@ -196,7 +196,8 @@
                 </td>
                 <td>
                   <div class="summary">
-            Writes a piece of text to the first line of the screen
+            Writes a piece of text to the first line of the screen. Note: Does not use same string memory structure as C# so cannot be called
+            from C#. Uses format of: Length as DWORD, Characters as BYTE
             </div>
                 </td>
               </tr>

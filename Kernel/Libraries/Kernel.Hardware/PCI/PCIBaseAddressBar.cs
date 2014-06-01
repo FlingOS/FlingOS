@@ -5,9 +5,9 @@ using System.Text;
 
 namespace Kernel.Hardware.PCI
 {
-    public class PCIBaseAddressBar : FOS_System.Object
+    public unsafe class PCIBaseAddressBar : FOS_System.Object
     {
-        private uint baseAddress = 0;
+        private byte* baseAddress;
         private ushort prefetchable = 0;
         private byte type = 0;
         private bool isIO = false;
@@ -19,7 +19,7 @@ namespace Kernel.Hardware.PCI
 
             if (isIO)
             {
-                baseAddress = raw & 0xFFFFFFFC;
+                baseAddress = (byte*)(raw & 0xFFFFFFFC);
             }
             else
             {
@@ -28,10 +28,10 @@ namespace Kernel.Hardware.PCI
                 switch (type)
                 {
                     case 0x00:
-                        baseAddress = raw & 0xFFFFFFF0;
+                        baseAddress = (byte*)(raw & 0xFFFFFFF0);
                         break;
                     case 0x01:
-                        baseAddress = raw & 0xFFFFFFF0;
+                        baseAddress = (byte*)(raw & 0xFFFFFFF0);
                         break;
                 }
             }
@@ -43,7 +43,7 @@ namespace Kernel.Hardware.PCI
             return size;
         }
 
-        public uint BaseAddress()
+        public byte* BaseAddress()
         {
             return baseAddress;
         }

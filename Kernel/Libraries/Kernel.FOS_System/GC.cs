@@ -32,8 +32,14 @@ namespace Kernel.FOS_System
         /// </summary>
         public static bool InsideGC = false;
 
-        public static int numStrings = 0;
+        /// <summary>
+        /// The number of strings currently allocated on the heap.
+        /// </summary>
+        public static int NumStrings = 0;
 
+        /// <summary>
+        /// The linked-list of objects to clean up.
+        /// </summary>
         private static ObjectToCleanup* CleanupList;
 
         //TODO - GC needs an object reference tree to do a thorough scan to find reference loops
@@ -109,7 +115,8 @@ namespace Kernel.FOS_System
         /// </summary>
         /// <remarks>"length" param placed first so that calling NewArr method is simple
         /// with regards to pushing params onto the stack.</remarks>
-        /// <param name="theType">The type of element in the array to create.</param>
+        /// <param name="length">The length of the array to create.</param>
+        /// <param name="elemType">The type of element in the array to create.</param>
         /// <returns>A pointer to the new array in memory.</returns>
         [Compiler.NewArrMethod]
         [Compiler.NoDebug]
@@ -222,7 +229,7 @@ namespace Kernel.FOS_System
             }
 
             NumObjs++;
-            numStrings++;
+            NumStrings++;
 
             //Initialise the GCHeader
             SetSignature(newObjPtr);
@@ -416,7 +423,9 @@ namespace Kernel.FOS_System
             headerPtr->Checksum = 0xB81D5BC4U;
         }
 
-
+        /// <summary>
+        /// Scans the CleanupList to free objects from memory.
+        /// </summary>
         [Compiler.NoDebug]
         [Compiler.NoGC]
         public static void Cleanup()
@@ -439,7 +448,7 @@ namespace Kernel.FOS_System
                     FOS_System.Object obj = (FOS_System.Object)Utilities.ObjectUtilities.GetObject(objPtr);
                     if (obj._Type == (FOS_System.Type)typeof(FOS_System.String))
                     {
-                        numStrings--;
+                        NumStrings--;
                     }
 
                     Heap.Free(objPtr);
@@ -455,6 +464,11 @@ namespace Kernel.FOS_System
             InsideGC = false;
         }
 
+        /// <summary>
+        /// Adds an object to the cleanup list.
+        /// </summary>
+        /// <param name="objHeaderPtr">A pointer to the object's header.</param>
+        /// <param name="objPtr">A pointer to the object.</param>
         [Compiler.NoDebug]
         [Compiler.NoGC]
         private static void AddObjectToCleanup(GCHeader* objHeaderPtr, void* objPtr)
@@ -468,6 +482,10 @@ namespace Kernel.FOS_System
 
             CleanupList = newObjToCleanupPtr;
         }
+        /// <summary>
+        /// Removes an object from the cleanup list.
+        /// </summary>
+        /// <param name="objHeaderPtr">A pointer to the object's header.</param>
         [Compiler.NoDebug]
         [Compiler.NoGC]
         private static void RemoveObjectToCleanup(GCHeader* objHeaderPtr)
@@ -483,6 +501,10 @@ namespace Kernel.FOS_System
                 currObjToCleanupPtr = currObjToCleanupPtr->prevPtr;
             }
         }
+        /// <summary>
+        /// Removes an object from the cleanup list.
+        /// </summary>
+        /// <param name="objToCleanupPtr">A pointer to the cleanup-list element.</param>
         [Compiler.NoDebug]
         [Compiler.NoGC]
         private static void RemoveObjectToCleanup(ObjectToCleanup* objToCleanupPtr)
@@ -524,12 +546,26 @@ namespace Kernel.FOS_System
         /// </summary>
         public uint RefCount;
     }
-
+    /// <summary>
+    /// Represents an object to be garbage collected (i.e. freed from memory).
+    /// </summary>
     public unsafe struct ObjectToCleanup
     {
+        /// <summary>
+        /// The pointer to the object.
+        /// </summary>
         public void* objPtr;
+        /// <summary>
+        /// The pointer to the object's header.
+        /// </summary>
         public GCHeader* objHeaderPtr;
+        /// <summary>
+        /// A pointer to the previous item in the cleanup list.
+        /// </summary>
         public ObjectToCleanup* prevPtr;
+        /// <summary>
+        /// A pointer to the next item in the cleanup list.
+        /// </summary>
         public ObjectToCleanup* nextPtr;
     }
 }

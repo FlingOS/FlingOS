@@ -31,10 +31,6 @@ namespace Kernel.FOS_System.IO
                     catch
                     {
                         BasicConsole.WriteLine("Error initialising disk: " + ExceptionMethods.CurrentException.Message);
-                        if (ExceptionMethods.CurrentException._Type == (FOS_System.Type)typeof(Exceptions.NotSupportedException))
-                        {
-                            BasicConsole.WriteLine(((Exceptions.NotSupportedException)ExceptionMethods.CurrentException).ExtendedMessage);
-                        }
                     }
                 }
             }

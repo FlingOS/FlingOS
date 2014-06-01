@@ -57,31 +57,17 @@
                 <th class="ps_nameColumn">Name</th>
                 <th class="ps_descriptionColumn">Description</th>
               </tr>
-              <tr data="public;static;declared;notNetfw;">
+              <tr data="private;static;declared;notNetfw;">
                 <td>
-                  <img src="./../icons/pubmethod.gif" alt="Public method" title="Public method" />
+                  <img src="./../icons/privmethod.gif" alt="Private method" title="Private method" />
                   <img src="./../icons/static.gif" alt="Static member" title="Static member" />
                 </td>
                 <td>
-                  <a href="d2a089c7-8e08-dd29-abd4-98dc6d049bd1.htm" target="">ClearMessage</a>
+                  <a href="25ee62fc-dffe-c023-b287-51a4893ba166.htm" target="">BeginEnableDebug</a>
                 </td>
                 <td>
                   <div class="summary">
-            Clears the screen
-            </div>
-                </td>
-              </tr>
-              <tr data="public;static;declared;notNetfw;">
-                <td>
-                  <img src="./../icons/pubmethod.gif" alt="Public method" title="Public method" />
-                  <img src="./../icons/static.gif" alt="Static member" title="Static member" />
-                </td>
-                <td>
-                  <a href="71f89930-c842-bb7f-47fe-2651bb791163.htm" target="">DisplayMessage</a>
-                </td>
-                <td>
-                  <div class="summary">
-            Displays the specified message to the screen.
+            Begins enabling the debug interrupt handler
             </div>
                 </td>
               </tr>
@@ -91,11 +77,11 @@
                   <img src="./../icons/static.gif" alt="Static member" title="Static member" />
                 </td>
                 <td>
-                  <a href="152b1ed1-0687-f63f-8c8d-39fd05ef5bd9.htm" target="">EnableDebug</a>
+                  <a href="d018828c-6bc8-465b-78a1-8524ef7dae2f.htm" target="">EndEnableDebug</a>
                 </td>
                 <td>
                   <div class="summary">
-            Enables the debug interrupt handler
+            Ends enabling the debug interrupt handler
             </div>
                 </td>
               </tr>
@@ -152,6 +138,20 @@
                 <td>
                   <div class="summary">
             Inserts the debug commands into the ASM.
+            </div>
+                </td>
+              </tr>
+              <tr data="public;static;declared;notNetfw;">
+                <td>
+                  <img src="./../icons/pubmethod.gif" alt="Public method" title="Public method" />
+                  <img src="./../icons/static.gif" alt="Static member" title="Static member" />
+                </td>
+                <td>
+                  <a href="5517cdf6-d0d1-0576-3c91-f74755ba650a.htm" target="">Int3</a>
+                </td>
+                <td>
+                  <div class="summary">
+            Invokes interrupt 3.
             </div>
                 </td>
               </tr>
@@ -254,7 +254,7 @@
                 </td>
                 <td>
                   <div class="summary">
-            Reads a byte from the debug serial port
+            Reads a byte from the debug serial port. Not callable from C#.
             </div>
                 </td>
               </tr>
@@ -268,7 +268,7 @@
                 </td>
                 <td>
                   <div class="summary">
-            Reads a UInt16 from the debug serial port
+            Reads a UInt16 from the debug serial port. Not callable from C#.
             </div>
                 </td>
               </tr>
@@ -282,7 +282,21 @@
                 </td>
                 <td>
                   <div class="summary">
-            Reads a UInt32 from the debug serial port
+            Reads a UInt32 from the debug serial port. Not callable from C#.
+            </div>
+                </td>
+              </tr>
+              <tr data="public;static;declared;notNetfw;">
+                <td>
+                  <img src="./../icons/pubmethod.gif" alt="Public method" title="Public method" />
+                  <img src="./../icons/static.gif" alt="Static member" title="Static member" />
+                </td>
+                <td>
+                  <a href="afef0251-7e44-8a17-8083-9215f5d12355.htm" target="">Serial_SafeReadUInt32</a>
+                </td>
+                <td>
+                  <div class="summary">
+            Safely reads a UInt32 from the debug serial port
             </div>
                 </td>
               </tr>
@@ -296,7 +310,7 @@
                 </td>
                 <td>
                   <div class="summary">
-            Writes the specified value to the debug serial port
+            Writes the specified value to the debug serial port. Not callable from C#.
             </div>
                 </td>
               </tr>
@@ -310,7 +324,7 @@
                 </td>
                 <td>
                   <div class="summary">
-            Writes the specified value to the debug serial port
+            Writes the specified value to the debug serial port. Not callable from C#.
             </div>
                 </td>
               </tr>
@@ -324,7 +338,7 @@
                 </td>
                 <td>
                   <div class="summary">
-            Writes the specified value to the debug serial port
+            Writes the specified value to the debug serial port. Not callable from C#.
             </div>
                 </td>
               </tr>
@@ -338,7 +352,7 @@
                 </td>
                 <td>
                   <div class="summary">
-            Writes the specified value to the debug serial port
+            Writes the specified value to the debug serial port. Not callable from C#.
             </div>
                 </td>
               </tr>

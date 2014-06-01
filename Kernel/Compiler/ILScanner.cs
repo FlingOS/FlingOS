@@ -214,10 +214,7 @@ namespace Kernel.Compiler
                 TheScannerState.HaltMethod = (from chunks in ILChunks
                                               where (chunks.IsHaltMethod)
                                               select chunks).First().Method;
-                TheScannerState.ArrayConstructorMethod = (from chunks in ILChunks
-                                                          where (chunks.IsArrayConstructorMethod)
-                                                          select chunks).First().Method;
-
+                
                 foreach (ILChunk aChunk in ILChunks)
                 {
                     //We don't want to break the loop if one chunk fails
@@ -1641,6 +1638,12 @@ namespace Kernel.Compiler
                         if (typeClassAttr != null)
                         {
                             TheScannerState.TypeClass = theType;
+                        }
+
+                        ArrayClassAttribute arrayClassAttr = (ArrayClassAttribute)theType.GetCustomAttribute(typeof(ArrayClassAttribute));
+                        if (arrayClassAttr != null)
+                        {
+                            TheScannerState.ArrayClass = theType;
                         }
 
                         StringClassAttribute stringClassAttr = (StringClassAttribute)theType.GetCustomAttribute(typeof(StringClassAttribute));

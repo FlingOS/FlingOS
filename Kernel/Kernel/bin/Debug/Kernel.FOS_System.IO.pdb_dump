@@ -887,83 +887,83 @@ Custom         :   (none)
 ** Module: Kernel.FOS_System.IO.FileSystemManager
 
 
-Function       : In MetaData, [00001E96][0001:00001E96], len = 000000E4, Init
+Function       : In MetaData, [00001E96][0001:00001E96], len = 000000A2, Init
                  Function attribute:
                  Function info:
 FuncDebugStart :   
 FuncDebugEnd   :   
-Block          :   static, [00001E96][0001:00001E96], len = 000000E4, (none)
+Block          :   static, [00001E96][0001:00001E96], len = 000000A2, (none)
 UsingNamespace :     USystem
 UsingNamespace :     UKernel.FOS_System.Collections
 UsingNamespace :     UKernel.Hardware
 UsingNamespace :     UKernel.Hardware.Devices
 UsingNamespace :     UKernel.FOS_System.IO.Disk
 Data           :     Slot, [00000002], Local, CS$4$0000
-Block          :     static, [00001EAD][0001:00001EAD], len = 000000C6, (none)
+Block          :     static, [00001EAD][0001:00001EAD], len = 00000084, (none)
 Data           :       Slot, [00000000], Local, i
-Block          :       static, [00001EB4][0001:00001EB4], len = 000000A7, (none)
+Block          :       static, [00001EB1][0001:00001EB1], len = 0000006B, (none)
 Data           :         Slot, [00000001], Local, aDevice
 Custom         :   (none)
 
-Function       : In MetaData, [00001F7A][0001:00001F7A], len = 00000048, InitDisk
+Function       : In MetaData, [00001F38][0001:00001F38], len = 00000048, InitDisk
                  Function attribute:
                  Function info:
 FuncDebugStart :   
 FuncDebugEnd   :   
-Block          :   static, [00001F7A][0001:00001F7A], len = 00000048, (none)
+Block          :   static, [00001F38][0001:00001F38], len = 00000048, (none)
 Data           :     Slot, [00000002], Local, CS$4$0000
 Data           :     Slot, [00000000], Local, MBRData
 Data           :     Slot, [00000001], Local, TheMBR
 Custom         :   (none)
 
-Function       : In MetaData, [00001FC2][0001:00001FC2], len = 00000084, ProcessMBR
+Function       : In MetaData, [00001F80][0001:00001F80], len = 00000084, ProcessMBR
                  Function attribute:
                  Function info:
 FuncDebugStart :   
 FuncDebugEnd   :   
-Block          :   static, [00001FC2][0001:00001FC2], len = 00000084, (none)
+Block          :   static, [00001F80][0001:00001F80], len = 00000084, (none)
 Data           :     Slot, [00000004], Local, CS$4$0000
-Block          :     static, [00001FC3][0001:00001FC3], len = 00000082, (none)
+Block          :     static, [00001F81][0001:00001F81], len = 00000082, (none)
 Data           :       Slot, [00000000], Local, i
-Block          :       static, [00001FC7][0001:00001FC7], len = 00000069, (none)
+Block          :       static, [00001F85][0001:00001F85], len = 00000069, (none)
 Data           :         Slot, [00000001], Local, aPartInfo
-Block          :         static, [00001FE0][0001:00001FE0], len = 0000002C, (none)
+Block          :         static, [00001F9E][0001:00001F9E], len = 0000002C, (none)
 Data           :           Slot, [00000002], Local, EBRData
 Data           :           Slot, [00000003], Local, newEBR
 Custom         :   (none)
 
-Function       : In MetaData, [00002046][0001:00002046], len = 00000099, InitPartitions
+Function       : In MetaData, [00002004][0001:00002004], len = 00000099, InitPartitions
                  Function attribute:
                  Function info:
 FuncDebugStart :   
 FuncDebugEnd   :   
-Block          :   static, [00002046][0001:00002046], len = 00000099, (none)
+Block          :   static, [00002004][0001:00002004], len = 00000099, (none)
 Data           :     Slot, [00000004], Local, CS$4$0000
-Block          :     static, [00002047][0001:00002047], len = 00000097, (none)
+Block          :     static, [00002005][0001:00002005], len = 00000097, (none)
 Data           :       Slot, [00000000], Local, i
-Block          :       static, [0000204B][0001:0000204B], len = 00000079, (none)
+Block          :       static, [00002009][0001:00002009], len = 00000079, (none)
 Data           :         Slot, [00000001], Local, aPartition
 Data           :         Slot, [00000002], Local, newFS
-Block          :         static, [00002073][0001:00002073], len = 0000003C, (none)
+Block          :         static, [00002031][0001:00002031], len = 0000003C, (none)
 Data           :           Slot, [00000003], Local, mappingPrefix
 Custom         :   (none)
 
-Function       : In MetaData, [000020DF][0001:000020DF], len = 0000004C, GetMapping
+Function       : In MetaData, [0000209D][0001:0000209D], len = 0000004C, GetMapping
                  Function attribute:
                  Function info:
 FuncDebugStart :   
 FuncDebugEnd   :   
-Block          :   static, [000020DF][0001:000020DF], len = 0000004C, (none)
+Block          :   static, [0000209D][0001:0000209D], len = 0000004C, (none)
 Data           :     Slot, [00000003], Local, CS$1$0000
 Data           :     Slot, [00000004], Local, CS$4$0001
 Data           :     Slot, [00000000], Local, result
-Block          :     static, [000020E2][0001:000020E2], len = 00000043, (none)
+Block          :     static, [000020A0][0001:000020A0], len = 00000043, (none)
 Data           :       Slot, [00000001], Local, i
-Block          :       static, [000020E6][0001:000020E6], len = 00000028, (none)
+Block          :       static, [000020A4][0001:000020A4], len = 00000028, (none)
 Data           :         Slot, [00000002], Local, aMapping
 Custom         :   (none)
 
-Function       : In MetaData, [0000212B][0001:0000212B], len = 00000017, .cctor
+Function       : In MetaData, [000020E9][0001:000020E9], len = 00000017, .cctor
                  Function attribute:
                  Function info:
 FuncDebugStart :   
@@ -973,29 +973,29 @@ Custom         :   (none)
 ** Module: Kernel.FOS_System.IO.Streams.FileStream
 
 
-Function       : In MetaData, [00002142][0001:00002142], len = 0000000C, get_TheFile
+Function       : In MetaData, [00002100][0001:00002100], len = 0000000C, get_TheFile
                  Function attribute:
                  Function info:
 FuncDebugStart :   
 FuncDebugEnd   :   
-Block          :   static, [00002142][0001:00002142], len = 0000000C, (none)
+Block          :   static, [00002100][0001:00002100], len = 0000000C, (none)
 UsingNamespace :     USystem
 Data           :     Slot, [00000000], Local, CS$1$0000
 Custom         :   (none)
 
-Function       : In MetaData, [0000214E][0001:0000214E], len = 00000011, .ctor
+Function       : In MetaData, [0000210C][0001:0000210C], len = 00000011, .ctor
                  Function attribute:
                  Function info:
 FuncDebugStart :   
 FuncDebugEnd   :   
 Custom         :   (none)
 
-Function       : In MetaData, [0000215F][0001:0000215F], len = 00000039, Create
+Function       : In MetaData, [0000211D][0001:0000211D], len = 00000039, Create
                  Function attribute:
                  Function info:
 FuncDebugStart :   
 FuncDebugEnd   :   
-Block          :   static, [0000215F][0001:0000215F], len = 00000039, (none)
+Block          :   static, [0000211D][0001:0000211D], len = 00000039, (none)
 Data           :     Slot, [00000000], Local, CS$1$0000
 Data           :     Slot, [00000001], Local, CS$4$0001
 Custom         :   (none)
@@ -1003,82 +1003,82 @@ Custom         :   (none)
 ** Module: Kernel.FOS_System.IO.Streams.FAT.FATFileStream
 
 
-Function       : In MetaData, [00002198][0001:00002198], len = 00000016, get_TheFATFileSystem
+Function       : In MetaData, [00002156][0001:00002156], len = 00000016, get_TheFATFileSystem
                  Function attribute:
                  Function info:
 FuncDebugStart :   
 FuncDebugEnd   :   
-Block          :   static, [00002198][0001:00002198], len = 00000016, (none)
+Block          :   static, [00002156][0001:00002156], len = 00000016, (none)
 UsingNamespace :     USystem
 UsingNamespace :     UKernel.FOS_System.Collections
 UsingNamespace :     UKernel.FOS_System.IO.FAT
 Data           :     Slot, [00000000], Local, CS$1$0000
 Custom         :   (none)
 
-Function       : In MetaData, [000021AE][0001:000021AE], len = 00000011, get_TheFATFile
+Function       : In MetaData, [0000216C][0001:0000216C], len = 00000011, get_TheFATFile
                  Function attribute:
                  Function info:
 FuncDebugStart :   
 FuncDebugEnd   :   
-Block          :   static, [000021AE][0001:000021AE], len = 00000011, (none)
+Block          :   static, [0000216C][0001:0000216C], len = 00000011, (none)
 Data           :     Slot, [00000000], Local, CS$1$0000
 Custom         :   (none)
 
-Function       : In MetaData, [000021BF][0001:000021BF], len = 0000000C, get_Position
+Function       : In MetaData, [0000217D][0001:0000217D], len = 0000000C, get_Position
                  Function attribute:
                  Function info:
 FuncDebugStart :   
 FuncDebugEnd   :   
-Block          :   static, [000021BF][0001:000021BF], len = 0000000C, (none)
+Block          :   static, [0000217D][0001:0000217D], len = 0000000C, (none)
 Data           :     Slot, [00000000], Local, CS$1$0000
 Custom         :   (none)
 
-Function       : In MetaData, [000021CB][0001:000021CB], len = 0000002C, set_Position
+Function       : In MetaData, [00002189][0001:00002189], len = 0000002C, set_Position
                  Function attribute:
                  Function info:
 FuncDebugStart :   
 FuncDebugEnd   :   
-Block          :   static, [000021CB][0001:000021CB], len = 0000002C, (none)
+Block          :   static, [00002189][0001:00002189], len = 0000002C, (none)
 Data           :     Slot, [00000000], Local, CS$4$0000
 Custom         :   (none)
 
-Function       : In MetaData, [000021F7][0001:000021F7], len = 00000053, GetActualSize
+Function       : In MetaData, [000021B5][0001:000021B5], len = 00000053, GetActualSize
                  Function attribute:
                  Function info:
 FuncDebugStart :   
 FuncDebugEnd   :   
-Block          :   static, [000021F7][0001:000021F7], len = 00000053, (none)
+Block          :   static, [000021B5][0001:000021B5], len = 00000053, (none)
 Data           :     Slot, [00000000], Local, CS$1$0000
 Data           :     Slot, [00000001], Local, CS$4$0001
 Custom         :   (none)
 
-Function       : In MetaData, [0000224A][0001:0000224A], len = 0000004F, .ctor
+Function       : In MetaData, [00002208][0001:00002208], len = 0000004F, .ctor
                  Function attribute:
                  Function info:
 FuncDebugStart :   
 FuncDebugEnd   :   
-Block          :   static, [0000224A][0001:0000224A], len = 0000004F, (none)
+Block          :   static, [00002208][0001:00002208], len = 0000004F, (none)
 Data           :     Slot, [00000000], Local, CS$4$0000
 Custom         :   (none)
 
-Function       : In MetaData, [00002299][0001:00002299], len = 0000004A, GetClusterNums
+Function       : In MetaData, [00002257][0001:00002257], len = 0000004A, GetClusterNums
                  Function attribute:
                  Function info:
 FuncDebugStart :   
 FuncDebugEnd   :   
-Block          :   static, [00002299][0001:00002299], len = 0000004A, (none)
+Block          :   static, [00002257][0001:00002257], len = 0000004A, (none)
 Data           :     Slot, [00000000], Local, CS$4$0000
 Custom         :   (none)
 
-Function       : In MetaData, [000022E3][0001:000022E3], len = 00000274, Read
+Function       : In MetaData, [000022A1][0001:000022A1], len = 00000274, Read
                  Function attribute:
                  Function info:
 FuncDebugStart :   
 FuncDebugEnd   :   
-Block          :   static, [000022E3][0001:000022E3], len = 00000274, (none)
+Block          :   static, [000022A1][0001:000022A1], len = 00000274, (none)
 Data           :     Slot, [0000000B], Local, CS$1$0000
 Data           :     Slot, [0000000C], Local, CS$4$0001
-Block          :     static, [00002309][0001:00002309], len = 00000245, (none)
+Block          :     static, [000022C7][0001:000022C7], len = 00000245, (none)
 Data           :       Slot, [00000000], Local, mFS
 Data           :       Slot, [00000001], Local, mFile
 Data           :       Slot, [00000002], Local, fileSize
@@ -1087,29 +1087,29 @@ Data           :       Slot, [00000004], Local, xCount
 Data           :       Slot, [00000005], Local, xCluster
 Data           :       Slot, [00000006], Local, xClusterSize
 Data           :       Slot, [00000007], Local, read
-Block          :       static, [000024AF][0001:000024AF], len = 0000007B, (none)
+Block          :       static, [0000246D][0001:0000246D], len = 0000007B, (none)
 Data           :         Slot, [00000008], Local, xClusterIdx
 Data           :         Slot, [00000009], Local, xPosInCluster
 Data           :         Slot, [0000000A], Local, xReadSize
 Custom         :   (none)
 
-Function       : In MetaData, [00002557][0001:00002557], len = 0000025A, Write
+Function       : In MetaData, [00002515][0001:00002515], len = 0000025A, Write
                  Function attribute:
                  Function info:
 FuncDebugStart :   
 FuncDebugEnd   :   
-Block          :   static, [00002557][0001:00002557], len = 0000025A, (none)
+Block          :   static, [00002515][0001:00002515], len = 0000025A, (none)
 Data           :     Slot, [0000000A], Local, CS$4$0000
 Data           :     Slot, [00000000], Local, mFS
 Data           :     Slot, [00000001], Local, mFile
 Data           :     Slot, [00000002], Local, xClusterSize
 Data           :     Slot, [00000003], Local, writeBuffer
-Block          :     static, [00002650][0001:00002650], len = 00000113, (none)
+Block          :     static, [0000260E][0001:0000260E], len = 00000113, (none)
 Data           :       Slot, [00000004], Local, clusterIdx
 Data           :       Slot, [00000005], Local, posInCluster
 Data           :       Slot, [00000006], Local, newCluster
 Data           :       Slot, [00000009], Local, writeSize
-Block          :       static, [0000266C][0001:0000266C], len = 0000005E, (none)
+Block          :       static, [0000262A][0001:0000262A], len = 0000005E, (none)
 Data           :         Slot, [00000007], Local, lastClusterNum
 Data           :         Slot, [00000008], Local, nextClusterNum
 Custom         :   (none)
@@ -1119,7 +1119,7 @@ Custom         :   (none)
 *** GLOBALS
 
 Function: [00001BE5][0001:00001BE5] GetListings
-Function: [00002198][0001:00002198] get_TheFATFileSystem
+Function: [00002156][0001:00002156] get_TheFATFileSystem
 Function: [00001609][0001:00001609] GetListing
 Function: [00001C59][0001:00001C59] GetListing
 Function: [00001DB3][0001:00001DB3] get_Prefix
@@ -1128,13 +1128,13 @@ Function: [00001B0C][0001:00001B0C] Find
 Function: [00001BB1][0001:00001BB1] get_FirstClusterNum
 Function: [00001722][0001:00001722] NewFile
 Function: [00000219][0001:00000219] FormatDisk
-Function: [0000224A][0001:0000224A] .ctor
+Function: [00002208][0001:00002208] .ctor
 Function: [00000395][0001:00000395] .ctor
 Function: [00001E27][0001:00001E27] .ctor
 Function: [00000447][0001:00000447] .ctor
 Function: [00001D94][0001:00001D94] .ctor
 Function: [00001AFE][0001:00001AFE] .ctor
-Function: [0000214E][0001:0000214E] .ctor
+Function: [0000210C][0001:0000210C] .ctor
 Function: [00000045][0001:00000045] .ctor
 Function: [0000001A][0001:0000001A] .ctor
 Function: [00001D20][0001:00001D20] .ctor
@@ -1145,10 +1145,10 @@ Function: [00001AC2][0001:00001AC2] .ctor
 Function: [00000373][0001:00000373] .ctor
 Function: [00001DD4][0001:00001DD4] .ctor
 Function: [00001BC2][0001:00001BC2] .ctor
-Function: [000021AE][0001:000021AE] get_TheFATFile
+Function: [0000216C][0001:0000216C] get_TheFATFile
 Function: [00000116][0001:00000116] ParsePartition
 Function: [00001D42][0001:00001D42] Open
-Function: [000020DF][0001:000020DF] GetMapping
+Function: [0000209D][0001:0000209D] GetMapping
 Function: [000006D2][0001:000006D2] ReadClusterChain
 Function: [000015D3][0001:000015D3] CheckSum
 Function: [00000EDD][0001:00000EDD] EncodeDirectoryTable
@@ -1161,11 +1161,11 @@ Function: [00001506][0001:00001506] GetShortName
 Function: [00000200][0001:00000200] CreateFAT32PartitionInfo
 Function: [00001E7C][0001:00001E7C] WriteBlock
 Function: [00000814][0001:00000814] ReadFATEntry
-Function: [000021F7][0001:000021F7] GetActualSize
+Function: [000021B5][0001:000021B5] GetActualSize
 Function: [00001861][0001:00001861] FormatPartitionAsFAT32
 Function: [000009E2][0001:000009E2] FATEntryIndicatesFree
-Function: [000021BF][0001:000021BF] get_Position
-Function: [000021CB][0001:000021CB] set_Position
+Function: [0000217D][0001:0000217D] get_Position
+Function: [00002189][0001:00002189] set_Position
 Function: [000009C1][0001:000009C1] FATEntryIndicatesEOF
 Function: [00000A20][0001:00000A20] GetNextFreeCluster
 Function: [00000000][0001:00000000] get_NumPartitions
@@ -1177,32 +1177,32 @@ Function: [00001B70][0001:00001B70] ListingExists
 Function: [00001B5E][0001:00001B5E] ListingExists
 Function: [000008A4][0001:000008A4] WriteFATEntry
 Function: [00000AEF][0001:00000AEF] GetRootDirectoryTable
-Function: [00002046][0001:00002046] InitPartitions
+Function: [00002004][0001:00002004] InitPartitions
 Function: [00001DEC][0001:00001DEC] PathMatchesMapping
 Function: [00001DC8][0001:00001DC8] get_TheFileSystem
-Function: [0000212B][0001:0000212B] .cctor
+Function: [000020E9][0001:000020E9] .cctor
 Function: [000006A9][0001:000006A9] WriteCluster
 Function: [00001627][0001:00001627] NewDirectory
 Function: [00000ACA][0001:00000ACA] get_RootDirectory_FAT32
 Function: [00001C71][0001:00001C71] WriteListings
 Function: [0000066C][0001:0000066C] NewClusterArray
 Function: [0000000C][0001:0000000C] get_PartitionsCapacity
-Function: [00001FC2][0001:00001FC2] ProcessMBR
-Function: [0000215F][0001:0000215F] Create
+Function: [00001F80][0001:00001F80] ProcessMBR
+Function: [0000211D][0001:0000211D] Create
 Function: [000003A5][0001:000003A5] get_ThePartition
 Function: [00000B9D][0001:00000B9D] ParseDirectoryTable
-Function: [00002557][0001:00002557] Write
+Function: [00002515][0001:00002515] Write
 Function: [00001DFE][0001:00001DFE] RemoveMappingPrefix
 Function: [00001E62][0001:00001E62] ReadBlock
 Function: [0000076E][0001:0000076E] GetFATTableSectorPosition
 Function: [000009EC][0001:000009EC] GetFATEntryEOFValue
 Function: [00000194][0001:00000194] AddPartitionToList
 Function: [00000A87][0001:00000A87] SetFATEntryAndSave
-Function: [000022E3][0001:000022E3] Read
+Function: [000022A1][0001:000022A1] Read
 Function: [00000680][0001:00000680] ReadCluster
-Function: [00002142][0001:00002142] get_TheFile
-Function: [00002299][0001:00002299] GetClusterNums
-Function: [00001F7A][0001:00001F7A] InitDisk
+Function: [00002100][0001:00002100] get_TheFile
+Function: [00002257][0001:00002257] GetClusterNums
+Function: [00001F38][0001:00001F38] InitDisk
 
 
 
@@ -2686,397 +2686,392 @@ Compiland = Kernel.FOS_System.IO.Streams.FAT.FATFileStream
 	line 19 at [00001E97][0001:00001E97], len = 0xB
 	line 20 at [00001EA2][0001:00001EA2], len = 0xB
 	line 22 at [00001EAD][0001:00001EAD], len = 0x2
-	line 16707566 at [00001EAF][0001:00001EAF], len = 0x5
-	line 23 at [00001EB4][0001:00001EB4], len = 0x1
-	line 24 at [00001EB5][0001:00001EB5], len = 0x11
-	line 25 at [00001EC6][0001:00001EC6], len = 0x1E
-	line 16707566 at [00001EE4][0001:00001EE4], len = 0x3
-	line 26 at [00001EE7][0001:00001EE7], len = 0x1
-	line 28 at [00001EE8][0001:00001EE8], len = 0x1
-	line 29 at [00001EE9][0001:00001EE9], len = 0xC
-	line 30 at [00001EF5][0001:00001EF5], len = 0x1
-	line 16707566 at [00001EF6][0001:00001EF6], len = 0x2
-	line 31 at [00001EF8][0001:00001EF8], len = 0x1
-	line 32 at [00001EF9][0001:00001EF9], len = 0x1
-	line 33 at [00001EFA][0001:00001EFA], len = 0x1F
-	line 34 at [00001F19][0001:00001F19], len = 0x22
-	line 16707566 at [00001F3B][0001:00001F3B], len = 0x3
-	line 35 at [00001F3E][0001:00001F3E], len = 0x1
-	line 36 at [00001F3F][0001:00001F3F], len = 0x15
-	line 37 at [00001F54][0001:00001F54], len = 0x1
-	line 38 at [00001F55][0001:00001F55], len = 0x1
-	line 16707566 at [00001F56][0001:00001F56], len = 0x2
-	line 16707566 at [00001F58][0001:00001F58], len = 0x1
-	line 39 at [00001F59][0001:00001F59], len = 0x1
-	line 40 at [00001F5A][0001:00001F5A], len = 0x1
-	line 22 at [00001F5B][0001:00001F5B], len = 0x4
-	line 22 at [00001F5F][0001:00001F5F], len = 0xE
-	line 16707566 at [00001F6D][0001:00001F6D], len = 0x6
-	line 42 at [00001F73][0001:00001F73], len = 0x6
-	line 43 at [00001F79][0001:00001F79], len = 0x1
+	line 16707566 at [00001EAF][0001:00001EAF], len = 0x2
+	line 23 at [00001EB1][0001:00001EB1], len = 0x1
+	line 24 at [00001EB2][0001:00001EB2], len = 0x11
+	line 25 at [00001EC3][0001:00001EC3], len = 0x1E
+	line 16707566 at [00001EE1][0001:00001EE1], len = 0x3
+	line 26 at [00001EE4][0001:00001EE4], len = 0x1
+	line 28 at [00001EE5][0001:00001EE5], len = 0x1
+	line 29 at [00001EE6][0001:00001EE6], len = 0xC
+	line 30 at [00001EF2][0001:00001EF2], len = 0x1
+	line 16707566 at [00001EF3][0001:00001EF3], len = 0x2
+	line 31 at [00001EF5][0001:00001EF5], len = 0x1
+	line 32 at [00001EF6][0001:00001EF6], len = 0x1
+	line 33 at [00001EF7][0001:00001EF7], len = 0x1F
+	line 34 at [00001F16][0001:00001F16], len = 0x1
+	line 16707566 at [00001F17][0001:00001F17], len = 0x2
+	line 16707566 at [00001F19][0001:00001F19], len = 0x1
+	line 35 at [00001F1A][0001:00001F1A], len = 0x1
+	line 36 at [00001F1B][0001:00001F1B], len = 0x1
+	line 22 at [00001F1C][0001:00001F1C], len = 0x4
+	line 22 at [00001F20][0001:00001F20], len = 0xE
+	line 16707566 at [00001F2E][0001:00001F2E], len = 0x3
+	line 38 at [00001F31][0001:00001F31], len = 0x6
+	line 39 at [00001F37][0001:00001F37], len = 0x1
 
 ** InitDisk
 
-	line 46 at [00001F7A][0001:00001F7A], len = 0x1	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.FOS_System.IO\FileSystemManager.cs
-	line 47 at [00001F7B][0001:00001F7B], len = 0xB
-	line 48 at [00001F86][0001:00001F86], len = 0xB
-	line 49 at [00001F91][0001:00001F91], len = 0x7
-	line 51 at [00001F98][0001:00001F98], len = 0x7
-	line 16707566 at [00001F9F][0001:00001F9F], len = 0x3
-	line 52 at [00001FA2][0001:00001FA2], len = 0x1
-	line 53 at [00001FA3][0001:00001FA3], len = 0x15
-	line 54 at [00001FB8][0001:00001FB8], len = 0x1
-	line 56 at [00001FB9][0001:00001FB9], len = 0x8
-	line 57 at [00001FC1][0001:00001FC1], len = 0x1
+	line 42 at [00001F38][0001:00001F38], len = 0x1	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.FOS_System.IO\FileSystemManager.cs
+	line 43 at [00001F39][0001:00001F39], len = 0xB
+	line 44 at [00001F44][0001:00001F44], len = 0xB
+	line 45 at [00001F4F][0001:00001F4F], len = 0x7
+	line 47 at [00001F56][0001:00001F56], len = 0x7
+	line 16707566 at [00001F5D][0001:00001F5D], len = 0x3
+	line 48 at [00001F60][0001:00001F60], len = 0x1
+	line 49 at [00001F61][0001:00001F61], len = 0x15
+	line 50 at [00001F76][0001:00001F76], len = 0x1
+	line 52 at [00001F77][0001:00001F77], len = 0x8
+	line 53 at [00001F7F][0001:00001F7F], len = 0x1
 
 ** ProcessMBR
 
-	line 59 at [00001FC2][0001:00001FC2], len = 0x1	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.FOS_System.IO\FileSystemManager.cs
-	line 60 at [00001FC3][0001:00001FC3], len = 0x2
-	line 16707566 at [00001FC5][0001:00001FC5], len = 0x2
-	line 61 at [00001FC7][0001:00001FC7], len = 0x1
-	line 62 at [00001FC8][0001:00001FC8], len = 0x9
-	line 63 at [00001FD1][0001:00001FD1], len = 0xB
-	line 16707566 at [00001FDC][0001:00001FDC], len = 0x4
-	line 64 at [00001FE0][0001:00001FE0], len = 0x1
-	line 65 at [00001FE1][0001:00001FE1], len = 0xB
-	line 66 at [00001FEC][0001:00001FEC], len = 0x10
-	line 67 at [00001FFC][0001:00001FFC], len = 0x7
-	line 68 at [00002003][0001:00002003], len = 0x8
-	line 69 at [0000200B][0001:0000200B], len = 0x1
-	line 16707566 at [0000200C][0001:0000200C], len = 0x2
-	line 71 at [0000200E][0001:0000200E], len = 0x1
-	line 72 at [0000200F][0001:0000200F], len = 0x1F
-	line 73 at [0000202E][0001:0000202E], len = 0x1
-	line 74 at [0000202F][0001:0000202F], len = 0x1
-	line 60 at [00002030][0001:00002030], len = 0x4
-	line 60 at [00002034][0001:00002034], len = 0xD
-	line 16707566 at [00002041][0001:00002041], len = 0x4
-	line 75 at [00002045][0001:00002045], len = 0x1
+	line 55 at [00001F80][0001:00001F80], len = 0x1	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.FOS_System.IO\FileSystemManager.cs
+	line 56 at [00001F81][0001:00001F81], len = 0x2
+	line 16707566 at [00001F83][0001:00001F83], len = 0x2
+	line 57 at [00001F85][0001:00001F85], len = 0x1
+	line 58 at [00001F86][0001:00001F86], len = 0x9
+	line 59 at [00001F8F][0001:00001F8F], len = 0xB
+	line 16707566 at [00001F9A][0001:00001F9A], len = 0x4
+	line 60 at [00001F9E][0001:00001F9E], len = 0x1
+	line 61 at [00001F9F][0001:00001F9F], len = 0xB
+	line 62 at [00001FAA][0001:00001FAA], len = 0x10
+	line 63 at [00001FBA][0001:00001FBA], len = 0x7
+	line 64 at [00001FC1][0001:00001FC1], len = 0x8
+	line 65 at [00001FC9][0001:00001FC9], len = 0x1
+	line 16707566 at [00001FCA][0001:00001FCA], len = 0x2
+	line 67 at [00001FCC][0001:00001FCC], len = 0x1
+	line 68 at [00001FCD][0001:00001FCD], len = 0x1F
+	line 69 at [00001FEC][0001:00001FEC], len = 0x1
+	line 70 at [00001FED][0001:00001FED], len = 0x1
+	line 56 at [00001FEE][0001:00001FEE], len = 0x4
+	line 56 at [00001FF2][0001:00001FF2], len = 0xD
+	line 16707566 at [00001FFF][0001:00001FFF], len = 0x4
+	line 71 at [00002003][0001:00002003], len = 0x1
 
 ** InitPartitions
 
-	line 78 at [00002046][0001:00002046], len = 0x1	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.FOS_System.IO\FileSystemManager.cs
-	line 79 at [00002047][0001:00002047], len = 0x2
-	line 16707566 at [00002049][0001:00002049], len = 0x2
-	line 80 at [0000204B][0001:0000204B], len = 0x1
-	line 81 at [0000204C][0001:0000204C], len = 0x11
-	line 82 at [0000205D][0001:0000205D], len = 0x7
-	line 83 at [00002064][0001:00002064], len = 0xB
-	line 16707566 at [0000206F][0001:0000206F], len = 0x4
-	line 84 at [00002073][0001:00002073], len = 0x1
-	line 85 at [00002074][0001:00002074], len = 0x7
-	line 86 at [0000207B][0001:0000207B], len = 0xD
-	line 87 at [00002088][0001:00002088], len = 0xA
-	line 88 at [00002092][0001:00002092], len = 0xA
-	line 89 at [0000209C][0001:0000209C], len = 0x12
-	line 90 at [000020AE][0001:000020AE], len = 0x1
-	line 16707566 at [000020AF][0001:000020AF], len = 0x2
-	line 92 at [000020B1][0001:000020B1], len = 0x1
-	line 93 at [000020B2][0001:000020B2], len = 0x10
-	line 94 at [000020C2][0001:000020C2], len = 0x1
-	line 95 at [000020C3][0001:000020C3], len = 0x1
-	line 79 at [000020C4][0001:000020C4], len = 0x4
-	line 79 at [000020C8][0001:000020C8], len = 0xF
-	line 16707566 at [000020D7][0001:000020D7], len = 0x7
-	line 96 at [000020DE][0001:000020DE], len = 0x1
+	line 74 at [00002004][0001:00002004], len = 0x1	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.FOS_System.IO\FileSystemManager.cs
+	line 75 at [00002005][0001:00002005], len = 0x2
+	line 16707566 at [00002007][0001:00002007], len = 0x2
+	line 76 at [00002009][0001:00002009], len = 0x1
+	line 77 at [0000200A][0001:0000200A], len = 0x11
+	line 78 at [0000201B][0001:0000201B], len = 0x7
+	line 79 at [00002022][0001:00002022], len = 0xB
+	line 16707566 at [0000202D][0001:0000202D], len = 0x4
+	line 80 at [00002031][0001:00002031], len = 0x1
+	line 81 at [00002032][0001:00002032], len = 0x7
+	line 82 at [00002039][0001:00002039], len = 0xD
+	line 83 at [00002046][0001:00002046], len = 0xA
+	line 84 at [00002050][0001:00002050], len = 0xA
+	line 85 at [0000205A][0001:0000205A], len = 0x12
+	line 86 at [0000206C][0001:0000206C], len = 0x1
+	line 16707566 at [0000206D][0001:0000206D], len = 0x2
+	line 88 at [0000206F][0001:0000206F], len = 0x1
+	line 89 at [00002070][0001:00002070], len = 0x10
+	line 90 at [00002080][0001:00002080], len = 0x1
+	line 91 at [00002081][0001:00002081], len = 0x1
+	line 75 at [00002082][0001:00002082], len = 0x4
+	line 75 at [00002086][0001:00002086], len = 0xF
+	line 16707566 at [00002095][0001:00002095], len = 0x7
+	line 92 at [0000209C][0001:0000209C], len = 0x1
 
 ** GetMapping
 
-	line 99 at [000020DF][0001:000020DF], len = 0x1	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.FOS_System.IO\FileSystemManager.cs
-	line 100 at [000020E0][0001:000020E0], len = 0x2
-	line 102 at [000020E2][0001:000020E2], len = 0x2
-	line 16707566 at [000020E4][0001:000020E4], len = 0x2
-	line 103 at [000020E6][0001:000020E6], len = 0x1
-	line 104 at [000020E7][0001:000020E7], len = 0x11
-	line 105 at [000020F8][0001:000020F8], len = 0xC
-	line 16707566 at [00002104][0001:00002104], len = 0x4
-	line 106 at [00002108][0001:00002108], len = 0x1
-	line 107 at [00002109][0001:00002109], len = 0x2
-	line 108 at [0000210B][0001:0000210B], len = 0x2
-	line 110 at [0000210D][0001:0000210D], len = 0x1
-	line 102 at [0000210E][0001:0000210E], len = 0x4
-	line 102 at [00002112][0001:00002112], len = 0xF
-	line 16707566 at [00002121][0001:00002121], len = 0x4
-	line 112 at [00002125][0001:00002125], len = 0x4
-	line 113 at [00002129][0001:00002129], len = 0x2
+	line 95 at [0000209D][0001:0000209D], len = 0x1	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.FOS_System.IO\FileSystemManager.cs
+	line 96 at [0000209E][0001:0000209E], len = 0x2
+	line 98 at [000020A0][0001:000020A0], len = 0x2
+	line 16707566 at [000020A2][0001:000020A2], len = 0x2
+	line 99 at [000020A4][0001:000020A4], len = 0x1
+	line 100 at [000020A5][0001:000020A5], len = 0x11
+	line 101 at [000020B6][0001:000020B6], len = 0xC
+	line 16707566 at [000020C2][0001:000020C2], len = 0x4
+	line 102 at [000020C6][0001:000020C6], len = 0x1
+	line 103 at [000020C7][0001:000020C7], len = 0x2
+	line 104 at [000020C9][0001:000020C9], len = 0x2
+	line 106 at [000020CB][0001:000020CB], len = 0x1
+	line 98 at [000020CC][0001:000020CC], len = 0x4
+	line 98 at [000020D0][0001:000020D0], len = 0xF
+	line 16707566 at [000020DF][0001:000020DF], len = 0x4
+	line 108 at [000020E3][0001:000020E3], len = 0x4
+	line 109 at [000020E7][0001:000020E7], len = 0x2
 
 ** .cctor
 
-	line 14 at [0000212B][0001:0000212B], len = 0xB	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.FOS_System.IO\FileSystemManager.cs
-	line 15 at [00002136][0001:00002136], len = 0xB
-	line 16707566 at [00002141][0001:00002141], len = 0x1
+	line 14 at [000020E9][0001:000020E9], len = 0xB	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.FOS_System.IO\FileSystemManager.cs
+	line 15 at [000020F4][0001:000020F4], len = 0xB
+	line 16707566 at [000020FF][0001:000020FF], len = 0x1
 
 ** get_TheFile
 
-	line 11 at [00002142][0001:00002142], len = 0x1	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.FOS_System.IO\Streams\FileStream.cs
-	line 12 at [00002143][0001:00002143], len = 0x9
-	line 13 at [0000214C][0001:0000214C], len = 0x2
+	line 11 at [00002100][0001:00002100], len = 0x1	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.FOS_System.IO\Streams\FileStream.cs
+	line 12 at [00002101][0001:00002101], len = 0x9
+	line 13 at [0000210A][0001:0000210A], len = 0x2
 
 ** .ctor
 
-	line 16 at [0000214E][0001:0000214E], len = 0x7	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.FOS_System.IO\Streams\FileStream.cs
-	line 17 at [00002155][0001:00002155], len = 0x1
-	line 18 at [00002156][0001:00002156], len = 0x7
-	line 19 at [0000215D][0001:0000215D], len = 0x2
+	line 16 at [0000210C][0001:0000210C], len = 0x7	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.FOS_System.IO\Streams\FileStream.cs
+	line 17 at [00002113][0001:00002113], len = 0x1
+	line 18 at [00002114][0001:00002114], len = 0x7
+	line 19 at [0000211B][0001:0000211B], len = 0x2
 
 ** Create
 
-	line 22 at [0000215F][0001:0000215F], len = 0x1	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.FOS_System.IO\Streams\FileStream.cs
-	line 23 at [00002160][0001:00002160], len = 0x1E
-	line 16707566 at [0000217E][0001:0000217E], len = 0x3
-	line 24 at [00002181][0001:00002181], len = 0x1
-	line 25 at [00002182][0001:00002182], len = 0xF
-	line 28 at [00002191][0001:00002191], len = 0x1
-	line 29 at [00002192][0001:00002192], len = 0x4
-	line 31 at [00002196][0001:00002196], len = 0x2
+	line 22 at [0000211D][0001:0000211D], len = 0x1	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.FOS_System.IO\Streams\FileStream.cs
+	line 23 at [0000211E][0001:0000211E], len = 0x1E
+	line 16707566 at [0000213C][0001:0000213C], len = 0x3
+	line 24 at [0000213F][0001:0000213F], len = 0x1
+	line 25 at [00002140][0001:00002140], len = 0xF
+	line 28 at [0000214F][0001:0000214F], len = 0x1
+	line 29 at [00002150][0001:00002150], len = 0x4
+	line 31 at [00002154][0001:00002154], len = 0x2
 
 ** get_TheFATFileSystem
 
-	line 15 at [00002198][0001:00002198], len = 0x1	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.FOS_System.IO\Streams\FAT\FATFileStream.cs
-	line 16 at [00002199][0001:00002199], len = 0x13
-	line 17 at [000021AC][0001:000021AC], len = 0x2
+	line 15 at [00002156][0001:00002156], len = 0x1	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.FOS_System.IO\Streams\FAT\FATFileStream.cs
+	line 16 at [00002157][0001:00002157], len = 0x13
+	line 17 at [0000216A][0001:0000216A], len = 0x2
 
 ** get_TheFATFile
 
-	line 22 at [000021AE][0001:000021AE], len = 0x1	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.FOS_System.IO\Streams\FAT\FATFileStream.cs
-	line 23 at [000021AF][0001:000021AF], len = 0xE
-	line 24 at [000021BD][0001:000021BD], len = 0x2
+	line 22 at [0000216C][0001:0000216C], len = 0x1	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.FOS_System.IO\Streams\FAT\FATFileStream.cs
+	line 23 at [0000216D][0001:0000216D], len = 0xE
+	line 24 at [0000217B][0001:0000217B], len = 0x2
 
 ** get_Position
 
-	line 31 at [000021BF][0001:000021BF], len = 0x1	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.FOS_System.IO\Streams\FAT\FATFileStream.cs
-	line 32 at [000021C0][0001:000021C0], len = 0x9
-	line 33 at [000021C9][0001:000021C9], len = 0x2
+	line 31 at [0000217D][0001:0000217D], len = 0x1	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.FOS_System.IO\Streams\FAT\FATFileStream.cs
+	line 32 at [0000217E][0001:0000217E], len = 0x9
+	line 33 at [00002187][0001:00002187], len = 0x2
 
 ** set_Position
 
-	line 35 at [000021CB][0001:000021CB], len = 0x1	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.FOS_System.IO\Streams\FAT\FATFileStream.cs
-	line 36 at [000021CC][0001:000021CC], len = 0x9
-	line 16707566 at [000021D5][0001:000021D5], len = 0x3
-	line 37 at [000021D8][0001:000021D8], len = 0x1
-	line 38 at [000021D9][0001:000021D9], len = 0x15
-	line 39 at [000021EE][0001:000021EE], len = 0x1
-	line 40 at [000021EF][0001:000021EF], len = 0x7
-	line 41 at [000021F6][0001:000021F6], len = 0x1
+	line 35 at [00002189][0001:00002189], len = 0x1	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.FOS_System.IO\Streams\FAT\FATFileStream.cs
+	line 36 at [0000218A][0001:0000218A], len = 0x9
+	line 16707566 at [00002193][0001:00002193], len = 0x3
+	line 37 at [00002196][0001:00002196], len = 0x1
+	line 38 at [00002197][0001:00002197], len = 0x15
+	line 39 at [000021AC][0001:000021AC], len = 0x1
+	line 40 at [000021AD][0001:000021AD], len = 0x7
+	line 41 at [000021B4][0001:000021B4], len = 0x1
 
 ** GetActualSize
 
-	line 46 at [000021F7][0001:000021F7], len = 0x1	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.FOS_System.IO\Streams\FAT\FATFileStream.cs
-	line 47 at [000021F8][0001:000021F8], len = 0xA
-	line 16707566 at [00002202][0001:00002202], len = 0x3
-	line 48 at [00002205][0001:00002205], len = 0x1
-	line 49 at [00002206][0001:00002206], len = 0xD
-	line 16707566 at [00002213][0001:00002213], len = 0x3
-	line 50 at [00002216][0001:00002216], len = 0x1
-	line 51 at [00002217][0001:00002217], len = 0x7
-	line 52 at [0000221E][0001:0000221E], len = 0x1
-	line 53 at [0000221F][0001:0000221F], len = 0x1B
-	line 55 at [0000223A][0001:0000223A], len = 0xE
-	line 56 at [00002248][0001:00002248], len = 0x2
+	line 46 at [000021B5][0001:000021B5], len = 0x1	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.FOS_System.IO\Streams\FAT\FATFileStream.cs
+	line 47 at [000021B6][0001:000021B6], len = 0xA
+	line 16707566 at [000021C0][0001:000021C0], len = 0x3
+	line 48 at [000021C3][0001:000021C3], len = 0x1
+	line 49 at [000021C4][0001:000021C4], len = 0xD
+	line 16707566 at [000021D1][0001:000021D1], len = 0x3
+	line 50 at [000021D4][0001:000021D4], len = 0x1
+	line 51 at [000021D5][0001:000021D5], len = 0x7
+	line 52 at [000021DC][0001:000021DC], len = 0x1
+	line 53 at [000021DD][0001:000021DD], len = 0x1B
+	line 55 at [000021F8][0001:000021F8], len = 0xE
+	line 56 at [00002206][0001:00002206], len = 0x2
 
 ** .ctor
 
-	line 27 at [0000224A][0001:0000224A], len = 0x8	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.FOS_System.IO\Streams\FAT\FATFileStream.cs
-	line 44 at [00002252][0001:00002252], len = 0x7
-	line 58 at [00002259][0001:00002259], len = 0x8
-	line 60 at [00002261][0001:00002261], len = 0x1
-	line 61 at [00002262][0001:00002262], len = 0x7
-	line 63 at [00002269][0001:00002269], len = 0xD
-	line 16707566 at [00002276][0001:00002276], len = 0x3
-	line 64 at [00002279][0001:00002279], len = 0x1
-	line 65 at [0000227A][0001:0000227A], len = 0x15
-	line 66 at [0000228F][0001:0000228F], len = 0x1
-	line 68 at [00002290][0001:00002290], len = 0x7
-	line 69 at [00002297][0001:00002297], len = 0x2
+	line 27 at [00002208][0001:00002208], len = 0x8	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.FOS_System.IO\Streams\FAT\FATFileStream.cs
+	line 44 at [00002210][0001:00002210], len = 0x7
+	line 58 at [00002217][0001:00002217], len = 0x8
+	line 60 at [0000221F][0001:0000221F], len = 0x1
+	line 61 at [00002220][0001:00002220], len = 0x7
+	line 63 at [00002227][0001:00002227], len = 0xD
+	line 16707566 at [00002234][0001:00002234], len = 0x3
+	line 64 at [00002237][0001:00002237], len = 0x1
+	line 65 at [00002238][0001:00002238], len = 0x15
+	line 66 at [0000224D][0001:0000224D], len = 0x1
+	line 68 at [0000224E][0001:0000224E], len = 0x7
+	line 69 at [00002255][0001:00002255], len = 0x2
 
 ** GetClusterNums
 
-	line 72 at [00002299][0001:00002299], len = 0x1	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.FOS_System.IO\Streams\FAT\FATFileStream.cs
-	line 73 at [0000229A][0001:0000229A], len = 0x1C
-	line 16707566 at [000022B6][0001:000022B6], len = 0x3
-	line 74 at [000022B9][0001:000022B9], len = 0x1
-	line 76 at [000022BA][0001:000022BA], len = 0x27
-	line 78 at [000022E1][0001:000022E1], len = 0x1
-	line 79 at [000022E2][0001:000022E2], len = 0x1
+	line 72 at [00002257][0001:00002257], len = 0x1	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.FOS_System.IO\Streams\FAT\FATFileStream.cs
+	line 73 at [00002258][0001:00002258], len = 0x1C
+	line 16707566 at [00002274][0001:00002274], len = 0x3
+	line 74 at [00002277][0001:00002277], len = 0x1
+	line 76 at [00002278][0001:00002278], len = 0x27
+	line 78 at [0000229F][0001:0000229F], len = 0x1
+	line 79 at [000022A0][0001:000022A0], len = 0x1
 
 ** Read
 
-	line 82 at [000022E3][0001:000022E3], len = 0x1	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.FOS_System.IO\Streams\FAT\FATFileStream.cs
-	line 83 at [000022E4][0001:000022E4], len = 0x1E
-	line 16707566 at [00002302][0001:00002302], len = 0x7
-	line 84 at [00002309][0001:00002309], len = 0x1
-	line 85 at [0000230A][0001:0000230A], len = 0xE
-	line 16707566 at [00002318][0001:00002318], len = 0x4
-	line 86 at [0000231C][0001:0000231C], len = 0x1
-	line 87 at [0000231D][0001:0000231D], len = 0x7
-	line 88 at [00002324][0001:00002324], len = 0xE
-	line 16707566 at [00002332][0001:00002332], len = 0x4
-	line 89 at [00002336][0001:00002336], len = 0x1
-	line 90 at [00002337][0001:00002337], len = 0x8
-	line 92 at [0000233F][0001:0000233F], len = 0x1
-	line 94 at [00002340][0001:00002340], len = 0x11
-	line 95 at [00002351][0001:00002351], len = 0x7
-	line 99 at [00002358][0001:00002358], len = 0x9
-	line 16707566 at [00002361][0001:00002361], len = 0x4
-	line 100 at [00002365][0001:00002365], len = 0x1
-	line 101 at [00002366][0001:00002366], len = 0x15
-	line 102 at [0000237B][0001:0000237B], len = 0x1
-	line 16707566 at [0000237C][0001:0000237C], len = 0x5
-	line 103 at [00002381][0001:00002381], len = 0x9
-	line 16707566 at [0000238A][0001:0000238A], len = 0x4
-	line 104 at [0000238E][0001:0000238E], len = 0x1
-	line 105 at [0000238F][0001:0000238F], len = 0x15
-	line 106 at [000023A4][0001:000023A4], len = 0x1
-	line 16707566 at [000023A5][0001:000023A5], len = 0x5
-	line 107 at [000023AA][0001:000023AA], len = 0x9
-	line 16707566 at [000023B3][0001:000023B3], len = 0x4
-	line 108 at [000023B7][0001:000023B7], len = 0x1
-	line 109 at [000023B8][0001:000023B8], len = 0x15
-	line 110 at [000023CD][0001:000023CD], len = 0x1
-	line 16707566 at [000023CE][0001:000023CE], len = 0x2
-	line 111 at [000023D0][0001:000023D0], len = 0xD
-	line 16707566 at [000023DD][0001:000023DD], len = 0x4
-	line 112 at [000023E1][0001:000023E1], len = 0x1
-	line 113 at [000023E2][0001:000023E2], len = 0x15
-	line 114 at [000023F7][0001:000023F7], len = 0x1
-	line 16707566 at [000023F8][0001:000023F8], len = 0x2
-	line 115 at [000023FA][0001:000023FA], len = 0xE
-	line 16707566 at [00002408][0001:00002408], len = 0x4
-	line 116 at [0000240C][0001:0000240C], len = 0x1
-	line 118 at [0000240D][0001:0000240D], len = 0x8
-	line 120 at [00002415][0001:00002415], len = 0x1F
-	line 16707566 at [00002434][0001:00002434], len = 0x4
-	line 121 at [00002438][0001:00002438], len = 0x1
-	line 123 at [00002439][0001:00002439], len = 0x8
-	line 129 at [00002441][0001:00002441], len = 0x3
-	line 130 at [00002444][0001:00002444], len = 0xB
+	line 82 at [000022A1][0001:000022A1], len = 0x1	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.FOS_System.IO\Streams\FAT\FATFileStream.cs
+	line 83 at [000022A2][0001:000022A2], len = 0x1E
+	line 16707566 at [000022C0][0001:000022C0], len = 0x7
+	line 84 at [000022C7][0001:000022C7], len = 0x1
+	line 85 at [000022C8][0001:000022C8], len = 0xE
+	line 16707566 at [000022D6][0001:000022D6], len = 0x4
+	line 86 at [000022DA][0001:000022DA], len = 0x1
+	line 87 at [000022DB][0001:000022DB], len = 0x7
+	line 88 at [000022E2][0001:000022E2], len = 0xE
+	line 16707566 at [000022F0][0001:000022F0], len = 0x4
+	line 89 at [000022F4][0001:000022F4], len = 0x1
+	line 90 at [000022F5][0001:000022F5], len = 0x8
+	line 92 at [000022FD][0001:000022FD], len = 0x1
+	line 94 at [000022FE][0001:000022FE], len = 0x11
+	line 95 at [0000230F][0001:0000230F], len = 0x7
+	line 99 at [00002316][0001:00002316], len = 0x9
+	line 16707566 at [0000231F][0001:0000231F], len = 0x4
+	line 100 at [00002323][0001:00002323], len = 0x1
+	line 101 at [00002324][0001:00002324], len = 0x15
+	line 102 at [00002339][0001:00002339], len = 0x1
+	line 16707566 at [0000233A][0001:0000233A], len = 0x5
+	line 103 at [0000233F][0001:0000233F], len = 0x9
+	line 16707566 at [00002348][0001:00002348], len = 0x4
+	line 104 at [0000234C][0001:0000234C], len = 0x1
+	line 105 at [0000234D][0001:0000234D], len = 0x15
+	line 106 at [00002362][0001:00002362], len = 0x1
+	line 16707566 at [00002363][0001:00002363], len = 0x5
+	line 107 at [00002368][0001:00002368], len = 0x9
+	line 16707566 at [00002371][0001:00002371], len = 0x4
+	line 108 at [00002375][0001:00002375], len = 0x1
+	line 109 at [00002376][0001:00002376], len = 0x15
+	line 110 at [0000238B][0001:0000238B], len = 0x1
+	line 16707566 at [0000238C][0001:0000238C], len = 0x2
+	line 111 at [0000238E][0001:0000238E], len = 0xD
+	line 16707566 at [0000239B][0001:0000239B], len = 0x4
+	line 112 at [0000239F][0001:0000239F], len = 0x1
+	line 113 at [000023A0][0001:000023A0], len = 0x15
+	line 114 at [000023B5][0001:000023B5], len = 0x1
+	line 16707566 at [000023B6][0001:000023B6], len = 0x2
+	line 115 at [000023B8][0001:000023B8], len = 0xE
+	line 16707566 at [000023C6][0001:000023C6], len = 0x4
+	line 116 at [000023CA][0001:000023CA], len = 0x1
+	line 118 at [000023CB][0001:000023CB], len = 0x8
+	line 120 at [000023D3][0001:000023D3], len = 0x1F
+	line 16707566 at [000023F2][0001:000023F2], len = 0x4
+	line 121 at [000023F6][0001:000023F6], len = 0x1
+	line 123 at [000023F7][0001:000023F7], len = 0x8
+	line 129 at [000023FF][0001:000023FF], len = 0x3
+	line 130 at [00002402][0001:00002402], len = 0xB
+	line 16707566 at [0000240D][0001:0000240D], len = 0x4
+	line 131 at [00002411][0001:00002411], len = 0x1
+	line 132 at [00002412][0001:00002412], len = 0x1A
+	line 133 at [0000242C][0001:0000242C], len = 0x1
+	line 16707566 at [0000242D][0001:0000242D], len = 0x2
+	line 135 at [0000242F][0001:0000242F], len = 0x1
+	line 136 at [00002430][0001:00002430], len = 0x7
+	line 137 at [00002437][0001:00002437], len = 0x1
+	line 138 at [00002438][0001:00002438], len = 0x9
+	line 139 at [00002441][0001:00002441], len = 0x4
+	line 140 at [00002445][0001:00002445], len = 0xA
 	line 16707566 at [0000244F][0001:0000244F], len = 0x4
-	line 131 at [00002453][0001:00002453], len = 0x1
-	line 132 at [00002454][0001:00002454], len = 0x1A
-	line 133 at [0000246E][0001:0000246E], len = 0x1
-	line 16707566 at [0000246F][0001:0000246F], len = 0x2
-	line 135 at [00002471][0001:00002471], len = 0x1
-	line 136 at [00002472][0001:00002472], len = 0x7
-	line 137 at [00002479][0001:00002479], len = 0x1
-	line 138 at [0000247A][0001:0000247A], len = 0x9
-	line 139 at [00002483][0001:00002483], len = 0x4
-	line 140 at [00002487][0001:00002487], len = 0xA
-	line 16707566 at [00002491][0001:00002491], len = 0x4
-	line 141 at [00002495][0001:00002495], len = 0x1
-	line 142 at [00002496][0001:00002496], len = 0x3
-	line 143 at [00002499][0001:00002499], len = 0x1
-	line 147 at [0000249A][0001:0000249A], len = 0x8
-	line 148 at [000024A2][0001:000024A2], len = 0x8
-	line 150 at [000024AA][0001:000024AA], len = 0x3
-	line 16707566 at [000024AD][0001:000024AD], len = 0x2
-	line 155 at [000024AF][0001:000024AF], len = 0x1
-	line 156 at [000024B0][0001:000024B0], len = 0xC
-	line 157 at [000024BC][0001:000024BC], len = 0xC
-	line 158 at [000024C8][0001:000024C8], len = 0x16
-	line 160 at [000024DE][0001:000024DE], len = 0x10
-	line 16707566 at [000024EE][0001:000024EE], len = 0x4
-	line 161 at [000024F2][0001:000024F2], len = 0x1
-	line 162 at [000024F3][0001:000024F3], len = 0x9
-	line 163 at [000024FC][0001:000024FC], len = 0x1
-	line 16707566 at [000024FD][0001:000024FD], len = 0x2
-	line 165 at [000024FF][0001:000024FF], len = 0x1
-	line 166 at [00002500][0001:00002500], len = 0x5
-	line 167 at [00002505][0001:00002505], len = 0x1
-	line 170 at [00002506][0001:00002506], len = 0xE
-	line 171 at [00002514][0001:00002514], len = 0x6
-	line 172 at [0000251A][0001:0000251A], len = 0x8
-	line 173 at [00002522][0001:00002522], len = 0x7
-	line 174 at [00002529][0001:00002529], len = 0x1
-	line 154 at [0000252A][0001:0000252A], len = 0x8
-	line 16707566 at [00002532][0001:00002532], len = 0x7
-	line 176 at [00002539][0001:00002539], len = 0xF
-	line 177 at [00002548][0001:00002548], len = 0x6
-	line 180 at [0000254E][0001:0000254E], len = 0x1
-	line 181 at [0000254F][0001:0000254F], len = 0x5
-	line 183 at [00002554][0001:00002554], len = 0x3
+	line 141 at [00002453][0001:00002453], len = 0x1
+	line 142 at [00002454][0001:00002454], len = 0x3
+	line 143 at [00002457][0001:00002457], len = 0x1
+	line 147 at [00002458][0001:00002458], len = 0x8
+	line 148 at [00002460][0001:00002460], len = 0x8
+	line 150 at [00002468][0001:00002468], len = 0x3
+	line 16707566 at [0000246B][0001:0000246B], len = 0x2
+	line 155 at [0000246D][0001:0000246D], len = 0x1
+	line 156 at [0000246E][0001:0000246E], len = 0xC
+	line 157 at [0000247A][0001:0000247A], len = 0xC
+	line 158 at [00002486][0001:00002486], len = 0x16
+	line 160 at [0000249C][0001:0000249C], len = 0x10
+	line 16707566 at [000024AC][0001:000024AC], len = 0x4
+	line 161 at [000024B0][0001:000024B0], len = 0x1
+	line 162 at [000024B1][0001:000024B1], len = 0x9
+	line 163 at [000024BA][0001:000024BA], len = 0x1
+	line 16707566 at [000024BB][0001:000024BB], len = 0x2
+	line 165 at [000024BD][0001:000024BD], len = 0x1
+	line 166 at [000024BE][0001:000024BE], len = 0x5
+	line 167 at [000024C3][0001:000024C3], len = 0x1
+	line 170 at [000024C4][0001:000024C4], len = 0xE
+	line 171 at [000024D2][0001:000024D2], len = 0x6
+	line 172 at [000024D8][0001:000024D8], len = 0x8
+	line 173 at [000024E0][0001:000024E0], len = 0x7
+	line 174 at [000024E7][0001:000024E7], len = 0x1
+	line 154 at [000024E8][0001:000024E8], len = 0x8
+	line 16707566 at [000024F0][0001:000024F0], len = 0x7
+	line 176 at [000024F7][0001:000024F7], len = 0xF
+	line 177 at [00002506][0001:00002506], len = 0x6
+	line 180 at [0000250C][0001:0000250C], len = 0x1
+	line 181 at [0000250D][0001:0000250D], len = 0x5
+	line 183 at [00002512][0001:00002512], len = 0x3
 
 ** Write
 
-	line 185 at [00002557][0001:00002557], len = 0x1	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.FOS_System.IO\Streams\FAT\FATFileStream.cs
-	line 186 at [00002558][0001:00002558], len = 0x9
-	line 16707566 at [00002561][0001:00002561], len = 0x4
-	line 187 at [00002565][0001:00002565], len = 0x1
-	line 188 at [00002566][0001:00002566], len = 0x15
-	line 189 at [0000257B][0001:0000257B], len = 0x1
-	line 16707566 at [0000257C][0001:0000257C], len = 0x2
-	line 190 at [0000257E][0001:0000257E], len = 0x9
-	line 16707566 at [00002587][0001:00002587], len = 0x4
-	line 191 at [0000258B][0001:0000258B], len = 0x1
-	line 192 at [0000258C][0001:0000258C], len = 0x15
-	line 193 at [000025A1][0001:000025A1], len = 0x1
-	line 16707566 at [000025A2][0001:000025A2], len = 0x2
-	line 194 at [000025A4][0001:000025A4], len = 0x9
-	line 16707566 at [000025AD][0001:000025AD], len = 0x4
-	line 195 at [000025B1][0001:000025B1], len = 0x1
-	line 196 at [000025B2][0001:000025B2], len = 0x15
-	line 197 at [000025C7][0001:000025C7], len = 0x1
-	line 16707566 at [000025C8][0001:000025C8], len = 0x2
-	line 198 at [000025CA][0001:000025CA], len = 0xD
-	line 16707566 at [000025D7][0001:000025D7], len = 0x4
-	line 199 at [000025DB][0001:000025DB], len = 0x1
-	line 200 at [000025DC][0001:000025DC], len = 0x15
-	line 201 at [000025F1][0001:000025F1], len = 0x1
-	line 205 at [000025F2][0001:000025F2], len = 0x11
-	line 206 at [00002603][0001:00002603], len = 0x7
-	line 208 at [0000260A][0001:0000260A], len = 0xE
-	line 16707566 at [00002618][0001:00002618], len = 0x4
-	line 209 at [0000261C][0001:0000261C], len = 0x1
-	line 212 at [0000261D][0001:0000261D], len = 0x7
-	line 213 at [00002624][0001:00002624], len = 0xE
-	line 16707566 at [00002632][0001:00002632], len = 0x4
-	line 214 at [00002636][0001:00002636], len = 0x1
-	line 216 at [00002637][0001:00002637], len = 0x5
-	line 220 at [0000263C][0001:0000263C], len = 0x1
-	line 224 at [0000263D][0001:0000263D], len = 0x7
-	line 225 at [00002644][0001:00002644], len = 0x7
-	line 16707566 at [0000264B][0001:0000264B], len = 0x5
-	line 230 at [00002650][0001:00002650], len = 0x1
-	line 231 at [00002651][0001:00002651], len = 0xB
-	line 232 at [0000265C][0001:0000265C], len = 0xB
-	line 234 at [00002667][0001:00002667], len = 0x3
-	line 16707566 at [0000266A][0001:0000266A], len = 0x2
-	line 236 at [0000266C][0001:0000266C], len = 0x1
-	line 239 at [0000266D][0001:0000266D], len = 0x18
-	line 240 at [00002685][0001:00002685], len = 0xA
-	line 243 at [0000268F][0001:0000268F], len = 0xA
-	line 246 at [00002699][0001:00002699], len = 0xB
-	line 249 at [000026A4][0001:000026A4], len = 0x14
-	line 252 at [000026B8][0001:000026B8], len = 0xE
-	line 253 at [000026C6][0001:000026C6], len = 0x3
-	line 254 at [000026C9][0001:000026C9], len = 0x1
-	line 235 at [000026CA][0001:000026CA], len = 0x16
-	line 16707566 at [000026E0][0001:000026E0], len = 0x4
-	line 256 at [000026E4][0001:000026E4], len = 0x12
-	line 16707566 at [000026F6][0001:000026F6], len = 0x4
-	line 257 at [000026FA][0001:000026FA], len = 0x1
-	line 260 at [000026FB][0001:000026FB], len = 0x15
-	line 263 at [00002710][0001:00002710], len = 0x1
-	line 266 at [00002711][0001:00002711], len = 0x13
-	line 269 at [00002724][0001:00002724], len = 0xD
-	line 272 at [00002731][0001:00002731], len = 0x15
-	line 276 at [00002746][0001:00002746], len = 0x6
-	line 277 at [0000274C][0001:0000274C], len = 0x6
-	line 278 at [00002752][0001:00002752], len = 0x10
-	line 279 at [00002762][0001:00002762], len = 0x1
-	line 229 at [00002763][0001:00002763], len = 0x6
-	line 16707566 at [00002769][0001:00002769], len = 0x7
-	line 283 at [00002770][0001:00002770], len = 0x8
-	line 16707566 at [00002778][0001:00002778], len = 0x4
-	line 284 at [0000277C][0001:0000277C], len = 0x1
-	line 285 at [0000277D][0001:0000277D], len = 0x13
-	line 16707566 at [00002790][0001:00002790], len = 0x4
-	line 286 at [00002794][0001:00002794], len = 0x1
-	line 288 at [00002795][0001:00002795], len = 0xD
-	line 290 at [000027A2][0001:000027A2], len = 0xC
-	line 291 at [000027AE][0001:000027AE], len = 0x1
-	line 292 at [000027AF][0001:000027AF], len = 0x1
-	line 293 at [000027B0][0001:000027B0], len = 0x1
+	line 185 at [00002515][0001:00002515], len = 0x1	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.FOS_System.IO\Streams\FAT\FATFileStream.cs
+	line 186 at [00002516][0001:00002516], len = 0x9
+	line 16707566 at [0000251F][0001:0000251F], len = 0x4
+	line 187 at [00002523][0001:00002523], len = 0x1
+	line 188 at [00002524][0001:00002524], len = 0x15
+	line 189 at [00002539][0001:00002539], len = 0x1
+	line 16707566 at [0000253A][0001:0000253A], len = 0x2
+	line 190 at [0000253C][0001:0000253C], len = 0x9
+	line 16707566 at [00002545][0001:00002545], len = 0x4
+	line 191 at [00002549][0001:00002549], len = 0x1
+	line 192 at [0000254A][0001:0000254A], len = 0x15
+	line 193 at [0000255F][0001:0000255F], len = 0x1
+	line 16707566 at [00002560][0001:00002560], len = 0x2
+	line 194 at [00002562][0001:00002562], len = 0x9
+	line 16707566 at [0000256B][0001:0000256B], len = 0x4
+	line 195 at [0000256F][0001:0000256F], len = 0x1
+	line 196 at [00002570][0001:00002570], len = 0x15
+	line 197 at [00002585][0001:00002585], len = 0x1
+	line 16707566 at [00002586][0001:00002586], len = 0x2
+	line 198 at [00002588][0001:00002588], len = 0xD
+	line 16707566 at [00002595][0001:00002595], len = 0x4
+	line 199 at [00002599][0001:00002599], len = 0x1
+	line 200 at [0000259A][0001:0000259A], len = 0x15
+	line 201 at [000025AF][0001:000025AF], len = 0x1
+	line 205 at [000025B0][0001:000025B0], len = 0x11
+	line 206 at [000025C1][0001:000025C1], len = 0x7
+	line 208 at [000025C8][0001:000025C8], len = 0xE
+	line 16707566 at [000025D6][0001:000025D6], len = 0x4
+	line 209 at [000025DA][0001:000025DA], len = 0x1
+	line 212 at [000025DB][0001:000025DB], len = 0x7
+	line 213 at [000025E2][0001:000025E2], len = 0xE
+	line 16707566 at [000025F0][0001:000025F0], len = 0x4
+	line 214 at [000025F4][0001:000025F4], len = 0x1
+	line 216 at [000025F5][0001:000025F5], len = 0x5
+	line 220 at [000025FA][0001:000025FA], len = 0x1
+	line 224 at [000025FB][0001:000025FB], len = 0x7
+	line 225 at [00002602][0001:00002602], len = 0x7
+	line 16707566 at [00002609][0001:00002609], len = 0x5
+	line 230 at [0000260E][0001:0000260E], len = 0x1
+	line 231 at [0000260F][0001:0000260F], len = 0xB
+	line 232 at [0000261A][0001:0000261A], len = 0xB
+	line 234 at [00002625][0001:00002625], len = 0x3
+	line 16707566 at [00002628][0001:00002628], len = 0x2
+	line 236 at [0000262A][0001:0000262A], len = 0x1
+	line 239 at [0000262B][0001:0000262B], len = 0x18
+	line 240 at [00002643][0001:00002643], len = 0xA
+	line 243 at [0000264D][0001:0000264D], len = 0xA
+	line 246 at [00002657][0001:00002657], len = 0xB
+	line 249 at [00002662][0001:00002662], len = 0x14
+	line 252 at [00002676][0001:00002676], len = 0xE
+	line 253 at [00002684][0001:00002684], len = 0x3
+	line 254 at [00002687][0001:00002687], len = 0x1
+	line 235 at [00002688][0001:00002688], len = 0x16
+	line 16707566 at [0000269E][0001:0000269E], len = 0x4
+	line 256 at [000026A2][0001:000026A2], len = 0x12
+	line 16707566 at [000026B4][0001:000026B4], len = 0x4
+	line 257 at [000026B8][0001:000026B8], len = 0x1
+	line 260 at [000026B9][0001:000026B9], len = 0x15
+	line 263 at [000026CE][0001:000026CE], len = 0x1
+	line 266 at [000026CF][0001:000026CF], len = 0x13
+	line 269 at [000026E2][0001:000026E2], len = 0xD
+	line 272 at [000026EF][0001:000026EF], len = 0x15
+	line 276 at [00002704][0001:00002704], len = 0x6
+	line 277 at [0000270A][0001:0000270A], len = 0x6
+	line 278 at [00002710][0001:00002710], len = 0x10
+	line 279 at [00002720][0001:00002720], len = 0x1
+	line 229 at [00002721][0001:00002721], len = 0x6
+	line 16707566 at [00002727][0001:00002727], len = 0x7
+	line 283 at [0000272E][0001:0000272E], len = 0x8
+	line 16707566 at [00002736][0001:00002736], len = 0x4
+	line 284 at [0000273A][0001:0000273A], len = 0x1
+	line 285 at [0000273B][0001:0000273B], len = 0x13
+	line 16707566 at [0000274E][0001:0000274E], len = 0x4
+	line 286 at [00002752][0001:00002752], len = 0x1
+	line 288 at [00002753][0001:00002753], len = 0xD
+	line 290 at [00002760][0001:00002760], len = 0xC
+	line 291 at [0000276C][0001:0000276C], len = 0x1
+	line 292 at [0000276D][0001:0000276D], len = 0x1
+	line 293 at [0000276E][0001:0000276E], len = 0x1
 
 
 
@@ -3150,24 +3145,24 @@ Compiland = Kernel.FOS_System.IO.Streams.FAT.FATFileStream
   00001E27  0001:00001E27  0000003B  Kernel.FOS_System.IO.Partition
   00001E62  0001:00001E62  0000001A  Kernel.FOS_System.IO.Partition
   00001E7C  0001:00001E7C  0000001A  Kernel.FOS_System.IO.Partition
-  00001E96  0001:00001E96  000000E4  Kernel.FOS_System.IO.FileSystemManager
-  00001F7A  0001:00001F7A  00000048  Kernel.FOS_System.IO.FileSystemManager
-  00001FC2  0001:00001FC2  00000084  Kernel.FOS_System.IO.FileSystemManager
-  00002046  0001:00002046  00000099  Kernel.FOS_System.IO.FileSystemManager
-  000020DF  0001:000020DF  0000004C  Kernel.FOS_System.IO.FileSystemManager
-  0000212B  0001:0000212B  00000017  Kernel.FOS_System.IO.FileSystemManager
-  00002142  0001:00002142  0000000C  Kernel.FOS_System.IO.Streams.FileStream
-  0000214E  0001:0000214E  00000011  Kernel.FOS_System.IO.Streams.FileStream
-  0000215F  0001:0000215F  00000039  Kernel.FOS_System.IO.Streams.FileStream
-  00002198  0001:00002198  00000016  Kernel.FOS_System.IO.Streams.FAT.FATFileStream
-  000021AE  0001:000021AE  00000011  Kernel.FOS_System.IO.Streams.FAT.FATFileStream
-  000021BF  0001:000021BF  0000000C  Kernel.FOS_System.IO.Streams.FAT.FATFileStream
-  000021CB  0001:000021CB  0000002C  Kernel.FOS_System.IO.Streams.FAT.FATFileStream
-  000021F7  0001:000021F7  00000053  Kernel.FOS_System.IO.Streams.FAT.FATFileStream
-  0000224A  0001:0000224A  0000004F  Kernel.FOS_System.IO.Streams.FAT.FATFileStream
-  00002299  0001:00002299  0000004A  Kernel.FOS_System.IO.Streams.FAT.FATFileStream
-  000022E3  0001:000022E3  00000274  Kernel.FOS_System.IO.Streams.FAT.FATFileStream
-  00002557  0001:00002557  0000025A  Kernel.FOS_System.IO.Streams.FAT.FATFileStream
+  00001E96  0001:00001E96  000000A2  Kernel.FOS_System.IO.FileSystemManager
+  00001F38  0001:00001F38  00000048  Kernel.FOS_System.IO.FileSystemManager
+  00001F80  0001:00001F80  00000084  Kernel.FOS_System.IO.FileSystemManager
+  00002004  0001:00002004  00000099  Kernel.FOS_System.IO.FileSystemManager
+  0000209D  0001:0000209D  0000004C  Kernel.FOS_System.IO.FileSystemManager
+  000020E9  0001:000020E9  00000017  Kernel.FOS_System.IO.FileSystemManager
+  00002100  0001:00002100  0000000C  Kernel.FOS_System.IO.Streams.FileStream
+  0000210C  0001:0000210C  00000011  Kernel.FOS_System.IO.Streams.FileStream
+  0000211D  0001:0000211D  00000039  Kernel.FOS_System.IO.Streams.FileStream
+  00002156  0001:00002156  00000016  Kernel.FOS_System.IO.Streams.FAT.FATFileStream
+  0000216C  0001:0000216C  00000011  Kernel.FOS_System.IO.Streams.FAT.FATFileStream
+  0000217D  0001:0000217D  0000000C  Kernel.FOS_System.IO.Streams.FAT.FATFileStream
+  00002189  0001:00002189  0000002C  Kernel.FOS_System.IO.Streams.FAT.FATFileStream
+  000021B5  0001:000021B5  00000053  Kernel.FOS_System.IO.Streams.FAT.FATFileStream
+  00002208  0001:00002208  0000004F  Kernel.FOS_System.IO.Streams.FAT.FATFileStream
+  00002257  0001:00002257  0000004A  Kernel.FOS_System.IO.Streams.FAT.FATFileStream
+  000022A1  0001:000022A1  00000274  Kernel.FOS_System.IO.Streams.FAT.FATFileStream
+  00002515  0001:00002515  0000025A  Kernel.FOS_System.IO.Streams.FAT.FATFileStream
 
 
 
@@ -3278,7 +3273,7 @@ Summary :
 	Sizeof(Elem) = 4
 
 Stream: SECTIONHEADERS(1)
-00 00 00 00 00 00 00 00 - B1 27 00 00 00 00 00 00 - B1 27 00 00 00 00 00 00 - 00 00 00 00 00 00 00 00 - 00 00 00 00 00 00 00 00 | ........▒'......▒'......................
+00 00 00 00 00 00 00 00 - 6F 27 00 00 00 00 00 00 - 6F 27 00 00 00 00 00 00 - 00 00 00 00 00 00 00 00 - 00 00 00 00 00 00 00 00 | ........o'......o'......................
 Summary :
 	No of Elems = 1
 	Sizeof(Elem) = 40
