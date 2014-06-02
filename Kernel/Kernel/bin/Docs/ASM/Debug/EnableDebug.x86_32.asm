@@ -1,0 +1,7 @@
+﻿method_System_Void_RETEND_Kernel_Debug_BasicDebug_DECLEND_BeginEnableDebug_NAMEEND___:
+mov dword [BasicDebug_Enabled], 1
+call BasicDebug_SendConnectedCmd
+ret
+method_System_Void_RETEND_Kernel_Debug_BasicDebug_DECLEND_EndEnableDebug_NAMEEND___:
+mov dword [BasicDebug_ReadAttempts], 0
+ret

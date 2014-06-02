@@ -1,0 +1,246 @@
+﻿<html>
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <link rel="shortcut icon" href="../icons/favicon.ico" />
+    <link rel="stylesheet" type="text/css" href="../styles/branding.css" />
+    <link rel="stylesheet" type="text/css" href="../styles/branding-en-US.css" />
+    <script type="text/javascript" src="../scripts/branding.js"> </script>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <title>KernelCompiler Methods</title>
+    <meta name="Language" content="en-us" />
+    <meta name="System.Keywords" content="KernelCompiler class, methods" />
+    <meta name="Microsoft.Help.Id" content="Methods.T:Kernel.Compiler.App.KernelCompiler" />
+    <meta name="Microsoft.Help.ContentType" content="Reference" />
+    <meta name="BrandingAware" content="true" />
+    
+    <meta name="container" content="Kernel.Compiler.App" />
+    <meta name="file" content="3224e62b-712c-8a23-0943-6e2787632bdd" />
+    <meta name="guid" content="3224e62b-712c-8a23-0943-6e2787632bdd" />
+    
+    <link rel="stylesheet" type="text/css" href="../styles/branding-Website.css" />
+    <script type="text/javascript" src="../scripts/jquery-1.11.0.min.js"></script>
+    <script type="text/javascript" src="../scripts/branding-Website.js"></script>
+  </head>
+  <body onload="OnLoad('cs')">
+    <input type="hidden" id="userDataCache" class="userDataStyle" />
+    <div class="pageHeader" id="PageHeader">Fling OS<form id="SearchForm" method="get" action="#" onsubmit="javascript:TransferToSearchPage(); return false;"><input id="SearchTextBox" type="text" maxlength="200" /><button id="SearchButton" type="submit"></button></form></div>
+    <div class="pageBody">
+      <div class="leftNav" id="leftNav"><div id="tocNav"><div class="toclevel0" data-toclevel="0"><a class="tocCollapsed" onclick="javascript: Toggle(this);" href="#!"></a><a data-tochassubtree="true" href="dd3e390e-07c0-499b-8f92-2cb8e8ca8b09.htm" title="Fling OS" tocid="roottoc">Fling OS</a></div><div class="toclevel0" data-toclevel="0"><a class="tocCollapsed" onclick="javascript: Toggle(this);" href="#!"></a><a data-tochassubtree="true" href="d75eb659-6335-53f6-af7a-81814a21ab7f.htm" title="Technical" tocid="e7898754-10b2-455e-af63-e0fed409eb87">Technical</a></div><div class="toclevel0" data-toclevel="0"><a class="tocCollapsed" onclick="javascript: Toggle(this);" href="#!"></a><a data-tochassubtree="true" href="d75eb659-6335-53f6-af7a-81814a21ab7f.htm" title="Kernel" tocid="d75eb659-6335-53f6-af7a-81814a21ab7f">Kernel</a></div><div class="toclevel0" data-toclevel="0"><a class="tocCollapsed" onclick="javascript: Toggle(this);" href="#!"></a><a data-tochassubtree="true" href="f85d4b75-ece2-4eb8-47cb-15814ba4e543.htm" title="Kernel.Compiler Namespaces" tocid="f85d4b75-ece2-4eb8-47cb-15814ba4e543">Kernel.Compiler Namespaces</a></div><div class="toclevel0" data-toclevel="0"><a class="tocCollapsed" onclick="javascript: Toggle(this);" href="#!"></a><a data-tochassubtree="true" href="1fa1cc95-513c-d6a3-cfa3-724e60d605d0.htm" title="Kernel.Compiler.App" tocid="1fa1cc95-513c-d6a3-cfa3-724e60d605d0">Kernel.Compiler.App</a></div><div class="toclevel0" data-toclevel="0"><a class="tocCollapsed" onclick="javascript: Toggle(this);" href="#!"></a><a data-tochassubtree="true" href="67786d2d-0b39-60c7-13a6-6e3b73d2e6a5.htm" title="KernelCompiler Class" tocid="67786d2d-0b39-60c7-13a6-6e3b73d2e6a5">KernelCompiler Class</a></div><div class="toclevel1 current" data-toclevel="1" data-childrenloaded="true"><a class="tocExpanded" onclick="javascript: Toggle(this);" href="#!"></a><a data-tochassubtree="true" href="3224e62b-712c-8a23-0943-6e2787632bdd.htm" title="KernelCompiler Methods" tocid="3224e62b-712c-8a23-0943-6e2787632bdd">KernelCompiler Methods</a></div><div class="toclevel2" data-toclevel="2"><a data-tochassubtree="false" href="a7bc8ded-de5e-b0a2-d73b-6dcb6bbf4108.htm" title="Execute Method " tocid="a7bc8ded-de5e-b0a2-d73b-6dcb6bbf4108">Execute Method </a></div><div class="toclevel2" data-toclevel="2"><a data-tochassubtree="false" href="4cf6a2ba-2260-7b5f-6093-b3841f96e927.htm" title="InitILCompiler Method " tocid="4cf6a2ba-2260-7b5f-6093-b3841f96e927">InitILCompiler Method </a></div><div class="toclevel2" data-toclevel="2"><a data-tochassubtree="false" href="efe39469-a745-eeab-2ef4-fbdb04b7e791.htm" title="InitOutputAndHandlers Method " tocid="efe39469-a745-eeab-2ef4-fbdb04b7e791">InitOutputAndHandlers Method </a></div><div class="toclevel2" data-toclevel="2"><a data-tochassubtree="false" href="3d2caaee-f83a-fef9-2ac9-e7b211786bf1.htm" title="InitSettings Method " tocid="3d2caaee-f83a-fef9-2ac9-e7b211786bf1">InitSettings Method </a></div><div class="toclevel2" data-toclevel="2"><a data-tochassubtree="false" href="d1ee72f5-c996-62ff-d378-2ea82e85a699.htm" title="Main Method " tocid="d1ee72f5-c996-62ff-d378-2ea82e85a699">Main Method </a></div><div class="toclevel2" data-toclevel="2"><a data-tochassubtree="false" href="1e5ba381-8733-ba79-0bbc-0a67bd067543.htm" title="MSBuild_OutputError Method " tocid="1e5ba381-8733-ba79-0bbc-0a67bd067543">MSBuild_OutputError Method </a></div><div class="toclevel2" data-toclevel="2"><a data-tochassubtree="false" href="863a2a74-20d5-6c8b-bc97-5f27012565cc.htm" title="MSBuild_OutputMessage Method " tocid="863a2a74-20d5-6c8b-bc97-5f27012565cc">MSBuild_OutputMessage Method </a></div><div class="toclevel2" data-toclevel="2"><a data-tochassubtree="false" href="237e12a2-896a-e669-9e56-304b974f0678.htm" title="MSBuild_OutputWarning Method " tocid="237e12a2-896a-e669-9e56-304b974f0678">MSBuild_OutputWarning Method </a></div><div class="toclevel2" data-toclevel="2"><a data-tochassubtree="false" href="272e3ae2-2bc5-76c4-ee67-c42059d89e54.htm" title="OutputError Method " tocid="272e3ae2-2bc5-76c4-ee67-c42059d89e54">OutputError Method </a></div><div class="toclevel2" data-toclevel="2"><a data-tochassubtree="false" href="e6aedc05-6126-4188-c4b9-371d3ed0691b.htm" title="OutputHelp Method " tocid="e6aedc05-6126-4188-c4b9-371d3ed0691b">OutputHelp Method </a></div><div class="toclevel2" data-toclevel="2"><a data-tochassubtree="false" href="4bc39109-8dfc-6c65-6557-60ce5384bc2d.htm" title="OutputMessage Method " tocid="4bc39109-8dfc-6c65-6557-60ce5384bc2d">OutputMessage Method </a></div><div class="toclevel2" data-toclevel="2"><a data-tochassubtree="false" href="48419c47-877b-bcec-c951-812af5f8d6f0.htm" title="OutputWarning Method " tocid="48419c47-877b-bcec-c951-812af5f8d6f0">OutputWarning Method </a></div></div></div><div id="TocResize" class="tocResize" onmousedown="OnMouseDown(event);"><img id="ResizeImageIncrease" src="../icons/TocOpen.gif" onclick="OnIncreaseToc()" alt="Click or drag to resize" title="Click or drag to resize"><img id="ResizeImageReset" src="../icons/TocClose.gif" style="display:none" onclick="OnResetToc()" alt="Click or drag to resize" title="Click or drag to resize"></div><div class="topicContent" id="TopicContent">
+        <table class="titleTable">
+          <tr>
+            <td class="titleColumn">KernelCompiler Methods</td>
+          </tr>
+        </table>
+        <span class="introStyle"></span>
+        <p>The <a href="67786d2d-0b39-60c7-13a6-6e3b73d2e6a5.htm">KernelCompiler</a> type exposes the following members.</p>
+        <div class="collapsibleAreaRegion">
+          <span class="collapsibleRegionTitle" onclick="SectionExpandCollapse('ID0RB')" onkeypress="SectionExpandCollapse_CheckKey('ID0RB', event)" tabindex="0">
+            <img id="ID0RBToggle" class="collapseToggle" src="../icons/SectionExpanded.png" />Methods</span>
+        </div>
+        <div id="ID0RBSection" class="collapsibleSection">
+          <table id="memberList" class="members">
+            <tr>
+              <th class="iconColumn">
+								 
+							</th>
+              <th>Name</th>
+              <th>Description</th>
+            </tr>
+            <tr data="public;declared;notNetfw;">
+              <td>
+                <img src="../icons/pubmethod.gif" alt="Public method" title="Public method" />
+              </td>
+              <td>
+                <a href="a7bc8ded-de5e-b0a2-d73b-6dcb6bbf4108.htm">Execute</a>
+              </td>
+              <td>
+                <div class="summary">
+            The entry point of the compiler if it is executed as an MSBuild task
+            </div> (Overrides <a href="http://msdn2.microsoft.com/en-us/library/ms126282" target="_blank">Task<span id="LSTCF29A83D_0"></span><script type="text/javascript">AddLanguageSpecificTextSet("LSTCF29A83D_0?cs=.|vb=.|cpp=::|nu=.|fs=.");</script>Execute<span id="LSTCF29A83D_1"></span><script type="text/javascript">AddLanguageSpecificTextSet("LSTCF29A83D_1?cs=()|vb=|cpp=()|nu=()|fs=()");</script></a>.)</td>
+            </tr>
+            <tr data="private;static;declared;notNetfw;">
+              <td>
+                <img src="../icons/privmethod.gif" alt="Private method" title="Private method" />
+                <img src="../icons/static.gif" alt="Static member" title="Static member" />
+              </td>
+              <td>
+                <a href="4cf6a2ba-2260-7b5f-6093-b3841f96e927.htm">InitILCompiler</a>
+              </td>
+              <td>
+                <div class="summary">
+            Initialises the ILCompiler.
+            </div>
+              </td>
+            </tr>
+            <tr data="private;static;declared;notNetfw;">
+              <td>
+                <img src="../icons/privmethod.gif" alt="Private method" title="Private method" />
+                <img src="../icons/static.gif" alt="Static member" title="Static member" />
+              </td>
+              <td>
+                <a href="efe39469-a745-eeab-2ef4-fbdb04b7e791.htm">InitOutputAndHandlers</a>
+              </td>
+              <td>
+                <div class="summary">
+            Initialises the output streams and handlers.
+            </div>
+              </td>
+            </tr>
+            <tr data="private;static;declared;notNetfw;">
+              <td>
+                <img src="../icons/privmethod.gif" alt="Private method" title="Private method" />
+                <img src="../icons/static.gif" alt="Static member" title="Static member" />
+              </td>
+              <td>
+                <a href="3d2caaee-f83a-fef9-2ac9-e7b211786bf1.htm">InitSettings</a>
+              </td>
+              <td>
+                <div class="summary">
+            Initialises the Settings using the supplied arguments.
+            </div>
+              </td>
+            </tr>
+            <tr data="public;static;declared;notNetfw;">
+              <td>
+                <img src="../icons/pubmethod.gif" alt="Public method" title="Public method" />
+                <img src="../icons/static.gif" alt="Static member" title="Static member" />
+              </td>
+              <td>
+                <a href="d1ee72f5-c996-62ff-d378-2ea82e85a699.htm">Main</a>
+              </td>
+              <td>
+                <div class="summary">
+            The kernel compiler application's main entry point.
+            </div>
+              </td>
+            </tr>
+            <tr data="public;static;declared;notNetfw;">
+              <td>
+                <img src="../icons/pubmethod.gif" alt="Public method" title="Public method" />
+                <img src="../icons/static.gif" alt="Static member" title="Static member" />
+              </td>
+              <td>
+                <a href="1e5ba381-8733-ba79-0bbc-0a67bd067543.htm">MSBuild_OutputError</a>
+              </td>
+              <td>
+                <div class="summary">
+            Outputs an error message via the MSBuild task.
+            </div>
+              </td>
+            </tr>
+            <tr data="public;static;declared;notNetfw;">
+              <td>
+                <img src="../icons/pubmethod.gif" alt="Public method" title="Public method" />
+                <img src="../icons/static.gif" alt="Static member" title="Static member" />
+              </td>
+              <td>
+                <a href="863a2a74-20d5-6c8b-bc97-5f27012565cc.htm">MSBuild_OutputMessage</a>
+              </td>
+              <td>
+                <div class="summary">
+            Outputs a standard message via the MSBuild task.
+            </div>
+              </td>
+            </tr>
+            <tr data="public;static;declared;notNetfw;">
+              <td>
+                <img src="../icons/pubmethod.gif" alt="Public method" title="Public method" />
+                <img src="../icons/static.gif" alt="Static member" title="Static member" />
+              </td>
+              <td>
+                <a href="237e12a2-896a-e669-9e56-304b974f0678.htm">MSBuild_OutputWarning</a>
+              </td>
+              <td>
+                <div class="summary">
+            Outputs a warning message via the MSBuild task.
+            </div>
+              </td>
+            </tr>
+            <tr data="public;static;declared;notNetfw;">
+              <td>
+                <img src="../icons/pubmethod.gif" alt="Public method" title="Public method" />
+                <img src="../icons/static.gif" alt="Static member" title="Static member" />
+              </td>
+              <td>
+                <a href="272e3ae2-2bc5-76c4-ee67-c42059d89e54.htm">OutputError</a>
+              </td>
+              <td>
+                <div class="summary">
+            Outputs an error message to the console window.
+            </div>
+              </td>
+            </tr>
+            <tr data="private;static;declared;notNetfw;">
+              <td>
+                <img src="../icons/privmethod.gif" alt="Private method" title="Private method" />
+                <img src="../icons/static.gif" alt="Static member" title="Static member" />
+              </td>
+              <td>
+                <a href="e6aedc05-6126-4188-c4b9-371d3ed0691b.htm">OutputHelp</a>
+              </td>
+              <td>
+                <div class="summary">
+            Outputs the help text.
+            </div>
+              </td>
+            </tr>
+            <tr data="public;static;declared;notNetfw;">
+              <td>
+                <img src="../icons/pubmethod.gif" alt="Public method" title="Public method" />
+                <img src="../icons/static.gif" alt="Static member" title="Static member" />
+              </td>
+              <td>
+                <a href="4bc39109-8dfc-6c65-6557-60ce5384bc2d.htm">OutputMessage</a>
+              </td>
+              <td>
+                <div class="summary">
+            Outputs a standard message to the console window.
+            </div>
+              </td>
+            </tr>
+            <tr data="public;static;declared;notNetfw;">
+              <td>
+                <img src="../icons/pubmethod.gif" alt="Public method" title="Public method" />
+                <img src="../icons/static.gif" alt="Static member" title="Static member" />
+              </td>
+              <td>
+                <a href="48419c47-877b-bcec-c951-812af5f8d6f0.htm">OutputWarning</a>
+              </td>
+              <td>
+                <div class="summary">
+            Outputs a warning message to the console window.
+            </div>
+              </td>
+            </tr>
+          </table>
+          <a href="#PageHeader">Top</a>
+        </div>
+        <div class="collapsibleAreaRegion" id="seeAlsoSection">
+          <span class="collapsibleRegionTitle" onclick="SectionExpandCollapse('ID1RB')" onkeypress="SectionExpandCollapse_CheckKey('ID1RB', event)" tabindex="0">
+            <img id="ID1RBToggle" class="collapseToggle" src="../icons/SectionExpanded.png" />See Also</span>
+        </div>
+        <div id="ID1RBSection" class="collapsibleSection">
+          <h4 class="subHeading">Reference</h4>
+          <div class="seeAlsoStyle">
+            <a href="67786d2d-0b39-60c7-13a6-6e3b73d2e6a5.htm">KernelCompiler Class</a>
+          </div>
+          <div class="seeAlsoStyle">
+            <a href="1fa1cc95-513c-d6a3-cfa3-724e60d605d0.htm">Kernel.Compiler.App Namespace</a>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div id="pageFooter" class="pageFooter">
+      <p>
+        <a href="http://www.flingos.co.uk" target="_blank">Copyright Edward Nutting 2014</a>
+      </p>
+      <div class="feedbackLink">Send comments on this topic to
+        <a id="HT_MailLink" href="mailto:edwardnutting%40outlook.com?Subject=Fling OS">Edward Nutting</a></div>
+      <script type="text/javascript">
+        var HT_mailLink = document.getElementById("HT_MailLink");
+        var HT_mailLinkText = HT_mailLink.innerHTML;
+        HT_mailLink.href += ": " + document.title + "\u0026body=" + encodeURIComponent("Your feedback is used to improve the documentation and the product. Your e-mail address will not be used for any other purpose and is disposed of after the issue you report is resolved. While working to resolve the issue that you report, you may be contacted via e-mail to get further details or clarification on the feedback you sent. After the issue you report has been addressed, you may receive an e-mail to let you know that your feedback has been addressed.");
+        HT_mailLink.innerHTML = HT_mailLinkText;
+        </script> </div>
+  </body>
+</html>

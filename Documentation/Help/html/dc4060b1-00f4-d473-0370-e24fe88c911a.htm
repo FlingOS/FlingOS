@@ -1,314 +1,300 @@
-﻿<html xmlns:MSHelp="http://msdn.microsoft.com/mshelp" xmlns:mshelp="http://msdn.microsoft.com/mshelp">
+﻿<html>
   <head>
-    <link rel="SHORTCUT ICON" href="./../icons/favicon.ico" />
-    <style type="text/css">.OH_CodeSnippetContainerTabLeftActive, .OH_CodeSnippetContainerTabLeft,.OH_CodeSnippetContainerTabLeftDisabled { }.OH_CodeSnippetContainerTabRightActive, .OH_CodeSnippetContainerTabRight,.OH_CodeSnippetContainerTabRightDisabled { }.OH_footer { }</style>
-    <link rel="stylesheet" type="text/css" href="./../styles/branding.css" />
-    <link rel="stylesheet" type="text/css" href="./../styles/branding-en-US.css" />
-    <style type="text/css">
-			body
-			{
-			border-left:5px solid #e6e6e6;
-			overflow-x:scroll;
-			overflow-y:scroll;
-			}
-		</style>
-    <script src="./../scripts/branding.js" type="text/javascript">
-      <!---->
-    </script>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <link rel="shortcut icon" href="../icons/favicon.ico" />
+    <link rel="stylesheet" type="text/css" href="../styles/branding.css" />
+    <link rel="stylesheet" type="text/css" href="../styles/branding-en-US.css" />
+    <script type="text/javascript" src="../scripts/branding.js"> </script>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
     <title>FATFileSystem Methods</title>
     <meta name="Language" content="en-us" />
     <meta name="System.Keywords" content="FATFileSystem class, methods" />
     <meta name="Microsoft.Help.Id" content="Methods.T:Kernel.FOS_System.IO.FAT.FATFileSystem" />
     <meta name="Microsoft.Help.ContentType" content="Reference" />
-    <meta name="BrandingAware" content="'true'" />
+    <meta name="BrandingAware" content="true" />
+    
     <meta name="container" content="Kernel.FOS_System.IO.FAT" />
     <meta name="file" content="dc4060b1-00f4-d473-0370-e24fe88c911a" />
     <meta name="guid" content="dc4060b1-00f4-d473-0370-e24fe88c911a" />
     
-    
-    <meta name="SelfBranded" content="true" />
+    <link rel="stylesheet" type="text/css" href="../styles/branding-Website.css" />
+    <script type="text/javascript" src="../scripts/jquery-1.11.0.min.js"></script>
+    <script type="text/javascript" src="../scripts/branding-Website.js"></script>
   </head>
-  <body onload="onLoad()" class="primary-mtps-offline-document">
-    <div class="OH_outerDiv">
-      <div class="OH_outerContent">
-        <table class="TitleTable">
+  <body onload="OnLoad('cs')">
+    <input type="hidden" id="userDataCache" class="userDataStyle" />
+    <div class="pageHeader" id="PageHeader">Fling OS<form id="SearchForm" method="get" action="#" onsubmit="javascript:TransferToSearchPage(); return false;"><input id="SearchTextBox" type="text" maxlength="200" /><button id="SearchButton" type="submit"></button></form></div>
+    <div class="pageBody">
+      <div class="leftNav" id="leftNav"><div id="tocNav"><div class="toclevel0" data-toclevel="0"><a class="tocCollapsed" onclick="javascript: Toggle(this);" href="#!"></a><a data-tochassubtree="true" href="dd3e390e-07c0-499b-8f92-2cb8e8ca8b09.htm" title="Fling OS" tocid="roottoc">Fling OS</a></div><div class="toclevel0" data-toclevel="0"><a class="tocCollapsed" onclick="javascript: Toggle(this);" href="#!"></a><a data-tochassubtree="true" href="d75eb659-6335-53f6-af7a-81814a21ab7f.htm" title="Technical" tocid="e0e0d194-2589-42a6-a2db-a50791dd3bda">Technical</a></div><div class="toclevel0" data-toclevel="0"><a class="tocCollapsed" onclick="javascript: Toggle(this);" href="#!"></a><a data-tochassubtree="true" href="d75eb659-6335-53f6-af7a-81814a21ab7f.htm" title="Kernel" tocid="d75eb659-6335-53f6-af7a-81814a21ab7f">Kernel</a></div><div class="toclevel0" data-toclevel="0"><a class="tocCollapsed" onclick="javascript: Toggle(this);" href="#!"></a><a data-tochassubtree="true" href="966b6396-35e7-33bc-96a3-92c550680dc2.htm" title="Kernel.FOS_System Namespaces" tocid="966b6396-35e7-33bc-96a3-92c550680dc2">Kernel.FOS_System Namespaces</a></div><div class="toclevel0" data-toclevel="0"><a class="tocCollapsed" onclick="javascript: Toggle(this);" href="#!"></a><a data-tochassubtree="true" href="6271d5c2-0e56-9923-5bda-160aaab7f455.htm" title="Kernel.FOS_System.IO.FAT" tocid="6271d5c2-0e56-9923-5bda-160aaab7f455">Kernel.FOS_System.IO.FAT</a></div><div class="toclevel0" data-toclevel="0"><a class="tocCollapsed" onclick="javascript: Toggle(this);" href="#!"></a><a data-tochassubtree="true" href="f555dedd-e3c3-6698-10ea-e350a5b50354.htm" title="FATFileSystem Class" tocid="f555dedd-e3c3-6698-10ea-e350a5b50354">FATFileSystem Class</a></div><div class="toclevel1 current" data-toclevel="1" data-childrenloaded="true"><a class="tocExpanded" onclick="javascript: Toggle(this);" href="#!"></a><a data-tochassubtree="true" href="dc4060b1-00f4-d473-0370-e24fe88c911a.htm" title="FATFileSystem Methods" tocid="dc4060b1-00f4-d473-0370-e24fe88c911a">FATFileSystem Methods</a></div><div class="toclevel2" data-toclevel="2"><a data-tochassubtree="false" href="0659ac5b-945f-c6b1-af1b-cf3ade10e260.htm" title="CheckSum Method " tocid="0659ac5b-945f-c6b1-af1b-cf3ade10e260">CheckSum Method </a></div><div class="toclevel2" data-toclevel="2"><a data-tochassubtree="false" href="1bc28de6-d9fd-0b60-a1bd-1729fa93c829.htm" title="EncodeDirectoryTable Method " tocid="1bc28de6-d9fd-0b60-a1bd-1729fa93c829">EncodeDirectoryTable Method </a></div><div class="toclevel2" data-toclevel="2"><a data-tochassubtree="false" href="cad4ac54-4483-95c4-b9fc-442011cf1b51.htm" title="FATEntryIndicatesEOF Method " tocid="cad4ac54-4483-95c4-b9fc-442011cf1b51">FATEntryIndicatesEOF Method </a></div><div class="toclevel2" data-toclevel="2"><a data-tochassubtree="false" href="42ae1fef-d59a-5525-4ac7-10232a4c2f00.htm" title="FATEntryIndicatesFree Method " tocid="42ae1fef-d59a-5525-4ac7-10232a4c2f00">FATEntryIndicatesFree Method </a></div><div class="toclevel2" data-toclevel="2"><a data-tochassubtree="false" href="abf157c8-1da0-d410-24c6-5487061ad354.htm" title="FormatPartitionAsFAT32 Method " tocid="abf157c8-1da0-d410-24c6-5487061ad354">FormatPartitionAsFAT32 Method </a></div><div class="toclevel2" data-toclevel="2"><a data-tochassubtree="false" href="29bbcbf4-d2b5-b881-2efb-9f59900d47e6.htm" title="GetFATEntryEOFValue Method " tocid="29bbcbf4-d2b5-b881-2efb-9f59900d47e6">GetFATEntryEOFValue Method </a></div><div class="toclevel2" data-toclevel="2"><a data-tochassubtree="false" href="5aaf3eea-6ccf-47a6-0667-1ab0553e3753.htm" title="GetFATTableSectorPosition Method " tocid="5aaf3eea-6ccf-47a6-0667-1ab0553e3753">GetFATTableSectorPosition Method </a></div><div class="toclevel2" data-toclevel="2"><a data-tochassubtree="false" href="698c0253-d72b-4dd0-2041-ffa6eed8572a.htm" title="GetListing Method " tocid="698c0253-d72b-4dd0-2041-ffa6eed8572a">GetListing Method </a></div><div class="toclevel2" data-toclevel="2"><a data-tochassubtree="false" href="0386eb63-e821-1e37-81a7-5985d5322075.htm" title="GetNextFreeCluster Method " tocid="0386eb63-e821-1e37-81a7-5985d5322075">GetNextFreeCluster Method </a></div><div class="toclevel2" data-toclevel="2"><a data-tochassubtree="false" href="2ad3c179-f273-98c0-76cf-808cb8b6b93e.htm" title="GetRootDirectoryTable Method " tocid="2ad3c179-f273-98c0-76cf-808cb8b6b93e">GetRootDirectoryTable Method </a></div><div class="toclevel2" data-toclevel="2"><a data-tochassubtree="false" href="f30bd19e-1a12-6945-7078-c07a9fe577fe.htm" title="GetShortName Method " tocid="f30bd19e-1a12-6945-7078-c07a9fe577fe">GetShortName Method </a></div><div class="toclevel2" data-toclevel="2"><a data-tochassubtree="false" href="a198a661-fff5-c8df-1df2-8bbc4f1448f7.htm" title="NewClusterArray Method " tocid="a198a661-fff5-c8df-1df2-8bbc4f1448f7">NewClusterArray Method </a></div><div class="toclevel2" data-toclevel="2"><a data-tochassubtree="false" href="fe0d5cdd-ae67-e5fc-f083-b2d33a0324be.htm" title="NewDirectory Method " tocid="fe0d5cdd-ae67-e5fc-f083-b2d33a0324be">NewDirectory Method </a></div><div class="toclevel2" data-toclevel="2"><a data-tochassubtree="false" href="31ac30a5-5e81-7610-172a-286e5b4a5ee6.htm" title="NewFile Method " tocid="31ac30a5-5e81-7610-172a-286e5b4a5ee6">NewFile Method </a></div><div class="toclevel2" data-toclevel="2"><a data-tochassubtree="false" href="4c02f2af-ba0b-efb5-b3ab-551b30af48f6.htm" title="ParseDirectoryTable Method " tocid="4c02f2af-ba0b-efb5-b3ab-551b30af48f6">ParseDirectoryTable Method </a></div><div class="toclevel2" data-toclevel="2"><a data-tochassubtree="false" href="a6eabd82-a8c9-b0fc-d33e-6242e0b09b75.htm" title="ReadCluster Method " tocid="a6eabd82-a8c9-b0fc-d33e-6242e0b09b75">ReadCluster Method </a></div><div class="toclevel2" data-toclevel="2"><a data-tochassubtree="false" href="0b49e4be-3303-2671-2bb7-3961fb276718.htm" title="ReadClusterChain Method " tocid="0b49e4be-3303-2671-2bb7-3961fb276718">ReadClusterChain Method </a></div><div class="toclevel2" data-toclevel="2"><a data-tochassubtree="false" href="07c88a4e-655e-6bdb-fd22-557adb4cfcea.htm" title="ReadFATEntry Method " tocid="07c88a4e-655e-6bdb-fd22-557adb4cfcea">ReadFATEntry Method </a></div><div class="toclevel2" data-toclevel="2"><a data-tochassubtree="false" href="a62158df-8384-1ccf-a2bb-8563a55083dd.htm" title="ReadFATTableSector Method " tocid="a62158df-8384-1ccf-a2bb-8563a55083dd">ReadFATTableSector Method </a></div><div class="toclevel2" data-toclevel="2"><a data-tochassubtree="false" href="dc35a7ad-4d28-27b9-234b-eb970e0e313d.htm" title="SetFATEntryAndSave Method " tocid="dc35a7ad-4d28-27b9-234b-eb970e0e313d">SetFATEntryAndSave Method </a></div><div class="toclevel2" data-toclevel="2"><a data-tochassubtree="false" href="28c60893-d610-a092-6f34-871af99d13c9.htm" title="WriteCluster Method " tocid="28c60893-d610-a092-6f34-871af99d13c9">WriteCluster Method </a></div><div class="toclevel2" data-toclevel="2"><a data-tochassubtree="false" href="5dcf1633-179c-6b3e-d547-2abd94ee02c8.htm" title="WriteFATEntry Method " tocid="5dcf1633-179c-6b3e-d547-2abd94ee02c8">WriteFATEntry Method </a></div><div class="toclevel2" data-toclevel="2"><a data-tochassubtree="false" href="6e159dd6-4abc-55ff-cb0b-84ad81a65a28.htm" title="WriteFATTableSector Method " tocid="6e159dd6-4abc-55ff-cb0b-84ad81a65a28">WriteFATTableSector Method </a></div></div></div><div id="TocResize" class="tocResize" onmousedown="OnMouseDown(event);"><img id="ResizeImageIncrease" src="../icons/TocOpen.gif" onclick="OnIncreaseToc()" alt="Click or drag to resize" title="Click or drag to resize"><img id="ResizeImageReset" src="../icons/TocClose.gif" style="display:none" onclick="OnResetToc()" alt="Click or drag to resize" title="Click or drag to resize"></div><div class="topicContent" id="TopicContent">
+        <table class="titleTable">
           <tr>
-            <td class="OH_tdTitleColumn">FATFileSystem Methods</td>
-            <td class="OH_tdRunningTitleColumn">Fling OS</td>
+            <td class="titleColumn">FATFileSystem Methods</td>
           </tr>
         </table>
-        <div id="mainSection">
-          <div id="mainBody">
-            <span class="introStyle"></span>
-            <p>The <a href="f555dedd-e3c3-6698-10ea-e350a5b50354.htm" target="">FATFileSystem</a> type exposes the following members.</p>
-            <div class="OH_CollapsibleAreaRegion">
-              <div class="OH_regiontitle">Methods</div>
-              <div class="OH_CollapsibleArea_HrDiv">
-                <hr class="OH_CollapsibleArea_Hr" />
-              </div>
-            </div>
-            <div class="OH_clear"></div>
-            <table id="memberList" class="members">
-              <tr>
-                <th class="ps_iconColumn">
-							 
-						</th>
-                <th class="ps_nameColumn">Name</th>
-                <th class="ps_descriptionColumn">Description</th>
-              </tr>
-              <tr data="private;static;declared;notNetfw;">
-                <td>
-                  <img src="./../icons/privmethod.gif" alt="Private method" title="Private method" />
-                  <img src="./../icons/static.gif" alt="Static member" title="Static member" />
-                </td>
-                <td>
-                  <a href="0659ac5b-945f-c6b1-af1b-cf3ade10e260.htm" target="">CheckSum</a>
-                </td>
-                <td></td>
-              </tr>
-              <tr data="public;declared;notNetfw;">
-                <td>
-                  <img src="./../icons/pubmethod.gif" alt="Public method" title="Public method" />
-                </td>
-                <td>
-                  <a href="1bc28de6-d9fd-0b60-a1bd-1729fa93c829.htm" target="">EncodeDirectoryTable</a>
-                </td>
-                <td></td>
-              </tr>
-              <tr data="public;declared;notNetfw;">
-                <td>
-                  <img src="./../icons/pubmethod.gif" alt="Public method" title="Public method" />
-                </td>
-                <td>
-                  <a href="cad4ac54-4483-95c4-b9fc-442011cf1b51.htm" target="">FATEntryIndicatesEOF</a>
-                </td>
-                <td></td>
-              </tr>
-              <tr data="public;declared;notNetfw;">
-                <td>
-                  <img src="./../icons/pubmethod.gif" alt="Public method" title="Public method" />
-                </td>
-                <td>
-                  <a href="42ae1fef-d59a-5525-4ac7-10232a4c2f00.htm" target="">FATEntryIndicatesFree</a>
-                </td>
-                <td></td>
-              </tr>
-              <tr data="public;static;declared;notNetfw;">
-                <td>
-                  <img src="./../icons/pubmethod.gif" alt="Public method" title="Public method" />
-                  <img src="./../icons/static.gif" alt="Static member" title="Static member" />
-                </td>
-                <td>
-                  <a href="abf157c8-1da0-d410-24c6-5487061ad354.htm" target="">FormatPartitionAsFAT32</a>
-                </td>
-                <td></td>
-              </tr>
-              <tr data="public;static;declared;notNetfw;">
-                <td>
-                  <img src="./../icons/pubmethod.gif" alt="Public method" title="Public method" />
-                  <img src="./../icons/static.gif" alt="Static member" title="Static member" />
-                </td>
-                <td>
-                  <a href="29bbcbf4-d2b5-b881-2efb-9f59900d47e6.htm" target="">GetFATEntryEOFValue</a>
-                </td>
-                <td></td>
-              </tr>
-              <tr data="public;declared;notNetfw;">
-                <td>
-                  <img src="./../icons/pubmethod.gif" alt="Public method" title="Public method" />
-                </td>
-                <td>
-                  <a href="5aaf3eea-6ccf-47a6-0667-1ab0553e3753.htm" target="">GetFATTableSectorPosition</a>
-                </td>
-                <td></td>
-              </tr>
-              <tr data="public;declared;notNetfw;">
-                <td>
-                  <img src="./../icons/pubmethod.gif" alt="Public method" title="Public method" />
-                </td>
-                <td>
-                  <a href="698c0253-d72b-4dd0-2041-ffa6eed8572a.htm" target="">GetListing</a>
-                </td>
-                <td> (Overrides <a href="38f632f7-0fc9-dbec-72bc-8e3adee2cecf.htm" target="">FileSystem<span id="ID0EBBAQBCAAAAA"> </span><script type="text/javascript">
-					addToLanSpecTextIdSet("ID0EBBAQBCAAAAA?vb=.|cpp=::|cs=.|fs=.|nu=.");
-				</script>GetListing(String)</a>.)</td>
-              </tr>
-              <tr data="public;inherited;notNetfw;">
-                <td>
-                  <img src="./../icons/pubmethod.gif" alt="Public method" title="Public method" />
-                </td>
-                <td>
-                  <a href="5855582b-b7e8-7ff9-0d21-5a13a0d2cf58.htm" target="">GetListingFromListings</a>
-                </td>
-                <td> (Inherited from <a href="fc5b6670-4bb6-613e-1507-c01692a66860.htm" target="">FileSystem</a>.)</td>
-              </tr>
-              <tr data="public;declared;notNetfw;">
-                <td>
-                  <img src="./../icons/pubmethod.gif" alt="Public method" title="Public method" />
-                </td>
-                <td>
-                  <a href="0386eb63-e821-1e37-81a7-5985d5322075.htm" target="">GetNextFreeCluster</a>
-                </td>
-                <td></td>
-              </tr>
-              <tr data="public;declared;notNetfw;">
-                <td>
-                  <img src="./../icons/pubmethod.gif" alt="Public method" title="Public method" />
-                </td>
-                <td>
-                  <a href="2ad3c179-f273-98c0-76cf-808cb8b6b93e.htm" target="">GetRootDirectoryTable</a>
-                </td>
-                <td></td>
-              </tr>
-              <tr data="private;static;declared;notNetfw;">
-                <td>
-                  <img src="./../icons/privmethod.gif" alt="Private method" title="Private method" />
-                  <img src="./../icons/static.gif" alt="Static member" title="Static member" />
-                </td>
-                <td>
-                  <a href="f30bd19e-1a12-6945-7078-c07a9fe577fe.htm" target="">GetShortName</a>
-                </td>
-                <td></td>
-              </tr>
-              <tr data="public;declared;notNetfw;">
-                <td>
-                  <img src="./../icons/pubmethod.gif" alt="Public method" title="Public method" />
-                </td>
-                <td>
-                  <a href="a198a661-fff5-c8df-1df2-8bbc4f1448f7.htm" target="">NewClusterArray</a>
-                </td>
-                <td></td>
-              </tr>
-              <tr data="public;declared;notNetfw;">
-                <td>
-                  <img src="./../icons/pubmethod.gif" alt="Public method" title="Public method" />
-                </td>
-                <td>
-                  <a href="fe0d5cdd-ae67-e5fc-f083-b2d33a0324be.htm" target="">NewDirectory</a>
-                </td>
-                <td> (Overrides <a href="af6566ae-7977-1c42-db82-133e2b4d8396.htm" target="">FileSystem<span id="ID0EBBAKBCAAAAA"> </span><script type="text/javascript">
-					addToLanSpecTextIdSet("ID0EBBAKBCAAAAA?vb=.|cpp=::|cs=.|fs=.|nu=.");
-				</script>NewDirectory(String, Directory)</a>.)</td>
-              </tr>
-              <tr data="public;declared;notNetfw;">
-                <td>
-                  <img src="./../icons/pubmethod.gif" alt="Public method" title="Public method" />
-                </td>
-                <td>
-                  <a href="31ac30a5-5e81-7610-172a-286e5b4a5ee6.htm" target="">NewFile</a>
-                </td>
-                <td> (Overrides <a href="9cc95c30-2fef-ae20-fbf7-dcc546689dd9.htm" target="">FileSystem<span id="ID0EBBAJBCAAAAA"> </span><script type="text/javascript">
-					addToLanSpecTextIdSet("ID0EBBAJBCAAAAA?vb=.|cpp=::|cs=.|fs=.|nu=.");
-				</script>NewFile(String, Directory)</a>.)</td>
-              </tr>
-              <tr data="public;declared;notNetfw;">
-                <td>
-                  <img src="./../icons/pubmethod.gif" alt="Public method" title="Public method" />
-                </td>
-                <td>
-                  <a href="4c02f2af-ba0b-efb5-b3ab-551b30af48f6.htm" target="">ParseDirectoryTable</a>
-                </td>
-                <td></td>
-              </tr>
-              <tr data="public;declared;notNetfw;">
-                <td>
-                  <img src="./../icons/pubmethod.gif" alt="Public method" title="Public method" />
-                </td>
-                <td>
-                  <a href="a6eabd82-a8c9-b0fc-d33e-6242e0b09b75.htm" target="">ReadCluster</a>
-                </td>
-                <td></td>
-              </tr>
-              <tr data="public;declared;notNetfw;">
-                <td>
-                  <img src="./../icons/pubmethod.gif" alt="Public method" title="Public method" />
-                </td>
-                <td>
-                  <a href="0b49e4be-3303-2671-2bb7-3961fb276718.htm" target="">ReadClusterChain</a>
-                </td>
-                <td></td>
-              </tr>
-              <tr data="public;declared;notNetfw;">
-                <td>
-                  <img src="./../icons/pubmethod.gif" alt="Public method" title="Public method" />
-                </td>
-                <td>
-                  <a href="07c88a4e-655e-6bdb-fd22-557adb4cfcea.htm" target="">ReadFATEntry</a>
-                </td>
-                <td></td>
-              </tr>
-              <tr data="public;declared;notNetfw;">
-                <td>
-                  <img src="./../icons/pubmethod.gif" alt="Public method" title="Public method" />
-                </td>
-                <td>
-                  <a href="a62158df-8384-1ccf-a2bb-8563a55083dd.htm" target="">ReadFATTableSector</a>
-                </td>
-                <td></td>
-              </tr>
-              <tr data="public;declared;notNetfw;">
-                <td>
-                  <img src="./../icons/pubmethod.gif" alt="Public method" title="Public method" />
-                </td>
-                <td>
-                  <a href="dc35a7ad-4d28-27b9-234b-eb970e0e313d.htm" target="">SetFATEntryAndSave</a>
-                </td>
-                <td></td>
-              </tr>
-              <tr data="public;declared;notNetfw;">
-                <td>
-                  <img src="./../icons/pubmethod.gif" alt="Public method" title="Public method" />
-                </td>
-                <td>
-                  <a href="28c60893-d610-a092-6f34-871af99d13c9.htm" target="">WriteCluster</a>
-                </td>
-                <td></td>
-              </tr>
-              <tr data="public;declared;notNetfw;">
-                <td>
-                  <img src="./../icons/pubmethod.gif" alt="Public method" title="Public method" />
-                </td>
-                <td>
-                  <a href="5dcf1633-179c-6b3e-d547-2abd94ee02c8.htm" target="">WriteFATEntry</a>
-                </td>
-                <td></td>
-              </tr>
-              <tr data="public;declared;notNetfw;">
-                <td>
-                  <img src="./../icons/pubmethod.gif" alt="Public method" title="Public method" />
-                </td>
-                <td>
-                  <a href="6e159dd6-4abc-55ff-cb0b-84ad81a65a28.htm" target="">WriteFATTableSector</a>
-                </td>
-                <td></td>
-              </tr>
-            </table>
-            <a href="#mainBody" target="">Top</a>
-            <a name="seeAlsoSection">
-              <!---->
-            </a>
-            <div class="OH_CollapsibleAreaRegion">
-              <div class="OH_regiontitle">See Also</div>
-              <div class="OH_CollapsibleArea_HrDiv">
-                <hr class="OH_CollapsibleArea_Hr" />
-              </div>
-            </div>
-            <div class="OH_clear"></div>
-            <div class="seeAlsoStyle">
-              <a href="f555dedd-e3c3-6698-10ea-e350a5b50354.htm" target="">FATFileSystem Class</a>
-            </div>
-            <div class="seeAlsoStyle">
-              <a href="6271d5c2-0e56-9923-5bda-160aaab7f455.htm" target="">Kernel.FOS_System.IO.FAT Namespace</a>
-            </div>
+        <span class="introStyle"></span>
+        <p>The <a href="f555dedd-e3c3-6698-10ea-e350a5b50354.htm">FATFileSystem</a> type exposes the following members.</p>
+        <div class="collapsibleAreaRegion">
+          <span class="collapsibleRegionTitle" onclick="SectionExpandCollapse('ID0RB')" onkeypress="SectionExpandCollapse_CheckKey('ID0RB', event)" tabindex="0">
+            <img id="ID0RBToggle" class="collapseToggle" src="../icons/SectionExpanded.png" />Methods</span>
+        </div>
+        <div id="ID0RBSection" class="collapsibleSection">
+          <table id="memberList" class="members">
+            <tr>
+              <th class="iconColumn">
+								 
+							</th>
+              <th>Name</th>
+              <th>Description</th>
+            </tr>
+            <tr data="private;static;declared;notNetfw;">
+              <td>
+                <img src="../icons/privmethod.gif" alt="Private method" title="Private method" />
+                <img src="../icons/static.gif" alt="Static member" title="Static member" />
+              </td>
+              <td>
+                <a href="0659ac5b-945f-c6b1-af1b-cf3ade10e260.htm">CheckSum</a>
+              </td>
+              <td />
+            </tr>
+            <tr data="public;declared;notNetfw;">
+              <td>
+                <img src="../icons/pubmethod.gif" alt="Public method" title="Public method" />
+              </td>
+              <td>
+                <a href="1bc28de6-d9fd-0b60-a1bd-1729fa93c829.htm">EncodeDirectoryTable</a>
+              </td>
+              <td />
+            </tr>
+            <tr data="public;declared;notNetfw;">
+              <td>
+                <img src="../icons/pubmethod.gif" alt="Public method" title="Public method" />
+              </td>
+              <td>
+                <a href="cad4ac54-4483-95c4-b9fc-442011cf1b51.htm">FATEntryIndicatesEOF</a>
+              </td>
+              <td />
+            </tr>
+            <tr data="public;declared;notNetfw;">
+              <td>
+                <img src="../icons/pubmethod.gif" alt="Public method" title="Public method" />
+              </td>
+              <td>
+                <a href="42ae1fef-d59a-5525-4ac7-10232a4c2f00.htm">FATEntryIndicatesFree</a>
+              </td>
+              <td />
+            </tr>
+            <tr data="public;static;declared;notNetfw;">
+              <td>
+                <img src="../icons/pubmethod.gif" alt="Public method" title="Public method" />
+                <img src="../icons/static.gif" alt="Static member" title="Static member" />
+              </td>
+              <td>
+                <a href="abf157c8-1da0-d410-24c6-5487061ad354.htm">FormatPartitionAsFAT32</a>
+              </td>
+              <td />
+            </tr>
+            <tr data="public;static;declared;notNetfw;">
+              <td>
+                <img src="../icons/pubmethod.gif" alt="Public method" title="Public method" />
+                <img src="../icons/static.gif" alt="Static member" title="Static member" />
+              </td>
+              <td>
+                <a href="29bbcbf4-d2b5-b881-2efb-9f59900d47e6.htm">GetFATEntryEOFValue</a>
+              </td>
+              <td />
+            </tr>
+            <tr data="public;declared;notNetfw;">
+              <td>
+                <img src="../icons/pubmethod.gif" alt="Public method" title="Public method" />
+              </td>
+              <td>
+                <a href="5aaf3eea-6ccf-47a6-0667-1ab0553e3753.htm">GetFATTableSectorPosition</a>
+              </td>
+              <td />
+            </tr>
+            <tr data="public;declared;notNetfw;">
+              <td>
+                <img src="../icons/pubmethod.gif" alt="Public method" title="Public method" />
+              </td>
+              <td>
+                <a href="698c0253-d72b-4dd0-2041-ffa6eed8572a.htm">GetListing</a>
+              </td>
+              <td> (Overrides <a href="38f632f7-0fc9-dbec-72bc-8e3adee2cecf.htm">FileSystem<span id="LSTAE79101A_0"></span><script type="text/javascript">AddLanguageSpecificTextSet("LSTAE79101A_0?cs=.|vb=.|cpp=::|nu=.|fs=.");</script>GetListing(String)</a>.)</td>
+            </tr>
+            <tr data="public;inherited;notNetfw;">
+              <td>
+                <img src="../icons/pubmethod.gif" alt="Public method" title="Public method" />
+              </td>
+              <td>
+                <a href="5855582b-b7e8-7ff9-0d21-5a13a0d2cf58.htm">GetListingFromListings</a>
+              </td>
+              <td> (Inherited from <a href="fc5b6670-4bb6-613e-1507-c01692a66860.htm">FileSystem</a>.)</td>
+            </tr>
+            <tr data="public;declared;notNetfw;">
+              <td>
+                <img src="../icons/pubmethod.gif" alt="Public method" title="Public method" />
+              </td>
+              <td>
+                <a href="0386eb63-e821-1e37-81a7-5985d5322075.htm">GetNextFreeCluster</a>
+              </td>
+              <td />
+            </tr>
+            <tr data="public;declared;notNetfw;">
+              <td>
+                <img src="../icons/pubmethod.gif" alt="Public method" title="Public method" />
+              </td>
+              <td>
+                <a href="2ad3c179-f273-98c0-76cf-808cb8b6b93e.htm">GetRootDirectoryTable</a>
+              </td>
+              <td />
+            </tr>
+            <tr data="private;static;declared;notNetfw;">
+              <td>
+                <img src="../icons/privmethod.gif" alt="Private method" title="Private method" />
+                <img src="../icons/static.gif" alt="Static member" title="Static member" />
+              </td>
+              <td>
+                <a href="f30bd19e-1a12-6945-7078-c07a9fe577fe.htm">GetShortName</a>
+              </td>
+              <td />
+            </tr>
+            <tr data="public;declared;notNetfw;">
+              <td>
+                <img src="../icons/pubmethod.gif" alt="Public method" title="Public method" />
+              </td>
+              <td>
+                <a href="a198a661-fff5-c8df-1df2-8bbc4f1448f7.htm">NewClusterArray</a>
+              </td>
+              <td />
+            </tr>
+            <tr data="public;declared;notNetfw;">
+              <td>
+                <img src="../icons/pubmethod.gif" alt="Public method" title="Public method" />
+              </td>
+              <td>
+                <a href="fe0d5cdd-ae67-e5fc-f083-b2d33a0324be.htm">NewDirectory</a>
+              </td>
+              <td> (Overrides <a href="af6566ae-7977-1c42-db82-133e2b4d8396.htm">FileSystem<span id="LSTAE79101A_1"></span><script type="text/javascript">AddLanguageSpecificTextSet("LSTAE79101A_1?cs=.|vb=.|cpp=::|nu=.|fs=.");</script>NewDirectory(String, Directory)</a>.)</td>
+            </tr>
+            <tr data="public;declared;notNetfw;">
+              <td>
+                <img src="../icons/pubmethod.gif" alt="Public method" title="Public method" />
+              </td>
+              <td>
+                <a href="31ac30a5-5e81-7610-172a-286e5b4a5ee6.htm">NewFile</a>
+              </td>
+              <td> (Overrides <a href="9cc95c30-2fef-ae20-fbf7-dcc546689dd9.htm">FileSystem<span id="LSTAE79101A_2"></span><script type="text/javascript">AddLanguageSpecificTextSet("LSTAE79101A_2?cs=.|vb=.|cpp=::|nu=.|fs=.");</script>NewFile(String, Directory)</a>.)</td>
+            </tr>
+            <tr data="public;declared;notNetfw;">
+              <td>
+                <img src="../icons/pubmethod.gif" alt="Public method" title="Public method" />
+              </td>
+              <td>
+                <a href="4c02f2af-ba0b-efb5-b3ab-551b30af48f6.htm">ParseDirectoryTable</a>
+              </td>
+              <td />
+            </tr>
+            <tr data="public;declared;notNetfw;">
+              <td>
+                <img src="../icons/pubmethod.gif" alt="Public method" title="Public method" />
+              </td>
+              <td>
+                <a href="a6eabd82-a8c9-b0fc-d33e-6242e0b09b75.htm">ReadCluster</a>
+              </td>
+              <td />
+            </tr>
+            <tr data="public;declared;notNetfw;">
+              <td>
+                <img src="../icons/pubmethod.gif" alt="Public method" title="Public method" />
+              </td>
+              <td>
+                <a href="0b49e4be-3303-2671-2bb7-3961fb276718.htm">ReadClusterChain</a>
+              </td>
+              <td />
+            </tr>
+            <tr data="public;declared;notNetfw;">
+              <td>
+                <img src="../icons/pubmethod.gif" alt="Public method" title="Public method" />
+              </td>
+              <td>
+                <a href="07c88a4e-655e-6bdb-fd22-557adb4cfcea.htm">ReadFATEntry</a>
+              </td>
+              <td />
+            </tr>
+            <tr data="public;declared;notNetfw;">
+              <td>
+                <img src="../icons/pubmethod.gif" alt="Public method" title="Public method" />
+              </td>
+              <td>
+                <a href="a62158df-8384-1ccf-a2bb-8563a55083dd.htm">ReadFATTableSector</a>
+              </td>
+              <td />
+            </tr>
+            <tr data="public;declared;notNetfw;">
+              <td>
+                <img src="../icons/pubmethod.gif" alt="Public method" title="Public method" />
+              </td>
+              <td>
+                <a href="dc35a7ad-4d28-27b9-234b-eb970e0e313d.htm">SetFATEntryAndSave</a>
+              </td>
+              <td />
+            </tr>
+            <tr data="public;declared;notNetfw;">
+              <td>
+                <img src="../icons/pubmethod.gif" alt="Public method" title="Public method" />
+              </td>
+              <td>
+                <a href="28c60893-d610-a092-6f34-871af99d13c9.htm">WriteCluster</a>
+              </td>
+              <td />
+            </tr>
+            <tr data="public;declared;notNetfw;">
+              <td>
+                <img src="../icons/pubmethod.gif" alt="Public method" title="Public method" />
+              </td>
+              <td>
+                <a href="5dcf1633-179c-6b3e-d547-2abd94ee02c8.htm">WriteFATEntry</a>
+              </td>
+              <td />
+            </tr>
+            <tr data="public;declared;notNetfw;">
+              <td>
+                <img src="../icons/pubmethod.gif" alt="Public method" title="Public method" />
+              </td>
+              <td>
+                <a href="6e159dd6-4abc-55ff-cb0b-84ad81a65a28.htm">WriteFATTableSector</a>
+              </td>
+              <td />
+            </tr>
+          </table>
+          <a href="#PageHeader">Top</a>
+        </div>
+        <div class="collapsibleAreaRegion" id="seeAlsoSection">
+          <span class="collapsibleRegionTitle" onclick="SectionExpandCollapse('ID1RB')" onkeypress="SectionExpandCollapse_CheckKey('ID1RB', event)" tabindex="0">
+            <img id="ID1RBToggle" class="collapseToggle" src="../icons/SectionExpanded.png" />See Also</span>
+        </div>
+        <div id="ID1RBSection" class="collapsibleSection">
+          <h4 class="subHeading">Reference</h4>
+          <div class="seeAlsoStyle">
+            <a href="f555dedd-e3c3-6698-10ea-e350a5b50354.htm">FATFileSystem Class</a>
+          </div>
+          <div class="seeAlsoStyle">
+            <a href="6271d5c2-0e56-9923-5bda-160aaab7f455.htm">Kernel.FOS_System.IO.FAT Namespace</a>
           </div>
         </div>
       </div>
     </div>
-    <div id="OH_footer" class="OH_footer">
-      <p>Copyright Edward Nutting 2014</p>
-      <div class="OH_feedbacklink">
-        <a href="mailto:edwardnutting@outlook.com?subject=Fling+OS+FATFileSystem+Methods+100+EN-US&amp;body=Your%20feedback%20is%20used%20to%20improve%20the%20documentation%20and%20the%20product.%20Your%20e-mail%20address%20will%20not%20be%20used%20for%20any%20other%20purpose%20and%20is%20disposed%20of%20after%20the%20issue%20you%20report%20is%20resolved.%20While%20working%20to%20resolve%20the%20issue%20that%20you%20report%2c%20you%20may%20be%20contacted%20via%20e-mail%20to%20get%20further%20details%20or%20clarification%20on%20the%20feedback%20you%20sent.%20After%20the%20issue%20you%20report%20has%20been%20addressed%2c%20you%20may%20receive%20an%20e-mail%20to%20let%20you%20know%20that%20your%20feedback%20has%20been%20addressed.">Send Feedback</a> on this topic to Edward Nutting.</div>
-    </div>
+    <div id="pageFooter" class="pageFooter">
+      <p>
+        <a href="http://www.flingos.co.uk" target="_blank">Copyright Edward Nutting 2014</a>
+      </p>
+      <div class="feedbackLink">Send comments on this topic to
+        <a id="HT_MailLink" href="mailto:edwardnutting%40outlook.com?Subject=Fling OS">Edward Nutting</a></div>
+      <script type="text/javascript">
+        var HT_mailLink = document.getElementById("HT_MailLink");
+        var HT_mailLinkText = HT_mailLink.innerHTML;
+        HT_mailLink.href += ": " + document.title + "\u0026body=" + encodeURIComponent("Your feedback is used to improve the documentation and the product. Your e-mail address will not be used for any other purpose and is disposed of after the issue you report is resolved. While working to resolve the issue that you report, you may be contacted via e-mail to get further details or clarification on the feedback you sent. After the issue you report has been addressed, you may receive an e-mail to let you know that your feedback has been addressed.");
+        HT_mailLink.innerHTML = HT_mailLinkText;
+        </script> </div>
   </body>
 </html>

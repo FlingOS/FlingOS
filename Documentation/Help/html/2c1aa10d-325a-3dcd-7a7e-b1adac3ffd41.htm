@@ -1,20 +1,10 @@
-﻿<html xmlns:MSHelp="http://msdn.microsoft.com/mshelp" xmlns:mshelp="http://msdn.microsoft.com/mshelp">
+﻿<html>
   <head>
-    <link rel="SHORTCUT ICON" href="./../icons/favicon.ico" />
-    <style type="text/css">.OH_CodeSnippetContainerTabLeftActive, .OH_CodeSnippetContainerTabLeft,.OH_CodeSnippetContainerTabLeftDisabled { }.OH_CodeSnippetContainerTabRightActive, .OH_CodeSnippetContainerTabRight,.OH_CodeSnippetContainerTabRightDisabled { }.OH_footer { }</style>
-    <link rel="stylesheet" type="text/css" href="./../styles/branding.css" />
-    <link rel="stylesheet" type="text/css" href="./../styles/branding-en-US.css" />
-    <style type="text/css">
-			body
-			{
-			border-left:5px solid #e6e6e6;
-			overflow-x:scroll;
-			overflow-y:scroll;
-			}
-		</style>
-    <script src="./../scripts/branding.js" type="text/javascript">
-      <!---->
-    </script>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <link rel="shortcut icon" href="../icons/favicon.ico" />
+    <link rel="stylesheet" type="text/css" href="../styles/branding.css" />
+    <link rel="stylesheet" type="text/css" href="../styles/branding-en-US.css" />
+    <script type="text/javascript" src="../scripts/branding.js"> </script>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
     <title>ExceptionMethods Class</title>
     <meta name="Language" content="en-us" />
@@ -25,104 +15,105 @@
     <meta name="Microsoft.Help.Id" content="T:Kernel.ExceptionMethods" />
     <meta name="Description" content="Implements the lowest-level kernel exception handling." />
     <meta name="Microsoft.Help.ContentType" content="Reference" />
-    <meta name="BrandingAware" content="'true'" />
+    <meta name="BrandingAware" content="true" />
+    
     <meta name="container" content="Kernel" />
     <meta name="file" content="2c1aa10d-325a-3dcd-7a7e-b1adac3ffd41" />
     <meta name="guid" content="2c1aa10d-325a-3dcd-7a7e-b1adac3ffd41" />
     
-    
-    <meta name="SelfBranded" content="true" />
+    <link rel="stylesheet" type="text/css" href="../styles/branding-Website.css" />
+    <script type="text/javascript" src="../scripts/jquery-1.11.0.min.js"></script>
+    <script type="text/javascript" src="../scripts/branding-Website.js"></script>
   </head>
-  <body onload="onLoad()" class="primary-mtps-offline-document">
-    <div class="OH_outerDiv">
-      <div class="OH_outerContent">
-        <table class="TitleTable">
+  <body onload="OnLoad('cs')">
+    <input type="hidden" id="userDataCache" class="userDataStyle" />
+    <div class="pageHeader" id="PageHeader">Fling OS<form id="SearchForm" method="get" action="#" onsubmit="javascript:TransferToSearchPage(); return false;"><input id="SearchTextBox" type="text" maxlength="200" /><button id="SearchButton" type="submit"></button></form></div>
+    <div class="pageBody">
+      <div class="leftNav" id="leftNav"><div id="tocNav"><div class="toclevel0" data-toclevel="0"><a class="tocCollapsed" onclick="javascript: Toggle(this);" href="#!"></a><a data-tochassubtree="true" href="dd3e390e-07c0-499b-8f92-2cb8e8ca8b09.htm" title="Fling OS" tocid="roottoc">Fling OS</a></div><div class="toclevel0" data-toclevel="0"><a class="tocCollapsed" onclick="javascript: Toggle(this);" href="#!"></a><a data-tochassubtree="true" href="d75eb659-6335-53f6-af7a-81814a21ab7f.htm" title="Technical" tocid="e0e0d194-2589-42a6-a2db-a50791dd3bda">Technical</a></div><div class="toclevel0" data-toclevel="0"><a class="tocCollapsed" onclick="javascript: Toggle(this);" href="#!"></a><a data-tochassubtree="true" href="d75eb659-6335-53f6-af7a-81814a21ab7f.htm" title="Kernel" tocid="d75eb659-6335-53f6-af7a-81814a21ab7f">Kernel</a></div><div class="toclevel0" data-toclevel="0"><a class="tocCollapsed" onclick="javascript: Toggle(this);" href="#!"></a><a data-tochassubtree="true" href="9d41ff33-a974-0813-84c7-2f139588649a.htm" title="Kernel" tocid="9d41ff33-a974-0813-84c7-2f139588649a">Kernel</a></div><div class="toclevel1 current" data-toclevel="1" data-childrenloaded="true"><a class="tocExpanded" onclick="javascript: Toggle(this);" href="#!"></a><a data-tochassubtree="true" href="2c1aa10d-325a-3dcd-7a7e-b1adac3ffd41.htm" title="ExceptionMethods Class" tocid="2c1aa10d-325a-3dcd-7a7e-b1adac3ffd41">ExceptionMethods Class</a></div><div class="toclevel2" data-toclevel="2"><a data-tochassubtree="false" href="00dd26ce-3166-1926-8c10-c7758ecc5a9b.htm" title="ExceptionMethods Constructor " tocid="00dd26ce-3166-1926-8c10-c7758ecc5a9b">ExceptionMethods Constructor </a></div><div class="toclevel2" data-toclevel="2"><a class="tocCollapsed" onclick="javascript: Toggle(this);" href="#!"></a><a data-tochassubtree="true" href="23994dd4-75cd-b426-caa2-61ab5cdec763.htm" title="ExceptionMethods Fields" tocid="23994dd4-75cd-b426-caa2-61ab5cdec763">ExceptionMethods Fields</a></div><div class="toclevel2" data-toclevel="2"><a class="tocCollapsed" onclick="javascript: Toggle(this);" href="#!"></a><a data-tochassubtree="true" href="d70970f0-e5aa-8042-30f6-b28f1d6a208b.htm" title="ExceptionMethods Methods" tocid="d70970f0-e5aa-8042-30f6-b28f1d6a208b">ExceptionMethods Methods</a></div></div></div><div id="TocResize" class="tocResize" onmousedown="OnMouseDown(event);"><img id="ResizeImageIncrease" src="../icons/TocOpen.gif" onclick="OnIncreaseToc()" alt="Click or drag to resize" title="Click or drag to resize"><img id="ResizeImageReset" src="../icons/TocClose.gif" style="display:none" onclick="OnResetToc()" alt="Click or drag to resize" title="Click or drag to resize"></div><div class="topicContent" id="TopicContent">
+        <table class="titleTable">
           <tr>
-            <td class="OH_tdTitleColumn">ExceptionMethods Class</td>
-            <td class="OH_tdRunningTitleColumn">Fling OS</td>
+            <td class="titleColumn">ExceptionMethods Class</td>
           </tr>
         </table>
-        <div id="mainSection">
-          <div id="mainBody">
-            <span class="introStyle"></span>
-            <div class="summary">
+        <span class="introStyle"></span>
+        <div class="summary">
             Implements the lowest-level kernel exception handling.
             </div>
-            <div class="OH_CollapsibleAreaRegion">
-              <div class="OH_regiontitle">Inheritance Hierarchy</div>
-              <div class="OH_CollapsibleArea_HrDiv">
-                <hr class="OH_CollapsibleArea_Hr" />
-              </div>
-            </div>
-            <div class="OH_clear"></div>
-            <a href="http://msdn2.microsoft.com/en-us/library/e5kfa45b" target="_blank">System<span id="ID0EBEQAAAAA"> </span><script type="text/javascript">
-					addToLanSpecTextIdSet("ID0EBEQAAAAA?vb=.|cpp=::|cs=.|fs=.|nu=.");
-				</script>Object</a>
-            <br />  <span class="selflink">Kernel<span id="ID0EBBQAAAAA"> </span><script type="text/javascript">
-					addToLanSpecTextIdSet("ID0EBBQAAAAA?vb=.|cpp=::|cs=.|fs=.|nu=.");
-				</script>ExceptionMethods</span><br /><p></p><strong>Namespace:</strong> <a href="9d41ff33-a974-0813-84c7-2f139588649a.htm" target="">Kernel</a><br /><strong>Assembly:</strong> <span sdata="assembly">Kernel.FOS_System</span> (in Kernel.FOS_System.dll) Version: 1.0.0.0 (1.0.0.0)<div class="OH_CollapsibleAreaRegion"><div class="OH_regiontitle">Syntax</div><div class="OH_CollapsibleArea_HrDiv"><hr class="OH_CollapsibleArea_Hr" /></div></div><div class="OH_clear"></div><div id="snippetGroup_Syntax" class="code"><div id="ID0EAAGAAAAA" class="OH_CodeSnippetContainer"><div class="OH_CodeSnippetContainerTabs" id="ID0EAAGAAAAA_tabs"><div class="OH_CodeSnippetContainerTabLeftActive" id="ID0EAAGAAAAA_tabimgleft"></div><div id="ID0EAAGAAAAA_tab1" class="OH_CodeSnippetContainerTabActive" EnableCopyCode="true"><a href="#" onclick="javascript:ChangeTab('ID0EAAGAAAAA','C#','1','4');return false;">C#</a></div><div id="ID0EAAGAAAAA_tab2" class="OH_CodeSnippetContainerTabDisabledNotFirst" EnableCopyCode="true" disabled="true"><a>VB</a></div><div id="ID0EAAGAAAAA_tab3" class="OH_CodeSnippetContainerTabDisabledNotFirst" EnableCopyCode="true" disabled="true"><a>C++</a></div><div id="ID0EAAGAAAAA_tab4" class="OH_CodeSnippetContainerTabDisabledNotFirst" EnableCopyCode="true" disabled="true"><a>F#</a></div><div class="OH_CodeSnippetContainerTabRight" id="ID0EAAGAAAAA_tabimgright"></div></div><div id="ID0EAAGAAAAA_codecollection" class="OH_CodeSnippetContainerCodeCollection"><div class="OH_CodeSnippetToolBar"><div class="OH_CodeSnippetToolBarText"><a id="ID0EAAGAAAAA_ViewColorized" href="#" onclick="javascript:ExchangeTitleContent('ID0EAAGAAAAA','4')" title="View Colorized" style="display: none">View Colorized</a><a id="ID0EAAGAAAAA_copycode" href="#" onclick="javascript:CopyToClipboard('ID0EAAGAAAAA','4')" title="Copy to Clipboard">Copy to Clipboard</a><a id="ID0EAAGAAAAA_PrintText" class="OH_PrintText" href="#" onclick="javascript:Print('ID0EAAGAAAAA','4')" title="Print">Print</a></div></div><div id="ID0EAAGAAAAA_code_Div1" class="OH_CodeSnippetContainerCode" style="display: block"><pre>[<span class="identifier">PluggedClassAttribute</span>]
-<span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">class</span> <span class="identifier">ExceptionMethods</span></pre></div><div id="ID0EAAGAAAAA_code_Plain_Div1" class="OH_CodeSnippetContainerCode" style="display: none"><pre>[PluggedClassAttribute]
-public static class ExceptionMethods</pre></div><div id="ID0EAAGAAAAA_code_Div2" class="OH_CodeSnippetContainerCode" style="display: none"><pre /></div><div id="ID0EAAGAAAAA_code_Plain_Div2" class="OH_CodeSnippetContainerCode" style="display: none"><pre /></div><div id="ID0EAAGAAAAA_code_Div3" class="OH_CodeSnippetContainerCode" style="display: none"><pre /></div><div id="ID0EAAGAAAAA_code_Plain_Div3" class="OH_CodeSnippetContainerCode" style="display: none"><pre /></div><div id="ID0EAAGAAAAA_code_Div4" class="OH_CodeSnippetContainerCode" style="display: none"><pre /></div><div id="ID0EAAGAAAAA_code_Plain_Div4" class="OH_CodeSnippetContainerCode" style="display: none"><pre /></div></div></div><script>addSpecificTextLanguageTagSet('ID0EAAGAAAAA');</script></div><p>The <span class="selflink">ExceptionMethods</span> type exposes the following members.</p><div class="OH_CollapsibleAreaRegion"><div class="OH_regiontitle">Constructors</div><div class="OH_CollapsibleArea_HrDiv"><hr class="OH_CollapsibleArea_Hr" /></div></div><div class="OH_clear"></div><table id="memberList" class="members"><tr><th class="ps_iconColumn">
-							 
-						</th><th class="ps_nameColumn">Name</th><th class="ps_descriptionColumn">Description</th></tr><tr data="private;static;declared;notNetfw;"><td><img src="./../icons/privmethod.gif" alt="Private method" title="Private method" /><img src="./../icons/static.gif" alt="Static member" title="Static member" /></td><td><a href="00dd26ce-3166-1926-8c10-c7758ecc5a9b.htm" target="">ExceptionMethods</a></td><td></td></tr></table><a href="#mainBody" target="">Top</a><div class="OH_CollapsibleAreaRegion"><div class="OH_regiontitle">Methods</div><div class="OH_CollapsibleArea_HrDiv"><hr class="OH_CollapsibleArea_Hr" /></div></div><div class="OH_clear"></div><table id="memberList" class="members"><tr><th class="ps_iconColumn">
-							 
-						</th><th class="ps_nameColumn">Name</th><th class="ps_descriptionColumn">Description</th></tr><tr data="public;static;declared;notNetfw;"><td><img src="./../icons/pubmethod.gif" alt="Public method" title="Public method" /><img src="./../icons/static.gif" alt="Static member" title="Static member" /></td><td><a href="3058ef0b-3982-aec8-18ed-4e02edf398cf.htm" target="">AddExceptionHandlerInfo</a></td><td><div class="summary">
+        <div class="collapsibleAreaRegion">
+          <span class="collapsibleRegionTitle" onclick="SectionExpandCollapse('ID0RB')" onkeypress="SectionExpandCollapse_CheckKey('ID0RB', event)" tabindex="0">
+            <img id="ID0RBToggle" class="collapseToggle" src="../icons/SectionExpanded.png" />Inheritance Hierarchy</span>
+        </div>
+        <div id="ID0RBSection" class="collapsibleSection">
+          <a href="http://msdn2.microsoft.com/en-us/library/e5kfa45b" target="_blank">System<span id="LST88AAC020_0"></span><script type="text/javascript">AddLanguageSpecificTextSet("LST88AAC020_0?cs=.|vb=.|cpp=::|nu=.|fs=.");</script>Object</a>
+          <br />  <span class="selflink">Kernel<span id="LST88AAC020_1"></span><script type="text/javascript">AddLanguageSpecificTextSet("LST88AAC020_1?cs=.|vb=.|cpp=::|nu=.|fs=.");</script>ExceptionMethods</span><br /></div>
+        <p> </p>
+        <strong>Namespace:</strong> <a href="9d41ff33-a974-0813-84c7-2f139588649a.htm">Kernel</a><br /><strong>Assembly:</strong> Kernel.FOS_System (in Kernel.FOS_System.dll) Version: 1.0.0.0 (1.0.0.0)<div class="collapsibleAreaRegion"><span class="collapsibleRegionTitle" onclick="SectionExpandCollapse('ID2RB')" onkeypress="SectionExpandCollapse_CheckKey('ID2RB', event)" tabindex="0"><img id="ID2RBToggle" class="collapseToggle" src="../icons/SectionExpanded.png" />Syntax</span></div><div id="ID2RBSection" class="collapsibleSection"><div class="codeSnippetContainer"><div class="codeSnippetContainerTabs"><div id="ID1EACA_tab1" class="codeSnippetContainerTabSingle">C#</div></div><div class="codeSnippetContainerCodeContainer"><div class="codeSnippetToolBar"><div class="codeSnippetToolBarText"><a id="ID1EACA_copyCode" href="#" onclick="javascript:CopyToClipboard('ID1EACA');return false;" title="Copy">Copy</a></div></div><div id="ID1EACA_code_Div1" class="codeSnippetContainerCode" style="display: block"><pre xml:space="preserve">[<span class="identifier">PluggedClassAttribute</span>]
+<span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">class</span> <span class="identifier">ExceptionMethods</span></pre></div></div></div><script type="text/javascript">AddLanguageTabSet("ID1EACA");</script></div><p>The <span class="selflink">ExceptionMethods</span> type exposes the following members.</p><div class="collapsibleAreaRegion"><span class="collapsibleRegionTitle" onclick="SectionExpandCollapse('ID3RB')" onkeypress="SectionExpandCollapse_CheckKey('ID3RB', event)" tabindex="0"><img id="ID3RBToggle" class="collapseToggle" src="../icons/SectionExpanded.png" />Constructors</span></div><div id="ID3RBSection" class="collapsibleSection"><table id="memberList" class="members"><tr><th class="iconColumn">
+								 
+							</th><th>Name</th><th>Description</th></tr><tr data="private;static;declared;notNetfw;"><td><img src="../icons/privmethod.gif" alt="Private method" title="Private method" /><img src="../icons/static.gif" alt="Static member" title="Static member" /></td><td><a href="00dd26ce-3166-1926-8c10-c7758ecc5a9b.htm">ExceptionMethods</a></td><td /></tr></table><a href="#PageHeader">Top</a></div><div class="collapsibleAreaRegion"><span class="collapsibleRegionTitle" onclick="SectionExpandCollapse('ID4RB')" onkeypress="SectionExpandCollapse_CheckKey('ID4RB', event)" tabindex="0"><img id="ID4RBToggle" class="collapseToggle" src="../icons/SectionExpanded.png" />Methods</span></div><div id="ID4RBSection" class="collapsibleSection"><table id="memberList" class="members"><tr><th class="iconColumn">
+								 
+							</th><th>Name</th><th>Description</th></tr><tr data="public;static;declared;notNetfw;"><td><img src="../icons/pubmethod.gif" alt="Public method" title="Public method" /><img src="../icons/static.gif" alt="Static member" title="Static member" /></td><td><a href="3058ef0b-3982-aec8-18ed-4e02edf398cf.htm">AddExceptionHandlerInfo</a></td><td><div class="summary">
             Adds a new Exception Handler Info structure to the stack and sets 
             it as the current handler.
-            </div></td></tr><tr data="public;static;declared;notNetfw;"><td><img src="./../icons/pubmethod.gif" alt="Public method" title="Public method" /><img src="./../icons/static.gif" alt="Static member" title="Static member" /></td><td><a href="75f13fc0-e9a5-f05d-b94f-782886f4553a.htm" target="">HandleEndFinally</a></td><td><div class="summary">
+            </div></td></tr><tr data="public;static;declared;notNetfw;"><td><img src="../icons/pubmethod.gif" alt="Public method" title="Public method" /><img src="../icons/static.gif" alt="Static member" title="Static member" /></td><td><a href="75f13fc0-e9a5-f05d-b94f-782886f4553a.htm">HandleEndFinally</a></td><td><div class="summary">
             Handles cleanly leaving a "finally" critical section (i.e. finally block). 
             This may result in an exception being passed to the next handler if it has not been caught &amp; handled yet.
-            </div></td></tr><tr data="public;static;declared;notNetfw;"><td><img src="./../icons/pubmethod.gif" alt="Public method" title="Public method" /><img src="./../icons/static.gif" alt="Static member" title="Static member" /></td><td><a href="23236d1c-174c-0d2b-cf7d-9252c449b567.htm" target="">HandleException</a></td><td><div class="summary">
+            </div></td></tr><tr data="public;static;declared;notNetfw;"><td><img src="../icons/pubmethod.gif" alt="Public method" title="Public method" /><img src="../icons/static.gif" alt="Static member" title="Static member" /></td><td><a href="23236d1c-174c-0d2b-cf7d-9252c449b567.htm">HandleException</a></td><td><div class="summary">
             Handles the current pending exception.
-            </div></td></tr><tr data="public;static;declared;notNetfw;"><td><img src="./../icons/pubmethod.gif" alt="Public method" title="Public method" /><img src="./../icons/static.gif" alt="Static member" title="Static member" /></td><td><a href="a5cc4b32-ac2d-06db-4c0e-e897a9ce7457.htm" target="">HandleLeave</a></td><td><div class="summary">
+            </div></td></tr><tr data="public;static;declared;notNetfw;"><td><img src="../icons/pubmethod.gif" alt="Public method" title="Public method" /><img src="../icons/static.gif" alt="Static member" title="Static member" /></td><td><a href="a5cc4b32-ac2d-06db-4c0e-e897a9ce7457.htm">HandleLeave</a></td><td><div class="summary">
             Handles cleanly leaving a critical section (i.e. try or catch block)
-            </div></td></tr><tr data="public;static;declared;notNetfw;"><td><img src="./../icons/pubmethod.gif" alt="Public method" title="Public method" /><img src="./../icons/static.gif" alt="Static member" title="Static member" /></td><td><a href="b31eb3cc-6b53-1a52-1a49-bed08724f9c7.htm" target="">Rethrow</a></td><td><div class="summary">
+            </div></td></tr><tr data="public;static;declared;notNetfw;"><td><img src="../icons/pubmethod.gif" alt="Public method" title="Public method" /><img src="../icons/static.gif" alt="Static member" title="Static member" /></td><td><a href="b31eb3cc-6b53-1a52-1a49-bed08724f9c7.htm">Rethrow</a></td><td><div class="summary">
             Rethrows the current exception.
-            </div></td></tr><tr data="public;static;declared;notNetfw;"><td><img src="./../icons/pubmethod.gif" alt="Public method" title="Public method" /><img src="./../icons/static.gif" alt="Static member" title="Static member" /></td><td><a href="aca5dbe2-e667-d74e-8ae2-b0ca7a91a50d.htm" target="">Throw</a></td><td><div class="summary">
+            </div></td></tr><tr data="public;static;declared;notNetfw;"><td><img src="../icons/pubmethod.gif" alt="Public method" title="Public method" /><img src="../icons/static.gif" alt="Static member" title="Static member" /></td><td><a href="aca5dbe2-e667-d74e-8ae2-b0ca7a91a50d.htm">Throw</a></td><td><div class="summary">
             Throws the specified exception.
-            </div></td></tr><tr data="public;static;declared;notNetfw;"><td><img src="./../icons/pubmethod.gif" alt="Public method" title="Public method" /><img src="./../icons/static.gif" alt="Static member" title="Static member" /></td><td><a href="8e84ee04-4cb2-5a05-4a35-8735f6953cef.htm" target="">Throw_ArrayTypeMismatchException</a></td><td><div class="summary">
+            </div></td></tr><tr data="public;static;declared;notNetfw;"><td><img src="../icons/pubmethod.gif" alt="Public method" title="Public method" /><img src="../icons/static.gif" alt="Static member" title="Static member" /></td><td><a href="8e84ee04-4cb2-5a05-4a35-8735f6953cef.htm">Throw_ArrayTypeMismatchException</a></td><td><div class="summary">
             Throws an Array Type Mismatch exception.
-            </div></td></tr><tr data="public;static;declared;notNetfw;"><td><img src="./../icons/pubmethod.gif" alt="Public method" title="Public method" /><img src="./../icons/static.gif" alt="Static member" title="Static member" /></td><td><a href="1f0b50a6-6089-748d-b1f4-dcfc9db82306.htm" target="">Throw_DivideByZeroException</a></td><td><div class="summary">
+            </div></td></tr><tr data="public;static;declared;notNetfw;"><td><img src="../icons/pubmethod.gif" alt="Public method" title="Public method" /><img src="../icons/static.gif" alt="Static member" title="Static member" /></td><td><a href="1f0b50a6-6089-748d-b1f4-dcfc9db82306.htm">Throw_DivideByZeroException</a></td><td><div class="summary">
             Throws a divide by zero exception.
-            </div></td></tr><tr data="public;static;declared;notNetfw;"><td><img src="./../icons/pubmethod.gif" alt="Public method" title="Public method" /><img src="./../icons/static.gif" alt="Static member" title="Static member" /></td><td><a href="a48526d2-cfa1-2834-2da6-aee510e1b287.htm" target="">Throw_DoubleFaultException</a></td><td><div class="summary">
+            </div></td></tr><tr data="public;static;declared;notNetfw;"><td><img src="../icons/pubmethod.gif" alt="Public method" title="Public method" /><img src="../icons/static.gif" alt="Static member" title="Static member" /></td><td><a href="a48526d2-cfa1-2834-2da6-aee510e1b287.htm">Throw_DoubleFaultException</a></td><td><div class="summary">
             Throws a double fault exception.
-            </div></td></tr><tr data="public;static;declared;notNetfw;"><td><img src="./../icons/pubmethod.gif" alt="Public method" title="Public method" /><img src="./../icons/static.gif" alt="Static member" title="Static member" /></td><td><a href="7214cf3d-b642-0b42-b5ab-4ea2f047b3be.htm" target="">Throw_IndexOutOfRangeException</a></td><td><div class="summary">
+            </div></td></tr><tr data="public;static;declared;notNetfw;"><td><img src="../icons/pubmethod.gif" alt="Public method" title="Public method" /><img src="../icons/static.gif" alt="Static member" title="Static member" /></td><td><a href="7214cf3d-b642-0b42-b5ab-4ea2f047b3be.htm">Throw_IndexOutOfRangeException</a></td><td><div class="summary">
             Throws a Index Out Of Range exception.
-            </div></td></tr><tr data="public;static;declared;notNetfw;"><td><img src="./../icons/pubmethod.gif" alt="Public method" title="Public method" /><img src="./../icons/static.gif" alt="Static member" title="Static member" /></td><td><a href="db32dc76-14f4-7eba-19ab-4a3e50d98565.htm" target="">Throw_InvalidOpCodeException</a></td><td><div class="summary">
+            </div></td></tr><tr data="public;static;declared;notNetfw;"><td><img src="../icons/pubmethod.gif" alt="Public method" title="Public method" /><img src="../icons/static.gif" alt="Static member" title="Static member" /></td><td><a href="db32dc76-14f4-7eba-19ab-4a3e50d98565.htm">Throw_InvalidOpCodeException</a></td><td><div class="summary">
             Throws an invalid op code exception.
-            </div></td></tr><tr data="public;static;declared;notNetfw;"><td><img src="./../icons/pubmethod.gif" alt="Public method" title="Public method" /><img src="./../icons/static.gif" alt="Static member" title="Static member" /></td><td><a href="65ad3b75-3112-ca48-9e0f-d9342070ef8a.htm" target="">Throw_NullReferenceException</a></td><td><div class="summary">
+            </div></td></tr><tr data="public;static;declared;notNetfw;"><td><img src="../icons/pubmethod.gif" alt="Public method" title="Public method" /><img src="../icons/static.gif" alt="Static member" title="Static member" /></td><td><a href="65ad3b75-3112-ca48-9e0f-d9342070ef8a.htm">Throw_NullReferenceException</a></td><td><div class="summary">
             Throws a Null Reference exception.
-            </div></td></tr><tr data="public;static;declared;notNetfw;"><td><img src="./../icons/pubmethod.gif" alt="Public method" title="Public method" /><img src="./../icons/static.gif" alt="Static member" title="Static member" /></td><td><a href="9fe4eabc-3a1a-e5b9-7e5b-8edc4dfdf37e.htm" target="">Throw_OverflowException</a></td><td><div class="summary">
+            </div></td></tr><tr data="public;static;declared;notNetfw;"><td><img src="../icons/pubmethod.gif" alt="Public method" title="Public method" /><img src="../icons/static.gif" alt="Static member" title="Static member" /></td><td><a href="9fe4eabc-3a1a-e5b9-7e5b-8edc4dfdf37e.htm">Throw_OverflowException</a></td><td><div class="summary">
             Throws an overflow exception.
-            </div></td></tr><tr data="public;static;declared;notNetfw;"><td><img src="./../icons/pubmethod.gif" alt="Public method" title="Public method" /><img src="./../icons/static.gif" alt="Static member" title="Static member" /></td><td><a href="2bb9237e-b758-60d8-5db6-cbc4d65bd8f2.htm" target="">Throw_PageFaultException</a></td><td><div class="summary">
+            </div></td></tr><tr data="public;static;declared;notNetfw;"><td><img src="../icons/pubmethod.gif" alt="Public method" title="Public method" /><img src="../icons/static.gif" alt="Static member" title="Static member" /></td><td><a href="2bb9237e-b758-60d8-5db6-cbc4d65bd8f2.htm">Throw_PageFaultException</a></td><td><div class="summary">
             Throws a page fault exception.
-            </div></td></tr><tr data="public;static;declared;notNetfw;"><td><img src="./../icons/pubmethod.gif" alt="Public method" title="Public method" /><img src="./../icons/static.gif" alt="Static member" title="Static member" /></td><td><a href="b4e7c8eb-7cef-5028-6a35-0311d59c1e61.htm" target="">Throw_StackException</a></td><td><div class="summary">
+            </div></td></tr><tr data="public;static;declared;notNetfw;"><td><img src="../icons/pubmethod.gif" alt="Public method" title="Public method" /><img src="../icons/static.gif" alt="Static member" title="Static member" /></td><td><a href="b4e7c8eb-7cef-5028-6a35-0311d59c1e61.htm">Throw_StackException</a></td><td><div class="summary">
             Throws a stack exception.
-            </div></td></tr><tr data="public;static;declared;notNetfw;"><td><img src="./../icons/pubmethod.gif" alt="Public method" title="Public method" /><img src="./../icons/static.gif" alt="Static member" title="Static member" /></td><td><a href="77b73063-d4d0-3176-a4e9-31fd1e75eed3.htm" target="">ThrowFromPtr</a></td><td><div class="summary">
+            </div></td></tr><tr data="public;static;declared;notNetfw;"><td><img src="../icons/pubmethod.gif" alt="Public method" title="Public method" /><img src="../icons/static.gif" alt="Static member" title="Static member" /></td><td><a href="77b73063-d4d0-3176-a4e9-31fd1e75eed3.htm">ThrowFromPtr</a></td><td><div class="summary">
             Throws the specified exception. Implementation used is eaxctly the 
             same as Throw (exact same plug used) just allows another way to 
             throw an exception.
-            </div></td></tr></table><a href="#mainBody" target="">Top</a><div class="OH_CollapsibleAreaRegion"><div class="OH_regiontitle">Fields</div><div class="OH_CollapsibleArea_HrDiv"><hr class="OH_CollapsibleArea_Hr" /></div></div><div class="OH_clear"></div><table id="memberList" class="members"><tr><th class="ps_iconColumn">
-							 
-						</th><th class="ps_nameColumn">Name</th><th class="ps_descriptionColumn">Description</th></tr><tr data="public;static;declared;notNetfw;"><td><img src="./../icons/pubfield.gif" alt="Public field" title="Public field" /><img src="./../icons/static.gif" alt="Static member" title="Static member" /></td><td><a href="90486811-2f49-278b-05a9-76b906701e30.htm" target="">CurrentException</a></td><td><div class="summary">
+            </div></td></tr></table><a href="#PageHeader">Top</a></div><div class="collapsibleAreaRegion"><span class="collapsibleRegionTitle" onclick="SectionExpandCollapse('ID5RB')" onkeypress="SectionExpandCollapse_CheckKey('ID5RB', event)" tabindex="0"><img id="ID5RBToggle" class="collapseToggle" src="../icons/SectionExpanded.png" />Fields</span></div><div id="ID5RBSection" class="collapsibleSection"><table id="memberList" class="members"><tr><th class="iconColumn">
+								 
+							</th><th>Name</th><th>Description</th></tr><tr data="public;static;declared;notNetfw;"><td><img src="../icons/pubfield.gif" alt="Public field" title="Public field" /><img src="../icons/static.gif" alt="Static member" title="Static member" /></td><td><a href="90486811-2f49-278b-05a9-76b906701e30.htm">CurrentException</a></td><td><div class="summary">
             The current exception - null as soon as the exception has been handled.
-            </div></td></tr><tr data="public;static;declared;notNetfw;"><td><img src="./../icons/pubfield.gif" alt="Public field" title="Public field" /><img src="./../icons/static.gif" alt="Static member" title="Static member" /></td><td><a href="73d949f7-d909-b00c-340d-add041009321.htm" target="">CurrentHandlerPtr</a></td><td><div class="summary">
+            </div></td></tr><tr data="public;static;declared;notNetfw;"><td><img src="../icons/pubfield.gif" alt="Public field" title="Public field" /><img src="../icons/static.gif" alt="Static member" title="Static member" /></td><td><a href="73d949f7-d909-b00c-340d-add041009321.htm">CurrentHandlerPtr</a></td><td><div class="summary">
             Pointer to the current Exception Handler Info (a pointer to the
             struct on the stack).
-            </div></td></tr><tr data="public;static;declared;notNetfw;"><td><img src="./../icons/pubfield.gif" alt="Public field" title="Public field" /><img src="./../icons/static.gif" alt="Static member" title="Static member" /></td><td><a href="da02eb0c-b585-5a28-a3ff-aee3f455cf8e.htm" target="">PendingException</a></td><td><div class="summary">
+            </div></td></tr><tr data="public;static;declared;notNetfw;"><td><img src="../icons/pubfield.gif" alt="Public field" title="Public field" /><img src="../icons/static.gif" alt="Static member" title="Static member" /></td><td><a href="da02eb0c-b585-5a28-a3ff-aee3f455cf8e.htm">PendingException</a></td><td><div class="summary">
             Whether the current exception is pending being handled.
-            </div></td></tr><tr data="public;static;declared;notNetfw;"><td><img src="./../icons/pubfield.gif" alt="Public field" title="Public field" /><img src="./../icons/static.gif" alt="Static member" title="Static member" /></td><td><a href="1c55b7c1-df29-934c-a537-f2ac617f1687.htm" target="">Throw_PanicMessage</a></td><td><div class="summary">
+            </div></td></tr><tr data="public;static;declared;notNetfw;"><td><img src="../icons/pubfield.gif" alt="Public field" title="Public field" /><img src="../icons/static.gif" alt="Static member" title="Static member" /></td><td><a href="1c55b7c1-df29-934c-a537-f2ac617f1687.htm">Throw_PanicMessage</a></td><td><div class="summary">
             The message to display when the Throw method panics.
-            </div></td></tr><tr data="public;static;declared;notNetfw;"><td><img src="./../icons/pubfield.gif" alt="Public field" title="Public field" /><img src="./../icons/static.gif" alt="Static member" title="Static member" /></td><td><a href="994e1992-1e87-bcef-1041-7605b1044634.htm" target="">UnhandledException_PanicMessage</a></td><td><div class="summary">
+            </div></td></tr><tr data="public;static;declared;notNetfw;"><td><img src="../icons/pubfield.gif" alt="Public field" title="Public field" /><img src="../icons/static.gif" alt="Static member" title="Static member" /></td><td><a href="994e1992-1e87-bcef-1041-7605b1044634.htm">UnhandledException_PanicMessage</a></td><td><div class="summary">
             The message to display when the kernel panics.
-            </div></td></tr></table><a href="#mainBody" target="">Top</a><a name="seeAlsoSection"><!----></a><div class="OH_CollapsibleAreaRegion"><div class="OH_regiontitle">See Also</div><div class="OH_CollapsibleArea_HrDiv"><hr class="OH_CollapsibleArea_Hr" /></div></div><div class="OH_clear"></div><div class="seeAlsoStyle"><a href="9d41ff33-a974-0813-84c7-2f139588649a.htm" target="">Kernel Namespace</a></div></div>
-        </div>
-      </div>
+            </div></td></tr></table><a href="#PageHeader">Top</a></div><div class="collapsibleAreaRegion" id="seeAlsoSection"><span class="collapsibleRegionTitle" onclick="SectionExpandCollapse('ID6RB')" onkeypress="SectionExpandCollapse_CheckKey('ID6RB', event)" tabindex="0"><img id="ID6RBToggle" class="collapseToggle" src="../icons/SectionExpanded.png" />See Also</span></div><div id="ID6RBSection" class="collapsibleSection"><h4 class="subHeading">Reference</h4><div class="seeAlsoStyle"><a href="9d41ff33-a974-0813-84c7-2f139588649a.htm">Kernel Namespace</a></div></div></div>
     </div>
-    <div id="OH_footer" class="OH_footer">
-      <p>Copyright Edward Nutting 2014</p>
-      <div class="OH_feedbacklink">
-        <a href="mailto:edwardnutting@outlook.com?subject=Fling+OS+ExceptionMethods+Class+100+EN-US&amp;body=Your%20feedback%20is%20used%20to%20improve%20the%20documentation%20and%20the%20product.%20Your%20e-mail%20address%20will%20not%20be%20used%20for%20any%20other%20purpose%20and%20is%20disposed%20of%20after%20the%20issue%20you%20report%20is%20resolved.%20While%20working%20to%20resolve%20the%20issue%20that%20you%20report%2c%20you%20may%20be%20contacted%20via%20e-mail%20to%20get%20further%20details%20or%20clarification%20on%20the%20feedback%20you%20sent.%20After%20the%20issue%20you%20report%20has%20been%20addressed%2c%20you%20may%20receive%20an%20e-mail%20to%20let%20you%20know%20that%20your%20feedback%20has%20been%20addressed.">Send Feedback</a> on this topic to Edward Nutting.</div>
-    </div>
+    <div id="pageFooter" class="pageFooter">
+      <p>
+        <a href="http://www.flingos.co.uk" target="_blank">Copyright Edward Nutting 2014</a>
+      </p>
+      <div class="feedbackLink">Send comments on this topic to
+        <a id="HT_MailLink" href="mailto:edwardnutting%40outlook.com?Subject=Fling OS">Edward Nutting</a></div>
+      <script type="text/javascript">
+        var HT_mailLink = document.getElementById("HT_MailLink");
+        var HT_mailLinkText = HT_mailLink.innerHTML;
+        HT_mailLink.href += ": " + document.title + "\u0026body=" + encodeURIComponent("Your feedback is used to improve the documentation and the product. Your e-mail address will not be used for any other purpose and is disposed of after the issue you report is resolved. While working to resolve the issue that you report, you may be contacted via e-mail to get further details or clarification on the feedback you sent. After the issue you report has been addressed, you may receive an e-mail to let you know that your feedback has been addressed.");
+        HT_mailLink.innerHTML = HT_mailLinkText;
+        </script> </div>
   </body>
 </html>

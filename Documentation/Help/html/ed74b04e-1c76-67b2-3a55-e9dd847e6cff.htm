@@ -1,299 +1,291 @@
-﻿<html xmlns:MSHelp="http://msdn.microsoft.com/mshelp" xmlns:mshelp="http://msdn.microsoft.com/mshelp">
+﻿<html>
   <head>
-    <link rel="SHORTCUT ICON" href="./../icons/favicon.ico" />
-    <style type="text/css">.OH_CodeSnippetContainerTabLeftActive, .OH_CodeSnippetContainerTabLeft,.OH_CodeSnippetContainerTabLeftDisabled { }.OH_CodeSnippetContainerTabRightActive, .OH_CodeSnippetContainerTabRight,.OH_CodeSnippetContainerTabRightDisabled { }.OH_footer { }</style>
-    <link rel="stylesheet" type="text/css" href="./../styles/branding.css" />
-    <link rel="stylesheet" type="text/css" href="./../styles/branding-en-US.css" />
-    <style type="text/css">
-			body
-			{
-			border-left:5px solid #e6e6e6;
-			overflow-x:scroll;
-			overflow-y:scroll;
-			}
-		</style>
-    <script src="./../scripts/branding.js" type="text/javascript">
-      <!---->
-    </script>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <link rel="shortcut icon" href="../icons/favicon.ico" />
+    <link rel="stylesheet" type="text/css" href="../styles/branding.css" />
+    <link rel="stylesheet" type="text/css" href="../styles/branding-en-US.css" />
+    <script type="text/javascript" src="../scripts/branding.js"> </script>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
     <title>GC Methods</title>
     <meta name="Language" content="en-us" />
     <meta name="System.Keywords" content="GC class, methods" />
     <meta name="Microsoft.Help.Id" content="Methods.T:Kernel.FOS_System.GC" />
     <meta name="Microsoft.Help.ContentType" content="Reference" />
-    <meta name="BrandingAware" content="'true'" />
+    <meta name="BrandingAware" content="true" />
+    
     <meta name="container" content="Kernel.FOS_System" />
     <meta name="file" content="ed74b04e-1c76-67b2-3a55-e9dd847e6cff" />
     <meta name="guid" content="ed74b04e-1c76-67b2-3a55-e9dd847e6cff" />
     
-    
-    <meta name="SelfBranded" content="true" />
+    <link rel="stylesheet" type="text/css" href="../styles/branding-Website.css" />
+    <script type="text/javascript" src="../scripts/jquery-1.11.0.min.js"></script>
+    <script type="text/javascript" src="../scripts/branding-Website.js"></script>
   </head>
-  <body onload="onLoad()" class="primary-mtps-offline-document">
-    <div class="OH_outerDiv">
-      <div class="OH_outerContent">
-        <table class="TitleTable">
+  <body onload="OnLoad('cs')">
+    <input type="hidden" id="userDataCache" class="userDataStyle" />
+    <div class="pageHeader" id="PageHeader">Fling OS<form id="SearchForm" method="get" action="#" onsubmit="javascript:TransferToSearchPage(); return false;"><input id="SearchTextBox" type="text" maxlength="200" /><button id="SearchButton" type="submit"></button></form></div>
+    <div class="pageBody">
+      <div class="leftNav" id="leftNav"><div id="tocNav"><div class="toclevel0" data-toclevel="0"><a class="tocCollapsed" onclick="javascript: Toggle(this);" href="#!"></a><a data-tochassubtree="true" href="dd3e390e-07c0-499b-8f92-2cb8e8ca8b09.htm" title="Fling OS" tocid="roottoc">Fling OS</a></div><div class="toclevel0" data-toclevel="0"><a class="tocCollapsed" onclick="javascript: Toggle(this);" href="#!"></a><a data-tochassubtree="true" href="d75eb659-6335-53f6-af7a-81814a21ab7f.htm" title="Technical" tocid="e0e0d194-2589-42a6-a2db-a50791dd3bda">Technical</a></div><div class="toclevel0" data-toclevel="0"><a class="tocCollapsed" onclick="javascript: Toggle(this);" href="#!"></a><a data-tochassubtree="true" href="d75eb659-6335-53f6-af7a-81814a21ab7f.htm" title="Kernel" tocid="d75eb659-6335-53f6-af7a-81814a21ab7f">Kernel</a></div><div class="toclevel0" data-toclevel="0"><a class="tocCollapsed" onclick="javascript: Toggle(this);" href="#!"></a><a data-tochassubtree="true" href="966b6396-35e7-33bc-96a3-92c550680dc2.htm" title="Kernel.FOS_System Namespaces" tocid="966b6396-35e7-33bc-96a3-92c550680dc2">Kernel.FOS_System Namespaces</a></div><div class="toclevel0" data-toclevel="0"><a class="tocCollapsed" onclick="javascript: Toggle(this);" href="#!"></a><a data-tochassubtree="true" href="f4608f1c-1b45-9728-1af2-757e20ce3928.htm" title="Kernel.FOS_System" tocid="f4608f1c-1b45-9728-1af2-757e20ce3928">Kernel.FOS_System</a></div><div class="toclevel0" data-toclevel="0"><a class="tocCollapsed" onclick="javascript: Toggle(this);" href="#!"></a><a data-tochassubtree="true" href="a24e55db-1f48-a1dc-4f28-678d5a1b1023.htm" title="GC Class" tocid="a24e55db-1f48-a1dc-4f28-678d5a1b1023">GC Class</a></div><div class="toclevel1 current" data-toclevel="1" data-childrenloaded="true"><a class="tocExpanded" onclick="javascript: Toggle(this);" href="#!"></a><a data-tochassubtree="true" href="ed74b04e-1c76-67b2-3a55-e9dd847e6cff.htm" title="GC Methods" tocid="ed74b04e-1c76-67b2-3a55-e9dd847e6cff">GC Methods</a></div><div class="toclevel2" data-toclevel="2"><a data-tochassubtree="false" href="33ac54f8-d0e3-1395-7198-285a1cd33649.htm" title="_DecrementRefCount Method " tocid="33ac54f8-d0e3-1395-7198-285a1cd33649">_DecrementRefCount Method </a></div><div class="toclevel2" data-toclevel="2"><a data-tochassubtree="false" href="2edb0aa3-61e4-2c8d-07f0-0f45f23d85d1.htm" title="_IncrementRefCount Method " tocid="2edb0aa3-61e4-2c8d-07f0-0f45f23d85d1">_IncrementRefCount Method </a></div><div class="toclevel2" data-toclevel="2"><a data-tochassubtree="false" href="03b21e08-520f-a6b3-4151-3cd1235ba387.htm" title="AddObjectToCleanup Method " tocid="03b21e08-520f-a6b3-4151-3cd1235ba387">AddObjectToCleanup Method </a></div><div class="toclevel2" data-toclevel="2"><a data-tochassubtree="false" href="c416fd61-ae93-7e3b-debc-508837fe0777.htm" title="CheckSignature Method " tocid="c416fd61-ae93-7e3b-debc-508837fe0777">CheckSignature Method </a></div><div class="toclevel2" data-toclevel="2"><a data-tochassubtree="false" href="d099b7d7-7c7c-811c-3f04-270f9cb21dcd.htm" title="Cleanup Method " tocid="d099b7d7-7c7c-811c-3f04-270f9cb21dcd">Cleanup Method </a></div><div class="toclevel2" data-toclevel="2"><a class="tocCollapsed" onclick="javascript: Toggle(this);" href="#!"></a><a data-tochassubtree="true" href="fa43ccec-c94f-354b-1c86-2ce4afc97899.htm" title="DecrementRefCount Method " tocid="fa43ccec-c94f-354b-1c86-2ce4afc97899">DecrementRefCount Method </a></div><div class="toclevel2" data-toclevel="2"><a data-tochassubtree="false" href="ba60ffc1-3ec1-56b8-ddae-63e4e1b81f73.htm" title="IncrementRefCount Method " tocid="ba60ffc1-3ec1-56b8-ddae-63e4e1b81f73">IncrementRefCount Method </a></div><div class="toclevel2" data-toclevel="2"><a data-tochassubtree="false" href="0ab547c8-7d66-587e-ff1f-4901a2d9ca46.htm" title="Init Method " tocid="0ab547c8-7d66-587e-ff1f-4901a2d9ca46">Init Method </a></div><div class="toclevel2" data-toclevel="2"><a data-tochassubtree="false" href="33f6a5e7-85bd-90bd-52b7-576305825715.htm" title="NewArr Method " tocid="33f6a5e7-85bd-90bd-52b7-576305825715">NewArr Method </a></div><div class="toclevel2" data-toclevel="2"><a data-tochassubtree="false" href="af00cc8d-8857-d7b0-703e-587de72c1dc7.htm" title="NewObj Method " tocid="af00cc8d-8857-d7b0-703e-587de72c1dc7">NewObj Method </a></div><div class="toclevel2" data-toclevel="2"><a data-tochassubtree="false" href="9228773b-223a-74a8-fb3e-505248dca1bb.htm" title="NewString Method " tocid="9228773b-223a-74a8-fb3e-505248dca1bb">NewString Method </a></div><div class="toclevel2" data-toclevel="2"><a class="tocCollapsed" onclick="javascript: Toggle(this);" href="#!"></a><a data-tochassubtree="true" href="6bb8050a-9bde-9cee-cf4a-6b46929e835c.htm" title="RemoveObjectToCleanup Method " tocid="6bb8050a-9bde-9cee-cf4a-6b46929e835c">RemoveObjectToCleanup Method </a></div><div class="toclevel2" data-toclevel="2"><a data-tochassubtree="false" href="9fa61182-228d-b35b-ce5a-50be557b235e.htm" title="SetSignature Method " tocid="9fa61182-228d-b35b-ce5a-50be557b235e">SetSignature Method </a></div></div></div><div id="TocResize" class="tocResize" onmousedown="OnMouseDown(event);"><img id="ResizeImageIncrease" src="../icons/TocOpen.gif" onclick="OnIncreaseToc()" alt="Click or drag to resize" title="Click or drag to resize"><img id="ResizeImageReset" src="../icons/TocClose.gif" style="display:none" onclick="OnResetToc()" alt="Click or drag to resize" title="Click or drag to resize"></div><div class="topicContent" id="TopicContent">
+        <table class="titleTable">
           <tr>
-            <td class="OH_tdTitleColumn">GC Methods</td>
-            <td class="OH_tdRunningTitleColumn">Fling OS</td>
+            <td class="titleColumn">GC Methods</td>
           </tr>
         </table>
-        <div id="mainSection">
-          <div id="mainBody">
-            <span class="introStyle"></span>
-            <p>The <a href="a24e55db-1f48-a1dc-4f28-678d5a1b1023.htm" target="">GC</a> type exposes the following members.</p>
-            <div class="OH_CollapsibleAreaRegion">
-              <div class="OH_regiontitle">Methods</div>
-              <div class="OH_CollapsibleArea_HrDiv">
-                <hr class="OH_CollapsibleArea_Hr" />
-              </div>
-            </div>
-            <div class="OH_clear"></div>
-            <table id="memberList" class="members">
-              <tr>
-                <th class="ps_iconColumn">
-							 
-						</th>
-                <th class="ps_nameColumn">Name</th>
-                <th class="ps_descriptionColumn">Description</th>
-              </tr>
-              <tr data="public;static;declared;notNetfw;">
-                <td>
-                  <img src="./../icons/pubmethod.gif" alt="Public method" title="Public method" />
-                  <img src="./../icons/static.gif" alt="Static member" title="Static member" />
-                </td>
-                <td>
-                  <a href="33ac54f8-d0e3-1395-7198-285a1cd33649.htm" target="">_DecrementRefCount</a>
-                </td>
-                <td>
-                  <div class="summary">
+        <span class="introStyle"></span>
+        <p>The <a href="a24e55db-1f48-a1dc-4f28-678d5a1b1023.htm">GC</a> type exposes the following members.</p>
+        <div class="collapsibleAreaRegion">
+          <span class="collapsibleRegionTitle" onclick="SectionExpandCollapse('ID0RB')" onkeypress="SectionExpandCollapse_CheckKey('ID0RB', event)" tabindex="0">
+            <img id="ID0RBToggle" class="collapseToggle" src="../icons/SectionExpanded.png" />Methods</span>
+        </div>
+        <div id="ID0RBSection" class="collapsibleSection">
+          <table id="memberList" class="members">
+            <tr>
+              <th class="iconColumn">
+								 
+							</th>
+              <th>Name</th>
+              <th>Description</th>
+            </tr>
+            <tr data="public;static;declared;notNetfw;">
+              <td>
+                <img src="../icons/pubmethod.gif" alt="Public method" title="Public method" />
+                <img src="../icons/static.gif" alt="Static member" title="Static member" />
+              </td>
+              <td>
+                <a href="33ac54f8-d0e3-1395-7198-285a1cd33649.htm">_DecrementRefCount</a>
+              </td>
+              <td>
+                <div class="summary">
             Underlying method that decrements the ref count of a GC managed object.
             </div>
-                </td>
-              </tr>
-              <tr data="public;static;declared;notNetfw;">
-                <td>
-                  <img src="./../icons/pubmethod.gif" alt="Public method" title="Public method" />
-                  <img src="./../icons/static.gif" alt="Static member" title="Static member" />
-                </td>
-                <td>
-                  <a href="2edb0aa3-61e4-2c8d-07f0-0f45f23d85d1.htm" target="">_IncrementRefCount</a>
-                </td>
-                <td>
-                  <div class="summary">
+              </td>
+            </tr>
+            <tr data="public;static;declared;notNetfw;">
+              <td>
+                <img src="../icons/pubmethod.gif" alt="Public method" title="Public method" />
+                <img src="../icons/static.gif" alt="Static member" title="Static member" />
+              </td>
+              <td>
+                <a href="2edb0aa3-61e4-2c8d-07f0-0f45f23d85d1.htm">_IncrementRefCount</a>
+              </td>
+              <td>
+                <div class="summary">
             Underlying method that increments the ref count of a GC managed object.
             </div>
-                </td>
-              </tr>
-              <tr data="private;static;declared;notNetfw;">
-                <td>
-                  <img src="./../icons/privmethod.gif" alt="Private method" title="Private method" />
-                  <img src="./../icons/static.gif" alt="Static member" title="Static member" />
-                </td>
-                <td>
-                  <a href="03b21e08-520f-a6b3-4151-3cd1235ba387.htm" target="">AddObjectToCleanup</a>
-                </td>
-                <td>
-                  <div class="summary">
+              </td>
+            </tr>
+            <tr data="private;static;declared;notNetfw;">
+              <td>
+                <img src="../icons/privmethod.gif" alt="Private method" title="Private method" />
+                <img src="../icons/static.gif" alt="Static member" title="Static member" />
+              </td>
+              <td>
+                <a href="03b21e08-520f-a6b3-4151-3cd1235ba387.htm">AddObjectToCleanup</a>
+              </td>
+              <td>
+                <div class="summary">
             Adds an object to the cleanup list.
             </div>
-                </td>
-              </tr>
-              <tr data="public;static;declared;notNetfw;">
-                <td>
-                  <img src="./../icons/pubmethod.gif" alt="Public method" title="Public method" />
-                  <img src="./../icons/static.gif" alt="Static member" title="Static member" />
-                </td>
-                <td>
-                  <a href="c416fd61-ae93-7e3b-debc-508837fe0777.htm" target="">CheckSignature</a>
-                </td>
-                <td>
-                  <div class="summary">
+              </td>
+            </tr>
+            <tr data="public;static;declared;notNetfw;">
+              <td>
+                <img src="../icons/pubmethod.gif" alt="Public method" title="Public method" />
+                <img src="../icons/static.gif" alt="Static member" title="Static member" />
+              </td>
+              <td>
+                <a href="c416fd61-ae93-7e3b-debc-508837fe0777.htm">CheckSignature</a>
+              </td>
+              <td>
+                <div class="summary">
             Checks the GC header is valid by checking for the GC signature.
             </div>
-                </td>
-              </tr>
-              <tr data="public;static;declared;notNetfw;">
-                <td>
-                  <img src="./../icons/pubmethod.gif" alt="Public method" title="Public method" />
-                  <img src="./../icons/static.gif" alt="Static member" title="Static member" />
-                </td>
-                <td>
-                  <a href="d099b7d7-7c7c-811c-3f04-270f9cb21dcd.htm" target="">Cleanup</a>
-                </td>
-                <td>
-                  <div class="summary">
+              </td>
+            </tr>
+            <tr data="public;static;declared;notNetfw;">
+              <td>
+                <img src="../icons/pubmethod.gif" alt="Public method" title="Public method" />
+                <img src="../icons/static.gif" alt="Static member" title="Static member" />
+              </td>
+              <td>
+                <a href="d099b7d7-7c7c-811c-3f04-270f9cb21dcd.htm">Cleanup</a>
+              </td>
+              <td>
+                <div class="summary">
             Scans the CleanupList to free objects from memory.
             </div>
-                </td>
-              </tr>
-              <tr data="public;static;declared;notNetfw;">
-                <td>
-                  <img src="./../icons/pubmethod.gif" alt="Public method" title="Public method" />
-                  <img src="./../icons/static.gif" alt="Static member" title="Static member" />
-                </td>
-                <td>
-                  <a href="e3a0245d-54a5-0677-bbb1-04193209fbc8.htm" target="">DecrementRefCount(Object)</a>
-                </td>
-                <td>
-                  <div class="summary">
+              </td>
+            </tr>
+            <tr data="public;static;declared;notNetfw;">
+              <td>
+                <img src="../icons/pubmethod.gif" alt="Public method" title="Public method" />
+                <img src="../icons/static.gif" alt="Static member" title="Static member" />
+              </td>
+              <td>
+                <a href="e3a0245d-54a5-0677-bbb1-04193209fbc8.htm">DecrementRefCount(Object)</a>
+              </td>
+              <td>
+                <div class="summary">
             Decrements the ref count of a GC managed object.
             </div>
-                </td>
-              </tr>
-              <tr data="public;static;declared;notNetfw;">
-                <td>
-                  <img src="./../icons/pubmethod.gif" alt="Public method" title="Public method" />
-                  <img src="./../icons/static.gif" alt="Static member" title="Static member" />
-                </td>
-                <td>
-                  <a href="e69d0573-c6e4-7964-d961-6454a68917af.htm" target="">DecrementRefCount(Object, Boolean)</a>
-                </td>
-                <td>
-                  <div class="summary">
+              </td>
+            </tr>
+            <tr data="public;static;declared;notNetfw;">
+              <td>
+                <img src="../icons/pubmethod.gif" alt="Public method" title="Public method" />
+                <img src="../icons/static.gif" alt="Static member" title="Static member" />
+              </td>
+              <td>
+                <a href="e69d0573-c6e4-7964-d961-6454a68917af.htm">DecrementRefCount(Object, Boolean)</a>
+              </td>
+              <td>
+                <div class="summary">
             Decrements the ref count of a GC managed object.
             </div>
-                </td>
-              </tr>
-              <tr data="public;static;declared;notNetfw;">
-                <td>
-                  <img src="./../icons/pubmethod.gif" alt="Public method" title="Public method" />
-                  <img src="./../icons/static.gif" alt="Static member" title="Static member" />
-                </td>
-                <td>
-                  <a href="ba60ffc1-3ec1-56b8-ddae-63e4e1b81f73.htm" target="">IncrementRefCount</a>
-                </td>
-                <td>
-                  <div class="summary">
+              </td>
+            </tr>
+            <tr data="public;static;declared;notNetfw;">
+              <td>
+                <img src="../icons/pubmethod.gif" alt="Public method" title="Public method" />
+                <img src="../icons/static.gif" alt="Static member" title="Static member" />
+              </td>
+              <td>
+                <a href="ba60ffc1-3ec1-56b8-ddae-63e4e1b81f73.htm">IncrementRefCount</a>
+              </td>
+              <td>
+                <div class="summary">
             Increments the ref count of a GC managed object.
             </div>
-                </td>
-              </tr>
-              <tr data="public;static;declared;notNetfw;">
-                <td>
-                  <img src="./../icons/pubmethod.gif" alt="Public method" title="Public method" />
-                  <img src="./../icons/static.gif" alt="Static member" title="Static member" />
-                </td>
-                <td>
-                  <a href="0ab547c8-7d66-587e-ff1f-4901a2d9ca46.htm" target="">Init</a>
-                </td>
-                <td>
-                  <div class="summary">
+              </td>
+            </tr>
+            <tr data="public;static;declared;notNetfw;">
+              <td>
+                <img src="../icons/pubmethod.gif" alt="Public method" title="Public method" />
+                <img src="../icons/static.gif" alt="Static member" title="Static member" />
+              </td>
+              <td>
+                <a href="0ab547c8-7d66-587e-ff1f-4901a2d9ca46.htm">Init</a>
+              </td>
+              <td>
+                <div class="summary">
             Intialises the GC.
             </div>
-                </td>
-              </tr>
-              <tr data="public;static;declared;notNetfw;">
-                <td>
-                  <img src="./../icons/pubmethod.gif" alt="Public method" title="Public method" />
-                  <img src="./../icons/static.gif" alt="Static member" title="Static member" />
-                </td>
-                <td>
-                  <a href="33f6a5e7-85bd-90bd-52b7-576305825715.htm" target="">NewArr</a>
-                </td>
-                <td>
-                  <div class="summary">
+              </td>
+            </tr>
+            <tr data="public;static;declared;notNetfw;">
+              <td>
+                <img src="../icons/pubmethod.gif" alt="Public method" title="Public method" />
+                <img src="../icons/static.gif" alt="Static member" title="Static member" />
+              </td>
+              <td>
+                <a href="33f6a5e7-85bd-90bd-52b7-576305825715.htm">NewArr</a>
+              </td>
+              <td>
+                <div class="summary">
             Creates a new array with specified element type (but does not call the default constructor).
             </div>
-                </td>
-              </tr>
-              <tr data="public;static;declared;notNetfw;">
-                <td>
-                  <img src="./../icons/pubmethod.gif" alt="Public method" title="Public method" />
-                  <img src="./../icons/static.gif" alt="Static member" title="Static member" />
-                </td>
-                <td>
-                  <a href="af00cc8d-8857-d7b0-703e-587de72c1dc7.htm" target="">NewObj</a>
-                </td>
-                <td>
-                  <div class="summary">
+              </td>
+            </tr>
+            <tr data="public;static;declared;notNetfw;">
+              <td>
+                <img src="../icons/pubmethod.gif" alt="Public method" title="Public method" />
+                <img src="../icons/static.gif" alt="Static member" title="Static member" />
+              </td>
+              <td>
+                <a href="af00cc8d-8857-d7b0-703e-587de72c1dc7.htm">NewObj</a>
+              </td>
+              <td>
+                <div class="summary">
             Creates a new object of specified type (but does not call the default constructor).
             </div>
-                </td>
-              </tr>
-              <tr data="public;static;declared;notNetfw;">
-                <td>
-                  <img src="./../icons/pubmethod.gif" alt="Public method" title="Public method" />
-                  <img src="./../icons/static.gif" alt="Static member" title="Static member" />
-                </td>
-                <td>
-                  <a href="9228773b-223a-74a8-fb3e-505248dca1bb.htm" target="">NewString</a>
-                </td>
-                <td>
-                  <div class="summary">
+              </td>
+            </tr>
+            <tr data="public;static;declared;notNetfw;">
+              <td>
+                <img src="../icons/pubmethod.gif" alt="Public method" title="Public method" />
+                <img src="../icons/static.gif" alt="Static member" title="Static member" />
+              </td>
+              <td>
+                <a href="9228773b-223a-74a8-fb3e-505248dca1bb.htm">NewString</a>
+              </td>
+              <td>
+                <div class="summary">
             DO NOT CALL DIRECTLY. Use FOS_System.String.New
             Creates a new string with specified length (but does not call the default constructor).
             </div>
-                </td>
-              </tr>
-              <tr data="private;static;declared;notNetfw;">
-                <td>
-                  <img src="./../icons/privmethod.gif" alt="Private method" title="Private method" />
-                  <img src="./../icons/static.gif" alt="Static member" title="Static member" />
-                </td>
-                <td>
-                  <a href="5bff045f-6fd8-1b90-8ecb-3d6d6a676ae9.htm" target="">RemoveObjectToCleanup(GCHeader*)</a>
-                </td>
-                <td>
-                  <div class="summary">
+              </td>
+            </tr>
+            <tr data="private;static;declared;notNetfw;">
+              <td>
+                <img src="../icons/privmethod.gif" alt="Private method" title="Private method" />
+                <img src="../icons/static.gif" alt="Static member" title="Static member" />
+              </td>
+              <td>
+                <a href="5bff045f-6fd8-1b90-8ecb-3d6d6a676ae9.htm">RemoveObjectToCleanup(GCHeader*)</a>
+              </td>
+              <td>
+                <div class="summary">
             Removes an object from the cleanup list.
             </div>
-                </td>
-              </tr>
-              <tr data="private;static;declared;notNetfw;">
-                <td>
-                  <img src="./../icons/privmethod.gif" alt="Private method" title="Private method" />
-                  <img src="./../icons/static.gif" alt="Static member" title="Static member" />
-                </td>
-                <td>
-                  <a href="72a92b58-ac30-996d-1db5-92d1f7f26b03.htm" target="">RemoveObjectToCleanup(ObjectToCleanup*)</a>
-                </td>
-                <td>
-                  <div class="summary">
+              </td>
+            </tr>
+            <tr data="private;static;declared;notNetfw;">
+              <td>
+                <img src="../icons/privmethod.gif" alt="Private method" title="Private method" />
+                <img src="../icons/static.gif" alt="Static member" title="Static member" />
+              </td>
+              <td>
+                <a href="72a92b58-ac30-996d-1db5-92d1f7f26b03.htm">RemoveObjectToCleanup(ObjectToCleanup*)</a>
+              </td>
+              <td>
+                <div class="summary">
             Removes an object from the cleanup list.
             </div>
-                </td>
-              </tr>
-              <tr data="public;static;declared;notNetfw;">
-                <td>
-                  <img src="./../icons/pubmethod.gif" alt="Public method" title="Public method" />
-                  <img src="./../icons/static.gif" alt="Static member" title="Static member" />
-                </td>
-                <td>
-                  <a href="9fa61182-228d-b35b-ce5a-50be557b235e.htm" target="">SetSignature</a>
-                </td>
-                <td>
-                  <div class="summary">
+              </td>
+            </tr>
+            <tr data="public;static;declared;notNetfw;">
+              <td>
+                <img src="../icons/pubmethod.gif" alt="Public method" title="Public method" />
+                <img src="../icons/static.gif" alt="Static member" title="Static member" />
+              </td>
+              <td>
+                <a href="9fa61182-228d-b35b-ce5a-50be557b235e.htm">SetSignature</a>
+              </td>
+              <td>
+                <div class="summary">
             Sets the GC signature in the specified GC header.
             </div>
-                </td>
-              </tr>
-            </table>
-            <a href="#mainBody" target="">Top</a>
-            <a name="seeAlsoSection">
-              <!---->
-            </a>
-            <div class="OH_CollapsibleAreaRegion">
-              <div class="OH_regiontitle">See Also</div>
-              <div class="OH_CollapsibleArea_HrDiv">
-                <hr class="OH_CollapsibleArea_Hr" />
-              </div>
-            </div>
-            <div class="OH_clear"></div>
-            <div class="seeAlsoStyle">
-              <a href="a24e55db-1f48-a1dc-4f28-678d5a1b1023.htm" target="">GC Class</a>
-            </div>
-            <div class="seeAlsoStyle">
-              <a href="f4608f1c-1b45-9728-1af2-757e20ce3928.htm" target="">Kernel.FOS_System Namespace</a>
-            </div>
+              </td>
+            </tr>
+          </table>
+          <a href="#PageHeader">Top</a>
+        </div>
+        <div class="collapsibleAreaRegion" id="seeAlsoSection">
+          <span class="collapsibleRegionTitle" onclick="SectionExpandCollapse('ID1RB')" onkeypress="SectionExpandCollapse_CheckKey('ID1RB', event)" tabindex="0">
+            <img id="ID1RBToggle" class="collapseToggle" src="../icons/SectionExpanded.png" />See Also</span>
+        </div>
+        <div id="ID1RBSection" class="collapsibleSection">
+          <h4 class="subHeading">Reference</h4>
+          <div class="seeAlsoStyle">
+            <a href="a24e55db-1f48-a1dc-4f28-678d5a1b1023.htm">GC Class</a>
+          </div>
+          <div class="seeAlsoStyle">
+            <a href="f4608f1c-1b45-9728-1af2-757e20ce3928.htm">Kernel.FOS_System Namespace</a>
           </div>
         </div>
       </div>
     </div>
-    <div id="OH_footer" class="OH_footer">
-      <p>Copyright Edward Nutting 2014</p>
-      <div class="OH_feedbacklink">
-        <a href="mailto:edwardnutting@outlook.com?subject=Fling+OS+GC+Methods+100+EN-US&amp;body=Your%20feedback%20is%20used%20to%20improve%20the%20documentation%20and%20the%20product.%20Your%20e-mail%20address%20will%20not%20be%20used%20for%20any%20other%20purpose%20and%20is%20disposed%20of%20after%20the%20issue%20you%20report%20is%20resolved.%20While%20working%20to%20resolve%20the%20issue%20that%20you%20report%2c%20you%20may%20be%20contacted%20via%20e-mail%20to%20get%20further%20details%20or%20clarification%20on%20the%20feedback%20you%20sent.%20After%20the%20issue%20you%20report%20has%20been%20addressed%2c%20you%20may%20receive%20an%20e-mail%20to%20let%20you%20know%20that%20your%20feedback%20has%20been%20addressed.">Send Feedback</a> on this topic to Edward Nutting.</div>
-    </div>
+    <div id="pageFooter" class="pageFooter">
+      <p>
+        <a href="http://www.flingos.co.uk" target="_blank">Copyright Edward Nutting 2014</a>
+      </p>
+      <div class="feedbackLink">Send comments on this topic to
+        <a id="HT_MailLink" href="mailto:edwardnutting%40outlook.com?Subject=Fling OS">Edward Nutting</a></div>
+      <script type="text/javascript">
+        var HT_mailLink = document.getElementById("HT_MailLink");
+        var HT_mailLinkText = HT_mailLink.innerHTML;
+        HT_mailLink.href += ": " + document.title + "\u0026body=" + encodeURIComponent("Your feedback is used to improve the documentation and the product. Your e-mail address will not be used for any other purpose and is disposed of after the issue you report is resolved. While working to resolve the issue that you report, you may be contacted via e-mail to get further details or clarification on the feedback you sent. After the issue you report has been addressed, you may receive an e-mail to let you know that your feedback has been addressed.");
+        HT_mailLink.innerHTML = HT_mailLinkText;
+        </script> </div>
   </body>
 </html>

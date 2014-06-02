@@ -1,20 +1,10 @@
-﻿<html xmlns:MSHelp="http://msdn.microsoft.com/mshelp" xmlns:mshelp="http://msdn.microsoft.com/mshelp">
+﻿<html>
   <head>
-    <link rel="SHORTCUT ICON" href="./../icons/favicon.ico" />
-    <style type="text/css">.OH_CodeSnippetContainerTabLeftActive, .OH_CodeSnippetContainerTabLeft,.OH_CodeSnippetContainerTabLeftDisabled { }.OH_CodeSnippetContainerTabRightActive, .OH_CodeSnippetContainerTabRight,.OH_CodeSnippetContainerTabRightDisabled { }.OH_footer { }</style>
-    <link rel="stylesheet" type="text/css" href="./../styles/branding.css" />
-    <link rel="stylesheet" type="text/css" href="./../styles/branding-en-US.css" />
-    <style type="text/css">
-			body
-			{
-			border-left:5px solid #e6e6e6;
-			overflow-x:scroll;
-			overflow-y:scroll;
-			}
-		</style>
-    <script src="./../scripts/branding.js" type="text/javascript">
-      <!---->
-    </script>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <link rel="shortcut icon" href="../icons/favicon.ico" />
+    <link rel="stylesheet" type="text/css" href="../styles/branding.css" />
+    <link rel="stylesheet" type="text/css" href="../styles/branding-en-US.css" />
+    <script type="text/javascript" src="../scripts/branding.js"> </script>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
     <title>IOPort Class</title>
     <meta name="Language" content="en-us" />
@@ -25,108 +15,105 @@
     <meta name="Microsoft.Help.Id" content="T:Kernel.Hardware.IO.IOPort" />
     <meta name="Description" content="Represents an IO port." />
     <meta name="Microsoft.Help.ContentType" content="Reference" />
-    <meta name="BrandingAware" content="'true'" />
+    <meta name="BrandingAware" content="true" />
+    
     <meta name="container" content="Kernel.Hardware.IO" />
     <meta name="file" content="673257d6-91e9-2b14-3595-94d6870144db" />
     <meta name="guid" content="673257d6-91e9-2b14-3595-94d6870144db" />
     
-    
-    <meta name="SelfBranded" content="true" />
+    <link rel="stylesheet" type="text/css" href="../styles/branding-Website.css" />
+    <script type="text/javascript" src="../scripts/jquery-1.11.0.min.js"></script>
+    <script type="text/javascript" src="../scripts/branding-Website.js"></script>
   </head>
-  <body onload="onLoad()" class="primary-mtps-offline-document">
-    <div class="OH_outerDiv">
-      <div class="OH_outerContent">
-        <table class="TitleTable">
+  <body onload="OnLoad('cs')">
+    <input type="hidden" id="userDataCache" class="userDataStyle" />
+    <div class="pageHeader" id="PageHeader">Fling OS<form id="SearchForm" method="get" action="#" onsubmit="javascript:TransferToSearchPage(); return false;"><input id="SearchTextBox" type="text" maxlength="200" /><button id="SearchButton" type="submit"></button></form></div>
+    <div class="pageBody">
+      <div class="leftNav" id="leftNav"><div id="tocNav"><div class="toclevel0" data-toclevel="0"><a class="tocCollapsed" onclick="javascript: Toggle(this);" href="#!"></a><a data-tochassubtree="true" href="dd3e390e-07c0-499b-8f92-2cb8e8ca8b09.htm" title="Fling OS" tocid="roottoc">Fling OS</a></div><div class="toclevel0" data-toclevel="0"><a class="tocCollapsed" onclick="javascript: Toggle(this);" href="#!"></a><a data-tochassubtree="true" href="d75eb659-6335-53f6-af7a-81814a21ab7f.htm" title="Technical" tocid="e0e0d194-2589-42a6-a2db-a50791dd3bda">Technical</a></div><div class="toclevel0" data-toclevel="0"><a class="tocCollapsed" onclick="javascript: Toggle(this);" href="#!"></a><a data-tochassubtree="true" href="d75eb659-6335-53f6-af7a-81814a21ab7f.htm" title="Kernel" tocid="d75eb659-6335-53f6-af7a-81814a21ab7f">Kernel</a></div><div class="toclevel0" data-toclevel="0"><a class="tocCollapsed" onclick="javascript: Toggle(this);" href="#!"></a><a data-tochassubtree="true" href="698f5b42-1ce4-46d2-d61e-8f36ddefa90d.htm" title="Kernel.Hardware Namespaces" tocid="698f5b42-1ce4-46d2-d61e-8f36ddefa90d">Kernel.Hardware Namespaces</a></div><div class="toclevel0" data-toclevel="0"><a class="tocCollapsed" onclick="javascript: Toggle(this);" href="#!"></a><a data-tochassubtree="true" href="0ec0de43-4533-152c-6d6c-fd664043918a.htm" title="Kernel.Hardware.IO" tocid="0ec0de43-4533-152c-6d6c-fd664043918a">Kernel.Hardware.IO</a></div><div class="toclevel1 current" data-toclevel="1" data-childrenloaded="true"><a class="tocExpanded" onclick="javascript: Toggle(this);" href="#!"></a><a data-tochassubtree="true" href="673257d6-91e9-2b14-3595-94d6870144db.htm" title="IOPort Class" tocid="673257d6-91e9-2b14-3595-94d6870144db">IOPort Class</a></div><div class="toclevel2" data-toclevel="2"><a class="tocCollapsed" onclick="javascript: Toggle(this);" href="#!"></a><a data-tochassubtree="true" href="2c3d8ef0-fd2f-dff3-869d-322ff35c1304.htm" title="IOPort Constructor " tocid="2c3d8ef0-fd2f-dff3-869d-322ff35c1304">IOPort Constructor </a></div><div class="toclevel2" data-toclevel="2"><a class="tocCollapsed" onclick="javascript: Toggle(this);" href="#!"></a><a data-tochassubtree="true" href="eda7882e-eeeb-36c4-abfa-86be1ad28842.htm" title="IOPort Fields" tocid="eda7882e-eeeb-36c4-abfa-86be1ad28842">IOPort Fields</a></div><div class="toclevel2" data-toclevel="2"><a class="tocCollapsed" onclick="javascript: Toggle(this);" href="#!"></a><a data-tochassubtree="true" href="588ebd6a-00ee-304d-d135-8b2d0eb2d804.htm" title="IOPort Methods" tocid="588ebd6a-00ee-304d-d135-8b2d0eb2d804">IOPort Methods</a></div></div></div><div id="TocResize" class="tocResize" onmousedown="OnMouseDown(event);"><img id="ResizeImageIncrease" src="../icons/TocOpen.gif" onclick="OnIncreaseToc()" alt="Click or drag to resize" title="Click or drag to resize"><img id="ResizeImageReset" src="../icons/TocClose.gif" style="display:none" onclick="OnResetToc()" alt="Click or drag to resize" title="Click or drag to resize"></div><div class="topicContent" id="TopicContent">
+        <table class="titleTable">
           <tr>
-            <td class="OH_tdTitleColumn">IOPort Class</td>
-            <td class="OH_tdRunningTitleColumn">Fling OS</td>
+            <td class="titleColumn">IOPort Class</td>
           </tr>
         </table>
-        <div id="mainSection">
-          <div id="mainBody">
-            <span class="introStyle"></span>
-            <div class="summary">
+        <span class="introStyle"></span>
+        <div class="summary">
             Represents an IO port.
             </div>
-            <div class="OH_CollapsibleAreaRegion">
-              <div class="OH_regiontitle">Inheritance Hierarchy</div>
-              <div class="OH_CollapsibleArea_HrDiv">
-                <hr class="OH_CollapsibleArea_Hr" />
-              </div>
-            </div>
-            <div class="OH_clear"></div>
-            <a href="http://msdn2.microsoft.com/en-us/library/e5kfa45b" target="_blank">System<span id="ID0EBKQAAAAA"> </span><script type="text/javascript">
-					addToLanSpecTextIdSet("ID0EBKQAAAAA?vb=.|cpp=::|cs=.|fs=.|nu=.");
-				</script>Object</a>
-            <br />  <a href="b76e4a75-d10f-181c-419a-3c5bced4b53b.htm" target="">Kernel.FOS_System<span id="ID0EBHQAAAAA"> </span><script type="text/javascript">
-					addToLanSpecTextIdSet("ID0EBHQAAAAA?vb=.|cpp=::|cs=.|fs=.|nu=.");
-				</script>ObjectWithType</a><br />    <a href="d6c554c0-edb5-6771-a2ee-17f7dc96adfc.htm" target="">Kernel.FOS_System<span id="ID0EBEQAAAAA"> </span><script type="text/javascript">
-					addToLanSpecTextIdSet("ID0EBEQAAAAA?vb=.|cpp=::|cs=.|fs=.|nu=.");
-				</script>Object</a><br />      <span class="selflink">Kernel.Hardware.IO<span id="ID0EBBQAAAAA"> </span><script type="text/javascript">
-					addToLanSpecTextIdSet("ID0EBBQAAAAA?vb=.|cpp=::|cs=.|fs=.|nu=.");
-				</script>IOPort</span><br /><p></p><strong>Namespace:</strong> <a href="0ec0de43-4533-152c-6d6c-fd664043918a.htm" target="">Kernel.Hardware.IO</a><br /><strong>Assembly:</strong> <span sdata="assembly">Kernel.Hardware</span> (in Kernel.Hardware.dll) Version: 1.0.0.0 (1.0.0.0)<div class="OH_CollapsibleAreaRegion"><div class="OH_regiontitle">Syntax</div><div class="OH_CollapsibleArea_HrDiv"><hr class="OH_CollapsibleArea_Hr" /></div></div><div class="OH_clear"></div><div id="snippetGroup_Syntax" class="code"><div id="ID0EAAGAAAAA" class="OH_CodeSnippetContainer"><div class="OH_CodeSnippetContainerTabs" id="ID0EAAGAAAAA_tabs"><div class="OH_CodeSnippetContainerTabLeftActive" id="ID0EAAGAAAAA_tabimgleft"></div><div id="ID0EAAGAAAAA_tab1" class="OH_CodeSnippetContainerTabActive" EnableCopyCode="true"><a href="#" onclick="javascript:ChangeTab('ID0EAAGAAAAA','C#','1','4');return false;">C#</a></div><div id="ID0EAAGAAAAA_tab2" class="OH_CodeSnippetContainerTabDisabledNotFirst" EnableCopyCode="true" disabled="true"><a>VB</a></div><div id="ID0EAAGAAAAA_tab3" class="OH_CodeSnippetContainerTabDisabledNotFirst" EnableCopyCode="true" disabled="true"><a>C++</a></div><div id="ID0EAAGAAAAA_tab4" class="OH_CodeSnippetContainerTabDisabledNotFirst" EnableCopyCode="true" disabled="true"><a>F#</a></div><div class="OH_CodeSnippetContainerTabRight" id="ID0EAAGAAAAA_tabimgright"></div></div><div id="ID0EAAGAAAAA_codecollection" class="OH_CodeSnippetContainerCodeCollection"><div class="OH_CodeSnippetToolBar"><div class="OH_CodeSnippetToolBarText"><a id="ID0EAAGAAAAA_ViewColorized" href="#" onclick="javascript:ExchangeTitleContent('ID0EAAGAAAAA','4')" title="View Colorized" style="display: none">View Colorized</a><a id="ID0EAAGAAAAA_copycode" href="#" onclick="javascript:CopyToClipboard('ID0EAAGAAAAA','4')" title="Copy to Clipboard">Copy to Clipboard</a><a id="ID0EAAGAAAAA_PrintText" class="OH_PrintText" href="#" onclick="javascript:Print('ID0EAAGAAAAA','4')" title="Print">Print</a></div></div><div id="ID0EAAGAAAAA_code_Div1" class="OH_CodeSnippetContainerCode" style="display: block"><pre>[<span class="identifier">PluggedClassAttribute</span>]
-<span class="keyword">public</span> <span class="keyword">class</span> <span class="identifier">IOPort</span> : <span class="identifier">Object</span></pre></div><div id="ID0EAAGAAAAA_code_Plain_Div1" class="OH_CodeSnippetContainerCode" style="display: none"><pre>[PluggedClassAttribute]
-public class IOPort : Object</pre></div><div id="ID0EAAGAAAAA_code_Div2" class="OH_CodeSnippetContainerCode" style="display: none"><pre /></div><div id="ID0EAAGAAAAA_code_Plain_Div2" class="OH_CodeSnippetContainerCode" style="display: none"><pre /></div><div id="ID0EAAGAAAAA_code_Div3" class="OH_CodeSnippetContainerCode" style="display: none"><pre /></div><div id="ID0EAAGAAAAA_code_Plain_Div3" class="OH_CodeSnippetContainerCode" style="display: none"><pre /></div><div id="ID0EAAGAAAAA_code_Div4" class="OH_CodeSnippetContainerCode" style="display: none"><pre /></div><div id="ID0EAAGAAAAA_code_Plain_Div4" class="OH_CodeSnippetContainerCode" style="display: none"><pre /></div></div></div><script>addSpecificTextLanguageTagSet('ID0EAAGAAAAA');</script></div><p>The <span class="selflink">IOPort</span> type exposes the following members.</p><div class="OH_CollapsibleAreaRegion"><div class="OH_regiontitle">Constructors</div><div class="OH_CollapsibleArea_HrDiv"><hr class="OH_CollapsibleArea_Hr" /></div></div><div class="OH_clear"></div><table id="memberList" class="members"><tr><th class="ps_iconColumn">
-							 
-						</th><th class="ps_nameColumn">Name</th><th class="ps_descriptionColumn">Description</th></tr><tr data="protected;declared;notNetfw;"><td><img src="./../icons/protmethod.gif" alt="Protected method" title="Protected method" /></td><td><a href="b9260aa2-cea0-dc35-8748-fd282b33b04a.htm" target="">IOPort(UInt16)</a></td><td><div class="summary">
+        <div class="collapsibleAreaRegion">
+          <span class="collapsibleRegionTitle" onclick="SectionExpandCollapse('ID0RB')" onkeypress="SectionExpandCollapse_CheckKey('ID0RB', event)" tabindex="0">
+            <img id="ID0RBToggle" class="collapseToggle" src="../icons/SectionExpanded.png" />Inheritance Hierarchy</span>
+        </div>
+        <div id="ID0RBSection" class="collapsibleSection">
+          <span class="nolink">System<span id="LST40D0C032_0"></span><script type="text/javascript">AddLanguageSpecificTextSet("LST40D0C032_0?cs=.|vb=.|cpp=::|nu=.|fs=.");</script>Object</span>
+          <br />  <a href="b76e4a75-d10f-181c-419a-3c5bced4b53b.htm">Kernel.FOS_System<span id="LST40D0C032_1"></span><script type="text/javascript">AddLanguageSpecificTextSet("LST40D0C032_1?cs=.|vb=.|cpp=::|nu=.|fs=.");</script>ObjectWithType</a><br />    <a href="d6c554c0-edb5-6771-a2ee-17f7dc96adfc.htm">Kernel.FOS_System<span id="LST40D0C032_2"></span><script type="text/javascript">AddLanguageSpecificTextSet("LST40D0C032_2?cs=.|vb=.|cpp=::|nu=.|fs=.");</script>Object</a><br />      <span class="selflink">Kernel.Hardware.IO<span id="LST40D0C032_3"></span><script type="text/javascript">AddLanguageSpecificTextSet("LST40D0C032_3?cs=.|vb=.|cpp=::|nu=.|fs=.");</script>IOPort</span><br /></div>
+        <p> </p>
+        <strong>Namespace:</strong> <a href="0ec0de43-4533-152c-6d6c-fd664043918a.htm">Kernel.Hardware.IO</a><br /><strong>Assembly:</strong> Kernel.Hardware (in Kernel.Hardware.dll) Version: 1.0.0.0 (1.0.0.0)<div class="collapsibleAreaRegion"><span class="collapsibleRegionTitle" onclick="SectionExpandCollapse('ID2RB')" onkeypress="SectionExpandCollapse_CheckKey('ID2RB', event)" tabindex="0"><img id="ID2RBToggle" class="collapseToggle" src="../icons/SectionExpanded.png" />Syntax</span></div><div id="ID2RBSection" class="collapsibleSection"><div class="codeSnippetContainer"><div class="codeSnippetContainerTabs"><div id="ID1EACA_tab1" class="codeSnippetContainerTabSingle">C#</div></div><div class="codeSnippetContainerCodeContainer"><div class="codeSnippetToolBar"><div class="codeSnippetToolBarText"><a id="ID1EACA_copyCode" href="#" onclick="javascript:CopyToClipboard('ID1EACA');return false;" title="Copy">Copy</a></div></div><div id="ID1EACA_code_Div1" class="codeSnippetContainerCode" style="display: block"><pre xml:space="preserve">[<span class="identifier">PluggedClassAttribute</span>]
+<span class="keyword">public</span> <span class="keyword">class</span> <span class="identifier">IOPort</span> : <span class="identifier">Object</span></pre></div></div></div><script type="text/javascript">AddLanguageTabSet("ID1EACA");</script></div><p>The <span class="selflink">IOPort</span> type exposes the following members.</p><div class="collapsibleAreaRegion"><span class="collapsibleRegionTitle" onclick="SectionExpandCollapse('ID3RB')" onkeypress="SectionExpandCollapse_CheckKey('ID3RB', event)" tabindex="0"><img id="ID3RBToggle" class="collapseToggle" src="../icons/SectionExpanded.png" />Constructors</span></div><div id="ID3RBSection" class="collapsibleSection"><table id="memberList" class="members"><tr><th class="iconColumn">
+								 
+							</th><th>Name</th><th>Description</th></tr><tr data="protected;declared;notNetfw;"><td><img src="../icons/protmethod.gif" alt="Protected method" title="Protected method" /></td><td><a href="b9260aa2-cea0-dc35-8748-fd282b33b04a.htm">IOPort(UInt16)</a></td><td><div class="summary">
             Initialises a new IO port with specified port number.
-            </div></td></tr><tr data="protected;declared;notNetfw;"><td><img src="./../icons/protmethod.gif" alt="Protected method" title="Protected method" /></td><td><a href="910994c1-d76d-c3da-6ef6-335e68dfa2e8.htm" target="">IOPort(UInt16, UInt16)</a></td><td><div class="summary">
+            </div></td></tr><tr data="protected;declared;notNetfw;"><td><img src="../icons/protmethod.gif" alt="Protected method" title="Protected method" /></td><td><a href="910994c1-d76d-c3da-6ef6-335e68dfa2e8.htm">IOPort(UInt16, UInt16)</a></td><td><div class="summary">
             Initialises a new IO port with specified port number and 
             offset from that port number.
-            </div></td></tr></table><a href="#mainBody" target="">Top</a><div class="OH_CollapsibleAreaRegion"><div class="OH_regiontitle">Methods</div><div class="OH_CollapsibleArea_HrDiv"><hr class="OH_CollapsibleArea_Hr" /></div></div><div class="OH_clear"></div><table id="memberList" class="members"><tr><th class="ps_iconColumn">
-							 
-						</th><th class="ps_nameColumn">Name</th><th class="ps_descriptionColumn">Description</th></tr><tr data="private;static;declared;notNetfw;"><td><img src="./../icons/privmethod.gif" alt="Private method" title="Private method" /><img src="./../icons/static.gif" alt="Static member" title="Static member" /></td><td><a href="278fe1bb-15d4-0caf-2e3c-b8e1eefd8964.htm" target="">doRead_Byte</a></td><td><div class="summary">
+            </div></td></tr></table><a href="#PageHeader">Top</a></div><div class="collapsibleAreaRegion"><span class="collapsibleRegionTitle" onclick="SectionExpandCollapse('ID4RB')" onkeypress="SectionExpandCollapse_CheckKey('ID4RB', event)" tabindex="0"><img id="ID4RBToggle" class="collapseToggle" src="../icons/SectionExpanded.png" />Methods</span></div><div id="ID4RBSection" class="collapsibleSection"><table id="memberList" class="members"><tr><th class="iconColumn">
+								 
+							</th><th>Name</th><th>Description</th></tr><tr data="private;static;declared;notNetfw;"><td><img src="../icons/privmethod.gif" alt="Private method" title="Private method" /><img src="../icons/static.gif" alt="Static member" title="Static member" /></td><td><a href="278fe1bb-15d4-0caf-2e3c-b8e1eefd8964.htm">doRead_Byte</a></td><td><div class="summary">
             Reads a byte from the specified port.
-            </div></td></tr><tr data="private;static;declared;notNetfw;"><td><img src="./../icons/privmethod.gif" alt="Private method" title="Private method" /><img src="./../icons/static.gif" alt="Static member" title="Static member" /></td><td><a href="e8d7d4c1-defd-2812-2db2-d2fe7da05c34.htm" target="">doRead_UInt16</a></td><td><div class="summary">
+            </div></td></tr><tr data="private;static;declared;notNetfw;"><td><img src="../icons/privmethod.gif" alt="Private method" title="Private method" /><img src="../icons/static.gif" alt="Static member" title="Static member" /></td><td><a href="e8d7d4c1-defd-2812-2db2-d2fe7da05c34.htm">doRead_UInt16</a></td><td><div class="summary">
             Reads a UInt16 from the specified port.
-            </div></td></tr><tr data="private;static;declared;notNetfw;"><td><img src="./../icons/privmethod.gif" alt="Private method" title="Private method" /><img src="./../icons/static.gif" alt="Static member" title="Static member" /></td><td><a href="8e7b5845-bece-4f50-865c-43315693bd40.htm" target="">doRead_UInt32</a></td><td><div class="summary">
+            </div></td></tr><tr data="private;static;declared;notNetfw;"><td><img src="../icons/privmethod.gif" alt="Private method" title="Private method" /><img src="../icons/static.gif" alt="Static member" title="Static member" /></td><td><a href="8e7b5845-bece-4f50-865c-43315693bd40.htm">doRead_UInt32</a></td><td><div class="summary">
             Reads a UInt32 from the specified port.
-            </div></td></tr><tr data="private;static;declared;notNetfw;"><td><img src="./../icons/privmethod.gif" alt="Private method" title="Private method" /><img src="./../icons/static.gif" alt="Static member" title="Static member" /></td><td><a href="c4fd5bc4-e07a-c762-1d21-1f66b6c7467f.htm" target="">doRead_UInt64</a></td><td><div class="summary">
+            </div></td></tr><tr data="private;static;declared;notNetfw;"><td><img src="../icons/privmethod.gif" alt="Private method" title="Private method" /><img src="../icons/static.gif" alt="Static member" title="Static member" /></td><td><a href="c4fd5bc4-e07a-c762-1d21-1f66b6c7467f.htm">doRead_UInt64</a></td><td><div class="summary">
             Reads a UInt64 from the specified port.
-            </div></td></tr><tr data="private;static;declared;notNetfw;"><td><img src="./../icons/privmethod.gif" alt="Private method" title="Private method" /><img src="./../icons/static.gif" alt="Static member" title="Static member" /></td><td><a href="bcb8b546-7ce9-73b7-27f2-269fb1909363.htm" target="">doWrite(UInt16, Byte)</a></td><td><div class="summary">
+            </div></td></tr><tr data="private;static;declared;notNetfw;"><td><img src="../icons/privmethod.gif" alt="Private method" title="Private method" /><img src="../icons/static.gif" alt="Static member" title="Static member" /></td><td><a href="bcb8b546-7ce9-73b7-27f2-269fb1909363.htm">doWrite(UInt16, Byte)</a></td><td><div class="summary">
             Writes a byte to the specified port.
-            </div></td></tr><tr data="private;static;declared;notNetfw;"><td><img src="./../icons/privmethod.gif" alt="Private method" title="Private method" /><img src="./../icons/static.gif" alt="Static member" title="Static member" /></td><td><a href="9b5c5e3d-abee-ef54-9457-f14559339d0a.htm" target="">doWrite(UInt16, UInt16)</a></td><td><div class="summary">
+            </div></td></tr><tr data="private;static;declared;notNetfw;"><td><img src="../icons/privmethod.gif" alt="Private method" title="Private method" /><img src="../icons/static.gif" alt="Static member" title="Static member" /></td><td><a href="9b5c5e3d-abee-ef54-9457-f14559339d0a.htm">doWrite(UInt16, UInt16)</a></td><td><div class="summary">
             Writes a UInt16 to the specified port.
-            </div></td></tr><tr data="private;static;declared;notNetfw;"><td><img src="./../icons/privmethod.gif" alt="Private method" title="Private method" /><img src="./../icons/static.gif" alt="Static member" title="Static member" /></td><td><a href="f21fb66c-8c77-d185-c9ff-ae621b0ea63d.htm" target="">doWrite(UInt16, UInt32)</a></td><td><div class="summary">
+            </div></td></tr><tr data="private;static;declared;notNetfw;"><td><img src="../icons/privmethod.gif" alt="Private method" title="Private method" /><img src="../icons/static.gif" alt="Static member" title="Static member" /></td><td><a href="f21fb66c-8c77-d185-c9ff-ae621b0ea63d.htm">doWrite(UInt16, UInt32)</a></td><td><div class="summary">
             Writes a UInt32 to the specified port.
-            </div></td></tr><tr data="private;static;declared;notNetfw;"><td><img src="./../icons/privmethod.gif" alt="Private method" title="Private method" /><img src="./../icons/static.gif" alt="Static member" title="Static member" /></td><td><a href="02cee836-332f-93c5-c7a7-df3e7beb823c.htm" target="">doWrite(UInt16, UInt64)</a></td><td><div class="summary">
+            </div></td></tr><tr data="private;static;declared;notNetfw;"><td><img src="../icons/privmethod.gif" alt="Private method" title="Private method" /><img src="../icons/static.gif" alt="Static member" title="Static member" /></td><td><a href="02cee836-332f-93c5-c7a7-df3e7beb823c.htm">doWrite(UInt16, UInt64)</a></td><td><div class="summary">
             Writes a UInt64 to the specified port.
-            </div></td></tr><tr data="public;declared;notNetfw;"><td><img src="./../icons/pubmethod.gif" alt="Public method" title="Public method" /></td><td><a href="ba2f673b-80d2-731e-c883-3d8e5708ca42.htm" target="">Read_Byte</a></td><td><div class="summary">
+            </div></td></tr><tr data="public;declared;notNetfw;"><td><img src="../icons/pubmethod.gif" alt="Public method" title="Public method" /></td><td><a href="ba2f673b-80d2-731e-c883-3d8e5708ca42.htm">Read_Byte</a></td><td><div class="summary">
             Reads a byte from the port.
-            </div></td></tr><tr data="public;declared;notNetfw;"><td><img src="./../icons/pubmethod.gif" alt="Public method" title="Public method" /></td><td><a href="d8d6f812-b0b7-e741-71bb-50c74da8e412.htm" target="">Read_UInt16</a></td><td><div class="summary">
+            </div></td></tr><tr data="public;declared;notNetfw;"><td><img src="../icons/pubmethod.gif" alt="Public method" title="Public method" /></td><td><a href="d8d6f812-b0b7-e741-71bb-50c74da8e412.htm">Read_UInt16</a></td><td><div class="summary">
             Reads a UInt16 from the port.
-            </div></td></tr><tr data="public;declared;notNetfw;"><td><img src="./../icons/pubmethod.gif" alt="Public method" title="Public method" /></td><td><a href="24d440b0-6272-f998-5ee6-725c6b5cb756.htm" target="">Read_UInt32</a></td><td><div class="summary">
+            </div></td></tr><tr data="public;declared;notNetfw;"><td><img src="../icons/pubmethod.gif" alt="Public method" title="Public method" /></td><td><a href="24d440b0-6272-f998-5ee6-725c6b5cb756.htm">Read_UInt32</a></td><td><div class="summary">
             Reads a UInt32 from the port.
-            </div></td></tr><tr data="public;declared;notNetfw;"><td><img src="./../icons/pubmethod.gif" alt="Public method" title="Public method" /></td><td><a href="a733101f-6502-d1b7-58b3-53131c14a700.htm" target="">Read_UInt64</a></td><td><div class="summary">
+            </div></td></tr><tr data="public;declared;notNetfw;"><td><img src="../icons/pubmethod.gif" alt="Public method" title="Public method" /></td><td><a href="a733101f-6502-d1b7-58b3-53131c14a700.htm">Read_UInt64</a></td><td><div class="summary">
             Reads a UInt64 from the port.
-            </div></td></tr><tr data="public;declared;notNetfw;"><td><img src="./../icons/pubmethod.gif" alt="Public method" title="Public method" /></td><td><a href="45e44a61-97ba-6d79-8e1c-6dc1011cc333.htm" target="">Read16</a></td><td><div class="summary">
+            </div></td></tr><tr data="public;declared;notNetfw;"><td><img src="../icons/pubmethod.gif" alt="Public method" title="Public method" /></td><td><a href="45e44a61-97ba-6d79-8e1c-6dc1011cc333.htm">Read16</a></td><td><div class="summary">
             Reads UInt16s into the specified UInt16 array.
-            </div></td></tr><tr data="public;declared;notNetfw;"><td><img src="./../icons/pubmethod.gif" alt="Public method" title="Public method" /></td><td><a href="b03232c2-9c38-3102-352e-3420feb61be4.htm" target="">Read32</a></td><td><div class="summary">
+            </div></td></tr><tr data="public;declared;notNetfw;"><td><img src="../icons/pubmethod.gif" alt="Public method" title="Public method" /></td><td><a href="b03232c2-9c38-3102-352e-3420feb61be4.htm">Read32</a></td><td><div class="summary">
             Reads UInt32s into the specified UInt32 array.
-            </div></td></tr><tr data="public;declared;notNetfw;"><td><img src="./../icons/pubmethod.gif" alt="Public method" title="Public method" /></td><td><a href="c68eb2e0-b8c4-0f27-e7a6-bec45921e22c.htm" target="">Read8</a></td><td><div class="summary">
+            </div></td></tr><tr data="public;declared;notNetfw;"><td><img src="../icons/pubmethod.gif" alt="Public method" title="Public method" /></td><td><a href="c68eb2e0-b8c4-0f27-e7a6-bec45921e22c.htm">Read8</a></td><td><div class="summary">
             Reads bytes into the specified byte array.
-            </div></td></tr><tr data="public;declared;notNetfw;"><td><img src="./../icons/pubmethod.gif" alt="Public method" title="Public method" /></td><td><a href="07da2c92-5b30-d2ed-a99c-5283af7631c5.htm" target="">Write(Byte)</a></td><td><div class="summary">
+            </div></td></tr><tr data="public;declared;notNetfw;"><td><img src="../icons/pubmethod.gif" alt="Public method" title="Public method" /></td><td><a href="07da2c92-5b30-d2ed-a99c-5283af7631c5.htm">Write(Byte)</a></td><td><div class="summary">
             Writes a byte to the port.
-            </div></td></tr><tr data="public;declared;notNetfw;"><td><img src="./../icons/pubmethod.gif" alt="Public method" title="Public method" /></td><td><a href="143d24f6-30f4-8ef4-0758-e9cd3c998712.htm" target="">Write(UInt16)</a></td><td><div class="summary">
+            </div></td></tr><tr data="public;declared;notNetfw;"><td><img src="../icons/pubmethod.gif" alt="Public method" title="Public method" /></td><td><a href="143d24f6-30f4-8ef4-0758-e9cd3c998712.htm">Write(UInt16)</a></td><td><div class="summary">
             Writes a UInt16 to the port.
-            </div></td></tr><tr data="public;declared;notNetfw;"><td><img src="./../icons/pubmethod.gif" alt="Public method" title="Public method" /></td><td><a href="2a220480-c2d1-3682-8ca3-09ad22361edf.htm" target="">Write(UInt32)</a></td><td><div class="summary">
+            </div></td></tr><tr data="public;declared;notNetfw;"><td><img src="../icons/pubmethod.gif" alt="Public method" title="Public method" /></td><td><a href="2a220480-c2d1-3682-8ca3-09ad22361edf.htm">Write(UInt32)</a></td><td><div class="summary">
             Writes a UInt32 to the port.
-            </div></td></tr><tr data="public;declared;notNetfw;"><td><img src="./../icons/pubmethod.gif" alt="Public method" title="Public method" /></td><td><a href="529d03a9-d847-7b61-140d-7b5319f5218f.htm" target="">Write(UInt64)</a></td><td><div class="summary">
+            </div></td></tr><tr data="public;declared;notNetfw;"><td><img src="../icons/pubmethod.gif" alt="Public method" title="Public method" /></td><td><a href="529d03a9-d847-7b61-140d-7b5319f5218f.htm">Write(UInt64)</a></td><td><div class="summary">
             Writes a UInt64 to the port.
-            </div></td></tr></table><a href="#mainBody" target="">Top</a><div class="OH_CollapsibleAreaRegion"><div class="OH_regiontitle">Fields</div><div class="OH_CollapsibleArea_HrDiv"><hr class="OH_CollapsibleArea_Hr" /></div></div><div class="OH_clear"></div><table id="memberList" class="members"><tr><th class="ps_iconColumn">
-							 
-						</th><th class="ps_nameColumn">Name</th><th class="ps_descriptionColumn">Description</th></tr><tr data="public;inherited;notNetfw;"><td><img src="./../icons/pubfield.gif" alt="Public field" title="Public field" /></td><td><a href="319b7241-a5ca-02b2-c216-b877e53644bd.htm" target="">_Type</a></td><td><div class="summary">
+            </div></td></tr></table><a href="#PageHeader">Top</a></div><div class="collapsibleAreaRegion"><span class="collapsibleRegionTitle" onclick="SectionExpandCollapse('ID5RB')" onkeypress="SectionExpandCollapse_CheckKey('ID5RB', event)" tabindex="0"><img id="ID5RBToggle" class="collapseToggle" src="../icons/SectionExpanded.png" />Fields</span></div><div id="ID5RBSection" class="collapsibleSection"><table id="memberList" class="members"><tr><th class="iconColumn">
+								 
+							</th><th>Name</th><th>Description</th></tr><tr data="public;inherited;notNetfw;"><td><img src="../icons/pubfield.gif" alt="Public field" title="Public field" /></td><td><a href="319b7241-a5ca-02b2-c216-b877e53644bd.htm">_Type</a></td><td><div class="summary">
             The underlying, specific type of the object specified when it was created.
-            </div> (Inherited from <a href="b76e4a75-d10f-181c-419a-3c5bced4b53b.htm" target="">ObjectWithType</a>.)</td></tr><tr data="public;declared;notNetfw;"><td><img src="./../icons/pubfield.gif" alt="Public field" title="Public field" /></td><td><a href="d186ff76-ac2e-e783-961b-48148f8cbc57.htm" target="">Port</a></td><td><div class="summary">
+            </div> (Inherited from <a href="b76e4a75-d10f-181c-419a-3c5bced4b53b.htm">ObjectWithType</a>.)</td></tr><tr data="public;declared;notNetfw;"><td><img src="../icons/pubfield.gif" alt="Public field" title="Public field" /></td><td><a href="d186ff76-ac2e-e783-961b-48148f8cbc57.htm">Port</a></td><td><div class="summary">
             The port number.
-            </div></td></tr></table><a href="#mainBody" target="">Top</a><a name="seeAlsoSection"><!----></a><div class="OH_CollapsibleAreaRegion"><div class="OH_regiontitle">See Also</div><div class="OH_CollapsibleArea_HrDiv"><hr class="OH_CollapsibleArea_Hr" /></div></div><div class="OH_clear"></div><div class="seeAlsoStyle"><a href="0ec0de43-4533-152c-6d6c-fd664043918a.htm" target="">Kernel.Hardware.IO Namespace</a></div></div>
-        </div>
-      </div>
+            </div></td></tr></table><a href="#PageHeader">Top</a></div><div class="collapsibleAreaRegion" id="seeAlsoSection"><span class="collapsibleRegionTitle" onclick="SectionExpandCollapse('ID6RB')" onkeypress="SectionExpandCollapse_CheckKey('ID6RB', event)" tabindex="0"><img id="ID6RBToggle" class="collapseToggle" src="../icons/SectionExpanded.png" />See Also</span></div><div id="ID6RBSection" class="collapsibleSection"><h4 class="subHeading">Reference</h4><div class="seeAlsoStyle"><a href="0ec0de43-4533-152c-6d6c-fd664043918a.htm">Kernel.Hardware.IO Namespace</a></div></div></div>
     </div>
-    <div id="OH_footer" class="OH_footer">
-      <p>Copyright Edward Nutting 2014</p>
-      <div class="OH_feedbacklink">
-        <a href="mailto:edwardnutting@outlook.com?subject=Fling+OS+IOPort+Class+100+EN-US&amp;body=Your%20feedback%20is%20used%20to%20improve%20the%20documentation%20and%20the%20product.%20Your%20e-mail%20address%20will%20not%20be%20used%20for%20any%20other%20purpose%20and%20is%20disposed%20of%20after%20the%20issue%20you%20report%20is%20resolved.%20While%20working%20to%20resolve%20the%20issue%20that%20you%20report%2c%20you%20may%20be%20contacted%20via%20e-mail%20to%20get%20further%20details%20or%20clarification%20on%20the%20feedback%20you%20sent.%20After%20the%20issue%20you%20report%20has%20been%20addressed%2c%20you%20may%20receive%20an%20e-mail%20to%20let%20you%20know%20that%20your%20feedback%20has%20been%20addressed.">Send Feedback</a> on this topic to Edward Nutting.</div>
-    </div>
+    <div id="pageFooter" class="pageFooter">
+      <p>
+        <a href="http://www.flingos.co.uk" target="_blank">Copyright Edward Nutting 2014</a>
+      </p>
+      <div class="feedbackLink">Send comments on this topic to
+        <a id="HT_MailLink" href="mailto:edwardnutting%40outlook.com?Subject=Fling OS">Edward Nutting</a></div>
+      <script type="text/javascript">
+        var HT_mailLink = document.getElementById("HT_MailLink");
+        var HT_mailLinkText = HT_mailLink.innerHTML;
+        HT_mailLink.href += ": " + document.title + "\u0026body=" + encodeURIComponent("Your feedback is used to improve the documentation and the product. Your e-mail address will not be used for any other purpose and is disposed of after the issue you report is resolved. While working to resolve the issue that you report, you may be contacted via e-mail to get further details or clarification on the feedback you sent. After the issue you report has been addressed, you may receive an e-mail to let you know that your feedback has been addressed.");
+        HT_mailLink.innerHTML = HT_mailLinkText;
+        </script> </div>
   </body>
 </html>

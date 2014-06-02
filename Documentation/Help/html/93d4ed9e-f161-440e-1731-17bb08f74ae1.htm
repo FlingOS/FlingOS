@@ -1,0 +1,679 @@
+﻿<html>
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <link rel="shortcut icon" href="../icons/favicon.ico" />
+    <link rel="stylesheet" type="text/css" href="../styles/branding.css" />
+    <link rel="stylesheet" type="text/css" href="../styles/branding-en-US.css" />
+    <script type="text/javascript" src="../scripts/branding.js"> </script>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <title>Kernel.Compiler.Architectures.x86_32 Namespace</title>
+    <meta name="Language" content="en-us" />
+    <meta name="System.Keywords" content="Kernel.Compiler.Architectures.x86_32 namespace" />
+    <meta name="Microsoft.Help.F1" content="Kernel.Compiler.Architectures.x86_32" />
+    <meta name="Microsoft.Help.Id" content="N:Kernel.Compiler.Architectures.x86_32" />
+    <meta name="Description" content="Contains the Il Op conversion class implementations for converting IL op to valid x86 - 32 bit assembler." />
+    <meta name="Microsoft.Help.ContentType" content="Reference" />
+    <meta name="BrandingAware" content="true" />
+    
+    <meta name="container" content="Kernel.Compiler.Architectures.x86_32" />
+    <meta name="file" content="93d4ed9e-f161-440e-1731-17bb08f74ae1" />
+    <meta name="guid" content="93d4ed9e-f161-440e-1731-17bb08f74ae1" />
+    
+    <link rel="stylesheet" type="text/css" href="../styles/branding-Website.css" />
+    <script type="text/javascript" src="../scripts/jquery-1.11.0.min.js"></script>
+    <script type="text/javascript" src="../scripts/branding-Website.js"></script>
+  </head>
+  <body onload="OnLoad('cs')">
+    <input type="hidden" id="userDataCache" class="userDataStyle" />
+    <div class="pageHeader" id="PageHeader">Fling OS<form id="SearchForm" method="get" action="#" onsubmit="javascript:TransferToSearchPage(); return false;"><input id="SearchTextBox" type="text" maxlength="200" /><button id="SearchButton" type="submit"></button></form></div>
+    <div class="pageBody">
+      <div class="leftNav" id="leftNav"><div id="tocNav"><div class="toclevel0" data-toclevel="0"><a class="tocCollapsed" onclick="javascript: Toggle(this);" href="#!"></a><a data-tochassubtree="true" href="dd3e390e-07c0-499b-8f92-2cb8e8ca8b09.htm" title="Fling OS" tocid="roottoc">Fling OS</a></div><div class="toclevel0" data-toclevel="0"><a class="tocCollapsed" onclick="javascript: Toggle(this);" href="#!"></a><a data-tochassubtree="true" href="d75eb659-6335-53f6-af7a-81814a21ab7f.htm" title="Technical" tocid="e0e0d194-2589-42a6-a2db-a50791dd3bda">Technical</a></div><div class="toclevel0" data-toclevel="0"><a class="tocCollapsed" onclick="javascript: Toggle(this);" href="#!"></a><a data-tochassubtree="true" href="d75eb659-6335-53f6-af7a-81814a21ab7f.htm" title="Kernel" tocid="d75eb659-6335-53f6-af7a-81814a21ab7f">Kernel</a></div><div class="toclevel0" data-toclevel="0"><a class="tocCollapsed" onclick="javascript: Toggle(this);" href="#!"></a><a data-tochassubtree="true" href="f85d4b75-ece2-4eb8-47cb-15814ba4e543.htm" title="Kernel.Compiler Namespaces" tocid="f85d4b75-ece2-4eb8-47cb-15814ba4e543">Kernel.Compiler Namespaces</a></div><div class="toclevel1 current" data-toclevel="1" data-childrenloaded="true"><a class="tocExpanded" onclick="javascript: Toggle(this);" href="#!"></a><a data-tochassubtree="true" href="93d4ed9e-f161-440e-1731-17bb08f74ae1.htm" title="Kernel.Compiler.Architectures.x86_32" tocid="93d4ed9e-f161-440e-1731-17bb08f74ae1">Kernel.Compiler.Architectures.x86_32</a></div><div class="toclevel2" data-toclevel="2"><a class="tocCollapsed" onclick="javascript: Toggle(this);" href="#!"></a><a data-tochassubtree="true" href="c2ae8ee2-78bd-45ee-d8ed-8070f944172b.htm" title="Add Class" tocid="c2ae8ee2-78bd-45ee-d8ed-8070f944172b">Add Class</a></div><div class="toclevel2" data-toclevel="2"><a class="tocCollapsed" onclick="javascript: Toggle(this);" href="#!"></a><a data-tochassubtree="true" href="a378abb3-1fe4-7c22-4115-1e3acf01c0a9.htm" title="And Class" tocid="a378abb3-1fe4-7c22-4115-1e3acf01c0a9">And Class</a></div><div class="toclevel2" data-toclevel="2"><a class="tocCollapsed" onclick="javascript: Toggle(this);" href="#!"></a><a data-tochassubtree="true" href="5244720d-a04d-d9dc-cdfe-8588e067e716.htm" title="Br Class" tocid="5244720d-a04d-d9dc-cdfe-8588e067e716">Br Class</a></div><div class="toclevel2" data-toclevel="2"><a class="tocCollapsed" onclick="javascript: Toggle(this);" href="#!"></a><a data-tochassubtree="true" href="4e57af60-ac49-13e6-47cf-cbd2728d6440.htm" title="Call Class" tocid="4e57af60-ac49-13e6-47cf-cbd2728d6440">Call Class</a></div><div class="toclevel2" data-toclevel="2"><a class="tocCollapsed" onclick="javascript: Toggle(this);" href="#!"></a><a data-tochassubtree="true" href="2e2bfbcb-3f80-b581-1cc9-01041759e32d.htm" title="Callvirt Class" tocid="2e2bfbcb-3f80-b581-1cc9-01041759e32d">Callvirt Class</a></div><div class="toclevel2" data-toclevel="2"><a class="tocCollapsed" onclick="javascript: Toggle(this);" href="#!"></a><a data-tochassubtree="true" href="ac8c8aab-9b8d-0d99-ff08-50a46fb31cc6.htm" title="Ceq Class" tocid="ac8c8aab-9b8d-0d99-ff08-50a46fb31cc6">Ceq Class</a></div><div class="toclevel2" data-toclevel="2"><a class="tocCollapsed" onclick="javascript: Toggle(this);" href="#!"></a><a data-tochassubtree="true" href="16d9a34f-7742-f931-03d7-6fb851762c90.htm" title="Cgt Class" tocid="16d9a34f-7742-f931-03d7-6fb851762c90">Cgt Class</a></div><div class="toclevel2" data-toclevel="2"><a class="tocCollapsed" onclick="javascript: Toggle(this);" href="#!"></a><a data-tochassubtree="true" href="17aa9253-96f1-1b44-f5ef-a9bf7fa615e2.htm" title="Clt Class" tocid="17aa9253-96f1-1b44-f5ef-a9bf7fa615e2">Clt Class</a></div><div class="toclevel2" data-toclevel="2"><a class="tocCollapsed" onclick="javascript: Toggle(this);" href="#!"></a><a data-tochassubtree="true" href="2d910428-fdef-22ef-acaa-44ad0afa2050.htm" title="Convi Class" tocid="2d910428-fdef-22ef-acaa-44ad0afa2050">Convi Class</a></div><div class="toclevel2" data-toclevel="2"><a class="tocCollapsed" onclick="javascript: Toggle(this);" href="#!"></a><a data-tochassubtree="true" href="d74c767c-b96c-4e41-b16c-90122517b735.htm" title="Convu Class" tocid="d74c767c-b96c-4e41-b16c-90122517b735">Convu Class</a></div><div class="toclevel2" data-toclevel="2"><a class="tocCollapsed" onclick="javascript: Toggle(this);" href="#!"></a><a data-tochassubtree="true" href="8d7fe569-d33f-b974-7f74-bfcfe2e10f3b.htm" title="Div Class" tocid="8d7fe569-d33f-b974-7f74-bfcfe2e10f3b">Div Class</a></div><div class="toclevel2" data-toclevel="2"><a class="tocCollapsed" onclick="javascript: Toggle(this);" href="#!"></a><a data-tochassubtree="true" href="bd6f1a0e-47c1-49e2-f447-1c615f856998.htm" title="Dup Class" tocid="bd6f1a0e-47c1-49e2-f447-1c615f856998">Dup Class</a></div><div class="toclevel2" data-toclevel="2"><a class="tocCollapsed" onclick="javascript: Toggle(this);" href="#!"></a><a data-tochassubtree="true" href="34815f9b-8d36-4f5d-1d3e-c3ae589b37a7.htm" title="Ldarg Class" tocid="34815f9b-8d36-4f5d-1d3e-c3ae589b37a7">Ldarg Class</a></div><div class="toclevel2" data-toclevel="2"><a class="tocCollapsed" onclick="javascript: Toggle(this);" href="#!"></a><a data-tochassubtree="true" href="c0b0e834-f457-f76d-bdbf-5ff4d4d5c7ef.htm" title="Ldc Class" tocid="c0b0e834-f457-f76d-bdbf-5ff4d4d5c7ef">Ldc Class</a></div><div class="toclevel2" data-toclevel="2"><a class="tocCollapsed" onclick="javascript: Toggle(this);" href="#!"></a><a data-tochassubtree="true" href="fafe4581-a6b6-275d-34c4-e1b66618da8b.htm" title="Ldelem Class" tocid="fafe4581-a6b6-275d-34c4-e1b66618da8b">Ldelem Class</a></div><div class="toclevel2" data-toclevel="2"><a class="tocCollapsed" onclick="javascript: Toggle(this);" href="#!"></a><a data-tochassubtree="true" href="861ea1bf-b56d-9201-d1ea-2cb519fe37b9.htm" title="Ldfld Class" tocid="861ea1bf-b56d-9201-d1ea-2cb519fe37b9">Ldfld Class</a></div><div class="toclevel2" data-toclevel="2"><a class="tocCollapsed" onclick="javascript: Toggle(this);" href="#!"></a><a data-tochassubtree="true" href="0763907f-941e-a8ad-b5ad-66d0906a650d.htm" title="Ldftn Class" tocid="0763907f-941e-a8ad-b5ad-66d0906a650d">Ldftn Class</a></div><div class="toclevel2" data-toclevel="2"><a class="tocCollapsed" onclick="javascript: Toggle(this);" href="#!"></a><a data-tochassubtree="true" href="37b0d495-9416-eafc-cdc9-e451a7ddd59e.htm" title="Ldind Class" tocid="37b0d495-9416-eafc-cdc9-e451a7ddd59e">Ldind Class</a></div><div class="toclevel2" data-toclevel="2"><a class="tocCollapsed" onclick="javascript: Toggle(this);" href="#!"></a><a data-tochassubtree="true" href="2d90e150-9dc5-3531-1348-a3bc13910713.htm" title="Ldlen Class" tocid="2d90e150-9dc5-3531-1348-a3bc13910713">Ldlen Class</a></div><div class="toclevel2" data-toclevel="2"><a class="tocCollapsed" onclick="javascript: Toggle(this);" href="#!"></a><a data-tochassubtree="true" href="0064317a-d444-62aa-1f00-5a3d28822fbd.htm" title="Ldloc Class" tocid="0064317a-d444-62aa-1f00-5a3d28822fbd">Ldloc Class</a></div><div class="toclevel2" data-toclevel="2"><a class="tocCollapsed" onclick="javascript: Toggle(this);" href="#!"></a><a data-tochassubtree="true" href="5469568a-49a8-cf01-d783-d1cac841159f.htm" title="Ldnull Class" tocid="5469568a-49a8-cf01-d783-d1cac841159f">Ldnull Class</a></div><div class="toclevel2" data-toclevel="2"><a class="tocCollapsed" onclick="javascript: Toggle(this);" href="#!"></a><a data-tochassubtree="true" href="26c21255-4feb-79f4-d81f-486eb826cdd7.htm" title="Ldsfld Class" tocid="26c21255-4feb-79f4-d81f-486eb826cdd7">Ldsfld Class</a></div><div class="toclevel2" data-toclevel="2"><a class="tocCollapsed" onclick="javascript: Toggle(this);" href="#!"></a><a data-tochassubtree="true" href="3c0b0be7-d2ea-345a-e18b-9a27e290d5c7.htm" title="Ldstr Class" tocid="3c0b0be7-d2ea-345a-e18b-9a27e290d5c7">Ldstr Class</a></div><div class="toclevel2" data-toclevel="2"><a class="tocCollapsed" onclick="javascript: Toggle(this);" href="#!"></a><a data-tochassubtree="true" href="61773649-2fea-3f1d-dac1-3f75bb3fef1d.htm" title="Ldtoken Class" tocid="61773649-2fea-3f1d-dac1-3f75bb3fef1d">Ldtoken Class</a></div><div class="toclevel2" data-toclevel="2"><a class="tocCollapsed" onclick="javascript: Toggle(this);" href="#!"></a><a data-tochassubtree="true" href="80e1d98b-054c-8963-7874-530853c4e95b.htm" title="MethodEnd Class" tocid="80e1d98b-054c-8963-7874-530853c4e95b">MethodEnd Class</a></div><div class="toclevel2" data-toclevel="2"><a class="tocCollapsed" onclick="javascript: Toggle(this);" href="#!"></a><a data-tochassubtree="true" href="2fc4d22a-e5d6-09ef-a8d1-e67df0941fb8.htm" title="MethodStart Class" tocid="2fc4d22a-e5d6-09ef-a8d1-e67df0941fb8">MethodStart Class</a></div><div class="toclevel2" data-toclevel="2"><a class="tocCollapsed" onclick="javascript: Toggle(this);" href="#!"></a><a data-tochassubtree="true" href="3a67d4b1-b0dc-3df7-a755-6807a8c48d8b.htm" title="Mul Class" tocid="3a67d4b1-b0dc-3df7-a755-6807a8c48d8b">Mul Class</a></div><div class="toclevel2" data-toclevel="2"><a class="tocCollapsed" onclick="javascript: Toggle(this);" href="#!"></a><a data-tochassubtree="true" href="44bffc40-d2b2-a859-0460-1f979dfef4dd.htm" title="Newarr Class" tocid="44bffc40-d2b2-a859-0460-1f979dfef4dd">Newarr Class</a></div><div class="toclevel2" data-toclevel="2"><a class="tocCollapsed" onclick="javascript: Toggle(this);" href="#!"></a><a data-tochassubtree="true" href="28b7201b-8f03-a042-e09d-80107e2c6cfa.htm" title="Newobj Class" tocid="28b7201b-8f03-a042-e09d-80107e2c6cfa">Newobj Class</a></div><div class="toclevel2" data-toclevel="2"><a class="tocCollapsed" onclick="javascript: Toggle(this);" href="#!"></a><a data-tochassubtree="true" href="012112e5-8bf8-d29a-ecef-e210070a1b57.htm" title="Nop Class" tocid="012112e5-8bf8-d29a-ecef-e210070a1b57">Nop Class</a></div><div class="toclevel2" data-toclevel="2"><a class="tocCollapsed" onclick="javascript: Toggle(this);" href="#!"></a><a data-tochassubtree="true" href="d938035d-b4cb-7490-a998-00eaf9bfddec.htm" title="Not Class" tocid="d938035d-b4cb-7490-a998-00eaf9bfddec">Not Class</a></div><div class="toclevel2" data-toclevel="2"><a class="tocCollapsed" onclick="javascript: Toggle(this);" href="#!"></a><a data-tochassubtree="true" href="db2d175e-0224-6fbf-2756-b0945d2dcb43.htm" title="Or Class" tocid="db2d175e-0224-6fbf-2756-b0945d2dcb43">Or Class</a></div><div class="toclevel2" data-toclevel="2"><a class="tocCollapsed" onclick="javascript: Toggle(this);" href="#!"></a><a data-tochassubtree="true" href="341e9247-fcb7-98a9-88cc-5695b3444caa.htm" title="Pop Class" tocid="341e9247-fcb7-98a9-88cc-5695b3444caa">Pop Class</a></div><div class="toclevel2" data-toclevel="2"><a class="tocCollapsed" onclick="javascript: Toggle(this);" href="#!"></a><a data-tochassubtree="true" href="4b986183-e2a3-a704-7bce-32e84ae4fd7c.htm" title="Rem Class" tocid="4b986183-e2a3-a704-7bce-32e84ae4fd7c">Rem Class</a></div><div class="toclevel2" data-toclevel="2"><a class="tocCollapsed" onclick="javascript: Toggle(this);" href="#!"></a><a data-tochassubtree="true" href="94f3f660-424c-7c1e-4a3f-afbe99c7cd65.htm" title="Ret Class" tocid="94f3f660-424c-7c1e-4a3f-afbe99c7cd65">Ret Class</a></div><div class="toclevel2" data-toclevel="2"><a class="tocCollapsed" onclick="javascript: Toggle(this);" href="#!"></a><a data-tochassubtree="true" href="088401b3-9ea3-3d3d-3f8f-39740106d6b4.htm" title="Shl Class" tocid="088401b3-9ea3-3d3d-3f8f-39740106d6b4">Shl Class</a></div><div class="toclevel2" data-toclevel="2"><a class="tocCollapsed" onclick="javascript: Toggle(this);" href="#!"></a><a data-tochassubtree="true" href="beb5b3d9-1cb9-5705-02d0-3bb317761ca0.htm" title="Shr Class" tocid="beb5b3d9-1cb9-5705-02d0-3bb317761ca0">Shr Class</a></div><div class="toclevel2" data-toclevel="2"><a class="tocCollapsed" onclick="javascript: Toggle(this);" href="#!"></a><a data-tochassubtree="true" href="156043ee-72ba-0656-9dd3-533ef4486c80.htm" title="Sizeof Class" tocid="156043ee-72ba-0656-9dd3-533ef4486c80">Sizeof Class</a></div><div class="toclevel2" data-toclevel="2"><a class="tocCollapsed" onclick="javascript: Toggle(this);" href="#!"></a><a data-tochassubtree="true" href="9663465d-c176-cc29-53ec-69eca9e20551.htm" title="StackSwitch Class" tocid="9663465d-c176-cc29-53ec-69eca9e20551">StackSwitch Class</a></div><div class="toclevel2" data-toclevel="2"><a class="tocCollapsed" onclick="javascript: Toggle(this);" href="#!"></a><a data-tochassubtree="true" href="68fb4a3e-4790-e581-4f44-0d947ce6b822.htm" title="Starg Class" tocid="68fb4a3e-4790-e581-4f44-0d947ce6b822">Starg Class</a></div><div class="toclevel2" data-toclevel="2"><a class="tocCollapsed" onclick="javascript: Toggle(this);" href="#!"></a><a data-tochassubtree="true" href="7ef836c8-2820-4183-5a2f-c8d1fd55ec7c.htm" title="Stelem Class" tocid="7ef836c8-2820-4183-5a2f-c8d1fd55ec7c">Stelem Class</a></div><div class="toclevel2" data-toclevel="2"><a class="tocCollapsed" onclick="javascript: Toggle(this);" href="#!"></a><a data-tochassubtree="true" href="62d7da97-c23b-f708-f524-8afacd1528a0.htm" title="Stfld Class" tocid="62d7da97-c23b-f708-f524-8afacd1528a0">Stfld Class</a></div><div class="toclevel2" data-toclevel="2"><a class="tocCollapsed" onclick="javascript: Toggle(this);" href="#!"></a><a data-tochassubtree="true" href="e7454d8f-0074-cc8e-66a6-e9fa037ec134.htm" title="Stind Class" tocid="e7454d8f-0074-cc8e-66a6-e9fa037ec134">Stind Class</a></div><div class="toclevel2" data-toclevel="2"><a class="tocCollapsed" onclick="javascript: Toggle(this);" href="#!"></a><a data-tochassubtree="true" href="9a304e55-596c-788e-618f-46acdad90434.htm" title="Stloc Class" tocid="9a304e55-596c-788e-618f-46acdad90434">Stloc Class</a></div><div class="toclevel2" data-toclevel="2"><a class="tocCollapsed" onclick="javascript: Toggle(this);" href="#!"></a><a data-tochassubtree="true" href="ca2f9af8-3fa5-473d-ef19-285312c0dfb6.htm" title="Stsfld Class" tocid="ca2f9af8-3fa5-473d-ef19-285312c0dfb6">Stsfld Class</a></div><div class="toclevel2" data-toclevel="2"><a class="tocCollapsed" onclick="javascript: Toggle(this);" href="#!"></a><a data-tochassubtree="true" href="182827f4-e2e8-0d8c-64c9-9972a8f61513.htm" title="Sub Class" tocid="182827f4-e2e8-0d8c-64c9-9972a8f61513">Sub Class</a></div><div class="toclevel2" data-toclevel="2"><a class="tocCollapsed" onclick="javascript: Toggle(this);" href="#!"></a><a data-tochassubtree="true" href="8a514250-6804-f509-91ee-73fc6dd994ab.htm" title="Switch Class" tocid="8a514250-6804-f509-91ee-73fc6dd994ab">Switch Class</a></div></div></div><div id="TocResize" class="tocResize" onmousedown="OnMouseDown(event);"><img id="ResizeImageIncrease" src="../icons/TocOpen.gif" onclick="OnIncreaseToc()" alt="Click or drag to resize" title="Click or drag to resize"><img id="ResizeImageReset" src="../icons/TocClose.gif" style="display:none" onclick="OnResetToc()" alt="Click or drag to resize" title="Click or drag to resize"></div><div class="topicContent" id="TopicContent">
+        <table class="titleTable">
+          <tr>
+            <td class="titleColumn">Kernel.Compiler.Architectures.x86_32 Namespace</td>
+          </tr>
+        </table>
+        <span class="introStyle"></span>
+        <div class="summary">Contains the Il Op conversion class implementations for converting IL op to valid x86 - 32 bit assembler.</div>
+        <div class="collapsibleAreaRegion">
+          <span class="collapsibleRegionTitle" onclick="SectionExpandCollapse('ID0RB')" onkeypress="SectionExpandCollapse_CheckKey('ID0RB', event)" tabindex="0">
+            <img id="ID0RBToggle" class="collapseToggle" src="../icons/SectionExpanded.png" />Classes</span>
+        </div>
+        <div id="ID0RBSection" class="collapsibleSection">
+          <table id="typeList" class="members">
+            <tr>
+              <th class="iconColumn">
+					 
+				</th>
+              <th>Class</th>
+              <th>Description</th>
+            </tr>
+            <tr data="class; public">
+              <td>
+                <img src="../icons/pubclass.gif" alt="Public class" title="Public class" />
+              </td>
+              <td>
+                <a href="c2ae8ee2-78bd-45ee-d8ed-8070f944172b.htm">Add</a>
+              </td>
+              <td>
+                <div class="summary">
+            See base class documentation.
+            </div>
+              </td>
+            </tr>
+            <tr data="class; public">
+              <td>
+                <img src="../icons/pubclass.gif" alt="Public class" title="Public class" />
+              </td>
+              <td>
+                <a href="a378abb3-1fe4-7c22-4115-1e3acf01c0a9.htm">And</a>
+              </td>
+              <td>
+                <div class="summary">
+            See base class documentation.
+            </div>
+              </td>
+            </tr>
+            <tr data="class; public">
+              <td>
+                <img src="../icons/pubclass.gif" alt="Public class" title="Public class" />
+              </td>
+              <td>
+                <a href="5244720d-a04d-d9dc-cdfe-8588e067e716.htm">Br</a>
+              </td>
+              <td>
+                <div class="summary">
+            See base class documentation.
+            </div>
+              </td>
+            </tr>
+            <tr data="class; public">
+              <td>
+                <img src="../icons/pubclass.gif" alt="Public class" title="Public class" />
+              </td>
+              <td>
+                <a href="4e57af60-ac49-13e6-47cf-cbd2728d6440.htm">Call</a>
+              </td>
+              <td>
+                <div class="summary">
+            See base class documentation.
+            </div>
+              </td>
+            </tr>
+            <tr data="class; public">
+              <td>
+                <img src="../icons/pubclass.gif" alt="Public class" title="Public class" />
+              </td>
+              <td>
+                <a href="2e2bfbcb-3f80-b581-1cc9-01041759e32d.htm">Callvirt</a>
+              </td>
+              <td>
+                <div class="summary">
+            See base class documentation.
+            </div>
+              </td>
+            </tr>
+            <tr data="class; public">
+              <td>
+                <img src="../icons/pubclass.gif" alt="Public class" title="Public class" />
+              </td>
+              <td>
+                <a href="ac8c8aab-9b8d-0d99-ff08-50a46fb31cc6.htm">Ceq</a>
+              </td>
+              <td>
+                <div class="summary">
+            See base class documentation.
+            </div>
+              </td>
+            </tr>
+            <tr data="class; public">
+              <td>
+                <img src="../icons/pubclass.gif" alt="Public class" title="Public class" />
+              </td>
+              <td>
+                <a href="16d9a34f-7742-f931-03d7-6fb851762c90.htm">Cgt</a>
+              </td>
+              <td>
+                <div class="summary">
+            See base class documentation.
+            </div>
+              </td>
+            </tr>
+            <tr data="class; public">
+              <td>
+                <img src="../icons/pubclass.gif" alt="Public class" title="Public class" />
+              </td>
+              <td>
+                <a href="17aa9253-96f1-1b44-f5ef-a9bf7fa615e2.htm">Clt</a>
+              </td>
+              <td>
+                <div class="summary">
+            See base class documentation.
+            </div>
+              </td>
+            </tr>
+            <tr data="class; public">
+              <td>
+                <img src="../icons/pubclass.gif" alt="Public class" title="Public class" />
+              </td>
+              <td>
+                <a href="2d910428-fdef-22ef-acaa-44ad0afa2050.htm">Convi</a>
+              </td>
+              <td>
+                <div class="summary">
+            See base class documentation.
+            </div>
+              </td>
+            </tr>
+            <tr data="class; public">
+              <td>
+                <img src="../icons/pubclass.gif" alt="Public class" title="Public class" />
+              </td>
+              <td>
+                <a href="d74c767c-b96c-4e41-b16c-90122517b735.htm">Convu</a>
+              </td>
+              <td>
+                <div class="summary">
+            See base class documentation.
+            </div>
+              </td>
+            </tr>
+            <tr data="class; public">
+              <td>
+                <img src="../icons/pubclass.gif" alt="Public class" title="Public class" />
+              </td>
+              <td>
+                <a href="8d7fe569-d33f-b974-7f74-bfcfe2e10f3b.htm">Div</a>
+              </td>
+              <td>
+                <div class="summary">
+            See base class documentation.
+            </div>
+              </td>
+            </tr>
+            <tr data="class; public">
+              <td>
+                <img src="../icons/pubclass.gif" alt="Public class" title="Public class" />
+              </td>
+              <td>
+                <a href="bd6f1a0e-47c1-49e2-f447-1c615f856998.htm">Dup</a>
+              </td>
+              <td>
+                <div class="summary">
+            See base class documentation.
+            </div>
+              </td>
+            </tr>
+            <tr data="class; public">
+              <td>
+                <img src="../icons/pubclass.gif" alt="Public class" title="Public class" />
+              </td>
+              <td>
+                <a href="34815f9b-8d36-4f5d-1d3e-c3ae589b37a7.htm">Ldarg</a>
+              </td>
+              <td>
+                <div class="summary">
+            See base class documentation.
+            </div>
+              </td>
+            </tr>
+            <tr data="class; public">
+              <td>
+                <img src="../icons/pubclass.gif" alt="Public class" title="Public class" />
+              </td>
+              <td>
+                <a href="c0b0e834-f457-f76d-bdbf-5ff4d4d5c7ef.htm">Ldc</a>
+              </td>
+              <td>
+                <div class="summary">
+            See base class documentation.
+            </div>
+              </td>
+            </tr>
+            <tr data="class; public">
+              <td>
+                <img src="../icons/pubclass.gif" alt="Public class" title="Public class" />
+              </td>
+              <td>
+                <a href="fafe4581-a6b6-275d-34c4-e1b66618da8b.htm">Ldelem</a>
+              </td>
+              <td>
+                <div class="summary">
+            See base class documentation.
+            </div>
+              </td>
+            </tr>
+            <tr data="class; public">
+              <td>
+                <img src="../icons/pubclass.gif" alt="Public class" title="Public class" />
+              </td>
+              <td>
+                <a href="861ea1bf-b56d-9201-d1ea-2cb519fe37b9.htm">Ldfld</a>
+              </td>
+              <td>
+                <div class="summary">
+            See base class documentation.
+            </div>
+              </td>
+            </tr>
+            <tr data="class; public">
+              <td>
+                <img src="../icons/pubclass.gif" alt="Public class" title="Public class" />
+              </td>
+              <td>
+                <a href="0763907f-941e-a8ad-b5ad-66d0906a650d.htm">Ldftn</a>
+              </td>
+              <td>
+                <div class="summary">
+            See base class documentation.
+            </div>
+              </td>
+            </tr>
+            <tr data="class; public">
+              <td>
+                <img src="../icons/pubclass.gif" alt="Public class" title="Public class" />
+              </td>
+              <td>
+                <a href="37b0d495-9416-eafc-cdc9-e451a7ddd59e.htm">Ldind</a>
+              </td>
+              <td>
+                <div class="summary">
+            See base class documentation.
+            </div>
+              </td>
+            </tr>
+            <tr data="class; public">
+              <td>
+                <img src="../icons/pubclass.gif" alt="Public class" title="Public class" />
+              </td>
+              <td>
+                <a href="2d90e150-9dc5-3531-1348-a3bc13910713.htm">Ldlen</a>
+              </td>
+              <td>
+                <div class="summary">
+            See base class documentation.
+            </div>
+              </td>
+            </tr>
+            <tr data="class; public">
+              <td>
+                <img src="../icons/pubclass.gif" alt="Public class" title="Public class" />
+              </td>
+              <td>
+                <a href="0064317a-d444-62aa-1f00-5a3d28822fbd.htm">Ldloc</a>
+              </td>
+              <td>
+                <div class="summary">
+            See base class documentation.
+            </div>
+              </td>
+            </tr>
+            <tr data="class; public">
+              <td>
+                <img src="../icons/pubclass.gif" alt="Public class" title="Public class" />
+              </td>
+              <td>
+                <a href="5469568a-49a8-cf01-d783-d1cac841159f.htm">Ldnull</a>
+              </td>
+              <td>
+                <div class="summary">
+            See base class documentation.
+            </div>
+              </td>
+            </tr>
+            <tr data="class; public">
+              <td>
+                <img src="../icons/pubclass.gif" alt="Public class" title="Public class" />
+              </td>
+              <td>
+                <a href="26c21255-4feb-79f4-d81f-486eb826cdd7.htm">Ldsfld</a>
+              </td>
+              <td>
+                <div class="summary">
+            See base class documentation.
+            </div>
+              </td>
+            </tr>
+            <tr data="class; public">
+              <td>
+                <img src="../icons/pubclass.gif" alt="Public class" title="Public class" />
+              </td>
+              <td>
+                <a href="3c0b0be7-d2ea-345a-e18b-9a27e290d5c7.htm">Ldstr</a>
+              </td>
+              <td>
+                <div class="summary">
+            See base class documentation.
+            </div>
+              </td>
+            </tr>
+            <tr data="class; public">
+              <td>
+                <img src="../icons/pubclass.gif" alt="Public class" title="Public class" />
+              </td>
+              <td>
+                <a href="61773649-2fea-3f1d-dac1-3f75bb3fef1d.htm">Ldtoken</a>
+              </td>
+              <td>
+                <div class="summary">
+            See base class documentation.
+            </div>
+              </td>
+            </tr>
+            <tr data="class; public">
+              <td>
+                <img src="../icons/pubclass.gif" alt="Public class" title="Public class" />
+              </td>
+              <td>
+                <a href="80e1d98b-054c-8963-7874-530853c4e95b.htm">MethodEnd</a>
+              </td>
+              <td>
+                <div class="summary">
+            See base class documentation.
+            </div>
+              </td>
+            </tr>
+            <tr data="class; public">
+              <td>
+                <img src="../icons/pubclass.gif" alt="Public class" title="Public class" />
+              </td>
+              <td>
+                <a href="2fc4d22a-e5d6-09ef-a8d1-e67df0941fb8.htm">MethodStart</a>
+              </td>
+              <td>
+                <div class="summary">
+            See base class documentation.
+            </div>
+              </td>
+            </tr>
+            <tr data="class; public">
+              <td>
+                <img src="../icons/pubclass.gif" alt="Public class" title="Public class" />
+              </td>
+              <td>
+                <a href="3a67d4b1-b0dc-3df7-a755-6807a8c48d8b.htm">Mul</a>
+              </td>
+              <td>
+                <div class="summary">
+            See base class documentation.
+            </div>
+              </td>
+            </tr>
+            <tr data="class; public">
+              <td>
+                <img src="../icons/pubclass.gif" alt="Public class" title="Public class" />
+              </td>
+              <td>
+                <a href="44bffc40-d2b2-a859-0460-1f979dfef4dd.htm">Newarr</a>
+              </td>
+              <td>
+                <div class="summary">
+            See base class documentation.
+            </div>
+              </td>
+            </tr>
+            <tr data="class; public">
+              <td>
+                <img src="../icons/pubclass.gif" alt="Public class" title="Public class" />
+              </td>
+              <td>
+                <a href="28b7201b-8f03-a042-e09d-80107e2c6cfa.htm">Newobj</a>
+              </td>
+              <td>
+                <div class="summary">
+            See base class documentation.
+            </div>
+              </td>
+            </tr>
+            <tr data="class; public">
+              <td>
+                <img src="../icons/pubclass.gif" alt="Public class" title="Public class" />
+              </td>
+              <td>
+                <a href="012112e5-8bf8-d29a-ecef-e210070a1b57.htm">Nop</a>
+              </td>
+              <td>
+                <div class="summary">
+            See base class documentation.
+            </div>
+              </td>
+            </tr>
+            <tr data="class; public">
+              <td>
+                <img src="../icons/pubclass.gif" alt="Public class" title="Public class" />
+              </td>
+              <td>
+                <a href="d938035d-b4cb-7490-a998-00eaf9bfddec.htm">Not</a>
+              </td>
+              <td>
+                <div class="summary">
+            See base class documentation.
+            </div>
+              </td>
+            </tr>
+            <tr data="class; public">
+              <td>
+                <img src="../icons/pubclass.gif" alt="Public class" title="Public class" />
+              </td>
+              <td>
+                <a href="db2d175e-0224-6fbf-2756-b0945d2dcb43.htm">Or</a>
+              </td>
+              <td>
+                <div class="summary">
+            See base class documentation.
+            </div>
+              </td>
+            </tr>
+            <tr data="class; public">
+              <td>
+                <img src="../icons/pubclass.gif" alt="Public class" title="Public class" />
+              </td>
+              <td>
+                <a href="341e9247-fcb7-98a9-88cc-5695b3444caa.htm">Pop</a>
+              </td>
+              <td>
+                <div class="summary">
+            See base class documentation.
+            </div>
+              </td>
+            </tr>
+            <tr data="class; public">
+              <td>
+                <img src="../icons/pubclass.gif" alt="Public class" title="Public class" />
+              </td>
+              <td>
+                <a href="4b986183-e2a3-a704-7bce-32e84ae4fd7c.htm">Rem</a>
+              </td>
+              <td>
+                <div class="summary">
+            See base class documentation.
+            </div>
+              </td>
+            </tr>
+            <tr data="class; public">
+              <td>
+                <img src="../icons/pubclass.gif" alt="Public class" title="Public class" />
+              </td>
+              <td>
+                <a href="94f3f660-424c-7c1e-4a3f-afbe99c7cd65.htm">Ret</a>
+              </td>
+              <td>
+                <div class="summary">
+            See base class documentation.
+            </div>
+              </td>
+            </tr>
+            <tr data="class; public">
+              <td>
+                <img src="../icons/pubclass.gif" alt="Public class" title="Public class" />
+              </td>
+              <td>
+                <a href="088401b3-9ea3-3d3d-3f8f-39740106d6b4.htm">Shl</a>
+              </td>
+              <td>
+                <div class="summary">
+            See base class documentation.
+            </div>
+              </td>
+            </tr>
+            <tr data="class; public">
+              <td>
+                <img src="../icons/pubclass.gif" alt="Public class" title="Public class" />
+              </td>
+              <td>
+                <a href="beb5b3d9-1cb9-5705-02d0-3bb317761ca0.htm">Shr</a>
+              </td>
+              <td>
+                <div class="summary">
+            See base class documentation.
+            </div>
+              </td>
+            </tr>
+            <tr data="class; public">
+              <td>
+                <img src="../icons/pubclass.gif" alt="Public class" title="Public class" />
+              </td>
+              <td>
+                <a href="156043ee-72ba-0656-9dd3-533ef4486c80.htm">Sizeof</a>
+              </td>
+              <td>
+                <div class="summary">
+            See base class documentation.
+            </div>
+              </td>
+            </tr>
+            <tr data="class; public">
+              <td>
+                <img src="../icons/pubclass.gif" alt="Public class" title="Public class" />
+              </td>
+              <td>
+                <a href="9663465d-c176-cc29-53ec-69eca9e20551.htm">StackSwitch</a>
+              </td>
+              <td>
+                <div class="summary">
+            See base class documentation.
+            </div>
+              </td>
+            </tr>
+            <tr data="class; public">
+              <td>
+                <img src="../icons/pubclass.gif" alt="Public class" title="Public class" />
+              </td>
+              <td>
+                <a href="68fb4a3e-4790-e581-4f44-0d947ce6b822.htm">Starg</a>
+              </td>
+              <td>
+                <div class="summary">
+            See base class documentation.
+            </div>
+              </td>
+            </tr>
+            <tr data="class; public">
+              <td>
+                <img src="../icons/pubclass.gif" alt="Public class" title="Public class" />
+              </td>
+              <td>
+                <a href="7ef836c8-2820-4183-5a2f-c8d1fd55ec7c.htm">Stelem</a>
+              </td>
+              <td>
+                <div class="summary">
+            See base class documentation.
+            </div>
+              </td>
+            </tr>
+            <tr data="class; public">
+              <td>
+                <img src="../icons/pubclass.gif" alt="Public class" title="Public class" />
+              </td>
+              <td>
+                <a href="62d7da97-c23b-f708-f524-8afacd1528a0.htm">Stfld</a>
+              </td>
+              <td>
+                <div class="summary">
+            See base class documentation.
+            </div>
+              </td>
+            </tr>
+            <tr data="class; public">
+              <td>
+                <img src="../icons/pubclass.gif" alt="Public class" title="Public class" />
+              </td>
+              <td>
+                <a href="e7454d8f-0074-cc8e-66a6-e9fa037ec134.htm">Stind</a>
+              </td>
+              <td>
+                <div class="summary">
+            See base class documentation.
+            </div>
+              </td>
+            </tr>
+            <tr data="class; public">
+              <td>
+                <img src="../icons/pubclass.gif" alt="Public class" title="Public class" />
+              </td>
+              <td>
+                <a href="9a304e55-596c-788e-618f-46acdad90434.htm">Stloc</a>
+              </td>
+              <td>
+                <div class="summary">
+            See base class documentation.
+            </div>
+              </td>
+            </tr>
+            <tr data="class; public">
+              <td>
+                <img src="../icons/pubclass.gif" alt="Public class" title="Public class" />
+              </td>
+              <td>
+                <a href="ca2f9af8-3fa5-473d-ef19-285312c0dfb6.htm">Stsfld</a>
+              </td>
+              <td>
+                <div class="summary">
+            See base class documentation.
+            </div>
+              </td>
+            </tr>
+            <tr data="class; public">
+              <td>
+                <img src="../icons/pubclass.gif" alt="Public class" title="Public class" />
+              </td>
+              <td>
+                <a href="182827f4-e2e8-0d8c-64c9-9972a8f61513.htm">Sub</a>
+              </td>
+              <td>
+                <div class="summary">
+            See base class documentation.
+            </div>
+              </td>
+            </tr>
+            <tr data="class; public">
+              <td>
+                <img src="../icons/pubclass.gif" alt="Public class" title="Public class" />
+              </td>
+              <td>
+                <a href="8a514250-6804-f509-91ee-73fc6dd994ab.htm">Switch</a>
+              </td>
+              <td>
+                <div class="summary">
+            See base class documentation.
+            </div>
+              </td>
+            </tr>
+          </table>
+        </div>
+      </div>
+    </div>
+    <div id="pageFooter" class="pageFooter">
+      <p>
+        <a href="http://www.flingos.co.uk" target="_blank">Copyright Edward Nutting 2014</a>
+      </p>
+      <div class="feedbackLink">Send comments on this topic to
+        <a id="HT_MailLink" href="mailto:edwardnutting%40outlook.com?Subject=Fling OS">Edward Nutting</a></div>
+      <script type="text/javascript">
+        var HT_mailLink = document.getElementById("HT_MailLink");
+        var HT_mailLinkText = HT_mailLink.innerHTML;
+        HT_mailLink.href += ": " + document.title + "\u0026body=" + encodeURIComponent("Your feedback is used to improve the documentation and the product. Your e-mail address will not be used for any other purpose and is disposed of after the issue you report is resolved. While working to resolve the issue that you report, you may be contacted via e-mail to get further details or clarification on the feedback you sent. After the issue you report has been addressed, you may receive an e-mail to let you know that your feedback has been addressed.");
+        HT_mailLink.innerHTML = HT_mailLinkText;
+        </script> </div>
+  </body>
+</html>

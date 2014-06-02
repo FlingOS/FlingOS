@@ -1,0 +1,168 @@
+﻿<html>
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <link rel="shortcut icon" href="../icons/favicon.ico" />
+    <link rel="stylesheet" type="text/css" href="../styles/branding.css" />
+    <link rel="stylesheet" type="text/css" href="../styles/branding-en-US.css" />
+    <script type="text/javascript" src="../scripts/branding.js"> </script>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <title>Approach 2 - Plugs</title>
+    <meta name="Language" content="en-us" />
+    <meta name="Microsoft.Help.Id" content="fb639778-c718-4c56-9ba4-0ad324d35114" />
+    <meta name="Description" content="A discussion of the approach to solving the issue of the Microsoft Standard C# Libraries involving writing custom libraries from scratch." />
+    <meta name="Microsoft.Help.ContentType" content="Concepts" />
+    <meta name="BrandingAware" content="true" />
+    
+    
+    <link rel="stylesheet" type="text/css" href="../styles/branding-Website.css" />
+    <script type="text/javascript" src="../scripts/jquery-1.11.0.min.js"></script>
+    <script type="text/javascript" src="../scripts/branding-Website.js"></script>
+  </head>
+  <body onload="OnLoad('cs')">
+    <input type="hidden" id="userDataCache" class="userDataStyle" />
+    <div class="pageHeader" id="PageHeader">Fling OS<form id="SearchForm" method="get" action="#" onsubmit="javascript:TransferToSearchPage(); return false;"><input id="SearchTextBox" type="text" maxlength="200" /><button id="SearchButton" type="submit"></button></form></div>
+    <div class="pageBody">
+      <div class="leftNav" id="leftNav"><div id="tocNav"><div class="toclevel0" data-toclevel="0"><a class="tocCollapsed" onclick="javascript: Toggle(this);" href="#!"></a><a data-tochassubtree="true" href="dd3e390e-07c0-499b-8f92-2cb8e8ca8b09.htm" title="Fling OS" tocid="roottoc">Fling OS</a></div><div class="toclevel0" data-toclevel="0"><a class="tocCollapsed" onclick="javascript: Toggle(this);" href="#!"></a><a data-tochassubtree="true" href="64d7d98a-eb1c-47ab-8fdf-f2411f237efc.htm" title="Conceptual" tocid="9fc51b1b-401c-420a-aba4-908af87b2815">Conceptual</a></div><div class="toclevel0" data-toclevel="0"><a class="tocCollapsed" onclick="javascript: Toggle(this);" href="#!"></a><a data-tochassubtree="true" href="c4d22cdf-f32a-4d25-b1b6-e0af2d2e9d4d.htm" title="Kernel" tocid="c4d22cdf-f32a-4d25-b1b6-e0af2d2e9d4d">Kernel</a></div><div class="toclevel1" data-toclevel="1" data-childrenloaded="true"><a class="tocExpanded" onclick="javascript: Toggle(this);" href="#!"></a><a data-tochassubtree="true" href="1a4ef707-ef74-43bd-9bd7-979cd9331d0c.htm" title="Handling the C# Standard Libraries" tocid="78c88477-2394-402d-9586-c049560a3847">Handling the C# Standard Libraries</a></div><div class="toclevel2" data-toclevel="2"><a data-tochassubtree="false" href="1a4ef707-ef74-43bd-9bd7-979cd9331d0c.htm" title="Approach 1 - DIY" tocid="1a4ef707-ef74-43bd-9bd7-979cd9331d0c">Approach 1 - DIY</a></div><div class="toclevel2 current" data-toclevel="2"><a data-tochassubtree="false" href="fb639778-c718-4c56-9ba4-0ad324d35114.htm" title="Approach 2 - Plugs" tocid="fb639778-c718-4c56-9ba4-0ad324d35114">Approach 2 - Plugs</a></div></div></div><div id="TocResize" class="tocResize" onmousedown="OnMouseDown(event);"><img id="ResizeImageIncrease" src="../icons/TocOpen.gif" onclick="OnIncreaseToc()" alt="Click or drag to resize" title="Click or drag to resize"><img id="ResizeImageReset" src="../icons/TocClose.gif" style="display:none" onclick="OnResetToc()" alt="Click or drag to resize" title="Click or drag to resize"></div><div class="topicContent" id="TopicContent">
+        <table class="titleTable">
+          <tr>
+            <td class="titleColumn">Approach 2 - Plugs</td>
+          </tr>
+        </table>
+        <span class="introStyle"></span>
+        <div class="introduction">
+          <p>
+        A discussion of the approach to solving the issue of the Microsoft Standard C#
+        Libraries involving writing custom libraries from scratch.
+      </p>
+        </div>
+        <div class="collapsibleAreaRegion" id="Description">
+          <span class="collapsibleRegionTitle" onclick="SectionExpandCollapse('ID0RB')" onkeypress="SectionExpandCollapse_CheckKey('ID0RB', event)" tabindex="0">
+            <img id="ID0RBToggle" class="collapseToggle" src="../icons/SectionExpanded.png" />Description</span>
+        </div>
+        <div id="ID0RBSection" class="collapsibleSection">
+          <p>
+          The Plugs approach is harder conceptually and requires a little background of how 
+          Microsoft’s standard C# libraries are structured.
+        </p>
+          <p>
+          Microsoft’s standard C# libraries are not purely to provide low-level code for higher 
+          level code to use. In fact, for the most part, they are IL code that references other 
+          bits of code within the standard libraries. Only a few core classes and functions call 
+          into lower level code such as the Microsoft Win32 libraries.
+        </p>
+          <p>
+          The implication of this is that you can keep some of the Microsoft standard C# 
+          libraries’ code and just plug the calls to the lower level code (e.g. calls to Win32 
+          libraries). Unfortunately, most of the basic standard libraries were designed to be 
+          used as user-mode code not kernel code, so most of the basic library classes and 
+          functions need to be plugged to be able to compile the kernel.
+        </p>
+        </div>
+        <div class="collapsibleAreaRegion" id="Advantages">
+          <span class="collapsibleRegionTitle" onclick="SectionExpandCollapse('ID1RB')" onkeypress="SectionExpandCollapse_CheckKey('ID1RB', event)" tabindex="0">
+            <img id="ID1RBToggle" class="collapseToggle" src="../icons/SectionExpanded.png" />Advantages</span>
+        </div>
+        <div id="ID1RBSection" class="collapsibleSection">
+          <ul>
+            <li>
+              <p>Uses Microsoft’s existing standard C# libraries saving work in:</p>
+              <ul>
+                <li>
+                  <p>Programming</p>
+                </li>
+                <li>
+                  <p>Structure design</p>
+                </li>
+                <li>
+                  <p>Research of required classes etc.</p>
+                </li>
+              </ul>
+            </li>
+            <li>
+              <p>Reduces the amount of code needed to be programmed</p>
+            </li>
+            <li>
+              <p>
+              Allows two development teams to work dependently but simultaneously – one on the 
+              kernel code, one on plugging the stuff used by the kernel code.
+            </p>
+            </li>
+          </ul>
+        </div>
+        <div class="collapsibleAreaRegion" id="Disadvantages">
+          <span class="collapsibleRegionTitle" onclick="SectionExpandCollapse('ID2RB')" onkeypress="SectionExpandCollapse_CheckKey('ID2RB', event)" tabindex="0">
+            <img id="ID2RBToggle" class="collapseToggle" src="../icons/SectionExpanded.png" />Disadvantages</span>
+        </div>
+        <div id="ID2RBSection" class="collapsibleSection">
+          <ul>
+            <li>
+              <p>
+              Complicates the kernel compiler hugely as it has to deal with “plugged” methods 
+              and classes etc.
+            </p>
+            </li>
+            <li>
+              <p>
+              Potentially doubles the compile time since plugs might have to be scanned before 
+              the rest of the compile can necessarily happen
+            </p>
+            </li>
+            <li>
+              <p>
+              Ties Fling OS into Microsoft’s libraries’ structures and any “intern hack” code 
+              they have!
+            </p>
+            </li>
+            <li>
+              <p>
+              No control over the inner code of the libraries and tied into MS .Net versions 
+              which may become unavailable.
+            </p>
+            </li>
+            <li>
+              <p>Hard to maintain</p>
+            </li>
+            <li>
+              <p>Very complex conceptually and to program</p>
+            </li>
+            <li>
+              <p>
+              Requires additional work to find out what needs plugging, how to plug it to match 
+              MS’s original functionality etc.
+            </p>
+            </li>
+            <li>
+              <p>May cause problems later with MS IP</p>
+            </li>
+            <li>
+              <p>Probably some more stuff that can’t be thought of right now…</p>
+            </li>
+          </ul>
+        </div>
+        <div class="collapsibleAreaRegion" id="seeAlsoSection">
+          <span class="collapsibleRegionTitle" onclick="SectionExpandCollapse('ID3RB')" onkeypress="SectionExpandCollapse_CheckKey('ID3RB', event)" tabindex="0">
+            <img id="ID3RBToggle" class="collapseToggle" src="../icons/SectionExpanded.png" />See Also</span>
+        </div>
+        <div id="ID3RBSection" class="collapsibleSection">
+          <h4 class="subHeading">Other Resources</h4>
+          <div class="seeAlsoStyle">
+            <a href="1a4ef707-ef74-43bd-9bd7-979cd9331d0c.htm">Approach 1 - DIY</a>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div id="pageFooter" class="pageFooter">
+      <p>
+        <a href="http://www.flingos.co.uk" target="_blank">Copyright Edward Nutting 2014</a>
+      </p>
+      <div class="feedbackLink">Send comments on this topic to
+        <a id="HT_MailLink" href="mailto:edwardnutting%40outlook.com?Subject=Fling OS">Edward Nutting</a></div>
+      <script type="text/javascript">
+        var HT_mailLink = document.getElementById("HT_MailLink");
+        var HT_mailLinkText = HT_mailLink.innerHTML;
+        HT_mailLink.href += ": " + document.title + "\u0026body=" + encodeURIComponent("Your feedback is used to improve the documentation and the product. Your e-mail address will not be used for any other purpose and is disposed of after the issue you report is resolved. While working to resolve the issue that you report, you may be contacted via e-mail to get further details or clarification on the feedback you sent. After the issue you report has been addressed, you may receive an e-mail to let you know that your feedback has been addressed.");
+        HT_mailLink.innerHTML = HT_mailLinkText;
+        </script>
+    </div>
+  </body>
+</html>

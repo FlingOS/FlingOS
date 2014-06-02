@@ -1,0 +1,96 @@
+﻿<html>
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <link rel="shortcut icon" href="../icons/favicon.ico" />
+    <link rel="stylesheet" type="text/css" href="../styles/branding.css" />
+    <link rel="stylesheet" type="text/css" href="../styles/branding-en-US.css" />
+    <script type="text/javascript" src="../scripts/branding.js"> </script>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <title>AssemblyManager Class</title>
+    <meta name="Language" content="en-us" />
+    <meta name="System.Keywords" content="AssemblyManager class" />
+    <meta name="System.Keywords" content="Kernel.Compiler.AssemblyManager class" />
+    <meta name="System.Keywords" content="AssemblyManager class, about AssemblyManager class" />
+    <meta name="Microsoft.Help.F1" content="Kernel.Compiler.AssemblyManager" />
+    <meta name="Microsoft.Help.Id" content="T:Kernel.Compiler.AssemblyManager" />
+    <meta name="Description" content="Manages loading root and referenced assemblies and the types they declare." />
+    <meta name="Microsoft.Help.ContentType" content="Reference" />
+    <meta name="BrandingAware" content="true" />
+    
+    <meta name="container" content="Kernel.Compiler" />
+    <meta name="file" content="1b6cd4f7-df12-d88f-d9a0-2feb7c26137b" />
+    <meta name="guid" content="1b6cd4f7-df12-d88f-d9a0-2feb7c26137b" />
+    
+    <link rel="stylesheet" type="text/css" href="../styles/branding-Website.css" />
+    <script type="text/javascript" src="../scripts/jquery-1.11.0.min.js"></script>
+    <script type="text/javascript" src="../scripts/branding-Website.js"></script>
+  </head>
+  <body onload="OnLoad('cs')">
+    <input type="hidden" id="userDataCache" class="userDataStyle" />
+    <div class="pageHeader" id="PageHeader">Fling OS<form id="SearchForm" method="get" action="#" onsubmit="javascript:TransferToSearchPage(); return false;"><input id="SearchTextBox" type="text" maxlength="200" /><button id="SearchButton" type="submit"></button></form></div>
+    <div class="pageBody">
+      <div class="leftNav" id="leftNav"><div id="tocNav"><div class="toclevel0" data-toclevel="0"><a class="tocCollapsed" onclick="javascript: Toggle(this);" href="#!"></a><a data-tochassubtree="true" href="dd3e390e-07c0-499b-8f92-2cb8e8ca8b09.htm" title="Fling OS" tocid="roottoc">Fling OS</a></div><div class="toclevel0" data-toclevel="0"><a class="tocCollapsed" onclick="javascript: Toggle(this);" href="#!"></a><a data-tochassubtree="true" href="d75eb659-6335-53f6-af7a-81814a21ab7f.htm" title="Technical" tocid="e0e0d194-2589-42a6-a2db-a50791dd3bda">Technical</a></div><div class="toclevel0" data-toclevel="0"><a class="tocCollapsed" onclick="javascript: Toggle(this);" href="#!"></a><a data-tochassubtree="true" href="d75eb659-6335-53f6-af7a-81814a21ab7f.htm" title="Kernel" tocid="d75eb659-6335-53f6-af7a-81814a21ab7f">Kernel</a></div><div class="toclevel0" data-toclevel="0"><a class="tocCollapsed" onclick="javascript: Toggle(this);" href="#!"></a><a data-tochassubtree="true" href="f85d4b75-ece2-4eb8-47cb-15814ba4e543.htm" title="Kernel.Compiler Namespaces" tocid="f85d4b75-ece2-4eb8-47cb-15814ba4e543">Kernel.Compiler Namespaces</a></div><div class="toclevel0" data-toclevel="0"><a class="tocCollapsed" onclick="javascript: Toggle(this);" href="#!"></a><a data-tochassubtree="true" href="8790723d-98bd-7478-28e9-f9b8d94beac1.htm" title="Kernel.Compiler" tocid="8790723d-98bd-7478-28e9-f9b8d94beac1">Kernel.Compiler</a></div><div class="toclevel1 current" data-toclevel="1" data-childrenloaded="true"><a class="tocExpanded" onclick="javascript: Toggle(this);" href="#!"></a><a data-tochassubtree="true" href="1b6cd4f7-df12-d88f-d9a0-2feb7c26137b.htm" title="AssemblyManager Class" tocid="1b6cd4f7-df12-d88f-d9a0-2feb7c26137b">AssemblyManager Class</a></div><div class="toclevel2" data-toclevel="2"><a data-tochassubtree="false" href="c1f6ce5d-e208-804b-b15b-5fb124a0c534.htm" title="AssemblyManager Constructor " tocid="c1f6ce5d-e208-804b-b15b-5fb124a0c534">AssemblyManager Constructor </a></div><div class="toclevel2" data-toclevel="2"><a class="tocCollapsed" onclick="javascript: Toggle(this);" href="#!"></a><a data-tochassubtree="true" href="9ddf5a4b-00f0-bace-fd5c-455f5a3fbd1c.htm" title="AssemblyManager Fields" tocid="9ddf5a4b-00f0-bace-fd5c-455f5a3fbd1c">AssemblyManager Fields</a></div><div class="toclevel2" data-toclevel="2"><a class="tocCollapsed" onclick="javascript: Toggle(this);" href="#!"></a><a data-tochassubtree="true" href="dc95777f-747c-e225-505e-d7aab1ff30a2.htm" title="AssemblyManager Methods" tocid="dc95777f-747c-e225-505e-d7aab1ff30a2">AssemblyManager Methods</a></div><div class="toclevel2" data-toclevel="2"><a class="tocCollapsed" onclick="javascript: Toggle(this);" href="#!"></a><a data-tochassubtree="true" href="8f4b5e4a-4dfa-2e77-b3c1-7af1c18d2075.htm" title="AssemblyManager Properties" tocid="8f4b5e4a-4dfa-2e77-b3c1-7af1c18d2075">AssemblyManager Properties</a></div></div></div><div id="TocResize" class="tocResize" onmousedown="OnMouseDown(event);"><img id="ResizeImageIncrease" src="../icons/TocOpen.gif" onclick="OnIncreaseToc()" alt="Click or drag to resize" title="Click or drag to resize"><img id="ResizeImageReset" src="../icons/TocClose.gif" style="display:none" onclick="OnResetToc()" alt="Click or drag to resize" title="Click or drag to resize"></div><div class="topicContent" id="TopicContent">
+        <table class="titleTable">
+          <tr>
+            <td class="titleColumn">AssemblyManager Class</td>
+          </tr>
+        </table>
+        <span class="introStyle"></span>
+        <div class="summary">
+            Manages loading root and referenced assemblies and the types 
+            they declare.
+            </div>
+        <div class="collapsibleAreaRegion">
+          <span class="collapsibleRegionTitle" onclick="SectionExpandCollapse('ID0RB')" onkeypress="SectionExpandCollapse_CheckKey('ID0RB', event)" tabindex="0">
+            <img id="ID0RBToggle" class="collapseToggle" src="../icons/SectionExpanded.png" />Inheritance Hierarchy</span>
+        </div>
+        <div id="ID0RBSection" class="collapsibleSection">
+          <span class="nolink">System<span id="LST81273B73_0"></span><script type="text/javascript">AddLanguageSpecificTextSet("LST81273B73_0?cs=.|vb=.|cpp=::|nu=.|fs=.");</script>Object</span>
+          <br />  <span class="selflink">Kernel.Compiler<span id="LST81273B73_1"></span><script type="text/javascript">AddLanguageSpecificTextSet("LST81273B73_1?cs=.|vb=.|cpp=::|nu=.|fs=.");</script>AssemblyManager</span><br /></div>
+        <p> </p>
+        <strong>Namespace:</strong> <a href="8790723d-98bd-7478-28e9-f9b8d94beac1.htm">Kernel.Compiler</a><br /><strong>Assembly:</strong> Kernel.Compiler (in Kernel.Compiler.dll) Version: 1.0.0.0 (1.0.0.0)<div class="collapsibleAreaRegion"><span class="collapsibleRegionTitle" onclick="SectionExpandCollapse('ID2RB')" onkeypress="SectionExpandCollapse_CheckKey('ID2RB', event)" tabindex="0"><img id="ID2RBToggle" class="collapseToggle" src="../icons/SectionExpanded.png" />Syntax</span></div><div id="ID2RBSection" class="collapsibleSection"><div class="codeSnippetContainer"><div class="codeSnippetContainerTabs"><div id="ID1EACA_tab1" class="codeSnippetContainerTabSingle">C#</div></div><div class="codeSnippetContainerCodeContainer"><div class="codeSnippetToolBar"><div class="codeSnippetToolBarText"><a id="ID1EACA_copyCode" href="#" onclick="javascript:CopyToClipboard('ID1EACA');return false;" title="Copy">Copy</a></div></div><div id="ID1EACA_code_Div1" class="codeSnippetContainerCode" style="display: block"><pre xml:space="preserve"><span class="keyword">public</span> <span class="keyword">class</span> <span class="identifier">AssemblyManager</span></pre></div></div></div><script type="text/javascript">AddLanguageTabSet("ID1EACA");</script></div><p>The <span class="selflink">AssemblyManager</span> type exposes the following members.</p><div class="collapsibleAreaRegion"><span class="collapsibleRegionTitle" onclick="SectionExpandCollapse('ID3RB')" onkeypress="SectionExpandCollapse_CheckKey('ID3RB', event)" tabindex="0"><img id="ID3RBToggle" class="collapseToggle" src="../icons/SectionExpanded.png" />Constructors</span></div><div id="ID3RBSection" class="collapsibleSection"><table id="memberList" class="members"><tr><th class="iconColumn">
+								 
+							</th><th>Name</th><th>Description</th></tr><tr data="public;declared;notNetfw;"><td><img src="../icons/pubmethod.gif" alt="Public method" title="Public method" /></td><td><a href="c1f6ce5d-e208-804b-b15b-5fb124a0c534.htm">AssemblyManager</a></td><td><div class="summary">
+            Empty constructor – no need to do anything in constructor as this class has no initialisation.
+            </div></td></tr></table><a href="#PageHeader">Top</a></div><div class="collapsibleAreaRegion"><span class="collapsibleRegionTitle" onclick="SectionExpandCollapse('ID4RB')" onkeypress="SectionExpandCollapse_CheckKey('ID4RB', event)" tabindex="0"><img id="ID4RBToggle" class="collapseToggle" src="../icons/SectionExpanded.png" />Methods</span></div><div id="ID4RBSection" class="collapsibleSection"><table id="memberList" class="members"><tr><th class="iconColumn">
+								 
+							</th><th>Name</th><th>Description</th></tr><tr data="public;declared;notNetfw;"><td><img src="../icons/pubmethod.gif" alt="Public method" title="Public method" /></td><td><a href="f4260305-499d-d9c6-8faf-97a84724fa19.htm">LoadAllTypes</a></td><td><div class="summary">
+            Loads all the modules that are in the loaded the assemblies.
+            </div></td></tr><tr data="public;declared;notNetfw;"><td><img src="../icons/pubmethod.gif" alt="Public method" title="Public method" /></td><td><a href="ecae09f5-0e37-93b0-3480-53aa9017862c.htm">LoadAssembly</a></td><td><div class="summary">
+            Loads an assembly from the specified path. The path should be to a valid .Net .DLL or .EXE file.
+            </div></td></tr><tr data="public;declared;notNetfw;"><td><img src="../icons/pubmethod.gif" alt="Public method" title="Public method" /></td><td><a href="8e3fe806-ab2e-6aff-8bfc-42d369bfb79c.htm">LoadReferences</a></td><td><div class="summary">
+            Recursively loads all the referenced assemblies of the specified assembly.
+            </div></td></tr></table><a href="#PageHeader">Top</a></div><div class="collapsibleAreaRegion"><span class="collapsibleRegionTitle" onclick="SectionExpandCollapse('ID5RB')" onkeypress="SectionExpandCollapse_CheckKey('ID5RB', event)" tabindex="0"><img id="ID5RBToggle" class="collapseToggle" src="../icons/SectionExpanded.png" />Fields</span></div><div id="ID5RBSection" class="collapsibleSection"><table id="memberList" class="members"><tr><th class="iconColumn">
+								 
+							</th><th>Name</th><th>Description</th></tr><tr data="public;declared;notNetfw;"><td><img src="../icons/pubfield.gif" alt="Public field" title="Public field" /></td><td><a href="447c8b77-465c-b1ab-728a-ab06021489cb.htm">Assemblies</a></td><td><div class="summary">
+            The dictionary of all the assemblies loaded by the assembly manager.
+            The key is the assembly’s full name. The value is the loaded assembly.
+            </div></td></tr><tr data="public;declared;notNetfw;"><td><img src="../icons/pubfield.gif" alt="Public field" title="Public field" /></td><td><a href="e8e4dc5b-fa84-5ed7-e9e0-6b7d7ad3d48d.htm">PluggedTypes</a></td><td><div class="summary">
+            The list of all the types that contain plugs loaded by the assembly manager.
+            The key is the type’s full name. The value is the loaded type.
+            </div></td></tr><tr data="public;declared;notNetfw;"><td><img src="../icons/pubfield.gif" alt="Public field" title="Public field" /></td><td><a href="0a07e4b6-6afa-808f-b46b-c776182cd5ea.htm">UnpluggedTypes</a></td><td><div class="summary">
+            The list of all the types that don’t contain plugs loaded by the assembly manager.
+            The key is the type’s full name. The value is the loaded type.
+            </div></td></tr></table><a href="#PageHeader">Top</a></div><div class="collapsibleAreaRegion"><span class="collapsibleRegionTitle" onclick="SectionExpandCollapse('ID6RB')" onkeypress="SectionExpandCollapse_CheckKey('ID6RB', event)" tabindex="0"><img id="ID6RBToggle" class="collapseToggle" src="../icons/SectionExpanded.png" />Properties</span></div><div id="ID6RBSection" class="collapsibleSection"><table id="memberList" class="members"><tr><th class="iconColumn">
+								 
+							</th><th>Name</th><th>Description</th></tr><tr data="public;declared;notNetfw;"><td><img src="../icons/pubproperty.gif" alt="Public property" title="Public property" /></td><td><a href="d7c27f81-55a6-b0e4-e690-2bafde13a505.htm">AllTypes</a></td><td><div class="summary">
+            All of the types (plugged and unplugged) that the assembly manager has loaded.
+            </div></td></tr></table><a href="#PageHeader">Top</a></div><div class="collapsibleAreaRegion"><span class="collapsibleRegionTitle" onclick="SectionExpandCollapse('ID7RB')" onkeypress="SectionExpandCollapse_CheckKey('ID7RB', event)" tabindex="0"><img id="ID7RBToggle" class="collapseToggle" src="../icons/SectionExpanded.png" />Remarks</span></div><div id="ID7RBSection" class="collapsibleSection">
+            Assemblies are loaded into the current execution context so that 
+            attributes can easily be scanned.
+            </div><div class="collapsibleAreaRegion" id="seeAlsoSection"><span class="collapsibleRegionTitle" onclick="SectionExpandCollapse('ID8RB')" onkeypress="SectionExpandCollapse_CheckKey('ID8RB', event)" tabindex="0"><img id="ID8RBToggle" class="collapseToggle" src="../icons/SectionExpanded.png" />See Also</span></div><div id="ID8RBSection" class="collapsibleSection"><h4 class="subHeading">Reference</h4><div class="seeAlsoStyle"><a href="8790723d-98bd-7478-28e9-f9b8d94beac1.htm">Kernel.Compiler Namespace</a></div></div></div>
+    </div>
+    <div id="pageFooter" class="pageFooter">
+      <p>
+        <a href="http://www.flingos.co.uk" target="_blank">Copyright Edward Nutting 2014</a>
+      </p>
+      <div class="feedbackLink">Send comments on this topic to
+        <a id="HT_MailLink" href="mailto:edwardnutting%40outlook.com?Subject=Fling OS">Edward Nutting</a></div>
+      <script type="text/javascript">
+        var HT_mailLink = document.getElementById("HT_MailLink");
+        var HT_mailLinkText = HT_mailLink.innerHTML;
+        HT_mailLink.href += ": " + document.title + "\u0026body=" + encodeURIComponent("Your feedback is used to improve the documentation and the product. Your e-mail address will not be used for any other purpose and is disposed of after the issue you report is resolved. While working to resolve the issue that you report, you may be contacted via e-mail to get further details or clarification on the feedback you sent. After the issue you report has been addressed, you may receive an e-mail to let you know that your feedback has been addressed.");
+        HT_mailLink.innerHTML = HT_mailLinkText;
+        </script> </div>
+  </body>
+</html>

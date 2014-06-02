@@ -1,20 +1,10 @@
-﻿<html xmlns:MSHelp="http://msdn.microsoft.com/mshelp" xmlns:mshelp="http://msdn.microsoft.com/mshelp">
+﻿<html>
   <head>
-    <link rel="SHORTCUT ICON" href="./../icons/favicon.ico" />
-    <style type="text/css">.OH_CodeSnippetContainerTabLeftActive, .OH_CodeSnippetContainerTabLeft,.OH_CodeSnippetContainerTabLeftDisabled { }.OH_CodeSnippetContainerTabRightActive, .OH_CodeSnippetContainerTabRight,.OH_CodeSnippetContainerTabRightDisabled { }.OH_footer { }</style>
-    <link rel="stylesheet" type="text/css" href="./../styles/branding.css" />
-    <link rel="stylesheet" type="text/css" href="./../styles/branding-en-US.css" />
-    <style type="text/css">
-			body
-			{
-			border-left:5px solid #e6e6e6;
-			overflow-x:scroll;
-			overflow-y:scroll;
-			}
-		</style>
-    <script src="./../scripts/branding.js" type="text/javascript">
-      <!---->
-    </script>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <link rel="shortcut icon" href="../icons/favicon.ico" />
+    <link rel="stylesheet" type="text/css" href="../styles/branding.css" />
+    <link rel="stylesheet" type="text/css" href="../styles/branding-en-US.css" />
+    <script type="text/javascript" src="../scripts/branding.js"> </script>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
     <title>Heap Class</title>
     <meta name="Language" content="en-us" />
@@ -25,85 +15,86 @@
     <meta name="Microsoft.Help.Id" content="T:Kernel.FOS_System.Heap" />
     <meta name="Description" content="The kernel heap - currently a very simple implementation." />
     <meta name="Microsoft.Help.ContentType" content="Reference" />
-    <meta name="BrandingAware" content="'true'" />
+    <meta name="BrandingAware" content="true" />
+    
     <meta name="container" content="Kernel.FOS_System" />
     <meta name="file" content="d8714cc5-9f79-029f-36a5-7b834c1991d1" />
     <meta name="guid" content="d8714cc5-9f79-029f-36a5-7b834c1991d1" />
     
-    
-    <meta name="SelfBranded" content="true" />
+    <link rel="stylesheet" type="text/css" href="../styles/branding-Website.css" />
+    <script type="text/javascript" src="../scripts/jquery-1.11.0.min.js"></script>
+    <script type="text/javascript" src="../scripts/branding-Website.js"></script>
   </head>
-  <body onload="onLoad()" class="primary-mtps-offline-document">
-    <div class="OH_outerDiv">
-      <div class="OH_outerContent">
-        <table class="TitleTable">
+  <body onload="OnLoad('cs')">
+    <input type="hidden" id="userDataCache" class="userDataStyle" />
+    <div class="pageHeader" id="PageHeader">Fling OS<form id="SearchForm" method="get" action="#" onsubmit="javascript:TransferToSearchPage(); return false;"><input id="SearchTextBox" type="text" maxlength="200" /><button id="SearchButton" type="submit"></button></form></div>
+    <div class="pageBody">
+      <div class="leftNav" id="leftNav"><div id="tocNav"><div class="toclevel0" data-toclevel="0"><a class="tocCollapsed" onclick="javascript: Toggle(this);" href="#!"></a><a data-tochassubtree="true" href="dd3e390e-07c0-499b-8f92-2cb8e8ca8b09.htm" title="Fling OS" tocid="roottoc">Fling OS</a></div><div class="toclevel0" data-toclevel="0"><a class="tocCollapsed" onclick="javascript: Toggle(this);" href="#!"></a><a data-tochassubtree="true" href="d75eb659-6335-53f6-af7a-81814a21ab7f.htm" title="Technical" tocid="e0e0d194-2589-42a6-a2db-a50791dd3bda">Technical</a></div><div class="toclevel0" data-toclevel="0"><a class="tocCollapsed" onclick="javascript: Toggle(this);" href="#!"></a><a data-tochassubtree="true" href="d75eb659-6335-53f6-af7a-81814a21ab7f.htm" title="Kernel" tocid="d75eb659-6335-53f6-af7a-81814a21ab7f">Kernel</a></div><div class="toclevel0" data-toclevel="0"><a class="tocCollapsed" onclick="javascript: Toggle(this);" href="#!"></a><a data-tochassubtree="true" href="966b6396-35e7-33bc-96a3-92c550680dc2.htm" title="Kernel.FOS_System Namespaces" tocid="966b6396-35e7-33bc-96a3-92c550680dc2">Kernel.FOS_System Namespaces</a></div><div class="toclevel0" data-toclevel="0"><a class="tocCollapsed" onclick="javascript: Toggle(this);" href="#!"></a><a data-tochassubtree="true" href="f4608f1c-1b45-9728-1af2-757e20ce3928.htm" title="Kernel.FOS_System" tocid="f4608f1c-1b45-9728-1af2-757e20ce3928">Kernel.FOS_System</a></div><div class="toclevel1 current" data-toclevel="1" data-childrenloaded="true"><a class="tocExpanded" onclick="javascript: Toggle(this);" href="#!"></a><a data-tochassubtree="true" href="d8714cc5-9f79-029f-36a5-7b834c1991d1.htm" title="Heap Class" tocid="d8714cc5-9f79-029f-36a5-7b834c1991d1">Heap Class</a></div><div class="toclevel2" data-toclevel="2"><a data-tochassubtree="false" href="e59a0889-fe30-0770-8c01-180df6069331.htm" title="Heap Constructor " tocid="e59a0889-fe30-0770-8c01-180df6069331">Heap Constructor </a></div><div class="toclevel2" data-toclevel="2"><a class="tocCollapsed" onclick="javascript: Toggle(this);" href="#!"></a><a data-tochassubtree="true" href="bbaf4c31-0057-d51e-5d43-5b0a250ab930.htm" title="Heap Fields" tocid="bbaf4c31-0057-d51e-5d43-5b0a250ab930">Heap Fields</a></div><div class="toclevel2" data-toclevel="2"><a class="tocCollapsed" onclick="javascript: Toggle(this);" href="#!"></a><a data-tochassubtree="true" href="07f49541-0656-1b1b-e6ae-09972bdcf84f.htm" title="Heap Methods" tocid="07f49541-0656-1b1b-e6ae-09972bdcf84f">Heap Methods</a></div><div class="toclevel2" data-toclevel="2"><a class="tocCollapsed" onclick="javascript: Toggle(this);" href="#!"></a><a data-tochassubtree="true" href="352dd692-df36-4d6e-0915-84d1009706ad.htm" title="Heap Properties" tocid="352dd692-df36-4d6e-0915-84d1009706ad">Heap Properties</a></div></div></div><div id="TocResize" class="tocResize" onmousedown="OnMouseDown(event);"><img id="ResizeImageIncrease" src="../icons/TocOpen.gif" onclick="OnIncreaseToc()" alt="Click or drag to resize" title="Click or drag to resize"><img id="ResizeImageReset" src="../icons/TocClose.gif" style="display:none" onclick="OnResetToc()" alt="Click or drag to resize" title="Click or drag to resize"></div><div class="topicContent" id="TopicContent">
+        <table class="titleTable">
           <tr>
-            <td class="OH_tdTitleColumn">Heap Class</td>
-            <td class="OH_tdRunningTitleColumn">Fling OS</td>
+            <td class="titleColumn">Heap Class</td>
           </tr>
         </table>
-        <div id="mainSection">
-          <div id="mainBody">
-            <span class="introStyle"></span>
-            <div class="summary">
+        <span class="introStyle"></span>
+        <div class="summary">
             The kernel heap - currently a very simple implementation.
             </div>
-            <div class="OH_CollapsibleAreaRegion">
-              <div class="OH_regiontitle">Inheritance Hierarchy</div>
-              <div class="OH_CollapsibleArea_HrDiv">
-                <hr class="OH_CollapsibleArea_Hr" />
-              </div>
-            </div>
-            <div class="OH_clear"></div>
-            <a href="http://msdn2.microsoft.com/en-us/library/e5kfa45b" target="_blank">System<span id="ID0EBERAAAAA"> </span><script type="text/javascript">
-					addToLanSpecTextIdSet("ID0EBERAAAAA?vb=.|cpp=::|cs=.|fs=.|nu=.");
-				</script>Object</a>
-            <br />  <span class="selflink">Kernel.FOS_System<span id="ID0EBBRAAAAA"> </span><script type="text/javascript">
-					addToLanSpecTextIdSet("ID0EBBRAAAAA?vb=.|cpp=::|cs=.|fs=.|nu=.");
-				</script>Heap</span><br /><p></p><strong>Namespace:</strong> <a href="f4608f1c-1b45-9728-1af2-757e20ce3928.htm" target="">Kernel.FOS_System</a><br /><strong>Assembly:</strong> <span sdata="assembly">Kernel.FOS_System</span> (in Kernel.FOS_System.dll) Version: 1.0.0.0 (1.0.0.0)<div class="OH_CollapsibleAreaRegion"><div class="OH_regiontitle">Syntax</div><div class="OH_CollapsibleArea_HrDiv"><hr class="OH_CollapsibleArea_Hr" /></div></div><div class="OH_clear"></div><div id="snippetGroup_Syntax" class="code"><div id="ID0EAAHAAAAA" class="OH_CodeSnippetContainer"><div class="OH_CodeSnippetContainerTabs" id="ID0EAAHAAAAA_tabs"><div class="OH_CodeSnippetContainerTabLeftActive" id="ID0EAAHAAAAA_tabimgleft"></div><div id="ID0EAAHAAAAA_tab1" class="OH_CodeSnippetContainerTabActive" EnableCopyCode="true"><a href="#" onclick="javascript:ChangeTab('ID0EAAHAAAAA','C#','1','4');return false;">C#</a></div><div id="ID0EAAHAAAAA_tab2" class="OH_CodeSnippetContainerTabDisabledNotFirst" EnableCopyCode="true" disabled="true"><a>VB</a></div><div id="ID0EAAHAAAAA_tab3" class="OH_CodeSnippetContainerTabDisabledNotFirst" EnableCopyCode="true" disabled="true"><a>C++</a></div><div id="ID0EAAHAAAAA_tab4" class="OH_CodeSnippetContainerTabDisabledNotFirst" EnableCopyCode="true" disabled="true"><a>F#</a></div><div class="OH_CodeSnippetContainerTabRight" id="ID0EAAHAAAAA_tabimgright"></div></div><div id="ID0EAAHAAAAA_codecollection" class="OH_CodeSnippetContainerCodeCollection"><div class="OH_CodeSnippetToolBar"><div class="OH_CodeSnippetToolBarText"><a id="ID0EAAHAAAAA_ViewColorized" href="#" onclick="javascript:ExchangeTitleContent('ID0EAAHAAAAA','4')" title="View Colorized" style="display: none">View Colorized</a><a id="ID0EAAHAAAAA_copycode" href="#" onclick="javascript:CopyToClipboard('ID0EAAHAAAAA','4')" title="Copy to Clipboard">Copy to Clipboard</a><a id="ID0EAAHAAAAA_PrintText" class="OH_PrintText" href="#" onclick="javascript:Print('ID0EAAHAAAAA','4')" title="Print">Print</a></div></div><div id="ID0EAAHAAAAA_code_Div1" class="OH_CodeSnippetContainerCode" style="display: block"><pre>[<span class="identifier">PluggedClassAttribute</span>]
-<span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">class</span> <span class="identifier">Heap</span></pre></div><div id="ID0EAAHAAAAA_code_Plain_Div1" class="OH_CodeSnippetContainerCode" style="display: none"><pre>[PluggedClassAttribute]
-public static class Heap</pre></div><div id="ID0EAAHAAAAA_code_Div2" class="OH_CodeSnippetContainerCode" style="display: none"><pre /></div><div id="ID0EAAHAAAAA_code_Plain_Div2" class="OH_CodeSnippetContainerCode" style="display: none"><pre /></div><div id="ID0EAAHAAAAA_code_Div3" class="OH_CodeSnippetContainerCode" style="display: none"><pre /></div><div id="ID0EAAHAAAAA_code_Plain_Div3" class="OH_CodeSnippetContainerCode" style="display: none"><pre /></div><div id="ID0EAAHAAAAA_code_Div4" class="OH_CodeSnippetContainerCode" style="display: none"><pre /></div><div id="ID0EAAHAAAAA_code_Plain_Div4" class="OH_CodeSnippetContainerCode" style="display: none"><pre /></div></div></div><script>addSpecificTextLanguageTagSet('ID0EAAHAAAAA');</script></div><p>The <span class="selflink">Heap</span> type exposes the following members.</p><div class="OH_CollapsibleAreaRegion"><div class="OH_regiontitle">Constructors</div><div class="OH_CollapsibleArea_HrDiv"><hr class="OH_CollapsibleArea_Hr" /></div></div><div class="OH_clear"></div><table id="memberList" class="members"><tr><th class="ps_iconColumn">
-							 
-						</th><th class="ps_nameColumn">Name</th><th class="ps_descriptionColumn">Description</th></tr><tr data="private;static;declared;notNetfw;"><td><img src="./../icons/privmethod.gif" alt="Private method" title="Private method" /><img src="./../icons/static.gif" alt="Static member" title="Static member" /></td><td><a href="e59a0889-fe30-0770-8c01-180df6069331.htm" target="">Heap</a></td><td></td></tr></table><a href="#mainBody" target="">Top</a><div class="OH_CollapsibleAreaRegion"><div class="OH_regiontitle">Methods</div><div class="OH_CollapsibleArea_HrDiv"><hr class="OH_CollapsibleArea_Hr" /></div></div><div class="OH_clear"></div><table id="memberList" class="members"><tr><th class="ps_iconColumn">
-							 
-						</th><th class="ps_nameColumn">Name</th><th class="ps_descriptionColumn">Description</th></tr><tr data="public;static;declared;notNetfw;"><td><img src="./../icons/pubmethod.gif" alt="Public method" title="Public method" /><img src="./../icons/static.gif" alt="Static member" title="Static member" /></td><td><a href="2adfc70d-4f81-627d-0b3f-13569cd252c2.htm" target="">AddBlock</a></td><td><div class="summary">
-            Adds a contiguous block of memory to the heap so it can be used for allocating memory to objects.
-            </div></td></tr><tr data="public;static;declared;notNetfw;"><td><img src="./../icons/pubmethod.gif" alt="Public method" title="Public method" /><img src="./../icons/static.gif" alt="Static member" title="Static member" /></td><td><a href="90dcbc90-6f62-11dd-daaa-b82d5d01ffee.htm" target="">Alloc</a></td><td><div class="summary">
-            Attempts to allocate the specified amount of memory from the heap.
-            </div></td></tr><tr data="public;static;declared;notNetfw;"><td><img src="./../icons/pubmethod.gif" alt="Public method" title="Public method" /><img src="./../icons/static.gif" alt="Static member" title="Static member" /></td><td><a href="c4dc271b-b2e9-72fa-8f62-b07a257145d5.htm" target="">Free</a></td><td><div class="summary">
-            Frees the specified memory giving it back to the heap.
-            </div></td></tr><tr data="public;static;declared;notNetfw;"><td><img src="./../icons/pubmethod.gif" alt="Public method" title="Public method" /><img src="./../icons/static.gif" alt="Static member" title="Static member" /></td><td><a href="bc88e9cb-ef2f-61f0-77a0-accb36477a53.htm" target="">GetFixedHeapPtr</a></td><td><div class="summary">
-            Gets a pointer to the block of memory to allocate to the kernel's fixed heap.
-            </div></td></tr><tr data="public;static;declared;notNetfw;"><td><img src="./../icons/pubmethod.gif" alt="Public method" title="Public method" /><img src="./../icons/static.gif" alt="Static member" title="Static member" /></td><td><a href="75970239-4c82-adf7-6668-175d4219edbe.htm" target="">GetFixedHeapSize</a></td><td><div class="summary">
-            Gets the size of the block of memory to allocate to the kernel's fixed heap.
-            </div></td></tr><tr data="public;static;declared;notNetfw;"><td><img src="./../icons/pubmethod.gif" alt="Public method" title="Public method" /><img src="./../icons/static.gif" alt="Static member" title="Static member" /></td><td><a href="9fb09730-ce9c-ffab-1c3e-4a0837523451.htm" target="">GetFreeMem</a></td><td><div class="summary">
-            Calculates the amount of free memory in the specified block.
-            </div></td></tr><tr data="public;static;declared;notNetfw;"><td><img src="./../icons/pubmethod.gif" alt="Public method" title="Public method" /><img src="./../icons/static.gif" alt="Static member" title="Static member" /></td><td><a href="3419771d-77db-af8d-6c69-1416846ad79c.htm" target="">GetNID</a></td><td><div class="summary">
-            Don't understand what this actually does...anyone care to inform me?
-            </div></td></tr><tr data="public;static;declared;notNetfw;"><td><img src="./../icons/pubmethod.gif" alt="Public method" title="Public method" /><img src="./../icons/static.gif" alt="Static member" title="Static member" /></td><td><a href="72e40eac-a665-0483-9caf-fef53b14eab3.htm" target="">GetTotalFreeMem</a></td><td><div class="summary">
-            Calculates the total amount of free memory in the heap.
-            </div></td></tr><tr data="public;static;declared;notNetfw;"><td><img src="./../icons/pubmethod.gif" alt="Public method" title="Public method" /><img src="./../icons/static.gif" alt="Static member" title="Static member" /></td><td><a href="59703bcd-d4d6-a4e1-aa81-bc4a0d9bf23b.htm" target="">Init</a></td><td><div class="summary">
-            Intialises the heap.
-            </div></td></tr><tr data="public;static;declared;notNetfw;"><td><img src="./../icons/pubmethod.gif" alt="Public method" title="Public method" /><img src="./../icons/static.gif" alt="Static member" title="Static member" /></td><td><a href="ee356b2e-3db0-e7d3-1919-35ff71c3163e.htm" target="">InitFixedHeap</a></td><td><div class="summary">
-            Intialises the kernel's fixed heap.
-            </div></td></tr></table><a href="#mainBody" target="">Top</a><div class="OH_CollapsibleAreaRegion"><div class="OH_regiontitle">Fields</div><div class="OH_CollapsibleArea_HrDiv"><hr class="OH_CollapsibleArea_Hr" /></div></div><div class="OH_clear"></div><table id="memberList" class="members"><tr><th class="ps_iconColumn">
-							 
-						</th><th class="ps_nameColumn">Name</th><th class="ps_descriptionColumn">Description</th></tr><tr data="private;static;declared;notNetfw;"><td><img src="./../icons/privfield.gif" alt="Private field" title="Private field" /><img src="./../icons/static.gif" alt="Static member" title="Static member" /></td><td><a href="55194190-3267-0268-ff63-b5e6f041e8cf.htm" target="">fblock</a></td><td><div class="summary">
-            A pointer to the most-recently added heap block.
-            </div></td></tr><tr data="private;static;declared;notNetfw;"><td><img src="./../icons/privfield.gif" alt="Private field" title="Private field" /><img src="./../icons/static.gif" alt="Static member" title="Static member" /></td><td><a href="fcacd7b1-a58a-cf73-3ae4-18a8486a19cc.htm" target="">FixedHeapInitialised</a></td><td><div class="summary">
-            Whether the kernel's fixed heap has been initialised or not.
-            </div></td></tr></table><a href="#mainBody" target="">Top</a><div class="OH_CollapsibleAreaRegion"><div class="OH_regiontitle">Properties</div><div class="OH_CollapsibleArea_HrDiv"><hr class="OH_CollapsibleArea_Hr" /></div></div><div class="OH_clear"></div><table id="memberList" class="members"><tr><th class="ps_iconColumn">
-							 
-						</th><th class="ps_nameColumn">Name</th><th class="ps_descriptionColumn">Description</th></tr><tr data="public;static;declared;notNetfw;"><td><img src="./../icons/pubproperty.gif" alt="Public property" title="Public property" /><img src="./../icons/static.gif" alt="Static member" title="Static member" /></td><td><a href="f9d06323-2f90-88eb-7499-cb98c4a8584b.htm" target="">FBlock</a></td><td><div class="summary">
-            A pointer to the most-recently added heap block.
-            </div></td></tr></table><a href="#mainBody" target="">Top</a><a name="seeAlsoSection"><!----></a><div class="OH_CollapsibleAreaRegion"><div class="OH_regiontitle">See Also</div><div class="OH_CollapsibleArea_HrDiv"><hr class="OH_CollapsibleArea_Hr" /></div></div><div class="OH_clear"></div><div class="seeAlsoStyle"><a href="f4608f1c-1b45-9728-1af2-757e20ce3928.htm" target="">Kernel.FOS_System Namespace</a></div></div>
+        <div class="collapsibleAreaRegion">
+          <span class="collapsibleRegionTitle" onclick="SectionExpandCollapse('ID0RB')" onkeypress="SectionExpandCollapse_CheckKey('ID0RB', event)" tabindex="0">
+            <img id="ID0RBToggle" class="collapseToggle" src="../icons/SectionExpanded.png" />Inheritance Hierarchy</span>
         </div>
-      </div>
+        <div id="ID0RBSection" class="collapsibleSection">
+          <span class="nolink">System<span id="LSTFEAB3CD9_0"></span><script type="text/javascript">AddLanguageSpecificTextSet("LSTFEAB3CD9_0?cs=.|vb=.|cpp=::|nu=.|fs=.");</script>Object</span>
+          <br />  <span class="selflink">Kernel.FOS_System<span id="LSTFEAB3CD9_1"></span><script type="text/javascript">AddLanguageSpecificTextSet("LSTFEAB3CD9_1?cs=.|vb=.|cpp=::|nu=.|fs=.");</script>Heap</span><br /></div>
+        <p> </p>
+        <strong>Namespace:</strong> <a href="f4608f1c-1b45-9728-1af2-757e20ce3928.htm">Kernel.FOS_System</a><br /><strong>Assembly:</strong> Kernel.FOS_System (in Kernel.FOS_System.dll) Version: 1.0.0.0 (1.0.0.0)<div class="collapsibleAreaRegion"><span class="collapsibleRegionTitle" onclick="SectionExpandCollapse('ID2RB')" onkeypress="SectionExpandCollapse_CheckKey('ID2RB', event)" tabindex="0"><img id="ID2RBToggle" class="collapseToggle" src="../icons/SectionExpanded.png" />Syntax</span></div><div id="ID2RBSection" class="collapsibleSection"><div class="codeSnippetContainer"><div class="codeSnippetContainerTabs"><div id="ID1EACA_tab1" class="codeSnippetContainerTabSingle">C#</div></div><div class="codeSnippetContainerCodeContainer"><div class="codeSnippetToolBar"><div class="codeSnippetToolBarText"><a id="ID1EACA_copyCode" href="#" onclick="javascript:CopyToClipboard('ID1EACA');return false;" title="Copy">Copy</a></div></div><div id="ID1EACA_code_Div1" class="codeSnippetContainerCode" style="display: block"><pre xml:space="preserve">[<span class="identifier">PluggedClassAttribute</span>]
+<span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">class</span> <span class="identifier">Heap</span></pre></div></div></div><script type="text/javascript">AddLanguageTabSet("ID1EACA");</script></div><p>The <span class="selflink">Heap</span> type exposes the following members.</p><div class="collapsibleAreaRegion"><span class="collapsibleRegionTitle" onclick="SectionExpandCollapse('ID3RB')" onkeypress="SectionExpandCollapse_CheckKey('ID3RB', event)" tabindex="0"><img id="ID3RBToggle" class="collapseToggle" src="../icons/SectionExpanded.png" />Constructors</span></div><div id="ID3RBSection" class="collapsibleSection"><table id="memberList" class="members"><tr><th class="iconColumn">
+								 
+							</th><th>Name</th><th>Description</th></tr><tr data="private;static;declared;notNetfw;"><td><img src="../icons/privmethod.gif" alt="Private method" title="Private method" /><img src="../icons/static.gif" alt="Static member" title="Static member" /></td><td><a href="e59a0889-fe30-0770-8c01-180df6069331.htm">Heap</a></td><td /></tr></table><a href="#PageHeader">Top</a></div><div class="collapsibleAreaRegion"><span class="collapsibleRegionTitle" onclick="SectionExpandCollapse('ID4RB')" onkeypress="SectionExpandCollapse_CheckKey('ID4RB', event)" tabindex="0"><img id="ID4RBToggle" class="collapseToggle" src="../icons/SectionExpanded.png" />Methods</span></div><div id="ID4RBSection" class="collapsibleSection"><table id="memberList" class="members"><tr><th class="iconColumn">
+								 
+							</th><th>Name</th><th>Description</th></tr><tr data="public;static;declared;notNetfw;"><td><img src="../icons/pubmethod.gif" alt="Public method" title="Public method" /><img src="../icons/static.gif" alt="Static member" title="Static member" /></td><td><a href="2adfc70d-4f81-627d-0b3f-13569cd252c2.htm">AddBlock</a></td><td><div class="summary">
+            Adds a contiguous block of memory to the heap so it can be used for allocating memory to objects.
+            </div></td></tr><tr data="public;static;declared;notNetfw;"><td><img src="../icons/pubmethod.gif" alt="Public method" title="Public method" /><img src="../icons/static.gif" alt="Static member" title="Static member" /></td><td><a href="90dcbc90-6f62-11dd-daaa-b82d5d01ffee.htm">Alloc</a></td><td><div class="summary">
+            Attempts to allocate the specified amount of memory from the heap.
+            </div></td></tr><tr data="public;static;declared;notNetfw;"><td><img src="../icons/pubmethod.gif" alt="Public method" title="Public method" /><img src="../icons/static.gif" alt="Static member" title="Static member" /></td><td><a href="c4dc271b-b2e9-72fa-8f62-b07a257145d5.htm">Free</a></td><td><div class="summary">
+            Frees the specified memory giving it back to the heap.
+            </div></td></tr><tr data="public;static;declared;notNetfw;"><td><img src="../icons/pubmethod.gif" alt="Public method" title="Public method" /><img src="../icons/static.gif" alt="Static member" title="Static member" /></td><td><a href="bc88e9cb-ef2f-61f0-77a0-accb36477a53.htm">GetFixedHeapPtr</a></td><td><div class="summary">
+            Gets a pointer to the block of memory to allocate to the kernel's fixed heap.
+            </div></td></tr><tr data="public;static;declared;notNetfw;"><td><img src="../icons/pubmethod.gif" alt="Public method" title="Public method" /><img src="../icons/static.gif" alt="Static member" title="Static member" /></td><td><a href="75970239-4c82-adf7-6668-175d4219edbe.htm">GetFixedHeapSize</a></td><td><div class="summary">
+            Gets the size of the block of memory to allocate to the kernel's fixed heap.
+            </div></td></tr><tr data="public;static;declared;notNetfw;"><td><img src="../icons/pubmethod.gif" alt="Public method" title="Public method" /><img src="../icons/static.gif" alt="Static member" title="Static member" /></td><td><a href="9fb09730-ce9c-ffab-1c3e-4a0837523451.htm">GetFreeMem</a></td><td><div class="summary">
+            Calculates the amount of free memory in the specified block.
+            </div></td></tr><tr data="public;static;declared;notNetfw;"><td><img src="../icons/pubmethod.gif" alt="Public method" title="Public method" /><img src="../icons/static.gif" alt="Static member" title="Static member" /></td><td><a href="3419771d-77db-af8d-6c69-1416846ad79c.htm">GetNID</a></td><td><div class="summary">
+            Don't understand what this actually does...anyone care to inform me?
+            </div></td></tr><tr data="public;static;declared;notNetfw;"><td><img src="../icons/pubmethod.gif" alt="Public method" title="Public method" /><img src="../icons/static.gif" alt="Static member" title="Static member" /></td><td><a href="72e40eac-a665-0483-9caf-fef53b14eab3.htm">GetTotalFreeMem</a></td><td><div class="summary">
+            Calculates the total amount of free memory in the heap.
+            </div></td></tr><tr data="public;static;declared;notNetfw;"><td><img src="../icons/pubmethod.gif" alt="Public method" title="Public method" /><img src="../icons/static.gif" alt="Static member" title="Static member" /></td><td><a href="59703bcd-d4d6-a4e1-aa81-bc4a0d9bf23b.htm">Init</a></td><td><div class="summary">
+            Intialises the heap.
+            </div></td></tr><tr data="public;static;declared;notNetfw;"><td><img src="../icons/pubmethod.gif" alt="Public method" title="Public method" /><img src="../icons/static.gif" alt="Static member" title="Static member" /></td><td><a href="ee356b2e-3db0-e7d3-1919-35ff71c3163e.htm">InitFixedHeap</a></td><td><div class="summary">
+            Intialises the kernel's fixed heap.
+            </div></td></tr></table><a href="#PageHeader">Top</a></div><div class="collapsibleAreaRegion"><span class="collapsibleRegionTitle" onclick="SectionExpandCollapse('ID5RB')" onkeypress="SectionExpandCollapse_CheckKey('ID5RB', event)" tabindex="0"><img id="ID5RBToggle" class="collapseToggle" src="../icons/SectionExpanded.png" />Fields</span></div><div id="ID5RBSection" class="collapsibleSection"><table id="memberList" class="members"><tr><th class="iconColumn">
+								 
+							</th><th>Name</th><th>Description</th></tr><tr data="private;static;declared;notNetfw;"><td><img src="../icons/privfield.gif" alt="Private field" title="Private field" /><img src="../icons/static.gif" alt="Static member" title="Static member" /></td><td><a href="55194190-3267-0268-ff63-b5e6f041e8cf.htm">fblock</a></td><td><div class="summary">
+            A pointer to the most-recently added heap block.
+            </div></td></tr><tr data="private;static;declared;notNetfw;"><td><img src="../icons/privfield.gif" alt="Private field" title="Private field" /><img src="../icons/static.gif" alt="Static member" title="Static member" /></td><td><a href="fcacd7b1-a58a-cf73-3ae4-18a8486a19cc.htm">FixedHeapInitialised</a></td><td><div class="summary">
+            Whether the kernel's fixed heap has been initialised or not.
+            </div></td></tr></table><a href="#PageHeader">Top</a></div><div class="collapsibleAreaRegion"><span class="collapsibleRegionTitle" onclick="SectionExpandCollapse('ID6RB')" onkeypress="SectionExpandCollapse_CheckKey('ID6RB', event)" tabindex="0"><img id="ID6RBToggle" class="collapseToggle" src="../icons/SectionExpanded.png" />Properties</span></div><div id="ID6RBSection" class="collapsibleSection"><table id="memberList" class="members"><tr><th class="iconColumn">
+								 
+							</th><th>Name</th><th>Description</th></tr><tr data="public;static;declared;notNetfw;"><td><img src="../icons/pubproperty.gif" alt="Public property" title="Public property" /><img src="../icons/static.gif" alt="Static member" title="Static member" /></td><td><a href="f9d06323-2f90-88eb-7499-cb98c4a8584b.htm">FBlock</a></td><td><div class="summary">
+            A pointer to the most-recently added heap block.
+            </div></td></tr></table><a href="#PageHeader">Top</a></div><div class="collapsibleAreaRegion" id="seeAlsoSection"><span class="collapsibleRegionTitle" onclick="SectionExpandCollapse('ID7RB')" onkeypress="SectionExpandCollapse_CheckKey('ID7RB', event)" tabindex="0"><img id="ID7RBToggle" class="collapseToggle" src="../icons/SectionExpanded.png" />See Also</span></div><div id="ID7RBSection" class="collapsibleSection"><h4 class="subHeading">Reference</h4><div class="seeAlsoStyle"><a href="f4608f1c-1b45-9728-1af2-757e20ce3928.htm">Kernel.FOS_System Namespace</a></div></div></div>
     </div>
-    <div id="OH_footer" class="OH_footer">
-      <p>Copyright Edward Nutting 2014</p>
-      <div class="OH_feedbacklink">
-        <a href="mailto:edwardnutting@outlook.com?subject=Fling+OS+Heap+Class+100+EN-US&amp;body=Your%20feedback%20is%20used%20to%20improve%20the%20documentation%20and%20the%20product.%20Your%20e-mail%20address%20will%20not%20be%20used%20for%20any%20other%20purpose%20and%20is%20disposed%20of%20after%20the%20issue%20you%20report%20is%20resolved.%20While%20working%20to%20resolve%20the%20issue%20that%20you%20report%2c%20you%20may%20be%20contacted%20via%20e-mail%20to%20get%20further%20details%20or%20clarification%20on%20the%20feedback%20you%20sent.%20After%20the%20issue%20you%20report%20has%20been%20addressed%2c%20you%20may%20receive%20an%20e-mail%20to%20let%20you%20know%20that%20your%20feedback%20has%20been%20addressed.">Send Feedback</a> on this topic to Edward Nutting.</div>
-    </div>
+    <div id="pageFooter" class="pageFooter">
+      <p>
+        <a href="http://www.flingos.co.uk" target="_blank">Copyright Edward Nutting 2014</a>
+      </p>
+      <div class="feedbackLink">Send comments on this topic to
+        <a id="HT_MailLink" href="mailto:edwardnutting%40outlook.com?Subject=Fling OS">Edward Nutting</a></div>
+      <script type="text/javascript">
+        var HT_mailLink = document.getElementById("HT_MailLink");
+        var HT_mailLinkText = HT_mailLink.innerHTML;
+        HT_mailLink.href += ": " + document.title + "\u0026body=" + encodeURIComponent("Your feedback is used to improve the documentation and the product. Your e-mail address will not be used for any other purpose and is disposed of after the issue you report is resolved. While working to resolve the issue that you report, you may be contacted via e-mail to get further details or clarification on the feedback you sent. After the issue you report has been addressed, you may receive an e-mail to let you know that your feedback has been addressed.");
+        HT_mailLink.innerHTML = HT_mailLinkText;
+        </script> </div>
   </body>
 </html>

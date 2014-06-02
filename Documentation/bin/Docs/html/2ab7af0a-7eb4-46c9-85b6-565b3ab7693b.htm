@@ -1,0 +1,432 @@
+﻿<html>
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <link rel="shortcut icon" href="../icons/favicon.ico" />
+    <link rel="stylesheet" type="text/css" href="../styles/branding.css" />
+    <link rel="stylesheet" type="text/css" href="../styles/branding-en-US.css" />
+    <script type="text/javascript" src="../scripts/branding.js"> </script>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <title>Processing Flow Details</title>
+    <meta name="Language" content="en-us" />
+    <meta name="Microsoft.Help.Id" content="2ab7af0a-7eb4-46c9-85b6-565b3ab7693b" />
+    <meta name="Description" content="Detailed information about the main kernel compiler architecture presented below." />
+    <meta name="Microsoft.Help.ContentType" content="Concepts" />
+    <meta name="BrandingAware" content="true" />
+    
+    
+    <link rel="stylesheet" type="text/css" href="../styles/branding-Website.css" />
+    <script type="text/javascript" src="../scripts/jquery-1.11.0.min.js"></script>
+    <script type="text/javascript" src="../scripts/branding-Website.js"></script>
+  </head>
+  <body onload="OnLoad('cs')">
+    <input type="hidden" id="userDataCache" class="userDataStyle" />
+    <div class="pageHeader" id="PageHeader">Fling OS<form id="SearchForm" method="get" action="#" onsubmit="javascript:TransferToSearchPage(); return false;"><input id="SearchTextBox" type="text" maxlength="200" /><button id="SearchButton" type="submit"></button></form></div>
+    <div class="pageBody">
+      <div class="leftNav" id="leftNav"><div id="tocNav"><div class="toclevel0" data-toclevel="0"><a class="tocCollapsed" onclick="javascript: Toggle(this);" href="#!"></a><a data-tochassubtree="true" href="dd3e390e-07c0-499b-8f92-2cb8e8ca8b09.htm" title="Fling OS" tocid="roottoc">Fling OS</a></div><div class="toclevel0" data-toclevel="0"><a class="tocCollapsed" onclick="javascript: Toggle(this);" href="#!"></a><a data-tochassubtree="true" href="64d7d98a-eb1c-47ab-8fdf-f2411f237efc.htm" title="Conceptual" tocid="9fc51b1b-401c-420a-aba4-908af87b2815">Conceptual</a></div><div class="toclevel1" data-toclevel="1" data-childrenloaded="true"><a class="tocExpanded" onclick="javascript: Toggle(this);" href="#!"></a><a data-tochassubtree="true" href="e0e1d083-640e-4bf8-b96d-4a6493dbf53a.htm" title="Kernel Compiler" tocid="e0e1d083-640e-4bf8-b96d-4a6493dbf53a">Kernel Compiler</a></div><div class="toclevel2 current" data-toclevel="2"><a data-tochassubtree="false" href="2ab7af0a-7eb4-46c9-85b6-565b3ab7693b.htm" title="Processing Flow Details" tocid="2ab7af0a-7eb4-46c9-85b6-565b3ab7693b">Processing Flow Details</a></div><div class="toclevel2" data-toclevel="2"><a data-tochassubtree="false" href="c6e4fa96-1037-4c8d-b9c5-bfee5405b5b4.htm" title="Using the compiler" tocid="c6e4fa96-1037-4c8d-b9c5-bfee5405b5b4">Using the compiler</a></div></div></div><div id="TocResize" class="tocResize" onmousedown="OnMouseDown(event);"><img id="ResizeImageIncrease" src="../icons/TocOpen.gif" onclick="OnIncreaseToc()" alt="Click or drag to resize" title="Click or drag to resize"><img id="ResizeImageReset" src="../icons/TocClose.gif" style="display:none" onclick="OnResetToc()" alt="Click or drag to resize" title="Click or drag to resize"></div><div class="topicContent" id="TopicContent">
+        <table class="titleTable">
+          <tr>
+            <td class="titleColumn">Processing Flow Details</td>
+          </tr>
+        </table>
+        <span class="introStyle"></span>
+        <div class="introduction">
+          <p>Detailed information about the main kernel compiler architecture presented below.</p>
+          <p>This topic contains the following sections.</p>
+          <ul class="autoOutline">
+            <li class="outlineSectionEntry">
+              <a href="#Step1">1. Start - Post MSBuild</a>
+            </li>
+            <li class="outlineSectionEntry">
+              <a href="#Step2">2. IL Compiler Initialise</a>
+            </li>
+            <li class="outlineSectionEntry">
+              <a href="#Step3">3. Initialising the compiler's execution environment</a>
+            </li>
+            <li class="outlineSectionEntry">
+              <a href="#Step4">4. IL Reader Initialise</a>
+            </li>
+            <li class="outlineSectionEntry">
+              <a href="#Step5">5. Find Assemblies</a>
+            </li>
+            <li class="outlineSectionEntry">
+              <a href="#Step6">6. Find all classes</a>
+            </li>
+            <li class="outlineSectionEntry">
+              <a href="#Step7">7. Find classes marked as containing plugs</a>
+            </li>
+            <li class="outlineSectionEntry">
+              <a href="#Step8">8. IL Scanner Initialise</a>
+            </li>
+            <li class="outlineSectionEntry">
+              <a href="#Step9">9. Loop through plugged classes</a>
+            </li>
+            <li class="outlineSectionEntry">
+              <a href="#Step10">10. Loop through all classes</a>
+            </li>
+            <li class="outlineSectionEntry">
+              <a href="#Step11">11. Sequence ASM Chunks</a>
+            </li>
+            <li class="outlineSectionEntry">
+              <a href="#Step12">12. Ouptut ASM chunks to file</a>
+            </li>
+            <li class="outlineSectionEntry">
+              <a href="#Step13">13. Invoke NASM</a>
+            </li>
+          </ul>
+        </div>
+        <div class="collapsibleAreaRegion" id="Step1">
+          <span class="collapsibleRegionTitle" onclick="SectionExpandCollapse('ID0RB')" onkeypress="SectionExpandCollapse_CheckKey('ID0RB', event)" tabindex="0">
+            <img id="ID0RBToggle" class="collapseToggle" src="../icons/SectionExpanded.png" />1. Start - Post MSBuild</span>
+        </div>
+        <div id="ID0RBSection" class="collapsibleSection">
+          <p>
+          The kernel compiler happens after the Microsoft compiler has compiled the operating system C# 
+          code into IL code.
+        </p>
+          <p>
+          Initial ideas were to integrate the kernel compiler as an MSBuild task so that it was automatically 
+          built after the C# code was compiled to IL. However, this approach was ditched after careful 
+          consideration for these reasons:
+        </p>
+          <ul>
+            <li>
+              <p>Using MSBuild ties the compiler functionality into MSBuild / Visual Studio too much</p>
+            </li>
+            <li>
+              <p>Very difficult to write / maintain MSBuild tasks</p>
+            </li>
+            <li>
+              <p>May not want to build the OS after every C# compile since compiling the OS could take a long time</p>
+            </li>
+            <li>
+              <p>Creating a separate, small, C# application to manage the kernel compiler will allow an easier shift to running the compiler on Fling OS itself in future.</p>
+            </li>
+            <li>
+              <p>Despite this adding an extra step to the build process, it can be automatically started using Visual Studio’s Post Build events.</p>
+            </li>
+          </ul>
+          <p>
+          Update (2014-03-14): Limited compatiblity with MSBuild was added so the main kernel project could be auto-built but
+                               the intenion was as a short-term convenience until a more customisable build tool-chain was
+                               constructed.
+        </p>
+          <p>
+          The kernel compiler was built, therefore, as a primarily command-line based tool.
+        </p>
+          <p>
+          The kernel compiler, having been started by either a post-build task, MSBuild or directly by a user (i.e. developer) 
+          should then proceed with the following steps:
+        </p>
+          <ol>
+            <li>
+              <p>
+              Parse any arguments that were passed when the compiler process was started (i.e. the args parameter of the Main method). 
+              The list of supported arguments can be found in the specification.
+            </p>
+            </li>
+            <li>
+              <p>
+              If necessary, open a console window / UI and/or open output streams for messages, warnings and errors to file(s).
+            </p>
+            </li>
+            <li>
+              <p>Proceed with the steps below.</p>
+            </li>
+          </ol>
+        </div>
+        <div class="collapsibleAreaRegion" id="Step2">
+          <span class="collapsibleRegionTitle" onclick="SectionExpandCollapse('ID1RB')" onkeypress="SectionExpandCollapse_CheckKey('ID1RB', event)" tabindex="0">
+            <img id="ID1RBToggle" class="collapseToggle" src="../icons/SectionExpanded.png" />2. IL Compiler Initialise</span>
+        </div>
+        <div id="ID1RBSection" class="collapsibleSection">
+          <p>
+          The IL Compiler is the main overall manager class which handles the conversion from IL code to assembler code. 
+          Its main functions are:
+        </p>
+          <ul>
+            <li>
+              <p>
+              To initialize the compiler’s execution environment (e.g. ensuring reference DLLs are loaded)
+            </p>
+            </li>
+            <li>
+              <p>To initialize and call into the IL Reader</p>
+            </li>
+            <li>
+              <p>To initialize and call into the IL Scanner</p>
+            </li>
+            <li>
+              <p>To pass the IL Reader to the IL Scanner</p>
+            </li>
+            <li>
+              <p>
+              To handle errors and warnings and output them to the user via command line or callbacks 
+              depending on the execution environment (e.g. command line, MSBuild task, ...)
+            </p>
+            </li>
+            <li>
+              <p>To feedback progress information to the user via command line or callbacks</p>
+            </li>
+          </ul>
+          <p>
+          So the compiler initialize must do the first three steps in the list. The initializations 
+          should not actually start any processing – just initialize what is required so that 
+          processing can immediately be started.
+        </p>
+        </div>
+        <div class="collapsibleAreaRegion" id="Step3">
+          <span class="collapsibleRegionTitle" onclick="SectionExpandCollapse('ID2RB')" onkeypress="SectionExpandCollapse_CheckKey('ID2RB', event)" tabindex="0">
+            <img id="ID2RBToggle" class="collapseToggle" src="../icons/SectionExpanded.png" />3. Initialising the compiler's execution environment</span>
+        </div>
+        <div id="ID2RBSection" class="collapsibleSection">
+          <p>
+          The compiler’s execution environment contains many of the usual things but the main one 
+          specific to this application is the list of assemblies to be built into the kernel / OS. 
+          The list of assemblies includes all the Fling OS standard libraries along with the actual 
+          OS code itself such as built-in drivers etc.
+        </p>
+          <p>
+          The IL Compiler should have been passed handlers to the process’ output message, warning 
+          and error methods but it should check at this point that they are not null. If they are null, 
+          it should set them to dummy/empty methods.
+        </p>
+        </div>
+        <div class="collapsibleAreaRegion" id="Step4">
+          <span class="collapsibleRegionTitle" onclick="SectionExpandCollapse('ID3RB')" onkeypress="SectionExpandCollapse_CheckKey('ID3RB', event)" tabindex="0">
+            <img id="ID3RBToggle" class="collapseToggle" src="../icons/SectionExpanded.png" />4. IL Reader Initialise</span>
+        </div>
+        <div id="ID3RBSection" class="collapsibleSection">
+          <p>
+          The IL Reader is the class which primarily handles reading IL code from an assembly but this also 
+          encompasses: finding classes; finding methods within a class.
+        </p>
+          <p>
+          The IL Reader should have been passed handlers to the process’ output message, warning and error 
+          methods but it should check at this point that they are not null. If they are null, it should set 
+          them to dummy/empty methods.
+        </p>
+        </div>
+        <div class="collapsibleAreaRegion" id="Step5">
+          <span class="collapsibleRegionTitle" onclick="SectionExpandCollapse('ID4RB')" onkeypress="SectionExpandCollapse_CheckKey('ID4RB', event)" tabindex="0">
+            <img id="ID4RBToggle" class="collapseToggle" src="../icons/SectionExpanded.png" />5. Find Assemblies</span>
+        </div>
+        <div id="ID4RBSection" class="collapsibleSection">
+          <p>
+          Once the IL Reader and IL Compiler have been initialized, the IL Reader can being to search for classes 
+          to be compiled into the kernel. The first step of this is to find all the assemblies included and 
+          referenced in/by the compiled kernel .DLL.
+        </p>
+          <p>
+          When the compiler process was started it should be have passed an argument specifying the path to the .DLL 
+          file hat MSBuild compiled from C#. This .DLL file will be the main OS code including the OS entry point. 
+          The assemblies in the .DLL file and all assemblies that the .DLL references should be included in the full list of assemblies.
+        </p>
+          <p>
+          The compiler will always try and include the standard C# libraries (since Microsoft’s well document NoStdLib option doesn’t seem to 
+          work with newer version of the .Net Framework / CSC.EXE). So all non-standard C# libraries / assemblies should be loaded and any standard 
+          types ignored except for those explicitly added by the IL Compiler (e.g. value types such as Int32). Fling OS will create its own standard 
+          libraries which follow similar names to Microsoft’s but will be preceded by “FOS”. When the kernel compiler comes across a type, it should 
+          check whether the type is in the standard libraries and if it is, ignore it.
+        </p>
+          <p>
+          The assemblies and referenced assemblies can be found using classes in C#’s System.Relfection namespace.
+        </p>
+        </div>
+        <div class="collapsibleAreaRegion" id="Step6">
+          <span class="collapsibleRegionTitle" onclick="SectionExpandCollapse('ID5RB')" onkeypress="SectionExpandCollapse_CheckKey('ID5RB', event)" tabindex="0">
+            <img id="ID5RBToggle" class="collapseToggle" src="../icons/SectionExpanded.png" />6. Find all classes</span>
+        </div>
+        <div id="ID5RBSection" class="collapsibleSection">
+          <p>
+          Having created a full list of assemblies to include, the IL Reader can then search all these assemblies for classes. This essentially means 
+          creating a large list of every class type in the assemblies. This is so that the IL Compiler can quickly go through all types, converting them 
+          to assembler.
+        </p>
+        </div>
+        <div class="collapsibleAreaRegion" id="Step7">
+          <span class="collapsibleRegionTitle" onclick="SectionExpandCollapse('ID6RB')" onkeypress="SectionExpandCollapse_CheckKey('ID6RB', event)" tabindex="0">
+            <img id="ID6RBToggle" class="collapseToggle" src="../icons/SectionExpanded.png" />7. Find classes marked as containing plugs</span>
+        </div>
+        <div id="ID6RBSection" class="collapsibleSection">
+          <p>
+          A second search should then be made for all classes marked as containing a plugged method. As discussed earlier in this document, classes can 
+          contain empty methods which are marked (using custom attributes) as plugged. However, to save scanning every method in every type for whether 
+          it is plugged, any class containing a plugged method should have a custom attribute indicating that it does. This means that only the 
+          (comparatively limited) number of methods from these classes are checked.
+        </p>
+          <p>
+          To find the plugged classes, the IL Reader should use Reflection to search for classes with the custom attribute.
+        </p>
+        </div>
+        <div class="collapsibleAreaRegion" id="Step8">
+          <span class="collapsibleRegionTitle" onclick="SectionExpandCollapse('ID7RB')" onkeypress="SectionExpandCollapse_CheckKey('ID7RB', event)" tabindex="0">
+            <img id="ID7RBToggle" class="collapseToggle" src="../icons/SectionExpanded.png" />8. IL Scanner Initialise</span>
+        </div>
+        <div id="ID7RBSection" class="collapsibleSection">
+          <p>
+          The IL Scanner is the class whose main task is to scan all the IL ops in the methods found and convert them to architecture specific assembler. Its 
+          functions are defined in steps below.
+        </p>
+          <p>
+          The IL Scanner should have been passed handlers to the process’ output message, warning and error methods but it should check at this point that they 
+          are not null. If they are null, it should set them to dummy/empty methods.
+        </p>
+        </div>
+        <div class="collapsibleAreaRegion" id="Step9">
+          <span class="collapsibleRegionTitle" onclick="SectionExpandCollapse('ID10RB')" onkeypress="SectionExpandCollapse_CheckKey('ID10RB', event)" tabindex="0">
+            <img id="ID10RBToggle" class="collapseToggle" src="../icons/SectionExpanded.png" />9. Loop through plugged classes</span>
+        </div>
+        <div id="ID10RBSection" class="collapsibleSection">
+          <p>
+          It probably doesn’t matter whether plugged classes or normal classes are looped through first but since plugged classes (/methods) are lower level than 
+          normal classes / methods, it makes sense to do them first.
+        </p>
+          <p>
+          When looping through plugged classes, we loop through all methods. Ones which are not plugged get processed like normal methods so are, for the sake of 
+          this description, included under All Classes.
+        </p>
+          <p>
+          For each plugged class, loop through all the plugged methods performing the steps below.
+        </p>
+          <div class="collapsibleAreaRegion" id="Step9.1">
+            <span class="collapsibleRegionTitle" onclick="SectionExpandCollapse('ID8RB')" onkeypress="SectionExpandCollapse_CheckKey('ID8RB', event)" tabindex="0">
+              <img id="ID8RBToggle" class="collapseToggle" src="../icons/SectionExpanded.png" />9.1. Loop through plugged methods</span>
+          </div>
+          <div id="ID8RBSection" class="collapsibleSection">
+            <p>
+              Using Reflection a list of methods with the plugged method custom attribute can be obtained for a given class. The attribute will indicate the base 
+              name of the file to load which contains the ASM to plug the method with.
+            </p>
+            <p>
+              Since different architectures could be targeted, the kernel compiler process should have been passed an argument when it was started indicating which 
+              architecture to target. A separate ASM plug file will exist for each target architecture. These files will have a common naming scheme where the base 
+              name can be appended to giving the actual file name for the ASM plug file to load for the current compile task.
+            </p>
+            <p>
+              For each plugged method, its relevant ASM plug file should be loaded.
+            </p>
+          </div>
+          <div class="collapsibleAreaRegion" id="Step9.2">
+            <span class="collapsibleRegionTitle" onclick="SectionExpandCollapse('ID9RB')" onkeypress="SectionExpandCollapse_CheckKey('ID9RB', event)" tabindex="0">
+              <img id="ID9RBToggle" class="collapseToggle" src="../icons/SectionExpanded.png" />9.2. Loop through ASM chunks from files</span>
+          </div>
+          <div id="ID9RBSection" class="collapsibleSection">
+            <p>
+              Once the ASM file has been loaded, the ASM should be used to create an ASM chunk (described later) and added to the full list of ASM chunks. It should be 
+              given an additional flag to indicate it came from an ASM plug file and a property to store which ASM plug file it came from.
+            </p>
+          </div>
+        </div>
+        <div class="collapsibleAreaRegion" id="Step10">
+          <span class="collapsibleRegionTitle" onclick="SectionExpandCollapse('ID14RB')" onkeypress="SectionExpandCollapse_CheckKey('ID14RB', event)" tabindex="0">
+            <img id="ID14RBToggle" class="collapseToggle" src="../icons/SectionExpanded.png" />10. Loop through all classes</span>
+        </div>
+        <div id="ID14RBSection" class="collapsibleSection">
+          <p>
+          The All Classes list is described as including all the found classes, but in reality it should not contain plugged classes. However, all unplugged methods (even 
+          in plugged classes) get processed as per steps below.
+        </p>
+          <div class="collapsibleAreaRegion" id="Step10.1">
+            <span class="collapsibleRegionTitle" onclick="SectionExpandCollapse('ID11RB')" onkeypress="SectionExpandCollapse_CheckKey('ID11RB', event)" tabindex="0">
+              <img id="ID11RBToggle" class="collapseToggle" src="../icons/SectionExpanded.png" />10.1. Loop through methods</span>
+          </div>
+          <div id="ID11RBSection" class="collapsibleSection">
+            <p>
+              Using Reflection a list of methods (which are not plugged) can be obtained for a given class. For each method, perform steps 2 and 3.
+            </p>
+          </div>
+          <div class="collapsibleAreaRegion" id="Step10.2">
+            <span class="collapsibleRegionTitle" onclick="SectionExpandCollapse('ID12RB')" onkeypress="SectionExpandCollapse_CheckKey('ID12RB', event)" tabindex="0">
+              <img id="ID12RBToggle" class="collapseToggle" src="../icons/SectionExpanded.png" />10.2. Loop through IL Ops constructing ASM</span>
+          </div>
+          <div id="ID12RBSection" class="collapsibleSection">
+            <p>
+              Every method will (or should) contain some IL ops. These IL ops must be converted to zero, one or more valid lines of assembler for the current target architecture. 
+              So for each method, we go through all the IL ops in that method (in order) and convert them into assembler. Combining the lines of assembler, in order, into one 
+              contains piece of assembler forms a chunk.
+            </p>
+            <p>
+              Each IL op will have a corresponding class in the compiler. These IL ops classes will be abstract since they will not be able to convert an IL op to ASM since they will 
+              be architecture independent. A separate class library will then be created for each target architecture which will contain implementations of all the IL op classes. The 
+              IL op classes will have one main function: to take its given IL op and the current code/compiler context and convert it into assembler (for the target architecture).
+            </p>
+            <p>
+              So for each IL op, the correct compiler IL op class will be loaded from the architecture library specified when the compiler process was started. The compiler IL op’s 
+              conversion method should then be called and the resulting assembler added to the current ASM chunk text.
+            </p>
+          </div>
+          <div class="collapsibleAreaRegion" id="Step10.3">
+            <span class="collapsibleRegionTitle" onclick="SectionExpandCollapse('ID13RB')" onkeypress="SectionExpandCollapse_CheckKey('ID13RB', event)" tabindex="0">
+              <img id="ID13RBToggle" class="collapseToggle" src="../icons/SectionExpanded.png" />10.3. Create and add ASM chunks</span>
+          </div>
+          <div id="ID13RBSection" class="collapsibleSection">
+            <p>
+              The final ASM text should be used to create the ASM chunk which should then be added to the full list of ASM chunks. In future, some ASM chunks will have additional information 
+              (for example, to indicate where they should be sequenced to in the final ASM file) but that is not detailed in this processing flow description.
+            </p>
+          </div>
+        </div>
+        <div class="collapsibleAreaRegion" id="Step11">
+          <span class="collapsibleRegionTitle" onclick="SectionExpandCollapse('ID15RB')" onkeypress="SectionExpandCollapse_CheckKey('ID15RB', event)" tabindex="0">
+            <img id="ID15RBToggle" class="collapseToggle" src="../icons/SectionExpanded.png" />11. Sequence ASM Chunks</span>
+        </div>
+        <div id="ID15RBSection" class="collapsibleSection">
+          <p>
+          In theory, all the assembler would appear in the full ASM chunks list in the order it should appear in the final ASM file. However, since the ASM chunks are found by just searching 
+          classes for methods, they will not be added to the list in the order they should be executed in. Things like boot signature/bootstrap code need to appear at the very top of the ASM 
+          file but other general code can appear in any order. For this reason, the sequencing step is included to re-order the ASM chunks into the final output order.
+        </p>
+          <p>
+          In practice, this step may be programmable so that it finds chunks and outputs them at the same time, so that we don’t have to loop through all the chunks more times than necessary.
+        </p>
+          <p>
+          The ASM chunks should be sequenced (ordered) based on:
+        </p>
+          <ul>
+            <li>
+              <p>Any extra information supplied with the ASM chunk</p>
+            </li>
+            <li>
+              <p>The ASM chunk identifier (such as a method label)</p>
+            </li>
+            <li>
+              <p>Existing position in the ASM chunks list</p>
+            </li>
+          </ul>
+        </div>
+        <div class="collapsibleAreaRegion" id="Step12">
+          <span class="collapsibleRegionTitle" onclick="SectionExpandCollapse('ID16RB')" onkeypress="SectionExpandCollapse_CheckKey('ID16RB', event)" tabindex="0">
+            <img id="ID16RBToggle" class="collapseToggle" src="../icons/SectionExpanded.png" />12. Ouptut ASM chunks to file</span>
+        </div>
+        <div id="ID16RBSection" class="collapsibleSection">
+          <p>
+          This step is small and simple. It is simply a matter of looping through all the ASM chunks in the final, ordered, full ASM chunks list and outputting the ASM text to the output file.
+        </p>
+        </div>
+        <div class="collapsibleAreaRegion" id="Step13">
+          <span class="collapsibleRegionTitle" onclick="SectionExpandCollapse('ID17RB')" onkeypress="SectionExpandCollapse_CheckKey('ID17RB', event)" tabindex="0">
+            <img id="ID17RBToggle" class="collapseToggle" src="../icons/SectionExpanded.png" />13. Invoke NASM</span>
+        </div>
+        <div id="ID17RBSection" class="collapsibleSection">
+          <p>
+          The final step is to convert the .ASM file into something that can actually be used as a bootable operating system. For the purposes of this description, we shall simply say this involves 
+          calling NASM, with the correct parameters for the target architecture, to convert the .ASM file into a .ISO file which can be used in virtualization software such as VMWare or Bochs.
+        </p>
+        </div>
+      </div>
+    </div>
+    <div id="pageFooter" class="pageFooter">
+      <p>
+        <a href="http://www.flingos.co.uk" target="_blank">Copyright Edward Nutting 2014</a>
+      </p>
+      <div class="feedbackLink">Send comments on this topic to
+        <a id="HT_MailLink" href="mailto:edwardnutting%40outlook.com?Subject=Fling OS">Edward Nutting</a></div>
+      <script type="text/javascript">
+        var HT_mailLink = document.getElementById("HT_MailLink");
+        var HT_mailLinkText = HT_mailLink.innerHTML;
+        HT_mailLink.href += ": " + document.title + "\u0026body=" + encodeURIComponent("Your feedback is used to improve the documentation and the product. Your e-mail address will not be used for any other purpose and is disposed of after the issue you report is resolved. While working to resolve the issue that you report, you may be contacted via e-mail to get further details or clarification on the feedback you sent. After the issue you report has been addressed, you may receive an e-mail to let you know that your feedback has been addressed.");
+        HT_mailLink.innerHTML = HT_mailLinkText;
+        </script>
+    </div>
+  </body>
+</html>

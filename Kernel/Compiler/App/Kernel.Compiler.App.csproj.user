@@ -6,4 +6,7 @@
   <PropertyGroup>
     <ProjectView>ProjectFiles</ProjectView>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Docs|AnyCPU'">
+    <StartArguments>"G:\Fling OS\Fling OS\Kernel\Kernel\bin\Debug\Kernel.dll" TargetArchitecture=x86_32 OutputFile="G:\Fling OS\Fling OS\Kernel\Kernel\bin\Debug\Kernel"</StartArguments>
+  </PropertyGroup>
 </Project>

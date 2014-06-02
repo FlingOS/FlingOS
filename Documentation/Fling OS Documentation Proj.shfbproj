@@ -18,7 +18,7 @@
     <HtmlHelpName>Documentation</HtmlHelpName>
     <Language>en-US</Language>
     <BuildAssemblerVerbosity>OnlyWarningsAndErrors</BuildAssemblerVerbosity>
-    <HelpFileFormat>Website</HelpFileFormat>
+    <HelpFileFormat>HtmlHelp1, Website</HelpFileFormat>
     <IndentHtml>True</IndentHtml>
     <KeepLogFile>False</KeepLogFile>
     <DisableCodeBlockComponent>False</DisableCodeBlockComponent>
@@ -30,7 +30,7 @@
     <MissingTags>Summary, Parameter, Returns, AutoDocumentCtors, Namespace, TypeParameter, AutoDocumentDispose</MissingTags>
     <VisibleItems>Attributes, ExplicitInterfaceImplementations, InheritedMembers, Internals, Privates, PrivateFields, Protected, SealedProtected</VisibleItems>
     <PlugInConfigurations>
-      <PlugInConfig id="Output Deployment" enabled="False">
+      <PlugInConfig id="Output Deployment" enabled="True">
         <configuration deleteAfterDeploy="false">
           <deploymentLocation id="help1x" location="">
             <userCredentials useDefault="true" userName="" password="" />
@@ -50,8 +50,14 @@
               <userCredentials useDefault="true" userName="" password="" />
             </proxyCredentials>
           </deploymentLocation>
-          <deploymentLocation id="website" location="ftp://ftp.flingos.co.uk/docs.flingos.co.uk/wwwroot/">
+          <deploymentLocation id="website" location="ftp://ftp.flingos.co.uk/docs.flingos.co.uk/wwwroot/Docs/">
             <userCredentials useDefault="false" userName="flingosc" password="r3Eera7795" />
+            <proxyCredentials useProxy="false" proxyServer="">
+              <userCredentials useDefault="true" userName="" password="" />
+            </proxyCredentials>
+          </deploymentLocation>
+          <deploymentLocation id="openXml" location="">
+            <userCredentials useDefault="true" userName="" password="" />
             <proxyCredentials useProxy="false" proxyServer="">
               <userCredentials useDefault="true" userName="" password="" />
             </proxyCredentials>
@@ -83,12 +89,12 @@
 <replace elements="/*//token" item="string(.)" /></component>
       </ComponentConfig>
     </ComponentConfigurations>
-    <MaximumGroupParts>4</MaximumGroupParts>
+    <MaximumGroupParts>2</MaximumGroupParts>
     <NamespaceGrouping>True</NamespaceGrouping>
     <SyntaxFilters>C#</SyntaxFilters>
     <SdkLinkTarget>Blank</SdkLinkTarget>
-    <RootNamespaceContainer>False</RootNamespaceContainer>
-    <PresentationStyle>VS2010</PresentationStyle>
+    <RootNamespaceContainer>True</RootNamespaceContainer>
+    <PresentationStyle>VS2013</PresentationStyle>
     <Preliminary>False</Preliminary>
     <NamingMethod>Guid</NamingMethod>
     <HelpTitle>Fling OS</HelpTitle>
@@ -104,10 +110,26 @@
       <NamespaceSummaryItem name="Kernel.Debug.Debugger" isDocumented="True">The Fling OS Kernel Debugger application used for debugging the Fling OS kernel (currently over a serial pipe form a virtual machine).</NamespaceSummaryItem>
       <NamespaceSummaryItem name="Kernel.Compiler (Group)" isGroup="True" isDocumented="True">Contains namespaces related to the kernel compiler.</NamespaceSummaryItem>
       <NamespaceSummaryItem name="Kernel.Debug (Group)" isGroup="True" isDocumented="True">Contains namespaces related to the kernel debugging tools.</NamespaceSummaryItem>
-      <NamespaceSummaryItem name="Kernel (Group)" isGroup="True" isDocumented="True">Contains the main namespaces for the Fling OS kernel implementation.</NamespaceSummaryItem>
+      <NamespaceSummaryItem name="Kernel (Group)" isGroup="True" isDocumented="False">Contains the main namespaces for the Fling OS kernel implementation.</NamespaceSummaryItem>
       <NamespaceSummaryItem name="Kernel.FOS_System" isDocumented="True">The kernel's System namespace that largely replaces .Net's System namespace.</NamespaceSummaryItem>
       <NamespaceSummaryItem name="Kernel.FOS_System.Exceptions" isDocumented="True">Contains the standard exceptions for the kernel.</NamespaceSummaryItem>
-      <NamespaceSummaryItem name="Testing._Kernel" isDocumented="True">The testing library for the Kernel library.</NamespaceSummaryItem>
+      <NamespaceSummaryItem name="Testing._Kernel" isDocumented="False">The testing library for the Kernel library.</NamespaceSummaryItem>
+      <NamespaceSummaryItem name="Kernel.FOS_System.Collections" isDocumented="True">Classes for managing collections of objects.</NamespaceSummaryItem>
+      <NamespaceSummaryItem name="Kernel.FOS_System.IO" isDocumented="True">Classes for managing input/output tasks such as file handling.</NamespaceSummaryItem>
+      <NamespaceSummaryItem name="Kernel.FOS_System.IO.Disk" isDocumented="True">Classes for handling disks (e.g. hard-disks).</NamespaceSummaryItem>
+      <NamespaceSummaryItem name="Kernel.FOS_System.IO.FAT" isDocumented="True">Classes for handling a FAT file system.</NamespaceSummaryItem>
+      <NamespaceSummaryItem name="Kernel.FOS_System.IO.Streams" isDocumented="True">Classes for handling streams.</NamespaceSummaryItem>
+      <NamespaceSummaryItem name="Kernel.FOS_System.IO.Streams.FAT" isDocumented="True">Classes for handling FAT streams such as FAT file streams.</NamespaceSummaryItem>
+      <NamespaceSummaryItem name="Kernel.FOS_System.Stubs" isDocumented="False" />
+      <NamespaceSummaryItem name="Kernel.Hardware" isDocumented="True">The kernel's Hardware namespace contains classes that handle specific hardware.</NamespaceSummaryItem>
+      <NamespaceSummaryItem name="Kernel.Hardware.ATA" isDocumented="True">Contains classes for handling ATA devices.</NamespaceSummaryItem>
+      <NamespaceSummaryItem name="Kernel.Hardware.Devices" isDocumented="True">Contains classes for generic types of hardware device e.g. DiskDevice.</NamespaceSummaryItem>
+      <NamespaceSummaryItem name="Kernel.Hardware.DMA" isDocumented="True">Contains classes for managing direct memory access.</NamespaceSummaryItem>
+      <NamespaceSummaryItem name="Kernel.Hardware.IO" isDocumented="True">Contains classes for managing I/O devices.</NamespaceSummaryItem>
+      <NamespaceSummaryItem name="Kernel.Hardware.PCI" isDocumented="True">Contains classes for managing PCI devices.</NamespaceSummaryItem>
+      <NamespaceSummaryItem name="Kernel.Hardware.USB" isDocumented="True">Contains classes for managing USB devices.</NamespaceSummaryItem>
+      <NamespaceSummaryItem name="Kernel.Hardware.USB.HCIs" isDocumented="True">Contains classes specifically for managing USB Host Controller Interfaces.</NamespaceSummaryItem>
+      <NamespaceSummaryItem name="Kernel.Utilities" isDocumented="True">Contains Kernel utility classes and functions that can be used throughout the kernel.</NamespaceSummaryItem>
     </NamespaceSummaries>
     <ApiFilter>
       <Filter entryType="Namespace" fullName="" isExposed="False" />
@@ -137,6 +159,8 @@
     <SccProvider>SAK</SccProvider>
     <SccAuxPath>SAK</SccAuxPath>
     <SccLocalPath>SAK</SccLocalPath>
+    <RootNamespaceTitle>Kernel</RootNamespaceTitle>
+    <CopyrightHref>http://www.flingos.co.uk</CopyrightHref>
   </PropertyGroup>
   <!-- There are no properties for these groups.  AnyCPU needs to appear in order for Visual Studio to perform
 			 the build.  The others are optional common platform types that may appear. -->
@@ -155,6 +179,9 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|Win32' ">
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|Win32' ">
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Docs' ">
+    <OutputPath>bin\Docs\</OutputPath>
   </PropertyGroup>
   <ItemGroup>
     <ContentLayout Include="Main Content Layout.content" />
@@ -194,6 +221,7 @@
     <None Include="Conceptual\Kernel\Kernel Sections\Built-in\Basic Debugger.aml" />
     <None Include="Conceptual\Kernel\Kernel Sections\Built-in\Pre-reqs.aml" />
     <None Include="Conceptual\Kernel\Kernel.aml" />
+    <None Include="Welcome.aml" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="Conceptual\Kernel Compiler\Architecture\Fling OS - Kernel Compiler Model 1.png">

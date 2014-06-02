@@ -1,20 +1,10 @@
-﻿<html xmlns:MSHelp="http://msdn.microsoft.com/mshelp" xmlns:mshelp="http://msdn.microsoft.com/mshelp">
+﻿<html>
   <head>
-    <link rel="SHORTCUT ICON" href="./../icons/favicon.ico" />
-    <style type="text/css">.OH_CodeSnippetContainerTabLeftActive, .OH_CodeSnippetContainerTabLeft,.OH_CodeSnippetContainerTabLeftDisabled { }.OH_CodeSnippetContainerTabRightActive, .OH_CodeSnippetContainerTabRight,.OH_CodeSnippetContainerTabRightDisabled { }.OH_footer { }</style>
-    <link rel="stylesheet" type="text/css" href="./../styles/branding.css" />
-    <link rel="stylesheet" type="text/css" href="./../styles/branding-en-US.css" />
-    <style type="text/css">
-			body
-			{
-			border-left:5px solid #e6e6e6;
-			overflow-x:scroll;
-			overflow-y:scroll;
-			}
-		</style>
-    <script src="./../scripts/branding.js" type="text/javascript">
-      <!---->
-    </script>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <link rel="shortcut icon" href="../icons/favicon.ico" />
+    <link rel="stylesheet" type="text/css" href="../styles/branding.css" />
+    <link rel="stylesheet" type="text/css" href="../styles/branding-en-US.css" />
+    <script type="text/javascript" src="../scripts/branding.js"> </script>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
     <title>Device Class</title>
     <meta name="Language" content="en-us" />
@@ -25,65 +15,57 @@
     <meta name="Microsoft.Help.Id" content="T:Kernel.Hardware.Device" />
     <meta name="Description" content="Represents any device connected to the system." />
     <meta name="Microsoft.Help.ContentType" content="Reference" />
-    <meta name="BrandingAware" content="'true'" />
+    <meta name="BrandingAware" content="true" />
+    
     <meta name="container" content="Kernel.Hardware" />
     <meta name="file" content="e5482ea9-9681-74e7-1cdd-010ad43e1ac7" />
     <meta name="guid" content="e5482ea9-9681-74e7-1cdd-010ad43e1ac7" />
     
-    
-    <meta name="SelfBranded" content="true" />
+    <link rel="stylesheet" type="text/css" href="../styles/branding-Website.css" />
+    <script type="text/javascript" src="../scripts/jquery-1.11.0.min.js"></script>
+    <script type="text/javascript" src="../scripts/branding-Website.js"></script>
   </head>
-  <body onload="onLoad()" class="primary-mtps-offline-document">
-    <div class="OH_outerDiv">
-      <div class="OH_outerContent">
-        <table class="TitleTable">
+  <body onload="OnLoad('cs')">
+    <input type="hidden" id="userDataCache" class="userDataStyle" />
+    <div class="pageHeader" id="PageHeader">Fling OS<form id="SearchForm" method="get" action="#" onsubmit="javascript:TransferToSearchPage(); return false;"><input id="SearchTextBox" type="text" maxlength="200" /><button id="SearchButton" type="submit"></button></form></div>
+    <div class="pageBody">
+      <div class="leftNav" id="leftNav"><div id="tocNav"><div class="toclevel0" data-toclevel="0"><a class="tocCollapsed" onclick="javascript: Toggle(this);" href="#!"></a><a data-tochassubtree="true" href="dd3e390e-07c0-499b-8f92-2cb8e8ca8b09.htm" title="Fling OS" tocid="roottoc">Fling OS</a></div><div class="toclevel0" data-toclevel="0"><a class="tocCollapsed" onclick="javascript: Toggle(this);" href="#!"></a><a data-tochassubtree="true" href="d75eb659-6335-53f6-af7a-81814a21ab7f.htm" title="Technical" tocid="e0e0d194-2589-42a6-a2db-a50791dd3bda">Technical</a></div><div class="toclevel0" data-toclevel="0"><a class="tocCollapsed" onclick="javascript: Toggle(this);" href="#!"></a><a data-tochassubtree="true" href="d75eb659-6335-53f6-af7a-81814a21ab7f.htm" title="Kernel" tocid="d75eb659-6335-53f6-af7a-81814a21ab7f">Kernel</a></div><div class="toclevel0" data-toclevel="0"><a class="tocCollapsed" onclick="javascript: Toggle(this);" href="#!"></a><a data-tochassubtree="true" href="698f5b42-1ce4-46d2-d61e-8f36ddefa90d.htm" title="Kernel.Hardware Namespaces" tocid="698f5b42-1ce4-46d2-d61e-8f36ddefa90d">Kernel.Hardware Namespaces</a></div><div class="toclevel0" data-toclevel="0"><a class="tocCollapsed" onclick="javascript: Toggle(this);" href="#!"></a><a data-tochassubtree="true" href="3e3911b0-7fd6-94b6-b7ae-f5a0893dd34e.htm" title="Kernel.Hardware" tocid="3e3911b0-7fd6-94b6-b7ae-f5a0893dd34e">Kernel.Hardware</a></div><div class="toclevel1 current" data-toclevel="1" data-childrenloaded="true"><a class="tocExpanded" onclick="javascript: Toggle(this);" href="#!"></a><a data-tochassubtree="true" href="e5482ea9-9681-74e7-1cdd-010ad43e1ac7.htm" title="Device Class" tocid="e5482ea9-9681-74e7-1cdd-010ad43e1ac7">Device Class</a></div><div class="toclevel2" data-toclevel="2"><a data-tochassubtree="false" href="68e6ab92-78ab-da31-25a5-ea78b1d2abb7.htm" title="Device Constructor " tocid="68e6ab92-78ab-da31-25a5-ea78b1d2abb7">Device Constructor </a></div><div class="toclevel2" data-toclevel="2"><a data-tochassubtree="false" href="25ab4119-f2bc-6aa3-6b81-c67251c87f0b.htm" title="Device Fields" tocid="25ab4119-f2bc-6aa3-6b81-c67251c87f0b">Device Fields</a></div></div></div><div id="TocResize" class="tocResize" onmousedown="OnMouseDown(event);"><img id="ResizeImageIncrease" src="../icons/TocOpen.gif" onclick="OnIncreaseToc()" alt="Click or drag to resize" title="Click or drag to resize"><img id="ResizeImageReset" src="../icons/TocClose.gif" style="display:none" onclick="OnResetToc()" alt="Click or drag to resize" title="Click or drag to resize"></div><div class="topicContent" id="TopicContent">
+        <table class="titleTable">
           <tr>
-            <td class="OH_tdTitleColumn">Device Class</td>
-            <td class="OH_tdRunningTitleColumn">Fling OS</td>
+            <td class="titleColumn">Device Class</td>
           </tr>
         </table>
-        <div id="mainSection">
-          <div id="mainBody">
-            <span class="introStyle"></span>
-            <div class="summary">
+        <span class="introStyle"></span>
+        <div class="summary">
             Represents any device connected to the system.
             </div>
-            <div class="OH_CollapsibleAreaRegion">
-              <div class="OH_regiontitle">Inheritance Hierarchy</div>
-              <div class="OH_CollapsibleArea_HrDiv">
-                <hr class="OH_CollapsibleArea_Hr" />
-              </div>
-            </div>
-            <div class="OH_clear"></div>
-            <a href="http://msdn2.microsoft.com/en-us/library/e5kfa45b" target="_blank">System<span id="ID0EBTPAAAAA"> </span><script type="text/javascript">
-					addToLanSpecTextIdSet("ID0EBTPAAAAA?vb=.|cpp=::|cs=.|fs=.|nu=.");
-				</script>Object</a>
-            <br />  <a href="b76e4a75-d10f-181c-419a-3c5bced4b53b.htm" target="">Kernel.FOS_System<span id="ID0EBQPAAAAA"> </span><script type="text/javascript">
-					addToLanSpecTextIdSet("ID0EBQPAAAAA?vb=.|cpp=::|cs=.|fs=.|nu=.");
-				</script>ObjectWithType</a><br />    <a href="d6c554c0-edb5-6771-a2ee-17f7dc96adfc.htm" target="">Kernel.FOS_System<span id="ID0EBNPAAAAA"> </span><script type="text/javascript">
-					addToLanSpecTextIdSet("ID0EBNPAAAAA?vb=.|cpp=::|cs=.|fs=.|nu=.");
-				</script>Object</a><br />      <span class="selflink">Kernel.Hardware<span id="ID0EBKPAAAAA"> </span><script type="text/javascript">
-					addToLanSpecTextIdSet("ID0EBKPAAAAA?vb=.|cpp=::|cs=.|fs=.|nu=.");
-				</script>Device</span><br />        <a href="b6d49855-509f-1701-c3d0-15e2c0aa6b37.htm" target="">Kernel.Hardware<span id="ID0EBHPAAAAA"> </span><script type="text/javascript">
-					addToLanSpecTextIdSet("ID0EBHPAAAAA?vb=.|cpp=::|cs=.|fs=.|nu=.");
-				</script>BlockDevice</a><br />        <a href="da3fbac2-d7aa-36e4-40ac-af10cc9ae264.htm" target="">Kernel.Hardware.PCI<span id="ID0EBEPAAAAA"> </span><script type="text/javascript">
-					addToLanSpecTextIdSet("ID0EBEPAAAAA?vb=.|cpp=::|cs=.|fs=.|nu=.");
-				</script>PCIDevice</a><br />        <a href="09193bc1-531f-f6af-d431-1eff402fd1a5.htm" target="">Kernel.Hardware.USB.HCIs<span id="ID0EBBPAAAAA"> </span><script type="text/javascript">
-					addToLanSpecTextIdSet("ID0EBBPAAAAA?vb=.|cpp=::|cs=.|fs=.|nu=.");
-				</script>HCI</a><br /><p></p><strong>Namespace:</strong> <a href="3e3911b0-7fd6-94b6-b7ae-f5a0893dd34e.htm" target="">Kernel.Hardware</a><br /><strong>Assembly:</strong> <span sdata="assembly">Kernel.Hardware</span> (in Kernel.Hardware.dll) Version: 1.0.0.0 (1.0.0.0)<div class="OH_CollapsibleAreaRegion"><div class="OH_regiontitle">Syntax</div><div class="OH_CollapsibleArea_HrDiv"><hr class="OH_CollapsibleArea_Hr" /></div></div><div class="OH_clear"></div><div id="snippetGroup_Syntax" class="code"><div id="ID0EAAFAAAAA" class="OH_CodeSnippetContainer"><div class="OH_CodeSnippetContainerTabs" id="ID0EAAFAAAAA_tabs"><div class="OH_CodeSnippetContainerTabLeftActive" id="ID0EAAFAAAAA_tabimgleft"></div><div id="ID0EAAFAAAAA_tab1" class="OH_CodeSnippetContainerTabActive" EnableCopyCode="true"><a href="#" onclick="javascript:ChangeTab('ID0EAAFAAAAA','C#','1','4');return false;">C#</a></div><div id="ID0EAAFAAAAA_tab2" class="OH_CodeSnippetContainerTabDisabledNotFirst" EnableCopyCode="true" disabled="true"><a>VB</a></div><div id="ID0EAAFAAAAA_tab3" class="OH_CodeSnippetContainerTabDisabledNotFirst" EnableCopyCode="true" disabled="true"><a>C++</a></div><div id="ID0EAAFAAAAA_tab4" class="OH_CodeSnippetContainerTabDisabledNotFirst" EnableCopyCode="true" disabled="true"><a>F#</a></div><div class="OH_CodeSnippetContainerTabRight" id="ID0EAAFAAAAA_tabimgright"></div></div><div id="ID0EAAFAAAAA_codecollection" class="OH_CodeSnippetContainerCodeCollection"><div class="OH_CodeSnippetToolBar"><div class="OH_CodeSnippetToolBarText"><a id="ID0EAAFAAAAA_ViewColorized" href="#" onclick="javascript:ExchangeTitleContent('ID0EAAFAAAAA','4')" title="View Colorized" style="display: none">View Colorized</a><a id="ID0EAAFAAAAA_copycode" href="#" onclick="javascript:CopyToClipboard('ID0EAAFAAAAA','4')" title="Copy to Clipboard">Copy to Clipboard</a><a id="ID0EAAFAAAAA_PrintText" class="OH_PrintText" href="#" onclick="javascript:Print('ID0EAAFAAAAA','4')" title="Print">Print</a></div></div><div id="ID0EAAFAAAAA_code_Div1" class="OH_CodeSnippetContainerCode" style="display: block"><pre><span class="keyword">public</span> <span class="keyword">class</span> <span class="identifier">Device</span> : <span class="identifier">Object</span></pre></div><div id="ID0EAAFAAAAA_code_Plain_Div1" class="OH_CodeSnippetContainerCode" style="display: none"><pre>public class Device : Object</pre></div><div id="ID0EAAFAAAAA_code_Div2" class="OH_CodeSnippetContainerCode" style="display: none"><pre /></div><div id="ID0EAAFAAAAA_code_Plain_Div2" class="OH_CodeSnippetContainerCode" style="display: none"><pre /></div><div id="ID0EAAFAAAAA_code_Div3" class="OH_CodeSnippetContainerCode" style="display: none"><pre /></div><div id="ID0EAAFAAAAA_code_Plain_Div3" class="OH_CodeSnippetContainerCode" style="display: none"><pre /></div><div id="ID0EAAFAAAAA_code_Div4" class="OH_CodeSnippetContainerCode" style="display: none"><pre /></div><div id="ID0EAAFAAAAA_code_Plain_Div4" class="OH_CodeSnippetContainerCode" style="display: none"><pre /></div></div></div><script>addSpecificTextLanguageTagSet('ID0EAAFAAAAA');</script></div><p>The <span class="selflink">Device</span> type exposes the following members.</p><div class="OH_CollapsibleAreaRegion"><div class="OH_regiontitle">Constructors</div><div class="OH_CollapsibleArea_HrDiv"><hr class="OH_CollapsibleArea_Hr" /></div></div><div class="OH_clear"></div><table id="memberList" class="members"><tr><th class="ps_iconColumn">
-							 
-						</th><th class="ps_nameColumn">Name</th><th class="ps_descriptionColumn">Description</th></tr><tr data="public;declared;notNetfw;"><td><img src="./../icons/pubmethod.gif" alt="Public method" title="Public method" /></td><td><a href="68e6ab92-78ab-da31-25a5-ea78b1d2abb7.htm" target="">Device</a></td><td><div class="summary">Initializes a new instance of the <span class="selflink">Device</span> class</div></td></tr></table><a href="#mainBody" target="">Top</a><div class="OH_CollapsibleAreaRegion"><div class="OH_regiontitle">Fields</div><div class="OH_CollapsibleArea_HrDiv"><hr class="OH_CollapsibleArea_Hr" /></div></div><div class="OH_clear"></div><table id="memberList" class="members"><tr><th class="ps_iconColumn">
-							 
-						</th><th class="ps_nameColumn">Name</th><th class="ps_descriptionColumn">Description</th></tr><tr data="public;inherited;notNetfw;"><td><img src="./../icons/pubfield.gif" alt="Public field" title="Public field" /></td><td><a href="319b7241-a5ca-02b2-c216-b877e53644bd.htm" target="">_Type</a></td><td><div class="summary">
-            The underlying, specific type of the object specified when it was created.
-            </div> (Inherited from <a href="b76e4a75-d10f-181c-419a-3c5bced4b53b.htm" target="">ObjectWithType</a>.)</td></tr></table><a href="#mainBody" target="">Top</a><a name="seeAlsoSection"><!----></a><div class="OH_CollapsibleAreaRegion"><div class="OH_regiontitle">See Also</div><div class="OH_CollapsibleArea_HrDiv"><hr class="OH_CollapsibleArea_Hr" /></div></div><div class="OH_clear"></div><div class="seeAlsoStyle"><a href="3e3911b0-7fd6-94b6-b7ae-f5a0893dd34e.htm" target="">Kernel.Hardware Namespace</a></div></div>
+        <div class="collapsibleAreaRegion">
+          <span class="collapsibleRegionTitle" onclick="SectionExpandCollapse('ID0RB')" onkeypress="SectionExpandCollapse_CheckKey('ID0RB', event)" tabindex="0">
+            <img id="ID0RBToggle" class="collapseToggle" src="../icons/SectionExpanded.png" />Inheritance Hierarchy</span>
         </div>
-      </div>
+        <div id="ID0RBSection" class="collapsibleSection">
+          <span class="nolink">System<span id="LSTA049A833_0"></span><script type="text/javascript">AddLanguageSpecificTextSet("LSTA049A833_0?cs=.|vb=.|cpp=::|nu=.|fs=.");</script>Object</span>
+          <br />  <a href="b76e4a75-d10f-181c-419a-3c5bced4b53b.htm">Kernel.FOS_System<span id="LSTA049A833_1"></span><script type="text/javascript">AddLanguageSpecificTextSet("LSTA049A833_1?cs=.|vb=.|cpp=::|nu=.|fs=.");</script>ObjectWithType</a><br />    <a href="d6c554c0-edb5-6771-a2ee-17f7dc96adfc.htm">Kernel.FOS_System<span id="LSTA049A833_2"></span><script type="text/javascript">AddLanguageSpecificTextSet("LSTA049A833_2?cs=.|vb=.|cpp=::|nu=.|fs=.");</script>Object</a><br />      <span class="selflink">Kernel.Hardware<span id="LSTA049A833_3"></span><script type="text/javascript">AddLanguageSpecificTextSet("LSTA049A833_3?cs=.|vb=.|cpp=::|nu=.|fs=.");</script>Device</span><br />        <a href="b6d49855-509f-1701-c3d0-15e2c0aa6b37.htm">Kernel.Hardware<span id="LSTA049A833_4"></span><script type="text/javascript">AddLanguageSpecificTextSet("LSTA049A833_4?cs=.|vb=.|cpp=::|nu=.|fs=.");</script>BlockDevice</a><br />        <a href="da3fbac2-d7aa-36e4-40ac-af10cc9ae264.htm">Kernel.Hardware.PCI<span id="LSTA049A833_5"></span><script type="text/javascript">AddLanguageSpecificTextSet("LSTA049A833_5?cs=.|vb=.|cpp=::|nu=.|fs=.");</script>PCIDevice</a><br />        <a href="09193bc1-531f-f6af-d431-1eff402fd1a5.htm">Kernel.Hardware.USB.HCIs<span id="LSTA049A833_6"></span><script type="text/javascript">AddLanguageSpecificTextSet("LSTA049A833_6?cs=.|vb=.|cpp=::|nu=.|fs=.");</script>HCI</a><br /></div>
+        <p> </p>
+        <strong>Namespace:</strong> <a href="3e3911b0-7fd6-94b6-b7ae-f5a0893dd34e.htm">Kernel.Hardware</a><br /><strong>Assembly:</strong> Kernel.Hardware (in Kernel.Hardware.dll) Version: 1.0.0.0 (1.0.0.0)<div class="collapsibleAreaRegion"><span class="collapsibleRegionTitle" onclick="SectionExpandCollapse('ID2RB')" onkeypress="SectionExpandCollapse_CheckKey('ID2RB', event)" tabindex="0"><img id="ID2RBToggle" class="collapseToggle" src="../icons/SectionExpanded.png" />Syntax</span></div><div id="ID2RBSection" class="collapsibleSection"><div class="codeSnippetContainer"><div class="codeSnippetContainerTabs"><div id="ID1EACA_tab1" class="codeSnippetContainerTabSingle">C#</div></div><div class="codeSnippetContainerCodeContainer"><div class="codeSnippetToolBar"><div class="codeSnippetToolBarText"><a id="ID1EACA_copyCode" href="#" onclick="javascript:CopyToClipboard('ID1EACA');return false;" title="Copy">Copy</a></div></div><div id="ID1EACA_code_Div1" class="codeSnippetContainerCode" style="display: block"><pre xml:space="preserve"><span class="keyword">public</span> <span class="keyword">class</span> <span class="identifier">Device</span> : <span class="identifier">Object</span></pre></div></div></div><script type="text/javascript">AddLanguageTabSet("ID1EACA");</script></div><p>The <span class="selflink">Device</span> type exposes the following members.</p><div class="collapsibleAreaRegion"><span class="collapsibleRegionTitle" onclick="SectionExpandCollapse('ID3RB')" onkeypress="SectionExpandCollapse_CheckKey('ID3RB', event)" tabindex="0"><img id="ID3RBToggle" class="collapseToggle" src="../icons/SectionExpanded.png" />Constructors</span></div><div id="ID3RBSection" class="collapsibleSection"><table id="memberList" class="members"><tr><th class="iconColumn">
+								 
+							</th><th>Name</th><th>Description</th></tr><tr data="public;declared;notNetfw;"><td><img src="../icons/pubmethod.gif" alt="Public method" title="Public method" /></td><td><a href="68e6ab92-78ab-da31-25a5-ea78b1d2abb7.htm">Device</a></td><td><div class="summary">Initializes a new instance of the <span class="selflink">Device</span> class</div></td></tr></table><a href="#PageHeader">Top</a></div><div class="collapsibleAreaRegion"><span class="collapsibleRegionTitle" onclick="SectionExpandCollapse('ID4RB')" onkeypress="SectionExpandCollapse_CheckKey('ID4RB', event)" tabindex="0"><img id="ID4RBToggle" class="collapseToggle" src="../icons/SectionExpanded.png" />Fields</span></div><div id="ID4RBSection" class="collapsibleSection"><table id="memberList" class="members"><tr><th class="iconColumn">
+								 
+							</th><th>Name</th><th>Description</th></tr><tr data="public;inherited;notNetfw;"><td><img src="../icons/pubfield.gif" alt="Public field" title="Public field" /></td><td><a href="319b7241-a5ca-02b2-c216-b877e53644bd.htm">_Type</a></td><td><div class="summary">
+            The underlying, specific type of the object specified when it was created.
+            </div> (Inherited from <a href="b76e4a75-d10f-181c-419a-3c5bced4b53b.htm">ObjectWithType</a>.)</td></tr></table><a href="#PageHeader">Top</a></div><div class="collapsibleAreaRegion" id="seeAlsoSection"><span class="collapsibleRegionTitle" onclick="SectionExpandCollapse('ID5RB')" onkeypress="SectionExpandCollapse_CheckKey('ID5RB', event)" tabindex="0"><img id="ID5RBToggle" class="collapseToggle" src="../icons/SectionExpanded.png" />See Also</span></div><div id="ID5RBSection" class="collapsibleSection"><h4 class="subHeading">Reference</h4><div class="seeAlsoStyle"><a href="3e3911b0-7fd6-94b6-b7ae-f5a0893dd34e.htm">Kernel.Hardware Namespace</a></div></div></div>
     </div>
-    <div id="OH_footer" class="OH_footer">
-      <p>Copyright Edward Nutting 2014</p>
-      <div class="OH_feedbacklink">
-        <a href="mailto:edwardnutting@outlook.com?subject=Fling+OS+Device+Class+100+EN-US&amp;body=Your%20feedback%20is%20used%20to%20improve%20the%20documentation%20and%20the%20product.%20Your%20e-mail%20address%20will%20not%20be%20used%20for%20any%20other%20purpose%20and%20is%20disposed%20of%20after%20the%20issue%20you%20report%20is%20resolved.%20While%20working%20to%20resolve%20the%20issue%20that%20you%20report%2c%20you%20may%20be%20contacted%20via%20e-mail%20to%20get%20further%20details%20or%20clarification%20on%20the%20feedback%20you%20sent.%20After%20the%20issue%20you%20report%20has%20been%20addressed%2c%20you%20may%20receive%20an%20e-mail%20to%20let%20you%20know%20that%20your%20feedback%20has%20been%20addressed.">Send Feedback</a> on this topic to Edward Nutting.</div>
-    </div>
+    <div id="pageFooter" class="pageFooter">
+      <p>
+        <a href="http://www.flingos.co.uk" target="_blank">Copyright Edward Nutting 2014</a>
+      </p>
+      <div class="feedbackLink">Send comments on this topic to
+        <a id="HT_MailLink" href="mailto:edwardnutting%40outlook.com?Subject=Fling OS">Edward Nutting</a></div>
+      <script type="text/javascript">
+        var HT_mailLink = document.getElementById("HT_MailLink");
+        var HT_mailLinkText = HT_mailLink.innerHTML;
+        HT_mailLink.href += ": " + document.title + "\u0026body=" + encodeURIComponent("Your feedback is used to improve the documentation and the product. Your e-mail address will not be used for any other purpose and is disposed of after the issue you report is resolved. While working to resolve the issue that you report, you may be contacted via e-mail to get further details or clarification on the feedback you sent. After the issue you report has been addressed, you may receive an e-mail to let you know that your feedback has been addressed.");
+        HT_mailLink.innerHTML = HT_mailLinkText;
+        </script> </div>
   </body>
 </html>

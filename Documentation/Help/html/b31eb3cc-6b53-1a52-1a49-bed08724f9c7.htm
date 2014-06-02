@@ -1,20 +1,10 @@
-﻿<html xmlns:MSHelp="http://msdn.microsoft.com/mshelp" xmlns:mshelp="http://msdn.microsoft.com/mshelp">
+﻿<html>
   <head>
-    <link rel="SHORTCUT ICON" href="./../icons/favicon.ico" />
-    <style type="text/css">.OH_CodeSnippetContainerTabLeftActive, .OH_CodeSnippetContainerTabLeft,.OH_CodeSnippetContainerTabLeftDisabled { }.OH_CodeSnippetContainerTabRightActive, .OH_CodeSnippetContainerTabRight,.OH_CodeSnippetContainerTabRightDisabled { }.OH_footer { }</style>
-    <link rel="stylesheet" type="text/css" href="./../styles/branding.css" />
-    <link rel="stylesheet" type="text/css" href="./../styles/branding-en-US.css" />
-    <style type="text/css">
-			body
-			{
-			border-left:5px solid #e6e6e6;
-			overflow-x:scroll;
-			overflow-y:scroll;
-			}
-		</style>
-    <script src="./../scripts/branding.js" type="text/javascript">
-      <!---->
-    </script>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <link rel="shortcut icon" href="../icons/favicon.ico" />
+    <link rel="stylesheet" type="text/css" href="../styles/branding.css" />
+    <link rel="stylesheet" type="text/css" href="../styles/branding-en-US.css" />
+    <script type="text/javascript" src="../scripts/branding.js"> </script>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
     <title>ExceptionMethods.Rethrow Method </title>
     <meta name="Language" content="en-us" />
@@ -24,40 +14,44 @@
     <meta name="Microsoft.Help.Id" content="M:Kernel.ExceptionMethods.Rethrow" />
     <meta name="Description" content="Rethrows the current exception." />
     <meta name="Microsoft.Help.ContentType" content="Reference" />
-    <meta name="BrandingAware" content="'true'" />
+    <meta name="BrandingAware" content="true" />
+    
     <meta name="container" content="Kernel" />
     <meta name="file" content="b31eb3cc-6b53-1a52-1a49-bed08724f9c7" />
     <meta name="guid" content="b31eb3cc-6b53-1a52-1a49-bed08724f9c7" />
     
-    
-    <meta name="SelfBranded" content="true" />
+    <link rel="stylesheet" type="text/css" href="../styles/branding-Website.css" />
+    <script type="text/javascript" src="../scripts/jquery-1.11.0.min.js"></script>
+    <script type="text/javascript" src="../scripts/branding-Website.js"></script>
   </head>
-  <body onload="onLoad()" class="primary-mtps-offline-document">
-    <div class="OH_outerDiv">
-      <div class="OH_outerContent">
-        <table class="TitleTable">
+  <body onload="OnLoad('cs')">
+    <input type="hidden" id="userDataCache" class="userDataStyle" />
+    <div class="pageHeader" id="PageHeader">Fling OS<form id="SearchForm" method="get" action="#" onsubmit="javascript:TransferToSearchPage(); return false;"><input id="SearchTextBox" type="text" maxlength="200" /><button id="SearchButton" type="submit"></button></form></div>
+    <div class="pageBody">
+      <div class="leftNav" id="leftNav"><div id="tocNav"><div class="toclevel0" data-toclevel="0"><a class="tocCollapsed" onclick="javascript: Toggle(this);" href="#!"></a><a data-tochassubtree="true" href="dd3e390e-07c0-499b-8f92-2cb8e8ca8b09.htm" title="Fling OS" tocid="roottoc">Fling OS</a></div><div class="toclevel0" data-toclevel="0"><a class="tocCollapsed" onclick="javascript: Toggle(this);" href="#!"></a><a data-tochassubtree="true" href="d75eb659-6335-53f6-af7a-81814a21ab7f.htm" title="Technical" tocid="e0e0d194-2589-42a6-a2db-a50791dd3bda">Technical</a></div><div class="toclevel0" data-toclevel="0"><a class="tocCollapsed" onclick="javascript: Toggle(this);" href="#!"></a><a data-tochassubtree="true" href="d75eb659-6335-53f6-af7a-81814a21ab7f.htm" title="Kernel" tocid="d75eb659-6335-53f6-af7a-81814a21ab7f">Kernel</a></div><div class="toclevel0" data-toclevel="0"><a class="tocCollapsed" onclick="javascript: Toggle(this);" href="#!"></a><a data-tochassubtree="true" href="9d41ff33-a974-0813-84c7-2f139588649a.htm" title="Kernel" tocid="9d41ff33-a974-0813-84c7-2f139588649a">Kernel</a></div><div class="toclevel0" data-toclevel="0"><a class="tocCollapsed" onclick="javascript: Toggle(this);" href="#!"></a><a data-tochassubtree="true" href="2c1aa10d-325a-3dcd-7a7e-b1adac3ffd41.htm" title="ExceptionMethods Class" tocid="2c1aa10d-325a-3dcd-7a7e-b1adac3ffd41">ExceptionMethods Class</a></div><div class="toclevel1" data-toclevel="1" data-childrenloaded="true"><a class="tocExpanded" onclick="javascript: Toggle(this);" href="#!"></a><a data-tochassubtree="true" href="d70970f0-e5aa-8042-30f6-b28f1d6a208b.htm" title="ExceptionMethods Methods" tocid="d70970f0-e5aa-8042-30f6-b28f1d6a208b">ExceptionMethods Methods</a></div><div class="toclevel2" data-toclevel="2"><a data-tochassubtree="false" href="3058ef0b-3982-aec8-18ed-4e02edf398cf.htm" title="AddExceptionHandlerInfo Method " tocid="3058ef0b-3982-aec8-18ed-4e02edf398cf">AddExceptionHandlerInfo Method </a></div><div class="toclevel2" data-toclevel="2"><a data-tochassubtree="false" href="75f13fc0-e9a5-f05d-b94f-782886f4553a.htm" title="HandleEndFinally Method " tocid="75f13fc0-e9a5-f05d-b94f-782886f4553a">HandleEndFinally Method </a></div><div class="toclevel2" data-toclevel="2"><a data-tochassubtree="false" href="23236d1c-174c-0d2b-cf7d-9252c449b567.htm" title="HandleException Method " tocid="23236d1c-174c-0d2b-cf7d-9252c449b567">HandleException Method </a></div><div class="toclevel2" data-toclevel="2"><a data-tochassubtree="false" href="a5cc4b32-ac2d-06db-4c0e-e897a9ce7457.htm" title="HandleLeave Method " tocid="a5cc4b32-ac2d-06db-4c0e-e897a9ce7457">HandleLeave Method </a></div><div class="toclevel2 current" data-toclevel="2"><a data-tochassubtree="false" href="b31eb3cc-6b53-1a52-1a49-bed08724f9c7.htm" title="Rethrow Method " tocid="b31eb3cc-6b53-1a52-1a49-bed08724f9c7">Rethrow Method </a></div><div class="toclevel2" data-toclevel="2"><a data-tochassubtree="false" href="aca5dbe2-e667-d74e-8ae2-b0ca7a91a50d.htm" title="Throw Method " tocid="aca5dbe2-e667-d74e-8ae2-b0ca7a91a50d">Throw Method </a></div><div class="toclevel2" data-toclevel="2"><a data-tochassubtree="false" href="8e84ee04-4cb2-5a05-4a35-8735f6953cef.htm" title="Throw_ArrayTypeMismatchException Method " tocid="8e84ee04-4cb2-5a05-4a35-8735f6953cef">Throw_ArrayTypeMismatchException Method </a></div><div class="toclevel2" data-toclevel="2"><a data-tochassubtree="false" href="1f0b50a6-6089-748d-b1f4-dcfc9db82306.htm" title="Throw_DivideByZeroException Method " tocid="1f0b50a6-6089-748d-b1f4-dcfc9db82306">Throw_DivideByZeroException Method </a></div><div class="toclevel2" data-toclevel="2"><a data-tochassubtree="false" href="a48526d2-cfa1-2834-2da6-aee510e1b287.htm" title="Throw_DoubleFaultException Method " tocid="a48526d2-cfa1-2834-2da6-aee510e1b287">Throw_DoubleFaultException Method </a></div><div class="toclevel2" data-toclevel="2"><a data-tochassubtree="false" href="7214cf3d-b642-0b42-b5ab-4ea2f047b3be.htm" title="Throw_IndexOutOfRangeException Method " tocid="7214cf3d-b642-0b42-b5ab-4ea2f047b3be">Throw_IndexOutOfRangeException Method </a></div><div class="toclevel2" data-toclevel="2"><a data-tochassubtree="false" href="db32dc76-14f4-7eba-19ab-4a3e50d98565.htm" title="Throw_InvalidOpCodeException Method " tocid="db32dc76-14f4-7eba-19ab-4a3e50d98565">Throw_InvalidOpCodeException Method </a></div><div class="toclevel2" data-toclevel="2"><a data-tochassubtree="false" href="65ad3b75-3112-ca48-9e0f-d9342070ef8a.htm" title="Throw_NullReferenceException Method " tocid="65ad3b75-3112-ca48-9e0f-d9342070ef8a">Throw_NullReferenceException Method </a></div><div class="toclevel2" data-toclevel="2"><a data-tochassubtree="false" href="9fe4eabc-3a1a-e5b9-7e5b-8edc4dfdf37e.htm" title="Throw_OverflowException Method " tocid="9fe4eabc-3a1a-e5b9-7e5b-8edc4dfdf37e">Throw_OverflowException Method </a></div><div class="toclevel2" data-toclevel="2"><a data-tochassubtree="false" href="2bb9237e-b758-60d8-5db6-cbc4d65bd8f2.htm" title="Throw_PageFaultException Method " tocid="2bb9237e-b758-60d8-5db6-cbc4d65bd8f2">Throw_PageFaultException Method </a></div><div class="toclevel2" data-toclevel="2"><a data-tochassubtree="false" href="b4e7c8eb-7cef-5028-6a35-0311d59c1e61.htm" title="Throw_StackException Method " tocid="b4e7c8eb-7cef-5028-6a35-0311d59c1e61">Throw_StackException Method </a></div><div class="toclevel2" data-toclevel="2"><a data-tochassubtree="false" href="77b73063-d4d0-3176-a4e9-31fd1e75eed3.htm" title="ThrowFromPtr Method " tocid="77b73063-d4d0-3176-a4e9-31fd1e75eed3">ThrowFromPtr Method </a></div></div></div><div id="TocResize" class="tocResize" onmousedown="OnMouseDown(event);"><img id="ResizeImageIncrease" src="../icons/TocOpen.gif" onclick="OnIncreaseToc()" alt="Click or drag to resize" title="Click or drag to resize"><img id="ResizeImageReset" src="../icons/TocClose.gif" style="display:none" onclick="OnResetToc()" alt="Click or drag to resize" title="Click or drag to resize"></div><div class="topicContent" id="TopicContent">
+        <table class="titleTable">
           <tr>
-            <td class="OH_tdTitleColumn">ExceptionMethods<span id="ID0EBBABAAA"> </span><script type="text/javascript">
-					addToLanSpecTextIdSet("ID0EBBABAAA?vb=.|cpp=::|cs=.|fs=.|nu=.");
-				</script>Rethrow Method </td>
-            <td class="OH_tdRunningTitleColumn">Fling OS</td>
+            <td class="titleColumn">ExceptionMethods<span id="LST4E765416_0"></span><script type="text/javascript">AddLanguageSpecificTextSet("LST4E765416_0?cpp=::|nu=.");</script>Rethrow Method </td>
           </tr>
         </table>
-        <div id="mainSection">
-          <div id="mainBody">
-            <span class="introStyle"></span>
-            <div class="summary">
+        <span class="introStyle"></span>
+        <div class="summary">
             Rethrows the current exception.
             </div>
-            <p></p>
-            <strong>Namespace:</strong> <a href="9d41ff33-a974-0813-84c7-2f139588649a.htm" target="">Kernel</a><br /><strong>Assembly:</strong> <span sdata="assembly">Kernel.FOS_System</span> (in Kernel.FOS_System.dll) Version: 1.0.0.0 (1.0.0.0)<div class="OH_CollapsibleAreaRegion"><div class="OH_regiontitle">Syntax</div><div class="OH_CollapsibleArea_HrDiv"><hr class="OH_CollapsibleArea_Hr" /></div></div><div class="OH_clear"></div><div id="snippetGroup_Syntax" class="code"><div id="ID0EAACAAAAA" class="OH_CodeSnippetContainer"><div class="OH_CodeSnippetContainerTabs" id="ID0EAACAAAAA_tabs"><div class="OH_CodeSnippetContainerTabLeftActive" id="ID0EAACAAAAA_tabimgleft"></div><div id="ID0EAACAAAAA_tab1" class="OH_CodeSnippetContainerTabActive" EnableCopyCode="true"><a href="#" onclick="javascript:ChangeTab('ID0EAACAAAAA','C#','1','4');return false;">C#</a></div><div id="ID0EAACAAAAA_tab2" class="OH_CodeSnippetContainerTabDisabledNotFirst" EnableCopyCode="true" disabled="true"><a>VB</a></div><div id="ID0EAACAAAAA_tab3" class="OH_CodeSnippetContainerTabDisabledNotFirst" EnableCopyCode="true" disabled="true"><a>C++</a></div><div id="ID0EAACAAAAA_tab4" class="OH_CodeSnippetContainerTabDisabledNotFirst" EnableCopyCode="true" disabled="true"><a>F#</a></div><div class="OH_CodeSnippetContainerTabRight" id="ID0EAACAAAAA_tabimgright"></div></div><div id="ID0EAACAAAAA_codecollection" class="OH_CodeSnippetContainerCodeCollection"><div class="OH_CodeSnippetToolBar"><div class="OH_CodeSnippetToolBarText"><a id="ID0EAACAAAAA_ViewColorized" href="#" onclick="javascript:ExchangeTitleContent('ID0EAACAAAAA','4')" title="View Colorized" style="display: none">View Colorized</a><a id="ID0EAACAAAAA_copycode" href="#" onclick="javascript:CopyToClipboard('ID0EAACAAAAA','4')" title="Copy to Clipboard">Copy to Clipboard</a><a id="ID0EAACAAAAA_PrintText" class="OH_PrintText" href="#" onclick="javascript:Print('ID0EAACAAAAA','4')" title="Print">Print</a></div></div><div id="ID0EAACAAAAA_code_Div1" class="OH_CodeSnippetContainerCode" style="display: block"><pre><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="identifier">Rethrow</span>()</pre></div><div id="ID0EAACAAAAA_code_Plain_Div1" class="OH_CodeSnippetContainerCode" style="display: none"><pre>public static void Rethrow()</pre></div><div id="ID0EAACAAAAA_code_Div2" class="OH_CodeSnippetContainerCode" style="display: none"><pre /></div><div id="ID0EAACAAAAA_code_Plain_Div2" class="OH_CodeSnippetContainerCode" style="display: none"><pre /></div><div id="ID0EAACAAAAA_code_Div3" class="OH_CodeSnippetContainerCode" style="display: none"><pre /></div><div id="ID0EAACAAAAA_code_Plain_Div3" class="OH_CodeSnippetContainerCode" style="display: none"><pre /></div><div id="ID0EAACAAAAA_code_Div4" class="OH_CodeSnippetContainerCode" style="display: none"><pre /></div><div id="ID0EAACAAAAA_code_Plain_Div4" class="OH_CodeSnippetContainerCode" style="display: none"><pre /></div></div></div><script>addSpecificTextLanguageTagSet('ID0EAACAAAAA');</script></div><a name="seeAlsoSection"><!----></a><div class="OH_CollapsibleAreaRegion"><div class="OH_regiontitle">See Also</div><div class="OH_CollapsibleArea_HrDiv"><hr class="OH_CollapsibleArea_Hr" /></div></div><div class="OH_clear"></div><div class="seeAlsoStyle"><a href="2c1aa10d-325a-3dcd-7a7e-b1adac3ffd41.htm" target="">ExceptionMethods Class</a></div><div class="seeAlsoStyle"><a href="9d41ff33-a974-0813-84c7-2f139588649a.htm" target="">Kernel Namespace</a></div></div>
-        </div>
-      </div>
+        <p> </p>
+        <strong>Namespace:</strong> <a href="9d41ff33-a974-0813-84c7-2f139588649a.htm">Kernel</a><br /><strong>Assembly:</strong> Kernel.FOS_System (in Kernel.FOS_System.dll) Version: 1.0.0.0 (1.0.0.0)<div class="collapsibleAreaRegion"><span class="collapsibleRegionTitle" onclick="SectionExpandCollapse('ID1RB')" onkeypress="SectionExpandCollapse_CheckKey('ID1RB', event)" tabindex="0"><img id="ID1RBToggle" class="collapseToggle" src="../icons/SectionExpanded.png" />Syntax</span></div><div id="ID1RBSection" class="collapsibleSection"><div class="codeSnippetContainer"><div class="codeSnippetContainerTabs"><div id="ID0EACA_tab1" class="codeSnippetContainerTabSingle">C#</div></div><div class="codeSnippetContainerCodeContainer"><div class="codeSnippetToolBar"><div class="codeSnippetToolBarText"><a id="ID0EACA_copyCode" href="#" onclick="javascript:CopyToClipboard('ID0EACA');return false;" title="Copy">Copy</a></div></div><div id="ID0EACA_code_Div1" class="codeSnippetContainerCode" style="display: block"><pre xml:space="preserve"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="identifier">Rethrow</span>()</pre></div></div></div><script type="text/javascript">AddLanguageTabSet("ID0EACA");</script></div><div class="collapsibleAreaRegion" id="seeAlsoSection"><span class="collapsibleRegionTitle" onclick="SectionExpandCollapse('ID2RB')" onkeypress="SectionExpandCollapse_CheckKey('ID2RB', event)" tabindex="0"><img id="ID2RBToggle" class="collapseToggle" src="../icons/SectionExpanded.png" />See Also</span></div><div id="ID2RBSection" class="collapsibleSection"><h4 class="subHeading">Reference</h4><div class="seeAlsoStyle"><a href="2c1aa10d-325a-3dcd-7a7e-b1adac3ffd41.htm">ExceptionMethods Class</a></div><div class="seeAlsoStyle"><a href="9d41ff33-a974-0813-84c7-2f139588649a.htm">Kernel Namespace</a></div></div></div>
     </div>
-    <div id="OH_footer" class="OH_footer">
-      <p>Copyright Edward Nutting 2014</p>
-      <div class="OH_feedbacklink">
-        <a href="mailto:edwardnutting@outlook.com?subject=Fling+OS+ExceptionMethods.Rethrow+Method++100+EN-US&amp;body=Your%20feedback%20is%20used%20to%20improve%20the%20documentation%20and%20the%20product.%20Your%20e-mail%20address%20will%20not%20be%20used%20for%20any%20other%20purpose%20and%20is%20disposed%20of%20after%20the%20issue%20you%20report%20is%20resolved.%20While%20working%20to%20resolve%20the%20issue%20that%20you%20report%2c%20you%20may%20be%20contacted%20via%20e-mail%20to%20get%20further%20details%20or%20clarification%20on%20the%20feedback%20you%20sent.%20After%20the%20issue%20you%20report%20has%20been%20addressed%2c%20you%20may%20receive%20an%20e-mail%20to%20let%20you%20know%20that%20your%20feedback%20has%20been%20addressed.">Send Feedback</a> on this topic to Edward Nutting.</div>
-    </div>
+    <div id="pageFooter" class="pageFooter">
+      <p>
+        <a href="http://www.flingos.co.uk" target="_blank">Copyright Edward Nutting 2014</a>
+      </p>
+      <div class="feedbackLink">Send comments on this topic to
+        <a id="HT_MailLink" href="mailto:edwardnutting%40outlook.com?Subject=Fling OS">Edward Nutting</a></div>
+      <script type="text/javascript">
+        var HT_mailLink = document.getElementById("HT_MailLink");
+        var HT_mailLinkText = HT_mailLink.innerHTML;
+        HT_mailLink.href += ": " + document.title + "\u0026body=" + encodeURIComponent("Your feedback is used to improve the documentation and the product. Your e-mail address will not be used for any other purpose and is disposed of after the issue you report is resolved. While working to resolve the issue that you report, you may be contacted via e-mail to get further details or clarification on the feedback you sent. After the issue you report has been addressed, you may receive an e-mail to let you know that your feedback has been addressed.");
+        HT_mailLink.innerHTML = HT_mailLinkText;
+        </script> </div>
   </body>
 </html>

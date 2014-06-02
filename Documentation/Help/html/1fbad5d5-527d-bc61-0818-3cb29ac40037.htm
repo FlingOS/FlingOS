@@ -1,0 +1,854 @@
+﻿<html>
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <link rel="shortcut icon" href="../icons/favicon.ico" />
+    <link rel="stylesheet" type="text/css" href="../styles/branding.css" />
+    <link rel="stylesheet" type="text/css" href="../styles/branding-en-US.css" />
+    <script type="text/javascript" src="../scripts/branding.js"> </script>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <title>Kernel.Compiler.ILOps Namespace</title>
+    <meta name="Language" content="en-us" />
+    <meta name="System.Keywords" content="Kernel.Compiler.ILOps namespace" />
+    <meta name="Microsoft.Help.F1" content="Kernel.Compiler.ILOps" />
+    <meta name="Microsoft.Help.Id" content="N:Kernel.Compiler.ILOps" />
+    <meta name="Description" content="Contains all the IL to ASM conversion classes for supported IL ops." />
+    <meta name="Microsoft.Help.ContentType" content="Reference" />
+    <meta name="BrandingAware" content="true" />
+    
+    <meta name="container" content="Kernel.Compiler.ILOps" />
+    <meta name="file" content="1fbad5d5-527d-bc61-0818-3cb29ac40037" />
+    <meta name="guid" content="1fbad5d5-527d-bc61-0818-3cb29ac40037" />
+    
+    <link rel="stylesheet" type="text/css" href="../styles/branding-Website.css" />
+    <script type="text/javascript" src="../scripts/jquery-1.11.0.min.js"></script>
+    <script type="text/javascript" src="../scripts/branding-Website.js"></script>
+  </head>
+  <body onload="OnLoad('cs')">
+    <input type="hidden" id="userDataCache" class="userDataStyle" />
+    <div class="pageHeader" id="PageHeader">Fling OS<form id="SearchForm" method="get" action="#" onsubmit="javascript:TransferToSearchPage(); return false;"><input id="SearchTextBox" type="text" maxlength="200" /><button id="SearchButton" type="submit"></button></form></div>
+    <div class="pageBody">
+      <div class="leftNav" id="leftNav"><div id="tocNav"><div class="toclevel0" data-toclevel="0"><a class="tocCollapsed" onclick="javascript: Toggle(this);" href="#!"></a><a data-tochassubtree="true" href="dd3e390e-07c0-499b-8f92-2cb8e8ca8b09.htm" title="Fling OS" tocid="roottoc">Fling OS</a></div><div class="toclevel0" data-toclevel="0"><a class="tocCollapsed" onclick="javascript: Toggle(this);" href="#!"></a><a data-tochassubtree="true" href="d75eb659-6335-53f6-af7a-81814a21ab7f.htm" title="Technical" tocid="e0e0d194-2589-42a6-a2db-a50791dd3bda">Technical</a></div><div class="toclevel0" data-toclevel="0"><a class="tocCollapsed" onclick="javascript: Toggle(this);" href="#!"></a><a data-tochassubtree="true" href="d75eb659-6335-53f6-af7a-81814a21ab7f.htm" title="Kernel" tocid="d75eb659-6335-53f6-af7a-81814a21ab7f">Kernel</a></div><div class="toclevel0" data-toclevel="0"><a class="tocCollapsed" onclick="javascript: Toggle(this);" href="#!"></a><a data-tochassubtree="true" href="f85d4b75-ece2-4eb8-47cb-15814ba4e543.htm" title="Kernel.Compiler Namespaces" tocid="f85d4b75-ece2-4eb8-47cb-15814ba4e543">Kernel.Compiler Namespaces</a></div><div class="toclevel1 current" data-toclevel="1" data-childrenloaded="true"><a class="tocExpanded" onclick="javascript: Toggle(this);" href="#!"></a><a data-tochassubtree="true" href="1fbad5d5-527d-bc61-0818-3cb29ac40037.htm" title="Kernel.Compiler.ILOps" tocid="1fbad5d5-527d-bc61-0818-3cb29ac40037">Kernel.Compiler.ILOps</a></div><div class="toclevel2" data-toclevel="2"><a class="tocCollapsed" onclick="javascript: Toggle(this);" href="#!"></a><a data-tochassubtree="true" href="f59b34bc-eb74-22d8-b91d-10c4cd0efb6e.htm" title="Add Class" tocid="f59b34bc-eb74-22d8-b91d-10c4cd0efb6e">Add Class</a></div><div class="toclevel2" data-toclevel="2"><a class="tocCollapsed" onclick="javascript: Toggle(this);" href="#!"></a><a data-tochassubtree="true" href="5a54104c-c9a8-f8d6-096a-a124223b1b48.htm" title="And Class" tocid="5a54104c-c9a8-f8d6-096a-a124223b1b48">And Class</a></div><div class="toclevel2" data-toclevel="2"><a class="tocCollapsed" onclick="javascript: Toggle(this);" href="#!"></a><a data-tochassubtree="true" href="602859f9-8c62-a401-f0c4-d70855b59f62.htm" title="Br Class" tocid="602859f9-8c62-a401-f0c4-d70855b59f62">Br Class</a></div><div class="toclevel2" data-toclevel="2"><a class="tocCollapsed" onclick="javascript: Toggle(this);" href="#!"></a><a data-tochassubtree="true" href="979ff32f-d251-67c8-70b4-ae80813f0fd2.htm" title="Call Class" tocid="979ff32f-d251-67c8-70b4-ae80813f0fd2">Call Class</a></div><div class="toclevel2" data-toclevel="2"><a class="tocCollapsed" onclick="javascript: Toggle(this);" href="#!"></a><a data-tochassubtree="true" href="dd20e7c6-2d8a-b3dc-e417-6e55a0169457.htm" title="Callvirt Class" tocid="dd20e7c6-2d8a-b3dc-e417-6e55a0169457">Callvirt Class</a></div><div class="toclevel2" data-toclevel="2"><a class="tocCollapsed" onclick="javascript: Toggle(this);" href="#!"></a><a data-tochassubtree="true" href="874f85c5-f8c5-8769-009e-4ab925779c05.htm" title="Ceq Class" tocid="874f85c5-f8c5-8769-009e-4ab925779c05">Ceq Class</a></div><div class="toclevel2" data-toclevel="2"><a class="tocCollapsed" onclick="javascript: Toggle(this);" href="#!"></a><a data-tochassubtree="true" href="d10bbef5-7a7d-6ce7-d8c9-aefcdf815a8a.htm" title="Cgt Class" tocid="d10bbef5-7a7d-6ce7-d8c9-aefcdf815a8a">Cgt Class</a></div><div class="toclevel2" data-toclevel="2"><a class="tocCollapsed" onclick="javascript: Toggle(this);" href="#!"></a><a data-tochassubtree="true" href="7f2b49bc-3406-5da9-4999-02e0d0f4168c.htm" title="Clt Class" tocid="7f2b49bc-3406-5da9-4999-02e0d0f4168c">Clt Class</a></div><div class="toclevel2" data-toclevel="2"><a class="tocCollapsed" onclick="javascript: Toggle(this);" href="#!"></a><a data-tochassubtree="true" href="ba3cc149-f549-0c8e-964f-019cd7a15036.htm" title="Convi Class" tocid="ba3cc149-f549-0c8e-964f-019cd7a15036">Convi Class</a></div><div class="toclevel2" data-toclevel="2"><a class="tocCollapsed" onclick="javascript: Toggle(this);" href="#!"></a><a data-tochassubtree="true" href="2c9a6c07-ca2b-cc1f-8cb2-d7021a512860.htm" title="Convu Class" tocid="2c9a6c07-ca2b-cc1f-8cb2-d7021a512860">Convu Class</a></div><div class="toclevel2" data-toclevel="2"><a class="tocCollapsed" onclick="javascript: Toggle(this);" href="#!"></a><a data-tochassubtree="true" href="4b31fec2-68f3-97f6-921d-d3f1a15b54e6.htm" title="Div Class" tocid="4b31fec2-68f3-97f6-921d-d3f1a15b54e6">Div Class</a></div><div class="toclevel2" data-toclevel="2"><a class="tocCollapsed" onclick="javascript: Toggle(this);" href="#!"></a><a data-tochassubtree="true" href="5b956f0a-909c-74b4-b324-0bc1d75035d0.htm" title="Dup Class" tocid="5b956f0a-909c-74b4-b324-0bc1d75035d0">Dup Class</a></div><div class="toclevel2" data-toclevel="2"><a class="tocCollapsed" onclick="javascript: Toggle(this);" href="#!"></a><a data-tochassubtree="true" href="b2509f56-da11-074d-8454-6639c7cfb36a.htm" title="ILOp Class" tocid="b2509f56-da11-074d-8454-6639c7cfb36a">ILOp Class</a></div><div class="toclevel2" data-toclevel="2"><a data-tochassubtree="false" href="ed46ad74-36ed-bea2-52cc-5aee5bc1471d.htm" title="ILOp.OpCodes Enumeration" tocid="ed46ad74-36ed-bea2-52cc-5aee5bc1471d">ILOp.OpCodes Enumeration</a></div><div class="toclevel2" data-toclevel="2"><a class="tocCollapsed" onclick="javascript: Toggle(this);" href="#!"></a><a data-tochassubtree="true" href="74ff18f0-42f1-b238-bd9c-215f98b091f2.htm" title="Ldarg Class" tocid="74ff18f0-42f1-b238-bd9c-215f98b091f2">Ldarg Class</a></div><div class="toclevel2" data-toclevel="2"><a class="tocCollapsed" onclick="javascript: Toggle(this);" href="#!"></a><a data-tochassubtree="true" href="7c32652e-c676-880b-81d1-71f795a5caa7.htm" title="Ldc Class" tocid="7c32652e-c676-880b-81d1-71f795a5caa7">Ldc Class</a></div><div class="toclevel2" data-toclevel="2"><a class="tocCollapsed" onclick="javascript: Toggle(this);" href="#!"></a><a data-tochassubtree="true" href="6fb3bdab-24a6-85e7-758b-8e770db1b0c9.htm" title="Ldelem Class" tocid="6fb3bdab-24a6-85e7-758b-8e770db1b0c9">Ldelem Class</a></div><div class="toclevel2" data-toclevel="2"><a class="tocCollapsed" onclick="javascript: Toggle(this);" href="#!"></a><a data-tochassubtree="true" href="726c9ab7-a819-ed6a-fae0-33c52a5da423.htm" title="Ldfld Class" tocid="726c9ab7-a819-ed6a-fae0-33c52a5da423">Ldfld Class</a></div><div class="toclevel2" data-toclevel="2"><a class="tocCollapsed" onclick="javascript: Toggle(this);" href="#!"></a><a data-tochassubtree="true" href="08339f18-f024-4198-06c2-caf0d95d8429.htm" title="Ldftn Class" tocid="08339f18-f024-4198-06c2-caf0d95d8429">Ldftn Class</a></div><div class="toclevel2" data-toclevel="2"><a class="tocCollapsed" onclick="javascript: Toggle(this);" href="#!"></a><a data-tochassubtree="true" href="2679f831-134d-2384-0327-86a974602f37.htm" title="Ldind Class" tocid="2679f831-134d-2384-0327-86a974602f37">Ldind Class</a></div><div class="toclevel2" data-toclevel="2"><a class="tocCollapsed" onclick="javascript: Toggle(this);" href="#!"></a><a data-tochassubtree="true" href="8f6d2713-da20-5200-36de-e1d19979e702.htm" title="Ldlen Class" tocid="8f6d2713-da20-5200-36de-e1d19979e702">Ldlen Class</a></div><div class="toclevel2" data-toclevel="2"><a class="tocCollapsed" onclick="javascript: Toggle(this);" href="#!"></a><a data-tochassubtree="true" href="6890ff87-2423-4c55-28b6-205486e2ec6c.htm" title="Ldloc Class" tocid="6890ff87-2423-4c55-28b6-205486e2ec6c">Ldloc Class</a></div><div class="toclevel2" data-toclevel="2"><a class="tocCollapsed" onclick="javascript: Toggle(this);" href="#!"></a><a data-tochassubtree="true" href="3afb6002-7052-a21a-5899-a4512af1493a.htm" title="Ldnull Class" tocid="3afb6002-7052-a21a-5899-a4512af1493a">Ldnull Class</a></div><div class="toclevel2" data-toclevel="2"><a class="tocCollapsed" onclick="javascript: Toggle(this);" href="#!"></a><a data-tochassubtree="true" href="ab20db36-169f-5d44-2fd4-5f3839c9d2a0.htm" title="Ldsfld Class" tocid="ab20db36-169f-5d44-2fd4-5f3839c9d2a0">Ldsfld Class</a></div><div class="toclevel2" data-toclevel="2"><a class="tocCollapsed" onclick="javascript: Toggle(this);" href="#!"></a><a data-tochassubtree="true" href="15bdcb8c-b0ec-fbbc-9f62-5dfc5168ce10.htm" title="Ldstr Class" tocid="15bdcb8c-b0ec-fbbc-9f62-5dfc5168ce10">Ldstr Class</a></div><div class="toclevel2" data-toclevel="2"><a class="tocCollapsed" onclick="javascript: Toggle(this);" href="#!"></a><a data-tochassubtree="true" href="72bc5be3-38fb-6617-658e-92469e1ca442.htm" title="Ldtoken Class" tocid="72bc5be3-38fb-6617-658e-92469e1ca442">Ldtoken Class</a></div><div class="toclevel2" data-toclevel="2"><a class="tocCollapsed" onclick="javascript: Toggle(this);" href="#!"></a><a data-tochassubtree="true" href="427b066c-2ff1-3004-5a9c-e5999bd553a1.htm" title="MethodEnd Class" tocid="427b066c-2ff1-3004-5a9c-e5999bd553a1">MethodEnd Class</a></div><div class="toclevel2" data-toclevel="2"><a class="tocCollapsed" onclick="javascript: Toggle(this);" href="#!"></a><a data-tochassubtree="true" href="aa857e2c-2529-bb91-e42f-e7f055a71f11.htm" title="MethodStart Class" tocid="aa857e2c-2529-bb91-e42f-e7f055a71f11">MethodStart Class</a></div><div class="toclevel2" data-toclevel="2"><a class="tocCollapsed" onclick="javascript: Toggle(this);" href="#!"></a><a data-tochassubtree="true" href="4d8c2af1-372e-021f-2577-5b084514be86.htm" title="Mul Class" tocid="4d8c2af1-372e-021f-2577-5b084514be86">Mul Class</a></div><div class="toclevel2" data-toclevel="2"><a class="tocCollapsed" onclick="javascript: Toggle(this);" href="#!"></a><a data-tochassubtree="true" href="6d7f9f68-aeec-35c8-20ec-be2ac5ff2620.htm" title="Newarr Class" tocid="6d7f9f68-aeec-35c8-20ec-be2ac5ff2620">Newarr Class</a></div><div class="toclevel2" data-toclevel="2"><a class="tocCollapsed" onclick="javascript: Toggle(this);" href="#!"></a><a data-tochassubtree="true" href="afaae49f-9e80-5480-18d5-8f45dc93f09b.htm" title="Newobj Class" tocid="afaae49f-9e80-5480-18d5-8f45dc93f09b">Newobj Class</a></div><div class="toclevel2" data-toclevel="2"><a class="tocCollapsed" onclick="javascript: Toggle(this);" href="#!"></a><a data-tochassubtree="true" href="cb817663-b7b9-aa12-922f-58f092fbdfac.htm" title="Nop Class" tocid="cb817663-b7b9-aa12-922f-58f092fbdfac">Nop Class</a></div><div class="toclevel2" data-toclevel="2"><a class="tocCollapsed" onclick="javascript: Toggle(this);" href="#!"></a><a data-tochassubtree="true" href="70516818-616f-c8dd-b085-5c8493ffb73f.htm" title="Not Class" tocid="70516818-616f-c8dd-b085-5c8493ffb73f">Not Class</a></div><div class="toclevel2" data-toclevel="2"><a class="tocCollapsed" onclick="javascript: Toggle(this);" href="#!"></a><a data-tochassubtree="true" href="048ea8a5-ebdb-3357-fd7e-ae79d2bf3774.htm" title="Or Class" tocid="048ea8a5-ebdb-3357-fd7e-ae79d2bf3774">Or Class</a></div><div class="toclevel2" data-toclevel="2"><a class="tocCollapsed" onclick="javascript: Toggle(this);" href="#!"></a><a data-tochassubtree="true" href="76f13203-8e71-2792-78a9-4ae3c59e4649.htm" title="Pop Class" tocid="76f13203-8e71-2792-78a9-4ae3c59e4649">Pop Class</a></div><div class="toclevel2" data-toclevel="2"><a class="tocCollapsed" onclick="javascript: Toggle(this);" href="#!"></a><a data-tochassubtree="true" href="1fb6cfaa-2cc2-9618-424a-bb15e0b75890.htm" title="Rem Class" tocid="1fb6cfaa-2cc2-9618-424a-bb15e0b75890">Rem Class</a></div><div class="toclevel2" data-toclevel="2"><a class="tocCollapsed" onclick="javascript: Toggle(this);" href="#!"></a><a data-tochassubtree="true" href="5775af9a-e856-9130-9420-03a4e43ff05b.htm" title="Ret Class" tocid="5775af9a-e856-9130-9420-03a4e43ff05b">Ret Class</a></div><div class="toclevel2" data-toclevel="2"><a class="tocCollapsed" onclick="javascript: Toggle(this);" href="#!"></a><a data-tochassubtree="true" href="b0baa5f0-f363-7bae-095a-2803ee751053.htm" title="Shl Class" tocid="b0baa5f0-f363-7bae-095a-2803ee751053">Shl Class</a></div><div class="toclevel2" data-toclevel="2"><a class="tocCollapsed" onclick="javascript: Toggle(this);" href="#!"></a><a data-tochassubtree="true" href="830467f8-6744-338e-6cc0-8f4f981780a6.htm" title="Shr Class" tocid="830467f8-6744-338e-6cc0-8f4f981780a6">Shr Class</a></div><div class="toclevel2" data-toclevel="2"><a class="tocCollapsed" onclick="javascript: Toggle(this);" href="#!"></a><a data-tochassubtree="true" href="700fe389-8a91-a4a3-c2ac-e5e72e5e56aa.htm" title="Sizeof Class" tocid="700fe389-8a91-a4a3-c2ac-e5e72e5e56aa">Sizeof Class</a></div><div class="toclevel2" data-toclevel="2"><a class="tocCollapsed" onclick="javascript: Toggle(this);" href="#!"></a><a data-tochassubtree="true" href="bf1f479d-4c12-6cc4-3ae4-518080fdf918.htm" title="StackSwitch Class" tocid="bf1f479d-4c12-6cc4-3ae4-518080fdf918">StackSwitch Class</a></div><div class="toclevel2" data-toclevel="2"><a class="tocCollapsed" onclick="javascript: Toggle(this);" href="#!"></a><a data-tochassubtree="true" href="8cf9bcc3-e65e-1448-4e9f-a7f29b239b3a.htm" title="Starg Class" tocid="8cf9bcc3-e65e-1448-4e9f-a7f29b239b3a">Starg Class</a></div><div class="toclevel2" data-toclevel="2"><a class="tocCollapsed" onclick="javascript: Toggle(this);" href="#!"></a><a data-tochassubtree="true" href="03ba6886-29ca-27bf-210e-d7a31946d075.htm" title="Stelem Class" tocid="03ba6886-29ca-27bf-210e-d7a31946d075">Stelem Class</a></div><div class="toclevel2" data-toclevel="2"><a class="tocCollapsed" onclick="javascript: Toggle(this);" href="#!"></a><a data-tochassubtree="true" href="378bfb55-50a5-78b7-8b61-4eb1bce1f5e4.htm" title="Stfld Class" tocid="378bfb55-50a5-78b7-8b61-4eb1bce1f5e4">Stfld Class</a></div><div class="toclevel2" data-toclevel="2"><a class="tocCollapsed" onclick="javascript: Toggle(this);" href="#!"></a><a data-tochassubtree="true" href="6bf5bbb2-950e-c51e-4e4a-2fb280b27284.htm" title="Stind Class" tocid="6bf5bbb2-950e-c51e-4e4a-2fb280b27284">Stind Class</a></div><div class="toclevel2" data-toclevel="2"><a class="tocCollapsed" onclick="javascript: Toggle(this);" href="#!"></a><a data-tochassubtree="true" href="89e670a1-ea80-a70f-b64c-4613bde08264.htm" title="Stloc Class" tocid="89e670a1-ea80-a70f-b64c-4613bde08264">Stloc Class</a></div><div class="toclevel2" data-toclevel="2"><a class="tocCollapsed" onclick="javascript: Toggle(this);" href="#!"></a><a data-tochassubtree="true" href="f90bb8f1-c43b-bac8-4f86-6ad524f3ca91.htm" title="Stsfld Class" tocid="f90bb8f1-c43b-bac8-4f86-6ad524f3ca91">Stsfld Class</a></div><div class="toclevel2" data-toclevel="2"><a class="tocCollapsed" onclick="javascript: Toggle(this);" href="#!"></a><a data-tochassubtree="true" href="61ac4f17-9fe6-97d4-ea33-37eca04012bf.htm" title="Sub Class" tocid="61ac4f17-9fe6-97d4-ea33-37eca04012bf">Sub Class</a></div><div class="toclevel2" data-toclevel="2"><a class="tocCollapsed" onclick="javascript: Toggle(this);" href="#!"></a><a data-tochassubtree="true" href="5147631f-cebf-8394-ef89-ee6770594ff6.htm" title="Switch Class" tocid="5147631f-cebf-8394-ef89-ee6770594ff6">Switch Class</a></div></div></div><div id="TocResize" class="tocResize" onmousedown="OnMouseDown(event);"><img id="ResizeImageIncrease" src="../icons/TocOpen.gif" onclick="OnIncreaseToc()" alt="Click or drag to resize" title="Click or drag to resize"><img id="ResizeImageReset" src="../icons/TocClose.gif" style="display:none" onclick="OnResetToc()" alt="Click or drag to resize" title="Click or drag to resize"></div><div class="topicContent" id="TopicContent">
+        <table class="titleTable">
+          <tr>
+            <td class="titleColumn">Kernel.Compiler.ILOps Namespace</td>
+          </tr>
+        </table>
+        <span class="introStyle"></span>
+        <div class="summary">Contains all the IL to ASM conversion classes for supported IL ops.</div>
+        <div class="collapsibleAreaRegion">
+          <span class="collapsibleRegionTitle" onclick="SectionExpandCollapse('ID0RB')" onkeypress="SectionExpandCollapse_CheckKey('ID0RB', event)" tabindex="0">
+            <img id="ID0RBToggle" class="collapseToggle" src="../icons/SectionExpanded.png" />Classes</span>
+        </div>
+        <div id="ID0RBSection" class="collapsibleSection">
+          <table id="typeList" class="members">
+            <tr>
+              <th class="iconColumn">
+					 
+				</th>
+              <th>Class</th>
+              <th>Description</th>
+            </tr>
+            <tr data="class; public">
+              <td>
+                <img src="../icons/pubclass.gif" alt="Public class" title="Public class" />
+              </td>
+              <td>
+                <a href="f59b34bc-eb74-22d8-b91d-10c4cd0efb6e.htm">Add</a>
+              </td>
+              <td>
+                <div class="summary">
+            Handles the <span class="nolink">Add</span> 
+            IL op.
+            </div>
+              </td>
+            </tr>
+            <tr data="class; public">
+              <td>
+                <img src="../icons/pubclass.gif" alt="Public class" title="Public class" />
+              </td>
+              <td>
+                <a href="5a54104c-c9a8-f8d6-096a-a124223b1b48.htm">And</a>
+              </td>
+              <td>
+                <div class="summary">
+            Handles the <span class="nolink">And</span> 
+            IL op.
+            </div>
+              </td>
+            </tr>
+            <tr data="class; public">
+              <td>
+                <img src="../icons/pubclass.gif" alt="Public class" title="Public class" />
+              </td>
+              <td>
+                <a href="602859f9-8c62-a401-f0c4-d70855b59f62.htm">Br</a>
+              </td>
+              <td>
+                <div class="summary">
+            Handles the 
+            <span class="nolink">Br</span>, 
+            <span class="nolink">Br_S</span>, 
+            <span class="nolink">Brtrue</span>, 
+            <span class="nolink">Brtrue_S</span>, 
+            <span class="nolink">Brfalse</span>,  
+            <span class="nolink">Brfalse_S</span>, 
+            <span class="nolink">Beq</span>, 
+            <span class="nolink">Beq_S</span>, 
+            <span class="nolink">Bne_Un</span>, 
+            <span class="nolink">Bne_Un_S</span>, 
+            <span class="nolink">Bge</span>, 
+            <span class="nolink">Bge_S</span>, 
+            <span class="nolink">Bge_Un</span>, 
+            <span class="nolink">Bge_Un_S</span>,
+            <span class="nolink">Bgt</span>, 
+            <span class="nolink">Bgt_S</span>,
+            <span class="nolink">Bgt_Un</span>, 
+            <span class="nolink">Bgt_Un_S</span>, 
+            <span class="nolink">Ble</span>, 
+            <span class="nolink">Ble_S</span>, 
+            <span class="nolink">Ble_Un</span>, 
+            <span class="nolink">Ble_Un_S</span>, 
+            <span class="nolink">Blt</span>, 
+            <span class="nolink">Blt_S</span>, 
+            <span class="nolink">Blt_Un</span> and
+            <span class="nolink">Blt_Un_S</span> 
+            IL ops.
+            </div>
+              </td>
+            </tr>
+            <tr data="class; public">
+              <td>
+                <img src="../icons/pubclass.gif" alt="Public class" title="Public class" />
+              </td>
+              <td>
+                <a href="979ff32f-d251-67c8-70b4-ae80813f0fd2.htm">Call</a>
+              </td>
+              <td>
+                <div class="summary">
+            Handles the <span class="nolink">Call</span> IL op.
+            </div>
+              </td>
+            </tr>
+            <tr data="class; public">
+              <td>
+                <img src="../icons/pubclass.gif" alt="Public class" title="Public class" />
+              </td>
+              <td>
+                <a href="dd20e7c6-2d8a-b3dc-e417-6e55a0169457.htm">Callvirt</a>
+              </td>
+              <td>
+                <div class="summary">
+            Handles the <span class="nolink">Callvirt</span> IL op.
+            </div>
+              </td>
+            </tr>
+            <tr data="class; public">
+              <td>
+                <img src="../icons/pubclass.gif" alt="Public class" title="Public class" />
+              </td>
+              <td>
+                <a href="874f85c5-f8c5-8769-009e-4ab925779c05.htm">Ceq</a>
+              </td>
+              <td>
+                <div class="summary">
+            Handles the <span class="nolink">Ceq</span> 
+            IL op.
+            </div>
+              </td>
+            </tr>
+            <tr data="class; public">
+              <td>
+                <img src="../icons/pubclass.gif" alt="Public class" title="Public class" />
+              </td>
+              <td>
+                <a href="d10bbef5-7a7d-6ce7-d8c9-aefcdf815a8a.htm">Cgt</a>
+              </td>
+              <td>
+                <div class="summary">
+            Handles the <span class="nolink">Cgt</span> and
+            <span class="nolink">Cgt_Un</span> IL ops.
+            </div>
+              </td>
+            </tr>
+            <tr data="class; public">
+              <td>
+                <img src="../icons/pubclass.gif" alt="Public class" title="Public class" />
+              </td>
+              <td>
+                <a href="7f2b49bc-3406-5da9-4999-02e0d0f4168c.htm">Clt</a>
+              </td>
+              <td>
+                <div class="summary">
+            Handles the <span class="nolink">Clt</span> and
+            <span class="nolink">Clt_Un</span> IL ops.
+            </div>
+              </td>
+            </tr>
+            <tr data="class; public">
+              <td>
+                <img src="../icons/pubclass.gif" alt="Public class" title="Public class" />
+              </td>
+              <td>
+                <a href="ba3cc149-f549-0c8e-964f-019cd7a15036.htm">Convi</a>
+              </td>
+              <td>
+                <div class="summary">
+            Handles the 
+            <span class="nolink">Conv_I</span>, 
+            <span class="nolink">Conv_I1</span>, 
+            <span class="nolink">Conv_I2</span>, 
+            <span class="nolink">Conv_I4</span> and 
+            <span class="nolink">Conv_I8</span> IL ops.
+            </div>
+              </td>
+            </tr>
+            <tr data="class; public">
+              <td>
+                <img src="../icons/pubclass.gif" alt="Public class" title="Public class" />
+              </td>
+              <td>
+                <a href="2c9a6c07-ca2b-cc1f-8cb2-d7021a512860.htm">Convu</a>
+              </td>
+              <td>
+                <div class="summary">
+            Handles the 
+            <span class="nolink">Conv_U</span>, 
+            <span class="nolink">Conv_U1</span>, 
+            <span class="nolink">Conv_U2</span>, 
+            <span class="nolink">Conv_U4</span> and 
+            <span class="nolink">Conv_U8</span> IL ops.
+            </div>
+              </td>
+            </tr>
+            <tr data="class; public">
+              <td>
+                <img src="../icons/pubclass.gif" alt="Public class" title="Public class" />
+              </td>
+              <td>
+                <a href="4b31fec2-68f3-97f6-921d-d3f1a15b54e6.htm">Div</a>
+              </td>
+              <td>
+                <div class="summary">
+            Handles the <span class="nolink">Div</span> and
+            <span class="nolink">Div_Un</span> 
+            IL ops.
+            </div>
+              </td>
+            </tr>
+            <tr data="class; public">
+              <td>
+                <img src="../icons/pubclass.gif" alt="Public class" title="Public class" />
+              </td>
+              <td>
+                <a href="5b956f0a-909c-74b4-b324-0bc1d75035d0.htm">Dup</a>
+              </td>
+              <td>
+                <div class="summary">
+            Handles the <span class="nolink">Dup</span> 
+            IL op.
+            </div>
+              </td>
+            </tr>
+            <tr data="class; public">
+              <td>
+                <img src="../icons/pubclass.gif" alt="Public class" title="Public class" />
+              </td>
+              <td>
+                <a href="b2509f56-da11-074d-8454-6639c7cfb36a.htm">ILOp</a>
+              </td>
+              <td>
+                <div class="summary">
+            Base class for IL op classes that are used to convert from IL code to ASM.
+            </div>
+              </td>
+            </tr>
+            <tr data="class; public">
+              <td>
+                <img src="../icons/pubclass.gif" alt="Public class" title="Public class" />
+              </td>
+              <td>
+                <a href="74ff18f0-42f1-b238-bd9c-215f98b091f2.htm">Ldarg</a>
+              </td>
+              <td>
+                <div class="summary">
+            Handles the
+            <span class="nolink">Ldarg</span>, 
+            <span class="nolink">Ldarg_0</span>, 
+            <span class="nolink">Ldarg_1</span>, 
+            <span class="nolink">Ldarg_2</span>, 
+            <span class="nolink">Ldarg_3</span> and 
+            <span class="nolink">Ldarg_S</span> IL ops.
+            </div>
+              </td>
+            </tr>
+            <tr data="class; public">
+              <td>
+                <img src="../icons/pubclass.gif" alt="Public class" title="Public class" />
+              </td>
+              <td>
+                <a href="7c32652e-c676-880b-81d1-71f795a5caa7.htm">Ldc</a>
+              </td>
+              <td>
+                <div class="summary">
+            Handles the 
+            <span class="nolink">Ldc_I4</span>, 
+            <span class="nolink">Ldc_I4_0</span>, 
+            <span class="nolink">Ldc_I4_1</span>, 
+            <span class="nolink">Ldc_I4_2</span>, 
+            <span class="nolink">Ldc_I4_3</span>, 
+            <span class="nolink">Ldc_I4_4</span>, 
+            <span class="nolink">Ldc_I4_5</span>, 
+            <span class="nolink">Ldc_I4_6</span>, 
+            <span class="nolink">Ldc_I4_7</span>, 
+            <span class="nolink">Ldc_I4_8</span>, 
+            <span class="nolink">Ldc_I4_M1</span> and 
+            <span class="nolink">Ldc_I4_S</span> IL ops.
+            </div>
+              </td>
+            </tr>
+            <tr data="class; public">
+              <td>
+                <img src="../icons/pubclass.gif" alt="Public class" title="Public class" />
+              </td>
+              <td>
+                <a href="6fb3bdab-24a6-85e7-758b-8e770db1b0c9.htm">Ldelem</a>
+              </td>
+              <td>
+                <div class="summary">
+            Handles the 
+            <span class="nolink">Ldelem</span>, 
+            <span class="nolink">Ldelem_I</span>, 
+            <span class="nolink">Ldelem_I1</span>, 
+            <span class="nolink">Ldelem_I2</span>, 
+            <span class="nolink">Ldelem_I4</span>, 
+            <span class="nolink">Ldelem_I8</span>,
+            <span class="nolink">Ldelem_R4</span>, 
+            <span class="nolink">Ldelem_R8</span>, 
+            <span class="nolink">Ldelem_U1</span>, 
+            <span class="nolink">Ldelem_U2</span>, 
+            <span class="nolink">Ldelem_U4</span> and 
+            <span class="nolink">Ldelema</span> IL ops.
+            </div>
+              </td>
+            </tr>
+            <tr data="class; public">
+              <td>
+                <img src="../icons/pubclass.gif" alt="Public class" title="Public class" />
+              </td>
+              <td>
+                <a href="726c9ab7-a819-ed6a-fae0-33c52a5da423.htm">Ldfld</a>
+              </td>
+              <td>
+                <div class="summary">
+            Handles the <span class="nolink">Ldfld</span> IL op.
+            </div>
+              </td>
+            </tr>
+            <tr data="class; public">
+              <td>
+                <img src="../icons/pubclass.gif" alt="Public class" title="Public class" />
+              </td>
+              <td>
+                <a href="08339f18-f024-4198-06c2-caf0d95d8429.htm">Ldftn</a>
+              </td>
+              <td>
+                <div class="summary">
+            Handles the 
+            <span class="nolink">Ldftn</span> IL op.
+            </div>
+              </td>
+            </tr>
+            <tr data="class; public">
+              <td>
+                <img src="../icons/pubclass.gif" alt="Public class" title="Public class" />
+              </td>
+              <td>
+                <a href="2679f831-134d-2384-0327-86a974602f37.htm">Ldind</a>
+              </td>
+              <td>
+                <div class="summary">
+            Handles the 
+            <span class="nolink">Ldind_U1</span>,  
+            <span class="nolink">Ldind_U2</span>,  
+            <span class="nolink">Ldind_U4</span>,  
+            <span class="nolink">Ldind_I1</span>,  
+            <span class="nolink">Ldind_I2</span>,  
+            <span class="nolink">Ldind_I4</span> and 
+            <span class="nolink">Ldind_I8</span> IL ops.
+            </div>
+              </td>
+            </tr>
+            <tr data="class; public">
+              <td>
+                <img src="../icons/pubclass.gif" alt="Public class" title="Public class" />
+              </td>
+              <td>
+                <a href="8f6d2713-da20-5200-36de-e1d19979e702.htm">Ldlen</a>
+              </td>
+              <td>
+                <div class="summary">
+            Handles the <span class="nolink">Ldlen</span> IL op.
+            </div>
+              </td>
+            </tr>
+            <tr data="class; public">
+              <td>
+                <img src="../icons/pubclass.gif" alt="Public class" title="Public class" />
+              </td>
+              <td>
+                <a href="6890ff87-2423-4c55-28b6-205486e2ec6c.htm">Ldloc</a>
+              </td>
+              <td>
+                <div class="summary">
+            Handles the 
+            <span class="nolink">Ldloc</span>, 
+            <span class="nolink">Ldloc_0</span>, 
+            <span class="nolink">Ldloc_1</span>, 
+            <span class="nolink">Ldloc_2</span>, 
+            <span class="nolink">Ldloc_3</span> and 
+            <span class="nolink">Ldloc_S</span> IL ops.
+            </div>
+              </td>
+            </tr>
+            <tr data="class; public">
+              <td>
+                <img src="../icons/pubclass.gif" alt="Public class" title="Public class" />
+              </td>
+              <td>
+                <a href="3afb6002-7052-a21a-5899-a4512af1493a.htm">Ldnull</a>
+              </td>
+              <td>
+                <div class="summary">
+            Handles the 
+            <span class="nolink">Ldnull</span> IL op.
+            </div>
+              </td>
+            </tr>
+            <tr data="class; public">
+              <td>
+                <img src="../icons/pubclass.gif" alt="Public class" title="Public class" />
+              </td>
+              <td>
+                <a href="ab20db36-169f-5d44-2fd4-5f3839c9d2a0.htm">Ldsfld</a>
+              </td>
+              <td>
+                <div class="summary">
+            Handles the 
+            <span class="nolink">Ldsfld</span> and
+            <span class="nolink">Ldsflda</span>
+            IL ops.
+            </div>
+              </td>
+            </tr>
+            <tr data="class; public">
+              <td>
+                <img src="../icons/pubclass.gif" alt="Public class" title="Public class" />
+              </td>
+              <td>
+                <a href="15bdcb8c-b0ec-fbbc-9f62-5dfc5168ce10.htm">Ldstr</a>
+              </td>
+              <td>
+                <div class="summary">
+            Handles the <span class="nolink">Ldstr</span> IL op.
+            </div>
+              </td>
+            </tr>
+            <tr data="class; public">
+              <td>
+                <img src="../icons/pubclass.gif" alt="Public class" title="Public class" />
+              </td>
+              <td>
+                <a href="72bc5be3-38fb-6617-658e-92469e1ca442.htm">Ldtoken</a>
+              </td>
+              <td>
+                <div class="summary">
+            Handles the <span class="nolink">Ldtoken</span> 
+            IL op.
+            </div>
+              </td>
+            </tr>
+            <tr data="class; public">
+              <td>
+                <img src="../icons/pubclass.gif" alt="Public class" title="Public class" />
+              </td>
+              <td>
+                <a href="427b066c-2ff1-3004-5a9c-e5999bd553a1.htm">MethodEnd</a>
+              </td>
+              <td>
+                <div class="summary">
+            Custom IL op that is inserted as the last IL op before the 
+            <a href="5775af9a-e856-9130-9420-03a4e43ff05b.htm">Ret</a> op in a method.
+            </div>
+              </td>
+            </tr>
+            <tr data="class; public">
+              <td>
+                <img src="../icons/pubclass.gif" alt="Public class" title="Public class" />
+              </td>
+              <td>
+                <a href="aa857e2c-2529-bb91-e42f-e7f055a71f11.htm">MethodStart</a>
+              </td>
+              <td>
+                <div class="summary">
+            Custom IL op that is inserted as the first IL op in a method.
+            </div>
+              </td>
+            </tr>
+            <tr data="class; public">
+              <td>
+                <img src="../icons/pubclass.gif" alt="Public class" title="Public class" />
+              </td>
+              <td>
+                <a href="4d8c2af1-372e-021f-2577-5b084514be86.htm">Mul</a>
+              </td>
+              <td>
+                <div class="summary">
+            Handles the <span class="nolink">Mul</span> 
+            IL op.
+            </div>
+              </td>
+            </tr>
+            <tr data="class; public">
+              <td>
+                <img src="../icons/pubclass.gif" alt="Public class" title="Public class" />
+              </td>
+              <td>
+                <a href="6d7f9f68-aeec-35c8-20ec-be2ac5ff2620.htm">Newarr</a>
+              </td>
+              <td>
+                <div class="summary">
+            Handles the 
+            <span class="nolink">Newarr</span> IL op.
+            </div>
+              </td>
+            </tr>
+            <tr data="class; public">
+              <td>
+                <img src="../icons/pubclass.gif" alt="Public class" title="Public class" />
+              </td>
+              <td>
+                <a href="afaae49f-9e80-5480-18d5-8f45dc93f09b.htm">Newobj</a>
+              </td>
+              <td>
+                <div class="summary">
+            Handles the 
+            <span class="nolink">Newobj</span> IL op.
+            </div>
+              </td>
+            </tr>
+            <tr data="class; public">
+              <td>
+                <img src="../icons/pubclass.gif" alt="Public class" title="Public class" />
+              </td>
+              <td>
+                <a href="cb817663-b7b9-aa12-922f-58f092fbdfac.htm">Nop</a>
+              </td>
+              <td>
+                <div class="summary">
+            Handles the <span class="nolink">Nop</span> IL op.
+            </div>
+              </td>
+            </tr>
+            <tr data="class; public">
+              <td>
+                <img src="../icons/pubclass.gif" alt="Public class" title="Public class" />
+              </td>
+              <td>
+                <a href="70516818-616f-c8dd-b085-5c8493ffb73f.htm">Not</a>
+              </td>
+              <td>
+                <div class="summary">
+            Handles the <span class="nolink">Not</span> 
+            IL op.
+            </div>
+              </td>
+            </tr>
+            <tr data="class; public">
+              <td>
+                <img src="../icons/pubclass.gif" alt="Public class" title="Public class" />
+              </td>
+              <td>
+                <a href="048ea8a5-ebdb-3357-fd7e-ae79d2bf3774.htm">Or</a>
+              </td>
+              <td>
+                <div class="summary">
+            Handles the <span class="nolink">Or</span> 
+            IL op.
+            </div>
+              </td>
+            </tr>
+            <tr data="class; public">
+              <td>
+                <img src="../icons/pubclass.gif" alt="Public class" title="Public class" />
+              </td>
+              <td>
+                <a href="76f13203-8e71-2792-78a9-4ae3c59e4649.htm">Pop</a>
+              </td>
+              <td>
+                <div class="summary">
+            Handles the <span class="nolink">Pop</span> IL op.
+            </div>
+              </td>
+            </tr>
+            <tr data="class; public">
+              <td>
+                <img src="../icons/pubclass.gif" alt="Public class" title="Public class" />
+              </td>
+              <td>
+                <a href="1fb6cfaa-2cc2-9618-424a-bb15e0b75890.htm">Rem</a>
+              </td>
+              <td>
+                <div class="summary">
+            Handles the <span class="nolink">Rem</span> and
+            <span class="nolink">Rem_Un</span> 
+            IL ops.
+            </div>
+              </td>
+            </tr>
+            <tr data="class; public">
+              <td>
+                <img src="../icons/pubclass.gif" alt="Public class" title="Public class" />
+              </td>
+              <td>
+                <a href="5775af9a-e856-9130-9420-03a4e43ff05b.htm">Ret</a>
+              </td>
+              <td>
+                <div class="summary">
+            Handles the <span class="nolink">Ret</span> IL op.
+            </div>
+              </td>
+            </tr>
+            <tr data="class; public">
+              <td>
+                <img src="../icons/pubclass.gif" alt="Public class" title="Public class" />
+              </td>
+              <td>
+                <a href="b0baa5f0-f363-7bae-095a-2803ee751053.htm">Shl</a>
+              </td>
+              <td>
+                <div class="summary">
+            Handles the <span class="nolink">Shl</span> IL op.
+            </div>
+              </td>
+            </tr>
+            <tr data="class; public">
+              <td>
+                <img src="../icons/pubclass.gif" alt="Public class" title="Public class" />
+              </td>
+              <td>
+                <a href="830467f8-6744-338e-6cc0-8f4f981780a6.htm">Shr</a>
+              </td>
+              <td>
+                <div class="summary">
+            Handles the <span class="nolink">Shr</span> and 
+            <span class="nolink">Shr_Un</span> IL ops.
+            </div>
+              </td>
+            </tr>
+            <tr data="class; public">
+              <td>
+                <img src="../icons/pubclass.gif" alt="Public class" title="Public class" />
+              </td>
+              <td>
+                <a href="700fe389-8a91-a4a3-c2ac-e5e72e5e56aa.htm">Sizeof</a>
+              </td>
+              <td>
+                <div class="summary">
+            Handles the <span class="nolink">Sizeof</span> 
+            IL op.
+            </div>
+              </td>
+            </tr>
+            <tr data="class; public">
+              <td>
+                <img src="../icons/pubclass.gif" alt="Public class" title="Public class" />
+              </td>
+              <td>
+                <a href="bf1f479d-4c12-6cc4-3ae4-518080fdf918.htm">StackSwitch</a>
+              </td>
+              <td>
+                <div class="summary">
+            Custom IL op that rotates (upwards) the specified number of top-most stack items with eachother. 
+            Does not alter compiler record of stack - caller must do that. 
+            Acts totally ignorant of item types (e.g. int or float). Only moves dwords. Number of dwords to move should be in value 
+            bytes. Null value bytes indicates rotate (switch) top two items.
+            </div>
+              </td>
+            </tr>
+            <tr data="class; public">
+              <td>
+                <img src="../icons/pubclass.gif" alt="Public class" title="Public class" />
+              </td>
+              <td>
+                <a href="8cf9bcc3-e65e-1448-4e9f-a7f29b239b3a.htm">Starg</a>
+              </td>
+              <td>
+                <div class="summary">
+            Handles the
+            <span class="nolink">Starg</span> and 
+            <span class="nolink">Starg_S</span> IL ops.
+            </div>
+              </td>
+            </tr>
+            <tr data="class; public">
+              <td>
+                <img src="../icons/pubclass.gif" alt="Public class" title="Public class" />
+              </td>
+              <td>
+                <a href="03ba6886-29ca-27bf-210e-d7a31946d075.htm">Stelem</a>
+              </td>
+              <td>
+                <div class="summary">
+            Handles the 
+            <span class="nolink">Stelem</span>, 
+            <span class="nolink">Stelem_I</span>, 
+            <span class="nolink">Stelem_I1</span>, 
+            <span class="nolink">Stelem_I2</span>, 
+            <span class="nolink">Stelem_I4</span>, 
+            <span class="nolink">Stelem_I8</span>,
+            <span class="nolink">Stelem_R4</span>,
+            <span class="nolink">Stelem_R8</span> and 
+            <span class="nolink">Stelem_Ref</span> IL ops.
+            </div>
+              </td>
+            </tr>
+            <tr data="class; public">
+              <td>
+                <img src="../icons/pubclass.gif" alt="Public class" title="Public class" />
+              </td>
+              <td>
+                <a href="378bfb55-50a5-78b7-8b61-4eb1bce1f5e4.htm">Stfld</a>
+              </td>
+              <td>
+                <div class="summary">
+            Handles the <span class="nolink">Stfld</span> IL op.
+            </div>
+              </td>
+            </tr>
+            <tr data="class; public">
+              <td>
+                <img src="../icons/pubclass.gif" alt="Public class" title="Public class" />
+              </td>
+              <td>
+                <a href="6bf5bbb2-950e-c51e-4e4a-2fb280b27284.htm">Stind</a>
+              </td>
+              <td>
+                <div class="summary">
+            Handles the 
+            <span class="nolink">Stind_I</span>, 
+            <span class="nolink">Stind_I1</span>, 
+            <span class="nolink">Stind_I2</span>, 
+            <span class="nolink">Stind_I4</span>, 
+            <span class="nolink">Stind_I8</span>, 
+            <span class="nolink">Stind_R4</span>, 
+            <span class="nolink">Stind_R8</span> and 
+            <span class="nolink">Stind_Ref</span> IL ops.
+            </div>
+              </td>
+            </tr>
+            <tr data="class; public">
+              <td>
+                <img src="../icons/pubclass.gif" alt="Public class" title="Public class" />
+              </td>
+              <td>
+                <a href="89e670a1-ea80-a70f-b64c-4613bde08264.htm">Stloc</a>
+              </td>
+              <td>
+                <div class="summary">
+            Handles the 
+            <span class="nolink">Stloc</span>, 
+            <span class="nolink">Stloc_0</span>, 
+            <span class="nolink">Stloc_1</span>, 
+            <span class="nolink">Stloc_2</span>, 
+            <span class="nolink">Stloc_3</span> and 
+            <span class="nolink">Stloc_S</span> IL ops.
+            </div>
+              </td>
+            </tr>
+            <tr data="class; public">
+              <td>
+                <img src="../icons/pubclass.gif" alt="Public class" title="Public class" />
+              </td>
+              <td>
+                <a href="f90bb8f1-c43b-bac8-4f86-6ad524f3ca91.htm">Stsfld</a>
+              </td>
+              <td>
+                <div class="summary">
+            Handles the <span class="nolink">Stsfld</span> IL op.
+            </div>
+              </td>
+            </tr>
+            <tr data="class; public">
+              <td>
+                <img src="../icons/pubclass.gif" alt="Public class" title="Public class" />
+              </td>
+              <td>
+                <a href="61ac4f17-9fe6-97d4-ea33-37eca04012bf.htm">Sub</a>
+              </td>
+              <td>
+                <div class="summary">
+            Handles the <span class="nolink">Sub</span> 
+            IL op.
+            </div>
+              </td>
+            </tr>
+            <tr data="class; public">
+              <td>
+                <img src="../icons/pubclass.gif" alt="Public class" title="Public class" />
+              </td>
+              <td>
+                <a href="5147631f-cebf-8394-ef89-ee6770594ff6.htm">Switch</a>
+              </td>
+              <td>
+                <div class="summary">
+            Handles the <span class="nolink">Switch</span> 
+            IL op.
+            </div>
+              </td>
+            </tr>
+          </table>
+        </div>
+        <div class="collapsibleAreaRegion">
+          <span class="collapsibleRegionTitle" onclick="SectionExpandCollapse('ID1RB')" onkeypress="SectionExpandCollapse_CheckKey('ID1RB', event)" tabindex="0">
+            <img id="ID1RBToggle" class="collapseToggle" src="../icons/SectionExpanded.png" />Enumerations</span>
+        </div>
+        <div id="ID1RBSection" class="collapsibleSection">
+          <table id="typeList" class="members">
+            <tr>
+              <th class="iconColumn">
+					 
+				</th>
+              <th>Enumeration</th>
+              <th>Description</th>
+            </tr>
+            <tr data="enumeration; public">
+              <td>
+                <img src="../icons/pubenumeration.gif" alt="Public enumeration" title="Public enumeration" />
+              </td>
+              <td>
+                <a href="ed46ad74-36ed-bea2-52cc-5aee5bc1471d.htm">ILOp<span id="LST620B4975_0"></span><script type="text/javascript">AddLanguageSpecificTextSet("LST620B4975_0?cs=.|vb=.|cpp=::|nu=.|fs=.");</script>OpCodes</a>
+              </td>
+              <td>
+                <div class="summary">
+            The full list of supported Il ops. Please see remarks for important info.
+            </div>
+              </td>
+            </tr>
+          </table>
+        </div>
+      </div>
+    </div>
+    <div id="pageFooter" class="pageFooter">
+      <p>
+        <a href="http://www.flingos.co.uk" target="_blank">Copyright Edward Nutting 2014</a>
+      </p>
+      <div class="feedbackLink">Send comments on this topic to
+        <a id="HT_MailLink" href="mailto:edwardnutting%40outlook.com?Subject=Fling OS">Edward Nutting</a></div>
+      <script type="text/javascript">
+        var HT_mailLink = document.getElementById("HT_MailLink");
+        var HT_mailLinkText = HT_mailLink.innerHTML;
+        HT_mailLink.href += ": " + document.title + "\u0026body=" + encodeURIComponent("Your feedback is used to improve the documentation and the product. Your e-mail address will not be used for any other purpose and is disposed of after the issue you report is resolved. While working to resolve the issue that you report, you may be contacted via e-mail to get further details or clarification on the feedback you sent. After the issue you report has been addressed, you may receive an e-mail to let you know that your feedback has been addressed.");
+        HT_mailLink.innerHTML = HT_mailLinkText;
+        </script> </div>
+  </body>
+</html>

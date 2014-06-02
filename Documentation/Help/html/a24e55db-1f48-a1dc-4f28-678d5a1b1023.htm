@@ -1,20 +1,10 @@
-﻿<html xmlns:MSHelp="http://msdn.microsoft.com/mshelp" xmlns:mshelp="http://msdn.microsoft.com/mshelp">
+﻿<html>
   <head>
-    <link rel="SHORTCUT ICON" href="./../icons/favicon.ico" />
-    <style type="text/css">.OH_CodeSnippetContainerTabLeftActive, .OH_CodeSnippetContainerTabLeft,.OH_CodeSnippetContainerTabLeftDisabled { }.OH_CodeSnippetContainerTabRightActive, .OH_CodeSnippetContainerTabRight,.OH_CodeSnippetContainerTabRightDisabled { }.OH_footer { }</style>
-    <link rel="stylesheet" type="text/css" href="./../styles/branding.css" />
-    <link rel="stylesheet" type="text/css" href="./../styles/branding-en-US.css" />
-    <style type="text/css">
-			body
-			{
-			border-left:5px solid #e6e6e6;
-			overflow-x:scroll;
-			overflow-y:scroll;
-			}
-		</style>
-    <script src="./../scripts/branding.js" type="text/javascript">
-      <!---->
-    </script>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <link rel="shortcut icon" href="../icons/favicon.ico" />
+    <link rel="stylesheet" type="text/css" href="../styles/branding.css" />
+    <link rel="stylesheet" type="text/css" href="../styles/branding-en-US.css" />
+    <script type="text/javascript" src="../scripts/branding.js"> </script>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
     <title>GC Class</title>
     <meta name="Language" content="en-us" />
@@ -25,104 +15,105 @@
     <meta name="Microsoft.Help.Id" content="T:Kernel.FOS_System.GC" />
     <meta name="Description" content="The garbage collector." />
     <meta name="Microsoft.Help.ContentType" content="Reference" />
-    <meta name="BrandingAware" content="'true'" />
+    <meta name="BrandingAware" content="true" />
+    
     <meta name="container" content="Kernel.FOS_System" />
     <meta name="file" content="a24e55db-1f48-a1dc-4f28-678d5a1b1023" />
     <meta name="guid" content="a24e55db-1f48-a1dc-4f28-678d5a1b1023" />
     
-    
-    <meta name="SelfBranded" content="true" />
+    <link rel="stylesheet" type="text/css" href="../styles/branding-Website.css" />
+    <script type="text/javascript" src="../scripts/jquery-1.11.0.min.js"></script>
+    <script type="text/javascript" src="../scripts/branding-Website.js"></script>
   </head>
-  <body onload="onLoad()" class="primary-mtps-offline-document">
-    <div class="OH_outerDiv">
-      <div class="OH_outerContent">
-        <table class="TitleTable">
+  <body onload="OnLoad('cs')">
+    <input type="hidden" id="userDataCache" class="userDataStyle" />
+    <div class="pageHeader" id="PageHeader">Fling OS<form id="SearchForm" method="get" action="#" onsubmit="javascript:TransferToSearchPage(); return false;"><input id="SearchTextBox" type="text" maxlength="200" /><button id="SearchButton" type="submit"></button></form></div>
+    <div class="pageBody">
+      <div class="leftNav" id="leftNav"><div id="tocNav"><div class="toclevel0" data-toclevel="0"><a class="tocCollapsed" onclick="javascript: Toggle(this);" href="#!"></a><a data-tochassubtree="true" href="dd3e390e-07c0-499b-8f92-2cb8e8ca8b09.htm" title="Fling OS" tocid="roottoc">Fling OS</a></div><div class="toclevel0" data-toclevel="0"><a class="tocCollapsed" onclick="javascript: Toggle(this);" href="#!"></a><a data-tochassubtree="true" href="d75eb659-6335-53f6-af7a-81814a21ab7f.htm" title="Technical" tocid="e0e0d194-2589-42a6-a2db-a50791dd3bda">Technical</a></div><div class="toclevel0" data-toclevel="0"><a class="tocCollapsed" onclick="javascript: Toggle(this);" href="#!"></a><a data-tochassubtree="true" href="d75eb659-6335-53f6-af7a-81814a21ab7f.htm" title="Kernel" tocid="d75eb659-6335-53f6-af7a-81814a21ab7f">Kernel</a></div><div class="toclevel0" data-toclevel="0"><a class="tocCollapsed" onclick="javascript: Toggle(this);" href="#!"></a><a data-tochassubtree="true" href="966b6396-35e7-33bc-96a3-92c550680dc2.htm" title="Kernel.FOS_System Namespaces" tocid="966b6396-35e7-33bc-96a3-92c550680dc2">Kernel.FOS_System Namespaces</a></div><div class="toclevel0" data-toclevel="0"><a class="tocCollapsed" onclick="javascript: Toggle(this);" href="#!"></a><a data-tochassubtree="true" href="f4608f1c-1b45-9728-1af2-757e20ce3928.htm" title="Kernel.FOS_System" tocid="f4608f1c-1b45-9728-1af2-757e20ce3928">Kernel.FOS_System</a></div><div class="toclevel1 current" data-toclevel="1" data-childrenloaded="true"><a class="tocExpanded" onclick="javascript: Toggle(this);" href="#!"></a><a data-tochassubtree="true" href="a24e55db-1f48-a1dc-4f28-678d5a1b1023.htm" title="GC Class" tocid="a24e55db-1f48-a1dc-4f28-678d5a1b1023">GC Class</a></div><div class="toclevel2" data-toclevel="2"><a data-tochassubtree="false" href="33e68e24-d8bd-170f-c755-2fce6028c5b5.htm" title="GC Constructor " tocid="33e68e24-d8bd-170f-c755-2fce6028c5b5">GC Constructor </a></div><div class="toclevel2" data-toclevel="2"><a class="tocCollapsed" onclick="javascript: Toggle(this);" href="#!"></a><a data-tochassubtree="true" href="ff7727ce-a5b6-9635-3a6d-fa3157da1790.htm" title="GC Fields" tocid="ff7727ce-a5b6-9635-3a6d-fa3157da1790">GC Fields</a></div><div class="toclevel2" data-toclevel="2"><a class="tocCollapsed" onclick="javascript: Toggle(this);" href="#!"></a><a data-tochassubtree="true" href="ed74b04e-1c76-67b2-3a55-e9dd847e6cff.htm" title="GC Methods" tocid="ed74b04e-1c76-67b2-3a55-e9dd847e6cff">GC Methods</a></div></div></div><div id="TocResize" class="tocResize" onmousedown="OnMouseDown(event);"><img id="ResizeImageIncrease" src="../icons/TocOpen.gif" onclick="OnIncreaseToc()" alt="Click or drag to resize" title="Click or drag to resize"><img id="ResizeImageReset" src="../icons/TocClose.gif" style="display:none" onclick="OnResetToc()" alt="Click or drag to resize" title="Click or drag to resize"></div><div class="topicContent" id="TopicContent">
+        <table class="titleTable">
           <tr>
-            <td class="OH_tdTitleColumn">GC Class</td>
-            <td class="OH_tdRunningTitleColumn">Fling OS</td>
+            <td class="titleColumn">GC Class</td>
           </tr>
         </table>
-        <div id="mainSection">
-          <div id="mainBody">
-            <span class="introStyle"></span>
-            <div class="summary">
+        <span class="introStyle"></span>
+        <div class="summary">
             The garbage collector.
             </div>
-            <div class="OH_CollapsibleAreaRegion">
-              <div class="OH_regiontitle">Inheritance Hierarchy</div>
-              <div class="OH_CollapsibleArea_HrDiv">
-                <hr class="OH_CollapsibleArea_Hr" />
-              </div>
-            </div>
-            <div class="OH_clear"></div>
-            <a href="http://msdn2.microsoft.com/en-us/library/e5kfa45b" target="_blank">System<span id="ID0EBERAAAAA"> </span><script type="text/javascript">
-					addToLanSpecTextIdSet("ID0EBERAAAAA?vb=.|cpp=::|cs=.|fs=.|nu=.");
-				</script>Object</a>
-            <br />  <span class="selflink">Kernel.FOS_System<span id="ID0EBBRAAAAA"> </span><script type="text/javascript">
-					addToLanSpecTextIdSet("ID0EBBRAAAAA?vb=.|cpp=::|cs=.|fs=.|nu=.");
-				</script>GC</span><br /><p></p><strong>Namespace:</strong> <a href="f4608f1c-1b45-9728-1af2-757e20ce3928.htm" target="">Kernel.FOS_System</a><br /><strong>Assembly:</strong> <span sdata="assembly">Kernel.FOS_System</span> (in Kernel.FOS_System.dll) Version: 1.0.0.0 (1.0.0.0)<div class="OH_CollapsibleAreaRegion"><div class="OH_regiontitle">Syntax</div><div class="OH_CollapsibleArea_HrDiv"><hr class="OH_CollapsibleArea_Hr" /></div></div><div class="OH_clear"></div><div id="snippetGroup_Syntax" class="code"><div id="ID0EAAHAAAAA" class="OH_CodeSnippetContainer"><div class="OH_CodeSnippetContainerTabs" id="ID0EAAHAAAAA_tabs"><div class="OH_CodeSnippetContainerTabLeftActive" id="ID0EAAHAAAAA_tabimgleft"></div><div id="ID0EAAHAAAAA_tab1" class="OH_CodeSnippetContainerTabActive" EnableCopyCode="true"><a href="#" onclick="javascript:ChangeTab('ID0EAAHAAAAA','C#','1','4');return false;">C#</a></div><div id="ID0EAAHAAAAA_tab2" class="OH_CodeSnippetContainerTabDisabledNotFirst" EnableCopyCode="true" disabled="true"><a>VB</a></div><div id="ID0EAAHAAAAA_tab3" class="OH_CodeSnippetContainerTabDisabledNotFirst" EnableCopyCode="true" disabled="true"><a>C++</a></div><div id="ID0EAAHAAAAA_tab4" class="OH_CodeSnippetContainerTabDisabledNotFirst" EnableCopyCode="true" disabled="true"><a>F#</a></div><div class="OH_CodeSnippetContainerTabRight" id="ID0EAAHAAAAA_tabimgright"></div></div><div id="ID0EAAHAAAAA_codecollection" class="OH_CodeSnippetContainerCodeCollection"><div class="OH_CodeSnippetToolBar"><div class="OH_CodeSnippetToolBarText"><a id="ID0EAAHAAAAA_ViewColorized" href="#" onclick="javascript:ExchangeTitleContent('ID0EAAHAAAAA','4')" title="View Colorized" style="display: none">View Colorized</a><a id="ID0EAAHAAAAA_copycode" href="#" onclick="javascript:CopyToClipboard('ID0EAAHAAAAA','4')" title="Copy to Clipboard">Copy to Clipboard</a><a id="ID0EAAHAAAAA_PrintText" class="OH_PrintText" href="#" onclick="javascript:Print('ID0EAAHAAAAA','4')" title="Print">Print</a></div></div><div id="ID0EAAHAAAAA_code_Div1" class="OH_CodeSnippetContainerCode" style="display: block"><pre>[<span class="identifier">PluggedClassAttribute</span>]
-<span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">class</span> <span class="identifier">GC</span></pre></div><div id="ID0EAAHAAAAA_code_Plain_Div1" class="OH_CodeSnippetContainerCode" style="display: none"><pre>[PluggedClassAttribute]
-public static class GC</pre></div><div id="ID0EAAHAAAAA_code_Div2" class="OH_CodeSnippetContainerCode" style="display: none"><pre /></div><div id="ID0EAAHAAAAA_code_Plain_Div2" class="OH_CodeSnippetContainerCode" style="display: none"><pre /></div><div id="ID0EAAHAAAAA_code_Div3" class="OH_CodeSnippetContainerCode" style="display: none"><pre /></div><div id="ID0EAAHAAAAA_code_Plain_Div3" class="OH_CodeSnippetContainerCode" style="display: none"><pre /></div><div id="ID0EAAHAAAAA_code_Div4" class="OH_CodeSnippetContainerCode" style="display: none"><pre /></div><div id="ID0EAAHAAAAA_code_Plain_Div4" class="OH_CodeSnippetContainerCode" style="display: none"><pre /></div></div></div><script>addSpecificTextLanguageTagSet('ID0EAAHAAAAA');</script></div><p>The <span class="selflink">GC</span> type exposes the following members.</p><div class="OH_CollapsibleAreaRegion"><div class="OH_regiontitle">Constructors</div><div class="OH_CollapsibleArea_HrDiv"><hr class="OH_CollapsibleArea_Hr" /></div></div><div class="OH_clear"></div><table id="memberList" class="members"><tr><th class="ps_iconColumn">
-							 
-						</th><th class="ps_nameColumn">Name</th><th class="ps_descriptionColumn">Description</th></tr><tr data="private;static;declared;notNetfw;"><td><img src="./../icons/privmethod.gif" alt="Private method" title="Private method" /><img src="./../icons/static.gif" alt="Static member" title="Static member" /></td><td><a href="33e68e24-d8bd-170f-c755-2fce6028c5b5.htm" target="">GC</a></td><td></td></tr></table><a href="#mainBody" target="">Top</a><div class="OH_CollapsibleAreaRegion"><div class="OH_regiontitle">Methods</div><div class="OH_CollapsibleArea_HrDiv"><hr class="OH_CollapsibleArea_Hr" /></div></div><div class="OH_clear"></div><table id="memberList" class="members"><tr><th class="ps_iconColumn">
-							 
-						</th><th class="ps_nameColumn">Name</th><th class="ps_descriptionColumn">Description</th></tr><tr data="public;static;declared;notNetfw;"><td><img src="./../icons/pubmethod.gif" alt="Public method" title="Public method" /><img src="./../icons/static.gif" alt="Static member" title="Static member" /></td><td><a href="33ac54f8-d0e3-1395-7198-285a1cd33649.htm" target="">_DecrementRefCount</a></td><td><div class="summary">
+        <div class="collapsibleAreaRegion">
+          <span class="collapsibleRegionTitle" onclick="SectionExpandCollapse('ID0RB')" onkeypress="SectionExpandCollapse_CheckKey('ID0RB', event)" tabindex="0">
+            <img id="ID0RBToggle" class="collapseToggle" src="../icons/SectionExpanded.png" />Inheritance Hierarchy</span>
+        </div>
+        <div id="ID0RBSection" class="collapsibleSection">
+          <span class="nolink">System<span id="LSTEAEBEE6D_0"></span><script type="text/javascript">AddLanguageSpecificTextSet("LSTEAEBEE6D_0?cs=.|vb=.|cpp=::|nu=.|fs=.");</script>Object</span>
+          <br />  <span class="selflink">Kernel.FOS_System<span id="LSTEAEBEE6D_1"></span><script type="text/javascript">AddLanguageSpecificTextSet("LSTEAEBEE6D_1?cs=.|vb=.|cpp=::|nu=.|fs=.");</script>GC</span><br /></div>
+        <p> </p>
+        <strong>Namespace:</strong> <a href="f4608f1c-1b45-9728-1af2-757e20ce3928.htm">Kernel.FOS_System</a><br /><strong>Assembly:</strong> Kernel.FOS_System (in Kernel.FOS_System.dll) Version: 1.0.0.0 (1.0.0.0)<div class="collapsibleAreaRegion"><span class="collapsibleRegionTitle" onclick="SectionExpandCollapse('ID2RB')" onkeypress="SectionExpandCollapse_CheckKey('ID2RB', event)" tabindex="0"><img id="ID2RBToggle" class="collapseToggle" src="../icons/SectionExpanded.png" />Syntax</span></div><div id="ID2RBSection" class="collapsibleSection"><div class="codeSnippetContainer"><div class="codeSnippetContainerTabs"><div id="ID1EACA_tab1" class="codeSnippetContainerTabSingle">C#</div></div><div class="codeSnippetContainerCodeContainer"><div class="codeSnippetToolBar"><div class="codeSnippetToolBarText"><a id="ID1EACA_copyCode" href="#" onclick="javascript:CopyToClipboard('ID1EACA');return false;" title="Copy">Copy</a></div></div><div id="ID1EACA_code_Div1" class="codeSnippetContainerCode" style="display: block"><pre xml:space="preserve">[<span class="identifier">PluggedClassAttribute</span>]
+<span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">class</span> <span class="identifier">GC</span></pre></div></div></div><script type="text/javascript">AddLanguageTabSet("ID1EACA");</script></div><p>The <span class="selflink">GC</span> type exposes the following members.</p><div class="collapsibleAreaRegion"><span class="collapsibleRegionTitle" onclick="SectionExpandCollapse('ID3RB')" onkeypress="SectionExpandCollapse_CheckKey('ID3RB', event)" tabindex="0"><img id="ID3RBToggle" class="collapseToggle" src="../icons/SectionExpanded.png" />Constructors</span></div><div id="ID3RBSection" class="collapsibleSection"><table id="memberList" class="members"><tr><th class="iconColumn">
+								 
+							</th><th>Name</th><th>Description</th></tr><tr data="private;static;declared;notNetfw;"><td><img src="../icons/privmethod.gif" alt="Private method" title="Private method" /><img src="../icons/static.gif" alt="Static member" title="Static member" /></td><td><a href="33e68e24-d8bd-170f-c755-2fce6028c5b5.htm">GC</a></td><td /></tr></table><a href="#PageHeader">Top</a></div><div class="collapsibleAreaRegion"><span class="collapsibleRegionTitle" onclick="SectionExpandCollapse('ID4RB')" onkeypress="SectionExpandCollapse_CheckKey('ID4RB', event)" tabindex="0"><img id="ID4RBToggle" class="collapseToggle" src="../icons/SectionExpanded.png" />Methods</span></div><div id="ID4RBSection" class="collapsibleSection"><table id="memberList" class="members"><tr><th class="iconColumn">
+								 
+							</th><th>Name</th><th>Description</th></tr><tr data="public;static;declared;notNetfw;"><td><img src="../icons/pubmethod.gif" alt="Public method" title="Public method" /><img src="../icons/static.gif" alt="Static member" title="Static member" /></td><td><a href="33ac54f8-d0e3-1395-7198-285a1cd33649.htm">_DecrementRefCount</a></td><td><div class="summary">
             Underlying method that decrements the ref count of a GC managed object.
-            </div></td></tr><tr data="public;static;declared;notNetfw;"><td><img src="./../icons/pubmethod.gif" alt="Public method" title="Public method" /><img src="./../icons/static.gif" alt="Static member" title="Static member" /></td><td><a href="2edb0aa3-61e4-2c8d-07f0-0f45f23d85d1.htm" target="">_IncrementRefCount</a></td><td><div class="summary">
+            </div></td></tr><tr data="public;static;declared;notNetfw;"><td><img src="../icons/pubmethod.gif" alt="Public method" title="Public method" /><img src="../icons/static.gif" alt="Static member" title="Static member" /></td><td><a href="2edb0aa3-61e4-2c8d-07f0-0f45f23d85d1.htm">_IncrementRefCount</a></td><td><div class="summary">
             Underlying method that increments the ref count of a GC managed object.
-            </div></td></tr><tr data="private;static;declared;notNetfw;"><td><img src="./../icons/privmethod.gif" alt="Private method" title="Private method" /><img src="./../icons/static.gif" alt="Static member" title="Static member" /></td><td><a href="03b21e08-520f-a6b3-4151-3cd1235ba387.htm" target="">AddObjectToCleanup</a></td><td><div class="summary">
+            </div></td></tr><tr data="private;static;declared;notNetfw;"><td><img src="../icons/privmethod.gif" alt="Private method" title="Private method" /><img src="../icons/static.gif" alt="Static member" title="Static member" /></td><td><a href="03b21e08-520f-a6b3-4151-3cd1235ba387.htm">AddObjectToCleanup</a></td><td><div class="summary">
             Adds an object to the cleanup list.
-            </div></td></tr><tr data="public;static;declared;notNetfw;"><td><img src="./../icons/pubmethod.gif" alt="Public method" title="Public method" /><img src="./../icons/static.gif" alt="Static member" title="Static member" /></td><td><a href="c416fd61-ae93-7e3b-debc-508837fe0777.htm" target="">CheckSignature</a></td><td><div class="summary">
+            </div></td></tr><tr data="public;static;declared;notNetfw;"><td><img src="../icons/pubmethod.gif" alt="Public method" title="Public method" /><img src="../icons/static.gif" alt="Static member" title="Static member" /></td><td><a href="c416fd61-ae93-7e3b-debc-508837fe0777.htm">CheckSignature</a></td><td><div class="summary">
             Checks the GC header is valid by checking for the GC signature.
-            </div></td></tr><tr data="public;static;declared;notNetfw;"><td><img src="./../icons/pubmethod.gif" alt="Public method" title="Public method" /><img src="./../icons/static.gif" alt="Static member" title="Static member" /></td><td><a href="d099b7d7-7c7c-811c-3f04-270f9cb21dcd.htm" target="">Cleanup</a></td><td><div class="summary">
+            </div></td></tr><tr data="public;static;declared;notNetfw;"><td><img src="../icons/pubmethod.gif" alt="Public method" title="Public method" /><img src="../icons/static.gif" alt="Static member" title="Static member" /></td><td><a href="d099b7d7-7c7c-811c-3f04-270f9cb21dcd.htm">Cleanup</a></td><td><div class="summary">
             Scans the CleanupList to free objects from memory.
-            </div></td></tr><tr data="public;static;declared;notNetfw;"><td><img src="./../icons/pubmethod.gif" alt="Public method" title="Public method" /><img src="./../icons/static.gif" alt="Static member" title="Static member" /></td><td><a href="e3a0245d-54a5-0677-bbb1-04193209fbc8.htm" target="">DecrementRefCount(Object)</a></td><td><div class="summary">
+            </div></td></tr><tr data="public;static;declared;notNetfw;"><td><img src="../icons/pubmethod.gif" alt="Public method" title="Public method" /><img src="../icons/static.gif" alt="Static member" title="Static member" /></td><td><a href="e3a0245d-54a5-0677-bbb1-04193209fbc8.htm">DecrementRefCount(Object)</a></td><td><div class="summary">
             Decrements the ref count of a GC managed object.
-            </div></td></tr><tr data="public;static;declared;notNetfw;"><td><img src="./../icons/pubmethod.gif" alt="Public method" title="Public method" /><img src="./../icons/static.gif" alt="Static member" title="Static member" /></td><td><a href="e69d0573-c6e4-7964-d961-6454a68917af.htm" target="">DecrementRefCount(Object, Boolean)</a></td><td><div class="summary">
+            </div></td></tr><tr data="public;static;declared;notNetfw;"><td><img src="../icons/pubmethod.gif" alt="Public method" title="Public method" /><img src="../icons/static.gif" alt="Static member" title="Static member" /></td><td><a href="e69d0573-c6e4-7964-d961-6454a68917af.htm">DecrementRefCount(Object, Boolean)</a></td><td><div class="summary">
             Decrements the ref count of a GC managed object.
-            </div></td></tr><tr data="public;static;declared;notNetfw;"><td><img src="./../icons/pubmethod.gif" alt="Public method" title="Public method" /><img src="./../icons/static.gif" alt="Static member" title="Static member" /></td><td><a href="ba60ffc1-3ec1-56b8-ddae-63e4e1b81f73.htm" target="">IncrementRefCount</a></td><td><div class="summary">
+            </div></td></tr><tr data="public;static;declared;notNetfw;"><td><img src="../icons/pubmethod.gif" alt="Public method" title="Public method" /><img src="../icons/static.gif" alt="Static member" title="Static member" /></td><td><a href="ba60ffc1-3ec1-56b8-ddae-63e4e1b81f73.htm">IncrementRefCount</a></td><td><div class="summary">
             Increments the ref count of a GC managed object.
-            </div></td></tr><tr data="public;static;declared;notNetfw;"><td><img src="./../icons/pubmethod.gif" alt="Public method" title="Public method" /><img src="./../icons/static.gif" alt="Static member" title="Static member" /></td><td><a href="0ab547c8-7d66-587e-ff1f-4901a2d9ca46.htm" target="">Init</a></td><td><div class="summary">
+            </div></td></tr><tr data="public;static;declared;notNetfw;"><td><img src="../icons/pubmethod.gif" alt="Public method" title="Public method" /><img src="../icons/static.gif" alt="Static member" title="Static member" /></td><td><a href="0ab547c8-7d66-587e-ff1f-4901a2d9ca46.htm">Init</a></td><td><div class="summary">
             Intialises the GC.
-            </div></td></tr><tr data="public;static;declared;notNetfw;"><td><img src="./../icons/pubmethod.gif" alt="Public method" title="Public method" /><img src="./../icons/static.gif" alt="Static member" title="Static member" /></td><td><a href="33f6a5e7-85bd-90bd-52b7-576305825715.htm" target="">NewArr</a></td><td><div class="summary">
+            </div></td></tr><tr data="public;static;declared;notNetfw;"><td><img src="../icons/pubmethod.gif" alt="Public method" title="Public method" /><img src="../icons/static.gif" alt="Static member" title="Static member" /></td><td><a href="33f6a5e7-85bd-90bd-52b7-576305825715.htm">NewArr</a></td><td><div class="summary">
             Creates a new array with specified element type (but does not call the default constructor).
-            </div></td></tr><tr data="public;static;declared;notNetfw;"><td><img src="./../icons/pubmethod.gif" alt="Public method" title="Public method" /><img src="./../icons/static.gif" alt="Static member" title="Static member" /></td><td><a href="af00cc8d-8857-d7b0-703e-587de72c1dc7.htm" target="">NewObj</a></td><td><div class="summary">
+            </div></td></tr><tr data="public;static;declared;notNetfw;"><td><img src="../icons/pubmethod.gif" alt="Public method" title="Public method" /><img src="../icons/static.gif" alt="Static member" title="Static member" /></td><td><a href="af00cc8d-8857-d7b0-703e-587de72c1dc7.htm">NewObj</a></td><td><div class="summary">
             Creates a new object of specified type (but does not call the default constructor).
-            </div></td></tr><tr data="public;static;declared;notNetfw;"><td><img src="./../icons/pubmethod.gif" alt="Public method" title="Public method" /><img src="./../icons/static.gif" alt="Static member" title="Static member" /></td><td><a href="9228773b-223a-74a8-fb3e-505248dca1bb.htm" target="">NewString</a></td><td><div class="summary">
+            </div></td></tr><tr data="public;static;declared;notNetfw;"><td><img src="../icons/pubmethod.gif" alt="Public method" title="Public method" /><img src="../icons/static.gif" alt="Static member" title="Static member" /></td><td><a href="9228773b-223a-74a8-fb3e-505248dca1bb.htm">NewString</a></td><td><div class="summary">
             DO NOT CALL DIRECTLY. Use FOS_System.String.New
             Creates a new string with specified length (but does not call the default constructor).
-            </div></td></tr><tr data="private;static;declared;notNetfw;"><td><img src="./../icons/privmethod.gif" alt="Private method" title="Private method" /><img src="./../icons/static.gif" alt="Static member" title="Static member" /></td><td><a href="5bff045f-6fd8-1b90-8ecb-3d6d6a676ae9.htm" target="">RemoveObjectToCleanup(GCHeader*)</a></td><td><div class="summary">
+            </div></td></tr><tr data="private;static;declared;notNetfw;"><td><img src="../icons/privmethod.gif" alt="Private method" title="Private method" /><img src="../icons/static.gif" alt="Static member" title="Static member" /></td><td><a href="5bff045f-6fd8-1b90-8ecb-3d6d6a676ae9.htm">RemoveObjectToCleanup(GCHeader*)</a></td><td><div class="summary">
             Removes an object from the cleanup list.
-            </div></td></tr><tr data="private;static;declared;notNetfw;"><td><img src="./../icons/privmethod.gif" alt="Private method" title="Private method" /><img src="./../icons/static.gif" alt="Static member" title="Static member" /></td><td><a href="72a92b58-ac30-996d-1db5-92d1f7f26b03.htm" target="">RemoveObjectToCleanup(ObjectToCleanup*)</a></td><td><div class="summary">
+            </div></td></tr><tr data="private;static;declared;notNetfw;"><td><img src="../icons/privmethod.gif" alt="Private method" title="Private method" /><img src="../icons/static.gif" alt="Static member" title="Static member" /></td><td><a href="72a92b58-ac30-996d-1db5-92d1f7f26b03.htm">RemoveObjectToCleanup(ObjectToCleanup*)</a></td><td><div class="summary">
             Removes an object from the cleanup list.
-            </div></td></tr><tr data="public;static;declared;notNetfw;"><td><img src="./../icons/pubmethod.gif" alt="Public method" title="Public method" /><img src="./../icons/static.gif" alt="Static member" title="Static member" /></td><td><a href="9fa61182-228d-b35b-ce5a-50be557b235e.htm" target="">SetSignature</a></td><td><div class="summary">
+            </div></td></tr><tr data="public;static;declared;notNetfw;"><td><img src="../icons/pubmethod.gif" alt="Public method" title="Public method" /><img src="../icons/static.gif" alt="Static member" title="Static member" /></td><td><a href="9fa61182-228d-b35b-ce5a-50be557b235e.htm">SetSignature</a></td><td><div class="summary">
             Sets the GC signature in the specified GC header.
-            </div></td></tr></table><a href="#mainBody" target="">Top</a><div class="OH_CollapsibleAreaRegion"><div class="OH_regiontitle">Fields</div><div class="OH_CollapsibleArea_HrDiv"><hr class="OH_CollapsibleArea_Hr" /></div></div><div class="OH_clear"></div><table id="memberList" class="members"><tr><th class="ps_iconColumn">
-							 
-						</th><th class="ps_nameColumn">Name</th><th class="ps_descriptionColumn">Description</th></tr><tr data="private;static;declared;notNetfw;"><td><img src="./../icons/privfield.gif" alt="Private field" title="Private field" /><img src="./../icons/static.gif" alt="Static member" title="Static member" /></td><td><a href="ff9255c4-6fbb-2555-0906-52be6b3b512f.htm" target="">CleanupList</a></td><td><div class="summary">
+            </div></td></tr></table><a href="#PageHeader">Top</a></div><div class="collapsibleAreaRegion"><span class="collapsibleRegionTitle" onclick="SectionExpandCollapse('ID5RB')" onkeypress="SectionExpandCollapse_CheckKey('ID5RB', event)" tabindex="0"><img id="ID5RBToggle" class="collapseToggle" src="../icons/SectionExpanded.png" />Fields</span></div><div id="ID5RBSection" class="collapsibleSection"><table id="memberList" class="members"><tr><th class="iconColumn">
+								 
+							</th><th>Name</th><th>Description</th></tr><tr data="private;static;declared;notNetfw;"><td><img src="../icons/privfield.gif" alt="Private field" title="Private field" /><img src="../icons/static.gif" alt="Static member" title="Static member" /></td><td><a href="ff9255c4-6fbb-2555-0906-52be6b3b512f.htm">CleanupList</a></td><td><div class="summary">
             The linked-list of objects to clean up.
-            </div></td></tr><tr data="private;static;declared;notNetfw;"><td><img src="./../icons/privfield.gif" alt="Private field" title="Private field" /><img src="./../icons/static.gif" alt="Static member" title="Static member" /></td><td><a href="4195de2e-de97-ef75-67ea-f5375db897d2.htm" target="">GCInitialised</a></td><td><div class="summary">
+            </div></td></tr><tr data="private;static;declared;notNetfw;"><td><img src="../icons/privfield.gif" alt="Private field" title="Private field" /><img src="../icons/static.gif" alt="Static member" title="Static member" /></td><td><a href="4195de2e-de97-ef75-67ea-f5375db897d2.htm">GCInitialised</a></td><td><div class="summary">
             Whether the GC has been initialised yet or not.
             Used to prevent the GC running before it has been initialised properly.
-            </div></td></tr><tr data="public;static;declared;notNetfw;"><td><img src="./../icons/pubfield.gif" alt="Public field" title="Public field" /><img src="./../icons/static.gif" alt="Static member" title="Static member" /></td><td><a href="de4a4dae-b860-09b4-3ad1-1b72f3266dad.htm" target="">InsideGC</a></td><td><div class="summary">
+            </div></td></tr><tr data="public;static;declared;notNetfw;"><td><img src="../icons/pubfield.gif" alt="Public field" title="Public field" /><img src="../icons/static.gif" alt="Static member" title="Static member" /></td><td><a href="de4a4dae-b860-09b4-3ad1-1b72f3266dad.htm">InsideGC</a></td><td><div class="summary">
             Whether the GC is currently executing. Used to prevent the GC calling itself (or ending up in loops with
             called methods re-calling the GC!)
-            </div></td></tr><tr data="public;static;declared;notNetfw;"><td><img src="./../icons/pubfield.gif" alt="Public field" title="Public field" /><img src="./../icons/static.gif" alt="Static member" title="Static member" /></td><td><a href="56319272-86e5-dbbf-67ee-302b08684945.htm" target="">NumObjs</a></td><td><div class="summary">
+            </div></td></tr><tr data="public;static;declared;notNetfw;"><td><img src="../icons/pubfield.gif" alt="Public field" title="Public field" /><img src="../icons/static.gif" alt="Static member" title="Static member" /></td><td><a href="56319272-86e5-dbbf-67ee-302b08684945.htm">NumObjs</a></td><td><div class="summary">
             The total number of objects currently allocated by the GC.
-            </div></td></tr><tr data="public;static;declared;notNetfw;"><td><img src="./../icons/pubfield.gif" alt="Public field" title="Public field" /><img src="./../icons/static.gif" alt="Static member" title="Static member" /></td><td><a href="1ed9c2ef-4f06-f513-9e81-adeeace7e316.htm" target="">NumStrings</a></td><td><div class="summary">
+            </div></td></tr><tr data="public;static;declared;notNetfw;"><td><img src="../icons/pubfield.gif" alt="Public field" title="Public field" /><img src="../icons/static.gif" alt="Static member" title="Static member" /></td><td><a href="1ed9c2ef-4f06-f513-9e81-adeeace7e316.htm">NumStrings</a></td><td><div class="summary">
             The number of strings currently allocated on the heap.
-            </div></td></tr></table><a href="#mainBody" target="">Top</a><div class="OH_CollapsibleAreaRegion"><div class="OH_regiontitle">Remarks</div><div class="OH_CollapsibleArea_HrDiv"><hr class="OH_CollapsibleArea_Hr" /></div></div><div class="OH_clear"></div>
+            </div></td></tr></table><a href="#PageHeader">Top</a></div><div class="collapsibleAreaRegion"><span class="collapsibleRegionTitle" onclick="SectionExpandCollapse('ID6RB')" onkeypress="SectionExpandCollapse_CheckKey('ID6RB', event)" tabindex="0"><img id="ID6RBToggle" class="collapseToggle" src="../icons/SectionExpanded.png" />Remarks</span></div><div id="ID6RBSection" class="collapsibleSection">
             Make sure all methods that the GC calls are marked with [Compiler.NoGC] (including
             get-set property methods! Apply the attribute to the get/set keywords not the property
             declaration (/name).
-            <a name="seeAlsoSection"><!----></a><div class="OH_CollapsibleAreaRegion"><div class="OH_regiontitle">See Also</div><div class="OH_CollapsibleArea_HrDiv"><hr class="OH_CollapsibleArea_Hr" /></div></div><div class="OH_clear"></div><div class="seeAlsoStyle"><a href="f4608f1c-1b45-9728-1af2-757e20ce3928.htm" target="">Kernel.FOS_System Namespace</a></div></div>
-        </div>
-      </div>
+            </div><div class="collapsibleAreaRegion" id="seeAlsoSection"><span class="collapsibleRegionTitle" onclick="SectionExpandCollapse('ID7RB')" onkeypress="SectionExpandCollapse_CheckKey('ID7RB', event)" tabindex="0"><img id="ID7RBToggle" class="collapseToggle" src="../icons/SectionExpanded.png" />See Also</span></div><div id="ID7RBSection" class="collapsibleSection"><h4 class="subHeading">Reference</h4><div class="seeAlsoStyle"><a href="f4608f1c-1b45-9728-1af2-757e20ce3928.htm">Kernel.FOS_System Namespace</a></div></div></div>
     </div>
-    <div id="OH_footer" class="OH_footer">
-      <p>Copyright Edward Nutting 2014</p>
-      <div class="OH_feedbacklink">
-        <a href="mailto:edwardnutting@outlook.com?subject=Fling+OS+GC+Class+100+EN-US&amp;body=Your%20feedback%20is%20used%20to%20improve%20the%20documentation%20and%20the%20product.%20Your%20e-mail%20address%20will%20not%20be%20used%20for%20any%20other%20purpose%20and%20is%20disposed%20of%20after%20the%20issue%20you%20report%20is%20resolved.%20While%20working%20to%20resolve%20the%20issue%20that%20you%20report%2c%20you%20may%20be%20contacted%20via%20e-mail%20to%20get%20further%20details%20or%20clarification%20on%20the%20feedback%20you%20sent.%20After%20the%20issue%20you%20report%20has%20been%20addressed%2c%20you%20may%20receive%20an%20e-mail%20to%20let%20you%20know%20that%20your%20feedback%20has%20been%20addressed.">Send Feedback</a> on this topic to Edward Nutting.</div>
-    </div>
+    <div id="pageFooter" class="pageFooter">
+      <p>
+        <a href="http://www.flingos.co.uk" target="_blank">Copyright Edward Nutting 2014</a>
+      </p>
+      <div class="feedbackLink">Send comments on this topic to
+        <a id="HT_MailLink" href="mailto:edwardnutting%40outlook.com?Subject=Fling OS">Edward Nutting</a></div>
+      <script type="text/javascript">
+        var HT_mailLink = document.getElementById("HT_MailLink");
+        var HT_mailLinkText = HT_mailLink.innerHTML;
+        HT_mailLink.href += ": " + document.title + "\u0026body=" + encodeURIComponent("Your feedback is used to improve the documentation and the product. Your e-mail address will not be used for any other purpose and is disposed of after the issue you report is resolved. While working to resolve the issue that you report, you may be contacted via e-mail to get further details or clarification on the feedback you sent. After the issue you report has been addressed, you may receive an e-mail to let you know that your feedback has been addressed.");
+        HT_mailLink.innerHTML = HT_mailLinkText;
+        </script> </div>
   </body>
 </html>
