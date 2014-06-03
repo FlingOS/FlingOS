@@ -259,7 +259,7 @@
             <summary>
             Attempts to discover the ATA drive.
             </summary>
-            <returns></returns>
+            <returns>The specification level of the discovered drive. SpecLevel.Null if not found.</returns>
         </member>
         <member name="M:Kernel.Hardware.ATA.ATAPio.InitDrive">
             <summary>
@@ -1550,9 +1550,9 @@
         </member>
         <member name="M:Kernel.Hardware.USB.HCIs.HCI.#ctor(Kernel.Hardware.PCI.PCIDeviceNormal)">
             <summary>
-            Initialises a new generic host controller interface using the specified PCI device.
+            Initializes a new generic host controller interface using the specified PCI device.
             </summary>
-            <param name="aPCIDevice"></param>
+            <param name="aPCIDevice">The PCI device that represents the HCI device.</param>
         </member>
         <member name="F:Kernel.Hardware.USB.HCIs.EHCI.usbBaseAddress">
             <summary>
@@ -1893,7 +1893,7 @@
             <summary>
             Initializes a qTD with specified underlying data structure.
             </summary>
-            <param name="aqTD"></param>
+            <param name="aqTD">The existing underlying data structure.</param>
         </member>
         <member name="M:Kernel.Hardware.USB.HCIs.qTD.Free">
             <summary>

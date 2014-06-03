@@ -20,7 +20,6 @@ G:\Fling OS\Fling OS\Kernel\Libraries\Kernel.FOS_System\bin\Docs\ASM\Exceptions\
 G:\Fling OS\Fling OS\Kernel\Libraries\Kernel.FOS_System\bin\Docs\ASM\Exceptions\Throw.x86_32.asm
 G:\Fling OS\Fling OS\Kernel\Libraries\Kernel.FOS_System\bin\Docs\ASM\Heap\GetFixedHeapPtr.x86_32.asm
 G:\Fling OS\Fling OS\Kernel\Libraries\Kernel.FOS_System\bin\Docs\ASM\Math\Divide.x86_32.asm
-G:\Fling OS\Fling OS\Kernel\Libraries\Kernel.FOS_System\bin\Docs\ASM\String\GetPointer.x86_32.asm
 G:\Fling OS\Fling OS\Kernel\Libraries\Kernel.FOS_System\bin\Docs\ASM\String\GetLength.x86_32.asm
 G:\Fling OS\Fling OS\Kernel\Libraries\Kernel.FOS_System\bin\Docs\cygwin\cygiconv-2.dll
 G:\Fling OS\Fling OS\Kernel\Libraries\Kernel.FOS_System\bin\Docs\cygwin\cygintl-3.dll

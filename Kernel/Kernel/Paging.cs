@@ -6,11 +6,20 @@ using System.Threading.Tasks;
 
 namespace Kernel
 {
+    /// <summary>
+    /// Provides methods for setting up paged virtual memory.
+    /// </summary>
     [Compiler.PluggedClass]
     public unsafe static class Paging
     {
+        /// <summary>
+        /// Whether paging has been loaded or not.
+        /// </summary>
         static bool LoadedPaging = false;
 
+        /// <summary>
+        /// Initializes paged virtual memory.
+        /// </summary>
         [Compiler.NoDebug]
         public static void Init()
         {
@@ -27,8 +36,11 @@ namespace Kernel
             }
         }
 
+        /// <summary>
+        /// Loads paged virtual memory.
+        /// </summary>
         [Compiler.NoDebug]
-        public static void LoadPaging()
+        private static void LoadPaging()
         {
             //Load empty page directory
             uint* page_directory = GetPageDirectoryPtr();
@@ -68,8 +80,11 @@ namespace Kernel
 
             InitKernelPages();
         }
+        /// <summary>
+        /// Initializes the pages that cover the kernel's memory.
+        /// </summary>
         [Compiler.NoDebug]
-        public static void InitKernelPages()
+        private static void InitKernelPages()
         {
             uint* page_directory = GetPageDirectoryPtr();
 
@@ -104,32 +119,55 @@ namespace Kernel
             }
         }
 
+        /// <summary>
+        /// Enables paging.
+        /// </summary>
         [Compiler.PluggedMethod(ASMFilePath = null)]
         public static void EnablePaging()
         {
         }
 
+        /// <summary>
+        /// Gets the page directory memory pointer.
+        /// </summary>
+        /// <returns>The pointer.</returns>
         [Compiler.PluggedMethod(ASMFilePath = @"ASM\Paging\Paging")]
         [Compiler.SequencePriority(Priority = long.MaxValue)]
         public static uint* GetPageDirectoryPtr()
         {
             return null;
         }
+        /// <summary>
+        /// Gets a pointer to the page table that is the first page table.
+        /// </summary>
+        /// <returns>The pointer.</returns>
         [Compiler.PluggedMethod(ASMFilePath = null)]
         public static uint* GetFirstPageTablePtr()
         {
             return null;
         }
+        /// <summary>
+        /// Gets a pointer to the page table that covers the kernel's memory.
+        /// </summary>
+        /// <returns>The pointer.</returns>
         [Compiler.PluggedMethod(ASMFilePath = null)]
         public static uint* GetKernelPageTablePtr()
         {
             return null;
         }
+        /// <summary>
+        /// Gets a pointer to the start of the kernel in memory.
+        /// </summary>
+        /// <returns>The pointer.</returns>
         [Compiler.PluggedMethod(ASMFilePath = null)]
         public static uint* GetKernelMemStartPtr()
         {
             return null;
         }
+        /// <summary>
+        /// Gets a pointer to the end of the kernel in memory.
+        /// </summary>
+        /// <returns>The pointer.</returns>
         [Compiler.PluggedMethod(ASMFilePath = null)]
         public static uint* GetKernelMemEndPtr()
         {

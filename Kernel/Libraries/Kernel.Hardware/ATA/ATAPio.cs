@@ -359,7 +359,7 @@ namespace Kernel.Hardware.ATA
         /// <summary>
         /// Attempts to discover the ATA drive.
         /// </summary>
-        /// <returns></returns>
+        /// <returns>The specification level of the discovered drive. SpecLevel.Null if not found.</returns>
         public SpecLevel DiscoverDrive()
         {
             SelectDrive(0);

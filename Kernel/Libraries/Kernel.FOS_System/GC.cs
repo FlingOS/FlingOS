@@ -191,6 +191,7 @@ namespace Kernel.FOS_System
         /// DO NOT CALL DIRECTLY. Use FOS_System.String.New
         /// Creates a new string with specified length (but does not call the default constructor).
         /// </summary>
+        /// <param name="length">The length of the string to create.</param>
         /// <returns>A pointer to the new string in memory.</returns>
         [Compiler.NoDebug]
         [Compiler.NoGC]

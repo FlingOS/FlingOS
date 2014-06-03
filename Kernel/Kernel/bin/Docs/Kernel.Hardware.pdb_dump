@@ -1325,7 +1325,7 @@ FuncDebugStart :
 FuncDebugEnd   :   
 Custom         :   (none)
 
-Function       : In MetaData, [00001A0E][0001:00001A0E], len = 0000000E, Free
+Function       : In MetaData, [00001A0E][0001:00001A0E], len = 00000016, Free
                  Function attribute:
                  Function info:
 FuncDebugStart :   
@@ -1335,335 +1335,335 @@ Custom         :   (none)
 ** Module: Kernel.Hardware.USB.HCIs.QueueHead
 
 
-Function       : In MetaData, [00001A1C][0001:00001A1C], len = 00000015, get_HorizontalLinkPointer
+Function       : In MetaData, [00001A24][0001:00001A24], len = 00000015, get_HorizontalLinkPointer
                  Function attribute:
                  Function info:
 FuncDebugStart :   
 FuncDebugEnd   :   
-Block          :   static, [00001A1C][0001:00001A1C], len = 00000015, (none)
+Block          :   static, [00001A24][0001:00001A24], len = 00000015, (none)
 Data           :     Slot, [00000000], Local, CS$1$0000
 Custom         :   (none)
 
-Function       : In MetaData, [00001A31][0001:00001A31], len = 00000017, set_HorizontalLinkPointer
+Function       : In MetaData, [00001A39][0001:00001A39], len = 00000017, set_HorizontalLinkPointer
                  Function attribute:
                  Function info:
 FuncDebugStart :   
 FuncDebugEnd   :   
 Custom         :   (none)
 
-Function       : In MetaData, [00001A48][0001:00001A48], len = 00000017, get_Type
+Function       : In MetaData, [00001A50][0001:00001A50], len = 00000017, get_Type
                  Function attribute:
                  Function info:
 FuncDebugStart :   
 FuncDebugEnd   :   
-Block          :   static, [00001A48][0001:00001A48], len = 00000017, (none)
+Block          :   static, [00001A50][0001:00001A50], len = 00000017, (none)
 Data           :     Slot, [00000000], Local, CS$1$0000
 Custom         :   (none)
 
-Function       : In MetaData, [00001A5F][0001:00001A5F], len = 00000022, set_Type
+Function       : In MetaData, [00001A67][0001:00001A67], len = 00000022, set_Type
                  Function attribute:
                  Function info:
 FuncDebugStart :   
 FuncDebugEnd   :   
 Custom         :   (none)
 
-Function       : In MetaData, [00001A81][0001:00001A81], len = 00000015, get_DeviceAddress
+Function       : In MetaData, [00001A89][0001:00001A89], len = 00000015, get_DeviceAddress
                  Function attribute:
                  Function info:
 FuncDebugStart :   
 FuncDebugEnd   :   
-Block          :   static, [00001A81][0001:00001A81], len = 00000015, (none)
+Block          :   static, [00001A89][0001:00001A89], len = 00000015, (none)
 Data           :     Slot, [00000000], Local, CS$1$0000
 Custom         :   (none)
 
-Function       : In MetaData, [00001A96][0001:00001A96], len = 00000020, set_DeviceAddress
+Function       : In MetaData, [00001A9E][0001:00001A9E], len = 00000020, set_DeviceAddress
                  Function attribute:
                  Function info:
 FuncDebugStart :   
 FuncDebugEnd   :   
 Custom         :   (none)
 
-Function       : In MetaData, [00001AB6][0001:00001AB6], len = 0000001A, get_InactiveOnNextTransaction
+Function       : In MetaData, [00001ABE][0001:00001ABE], len = 0000001A, get_InactiveOnNextTransaction
                  Function attribute:
                  Function info:
 FuncDebugStart :   
 FuncDebugEnd   :   
-Block          :   static, [00001AB6][0001:00001AB6], len = 0000001A, (none)
+Block          :   static, [00001ABE][0001:00001ABE], len = 0000001A, (none)
 Data           :     Slot, [00000000], Local, CS$1$0000
 Custom         :   (none)
 
-Function       : In MetaData, [00001AD0][0001:00001AD0], len = 00000048, set_InactiveOnNextTransaction
+Function       : In MetaData, [00001AD8][0001:00001AD8], len = 00000048, set_InactiveOnNextTransaction
                  Function attribute:
                  Function info:
 FuncDebugStart :   
 FuncDebugEnd   :   
-Block          :   static, [00001AD0][0001:00001AD0], len = 00000048, (none)
+Block          :   static, [00001AD8][0001:00001AD8], len = 00000048, (none)
 Data           :     Slot, [00000000], Local, CS$4$0000
 Custom         :   (none)
 
-Function       : In MetaData, [00001B18][0001:00001B18], len = 0000001A, get_EndpointNumber
+Function       : In MetaData, [00001B20][0001:00001B20], len = 0000001A, get_EndpointNumber
                  Function attribute:
                  Function info:
 FuncDebugStart :   
 FuncDebugEnd   :   
-Block          :   static, [00001B18][0001:00001B18], len = 0000001A, (none)
+Block          :   static, [00001B20][0001:00001B20], len = 0000001A, (none)
 Data           :     Slot, [00000000], Local, CS$1$0000
 Custom         :   (none)
 
-Function       : In MetaData, [00001B32][0001:00001B32], len = 00000022, set_EndpointNumber
+Function       : In MetaData, [00001B3A][0001:00001B3A], len = 00000022, set_EndpointNumber
                  Function attribute:
                  Function info:
 FuncDebugStart :   
 FuncDebugEnd   :   
 Custom         :   (none)
 
-Function       : In MetaData, [00001B54][0001:00001B54], len = 0000001B, get_EndpointSpeed
+Function       : In MetaData, [00001B5C][0001:00001B5C], len = 0000001B, get_EndpointSpeed
                  Function attribute:
                  Function info:
 FuncDebugStart :   
 FuncDebugEnd   :   
-Block          :   static, [00001B54][0001:00001B54], len = 0000001B, (none)
+Block          :   static, [00001B5C][0001:00001B5C], len = 0000001B, (none)
 Data           :     Slot, [00000000], Local, CS$1$0000
 Custom         :   (none)
 
-Function       : In MetaData, [00001B6F][0001:00001B6F], len = 00000023, set_EndpointSpeed
+Function       : In MetaData, [00001B77][0001:00001B77], len = 00000023, set_EndpointSpeed
                  Function attribute:
                  Function info:
 FuncDebugStart :   
 FuncDebugEnd   :   
 Custom         :   (none)
 
-Function       : In MetaData, [00001B92][0001:00001B92], len = 0000001A, get_DataToggleControl
+Function       : In MetaData, [00001B9A][0001:00001B9A], len = 0000001A, get_DataToggleControl
                  Function attribute:
                  Function info:
 FuncDebugStart :   
 FuncDebugEnd   :   
-Block          :   static, [00001B92][0001:00001B92], len = 0000001A, (none)
+Block          :   static, [00001B9A][0001:00001B9A], len = 0000001A, (none)
 Data           :     Slot, [00000000], Local, CS$1$0000
 Custom         :   (none)
 
-Function       : In MetaData, [00001BAC][0001:00001BAC], len = 00000048, set_DataToggleControl
+Function       : In MetaData, [00001BB4][0001:00001BB4], len = 00000048, set_DataToggleControl
                  Function attribute:
                  Function info:
 FuncDebugStart :   
 FuncDebugEnd   :   
-Block          :   static, [00001BAC][0001:00001BAC], len = 00000048, (none)
+Block          :   static, [00001BB4][0001:00001BB4], len = 00000048, (none)
 Data           :     Slot, [00000000], Local, CS$4$0000
 Custom         :   (none)
 
-Function       : In MetaData, [00001BF4][0001:00001BF4], len = 0000001A, get_HeadOfReclamationList
+Function       : In MetaData, [00001BFC][0001:00001BFC], len = 0000001A, get_HeadOfReclamationList
                  Function attribute:
                  Function info:
 FuncDebugStart :   
 FuncDebugEnd   :   
-Block          :   static, [00001BF4][0001:00001BF4], len = 0000001A, (none)
+Block          :   static, [00001BFC][0001:00001BFC], len = 0000001A, (none)
 Data           :     Slot, [00000000], Local, CS$1$0000
 Custom         :   (none)
 
-Function       : In MetaData, [00001C0E][0001:00001C0E], len = 00000048, set_HeadOfReclamationList
+Function       : In MetaData, [00001C16][0001:00001C16], len = 00000048, set_HeadOfReclamationList
                  Function attribute:
                  Function info:
 FuncDebugStart :   
 FuncDebugEnd   :   
-Block          :   static, [00001C0E][0001:00001C0E], len = 00000048, (none)
+Block          :   static, [00001C16][0001:00001C16], len = 00000048, (none)
 Data           :     Slot, [00000000], Local, CS$4$0000
 Custom         :   (none)
 
-Function       : In MetaData, [00001C56][0001:00001C56], len = 0000001B, get_MaximumPacketLength
+Function       : In MetaData, [00001C5E][0001:00001C5E], len = 0000001B, get_MaximumPacketLength
                  Function attribute:
                  Function info:
 FuncDebugStart :   
 FuncDebugEnd   :   
-Block          :   static, [00001C56][0001:00001C56], len = 0000001B, (none)
+Block          :   static, [00001C5E][0001:00001C5E], len = 0000001B, (none)
 Data           :     Slot, [00000000], Local, CS$1$0000
 Custom         :   (none)
 
-Function       : In MetaData, [00001C71][0001:00001C71], len = 00000029, set_MaximumPacketLength
+Function       : In MetaData, [00001C79][0001:00001C79], len = 00000029, set_MaximumPacketLength
                  Function attribute:
                  Function info:
 FuncDebugStart :   
 FuncDebugEnd   :   
 Custom         :   (none)
 
-Function       : In MetaData, [00001C9A][0001:00001C9A], len = 0000001A, get_ControlEndpointFlag
+Function       : In MetaData, [00001CA2][0001:00001CA2], len = 0000001A, get_ControlEndpointFlag
                  Function attribute:
                  Function info:
 FuncDebugStart :   
 FuncDebugEnd   :   
-Block          :   static, [00001C9A][0001:00001C9A], len = 0000001A, (none)
+Block          :   static, [00001CA2][0001:00001CA2], len = 0000001A, (none)
 Data           :     Slot, [00000000], Local, CS$1$0000
 Custom         :   (none)
 
-Function       : In MetaData, [00001CB4][0001:00001CB4], len = 00000048, set_ControlEndpointFlag
+Function       : In MetaData, [00001CBC][0001:00001CBC], len = 00000048, set_ControlEndpointFlag
                  Function attribute:
                  Function info:
 FuncDebugStart :   
 FuncDebugEnd   :   
-Block          :   static, [00001CB4][0001:00001CB4], len = 00000048, (none)
+Block          :   static, [00001CBC][0001:00001CBC], len = 00000048, (none)
 Data           :     Slot, [00000000], Local, CS$4$0000
 Custom         :   (none)
 
-Function       : In MetaData, [00001CFC][0001:00001CFC], len = 0000001B, get_NakCountReload
+Function       : In MetaData, [00001D04][0001:00001D04], len = 0000001B, get_NakCountReload
                  Function attribute:
                  Function info:
 FuncDebugStart :   
 FuncDebugEnd   :   
-Block          :   static, [00001CFC][0001:00001CFC], len = 0000001B, (none)
+Block          :   static, [00001D04][0001:00001D04], len = 0000001B, (none)
 Data           :     Slot, [00000000], Local, CS$1$0000
 Custom         :   (none)
 
-Function       : In MetaData, [00001D17][0001:00001D17], len = 00000023, set_NakCountReload
+Function       : In MetaData, [00001D1F][0001:00001D1F], len = 00000023, set_NakCountReload
                  Function attribute:
                  Function info:
 FuncDebugStart :   
 FuncDebugEnd   :   
 Custom         :   (none)
 
-Function       : In MetaData, [00001D3A][0001:00001D3A], len = 00000012, get_InterruptScheduleMask
+Function       : In MetaData, [00001D42][0001:00001D42], len = 00000012, get_InterruptScheduleMask
                  Function attribute:
                  Function info:
 FuncDebugStart :   
 FuncDebugEnd   :   
-Block          :   static, [00001D3A][0001:00001D3A], len = 00000012, (none)
+Block          :   static, [00001D42][0001:00001D42], len = 00000012, (none)
 Data           :     Slot, [00000000], Local, CS$1$0000
 Custom         :   (none)
 
-Function       : In MetaData, [00001D4C][0001:00001D4C], len = 00000020, set_InterruptScheduleMask
+Function       : In MetaData, [00001D54][0001:00001D54], len = 00000020, set_InterruptScheduleMask
                  Function attribute:
                  Function info:
 FuncDebugStart :   
 FuncDebugEnd   :   
 Custom         :   (none)
 
-Function       : In MetaData, [00001D6C][0001:00001D6C], len = 00000014, get_SplitCompletionMask
+Function       : In MetaData, [00001D74][0001:00001D74], len = 00000014, get_SplitCompletionMask
                  Function attribute:
                  Function info:
 FuncDebugStart :   
 FuncDebugEnd   :   
-Block          :   static, [00001D6C][0001:00001D6C], len = 00000014, (none)
+Block          :   static, [00001D74][0001:00001D74], len = 00000014, (none)
 Data           :     Slot, [00000000], Local, CS$1$0000
 Custom         :   (none)
 
-Function       : In MetaData, [00001D80][0001:00001D80], len = 00000022, set_SplitCompletionMask
+Function       : In MetaData, [00001D88][0001:00001D88], len = 00000022, set_SplitCompletionMask
                  Function attribute:
                  Function info:
 FuncDebugStart :   
 FuncDebugEnd   :   
 Custom         :   (none)
 
-Function       : In MetaData, [00001DA2][0001:00001DA2], len = 0000001B, get_HubAddr
+Function       : In MetaData, [00001DAA][0001:00001DAA], len = 0000001B, get_HubAddr
                  Function attribute:
                  Function info:
 FuncDebugStart :   
 FuncDebugEnd   :   
-Block          :   static, [00001DA2][0001:00001DA2], len = 0000001B, (none)
+Block          :   static, [00001DAA][0001:00001DAA], len = 0000001B, (none)
 Data           :     Slot, [00000000], Local, CS$1$0000
 Custom         :   (none)
 
-Function       : In MetaData, [00001DBD][0001:00001DBD], len = 00000023, set_HubAddr
+Function       : In MetaData, [00001DC5][0001:00001DC5], len = 00000023, set_HubAddr
                  Function attribute:
                  Function info:
 FuncDebugStart :   
 FuncDebugEnd   :   
 Custom         :   (none)
 
-Function       : In MetaData, [00001DE0][0001:00001DE0], len = 0000001B, get_PortNumber
+Function       : In MetaData, [00001DE8][0001:00001DE8], len = 0000001B, get_PortNumber
                  Function attribute:
                  Function info:
 FuncDebugStart :   
 FuncDebugEnd   :   
-Block          :   static, [00001DE0][0001:00001DE0], len = 0000001B, (none)
+Block          :   static, [00001DE8][0001:00001DE8], len = 0000001B, (none)
 Data           :     Slot, [00000000], Local, CS$1$0000
 Custom         :   (none)
 
-Function       : In MetaData, [00001DFB][0001:00001DFB], len = 00000023, set_PortNumber
+Function       : In MetaData, [00001E03][0001:00001E03], len = 00000023, set_PortNumber
                  Function attribute:
                  Function info:
 FuncDebugStart :   
 FuncDebugEnd   :   
 Custom         :   (none)
 
-Function       : In MetaData, [00001E1E][0001:00001E1E], len = 0000001B, get_HighBandwidthPipeMultiplier
+Function       : In MetaData, [00001E26][0001:00001E26], len = 0000001B, get_HighBandwidthPipeMultiplier
                  Function attribute:
                  Function info:
 FuncDebugStart :   
 FuncDebugEnd   :   
-Block          :   static, [00001E1E][0001:00001E1E], len = 0000001B, (none)
+Block          :   static, [00001E26][0001:00001E26], len = 0000001B, (none)
 Data           :     Slot, [00000000], Local, CS$1$0000
 Custom         :   (none)
 
-Function       : In MetaData, [00001E39][0001:00001E39], len = 00000023, set_HighBandwidthPipeMultiplier
+Function       : In MetaData, [00001E41][0001:00001E41], len = 00000023, set_HighBandwidthPipeMultiplier
                  Function attribute:
                  Function info:
 FuncDebugStart :   
 FuncDebugEnd   :   
 Custom         :   (none)
 
-Function       : In MetaData, [00001E5C][0001:00001E5C], len = 00000015, get_CurrentqTDPointer
+Function       : In MetaData, [00001E64][0001:00001E64], len = 00000015, get_CurrentqTDPointer
                  Function attribute:
                  Function info:
 FuncDebugStart :   
 FuncDebugEnd   :   
-Block          :   static, [00001E5C][0001:00001E5C], len = 00000015, (none)
+Block          :   static, [00001E64][0001:00001E64], len = 00000015, (none)
 Data           :     Slot, [00000000], Local, CS$1$0000
 Custom         :   (none)
 
-Function       : In MetaData, [00001E71][0001:00001E71], len = 00000021, set_CurrentqTDPointer
+Function       : In MetaData, [00001E79][0001:00001E79], len = 00000021, set_CurrentqTDPointer
                  Function attribute:
                  Function info:
 FuncDebugStart :   
 FuncDebugEnd   :   
 Custom         :   (none)
 
-Function       : In MetaData, [00001E92][0001:00001E92], len = 00000015, get_NextqTDPointer
+Function       : In MetaData, [00001E9A][0001:00001E9A], len = 00000015, get_NextqTDPointer
                  Function attribute:
                  Function info:
 FuncDebugStart :   
 FuncDebugEnd   :   
-Block          :   static, [00001E92][0001:00001E92], len = 00000015, (none)
+Block          :   static, [00001E9A][0001:00001E9A], len = 00000015, (none)
 Data           :     Slot, [00000000], Local, CS$1$0000
 Custom         :   (none)
 
-Function       : In MetaData, [00001EA7][0001:00001EA7], len = 00000021, set_NextqTDPointer
+Function       : In MetaData, [00001EAF][0001:00001EAF], len = 00000021, set_NextqTDPointer
                  Function attribute:
                  Function info:
 FuncDebugStart :   
 FuncDebugEnd   :   
 Custom         :   (none)
 
-Function       : In MetaData, [00001EC8][0001:00001EC8], len = 00000016, get_NextqTDPointerTerminate
+Function       : In MetaData, [00001ED0][0001:00001ED0], len = 00000016, get_NextqTDPointerTerminate
                  Function attribute:
                  Function info:
 FuncDebugStart :   
 FuncDebugEnd   :   
-Block          :   static, [00001EC8][0001:00001EC8], len = 00000016, (none)
+Block          :   static, [00001ED0][0001:00001ED0], len = 00000016, (none)
 Data           :     Slot, [00000000], Local, CS$1$0000
 Custom         :   (none)
 
-Function       : In MetaData, [00001EDE][0001:00001EDE], len = 00000041, set_NextqTDPointerTerminate
+Function       : In MetaData, [00001EE6][0001:00001EE6], len = 00000041, set_NextqTDPointerTerminate
                  Function attribute:
                  Function info:
 FuncDebugStart :   
 FuncDebugEnd   :   
-Block          :   static, [00001EDE][0001:00001EDE], len = 00000041, (none)
+Block          :   static, [00001EE6][0001:00001EE6], len = 00000041, (none)
 Data           :     Slot, [00000000], Local, CS$4$0000
 Custom         :   (none)
 
-Function       : In MetaData, [00001F1F][0001:00001F1F], len = 0000001B, .ctor
+Function       : In MetaData, [00001F27][0001:00001F27], len = 0000001B, .ctor
                  Function attribute:
                  Function info:
 FuncDebugStart :   
 FuncDebugEnd   :   
 Custom         :   (none)
 
-Function       : In MetaData, [00001F3A][0001:00001F3A], len = 00000011, .ctor
+Function       : In MetaData, [00001F42][0001:00001F42], len = 00000011, .ctor
                  Function attribute:
                  Function info:
 FuncDebugStart :   
 FuncDebugEnd   :   
 Custom         :   (none)
 
-Function       : In MetaData, [00001F4B][0001:00001F4B], len = 0000000E, Free
+Function       : In MetaData, [00001F53][0001:00001F53], len = 00000016, Free
                  Function attribute:
                  Function info:
 FuncDebugStart :   
@@ -1673,25 +1673,25 @@ Custom         :   (none)
 ** Module: Kernel.Hardware.USB.HCIs.EHCI_ExtendedCapability
 
 
-Function       : In MetaData, [00001F59][0001:00001F59], len = 00000014, get_CapabilityID
+Function       : In MetaData, [00001F69][0001:00001F69], len = 00000014, get_CapabilityID
                  Function attribute:
                  Function info:
 FuncDebugStart :   
 FuncDebugEnd   :   
-Block          :   static, [00001F59][0001:00001F59], len = 00000014, (none)
+Block          :   static, [00001F69][0001:00001F69], len = 00000014, (none)
 Data           :     Slot, [00000000], Local, CS$1$0000
 Custom         :   (none)
 
-Function       : In MetaData, [00001F6D][0001:00001F6D], len = 00000017, get_NextEHCIExtendedCapabilityOffset
+Function       : In MetaData, [00001F7D][0001:00001F7D], len = 00000017, get_NextEHCIExtendedCapabilityOffset
                  Function attribute:
                  Function info:
 FuncDebugStart :   
 FuncDebugEnd   :   
-Block          :   static, [00001F6D][0001:00001F6D], len = 00000017, (none)
+Block          :   static, [00001F7D][0001:00001F7D], len = 00000017, (none)
 Data           :     Slot, [00000000], Local, CS$1$0000
 Custom         :   (none)
 
-Function       : In MetaData, [00001F84][0001:00001F84], len = 00000018, .ctor
+Function       : In MetaData, [00001F94][0001:00001F94], len = 00000018, .ctor
                  Function attribute:
                  Function info:
 FuncDebugStart :   
@@ -1701,43 +1701,43 @@ Custom         :   (none)
 ** Module: Kernel.Hardware.USB.HCIs.EHCI_USBLegacySupportExtendedCapability
 
 
-Function       : In MetaData, [00001F9C][0001:00001F9C], len = 0000001D, get_HCOSOwnedSemaphore
+Function       : In MetaData, [00001FAC][0001:00001FAC], len = 0000001D, get_HCOSOwnedSemaphore
                  Function attribute:
                  Function info:
 FuncDebugStart :   
 FuncDebugEnd   :   
-Block          :   static, [00001F9C][0001:00001F9C], len = 0000001D, (none)
+Block          :   static, [00001FAC][0001:00001FAC], len = 0000001D, (none)
 Data           :     Slot, [00000000], Local, CS$1$0000
 Custom         :   (none)
 
-Function       : In MetaData, [00001FB9][0001:00001FB9], len = 00000062, set_HCOSOwnedSemaphore
+Function       : In MetaData, [00001FC9][0001:00001FC9], len = 00000062, set_HCOSOwnedSemaphore
                  Function attribute:
                  Function info:
 FuncDebugStart :   
 FuncDebugEnd   :   
-Block          :   static, [00001FB9][0001:00001FB9], len = 00000062, (none)
+Block          :   static, [00001FC9][0001:00001FC9], len = 00000062, (none)
 Data           :     Slot, [00000000], Local, CS$4$0000
 Custom         :   (none)
 
-Function       : In MetaData, [0000201B][0001:0000201B], len = 0000001D, get_HCBIOSOwnedSemaphore
+Function       : In MetaData, [0000202B][0001:0000202B], len = 0000001D, get_HCBIOSOwnedSemaphore
                  Function attribute:
                  Function info:
 FuncDebugStart :   
 FuncDebugEnd   :   
-Block          :   static, [0000201B][0001:0000201B], len = 0000001D, (none)
+Block          :   static, [0000202B][0001:0000202B], len = 0000001D, (none)
 Data           :     Slot, [00000000], Local, CS$1$0000
 Custom         :   (none)
 
-Function       : In MetaData, [00002038][0001:00002038], len = 00000062, set_HCBIOSOwnedSemaphore
+Function       : In MetaData, [00002048][0001:00002048], len = 00000062, set_HCBIOSOwnedSemaphore
                  Function attribute:
                  Function info:
 FuncDebugStart :   
 FuncDebugEnd   :   
-Block          :   static, [00002038][0001:00002038], len = 00000062, (none)
+Block          :   static, [00002048][0001:00002048], len = 00000062, (none)
 Data           :     Slot, [00000000], Local, CS$4$0000
 Custom         :   (none)
 
-Function       : In MetaData, [0000209A][0001:0000209A], len = 00000026, .ctor
+Function       : In MetaData, [000020AA][0001:000020AA], len = 00000026, .ctor
                  Function attribute:
                  Function info:
 FuncDebugStart :   
@@ -1747,7 +1747,7 @@ Custom         :   (none)
 ** Module: Kernel.Hardware.USB.HCIs.EHCI_USBLegacySupportControlStatusCapability
 
 
-Function       : In MetaData, [000020C0][0001:000020C0], len = 0000000C, .ctor
+Function       : In MetaData, [000020D0][0001:000020D0], len = 0000000C, .ctor
                  Function attribute:
                  Function info:
 FuncDebugStart :   
@@ -1757,27 +1757,27 @@ Custom         :   (none)
 ** Module: Kernel.Hardware.USB.USBManager
 
 
-Function       : In MetaData, [000020CC][0001:000020CC], len = 000000EF, Init
+Function       : In MetaData, [000020DC][0001:000020DC], len = 000000EF, Init
                  Function attribute:
                  Function info:
 FuncDebugStart :   
 FuncDebugEnd   :   
-Block          :   static, [000020CC][0001:000020CC], len = 000000EF, (none)
+Block          :   static, [000020DC][0001:000020DC], len = 000000EF, (none)
 UsingNamespace :     USystem
 UsingNamespace :     UKernel.FOS_System.Collections
 UsingNamespace :     UKernel.Hardware.PCI
 UsingNamespace :     UKernel.Hardware.USB.HCIs
 Data           :     Slot, [00000004], Local, CS$4$0000
-Block          :     static, [000020CD][0001:000020CD], len = 000000ED, (none)
+Block          :     static, [000020DD][0001:000020DD], len = 000000ED, (none)
 Data           :       Slot, [00000000], Local, i
-Block          :       static, [000020D4][0001:000020D4], len = 000000CC, (none)
+Block          :       static, [000020E4][0001:000020E4], len = 000000CC, (none)
 Data           :         Slot, [00000001], Local, aDevice
-Block          :         static, [0000216D][0001:0000216D], len = 00000030, (none)
+Block          :         static, [0000217D][0001:0000217D], len = 00000030, (none)
 Data           :           Slot, [00000002], Local, EHCI_PCIDevice
 Data           :           Slot, [00000003], Local, newEHCI
 Custom         :   (none)
 
-Function       : In MetaData, [000021BB][0001:000021BB], len = 0000000C, .cctor
+Function       : In MetaData, [000021CB][0001:000021CB], len = 0000000C, .cctor
                  Function attribute:
                  Function info:
 FuncDebugStart :   
@@ -1790,12 +1790,12 @@ Custom         :   (none)
 
 Function: [0000068A][0001:0000068A] Read_Byte
 Function: [000015C5][0001:000015C5] set_CONFIGFLAG
-Function: [0000201B][0001:0000201B] get_HCBIOSOwnedSemaphore
+Function: [0000202B][0001:0000202B] get_HCBIOSOwnedSemaphore
 Function: [000015B4][0001:000015B4] get_CONFIGFLAG
-Function: [00002038][0001:00002038] set_HCBIOSOwnedSemaphore
-Function: [00001CFC][0001:00001CFC] get_NakCountReload
+Function: [00002048][0001:00002048] set_HCBIOSOwnedSemaphore
+Function: [00001D04][0001:00001D04] get_NakCountReload
 Function: [00000848][0001:00000848] AddDevice
-Function: [00001D17][0001:00001D17] set_NakCountReload
+Function: [00001D1F][0001:00001D1F] set_NakCountReload
 Function: [00000960][0001:00000960] IsIO
 Function: [00000979][0001:00000979] set_Command
 Function: [0000170B][0001:0000170B] CreateQueueHead
@@ -1812,25 +1812,25 @@ Function: [00000408][0001:00000408] SendCmd
 Function: [0000182E][0001:0000182E] get_PIDCode
 Function: [00001845][0001:00001845] set_PIDCode
 Function: [0000000C][0001:0000000C] get_BlockSize
-Function: [00001F6D][0001:00001F6D] get_NextEHCIExtendedCapabilityOffset
+Function: [00001F7D][0001:00001F7D] get_NextEHCIExtendedCapabilityOffset
 Function: [00000B3D][0001:00000B3D] WriteRegister8
-Function: [00001A5F][0001:00001A5F] set_Type
+Function: [00001A67][0001:00001A67] set_Type
 Function: [0000187F][0001:0000187F] set_ErrorCounter
-Function: [00001A96][0001:00001A96] set_DeviceAddress
+Function: [00001A9E][0001:00001A9E] set_DeviceAddress
 Function: [0000120E][0001:0000120E] .ctor
 Function: [000010BC][0001:000010BC] .ctor
 Function: [00001439][0001:00001439] .ctor
 Function: [000008C2][0001:000008C2] .ctor
-Function: [0000209A][0001:0000209A] .ctor
-Function: [00001F84][0001:00001F84] .ctor
+Function: [000020AA][0001:000020AA] .ctor
+Function: [00001F94][0001:00001F94] .ctor
 Function: [00001338][0001:00001338] .ctor
 Function: [000015F2][0001:000015F2] .ctor
 Function: [0000002D][0001:0000002D] .ctor
-Function: [00001F3A][0001:00001F3A] .ctor
-Function: [00001F1F][0001:00001F1F] .ctor
+Function: [00001F42][0001:00001F42] .ctor
+Function: [00001F27][0001:00001F27] .ctor
 Function: [0000005B][0001:0000005B] .ctor
 Function: [00000045][0001:00000045] .ctor
-Function: [000020C0][0001:000020C0] .ctor
+Function: [000020D0][0001:000020D0] .ctor
 Function: [0000099D][0001:0000099D] .ctor
 Function: [00000659][0001:00000659] .ctor
 Function: [00000648][0001:00000648] .ctor
@@ -1839,20 +1839,20 @@ Function: [000005CD][0001:000005CD] .ctor
 Function: [000019FD][0001:000019FD] .ctor
 Function: [000019E2][0001:000019E2] .ctor
 Function: [00001864][0001:00001864] get_ErrorCounter
-Function: [00001A81][0001:00001A81] get_DeviceAddress
-Function: [00001A48][0001:00001A48] get_Type
+Function: [00001A89][0001:00001A89] get_DeviceAddress
+Function: [00001A50][0001:00001A50] get_Type
 Function: [000014D4][0001:000014D4] set_USBINTR
 Function: [000014C4][0001:000014C4] get_USBINTR
 Function: [00001707][0001:00001707] AddAsyncQueueHead
 Function: [0000195D][0001:0000195D] set_TotalBytesToTransfer
-Function: [00001F59][0001:00001F59] get_CapabilityID
+Function: [00001F69][0001:00001F69] get_CapabilityID
 Function: [00001942][0001:00001942] get_TotalBytesToTransfer
-Function: [00001F9C][0001:00001F9C] get_HCOSOwnedSemaphore
-Function: [00001FB9][0001:00001FB9] set_HCOSOwnedSemaphore
+Function: [00001FAC][0001:00001FAC] get_HCOSOwnedSemaphore
+Function: [00001FC9][0001:00001FC9] set_HCOSOwnedSemaphore
 Function: [000016D7][0001:000016D7] EnableAsyncQueue
-Function: [00001EA7][0001:00001EA7] set_NextqTDPointer
+Function: [00001EAF][0001:00001EAF] set_NextqTDPointer
 Function: [00001784][0001:00001784] set_NextqTDPointer
-Function: [00001E92][0001:00001E92] get_NextqTDPointer
+Function: [00001E9A][0001:00001E9A] get_NextqTDPointer
 Function: [0000176F][0001:0000176F] get_NextqTDPointer
 Function: [000014E1][0001:000014E1] get_FRINDEX
 Function: [000014F2][0001:000014F2] set_FRINDEX
@@ -1865,9 +1865,9 @@ Function: [000001E7][0001:000001E7] SelectDrive
 Function: [00000618][0001:00000618] set_Item
 Function: [000005E5][0001:000005E5] get_Item
 Function: [00000BFD][0001:00000BFD] ReadRegister32
-Function: [00001EDE][0001:00001EDE] set_NextqTDPointerTerminate
+Function: [00001EE6][0001:00001EE6] set_NextqTDPointerTerminate
 Function: [000017BB][0001:000017BB] set_NextqTDPointerTerminate
-Function: [00001EC8][0001:00001EC8] get_NextqTDPointerTerminate
+Function: [00001ED0][0001:00001ED0] get_NextqTDPointerTerminate
 Function: [000017A5][0001:000017A5] get_NextqTDPointerTerminate
 Function: [00000260][0001:00000260] DiscoverDrive
 Function: [00000AC8][0001:00000AC8] EnableMemory
@@ -1877,12 +1877,12 @@ Function: [0000171D][0001:0000171D] RecycleQueueHead
 Function: [000015D3][0001:000015D3] get_PORTSC
 Function: [000015E4][0001:000015E4] set_PORTSC
 Function: [0000015D][0001:0000015D] get_DriveType
-Function: [000020CC][0001:000020CC] Init
+Function: [000020DC][0001:000020DC] Init
 Function: [000000FD][0001:000000FD] Init
 Function: [00000781][0001:00000781] Init
 Function: [0000169C][0001:0000169C] Init
-Function: [00001C9A][0001:00001C9A] get_ControlEndpointFlag
-Function: [00001CB4][0001:00001CB4] set_ControlEndpointFlag
+Function: [00001CA2][0001:00001CA2] get_ControlEndpointFlag
+Function: [00001CBC][0001:00001CBC] set_ControlEndpointFlag
 Function: [000018E0][0001:000018E0] get_InterruptOnComplete
 Function: [00000AF1][0001:00000AF1] ReadRegister8
 Function: [000018FA][0001:000018FA] set_InterruptOnComplete
@@ -1899,49 +1899,49 @@ Function: [00001490][0001:00001490] get_USBCMD
 Function: [0000149D][0001:0000149D] set_USBCMD
 Function: [000016EF][0001:000016EF] DisableAsyncQueue
 Function: [00000484][0001:00000484] SelectSector
-Function: [00001DFB][0001:00001DFB] set_PortNumber
+Function: [00001E03][0001:00001E03] set_PortNumber
 Function: [0000067B][0001:0000067B] doRead_UInt32
 Function: [00001723][0001:00001723] LoadExtendedCapabilities
-Function: [00001DE0][0001:00001DE0] get_PortNumber
+Function: [00001DE8][0001:00001DE8] get_PortNumber
 Function: [0000153E][0001:0000153E] get_ASYNCLISTADDR
-Function: [00001A1C][0001:00001A1C] get_HorizontalLinkPointer
+Function: [00001A24][0001:00001A24] get_HorizontalLinkPointer
 Function: [00000C39][0001:00000C39] WriteRegister32
 Function: [000006BD][0001:000006BD] Read_UInt64
 Function: [0000154F][0001:0000154F] set_ASYNCLISTADDR
-Function: [00001A31][0001:00001A31] set_HorizontalLinkPointer
+Function: [00001A39][0001:00001A39] set_HorizontalLinkPointer
 Function: [000005C0][0001:000005C0] .cctor
-Function: [000021BB][0001:000021BB] .cctor
+Function: [000021CB][0001:000021CB] .cctor
 Function: [00000146][0001:00000146] .cctor
 Function: [00000899][0001:00000899] .cctor
-Function: [00001C0E][0001:00001C0E] set_HeadOfReclamationList
-Function: [00001BF4][0001:00001BF4] get_HeadOfReclamationList
+Function: [00001C16][0001:00001C16] set_HeadOfReclamationList
+Function: [00001BFC][0001:00001BFC] get_HeadOfReclamationList
 Function: [0000146E][0001:0000146E] get_PortWakeCap
 Function: [00000000][0001:00000000] get_BlockCount
 Function: [00001481][0001:00001481] get_EECP
-Function: [00001D3A][0001:00001D3A] get_InterruptScheduleMask
-Function: [00001D4C][0001:00001D4C] set_InterruptScheduleMask
-Function: [00001B32][0001:00001B32] set_EndpointNumber
-Function: [00001B18][0001:00001B18] get_EndpointNumber
+Function: [00001D42][0001:00001D42] get_InterruptScheduleMask
+Function: [00001D54][0001:00001D54] set_InterruptScheduleMask
+Function: [00001B3A][0001:00001B3A] set_EndpointNumber
+Function: [00001B20][0001:00001B20] get_EndpointNumber
 Function: [0000010F][0001:0000010F] InitDrive
 Function: [000002F4][0001:000002F4] InitDrive
 Function: [000018BD][0001:000018BD] set_CurrentPage
 Function: [000018A2][0001:000018A2] get_CurrentPage
-Function: [00001C71][0001:00001C71] set_MaximumPacketLength
+Function: [00001C79][0001:00001C79] set_MaximumPacketLength
 Function: [000016BC][0001:000016BC] WaitForAsyncQueueEnabledStatusMatch
-Function: [00001C56][0001:00001C56] get_MaximumPacketLength
+Function: [00001C5E][0001:00001C5E] get_MaximumPacketLength
 Function: [00000743][0001:00000743] Read16
-Function: [00001B54][0001:00001B54] get_EndpointSpeed
+Function: [00001B5C][0001:00001B5C] get_EndpointSpeed
 Function: [00000674][0001:00000674] doRead_UInt16
-Function: [00001B6F][0001:00001B6F] set_EndpointSpeed
+Function: [00001B77][0001:00001B77] set_EndpointSpeed
 Function: [00000BC3][0001:00000BC3] WriteRegister16
 Function: [00000703][0001:00000703] Write
 Function: [000006F4][0001:000006F4] Write
 Function: [000006E5][0001:000006E5] Write
 Function: [000006D6][0001:000006D6] Write
-Function: [00001D6C][0001:00001D6C] get_SplitCompletionMask
-Function: [00001D80][0001:00001D80] set_SplitCompletionMask
+Function: [00001D74][0001:00001D74] get_SplitCompletionMask
+Function: [00001D88][0001:00001D88] set_SplitCompletionMask
 Function: [000004F8][0001:000004F8] ReadBlock
-Function: [00001F4B][0001:00001F4B] Free
+Function: [00001F53][0001:00001F53] Free
 Function: [00001A0E][0001:00001A0E] Free
 Function: [0000199A][0001:0000199A] set_DataToggle
 Function: [00001980][0001:00001980] get_DataToggle
@@ -1949,22 +1949,22 @@ Function: [0000171B][0001:0000171B] RemoveqTDFromQueueHead
 Function: [00000682][0001:00000682] doRead_UInt64
 Function: [000006AC][0001:000006AC] Read_UInt32
 Function: [00001721][0001:00001721] Reclaim
-Function: [00001E71][0001:00001E71] set_CurrentqTDPointer
-Function: [00001E5C][0001:00001E5C] get_CurrentqTDPointer
+Function: [00001E79][0001:00001E79] set_CurrentqTDPointer
+Function: [00001E64][0001:00001E64] get_CurrentqTDPointer
 Function: [00000018][0001:00000018] NewBlockArray
-Function: [00001E1E][0001:00001E1E] get_HighBandwidthPipeMultiplier
-Function: [00001E39][0001:00001E39] set_HighBandwidthPipeMultiplier
-Function: [00001DA2][0001:00001DA2] get_HubAddr
-Function: [00001DBD][0001:00001DBD] set_HubAddr
+Function: [00001E26][0001:00001E26] get_HighBandwidthPipeMultiplier
+Function: [00001E41][0001:00001E41] set_HighBandwidthPipeMultiplier
+Function: [00001DAA][0001:00001DAA] get_HubAddr
+Function: [00001DC5][0001:00001DC5] set_HubAddr
 Function: [00000712][0001:00000712] Read8
 Function: [00001709][0001:00001709] RemoveAsyncQueueHead
-Function: [00001B92][0001:00001B92] get_DataToggleControl
-Function: [00001BAC][0001:00001BAC] set_DataToggleControl
+Function: [00001B9A][0001:00001B9A] get_DataToggleControl
+Function: [00001BB4][0001:00001BB4] set_DataToggleControl
 Function: [0000066D][0001:0000066D] doRead_Byte
 Function: [00000C73][0001:00000C73] GetString
 Function: [000003C3][0001:000003C3] GetString
-Function: [00001AB6][0001:00001AB6] get_InactiveOnNextTransaction
-Function: [00001AD0][0001:00001AD0] set_InactiveOnNextTransaction
+Function: [00001ABE][0001:00001ABE] get_InactiveOnNextTransaction
+Function: [00001AD8][0001:00001AD8] set_InactiveOnNextTransaction
 Function: [0000069B][0001:0000069B] Read_UInt16
 Function: [00000AAA][0001:00000AAA] GetAddressBase
 Function: [0000156F][0001:0000156F] set_AsynchronousScheduleEnabled
@@ -2959,834 +2959,836 @@ Compiland = Kernel.Hardware.USB.USBManager
 
 ** get_FLADJ
 
-	line 28 at [0000144A][0001:0000144A], len = 0x1	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.Hardware\USB\HCIs\EHCI.cs
-	line 29 at [0000144B][0001:0000144B], len = 0x10
-	line 30 at [0000145B][0001:0000145B], len = 0x2
+	line 40 at [0000144A][0001:0000144A], len = 0x1	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.Hardware\USB\HCIs\EHCI.cs
+	line 41 at [0000144B][0001:0000144B], len = 0x10
+	line 42 at [0000145B][0001:0000145B], len = 0x2
 
 ** set_FLADJ
 
-	line 32 at [0000145D][0001:0000145D], len = 0x1	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.Hardware\USB\HCIs\EHCI.cs
-	line 33 at [0000145E][0001:0000145E], len = 0xF
-	line 34 at [0000146D][0001:0000146D], len = 0x1
+	line 44 at [0000145D][0001:0000145D], len = 0x1	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.Hardware\USB\HCIs\EHCI.cs
+	line 45 at [0000145E][0001:0000145E], len = 0xF
+	line 46 at [0000146D][0001:0000146D], len = 0x1
 
 ** get_PortWakeCap
 
-	line 39 at [0000146E][0001:0000146E], len = 0x1	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.Hardware\USB\HCIs\EHCI.cs
-	line 40 at [0000146F][0001:0000146F], len = 0x10
-	line 41 at [0000147F][0001:0000147F], len = 0x2
+	line 54 at [0000146E][0001:0000146E], len = 0x1	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.Hardware\USB\HCIs\EHCI.cs
+	line 55 at [0000146F][0001:0000146F], len = 0x10
+	line 56 at [0000147F][0001:0000147F], len = 0x2
 
 ** get_EECP
 
-	line 80 at [00001481][0001:00001481], len = 0x1	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.Hardware\USB\HCIs\EHCI.cs
-	line 81 at [00001482][0001:00001482], len = 0xC
-	line 82 at [0000148E][0001:0000148E], len = 0x2
+	line 120 at [00001481][0001:00001481], len = 0x1	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.Hardware\USB\HCIs\EHCI.cs
+	line 121 at [00001482][0001:00001482], len = 0xC
+	line 122 at [0000148E][0001:0000148E], len = 0x2
 
 ** get_USBCMD
 
-	line 102 at [00001490][0001:00001490], len = 0x1	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.Hardware\USB\HCIs\EHCI.cs
-	line 103 at [00001491][0001:00001491], len = 0xA
-	line 104 at [0000149B][0001:0000149B], len = 0x2
+	line 148 at [00001490][0001:00001490], len = 0x1	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.Hardware\USB\HCIs\EHCI.cs
+	line 149 at [00001491][0001:00001491], len = 0xA
+	line 150 at [0000149B][0001:0000149B], len = 0x2
 
 ** set_USBCMD
 
-	line 106 at [0000149D][0001:0000149D], len = 0x1	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.Hardware\USB\HCIs\EHCI.cs
-	line 107 at [0000149E][0001:0000149E], len = 0x8
-	line 108 at [000014A6][0001:000014A6], len = 0x1
+	line 152 at [0000149D][0001:0000149D], len = 0x1	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.Hardware\USB\HCIs\EHCI.cs
+	line 153 at [0000149E][0001:0000149E], len = 0x8
+	line 154 at [000014A6][0001:000014A6], len = 0x1
 
 ** get_USBSTS
 
-	line 113 at [000014A7][0001:000014A7], len = 0x1	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.Hardware\USB\HCIs\EHCI.cs
-	line 114 at [000014A8][0001:000014A8], len = 0xD
-	line 115 at [000014B5][0001:000014B5], len = 0x2
+	line 162 at [000014A7][0001:000014A7], len = 0x1	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.Hardware\USB\HCIs\EHCI.cs
+	line 163 at [000014A8][0001:000014A8], len = 0xD
+	line 164 at [000014B5][0001:000014B5], len = 0x2
 
 ** set_USBSTS
 
-	line 117 at [000014B7][0001:000014B7], len = 0x1	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.Hardware\USB\HCIs\EHCI.cs
-	line 118 at [000014B8][0001:000014B8], len = 0xB
-	line 119 at [000014C3][0001:000014C3], len = 0x1
+	line 166 at [000014B7][0001:000014B7], len = 0x1	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.Hardware\USB\HCIs\EHCI.cs
+	line 167 at [000014B8][0001:000014B8], len = 0xB
+	line 168 at [000014C3][0001:000014C3], len = 0x1
 
 ** get_USBINTR
 
-	line 124 at [000014C4][0001:000014C4], len = 0x1	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.Hardware\USB\HCIs\EHCI.cs
-	line 125 at [000014C5][0001:000014C5], len = 0xD
-	line 126 at [000014D2][0001:000014D2], len = 0x2
+	line 176 at [000014C4][0001:000014C4], len = 0x1	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.Hardware\USB\HCIs\EHCI.cs
+	line 177 at [000014C5][0001:000014C5], len = 0xD
+	line 178 at [000014D2][0001:000014D2], len = 0x2
 
 ** set_USBINTR
 
-	line 128 at [000014D4][0001:000014D4], len = 0x1	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.Hardware\USB\HCIs\EHCI.cs
-	line 129 at [000014D5][0001:000014D5], len = 0xB
-	line 130 at [000014E0][0001:000014E0], len = 0x1
+	line 180 at [000014D4][0001:000014D4], len = 0x1	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.Hardware\USB\HCIs\EHCI.cs
+	line 181 at [000014D5][0001:000014D5], len = 0xB
+	line 182 at [000014E0][0001:000014E0], len = 0x1
 
 ** get_FRINDEX
 
-	line 135 at [000014E1][0001:000014E1], len = 0x1	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.Hardware\USB\HCIs\EHCI.cs
-	line 136 at [000014E2][0001:000014E2], len = 0xE
-	line 137 at [000014F0][0001:000014F0], len = 0x2
+	line 190 at [000014E1][0001:000014E1], len = 0x1	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.Hardware\USB\HCIs\EHCI.cs
+	line 191 at [000014E2][0001:000014E2], len = 0xE
+	line 192 at [000014F0][0001:000014F0], len = 0x2
 
 ** set_FRINDEX
 
-	line 139 at [000014F2][0001:000014F2], len = 0x1	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.Hardware\USB\HCIs\EHCI.cs
-	line 140 at [000014F3][0001:000014F3], len = 0xC
-	line 141 at [000014FF][0001:000014FF], len = 0x1
+	line 194 at [000014F2][0001:000014F2], len = 0x1	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.Hardware\USB\HCIs\EHCI.cs
+	line 195 at [000014F3][0001:000014F3], len = 0xC
+	line 196 at [000014FF][0001:000014FF], len = 0x1
 
 ** get_CTRLDSSEGMENT
 
-	line 146 at [00001500][0001:00001500], len = 0x1	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.Hardware\USB\HCIs\EHCI.cs
-	line 147 at [00001501][0001:00001501], len = 0xE
-	line 148 at [0000150F][0001:0000150F], len = 0x2
+	line 204 at [00001500][0001:00001500], len = 0x1	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.Hardware\USB\HCIs\EHCI.cs
+	line 205 at [00001501][0001:00001501], len = 0xE
+	line 206 at [0000150F][0001:0000150F], len = 0x2
 
 ** set_CTRLDSSEGMENT
 
-	line 150 at [00001511][0001:00001511], len = 0x1	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.Hardware\USB\HCIs\EHCI.cs
-	line 151 at [00001512][0001:00001512], len = 0xC
-	line 152 at [0000151E][0001:0000151E], len = 0x1
+	line 208 at [00001511][0001:00001511], len = 0x1	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.Hardware\USB\HCIs\EHCI.cs
+	line 209 at [00001512][0001:00001512], len = 0xC
+	line 210 at [0000151E][0001:0000151E], len = 0x1
 
 ** get_PERIODICLISTBASE
 
-	line 157 at [0000151F][0001:0000151F], len = 0x1	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.Hardware\USB\HCIs\EHCI.cs
-	line 158 at [00001520][0001:00001520], len = 0xE
-	line 159 at [0000152E][0001:0000152E], len = 0x2
+	line 218 at [0000151F][0001:0000151F], len = 0x1	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.Hardware\USB\HCIs\EHCI.cs
+	line 219 at [00001520][0001:00001520], len = 0xE
+	line 220 at [0000152E][0001:0000152E], len = 0x2
 
 ** set_PERIODICLISTBASE
 
-	line 161 at [00001530][0001:00001530], len = 0x1	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.Hardware\USB\HCIs\EHCI.cs
-	line 162 at [00001531][0001:00001531], len = 0xC
-	line 163 at [0000153D][0001:0000153D], len = 0x1
+	line 222 at [00001530][0001:00001530], len = 0x1	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.Hardware\USB\HCIs\EHCI.cs
+	line 223 at [00001531][0001:00001531], len = 0xC
+	line 224 at [0000153D][0001:0000153D], len = 0x1
 
 ** get_ASYNCLISTADDR
 
-	line 168 at [0000153E][0001:0000153E], len = 0x1	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.Hardware\USB\HCIs\EHCI.cs
-	line 169 at [0000153F][0001:0000153F], len = 0xE
-	line 170 at [0000154D][0001:0000154D], len = 0x2
+	line 232 at [0000153E][0001:0000153E], len = 0x1	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.Hardware\USB\HCIs\EHCI.cs
+	line 233 at [0000153F][0001:0000153F], len = 0xE
+	line 234 at [0000154D][0001:0000154D], len = 0x2
 
 ** set_ASYNCLISTADDR
 
-	line 172 at [0000154F][0001:0000154F], len = 0x1	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.Hardware\USB\HCIs\EHCI.cs
-	line 173 at [00001550][0001:00001550], len = 0xC
-	line 174 at [0000155C][0001:0000155C], len = 0x1
+	line 236 at [0000154F][0001:0000154F], len = 0x1	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.Hardware\USB\HCIs\EHCI.cs
+	line 237 at [00001550][0001:00001550], len = 0xC
+	line 238 at [0000155C][0001:0000155C], len = 0x1
 
 ** get_AsynchronousScheduleEnabled
 
-	line 184 at [0000155D][0001:0000155D], len = 0x1	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.Hardware\USB\HCIs\EHCI.cs
-	line 185 at [0000155E][0001:0000155E], len = 0xF
-	line 186 at [0000156D][0001:0000156D], len = 0x2
+	line 251 at [0000155D][0001:0000155D], len = 0x1	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.Hardware\USB\HCIs\EHCI.cs
+	line 252 at [0000155E][0001:0000155E], len = 0xF
+	line 253 at [0000156D][0001:0000156D], len = 0x2
 
 ** set_AsynchronousScheduleEnabled
 
-	line 188 at [0000156F][0001:0000156F], len = 0x1	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.Hardware\USB\HCIs\EHCI.cs
-	line 189 at [00001570][0001:00001570], len = 0x5
+	line 255 at [0000156F][0001:0000156F], len = 0x1	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.Hardware\USB\HCIs\EHCI.cs
+	line 256 at [00001570][0001:00001570], len = 0x5
 	line 16707566 at [00001575][0001:00001575], len = 0x3
-	line 190 at [00001578][0001:00001578], len = 0x1
-	line 191 at [00001579][0001:00001579], len = 0x10
-	line 192 at [00001589][0001:00001589], len = 0x1
+	line 257 at [00001578][0001:00001578], len = 0x1
+	line 258 at [00001579][0001:00001579], len = 0x10
+	line 259 at [00001589][0001:00001589], len = 0x1
 	line 16707566 at [0000158A][0001:0000158A], len = 0x2
-	line 194 at [0000158C][0001:0000158C], len = 0x1
-	line 195 at [0000158D][0001:0000158D], len = 0x10
-	line 196 at [0000159D][0001:0000159D], len = 0x1
-	line 197 at [0000159E][0001:0000159E], len = 0x1
+	line 261 at [0000158C][0001:0000158C], len = 0x1
+	line 262 at [0000158D][0001:0000158D], len = 0x10
+	line 263 at [0000159D][0001:0000159D], len = 0x1
+	line 264 at [0000159E][0001:0000159E], len = 0x1
 
 ** get_AsynchronousScheduleStatus
 
-	line 202 at [0000159F][0001:0000159F], len = 0x1	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.Hardware\USB\HCIs\EHCI.cs
-	line 203 at [000015A0][0001:000015A0], len = 0x12
-	line 204 at [000015B2][0001:000015B2], len = 0x2
+	line 272 at [0000159F][0001:0000159F], len = 0x1	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.Hardware\USB\HCIs\EHCI.cs
+	line 273 at [000015A0][0001:000015A0], len = 0x12
+	line 274 at [000015B2][0001:000015B2], len = 0x2
 
 ** get_CONFIGFLAG
 
-	line 214 at [000015B4][0001:000015B4], len = 0x1	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.Hardware\USB\HCIs\EHCI.cs
-	line 215 at [000015B5][0001:000015B5], len = 0xE
-	line 216 at [000015C3][0001:000015C3], len = 0x2
+	line 287 at [000015B4][0001:000015B4], len = 0x1	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.Hardware\USB\HCIs\EHCI.cs
+	line 288 at [000015B5][0001:000015B5], len = 0xE
+	line 289 at [000015C3][0001:000015C3], len = 0x2
 
 ** set_CONFIGFLAG
 
-	line 218 at [000015C5][0001:000015C5], len = 0x1	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.Hardware\USB\HCIs\EHCI.cs
-	line 219 at [000015C6][0001:000015C6], len = 0xC
-	line 220 at [000015D2][0001:000015D2], len = 0x1
+	line 291 at [000015C5][0001:000015C5], len = 0x1	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.Hardware\USB\HCIs\EHCI.cs
+	line 292 at [000015C6][0001:000015C6], len = 0xC
+	line 293 at [000015D2][0001:000015D2], len = 0x1
 
 ** get_PORTSC
 
-	line 225 at [000015D3][0001:000015D3], len = 0x1	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.Hardware\USB\HCIs\EHCI.cs
-	line 226 at [000015D4][0001:000015D4], len = 0xE
-	line 227 at [000015E2][0001:000015E2], len = 0x2
+	line 301 at [000015D3][0001:000015D3], len = 0x1	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.Hardware\USB\HCIs\EHCI.cs
+	line 302 at [000015D4][0001:000015D4], len = 0xE
+	line 303 at [000015E2][0001:000015E2], len = 0x2
 
 ** set_PORTSC
 
-	line 229 at [000015E4][0001:000015E4], len = 0x1	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.Hardware\USB\HCIs\EHCI.cs
-	line 230 at [000015E5][0001:000015E5], len = 0xC
-	line 231 at [000015F1][0001:000015F1], len = 0x1
+	line 305 at [000015E4][0001:000015E4], len = 0x1	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.Hardware\USB\HCIs\EHCI.cs
+	line 306 at [000015E5][0001:000015E5], len = 0xC
+	line 307 at [000015F1][0001:000015F1], len = 0x1
 
 ** .ctor
 
-	line 238 at [000015F2][0001:000015F2], len = 0x8	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.Hardware\USB\HCIs\EHCI.cs
-	line 240 at [000015FA][0001:000015FA], len = 0x1
-	line 241 at [000015FB][0001:000015FB], len = 0x18
-	line 242 at [00001613][0001:00001613], len = 0xC
-	line 244 at [0000161F][0001:0000161F], len = 0x13
-	line 246 at [00001632][0001:00001632], len = 0xD
-	line 247 at [0000163F][0001:0000163F], len = 0x10
-	line 248 at [0000164F][0001:0000164F], len = 0x10
-	line 249 at [0000165F][0001:0000165F], len = 0x10
-	line 250 at [0000166F][0001:0000166F], len = 0x11
-	line 252 at [00001680][0001:00001680], len = 0x13
-	line 254 at [00001693][0001:00001693], len = 0x7
-	line 255 at [0000169A][0001:0000169A], len = 0x2
+	line 318 at [000015F2][0001:000015F2], len = 0x8	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.Hardware\USB\HCIs\EHCI.cs
+	line 320 at [000015FA][0001:000015FA], len = 0x1
+	line 321 at [000015FB][0001:000015FB], len = 0x18
+	line 322 at [00001613][0001:00001613], len = 0xC
+	line 324 at [0000161F][0001:0000161F], len = 0x13
+	line 326 at [00001632][0001:00001632], len = 0xD
+	line 327 at [0000163F][0001:0000163F], len = 0x10
+	line 328 at [0000164F][0001:0000164F], len = 0x10
+	line 329 at [0000165F][0001:0000165F], len = 0x10
+	line 330 at [0000166F][0001:0000166F], len = 0x11
+	line 332 at [00001680][0001:00001680], len = 0x13
+	line 334 at [00001693][0001:00001693], len = 0x7
+	line 335 at [0000169A][0001:0000169A], len = 0x2
 
 ** Init
 
-	line 260 at [0000169C][0001:0000169C], len = 0x1	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.Hardware\USB\HCIs\EHCI.cs
-	line 275 at [0000169D][0001:0000169D], len = 0xF
-	line 279 at [000016AC][0001:000016AC], len = 0xF
-	line 286 at [000016BB][0001:000016BB], len = 0x1
+	line 343 at [0000169C][0001:0000169C], len = 0x1	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.Hardware\USB\HCIs\EHCI.cs
+	line 358 at [0000169D][0001:0000169D], len = 0xF
+	line 362 at [000016AC][0001:000016AC], len = 0xF
+	line 369 at [000016BB][0001:000016BB], len = 0x1
 
 ** WaitForAsyncQueueEnabledStatusMatch
 
-	line 348 at [000016BC][0001:000016BC], len = 0x1	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.Hardware\USB\HCIs\EHCI.cs
+	line 434 at [000016BC][0001:000016BC], len = 0x1	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.Hardware\USB\HCIs\EHCI.cs
 	line 16707566 at [000016BD][0001:000016BD], len = 0x2
-	line 350 at [000016BF][0001:000016BF], len = 0x1
-	line 352 at [000016C0][0001:000016C0], len = 0x1
-	line 349 at [000016C1][0001:000016C1], len = 0x12
+	line 436 at [000016BF][0001:000016BF], len = 0x1
+	line 438 at [000016C0][0001:000016C0], len = 0x1
+	line 435 at [000016C1][0001:000016C1], len = 0x12
 	line 16707566 at [000016D3][0001:000016D3], len = 0x3
-	line 353 at [000016D6][0001:000016D6], len = 0x1
+	line 439 at [000016D6][0001:000016D6], len = 0x1
 
 ** EnableAsyncQueue
 
-	line 355 at [000016D7][0001:000016D7], len = 0x1	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.Hardware\USB\HCIs\EHCI.cs
-	line 357 at [000016D8][0001:000016D8], len = 0x7
-	line 359 at [000016DF][0001:000016DF], len = 0x8
-	line 361 at [000016E7][0001:000016E7], len = 0x7
-	line 362 at [000016EE][0001:000016EE], len = 0x1
+	line 444 at [000016D7][0001:000016D7], len = 0x1	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.Hardware\USB\HCIs\EHCI.cs
+	line 446 at [000016D8][0001:000016D8], len = 0x7
+	line 448 at [000016DF][0001:000016DF], len = 0x8
+	line 450 at [000016E7][0001:000016E7], len = 0x7
+	line 451 at [000016EE][0001:000016EE], len = 0x1
 
 ** DisableAsyncQueue
 
-	line 364 at [000016EF][0001:000016EF], len = 0x1	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.Hardware\USB\HCIs\EHCI.cs
-	line 366 at [000016F0][0001:000016F0], len = 0x7
-	line 368 at [000016F7][0001:000016F7], len = 0x8
-	line 370 at [000016FF][0001:000016FF], len = 0x7
-	line 371 at [00001706][0001:00001706], len = 0x1
+	line 456 at [000016EF][0001:000016EF], len = 0x1	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.Hardware\USB\HCIs\EHCI.cs
+	line 458 at [000016F0][0001:000016F0], len = 0x7
+	line 460 at [000016F7][0001:000016F7], len = 0x8
+	line 462 at [000016FF][0001:000016FF], len = 0x7
+	line 463 at [00001706][0001:00001706], len = 0x1
 
 ** AddAsyncQueueHead
 
-	line 377 at [00001707][0001:00001707], len = 0x1	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.Hardware\USB\HCIs\EHCI.cs
-	line 381 at [00001708][0001:00001708], len = 0x1
+	line 473 at [00001707][0001:00001707], len = 0x1	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.Hardware\USB\HCIs\EHCI.cs
+	line 477 at [00001708][0001:00001708], len = 0x1
 
 ** RemoveAsyncQueueHead
 
-	line 383 at [00001709][0001:00001709], len = 0x1	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.Hardware\USB\HCIs\EHCI.cs
-	line 384 at [0000170A][0001:0000170A], len = 0x1
+	line 483 at [00001709][0001:00001709], len = 0x1	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.Hardware\USB\HCIs\EHCI.cs
+	line 484 at [0000170A][0001:0000170A], len = 0x1
 
 ** CreateQueueHead
 
-	line 388 at [0000170B][0001:0000170B], len = 0x1	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.Hardware\USB\HCIs\EHCI.cs
-	line 389 at [0000170C][0001:0000170C], len = 0x4
-	line 390 at [00001710][0001:00001710], len = 0x2
+	line 492 at [0000170B][0001:0000170B], len = 0x1	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.Hardware\USB\HCIs\EHCI.cs
+	line 493 at [0000170C][0001:0000170C], len = 0x4
+	line 494 at [00001710][0001:00001710], len = 0x2
 
 ** CreateqTD
 
-	line 396 at [00001712][0001:00001712], len = 0x1	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.Hardware\USB\HCIs\EHCI.cs
-	line 397 at [00001713][0001:00001713], len = 0x4
-	line 398 at [00001717][0001:00001717], len = 0x2
+	line 504 at [00001712][0001:00001712], len = 0x1	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.Hardware\USB\HCIs\EHCI.cs
+	line 505 at [00001713][0001:00001713], len = 0x4
+	line 506 at [00001717][0001:00001717], len = 0x2
 
 ** AddqTDToQueueHead
 
-	line 400 at [00001719][0001:00001719], len = 0x1	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.Hardware\USB\HCIs\EHCI.cs
-	line 401 at [0000171A][0001:0000171A], len = 0x1
+	line 513 at [00001719][0001:00001719], len = 0x1	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.Hardware\USB\HCIs\EHCI.cs
+	line 514 at [0000171A][0001:0000171A], len = 0x1
 
 ** RemoveqTDFromQueueHead
 
-	line 403 at [0000171B][0001:0000171B], len = 0x1	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.Hardware\USB\HCIs\EHCI.cs
-	line 404 at [0000171C][0001:0000171C], len = 0x1
+	line 521 at [0000171B][0001:0000171B], len = 0x1	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.Hardware\USB\HCIs\EHCI.cs
+	line 522 at [0000171C][0001:0000171C], len = 0x1
 
 ** RecycleQueueHead
 
-	line 410 at [0000171D][0001:0000171D], len = 0x1	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.Hardware\USB\HCIs\EHCI.cs
-	line 411 at [0000171E][0001:0000171E], len = 0x1
+	line 532 at [0000171D][0001:0000171D], len = 0x1	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.Hardware\USB\HCIs\EHCI.cs
+	line 533 at [0000171E][0001:0000171E], len = 0x1
 
 ** RecycleqTD
 
-	line 413 at [0000171F][0001:0000171F], len = 0x1	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.Hardware\USB\HCIs\EHCI.cs
-	line 414 at [00001720][0001:00001720], len = 0x1
+	line 539 at [0000171F][0001:0000171F], len = 0x1	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.Hardware\USB\HCIs\EHCI.cs
+	line 540 at [00001720][0001:00001720], len = 0x1
 
 ** Reclaim
 
-	line 418 at [00001721][0001:00001721], len = 0x1	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.Hardware\USB\HCIs\EHCI.cs
-	line 419 at [00001722][0001:00001722], len = 0x1
+	line 547 at [00001721][0001:00001721], len = 0x1	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.Hardware\USB\HCIs\EHCI.cs
+	line 548 at [00001722][0001:00001722], len = 0x1
 
 ** LoadExtendedCapabilities
 
-	line 450 at [00001723][0001:00001723], len = 0x1	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.Hardware\USB\HCIs\EHCI.cs
-	line 451 at [00001724][0001:00001724], len = 0x7
-	line 452 at [0000172B][0001:0000172B], len = 0x8
+	line 582 at [00001723][0001:00001723], len = 0x1	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.Hardware\USB\HCIs\EHCI.cs
+	line 583 at [00001724][0001:00001724], len = 0x7
+	line 584 at [0000172B][0001:0000172B], len = 0x8
 	line 16707566 at [00001733][0001:00001733], len = 0x3
-	line 453 at [00001736][0001:00001736], len = 0x1
-	line 454 at [00001737][0001:00001737], len = 0xA
-	line 455 at [00001741][0001:00001741], len = 0x8
+	line 585 at [00001736][0001:00001736], len = 0x1
+	line 586 at [00001737][0001:00001737], len = 0xA
+	line 587 at [00001741][0001:00001741], len = 0x8
 	line 16707566 at [00001749][0001:00001749], len = 0x3
-	line 456 at [0000174C][0001:0000174C], len = 0x1
-	line 458 at [0000174D][0001:0000174D], len = 0x12
-	line 461 at [0000175F][0001:0000175F], len = 0xD
-	line 462 at [0000176C][0001:0000176C], len = 0x1
-	line 463 at [0000176D][0001:0000176D], len = 0x1
-	line 464 at [0000176E][0001:0000176E], len = 0x1
+	line 588 at [0000174C][0001:0000174C], len = 0x1
+	line 590 at [0000174D][0001:0000174D], len = 0x12
+	line 593 at [0000175F][0001:0000175F], len = 0xD
+	line 594 at [0000176C][0001:0000176C], len = 0x1
+	line 595 at [0000176D][0001:0000176D], len = 0x1
+	line 596 at [0000176E][0001:0000176E], len = 0x1
 
 ** get_NextqTDPointer
 
-	line 514 at [0000176F][0001:0000176F], len = 0x1	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.Hardware\USB\HCIs\EHCI.cs
-	line 515 at [00001770][0001:00001770], len = 0x12
-	line 516 at [00001782][0001:00001782], len = 0x2
+	line 724 at [0000176F][0001:0000176F], len = 0x1	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.Hardware\USB\HCIs\EHCI.cs
+	line 725 at [00001770][0001:00001770], len = 0x12
+	line 726 at [00001782][0001:00001782], len = 0x2
 
 ** set_NextqTDPointer
 
-	line 518 at [00001784][0001:00001784], len = 0x1	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.Hardware\USB\HCIs\EHCI.cs
-	line 519 at [00001785][0001:00001785], len = 0x1F
-	line 520 at [000017A4][0001:000017A4], len = 0x1
+	line 728 at [00001784][0001:00001784], len = 0x1	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.Hardware\USB\HCIs\EHCI.cs
+	line 729 at [00001785][0001:00001785], len = 0x1F
+	line 730 at [000017A4][0001:000017A4], len = 0x1
 
 ** get_NextqTDPointerTerminate
 
-	line 525 at [000017A5][0001:000017A5], len = 0x1	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.Hardware\USB\HCIs\EHCI.cs
-	line 526 at [000017A6][0001:000017A6], len = 0x13
-	line 527 at [000017B9][0001:000017B9], len = 0x2
+	line 738 at [000017A5][0001:000017A5], len = 0x1	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.Hardware\USB\HCIs\EHCI.cs
+	line 739 at [000017A6][0001:000017A6], len = 0x13
+	line 740 at [000017B9][0001:000017B9], len = 0x2
 
 ** set_NextqTDPointerTerminate
 
-	line 529 at [000017BB][0001:000017BB], len = 0x1	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.Hardware\USB\HCIs\EHCI.cs
-	line 530 at [000017BC][0001:000017BC], len = 0x5
+	line 742 at [000017BB][0001:000017BB], len = 0x1	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.Hardware\USB\HCIs\EHCI.cs
+	line 743 at [000017BC][0001:000017BC], len = 0x5
 	line 16707566 at [000017C1][0001:000017C1], len = 0x3
-	line 531 at [000017C4][0001:000017C4], len = 0x1
-	line 532 at [000017C5][0001:000017C5], len = 0x18
-	line 533 at [000017DD][0001:000017DD], len = 0x1
+	line 744 at [000017C4][0001:000017C4], len = 0x1
+	line 745 at [000017C5][0001:000017C5], len = 0x18
+	line 746 at [000017DD][0001:000017DD], len = 0x1
 	line 16707566 at [000017DE][0001:000017DE], len = 0x2
-	line 535 at [000017E0][0001:000017E0], len = 0x1
-	line 536 at [000017E1][0001:000017E1], len = 0x19
-	line 537 at [000017FA][0001:000017FA], len = 0x1
-	line 538 at [000017FB][0001:000017FB], len = 0x1
+	line 748 at [000017E0][0001:000017E0], len = 0x1
+	line 749 at [000017E1][0001:000017E1], len = 0x19
+	line 750 at [000017FA][0001:000017FA], len = 0x1
+	line 751 at [000017FB][0001:000017FB], len = 0x1
 
 ** get_Status
 
-	line 543 at [000017FC][0001:000017FC], len = 0x1	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.Hardware\USB\HCIs\EHCI.cs
-	line 544 at [000017FD][0001:000017FD], len = 0xF
-	line 545 at [0000180C][0001:0000180C], len = 0x2
+	line 759 at [000017FC][0001:000017FC], len = 0x1	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.Hardware\USB\HCIs\EHCI.cs
+	line 760 at [000017FD][0001:000017FD], len = 0xF
+	line 761 at [0000180C][0001:0000180C], len = 0x2
 
 ** set_Status
 
-	line 547 at [0000180E][0001:0000180E], len = 0x1	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.Hardware\USB\HCIs\EHCI.cs
-	line 548 at [0000180F][0001:0000180F], len = 0x1E
-	line 549 at [0000182D][0001:0000182D], len = 0x1
+	line 763 at [0000180E][0001:0000180E], len = 0x1	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.Hardware\USB\HCIs\EHCI.cs
+	line 764 at [0000180F][0001:0000180F], len = 0x1E
+	line 765 at [0000182D][0001:0000182D], len = 0x1
 
 ** get_PIDCode
 
-	line 554 at [0000182E][0001:0000182E], len = 0x1	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.Hardware\USB\HCIs\EHCI.cs
-	line 555 at [0000182F][0001:0000182F], len = 0x14
-	line 556 at [00001843][0001:00001843], len = 0x2
+	line 773 at [0000182E][0001:0000182E], len = 0x1	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.Hardware\USB\HCIs\EHCI.cs
+	line 774 at [0000182F][0001:0000182F], len = 0x14
+	line 775 at [00001843][0001:00001843], len = 0x2
 
 ** set_PIDCode
 
-	line 558 at [00001845][0001:00001845], len = 0x1	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.Hardware\USB\HCIs\EHCI.cs
-	line 559 at [00001846][0001:00001846], len = 0x1D
-	line 560 at [00001863][0001:00001863], len = 0x1
+	line 777 at [00001845][0001:00001845], len = 0x1	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.Hardware\USB\HCIs\EHCI.cs
+	line 778 at [00001846][0001:00001846], len = 0x1D
+	line 779 at [00001863][0001:00001863], len = 0x1
 
 ** get_ErrorCounter
 
-	line 565 at [00001864][0001:00001864], len = 0x1	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.Hardware\USB\HCIs\EHCI.cs
-	line 566 at [00001865][0001:00001865], len = 0x18
-	line 567 at [0000187D][0001:0000187D], len = 0x2
+	line 787 at [00001864][0001:00001864], len = 0x1	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.Hardware\USB\HCIs\EHCI.cs
+	line 788 at [00001865][0001:00001865], len = 0x18
+	line 789 at [0000187D][0001:0000187D], len = 0x2
 
 ** set_ErrorCounter
 
-	line 569 at [0000187F][0001:0000187F], len = 0x1	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.Hardware\USB\HCIs\EHCI.cs
-	line 570 at [00001880][0001:00001880], len = 0x21
-	line 571 at [000018A1][0001:000018A1], len = 0x1
+	line 791 at [0000187F][0001:0000187F], len = 0x1	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.Hardware\USB\HCIs\EHCI.cs
+	line 792 at [00001880][0001:00001880], len = 0x21
+	line 793 at [000018A1][0001:000018A1], len = 0x1
 
 ** get_CurrentPage
 
-	line 576 at [000018A2][0001:000018A2], len = 0x1	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.Hardware\USB\HCIs\EHCI.cs
-	line 577 at [000018A3][0001:000018A3], len = 0x18
-	line 578 at [000018BB][0001:000018BB], len = 0x2
+	line 801 at [000018A2][0001:000018A2], len = 0x1	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.Hardware\USB\HCIs\EHCI.cs
+	line 802 at [000018A3][0001:000018A3], len = 0x18
+	line 803 at [000018BB][0001:000018BB], len = 0x2
 
 ** set_CurrentPage
 
-	line 580 at [000018BD][0001:000018BD], len = 0x1	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.Hardware\USB\HCIs\EHCI.cs
-	line 581 at [000018BE][0001:000018BE], len = 0x21
-	line 582 at [000018DF][0001:000018DF], len = 0x1
+	line 805 at [000018BD][0001:000018BD], len = 0x1	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.Hardware\USB\HCIs\EHCI.cs
+	line 806 at [000018BE][0001:000018BE], len = 0x21
+	line 807 at [000018DF][0001:000018DF], len = 0x1
 
 ** get_InterruptOnComplete
 
-	line 587 at [000018E0][0001:000018E0], len = 0x1	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.Hardware\USB\HCIs\EHCI.cs
-	line 588 at [000018E1][0001:000018E1], len = 0x17
-	line 589 at [000018F8][0001:000018F8], len = 0x2
+	line 815 at [000018E0][0001:000018E0], len = 0x1	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.Hardware\USB\HCIs\EHCI.cs
+	line 816 at [000018E1][0001:000018E1], len = 0x17
+	line 817 at [000018F8][0001:000018F8], len = 0x2
 
 ** set_InterruptOnComplete
 
-	line 591 at [000018FA][0001:000018FA], len = 0x1	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.Hardware\USB\HCIs\EHCI.cs
-	line 592 at [000018FB][0001:000018FB], len = 0x5
+	line 819 at [000018FA][0001:000018FA], len = 0x1	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.Hardware\USB\HCIs\EHCI.cs
+	line 820 at [000018FB][0001:000018FB], len = 0x5
 	line 16707566 at [00001900][0001:00001900], len = 0x3
-	line 593 at [00001903][0001:00001903], len = 0x1
-	line 594 at [00001904][0001:00001904], len = 0x1C
-	line 595 at [00001920][0001:00001920], len = 0x1
+	line 821 at [00001903][0001:00001903], len = 0x1
+	line 822 at [00001904][0001:00001904], len = 0x1C
+	line 823 at [00001920][0001:00001920], len = 0x1
 	line 16707566 at [00001921][0001:00001921], len = 0x2
-	line 597 at [00001923][0001:00001923], len = 0x1
-	line 598 at [00001924][0001:00001924], len = 0x1C
-	line 599 at [00001940][0001:00001940], len = 0x1
-	line 600 at [00001941][0001:00001941], len = 0x1
+	line 825 at [00001923][0001:00001923], len = 0x1
+	line 826 at [00001924][0001:00001924], len = 0x1C
+	line 827 at [00001940][0001:00001940], len = 0x1
+	line 828 at [00001941][0001:00001941], len = 0x1
 
 ** get_TotalBytesToTransfer
 
-	line 605 at [00001942][0001:00001942], len = 0x1	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.Hardware\USB\HCIs\EHCI.cs
-	line 606 at [00001943][0001:00001943], len = 0x18
-	line 607 at [0000195B][0001:0000195B], len = 0x2
+	line 836 at [00001942][0001:00001942], len = 0x1	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.Hardware\USB\HCIs\EHCI.cs
+	line 837 at [00001943][0001:00001943], len = 0x18
+	line 838 at [0000195B][0001:0000195B], len = 0x2
 
 ** set_TotalBytesToTransfer
 
-	line 609 at [0000195D][0001:0000195D], len = 0x1	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.Hardware\USB\HCIs\EHCI.cs
-	line 610 at [0000195E][0001:0000195E], len = 0x21
-	line 611 at [0000197F][0001:0000197F], len = 0x1
+	line 840 at [0000195D][0001:0000195D], len = 0x1	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.Hardware\USB\HCIs\EHCI.cs
+	line 841 at [0000195E][0001:0000195E], len = 0x21
+	line 842 at [0000197F][0001:0000197F], len = 0x1
 
 ** get_DataToggle
 
-	line 616 at [00001980][0001:00001980], len = 0x1	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.Hardware\USB\HCIs\EHCI.cs
-	line 617 at [00001981][0001:00001981], len = 0x17
-	line 618 at [00001998][0001:00001998], len = 0x2
+	line 850 at [00001980][0001:00001980], len = 0x1	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.Hardware\USB\HCIs\EHCI.cs
+	line 851 at [00001981][0001:00001981], len = 0x17
+	line 852 at [00001998][0001:00001998], len = 0x2
 
 ** set_DataToggle
 
-	line 620 at [0000199A][0001:0000199A], len = 0x1	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.Hardware\USB\HCIs\EHCI.cs
-	line 621 at [0000199B][0001:0000199B], len = 0x5
+	line 854 at [0000199A][0001:0000199A], len = 0x1	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.Hardware\USB\HCIs\EHCI.cs
+	line 855 at [0000199B][0001:0000199B], len = 0x5
 	line 16707566 at [000019A0][0001:000019A0], len = 0x3
-	line 622 at [000019A3][0001:000019A3], len = 0x1
-	line 623 at [000019A4][0001:000019A4], len = 0x1C
-	line 624 at [000019C0][0001:000019C0], len = 0x1
+	line 856 at [000019A3][0001:000019A3], len = 0x1
+	line 857 at [000019A4][0001:000019A4], len = 0x1C
+	line 858 at [000019C0][0001:000019C0], len = 0x1
 	line 16707566 at [000019C1][0001:000019C1], len = 0x2
-	line 626 at [000019C3][0001:000019C3], len = 0x1
-	line 627 at [000019C4][0001:000019C4], len = 0x1C
-	line 628 at [000019E0][0001:000019E0], len = 0x1
-	line 629 at [000019E1][0001:000019E1], len = 0x1
+	line 860 at [000019C3][0001:000019C3], len = 0x1
+	line 861 at [000019C4][0001:000019C4], len = 0x1C
+	line 862 at [000019E0][0001:000019E0], len = 0x1
+	line 863 at [000019E1][0001:000019E1], len = 0x1
 
 ** .ctor
 
-	line 632 at [000019E2][0001:000019E2], len = 0x7	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.Hardware\USB\HCIs\EHCI.cs
-	line 633 at [000019E9][0001:000019E9], len = 0x1
-	line 634 at [000019EA][0001:000019EA], len = 0x11
-	line 635 at [000019FB][0001:000019FB], len = 0x2
+	line 869 at [000019E2][0001:000019E2], len = 0x7	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.Hardware\USB\HCIs\EHCI.cs
+	line 870 at [000019E9][0001:000019E9], len = 0x1
+	line 871 at [000019EA][0001:000019EA], len = 0x11
+	line 872 at [000019FB][0001:000019FB], len = 0x2
 
 ** .ctor
 
-	line 636 at [000019FD][0001:000019FD], len = 0x7	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.Hardware\USB\HCIs\EHCI.cs
-	line 637 at [00001A04][0001:00001A04], len = 0x1
-	line 638 at [00001A05][0001:00001A05], len = 0x7
-	line 639 at [00001A0C][0001:00001A0C], len = 0x2
+	line 877 at [000019FD][0001:000019FD], len = 0x7	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.Hardware\USB\HCIs\EHCI.cs
+	line 878 at [00001A04][0001:00001A04], len = 0x1
+	line 879 at [00001A05][0001:00001A05], len = 0x7
+	line 880 at [00001A0C][0001:00001A0C], len = 0x2
 
 ** Free
 
-	line 642 at [00001A0E][0001:00001A0E], len = 0x1	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.Hardware\USB\HCIs\EHCI.cs
-	line 643 at [00001A0F][0001:00001A0F], len = 0xC
-	line 644 at [00001A1B][0001:00001A1B], len = 0x1
+	line 886 at [00001A0E][0001:00001A0E], len = 0x1	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.Hardware\USB\HCIs\EHCI.cs
+	line 887 at [00001A0F][0001:00001A0F], len = 0xC
+	line 888 at [00001A1B][0001:00001A1B], len = 0x8
+	line 889 at [00001A23][0001:00001A23], len = 0x1
 
 ** get_HorizontalLinkPointer
 
-	line 657 at [00001A1C][0001:00001A1C], len = 0x1	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.Hardware\USB\HCIs\EHCI.cs
-	line 658 at [00001A1D][0001:00001A1D], len = 0x12
-	line 659 at [00001A2F][0001:00001A2F], len = 0x2
+	line 912 at [00001A24][0001:00001A24], len = 0x1	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.Hardware\USB\HCIs\EHCI.cs
+	line 913 at [00001A25][0001:00001A25], len = 0x12
+	line 914 at [00001A37][0001:00001A37], len = 0x2
 
 ** set_HorizontalLinkPointer
 
-	line 661 at [00001A31][0001:00001A31], len = 0x1	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.Hardware\USB\HCIs\EHCI.cs
-	line 662 at [00001A32][0001:00001A32], len = 0x15
-	line 663 at [00001A47][0001:00001A47], len = 0x1
+	line 916 at [00001A39][0001:00001A39], len = 0x1	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.Hardware\USB\HCIs\EHCI.cs
+	line 917 at [00001A3A][0001:00001A3A], len = 0x15
+	line 918 at [00001A4F][0001:00001A4F], len = 0x1
 
 ** get_Type
 
-	line 668 at [00001A48][0001:00001A48], len = 0x1	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.Hardware\USB\HCIs\EHCI.cs
-	line 669 at [00001A49][0001:00001A49], len = 0x14
-	line 670 at [00001A5D][0001:00001A5D], len = 0x2
+	line 926 at [00001A50][0001:00001A50], len = 0x1	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.Hardware\USB\HCIs\EHCI.cs
+	line 927 at [00001A51][0001:00001A51], len = 0x14
+	line 928 at [00001A65][0001:00001A65], len = 0x2
 
 ** set_Type
 
-	line 672 at [00001A5F][0001:00001A5F], len = 0x1	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.Hardware\USB\HCIs\EHCI.cs
-	line 673 at [00001A60][0001:00001A60], len = 0x20
-	line 674 at [00001A80][0001:00001A80], len = 0x1
+	line 930 at [00001A67][0001:00001A67], len = 0x1	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.Hardware\USB\HCIs\EHCI.cs
+	line 931 at [00001A68][0001:00001A68], len = 0x20
+	line 932 at [00001A88][0001:00001A88], len = 0x1
 
 ** get_DeviceAddress
 
-	line 679 at [00001A81][0001:00001A81], len = 0x1	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.Hardware\USB\HCIs\EHCI.cs
-	line 680 at [00001A82][0001:00001A82], len = 0x12
-	line 681 at [00001A94][0001:00001A94], len = 0x2
+	line 940 at [00001A89][0001:00001A89], len = 0x1	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.Hardware\USB\HCIs\EHCI.cs
+	line 941 at [00001A8A][0001:00001A8A], len = 0x12
+	line 942 at [00001A9C][0001:00001A9C], len = 0x2
 
 ** set_DeviceAddress
 
-	line 683 at [00001A96][0001:00001A96], len = 0x1	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.Hardware\USB\HCIs\EHCI.cs
-	line 684 at [00001A97][0001:00001A97], len = 0x1E
-	line 685 at [00001AB5][0001:00001AB5], len = 0x1
+	line 944 at [00001A9E][0001:00001A9E], len = 0x1	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.Hardware\USB\HCIs\EHCI.cs
+	line 945 at [00001A9F][0001:00001A9F], len = 0x1E
+	line 946 at [00001ABD][0001:00001ABD], len = 0x1
 
 ** get_InactiveOnNextTransaction
 
-	line 690 at [00001AB6][0001:00001AB6], len = 0x1	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.Hardware\USB\HCIs\EHCI.cs
-	line 691 at [00001AB7][0001:00001AB7], len = 0x17
-	line 692 at [00001ACE][0001:00001ACE], len = 0x2
+	line 954 at [00001ABE][0001:00001ABE], len = 0x1	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.Hardware\USB\HCIs\EHCI.cs
+	line 955 at [00001ABF][0001:00001ABF], len = 0x17
+	line 956 at [00001AD6][0001:00001AD6], len = 0x2
 
 ** set_InactiveOnNextTransaction
 
-	line 694 at [00001AD0][0001:00001AD0], len = 0x1	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.Hardware\USB\HCIs\EHCI.cs
-	line 695 at [00001AD1][0001:00001AD1], len = 0x5
-	line 16707566 at [00001AD6][0001:00001AD6], len = 0x3
-	line 696 at [00001AD9][0001:00001AD9], len = 0x1
-	line 697 at [00001ADA][0001:00001ADA], len = 0x1C
-	line 698 at [00001AF6][0001:00001AF6], len = 0x1
-	line 16707566 at [00001AF7][0001:00001AF7], len = 0x2
-	line 700 at [00001AF9][0001:00001AF9], len = 0x1
-	line 701 at [00001AFA][0001:00001AFA], len = 0x1C
-	line 702 at [00001B16][0001:00001B16], len = 0x1
-	line 703 at [00001B17][0001:00001B17], len = 0x1
+	line 958 at [00001AD8][0001:00001AD8], len = 0x1	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.Hardware\USB\HCIs\EHCI.cs
+	line 959 at [00001AD9][0001:00001AD9], len = 0x5
+	line 16707566 at [00001ADE][0001:00001ADE], len = 0x3
+	line 960 at [00001AE1][0001:00001AE1], len = 0x1
+	line 961 at [00001AE2][0001:00001AE2], len = 0x1C
+	line 962 at [00001AFE][0001:00001AFE], len = 0x1
+	line 16707566 at [00001AFF][0001:00001AFF], len = 0x2
+	line 964 at [00001B01][0001:00001B01], len = 0x1
+	line 965 at [00001B02][0001:00001B02], len = 0x1C
+	line 966 at [00001B1E][0001:00001B1E], len = 0x1
+	line 967 at [00001B1F][0001:00001B1F], len = 0x1
 
 ** get_EndpointNumber
 
-	line 708 at [00001B18][0001:00001B18], len = 0x1	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.Hardware\USB\HCIs\EHCI.cs
-	line 709 at [00001B19][0001:00001B19], len = 0x17
-	line 710 at [00001B30][0001:00001B30], len = 0x2
+	line 975 at [00001B20][0001:00001B20], len = 0x1	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.Hardware\USB\HCIs\EHCI.cs
+	line 976 at [00001B21][0001:00001B21], len = 0x17
+	line 977 at [00001B38][0001:00001B38], len = 0x2
 
 ** set_EndpointNumber
 
-	line 712 at [00001B32][0001:00001B32], len = 0x1	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.Hardware\USB\HCIs\EHCI.cs
-	line 713 at [00001B33][0001:00001B33], len = 0x20
-	line 714 at [00001B53][0001:00001B53], len = 0x1
+	line 979 at [00001B3A][0001:00001B3A], len = 0x1	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.Hardware\USB\HCIs\EHCI.cs
+	line 980 at [00001B3B][0001:00001B3B], len = 0x20
+	line 981 at [00001B5B][0001:00001B5B], len = 0x1
 
 ** get_EndpointSpeed
 
-	line 719 at [00001B54][0001:00001B54], len = 0x1	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.Hardware\USB\HCIs\EHCI.cs
-	line 720 at [00001B55][0001:00001B55], len = 0x18
-	line 721 at [00001B6D][0001:00001B6D], len = 0x2
+	line 989 at [00001B5C][0001:00001B5C], len = 0x1	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.Hardware\USB\HCIs\EHCI.cs
+	line 990 at [00001B5D][0001:00001B5D], len = 0x18
+	line 991 at [00001B75][0001:00001B75], len = 0x2
 
 ** set_EndpointSpeed
 
-	line 723 at [00001B6F][0001:00001B6F], len = 0x1	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.Hardware\USB\HCIs\EHCI.cs
-	line 724 at [00001B70][0001:00001B70], len = 0x21
-	line 725 at [00001B91][0001:00001B91], len = 0x1
+	line 993 at [00001B77][0001:00001B77], len = 0x1	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.Hardware\USB\HCIs\EHCI.cs
+	line 994 at [00001B78][0001:00001B78], len = 0x21
+	line 995 at [00001B99][0001:00001B99], len = 0x1
 
 ** get_DataToggleControl
 
-	line 730 at [00001B92][0001:00001B92], len = 0x1	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.Hardware\USB\HCIs\EHCI.cs
-	line 731 at [00001B93][0001:00001B93], len = 0x17
-	line 732 at [00001BAA][0001:00001BAA], len = 0x2
+	line 1003 at [00001B9A][0001:00001B9A], len = 0x1	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.Hardware\USB\HCIs\EHCI.cs
+	line 1004 at [00001B9B][0001:00001B9B], len = 0x17
+	line 1005 at [00001BB2][0001:00001BB2], len = 0x2
 
 ** set_DataToggleControl
 
-	line 734 at [00001BAC][0001:00001BAC], len = 0x1	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.Hardware\USB\HCIs\EHCI.cs
-	line 735 at [00001BAD][0001:00001BAD], len = 0x5
-	line 16707566 at [00001BB2][0001:00001BB2], len = 0x3
-	line 736 at [00001BB5][0001:00001BB5], len = 0x1
-	line 737 at [00001BB6][0001:00001BB6], len = 0x1C
-	line 738 at [00001BD2][0001:00001BD2], len = 0x1
-	line 16707566 at [00001BD3][0001:00001BD3], len = 0x2
-	line 740 at [00001BD5][0001:00001BD5], len = 0x1
-	line 741 at [00001BD6][0001:00001BD6], len = 0x1C
-	line 742 at [00001BF2][0001:00001BF2], len = 0x1
-	line 743 at [00001BF3][0001:00001BF3], len = 0x1
+	line 1007 at [00001BB4][0001:00001BB4], len = 0x1	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.Hardware\USB\HCIs\EHCI.cs
+	line 1008 at [00001BB5][0001:00001BB5], len = 0x5
+	line 16707566 at [00001BBA][0001:00001BBA], len = 0x3
+	line 1009 at [00001BBD][0001:00001BBD], len = 0x1
+	line 1010 at [00001BBE][0001:00001BBE], len = 0x1C
+	line 1011 at [00001BDA][0001:00001BDA], len = 0x1
+	line 16707566 at [00001BDB][0001:00001BDB], len = 0x2
+	line 1013 at [00001BDD][0001:00001BDD], len = 0x1
+	line 1014 at [00001BDE][0001:00001BDE], len = 0x1C
+	line 1015 at [00001BFA][0001:00001BFA], len = 0x1
+	line 1016 at [00001BFB][0001:00001BFB], len = 0x1
 
 ** get_HeadOfReclamationList
 
-	line 748 at [00001BF4][0001:00001BF4], len = 0x1	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.Hardware\USB\HCIs\EHCI.cs
-	line 749 at [00001BF5][0001:00001BF5], len = 0x17
-	line 750 at [00001C0C][0001:00001C0C], len = 0x2
+	line 1024 at [00001BFC][0001:00001BFC], len = 0x1	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.Hardware\USB\HCIs\EHCI.cs
+	line 1025 at [00001BFD][0001:00001BFD], len = 0x17
+	line 1026 at [00001C14][0001:00001C14], len = 0x2
 
 ** set_HeadOfReclamationList
 
-	line 752 at [00001C0E][0001:00001C0E], len = 0x1	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.Hardware\USB\HCIs\EHCI.cs
-	line 753 at [00001C0F][0001:00001C0F], len = 0x5
-	line 16707566 at [00001C14][0001:00001C14], len = 0x3
-	line 754 at [00001C17][0001:00001C17], len = 0x1
-	line 755 at [00001C18][0001:00001C18], len = 0x1C
-	line 756 at [00001C34][0001:00001C34], len = 0x1
-	line 16707566 at [00001C35][0001:00001C35], len = 0x2
-	line 758 at [00001C37][0001:00001C37], len = 0x1
-	line 759 at [00001C38][0001:00001C38], len = 0x1C
-	line 760 at [00001C54][0001:00001C54], len = 0x1
-	line 761 at [00001C55][0001:00001C55], len = 0x1
+	line 1028 at [00001C16][0001:00001C16], len = 0x1	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.Hardware\USB\HCIs\EHCI.cs
+	line 1029 at [00001C17][0001:00001C17], len = 0x5
+	line 16707566 at [00001C1C][0001:00001C1C], len = 0x3
+	line 1030 at [00001C1F][0001:00001C1F], len = 0x1
+	line 1031 at [00001C20][0001:00001C20], len = 0x1C
+	line 1032 at [00001C3C][0001:00001C3C], len = 0x1
+	line 16707566 at [00001C3D][0001:00001C3D], len = 0x2
+	line 1034 at [00001C3F][0001:00001C3F], len = 0x1
+	line 1035 at [00001C40][0001:00001C40], len = 0x1C
+	line 1036 at [00001C5C][0001:00001C5C], len = 0x1
+	line 1037 at [00001C5D][0001:00001C5D], len = 0x1
 
 ** get_MaximumPacketLength
 
-	line 766 at [00001C56][0001:00001C56], len = 0x1	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.Hardware\USB\HCIs\EHCI.cs
-	line 767 at [00001C57][0001:00001C57], len = 0x18
-	line 768 at [00001C6F][0001:00001C6F], len = 0x2
+	line 1045 at [00001C5E][0001:00001C5E], len = 0x1	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.Hardware\USB\HCIs\EHCI.cs
+	line 1046 at [00001C5F][0001:00001C5F], len = 0x18
+	line 1047 at [00001C77][0001:00001C77], len = 0x2
 
 ** set_MaximumPacketLength
 
-	line 770 at [00001C71][0001:00001C71], len = 0x1	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.Hardware\USB\HCIs\EHCI.cs
-	line 771 at [00001C72][0001:00001C72], len = 0x27
-	line 772 at [00001C99][0001:00001C99], len = 0x1
+	line 1049 at [00001C79][0001:00001C79], len = 0x1	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.Hardware\USB\HCIs\EHCI.cs
+	line 1050 at [00001C7A][0001:00001C7A], len = 0x27
+	line 1051 at [00001CA1][0001:00001CA1], len = 0x1
 
 ** get_ControlEndpointFlag
 
-	line 777 at [00001C9A][0001:00001C9A], len = 0x1	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.Hardware\USB\HCIs\EHCI.cs
-	line 778 at [00001C9B][0001:00001C9B], len = 0x17
-	line 779 at [00001CB2][0001:00001CB2], len = 0x2
+	line 1059 at [00001CA2][0001:00001CA2], len = 0x1	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.Hardware\USB\HCIs\EHCI.cs
+	line 1060 at [00001CA3][0001:00001CA3], len = 0x17
+	line 1061 at [00001CBA][0001:00001CBA], len = 0x2
 
 ** set_ControlEndpointFlag
 
-	line 781 at [00001CB4][0001:00001CB4], len = 0x1	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.Hardware\USB\HCIs\EHCI.cs
-	line 782 at [00001CB5][0001:00001CB5], len = 0x5
-	line 16707566 at [00001CBA][0001:00001CBA], len = 0x3
-	line 783 at [00001CBD][0001:00001CBD], len = 0x1
-	line 784 at [00001CBE][0001:00001CBE], len = 0x1C
-	line 785 at [00001CDA][0001:00001CDA], len = 0x1
-	line 16707566 at [00001CDB][0001:00001CDB], len = 0x2
-	line 787 at [00001CDD][0001:00001CDD], len = 0x1
-	line 788 at [00001CDE][0001:00001CDE], len = 0x1C
-	line 789 at [00001CFA][0001:00001CFA], len = 0x1
-	line 790 at [00001CFB][0001:00001CFB], len = 0x1
+	line 1063 at [00001CBC][0001:00001CBC], len = 0x1	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.Hardware\USB\HCIs\EHCI.cs
+	line 1064 at [00001CBD][0001:00001CBD], len = 0x5
+	line 16707566 at [00001CC2][0001:00001CC2], len = 0x3
+	line 1065 at [00001CC5][0001:00001CC5], len = 0x1
+	line 1066 at [00001CC6][0001:00001CC6], len = 0x1C
+	line 1067 at [00001CE2][0001:00001CE2], len = 0x1
+	line 16707566 at [00001CE3][0001:00001CE3], len = 0x2
+	line 1069 at [00001CE5][0001:00001CE5], len = 0x1
+	line 1070 at [00001CE6][0001:00001CE6], len = 0x1C
+	line 1071 at [00001D02][0001:00001D02], len = 0x1
+	line 1072 at [00001D03][0001:00001D03], len = 0x1
 
 ** get_NakCountReload
 
-	line 795 at [00001CFC][0001:00001CFC], len = 0x1	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.Hardware\USB\HCIs\EHCI.cs
-	line 796 at [00001CFD][0001:00001CFD], len = 0x18
-	line 797 at [00001D15][0001:00001D15], len = 0x2
+	line 1080 at [00001D04][0001:00001D04], len = 0x1	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.Hardware\USB\HCIs\EHCI.cs
+	line 1081 at [00001D05][0001:00001D05], len = 0x18
+	line 1082 at [00001D1D][0001:00001D1D], len = 0x2
 
 ** set_NakCountReload
 
-	line 799 at [00001D17][0001:00001D17], len = 0x1	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.Hardware\USB\HCIs\EHCI.cs
-	line 800 at [00001D18][0001:00001D18], len = 0x21
-	line 801 at [00001D39][0001:00001D39], len = 0x1
+	line 1084 at [00001D1F][0001:00001D1F], len = 0x1	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.Hardware\USB\HCIs\EHCI.cs
+	line 1085 at [00001D20][0001:00001D20], len = 0x21
+	line 1086 at [00001D41][0001:00001D41], len = 0x1
 
 ** get_InterruptScheduleMask
 
-	line 806 at [00001D3A][0001:00001D3A], len = 0x1	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.Hardware\USB\HCIs\EHCI.cs
-	line 807 at [00001D3B][0001:00001D3B], len = 0xF
-	line 808 at [00001D4A][0001:00001D4A], len = 0x2
+	line 1094 at [00001D42][0001:00001D42], len = 0x1	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.Hardware\USB\HCIs\EHCI.cs
+	line 1095 at [00001D43][0001:00001D43], len = 0xF
+	line 1096 at [00001D52][0001:00001D52], len = 0x2
 
 ** set_InterruptScheduleMask
 
-	line 810 at [00001D4C][0001:00001D4C], len = 0x1	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.Hardware\USB\HCIs\EHCI.cs
-	line 811 at [00001D4D][0001:00001D4D], len = 0x1E
-	line 812 at [00001D6B][0001:00001D6B], len = 0x1
+	line 1098 at [00001D54][0001:00001D54], len = 0x1	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.Hardware\USB\HCIs\EHCI.cs
+	line 1099 at [00001D55][0001:00001D55], len = 0x1E
+	line 1100 at [00001D73][0001:00001D73], len = 0x1
 
 ** get_SplitCompletionMask
 
-	line 817 at [00001D6C][0001:00001D6C], len = 0x1	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.Hardware\USB\HCIs\EHCI.cs
-	line 818 at [00001D6D][0001:00001D6D], len = 0x11
-	line 819 at [00001D7E][0001:00001D7E], len = 0x2
+	line 1108 at [00001D74][0001:00001D74], len = 0x1	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.Hardware\USB\HCIs\EHCI.cs
+	line 1109 at [00001D75][0001:00001D75], len = 0x11
+	line 1110 at [00001D86][0001:00001D86], len = 0x2
 
 ** set_SplitCompletionMask
 
-	line 821 at [00001D80][0001:00001D80], len = 0x1	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.Hardware\USB\HCIs\EHCI.cs
-	line 822 at [00001D81][0001:00001D81], len = 0x20
-	line 823 at [00001DA1][0001:00001DA1], len = 0x1
+	line 1112 at [00001D88][0001:00001D88], len = 0x1	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.Hardware\USB\HCIs\EHCI.cs
+	line 1113 at [00001D89][0001:00001D89], len = 0x20
+	line 1114 at [00001DA9][0001:00001DA9], len = 0x1
 
 ** get_HubAddr
 
-	line 828 at [00001DA2][0001:00001DA2], len = 0x1	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.Hardware\USB\HCIs\EHCI.cs
-	line 829 at [00001DA3][0001:00001DA3], len = 0x18
-	line 830 at [00001DBB][0001:00001DBB], len = 0x2
+	line 1122 at [00001DAA][0001:00001DAA], len = 0x1	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.Hardware\USB\HCIs\EHCI.cs
+	line 1123 at [00001DAB][0001:00001DAB], len = 0x18
+	line 1124 at [00001DC3][0001:00001DC3], len = 0x2
 
 ** set_HubAddr
 
-	line 832 at [00001DBD][0001:00001DBD], len = 0x1	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.Hardware\USB\HCIs\EHCI.cs
-	line 833 at [00001DBE][0001:00001DBE], len = 0x21
-	line 834 at [00001DDF][0001:00001DDF], len = 0x1
+	line 1126 at [00001DC5][0001:00001DC5], len = 0x1	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.Hardware\USB\HCIs\EHCI.cs
+	line 1127 at [00001DC6][0001:00001DC6], len = 0x21
+	line 1128 at [00001DE7][0001:00001DE7], len = 0x1
 
 ** get_PortNumber
 
-	line 839 at [00001DE0][0001:00001DE0], len = 0x1	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.Hardware\USB\HCIs\EHCI.cs
-	line 840 at [00001DE1][0001:00001DE1], len = 0x18
-	line 841 at [00001DF9][0001:00001DF9], len = 0x2
+	line 1136 at [00001DE8][0001:00001DE8], len = 0x1	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.Hardware\USB\HCIs\EHCI.cs
+	line 1137 at [00001DE9][0001:00001DE9], len = 0x18
+	line 1138 at [00001E01][0001:00001E01], len = 0x2
 
 ** set_PortNumber
 
-	line 843 at [00001DFB][0001:00001DFB], len = 0x1	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.Hardware\USB\HCIs\EHCI.cs
-	line 844 at [00001DFC][0001:00001DFC], len = 0x21
-	line 845 at [00001E1D][0001:00001E1D], len = 0x1
+	line 1140 at [00001E03][0001:00001E03], len = 0x1	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.Hardware\USB\HCIs\EHCI.cs
+	line 1141 at [00001E04][0001:00001E04], len = 0x21
+	line 1142 at [00001E25][0001:00001E25], len = 0x1
 
 ** get_HighBandwidthPipeMultiplier
 
-	line 850 at [00001E1E][0001:00001E1E], len = 0x1	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.Hardware\USB\HCIs\EHCI.cs
-	line 851 at [00001E1F][0001:00001E1F], len = 0x18
-	line 852 at [00001E37][0001:00001E37], len = 0x2
+	line 1150 at [00001E26][0001:00001E26], len = 0x1	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.Hardware\USB\HCIs\EHCI.cs
+	line 1151 at [00001E27][0001:00001E27], len = 0x18
+	line 1152 at [00001E3F][0001:00001E3F], len = 0x2
 
 ** set_HighBandwidthPipeMultiplier
 
-	line 854 at [00001E39][0001:00001E39], len = 0x1	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.Hardware\USB\HCIs\EHCI.cs
-	line 855 at [00001E3A][0001:00001E3A], len = 0x21
-	line 856 at [00001E5B][0001:00001E5B], len = 0x1
+	line 1154 at [00001E41][0001:00001E41], len = 0x1	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.Hardware\USB\HCIs\EHCI.cs
+	line 1155 at [00001E42][0001:00001E42], len = 0x21
+	line 1156 at [00001E63][0001:00001E63], len = 0x1
 
 ** get_CurrentqTDPointer
 
-	line 861 at [00001E5C][0001:00001E5C], len = 0x1	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.Hardware\USB\HCIs\EHCI.cs
-	line 862 at [00001E5D][0001:00001E5D], len = 0x12
-	line 863 at [00001E6F][0001:00001E6F], len = 0x2
+	line 1164 at [00001E64][0001:00001E64], len = 0x1	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.Hardware\USB\HCIs\EHCI.cs
+	line 1165 at [00001E65][0001:00001E65], len = 0x12
+	line 1166 at [00001E77][0001:00001E77], len = 0x2
 
 ** set_CurrentqTDPointer
 
-	line 865 at [00001E71][0001:00001E71], len = 0x1	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.Hardware\USB\HCIs\EHCI.cs
-	line 866 at [00001E72][0001:00001E72], len = 0x1F
-	line 867 at [00001E91][0001:00001E91], len = 0x1
+	line 1168 at [00001E79][0001:00001E79], len = 0x1	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.Hardware\USB\HCIs\EHCI.cs
+	line 1169 at [00001E7A][0001:00001E7A], len = 0x1F
+	line 1170 at [00001E99][0001:00001E99], len = 0x1
 
 ** get_NextqTDPointer
 
-	line 872 at [00001E92][0001:00001E92], len = 0x1	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.Hardware\USB\HCIs\EHCI.cs
-	line 873 at [00001E93][0001:00001E93], len = 0x12
-	line 874 at [00001EA5][0001:00001EA5], len = 0x2
+	line 1178 at [00001E9A][0001:00001E9A], len = 0x1	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.Hardware\USB\HCIs\EHCI.cs
+	line 1179 at [00001E9B][0001:00001E9B], len = 0x12
+	line 1180 at [00001EAD][0001:00001EAD], len = 0x2
 
 ** set_NextqTDPointer
 
-	line 876 at [00001EA7][0001:00001EA7], len = 0x1	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.Hardware\USB\HCIs\EHCI.cs
-	line 877 at [00001EA8][0001:00001EA8], len = 0x1F
-	line 878 at [00001EC7][0001:00001EC7], len = 0x1
+	line 1182 at [00001EAF][0001:00001EAF], len = 0x1	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.Hardware\USB\HCIs\EHCI.cs
+	line 1183 at [00001EB0][0001:00001EB0], len = 0x1F
+	line 1184 at [00001ECF][0001:00001ECF], len = 0x1
 
 ** get_NextqTDPointerTerminate
 
-	line 883 at [00001EC8][0001:00001EC8], len = 0x1	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.Hardware\USB\HCIs\EHCI.cs
-	line 884 at [00001EC9][0001:00001EC9], len = 0x13
-	line 885 at [00001EDC][0001:00001EDC], len = 0x2
+	line 1192 at [00001ED0][0001:00001ED0], len = 0x1	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.Hardware\USB\HCIs\EHCI.cs
+	line 1193 at [00001ED1][0001:00001ED1], len = 0x13
+	line 1194 at [00001EE4][0001:00001EE4], len = 0x2
 
 ** set_NextqTDPointerTerminate
 
-	line 887 at [00001EDE][0001:00001EDE], len = 0x1	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.Hardware\USB\HCIs\EHCI.cs
-	line 888 at [00001EDF][0001:00001EDF], len = 0x5
-	line 16707566 at [00001EE4][0001:00001EE4], len = 0x3
-	line 889 at [00001EE7][0001:00001EE7], len = 0x1
-	line 890 at [00001EE8][0001:00001EE8], len = 0x18
-	line 891 at [00001F00][0001:00001F00], len = 0x1
-	line 16707566 at [00001F01][0001:00001F01], len = 0x2
-	line 893 at [00001F03][0001:00001F03], len = 0x1
-	line 894 at [00001F04][0001:00001F04], len = 0x19
-	line 895 at [00001F1D][0001:00001F1D], len = 0x1
-	line 896 at [00001F1E][0001:00001F1E], len = 0x1
+	line 1196 at [00001EE6][0001:00001EE6], len = 0x1	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.Hardware\USB\HCIs\EHCI.cs
+	line 1197 at [00001EE7][0001:00001EE7], len = 0x5
+	line 16707566 at [00001EEC][0001:00001EEC], len = 0x3
+	line 1198 at [00001EEF][0001:00001EEF], len = 0x1
+	line 1199 at [00001EF0][0001:00001EF0], len = 0x18
+	line 1200 at [00001F08][0001:00001F08], len = 0x1
+	line 16707566 at [00001F09][0001:00001F09], len = 0x2
+	line 1202 at [00001F0B][0001:00001F0B], len = 0x1
+	line 1203 at [00001F0C][0001:00001F0C], len = 0x19
+	line 1204 at [00001F25][0001:00001F25], len = 0x1
+	line 1205 at [00001F26][0001:00001F26], len = 0x1
 
 ** .ctor
 
-	line 899 at [00001F1F][0001:00001F1F], len = 0x7	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.Hardware\USB\HCIs\EHCI.cs
-	line 900 at [00001F26][0001:00001F26], len = 0x1
-	line 901 at [00001F27][0001:00001F27], len = 0x11
-	line 902 at [00001F38][0001:00001F38], len = 0x2
+	line 1211 at [00001F27][0001:00001F27], len = 0x7	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.Hardware\USB\HCIs\EHCI.cs
+	line 1212 at [00001F2E][0001:00001F2E], len = 0x1
+	line 1213 at [00001F2F][0001:00001F2F], len = 0x11
+	line 1214 at [00001F40][0001:00001F40], len = 0x2
 
 ** .ctor
 
-	line 903 at [00001F3A][0001:00001F3A], len = 0x7	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.Hardware\USB\HCIs\EHCI.cs
-	line 904 at [00001F41][0001:00001F41], len = 0x1
-	line 905 at [00001F42][0001:00001F42], len = 0x7
-	line 906 at [00001F49][0001:00001F49], len = 0x2
+	line 1219 at [00001F42][0001:00001F42], len = 0x7	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.Hardware\USB\HCIs\EHCI.cs
+	line 1220 at [00001F49][0001:00001F49], len = 0x1
+	line 1221 at [00001F4A][0001:00001F4A], len = 0x7
+	line 1222 at [00001F51][0001:00001F51], len = 0x2
 
 ** Free
 
-	line 909 at [00001F4B][0001:00001F4B], len = 0x1	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.Hardware\USB\HCIs\EHCI.cs
-	line 910 at [00001F4C][0001:00001F4C], len = 0xC
-	line 911 at [00001F58][0001:00001F58], len = 0x1
+	line 1228 at [00001F53][0001:00001F53], len = 0x1	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.Hardware\USB\HCIs\EHCI.cs
+	line 1229 at [00001F54][0001:00001F54], len = 0xC
+	line 1230 at [00001F60][0001:00001F60], len = 0x8
+	line 1231 at [00001F68][0001:00001F68], len = 0x1
 
 ** get_CapabilityID
 
-	line 921 at [00001F59][0001:00001F59], len = 0x1	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.Hardware\USB\HCIs\EHCI.cs
-	line 922 at [00001F5A][0001:00001F5A], len = 0x11
-	line 923 at [00001F6B][0001:00001F6B], len = 0x2
+	line 1253 at [00001F69][0001:00001F69], len = 0x1	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.Hardware\USB\HCIs\EHCI.cs
+	line 1254 at [00001F6A][0001:00001F6A], len = 0x11
+	line 1255 at [00001F7B][0001:00001F7B], len = 0x2
 
 ** get_NextEHCIExtendedCapabilityOffset
 
-	line 928 at [00001F6D][0001:00001F6D], len = 0x1	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.Hardware\USB\HCIs\EHCI.cs
-	line 929 at [00001F6E][0001:00001F6E], len = 0x14
-	line 930 at [00001F82][0001:00001F82], len = 0x2
+	line 1263 at [00001F7D][0001:00001F7D], len = 0x1	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.Hardware\USB\HCIs\EHCI.cs
+	line 1264 at [00001F7E][0001:00001F7E], len = 0x14
+	line 1265 at [00001F92][0001:00001F92], len = 0x2
 
 ** .ctor
 
-	line 933 at [00001F84][0001:00001F84], len = 0x7	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.Hardware\USB\HCIs\EHCI.cs
-	line 934 at [00001F8B][0001:00001F8B], len = 0x1
-	line 935 at [00001F8C][0001:00001F8C], len = 0x7
-	line 936 at [00001F93][0001:00001F93], len = 0x7
-	line 937 at [00001F9A][0001:00001F9A], len = 0x2
+	line 1273 at [00001F94][0001:00001F94], len = 0x7	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.Hardware\USB\HCIs\EHCI.cs
+	line 1274 at [00001F9B][0001:00001F9B], len = 0x1
+	line 1275 at [00001F9C][0001:00001F9C], len = 0x7
+	line 1276 at [00001FA3][0001:00001FA3], len = 0x7
+	line 1277 at [00001FAA][0001:00001FAA], len = 0x2
 
 ** get_HCOSOwnedSemaphore
 
-	line 948 at [00001F9C][0001:00001F9C], len = 0x1	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.Hardware\USB\HCIs\EHCI.cs
-	line 949 at [00001F9D][0001:00001F9D], len = 0x1A
-	line 950 at [00001FB7][0001:00001FB7], len = 0x2
+	line 1294 at [00001FAC][0001:00001FAC], len = 0x1	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.Hardware\USB\HCIs\EHCI.cs
+	line 1295 at [00001FAD][0001:00001FAD], len = 0x1A
+	line 1296 at [00001FC7][0001:00001FC7], len = 0x2
 
 ** set_HCOSOwnedSemaphore
 
-	line 952 at [00001FB9][0001:00001FB9], len = 0x1	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.Hardware\USB\HCIs\EHCI.cs
-	line 953 at [00001FBA][0001:00001FBA], len = 0x5
-	line 16707566 at [00001FBF][0001:00001FBF], len = 0x3
-	line 954 at [00001FC2][0001:00001FC2], len = 0x1
-	line 955 at [00001FC3][0001:00001FC3], len = 0x27
-	line 956 at [00001FEA][0001:00001FEA], len = 0x1
-	line 16707566 at [00001FEB][0001:00001FEB], len = 0x2
-	line 958 at [00001FED][0001:00001FED], len = 0x1
-	line 959 at [00001FEE][0001:00001FEE], len = 0x2B
-	line 960 at [00002019][0001:00002019], len = 0x1
-	line 961 at [0000201A][0001:0000201A], len = 0x1
+	line 1298 at [00001FC9][0001:00001FC9], len = 0x1	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.Hardware\USB\HCIs\EHCI.cs
+	line 1299 at [00001FCA][0001:00001FCA], len = 0x5
+	line 16707566 at [00001FCF][0001:00001FCF], len = 0x3
+	line 1300 at [00001FD2][0001:00001FD2], len = 0x1
+	line 1301 at [00001FD3][0001:00001FD3], len = 0x27
+	line 1302 at [00001FFA][0001:00001FFA], len = 0x1
+	line 16707566 at [00001FFB][0001:00001FFB], len = 0x2
+	line 1304 at [00001FFD][0001:00001FFD], len = 0x1
+	line 1305 at [00001FFE][0001:00001FFE], len = 0x2B
+	line 1306 at [00002029][0001:00002029], len = 0x1
+	line 1307 at [0000202A][0001:0000202A], len = 0x1
 
 ** get_HCBIOSOwnedSemaphore
 
-	line 966 at [0000201B][0001:0000201B], len = 0x1	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.Hardware\USB\HCIs\EHCI.cs
-	line 967 at [0000201C][0001:0000201C], len = 0x1A
-	line 968 at [00002036][0001:00002036], len = 0x2
+	line 1315 at [0000202B][0001:0000202B], len = 0x1	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.Hardware\USB\HCIs\EHCI.cs
+	line 1316 at [0000202C][0001:0000202C], len = 0x1A
+	line 1317 at [00002046][0001:00002046], len = 0x2
 
 ** set_HCBIOSOwnedSemaphore
 
-	line 970 at [00002038][0001:00002038], len = 0x1	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.Hardware\USB\HCIs\EHCI.cs
-	line 971 at [00002039][0001:00002039], len = 0x5
-	line 16707566 at [0000203E][0001:0000203E], len = 0x3
-	line 972 at [00002041][0001:00002041], len = 0x1
-	line 973 at [00002042][0001:00002042], len = 0x27
-	line 974 at [00002069][0001:00002069], len = 0x1
-	line 16707566 at [0000206A][0001:0000206A], len = 0x2
-	line 976 at [0000206C][0001:0000206C], len = 0x1
-	line 977 at [0000206D][0001:0000206D], len = 0x2B
-	line 978 at [00002098][0001:00002098], len = 0x1
-	line 979 at [00002099][0001:00002099], len = 0x1
+	line 1319 at [00002048][0001:00002048], len = 0x1	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.Hardware\USB\HCIs\EHCI.cs
+	line 1320 at [00002049][0001:00002049], len = 0x5
+	line 16707566 at [0000204E][0001:0000204E], len = 0x3
+	line 1321 at [00002051][0001:00002051], len = 0x1
+	line 1322 at [00002052][0001:00002052], len = 0x27
+	line 1323 at [00002079][0001:00002079], len = 0x1
+	line 16707566 at [0000207A][0001:0000207A], len = 0x2
+	line 1325 at [0000207C][0001:0000207C], len = 0x1
+	line 1326 at [0000207D][0001:0000207D], len = 0x2B
+	line 1327 at [000020A8][0001:000020A8], len = 0x1
+	line 1328 at [000020A9][0001:000020A9], len = 0x1
 
 ** .ctor
 
-	line 984 at [0000209A][0001:0000209A], len = 0x9	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.Hardware\USB\HCIs\EHCI.cs
-	line 986 at [000020A3][0001:000020A3], len = 0x1
-	line 987 at [000020A4][0001:000020A4], len = 0x1A
-	line 988 at [000020BE][0001:000020BE], len = 0x2
+	line 1341 at [000020AA][0001:000020AA], len = 0x9	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.Hardware\USB\HCIs\EHCI.cs
+	line 1343 at [000020B3][0001:000020B3], len = 0x1
+	line 1344 at [000020B4][0001:000020B4], len = 0x1A
+	line 1345 at [000020CE][0001:000020CE], len = 0x2
 
 ** .ctor
 
-	line 998 at [000020C0][0001:000020C0], len = 0x9	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.Hardware\USB\HCIs\EHCI.cs
-	line 1000 at [000020C9][0001:000020C9], len = 0x1
-	line 1001 at [000020CA][0001:000020CA], len = 0x2
+	line 1363 at [000020D0][0001:000020D0], len = 0x9	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.Hardware\USB\HCIs\EHCI.cs
+	line 1365 at [000020D9][0001:000020D9], len = 0x1
+	line 1366 at [000020DA][0001:000020DA], len = 0x2
 
 ** Init
 
-	line 39 at [000020CC][0001:000020CC], len = 0x1	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.Hardware\USB\USBManager.cs
-	line 46 at [000020CD][0001:000020CD], len = 0x2
-	line 16707566 at [000020CF][0001:000020CF], len = 0x5
-	line 47 at [000020D4][0001:000020D4], len = 0x1
-	line 48 at [000020D5][0001:000020D5], len = 0x11
-	line 50 at [000020E6][0001:000020E6], len = 0xF
-	line 16707566 at [000020F5][0001:000020F5], len = 0x7
-	line 51 at [000020FC][0001:000020FC], len = 0x1
-	line 53 at [000020FD][0001:000020FD], len = 0xE
-	line 16707566 at [0000210B][0001:0000210B], len = 0x7
-	line 54 at [00002112][0001:00002112], len = 0x1
-	line 56 at [00002113][0001:00002113], len = 0xE
-	line 16707566 at [00002121][0001:00002121], len = 0x4
-	line 57 at [00002125][0001:00002125], len = 0x1
-	line 65 at [00002126][0001:00002126], len = 0xD
-	line 66 at [00002133][0001:00002133], len = 0x1
-	line 16707566 at [00002134][0001:00002134], len = 0x2
-	line 68 at [00002136][0001:00002136], len = 0xF
-	line 16707566 at [00002145][0001:00002145], len = 0x4
-	line 69 at [00002149][0001:00002149], len = 0x1
-	line 77 at [0000214A][0001:0000214A], len = 0xD
-	line 78 at [00002157][0001:00002157], len = 0x1
-	line 16707566 at [00002158][0001:00002158], len = 0x2
-	line 80 at [0000215A][0001:0000215A], len = 0xF
-	line 16707566 at [00002169][0001:00002169], len = 0x4
-	line 81 at [0000216D][0001:0000216D], len = 0x1
-	line 85 at [0000216E][0001:0000216E], len = 0x7
-	line 86 at [00002175][0001:00002175], len = 0x8
-	line 88 at [0000217D][0001:0000217D], len = 0x7
-	line 90 at [00002184][0001:00002184], len = 0xC
-	line 91 at [00002190][0001:00002190], len = 0xC
-	line 92 at [0000219C][0001:0000219C], len = 0x1
-	line 93 at [0000219D][0001:0000219D], len = 0x1
-	line 94 at [0000219E][0001:0000219E], len = 0x1
-	line 95 at [0000219F][0001:0000219F], len = 0x1
-	line 46 at [000021A0][0001:000021A0], len = 0x4
-	line 46 at [000021A4][0001:000021A4], len = 0xF
-	line 16707566 at [000021B3][0001:000021B3], len = 0x7
-	line 96 at [000021BA][0001:000021BA], len = 0x1
+	line 39 at [000020DC][0001:000020DC], len = 0x1	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.Hardware\USB\USBManager.cs
+	line 46 at [000020DD][0001:000020DD], len = 0x2
+	line 16707566 at [000020DF][0001:000020DF], len = 0x5
+	line 47 at [000020E4][0001:000020E4], len = 0x1
+	line 48 at [000020E5][0001:000020E5], len = 0x11
+	line 50 at [000020F6][0001:000020F6], len = 0xF
+	line 16707566 at [00002105][0001:00002105], len = 0x7
+	line 51 at [0000210C][0001:0000210C], len = 0x1
+	line 53 at [0000210D][0001:0000210D], len = 0xE
+	line 16707566 at [0000211B][0001:0000211B], len = 0x7
+	line 54 at [00002122][0001:00002122], len = 0x1
+	line 56 at [00002123][0001:00002123], len = 0xE
+	line 16707566 at [00002131][0001:00002131], len = 0x4
+	line 57 at [00002135][0001:00002135], len = 0x1
+	line 65 at [00002136][0001:00002136], len = 0xD
+	line 66 at [00002143][0001:00002143], len = 0x1
+	line 16707566 at [00002144][0001:00002144], len = 0x2
+	line 68 at [00002146][0001:00002146], len = 0xF
+	line 16707566 at [00002155][0001:00002155], len = 0x4
+	line 69 at [00002159][0001:00002159], len = 0x1
+	line 77 at [0000215A][0001:0000215A], len = 0xD
+	line 78 at [00002167][0001:00002167], len = 0x1
+	line 16707566 at [00002168][0001:00002168], len = 0x2
+	line 80 at [0000216A][0001:0000216A], len = 0xF
+	line 16707566 at [00002179][0001:00002179], len = 0x4
+	line 81 at [0000217D][0001:0000217D], len = 0x1
+	line 85 at [0000217E][0001:0000217E], len = 0x7
+	line 86 at [00002185][0001:00002185], len = 0x8
+	line 88 at [0000218D][0001:0000218D], len = 0x7
+	line 90 at [00002194][0001:00002194], len = 0xC
+	line 91 at [000021A0][0001:000021A0], len = 0xC
+	line 92 at [000021AC][0001:000021AC], len = 0x1
+	line 93 at [000021AD][0001:000021AD], len = 0x1
+	line 94 at [000021AE][0001:000021AE], len = 0x1
+	line 95 at [000021AF][0001:000021AF], len = 0x1
+	line 46 at [000021B0][0001:000021B0], len = 0x4
+	line 46 at [000021B4][0001:000021B4], len = 0xF
+	line 16707566 at [000021C3][0001:000021C3], len = 0x7
+	line 96 at [000021CA][0001:000021CA], len = 0x1
 
 ** .cctor
 
-	line 33 at [000021BB][0001:000021BB], len = 0xB	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.Hardware\USB\USBManager.cs
-	line 16707566 at [000021C6][0001:000021C6], len = 0x1
+	line 33 at [000021CB][0001:000021CB], len = 0xB	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.Hardware\USB\USBManager.cs
+	line 16707566 at [000021D6][0001:000021D6], len = 0x1
 
 
 
@@ -3928,59 +3930,59 @@ Compiland = Kernel.Hardware.USB.USBManager
   0000199A  0001:0000199A  00000048  Kernel.Hardware.USB.HCIs.qTD
   000019E2  0001:000019E2  0000001B  Kernel.Hardware.USB.HCIs.qTD
   000019FD  0001:000019FD  00000011  Kernel.Hardware.USB.HCIs.qTD
-  00001A0E  0001:00001A0E  0000000E  Kernel.Hardware.USB.HCIs.qTD
-  00001A1C  0001:00001A1C  00000015  Kernel.Hardware.USB.HCIs.QueueHead
-  00001A31  0001:00001A31  00000017  Kernel.Hardware.USB.HCIs.QueueHead
-  00001A48  0001:00001A48  00000017  Kernel.Hardware.USB.HCIs.QueueHead
-  00001A5F  0001:00001A5F  00000022  Kernel.Hardware.USB.HCIs.QueueHead
-  00001A81  0001:00001A81  00000015  Kernel.Hardware.USB.HCIs.QueueHead
-  00001A96  0001:00001A96  00000020  Kernel.Hardware.USB.HCIs.QueueHead
-  00001AB6  0001:00001AB6  0000001A  Kernel.Hardware.USB.HCIs.QueueHead
-  00001AD0  0001:00001AD0  00000048  Kernel.Hardware.USB.HCIs.QueueHead
-  00001B18  0001:00001B18  0000001A  Kernel.Hardware.USB.HCIs.QueueHead
-  00001B32  0001:00001B32  00000022  Kernel.Hardware.USB.HCIs.QueueHead
-  00001B54  0001:00001B54  0000001B  Kernel.Hardware.USB.HCIs.QueueHead
-  00001B6F  0001:00001B6F  00000023  Kernel.Hardware.USB.HCIs.QueueHead
-  00001B92  0001:00001B92  0000001A  Kernel.Hardware.USB.HCIs.QueueHead
-  00001BAC  0001:00001BAC  00000048  Kernel.Hardware.USB.HCIs.QueueHead
-  00001BF4  0001:00001BF4  0000001A  Kernel.Hardware.USB.HCIs.QueueHead
-  00001C0E  0001:00001C0E  00000048  Kernel.Hardware.USB.HCIs.QueueHead
-  00001C56  0001:00001C56  0000001B  Kernel.Hardware.USB.HCIs.QueueHead
-  00001C71  0001:00001C71  00000029  Kernel.Hardware.USB.HCIs.QueueHead
-  00001C9A  0001:00001C9A  0000001A  Kernel.Hardware.USB.HCIs.QueueHead
-  00001CB4  0001:00001CB4  00000048  Kernel.Hardware.USB.HCIs.QueueHead
-  00001CFC  0001:00001CFC  0000001B  Kernel.Hardware.USB.HCIs.QueueHead
-  00001D17  0001:00001D17  00000023  Kernel.Hardware.USB.HCIs.QueueHead
-  00001D3A  0001:00001D3A  00000012  Kernel.Hardware.USB.HCIs.QueueHead
-  00001D4C  0001:00001D4C  00000020  Kernel.Hardware.USB.HCIs.QueueHead
-  00001D6C  0001:00001D6C  00000014  Kernel.Hardware.USB.HCIs.QueueHead
-  00001D80  0001:00001D80  00000022  Kernel.Hardware.USB.HCIs.QueueHead
-  00001DA2  0001:00001DA2  0000001B  Kernel.Hardware.USB.HCIs.QueueHead
-  00001DBD  0001:00001DBD  00000023  Kernel.Hardware.USB.HCIs.QueueHead
-  00001DE0  0001:00001DE0  0000001B  Kernel.Hardware.USB.HCIs.QueueHead
-  00001DFB  0001:00001DFB  00000023  Kernel.Hardware.USB.HCIs.QueueHead
-  00001E1E  0001:00001E1E  0000001B  Kernel.Hardware.USB.HCIs.QueueHead
-  00001E39  0001:00001E39  00000023  Kernel.Hardware.USB.HCIs.QueueHead
-  00001E5C  0001:00001E5C  00000015  Kernel.Hardware.USB.HCIs.QueueHead
-  00001E71  0001:00001E71  00000021  Kernel.Hardware.USB.HCIs.QueueHead
-  00001E92  0001:00001E92  00000015  Kernel.Hardware.USB.HCIs.QueueHead
-  00001EA7  0001:00001EA7  00000021  Kernel.Hardware.USB.HCIs.QueueHead
-  00001EC8  0001:00001EC8  00000016  Kernel.Hardware.USB.HCIs.QueueHead
-  00001EDE  0001:00001EDE  00000041  Kernel.Hardware.USB.HCIs.QueueHead
-  00001F1F  0001:00001F1F  0000001B  Kernel.Hardware.USB.HCIs.QueueHead
-  00001F3A  0001:00001F3A  00000011  Kernel.Hardware.USB.HCIs.QueueHead
-  00001F4B  0001:00001F4B  0000000E  Kernel.Hardware.USB.HCIs.QueueHead
-  00001F59  0001:00001F59  00000014  Kernel.Hardware.USB.HCIs.EHCI_ExtendedCapability
-  00001F6D  0001:00001F6D  00000017  Kernel.Hardware.USB.HCIs.EHCI_ExtendedCapability
-  00001F84  0001:00001F84  00000018  Kernel.Hardware.USB.HCIs.EHCI_ExtendedCapability
-  00001F9C  0001:00001F9C  0000001D  Kernel.Hardware.USB.HCIs.EHCI_USBLegacySupportExtendedCapability
-  00001FB9  0001:00001FB9  00000062  Kernel.Hardware.USB.HCIs.EHCI_USBLegacySupportExtendedCapability
-  0000201B  0001:0000201B  0000001D  Kernel.Hardware.USB.HCIs.EHCI_USBLegacySupportExtendedCapability
-  00002038  0001:00002038  00000062  Kernel.Hardware.USB.HCIs.EHCI_USBLegacySupportExtendedCapability
-  0000209A  0001:0000209A  00000026  Kernel.Hardware.USB.HCIs.EHCI_USBLegacySupportExtendedCapability
-  000020C0  0001:000020C0  0000000C  Kernel.Hardware.USB.HCIs.EHCI_USBLegacySupportControlStatusCapability
-  000020CC  0001:000020CC  000000EF  Kernel.Hardware.USB.USBManager
-  000021BB  0001:000021BB  0000000C  Kernel.Hardware.USB.USBManager
+  00001A0E  0001:00001A0E  00000016  Kernel.Hardware.USB.HCIs.qTD
+  00001A24  0001:00001A24  00000015  Kernel.Hardware.USB.HCIs.QueueHead
+  00001A39  0001:00001A39  00000017  Kernel.Hardware.USB.HCIs.QueueHead
+  00001A50  0001:00001A50  00000017  Kernel.Hardware.USB.HCIs.QueueHead
+  00001A67  0001:00001A67  00000022  Kernel.Hardware.USB.HCIs.QueueHead
+  00001A89  0001:00001A89  00000015  Kernel.Hardware.USB.HCIs.QueueHead
+  00001A9E  0001:00001A9E  00000020  Kernel.Hardware.USB.HCIs.QueueHead
+  00001ABE  0001:00001ABE  0000001A  Kernel.Hardware.USB.HCIs.QueueHead
+  00001AD8  0001:00001AD8  00000048  Kernel.Hardware.USB.HCIs.QueueHead
+  00001B20  0001:00001B20  0000001A  Kernel.Hardware.USB.HCIs.QueueHead
+  00001B3A  0001:00001B3A  00000022  Kernel.Hardware.USB.HCIs.QueueHead
+  00001B5C  0001:00001B5C  0000001B  Kernel.Hardware.USB.HCIs.QueueHead
+  00001B77  0001:00001B77  00000023  Kernel.Hardware.USB.HCIs.QueueHead
+  00001B9A  0001:00001B9A  0000001A  Kernel.Hardware.USB.HCIs.QueueHead
+  00001BB4  0001:00001BB4  00000048  Kernel.Hardware.USB.HCIs.QueueHead
+  00001BFC  0001:00001BFC  0000001A  Kernel.Hardware.USB.HCIs.QueueHead
+  00001C16  0001:00001C16  00000048  Kernel.Hardware.USB.HCIs.QueueHead
+  00001C5E  0001:00001C5E  0000001B  Kernel.Hardware.USB.HCIs.QueueHead
+  00001C79  0001:00001C79  00000029  Kernel.Hardware.USB.HCIs.QueueHead
+  00001CA2  0001:00001CA2  0000001A  Kernel.Hardware.USB.HCIs.QueueHead
+  00001CBC  0001:00001CBC  00000048  Kernel.Hardware.USB.HCIs.QueueHead
+  00001D04  0001:00001D04  0000001B  Kernel.Hardware.USB.HCIs.QueueHead
+  00001D1F  0001:00001D1F  00000023  Kernel.Hardware.USB.HCIs.QueueHead
+  00001D42  0001:00001D42  00000012  Kernel.Hardware.USB.HCIs.QueueHead
+  00001D54  0001:00001D54  00000020  Kernel.Hardware.USB.HCIs.QueueHead
+  00001D74  0001:00001D74  00000014  Kernel.Hardware.USB.HCIs.QueueHead
+  00001D88  0001:00001D88  00000022  Kernel.Hardware.USB.HCIs.QueueHead
+  00001DAA  0001:00001DAA  0000001B  Kernel.Hardware.USB.HCIs.QueueHead
+  00001DC5  0001:00001DC5  00000023  Kernel.Hardware.USB.HCIs.QueueHead
+  00001DE8  0001:00001DE8  0000001B  Kernel.Hardware.USB.HCIs.QueueHead
+  00001E03  0001:00001E03  00000023  Kernel.Hardware.USB.HCIs.QueueHead
+  00001E26  0001:00001E26  0000001B  Kernel.Hardware.USB.HCIs.QueueHead
+  00001E41  0001:00001E41  00000023  Kernel.Hardware.USB.HCIs.QueueHead
+  00001E64  0001:00001E64  00000015  Kernel.Hardware.USB.HCIs.QueueHead
+  00001E79  0001:00001E79  00000021  Kernel.Hardware.USB.HCIs.QueueHead
+  00001E9A  0001:00001E9A  00000015  Kernel.Hardware.USB.HCIs.QueueHead
+  00001EAF  0001:00001EAF  00000021  Kernel.Hardware.USB.HCIs.QueueHead
+  00001ED0  0001:00001ED0  00000016  Kernel.Hardware.USB.HCIs.QueueHead
+  00001EE6  0001:00001EE6  00000041  Kernel.Hardware.USB.HCIs.QueueHead
+  00001F27  0001:00001F27  0000001B  Kernel.Hardware.USB.HCIs.QueueHead
+  00001F42  0001:00001F42  00000011  Kernel.Hardware.USB.HCIs.QueueHead
+  00001F53  0001:00001F53  00000016  Kernel.Hardware.USB.HCIs.QueueHead
+  00001F69  0001:00001F69  00000014  Kernel.Hardware.USB.HCIs.EHCI_ExtendedCapability
+  00001F7D  0001:00001F7D  00000017  Kernel.Hardware.USB.HCIs.EHCI_ExtendedCapability
+  00001F94  0001:00001F94  00000018  Kernel.Hardware.USB.HCIs.EHCI_ExtendedCapability
+  00001FAC  0001:00001FAC  0000001D  Kernel.Hardware.USB.HCIs.EHCI_USBLegacySupportExtendedCapability
+  00001FC9  0001:00001FC9  00000062  Kernel.Hardware.USB.HCIs.EHCI_USBLegacySupportExtendedCapability
+  0000202B  0001:0000202B  0000001D  Kernel.Hardware.USB.HCIs.EHCI_USBLegacySupportExtendedCapability
+  00002048  0001:00002048  00000062  Kernel.Hardware.USB.HCIs.EHCI_USBLegacySupportExtendedCapability
+  000020AA  0001:000020AA  00000026  Kernel.Hardware.USB.HCIs.EHCI_USBLegacySupportExtendedCapability
+  000020D0  0001:000020D0  0000000C  Kernel.Hardware.USB.HCIs.EHCI_USBLegacySupportControlStatusCapability
+  000020DC  0001:000020DC  000000EF  Kernel.Hardware.USB.USBManager
+  000021CB  0001:000021CB  0000000C  Kernel.Hardware.USB.USBManager
 
 
 
@@ -4309,7 +4311,7 @@ Summary :
 	Sizeof(Elem) = 4
 
 Stream: SECTIONHEADERS(1)
-00 00 00 00 00 00 00 00 - C7 21 00 00 00 00 00 00 - C7 21 00 00 00 00 00 00 - 00 00 00 00 00 00 00 00 - 00 00 00 00 00 00 00 00 | ........Ã!......Ã!......................
+00 00 00 00 00 00 00 00 - D7 21 00 00 00 00 00 00 - D7 21 00 00 00 00 00 00 - 00 00 00 00 00 00 00 00 - 00 00 00 00 00 00 00 00 | ........Î!......Î!......................
 Summary :
 	No of Elems = 1
 	Sizeof(Elem) = 40

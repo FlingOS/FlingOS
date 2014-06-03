@@ -199,6 +199,369 @@
             The partition in which the file system resides.
             </summary>
         </member>
+        <member name="F:Kernel.FOS_System.IO.FAT.FATFileSystem.BytesPerSector">
+            <summary>
+            Number of bytes per sector
+            </summary>
+        </member>
+        <member name="F:Kernel.FOS_System.IO.FAT.FATFileSystem.SectorsPerCluster">
+            <summary>
+            Number of sectors per cluster
+            </summary>
+        </member>
+        <member name="F:Kernel.FOS_System.IO.FAT.FATFileSystem.BytesPerCluster">
+            <summary>
+            Number of bytes per cluster (= SectorsPerCluster * BytesPerSector)
+            </summary>
+        </member>
+        <member name="F:Kernel.FOS_System.IO.FAT.FATFileSystem.ReservedSectorCount">
+            <summary>
+            Number of reserved sectors.
+            </summary>
+        </member>
+        <member name="F:Kernel.FOS_System.IO.FAT.FATFileSystem.TotalSectorCount">
+            <summary>
+            Total number of sectors.
+            </summary>
+        </member>
+        <member name="F:Kernel.FOS_System.IO.FAT.FATFileSystem.ClusterCount">
+            <summary>
+            Number of clusters (to use for storing files/directories).
+            </summary>
+        </member>
+        <member name="F:Kernel.FOS_System.IO.FAT.FATFileSystem.NumberOfFATs">
+            <summary>
+            Number of file allocation tables.
+            </summary>
+        </member>
+        <member name="F:Kernel.FOS_System.IO.FAT.FATFileSystem.FATSectorCount">
+            <summary>
+            Number of sectors for file allocation tables.
+            </summary>
+        </member>
+        <member name="F:Kernel.FOS_System.IO.FAT.FATFileSystem.RootSector">
+            <summary>
+            Root sector number - used by FAT12/16 only.
+            </summary>
+        </member>
+        <member name="F:Kernel.FOS_System.IO.FAT.FATFileSystem.RootSectorCount">
+            <summary>
+            Number of root sectors - used by FAT12/16 only. Always 0 for FAT32.
+            </summary>
+        </member>
+        <member name="F:Kernel.FOS_System.IO.FAT.FATFileSystem.RootCluster">
+            <summary>
+            The cluster number for the root cluster. Used by FAT32 only.
+            </summary>
+        </member>
+        <member name="F:Kernel.FOS_System.IO.FAT.FATFileSystem.RootEntryCount">
+            <summary>
+            The number of entries in the root directory table.
+            </summary>
+        </member>
+        <member name="F:Kernel.FOS_System.IO.FAT.FATFileSystem.DataSector">
+            <summary>
+            The sector number of the first data sector.
+            </summary>
+        </member>
+        <member name="F:Kernel.FOS_System.IO.FAT.FATFileSystem.DataSectorCount">
+            <summary>
+            The number of sectors for data storage.
+            </summary>
+        </member>
+        <member name="F:Kernel.FOS_System.IO.FAT.FATFileSystem.IsValid">
+            <summary>
+            Whether the file system is valid or not.
+            </summary>
+        </member>
+        <member name="F:Kernel.FOS_System.IO.FAT.FATFileSystem.FATType">
+            <summary>
+            The FAT type of the file system. Writing is only supported for FAT32.
+            </summary>
+        </member>
+        <member name="M:Kernel.FOS_System.IO.FAT.FATFileSystem.#ctor(Kernel.FOS_System.IO.Partition)">
+            <summary>
+            Initializes a new FAT file system from the specified partition.
+            </summary>
+            <param name="aPartition">The partition on which the file system resides.</param>
+            <remarks>
+            You should check IsValid after creating a new FAT file system to check a valid FAT 
+            file system has been detected.
+            </remarks>
+        </member>
+        <member name="M:Kernel.FOS_System.IO.FAT.FATFileSystem.NewClusterArray">
+            <summary>
+            Creates a new byte array of the size of one cluster.
+            </summary>
+            <returns>The new byte array.</returns>
+        </member>
+        <member name="M:Kernel.FOS_System.IO.FAT.FATFileSystem.ReadCluster(System.UInt32,System.Byte[])">
+            <summary>
+            Reads the specified cluster from the disk into the specified array.
+            </summary>
+            <param name="aCluster">The cluster number to read.</param>
+            <param name="aData">The array to store the data in.</param>
+        </member>
+        <member name="M:Kernel.FOS_System.IO.FAT.FATFileSystem.WriteCluster(System.UInt32,System.Byte[])">
+            <summary>
+            Writes the specified data to specified cluster number on the disk.
+            </summary>
+            <param name="aCluster">The cluster number to write to.</param>
+            <param name="aData">The data to write.</param>
+        </member>
+        <member name="M:Kernel.FOS_System.IO.FAT.FATFileSystem.ReadClusterChain(System.UInt64,System.UInt32)">
+            <summary>
+            Reads the cluster numbers in a cluster chain starting at the specified cluster number.
+            </summary>
+            <param name="fileSize">The size of file being read (used only for estimating number of clusters)</param>
+            <param name="FirstClusterNum">The first cluster number in the chain.</param>
+            <returns>The list of cluster numbers in the chain.</returns>
+        </member>
+        <member name="M:Kernel.FOS_System.IO.FAT.FATFileSystem.GetFATTableSectorPosition(System.UInt32)">
+            <summary>
+            Gets the sector number containing the FAT data and offset in that sector for the specified cluster number.
+            </summary>
+            <param name="aClusterNum">The cluster number.</param>
+            <returns>The sector number and offset within the sector.</returns>
+        </member>
+        <member name="M:Kernel.FOS_System.IO.FAT.FATFileSystem.ReadFATSector(System.UInt64,System.Byte[])">
+            <summary>
+            Reads the specified sector of the FAT into the specified data array.
+            </summary>
+            <param name="xSectorNum">The sector number of the FAT to read.</param>
+            <param name="aData">The byte array to read the data into.</param>
+        </member>
+        <member name="M:Kernel.FOS_System.IO.FAT.FATFileSystem.WriteFATSector(System.UInt64,System.Byte[])">
+            <summary>
+            Writes the specified FAt data to the specified sector of the FAT on disk.
+            </summary>
+            <param name="xSectorNum">The sector number to write.</param>
+            <param name="aData">The FAT sector data to write.</param>
+        </member>
+        <member name="M:Kernel.FOS_System.IO.FAT.FATFileSystem.ReadFATEntry(System.Byte[],System.UInt32,System.UInt32)">
+            <summary>
+            Reads the FAT specified entry number (cluster number) from the specified FAT sector data.
+            </summary>
+            <param name="aFATTableSector">The FAT sector data containing the FAT entry to be read.</param>
+            <param name="aClusterNum">The entry (cluster number) to read.</param>
+            <param name="aOffset">The offset within the sector that the entry is at.</param>
+            <returns>The entry's value.</returns>
+        </member>
+        <member name="M:Kernel.FOS_System.IO.FAT.FATFileSystem.WriteFATEntry(System.Byte[],System.UInt32,System.UInt32,System.UInt32)">
+            <summary>
+            Writes the specified value to the specified FAT entry number in the FAT sector data array.
+            </summary>
+            <param name="aFATTableSector">The FAT sector data.</param>
+            <param name="aClusterNum">The cluster number to write.</param>
+            <param name="aOffset">The offset within the FAT sector data of the entry to write.</param>
+            <param name="FATEntry">The value to write.</param>
+        </member>
+        <member name="M:Kernel.FOS_System.IO.FAT.FATFileSystem.FATEntryIndicatesEOF(System.UInt32)">
+            <summary>
+            Determines whether the FAT entry value indicates end-of-file or not.
+            </summary>
+            <param name="aValue">The value to test.</param>
+            <returns>Whether the FAT entry value indicates end-of-file or not.</returns>
+        </member>
+        <member name="M:Kernel.FOS_System.IO.FAT.FATFileSystem.FATEntryIndicatesFree(System.UInt32)">
+            <summary>
+            Determines whether the FAT entry value indicates a free cluster or not.
+            </summary>
+            <param name="aValue">The value to test.</param>
+            <returns>Whether the FAT entry value indicates a free cluster or not.</returns>
+        </member>
+        <member name="M:Kernel.FOS_System.IO.FAT.FATFileSystem.GetFATEntryEOFValue(Kernel.FOS_System.IO.FAT.FATFileSystem.FATTypeEnum)">
+            <summary>
+            Gets the EOF value for the specified FAT type.
+            </summary>
+            <param name="aFATType">The FAT type.</param>
+            <returns>The EOF value.</returns>
+        </member>
+        <member name="M:Kernel.FOS_System.IO.FAT.FATFileSystem.GetNextFreeCluster(System.UInt32)">
+            <summary>
+            Gets the next free cluster number after the specified cluster number.
+            </summary>
+            <param name="startCluster">The cluster number to start searching from.</param>
+            <returns>The next free cluster number.</returns>
+            <remarks>
+            At the time of writing, this method's behavior was undefined if no free clusters were left.
+            Predicted behavior is that it would either enter an infinite loop or cause an exception if no
+            free clusters are available.
+            </remarks>
+        </member>
+        <member name="M:Kernel.FOS_System.IO.FAT.FATFileSystem.SetFATEntryAndSave(System.UInt32,System.UInt32)">
+            <summary>
+            Sets the specified FAT entry to the specified value and saves it to disk.
+            </summary>
+            <param name="clusterNum">The cluster number to set.</param>
+            <param name="value">The value to set to.</param>
+        </member>
+        <member name="F:Kernel.FOS_System.IO.FAT.FATFileSystem._rootDirectoryFAT32">
+            <summary>
+            The underlying root directory - used by FAT32 only.
+            </summary>
+        </member>
+        <member name="F:Kernel.FOS_System.IO.FAT.FATFileSystem._rootDirectoryListings">
+            <summary>
+            The cached root directory listings - used by FAT12/16 only.
+            </summary>
+        </member>
+        <member name="M:Kernel.FOS_System.IO.FAT.FATFileSystem.GetRootDirectoryTable">
+            <summary>
+            Gets the root directory listings in the FAT file system.
+            </summary>
+            <returns>The root directory listings.</returns>
+        </member>
+        <member name="M:Kernel.FOS_System.IO.FAT.FATFileSystem.ParseDirectoryTable(System.Byte[],System.Int32,Kernel.FOS_System.IO.FAT.FATDirectory)">
+            <summary>
+            Parses the specified directory file data for its listings.
+            </summary>
+            <param name="xData">The directory data.</param>
+            <param name="xDataLength">The directory data length.</param>
+            <param name="thisDir">
+            The FAT directory the FAT data is from. 
+            Used when creating listings as the parent directory.
+            </param>
+            <returns>The directory listings.</returns>
+        </member>
+        <member name="M:Kernel.FOS_System.IO.FAT.FATFileSystem.EncodeDirectoryTable(Kernel.FOS_System.Collections.List,System.Boolean)">
+            <summary>
+            Encodes the specified listings into a byte array.
+            </summary>
+            <param name="listings">The listings to encode.</param>
+            <param name="includeVolumeID">Whether to include the Volume ID entry (partition name). Only true for root directory.</param>
+            <returns>The encoded listings data.</returns>
+        </member>
+        <member name="M:Kernel.FOS_System.IO.FAT.FATFileSystem.GetShortName(Kernel.FOS_System.String,System.Boolean)">
+            <summary>
+            Gets the short name for the specified long name.
+            </summary>
+            <param name="longName">The long name to shorten.</param>
+            <param name="isDirectory">Whether the long name is for a directory or not.</param>
+            <returns>The short name parts. Directory=1 part, file=2 parts (name + extension).</returns>
+        </member>
+        <member name="M:Kernel.FOS_System.IO.FAT.FATFileSystem.CheckSum(System.Byte[])">
+            <summary>
+            Calculates the short name checksum.
+            </summary>
+            <param name="shortName">The short name.</param>
+            <returns>The checksum value.</returns>
+        </member>
+        <member name="M:Kernel.FOS_System.IO.FAT.FATFileSystem.GetListing(Kernel.FOS_System.String)">
+            <summary>
+            Gets the listing for the specified file or directory.
+            </summary>
+            <param name="aName">The full path to the file or directory.</param>
+            <returns>The listing or null if not found.</returns>
+        </member>
+        <member name="M:Kernel.FOS_System.IO.FAT.FATFileSystem.NewDirectory(Kernel.FOS_System.String,Kernel.FOS_System.IO.Directory)">
+            <summary>
+            Creates a new directory within the file system.
+            </summary>
+            <param name="name">The name of the directory to create.</param>
+            <param name="parent">The parent directory of the new directory.</param>
+            <returns>The new directory listing.</returns>
+        </member>
+        <member name="M:Kernel.FOS_System.IO.FAT.FATFileSystem.NewFile(Kernel.FOS_System.String,Kernel.FOS_System.IO.Directory)">
+            <summary>
+            Creates a new file within the file system.
+            </summary>
+            <param name="name">The name of the file to create.</param>
+            <param name="parent">The parent directory of the new file.</param>
+            <returns>The new file listing.</returns>
+        </member>
+        <member name="M:Kernel.FOS_System.IO.FAT.FATFileSystem.FormatPartitionAsFAT32(Kernel.FOS_System.IO.Partition)">
+            <summary>
+            Formats the specified partition as FAT32.
+            </summary>
+            <param name="thePartition">The partition to format.</param>
+        </member>
+        <member name="P:Kernel.FOS_System.IO.FAT.FATFileSystem.RootDirectory_FAT32">
+            <summary>
+            The underlying root directory - used by FAT32 only.
+            </summary>
+        </member>
+        <member name="T:Kernel.FOS_System.IO.FAT.FATFileSystem.ListingAttribs">
+            <summary>
+            FAT listing attributes
+            </summary>
+        </member>
+        <member name="F:Kernel.FOS_System.IO.FAT.FATFileSystem.ListingAttribs.Test">
+            <summary>
+            Test
+            </summary>
+        </member>
+        <member name="F:Kernel.FOS_System.IO.FAT.FATFileSystem.ListingAttribs.Hidden">
+            <summary>
+            Indicates a hidden listing
+            </summary>
+        </member>
+        <member name="F:Kernel.FOS_System.IO.FAT.FATFileSystem.ListingAttribs.System">
+            <summary>
+            Indicates a system listing
+            </summary>
+        </member>
+        <member name="F:Kernel.FOS_System.IO.FAT.FATFileSystem.ListingAttribs.VolumeID">
+            <summary>
+            Indicates a Volume ID listing - partition name.
+            </summary>
+        </member>
+        <member name="F:Kernel.FOS_System.IO.FAT.FATFileSystem.ListingAttribs.Directory">
+            <summary>
+            Indicates a directory listing.
+            </summary>
+        </member>
+        <member name="F:Kernel.FOS_System.IO.FAT.FATFileSystem.ListingAttribs.Archive">
+            <summary>
+            Indicates an archive listing.
+            </summary>
+        </member>
+        <member name="F:Kernel.FOS_System.IO.FAT.FATFileSystem.ListingAttribs.LongName">
+            <summary>
+            Indicates a long name entry - this is a combination 
+            of other attributes. Test for first.
+            </summary>
+        </member>
+        <member name="T:Kernel.FOS_System.IO.FAT.FATFileSystem.FATTypeEnum">
+            <summary>
+            The types of FAT file system.
+            </summary>
+        </member>
+        <member name="F:Kernel.FOS_System.IO.FAT.FATFileSystem.FATTypeEnum.Unknown">
+            <summary>
+            Unknown / unrecognized FAT file system.
+            </summary>
+        </member>
+        <member name="F:Kernel.FOS_System.IO.FAT.FATFileSystem.FATTypeEnum.FAT12">
+            <summary>
+            FAT12 (12-bit) version
+            </summary>
+        </member>
+        <member name="F:Kernel.FOS_System.IO.FAT.FATFileSystem.FATTypeEnum.FAT16">
+            <summary>
+            FAT16 (16-bit) version
+            </summary>
+        </member>
+        <member name="F:Kernel.FOS_System.IO.FAT.FATFileSystem.FATTypeEnum.FAT32">
+            <summary>
+            FAT32 (32-bit) version
+            </summary>
+        </member>
+        <member name="T:Kernel.FOS_System.IO.FAT.FATFileSystem.TableSectorDescrip">
+            <summary>
+            Describes the position of FAT data on the disk.
+            </summary>
+        </member>
+        <member name="F:Kernel.FOS_System.IO.FAT.FATFileSystem.TableSectorDescrip.Sector">
+            <summary>
+            The sector number.
+            </summary>
+        </member>
+        <member name="F:Kernel.FOS_System.IO.FAT.FATFileSystem.TableSectorDescrip.Offset">
+            <summary>
+            The offset to the cluster entry within the sector.
+            </summary>
+        </member>
         <member name="T:Kernel.FOS_System.IO.FAT.FATDirectory">
             <summary>
             Represents a directory in a FAT file system.
@@ -413,15 +776,15 @@
         </member>
         <member name="M:Kernel.FOS_System.IO.FAT.FATFile.#ctor(Kernel.FOS_System.IO.FAT.FATFileSystem,Kernel.FOS_System.IO.FAT.FATDirectory,Kernel.FOS_System.String,System.UInt32,System.UInt32)">
             <summary>
-            
+            Initializes a new FAT file.
             </summary>
-            <param name="aFileSystem"></param>
-            <param name="parent"></param>
-            <param name="aName"></param>
-            <param name="aSize"></param>
-            <param name="aFirstCluster"></param>
+            <param name="aFileSystem">The FAT file system to which the file belongs.</param>
+            <param name="parent">The parent directory of the file.</param>
+            <param name="aName">The name of the file.</param>
+            <param name="aSize">The size of the file.</param>
+            <param name="aFirstCluster">The first cluster number of the file.</param>
             <remarks>
-            Size is UInt32 because FAT doesn't support bigger. Dont change to UInt64.
+            Size is UInt32 because FAT doesn't support bigger. Don't change to UInt64.
             </remarks>
         </member>
         <member name="T:Kernel.FOS_System.IO.FileSystemMapping">
@@ -574,6 +937,11 @@
             <param name="aPath">The path to get the mapping for.</param>
             <returns>The file system mapping or null if none exists.</returns>
         </member>
+        <member name="T:Kernel.FOS_System.IO.Streams.FAT.FATFileStream">
+            <summary>
+            Represents a file stream to a FAT file or FAT directory file.
+            </summary>
+        </member>
         <member name="T:Kernel.FOS_System.IO.Streams.FileStream">
             <summary>
             Represents a file stream which can read and write to files in a file system.
@@ -589,9 +957,9 @@
             Reads the specified number of bytes from the stream from the current position into the buffer at the 
             specified offset or as many bytes as are available before the end of the stream is met.
             </summary>
-            <param name="aBuffer">The byte array to read into.</param>
-            <param name="anOffset">The offset within the buffer to start storing read data at.</param>
-            <param name="aCount">The number of bytes to read.</param>
+            <param name="buffer">The byte array to read into.</param>
+            <param name="offset">The offset within the buffer to start storing read data at.</param>
+            <param name="count">The number of bytes to read.</param>
             <returns>The actual number of bytes read.</returns>
         </member>
         <member name="M:Kernel.FOS_System.IO.Streams.Stream.Write(System.Byte[],System.Int32,System.Int32)">
@@ -616,7 +984,7 @@
             <summary>
             Initializes a new file stream for the specified file.
             </summary>
-            <param name="aFile"></param>
+            <param name="aFile">The file which the file stream is reading from.</param>
         </member>
         <member name="M:Kernel.FOS_System.IO.Streams.FileStream.Create(Kernel.FOS_System.IO.File)">
             <summary>
@@ -630,6 +998,80 @@
         <member name="P:Kernel.FOS_System.IO.Streams.FileStream.TheFile">
             <summary>
             The file which the stream reads/writes from/to.
+            </summary>
+        </member>
+        <member name="F:Kernel.FOS_System.IO.Streams.FAT.FATFileStream.ClusterNums">
+            <summary>
+            The cluster numbers that are part of the file.
+            </summary>
+        </member>
+        <member name="F:Kernel.FOS_System.IO.Streams.FAT.FATFileStream.mPosition">
+            <summary>
+            The position (as an offset from the start of the file) of the stream in the file.
+            </summary>
+        </member>
+        <member name="F:Kernel.FOS_System.IO.Streams.FAT.FATFileStream.IgnoreFileSize">
+            <summary>
+            Whether to ignore the file size and use cluster sizes or not.
+            This is always true for directories as directories report file
+            size 0.
+            </summary>
+            <remarks>
+            Directories having file size 0 makes perfect sense when you study
+            the structure of a directory file.
+            </remarks>
+        </member>
+        <member name="M:Kernel.FOS_System.IO.Streams.FAT.FATFileStream.GetActualSize">
+            <summary>
+            Gets the actual length (size) of the stream.
+            For files, this is FileSize. For directories, it is calculated
+            from the number of clusters times cluster size.
+            </summary>
+            <returns>The actual size of the file.</returns>
+        </member>
+        <member name="M:Kernel.FOS_System.IO.Streams.FAT.FATFileStream.#ctor(Kernel.FOS_System.IO.FAT.FATFile,System.Boolean)">
+            <summary>
+            Initializes a new FAT file stream for the specified file.
+            </summary>
+            <param name="aFile">The file to create a stream to.</param>
+            <param name="ignoreFileSize">Whether to ignore the file size or not. True for directories.</param>
+        </member>
+        <member name="M:Kernel.FOS_System.IO.Streams.FAT.FATFileStream.GetClusterNums">
+            <summary>
+            Gets the list of cluster numbers that are part of the file being read/written from/to.
+            </summary>
+        </member>
+        <member name="M:Kernel.FOS_System.IO.Streams.FAT.FATFileStream.Read(System.Byte[],System.Int32,System.Int32)">
+            <summary>
+            Reads the specified number of bytes from the stream from the current position into the buffer at the 
+            specified offset or as many bytes as are available before the end of the stream is met.
+            </summary>
+            <param name="buffer">The byte array to read into.</param>
+            <param name="offset">The offset within the buffer to start storing read data at.</param>
+            <param name="count">The number of bytes to read.</param>
+            <returns>The actual number of bytes read.</returns>
+        </member>
+        <member name="M:Kernel.FOS_System.IO.Streams.FAT.FATFileStream.Write(System.Byte[],System.Int32,System.Int32)">
+            <summary>
+            Writes the specified number of the bytes from the buffer starting at offset in the buffer.
+            </summary>
+            <param name="buffer">The data to write.</param>
+            <param name="offset">The offset within the buffer to start writing from.</param>
+            <param name="count">The number of bytes to write.</param>
+        </member>
+        <member name="P:Kernel.FOS_System.IO.Streams.FAT.FATFileStream.TheFATFileSystem">
+            <summary>
+            The FAT file system to which the file the stream is for belongs.
+            </summary>
+        </member>
+        <member name="P:Kernel.FOS_System.IO.Streams.FAT.FATFileStream.TheFATFile">
+            <summary>
+            The FAT file the stream is for.
+            </summary>
+        </member>
+        <member name="P:Kernel.FOS_System.IO.Streams.FAT.FATFileStream.Position">
+            <summary>
+            Gets or sets the position (as an offset from the start of the file) of the stream in the file.
             </summary>
         </member>
     </members>

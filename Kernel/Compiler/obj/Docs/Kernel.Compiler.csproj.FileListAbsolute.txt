@@ -1,4 +1,3 @@
-G:\Fling OS\Fling OS\Kernel\Compiler\obj\Docs\Kernel.Compiler.csprojResolveAssemblyReference.cache
 G:\Fling OS\Fling OS\Kernel\Compiler\bin\Docs\Mosa.Utility.IsoImage.dll
 G:\Fling OS\Fling OS\Kernel\Compiler\bin\Docs\Dia2Dump\Dia2Dump.exe
 G:\Fling OS\Fling OS\Kernel\Compiler\bin\Docs\Dia2Dump\Dia2Dump.pdb
@@ -28,5 +27,6 @@ G:\Fling OS\Fling OS\Kernel\Compiler\bin\Docs\Kernel.Compiler.XML
 G:\Fling OS\Fling OS\Kernel\Compiler\bin\Docs\Kernel.Debug.Data.dll
 G:\Fling OS\Fling OS\Kernel\Compiler\bin\Docs\Kernel.Debug.Data.pdb
 G:\Fling OS\Fling OS\Kernel\Compiler\bin\Docs\Kernel.Debug.Data.xml
+G:\Fling OS\Fling OS\Kernel\Compiler\obj\Docs\Kernel.Compiler.csprojResolveAssemblyReference.cache
 G:\Fling OS\Fling OS\Kernel\Compiler\obj\Docs\Kernel.Compiler.dll
 G:\Fling OS\Fling OS\Kernel\Compiler\obj\Docs\Kernel.Compiler.pdb

@@ -15,7 +15,7 @@ namespace Kernel.Compiler.ILOps
     /// See MSDN for details of these ops.
     /// </remarks>
     /// <seealso cref="System.Reflection.Emit.OpCodes.Rem"/>
-    /// <seealso cref="System.Reflection.Emit.OpCodes.Re,_Un"/>
+    /// <seealso cref="System.Reflection.Emit.OpCodes.Rem_Un"/>
     [ILOpTarget(Target = ILOp.OpCodes.Rem)]
     [ILOpTarget(Target = ILOp.OpCodes.Rem_Un)]
     public abstract class Rem : ILOp

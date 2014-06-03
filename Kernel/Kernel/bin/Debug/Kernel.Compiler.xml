@@ -1841,7 +1841,7 @@
             See MSDN for details of these ops.
             </remarks>
             <seealso cref="F:System.Reflection.Emit.OpCodes.Rem"/>
-            <seealso cref="!:System.Reflection.Emit.OpCodes.Re,_Un"/>
+            <seealso cref="F:System.Reflection.Emit.OpCodes.Rem_Un"/>
         </member>
         <member name="T:Kernel.Compiler.ILOps.Not">
             <summary>

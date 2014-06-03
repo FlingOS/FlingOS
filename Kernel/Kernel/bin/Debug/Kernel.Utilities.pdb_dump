@@ -82,15 +82,15 @@ Compiland = Kernel.Utilities.ObjectUtilities
 
 ** GetHandle
 
-	line 24 at [00000000][0001:00000000], len = 0x1	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.Utilities\ObjectUtilities.cs
-	line 25 at [00000001][0001:00000001], len = 0x5
-	line 26 at [00000006][0001:00000006], len = 0x2
+	line 27 at [00000000][0001:00000000], len = 0x1	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.Utilities\ObjectUtilities.cs
+	line 28 at [00000001][0001:00000001], len = 0x5
+	line 29 at [00000006][0001:00000006], len = 0x2
 
 ** GetObject
 
-	line 39 at [00000008][0001:00000008], len = 0x1	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.Utilities\ObjectUtilities.cs
-	line 40 at [00000009][0001:00000009], len = 0x4
-	line 41 at [0000000D][0001:0000000D], len = 0x2
+	line 42 at [00000008][0001:00000008], len = 0x1	g:\Fling OS\Fling OS\Kernel\Libraries\Kernel.Utilities\ObjectUtilities.cs
+	line 43 at [00000009][0001:00000009], len = 0x4
+	line 44 at [0000000D][0001:0000000D], len = 0x2
 
 
 

@@ -19,7 +19,6 @@ G:\Fling OS\Fling OS\Kernel\Libraries\Kernel.Hardware\bin\Debug\ASM\Exceptions\H
 G:\Fling OS\Fling OS\Kernel\Libraries\Kernel.Hardware\bin\Debug\ASM\Exceptions\HandleLeave.x86_32.asm
 G:\Fling OS\Fling OS\Kernel\Libraries\Kernel.Hardware\bin\Debug\ASM\Exceptions\Throw.x86_32.asm
 G:\Fling OS\Fling OS\Kernel\Libraries\Kernel.Hardware\bin\Debug\ASM\Heap\GetFixedHeapPtr.x86_32.asm
-G:\Fling OS\Fling OS\Kernel\Libraries\Kernel.Hardware\bin\Debug\ASM\String\GetPointer.x86_32.asm
 G:\Fling OS\Fling OS\Kernel\Libraries\Kernel.Hardware\bin\Debug\ASM\String\GetLength.x86_32.asm
 G:\Fling OS\Fling OS\Kernel\Libraries\Kernel.Hardware\bin\Debug\ASM\IO\IOPort\Read.x86_32.asm
 G:\Fling OS\Fling OS\Kernel\Libraries\Kernel.Hardware\bin\Debug\ASM\IO\IOPort\Write.x86_32.asm

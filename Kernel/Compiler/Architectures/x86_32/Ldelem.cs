@@ -57,7 +57,6 @@ namespace Kernel.Compiler.Architectures.x86_32
                 case OpCodes.Ldelem_R8:
                     //TODO - Add more LdElem op variants support
                     throw new NotSupportedException("Ldelem op variant not supported yet!");
-                    break;
 
                 case OpCodes.Ldelem_I1:
                     sizeToPush = 1;

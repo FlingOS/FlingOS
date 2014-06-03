@@ -119,11 +119,29 @@ namespace Kernel.Debug.Debugger
         /// </summary>
         public enum States
         {
+            /// <summary>
+            /// State not set.
+            /// </summary>
             None,
+            /// <summary>
+            /// Indicates the debugger is waiting for a break.
+            /// </summary>
             Breaking,
+            /// <summary>
+            /// Indicates the debugger is stepping over ASM, IL or C#.
+            /// </summary>
             Stepping,
+            /// <summary>
+            /// Indicates the debugger is currently broken i.e. stopped at a breakpoint.
+            /// </summary>
             Broken,
+            /// <summary>
+            /// Indicates the debugger is running.
+            /// </summary>
             Running,
+            /// <summary>
+            /// Indicates the debugger is stopping.
+            /// </summary>
             Stopping
         }
         /// <summary>
@@ -131,6 +149,10 @@ namespace Kernel.Debug.Debugger
         /// </summary>
         public  States State = States.None;
 
+        /// <summary>
+        /// Whether the debugger is in 64-bit mode or not (not meaning 32-bit mode). Not fully supported yet.
+        /// Untested.
+        /// </summary>
         private bool Mode_64bit = false;
 
         /// <summary>
@@ -1541,11 +1563,16 @@ namespace Kernel.Debug.Debugger
         /// </summary>
         public List<Variable> Fields = new List<Variable>();
 
+        /// <summary>
+        /// Delegate method for callback when loading fields is complete.
+        /// </summary>
         public delegate void OnLoadFieldsCompleteDelegate();
         /// <summary>
         /// Loads the values of the fields of this variable.
         /// </summary>
         /// <param name="debugger">The debugger to use for loading.</param>
+        /// <param name="callback">The callback to invoke when loading is complete.</param>
+        /// <param name="recursive">Whether to load recursively down the object tree.</param>
         public void LoadFields(Debugger debugger, OnLoadFieldsCompleteDelegate callback, bool recursive = false)
         {
             return;

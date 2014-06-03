@@ -10,47 +10,143 @@ namespace Kernel.FOS_System.IO.FAT
     /// </summary>
     public class FATFileSystem : FileSystem
     {
+        /// <summary>
+        /// Number of bytes per sector
+        /// </summary>
         public readonly UInt32 BytesPerSector;
+        /// <summary>
+        /// Number of sectors per cluster
+        /// </summary>
         public readonly UInt32 SectorsPerCluster;
+        /// <summary>
+        /// Number of bytes per cluster (= SectorsPerCluster * BytesPerSector)
+        /// </summary>
         public readonly UInt32 BytesPerCluster;
 
+        /// <summary>
+        /// Number of reserved sectors.
+        /// </summary>
         public readonly UInt32 ReservedSectorCount;
+        /// <summary>
+        /// Total number of sectors.
+        /// </summary>
         public readonly UInt32 TotalSectorCount;
+        /// <summary>
+        /// Number of clusters (to use for storing files/directories).
+        /// </summary>
         public readonly UInt32 ClusterCount;
 
+        /// <summary>
+        /// Number of file allocation tables.
+        /// </summary>
         public readonly UInt32 NumberOfFATs;
+        /// <summary>
+        /// Number of sectors for file allocation tables.
+        /// </summary>
         public readonly UInt32 FATSectorCount;
 
+        /// <summary>
+        /// Root sector number - used by FAT12/16 only.
+        /// </summary>
         public readonly UInt64 RootSector = 0;      // FAT12/16
+        /// <summary>
+        /// Number of root sectors - used by FAT12/16 only. Always 0 for FAT32.
+        /// </summary>
         public readonly UInt32 RootSectorCount = 0; // FAT12/16, (FAT32 this is always 0)
+        /// <summary>
+        /// The cluster number for the root cluster. Used by FAT32 only.
+        /// </summary>
         public readonly UInt32 RootCluster;         // FAT32
+        /// <summary>
+        /// The number of entries in the root directory table.
+        /// </summary>
         public readonly UInt32 RootEntryCount;
 
+        /// <summary>
+        /// The sector number of the first data sector.
+        /// </summary>
         public readonly UInt64 DataSector;          // First Data Sector
+        /// <summary>
+        /// The number of sectors for data storage.
+        /// </summary>
         public readonly UInt32 DataSectorCount;
 
+        /// <summary>
+        /// Whether the file system is valid or not.
+        /// </summary>
         public readonly bool IsValid = false;
 
+        /// <summary>
+        /// FAT listing attributes
+        /// </summary>
         public static class ListingAttribs
         {
+            /// <summary>
+            /// Test
+            /// </summary>
             public const byte Test = 0x01;
+            /// <summary>
+            /// Indicates a hidden listing
+            /// </summary>
             public const byte Hidden = 0x02;
+            /// <summary>
+            /// Indicates a system listing
+            /// </summary>
             public const byte System = 0x04;
+            /// <summary>
+            /// Indicates a Volume ID listing - partition name.
+            /// </summary>
             public const byte VolumeID = 0x08;
+            /// <summary>
+            /// Indicates a directory listing.
+            /// </summary>
             public const byte Directory = 0x10;
+            /// <summary>
+            /// Indicates an archive listing.
+            /// </summary>
             public const byte Archive = 0x20;
+            /// <summary>
+            /// Indicates a long name entry - this is a combination 
+            /// of other attributes. Test for first.
+            /// </summary>
             public const byte LongName = 0x0F; // Combination of above attribs.
         }
 
+        /// <summary>
+        /// The types of FAT file system.
+        /// </summary>
         public enum FATTypeEnum 
         { 
+            /// <summary>
+            /// Unknown / unrecognized FAT file system.
+            /// </summary>
             Unknown, 
+            /// <summary>
+            /// FAT12 (12-bit) version
+            /// </summary>
             FAT12, 
+            /// <summary>
+            /// FAT16 (16-bit) version
+            /// </summary>
             FAT16, 
+            /// <summary>
+            /// FAT32 (32-bit) version
+            /// </summary>
             FAT32 
         }
+        /// <summary>
+        /// The FAT type of the file system. Writing is only supported for FAT32.
+        /// </summary>
         public readonly FATTypeEnum FATType = FATTypeEnum.Unknown;
 
+        /// <summary>
+        /// Initializes a new FAT file system from the specified partition.
+        /// </summary>
+        /// <param name="aPartition">The partition on which the file system resides.</param>
+        /// <remarks>
+        /// You should check IsValid after creating a new FAT file system to check a valid FAT 
+        /// file system has been detected.
+        /// </remarks>
         public FATFileSystem(Partition aPartition)
             : base(aPartition)
         {
@@ -122,6 +218,10 @@ namespace Kernel.FOS_System.IO.FAT
             DataSector = ReservedSectorCount + (NumberOfFATs * FATSectorCount) + RootSectorCount;
         }
         
+        /// <summary>
+        /// Creates a new byte array of the size of one cluster.
+        /// </summary>
+        /// <returns>The new byte array.</returns>
         public unsafe byte[] NewClusterArray()
         {
             //BasicConsole.WriteLine(((FOS_System.String)"Attempting to allocate ") + BytesPerCluster + " bytes");
@@ -130,16 +230,32 @@ namespace Kernel.FOS_System.IO.FAT
             //BasicConsole.WriteLine(((FOS_System.String)"Heap free mem (bytes): ") + (Heap.FBlock->size - (Heap.FBlock->used * Heap.FBlock->bsize)));
             return result;
         }
+        /// <summary>
+        /// Reads the specified cluster from the disk into the specified array.
+        /// </summary>
+        /// <param name="aCluster">The cluster number to read.</param>
+        /// <param name="aData">The array to store the data in.</param>
         public void ReadCluster(UInt32 aCluster, byte[] aData)
         {
             UInt64 xSector = DataSector + ((aCluster - 2) * SectorsPerCluster);
             thePartition.ReadBlock(xSector, SectorsPerCluster, aData);
         }
+        /// <summary>
+        /// Writes the specified data to specified cluster number on the disk.
+        /// </summary>
+        /// <param name="aCluster">The cluster number to write to.</param>
+        /// <param name="aData">The data to write.</param>
         public void WriteCluster(UInt32 aCluster, byte[] aData)
         {
             UInt64 xSector = DataSector + ((aCluster - 2) * SectorsPerCluster);
             thePartition.WriteBlock(xSector, SectorsPerCluster, aData);
         }
+        /// <summary>
+        /// Reads the cluster numbers in a cluster chain starting at the specified cluster number.
+        /// </summary>
+        /// <param name="fileSize">The size of file being read (used only for estimating number of clusters)</param>
+        /// <param name="FirstClusterNum">The first cluster number in the chain.</param>
+        /// <returns>The list of cluster numbers in the chain.</returns>
         public UInt32List ReadClusterChain(UInt64 fileSize, UInt32 FirstClusterNum)
         {
             UInt32List xResult = new UInt32List((int)((UInt32)fileSize / (SectorsPerCluster * BytesPerSector)));
@@ -160,7 +276,7 @@ namespace Kernel.FOS_System.IO.FAT
 
                 if (xSectorNumHasValue == false || xSectorNum != xNextSectorNum)
                 {
-                    ReadFATTableSector(xNextSectorNum, xSector);
+                    ReadFATSector(xNextSectorNum, xSector);
                     xSectorNum = xNextSectorNum;
                     xSectorNumHasValue = true;
                 }
@@ -174,6 +290,11 @@ namespace Kernel.FOS_System.IO.FAT
             return xResult;
         }
 
+        /// <summary>
+        /// Gets the sector number containing the FAT data and offset in that sector for the specified cluster number.
+        /// </summary>
+        /// <param name="aClusterNum">The cluster number.</param>
+        /// <returns>The sector number and offset within the sector.</returns>
         public TableSectorDescrip GetFATTableSectorPosition(UInt32 aClusterNum)
         {
             TableSectorDescrip result = new TableSectorDescrip();
@@ -197,19 +318,45 @@ namespace Kernel.FOS_System.IO.FAT
 
             return result;
         }
+        /// <summary>
+        /// Describes the position of FAT data on the disk.
+        /// </summary>
         public class TableSectorDescrip : FOS_System.Object
         {
+            /// <summary>
+            /// The sector number.
+            /// </summary>
             public UInt64 Sector;
+            /// <summary>
+            /// The offset to the cluster entry within the sector.
+            /// </summary>
             public UInt32 Offset;
         }
-        public void ReadFATTableSector(UInt64 xSectorNum, byte[] aData)
+        /// <summary>
+        /// Reads the specified sector of the FAT into the specified data array.
+        /// </summary>
+        /// <param name="xSectorNum">The sector number of the FAT to read.</param>
+        /// <param name="aData">The byte array to read the data into.</param>
+        public void ReadFATSector(UInt64 xSectorNum, byte[] aData)
         {
             thePartition.ReadBlock(ReservedSectorCount + xSectorNum, 1, aData);
         }
-        public void WriteFATTableSector(UInt64 xSectorNum, byte[] aData)
+        /// <summary>
+        /// Writes the specified FAt data to the specified sector of the FAT on disk.
+        /// </summary>
+        /// <param name="xSectorNum">The sector number to write.</param>
+        /// <param name="aData">The FAT sector data to write.</param>
+        public void WriteFATSector(UInt64 xSectorNum, byte[] aData)
         {
             thePartition.WriteBlock(ReservedSectorCount + xSectorNum, 1, aData);
         }
+        /// <summary>
+        /// Reads the FAT specified entry number (cluster number) from the specified FAT sector data.
+        /// </summary>
+        /// <param name="aFATTableSector">The FAT sector data containing the FAT entry to be read.</param>
+        /// <param name="aClusterNum">The entry (cluster number) to read.</param>
+        /// <param name="aOffset">The offset within the sector that the entry is at.</param>
+        /// <returns>The entry's value.</returns>
         public UInt32 ReadFATEntry(byte[] aFATTableSector, UInt32 aClusterNum, UInt32 aOffset)
         {
             if (FATType == FATTypeEnum.FAT12)
@@ -249,6 +396,13 @@ namespace Kernel.FOS_System.IO.FAT
                 return ByteConverter.ToUInt16(aFATTableSector, aOffset) & 0x0FFFFFFFu;
             }
         }
+        /// <summary>
+        /// Writes the specified value to the specified FAT entry number in the FAT sector data array.
+        /// </summary>
+        /// <param name="aFATTableSector">The FAT sector data.</param>
+        /// <param name="aClusterNum">The cluster number to write.</param>
+        /// <param name="aOffset">The offset within the FAT sector data of the entry to write.</param>
+        /// <param name="FATEntry">The value to write.</param>
         public void WriteFATEntry(byte[] aFATTableSector, UInt32 aClusterNum, UInt32 aOffset, UInt32 FATEntry)
         {
             if (FATType == FATTypeEnum.FAT12)
@@ -302,6 +456,11 @@ namespace Kernel.FOS_System.IO.FAT
                 //aFATTableSector[aOffset + 7] = (byte)(FATEntry >> 28);
             }
         }
+        /// <summary>
+        /// Determines whether the FAT entry value indicates end-of-file or not.
+        /// </summary>
+        /// <param name="aValue">The value to test.</param>
+        /// <returns>Whether the FAT entry value indicates end-of-file or not.</returns>
         public bool FATEntryIndicatesEOF(UInt32 aValue)
         {
             //Hmmm...Ubuntu 10.1 FAT driver was writing 
@@ -313,6 +472,11 @@ namespace Kernel.FOS_System.IO.FAT
             return aValue >= GetFATEntryEOFValue(FATType) ||
                 aValue == GetFATEntryEOFValue(FATTypeEnum.FAT16);
         }
+        /// <summary>
+        /// Determines whether the FAT entry value indicates a free cluster or not.
+        /// </summary>
+        /// <param name="aValue">The value to test.</param>
+        /// <returns>Whether the FAT entry value indicates a free cluster or not.</returns>
         public bool FATEntryIndicatesFree(UInt32 aValue)
         {
             //Hmmm...Ubuntu 10.1 FAT driver was writing 
@@ -323,6 +487,11 @@ namespace Kernel.FOS_System.IO.FAT
 
             return aValue == 0;
         }
+        /// <summary>
+        /// Gets the EOF value for the specified FAT type.
+        /// </summary>
+        /// <param name="aFATType">The FAT type.</param>
+        /// <returns>The EOF value.</returns>
         public static UInt32 GetFATEntryEOFValue(FATTypeEnum aFATType)
         {
             if (aFATType == FATTypeEnum.FAT12)
@@ -338,6 +507,16 @@ namespace Kernel.FOS_System.IO.FAT
                 return 0x0FFFFFF8;
             }
         }
+        /// <summary>
+        /// Gets the next free cluster number after the specified cluster number.
+        /// </summary>
+        /// <param name="startCluster">The cluster number to start searching from.</param>
+        /// <returns>The next free cluster number.</returns>
+        /// <remarks>
+        /// At the time of writing, this method's behavior was undefined if no free clusters were left.
+        /// Predicted behavior is that it would either enter an infinite loop or cause an exception if no
+        /// free clusters are available.
+        /// </remarks>
         public UInt32 GetNextFreeCluster(UInt32 startCluster)
         {
             byte[] xSector = new byte[BytesPerSector];
@@ -346,6 +525,7 @@ namespace Kernel.FOS_System.IO.FAT
             UInt32 xClusterNum = startCluster - 1;
             UInt32 xClusterPointedTo = 0xF;
 
+            //TODO - Umm...fix this! This will hit infinite loop if no free clusters left!
             do
             {
                 xClusterNum++;
@@ -353,7 +533,7 @@ namespace Kernel.FOS_System.IO.FAT
                 xSectorNum = tableSectorDesc.Sector;
                 xSectorOffset = tableSectorDesc.Offset;
 
-                ReadFATTableSector(xSectorNum, xSector);
+                ReadFATSector(xSectorNum, xSector);
 
                 xClusterPointedTo = ReadFATEntry(xSector, xClusterNum, xSectorOffset);
             }
@@ -361,18 +541,29 @@ namespace Kernel.FOS_System.IO.FAT
 
             return xClusterNum;
         }
+        /// <summary>
+        /// Sets the specified FAT entry to the specified value and saves it to disk.
+        /// </summary>
+        /// <param name="clusterNum">The cluster number to set.</param>
+        /// <param name="value">The value to set to.</param>
         public void SetFATEntryAndSave(UInt32 clusterNum, UInt32 value)
         {
             FATFileSystem.TableSectorDescrip tableSectorDesc = GetFATTableSectorPosition(clusterNum);
             UInt64 sectorNum = tableSectorDesc.Sector;
             UInt32 sectorOffset = tableSectorDesc.Offset;
             byte[] sectorData = new byte[BytesPerSector];
-            ReadFATTableSector(sectorNum, sectorData);
+            ReadFATSector(sectorNum, sectorData);
             WriteFATEntry(sectorData, (UInt32)sectorNum, sectorOffset, value);
-            WriteFATTableSector(sectorNum, sectorData);
+            WriteFATSector(sectorNum, sectorData);
         }
 
+        /// <summary>
+        /// The underlying root directory - used by FAT32 only.
+        /// </summary>
         private FATDirectory _rootDirectoryFAT32 = null;
+        /// <summary>
+        /// The underlying root directory - used by FAT32 only.
+        /// </summary>
         public FATDirectory RootDirectory_FAT32
         {
             get
@@ -384,7 +575,14 @@ namespace Kernel.FOS_System.IO.FAT
                 return _rootDirectoryFAT32;
             }
         }
+        /// <summary>
+        /// The cached root directory listings - used by FAT12/16 only.
+        /// </summary>
         private List _rootDirectoryListings = null;
+        /// <summary>
+        /// Gets the root directory listings in the FAT file system.
+        /// </summary>
+        /// <returns>The root directory listings.</returns>
         public List GetRootDirectoryTable()
         {
             if (FATType == FATTypeEnum.FAT32)
@@ -407,6 +605,16 @@ namespace Kernel.FOS_System.IO.FAT
                 return _rootDirectoryListings;
             }
         }
+        /// <summary>
+        /// Parses the specified directory file data for its listings.
+        /// </summary>
+        /// <param name="xData">The directory data.</param>
+        /// <param name="xDataLength">The directory data length.</param>
+        /// <param name="thisDir">
+        /// The FAT directory the FAT data is from. 
+        /// Used when creating listings as the parent directory.
+        /// </param>
+        /// <returns>The directory listings.</returns>
         public List ParseDirectoryTable(byte[] xData, int xDataLength, FATDirectory thisDir)
         {
             List xResult = new List();
@@ -560,6 +768,12 @@ namespace Kernel.FOS_System.IO.FAT
 
             return xResult;
         }
+        /// <summary>
+        /// Encodes the specified listings into a byte array.
+        /// </summary>
+        /// <param name="listings">The listings to encode.</param>
+        /// <param name="includeVolumeID">Whether to include the Volume ID entry (partition name). Only true for root directory.</param>
+        /// <returns>The encoded listings data.</returns>
         public byte[] EncodeDirectoryTable(List listings, bool includeVolumeID)
         {
             int LongFilenamesSize = 0;
@@ -766,6 +980,12 @@ namespace Kernel.FOS_System.IO.FAT
 
             return result;
         }
+        /// <summary>
+        /// Gets the short name for the specified long name.
+        /// </summary>
+        /// <param name="longName">The long name to shorten.</param>
+        /// <param name="isDirectory">Whether the long name is for a directory or not.</param>
+        /// <returns>The short name parts. Directory=1 part, file=2 parts (name + extension).</returns>
         private static List GetShortName(FOS_System.String longName, bool isDirectory)
         {
             if (isDirectory)
@@ -791,6 +1011,11 @@ namespace Kernel.FOS_System.IO.FAT
                 return result;
             }
         }
+        /// <summary>
+        /// Calculates the short name checksum.
+        /// </summary>
+        /// <param name="shortName">The short name.</param>
+        /// <returns>The checksum value.</returns>
         private static byte CheckSum(byte[] shortName)
         {
             short FcbNameLen;
@@ -805,6 +1030,11 @@ namespace Kernel.FOS_System.IO.FAT
 		    return Sum;
         }
 
+        /// <summary>
+        /// Gets the listing for the specified file or directory.
+        /// </summary>
+        /// <param name="aName">The full path to the file or directory.</param>
+        /// <returns>The listing or null if not found.</returns>
         public override Base GetListing(FOS_System.String aName)
         {
             List nameParts = aName.Split(FileSystemManager.PathDelimiter);
@@ -812,6 +1042,12 @@ namespace Kernel.FOS_System.IO.FAT
             return GetListingFromListings(nameParts, listings);
         }
 
+        /// <summary>
+        /// Creates a new directory within the file system.
+        /// </summary>
+        /// <param name="name">The name of the directory to create.</param>
+        /// <param name="parent">The parent directory of the new directory.</param>
+        /// <returns>The new directory listing.</returns>
         public override Directory NewDirectory(String name, Directory parent)
         {
             if (FATType != FATTypeEnum.FAT32)
@@ -859,6 +1095,12 @@ namespace Kernel.FOS_System.IO.FAT
             }
             return null;
         }
+        /// <summary>
+        /// Creates a new file within the file system.
+        /// </summary>
+        /// <param name="name">The name of the file to create.</param>
+        /// <param name="parent">The parent directory of the new file.</param>
+        /// <returns>The new file listing.</returns>
         public override File NewFile(String name, Directory parent)
         {
             if (FATType != FATTypeEnum.FAT32)
@@ -929,6 +1171,10 @@ namespace Kernel.FOS_System.IO.FAT
             return null;
         }
 
+        /// <summary>
+        /// Formats the specified partition as FAT32.
+        /// </summary>
+        /// <param name="thePartition">The partition to format.</param>
         public static void FormatPartitionAsFAT32(Partition thePartition)
         {
             byte[] newBPBData = thePartition.TheDiskDevice.NewBlockArray(1);

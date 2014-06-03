@@ -247,6 +247,7 @@ namespace Kernel
         /// <summary>
         /// Synchronous processing delay.
         /// </summary>
+        /// <param name="amount">The amount of time to delay (approx. 1 = 1 second).</param>
         public static void DelayOutput(int amount)
         {
             if (DisableDelayOutput)

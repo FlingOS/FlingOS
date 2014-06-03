@@ -169,6 +169,12 @@
             The current debugger state.
             </summary>
         </member>
+        <member name="F:Kernel.Debug.Debugger.Debugger.Mode_64bit">
+            <summary>
+            Whether the debugger is in 64-bit mode or not (not meaning 32-bit mode). Not fully supported yet.
+            Untested.
+            </summary>
+        </member>
         <member name="F:Kernel.Debug.Debugger.Debugger.breakAddress">
             <summary>
             The address of the last instruction executed before the break.
@@ -600,6 +606,36 @@
             The states the deugger can be in.
             </summary>
         </member>
+        <member name="F:Kernel.Debug.Debugger.Debugger.States.None">
+            <summary>
+            State not set.
+            </summary>
+        </member>
+        <member name="F:Kernel.Debug.Debugger.Debugger.States.Breaking">
+            <summary>
+            Indicates the debugger is waiting for a break.
+            </summary>
+        </member>
+        <member name="F:Kernel.Debug.Debugger.Debugger.States.Stepping">
+            <summary>
+            Indicates the debugger is stepping over ASM, IL or C#.
+            </summary>
+        </member>
+        <member name="F:Kernel.Debug.Debugger.Debugger.States.Broken">
+            <summary>
+            Indicates the debugger is currently broken i.e. stopped at a breakpoint.
+            </summary>
+        </member>
+        <member name="F:Kernel.Debug.Debugger.Debugger.States.Running">
+            <summary>
+            Indicates the debugger is running.
+            </summary>
+        </member>
+        <member name="F:Kernel.Debug.Debugger.Debugger.States.Stopping">
+            <summary>
+            Indicates the debugger is stopping.
+            </summary>
+        </member>
         <member name="T:Kernel.Debug.Debugger.Debugger.LoadMemoryCompletedDelegate">
             <summary>
             Represents a callback method for when requested memory data has been loaded.
@@ -702,12 +738,19 @@
             Loads the values of the fields of this variable.
             </summary>
             <param name="debugger">The debugger to use for loading.</param>
+            <param name="callback">The callback to invoke when loading is complete.</param>
+            <param name="recursive">Whether to load recursively down the object tree.</param>
         </member>
         <member name="M:Kernel.Debug.Debugger.Variable.ToString">
             <summary>
             Converts the variable's value to a string
             </summary>
             <returns>The variable's value represented as a string</returns>
+        </member>
+        <member name="T:Kernel.Debug.Debugger.Variable.OnLoadFieldsCompleteDelegate">
+            <summary>
+            Delegate method for callback when loading fields is complete.
+            </summary>
         </member>
         <member name="T:Kernel.Debug.Debugger.Argument">
             <summary>

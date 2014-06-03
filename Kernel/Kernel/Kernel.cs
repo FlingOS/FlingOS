@@ -107,6 +107,9 @@ namespace Kernel
             PreReqs.Reset();
         }
 
+        /// <summary>
+        /// Disk0 - expected to be the primary, master HDD.
+        /// </summary>
         private static Hardware.Devices.DiskDevice disk0;
         /// <summary>
         /// The actual main method for the kernel - by this point, all memory management, exception handling 
@@ -725,37 +728,38 @@ namespace Kernel
         /// </summary>
         private static void DummyObjectTest()
         {
-            BasicConsole.WriteLine("Dummy object test...");
+            //BasicConsole.WriteLine("Dummy object test...");
 
-            try
-            {
-                Dummy obj = new Dummy();
-                new Dummy();
-                obj = new Dummy();
-                obj.x = obj.x + obj.y;
-                if (obj.x == 21)
-                {
-                    BasicConsole.WriteLine("Addition success!");
-                }
+            //try
+            //{
+            //    Dummy obj = new Dummy();
+            //    new Dummy();
+            //    obj = new Dummy();
+            //    obj.x = obj.x + obj.y;
+            //    if (obj.x == 21)
+            //    {
+            //        BasicConsole.WriteLine("Addition success!");
+            //    }
 
-                if (obj.testEnum == Dummy.TestEnum.First)
-                {
-                    BasicConsole.WriteLine("TestEnum.First pre-assigned.");
-                }
-                obj.testEnum = Dummy.TestEnum.Second;
-                if (obj.testEnum == Dummy.TestEnum.Second)
-                {
-                    BasicConsole.WriteLine("TestEnum.Second assignment worked.");
-                }
-            }
-            catch
-            {
-                BasicConsole.SetTextColour(BasicConsole.warning_colour);
-                BasicConsole.WriteLine(ExceptionMethods.CurrentException.Message);
-                BasicConsole.SetTextColour(BasicConsole.default_colour);
-            }
+            //    if (obj.testEnum == Dummy.TestEnum.First)
+            //    {
+            //        BasicConsole.WriteLine("TestEnum.First pre-assigned.");
+            //    }
+            //    obj.testEnum = Dummy.TestEnum.Second;
+            //    if (obj.testEnum == Dummy.TestEnum.Second)
+            //    {
+            //        BasicConsole.WriteLine("TestEnum.Second assignment worked.");
+            //    }
+            //}
+            //catch
+            //{
+            //    BasicConsole.SetTextColour(BasicConsole.warning_colour);
+            //    BasicConsole.WriteLine(ExceptionMethods.CurrentException.Message);
+            //    BasicConsole.SetTextColour(BasicConsole.default_colour);
+            //}
 
-            BasicConsole.WriteLine("Dummy object test.");
+            //BasicConsole.WriteLine("Dummy object test.");
+            BasicConsole.WriteLine("Dummy object test disabled.");
         }
         /// <summary>
         /// Tests managed exception sub-system by deliberately causing hardware-level divide-by-zero exception.
@@ -827,24 +831,24 @@ namespace Kernel
         }
     }
 
-    public class Dummy : FOS_System.Object
-    {
-        public enum TestEnum
-        {
-            First = 1,
-            Second = 2,
-            Third = 3,
-            NULL = 0
-        }
+    //public class Dummy : FOS_System.Object
+    //{
+    //    public enum TestEnum
+    //    {
+    //        First = 1,
+    //        Second = 2,
+    //        Third = 3,
+    //        NULL = 0
+    //    }
 
-        public TestEnum testEnum = TestEnum.First;
+    //    public TestEnum testEnum = TestEnum.First;
 
-        public int x = 10;
-        public int y = 11;
+    //    public int x = 10;
+    //    public int y = 11;
 
-        public int Add()
-        {
-            return x + y;
-        }
-    }
+    //    public int Add()
+    //    {
+    //        return x + y;
+    //    }
+    //}
 }

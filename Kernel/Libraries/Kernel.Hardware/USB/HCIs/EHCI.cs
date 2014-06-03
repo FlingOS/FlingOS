@@ -873,7 +873,7 @@ namespace Kernel.Hardware.USB.HCIs
         /// <summary>
         /// Initializes a qTD with specified underlying data structure.
         /// </summary>
-        /// <param name="aqTD"></param>
+        /// <param name="aqTD">The existing underlying data structure.</param>
         public qTD(qTD_Struct* aqTD)
         {
             qtd = aqTD;

@@ -25,7 +25,7 @@ namespace Kernel.FOS_System.IO.Streams
         /// <summary>
         /// Initializes a new file stream for the specified file.
         /// </summary>
-        /// <param name="aFile"></param>
+        /// <param name="aFile">The file which the file stream is reading from.</param>
         public FileStream(File aFile)
         {
             theFile = aFile;

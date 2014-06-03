@@ -34,21 +34,6 @@ namespace Kernel.FOS_System
         }
 
         /// <summary>
-        /// Gets a pointer to the first char (that represents a character) of the specified string.
-        /// </summary>
-        /// <param name="aString">The string to get a pointer to.</param>
-        /// <returns>A pointer to the first char (that represents a character) of the specified string.</returns>
-        /// <remarks>
-        /// Skips over the length dword at the start of the string.
-        /// </remarks>
-        [Kernel.Compiler.PluggedMethod(ASMFilePath = @"ASM\String\GetPointer")]
-        public static unsafe char* GetCharPointer(string aString)
-        {
-            //Stub for use by testing frameworks.
-            return (char*)System.Runtime.InteropServices.Marshal.StringToHGlobalAuto(aString);
-        }
-
-        /// <summary>
         /// Creates a new, blank FOS_System.String of specified length.
         /// IMPORTANT NOTE: You MUST assign the return value of this to a variable / local / arg / 
         /// field etc. You may not use IL or C# that results in an IL Pop op of the return value
@@ -113,7 +98,7 @@ namespace Kernel.FOS_System
         /// <summary>
         /// Gets a pointer to the first character in the string.
         /// </summary>
-        /// <returns></returns>
+        /// <returns>A pointer to the first char (that represents a character) of the specified string.</returns>
         [Compiler.NoDebug]
         [Compiler.NoGC]
         public unsafe char* GetCharPointer()

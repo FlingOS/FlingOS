@@ -161,6 +161,8 @@ namespace Kernel
         /// <summary>
         /// Throws a page fault exception.
         /// </summary>
+        /// <param name="errorCode">The error code associated with the page fault.</param>
+        /// <param name="address">The address which caused the fault.</param>
         /// <remarks>
         /// Used by CPU interrupts to handle the creation of the exception object and calling Throw.
         /// </remarks>

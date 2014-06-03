@@ -4,10 +4,612 @@
         <name>Kernel.Hardware</name>
     </assembly>
     <members>
+        <member name="T:Kernel.Hardware.ATA.ATA">
+            <summary>
+            Represents an ATA device.
+            </summary>
+        </member>
+        <member name="T:Kernel.Hardware.Devices.DiskDevice">
+            <summary>
+            Represents a disk device.
+            </summary>
+        </member>
+        <member name="T:Kernel.Hardware.BlockDevice">
+            <summary>
+            Represents a logical block based device.
+            </summary>
+        </member>
+        <member name="T:Kernel.Hardware.Device">
+            <summary>
+            Represents any device connected to the system.
+            </summary>
+        </member>
+        <member name="F:Kernel.Hardware.BlockDevice.blockCount">
+            <summary>
+            The number of logical blocks in the device.
+            </summary>
+        </member>
+        <member name="F:Kernel.Hardware.BlockDevice.blockSize">
+            <summary>
+            The size of the logical blocks.
+            </summary>
+        </member>
+        <member name="M:Kernel.Hardware.BlockDevice.ReadBlock(System.UInt64,System.UInt32,System.Byte[])">
+            <summary>
+            Reads contiguous logical blocks from the device.
+            </summary>
+            <param name="aBlockNo">The logical block number to read.</param>
+            <param name="aBlockCount">The number of blocks to read.</param>
+            <param name="aData">The byte array to store the data in.</param>
+        </member>
         <member name="M:Kernel.Hardware.BlockDevice.WriteBlock(System.UInt64,System.UInt32,System.Byte[])">
+            <summary>
+            Writes contiguous logical blocks to the device.
+            </summary>
+            <param name="aBlockNo">The number of the first block to write.</param>
+            <param name="aBlockCount">The number of blocks to write.</param>
+            <param name="aData">The data to write. Pass null to efficiently write 0s to the device.</param>
             <remarks>
             If data is null, all data to be written should be assumed to be 0.
             </remarks>
+        </member>
+        <member name="M:Kernel.Hardware.BlockDevice.NewBlockArray(System.UInt32)">
+            <summary>
+            Creates a new byte array sized to fit the specified number of blocks.
+            </summary>
+            <param name="aBlockCount">The number of blocks to size for.</param>
+            <returns>The new byte array.</returns>
+        </member>
+        <member name="P:Kernel.Hardware.BlockDevice.BlockCount">
+            <summary>
+            The number of logical blocks in the device.
+            </summary>
+        </member>
+        <member name="P:Kernel.Hardware.BlockDevice.BlockSize">
+            <summary>
+            The size of the logical blocks.
+            </summary>
+        </member>
+        <member name="F:Kernel.Hardware.ATA.ATA.controllerId">
+            <summary>
+            The device's controller ID.
+            </summary>
+        </member>
+        <member name="F:Kernel.Hardware.ATA.ATA.busPosition">
+            <summary>
+            The device's bus position.
+            </summary>
+        </member>
+        <member name="M:Kernel.Hardware.ATA.ATA.#ctor">
+            <summary>
+            Initialises a new ATA device with block size 512.
+            </summary>
+        </member>
+        <member name="T:Kernel.Hardware.ATA.ATA.ControllerID">
+            <summary>
+            The ATA controller IDs.
+            </summary>
+        </member>
+        <member name="F:Kernel.Hardware.ATA.ATA.ControllerID.Primary">
+            <summary>
+            Primary ATA controller.
+            </summary>
+        </member>
+        <member name="F:Kernel.Hardware.ATA.ATA.ControllerID.Secondary">
+            <summary>
+            Secondary ATA controller.
+            </summary>
+        </member>
+        <member name="T:Kernel.Hardware.ATA.ATA.BusPosition">
+            <summary>
+            The ATA bus positions.
+            </summary>
+        </member>
+        <member name="F:Kernel.Hardware.ATA.ATA.BusPosition.Master">
+            <summary>
+            Master device.
+            </summary>
+        </member>
+        <member name="F:Kernel.Hardware.ATA.ATA.BusPosition.Slave">
+            <summary>
+            Slave device.
+            </summary>
+        </member>
+        <member name="T:Kernel.Hardware.ATA.ATAIO">
+            <summary>
+            Represents an ATA IO device.
+            </summary>
+        </member>
+        <member name="F:Kernel.Hardware.ATA.ATAIO.Data">
+            <summary>
+            The data port.
+            </summary>
+        </member>
+        <member name="F:Kernel.Hardware.ATA.ATAIO.SectorCount">
+            <summary>
+            The sector count.
+            </summary>
+        </member>
+        <member name="F:Kernel.Hardware.ATA.ATAIO.LBA0">
+            <summary>
+            LBA0 port.
+            </summary>
+        </member>
+        <member name="F:Kernel.Hardware.ATA.ATAIO.LBA1">
+            <summary>
+            LBA1 port.
+            </summary>
+        </member>
+        <member name="F:Kernel.Hardware.ATA.ATAIO.LBA2">
+            <summary>
+            LBA2 port.
+            </summary>
+        </member>
+        <member name="F:Kernel.Hardware.ATA.ATAIO.DeviceSelect">
+            <summary>
+            Device select port.
+            </summary>
+        </member>
+        <member name="F:Kernel.Hardware.ATA.ATAIO.Command">
+            <summary>
+            Command port.
+            </summary>
+        </member>
+        <member name="F:Kernel.Hardware.ATA.ATAIO.Status">
+            <summary>
+            Status port.
+            </summary>
+        </member>
+        <member name="F:Kernel.Hardware.ATA.ATAIO.Control">
+            <summary>
+            Control port.
+            </summary>
+        </member>
+        <member name="M:Kernel.Hardware.ATA.ATAIO.#ctor(System.Boolean)">
+            <summary>
+            Initialises a new ATA IO device including the various ports.
+            </summary>
+            <param name="isSecondary">Whether the device is a secondary ATA device.</param>
+        </member>
+        <member name="T:Kernel.Hardware.ATA.ATAManager">
+            <summary>
+            Provides methods for managing ATA access.
+            </summary>
+        </member>
+        <member name="F:Kernel.Hardware.ATA.ATAManager.ATAIO1">
+            <summary>
+            ATA primary IO device.
+            </summary>
+        </member>
+        <member name="F:Kernel.Hardware.ATA.ATAManager.ATAIO2">
+            <summary>
+            ATA secondary IO device.
+            </summary>
+        </member>
+        <member name="M:Kernel.Hardware.ATA.ATAManager.Init">
+            <summary>
+            Initialises all available ATA devices on the primary bus.
+            </summary>
+        </member>
+        <member name="M:Kernel.Hardware.ATA.ATAManager.InitDrive(Kernel.Hardware.ATA.ATA.ControllerID,Kernel.Hardware.ATA.ATA.BusPosition)">
+            <summary>
+            Initialises a particular drive on the ATA bus.
+            </summary>
+            <param name="ctrlId">The controller ID of the device.</param>
+            <param name="busPos">The bus position of the device.</param>
+        </member>
+        <member name="T:Kernel.Hardware.ATA.ATAPio">
+            <summary>
+            Represents an ATA Pio device.
+            </summary>
+        </member>
+        <member name="F:Kernel.Hardware.ATA.ATAPio.IO">
+            <summary>
+            IO ports for this device.
+            </summary>
+        </member>
+        <member name="F:Kernel.Hardware.ATA.ATAPio.mDriveType">
+            <summary>
+            Pio drive type.
+            </summary>
+        </member>
+        <member name="F:Kernel.Hardware.ATA.ATAPio.mSerialNo">
+            <summary>
+            Drive's serial number.
+            </summary>
+        </member>
+        <member name="F:Kernel.Hardware.ATA.ATAPio.mFirmwareRev">
+            <summary>
+            Drive's .
+            </summary>
+        </member>
+        <member name="F:Kernel.Hardware.ATA.ATAPio.mModelNo">
+            <summary>
+            Drive's model number.
+            </summary>
+        </member>
+        <member name="M:Kernel.Hardware.ATA.ATAPio.#ctor(Kernel.Hardware.ATA.ATAIO,Kernel.Hardware.ATA.ATA.ControllerID,Kernel.Hardware.ATA.ATA.BusPosition)">
+            <summary>
+            Initialises a new ATA pio device.
+            </summary>
+            <param name="anIO">The IO ports for the new Pio device.</param>
+            <param name="aControllerId">The controller ID for the new device.</param>
+            <param name="aBusPosition">The bus position of the new device.</param>
+        </member>
+        <member name="M:Kernel.Hardware.ATA.ATAPio.SelectDrive(System.Byte)">
+            <summary>
+            Sends the drive select command.
+            </summary>
+            <param name="aLbaHigh4">LBA High 4 bits</param>
+        </member>
+        <member name="M:Kernel.Hardware.ATA.ATAPio.Wait">
+            <summary>
+            Waits by performing 4 reads (see remarks / ATA spec)
+            </summary>
+            <remarks>
+            ATA requires a wait of 400 nanoseconds.
+            Read the Status register FIVE TIMES, and only pay attention to the value 
+            returned by the last one -- after selecting a new master or slave device. The point being that 
+            you can assume an IO port read takes approximately 100ns, so doing the first four creates a 400ns 
+            delay -- which allows the drive time to push the correct voltages onto the bus. 
+            Since we read status again later, we wait by reading it 4 times.
+            </remarks>
+        </member>
+        <member name="M:Kernel.Hardware.ATA.ATAPio.DiscoverDrive">
+            <summary>
+            Attempts to discover the ATA drive.
+            </summary>
+            <returns>The specification level of the discovered drive. SpecLevel.Null if not found.</returns>
+        </member>
+        <member name="M:Kernel.Hardware.ATA.ATAPio.InitDrive">
+            <summary>
+            Attempts to initialise the ATA drive.
+            </summary>
+        </member>
+        <member name="M:Kernel.Hardware.ATA.ATAPio.GetString(System.UInt16[],System.Int32,System.Int32)">
+            <summary>
+            Gets a string from the specified UInt16. Equivalent of ASCII byte array conversion.
+            </summary>
+            <param name="aBuffer">The data to convert.</param>
+            <param name="anIndexStart">The index to start converting at.</param>
+            <param name="aStringLength">The length of the string to create.</param>
+            <returns>The new string.</returns>
+        </member>
+        <member name="M:Kernel.Hardware.ATA.ATAPio.SendCmd(Kernel.Hardware.ATA.ATAPio.Cmd)">
+            <summary>
+            Sends the specified command (with ThrowOnError=true).
+            </summary>
+            <param name="aCmd">The command to send.</param>
+            <returns>The device status.</returns>
+        </member>
+        <member name="M:Kernel.Hardware.ATA.ATAPio.SendCmd(Kernel.Hardware.ATA.ATAPio.Cmd,System.Boolean)">
+            <summary>
+            Sends the specified command.
+            </summary>
+            <param name="aCmd">The command to send.</param>
+            <param name="aThrowOnError">
+            Whether to throw an exception if the device reports 
+            an error status.
+            </param>
+            <returns>The device status.</returns>
+        </member>
+        <member name="M:Kernel.Hardware.ATA.ATAPio.SelectSector(System.UInt64,System.UInt32)">
+            <summary>
+            Selects the specified contiguous sectors on the drive.
+            </summary>
+            <param name="aSectorNo">The first sector to select.</param>
+            <param name="aSectorCount">The number of contiguous sectors to select.</param>
+        </member>
+        <member name="M:Kernel.Hardware.ATA.ATAPio.ReadBlock(System.UInt64,System.UInt32,System.Byte[])">
+            <summary>
+            Reads contiguous blocks from the drive.
+            </summary>
+            <param name="aBlockNo">The number of the first block to read.</param>
+            <param name="aBlockCount">The number of contiguous blocks to read.</param>
+            <param name="aData">The data array to read into.</param>
+        </member>
+        <member name="M:Kernel.Hardware.ATA.ATAPio.WriteBlock(System.UInt64,System.UInt32,System.Byte[])">
+            <summary>
+            Writes contiguous blocks to the drive.
+            </summary>
+            <param name="aBlockNo">The number of the first block to write.</param>
+            <param name="aBlockCount">The number of contiguous blocks to write.</param>
+            <param name="aData">The data to write.</param>
+        </member>
+        <member name="P:Kernel.Hardware.ATA.ATAPio.DriveType">
+            <summary>
+            Pio drive type.
+            </summary>
+        </member>
+        <member name="P:Kernel.Hardware.ATA.ATAPio.SerialNo">
+            <summary>
+            Drive's .
+            </summary>
+        </member>
+        <member name="P:Kernel.Hardware.ATA.ATAPio.FirmwareRev">
+            <summary>
+            Drive's .
+            </summary>
+        </member>
+        <member name="P:Kernel.Hardware.ATA.ATAPio.ModelNo">
+            <summary>
+            Drive's model number.
+            </summary>
+        </member>
+        <member name="T:Kernel.Hardware.ATA.ATAPio.Status">
+            <summary>
+            Device statuses.
+            </summary>
+        </member>
+        <member name="F:Kernel.Hardware.ATA.ATAPio.Status.None">
+            <summary>
+            No status.
+            </summary>
+        </member>
+        <member name="F:Kernel.Hardware.ATA.ATAPio.Status.Busy">
+            <summary>
+            Busy status.
+            </summary>
+        </member>
+        <member name="F:Kernel.Hardware.ATA.ATAPio.Status.ATA_SR_DRD">
+            <summary>
+            ATA_SR_DRD status.
+            </summary>
+        </member>
+        <member name="F:Kernel.Hardware.ATA.ATAPio.Status.ATA_SR_DF">
+            <summary>
+            ATA_SR_DF status.
+            </summary>
+        </member>
+        <member name="F:Kernel.Hardware.ATA.ATAPio.Status.ATA_SR_DSC">
+            <summary>
+            ATA_SR_DSC status.
+            </summary>
+        </member>
+        <member name="F:Kernel.Hardware.ATA.ATAPio.Status.DRQ">
+            <summary>
+            DRQ status.
+            </summary>
+        </member>
+        <member name="F:Kernel.Hardware.ATA.ATAPio.Status.ATA_SR_COR">
+            <summary>
+            ATA_SR_COR status.
+            </summary>
+        </member>
+        <member name="F:Kernel.Hardware.ATA.ATAPio.Status.ATA_SR_IDX">
+            <summary>
+            ATA_SR_IDX status.
+            </summary>
+        </member>
+        <member name="F:Kernel.Hardware.ATA.ATAPio.Status.Error">
+            <summary>
+            Error status.
+            </summary>
+        </member>
+        <member name="T:Kernel.Hardware.ATA.ATAPio.Error">
+            <summary>
+            Error masks.
+            </summary>
+        </member>
+        <member name="F:Kernel.Hardware.ATA.ATAPio.Error.ATA_ER_BBK">
+            <summary>
+            BBK error.
+            </summary>
+        </member>
+        <member name="F:Kernel.Hardware.ATA.ATAPio.Error.ATA_ER_UNC">
+            <summary>
+            UNC error.
+            </summary>
+        </member>
+        <member name="F:Kernel.Hardware.ATA.ATAPio.Error.ATA_ER_MC">
+            <summary>
+            MC error.
+            </summary>
+        </member>
+        <member name="F:Kernel.Hardware.ATA.ATAPio.Error.ATA_ER_IDNF">
+            <summary>
+            IDNF error.
+            </summary>
+        </member>
+        <member name="F:Kernel.Hardware.ATA.ATAPio.Error.ATA_ER_MCR">
+            <summary>
+            MCR error.
+            </summary>
+        </member>
+        <member name="F:Kernel.Hardware.ATA.ATAPio.Error.ATA_ER_ABRT">
+            <summary>
+            ABRT error.
+            </summary>
+        </member>
+        <member name="F:Kernel.Hardware.ATA.ATAPio.Error.ATA_ER_TK0NF">
+            <summary>
+            TK0NF error.
+            </summary>
+        </member>
+        <member name="F:Kernel.Hardware.ATA.ATAPio.Error.ATA_ER_AMNF">
+            <summary>
+            AMNF error.
+            </summary>
+        </member>
+        <member name="T:Kernel.Hardware.ATA.ATAPio.DvcSelVal">
+            <summary>
+            Dvc Sel values.
+            </summary>
+        </member>
+        <member name="F:Kernel.Hardware.ATA.ATAPio.DvcSelVal.Slave">
+            <summary>
+            Slave value.
+            </summary>
+        </member>
+        <member name="F:Kernel.Hardware.ATA.ATAPio.DvcSelVal.LBA">
+            <summary>
+            LBA value.
+            </summary>
+        </member>
+        <member name="F:Kernel.Hardware.ATA.ATAPio.DvcSelVal.Default">
+            <summary>
+            Default value.
+            </summary>
+        </member>
+        <member name="T:Kernel.Hardware.ATA.ATAPio.Cmd">
+            <summary>
+            ATA Pio commands.
+            </summary>
+        </member>
+        <member name="F:Kernel.Hardware.ATA.ATAPio.Cmd.ReadPio">
+            <summary>
+            Read Pio command.
+            </summary>
+        </member>
+        <member name="F:Kernel.Hardware.ATA.ATAPio.Cmd.ReadPioExt">
+            <summary>
+            Read Pio extended command.
+            </summary>
+        </member>
+        <member name="F:Kernel.Hardware.ATA.ATAPio.Cmd.ReadDma">
+            <summary>
+            Read direct memory access command.
+            </summary>
+        </member>
+        <member name="F:Kernel.Hardware.ATA.ATAPio.Cmd.ReadDmaExt">
+            <summary>
+            Read direct memory access extended command.
+            </summary>
+        </member>
+        <member name="F:Kernel.Hardware.ATA.ATAPio.Cmd.WritePio">
+            <summary>
+            Write Pio command.
+            </summary>
+        </member>
+        <member name="F:Kernel.Hardware.ATA.ATAPio.Cmd.WritePioExt">
+            <summary>
+            Write Pio extended command.
+            </summary>
+        </member>
+        <member name="F:Kernel.Hardware.ATA.ATAPio.Cmd.WriteDma">
+            <summary>
+            Write direct memory access command.
+            </summary>
+        </member>
+        <member name="F:Kernel.Hardware.ATA.ATAPio.Cmd.WriteDmaExt">
+            <summary>
+            Write direct memory access extended command.
+            </summary>
+        </member>
+        <member name="F:Kernel.Hardware.ATA.ATAPio.Cmd.CacheFlush">
+            <summary>
+            Cache flush command.
+            </summary>
+        </member>
+        <member name="F:Kernel.Hardware.ATA.ATAPio.Cmd.CacheFlushExt">
+            <summary>
+            Cache flush extended command.
+            </summary>
+        </member>
+        <member name="F:Kernel.Hardware.ATA.ATAPio.Cmd.Packet">
+            <summary>
+            Packet command.
+            </summary>
+        </member>
+        <member name="F:Kernel.Hardware.ATA.ATAPio.Cmd.IdentifyPacket">
+            <summary>
+            Identify packet command.
+            </summary>
+        </member>
+        <member name="F:Kernel.Hardware.ATA.ATAPio.Cmd.Identify">
+            <summary>
+            Identify command.
+            </summary>
+        </member>
+        <member name="F:Kernel.Hardware.ATA.ATAPio.Cmd.Read">
+            <summary>
+            Read command.
+            </summary>
+        </member>
+        <member name="F:Kernel.Hardware.ATA.ATAPio.Cmd.Eject">
+            <summary>
+            Eject command.
+            </summary>
+        </member>
+        <member name="T:Kernel.Hardware.ATA.ATAPio.Ident">
+            <summary>
+            Identity values.
+            </summary>
+        </member>
+        <member name="F:Kernel.Hardware.ATA.ATAPio.Ident.DEVICETYPE">
+            <summary>
+            Device type
+            </summary>
+        </member>
+        <member name="F:Kernel.Hardware.ATA.ATAPio.Ident.CYLINDERS">
+            <summary>
+            Cylinders
+            </summary>
+        </member>
+        <member name="F:Kernel.Hardware.ATA.ATAPio.Ident.HEADS">
+            <summary>
+            Heads
+            </summary>
+        </member>
+        <member name="F:Kernel.Hardware.ATA.ATAPio.Ident.SECTORS">
+            <summary>
+            Sectors
+            </summary>
+        </member>
+        <member name="F:Kernel.Hardware.ATA.ATAPio.Ident.SERIAL">
+            <summary>
+            Serial
+            </summary>
+        </member>
+        <member name="F:Kernel.Hardware.ATA.ATAPio.Ident.MODEL">
+            <summary>
+            Model
+            </summary>
+        </member>
+        <member name="F:Kernel.Hardware.ATA.ATAPio.Ident.CAPABILITIES">
+            <summary>
+            Capabilities
+            </summary>
+        </member>
+        <member name="F:Kernel.Hardware.ATA.ATAPio.Ident.FIELDVALID">
+            <summary>
+            Field valid
+            </summary>
+        </member>
+        <member name="F:Kernel.Hardware.ATA.ATAPio.Ident.MAX_LBA">
+            <summary>
+            Max LBA
+            </summary>
+        </member>
+        <member name="F:Kernel.Hardware.ATA.ATAPio.Ident.COMMANDSETS">
+            <summary>
+            Command sets
+            </summary>
+        </member>
+        <member name="F:Kernel.Hardware.ATA.ATAPio.Ident.MAX_LBA_EXT">
+            <summary>
+            Max LBA extended
+            </summary>
+        </member>
+        <member name="T:Kernel.Hardware.ATA.ATAPio.SpecLevel">
+            <summary>
+            Specification levels
+            </summary>
+        </member>
+        <member name="F:Kernel.Hardware.ATA.ATAPio.SpecLevel.Null">
+            <summary>
+            Null
+            </summary>
+        </member>
+        <member name="F:Kernel.Hardware.ATA.ATAPio.SpecLevel.ATA">
+            <summary>
+            ATA
+            </summary>
+        </member>
+        <member name="F:Kernel.Hardware.ATA.ATAPio.SpecLevel.ATAPI">
+            <summary>
+            ATAPI
+            </summary>
         </member>
         <member name="T:Kernel.Hardware.DeviceManager">
             <summary>
@@ -23,20 +625,644 @@
             exist. For example, a PCIDevice instance and a EHCI instance would both exist for one physical EHCI device.
             </remarks>
         </member>
+        <member name="T:Kernel.Hardware.DMA.DMABlock">
+            <summary>
+            Provides direct access memory block access.
+            </summary>
+        </member>
+        <member name="F:Kernel.Hardware.DMA.DMABlock.Base">
+            <summary>
+            The memory block base pointer.
+            </summary>
+        </member>
+        <member name="F:Kernel.Hardware.DMA.DMABlock.Size">
+            <summary>
+            The size of the memory block.
+            </summary>
+        </member>
+        <member name="M:Kernel.Hardware.DMA.DMABlock.#ctor(System.Byte*,System.UInt32)">
+            <summary>
+            Initialises a new direct access memory block .
+            </summary>
+            <param name="aBase">The block base pointer.</param>
+            <param name="aSize">The size of the block.</param>
+        </member>
+        <member name="P:Kernel.Hardware.DMA.DMABlock.Item(System.UInt32)">
+            <summary>
+            Gets the UInt32 at the specified byte-specific index.
+            </summary>
+            <param name="byteIndex">The byte-specific index of the first byte of the UInt32.</param>
+            <returns>The UInt32 starting at the specified byte.</returns>
+        </member>
+        <member name="T:Kernel.Hardware.IO.IOPort">
+            <summary>
+            Represents an IO port.
+            </summary>
+        </member>
+        <member name="F:Kernel.Hardware.IO.IOPort.Port">
+            <summary>
+            The port number.
+            </summary>
+        </member>
+        <member name="M:Kernel.Hardware.IO.IOPort.#ctor(System.UInt16)">
+            <summary>
+            Initialises a new IO port with specified port number.
+            </summary>
+            <param name="aPort">The port number.</param>
+        </member>
+        <member name="M:Kernel.Hardware.IO.IOPort.#ctor(System.UInt16,System.UInt16)">
+            <summary>
+            Initialises a new IO port with specified port number and 
+            offset from that port number.
+            </summary>
+            <param name="aBase">The port base number.</param>
+            <param name="anOffset">The offset from the base port number.</param>
+        </member>
+        <member name="M:Kernel.Hardware.IO.IOPort.doRead_Byte(System.UInt16)">
+            <summary>
+            Reads a byte from the specified port.
+            </summary>
+            <param name="port">The port to read.</param>
+            <returns>The value read.</returns>
+        </member>
+        <member name="M:Kernel.Hardware.IO.IOPort.doRead_UInt16(System.UInt16)">
+            <summary>
+            Reads a UInt16 from the specified port.
+            </summary>
+            <param name="port">The port to read.</param>
+            <returns>The value read.</returns>
+        </member>
+        <member name="M:Kernel.Hardware.IO.IOPort.doRead_UInt32(System.UInt16)">
+            <summary>
+            Reads a UInt32 from the specified port.
+            </summary>
+            <param name="port">The port to read.</param>
+            <returns>The value read.</returns>
+        </member>
+        <member name="M:Kernel.Hardware.IO.IOPort.doRead_UInt64(System.UInt16)">
+            <summary>
+            Reads a UInt64 from the specified port.
+            </summary>
+            <param name="port">The port to read.</param>
+            <returns>The value read.</returns>
+        </member>
+        <member name="M:Kernel.Hardware.IO.IOPort.Read_Byte">
+            <summary>
+            Reads a byte from the port.
+            </summary>
+            <returns>The value read.</returns>
+        </member>
+        <member name="M:Kernel.Hardware.IO.IOPort.Read_UInt16">
+            <summary>
+            Reads a UInt16 from the port.
+            </summary>
+            <returns>The value read.</returns>
+        </member>
+        <member name="M:Kernel.Hardware.IO.IOPort.Read_UInt32">
+            <summary>
+            Reads a UInt32 from the port.
+            </summary>
+            <returns>The value read.</returns>
+        </member>
+        <member name="M:Kernel.Hardware.IO.IOPort.Read_UInt64">
+            <summary>
+            Reads a UInt64 from the port.
+            </summary>
+            <returns>The value read.</returns>
+        </member>
+        <member name="M:Kernel.Hardware.IO.IOPort.doWrite(System.UInt16,System.Byte)">
+            <summary>
+            Writes a byte to the specified port.
+            </summary>
+            <param name="port">The port to write to.</param>
+            <param name="aVal">The value to write.</param>
+        </member>
+        <member name="M:Kernel.Hardware.IO.IOPort.doWrite(System.UInt16,System.UInt16)">
+            <summary>
+            Writes a UInt16 to the specified port.
+            </summary>
+            <param name="port">The port to write to.</param>
+            <param name="aVal">The value to write.</param>
+        </member>
+        <member name="M:Kernel.Hardware.IO.IOPort.doWrite(System.UInt16,System.UInt32)">
+            <summary>
+            Writes a UInt32 to the specified port.
+            </summary>
+            <param name="port">The port to write to.</param>
+            <param name="aVal">The value to write.</param>
+        </member>
+        <member name="M:Kernel.Hardware.IO.IOPort.doWrite(System.UInt16,System.UInt64)">
+            <summary>
+            Writes a UInt64 to the specified port.
+            </summary>
+            <param name="port">The port to write to.</param>
+            <param name="aVal">The value to write.</param>
+        </member>
+        <member name="M:Kernel.Hardware.IO.IOPort.Write(System.Byte)">
+            <summary>
+            Writes a byte to the port.
+            </summary>
+            <param name="aVal">The value to write.</param>
+        </member>
+        <member name="M:Kernel.Hardware.IO.IOPort.Write(System.UInt16)">
+            <summary>
+            Writes a UInt16 to the port.
+            </summary>
+            <param name="aVal">The value to write.</param>
+        </member>
+        <member name="M:Kernel.Hardware.IO.IOPort.Write(System.UInt32)">
+            <summary>
+            Writes a UInt32 to the port.
+            </summary>
+            <param name="aVal">The value to write.</param>
+        </member>
+        <member name="M:Kernel.Hardware.IO.IOPort.Write(System.UInt64)">
+            <summary>
+            Writes a UInt64 to the port.
+            </summary>
+            <param name="aVal">The value to write.</param>
+        </member>
+        <member name="M:Kernel.Hardware.IO.IOPort.Read8(System.Byte[])">
+            <summary>
+            Reads bytes into the specified byte array.
+            </summary>
+            <param name="aData">The byte array to read data into.</param>
+        </member>
+        <member name="M:Kernel.Hardware.IO.IOPort.Read16(System.UInt16[])">
+            <summary>
+            Reads UInt16s into the specified UInt16 array.
+            </summary>
+            <param name="aData">The UInt16 array to read data into.</param>
+        </member>
+        <member name="M:Kernel.Hardware.IO.IOPort.Read32(System.UInt32[])">
+            <summary>
+            Reads UInt32s into the specified UInt32 array.
+            </summary>
+            <param name="aData">The UInt32 array to read data into.</param>
+        </member>
         <member name="T:Kernel.Hardware.PCI.PCI">
             <summary>
-            
+            Provides methods for managing PCI access.
             </summary>
+        </member>
+        <member name="F:Kernel.Hardware.PCI.PCI.ConfigAddressPort">
+            <summary>
+            The configuration address port.
+            </summary>
+        </member>
+        <member name="F:Kernel.Hardware.PCI.PCI.ConfigDataPort">
+            <summary>
+            The configuration data port.
+            </summary>
+        </member>
+        <member name="F:Kernel.Hardware.PCI.PCI.Devices">
+            <summary>
+            List of all the PCI device found.
+            </summary>
+        </member>
+        <member name="M:Kernel.Hardware.PCI.PCI.Init">
+            <summary>
+            Initialises the PCI bus by enumerating all connected devices.
+            </summary>
+        </member>
+        <member name="M:Kernel.Hardware.PCI.PCI.EnumerateDevices">
+            <summary>
+            Enumerates all connected PCI devices.
+            </summary>
+        </member>
+        <member name="M:Kernel.Hardware.PCI.PCI.EnumerateBus(System.UInt32,System.UInt32)">
+            <summary>
+            Enumerates a particular PCI bus for connected devices.
+            </summary>
+            <param name="xBus">The bus to enumerate.</param>
+            <param name="step">The number of steps from the root bus.</param>
+        </member>
+        <member name="M:Kernel.Hardware.PCI.PCI.AddDevice(Kernel.Hardware.PCI.PCIDevice,System.UInt32)">
+            <summary>
+            Adds a PCI device to the list of devices. Enumerates the secondary bus if it is available.
+            </summary>
+            <param name="device">The device to add.</param>
+            <param name="step">The number of steps from the root bus.</param>
+        </member>
+        <member name="T:Kernel.Hardware.PCI.PCIBaseAddressBar">
+            <summary>
+            Represents a PCI base address.
+            </summary>
+        </member>
+        <member name="F:Kernel.Hardware.PCI.PCIBaseAddressBar.baseAddress">
+            <summary>
+            The underlying base address pointer.
+            </summary>
+        </member>
+        <member name="F:Kernel.Hardware.PCI.PCIBaseAddressBar.prefetchable">
+            <summary>
+            Whether the data is prefetchable or not.
+            </summary>
+        </member>
+        <member name="F:Kernel.Hardware.PCI.PCIBaseAddressBar.type">
+            <summary>
+            The base address type.
+            </summary>
+        </member>
+        <member name="F:Kernel.Hardware.PCI.PCIBaseAddressBar.isIO">
+            <summary>
+            Whether the base address is an IO address.
+            </summary>
+        </member>
+        <member name="M:Kernel.Hardware.PCI.PCIBaseAddressBar.#ctor(System.UInt32)">
+            <summary>
+            Initialises a new PCI base address.
+            </summary>
+            <param name="raw">The raw address value.</param>
+        </member>
+        <member name="M:Kernel.Hardware.PCI.PCIBaseAddressBar.BaseAddress">
+            <summary>
+            The base address byte pointer.
+            </summary>
+            <returns>Returns the base address byte pointer.</returns>
+        </member>
+        <member name="M:Kernel.Hardware.PCI.PCIBaseAddressBar.IsIO">
+            <summary>
+            Whether the base address is IO or not.
+            </summary>
+            <returns>Whether the base address is IO or not.</returns>
         </member>
         <member name="T:Kernel.Hardware.PCI.PCIDevice">
             <summary>
             Represents any PCI device.
             </summary>
         </member>
+        <member name="F:Kernel.Hardware.PCI.PCIDevice.bus">
+            <summary>
+            The device's bus number.
+            </summary>
+        </member>
+        <member name="F:Kernel.Hardware.PCI.PCIDevice.slot">
+            <summary>
+            The device's slot number.
+            </summary>
+        </member>
+        <member name="F:Kernel.Hardware.PCI.PCIDevice.function">
+            <summary>
+            The device's function number.
+            </summary>
+        </member>
+        <member name="M:Kernel.Hardware.PCI.PCIDevice.#ctor(System.UInt32,System.UInt32,System.UInt32)">
+            <summary>
+            Initialises a new, generic PCI device.
+            </summary>
+            <param name="bus">The PCI bus number.</param>
+            <param name="slot">The PCI slot number.</param>
+            <param name="function">The PCI function number.</param>
+        </member>
+        <member name="M:Kernel.Hardware.PCI.PCIDevice.GetAddressBase(System.UInt32,System.UInt32,System.UInt32)">
+            <summary>
+            Calculates the base address for a PCI device.
+            </summary>
+            <param name="aBus">PCI bus number.</param>
+            <param name="aSlot">PCI slot number.</param>
+            <param name="aFunction">PCI function number.</param>
+            <returns>The base address.</returns>
+        </member>
+        <member name="M:Kernel.Hardware.PCI.PCIDevice.EnableMemory(System.Boolean)">
+            <summary>
+            Enables or disables memory.
+            </summary>
+            <param name="enable">Whether to enable memory or not.</param>
+        </member>
+        <member name="M:Kernel.Hardware.PCI.PCIDevice.ReadRegister8(System.Byte)">
+            <summary>
+            Reads a byte from the specified register.
+            </summary>
+            <param name="aRegister">The register to read.</param>
+            <returns>The byte that has been read.</returns>
+        </member>
+        <member name="M:Kernel.Hardware.PCI.PCIDevice.WriteRegister8(System.Byte,System.Byte)">
+            <summary>
+            Writes a byte to the specified register.
+            </summary>
+            <param name="aRegister">The register to write.</param>
+            <param name="value">The value to write.</param>
+        </member>
+        <member name="M:Kernel.Hardware.PCI.PCIDevice.ReadRegister16(System.Byte)">
+            <summary>
+            Reads a UInt16 from the specified register.
+            </summary>
+            <param name="aRegister">The register to read.</param>
+            <returns>The UInt16 that has been read.</returns>
+        </member>
+        <member name="M:Kernel.Hardware.PCI.PCIDevice.WriteRegister16(System.Byte,System.UInt16)">
+            <summary>
+            Writes a UInt16 to the specified register.
+            </summary>
+            <param name="aRegister">The register to write.</param>
+            <param name="value">The value to write.</param>
+        </member>
+        <member name="M:Kernel.Hardware.PCI.PCIDevice.ReadRegister32(System.Byte)">
+            <summary>
+            Reads a UInt32 from the specified register.
+            </summary>
+            <param name="aRegister">The register to read.</param>
+            <returns>The UInt32 that has been read.</returns>
+        </member>
+        <member name="M:Kernel.Hardware.PCI.PCIDevice.WriteRegister32(System.Byte,System.UInt32)">
+            <summary>
+            Writes a UInt32 to the specified register.
+            </summary>
+            <param name="aRegister">The register to write.</param>
+            <param name="value">The value to write.</param>
+        </member>
+        <member name="P:Kernel.Hardware.PCI.PCIDevice.VendorID">
+            <summary>
+            The device's VendorID.
+            </summary>
+        </member>
+        <member name="P:Kernel.Hardware.PCI.PCIDevice.DeviceID">
+            <summary>
+            The device's DeviceID.
+            </summary>
+        </member>
+        <member name="P:Kernel.Hardware.PCI.PCIDevice.Command">
+            <summary>
+            Reads / writes the command register.
+            </summary>
+        </member>
+        <member name="P:Kernel.Hardware.PCI.PCIDevice.Status">
+            <summary>
+            Reads / writes the status register.
+            </summary>
+        </member>
+        <member name="P:Kernel.Hardware.PCI.PCIDevice.RevisionID">
+            <summary>
+            The device's RevisionID.
+            </summary>
+        </member>
+        <member name="P:Kernel.Hardware.PCI.PCIDevice.ProgIF">
+            <summary>
+            The device's ProgIF.
+            </summary>
+        </member>
+        <member name="P:Kernel.Hardware.PCI.PCIDevice.Subclass">
+            <summary>
+            The device's Subclass.
+            </summary>
+        </member>
+        <member name="P:Kernel.Hardware.PCI.PCIDevice.ClassCode">
+            <summary>
+            The device's ClassCode.
+            </summary>
+        </member>
+        <member name="P:Kernel.Hardware.PCI.PCIDevice.CacheLineSize">
+            <summary>
+            The device's CacheLineSize.
+            </summary>
+        </member>
+        <member name="P:Kernel.Hardware.PCI.PCIDevice.LatencyTimer">
+            <summary>
+            The device's LatencyTimer.
+            </summary>
+        </member>
+        <member name="P:Kernel.Hardware.PCI.PCIDevice.HeaderType">
+            <summary>
+            The device's HeaderType.
+            </summary>
+        </member>
+        <member name="P:Kernel.Hardware.PCI.PCIDevice.BIST">
+            <summary>
+            The device's BIST.
+            </summary>
+        </member>
+        <member name="P:Kernel.Hardware.PCI.PCIDevice.InterruptLine">
+            <summary>
+            The device's InterruptLine.
+            </summary>
+        </member>
+        <member name="P:Kernel.Hardware.PCI.PCIDevice.InterruptPIN">
+            <summary>
+            The device's InterruptPIN.
+            </summary>
+        </member>
+        <member name="P:Kernel.Hardware.PCI.PCIDevice.DeviceExists">
+            <summary>
+            The device's DeviceExists.
+            </summary>
+        </member>
         <member name="P:Kernel.Hardware.PCI.PCIDevice.Claimed">
             <summary>
             Has this device been claimed by a driver
             </summary>
+        </member>
+        <member name="T:Kernel.Hardware.PCI.PCIDevice.PCIHeaderType">
+            <summary>
+            Enumeration of PCI header types.
+            </summary>
+        </member>
+        <member name="F:Kernel.Hardware.PCI.PCIDevice.PCIHeaderType.Normal">
+            <summary>
+            Indicates a normal PCI devise.
+            </summary>
+        </member>
+        <member name="F:Kernel.Hardware.PCI.PCIDevice.PCIHeaderType.Bridge">
+            <summary>
+            Indicates a bridge PCI devise.
+            </summary>
+        </member>
+        <member name="F:Kernel.Hardware.PCI.PCIDevice.PCIHeaderType.Cardbus">
+            <summary>
+            Indicates a cardbus PCI devise.
+            </summary>
+        </member>
+        <member name="T:Kernel.Hardware.PCI.PCIDevice.PCIBISTs">
+            <summary>
+            Built-in Self Test status byte masks.
+            </summary>
+        </member>
+        <member name="F:Kernel.Hardware.PCI.PCIDevice.PCIBISTs.CocdMask">
+            <summary>
+            Return result mask.
+            </summary>
+        </member>
+        <member name="F:Kernel.Hardware.PCI.PCIDevice.PCIBISTs.Start">
+            <summary>
+            Start mask.
+            </summary>
+        </member>
+        <member name="F:Kernel.Hardware.PCI.PCIDevice.PCIBISTs.Capable">
+            <summary>
+            BIST Capable mask.
+            </summary>
+        </member>
+        <member name="T:Kernel.Hardware.PCI.PCIDevice.PCICommand">
+            <summary>
+            PCI command masks.
+            </summary>
+        </member>
+        <member name="F:Kernel.Hardware.PCI.PCIDevice.PCICommand.IO">
+            <summary>
+            Enable response in I/O space command.
+            </summary>
+        </member>
+        <member name="F:Kernel.Hardware.PCI.PCIDevice.PCICommand.Memory">
+            <summary>
+            Enable response in memory space command.
+            </summary>
+        </member>
+        <member name="F:Kernel.Hardware.PCI.PCIDevice.PCICommand.Master">
+            <summary>
+            Enable bus mastering command.
+            </summary>
+        </member>
+        <member name="F:Kernel.Hardware.PCI.PCIDevice.PCICommand.Special">
+            <summary>
+            Enable response to special cycles command.
+            </summary>
+        </member>
+        <member name="F:Kernel.Hardware.PCI.PCIDevice.PCICommand.Invalidate">
+            <summary>
+            Use memory write and invalidate command.
+            </summary>
+        </member>
+        <member name="F:Kernel.Hardware.PCI.PCIDevice.PCICommand.VGA_Pallete">
+            <summary>
+            Enable palette snooping command.
+            </summary>
+        </member>
+        <member name="F:Kernel.Hardware.PCI.PCIDevice.PCICommand.Parity">
+            <summary>
+            Enable parity checking command.
+            </summary>
+        </member>
+        <member name="F:Kernel.Hardware.PCI.PCIDevice.PCICommand.Wait">
+            <summary>
+            Enable address/data stepping command.
+            </summary>
+        </member>
+        <member name="F:Kernel.Hardware.PCI.PCIDevice.PCICommand.SERR">
+            <summary>
+            Enable SERR command.
+            </summary>
+        </member>
+        <member name="F:Kernel.Hardware.PCI.PCIDevice.PCICommand.Fast_Back">
+            <summary>
+            Enable back-to-back writes command.
+            </summary>
+        </member>
+        <member name="T:Kernel.Hardware.PCI.PCIDevice.PCIStatus">
+            <summary>
+            PCI status masks.
+            </summary>
+        </member>
+        <member name="F:Kernel.Hardware.PCI.PCIDevice.PCIStatus.CAP_LIST">
+            <summary>
+            Support capability list.
+            </summary>
+        </member>
+        <member name="F:Kernel.Hardware.PCI.PCIDevice.PCIStatus.SUPPORT_66MHZ">
+            <summary>
+            Support 66 Mhz PCI 2.1 bus
+            </summary>
+        </member>
+        <member name="F:Kernel.Hardware.PCI.PCIDevice.PCIStatus.UDF">
+            <summary>
+            Support User Definable Features [obsolete]
+            </summary>
+        </member>
+        <member name="F:Kernel.Hardware.PCI.PCIDevice.PCIStatus.FAST_BACK">
+            <summary>
+            Accept fast-back (back-to-back writes)
+            </summary>
+        </member>
+        <member name="F:Kernel.Hardware.PCI.PCIDevice.PCIStatus.PARITY">
+            <summary>
+            Detected parity error.
+            </summary>
+        </member>
+        <member name="F:Kernel.Hardware.PCI.PCIDevice.PCIStatus.DEVSEL_MASK">
+            <summary>
+            DEVSEL timing.
+            </summary>
+        </member>
+        <member name="F:Kernel.Hardware.PCI.PCIDevice.PCIStatus.DEVSEL_FAST">
+            <summary>
+            DEVSEL timing - fast.
+            </summary>
+        </member>
+        <member name="F:Kernel.Hardware.PCI.PCIDevice.PCIStatus.DEVSEL_MEDIUM">
+            <summary>
+            DEVSEL timing - medium.
+            </summary>
+        </member>
+        <member name="F:Kernel.Hardware.PCI.PCIDevice.PCIStatus.DEVSEL_SLOW">
+            <summary>
+            DEVSEL timing - slow.
+            </summary>
+        </member>
+        <member name="F:Kernel.Hardware.PCI.PCIDevice.PCIStatus.SIG_TARGET_ABORT">
+            <summary>
+            Set on target abort.
+            </summary>
+        </member>
+        <member name="F:Kernel.Hardware.PCI.PCIDevice.PCIStatus.REC_TARGET_ABORT">
+            <summary>
+            Master ack off.
+            </summary>
+        </member>
+        <member name="F:Kernel.Hardware.PCI.PCIDevice.PCIStatus.REC_MASTER_ABORT">
+            <summary>
+            Set on master abort.
+            </summary>
+        </member>
+        <member name="F:Kernel.Hardware.PCI.PCIDevice.PCIStatus.SIG_SYSTEM_ERROR">
+            <summary>
+            Set when we drive SERR.
+            </summary>
+        </member>
+        <member name="F:Kernel.Hardware.PCI.PCIDevice.PCIStatus.DETECTED_PARITY">
+            <summary>
+            Set on parity error.
+            </summary>
+        </member>
+        <member name="T:Kernel.Hardware.PCI.PCIDevice.PCIInterruptPIN">
+            <summary>
+            PCI interrupt pin numbers.
+            </summary>
+        </member>
+        <member name="F:Kernel.Hardware.PCI.PCIDevice.PCIInterruptPIN.None">
+            <summary>
+            None.
+            </summary>
+        </member>
+        <member name="F:Kernel.Hardware.PCI.PCIDevice.PCIInterruptPIN.INTA">
+            <summary>
+            INTA
+            </summary>
+        </member>
+        <member name="F:Kernel.Hardware.PCI.PCIDevice.PCIInterruptPIN.INTB">
+            <summary>
+            INTB
+            </summary>
+        </member>
+        <member name="F:Kernel.Hardware.PCI.PCIDevice.PCIInterruptPIN.INTC">
+            <summary>
+            INTC
+            </summary>
+        </member>
+        <member name="F:Kernel.Hardware.PCI.PCIDevice.PCIInterruptPIN.INTD">
+            <summary>
+            INTD
+            </summary>
+        </member>
+        <member name="T:Kernel.Hardware.PCI.PCIDevice.DeviceClassInfo">
+            <summary>
+            Provides device class information for PCI devices.
+            </summary>
+        </member>
+        <member name="M:Kernel.Hardware.PCI.PCIDevice.DeviceClassInfo.GetString(Kernel.Hardware.PCI.PCIDevice)">
+            <summary>
+            Gets a string that represents the specified PCI device.
+            </summary>
+            <param name="device">The device to get a string for.</param>
+            <returns>The string.</returns>
         </member>
         <member name="T:Kernel.Hardware.PCI.PCIDeviceBridge">
             <summary>
@@ -306,6 +1532,611 @@
             <summary>
             The device's MaxLatency.
             </summary>
+        </member>
+        <member name="T:Kernel.Hardware.USB.HCIs.EHCI">
+            <summary>
+            Represents a USB Extended Host Controller Interface
+            </summary>
+        </member>
+        <member name="T:Kernel.Hardware.USB.HCIs.HCI">
+            <summary>
+            Represents a generic USB Host Controller Interface.
+            </summary>
+        </member>
+        <member name="F:Kernel.Hardware.USB.HCIs.HCI.pciDevice">
+            <summary>
+            The underlying PCI device for the host controller.
+            </summary>
+        </member>
+        <member name="M:Kernel.Hardware.USB.HCIs.HCI.#ctor(Kernel.Hardware.PCI.PCIDeviceNormal)">
+            <summary>
+            Initializes a new generic host controller interface using the specified PCI device.
+            </summary>
+            <param name="aPCIDevice">The PCI device that represents the HCI device.</param>
+        </member>
+        <member name="F:Kernel.Hardware.USB.HCIs.EHCI.usbBaseAddress">
+            <summary>
+            The base address of the USB HCI device in memory.
+            </summary>
+        </member>
+        <member name="F:Kernel.Hardware.USB.HCIs.EHCI.SBRN">
+            <summary>
+            SBRN PCI memory-mapped register.
+            </summary>
+        </member>
+        <member name="F:Kernel.Hardware.USB.HCIs.EHCI.USBLegacySupportExtendedCapability">
+            <summary>
+            The EHCI USB Legacy Support extended capabilities information if it exists.
+            </summary>
+        </member>
+        <member name="F:Kernel.Hardware.USB.HCIs.EHCI.CapabilitiesRegAddr">
+            <summary>
+            The base address of the capabilities regsiters.
+            </summary>
+        </member>
+        <member name="F:Kernel.Hardware.USB.HCIs.EHCI.CapabilitiesRegsLength">
+            <summary>
+            The length of the capabilities registers. Used to calculate 
+            offset to operational registers.
+            </summary>
+        </member>
+        <member name="F:Kernel.Hardware.USB.HCIs.EHCI.HCIVersion">
+            <summary>
+            HCI Version number.
+            </summary>
+        </member>
+        <member name="F:Kernel.Hardware.USB.HCIs.EHCI.HCSParams">
+            <summary>
+            HCS params
+            </summary>
+        </member>
+        <member name="F:Kernel.Hardware.USB.HCIs.EHCI.HCCParams">
+            <summary>
+            HCC params
+            </summary>
+        </member>
+        <member name="F:Kernel.Hardware.USB.HCIs.EHCI.HCSPPortRouteDesc">
+            <summary>
+            HCSP port route desc
+            </summary>
+        </member>
+        <member name="F:Kernel.Hardware.USB.HCIs.EHCI.OpRegAddr">
+            <summary>
+            Base address of the operational registers.
+            </summary>
+        </member>
+        <member name="M:Kernel.Hardware.USB.HCIs.EHCI.#ctor(Kernel.Hardware.PCI.PCIDeviceNormal)">
+            <summary>
+            Initializes a new EHCI device.
+            </summary>
+            <param name="aPCIDevice">The PCI device that represents the EHCI device.</param>
+        </member>
+        <member name="M:Kernel.Hardware.USB.HCIs.EHCI.Init">
+            <summary>
+            Initializes the EHCI device.
+            </summary>
+        </member>
+        <member name="M:Kernel.Hardware.USB.HCIs.EHCI.WaitForAsyncQueueEnabledStatusMatch">
+            <summary>
+            Waits for the HCI async schedule status and enabled values to match.
+            </summary>
+        </member>
+        <member name="M:Kernel.Hardware.USB.HCIs.EHCI.EnableAsyncQueue">
+            <summary>
+            Enables the async queue and waits for the enable to be acknowledged.
+            </summary>
+        </member>
+        <member name="M:Kernel.Hardware.USB.HCIs.EHCI.DisableAsyncQueue">
+            <summary>
+            Disables the async queue and waits for the disable to be acknowledged.
+            </summary>
+        </member>
+        <member name="M:Kernel.Hardware.USB.HCIs.EHCI.AddAsyncQueueHead(Kernel.Hardware.USB.HCIs.QueueHead)">
+            <summary>
+            Adds a queue head to the async queue.
+            </summary>
+            <param name="theHead">The queue head to add.</param>
+        </member>
+        <member name="M:Kernel.Hardware.USB.HCIs.EHCI.RemoveAsyncQueueHead(Kernel.Hardware.USB.HCIs.QueueHead)">
+            <summary>
+            Removes a queue head from the async queue.
+            </summary>
+            <param name="theHead">The queue head to remove.</param>
+        </member>
+        <member name="M:Kernel.Hardware.USB.HCIs.EHCI.CreateQueueHead">
+            <summary>
+            Creates a new queue head for the async queue.
+            </summary>
+            <returns>The new queue head.</returns>
+        </member>
+        <member name="M:Kernel.Hardware.USB.HCIs.EHCI.CreateqTD">
+            <summary>
+            Creates a new queue transfer descriptor.
+            </summary>
+            <returns>The new qTD.</returns>
+        </member>
+        <member name="M:Kernel.Hardware.USB.HCIs.EHCI.AddqTDToQueueHead(Kernel.Hardware.USB.HCIs.qTD,Kernel.Hardware.USB.HCIs.QueueHead)">
+            <summary>
+            Adds a qTD to a queue head.
+            </summary>
+            <param name="theqTD">The qTD to add.</param>
+            <param name="theQueueHead">The queue head to add to.</param>
+        </member>
+        <member name="M:Kernel.Hardware.USB.HCIs.EHCI.RemoveqTDFromQueueHead(Kernel.Hardware.USB.HCIs.qTD,Kernel.Hardware.USB.HCIs.QueueHead)">
+            <summary>
+            Removes a qTD from a queue head.
+            </summary>
+            <param name="theqTD">The qTD to remove.</param>
+            <param name="theQueueHead">The queue head to remove from.</param>
+        </member>
+        <member name="M:Kernel.Hardware.USB.HCIs.EHCI.RecycleQueueHead(Kernel.Hardware.USB.HCIs.QueueHead)">
+            <summary>
+            Recycles a queue head for re-use. Recycling reduces heap memory operations.
+            </summary>
+            <param name="theQueueHead">The queue head to recycle.</param>
+        </member>
+        <member name="M:Kernel.Hardware.USB.HCIs.EHCI.RecycleqTD(Kernel.Hardware.USB.HCIs.qTD)">
+            <summary>
+            Recycles a qTD for re-use. Recycling reduces heap memory operations.
+            </summary>
+            <param name="theqTD">The qTD to recycle.</param>
+        </member>
+        <member name="M:Kernel.Hardware.USB.HCIs.EHCI.Reclaim">
+            <summary>
+            Reclaims queue heads and qTDs from the async transfer queue.
+            </summary>
+        </member>
+        <member name="M:Kernel.Hardware.USB.HCIs.EHCI.LoadExtendedCapabilities">
+            <summary>
+            Loads the extended capabilities PCI registers.
+            </summary>
+        </member>
+        <member name="P:Kernel.Hardware.USB.HCIs.EHCI.FLADJ">
+            <summary>
+            FLADJ PCI memory-mapped register.
+            </summary>
+        </member>
+        <member name="P:Kernel.Hardware.USB.HCIs.EHCI.PortWakeCap">
+            <summary>
+            Port wakeup capability PCI memory-mapped register.
+            </summary>
+        </member>
+        <member name="P:Kernel.Hardware.USB.HCIs.EHCI.EECP">
+            <summary>
+            EECP from HCC params
+            </summary>
+        </member>
+        <member name="P:Kernel.Hardware.USB.HCIs.EHCI.USBCMD">
+            <summary>
+            USB command operational memory-mapped register.
+            </summary>
+        </member>
+        <member name="P:Kernel.Hardware.USB.HCIs.EHCI.USBSTS">
+            <summary>
+            USB status operational memory-mapped register.
+            </summary>
+        </member>
+        <member name="P:Kernel.Hardware.USB.HCIs.EHCI.USBINTR">
+            <summary>
+            USB interrupts operational memory-mapped register.
+            </summary>
+        </member>
+        <member name="P:Kernel.Hardware.USB.HCIs.EHCI.FRINDEX">
+            <summary>
+            USB frame index operational memory-mapped register.
+            </summary>
+        </member>
+        <member name="P:Kernel.Hardware.USB.HCIs.EHCI.CTRLDSSEGMENT">
+            <summary>
+            USB control DS segment operational memory-mapped register.
+            </summary>
+        </member>
+        <member name="P:Kernel.Hardware.USB.HCIs.EHCI.PERIODICLISTBASE">
+            <summary>
+            USB periodic list base operational memory-mapped register.
+            </summary>
+        </member>
+        <member name="P:Kernel.Hardware.USB.HCIs.EHCI.ASYNCLISTADDR">
+            <summary>
+            USB async list address operational memory-mapped register.
+            </summary>
+        </member>
+        <member name="P:Kernel.Hardware.USB.HCIs.EHCI.AsynchronousScheduleEnabled">
+            <summary>
+            Whether the asynchronous schedule is enabled or not.
+            </summary>
+        </member>
+        <member name="P:Kernel.Hardware.USB.HCIs.EHCI.AsynchronousScheduleStatus">
+            <summary>
+            Whether the HCI thinks the asynchronous schedule is enabled or not.
+            </summary>
+        </member>
+        <member name="P:Kernel.Hardware.USB.HCIs.EHCI.CONFIGFLAG">
+            <summary>
+            USB configuration flags operational memory-mapped register.
+            </summary>
+        </member>
+        <member name="P:Kernel.Hardware.USB.HCIs.EHCI.PORTSC">
+            <summary>
+            USB port SC operational memory-mapped register.
+            </summary>
+        </member>
+        <member name="T:Kernel.Hardware.USB.HCIs.QueueHead_Struct">
+            <summary>
+            Represents a Queue Head structure's memory layout.
+            This structure can be passed to the HCI.
+            </summary>
+        </member>
+        <member name="F:Kernel.Hardware.USB.HCIs.QueueHead_Struct.u1">
+            <summary>
+            UInt32 1 in the structure.
+            </summary>
+        </member>
+        <member name="F:Kernel.Hardware.USB.HCIs.QueueHead_Struct.u2">
+            <summary>
+            UInt32 2 in the structure.
+            </summary>
+        </member>
+        <member name="F:Kernel.Hardware.USB.HCIs.QueueHead_Struct.u3">
+            <summary>
+            UInt32 3 in the structure.
+            </summary>
+        </member>
+        <member name="F:Kernel.Hardware.USB.HCIs.QueueHead_Struct.u4">
+            <summary>
+            UInt32 4 in the structure.
+            </summary>
+        </member>
+        <member name="F:Kernel.Hardware.USB.HCIs.QueueHead_Struct.u5">
+            <summary>
+            UInt32 5 in the structure.
+            </summary>
+        </member>
+        <member name="F:Kernel.Hardware.USB.HCIs.QueueHead_Struct.u6">
+            <summary>
+            UInt32 6 in the structure.
+            </summary>
+        </member>
+        <member name="F:Kernel.Hardware.USB.HCIs.QueueHead_Struct.u7">
+            <summary>
+            UInt32 7 in the structure.
+            </summary>
+        </member>
+        <member name="F:Kernel.Hardware.USB.HCIs.QueueHead_Struct.u8">
+            <summary>
+            UInt32 8 in the structure.
+            </summary>
+        </member>
+        <member name="F:Kernel.Hardware.USB.HCIs.QueueHead_Struct.u9">
+            <summary>
+            UInt32 9 in the structure.
+            </summary>
+        </member>
+        <member name="F:Kernel.Hardware.USB.HCIs.QueueHead_Struct.u10">
+            <summary>
+            UInt32 10 in the structure.
+            </summary>
+        </member>
+        <member name="F:Kernel.Hardware.USB.HCIs.QueueHead_Struct.u11">
+            <summary>
+            UInt32 11 in the structure.
+            </summary>
+        </member>
+        <member name="F:Kernel.Hardware.USB.HCIs.QueueHead_Struct.u12">
+            <summary>
+            UInt32 12 in the structure.
+            </summary>
+        </member>
+        <member name="T:Kernel.Hardware.USB.HCIs.qTD_Struct">
+            <summary>
+            Represents a Queue Transfer Descriptor structure's memory layout.
+            This structure can be passed to the HCI.
+            </summary>
+        </member>
+        <member name="F:Kernel.Hardware.USB.HCIs.qTD_Struct.u1">
+            <summary>
+            UInt32 1 in the structure.
+            </summary>
+        </member>
+        <member name="F:Kernel.Hardware.USB.HCIs.qTD_Struct.u2">
+            <summary>
+            UInt32 2 in the structure.
+            </summary>
+        </member>
+        <member name="F:Kernel.Hardware.USB.HCIs.qTD_Struct.u3">
+            <summary>
+            UInt32 3 in the structure.
+            </summary>
+        </member>
+        <member name="F:Kernel.Hardware.USB.HCIs.qTD_Struct.u4">
+            <summary>
+            UInt32 4 in the structure.
+            </summary>
+        </member>
+        <member name="F:Kernel.Hardware.USB.HCIs.qTD_Struct.u5">
+            <summary>
+            UInt32 5 in the structure.
+            </summary>
+        </member>
+        <member name="F:Kernel.Hardware.USB.HCIs.qTD_Struct.u6">
+            <summary>
+            UInt32 6 in the structure.
+            </summary>
+        </member>
+        <member name="F:Kernel.Hardware.USB.HCIs.qTD_Struct.u7">
+            <summary>
+            UInt32 7 in the structure.
+            </summary>
+        </member>
+        <member name="F:Kernel.Hardware.USB.HCIs.qTD_Struct.u8">
+            <summary>
+            UInt32 8 in the structure.
+            </summary>
+        </member>
+        <member name="T:Kernel.Hardware.USB.HCIs.qTD">
+            <summary>
+            Represents a qTD. The underlying memory structure can be passed to the HCI. 
+            This class provides methods / properties for manipulating qTD values.
+            </summary>
+        </member>
+        <member name="F:Kernel.Hardware.USB.HCIs.qTD.qtd">
+            <summary>
+            The qTD data/memory structure that can be passed to the HCI.
+            </summary>
+        </member>
+        <member name="M:Kernel.Hardware.USB.HCIs.qTD.#ctor">
+            <summary>
+            Initializes a new qTD with new data structure.
+            </summary>
+        </member>
+        <member name="M:Kernel.Hardware.USB.HCIs.qTD.#ctor(Kernel.Hardware.USB.HCIs.qTD_Struct*)">
+            <summary>
+            Initializes a qTD with specified underlying data structure.
+            </summary>
+            <param name="aqTD">The existing underlying data structure.</param>
+        </member>
+        <member name="M:Kernel.Hardware.USB.HCIs.qTD.Free">
+            <summary>
+            Frees the underlying memory structure.
+            </summary>
+        </member>
+        <member name="P:Kernel.Hardware.USB.HCIs.qTD.NextqTDPointer">
+            <summary>
+            Pointer to the next qTD in the linked list.
+            </summary>
+        </member>
+        <member name="P:Kernel.Hardware.USB.HCIs.qTD.NextqTDPointerTerminate">
+            <summary>
+            Whether the next qTD pointer indicates the end of the linked list.
+            </summary>
+        </member>
+        <member name="P:Kernel.Hardware.USB.HCIs.qTD.Status">
+            <summary>
+            The status.
+            </summary>
+        </member>
+        <member name="P:Kernel.Hardware.USB.HCIs.qTD.PIDCode">
+            <summary>
+            The PID code.
+            </summary>
+        </member>
+        <member name="P:Kernel.Hardware.USB.HCIs.qTD.ErrorCounter">
+            <summary>
+            The error counter.
+            </summary>
+        </member>
+        <member name="P:Kernel.Hardware.USB.HCIs.qTD.CurrentPage">
+            <summary>
+            The current page number.
+            </summary>
+        </member>
+        <member name="P:Kernel.Hardware.USB.HCIs.qTD.InterruptOnComplete">
+            <summary>
+            Whether to trigger an interrupt when the transfer is complete.
+            </summary>
+        </member>
+        <member name="P:Kernel.Hardware.USB.HCIs.qTD.TotalBytesToTransfer">
+            <summary>
+            The total number of bytes to transfer.
+            </summary>
+        </member>
+        <member name="P:Kernel.Hardware.USB.HCIs.qTD.DataToggle">
+            <summary>
+            The data toggle status.
+            </summary>
+        </member>
+        <member name="T:Kernel.Hardware.USB.HCIs.QueueHead">
+            <summary>
+            Represents a queue head. The underlying memory structure can be passed to the HCI. 
+            This class provides methods / properties for manipulating queue head values.
+            </summary>
+        </member>
+        <member name="F:Kernel.Hardware.USB.HCIs.QueueHead.queueHead">
+            <summary>
+            The queue head data/memory structure that can be passed to the HCI.
+            </summary>
+        </member>
+        <member name="M:Kernel.Hardware.USB.HCIs.QueueHead.#ctor">
+            <summary>
+            Initializes a new queue head with empty underlying memory structure.
+            </summary>
+        </member>
+        <member name="M:Kernel.Hardware.USB.HCIs.QueueHead.#ctor(Kernel.Hardware.USB.HCIs.QueueHead_Struct*)">
+            <summary>
+            Initializes a new queue head with specified underlying memory structure.
+            </summary>
+            <param name="aQueueHead">The existing underlying queue head.</param>
+        </member>
+        <member name="M:Kernel.Hardware.USB.HCIs.QueueHead.Free">
+            <summary>
+            Frees the underlying memory structure.
+            </summary>
+        </member>
+        <member name="P:Kernel.Hardware.USB.HCIs.QueueHead.HorizontalLinkPointer">
+            <summary>
+            Horizontal link pointer - points to the next queue head in the list.
+            </summary>
+        </member>
+        <member name="P:Kernel.Hardware.USB.HCIs.QueueHead.Type">
+            <summary>
+            Queue head type.
+            </summary>
+        </member>
+        <member name="P:Kernel.Hardware.USB.HCIs.QueueHead.DeviceAddress">
+            <summary>
+            Target USB device address.
+            </summary>
+        </member>
+        <member name="P:Kernel.Hardware.USB.HCIs.QueueHead.InactiveOnNextTransaction">
+            <summary>
+            Inactive on next transaction.
+            </summary>
+        </member>
+        <member name="P:Kernel.Hardware.USB.HCIs.QueueHead.EndpointNumber">
+            <summary>
+            Target USB endpoint number.
+            </summary>
+        </member>
+        <member name="P:Kernel.Hardware.USB.HCIs.QueueHead.EndpointSpeed">
+            <summary>
+            Target USB endpoint speed.
+            </summary>
+        </member>
+        <member name="P:Kernel.Hardware.USB.HCIs.QueueHead.DataToggleControl">
+            <summary>
+            Data toggle control.
+            </summary>
+        </member>
+        <member name="P:Kernel.Hardware.USB.HCIs.QueueHead.HeadOfReclamationList">
+            <summary>
+            Whether this queue head is the first in the reclamation list.
+            </summary>
+        </member>
+        <member name="P:Kernel.Hardware.USB.HCIs.QueueHead.MaximumPacketLength">
+            <summary>
+            Target endpoint's maximum packet length.
+            </summary>
+        </member>
+        <member name="P:Kernel.Hardware.USB.HCIs.QueueHead.ControlEndpointFlag">
+            <summary>
+            Control endpoint flag.
+            </summary>
+        </member>
+        <member name="P:Kernel.Hardware.USB.HCIs.QueueHead.NakCountReload">
+            <summary>
+            Nak count reload number.
+            </summary>
+        </member>
+        <member name="P:Kernel.Hardware.USB.HCIs.QueueHead.InterruptScheduleMask">
+            <summary>
+            Interrupt schedule mask.
+            </summary>
+        </member>
+        <member name="P:Kernel.Hardware.USB.HCIs.QueueHead.SplitCompletionMask">
+            <summary>
+            Split completion mask.
+            </summary>
+        </member>
+        <member name="P:Kernel.Hardware.USB.HCIs.QueueHead.HubAddr">
+            <summary>
+            Hub address.
+            </summary>
+        </member>
+        <member name="P:Kernel.Hardware.USB.HCIs.QueueHead.PortNumber">
+            <summary>
+            Port number.
+            </summary>
+        </member>
+        <member name="P:Kernel.Hardware.USB.HCIs.QueueHead.HighBandwidthPipeMultiplier">
+            <summary>
+            High bandwidth pipe multiplier.
+            </summary>
+        </member>
+        <member name="P:Kernel.Hardware.USB.HCIs.QueueHead.CurrentqTDPointer">
+            <summary>
+            Current qTD pointer.
+            </summary>
+        </member>
+        <member name="P:Kernel.Hardware.USB.HCIs.QueueHead.NextqTDPointer">
+            <summary>
+            Next qTD pointer.
+            </summary>
+        </member>
+        <member name="P:Kernel.Hardware.USB.HCIs.QueueHead.NextqTDPointerTerminate">
+            <summary>
+            Whether the next qTD pointer indicates end of the qTD list or not.
+            </summary>
+        </member>
+        <member name="T:Kernel.Hardware.USB.HCIs.EHCI_ExtendedCapability">
+            <summary>
+            Represents EHCI Extended Capabilities register information.
+            </summary>
+        </member>
+        <member name="F:Kernel.Hardware.USB.HCIs.EHCI_ExtendedCapability.usbBaseAddress">
+            <summary>
+            USB PCI base address.
+            </summary>
+        </member>
+        <member name="F:Kernel.Hardware.USB.HCIs.EHCI_ExtendedCapability.capOffset">
+            <summary>
+            Capabilities registers offset from base address.
+            </summary>
+        </member>
+        <member name="M:Kernel.Hardware.USB.HCIs.EHCI_ExtendedCapability.#ctor(System.Byte*,System.Byte)">
+            <summary>
+            Initializes new extended capabilities information.
+            </summary>
+            <param name="aUSBBaseAddress">The USB base address.</param>
+            <param name="aCapOffset">The capabilities registers offset form base address.</param>
+        </member>
+        <member name="P:Kernel.Hardware.USB.HCIs.EHCI_ExtendedCapability.CapabilityID">
+            <summary>
+            Capability ID.
+            </summary>
+        </member>
+        <member name="P:Kernel.Hardware.USB.HCIs.EHCI_ExtendedCapability.NextEHCIExtendedCapabilityOffset">
+            <summary>
+            Next EHCI extended capability offset.
+            </summary>
+        </member>
+        <member name="T:Kernel.Hardware.USB.HCIs.EHCI_USBLegacySupportExtendedCapability">
+            <summary>
+            Represents EHCI USB Legacy Support Extended Capabilities register information.
+            </summary>
+        </member>
+        <member name="F:Kernel.Hardware.USB.HCIs.EHCI_USBLegacySupportExtendedCapability.ControlStatusCap">
+            <summary>
+            Control status capabilities.
+            </summary>
+        </member>
+        <member name="M:Kernel.Hardware.USB.HCIs.EHCI_USBLegacySupportExtendedCapability.#ctor(System.Byte*,System.Byte)">
+            <summary>
+            Initializes new EHCI USB Legacy Support Extended Capabilities register information.
+            </summary>
+            <param name="aUSBBaseAddress">The USB base address.</param>
+            <param name="aCapOffset">The capabilities registers offset from the base address.</param>
+        </member>
+        <member name="P:Kernel.Hardware.USB.HCIs.EHCI_USBLegacySupportExtendedCapability.HCOSOwnedSemaphore">
+            <summary>
+            HC OS Owned semaphore - whether the OS controls the EHCI.
+            </summary>
+        </member>
+        <member name="P:Kernel.Hardware.USB.HCIs.EHCI_USBLegacySupportExtendedCapability.HCBIOSOwnedSemaphore">
+            <summary>
+            HC BIOS Owned semaphore - whether the BIOS controls the EHCI.
+            </summary>
+        </member>
+        <member name="T:Kernel.Hardware.USB.HCIs.EHCI_USBLegacySupportControlStatusCapability">
+            <summary>
+            Represents EHCI USB Legacy Support Control/Status Capabilities register information.
+            </summary>
+        </member>
+        <member name="M:Kernel.Hardware.USB.HCIs.EHCI_USBLegacySupportControlStatusCapability.#ctor(System.Byte*,System.Byte)">
+            <summary>
+            Initializes new EHCI USB Legacy Support Control/Status Capabilities register information.
+            </summary>
+            <param name="aUSBBaseAddress">The USB base address.</param>
+            <param name="aCapOffset">The capabilities registers offset from the base address.</param>
         </member>
         <member name="T:Kernel.Hardware.USB.USBManager">
             <summary>

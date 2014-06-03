@@ -5,10 +5,19 @@ using Kernel.FOS_System.IO.FAT;
 
 namespace Kernel.FOS_System.IO.Streams.FAT
 {
+    /// <summary>
+    /// Represents a file stream to a FAT file or FAT directory file.
+    /// </summary>
     public class FATFileStream : FileStream
     {
+        /// <summary>
+        /// The cluster numbers that are part of the file.
+        /// </summary>
         protected UInt32List ClusterNums;
 
+        /// <summary>
+        /// The FAT file system to which the file the stream is for belongs.
+        /// </summary>
         public FATFileSystem TheFATFileSystem
         {
             get
@@ -16,6 +25,9 @@ namespace Kernel.FOS_System.IO.Streams.FAT
                 return (FATFileSystem)TheFile.TheFileSystem;
             }
         }
+        /// <summary>
+        /// The FAT file the stream is for.
+        /// </summary>
         public FATFile TheFATFile
         {
             get
@@ -24,7 +36,13 @@ namespace Kernel.FOS_System.IO.Streams.FAT
             }
         }
 
+        /// <summary>
+        /// The position (as an offset from the start of the file) of the stream in the file.
+        /// </summary>
         protected UInt64 mPosition = 0;
+        /// <summary>
+        /// Gets or sets the position (as an offset from the start of the file) of the stream in the file.
+        /// </summary>
         public override long Position
         {
             get
@@ -41,7 +59,22 @@ namespace Kernel.FOS_System.IO.Streams.FAT
             }
         }
 
+        /// <summary>
+        /// Whether to ignore the file size and use cluster sizes or not.
+        /// This is always true for directories as directories report file
+        /// size 0.
+        /// </summary>
+        /// <remarks>
+        /// Directories having file size 0 makes perfect sense when you study
+        /// the structure of a directory file.
+        /// </remarks>
         public bool IgnoreFileSize = false;
+        /// <summary>
+        /// Gets the actual length (size) of the stream.
+        /// For files, this is FileSize. For directories, it is calculated
+        /// from the number of clusters times cluster size.
+        /// </summary>
+        /// <returns>The actual size of the file.</returns>
         public UInt64 GetActualSize()
         {
             if (IgnoreFileSize)
@@ -55,6 +88,11 @@ namespace Kernel.FOS_System.IO.Streams.FAT
             return theFile.Size;
         }
 
+        /// <summary>
+        /// Initializes a new FAT file stream for the specified file.
+        /// </summary>
+        /// <param name="aFile">The file to create a stream to.</param>
+        /// <param name="ignoreFileSize">Whether to ignore the file size or not. True for directories.</param>
         public FATFileStream(FATFile aFile, bool ignoreFileSize)
             : base(aFile)
         {
@@ -68,6 +106,9 @@ namespace Kernel.FOS_System.IO.Streams.FAT
             GetClusterNums();
         }
 
+        /// <summary>
+        /// Gets the list of cluster numbers that are part of the file being read/written from/to.
+        /// </summary>
         private void GetClusterNums()
         {
             if (TheFATFile.FirstClusterNum > 0 || IgnoreFileSize)
@@ -77,7 +118,15 @@ namespace Kernel.FOS_System.IO.Streams.FAT
                 //BasicConsole.WriteLine("Read cluster chain.");
             }
         }
-        
+
+        /// <summary>
+        /// Reads the specified number of bytes from the stream from the current position into the buffer at the 
+        /// specified offset or as many bytes as are available before the end of the stream is met.
+        /// </summary>
+        /// <param name="buffer">The byte array to read into.</param>
+        /// <param name="offset">The offset within the buffer to start storing read data at.</param>
+        /// <param name="count">The number of bytes to read.</param>
+        /// <returns>The actual number of bytes read.</returns>
         public override int Read(byte[] buffer, int offset, int count)
         {
             if (TheFile.Size > 0 || IgnoreFileSize)
@@ -181,6 +230,12 @@ namespace Kernel.FOS_System.IO.Streams.FAT
                 return 0;
             }
         }
+        /// <summary>
+        /// Writes the specified number of the bytes from the buffer starting at offset in the buffer.
+        /// </summary>
+        /// <param name="buffer">The data to write.</param>
+        /// <param name="offset">The offset within the buffer to start writing from.</param>
+        /// <param name="count">The number of bytes to write.</param>
         public override void Write(byte[] buffer, int offset, int count)
         {
             if (count < 0)

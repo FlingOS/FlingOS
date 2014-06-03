@@ -24,6 +24,8 @@ namespace Kernel.FOS_System.Exceptions
         /// <summary>
         /// Sets the message to "Page fault"
         /// </summary>
+        /// <param name="anErrorCode">The error code associated with the page fault.</param>
+        /// <param name="anAddress">The address which caused the fault.</param>
         public PageFaultException(uint anErrorCode, uint anAddress)
             : base("Page fault")
         {

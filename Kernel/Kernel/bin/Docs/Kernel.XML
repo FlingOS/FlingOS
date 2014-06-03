@@ -136,6 +136,66 @@
             Inserts the plug for the Int1 and Int3 interrupt handler.
             </summary>
         </member>
+        <member name="T:Kernel.Paging">
+            <summary>
+            Provides methods for setting up paged virtual memory.
+            </summary>
+        </member>
+        <member name="F:Kernel.Paging.LoadedPaging">
+            <summary>
+            Whether paging has been loaded or not.
+            </summary>
+        </member>
+        <member name="M:Kernel.Paging.Init">
+            <summary>
+            Initializes paged virtual memory.
+            </summary>
+        </member>
+        <member name="M:Kernel.Paging.LoadPaging">
+            <summary>
+            Loads paged virtual memory.
+            </summary>
+        </member>
+        <member name="M:Kernel.Paging.InitKernelPages">
+            <summary>
+            Initializes the pages that cover the kernel's memory.
+            </summary>
+        </member>
+        <member name="M:Kernel.Paging.EnablePaging">
+            <summary>
+            Enables paging.
+            </summary>
+        </member>
+        <member name="M:Kernel.Paging.GetPageDirectoryPtr">
+            <summary>
+            Gets the page directory memory pointer.
+            </summary>
+            <returns>The pointer.</returns>
+        </member>
+        <member name="M:Kernel.Paging.GetFirstPageTablePtr">
+            <summary>
+            Gets a pointer to the page table that is the first page table.
+            </summary>
+            <returns>The pointer.</returns>
+        </member>
+        <member name="M:Kernel.Paging.GetKernelPageTablePtr">
+            <summary>
+            Gets a pointer to the page table that covers the kernel's memory.
+            </summary>
+            <returns>The pointer.</returns>
+        </member>
+        <member name="M:Kernel.Paging.GetKernelMemStartPtr">
+            <summary>
+            Gets a pointer to the start of the kernel in memory.
+            </summary>
+            <returns>The pointer.</returns>
+        </member>
+        <member name="M:Kernel.Paging.GetKernelMemEndPtr">
+            <summary>
+            Gets a pointer to the end of the kernel in memory.
+            </summary>
+            <returns>The pointer.</returns>
+        </member>
         <member name="T:Kernel.PreReqs">
             <summary>
             Contains plugged methos that are pre-requisites for the kernel to boot.
@@ -221,6 +281,11 @@
         <member name="M:Kernel.Kernel.Halt">
             <summary>
             Halts the kernel and halts the CPU.
+            </summary>
+        </member>
+        <member name="F:Kernel.Kernel.disk0">
+            <summary>
+            Disk0 - expected to be the primary, master HDD.
             </summary>
         </member>
         <member name="M:Kernel.Kernel.ManagedMain">

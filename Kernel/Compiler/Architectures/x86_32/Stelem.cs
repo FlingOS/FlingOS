@@ -26,16 +26,14 @@ namespace Kernel.Compiler.Architectures.x86_32
             StringBuilder result = new StringBuilder();
 
             Type elementType = null;
-            bool pushValue = true;
+            //bool pushValue = true;
             int sizeToPop = 4;
-            bool signExtend = true;
             bool isFloat = false;
 
             switch ((OpCodes)anILOpInfo.opCode.Value)
             {
                 case OpCodes.Stelem:
                     {
-                        signExtend = false;
                         //Load the metadata token used to get the type info
                         int metadataToken = Utils.ReadInt32(anILOpInfo.ValueBytes, 0);
                         //Get the type info for the element type
@@ -47,7 +45,6 @@ namespace Kernel.Compiler.Architectures.x86_32
                 case OpCodes.Stelem_R8:
                     //TODO - Add more StElem op variants support
                     throw new NotSupportedException("Stelem op variant not supported yet!");
-                    break;
 
                 case OpCodes.Stelem_I1:
                     sizeToPop = 1;
@@ -59,7 +56,6 @@ namespace Kernel.Compiler.Architectures.x86_32
                     break;
 
                 case OpCodes.Stelem_Ref:
-                    signExtend = false;
                     elementType = null;
                     break;
 

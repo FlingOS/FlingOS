@@ -167,6 +167,7 @@
             <summary>
             Synchronous processing delay.
             </summary>
+            <param name="amount">The amount of time to delay (approx. 1 = 1 second).</param>
         </member>
         <member name="P:Kernel.BasicConsole.Offset">
             <summary>
@@ -508,6 +509,8 @@
             <summary>
             Throws a page fault exception.
             </summary>
+            <param name="errorCode">The error code associated with the page fault.</param>
+            <param name="address">The address which caused the fault.</param>
             <remarks>
             Used by CPU interrupts to handle the creation of the exception object and calling Throw.
             </remarks>
@@ -671,6 +674,8 @@
             <summary>
             Sets the message to "Page fault"
             </summary>
+            <param name="anErrorCode">The error code associated with the page fault.</param>
+            <param name="anAddress">The address which caused the fault.</param>
         </member>
         <member name="T:Kernel.FOS_System.Exceptions.ArrayTypeMismatchException">
             <summary>
@@ -779,6 +784,7 @@
             DO NOT CALL DIRECTLY. Use FOS_System.String.New
             Creates a new string with specified length (but does not call the default constructor).
             </summary>
+            <param name="length">The length of the string to create.</param>
             <returns>A pointer to the new string in memory.</returns>
         </member>
         <member name="M:Kernel.FOS_System.GC.IncrementRefCount(Kernel.FOS_System.Object)">
@@ -1086,16 +1092,6 @@
             <param name="aString">The string to get the length of.</param>
             <returns>The length of the specified string.</returns>
         </member>
-        <member name="M:Kernel.FOS_System.String.GetCharPointer(System.String)">
-            <summary>
-            Gets a pointer to the first char (that represents a character) of the specified string.
-            </summary>
-            <param name="aString">The string to get a pointer to.</param>
-            <returns>A pointer to the first char (that represents a character) of the specified string.</returns>
-            <remarks>
-            Skips over the length dword at the start of the string.
-            </remarks>
-        </member>
         <member name="M:Kernel.FOS_System.String.New(System.Int32)">
             <summary>
             Creates a new, blank FOS_System.String of specified length.
@@ -1118,7 +1114,7 @@
             <summary>
             Gets a pointer to the first character in the string.
             </summary>
-            <returns></returns>
+            <returns>A pointer to the first char (that represents a character) of the specified string.</returns>
         </member>
         <member name="M:Kernel.FOS_System.String.PadLeft(System.Int32,System.Char)">
             <summary>
