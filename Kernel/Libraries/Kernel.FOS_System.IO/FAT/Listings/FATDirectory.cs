@@ -4,8 +4,14 @@ using Kernel.FOS_System.Collections;
 
 namespace Kernel.FOS_System.IO.FAT
 {
+    /// <summary>
+    /// Represents a directory in a FAT file system.
+    /// </summary>
     public sealed class FATDirectory : Directory
     {
+        /// <summary>
+        /// The first cluster number of the directory.
+        /// </summary>
         public UInt32 FirstClusterNum
         {
             get
@@ -13,15 +19,36 @@ namespace Kernel.FOS_System.IO.FAT
                 return _theFile.FirstClusterNum;
             }
         }
+        /// <summary>
+        /// The underlying FAT file used to access the directory listings file.
+        /// </summary>
         private FATFile _theFile;
+        /// <summary>
+        /// The underlying FAT file stream used to read data from the FAT file.
+        /// </summary>
         Streams.FAT.FATFileStream _fileStream;
+        /// <summary>
+        /// Initializes a new FAT directory.
+        /// </summary>
+        /// <param name="aFileSystem">The FAT file system to which the directory belongs.</param>
+        /// <param name="parent">The FAT directory which is the parent of the directory. Null for the root directory.</param>
+        /// <param name="aName">The name of the directory.</param>
+        /// <param name="aFirstCluster">The first cluster number of the directory.</param>
         public FATDirectory(FATFileSystem aFileSystem, FATDirectory parent, FOS_System.String aName, UInt32 aFirstCluster)
             : base(aFileSystem, parent, aName)
         {
             _theFile = new FATFile(aFileSystem, parent, Name, 0, aFirstCluster);
         }
 
+        /// <summary>
+        /// The cached listings in the directory.
+        /// </summary>
         private List _cachedlistings;
+        /// <summary>
+        /// Reads the directory's listings off disk unless they have already been
+        /// cached.
+        /// </summary>
+        /// <returns>The listings.</returns>
         public override List GetListings()
         {
             if (_cachedlistings == null)
@@ -43,10 +70,18 @@ namespace Kernel.FOS_System.IO.FAT
             }
             return _cachedlistings;
         }
+        /// <summary>
+        /// Gets the listing for the specified path.
+        /// </summary>
+        /// <param name="nameParts">The path to the listing.</param>
+        /// <returns>The listing or null if not found.</returns>
         public override Base GetListing(List nameParts)
         {
             return TheFileSystem.GetListingFromListings(nameParts, GetListings());
         }
+        /// <summary>
+        /// Writes the cached listings back to disk.
+        /// </summary>
         public override void WriteListings()
         {
             //BasicConsole.WriteLine("Encoding listings...");
@@ -58,6 +93,9 @@ namespace Kernel.FOS_System.IO.FAT
             _fileStream.Write(listingsBytes, 0, (int)listingsBytes.Length);
             //BasicConsole.WriteLine("Written to disk.");
         }
+        /// <summary>
+        /// Initializes the underlying file stream.
+        /// </summary>
         private void Get_FileStream()
         {
             if (_fileStream == null)
@@ -67,6 +105,10 @@ namespace Kernel.FOS_System.IO.FAT
             }
         }
 
+        /// <summary>
+        /// Adds the specified listing to the directory's listings.
+        /// </summary>
+        /// <param name="aListing">The listing to add.</param>
         public override void AddListing(Base aListing)
         {
             //BasicConsole.WriteLine("Add listing: Getting existing listings...");

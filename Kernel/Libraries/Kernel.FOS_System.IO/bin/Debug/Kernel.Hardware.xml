@@ -1533,6 +1533,11 @@
             The device's MaxLatency.
             </summary>
         </member>
+        <member name="T:Kernel.Hardware.USB.HCIs.EHCI">
+            <summary>
+            Represents a USB Extended Host Controller Interface
+            </summary>
+        </member>
         <member name="T:Kernel.Hardware.USB.HCIs.HCI">
             <summary>
             Represents a generic USB Host Controller Interface.
@@ -1548,6 +1553,590 @@
             Initialises a new generic host controller interface using the specified PCI device.
             </summary>
             <param name="aPCIDevice"></param>
+        </member>
+        <member name="F:Kernel.Hardware.USB.HCIs.EHCI.usbBaseAddress">
+            <summary>
+            The base address of the USB HCI device in memory.
+            </summary>
+        </member>
+        <member name="F:Kernel.Hardware.USB.HCIs.EHCI.SBRN">
+            <summary>
+            SBRN PCI memory-mapped register.
+            </summary>
+        </member>
+        <member name="F:Kernel.Hardware.USB.HCIs.EHCI.USBLegacySupportExtendedCapability">
+            <summary>
+            The EHCI USB Legacy Support extended capabilities information if it exists.
+            </summary>
+        </member>
+        <member name="F:Kernel.Hardware.USB.HCIs.EHCI.CapabilitiesRegAddr">
+            <summary>
+            The base address of the capabilities regsiters.
+            </summary>
+        </member>
+        <member name="F:Kernel.Hardware.USB.HCIs.EHCI.CapabilitiesRegsLength">
+            <summary>
+            The length of the capabilities registers. Used to calculate 
+            offset to operational registers.
+            </summary>
+        </member>
+        <member name="F:Kernel.Hardware.USB.HCIs.EHCI.HCIVersion">
+            <summary>
+            HCI Version number.
+            </summary>
+        </member>
+        <member name="F:Kernel.Hardware.USB.HCIs.EHCI.HCSParams">
+            <summary>
+            HCS params
+            </summary>
+        </member>
+        <member name="F:Kernel.Hardware.USB.HCIs.EHCI.HCCParams">
+            <summary>
+            HCC params
+            </summary>
+        </member>
+        <member name="F:Kernel.Hardware.USB.HCIs.EHCI.HCSPPortRouteDesc">
+            <summary>
+            HCSP port route desc
+            </summary>
+        </member>
+        <member name="F:Kernel.Hardware.USB.HCIs.EHCI.OpRegAddr">
+            <summary>
+            Base address of the operational registers.
+            </summary>
+        </member>
+        <member name="M:Kernel.Hardware.USB.HCIs.EHCI.#ctor(Kernel.Hardware.PCI.PCIDeviceNormal)">
+            <summary>
+            Initializes a new EHCI device.
+            </summary>
+            <param name="aPCIDevice">The PCI device that represents the EHCI device.</param>
+        </member>
+        <member name="M:Kernel.Hardware.USB.HCIs.EHCI.Init">
+            <summary>
+            Initializes the EHCI device.
+            </summary>
+        </member>
+        <member name="M:Kernel.Hardware.USB.HCIs.EHCI.WaitForAsyncQueueEnabledStatusMatch">
+            <summary>
+            Waits for the HCI async schedule status and enabled values to match.
+            </summary>
+        </member>
+        <member name="M:Kernel.Hardware.USB.HCIs.EHCI.EnableAsyncQueue">
+            <summary>
+            Enables the async queue and waits for the enable to be acknowledged.
+            </summary>
+        </member>
+        <member name="M:Kernel.Hardware.USB.HCIs.EHCI.DisableAsyncQueue">
+            <summary>
+            Disables the async queue and waits for the disable to be acknowledged.
+            </summary>
+        </member>
+        <member name="M:Kernel.Hardware.USB.HCIs.EHCI.AddAsyncQueueHead(Kernel.Hardware.USB.HCIs.QueueHead)">
+            <summary>
+            Adds a queue head to the async queue.
+            </summary>
+            <param name="theHead">The queue head to add.</param>
+        </member>
+        <member name="M:Kernel.Hardware.USB.HCIs.EHCI.RemoveAsyncQueueHead(Kernel.Hardware.USB.HCIs.QueueHead)">
+            <summary>
+            Removes a queue head from the async queue.
+            </summary>
+            <param name="theHead">The queue head to remove.</param>
+        </member>
+        <member name="M:Kernel.Hardware.USB.HCIs.EHCI.CreateQueueHead">
+            <summary>
+            Creates a new queue head for the async queue.
+            </summary>
+            <returns>The new queue head.</returns>
+        </member>
+        <member name="M:Kernel.Hardware.USB.HCIs.EHCI.CreateqTD">
+            <summary>
+            Creates a new queue transfer descriptor.
+            </summary>
+            <returns>The new qTD.</returns>
+        </member>
+        <member name="M:Kernel.Hardware.USB.HCIs.EHCI.AddqTDToQueueHead(Kernel.Hardware.USB.HCIs.qTD,Kernel.Hardware.USB.HCIs.QueueHead)">
+            <summary>
+            Adds a qTD to a queue head.
+            </summary>
+            <param name="theqTD">The qTD to add.</param>
+            <param name="theQueueHead">The queue head to add to.</param>
+        </member>
+        <member name="M:Kernel.Hardware.USB.HCIs.EHCI.RemoveqTDFromQueueHead(Kernel.Hardware.USB.HCIs.qTD,Kernel.Hardware.USB.HCIs.QueueHead)">
+            <summary>
+            Removes a qTD from a queue head.
+            </summary>
+            <param name="theqTD">The qTD to remove.</param>
+            <param name="theQueueHead">The queue head to remove from.</param>
+        </member>
+        <member name="M:Kernel.Hardware.USB.HCIs.EHCI.RecycleQueueHead(Kernel.Hardware.USB.HCIs.QueueHead)">
+            <summary>
+            Recycles a queue head for re-use. Recycling reduces heap memory operations.
+            </summary>
+            <param name="theQueueHead">The queue head to recycle.</param>
+        </member>
+        <member name="M:Kernel.Hardware.USB.HCIs.EHCI.RecycleqTD(Kernel.Hardware.USB.HCIs.qTD)">
+            <summary>
+            Recycles a qTD for re-use. Recycling reduces heap memory operations.
+            </summary>
+            <param name="theqTD">The qTD to recycle.</param>
+        </member>
+        <member name="M:Kernel.Hardware.USB.HCIs.EHCI.Reclaim">
+            <summary>
+            Reclaims queue heads and qTDs from the async transfer queue.
+            </summary>
+        </member>
+        <member name="M:Kernel.Hardware.USB.HCIs.EHCI.LoadExtendedCapabilities">
+            <summary>
+            Loads the extended capabilities PCI registers.
+            </summary>
+        </member>
+        <member name="P:Kernel.Hardware.USB.HCIs.EHCI.FLADJ">
+            <summary>
+            FLADJ PCI memory-mapped register.
+            </summary>
+        </member>
+        <member name="P:Kernel.Hardware.USB.HCIs.EHCI.PortWakeCap">
+            <summary>
+            Port wakeup capability PCI memory-mapped register.
+            </summary>
+        </member>
+        <member name="P:Kernel.Hardware.USB.HCIs.EHCI.EECP">
+            <summary>
+            EECP from HCC params
+            </summary>
+        </member>
+        <member name="P:Kernel.Hardware.USB.HCIs.EHCI.USBCMD">
+            <summary>
+            USB command operational memory-mapped register.
+            </summary>
+        </member>
+        <member name="P:Kernel.Hardware.USB.HCIs.EHCI.USBSTS">
+            <summary>
+            USB status operational memory-mapped register.
+            </summary>
+        </member>
+        <member name="P:Kernel.Hardware.USB.HCIs.EHCI.USBINTR">
+            <summary>
+            USB interrupts operational memory-mapped register.
+            </summary>
+        </member>
+        <member name="P:Kernel.Hardware.USB.HCIs.EHCI.FRINDEX">
+            <summary>
+            USB frame index operational memory-mapped register.
+            </summary>
+        </member>
+        <member name="P:Kernel.Hardware.USB.HCIs.EHCI.CTRLDSSEGMENT">
+            <summary>
+            USB control DS segment operational memory-mapped register.
+            </summary>
+        </member>
+        <member name="P:Kernel.Hardware.USB.HCIs.EHCI.PERIODICLISTBASE">
+            <summary>
+            USB periodic list base operational memory-mapped register.
+            </summary>
+        </member>
+        <member name="P:Kernel.Hardware.USB.HCIs.EHCI.ASYNCLISTADDR">
+            <summary>
+            USB async list address operational memory-mapped register.
+            </summary>
+        </member>
+        <member name="P:Kernel.Hardware.USB.HCIs.EHCI.AsynchronousScheduleEnabled">
+            <summary>
+            Whether the asynchronous schedule is enabled or not.
+            </summary>
+        </member>
+        <member name="P:Kernel.Hardware.USB.HCIs.EHCI.AsynchronousScheduleStatus">
+            <summary>
+            Whether the HCI thinks the asynchronous schedule is enabled or not.
+            </summary>
+        </member>
+        <member name="P:Kernel.Hardware.USB.HCIs.EHCI.CONFIGFLAG">
+            <summary>
+            USB configuration flags operational memory-mapped register.
+            </summary>
+        </member>
+        <member name="P:Kernel.Hardware.USB.HCIs.EHCI.PORTSC">
+            <summary>
+            USB port SC operational memory-mapped register.
+            </summary>
+        </member>
+        <member name="T:Kernel.Hardware.USB.HCIs.QueueHead_Struct">
+            <summary>
+            Represents a Queue Head structure's memory layout.
+            This structure can be passed to the HCI.
+            </summary>
+        </member>
+        <member name="F:Kernel.Hardware.USB.HCIs.QueueHead_Struct.u1">
+            <summary>
+            UInt32 1 in the structure.
+            </summary>
+        </member>
+        <member name="F:Kernel.Hardware.USB.HCIs.QueueHead_Struct.u2">
+            <summary>
+            UInt32 2 in the structure.
+            </summary>
+        </member>
+        <member name="F:Kernel.Hardware.USB.HCIs.QueueHead_Struct.u3">
+            <summary>
+            UInt32 3 in the structure.
+            </summary>
+        </member>
+        <member name="F:Kernel.Hardware.USB.HCIs.QueueHead_Struct.u4">
+            <summary>
+            UInt32 4 in the structure.
+            </summary>
+        </member>
+        <member name="F:Kernel.Hardware.USB.HCIs.QueueHead_Struct.u5">
+            <summary>
+            UInt32 5 in the structure.
+            </summary>
+        </member>
+        <member name="F:Kernel.Hardware.USB.HCIs.QueueHead_Struct.u6">
+            <summary>
+            UInt32 6 in the structure.
+            </summary>
+        </member>
+        <member name="F:Kernel.Hardware.USB.HCIs.QueueHead_Struct.u7">
+            <summary>
+            UInt32 7 in the structure.
+            </summary>
+        </member>
+        <member name="F:Kernel.Hardware.USB.HCIs.QueueHead_Struct.u8">
+            <summary>
+            UInt32 8 in the structure.
+            </summary>
+        </member>
+        <member name="F:Kernel.Hardware.USB.HCIs.QueueHead_Struct.u9">
+            <summary>
+            UInt32 9 in the structure.
+            </summary>
+        </member>
+        <member name="F:Kernel.Hardware.USB.HCIs.QueueHead_Struct.u10">
+            <summary>
+            UInt32 10 in the structure.
+            </summary>
+        </member>
+        <member name="F:Kernel.Hardware.USB.HCIs.QueueHead_Struct.u11">
+            <summary>
+            UInt32 11 in the structure.
+            </summary>
+        </member>
+        <member name="F:Kernel.Hardware.USB.HCIs.QueueHead_Struct.u12">
+            <summary>
+            UInt32 12 in the structure.
+            </summary>
+        </member>
+        <member name="T:Kernel.Hardware.USB.HCIs.qTD_Struct">
+            <summary>
+            Represents a Queue Transfer Descriptor structure's memory layout.
+            This structure can be passed to the HCI.
+            </summary>
+        </member>
+        <member name="F:Kernel.Hardware.USB.HCIs.qTD_Struct.u1">
+            <summary>
+            UInt32 1 in the structure.
+            </summary>
+        </member>
+        <member name="F:Kernel.Hardware.USB.HCIs.qTD_Struct.u2">
+            <summary>
+            UInt32 2 in the structure.
+            </summary>
+        </member>
+        <member name="F:Kernel.Hardware.USB.HCIs.qTD_Struct.u3">
+            <summary>
+            UInt32 3 in the structure.
+            </summary>
+        </member>
+        <member name="F:Kernel.Hardware.USB.HCIs.qTD_Struct.u4">
+            <summary>
+            UInt32 4 in the structure.
+            </summary>
+        </member>
+        <member name="F:Kernel.Hardware.USB.HCIs.qTD_Struct.u5">
+            <summary>
+            UInt32 5 in the structure.
+            </summary>
+        </member>
+        <member name="F:Kernel.Hardware.USB.HCIs.qTD_Struct.u6">
+            <summary>
+            UInt32 6 in the structure.
+            </summary>
+        </member>
+        <member name="F:Kernel.Hardware.USB.HCIs.qTD_Struct.u7">
+            <summary>
+            UInt32 7 in the structure.
+            </summary>
+        </member>
+        <member name="F:Kernel.Hardware.USB.HCIs.qTD_Struct.u8">
+            <summary>
+            UInt32 8 in the structure.
+            </summary>
+        </member>
+        <member name="T:Kernel.Hardware.USB.HCIs.qTD">
+            <summary>
+            Represents a qTD. The underlying memory structure can be passed to the HCI. 
+            This class provides methods / properties for manipulating qTD values.
+            </summary>
+        </member>
+        <member name="F:Kernel.Hardware.USB.HCIs.qTD.qtd">
+            <summary>
+            The qTD data/memory structure that can be passed to the HCI.
+            </summary>
+        </member>
+        <member name="M:Kernel.Hardware.USB.HCIs.qTD.#ctor">
+            <summary>
+            Initializes a new qTD with new data structure.
+            </summary>
+        </member>
+        <member name="M:Kernel.Hardware.USB.HCIs.qTD.#ctor(Kernel.Hardware.USB.HCIs.qTD_Struct*)">
+            <summary>
+            Initializes a qTD with specified underlying data structure.
+            </summary>
+            <param name="aqTD"></param>
+        </member>
+        <member name="M:Kernel.Hardware.USB.HCIs.qTD.Free">
+            <summary>
+            Frees the underlying memory structure.
+            </summary>
+        </member>
+        <member name="P:Kernel.Hardware.USB.HCIs.qTD.NextqTDPointer">
+            <summary>
+            Pointer to the next qTD in the linked list.
+            </summary>
+        </member>
+        <member name="P:Kernel.Hardware.USB.HCIs.qTD.NextqTDPointerTerminate">
+            <summary>
+            Whether the next qTD pointer indicates the end of the linked list.
+            </summary>
+        </member>
+        <member name="P:Kernel.Hardware.USB.HCIs.qTD.Status">
+            <summary>
+            The status.
+            </summary>
+        </member>
+        <member name="P:Kernel.Hardware.USB.HCIs.qTD.PIDCode">
+            <summary>
+            The PID code.
+            </summary>
+        </member>
+        <member name="P:Kernel.Hardware.USB.HCIs.qTD.ErrorCounter">
+            <summary>
+            The error counter.
+            </summary>
+        </member>
+        <member name="P:Kernel.Hardware.USB.HCIs.qTD.CurrentPage">
+            <summary>
+            The current page number.
+            </summary>
+        </member>
+        <member name="P:Kernel.Hardware.USB.HCIs.qTD.InterruptOnComplete">
+            <summary>
+            Whether to trigger an interrupt when the transfer is complete.
+            </summary>
+        </member>
+        <member name="P:Kernel.Hardware.USB.HCIs.qTD.TotalBytesToTransfer">
+            <summary>
+            The total number of bytes to transfer.
+            </summary>
+        </member>
+        <member name="P:Kernel.Hardware.USB.HCIs.qTD.DataToggle">
+            <summary>
+            The data toggle status.
+            </summary>
+        </member>
+        <member name="T:Kernel.Hardware.USB.HCIs.QueueHead">
+            <summary>
+            Represents a queue head. The underlying memory structure can be passed to the HCI. 
+            This class provides methods / properties for manipulating queue head values.
+            </summary>
+        </member>
+        <member name="F:Kernel.Hardware.USB.HCIs.QueueHead.queueHead">
+            <summary>
+            The queue head data/memory structure that can be passed to the HCI.
+            </summary>
+        </member>
+        <member name="M:Kernel.Hardware.USB.HCIs.QueueHead.#ctor">
+            <summary>
+            Initializes a new queue head with empty underlying memory structure.
+            </summary>
+        </member>
+        <member name="M:Kernel.Hardware.USB.HCIs.QueueHead.#ctor(Kernel.Hardware.USB.HCIs.QueueHead_Struct*)">
+            <summary>
+            Initializes a new queue head with specified underlying memory structure.
+            </summary>
+            <param name="aQueueHead">The existing underlying queue head.</param>
+        </member>
+        <member name="M:Kernel.Hardware.USB.HCIs.QueueHead.Free">
+            <summary>
+            Frees the underlying memory structure.
+            </summary>
+        </member>
+        <member name="P:Kernel.Hardware.USB.HCIs.QueueHead.HorizontalLinkPointer">
+            <summary>
+            Horizontal link pointer - points to the next queue head in the list.
+            </summary>
+        </member>
+        <member name="P:Kernel.Hardware.USB.HCIs.QueueHead.Type">
+            <summary>
+            Queue head type.
+            </summary>
+        </member>
+        <member name="P:Kernel.Hardware.USB.HCIs.QueueHead.DeviceAddress">
+            <summary>
+            Target USB device address.
+            </summary>
+        </member>
+        <member name="P:Kernel.Hardware.USB.HCIs.QueueHead.InactiveOnNextTransaction">
+            <summary>
+            Inactive on next transaction.
+            </summary>
+        </member>
+        <member name="P:Kernel.Hardware.USB.HCIs.QueueHead.EndpointNumber">
+            <summary>
+            Target USB endpoint number.
+            </summary>
+        </member>
+        <member name="P:Kernel.Hardware.USB.HCIs.QueueHead.EndpointSpeed">
+            <summary>
+            Target USB endpoint speed.
+            </summary>
+        </member>
+        <member name="P:Kernel.Hardware.USB.HCIs.QueueHead.DataToggleControl">
+            <summary>
+            Data toggle control.
+            </summary>
+        </member>
+        <member name="P:Kernel.Hardware.USB.HCIs.QueueHead.HeadOfReclamationList">
+            <summary>
+            Whether this queue head is the first in the reclamation list.
+            </summary>
+        </member>
+        <member name="P:Kernel.Hardware.USB.HCIs.QueueHead.MaximumPacketLength">
+            <summary>
+            Target endpoint's maximum packet length.
+            </summary>
+        </member>
+        <member name="P:Kernel.Hardware.USB.HCIs.QueueHead.ControlEndpointFlag">
+            <summary>
+            Control endpoint flag.
+            </summary>
+        </member>
+        <member name="P:Kernel.Hardware.USB.HCIs.QueueHead.NakCountReload">
+            <summary>
+            Nak count reload number.
+            </summary>
+        </member>
+        <member name="P:Kernel.Hardware.USB.HCIs.QueueHead.InterruptScheduleMask">
+            <summary>
+            Interrupt schedule mask.
+            </summary>
+        </member>
+        <member name="P:Kernel.Hardware.USB.HCIs.QueueHead.SplitCompletionMask">
+            <summary>
+            Split completion mask.
+            </summary>
+        </member>
+        <member name="P:Kernel.Hardware.USB.HCIs.QueueHead.HubAddr">
+            <summary>
+            Hub address.
+            </summary>
+        </member>
+        <member name="P:Kernel.Hardware.USB.HCIs.QueueHead.PortNumber">
+            <summary>
+            Port number.
+            </summary>
+        </member>
+        <member name="P:Kernel.Hardware.USB.HCIs.QueueHead.HighBandwidthPipeMultiplier">
+            <summary>
+            High bandwidth pipe multiplier.
+            </summary>
+        </member>
+        <member name="P:Kernel.Hardware.USB.HCIs.QueueHead.CurrentqTDPointer">
+            <summary>
+            Current qTD pointer.
+            </summary>
+        </member>
+        <member name="P:Kernel.Hardware.USB.HCIs.QueueHead.NextqTDPointer">
+            <summary>
+            Next qTD pointer.
+            </summary>
+        </member>
+        <member name="P:Kernel.Hardware.USB.HCIs.QueueHead.NextqTDPointerTerminate">
+            <summary>
+            Whether the next qTD pointer indicates end of the qTD list or not.
+            </summary>
+        </member>
+        <member name="T:Kernel.Hardware.USB.HCIs.EHCI_ExtendedCapability">
+            <summary>
+            Represents EHCI Extended Capabilities register information.
+            </summary>
+        </member>
+        <member name="F:Kernel.Hardware.USB.HCIs.EHCI_ExtendedCapability.usbBaseAddress">
+            <summary>
+            USB PCI base address.
+            </summary>
+        </member>
+        <member name="F:Kernel.Hardware.USB.HCIs.EHCI_ExtendedCapability.capOffset">
+            <summary>
+            Capabilities registers offset from base address.
+            </summary>
+        </member>
+        <member name="M:Kernel.Hardware.USB.HCIs.EHCI_ExtendedCapability.#ctor(System.Byte*,System.Byte)">
+            <summary>
+            Initializes new extended capabilities information.
+            </summary>
+            <param name="aUSBBaseAddress">The USB base address.</param>
+            <param name="aCapOffset">The capabilities registers offset form base address.</param>
+        </member>
+        <member name="P:Kernel.Hardware.USB.HCIs.EHCI_ExtendedCapability.CapabilityID">
+            <summary>
+            Capability ID.
+            </summary>
+        </member>
+        <member name="P:Kernel.Hardware.USB.HCIs.EHCI_ExtendedCapability.NextEHCIExtendedCapabilityOffset">
+            <summary>
+            Next EHCI extended capability offset.
+            </summary>
+        </member>
+        <member name="T:Kernel.Hardware.USB.HCIs.EHCI_USBLegacySupportExtendedCapability">
+            <summary>
+            Represents EHCI USB Legacy Support Extended Capabilities register information.
+            </summary>
+        </member>
+        <member name="F:Kernel.Hardware.USB.HCIs.EHCI_USBLegacySupportExtendedCapability.ControlStatusCap">
+            <summary>
+            Control status capabilities.
+            </summary>
+        </member>
+        <member name="M:Kernel.Hardware.USB.HCIs.EHCI_USBLegacySupportExtendedCapability.#ctor(System.Byte*,System.Byte)">
+            <summary>
+            Initializes new EHCI USB Legacy Support Extended Capabilities register information.
+            </summary>
+            <param name="aUSBBaseAddress">The USB base address.</param>
+            <param name="aCapOffset">The capabilities registers offset from the base address.</param>
+        </member>
+        <member name="P:Kernel.Hardware.USB.HCIs.EHCI_USBLegacySupportExtendedCapability.HCOSOwnedSemaphore">
+            <summary>
+            HC OS Owned semaphore - whether the OS controls the EHCI.
+            </summary>
+        </member>
+        <member name="P:Kernel.Hardware.USB.HCIs.EHCI_USBLegacySupportExtendedCapability.HCBIOSOwnedSemaphore">
+            <summary>
+            HC BIOS Owned semaphore - whether the BIOS controls the EHCI.
+            </summary>
+        </member>
+        <member name="T:Kernel.Hardware.USB.HCIs.EHCI_USBLegacySupportControlStatusCapability">
+            <summary>
+            Represents EHCI USB Legacy Support Control/Status Capabilities register information.
+            </summary>
+        </member>
+        <member name="M:Kernel.Hardware.USB.HCIs.EHCI_USBLegacySupportControlStatusCapability.#ctor(System.Byte*,System.Byte)">
+            <summary>
+            Initializes new EHCI USB Legacy Support Control/Status Capabilities register information.
+            </summary>
+            <param name="aUSBBaseAddress">The USB base address.</param>
+            <param name="aCapOffset">The capabilities registers offset from the base address.</param>
         </member>
         <member name="T:Kernel.Hardware.USB.USBManager">
             <summary>

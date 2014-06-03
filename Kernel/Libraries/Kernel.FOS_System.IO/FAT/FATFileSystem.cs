@@ -5,6 +5,9 @@ using Kernel.Hardware;
 
 namespace Kernel.FOS_System.IO.FAT
 {
+    /// <summary>
+    /// Represents a FAT (12/16/32) file system.
+    /// </summary>
     public class FATFileSystem : FileSystem
     {
         public readonly UInt32 BytesPerSector;

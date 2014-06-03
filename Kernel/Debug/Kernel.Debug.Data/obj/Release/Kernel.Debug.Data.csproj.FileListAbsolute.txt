@@ -4,3 +4,9 @@ G:\Fling OS\Fling OS\Kernel\Debug\Kernel.Debug.Data\bin\Release\Kernel.Debug.Dat
 G:\Fling OS\Fling OS\Kernel\Debug\Kernel.Debug.Data\obj\Release\Kernel.Debug.Data.csprojResolveAssemblyReference.cache
 G:\Fling OS\Fling OS\Kernel\Debug\Kernel.Debug.Data\obj\Release\Kernel.Debug.Data.dll
 G:\Fling OS\Fling OS\Kernel\Debug\Kernel.Debug.Data\obj\Release\Kernel.Debug.Data.pdb
+Z:\Fling OS\Fling OS\Kernel\Debug\Kernel.Debug.Data\bin\Release\Kernel.Debug.Data.dll.config
+Z:\Fling OS\Fling OS\Kernel\Debug\Kernel.Debug.Data\bin\Release\Kernel.Debug.Data.dll
+Z:\Fling OS\Fling OS\Kernel\Debug\Kernel.Debug.Data\bin\Release\Kernel.Debug.Data.pdb
+Z:\Fling OS\Fling OS\Kernel\Debug\Kernel.Debug.Data\obj\Release\Kernel.Debug.Data.csprojResolveAssemblyReference.cache
+Z:\Fling OS\Fling OS\Kernel\Debug\Kernel.Debug.Data\obj\Release\Kernel.Debug.Data.dll
+Z:\Fling OS\Fling OS\Kernel\Debug\Kernel.Debug.Data\obj\Release\Kernel.Debug.Data.pdb

@@ -4,6 +4,11 @@
         <name>Kernel.Utilities</name>
     </assembly>
     <members>
+        <member name="T:Kernel.Utilities.ObjectUtilities">
+            <summary>
+            Utility methods for object manipulation.
+            </summary>
+        </member>
         <member name="M:Kernel.Utilities.ObjectUtilities.GetHandle(System.Object)">
             <summary>
             Gets a handle for the specified object - basically, a round-about way of casting an object to a pointer.
@@ -21,7 +26,7 @@
             <remarks>
             All the plug does is to set the return value to the argument value!
             </remarks>
-            <param name="anObj">The pointer to get an object of.</param>
+            <param name="anObjPtr">The pointer to get an object of.</param>
             <returns>The object the pointer points to.</returns>
         </member>
     </members>

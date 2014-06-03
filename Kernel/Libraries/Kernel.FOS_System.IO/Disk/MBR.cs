@@ -4,6 +4,9 @@ using Kernel.FOS_System.Collections;
 
 namespace Kernel.FOS_System.IO.Disk
 {
+    /// <summary>
+    /// Represents a master boot record partitioning scheme.
+    /// </summary>
     public class MBR : FOS_System.Object
     {
         /*
@@ -11,8 +14,18 @@ namespace Kernel.FOS_System.IO.Disk
          *   - http://wiki.osdev.org/Partition_Table
          *   - http://wiki.osdev.org/MBR_(x86)
          */
+
+        /// <summary>
+        /// The partitions in this MBR.
+        /// </summary>
         public PartitionInfo[] Partitions = new PartitionInfo[4];
+        /// <summary>
+        /// The number of partitions set in the Partitions array.
+        /// </summary>
         protected UInt32 numPartitions = 0;
+        /// <summary>
+        /// The number of partitions set in the Partitions array.
+        /// </summary>
         public UInt32 NumPartitions
         {
             get
@@ -20,6 +33,9 @@ namespace Kernel.FOS_System.IO.Disk
                 return numPartitions;
             }
         }
+        /// <summary>
+        /// The actual capacity (length) of the partitions array.
+        /// </summary>
         protected int PartitionsCapacity
         {
             get
@@ -28,31 +44,63 @@ namespace Kernel.FOS_System.IO.Disk
             }
         }
 
+        /// <summary>
+        /// Whether the MBR is valid or not.
+        /// </summary>
         public readonly bool IsValid = false;
 
+        /// <summary>
+        /// Represents partition information read from the MBR.
+        /// </summary>
         public class PartitionInfo : FOS_System.Object
         {
+            /// <summary>
+            /// The location of the Extended Boot Record information.
+            /// </summary>
             public UInt32 EBRLocation = 0;
 
+            /// <summary>
+            /// Whether the partition is bootable or not.
+            /// </summary>
             public readonly bool Bootable;
             /*  Not used - we use LBA values not Head/Sector/Cylinder
                 public readonly byte StartingHead;
                 public readonly byte StartingSector;
                 public readonly byte StartingCylinder;
             */
+            /// <summary>
+            /// The System ID of the partition.
+            /// </summary>
             public readonly byte SystemID;
             /*  Not used - we use LBA values not Head/Sector/Cylinder
                 public readonly byte EndingHead;
                 public readonly byte EndingSector;
                 public readonly byte EndingCylinder;
             */
+            /// <summary>
+            /// The first sector number of the partition.
+            /// </summary>
             public readonly UInt32 StartSector;
+            /// <summary>
+            /// The number of sectors in the partition.
+            /// </summary>
             public readonly UInt32 SectorCount;
 
+            /// <summary>
+            /// Initializes new partition information with only EBR information.
+            /// </summary>
+            /// <param name="anEBRLocation">The location of the EBR information on disk.</param>
             public PartitionInfo(UInt32 anEBRLocation)
             {
                 EBRLocation = anEBRLocation;
             }
+            /// <summary>
+            /// Initializes new partition information.
+            /// </summary>
+            /// <param name="isBootable">Whether the partition is bootable or not.</param>
+            /// <param name="aSystemID">The partition's System ID.</param>
+            /// <param name="aStartSector">The sector number of the first sector in the partition.</param>
+            /// <param name="aSectorCount">The number of sectors in the partition.</param>
             public PartitionInfo(bool isBootable, byte aSystemID, UInt32 aStartSector, UInt32 aSectorCount)
             {
                 Bootable = isBootable;
@@ -62,10 +110,17 @@ namespace Kernel.FOS_System.IO.Disk
             }
         }
 
+        /// <summary>
+        /// Initializes a new, empty MBR and marks it as valid.
+        /// </summary>
         public MBR()
         {
             IsValid = true;
         }
+        /// <summary>
+        /// Initializes a new MBR from the specified MBR data.
+        /// </summary>
+        /// <param name="aMBR">The MBR data read from the disk.</param>
         public MBR(byte[] aMBR)
         {
             //See whether this is a valid MBR
@@ -99,6 +154,12 @@ namespace Kernel.FOS_System.IO.Disk
             }
         }
 
+        /// <summary>
+        /// Parses partition information from the MBR data at the specified offset.
+        /// </summary>
+        /// <param name="aMBR">The MBR data.</param>
+        /// <param name="aLoc">The offset of the partition information in the MBR data.</param>
+        /// <returns>The partition information or null if the information is not a valid partition.</returns>
         protected static PartitionInfo ParsePartition(byte[] aMBR, UInt32 aLoc)
         {
             byte systemID = aMBR[aLoc + 4];
@@ -130,6 +191,10 @@ namespace Kernel.FOS_System.IO.Disk
                 return new PartitionInfo(bootable, systemID, startSector, sectorCount);
             }
         }
+        /// <summary>
+        /// Adds partition info to the list of partitions.
+        /// </summary>
+        /// <param name="partInfo">The partition info to add.</param>
         protected void AddPartitionToList(PartitionInfo partInfo)
         {
             if (numPartitions >= PartitionsCapacity)
@@ -145,11 +210,22 @@ namespace Kernel.FOS_System.IO.Disk
             Partitions[numPartitions++] = partInfo;
         }
 
+        /// <summary>
+        /// Creates a new FAT32 partition that covers the entire drive.
+        /// </summary>
+        /// <param name="aDisk">The disk to create the partition for.</param>
+        /// <param name="bootable">Whether to mark the partition as bootable or not.</param>
+        /// <returns>The new partition information.</returns>
         public static PartitionInfo CreateFAT32PartitionInfo(Hardware.Devices.DiskDevice aDisk, bool bootable)
         {
             return new PartitionInfo(bootable, 0xC, 2U, (uint)(aDisk.BlockCount - 1));
         }
-        public static void FormatDisk(Hardware.Devices.DiskDevice aDisk, List partitions)
+        /// <summary>
+        /// Formats the specified using the specified partition informations.
+        /// </summary>
+        /// <param name="aDisk">The disk to format.</param>
+        /// <param name="partitionInfos">The partition informations to use for the format.</param>
+        public static void FormatDisk(Hardware.Devices.DiskDevice aDisk, List partitionInfos)
         {
             //BasicConsole.WriteLine("Creating new MBR data...");
             byte[] newMBRData = new byte[512];
@@ -164,9 +240,9 @@ namespace Kernel.FOS_System.IO.Disk
             //BasicConsole.DelayOutput(1);
 
             uint part1Offset = 0x1BE;
-            for (uint i = 0; i < partitions.Count; i++)
+            for (uint i = 0; i < partitionInfos.Count; i++)
             {
-                PartitionInfo partInfo = (PartitionInfo)partitions[(int)i];
+                PartitionInfo partInfo = (PartitionInfo)partitionInfos[(int)i];
                 uint partOffset = part1Offset + (0x10 * i);
                 //BasicConsole.WriteLine(((FOS_System.String)"Partition ") + i + " @ " + partOffset);
                 //BasicConsole.WriteLine(((FOS_System.String)"Bootable : ") + partInfo.Bootable);

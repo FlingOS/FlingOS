@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 
 namespace Kernel.Utilities
 {
+    /// <summary>
+    /// Utility methods for object manipulation.
+    /// </summary>
     [Compiler.PluggedClass]
     public static class ObjectUtilities
     {
@@ -30,7 +33,7 @@ namespace Kernel.Utilities
         /// <remarks>
         /// All the plug does is to set the return value to the argument value!
         /// </remarks>
-        /// <param name="anObj">The pointer to get an object of.</param>
+        /// <param name="anObjPtr">The pointer to get an object of.</param>
         /// <returns>The object the pointer points to.</returns>
         [Compiler.PluggedMethod(ASMFilePath = @"ASM\ObjectUtilities\GetObject")]
         [Compiler.NoDebug]

@@ -4,5 +4,633 @@
         <name>Kernel.FOS_System.IO</name>
     </assembly>
     <members>
+        <member name="T:Kernel.FOS_System.IO.Disk.EBR">
+            <summary>
+            Represents an extended boot record.
+            </summary>
+        </member>
+        <member name="T:Kernel.FOS_System.IO.Disk.MBR">
+            <summary>
+            Represents a master boot record partitioning scheme.
+            </summary>
+        </member>
+        <member name="F:Kernel.FOS_System.IO.Disk.MBR.Partitions">
+            <summary>
+            The partitions in this MBR.
+            </summary>
+        </member>
+        <member name="F:Kernel.FOS_System.IO.Disk.MBR.numPartitions">
+            <summary>
+            The number of partitions set in the Partitions array.
+            </summary>
+        </member>
+        <member name="F:Kernel.FOS_System.IO.Disk.MBR.IsValid">
+            <summary>
+            Whether the MBR is valid or not.
+            </summary>
+        </member>
+        <member name="M:Kernel.FOS_System.IO.Disk.MBR.#ctor">
+            <summary>
+            Initializes a new, empty MBR and marks it as valid.
+            </summary>
+        </member>
+        <member name="M:Kernel.FOS_System.IO.Disk.MBR.#ctor(System.Byte[])">
+            <summary>
+            Initializes a new MBR from the specified MBR data.
+            </summary>
+            <param name="aMBR">The MBR data read from the disk.</param>
+        </member>
+        <member name="M:Kernel.FOS_System.IO.Disk.MBR.ParsePartition(System.Byte[],System.UInt32)">
+            <summary>
+            Parses partition information from the MBR data at the specified offset.
+            </summary>
+            <param name="aMBR">The MBR data.</param>
+            <param name="aLoc">The offset of the partition information in the MBR data.</param>
+            <returns>The partition information or null if the information is not a valid partition.</returns>
+        </member>
+        <member name="M:Kernel.FOS_System.IO.Disk.MBR.AddPartitionToList(Kernel.FOS_System.IO.Disk.MBR.PartitionInfo)">
+            <summary>
+            Adds partition info to the list of partitions.
+            </summary>
+            <param name="partInfo">The partition info to add.</param>
+        </member>
+        <member name="M:Kernel.FOS_System.IO.Disk.MBR.CreateFAT32PartitionInfo(Kernel.Hardware.Devices.DiskDevice,System.Boolean)">
+            <summary>
+            Creates a new FAT32 partition that covers the entire drive.
+            </summary>
+            <param name="aDisk">The disk to create the partition for.</param>
+            <param name="bootable">Whether to mark the partition as bootable or not.</param>
+            <returns>The new partition information.</returns>
+        </member>
+        <member name="M:Kernel.FOS_System.IO.Disk.MBR.FormatDisk(Kernel.Hardware.Devices.DiskDevice,Kernel.FOS_System.Collections.List)">
+            <summary>
+            Formats the specified using the specified partition informations.
+            </summary>
+            <param name="aDisk">The disk to format.</param>
+            <param name="partitionInfos">The partition informations to use for the format.</param>
+        </member>
+        <member name="P:Kernel.FOS_System.IO.Disk.MBR.NumPartitions">
+            <summary>
+            The number of partitions set in the Partitions array.
+            </summary>
+        </member>
+        <member name="P:Kernel.FOS_System.IO.Disk.MBR.PartitionsCapacity">
+            <summary>
+            The actual capacity (length) of the partitions array.
+            </summary>
+        </member>
+        <member name="T:Kernel.FOS_System.IO.Disk.MBR.PartitionInfo">
+            <summary>
+            Represents partition information read from the MBR.
+            </summary>
+        </member>
+        <member name="F:Kernel.FOS_System.IO.Disk.MBR.PartitionInfo.EBRLocation">
+            <summary>
+            The location of the Extended Boot Record information.
+            </summary>
+        </member>
+        <member name="F:Kernel.FOS_System.IO.Disk.MBR.PartitionInfo.Bootable">
+            <summary>
+            Whether the partition is bootable or not.
+            </summary>
+        </member>
+        <member name="F:Kernel.FOS_System.IO.Disk.MBR.PartitionInfo.SystemID">
+            <summary>
+            The System ID of the partition.
+            </summary>
+        </member>
+        <member name="F:Kernel.FOS_System.IO.Disk.MBR.PartitionInfo.StartSector">
+            <summary>
+            The first sector number of the partition.
+            </summary>
+        </member>
+        <member name="F:Kernel.FOS_System.IO.Disk.MBR.PartitionInfo.SectorCount">
+            <summary>
+            The number of sectors in the partition.
+            </summary>
+        </member>
+        <member name="M:Kernel.FOS_System.IO.Disk.MBR.PartitionInfo.#ctor(System.UInt32)">
+            <summary>
+            Initializes new partition information with only EBR information.
+            </summary>
+            <param name="anEBRLocation">The location of the EBR information on disk.</param>
+        </member>
+        <member name="M:Kernel.FOS_System.IO.Disk.MBR.PartitionInfo.#ctor(System.Boolean,System.Byte,System.UInt32,System.UInt32)">
+            <summary>
+            Initializes new partition information.
+            </summary>
+            <param name="isBootable">Whether the partition is bootable or not.</param>
+            <param name="aSystemID">The partition's System ID.</param>
+            <param name="aStartSector">The sector number of the first sector in the partition.</param>
+            <param name="aSectorCount">The number of sectors in the partition.</param>
+        </member>
+        <member name="M:Kernel.FOS_System.IO.Disk.EBR.#ctor(System.Byte[])">
+            <summary>
+            Initializes an EBR from the specified data.
+            </summary>
+            <param name="aEBR">The EBR data.</param>
+        </member>
+        <member name="T:Kernel.FOS_System.IO.IOException">
+            <summary>
+            Represents an IO exception.
+            </summary>
+        </member>
+        <member name="M:Kernel.FOS_System.IO.IOException.#ctor(System.String)">
+            <summary>
+            Initializes a new IO exception.
+            </summary>
+            <param name="aMessage">The IO exception message.</param>
+        </member>
+        <member name="T:Kernel.FOS_System.IO.FAT.FATFileSystem">
+            <summary>
+            Represents a FAT (12/16/32) file system.
+            </summary>
+        </member>
+        <member name="T:Kernel.FOS_System.IO.FileSystem">
+            <summary>
+            Represents a file system which must exist within a partition.
+            </summary>
+        </member>
+        <member name="F:Kernel.FOS_System.IO.FileSystem.thePartition">
+            <summary>
+            The partition in which the file system resides.
+            </summary>
+        </member>
+        <member name="M:Kernel.FOS_System.IO.FileSystem.#ctor(Kernel.FOS_System.IO.Partition)">
+            <summary>
+            Initializes a new file system for the specified partition.
+            </summary>
+            <param name="aPartition">The partition in which the partition resides.</param>
+        </member>
+        <member name="M:Kernel.FOS_System.IO.FileSystem.GetListing(Kernel.FOS_System.String)">
+            <summary>
+            Gets the listing for the specified path.
+            </summary>
+            <param name="aName">The full path to the listing to get.</param>
+            <returns>The listing or null if not found.</returns>
+        </member>
+        <member name="M:Kernel.FOS_System.IO.FileSystem.GetListingFromListings(Kernel.FOS_System.Collections.List,Kernel.FOS_System.Collections.List)">
+            <summary>
+            Gets a specific listing from the specified list of listings. Performs a recursive
+            search down the file system tree.
+            </summary>
+            <param name="nameParts">The parts of the full path of the listing to get.</param>
+            <param name="listings">The listings to search through.</param>
+            <returns>The listing or null if not found.</returns>
+        </member>
+        <member name="M:Kernel.FOS_System.IO.FileSystem.NewFile(Kernel.FOS_System.String,Kernel.FOS_System.IO.Directory)">
+            <summary>
+            Creates a new file within the file system.
+            </summary>
+            <param name="name">The name of the file to create.</param>
+            <param name="parent">The parent directory of the new file.</param>
+            <returns>The new file listing.</returns>
+        </member>
+        <member name="M:Kernel.FOS_System.IO.FileSystem.NewDirectory(Kernel.FOS_System.String,Kernel.FOS_System.IO.Directory)">
+            <summary>
+            Creates a new directory within the file system.
+            </summary>
+            <param name="name">The name of the directory to create.</param>
+            <param name="parent">The parent directory of the new directory.</param>
+            <returns>The new directory listing.</returns>
+        </member>
+        <member name="P:Kernel.FOS_System.IO.FileSystem.ThePartition">
+            <summary>
+            The partition in which the file system resides.
+            </summary>
+        </member>
+        <member name="T:Kernel.FOS_System.IO.FAT.FATDirectory">
+            <summary>
+            Represents a directory in a FAT file system.
+            </summary>
+        </member>
+        <member name="T:Kernel.FOS_System.IO.Directory">
+            <summary>
+            Represents a directory (folder) listing.
+            </summary>
+        </member>
+        <member name="T:Kernel.FOS_System.IO.Base">
+            <summary>
+            Represents any listing - a directory or a file.
+            </summary>
+        </member>
+        <member name="F:Kernel.FOS_System.IO.Base.TheFileSystem">
+            <summary>
+            The file system the listing belongs to.
+            </summary>
+        </member>
+        <member name="F:Kernel.FOS_System.IO.Base.Parent">
+            <summary>
+            The parent directory of this listing. Null indicates this listing is the root directory.
+            </summary>
+        </member>
+        <member name="F:Kernel.FOS_System.IO.Base.Name">
+            <summary>
+            The name of this listing.
+            </summary>
+        </member>
+        <member name="F:Kernel.FOS_System.IO.Base.IsDirectory">
+            <summary>
+            Whether this listing is a directory or not.
+            </summary>
+        </member>
+        <member name="M:Kernel.FOS_System.IO.Base.#ctor(Kernel.FOS_System.IO.FileSystem,Kernel.FOS_System.IO.Directory,Kernel.FOS_System.String,System.Boolean)">
+            <summary>
+            Initializes a new base listing.
+            </summary>
+            <param name="aFileSystem">The file system to which the listing belongs.</param>
+            <param name="parent">The parent directory of the listing.</param>
+            <param name="aName">The name of the listing.</param>
+            <param name="isDirectory">Whether the listing is a directory or not.</param>
+        </member>
+        <member name="F:Kernel.FOS_System.IO.Base.mSize">
+            <summary>
+            The size of the listing. 0 for directories.
+            </summary>
+        </member>
+        <member name="P:Kernel.FOS_System.IO.Base.Size">
+            <summary>
+            The size of the listing. 0 for directories.
+            </summary>
+        </member>
+        <member name="M:Kernel.FOS_System.IO.Directory.#ctor(Kernel.FOS_System.IO.FileSystem,Kernel.FOS_System.IO.Directory,Kernel.FOS_System.String)">
+            <summary>
+            Initializes a new directory listing.
+            </summary>
+            <param name="aFileSystem">The file system to which the directory belongs.</param>
+            <param name="parent">The parent directory of the directory.</param>
+            <param name="aName">The name of the directory.</param>
+        </member>
+        <member name="M:Kernel.FOS_System.IO.Directory.Find(Kernel.FOS_System.String)">
+            <summary>
+            Attempts to find the specified directory within any file system.
+            </summary>
+            <param name="directoryName">The full path and name of the directory to find.</param>
+            <returns>The directory or null if it isn't found.</returns>
+        </member>
+        <member name="M:Kernel.FOS_System.IO.Directory.GetListings">
+            <summary>
+            Gets all the listings within the directory.
+            </summary>
+            <returns>All the listings within the directory.</returns>
+        </member>
+        <member name="M:Kernel.FOS_System.IO.Directory.GetListing(Kernel.FOS_System.Collections.List)">
+            <summary>
+            Gets the listing with specified name parts from within the current directory or its sub-directories.
+            </summary>
+            <param name="nameParts">
+            The full path and name of the listing to get, split into their separate parts. One part represents one 
+            sub-directory or the final file/directory name.
+            </param>
+            <returns>Returns the listing or null if it is not found.</returns>
+        </member>
+        <member name="M:Kernel.FOS_System.IO.Directory.WriteListings">
+            <summary>
+            Writes the cached listings to back to disc. This can either do a full re-write or an update-only approach.
+            </summary>
+        </member>
+        <member name="M:Kernel.FOS_System.IO.Directory.AddListing(Kernel.FOS_System.IO.Base)">
+            <summary>
+            Adds the specified listing to the cached listings. Call WriteListings to save the new listing to disc.
+            </summary>
+            <param name="aListing">The listing to add.</param>
+        </member>
+        <member name="M:Kernel.FOS_System.IO.Directory.ListingExists(Kernel.FOS_System.String)">
+            <summary>
+            Determines whether the specified listing exists or not within this directory or its sub-directories.
+            </summary>
+            <param name="name">The full path and name of the listing to check for.</param>
+            <returns>Whether the listing exists or not.</returns>
+        </member>
+        <member name="M:Kernel.FOS_System.IO.Directory.ListingExists(Kernel.FOS_System.String,Kernel.FOS_System.Collections.List)">
+            <summary>
+            Determines whether the specified listing exists or not within this directory or its sub-directories.
+            </summary>
+            <param name="name">The full path and name of the listing to check for.</param>
+            <param name="listings">The list of listings to search through.</param>
+            <returns>Whether the listing exists or not.</returns>
+        </member>
+        <member name="F:Kernel.FOS_System.IO.FAT.FATDirectory._theFile">
+            <summary>
+            The underlying FAT file used to access the directory listings file.
+            </summary>
+        </member>
+        <member name="F:Kernel.FOS_System.IO.FAT.FATDirectory._fileStream">
+            <summary>
+            The underlying FAT file stream used to read data from the FAT file.
+            </summary>
+        </member>
+        <member name="M:Kernel.FOS_System.IO.FAT.FATDirectory.#ctor(Kernel.FOS_System.IO.FAT.FATFileSystem,Kernel.FOS_System.IO.FAT.FATDirectory,Kernel.FOS_System.String,System.UInt32)">
+            <summary>
+            Initializes a new FAT directory.
+            </summary>
+            <param name="aFileSystem">The FAT file system to which the directory belongs.</param>
+            <param name="parent">The FAT directory which is the parent of the directory. Null for the root directory.</param>
+            <param name="aName">The name of the directory.</param>
+            <param name="aFirstCluster">The first cluster number of the directory.</param>
+        </member>
+        <member name="F:Kernel.FOS_System.IO.FAT.FATDirectory._cachedlistings">
+            <summary>
+            The cached listings in the directory.
+            </summary>
+        </member>
+        <member name="M:Kernel.FOS_System.IO.FAT.FATDirectory.GetListings">
+            <summary>
+            Reads the directory's listings off disk unless they have already been
+            cached.
+            </summary>
+            <returns>The listings.</returns>
+        </member>
+        <member name="M:Kernel.FOS_System.IO.FAT.FATDirectory.GetListing(Kernel.FOS_System.Collections.List)">
+            <summary>
+            Gets the listing for the specified path.
+            </summary>
+            <param name="nameParts">The path to the listing.</param>
+            <returns>The listing or null if not found.</returns>
+        </member>
+        <member name="M:Kernel.FOS_System.IO.FAT.FATDirectory.WriteListings">
+            <summary>
+            Writes the cached listings back to disk.
+            </summary>
+        </member>
+        <member name="M:Kernel.FOS_System.IO.FAT.FATDirectory.Get_FileStream">
+            <summary>
+            Initializes the underlying file stream.
+            </summary>
+        </member>
+        <member name="M:Kernel.FOS_System.IO.FAT.FATDirectory.AddListing(Kernel.FOS_System.IO.Base)">
+            <summary>
+            Adds the specified listing to the directory's listings.
+            </summary>
+            <param name="aListing">The listing to add.</param>
+        </member>
+        <member name="P:Kernel.FOS_System.IO.FAT.FATDirectory.FirstClusterNum">
+            <summary>
+            The first cluster number of the directory.
+            </summary>
+        </member>
+        <member name="T:Kernel.FOS_System.IO.FAT.FATFile">
+            <summary>
+            Represents a file in a FAT file system.
+            </summary>
+        </member>
+        <member name="T:Kernel.FOS_System.IO.File">
+            <summary>
+            Represents a file listing in a file system.
+            </summary>
+        </member>
+        <member name="M:Kernel.FOS_System.IO.File.#ctor(Kernel.FOS_System.IO.FileSystem,Kernel.FOS_System.IO.Directory,Kernel.FOS_System.String,System.UInt64)">
+            <summary>
+            Initializes a new file.
+            </summary>
+            <param name="aFileSystem">The file system to which the file belongs.</param>
+            <param name="parent">The parent directory of the file.</param>
+            <param name="aName">The name of the file.</param>
+            <param name="aSize">The exact size of the file in bytes.</param>
+        </member>
+        <member name="M:Kernel.FOS_System.IO.File.GetStream">
+            <summary>
+            Gets a stream to read/write from the file.
+            </summary>
+            <returns>A readable, writeable stream.</returns>
+        </member>
+        <member name="M:Kernel.FOS_System.IO.File.Open(Kernel.FOS_System.String)">
+            <summary>
+            Opens the specified file.
+            </summary>
+            <param name="fileName">The full path to the file to open.</param>
+            <returns>The file listing or null if not found.</returns>
+        </member>
+        <member name="F:Kernel.FOS_System.IO.FAT.FATFile.TheFATFileSystem">
+            <summary>
+            The FAT file system to which the file belongs.
+            </summary>
+        </member>
+        <member name="F:Kernel.FOS_System.IO.FAT.FATFile.FirstClusterNum">
+            <summary>
+            The first cluster number of the file.
+            </summary>
+        </member>
+        <member name="M:Kernel.FOS_System.IO.FAT.FATFile.#ctor(Kernel.FOS_System.IO.FAT.FATFileSystem,Kernel.FOS_System.IO.FAT.FATDirectory,Kernel.FOS_System.String,System.UInt32,System.UInt32)">
+            <summary>
+            
+            </summary>
+            <param name="aFileSystem"></param>
+            <param name="parent"></param>
+            <param name="aName"></param>
+            <param name="aSize"></param>
+            <param name="aFirstCluster"></param>
+            <remarks>
+            Size is UInt32 because FAT doesn't support bigger. Dont change to UInt64.
+            </remarks>
+        </member>
+        <member name="T:Kernel.FOS_System.IO.FileSystemMapping">
+            <summary>
+            Represents a file system mapping. A file system 
+            mapping maps a path prefix (e.g. A:/) to a particular
+            file system.
+            
+            </summary>
+        </member>
+        <member name="F:Kernel.FOS_System.IO.FileSystemMapping.prefix">
+            <summary>
+            The prefix to map. This must be unique.
+            </summary>
+        </member>
+        <member name="F:Kernel.FOS_System.IO.FileSystemMapping.theFileSystem">
+            <summary>
+            The file system to map.
+            </summary>
+        </member>
+        <member name="M:Kernel.FOS_System.IO.FileSystemMapping.#ctor(Kernel.FOS_System.String,Kernel.FOS_System.IO.FileSystem)">
+            <summary>
+            Initializes a new file system mapping.
+            </summary>
+            <param name="aPrefix">The prefix to map.</param>
+            <param name="aFileSystem">The file system to map.</param>
+        </member>
+        <member name="M:Kernel.FOS_System.IO.FileSystemMapping.PathMatchesMapping(Kernel.FOS_System.String)">
+            <summary>
+            Determines whether the specified path starts with this
+            mapping's prefix.
+            </summary>
+            <param name="aPath">The path to check.</param>
+            <returns>
+            Whether the specified path starts with this
+            mapping's prefix.
+            </returns>
+        </member>
+        <member name="M:Kernel.FOS_System.IO.FileSystemMapping.RemoveMappingPrefix(Kernel.FOS_System.String)">
+            <summary>
+            Removes the mapping's prefix from the specified path.
+            </summary>
+            <param name="aPath">The path to remove the prefix from.</param>
+            <returns>The path without the prefix.</returns>
+        </member>
+        <member name="P:Kernel.FOS_System.IO.FileSystemMapping.Prefix">
+            <summary>
+            The prefix to map. This must be unique.
+            </summary>
+        </member>
+        <member name="P:Kernel.FOS_System.IO.FileSystemMapping.TheFileSystem">
+            <summary>
+            The file system to map.
+            </summary>
+        </member>
+        <member name="T:Kernel.FOS_System.IO.Partition">
+            <summary>
+            Represents a partition on a disk drive.
+            </summary>
+        </member>
+        <member name="F:Kernel.FOS_System.IO.Partition.TheDiskDevice">
+            <summary>
+            The underlying disk device on which this partition resides.
+            </summary>
+        </member>
+        <member name="F:Kernel.FOS_System.IO.Partition.StartingSector">
+            <summary>
+            The sector number at which the partition starts.
+            </summary>
+        </member>
+        <member name="F:Kernel.FOS_System.IO.Partition.VolumeID">
+            <summary>
+            The ID of this partition (volume).
+            </summary>
+        </member>
+        <member name="M:Kernel.FOS_System.IO.Partition.#ctor(Kernel.Hardware.Devices.DiskDevice,System.UInt64,System.UInt64)">
+            <summary>
+            Initializes a new partition.
+            </summary>
+            <param name="aDiskDevice">The disk device on which the partition resides.</param>
+            <param name="aStartingSector">The sector number at which the partition starts.</param>
+            <param name="aSectorCount">The number of sectors in the partition.</param>
+        </member>
+        <member name="M:Kernel.FOS_System.IO.Partition.ReadBlock(System.UInt64,System.UInt32,System.Byte[])">
+            <summary>
+            Reads contiguous blocks within the partition. Block 0 = 1st sector of the partition.
+            </summary>
+            <param name="aBlockNo">The first sector (block) number to read.</param>
+            <param name="aBlockCount">The number of sectors (blocks) to read.</param>
+            <param name="aData">The buffer to read into.</param>
+        </member>
+        <member name="M:Kernel.FOS_System.IO.Partition.WriteBlock(System.UInt64,System.UInt32,System.Byte[])">
+            <summary>
+            Writes contiguous blocks to the partition. Block 0 = 1st sector of the partition.
+            </summary>
+            <param name="aBlockNo">The first sector (block) to write.</param>
+            <param name="aBlockCount">The number of sectors (blocks) to write.</param>
+            <param name="aData">The data to write.</param>
+        </member>
+        <member name="T:Kernel.FOS_System.IO.FileSystemManager">
+            <summary>
+            Provides management for file systems in the kernel.
+            </summary>
+        </member>
+        <member name="F:Kernel.FOS_System.IO.FileSystemManager.PathDelimiter">
+            <summary>
+            The delimiter that separates mapping prefixes and directory/file names in a path.
+            </summary>
+        </member>
+        <member name="F:Kernel.FOS_System.IO.FileSystemManager.Partitions">
+            <summary>
+            The list of initialized partitions.
+            </summary>
+        </member>
+        <member name="F:Kernel.FOS_System.IO.FileSystemManager.FileSystemMappings">
+            <summary>
+            The list of file system mappings.
+            </summary>
+        </member>
+        <member name="M:Kernel.FOS_System.IO.FileSystemManager.Init">
+            <summary>
+            Initializes all available file systems by searching for 
+            valid partitions on the available disk devices.
+            </summary>
+        </member>
+        <member name="M:Kernel.FOS_System.IO.FileSystemManager.InitDisk(Kernel.Hardware.Devices.DiskDevice)">
+            <summary>
+            Initializes the specified disk device.
+            </summary>
+            <param name="aDiskDevice">The disk device to initialize.</param>
+        </member>
+        <member name="M:Kernel.FOS_System.IO.FileSystemManager.ProcessMBR(Kernel.FOS_System.IO.Disk.MBR,Kernel.Hardware.Devices.DiskDevice)">
+            <summary>
+            Processes a valid master boot record to initialize 
+            its partitions.
+            </summary>
+            <param name="anMBR">The MBR to process.</param>
+            <param name="aDiskDevice">The disk device from which the MBR was read.</param>
+        </member>
+        <member name="M:Kernel.FOS_System.IO.FileSystemManager.InitPartitions">
+            <summary>
+            Initializes all available partitions looking for valid 
+            file systems.
+            </summary>
+        </member>
+        <member name="M:Kernel.FOS_System.IO.FileSystemManager.GetMapping(Kernel.FOS_System.String)">
+            <summary>
+            Gets the file system mapping for the specified path.
+            </summary>
+            <param name="aPath">The path to get the mapping for.</param>
+            <returns>The file system mapping or null if none exists.</returns>
+        </member>
+        <member name="T:Kernel.FOS_System.IO.Streams.FileStream">
+            <summary>
+            Represents a file stream which can read and write to files in a file system.
+            </summary>
+        </member>
+        <member name="T:Kernel.FOS_System.IO.Streams.Stream">
+            <summary>
+            Represents any stream.
+            </summary>
+        </member>
+        <member name="M:Kernel.FOS_System.IO.Streams.Stream.Read(System.Byte[],System.Int32,System.Int32)">
+            <summary>
+            Reads the specified number of bytes from the stream from the current position into the buffer at the 
+            specified offset or as many bytes as are available before the end of the stream is met.
+            </summary>
+            <param name="aBuffer">The byte array to read into.</param>
+            <param name="anOffset">The offset within the buffer to start storing read data at.</param>
+            <param name="aCount">The number of bytes to read.</param>
+            <returns>The actual number of bytes read.</returns>
+        </member>
+        <member name="M:Kernel.FOS_System.IO.Streams.Stream.Write(System.Byte[],System.Int32,System.Int32)">
+            <summary>
+            Writes the specified number of the bytes from the buffer starting at offset in the buffer.
+            </summary>
+            <param name="buffer">The data to write.</param>
+            <param name="offset">The offset within the buffer to start writing from.</param>
+            <param name="count">The number of bytes to write.</param>
+        </member>
+        <member name="P:Kernel.FOS_System.IO.Streams.Stream.Position">
+            <summary>
+            The current position of the stream as a distance from the start of the stream.
+            </summary>
+        </member>
+        <member name="F:Kernel.FOS_System.IO.Streams.FileStream.theFile">
+            <summary>
+            The file which the stream reads/writes from/to.
+            </summary>
+        </member>
+        <member name="M:Kernel.FOS_System.IO.Streams.FileStream.#ctor(Kernel.FOS_System.IO.File)">
+            <summary>
+            Initializes a new file stream for the specified file.
+            </summary>
+            <param name="aFile"></param>
+        </member>
+        <member name="M:Kernel.FOS_System.IO.Streams.FileStream.Create(Kernel.FOS_System.IO.File)">
+            <summary>
+            Creates a file stream for the specified file. Handles creating
+            the correct type of file stream for the file system to which 
+            the file belongs.
+            </summary>
+            <param name="aFile">The file to get a stream to.</param>
+            <returns>The new file stream.</returns>
+        </member>
+        <member name="P:Kernel.FOS_System.IO.Streams.FileStream.TheFile">
+            <summary>
+            The file which the stream reads/writes from/to.
+            </summary>
+        </member>
     </members>
 </doc>

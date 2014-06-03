@@ -4,13 +4,27 @@ using Kernel.FOS_System.Collections;
 
 namespace Kernel.FOS_System.IO
 {
+    /// <summary>
+    /// Represents a directory (folder) listing.
+    /// </summary>
     public abstract class Directory : Base
     {
+        /// <summary>
+        /// Initializes a new directory listing.
+        /// </summary>
+        /// <param name="aFileSystem">The file system to which the directory belongs.</param>
+        /// <param name="parent">The parent directory of the directory.</param>
+        /// <param name="aName">The name of the directory.</param>
         public Directory(FileSystem aFileSystem, Directory parent, FOS_System.String aName)
             : base(aFileSystem, parent, aName, true)
         {
         }
 
+        /// <summary>
+        /// Attempts to find the specified directory within any file system.
+        /// </summary>
+        /// <param name="directoryName">The full path and name of the directory to find.</param>
+        /// <returns>The directory or null if it isn't found.</returns>
         public static Directory Find(FOS_System.String directoryName)
         {
             FileSystemMapping theMapping = FileSystemManager.GetMapping(directoryName);
@@ -34,16 +48,46 @@ namespace Kernel.FOS_System.IO
             }
         }
 
+        /// <summary>
+        /// Gets all the listings within the directory.
+        /// </summary>
+        /// <returns>All the listings within the directory.</returns>
         public abstract List GetListings();
+        /// <summary>
+        /// Gets the listing with specified name parts from within the current directory or its sub-directories.
+        /// </summary>
+        /// <param name="nameParts">
+        /// The full path and name of the listing to get, split into their separate parts. One part represents one 
+        /// sub-directory or the final file/directory name.
+        /// </param>
+        /// <returns>Returns the listing or null if it is not found.</returns>
         public abstract Base GetListing(FOS_System.Collections.List nameParts);
+        /// <summary>
+        /// Writes the cached listings to back to disc. This can either do a full re-write or an update-only approach.
+        /// </summary>
         public abstract void WriteListings();
 
+        /// <summary>
+        /// Adds the specified listing to the cached listings. Call WriteListings to save the new listing to disc.
+        /// </summary>
+        /// <param name="aListing">The listing to add.</param>
         public abstract void AddListing(Base aListing);
 
+        /// <summary>
+        /// Determines whether the specified listing exists or not within this directory or its sub-directories.
+        /// </summary>
+        /// <param name="name">The full path and name of the listing to check for.</param>
+        /// <returns>Whether the listing exists or not.</returns>
         public bool ListingExists(FOS_System.String name)
         {
             return ListingExists(name, GetListings());
         }
+        /// <summary>
+        /// Determines whether the specified listing exists or not within this directory or its sub-directories.
+        /// </summary>
+        /// <param name="name">The full path and name of the listing to check for.</param>
+        /// <param name="listings">The list of listings to search through.</param>
+        /// <returns>Whether the listing exists or not.</returns>
         public static bool ListingExists(FOS_System.String name, List listings)
         {
             for (int i = 0; i < listings.Count; i++)

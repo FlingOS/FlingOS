@@ -17,9 +17,9 @@ namespace Kernel.Hardware.USB.HCIs
         protected PCI.PCIDeviceNormal pciDevice;
 
         /// <summary>
-        /// Initialises a new generic host controller interface using the specified PCI device.
+        /// Initializes a new generic host controller interface using the specified PCI device.
         /// </summary>
-        /// <param name="aPCIDevice"></param>
+        /// <param name="aPCIDevice">The PCI device that represents the HCI device.</param>
         public HCI(PCI.PCIDeviceNormal aPCIDevice)
             : base()
         {

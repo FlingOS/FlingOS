@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 
 namespace Kernel.Hardware.USB.HCIs
 {
+    /// <summary>
+    /// Represents a USB Extended Host Controller Interface
+    /// </summary>
     public unsafe class EHCI : HCI
     {
         /*
@@ -13,6 +16,9 @@ namespace Kernel.Hardware.USB.HCIs
          *  http://www.intel.co.uk/content/dam/www/public/us/en/documents/technical-specifications/ehci-specification-for-usb.pdf
          */
 
+        /// <summary>
+        /// The base address of the USB HCI device in memory.
+        /// </summary>
         protected byte* usbBaseAddress;
 
         #region PCI Registers
@@ -21,7 +27,13 @@ namespace Kernel.Hardware.USB.HCIs
          * See section 2.1 of spec.
          */
 
+        /// <summary>
+        /// SBRN PCI memory-mapped register.
+        /// </summary>
         protected byte SBRN;
+        /// <summary>
+        /// FLADJ PCI memory-mapped register.
+        /// </summary>
         protected byte FLADJ
         {
             get
@@ -33,6 +45,9 @@ namespace Kernel.Hardware.USB.HCIs
                 pciDevice.WriteRegister8(0x61, value);
             }
         }
+        /// <summary>
+        /// Port wakeup capability PCI memory-mapped register.
+        /// </summary>
         protected byte PortWakeCap
         {
             get
@@ -40,6 +55,9 @@ namespace Kernel.Hardware.USB.HCIs
                 return pciDevice.ReadRegister8(0x62);
             }
         }
+        /// <summary>
+        /// The EHCI USB Legacy Support extended capabilities information if it exists.
+        /// </summary>
         protected EHCI_USBLegacySupportExtendedCapability USBLegacySupportExtendedCapability;
         
         #endregion
@@ -50,11 +68,30 @@ namespace Kernel.Hardware.USB.HCIs
          *  See section 2.2 of spec.
          */
 
+        /// <summary>
+        /// The base address of the capabilities regsiters.
+        /// </summary>
         protected byte* CapabilitiesRegAddr;
+        /// <summary>
+        /// The length of the capabilities registers. Used to calculate 
+        /// offset to operational registers.
+        /// </summary>
         protected byte CapabilitiesRegsLength;
+        /// <summary>
+        /// HCI Version number.
+        /// </summary>
         protected UInt16 HCIVersion;
+        /// <summary>
+        /// HCS params
+        /// </summary>
         protected uint HCSParams;
+        /// <summary>
+        /// HCC params
+        /// </summary>
         protected uint HCCParams;
+        /// <summary>
+        /// HCSP port route desc
+        /// </summary>
         protected UInt64 HCSPPortRouteDesc;
 
         #region From HCS Params
@@ -74,6 +111,9 @@ namespace Kernel.Hardware.USB.HCIs
          */
 
         //TODO - Add remaining HCC fields
+        /// <summary>
+        /// EECP from HCC params
+        /// </summary>
         protected byte EECP
         {
             get
@@ -92,10 +132,16 @@ namespace Kernel.Hardware.USB.HCIs
          * See section 2.3 of spec.
          */
 
+        /// <summary>
+        /// Base address of the operational registers.
+        /// </summary>
         protected uint* OpRegAddr;
 
         #region Core Well
 
+        /// <summary>
+        /// USB command operational memory-mapped register.
+        /// </summary>
         protected uint USBCMD
         {
             get
@@ -107,6 +153,9 @@ namespace Kernel.Hardware.USB.HCIs
                 *OpRegAddr = value;
             }
         }
+        /// <summary>
+        /// USB status operational memory-mapped register.
+        /// </summary>
         protected uint USBSTS
         {
             get
@@ -118,6 +167,9 @@ namespace Kernel.Hardware.USB.HCIs
                 *(OpRegAddr + 1) = value;
             }
         }
+        /// <summary>
+        /// USB interrupts operational memory-mapped register.
+        /// </summary>
         protected uint USBINTR
         {
             get
@@ -129,6 +181,9 @@ namespace Kernel.Hardware.USB.HCIs
                 *(OpRegAddr + 2) = value;
             }
         }
+        /// <summary>
+        /// USB frame index operational memory-mapped register.
+        /// </summary>
         protected uint FRINDEX
         {
             get
@@ -140,6 +195,9 @@ namespace Kernel.Hardware.USB.HCIs
                 *(OpRegAddr + 3) = value;
             }
         }
+        /// <summary>
+        /// USB control DS segment operational memory-mapped register.
+        /// </summary>
         protected uint CTRLDSSEGMENT
         {
             get
@@ -151,6 +209,9 @@ namespace Kernel.Hardware.USB.HCIs
                 *(OpRegAddr + 4) = value;
             }
         }
+        /// <summary>
+        /// USB periodic list base operational memory-mapped register.
+        /// </summary>
         protected uint PERIODICLISTBASE
         {
             get
@@ -162,6 +223,9 @@ namespace Kernel.Hardware.USB.HCIs
                 *(OpRegAddr + 5) = value;
             }
         }
+        /// <summary>
+        /// USB async list address operational memory-mapped register.
+        /// </summary>
         protected uint ASYNCLISTADDR
         {
             get
@@ -174,6 +238,9 @@ namespace Kernel.Hardware.USB.HCIs
             }
         }
 
+        /// <summary>
+        /// Whether the asynchronous schedule is enabled or not.
+        /// </summary>
         protected bool AsynchronousScheduleEnabled
         {
             /*
@@ -196,6 +263,9 @@ namespace Kernel.Hardware.USB.HCIs
                 }
             }
         }
+        /// <summary>
+        /// Whether the HCI thinks the asynchronous schedule is enabled or not.
+        /// </summary>
         protected bool AsynchronousScheduleStatus
         {
             get
@@ -208,6 +278,9 @@ namespace Kernel.Hardware.USB.HCIs
 
         #region Aux Well
 
+        /// <summary>
+        /// USB configuration flags operational memory-mapped register.
+        /// </summary>
         protected uint CONFIGFLAG
         {
             get
@@ -219,6 +292,9 @@ namespace Kernel.Hardware.USB.HCIs
                 *(OpRegAddr + 16) = value;
             }
         }
+        /// <summary>
+        /// USB port SC operational memory-mapped register.
+        /// </summary>
         protected uint PORTSC
         {
             get
@@ -235,6 +311,10 @@ namespace Kernel.Hardware.USB.HCIs
 
         #endregion
 
+        /// <summary>
+        /// Initializes a new EHCI device.
+        /// </summary>
+        /// <param name="aPCIDevice">The PCI device that represents the EHCI device.</param>
         public EHCI(PCI.PCIDeviceNormal aPCIDevice)
             : base(aPCIDevice)
         {
@@ -254,8 +334,11 @@ namespace Kernel.Hardware.USB.HCIs
             LoadExtendedCapabilities();
         }
 
-        #region Initialisation / setup methods
+        #region Initialization / setup methods
 
+        /// <summary>
+        /// Initializes the EHCI device.
+        /// </summary>
         public void Init()
         {
             //Host Controller Initialisation
@@ -344,6 +427,9 @@ namespace Kernel.Hardware.USB.HCIs
         #endregion
 
         //Done
+        /// <summary>
+        /// Waits for the HCI async schedule status and enabled values to match.
+        /// </summary>
         protected void WaitForAsyncQueueEnabledStatusMatch()
         {
             while (AsynchronousScheduleEnabled != AsynchronousScheduleStatus)
@@ -351,6 +437,9 @@ namespace Kernel.Hardware.USB.HCIs
                 ;
             }
         }
+        /// <summary>
+        /// Enables the async queue and waits for the enable to be acknowledged.
+        /// </summary>
         protected void EnableAsyncQueue()
         {
             // - Wait for AsyncQueueEnabled and corresponding Status bit to match
@@ -360,6 +449,9 @@ namespace Kernel.Hardware.USB.HCIs
             // - Wait again
             WaitForAsyncQueueEnabledStatusMatch();
         }
+        /// <summary>
+        /// Disables the async queue and waits for the disable to be acknowledged.
+        /// </summary>
         protected void DisableAsyncQueue()
         {
             // - Wait for AsyncQueueEnabled and corresponding Status bit to match
@@ -373,17 +465,29 @@ namespace Kernel.Hardware.USB.HCIs
         //To be done
         //TODO - Methods for adding / removing QueueHeads from the 
         //       HC's list
+        /// <summary>
+        /// Adds a queue head to the async queue.
+        /// </summary>
+        /// <param name="theHead">The queue head to add.</param>
         protected void AddAsyncQueueHead(QueueHead theHead)
         {
             // - Reclaim anything from the queue that we can
             // - Check if queue is empty:
             //      - If so, create new queue
         }
+        /// <summary>
+        /// Removes a queue head from the async queue.
+        /// </summary>
+        /// <param name="theHead">The queue head to remove.</param>
         protected void RemoveAsyncQueueHead(QueueHead theHead)
         {
         }
 
         //TODO - Methods for creating QueueHeads for an endpoint
+        /// <summary>
+        /// Creates a new queue head for the async queue.
+        /// </summary>
+        /// <returns>The new queue head.</returns>
         protected QueueHead CreateQueueHead(/*Params?*/)
         {
             return null;
@@ -392,13 +496,27 @@ namespace Kernel.Hardware.USB.HCIs
         //TODO - Methods for creating lists of qTDs for a 
         //       queue head and for adding/removing them from/to 
         //       a queue head.
+        /// <summary>
+        /// Creates a new queue transfer descriptor.
+        /// </summary>
+        /// <returns>The new qTD.</returns>
         protected qTD CreateqTD(/*Params?*/)
         {
             return null;
         }
+        /// <summary>
+        /// Adds a qTD to a queue head.
+        /// </summary>
+        /// <param name="theqTD">The qTD to add.</param>
+        /// <param name="theQueueHead">The queue head to add to.</param>
         protected void AddqTDToQueueHead(qTD theqTD, QueueHead theQueueHead)
         {
         }
+        /// <summary>
+        /// Removes a qTD from a queue head.
+        /// </summary>
+        /// <param name="theqTD">The qTD to remove.</param>
+        /// <param name="theQueueHead">The queue head to remove from.</param>
         protected void RemoveqTDFromQueueHead(qTD theqTD, QueueHead theQueueHead)
         {
         }
@@ -406,14 +524,25 @@ namespace Kernel.Hardware.USB.HCIs
         //TODO - Methods for re-cycling (/re-using) queue heads
         //       and qTDs to reduce memory allocation load / 
         //       improve performance
+        /// <summary>
+        /// Recycles a queue head for re-use. Recycling reduces heap memory operations.
+        /// </summary>
+        /// <param name="theQueueHead">The queue head to recycle.</param>
         protected void RecycleQueueHead(QueueHead theQueueHead)
         {
         }
+        /// <summary>
+        /// Recycles a qTD for re-use. Recycling reduces heap memory operations.
+        /// </summary>
+        /// <param name="theqTD">The qTD to recycle.</param>
         protected void RecycleqTD(qTD theqTD)
         {
         }
 
         //TODO - Methods for reclaiming QueueHeads and qTDs
+        /// <summary>
+        /// Reclaims queue heads and qTDs from the async transfer queue.
+        /// </summary>
         protected void Reclaim()
         {
         }
@@ -446,6 +575,9 @@ namespace Kernel.Hardware.USB.HCIs
 
         #endregion
 
+        /// <summary>
+        /// Loads the extended capabilities PCI registers.
+        /// </summary>
         private void LoadExtendedCapabilities()
         {
             byte aEECP = EECP;
@@ -464,6 +596,10 @@ namespace Kernel.Hardware.USB.HCIs
         }
     }
 
+    /// <summary>
+    /// Represents a Queue Head structure's memory layout.
+    /// This structure can be passed to the HCI.
+    /// </summary>
     [System.Runtime.InteropServices.StructLayout(System.Runtime.InteropServices.LayoutKind.Sequential)]
     public struct QueueHead_Struct
     {
@@ -471,19 +607,59 @@ namespace Kernel.Hardware.USB.HCIs
          * See section 3.6 of spec.
          */
 
+        /// <summary>
+        /// UInt32 1 in the structure.
+        /// </summary>
         public uint u1;
+        /// <summary>
+        /// UInt32 2 in the structure.
+        /// </summary>
         public uint u2;
+        /// <summary>
+        /// UInt32 3 in the structure.
+        /// </summary>
         public uint u3;
+        /// <summary>
+        /// UInt32 4 in the structure.
+        /// </summary>
         public uint u4;
+        /// <summary>
+        /// UInt32 5 in the structure.
+        /// </summary>
         public uint u5;
+        /// <summary>
+        /// UInt32 6 in the structure.
+        /// </summary>
         public uint u6;
+        /// <summary>
+        /// UInt32 7 in the structure.
+        /// </summary>
         public uint u7;
+        /// <summary>
+        /// UInt32 8 in the structure.
+        /// </summary>
         public uint u8;
+        /// <summary>
+        /// UInt32 9 in the structure.
+        /// </summary>
         public uint u9;
+        /// <summary>
+        /// UInt32 10 in the structure.
+        /// </summary>
         public uint u10;
+        /// <summary>
+        /// UInt32 11 in the structure.
+        /// </summary>
         public uint u11;
+        /// <summary>
+        /// UInt32 12 in the structure.
+        /// </summary>
         public uint u12;
     }
+    /// <summary>
+    /// Represents a Queue Transfer Descriptor structure's memory layout.
+    /// This structure can be passed to the HCI.
+    /// </summary>
     [System.Runtime.InteropServices.StructLayout(System.Runtime.InteropServices.LayoutKind.Sequential)]
     public struct qTD_Struct
     {
@@ -491,23 +667,57 @@ namespace Kernel.Hardware.USB.HCIs
          * See section 3.5 of spec.
          */
 
+        /// <summary>
+        /// UInt32 1 in the structure.
+        /// </summary>
         public uint u1;
+        /// <summary>
+        /// UInt32 2 in the structure.
+        /// </summary>
         public uint u2;
+        /// <summary>
+        /// UInt32 3 in the structure.
+        /// </summary>
         public uint u3;
+        /// <summary>
+        /// UInt32 4 in the structure.
+        /// </summary>
         public uint u4;
+        /// <summary>
+        /// UInt32 5 in the structure.
+        /// </summary>
         public uint u5;
+        /// <summary>
+        /// UInt32 6 in the structure.
+        /// </summary>
         public uint u6;
+        /// <summary>
+        /// UInt32 7 in the structure.
+        /// </summary>
         public uint u7;
+        /// <summary>
+        /// UInt32 8 in the structure.
+        /// </summary>
         public uint u8;
     }
+    /// <summary>
+    /// Represents a qTD. The underlying memory structure can be passed to the HCI. 
+    /// This class provides methods / properties for manipulating qTD values.
+    /// </summary>
     public unsafe class qTD : FOS_System.Object
     {
         /*
          * See section 3.5 of spec.
          */
 
+        /// <summary>
+        /// The qTD data/memory structure that can be passed to the HCI.
+        /// </summary>
         public qTD_Struct* qtd;
 
+        /// <summary>
+        /// Pointer to the next qTD in the linked list.
+        /// </summary>
         public qTD_Struct* NextqTDPointer
         {
             get
@@ -519,6 +729,9 @@ namespace Kernel.Hardware.USB.HCIs
                 qtd->u1 = (qtd->u1 & 0x0000000Fu) | ((uint)value & 0xFFFFFFF0u);
             }
         }
+        /// <summary>
+        /// Whether the next qTD pointer indicates the end of the linked list.
+        /// </summary>
         public bool NextqTDPointerTerminate
         {
             get
@@ -537,6 +750,9 @@ namespace Kernel.Hardware.USB.HCIs
                 }
             }
         }
+        /// <summary>
+        /// The status.
+        /// </summary>
         public byte Status
         {
             get
@@ -548,6 +764,9 @@ namespace Kernel.Hardware.USB.HCIs
                 qtd->u3 = (qtd->u3 & 0xFFFFFF00u) | value;
             }
         }
+        /// <summary>
+        /// The PID code.
+        /// </summary>
         public byte PIDCode
         {
             get
@@ -559,6 +778,9 @@ namespace Kernel.Hardware.USB.HCIs
                 qtd->u3 = (qtd->u3 & 0xFFFFFFCFu) | (uint)(value << 8); 
             }
         }
+        /// <summary>
+        /// The error counter.
+        /// </summary>
         public byte ErrorCounter
         {
             get
@@ -570,6 +792,9 @@ namespace Kernel.Hardware.USB.HCIs
                 qtd->u3 = (qtd->u3 & 0xFFFFF3FFu) | (uint)(value << 10);
             }
         }
+        /// <summary>
+        /// The current page number.
+        /// </summary>
         public byte CurrentPage
         {
             get
@@ -581,6 +806,9 @@ namespace Kernel.Hardware.USB.HCIs
                 qtd->u3 = (qtd->u3 & 0xFFFF8FFF) | (uint)(value << 12);
             }
         }
+        /// <summary>
+        /// Whether to trigger an interrupt when the transfer is complete.
+        /// </summary>
         public bool InterruptOnComplete
         {
             get
@@ -599,6 +827,9 @@ namespace Kernel.Hardware.USB.HCIs
                 }
             }
         }
+        /// <summary>
+        /// The total number of bytes to transfer.
+        /// </summary>
         public UInt16 TotalBytesToTransfer
         {
             get
@@ -610,6 +841,9 @@ namespace Kernel.Hardware.USB.HCIs
                 qtd->u3 = (qtd->u3 & 0x8000FFFF) | (uint)(value << 16);
             }
         }
+        /// <summary>
+        /// The data toggle status.
+        /// </summary>
         public bool DataToggle
         {
             get
@@ -629,28 +863,49 @@ namespace Kernel.Hardware.USB.HCIs
             }
         }
         
+        /// <summary>
+        /// Initializes a new qTD with new data structure.
+        /// </summary>
         public qTD()
         {
             qtd = (qTD_Struct*)FOS_System.Heap.Alloc((uint)sizeof(qTD_Struct));
         }
+        /// <summary>
+        /// Initializes a qTD with specified underlying data structure.
+        /// </summary>
+        /// <param name="aqTD"></param>
         public qTD(qTD_Struct* aqTD)
         {
             qtd = aqTD;
         }
 
+        /// <summary>
+        /// Frees the underlying memory structure.
+        /// </summary>
         public void Free()
         {
             FOS_System.Heap.Free(qtd);
+            qtd = null;
         }
     }
+    /// <summary>
+    /// Represents a queue head. The underlying memory structure can be passed to the HCI. 
+    /// This class provides methods / properties for manipulating queue head values.
+    /// </summary>
     public unsafe class QueueHead : FOS_System.Object
     {
         /*
          * See section 3.6 of spec.
          */
 
+        /// <summary>
+        /// The queue head data/memory structure that can be passed to the HCI.
+        /// </summary>
         public QueueHead_Struct* queueHead;
 
+        /// <summary>
+        /// Horizontal link pointer - points to the next queue head in the list.
+        /// </summary>
         public QueueHead_Struct* HorizontalLinkPointer
         {
             get
@@ -662,6 +917,9 @@ namespace Kernel.Hardware.USB.HCIs
                 queueHead->u1 = (uint)HorizontalLinkPointer & 0xFFFFFFF0u;
             }
         }
+        /// <summary>
+        /// Queue head type.
+        /// </summary>
         public byte Type
         {
             get
@@ -673,6 +931,9 @@ namespace Kernel.Hardware.USB.HCIs
                 queueHead->u1 = (queueHead->u1 & 0xFFFFFFF0u) | (uint)((value & 0x0000000Fu) << 1);
             }
         }
+        /// <summary>
+        /// Target USB device address.
+        /// </summary>
         public byte DeviceAddress
         {
             get
@@ -684,6 +945,9 @@ namespace Kernel.Hardware.USB.HCIs
                 queueHead->u2 = (queueHead->u2 & 0xFFFFFF80u) | (value & 0x0000007Fu);
             }
         }
+        /// <summary>
+        /// Inactive on next transaction.
+        /// </summary>
         public bool InactiveOnNextTransaction
         {
             get
@@ -702,6 +966,9 @@ namespace Kernel.Hardware.USB.HCIs
                 }
             }
         }
+        /// <summary>
+        /// Target USB endpoint number.
+        /// </summary>
         public byte EndpointNumber
         {
             get
@@ -713,6 +980,9 @@ namespace Kernel.Hardware.USB.HCIs
                 queueHead->u2 = (queueHead->u2 & 0xFFFFF0FFu) | (uint)(value << 8);
             }
         }
+        /// <summary>
+        /// Target USB endpoint speed.
+        /// </summary>
         public byte EndpointSpeed
         {
             get
@@ -724,6 +994,9 @@ namespace Kernel.Hardware.USB.HCIs
                 queueHead->u2 = (queueHead->u2 & 0xFFFFCFFFu) | (uint)(value << 12);
             }
         }
+        /// <summary>
+        /// Data toggle control.
+        /// </summary>
         public bool DataToggleControl
         {
             get
@@ -742,6 +1015,9 @@ namespace Kernel.Hardware.USB.HCIs
                 }
             }
         }
+        /// <summary>
+        /// Whether this queue head is the first in the reclamation list.
+        /// </summary>
         public bool HeadOfReclamationList
         {
             get
@@ -760,6 +1036,9 @@ namespace Kernel.Hardware.USB.HCIs
                 }
             }
         }
+        /// <summary>
+        /// Target endpoint's maximum packet length.
+        /// </summary>
         public UInt16 MaximumPacketLength
         {
             get
@@ -771,6 +1050,9 @@ namespace Kernel.Hardware.USB.HCIs
                 queueHead->u2 = (queueHead->u2 & 0xF800FFFFu) | ((uint)(value << 16) & 0x07FF0000u);
             }
         }
+        /// <summary>
+        /// Control endpoint flag.
+        /// </summary>
         public bool ControlEndpointFlag
         {
             get
@@ -789,6 +1071,9 @@ namespace Kernel.Hardware.USB.HCIs
                 }
             }
         }
+        /// <summary>
+        /// Nak count reload number.
+        /// </summary>
         public byte NakCountReload
         {
             get
@@ -800,6 +1085,9 @@ namespace Kernel.Hardware.USB.HCIs
                 queueHead->u2 = (queueHead->u2 & 0x0FFFFFFFu) | (uint)(value << 28);
             }
         }
+        /// <summary>
+        /// Interrupt schedule mask.
+        /// </summary>
         public byte InterruptScheduleMask
         {
             get
@@ -811,6 +1099,9 @@ namespace Kernel.Hardware.USB.HCIs
                 queueHead->u3 = (queueHead->u3 & 0xFFFFFF00u) | value;
             }
         }
+        /// <summary>
+        /// Split completion mask.
+        /// </summary>
         public byte SplitCompletionMask
         {
             get
@@ -822,6 +1113,9 @@ namespace Kernel.Hardware.USB.HCIs
                 queueHead->u3 = (queueHead->u3 & 0xFFFF00FFu) | (uint)(value << 8);
             }
         }
+        /// <summary>
+        /// Hub address.
+        /// </summary>
         public byte HubAddr
         {
             get
@@ -833,6 +1127,9 @@ namespace Kernel.Hardware.USB.HCIs
                 queueHead->u3 = (queueHead->u3 & 0xFF80FFFFu) | (uint)(value << 16);
             }
         }
+        /// <summary>
+        /// Port number.
+        /// </summary>
         public byte PortNumber
         {
             get
@@ -844,6 +1141,9 @@ namespace Kernel.Hardware.USB.HCIs
                 queueHead->u3 = (queueHead->u3 & 0xC07FFFFFu) | (uint)(value << 23);
             }
         }
+        /// <summary>
+        /// High bandwidth pipe multiplier.
+        /// </summary>
         public byte HighBandwidthPipeMultiplier
         {
             get
@@ -855,6 +1155,9 @@ namespace Kernel.Hardware.USB.HCIs
                 queueHead->u3 = (queueHead->u3 & 0x3FFFFFFFu) | (uint)(value << 30);
             }
         }
+        /// <summary>
+        /// Current qTD pointer.
+        /// </summary>
         public qTD_Struct* CurrentqTDPointer
         {
             get
@@ -866,6 +1169,9 @@ namespace Kernel.Hardware.USB.HCIs
                 queueHead->u4 = (queueHead->u4 & 0x0000000Fu) | ((uint)value & 0xFFFFFFF0u);
             }
         }
+        /// <summary>
+        /// Next qTD pointer.
+        /// </summary>
         public qTD_Struct* NextqTDPointer
         {
             get
@@ -877,6 +1183,9 @@ namespace Kernel.Hardware.USB.HCIs
                 queueHead->u5 = (queueHead->u5 & 0x0000000Fu) | ((uint)value & 0xFFFFFFF0u);
             }
         }
+        /// <summary>
+        /// Whether the next qTD pointer indicates end of the qTD list or not.
+        /// </summary>
         public bool NextqTDPointerTerminate
         {
             get
@@ -896,25 +1205,48 @@ namespace Kernel.Hardware.USB.HCIs
             }
         }
 
+        /// <summary>
+        /// Initializes a new queue head with empty underlying memory structure.
+        /// </summary>
         public QueueHead()
         {
             queueHead = (QueueHead_Struct*)FOS_System.Heap.Alloc((uint)sizeof(QueueHead_Struct));
         }
+        /// <summary>
+        /// Initializes a new queue head with specified underlying memory structure.
+        /// </summary>
+        /// <param name="aQueueHead">The existing underlying queue head.</param>
         public QueueHead(QueueHead_Struct* aQueueHead)
         {
             queueHead = aQueueHead;
         }
 
+        /// <summary>
+        /// Frees the underlying memory structure.
+        /// </summary>
         public void Free()
         {
             FOS_System.Heap.Free(queueHead);
+            queueHead = null;
         }
     }
 
+    /// <summary>
+    /// Represents EHCI Extended Capabilities register information.
+    /// </summary>
     public unsafe class EHCI_ExtendedCapability : FOS_System.Object
     {
+        /// <summary>
+        /// USB PCI base address.
+        /// </summary>
         internal byte* usbBaseAddress;
+        /// <summary>
+        /// Capabilities registers offset from base address.
+        /// </summary>
         internal byte capOffset;
+        /// <summary>
+        /// Capability ID.
+        /// </summary>
         public byte CapabilityID
         {
             get
@@ -922,6 +1254,9 @@ namespace Kernel.Hardware.USB.HCIs
                 return *(usbBaseAddress + capOffset);
             }
         }
+        /// <summary>
+        /// Next EHCI extended capability offset.
+        /// </summary>
         public byte NextEHCIExtendedCapabilityOffset
         {
             get
@@ -930,18 +1265,29 @@ namespace Kernel.Hardware.USB.HCIs
             }
         }
 
+        /// <summary>
+        /// Initializes new extended capabilities information.
+        /// </summary>
+        /// <param name="aUSBBaseAddress">The USB base address.</param>
+        /// <param name="aCapOffset">The capabilities registers offset form base address.</param>
         public EHCI_ExtendedCapability(byte* aUSBBaseAddress, byte aCapOffset)
         {
             usbBaseAddress = aUSBBaseAddress;
             capOffset = aCapOffset;
         }
     }
+    /// <summary>
+    /// Represents EHCI USB Legacy Support Extended Capabilities register information.
+    /// </summary>
     public unsafe class EHCI_USBLegacySupportExtendedCapability : EHCI_ExtendedCapability
     {
         /*
          * See section 2.1.7 of spec.
          */
 
+        /// <summary>
+        /// HC OS Owned semaphore - whether the OS controls the EHCI.
+        /// </summary>
         public bool HCOSOwnedSemaphore
         {
             get
@@ -960,6 +1306,9 @@ namespace Kernel.Hardware.USB.HCIs
                 }
             }
         }
+        /// <summary>
+        /// HC BIOS Owned semaphore - whether the BIOS controls the EHCI.
+        /// </summary>
         public bool HCBIOSOwnedSemaphore
         {
             get
@@ -979,14 +1328,25 @@ namespace Kernel.Hardware.USB.HCIs
             }
         }
 
+        /// <summary>
+        /// Control status capabilities.
+        /// </summary>
         public EHCI_USBLegacySupportControlStatusCapability ControlStatusCap;
 
+        /// <summary>
+        /// Initializes new EHCI USB Legacy Support Extended Capabilities register information.
+        /// </summary>
+        /// <param name="aUSBBaseAddress">The USB base address.</param>
+        /// <param name="aCapOffset">The capabilities registers offset from the base address.</param>
         public EHCI_USBLegacySupportExtendedCapability(byte* aUSBBaseAddress, byte aCapOffset)
             : base(aUSBBaseAddress, aCapOffset)
         {
             ControlStatusCap = new EHCI_USBLegacySupportControlStatusCapability(usbBaseAddress, (byte)(capOffset + 4u));
         }
     }
+    /// <summary>
+    /// Represents EHCI USB Legacy Support Control/Status Capabilities register information.
+    /// </summary>
     public unsafe class EHCI_USBLegacySupportControlStatusCapability : EHCI_ExtendedCapability
     {
         /*
@@ -995,6 +1355,11 @@ namespace Kernel.Hardware.USB.HCIs
 
         //TODO - Add the necessary fields to this class
 
+        /// <summary>
+        /// Initializes new EHCI USB Legacy Support Control/Status Capabilities register information.
+        /// </summary>
+        /// <param name="aUSBBaseAddress">The USB base address.</param>
+        /// <param name="aCapOffset">The capabilities registers offset from the base address.</param>
         public EHCI_USBLegacySupportControlStatusCapability(byte* aUSBBaseAddress, byte aCapOffset)
             : base(aUSBBaseAddress, aCapOffset)
         {
