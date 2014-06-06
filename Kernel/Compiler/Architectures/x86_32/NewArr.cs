@@ -70,7 +70,10 @@ namespace Kernel.Compiler.Architectures.x86_32
             result.AppendLine(string.Format("call {0}", aScannerState.GetMethodID(aScannerState.HaltMethod)));
             //Insert the not null label
             result.AppendLine(NotNullLabel + ":");
-            
+
+            //Push new array pointer
+            result.AppendLine("push dword eax");
+
             aScannerState.CurrentStackFrame.Stack.Push(new StackItem()
             {
                 isFloat = false,
