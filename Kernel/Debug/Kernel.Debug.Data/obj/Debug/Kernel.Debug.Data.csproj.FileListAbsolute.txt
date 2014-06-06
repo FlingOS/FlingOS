@@ -1,7 +1,0 @@
-G:\Fling OS\Fling OS\Kernel\Debug\Kernel.Debug.Data\bin\Debug\Kernel.Debug.Data.dll.config
-G:\Fling OS\Fling OS\Kernel\Debug\Kernel.Debug.Data\bin\Debug\Kernel.Debug.Data.XML
-G:\Fling OS\Fling OS\Kernel\Debug\Kernel.Debug.Data\bin\Debug\Kernel.Debug.Data.dll
-G:\Fling OS\Fling OS\Kernel\Debug\Kernel.Debug.Data\bin\Debug\Kernel.Debug.Data.pdb
-G:\Fling OS\Fling OS\Kernel\Debug\Kernel.Debug.Data\obj\Debug\Kernel.Debug.Data.csprojResolveAssemblyReference.cache
-G:\Fling OS\Fling OS\Kernel\Debug\Kernel.Debug.Data\obj\Debug\Kernel.Debug.Data.dll
-G:\Fling OS\Fling OS\Kernel\Debug\Kernel.Debug.Data\obj\Debug\Kernel.Debug.Data.pdb
