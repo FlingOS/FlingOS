@@ -67,11 +67,6 @@ namespace Kernel.Compiler
         public List<ASMChunk> ASMChunks = new List<ASMChunk>();
 
         /// <summary>
-        /// The PDB dump manager to use.
-        /// </summary>
-        private PDBDumpManager ThePDBManager;
-        
-        /// <summary>
         /// Initialises a new IL scanner with specified settings and output handlers.
         /// </summary>
         /// <param name="aSettings">The settings to use.</param>
@@ -108,12 +103,10 @@ namespace Kernel.Compiler
         /// </item>
         /// </list>
         /// </exception>
-        public bool Execute(List<Type> Types, List<ILChunk> ILChunks,
-                            PDBDumpManager aPDBManager, StaticConstructorDependency TheStaticConstructorDependencyTree)
+        public bool Execute(List<Type> Types, List<ILChunk> ILChunks, StaticConstructorDependency TheStaticConstructorDependencyTree)
         {
             bool OK = true;
 
-            ThePDBManager = aPDBManager;
             AllTypes = Types;
 
             OK = LoadTargetArchitectureAssembly();
@@ -121,8 +114,8 @@ namespace Kernel.Compiler
             if (OK)
             {
                 LoadIlOpTypes();
-                
-                TheScannerState = new ILScannerState();
+
+                TheScannerState = new ILScannerState(TheSettings.DebugBuild);
                 ASMChunks.Add(TheScannerState.StringLiteralsDataBlock);
                 ASMChunks.Add(TheScannerState.StaticFieldsDataBlock);
                 ASMChunks.Add(TheScannerState.TypesTableDataBlock);
@@ -370,32 +363,49 @@ namespace Kernel.Compiler
                 //Add arguments info to debug database
 
                 int argIndex = 0;
-                if (!aChunk.Method.IsStatic)
+                if (TheSettings.DebugBuild)
                 {
-                    DB_Argument dbArgVar = new DB_Argument();
-                    dbArgVar.BytesSize = Utils.GetNumBytesForType(aChunk.Method.DeclaringType);
-                    dbArgVar.Id = Guid.NewGuid();
-                    dbArgVar.Index = argIndex;
-                    dbArgVar.TypeID = ProcessType(aChunk.Method.DeclaringType).Id;
-                    dbArgVar.MethodID = TheScannerState.GetMethodID(aChunk.Method);
-                    DebugDatabase.AddArgument(dbArgVar);
-                    argIndex++;
+                    if (!aChunk.Method.IsStatic)
+                    {
+                        DB_Argument dbArgVar = new DB_Argument();
+                        dbArgVar.BytesSize = Utils.GetNumBytesForType(aChunk.Method.DeclaringType);
+                        dbArgVar.Id = Guid.NewGuid();
+                        dbArgVar.Index = argIndex;
+                        dbArgVar.TypeID = ProcessType(aChunk.Method.DeclaringType).Id;
+                        dbArgVar.MethodID = TheScannerState.GetMethodID(aChunk.Method);
+                        DebugDatabase.AddArgument(dbArgVar);
+                        argIndex++;
+                    }
+                    ParameterInfo[] args = aChunk.Method.GetParameters();
+                    foreach (ParameterInfo argItem in args)
+                    {
+                        DB_Argument dbArgVar = new DB_Argument();
+                        dbArgVar.BytesSize = Utils.GetNumBytesForType(argItem.ParameterType);
+                        dbArgVar.Id = Guid.NewGuid();
+                        dbArgVar.Index = argIndex;
+                        dbArgVar.TypeID = ProcessType(argItem.ParameterType).Id;
+                        dbArgVar.MethodID = TheScannerState.GetMethodID(aChunk.Method);
+                        DebugDatabase.AddArgument(dbArgVar);
+                        argIndex++;
+                    }
                 }
-                ParameterInfo[] args = aChunk.Method.GetParameters();
-                foreach (ParameterInfo argItem in args)
+                else
                 {
-                    DB_Argument dbArgVar = new DB_Argument();
-                    dbArgVar.BytesSize = Utils.GetNumBytesForType(argItem.ParameterType);
-                    dbArgVar.Id = Guid.NewGuid();
-                    dbArgVar.Index = argIndex;
-                    dbArgVar.TypeID = ProcessType(argItem.ParameterType).Id;
-                    dbArgVar.MethodID = TheScannerState.GetMethodID(aChunk.Method);
-                    DebugDatabase.AddArgument(dbArgVar);
-                    argIndex++;
+                    //Must still process types info for release builds
+                    if (!aChunk.Method.IsStatic)
+                    {
+                        ProcessType(aChunk.Method.DeclaringType);
+                    }
+                    ParameterInfo[] args = aChunk.Method.GetParameters();
+                    foreach (ParameterInfo argItem in args)
+                    {
+                        ProcessType(argItem.ParameterType);
+                    }
                 }
 
                 //Must add the return arg
 
+                if (TheSettings.DebugBuild)
                 {
                     ParameterInfo argItem = (aChunk.Method.IsConstructor || aChunk.Method is ConstructorInfo ? null : ((MethodInfo)aChunk.Method).ReturnParameter);
                     if (argItem == null)
@@ -425,6 +435,14 @@ namespace Kernel.Compiler
                         DebugDatabase.AddArgument(dbArgVar);
                     }
                 }
+                else
+                {
+                    ParameterInfo argItem = (aChunk.Method.IsConstructor || aChunk.Method is ConstructorInfo ? null : ((MethodInfo)aChunk.Method).ReturnParameter);
+                    if (argItem != null)
+                    {
+                        ProcessType(argItem.ParameterType);
+                    }
+                }
             }
 
             return result;
@@ -443,16 +461,20 @@ namespace Kernel.Compiler
 
             ASMChunk result = new ASMChunk();
 
-            //Add the method to the debug database
-            //  (method is marked as plugged)
-            DB_Method dbMethod = new DB_Method();
-            dbMethod.Id = TheScannerState.GetMethodID(aChunk.Method);
-            dbMethod.MethodSignature = methodSignature;
-            dbMethod.Plugged = true;
-            dbMethod.ASMStartPos = -1;
-            dbMethod.ASMEndPos = -1;
-            result.DBMethod = dbMethod;
-            DebugDatabase.AddMethod(dbMethod);
+            DB_Method dbMethod = null;
+            if (TheSettings.DebugBuild)
+            {
+                //Add the method to the debug database
+                //  (method is marked as plugged)
+                dbMethod = new DB_Method();
+                dbMethod.Id = TheScannerState.GetMethodID(aChunk.Method);
+                dbMethod.MethodSignature = methodSignature;
+                dbMethod.Plugged = true;
+                dbMethod.ASMStartPos = -1;
+                dbMethod.ASMEndPos = -1;
+                result.DBMethod = dbMethod;
+                DebugDatabase.AddMethod(dbMethod);
+            }
 
             //We do not want to output this initial comment stuff in front of 
             //  the Multiboot signature!
@@ -461,9 +483,12 @@ namespace Kernel.Compiler
             if (aChunk.PlugASMFilePath == null || 
                 !aChunk.PlugASMFilePath.Contains("Multiboot"))
             {
-                result.ASM.AppendLine("; Plugged Method"); //DEBUG INFO
-                result.ASM.AppendLine("; Method Signature : " + methodSignature); //DEBUG INFO
-                result.ASM.AppendLine("; Method ID : " + dbMethod.Id); //DEBUG INFO
+                if (TheSettings.DebugBuild)
+                {
+                    result.ASM.AppendLine("; Plugged Method"); //DEBUG INFO
+                    result.ASM.AppendLine("; Method Signature : " + methodSignature); //DEBUG INFO
+                    result.ASM.AppendLine("; Method ID : " + dbMethod.Id); //DEBUG INFO
+                }
 
                 if (aChunk.PlugASMFilePath == null)
                 {
@@ -495,14 +520,18 @@ namespace Kernel.Compiler
             string MethodID = TheScannerState.GetMethodID(aChunk.Method);
             
             //Add the method to the debug database
-            DB_Method dbMethod = new DB_Method();
-            dbMethod.Id = MethodID;
-            dbMethod.MethodSignature = methodSignature;
-            dbMethod.Plugged = false;
-            dbMethod.ASMStartPos = -1;
-            dbMethod.ASMEndPos = -1;
-            result.DBMethod = dbMethod;
-            DebugDatabase.AddMethod(dbMethod);
+            DB_Method dbMethod = null;
+            if (TheSettings.DebugBuild)
+            {
+                dbMethod = new DB_Method();
+                dbMethod.Id = MethodID;
+                dbMethod.MethodSignature = methodSignature;
+                dbMethod.Plugged = false;
+                dbMethod.ASMStartPos = -1;
+                dbMethod.ASMEndPos = -1;
+                result.DBMethod = dbMethod;
+                DebugDatabase.AddMethod(dbMethod);
+            }
 
             result.ASM.AppendLine("; IL Scanned Method"); //DEBUG INFO
             result.ASM.AppendLine("; " + methodSignature); //DEBUG INFO
@@ -633,29 +662,33 @@ namespace Kernel.Compiler
                     #region Debug 
 
                     //Create the debug
-                    DB_ILOpInfo dbILOpInfo = new DB_ILOpInfo();
-                    dbILOpInfo.Id = Guid.NewGuid();
-                    dbILOpInfo.MethodID = MethodID;
-                    dbILOpInfo.OpCode = anILOpInfo.opCode.Value;
-                    dbILOpInfo.CustomOpCode = 0;
-                    dbILOpInfo.NextPosition = anILOpInfo.NextPosition;
-                    dbILOpInfo.Position = anILOpInfo.Position;
-                    if (anILOpInfo.ValueBytes != null)
+                    DB_ILOpInfo dbILOpInfo = null;
+                    if (TheSettings.DebugBuild)
                     {
-                        if (anILOpInfo.ValueBytes.Length < 8000)
+                        dbILOpInfo = new DB_ILOpInfo();
+                        dbILOpInfo.Id = Guid.NewGuid();
+                        dbILOpInfo.MethodID = MethodID;
+                        dbILOpInfo.OpCode = anILOpInfo.opCode.Value;
+                        dbILOpInfo.CustomOpCode = 0;
+                        dbILOpInfo.NextPosition = anILOpInfo.NextPosition;
+                        dbILOpInfo.Position = anILOpInfo.Position;
+                        if (anILOpInfo.ValueBytes != null)
                         {
-                            dbILOpInfo.ValueBytes = new System.Data.Linq.Binary(anILOpInfo.ValueBytes);
+                            if (anILOpInfo.ValueBytes.Length < 8000)
+                            {
+                                dbILOpInfo.ValueBytes = new System.Data.Linq.Binary(anILOpInfo.ValueBytes);
+                            }
+                            else
+                            {
+                                OutputWarning(new Exception("ValueBytes not set because data too large. Op: " + anILOpInfo.opCode.Name + ", Op offset: " + anILOpInfo.Position.ToString("X2") + "\r\n" + methodSignature));
+                                anILOpInfo.ValueBytes = null;
+                            }
                         }
-                        else
-                        {
-                            OutputWarning(new Exception("ValueBytes not set because data too large. Op: " + anILOpInfo.opCode.Name + ", Op offset: " + anILOpInfo.Position.ToString("X2") + "\r\n" + methodSignature));
-                            anILOpInfo.ValueBytes = null;
-                        }
-                    }
-                    dbILOpInfo.ASMInsertLabel = true;
-                    anILOpInfo.DBILOpInfo = dbILOpInfo;
+                        dbILOpInfo.ASMInsertLabel = true;
+                        anILOpInfo.DBILOpInfo = dbILOpInfo;
 
-                    dbILOpInfo.ASMStartPos = anILOpInfo.ASMStartPos = ASMStartPos;
+                        dbILOpInfo.ASMStartPos = anILOpInfo.ASMStartPos = ASMStartPos;
+                    }
 
                     #endregion
 
@@ -809,43 +842,46 @@ namespace Kernel.Compiler
 
                     #region Debug 
 
-                    //If this chunk hasn't been marked as no-debug ops:
-                    if (!aChunk.NoDebugOps)
+                    if (TheSettings.DebugBuild)
                     {
-                        // Insert a debug nop just before the op
-                        //  - This allows us to step an entire IL op at a time rather than just one
-                        //    line of ASM at a time.
-                        result.ASM.AppendLine("; Debug Nop"); // DEBUG INFO
-                        // Insert the nop
-                        asm += "\r\n" + TargetILOps[ILOps.ILOp.OpCodes.Nop].Convert(anILOpInfo, TheScannerState);
-                        //See above for how this append code works
-                        string[] asmLines = asm.Replace("\r", "").Split("\n".ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
-                        int asmLineNum = addASMLineNum;
-                        //Clear the current debug nop label so we can get the first label
-                        //  of the new ASM and use it as the debug nop label for this IL op.
-                        debugNopLabel = null;
-                        foreach (string asmLine in asmLines)
+                        //If this chunk hasn't been marked as no-debug ops:
+                        if (!aChunk.NoDebugOps)
                         {
-                            if (!asmLine.Split(';')[0].Trim().EndsWith(":"))
+                            // Insert a debug nop just before the op
+                            //  - This allows us to step an entire IL op at a time rather than just one
+                            //    line of ASM at a time.
+                            result.ASM.AppendLine("; Debug Nop"); // DEBUG INFO
+                            // Insert the nop
+                            asm += "\r\n" + TargetILOps[ILOps.ILOp.OpCodes.Nop].Convert(anILOpInfo, TheScannerState);
+                            //See above for how this append code works
+                            string[] asmLines = asm.Replace("\r", "").Split("\n".ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
+                            int asmLineNum = addASMLineNum;
+                            //Clear the current debug nop label so we can get the first label
+                            //  of the new ASM and use it as the debug nop label for this IL op.
+                            debugNopLabel = null;
+                            foreach (string asmLine in asmLines)
                             {
-                                string label = string.Format("{0}.IL_{1}_{2}", MethodID, anILOpInfo.Position, asmLineNum);
-                                //If we do not currently have a debug nop label for this IL op:
-                                if (debugNopLabel == null)
+                                if (!asmLine.Split(';')[0].Trim().EndsWith(":"))
                                 {
-                                    //Set the current debug nop label.
-                                    debugNopLabel = label;
+                                    string label = string.Format("{0}.IL_{1}_{2}", MethodID, anILOpInfo.Position, asmLineNum);
+                                    //If we do not currently have a debug nop label for this IL op:
+                                    if (debugNopLabel == null)
+                                    {
+                                        //Set the current debug nop label.
+                                        debugNopLabel = label;
+                                    }
+                                    result.ASM.AppendLine(label + ":");
                                 }
-                                result.ASM.AppendLine(label + ":");
+                                result.ASM.AppendLine(asmLine);
+                                asmLineNum++;
                             }
-                            result.ASM.AppendLine(asmLine);
-                            asmLineNum++;
+                            addASMLineNum = asmLineNum;
+                            //We just added all the ASM for this op generated so far, so clean the "asm" variable
+                            asm = "";
                         }
-                        addASMLineNum = asmLineNum;
-                        //We just added all the ASM for this op generated so far, so clean the "asm" variable
-                        asm = "";
+                        //Set the debug nop label for this IL op as the last inserted debug nop label
+                        dbILOpInfo.DebugOpMeta = "DebugNopLabel=" + debugNopLabel + ";";
                     }
-                    //Set the debug nop label for this IL op as the last inserted debug nop label
-                    dbILOpInfo.DebugOpMeta = "DebugNopLabel=" + debugNopLabel + ";";
 
                     #endregion
 
@@ -1400,14 +1436,17 @@ namespace Kernel.Compiler
 
                             #region Debug
 
-                            if (anILOpInfo.opCode.Name == "nop" && !aChunk.NoDebugOps)
+                            if (TheSettings.DebugBuild)
                             {
-                                anILOpInfo.IsDebugOp = dbILOpInfo.IsDebugOp = true;
-                                dbILOpInfo.DebugOpMeta += "breakpoint;";
-                            }
-                            else
-                            {
-                                dbILOpInfo.IsDebugOp = false;
+                                if (anILOpInfo.opCode.Name == "nop" && !aChunk.NoDebugOps)
+                                {
+                                    anILOpInfo.IsDebugOp = dbILOpInfo.IsDebugOp = true;
+                                    dbILOpInfo.DebugOpMeta += "breakpoint;";
+                                }
+                                else
+                                {
+                                    dbILOpInfo.IsDebugOp = false;
+                                }
                             }
 
                             #endregion
@@ -1435,9 +1474,12 @@ namespace Kernel.Compiler
 
                     #region Debug
 
-                    dbILOpInfo.ASMEndPos = anILOpInfo.ASMEndPos = result.ASM.Length;
+                    if (TheSettings.DebugBuild)
+                    {
+                        dbILOpInfo.ASMEndPos = anILOpInfo.ASMEndPos = result.ASM.Length;
 
-                    DebugDatabase.AddILOpInfo(dbILOpInfo);
+                        DebugDatabase.AddILOpInfo(dbILOpInfo);
+                    }
 
                     #endregion
                 }
@@ -1458,20 +1500,23 @@ namespace Kernel.Compiler
 
             #region Debug
 
-            //Add debug info for local variables of this method
-            int locIndex = 0;
-            foreach(LocalVariable localItem in aChunk.LocalVariables)
+            if (TheSettings.DebugBuild)
             {
-                DB_LocalVariable dbLocalVar = new DB_LocalVariable();
-                dbLocalVar.BytesSize = localItem.sizeOnStackInBytes;
-                dbLocalVar.Id = Guid.NewGuid();
-                dbLocalVar.Index = locIndex;
-                //We always call ProcessType just in case we missed a type
-                //  when loading assemblies
-                dbLocalVar.TypeID = ProcessType(localItem.TheType).Id;
-                dbLocalVar.MethodID = dbMethod.Id;
-                DebugDatabase.AddLocalVariable(dbLocalVar);
-                locIndex++;
+                //Add debug info for local variables of this method
+                int locIndex = 0;
+                foreach (LocalVariable localItem in aChunk.LocalVariables)
+                {
+                    DB_LocalVariable dbLocalVar = new DB_LocalVariable();
+                    dbLocalVar.BytesSize = localItem.sizeOnStackInBytes;
+                    dbLocalVar.Id = Guid.NewGuid();
+                    dbLocalVar.Index = locIndex;
+                    //We always call ProcessType just in case we missed a type
+                    //  when loading assemblies
+                    dbLocalVar.TypeID = ProcessType(localItem.TheType).Id;
+                    dbLocalVar.MethodID = dbMethod.Id;
+                    DebugDatabase.AddLocalVariable(dbLocalVar);
+                    locIndex++;
+                }
             }
 
             #endregion

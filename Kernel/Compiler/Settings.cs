@@ -40,11 +40,30 @@ namespace Kernel.Compiler
         /// The setting key for the setting “ToolsPath”. The “ToolsPath” setting is used to specify the path to the tool apps folder.
         /// </summary>
         public const string ToolsPathKey = "toolspath";
+        /// <summary>
+        /// The setting key for the setting “DebugBuild”. The “DebugBuild” setting is used to specify the compiler should do a debug build or not.
+        /// </summary>
+        public const string DebugBuildKey = "debugbuild";
 
         /// <summary>
         /// The underlying dictionary of all the settings (arguments) stored.
         /// </summary>
         Dictionary<string, string> allArgs = new Dictionary<string, string>();
+
+        /// <summary>
+        /// Whether to do a debug or release build.
+        /// </summary>
+        public bool DebugBuild
+        {
+            get
+            {
+                return this[DebugBuildKey] != null; 
+            }
+            set
+            {
+                this[DebugBuildKey] = value.ToString();
+            }
+        }
 
         /// <summary>
         /// Constructor for Settings - creates empty settings instance.

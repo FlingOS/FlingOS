@@ -30,7 +30,7 @@
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
+    <Optimize>false</Optimize>
     <OutputPath>bin\Release\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
@@ -160,8 +160,9 @@
   <Target Name="BeforeBuild">
   </Target>
   -->
-  <UsingTask TaskName="KernelCompiler" AssemblyFile="G:\Fling OS\Fling OS\Kernel\Compiler\App\bin\Debug\Kernel.Compiler.App.exe" />
+  <UsingTask TaskName="KernelCompiler" AssemblyFile="G:\Fling OS\Fling OS\Kernel\Compiler\App\$(OutputPath)Kernel.Compiler.App.exe" />
   <Target Name="AfterBuild">
-    <KernelCompiler InputFile="$(TargetPath)" TargetArchitecture="$(PlatformTarget)" OutputFile="$(TargetDir)$(TargetName)" ToolsPath="G:\Fling OS\Fling OS\Kernel\Compiler\App\bin\Debug" />
+    <KernelCompiler Condition="'$(Configuration)' == 'Debug'" InputFile="$(TargetPath)" TargetArchitecture="$(PlatformTarget)" OutputFile="$(TargetDir)$(TargetName)" ToolsPath="G:\Fling OS\Fling OS\Kernel\Compiler\App\bin\Debug" DebugBuild="True" />
+    <KernelCompiler Condition="'$(Configuration)' == 'Release'" InputFile="$(TargetPath)" TargetArchitecture="$(PlatformTarget)" OutputFile="$(TargetDir)$(TargetName)" ToolsPath="G:\Fling OS\Fling OS\Kernel\Compiler\App\bin\Release" />
   </Target>
 </Project>

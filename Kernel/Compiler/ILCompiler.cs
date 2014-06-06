@@ -115,7 +115,7 @@ namespace Kernel.Compiler
             //Init the assembly manager
             TheAssemblyManager = new AssemblyManager();
             Assembly rootAssembly = null;
-            //Get it to load the assembly spcecified in Settings
+            //Get it to load the assembly specified in Settings
             try
             {
                 rootAssembly = TheAssemblyManager.LoadAssembly(TheSettings[Settings.InputFileKey]);
@@ -124,6 +124,9 @@ namespace Kernel.Compiler
                     OK = false;
                 }
 
+                //Debug database is still used even for release builds. 
+                //  - At the time of writing, (6/6/14) the Type and ComplexTypeLinks tables were the only
+                //    ones required during a release build.
                 Debug.Data.DebugDatabase.Empty();
             }
             catch(Exception ex)
@@ -325,8 +328,7 @@ namespace Kernel.Compiler
                 AllTypes.Add(typeof(UInt32*));
                 AllTypes.Add(typeof(UInt64*));
                 
-                OK = TheILScanner.Execute(AllTypes, TheILReader.ILChunks,
-                                          ThePDBManager,TheILReader.TheStaticConstructorDependencyTree);
+                OK = TheILScanner.Execute(AllTypes, TheILReader.ILChunks, TheILReader.TheStaticConstructorDependencyTree);
             }
             return OK;
         }

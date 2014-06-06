@@ -161,6 +161,20 @@ namespace Kernel.Compiler.App
                 TheSettings[Settings.ToolsPathKey] = value;
             }
         }
+        /// <summary>
+        /// Used by MSBuild to set settings before execution.
+        /// </summary>
+        public string DebugBuild
+        {
+            get
+            {
+                return TheSettings[Settings.DebugBuildKey];
+            }
+            set
+            {
+                TheSettings[Settings.DebugBuildKey] = value;
+            }
+        }
 
         /// <summary>
         /// A reference to the MSBuild Log for outputting errors, warnings and messages.
@@ -198,6 +212,7 @@ namespace Kernel.Compiler.App
             MSBuild_OutputMessage("Target Architecture = " + TargetArchitecture);
             MSBuild_OutputMessage("Output file = " + OutputFile);
             MSBuild_OutputMessage("Tools path = " + ToolsPath);
+            MSBuild_OutputMessage("Debug build = " + (DebugBuild != null ? "Yes" : "No"));
 
             bool result = Main(null) == (int)ErrorCodes.Success;
 
