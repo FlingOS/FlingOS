@@ -375,7 +375,7 @@ namespace Kernel.Debug.Data
         /// not occur if you modify values etc.
         /// </para>
         /// </remarks>
-        public static DB_StringLiteral GetStringLiteral(Guid aStringLiteralID)
+        public static DB_StringLiteral GetStringLiteral(string aStringLiteralID)
         {
             IQueryable<DB_StringLiteral> potStringLiterals = (from StringLiterals in DB.DB_StringLiterals
                                                 where (StringLiterals.Id == aStringLiteralID)
@@ -745,39 +745,10 @@ namespace Kernel.Debug.Data
         /// not occur if you modify values etc.
         /// </para>
         /// </remarks>
-        public static DB_Type GetType(Guid aTypeID)
+        public static DB_Type GetType(string aTypeID)
         {
             IQueryable<DB_Type> potTypes = (from Types in DB.DB_Types
-                                                    where (Types.Id == aTypeID)
-                                                    select Types);
-            if (potTypes.Count() > 0)
-            {
-                return potTypes.First();
-            }
-            return null;
-        }
-        /// <summary>
-        /// Gets the specified type from the database.
-        /// <para>To Do's: See <see cref="GetMethod"/>'s to do's.</para>
-        /// </summary>
-        /// <param name="Signature">The signature of the entry to get.</param>
-        /// <returns>The database type if found. Otherwise null.</returns>
-        /// <remarks>
-        /// <para>
-        /// This is an exception-safe method so if you try to request
-        /// an ID that isn't in the database, it won't throw an exception.
-        /// Instead it will return null.
-        /// </para>
-        /// <para>
-        /// The return value of this method can be cached because the 
-        /// debug database used is a static instance so exceptions will 
-        /// not occur if you modify values etc.
-        /// </para>
-        /// </remarks>
-        public static DB_Type GetType(string Signature)
-        {
-            IQueryable<DB_Type> potTypes = (from Types in DB.DB_Types
-                                            where (Types.Signature == Signature)
+                                            where (Types.Id == aTypeID)
                                             select Types);
             if (potTypes.Count() > 0)
             {

@@ -373,7 +373,8 @@ namespace Kernel.Compiler.App
                     }
                 }
             }
-            //Always run cleanup!
+            //Always run cleanup unless it waqs settings failure
+            if(resultCode != ErrorCodes.InitSettingsFail)
             {
                 try
                 {

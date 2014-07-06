@@ -117,7 +117,7 @@ namespace Kernel.Compiler
         /// <summary>
         /// A dictionary of all the types to type IDs scanned so far.
         /// </summary>
-        private Dictionary<string, Guid> TypeIDs = new Dictionary<string, Guid>();
+        private Dictionary<string, string> TypeIDs = new Dictionary<string, string>();
         
         /// <summary>
         /// Initialises a new, empty scanner state.
@@ -219,10 +219,11 @@ namespace Kernel.Compiler
         /// </summary>
         /// <param name="theType">The type to get the ID of.</param>
         /// <returns>The type's ID.</returns>
-        public Guid GetTypeID(Type theType)
+        public string GetTypeID(Type theType)
         {
             string assemblyQualifiedName = theType.AssemblyQualifiedName;
-            Guid result = Guid.NewGuid();
+            string result = Utils.GetMD5Hash(
+                Encoding.UTF8.GetBytes(theType.AssemblyQualifiedName));
             if(TypeIDs.ContainsKey(assemblyQualifiedName))
             {
                 result = TypeIDs[assemblyQualifiedName];
@@ -247,9 +248,9 @@ namespace Kernel.Compiler
         /// </summary>
         /// <param name="typeId">The type ID to convert to a label.</param>
         /// <returns>The ID string.</returns>
-        public string GetTypeIdString(Guid typeId)
+        public string GetTypeIdString(string typeId)
         {
-            return Utils.FilterIdentifierForInvalidChars("type_" + typeId.ToString());
+            return Utils.FilterIdentifierForInvalidChars("type_" + typeId);
         }
 
         /// <summary>
@@ -260,45 +261,49 @@ namespace Kernel.Compiler
         /// <returns>The ID (label) of the string.</returns>
         public string AddStringLiteral(string value, ILOpInfo ilOpInfo)
         {
-            Guid stringID = Guid.NewGuid();
-
-            Encoding xEncoding = Encoding.ASCII;
-
+            string stringID = Utils.GetMD5Hash(
+                Encoding.UTF8.GetBytes(value));
             string label = Utils.FilterIdentifierForInvalidChars("StringLiteral_" + stringID);
-            var NumBytes = xEncoding.GetByteCount(value);
-            var stringData = new byte[4 + NumBytes];
-            Array.Copy(BitConverter.GetBytes(value.Length), 0, stringData, 0, 4);
-            Array.Copy(xEncoding.GetBytes(value), 0, stringData, 4, NumBytes);
+            
+            if (!StringLiteralsDataBlock.ASM.ToString().Contains(stringID))
+            {
+                Encoding xEncoding = Encoding.ASCII;
 
-            //This is UTF-16 (Unicode)/ASCII text
-            StringLiteralsDataBlock.ASM.AppendLine(string.Format("{0}:", label));
-            //Put in type info as FOS_System.String type
-            StringLiteralsDataBlock.ASM.AppendLine("dd STRING_TYPE_ID");
-            //Put in string length bytes
-            StringLiteralsDataBlock.ASM.Append("db ");
-            for (int i = 0; i < 3; i++)
-            {
-                StringLiteralsDataBlock.ASM.Append(stringData[i]);
-                StringLiteralsDataBlock.ASM.Append(", ");
-            }
-            StringLiteralsDataBlock.ASM.Append(stringData[3]);
-            //Put in string characters (as words)
-            StringLiteralsDataBlock.ASM.Append("\ndw ");
-            for (int i = 4; i < (stringData.Length - 1); i++)
-            {
-                StringLiteralsDataBlock.ASM.Append(stringData[i]);
-                StringLiteralsDataBlock.ASM.Append(", ");
-            }
-            StringLiteralsDataBlock.ASM.Append(stringData.Last());
-            StringLiteralsDataBlock.ASM.AppendLine();
+                var NumBytes = xEncoding.GetByteCount(value);
+                var stringData = new byte[4 + NumBytes];
+                Array.Copy(BitConverter.GetBytes(value.Length), 0, stringData, 0, 4);
+                Array.Copy(xEncoding.GetBytes(value), 0, stringData, 4, NumBytes);
 
-            if (DebugBuild)
-            {
-                DB_StringLiteral dbStringLiteral = new DB_StringLiteral();
-                dbStringLiteral.Id = stringID;
-                dbStringLiteral.ILOpInfoID = ilOpInfo.DBILOpInfo.Id;
-                dbStringLiteral.Value = value;
-                DebugDatabase.AddStringLiteral(dbStringLiteral);
+                //This is UTF-16 (Unicode)/ASCII text
+                StringLiteralsDataBlock.ASM.AppendLine(string.Format("{0}:", label));
+                //Put in type info as FOS_System.String type
+                StringLiteralsDataBlock.ASM.AppendLine("dd STRING_TYPE_ID");
+                //Put in string length bytes
+                StringLiteralsDataBlock.ASM.Append("db ");
+                for (int i = 0; i < 3; i++)
+                {
+                    StringLiteralsDataBlock.ASM.Append(stringData[i]);
+                    StringLiteralsDataBlock.ASM.Append(", ");
+                }
+                StringLiteralsDataBlock.ASM.Append(stringData[3]);
+                //Put in string characters (as words)
+                StringLiteralsDataBlock.ASM.Append("\ndw ");
+                for (int i = 4; i < (stringData.Length - 1); i++)
+                {
+                    StringLiteralsDataBlock.ASM.Append(stringData[i]);
+                    StringLiteralsDataBlock.ASM.Append(", ");
+                }
+                StringLiteralsDataBlock.ASM.Append(stringData.Last());
+                StringLiteralsDataBlock.ASM.AppendLine();
+
+                if (DebugBuild)
+                {
+                    DB_StringLiteral dbStringLiteral = new DB_StringLiteral();
+                    dbStringLiteral.Id = stringID;
+                    dbStringLiteral.ILOpInfoID = ilOpInfo.DBILOpInfo.Id;
+                    dbStringLiteral.Value = value;
+                    DebugDatabase.AddStringLiteral(dbStringLiteral);
+                }
             }
 
             return label;

@@ -152,8 +152,8 @@ namespace Kernel.Compiler
                 }
 
                 ILChunk CallStaticConstructorsChunk = (from chunks in ILChunks
-                                                      where (chunks.IsCallStaticConstructorsMethod)
-                                                      select chunks).First();
+                                                       where (chunks.IsCallStaticConstructorsMethod)
+                                                       select chunks).First();
                 List<ConstructorInfo> staticConstructorsToCall = TheStaticConstructorDependencyTree.Flatten();
                 int position = CallStaticConstructorsChunk.ILOpInfos.Count;
                 foreach (ConstructorInfo anInfo in staticConstructorsToCall)
@@ -175,23 +175,23 @@ namespace Kernel.Compiler
                 }
 
                 TheScannerState.AddExceptionHandlerInfoMethod = (from chunks in ILChunks
-                                                 where (chunks.IsAddExceptionHandlerInfoMethod)
-                                                 select chunks).First().Method;
+                                                                 where (chunks.IsAddExceptionHandlerInfoMethod)
+                                                                 select chunks).First().Method;
                 TheScannerState.ExceptionsHandleLeaveMethod = (from chunks in ILChunks
-                                               where (chunks.IsExceptionsHandleLeaveMethod)
-                                               select chunks).First().Method;
+                                                               where (chunks.IsExceptionsHandleLeaveMethod)
+                                                               select chunks).First().Method;
                 TheScannerState.ExceptionsHandleEndFinallyMethod = (from chunks in ILChunks
-                                               where (chunks.IsExceptionsHandleEndFinallyMethod)
+                                                                    where (chunks.IsExceptionsHandleEndFinallyMethod)
                                                                     select chunks).First().Method;
                 TheScannerState.ThrowNullReferenceExceptionMethod = (from chunks in ILChunks
                                                                      where (chunks.IsExceptionsThrowNullReferenceMethod)
                                                                      select chunks).First().Method;
                 TheScannerState.ThrowArrayTypeMismatchExceptionMethod = (from chunks in ILChunks
-                                                                     where (chunks.IsExceptionsThrowArrayTypeMismatchMethod)
-                                                                     select chunks).First().Method;
+                                                                         where (chunks.IsExceptionsThrowArrayTypeMismatchMethod)
+                                                                         select chunks).First().Method;
                 TheScannerState.ThrowIndexOutOfRangeExceptionMethod = (from chunks in ILChunks
-                                                                     where (chunks.IsExceptionsThrowIndexOutOfRangeMethod)
-                                                                     select chunks).First().Method;
+                                                                       where (chunks.IsExceptionsThrowIndexOutOfRangeMethod)
+                                                                       select chunks).First().Method;
                 TheScannerState.NewObjMethod = (from chunks in ILChunks
                                                 where (chunks.IsNewObjMethod)
                                                 select chunks).First().Method;
@@ -1592,7 +1592,7 @@ namespace Kernel.Compiler
                         ProcessingTypes.Add(theType);
                         ProcessedTypes.Add(theType);
 
-                        Guid TypeId = TheScannerState.GetTypeID(theType);
+                        string TypeId = TheScannerState.GetTypeID(theType);
 
                         DB_Type TheDBType = new DB_Type();
                         TheDBType.Id = TypeId;

@@ -326,7 +326,7 @@ namespace Kernel.Debug.Data
 			}
 		}
 		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_ValueBytes", DbType="VarBinary(MAX)", CanBeNull=true, UpdateCheck=UpdateCheck.Never)]
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_ValueBytes", DbType="VarBinary(MAX)", UpdateCheck=UpdateCheck.Never)]
 		public System.Data.Linq.Binary ValueBytes
 		{
 			get
@@ -552,7 +552,7 @@ namespace Kernel.Debug.Data
 		
 		private static PropertyChangingEventArgs emptyChangingEventArgs = new PropertyChangingEventArgs(String.Empty);
 		
-		private System.Guid _Id;
+		private string _Id;
 		
 		private string _Value;
 		
@@ -564,7 +564,7 @@ namespace Kernel.Debug.Data
     partial void OnLoaded();
     partial void OnValidate(System.Data.Linq.ChangeAction action);
     partial void OnCreated();
-    partial void OnIdChanging(System.Guid value);
+    partial void OnIdChanging(string value);
     partial void OnIdChanged();
     partial void OnValueChanging(string value);
     partial void OnValueChanged();
@@ -578,8 +578,8 @@ namespace Kernel.Debug.Data
 			OnCreated();
 		}
 		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Id", DbType="UniqueIdentifier NOT NULL", IsPrimaryKey=true)]
-		public System.Guid Id
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Id", DbType="NVarChar(150) NOT NULL", CanBeNull=false, IsPrimaryKey=true)]
+		public string Id
 		{
 			get
 			{
@@ -947,7 +947,7 @@ namespace Kernel.Debug.Data
 		
 		private System.Guid _Id;
 		
-		private System.Guid _TypeID;
+		private string _TypeID;
 		
 		private int _Index;
 		
@@ -967,7 +967,7 @@ namespace Kernel.Debug.Data
     partial void OnCreated();
     partial void OnIdChanging(System.Guid value);
     partial void OnIdChanged();
-    partial void OnTypeIDChanging(System.Guid value);
+    partial void OnTypeIDChanging(string value);
     partial void OnTypeIDChanged();
     partial void OnIndexChanging(int value);
     partial void OnIndexChanged();
@@ -1006,8 +1006,8 @@ namespace Kernel.Debug.Data
 			}
 		}
 		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_TypeID", DbType="UniqueIdentifier NOT NULL")]
-		public System.Guid TypeID
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_TypeID", DbType="NVarChar(150) NOT NULL", CanBeNull=false)]
+		public string TypeID
 		{
 			get
 			{
@@ -1175,7 +1175,7 @@ namespace Kernel.Debug.Data
 					}
 					else
 					{
-						this._TypeID = default(System.Guid);
+						this._TypeID = default(string);
 					}
 					this.SendPropertyChanged("DB_Type");
 				}
@@ -1211,9 +1211,9 @@ namespace Kernel.Debug.Data
 		
 		private System.Guid _Id;
 		
-		private System.Guid _ParentTypeID;
+		private string _ParentTypeID;
 		
-		private System.Guid _ChildTypeID;
+		private string _ChildTypeID;
 		
 		private int _ParentIndex;
 		
@@ -1229,9 +1229,9 @@ namespace Kernel.Debug.Data
     partial void OnCreated();
     partial void OnIdChanging(System.Guid value);
     partial void OnIdChanged();
-    partial void OnParentTypeIDChanging(System.Guid value);
+    partial void OnParentTypeIDChanging(string value);
     partial void OnParentTypeIDChanged();
-    partial void OnChildTypeIDChanging(System.Guid value);
+    partial void OnChildTypeIDChanging(string value);
     partial void OnChildTypeIDChanged();
     partial void OnParentIndexChanging(int value);
     partial void OnParentIndexChanged();
@@ -1266,8 +1266,8 @@ namespace Kernel.Debug.Data
 			}
 		}
 		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_ParentTypeID", DbType="UniqueIdentifier NOT NULL")]
-		public System.Guid ParentTypeID
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_ParentTypeID", DbType="NVarChar(150) NOT NULL", CanBeNull=false)]
+		public string ParentTypeID
 		{
 			get
 			{
@@ -1290,8 +1290,8 @@ namespace Kernel.Debug.Data
 			}
 		}
 		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_ChildTypeID", DbType="UniqueIdentifier NOT NULL")]
-		public System.Guid ChildTypeID
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_ChildTypeID", DbType="NVarChar(150) NOT NULL", CanBeNull=false)]
+		public string ChildTypeID
 		{
 			get
 			{
@@ -1381,7 +1381,7 @@ namespace Kernel.Debug.Data
 					}
 					else
 					{
-						this._ChildTypeID = default(System.Guid);
+						this._ChildTypeID = default(string);
 					}
 					this.SendPropertyChanged("ChildType");
 				}
@@ -1415,7 +1415,7 @@ namespace Kernel.Debug.Data
 					}
 					else
 					{
-						this._ParentTypeID = default(System.Guid);
+						this._ParentTypeID = default(string);
 					}
 					this.SendPropertyChanged("ParentType");
 				}
@@ -1451,7 +1451,7 @@ namespace Kernel.Debug.Data
 		
 		private System.Guid _Id;
 		
-		private System.Guid _TypeID;
+		private string _TypeID;
 		
 		private int _Index;
 		
@@ -1469,7 +1469,7 @@ namespace Kernel.Debug.Data
     partial void OnCreated();
     partial void OnIdChanging(System.Guid value);
     partial void OnIdChanged();
-    partial void OnTypeIDChanging(System.Guid value);
+    partial void OnTypeIDChanging(string value);
     partial void OnTypeIDChanged();
     partial void OnIndexChanging(int value);
     partial void OnIndexChanged();
@@ -1506,8 +1506,8 @@ namespace Kernel.Debug.Data
 			}
 		}
 		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_TypeID", DbType="UniqueIdentifier NOT NULL")]
-		public System.Guid TypeID
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_TypeID", DbType="NVarChar(150) NOT NULL", CanBeNull=false)]
+		public string TypeID
 		{
 			get
 			{
@@ -1655,7 +1655,7 @@ namespace Kernel.Debug.Data
 					}
 					else
 					{
-						this._TypeID = default(System.Guid);
+						this._TypeID = default(string);
 					}
 					this.SendPropertyChanged("DB_Type");
 				}
@@ -1689,7 +1689,7 @@ namespace Kernel.Debug.Data
 		
 		private static PropertyChangingEventArgs emptyChangingEventArgs = new PropertyChangingEventArgs(String.Empty);
 		
-		private System.Guid _Id;
+		private string _Id;
 		
 		private string _Signature;
 		
@@ -1715,7 +1715,7 @@ namespace Kernel.Debug.Data
     partial void OnLoaded();
     partial void OnValidate(System.Data.Linq.ChangeAction action);
     partial void OnCreated();
-    partial void OnIdChanging(System.Guid value);
+    partial void OnIdChanging(string value);
     partial void OnIdChanged();
     partial void OnSignatureChanging(string value);
     partial void OnSignatureChanged();
@@ -1738,8 +1738,8 @@ namespace Kernel.Debug.Data
 			OnCreated();
 		}
 		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Id", DbType="UniqueIdentifier NOT NULL", IsPrimaryKey=true)]
-		public System.Guid Id
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Id", DbType="NVarChar(150) NOT NULL", CanBeNull=false, IsPrimaryKey=true)]
+		public string Id
 		{
 			get
 			{
@@ -2017,9 +2017,9 @@ namespace Kernel.Debug.Data
 		
 		private string _Id;
 		
-		private System.Guid _TypeID;
+		private string _TypeID;
 		
-		private System.Guid _DeclaringTypeID;
+		private string _DeclaringTypeID;
 		
 		private EntityRef<DB_Type> _DB_Type;
 		
@@ -2031,9 +2031,9 @@ namespace Kernel.Debug.Data
     partial void OnCreated();
     partial void OnIdChanging(string value);
     partial void OnIdChanged();
-    partial void OnTypeIDChanging(System.Guid value);
+    partial void OnTypeIDChanging(string value);
     partial void OnTypeIDChanged();
-    partial void OnDeclaringTypeIDChanging(System.Guid value);
+    partial void OnDeclaringTypeIDChanging(string value);
     partial void OnDeclaringTypeIDChanged();
     #endregion
 		
@@ -2064,8 +2064,8 @@ namespace Kernel.Debug.Data
 			}
 		}
 		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_TypeID", DbType="UniqueIdentifier NOT NULL")]
-		public System.Guid TypeID
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_TypeID", DbType="NVarChar(150) NOT NULL", CanBeNull=false)]
+		public string TypeID
 		{
 			get
 			{
@@ -2088,8 +2088,8 @@ namespace Kernel.Debug.Data
 			}
 		}
 		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_DeclaringTypeID", DbType="UniqueIdentifier NOT NULL")]
-		public System.Guid DeclaringTypeID
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_DeclaringTypeID", DbType="NVarChar(150) NOT NULL", CanBeNull=false)]
+		public string DeclaringTypeID
 		{
 			get
 			{
@@ -2139,7 +2139,7 @@ namespace Kernel.Debug.Data
 					}
 					else
 					{
-						this._TypeID = default(System.Guid);
+						this._TypeID = default(string);
 					}
 					this.SendPropertyChanged("DB_Type");
 				}
@@ -2173,7 +2173,7 @@ namespace Kernel.Debug.Data
 					}
 					else
 					{
-						this._DeclaringTypeID = default(System.Guid);
+						this._DeclaringTypeID = default(string);
 					}
 					this.SendPropertyChanged("DB_Type1");
 				}

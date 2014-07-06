@@ -20,7 +20,7 @@
   </Table>
   <Table Name="dbo.StringLiterals" Member="DB_StringLiterals">
     <Type Name="DB_StringLiteral">
-      <Column Name="Id" Type="System.Guid" DbType="UniqueIdentifier NOT NULL" IsPrimaryKey="true" CanBeNull="false" />
+      <Column Name="Id" Type="System.String" DbType="NVarChar(150) NOT NULL" IsPrimaryKey="true" CanBeNull="false" />
       <Column Name="Value" Type="System.String" DbType="NVarChar(MAX) NOT NULL" CanBeNull="false" />
       <Column Name="ILOpInfoID" Type="System.Guid" DbType="UniqueIdentifier" CanBeNull="true" />
       <Association Name="DB_ILOpInfo_DB_StringLiteral" Member="DB_ILOpInfo" ThisKey="ILOpInfoID" OtherKey="Id" Type="DB_ILOpInfo" IsForeignKey="true" />
@@ -41,7 +41,7 @@
   <Table Name="dbo.Arguments" Member="DB_Arguments">
     <Type Name="DB_Argument">
       <Column Name="Id" Type="System.Guid" DbType="UniqueIdentifier NOT NULL" IsPrimaryKey="true" CanBeNull="false" />
-      <Column Name="TypeID" Type="System.Guid" DbType="UniqueIdentifier NOT NULL" CanBeNull="false" />
+      <Column Name="TypeID" Type="System.String" DbType="NVarChar(150) NOT NULL" CanBeNull="false" />
       <Column Name="[Index]" Member="Index" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
       <Column Name="BytesSize" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
       <Column Name="MethodID" Type="System.String" DbType="NVarChar(500) NOT NULL" CanBeNull="false" />
@@ -53,8 +53,8 @@
   <Table Name="dbo.ComplexTypeLinks" Member="DB_ComplexTypeLinks">
     <Type Name="DB_ComplexTypeLink">
       <Column Name="Id" Type="System.Guid" DbType="UniqueIdentifier NOT NULL" IsPrimaryKey="true" CanBeNull="false" />
-      <Column Name="ParentTypeID" Type="System.Guid" DbType="UniqueIdentifier NOT NULL" CanBeNull="false" />
-      <Column Name="ChildTypeID" Type="System.Guid" DbType="UniqueIdentifier NOT NULL" CanBeNull="false" />
+      <Column Name="ParentTypeID" Type="System.String" DbType="NVarChar(150) NOT NULL" CanBeNull="false" />
+      <Column Name="ChildTypeID" Type="System.String" DbType="NVarChar(150) NOT NULL" CanBeNull="false" />
       <Column Name="ParentIndex" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
       <Column Name="FieldId" Type="System.String" DbType="NVarChar(500)" CanBeNull="true" />
       <Association Name="DB_Type_DB_ComplexTypeLink" Member="ChildType" Storage="_Type" ThisKey="ChildTypeID" OtherKey="Id" Type="DB_Type" IsForeignKey="true" />
@@ -64,7 +64,7 @@
   <Table Name="dbo.LocalVariables" Member="DB_LocalVariables">
     <Type Name="DB_LocalVariable">
       <Column Name="Id" Type="System.Guid" DbType="UniqueIdentifier NOT NULL" IsPrimaryKey="true" CanBeNull="false" />
-      <Column Name="TypeID" Type="System.Guid" DbType="UniqueIdentifier NOT NULL" CanBeNull="false" />
+      <Column Name="TypeID" Type="System.String" DbType="NVarChar(150) NOT NULL" CanBeNull="false" />
       <Column Name="[Index]" Member="Index" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
       <Column Name="BytesSize" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
       <Column Name="MethodID" Type="System.String" DbType="NVarChar(500) NOT NULL" CanBeNull="false" />
@@ -74,7 +74,7 @@
   </Table>
   <Table Name="dbo.Types" Member="DB_Types">
     <Type Name="DB_Type">
-      <Column Name="Id" Type="System.Guid" DbType="UniqueIdentifier NOT NULL" IsPrimaryKey="true" CanBeNull="false" />
+      <Column Name="Id" Type="System.String" DbType="NVarChar(150) NOT NULL" IsPrimaryKey="true" CanBeNull="false" />
       <Column Name="Signature" Type="System.String" DbType="NVarChar(500) NOT NULL" CanBeNull="false" />
       <Column Name="BytesSize" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
       <Column Name="StackBytesSize" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
@@ -90,8 +90,8 @@
   <Table Name="dbo.StaticFields" Member="DB_StaticFields">
     <Type Name="DB_StaticField">
       <Column Name="Id" Type="System.String" DbType="NVarChar(500) NOT NULL" IsPrimaryKey="true" CanBeNull="false" />
-      <Column Name="TypeID" Type="System.Guid" DbType="UniqueIdentifier NOT NULL" CanBeNull="false" />
-      <Column Name="DeclaringTypeID" Type="System.Guid" DbType="UniqueIdentifier NOT NULL" CanBeNull="false" />
+      <Column Name="TypeID" Type="System.String" DbType="NVarChar(150) NOT NULL" CanBeNull="false" />
+      <Column Name="DeclaringTypeID" Type="System.String" DbType="NVarChar(150) NOT NULL" CanBeNull="false" />
       <Association Name="DB_Type_DB_StaticField" Member="DB_Type" ThisKey="TypeID" OtherKey="Id" Type="DB_Type" IsForeignKey="true" />
       <Association Name="DB_Type_DB_StaticField1" Member="DB_Type1" ThisKey="DeclaringTypeID" OtherKey="Id" Type="DB_Type" IsForeignKey="true" />
     </Type>

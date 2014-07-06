@@ -48,11 +48,7 @@ namespace Kernel.Compiler
         /// The ASM sequencer to use.
         /// </summary>
         private ASMSequencer TheASMSequencer;
-        /// <summary>
-        /// The PDB manager to use.
-        /// </summary>
-        private PDBDumpManager ThePDBManager;
-
+        
         /// <summary>
         /// Initialises a new ILCompiler instance with the specified settings and empty output handlers.
         /// </summary>
@@ -167,8 +163,6 @@ namespace Kernel.Compiler
                             OutputError(new Exception("Failed to execute Dia2Dump. Debug information will be missing. " + assemblyFileName));
                         }
                     }
-
-                    ThePDBManager = new PDBDumpManager(TheAssemblyManager);
                 }
                 catch (ReflectionTypeLoadException ex)
                 {
