@@ -86,9 +86,11 @@ namespace Kernel.Hardware.USB
                             EHCI_PCIDevice.Claimed = true;
 
                             EHCI newEHCI = new EHCI(EHCI_PCIDevice);
-                            
+
                             HCIDevices.Add(newEHCI);
                             DeviceManager.Devices.Add(newEHCI);
+
+                            newEHCI.Test();
                         }
                     }
                 }

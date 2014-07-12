@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Kernel.FOS_System.Collections;
 
 namespace Kernel.Hardware.USB.HCIs
 {
@@ -11,6 +8,8 @@ namespace Kernel.Hardware.USB.HCIs
     /// </summary>
     public unsafe class EHCI : HCI
     {
+        //TODO - Reprogram bits of this to handle physical-to-virtual and reverse conversions where necessary
+
         /*
          * Based on the Intel EHCI Specification for USB 2.0
          *  http://www.intel.co.uk/content/dam/www/public/us/en/documents/technical-specifications/ehci-specification-for-usb.pdf
@@ -20,6 +19,8 @@ namespace Kernel.Hardware.USB.HCIs
         /// The base address of the USB HCI device in memory.
         /// </summary>
         protected byte* usbBaseAddress;
+
+        protected List QueueHeadReclaimList;
 
         #region PCI Registers
         
@@ -226,15 +227,15 @@ namespace Kernel.Hardware.USB.HCIs
         /// <summary>
         /// USB async list address operational memory-mapped register.
         /// </summary>
-        protected uint ASYNCLISTADDR
+        protected QueueHead_Struct* ASYNCLISTADDR
         {
             get
             {
-                return *(OpRegAddr + 6);
+                return (QueueHead_Struct*)*(OpRegAddr + 6);
             }
             set
             {
-                *(OpRegAddr + 6) = value;
+                *(OpRegAddr + 6) = (uint)value;
             }
         }
 
@@ -274,6 +275,58 @@ namespace Kernel.Hardware.USB.HCIs
             }
         }
 
+        /// <summary>
+        /// Used as a doorbell by software to tell the host controller to issue an interrupt the next time it advances 
+        /// asynchronous schedule. Used when a queue head is removed from the async queue.
+        /// </summary>
+        protected bool InterruptOnAsyncAdvanceDoorbell
+        {
+            /*
+             * See sections 2.3.1 and 4.8.2 of spec.
+             */
+
+            get
+            {
+                return (USBCMD & 0x40) > 0;
+            }
+            set
+            {
+                if (value)
+                {
+                    USBCMD = USBCMD | 0x40;
+                }
+                else
+                {
+                    USBCMD = USBCMD & 0xFFFFFFBF;
+                }
+            }
+        }
+        /// <summary>
+        /// Indicates the interrupt has/would have occurred.
+        /// </summary>
+        protected bool InterruptOnAsyncAdvance
+        {
+            /*
+             * See sections 2.3.1 and 4.8.2 of spec.
+             */
+
+            get
+            {
+                return (USBSTS & 0x20) > 0;
+            }
+            set
+            {
+                if (value)
+                {
+                    USBSTS = USBSTS | 0x20;
+                }
+                else
+                {
+                    USBSTS = USBSTS & 0xFFFFFFDF;
+                }
+            }
+        }
+
         #endregion
 
         #region Aux Well
@@ -310,7 +363,7 @@ namespace Kernel.Hardware.USB.HCIs
         #endregion
 
         #endregion
-
+        
         /// <summary>
         /// Initializes a new EHCI device.
         /// </summary>
@@ -318,21 +371,51 @@ namespace Kernel.Hardware.USB.HCIs
         public EHCI(PCI.PCIDeviceNormal aPCIDevice)
             : base(aPCIDevice)
         {
-            usbBaseAddress = pciDevice.BaseAddresses[4].BaseAddress();
+            usbBaseAddress = pciDevice.BaseAddresses[0].BaseAddress();
             CapabilitiesRegAddr = usbBaseAddress;
-
+            BasicConsole.WriteLine("CapabilitiesRegAddr: " + (FOS_System.String)(uint)CapabilitiesRegAddr);
+            
             SBRN = pciDevice.ReadRegister8(0x60);
-
+            BasicConsole.WriteLine("SBRN: " + (FOS_System.String)SBRN);
+            
             CapabilitiesRegsLength = *CapabilitiesRegAddr;
+            BasicConsole.WriteLine("CapabilitiesRegsLength: " + (FOS_System.String)CapabilitiesRegsLength);
             HCIVersion = *((UInt16*)(CapabilitiesRegAddr + 2));
+            BasicConsole.WriteLine("HCIVersion: " + (FOS_System.String)HCIVersion);
             HCSParams = *((UInt32*)(CapabilitiesRegAddr + 4));
+            BasicConsole.WriteLine("HCSParams: " + (FOS_System.String)HCSParams);
             HCCParams = *((UInt32*)(CapabilitiesRegAddr + 8));
+            BasicConsole.WriteLine("HCCParams: " + (FOS_System.String)HCCParams);
             HCSPPortRouteDesc = *((UInt64*)(CapabilitiesRegAddr + 12));
-
+            BasicConsole.WriteLine("HCSPPortRouteDesc: " + (FOS_System.String)HCSPPortRouteDesc);
+            
             OpRegAddr = (uint*)(usbBaseAddress + CapabilitiesRegsLength);
+            BasicConsole.WriteLine("OpRegAddr: " + (FOS_System.String)(uint)OpRegAddr);
 
             LoadExtendedCapabilities();
         }
+
+        #region Test Methods
+
+        /// <summary>
+        /// Performs basic tests with the driver covering initialisation
+        /// and the async queue.
+        /// </summary>
+        public void Test()
+        {
+            BasicConsole.WriteLine("Testing Init()...");
+            Init();
+            BasicConsole.WriteLine("Test passed.");
+            BasicConsole.WriteLine("Testing EnableAsyncQueue()...");
+            EnableAsyncQueue();
+            BasicConsole.WriteLine("Test passed.");
+            BasicConsole.WriteLine("Testing DisableAsyncQueue()...");
+            DisableAsyncQueue();
+            BasicConsole.WriteLine("Test passed.");
+            BasicConsole.WriteLine("Tests complete.");
+        }
+
+        #endregion
 
         #region Initialization / setup methods
 
@@ -379,7 +462,7 @@ namespace Kernel.Hardware.USB.HCIs
         /*
          * See Init() method - all ports are routed to EHCI initially.
          * For our simple implementation, we will not use re-routing 
-         * to companion controllers yet nor inidividual port power 
+         * to companion controllers yet nor individual port power 
          * management.
          */
 
@@ -432,7 +515,28 @@ namespace Kernel.Hardware.USB.HCIs
         /// </summary>
         protected void WaitForAsyncQueueEnabledStatusMatch()
         {
-            while (AsynchronousScheduleEnabled != AsynchronousScheduleStatus)
+            //BasicConsole.WriteLine("USBCMD: " + (FOS_System.String)USBCMD);
+            //BasicConsole.WriteLine("USBSTS: " + (FOS_System.String)USBSTS);
+
+            //if (AsynchronousScheduleEnabled)
+            //{
+            //    BasicConsole.WriteLine("Schedule enabled: true");
+            //}
+            //else
+            //{
+            //    BasicConsole.WriteLine("Schedule enabled: false");
+            //}
+            //if (AsynchronousScheduleStatus)
+            //{
+            //    BasicConsole.WriteLine("Schedule status: true");
+            //}
+            //else
+            //{
+            //    BasicConsole.WriteLine("Schedule status: false");
+            //}
+
+            while (AsynchronousScheduleEnabled != AsynchronousScheduleStatus &&
+                   ASYNCLISTADDR != null)
             {
                 ;
             }
@@ -454,35 +558,154 @@ namespace Kernel.Hardware.USB.HCIs
         /// </summary>
         protected void DisableAsyncQueue()
         {
-            // - Wait for AsyncQueueEnabled and corresponding Status bit to match
-            WaitForAsyncQueueEnabledStatusMatch();
-            // - Set AsyncQueueEnabled
+            // - Wait for AsyncQueueStatus to equal 0 i.e. schedule goes idle
+            while (AsynchronousScheduleStatus)
+            {
+                ;
+            }
+            // - Set AsyncQueueEnabled to false
             AsynchronousScheduleEnabled = false;
-            // - Wait again
-            WaitForAsyncQueueEnabledStatusMatch();
         }
         
-        //To be done
-        //TODO - Methods for adding / removing QueueHeads from the 
-        //       HC's list
         /// <summary>
         /// Adds a queue head to the async queue.
         /// </summary>
         /// <param name="theHead">The queue head to add.</param>
+        /// <remarks>
+        /// See EHCI spec section 4.8.1
+        /// </remarks>
         protected void AddAsyncQueueHead(QueueHead theHead)
         {
             // - Reclaim anything from the queue that we can
             // - Check if queue is empty:
             //      - If so, create new queue
+
+            //Call Reclaim
+            Reclaim();
+
+            //Check if queue activated (/empty)
+            if (ASYNCLISTADDR == null)
+            {
+                //Inactive (/empty) queue
+                //Set as only item in queue
+                //(Re-)enable (/activate) queue
+
+                ASYNCLISTADDR = theHead.queueHead;
+                EnableAsyncQueue();
+            }
+            else
+            {
+                //Active (/not empty) queue
+                //Insert into the linked list maintaining queue coherency
+
+                QueueHead currQueueHead = new QueueHead(ASYNCLISTADDR);
+                theHead.HorizontalLinkPointer = currQueueHead.HorizontalLinkPointer;
+                currQueueHead.HorizontalLinkPointer = theHead.queueHead;
+            }
         }
         /// <summary>
         /// Removes a queue head from the async queue.
         /// </summary>
         /// <param name="theHead">The queue head to remove.</param>
+        /// <remarks>
+        /// See EHCI spec section 4.8.2
+        /// </remarks>
         protected void RemoveAsyncQueueHead(QueueHead theHead)
         {
+            //Check if queue is empty: If so, do nothing
+            //Otherwise:
+            //Deactivate all qTDs in the queue head
+            //(Wait for queue head to go inactive)
+            //Find prev qHead. 
+            //If no prev: Last in the list so deactivate async list and remove
+            //Otherwise:
+            //Find next qHead
+            //Check H-bit. If set, find another to have H-bit set
+            //Unlink theHead maintaining queue coherency
+            //Handshake with the host controller to confirm cache release of theHead
+
+            //Check if queue is empty
+            if (ASYNCLISTADDR == null)
+            {
+                //If so, do nothing
+                return;
+            }
+
+            //Deactivate all qTDs in the queue head
+            if (theHead.NextqTDPointer != null)
+            {
+                qTD aqTD = new qTD(theHead.NextqTDPointer);
+                while (aqTD != null)
+                {
+                    //Deactivate by setting status to 0
+                    aqTD.Status &= 0x7F;
+
+                    //Move to next qTD
+                    if (aqTD.NextqTDPointer != null)
+                    {
+                        aqTD.qtd = aqTD.NextqTDPointer;
+                    }
+                    else
+                    {
+                        aqTD = null;
+                    }
+                }
+            }
+
+            //Wait for queue head to go inactive
+            //Umm...not actually sure how to do this? No documentation on how to detect this...
+            // (QueueHead doesn't have a status bit - only qTDs have a status bit (?!))
+
+            //Find prev qHead.
+            QueueHead prevHead = new QueueHead(ASYNCLISTADDR);
+            while (prevHead.queueHead != null)
+            {
+                if (prevHead.HorizontalLinkPointer == theHead.queueHead)
+                {
+                    break;
+                }
+                else
+                {
+                    prevHead.queueHead = prevHead.HorizontalLinkPointer;
+                }
+            }
+
+            //If no prev: Last in the list so deactivate async list and remove
+            if (prevHead.queueHead == null)
+            {
+                DisableAsyncQueue();
+                ASYNCLISTADDR = null;
+            }
+            else
+            {
+                //Otherwise:
+                //Find next qHead
+                QueueHead nextHead = new QueueHead(theHead.HorizontalLinkPointer);
+
+                //Check H-bit. If set, find another to have H-bit set
+                if (theHead.HeadOfReclamationList)
+                {
+                    nextHead.HeadOfReclamationList = true;
+                    theHead.HeadOfReclamationList = false;
+                }
+
+                //Unlink theHead maintaining queue coherency
+                prevHead.HorizontalLinkPointer = theHead.HorizontalLinkPointer;
+                theHead.HorizontalLinkPointer = nextHead.queueHead;
+            }
+
+            //Handshake with the host controller to confirm cache release of theHead
+            InterruptOnAsyncAdvanceDoorbell = true;
+            //TODO - Use actual interrupts not this ignorant/hacky solution
+            while(!InterruptOnAsyncAdvance)
+            {
+                ;
+            }
+            QueueHeadReclaimList.Add(theHead);
         }
 
+        //To be done
+        
         //TODO - Methods for creating QueueHeads for an endpoint
         /// <summary>
         /// Creates a new queue head for the async queue.
@@ -490,6 +713,9 @@ namespace Kernel.Hardware.USB.HCIs
         /// <returns>The new queue head.</returns>
         protected QueueHead CreateQueueHead(/*Params?*/)
         {
+            //Check if recycle list not empty:
+            //  - If so, reinitialise a reclaimed queue head
+            //Otherwise, create a new queue head and initialise it (to valid empty values?)
             return null;
         }
 
@@ -502,6 +728,9 @@ namespace Kernel.Hardware.USB.HCIs
         /// <returns>The new qTD.</returns>
         protected qTD CreateqTD(/*Params?*/)
         {
+            //Check if recycle list not empty:
+            //  - If so, reinitialise a reclaimed qTD
+            //Otherwise, create a new qTD and initialise it (to valid empty values?)
             return null;
         }
         /// <summary>
@@ -720,10 +949,12 @@ namespace Kernel.Hardware.USB.HCIs
         /// </summary>
         public qTD_Struct* NextqTDPointer
         {
+            [Compiler.NoGC]
             get
             {
                 return (qTD_Struct*)(qtd->u1 & 0xFFFFFFF0u);
             }
+            [Compiler.NoGC]
             set
             {
                 qtd->u1 = (qtd->u1 & 0x0000000Fu) | ((uint)value & 0xFFFFFFF0u);
@@ -734,10 +965,12 @@ namespace Kernel.Hardware.USB.HCIs
         /// </summary>
         public bool NextqTDPointerTerminate
         {
+            [Compiler.NoGC]
             get
             {
                 return (qtd->u1 & 0x00000001u) > 0;
             }
+            [Compiler.NoGC]
             set
             {
                 if (value)
@@ -755,10 +988,12 @@ namespace Kernel.Hardware.USB.HCIs
         /// </summary>
         public byte Status
         {
+            [Compiler.NoGC]
             get
             {
                 return (byte)(qtd->u3);
             }
+            [Compiler.NoGC]
             set
             {
                 qtd->u3 = (qtd->u3 & 0xFFFFFF00u) | value;
@@ -769,10 +1004,12 @@ namespace Kernel.Hardware.USB.HCIs
         /// </summary>
         public byte PIDCode
         {
+            [Compiler.NoGC]
             get
             {
                 return (byte)((qtd->u3 & 0x00000030u) >> 8);
             }
+            [Compiler.NoGC]
             set
             {
                 qtd->u3 = (qtd->u3 & 0xFFFFFFCFu) | (uint)(value << 8); 
@@ -783,10 +1020,12 @@ namespace Kernel.Hardware.USB.HCIs
         /// </summary>
         public byte ErrorCounter
         {
+            [Compiler.NoGC]
             get
             {
                 return (byte)((qtd->u3 & 0x00000C00u) >> 10);
             }
+            [Compiler.NoGC]
             set
             {
                 qtd->u3 = (qtd->u3 & 0xFFFFF3FFu) | (uint)(value << 10);
@@ -797,10 +1036,12 @@ namespace Kernel.Hardware.USB.HCIs
         /// </summary>
         public byte CurrentPage
         {
+            [Compiler.NoGC]
             get
             {
                 return (byte)((qtd->u3 & 0x00007000) >> 12);
             }
+            [Compiler.NoGC]
             set
             {
                 qtd->u3 = (qtd->u3 & 0xFFFF8FFF) | (uint)(value << 12);
@@ -811,10 +1052,12 @@ namespace Kernel.Hardware.USB.HCIs
         /// </summary>
         public bool InterruptOnComplete
         {
+            [Compiler.NoGC]
             get
             {
                 return (qtd->u3 & 0x00008000u) > 0;
             }
+            [Compiler.NoGC]
             set
             {
                 if (value)
@@ -832,10 +1075,12 @@ namespace Kernel.Hardware.USB.HCIs
         /// </summary>
         public UInt16 TotalBytesToTransfer
         {
+            [Compiler.NoGC]
             get
             {
                 return (UInt16)((qtd->u3 >> 16) & 0x00007FFF);
             }
+            [Compiler.NoGC]
             set
             {
                 qtd->u3 = (qtd->u3 & 0x8000FFFF) | (uint)(value << 16);
@@ -846,10 +1091,12 @@ namespace Kernel.Hardware.USB.HCIs
         /// </summary>
         public bool DataToggle
         {
+            [Compiler.NoGC]
             get
             {
                 return (qtd->u3 & 0x80000000u) > 0;
             }
+            [Compiler.NoGC]
             set
             {
                 if (value)
@@ -882,6 +1129,7 @@ namespace Kernel.Hardware.USB.HCIs
         /// <summary>
         /// Frees the underlying memory structure.
         /// </summary>
+        [Compiler.NoGC]
         public void Free()
         {
             FOS_System.Heap.Free(qtd);
@@ -908,10 +1156,12 @@ namespace Kernel.Hardware.USB.HCIs
         /// </summary>
         public QueueHead_Struct* HorizontalLinkPointer
         {
+            [Compiler.NoGC]
             get
             {
                 return (QueueHead_Struct*)(queueHead->u1 & 0xFFFFFFF0u);
             }
+            [Compiler.NoGC]
             set
             {
                 queueHead->u1 = (uint)HorizontalLinkPointer & 0xFFFFFFF0u;
@@ -922,10 +1172,12 @@ namespace Kernel.Hardware.USB.HCIs
         /// </summary>
         public byte Type
         {
+            [Compiler.NoGC]
             get
             {
                 return (byte)((queueHead->u1 >> 1) & 0x0000000Fu);
             }
+            [Compiler.NoGC]
             set
             {
                 queueHead->u1 = (queueHead->u1 & 0xFFFFFFF0u) | (uint)((value & 0x0000000Fu) << 1);
@@ -936,10 +1188,12 @@ namespace Kernel.Hardware.USB.HCIs
         /// </summary>
         public byte DeviceAddress
         {
+            [Compiler.NoGC]
             get
             {
                 return (byte)(queueHead->u2 & 0x0000007Fu);
             }
+            [Compiler.NoGC]
             set
             {
                 queueHead->u2 = (queueHead->u2 & 0xFFFFFF80u) | (value & 0x0000007Fu);
@@ -950,10 +1204,12 @@ namespace Kernel.Hardware.USB.HCIs
         /// </summary>
         public bool InactiveOnNextTransaction
         {
+            [Compiler.NoGC]
             get
             {
                 return (queueHead->u2 & 0x00000080u) > 0;
             }
+            [Compiler.NoGC]
             set
             {
                 if (value)
@@ -971,10 +1227,12 @@ namespace Kernel.Hardware.USB.HCIs
         /// </summary>
         public byte EndpointNumber
         {
+            [Compiler.NoGC]
             get
             {
                 return (byte)((queueHead->u2 & 0x00000F00u) >> 8);
             }
+            [Compiler.NoGC]
             set
             {
                 queueHead->u2 = (queueHead->u2 & 0xFFFFF0FFu) | (uint)(value << 8);
@@ -985,10 +1243,12 @@ namespace Kernel.Hardware.USB.HCIs
         /// </summary>
         public byte EndpointSpeed
         {
+            [Compiler.NoGC]
             get
             {
                 return (byte)((queueHead->u2 & 0x00003000u) >> 12);
             }
+            [Compiler.NoGC]
             set
             {
                 queueHead->u2 = (queueHead->u2 & 0xFFFFCFFFu) | (uint)(value << 12);
@@ -999,10 +1259,12 @@ namespace Kernel.Hardware.USB.HCIs
         /// </summary>
         public bool DataToggleControl
         {
+            [Compiler.NoGC]
             get
             {
                 return (queueHead->u2 & 0x00004000u) > 0;
             }
+            [Compiler.NoGC]
             set
             {
                 if (value)
@@ -1020,10 +1282,12 @@ namespace Kernel.Hardware.USB.HCIs
         /// </summary>
         public bool HeadOfReclamationList
         {
+            [Compiler.NoGC]
             get
             {
                 return (queueHead->u2 & 0x00008000u) > 0;
             }
+            [Compiler.NoGC]
             set
             {
                 if (value)
@@ -1041,10 +1305,12 @@ namespace Kernel.Hardware.USB.HCIs
         /// </summary>
         public UInt16 MaximumPacketLength
         {
+            [Compiler.NoGC]
             get
             {
                 return (UInt16)((queueHead->u2 & 0x07FF0000u) >> 16);
             }
+            [Compiler.NoGC]
             set
             {
                 queueHead->u2 = (queueHead->u2 & 0xF800FFFFu) | ((uint)(value << 16) & 0x07FF0000u);
@@ -1055,10 +1321,12 @@ namespace Kernel.Hardware.USB.HCIs
         /// </summary>
         public bool ControlEndpointFlag
         {
+            [Compiler.NoGC]
             get
             {
                 return (queueHead->u2 & 0x08000000u) > 0;
             }
+            [Compiler.NoGC]
             set
             {
                 if (value)
@@ -1076,10 +1344,12 @@ namespace Kernel.Hardware.USB.HCIs
         /// </summary>
         public byte NakCountReload
         {
+            [Compiler.NoGC]
             get
             {
                 return (byte)((queueHead->u2 & 0xF0000000u) >> 28);
             }
+            [Compiler.NoGC]
             set
             {
                 queueHead->u2 = (queueHead->u2 & 0x0FFFFFFFu) | (uint)(value << 28);
@@ -1090,10 +1360,12 @@ namespace Kernel.Hardware.USB.HCIs
         /// </summary>
         public byte InterruptScheduleMask
         {
+            [Compiler.NoGC]
             get
             {
                 return (byte)(queueHead->u3);
             }
+            [Compiler.NoGC]
             set
             {
                 queueHead->u3 = (queueHead->u3 & 0xFFFFFF00u) | value;
@@ -1104,10 +1376,12 @@ namespace Kernel.Hardware.USB.HCIs
         /// </summary>
         public byte SplitCompletionMask
         {
+            [Compiler.NoGC]
             get
             {
                 return (byte)(queueHead->u3 >> 8);
             }
+            [Compiler.NoGC]
             set
             {
                 queueHead->u3 = (queueHead->u3 & 0xFFFF00FFu) | (uint)(value << 8);
@@ -1118,10 +1392,12 @@ namespace Kernel.Hardware.USB.HCIs
         /// </summary>
         public byte HubAddr
         {
+            [Compiler.NoGC]
             get
             {
                 return (byte)((queueHead->u3 & 0x007F0000u) >> 16);
             }
+            [Compiler.NoGC]
             set
             {
                 queueHead->u3 = (queueHead->u3 & 0xFF80FFFFu) | (uint)(value << 16);
@@ -1132,10 +1408,12 @@ namespace Kernel.Hardware.USB.HCIs
         /// </summary>
         public byte PortNumber
         {
+            [Compiler.NoGC]
             get
             {
                 return (byte)((queueHead->u3 & 0x007F0000u) >> 23);
             }
+            [Compiler.NoGC]
             set
             {
                 queueHead->u3 = (queueHead->u3 & 0xC07FFFFFu) | (uint)(value << 23);
@@ -1146,10 +1424,12 @@ namespace Kernel.Hardware.USB.HCIs
         /// </summary>
         public byte HighBandwidthPipeMultiplier
         {
+            [Compiler.NoGC]
             get
             {
                 return (byte)((queueHead->u3 & 0xC0000000u) >> 30);
             }
+            [Compiler.NoGC]
             set
             {
                 queueHead->u3 = (queueHead->u3 & 0x3FFFFFFFu) | (uint)(value << 30);
@@ -1160,10 +1440,12 @@ namespace Kernel.Hardware.USB.HCIs
         /// </summary>
         public qTD_Struct* CurrentqTDPointer
         {
+            [Compiler.NoGC]
             get
             {
                 return (qTD_Struct*)(queueHead->u4 & 0xFFFFFFF0u);
             }
+            [Compiler.NoGC]
             set
             {
                 queueHead->u4 = (queueHead->u4 & 0x0000000Fu) | ((uint)value & 0xFFFFFFF0u);
@@ -1174,10 +1456,12 @@ namespace Kernel.Hardware.USB.HCIs
         /// </summary>
         public qTD_Struct* NextqTDPointer
         {
+            [Compiler.NoGC]
             get
             {
                 return (qTD_Struct*)(queueHead->u5 & 0xFFFFFFF0u);
             }
+            [Compiler.NoGC]
             set
             {
                 queueHead->u5 = (queueHead->u5 & 0x0000000Fu) | ((uint)value & 0xFFFFFFF0u);
@@ -1188,10 +1472,12 @@ namespace Kernel.Hardware.USB.HCIs
         /// </summary>
         public bool NextqTDPointerTerminate
         {
+            [Compiler.NoGC]
             get
             {
                 return (queueHead->u5 & 0x00000001u) > 0;
             }
+            [Compiler.NoGC]
             set
             {
                 if (value)
@@ -1224,6 +1510,7 @@ namespace Kernel.Hardware.USB.HCIs
         /// <summary>
         /// Frees the underlying memory structure.
         /// </summary>
+        [Compiler.NoGC]
         public void Free()
         {
             FOS_System.Heap.Free(queueHead);
@@ -1249,6 +1536,7 @@ namespace Kernel.Hardware.USB.HCIs
         /// </summary>
         public byte CapabilityID
         {
+            [Compiler.NoGC]
             get
             {
                 return *(usbBaseAddress + capOffset);
@@ -1259,6 +1547,7 @@ namespace Kernel.Hardware.USB.HCIs
         /// </summary>
         public byte NextEHCIExtendedCapabilityOffset
         {
+            [Compiler.NoGC]
             get
             {
                 return *(usbBaseAddress + capOffset + 8);
@@ -1290,10 +1579,12 @@ namespace Kernel.Hardware.USB.HCIs
         /// </summary>
         public bool HCOSOwnedSemaphore
         {
+            [Compiler.NoGC]
             get
             {
                 return (*(usbBaseAddress + capOffset + 24) & 0x01) > 0;
             }
+            [Compiler.NoGC]
             set
             {
                 if (value)
@@ -1311,10 +1602,12 @@ namespace Kernel.Hardware.USB.HCIs
         /// </summary>
         public bool HCBIOSOwnedSemaphore
         {
+            [Compiler.NoGC]
             get
             {
                 return (*(usbBaseAddress + capOffset + 16) & 0x01) > 0;
             }
+            [Compiler.NoGC]
             set
             {
                 if (value)
