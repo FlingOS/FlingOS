@@ -1,4 +1,22 @@
-﻿using System;
+﻿#region Copyright Notice
+/// ------------------------------------------------------------------------------ ///
+///                                                                                ///
+///               All contents copyright � Edward Nutting 2014                     ///
+///                                                                                ///
+///        You may not share, reuse, redistribute or otherwise use the             ///
+///        contents this file outside of the Fling OS project without              ///
+///        the express permission of Edward Nutting or other copyright             ///
+///        holder. Any changes (including but not limited to additions,            ///
+///        edits or subtractions) made to or from this document are not            ///
+///        your copyright. They are the copyright of the main copyright            ///
+///        holder for all Fling OS files. At the time of writing, this             ///
+///        owner was Edward Nutting. To be clear, owner(s) do not include          ///
+///        developers, contributors or other project members.                      ///
+///                                                                                ///
+/// ------------------------------------------------------------------------------ ///
+#endregion
+    
+using System;
 using Kernel.FOS_System.Collections;
 
 namespace Kernel.Hardware.USB.HCIs
@@ -615,7 +633,7 @@ namespace Kernel.Hardware.USB.HCIs
             //Check if queue is empty: If so, do nothing
             //Otherwise:
             //Deactivate all qTDs in the queue head
-            //(Wait for queue head to go inactive)
+            //Wait for queue head to go inactive
             //Find prev qHead. 
             //If no prev: Last in the list so deactivate async list and remove
             //Otherwise:
@@ -653,8 +671,10 @@ namespace Kernel.Hardware.USB.HCIs
             }
 
             //Wait for queue head to go inactive
-            //Umm...not actually sure how to do this? No documentation on how to detect this...
-            // (QueueHead doesn't have a status bit - only qTDs have a status bit (?!))
+            while (theHead.Active)
+            {
+                ;
+            }
 
             //Find prev qHead.
             QueueHead prevHead = new QueueHead(ASYNCLISTADDR);
@@ -701,24 +721,38 @@ namespace Kernel.Hardware.USB.HCIs
             {
                 ;
             }
-            QueueHeadReclaimList.Add(theHead);
+            //TODO : Use reclaimed queue heads
+            //QueueHeadReclaimList.Add(theHead);
+            theHead.Free();
         }
 
-        //To be done
         
-        //TODO - Methods for creating QueueHeads for an endpoint
         /// <summary>
         /// Creates a new queue head for the async queue.
         /// </summary>
         /// <returns>The new queue head.</returns>
-        protected QueueHead CreateQueueHead(/*Params?*/)
+        protected QueueHead CreateQueueHead(bool IsControlEndpoint, ushort MaxPacketLength, 
+                                            byte EndpointSpeed,     byte EndpointNumber,
+                                            byte DeviceAddress)
         {
             //Check if recycle list not empty:
             //  - If so, reinitialise a reclaimed queue head
             //Otherwise, create a new queue head and initialise it (to valid empty values?)
-            return null;
+
+            //TODO : Use reclaimed queue heads
+
+            QueueHead newHead = new QueueHead();
+            newHead.ControlEndpointFlag = IsControlEndpoint;
+            newHead.MaximumPacketLength = MaxPacketLength;
+            newHead.EndpointSpeed = EndpointSpeed;
+            newHead.EndpointNumber = EndpointNumber;
+            newHead.DeviceAddress = DeviceAddress;
+            
+            return newHead;
         }
 
+        //To be done
+        
         //TODO - Methods for creating lists of qTDs for a 
         //       queue head and for adding/removing them from/to 
         //       a queue head.
@@ -1490,7 +1524,31 @@ namespace Kernel.Hardware.USB.HCIs
                 }
             }
         }
-
+        
+        /// <summary>
+        /// Whether the queue head is active or not.
+        /// </summary>
+        public bool Active
+        {
+            [Compiler.NoGC]
+            get
+            {
+                return (queueHead->u7 & 0x00000080u) > 0;
+            }
+            [Compiler.NoGC]
+            set
+            {
+                if (value)
+                {
+                    queueHead->u7 = queueHead->u7 | 0x00000080u;
+                }
+                else
+                {
+                    queueHead->u7 = queueHead->u7 & 0xFFFFFF7Fu;
+                }
+            }
+        }
+        
         /// <summary>
         /// Initializes a new queue head with empty underlying memory structure.
         /// </summary>

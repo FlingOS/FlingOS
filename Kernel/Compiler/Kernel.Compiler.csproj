@@ -151,6 +151,9 @@
     <Compile Include="Utils.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="..\Kernel\Kernel.licenseheader">
+      <Link>Kernel.licenseheader</Link>
+    </None>
     <None Include="ClassDiagram1.cd" />
     <None Include="Dia2Dump\Dia2Dump.ilk">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
