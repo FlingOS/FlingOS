@@ -1,0 +1,129 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<topic id="d3b1bc73-d0b4-4c5b-8055-787bebd168fb" revisionNumber="1">
+  <developerHowToDocument
+    xmlns="http://ddue.schemas.microsoft.com/authoring/2003/5"
+    xmlns:xlink="http://www.w3.org/1999/xlink">
+
+    <!--
+    <summary>
+      <para>Optional summary abstract</para>
+    </summary>
+    -->
+
+    <introduction>
+      <para>The following page describes the steps to get your development PC set up for developing Fling OS.</para>
+      <para>If you are going to be developing mockups, you should not be following the tutorial on this page.</para>
+    </introduction>
+    
+    <!-- Optional procedures followed by optional code example but must have
+         at least one procedure or code example -->
+    <procedure>
+      <title>Become a developer</title>
+      <steps class="ordered">
+        <step>
+          <content>
+            <para>You will already have signed up to the main Fling OS websites (since you are viewing this page).</para>
+          </content>
+        </step>
+        <step>
+          <content>
+            <para>
+              If you haven't already, sign up to BitBucket.org and send your username to the lead developer Edward Nutting
+              to be added to the source control system and development team.
+            </para>
+          </content>
+        </step>
+      </steps>
+      <conclusion>
+        At this point you should have access to all the bits of the Fling OS project you need to develop the main operating 
+        system.
+      </conclusion>
+    </procedure>
+
+    <procedure>
+      <title>Pre-requisites</title>
+      <steps class="ordered">
+        <step>
+          <content>
+            <para>Ensure you have the following required software installed:</para>
+            <list class="bullet">
+              <listItem>
+                <para>
+                  <link xlink:href="http://www.visualstudio.com/downloads/download-visual-studio-vs">Visual Studio 2013 Pro/Premium/Ultimate</link>
+                </para>
+              </listItem>
+              <listItem>
+                <para>
+                  <link xlink:href="https://www.atlassian.com/software/sourcetree/overview">Atlassian Source Tree</link>
+                </para>
+              </listItem>
+              <listItem>
+                <para>
+                  <link xlink:href="https://my.vmware.com/web/vmware/free#desktop_end_user_computing/vmware_player/6_0">VMWare Player</link>
+                </para>
+              </listItem>
+              <listItem>
+                <para>
+                  <link xlink:href="http://www.microsoft.com/en-gb/download/details.aspx?id=8961">SQL Server Management Studio</link>
+                </para>
+              </listItem>
+              <listItem>
+                <para>
+                  <link xlink:href="http://ilspy.net/">IL Spy</link>
+                </para>
+              </listItem>
+            </list>
+          </content>
+        </step>
+        <step>
+          <content>
+            <para></para>
+          </content>
+        </step>
+      </steps>
+    </procedure>
+    <!-- <codeExample>Optional code example</codeExample> -->
+
+    <!-- <buildInstructions>Optional instructions for building a
+         code example.</buildInstructions> -->
+
+    <!-- <robustProgramming>Optional discussion of error handling and other
+         issues related to writing solid code.</robustProgramming> -->
+
+    <!-- <security>Optional discussion of security issues.</security> -->
+
+    <relatedTopics>
+      <!-- One or more of the following:
+           - A local link
+           - An external link
+           - A code entity reference
+
+      <link xlink:href="Other Topic's ID">Link text</link>
+      <externalLink>
+          <linkText>Link text</linkText>
+          <linkAlternateText>Optional alternate link text</linkAlternateText>
+          <linkUri>URI</linkUri>
+      </externalLink>
+      <codeEntityReference>API member ID</codeEntityReference>
+
+      Examples:
+
+      <link xlink:href="00e97994-e9e6-46e0-b420-5be86b2f8278">Some other topic</link>
+
+      <externalLink>
+          <linkText>SHFB on CodePlex</linkText>
+          <linkAlternateText>Go to CodePlex</linkAlternateText>
+          <linkUri>http://shfb.codeplex.com</linkUri>
+      </externalLink>
+
+      <codeEntityReference>T:TestDoc.TestClass</codeEntityReference>
+      <codeEntityReference>P:TestDoc.TestClass.SomeProperty</codeEntityReference>
+      <codeEntityReference>M:TestDoc.TestClass.#ctor</codeEntityReference>
+      <codeEntityReference>M:TestDoc.TestClass.#ctor(System.String,System.Int32)</codeEntityReference>
+      <codeEntityReference>M:TestDoc.TestClass.ToString</codeEntityReference>
+      <codeEntityReference>M:TestDoc.TestClass.FirstMethod</codeEntityReference>
+      <codeEntityReference>M:TestDoc.TestClass.SecondMethod(System.Int32,System.String)</codeEntityReference>
+      -->
+    </relatedTopics>
+  </developerHowToDocument>
+</topic>

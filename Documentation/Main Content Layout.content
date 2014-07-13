@@ -1,8 +1,9 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Topics>
-  <Topic id="dd3e390e-07c0-499b-8f92-2cb8e8ca8b09" visible="True" isDefault="true" isSelected="true" />
-  <Topic id="192cb007-e293-44d5-a0c5-da2061201663" visible="True" noFile="true" title="Conceptual">
+  <Topic id="dd3e390e-07c0-499b-8f92-2cb8e8ca8b09" visible="True" isDefault="true" />
+  <Topic id="192cb007-e293-44d5-a0c5-da2061201663" visible="True" noFile="true" isExpanded="true" title="Conceptual">
     <Topic id="64d7d98a-eb1c-47ab-8fdf-f2411f237efc" visible="True" title="Introduction" />
+    <Topic id="d3b1bc73-d0b4-4c5b-8055-787bebd168fb" visible="True" isSelected="true" />
     <Topic id="27a8f4cf-42c2-4be4-aa2b-c04dee943d5c" visible="True">
       <Topic id="cddbb660-4e69-46c1-90b0-75bbe752a748" visible="True" noFile="true" title="Aims">
         <Topic id="2db9f191-ecdf-4db5-b63d-99ba96a370fd" visible="True" />

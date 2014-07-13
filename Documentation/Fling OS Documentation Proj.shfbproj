@@ -223,6 +223,7 @@
     <None Include="Conceptual\Kernel\Kernel Sections\Built-in\Basic Debugger.aml" />
     <None Include="Conceptual\Kernel\Kernel Sections\Built-in\Pre-reqs.aml" />
     <None Include="Conceptual\Kernel\Kernel.aml" />
+    <None Include="Conceptual\Setup for Development.aml" />
     <None Include="Welcome.aml" />
   </ItemGroup>
   <ItemGroup>
