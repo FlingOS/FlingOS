@@ -49,27 +49,42 @@
             <list class="bullet">
               <listItem>
                 <para>
-                  <link xlink:href="http://www.visualstudio.com/downloads/download-visual-studio-vs">Visual Studio 2013 Pro/Premium/Ultimate</link>
+                  <externalLink>
+                    <linkText>Visual Studio 2013 Pro/Premium/Ultimate</linkText>
+                    <linkUri>http://www.visualstudio.com/downloads/download-visual-studio-vs</linkUri>
+                  </externalLink>
                 </para>
               </listItem>
               <listItem>
                 <para>
-                  <link xlink:href="https://www.atlassian.com/software/sourcetree/overview">Atlassian Source Tree</link>
+                  <externalLink>
+                    <linkText>Atlassian Source Tree</linkText>
+                    <linkUri>https://www.atlassian.com/software/sourcetree/overview</linkUri>
+                  </externalLink>
                 </para>
               </listItem>
               <listItem>
                 <para>
-                  <link xlink:href="https://my.vmware.com/web/vmware/free#desktop_end_user_computing/vmware_player/6_0">VMWare Player</link>
+                  <externalLink>
+                    <linkText>VMWare Player</linkText>
+                    <linkUri>https://my.vmware.com/web/vmware/free#desktop_end_user_computing/vmware_player/6_0</linkUri>
+                  </externalLink>
                 </para>
               </listItem>
               <listItem>
                 <para>
-                  <link xlink:href="http://www.microsoft.com/en-gb/download/details.aspx?id=8961">SQL Server Management Studio</link>
+                  <externalLink>
+                    <linkText>SQL Server Management Studio</linkText>
+                    <linkUri>http://www.microsoft.com/en-gb/download/details.aspx?id=8961</linkUri>
+                  </externalLink>
                 </para>
               </listItem>
               <listItem>
                 <para>
-                  <link xlink:href="http://ilspy.net/">IL Spy</link>
+                  <externalLink>
+                    <linkText>IL Spy</linkText>
+                    <linkUri>http://ilspy.net/</linkUri>
+                  </externalLink>
                 </para>
               </listItem>
             </list>
