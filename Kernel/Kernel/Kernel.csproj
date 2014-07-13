@@ -160,9 +160,9 @@
   <Target Name="BeforeBuild">
   </Target>
   -->
-  <UsingTask TaskName="KernelCompiler" AssemblyFile="G:\Fling OS\Fling OS\Kernel\Compiler\App\$(OutputPath)Kernel.Compiler.App.exe" />
+  <UsingTask TaskName="KernelCompiler" AssemblyFile="$(SolutionDir)Kernel\Compiler\App\$(OutputPath)Kernel.Compiler.App.exe" />
   <Target Name="AfterBuild">
-    <KernelCompiler Condition="'$(Configuration)' == 'Debug'" InputFile="$(TargetPath)" TargetArchitecture="$(PlatformTarget)" OutputFile="$(TargetDir)$(TargetName)" ToolsPath="G:\Fling OS\Fling OS\Kernel\Compiler\App\bin\Debug" DebugBuild="True" />
-    <KernelCompiler Condition="'$(Configuration)' == 'Release'" InputFile="$(TargetPath)" TargetArchitecture="$(PlatformTarget)" OutputFile="$(TargetDir)$(TargetName)" ToolsPath="G:\Fling OS\Fling OS\Kernel\Compiler\App\bin\Release" />
+    <KernelCompiler Condition="'$(Configuration)' == 'Debug'" InputFile="$(TargetPath)" TargetArchitecture="$(PlatformTarget)" OutputFile="$(TargetDir)$(TargetName)" ToolsPath="$(SolutionDir)Kernel\Compiler\App\bin\Debug" DebugBuild="True" />
+    <KernelCompiler Condition="'$(Configuration)' == 'Release'" InputFile="$(TargetPath)" TargetArchitecture="$(PlatformTarget)" OutputFile="$(TargetDir)$(TargetName)" ToolsPath="$(SolutionDir)Kernel\Compiler\App\bin\Release" />
   </Target>
 </Project>
