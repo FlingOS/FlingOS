@@ -106,6 +106,9 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
+    <None Include="..\..\Kernel\Kernel.licenseheader">
+      <Link>Kernel.licenseheader</Link>
+    </None>
     <None Include="app.config" />
     <None Include="Database.dbml">
       <Generator>MSLinqToSQLGenerator</Generator>

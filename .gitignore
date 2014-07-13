@@ -4,3 +4,4 @@ obj/
 Database.mdf
 Database.ldf
 *.ldf
+Documentation/Help/
