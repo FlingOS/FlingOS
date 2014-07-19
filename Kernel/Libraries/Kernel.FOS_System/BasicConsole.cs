@@ -275,7 +275,7 @@ namespace Kernel
 
             WriteLine();
             int a = 0;
-            amount *= 1000000;
+            amount *= 10000000;
             for (int i = 0; i < amount; i++)
             {
                 if (i % 500000 == 0)

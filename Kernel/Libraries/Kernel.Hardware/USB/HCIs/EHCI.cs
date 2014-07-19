@@ -726,11 +726,15 @@ namespace Kernel.Hardware.USB.HCIs
             theHead.Free();
         }
 
-        
         /// <summary>
         /// Creates a new queue head for the async queue.
         /// </summary>
-        /// <returns>The new queue head.</returns>
+        /// <param name="IsControlEndpoint">Whether the endpoint is a control endpoint or not.</param>
+        /// <param name="MaxPacketLength">The maximum packet length to use with the endpoint.</param>
+        /// <param name="EndpointSpeed">The endpoint speed.</param>
+        /// <param name="EndpointNumber">The endpoint number.</param>
+        /// <param name="DeviceAddress">The address of the device to which the endpoint belongs.</param>
+        /// <returns>The new (or recycled) queue head.</returns>
         protected QueueHead CreateQueueHead(bool IsControlEndpoint, ushort MaxPacketLength, 
                                             byte EndpointSpeed,     byte EndpointNumber,
                                             byte DeviceAddress)
@@ -751,22 +755,50 @@ namespace Kernel.Hardware.USB.HCIs
             return newHead;
         }
 
-        //To be done
-        
-        //TODO - Methods for creating lists of qTDs for a 
-        //       queue head and for adding/removing them from/to 
-        //       a queue head.
         /// <summary>
         /// Creates a new queue transfer descriptor.
         /// </summary>
-        /// <returns>The new qTD.</returns>
-        protected qTD CreateqTD(/*Params?*/)
+        /// <param name="TotalBytesToTransfer">The total number of bytes to transfer from the buffers. Max: 0x5000 (5 pages)</param>
+        /// <param name="ErrorCounter">
+        /// 2-bit counter. Valid values: 3, 2, 1 or 0 (except for low or full speed devices in which case 0 is not valid)
+        /// </param>
+        /// <param name="PIDCode">0=OUT Token, 1=IN Token, 2=SETUP Token, 3=(Reserved)</param>
+        /// <param name="Buffer0">4K page-aligned pointer to first buffer of memory.</param>
+        /// <param name="Buffer1">4K page-aligned pointer to second buffer of memory.</param>
+        /// <param name="Buffer2">4K page-aligned pointer to third buffer of memory.</param>
+        /// <param name="Buffer3">4K page-aligned pointer to fourth buffer of memory.</param>
+        /// <param name="Buffer4">4K page-aligned pointer to fifth buffer of memory.</param>
+        /// <param name="NextqTDPtr">32-byte aligned pointer to the next qTD in the list or null ptr (value of 0)</param>
+        /// <returns>The new (or recycled) qTD.</returns>
+        protected qTD CreateqTD(char TotalBytesToTransfer,
+                                byte ErrorCounter,  byte PIDCode,
+                                byte* Buffer0,      byte* Buffer1,
+                                byte* Buffer2,      byte* Buffer3,
+                                byte* Buffer4,      qTD_Struct* NextqTDPtr)
         {
             //Check if recycle list not empty:
             //  - If so, reinitialise a reclaimed qTD
             //Otherwise, create a new qTD and initialise it (to valid empty values?)
+
+            //TODO: Use reclaimed qTDs
+
+            qTD newqTD = new qTD();
+            newqTD.ErrorCounter = ErrorCounter;
+            newqTD.NextqTDPointer = NextqTDPtr;
+            newqTD.NextqTDPointerTerminate = (uint)NextqTDPtr == 0u;
+            newqTD.PIDCode = PIDCode;
+            newqTD.TotalBytesToTransfer = TotalBytesToTransfer;
+            newqTD.Buffer0 = Buffer0;
+            newqTD.Buffer1 = Buffer1;
+            newqTD.Buffer2 = Buffer2;
+            newqTD.Buffer3 = Buffer3;
+            newqTD.Buffer4 = Buffer4;
+
             return null;
         }
+
+        //To be done
+
         /// <summary>
         /// Adds a qTD to a queue head.
         /// </summary>
@@ -782,6 +814,7 @@ namespace Kernel.Hardware.USB.HCIs
         /// <param name="theQueueHead">The queue head to remove from.</param>
         protected void RemoveqTDFromQueueHead(qTD theqTD, QueueHead theQueueHead)
         {
+            //TODO: Free buffer memory
         }
 
         //TODO - Methods for re-cycling (/re-using) queue heads
@@ -1141,6 +1174,87 @@ namespace Kernel.Hardware.USB.HCIs
                 {
                     qtd->u3 = qtd->u3 & 0x7FFFFFFFu;
                 }
+            }
+        }
+
+        /// <summary>
+        /// Buffer 0 pointer.
+        /// </summary>
+        public byte* Buffer0
+        {
+            [Compiler.NoGC]
+            get
+            {
+                return (byte*)(qtd->u4 & 0xFFFFF000);
+            }
+            [Compiler.NoGC]
+            set
+            {
+                qtd->u4 = (uint)value & 0xFFFFF000;
+            }
+        }
+        /// <summary>
+        /// Buffer 1 pointer.
+        /// </summary>
+        public byte* Buffer1
+        {
+            [Compiler.NoGC]
+            get
+            {
+                return (byte*)(qtd->u5 & 0xFFFFF000);
+            }
+            [Compiler.NoGC]
+            set
+            {
+                qtd->u5 = (uint)value & 0xFFFFF000;
+            }
+        }
+        /// <summary>
+        /// Buffer 2 pointer.
+        /// </summary>
+        public byte* Buffer2
+        {
+            [Compiler.NoGC]
+            get
+            {
+                return (byte*)(qtd->u6 & 0xFFFFF000);
+            }
+            [Compiler.NoGC]
+            set
+            {
+                qtd->u6 = (uint)value & 0xFFFFF000;
+            }
+        }
+        /// <summary>
+        /// Buffer 3 pointer.
+        /// </summary>
+        public byte* Buffer3
+        {
+            [Compiler.NoGC]
+            get
+            {
+                return (byte*)(qtd->u7 & 0xFFFFF000);
+            }
+            [Compiler.NoGC]
+            set
+            {
+                qtd->u7 = (uint)value & 0xFFFFF000;
+            }
+        }
+        /// <summary>
+        /// Buffer 4 pointer.
+        /// </summary>
+        public byte* Buffer4
+        {
+            [Compiler.NoGC]
+            get
+            {
+                return (byte*)(qtd->u8 & 0xFFFFF000);
+            }
+            [Compiler.NoGC]
+            set
+            {
+                qtd->u8 = (uint)value & 0xFFFFF000;
             }
         }
         

@@ -235,6 +235,25 @@ namespace Kernel
             BasicConsole.WriteLine(((FOS_System.String)"ATA initialised. Devices: ") + Hardware.DeviceManager.Devices.Count);
             
             disk0 = (Hardware.Devices.DiskDevice)Hardware.DeviceManager.Devices[0];
+
+            //for (int i = 0; i < Hardware.DeviceManager.Devices.Count; i++)
+            //{
+            //    disk0 = (Hardware.Devices.DiskDevice)Hardware.DeviceManager.Devices[0];
+            //    if (disk0._Type == (FOS_System.Type)(typeof(Hardware.ATA.ATAPio)))
+            //    {
+            //        Hardware.ATA.ATAPio theATA = (Hardware.ATA.ATAPio)disk0;
+            //        BasicConsole.WriteLine(((FOS_System.String)"disk0 currently using model no: ") + theATA.ModelNo);
+            //        if (theATA.DriveType == Hardware.ATA.ATAPio.SpecLevel.ATAPI)
+            //        {
+            //            //Reject ATAPI devices (i.e. non-HDD devices)
+            //        }
+            //        else
+            //        {
+            //            //Accept non ATAPI devices.
+            //            break;
+            //        }
+            //    }
+            //}
         }
         /// <summary>
         /// Initialises the file-system.
