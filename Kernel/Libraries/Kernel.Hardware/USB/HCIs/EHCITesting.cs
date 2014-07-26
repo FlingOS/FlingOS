@@ -27,7 +27,7 @@ namespace Kernel.Hardware.USB.HCIs
 
         #region Memory Tests
 
-        public static void Test_PointerManipultation()
+        public static void Test_PointerManipulation()
         {
             FOS_System.String testName = "Ptr Manipulation";
             DBGMSG(testName, "START");
@@ -904,6 +904,304 @@ namespace Kernel.Hardware.USB.HCIs
             finally
             {
                 qh.Free();
+            }
+
+            if (errors > 0)
+            {
+                DBGERR(testName, ((FOS_System.String)"Test failed! Errors: ") + errors + " Warnings: " + warnings);
+            }
+            else
+            {
+                if (warnings > 0)
+                {
+                    DBGWRN(testName, ((FOS_System.String)"Test passed with warnings: ") + warnings);
+                }
+                else
+                {
+                    DBGMSG(testName, "Test passed.");
+                }
+            }
+
+            DBGMSG(testName, "END");
+
+            BasicConsole.DelayOutput(4);
+        }
+        public static void Test_qTDWrapper()
+        {
+            FOS_System.String testName = "Queue Transfer Descrip";
+            DBGMSG(testName, "START");
+
+            errors = 0;
+            warnings = 0;
+
+            EHCI_qTD qTD = new EHCI_qTD();
+            try
+            {
+                byte* pqTD = (byte*)qTD.qtd;
+
+                //Verifications done via two methods:
+                //  1. Check value from pointer & manual shifting to confirm set properly
+                //  2. Check value from "get" method to confirm reading properly
+                //  3. For boolean types, also test & verify setting to false!
+
+                qTD.AlternateNextqTDPointerTerminate = true;
+                if ((pqTD[0x04u] & 0x01u) == 0)
+                {
+                    DBGERR(testName, "AlternateNextqTDPointerTerminate - Failed to set to true.");
+                }
+                else
+                {
+                    if (!qTD.AlternateNextqTDPointerTerminate)
+                    {
+                        DBGERR(testName, "AlternateNextqTDPointerTerminate - Failed to read as true.");
+                    }
+                    else
+                    {
+                        pqTD[0x04u] = 0xFF;
+                        qTD.AlternateNextqTDPointerTerminate = false;
+                        if ((pqTD[0x04u] & 0x1u) != 0)
+                        {
+                            DBGERR(testName, "AlternateNextqTDPointerTerminate - Failed to set to false.");
+                        }
+                        else
+                        {
+                            if (qTD.AlternateNextqTDPointerTerminate)
+                            {
+                                DBGERR(testName, "AlternateNextqTDPointerTerminate - Failed to read as false.");
+                            }
+                        }
+                    }
+                }
+
+                qTD.Buffer0 = (byte*)0xDEADBEEFu;
+                //Read back should be 0xDEADB000
+                if ((pqTD[0x0Du] & 0xF0u) != 0xB0u ||
+                     pqTD[0x0Eu] != 0xADu ||
+                     pqTD[0x0Fu] != 0xDEu)
+                {
+                    DBGERR(testName, "Buffer0 - Failed to set.");
+                }
+                else
+                {
+                    if ((uint)qTD.Buffer0 != 0xDEADB000u)
+                    {
+                        DBGERR(testName, "Buffer0 - Failed to read.");
+                    }
+                }
+
+                qTD.Buffer1 = (byte*)0x12345678u;
+                //Read back should be 0x12345000
+                if ((pqTD[0x11u] & 0xF0u) != 0x50u ||
+                     pqTD[0x12u] != 0x34u ||
+                     pqTD[0x13u] != 0x12u)
+                {
+                    DBGERR(testName, "Buffer1 - Failed to set.");
+                }
+                else
+                {
+                    if ((uint)qTD.Buffer1 != 0x12345000u)
+                    {
+                        DBGERR(testName, "Buffer1 - Failed to read.");
+                    }
+                }
+
+                qTD.Buffer2 = (byte*)0xFEEDBEA5u;
+                //Read back should be 0xFEEDB000
+                if ((pqTD[0x15u] & 0xF0u) != 0xB0u ||
+                     pqTD[0x16u] != 0xEDu ||
+                     pqTD[0x17u] != 0xFEu)
+                {
+                    DBGERR(testName, "Buffer2 - Failed to set.");
+                }
+                else
+                {
+                    if ((uint)qTD.Buffer2 != 0xFEEDB000u)
+                    {
+                        DBGERR(testName, "Buffer2 - Failed to read.");
+                    }
+                }
+
+                qTD.Buffer3 = (byte*)0x09876543u;
+                //Read back should be 0x09876000
+                if ((pqTD[0x19u] & 0xF0u) != 0x60u ||
+                     pqTD[0x1Au] != 0x87u ||
+                     pqTD[0x1Bu] != 0x09u)
+                {
+                    DBGERR(testName, "Buffer3 - Failed to set.");
+                }
+                else
+                {
+                    if ((uint)qTD.Buffer3 != 0x09876000u)
+                    {
+                        DBGERR(testName, "Buffer3 - Failed to read.");
+                    }
+                }
+
+                qTD.Buffer4 = (byte*)0x24681357u;
+                //Read back should be 0x24681000
+                if ((pqTD[0x1Du] & 0xF0u) != 0x10u ||
+                     pqTD[0x1Eu] != 0x68u ||
+                     pqTD[0x1Fu] != 0x24u)
+                {
+                    DBGERR(testName, "Buffer4 - Failed to set.");
+                }
+                else
+                {
+                    if ((uint)qTD.Buffer4 != 0x24681000u)
+                    {
+                        DBGERR(testName, "Buffer4 - Failed to read.");
+                    }
+                }
+
+                qTD.CurrentPage = 0xFF;
+                //Shift!
+                if ((pqTD[0x09u] & 0x70u) != 0x70u)
+                {
+                    DBGERR(testName, "CurrentPage - Failed to set.");
+                }
+                else
+                {
+                    if ((uint)qTD.CurrentPage != 0x07u)
+                    {
+                        DBGERR(testName, "CurrentPage - Failed to read.");
+                    }
+                }
+
+                qTD.DataToggle = true;
+                if ((pqTD[0x0Bu] & 0x80u) == 0)
+                {
+                    DBGERR(testName, "DataToggle - Failed to set to true.");
+                }
+                else
+                {
+                    if (!qTD.DataToggle)
+                    {
+                        DBGERR(testName, "DataToggle - Failed to read as true.");
+                    }
+                    else
+                    {
+                        pqTD[0x0Bu] = 0xFF;
+                        qTD.DataToggle = false;
+                        if ((pqTD[0x0Bu] & 0x80u) != 0)
+                        {
+                            DBGERR(testName, "DataToggle - Failed to set to false.");
+                        }
+                        else
+                        {
+                            if (qTD.DataToggle)
+                            {
+                                DBGERR(testName, "DataToggle - Failed to read as false.");
+                            }
+                        }
+                    }
+                }
+
+                qTD.ErrorCounter = 0xFF;
+                //Shift!
+                if ((pqTD[0x09u] & 0x0Cu) != 0x0Cu)
+                {
+                    DBGERR(testName, "ErrorCounter - Failed to set.");
+                }
+                else
+                {
+                    if ((uint)qTD.ErrorCounter != 0x03u)
+                    {
+                        DBGERR(testName, "ErrorCounter - Failed to read.");
+                    }
+                }
+
+                qTD.InterruptOnComplete = true;
+                if ((pqTD[0x09u] & 0x80u) == 0)
+                {
+                    DBGERR(testName, "InterruptOnComplete - Failed to set to true.");
+                }
+                else
+                {
+                    if (!qTD.InterruptOnComplete)
+                    {
+                        DBGERR(testName, "InterruptOnComplete - Failed to read as true.");
+                    }
+                    else
+                    {
+                        pqTD[0x09u] = 0xFF;
+                        qTD.InterruptOnComplete = false;
+                        if ((pqTD[0x09u] & 0x80u) != 0)
+                        {
+                            DBGERR(testName, "InterruptOnComplete - Failed to set to false.");
+                        }
+                        else
+                        {
+                            if (qTD.InterruptOnComplete)
+                            {
+                                DBGERR(testName, "InterruptOnComplete - Failed to read as false.");
+                            }
+                        }
+                    }
+                }
+
+                qTD.NextqTDPointer = (EHCI_qTD_Struct*)0xF2610369;
+                //Read back should be 0xF2610360
+                if ((pqTD[0x00u] & 0xE0u) != 0x60u ||
+                     pqTD[0x01u] != 0x03u ||
+                     pqTD[0x02u] != 0x61u ||
+                     pqTD[0x03u] != 0xF2u)
+                {
+                    DBGERR(testName, "NextqTDPointer - Failed to set.");
+                }
+                else
+                {
+                    if ((uint)qTD.NextqTDPointer != 0xF2610360u)
+                    {
+                        DBGERR(testName, "NextqTDPointer - Failed to read.");
+                    }
+                }
+
+                qTD.NextqTDPointerTerminate = true;
+                if ((pqTD[0x00u] & 0x01u) == 0)
+                {
+                    DBGERR(testName, "NextqTDPointerTerminate - Failed to set to true.");
+                }
+                else
+                {
+                    if (!qTD.NextqTDPointerTerminate)
+                    {
+                        DBGERR(testName, "NextqTDPointerTerminate - Failed to read as true.");
+                    }
+                    else
+                    {
+                        pqTD[0x00u] = 0xFF;
+                        qTD.NextqTDPointerTerminate = false;
+                        if ((pqTD[0x00u] & 0x01u) != 0)
+                        {
+                            DBGERR(testName, "NextqTDPointerTerminate - Failed to set to false.");
+                        }
+                        else
+                        {
+                            if (qTD.NextqTDPointerTerminate)
+                            {
+                                DBGERR(testName, "NextqTDPointerTerminate - Failed to read as false.");
+                            }
+                        }
+                    }
+                }
+
+                qTD.PIDCode = 0xFF;
+                //TODO: Verify
+                qTD.Status = 0xFF;
+                //TODO: Verify
+                qTD.TotalBytesToTransfer = 0xFFFF;
+                //TODO: Verify
+            }
+            catch
+            {
+                errors++;
+                BasicConsole.SetTextColour(BasicConsole.warning_colour);
+                BasicConsole.WriteLine(ExceptionMethods.CurrentException.Message);
+                BasicConsole.SetTextColour(BasicConsole.default_colour);
+            }
+            finally
+            {
+                qTD.Free();
             }
 
             if (errors > 0)

@@ -402,7 +402,7 @@ namespace Kernel.Hardware.PCI
         {
             UInt32 xAddr = GetAddressBase(bus, slot, function) | ((UInt32)(aRegister & 0xFC));
             PCI_IO.ConfigAddressPort.Write(xAddr);
-            PCI_IO.ConfigDataPort.Write(value);
+            IO.IOPort.doWrite((ushort)(PCI_IO.ConfigDataPort.Port + (aRegister & 0x03)), value);
         }
 
         /// <summary>
@@ -415,7 +415,7 @@ namespace Kernel.Hardware.PCI
         {
             UInt32 xAddr = GetAddressBase(bus, slot, function) | ((UInt32)(aRegister & 0xFC));
             PCI_IO.ConfigAddressPort.Write(xAddr);
-            return (UInt16)(PCI_IO.ConfigDataPort.Read_UInt32() >> ((aRegister % 4) * 8) & 0xFFFF); ;
+            return (UInt16)((PCI_IO.ConfigDataPort.Read_UInt32() >> ((aRegister % 4) * 8)) & 0xFFFF);
         }
 
         /// <summary>
@@ -441,7 +441,7 @@ namespace Kernel.Hardware.PCI
         {
             UInt32 xAddr = GetAddressBase(bus, slot, function) | ((UInt32)(aRegister & 0xFC));
             PCI_IO.ConfigAddressPort.Write(xAddr);
-            return PCI_IO.ConfigDataPort.Read_UInt32();
+            return (PCI_IO.ConfigDataPort.Read_UInt32() >> ((aRegister % 4) * 8));
         }
 
         /// <summary>

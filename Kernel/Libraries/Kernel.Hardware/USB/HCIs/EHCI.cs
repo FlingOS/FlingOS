@@ -185,10 +185,6 @@ namespace Kernel.Hardware.USB.HCIs
                 return pciDevice.ReadRegister8(0x62);
             }
         }
-        /// <summary>
-        /// The EHCI USB Legacy Support extended capabilities information if it exists.
-        /// </summary>
-        protected EHCI_USBLegacySupportExtendedCapability USBLegacySupportExtendedCapability;
         
         #endregion
 
@@ -1006,35 +1002,6 @@ namespace Kernel.Hardware.USB.HCIs
 
         #endregion
 
-        /// <summary>
-        /// Loads the extended capabilities PCI registers.
-        /// </summary>
-        private void LoadExtendedCapabilities()
-        {
-            byte aEECP = EECP;
-            if (aEECP >= 0x40)
-            {
-                byte capID = 0;
-                while (aEECP != 0)
-                {
-                    capID = *(usbBaseAddress + aEECP);
-                    if (capID == 1)
-                    {
-                        break;
-                    }
-                    else
-                    {
-                        aEECP = pciDevice.ReadRegister8((byte)(aEECP + 1));
-                    }
-                }
-                if (capID == 0x1)
-                {
-                    /* USB Legacy support extended capability */
-                    USBLegacySupportExtendedCapability = new EHCI_USBLegacySupportExtendedCapability(usbBaseAddress, aEECP);
-                }
-            }
-        }
-
         protected bool EnabledPortFlag = false;
         protected int USBasyncIntCount = 0;
         protected EHCI_QueueHead_Struct* IdleQueueHead = null;
@@ -1045,9 +1012,10 @@ namespace Kernel.Hardware.USB.HCIs
         {
             try
             {
-                EHCITesting.Test_PointerManipultation();
+                EHCITesting.Test_PointerManipulation();
                 EHCITesting.Test_StructValueSetting();
                 EHCITesting.Test_QueueHeadWrapper();
+                EHCITesting.Test_qTDWrapper();
             }
             catch
             {
@@ -1057,7 +1025,7 @@ namespace Kernel.Hardware.USB.HCIs
             }
 
 
-            usbBaseAddress = (byte*)((uint)pciDevice.BaseAddresses[0].BaseAddress() & 0xFFFFFFF0);
+            usbBaseAddress = (byte*)((uint)pciDevice.BaseAddresses[0].BaseAddress() & 0xFFFFFF00);
             CapabilitiesRegAddr = usbBaseAddress;
 #if DEBUG
             DBGMSG("CapabilitiesRegAddr: " + (FOS_System.String)(uint)CapabilitiesRegAddr);
@@ -1083,8 +1051,6 @@ namespace Kernel.Hardware.USB.HCIs
             DBGMSG("HCSPPortRouteDesc: " + (FOS_System.String)HCSPPortRouteDesc);
             DBGMSG("OpRegAddr: " + (FOS_System.String)(uint)OpRegAddr);
 #endif
-
-            LoadExtendedCapabilities();
 
             RootPortCount = (byte)(HCSParams & 0x000F);
 
@@ -1126,15 +1092,24 @@ namespace Kernel.Hardware.USB.HCIs
         {
             DeactivateLegacySupport();
             CTRLDSSEGMENT = 0u;
-            USBSTS = 0u;
+            USBSTS = 0u; //Will this ever have any effect? According to spec, only writing bits set to 1 will have an effect??
             USBINTR = EHCI_Consts.STS_ASYNC_INT | EHCI_Consts.STS_HOST_SYSTEM_ERROR | EHCI_Consts.STS_PORT_CHANGE | 
-                      EHCI_Consts.STS_USBINT;
-            USBCMD |= EHCI_Consts.CMD_8_MICROFRAME; //InterruptThresholdControl = 8 Microframes (1ms)
+                      EHCI_Consts.STS_USBINT | EHCI_Consts.STS_USBERRINT;
             if (HCHalted)
             {
                 USBCMD |= EHCI_Consts.CMD_RUN_STOP; //Set run-stop bit
             }
+
+            //This can only be set when HCHalted != 0  !!!
+            USBCMD |= EHCI_Consts.CMD_8_MICROFRAME; //InterruptThresholdControl = 8 Microframes (1ms).
+            
             CONFIGFLAG = EHCI_Consts.CF; //Set port routing to route all ports to EHCI
+
+            //Is this delay necessary? If so, why?
+            for (int i = 1000000; i > 0; i--)
+            {
+                ;
+            }
         }
         protected void ResetHC()
         {
@@ -1169,43 +1144,101 @@ namespace Kernel.Hardware.USB.HCIs
         }
         protected void DeactivateLegacySupport()
         {
-            if (USBLegacySupportExtendedCapability != null)
-            {
-                if (USBLegacySupportExtendedCapability.HCBIOSOwnedSemaphore)
-                {
-                    /* Claim EHCI for OS */
-                    USBLegacySupportExtendedCapability.HCOSOwnedSemaphore = true;
+            byte eecp = EECP;
 
-                    //Wait for BIOS semaphore to clear
+#if DEBUG
+            DBGMSG(((FOS_System.String)"DeactivateLegacySupport: eecp = ") + eecp);
+#endif
+            /*
+            cf. EHCI 1.0 spec, 2.2.4 HCCPARAMS - Capability Parameters, Bit 15:8 (BYTE2)
+            EHCI Extended Capabilities Pointer (EECP). Default = Implementation Dependent.
+            This optional field indicates the existence of a capabilities list.
+            A value of 00h indicates no extended capabilities are implemented.
+            A non-zero value in this register indicates the offset in PCI configuration space
+            of the first EHCI extended capability. The pointer value must be 40h or greater
+            if implemented to maintain the consistency of the PCI header defined for this class of device.
+            */
+            // cf. http://wiki.osdev.org/PCI#PCI_Device_Structure
+
+            //   eecp     // RO - This field identifies the extended capability.
+                          //      01h identifies the capability as Legacy Support.
+            if (eecp >= 0x40)
+            {
+                byte eecp_id = 0;
+
+                while (eecp != 0) // 00h indicates end of the ext. cap. list.
+                {
+#if DEBUG
+                    DBGMSG(((FOS_System.String)"eecp = ") + eecp);
+#endif
+                    eecp_id = pciDevice.ReadRegister8(eecp);
+#if DEBUG
+                    DBGMSG(((FOS_System.String)"eecp_id = ") + eecp_id);
+#endif
+                    if (eecp_id == 1)
+                    {
+                        break;
+                    }
+                    eecp = pciDevice.ReadRegister8((byte)(eecp + 1));
+                }
+                byte BIOSownedSemaphore = (byte)(eecp + 2); // R/W - only Bit 16 (Bit 23:17 Reserved, must be set to zero)
+                byte OSownedSemaphore   = (byte)(eecp + 3); // R/W - only Bit 24 (Bit 31:25 Reserved, must be set to zero)
+                byte USBLEGCTLSTS       = (byte)(eecp + 4); // USB Legacy Support Control/Status (DWORD, cf. EHCI 1.0 spec, 2.1.8)
+
+                // Legacy-Support-EC found? BIOS-Semaphore set?
+                if (eecp_id == 1 && (pciDevice.ReadRegister8(BIOSownedSemaphore) & 0x01) != 0)
+                {
+#if DEBUG
+                    DBGMSG("set OS-Semaphore.");
+#endif
+                    pciDevice.WriteRegister8(OSownedSemaphore, 0x01);
+
                     int timeout = 250;
-                    while (USBLegacySupportExtendedCapability.HCBIOSOwnedSemaphore && (timeout > 0))
+                    // Wait for BIOS-Semaphore being not set
+                    while ((pciDevice.ReadRegister8(BIOSownedSemaphore) & 0x01) != 0 && (timeout > 0))
                     {
                         timeout--;
-
-                        for (int i = 0; i < 100000; i++)
+                        for(int i = 0; i < 100000; i++)
                             ;
                     }
-
-                    if (!USBLegacySupportExtendedCapability.HCBIOSOwnedSemaphore)
+                    if ((pciDevice.ReadRegister8(BIOSownedSemaphore) & 0x01) == 0) // not set
                     {
+#if DEBUG
+                        DBGMSG("BIOS-Semaphore being cleared.");
+#endif
                         timeout = 250;
-                        while (USBLegacySupportExtendedCapability.HCOSOwnedSemaphore && (timeout > 0))
+                        while ((pciDevice.ReadRegister8(OSownedSemaphore) & 0x01) == 0 && (timeout > 0))
                         {
                             timeout--;
-
-                            for (int i = 0; i < 100000; i++)
+                            for(int i = 0; i < 100000; i++)
                                 ;
                         }
                     }
-
-                    if (!USBLegacySupportExtendedCapability.HCOSOwnedSemaphore)
+#if DEBUG
+                    if ((pciDevice.ReadRegister8(OSownedSemaphore) & 0x01) != 0)
                     {
-                        ExceptionMethods.Throw(new FOS_System.Exception("EHCI.DeactivateLegacySupport(): HCOSOwnedSemaphore not set!"));
+                        DBGMSG("OS-Semaphore being set.");
                     }
+                    DBGMSG(((FOS_System.String)"Check: BIOSownedSemaphore: ") + pciDevice.ReadRegister8(BIOSownedSemaphore) + 
+                                                     " OSownedSemaphore: " + pciDevice.ReadRegister8(OSownedSemaphore));
+#endif
 
-                    USBLegacySupportExtendedCapability.USBLEGCTLSTS = true;
+                    // USB SMI Enable R/W. 0=Default.
+                    // The OS tries to set SMI to disabled in case that BIOS bit stays at one.
+                    pciDevice.WriteRegister32(USBLEGCTLSTS, 0x0); // USB SMI disabled
+                }
+              #if DEBUG
+                else
+                {
+                    DBGMSG("BIOS did not own the EHCI. No action needed.");
                 }
             }
+            else
+            {
+                DBGMSG("No valid eecp found.");
+          #endif
+            }
+            BasicConsole.DelayOutput(2);
         }
         protected void EnablePorts()
         {
@@ -2046,12 +2079,12 @@ namespace Kernel.Hardware.USB.HCIs
             [Compiler.NoGC]
             get
             {
-                return (byte*)(qtd->u4 & 0xFFFFF000);
+                return (byte*)(qtd->u4 & 0xFFFFF000u);
             }
             [Compiler.NoGC]
             set
             {
-                qtd->u4 = (uint)value & 0xFFFFF000;
+                qtd->u4 = (qtd->u4 & 0x00000FFFu) | (uint)value & 0xFFFFF000u;
             }
         }
         /// <summary>
@@ -2573,170 +2606,4 @@ namespace Kernel.Hardware.USB.HCIs
             queueHead = null;
         }
     }
-
-    /// <summary>
-    /// Represents EHCI Extended Capabilities register information.
-    /// </summary>
-    public unsafe class EHCI_ExtendedCapability : FOS_System.Object
-    {
-        /// <summary>
-        /// USB PCI base address.
-        /// </summary>
-        internal byte* usbBaseAddress;
-        /// <summary>
-        /// Capabilities registers offset from base address.
-        /// </summary>
-        internal byte capOffset;
-        /// <summary>
-        /// Capability ID.
-        /// </summary>
-        public byte CapabilityID
-        {
-            [Compiler.NoGC]
-            get
-            {
-                return *(usbBaseAddress + capOffset);
-            }
-        }
-        /// <summary>
-        /// Next EHCI extended capability offset.
-        /// </summary>
-        public byte NextEHCIExtendedCapabilityOffset
-        {
-            [Compiler.NoGC]
-            get
-            {
-                return *(usbBaseAddress + capOffset + 8);
-            }
-        }
-
-        /// <summary>
-        /// Initializes new extended capabilities information.
-        /// </summary>
-        /// <param name="aUSBBaseAddress">The USB base address.</param>
-        /// <param name="aCapOffset">The capabilities registers offset form base address.</param>
-        public EHCI_ExtendedCapability(byte* aUSBBaseAddress, byte aCapOffset)
-        {
-            usbBaseAddress = aUSBBaseAddress;
-            capOffset = aCapOffset;
-        }
-    }
-    /// <summary>
-    /// Represents EHCI USB Legacy Support Extended Capabilities register information.
-    /// </summary>
-    public unsafe class EHCI_USBLegacySupportExtendedCapability : EHCI_ExtendedCapability
-    {
-        /*
-         * See section 2.1.7 of spec.
-         */
-
-        /// <summary>
-        /// HC OS Owned semaphore - whether the OS controls the EHCI.
-        /// </summary>
-        public bool HCOSOwnedSemaphore
-        {
-            [Compiler.NoGC]
-            get
-            {
-                return (*(usbBaseAddress + capOffset + 24) & 0x01) > 0;
-            }
-            [Compiler.NoGC]
-            set
-            {
-                if (value)
-                {
-                    *(usbBaseAddress + capOffset + 24) = (byte)(*(usbBaseAddress + capOffset + 24) | 0x01u);
-                }
-                else
-                {
-                    *(usbBaseAddress + capOffset + 24) = (byte)(*(usbBaseAddress + capOffset + 24) & 0xFEu);
-                }
-            }
-        }
-        /// <summary>
-        /// HC BIOS Owned semaphore - whether the BIOS controls the EHCI.
-        /// </summary>
-        public bool HCBIOSOwnedSemaphore
-        {
-            [Compiler.NoGC]
-            get
-            {
-                return (*(usbBaseAddress + capOffset + 16) & 0x01) > 0;
-            }
-            [Compiler.NoGC]
-            set
-            {
-                if (value)
-                {
-                    *(usbBaseAddress + capOffset + 16) = (byte)(*(usbBaseAddress + capOffset + 16) | 0x01u);
-                }
-                else
-                {
-                    *(usbBaseAddress + capOffset + 16) = (byte)(*(usbBaseAddress + capOffset + 16) & 0xFEu);
-                }
-            }
-        }
-        /// <summary>
-        /// USB Legacy Support Control/Status
-        /// </summary>
-        public bool USBLEGCTLSTS
-        {
-            [Compiler.NoGC]
-            get
-            {
-                return (*(usbBaseAddress + capOffset + 24) & 0x01) > 0;
-            }
-            [Compiler.NoGC]
-            set
-            {
-                if (value)
-                {
-                    *(usbBaseAddress + capOffset + 24) = (byte)(*(usbBaseAddress + capOffset + 24) | 0x01u);
-                }
-                else
-                {
-                    *(usbBaseAddress + capOffset + 24) = (byte)(*(usbBaseAddress + capOffset + 24) & 0xFEu);
-                }
-            }
-        }
-
-        /// <summary>
-        /// Control status capabilities.
-        /// </summary>
-        //public EHCI_USBLegacySupportControlStatusCapability ControlStatusCap;
-
-        /// <summary>
-        /// Initializes new EHCI USB Legacy Support Extended Capabilities register information.
-        /// </summary>
-        /// <param name="aUSBBaseAddress">The USB base address.</param>
-        /// <param name="aCapOffset">The capabilities registers offset from the base address.</param>
-        public EHCI_USBLegacySupportExtendedCapability(byte* aUSBBaseAddress, byte aCapOffset)
-            : base(aUSBBaseAddress, aCapOffset)
-        {
-            //ControlStatusCap = new EHCI_USBLegacySupportControlStatusCapability(usbBaseAddress, (byte)(capOffset + 4u));
-        }
-    }
-    #region old code
-    ///// <summary>
-    ///// Represents EHCI USB Legacy Support Control/Status Capabilities register information.
-    ///// </summary>
-    //public unsafe class EHCI_USBLegacySupportControlStatusCapability : EHCI_ExtendedCapability
-    //{
-    //    /*
-    //     * See section 2.1.8 of spec.
-    //     */
-
-    //    //- Add the necessary fields to this class
-
-    //    /// <summary>
-    //    /// Initializes new EHCI USB Legacy Support Control/Status Capabilities register information.
-    //    /// </summary>
-    //    /// <param name="aUSBBaseAddress">The USB base address.</param>
-    //    /// <param name="aCapOffset">The capabilities registers offset from the base address.</param>
-    //    public EHCI_USBLegacySupportControlStatusCapability(byte* aUSBBaseAddress, byte aCapOffset)
-    //        : base(aUSBBaseAddress, aCapOffset)
-    //    {
-    //    }
-    //}
-    #endregion
 }
