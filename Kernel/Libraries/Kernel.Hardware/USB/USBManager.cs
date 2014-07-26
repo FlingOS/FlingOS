@@ -82,32 +82,32 @@ namespace Kernel.Hardware.USB
 
             //TODO - Check host controllers haven't already been claimed / initialised!
 
-            for (int i = 0; i < PCI.PCI.Devices.Count; i++)
-            {
-                PCIDevice aDevice = (PCIDevice)(PCI.PCI.Devices[i]);
-                //0x0C = Serial bus controllers
-                if (aDevice.ClassCode == 0x0C)
-                {
-                    //0x03 = USB controllers
-                    if (aDevice.Subclass == 0x03)
-                    {
-                        //xHCI = 0x30
-                        if (aDevice.ProgIF == 0x30)
-                        {
-                            //xHCI detected
-#if DEBUG
-                            BasicConsole.WriteLine("xHCI detected.");
-#endif
+//            for (int i = 0; i < PCI.PCI.Devices.Count; i++)
+//            {
+//                PCIDevice aDevice = (PCIDevice)(PCI.PCI.Devices[i]);
+//                //0x0C = Serial bus controllers
+//                if (aDevice.ClassCode == 0x0C)
+//                {
+//                    //0x03 = USB controllers
+//                    if (aDevice.Subclass == 0x03)
+//                    {
+//                        //xHCI = 0x30
+//                        if (aDevice.ProgIF == 0x30)
+//                        {
+//                            //xHCI detected
+//#if DEBUG
+//                            BasicConsole.WriteLine("xHCI detected.");
+//#endif
 
-                            //TODO - Add xHCI support
-                            //Supported by VMWare
-                            //  - This is USB 3.0
+//                            //TODO - Add xHCI support
+//                            //Supported by VMWare
+//                            //  - This is USB 3.0
 
-                            NumxHCIDevices++;
-                        }
-                    }
-                }
-            }
+//                            NumxHCIDevices++;
+//                        }
+//                    }
+//                }
+//            }
             for (int i = 0; i < PCI.PCI.Devices.Count; i++)
             {
                 PCIDevice aDevice = (PCIDevice)(PCI.PCI.Devices[i]);
@@ -139,51 +139,51 @@ namespace Kernel.Hardware.USB
                     }
                 }
             }
-            for (int i = 0; i < PCI.PCI.Devices.Count; i++)
-            {
-                PCIDevice aDevice = (PCIDevice)(PCI.PCI.Devices[i]);
-                //0x0C = Serial bus controllers
-                if (aDevice.ClassCode == 0x0C)
-                {
-                    //0x03 = USB controllers
-                    if (aDevice.Subclass == 0x03)
-                    {
-                        //UHCI = 0x00
-                        if (aDevice.ProgIF == 0x00)
-                        {
-                            //UHCI detected
-#if DEBUG
-                            BasicConsole.WriteLine("UHCI detected.");
-#endif
-                            NumUHCIDevices++;
+//            for (int i = 0; i < PCI.PCI.Devices.Count; i++)
+//            {
+//                PCIDevice aDevice = (PCIDevice)(PCI.PCI.Devices[i]);
+//                //0x0C = Serial bus controllers
+//                if (aDevice.ClassCode == 0x0C)
+//                {
+//                    //0x03 = USB controllers
+//                    if (aDevice.Subclass == 0x03)
+//                    {
+//                        //UHCI = 0x00
+//                        if (aDevice.ProgIF == 0x00)
+//                        {
+//                            //UHCI detected
+//#if DEBUG
+//                            BasicConsole.WriteLine("UHCI detected.");
+//#endif
+//                            NumUHCIDevices++;
 
-                            PCIDeviceNormal UHCI_PCIDevice = (PCIDeviceNormal)aDevice;
-                            UHCI_PCIDevice.Claimed = true;
+//                            PCIDeviceNormal UHCI_PCIDevice = (PCIDeviceNormal)aDevice;
+//                            UHCI_PCIDevice.Claimed = true;
 
-                            UHCI newUHCI = new UHCI(UHCI_PCIDevice);
+//                            UHCI newUHCI = new UHCI(UHCI_PCIDevice);
 
-                            HCIDevices.Add(newUHCI);
-                            DeviceManager.Devices.Add(newUHCI);
+//                            HCIDevices.Add(newUHCI);
+//                            DeviceManager.Devices.Add(newUHCI);
 
-                            BasicConsole.DelayOutput(10);
-                        }
-                        //OHCI = 0x10
-                        else if (aDevice.ProgIF == 0x10)
-                        {
-                            //OHCI detected
-#if DEBUG
-                            BasicConsole.WriteLine("OHCI detected.");
-#endif
+//                            BasicConsole.DelayOutput(10);
+//                        }
+//                        //OHCI = 0x10
+//                        else if (aDevice.ProgIF == 0x10)
+//                        {
+//                            //OHCI detected
+//#if DEBUG
+//                            BasicConsole.WriteLine("OHCI detected.");
+//#endif
 
-                            //TODO - Add OHCI support
-                            //Not supported by VMWare or my laptop 
-                            //  so we aren't going to program this any further for now.
+//                            //TODO - Add OHCI support
+//                            //Not supported by VMWare or my laptop 
+//                            //  so we aren't going to program this any further for now.
 
-                            NumOHCIDevices++;
-                        }
-                    }
-                }
-            }
+//                            NumOHCIDevices++;
+//                        }
+//                    }
+//                }
+//            }
         }
 
         public static Devices.USBDevice CreateDevice(HCI hc, HCPort port)
@@ -220,14 +220,17 @@ namespace Kernel.Hardware.USB
             {
                 success = GetDeviceDescriptor(device);
             }
-
+            
             if (!success)
             {
 #if DEBUG
+                BasicConsole.DelayOutput(10);
                 DBGMSG("Setup Device interrupted!");
 #endif
                 return;
             }
+
+            BasicConsole.DelayOutput(10);
 
             bool hub = device.usbClass == 0x09;
 
@@ -240,6 +243,8 @@ namespace Kernel.Hardware.USB
                 DBGMSG(" <-- usb Hub");
             }
 #endif
+            
+            BasicConsole.DelayOutput(10);
 
             success = GetConfigDescriptor(device);
             if (!success)
@@ -251,15 +256,18 @@ namespace Kernel.Hardware.USB
             {
 #if DEBUG
                 DBGMSG("ConfigDescriptor could not be read! Setup Device interrupted!");
+                BasicConsole.DelayOutput(10);
 #endif
                 return;
             }
+
+            BasicConsole.DelayOutput(10);
 
             if (!hub)
             {
                 GetStringDescriptor(device);
 #if DEBUG
-                BasicConsole.DelayOutput(4);
+                BasicConsole.DelayOutput(10);
 #endif
 
                 for (byte i = 1; i < 4; i++) // fetch 3 strings
@@ -273,7 +281,7 @@ namespace Kernel.Hardware.USB
 #if DEBUG
             byte config = GetConfiguration(device);
             DBGMSG(((FOS_System.String)"configuration: ") + config); // check configuration
-            BasicConsole.DelayOutput(4);
+            BasicConsole.DelayOutput(10);
 #endif
 
             if (hub)
@@ -295,17 +303,18 @@ namespace Kernel.Hardware.USB
                 //    textColor(TEXT);
                 //}
                 //waitForKeyStroke();
-                BasicConsole.DelayOutput(1);
+                BasicConsole.DelayOutput(10);
             }
             else if (device.InterfaceClass == 0x08)
             {
                 //TODO: usb_setupMSD(device);
+                BasicConsole.DelayOutput(10);
             }
             else
             {
 #if DEBUG
                 DBGMSG("Unrecognised USB device detected.");
-                BasicConsole.DelayOutput(4);
+                BasicConsole.DelayOutput(10);
 #endif
             }
         }
@@ -337,7 +346,7 @@ namespace Kernel.Hardware.USB
 #endif
 
             USBDeviceDescriptor descriptor = new USBDeviceDescriptor();
-
+            
             USBTransfer transfer = new USBTransfer();
             device.hc.SetupTransfer(device, transfer, USBTransferType.USB_CONTROL, 0, 64);
             device.hc.SETUPTransaction(transfer, 8, 0x80, 6, 1, 0, 0, 18);

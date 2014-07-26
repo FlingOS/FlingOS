@@ -1003,14 +1003,14 @@ namespace Kernel.Hardware.USB.HCIs
         #endregion
 
         protected bool EnabledPortFlag = false;
-        protected int USBasyncIntCount = 0;
+        protected int USBIntCount = 0;
         protected EHCI_QueueHead_Struct* IdleQueueHead = null;
         protected EHCI_QueueHead_Struct* TailQueueHead = null;
 
         public EHCI(PCI.PCIDeviceNormal aPCIDevice)
             : base(aPCIDevice)
         {
-#if DEBUG
+#if EHCI_TESTS
             try
             {
                 EHCITesting.Test_PointerManipulation();
@@ -1358,19 +1358,19 @@ namespace Kernel.Hardware.USB.HCIs
                 Start();
             }
 
-            if ((val & EHCI_Consts.STS_ASYNC_INT) != 0u)
+            if ((val & EHCI_Consts.STS_USBINT) != 0u)
             {
-                if (USBasyncIntCount != 0)
+                if (USBIntCount != 0)
                 {
-                    USBasyncIntCount--;
-                }
-                if (USBasyncIntCount != 0)
-                {
-                    USBCMD |= EHCI_Consts.CMD_ASYNCH_INT_DOORBELL; // Activate Doorbell: We would like to receive an asynchronous schedule interrupt
+                    USBIntCount--;
                 }
 #if DEBUG
-                DBGMSG(((FOS_System.String)"EHCI: ASYNC_INT occurred! USBasyncIntCount: ") + USBasyncIntCount);
+                DBGMSG(((FOS_System.String)"EHCI: USB Interrupt occurred! USBIntCount: ") + USBIntCount);
 #endif
+                if (USBIntCount != 0)
+                {
+                    //USBCMD |= EHCI_Consts.CMD_ASYNCH_INT_DOORBELL; // Activate Doorbell: We would like to receive an asynchronous schedule interrupt
+                }
             }
 
             if (doPortCheck)
@@ -1479,7 +1479,7 @@ namespace Kernel.Hardware.USB.HCIs
             {
                 eTransaction.qTD = CreateQTD_SETUP((EHCI_qTD_Struct*)1u, toggle, tokenBytes, type, req, hiVal, loVal, index, length, bufferPtr).qtd;
             }
-            if (transfer.transactions.Count > 1)
+            if (transfer.transactions.Count > 0)
             {
                 EHCITransaction eLastTransaction = (EHCITransaction)((USBTransaction)(transfer.transactions[transfer.transactions.Count - 1])).data;
                 EHCI_qTD lastQTD = new EHCI_qTD(eLastTransaction.qTD);
@@ -1497,7 +1497,7 @@ namespace Kernel.Hardware.USB.HCIs
             {
                 eTransaction.qTD = CreateQTD_IO((EHCI_qTD_Struct*)1u, 1, toggle, length, bufferPtr).qtd;
             }
-            if (transfer.transactions.Count > 1)
+            if (transfer.transactions.Count > 0)
             {
                 EHCITransaction eLastTransaction = (EHCITransaction)((USBTransaction)(transfer.transactions[transfer.transactions.Count - 1])).data;
                 EHCI_qTD lastQTD = new EHCI_qTD(eLastTransaction.qTD);
@@ -1519,7 +1519,7 @@ namespace Kernel.Hardware.USB.HCIs
                     Utilities.MemoryUtils.MemCpy_32((byte*)eTransaction.qTDBuffer, (byte*)buffer, length);
                 }
             }
-            if (transfer.transactions.Count > 1)
+            if (transfer.transactions.Count > 0)
             {
                 EHCITransaction eLastTransaction = (EHCITransaction)((USBTransaction)(transfer.transactions[transfer.transactions.Count - 1])).data;
                 EHCI_qTD lastQTD = new EHCI_qTD(eLastTransaction.qTD);
@@ -1529,11 +1529,53 @@ namespace Kernel.Hardware.USB.HCIs
         }
         protected override void _IssueTransfer(USBTransfer transfer)
         {
+            EHCITransaction lastTransaction = (EHCITransaction)((USBTransaction)transfer.transactions[transfer.transactions.Count - 1]).data;
+            EHCI_qTD lastQTD = new EHCI_qTD(lastTransaction.qTD);
+            lastQTD.InterruptOnComplete = true;
+
+#if DEBUG
+            //Test walking the transaction tree
+            bool treeOK = true;
+            for (int k = 0; k < transfer.transactions.Count - 1; k++)
+            {
+                EHCITransaction transaction1 = (EHCITransaction)((USBTransaction)transfer.transactions[k]).data;
+                EHCITransaction transaction2 = (EHCITransaction)((USBTransaction)transfer.transactions[k + 1]).data;
+                EHCI_qTD qtd1 = new EHCI_qTD(transaction1.qTD);
+                treeOK = treeOK && (qtd1.NextqTDPointer == transaction2.qTD) && !qtd1.NextqTDPointerTerminate;
+            }
+            {
+                treeOK = treeOK && lastQTD.NextqTDPointerTerminate;
+            }
+            DBGMSG(((FOS_System.String)"Transfer transactions tree OK: ") + treeOK);
+            BasicConsole.DelayOutput(10);
+#endif            
+
             EHCITransaction firstTransaction = (EHCITransaction)((USBTransaction)(transfer.transactions[0])).data;
             CreateQH((EHCI_QueueHead_Struct*)transfer.data, (uint)transfer.data, firstTransaction.qTD, false, transfer.device.num, transfer.endpoint, transfer.packetSize);
             
             for (byte i = 0; i < EHCI_Consts.NUMBER_OF_EHCI_ASYNCLIST_RETRIES && !transfer.success; i++)
             {
+#if DEBUG
+                transfer.success = true;
+                for (int k = 0; k < transfer.transactions.Count; k++)
+                {
+                    EHCITransaction transaction = (EHCITransaction)((USBTransaction)transfer.transactions[k]).data;
+                    byte status = new EHCI_qTD(transaction.qTD).Status;
+                    transfer.success = transfer.success && (status == 0 || status == Utils.BIT(0));
+
+                    DBGMSG(((FOS_System.String)"PRE Issue: Transaction ") + k + " status: " + status);
+                }
+                if (!transfer.success)
+                {
+                    DBGMSG("EHCI: PRE Issue - Transfer detected as failed.");
+                    BasicConsole.DelayOutput(1);
+                }
+                else
+                {
+                    DBGMSG("EHCI: PRE Issue - Transfer OK.");
+                }
+#endif
+
                 if (transfer.type == USBTransferType.USB_CONTROL)
                 {
                     AddToAsyncScheduler(transfer, 0);
@@ -1544,23 +1586,26 @@ namespace Kernel.Hardware.USB.HCIs
                 }
 
                 transfer.success = true;
-                for (int k = 0; k < 0; k++)
+                for (int k = 0; k < transfer.transactions.Count; k++)
                 {
                     EHCITransaction transaction = (EHCITransaction)((USBTransaction)transfer.transactions[k]).data;
                     byte status = new EHCI_qTD(transaction.qTD).Status;
                     transfer.success = transfer.success && (status == 0 || status == Utils.BIT(0));
+
+                    DBGMSG(((FOS_System.String)"POST Issue: Transaction ") + k + " status: " + status);
                 }
 
 #if DEBUG
                 if (!transfer.success)
                 {
                     DBGMSG(((FOS_System.String)"EHCI: Retry transfer: ") + (i + 1));
+                    BasicConsole.DelayOutput(2);
                 }
 #endif
             }
 
             FOS_System.Heap.Free(transfer.data);
-            for (int k = 0; k < 0; k++)
+            for (int k = 0; k < transfer.transactions.Count; k++)
             {
                 EHCITransaction transaction = (EHCITransaction)((USBTransaction)transfer.transactions[k]).data;
 
@@ -1581,6 +1626,7 @@ namespace Kernel.Hardware.USB.HCIs
             {
                 DBGMSG("EHCI:IssueTransfer(): Transfer failed.");
             }
+            BasicConsole.DelayOutput(2);
 #endif
         }
 
@@ -1653,7 +1699,7 @@ namespace Kernel.Hardware.USB.HCIs
             newQTD.Status = 0x80; // This will be filled by the Host Controller. Active bit set
             newQTD.ErrorCounter = 0x0;  // Written by the Host Controller.
             newQTD.CurrentPage = 0x0;  // Written by the Host Controller.
-            newQTD.InterruptOnComplete = true;  // We want an interrupt after complete transfer, but not after each transaction
+            newQTD.InterruptOnComplete = false; //Set only for the last transaction of a transfer
 
             return newQTD;
         }
@@ -1709,13 +1755,13 @@ namespace Kernel.Hardware.USB.HCIs
         }
         protected void AddToAsyncScheduler(USBTransfer transfer, byte velocity)
         {
-            USBasyncIntCount = transfer.transactions.Count;
+            USBIntCount = 1;
             
             if ((USBSTS & EHCI_Consts.STS_ASYNC_ENABLED) == 0)
             {
                 EnableAsyncScheduler(); // Start async scheduler, when it is not running
             }
-            USBCMD |= EHCI_Consts.CMD_ASYNCH_INT_DOORBELL; // Activate Doorbell: We would like to receive an asynchronous schedule interrupt
+            //USBCMD |= EHCI_Consts.CMD_ASYNCH_INT_DOORBELL; // Activate Doorbell: We would like to receive an asynchronous schedule interrupt
 
             EHCI_QueueHead oldTailQH = new EHCI_QueueHead(TailQueueHead); // save old tail QH
             TailQueueHead = (EHCI_QueueHead_Struct*)transfer.data; // new QH will now be end of Queue
@@ -1728,7 +1774,7 @@ namespace Kernel.Hardware.USB.HCIs
             oldTailQH.Type = 1;
 
             int timeout = 10 * velocity + 25; // Wait up to 250+100*velocity milliseconds for USBasyncIntFlag to be set
-            while (USBasyncIntCount > 0 && timeout > 0)
+            while (USBIntCount > 0 && timeout > 0)
             {
                 timeout--;
                 //~100ms
@@ -1738,9 +1784,8 @@ namespace Kernel.Hardware.USB.HCIs
 
             if (timeout == 0)
             {
-                //ExceptionMethods.Throw(new FOS_System.Exception("EHCI.AddToAsyncScheduler(): ASYNC_INT not set!"));
 #if DEBUG
-                DBGMSG(((FOS_System.String)"EHCI.AddToAsyncScheduler(): ASYNC_INT not set! USBasyncIntCount: ") + USBasyncIntCount);
+                DBGMSG(((FOS_System.String)"EHCI.AddToAsyncScheduler(): Num interrupts not 0! not set! USBIntCount: ") + USBIntCount);
 #endif
             }
 

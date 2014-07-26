@@ -49,6 +49,12 @@ namespace Kernel.Hardware.Interrupts
                                          FOS_System.Object data)
         {
             SetISRHandler(num + 32, handler, data);
+            //TODO: The following method doesn't work yet - fix the asm. (Caused double protection fault??)
+            EnableIRQ((byte)num);
+        }
+        [Compiler.PluggedMethod(ASMFilePath = null)]
+        public static void EnableIRQ(byte num)
+        {
         }
         public static void SetISRHandler(int num, InterruptHandler handler,
                                          FOS_System.Object data)

@@ -294,14 +294,27 @@ IRet
 
 %macro CommonInterruptHandlerMacro 1
 CommonInterruptHandler%1:
-    pushad
-    push dword ebp
-    mov dword ebp, esp
-    push dword %1
+	pushad
+
+	; push dword Interrupt124HandlerMsg
+	; push dword 0x02
+	; call method_System_Void_RETEND_Kernel_PreReqs_DECLEND_WriteDebugVideo_NAMEEND__System_String_System_UInt32_
+	; add esp, 8
+	
+	; in al, 0x60  ; read information from the keyboard - REQUIRED for keyboard interrupt else keyboard won't think the
+				 ;										character has been handled so won't send interrupts for any 
+				 ;										more keys!
+	
+	push dword %1
     call method_System_Void_RETEND_Kernel_Hardware_Interrupts_Interrupts_DECLEND_CommonISR_NAMEEND__System_UInt32_
     add esp, 4
-    pop dword ebp
-    popad
+
+	; This would send the EOI
+	; mov al, 0x20
+	; out 0x20, al
+
+	popad
+				
     IRet
 %endmacro
 %assign handlernum2 17
@@ -350,3 +363,11 @@ pic_remap:
     out 0xA1, al        ;  restore mask of PIC2_DATA
     xchg al, ah
     out 0x21, al        ;  restore mask of PIC1_DATA
+
+	mov ax, 0xFFDF		; Set interrupt mask to disable all interrupts
+    out 0x21, al        ; Set mask of PIC1_DATA
+    xchg al, ah
+    out 0xA1, al        ; Set mask of PIC2_DATA
+
+	sti					; Enable interrupts
+	nop					; Required - STI takes effect after the next instruction runs
