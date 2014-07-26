@@ -20,6 +20,7 @@ using System;
 
 namespace Kernel.Hardware.USB.HCIs
 {
+#if DEBUG
     public static unsafe class EHCITesting
     {
         public static int errors = 0;
@@ -109,7 +110,7 @@ namespace Kernel.Hardware.USB.HCIs
 
             DBGMSG(testName, "END");
 
-            BasicConsole.DelayOutput(4);
+            BasicConsole.DelayOutput(1);
         }
         private static byte* ReturnPointer(byte* aPtr)
         {
@@ -262,7 +263,7 @@ namespace Kernel.Hardware.USB.HCIs
 
             DBGMSG(testName, "END");
 
-            BasicConsole.DelayOutput(4);
+            BasicConsole.DelayOutput(1);
         }
         private static void Test_StructValueSettingAsArg(FOS_System.String testName, EHCITestingStruct root)
         {
@@ -924,7 +925,7 @@ namespace Kernel.Hardware.USB.HCIs
 
             DBGMSG(testName, "END");
 
-            BasicConsole.DelayOutput(4);
+            BasicConsole.DelayOutput(1);
         }
         public static void Test_qTDWrapper()
         {
@@ -1186,11 +1187,47 @@ namespace Kernel.Hardware.USB.HCIs
                 }
 
                 qTD.PIDCode = 0xFF;
-                //TODO: Verify
+                //Shift!
+                if ((pqTD[0x09u] & 0x03u) != 0x03u)
+                {
+                    DBGERR(testName, "PIDCode - Failed to set.");
+                }
+                else
+                {
+                    if ((uint)qTD.PIDCode != 0x03u)
+                    {
+                        DBGERR(testName, "PIDCode - Failed to read.");
+                    }
+                }
+
                 qTD.Status = 0xFF;
-                //TODO: Verify
+                //Shift!
+                if (pqTD[0x08u] != 0xFFu)
+                {
+                    DBGERR(testName, "Status - Failed to set.");
+                }
+                else
+                {
+                    if ((uint)qTD.Status != 0xFFu)
+                    {
+                        DBGERR(testName, "Status - Failed to read.");
+                    }
+                }
+
                 qTD.TotalBytesToTransfer = 0xFFFF;
-                //TODO: Verify
+                //Read back should be 0x7FFF
+                if (pqTD[0x0Au] != 0xFFu ||
+                    (pqTD[0x0Bu] & 0x7Fu) != 0x7Fu)
+                {
+                    DBGERR(testName, "TotalBytesToTransfer - Failed to set.");
+                }
+                else
+                {
+                    if ((uint)qTD.TotalBytesToTransfer != 0x7FFFu)
+                    {
+                        DBGERR(testName, "TotalBytesToTransfer - Failed to read.");
+                    }
+                }
             }
             catch
             {
@@ -1222,21 +1259,11 @@ namespace Kernel.Hardware.USB.HCIs
 
             DBGMSG(testName, "END");
 
-            BasicConsole.DelayOutput(4);
+            BasicConsole.DelayOutput(1);
         }
 
         #endregion
-
-
-        #region Register Tests
-
-        #endregion
-
-
-        #region EHCI Method Tests
-
-        #endregion
-
+        
 
         #region Validation
 
@@ -1247,17 +1274,17 @@ namespace Kernel.Hardware.USB.HCIs
 
         #endregion
 
-        private static void DBGMSG(FOS_System.String testName, FOS_System.String msg)
+        public static void DBGMSG(FOS_System.String testName, FOS_System.String msg)
         {
             BasicConsole.WriteLine(testName.PadRight(25, ' ') + " : " + msg);
         }
-        private static void DBGWRN(FOS_System.String testName, FOS_System.String msg)
+        public static void DBGWRN(FOS_System.String testName, FOS_System.String msg)
         {
             BasicConsole.SetTextColour(BasicConsole.warning_colour);
             DBGMSG(testName, msg);
             BasicConsole.SetTextColour(BasicConsole.default_colour);
         }
-        private static void DBGERR(FOS_System.String testName, FOS_System.String msg)
+        public static void DBGERR(FOS_System.String testName, FOS_System.String msg)
         {
             BasicConsole.SetTextColour(BasicConsole.error_colour);
             DBGMSG(testName, msg);
@@ -1284,4 +1311,5 @@ namespace Kernel.Hardware.USB.HCIs
         public uint u7;
         public uint u8;
     }
+#endif
 }

@@ -1010,6 +1010,7 @@ namespace Kernel.Hardware.USB.HCIs
         public EHCI(PCI.PCIDeviceNormal aPCIDevice)
             : base(aPCIDevice)
         {
+#if DEBUG
             try
             {
                 EHCITesting.Test_PointerManipulation();
@@ -1023,7 +1024,7 @@ namespace Kernel.Hardware.USB.HCIs
                 BasicConsole.WriteLine(ExceptionMethods.CurrentException.Message);
                 BasicConsole.SetTextColour(BasicConsole.default_colour);
             }
-
+#endif
 
             usbBaseAddress = (byte*)((uint)pciDevice.BaseAddresses[0].BaseAddress() & 0xFFFFFF00);
             CapabilitiesRegAddr = usbBaseAddress;
@@ -1754,6 +1755,70 @@ namespace Kernel.Hardware.USB.HCIs
             BasicConsole.WriteLine(msg);
         }
 #endif
+
+#if DEBUG
+        #region EHCI Method Tests
+
+        //SetupTransfer
+        //SETUPTransaction
+        //INTransaction
+        //OUTTransaction
+        //IssueTransfer
+        //CreateQTD_SETUP
+        //CreateQTD_IO
+        //Create_QH
+        public void Test_Create_QH()
+        {
+            FOS_System.String testName = "Queue Transfer Descrip";
+            EHCITesting.DBGMSG(testName, "START");
+
+            EHCITesting.errors = 0;
+            EHCITesting.warnings = 0;
+
+            EHCI_QueueHead qh = new EHCI_QueueHead();
+            EHCI_QueueHead_Struct* pQH = qh.queueHead;
+            try
+            {
+                CreateQH(pQH, 0xDEADBEEFu, (EHCI_qTD_Struct*)0x12345678u, true, 0xFE, 0xED, 0x1234);
+
+                //Confirm values (other tests check that these get/set properties work properly)
+
+            }
+            catch
+            {
+                EHCITesting.errors++;
+                BasicConsole.SetTextColour(BasicConsole.warning_colour);
+                BasicConsole.WriteLine(ExceptionMethods.CurrentException.Message);
+                BasicConsole.SetTextColour(BasicConsole.default_colour);
+            }
+            finally
+            {
+                qh.Free();
+            }
+
+            if (EHCITesting.errors > 0)
+            {
+                EHCITesting.DBGERR(testName, ((FOS_System.String)"Test failed! Errors: ") + EHCITesting.errors + " Warnings: " + EHCITesting.warnings);
+            }
+            else
+            {
+                if (EHCITesting.warnings > 0)
+                {
+                    EHCITesting.DBGWRN(testName, ((FOS_System.String)"Test passed with warnings: ") + EHCITesting.warnings);
+                }
+                else
+                {
+                    EHCITesting.DBGMSG(testName, "Test passed.");
+                }
+            }
+
+            EHCITesting.DBGMSG(testName, "END");
+
+            BasicConsole.DelayOutput(4);
+        }
+
+        #endregion
+#endif
     }
     public unsafe class EHCITransaction : HCTransaction
     {
@@ -1973,7 +2038,7 @@ namespace Kernel.Hardware.USB.HCIs
             [Compiler.NoGC]
             set
             {
-                qtd->u3 = (qtd->u3 & 0xFFFFFCFFu) | (uint)(value << 8); 
+                qtd->u3 = (qtd->u3 & 0xFFFFFCFFu) | ((uint)value << 8); 
             }
         }
         /// <summary>
@@ -1989,7 +2054,7 @@ namespace Kernel.Hardware.USB.HCIs
             [Compiler.NoGC]
             set
             {
-                qtd->u3 = (qtd->u3 & 0xFFFFF3FFu) | (uint)(value << 10);
+                qtd->u3 = (qtd->u3 & 0xFFFFF3FFu) | ((uint)value << 10);
             }
         }
         /// <summary>
@@ -2005,7 +2070,7 @@ namespace Kernel.Hardware.USB.HCIs
             [Compiler.NoGC]
             set
             {
-                qtd->u3 = (qtd->u3 & 0xFFFF8FFF) | (uint)(value << 12);
+                qtd->u3 = (qtd->u3 & 0xFFFF8FFF) | ((uint)value << 12);
             }
         }
         /// <summary>
@@ -2044,7 +2109,7 @@ namespace Kernel.Hardware.USB.HCIs
             [Compiler.NoGC]
             set
             {
-                qtd->u3 = (qtd->u3 & 0x8000FFFF) | (uint)(value << 16);
+                qtd->u3 = (qtd->u3 & 0x8000FFFF) | ((uint)value << 16);
             }
         }
         /// <summary>
@@ -2084,7 +2149,7 @@ namespace Kernel.Hardware.USB.HCIs
             [Compiler.NoGC]
             set
             {
-                qtd->u4 = (qtd->u4 & 0x00000FFFu) | (uint)value & 0xFFFFF000u;
+                qtd->u4 = (qtd->u4 & 0x00000FFFu) | ((uint)value & 0xFFFFF000u);
             }
         }
         /// <summary>
@@ -2378,7 +2443,7 @@ namespace Kernel.Hardware.USB.HCIs
             [Compiler.NoGC]
             set
             {
-                queueHead->u2 = (queueHead->u2 & 0xF800FFFFu) | ((uint)(value << 16) & 0x07FF0000u);
+                queueHead->u2 = (queueHead->u2 & 0xF800FFFFu) | (((uint)value << 16) & 0x07FF0000u);
             }
         }
         /// <summary>
@@ -2417,7 +2482,7 @@ namespace Kernel.Hardware.USB.HCIs
             [Compiler.NoGC]
             set
             {
-                queueHead->u2 = (queueHead->u2 & 0x0FFFFFFFu) | (uint)(value << 28);
+                queueHead->u2 = (queueHead->u2 & 0x0FFFFFFFu) | ((uint)value << 28);
             }
         }
         /// <summary>
@@ -2449,7 +2514,7 @@ namespace Kernel.Hardware.USB.HCIs
             [Compiler.NoGC]
             set
             {
-                queueHead->u3 = (queueHead->u3 & 0xFFFF00FFu) | (uint)(value << 8);
+                queueHead->u3 = (queueHead->u3 & 0xFFFF00FFu) | ((uint)value << 8);
             }
         }
         /// <summary>
@@ -2465,7 +2530,7 @@ namespace Kernel.Hardware.USB.HCIs
             [Compiler.NoGC]
             set
             {
-                queueHead->u3 = (queueHead->u3 & 0xFF80FFFFu) | (uint)(value << 16);
+                queueHead->u3 = (queueHead->u3 & 0xFF80FFFFu) | ((uint)value << 16);
             }
         }
         /// <summary>
@@ -2481,7 +2546,7 @@ namespace Kernel.Hardware.USB.HCIs
             [Compiler.NoGC]
             set
             {
-                queueHead->u3 = (queueHead->u3 & 0xC07FFFFFu) | (uint)(value << 23);
+                queueHead->u3 = (queueHead->u3 & 0xC07FFFFFu) | ((uint)value << 23);
             }
         }
         /// <summary>
@@ -2497,7 +2562,7 @@ namespace Kernel.Hardware.USB.HCIs
             [Compiler.NoGC]
             set
             {
-                queueHead->u3 = (queueHead->u3 & 0x3FFFFFFFu) | (uint)(value << 30);
+                queueHead->u3 = (queueHead->u3 & 0x3FFFFFFFu) | ((uint)value << 30);
             }
         }
         /// <summary>
