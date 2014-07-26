@@ -2212,7 +2212,7 @@ namespace Kernel.Hardware.USB.HCIs
             [Compiler.NoGC]
             set
             {
-                queueHead->u1 = ((uint)HorizontalLinkPointer & 0xFFFFFFE0u) | (queueHead->u1 & 0x0000001Fu);
+                queueHead->u1 = ((uint)value & 0xFFFFFFE0u) | (queueHead->u1 & 0x0000001Fu);
             }
         }
         /// <summary>
@@ -2267,7 +2267,7 @@ namespace Kernel.Hardware.USB.HCIs
             [Compiler.NoGC]
             set
             {
-                queueHead->u2 = (queueHead->u2 & 0xFFFFF0FFu) | (uint)(value << 8);
+                queueHead->u2 = (queueHead->u2 & 0xFFFFF0FFu) | (((uint)value) << 8);
             }
         }
         /// <summary>
@@ -2283,7 +2283,7 @@ namespace Kernel.Hardware.USB.HCIs
             [Compiler.NoGC]
             set
             {
-                queueHead->u2 = (queueHead->u2 & 0xFFFFCFFFu) | (uint)(value << 12);
+                queueHead->u2 = (queueHead->u2 & 0xFFFFCFFFu) | (((uint)value) << 12);
             }
         }
         /// <summary>
@@ -2443,7 +2443,7 @@ namespace Kernel.Hardware.USB.HCIs
             [Compiler.NoGC]
             get
             {
-                return (byte)((queueHead->u3 & 0x007F0000u) >> 23);
+                return (byte)((queueHead->u3 & 0x3f800000u) >> 23);
             }
             [Compiler.NoGC]
             set

@@ -543,18 +543,18 @@ namespace Kernel.Hardware.USB.HCIs
                     }
                 }
 
-                qh.CurrentqTDPointer = (EHCI_qTD_Struct*)0xDEADBEEFu;
+                qh.CurrentqTDPointer = (EHCI_qTD_Struct*)0xDEADBEFFu;
                 //- Read back should equal 0xDEADBEE0
-                if (pQH[0x0Cu] != 0xE0u ||
-                    pQH[0x0Du] != 0xBEu ||
-                    pQH[0x0Eu] != 0xADu ||
-                    pQH[0x0Fu] != 0xDEu)
+                if ((pQH[0x0Cu] & 0xF0u) != 0xF0u ||
+                     pQH[0x0Du]          != 0xBEu ||
+                     pQH[0x0Eu]          != 0xADu ||
+                     pQH[0x0Fu]          != 0xDEu)
                 {
                     DBGERR(testName, "CurrentqTDPointer - Failed to set.");
                 }
                 else
                 {
-                    if ((uint)qh.CurrentqTDPointer != 0xDEADBEE0u)
+                    if ((uint)qh.CurrentqTDPointer != 0xDEADBEF0u)
                     {
                         DBGERR(testName, "CurrentqTDPointer - Failed to read.");
                     }
@@ -590,25 +590,45 @@ namespace Kernel.Hardware.USB.HCIs
                 }
 
                 qh.DeviceAddress = 0xDE;
-                if (pQH[0x04u] != 0x5Eu)
+                if ((pQH[0x04u] & 0x7Fu) != 0x5Eu)
                 {
                     DBGERR(testName, "DeviceAddress - Failed to set.");
                 }
                 else
                 {
-                    if ((uint)qh.DeviceAddress != 0x5E)
+                    if ((uint)qh.DeviceAddress != 0x5Eu)
                     {
                         DBGERR(testName, "DeviceAddress - Failed to read.");
                     }
                 }
 
-                qh.EndpointNumber = 0xBE;
+                qh.EndpointNumber = 0xBF;
                 //Shift!
-                //TODO: Verify
+                if ((pQH[0x05u] & 0x0Fu) != 0x0Fu)
+                {
+                    DBGERR(testName, "EndpointNumber - Failed to set.");
+                }
+                else
+                {
+                    if ((uint)qh.EndpointNumber != 0x0Fu)
+                    {
+                        DBGERR(testName, "EndpointNumber - Failed to read.");
+                    }
+                }
 
-                qh.EndpointSpeed = 0xFE;
+                qh.EndpointSpeed = 0xB3;
                 //Shift!
-                //TODO: Verify
+                if ((pQH[0x05u] & 0x30u) != 0x30u)
+                {
+                    DBGERR(testName, "EndpointSpeed - Failed to set.");
+                }
+                else
+                {
+                    if ((uint)qh.EndpointSpeed != 0x03u)
+                    {
+                        DBGERR(testName, "EndpointSpeed - Failed to read.");
+                    }
+                }
 
                 qh.HeadOfReclamationList = true;
                 if ((pQH[0x05u] & 0x80u) == 0)
@@ -639,12 +659,50 @@ namespace Kernel.Hardware.USB.HCIs
                     }
                 }
 
-                qh.HighBandwidthPipeMultiplier = 0xDE;
-                //TODO: Verify
-                qh.HorizontalLinkPointer = (EHCI_QueueHead_Struct*)0xDEADBEEF;
-                //TODO: Verify
+                qh.HighBandwidthPipeMultiplier = 0xDF;
+                //Shift!
+                if ((pQH[0x0Bu] & 0xC0u) != 0xC0u)
+                {
+                    DBGERR(testName, "HighBandwidthPipeMultiplier - Failed to set.");
+                }
+                else
+                {
+                    if ((uint)qh.HighBandwidthPipeMultiplier != 0x03u)
+                    {
+                        DBGERR(testName, "HighBandwidthPipeMultiplier - Failed to read.");
+                    }
+                }
+
+                qh.HorizontalLinkPointer = (EHCI_QueueHead_Struct*)0xDEADBEFE;
+                if ((pQH[0x00u] & 0xE0u) != 0xE0u ||
+                     pQH[0x01u]          != 0xBEu ||
+                     pQH[0x02u]          != 0xADu ||
+                     pQH[0x03u]          != 0xDEu)
+                {
+                    DBGERR(testName, "HorizontalLinkPointer - Failed to set.");
+                }
+                else
+                {
+                    if ((uint)qh.HorizontalLinkPointer != 0xDEADBEE0u)
+                    {
+                        DBGERR(testName, "HorizontalLinkPointer - Failed to read.");
+                    }
+                }
+
                 qh.HubAddr = 0xBE;
-                //TODO: Verify
+                //Shift!
+                if ((pQH[0x0Au] & 0x7Fu) != 0x3Eu)
+                {
+                    DBGERR(testName, "HubAddr - Failed to set.");
+                }
+                else
+                {
+                    if ((uint)qh.HubAddr != 0x3Eu)
+                    {
+                        DBGERR(testName, "HubAddr - Failed to read.");
+                    }
+                }
+
                 qh.InactiveOnNextTransaction = true;
                 if ((pQH[0x04u] & 0x80u) == 0)
                 {
@@ -675,23 +733,166 @@ namespace Kernel.Hardware.USB.HCIs
                 }
 
                 qh.InterruptScheduleMask = 0xFE;
-                //TODO: Verify
+                //Shift!
+                if (pQH[0x08u] != 0xFEu)
+                {
+                    DBGERR(testName, "InterruptScheduleMask - Failed to set.");
+                }
+                else
+                {
+                    if ((uint)qh.InterruptScheduleMask != 0xFEu)
+                    {
+                        DBGERR(testName, "InterruptScheduleMask - Failed to read.");
+                    }
+                }
+
                 qh.MaximumPacketLength = 0xDEAD;
-                //TODO: Verify
-                qh.NakCountReload = 0xBE;
-                //TODO: Verify
-                qh.NextqTDPointer = (EHCI_qTD_Struct*)0xDEADBEEF;
-                //TODO: Verify
+                //Shift!
+                if ( pQH[0x06u]          != 0xADu ||
+                    (pQH[0x07u] & 0x07u) != 0x06u)
+                {
+                    DBGERR(testName, "MaximumPacketLength - Failed to set.");
+                }
+                else
+                {
+                    if ((uint)qh.MaximumPacketLength != 0x06ADu)
+                    {
+                        DBGERR(testName, "MaximumPacketLength - Failed to read.");
+                    }
+                }
+
+                qh.NakCountReload = 0xFF;
+                //Shift!
+                if ((pQH[0x07u] & 0xF0u) != 0xF0u)
+                {
+                    DBGERR(testName, "NakCountReload - Failed to set.");
+                }
+                else
+                {
+                    if ((uint)qh.NakCountReload != 0x0Fu)
+                    {
+                        DBGERR(testName, "NakCountReload - Failed to read.");
+                    }
+                }
+
+                qh.NextqTDPointer = (EHCI_qTD_Struct*)0xDEADBEFF;
+                //- Read back should equal 0xDEADBEE0
+                if ((pQH[0x10u] & 0xF0u) != 0xF0u ||
+                     pQH[0x11u] != 0xBEu ||
+                     pQH[0x12u] != 0xADu ||
+                     pQH[0x13u] != 0xDEu)
+                {
+                    DBGERR(testName, "NextqTDPointer - Failed to set.");
+                }
+                else
+                {
+                    if ((uint)qh.NextqTDPointer != 0xDEADBEF0u)
+                    {
+                        DBGERR(testName, "NextqTDPointer - Failed to read.");
+                    }
+                }
+
                 qh.NextqTDPointerTerminate = true;
-                //TODO: Verify
-                qh.PortNumber = 0xDE;
-                //TODO: Verify
+                if ((pQH[0x10u] & 0x01u) == 0)
+                {
+                    DBGERR(testName, "NextqTDPointerTerminate - Failed to set to true.");
+                }
+                else
+                {
+                    if (!qh.NextqTDPointerTerminate)
+                    {
+                        DBGERR(testName, "NextqTDPointerTerminate - Failed to read as true.");
+                    }
+                    else
+                    {
+                        pQH[0x10u] = 0xFF;
+                        qh.NextqTDPointerTerminate = false;
+                        if ((pQH[0x10u] & 0x01u) != 0)
+                        {
+                            DBGERR(testName, "NextqTDPointerTerminate - Failed to set to false.");
+                        }
+                        else
+                        {
+                            if (qh.NextqTDPointerTerminate)
+                            {
+                                DBGERR(testName, "NextqTDPointerTerminate - Failed to read as false.");
+                            }
+                        }
+                    }
+                }
+
+                qh.PortNumber = 0xFF;
+                //Shift!
+                if ((pQH[0x0Au] & 0x80u) != 0x80u ||
+                    (pQH[0x0Bu] & 0x3Fu) != 0x3Fu)
+                {
+                    DBGERR(testName, "PortNumber - Failed to set.");
+                }
+                else
+                {
+                    if ((uint)qh.PortNumber != 0x7Fu)
+                    {
+                        DBGERR(testName, "PortNumber - Failed to read.");
+                    }
+                }
+
                 qh.SplitCompletionMask = 0xBE;
-                //TODO: Verify
+                //Shift!
+                if (pQH[0x09u] != 0xBEu)
+                {
+                    DBGERR(testName, "SplitCompletionMask - Failed to set.");
+                }
+                else
+                {
+                    if ((uint)qh.SplitCompletionMask != 0xBEu)
+                    {
+                        DBGERR(testName, "SplitCompletionMask - Failed to read.");
+                    }
+                }
+
                 qh.Terminate = true;
-                //TODO: Verify
-                qh.Type = 0xDE;
-                //TODO: Verify
+                if ((pQH[0x00u] & 0x01u) == 0)
+                {
+                    DBGERR(testName, "Terminate - Failed to set to true.");
+                }
+                else
+                {
+                    if (!qh.Terminate)
+                    {
+                        DBGERR(testName, "Terminate - Failed to read as true.");
+                    }
+                    else
+                    {
+                        pQH[0x00u] = 0xFF;
+                        qh.Terminate = false;
+                        if ((pQH[0x00u] & 0x01u) != 0)
+                        {
+                            DBGERR(testName, "Terminate - Failed to set to false.");
+                        }
+                        else
+                        {
+                            if (qh.Terminate)
+                            {
+                                DBGERR(testName, "Terminate - Failed to read as false.");
+                            }
+                        }
+                    }
+                }
+
+                qh.Type = 0xFF;
+                //Shift!
+                if ((pQH[0x00u] & 0x06u) != 0x06u)
+                {
+                    DBGERR(testName, "Type - Failed to set.");
+                }
+                else
+                {
+                    if ((uint)qh.Type != 0x03u)
+                    {
+                        DBGERR(testName, "Type - Failed to read.");
+                    }
+                }
+
             }
             catch
             {
