@@ -126,7 +126,7 @@ namespace Kernel.FOS_System
 
         /// <summary>
         /// Creates a new string and pads the left side of the string with the specified character until the 
-        /// whole string is of the specified length.
+        /// whole string is of the specified length or returns the original string if it is longer.
         /// </summary>
         /// <param name="totalLength">The final length of the whole string.</param>
         /// <param name="padChar">The character to pad with.</param>
@@ -134,6 +134,11 @@ namespace Kernel.FOS_System
         [Compiler.NoDebug]
         public FOS_System.String PadLeft(int totalLength, char padChar)
         {
+            if (this.length >= totalLength)
+            {
+                return this;
+            }
+
             FOS_System.String result = New(totalLength);
             int offset = totalLength - this.length;
             for (int i = 0; i < this.length; i++)
@@ -148,7 +153,7 @@ namespace Kernel.FOS_System
         }
         /// <summary>
         /// Creates a new string and pads the right side of the string with the specified character until the 
-        /// whole string is of the specified length.
+        /// whole string is of the specified length or returns the original string if it is longer.
         /// </summary>
         /// <param name="totalLength">The final length of the whole string.</param>
         /// <param name="padChar">The character to pad with.</param>
@@ -156,13 +161,17 @@ namespace Kernel.FOS_System
         [Compiler.NoDebug]
         public FOS_System.String PadRight(int totalLength, char padChar)
         {
+            if(this.length >= totalLength)
+            {
+                return this;
+            }
+
             FOS_System.String result = New(totalLength);
             for (int i = 0; i < this.length; i++)
             {
                 result[i] = this[i];
             }
-            int offset = this.length;
-            for (int i = offset; i < totalLength; i++)
+            for (int i = this.length; i < totalLength; i++)
             {
                 result[i] = padChar;
             }

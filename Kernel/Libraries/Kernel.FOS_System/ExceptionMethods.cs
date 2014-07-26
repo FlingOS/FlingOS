@@ -236,7 +236,7 @@ namespace Kernel
     /// anywhere in memory. The order of the fields in the structure matters!
     /// </para>
     /// </remarks>
-    [System.Runtime.InteropServices.StructLayout(System.Runtime.InteropServices.LayoutKind.Sequential)]
+    [System.Runtime.InteropServices.StructLayout(System.Runtime.InteropServices.LayoutKind.Sequential, Pack = 1)]
     public unsafe struct ExceptionHandlerInfo
     {
         //DO NOT (!!!!!!!) MODIFY THIS STRUCTURE WITHOUT CHECKING / 

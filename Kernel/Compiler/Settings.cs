@@ -62,6 +62,10 @@ namespace Kernel.Compiler
         /// The setting key for the setting “DebugBuild”. The “DebugBuild” setting is used to specify the compiler should do a debug build or not.
         /// </summary>
         public const string DebugBuildKey = "debugbuild";
+        /// <summary>
+        /// The setting key for the setting “NASMOnly”. The “NASMOnly” setting is used to specify the compiler should only run the NASM part of the build.
+        /// </summary>
+        public const string NASMOnlyKey = "nasmonly";
 
         /// <summary>
         /// The underlying dictionary of all the settings (arguments) stored.
@@ -80,6 +84,20 @@ namespace Kernel.Compiler
             set
             {
                 this[DebugBuildKey] = value.ToString();
+            }
+        }
+        /// <summary>
+        /// Whether to run only NASM or a full build.
+        /// </summary>
+        public bool NASMOnly
+        {
+            get
+            {
+                return this[NASMOnlyKey] != null;
+            }
+            set
+            {
+                this[NASMOnlyKey] = value.ToString();
             }
         }
 

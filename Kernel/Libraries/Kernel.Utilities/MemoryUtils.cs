@@ -18,46 +18,23 @@
     
 using System;
 
-namespace Kernel.FOS_System
+namespace Kernel.Utilities
 {
-    /// <summary>
-    /// Provides constants and static methods for common mathematical functions and some operations not supported by 
-    /// IL code.
-    /// </summary>
-    [Compiler.PluggedClass]
-    public static class Math
+    public static unsafe class MemoryUtils
     {
-        /// <summary>
-        /// Divides a UInt64 by a UInt32.
-        /// </summary>
-        /// <param name="dividend">The UInt64 to be divided.</param>
-        /// <param name="divisor">The UInt32 to divide.</param>
-        /// <returns>The quotient of the division.</returns>
-        [Compiler.PluggedMethod(ASMFilePath=@"ASM\Math\Divide")]
-        public static ulong Divide(ulong dividend, uint divisor)
+        public static void MemCpy_32(byte* dest, byte* src, uint length)
         {
-            return 0;
+            for (uint i = 0; i < length; i++)
+            {
+                dest[i] = src[i];
+            }
         }
-
-        /// <summary>
-        /// Returns the lower of the two inputs.
-        /// </summary>
-        /// <param name="x">Input 1.</param>
-        /// <param name="y">Input 2.</param>
-        /// <returns>The lower of the two inputs.</returns>
-        public static ushort Min(ushort x, ushort y)
+        public static void MemCpy(byte* dest, byte* src, ulong length)
         {
-            return (x < y ? x : y);
-        }
-        /// <summary>
-        /// Returns the higher of the two inputs.
-        /// </summary>
-        /// <param name="x">Input 1.</param>
-        /// <param name="y">Input 2.</param>
-        /// <returns>The higher of the two inputs.</returns>
-        public static int Max(int x, int y)
-        {
-            return (x > y ? x : y);
+            for(ulong i = 0; i < length; i++)
+            {
+                dest[i] = src[i];
+            }
         }
     }
 }

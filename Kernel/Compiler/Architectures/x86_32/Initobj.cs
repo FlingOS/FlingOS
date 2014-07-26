@@ -17,47 +17,29 @@
 #endregion
     
 using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
-namespace Kernel.FOS_System
+namespace Kernel.Compiler.Architectures.x86_32
 {
     /// <summary>
-    /// Provides constants and static methods for common mathematical functions and some operations not supported by 
-    /// IL code.
+    /// See base class documentation.
     /// </summary>
-    [Compiler.PluggedClass]
-    public static class Math
+    public class Initobj : ILOps.Initobj
     {
         /// <summary>
-        /// Divides a UInt64 by a UInt32.
+        /// See base class documentation.
         /// </summary>
-        /// <param name="dividend">The UInt64 to be divided.</param>
-        /// <param name="divisor">The UInt32 to divide.</param>
-        /// <returns>The quotient of the division.</returns>
-        [Compiler.PluggedMethod(ASMFilePath=@"ASM\Math\Divide")]
-        public static ulong Divide(ulong dividend, uint divisor)
+        /// <param name="anILOpInfo">See base class documentation.</param>
+        /// <param name="aScannerState">See base class documentation.</param>
+        /// <returns>See base class documentation.</returns>
+        public override string Convert(ILOpInfo anILOpInfo, ILScannerState aScannerState)
         {
-            return 0;
-        }
-
-        /// <summary>
-        /// Returns the lower of the two inputs.
-        /// </summary>
-        /// <param name="x">Input 1.</param>
-        /// <param name="y">Input 2.</param>
-        /// <returns>The lower of the two inputs.</returns>
-        public static ushort Min(ushort x, ushort y)
-        {
-            return (x < y ? x : y);
-        }
-        /// <summary>
-        /// Returns the higher of the two inputs.
-        /// </summary>
-        /// <param name="x">Input 1.</param>
-        /// <param name="y">Input 2.</param>
-        /// <returns>The higher of the two inputs.</returns>
-        public static int Max(int x, int y)
-        {
-            return (x > y ? x : y);
+            //Ignore for now
+            //TODO: Initialise properly...
+            return "add esp, 4";
         }
     }
 }

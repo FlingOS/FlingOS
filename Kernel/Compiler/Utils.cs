@@ -291,6 +291,10 @@ namespace Kernel.Compiler
                 {
                     result = 4;
                 }
+                else if (theType.IsPointer)
+                {
+                    result = 4;
+                }
                 else
                 {
                     List<FieldInfo> AllFields = theType.GetFields(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic).ToList();
@@ -302,6 +306,10 @@ namespace Kernel.Compiler
                         result += GetSizeForType(anInfo.FieldType);
                     }
                 }
+            }
+            else if (theType.IsPointer)
+            {
+                result = 4;
             }
 
             return result;

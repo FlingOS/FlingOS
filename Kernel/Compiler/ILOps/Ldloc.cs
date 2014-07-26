@@ -30,8 +30,10 @@ namespace Kernel.Compiler.ILOps
     /// <see cref="System.Reflection.Emit.OpCodes.Ldloc_0"/>, 
     /// <see cref="System.Reflection.Emit.OpCodes.Ldloc_1"/>, 
     /// <see cref="System.Reflection.Emit.OpCodes.Ldloc_2"/>, 
-    /// <see cref="System.Reflection.Emit.OpCodes.Ldloc_3"/> and 
-    /// <see cref="System.Reflection.Emit.OpCodes.Ldloc_S"/> IL ops.
+    /// <see cref="System.Reflection.Emit.OpCodes.Ldloc_3"/>,  
+    /// <see cref="System.Reflection.Emit.OpCodes.Ldloc_S"/>, 
+    /// <see cref="System.Reflection.Emit.OpCodes.Ldloca"/> and
+    /// <see cref="System.Reflection.Emit.OpCodes.Ldloca_S"/> IL ops.
     /// </summary>
     /// <remarks>
     /// See MSDN for details of these ops.
@@ -42,12 +44,16 @@ namespace Kernel.Compiler.ILOps
     /// <seealso cref="System.Reflection.Emit.OpCodes.Ldloc_2"/>
     /// <seealso cref="System.Reflection.Emit.OpCodes.Ldloc_3"/>
     /// <seealso cref="System.Reflection.Emit.OpCodes.Ldloc_S"/>
+    /// <seealso cref="System.Reflection.Emit.OpCodes.Ldloca"/>
+    /// <seealso cref="System.Reflection.Emit.OpCodes.Ldloca_S"/>
     [ILOpTarget(Target = ILOp.OpCodes.Ldloc)]
     [ILOpTarget(Target = ILOp.OpCodes.Ldloc_0)]
     [ILOpTarget(Target = ILOp.OpCodes.Ldloc_1)]
     [ILOpTarget(Target = ILOp.OpCodes.Ldloc_2)]
     [ILOpTarget(Target = ILOp.OpCodes.Ldloc_3)]
     [ILOpTarget(Target = ILOp.OpCodes.Ldloc_S)]
+    [ILOpTarget(Target = ILOp.OpCodes.Ldloca)]
+    [ILOpTarget(Target = ILOp.OpCodes.Ldloca_S)]
     public abstract class Ldloc : ILOp
     {
     }

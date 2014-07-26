@@ -504,6 +504,15 @@ namespace Kernel.Compiler
             //Get the method body which can then be used to get locals info and
             //IL bytes that are the IL code.
             MethodBody theMethodBody = aMethod.GetMethodBody();
+
+            //Method body for something like [DelegateType].Invoke()
+            //  is null
+            if (theMethodBody == null)
+            {
+                //Just return empty method
+                return result;
+            }
+
             //For each local variable in this method
             foreach (LocalVariableInfo aLocal in theMethodBody.LocalVariables)
             {

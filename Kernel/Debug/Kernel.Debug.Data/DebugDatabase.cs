@@ -146,10 +146,34 @@ namespace Kernel.Debug.Data
         /// </summary>
         public static void Dispose()
         {
-            SubmitChanges();
-            DB.Connection.Close();
-            DB.Dispose();
-            DB = null;
+            try
+            {
+                SubmitChanges();
+            }
+            catch
+            {
+            }
+            try
+            {
+                DB.Connection.Close();
+            }
+            catch
+            {
+            }
+            try
+            {
+                DB.Dispose();
+            }
+            catch
+            {
+            }
+            try
+            {
+                DB = null;
+            }
+            catch
+            {
+            }
         }
 
         /// <summary>
@@ -162,16 +186,8 @@ namespace Kernel.Debug.Data
         /// </remarks>
         public static void Empty()
         {
-            //NOTE - Add new debug tables here
-            DB.DB_ILOpInfos.DeleteAllOnSubmit(DB.DB_ILOpInfos);
-            DB.DB_LocalVariables.DeleteAllOnSubmit(DB.DB_LocalVariables);
-            DB.DB_Methods.DeleteAllOnSubmit(DB.DB_Methods);
-            DB.DB_StringLiterals.DeleteAllOnSubmit(DB.DB_StringLiterals);
-            DB.DB_StaticFields.DeleteAllOnSubmit(DB.DB_StaticFields);
-            DB.DB_Arguments.DeleteAllOnSubmit(DB.DB_Arguments);
-            DB.DB_ComplexTypeLinks.DeleteAllOnSubmit(DB.DB_ComplexTypeLinks);
-            DB.DB_Types.DeleteAllOnSubmit(DB.DB_Types);
-            SubmitChanges();
+            DB.DeleteDatabase();
+            Dispose();
         }
 
         /// <summary>

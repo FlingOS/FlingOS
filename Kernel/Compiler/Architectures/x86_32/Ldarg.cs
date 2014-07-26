@@ -76,6 +76,12 @@ namespace Kernel.Compiler.Architectures.x86_32
                 case OpCodes.Ldarg_S:
                     index = (Int16)anILOpInfo.ValueBytes[0];
                     break;
+                case OpCodes.Ldarga:
+                    index = Utils.ReadInt16(anILOpInfo.ValueBytes, 0);
+                    break;
+                case OpCodes.Ldarga_S:
+                    index = (Int16)anILOpInfo.ValueBytes[0];
+                    break;
             }
 
             //Used to store the number of bytes to add to EBP to get to the arg
@@ -110,29 +116,48 @@ namespace Kernel.Compiler.Architectures.x86_32
             int retSize = Utils.GetNumBytesForType(retType);
             //Add it to EBP offset
             BytesOffsetFromEBP += retSize;
-        
-            //Push the argument onto the stack
-            int bytesForArg = Utils.GetNumBytesForType(allParams[index]);
-            if(bytesForArg == 4)
+
+            if ((OpCodes)anILOpInfo.opCode.Value == OpCodes.Ldarga ||
+                (OpCodes)anILOpInfo.opCode.Value == OpCodes.Ldarga_S)
             {
-                result.AppendLine(string.Format("push dword [ebp+{0}]", BytesOffsetFromEBP));
-            }
-            else if (bytesForArg == 8)
-            {
-                result.AppendLine(string.Format("push dword [ebp+{0}]", BytesOffsetFromEBP + 4));
-                result.AppendLine(string.Format("push dword [ebp+{0}]", BytesOffsetFromEBP));
+                //Push the address of the argument onto the stack
+
+                result.AppendLine("mov ecx, ebp");
+                result.AppendLine(string.Format("add ecx, {0}", BytesOffsetFromEBP));
+                result.AppendLine("push dword ecx");
+
+                //Push the address onto our stack
+                aScannerState.CurrentStackFrame.Stack.Push(new StackItem()
+                {
+                    sizeOnStackInBytes = 4,
+                    isFloat = false
+                });
             }
             else
             {
-                throw new ArgumentException("Cannot load arg! Don't understand byte size of the arg!");
-            }
+                //Push the argument onto the stack
+                int bytesForArg = Utils.GetNumBytesForType(allParams[index]);
+                if (bytesForArg == 4)
+                {
+                    result.AppendLine(string.Format("push dword [ebp+{0}]", BytesOffsetFromEBP));
+                }
+                else if (bytesForArg == 8)
+                {
+                    result.AppendLine(string.Format("push dword [ebp+{0}]", BytesOffsetFromEBP + 4));
+                    result.AppendLine(string.Format("push dword [ebp+{0}]", BytesOffsetFromEBP));
+                }
+                else
+                {
+                    throw new ArgumentException("Cannot load arg! Don't understand byte size of the arg!");
+                }
 
-            //Push the arg onto our stack
-            aScannerState.CurrentStackFrame.Stack.Push(new StackItem()
-            {
-                sizeOnStackInBytes = bytesForArg,
-                isFloat = false
-            });
+                //Push the arg onto our stack
+                aScannerState.CurrentStackFrame.Stack.Push(new StackItem()
+                {
+                    sizeOnStackInBytes = bytesForArg,
+                    isFloat = false
+                });
+            }
 
             return result.ToString().Trim();
         }

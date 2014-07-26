@@ -31,7 +31,7 @@ namespace Kernel.Hardware.PCI
         /// <summary>
         /// The device's BaseAddresses.
         /// </summary>
-        public PCIBaseAddressBar[] BaseAddresses { get; private set; }
+        public PCIBaseAddress[] BaseAddresses { get; private set; }
 
         /// <summary>
         /// The device's PrimaryBusNumber.
@@ -124,9 +124,9 @@ namespace Kernel.Hardware.PCI
         public PCIDeviceBridge(uint bus, uint slot, uint function)
             : base(bus, slot, function)
         {
-            BaseAddresses = new PCIBaseAddressBar[2];
-            BaseAddresses[0] = new PCIBaseAddressBar(ReadRegister32(0x10));
-            BaseAddresses[1] = new PCIBaseAddressBar(ReadRegister32(0x14));
+            BaseAddresses = new PCIBaseAddress[2];
+            BaseAddresses[0] = new PCIBaseAddress(ReadRegister32(0x10), GetSize(0));
+            BaseAddresses[1] = new PCIBaseAddress(ReadRegister32(0x14), GetSize(1));
 
             PrimaryBusNumber = ReadRegister8(0x18);
             SecondaryBusNumber = ReadRegister8(0x19);

@@ -193,6 +193,20 @@ namespace Kernel.Compiler.App
                 TheSettings[Settings.DebugBuildKey] = value;
             }
         }
+        /// <summary>
+        /// Used by MSBuild to set settings before execution.
+        /// </summary>
+        public string NASMOnly
+        {
+            get
+            {
+                return TheSettings[Settings.NASMOnlyKey];
+            }
+            set
+            {
+                TheSettings[Settings.NASMOnlyKey] = value;
+            }
+        }
 
         /// <summary>
         /// A reference to the MSBuild Log for outputting errors, warnings and messages.
@@ -296,7 +310,7 @@ namespace Kernel.Compiler.App
              *  - Finalise
              *  - Cleanup
              */
-            if (resultCode == ErrorCodes.Success)
+            if (resultCode == ErrorCodes.Success && !TheSettings.NASMOnly)
             {
                 try
                 {
@@ -315,7 +329,7 @@ namespace Kernel.Compiler.App
                     }
                 }
             }
-            if (resultCode == ErrorCodes.Success)
+            if (resultCode == ErrorCodes.Success && !TheSettings.NASMOnly)
             {
                 try
                 {
@@ -334,7 +348,7 @@ namespace Kernel.Compiler.App
                     }
                 }
             }
-            if (resultCode == ErrorCodes.Success)
+            if (resultCode == ErrorCodes.Success && !TheSettings.NASMOnly)
             {
                 try
                 {

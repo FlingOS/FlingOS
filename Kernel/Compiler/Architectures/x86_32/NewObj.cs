@@ -44,9 +44,21 @@ namespace Kernel.Compiler.Architectures.x86_32
             Type objectType = constructorMethod.DeclaringType;
             
             //New obj must:
+            // - Ignore for creation of Delegates
             // - Allocate memory on the heap for the object
             //          - If no memory is left, throw a panic attack because we're out of memory...
             // - Call the specified constructor
+
+            if (typeof(Delegate).IsAssignableFrom(objectType))
+            {
+                result.AppendLine("; Ignore newobj calls for Delegates");
+                //Still need to: 
+                // - Remove the "object" param but preserve the "function pointer"
+                result.AppendLine("mov dword eax, [esp]");
+                result.AppendLine("mov dword [esp+4], eax");
+                result.AppendLine("add esp, 4");
+                return result.ToString().Trim();
+            }
 
             //The label to jump to if allocated memory isn't null
             //i.e. not out of memory.

@@ -32,6 +32,6 @@ _NATIVE_GDT_Contents db 0, 0, 0, 0, 0, 0, 0, 0, 255, 255, 0, 0, 0, 154, 207, 0, 
 _NATIVE_GDT_Pointer db 23, 0, 0, 0, 0, 0
 global _NATIVE_IDT_Contents
 _NATIVE_IDT_Contents: TIMES 2048 db 0
-_NATIVE_IDT_Pointer db 0, 8, 0, 0, 0, 0
+_NATIVE_IDT_Pointer db 15, 15, 0, 0, 0, 0
 
 ; END - Multiboot Signature

@@ -26,7 +26,7 @@ namespace Kernel.Hardware.PCI
     /// <summary>
     /// Represents a PCI base address.
     /// </summary>
-    public unsafe class PCIBaseAddressBar : FOS_System.Object
+    public unsafe class PCIBaseAddress : FOS_System.Object
     {
         /// <summary>
         /// The underlying base address pointer.
@@ -46,11 +46,16 @@ namespace Kernel.Hardware.PCI
         private bool isIO = false;
 
         /// <summary>
+        /// The PCI device's required memory size.
+        /// </summary>
+        private uint size = 0;
+
+        /// <summary>
         /// Initialises a new PCI base address.
         /// </summary>
         /// <param name="raw">The raw address value.</param>
         [Compiler.NoDebug]
-        internal PCIBaseAddressBar(uint raw)
+        internal PCIBaseAddress(uint raw, uint aSize)
         {
             isIO = (raw & 0x01) == 1;
 
@@ -72,6 +77,8 @@ namespace Kernel.Hardware.PCI
                         break;
                 }
             }
+
+            size = aSize;
         }
 
         /// <summary>
@@ -90,6 +97,15 @@ namespace Kernel.Hardware.PCI
         public bool IsIO()
         {
             return isIO;
+        }
+
+        /// <summary>
+        /// The PCI device's required memory size.
+        /// </summary>
+        /// <returns>The size.</returns>
+        public uint Size()
+        {
+            return size;
         }
     }
 }

@@ -62,17 +62,24 @@
     <Compile Include="DeviceManager.cs" />
     <Compile Include="Devices\DiskDevice.cs" />
     <Compile Include="DMA\DMABlock.cs" />
+    <Compile Include="Interrupts\Interrupts.cs" />
     <Compile Include="IO\IOPort.cs" />
     <Compile Include="PCI\PCI.cs" />
-    <Compile Include="PCI\PCIBaseAddressBar.cs" />
+    <Compile Include="PCI\PCIBaseAddress.cs" />
     <Compile Include="PCI\PCIDevice.cs" />
     <Compile Include="PCI\PCIDeviceBridge.cs" />
     <Compile Include="PCI\PCIDeviceCardbus.cs" />
     <Compile Include="PCI\PCIDeviceNormal.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="USB\Devices\USBDevice.cs" />
     <Compile Include="USB\HCIs\EHCI.cs" />
+    <Compile Include="USB\HCIs\EHCITesting.cs" />
     <Compile Include="USB\HCIs\HCI.cs" />
+    <Compile Include="USB\HCIs\UHCI.cs" />
     <Compile Include="USB\USBManager.cs" />
+    <Compile Include="USB\USBRequest.cs" />
+    <Compile Include="USB\USBTransaction.cs" />
+    <Compile Include="USB\USBTransfer.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Compiler\Kernel.Compiler.csproj">
@@ -89,6 +96,9 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="ASM\Interrupts\Interrupts.x86_32.asm">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="ASM\IO\IOPort\Read.x86_32.asm">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
@@ -101,6 +111,7 @@
       <Link>Kernel.licenseheader</Link>
     </None>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

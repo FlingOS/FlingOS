@@ -57,7 +57,7 @@ namespace Kernel.Compiler.Architectures.x86_32
             switch ((OpCodes)anILOpInfo.opCode.Value)
             {
                 case OpCodes.Stind_I:
-                    bytesToStore = Utils.ReadInt32(anILOpInfo.ValueBytes, 0);
+                    bytesToStore = 4;
                     break;
                 case OpCodes.Stind_I1:
                     bytesToStore = 1;

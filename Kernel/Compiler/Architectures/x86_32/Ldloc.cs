@@ -46,10 +46,13 @@ namespace Kernel.Compiler.Architectures.x86_32
 
             //Load local
 
+            bool loadAddr = (ILOps.ILOp.OpCodes)anILOpInfo.opCode.Value == OpCodes.Ldloca ||
+                            (ILOps.ILOp.OpCodes)anILOpInfo.opCode.Value == OpCodes.Ldloca_S;
             UInt16 localIndex = 0;
             switch ((ILOps.ILOp.OpCodes)anILOpInfo.opCode.Value)
             {
                 case OpCodes.Ldloc:
+                case OpCodes.Ldloca:
                     localIndex = (UInt16)Utils.ReadInt16(anILOpInfo.ValueBytes, 0);
                     break;
                 case OpCodes.Ldloc_0:
@@ -65,6 +68,7 @@ namespace Kernel.Compiler.Architectures.x86_32
                     localIndex = 3;
                     break;
                 case OpCodes.Ldloc_S:
+                case OpCodes.Ldloca_S:
                     localIndex = (UInt16)anILOpInfo.ValueBytes[0];
                     break;
             }
@@ -81,26 +85,40 @@ namespace Kernel.Compiler.Architectures.x86_32
                 throw new NotSupportedException("Float locals not supported yet!");
             }
 
-            int pushedLocalSizeVal = theLoc.sizeOnStackInBytes;
-            if (pushedLocalSizeVal == 8)
+            if (loadAddr)
             {
-                result.AppendLine(string.Format("push dword [ebp-{0}]", bytesOffset - 4));
-                result.AppendLine(string.Format("push dword [ebp-{0}]", bytesOffset));
-            }
-            else if (pushedLocalSizeVal == 4)
-            {
-                result.AppendLine(string.Format("push dword [ebp-{0}]", bytesOffset));
+                result.AppendLine("mov eax, ebp");
+                result.AppendLine(string.Format("sub eax, {0}", bytesOffset));
+                result.AppendLine("push dword eax");
+
+                aScannerState.CurrentStackFrame.Stack.Push(new StackItem()
+                {
+                    isFloat = false,
+                    sizeOnStackInBytes = 4
+                });
             }
             else
             {
-                throw new NotSupportedException("Invalid local bytes size!");
-            }
+                int pushedLocalSizeVal = theLoc.sizeOnStackInBytes;
 
-            aScannerState.CurrentStackFrame.Stack.Push(new StackItem()
-            {
-                isFloat = theLoc.isFloat,
-                sizeOnStackInBytes = pushedLocalSizeVal
-            });
+                if ((pushedLocalSizeVal % 4) != 0)
+                {
+                    throw new NotSupportedException("Invalid local bytes size!");
+                }
+                else
+                {
+                    for (int i = bytesOffset - (pushedLocalSizeVal - 4); i <= bytesOffset; i += 4)
+                    {
+                        result.AppendLine(string.Format("push dword [ebp-{0}]", i));
+                    }
+                }
+
+                aScannerState.CurrentStackFrame.Stack.Push(new StackItem()
+                {
+                    isFloat = theLoc.isFloat,
+                    sizeOnStackInBytes = pushedLocalSizeVal
+                });
+            }
 
             return result.ToString().Trim();
         }

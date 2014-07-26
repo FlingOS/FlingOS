@@ -32,13 +32,15 @@ namespace Kernel
         /// <summary>
         /// Initialises static stuff within the kernel (such as calling GC.Init and BasicDebug.Init)
         /// </summary>
-        [Compiler.NoDebug]
+        //[Compiler.NoDebug]
         static Kernel()
         {
             BasicConsole.Init();
             BasicConsole.Clear();
 
-            //Debug.BasicDebug.Init();
+#if DEBUG
+            Debug.BasicDebug.Init();
+#endif
             FOS_System.GC.Init();
 
             BasicConsole.WriteLine();
@@ -138,12 +140,13 @@ namespace Kernel
         {
             try
             {
-                InitATA();
                 
-                OutputDivider();
+                //InitATA();
+                
+                //OutputDivider();
 
-                if (Hardware.DeviceManager.Devices.Count > 0)
-                {
+                //if (Hardware.DeviceManager.Devices.Count > 0)
+                //{
                     //try
                     //{
                     //    OutputATAInfo();
@@ -153,13 +156,13 @@ namespace Kernel
                     //    OutputCurrentExceptionInfo();
                     //}
 
-                    InitFileSystem();
+                    //InitFileSystem();
 
-                    OutputDivider();
+                    //OutputDivider();
 
-                    CheckDiskFormatting();
+                    //CheckDiskFormatting();
 
-                    OutputDivider();
+                    //OutputDivider();
 
                     //try
                     //{
@@ -169,7 +172,7 @@ namespace Kernel
                     //{
                     //    OutputCurrentExceptionInfo();
                     //}
-                }
+                //}
 
                 InitPCI();
 
@@ -302,7 +305,12 @@ namespace Kernel
         {
             BasicConsole.WriteLine("Initialising USB system...");
             Hardware.USB.USBManager.Init();
-            BasicConsole.WriteLine(((FOS_System.String)"USB system initialised. HCI devices: ") + Hardware.USB.USBManager.HCIDevices.Count);
+            BasicConsole.WriteLine(((FOS_System.String)"USB system initialised.        HCIs : ") + Hardware.USB.USBManager.HCIDevices.Count);
+            BasicConsole.WriteLine(((FOS_System.String)"                              UHCIs : ") + Hardware.USB.USBManager.NumUHCIDevices);
+            BasicConsole.WriteLine(((FOS_System.String)"                              OHCIs : ") + Hardware.USB.USBManager.NumOHCIDevices);
+            BasicConsole.WriteLine(((FOS_System.String)"                              EHCIs : ") + Hardware.USB.USBManager.NumEHCIDevices);
+            BasicConsole.WriteLine(((FOS_System.String)"                              xHCIs : ") + Hardware.USB.USBManager.NumxHCIDevices);
+            BasicConsole.WriteLine(((FOS_System.String)"                        USB devices : ") + Hardware.USB.USBManager.NumUSBDevices);
         }
 
         /// <summary>
@@ -498,6 +506,53 @@ namespace Kernel
             BasicConsole.WriteLine(((FOS_System.String)"Total # of drives: ") + numDrives);
         }
 
+        /// <summary>
+        /// Tests all interrupts in the range 17 to 255 by firing them.
+        /// </summary>
+        [Compiler.NoGC]
+        private static void InterruptsTest()
+        {
+            for (uint i = 17; i < 256; i++)
+            {
+                BasicConsole.WriteLine(((FOS_System.String)"Attempting to invoke interrupt: ") + i);
+                Hardware.Interrupts.Interrupts.InvokeInterrupt(i);
+            }
+        }
+        /// <summary>
+        /// Tests delegates.
+        /// </summary>
+        [Compiler.NoGC]
+        private static void DelegateTest()
+        {
+            IntDelegate del = CallbackMethod;
+            int x = del(new FOS_System.Object());
+            if (x == -1)
+            {
+                BasicConsole.WriteLine("Delegate return value OK.");
+            }
+            else
+            {
+                BasicConsole.WriteLine("Delegate return value NOT OK!");
+            }
+            BasicConsole.DelayOutput(10);
+        }
+        /// <summary>
+        /// Delegate used by delegates test.
+        /// </summary>
+        /// <param name="data">Test data to pass in.</param>
+        /// <returns>A test value.</returns>
+        private delegate int IntDelegate(object data);
+        /// <summary>
+        /// Method called by delegates test.
+        /// </summary>
+        /// <param name="data">Test data to pass in.</param>
+        /// <returns>A test value.</returns>
+        private static int CallbackMethod(object data)
+        {
+            BasicConsole.WriteLine("Callback method executed!");
+            BasicConsole.DelayOutput(10);
+            return -1;
+        }
         /// <summary>
         /// Runs a series of tests on the file system, currently:
         ///  - Finds or creates A:/ drive

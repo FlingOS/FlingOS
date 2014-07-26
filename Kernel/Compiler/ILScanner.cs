@@ -1675,7 +1675,7 @@ namespace Kernel.Compiler
                             }
                         }
 
-                        if (theType.IsValueType && totalMemSize == 0)
+                        if ((theType.IsValueType && totalMemSize == 0) || theType.IsPointer)
                         {
                             totalMemSize = Utils.GetSizeForType(theType);
                         }

@@ -87,18 +87,32 @@ namespace Kernel.Compiler.Architectures.x86_32
 
             //Pop object pointer
             result.AppendLine("pop dword ecx");
-            //Push value at pointer+offset
-            result.AppendLine(string.Format("push dword [ecx+{0}]", offset));
-            if(valuesizeOnStackInBytes == 8)
+            if ((OpCodes)anILOpInfo.opCode.Value == OpCodes.Ldflda)
             {
-                result.AppendLine(string.Format("push dword [ecx+{0}]", offset + 4));
-            }
+                result.AppendLine(string.Format("add ecx, {0}", offset));
+                result.AppendLine("push dword ecx");
 
-            aScannerState.CurrentStackFrame.Stack.Push(new StackItem()
+                aScannerState.CurrentStackFrame.Stack.Push(new StackItem()
+                {
+                    isFloat = valueisFloat,
+                    sizeOnStackInBytes = 4
+                });
+            }
+            else
             {
-                isFloat = valueisFloat,
-                sizeOnStackInBytes = valuesizeOnStackInBytes
-            });
+                //Push value at pointer+offset
+                result.AppendLine(string.Format("push dword [ecx+{0}]", offset));
+                if (valuesizeOnStackInBytes == 8)
+                {
+                    result.AppendLine(string.Format("push dword [ecx+{0}]", offset + 4));
+                }
+
+                aScannerState.CurrentStackFrame.Stack.Push(new StackItem()
+                {
+                    isFloat = valueisFloat,
+                    sizeOnStackInBytes = valuesizeOnStackInBytes
+                });
+            }
 
             return result.ToString().Trim();
         }

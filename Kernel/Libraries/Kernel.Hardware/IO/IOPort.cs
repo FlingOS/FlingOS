@@ -62,7 +62,7 @@ namespace Kernel.Hardware.IO
         /// <param name="port">The port to read.</param>
         /// <returns>The value read.</returns>
         [Compiler.PluggedMethod(ASMFilePath = @"ASM\IO\IOPort\Read")]
-        private static byte doRead_Byte(UInt16 port)
+        public static byte doRead_Byte(UInt16 port)
         {
             return 0;
         }
@@ -72,7 +72,7 @@ namespace Kernel.Hardware.IO
         /// <param name="port">The port to read.</param>
         /// <returns>The value read.</returns>
         [Compiler.PluggedMethod(ASMFilePath = null)]
-        private static UInt16 doRead_UInt16(UInt16 port)
+        public static UInt16 doRead_UInt16(UInt16 port)
         {
             return 0;
         }
@@ -82,7 +82,7 @@ namespace Kernel.Hardware.IO
         /// <param name="port">The port to read.</param>
         /// <returns>The value read.</returns>
         [Compiler.PluggedMethod(ASMFilePath = null)]
-        private static UInt32 doRead_UInt32(UInt16 port)
+        public static UInt32 doRead_UInt32(UInt16 port)
         {
             return 0;
         }
@@ -92,7 +92,7 @@ namespace Kernel.Hardware.IO
         /// <param name="port">The port to read.</param>
         /// <returns>The value read.</returns>
         [Compiler.PluggedMethod(ASMFilePath = null)]
-        private static UInt64 doRead_UInt64(UInt16 port)
+        public static UInt64 doRead_UInt64(UInt16 port)
         {
             return 0;
         }
@@ -140,7 +140,7 @@ namespace Kernel.Hardware.IO
         /// <param name="port">The port to write to.</param>
         /// <param name="aVal">The value to write.</param>
         [Compiler.PluggedMethod(ASMFilePath = @"ASM\IO\IOPort\Write")]
-        private static void doWrite(UInt16 port, byte aVal)
+        public static void doWrite(UInt16 port, byte aVal)
         {
         }
         /// <summary>
@@ -149,7 +149,7 @@ namespace Kernel.Hardware.IO
         /// <param name="port">The port to write to.</param>
         /// <param name="aVal">The value to write.</param>
         [Compiler.PluggedMethod(ASMFilePath = null)]
-        private static void doWrite(UInt16 port, UInt16 aVal)
+        public static void doWrite(UInt16 port, UInt16 aVal)
         {
         }
         /// <summary>
@@ -158,7 +158,7 @@ namespace Kernel.Hardware.IO
         /// <param name="port">The port to write to.</param>
         /// <param name="aVal">The value to write.</param>
         [Compiler.PluggedMethod(ASMFilePath = null)]
-        private static void doWrite(UInt16 port, UInt32 aVal)
+        public static void doWrite(UInt16 port, UInt32 aVal)
         {
         }
         /// <summary>
@@ -167,7 +167,7 @@ namespace Kernel.Hardware.IO
         /// <param name="port">The port to write to.</param>
         /// <param name="aVal">The value to write.</param>
         [Compiler.PluggedMethod(ASMFilePath = null)]
-        private static void doWrite(UInt16 port, UInt64 aVal)
+        public static void doWrite(UInt16 port, UInt64 aVal)
         {
         }
 

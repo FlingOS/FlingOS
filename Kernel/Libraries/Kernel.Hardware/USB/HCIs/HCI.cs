@@ -17,18 +17,19 @@
 #endregion
     
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Kernel.FOS_System.Collections;
 
 namespace Kernel.Hardware.USB.HCIs
 {
     /// <summary>
     /// Represents a generic USB Host Controller Interface.
     /// </summary>
-    public abstract class HCI : Device
+    public unsafe abstract class HCI : Device
     {
+        protected List RootPorts = new List(4);
+        protected List OtherPorts = new List(4);
+        protected byte RootPortCount = 0;
+
         /// <summary>
         /// The underlying PCI device for the host controller.
         /// </summary>
@@ -42,6 +43,155 @@ namespace Kernel.Hardware.USB.HCIs
             : base()
         {
             pciDevice = aPCIDevice;
+
+            for (byte i = 0; i < RootPortCount; i++)
+            {
+                RootPorts.Add(new HCPort()
+                {
+                    portNum = i
+                });
+            }
         }
+
+        public void SetupTransfer(Devices.USBDevice usbDevice, USBTransfer transfer, USBTransferType type, byte endpoint, 
+                                  ushort maxLength)
+        {
+            transfer.device = usbDevice;
+            transfer.endpoint = endpoint;
+            transfer.type = type;
+            transfer.packetSize = FOS_System.Math.Min(maxLength, ((USBEndpoint)usbDevice.Endpoints[endpoint]).mps);
+            transfer.success = false;
+            transfer.transactions = new List(3);
+
+            _SetupTransfer(transfer);
+        }
+        public void SETUPTransaction(USBTransfer transfer, ushort tokenBytes, byte type, byte req, byte hiVal, byte loVal, 
+                                     ushort index, ushort length)
+        {
+            USBTransaction transaction = new USBTransaction();
+            transaction.type = USBTransactionType.USB_TT_SETUP;
+
+            _SETUPTransaction(transfer, transaction, false, tokenBytes, type, req, hiVal, loVal, index, length);
+
+            transfer.transactions.Add(transaction);
+
+            ((USBEndpoint)transfer.device.Endpoints[transfer.endpoint]).toggle = true;
+        }
+        public void INTransaction(USBTransfer transfer, bool controlHandshake, void* buffer, ushort length)
+        {
+            ushort clampedLength = FOS_System.Math.Min(transfer.packetSize, length);
+            length -= clampedLength;
+            ushort remainingTransactions = (ushort)(length / transfer.packetSize);
+            if (length % transfer.packetSize != 0)
+                remainingTransactions++;
+
+            USBTransaction transaction = new USBTransaction();
+            transaction.type = USBTransactionType.USB_TT_IN;
+
+            if (controlHandshake) // Handshake transaction of control transfers have always set toggle to 1
+            {
+                ((USBEndpoint)transfer.device.Endpoints[transfer.endpoint]).toggle = true;
+            }
+
+            _INTransaction(transfer, transaction, ((USBEndpoint)transfer.device.Endpoints[transfer.endpoint]).toggle, buffer, clampedLength);
+
+            transfer.transactions.Add(transaction);
+
+            ((USBEndpoint)transfer.device.Endpoints[transfer.endpoint]).toggle = !((USBEndpoint)transfer.device.Endpoints[transfer.endpoint]).toggle; // Switch toggle
+
+            if (remainingTransactions > 0)
+            {
+                INTransaction(transfer, ((USBEndpoint)transfer.device.Endpoints[transfer.endpoint]).toggle, ((byte*)buffer + clampedLength), length);
+            }
+        }
+        public void OUTTransaction(USBTransfer transfer, bool controlHandshake, void* buffer, ushort length)
+        {
+            ushort clampedLength = FOS_System.Math.Min(transfer.packetSize, length);
+            length -= clampedLength;
+            ushort remainingTransactions = (ushort)(length / transfer.packetSize);
+            if (length % transfer.packetSize != 0)
+                remainingTransactions++;
+
+            USBTransaction transaction = new USBTransaction();
+            transaction.type = USBTransactionType.USB_TT_OUT;
+
+            if (controlHandshake) // Handshake transaction of control transfers have always set toggle to 1
+            {
+                ((USBEndpoint)transfer.device.Endpoints[transfer.endpoint]).toggle = true;
+            }
+
+            _OUTTransaction(transfer, transaction, ((USBEndpoint)transfer.device.Endpoints[transfer.endpoint]).toggle, buffer, clampedLength);
+
+            transfer.transactions.Add(transaction);
+
+            ((USBEndpoint)transfer.device.Endpoints[transfer.endpoint]).toggle = !((USBEndpoint)transfer.device.Endpoints[transfer.endpoint]).toggle; // Switch toggle
+
+            if (remainingTransactions > 0)
+            {
+                OUTTransaction(transfer, ((USBEndpoint)transfer.device.Endpoints[transfer.endpoint]).toggle, ((byte*)buffer + clampedLength), length);
+            }
+        }
+        public void IssueTransfer(USBTransfer transfer)
+        {
+            _IssueTransfer(transfer);
+        }
+
+        protected abstract void _SetupTransfer(USBTransfer transfer);
+        protected abstract void _SETUPTransaction(USBTransfer transfer, USBTransaction uTransaction, bool toggle, ushort tokenBytes,
+                                           byte type, byte req, byte hiVal, byte loVal, ushort index, ushort length);
+        protected abstract void _INTransaction(USBTransfer transfer, USBTransaction uTransaction, bool toggle, void* buffer, ushort length);
+        protected abstract void _OUTTransaction(USBTransfer transfer, USBTransaction uTransaction, bool toggle, void* buffer, ushort length);
+        protected abstract void _IssueTransfer(USBTransfer transfer);
+
+        protected virtual void SetupUSBDevice(byte portNum)
+        {
+            HCPort port = GetPort(portNum);
+            port.device = USBManager.CreateDevice(this, port);
+            USBManager.SetupDevice(port.device, (byte)(portNum + 1));
+        }
+        protected byte AddPort(Devices.USBDevice usbDevice)
+        {
+            HCPort port = new HCPort();
+            byte num = port.portNum = AquirePort(port);
+            return num;
+        }
+        protected HCPort GetPort(byte num)
+        {
+            if (num < RootPortCount)
+                return (HCPort)RootPorts[num];
+
+            num -= RootPortCount;
+            if (num < OtherPorts.Count)
+            {
+                return (HCPort)OtherPorts[num];
+            }
+            return null;
+        }
+        protected byte AquirePort(HCPort port)
+        {
+            OtherPorts.Add(port);
+            return (byte)(OtherPorts.Count - 1 + RootPortCount);
+        }
+    }
+
+    public enum USBPortSpeed
+    {
+        UNSET = -1,
+        //DO NOT CHANGE THESE VALUES!
+        Low = 1,
+        Full = 0,
+        High = 2,
+        SuperSpeed = 4
+    }
+    public class HCPort : FOS_System.Object
+    {
+        public Devices.USBDevice device;
+        public bool connected = false;
+        public byte portNum = 0;
+        public USBPortSpeed speed = USBPortSpeed.UNSET;
+    }
+
+    public abstract class HCTransaction : FOS_System.Object
+    {
     }
 }

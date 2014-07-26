@@ -361,6 +361,21 @@ namespace Kernel.Hardware.PCI
             Command = (PCICommand)command;
         }
 
+        /// <summary>
+        /// Gets the size associated with the specified base address register.
+        /// </summary>
+        /// <param name="bar">The number of the base address register to test.</param>
+        /// <returns>The size.</returns>
+        protected uint GetSize(byte bar)
+        {
+            byte regNum = (byte)(0x10 + (bar * 4));
+            uint baseAddr = ReadRegister32(regNum);
+            WriteRegister32(regNum, 0xFFFFFFFF);
+            uint size = ReadRegister32(regNum);
+            size = (~size | 0x0F) + 1;
+            WriteRegister32(regNum, baseAddr);
+            return size;
+        }
 
         #region IOReadWrite
 
@@ -374,7 +389,7 @@ namespace Kernel.Hardware.PCI
         {
             UInt32 xAddr = GetAddressBase(bus, slot, function) | ((UInt32)(aRegister & 0xFC));
             PCI_IO.ConfigAddressPort.Write(xAddr);
-            return (byte)(PCI_IO.ConfigDataPort.Read_UInt32() >> ((aRegister % 4) * 8) & 0xFF);
+            return (byte)((PCI_IO.ConfigDataPort.Read_UInt32() >> ((aRegister % 4) * 8)) & 0xFF);
         }
 
         /// <summary>

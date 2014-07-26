@@ -31,7 +31,7 @@ namespace Kernel.Hardware.PCI
         /// <summary>
         /// The base address of the PCI device.
         /// </summary>
-        public PCIBaseAddressBar[] BaseAddresses { get; private set; }
+        public PCIBaseAddress[] BaseAddresses { get; private set; }
 
         /// <summary>
         /// The CardbusCISPointer of the device.
@@ -76,13 +76,13 @@ namespace Kernel.Hardware.PCI
         public PCIDeviceNormal(uint bus, uint slot, uint function)
             : base(bus, slot, function)
         {
-            BaseAddresses = new PCIBaseAddressBar[6];
-            BaseAddresses[0] = new PCIBaseAddressBar(ReadRegister32(0x10));
-            BaseAddresses[1] = new PCIBaseAddressBar(ReadRegister32(0x14));
-            BaseAddresses[2] = new PCIBaseAddressBar(ReadRegister32(0x18));
-            BaseAddresses[3] = new PCIBaseAddressBar(ReadRegister32(0x1C));
-            BaseAddresses[4] = new PCIBaseAddressBar(ReadRegister32(0x20));
-            BaseAddresses[5] = new PCIBaseAddressBar(ReadRegister32(0x24));
+            BaseAddresses = new PCIBaseAddress[6];
+            BaseAddresses[0] = new PCIBaseAddress(ReadRegister32(0x10), GetSize(0));
+            BaseAddresses[1] = new PCIBaseAddress(ReadRegister32(0x14), GetSize(1));
+            BaseAddresses[2] = new PCIBaseAddress(ReadRegister32(0x18), GetSize(2));
+            BaseAddresses[3] = new PCIBaseAddress(ReadRegister32(0x1C), GetSize(3));
+            BaseAddresses[4] = new PCIBaseAddress(ReadRegister32(0x20), GetSize(4));
+            BaseAddresses[5] = new PCIBaseAddress(ReadRegister32(0x24), GetSize(5));
 
             CardbusCISPointer = ReadRegister32(0x28);
 

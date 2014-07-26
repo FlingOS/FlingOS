@@ -17,25 +17,16 @@
 #endregion
     
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace Kernel.Compiler.ILOps
+namespace Kernel.Hardware.USB
 {
-    /// <summary>
-    /// Handles the <see cref="System.Reflection.Emit.OpCodes.Ldfld"/> and
-    /// <see cref="System.Reflection.Emit.OpCodes.Ldflda"/> IL ops.
-    /// </summary>
-    /// <remarks>
-    /// See MSDN for details of these ops.
-    /// </remarks>
-    /// <seealso cref="System.Reflection.Emit.OpCodes.Ldfld"/>
-    /// <seealso cref="System.Reflection.Emit.OpCodes.Ldflda"/>
-    [ILOpTarget(Target = ILOp.OpCodes.Ldfld)]
-    [ILOpTarget(Target = ILOp.OpCodes.Ldflda)]
-    public abstract class Ldfld : ILOp
+    public enum USBTransactionType
     {
+        USB_TT_SETUP, USB_TT_IN, USB_TT_OUT
+    }
+    public class USBTransaction : FOS_System.Object
+    {
+        public HCIs.HCTransaction data;
+        public USBTransactionType type;
     }
 }
