@@ -16,6 +16,9 @@
 /// ------------------------------------------------------------------------------ ///
 #endregion
     
+#define HCI_TRACE
+#undef HCI_TRACE
+
 using System;
 using Kernel.FOS_System.Collections;
 
@@ -53,7 +56,7 @@ namespace Kernel.Hardware.USB.HCIs
             }
         }
 
-        public void SetupTransfer(Devices.USBDevice usbDevice, USBTransfer transfer, USBTransferType type, byte endpoint, 
+        public void SetupTransfer(Devices.USBDeviceInfo usbDevice, USBTransfer transfer, USBTransferType type, byte endpoint, 
                                   ushort maxLength)
         {
             transfer.device = usbDevice;
@@ -81,9 +84,20 @@ namespace Kernel.Hardware.USB.HCIs
         {
             ushort clampedLength = FOS_System.Math.Min(transfer.packetSize, length);
             length -= clampedLength;
+#if HCI_TRACE || USB_TRACE
+            BasicConsole.WriteLine(((FOS_System.String)"transfer.packetSize=") + transfer.packetSize + 
+                                                       ", length=" + length);
+            BasicConsole.DelayOutput(1);
+#endif
             ushort remainingTransactions = (ushort)(length / transfer.packetSize);
+#if HCI_TRACE || USB_TRACE
+            BasicConsole.WriteLine("Division passed.");
+            BasicConsole.DelayOutput(1);
+#endif
             if (length % transfer.packetSize != 0)
+            {
                 remainingTransactions++;
+            }
 
             USBTransaction transaction = new USBTransaction();
             transaction.type = USBTransactionType.USB_TT_IN;
@@ -143,19 +157,15 @@ namespace Kernel.Hardware.USB.HCIs
         protected abstract void _OUTTransaction(USBTransfer transfer, USBTransaction uTransaction, bool toggle, void* buffer, ushort length);
         protected abstract void _IssueTransfer(USBTransfer transfer);
 
+        public abstract void Update();
+
         protected virtual void SetupUSBDevice(byte portNum)
         {
             HCPort port = GetPort(portNum);
-            port.device = USBManager.CreateDevice(this, port);
-            USBManager.SetupDevice(port.device, (byte)(portNum + 1));
+            port.deviceInfo = USBManager.CreateDeviceInfo(this, port);
+            USBManager.SetupDevice(port.deviceInfo, (byte)(portNum + 1));
         }
-        protected byte AddPort(Devices.USBDevice usbDevice)
-        {
-            HCPort port = new HCPort();
-            byte num = port.portNum = AquirePort(port);
-            return num;
-        }
-        protected HCPort GetPort(byte num)
+        public HCPort GetPort(byte num)
         {
             if (num < RootPortCount)
                 return (HCPort)RootPorts[num];
@@ -165,12 +175,21 @@ namespace Kernel.Hardware.USB.HCIs
             {
                 return (HCPort)OtherPorts[num];
             }
-            return null;
-        }
-        protected byte AquirePort(HCPort port)
-        {
-            OtherPorts.Add(port);
-            return (byte)(OtherPorts.Count - 1 + RootPortCount);
+            else
+            {
+                for (int i = OtherPorts.Count; i <= num; i++)
+                {
+                    OtherPorts.Add(new HCPort()
+                    {
+                        connected = false,
+                        deviceInfo = null,
+                        portNum = (byte)(i + RootPortCount),
+                        speed = USBPortSpeed.UNSET
+                    });
+                }
+            }
+
+            return (HCPort)OtherPorts[num];
         }
     }
 
@@ -185,7 +204,8 @@ namespace Kernel.Hardware.USB.HCIs
     }
     public class HCPort : FOS_System.Object
     {
-        public Devices.USBDevice device;
+        public Devices.USBDevice device = null;
+        public Devices.USBDeviceInfo deviceInfo = null;
         public bool connected = false;
         public byte portNum = 0;
         public USBPortSpeed speed = USBPortSpeed.UNSET;

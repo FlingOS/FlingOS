@@ -137,6 +137,16 @@ namespace Kernel
             Throw(new FOS_System.Exceptions.DivideByZeroException());
         }
         /// <summary>
+        /// Throws a divide by zero exception storing the specified exception address.
+        /// </summary>
+        /// <remarks>
+        /// Used by CPU interrupts to handle the creation of the exception object and calling Throw.
+        /// </remarks>
+        public static void Throw_DivideByZeroException(uint address)
+        {
+            Throw(new FOS_System.Exceptions.DivideByZeroException(address));
+        }
+        /// <summary>
         /// Throws an overflow exception.
         /// </summary>
         /// <remarks>

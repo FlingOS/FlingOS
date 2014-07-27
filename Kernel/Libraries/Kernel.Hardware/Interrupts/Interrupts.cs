@@ -16,6 +16,9 @@
 /// ------------------------------------------------------------------------------ ///
 #endregion
     
+#define INTERRUPTS_TRACE
+#undef INTERRUPTS_TRACE
+
 using System;
 using Kernel.FOS_System.Collections;
 
@@ -61,12 +64,12 @@ namespace Kernel.Hardware.Interrupts
         {
             if (Handlers[num] == null)
             {
-#if DEBUG
+#if INTERRUPTS_TRACE
                 BasicConsole.WriteLine("Creating new InterruptHandlers...");
 #endif
                 Handlers[num] = new InterruptHandlers();
             }
-#if DEBUG
+#if INTERRUPTS_TRACE
             BasicConsole.WriteLine(((FOS_System.String)"Adding new HandlerDescriptor... ISR: ") + num);
 #endif
             Handlers[num].HandlerDescrips.Add(new HandlerDescriptor()
@@ -74,7 +77,7 @@ namespace Kernel.Hardware.Interrupts
                 handler = handler,
                 data = data
             });
-#if DEBUG
+#if INTERRUPTS_TRACE
             BasicConsole.WriteLine("Added.");
 #endif
         }
@@ -83,7 +86,7 @@ namespace Kernel.Hardware.Interrupts
         {
             try
             {
-#if DEBUG
+#if INTERRUPTS_TRACE
                 BasicConsole.SetTextColour(BasicConsole.warning_colour);
                 BasicConsole.WriteLine(((FOS_System.String)"ISR: ") + ISRNum);
                 BasicConsole.SetTextColour(BasicConsole.default_colour);

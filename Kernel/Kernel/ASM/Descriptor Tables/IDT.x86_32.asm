@@ -202,7 +202,8 @@ jmp SkipIDTHandlers
 ; BEGIN - Proper exception handlers (i.e. they use the exceptions mechanism)
 
 Interrupt0Handler:
-call method_System_Void_RETEND_Kernel_ExceptionMethods_DECLEND_Throw_DivideByZeroException_NAMEEND___
+push dword [esp]
+call method_System_Void_RETEND_Kernel_ExceptionMethods_DECLEND_Throw_DivideByZeroException_NAMEEND__System_UInt32_
 
 Interrupt4Handler:
 call method_System_Void_RETEND_Kernel_ExceptionMethods_DECLEND_Throw_OverflowException_NAMEEND___
@@ -330,11 +331,6 @@ pic_remap:
 ; Remap IRQs 0-7    to    ISRs 32-39
 ; and   IRQs 8-15    to    ISRs 40-47
 
-    in al, 0x21         ;  save mask of PIC1_DATA
-    xchg al, ah
-    in al, 0xA1         ;  save mask of PIC2_DATA
-    push ax
-
     ; Remap IRQ 0-15 to 32-47 (see http://wiki.osdev.org/PIC#Initialisation)
     ; Interrupt Vectors 0x20 for IRQ 0 to 7 and 0x28 for IRQ 8 to 15
     mov al, 0x11        ; INIT command
@@ -358,11 +354,6 @@ pic_remap:
     dec al              ; al is now 0.
     out 0x21, al        ; set PIC1
     out 0xA1, al        ; set PIC2
-
-    pop ax
-    out 0xA1, al        ;  restore mask of PIC2_DATA
-    xchg al, ah
-    out 0x21, al        ;  restore mask of PIC1_DATA
 
 	mov ax, 0xFFDF		; Set interrupt mask to disable all interrupts
     out 0x21, al        ; Set mask of PIC1_DATA

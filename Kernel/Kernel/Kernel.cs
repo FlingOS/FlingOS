@@ -95,8 +95,14 @@ namespace Kernel
             FOS_System.GC.Cleanup();
 
             BasicConsole.SetTextColour(BasicConsole.error_colour);
+            BasicConsole.Write("GC num objs: ");
             BasicConsole.WriteLine(FOS_System.GC.NumObjs);
+            BasicConsole.Write("GC num strings: ");
             BasicConsole.WriteLine(FOS_System.GC.NumStrings);
+            BasicConsole.Write("Heap memory use: ");
+            BasicConsole.Write(Heap.FBlock->used * Heap.FBlock->bsize);
+            BasicConsole.Write(" / ");
+            BasicConsole.WriteLine(Heap.FBlock->size);
             BasicConsole.SetTextColour(BasicConsole.default_colour);
 
             BasicConsole.WriteLine("Fling OS Ended.");
@@ -107,6 +113,7 @@ namespace Kernel
             //So we just halt the CPU for want of a better solution later when ACPI is 
             //implemented.
             Halt();
+            //TODO: ACPI shutdown
         }
 
         /// <summary>
@@ -318,7 +325,7 @@ namespace Kernel
             BasicConsole.WriteLine(((FOS_System.String)"                              OHCIs : ") + Hardware.USB.USBManager.NumOHCIDevices);
             BasicConsole.WriteLine(((FOS_System.String)"                              EHCIs : ") + Hardware.USB.USBManager.NumEHCIDevices);
             BasicConsole.WriteLine(((FOS_System.String)"                              xHCIs : ") + Hardware.USB.USBManager.NumxHCIDevices);
-            BasicConsole.WriteLine(((FOS_System.String)"                        USB devices : ") + Hardware.USB.USBManager.NumUSBDevices);
+            BasicConsole.WriteLine(((FOS_System.String)"                        USB devices : ") + Hardware.USB.USBManager.Devices.Count);
         }
 
         /// <summary>

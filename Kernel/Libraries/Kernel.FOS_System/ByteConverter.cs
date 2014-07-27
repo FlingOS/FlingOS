@@ -129,6 +129,27 @@ namespace Kernel.FOS_System
         [Compiler.NoDebug]
         public static FOS_System.String GetASCIIStringFromUTF16(byte[] n, UInt32 aStart, UInt32 aCharCount)
         {
+            //If you change this method, change the pointer version below too.
+
+            FOS_System.String result = FOS_System.String.New((int)aCharCount);
+            for (int i = 0; i < aCharCount; i++)
+            {
+                UInt32 pos = (UInt32)(aStart + (i * 2));
+                UInt16 aChar = (UInt16)(n[pos + 1] << 8 | n[pos]);
+                if (aChar == 0)
+                {
+                    return result.Substring(0, i);
+                }
+                result[i] = (char)aChar;
+            }
+
+            return result;
+        }
+
+        public unsafe static FOS_System.String GetASCIIStringFromUTF16(byte* n, UInt32 aStart, UInt32 aCharCount)
+        {
+            //If you change this method, change the array version above too.
+
             FOS_System.String result = FOS_System.String.New((int)aCharCount);
             for (int i = 0; i < aCharCount; i++)
             {

@@ -71,6 +71,7 @@
     <Compile Include="PCI\PCIDeviceCardbus.cs" />
     <Compile Include="PCI\PCIDeviceNormal.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="USB\Devices\MassStorageDevice.cs" />
     <Compile Include="USB\Devices\USBDevice.cs" />
     <Compile Include="USB\HCIs\EHCI.cs" />
     <Compile Include="USB\HCIs\EHCITesting.cs" />

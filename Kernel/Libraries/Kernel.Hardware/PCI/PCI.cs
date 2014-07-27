@@ -37,7 +37,7 @@ namespace Kernel.Hardware.PCI
         internal static IO.IOPort ConfigDataPort = new IO.IOPort(0xCFC);
 
         /// <summary>
-        /// List of all the PCI device found.
+        /// List of all the PCI devices found.
         /// </summary>
         public static List Devices = new List();
 

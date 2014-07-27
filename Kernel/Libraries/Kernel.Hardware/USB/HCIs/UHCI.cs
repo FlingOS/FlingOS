@@ -174,18 +174,18 @@ namespace Kernel.Hardware.USB.HCIs
         public UHCI(PCI.PCIDeviceNormal aPCIDevice)
             : base(aPCIDevice)
         {
-#if DEBUG
+#if UHCI_TRACE
             DBGMSG(">>> UHCI Constructor <<<");
 #endif
 
             PCI.PCIBaseAddress pciBAR = pciDevice.BaseAddresses[4];
             usbBaseAddress = (byte*)((uint)pciBAR.BaseAddress() & 0xFFFFFFF0);
-#if DEBUG
+#if UHCI_TRACE
             DBGMSG("usbBaseAddress: " + (FOS_System.String)(uint)usbBaseAddress);
 #endif
 
             memSize = pciBAR.Size();
-#if DEBUG
+#if UHCI_TRACE
             DBGMSG("memSize: " + (FOS_System.String)memSize);
 #endif
 
@@ -200,7 +200,7 @@ namespace Kernel.Hardware.USB.HCIs
             PORTSC1 = new IO.IOPort((UInt16)usbBaseAddress, UHCI_Consts.UHCI_PORTSC1);
             PORTSC2 = new IO.IOPort((UInt16)usbBaseAddress, UHCI_Consts.UHCI_PORTSC2);
 
-#if DEBUG
+#if UHCI_TRACE
             DBGMSG("USBCMD: " + (FOS_System.String)USBCMD.Port);
             DBGMSG("USBINTR: " + (FOS_System.String)USBINTR.Port);
             DBGMSG("USBSTS: " + (FOS_System.String)USBSTS.Port);
@@ -213,10 +213,13 @@ namespace Kernel.Hardware.USB.HCIs
             Start();
         }
 
+        public override void Update()
+        {
+        }
 
         protected void Start()
         {
-#if DEBUG
+#if UHCI_TRACE
             DBGMSG(">>> startUHCI <<<");
 #endif
 
@@ -225,7 +228,7 @@ namespace Kernel.Hardware.USB.HCIs
 
         protected void InitHC()
         {
-#if DEBUG
+#if UHCI_TRACE
             DBGMSG(">>> initUHCIHostController <<<");
             DBGMSG("Initialize UHCI Host Controller:");
 #endif
@@ -239,14 +242,14 @@ namespace Kernel.Hardware.USB.HCIs
 
         protected void ResetHC()
         {
-#if DEBUG
+#if UHCI_TRACE
             DBGMSG(">>> uhci_resetHostController <<<");
 #endif
 
             // http://www.lowlevel.eu/wiki/Universal_Host_Controller_Interface#Informationen_vom_PCI-Treiber_holen
 
             ushort legacySupport = pciDevice.ReadRegister16(UHCI_Consts.UHCI_PCI_LEGACY_SUPPORT);
-#if DEBUG
+#if UHCI_TRACE
             DBGMSG(((FOS_System.String)"legacySupport : ") + legacySupport);
 #endif
 
@@ -274,7 +277,7 @@ namespace Kernel.Hardware.USB.HCIs
             
             ushort uhci_usbcmd = USBCMD.Read_UInt16();
             ushort uhci_usbintr = USBINTR.Read_UInt16();
-#if DEBUG
+#if UHCI_TRACE
             DBGMSG(((FOS_System.String)"UHCI root ports: ") + RootPortCount);
             DBGMSG(((FOS_System.String)"USBCMD: ") + uhci_usbcmd);
             DBGMSG(((FOS_System.String)"USBINTR: ") + uhci_usbintr);
@@ -288,7 +291,7 @@ namespace Kernel.Hardware.USB.HCIs
                  ((uhci_usbcmd & UHCI_Consts.UHCI_CMD_EGSM) == 0) ||
                  ((uhci_usbintr & UHCI_Consts.UHCI_INT_MASK) != 0))
             {
-#if DEBUG
+#if UHCI_TRACE
                 DBGMSG("Resetting HC...");
 #endif
 
@@ -303,7 +306,7 @@ namespace Kernel.Hardware.USB.HCIs
                 {
                     if (timeout == 0)
                     {
-#if DEBUG
+#if UHCI_TRACE
                         DBGMSG("USBCMD_HCRESET timed out!");
 #endif
                         break;
@@ -312,7 +315,7 @@ namespace Kernel.Hardware.USB.HCIs
                     timeout--;
                     Reset = (USBCMD.Read_UInt16() & UHCI_Consts.UHCI_CMD_HCRESET) != 0;
                 }
-#if DEBUG
+#if UHCI_TRACE
                 DBGMSG(((FOS_System.String)"Reset : ") + Reset);
 #endif
 
@@ -323,7 +326,7 @@ namespace Kernel.Hardware.USB.HCIs
                 {
                     WritePort_SC1_16(i, (ushort)0u);
                 }
-#if DEBUG
+#if UHCI_TRACE
                 DBGMSG("HC reset.");
 #endif
             }
@@ -366,7 +369,7 @@ namespace Kernel.Hardware.USB.HCIs
             USBCMD.Write((ushort)(UHCI_Consts.UHCI_CMD_RS | UHCI_Consts.UHCI_CMD_CF | UHCI_Consts.UHCI_CMD_MAXP));
             sleepMilliSeconds(100);
 
-#if DEBUG
+#if UHCI_TRACE
             DBGMSG(((FOS_System.String)"Root-Ports   port1: ") + ReadPort_SC1_16(0) +
                                                   "  port2: " + ReadPort_SC2_16(0));
 #endif
@@ -375,12 +378,12 @@ namespace Kernel.Hardware.USB.HCIs
 
             if ((USBSTS.Read_UInt16() & UHCI_Consts.UHCI_STS_HCHALTED) == 0)
             {
-#if DEBUG
+#if UHCI_TRACE
                 DBGMSG(((FOS_System.String)"RunStop bit: ") + run);
 #endif
                 //TODO: uhci_enablePorts(u); // attaches the ports
             }
-#if DEBUG
+#if UHCI_TRACE
             else
             {
                 DBGMSG("Fatal Error: UHCI - HCHalted. Ports will not be enabled.");
@@ -393,7 +396,7 @@ namespace Kernel.Hardware.USB.HCIs
         
         protected void EnablePorts()
         {
-#if DEBUG
+#if UHCI_TRACE
             DBGMSG(">>> uhci_enablePorts <<<");
 #endif
 
@@ -411,7 +414,7 @@ namespace Kernel.Hardware.USB.HCIs
             for (byte j = 0; j < RootPortCount; j++)
             {
                 ushort val = ReadPort_SC1_16(j);
-#if DEBUG
+#if UHCI_TRACE
                 DBGMSG(((FOS_System.String)"port ") + (j + 1) + ": " + val);
 #endif
                 AnalysePortStatus(j, val);
@@ -432,7 +435,7 @@ namespace Kernel.Hardware.USB.HCIs
                 timeout--;
                 if (timeout == 0)
                 {
-#if DEBUG
+#if UHCI_TRACE
                     DBGMSG(((FOS_System.String)"Timeour Error: Port ") + (port + 1) + " did not reset! ");
                     DBGMSG(((FOS_System.String)"Port Status: ") + ReadPort_SC1_16(port));
                     BasicConsole.DelayOutput(5);
@@ -450,7 +453,7 @@ namespace Kernel.Hardware.USB.HCIs
                                             UHCI_Consts.UHCI_PORT_ENABLE));       // set Enable-Bit
             sleepMilliSeconds(10);
 
-#if DEBUG
+#if UHCI_TRACE
             DBGMSG(((FOS_System.String)"Port Status: ") + ReadPort_SC1_16(port));
             BasicConsole.DelayOutput(5);
 #endif
@@ -466,7 +469,7 @@ namespace Kernel.Hardware.USB.HCIs
 
             if (val == 0) // Interrupt came from another UHCI device
             {
-#if DEBUG
+#if UHCI_TRACE
                 DBGMSG("Interrupt came from another UHCI device!");
 #endif
                 return;
@@ -474,14 +477,14 @@ namespace Kernel.Hardware.USB.HCIs
 
             if ((val & UHCI_Consts.UHCI_STS_USBINT) == 0)
             {
-#if DEBUG
+#if UHCI_TRACE
                 DBGMSG("USB UHCI Interrupt");
 #endif
             }
 
             if ((val & UHCI_Consts.UHCI_STS_USBINT) != 0)
             {
-#if DEBUG
+#if UHCI_TRACE
                 DBGMSG(((FOS_System.String)"Frame: ") + FRNUM.Read_UInt16() + " - USB transaction completed");
 #endif
                 USBSTS.Write((ushort)UHCI_Consts.UHCI_STS_USBINT); // reset interrupt
@@ -489,7 +492,7 @@ namespace Kernel.Hardware.USB.HCIs
 
             if ((val & UHCI_Consts.UHCI_STS_RESUME_DETECT) != 0)
             {
-#if DEBUG
+#if UHCI_TRACE
                 DBGMSG("Resume Detect");
 #endif
                 USBSTS.Write((ushort)UHCI_Consts.UHCI_STS_RESUME_DETECT); // reset interrupt
@@ -497,7 +500,7 @@ namespace Kernel.Hardware.USB.HCIs
 
             if ((val & UHCI_Consts.UHCI_STS_HCHALTED) != 0)
             {
-#if DEBUG
+#if UHCI_TRACE
                 DBGMSG("Host Controller Halted");
 #endif
                 USBSTS.Write((ushort)UHCI_Consts.UHCI_STS_HCHALTED); // reset interrupt
@@ -505,7 +508,7 @@ namespace Kernel.Hardware.USB.HCIs
 
             if ((val & UHCI_Consts.UHCI_STS_HC_PROCESS_ERROR) != 0)
             {
-#if DEBUG
+#if UHCI_TRACE
                 DBGMSG("Host Controller Process Error");
 #endif
                 USBSTS.Write((ushort)UHCI_Consts.UHCI_STS_HC_PROCESS_ERROR); // reset interrupt
@@ -513,7 +516,7 @@ namespace Kernel.Hardware.USB.HCIs
 
             if ((val & UHCI_Consts.UHCI_STS_USB_ERROR) != 0)
             {
-#if DEBUG
+#if UHCI_TRACE
                 DBGMSG("USB Error");
 #endif
                 USBSTS.Write((ushort)UHCI_Consts.UHCI_STS_USB_ERROR); // reset interrupt
@@ -521,7 +524,7 @@ namespace Kernel.Hardware.USB.HCIs
 
             if ((val & UHCI_Consts.UHCI_STS_HOST_SYSTEM_ERROR) != 0)
             {
-#if DEBUG
+#if UHCI_TRACE
                 DBGMSG("Host System Error");
 #endif
                 USBSTS.Write((ushort)UHCI_Consts.UHCI_STS_HOST_SYSTEM_ERROR); // reset interrupt
@@ -531,6 +534,7 @@ namespace Kernel.Hardware.USB.HCIs
 
         protected static void ShowPortState(ushort val)
         {
+#if UHCI_TRACE
             if ((val & UHCI_Consts.UHCI_PORT_RESET) != 0) { DBGMSG(" - RESET"); }
 
             if ((val & UHCI_Consts.UHCI_SUSPEND) != 0) { DBGMSG(" - SUSPEND"); }
@@ -547,6 +551,7 @@ namespace Kernel.Hardware.USB.HCIs
             if ((val & UHCI_Consts.UHCI_PORT_CS_CHANGE) != 0) { DBGMSG(" - DEVICE CHANGE"); }
             if ((val & UHCI_Consts.UHCI_PORT_CS) != 0) { DBGMSG(" - DEVICE ATTACHED"); }
             else { DBGMSG(" - NO DEVICE ATTACHED"); }
+#endif
         }
 
         protected void AnalysePortStatus(byte j, ushort val)
@@ -554,14 +559,14 @@ namespace Kernel.Hardware.USB.HCIs
             HCPort port = GetPort(j);
             if ((val & UHCI_Consts.UHCI_PORT_LOWSPEED_DEVICE) != 0)
             {
-#if DEBUG
+#if UHCI_TRACE
                 DBGMSG("Low-speed device");
 #endif
                 port.speed = USBPortSpeed.Low;
             }
             else
             {
-#if DEBUG
+#if UHCI_TRACE
                 DBGMSG("Full-speed device");
 #endif
                 port.speed = USBPortSpeed.Full;
@@ -569,12 +574,12 @@ namespace Kernel.Hardware.USB.HCIs
 
             if (((val & UHCI_Consts.UHCI_PORT_CS) != 0) && !port.connected)
             {
-#if DEBUG
+#if UHCI_TRACE
                 DBGMSG(" - attached.");
 #endif
                 port.connected = true;
                 ResetPort(j);      // reset on attached
-#if DEBUG
+#if UHCI_TRACE
                 BasicConsole.DelayOutput(2);
 #endif
 
@@ -582,18 +587,17 @@ namespace Kernel.Hardware.USB.HCIs
             }
             else if (port.connected)
             {
-#if DEBUG
+#if UHCI_TRACE
                 DBGMSG(" - removed.");
 #endif
                 port.connected = false;
 
-                if (port.device != null)
+                if (port.deviceInfo != null)
                 {
-                    port.device.Destroy();
-                    port.device = null;
+                    port.deviceInfo.FreePort();
                 }
             }
-#if DEBUG
+#if UHCI_TRACE
             ShowPortState(val);
 #endif
         }
@@ -649,7 +653,7 @@ namespace Kernel.Hardware.USB.HCIs
 
         //    uT->TD = uhci_createTD_SETUP(u, transfer->data, 1, toggle, tokenBytes, type, req, hiVal, loVal, i, length, &uT->TDBuffer, transfer->device->num, transfer->endpoint, transfer->packetSize);
 
-        //#if DEBUG
+        //#if UHCI_TRACE
         //    usb_request_t* request = (usb_request_t*)uT->TDBuffer;
         //    DBGMSG("type: %u req: %u valHi: %u valLo: %u i: %u len: %u", request->type, request->request, request->valueHi, request->valueLo, request->index, request->length);
         //#endif
@@ -731,7 +735,7 @@ namespace Kernel.Hardware.USB.HCIs
 
         //    for (byte i = 0; i < NUMBER_OF_UHCI_RETRIES && !transfer->success; i++)
         //    {
-        //#if DEBUG
+        //#if UHCI_TRACE
         //        DBGMSG("transfer try = %u", i);
         //#endif
 
@@ -745,7 +749,7 @@ namespace Kernel.Hardware.USB.HCIs
         //        // run transactions
         //        for (dlelement_t* elem = transfer->transactions.head; elem != 0; elem = elem->next)
         //        {
-        //#if DEBUG
+        //#if UHCI_TRACE
         //            ushort num = inportw(u->bar + UHCI_FRNUM);
         //            DBGMSG("FRBADDR: %X  frame pointer: %X frame number: %u", inportl(u->bar + UHCI_FRBASEADD), u->framelistAddrVirt->frPtr[num], num);
         //#endif
@@ -770,7 +774,7 @@ namespace Kernel.Hardware.USB.HCIs
         //            }
         //        }
 
-        //#if DEBUG
+        //#if UHCI_TRACE
         //        DBGMSG("QH: %X  QH->transfer: %X", paging_getPhysAddr(transfer->data), ((uhciQH_t*)transfer->data)->transfer);
 
         //        for (dlelement_t* elem = transfer->transactions.head; elem != 0; elem = elem->next)
@@ -782,7 +786,7 @@ namespace Kernel.Hardware.USB.HCIs
 
         //        if (transfer->success)
         //        {
-        //#if DEBUG
+        //#if UHCI_TRACE
         //            textColor(SUCCESS);
         //            DBGMSG("Transfer successful.");
         //            textColor(TEXT);
@@ -922,7 +926,7 @@ namespace Kernel.Hardware.USB.HCIs
         //    textColor(GRAY);
         //    if (TD->active)            DBGMSG("active");                  // 1: HC will execute   0: set by HC after excution (HC will not excute next time)
 
-        //#if DEBUG
+        //#if UHCI_TRACE
         //    textColor(IMPORTANT);
         //    if (TD->intOnComplete)     DBGMSG("interrupt on complete");   // 1: HC issues interrupt on completion of the frame in which the TD is executed
         //    if (TD->isochrSelect)      DBGMSG("isochronous TD");          // 1: Isochronous TD
@@ -967,7 +971,7 @@ namespace Kernel.Hardware.USB.HCIs
             ExceptionMethods.Throw(new FOS_System.Exceptions.NotSupportedException("UHCI method not implemented."));
         }
         
-#if DEBUG
+#if UHCI_TRACE
         private static void DBGMSG(FOS_System.String msg)
         {
             BasicConsole.WriteLine(msg);

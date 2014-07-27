@@ -224,6 +224,30 @@ namespace Kernel.FOS_System
             return Alloc(size, 1);
         }
         /// <summary>
+        /// Attempts to allocate the specified amount of memory from the heap and then zero all of it.
+        /// </summary>
+        /// <param name="size">The amount of memory to try and allocate.</param>
+        /// <returns>A pointer to the start of the allocated memory or a null pointer if not enough 
+        /// contiguous memory is available.</returns>
+        [Compiler.NoDebug]
+        [Compiler.NoGC]
+        public static void* AllocZeroed(UInt32 size)
+        {
+            return AllocZeroed(size, 1);
+        }
+        /// <summary>
+        /// Attempts to allocate the specified amount of memory from the heap and then zero all of it.
+        /// </summary>
+        /// <param name="size">The amount of memory to try and allocate.</param>
+        /// <returns>A pointer to the start of the allocated memory or a null pointer if not enough 
+        /// contiguous memory is available.</returns>
+        [Compiler.NoDebug]
+        [Compiler.NoGC]
+        public static void* AllocZeroed(UInt32 size, UInt32 boundary)
+        {
+            return Utilities.MemoryUtils.ZeroMem(Alloc(size, boundary), size);
+        }
+        /// <summary>
         /// Attempts to allocate the specified amount of memory from the heap.
         /// </summary>
         /// <param name="size">The amount of memory to try and allocate.</param>

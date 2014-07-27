@@ -36,5 +36,16 @@ namespace Kernel.Utilities
                 dest[i] = src[i];
             }
         }
+
+        public static void* ZeroMem(void* ptr, uint size)
+        {
+            byte* bPtr = (byte*)ptr;
+            byte* bEndPtr = ((byte*)ptr) + size;
+            while (bPtr < bEndPtr)
+            {
+                *bPtr++ = 0;
+            }
+            return ptr;
+        }
     }
 }

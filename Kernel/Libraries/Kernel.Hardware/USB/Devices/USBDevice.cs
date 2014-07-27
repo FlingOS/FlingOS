@@ -23,6 +23,25 @@ namespace Kernel.Hardware.USB.Devices
 {
     public class USBDevice : Device
     {
+        protected USBDeviceInfo DeviceInfo;
+
+        public USBDevice(USBDeviceInfo aDeviceInfo)
+        {
+            DeviceInfo = aDeviceInfo;
+
+            DeviceManager.Devices.Add(this);
+            USBManager.Devices.Add(this);
+        }
+
+        public virtual void Destroy()
+        {
+            DeviceManager.Devices.Remove(this);
+            USBManager.Devices.Remove(this);
+        }
+    }
+    public class USBDeviceInfo : FOS_System.Object
+    {
+        public byte portNum;
         public byte num;
         public HCIs.HCI hc;
         public List Endpoints;
@@ -45,18 +64,27 @@ namespace Kernel.Hardware.USB.Devices
 
         public FOS_System.String SerialNumber;
 
-        public byte MSDInterfaceNum;
+        public byte MSD_InterfaceNum;
+        public byte MSD_INEndpointID;
+        public byte MSD_OUTEndpointID;
 
-        public USBDevice()
+        public USBDeviceInfo(byte aPortNum, HCIs.HCI aHC)
         {
-            DeviceManager.Devices.Add(this);
-            USBManager.NumUSBDevices++;
+            portNum = aPortNum;
+            hc = aHC;
         }
 
-        public void Destroy()
+        public void FreePort()
         {
-            DeviceManager.Devices.Remove(this);
-            USBManager.NumUSBDevices--;
+            HCIs.HCPort port = hc.GetPort(portNum);
+            if (port.device != null)
+            {
+                port.device.Destroy();
+                port.device = null;
+            }
+            port.deviceInfo = null;
+            port.connected = false;
+            port.speed = HCIs.USBPortSpeed.UNSET;
         }
     }
 }

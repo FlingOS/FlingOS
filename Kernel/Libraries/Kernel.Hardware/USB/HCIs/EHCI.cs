@@ -15,18 +15,19 @@
 ///                                                                                ///
 /// ------------------------------------------------------------------------------ ///
 #endregion
-    
-/* ****** */
-/* USBCMD */
-/* ****** */
+
+#define EHCI_TRACE
+#undef EHCI_TRACE
 
 using System;
 using Kernel.FOS_System.Collections;
 using Kernel.Hardware.USB.Devices;
 using Utils = Kernel.Utilities.ConstantsUtils;
+using Kernel.Utilities;
 
 namespace Kernel.Hardware.USB.HCIs
 {
+    #region Constants
     public class EHCI_Consts
     {
         /* ****** */
@@ -131,6 +132,7 @@ namespace Kernel.Hardware.USB.HCIs
         public const byte IN = 1;
         public const byte SETUP = 2;
     }
+    #endregion
 
     /// <summary>
     /// Represents a USB Extended Host Controller Interface
@@ -1002,6 +1004,7 @@ namespace Kernel.Hardware.USB.HCIs
 
         #endregion
 
+        protected bool AnyPortsChanged = false;
         protected bool EnabledPortFlag = false;
         protected int USBIntCount = 0;
         protected EHCI_QueueHead_Struct* IdleQueueHead = null;
@@ -1028,11 +1031,11 @@ namespace Kernel.Hardware.USB.HCIs
 
             usbBaseAddress = (byte*)((uint)pciDevice.BaseAddresses[0].BaseAddress() & 0xFFFFFF00);
             CapabilitiesRegAddr = usbBaseAddress;
-#if DEBUG
+#if EHCI_TRACE
             DBGMSG("CapabilitiesRegAddr: " + (FOS_System.String)(uint)CapabilitiesRegAddr);
 #endif
             SBRN = pciDevice.ReadRegister8(0x60);
-#if DEBUG
+#if EHCI_TRACE
             DBGMSG("SBRN: " + (FOS_System.String)SBRN);
 #endif
 
@@ -1044,7 +1047,7 @@ namespace Kernel.Hardware.USB.HCIs
             
             OpRegAddr = (uint*)(usbBaseAddress + CapabilitiesRegsLength);
             
-#if DEBUG
+#if EHCI_TRACE
             DBGMSG("CapabilitiesRegsLength: " + (FOS_System.String)CapabilitiesRegsLength);
             DBGMSG("HCIVersion: " + (FOS_System.String)HCIVersion);
             DBGMSG("HCSParams: " + (FOS_System.String)HCSParams);
@@ -1057,6 +1060,15 @@ namespace Kernel.Hardware.USB.HCIs
 
             Start();
         }
+
+        public override void Update()
+        {
+            if (AnyPortsChanged)
+            {
+                PortCheck();
+            }
+        }
+
         protected void Start()
         {
             InitHC();
@@ -1067,7 +1079,7 @@ namespace Kernel.Hardware.USB.HCIs
             if (!HCHalted)
             {
                 EnablePorts();
-#if DEBUG
+#if EHCI_TRACE
                 DBGMSG("USB ports enabled.");
 #endif
             }
@@ -1080,12 +1092,12 @@ namespace Kernel.Hardware.USB.HCIs
         {
             pciDevice.Command = pciDevice.Command | PCI.PCIDevice.PCICommand.Memory | PCI.PCIDevice.PCICommand.Master;
 
-#if DEBUG
+#if EHCI_TRACE
             DBGMSG("Hooking IRQ...");
 #endif
             //Setup InterruptHandler (IRQ number = PCIDevice.InterruptLine)
             Interrupts.Interrupts.SetIRQHandler(pciDevice.InterruptLine, EHCI.InterruptHandler, this);
-#if DEBUG
+#if EHCI_TRACE
             DBGMSG("Hooked IRQ.");
 #endif
         }
@@ -1136,7 +1148,7 @@ namespace Kernel.Hardware.USB.HCIs
                 if (timeout==0)
                 {
                     //ExceptionMethods.Throw(new FOS_System.Exception("EHCI.Reset(): Timeout! USBCMD Reset bit not cleared!"));
-#if DEBUG
+#if EHCI_TRACE
                     DBGMSG("EHCI.Reset(): Timeout! USBCMD Reset bit not cleared!");
 #endif
                     break;
@@ -1147,7 +1159,7 @@ namespace Kernel.Hardware.USB.HCIs
         {
             byte eecp = EECP;
 
-#if DEBUG
+#if EHCI_TRACE
             DBGMSG(((FOS_System.String)"DeactivateLegacySupport: eecp = ") + eecp);
 #endif
             /*
@@ -1169,11 +1181,11 @@ namespace Kernel.Hardware.USB.HCIs
 
                 while (eecp != 0) // 00h indicates end of the ext. cap. list.
                 {
-#if DEBUG
+#if EHCI_TRACE
                     DBGMSG(((FOS_System.String)"eecp = ") + eecp);
 #endif
                     eecp_id = pciDevice.ReadRegister8(eecp);
-#if DEBUG
+#if EHCI_TRACE
                     DBGMSG(((FOS_System.String)"eecp_id = ") + eecp_id);
 #endif
                     if (eecp_id == 1)
@@ -1189,7 +1201,7 @@ namespace Kernel.Hardware.USB.HCIs
                 // Legacy-Support-EC found? BIOS-Semaphore set?
                 if (eecp_id == 1 && (pciDevice.ReadRegister8(BIOSownedSemaphore) & 0x01) != 0)
                 {
-#if DEBUG
+#if EHCI_TRACE
                     DBGMSG("set OS-Semaphore.");
 #endif
                     pciDevice.WriteRegister8(OSownedSemaphore, 0x01);
@@ -1204,7 +1216,7 @@ namespace Kernel.Hardware.USB.HCIs
                     }
                     if ((pciDevice.ReadRegister8(BIOSownedSemaphore) & 0x01) == 0) // not set
                     {
-#if DEBUG
+#if EHCI_TRACE
                         DBGMSG("BIOS-Semaphore being cleared.");
 #endif
                         timeout = 250;
@@ -1215,7 +1227,7 @@ namespace Kernel.Hardware.USB.HCIs
                                 ;
                         }
                     }
-#if DEBUG
+#if EHCI_TRACE
                     if ((pciDevice.ReadRegister8(OSownedSemaphore) & 0x01) != 0)
                     {
                         DBGMSG("OS-Semaphore being set.");
@@ -1228,7 +1240,7 @@ namespace Kernel.Hardware.USB.HCIs
                     // The OS tries to set SMI to disabled in case that BIOS bit stays at one.
                     pciDevice.WriteRegister32(USBLEGCTLSTS, 0x0); // USB SMI disabled
                 }
-              #if DEBUG
+              #if EHCI_TRACE
                 else
                 {
                     DBGMSG("BIOS did not own the EHCI. No action needed.");
@@ -1239,11 +1251,14 @@ namespace Kernel.Hardware.USB.HCIs
                 DBGMSG("No valid eecp found.");
           #endif
             }
+
+#if EHCI_TRACE
             BasicConsole.DelayOutput(2);
+#endif
         }
         protected void EnablePorts()
         {
-#if DEBUG
+#if EHCI_TRACE
             DBGMSG("Enabling ports...");
 #endif
             for (byte i = 0; i < RootPortCount; i++)
@@ -1253,18 +1268,18 @@ namespace Kernel.Hardware.USB.HCIs
                         portNum = i
                     });
             }
-#if DEBUG
+#if EHCI_TRACE
             DBGMSG("Added root ports.");
 #endif
             EnabledPortFlag = true;
-#if DEBUG
+#if EHCI_TRACE
             DBGMSG("Checking line statuses...");
 #endif
             for (byte i = 0; i < RootPortCount; i++)
             {
                 CheckPortLineStatus(i);
             }
-#if DEBUG
+#if EHCI_TRACE
             DBGMSG("Checked port line statuses.");
 #endif
         }
@@ -1300,7 +1315,7 @@ namespace Kernel.Hardware.USB.HCIs
                 {
                     //ExceptionMethods.Throw(new FOS_System.Exception("EHCI.ResetPort(): Port not reset!"));
 
-#if DEBUG
+#if EHCI_TRACE
                     DBGMSG("EHCI.ResetPort(): Port not reset!");
 #endif
                     break;
@@ -1320,9 +1335,7 @@ namespace Kernel.Hardware.USB.HCIs
         }
         protected void InterruptHandler()
         {
-            bool doPortCheck = false;
-
-#if DEBUG
+#if EHCI_TRACE
             DBGMSG("EHCI Interrupt Handler called");
 #endif
 
@@ -1330,14 +1343,14 @@ namespace Kernel.Hardware.USB.HCIs
             uint val = USBSTS;
             if (val == 0)
             {
-#if DEBUG
+#if EHCI_TRACE
                 DBGMSG("Interrupt ignored.");
 #endif
                 return;
             }
             USBSTS = val; //Reset interrupt
 
-#if DEBUG
+#if EHCI_TRACE
             if((val & EHCI_Consts.STS_USBERRINT) != 0u)
             {
                 USBIntCount--;
@@ -1350,7 +1363,7 @@ namespace Kernel.Hardware.USB.HCIs
             {
                 if (EnabledPortFlag && pciDevice != null)
                 {
-                    doPortCheck = true;
+                    AnyPortsChanged = true;
                 }
             }
 
@@ -1366,26 +1379,18 @@ namespace Kernel.Hardware.USB.HCIs
                 {
                     USBIntCount--;
                 }
-#if DEBUG
+#if EHCI_TRACE
                 DBGMSG(((FOS_System.String)"EHCI: USB Interrupt occurred! USBIntCount: ") + USBIntCount);
 #endif
-                //if (USBIntCount != 0)
-                //{
-                //    USBCMD |= EHCI_Consts.CMD_ASYNCH_INT_DOORBELL; // Activate Doorbell: We would like to receive an asynchronous schedule interrupt
-                //}
             }
 
-#if DEBUG
+#if EHCI_TRACE
             BasicConsole.DelayOutput(5);
 #endif
-
-            if (doPortCheck)
-            {
-                //TODO: Uncomment this: PortCheck();
-            }
         }
         protected void PortCheck()
         {
+            AnyPortsChanged = false;
             for (byte j = 0; j < RootPortCount; j++)
             {
                 if ((PORTSC[j] & EHCI_Consts.PSTS_CONNECTED_CHANGE) != 0)
@@ -1399,21 +1404,21 @@ namespace Kernel.Hardware.USB.HCIs
                     {
                         PORTSC[j] &= ~EHCI_Consts.PSTS_COMPANION_HC_OWNED; // port is given back to the EHCI
 
-                        if (((HCPort)RootPorts[j]).device != null)
+                        if (((HCPort)RootPorts[j]).deviceInfo != null)
                         {
-                            ((HCPort)RootPorts[j]).device.Destroy();
-                            ((HCPort)RootPorts[j]).device = null;
+                            ((HCPort)RootPorts[j]).deviceInfo.FreePort();
                         }
 
                     }
                 }
             }
+            AnyPortsChanged = false;
         }
         protected void CheckPortLineStatus(byte portNum)
         {
             if ((PORTSC[portNum] & EHCI_Consts.PSTS_CONNECTED) == 0)
             {
-#if DEBUG
+#if EHCI_TRACE
                 DBGMSG("Port not connected.");
 #endif
                 return;
@@ -1424,7 +1429,7 @@ namespace Kernel.Hardware.USB.HCIs
             switch (lineStatus)
             {
                 case 1: // K-state, release ownership of port, because a low speed device is attached
-#if DEBUG
+#if EHCI_TRACE
                     DBGMSG("Low-speed device attached. Releasing port.");
 #endif
                     PORTSC[portNum] |= EHCI_Consts.PSTS_COMPANION_HC_OWNED; // release it to the cHC
@@ -1438,41 +1443,41 @@ namespace Kernel.Hardware.USB.HCIs
         }
         protected void DetectDevice(byte portNum)
         {
-#if DEBUG
+#if EHCI_TRACE
             DBGMSG("Detecting device...");
 #endif
             ResetPort(portNum);
-#if DEBUG
+#if EHCI_TRACE
             DBGMSG("Reset port.");
 #endif
             if (EnabledPortFlag && ((PORTSC[portNum] & EHCI_Consts.PSTS_POWERON) != 0)) // power on
             {
-#if DEBUG
+#if EHCI_TRACE
                 DBGMSG("Device powered on.");
 #endif
                 if ((PORTSC[portNum] & EHCI_Consts.PSTS_ENABLED) != 0) // High speed
                 {
-#if DEBUG
+#if EHCI_TRACE
                     DBGMSG("Setting up USB device.");
 #endif
                     SetupUSBDevice(portNum);
                 }
                 else // Full speed
                 {
-#if DEBUG
+#if EHCI_TRACE
                     DBGMSG("Full-speed device attached. Releasing port.");
                     BasicConsole.DelayOutput(2);
 #endif
                     PORTSC[portNum] |= EHCI_Consts.PSTS_COMPANION_HC_OWNED; // release it to the cHC
                 }
             }
-#if DEBUG
+#if EHCI_TRACE
             DBGMSG("End DetectDevice()");
 #endif
         }
         protected override void _SetupTransfer(USBTransfer transfer)
         {
-            transfer.data = (EHCI_QueueHead_Struct*)ZeroMem(FOS_System.Heap.Alloc((uint)sizeof(EHCI_QueueHead_Struct), 32), sizeof(EHCI_QueueHead_Struct));
+            transfer.data = (EHCI_QueueHead_Struct*)FOS_System.Heap.AllocZeroed((uint)sizeof(EHCI_QueueHead_Struct), 32);
         }
         protected override void _SETUPTransaction(USBTransfer transfer, USBTransaction uTransaction, bool toggle, ushort tokenBytes,
                                            byte type, byte req, byte hiVal, byte loVal, ushort index, ushort length)
@@ -1498,22 +1503,21 @@ namespace Kernel.Hardware.USB.HCIs
             EHCITransaction eTransaction = new EHCITransaction();
             uTransaction.data = eTransaction;
             eTransaction.inBuffer = buffer;
-#if DEBUG
+#if EHCI_TRACE
             DBGMSG(((FOS_System.String)"IN Transaction : buffer=") + (uint)buffer);
 #endif
             eTransaction.inLength = length;
             fixed (void** bufferPtr = &(eTransaction.qTDBuffer))
             {
-#if DEBUG
+#if EHCI_TRACE
                 DBGMSG(((FOS_System.String)"IN Transaction : Before CreateQTD : bufferPtr=&qTDBuffer=") + (uint)bufferPtr + 
                                            ", *bufferPtr=" + (uint)(*bufferPtr));
 #endif
-                EHCI_qTD qtd = CreateQTD_IO((EHCI_qTD_Struct*)1u, 1, toggle, length, bufferPtr);
+                EHCI_qTD qtd = CreateQTD_IO((EHCI_qTD_Struct*)1u, 1, toggle, length, bufferPtr, length);
                 eTransaction.qTD = qtd.qtd;
-#if DEBUG
+#if EHCI_TRACE
                 DBGMSG(((FOS_System.String)"IN Transaction : After CreateQTD : bufferPtr=&qTDBuffer=") + (uint)bufferPtr +
                                            ", *bufferPtr=" + (uint)(*bufferPtr) + ", Buffer0=" + (uint)qtd.Buffer0);
-#endif
                 for (int i = 0; i < length; i++)
                 {
                     ((byte*)eTransaction.qTDBuffer)[i] = 0xDE;
@@ -1523,6 +1527,7 @@ namespace Kernel.Hardware.USB.HCIs
                 {
                     ((byte*)eTransaction.qTDBuffer)[i] = 0x56;
                 }
+#endif
             }
             if (transfer.transactions.Count > 0)
             {
@@ -1540,7 +1545,7 @@ namespace Kernel.Hardware.USB.HCIs
             eTransaction.inLength = 0u;
             fixed (void** bufferPtr = &(eTransaction.qTDBuffer))
             {
-                eTransaction.qTD = CreateQTD_IO((EHCI_qTD_Struct*)1u, 0, toggle, length, bufferPtr).qtd;
+                eTransaction.qTD = CreateQTD_IO((EHCI_qTD_Struct*)1u, 0, toggle, length, bufferPtr, length).qtd;
                 if (buffer != null && length != 0)
                 {
                     Utilities.MemoryUtils.MemCpy_32((byte*)eTransaction.qTDBuffer, (byte*)buffer, length);
@@ -1560,7 +1565,7 @@ namespace Kernel.Hardware.USB.HCIs
             EHCI_qTD lastQTD = new EHCI_qTD(lastTransaction.qTD);
             lastQTD.InterruptOnComplete = true;
 
-#if DEBUG
+#if EHCI_TRACE
             //Test walking the transaction tree
             bool treeOK = true;
             for (int k = 0; k < transfer.transactions.Count - 1; k++)
@@ -1582,7 +1587,7 @@ namespace Kernel.Hardware.USB.HCIs
             
             for (byte i = 0; i < EHCI_Consts.NUMBER_OF_EHCI_ASYNCLIST_RETRIES && !transfer.success; i++)
             {
-#if DEBUG
+#if EHCI_TRACE
                 transfer.success = true;
                 for (int k = 0; k < transfer.transactions.Count; k++)
                 {
@@ -1619,10 +1624,12 @@ namespace Kernel.Hardware.USB.HCIs
                     byte status = new EHCI_qTD(transaction.qTD).Status;
                     transfer.success = transfer.success && (status == 0 || status == Utils.BIT(0));
 
+#if EHCI_TRACE
                     DBGMSG(((FOS_System.String)"POST Issue: Transaction ") + k + " status: " + status);
+#endif
                 }
 
-#if DEBUG
+#if EHCI_TRACE
                 if (!transfer.success)
                 {
                     DBGMSG(((FOS_System.String)"EHCI: Retry transfer: ") + (i + 1));
@@ -1638,7 +1645,7 @@ namespace Kernel.Hardware.USB.HCIs
 
                 if (transaction.inBuffer != null && transaction.inLength != 0)
                 {
-#if DEBUG
+#if EHCI_TRACE
                     DBGMSG(((FOS_System.String)"Doing MemCpy of in data... inBuffer=") + (uint)transaction.inBuffer + 
                                                ", qTDBuffer=" + (uint)transaction.qTDBuffer + 
                                                ", inLength=" + transaction.inLength + ", Data to copy: ");
@@ -1646,13 +1653,13 @@ namespace Kernel.Hardware.USB.HCIs
                     
                     Utilities.MemoryUtils.MemCpy_32((byte*)transaction.inBuffer, (byte*)transaction.qTDBuffer, transaction.inLength);
 
-#if DEBUG
+#if EHCI_TRACE
                     for (int i = 0; i < transaction.inLength; i++)
                     {
                         DBGMSG(((FOS_System.String)"i=") + i + ", qTDBuffer[i]=" + ((byte*)transaction.qTDBuffer)[i] + ", inBuffer[i]=" + ((byte*)transaction.inBuffer)[i]);
                     }
 #endif
-#if DEBUG
+#if EHCI_TRACE
                     DBGMSG("Done.");
                     BasicConsole.DelayOutput(2);
 #endif
@@ -1661,7 +1668,7 @@ namespace Kernel.Hardware.USB.HCIs
                 FOS_System.Heap.Free(transaction.qTD);
             }
 
-#if DEBUG
+#if EHCI_TRACE
             if (transfer.success)
             {
                 DBGMSG("EHCI: Transfer succeeded.");
@@ -1677,7 +1684,9 @@ namespace Kernel.Hardware.USB.HCIs
         protected void InitializeAsyncScheduler()
         {
             if (IdleQueueHead == null)
+            {
                 IdleQueueHead = TailQueueHead = new EHCI_QueueHead().queueHead;
+            }
             CreateQH(IdleQueueHead, (uint)IdleQueueHead, null, true, 0, 0, 0);
             ASYNCLISTADDR = IdleQueueHead;
             EnableAsyncScheduler();
@@ -1704,7 +1713,7 @@ namespace Kernel.Hardware.USB.HCIs
             }
         }
 
-        protected EHCI_qTD CreateQTD_SETUP(EHCI_qTD_Struct* next, bool toggle, ushort tokenBytes, byte type, byte req, 
+        protected EHCI_qTD CreateQTD_SETUP(EHCI_qTD_Struct* next, bool toggle, ushort tokenBytes, byte type, byte req,
                                                  byte hiVal, byte loVal, ushort index, ushort length, void** buffer)
         {
             EHCI_qTD td = allocQTD(next);
@@ -1715,7 +1724,7 @@ namespace Kernel.Hardware.USB.HCIs
 
                                                                      //PAGESIZE
             //Transaction Buffer0
-            USBRequest* request = (USBRequest*)(*buffer = allocQTDbuffer(td));
+            USBRequest* request = (USBRequest*)(*buffer = allocQTDbuffer(td, (uint)sizeof(USBRequest)));
             request->type = type;
             request->request = req;
             request->valueHi = hiVal;
@@ -1747,14 +1756,14 @@ namespace Kernel.Hardware.USB.HCIs
 
             return newQTD;
         }
-        protected static void* allocQTDbuffer(EHCI_qTD td)
+        protected static void* allocQTDbuffer(EHCI_qTD td, uint actualSizeToAlloc)
         {
-            td.Buffer0 = (byte*)ZeroMem(FOS_System.Heap.Alloc(0x1000u, 0x1000u), 0x1000);
+            td.Buffer0 = (byte*)FOS_System.Heap.AllocZeroed(0x1000u, 0x1000u);
             td.CurrentPage = 0;
             td.CurrentOffset = 0;
             return td.Buffer0;
         }
-        protected EHCI_qTD CreateQTD_IO(EHCI_qTD_Struct* next, byte direction, bool toggle, ushort tokenBytes, void** buffer)
+        protected EHCI_qTD CreateQTD_IO(EHCI_qTD_Struct* next, byte direction, bool toggle, ushort tokenBytes, void** buffer, uint bufferSize)
         {
             EHCI_qTD td = allocQTD(next);
 
@@ -1762,7 +1771,7 @@ namespace Kernel.Hardware.USB.HCIs
             td.TotalBytesToTransfer = tokenBytes; // dependent on transfer
             td.DataToggle = toggle;     // Should be toggled every list entry
 
-            *buffer = allocQTDbuffer(td);
+            *buffer = allocQTDbuffer(td, bufferSize);
 
             return td;
         }
@@ -1831,7 +1840,7 @@ namespace Kernel.Hardware.USB.HCIs
 
 //            if (timeout == 0)
 //            {
-//#if DEBUG
+//#if EHCI_TRACE
 //                DBGMSG(((FOS_System.String)"EHCI.AddToAsyncScheduler(): Num interrupts not 0! not set! USBIntCount: ") + USBIntCount);
 //#endif
 //            }
@@ -1841,24 +1850,14 @@ namespace Kernel.Hardware.USB.HCIs
             TailQueueHead = IdleQueueHead; // qh done. idleQH is end of Queue again (ring structure of asynchronous schedule)
         }
 
-        internal static void* ZeroMem(void* ptr, int size)
-        {
-            byte* bPtr = (byte*)ptr;
-            for (int i = 0; i < size; i++)
-            {
-                bPtr[i] = 0;
-            }
-            return ptr;
-        }
-
-#if DEBUG
+#if EHCI_TRACE
         internal static void DBGMSG(FOS_System.String msg)
         {
             BasicConsole.WriteLine(msg);
         }
 #endif
 
-#if DEBUG
+#if EHCI_TRACE
         #region EHCI Method Tests
 
         //SetupTransfer
@@ -2341,7 +2340,7 @@ namespace Kernel.Hardware.USB.HCIs
         /// </summary>
         public EHCI_qTD()
         {
-            qtd = (EHCI_qTD_Struct*)EHCI.ZeroMem(FOS_System.Heap.Alloc((uint)sizeof(EHCI_qTD_Struct), 32), sizeof(EHCI_qTD_Struct));
+            qtd = (EHCI_qTD_Struct*)FOS_System.Heap.AllocZeroed((uint)sizeof(EHCI_qTD_Struct), 32);
         }
         /// <summary>
         /// Initializes a qTD with specified underlying data structure.
@@ -2769,7 +2768,7 @@ namespace Kernel.Hardware.USB.HCIs
         /// </summary>
         public EHCI_QueueHead()
         {
-            queueHead = (EHCI_QueueHead_Struct*)EHCI.ZeroMem(FOS_System.Heap.Alloc((uint)sizeof(EHCI_QueueHead_Struct), 32), sizeof(EHCI_QueueHead_Struct));
+            queueHead = (EHCI_QueueHead_Struct*)FOS_System.Heap.AllocZeroed((uint)sizeof(EHCI_QueueHead_Struct), 32);
         }
         /// <summary>
         /// Initializes a new queue head with specified underlying memory structure.

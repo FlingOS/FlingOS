@@ -32,7 +32,7 @@ namespace Kernel.Hardware.USB
         public USBTransferType type;
         public byte endpoint;
         public ushort    packetSize;
-        public USB.Devices.USBDevice device;
+        public USB.Devices.USBDeviceInfo device;
         public List transactions;
         public bool success;
     }
