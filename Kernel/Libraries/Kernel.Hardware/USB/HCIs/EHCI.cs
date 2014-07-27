@@ -1308,7 +1308,7 @@ namespace Kernel.Hardware.USB.HCIs
             }
             
             USBINTR = EHCI_Consts.STS_ASYNC_INT | EHCI_Consts.STS_HOST_SYSTEM_ERROR | EHCI_Consts.STS_PORT_CHANGE |
-                      EHCI_Consts.STS_USBINT;
+                      EHCI_Consts.STS_USBINT | EHCI_Consts.STS_USBERRINT;
 
             //~20ms
             for (int i = 0; i < 200000; i++)
@@ -1340,6 +1340,8 @@ namespace Kernel.Hardware.USB.HCIs
 #if DEBUG
             if((val & EHCI_Consts.STS_USBERRINT) != 0u)
             {
+                USBIntCount--;
+
                 DBGMSG("USB Error Interrupt!");
             }
 #endif
@@ -1367,15 +1369,19 @@ namespace Kernel.Hardware.USB.HCIs
 #if DEBUG
                 DBGMSG(((FOS_System.String)"EHCI: USB Interrupt occurred! USBIntCount: ") + USBIntCount);
 #endif
-                if (USBIntCount != 0)
-                {
-                    //USBCMD |= EHCI_Consts.CMD_ASYNCH_INT_DOORBELL; // Activate Doorbell: We would like to receive an asynchronous schedule interrupt
-                }
+                //if (USBIntCount != 0)
+                //{
+                //    USBCMD |= EHCI_Consts.CMD_ASYNCH_INT_DOORBELL; // Activate Doorbell: We would like to receive an asynchronous schedule interrupt
+                //}
             }
+
+#if DEBUG
+            BasicConsole.DelayOutput(5);
+#endif
 
             if (doPortCheck)
             {
-                PortCheck();
+                //TODO: Uncomment this: PortCheck();
             }
         }
         protected void PortCheck()
@@ -1466,7 +1472,7 @@ namespace Kernel.Hardware.USB.HCIs
         }
         protected override void _SetupTransfer(USBTransfer transfer)
         {
-            transfer.data = (EHCI_QueueHead_Struct*)FOS_System.Heap.Alloc((uint)sizeof(EHCI_QueueHead_Struct), 32);
+            transfer.data = (EHCI_QueueHead_Struct*)ZeroMem(FOS_System.Heap.Alloc((uint)sizeof(EHCI_QueueHead_Struct), 32), sizeof(EHCI_QueueHead_Struct));
         }
         protected override void _SETUPTransaction(USBTransfer transfer, USBTransaction uTransaction, bool toggle, ushort tokenBytes,
                                            byte type, byte req, byte hiVal, byte loVal, ushort index, ushort length)
@@ -1492,10 +1498,31 @@ namespace Kernel.Hardware.USB.HCIs
             EHCITransaction eTransaction = new EHCITransaction();
             uTransaction.data = eTransaction;
             eTransaction.inBuffer = buffer;
+#if DEBUG
+            DBGMSG(((FOS_System.String)"IN Transaction : buffer=") + (uint)buffer);
+#endif
             eTransaction.inLength = length;
             fixed (void** bufferPtr = &(eTransaction.qTDBuffer))
             {
-                eTransaction.qTD = CreateQTD_IO((EHCI_qTD_Struct*)1u, 1, toggle, length, bufferPtr).qtd;
+#if DEBUG
+                DBGMSG(((FOS_System.String)"IN Transaction : Before CreateQTD : bufferPtr=&qTDBuffer=") + (uint)bufferPtr + 
+                                           ", *bufferPtr=" + (uint)(*bufferPtr));
+#endif
+                EHCI_qTD qtd = CreateQTD_IO((EHCI_qTD_Struct*)1u, 1, toggle, length, bufferPtr);
+                eTransaction.qTD = qtd.qtd;
+#if DEBUG
+                DBGMSG(((FOS_System.String)"IN Transaction : After CreateQTD : bufferPtr=&qTDBuffer=") + (uint)bufferPtr +
+                                           ", *bufferPtr=" + (uint)(*bufferPtr) + ", Buffer0=" + (uint)qtd.Buffer0);
+#endif
+                for (int i = 0; i < length; i++)
+                {
+                    ((byte*)eTransaction.qTDBuffer)[i] = 0xDE;
+                    ((byte*)buffer)[i] = 0xBF;
+                }
+                for (int i = length; i < 0x1000; i++)
+                {
+                    ((byte*)eTransaction.qTDBuffer)[i] = 0x56;
+                }
             }
             if (transfer.transactions.Count > 0)
             {
@@ -1611,7 +1638,24 @@ namespace Kernel.Hardware.USB.HCIs
 
                 if (transaction.inBuffer != null && transaction.inLength != 0)
                 {
+#if DEBUG
+                    DBGMSG(((FOS_System.String)"Doing MemCpy of in data... inBuffer=") + (uint)transaction.inBuffer + 
+                                               ", qTDBuffer=" + (uint)transaction.qTDBuffer + 
+                                               ", inLength=" + transaction.inLength + ", Data to copy: ");
+#endif
+                    
                     Utilities.MemoryUtils.MemCpy_32((byte*)transaction.inBuffer, (byte*)transaction.qTDBuffer, transaction.inLength);
+
+#if DEBUG
+                    for (int i = 0; i < transaction.inLength; i++)
+                    {
+                        DBGMSG(((FOS_System.String)"i=") + i + ", qTDBuffer[i]=" + ((byte*)transaction.qTDBuffer)[i] + ", inBuffer[i]=" + ((byte*)transaction.inBuffer)[i]);
+                    }
+#endif
+#if DEBUG
+                    DBGMSG("Done.");
+                    BasicConsole.DelayOutput(2);
+#endif
                 }
                 FOS_System.Heap.Free(transaction.qTDBuffer);
                 FOS_System.Heap.Free(transaction.qTD);
@@ -1705,7 +1749,10 @@ namespace Kernel.Hardware.USB.HCIs
         }
         protected static void* allocQTDbuffer(EHCI_qTD td)
         {
-            return (td.Buffer0 = (byte*)FOS_System.Heap.Alloc(0x1000u, 0x1000u));
+            td.Buffer0 = (byte*)ZeroMem(FOS_System.Heap.Alloc(0x1000u, 0x1000u), 0x1000);
+            td.CurrentPage = 0;
+            td.CurrentOffset = 0;
+            return td.Buffer0;
         }
         protected EHCI_qTD CreateQTD_IO(EHCI_qTD_Struct* next, byte direction, bool toggle, ushort tokenBytes, void** buffer)
         {
@@ -1773,29 +1820,39 @@ namespace Kernel.Hardware.USB.HCIs
             oldTailQH.HorizontalLinkPointer = TailQueueHead; // Insert qh to Queue as element behind old queue head
             oldTailQH.Type = 1;
 
-            int timeout = 10 * velocity + 25; // Wait up to 250+100*velocity milliseconds for USBasyncIntFlag to be set
-            while (USBIntCount > 0 && timeout > 0)
+            //int timeout = 10 * velocity + 25; // Wait up to 250+100*velocity milliseconds for USBasyncIntFlag to be set
+            while (USBIntCount > 0 /*&& timeout > 0*/)
             {
-                timeout--;
+                //timeout--;
                 //~100ms
-                for (int i = 0; i < 1000000; i++)
-                    ;
+                //for (int i = 0; i < 1000000; i++)
+                //    ;
             }
 
-            if (timeout == 0)
-            {
-#if DEBUG
-                DBGMSG(((FOS_System.String)"EHCI.AddToAsyncScheduler(): Num interrupts not 0! not set! USBIntCount: ") + USBIntCount);
-#endif
-            }
+//            if (timeout == 0)
+//            {
+//#if DEBUG
+//                DBGMSG(((FOS_System.String)"EHCI.AddToAsyncScheduler(): Num interrupts not 0! not set! USBIntCount: ") + USBIntCount);
+//#endif
+//            }
 
             idleQH.HorizontalLinkPointer = IdleQueueHead; // Restore link of idleQH to idleQH (endless loop)
             idleQH.Type = 0x1;
             TailQueueHead = IdleQueueHead; // qh done. idleQH is end of Queue again (ring structure of asynchronous schedule)
         }
 
+        internal static void* ZeroMem(void* ptr, int size)
+        {
+            byte* bPtr = (byte*)ptr;
+            for (int i = 0; i < size; i++)
+            {
+                bPtr[i] = 0;
+            }
+            return ptr;
+        }
+
 #if DEBUG
-        private static void DBGMSG(FOS_System.String msg)
+        internal static void DBGMSG(FOS_System.String msg)
         {
             BasicConsole.WriteLine(msg);
         }
@@ -2182,6 +2239,23 @@ namespace Kernel.Hardware.USB.HCIs
         }
 
         /// <summary>
+        /// Current offset in C_Page buffer.
+        /// </summary>
+        public ushort CurrentOffset
+        {
+            [Compiler.NoGC]
+            get
+            {
+                return (ushort)(qtd->u4 & 0x00000FFFu);
+            }
+            [Compiler.NoGC]
+            set
+            {
+                qtd->u4 = (qtd->u4 & 0xFFFFF000u) | ((uint)value & 0x00000FFFu);
+            }
+        }
+
+        /// <summary>
         /// Buffer 0 pointer.
         /// </summary>
         public byte* Buffer0
@@ -2267,7 +2341,7 @@ namespace Kernel.Hardware.USB.HCIs
         /// </summary>
         public EHCI_qTD()
         {
-            qtd = (EHCI_qTD_Struct*)FOS_System.Heap.Alloc((uint)sizeof(EHCI_qTD_Struct), 32);
+            qtd = (EHCI_qTD_Struct*)EHCI.ZeroMem(FOS_System.Heap.Alloc((uint)sizeof(EHCI_qTD_Struct), 32), sizeof(EHCI_qTD_Struct));
         }
         /// <summary>
         /// Initializes a qTD with specified underlying data structure.
@@ -2695,7 +2769,7 @@ namespace Kernel.Hardware.USB.HCIs
         /// </summary>
         public EHCI_QueueHead()
         {
-            queueHead = (EHCI_QueueHead_Struct*)FOS_System.Heap.Alloc((uint)sizeof(EHCI_QueueHead_Struct), 32);
+            queueHead = (EHCI_QueueHead_Struct*)EHCI.ZeroMem(FOS_System.Heap.Alloc((uint)sizeof(EHCI_QueueHead_Struct), 32), sizeof(EHCI_QueueHead_Struct));
         }
         /// <summary>
         /// Initializes a new queue head with specified underlying memory structure.

@@ -1660,7 +1660,7 @@ namespace Kernel.Compiler
                                 if (anInfo.DeclaringType == theType)
                                 {
                                     DB_Type childDBType = ProcessType(anInfo.FieldType);
-                                    totalMemSize += childDBType.StackBytesSize;
+                                    totalMemSize += childDBType.BytesSize;
 
                                     DB_ComplexTypeLink DBTypeLink = new DB_ComplexTypeLink();
                                     DBTypeLink.Id = Guid.NewGuid();

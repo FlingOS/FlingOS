@@ -58,6 +58,7 @@ namespace Kernel.Compiler.Architectures.x86_32
                     break;
                 case OpCodes.Ldind_U4:
                 case OpCodes.Ldind_I4:
+                case OpCodes.Ldind_I:
                     bytesToLoad = 4;
                     break;
                 case OpCodes.Ldind_I8:

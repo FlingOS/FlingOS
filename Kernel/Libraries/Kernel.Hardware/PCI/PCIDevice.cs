@@ -301,7 +301,17 @@ namespace Kernel.Hardware.PCI
             this.slot = slot;
             this.function = function;
 
+#if PCI_TRACE || COMPILER_TRACE
+            ushort vendorID = ReadRegister16(0x00);
             VendorID = ReadRegister16(0x00);
+            BasicConsole.WriteLine(((FOS_System.String)"New PCI device. bus(arg)=") + bus + ", bus(fld)=" + this.bus);
+            BasicConsole.WriteLine(((FOS_System.String)"                slot(arg)=") + slot + ", slot(fld)=" + this.slot);
+            BasicConsole.WriteLine(((FOS_System.String)"                func(arg)=") + function + ", func(fld)=" + this.function);
+            BasicConsole.WriteLine(((FOS_System.String)"                vendorID(loc)=") + vendorID + ", vendorID(fld)=" + this.VendorID);
+            BasicConsole.DelayOutput(4);
+#else
+            VendorID = ReadRegister16(0x00);
+#endif
             DeviceID = ReadRegister16(0x02);
             
             RevisionID = ReadRegister8(0x08);

@@ -40,6 +40,7 @@ namespace Kernel.Compiler.ILOps
     /// <seealso cref="System.Reflection.Emit.OpCodes.Ldind_U1"/>
     /// <seealso cref="System.Reflection.Emit.OpCodes.Ldind_U2"/>
     /// <seealso cref="System.Reflection.Emit.OpCodes.Ldind_U4"/>
+    /// <seealso cref="System.Reflection.Emit.OpCodes.Ldind_I"/>
     /// <seealso cref="System.Reflection.Emit.OpCodes.Ldind_I1"/>
     /// <seealso cref="System.Reflection.Emit.OpCodes.Ldind_I2"/>
     /// <seealso cref="System.Reflection.Emit.OpCodes.Ldind_I4"/>
@@ -47,6 +48,7 @@ namespace Kernel.Compiler.ILOps
     [ILOpTarget(Target = ILOp.OpCodes.Ldind_U1)]
     [ILOpTarget(Target = ILOp.OpCodes.Ldind_U2)]
     [ILOpTarget(Target = ILOp.OpCodes.Ldind_U4)]
+    [ILOpTarget(Target = ILOp.OpCodes.Ldind_I)]
     [ILOpTarget(Target = ILOp.OpCodes.Ldind_I1)]
     [ILOpTarget(Target = ILOp.OpCodes.Ldind_I2)]
     [ILOpTarget(Target = ILOp.OpCodes.Ldind_I4)]

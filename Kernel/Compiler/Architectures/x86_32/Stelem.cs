@@ -189,7 +189,7 @@ namespace Kernel.Compiler.Architectures.x86_32
                 allChildLinks = allChildLinks.Where(x => x.ParentIndex < theTypeLink.ParentIndex).ToList();
                 //Calculate the offset
                 //We use StackBytesSize since fields that are reference types are only stored as a pointer
-                elemTypeOffset = allChildLinks.Sum(x => x.ChildType.StackBytesSize);
+                elemTypeOffset = allChildLinks.Sum(x => x.ChildType.IsValueType ? x.ChildType.BytesSize : x.ChildType.StackBytesSize);
             }
             #endregion
             //result.AppendLine(string.Format("mov ebx, [ebx+{0}]", elemTypeOffset));
@@ -231,7 +231,7 @@ namespace Kernel.Compiler.Architectures.x86_32
                 allChildLinks = allChildLinks.Where(x => x.ParentIndex < theTypeLink.ParentIndex).ToList();
                 //Calculate the offset
                 //We use StackBytesSize since fields that are reference types are only stored as a pointer
-                lengthOffset = allChildLinks.Sum(x => x.ChildType.StackBytesSize);
+                lengthOffset = allChildLinks.Sum(x => x.ChildType.IsValueType ? x.ChildType.BytesSize : x.ChildType.StackBytesSize);
             }
             #endregion
             //              - Move array ref into ebx
@@ -303,7 +303,7 @@ namespace Kernel.Compiler.Architectures.x86_32
                 allChildLinks = allChildLinks.Where(x => x.ParentIndex < theTypeLink.ParentIndex).ToList();
                 //Calculate the offset
                 //We use StackBytesSize since fields that are reference types are only stored as a pointer
-                isValueTypeOffset = allChildLinks.Sum(x => x.ChildType.StackBytesSize);
+                isValueTypeOffset = allChildLinks.Sum(x => x.ChildType.IsValueType ? x.ChildType.BytesSize : x.ChildType.StackBytesSize);
             }
             #endregion
             result.AppendLine(string.Format("mov eax, [eax+{0}]", isValueTypeOffset));
@@ -328,7 +328,7 @@ namespace Kernel.Compiler.Architectures.x86_32
                 allChildLinks = allChildLinks.Where(x => x.ParentIndex < theTypeLink.ParentIndex).ToList();
                 //Calculate the offset
                 //We use StackBytesSize since fields that are reference types are only stored as a pointer
-                sizeOffset = allChildLinks.Sum(x => x.ChildType.StackBytesSize);
+                sizeOffset = allChildLinks.Sum(x => x.ChildType.IsValueType ? x.ChildType.BytesSize : x.ChildType.StackBytesSize);
             }
             #endregion
             result.AppendLine(string.Format("mov eax, [eax+{0}]", sizeOffset));
@@ -353,7 +353,7 @@ namespace Kernel.Compiler.Architectures.x86_32
                 allChildLinks = allChildLinks.Where(x => x.ParentIndex < theTypeLink.ParentIndex).ToList();
                 //Calculate the offset
                 //We use StackBytesSize since fields that are reference types are only stored as a pointer
-                stackSizeOffset = allChildLinks.Sum(x => x.ChildType.StackBytesSize);
+                stackSizeOffset = allChildLinks.Sum(x => x.ChildType.IsValueType ? x.ChildType.BytesSize : x.ChildType.StackBytesSize);
             }
             #endregion
             result.AppendLine(string.Format("mov eax, [eax+{0}]", stackSizeOffset));
@@ -370,7 +370,7 @@ namespace Kernel.Compiler.Architectures.x86_32
                 List<DB_ComplexTypeLink> allChildLinks = arrayDBType.ChildTypes.ToList();
                 //Calculate the offset
                 //We use StackBytesSize since fields that are reference types are only stored as a pointer
-                allFieldsOffset = allChildLinks.Sum(x => x.ChildType.StackBytesSize);
+                allFieldsOffset = allChildLinks.Sum(x => x.ChildType.IsValueType ? x.ChildType.BytesSize : x.ChildType.StackBytesSize);
             }
             #endregion
             result.AppendLine(string.Format("add ebx, {0}", allFieldsOffset));
@@ -378,15 +378,23 @@ namespace Kernel.Compiler.Architectures.x86_32
             result.AppendLine("add eax, ebx");
 
             // 5. Pop the element from the stack to array
-            //      5.1. Move value in edx to [eax]
+            //      5.1. Move value in edx:ecx to [eax]
             if (sizeToPop == 8)
             {
                 result.AppendLine("mov dword [eax], ecx");
                 result.AppendLine("mov dword [eax+4], edx");
             }
-            else
+            else if(sizeToPop == 4)
             {
                 result.AppendLine("mov dword [eax], ecx");
+            }
+            else if (sizeToPop == 2)
+            {
+                result.AppendLine("mov word [eax], cx");
+            }
+            else if (sizeToPop == 1)
+            {
+                result.AppendLine("mov byte [eax], cl");
             }
 
             //      5.2. Pop index, array ref and value from our stack

@@ -63,12 +63,13 @@ namespace Kernel.Compiler.Architectures.x86_32
             allChildLinks = allChildLinks.Where(x => x.ParentIndex < theTypeLink.ParentIndex).ToList();
             //Calculate the offset
             //We use StackBytesSize since fields that are reference types are only stored as a pointer
-            int offset = allChildLinks.Sum(x => x.ChildType.StackBytesSize);
+            int offset = allChildLinks.Sum(x => x.ChildType.IsValueType ? x.ChildType.BytesSize : x.ChildType.StackBytesSize);
 
             //Is the value to load a floating pointer number?
             bool valueisFloat = Utils.IsFloat(theField.FieldType);
             //Get the size of the value to load (in bytes, as it will appear on the stack)
-            int valuesizeOnStackInBytes = Utils.GetNumBytesForType(theField.FieldType);
+            int stackSize = Utils.GetNumBytesForType(theField.FieldType);
+            int memSize = theField.FieldType.IsValueType ? Utils.GetSizeForType(theField.FieldType) : stackSize;
 
             //Pop the object pointer from our stack
             StackItem objPointer = aScannerState.CurrentStackFrame.Stack.Pop();
@@ -78,11 +79,6 @@ namespace Kernel.Compiler.Architectures.x86_32
             {
                 //SUPPORT - floats
                 throw new NotSupportedException("Loading fields of type float not supported yet!");
-            }
-            //Otherwise, if the value to load is a weird size, abort
-            else if (!(valuesizeOnStackInBytes == 8 || valuesizeOnStackInBytes == 4))
-            {
-                throw new NotSupportedException("Loading fields of supplied size not supported yet!");
             }
 
             //Pop object pointer
@@ -94,23 +90,38 @@ namespace Kernel.Compiler.Architectures.x86_32
 
                 aScannerState.CurrentStackFrame.Stack.Push(new StackItem()
                 {
-                    isFloat = valueisFloat,
+                    isFloat = false,
                     sizeOnStackInBytes = 4
                 });
             }
             else
             {
                 //Push value at pointer+offset
-                result.AppendLine(string.Format("push dword [ecx+{0}]", offset));
-                if (valuesizeOnStackInBytes == 8)
+                int sizeNotInMem = stackSize - memSize;
+                int sizeToSub = (sizeNotInMem / 2) * 2; //Rounds down
+                for (int i = 0; i < sizeToSub; i += 2)
                 {
-                    result.AppendLine(string.Format("push dword [ecx+{0}]", offset + 4));
+                    result.AppendLine("push word 0");
+                }
+                for (int i = memSize + (memSize % 2); i > 0; i -= 2)
+                {
+                    if (sizeToSub != sizeNotInMem)
+                    {
+                        result.AppendLine("mov ax, 0");
+                        result.AppendLine(string.Format("mov byte al, [ecx+{0}]", offset + i - 2));
+                        result.AppendLine("push word ax");
+                    }
+                    else
+                    {
+                        result.AppendLine(string.Format("mov word ax, [ecx+{0}]", offset + i - 2));
+                        result.AppendLine("push word ax");
+                    }
                 }
 
                 aScannerState.CurrentStackFrame.Stack.Push(new StackItem()
                 {
                     isFloat = valueisFloat,
-                    sizeOnStackInBytes = valuesizeOnStackInBytes
+                    sizeOnStackInBytes = stackSize
                 });
             }
 

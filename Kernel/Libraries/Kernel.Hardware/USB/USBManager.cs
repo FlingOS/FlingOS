@@ -345,48 +345,61 @@ namespace Kernel.Hardware.USB
             DBGMSG("USB: GET_DESCRIPTOR Device");
 #endif
 
-            USBDeviceDescriptor descriptor = new USBDeviceDescriptor();
-            
+            USBDeviceDescriptor* descriptor = (USBDeviceDescriptor*)FOS_System.Heap.Alloc((uint)sizeof(USBDeviceDescriptor));
             USBTransfer transfer = new USBTransfer();
-            device.hc.SetupTransfer(device, transfer, USBTransferType.USB_CONTROL, 0, 64);
-            device.hc.SETUPTransaction(transfer, 8, 0x80, 6, 1, 0, 0, 18);
-            device.hc.INTransaction(transfer, false, &descriptor, 18);
-            device.hc.OUTTransaction(transfer, true, null, 0);
-            device.hc.IssueTransfer(transfer);
-
-            if (transfer.success)
+            try
             {
-                AnalyzeDeviceDescriptor(descriptor, device);
-                ShowDevice(device);
-                BasicConsole.DelayOutput(4);
-            }
+                device.hc.SetupTransfer(device, transfer, USBTransferType.USB_CONTROL, 0, 64);
+                device.hc.SETUPTransaction(transfer, 8, 0x80, 6, 1, 0, 0, 18);
+                device.hc.INTransaction(transfer, false, descriptor, 18);
+                device.hc.OUTTransaction(transfer, true, null, 0);
+                device.hc.IssueTransfer(transfer);
 
+                if (transfer.success)
+                {
+#if DEBUG
+                    byte* bpDescriptor = (byte*)descriptor;
+                    for (int i = 0; i < sizeof(USBDeviceDescriptor); i++)
+                    {
+                        DBGMSG(((FOS_System.String)"i=") + i + ", bpDescriptor[i]=" + bpDescriptor[i]);
+                    }
+#endif
+
+                    AnalyzeDeviceDescriptor(descriptor, device);
+                    ShowDevice(device);
+                    BasicConsole.DelayOutput(4);
+                }
+            }
+            finally
+            {
+                FOS_System.Heap.Free(descriptor);
+            }
             return transfer.success;
         }
-        private static void AnalyzeDeviceDescriptor(USBDeviceDescriptor d, USBDevice usbDev)
+        private static void AnalyzeDeviceDescriptor(USBDeviceDescriptor* d, USBDevice usbDev)
         {
-            usbDev.usbSpec              = d.bcdUSB;
-            usbDev.usbClass             = d.deviceClass;
-            usbDev.usbSubclass          = d.deviceSubclass;
-            usbDev.usbProtocol          = d.deviceProtocol;
-            usbDev.vendor               = d.idVendor;
-            usbDev.product              = d.idProduct;
-            usbDev.releaseNumber        = d.bcdDevice;
-            usbDev.manufacturerStringID = d.manufacturer;
-            usbDev.productStringID      = d.product;
-            usbDev.serNumberStringID    = d.serialNumber;
-            usbDev.numConfigurations    = d.numConfigurations;
-            ((USBEndpoint)usbDev.Endpoints[0]).mps     = d.maxPacketSize;
+            usbDev.usbSpec              = d->bcdUSB;
+            usbDev.usbClass             = d->deviceClass;
+            usbDev.usbSubclass          = d->deviceSubclass;
+            usbDev.usbProtocol          = d->deviceProtocol;
+            usbDev.vendor               = d->idVendor;
+            usbDev.product              = d->idProduct;
+            usbDev.releaseNumber        = d->bcdDevice;
+            usbDev.manufacturerStringID = d->manufacturer;
+            usbDev.productStringID      = d->product;
+            usbDev.serNumberStringID    = d->serialNumber;
+            usbDev.numConfigurations    = d->numConfigurations;
+            ((USBEndpoint)usbDev.Endpoints[0]).mps     = d->maxPacketSize;
         }
         public static void ShowDevice(USBDevice usbDev)
         {
             if (usbDev.usbSpec == 0x0100 || usbDev.usbSpec == 0x0110 || usbDev.usbSpec == 0x0200 || usbDev.usbSpec == 0x0201 || usbDev.usbSpec == 0x0210 || usbDev.usbSpec == 0x0213 ||usbDev.usbSpec == 0x0300)
             {
-                DBGMSG(((FOS_System.String)"USB ") + ((usbDev.usbSpec >> 8) & 0xFF) + "." + (usbDev.usbSpec & 0xFF)); // e.g. 0x0210 means 2.10
+                DBGMSG(((FOS_System.String)"USB ") + (byte)((usbDev.usbSpec >> 8) & 0xFF) + "." + (byte)(usbDev.usbSpec & 0xFF)); // e.g. 0x0210 means 2.10
             }
             else
             {
-                DBGMSG(((FOS_System.String)"Invalid USB version ") + ((usbDev.usbSpec >> 8) & 0xFF) + "." + (usbDev.usbSpec & 0xFF) + "!");
+                DBGMSG(((FOS_System.String)"Invalid USB version ") + (byte)((usbDev.usbSpec >> 8) & 0xFF) + "." + (byte)(usbDev.usbSpec & 0xFF) + "!");
                 //return;
             }
 

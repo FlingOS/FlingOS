@@ -62,7 +62,7 @@ namespace Kernel.Compiler.Architectures.x86_32
                 allChildLinks = allChildLinks.Where(x => x.ParentIndex < theTypeLink.ParentIndex).ToList();
                 //Calculate the offset
                 //We use StackBytesSize since fields that are reference types are only stored as a pointer
-                lengthOffset = allChildLinks.Sum(x => x.ChildType.StackBytesSize);
+                lengthOffset = allChildLinks.Sum(x => x.ChildType.IsValueType ? x.ChildType.BytesSize : x.ChildType.StackBytesSize);
             }
             #endregion
 
