@@ -125,7 +125,16 @@ namespace Kernel
         {
             if(ExceptionMethods.CurrentException != null)
             {
+                BasicConsole.SetTextColour(BasicConsole.error_colour);
                 BasicConsole.WriteLine(ExceptionMethods.CurrentException.Message);
+                if (ExceptionMethods.CurrentException._Type == (FOS_System.Type)(typeof(FOS_System.Exceptions.PageFaultException)))
+                {
+                    BasicConsole.Write("Address: ");
+                    BasicConsole.WriteLine(((FOS_System.Exceptions.PageFaultException)ExceptionMethods.CurrentException).address);
+                    BasicConsole.Write("Code: ");
+                    BasicConsole.WriteLine(((FOS_System.Exceptions.PageFaultException)ExceptionMethods.CurrentException).errorCode);
+                }
+                BasicConsole.SetTextColour(BasicConsole.default_colour);
             }
 
             BasicConsole.SetTextColour(BasicConsole.error_colour);
@@ -157,38 +166,7 @@ namespace Kernel
                 //InitATA();
 
                 //OutputDivider();
-
-                //if (Hardware.DeviceManager.Devices.Count > 0)
-                //{
-                //    try
-                //    {
-                //        OutputATAInfo();
-                //    }
-                //    catch
-                //    {
-                //        OutputCurrentExceptionInfo();
-                //    }
-
-                //    InitFileSystem();
-
-                //    OutputDivider();
-
-                //    CheckDiskFormatting();
-
-                //    OutputDivider();
-
-                //    try
-                //    {
-                //        OutputFileSystemsInfo();
-                //    }
-                //    catch
-                //    {
-                //        OutputCurrentExceptionInfo();
-                //    }
-
-                //    //FileSystemTests();
-                //}
-
+                
                 InitPCI();
 
                 OutputDivider();
@@ -208,6 +186,37 @@ namespace Kernel
                 InitUSB();
 
                 OutputDivider();
+
+                if (Hardware.DeviceManager.Devices.Count > 0)
+                {
+                    //try
+                    //{
+                    //    OutputATAInfo();
+                    //}
+                    //catch
+                    //{
+                    //    OutputCurrentExceptionInfo();
+                    //}
+
+                    InitFileSystem();
+
+                    OutputDivider();
+
+                    //CheckDiskFormatting();
+
+                    OutputDivider();
+
+                    try
+                    {
+                        OutputFileSystemsInfo();
+                    }
+                    catch
+                    {
+                        OutputCurrentExceptionInfo();
+                    }
+
+                    //FileSystemTests();
+                }
             }
             catch
             {
@@ -287,17 +296,62 @@ namespace Kernel
         /// </summary>
         private static void CheckDiskFormatting()
         {
+            bool OK = true;
+
             if (FOS_System.IO.FileSystemManager.Partitions.Count == 0)
             {
-                BasicConsole.WriteLine("Disk found but no partitions found on disk.");
-                BasicConsole.WriteLine("Formatting disk as MBR with one, primary FAT32 partition...");
+                BasicConsole.WriteLine("No partitions. Either no disk (or equiv.) devices or they are not MBR formatted.");
+                BasicConsole.WriteLine("Attempting to find disk device to format...");
 
-                List newPartitions = new List(1);
-                newPartitions.Add(FOS_System.IO.Disk.MBR.CreateFAT32PartitionInfo(disk0, false));
-                FOS_System.IO.Disk.MBR.FormatDisk(disk0, newPartitions);
+                for (int i = 0; i < Hardware.DeviceManager.Devices.Count; i++)
+                {
+                    Hardware.Device aDevice = (Hardware.Device)Hardware.DeviceManager.Devices[i];
+                    if (aDevice._Type == (FOS_System.Type)(typeof(Hardware.ATA.ATAPio)))
+                    {
+                        try
+                        {
+                            BasicConsole.WriteLine("Formatting disk as MBR with one, primary FAT32 partition...");
 
-                BasicConsole.WriteLine("MBR format done.");
-                BasicConsole.DelayOutput(2);
+                            disk0 = (Hardware.Devices.DiskDevice)aDevice;
+                            List newPartitions = new List(1);
+                            newPartitions.Add(FOS_System.IO.Disk.MBR.CreateFAT32PartitionInfo(disk0, false));
+                            FOS_System.IO.Disk.MBR.FormatDisk(disk0, newPartitions);
+
+                            BasicConsole.WriteLine("MBR format done.");
+                            BasicConsole.DelayOutput(2);
+
+                            break;
+                        }
+                        catch
+                        {
+                            OK = false;
+                            BasicConsole.WriteLine("Error initializing disk: " + ExceptionMethods.CurrentException.Message);
+                        }
+                    }
+                    else if (aDevice._Type == (FOS_System.Type)(typeof(Hardware.USB.Devices.MassStorageDevice_DiskDevice)))
+                    {
+                        try
+                        {
+                            BasicConsole.WriteLine("Formatting MSD as MBR with one, primary FAT32 partition...");
+
+                            disk0 = (Hardware.Devices.DiskDevice)aDevice;
+                            List newPartitions = new List(1);
+                            newPartitions.Add(FOS_System.IO.Disk.MBR.CreateFAT32PartitionInfo(disk0, false));
+                            FOS_System.IO.Disk.MBR.FormatDisk(disk0, newPartitions);
+
+                            BasicConsole.WriteLine("MBR format done.");
+                            BasicConsole.DelayOutput(2);
+
+                            break;
+                        }
+                        catch
+                        {
+                            OK = false;
+                            BasicConsole.WriteLine("Error formatting MSD: " + ExceptionMethods.CurrentException.Message);
+                        }
+                    }
+                    //TODO - Add more device types e.g. USB
+                }
 
                 InitFileSystem();
             }

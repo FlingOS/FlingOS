@@ -20,8 +20,11 @@ using System;
 
 namespace Kernel.Utilities
 {
+    [Compiler.PluggedClass]
     public static unsafe class MemoryUtils
     {
+        [Compiler.NoGC]
+        [Compiler.NoDebug]
         public static void MemCpy_32(byte* dest, byte* src, uint length)
         {
             for (uint i = 0; i < length; i++)
@@ -29,6 +32,8 @@ namespace Kernel.Utilities
                 dest[i] = src[i];
             }
         }
+        [Compiler.NoGC]
+        [Compiler.NoDebug]
         public static void MemCpy(byte* dest, byte* src, ulong length)
         {
             for(ulong i = 0; i < length; i++)
@@ -37,6 +42,8 @@ namespace Kernel.Utilities
             }
         }
 
+        [Compiler.NoGC]
+        [Compiler.NoDebug]
         public static void* ZeroMem(void* ptr, uint size)
         {
             byte* bPtr = (byte*)ptr;
@@ -46,6 +53,19 @@ namespace Kernel.Utilities
                 *bPtr++ = 0;
             }
             return ptr;
+        }
+
+        [Compiler.NoGC]
+        [Compiler.NoDebug]
+        public static byte GetField(byte* addr, byte byteNum, byte shift, byte len) 
+        {
+            return (byte)((addr[byteNum] >> (shift)) & ((1 << len) - 1));
+        }
+
+        [Compiler.PluggedMethod(ASMFilePath=@"ASM\MemoryUtils")]
+        public static uint htonl(uint aByte)
+        {
+            return 0;
         }
     }
 }

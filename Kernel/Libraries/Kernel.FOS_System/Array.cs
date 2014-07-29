@@ -31,7 +31,9 @@ namespace Kernel.FOS_System
     public unsafe class Array : Object
     {
         /* If changing the fields in this class, remember to update the 
-         * Kernel.GC.NewArr method implementation. */
+         * Kernel.GC.NewArr method implementation. And also the constant below.*/
+
+        public const uint FieldsBytesSize = 12;
 
         /// <summary>
         /// The length of the array. Can also use standard System.Array.Length e.g. new object[5].Length.

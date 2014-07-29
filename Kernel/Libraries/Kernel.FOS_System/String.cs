@@ -31,7 +31,9 @@ namespace Kernel.FOS_System
         /* If you add more fields here, remember to update the compiler and all the ASM files that depend on the string
            class structure ( i.e. do all the hard work! ;) )
          */
-        
+
+        public const uint FieldsBytesSize = 8;
+
         /// <summary>
         /// The length of the string.
         /// </summary>
@@ -121,7 +123,7 @@ namespace Kernel.FOS_System
         [Compiler.NoGC]
         public unsafe char* GetCharPointer()
         {
-            return (char*)(((byte*)Utilities.ObjectUtilities.GetHandle(this)) + 8/*For fields*/);
+            return (char*)(((byte*)Utilities.ObjectUtilities.GetHandle(this)) + FieldsBytesSize);
         }
 
         /// <summary>

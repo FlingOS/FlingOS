@@ -67,6 +67,17 @@ namespace Kernel.FOS_System.IO
                         BasicConsole.WriteLine("Error initializing disk: " + ExceptionMethods.CurrentException.Message);
                     }
                 }
+                else if (aDevice._Type == (FOS_System.Type)(typeof(Hardware.USB.Devices.MassStorageDevice_DiskDevice)))
+                {
+                    try
+                    {
+                        InitDisk((DiskDevice)aDevice);
+                    }
+                    catch
+                    {
+                        BasicConsole.WriteLine("Error initializing MSD: " + ExceptionMethods.CurrentException.Message);
+                    }
+                }
                 //TODO - Add more device types e.g. USB
             }
             
@@ -81,16 +92,21 @@ namespace Kernel.FOS_System.IO
         {
             //TODO - Add more partitioning schemes.
 
+            BasicConsole.WriteLine("Attempting to read MBR...");
             byte[] MBRData = new byte[512];
             aDiskDevice.ReadBlock(0UL, 1U, MBRData);
+            BasicConsole.WriteLine("Read potential MBR data. Attempting to init MBR...");
             MBR TheMBR = new MBR(MBRData);
 
             if (!TheMBR.IsValid)
             {
                 ExceptionMethods.Throw(new FOS_System.Exceptions.NotSupportedException("Non MBR/EBR formatted disks not supported."));
             }
-
-            ProcessMBR(TheMBR, aDiskDevice);
+            else
+            {
+                BasicConsole.WriteLine("Valid MBR found.");
+                ProcessMBR(TheMBR, aDiskDevice);
+            }
         }
         /// <summary>
         /// Processes a valid master boot record to initialize 

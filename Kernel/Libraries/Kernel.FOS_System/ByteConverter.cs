@@ -120,6 +120,30 @@ namespace Kernel.FOS_System
             return result;
         }
         /// <summary>
+        /// Converts the specified bytes to an ASCII encoded string, treating the bytes as ASCII encoded bytes.
+        /// </summary>
+        /// <param name="n">The bytes to convert.</param>
+        /// <param name="aStart">The index in the array at which to start converting bytes.</param>
+        /// <param name="aCharCount">The number of characters to convert.</param>
+        /// <returns>The ASCII encoded string.</returns>
+        [Compiler.NoDebug]
+        public static unsafe FOS_System.String GetASCIIStringFromASCII(byte* n, UInt32 aStart, UInt32 aCharCount)
+        {
+            FOS_System.String result = FOS_System.String.New((int)aCharCount);
+            for (int i = 0; i < aCharCount; i++)
+            {
+                UInt32 pos = (UInt32)(aStart + i);
+                UInt16 aChar = (UInt16)(n[pos]);
+                if (aChar == 0)
+                {
+                    return result.Substring(0, i);
+                }
+                result[i] = (char)aChar;
+            }
+
+            return result;
+        }
+        /// <summary>
         /// Converts the specified bytes to an ASCII encoded string, treating the bytes as UTF16 encoded bytes.
         /// </summary>
         /// <param name="n">The bytes to convert.</param>
