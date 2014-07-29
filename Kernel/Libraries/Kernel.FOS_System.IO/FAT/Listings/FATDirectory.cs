@@ -16,8 +16,10 @@
 /// ------------------------------------------------------------------------------ ///
 #endregion
     
-using System;
+#define FATDIR_TRACE
+//#undef FATDIR_TRACE
 
+using System;
 using Kernel.FOS_System.Collections;
 
 namespace Kernel.FOS_System.IO.FAT
@@ -71,20 +73,34 @@ namespace Kernel.FOS_System.IO.FAT
         {
             if (_cachedlistings == null)
             {
-                //BasicConsole.WriteLine("Getting stream...");
+#if FATDIR_TRACE
+                BasicConsole.WriteLine("Getting stream...");
+#endif
                 Get_FileStream();
-                //BasicConsole.WriteLine("Got stream. Calculating actual size...");
+#if FATDIR_TRACE
+                BasicConsole.WriteLine("Got stream. Calculating actual size...");
+#endif
                 ulong actualSize = _fileStream.GetActualSize();
-                //BasicConsole.WriteLine(((FOS_System.String)"actualSize: ") + actualSize);
-                //BasicConsole.WriteLine("Creating data array...");
+#if FATDIR_TRACE
+                BasicConsole.WriteLine(((FOS_System.String)"actualSize: ") + actualSize);
+                BasicConsole.WriteLine("Creating data array...");
+#endif
                 byte[] xData = new byte[(uint)actualSize];
-                //BasicConsole.WriteLine("Created data array.");
+#if FATDIR_TRACE
+                BasicConsole.WriteLine("Created data array.");
+#endif
                 _fileStream.Position = 0;
-                //BasicConsole.WriteLine("Reading data...");
+#if FATDIR_TRACE
+                BasicConsole.WriteLine("Reading data...");
+#endif
                 int actuallyRead = _fileStream.Read(xData, 0, (int)xData.Length);
-                //BasicConsole.WriteLine("Read data. Parsing table...");
+#if FATDIR_TRACE
+                BasicConsole.WriteLine("Read data. Parsing table...");
+#endif
                 _cachedlistings = ((FATFileSystem)TheFileSystem).ParseDirectoryTable(xData, actuallyRead, this);
-                //BasicConsole.WriteLine("Parsed table.");
+#if FATDIR_TRACE
+                BasicConsole.WriteLine("Parsed table.");
+#endif
             }
             return _cachedlistings;
         }
@@ -102,14 +118,22 @@ namespace Kernel.FOS_System.IO.FAT
         /// </summary>
         public override void WriteListings()
         {
-            //BasicConsole.WriteLine("Encoding listings...");
+#if FATDIR_TRACE
+            BasicConsole.WriteLine("Encoding listings...");
+#endif
             byte[] listingsBytes = ((FATFileSystem)TheFileSystem).EncodeDirectoryTable(_cachedlistings, Name == "ROOT" && Parent == null);
-            //BasicConsole.WriteLine("Encoded listings. Getting file stream...");
+#if FATDIR_TRACE
+            BasicConsole.WriteLine("Encoded listings. Getting file stream...");
+#endif
             Get_FileStream();
-            //BasicConsole.WriteLine("Got file stream. Writing listings to disk...");
+#if FATDIR_TRACE
+            BasicConsole.WriteLine("Got file stream. Writing listings to disk...");
+#endif
             _fileStream.Position = 0;
             _fileStream.Write(listingsBytes, 0, (int)listingsBytes.Length);
-            //BasicConsole.WriteLine("Written to disk.");
+#if FATDIR_TRACE
+            BasicConsole.WriteLine("Written to disk.");
+#endif
         }
         /// <summary>
         /// Initializes the underlying file stream.
@@ -129,11 +153,17 @@ namespace Kernel.FOS_System.IO.FAT
         /// <param name="aListing">The listing to add.</param>
         public override void AddListing(Base aListing)
         {
-            //BasicConsole.WriteLine("Add listing: Getting existing listings...");
+#if FATDIR_TRACE
+            BasicConsole.WriteLine("Add listing: Getting existing listings...");
+#endif
             GetListings();
-            //BasicConsole.WriteLine("Got existing listings. Adding listing to cache...");
+#if FATDIR_TRACE
+            BasicConsole.WriteLine("Got existing listings. Adding listing to cache...");
+#endif
             _cachedlistings.Add(aListing);
-            //BasicConsole.WriteLine("Added listing.");
+#if FATDIR_TRACE
+            BasicConsole.WriteLine("Added listing.");
+#endif
         }
     }
 }
