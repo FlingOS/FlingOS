@@ -30,6 +30,9 @@ namespace Kernel
     [Compiler.PluggedClass]
     public static unsafe class ExceptionMethods
     {
+
+        public static FOS_System.String HaltReason = "";
+
         /// <summary>
         /// The message to display when the Throw method panics.
         /// </summary>

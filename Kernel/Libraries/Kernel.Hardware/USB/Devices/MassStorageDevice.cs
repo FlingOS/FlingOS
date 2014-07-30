@@ -19,6 +19,9 @@
 #define MSD_TRACE
 #undef MSD_TRACE
 
+#define DEVICE_INFO
+#undef DEVICE_INFO
+
 using System;
 using Kernel.FOS_System.Collections;
 using Kernel.Hardware.Devices;
@@ -40,14 +43,11 @@ namespace Kernel.Hardware.USB.Devices
         public MassStorageDevice(USBDeviceInfo aDeviceInfo)
             : base(aDeviceInfo)
         {
-            diskDevice = new MassStorageDevice_DiskDevice(this);
-
 #if MSD_TRACE
             DBGMSG("------------------------------ Mass Storage Device -----------------------------");
             DBGMSG(((FOS_System.String)"MSD Interface num: ") + DeviceInfo.MSD_InterfaceNum);
             BasicConsole.DelayOutput(1);
 #endif
-
             Setup();
         }
 
@@ -62,8 +62,15 @@ namespace Kernel.Hardware.USB.Devices
 
             BulkReset(DeviceInfo.MSD_InterfaceNum); // Reset Interface
 
+            byte* inquiryBuffer = (byte*)FOS_System.Heap.AllocZeroed(26u);
+            SendSCSICommand(0x12 /*SCSI opcode*/, 0 /*LBA*/, 36 /*Bytes In*/, inquiryBuffer, null);
 
-            TestMSD(); // test with some SCSI commands
+            AnalyzeInquiry(inquiryBuffer);
+
+            ///////// send SCSI command "test unit ready(6)"
+            TestDeviceReady();
+
+            diskDevice = new MassStorageDevice_DiskDevice(this);
         }
 
         public override void Destroy()
@@ -76,27 +83,36 @@ namespace Kernel.Hardware.USB.Devices
 
 
         // Bulk-Only Mass Storage get maximum number of Logical Units
-        public byte GetMaxLUN(byte numInterface)
+//        public byte GetMaxLUN(byte numInterface)
+//        {
+//#if MSD_TRACE
+//            DBGMSG(((FOS_System.String)"USB MSD: TransferBulkOnly - GetMaxLUN, interface: ") + numInterface);
+//#endif
+
+//            byte maxLUN;
+
+//            USBTransfer transfer = new USBTransfer();
+//            DeviceInfo.hc.SetupTransfer(DeviceInfo, transfer, USBTransferType.USB_CONTROL, 0, 64);
+
+//            // bmRequestType bRequest  wValue wIndex    wLength   Data
+//            // 10100001b     11111110b 0000h  Interface 0001h     1 byte
+//            DeviceInfo.hc.SETUPTransaction(transfer, 8, 0xA1, 0xFE, 0, 0, numInterface, 1);
+//            DeviceInfo.hc.INTransaction(transfer, false, &maxLUN, 1);
+//            DeviceInfo.hc.OUTTransaction(transfer, true, null, 0); // handshake
+//            DeviceInfo.hc.IssueTransfer(transfer);
+
+//            return maxLUN;
+//        }
+
+
+        public void BulkReset()
         {
-#if MSD_TRACE
-            DBGMSG(((FOS_System.String)"USB MSD: TransferBulkOnly - GetMaxLUN, interface: ") + numInterface);
-#endif
-
-            byte maxLUN;
-
-            USBTransfer transfer = new USBTransfer();
-            DeviceInfo.hc.SetupTransfer(DeviceInfo, transfer, USBTransferType.USB_CONTROL, 0, 64);
-
-            // bmRequestType bRequest  wValue wIndex    wLength   Data
-            // 10100001b     11111110b 0000h  Interface 0001h     1 byte
-            DeviceInfo.hc.SETUPTransaction(transfer, 8, 0xA1, 0xFE, 0, 0, numInterface, 1);
-            DeviceInfo.hc.INTransaction(transfer, false, &maxLUN, 1);
-            DeviceInfo.hc.OUTTransaction(transfer, true, null, 0); // handshake
-            DeviceInfo.hc.IssueTransfer(transfer);
-
-            return maxLUN;
+            BulkReset(DeviceInfo.MSD_InterfaceNum);
         }
-        // Bulk-Only Mass Storage Reset
+        /// <summary>
+        /// Bulk-Only Mass Storage Reset
+        /// </summary>
+        /// <param name="numInterface">Interface number to reset.</param> 
         public void BulkReset(byte numInterface)
         {
 #if MSD_TRACE
@@ -389,6 +405,7 @@ namespace Kernel.Hardware.USB.Devices
                 }
             }
         }
+        
         public byte TestDeviceReady()
         {
             byte maxTest = 5;
@@ -448,16 +465,15 @@ namespace Kernel.Hardware.USB.Devices
             byte CmdQue = Utils.GetField(addr, 7, 1, 1);
             byte Linked = Utils.GetField(addr, 7, 3, 1);
 
+#if MSD_TRACE || DEVICE_INFO
             BasicConsole.WriteLine("Vendor ID  : " + FOS_System.ByteConverter.GetASCIIStringFromASCII(addr, 8, 8));
             BasicConsole.WriteLine("Product ID : " + FOS_System.ByteConverter.GetASCIIStringFromASCII(addr, 16, 16));
 
-#if MSD_TRACE
             DBGMSG("Revision   : " + FOS_System.ByteConverter.GetASCIIStringFromASCII(addr, 32, 4));
 
             // Book of Jan Axelson, "USB Mass Storage", page 140:
             // printf("\nVersion ANSI: %u  ECMA: %u  ISO: %u", ANSIapprovedVersion, ECMAversion, ISOversion);
             DBGMSG(((FOS_System.String)"Version: ") + ANSIapprovedVersion + " (4: SPC-2, 5: SPC-3)");
-#endif
 
             // Jan Axelson, USB Mass Storage, page 140
             if (ResponseDataFormat == 2)
@@ -501,6 +517,7 @@ namespace Kernel.Hardware.USB.Devices
                 case 0x1E: BasicConsole.WriteLine("Reduced block command (RBC) direct-access device"); break;
                 case 0x1F: BasicConsole.WriteLine("Unknown or no device type"); break;
             }
+#endif
         }
 
         public void TestMSD()
@@ -518,13 +535,10 @@ namespace Kernel.Hardware.USB.Devices
 #if MSD_TRACE
             DBGMSG("SCSI: inquiry");
 #endif
-
-            byte* inquiryBuffer = (byte*)FOS_System.Heap.AllocZeroed(26u);
-            SendSCSICommand(0x12 /*SCSI opcode*/, 0 /*LBA*/, 36 /*Bytes In*/, inquiryBuffer, null);
-
-            AnalyzeInquiry(inquiryBuffer);
-
+              
+#if DEVICE_INFO || MSD_TRACE
             BasicConsole.DelayOutput(10);
+#endif
 
             ///////// send SCSI command "test unit ready(6)"
             TestDeviceReady();
@@ -541,8 +555,8 @@ namespace Kernel.Hardware.USB.Devices
             capacityBuffer[0] = Utils.htonl(capacityBuffer[0]);
             capacityBuffer[1] = Utils.htonl(capacityBuffer[1]);
 
-            diskDevice.SetBlockCount(((ulong)capacityBuffer[0]) + 1);
-            diskDevice.SetBlockSize((ulong)capacityBuffer[1]);
+            //diskDevice.SetBlockCount(((ulong)capacityBuffer[0]) + 1);
+            //diskDevice.SetBlockSize((ulong)capacityBuffer[1]);
             
 #if MSD_TRACE
             DBGMSG(((FOS_System.String)"Capacity: ") + (diskDevice.BlockCount * diskDevice.BlockSize) + ", Last LBA: " + capacityBuffer[0] + ", block size: " + capacityBuffer[1]);
@@ -702,22 +716,46 @@ namespace Kernel.Hardware.USB.Devices
         public MassStorageDevice_DiskDevice(MassStorageDevice anMSD)
         {
             msd = anMSD;
-            DeviceManager.Devices.Add(this);
-            blockSize = 512; // TODO - How do we determine this? See Init TODO below.
+            
+            uint* capacityBuffer = (uint*)FOS_System.Heap.AllocZeroed(8);
+            anMSD.SendSCSICommand(0x25 /*SCSI opcode*/, 0 /*LBA*/, 8 /*Bytes In*/, capacityBuffer, null);
 
-            //TODO - Init BlockDevice fields with data from USB stick
+            // MSB ... LSB
+            capacityBuffer[0] = Utils.htonl(capacityBuffer[0]);
+            capacityBuffer[1] = Utils.htonl(capacityBuffer[1]);
+
+            blockCount = ((ulong)capacityBuffer[0]) + 1;
+            blockSize = (ulong)capacityBuffer[1];
+
+            DeviceManager.Devices.Add(this);
         }
 
         public override void ReadBlock(ulong aBlockNo, uint aBlockCount, byte[] aData)
         {
+#if MSD_TRACE
+            BasicConsole.WriteLine("Beginning reading...");
+#endif
+
             byte* dataPtr = ((byte*)Utilities.ObjectUtilities.GetHandle(aData)) + FOS_System.Array.FieldsBytesSize;
             for (uint i = 0; i < aBlockCount; i++)
             {
+#if MSD_TRACE
+                BasicConsole.Write(((FOS_System.String)"Reading block: ") + i);
+#endif
+
                 msd.Read((uint)(aBlockNo + i), dataPtr);
                 dataPtr += blockSize;
+                
+#if MSD_TRACE
+                BasicConsole.WriteLine(" - Read.");
+#endif
 
                 FOS_System.GC.Cleanup();
             }
+
+#if MSD_TRACE
+            BasicConsole.WriteLine("Completed all reading.");
+#endif
         }
         public override void WriteBlock(ulong aBlockNo, uint aBlockCount, byte[] aData)
         {
@@ -730,17 +768,7 @@ namespace Kernel.Hardware.USB.Devices
                 FOS_System.GC.Cleanup();
             }
         }
-
-        //TODo - Remove these hacks
-        public void SetBlockCount(ulong count)
-        {
-            blockCount = count;
-        }
-        public void SetBlockSize(ulong size)
-        {
-            blockSize = size;
-        }
-
+        
         public void Destroy()
         {
             DeviceManager.Devices.Remove(this);

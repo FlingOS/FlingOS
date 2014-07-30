@@ -17,7 +17,7 @@
 #endregion
 
 #define HEAP_TRACE
-//#undef HEAP_TRACE
+#undef HEAP_TRACE
     
 using System;
 
@@ -261,6 +261,12 @@ namespace Kernel.FOS_System
         [Compiler.NoGC]
         public static void* Alloc(UInt32 size, UInt32 boundary)
         {
+#if HEAP_TRACE
+            BasicConsole.SetTextColour(BasicConsole.warning_colour);
+            BasicConsole.WriteLine("Attempt to alloc mem....");
+            BasicConsole.SetTextColour(BasicConsole.default_colour);
+#endif
+
             HeapBlock* b;
             byte* bm;
             UInt32 bcnt;

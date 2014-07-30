@@ -32,7 +32,7 @@ namespace Kernel
         /// <summary>
         /// Initialises static stuff within the kernel (such as calling GC.Init and BasicDebug.Init)
         /// </summary>
-        //[Compiler.NoDebug]
+        [Compiler.NoDebug]
         static Kernel()
         {
             BasicConsole.Init();
@@ -112,7 +112,8 @@ namespace Kernel
             //            to "ret"
             //So we just halt the CPU for want of a better solution later when ACPI is 
             //implemented.
-            Halt();
+            ExceptionMethods.HaltReason = "End of Main";
+            Halt(0xFFFFFFFF);
             //TODO: ACPI shutdown
         }
 
@@ -121,8 +122,15 @@ namespace Kernel
         /// </summary>
         [Compiler.HaltMethod]
         [Compiler.NoGC]
-        public static void Halt()
+        public static void Halt(uint lastAddress)
         {
+            BasicConsole.SetTextColour(BasicConsole.warning_colour);
+            BasicConsole.Write("Halt Reason: ");
+            BasicConsole.WriteLine(ExceptionMethods.HaltReason);
+            //BasicConsole.Write("Last address: ");
+            //BasicConsole.WriteLine(lastAddress);
+            BasicConsole.SetTextColour(BasicConsole.default_colour);
+
             if(ExceptionMethods.CurrentException != null)
             {
                 BasicConsole.SetTextColour(BasicConsole.error_colour);
@@ -156,13 +164,6 @@ namespace Kernel
         {
             try
             {
-                //DummyObjectTest();
-                //BasicConsole.DelayOutput(5);
-                //IntArrayTest();
-                //BasicConsole.DelayOutput(5);
-                //ObjectArrayTest();
-                //BasicConsole.DelayOutput(5);
-
                 //InitATA();
 
                 //OutputDivider();
@@ -202,13 +203,23 @@ namespace Kernel
 
                     OutputDivider();
 
-                    //CheckDiskFormatting();
+                    CheckDiskFormatting();
 
                     OutputDivider();
 
                     try
                     {
                         OutputFileSystemsInfo();
+                    }
+                    catch
+                    {
+                        OutputCurrentExceptionInfo();
+                    }
+
+                    try
+                    {
+                        OutputFileContents("A:/Doc in Root Dir.txt");
+                        OutputFileContents("A:/Test Dir/Doc in Test Dir.txt");
                     }
                     catch
                     {
@@ -438,9 +449,13 @@ namespace Kernel
                 if (xItem._Type == (FOS_System.Type)(typeof(FOS_System.IO.FAT.FATDirectory)))
                 {
                     FOS_System.String name = ((FOS_System.IO.FAT.FATDirectory)Listings[j]).Name;
-                    BasicConsole.WriteLine(((FOS_System.String)"<DIR> ") + name);
-
-                    OutputListings(((FOS_System.IO.FAT.FATDirectory)Listings[j]).GetListings());
+                    if (name != "." && name != "..")
+                    {
+                        BasicConsole.WriteLine(((FOS_System.String)"<DIR> ") + name);
+                        BasicConsole.WriteLine("                 |||||||||||||||||||||||||||||||");
+                        OutputListings(((FOS_System.IO.FAT.FATDirectory)Listings[j]).GetListings());
+                        BasicConsole.WriteLine("                 |||||||||||||||||||||||||||||||");
+                    }
                 }
                 else if (xItem._Type == (FOS_System.Type)(typeof(FOS_System.IO.FAT.FATFile)))
                 {

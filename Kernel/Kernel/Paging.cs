@@ -16,6 +16,9 @@
 /// ------------------------------------------------------------------------------ ///
 #endregion
     
+#define PAGING_TRACE
+#undef PAGING_TRACE
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -151,11 +154,13 @@ namespace Kernel
             {
                 endPT = j == endPDIndex ? endPTIndex : 1023;
 
+#if PAGING_TRACE
                 BasicConsole.WriteLine(((FOS_System.String)"      PD Index: ") + j);
                 BasicConsole.WriteLine(((FOS_System.String)"Start PT Index: ") + startPT);
                 BasicConsole.WriteLine(((FOS_System.String)"  End PT Index: ") + endPT);
                 BasicConsole.WriteLine(((FOS_System.String)" Start Address: ") + address);
                 BasicConsole.DelayOutput(1);
+#endif
 
                 page_directory[j] = ((uint)kernel_page_table) | 3;
                 
@@ -175,8 +180,9 @@ namespace Kernel
 
                 kernel_page_table += 1024;
             }
-
+#if PAGING_TRACE
             BasicConsole.WriteLine("Kernel mapping completed.");
+#endif
 
             LoadedPaging = true;
             //}
