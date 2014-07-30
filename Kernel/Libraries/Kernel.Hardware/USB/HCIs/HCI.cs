@@ -107,7 +107,17 @@ namespace Kernel.Hardware.USB.HCIs
                 ((USBEndpoint)transfer.device.Endpoints[transfer.endpoint]).toggle = true;
             }
 
+#if HCI_TRACE
+            BasicConsole.WriteLine("Call _INTransaction...");
+            BasicConsole.DelayOutput(1);
+#endif
+
             _INTransaction(transfer, transaction, ((USBEndpoint)transfer.device.Endpoints[transfer.endpoint]).toggle, buffer, clampedLength);
+
+#if HCI_TRACE
+            BasicConsole.WriteLine("Done.");
+            BasicConsole.DelayOutput(1);
+#endif
 
             transfer.transactions.Add(transaction);
 

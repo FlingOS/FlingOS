@@ -15,7 +15,10 @@
 ///                                                                                ///
 /// ------------------------------------------------------------------------------ ///
 #endregion
-    
+
+#define FSM_TRACE
+#undef FSM_TRACE
+
 using System;
 
 using Kernel.FOS_System.Collections;
@@ -92,10 +95,14 @@ namespace Kernel.FOS_System.IO
         {
             //TODO - Add more partitioning schemes.
 
+#if FSM_TRACE
             BasicConsole.WriteLine("Attempting to read MBR...");
+#endif
             byte[] MBRData = new byte[512];
             aDiskDevice.ReadBlock(0UL, 1U, MBRData);
+#if FSM_TRACE
             BasicConsole.WriteLine("Read potential MBR data. Attempting to init MBR...");
+#endif
             MBR TheMBR = new MBR(MBRData);
 
             if (!TheMBR.IsValid)
@@ -104,7 +111,9 @@ namespace Kernel.FOS_System.IO
             }
             else
             {
+#if FSM_TRACE
                 BasicConsole.WriteLine("Valid MBR found.");
+#endif
                 ProcessMBR(TheMBR, aDiskDevice);
             }
         }

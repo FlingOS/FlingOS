@@ -15,6 +15,9 @@
 ///                                                                                ///
 /// ------------------------------------------------------------------------------ ///
 #endregion
+
+#define HEAP_TRACE
+//#undef HEAP_TRACE
     
 using System;
 
@@ -267,7 +270,7 @@ namespace Kernel.FOS_System
 
             if(boundary > 1)
             {
-                size += boundary;
+                size += (boundary - 1);
             }
 
             /* iterate blocks */
@@ -328,6 +331,12 @@ namespace Kernel.FOS_System
                 }
             }
 
+#if HEAP_TRACE
+            BasicConsole.SetTextColour(BasicConsole.error_colour);
+            BasicConsole.WriteLine("!!Heap out of memory!!");
+            BasicConsole.SetTextColour(BasicConsole.default_colour);
+            BasicConsole.DelayOutput(2);
+#endif
             return null;
         }
         /// <summary>

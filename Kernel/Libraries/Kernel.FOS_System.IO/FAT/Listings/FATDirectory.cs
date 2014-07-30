@@ -17,7 +17,7 @@
 #endregion
     
 #define FATDIR_TRACE
-//#undef FATDIR_TRACE
+#undef FATDIR_TRACE
 
 using System;
 using Kernel.FOS_System.Collections;

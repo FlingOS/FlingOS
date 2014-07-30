@@ -17,7 +17,7 @@
 #endregion
     
 #define GC_TRACE
-#undef GC_TRACE
+//#undef GC_TRACE
 
 using System;
 using System.Collections.Generic;
@@ -484,7 +484,7 @@ namespace Kernel.FOS_System
             BasicConsole.WriteLine(((FOS_System.String)"Freed objects: ") + numObjsFreed);
             BasicConsole.WriteLine(((FOS_System.String)"Freed strings: ") + numStringsFreed);
             BasicConsole.WriteLine(((FOS_System.String)"Used memory  : ") + (Heap.FBlock->used * Heap.FBlock->bsize) + " / " + Heap.FBlock->size);
-            BasicConsole.DelayOutput(2);
+            //BasicConsole.DelayOutput(2);
             BasicConsole.SetTextColour(BasicConsole.default_colour);
         }
 

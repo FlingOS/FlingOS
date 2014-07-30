@@ -90,7 +90,7 @@ align 4096
 Page_Directory: TIMES 1024 dd 0
 Page_Table1: TIMES 1024 dd 0
 Page_Table_USB: TIMES 1024 dd 0
-Page_Table_Kernel: TIMES 1024 dd 0
+Page_Table_Kernel: TIMES 196608 dd 0
 
 Kernel_MemEnd:
 

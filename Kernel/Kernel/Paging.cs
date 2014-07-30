@@ -119,6 +119,7 @@ namespace Kernel
 
             //Initially, set up identity paged memory only for the kernel's required amount
             uint* kernel_page_table = GetKernelPageTablePtr();
+            uint* kernel_page_table_end = kernel_page_table + (1024 * 48);
             uint* kernel_MemStartPtr = GetKernelMemStartPtr();
             uint* kernel_MemEndPtr = GetKernelMemEndPtr();
             uint startPDIndex = (uint)kernel_MemStartPtr >> 22;
@@ -126,26 +127,59 @@ namespace Kernel
             uint endPDIndex = (uint)kernel_MemEndPtr >> 22;
             uint endPTIndex = ((uint)kernel_MemEndPtr >> 12) & 0x03FF;
 
-            if (endPDIndex != startPDIndex)
+            if (endPDIndex - startPDIndex > 32)
             {
                 ExceptionMethods.Throw(new FOS_System.Exception(
-                    ((FOS_System.String)"Unable to set up paging! endPDIndex != startPDIndex : ") +
+                    ((FOS_System.String)"Unable to set up paging! Insufficient pages! : ") +
                     startPDIndex + ", " + endPDIndex
                     ));
             }
-            else
+            //if (endPDIndex != startPDIndex)
+            //{
+            //    ExceptionMethods.Throw(new FOS_System.Exception(
+            //        ((FOS_System.String)"Unable to set up paging! endPDIndex != startPDIndex : ") +
+            //        startPDIndex + ", " + endPDIndex
+            //        ));
+            //}
+            //else
+            //{
+            
+            uint address = ((uint)kernel_MemStartPtr) & 0xFFFFF000;
+            uint startPT = startPTIndex;
+            uint endPT = 0;
+            for (uint j = startPDIndex; j <= endPDIndex; j++)
             {
-                page_directory[startPDIndex] = ((uint)kernel_page_table) | 3;
+                endPT = j == endPDIndex ? endPTIndex : 1023;
 
-                uint address = ((uint)kernel_MemStartPtr) & 0xFFFFF000;
-                for (uint i = startPTIndex; i <= endPTIndex; i++)
-                {
+                BasicConsole.WriteLine(((FOS_System.String)"      PD Index: ") + j);
+                BasicConsole.WriteLine(((FOS_System.String)"Start PT Index: ") + startPT);
+                BasicConsole.WriteLine(((FOS_System.String)"  End PT Index: ") + endPT);
+                BasicConsole.WriteLine(((FOS_System.String)" Start Address: ") + address);
+                BasicConsole.DelayOutput(1);
+
+                page_directory[j] = ((uint)kernel_page_table) | 3;
+                
+                for (uint i = startPT; i <= endPT; i++)
+                {                    
                     kernel_page_table[i] = address | 3;
                     address += 4096;
                 }
 
-                LoadedPaging = true;
+                if (kernel_page_table == kernel_page_table_end)
+                {
+                    BasicConsole.WriteLine("Out of pages to allocate for kernel!");
+                    return;
+                }
+
+                startPT = 0;
+
+                kernel_page_table += 1024;
             }
+
+            BasicConsole.WriteLine("Kernel mapping completed.");
+
+            LoadedPaging = true;
+            //}
         }
 
         /// <summary>
