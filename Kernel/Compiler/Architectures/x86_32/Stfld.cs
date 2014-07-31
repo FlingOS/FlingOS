@@ -1,4 +1,22 @@
-﻿using System;
+﻿#region Copyright Notice
+/// ------------------------------------------------------------------------------ ///
+///                                                                                ///
+///               All contents copyright � Edward Nutting 2014                     ///
+///                                                                                ///
+///        You may not share, reuse, redistribute or otherwise use the             ///
+///        contents this file outside of the Fling OS project without              ///
+///        the express permission of Edward Nutting or other copyright             ///
+///        holder. Any changes (including but not limited to additions,            ///
+///        edits or subtractions) made to or from this document are not            ///
+///        your copyright. They are the copyright of the main copyright            ///
+///        holder for all Fling OS files. At the time of writing, this             ///
+///        owner was Edward Nutting. To be clear, owner(s) do not include          ///
+///        developers, contributors or other project members.                      ///
+///                                                                                ///
+/// ------------------------------------------------------------------------------ ///
+#endregion
+    
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -36,10 +54,11 @@ namespace Kernel.Compiler.Architectures.x86_32
                                               where links.FieldId == theField.Name
                                               select links).First();
             allChildLinks = allChildLinks.Where(x => x.ParentIndex < theTypeLink.ParentIndex).ToList();
-            int offset = allChildLinks.Sum(x => x.ChildType.StackBytesSize);
+            int offset = allChildLinks.Sum(x => x.ChildType.IsValueType ? x.ChildType.BytesSize : x.ChildType.StackBytesSize);
 
-            int size = Utils.GetNumBytesForType(theField.FieldType);
-            
+            int stackSize = Utils.GetNumBytesForType(theField.FieldType);
+            int memSize = theField.FieldType.IsValueType ? Utils.GetSizeForType(theField.FieldType) : stackSize;
+
             StackItem value = aScannerState.CurrentStackFrame.Stack.Pop();
             StackItem objPointer = aScannerState.CurrentStackFrame.Stack.Pop();
             
@@ -48,29 +67,25 @@ namespace Kernel.Compiler.Architectures.x86_32
                 //SUPPORT - floats
                 throw new NotSupportedException("Storing fields of type float not supported yet!");
             }
-            else if (!(value.sizeOnStackInBytes == 8 || value.sizeOnStackInBytes == 4))
-            {
-                throw new NotSupportedException("Storing fields of supplied size not supported yet!");
-            }
 
-            //Pop value
-            if(value.sizeOnStackInBytes == 4)
+            //Get object pointer
+            result.AppendLine(string.Format("mov ecx, [esp+{0}]", stackSize));
+            //Pop and mov value
+            for (int i = 0; i < memSize; i += 2)
             {
-                result.AppendLine("pop dword eax");
+                if (memSize - i == 1)
+                {
+                    result.AppendLine("pop word ax");
+                    result.AppendLine(string.Format("mov byte [ecx+{0}], al", offset + i));
+                }
+                else
+                {
+                    result.AppendLine("pop word ax");
+                    result.AppendLine(string.Format("mov word [ecx+{0}], ax", offset + i));
+                }
             }
-            else if(value.sizeOnStackInBytes == 8)
-            {
-                result.AppendLine("pop dword edx");
-                result.AppendLine("pop dword eax");
-            }
-            //Pop object pointer
-            result.AppendLine("pop dword ecx");
-            //Move value into pointer+offset
-            result.AppendLine(string.Format("mov dword [ecx+{0}], eax", offset));
-            if(value.sizeOnStackInBytes == 8)
-            {
-                result.AppendLine(string.Format("mov dword [ecx+{0}], edx", offset + 4));
-            }
+            result.AppendLine(string.Format("add esp, {0}", ((stackSize - memSize) / 2) * 2)); //Rounds down
+            result.AppendLine("add esp, 4");//Pop object pointer
 
             return result.ToString().Trim();
         }

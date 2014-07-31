@@ -1,4 +1,22 @@
-﻿using Kernel.FOS_System;
+﻿#region Copyright Notice
+/// ------------------------------------------------------------------------------ ///
+///                                                                                ///
+///               All contents copyright � Edward Nutting 2014                     ///
+///                                                                                ///
+///        You may not share, reuse, redistribute or otherwise use the             ///
+///        contents this file outside of the Fling OS project without              ///
+///        the express permission of Edward Nutting or other copyright             ///
+///        holder. Any changes (including but not limited to additions,            ///
+///        edits or subtractions) made to or from this document are not            ///
+///        your copyright. They are the copyright of the main copyright            ///
+///        holder for all Fling OS files. At the time of writing, this             ///
+///        owner was Edward Nutting. To be clear, owner(s) do not include          ///
+///        developers, contributors or other project members.                      ///
+///                                                                                ///
+/// ------------------------------------------------------------------------------ ///
+#endregion
+    
+using Kernel.FOS_System;
 using Kernel.FOS_System.Collections;
 using Kernel.FOS_System.IO;
 using System;
@@ -20,7 +38,9 @@ namespace Kernel
             BasicConsole.Init();
             BasicConsole.Clear();
 
-            //Debug.BasicDebug.Init();
+#if DEBUG
+            Debug.BasicDebug.Init();
+#endif
             FOS_System.GC.Init();
 
             BasicConsole.WriteLine();
@@ -75,8 +95,14 @@ namespace Kernel
             FOS_System.GC.Cleanup();
 
             BasicConsole.SetTextColour(BasicConsole.error_colour);
+            BasicConsole.Write("GC num objs: ");
             BasicConsole.WriteLine(FOS_System.GC.NumObjs);
+            BasicConsole.Write("GC num strings: ");
             BasicConsole.WriteLine(FOS_System.GC.NumStrings);
+            BasicConsole.Write("Heap memory use: ");
+            BasicConsole.Write(Heap.FBlock->used * Heap.FBlock->bsize);
+            BasicConsole.Write(" / ");
+            BasicConsole.WriteLine(Heap.FBlock->size);
             BasicConsole.SetTextColour(BasicConsole.default_colour);
 
             BasicConsole.WriteLine("Fling OS Ended.");
@@ -86,7 +112,9 @@ namespace Kernel
             //            to "ret"
             //So we just halt the CPU for want of a better solution later when ACPI is 
             //implemented.
-            Halt();
+            ExceptionMethods.HaltReason = "End of Main";
+            Halt(0xFFFFFFFF);
+            //TODO: ACPI shutdown
         }
 
         /// <summary>
@@ -94,11 +122,35 @@ namespace Kernel
         /// </summary>
         [Compiler.HaltMethod]
         [Compiler.NoGC]
-        public static void Halt()
+        public static void Halt(uint lastAddress)
         {
-            if(ExceptionMethods.CurrentException != null)
+            try
             {
+                Hardware.Keyboards.PS2.ThePS2.Disable();
+            }
+            catch
+            {
+            }
+
+            BasicConsole.SetTextColour(BasicConsole.warning_colour);
+            BasicConsole.Write("Halt Reason: ");
+            BasicConsole.WriteLine(ExceptionMethods.HaltReason);
+            //BasicConsole.Write("Last address: ");
+            //BasicConsole.WriteLine(lastAddress);
+            BasicConsole.SetTextColour(BasicConsole.default_colour);
+
+            if (ExceptionMethods.CurrentException != null)
+            {
+                BasicConsole.SetTextColour(BasicConsole.error_colour);
                 BasicConsole.WriteLine(ExceptionMethods.CurrentException.Message);
+                if (ExceptionMethods.CurrentException._Type == (FOS_System.Type)(typeof(FOS_System.Exceptions.PageFaultException)))
+                {
+                    BasicConsole.Write("Address: ");
+                    BasicConsole.WriteLine(((FOS_System.Exceptions.PageFaultException)ExceptionMethods.CurrentException).address);
+                    BasicConsole.Write("Code: ");
+                    BasicConsole.WriteLine(((FOS_System.Exceptions.PageFaultException)ExceptionMethods.CurrentException).errorCode);
+                }
+                BasicConsole.SetTextColour(BasicConsole.default_colour);
             }
 
             BasicConsole.SetTextColour(BasicConsole.error_colour);
@@ -110,7 +162,7 @@ namespace Kernel
         /// <summary>
         /// Disk0 - expected to be the primary, master HDD.
         /// </summary>
-        private static Hardware.Devices.DiskDevice disk0;
+        private static Hardware.Devices.DiskDevice HDD0;
         /// <summary>
         /// The actual main method for the kernel - by this point, all memory management, exception handling 
         /// etc has been set up properly.
@@ -120,38 +172,11 @@ namespace Kernel
         {
             try
             {
+                KeyboardTest();
+
                 InitATA();
-                
+
                 OutputDivider();
-
-                if (Hardware.DeviceManager.Devices.Count > 0)
-                {
-                    //try
-                    //{
-                    //    OutputATAInfo();
-                    //}
-                    //catch
-                    //{
-                    //    OutputCurrentExceptionInfo();
-                    //}
-
-                    InitFileSystem();
-
-                    OutputDivider();
-
-                    CheckDiskFormatting();
-
-                    OutputDivider();
-
-                    //try
-                    //{
-                    //    OutputFileSystemsInfo();
-                    //}
-                    //catch
-                    //{
-                    //    OutputCurrentExceptionInfo();
-                    //}
-                }
 
                 InitPCI();
 
@@ -172,10 +197,55 @@ namespace Kernel
                 InitUSB();
 
                 OutputDivider();
+
+                if (Hardware.DeviceManager.Devices.Count > 0)
+                {
+                    //try
+                    //{
+                    //    OutputATAInfo();
+                    //}
+                    //catch
+                    //{
+                    //    OutputCurrentExceptionInfo();
+                    //}
+
+                    InitFileSystem();
+
+                    OutputDivider();
+
+                    CheckDiskFormatting(HDD0);
+
+                    OutputDivider();
+
+                    try
+                    {
+                        OutputFileSystemsInfo();
+                    }
+                    catch
+                    {
+                        OutputCurrentExceptionInfo();
+                    }
+
+                    try
+                    {
+                        OutputFileContents("A:/Doc in Root Dir.txt");
+                        OutputFileContents("A:/Test Dir/Doc in Test Dir.txt");
+                    }
+                    catch
+                    {
+                        OutputCurrentExceptionInfo();
+                    }
+
+                    FileSystemTests();
+                }
             }
             catch
             {
                 OutputCurrentExceptionInfo();
+            }
+            finally
+            {
+                Hardware.Keyboards.PS2.ThePS2.Disable();
             }
 
             BasicConsole.WriteLine();
@@ -212,11 +282,14 @@ namespace Kernel
         /// </summary>
         private static void InitATA()
         {
+            int deviceCount = Hardware.DeviceManager.Devices.Count;
+
             BasicConsole.WriteLine("Initiailsing ATA...");
             Hardware.ATA.ATAManager.Init();
             BasicConsole.WriteLine(((FOS_System.String)"ATA initialised. Devices: ") + Hardware.DeviceManager.Devices.Count);
             
-            disk0 = (Hardware.Devices.DiskDevice)Hardware.DeviceManager.Devices[0];
+            //Get the first found drive (expected to be HDD)
+            HDD0 = (Hardware.Devices.DiskDevice)Hardware.DeviceManager.Devices[deviceCount];
         }
         /// <summary>
         /// Initialises the file-system.
@@ -230,27 +303,50 @@ namespace Kernel
         /// <summary>
         /// Checks for usable FAT32 partitions. If none found, formats "disk0" as MBR, 1 FAT32 partiton.
         /// </summary>
-        private static void CheckDiskFormatting()
+        private static void CheckDiskFormatting(Hardware.Devices.DiskDevice disk)
         {
-            if (FOS_System.IO.FileSystemManager.Partitions.Count == 0)
+            bool OK = true;
+
+            if (disk == null)
             {
-                BasicConsole.WriteLine("Disk found but no partitions found on disk.");
-                BasicConsole.WriteLine("Formatting disk as MBR with one, primary FAT32 partition...");
+                BasicConsole.WriteLine("Can't check formatting of null disk!");
+                return;
+            }
 
-                List newPartitions = new List(1);
-                newPartitions.Add(FOS_System.IO.Disk.MBR.CreateFAT32PartitionInfo(disk0, false));
-                FOS_System.IO.Disk.MBR.FormatDisk(disk0, newPartitions);
+            if (!FOS_System.IO.Partition.HasPartitions(disk))
+            {
+                BasicConsole.WriteLine("No partitions found on disk. Either no disk (or equiv.) devices or they are not MBR formatted.");
 
-                BasicConsole.WriteLine("MBR format done.");
-                BasicConsole.DelayOutput(2);
+                try
+                {
+                    BasicConsole.WriteLine("Formatting disk as MBR with one, primary FAT32 partition...");
+
+                    List newPartitions = new List(1);
+                    newPartitions.Add(FOS_System.IO.Disk.MBR.CreateFAT32PartitionInfo(disk, false));
+                    FOS_System.IO.Disk.MBR.FormatDisk(disk, newPartitions);
+
+                    BasicConsole.WriteLine("MBR format done.");
+                    BasicConsole.DelayOutput(2);
+                }
+                catch
+                {
+                    OK = false;
+                    BasicConsole.WriteLine("Error initializing disk: " + ExceptionMethods.CurrentException.Message);
+                }
 
                 InitFileSystem();
             }
-            if (FOS_System.IO.FileSystemManager.FileSystemMappings.Count == 0)
+            FOS_System.IO.Partition part = FOS_System.IO.Partition.GetFirstPartition(disk);
+            if(part == null)
+            {
+                BasicConsole.WriteLine("Disk not formatted correctly! No partition found.");
+                return;
+            }
+
+            if (!FOS_System.IO.FileSystemManager.HasMapping(part))
             {
                 BasicConsole.WriteLine("Formatting first partition as FAT32...");
-                Partition thePart = (Partition)FOS_System.IO.FileSystemManager.Partitions[0];
-                FOS_System.IO.FAT.FATFileSystem.FormatPartitionAsFAT32(thePart);
+                FOS_System.IO.FAT.FATFileSystem.FormatPartitionAsFAT32(part);
                 BasicConsole.WriteLine("Format done.");
                 BasicConsole.DelayOutput(2);
 
@@ -265,7 +361,12 @@ namespace Kernel
         {
             BasicConsole.WriteLine("Initialising USB system...");
             Hardware.USB.USBManager.Init();
-            BasicConsole.WriteLine(((FOS_System.String)"USB system initialised. HCI devices: ") + Hardware.USB.USBManager.HCIDevices.Count);
+            BasicConsole.WriteLine(((FOS_System.String)"USB system initialised.        HCIs : ") + Hardware.USB.USBManager.HCIDevices.Count);
+            BasicConsole.WriteLine(((FOS_System.String)"                              UHCIs : ") + Hardware.USB.USBManager.NumUHCIDevices);
+            BasicConsole.WriteLine(((FOS_System.String)"                              OHCIs : ") + Hardware.USB.USBManager.NumOHCIDevices);
+            BasicConsole.WriteLine(((FOS_System.String)"                              EHCIs : ") + Hardware.USB.USBManager.NumEHCIDevices);
+            BasicConsole.WriteLine(((FOS_System.String)"                              xHCIs : ") + Hardware.USB.USBManager.NumxHCIDevices);
+            BasicConsole.WriteLine(((FOS_System.String)"                        USB devices : ") + Hardware.USB.USBManager.Devices.Count);
         }
 
         /// <summary>
@@ -324,9 +425,13 @@ namespace Kernel
                 if (xItem._Type == (FOS_System.Type)(typeof(FOS_System.IO.FAT.FATDirectory)))
                 {
                     FOS_System.String name = ((FOS_System.IO.FAT.FATDirectory)Listings[j]).Name;
-                    BasicConsole.WriteLine(((FOS_System.String)"<DIR> ") + name);
-
-                    OutputListings(((FOS_System.IO.FAT.FATDirectory)Listings[j]).GetListings());
+                    if (name != "." && name != "..")
+                    {
+                        BasicConsole.WriteLine(((FOS_System.String)"<DIR> ") + name);
+                        BasicConsole.WriteLine("                 |||||||||||||||||||||||||||||||");
+                        OutputListings(((FOS_System.IO.FAT.FATDirectory)Listings[j]).GetListings());
+                        BasicConsole.WriteLine("                 |||||||||||||||||||||||||||||||");
+                    }
                 }
                 else if (xItem._Type == (FOS_System.Type)(typeof(FOS_System.IO.FAT.FATFile)))
                 {
@@ -462,6 +567,53 @@ namespace Kernel
         }
 
         /// <summary>
+        /// Tests all interrupts in the range 17 to 255 by firing them.
+        /// </summary>
+        [Compiler.NoGC]
+        private static void InterruptsTest()
+        {
+            for (uint i = 17; i < 256; i++)
+            {
+                BasicConsole.WriteLine(((FOS_System.String)"Attempting to invoke interrupt: ") + i);
+                Hardware.Interrupts.Interrupts.InvokeInterrupt(i);
+            }
+        }
+        /// <summary>
+        /// Tests delegates.
+        /// </summary>
+        [Compiler.NoGC]
+        private static void DelegateTest()
+        {
+            IntDelegate del = CallbackMethod;
+            int x = del(new FOS_System.Object());
+            if (x == -1)
+            {
+                BasicConsole.WriteLine("Delegate return value OK.");
+            }
+            else
+            {
+                BasicConsole.WriteLine("Delegate return value NOT OK!");
+            }
+            BasicConsole.DelayOutput(10);
+        }
+        /// <summary>
+        /// Delegate used by delegates test.
+        /// </summary>
+        /// <param name="data">Test data to pass in.</param>
+        /// <returns>A test value.</returns>
+        private delegate int IntDelegate(object data);
+        /// <summary>
+        /// Method called by delegates test.
+        /// </summary>
+        /// <param name="data">Test data to pass in.</param>
+        /// <returns>A test value.</returns>
+        private static int CallbackMethod(object data)
+        {
+            BasicConsole.WriteLine("Callback method executed!");
+            BasicConsole.DelayOutput(10);
+            return -1;
+        }
+        /// <summary>
         /// Runs a series of tests on the file system, currently:
         ///  - Finds or creates A:/ drive
         ///  - Attempts to use FAT file system for A drive
@@ -554,11 +706,11 @@ namespace Kernel
 
                         BasicConsole.WriteLine("Writing data...");
                         fileStream.Position = 0;
-                        int size = 0;
+                        uint size = (uint)shortNameTestFile.Size;
                         //for (int i = 0; i < 20; i++)
                         {
-                            fileStream.Write(testStrBytes, 0, testStrBytes.Length);
-                            size += testStrBytes.Length;
+                            //fileStream.Write(testStrBytes, 0, testStrBytes.Length);
+                            //size += testStrBytes.Length;
                         }
 
                         BasicConsole.WriteLine("Reading data...");
@@ -580,6 +732,61 @@ namespace Kernel
                     BasicConsole.WriteLine("Could not find \"A:/\" mapping.");
                 }
 
+                
+                FileSystemMapping B_FSMapping = FileSystemManager.GetMapping("B:/");
+                if (B_FSMapping != null)
+                {
+                    if (A_FSMapping != null)
+                    {
+                        File FileToCopy = File.Open("B:/Doc in Root Dir.txt");
+                        File shortNameTestFile = File.Open("A:/P1D2/ShrtTest.txt");
+                        if (shortNameTestFile != null)
+                        {
+                            FOS_System.IO.Streams.FileStream FromFileStream = FileToCopy.GetStream();
+
+                            if (shortNameTestFile != null)
+                            {
+                                FOS_System.IO.Streams.FileStream ToFileStream = shortNameTestFile.GetStream();
+
+                                BasicConsole.WriteLine("Copying data...");
+
+                                FromFileStream.Position = 0;
+                                byte[] readBytes = new byte[(uint)FileToCopy.Size];
+                                FromFileStream.Read(readBytes, 0, readBytes.Length);
+                                FOS_System.String readStr = ByteConverter.GetASCIIStringFromASCII(readBytes, 0u, (uint)readBytes.Length);
+                                BasicConsole.WriteLine("\"" + readStr + "\"");
+
+                                ToFileStream.Position = 0;
+                                ToFileStream.Write(readBytes, 0, readBytes.Length);
+
+                                BasicConsole.WriteLine("Copied!");
+                                BasicConsole.WriteLine("Reading back data from target file...");
+
+                                ToFileStream.Position = 0;
+                                readBytes = new byte[(uint)FileToCopy.Size];
+                                ToFileStream.Read(readBytes, 0, readBytes.Length);
+                                readStr = ByteConverter.GetASCIIStringFromASCII(readBytes, 0u, (uint)readBytes.Length);
+                                BasicConsole.WriteLine("\"" + readStr + "\"");
+                            }
+                            else
+                            {
+                                BasicConsole.WriteLine("Could not find file to copy to!");
+                            }
+                        }
+                        else
+                        {
+                            BasicConsole.WriteLine("Could not find file to copy!");
+                        }
+                    }
+                    else
+                    {
+                        BasicConsole.WriteLine("\"B:/\" mapping found but no \"A:/\" mapping!");
+                    }
+                }
+                else
+                {
+                    BasicConsole.WriteLine("Could not find \"B:/\" mapping.");
+                }
             }
             catch
             {
@@ -728,38 +935,38 @@ namespace Kernel
         /// </summary>
         private static void DummyObjectTest()
         {
-            //BasicConsole.WriteLine("Dummy object test...");
+            BasicConsole.WriteLine("Dummy object test...");
 
-            //try
-            //{
-            //    Dummy obj = new Dummy();
-            //    new Dummy();
-            //    obj = new Dummy();
-            //    obj.x = obj.x + obj.y;
-            //    if (obj.x == 21)
-            //    {
-            //        BasicConsole.WriteLine("Addition success!");
-            //    }
+            try
+            {
+                Dummy obj = new Dummy();
+                new Dummy();
+                obj = new Dummy();
+                obj.x = obj.x + obj.y;
+                if (obj.x == 21)
+                {
+                    BasicConsole.WriteLine("Addition success!");
+                }
 
-            //    if (obj.testEnum == Dummy.TestEnum.First)
-            //    {
-            //        BasicConsole.WriteLine("TestEnum.First pre-assigned.");
-            //    }
-            //    obj.testEnum = Dummy.TestEnum.Second;
-            //    if (obj.testEnum == Dummy.TestEnum.Second)
-            //    {
-            //        BasicConsole.WriteLine("TestEnum.Second assignment worked.");
-            //    }
-            //}
-            //catch
-            //{
-            //    BasicConsole.SetTextColour(BasicConsole.warning_colour);
-            //    BasicConsole.WriteLine(ExceptionMethods.CurrentException.Message);
-            //    BasicConsole.SetTextColour(BasicConsole.default_colour);
-            //}
+                if (obj.testEnum == Dummy.TestEnum.First)
+                {
+                    BasicConsole.WriteLine("TestEnum.First pre-assigned.");
+                }
+                obj.testEnum = Dummy.TestEnum.Second;
+                if (obj.testEnum == Dummy.TestEnum.Second)
+                {
+                    BasicConsole.WriteLine("TestEnum.Second assignment worked.");
+                }
+            }
+            catch
+            {
+                BasicConsole.SetTextColour(BasicConsole.warning_colour);
+                BasicConsole.WriteLine(ExceptionMethods.CurrentException.Message);
+                BasicConsole.SetTextColour(BasicConsole.default_colour);
+            }
 
-            //BasicConsole.WriteLine("Dummy object test.");
-            BasicConsole.WriteLine("Dummy object test disabled.");
+            BasicConsole.WriteLine("Dummy object test.");
+            //BasicConsole.WriteLine("Dummy object test disabled.");
         }
         /// <summary>
         /// Tests managed exception sub-system by deliberately causing hardware-level divide-by-zero exception.
@@ -829,26 +1036,71 @@ namespace Kernel
                 BasicConsole.WriteLine("Finally ran.");
             }
         }
+
+        private static void KeyboardTest()
+        {
+            try
+            {
+                Hardware.Keyboards.PS2.Init();
+
+                BasicConsole.WriteLine("Running PS2 Keyboard test. Type for a bit, eventually it will end (if the keyboard works that is)...");
+
+                int charsPrinted = 0;
+                char c;
+                bool ok;
+                for (int i = 0; i < 240; i++)
+                {
+                    ok = Hardware.Keyboards.PS2.ThePS2.GetChar_Blocking(200000000, out c);
+                    if (ok)
+                    {
+                        charsPrinted++;
+                        if (charsPrinted % 80 == 0)
+                        {
+                            BasicConsole.WriteLine(c);
+                        }
+                        else
+                        {
+                            BasicConsole.Write(c);
+                        }
+                    }
+                    else
+                    {
+                        BasicConsole.WriteLine();
+                        BasicConsole.SetTextColour(BasicConsole.warning_colour);
+                        BasicConsole.WriteLine("Undisplayable key pressed.");
+                        BasicConsole.SetTextColour(BasicConsole.default_colour);
+                    }
+                }
+
+                BasicConsole.WriteLine();
+                BasicConsole.WriteLine();
+                BasicConsole.WriteLine("Ended keyboard test.");
+            }
+            finally
+            {
+                Hardware.Keyboards.PS2.Clean();
+            }
+        }
     }
 
-    //public class Dummy : FOS_System.Object
-    //{
-    //    public enum TestEnum
-    //    {
-    //        First = 1,
-    //        Second = 2,
-    //        Third = 3,
-    //        NULL = 0
-    //    }
+    public class Dummy : FOS_System.Object
+    {
+        public enum TestEnum
+        {
+            First = 1,
+            Second = 2,
+            Third = 3,
+            NULL = 0
+        }
 
-    //    public TestEnum testEnum = TestEnum.First;
+        public TestEnum testEnum = TestEnum.First;
 
-    //    public int x = 10;
-    //    public int y = 11;
+        public int x = 10;
+        public int y = 11;
 
-    //    public int Add()
-    //    {
-    //        return x + y;
-    //    }
-    //}
+        public int Add()
+        {
+            return x + y;
+        }
+    }
 }

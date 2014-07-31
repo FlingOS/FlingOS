@@ -1,4 +1,22 @@
-﻿using System;
+﻿#region Copyright Notice
+/// ------------------------------------------------------------------------------ ///
+///                                                                                ///
+///               All contents copyright � Edward Nutting 2014                     ///
+///                                                                                ///
+///        You may not share, reuse, redistribute or otherwise use the             ///
+///        contents this file outside of the Fling OS project without              ///
+///        the express permission of Edward Nutting or other copyright             ///
+///        holder. Any changes (including but not limited to additions,            ///
+///        edits or subtractions) made to or from this document are not            ///
+///        your copyright. They are the copyright of the main copyright            ///
+///        holder for all Fling OS files. At the time of writing, this             ///
+///        owner was Edward Nutting. To be clear, owner(s) do not include          ///
+///        developers, contributors or other project members.                      ///
+///                                                                                ///
+/// ------------------------------------------------------------------------------ ///
+#endregion
+    
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -283,7 +301,17 @@ namespace Kernel.Hardware.PCI
             this.slot = slot;
             this.function = function;
 
+#if PCI_TRACE || COMPILER_TRACE
+            ushort vendorID = ReadRegister16(0x00);
             VendorID = ReadRegister16(0x00);
+            BasicConsole.WriteLine(((FOS_System.String)"New PCI device. bus(arg)=") + bus + ", bus(fld)=" + this.bus);
+            BasicConsole.WriteLine(((FOS_System.String)"                slot(arg)=") + slot + ", slot(fld)=" + this.slot);
+            BasicConsole.WriteLine(((FOS_System.String)"                func(arg)=") + function + ", func(fld)=" + this.function);
+            BasicConsole.WriteLine(((FOS_System.String)"                vendorID(loc)=") + vendorID + ", vendorID(fld)=" + this.VendorID);
+            BasicConsole.DelayOutput(4);
+#else
+            VendorID = ReadRegister16(0x00);
+#endif
             DeviceID = ReadRegister16(0x02);
             
             RevisionID = ReadRegister8(0x08);
@@ -343,6 +371,21 @@ namespace Kernel.Hardware.PCI
             Command = (PCICommand)command;
         }
 
+        /// <summary>
+        /// Gets the size associated with the specified base address register.
+        /// </summary>
+        /// <param name="bar">The number of the base address register to test.</param>
+        /// <returns>The size.</returns>
+        protected uint GetSize(byte bar)
+        {
+            byte regNum = (byte)(0x10 + (bar * 4));
+            uint baseAddr = ReadRegister32(regNum);
+            WriteRegister32(regNum, 0xFFFFFFFF);
+            uint size = ReadRegister32(regNum);
+            size = (~size | 0x0F) + 1;
+            WriteRegister32(regNum, baseAddr);
+            return size;
+        }
 
         #region IOReadWrite
 
@@ -356,7 +399,7 @@ namespace Kernel.Hardware.PCI
         {
             UInt32 xAddr = GetAddressBase(bus, slot, function) | ((UInt32)(aRegister & 0xFC));
             PCI_IO.ConfigAddressPort.Write(xAddr);
-            return (byte)(PCI_IO.ConfigDataPort.Read_UInt32() >> ((aRegister % 4) * 8) & 0xFF);
+            return (byte)((PCI_IO.ConfigDataPort.Read_UInt32() >> ((aRegister % 4) * 8)) & 0xFF);
         }
 
         /// <summary>
@@ -369,7 +412,7 @@ namespace Kernel.Hardware.PCI
         {
             UInt32 xAddr = GetAddressBase(bus, slot, function) | ((UInt32)(aRegister & 0xFC));
             PCI_IO.ConfigAddressPort.Write(xAddr);
-            PCI_IO.ConfigDataPort.Write(value);
+            IO.IOPort.doWrite((ushort)(PCI_IO.ConfigDataPort.Port + (aRegister & 0x03)), value);
         }
 
         /// <summary>
@@ -382,7 +425,7 @@ namespace Kernel.Hardware.PCI
         {
             UInt32 xAddr = GetAddressBase(bus, slot, function) | ((UInt32)(aRegister & 0xFC));
             PCI_IO.ConfigAddressPort.Write(xAddr);
-            return (UInt16)(PCI_IO.ConfigDataPort.Read_UInt32() >> ((aRegister % 4) * 8) & 0xFFFF); ;
+            return (UInt16)((PCI_IO.ConfigDataPort.Read_UInt32() >> ((aRegister % 4) * 8)) & 0xFFFF);
         }
 
         /// <summary>
@@ -408,7 +451,7 @@ namespace Kernel.Hardware.PCI
         {
             UInt32 xAddr = GetAddressBase(bus, slot, function) | ((UInt32)(aRegister & 0xFC));
             PCI_IO.ConfigAddressPort.Write(xAddr);
-            return PCI_IO.ConfigDataPort.Read_UInt32();
+            return (PCI_IO.ConfigDataPort.Read_UInt32() >> ((aRegister % 4) * 8));
         }
 
         /// <summary>

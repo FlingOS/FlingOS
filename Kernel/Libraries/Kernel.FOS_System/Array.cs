@@ -1,4 +1,22 @@
-﻿using System;
+﻿#region Copyright Notice
+/// ------------------------------------------------------------------------------ ///
+///                                                                                ///
+///               All contents copyright � Edward Nutting 2014                     ///
+///                                                                                ///
+///        You may not share, reuse, redistribute or otherwise use the             ///
+///        contents this file outside of the Fling OS project without              ///
+///        the express permission of Edward Nutting or other copyright             ///
+///        holder. Any changes (including but not limited to additions,            ///
+///        edits or subtractions) made to or from this document are not            ///
+///        your copyright. They are the copyright of the main copyright            ///
+///        holder for all Fling OS files. At the time of writing, this             ///
+///        owner was Edward Nutting. To be clear, owner(s) do not include          ///
+///        developers, contributors or other project members.                      ///
+///                                                                                ///
+/// ------------------------------------------------------------------------------ ///
+#endregion
+    
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -13,7 +31,9 @@ namespace Kernel.FOS_System
     public unsafe class Array : Object
     {
         /* If changing the fields in this class, remember to update the 
-         * Kernel.GC.NewArr method implementation. */
+         * Kernel.GC.NewArr method implementation. And also the constant below.*/
+
+        public const uint FieldsBytesSize = 12;
 
         /// <summary>
         /// The length of the array. Can also use standard System.Array.Length e.g. new object[5].Length.

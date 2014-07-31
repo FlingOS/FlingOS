@@ -173,20 +173,25 @@ mov word [ebx+2], 0x8
 mov byte [ebx+4], 0x0
 mov byte [ebx+5], 0x8F
 add ebx, 8
-  
-mov dword ebx, _NATIVE_IDT_Contents
-add ebx, 992
-mov dword eax, Interrupt124Handler
-mov byte [ebx], al
-mov byte [ebx+1], ah
-shr dword eax, 0x10
-mov byte [ebx+6], al
-mov byte [ebx+7], ah
-mov word [ebx+2], 0x8
-mov byte [ebx+4], 0x0
-mov byte [ebx+5], 0x8F
-add ebx, 8
- 
+
+%macro CommonInterruptHandler_IDTMacro 1
+    ; %1
+    mov dword eax, CommonInterruptHandler%1
+    mov byte [ebx], al
+    mov byte [ebx+1], ah
+    shr dword eax, 0x10
+    mov byte [ebx+6], al
+    mov byte [ebx+7], ah
+    mov word [ebx+2], 0x8
+    mov byte [ebx+4], 0x0
+    mov byte [ebx+5], 0x8F
+    add ebx, 8
+%endmacro
+%assign handlernum 17
+%rep 239
+    CommonInterruptHandler_IDTMacro handlernum
+    %assign handlernum handlernum+1
+%endrep
 
 mov dword [_NATIVE_IDT_Pointer + 2], _NATIVE_IDT_Contents
 mov dword eax, _NATIVE_IDT_Pointer
@@ -197,7 +202,8 @@ jmp SkipIDTHandlers
 ; BEGIN - Proper exception handlers (i.e. they use the exceptions mechanism)
 
 Interrupt0Handler:
-call method_System_Void_RETEND_Kernel_ExceptionMethods_DECLEND_Throw_DivideByZeroException_NAMEEND___
+push dword [esp]
+call method_System_Void_RETEND_Kernel_ExceptionMethods_DECLEND_Throw_DivideByZeroException_NAMEEND__System_UInt32_
 
 Interrupt4Handler:
 call method_System_Void_RETEND_Kernel_ExceptionMethods_DECLEND_Throw_OverflowException_NAMEEND___
@@ -271,7 +277,7 @@ mov dword ebp, esp
 push dword eax
 push dword 0x02
 call method_System_Void_RETEND_Kernel_PreReqs_DECLEND_WriteDebugVideo_NAMEEND__System_String_System_UInt32_
-add esp, 4
+add esp, 8
 
 mov ecx, 0x0F0FFFFF
 MessageOnlyInterruptHandler.delayLoop1:
@@ -285,4 +291,74 @@ IRet
 
 ; END - Message-only Interrupt Handlers
 
+; BEGIN - Common interrupt handlers
+
+%macro CommonInterruptHandlerMacro 1
+CommonInterruptHandler%1:
+	pushad
+
+	; push dword Interrupt124HandlerMsg
+	; push dword 0x02
+	; call method_System_Void_RETEND_Kernel_PreReqs_DECLEND_WriteDebugVideo_NAMEEND__System_String_System_UInt32_
+	; add esp, 8
+	
+	; in al, 0x60  ; read information from the keyboard - REQUIRED for keyboard interrupt else keyboard won't think the
+				 ;										character has been handled so won't send interrupts for any 
+				 ;										more keys!
+	
+	push dword %1
+    call method_System_Void_RETEND_Kernel_Hardware_Interrupts_Interrupts_DECLEND_CommonISR_NAMEEND__System_UInt32_
+    add esp, 4
+
+	; This would send the EOI
+	; mov al, 0x20
+	; out 0x20, al
+
+	popad
+				
+    IRet
+%endmacro
+%assign handlernum2 17
+%rep 239
+    CommonInterruptHandlerMacro handlernum2
+    %assign handlernum2 handlernum2+1
+%endrep
+
+; END - Common interrupt handlers
+
 SkipIDTHandlers:
+pic_remap:
+; Remap IRQs 0-7    to    ISRs 32-39
+; and   IRQs 8-15    to    ISRs 40-47
+
+    ; Remap IRQ 0-15 to 32-47 (see http://wiki.osdev.org/PIC#Initialisation)
+    ; Interrupt Vectors 0x20 for IRQ 0 to 7 and 0x28 for IRQ 8 to 15
+    mov al, 0x11        ; INIT command
+    out 0x20, al        ; send INIT to PIC1
+    out 0xA0, al        ; send INIT to PIC2
+
+    mov al, 0x20        ; PIC1 interrupts start at 0x20
+    out 0x21, al        ; send the port to PIC1 DATA
+    mov al, 0x28        ; PIC2 interrupts start at 0x28
+    out 0xA1, al        ; send the port to PIC2 DATA
+
+    mov al, 0x04        ; MASTER code
+    out 0x21, al        ; set PIC1 as MASTER
+    mov al, 0x02        ; SLAVE code
+    out 0xA1, al        ; set PIC2 as SLAVE
+
+    dec al              ; al is now 1. This is the x86 mode code for both 8259 PIC chips
+    out 0x21, al        ; set PIC1
+    out 0xA1, al        ; set PIC2
+
+    dec al              ; al is now 0.
+    out 0x21, al        ; set PIC1
+    out 0xA1, al        ; set PIC2
+
+	mov ax, 0xFFFF		; Set interrupt mask to disable all interrupts
+    out 0x21, al        ; Set mask of PIC1_DATA
+    xchg al, ah
+    out 0xA1, al        ; Set mask of PIC2_DATA
+
+	sti					; Enable interrupts
+	nop					; Required - STI takes effect after the next instruction runs

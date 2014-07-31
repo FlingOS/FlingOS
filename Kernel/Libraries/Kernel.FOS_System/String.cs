@@ -1,4 +1,22 @@
-﻿using System;
+﻿#region Copyright Notice
+/// ------------------------------------------------------------------------------ ///
+///                                                                                ///
+///               All contents copyright � Edward Nutting 2014                     ///
+///                                                                                ///
+///        You may not share, reuse, redistribute or otherwise use the             ///
+///        contents this file outside of the Fling OS project without              ///
+///        the express permission of Edward Nutting or other copyright             ///
+///        holder. Any changes (including but not limited to additions,            ///
+///        edits or subtractions) made to or from this document are not            ///
+///        your copyright. They are the copyright of the main copyright            ///
+///        holder for all Fling OS files. At the time of writing, this             ///
+///        owner was Edward Nutting. To be clear, owner(s) do not include          ///
+///        developers, contributors or other project members.                      ///
+///                                                                                ///
+/// ------------------------------------------------------------------------------ ///
+#endregion
+    
+using System;
 
 namespace Kernel.FOS_System
 {
@@ -13,7 +31,9 @@ namespace Kernel.FOS_System
         /* If you add more fields here, remember to update the compiler and all the ASM files that depend on the string
            class structure ( i.e. do all the hard work! ;) )
          */
-        
+
+        public const uint FieldsBytesSize = 8;
+
         /// <summary>
         /// The length of the string.
         /// </summary>
@@ -103,12 +123,12 @@ namespace Kernel.FOS_System
         [Compiler.NoGC]
         public unsafe char* GetCharPointer()
         {
-            return (char*)(((byte*)Utilities.ObjectUtilities.GetHandle(this)) + 8/*For fields*/);
+            return (char*)(((byte*)Utilities.ObjectUtilities.GetHandle(this)) + FieldsBytesSize);
         }
 
         /// <summary>
         /// Creates a new string and pads the left side of the string with the specified character until the 
-        /// whole string is of the specified length.
+        /// whole string is of the specified length or returns the original string if it is longer.
         /// </summary>
         /// <param name="totalLength">The final length of the whole string.</param>
         /// <param name="padChar">The character to pad with.</param>
@@ -116,6 +136,11 @@ namespace Kernel.FOS_System
         [Compiler.NoDebug]
         public FOS_System.String PadLeft(int totalLength, char padChar)
         {
+            if (this.length >= totalLength)
+            {
+                return this;
+            }
+
             FOS_System.String result = New(totalLength);
             int offset = totalLength - this.length;
             for (int i = 0; i < this.length; i++)
@@ -130,7 +155,7 @@ namespace Kernel.FOS_System
         }
         /// <summary>
         /// Creates a new string and pads the right side of the string with the specified character until the 
-        /// whole string is of the specified length.
+        /// whole string is of the specified length or returns the original string if it is longer.
         /// </summary>
         /// <param name="totalLength">The final length of the whole string.</param>
         /// <param name="padChar">The character to pad with.</param>
@@ -138,13 +163,17 @@ namespace Kernel.FOS_System
         [Compiler.NoDebug]
         public FOS_System.String PadRight(int totalLength, char padChar)
         {
+            if(this.length >= totalLength)
+            {
+                return this;
+            }
+
             FOS_System.String result = New(totalLength);
             for (int i = 0; i < this.length; i++)
             {
                 result[i] = this[i];
             }
-            int offset = this.length;
-            for (int i = offset; i < totalLength; i++)
+            for (int i = this.length; i < totalLength; i++)
             {
                 result[i] = padChar;
             }
@@ -530,6 +559,19 @@ namespace Kernel.FOS_System
                 y >>= 4;
             }
             return "0x" + result.PadLeft(4, '0');
+        }
+        /// <summary>
+        /// Implicitly converts the specified value to an FOS_System.String.
+        /// </summary>
+        /// <param name="x">The value to convert.</param>
+        /// <returns>The FOS_System.String value.</returns>
+        [Compiler.NoDebug]
+        [Compiler.NoGC]
+        public static implicit operator FOS_System.String(char x)
+        {
+            FOS_System.String result = FOS_System.String.New(1);
+            result[0] = x;
+            return result;
         }
         /// <summary>
         /// Implicitly converts the specified value to a hex FOS_System.String.

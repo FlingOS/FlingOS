@@ -1,4 +1,22 @@
-﻿using System;
+﻿#region Copyright Notice
+/// ------------------------------------------------------------------------------ ///
+///                                                                                ///
+///               All contents copyright � Edward Nutting 2014                     ///
+///                                                                                ///
+///        You may not share, reuse, redistribute or otherwise use the             ///
+///        contents this file outside of the Fling OS project without              ///
+///        the express permission of Edward Nutting or other copyright             ///
+///        holder. Any changes (including but not limited to additions,            ///
+///        edits or subtractions) made to or from this document are not            ///
+///        your copyright. They are the copyright of the main copyright            ///
+///        holder for all Fling OS files. At the time of writing, this             ///
+///        owner was Edward Nutting. To be clear, owner(s) do not include          ///
+///        developers, contributors or other project members.                      ///
+///                                                                                ///
+/// ------------------------------------------------------------------------------ ///
+#endregion
+    
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -26,9 +44,21 @@ namespace Kernel.Compiler.Architectures.x86_32
             Type objectType = constructorMethod.DeclaringType;
             
             //New obj must:
+            // - Ignore for creation of Delegates
             // - Allocate memory on the heap for the object
             //          - If no memory is left, throw a panic attack because we're out of memory...
             // - Call the specified constructor
+
+            if (typeof(Delegate).IsAssignableFrom(objectType))
+            {
+                result.AppendLine("; Ignore newobj calls for Delegates");
+                //Still need to: 
+                // - Remove the "object" param but preserve the "function pointer"
+                result.AppendLine("mov dword eax, [esp]");
+                result.AppendLine("mov dword [esp+4], eax");
+                result.AppendLine("add esp, 4");
+                return result.ToString().Trim();
+            }
 
             //The label to jump to if allocated memory isn't null
             //i.e. not out of memory.
@@ -63,7 +93,8 @@ namespace Kernel.Compiler.Architectures.x86_32
             //If we are out of memory, we have a massive problem
             //Because it means we don't have space to create a new exception object
             //So ultimately we just have to throw a kernel panic
-            //Throw a panic attack... ( :/ ) by calling kernel Halt()
+            //Throw a panic attack... ( :/ ) by calling kernel Halt(uint lastAddress)
+            result.AppendLine("call GetEIP");
             result.AppendLine(string.Format("call {0}", aScannerState.GetMethodID(aScannerState.HaltMethod)));
             //Insert the not null label
             result.AppendLine(NotNullLabel + ":");

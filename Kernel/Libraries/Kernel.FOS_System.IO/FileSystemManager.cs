@@ -1,4 +1,25 @@
-﻿using System;
+﻿#region Copyright Notice
+/// ------------------------------------------------------------------------------ ///
+///                                                                                ///
+///               All contents copyright � Edward Nutting 2014                     ///
+///                                                                                ///
+///        You may not share, reuse, redistribute or otherwise use the             ///
+///        contents this file outside of the Fling OS project without              ///
+///        the express permission of Edward Nutting or other copyright             ///
+///        holder. Any changes (including but not limited to additions,            ///
+///        edits or subtractions) made to or from this document are not            ///
+///        your copyright. They are the copyright of the main copyright            ///
+///        holder for all Fling OS files. At the time of writing, this             ///
+///        owner was Edward Nutting. To be clear, owner(s) do not include          ///
+///        developers, contributors or other project members.                      ///
+///                                                                                ///
+/// ------------------------------------------------------------------------------ ///
+#endregion
+
+#define FSM_TRACE
+#undef FSM_TRACE
+
+using System;
 
 using Kernel.FOS_System.Collections;
 using Kernel.Hardware;
@@ -49,6 +70,17 @@ namespace Kernel.FOS_System.IO
                         BasicConsole.WriteLine("Error initializing disk: " + ExceptionMethods.CurrentException.Message);
                     }
                 }
+                else if (aDevice._Type == (FOS_System.Type)(typeof(Hardware.USB.Devices.MassStorageDevice_DiskDevice)))
+                {
+                    try
+                    {
+                        InitDisk((DiskDevice)aDevice);
+                    }
+                    catch
+                    {
+                        BasicConsole.WriteLine("Error initializing MSD: " + ExceptionMethods.CurrentException.Message);
+                    }
+                }
                 //TODO - Add more device types e.g. USB
             }
             
@@ -63,16 +95,27 @@ namespace Kernel.FOS_System.IO
         {
             //TODO - Add more partitioning schemes.
 
+#if FSM_TRACE
+            BasicConsole.WriteLine("Attempting to read MBR...");
+#endif
             byte[] MBRData = new byte[512];
             aDiskDevice.ReadBlock(0UL, 1U, MBRData);
+#if FSM_TRACE
+            BasicConsole.WriteLine("Read potential MBR data. Attempting to init MBR...");
+#endif
             MBR TheMBR = new MBR(MBRData);
 
             if (!TheMBR.IsValid)
             {
                 ExceptionMethods.Throw(new FOS_System.Exceptions.NotSupportedException("Non MBR/EBR formatted disks not supported."));
             }
-
-            ProcessMBR(TheMBR, aDiskDevice);
+            else
+            {
+#if FSM_TRACE
+                BasicConsole.WriteLine("Valid MBR found.");
+#endif
+                ProcessMBR(TheMBR, aDiskDevice);
+            }
         }
         /// <summary>
         /// Processes a valid master boot record to initialize 
@@ -144,6 +187,19 @@ namespace Kernel.FOS_System.IO
             }
 
             return result;
+        }
+
+        public static bool HasMapping(Partition part)
+        {
+            for (int i = 0; i < FileSystemMappings.Count; i++)
+            {
+                FileSystemMapping mapping = (FileSystemMapping)FileSystemMappings[i];
+                if (mapping.TheFileSystem.ThePartition == part)
+                {
+                    return true;
+                }
+            }
+            return false;
         }
     }
 }

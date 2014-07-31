@@ -1,4 +1,22 @@
-﻿using System;
+﻿#region Copyright Notice
+/// ------------------------------------------------------------------------------ ///
+///                                                                                ///
+///               All contents copyright � Edward Nutting 2014                     ///
+///                                                                                ///
+///        You may not share, reuse, redistribute or otherwise use the             ///
+///        contents this file outside of the Fling OS project without              ///
+///        the express permission of Edward Nutting or other copyright             ///
+///        holder. Any changes (including but not limited to additions,            ///
+///        edits or subtractions) made to or from this document are not            ///
+///        your copyright. They are the copyright of the main copyright            ///
+///        holder for all Fling OS files. At the time of writing, this             ///
+///        owner was Edward Nutting. To be clear, owner(s) do not include          ///
+///        developers, contributors or other project members.                      ///
+///                                                                                ///
+/// ------------------------------------------------------------------------------ ///
+#endregion
+    
+using System;
 
 namespace Kernel.FOS_System.Collections
 {
@@ -267,6 +285,32 @@ namespace Kernel.FOS_System.Collections
                 }
             }
         }
+        /// <summary>
+        /// The removes the UInt32 at the specified index from the list.
+        /// </summary>
+        /// <param name="index">The index of the UInt32 to remove.</param>
+        [Compiler.NoDebug]
+        public void RemoveAt(int index)
+        {
+            if (index >= currIndex)
+            {
+                ExceptionMethods.Throw(new Exceptions.OverflowException());
+            }
+
+            for (int i = index; i < currIndex; i++)
+            {
+                if (i < currIndex - 1)
+                {
+                    _array[i] = _array[i + 1];
+                }
+                else
+                {
+                    _array[i] = 0;
+                }
+            }
+
+            currIndex--;
+        }
 
         /// <summary>
         /// Expands the capacity of the internel array that stores the UInt32s.
@@ -292,6 +336,139 @@ namespace Kernel.FOS_System.Collections
         /// Throws IndexOutOfRangeException if "index" is &lt; 0 or greater than the length of the list.
         /// </exception>
         public UInt32 this[int index]
+        {
+            [Compiler.NoDebug]
+            get
+            {
+                if (index >= currIndex)
+                {
+                    ExceptionMethods.Throw(new Exceptions.IndexOutOfRangeException());
+                }
+
+                return _array[index];
+            }
+            [Compiler.NoDebug]
+            set
+            {
+                if (index >= currIndex)
+                {
+                    ExceptionMethods.Throw(new Exceptions.IndexOutOfRangeException());
+                }
+
+                _array[index] = value;
+            }
+        }
+    }
+
+    /// <summary>
+    /// Represents a strongly typed list of Delegates that can be accessed by 
+    /// index. Provides methods to search and manipulate lists.
+    /// </summary>
+    public class DelegateList : FOS_System.Object
+    {
+        /// <summary>
+        /// The underlying object array.
+        /// </summary>
+        protected Delegate[] _array;
+        /// <summary>
+        /// The "currentIndex" is the index to insert the next new item.
+        /// It is the index immediately after the last-set item in the array.
+        /// It thus also acts as an item count.
+        /// </summary>
+        protected int currIndex = 0;
+
+        /// <summary>
+        /// The number of elements in the list.
+        /// </summary>
+        public int Count
+        {
+            [Compiler.NoDebug]
+            get
+            {
+                return currIndex;
+            }
+        }
+
+        /// <summary>
+        /// Creates a new list with initial capacity of 5.
+        /// </summary>
+        [Compiler.NoDebug]
+        public DelegateList()
+        {
+            _array = new Delegate[5];
+        }
+        /// <summary>
+        /// Creates a new list with specified initial capacity. Use this to optimise memory usage.
+        /// </summary>
+        /// <param name="capacity">The initial capacity of the list.</param>
+        [Compiler.NoDebug]
+        public DelegateList(int capacity)
+        {
+            _array = new Delegate[capacity];
+        }
+
+        /// <summary>
+        /// Adds the specified Delegate to the list.
+        /// </summary>
+        /// <param name="obj">The Delegate to add.</param>
+        [Compiler.NoDebug]
+        public void Add(Delegate obj)
+        {
+            if (currIndex >= _array.Length)
+            {
+                ExpandCapacity(5);
+            }
+            _array[currIndex++] = obj;
+        }
+        /// <summary>
+        /// Removes the first equal value of the specified Delegate from the list.
+        /// </summary>
+        /// <param name="obj">The Delegate to remove.</param>
+        [Compiler.NoDebug]
+        public void Remove(Delegate obj)
+        {
+            bool setObjectToNull = false;
+            for (int i = 0; i < currIndex; i++)
+            {
+                if (setObjectToNull || _array[i] == obj)
+                {
+                    setObjectToNull = true;
+                    if (i < currIndex - 1)
+                    {
+                        _array[i] = _array[i + 1];
+                    }
+                    else
+                    {
+                        _array[i] = null;
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// Expands the capacity of the internel array that stores the Delegates.
+        /// </summary>
+        /// <param name="amount">The amount to expand the capacity by.</param>
+        [Compiler.NoDebug]
+        private void ExpandCapacity(int amount)
+        {
+            Delegate[] newArray = new Delegate[_array.Length + amount];
+            for (int i = 0; i < _array.Length; i++)
+            {
+                newArray[i] = _array[i];
+            }
+            _array = newArray;
+        }
+
+        /// <summary>
+        /// Gets the Delegate at the specified index.
+        /// </summary>
+        /// <param name="index">The index of the Delegate to get.</param>
+        /// <returns>The Delegate at the specified index.</returns>
+        /// <exception cref="Kernel.FOS_System.Exceptions.IndexOutOfRangeException">
+        /// Throws IndexOutOfRangeException if "index" is &lt; 0 or greater than the length of the list.
+        /// </exception>
+        public Delegate this[int index]
         {
             [Compiler.NoDebug]
             get

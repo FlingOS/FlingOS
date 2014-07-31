@@ -1,4 +1,22 @@
-﻿using System;
+﻿#region Copyright Notice
+/// ------------------------------------------------------------------------------ ///
+///                                                                                ///
+///               All contents copyright � Edward Nutting 2014                     ///
+///                                                                                ///
+///        You may not share, reuse, redistribute or otherwise use the             ///
+///        contents this file outside of the Fling OS project without              ///
+///        the express permission of Edward Nutting or other copyright             ///
+///        holder. Any changes (including but not limited to additions,            ///
+///        edits or subtractions) made to or from this document are not            ///
+///        your copyright. They are the copyright of the main copyright            ///
+///        holder for all Fling OS files. At the time of writing, this             ///
+///        owner was Edward Nutting. To be clear, owner(s) do not include          ///
+///        developers, contributors or other project members.                      ///
+///                                                                                ///
+/// ------------------------------------------------------------------------------ ///
+#endregion
+    
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -128,10 +146,34 @@ namespace Kernel.Debug.Data
         /// </summary>
         public static void Dispose()
         {
-            SubmitChanges();
-            DB.Connection.Close();
-            DB.Dispose();
-            DB = null;
+            try
+            {
+                SubmitChanges();
+            }
+            catch
+            {
+            }
+            try
+            {
+                DB.Connection.Close();
+            }
+            catch
+            {
+            }
+            try
+            {
+                DB.Dispose();
+            }
+            catch
+            {
+            }
+            try
+            {
+                DB = null;
+            }
+            catch
+            {
+            }
         }
 
         /// <summary>
@@ -144,16 +186,8 @@ namespace Kernel.Debug.Data
         /// </remarks>
         public static void Empty()
         {
-            //NOTE - Add new debug tables here
-            DB.DB_ILOpInfos.DeleteAllOnSubmit(DB.DB_ILOpInfos);
-            DB.DB_LocalVariables.DeleteAllOnSubmit(DB.DB_LocalVariables);
-            DB.DB_Methods.DeleteAllOnSubmit(DB.DB_Methods);
-            DB.DB_StringLiterals.DeleteAllOnSubmit(DB.DB_StringLiterals);
-            DB.DB_StaticFields.DeleteAllOnSubmit(DB.DB_StaticFields);
-            DB.DB_Arguments.DeleteAllOnSubmit(DB.DB_Arguments);
-            DB.DB_ComplexTypeLinks.DeleteAllOnSubmit(DB.DB_ComplexTypeLinks);
-            DB.DB_Types.DeleteAllOnSubmit(DB.DB_Types);
-            SubmitChanges();
+            DB.DeleteDatabase();
+            Dispose();
         }
 
         /// <summary>

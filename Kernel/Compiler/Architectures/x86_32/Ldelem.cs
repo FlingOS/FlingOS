@@ -1,4 +1,22 @@
-﻿using System;
+﻿#region Copyright Notice
+/// ------------------------------------------------------------------------------ ///
+///                                                                                ///
+///               All contents copyright � Edward Nutting 2014                     ///
+///                                                                                ///
+///        You may not share, reuse, redistribute or otherwise use the             ///
+///        contents this file outside of the Fling OS project without              ///
+///        the express permission of Edward Nutting or other copyright             ///
+///        holder. Any changes (including but not limited to additions,            ///
+///        edits or subtractions) made to or from this document are not            ///
+///        your copyright. They are the copyright of the main copyright            ///
+///        holder for all Fling OS files. At the time of writing, this             ///
+///        owner was Edward Nutting. To be clear, owner(s) do not include          ///
+///        developers, contributors or other project members.                      ///
+///                                                                                ///
+/// ------------------------------------------------------------------------------ ///
+#endregion
+    
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -165,7 +183,7 @@ namespace Kernel.Compiler.Architectures.x86_32
                 allChildLinks = allChildLinks.Where(x => x.ParentIndex < theTypeLink.ParentIndex).ToList();
                 //Calculate the offset
                 //We use StackBytesSize since fields that are reference types are only stored as a pointer
-                elemTypeOffset = allChildLinks.Sum(x => x.ChildType.StackBytesSize);
+                elemTypeOffset = allChildLinks.Sum(x => x.ChildType.IsValueType ? x.ChildType.BytesSize : x.ChildType.StackBytesSize);
             }
             #endregion
             //if (elementType != null)
@@ -216,7 +234,7 @@ namespace Kernel.Compiler.Architectures.x86_32
                 allChildLinks = allChildLinks.Where(x => x.ParentIndex < theTypeLink.ParentIndex).ToList();
                 //Calculate the offset
                 //We use StackBytesSize since fields that are reference types are only stored as a pointer
-                lengthOffset = allChildLinks.Sum(x => x.ChildType.StackBytesSize);
+                lengthOffset = allChildLinks.Sum(x => x.ChildType.IsValueType ? x.ChildType.BytesSize : x.ChildType.StackBytesSize);
             }
             #endregion
             //              - Move array ref into ebx
@@ -276,7 +294,7 @@ namespace Kernel.Compiler.Architectures.x86_32
                 allChildLinks = allChildLinks.Where(x => x.ParentIndex < theTypeLink.ParentIndex).ToList();
                 //Calculate the offset
                 //We use StackBytesSize since fields that are reference types are only stored as a pointer
-                isValueTypeOffset = allChildLinks.Sum(x => x.ChildType.StackBytesSize);
+                isValueTypeOffset = allChildLinks.Sum(x => x.ChildType.IsValueType ? x.ChildType.BytesSize : x.ChildType.StackBytesSize);
             }
             #endregion
             result.AppendLine(string.Format("mov ecx, [eax+{0}]", isValueTypeOffset));
@@ -299,7 +317,7 @@ namespace Kernel.Compiler.Architectures.x86_32
                 allChildLinks = allChildLinks.Where(x => x.ParentIndex < theTypeLink.ParentIndex).ToList();
                 //Calculate the offset
                 //We use StackBytesSize since fields that are reference types are only stored as a pointer
-                sizeOffset = allChildLinks.Sum(x => x.ChildType.StackBytesSize);
+                sizeOffset = allChildLinks.Sum(x => x.ChildType.IsValueType ? x.ChildType.BytesSize : x.ChildType.StackBytesSize);
             }
             #endregion
             result.AppendLine(string.Format("mov eax, [eax+{0}]", sizeOffset));
@@ -322,7 +340,7 @@ namespace Kernel.Compiler.Architectures.x86_32
                 allChildLinks = allChildLinks.Where(x => x.ParentIndex < theTypeLink.ParentIndex).ToList();
                 //Calculate the offset
                 //We use StackBytesSize since fields that are reference types are only stored as a pointer
-                stackSizeOffset = allChildLinks.Sum(x => x.ChildType.StackBytesSize);
+                stackSizeOffset = allChildLinks.Sum(x => x.ChildType.IsValueType ? x.ChildType.BytesSize : x.ChildType.StackBytesSize);
             }
             #endregion
             result.AppendLine(string.Format("mov eax, [eax+{0}]", stackSizeOffset));
@@ -339,7 +357,7 @@ namespace Kernel.Compiler.Architectures.x86_32
                 List<DB_ComplexTypeLink> allChildLinks = arrayDBType.ChildTypes.ToList();
                 //Calculate the offset
                 //We use StackBytesSize since fields that are reference types are only stored as a pointer
-                allFieldsOffset = allChildLinks.Sum(x => x.ChildType.StackBytesSize);
+                allFieldsOffset = allChildLinks.Sum(x => x.ChildType.IsValueType ? x.ChildType.BytesSize : x.ChildType.StackBytesSize);
             }
             #endregion
             result.AppendLine(string.Format("add ebx, {0}", allFieldsOffset));

@@ -1,4 +1,22 @@
-﻿using System;
+﻿#region Copyright Notice
+/// ------------------------------------------------------------------------------ ///
+///                                                                                ///
+///               All contents copyright � Edward Nutting 2014                     ///
+///                                                                                ///
+///        You may not share, reuse, redistribute or otherwise use the             ///
+///        contents this file outside of the Fling OS project without              ///
+///        the express permission of Edward Nutting or other copyright             ///
+///        holder. Any changes (including but not limited to additions,            ///
+///        edits or subtractions) made to or from this document are not            ///
+///        your copyright. They are the copyright of the main copyright            ///
+///        holder for all Fling OS files. At the time of writing, this             ///
+///        owner was Edward Nutting. To be clear, owner(s) do not include          ///
+///        developers, contributors or other project members.                      ///
+///                                                                                ///
+/// ------------------------------------------------------------------------------ ///
+#endregion
+    
+using System;
 using Microsoft.Build.Framework;
 using Microsoft.Build.Utilities;
 
@@ -175,6 +193,20 @@ namespace Kernel.Compiler.App
                 TheSettings[Settings.DebugBuildKey] = value;
             }
         }
+        /// <summary>
+        /// Used by MSBuild to set settings before execution.
+        /// </summary>
+        public string NASMOnly
+        {
+            get
+            {
+                return TheSettings[Settings.NASMOnlyKey];
+            }
+            set
+            {
+                TheSettings[Settings.NASMOnlyKey] = value;
+            }
+        }
 
         /// <summary>
         /// A reference to the MSBuild Log for outputting errors, warnings and messages.
@@ -278,7 +310,7 @@ namespace Kernel.Compiler.App
              *  - Finalise
              *  - Cleanup
              */
-            if (resultCode == ErrorCodes.Success)
+            if (resultCode == ErrorCodes.Success && !TheSettings.NASMOnly)
             {
                 try
                 {
@@ -297,7 +329,7 @@ namespace Kernel.Compiler.App
                     }
                 }
             }
-            if (resultCode == ErrorCodes.Success)
+            if (resultCode == ErrorCodes.Success && !TheSettings.NASMOnly)
             {
                 try
                 {
@@ -316,7 +348,7 @@ namespace Kernel.Compiler.App
                     }
                 }
             }
-            if (resultCode == ErrorCodes.Success)
+            if (resultCode == ErrorCodes.Success && !TheSettings.NASMOnly)
             {
                 try
                 {

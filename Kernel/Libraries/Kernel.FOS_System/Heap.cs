@@ -1,4 +1,25 @@
-﻿using System;
+﻿#region Copyright Notice
+/// ------------------------------------------------------------------------------ ///
+///                                                                                ///
+///               All contents copyright � Edward Nutting 2014                     ///
+///                                                                                ///
+///        You may not share, reuse, redistribute or otherwise use the             ///
+///        contents this file outside of the Fling OS project without              ///
+///        the express permission of Edward Nutting or other copyright             ///
+///        holder. Any changes (including but not limited to additions,            ///
+///        edits or subtractions) made to or from this document are not            ///
+///        your copyright. They are the copyright of the main copyright            ///
+///        holder for all Fling OS files. At the time of writing, this             ///
+///        owner was Edward Nutting. To be clear, owner(s) do not include          ///
+///        developers, contributors or other project members.                      ///
+///                                                                                ///
+/// ------------------------------------------------------------------------------ ///
+#endregion
+
+#define HEAP_TRACE
+#undef HEAP_TRACE
+    
+using System;
 
 namespace Kernel.FOS_System
 {
@@ -203,12 +224,60 @@ namespace Kernel.FOS_System
         [Compiler.NoGC]
         public static void* Alloc(UInt32 size)
         {
+            return Alloc(size, 1);
+        }
+        /// <summary>
+        /// Attempts to allocate the specified amount of memory from the heap and then zero all of it.
+        /// </summary>
+        /// <param name="size">The amount of memory to try and allocate.</param>
+        /// <returns>A pointer to the start of the allocated memory or a null pointer if not enough 
+        /// contiguous memory is available.</returns>
+        [Compiler.NoDebug]
+        [Compiler.NoGC]
+        public static void* AllocZeroed(UInt32 size)
+        {
+            return AllocZeroed(size, 1);
+        }
+        /// <summary>
+        /// Attempts to allocate the specified amount of memory from the heap and then zero all of it.
+        /// </summary>
+        /// <param name="size">The amount of memory to try and allocate.</param>
+        /// <returns>A pointer to the start of the allocated memory or a null pointer if not enough 
+        /// contiguous memory is available.</returns>
+        [Compiler.NoDebug]
+        [Compiler.NoGC]
+        public static void* AllocZeroed(UInt32 size, UInt32 boundary)
+        {
+            return Utilities.MemoryUtils.ZeroMem(Alloc(size, boundary), size);
+        }
+        /// <summary>
+        /// Attempts to allocate the specified amount of memory from the heap.
+        /// </summary>
+        /// <param name="size">The amount of memory to try and allocate.</param>
+        /// <param name="boundary">The boundary on which the data must be allocated. 1 = no boundary. Must be power of 2.</param>
+        /// <returns>A pointer to the start of the allocated memory or a null pointer if not enough 
+        /// contiguous memory is available.</returns>
+        [Compiler.NoDebug]
+        [Compiler.NoGC]
+        public static void* Alloc(UInt32 size, UInt32 boundary)
+        {
+#if HEAP_TRACE
+            BasicConsole.SetTextColour(BasicConsole.warning_colour);
+            BasicConsole.WriteLine("Attempt to alloc mem....");
+            BasicConsole.SetTextColour(BasicConsole.default_colour);
+#endif
+
             HeapBlock* b;
             byte* bm;
             UInt32 bcnt;
             UInt32 x, y, z;
             UInt32 bneed;
             byte nid;
+
+            if(boundary > 1)
+            {
+                size += (boundary - 1);
+            }
 
             /* iterate blocks */
             for (b = fblock; (UInt32)b != 0; b = b->next)
@@ -252,7 +321,12 @@ namespace Kernel.FOS_System
                                 /* count used blocks NOT bytes */
                                 b->used += y;
 
-                                return (void*)(x * b->bsize + (UInt32*)&b[1]);
+                                void* result = (void*)(x * b->bsize + (UInt32*)&b[1]);
+                                if (boundary > 1)
+                                {
+                                    result = (void*)((((UInt32)result) + (boundary - 1)) & ~(boundary - 1));
+                                }
+                                return result;
                             }
 
                             /* x will be incremented by one ONCE more in our FOR loop */
@@ -263,6 +337,12 @@ namespace Kernel.FOS_System
                 }
             }
 
+#if HEAP_TRACE
+            BasicConsole.SetTextColour(BasicConsole.error_colour);
+            BasicConsole.WriteLine("!!Heap out of memory!!");
+            BasicConsole.SetTextColour(BasicConsole.default_colour);
+            BasicConsole.DelayOutput(2);
+#endif
             return null;
         }
         /// <summary>

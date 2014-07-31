@@ -1,4 +1,22 @@
-﻿using System;
+﻿#region Copyright Notice
+/// ------------------------------------------------------------------------------ ///
+///                                                                                ///
+///               All contents copyright � Edward Nutting 2014                     ///
+///                                                                                ///
+///        You may not share, reuse, redistribute or otherwise use the             ///
+///        contents this file outside of the Fling OS project without              ///
+///        the express permission of Edward Nutting or other copyright             ///
+///        holder. Any changes (including but not limited to additions,            ///
+///        edits or subtractions) made to or from this document are not            ///
+///        your copyright. They are the copyright of the main copyright            ///
+///        holder for all Fling OS files. At the time of writing, this             ///
+///        owner was Edward Nutting. To be clear, owner(s) do not include          ///
+///        developers, contributors or other project members.                      ///
+///                                                                                ///
+/// ------------------------------------------------------------------------------ ///
+#endregion
+    
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -44,6 +62,10 @@ namespace Kernel.Compiler
         /// The setting key for the setting “DebugBuild”. The “DebugBuild” setting is used to specify the compiler should do a debug build or not.
         /// </summary>
         public const string DebugBuildKey = "debugbuild";
+        /// <summary>
+        /// The setting key for the setting “NASMOnly”. The “NASMOnly” setting is used to specify the compiler should only run the NASM part of the build.
+        /// </summary>
+        public const string NASMOnlyKey = "nasmonly";
 
         /// <summary>
         /// The underlying dictionary of all the settings (arguments) stored.
@@ -62,6 +84,20 @@ namespace Kernel.Compiler
             set
             {
                 this[DebugBuildKey] = value.ToString();
+            }
+        }
+        /// <summary>
+        /// Whether to run only NASM or a full build.
+        /// </summary>
+        public bool NASMOnly
+        {
+            get
+            {
+                return this[NASMOnlyKey] != null;
+            }
+            set
+            {
+                this[NASMOnlyKey] = value.ToString();
             }
         }
 

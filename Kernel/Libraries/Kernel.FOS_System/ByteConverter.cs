@@ -1,4 +1,22 @@
-﻿using System;
+﻿#region Copyright Notice
+/// ------------------------------------------------------------------------------ ///
+///                                                                                ///
+///               All contents copyright � Edward Nutting 2014                     ///
+///                                                                                ///
+///        You may not share, reuse, redistribute or otherwise use the             ///
+///        contents this file outside of the Fling OS project without              ///
+///        the express permission of Edward Nutting or other copyright             ///
+///        holder. Any changes (including but not limited to additions,            ///
+///        edits or subtractions) made to or from this document are not            ///
+///        your copyright. They are the copyright of the main copyright            ///
+///        holder for all Fling OS files. At the time of writing, this             ///
+///        owner was Edward Nutting. To be clear, owner(s) do not include          ///
+///        developers, contributors or other project members.                      ///
+///                                                                                ///
+/// ------------------------------------------------------------------------------ ///
+#endregion
+    
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -102,6 +120,30 @@ namespace Kernel.FOS_System
             return result;
         }
         /// <summary>
+        /// Converts the specified bytes to an ASCII encoded string, treating the bytes as ASCII encoded bytes.
+        /// </summary>
+        /// <param name="n">The bytes to convert.</param>
+        /// <param name="aStart">The index in the array at which to start converting bytes.</param>
+        /// <param name="aCharCount">The number of characters to convert.</param>
+        /// <returns>The ASCII encoded string.</returns>
+        [Compiler.NoDebug]
+        public static unsafe FOS_System.String GetASCIIStringFromASCII(byte* n, UInt32 aStart, UInt32 aCharCount)
+        {
+            FOS_System.String result = FOS_System.String.New((int)aCharCount);
+            for (int i = 0; i < aCharCount; i++)
+            {
+                UInt32 pos = (UInt32)(aStart + i);
+                UInt16 aChar = (UInt16)(n[pos]);
+                if (aChar == 0)
+                {
+                    return result.Substring(0, i);
+                }
+                result[i] = (char)aChar;
+            }
+
+            return result;
+        }
+        /// <summary>
         /// Converts the specified bytes to an ASCII encoded string, treating the bytes as UTF16 encoded bytes.
         /// </summary>
         /// <param name="n">The bytes to convert.</param>
@@ -111,6 +153,27 @@ namespace Kernel.FOS_System
         [Compiler.NoDebug]
         public static FOS_System.String GetASCIIStringFromUTF16(byte[] n, UInt32 aStart, UInt32 aCharCount)
         {
+            //If you change this method, change the pointer version below too.
+
+            FOS_System.String result = FOS_System.String.New((int)aCharCount);
+            for (int i = 0; i < aCharCount; i++)
+            {
+                UInt32 pos = (UInt32)(aStart + (i * 2));
+                UInt16 aChar = (UInt16)(n[pos + 1] << 8 | n[pos]);
+                if (aChar == 0)
+                {
+                    return result.Substring(0, i);
+                }
+                result[i] = (char)aChar;
+            }
+
+            return result;
+        }
+
+        public unsafe static FOS_System.String GetASCIIStringFromUTF16(byte* n, UInt32 aStart, UInt32 aCharCount)
+        {
+            //If you change this method, change the array version above too.
+
             FOS_System.String result = FOS_System.String.New((int)aCharCount);
             for (int i = 0; i < aCharCount; i++)
             {

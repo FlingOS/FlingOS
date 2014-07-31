@@ -1,4 +1,25 @@
-﻿using System;
+﻿#region Copyright Notice
+/// ------------------------------------------------------------------------------ ///
+///                                                                                ///
+///               All contents copyright � Edward Nutting 2014                     ///
+///                                                                                ///
+///        You may not share, reuse, redistribute or otherwise use the             ///
+///        contents this file outside of the Fling OS project without              ///
+///        the express permission of Edward Nutting or other copyright             ///
+///        holder. Any changes (including but not limited to additions,            ///
+///        edits or subtractions) made to or from this document are not            ///
+///        your copyright. They are the copyright of the main copyright            ///
+///        holder for all Fling OS files. At the time of writing, this             ///
+///        owner was Edward Nutting. To be clear, owner(s) do not include          ///
+///        developers, contributors or other project members.                      ///
+///                                                                                ///
+/// ------------------------------------------------------------------------------ ///
+#endregion
+
+#define FATFileStream_TRACE
+#undef FATFileStream_TRACE
+    
+using System;
 
 using Kernel.FOS_System.Collections;
 using Kernel.FOS_System.IO.FAT;
@@ -143,7 +164,9 @@ namespace Kernel.FOS_System.IO.Streams.FAT
                 FATFileSystem mFS = (FATFileSystem)TheFile.TheFileSystem;
                 FATFile mFile = TheFATFile;
 
-                //BasicConsole.WriteLine("Checking params...");
+#if FATFileStream_TRACE
+                BasicConsole.WriteLine("Checking params...");
+#endif
 
                 if (count < 0)
                 {
@@ -172,7 +195,9 @@ namespace Kernel.FOS_System.IO.Streams.FAT
                     return 0;
                 }
 
-                //BasicConsole.WriteLine("Params OK.");
+#if FATFileStream_TRACE
+                BasicConsole.WriteLine("Params OK.");
+#endif
                                 
                 // Reduce count, so that no out of bounds exceptions occur
                 ulong fileSize = 0;
@@ -191,20 +216,30 @@ namespace Kernel.FOS_System.IO.Streams.FAT
                     xCount = xMaxReadableBytes;
                 }
 
-                //BasicConsole.WriteLine("Creating new cluster array...");
+#if FATFileStream_TRACE
+                BasicConsole.WriteLine("Creating new cluster array...");
+#endif
 
                 byte[] xCluster = mFS.NewClusterArray();
                 UInt32 xClusterSize = mFS.BytesPerCluster;
 
                 int read = 0;
 
-                //BasicConsole.WriteLine("Reading data...");
+#if FATFileStream_TRACE
+                BasicConsole.WriteLine("Reading data...");
+#endif
 
                 while (xCount > 0)
                 {
                     UInt32 xClusterIdx = (UInt32)mPosition / xClusterSize;
                     UInt32 xPosInCluster = (UInt32)mPosition % xClusterSize;
+#if FATFileStream_TRACE
+                    BasicConsole.WriteLine(((FOS_System.String)"Reading cluster ") + ClusterNums[(int)xClusterIdx]);
+#endif
                     mFS.ReadCluster(ClusterNums[(int)xClusterIdx], xCluster);
+#if FATFileStream_TRACE
+                    BasicConsole.WriteLine("Read cluster.");
+#endif
                     uint xReadSize;
                     if (xPosInCluster + xCount > xClusterSize)
                     {
@@ -221,6 +256,10 @@ namespace Kernel.FOS_System.IO.Streams.FAT
                     xCount -= (ulong)xReadSize;
                     read += (int)xReadSize;
                 }
+
+#if FATFileStream_TRACE
+                BasicConsole.WriteLine("Read data.");
+#endif
 
                 mPosition += (ulong)offset;
                 return read;

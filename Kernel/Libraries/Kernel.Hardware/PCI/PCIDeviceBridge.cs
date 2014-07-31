@@ -1,4 +1,22 @@
-﻿using System;
+﻿#region Copyright Notice
+/// ------------------------------------------------------------------------------ ///
+///                                                                                ///
+///               All contents copyright � Edward Nutting 2014                     ///
+///                                                                                ///
+///        You may not share, reuse, redistribute or otherwise use the             ///
+///        contents this file outside of the Fling OS project without              ///
+///        the express permission of Edward Nutting or other copyright             ///
+///        holder. Any changes (including but not limited to additions,            ///
+///        edits or subtractions) made to or from this document are not            ///
+///        your copyright. They are the copyright of the main copyright            ///
+///        holder for all Fling OS files. At the time of writing, this             ///
+///        owner was Edward Nutting. To be clear, owner(s) do not include          ///
+///        developers, contributors or other project members.                      ///
+///                                                                                ///
+/// ------------------------------------------------------------------------------ ///
+#endregion
+    
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -13,7 +31,7 @@ namespace Kernel.Hardware.PCI
         /// <summary>
         /// The device's BaseAddresses.
         /// </summary>
-        public PCIBaseAddressBar[] BaseAddresses { get; private set; }
+        public PCIBaseAddress[] BaseAddresses { get; private set; }
 
         /// <summary>
         /// The device's PrimaryBusNumber.
@@ -106,9 +124,9 @@ namespace Kernel.Hardware.PCI
         public PCIDeviceBridge(uint bus, uint slot, uint function)
             : base(bus, slot, function)
         {
-            BaseAddresses = new PCIBaseAddressBar[2];
-            BaseAddresses[0] = new PCIBaseAddressBar(ReadRegister32(0x10));
-            BaseAddresses[1] = new PCIBaseAddressBar(ReadRegister32(0x14));
+            BaseAddresses = new PCIBaseAddress[2];
+            BaseAddresses[0] = new PCIBaseAddress(ReadRegister32(0x10), GetSize(0));
+            BaseAddresses[1] = new PCIBaseAddress(ReadRegister32(0x14), GetSize(1));
 
             PrimaryBusNumber = ReadRegister8(0x18);
             SecondaryBusNumber = ReadRegister8(0x19);

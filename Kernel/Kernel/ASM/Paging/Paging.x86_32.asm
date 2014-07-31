@@ -41,6 +41,16 @@ mov dword [ebp+8], Page_Table1
 pop dword ebp
 
 ret
+method_System_UInt32__RETEND_Kernel_Paging_DECLEND_GetUSBPageTablePtr_NAMEEND___:
+
+push dword ebp
+mov dword ebp, esp
+
+mov dword [ebp+8], Page_Table_USB
+
+pop dword ebp
+
+ret
 method_System_UInt32__RETEND_Kernel_Paging_DECLEND_GetKernelPageTablePtr_NAMEEND___:
 
 push dword ebp
@@ -79,7 +89,8 @@ ret
 align 4096
 Page_Directory: TIMES 1024 dd 0
 Page_Table1: TIMES 1024 dd 0
-Page_Table_Kernel: TIMES 1024 dd 0
+Page_Table_USB: TIMES 1024 dd 0
+Page_Table_Kernel: TIMES 196608 dd 0
 
 Kernel_MemEnd:
 

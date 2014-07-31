@@ -93,7 +93,10 @@
     <Compile Include="ILCompiler.cs" />
     <Compile Include="ILOpInfo.cs" />
     <Compile Include="ILOps\Callvirt.cs" />
+    <Compile Include="ILOps\Initobj.cs" />
     <Compile Include="ILOps\Ldlen.cs" />
+    <Compile Include="ILOps\Ldobj.cs" />
+    <Compile Include="ILOps\Xor.cs" />
     <Compile Include="ILOps\Rem.cs" />
     <Compile Include="ILOps\Not.cs" />
     <Compile Include="ILOps\Switch.cs" />
@@ -151,6 +154,9 @@
     <Compile Include="Utils.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="..\Kernel\Kernel.licenseheader">
+      <Link>Kernel.licenseheader</Link>
+    </None>
     <None Include="ClassDiagram1.cd" />
     <None Include="Dia2Dump\Dia2Dump.ilk">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>

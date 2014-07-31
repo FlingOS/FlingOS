@@ -1,4 +1,22 @@
-﻿using System;
+﻿#region Copyright Notice
+/// ------------------------------------------------------------------------------ ///
+///                                                                                ///
+///               All contents copyright � Edward Nutting 2014                     ///
+///                                                                                ///
+///        You may not share, reuse, redistribute or otherwise use the             ///
+///        contents this file outside of the Fling OS project without              ///
+///        the express permission of Edward Nutting or other copyright             ///
+///        holder. Any changes (including but not limited to additions,            ///
+///        edits or subtractions) made to or from this document are not            ///
+///        your copyright. They are the copyright of the main copyright            ///
+///        holder for all Fling OS files. At the time of writing, this             ///
+///        owner was Edward Nutting. To be clear, owner(s) do not include          ///
+///        developers, contributors or other project members.                      ///
+///                                                                                ///
+/// ------------------------------------------------------------------------------ ///
+#endregion
+    
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -12,6 +30,9 @@ namespace Kernel
     [Compiler.PluggedClass]
     public static unsafe class ExceptionMethods
     {
+
+        public static FOS_System.String HaltReason = "";
+
         /// <summary>
         /// The message to display when the Throw method panics.
         /// </summary>
@@ -116,7 +137,19 @@ namespace Kernel
         /// </remarks>
         public static void Throw_DivideByZeroException()
         {
+            HaltReason = "Divide by zero exception.";
             Throw(new FOS_System.Exceptions.DivideByZeroException());
+        }
+        /// <summary>
+        /// Throws a divide by zero exception storing the specified exception address.
+        /// </summary>
+        /// <remarks>
+        /// Used by CPU interrupts to handle the creation of the exception object and calling Throw.
+        /// </remarks>
+        public static void Throw_DivideByZeroException(uint address)
+        {
+            HaltReason = "Divide by zero exception.";
+            Throw(new FOS_System.Exceptions.DivideByZeroException(address));
         }
         /// <summary>
         /// Throws an overflow exception.
@@ -126,6 +159,7 @@ namespace Kernel
         /// </remarks>
         public static void Throw_OverflowException()
         {
+            HaltReason = "Overflow exception.";
             Throw(new FOS_System.Exceptions.OverflowException());
         }
         /// <summary>
@@ -136,6 +170,7 @@ namespace Kernel
         /// </remarks>
         public static void Throw_InvalidOpCodeException()
         {
+            HaltReason = "Invalid op code exception.";
             Throw(new FOS_System.Exceptions.InvalidOpCodeException());
         }
         /// <summary>
@@ -146,6 +181,7 @@ namespace Kernel
         /// </remarks>
         public static void Throw_DoubleFaultException()
         {
+            HaltReason = "Double fault exception.";
             Throw(new FOS_System.Exceptions.DoubleFaultException());
         }
         /// <summary>
@@ -156,6 +192,7 @@ namespace Kernel
         /// </remarks>
         public static void Throw_StackException()
         {
+            HaltReason = "Stack exception.";
             Throw(new FOS_System.Exceptions.StackException());
         }
         /// <summary>
@@ -168,6 +205,7 @@ namespace Kernel
         /// </remarks>
         public static void Throw_PageFaultException(uint errorCode, uint address)
         {
+            HaltReason = "Page fault exception.";
             Throw(new FOS_System.Exceptions.PageFaultException(errorCode, address));
         }
 
@@ -180,6 +218,7 @@ namespace Kernel
         [Compiler.ThrowNullReferenceExceptionMethod]
         public static void Throw_NullReferenceException()
         {
+            HaltReason = "Null reference exception.";
             Throw(new FOS_System.Exceptions.NullReferenceException());
         }
         /// <summary>
@@ -191,6 +230,7 @@ namespace Kernel
         [Compiler.ThrowArrayTypeMismatchExceptionMethod]
         public static void Throw_ArrayTypeMismatchException()
         {
+            HaltReason = "Array type mismatch exception.";
             Throw(new FOS_System.Exceptions.ArrayTypeMismatchException());
         }
         /// <summary>
@@ -202,6 +242,7 @@ namespace Kernel
         [Compiler.ThrowIndexOutOfRangeExceptionMethod]
         public static void Throw_IndexOutOfRangeException()
         {
+            HaltReason = "Index out of range exception.";
             Throw(new FOS_System.Exceptions.IndexOutOfRangeException());
         }        
     }
@@ -218,7 +259,7 @@ namespace Kernel
     /// anywhere in memory. The order of the fields in the structure matters!
     /// </para>
     /// </remarks>
-    [System.Runtime.InteropServices.StructLayout(System.Runtime.InteropServices.LayoutKind.Sequential)]
+    [System.Runtime.InteropServices.StructLayout(System.Runtime.InteropServices.LayoutKind.Sequential, Pack = 1)]
     public unsafe struct ExceptionHandlerInfo
     {
         //DO NOT (!!!!!!!) MODIFY THIS STRUCTURE WITHOUT CHECKING / 

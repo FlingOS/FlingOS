@@ -1,4 +1,25 @@
-﻿using System;
+﻿#region Copyright Notice
+/// ------------------------------------------------------------------------------ ///
+///                                                                                ///
+///               All contents copyright � Edward Nutting 2014                     ///
+///                                                                                ///
+///        You may not share, reuse, redistribute or otherwise use the             ///
+///        contents this file outside of the Fling OS project without              ///
+///        the express permission of Edward Nutting or other copyright             ///
+///        holder. Any changes (including but not limited to additions,            ///
+///        edits or subtractions) made to or from this document are not            ///
+///        your copyright. They are the copyright of the main copyright            ///
+///        holder for all Fling OS files. At the time of writing, this             ///
+///        owner was Edward Nutting. To be clear, owner(s) do not include          ///
+///        developers, contributors or other project members.                      ///
+///                                                                                ///
+/// ------------------------------------------------------------------------------ ///
+#endregion
+    
+#define GC_TRACE
+#undef GC_TRACE
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -78,7 +99,7 @@ namespace Kernel.FOS_System
             uint totalSize = theType.Size;
             totalSize += (uint)sizeof(GCHeader);
 
-            GCHeader* newObjPtr = (GCHeader*)Heap.Alloc(totalSize);
+            GCHeader* newObjPtr = (GCHeader*)Heap.AllocZeroed(totalSize);
             
             if((UInt32)newObjPtr == 0)
             {
@@ -96,14 +117,8 @@ namespace Kernel.FOS_System
             FOS_System.ObjectWithType newObj = (FOS_System.ObjectWithType)Utilities.ObjectUtilities.GetObject(newObjPtr + 1);
             newObj._Type = theType;
             
-            byte* newObjBytePtr = (byte*)newObjPtr;
-            for (int i = sizeof(GCHeader) + 4/*For _Type field*/; i < totalSize; i++)
-            {
-                newObjBytePtr[i] = 0;
-            }
-
             //Move past GCHeader
-            newObjBytePtr = (byte*)(newObjBytePtr + sizeof(GCHeader));
+            byte* newObjBytePtr = (byte*)(newObjPtr + 1);
 
             InsideGC = false;
 
@@ -152,7 +167,7 @@ namespace Kernel.FOS_System
             }
             totalSize += (uint)sizeof(GCHeader);
 
-            GCHeader* newObjPtr = (GCHeader*)Heap.Alloc(totalSize);
+            GCHeader* newObjPtr = (GCHeader*)Heap.AllocZeroed(totalSize);
 
             if ((UInt32)newObjPtr == 0)
             {
@@ -173,14 +188,8 @@ namespace Kernel.FOS_System
             newArr.length = length;
             newArr.elemType = elemType;
             
-            byte* newObjBytePtr = (byte*)newObjPtr;
-            for (int i = sizeof(GCHeader) + arrayObjSize + 4/*For _Type field*/; i < totalSize; i++)
-            {
-                newObjBytePtr[i] = 0;
-            }
-
             //Move past GCHeader
-            newObjBytePtr = (byte*)(newObjBytePtr + sizeof(GCHeader));
+            byte* newObjBytePtr = (byte*)(newObjPtr + 1);
 
             InsideGC = false;
             
@@ -219,7 +228,7 @@ namespace Kernel.FOS_System
             totalSize += /*char size in bytes*/2 * (uint)length;
             totalSize += (uint)sizeof(GCHeader);
 
-            GCHeader* newObjPtr = (GCHeader*)Heap.Alloc(totalSize);
+            GCHeader* newObjPtr = (GCHeader*)Heap.AllocZeroed(totalSize);
 
             if ((UInt32)newObjPtr == 0)
             {
@@ -249,14 +258,8 @@ namespace Kernel.FOS_System
             newStr._Type = (FOS_System.Type)typeof(FOS_System.String);
             newStr.length = length;
             
-            byte* newObjBytePtr = (byte*)newObjPtr;
-            for (int i = sizeof(GCHeader) + strObjSize + 4/*For _Type field*/; i < totalSize; i++)
-            {
-                newObjBytePtr[i] = 0;
-            }
-
             //Move past GCHeader
-            newObjBytePtr = (byte*)(newObjBytePtr + sizeof(GCHeader));
+            byte* newObjBytePtr = (byte*)(newObjPtr + 1);
 
             InsideGC = false;
 
@@ -438,6 +441,11 @@ namespace Kernel.FOS_System
 
             InsideGC = true;
 
+#if GC_TRACE
+            int startNumObjs = NumObjs;
+            int startNumStrings = NumStrings;
+#endif
+
             ObjectToCleanup* currObjToCleanupPtr = CleanupList;
             ObjectToCleanup* prevObjToCleanupPtr = null;
             while (currObjToCleanupPtr != null)
@@ -463,6 +471,21 @@ namespace Kernel.FOS_System
             }
 
             InsideGC = false;
+            
+#if GC_TRACE
+            PrintCleanupData(startNumObjs, startNumStrings);
+#endif
+        }
+        private static void PrintCleanupData(int startNumObjs, int startNumStrings)
+        {
+            int numObjsFreed = startNumObjs - NumObjs;
+            int numStringsFreed = startNumStrings - NumStrings;
+            BasicConsole.SetTextColour(BasicConsole.warning_colour);
+            BasicConsole.WriteLine(((FOS_System.String)"Freed objects: ") + numObjsFreed);
+            BasicConsole.WriteLine(((FOS_System.String)"Freed strings: ") + numStringsFreed);
+            BasicConsole.WriteLine(((FOS_System.String)"Used memory  : ") + (Heap.FBlock->used * Heap.FBlock->bsize) + " / " + Heap.FBlock->size);
+            //BasicConsole.DelayOutput(2);
+            BasicConsole.SetTextColour(BasicConsole.default_colour);
         }
 
         /// <summary>
