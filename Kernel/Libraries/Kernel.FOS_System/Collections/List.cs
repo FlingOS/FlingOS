@@ -285,6 +285,32 @@ namespace Kernel.FOS_System.Collections
                 }
             }
         }
+        /// <summary>
+        /// The removes the UInt32 at the specified index from the list.
+        /// </summary>
+        /// <param name="index">The index of the UInt32 to remove.</param>
+        [Compiler.NoDebug]
+        public void RemoveAt(int index)
+        {
+            if (index >= currIndex)
+            {
+                ExceptionMethods.Throw(new Exceptions.OverflowException());
+            }
+
+            for (int i = index; i < currIndex; i++)
+            {
+                if (i < currIndex - 1)
+                {
+                    _array[i] = _array[i + 1];
+                }
+                else
+                {
+                    _array[i] = 0;
+                }
+            }
+
+            currIndex--;
+        }
 
         /// <summary>
         /// Expands the capacity of the internel array that stores the UInt32s.

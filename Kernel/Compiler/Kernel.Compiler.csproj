@@ -96,6 +96,7 @@
     <Compile Include="ILOps\Initobj.cs" />
     <Compile Include="ILOps\Ldlen.cs" />
     <Compile Include="ILOps\Ldobj.cs" />
+    <Compile Include="ILOps\Xor.cs" />
     <Compile Include="ILOps\Rem.cs" />
     <Compile Include="ILOps\Not.cs" />
     <Compile Include="ILOps\Switch.cs" />

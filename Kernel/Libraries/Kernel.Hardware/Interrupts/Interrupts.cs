@@ -36,11 +36,13 @@ namespace Kernel.Hardware.Interrupts
     public class InterruptHandlers : FOS_System.Object
     {
         public List HandlerDescrips = new List(1);
+        public int id = 0;
     }
     public class HandlerDescriptor : FOS_System.Object
     {
         public InterruptHandler handler;
         public FOS_System.Object data;
+        public int id;
     }
     public delegate void InterruptHandler(FOS_System.Object data);
     [Compiler.PluggedClass]
@@ -48,13 +50,6 @@ namespace Kernel.Hardware.Interrupts
     {
         private static InterruptHandlers[] Handlers = new InterruptHandlers[256];
 
-        public static void SetIRQHandler(int num, InterruptHandler handler,
-                                         FOS_System.Object data)
-        {
-            SetISRHandler(num + 32, handler, data);
-            //TODO: The following method doesn't work yet - fix the asm. (Caused double protection fault??)
-            EnableIRQ((byte)num);
-        }
         public static void EnableIRQ(byte num)
         {
             if (num > 7)
@@ -74,7 +69,18 @@ namespace Kernel.Hardware.Interrupts
                 IO.IOPort.doWrite(0x21, mask);
             }
         }
-        public static void SetISRHandler(int num, InterruptHandler handler,
+        public static int SetIRQHandler(int num, InterruptHandler handler,
+                                         FOS_System.Object data)
+        {
+            int result = SetISRHandler(num + 32, handler, data);
+            EnableIRQ((byte)num);
+            return result;
+        }
+        public static void RemoveIRQHandler(int num, int id)
+        {
+            RemoveISRHandler(num + 32, id);
+        }
+        public static int SetISRHandler(int num, InterruptHandler handler,
                                          FOS_System.Object data)
         {
             if (Handlers[num] == null)
@@ -87,14 +93,33 @@ namespace Kernel.Hardware.Interrupts
 #if INTERRUPTS_TRACE
             BasicConsole.WriteLine(((FOS_System.String)"Adding new HandlerDescriptor... ISR: ") + num);
 #endif
-            Handlers[num].HandlerDescrips.Add(new HandlerDescriptor()
+            InterruptHandlers handlers = Handlers[num];
+            int id = handlers.id++;
+            handlers.HandlerDescrips.Add(new HandlerDescriptor()
             {
                 handler = handler,
-                data = data
+                data = data,
+                id = id
             });
 #if INTERRUPTS_TRACE
             BasicConsole.WriteLine("Added.");
 #endif
+            return id;
+        }
+        public static void RemoveISRHandler(int num, int id)
+        {
+            if (Handlers[num] != null)
+            {
+                InterruptHandlers handlers = Handlers[num];
+                for (int i = 0; i < handlers.HandlerDescrips.Count; i++)
+                {
+                    HandlerDescriptor descrip = (HandlerDescriptor)handlers.HandlerDescrips[i];
+                    if (descrip.id == id)
+                    {
+                        handlers.HandlerDescrips.RemoveAt(i);
+                    }
+                }
+            }
         }
 
         private static void CommonISR(uint ISRNum)

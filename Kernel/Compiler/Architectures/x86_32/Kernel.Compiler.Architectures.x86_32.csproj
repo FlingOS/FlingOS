@@ -60,6 +60,7 @@
     <Compile Include="Ldlen.cs" />
     <Compile Include="Initobj.cs" />
     <Compile Include="Ldobj.cs" />
+    <Compile Include="Xor.cs" />
     <Compile Include="Rem.cs" />
     <Compile Include="Not.cs" />
     <Compile Include="Switch.cs" />

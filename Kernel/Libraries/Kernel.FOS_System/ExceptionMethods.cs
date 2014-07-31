@@ -137,6 +137,7 @@ namespace Kernel
         /// </remarks>
         public static void Throw_DivideByZeroException()
         {
+            HaltReason = "Divide by zero exception.";
             Throw(new FOS_System.Exceptions.DivideByZeroException());
         }
         /// <summary>
@@ -147,6 +148,7 @@ namespace Kernel
         /// </remarks>
         public static void Throw_DivideByZeroException(uint address)
         {
+            HaltReason = "Divide by zero exception.";
             Throw(new FOS_System.Exceptions.DivideByZeroException(address));
         }
         /// <summary>
@@ -157,6 +159,7 @@ namespace Kernel
         /// </remarks>
         public static void Throw_OverflowException()
         {
+            HaltReason = "Overflow exception.";
             Throw(new FOS_System.Exceptions.OverflowException());
         }
         /// <summary>
@@ -167,6 +170,7 @@ namespace Kernel
         /// </remarks>
         public static void Throw_InvalidOpCodeException()
         {
+            HaltReason = "Invalid op code exception.";
             Throw(new FOS_System.Exceptions.InvalidOpCodeException());
         }
         /// <summary>
@@ -177,6 +181,7 @@ namespace Kernel
         /// </remarks>
         public static void Throw_DoubleFaultException()
         {
+            HaltReason = "Double fault exception.";
             Throw(new FOS_System.Exceptions.DoubleFaultException());
         }
         /// <summary>
@@ -187,6 +192,7 @@ namespace Kernel
         /// </remarks>
         public static void Throw_StackException()
         {
+            HaltReason = "Stack exception.";
             Throw(new FOS_System.Exceptions.StackException());
         }
         /// <summary>
@@ -199,6 +205,7 @@ namespace Kernel
         /// </remarks>
         public static void Throw_PageFaultException(uint errorCode, uint address)
         {
+            HaltReason = "Page fault exception.";
             Throw(new FOS_System.Exceptions.PageFaultException(errorCode, address));
         }
 
@@ -211,6 +218,7 @@ namespace Kernel
         [Compiler.ThrowNullReferenceExceptionMethod]
         public static void Throw_NullReferenceException()
         {
+            HaltReason = "Null reference exception.";
             Throw(new FOS_System.Exceptions.NullReferenceException());
         }
         /// <summary>
@@ -222,6 +230,7 @@ namespace Kernel
         [Compiler.ThrowArrayTypeMismatchExceptionMethod]
         public static void Throw_ArrayTypeMismatchException()
         {
+            HaltReason = "Array type mismatch exception.";
             Throw(new FOS_System.Exceptions.ArrayTypeMismatchException());
         }
         /// <summary>
@@ -233,6 +242,7 @@ namespace Kernel
         [Compiler.ThrowIndexOutOfRangeExceptionMethod]
         public static void Throw_IndexOutOfRangeException()
         {
+            HaltReason = "Index out of range exception.";
             Throw(new FOS_System.Exceptions.IndexOutOfRangeException());
         }        
     }

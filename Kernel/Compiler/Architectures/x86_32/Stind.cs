@@ -80,8 +80,8 @@ namespace Kernel.Compiler.Architectures.x86_32
                     isFloat = true;
                     break;
                 case OpCodes.Stind_Ref:
-                    //SUPPORT - What the hell is this op, how do we support it?
-                    throw new NotImplementedException("Stind_Red not supported yet!");
+                    bytesToStore = 4;
+                    break;
             }
 
             if(isFloat)

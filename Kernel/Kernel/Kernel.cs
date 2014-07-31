@@ -124,6 +124,14 @@ namespace Kernel
         [Compiler.NoGC]
         public static void Halt(uint lastAddress)
         {
+            try
+            {
+                Hardware.Keyboards.PS2.ThePS2.Disable();
+            }
+            catch
+            {
+            }
+
             BasicConsole.SetTextColour(BasicConsole.warning_colour);
             BasicConsole.Write("Halt Reason: ");
             BasicConsole.WriteLine(ExceptionMethods.HaltReason);
@@ -148,11 +156,7 @@ namespace Kernel
             BasicConsole.SetTextColour(BasicConsole.error_colour);
             BasicConsole.WriteLine("Kernel halting!");
             BasicConsole.SetTextColour(BasicConsole.default_colour);
-
-            BasicConsole.WriteLine("Not resetting. Going into infinite loop...");
-            while (true)
-                ;
-            //PreReqs.Reset();
+            PreReqs.Reset();
         }
 
         /// <summary>
@@ -168,12 +172,12 @@ namespace Kernel
         {
             try
             {
-                Hardware.Keyboards.PS2.Init();
+                KeyboardTest();
 
                 InitATA();
 
                 OutputDivider();
-                
+
                 InitPCI();
 
                 OutputDivider();
@@ -238,6 +242,10 @@ namespace Kernel
             catch
             {
                 OutputCurrentExceptionInfo();
+            }
+            finally
+            {
+                Hardware.Keyboards.PS2.ThePS2.Disable();
             }
 
             BasicConsole.WriteLine();
@@ -1026,6 +1034,51 @@ namespace Kernel
             finally
             {
                 BasicConsole.WriteLine("Finally ran.");
+            }
+        }
+
+        private static void KeyboardTest()
+        {
+            try
+            {
+                Hardware.Keyboards.PS2.Init();
+
+                BasicConsole.WriteLine("Running PS2 Keyboard test. Type for a bit, eventually it will end (if the keyboard works that is)...");
+
+                int charsPrinted = 0;
+                char c;
+                bool ok;
+                for (int i = 0; i < 240; i++)
+                {
+                    ok = Hardware.Keyboards.PS2.ThePS2.GetChar_Blocking(200000000, out c);
+                    if (ok)
+                    {
+                        charsPrinted++;
+                        if (charsPrinted % 80 == 0)
+                        {
+                            BasicConsole.WriteLine(c);
+                        }
+                        else
+                        {
+                            BasicConsole.Write(c);
+                        }
+                    }
+                    else
+                    {
+                        BasicConsole.WriteLine();
+                        BasicConsole.SetTextColour(BasicConsole.warning_colour);
+                        BasicConsole.WriteLine("Undisplayable key pressed.");
+                        BasicConsole.SetTextColour(BasicConsole.default_colour);
+                    }
+                }
+
+                BasicConsole.WriteLine();
+                BasicConsole.WriteLine();
+                BasicConsole.WriteLine("Ended keyboard test.");
+            }
+            finally
+            {
+                Hardware.Keyboards.PS2.Clean();
             }
         }
     }
