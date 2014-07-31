@@ -561,6 +561,19 @@ namespace Kernel.FOS_System
             return "0x" + result.PadLeft(4, '0');
         }
         /// <summary>
+        /// Implicitly converts the specified value to an FOS_System.String.
+        /// </summary>
+        /// <param name="x">The value to convert.</param>
+        /// <returns>The FOS_System.String value.</returns>
+        [Compiler.NoDebug]
+        [Compiler.NoGC]
+        public static implicit operator FOS_System.String(char x)
+        {
+            FOS_System.String result = FOS_System.String.New(1);
+            result[0] = x;
+            return result;
+        }
+        /// <summary>
         /// Implicitly converts the specified value to a hex FOS_System.String.
         /// </summary>
         /// <param name="x">The value to convert.</param>

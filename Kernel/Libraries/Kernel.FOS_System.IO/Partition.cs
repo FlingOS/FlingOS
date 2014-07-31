@@ -82,5 +82,30 @@ namespace Kernel.FOS_System.IO
             UInt64 xHostBlockNo = StartingSector + aBlockNo;
             TheDiskDevice.WriteBlock(xHostBlockNo, aBlockCount, aData);
         }
+
+        public static bool HasPartitions(DiskDevice disk)
+        {
+            for (int i = 0; i < FOS_System.IO.FileSystemManager.Partitions.Count; i++)
+            {
+                FOS_System.IO.Partition part = (FOS_System.IO.Partition)FOS_System.IO.FileSystemManager.Partitions[i];
+                if (part.TheDiskDevice == disk)
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+        public static Partition GetFirstPartition(DiskDevice disk)
+        {
+            for (int i = 0; i < FOS_System.IO.FileSystemManager.Partitions.Count; i++)
+            {
+                FOS_System.IO.Partition part = (FOS_System.IO.Partition)FOS_System.IO.FileSystemManager.Partitions[i];
+                if (part.TheDiskDevice == disk)
+                {
+                    return part;
+                }
+            }
+            return null;
+        }
     }
 }

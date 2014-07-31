@@ -55,9 +55,24 @@ namespace Kernel.Hardware.Interrupts
             //TODO: The following method doesn't work yet - fix the asm. (Caused double protection fault??)
             EnableIRQ((byte)num);
         }
-        [Compiler.PluggedMethod(ASMFilePath = null)]
         public static void EnableIRQ(byte num)
         {
+            if (num > 7)
+            {
+                num -= 8;
+
+                byte mask = IO.IOPort.doRead_Byte(0xA1);
+                byte bitMask = (byte)(~(1u << num));
+                mask &= bitMask;
+                IO.IOPort.doWrite(0xA1, mask);
+            }
+            else
+            {
+                byte mask = IO.IOPort.doRead_Byte(0x21);
+                byte bitMask = (byte)(~(1u << num));
+                mask &= bitMask;
+                IO.IOPort.doWrite(0x21, mask);
+            }
         }
         public static void SetISRHandler(int num, InterruptHandler handler,
                                          FOS_System.Object data)

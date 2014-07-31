@@ -355,7 +355,7 @@ pic_remap:
     out 0x21, al        ; set PIC1
     out 0xA1, al        ; set PIC2
 
-	mov ax, 0xFFDF		; Set interrupt mask to disable all interrupts
+	mov ax, 0xFFFF		; Set interrupt mask to disable all interrupts
     out 0x21, al        ; Set mask of PIC1_DATA
     xchg al, ah
     out 0xA1, al        ; Set mask of PIC2_DATA

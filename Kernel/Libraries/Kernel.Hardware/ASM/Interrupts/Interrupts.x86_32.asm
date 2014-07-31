@@ -47,35 +47,3 @@ mov eax, [ebp+8]
 pop dword ebp
 
 ret
-
-
-method_System_Void_RETEND_Kernel_Hardware_Interrupts_Interrupts_DECLEND_EnableIRQ_NAMEEND__System_Byte_:
-
-push dword ebp
-mov dword ebp, esp
-
-mov byte cl, [ebp+8]
-cmp cl, 8
-jge .HighIRQ
-
-.LowIRQ:
-; in al, 0x21
-; mov bl, 1
-; shl bl, cl
-; or al, bl
-; out 0x20, al
-jmp .End
-
-.HighIRQ:
-; sub cl, 8
-; in al, 0xA1
-; mov bl, 1
-; shl bl, cl
-; or al, bl
-; out 0xA1, al
-
-.End:
-
-pop dword ebp
-
-ret

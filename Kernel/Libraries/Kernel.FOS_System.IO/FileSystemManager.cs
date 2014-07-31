@@ -188,5 +188,18 @@ namespace Kernel.FOS_System.IO
 
             return result;
         }
+
+        public static bool HasMapping(Partition part)
+        {
+            for (int i = 0; i < FileSystemMappings.Count; i++)
+            {
+                FileSystemMapping mapping = (FileSystemMapping)FileSystemMappings[i];
+                if (mapping.TheFileSystem.ThePartition == part)
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
     }
 }

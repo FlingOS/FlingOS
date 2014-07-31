@@ -64,6 +64,8 @@
     <Compile Include="DMA\DMABlock.cs" />
     <Compile Include="Interrupts\Interrupts.cs" />
     <Compile Include="IO\IOPort.cs" />
+    <Compile Include="Devices\Keyboard.cs" />
+    <Compile Include="Keyboards\PS2.cs" />
     <Compile Include="PCI\PCI.cs" />
     <Compile Include="PCI\PCIBaseAddress.cs" />
     <Compile Include="PCI\PCIDevice.cs" />

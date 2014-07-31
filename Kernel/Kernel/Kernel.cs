@@ -131,7 +131,7 @@ namespace Kernel
             //BasicConsole.WriteLine(lastAddress);
             BasicConsole.SetTextColour(BasicConsole.default_colour);
 
-            if(ExceptionMethods.CurrentException != null)
+            if (ExceptionMethods.CurrentException != null)
             {
                 BasicConsole.SetTextColour(BasicConsole.error_colour);
                 BasicConsole.WriteLine(ExceptionMethods.CurrentException.Message);
@@ -148,13 +148,17 @@ namespace Kernel
             BasicConsole.SetTextColour(BasicConsole.error_colour);
             BasicConsole.WriteLine("Kernel halting!");
             BasicConsole.SetTextColour(BasicConsole.default_colour);
-            PreReqs.Reset();
+
+            BasicConsole.WriteLine("Not resetting. Going into infinite loop...");
+            while (true)
+                ;
+            //PreReqs.Reset();
         }
 
         /// <summary>
         /// Disk0 - expected to be the primary, master HDD.
         /// </summary>
-        private static Hardware.Devices.DiskDevice disk0;
+        private static Hardware.Devices.DiskDevice HDD0;
         /// <summary>
         /// The actual main method for the kernel - by this point, all memory management, exception handling 
         /// etc has been set up properly.
@@ -164,9 +168,11 @@ namespace Kernel
         {
             try
             {
-                //InitATA();
+                Hardware.Keyboards.PS2.Init();
 
-                //OutputDivider();
+                InitATA();
+
+                OutputDivider();
                 
                 InitPCI();
 
@@ -203,7 +209,7 @@ namespace Kernel
 
                     OutputDivider();
 
-                    CheckDiskFormatting();
+                    CheckDiskFormatting(HDD0);
 
                     OutputDivider();
 
@@ -226,7 +232,7 @@ namespace Kernel
                         OutputCurrentExceptionInfo();
                     }
 
-                    //FileSystemTests();
+                    FileSystemTests();
                 }
             }
             catch
@@ -268,30 +274,14 @@ namespace Kernel
         /// </summary>
         private static void InitATA()
         {
+            int deviceCount = Hardware.DeviceManager.Devices.Count;
+
             BasicConsole.WriteLine("Initiailsing ATA...");
             Hardware.ATA.ATAManager.Init();
             BasicConsole.WriteLine(((FOS_System.String)"ATA initialised. Devices: ") + Hardware.DeviceManager.Devices.Count);
             
-            disk0 = (Hardware.Devices.DiskDevice)Hardware.DeviceManager.Devices[0];
-
-            //for (int i = 0; i < Hardware.DeviceManager.Devices.Count; i++)
-            //{
-            //    disk0 = (Hardware.Devices.DiskDevice)Hardware.DeviceManager.Devices[0];
-            //    if (disk0._Type == (FOS_System.Type)(typeof(Hardware.ATA.ATAPio)))
-            //    {
-            //        Hardware.ATA.ATAPio theATA = (Hardware.ATA.ATAPio)disk0;
-            //        BasicConsole.WriteLine(((FOS_System.String)"disk0 currently using model no: ") + theATA.ModelNo);
-            //        if (theATA.DriveType == Hardware.ATA.ATAPio.SpecLevel.ATAPI)
-            //        {
-            //            //Reject ATAPI devices (i.e. non-HDD devices)
-            //        }
-            //        else
-            //        {
-            //            //Accept non ATAPI devices.
-            //            break;
-            //        }
-            //    }
-            //}
+            //Get the first found drive (expected to be HDD)
+            HDD0 = (Hardware.Devices.DiskDevice)Hardware.DeviceManager.Devices[deviceCount];
         }
         /// <summary>
         /// Initialises the file-system.
@@ -305,72 +295,50 @@ namespace Kernel
         /// <summary>
         /// Checks for usable FAT32 partitions. If none found, formats "disk0" as MBR, 1 FAT32 partiton.
         /// </summary>
-        private static void CheckDiskFormatting()
+        private static void CheckDiskFormatting(Hardware.Devices.DiskDevice disk)
         {
             bool OK = true;
 
-            if (FOS_System.IO.FileSystemManager.Partitions.Count == 0)
+            if (disk == null)
             {
-                BasicConsole.WriteLine("No partitions. Either no disk (or equiv.) devices or they are not MBR formatted.");
-                BasicConsole.WriteLine("Attempting to find disk device to format...");
+                BasicConsole.WriteLine("Can't check formatting of null disk!");
+                return;
+            }
 
-                for (int i = 0; i < Hardware.DeviceManager.Devices.Count; i++)
+            if (!FOS_System.IO.Partition.HasPartitions(disk))
+            {
+                BasicConsole.WriteLine("No partitions found on disk. Either no disk (or equiv.) devices or they are not MBR formatted.");
+
+                try
                 {
-                    Hardware.Device aDevice = (Hardware.Device)Hardware.DeviceManager.Devices[i];
-                    if (aDevice._Type == (FOS_System.Type)(typeof(Hardware.ATA.ATAPio)))
-                    {
-                        try
-                        {
-                            BasicConsole.WriteLine("Formatting disk as MBR with one, primary FAT32 partition...");
+                    BasicConsole.WriteLine("Formatting disk as MBR with one, primary FAT32 partition...");
 
-                            disk0 = (Hardware.Devices.DiskDevice)aDevice;
-                            List newPartitions = new List(1);
-                            newPartitions.Add(FOS_System.IO.Disk.MBR.CreateFAT32PartitionInfo(disk0, false));
-                            FOS_System.IO.Disk.MBR.FormatDisk(disk0, newPartitions);
+                    List newPartitions = new List(1);
+                    newPartitions.Add(FOS_System.IO.Disk.MBR.CreateFAT32PartitionInfo(disk, false));
+                    FOS_System.IO.Disk.MBR.FormatDisk(disk, newPartitions);
 
-                            BasicConsole.WriteLine("MBR format done.");
-                            BasicConsole.DelayOutput(2);
-
-                            break;
-                        }
-                        catch
-                        {
-                            OK = false;
-                            BasicConsole.WriteLine("Error initializing disk: " + ExceptionMethods.CurrentException.Message);
-                        }
-                    }
-                    else if (aDevice._Type == (FOS_System.Type)(typeof(Hardware.USB.Devices.MassStorageDevice_DiskDevice)))
-                    {
-                        try
-                        {
-                            BasicConsole.WriteLine("Formatting MSD as MBR with one, primary FAT32 partition...");
-
-                            disk0 = (Hardware.Devices.DiskDevice)aDevice;
-                            List newPartitions = new List(1);
-                            newPartitions.Add(FOS_System.IO.Disk.MBR.CreateFAT32PartitionInfo(disk0, false));
-                            FOS_System.IO.Disk.MBR.FormatDisk(disk0, newPartitions);
-
-                            BasicConsole.WriteLine("MBR format done.");
-                            BasicConsole.DelayOutput(2);
-
-                            break;
-                        }
-                        catch
-                        {
-                            OK = false;
-                            BasicConsole.WriteLine("Error formatting MSD: " + ExceptionMethods.CurrentException.Message);
-                        }
-                    }
-                    //TODO - Add more device types e.g. USB
+                    BasicConsole.WriteLine("MBR format done.");
+                    BasicConsole.DelayOutput(2);
+                }
+                catch
+                {
+                    OK = false;
+                    BasicConsole.WriteLine("Error initializing disk: " + ExceptionMethods.CurrentException.Message);
                 }
 
                 InitFileSystem();
             }
-            if (FOS_System.IO.FileSystemManager.FileSystemMappings.Count == 0)
+            FOS_System.IO.Partition part = FOS_System.IO.Partition.GetFirstPartition(disk);
+            if(part == null)
+            {
+                BasicConsole.WriteLine("Disk not formatted correctly! No partition found.");
+                return;
+            }
+
+            if (!FOS_System.IO.FileSystemManager.HasMapping(part))
             {
                 BasicConsole.WriteLine("Formatting first partition as FAT32...");
-                Partition thePart = (Partition)FOS_System.IO.FileSystemManager.Partitions[0];
-                FOS_System.IO.FAT.FATFileSystem.FormatPartitionAsFAT32(thePart);
+                FOS_System.IO.FAT.FATFileSystem.FormatPartitionAsFAT32(part);
                 BasicConsole.WriteLine("Format done.");
                 BasicConsole.DelayOutput(2);
 
@@ -730,11 +698,11 @@ namespace Kernel
 
                         BasicConsole.WriteLine("Writing data...");
                         fileStream.Position = 0;
-                        int size = 0;
+                        uint size = (uint)shortNameTestFile.Size;
                         //for (int i = 0; i < 20; i++)
                         {
-                            fileStream.Write(testStrBytes, 0, testStrBytes.Length);
-                            size += testStrBytes.Length;
+                            //fileStream.Write(testStrBytes, 0, testStrBytes.Length);
+                            //size += testStrBytes.Length;
                         }
 
                         BasicConsole.WriteLine("Reading data...");
@@ -756,6 +724,61 @@ namespace Kernel
                     BasicConsole.WriteLine("Could not find \"A:/\" mapping.");
                 }
 
+                
+                FileSystemMapping B_FSMapping = FileSystemManager.GetMapping("B:/");
+                if (B_FSMapping != null)
+                {
+                    if (A_FSMapping != null)
+                    {
+                        File FileToCopy = File.Open("B:/Doc in Root Dir.txt");
+                        File shortNameTestFile = File.Open("A:/P1D2/ShrtTest.txt");
+                        if (shortNameTestFile != null)
+                        {
+                            FOS_System.IO.Streams.FileStream FromFileStream = FileToCopy.GetStream();
+
+                            if (shortNameTestFile != null)
+                            {
+                                FOS_System.IO.Streams.FileStream ToFileStream = shortNameTestFile.GetStream();
+
+                                BasicConsole.WriteLine("Copying data...");
+
+                                FromFileStream.Position = 0;
+                                byte[] readBytes = new byte[(uint)FileToCopy.Size];
+                                FromFileStream.Read(readBytes, 0, readBytes.Length);
+                                FOS_System.String readStr = ByteConverter.GetASCIIStringFromASCII(readBytes, 0u, (uint)readBytes.Length);
+                                BasicConsole.WriteLine("\"" + readStr + "\"");
+
+                                ToFileStream.Position = 0;
+                                ToFileStream.Write(readBytes, 0, readBytes.Length);
+
+                                BasicConsole.WriteLine("Copied!");
+                                BasicConsole.WriteLine("Reading back data from target file...");
+
+                                ToFileStream.Position = 0;
+                                readBytes = new byte[(uint)FileToCopy.Size];
+                                ToFileStream.Read(readBytes, 0, readBytes.Length);
+                                readStr = ByteConverter.GetASCIIStringFromASCII(readBytes, 0u, (uint)readBytes.Length);
+                                BasicConsole.WriteLine("\"" + readStr + "\"");
+                            }
+                            else
+                            {
+                                BasicConsole.WriteLine("Could not find file to copy to!");
+                            }
+                        }
+                        else
+                        {
+                            BasicConsole.WriteLine("Could not find file to copy!");
+                        }
+                    }
+                    else
+                    {
+                        BasicConsole.WriteLine("\"B:/\" mapping found but no \"A:/\" mapping!");
+                    }
+                }
+                else
+                {
+                    BasicConsole.WriteLine("Could not find \"B:/\" mapping.");
+                }
             }
             catch
             {

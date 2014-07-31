@@ -63,9 +63,16 @@ namespace Kernel.Hardware.USB.Devices
             BulkReset(DeviceInfo.MSD_InterfaceNum); // Reset Interface
 
             byte* inquiryBuffer = (byte*)FOS_System.Heap.AllocZeroed(26u);
-            SendSCSICommand(0x12 /*SCSI opcode*/, 0 /*LBA*/, 36 /*Bytes In*/, inquiryBuffer, null);
+            try
+            {
+                SendSCSICommand(0x12 /*SCSI opcode*/, 0 /*LBA*/, 36 /*Bytes In*/, inquiryBuffer, null);
 
-            AnalyzeInquiry(inquiryBuffer);
+                AnalyzeInquiry(inquiryBuffer);
+            }
+            finally
+            {
+                FOS_System.Heap.Free(inquiryBuffer);
+            }
 
             ///////// send SCSI command "test unit ready(6)"
             TestDeviceReady();
@@ -389,6 +396,7 @@ namespace Kernel.Hardware.USB.Devices
 
                 if (statusBuffer == null)
                 {
+                    FreeStatusBuffer = true;
                     statusBuffer = FOS_System.Heap.AllocZeroed(13u);
                 }
 
@@ -420,27 +428,40 @@ namespace Kernel.Hardware.USB.Devices
 #endif
 
                 byte* statusBuffer = (byte*)FOS_System.Heap.AllocZeroed(13u);
-                SendSCSICommand(0x00, 0u, 0, null, statusBuffer); // dev, endp, cmd, LBA, transfer length
+                try
+                {
+                    SendSCSICommand(0x00, 0u, 0, null, statusBuffer); // dev, endp, cmd, LBA, transfer length
 
-                byte statusByteTestReady = (byte)*(((uint*)statusBuffer) + 3);
+                    byte statusByteTestReady = (byte)*(((uint*)statusBuffer) + 3);
 
-                if (timeout >= maxTest / 2 && statusByteTestReady != 0) continue;
+                    if (timeout >= maxTest / 2 && statusByteTestReady != 0) continue;
 
 #if MSD_TRACE
                 DBGMSG("SCSI: request sense");
 #endif
 
-                byte* dataBuffer = (byte*)FOS_System.Heap.AllocZeroed(18u);
-                SendSCSICommand(0x03, 0, 18, dataBuffer, statusBuffer); // dev, endp, cmd, LBA, transfer length
+                    byte* dataBuffer = (byte*)FOS_System.Heap.AllocZeroed(18u);
+                    try
+                    {
+                        SendSCSICommand(0x03, 0, 18, dataBuffer, statusBuffer); // dev, endp, cmd, LBA, transfer length
 
-                statusByte = (byte)*(((uint*)statusBuffer) + 3);
+                        statusByte = (byte)*(((uint*)statusBuffer) + 3);
 
-                int sense = ShowResultsRequestSense(dataBuffer);
-                if (sense == 0 || sense == 6)
-                {
-                    break;
+                        int sense = ShowResultsRequestSense(dataBuffer);
+                        if (sense == 0 || sense == 6)
+                        {
+                            break;
+                        }
+                    }
+                    finally
+                    {
+                        FOS_System.Heap.Free(dataBuffer);
+                    }
                 }
-
+                finally
+                {
+                    FOS_System.Heap.Free(statusBuffer);
+                }
             }
 
             return statusByte;
@@ -718,14 +739,21 @@ namespace Kernel.Hardware.USB.Devices
             msd = anMSD;
             
             uint* capacityBuffer = (uint*)FOS_System.Heap.AllocZeroed(8);
-            anMSD.SendSCSICommand(0x25 /*SCSI opcode*/, 0 /*LBA*/, 8 /*Bytes In*/, capacityBuffer, null);
+            try
+            {
+                anMSD.SendSCSICommand(0x25 /*SCSI opcode*/, 0 /*LBA*/, 8 /*Bytes In*/, capacityBuffer, null);
 
-            // MSB ... LSB
-            capacityBuffer[0] = Utils.htonl(capacityBuffer[0]);
-            capacityBuffer[1] = Utils.htonl(capacityBuffer[1]);
+                // MSB ... LSB
+                capacityBuffer[0] = Utils.htonl(capacityBuffer[0]);
+                capacityBuffer[1] = Utils.htonl(capacityBuffer[1]);
 
-            blockCount = ((ulong)capacityBuffer[0]) + 1;
-            blockSize = (ulong)capacityBuffer[1];
+                blockCount = ((ulong)capacityBuffer[0]) + 1;
+                blockSize = (ulong)capacityBuffer[1];
+            }
+            finally
+            {
+                FOS_System.Heap.Free(capacityBuffer);
+            }
 
             DeviceManager.Devices.Add(this);
         }
