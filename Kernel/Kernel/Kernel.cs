@@ -71,12 +71,12 @@ namespace Kernel
 
             try
             {
+                Paging.Init();
+                
                 Hardware.Devices.CPU.InitDefault();
                 Hardware.Devices.Timer.InitDefault();
                 Hardware.Devices.Keyboard.InitDefault();
 
-                Paging.Init();
-                
                 ManagedMain();
             }
             catch
@@ -177,9 +177,10 @@ namespace Kernel
         {
             try
             {
-                PITTest();
+                TimerTest();
+                PCBeepTest();
                 KeyboardTest();
-
+                
                 InitATA();
 
                 OutputDivider();
@@ -1038,16 +1039,36 @@ namespace Kernel
                 BasicConsole.WriteLine("Finally ran.");
             }
         }
-        private static void PITTest()
+
+        private static void PCBeepTest()
+        {
+            try
+            {
+                BasicConsole.WriteLine("Running PC Beep test...");
+                BasicConsole.WriteLine("Enabling beep...");
+                Hardware.Timers.PIT.ThePIT.PlaySound(247); //261 ~ B3
+                BasicConsole.WriteLine("Beep enabled. Waiting 10s...");
+                Hardware.Devices.Timer.Default.Wait(10000);
+                BasicConsole.WriteLine("Wait finished. Muting beep...");
+                Hardware.Timers.PIT.ThePIT.MuteSound();
+                BasicConsole.WriteLine("Muted beep.");
+                BasicConsole.WriteLine("Ended PC Beep test.");
+            }
+            catch
+            {
+                OutputCurrentExceptionInfo();
+            }
+        }
+        private static void TimerTest()
         {
             try
             {
                 BasicConsole.WriteLine("Running PIT test...");
 
-                BasicConsole.Write("Waiting for 10 lot(s) of 1 second(s)");
-                for (int i = 0; i < 10; i++)
+                BasicConsole.Write("Waiting for 5 lot(s) of 1 second(s)");
+                for (int i = 0; i < 5; i++)
                 {
-                    Hardware.Timers.PIT.ThePIT.Wait(1000);
+                    Hardware.Devices.Timer.Default.Wait(1000);
                     BasicConsole.Write(".");
                 }
                 BasicConsole.WriteLine("completed.");
@@ -1070,7 +1091,9 @@ namespace Kernel
                 bool ok;
                 for (int i = 0; i < 240; i++)
                 {
-                    ok = Hardware.Devices.Keyboard.Default.GetChar_Blocking(200000000, out c);
+                    /*Wait up-to 5 seconds per key stroke. 5 * 240 = 1200 seconds = 
+                      Max wait time of 20 minutes or 240 characters */
+                    ok = Hardware.Devices.Keyboard.Default.GetChar_Blocking(5000, out c);
                     if (ok)
                     {
                         charsPrinted++;

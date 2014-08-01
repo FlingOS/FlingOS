@@ -31,7 +31,7 @@ namespace Kernel.Hardware.Timers
         {
         }
         
-        private ushort _T0Countdown = 65535;
+        private ushort _T0Countdown = 65535; //2048;     //Produces ~1.72ms delay between interrupts
         private ushort _T2Countdown = 65535;
         private int TimerCounter = 0;
         private bool WaitSignaled = false;
@@ -168,9 +168,9 @@ namespace Kernel.Hardware.Timers
 
         public override void Wait(uint TimeoutMS)
         {
-            WaitNS(1000000ul * TimeoutMS);
+            WaitNS(1000000l * TimeoutMS);
         }
-        public override void WaitNS(ulong TimeoutNS)
+        public override void WaitNS(long TimeoutNS)
         {
             WaitSignaled = false;
 
@@ -218,13 +218,12 @@ namespace Kernel.Hardware.Timers
             for (int i = ActiveHandlers.Count - 1; i >= 0; i--)
             {
                 hndlr = (PITHandler)ActiveHandlers[i];
-                
-                hndlr.NSRemaining -= T0Delay;
 
-                //UInt64 underflows to max value
+                hndlr.NSRemaining -= T0Delay;
+                
                 if (hndlr.NSRemaining < T0Delay)
                 {
-                    if (hndlr.Recuring)
+                    if (hndlr.Recurring)
                     {
                         hndlr.NSRemaining = hndlr.NanosecondsTimeout;
                     }
@@ -281,9 +280,9 @@ namespace Kernel.Hardware.Timers
     }
     public class PITHandler : FOS_System.Object
     {
-        internal ulong NSRemaining;
-        public ulong NanosecondsTimeout;
-        public bool Recuring;
+        internal long NSRemaining;
+        public long NanosecondsTimeout;
+        public bool Recurring;
         internal int ID = -1;
         public FOS_System.Object state;
 
@@ -298,20 +297,20 @@ namespace Kernel.Hardware.Timers
         public delegate void dOnTrigger(FOS_System.Object state);
         public dOnTrigger HandleTrigger;
 
-        public PITHandler(dOnTrigger HandleOnTrigger, FOS_System.Object aState, ulong NanosecondsTimeout, bool Recuring)
+        public PITHandler(dOnTrigger HandleOnTrigger, FOS_System.Object aState, long NanosecondsTimeout, bool Recurring)
         {
             this.HandleTrigger = HandleOnTrigger;
             this.NanosecondsTimeout = NanosecondsTimeout;
             this.NSRemaining = this.NanosecondsTimeout;
-            this.Recuring = Recuring;
+            this.Recurring = Recurring;
             this.state = aState;
         }
-        public PITHandler(dOnTrigger HandleOnTrigger, FOS_System.Object aState, ulong NanosecondsTimeout, uint NanosecondsLeft)
+        public PITHandler(dOnTrigger HandleOnTrigger, FOS_System.Object aState, long NanosecondsTimeout, uint NanosecondsLeft)
         {
             this.HandleTrigger = HandleOnTrigger;
             this.NanosecondsTimeout = NanosecondsTimeout;
             this.NSRemaining = NanosecondsLeft;
-            this.Recuring = true;
+            this.Recurring = true;
             this.state = aState;
         }
     }

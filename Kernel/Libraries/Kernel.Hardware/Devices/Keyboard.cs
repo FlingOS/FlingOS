@@ -23,6 +23,8 @@ namespace Kernel.Hardware.Devices
 {
     public abstract class Keyboard : Device
     {
+        public static uint GetCharDelayTimeMS = 10;
+
         protected UInt32List scancodeBuffer = new UInt32List(64);
         protected bool enabled = false;
 
@@ -348,13 +350,14 @@ namespace Kernel.Hardware.Devices
                 return false;
             }
         }
-        public bool GetChar_Blocking(int timeout, out char c)
+        public bool GetChar_Blocking(uint timeout, out char c)
         {
             c = '\0';
 
+            timeout /= GetCharDelayTimeMS;
             while(scancodeBuffer.Count == 0 && timeout-- > 0)
             {
-                Timer.Default.Wait(50);
+                Timer.Default.Wait(GetCharDelayTimeMS);
             }
 
             if(scancodeBuffer.Count > 0)

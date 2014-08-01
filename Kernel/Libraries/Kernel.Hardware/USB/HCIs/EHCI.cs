@@ -1134,6 +1134,7 @@ namespace Kernel.Hardware.USB.HCIs
                 //Sleep for a bit
                 for (int i = 0; i < 100000; i++)
                     ;
+                //TODO: Use Timer.Default.Wait(10)
             }
 
             USBCMD |= EHCI_Consts.CMD_HCRESET; //Set reset bit
@@ -1143,6 +1144,7 @@ namespace Kernel.Hardware.USB.HCIs
             {
                 for (int i = 0; i < 100000; i++)
                     ;
+                //TODO: Use Timer.Default.Wait(10)
 
                 timeout--;
                 if (timeout==0)
@@ -1213,6 +1215,7 @@ namespace Kernel.Hardware.USB.HCIs
                         timeout--;
                         for(int i = 0; i < 100000; i++)
                             ;
+                        //TODO: Use Timer.Default.Wait(10)
                     }
                     if ((pciDevice.ReadRegister8(BIOSownedSemaphore) & 0x01) == 0) // not set
                     {
@@ -1225,6 +1228,7 @@ namespace Kernel.Hardware.USB.HCIs
                             timeout--;
                             for(int i = 0; i < 100000; i++)
                                 ;
+                            //TODO: Use Timer.Default.Wait(10)
                         }
                     }
 #if EHCI_TRACE
@@ -1298,6 +1302,7 @@ namespace Kernel.Hardware.USB.HCIs
             //~200ms
             for (int i = 0; i < 2000000; i++)
                 ;
+            //TODO: Use Timer.Default.Wait(200)
 
             PORTSC[portNum] &= ~EHCI_Consts.PSTS_PORT_RESET;
 
@@ -1309,6 +1314,7 @@ namespace Kernel.Hardware.USB.HCIs
                 // ~1ms
                 for (int i = 0; i < 10000; i++)
                     ;
+                //TODO: Use Timer.Default.Wait(1)
 
                 timeout--;
                 if (timeout == 0)
@@ -1328,6 +1334,7 @@ namespace Kernel.Hardware.USB.HCIs
             //~20ms
             for (int i = 0; i < 200000; i++)
                 ;
+            //TODO: Use Timer.Default.Wait(20)
         }
         protected static void InterruptHandler(FOS_System.Object data)
         {
@@ -1704,6 +1711,7 @@ namespace Kernel.Hardware.USB.HCIs
                     //~10ms
                     for (int i = 0; i < 100000; i++)
                         ;
+                    //TODO: Use Timer.Default.Wait(10)
                 }
                 else
                 {

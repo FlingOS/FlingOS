@@ -27,7 +27,7 @@ namespace Kernel.Hardware.Devices
         public abstract void Disable();
 
         public abstract void Wait(uint ms);
-        public abstract void WaitNS(ulong ns);
+        public abstract void WaitNS(long ns);
 
         public static Timer Default;
         public static void InitDefault()

@@ -268,6 +268,11 @@ namespace Kernel
         /// <param name="amount">The amount of time to delay (approx. 1 = 1 second).</param>
         public static void DelayOutput(int amount)
         {
+            /*********************************************
+             * DO NOT CHANGE THIS IMPLEMENTATION TO USE  *
+             *    Devices.Timer.Wait/WaitNS functions!   *
+             *********************************************/
+
             if (DisableDelayOutput)
             {
                 return;
