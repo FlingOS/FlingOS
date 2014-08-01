@@ -78,7 +78,9 @@ namespace Kernel.Hardware.Devices
         {
             mKeys = new List(164);
 
-            //TODO: fn (for laptops)
+            //TODO: fn key
+            //TODO: full numpad?
+            //TODO: Other UK keys e.g. backslash
 
             #region Letters
             AddKey(0x10, 'q', KeyboardKey.Q);
@@ -138,16 +140,14 @@ namespace Kernel.Hardware.Devices
             #endregion
 
             #region digits
-            //AddKey(0x1, '`');
-            //AddKey(0x10000, '~');
             AddKey(0x29, '`', KeyboardKey.NoName);
-            AddKey(0x290000, '~', KeyboardKey.NoName);
+            AddKey(0x290000, (char)170u, KeyboardKey.NoName);
             AddKey(0x2, '1', KeyboardKey.D1);
             AddKey(0x20000, '!', KeyboardKey.D1);
             AddKey(0x3, '2', KeyboardKey.D2);
-            AddKey(0x30000, '@', KeyboardKey.D2);
+            AddKey(0x30000, '"', KeyboardKey.D2);
             AddKey(0x4, '3', KeyboardKey.D3);
-            AddKey(0x40000, '#', KeyboardKey.D3);
+            AddKey(0x40000, (char)156u, KeyboardKey.D3);
             AddKey(0x5, '4', KeyboardKey.D4);
             AddKey(0x50000, '$', KeyboardKey.D5);
             AddKey(0x6, '5', KeyboardKey.D5);
@@ -211,9 +211,9 @@ namespace Kernel.Hardware.Devices
             AddKey(0x27, ';', KeyboardKey.NoName);
             AddKey(0x270000, ':', KeyboardKey.NoName);
             AddKey(0x28, '\'', KeyboardKey.NoName);
-            AddKey(0x280000, '"', KeyboardKey.NoName);
-            AddKey(0x2B, '\\', KeyboardKey.NoName);
-            AddKey(0x2B0000, '|', KeyboardKey.NoName);
+            AddKey(0x280000, '@', KeyboardKey.NoName);
+            AddKey(0x2B, '#', KeyboardKey.NoName);
+            AddKey(0x2B0000, '~', KeyboardKey.NoName);
             AddKey(0x33, ',', KeyboardKey.OemComma);
             AddKey(0x330000, '<', KeyboardKey.OemComma);
             AddKey(0x34, '.', KeyboardKey.OemPeriod);
@@ -329,7 +329,7 @@ namespace Kernel.Hardware.Devices
             char xResult = '\0';
             while (scancodeBuffer.Count == 0 || !GetCharValue(Dequeue(), out xResult))
             {
-                //TODO: Sleep
+                Timer.Default.Wait(50);
             }
             return xResult;
         }
@@ -354,7 +354,7 @@ namespace Kernel.Hardware.Devices
 
             while(scancodeBuffer.Count == 0 && timeout-- > 0)
             {
-                //TODO: Sleep
+                Timer.Default.Wait(50);
             }
 
             if(scancodeBuffer.Count > 0)
@@ -373,7 +373,7 @@ namespace Kernel.Hardware.Devices
             KeyboardKey xResult = KeyboardKey.NoName;
             while (scancodeBuffer.Count == 0 || !GetKeyValue(Dequeue(), out xResult))
             {
-                //TODO: Sleep
+                Timer.Default.Wait(50);
             }
             return xResult;
         }
@@ -397,7 +397,7 @@ namespace Kernel.Hardware.Devices
             KeyMapping xResult = null;
             while (scancodeBuffer.Count == 0 || !GetKeyMapping(Dequeue(), out xResult))
             {
-                //TODO: Sleep
+                Timer.Default.Wait(50);
             }
             return xResult;
         }
@@ -420,7 +420,7 @@ namespace Kernel.Hardware.Devices
         {
             while (scancodeBuffer.Count == 0)
             {
-                //TODO: Sleep
+                Timer.Default.Wait(50);
             }
 
             return Dequeue();
@@ -436,6 +436,21 @@ namespace Kernel.Hardware.Devices
             {
                 c = 0;
                 return false;
+            }
+        }
+
+
+        public static Keyboard Default;
+        public static void InitDefault()
+        {
+            Keyboards.PS2.Init();
+            Default = Keyboards.PS2.ThePS2;
+        }
+        public static void CleanDefault()
+        {
+            if (Default != null)
+            {
+                Default.Disable();
             }
         }
     }

@@ -58,9 +58,12 @@
     <Compile Include="ATA\ATAManager.cs" />
     <Compile Include="ATA\ATAPio.cs" />
     <Compile Include="BlockDevice.cs" />
+    <Compile Include="CPUs\CPUx86_32.cs" />
     <Compile Include="Device.cs" />
     <Compile Include="DeviceManager.cs" />
+    <Compile Include="Devices\CPU.cs" />
     <Compile Include="Devices\DiskDevice.cs" />
+    <Compile Include="Devices\Timer.cs" />
     <Compile Include="DMA\DMABlock.cs" />
     <Compile Include="Interrupts\Interrupts.cs" />
     <Compile Include="IO\IOPort.cs" />
@@ -73,6 +76,7 @@
     <Compile Include="PCI\PCIDeviceCardbus.cs" />
     <Compile Include="PCI\PCIDeviceNormal.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Timers\PIT.cs" />
     <Compile Include="USB\Devices\MassStorageDevice.cs" />
     <Compile Include="USB\Devices\USBDevice.cs" />
     <Compile Include="USB\HCIs\EHCI.cs" />
@@ -99,6 +103,9 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="ASM\CPUs\CPUx86_32\Halt.x86_32.asm">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="ASM\Interrupts\Interrupts.x86_32.asm">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>

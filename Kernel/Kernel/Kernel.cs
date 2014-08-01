@@ -71,6 +71,10 @@ namespace Kernel
 
             try
             {
+                Hardware.Devices.CPU.InitDefault();
+                Hardware.Devices.Timer.InitDefault();
+                Hardware.Devices.Keyboard.InitDefault();
+
                 Paging.Init();
                 
                 ManagedMain();
@@ -126,7 +130,8 @@ namespace Kernel
         {
             try
             {
-                Hardware.Keyboards.PS2.ThePS2.Disable();
+                Hardware.Devices.Keyboard.CleanDefault();
+                Hardware.Devices.Timer.CleanDefault();
             }
             catch
             {
@@ -172,6 +177,7 @@ namespace Kernel
         {
             try
             {
+                PITTest();
                 KeyboardTest();
 
                 InitATA();
@@ -1036,13 +1042,31 @@ namespace Kernel
                 BasicConsole.WriteLine("Finally ran.");
             }
         }
+        private static void PITTest()
+        {
+            try
+            {
+                BasicConsole.WriteLine("Running PIT test...");
 
+                BasicConsole.Write("Waiting for 10 lot(s) of 1 second(s)");
+                for (int i = 0; i < 10; i++)
+                {
+                    Hardware.Timers.PIT.ThePIT.Wait(1000);
+                    BasicConsole.Write(".");
+                }
+                BasicConsole.WriteLine("completed.");
+                
+                BasicConsole.WriteLine("Ended PIT test.");
+            }
+            catch
+            {
+                OutputCurrentExceptionInfo();
+            }
+        }
         private static void KeyboardTest()
         {
             try
             {
-                Hardware.Keyboards.PS2.Init();
-
                 BasicConsole.WriteLine("Running PS2 Keyboard test. Type for a bit, eventually it will end (if the keyboard works that is)...");
 
                 int charsPrinted = 0;
@@ -1050,7 +1074,7 @@ namespace Kernel
                 bool ok;
                 for (int i = 0; i < 240; i++)
                 {
-                    ok = Hardware.Keyboards.PS2.ThePS2.GetChar_Blocking(200000000, out c);
+                    ok = Hardware.Devices.Keyboard.Default.GetChar_Blocking(200000000, out c);
                     if (ok)
                     {
                         charsPrinted++;
@@ -1076,9 +1100,9 @@ namespace Kernel
                 BasicConsole.WriteLine();
                 BasicConsole.WriteLine("Ended keyboard test.");
             }
-            finally
+            catch
             {
-                Hardware.Keyboards.PS2.Clean();
+                OutputCurrentExceptionInfo();
             }
         }
     }

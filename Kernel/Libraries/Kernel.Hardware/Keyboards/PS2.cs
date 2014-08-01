@@ -52,8 +52,8 @@ namespace Kernel.Hardware.Keyboards
                 enabled = false;
             }
         }
-        
-        private static void InterruptHandler(object data)
+
+        private static void InterruptHandler(FOS_System.Object data)
         {
             ((PS2)data).InterruptHandler();
         }
@@ -99,6 +99,7 @@ namespace Kernel.Hardware.Keyboards
                         {
                             //TODO: Remove this Ctrl+Alt+Delete hack
                             Console.WriteLine("Detected Ctrl-Alt-Delete! Disabling keyboard.");
+                            Disable();
                         }
                         if (mShiftState)
                         {
