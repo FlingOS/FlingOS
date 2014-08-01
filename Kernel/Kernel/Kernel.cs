@@ -249,11 +249,7 @@ namespace Kernel
             {
                 OutputCurrentExceptionInfo();
             }
-            finally
-            {
-                Hardware.Keyboards.PS2.ThePS2.Disable();
-            }
-
+            
             BasicConsole.WriteLine();
             OutputDivider();
             BasicConsole.WriteLine();
