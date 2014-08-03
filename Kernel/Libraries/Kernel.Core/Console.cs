@@ -184,6 +184,7 @@ namespace Kernel.Core
             CurrentLine = Buffer.Count - 1;
             CurrentChar = 0;
             Update();
+
             SetCursorPosition((ushort)(CurrentChar - GetDisplayOffset_Char()),
                               (ushort)(CurrentLine - GetDisplayOffset_Line()));
         }
@@ -274,12 +275,21 @@ namespace Kernel.Core
 
                     Update();
                 }
-                else if(c.Value != '\0')
+                else if (c.Key == Hardware.Devices.KeyboardKey.UpArrow)
+                {
+                    Scroll(-1);
+                }
+                else if (c.Key == Hardware.Devices.KeyboardKey.DownArrow)
+                {
+                    Scroll(1);
+                }
+                else if (c.Value != '\0')
                 {
                     result += c.Value;
                     Write(c.Value);
                 }
             }
+            WriteLine();
             return result;
         }
 
@@ -336,7 +346,10 @@ namespace Kernel.Core
         public static Console Default;
         public static void InitDefault()
         {
-            Default = new Consoles.AdvancedConsole();
+            if (Default == null)
+            {
+                Default = new Consoles.AdvancedConsole();
+            }
         }
         public static void CleanDefault()
         {

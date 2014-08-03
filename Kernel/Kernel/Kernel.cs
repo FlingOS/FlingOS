@@ -177,75 +177,89 @@ namespace Kernel
         {
             try
             {
-                TimerTest();
+                Core.Shell.InitDefault();
+                Core.Shell.Default.Execute();
+
+                if (!Core.Shell.Default.Terminating)
+                {
+                    Core.Console.Default.WarningColour();
+                    Core.Console.Default.WriteLine("Abnormal shell shutdown!");
+                    Core.Console.Default.DefaultColour();
+                }
+                else
+                {
+                    Core.Console.Default.Clear();
+                }
+
+                //TimerTest();
                 //PCBeepTest();
                 //KeyboardTest();
-                AdvancedConsoleTest();
+                //AdvancedConsoleTest();
                 
-                InitATA();
+                //InitATA();
 
-                OutputDivider();
+                //OutputDivider();
 
-                InitPCI();
+                //InitPCI();
 
-                OutputDivider();
+                //OutputDivider();
 
-                try
-                {
-                    OutputPCIInfo();
-                    OutputDivider();
-                }
-                catch
-                {
-                    OutputCurrentExceptionInfo();
-                }
+                //try
+                //{
+                //    OutputPCIInfo();
+                //    OutputDivider();
+                //}
+                //catch
+                //{
+                //    OutputCurrentExceptionInfo();
+                //}
 
-                FOS_System.GC.Cleanup();
+                //FOS_System.GC.Cleanup();
 
-                InitUSB();
+                //InitUSB();
 
-                OutputDivider();
+                //OutputDivider();
 
-                if (Hardware.DeviceManager.Devices.Count > 0)
-                {
-                    //try
-                    //{
-                    //    OutputATAInfo();
-                    //}
-                    //catch
-                    //{
-                    //    OutputCurrentExceptionInfo();
-                    //}
+                //if (Hardware.DeviceManager.Devices.Count > 0)
+                //{
+                //    //try
+                //    //{
+                //    //    OutputATAInfo();
+                //    //}
+                //    //catch
+                //    //{
+                //    //    OutputCurrentExceptionInfo();
+                //    //}
 
-                    InitFileSystem();
+                //    InitFileSystem();
 
-                    OutputDivider();
+                //    OutputDivider();
 
-                    CheckDiskFormatting(HDD0);
+                //    CheckDiskFormatting(HDD0);
 
-                    OutputDivider();
+                //    OutputDivider();
 
-                    try
-                    {
-                        OutputFileSystemsInfo();
-                    }
-                    catch
-                    {
-                        OutputCurrentExceptionInfo();
-                    }
+                //    try
+                //    {
+                //        OutputFileSystemsInfo();
+                //    }
+                //    catch
+                //    {
+                //        OutputCurrentExceptionInfo();
+                //    }
 
-                    try
-                    {
-                        OutputFileContents("A:/Doc in Root Dir.txt");
-                        OutputFileContents("A:/Test Dir/Doc in Test Dir.txt");
-                    }
-                    catch
-                    {
-                        OutputCurrentExceptionInfo();
-                    }
+                //    try
+                //    {
+                //        OutputFileContents("A:/Doc in Root Dir.txt");
+                //        OutputFileContents("A:/Test Dir/Doc in Test Dir.txt");
+                //    }
+                //    catch
+                //    {
+                //        OutputCurrentExceptionInfo();
+                //    }
 
-                    FileSystemTests();
-                }
+                //    FileSystemTests();
+                //}
             }
             catch
             {

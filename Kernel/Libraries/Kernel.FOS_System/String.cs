@@ -332,6 +332,43 @@ namespace Kernel.FOS_System
 
             return result;
         }
+        /// <summary>
+        /// Copies the current string then converts all the alpha-characters to lower-case.
+        /// </summary>
+        /// <returns>The new, lower-case string.</returns>
+        [Compiler.NoDebug]
+        public FOS_System.String ToLower()
+        {
+            FOS_System.String result = New(this.length);
+
+            for (int i = 0; i < result.length; i++)
+            {
+                char cChar = this[i];
+                if (cChar >= 'A' && cChar <= 'Z')
+                {
+                    cChar = (char)('a' + (cChar - 'A'));
+                }
+                result[i] = cChar;
+            }
+
+            return result;
+        }
+
+        [Compiler.NoDebug]
+        [Compiler.NoGC]
+        public int IndexOf(char c)
+        {
+            int result = -1;
+            for (int i = 0; i < length; i++)
+            {
+                if (this[i] == c)
+                {
+                    result = i;
+                    break;
+                }
+            }
+            return result;
+        }
         
         /// <summary>
         /// Concatenates two strings using "+" operator.

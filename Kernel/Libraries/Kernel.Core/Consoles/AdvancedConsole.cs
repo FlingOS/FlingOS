@@ -56,7 +56,7 @@ namespace Kernel.Core.Consoles
         }
         protected override int GetDisplayOffset_Line()
         {
-            return 0;
+            return CurrentLine - 24;
         }
 
         public override void SetCursorPosition(ushort character, ushort line)
