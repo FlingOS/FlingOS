@@ -5,3 +5,4 @@ Database.mdf
 Database.ldf
 *.ldf
 Documentation/Help/
+UpgradeLog*.htm
