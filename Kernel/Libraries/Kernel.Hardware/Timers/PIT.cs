@@ -168,7 +168,14 @@ namespace Kernel.Hardware.Timers
 
         public override void Wait(uint TimeoutMS)
         {
-            WaitNS(1000000l * TimeoutMS);
+            //TODO Remove this hack.
+            //  - 03/08/2014 : This hack is a solution for 64-64 multiplication and/or subtraction not working.
+            while (TimeoutMS >= 2000)
+            {
+                WaitNS(1000000L * 2000L);
+                TimeoutMS -= 2000;
+            }
+            WaitNS(1000000L * TimeoutMS);
         }
         public override void WaitNS(long TimeoutNS)
         {

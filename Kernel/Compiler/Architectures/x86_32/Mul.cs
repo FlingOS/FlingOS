@@ -89,13 +89,11 @@ namespace Kernel.Compiler.Architectures.x86_32
                          (itemA.sizeOnStackInBytes == 4 &&
                           itemB.sizeOnStackInBytes == 8))
                 {
-                    throw new InvalidOperationException("Invalid stack operand sizes! They should be the 32-32 or 64-64.");
+                    throw new InvalidOperationException("Invalid stack operand sizes! They should be 32-32 or 64-64.");
                 }
                 else if (itemA.sizeOnStackInBytes == 8 &&
                     itemB.sizeOnStackInBytes == 8)
                 {
-                    //SUPPORT - Support 64-bit multiplication
-
                     //A = item a, B = item B
                     //L = low bits, H = high bits
                     // => A = AL + AH, B = BL + BH

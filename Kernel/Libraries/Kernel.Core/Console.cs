@@ -313,6 +313,7 @@ namespace Kernel.Core
             {
                 CurrentLine = Buffer.Count - 1;
             }
+            Update();
         }
 
         public virtual void Colour(byte col)
