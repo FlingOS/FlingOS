@@ -44,7 +44,7 @@ namespace Kernel.Core.Consoles
             {
                 for (int j = 0; j < LineLength; j++)
                 {
-                    vidMemPtr[j] = (char)0;
+                    vidMemPtr[j] = (char)(' ' | CurrentAttr);
                 }
                 vidMemPtr -= LineLength;
             }
