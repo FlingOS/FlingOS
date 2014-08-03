@@ -40,7 +40,7 @@ namespace Kernel.Hardware.IO
         /// </summary>
         /// <param name="aPort">The port number.</param>
         [Compiler.NoDebug]
-        protected internal IOPort(UInt16 aPort)
+        public IOPort(UInt16 aPort)
         {
             Port = aPort;
         }
@@ -51,7 +51,7 @@ namespace Kernel.Hardware.IO
         /// <param name="aBase">The port base number.</param>
         /// <param name="anOffset">The offset from the base port number.</param>
         [Compiler.NoDebug]
-        protected internal IOPort(UInt16 aBase, UInt16 anOffset)
+        public IOPort(UInt16 aBase, UInt16 anOffset)
         {
             Port = (UInt16)(aBase + anOffset);
         }

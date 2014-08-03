@@ -64,6 +64,10 @@
       <Project>{061e5f53-5eff-4e12-94ee-9e18459e5cf4}</Project>
       <Name>Kernel.Compiler</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Libraries\Kernel.Core\Kernel.Core.csproj">
+      <Project>{5ba8a9c9-d4e1-4470-a9e6-2b5657e09140}</Project>
+      <Name>Kernel.Core</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Libraries\Kernel.FOS_System.IO\Kernel.FOS_System.IO.csproj">
       <Project>{5c9fdb7d-604e-4927-9d3f-e2c599b20797}</Project>
       <Name>Kernel.FOS_System.IO</Name>

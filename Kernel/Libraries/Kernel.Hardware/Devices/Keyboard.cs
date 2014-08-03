@@ -168,7 +168,7 @@ namespace Kernel.Hardware.Devices
             #endregion
 
             #region Special
-            AddKeyWithShift(0x0E, '\u0968', KeyboardKey.Backspace);               //Backspace
+            AddKeyWithShift(0x0E, '\0', KeyboardKey.Backspace);               //Backspace
             AddKeyWithShift(0x0F, '\t', KeyboardKey.Tab);                         //Tabulator
             AddKeyWithShift(0x1C, '\n', KeyboardKey.Enter);                       //Enter
             AddKeyWithShift(0x39, ' ', KeyboardKey.Spacebar);                     //Space
@@ -326,6 +326,15 @@ namespace Kernel.Hardware.Devices
             return false;
         }
 
+        public KeyMapping ReadMapping()
+        {
+            KeyMapping xResult = null;
+            while (scancodeBuffer.Count == 0 || !GetKeyMapping(Dequeue(), out xResult))
+            {
+                Timer.Default.Wait(50);
+            }
+            return xResult;
+        }
         public char ReadChar()
         {
             char xResult = '\0';
@@ -334,6 +343,24 @@ namespace Kernel.Hardware.Devices
                 Timer.Default.Wait(50);
             }
             return xResult;
+        }
+        public KeyboardKey ReadKey()
+        {
+            KeyboardKey xResult = KeyboardKey.NoName;
+            while (scancodeBuffer.Count == 0 || !GetKeyValue(Dequeue(), out xResult))
+            {
+                Timer.Default.Wait(50);
+            }
+            return xResult;
+        }
+        public uint ReadScancode()
+        {
+            while (scancodeBuffer.Count == 0)
+            {
+                Timer.Default.Wait(50);
+            }
+
+            return Dequeue();
         }
 
         public bool GetChar(out char c)
@@ -371,15 +398,6 @@ namespace Kernel.Hardware.Devices
             }
         }
 
-        public KeyboardKey ReadKey()
-        {
-            KeyboardKey xResult = KeyboardKey.NoName;
-            while (scancodeBuffer.Count == 0 || !GetKeyValue(Dequeue(), out xResult))
-            {
-                Timer.Default.Wait(50);
-            }
-            return xResult;
-        }
         public bool GetKey(out KeyboardKey c)
         {
             c = KeyboardKey.NoName;
@@ -393,16 +411,6 @@ namespace Kernel.Hardware.Devices
             {
                 return false;
             }
-        }
-
-        public KeyMapping ReadMapping()
-        {
-            KeyMapping xResult = null;
-            while (scancodeBuffer.Count == 0 || !GetKeyMapping(Dequeue(), out xResult))
-            {
-                Timer.Default.Wait(50);
-            }
-            return xResult;
         }
         public bool GetMapping(out KeyMapping c)
         {
@@ -418,16 +426,6 @@ namespace Kernel.Hardware.Devices
                 return false;
             }
         }
-
-        public uint ReadScancode()
-        {
-            while (scancodeBuffer.Count == 0)
-            {
-                Timer.Default.Wait(50);
-            }
-
-            return Dequeue();
-        }
         public bool GetScancode(out uint c)
         {
             if (scancodeBuffer.Count > 0)
@@ -441,7 +439,6 @@ namespace Kernel.Hardware.Devices
                 return false;
             }
         }
-
 
         public static Keyboard Default;
         public static void InitDefault()

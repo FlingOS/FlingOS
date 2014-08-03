@@ -18,46 +18,54 @@
     
 using System;
 
-namespace Kernel.FOS_System
+namespace Kernel.Core.Consoles
 {
-    /// <summary>
-    /// Provides constants and static methods for common mathematical functions and some operations not supported by 
-    /// IL code.
-    /// </summary>
-    [Compiler.PluggedClass]
-    public static class Math
+    public unsafe class AdvancedConsole : Console
     {
         /// <summary>
-        /// Divides a UInt64 by a UInt32.
+        /// A pointer to the start of the (character-based) video memory.
         /// </summary>
-        /// <param name="dividend">The UInt64 to be divided.</param>
-        /// <param name="divisor">The UInt32 to divide by.</param>
-        /// <returns>The quotient of the division.</returns>
-        [Compiler.PluggedMethod(ASMFilePath = @"ASM\Math\Divide")]
-        public static ulong Divide(ulong dividend, uint divisor)
+        public static char* vidMemBasePtr = (char*)0xB8000;
+
+        protected override void Update()
+        {
+            char* vidMemPtr = vidMemBasePtr + (24 * LineLength);
+            for(int i = CurrentLine; i > -1 && i > CurrentLine - 25; i--)
+            {
+                char* cLinePtr = ((FOS_System.String)Buffer[i]).GetCharPointer();
+                for (int j = 0; j < LineLength; j++)
+                {
+                    vidMemPtr[j] = cLinePtr[j];
+                }
+                vidMemPtr -= LineLength;
+            }
+
+            while(vidMemPtr >= vidMemBasePtr)
+            {
+                for (int j = 0; j < LineLength; j++)
+                {
+                    vidMemPtr[j] = (char)0;
+                }
+                vidMemPtr -= LineLength;
+            }
+        }
+
+        protected override int GetDisplayOffset_Char()
+        {
+            return 0;
+        }
+        protected override int GetDisplayOffset_Line()
         {
             return 0;
         }
 
-        /// <summary>
-        /// Returns the lower of the two inputs.
-        /// </summary>
-        /// <param name="x">Input 1.</param>
-        /// <param name="y">Input 2.</param>
-        /// <returns>The lower of the two inputs.</returns>
-        public static ushort Min(ushort x, ushort y)
+        public override void SetCursorPosition(ushort character, ushort line)
         {
-            return (x < y ? x : y);
-        }
-        /// <summary>
-        /// Returns the higher of the two inputs.
-        /// </summary>
-        /// <param name="x">Input 1.</param>
-        /// <param name="y">Input 2.</param>
-        /// <returns>The higher of the two inputs.</returns>
-        public static int Max(int x, int y)
-        {
-            return (x > y ? x : y);
+            ushort offset = (ushort)((line * LineLength) + character);
+            CursorCmdPort.Write((byte)14);
+            CursorDataPort.Write((byte)(offset >> 8));
+            CursorCmdPort.Write((byte)15);
+            CursorDataPort.Write((byte)(offset));
         }
     }
 }

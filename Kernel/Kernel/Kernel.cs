@@ -178,8 +178,9 @@ namespace Kernel
             try
             {
                 TimerTest();
-                PCBeepTest();
-                KeyboardTest();
+                //PCBeepTest();
+                //KeyboardTest();
+                AdvancedConsoleTest();
                 
                 InitATA();
 
@@ -1042,9 +1043,10 @@ namespace Kernel
 
         private static void PCBeepTest()
         {
+            BasicConsole.WriteLine("Running PC Beep test...");
+
             try
             {
-                BasicConsole.WriteLine("Running PC Beep test...");
                 BasicConsole.WriteLine("Enabling beep...");
                 Hardware.Timers.PIT.ThePIT.PlaySound(247); //261 ~ B3
                 BasicConsole.WriteLine("Beep enabled. Waiting 10s...");
@@ -1052,19 +1054,20 @@ namespace Kernel
                 BasicConsole.WriteLine("Wait finished. Muting beep...");
                 Hardware.Timers.PIT.ThePIT.MuteSound();
                 BasicConsole.WriteLine("Muted beep.");
-                BasicConsole.WriteLine("Ended PC Beep test.");
             }
             catch
             {
                 OutputCurrentExceptionInfo();
             }
+
+            BasicConsole.WriteLine("Ended PC Beep test.");
         }
         private static void TimerTest()
         {
+            BasicConsole.WriteLine("Running PIT test...");
+
             try
             {
-                BasicConsole.WriteLine("Running PIT test...");
-
                 BasicConsole.Write("Waiting for 5 lot(s) of 1 second(s)");
                 for (int i = 0; i < 5; i++)
                 {
@@ -1072,13 +1075,22 @@ namespace Kernel
                     BasicConsole.Write(".");
                 }
                 BasicConsole.WriteLine("completed.");
-                
-                BasicConsole.WriteLine("Ended PIT test.");
+
+
+                BasicConsole.Write("Waiting for 1 lot(s) of 5 second(s)");
+                //for (int i = 0; i < 5; i++)
+                {
+                    Hardware.Devices.Timer.Default.Wait(5000);
+                    BasicConsole.Write(".");
+                }
+                BasicConsole.WriteLine("completed.");
             }
             catch
             {
                 OutputCurrentExceptionInfo();
             }
+
+            BasicConsole.WriteLine("Ended PIT test.");
         }
         private static void KeyboardTest()
         {
@@ -1116,13 +1128,64 @@ namespace Kernel
                 }
 
                 BasicConsole.WriteLine();
-                BasicConsole.WriteLine();
-                BasicConsole.WriteLine("Ended keyboard test.");
             }
             catch
             {
                 OutputCurrentExceptionInfo();
             }
+
+            BasicConsole.WriteLine();
+            BasicConsole.WriteLine("Ended keyboard test.");
+        }
+        private static void AdvancedConsoleTest()
+        {
+            BasicConsole.WriteLine("Starting advanced console test.");
+
+            try
+            {
+                Core.Console.InitDefault();
+
+                Core.Console.Default.Beep();
+                Core.Console.Default.WriteLine("Test write line.");
+                Core.Console.Default.WriteLine("Please write a line: ");
+                FOS_System.String line = Core.Console.Default.ReadLine();
+                Core.Console.Default.WriteLine("Your wrote: " + line);
+
+                Core.Console.Default.WriteLine("Pausing for 2 seconds...");
+                Hardware.Devices.Timer.Default.Wait(2000);
+
+                for (int i = 0; i < 25; i++)
+                {
+                    Core.Console.Default.Write("Line ");
+                    Core.Console.Default.WriteLine_AsDecimal(i);
+                }
+
+                Core.Console.Default.WriteLine("Testing scrolling...");
+                for (int i = 0; i < 25; i++)
+                {
+                    Hardware.Devices.Timer.Default.Wait(500);
+                    Core.Console.Default.Scroll(-1);
+                }
+                Core.Console.Default.Scroll(25);
+
+                Core.Console.Default.WriteLine("Scroll test done.");
+
+                Core.Console.Default.WriteLine("Testing Clear and Colour...");
+                Core.Console.Default.Clear();
+                Core.Console.Default.WarningColour();
+                Core.Console.Default.WriteLine("Warning colour test.");
+                Core.Console.Default.ErrorColour();
+                Core.Console.Default.WriteLine("Error colour test.");
+                Core.Console.Default.DefaultColour();
+                Core.Console.Default.WriteLine("Default colour test.");
+            }
+            catch
+            {
+                OutputCurrentExceptionInfo();
+            }
+
+            BasicConsole.WriteLine("Ended advanced console test. Pausing for 5 seconds.");
+            Hardware.Devices.Timer.Default.Wait(5000);
         }
     }
 
