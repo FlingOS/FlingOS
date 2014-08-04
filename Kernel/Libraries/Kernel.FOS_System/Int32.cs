@@ -33,5 +33,31 @@ namespace Kernel.FOS_System
                 return 2147483647;
             }
         }
+
+        public static uint Parse_DecimalUnsigned(FOS_System.String str, int offset)
+        {
+            uint result = 0;
+            for(int i = offset; i < str.length; i++)
+            {
+                char c = str[i];
+                if (c < '0' || c > '9')
+                {
+                    break;
+                }
+                result *= 10;
+                result += (uint)(c - '0');
+            }
+            return result;
+        }
+        public static int Parse_DecimalSigned(FOS_System.String str)
+        {
+            bool neg = str.StartsWith("-");
+            int result = (int)Parse_DecimalUnsigned(str, (neg ? 1 : 0));
+            if (neg)
+            {
+                result *= -1;
+            }
+            return result;
+        }
     }
 }

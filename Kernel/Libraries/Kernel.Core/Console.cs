@@ -50,7 +50,14 @@ namespace Kernel.Core
 
         protected FOS_System.String CreateBlankLine()
         {
-            return FOS_System.String.New(LineLength);
+            FOS_System.String str = FOS_System.String.New(LineLength);
+
+            for (int i = 0; i < str.length; i++)
+            {
+                str[i] |= (char)CurrentAttr;
+            }
+
+            return str;
         }
 
         protected abstract void Update();
@@ -71,7 +78,7 @@ namespace Kernel.Core
                 }
                 else
                 {
-                    ((FOS_System.String)Buffer[CurrentLine])[CurrentChar++] = (char)(str[i] | CurrentAttr);
+                    ((FOS_System.String)Buffer[CurrentLine])[CurrentChar++] = (char)((str[i] & 0xFF) | CurrentAttr);
                 }
             }
             Update();
@@ -81,91 +88,105 @@ namespace Kernel.Core
         public virtual void Write_AsDecimal(UInt32 num)
         {
             FOS_System.String result = "";
-            while (num > 0)
+            if (num != 0)
             {
-                uint rem = num % 10;
-                switch (rem)
+                while (num > 0)
                 {
-                    case 0:
-                        result = "0" + result;
-                        break;
-                    case 1:
-                        result = "1" + result;
-                        break;
-                    case 2:
-                        result = "2" + result;
-                        break;
-                    case 3:
-                        result = "3" + result;
-                        break;
-                    case 4:
-                        result = "4" + result;
-                        break;
-                    case 5:
-                        result = "5" + result;
-                        break;
-                    case 6:
-                        result = "6" + result;
-                        break;
-                    case 7:
-                        result = "7" + result;
-                        break;
-                    case 8:
-                        result = "8" + result;
-                        break;
-                    case 9:
-                        result = "9" + result;
-                        break;
+                    uint rem = num % 10;
+                    switch (rem)
+                    {
+                        case 0:
+                            result = "0" + result;
+                            break;
+                        case 1:
+                            result = "1" + result;
+                            break;
+                        case 2:
+                            result = "2" + result;
+                            break;
+                        case 3:
+                            result = "3" + result;
+                            break;
+                        case 4:
+                            result = "4" + result;
+                            break;
+                        case 5:
+                            result = "5" + result;
+                            break;
+                        case 6:
+                            result = "6" + result;
+                            break;
+                        case 7:
+                            result = "7" + result;
+                            break;
+                        case 8:
+                            result = "8" + result;
+                            break;
+                        case 9:
+                            result = "9" + result;
+                            break;
+                    }
+                    num /= 10;
                 }
-                num /= 10;
+            }
+            else
+            {
+                result = "0";
             }
             Write(result);
         }
         public virtual void Write_AsDecimal(Int32 num)
         {
             FOS_System.String result = "";
-            while (num > 0)
+            if (num != 0)
             {
-                int rem = num % 10;
-                switch (rem)
+                while (num > 0)
                 {
-                    case 0:
-                        result = "0" + result;
-                        break;
-                    case 1:
-                        result = "1" + result;
-                        break;
-                    case 2:
-                        result = "2" + result;
-                        break;
-                    case 3:
-                        result = "3" + result;
-                        break;
-                    case 4:
-                        result = "4" + result;
-                        break;
-                    case 5:
-                        result = "5" + result;
-                        break;
-                    case 6:
-                        result = "6" + result;
-                        break;
-                    case 7:
-                        result = "7" + result;
-                        break;
-                    case 8:
-                        result = "8" + result;
-                        break;
-                    case 9:
-                        result = "9" + result;
-                        break;
+                    int rem = num % 10;
+                    switch (rem)
+                    {
+                        case 0:
+                            result = "0" + result;
+                            break;
+                        case 1:
+                            result = "1" + result;
+                            break;
+                        case 2:
+                            result = "2" + result;
+                            break;
+                        case 3:
+                            result = "3" + result;
+                            break;
+                        case 4:
+                            result = "4" + result;
+                            break;
+                        case 5:
+                            result = "5" + result;
+                            break;
+                        case 6:
+                            result = "6" + result;
+                            break;
+                        case 7:
+                            result = "7" + result;
+                            break;
+                        case 8:
+                            result = "8" + result;
+                            break;
+                        case 9:
+                            result = "9" + result;
+                            break;
+                    }
+                    num /= 10;
                 }
-                num /= 10;
-            }
 
-            if(num < 0)
+                if (num < 0)
+                {
+                    result = "-" + result;
+                }
+            }
+            else
             {
-                result = "-" + result;
+                result = "0";
             }
             Write(result);
         }
@@ -245,8 +266,10 @@ namespace Kernel.Core
                             CurrentChar = LineLength - 1;
                             CurrentLine--;
                         }
-                        ((FOS_System.String)Buffer[CurrentLine])[CurrentChar] = ' ';
+                        ((FOS_System.String)Buffer[CurrentLine])[CurrentChar] = (char)(' ' | CurrentAttr);
                         Update();
+                        SetCursorPosition((ushort)(CurrentChar - GetDisplayOffset_Char()),
+                                          (ushort)(CurrentLine - GetDisplayOffset_Line()));
                     }
                 }
                 else if(c.Key == Hardware.Devices.KeyboardKey.Escape)
@@ -274,6 +297,8 @@ namespace Kernel.Core
                     CurrentChar = StartChar;
 
                     Update();
+                    SetCursorPosition((ushort)(CurrentChar - GetDisplayOffset_Char()),
+                                      (ushort)(CurrentLine - GetDisplayOffset_Line()));
                 }
                 else if (c.Key == Hardware.Devices.KeyboardKey.UpArrow)
                 {

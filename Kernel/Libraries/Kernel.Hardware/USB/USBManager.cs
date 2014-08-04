@@ -194,6 +194,13 @@ namespace Kernel.Hardware.USB
             //                }
             //            }
         }
+        public static void Update()
+        {
+            for(int i = 0; i < HCIDevices.Count; i++)
+            {
+                ((HCI)HCIDevices[i]).Update();
+            }
+        }
 
         public static Devices.USBDeviceInfo CreateDeviceInfo(HCI hc, HCPort port)
         {
