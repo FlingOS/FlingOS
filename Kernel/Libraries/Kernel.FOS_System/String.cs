@@ -32,6 +32,9 @@ namespace Kernel.FOS_System
            class structure ( i.e. do all the hard work! ;) )
          */
 
+        /// <summary>
+        /// The size of the fields in an string object that come before the actual string data.
+        /// </summary>
         public const uint FieldsBytesSize = 8;
 
         /// <summary>
@@ -354,6 +357,11 @@ namespace Kernel.FOS_System
             return result;
         }
 
+        /// <summary>
+        /// Finds the first index of the specified character in the string.
+        /// </summary>
+        /// <param name="c">The character to find.</param>
+        /// <returns>The first instance of the character or -1 if not found.</returns>
         [Compiler.NoDebug]
         [Compiler.NoGC]
         public int IndexOf(char c)

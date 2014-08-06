@@ -33,6 +33,9 @@ namespace Kernel.FOS_System
         /* If changing the fields in this class, remember to update the 
          * Kernel.GC.NewArr method implementation. And also the constant below.*/
 
+        /// <summary>
+        /// The size of the fields in an array object that come before the actual array data.
+        /// </summary>
         public const uint FieldsBytesSize = 12;
 
         /// <summary>

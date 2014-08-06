@@ -20,8 +20,16 @@ using System;
 
 namespace Kernel.Utilities
 {
+    /// <summary>
+    /// Static utility methods for constant values.
+    /// </summary>
     public static class ConstantsUtils
     {
+        /// <summary>
+        /// Creates a mask for the specified bit index.
+        /// </summary>
+        /// <param name="bitNum">The bit index to mask.</param>
+        /// <returns>The mask.</returns>
         [Compiler.NoDebug]
         [Compiler.NoGC]
         public static uint BIT(int bitNum)

@@ -258,7 +258,7 @@ namespace Kernel.Hardware.Timers
         /// <summary>
         /// Blocks the caller for the specified length of time (in nanoseconds).
         /// </summary>
-        /// <param name="TimeoutMS">The length of time to wait in nanoseconds.</param>
+        /// <param name="TimeoutNS">The length of time to wait in nanoseconds.</param>
         public override void WaitNS(long TimeoutNS)
         {
             WaitSignaled = false;

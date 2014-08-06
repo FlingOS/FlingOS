@@ -30,7 +30,10 @@ namespace Kernel
     [Compiler.PluggedClass]
     public static unsafe class ExceptionMethods
     {
-
+        /// <summary>
+        /// The reason the kernel is halting. Useful for debugging purposes in case an exception causes
+        /// an immediate halt.
+        /// </summary>
         public static FOS_System.String HaltReason = "";
 
         /// <summary>

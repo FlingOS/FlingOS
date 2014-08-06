@@ -16,17 +16,20 @@
 // ------------------------------------------------------------------------------ //
 #endregion
     
+#define EHCI_TESTS
+#undef EHCI_TESTS
+
 using System;
 
 namespace Kernel.Hardware.USB.HCIs
 {
-#if DEBUG
+#if DEBUG && EHCI_TESTS
     public static unsafe class EHCITesting
     {
         public static int errors = 0;
         public static int warnings = 0;
 
-        #region Memory Tests
+    #region Memory Tests
 
         public static void Test_PointerManipulation()
         {
@@ -466,7 +469,7 @@ namespace Kernel.Hardware.USB.HCIs
         #endregion
 
 
-        #region Wrapper Class Tests
+    #region Wrapper Class Tests
 
         public static void Test_QueueHeadWrapper()
         {
@@ -1265,7 +1268,7 @@ namespace Kernel.Hardware.USB.HCIs
         #endregion
         
 
-        #region Validation
+    #region Validation
 
         public static bool Validate_PointerBoundaryAlignment(void* ptr, uint boundary)
         {

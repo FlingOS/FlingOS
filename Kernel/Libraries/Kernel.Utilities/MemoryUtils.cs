@@ -20,9 +20,18 @@ using System;
 
 namespace Kernel.Utilities
 {
+    /// <summary>
+    /// Static utility methods for memory manipulation.
+    /// </summary>
     [Compiler.PluggedClass]
     public static unsafe class MemoryUtils
     {
+        /// <summary>
+        /// Copies the specified amount of memory from the source to the dest.
+        /// </summary>
+        /// <param name="dest">The destination memory.</param>
+        /// <param name="src">The source memory.</param>
+        /// <param name="length">The amount of memory to copy.</param>
         [Compiler.NoGC]
         [Compiler.NoDebug]
         public static void MemCpy_32(byte* dest, byte* src, uint length)
@@ -32,6 +41,12 @@ namespace Kernel.Utilities
                 dest[i] = src[i];
             }
         }
+        /// <summary>
+        /// Copies the specified amount of memory from the source to the dest.
+        /// </summary>
+        /// <param name="dest">The destination memory.</param>
+        /// <param name="src">The source memory.</param>
+        /// <param name="length">The amount of memory to copy.</param>
         [Compiler.NoGC]
         [Compiler.NoDebug]
         public static void MemCpy(byte* dest, byte* src, ulong length)
@@ -42,6 +57,12 @@ namespace Kernel.Utilities
             }
         }
 
+        /// <summary>
+        /// Zeroes-out the specified memory.
+        /// </summary>
+        /// <param name="ptr">Pointer to the start of the memory to set to zero.</param>
+        /// <param name="size">The length of memory to set to zeroes.</param>
+        /// <returns>The original pointer.</returns>
         [Compiler.NoGC]
         [Compiler.NoDebug]
         public static void* ZeroMem(void* ptr, uint size)
@@ -55,6 +76,17 @@ namespace Kernel.Utilities
             return ptr;
         }
 
+        /// <summary>
+        /// Gets a field from a byte in memory.
+        /// </summary>
+        /// <param name="addr">The pointer to the memory to get the field from.</param>
+        /// <param name="byteNum">The index of the byte to use.</param>
+        /// <param name="shift">
+        /// The amount to shift the byte right. This is the index of the left-most bit of field (little-endian,
+        /// hi-to-lo notation).
+        /// </param>
+        /// <param name="len">The length of the field in bits.</param>
+        /// <returns>The field value.</returns>
         [Compiler.NoGC]
         [Compiler.NoDebug]
         public static byte GetField(byte* addr, byte byteNum, byte shift, byte len) 
@@ -62,8 +94,13 @@ namespace Kernel.Utilities
             return (byte)((addr[byteNum] >> (shift)) & ((1 << len) - 1));
         }
 
+        /// <summary>
+        /// Converts a value from host to network byte order.
+        /// </summary>
+        /// <param name="aUInt32">The value to convert.</param>
+        /// <returns>The converted value.</returns>
         [Compiler.PluggedMethod(ASMFilePath=@"ASM\MemoryUtils")]
-        public static uint htonl(uint aByte)
+        public static uint htonl(uint aUInt32)
         {
             return 0;
         }

@@ -34,6 +34,12 @@ namespace Kernel.FOS_System
             }
         }
 
+        /// <summary>
+        /// Parses a string as an unsigned decimal integer.
+        /// </summary>
+        /// <param name="str">The string to parse.</param>
+        /// <param name="offset">The offset into the string at which to start parsing.</param>
+        /// <returns>The parsed uint.</returns>
         public static uint Parse_DecimalUnsigned(FOS_System.String str, int offset)
         {
             uint result = 0;
@@ -49,6 +55,11 @@ namespace Kernel.FOS_System
             }
             return result;
         }
+        /// <summary>
+        /// Parses a string as an signed decimal integer.
+        /// </summary>
+        /// <param name="str">The string to parse.</param>
+        /// <returns>The parsed int.</returns>
         public static int Parse_DecimalSigned(FOS_System.String str)
         {
             bool neg = str.StartsWith("-");

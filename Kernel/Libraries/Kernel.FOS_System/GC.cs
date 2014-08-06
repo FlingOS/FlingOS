@@ -138,8 +138,6 @@ namespace Kernel.FOS_System
         [Compiler.NoGC]
         public static void* NewArr(int length, FOS_System.Type elemType)
         {
-            int arrayObjSize = 8;
-
             if (!GCInitialised || InsideGC)
             {
                 return null;
@@ -206,8 +204,6 @@ namespace Kernel.FOS_System
         [Compiler.NoGC]
         public static void* NewString(int length)
         {
-            int strObjSize = 4;
-
             if (!GCInitialised || InsideGC)
             {
                 return null;
