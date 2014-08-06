@@ -57,8 +57,8 @@ namespace Kernel.Hardware.USB.Devices
             DeviceInfo.maxLUN = 0;
 
             // start with correct endpoint toggles and reset interface
-            ((USBEndpoint)DeviceInfo.Endpoints[DeviceInfo.MSD_OUTEndpointID]).toggle = false;
-            ((USBEndpoint)DeviceInfo.Endpoints[DeviceInfo.MSD_INEndpointID]).toggle = false;
+            ((Endpoint)DeviceInfo.Endpoints[DeviceInfo.MSD_OUTEndpointID]).toggle = false;
+            ((Endpoint)DeviceInfo.Endpoints[DeviceInfo.MSD_INEndpointID]).toggle = false;
 
             BulkReset(DeviceInfo.MSD_InterfaceNum); // Reset Interface
 
@@ -127,7 +127,7 @@ namespace Kernel.Hardware.USB.Devices
 #endif
 
             USBTransfer transfer = new USBTransfer();
-            DeviceInfo.hc.SetupTransfer(DeviceInfo, transfer, USBTransferType.USB_CONTROL, 0, 64);
+            DeviceInfo.hc.SetupTransfer(DeviceInfo, transfer, USBTransferType.Control, 0, 64);
 
             // bmRequestType bRequest  wValue wIndex    wLength   Data
             // 00100001b     11111111b 0000h  Interface 0000h     none
@@ -136,7 +136,7 @@ namespace Kernel.Hardware.USB.Devices
             DeviceInfo.hc.IssueTransfer(transfer);
         }
 
-        public void FormatSCSICommand(byte SCSIcommand, usb_CommandBlockWrapper* cbw, uint LBA, ushort TransferLength)
+        public void FormatSCSICommand(byte SCSIcommand, CommandBlockWrapper* cbw, uint LBA, ushort TransferLength)
         {
             cbw->CBWSignature = MassStorageDevice_Consts.CBWMagic;                      // magic
             cbw->CBWTag = 0x42424200u | SCSIcommand;      // device echoes this field in the CSWTag field of the associated CSW
@@ -287,14 +287,14 @@ namespace Kernel.Hardware.USB.Devices
             DBGMSG(((FOS_System.String)"Toggle OUT ") + ((USBEndpoint)DeviceInfo.Endpoints[DeviceInfo.MSD_OUTEndpointID]).toggle);
 #endif
 
-            usb_CommandBlockWrapper* cbw = (usb_CommandBlockWrapper*)FOS_System.Heap.AllocZeroed((uint)sizeof(usb_CommandBlockWrapper));
+            CommandBlockWrapper* cbw = (CommandBlockWrapper*)FOS_System.Heap.AllocZeroed((uint)sizeof(CommandBlockWrapper));
             bool FreeStatusBuffer = false;
             try
             {
                 FormatSCSICommand(SCSIcommand, cbw, LBA, TransferLength);
 
                 USBTransfer transfer = new USBTransfer();
-                DeviceInfo.hc.SetupTransfer(DeviceInfo, transfer, USBTransferType.USB_BULK, DeviceInfo.MSD_OUTEndpointID, 512);
+                DeviceInfo.hc.SetupTransfer(DeviceInfo, transfer, USBTransferType.Bulk, DeviceInfo.MSD_OUTEndpointID, 512);
                 DeviceInfo.hc.OUTTransaction(transfer, false, cbw, 31);
                 DeviceInfo.hc.IssueTransfer(transfer);
 
@@ -318,7 +318,7 @@ namespace Kernel.Hardware.USB.Devices
 #if MSD_TRACE
                     DBGMSG("Setup transfer...");
 #endif
-                    DeviceInfo.hc.SetupTransfer(DeviceInfo, transfer, USBTransferType.USB_BULK, DeviceInfo.MSD_INEndpointID, 512);
+                    DeviceInfo.hc.SetupTransfer(DeviceInfo, transfer, USBTransferType.Bulk, DeviceInfo.MSD_INEndpointID, 512);
 #if MSD_TRACE
                     DBGMSG("Done.");
 #endif
@@ -380,14 +380,14 @@ namespace Kernel.Hardware.USB.Devices
         }
         public void SendSCSICommand_OUT(byte SCSIcommand, uint LBA, ushort TransferLength, void* dataBuffer, void* statusBuffer)
         {
-            usb_CommandBlockWrapper* cbw = (usb_CommandBlockWrapper*)FOS_System.Heap.AllocZeroed((uint)sizeof(usb_CommandBlockWrapper));
+            CommandBlockWrapper* cbw = (CommandBlockWrapper*)FOS_System.Heap.AllocZeroed((uint)sizeof(CommandBlockWrapper));
             bool FreeStatusBuffer = false;
             try
             {
                 FormatSCSICommand(SCSIcommand, cbw, LBA, TransferLength);
 
                 USBTransfer transfer = new USBTransfer();
-                DeviceInfo.hc.SetupTransfer(DeviceInfo, transfer, USBTransferType.USB_BULK, DeviceInfo.MSD_OUTEndpointID, 512);
+                DeviceInfo.hc.SetupTransfer(DeviceInfo, transfer, USBTransferType.Bulk, DeviceInfo.MSD_OUTEndpointID, 512);
                 DeviceInfo.hc.OUTTransaction(transfer, false, cbw, 31);
                 DeviceInfo.hc.OUTTransaction(transfer, false, dataBuffer, TransferLength);
                 DeviceInfo.hc.IssueTransfer(transfer);
@@ -400,7 +400,7 @@ namespace Kernel.Hardware.USB.Devices
                     statusBuffer = FOS_System.Heap.AllocZeroed(13u);
                 }
 
-                DeviceInfo.hc.SetupTransfer(DeviceInfo, transfer, USBTransferType.USB_BULK, DeviceInfo.MSD_INEndpointID, 512);
+                DeviceInfo.hc.SetupTransfer(DeviceInfo, transfer, USBTransferType.Bulk, DeviceInfo.MSD_INEndpointID, 512);
                 DeviceInfo.hc.INTransaction(transfer, false, statusBuffer, 13);
                 DeviceInfo.hc.IssueTransfer(transfer);
             }
@@ -547,8 +547,8 @@ namespace Kernel.Hardware.USB.Devices
             DeviceInfo.maxLUN = 0;
 
             // start with correct endpoint toggles and reset interface
-            ((USBEndpoint)DeviceInfo.Endpoints[DeviceInfo.MSD_OUTEndpointID]).toggle = false;
-            ((USBEndpoint)DeviceInfo.Endpoints[DeviceInfo.MSD_INEndpointID]).toggle = false;
+            ((Endpoint)DeviceInfo.Endpoints[DeviceInfo.MSD_OUTEndpointID]).toggle = false;
+            ((Endpoint)DeviceInfo.Endpoints[DeviceInfo.MSD_INEndpointID]).toggle = false;
 
             BulkReset(DeviceInfo.MSD_InterfaceNum); // Reset Interface
 
@@ -643,8 +643,8 @@ namespace Kernel.Hardware.USB.Devices
 #endif
 
             // start with correct endpoint toggles and reset interface
-            ((USBEndpoint)DeviceInfo.Endpoints[DeviceInfo.MSD_OUTEndpointID]).toggle = false;
-            ((USBEndpoint)DeviceInfo.Endpoints[DeviceInfo.MSD_INEndpointID]).toggle = false;
+            ((Endpoint)DeviceInfo.Endpoints[DeviceInfo.MSD_OUTEndpointID]).toggle = false;
+            ((Endpoint)DeviceInfo.Endpoints[DeviceInfo.MSD_INEndpointID]).toggle = false;
             BulkReset(DeviceInfo.MSD_InterfaceNum); // Reset Interface
         }
 
@@ -804,7 +804,7 @@ namespace Kernel.Hardware.USB.Devices
         }
     }
 
-    public unsafe struct usb_CommandBlockWrapper
+    public unsafe struct CommandBlockWrapper
     {
         public uint CBWSignature;
         public uint CBWTag;

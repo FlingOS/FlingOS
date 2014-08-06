@@ -13,52 +13,40 @@ namespace Kernel.Hardware.Timers
         protected IO.IOPort SpeakerPort = new IO.IOPort(0x61);
 
         private List ActiveHandlers = new List();
-
-        public override ulong CurrentTime
-        {
-            get
-            {
-                return 0;
-            }
-            protected set
-            {
-                
-            }
-        }
-
+        
         public PIT()
             : base()
         {
         }
         
-        private ushort _T0Countdown = 65535; //2048;     //Produces ~1.72ms delay between interrupts
-        private ushort _T2Countdown = 65535;
+        private ushort _T0Reload = 65535; //2048;     //Produces ~1.72ms delay between interrupts
+        private ushort _T2Reload = 65535;
         private int TimerCounter = 0;
         private bool WaitSignaled = false;
         public const uint PITFrequency = 1193180;
         public const uint PITDelayNS = 838;
         public bool T0RateGen = false;
 
-        public ushort T0Countdown
+        public ushort T0Reload
         {
             get
             {
-                return _T0Countdown;
+                return _T0Reload;
             }
             set
             {
-                _T0Countdown = value;
+                _T0Reload = value;
 
-                Command.Write((byte)(T0RateGen ? 0x34 : 0x30));
-                Data0.Write((byte)(value & 0xFF));
-                Data0.Write((byte)(value >> 8));
+                Command.Write_Byte((byte)(T0RateGen ? 0x34 : 0x30));
+                Data0.Write_Byte((byte)(value & 0xFF));
+                Data0.Write_Byte((byte)(value >> 8));
             }
         }
         public uint T0Frequency
         {
             get
             {
-                return (PITFrequency / ((uint)_T0Countdown));
+                return (PITFrequency / ((uint)_T0Reload));
             }
             set
             {
@@ -68,14 +56,14 @@ namespace Kernel.Hardware.Timers
                         "Frequency must be between 19 and 1193180!"));
                 }
 
-                T0Countdown = (ushort)(PITFrequency / value);
+                T0Reload = (ushort)(PITFrequency / value);
             }
         }
         public uint T0DelyNS
         {
             get
             {
-                return (PITDelayNS * _T0Countdown);
+                return (PITDelayNS * _T0Reload);
             }
             set
             {
@@ -85,30 +73,30 @@ namespace Kernel.Hardware.Timers
                         "Delay must be no greater that 54918330"));
                 }
 
-                T0Countdown = (ushort)(value / PITDelayNS);
+                T0Reload = (ushort)(value / PITDelayNS);
             }
         }
 
-        public ushort T2Countdown
+        public ushort T2Reload
         {
             get
             {
-                return _T2Countdown;
+                return _T2Reload;
             }
             set
             {
-                _T2Countdown = value;
+                _T2Reload = value;
 
-                Command.Write(0xB6);
-                Data2.Write((byte)(value & 0xFF));
-                Data2.Write((byte)(value >> 8));
+                Command.Write_Byte(0xB6);
+                Data2.Write_Byte((byte)(value & 0xFF));
+                Data2.Write_Byte((byte)(value >> 8));
             }
         }
         public uint T2Frequency
         {
             get
             {
-                return (PITFrequency / ((uint)_T2Countdown));
+                return (PITFrequency / ((uint)_T2Reload));
             }
             set
             {
@@ -118,14 +106,14 @@ namespace Kernel.Hardware.Timers
                         "Frequency must be between 19 and 1193180!"));
                 }
 
-                T2Countdown = (ushort)(PITFrequency / value);
+                T2Reload = (ushort)(PITFrequency / value);
             }
         }
         public uint T2DelyNS
         {
             get
             {
-                return (PITDelayNS * _T2Countdown);
+                return (PITDelayNS * _T2Reload);
             }
             set
             {
@@ -135,17 +123,17 @@ namespace Kernel.Hardware.Timers
                         "Delay must be no greater than 54918330"));
                 }
 
-                T2Countdown = (ushort)(value / PITDelayNS);
+                T2Reload = (ushort)(value / PITDelayNS);
             }
         }
 
         public void EnableSound()
         {
-            SpeakerPort.Write((byte)(SpeakerPort.Read_Byte() | 0x03));
+            SpeakerPort.Write_Byte((byte)(SpeakerPort.Read_Byte() | 0x03));
         }
         public void DisableSound()
         {
-            SpeakerPort.Write((byte)(SpeakerPort.Read_Byte() & 0xFC));
+            SpeakerPort.Write_Byte((byte)(SpeakerPort.Read_Byte() & 0xFC));
         }
         public void PlaySound(int aFreq)
         {
@@ -191,23 +179,23 @@ namespace Kernel.Hardware.Timers
 
         public int RegisterHandler(PITHandler timer)
         {
-            if (timer.ID != -1)
+            if (timer.id != -1)
             {
                 ExceptionMethods.Throw(new FOS_System.Exception("Timer has already been registered!"));
             }
 
-            timer.ID = (TimerCounter++);
+            timer.id = (TimerCounter++);
             ActiveHandlers.Add(timer);
 
-            return timer.ID;
+            return timer.id;
         }
         public void UnregisterHandler(int timerid)
         {
             for (int i = 0; i < ActiveHandlers.Count; i++)
             {
-                if (((PITHandler)ActiveHandlers[i]).ID == timerid)
+                if (((PITHandler)ActiveHandlers[i]).id == timerid)
                 {
-                    ((PITHandler)ActiveHandlers[i]).ID = -1;
+                    ((PITHandler)ActiveHandlers[i]).id = -1;
                     ActiveHandlers.RemoveAt(i);
                     return;
                 }
@@ -236,7 +224,7 @@ namespace Kernel.Hardware.Timers
                     }
                     else
                     {
-                        hndlr.ID = -1;
+                        hndlr.id = -1;
                         ActiveHandlers.RemoveAt(i);
                     }
                     hndlr.HandleTrigger(hndlr.state);
@@ -255,7 +243,7 @@ namespace Kernel.Hardware.Timers
                 enabled = true;
                 
                 T0RateGen = true;
-                T0Countdown = _T0Countdown;
+                T0Reload = _T0Reload;
             }
         }
         public override void Disable()
@@ -290,14 +278,14 @@ namespace Kernel.Hardware.Timers
         internal long NSRemaining;
         public long NanosecondsTimeout;
         public bool Recurring;
-        internal int ID = -1;
-        public FOS_System.Object state;
+        internal int id = -1;
+        internal FOS_System.Object state;
 
-        public int TimerID
+        public int ID
         {
             get
             {
-                return ID;
+                return id;
             }
         }
 

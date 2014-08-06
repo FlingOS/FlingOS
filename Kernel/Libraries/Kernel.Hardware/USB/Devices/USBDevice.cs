@@ -90,19 +90,19 @@ namespace Kernel.Hardware.USB.Devices
 }
 namespace Kernel.Hardware.USB
 {
-    public enum USBEndpointType
+    public enum EndpointType
     {
         EP_OUT, EP_IN, EP_BIDIR
     }
-    public class USBEndpoint : FOS_System.Object
+    public class Endpoint : FOS_System.Object
     {
         public ushort mps;
         public bool toggle;
-        public USBEndpointType type;
+        public EndpointType type;
         public byte interval;
     }
     [System.Runtime.InteropServices.StructLayout(System.Runtime.InteropServices.LayoutKind.Sequential, Pack=1)]
-    public struct USBDeviceDescriptor
+    public struct DeviceDescriptor
     {
         public byte length;            // 18
         public byte descriptorType;    // 1
@@ -121,7 +121,7 @@ namespace Kernel.Hardware.USB
     }
 
     [System.Runtime.InteropServices.StructLayout(System.Runtime.InteropServices.LayoutKind.Sequential, Pack = 1)]
-    public struct usb_configurationDescriptor
+    public struct ConfigurationDescriptor
     {
         public byte  length;            // 9
         public byte  descriptorType;    // 2
@@ -134,7 +134,7 @@ namespace Kernel.Hardware.USB
     }
 
     [System.Runtime.InteropServices.StructLayout(System.Runtime.InteropServices.LayoutKind.Sequential, Pack = 1)]
-    public struct usb_interfaceDescriptor
+    public struct InterfaceDescriptor
     {
         public byte  length;            // 9
         public byte  descriptorType;    // 4
@@ -148,7 +148,7 @@ namespace Kernel.Hardware.USB
     }
 
     [System.Runtime.InteropServices.StructLayout(System.Runtime.InteropServices.LayoutKind.Sequential, Pack = 1)]
-    public struct usb_endpointDescriptor
+    public struct EndpointDescriptor
     {
         public byte  length;            // 7
         public byte  descriptorType;    // 5
@@ -159,7 +159,7 @@ namespace Kernel.Hardware.USB
     }
 
     [System.Runtime.InteropServices.StructLayout(System.Runtime.InteropServices.LayoutKind.Sequential, Pack = 1)]
-    public unsafe struct usb_stringDescriptor
+    public unsafe struct StringDescriptor
     {
         public byte  length;            // ?
         public byte  descriptorType;    // 3
@@ -167,7 +167,7 @@ namespace Kernel.Hardware.USB
     }
 
     [System.Runtime.InteropServices.StructLayout(System.Runtime.InteropServices.LayoutKind.Sequential, Pack = 1)]
-    public unsafe struct usb_stringDescriptorUnicode
+    public unsafe struct StringDescriptorUnicode
     {
         public byte  length;            // 2 + 2 * numUnicodeCharacters
         public byte  descriptorType;    // 3

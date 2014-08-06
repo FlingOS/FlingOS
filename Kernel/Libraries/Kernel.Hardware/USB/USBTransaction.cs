@@ -22,7 +22,7 @@ namespace Kernel.Hardware.USB
 {
     public enum USBTransactionType
     {
-        USB_TT_SETUP, USB_TT_IN, USB_TT_OUT
+        SETUP, IN, OUT
     }
     public class USBTransaction : FOS_System.Object
     {

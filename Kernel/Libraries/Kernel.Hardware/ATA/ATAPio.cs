@@ -335,7 +335,7 @@ namespace Kernel.Hardware.ATA
             controllerId = aControllerId;
             busPosition = aBusPosition;
             // Disable IRQs, we use polling currently
-            IO.Control.Write((byte)0x02);
+            IO.Control.Write_Byte((byte)0x02);
 
             mDriveType = DiscoverDrive();
             if (mDriveType != SpecLevel.Null)
@@ -350,7 +350,7 @@ namespace Kernel.Hardware.ATA
         /// <param name="aLbaHigh4">LBA High 4 bits</param>
         public void SelectDrive(byte aLbaHigh4)
         {
-            IO.DeviceSelect.Write((byte)((byte)(DvcSelVal.Default | DvcSelVal.LBA | (busPosition == BusPosition.Slave ? DvcSelVal.Slave : 0)) | aLbaHigh4));
+            IO.DeviceSelect.Write_Byte((byte)((byte)(DvcSelVal.Default | DvcSelVal.LBA | (busPosition == BusPosition.Slave ? DvcSelVal.Slave : 0)) | aLbaHigh4));
             Wait();
         }
         
@@ -437,7 +437,7 @@ namespace Kernel.Hardware.ATA
 
             // Read Identification Space of the Device
             var xBuff = new UInt16[256];
-            IO.Data.Read16(xBuff);
+            IO.Data.Read_UInt16s(xBuff);
             mSerialNo = GetString(xBuff, 10, 20);
             mFirmwareRev = GetString(xBuff, 23, 8);
             mModelNo = GetString(xBuff, 27, 40);
@@ -498,7 +498,7 @@ namespace Kernel.Hardware.ATA
         /// <returns>The device status.</returns>
         public Status SendCmd(Cmd aCmd, bool aThrowOnError)
         {
-            IO.Command.Write((byte)aCmd);
+            IO.Command.Write_Byte((byte)aCmd);
             Status xStatus;
             do
             {
@@ -526,10 +526,10 @@ namespace Kernel.Hardware.ATA
             SelectDrive((byte)(aSectorNo >> 24));
 
             // Number of sectors to read
-            IO.SectorCount.Write((byte)aSectorCount);
-            IO.LBA0.Write((byte)(aSectorNo & 0xFF));
-            IO.LBA1.Write((byte)((aSectorNo & 0xFF00) >> 8));
-            IO.LBA2.Write((byte)((aSectorNo & 0xFF0000) >> 16));
+            IO.SectorCount.Write_Byte((byte)aSectorCount);
+            IO.LBA0.Write_Byte((byte)(aSectorNo & 0xFF));
+            IO.LBA1.Write_Byte((byte)((aSectorNo & 0xFF00) >> 8));
+            IO.LBA2.Write_Byte((byte)((aSectorNo & 0xFF0000) >> 16));
             //TODO LBA3  ...
         }
         /// <summary>
@@ -542,7 +542,7 @@ namespace Kernel.Hardware.ATA
         {
             SelectSector(aBlockNo, aBlockCount);
             SendCmd(Cmd.ReadPio);
-            IO.Data.Read8(aData);
+            IO.Data.Read_Bytes(aData);
         }
         /// <summary>
         /// Writes contiguous blocks to the drive.
@@ -560,7 +560,7 @@ namespace Kernel.Hardware.ATA
                 ulong size = (aBlockCount / 2) * blockSize;
                 for (ulong i = 0; i < size; i++)
                 {
-                    IO.Data.Write(0);
+                    IO.Data.Write_Byte(0);
                 }
             }
             else
@@ -570,7 +570,7 @@ namespace Kernel.Hardware.ATA
                 for (int i = 0; i < aData.Length / 2; i++)
                 {
                     xValue = (UInt16)((aData[i * 2 + 1] << 8) | aData[i * 2]);
-                    IO.Data.Write(xValue);
+                    IO.Data.Write_UInt16(xValue);
                 }
             }
 

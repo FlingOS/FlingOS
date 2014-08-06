@@ -62,7 +62,7 @@ namespace Kernel.Hardware.USB.HCIs
             transfer.device = usbDevice;
             transfer.endpoint = endpoint;
             transfer.type = type;
-            transfer.packetSize = FOS_System.Math.Min(maxLength, ((USBEndpoint)usbDevice.Endpoints[endpoint]).mps);
+            transfer.packetSize = FOS_System.Math.Min(maxLength, ((Endpoint)usbDevice.Endpoints[endpoint]).mps);
             transfer.success = false;
             transfer.transactions = new List(3);
 
@@ -72,13 +72,13 @@ namespace Kernel.Hardware.USB.HCIs
                                      ushort index, ushort length)
         {
             USBTransaction transaction = new USBTransaction();
-            transaction.type = USBTransactionType.USB_TT_SETUP;
+            transaction.type = USBTransactionType.SETUP;
 
             _SETUPTransaction(transfer, transaction, false, tokenBytes, type, req, hiVal, loVal, index, length);
 
             transfer.transactions.Add(transaction);
 
-            ((USBEndpoint)transfer.device.Endpoints[transfer.endpoint]).toggle = true;
+            ((Endpoint)transfer.device.Endpoints[transfer.endpoint]).toggle = true;
         }
         public void INTransaction(USBTransfer transfer, bool controlHandshake, void* buffer, ushort length)
         {
@@ -100,11 +100,11 @@ namespace Kernel.Hardware.USB.HCIs
             }
 
             USBTransaction transaction = new USBTransaction();
-            transaction.type = USBTransactionType.USB_TT_IN;
+            transaction.type = USBTransactionType.IN;
 
             if (controlHandshake) // Handshake transaction of control transfers have always set toggle to 1
             {
-                ((USBEndpoint)transfer.device.Endpoints[transfer.endpoint]).toggle = true;
+                ((Endpoint)transfer.device.Endpoints[transfer.endpoint]).toggle = true;
             }
 
 #if HCI_TRACE
@@ -112,7 +112,7 @@ namespace Kernel.Hardware.USB.HCIs
             BasicConsole.DelayOutput(1);
 #endif
 
-            _INTransaction(transfer, transaction, ((USBEndpoint)transfer.device.Endpoints[transfer.endpoint]).toggle, buffer, clampedLength);
+            _INTransaction(transfer, transaction, ((Endpoint)transfer.device.Endpoints[transfer.endpoint]).toggle, buffer, clampedLength);
 
 #if HCI_TRACE
             BasicConsole.WriteLine("Done.");
@@ -121,11 +121,11 @@ namespace Kernel.Hardware.USB.HCIs
 
             transfer.transactions.Add(transaction);
 
-            ((USBEndpoint)transfer.device.Endpoints[transfer.endpoint]).toggle = !((USBEndpoint)transfer.device.Endpoints[transfer.endpoint]).toggle; // Switch toggle
+            ((Endpoint)transfer.device.Endpoints[transfer.endpoint]).toggle = !((Endpoint)transfer.device.Endpoints[transfer.endpoint]).toggle; // Switch toggle
 
             if (remainingTransactions > 0)
             {
-                INTransaction(transfer, ((USBEndpoint)transfer.device.Endpoints[transfer.endpoint]).toggle, ((byte*)buffer + clampedLength), length);
+                INTransaction(transfer, ((Endpoint)transfer.device.Endpoints[transfer.endpoint]).toggle, ((byte*)buffer + clampedLength), length);
             }
         }
         public void OUTTransaction(USBTransfer transfer, bool controlHandshake, void* buffer, ushort length)
@@ -137,22 +137,22 @@ namespace Kernel.Hardware.USB.HCIs
                 remainingTransactions++;
 
             USBTransaction transaction = new USBTransaction();
-            transaction.type = USBTransactionType.USB_TT_OUT;
+            transaction.type = USBTransactionType.OUT;
 
             if (controlHandshake) // Handshake transaction of control transfers have always set toggle to 1
             {
-                ((USBEndpoint)transfer.device.Endpoints[transfer.endpoint]).toggle = true;
+                ((Endpoint)transfer.device.Endpoints[transfer.endpoint]).toggle = true;
             }
 
-            _OUTTransaction(transfer, transaction, ((USBEndpoint)transfer.device.Endpoints[transfer.endpoint]).toggle, buffer, clampedLength);
+            _OUTTransaction(transfer, transaction, ((Endpoint)transfer.device.Endpoints[transfer.endpoint]).toggle, buffer, clampedLength);
 
             transfer.transactions.Add(transaction);
 
-            ((USBEndpoint)transfer.device.Endpoints[transfer.endpoint]).toggle = !((USBEndpoint)transfer.device.Endpoints[transfer.endpoint]).toggle; // Switch toggle
+            ((Endpoint)transfer.device.Endpoints[transfer.endpoint]).toggle = !((Endpoint)transfer.device.Endpoints[transfer.endpoint]).toggle; // Switch toggle
 
             if (remainingTransactions > 0)
             {
-                OUTTransaction(transfer, ((USBEndpoint)transfer.device.Endpoints[transfer.endpoint]).toggle, ((byte*)buffer + clampedLength), length);
+                OUTTransaction(transfer, ((Endpoint)transfer.device.Endpoints[transfer.endpoint]).toggle, ((byte*)buffer + clampedLength), length);
             }
         }
         public void IssueTransfer(USBTransfer transfer)

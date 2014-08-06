@@ -2,9 +2,19 @@
 
 namespace Kernel.Hardware.Devices
 {
+    /// <summary>
+    /// Represents a timer device.
+    /// </summary>
+    /// <seealso cref="Kernel.Hardware.Timers.PIT"/>
     public abstract class Timer : Device
     {
+        /// <summary>
+        /// Whether the timer is enabled or not.
+        /// </summary>
         protected bool enabled;
+        /// <summary>
+        /// Whether the timer is enabled or not.
+        /// </summary>
         public bool Enabled
         {
             get
@@ -12,13 +22,7 @@ namespace Kernel.Hardware.Devices
                 return enabled;
             }
         }
-
-        public abstract ulong CurrentTime
-        {
-            get;
-            protected set;
-        }
-
+        
         protected virtual void InterruptHandler()
         {
         }

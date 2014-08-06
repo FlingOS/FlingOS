@@ -209,10 +209,10 @@ namespace Kernel.Hardware.USB
 #endif
             USBDeviceInfo deviceInf = new USBDeviceInfo(port.portNum, hc);
             deviceInf.Endpoints = new List(1);
-            deviceInf.Endpoints.Add(new USBEndpoint());
-            ((USBEndpoint)deviceInf.Endpoints[0]).mps = 64;
-            ((USBEndpoint)deviceInf.Endpoints[0]).type = USBEndpointType.EP_BIDIR;
-            ((USBEndpoint)deviceInf.Endpoints[0]).toggle = false;
+            deviceInf.Endpoints.Add(new Endpoint());
+            ((Endpoint)deviceInf.Endpoints[0]).mps = 64;
+            ((Endpoint)deviceInf.Endpoints[0]).type = EndpointType.EP_BIDIR;
+            ((Endpoint)deviceInf.Endpoints[0]).toggle = false;
 #if USB_TRACE
             DBGMSG("Created device.");
 #endif
@@ -389,7 +389,7 @@ namespace Kernel.Hardware.USB
             byte new_address = num; // indicated port number
 
             USBTransfer transfer = new USBTransfer();
-            device.hc.SetupTransfer(device, transfer, USBTransferType.USB_CONTROL, 0, 64);
+            device.hc.SetupTransfer(device, transfer, USBTransferType.Control, 0, 64);
             device.hc.SETUPTransaction(transfer, 8, 0x00, 5, 0, new_address, 0, 0);
             device.hc.INTransaction(transfer, true, null, 0);
             device.hc.IssueTransfer(transfer);
@@ -400,17 +400,18 @@ namespace Kernel.Hardware.USB
 #endif
             return new_address;
         }
+        
         public static bool GetDeviceDescriptor(USBDeviceInfo device)
         {
 #if USB_TRACE
             DBGMSG("USB: GET_DESCRIPTOR Device");
 #endif
 
-            USBDeviceDescriptor* descriptor = (USBDeviceDescriptor*)FOS_System.Heap.AllocZeroed((uint)sizeof(USBDeviceDescriptor));
+            DeviceDescriptor* descriptor = (DeviceDescriptor*)FOS_System.Heap.AllocZeroed((uint)sizeof(DeviceDescriptor));
             USBTransfer transfer = new USBTransfer();
             try
             {
-                device.hc.SetupTransfer(device, transfer, USBTransferType.USB_CONTROL, 0, 64);
+                device.hc.SetupTransfer(device, transfer, USBTransferType.Control, 0, 64);
                 device.hc.SETUPTransaction(transfer, 8, 0x80, 6, 1, 0, 0, 18);
                 device.hc.INTransaction(transfer, false, descriptor, 18);
                 device.hc.OUTTransaction(transfer, true, null, 0);
@@ -439,7 +440,7 @@ namespace Kernel.Hardware.USB
             }
             return transfer.success;
         }
-        private static void ParseDeviceDescriptor(USBDeviceDescriptor* d, USBDeviceInfo usbDev)
+        private static void ParseDeviceDescriptor(DeviceDescriptor* d, USBDeviceInfo usbDev)
         {
             usbDev.usbSpec = d->bcdUSB;
             usbDev.usbClass = d->deviceClass;
@@ -452,8 +453,9 @@ namespace Kernel.Hardware.USB
             usbDev.productStringID = d->product;
             usbDev.serNumberStringID = d->serialNumber;
             usbDev.numConfigurations = d->numConfigurations;
-            ((USBEndpoint)usbDev.Endpoints[0]).mps = d->maxPacketSize;
+            ((Endpoint)usbDev.Endpoints[0]).mps = d->maxPacketSize;
         }
+        
         public static unsafe bool GetConfigDescriptor(USBDeviceInfo device)
         {
 #if USB_TRACE
@@ -465,7 +467,7 @@ namespace Kernel.Hardware.USB
             byte* buffer = (byte*)FOS_System.Heap.AllocZeroed(bufferSize);
 
             USBTransfer transfer = new USBTransfer();
-            device.hc.SetupTransfer(device, transfer, USBTransferType.USB_CONTROL, 0, bufferSize);
+            device.hc.SetupTransfer(device, transfer, USBTransferType.Control, 0, bufferSize);
             device.hc.SETUPTransaction(transfer, 8, 0x80, 6, 2, 0, 0, bufferSize);
             device.hc.INTransaction(transfer, false, buffer, 64);
             device.hc.OUTTransaction(transfer, true, null, 0);
@@ -489,14 +491,14 @@ namespace Kernel.Hardware.USB
 
                     if (length == 9 && type == 2)
                     {
-                        usb_configurationDescriptor* descriptor = (usb_configurationDescriptor*)addr;
+                        ConfigurationDescriptor* descriptor = (ConfigurationDescriptor*)addr;
 #if USB_TRACE
                         ShowConfigurationDescriptor(descriptor);
 #endif
                     }
                     else if (length == 9 && type == 4)
                     {
-                        usb_interfaceDescriptor* descriptor = (usb_interfaceDescriptor*)addr;
+                        InterfaceDescriptor* descriptor = (InterfaceDescriptor*)addr;
 #if USB_TRACE
                         ShowInterfaceDescriptor(descriptor);
 #endif
@@ -532,7 +534,7 @@ namespace Kernel.Hardware.USB
                 }
                 for (int i = 0; i < numEndpoints - 1; i++)
                 {
-                    device.Endpoints.Add(new USBEndpoint());
+                    device.Endpoints.Add(new Endpoint());
                 }
 
                 // Second pass. Fill in endpoint information
@@ -544,7 +546,7 @@ namespace Kernel.Hardware.USB
 
                     if (length == 7 && type == 5)
                     {
-                        usb_endpointDescriptor* descriptor = (usb_endpointDescriptor*)addr;
+                        EndpointDescriptor* descriptor = (EndpointDescriptor*)addr;
 #if USB_TRACE
                         ShowEndpointDescriptor(descriptor);
 #endif
@@ -557,9 +559,9 @@ namespace Kernel.Hardware.USB
                         }
 #endif
 
-                        ((USBEndpoint)device.Endpoints[ep_id]).mps = descriptor->maxPacketSize;
-                        ((USBEndpoint)device.Endpoints[ep_id]).type = USBEndpointType.EP_BIDIR; // Can be overwritten below
-                        ((USBEndpoint)device.Endpoints[ep_id]).interval = descriptor->interval;
+                        ((Endpoint)device.Endpoints[ep_id]).mps = descriptor->maxPacketSize;
+                        ((Endpoint)device.Endpoints[ep_id]).type = EndpointType.EP_BIDIR; // Can be overwritten below
+                        ((Endpoint)device.Endpoints[ep_id]).interval = descriptor->interval;
 
                         // store endpoint numbers for IN/OUT mass storage transfers, attributes must be 0x2, because there are also endpoints with attributes 0x3(interrupt)
                         if ((descriptor->endpointAddress & 0x80) > 0 && descriptor->attributes == 0x2)
@@ -568,7 +570,7 @@ namespace Kernel.Hardware.USB
                             {
                                 device.MSD_INEndpointID = ep_id;
                             }
-                            ((USBEndpoint)device.Endpoints[ep_id]).type = USBEndpointType.EP_IN;
+                            ((Endpoint)device.Endpoints[ep_id]).type = EndpointType.EP_IN;
                         }
 
                         if ((descriptor->endpointAddress & 0x80) == 0 && descriptor->attributes == 0x2)
@@ -577,7 +579,7 @@ namespace Kernel.Hardware.USB
                             {
                                 device.MSD_OUTEndpointID = ep_id;
                             }
-                            ((USBEndpoint)device.Endpoints[ep_id]).type = USBEndpointType.EP_OUT;
+                            ((Endpoint)device.Endpoints[ep_id]).type = EndpointType.EP_OUT;
                         }
                     }
                     else if (length == 0)
@@ -591,19 +593,20 @@ namespace Kernel.Hardware.USB
 
             return transfer.success;
         }
+        
         public static void GetStringDescriptor(USBDeviceInfo device)
         {
 #if USB_TRACE
             DBGMSG("USB: GET_DESCRIPTOR string");
 #endif
 
-            usb_stringDescriptor* descriptor = (usb_stringDescriptor*)FOS_System.Heap.AllocZeroed((uint)sizeof(usb_stringDescriptor));
+            StringDescriptor* descriptor = (StringDescriptor*)FOS_System.Heap.AllocZeroed((uint)sizeof(StringDescriptor));
 
             try
             {
-                ushort size = (ushort)sizeof(usb_stringDescriptor);
+                ushort size = (ushort)sizeof(StringDescriptor);
                 USBTransfer transfer = new USBTransfer();
-                device.hc.SetupTransfer(device, transfer, USBTransferType.USB_CONTROL, 0, 64);
+                device.hc.SetupTransfer(device, transfer, USBTransferType.Control, 0, 64);
                 device.hc.SETUPTransaction(transfer, 8, 0x80, 6, 3, 0, 0, size);
                 device.hc.INTransaction(transfer, false, descriptor, size);
                 device.hc.OUTTransaction(transfer, true, null, 0);
@@ -621,6 +624,7 @@ namespace Kernel.Hardware.USB
                 FOS_System.Heap.Free(descriptor);
             }
         }
+        
         public static void GetUnicodeStringDescriptor(USBDeviceInfo device, byte stringIndex)
         {
 #if USB_TRACE
@@ -632,7 +636,7 @@ namespace Kernel.Hardware.USB
             byte* buffer = (byte*)FOS_System.Heap.AllocZeroed(bufferSize);
 
             USBTransfer transfer = new USBTransfer();
-            device.hc.SetupTransfer(device, transfer, USBTransferType.USB_CONTROL, 0, bufferSize);
+            device.hc.SetupTransfer(device, transfer, USBTransferType.Control, 0, bufferSize);
             device.hc.SETUPTransaction(transfer, 8, 0x80, 6, 3, stringIndex, 0x0409, bufferSize);
             device.hc.INTransaction(transfer, false, buffer, bufferSize);
             device.hc.OUTTransaction(transfer, true, null, 0);
@@ -642,18 +646,7 @@ namespace Kernel.Hardware.USB
             ShowUnicodeStringDescriptor((usb_stringDescriptorUnicode*)buffer, device, stringIndex);
 #endif
         }
-        public static void SetConfiguration(USBDeviceInfo device, byte configuration)
-        {
-#if USB_TRACE
-            DBGMSG(((FOS_System.String)"USB: SET_CONFIGURATION ") + configuration);
-#endif
-
-            USBTransfer transfer = new USBTransfer();
-            device.hc.SetupTransfer(device, transfer, USBTransferType.USB_CONTROL, 0, 64);
-            device.hc.SETUPTransaction(transfer, 8, 0x00, 9, 0, configuration, 0, 0); // SETUP DATA0, 8 byte, request type, SET_CONFIGURATION(9), hi(reserved), configuration, index=0, length=0
-            device.hc.INTransaction(transfer, true, null, 0);
-            device.hc.IssueTransfer(transfer);
-        }
+        
         public static unsafe byte GetConfiguration(USBDeviceInfo device)
         {
 #if USB_TRACE
@@ -663,7 +656,7 @@ namespace Kernel.Hardware.USB
             uint configuration;
 
             USBTransfer transfer = new USBTransfer();
-            device.hc.SetupTransfer(device, transfer, USBTransferType.USB_CONTROL, 0, 64);
+            device.hc.SetupTransfer(device, transfer, USBTransferType.Control, 0, 64);
             device.hc.SETUPTransaction(transfer, 8, 0x80, 8, 0, 0, 0, 1);
             device.hc.INTransaction(transfer, false, &configuration, 1);
             device.hc.OUTTransaction(transfer, true, null, 0);
@@ -671,6 +664,19 @@ namespace Kernel.Hardware.USB
 
             return (byte)configuration;
         }
+        public static void SetConfiguration(USBDeviceInfo device, byte configuration)
+        {
+#if USB_TRACE
+            DBGMSG(((FOS_System.String)"USB: SET_CONFIGURATION ") + configuration);
+#endif
+
+            USBTransfer transfer = new USBTransfer();
+            device.hc.SetupTransfer(device, transfer, USBTransferType.Control, 0, 64);
+            device.hc.SETUPTransaction(transfer, 8, 0x00, 9, 0, configuration, 0, 0); // SETUP DATA0, 8 byte, request type, SET_CONFIGURATION(9), hi(reserved), configuration, index=0, length=0
+            device.hc.INTransaction(transfer, true, null, 0);
+            device.hc.IssueTransfer(transfer);
+        }
+        
         public static unsafe ushort GetStatus(USBDeviceInfo device, byte endpoint)
         {
 #if USB_TRACE
@@ -680,7 +686,7 @@ namespace Kernel.Hardware.USB
             ushort status;
 
             USBTransfer transfer = new USBTransfer();
-            device.hc.SetupTransfer(device, transfer, USBTransferType.USB_CONTROL, endpoint, 64);
+            device.hc.SetupTransfer(device, transfer, USBTransferType.Control, endpoint, 64);
             device.hc.SETUPTransaction(transfer, 8, 0x02, 0, 0, 0, endpoint, 2);
             device.hc.INTransaction(transfer, false, &status, 2);
             device.hc.OUTTransaction(transfer, true, null, 0);
@@ -692,6 +698,7 @@ namespace Kernel.Hardware.USB
 
             return status;
         }
+
         public static void SetFeatureHALT(USBDeviceInfo device, byte endpoint)
         {
 #if USB_TRACE
@@ -699,7 +706,7 @@ namespace Kernel.Hardware.USB
 #endif
 
             USBTransfer transfer = new USBTransfer();
-            device.hc.SetupTransfer(device, transfer, USBTransferType.USB_CONTROL, endpoint, 64);
+            device.hc.SetupTransfer(device, transfer, USBTransferType.Control, endpoint, 64);
             device.hc.SETUPTransaction(transfer, 8, 0x02, 3, 0, 0, endpoint, 0);
             device.hc.INTransaction(transfer, true, null, 0);
             device.hc.IssueTransfer(transfer);
@@ -715,7 +722,7 @@ namespace Kernel.Hardware.USB
 #endif
 
             USBTransfer transfer = new USBTransfer();
-            device.hc.SetupTransfer(device, transfer, USBTransferType.USB_CONTROL, endpoint, 64);
+            device.hc.SetupTransfer(device, transfer, USBTransferType.Control, endpoint, 64);
             device.hc.SETUPTransaction(transfer, 8, 0x02, 1, 0, 0, endpoint, 0);
             device.hc.INTransaction(transfer, true, null, 0);
             device.hc.IssueTransfer(transfer);

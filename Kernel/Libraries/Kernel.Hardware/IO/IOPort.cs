@@ -140,7 +140,7 @@ namespace Kernel.Hardware.IO
         /// <param name="port">The port to write to.</param>
         /// <param name="aVal">The value to write.</param>
         [Compiler.PluggedMethod(ASMFilePath = @"ASM\IO\IOPort\Write")]
-        public static void doWrite(UInt16 port, byte aVal)
+        public static void doWrite_Byte(UInt16 port, byte aVal)
         {
         }
         /// <summary>
@@ -149,7 +149,7 @@ namespace Kernel.Hardware.IO
         /// <param name="port">The port to write to.</param>
         /// <param name="aVal">The value to write.</param>
         [Compiler.PluggedMethod(ASMFilePath = null)]
-        public static void doWrite(UInt16 port, UInt16 aVal)
+        public static void doWrite_UInt16(UInt16 port, UInt16 aVal)
         {
         }
         /// <summary>
@@ -158,7 +158,7 @@ namespace Kernel.Hardware.IO
         /// <param name="port">The port to write to.</param>
         /// <param name="aVal">The value to write.</param>
         [Compiler.PluggedMethod(ASMFilePath = null)]
-        public static void doWrite(UInt16 port, UInt32 aVal)
+        public static void doWrite_UInt32(UInt16 port, UInt32 aVal)
         {
         }
         /// <summary>
@@ -167,7 +167,7 @@ namespace Kernel.Hardware.IO
         /// <param name="port">The port to write to.</param>
         /// <param name="aVal">The value to write.</param>
         [Compiler.PluggedMethod(ASMFilePath = null)]
-        public static void doWrite(UInt16 port, UInt64 aVal)
+        public static void doWrite_UInt64(UInt16 port, UInt64 aVal)
         {
         }
 
@@ -176,36 +176,36 @@ namespace Kernel.Hardware.IO
         /// </summary>
         /// <param name="aVal">The value to write.</param>
         [Compiler.NoDebug]
-        public virtual void Write(byte aVal)
+        public virtual void Write_Byte(byte aVal)
         {
-            doWrite(this.Port, aVal);
+            doWrite_Byte(this.Port, aVal);
         }
         /// <summary>
         /// Writes a UInt16 to the port.
         /// </summary>
         /// <param name="aVal">The value to write.</param>
         [Compiler.NoDebug]
-        public void Write(UInt16 aVal)
+        public void Write_UInt16(UInt16 aVal)
         {
-            doWrite(this.Port, aVal);
+            doWrite_UInt16(this.Port, aVal);
         }
         /// <summary>
         /// Writes a UInt32 to the port.
         /// </summary>
         /// <param name="aVal">The value to write.</param>
         [Compiler.NoDebug]
-        public void Write(UInt32 aVal)
+        public void Write_UInt32(UInt32 aVal)
         {
-            doWrite(this.Port, aVal);
+            doWrite_UInt32(this.Port, aVal);
         }
         /// <summary>
         /// Writes a UInt64 to the port.
         /// </summary>
         /// <param name="aVal">The value to write.</param>
         [Compiler.NoDebug]
-        public void Write(UInt64 aVal)
+        public void Write_UInt64(UInt64 aVal)
         {
-            doWrite(this.Port, aVal);
+            doWrite_UInt64(this.Port, aVal);
         }
 
         /// <summary>
@@ -213,7 +213,7 @@ namespace Kernel.Hardware.IO
         /// </summary>
         /// <param name="aData">The byte array to read data into.</param>
         [Compiler.NoDebug]
-        public void Read8(byte[] aData)
+        public void Read_Bytes(byte[] aData)
         {
             UInt16 xValue;
             for (int i = 0; i < aData.Length / 2; i++)
@@ -228,7 +228,7 @@ namespace Kernel.Hardware.IO
         /// </summary>
         /// <param name="aData">The UInt16 array to read data into.</param>
         [Compiler.NoDebug]
-        public void Read16(UInt16[] aData)
+        public void Read_UInt16s(UInt16[] aData)
         {
             for (int i = 0; i < aData.Length; i++)
             {
@@ -240,7 +240,7 @@ namespace Kernel.Hardware.IO
         /// </summary>
         /// <param name="aData">The UInt32 array to read data into.</param>
         [Compiler.NoDebug]
-        public void Read32(UInt32[] aData)
+        public void Read_UInt32s(UInt32[] aData)
         {
             for (int i = 0; i < aData.Length; i++)
             {

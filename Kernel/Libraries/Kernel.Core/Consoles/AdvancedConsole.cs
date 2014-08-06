@@ -62,10 +62,10 @@ namespace Kernel.Core.Consoles
         public override void SetCursorPosition(ushort character, ushort line)
         {
             ushort offset = (ushort)((line * LineLength) + character);
-            CursorCmdPort.Write((byte)14);
-            CursorDataPort.Write((byte)(offset >> 8));
-            CursorCmdPort.Write((byte)15);
-            CursorDataPort.Write((byte)(offset));
+            CursorCmdPort.Write_Byte((byte)14);
+            CursorDataPort.Write_Byte((byte)(offset >> 8));
+            CursorCmdPort.Write_Byte((byte)15);
+            CursorDataPort.Write_Byte((byte)(offset));
         }
     }
 }

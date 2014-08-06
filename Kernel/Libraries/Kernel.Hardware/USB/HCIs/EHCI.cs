@@ -1615,7 +1615,7 @@ namespace Kernel.Hardware.USB.HCIs
                 }
 #endif
 
-                if (transfer.type == USBTransferType.USB_CONTROL)
+                if (transfer.type == USBTransferType.Control)
                 {
                     AddToAsyncScheduler(transfer, 0);
                 }

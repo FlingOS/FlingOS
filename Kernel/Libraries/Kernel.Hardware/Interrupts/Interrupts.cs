@@ -59,14 +59,14 @@ namespace Kernel.Hardware.Interrupts
                 byte mask = IO.IOPort.doRead_Byte(0xA1);
                 byte bitMask = (byte)(~(1u << num));
                 mask &= bitMask;
-                IO.IOPort.doWrite(0xA1, mask);
+                IO.IOPort.doWrite_Byte(0xA1, mask);
             }
             else
             {
                 byte mask = IO.IOPort.doRead_Byte(0x21);
                 byte bitMask = (byte)(~(1u << num));
                 mask &= bitMask;
-                IO.IOPort.doWrite(0x21, mask);
+                IO.IOPort.doWrite_Byte(0x21, mask);
             }
         }
         public static int SetIRQHandler(int num, InterruptHandler handler,

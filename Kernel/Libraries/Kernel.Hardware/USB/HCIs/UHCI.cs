@@ -253,9 +253,9 @@ namespace Kernel.Hardware.USB.HCIs
             DBGMSG(((FOS_System.String)"legacySupport : ") + legacySupport);
 #endif
 
-            USBCMD.Write(UHCI_Consts.UHCI_CMD_GRESET);
+            USBCMD.Write_UInt16(UHCI_Consts.UHCI_CMD_GRESET);
             sleepMilliSeconds(100); // at least 50 msec
-            USBCMD.Write((ushort)0u);
+            USBCMD.Write_UInt16((ushort)0u);
 
             // get number of valid root ports
             RootPortCount = (byte)((memSize - UHCI_Consts.UHCI_PORTSC1) / 2); // each port has a two byte PORTSC register
@@ -295,10 +295,10 @@ namespace Kernel.Hardware.USB.HCIs
                 DBGMSG("Resetting HC...");
 #endif
 
-                USBSTS.Write(UHCI_Consts.UHCI_STS_MASK);
+                USBSTS.Write_UInt16(UHCI_Consts.UHCI_STS_MASK);
                 sleepMilliSeconds(1);                             // wait one frame
                 pciDevice.WriteRegister16(UHCI_Consts.UHCI_PCI_LEGACY_SUPPORT, UHCI_Consts.UHCI_PCI_LEGACY_SUPPORT_STATUS);
-                USBCMD.Write(UHCI_Consts.UHCI_CMD_HCRESET);
+                USBCMD.Write_UInt16(UHCI_Consts.UHCI_CMD_HCRESET);
 
                 byte timeout = 50;
                 bool Reset = (USBCMD.Read_UInt16() & UHCI_Consts.UHCI_CMD_HCRESET) != 0;
@@ -319,8 +319,8 @@ namespace Kernel.Hardware.USB.HCIs
                 DBGMSG(((FOS_System.String)"Reset : ") + Reset);
 #endif
 
-                USBINTR.Write((ushort)0u); // switch off all interrupts
-                USBCMD.Write((ushort)0u); // switch off the host controller
+                USBINTR.Write_UInt16((ushort)0u); // switch off all interrupts
+                USBCMD.Write_UInt16((ushort)0u); // switch off the host controller
 
                 for (byte i = 0; i < RootPortCount; i++) // switch off the valid root ports
                 {
@@ -347,26 +347,26 @@ namespace Kernel.Hardware.USB.HCIs
             }
 
             // define each millisecond one frame, provide physical address of frame list, and start at frame 0
-            SOFMOD.Write((byte)0x40); // SOF cycle time: 12000. For a 12 MHz SOF counter clock input, this produces a 1 ms Frame period.    
+            SOFMOD.Write_Byte((byte)0x40); // SOF cycle time: 12000. For a 12 MHz SOF counter clock input, this produces a 1 ms Frame period.    
 
-            FRBASEADD.Write((uint)(framelistAddrVirt->frPtr));
-            FRNUM.Write((ushort)0u);
+            FRBASEADD.Write_UInt32((uint)(framelistAddrVirt->frPtr));
+            FRNUM.Write_UInt16((ushort)0u);
 
             // set PIRQ
             pciDevice.WriteRegister16(UHCI_Consts.UHCI_PCI_LEGACY_SUPPORT, UHCI_Consts.UHCI_PCI_LEGACY_SUPPORT_PIRQ);
 
             // start hostcontroller and mark it configured with a 64-byte max packet
-            USBCMD.Write((ushort)(UHCI_Consts.UHCI_CMD_RS | UHCI_Consts.UHCI_CMD_CF | UHCI_Consts.UHCI_CMD_MAXP));
-            USBINTR.Write((ushort)(UHCI_Consts.UHCI_INT_MASK)); // switch on all interrupts
+            USBCMD.Write_UInt16((ushort)(UHCI_Consts.UHCI_CMD_RS | UHCI_Consts.UHCI_CMD_CF | UHCI_Consts.UHCI_CMD_MAXP));
+            USBINTR.Write_UInt16((ushort)(UHCI_Consts.UHCI_INT_MASK)); // switch on all interrupts
 
             for (byte i = 0; i < RootPortCount; i++) // reset the CSC of the valid root ports
             {
                 WritePort_SC1_16(i, (ushort)(UHCI_Consts.UHCI_PORT_CS_CHANGE));
             }
 
-            USBCMD.Write((ushort)(UHCI_Consts.UHCI_CMD_RS | UHCI_Consts.UHCI_CMD_CF | UHCI_Consts.UHCI_CMD_MAXP | UHCI_Consts.UHCI_CMD_FGR));
+            USBCMD.Write_UInt16((ushort)(UHCI_Consts.UHCI_CMD_RS | UHCI_Consts.UHCI_CMD_CF | UHCI_Consts.UHCI_CMD_MAXP | UHCI_Consts.UHCI_CMD_FGR));
             sleepMilliSeconds(20);
-            USBCMD.Write((ushort)(UHCI_Consts.UHCI_CMD_RS | UHCI_Consts.UHCI_CMD_CF | UHCI_Consts.UHCI_CMD_MAXP));
+            USBCMD.Write_UInt16((ushort)(UHCI_Consts.UHCI_CMD_RS | UHCI_Consts.UHCI_CMD_CF | UHCI_Consts.UHCI_CMD_MAXP));
             sleepMilliSeconds(100);
 
 #if UHCI_TRACE
@@ -487,7 +487,7 @@ namespace Kernel.Hardware.USB.HCIs
 #if UHCI_TRACE
                 DBGMSG(((FOS_System.String)"Frame: ") + FRNUM.Read_UInt16() + " - USB transaction completed");
 #endif
-                USBSTS.Write((ushort)UHCI_Consts.UHCI_STS_USBINT); // reset interrupt
+                USBSTS.Write_UInt16((ushort)UHCI_Consts.UHCI_STS_USBINT); // reset interrupt
             }
 
             if ((val & UHCI_Consts.UHCI_STS_RESUME_DETECT) != 0)
@@ -495,7 +495,7 @@ namespace Kernel.Hardware.USB.HCIs
 #if UHCI_TRACE
                 DBGMSG("Resume Detect");
 #endif
-                USBSTS.Write((ushort)UHCI_Consts.UHCI_STS_RESUME_DETECT); // reset interrupt
+                USBSTS.Write_UInt16((ushort)UHCI_Consts.UHCI_STS_RESUME_DETECT); // reset interrupt
             }
 
             if ((val & UHCI_Consts.UHCI_STS_HCHALTED) != 0)
@@ -503,7 +503,7 @@ namespace Kernel.Hardware.USB.HCIs
 #if UHCI_TRACE
                 DBGMSG("Host Controller Halted");
 #endif
-                USBSTS.Write((ushort)UHCI_Consts.UHCI_STS_HCHALTED); // reset interrupt
+                USBSTS.Write_UInt16((ushort)UHCI_Consts.UHCI_STS_HCHALTED); // reset interrupt
             }
 
             if ((val & UHCI_Consts.UHCI_STS_HC_PROCESS_ERROR) != 0)
@@ -511,7 +511,7 @@ namespace Kernel.Hardware.USB.HCIs
 #if UHCI_TRACE
                 DBGMSG("Host Controller Process Error");
 #endif
-                USBSTS.Write((ushort)UHCI_Consts.UHCI_STS_HC_PROCESS_ERROR); // reset interrupt
+                USBSTS.Write_UInt16((ushort)UHCI_Consts.UHCI_STS_HC_PROCESS_ERROR); // reset interrupt
             }
 
             if ((val & UHCI_Consts.UHCI_STS_USB_ERROR) != 0)
@@ -519,7 +519,7 @@ namespace Kernel.Hardware.USB.HCIs
 #if UHCI_TRACE
                 DBGMSG("USB Error");
 #endif
-                USBSTS.Write((ushort)UHCI_Consts.UHCI_STS_USB_ERROR); // reset interrupt
+                USBSTS.Write_UInt16((ushort)UHCI_Consts.UHCI_STS_USB_ERROR); // reset interrupt
             }
 
             if ((val & UHCI_Consts.UHCI_STS_HOST_SYSTEM_ERROR) != 0)
@@ -527,7 +527,7 @@ namespace Kernel.Hardware.USB.HCIs
 #if UHCI_TRACE
                 DBGMSG("Host System Error");
 #endif
-                USBSTS.Write((ushort)UHCI_Consts.UHCI_STS_HOST_SYSTEM_ERROR); // reset interrupt
+                USBSTS.Write_UInt16((ushort)UHCI_Consts.UHCI_STS_HOST_SYSTEM_ERROR); // reset interrupt
                 //pci_analyzeHostSystemError(u->PCIdevice);
             }
         }
@@ -989,7 +989,7 @@ namespace Kernel.Hardware.USB.HCIs
 
         protected void WritePort_SC1_16(byte port, ushort value)
         {
-            IO.IOPort.doWrite((ushort)(usbBaseAddress + UHCI_Consts.UHCI_PORTSC1 + port * 2), value);
+            IO.IOPort.doWrite_UInt16((ushort)(usbBaseAddress + UHCI_Consts.UHCI_PORTSC1 + port * 2), value);
         }
         protected ushort ReadPort_SC1_16(byte port)
         {
@@ -997,7 +997,7 @@ namespace Kernel.Hardware.USB.HCIs
         }
         protected void WritePort_SC2_16(byte port, ushort value)
         {
-            IO.IOPort.doWrite((ushort)(usbBaseAddress + UHCI_Consts.UHCI_PORTSC2 + port * 2), value);
+            IO.IOPort.doWrite_UInt16((ushort)(usbBaseAddress + UHCI_Consts.UHCI_PORTSC2 + port * 2), value);
         }
         protected ushort ReadPort_SC2_16(byte port)
         {

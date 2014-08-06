@@ -23,7 +23,7 @@ namespace Kernel.Hardware.USB
 {
     public enum USBTransferType : byte
     {
-        USB_BULK, USB_CONTROL, USB_INTERRUPT, USB_ISOCHRONOUS
+        Bulk, Control, Interrupt, Isochronous
     }
 
     public unsafe class USBTransfer : FOS_System.Object
