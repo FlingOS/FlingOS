@@ -24,16 +24,24 @@ using System.Threading.Tasks;
 
 namespace Kernel.Hardware.Keyboards
 {
+    /// <summary>
+    /// Represents a PS2 keyboard device.
+    /// </summary>
     public class PS2 : Devices.Keyboard
     {
+        /// <summary>
+        /// The keyboard data port.
+        /// </summary>
         protected IO.IOPort DataPort = new IO.IOPort(0x60);
+        /// <summary>
+        /// The interrupt handler Id returned when the interrupt handler is set.
+        /// Use to remove the interrupt handler when disabling.
+        /// </summary>
         protected int InterruptHandlerId;
         
-        public PS2()
-            : base()
-        {
-        }
-
+        /// <summary>
+        /// Enables the PS2 keyboard.
+        /// </summary>
         public override void Enable()
         {
             if (!enabled)
@@ -43,6 +51,9 @@ namespace Kernel.Hardware.Keyboards
                 enabled = true;
             }
         }
+        /// <summary>
+        /// Disables the PS2 keyboard.
+        /// </summary>
         public override void Disable()
         {
             if (enabled)
@@ -53,10 +64,17 @@ namespace Kernel.Hardware.Keyboards
             }
         }
 
+        /// <summary>
+        /// The internal interrupt handler static wrapper.
+        /// </summary>
+        /// <param name="data">The PS2 keyboard state object.</param>
         private static void InterruptHandler(FOS_System.Object data)
         {
             ((PS2)data).InterruptHandler();
         }
+        /// <summary>
+        /// The internal interrupt handler.
+        /// </summary>
         private void InterruptHandler()
         {
             byte scanCode = DataPort.Read_Byte();
@@ -67,54 +85,59 @@ namespace Kernel.Hardware.Keyboards
             }
             HandleScancode(scanCode, released);
         }
-        private void HandleScancode(byte scancode, bool released)
+        /// <summary>
+        /// Handles the specified scancode.
+        /// </summary>
+        /// <param name="scancode">The scancode to handle.</param>
+        /// <param name="released">Whether the key has been released or not.</param>
+        private void HandleScancode(uint scancode, bool released)
         {
-            uint theScancode = scancode;
-            if (mEscaped)
-            {
-                theScancode = (ushort)(theScancode << 8);
-                mEscaped = false;
-            }
-            switch (theScancode)
+            switch (scancode)
             {
                 case 0x36:
                 case 0x2A:
                     {
-                        mShiftState = !released;
+                        shiftPressed = !released;
                         break;
                     }
                 case 0x1D:
                     {
-                        mCtrlState = !released;
+                        ctrlPressed = !released;
                         break;
                     }
                 case 0x38:
                     {
-                        mAltState = !released;
+                        altPressed = !released;
                         break;
                     }
                 default:
                     {
-                        if ((mCtrlState) && (mAltState) && (theScancode == 0x53))
+                        if ((ctrlPressed) && (altPressed) && (scancode == 0x53))
                         {
                             //TODO: Remove this Ctrl+Alt+Delete hack
                             Console.WriteLine("Detected Ctrl-Alt-Delete! Disabling keyboard.");
                             Disable();
                         }
-                        if (mShiftState)
+                        if (shiftPressed)
                         {
-                            theScancode = theScancode << 16;
+                            scancode = scancode << 16;
                         }
                         if (!released)
                         {
-                            Enqueue(theScancode);
+                            Enqueue(scancode);
                         }
                         break;
                     }
             }
         }
 
+        /// <summary>
+        /// The (only) PS2 keyboard instance.
+        /// </summary>
         public static PS2 ThePS2 = null;
+        /// <summary>
+        /// Initialises the (only) PS2 instance.
+        /// </summary>
         public static void Init()
         {
             if (ThePS2 == null)
@@ -123,6 +146,9 @@ namespace Kernel.Hardware.Keyboards
             }
             ThePS2.Enable();
         }
+        /// <summary>
+        /// Cleans up the (only) PS2 instance.
+        /// </summary>
         public static void Clean()
         {
             if(ThePS2 != null)

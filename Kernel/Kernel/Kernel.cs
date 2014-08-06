@@ -1054,7 +1054,9 @@ namespace Kernel
                 BasicConsole.WriteLine("Finally ran.");
             }
         }
-
+        /// <summary>
+        /// Tests the PC speaker beep feature (part of the PIT).
+        /// </summary>
         private static void PCBeepTest()
         {
             BasicConsole.WriteLine("Running PC Beep test...");
@@ -1076,6 +1078,9 @@ namespace Kernel
 
             BasicConsole.WriteLine("Ended PC Beep test.");
         }
+        /// <summary>
+        /// Tests the default timer device.
+        /// </summary>
         private static void TimerTest()
         {
             BasicConsole.WriteLine("Running PIT test...");
@@ -1106,6 +1111,9 @@ namespace Kernel
 
             BasicConsole.WriteLine("Ended PIT test.");
         }
+        /// <summary>
+        /// Tests the default keyboard device.
+        /// </summary>
         private static void KeyboardTest()
         {
             try
@@ -1117,10 +1125,8 @@ namespace Kernel
                 bool ok;
                 for (int i = 0; i < 240; i++)
                 {
-                    /*Wait up-to 5 seconds per key stroke. 5 * 240 = 1200 seconds = 
-                      Max wait time of 20 minutes or 240 characters */
-                    ok = Hardware.Devices.Keyboard.Default.GetChar_Blocking(5000, out c);
-                    if (ok)
+                    c = Hardware.Devices.Keyboard.Default.ReadChar();
+                    if (c != '\0')
                     {
                         charsPrinted++;
                         if (charsPrinted % 80 == 0)
@@ -1151,6 +1157,9 @@ namespace Kernel
             BasicConsole.WriteLine();
             BasicConsole.WriteLine("Ended keyboard test.");
         }
+        /// <summary>
+        /// Tests the advanced console class.
+        /// </summary>
         private static void AdvancedConsoleTest()
         {
             BasicConsole.WriteLine("Starting advanced console test.");
@@ -1203,8 +1212,14 @@ namespace Kernel
         }
     }
 
+    /// <summary>
+    /// Dummy class used in Dummy Object test.
+    /// </summary>
     public class Dummy : FOS_System.Object
     {
+        /// <summary>
+        /// Test enumeration.
+        /// </summary>
         public enum TestEnum
         {
             First = 1,
@@ -1213,11 +1228,24 @@ namespace Kernel
             NULL = 0
         }
 
+        /// <summary>
+        /// Test field.
+        /// </summary>
         public TestEnum testEnum = TestEnum.First;
 
+        /// <summary>
+        /// Test field.
+        /// </summary>
         public int x = 10;
+        /// <summary>
+        /// Test field.
+        /// </summary>
         public int y = 11;
 
+        /// <summary>
+        /// Test method.
+        /// </summary>
+        /// <returns>x + y</returns>
         public int Add()
         {
             return x + y;

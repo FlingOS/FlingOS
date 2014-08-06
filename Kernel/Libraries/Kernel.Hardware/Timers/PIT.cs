@@ -206,7 +206,7 @@ namespace Kernel.Hardware.Timers
         {
             ((PIT)state).InterruptHandler();
         }
-        protected override void InterruptHandler()
+        protected void InterruptHandler()
         {
             uint T0Delay = T0DelyNS;
             PITHandler hndlr = null;
@@ -230,8 +230,6 @@ namespace Kernel.Hardware.Timers
                     hndlr.HandleTrigger(hndlr.state);
                 }
             }
-   
-            base.InterruptHandler();
         }
 
         public override void Enable()
