@@ -220,7 +220,7 @@ namespace Kernel.Hardware.USB
         }
         public static void SetupDevice(USBDeviceInfo deviceInfo, byte address)
         {
-            deviceInfo.num = 0; // device number has to be set to 0
+            deviceInfo.address = 0; // device number has to be set to 0
             bool success = false;
 
             try
@@ -247,7 +247,7 @@ namespace Kernel.Hardware.USB
 
                 bool hub = deviceInfo.usbClass == 0x09;
 
-                deviceInfo.num = SetDeviceAddress(deviceInfo, address);
+                deviceInfo.address = SetDeviceAddress(deviceInfo, address);
                 FOS_System.GC.Cleanup();
 #if USB_TRACE
                 if (hub)

@@ -78,9 +78,6 @@ namespace Kernel.Hardware.USB.Devices
         /// </summary>
         protected void Setup()
         {
-            // maxLUN (0 for USB-sticks)
-            DeviceInfo.maxLUN = 0;
-
             // start with correct endpoint toggles and reset interface
             ((Endpoint)DeviceInfo.Endpoints[DeviceInfo.MSD_OUTEndpointID]).toggle = false;
             ((Endpoint)DeviceInfo.Endpoints[DeviceInfo.MSD_INEndpointID]).toggle = false;

@@ -1086,7 +1086,7 @@ namespace Kernel.Hardware.USB.HCIs
 #endif            
 
             EHCITransaction firstTransaction = (EHCITransaction)((USBTransaction)(transfer.transactions[0])).data;
-            CreateQH((EHCI_QueueHead_Struct*)transfer.data, (uint)transfer.data, firstTransaction.qTD, false, transfer.device.num, transfer.endpoint, transfer.packetSize);
+            CreateQH((EHCI_QueueHead_Struct*)transfer.data, (uint)transfer.data, firstTransaction.qTD, false, transfer.device.address, transfer.endpoint, transfer.packetSize);
             
             for (byte i = 0; i < EHCI_Consts.NUMBER_OF_EHCI_ASYNCLIST_RETRIES && !transfer.success; i++)
             {
