@@ -83,6 +83,7 @@
     <Compile Include="USB\HCIs\EHCITesting.cs" />
     <Compile Include="USB\HCIs\HCI.cs" />
     <Compile Include="USB\HCIs\UHCI.cs" />
+    <Compile Include="USB\USBDescriptors.cs" />
     <Compile Include="USB\USBManager.cs" />
     <Compile Include="USB\USBRequest.cs" />
     <Compile Include="USB\USBTransaction.cs" />

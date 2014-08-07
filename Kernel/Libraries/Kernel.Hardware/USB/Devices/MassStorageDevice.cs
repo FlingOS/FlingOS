@@ -48,6 +48,9 @@ namespace Kernel.Hardware.USB.Devices
         /// </summary>
         public const uint CBWMagic = 0x43425355; // USBC
     }
+    /// <summary>
+    /// Represents a USB mass storage device.
+    /// </summary>
     public unsafe class MassStorageDevice : USBDevice
     {
         /// <summary>
@@ -305,7 +308,7 @@ namespace Kernel.Hardware.USB.Devices
         /// <param name="TransferLength">The length of the data to receive.</param>
         /// <param name="dataBuffer">The data buffer - must be at least as big as the transfer length.</param>
         /// <param name="statusBuffer">The buffer to store the command status result in. Must be at least 13 bytes long.</param>
-        /// <see cref="http://www.beyondlogic.org/usbnutshell/usb4.htm#Bulk"/>
+        /// <see cref="!:http://www.beyondlogic.org/usbnutshell/usb4.htm#Bulk"/>
         public void SendSCSICommand_IN(byte SCSIcommand, uint LBA, ushort TransferLength, void* dataBuffer, void* statusBuffer)
         {
 #if MSD_TRACE
@@ -512,7 +515,7 @@ namespace Kernel.Hardware.USB.Devices
         /// Analyses the inquiry data to extract device-specific information.
         /// </summary>
         /// <param name="inquiryData">A pointer to the data to analyse.</param>
-        /// <see cref="http://en.wikipedia.org/wiki/SCSI_Inquiry_Command"/>
+        /// <see cref="!:http://en.wikipedia.org/wiki/SCSI_Inquiry_Command"/>
         static void AnalyseInquiry(byte* inquiryData)
         {
             //TODO: Store this data in the class for later

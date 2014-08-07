@@ -235,7 +235,7 @@ namespace Kernel.Hardware.USB.HCIs
 
             pciDevice.Command = pciDevice.Command | PCI.PCIDevice.PCICommand.IO | PCI.PCIDevice.PCICommand.Master;
 
-            Interrupts.Interrupts.SetIRQHandler(pciDevice.InterruptLine, UHCI.InterruptHandler, this);
+            Interrupts.Interrupts.AddIRQHandler(pciDevice.InterruptLine, UHCI.InterruptHandler, this);
 
             ResetHC();
         }

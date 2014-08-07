@@ -349,7 +349,7 @@ namespace Kernel.Hardware.Timers
         {
             if (!enabled)
             {
-                InterruptHandlerId = Interrupts.Interrupts.SetIRQHandler(0, InterruptHandler, this);
+                InterruptHandlerId = Interrupts.Interrupts.AddIRQHandler(0, InterruptHandler, this);
                 DeviceManager.Devices.Add(this);
                 enabled = true;
                 

@@ -46,7 +46,7 @@ namespace Kernel.Hardware.Keyboards
         {
             if (!enabled)
             {
-                InterruptHandlerId = Interrupts.Interrupts.SetIRQHandler(1, InterruptHandler, this);
+                InterruptHandlerId = Interrupts.Interrupts.AddIRQHandler(1, InterruptHandler, this);
                 DeviceManager.Devices.Add(this);
                 enabled = true;
             }

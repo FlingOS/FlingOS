@@ -20,7 +20,7 @@
 #undef EHCI_TRACE
 
 #define EHCI_TESTS
-#undef EHCI_TESTS
+#undef EHCI_TESTS //Note: Also comment out the undef in EHCITesting.cs
 
 using System;
 using Kernel.FOS_System.Collections;
@@ -592,7 +592,7 @@ namespace Kernel.Hardware.USB.HCIs
             DBGMSG("Hooking IRQ...");
 #endif
             //Setup InterruptHandler (IRQ number = PCIDevice.InterruptLine)
-            Interrupts.Interrupts.SetIRQHandler(pciDevice.InterruptLine, EHCI.InterruptHandler, this);
+            Interrupts.Interrupts.AddIRQHandler(pciDevice.InterruptLine, EHCI.InterruptHandler, this);
 #if EHCI_TRACE
             DBGMSG("Hooked IRQ.");
 #endif

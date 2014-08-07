@@ -54,6 +54,7 @@ namespace Kernel.Hardware.PCI
         /// Initialises a new PCI base address.
         /// </summary>
         /// <param name="raw">The raw address value.</param>
+        /// <param name="aSize">The size of the PCI registers pointed to by the base address.</param>
         [Compiler.NoDebug]
         internal PCIBaseAddress(uint raw, uint aSize)
         {
