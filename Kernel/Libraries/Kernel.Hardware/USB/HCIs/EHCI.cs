@@ -31,109 +31,254 @@ using Kernel.Utilities;
 namespace Kernel.Hardware.USB.HCIs
 {
     #region Constants
+    /// <summary>
+    /// Interrupt threshold control values - determines the minimum time between interrupt being fired.
+    /// </summary>
+    public enum EHCI_InterruptThresholdControls : uint
+    {
+        /// <summary>
+        /// 1 Microframes (= 0.125ms)
+        /// </summary>
+        x01 = 0x010000,
+        /// <summary>
+        /// 2 Microframes (= 0.25ms)
+        /// </summary>
+        x02 = 0x020000,
+        /// <summary>
+        /// 4 Microframes (= 0.5ms)
+        /// </summary>
+        x04 =  0x040000,
+        /// <summary>
+        /// 8 Microframes (= 1ms)
+        /// </summary>
+        x08 = 0x080000,
+        /// <summary>
+        /// 16 Microframes (= 2ms)
+        /// </summary>
+        x16 = 0x100000,
+        /// <summary>
+        /// 32 Microframes (= 4ms)
+        /// </summary>
+        x32 = 0x200000,
+        /// <summary>
+        /// 64 Microframes (= 8ms)
+        /// </summary>
+        x64 = 0x400000
+    }
+    /// <summary>
+    /// Frame list size values.
+    /// </summary>
+    public enum EHCI_FrameListSizes : uint
+    {
+        /// <summary>
+        /// List size of 1024.
+        /// </summary>
+        x1024 = 0x0,
+        /// <summary>
+        /// List size of 512.
+        /// </summary>
+        x0512 = 0x4,
+        /// <summary>
+        /// List size of 256.
+        /// </summary>
+        x0256 = 0x8
+    }
+    /// <summary>
+    /// Constants used by the EHCI driver.
+    /// </summary>
     public class EHCI_Consts
     {
-        /* ****** */
-        /* USBCMD */
-        /* ****** */
+        /* ------ USBCMD ------ */
 
-        public static uint CMD_INTERRUPT_THRESHOLD = 0x00FF0000;// valid values are:
-        public static uint CMD_1_MICROFRAME = Utils.BIT(16);
-        public static uint CMD_2_MICROFRAME = Utils.BIT(17);
-        public static uint CMD_4_MICROFRAME = Utils.BIT(18);
-        public static uint CMD_8_MICROFRAME = Utils.BIT(19);// 1ms
-        public static uint CMD_16_MICROFRAME = Utils.BIT(20);
-        public static uint CMD_32_MICROFRAME = Utils.BIT(21);
-        public static uint CMD_64_MICROFRAME = Utils.BIT(22);
+        /// <summary>
+        /// Mask for the Interrupt Threshold setting in the CMD operational register.
+        /// </summary>
+        /// <see cref="EHCI_InterruptThresholdControls"/>
+        public static uint CMD_InterruptThresholdMask = 0x00FF0000;
+        /// <summary>
+        /// Mask for the Frame List Size setting in the CMD operational register.
+        /// </summary>
+        /// <see cref="EHCI_FrameListSizes"/>
+        public static uint CMD_FrameListSizeMask = 0xC;
+                
+        /// <summary>
+        /// Mask for the Park Mode setting in the CMD operational register.
+        /// </summary>
+        public static uint CMD_ParkModeMask = 0x800;
+        /// <summary>
+        /// Mask for the Park Count setting in the CMD operational register.
+        /// </summary>
+        public static uint CMD_ParkCountMask = 0x300;
+        /// <summary>
+        /// Mask for the Light Reset command in the CMD operational register.
+        /// </summary>
+        public static uint CMD_LightResetMask = Utils.BIT(7);
+        /// <summary>
+        /// Mask for the Async Interrupt Doorbell setting in the CMD operational register.
+        /// </summary>
+        public static uint CMD_AsyncInterruptDoorbellMask = Utils.BIT(6);
+        /// <summary>
+        /// Mask for the Async Schedule Enable command in the CMD operational register.
+        /// </summary>
+        public static uint CMD_AsyncScheduleEnableMask = Utils.BIT(5);
+        /// <summary>
+        /// Mask for the Periodic Schedule Enable command in the CMD operational register.
+        /// </summary>
+        public static uint CMD_PeriodicScheduleEnableMask = Utils.BIT(4);
 
-        public static uint CMD_PARK_MODE = 0x800;
-        public static uint CMD_PARK_COUNT = 0x300;
-        public static uint CMD_LIGHT_RESET = Utils.BIT(7);
-        public static uint CMD_ASYNCH_INT_DOORBELL = Utils.BIT(6);
-        public static uint CMD_ASYNCH_ENABLE = Utils.BIT(5);
-        public static uint CMD_PERIODIC_ENABLE = Utils.BIT(4);
-
-        public static uint CMD_FRAMELIST_SIZE = 0xC;// valid values are:
-        public static uint CMD_FRAMELIST_1024 = 0x0;
-        public static uint CMD_FRAMELIST_512 = 0x4;
-        public static uint CMD_FRAMELIST_256 = 0x8;
-
-        public static uint CMD_HCRESET = Utils.BIT(1);// reset
-        public static uint CMD_RUN_STOP = Utils.BIT(0);// run/stop
-
-
-        /* ************** */
-        /* USBSTS USBINTR */
-        /* ************** */
-
-        // only USBSTS
-        public static uint STS_ASYNC_ENABLED = Utils.BIT(15);
-        public static uint STS_PERIODIC_ENABLED = Utils.BIT(14);
-        public static uint STS_RECLAMATION = Utils.BIT(13);
-        public static uint STS_HCHALTED = Utils.BIT(12);
-
-        // USBSTS (Interrupts)
-        public static uint STS_ASYNC_INT = Utils.BIT(5);
-        public static uint STS_HOST_SYSTEM_ERROR = Utils.BIT(4);
-        public static uint STS_FRAMELIST_ROLLOVER = Utils.BIT(3);
-        public static uint STS_PORT_CHANGE = Utils.BIT(2);
-        public static uint STS_USBERRINT = Utils.BIT(1);
-        public static uint STS_USBINT = Utils.BIT(0);
-
-
-        /* *********/
-        /* FRINDEX */
-        /* *********/
-
-        public static uint FRI_MASK = 0x00001FFF;
+        /// <summary>
+        /// Mask for the Host Controller Reset command in the CMD operational register.
+        /// </summary>
+        public static uint CMD_HCResetMask = Utils.BIT(1);// reset
+        /// <summary>
+        /// Mask for the Run-Stop command bit in the CMD operational register.
+        /// </summary>
+        public static uint CMD_RunStopMask = Utils.BIT(0);// run/stop
 
 
-        /* **************** */
-        /* PERIODICLISTBASE */
-        /* **************** */
+        /* ------ USBSTS / USBINTR ------ */
 
-        public static uint PLB_ALIGNMENT = 0x00000FFF; // 4 KiB
+        /* Only USBSTS */
+        /// <summary>
+        /// Mask for the Async Schedule Enabled flag.
+        /// </summary>
+        public static uint STS_AsyncEnabled = Utils.BIT(15);
+        /// <summary>
+        /// Mask for the Periodic Schedule Enabled flag.
+        /// </summary>
+        public static uint STS_PeriodicEnabled = Utils.BIT(14);
+        /// <summary>
+        /// Mask for the Reclamation flag.
+        /// </summary>
+        public static uint STS_ReclamationFlag = Utils.BIT(13);
+        /// <summary>
+        /// Mask for the Host Controller Halted flag.
+        /// </summary>
+        public static uint STS_HCHalted = Utils.BIT(12);
+
+        /* USBSTS / USBINTR */
+        /// <summary>
+        /// Mask for the interrupt type flag indicating Async Interrupt occurred.
+        /// </summary>
+        public static uint STS_AsyncInterrupt = Utils.BIT(5);
+        /// <summary>
+        /// Mask for the interrupt type flag indicating a Host System Error occurred.
+        /// </summary>
+        public static uint STS_HostSystemError = Utils.BIT(4);
+        /// <summary>
+        /// Mask for the interrupt type flag indicating a Frame List Rollover occurred.
+        /// </summary>
+        public static uint STS_FrameListRollover = Utils.BIT(3);
+        /// <summary>
+        /// Mask for the interrupt type flag indicating a Port Change occurred.
+        /// </summary>
+        public static uint STS_PortChange = Utils.BIT(2);
+        /// <summary>
+        /// Mask for the interrupt type flag indicating a USB Error occurred.
+        /// </summary>
+        public static uint STS_USBErrorInterrupt = Utils.BIT(1);
+        /// <summary>
+        /// Mask for the interrupt type flag indicating a general USB Interrupt occurred.
+        /// </summary>
+        public static uint STS_USBInterrupt = Utils.BIT(0);
 
 
-        /* ************* */
-        /* ASYNCLISTADDR */
-        /* ************* */
+        /* ------ FRINDEX ------ */
+        /// <summary>
+        /// Frame index register mask.
+        /// </summary>
+        public static uint FRI_Mask = 0x00001FFF;
 
-        public static uint ALB_ALIGNMENT = 0x0000001F;  // 32 Byte
+
+        /* ------ PERIODICLISTBASE ------ */
+        /// <summary>
+        /// Periodic list base alignment mask. 4KiB alignment.
+        /// </summary>
+        public static uint PLB_Alignment = 0x00000FFF; // 4 KiB
 
 
-        /* ********** */
-        /* CONFIGFLAG */
-        /* ********** */
+        /* ------ ASYNCLISTADDR ------ */
+        /// <summary>
+        /// Async list address alignment mask. 32 byte alignment.
+        /// </summary>
+        public static uint ALB_Alignment = 0x0000001F;  // 32 Byte
 
+
+        /* ------ CONFIGFLAG ------ */
+        /// <summary>
+        /// Config flag mask.
+        /// </summary>
         public static uint CF = Utils.BIT(0);
 
 
-        /* *********** */
-        /* PORTSC[...] */
-        /* *********** */
+        /* ------ PORTSC[0-n] ------ */
+        /// <summary>
+        /// R/W. Port status mask to get/set whether the port is owned by the companion host controller.
+        /// </summary>
+        public static uint PSTS_CompanionHCOwned = Utils.BIT(13);
+        /// <summary>
+        /// R/W. Port status mask to power the port on/off. Valid if PPC == 1.
+        /// </summary>
+        public static uint PSTS_PowerOn = Utils.BIT(12);
+        /// <summary>
+        /// R/W. Port status mask to tell the port to reset.
+        /// </summary>
+        public static uint PSTS_PortReset = Utils.BIT(8);
+        /// <summary>
+        /// R/W. Port status mask to tell the port to suspend.
+        /// </summary>
+        public static uint PSTS_PortSuspend = Utils.BIT(7);
+        /// <summary>
+        /// R/W. Port status mask to tell the port to suspend.
+        /// </summary>
+        public static uint PSTS_PortResume = Utils.BIT(6);
+        /// <summary>
+        /// R/WC. Port status mask to read or clear the port overrcurrent changed status.
+        /// </summary>
+        public static uint PSTS_OverCurrentChange = Utils.BIT(5);
+        /// <summary>
+        /// R. Port status mask to read whether the port has gone into overcurrent or not.
+        /// </summary>
+        public static uint PSTS_OverCurrent = Utils.BIT(4);
+        /// <summary>
+        /// R/WC. Port status mask to read or clear the port changed status.
+        /// </summary>
+        public static uint PSTS_EnabledChange = Utils.BIT(3);
+        /// <summary>
+        /// R/W. Port status mask to get/set whether the port is enabled or not.
+        /// </summary>
+        public static uint PSTS_Enabled = Utils.BIT(2);
+        /// <summary>
+        /// R/WC. Port status mask to read or clear the port connected changed status.
+        /// </summary>
+        public static uint PSTS_ConnectedChange = Utils.BIT(1);
+        /// <summary>
+        /// R. Port status mask to read whether the port is connected to a device or not.
+        /// </summary>
+        public static uint PSTS_Connected = Utils.BIT(0);
 
-        public static uint PSTS_COMPANION_HC_OWNED = Utils.BIT(13);// rw
-        public static uint PSTS_POWERON = Utils.BIT(12);// rw valid, if PPC == 1
-        public static uint PSTS_PORT_RESET = Utils.BIT(8);// rw
-        public static uint PSTS_PORT_SUSPEND = Utils.BIT(7);// rw
-        public static uint PSTS_PORT_RESUME = Utils.BIT(6);// rw
-        public static uint PSTS_OVERCURRENT_CHANGE = Utils.BIT(5);// rwc
-        public static uint PSTS_OVERCURRENT = Utils.BIT(4);// ro
-        public static uint PSTS_ENABLED_CHANGE = Utils.BIT(3);// rwc
-        public static uint PSTS_ENABLED = Utils.BIT(2);// rw
-        public static uint PSTS_CONNECTED_CHANGE = Utils.BIT(1);// rwc
-        public static uint PSTS_CONNECTED = Utils.BIT(0);// ro
-
-        public static uint N_PORTS = 0xF;// number of ports (Utils.BITs 3:0)
-        public static uint PORT_ROUTING_RULES = Utils.BIT(7);// port routing to EHCI or cHC
-        public static uint NUMBER_OF_EHCI_ASYNCLIST_RETRIES = 3;
+        /// <summary>
+        /// Mask for the number of ports.
+        /// </summary>
+        public static uint NumPorts = 0xF;// number of ports (Bits 3:0 set)
+        /// <summary>
+        /// Mask for the overall port routing bit.
+        /// </summary>
+        public static uint PortRoutingMask = Utils.BIT(7);// port routing to EHCI or cHC
+        /// <summary>
+        /// Constant to set the number of times that software should re-attempt to send a transfer 
+        /// in the async schedule.
+        /// </summary>
+        public static uint NumAsyncListRetries = 3;
     }
-    public class EHCI_QHConsts
+    /// <summary>
+    /// The types of queue head (under EHCI): IN, OUT or SETUP.
+    /// </summary>
+    public enum EHCI_qTDTypes : byte
     {
-        public const byte OUT = 0;
-        public const byte IN = 1;
-        public const byte SETUP = 2;
+        OUT = 0,
+        IN = 1,
+        SETUP = 2
     }
     #endregion
 
@@ -371,7 +516,7 @@ namespace Kernel.Hardware.USB.HCIs
         {
             get
             {
-                return (USBSTS & EHCI_Consts.STS_HCHALTED) != 0;
+                return (USBSTS & EHCI_Consts.STS_HCHalted) != 0;
             }
         }
 
@@ -602,15 +747,15 @@ namespace Kernel.Hardware.USB.HCIs
             DeactivateLegacySupport();
             CTRLDSSEGMENT = 0u;
             USBSTS = 0u; //Will this ever have any effect? According to spec, only writing bits set to 1 will have an effect??
-            USBINTR = EHCI_Consts.STS_ASYNC_INT | EHCI_Consts.STS_HOST_SYSTEM_ERROR | EHCI_Consts.STS_PORT_CHANGE | 
-                      EHCI_Consts.STS_USBINT | EHCI_Consts.STS_USBERRINT;
+            USBINTR = EHCI_Consts.STS_AsyncInterrupt | EHCI_Consts.STS_HostSystemError | EHCI_Consts.STS_PortChange | 
+                      EHCI_Consts.STS_USBInterrupt | EHCI_Consts.STS_USBErrorInterrupt;
             if (HCHalted)
             {
-                USBCMD |= EHCI_Consts.CMD_RUN_STOP; //Set run-stop bit
+                USBCMD |= EHCI_Consts.CMD_RunStopMask; //Set run-stop bit
             }
 
             //This can only be set when HCHalted != 0  !!!
-            USBCMD |= EHCI_Consts.CMD_8_MICROFRAME; //InterruptThresholdControl = 8 Microframes (1ms).
+            USBCMD |= (uint)EHCI_InterruptThresholdControls.x08; //InterruptThresholdControl = 8 Microframes (1ms).
             
             CONFIGFLAG = EHCI_Consts.CF; //Set port routing to route all ports to EHCI
 
@@ -622,7 +767,7 @@ namespace Kernel.Hardware.USB.HCIs
         }
         protected void ResetHC()
         {
-            USBCMD &= ~EHCI_Consts.CMD_RUN_STOP; //Clear run-stop bit
+            USBCMD &= ~EHCI_Consts.CMD_RunStopMask; //Clear run-stop bit
 
             //Wait for halt
             while (!HCHalted)
@@ -633,10 +778,10 @@ namespace Kernel.Hardware.USB.HCIs
                 //TODO: Use Timer.Default.Wait(10)
             }
 
-            USBCMD |= EHCI_Consts.CMD_HCRESET; //Set reset bit
+            USBCMD |= EHCI_Consts.CMD_HCResetMask; //Set reset bit
 
             int timeout = 30;
-            while ((USBCMD & EHCI_Consts.CMD_HCRESET) != 0) // Reset-bit still set to 1
+            while ((USBCMD & EHCI_Consts.CMD_HCResetMask) != 0) // Reset-bit still set to 1
             {
                 for (int i = 0; i < 100000; i++)
                     ;
@@ -785,27 +930,27 @@ namespace Kernel.Hardware.USB.HCIs
         }
         protected void ResetPort(byte portNum)
         {
-            PORTSC[portNum] |= EHCI_Consts.PSTS_POWERON;
-            PORTSC[portNum] &= ~EHCI_Consts.PSTS_ENABLED;
-            USBSTS |= ~EHCI_Consts.STS_PORT_CHANGE;
+            PORTSC[portNum] |= EHCI_Consts.PSTS_PowerOn;
+            PORTSC[portNum] &= ~EHCI_Consts.PSTS_Enabled;
+            USBSTS |= ~EHCI_Consts.STS_PortChange;
             if (HCHalted)
             {
                 ExceptionMethods.Throw(new FOS_System.Exception("EHCI.ResetPort(): HCHalted not zero!"));
             }
             USBINTR = 0;
-            PORTSC[portNum] |= EHCI_Consts.PSTS_PORT_RESET;
+            PORTSC[portNum] |= EHCI_Consts.PSTS_PortReset;
 
             //~200ms
             for (int i = 0; i < 2000000; i++)
                 ;
             //TODO: Use Timer.Default.Wait(200)
 
-            PORTSC[portNum] &= ~EHCI_Consts.PSTS_PORT_RESET;
+            PORTSC[portNum] &= ~EHCI_Consts.PSTS_PortReset;
 
 
             // wait and check, whether really zero
             uint timeout = 50;
-            while ((PORTSC[portNum] & EHCI_Consts.PSTS_PORT_RESET) != 0)
+            while ((PORTSC[portNum] & EHCI_Consts.PSTS_PortReset) != 0)
             {
                 // ~1ms
                 for (int i = 0; i < 10000; i++)
@@ -824,8 +969,8 @@ namespace Kernel.Hardware.USB.HCIs
                 }
             }
             
-            USBINTR = EHCI_Consts.STS_ASYNC_INT | EHCI_Consts.STS_HOST_SYSTEM_ERROR | EHCI_Consts.STS_PORT_CHANGE |
-                      EHCI_Consts.STS_USBINT | EHCI_Consts.STS_USBERRINT;
+            USBINTR = EHCI_Consts.STS_AsyncInterrupt | EHCI_Consts.STS_HostSystemError | EHCI_Consts.STS_PortChange |
+                      EHCI_Consts.STS_USBInterrupt | EHCI_Consts.STS_USBErrorInterrupt;
 
             //~20ms
             for (int i = 0; i < 200000; i++)
@@ -862,7 +1007,7 @@ namespace Kernel.Hardware.USB.HCIs
             }
 #endif
 
-            if ((val & EHCI_Consts.STS_PORT_CHANGE) != 0u)
+            if ((val & EHCI_Consts.STS_PortChange) != 0u)
             {
                 if (EnabledPortFlag && pciDevice != null)
                 {
@@ -871,12 +1016,12 @@ namespace Kernel.Hardware.USB.HCIs
             }
 
 
-            if ((val & EHCI_Consts.STS_HOST_SYSTEM_ERROR) != 0u)
+            if ((val & EHCI_Consts.STS_HostSystemError) != 0u)
             {
                 Start();
             }
 
-            if ((val & EHCI_Consts.STS_USBINT) != 0u)
+            if ((val & EHCI_Consts.STS_USBInterrupt) != 0u)
             {
                 if (USBIntCount != 0)
                 {
@@ -896,16 +1041,16 @@ namespace Kernel.Hardware.USB.HCIs
             AnyPortsChanged = false;
             for (byte j = 0; j < RootPortCount; j++)
             {
-                if ((PORTSC[j] & EHCI_Consts.PSTS_CONNECTED_CHANGE) != 0)
+                if ((PORTSC[j] & EHCI_Consts.PSTS_ConnectedChange) != 0)
                 {
-                    PORTSC[j] |= EHCI_Consts.PSTS_CONNECTED_CHANGE; // reset interrupt
-                    if ((PORTSC[j] & EHCI_Consts.PSTS_CONNECTED) != 0)
+                    PORTSC[j] |= EHCI_Consts.PSTS_ConnectedChange; // reset interrupt
+                    if ((PORTSC[j] & EHCI_Consts.PSTS_Connected) != 0)
                     {
                         CheckPortLineStatus(j);
                     }
                     else
                     {
-                        PORTSC[j] &= ~EHCI_Consts.PSTS_COMPANION_HC_OWNED; // port is given back to the EHCI
+                        PORTSC[j] &= ~EHCI_Consts.PSTS_CompanionHCOwned; // port is given back to the EHCI
 
                         if (((HCPort)RootPorts[j]).deviceInfo != null)
                         {
@@ -919,7 +1064,7 @@ namespace Kernel.Hardware.USB.HCIs
         }
         protected void CheckPortLineStatus(byte portNum)
         {
-            if ((PORTSC[portNum] & EHCI_Consts.PSTS_CONNECTED) == 0)
+            if ((PORTSC[portNum] & EHCI_Consts.PSTS_Connected) == 0)
             {
 #if EHCI_TRACE
                 DBGMSG("Port not connected.");
@@ -935,7 +1080,7 @@ namespace Kernel.Hardware.USB.HCIs
 #if EHCI_TRACE
                     DBGMSG("Low-speed device attached. Releasing port.");
 #endif
-                    PORTSC[portNum] |= EHCI_Consts.PSTS_COMPANION_HC_OWNED; // release it to the cHC
+                    PORTSC[portNum] |= EHCI_Consts.PSTS_CompanionHCOwned; // release it to the cHC
                     break;
                 case 0: // SE0
                 case 2: // J-state
@@ -953,12 +1098,12 @@ namespace Kernel.Hardware.USB.HCIs
 #if EHCI_TRACE
             DBGMSG("Reset port.");
 #endif
-            if (EnabledPortFlag && ((PORTSC[portNum] & EHCI_Consts.PSTS_POWERON) != 0)) // power on
+            if (EnabledPortFlag && ((PORTSC[portNum] & EHCI_Consts.PSTS_PowerOn) != 0)) // power on
             {
 #if EHCI_TRACE
                 DBGMSG("Device powered on.");
 #endif
-                if ((PORTSC[portNum] & EHCI_Consts.PSTS_ENABLED) != 0) // High speed
+                if ((PORTSC[portNum] & EHCI_Consts.PSTS_Enabled) != 0) // High speed
                 {
 #if EHCI_TRACE
                     DBGMSG("Setting up USB device.");
@@ -971,7 +1116,7 @@ namespace Kernel.Hardware.USB.HCIs
                     DBGMSG("Full-speed device attached. Releasing port.");
                     BasicConsole.DelayOutput(2);
 #endif
-                    PORTSC[portNum] |= EHCI_Consts.PSTS_COMPANION_HC_OWNED; // release it to the cHC
+                    PORTSC[portNum] |= EHCI_Consts.PSTS_CompanionHCOwned; // release it to the cHC
                 }
             }
 #if EHCI_TRACE
@@ -1088,7 +1233,7 @@ namespace Kernel.Hardware.USB.HCIs
             EHCITransaction firstTransaction = (EHCITransaction)((USBTransaction)(transfer.transactions[0])).data;
             CreateQH((EHCI_QueueHead_Struct*)transfer.data, (uint)transfer.data, firstTransaction.qTD, false, transfer.device.address, transfer.endpoint, transfer.packetSize);
             
-            for (byte i = 0; i < EHCI_Consts.NUMBER_OF_EHCI_ASYNCLIST_RETRIES && !transfer.success; i++)
+            for (byte i = 0; i < EHCI_Consts.NumAsyncListRetries && !transfer.success; i++)
             {
 #if EHCI_TRACE
                 transfer.success = true;
@@ -1196,10 +1341,10 @@ namespace Kernel.Hardware.USB.HCIs
         }
         protected void EnableAsyncScheduler()
         {
-            USBCMD |= EHCI_Consts.CMD_ASYNCH_ENABLE;
+            USBCMD |= EHCI_Consts.CMD_AsyncScheduleEnableMask;
 
             uint timeout = 7;
-            while ((USBSTS & EHCI_Consts.STS_ASYNC_ENABLED) == 0) // wait until it is really on
+            while ((USBSTS & EHCI_Consts.STS_AsyncEnabled) == 0) // wait until it is really on
             {
                 timeout--;
                 if (timeout>0)
@@ -1220,7 +1365,7 @@ namespace Kernel.Hardware.USB.HCIs
         {
             USBIntCount = 1;
 
-            if ((USBSTS & EHCI_Consts.STS_ASYNC_ENABLED) == 0)
+            if ((USBSTS & EHCI_Consts.STS_AsyncEnabled) == 0)
             {
                 EnableAsyncScheduler(); // Start async scheduler, when it is not running
             }
@@ -1295,7 +1440,7 @@ namespace Kernel.Hardware.USB.HCIs
         {
             EHCI_qTD td = allocQTD(next);
 
-            td.PIDCode = EHCI_QHConsts.SETUP;      // SETUP = 2
+            td.PIDCode = (byte)EHCI_qTDTypes.SETUP;      // SETUP = 2
             td.TotalBytesToTransfer = tokenBytes; // dependent on transfer
             td.DataToggle = toggle;     // Should be toggled every list entry
 
