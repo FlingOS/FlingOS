@@ -429,6 +429,11 @@ namespace Kernel.Compiler
             return isGCManaged;
         }
 
+        /// <summary>
+        /// Gets an MD5 hash string for the specified bytes.
+        /// </summary>
+        /// <param name="inputBytes">The bytes to hash.</param>
+        /// <returns>The hash string.</returns>
         public static string GetMD5Hash(byte[] inputBytes)
         {
             // step 1, calculate MD5 hash from input

@@ -323,8 +323,6 @@ namespace Kernel
         /// </summary>
         private static void CheckDiskFormatting(Hardware.Devices.DiskDevice disk)
         {
-            bool OK = true;
-
             if (disk == null)
             {
                 BasicConsole.WriteLine("Can't check formatting of null disk!");
@@ -348,7 +346,6 @@ namespace Kernel
                 }
                 catch
                 {
-                    OK = false;
                     BasicConsole.WriteLine("Error initializing disk: " + ExceptionMethods.CurrentException.Message);
                 }
 
@@ -1122,7 +1119,6 @@ namespace Kernel
 
                 int charsPrinted = 0;
                 char c;
-                bool ok;
                 for (int i = 0; i < 240; i++)
                 {
                     c = Hardware.Devices.Keyboard.Default.ReadChar();
@@ -1222,9 +1218,21 @@ namespace Kernel
         /// </summary>
         public enum TestEnum
         {
+            /// <summary>
+            /// A test value.
+            /// </summary>
             First = 1,
+            /// <summary>
+            /// A test value.
+            /// </summary>
             Second = 2,
+            /// <summary>
+            /// A test value.
+            /// </summary>
             Third = 3,
+            /// <summary>
+            /// A test value.
+            /// </summary>
             NULL = 0
         }
 

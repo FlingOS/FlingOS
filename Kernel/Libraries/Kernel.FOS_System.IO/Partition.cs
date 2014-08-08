@@ -83,6 +83,11 @@ namespace Kernel.FOS_System.IO
             TheDiskDevice.WriteBlock(xHostBlockNo, aBlockCount, aData);
         }
 
+        /// <summary>
+        /// Determines whether the specified disk has had any valid partitions detected.
+        /// </summary>
+        /// <param name="disk">The disk to check.</param>
+        /// <returns>Whether the specified disk has had any valid partitions detected.</returns>
         public static bool HasPartitions(DiskDevice disk)
         {
             for (int i = 0; i < FOS_System.IO.FileSystemManager.Partitions.Count; i++)
@@ -95,6 +100,11 @@ namespace Kernel.FOS_System.IO
             }
             return false;
         }
+        /// <summary>
+        /// Gets the first partition, if any, of the specified disk.
+        /// </summary>
+        /// <param name="disk">The disk to get the first partition of.</param>
+        /// <returns>The partition or null if none found.</returns>
         public static Partition GetFirstPartition(DiskDevice disk)
         {
             for (int i = 0; i < FOS_System.IO.FileSystemManager.Partitions.Count; i++)

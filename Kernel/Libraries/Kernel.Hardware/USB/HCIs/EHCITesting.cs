@@ -17,7 +17,7 @@
 #endregion
     
 #define EHCI_TESTS
-#undef EHCI_TEST //Note: Also comment out the undef in EHCI.cs
+#undef EHCI_TESTS //Note: Also comment out the undef in EHCI.cs
 
 using System;
 

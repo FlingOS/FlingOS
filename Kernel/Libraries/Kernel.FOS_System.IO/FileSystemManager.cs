@@ -189,6 +189,11 @@ namespace Kernel.FOS_System.IO
             return result;
         }
 
+        /// <summary>
+        /// Determines whether the specified partition has any file system mappings associated with it.
+        /// </summary>
+        /// <param name="part">The partition to check.</param>
+        /// <returns>Whether there are any file system mappings for the partition.</returns>
         public static bool HasMapping(Partition part)
         {
             for (int i = 0; i < FileSystemMappings.Count; i++)
