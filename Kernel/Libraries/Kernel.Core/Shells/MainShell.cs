@@ -5,10 +5,20 @@ using Kernel.FOS_System.IO;
 
 namespace Kernel.Core.Shells
 {
+    /// <summary>
+    /// Implements the main shell for the core kernel.
+    /// </summary>
     public class MainShell : Shell
     {
+        /// <summary>
+        /// The current directory of the shell. Printed at the start of every new command line and used as the start of relative file paths
+        /// and the default path in file-based commands.
+        /// </summary>
         protected FOS_System.String CurrentDir = "";
 
+        /// <summary>
+        /// Executes the main shell.
+        /// </summary>
         public override void Execute()
         {
             try
@@ -368,6 +378,9 @@ namespace Kernel.Core.Shells
             console.WriteLine("Shell exited.");
         }
 
+        /// <summary>
+        /// Outputs current memory information.
+        /// </summary>
         protected unsafe void Output_Memory()
         {
             console.Write("GC num objs: ");
@@ -380,6 +393,10 @@ namespace Kernel.Core.Shells
             console.WriteLine_AsDecimal(Heap.FBlock->size);
         }
 
+        /// <summary>
+        /// Checks the specified disk's formatting. Requires (attempt) to initialise file systems first.
+        /// </summary>
+        /// <param name="disk">The disk to check.</param>
         private void CheckDiskFormatting(Hardware.Devices.DiskDevice disk)
         {
             if (disk == null)
@@ -402,6 +419,10 @@ namespace Kernel.Core.Shells
 
             console.WriteLine("Disk formatting OK.");
         }
+        /// <summary>
+        /// Formats the specified disk.
+        /// </summary>
+        /// <param name="disk">The disk to format.</param>
         private void FormatDisk(Hardware.Devices.DiskDevice disk)
         {
             List newPartitions = new List(1);

@@ -29,8 +29,17 @@ namespace Kernel.Hardware.USB.HCIs
     /// </summary>
     public unsafe abstract class HCI : Device
     {
+        /// <summary>
+        /// The root ports (that make up the root hub) of the host controller.
+        /// </summary>
         protected List RootPorts = new List(4);
+        /// <summary>
+        /// Any other ports attached to the host controller.
+        /// </summary>
         protected List OtherPorts = new List(4);
+        /// <summary>
+        /// The number of root ports read from the host controller information.
+        /// </summary>
         protected byte RootPortCount = 0;
 
         /// <summary>
@@ -56,6 +65,14 @@ namespace Kernel.Hardware.USB.HCIs
             }
         }
 
+        /// <summary>
+        /// Sets up a USB transfer for sending via the EHCI.
+        /// </summary>
+        /// <param name="usbDevice">The USb device to send the transfer to.</param>
+        /// <param name="transfer">The transfer to send.</param>
+        /// <param name="type">The type of USB transfer.</param>
+        /// <param name="endpoint">The endpoint of the device to send the transfer to.</param>
+        /// <param name="maxLength">The maximum packet size to use when transferring.</param>
         public void SetupTransfer(Devices.USBDeviceInfo usbDevice, USBTransfer transfer, USBTransferType type, byte endpoint, 
                                   ushort maxLength)
         {
@@ -68,6 +85,17 @@ namespace Kernel.Hardware.USB.HCIs
 
             _SetupTransfer(transfer);
         }
+        /// <summary>
+        /// Sets up a SETUP transaction and adds it to the specified transfer.
+        /// </summary>
+        /// <param name="transfer">The transfer to which the transaction should be added.</param>
+        /// <param name="tokenBytes">The number of bytes to send.</param>
+        /// <param name="type">The type of the USB Request.</param>
+        /// <param name="req">The specific USB Request.</param>
+        /// <param name="hiVal">The USB Request Hi-Val.</param>
+        /// <param name="loVal">The USB Request Lo-Val.</param>
+        /// <param name="index">The USB request index.</param>
+        /// <param name="length">The length of the USB request.</param>
         public void SETUPTransaction(USBTransfer transfer, ushort tokenBytes, byte type, byte req, byte hiVal, byte loVal, 
                                      ushort index, ushort length)
         {
@@ -80,6 +108,13 @@ namespace Kernel.Hardware.USB.HCIs
 
             ((Endpoint)transfer.device.Endpoints[transfer.endpoint]).toggle = true;
         }
+        /// <summary>
+        /// Sets up an IN transaction and adds it to the specified transfer.
+        /// </summary>
+        /// <param name="transfer">The transfer to which the transaction should be added.</param>
+        /// <param name="controlHandshake">Whether the transaction is part of a control handshake or not.</param>
+        /// <param name="buffer">The buffer to store the incoming data in.</param>
+        /// <param name="length">The length of the buffer.</param>
         public void INTransaction(USBTransfer transfer, bool controlHandshake, void* buffer, ushort length)
         {
             ushort clampedLength = FOS_System.Math.Min(transfer.packetSize, length);
@@ -128,6 +163,13 @@ namespace Kernel.Hardware.USB.HCIs
                 INTransaction(transfer, ((Endpoint)transfer.device.Endpoints[transfer.endpoint]).toggle, ((byte*)buffer + clampedLength), length);
             }
         }
+        /// <summary>
+        /// Sets up an OUT transaction and adds it to the specified transfer.
+        /// </summary>
+        /// <param name="transfer">The transfer to which the transaction should be added.</param>
+        /// <param name="controlHandshake">Whether the transaction is part of a control handshake or not.</param>
+        /// <param name="buffer">The buffer of outgoing data.</param>
+        /// <param name="length">The length of the buffer.</param>
         public void OUTTransaction(USBTransfer transfer, bool controlHandshake, void* buffer, ushort length)
         {
             ushort clampedLength = FOS_System.Math.Min(transfer.packetSize, length);
@@ -155,26 +197,79 @@ namespace Kernel.Hardware.USB.HCIs
                 OUTTransaction(transfer, ((Endpoint)transfer.device.Endpoints[transfer.endpoint]).toggle, ((byte*)buffer + clampedLength), length);
             }
         }
+        /// <summary>
+        /// Issues the specified transfer to the physical device.
+        /// </summary>
+        /// <param name="transfer">The transfer to issue.</param>
         public void IssueTransfer(USBTransfer transfer)
         {
             _IssueTransfer(transfer);
         }
 
+        /// <summary>
+        /// When overridden in a derived class, handles HC implementation specific transfer initialisation.
+        /// </summary>
+        /// <param name="transfer">The transfer to set up.</param>
         protected abstract void _SetupTransfer(USBTransfer transfer);
+        /// <summary>
+        /// When overridden in a derived class, handles HC implementation specific SETUP transaction initialisation.
+        /// </summary>
+        /// <param name="transfer">The transfer to which the transaction should be added.</param>
+        /// <param name="uTransaction">The USB Transaction to convert to an EHCI Transaction.</param>
+        /// <param name="toggle">The transaction toggle state.</param>
+        /// <param name="tokenBytes">The number of bytes to send.</param>
+        /// <param name="type">The type of the USB Request.</param>
+        /// <param name="req">The specific USB Request.</param>
+        /// <param name="hiVal">The USB Request Hi-Val.</param>
+        /// <param name="loVal">The USB Request Lo-Val.</param>
+        /// <param name="index">The USB request index.</param>
+        /// <param name="length">The length of the USB request.</param>
         protected abstract void _SETUPTransaction(USBTransfer transfer, USBTransaction uTransaction, bool toggle, ushort tokenBytes,
                                            byte type, byte req, byte hiVal, byte loVal, ushort index, ushort length);
+        /// <summary>
+        /// When overridden in a derived class, handles HC implementation specific IN transaction initialisation.
+        /// </summary>
+        /// <param name="transfer">The transfer to which the transaction should be added.</param>
+        /// <param name="uTransaction">The USB Transaction to convert to an EHCI transaction.</param>
+        /// <param name="toggle">The transaction toggle state.</param>
+        /// <param name="buffer">The buffer to store the incoming data in.</param>
+        /// <param name="length">The length of the buffer.</param>
         protected abstract void _INTransaction(USBTransfer transfer, USBTransaction uTransaction, bool toggle, void* buffer, ushort length);
+        /// <summary>
+        /// When overridden in a derived class, handles HC implementation specific OUT transaction initialisation.
+        /// </summary>
+        /// <param name="transfer">The transfer to which the transaction should be added.</param>
+        /// <param name="uTransaction">The USB Transaction to convert to an EHCI transaction.</param>
+        /// <param name="toggle">The transaction toggle state.</param>
+        /// <param name="buffer">The buffer of outgoing data.</param>
+        /// <param name="length">The length of the buffer.</param>
         protected abstract void _OUTTransaction(USBTransfer transfer, USBTransaction uTransaction, bool toggle, void* buffer, ushort length);
+        /// <summary>
+        /// When overridden in a derived class, handles HC implementation specific method of issuing a transfer.
+        /// </summary>
+        /// <param name="transfer">The transfer to issue.</param>
         protected abstract void _IssueTransfer(USBTransfer transfer);
 
+        /// <summary>
+        /// Updates the HC such as checking for port/device changes.
+        /// </summary>
         public abstract void Update();
 
+        /// <summary>
+        /// Sets up a USb device connected to the specified port.
+        /// </summary>
+        /// <param name="portNum">The port to which the device to set up is connected.</param>
         protected virtual void SetupUSBDevice(byte portNum)
         {
             HCPort port = GetPort(portNum);
             port.deviceInfo = USBManager.CreateDeviceInfo(this, port);
             USBManager.SetupDevice(port.deviceInfo, (byte)(portNum + 1));
         }
+        /// <summary>
+        /// Gets (or creates) the HCPort instance for the specified port number.
+        /// </summary>
+        /// <param name="num">The port number of the HCPort instance to get.</param>
+        /// <returns>The existing or new HCPort instance.</returns>
         public HCPort GetPort(byte num)
         {
             if (num < RootPortCount)
@@ -203,24 +298,63 @@ namespace Kernel.Hardware.USB.HCIs
         }
     }
 
+    /// <summary>
+    /// The allowable USB port speeds.
+    /// </summary>
     public enum USBPortSpeed
     {
+        /// <summary>
+        /// Specifies no valid speed.
+        /// </summary>
         UNSET = -1,
         //DO NOT CHANGE THESE VALUES!
+        /// <summary>
+        /// Indiciates a low-speed port or device (USB 1.0/1.1).
+        /// </summary>
         Low = 1,
+        /// <summary>
+        /// Indiciates a full-speed port or device (USB 1.0/1.1).
+        /// </summary>
         Full = 0,
+        /// <summary>
+        /// Indiciates a high-speed port or device (USB 2.0).
+        /// </summary>
         High = 2,
+        /// <summary>
+        /// Indiciates a super-speed port or device (USB 3.0).
+        /// </summary>
         SuperSpeed = 4
     }
+    /// <summary>
+    /// Represents a port on a host controller.
+    /// </summary>
     public class HCPort : FOS_System.Object
     {
+        /// <summary>
+        /// The USB device attached to the port, if any.
+        /// </summary>
         public Devices.USBDevice device = null;
+        /// <summary>
+        /// The device information about the device attached to the port, if any.
+        /// </summary>
         public Devices.USBDeviceInfo deviceInfo = null;
+        /// <summary>
+        /// Whether a device is attached to the port or not.
+        /// </summary>
         public bool connected = false;
+        /// <summary>
+        /// The port number (index).
+        /// </summary>
         public byte portNum = 0;
+        /// <summary>
+        /// The speed of the port. Default: UNSET.
+        /// </summary>
         public USBPortSpeed speed = USBPortSpeed.UNSET;
     }
 
+    /// <summary>
+    /// Represents a host-controller-level transaction.
+    /// </summary>
     public abstract class HCTransaction : FOS_System.Object
     {
     }

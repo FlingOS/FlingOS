@@ -124,6 +124,7 @@ namespace Kernel
         /// <summary>
         /// Halts the kernel and halts the CPU.
         /// </summary>
+        /// <param name="lastAddress">The address of the last line of code which ran or 0xFFFFFFFF.</param>
         [Compiler.HaltMethod]
         [Compiler.NoGC]
         public static void Halt(uint lastAddress)
@@ -321,6 +322,7 @@ namespace Kernel
         /// <summary>
         /// Checks for usable FAT32 partitions. If none found, formats "disk0" as MBR, 1 FAT32 partiton.
         /// </summary>
+        /// <param name="disk">The disk to check.</param>
         private static void CheckDiskFormatting(Hardware.Devices.DiskDevice disk)
         {
             if (disk == null)

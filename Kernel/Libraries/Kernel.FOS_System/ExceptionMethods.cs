@@ -146,6 +146,7 @@ namespace Kernel
         /// <summary>
         /// Throws a divide by zero exception storing the specified exception address.
         /// </summary>
+        /// <param name="address">The address of the code that caused the exception.</param>
         /// <remarks>
         /// Used by CPU interrupts to handle the creation of the exception object and calling Throw.
         /// </remarks>
