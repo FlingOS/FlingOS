@@ -472,6 +472,11 @@ namespace Kernel.FOS_System
             PrintCleanupData(startNumObjs, startNumStrings);
 #endif
         }
+        /// <summary>
+        /// Outputs, via the basic console, how much memory was cleaned up.
+        /// </summary>
+        /// <param name="startNumObjs">The number of objects before the cleanup.</param>
+        /// <param name="startNumStrings">The number of strings before the cleanup.</param>
         private static void PrintCleanupData(int startNumObjs, int startNumStrings)
         {
             int numObjsFreed = startNumObjs - NumObjs;

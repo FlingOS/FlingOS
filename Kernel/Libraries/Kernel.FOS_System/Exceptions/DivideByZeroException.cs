@@ -40,6 +40,7 @@ namespace Kernel.FOS_System.Exceptions
         /// <summary>
         /// Sets the message to "Attempt to divide by zero invalid. Address: [address]"
         /// </summary>
+        /// <param name="address">The address of the instruction which caused the exception.</param>
         public DivideByZeroException(uint address)
             : base(((FOS_System.String)"Attempt to divide by zero invalid. Address: ") + address)
         {

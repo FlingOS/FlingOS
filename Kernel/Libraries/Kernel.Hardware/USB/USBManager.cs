@@ -196,6 +196,9 @@ namespace Kernel.Hardware.USB
             //                }
             //            }
         }
+        /// <summary>
+        /// Updates the USb manager and all host controller devices.
+        /// </summary>
         public static void Update()
         {
             for(int i = 0; i < HCIDevices.Count; i++)
@@ -204,6 +207,12 @@ namespace Kernel.Hardware.USB
             }
         }
 
+        /// <summary>
+        /// Creates new device info for the specified port.
+        /// </summary>
+        /// <param name="hc">The host contorller which owns the port.</param>
+        /// <param name="port">The port to create device info for.</param>
+        /// <returns>The new device info.</returns>
         public static Devices.USBDeviceInfo CreateDeviceInfo(HCI hc, HCPort port)
         {
 #if USB_TRACE
@@ -213,13 +222,18 @@ namespace Kernel.Hardware.USB
             deviceInf.Endpoints = new List(1);
             deviceInf.Endpoints.Add(new Endpoint());
             ((Endpoint)deviceInf.Endpoints[0]).mps = 64;
-            ((Endpoint)deviceInf.Endpoints[0]).type = EndpointType.EP_BIDIR;
+            ((Endpoint)deviceInf.Endpoints[0]).type = EndpointType.BIDIR;
             ((Endpoint)deviceInf.Endpoints[0]).toggle = false;
 #if USB_TRACE
             DBGMSG("Created device.");
 #endif
             return deviceInf;
         }
+        /// <summary>
+        /// Creates and initialises a new USb device for the specified device info and address.
+        /// </summary>
+        /// <param name="deviceInfo">The device info to create a new device for.</param>
+        /// <param name="address">The USB address for the new device.</param>
         public static void SetupDevice(USBDeviceInfo deviceInfo, byte address)
         {
             deviceInfo.address = 0; // device number has to be set to 0
@@ -381,14 +395,20 @@ namespace Kernel.Hardware.USB
 #endif
             }
         }
-        public static byte SetDeviceAddress(USBDeviceInfo device, byte num)
+        /// <summary>
+        /// Sets the USB device address of the specified device to the specified value.
+        /// </summary>
+        /// <param name="device">The device to set the address of.</param>
+        /// <param name="addr">The address to set to.</param>
+        /// <returns>The address it was set to.</returns>
+        public static byte SetDeviceAddress(USBDeviceInfo device, byte addr)
         {
 #if USB_TRACE
             DBGMSG("");
             DBGMSG("USB: SET_ADDRESS");
 #endif
 
-            byte new_address = num; // indicated port number
+            byte new_address = addr; // indicated port number
 
             USBTransfer transfer = new USBTransfer();
             device.hc.SetupTransfer(device, transfer, USBTransferType.Control, 0, 64);
@@ -403,6 +423,11 @@ namespace Kernel.Hardware.USB
             return new_address;
         }
         
+        /// <summary>
+        /// Gets the device descriptor from the specified device.
+        /// </summary>
+        /// <param name="device">The device info of the device to get the descriptor from.</param>
+        /// <returns>True if USB transfer completed successfully. Otherwise, false.</returns>
         public static bool GetDeviceDescriptor(USBDeviceInfo device)
         {
 #if USB_TRACE
@@ -442,22 +467,32 @@ namespace Kernel.Hardware.USB
             }
             return transfer.success;
         }
+        /// <summary>
+        /// Parses the specified device descriptor. 
+        /// </summary>
+        /// <param name="d">The desxcriptor to parse.</param>
+        /// <param name="usbDev">The device info for the device the descriptor came from.</param>
         private static void ParseDeviceDescriptor(DeviceDescriptor* d, USBDeviceInfo usbDev)
         {
             usbDev.usbSpec = d->bcdUSB;
             usbDev.usbClass = d->deviceClass;
             usbDev.usbSubclass = d->deviceSubclass;
             usbDev.usbProtocol = d->deviceProtocol;
-            usbDev.vendor = d->idVendor;
-            usbDev.product = d->idProduct;
+            usbDev.vendor = d->VendorId;
+            usbDev.product = d->ProductId;
             usbDev.releaseNumber = d->bcdDevice;
             usbDev.manufacturerStringID = d->manufacturer;
             usbDev.productStringID = d->product;
             usbDev.serNumberStringID = d->serialNumber;
             usbDev.numConfigurations = d->numConfigurations;
-            ((Endpoint)usbDev.Endpoints[0]).mps = d->maxPacketSize;
+            ((Endpoint)usbDev.Endpoints[0]).mps = d->MaxPacketSize;
         }
-        
+
+        /// <summary>
+        /// Gets the configuration descriptor from the specified device.
+        /// </summary>
+        /// <param name="device">The device info of the device to get the descriptor from.</param>
+        /// <returns>True if USB transfer completed successfully. Otherwise, false.</returns>
         public static unsafe bool GetConfigDescriptor(USBDeviceInfo device)
         {
 #if USB_TRACE
@@ -562,9 +597,8 @@ namespace Kernel.Hardware.USB
 #endif
 
                         ((Endpoint)device.Endpoints[ep_id]).mps = descriptor->maxPacketSize;
-                        ((Endpoint)device.Endpoints[ep_id]).type = EndpointType.EP_BIDIR; // Can be overwritten below
-                        ((Endpoint)device.Endpoints[ep_id]).interval = descriptor->interval;
-
+                        ((Endpoint)device.Endpoints[ep_id]).type = EndpointType.BIDIR; // Can be overwritten below
+                        
                         // store endpoint numbers for IN/OUT mass storage transfers, attributes must be 0x2, because there are also endpoints with attributes 0x3(interrupt)
                         if ((descriptor->endpointAddress & 0x80) > 0 && descriptor->attributes == 0x2)
                         {
@@ -572,7 +606,7 @@ namespace Kernel.Hardware.USB
                             {
                                 device.MSD_INEndpointID = ep_id;
                             }
-                            ((Endpoint)device.Endpoints[ep_id]).type = EndpointType.EP_IN;
+                            ((Endpoint)device.Endpoints[ep_id]).type = EndpointType.IN;
                         }
 
                         if ((descriptor->endpointAddress & 0x80) == 0 && descriptor->attributes == 0x2)
@@ -581,7 +615,7 @@ namespace Kernel.Hardware.USB
                             {
                                 device.MSD_OUTEndpointID = ep_id;
                             }
-                            ((Endpoint)device.Endpoints[ep_id]).type = EndpointType.EP_OUT;
+                            ((Endpoint)device.Endpoints[ep_id]).type = EndpointType.OUT;
                         }
                     }
                     else if (length == 0)
@@ -595,8 +629,13 @@ namespace Kernel.Hardware.USB
 
             return transfer.success;
         }
-        
-        public static void GetStringDescriptor(USBDeviceInfo device)
+
+        /// <summary>
+        /// Gets the device string descriptor from the specified device.
+        /// </summary>
+        /// <param name="device">The device info of the device to get the descriptor from.</param>
+        /// <returns>True if USB transfer completed successfully. Otherwise, false.</returns>
+        public static void GetDeviceStringDescriptor(USBDeviceInfo device)
         {
 #if USB_TRACE
             DBGMSG("USB: GET_DESCRIPTOR string");
@@ -626,7 +665,13 @@ namespace Kernel.Hardware.USB
                 FOS_System.Heap.Free(descriptor);
             }
         }
-        
+
+        /// <summary>
+        /// Gets a unicode string descriptor from the specified device.
+        /// </summary>
+        /// <param name="device">The device info of the device to get the descriptor from.</param>
+        /// <param name="stringIndex">The index of the string descriptor to get.</param>
+        /// <returns>True if USB transfer completed successfully. Otherwise, false.</returns>
         public static void GetUnicodeStringDescriptor(USBDeviceInfo device, byte stringIndex)
         {
 #if USB_TRACE
@@ -648,7 +693,12 @@ namespace Kernel.Hardware.USB
             ShowUnicodeStringDescriptor((usb_stringDescriptorUnicode*)buffer, device, stringIndex);
 #endif
         }
-        
+
+        /// <summary>
+        /// Gets the current configuration number from the specified device.
+        /// </summary>
+        /// <param name="device">The device info of the device to get the information from.</param>
+        /// <returns>The current configuration value.</returns>
         public static unsafe byte GetConfiguration(USBDeviceInfo device)
         {
 #if USB_TRACE
@@ -666,6 +716,11 @@ namespace Kernel.Hardware.USB
 
             return (byte)configuration;
         }
+        /// <summary>
+        /// Sets the current configuration number of the specified device.
+        /// </summary>
+        /// <param name="device">The device info of the device to set the information in.</param>
+        /// <param name="configuration">The configuration number to set.</param>
         public static void SetConfiguration(USBDeviceInfo device, byte configuration)
         {
 #if USB_TRACE
@@ -679,6 +734,12 @@ namespace Kernel.Hardware.USB
             device.hc.IssueTransfer(transfer);
         }
         
+        /// <summary>
+        /// Gets the specified endpoint's status.
+        /// </summary>
+        /// <param name="device">The device info of the device to get the information from.</param>
+        /// <param name="endpoint">The number of the endpoint to check the status of.</param>
+        /// <returns>The status value.</returns>
         public static unsafe ushort GetStatus(USBDeviceInfo device, byte endpoint)
         {
 #if USB_TRACE
@@ -701,6 +762,11 @@ namespace Kernel.Hardware.USB
             return status;
         }
 
+        /// <summary>
+        /// Sets the HALT feature on the specified endpoint.
+        /// </summary>
+        /// <param name="device">The device info of the device to which the endpoint belongs.</param>
+        /// <param name="endpoint">The endpoint number on which to set the halt.</param>
         public static void SetFeatureHALT(USBDeviceInfo device, byte endpoint)
         {
 #if USB_TRACE
@@ -717,6 +783,11 @@ namespace Kernel.Hardware.USB
             DBGMSG(((FOS_System.String)"Set HALT at endpoint: ") + endpoint);
 #endif
         }
+        /// <summary>
+        /// Clears the HALT feature on the specified endpoint.
+        /// </summary>
+        /// <param name="device">The device info of the device to which the endpoint belongs.</param>
+        /// <param name="endpoint">The endpoint number from which to clear the halt.</param>
         public static void ClearFeatureHALT(USBDeviceInfo device, byte endpoint)
         {
 #if USB_TRACE

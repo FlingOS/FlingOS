@@ -20,13 +20,36 @@ using System;
 
 namespace Kernel.Hardware.USB
 {
+    /// <summary>
+    /// The types of USB transaction.
+    /// </summary>
     public enum USBTransactionType
     {
-        SETUP, IN, OUT
+        /// <summary>
+        /// Indicates the transaction is a SETUP transaction.
+        /// </summary>
+        SETUP,
+        /// <summary>
+        /// Indicates the transaction is an IN transaction.
+        /// </summary>
+        IN,
+        /// <summary>
+        /// Indicates the transaction is an OUT transaction.
+        /// </summary>
+        OUT
     }
+    /// <summary>
+    /// Represents a transaction from the high-level USB perspective.
+    /// </summary>
     public class USBTransaction : FOS_System.Object
     {
-        public HCIs.HCTransaction data;
+        /// <summary>
+        /// The implementation-specific transaction that can actually be sent by a specific host controller type.
+        /// </summary>
+        public HCIs.HCTransaction underlyingTz;
+        /// <summary>
+        /// The type of the transaction.
+        /// </summary>
         public USBTransactionType type;
     }
 }

@@ -20,14 +20,35 @@ using System;
 
 namespace Kernel.Hardware.USB
 {
+    /// <summary>
+    /// The USB Request structure used for sending USB requests under the USB protocol.
+    /// </summary>
     [System.Runtime.InteropServices.StructLayout(System.Runtime.InteropServices.LayoutKind.Sequential, Pack = 1)]
     public struct USBRequest
     {
+        /// <summary>
+        /// The USB request type.
+        /// </summary>
         public byte type;
+        /// <summary>
+        /// The specific USB request.
+        /// </summary>
         public byte request;
+        /// <summary>
+        /// The USB request lo-val.
+        /// </summary>
         public byte valueLo;
+        /// <summary>
+        /// The USB request hi-val.
+        /// </summary>
         public byte valueHi;
+        /// <summary>
+        /// The request index.
+        /// </summary>
         public ushort index;
+        /// <summary>
+        /// The length of the request.
+        /// </summary>
         public ushort length;
     }
 }
