@@ -43,6 +43,12 @@ namespace Kernel.FOS_System.IO
             }
         }
 
+        public FileSystemMapping TheMapping
+        {
+            get;
+            set;
+        }
+
         /// <summary>
         /// Initializes a new file system for the specified partition.
         /// </summary>
@@ -65,8 +71,19 @@ namespace Kernel.FOS_System.IO
         /// <param name="nameParts">The parts of the full path of the listing to get.</param>
         /// <param name="listings">The listings to search through.</param>
         /// <returns>The listing or null if not found.</returns>
-        public Base GetListingFromListings(List nameParts, List listings)
+        public Base GetListingFromListings(List nameParts, Directory parent, List listings)
         {
+            if (((FOS_System.String)nameParts[0]) == "..")
+            {
+                nameParts.RemoveAt(0);
+                if (nameParts.Count == 0)
+                {
+                    return parent;
+                }
+
+                return parent.GetListing(nameParts);
+            }
+
             for (int i = 0; i < listings.Count; i++)
             {
                 Base aListing = (Base)listings[i];

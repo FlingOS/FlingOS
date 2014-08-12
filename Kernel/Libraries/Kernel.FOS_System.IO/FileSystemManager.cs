@@ -158,7 +158,8 @@ namespace Kernel.FOS_System.IO
                     mappingPrefix[0] = (char)((int)('A') + i);
                     mappingPrefix[1] = ':';
                     mappingPrefix[2] = PathDelimiter;
-                    FileSystemMappings.Add(new FileSystemMapping(mappingPrefix, newFS));
+                    newFS.TheMapping = new FileSystemMapping(mappingPrefix, newFS);
+                    FileSystemMappings.Add(newFS.TheMapping);
                 }
                 else
                 {

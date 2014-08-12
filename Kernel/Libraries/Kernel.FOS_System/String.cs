@@ -247,6 +247,10 @@ namespace Kernel.FOS_System
         {
             if (startIndex >= this.length)
             {
+                if (aLength == 0)
+                {
+                    return New(0);
+                }
                 ExceptionMethods.Throw_IndexOutOfRangeException();
             }
             else if (aLength > length - startIndex)
@@ -321,6 +325,9 @@ namespace Kernel.FOS_System
         [Compiler.NoDebug]
         public FOS_System.String ToUpper()
         {
+            if (this.length == 0)
+                return "";
+
             FOS_System.String result = New(this.length);
 
             for (int i = 0; i < result.length; i++)

@@ -47,7 +47,7 @@ namespace Kernel.FOS_System.IO
             }
             set
             {
-                prefix = value;
+                prefix = value.ToUpper();
             }
         }
 
@@ -88,7 +88,7 @@ namespace Kernel.FOS_System.IO
         /// </returns>
         public bool PathMatchesMapping(FOS_System.String aPath)
         {
-            return aPath.StartsWith(prefix);
+            return aPath.ToUpper().StartsWith(prefix);
         }
         /// <summary>
         /// Removes the mapping's prefix from the specified path.

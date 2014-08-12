@@ -1055,9 +1055,16 @@ namespace Kernel.FOS_System.IO.FAT
         /// <returns>The listing or null if not found.</returns>
         public override Base GetListing(FOS_System.String aName)
         {
-            List nameParts = aName.Split(FileSystemManager.PathDelimiter);
-            List listings = GetRootDirectoryTable();
-            return GetListingFromListings(nameParts, listings);
+            if (aName == "")
+            {
+                return RootDirectory_FAT32;
+            }
+            else
+            {
+                List nameParts = aName.Split(FileSystemManager.PathDelimiter);
+                List listings = GetRootDirectoryTable();
+                return GetListingFromListings(nameParts, null, listings);
+            }
         }
 
         /// <summary>

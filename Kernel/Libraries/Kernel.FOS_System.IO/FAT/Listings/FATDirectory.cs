@@ -111,7 +111,7 @@ namespace Kernel.FOS_System.IO.FAT
         /// <returns>The listing or null if not found.</returns>
         public override Base GetListing(List nameParts)
         {
-            return TheFileSystem.GetListingFromListings(nameParts, GetListings());
+            return TheFileSystem.GetListingFromListings(nameParts, Parent, GetListings());
         }
         /// <summary>
         /// Writes the cached listings back to disk.
@@ -164,6 +164,15 @@ namespace Kernel.FOS_System.IO.FAT
 #if FATDIR_TRACE
             BasicConsole.WriteLine("Added listing.");
 #endif
+        }
+
+        public override String GetFullPath()
+        {
+            if (this == ((FATFileSystem)TheFileSystem).RootDirectory_FAT32)
+            {
+                return this.TheFileSystem.TheMapping.Prefix;
+            }
+            return base.GetFullPath();
         }
     }
 }

@@ -54,7 +54,7 @@ namespace Kernel.FOS_System.IO
             directoryName = theMapping.RemoveMappingPrefix(directoryName);
             
             directoryName = directoryName.ToUpper();
-
+            
             Base baseListing = theMapping.TheFileSystem.GetListing(directoryName);
             if (baseListing == null)
             {
@@ -116,6 +116,18 @@ namespace Kernel.FOS_System.IO
                 }
             }
             return false;
+        }
+
+        public virtual FOS_System.String GetFullPath()
+        {
+            if (Parent != null)
+            {
+                return Parent.GetFullPath() + this.Name + "/";
+            }
+            else
+            {
+                return this.TheFileSystem.TheMapping.Prefix + this.Name + "/";
+            }
         }
     }
 }
