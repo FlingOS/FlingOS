@@ -43,6 +43,9 @@ namespace Kernel.FOS_System.IO
             }
         }
 
+        /// <summary>
+        /// The file system mapping for the file system.
+        /// </summary>
         public FileSystemMapping TheMapping
         {
             get;
@@ -69,6 +72,7 @@ namespace Kernel.FOS_System.IO
         /// search down the file system tree.
         /// </summary>
         /// <param name="nameParts">The parts of the full path of the listing to get.</param>
+        /// <param name="parent">The parent directory of the directory from which the listings were taken.</param>
         /// <param name="listings">The listings to search through.</param>
         /// <returns>The listing or null if not found.</returns>
         public Base GetListingFromListings(List nameParts, Directory parent, List listings)

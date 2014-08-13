@@ -166,6 +166,10 @@ namespace Kernel.FOS_System.IO.FAT
 #endif
         }
 
+        /// <summary>
+        /// Gets the full, simplified, path for the directory.
+        /// </summary>
+        /// <returns>The full path.</returns>
         public override String GetFullPath()
         {
             if (this == ((FATFileSystem)TheFileSystem).RootDirectory_FAT32)

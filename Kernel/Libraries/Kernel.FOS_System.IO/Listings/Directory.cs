@@ -118,6 +118,10 @@ namespace Kernel.FOS_System.IO
             return false;
         }
 
+        /// <summary>
+        /// Gets the full, simplified, path for the directory.
+        /// </summary>
+        /// <returns>The full path.</returns>
         public virtual FOS_System.String GetFullPath()
         {
             if (Parent != null)

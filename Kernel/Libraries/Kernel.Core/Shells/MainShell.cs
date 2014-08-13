@@ -23,10 +23,19 @@ using Kernel.FOS_System.IO;
 
 namespace Kernel.Core.Shells
 {
+    /// <summary>
+    /// Implementation of the main shell for the core kernel.
+    /// </summary>
     public class MainShell : Shell
     {
+        /// <summary>
+        /// The current directory to prepend to relative paths.
+        /// </summary>
         protected FOS_System.String CurrentDir = "";
 
+        /// <summary>
+        /// See base class.
+        /// </summary>
         public override void Execute()
         {
             try
@@ -529,6 +538,10 @@ namespace Kernel.Core.Shells
             console.WriteLine("Shell exited.");
         }
 
+        /// <summary>
+        /// Formats the specified disk.
+        /// </summary>
+        /// <param name="disk">The disk to format.</param>
         private void FormatDisk(Hardware.Devices.DiskDevice disk)
         {
             List newPartitions = new List(1);
@@ -537,6 +550,10 @@ namespace Kernel.Core.Shells
 
             FOS_System.IO.FAT.FATFileSystem.FormatPartitionAsFAT32((FOS_System.IO.Partition)newPartitions[0]);
         }
+        /// <summary>
+        /// Checks the specified disk's formatting.
+        /// </summary>
+        /// <param name="disk">The disk to check.</param>
         private void CheckDiskFormatting(Hardware.Devices.DiskDevice disk)
         {
             if (disk == null)
@@ -560,6 +577,10 @@ namespace Kernel.Core.Shells
             console.WriteLine("Disk formatting OK.");
         }
 
+        /// <summary>
+        /// Outputs the specified listings.
+        /// </summary>
+        /// <param name="Listings">The listings to output.</param>
         private void OutputListings(List Listings)
         {
             for (int j = 0; j < Listings.Count; j++)
@@ -584,6 +605,10 @@ namespace Kernel.Core.Shells
                 }
             }
         }
+        /// <summary>
+        /// Outputs the contents of the specified file if it exists.
+        /// </summary>
+        /// <param name="fileName">The file to try and output.</param>
         private void OutputFileContents(FOS_System.String fileName)
         {
             OutputDivider();
@@ -611,6 +636,10 @@ namespace Kernel.Core.Shells
             }
             OutputDivider();
         }
+        /// <summary>
+        /// Outputs the contents of the specified directory if it exists.
+        /// </summary>
+        /// <param name="dir">The directory to try and output.</param>
         private void OutputDirectoryContents(FOS_System.String dir)
         {
             OutputDivider();
@@ -647,7 +676,10 @@ namespace Kernel.Core.Shells
             }
             OutputDivider();
         }
-        protected unsafe void OutputMemory()
+        /// <summary>
+        /// Outputs the current memory information.
+        /// </summary>
+        private unsafe void OutputMemory()
         {
             console.Write("GC num objs: ");
             console.WriteLine(FOS_System.GC.NumObjs);
@@ -658,6 +690,9 @@ namespace Kernel.Core.Shells
             console.Write(" / ");
             console.WriteLine_AsDecimal(Heap.FBlock->size);
         }
+        /// <summary>
+        /// Outputs the file systems information.
+        /// </summary>
         private void OutputFS()
         {
             console.WriteLine(((FOS_System.String)"Num partitions: ") + FOS_System.IO.FileSystemManager.Partitions.Count);
@@ -678,6 +713,9 @@ namespace Kernel.Core.Shells
                 }
             }
         }
+        /// <summary>
+        /// Outputs the USB system information.
+        /// </summary>
         private void OuptutUSB()
         {
             console.WriteLine(((FOS_System.String)"USB system initialised.        HCIs : ") + Hardware.USB.USBManager.HCIDevices.Count);
@@ -708,6 +746,9 @@ namespace Kernel.Core.Shells
                 }
             }
         }
+        /// <summary>
+        /// Outputs the ATA system information.
+        /// </summary>
         private void OutputATA()
         {
             int numDrives = 0;
@@ -738,6 +779,9 @@ namespace Kernel.Core.Shells
             console.Write("Total # of drives: ");
             console.WriteLine_AsDecimal(numDrives);
         }
+        /// <summary>
+        /// Outputs the PCI system information.
+        /// </summary>
         private void OutputPCI()
         {
             for (int i = 0; i < Hardware.PCI.PCI.Devices.Count; i++)
@@ -747,24 +791,36 @@ namespace Kernel.Core.Shells
             }
         }
 
+        /// <summary>
+        /// Initialises the file systems.
+        /// </summary>
         private void InitFS()
         {
             console.Write("Initialising file systems...");
             FileSystemManager.Init();
             console.WriteLine("done.");
         }
+        /// <summary>
+        /// Initialises the USB system.
+        /// </summary>
         private void InitUSB()
         {
             console.Write("Initialising USB...");
             Hardware.USB.USBManager.Init();
             console.WriteLine("done.");
         }
+        /// <summary>
+        /// Initialises the ATA system.
+        /// </summary>
         private void InitATA()
         {
             console.Write("Initialising ATA...");
             Hardware.ATA.ATAManager.Init();
             console.WriteLine("done.");
         }
+        /// <summary>
+        /// Initialises the PCI system.
+        /// </summary>
         private void InitPCI()
         {
             console.Write("Initialising PCI...");
@@ -772,6 +828,9 @@ namespace Kernel.Core.Shells
             console.WriteLine("done.");
         }
 
+        /// <summary>
+        /// Outputs a warning to the user indicating their input was unrecognised.
+        /// </summary>
         private void UnrecognisedOption()
         {
             console.WarningColour();
