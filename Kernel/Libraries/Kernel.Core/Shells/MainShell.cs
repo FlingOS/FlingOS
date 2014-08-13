@@ -26,13 +26,13 @@ namespace Kernel.Core.Shells
                       /   *  - Output { PCI/ATA/USB/FS/Memory }
                       /   *  - CheckDisk/ChkD  { Drive# }
                       /   *  - FormatDisk/FmtD { Drive# }
-                      \   *  - Dir  { List/Open/New/Delete }
-                      \   *  - File { Open/New/Delete/Copy }
-                         *  - Test {    Interrupts  /   Delegates   /   FileSystems /
-                         *              ULLTComp    /   StringConcat/   ObjArray    /
-                         *              IntArray    /   DummyObj    /   DivideBy0   /
-                         *              Exceptions1 /   Exceptions2 /   PCBeep      /
-                         *              Timer       /   Keyboard                        }
+                         *  - Dir  { List/Open/New/Delete }
+                         *  - File { Open/New/Delete/Copy }
+                      /   *  - Test {    Interrupts  /   Delegates   /   FileSystems /
+                      /   *              ULLTComp    /   StringConcat/   ObjArray    /
+                      /   *              IntArray    /   DummyObj    /   DivideBy0   /
+                      /   *              Exceptions1 /   Exceptions2 /   PCBeep      /
+                      /   *              Timer       /   Keyboard                        }
                       /   *  - GC   { Cleanup }
                       /   *  - USB { Update }
                          */
@@ -414,6 +414,88 @@ namespace Kernel.Core.Shells
                             }
                             #endregion
                         }
+                        else if(cmd == "test")
+                        {
+                            #region Test
+                            FOS_System.String opt1 = null;
+                            if (lineParts.Count > 1)
+                            {
+                                opt1 = ((FOS_System.String)lineParts[1]).ToLower();
+                            }
+
+                            if (opt1 != null)
+                            {
+                                if(opt1 == "interrupts")
+                                {
+                                    InterruptsTest();
+                                }
+                                else if(opt1 == "delegates")
+                                {
+                                    DelegateTest();
+                                }
+                                else if(opt1 == "filesystems")
+                                {
+                                    FileSystemTests();
+                                }
+                                else if(opt1 == "ulltcomp")
+                                {
+                                    ULongLTComparisonTest();
+                                }
+                                else if(opt1 == "stringconcat")
+                                {
+                                    StringConcatTest();
+                                }
+                                else if(opt1 == "objarray")
+                                {
+                                    ObjectArrayTest();
+                                }
+                                else if(opt1 == "intarray")
+                                {
+                                    IntArrayTest();
+                                }
+                                else if(opt1 == "dummyobj")
+                                {
+                                    DummyObjectTest();
+                                }
+                                else if(opt1 == "divideby0")
+                                {
+                                    DivideByZeroTest();
+                                }
+                                else if(opt1 == "exceptions1")
+                                {
+                                    ExceptionsTestP1();
+                                }
+                                else if(opt1 == "exceptions2")
+                                {
+                                    ExceptionsTestP2();
+                                }
+                                else if(opt1 == "pcbeep")
+                                {
+                                    PCBeepTest();
+                                }
+                                else if(opt1 == "timer")
+                                {
+                                    TimerTest();
+                                }
+                                else if (opt1 == "keyboard")
+                                {
+                                    KeyboardTest();
+                                }
+                                else
+                                {
+                                    UnrecognisedOption();
+                                }
+                            }
+                            else
+                            {
+                                console.WriteLine("You must specify which test. { Interrupts  /  Delegates    /  FileSystems /\n" +
+                                                  "                               ULLTComp    /  StringConcat /  ObjArray    /\n" +
+                                                  "                               IntArray    /  DummyObj     /  DivideBy0   /\n" +
+                                                  "                               Exceptions1 /  Exceptions2  /  PCBeep      /\n" +
+                                                  "                               Timer       /  Keyboard                     }");
+                            }
+                            #endregion
+                        }
                     }
                     catch
                     {
@@ -679,5 +761,683 @@ namespace Kernel.Core.Shells
             console.DefaultColour();
         }
 
+
+        /// <summary>
+        /// Tests all interrupts in the range 17 to 255 by firing them.
+        /// </summary>
+        [Compiler.NoGC]
+        private void InterruptsTest()
+        {
+            for (uint i = 17; i < 256; i++)
+            {
+                console.WriteLine(((FOS_System.String)"Attempting to invoke interrupt: ") + i);
+                Hardware.Interrupts.Interrupts.InvokeInterrupt(i);
+            }
+        }
+        /// <summary>
+        /// Tests delegates.
+        /// </summary>
+        [Compiler.NoGC]
+        private void DelegateTest()
+        {
+            IntDelegate del = CallbackMethod;
+            int x = del(new FOS_System.Object());
+            if (x == -1)
+            {
+                console.WriteLine("Delegate return value OK.");
+            }
+            else
+            {
+                console.WriteLine("Delegate return value NOT OK!");
+            }
+            Hardware.Devices.Timer.Default.Wait(1000 * 10);
+        }
+        /// <summary>
+        /// Delegate used by delegates test.
+        /// </summary>
+        /// <param name="data">Test data to pass in.</param>
+        /// <returns>A test value.</returns>
+        private delegate int IntDelegate(object data);
+        /// <summary>
+        /// Method called by delegates test.
+        /// </summary>
+        /// <param name="data">Test data to pass in.</param>
+        /// <returns>A test value.</returns>
+        private int CallbackMethod(object data)
+        {
+            console.WriteLine("Callback method executed!");
+            Hardware.Devices.Timer.Default.Wait(1000 * 10);
+            return -1;
+        }
+        /// <summary>
+        /// Runs a series of tests on the file system, currently:
+        ///  - Finds or creates A:/ drive
+        ///  - Attempts to use FAT file system for A drive
+        ///  - Finds or creates a folder called "P1D2"
+        ///  - Finds or creates short and long name files in "P1D2"
+        ///  - Writes and reads from above test files.
+        /// </summary>
+        private void FileSystemTests()
+        {
+            try
+            {
+                FileSystemMapping A_FSMapping = FileSystemManager.GetMapping("A:/");
+                if (A_FSMapping != null)
+                {
+                    FOS_System.IO.FAT.FATFileSystem A_FS = (FOS_System.IO.FAT.FATFileSystem)A_FSMapping.TheFileSystem;
+
+                    Directory P1D2Dir = Directory.Find("A:/P1D2");
+                    if (P1D2Dir == null)
+                    {
+                        console.WriteLine("Creating P1D2 directory...");
+                        P1D2Dir = A_FS.NewDirectory("P1D2", A_FS.RootDirectory_FAT32);
+                        console.WriteLine("Directory created.");
+                    }
+                    else
+                    {
+                        console.WriteLine("Found P1D2 directory.");
+                    }
+
+                    console.WriteLine("Finding P1D2 directory...");
+                    File longNameTestFile = File.Open("A:/P1D2/LongNameTest.txt");
+                    if (longNameTestFile == null)
+                    {
+                        console.WriteLine("Creating LongNameTest.txt file...");
+                        longNameTestFile = P1D2Dir.TheFileSystem.NewFile("LongNameTest.txt", P1D2Dir);
+                    }
+                    else
+                    {
+                        console.WriteLine("Found LongNameTest.txt file.");
+                    }
+
+                    File shortNameTestFile = File.Open("A:/P1D2/ShrtTest.txt");
+                    if (shortNameTestFile == null)
+                    {
+                        console.WriteLine("Creating ShrtTest.txt file...");
+                        shortNameTestFile = P1D2Dir.TheFileSystem.NewFile("ShrtTest.txt", P1D2Dir);
+                    }
+                    else
+                    {
+                        console.WriteLine("Found ShrtTest.txt file.");
+                    }
+
+                    if (longNameTestFile != null)
+                    {
+                        console.WriteLine("Opening stream...");
+                        FOS_System.IO.Streams.FileStream fileStream = longNameTestFile.GetStream();
+
+                        FOS_System.String testStr = "This is some test file contents.";
+                        byte[] testStrBytes = ByteConverter.GetASCIIBytes(testStr);
+
+                        console.WriteLine("Writing data...");
+                        fileStream.Position = 0;
+                        int size = 0;
+                        //for (int i = 0; i < 20; i++)
+                        {
+                            fileStream.Write(testStrBytes, 0, testStrBytes.Length);
+                            size += testStrBytes.Length;
+                        }
+
+                        console.WriteLine("Reading data...");
+                        fileStream.Position = 0;
+                        byte[] readBytes = new byte[size];
+                        fileStream.Read(readBytes, 0, readBytes.Length);
+                        FOS_System.String readStr = ByteConverter.GetASCIIStringFromASCII(readBytes, 0u, (uint)readBytes.Length);
+                        console.WriteLine("\"" + readStr + "\"");
+
+                        OutputDivider();
+                    }
+                    else
+                    {
+                        console.WriteLine("LongNameTest2.txt file not found.");
+                    }
+
+                    if (shortNameTestFile != null)
+                    {
+                        console.WriteLine("Opening stream...");
+                        FOS_System.IO.Streams.FileStream fileStream = shortNameTestFile.GetStream();
+
+                        FOS_System.String testStr = "This is some test file contents.";
+                        byte[] testStrBytes = ByteConverter.GetASCIIBytes(testStr);
+
+                        console.WriteLine("Writing data...");
+                        fileStream.Position = 0;
+                        uint size = (uint)shortNameTestFile.Size;
+                        //for (int i = 0; i < 20; i++)
+                        {
+                            //fileStream.Write(testStrBytes, 0, testStrBytes.Length);
+                            //size += testStrBytes.Length;
+                        }
+
+                        console.WriteLine("Reading data...");
+                        fileStream.Position = 0;
+                        byte[] readBytes = new byte[size];
+                        fileStream.Read(readBytes, 0, readBytes.Length);
+                        FOS_System.String readStr = ByteConverter.GetASCIIStringFromASCII(readBytes, 0u, (uint)readBytes.Length);
+                        console.WriteLine("\"" + readStr + "\"");
+
+                        OutputDivider();
+                    }
+                    else
+                    {
+                        console.WriteLine("ShortNameTest.txt file not found.");
+                    }
+                }
+                else
+                {
+                    console.WriteLine("Could not find \"A:/\" mapping.");
+                }
+
+
+                FileSystemMapping B_FSMapping = FileSystemManager.GetMapping("B:/");
+                if (B_FSMapping != null)
+                {
+                    if (A_FSMapping != null)
+                    {
+                        File FileToCopy = File.Open("B:/Doc in Root Dir.txt");
+                        File shortNameTestFile = File.Open("A:/P1D2/ShrtTest.txt");
+                        if (shortNameTestFile != null)
+                        {
+                            FOS_System.IO.Streams.FileStream FromFileStream = FileToCopy.GetStream();
+
+                            if (shortNameTestFile != null)
+                            {
+                                FOS_System.IO.Streams.FileStream ToFileStream = shortNameTestFile.GetStream();
+
+                                console.WriteLine("Copying data...");
+
+                                FromFileStream.Position = 0;
+                                byte[] readBytes = new byte[(uint)FileToCopy.Size];
+                                FromFileStream.Read(readBytes, 0, readBytes.Length);
+                                FOS_System.String readStr = ByteConverter.GetASCIIStringFromASCII(readBytes, 0u, (uint)readBytes.Length);
+                                console.WriteLine("\"" + readStr + "\"");
+
+                                ToFileStream.Position = 0;
+                                ToFileStream.Write(readBytes, 0, readBytes.Length);
+
+                                console.WriteLine("Copied!");
+                                console.WriteLine("Reading back data from target file...");
+
+                                ToFileStream.Position = 0;
+                                readBytes = new byte[(uint)FileToCopy.Size];
+                                ToFileStream.Read(readBytes, 0, readBytes.Length);
+                                readStr = ByteConverter.GetASCIIStringFromASCII(readBytes, 0u, (uint)readBytes.Length);
+                                console.WriteLine("\"" + readStr + "\"");
+                            }
+                            else
+                            {
+                                console.WriteLine("Could not find file to copy to!");
+                            }
+                        }
+                        else
+                        {
+                            console.WriteLine("Could not find file to copy!");
+                        }
+                    }
+                    else
+                    {
+                        console.WriteLine("\"B:/\" mapping found but no \"A:/\" mapping!");
+                    }
+                }
+                else
+                {
+                    console.WriteLine("Could not find \"B:/\" mapping.");
+                }
+            }
+            catch
+            {
+                console.WarningColour();
+                console.WriteLine(ExceptionMethods.CurrentException.Message);
+                console.DefaultColour();
+            }
+        }
+        /// <summary>
+        /// Tests unsigned less-than comparison of ulongs.
+        /// </summary>
+        private void ULongLTComparisonTest()
+        {
+            ulong x = 0x01;
+            ulong y = 0x20000000000;
+            bool c = x < y;
+            if (!c)
+            {
+                console.WriteLine("Test 1 failed.");
+            }
+            x = 0x01000000000;
+            c = x < y;
+            if (!c)
+            {
+                console.WriteLine("Test 2 failed.");
+            }
+            x = 0x20000000000;
+            c = x < y;
+            if (c)
+            {
+                console.WriteLine("Test 3 failed.");
+            }
+            Hardware.Devices.Timer.Default.Wait(1000 * 10);
+        }
+        /// <summary>
+        /// Tests multiplying two 64-bit numbers together
+        /// </summary>
+        private void ULongMultiplicationTest()
+        {
+            ulong a = 0x00000000UL;
+            ulong b = 0x00000000UL;
+            ulong c = a * b;
+            bool test1OK = c == 0x0UL;
+
+            a = 0x00000001UL;
+            b = 0x00000001UL;
+            c = a * b;
+            bool test2OK = c == 0x1;
+
+            a = 0x00000010UL;
+            b = 0x00000010UL;
+            c = a * b;
+            bool test3OK = c == 0x100UL;
+
+            a = 0x10000000UL;
+            b = 0x00000010UL;
+            c = a * b;
+            bool test4OK = c == 0x100000000UL;
+
+            a = 0x100000000UL;
+            b = 0x00000011UL;
+            c = a * b;
+            bool test5OK = c == 0x1100000000UL;
+
+            a = 0x100000000UL;
+            b = 0x100000000UL;
+            c = a * b;
+            bool test6OK = c == 0x0UL;
+
+            console.WriteLine(((FOS_System.String)"Tests OK: ") + test1OK + ", " + test2OK +
+                                                                ", " + test3OK + ", " + test4OK +
+                                                                ", " + test5OK + ", " + test6OK);
+            Hardware.Devices.Timer.Default.Wait(1000 * 10);
+        }
+        /// <summary>
+        /// Tests dynamic string creation and string concatentation.
+        /// </summary>
+        private void StringConcatTest()
+        {
+            console.WriteLine("String concat test...");
+
+            try
+            {
+                FOS_System.String testStr = FOS_System.String.Concat("test1", " test2");
+                console.WriteLine(testStr);
+            }
+            catch
+            {
+                console.WarningColour();
+                console.WriteLine(ExceptionMethods.CurrentException.Message);
+                console.DefaultColour();
+            }
+
+            console.WriteLine("End string concat test.");
+        }
+        /// <summary>
+        /// Tests creating arrays where elements are reference-type and Gc managed.
+        /// </summary>
+        private void ObjectArrayTest()
+        {
+            console.WriteLine("Object array test...");
+
+            try
+            {
+                FOS_System.Object[] objArr = new FOS_System.Object[10];
+                objArr[0] = new FOS_System.Object();
+                objArr[0]._Type.Size = 5;
+                if (objArr[0] != null)
+                {
+                    console.WriteLine("Set object in array success!");
+                }
+            }
+            catch
+            {
+                console.WarningColour();
+                console.WriteLine(ExceptionMethods.CurrentException.Message);
+                console.DefaultColour();
+            }
+
+            console.WriteLine("End object array test.");
+        }
+        /// <summary>
+        /// Tests creating an array of integers (element of type from MSCorLib type and value type)
+        /// </summary>
+        private void IntArrayTest()
+        {
+            console.WriteLine("Int array test...");
+
+            try
+            {
+                int[] testArray = new int[1024];
+                testArray[5] = 10;
+                int q = testArray[5];
+            }
+            catch
+            {
+                console.WarningColour();
+                console.WriteLine(ExceptionMethods.CurrentException.Message);
+                console.DefaultColour();
+            }
+
+            console.WriteLine("Int array test.");
+        }
+        /// <summary>
+        /// Tests creating  GC-managed reference-type object and  setting properties and enums.
+        /// </summary>
+        private void DummyObjectTest()
+        {
+            console.WriteLine("Dummy object test...");
+
+            try
+            {
+                Dummy obj = new Dummy();
+                new Dummy();
+                obj = new Dummy();
+                obj.x = obj.x + obj.y;
+                if (obj.x == 21)
+                {
+                    console.WriteLine("Addition success!");
+                }
+
+                if (obj.testEnum == Dummy.TestEnum.First)
+                {
+                    console.WriteLine("TestEnum.First pre-assigned.");
+                }
+                obj.testEnum = Dummy.TestEnum.Second;
+                if (obj.testEnum == Dummy.TestEnum.Second)
+                {
+                    console.WriteLine("TestEnum.Second assignment worked.");
+                }
+            }
+            catch
+            {
+                console.WarningColour();
+                console.WriteLine(ExceptionMethods.CurrentException.Message);
+                console.DefaultColour();
+            }
+
+            console.WriteLine("Dummy object test.");
+            //console.WriteLine("Dummy object test disabled.");
+        }
+        /// <summary>
+        /// Tests managed exception sub-system by deliberately causing hardware-level divide-by-zero exception.
+        /// </summary>
+        private void DivideByZeroTest()
+        {
+            console.WriteLine("Divide by zero test...");
+
+            try
+            {
+                int x = 0;
+                int y = 0;
+                int z = 0;
+                z = x / y;
+            }
+            catch
+            {
+                console.WarningColour();
+                console.WriteLine(ExceptionMethods.CurrentException.Message);
+                console.DefaultColour();
+
+                FOS_System.Type currExceptionType = ExceptionMethods.CurrentException._Type;
+                if (currExceptionType == (FOS_System.Type)typeof(FOS_System.Exceptions.DivideByZeroException))
+                {
+                    console.WriteLine("Handled divide by zero exception.");
+                }
+            }
+
+            console.WriteLine("Divide by zero test.");
+        }
+        /// <summary>
+        /// Tests the exception handling sub-system.
+        /// </summary>
+        /// <remarks>
+        /// If the mechanism appears to work but code in Main() stops working then
+        /// it is because one of the GC methods is calling a method / get-set property
+        /// that is not marked with [Comnpiler.NoGC]. Make sure all methods that the 
+        /// GC calls are marked with [Compiler.NoGC] attribute. See example.
+        /// </remarks>
+        /// <example>
+        /// public int x
+        /// {
+        ///     [Compiler.NoGC]
+        ///     get
+        ///     {
+        ///         return 0;
+        ///     }
+        /// }
+        /// </example>
+        private void ExceptionsTestP1()
+        {
+            ExceptionsTestP2();
+        }
+        /// <summary>
+        /// Secondary method used in testing the exception handling sub-system.
+        /// </summary>
+        private void ExceptionsTestP2()
+        {
+            FOS_System.Object obj = new FOS_System.Object();
+
+            try
+            {
+                ExceptionMethods.Throw(new FOS_System.Exception("An exception."));
+            }
+            finally
+            {
+                console.WriteLine("Finally ran.");
+            }
+        }
+        /// <summary>
+        /// Tests the PC speaker beep feature (part of the PIT).
+        /// </summary>
+        private void PCBeepTest()
+        {
+            console.WriteLine("Running PC Beep test...");
+
+            try
+            {
+                console.WriteLine("Enabling beep...");
+                Hardware.Timers.PIT.ThePIT.PlaySound(247); //261 ~ B3
+                console.WriteLine("Beep enabled. Waiting 10s...");
+                Hardware.Devices.Timer.Default.Wait(10000);
+                console.WriteLine("Wait finished. Muting beep...");
+                Hardware.Timers.PIT.ThePIT.MuteSound();
+                console.WriteLine("Muted beep.");
+            }
+            catch
+            {
+                OutputCurrentExceptionInfo();
+            }
+
+            console.WriteLine("Ended PC Beep test.");
+        }
+        /// <summary>
+        /// Tests the default timer device.
+        /// </summary>
+        private void TimerTest()
+        {
+            console.WriteLine("Running PIT test...");
+
+            try
+            {
+                console.Write("Waiting for 5 lot(s) of 1 second(s)");
+                for (int i = 0; i < 5; i++)
+                {
+                    Hardware.Devices.Timer.Default.Wait(1000);
+                    console.Write(".");
+                }
+                console.WriteLine("completed.");
+
+
+                console.Write("Waiting for 1 lot(s) of 5 second(s)");
+                //for (int i = 0; i < 5; i++)
+                {
+                    Hardware.Devices.Timer.Default.Wait(5000);
+                    console.Write(".");
+                }
+                console.WriteLine("completed.");
+            }
+            catch
+            {
+                OutputCurrentExceptionInfo();
+            }
+
+            console.WriteLine("Ended PIT test.");
+        }
+        /// <summary>
+        /// Tests the default keyboard device.
+        /// </summary>
+        private void KeyboardTest()
+        {
+            try
+            {
+                console.WriteLine("Running PS2 Keyboard test. Type for a bit, eventually it will end (if the keyboard works that is)...");
+
+                int charsPrinted = 0;
+                char c;
+                for (int i = 0; i < 240; i++)
+                {
+                    c = Hardware.Devices.Keyboard.Default.ReadChar();
+                    if (c != '\0')
+                    {
+                        charsPrinted++;
+                        if (charsPrinted % 80 == 0)
+                        {
+                            console.WriteLine(c);
+                        }
+                        else
+                        {
+                            console.Write(c);
+                        }
+                    }
+                    else
+                    {
+                        console.WriteLine();
+                        console.WarningColour();
+                        console.WriteLine("Undisplayable key pressed.");
+                        console.DefaultColour();
+                    }
+                }
+
+                console.WriteLine();
+            }
+            catch
+            {
+                OutputCurrentExceptionInfo();
+            }
+
+            console.WriteLine();
+            console.WriteLine("Ended keyboard test.");
+        }
+        /// <summary>
+        /// Tests the advanced console class.
+        /// </summary>
+        private void AdvancedConsoleTest()
+        {
+            console.WriteLine("Starting advanced console test.");
+
+            try
+            {
+                Core.Console.InitDefault();
+
+                Core.Console.Default.Beep();
+                Core.Console.Default.WriteLine("Test write line.");
+                Core.Console.Default.WriteLine("Please write a line: ");
+                FOS_System.String line = Core.Console.Default.ReadLine();
+                Core.Console.Default.WriteLine("Your wrote: " + line);
+
+                Core.Console.Default.WriteLine("Pausing for 2 seconds...");
+                Hardware.Devices.Timer.Default.Wait(2000);
+
+                for (int i = 0; i < 25; i++)
+                {
+                    Core.Console.Default.Write("Line ");
+                    Core.Console.Default.WriteLine_AsDecimal(i);
+                }
+
+                Core.Console.Default.WriteLine("Testing scrolling...");
+                for (int i = 0; i < 25; i++)
+                {
+                    Hardware.Devices.Timer.Default.Wait(500);
+                    Core.Console.Default.Scroll(-1);
+                }
+                Core.Console.Default.Scroll(25);
+
+                Core.Console.Default.WriteLine("Scroll test done.");
+
+                Core.Console.Default.WriteLine("Testing Clear and Colour...");
+                Core.Console.Default.Clear();
+                Core.Console.Default.WarningColour();
+                Core.Console.Default.WriteLine("Warning colour test.");
+                Core.Console.Default.ErrorColour();
+                Core.Console.Default.WriteLine("Error colour test.");
+                Core.Console.Default.DefaultColour();
+                Core.Console.Default.WriteLine("Default colour test.");
+            }
+            catch
+            {
+                OutputCurrentExceptionInfo();
+            }
+
+            console.WriteLine("Ended advanced console test. Pausing for 5 seconds.");
+            Hardware.Devices.Timer.Default.Wait(5000);
+        }
+    }
+
+    /// <summary>
+    /// Dummy class used in Dummy Object test.
+    /// </summary>
+    public class Dummy : FOS_System.Object
+    {
+        /// <summary>
+        /// Test enumeration.
+        /// </summary>
+        public enum TestEnum
+        {
+            /// <summary>
+            /// A test value.
+            /// </summary>
+            First = 1,
+            /// <summary>
+            /// A test value.
+            /// </summary>
+            Second = 2,
+            /// <summary>
+            /// A test value.
+            /// </summary>
+            Third = 3,
+            /// <summary>
+            /// A test value.
+            /// </summary>
+            NULL = 0
+        }
+
+        /// <summary>
+        /// Test field.
+        /// </summary>
+        public TestEnum testEnum = TestEnum.First;
+
+        /// <summary>
+        /// Test field.
+        /// </summary>
+        public int x = 10;
+        /// <summary>
+        /// Test field.
+        /// </summary>
+        public int y = 11;
+
+        /// <summary>
+        /// Test method.
+        /// </summary>
+        /// <returns>x + y</returns>
+        public int Add()
+        {
+            return x + y;
+        }
     }
 }
