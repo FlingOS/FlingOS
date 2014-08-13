@@ -115,7 +115,7 @@ namespace Kernel.Hardware.Keyboards
                         if ((ctrlPressed) && (altPressed) && (scancode == 0x53))
                         {
                             //TODO: Remove this Ctrl+Alt+Delete hack
-                            Console.WriteLine("Detected Ctrl-Alt-Delete! Disabling keyboard.");
+                            BasicConsole.WriteLine("Detected Ctrl-Alt-Delete! Disabling keyboard.");
                             Disable();
                         }
                         if (shiftPressed)
