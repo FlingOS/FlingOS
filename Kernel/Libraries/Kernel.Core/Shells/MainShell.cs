@@ -378,6 +378,36 @@ namespace Kernel.Core.Shells
                                         console.WriteLine("You must specify a directory path.");
                                     }
                                 }
+                                else if (opt1 == "new")
+                                {
+                                    FOS_System.String opt2 = null;
+                                    if (lineParts.Count > 2)
+                                    {
+                                        opt2 = "";
+                                        for (int i = 2; i < lineParts.Count; i++)
+                                        {
+                                            opt2 += ((FOS_System.String)lineParts[i]).ToLower();
+                                            if (i < lineParts.Count - 1)
+                                            {
+                                                opt2 += " ";
+                                            }
+                                        }
+                                    }
+
+                                    if (opt2 != null)
+                                    {
+                                        if (opt2.StartsWith("./"))
+                                        {
+                                            opt2 = CurrentDir + opt2.Substring(2, opt2.length - 2);
+                                        }
+                                        console.WriteLine("Creating dir: " + opt2);
+                                        NewDirectory(opt2);
+                                    }
+                                    else
+                                    {
+                                        console.WriteLine("You must specify a directory path.");
+                                    }
+                                }
                                 else
                                 {
                                     UnrecognisedOption();
@@ -536,6 +566,60 @@ namespace Kernel.Core.Shells
                 OutputCurrentExceptionInfo();
             }
             console.WriteLine("Shell exited.");
+        }
+
+        private void DeleteDirectory(FOS_System.String path)
+        {
+
+        }
+        private Directory NewDirectory(FOS_System.String path)
+        {
+            console.WriteLine("Searching for directory: " + path);
+            Directory theDir = Directory.Find(path);
+            if (theDir == null)
+            {
+                console.WriteLine("Creating directory...");
+                FileSystemMapping mapping = FileSystemManager.GetMapping(path);
+                if(mapping != null)
+                {
+                    if (path.EndsWith(FileSystemManager.PathDelimiter))
+                    {
+                        path = path.Substring(0, path.length - 1);
+                    }
+
+                    //                                                              + 1 as we wish to include the path
+                    //                                                                  delimeter in parent dir name and
+                    //                                                                  not in the new dir name.
+                    //  Note: It is important to include the path delimeter at the end of the parent dir name
+                    //        as the parent dir name may be a FS root which requires the trailing path delimeter.
+                    int lastIdx = path.LastIndexOf(FileSystemManager.PathDelimiter) + 1;
+                    FOS_System.String dirParentPath = path.Substring(0, lastIdx);
+                    FOS_System.String newDirName = path.Substring(lastIdx, path.length - lastIdx);
+
+                    console.WriteLine("Checking parent path: " + dirParentPath);
+                    Directory parentDir = NewDirectory(dirParentPath);
+                    if (parentDir != null)
+                    {
+                        console.WriteLine("New dir name: " + newDirName);
+                        theDir = mapping.TheFileSystem.NewDirectory(newDirName, parentDir);
+                        console.WriteLine("Directory created.");
+                    }
+                    else
+                    {
+                        console.WriteLine("Failed to find or create parent directory.");
+                    }
+                }
+                else
+                {
+                    console.WriteLine("File system mapping not found.");
+                }
+            }
+            else
+            {
+                console.WriteLine("Directory already exists.");
+            }
+
+            return theDir;
         }
 
         /// <summary>
