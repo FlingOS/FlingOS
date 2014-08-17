@@ -72,6 +72,12 @@ namespace Kernel.Core
             {
                 console.WarningColour();
                 console.WriteLine(ExceptionMethods.CurrentException.Message);
+                FOS_System.Type currExceptionType = ExceptionMethods.CurrentException._Type;
+                if (currExceptionType == (FOS_System.Type)typeof(FOS_System.Exceptions.PageFaultException))
+                {
+                    console.WriteLine(((FOS_System.String)"    - Address: ") + ((FOS_System.Exceptions.PageFaultException)ExceptionMethods.CurrentException).address);
+                    console.WriteLine(((FOS_System.String)"    - Error code: ") + ((FOS_System.Exceptions.PageFaultException)ExceptionMethods.CurrentException).errorCode);
+                }
                 console.DefaultColour();
             }
             else

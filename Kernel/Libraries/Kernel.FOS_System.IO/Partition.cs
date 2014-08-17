@@ -34,7 +34,7 @@ namespace Kernel.FOS_System.IO
         /// <summary>
         /// The underlying disk device on which this partition resides.
         /// </summary>
-        internal DiskDevice TheDiskDevice;
+        public DiskDevice TheDiskDevice;
         /// <summary>
         /// The sector number at which the partition starts.
         /// </summary>
@@ -72,11 +72,11 @@ namespace Kernel.FOS_System.IO
         }
 
         /// <summary>
-        /// Writes contiguous blocks to the partition. Block 0 = 1st sector of the partition.
+        /// See base class.
         /// </summary>
-        /// <param name="aBlockNo">The first sector (block) to write.</param>
-        /// <param name="aBlockCount">The number of sectors (blocks) to write.</param>
-        /// <param name="aData">The data to write.</param>
+        /// <param name="aBlockNo">See base class.</param>
+        /// <param name="aBlockCount">See base class.</param>
+        /// <param name="aData">See base class.</param>
         public override void WriteBlock(UInt64 aBlockNo, UInt32 aBlockCount, byte[] aData)
         {
             UInt64 xHostBlockNo = StartingSector + aBlockNo;

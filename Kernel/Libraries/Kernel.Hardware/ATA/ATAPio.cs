@@ -545,11 +545,11 @@ namespace Kernel.Hardware.ATA
             IO.Data.Read_Bytes(aData);
         }
         /// <summary>
-        /// Writes contiguous blocks to the drive.
+        /// See base class.
         /// </summary>
-        /// <param name="aBlockNo">The number of the first block to write.</param>
-        /// <param name="aBlockCount">The number of contiguous blocks to write.</param>
-        /// <param name="aData">The data to write.</param>
+        /// <param name="aBlockNo">See base class.</param>
+        /// <param name="aBlockCount">See base class.</param>
+        /// <param name="aData">See base class.</param>
         public override void WriteBlock(UInt64 aBlockNo, UInt32 aBlockCount, byte[] aData)
         {
             SelectSector(aBlockNo, aBlockCount);
@@ -557,10 +557,11 @@ namespace Kernel.Hardware.ATA
 
             if (aData == null)
             {
-                ulong size = (aBlockCount / 2) * blockSize;
+                //TODO: Remove the cast-down - only due to multiplication of longs not working...
+                ulong size = (aBlockCount * (uint)blockSize) / 2;
                 for (ulong i = 0; i < size; i++)
                 {
-                    IO.Data.Write_Byte(0);
+                    IO.Data.Write_UInt16(0);
                 }
             }
             else

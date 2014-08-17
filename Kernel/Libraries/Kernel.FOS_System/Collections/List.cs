@@ -102,7 +102,7 @@ namespace Kernel.FOS_System.Collections
                     }
 
                     setObjectToNull = true;
-                    if (i < currIndex - 1)
+                    if (i < currIndex)
                     {
                         _array[i] = _array[i + 1];
                     }

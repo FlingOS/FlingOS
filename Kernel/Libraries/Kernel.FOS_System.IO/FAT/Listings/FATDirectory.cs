@@ -148,7 +148,7 @@ namespace Kernel.FOS_System.IO.FAT
         }
 
         /// <summary>
-        /// Adds the specified listing to the directory's listings.
+        /// Adds the specified listing to the cached listings. Call WriteListings to save the new listing to disc.
         /// </summary>
         /// <param name="aListing">The listing to add.</param>
         public override void AddListing(Base aListing)
@@ -163,6 +163,24 @@ namespace Kernel.FOS_System.IO.FAT
             _cachedlistings.Add(aListing);
 #if FATDIR_TRACE
             BasicConsole.WriteLine("Added listing.");
+#endif
+        }
+        /// <summary>
+        /// Removes the specified listing from the cached listings. Call WriteListings to save the change to disc.
+        /// </summary>
+        /// <param name="aListing">The listing to remove.</param>
+        public override void RemoveListing(Base aListing)
+        {
+#if FATDIR_TRACE
+            BasicConsole.WriteLine("Remove listing: Getting existing listings...");
+#endif
+            GetListings();
+#if FATDIR_TRACE
+            BasicConsole.WriteLine("Got existing listings. Removing listing from cache...");
+#endif
+            _cachedlistings.Remove(aListing);
+#if FATDIR_TRACE
+            BasicConsole.WriteLine("Removed listing.");
 #endif
         }
 

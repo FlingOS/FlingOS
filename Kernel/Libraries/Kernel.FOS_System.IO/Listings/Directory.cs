@@ -90,6 +90,11 @@ namespace Kernel.FOS_System.IO
         /// </summary>
         /// <param name="aListing">The listing to add.</param>
         public abstract void AddListing(Base aListing);
+        /// <summary>
+        /// Removes the specified listing from the cached listings. Call WriteListings to save the change to disc.
+        /// </summary>
+        /// <param name="aListing">The listing to remove.</param>
+        public abstract void RemoveListing(Base aListing);
 
         /// <summary>
         /// Determines whether the specified listing exists or not within this directory or its sub-directories.

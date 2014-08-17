@@ -886,13 +886,26 @@ namespace Kernel.Hardware.USB.Devices
         /// <param name="aData">See base class.</param>
         public override void WriteBlock(ulong aBlockNo, uint aBlockCount, byte[] aData)
         {
-            byte* dataPtr = ((byte*)Utilities.ObjectUtilities.GetHandle(aData)) + FOS_System.Array.FieldsBytesSize;
-            for (uint i = 0; i < aBlockCount; i++)
+            if (aData == null)
             {
-                msd.Write((uint)(aBlockNo + i), dataPtr);
-                dataPtr += blockSize;
+                byte* dataPtr = ((byte*)Utilities.ObjectUtilities.GetHandle(NewBlockArray(1))) + FOS_System.Array.FieldsBytesSize;
+                for (uint i = 0; i < aBlockCount; i++)
+                {
+                    msd.Write((uint)(aBlockNo + i), dataPtr);
 
-                FOS_System.GC.Cleanup();
+                    FOS_System.GC.Cleanup();
+                }
+            }
+            else
+            {
+                byte* dataPtr = ((byte*)Utilities.ObjectUtilities.GetHandle(aData)) + FOS_System.Array.FieldsBytesSize;
+                for (uint i = 0; i < aBlockCount; i++)
+                {
+                    msd.Write((uint)(aBlockNo + i), dataPtr);
+                    dataPtr += blockSize;
+
+                    FOS_System.GC.Cleanup();
+                }
             }
         }
         

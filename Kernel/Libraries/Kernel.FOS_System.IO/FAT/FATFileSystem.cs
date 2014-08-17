@@ -15,7 +15,10 @@
 //                                                                                //
 // ------------------------------------------------------------------------------ //
 #endregion
-    
+
+#define FATFS_TRACE
+#undef FATFS_TRACE
+
 using System;
 
 using Kernel.FOS_System.Collections;
@@ -360,7 +363,7 @@ namespace Kernel.FOS_System.IO.FAT
             thePartition.ReadBlock(ReservedSectorCount + xSectorNum, 1, aData);
         }
         /// <summary>
-        /// Writes the specified FAt data to the specified sector of the FAT on disk.
+        /// Writes the specified FAT data to the specified sector of the FAT on disk.
         /// </summary>
         /// <param name="xSectorNum">The sector number to write.</param>
         /// <param name="aData">The FAT sector data to write.</param>
@@ -797,10 +800,22 @@ namespace Kernel.FOS_System.IO.FAT
             int LongFilenamesSize = 0;
             if (FATType == FATTypeEnum.FAT32)
             {
+#if FATFS_TRACE
+                BasicConsole.WriteLine(((FOS_System.String)"Checking listings (") + listings.Count + ") for long file names...");
+                BasicConsole.DelayOutput(2);
+#endif
                 for (int i = 0; i < listings.Count; i++)
                 {
+#if FATFS_TRACE
+                    BasicConsole.WriteLine("Checking listing...");
+                    BasicConsole.WriteLine(((Base)listings[i]).Name);
+                    BasicConsole.DelayOutput(2);
+#endif
                     if (((FOS_System.String)((Base)listings[i]).Name.Split('.')[0]).length > 8)
                     {
+#if FATFS_TRACE
+                        BasicConsole.WriteLine("Long name detected.");
+#endif
                         int nameLength = ((Base)listings[i]).Name.length;
                         LongFilenamesSize += nameLength / 13;
                         if (nameLength % 13 > 0)
@@ -808,10 +823,20 @@ namespace Kernel.FOS_System.IO.FAT
                             LongFilenamesSize++;
                         }
                     }
+
+#if FATFS_TRACE
+                    BasicConsole.WriteLine("Check completed.");
+#endif
                 }
             }
+#if FATFS_TRACE
+            BasicConsole.WriteLine("Calculating long file name size...");
+#endif
             LongFilenamesSize *= 32;
 
+#if FATFS_TRACE
+            BasicConsole.WriteLine("Allocating data for directory bytes...");
+#endif
             //                       +32 for VolumeID entry                         + 32 for end entry
             byte[] result = new byte[32 + (listings.Count * 32) + LongFilenamesSize + 32];
 
@@ -837,6 +862,9 @@ namespace Kernel.FOS_System.IO.FAT
 
             for (int i = 0; i < listings.Count; i++)
             {
+#if FATFS_TRACE
+                BasicConsole.WriteLine("Encoding listing...");
+#endif
                 Base listing = ((Base)listings[i]);
                 bool isDirectory = listing._Type == (FOS_System.Type)typeof(FATDirectory);
                 FOS_System.String name = listing.Name.ToUpper();
@@ -845,6 +873,9 @@ namespace Kernel.FOS_System.IO.FAT
                 bool isLongName = ((FOS_System.String)nameParts[0]).length > 8;
                 if (isLongName)
                 {
+#if FATFS_TRACE
+                    BasicConsole.WriteLine("Long name detected.");
+#endif
                     shortNameReplacements++;
                     if (isDirectory)
                     {
@@ -901,9 +932,17 @@ namespace Kernel.FOS_System.IO.FAT
                             {
                                 result[offset + 1 + j] = LDIR_Name1[j];
                             }
+                            //As per spec, insert trailing periods
                             for (int j = LDIR_Name1.Length + 1; j < 10; j++)
                             {
-                                result[offset + 1 + j] = 0xFF;
+                                if (j % 2 == 0)
+                                {
+                                    result[offset + 1 + j] = 0x2E;
+                                }
+                                else
+                                {
+                                    result[offset + 1 + j] = 0x00;
+                                }
                             }
                             result[offset + 11] = LDIR_Attr;
                             result[offset + 12] = LDIR_Type;
@@ -912,18 +951,34 @@ namespace Kernel.FOS_System.IO.FAT
                             {
                                 result[offset + 14 + j] = LDIR_Name2[j];
                             }
+                            //As per spec, insert trailing periods
                             for (int j = LDIR_Name2.Length + 1; j < 12; j++)
                             {
-                                result[offset + 14 + j] = 0xFF;
+                                if (j % 2 == 0)
+                                {
+                                    result[offset + 14 + j] = 0x2E;
+                                }
+                                else
+                                {
+                                    result[offset + 14 + j] = 0x00;
+                                }
                             }
                             result[offset + 26] = LDIR_FstClusLO;
                             for (int j = 0; j < LDIR_Name3.Length; j++)
                             {
                                 result[offset + 28 + j] = LDIR_Name3[j];
                             }
+                            //As per spec, insert trailing periods
                             for (int j = LDIR_Name3.Length + 1; j < 4; j++)
                             {
-                                result[offset + 28 + j] = 0xFF;
+                                if (j % 2 == 0)
+                                {
+                                    result[offset + 28 + j] = 0x2E;
+                                }
+                                else
+                                {
+                                    result[offset + 28 + j] = 0x00;
+                                }
                             }
 
                             if (first)
@@ -993,9 +1048,12 @@ namespace Kernel.FOS_System.IO.FAT
                 result[offset++] = DIR_FileSize[1];
                 result[offset++] = DIR_FileSize[2];
                 result[offset++] = DIR_FileSize[3];
-            }
-            //ExceptionMethods.Throw(new Exceptions.NotSupportedException("EncodeDirectoryTable not supported yet!"));
 
+#if FATFS_TRACE
+                BasicConsole.WriteLine("Encoded listing.");
+#endif
+            }
+            
             return result;
         }
         /// <summary>
@@ -1202,8 +1260,16 @@ namespace Kernel.FOS_System.IO.FAT
         /// <param name="thePartition">The partition to format.</param>
         public static void FormatPartitionAsFAT32(Partition thePartition)
         {
+#if FATFS_TRACE
+            BasicConsole.WriteLine(((FOS_System.String)"Creating block array... Block size: ") + thePartition.BlockSize);
+#endif
+
             byte[] newBPBData = thePartition.TheDiskDevice.NewBlockArray(1);
-            
+
+#if FATFS_TRACE
+            BasicConsole.WriteLine("Block array created.");
+#endif
+
             //FAT signature
             newBPBData[510] = 0x55;
             newBPBData[511] = 0xAA;
@@ -1214,7 +1280,9 @@ namespace Kernel.FOS_System.IO.FAT
             newBPBData[12] = (byte)(bytesPerSector >> 8);
             ulong partitionSize = thePartition.BlockCount * thePartition.BlockSize;
 
-            //BasicConsole.WriteLine(((FOS_System.String)"partitionSize: ") + partitionSize);
+#if FATFS_TRACE
+            BasicConsole.WriteLine(((FOS_System.String)"partitionSize: ") + partitionSize);
+#endif
             
             byte sectorsPerCluster = 0x1;
             //See http://www.win.tue.nl/~aeb/linux/fs/fat/fat-1.html
@@ -1270,88 +1338,119 @@ namespace Kernel.FOS_System.IO.FAT
             // - At newBPBData[36] - See calculation below
 
             //FAT sector count = 2 * RoundUp(Number of bytes for 1 FAT / Bytes per sector)
-
-            //BasicConsole.WriteLine(((FOS_System.String)"totalSectors: ") + totalSectors +
-            //                                           ", reservedSectors: " + reservedSectors +
-            //                                           ", sectorsPerCluster: " + sectorsPerCluster +
-            //                                           ", bytesPerSector: " + bytesPerSector);
+            
+#if FATFS_TRACE
+            BasicConsole.WriteLine(((FOS_System.String)"totalSectors: ") + totalSectors +
+                                                       ", reservedSectors: " + reservedSectors +
+                                                       ", sectorsPerCluster: " + sectorsPerCluster +
+                                                       ", bytesPerSector: " + bytesPerSector);
+#endif
 
             // Number of bytes for 2 FAT  = 4 * Number of data clusters
             //                            = 4 * (RndDown((totalSectors - ReservedSectors) / sectorsPerCluster) - RndUp(Clusters for 2 FATs))
             //               bytesPer2FAT = 4 * (X - RndUp((bytesPerFAT * 2) / bytesPerCluster))
             //               bytesPer2FAT = (4 * X * bytesPerCluster) / (bytesPerCluster + 8)
             uint dataClusters = (totalSectors - reservedSectors) / sectorsPerCluster;
-            //BasicConsole.WriteLine(((FOS_System.String)"dataClusters: ") + dataClusters);
+#if FATFS_TRACE
+            BasicConsole.WriteLine(((FOS_System.String)"dataClusters: ") + dataClusters);
+#endif
             uint bytesPerCluster = (uint)sectorsPerCluster * bytesPerSector;
-            //BasicConsole.WriteLine(((FOS_System.String)"bytesPerCluster: ") + bytesPerCluster);
-            //BasicConsole.WriteLine(((FOS_System.String)"4 * dataClusters: ") + (4 * dataClusters));
-            //BasicConsole.WriteLine(((FOS_System.String)"4 * dataClusters * bytesPerCluster: ") + (4 * dataClusters * bytesPerCluster));
-            //BasicConsole.WriteLine(((FOS_System.String)"bytesPerCluster + 8: ") + (bytesPerCluster + 8));
+#if FATFS_TRACE
+            BasicConsole.WriteLine(((FOS_System.String)"bytesPerCluster: ") + bytesPerCluster);
+            BasicConsole.WriteLine(((FOS_System.String)"4 * dataClusters: ") + (4 * dataClusters));
+            BasicConsole.WriteLine(((FOS_System.String)"4 * dataClusters * bytesPerCluster: ") + (4 * dataClusters * bytesPerCluster));
+            BasicConsole.WriteLine(((FOS_System.String)"bytesPerCluster + 8: ") + (bytesPerCluster + 8));
+#endif
             
             uint bytesPer2FAT = (uint)Math.Divide((4 * (ulong)dataClusters * bytesPerCluster), (bytesPerCluster + 8)); //Calculation rounds down
-            //BasicConsole.WriteLine(((FOS_System.String)"bytesPerFAT: ") + bytesPerFAT);
+#if FATFS_TRACE
+            BasicConsole.WriteLine(((FOS_System.String)"bytesPer2FAT: ") + bytesPer2FAT);
+#endif
             uint FATSectorCount = bytesPer2FAT / bytesPerSector;
-            //BasicConsole.WriteLine(((FOS_System.String)"FATSectorCount: ") + FATSectorCount);
+#if FATFS_TRACE
+            BasicConsole.WriteLine(((FOS_System.String)"FATSectorCount: ") + FATSectorCount);
+#endif
             newBPBData[36] = (byte)(FATSectorCount);
             newBPBData[37] = (byte)(FATSectorCount >> 8);
             newBPBData[38] = (byte)(FATSectorCount >> 16);
             newBPBData[39] = (byte)(FATSectorCount >> 24);
-
-            //BasicConsole.WriteLine(((FOS_System.String)"totalSectors: ") + totalSectors +
-            //                                           ", reservedSectors: " + reservedSectors +
-            //                                           ", sectorsPerCluster: " + sectorsPerCluster +
-            //                                           ", bytesPerSector: " + bytesPerSector +
-            //                                           ", bytesPerCluster: " + bytesPerCluster +
-            //                                           ", dataClusters: " + dataClusters +
-            //                                           ", bytesPer2FAT: " + bytesPer2FAT +
-            //                                           ", FATSectorCount: " + FATSectorCount);
-            //BasicConsole.DelayOutput(10);
+            
+#if FATFS_TRACE
+            BasicConsole.WriteLine(((FOS_System.String)"totalSectors: ") + totalSectors +
+                                                       ", reservedSectors: " + reservedSectors +
+                                                       ", sectorsPerCluster: " + sectorsPerCluster +
+                                                       ", bytesPerSector: " + bytesPerSector +
+                                                       ", bytesPerCluster: " + bytesPerCluster +
+                                                       ", dataClusters: " + dataClusters +
+                                                       ", bytesPer2FAT: " + bytesPer2FAT +
+                                                       ", FATSectorCount: " + FATSectorCount);
+            BasicConsole.DelayOutput(10);
+#endif
 
             //Root cluster (number/index - min value is 2)
             newBPBData[44] = 0x02;
-
-            //BasicConsole.WriteLine("Writing new BPB...");
-            //BasicConsole.DelayOutput(1);
+            
+#if FATFS_TRACE
+            BasicConsole.WriteLine("Writing new BPB...");
+            BasicConsole.DelayOutput(1);
+#endif
 
             thePartition.WriteBlock(0UL, 1U, newBPBData);
-
-            //BasicConsole.WriteLine("Written new BPB. Attempting to load new file system...");
+            
+#if FATFS_TRACE
+            BasicConsole.WriteLine("Written new BPB. Attempting to load new file system...");
+#endif
 
             FATFileSystem fs = new FATFileSystem(thePartition);
             if (!fs.IsValid)
             {
-                //BasicConsole.WriteLine("Failed to format properly. Scrubbing new BPB...");
+#if FATFS_TRACE
+                BasicConsole.WriteLine("Failed to format properly. Scrubbing new BPB...");
+#endif
                 byte[] scrubBPB = thePartition.TheDiskDevice.NewBlockArray(1);
                 thePartition.WriteBlock(0UL, 1U, scrubBPB);
-                //BasicConsole.WriteLine("Scrub done.");
+#if FATFS_TRACE
+                BasicConsole.WriteLine("Scrub done.");
+#endif
 
                 ExceptionMethods.Throw(new FOS_System.Exception("Failed to format properly! FATFileSystem did not recognise system as valid."));
             }
             else if (fs.FATType != FATTypeEnum.FAT32)
             {
-                //BasicConsole.WriteLine("Failed to format properly. Scrubbing new BPB...");
+#if FATFS_TRACE
+                BasicConsole.WriteLine("Failed to format properly. Scrubbing new BPB...");
+#endif
                 byte[] scrubBPB = thePartition.TheDiskDevice.NewBlockArray(1);
                 thePartition.WriteBlock(0UL, 1U, scrubBPB);
-                //BasicConsole.WriteLine("Scrub done.");
+#if FATFS_TRACE
+                BasicConsole.WriteLine("Scrub done.");
+#endif
 
                 ExceptionMethods.Throw(new FOS_System.Exception(((FOS_System.String)"Failed to format properly! FATFileSystem recognised incorrect FAT type. Type recognised: ") + (uint)fs.FATType));
             }
-
-            //BasicConsole.WriteLine("FAT recognised. Setting up empty FAT table...");
+            
+#if FATFS_TRACE
+            BasicConsole.WriteLine("FAT recognised. Setting up empty FAT table...");
+#endif
 
             //Mark all clusters as empty
-            uint FATStartSector = fs.ReservedSectorCount;
-            fs.ThePartition.WriteBlock(FATSectorCount, FATSectorCount, null);
-
-            //BasicConsole.WriteLine("Marking root directory cluster as used...");
+            fs.ThePartition.WriteBlock(fs.ReservedSectorCount, FATSectorCount, null);
+            
+#if FATFS_TRACE
+            BasicConsole.WriteLine("Marking root directory cluster as used...");
+#endif
             //Mark root cluster as being 1 cluster in size.
-            fs.SetFATEntryAndSave(2 , GetFATEntryEOFValue(FATTypeEnum.FAT32));
-
-            //BasicConsole.WriteLine("Done. Clearing the root directory...");
+            fs.SetFATEntryAndSave(2, GetFATEntryEOFValue(FATTypeEnum.FAT32));
+            
+#if FATFS_TRACE
+            BasicConsole.WriteLine("Done. Clearing the root directory...");
+#endif
             //Empty the root directory (in case of junk data)
             fs.WriteCluster(2, null);
-
-            //BasicConsole.WriteLine("Format complete.");
+            
+#if FATFS_TRACE
+            BasicConsole.WriteLine("Format complete.");
+#endif
         }
     }
 }

@@ -53,8 +53,8 @@ namespace Kernel.Core.Shells
                       /   *  - Output { PCI/ATA/USB/FS/Memory }
                       /   *  - CheckDisk/ChkD  { Drive# }
                       /   *  - FormatDisk/FmtD { Drive# }
-                         *  - Dir  { List/Open/New/Delete }
-                         *  - File { Open/New/Delete/Copy }
+                         *  - Dir  { List/Open/       New/Delete/Copy }
+                         *  - File { Open/Delete/     Copy }
                       /   *  - Test {    Interrupts  /   Delegates   /   FileSystems /
                       /   *              ULLTComp    /   StringConcat/   ObjArray    /
                       /   *              IntArray    /   DummyObj    /   DivideBy0   /
@@ -430,6 +430,36 @@ namespace Kernel.Core.Shells
                                         console.WriteLine("You must specify a file path.");
                                     }
                                 }
+                                else if(opt1 == "delete")
+                                {
+                                    FOS_System.String opt2 = null;
+                                    if (lineParts.Count > 2)
+                                    {
+                                        opt2 = "";
+                                        for (int i = 2; i < lineParts.Count; i++)
+                                        {
+                                            opt2 += ((FOS_System.String)lineParts[i]).ToLower();
+                                            if (i < lineParts.Count - 1)
+                                            {
+                                                opt2 += " ";
+                                            }
+                                        }
+                                    }
+
+                                    if (opt2 != null)
+                                    {
+                                        if (opt2.StartsWith("./"))
+                                        {
+                                            opt2 = CurrentDir + opt2.Substring(2, opt2.length - 2);
+                                        }
+
+                                        DeleteFile(opt2);
+                                    }
+                                    else
+                                    {
+                                        console.WriteLine("You must specify a file path.");
+                                    }
+                                }
                                 else
                                 {
                                     UnrecognisedOption();
@@ -526,6 +556,7 @@ namespace Kernel.Core.Shells
                     }
                     catch
                     {
+                        Hardware.Devices.Timer.Default.Wait(5000);
                         OutputCurrentExceptionInfo();
                         Hardware.Devices.Timer.Default.Wait(5000);
                     }
@@ -538,17 +569,54 @@ namespace Kernel.Core.Shells
             console.WriteLine("Shell exited.");
         }
 
+        private void DeleteFile(FOS_System.String fileName)
+        {
+            if (File.Delete(fileName))
+            {
+                console.WriteLine("File deleted: " + fileName);
+            }
+            else
+            {
+                console.WriteLine("File not found: " + fileName);
+            }
+        }
+
         /// <summary>
         /// Formats the specified disk.
         /// </summary>
         /// <param name="disk">The disk to format.</param>
         private void FormatDisk(Hardware.Devices.DiskDevice disk)
         {
-            List newPartitions = new List(1);
-            newPartitions.Add(FOS_System.IO.Disk.MBR.CreateFAT32PartitionInfo(disk, false));
-            FOS_System.IO.Disk.MBR.FormatDisk(disk, newPartitions);
-
-            FOS_System.IO.FAT.FATFileSystem.FormatPartitionAsFAT32((FOS_System.IO.Partition)newPartitions[0]);
+            List newPartitionInfos = new List(1);
+            console.WriteLine("Creating partition info...");
+            newPartitionInfos.Add(FOS_System.IO.Disk.MBR.CreateFAT32PartitionInfo(disk, false));
+            console.WriteLine("Done. Doing MBR format...");
+            FOS_System.IO.Disk.MBR.FormatDisk(disk, newPartitionInfos);
+            console.WriteLine("Done. Initialising disk...");
+            FileSystemManager.InitDisk(disk);
+            console.WriteLine("Done. Finding partition...");
+            Partition thePart = null;
+            for (int i = 0; i < FileSystemManager.Partitions.Count; i++)
+            {
+                Partition aPart = (Partition)FileSystemManager.Partitions[i];
+                if(aPart.TheDiskDevice == disk)
+                {
+                    thePart = aPart;
+                    break;
+                }
+            }
+            if (thePart != null)
+            {
+                console.WriteLine("Done. Formatting as FAT32...");
+                FOS_System.IO.FAT.FATFileSystem.FormatPartitionAsFAT32(thePart);
+                console.WriteLine("Done.");
+                console.WriteLine("Format completed successfully.");
+            }
+            else
+            {
+                console.WriteLine("Done. Partition not found.");
+                console.WriteLine("Format failed.");
+            }
         }
         /// <summary>
         /// Checks the specified disk's formatting.

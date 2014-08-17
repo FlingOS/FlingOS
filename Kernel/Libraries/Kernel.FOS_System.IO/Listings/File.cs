@@ -78,5 +78,27 @@ namespace Kernel.FOS_System.IO
                 return (File)baseListing;
             }
         }
+        /// <summary>
+        /// Deletes the specified file within the file system.
+        /// </summary>
+        /// <param name="name">The name of the file to delete.</param>
+        /// <returns>True if the file was found and deleted. Otherwise, false.</returns>
+        public static bool Delete(FOS_System.String name)
+        {
+            File theFile = Open(name);
+
+            if (theFile == null)
+            {
+                return false;
+            }
+
+            return theFile.Delete();
+        }
+
+        /// <summary>
+        /// Deletes the file from the file system.
+        /// </summary>
+        /// <returns>True if the file was deleted. Otherwise, false.</returns>
+        public abstract bool Delete();
     }
 }

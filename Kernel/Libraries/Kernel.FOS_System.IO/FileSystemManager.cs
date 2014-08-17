@@ -91,7 +91,7 @@ namespace Kernel.FOS_System.IO
         /// Initializes the specified disk device.
         /// </summary>
         /// <param name="aDiskDevice">The disk device to initialize.</param>
-        internal static void InitDisk(DiskDevice aDiskDevice)
+        public static void InitDisk(DiskDevice aDiskDevice)
         {
             //TODO - Add more partitioning schemes.
 

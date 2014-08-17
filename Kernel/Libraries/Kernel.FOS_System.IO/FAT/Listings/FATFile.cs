@@ -16,6 +16,9 @@
 // ------------------------------------------------------------------------------ //
 #endregion
     
+#define FATFILE_TRACE
+#undef FATFILE_TRACE
+
 using System;
 
 using Kernel.FOS_System.Collections;
@@ -52,6 +55,54 @@ namespace Kernel.FOS_System.IO.FAT
         {
             TheFATFileSystem = aFileSystem;
             FirstClusterNum = aFirstCluster;
+        }
+
+        public override bool Delete()
+        {
+            if (TheFATFileSystem.FATType != FATFileSystem.FATTypeEnum.FAT32)
+            {
+                ExceptionMethods.Throw(new Exceptions.NotSupportedException("FATFile.Delete for non-FAT32 not supported!"));
+            }
+
+#if FATFILE_TRACE
+            BasicConsole.WriteLine("FATFile.Delete : Reading cluster chain...");
+#endif
+            UInt32List clusters = TheFATFileSystem.ReadClusterChain(Size, FirstClusterNum);
+#if FATFILE_TRACE
+            BasicConsole.WriteLine("FATFile.Delete : Processing cluster chain...");
+#endif
+            for (int i = 0; i < clusters.Count; i++)
+            {
+#if FATFILE_TRACE
+                BasicConsole.WriteLine("FATFile.Delete : Writing cluster...");
+#endif
+                //Write 0s (null) to clusters
+                TheFATFileSystem.WriteCluster(clusters[i], null);
+            
+#if FATFILE_TRACE
+                BasicConsole.WriteLine("FATFile.Delete : Setting FAT entry...");
+#endif
+                //Write "empty" to FAT entries
+                TheFATFileSystem.SetFATEntryAndSave(clusters[i], 0);
+            }
+            
+#if FATFILE_TRACE
+            BasicConsole.WriteLine("FATFile.Delete : Removing listing...");
+#endif
+            //Remove listing
+            Parent.RemoveListing(this);
+            
+#if FATFILE_TRACE
+            BasicConsole.WriteLine("FATFile.Delete : Writing listings...");
+#endif
+            //Write listings
+            Parent.WriteListings();
+            
+#if FATFILE_TRACE
+            BasicConsole.WriteLine("FATFile.Delete : Complete.");
+#endif
+
+            return true;
         }
     }
 }
