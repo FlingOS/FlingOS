@@ -31,6 +31,12 @@ namespace Kernel.FOS_System.IO.FAT
     public sealed class FATFile : File
     {
         /// <summary>
+        /// Indicates whether the FATFile instance is being used to read/write FATDirectory data. 
+        /// This is subtly different from IsDirectory.
+        /// </summary>
+        internal bool IsDirectoryFile = false;
+
+        /// <summary>
         /// The FAT file system to which the file belongs.
         /// </summary>
         public readonly FATFileSystem TheFATFileSystem;
@@ -85,19 +91,26 @@ namespace Kernel.FOS_System.IO.FAT
                 //Write "empty" to FAT entries
                 TheFATFileSystem.SetFATEntryAndSave(clusters[i], 0);
             }
-            
+
+            //If the file actually being used to read/write a FATDirectory, 
+            //      it will not be in the parent listings, the FATDirectory instance will be.
+            //      So we should not attempt to edit the parent listings from within the 
+            //      FATFile instance.
+            if (!IsDirectoryFile)
+            {
 #if FATFILE_TRACE
             BasicConsole.WriteLine("FATFile.Delete : Removing listing...");
 #endif
-            //Remove listing
-            Parent.RemoveListing(this);
-            
+                //Remove listing
+                Parent.RemoveListing(this);
+
 #if FATFILE_TRACE
             BasicConsole.WriteLine("FATFile.Delete : Writing listings...");
 #endif
-            //Write listings
-            Parent.WriteListings();
-            
+                //Write listings
+                Parent.WriteListings();
+            }
+
 #if FATFILE_TRACE
             BasicConsole.WriteLine("FATFile.Delete : Complete.");
 #endif

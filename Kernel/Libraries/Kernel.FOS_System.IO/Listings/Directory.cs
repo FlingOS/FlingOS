@@ -138,5 +138,29 @@ namespace Kernel.FOS_System.IO
                 return this.TheFileSystem.TheMapping.Prefix + this.Name + FileSystemManager.PathDelimiter;
             }
         }
+
+
+        /// <summary>
+        /// Deletes the specified directory within the file system.
+        /// </summary>
+        /// <param name="name">The name of the directory to delete.</param>
+        /// <returns>True if the directory was found and deleted. Otherwise, false.</returns>
+        public static bool Delete(FOS_System.String name)
+        {
+            Directory theDir = Find(name);
+
+            if (theDir == null)
+            {
+                return false;
+            }
+
+            return theDir.Delete();
+        }
+
+        /// <summary>
+        /// Deletes the directory from the file system.
+        /// </summary>
+        /// <returns>True if the directory was deleted. Otherwise, false.</returns>
+        public abstract bool Delete();
     }
 }

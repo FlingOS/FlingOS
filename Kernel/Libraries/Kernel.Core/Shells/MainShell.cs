@@ -53,8 +53,8 @@ namespace Kernel.Core.Shells
                       /   *  - Output { PCI/ATA/USB/FS/Memory }
                       /   *  - CheckDisk/ChkD  { Drive# }
                       /   *  - FormatDisk/FmtD { Drive# }
-                         *  - Dir  { List/Open/       New/Delete/Copy }
-                         *  - File { Open/Delete/     Copy }
+                         *  - Dir  { List/Open/New/Delete    /Copy }
+                         *  - File { Open/Delete             /Copy }
                       /   *  - Test {    Interrupts  /   Delegates   /   FileSystems /
                       /   *              ULLTComp    /   StringConcat/   ObjArray    /
                       /   *              IntArray    /   DummyObj    /   DivideBy0   /
@@ -408,6 +408,36 @@ namespace Kernel.Core.Shells
                                         console.WriteLine("You must specify a directory path.");
                                     }
                                 }
+                                else if (opt1 == "delete")
+                                {
+                                    FOS_System.String opt2 = null;
+                                    if (lineParts.Count > 2)
+                                    {
+                                        opt2 = "";
+                                        for (int i = 2; i < lineParts.Count; i++)
+                                        {
+                                            opt2 += ((FOS_System.String)lineParts[i]).ToLower();
+                                            if (i < lineParts.Count - 1)
+                                            {
+                                                opt2 += " ";
+                                            }
+                                        }
+                                    }
+
+                                    if (opt2 != null)
+                                    {
+                                        if (opt2.StartsWith("./"))
+                                        {
+                                            opt2 = CurrentDir + opt2.Substring(2, opt2.length - 2);
+                                        }
+                                        console.WriteLine("Deleting dir: " + opt2);
+                                        DeleteDirectory(opt2);
+                                    }
+                                    else
+                                    {
+                                        console.WriteLine("You must specify a directory path.");
+                                    }
+                                }
                                 else
                                 {
                                     UnrecognisedOption();
@@ -599,7 +629,6 @@ namespace Kernel.Core.Shells
             console.WriteLine("Shell exited.");
         }
 
-<<<<<<< HEAD
         private void DeleteFile(FOS_System.String fileName)
         {
             if (File.Delete(fileName))
@@ -610,10 +639,17 @@ namespace Kernel.Core.Shells
             {
                 console.WriteLine("File not found: " + fileName);
             }
-=======
+        }
         private void DeleteDirectory(FOS_System.String path)
         {
-
+            if (Directory.Delete(path))
+            {
+                console.WriteLine("Directory deleted: " + path);
+            }
+            else
+            {
+                console.WriteLine("Directory not found: " + path);
+            }
         }
         private Directory NewDirectory(FOS_System.String path)
         {
@@ -663,7 +699,6 @@ namespace Kernel.Core.Shells
             }
 
             return theDir;
->>>>>>> ab58c11ffaa5d80c05218b48fe65290c186db26d
         }
 
         /// <summary>

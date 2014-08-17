@@ -57,7 +57,7 @@ namespace Kernel.FOS_System.IO.FAT
         public FATDirectory(FATFileSystem aFileSystem, FATDirectory parent, FOS_System.String aName, UInt32 aFirstCluster)
             : base(aFileSystem, parent, aName)
         {
-            _theFile = new FATFile(aFileSystem, parent, Name, 0, aFirstCluster);
+            _theFile = new FATFile(aFileSystem, parent, Name, 0, aFirstCluster) { IsDirectoryFile = true };
         }
 
         /// <summary>
@@ -195,6 +195,24 @@ namespace Kernel.FOS_System.IO.FAT
                 return this.TheFileSystem.TheMapping.Prefix;
             }
             return base.GetFullPath();
+        }
+
+        /// <summary>
+        /// Deletes the directory from the file system.
+        /// </summary>
+        /// <returns>True if the directory was deleted. Otherwise, false.</returns>
+        public override bool Delete()
+        {
+            //Delete the directory file
+            bool OK = _theFile.Delete();
+            
+            //Remove listing
+            Parent.RemoveListing(this);
+
+            //Write listings
+            Parent.WriteListings();
+            
+            return OK;
         }
     }
 }
