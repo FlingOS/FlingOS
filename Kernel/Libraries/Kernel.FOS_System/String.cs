@@ -291,6 +291,32 @@ namespace Kernel.FOS_System
             }
         }
         /// <summary>
+        /// Determines whether the string ends with the specified string.
+        /// </summary>
+        /// <param name="postfix">The string to test for.</param>
+        /// <returns>Whether the string ends with the postfix.</returns>
+        [Compiler.NoDebug]
+        [Compiler.NoGC]
+        public bool EndsWith(FOS_System.String postfix)
+        {
+            if (this.length < postfix.length)
+            {
+                return false;
+            }
+            else
+            {
+                int offset = this.length - postfix.length;
+                for (int i = this.length - 1; i >= offset; i--)
+                {
+                    if (this[i] != postfix[i - offset])
+                    {
+                        return false;
+                    }
+                }
+                return true;
+            }
+        }
+        /// <summary>
         /// Splits the string at every index where splitChar occurs and adds the splits parts (excluding splitChar)
         /// to a list of strings.
         /// </summary>
@@ -375,6 +401,26 @@ namespace Kernel.FOS_System
         {
             int result = -1;
             for (int i = 0; i < length; i++)
+            {
+                if (this[i] == c)
+                {
+                    result = i;
+                    break;
+                }
+            }
+            return result;
+        }
+        /// <summary>
+        /// Finds the last index of the specified character in the string.
+        /// </summary>
+        /// <param name="c">The character to find.</param>
+        /// <returns>The last instance of the character or -1 if not found.</returns>
+        [Compiler.NoDebug]
+        [Compiler.NoGC]
+        public int LastIndexOf(char c)
+        {
+            int result = -1;
+            for (int i = length - 1; i > -1; i--)
             {
                 if (this[i] == c)
                 {

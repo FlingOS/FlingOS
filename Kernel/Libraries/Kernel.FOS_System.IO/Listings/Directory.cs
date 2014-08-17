@@ -131,11 +131,11 @@ namespace Kernel.FOS_System.IO
         {
             if (Parent != null)
             {
-                return Parent.GetFullPath() + this.Name + "/";
+                return Parent.GetFullPath() + this.Name + FileSystemManager.PathDelimiter;
             }
             else
             {
-                return this.TheFileSystem.TheMapping.Prefix + this.Name + "/";
+                return this.TheFileSystem.TheMapping.Prefix + this.Name + FileSystemManager.PathDelimiter;
             }
         }
     }
