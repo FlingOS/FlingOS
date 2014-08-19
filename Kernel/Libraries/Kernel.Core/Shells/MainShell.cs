@@ -47,21 +47,21 @@ namespace Kernel.Core.Shells
                         console.Write(CurrentDir + " > ");
 
                         /* Command { Req Arg } [Opt Arg]:
-                      /   *  - Halt
-                      /   *  - ExInfo
-                      /   *  - Init { ALL/PCI/ATA/USB/FS }
-                      /   *  - Output { PCI/ATA/USB/FS/Memory }
-                      /   *  - CheckDisk/ChkD  { Drive# }
-                      /   *  - FormatDisk/FmtD { Drive# }
-                         *  - Dir  { List/Open/New/Delete    /Copy }
-                      /   *  - File { Open/Delete/Copy }
-                      /   *  - Test {    Interrupts  /   Delegates   /   FileSystems /
-                      /   *              ULLTComp    /   StringConcat/   ObjArray    /
-                      /   *              IntArray    /   DummyObj    /   DivideBy0   /
-                      /   *              Exceptions1 /   Exceptions2 /   PCBeep      /
-                      /   *              Timer       /   Keyboard                        }
-                      /   *  - GC   { Cleanup }
-                      /   *  - USB { Update }
+                         *  - Halt
+                         *  - ExInfo
+                         *  - Init { ALL/PCI/ATA/USB/FS }
+                         *  - Output { PCI/ATA/USB/FS/Memory }
+                         *  - CheckDisk/ChkD  { Drive# }
+                         *  - FormatDisk/FmtD { Drive# }
+                         *  - Dir  { List/Open/New/Delete/Copy }
+                         *  - File { Open/Delete/Copy }
+                         *  - Test {    Interrupts  /   Delegates   /   FileSystems /
+                         *              ULLTComp    /   StringConcat/   ObjArray    /
+                         *              IntArray    /   DummyObj    /   DivideBy0   /
+                         *              Exceptions1 /   Exceptions2 /   PCBeep      /
+                         *              Timer       /   Keyboard                        }
+                         *  - GC   { Cleanup }
+                         *  - USB { Update }
                          */
 
                         FOS_System.String line = console.ReadLine();
@@ -438,6 +438,95 @@ namespace Kernel.Core.Shells
                                         console.WriteLine("You must specify a directory path.");
                                     }
                                 }
+                                else if (opt1 == "copy")
+                                {
+                                    int searchPos = 2;
+                                    bool opt2SearchTillQuote = false;
+                                    FOS_System.String opt2 = null;
+                                    if (lineParts.Count > searchPos)
+                                    {
+                                        opt2 = ((FOS_System.String)lineParts[searchPos++]);
+                                        opt2SearchTillQuote = opt2.StartsWith("\"");
+
+                                        if (opt2SearchTillQuote && !opt2.EndsWith("\""))
+                                        {
+                                            opt2 += " ";
+                                            for (; searchPos < lineParts.Count; searchPos++)
+                                            {
+                                                opt2 += ((FOS_System.String)lineParts[searchPos]).ToLower();
+
+                                                if (opt2.EndsWith("\""))
+                                                {
+                                                    break;
+                                                }
+                                                else
+                                                {
+                                                    opt2 += " ";
+                                                }
+                                            }
+                                        }
+                                    }
+
+                                    if (opt2 != null)
+                                    {
+                                        if (opt2SearchTillQuote)
+                                        {
+                                            opt2 = opt2.Substring(1, opt2.length - 2);
+                                        }
+                                        if (opt2.StartsWith("./"))
+                                        {
+                                            opt2 = CurrentDir + opt2.Substring(2, opt2.length - 2);
+                                        }
+
+                                        bool opt3SearchTillQuote = false;
+                                        FOS_System.String opt3 = null;
+                                        if (lineParts.Count > searchPos)
+                                        {
+                                            opt3 = ((FOS_System.String)lineParts[searchPos++]);
+                                            opt3SearchTillQuote = opt3.StartsWith("\"");
+
+                                            if (opt3SearchTillQuote && !opt3.EndsWith("\""))
+                                            {
+                                                opt3 += " ";
+                                                for (; searchPos < lineParts.Count; searchPos++)
+                                                {
+                                                    opt3 += ((FOS_System.String)lineParts[searchPos]).ToLower();
+
+                                                    if (opt3.EndsWith("\""))
+                                                    {
+                                                        break;
+                                                    }
+                                                    else
+                                                    {
+                                                        opt3 += " ";
+                                                    }
+                                                }
+                                            }
+                                        }
+
+                                        if (opt3 != null)
+                                        {
+                                            if (opt3SearchTillQuote)
+                                            {
+                                                opt3 = opt3.Substring(1, opt3.length - 2);
+                                            }
+                                            if (opt3.StartsWith("./"))
+                                            {
+                                                opt3 = CurrentDir + opt3.Substring(2, opt3.length - 2);
+                                            }
+
+                                            CopyDirectory(opt2, opt3);
+                                        }
+                                        else
+                                        {
+                                            console.WriteLine("You must specify a destination path.");
+                                        }
+                                    }
+                                    else
+                                    {
+                                        console.WriteLine("You must specify a source path.");
+                                    }
+                                }
                                 else
                                 {
                                     UnrecognisedOption();
@@ -601,12 +690,12 @@ namespace Kernel.Core.Shells
                                         }
                                         else
                                         {
-                                            console.WriteLine("You must specify a destination file path.");
+                                            console.WriteLine("You must specify a destination path.");
                                         }
                                     }
                                     else
                                     {
-                                        console.WriteLine("You must specify a source file path.");
+                                        console.WriteLine("You must specify a source path.");
                                     }
                                 }
                                 else
@@ -751,6 +840,11 @@ namespace Kernel.Core.Shells
 
                 Directory parentDir = NewDirectory(dstDir);
                 dstFile = mapping.TheFileSystem.NewFile(dstName, parentDir);
+                if (dstFile == null)
+                {
+                    console.WriteLine("Failed to create!");
+                    return;
+                }
 
                 console.WriteLine("Created.");
             }
@@ -793,6 +887,69 @@ namespace Kernel.Core.Shells
             else
             {
                 console.WriteLine("File not found: " + fileName);
+            }
+        }
+        private void CopyDirectory(FOS_System.String src, FOS_System.String dst)
+        {
+            CopyDirectory(Directory.Find(src), dst);
+        }
+        private void CopyDirectory(Directory srcDir, FOS_System.String dst)
+        {
+            if (srcDir == null)
+            {
+                console.WriteLine("Source directory not found!");
+                return;
+            }
+
+            if(!dst.EndsWith(FileSystemManager.PathDelimiter))
+            {
+                dst += FileSystemManager.PathDelimiter;
+            }
+
+            Directory dstDir = Directory.Find(dst);
+            if (dstDir == null)
+            {
+                console.WriteLine("Creating destination directory...");
+                
+                dstDir = NewDirectory(dst);
+                if(dstDir == null)
+                {
+                    console.WriteLine("Failed to create!");
+                    return;
+                }
+
+                console.WriteLine("Created.");
+            }
+            else
+            {
+                console.WriteLine("Destination directory already exists.");
+            }
+
+            FOS_System.String srcFullPath = srcDir.GetFullPath();
+            FOS_System.String dstFullPath = dstDir.GetFullPath();
+            if (srcFullPath == dstFullPath)
+            {
+                console.WriteLine("Atempted to copy a directory to itself! (" + srcFullPath + ")");
+                return;
+            }
+            else
+            {
+                console.WriteLine("Copying " + srcFullPath + " to " + dstFullPath);
+            }
+
+            //Copy listings
+            List listings = srcDir.GetListings();
+            for(int i = 0; i < listings.Count; i++)
+            {
+                Base listing = (Base)listings[i];
+                if(listing.IsDirectory)
+                {
+                    CopyDirectory((Directory)listing, dst + listing.Name + FileSystemManager.PathDelimiter);
+                }
+                else
+                {
+                    CopyFile((File)listing, dst + listing.Name);
+                }
             }
         }
         private void DeleteDirectory(FOS_System.String path)
