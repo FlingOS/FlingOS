@@ -759,6 +759,18 @@ namespace Kernel.Core.Shells
                 console.WriteLine("Destination file already exists.");
             }
 
+            FOS_System.String srcFullPath = srcFile.GetFullPath();
+            FOS_System.String dstFullPath = dstFile.GetFullPath();
+            if (srcFullPath == dstFullPath)
+            {
+                console.WriteLine("Atempted to copy a file to itself! (" + srcFullPath + ")");
+                return;
+            }
+            else
+            {
+                console.WriteLine("Copying " + srcFullPath + " to " + dstFullPath);
+            }
+
             FOS_System.IO.Streams.FileStream srcStr = srcFile.GetStream();
             FOS_System.IO.Streams.FileStream dstStr = dstFile.GetStream();
 

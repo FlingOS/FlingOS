@@ -122,24 +122,7 @@ namespace Kernel.FOS_System.IO
             }
             return false;
         }
-
-        /// <summary>
-        /// Gets the full, simplified, path for the directory.
-        /// </summary>
-        /// <returns>The full path.</returns>
-        public virtual FOS_System.String GetFullPath()
-        {
-            if (Parent != null)
-            {
-                return Parent.GetFullPath() + this.Name + FileSystemManager.PathDelimiter;
-            }
-            else
-            {
-                return this.TheFileSystem.TheMapping.Prefix + this.Name + FileSystemManager.PathDelimiter;
-            }
-        }
-
-
+        
         /// <summary>
         /// Deletes the specified directory within the file system.
         /// </summary>

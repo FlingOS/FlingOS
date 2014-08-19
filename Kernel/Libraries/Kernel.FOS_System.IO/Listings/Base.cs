@@ -72,6 +72,36 @@ namespace Kernel.FOS_System.IO
         }
 
         /// <summary>
+        /// Gets the full, simplified, path for the listing.
+        /// </summary>
+        /// <returns>The full path.</returns>
+        public virtual FOS_System.String GetFullPath()
+        {
+            if (IsDirectory)
+            {
+                if (Parent != null)
+                {
+                    return Parent.GetFullPath() + this.Name + FileSystemManager.PathDelimiter;
+                }
+                else
+                {
+                    return TheFileSystem.TheMapping.Prefix + this.Name + FileSystemManager.PathDelimiter;
+                }
+            }
+            else
+            {
+                if (Parent != null)
+                {
+                    return Parent.GetFullPath() + this.Name;
+                }
+                else
+                {
+                    return TheFileSystem.TheMapping.Prefix + this.Name;
+                }
+            }
+        }
+
+        /// <summary>
         /// Deletes the listing from the file system.
         /// </summary>
         /// <returns>True if the listing was deleted. Otherwise, false.</returns>
