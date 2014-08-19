@@ -451,9 +451,9 @@ namespace Kernel.Core.Shells
                                         if (opt2SearchTillQuote && !opt2.EndsWith("\""))
                                         {
                                             opt2 += " ";
-                                            for (; searchPos < lineParts.Count; searchPos++)
+                                            for (; searchPos < lineParts.Count;)
                                             {
-                                                opt2 += ((FOS_System.String)lineParts[searchPos]).ToLower();
+                                                opt2 += ((FOS_System.String)lineParts[searchPos++]).ToLower();
 
                                                 if (opt2.EndsWith("\""))
                                                 {
@@ -488,9 +488,9 @@ namespace Kernel.Core.Shells
                                             if (opt3SearchTillQuote && !opt3.EndsWith("\""))
                                             {
                                                 opt3 += " ";
-                                                for (; searchPos < lineParts.Count; searchPos++)
+                                                for (; searchPos < lineParts.Count;)
                                                 {
-                                                    opt3 += ((FOS_System.String)lineParts[searchPos]).ToLower();
+                                                    opt3 += ((FOS_System.String)lineParts[searchPos++]).ToLower();
 
                                                     if (opt3.EndsWith("\""))
                                                     {
@@ -515,6 +515,7 @@ namespace Kernel.Core.Shells
                                                 opt3 = CurrentDir + opt3.Substring(2, opt3.length - 2);
                                             }
 
+                                            console.WriteLine("Copy cmd, opt2=\"" + opt2 + "\", opt3=\"" + opt3 + "\"");
                                             CopyDirectory(opt2, opt3);
                                         }
                                         else
@@ -622,9 +623,9 @@ namespace Kernel.Core.Shells
                                         if (opt2SearchTillQuote && !opt2.EndsWith("\""))
                                         {
                                             opt2 += " ";
-                                            for (; searchPos < lineParts.Count; searchPos++)
+                                            for (; searchPos < lineParts.Count;)
                                             {
-                                                opt2 += ((FOS_System.String)lineParts[searchPos]).ToLower();
+                                                opt2 += ((FOS_System.String)lineParts[searchPos++]).ToLower();
 
                                                 if (opt2.EndsWith("\""))
                                                 {
@@ -659,9 +660,9 @@ namespace Kernel.Core.Shells
                                             if (opt3SearchTillQuote && !opt3.EndsWith("\""))
                                             {
                                                 opt3 += " ";
-                                                for (; searchPos < lineParts.Count; searchPos++)
+                                                for (; searchPos < lineParts.Count;)
                                                 {
-                                                    opt3 += ((FOS_System.String)lineParts[searchPos]).ToLower();
+                                                    opt3 += ((FOS_System.String)lineParts[searchPos++]).ToLower();
 
                                                     if (opt3.EndsWith("\""))
                                                     {
@@ -686,6 +687,7 @@ namespace Kernel.Core.Shells
                                                 opt3 = CurrentDir + opt3.Substring(2, opt3.length - 2);
                                             }
 
+                                            console.WriteLine("Copy cmd, opt2=\"" + opt2 + "\", opt3=\"" + opt3 + "\"");
                                             CopyFile(opt2, opt3);
                                         }
                                         else
