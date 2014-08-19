@@ -94,11 +94,5 @@ namespace Kernel.FOS_System.IO
 
             return theFile.Delete();
         }
-
-        /// <summary>
-        /// Deletes the file from the file system.
-        /// </summary>
-        /// <returns>True if the file was deleted. Otherwise, false.</returns>
-        public abstract bool Delete();
     }
 }

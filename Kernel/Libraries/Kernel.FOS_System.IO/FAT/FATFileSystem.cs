@@ -1067,7 +1067,7 @@ namespace Kernel.FOS_System.IO.FAT
             if (isDirectory)
             {
                 List result = new List(1);
-                result.Add(longName.Substring(0, 11).PadRight(11, (char)0));
+                result.Add(longName.Substring(0, 11).PadRight(11, ' '));
                 return result;
             }
             else
@@ -1076,13 +1076,13 @@ namespace Kernel.FOS_System.IO.FAT
                 List nameParts = longName.Split('.');
                 if (nameParts.Count > 1)
                 {
-                    result.Add(((FOS_System.String)nameParts[0]).Substring(0, 8).PadRight(8, (char)0));
-                    result.Add(((FOS_System.String)nameParts[1]).Substring(0, 3).PadLeft(3, (char)0));
+                    result.Add(((FOS_System.String)nameParts[0]).Substring(0, 8).PadRight(8, ' '));
+                    result.Add(((FOS_System.String)nameParts[1]).Substring(0, 3).PadLeft(3, ' '));
                 }
                 else
                 {
-                    result.Add(longName.Substring(0, 8).PadRight(8, (char)0));
-                    result.Add(((FOS_System.String)"").PadLeft(3, (char)0));
+                    result.Add(longName.Substring(0, 8).PadRight(8, ' '));
+                    result.Add(((FOS_System.String)"").PadLeft(3, ' '));
                 }
                 return result;
             }

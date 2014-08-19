@@ -156,11 +156,5 @@ namespace Kernel.FOS_System.IO
 
             return theDir.Delete();
         }
-
-        /// <summary>
-        /// Deletes the directory from the file system.
-        /// </summary>
-        /// <returns>True if the directory was deleted. Otherwise, false.</returns>
-        public abstract bool Delete();
     }
 }

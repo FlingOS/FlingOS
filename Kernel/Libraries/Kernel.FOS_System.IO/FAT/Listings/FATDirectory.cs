@@ -203,8 +203,17 @@ namespace Kernel.FOS_System.IO.FAT
         /// <returns>True if the directory was deleted. Otherwise, false.</returns>
         public override bool Delete()
         {
+            //Delete children
+            bool OK = true;
+            GetListings();
+            //Backwards search as items will be removed from the list.
+            for (int i = _cachedlistings.Count - 1; i > -1; i--)
+            {
+                OK = OK && ((Base)_cachedlistings[i]).Delete();
+            }
+
             //Delete the directory file
-            bool OK = _theFile.Delete();
+            OK = OK && _theFile.Delete();
             
             //Remove listing
             Parent.RemoveListing(this);

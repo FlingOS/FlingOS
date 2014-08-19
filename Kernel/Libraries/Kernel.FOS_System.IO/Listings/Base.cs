@@ -70,5 +70,11 @@ namespace Kernel.FOS_System.IO
             get { return mSize; }
             internal set { mSize = value; }
         }
+
+        /// <summary>
+        /// Deletes the listing from the file system.
+        /// </summary>
+        /// <returns>True if the listing was deleted. Otherwise, false.</returns>
+        public abstract bool Delete();
     }
 }
