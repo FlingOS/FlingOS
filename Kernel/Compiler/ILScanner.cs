@@ -258,13 +258,7 @@ namespace Kernel.Compiler
                 }
                 
                 ASMChunk endChunk = new ASMChunk();
-                endChunk.ASM.AppendLine("_end_code:");                
-                endChunk.ASM.AppendLine("%ifndef ELF_COMPILATION");
-                endChunk.ASM.AppendLine("use32");
-                endChunk.ASM.AppendLine("org 0x200000");
-                endChunk.ASM.AppendLine("[map all main.map]");
-                endChunk.ASM.AppendLine("%endif");                
-                endChunk.ASM.AppendLine("global Kernel_Start");
+                endChunk.ASM.AppendLine("_end_code:");
                 endChunk.SequencePriority = long.MaxValue;
                 ASMChunks.Add(endChunk);
             }

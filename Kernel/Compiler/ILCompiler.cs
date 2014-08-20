@@ -544,6 +544,7 @@ namespace Kernel.Compiler
             string executionPath = TheSettings[Settings.ToolsPathKey];
             string compilerExecutionPath = Path.Combine(executionPath, @"ISO");
             string LdPath = Path.Combine(executionPath, @"cygwin\ld.exe");
+            string LinkScriptPath = Path.Combine(executionPath, @"cygwin\linker.ld");
             string ObjDumpPath = Path.Combine(executionPath, @"cygwin\objdump.exe");
             string workingDir = Path.GetDirectoryName(outputFilePath);
 
@@ -553,9 +554,10 @@ namespace Kernel.Compiler
             {
                 File.Delete(aBinPathname);
             }
-            OK = ExecuteProcess(workingDir, LdPath, String.Format("-Ttext 0x2000000 -Tdata 0x1000000 -e Kernel_Start -o '{0}' '{1}'",
+            OK = ExecuteProcess(workingDir, LdPath, String.Format("-T '{2}' -e Kernel_Start -o '{0}' '{1}'",
                                                   aBinPathname,
-                                                  aObjPathname), 
+                                                  aObjPathname,
+                                                  LinkScriptPath), 
                                                   "Ld");
 
             if (OK)

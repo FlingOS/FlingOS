@@ -44,6 +44,11 @@ namespace Kernel
         [Compiler.NoDebug]
         public static void Init()
         {
+#warning This needs rewriting to allow for the whole higher-half kernel thing!
+#pragma warning disable
+            //TODO - Remove the warnings disables (they prevent the "unreachable code detected" warning)
+            return;
+
             LoadPaging();
             if (LoadedPaging)
             {
@@ -55,6 +60,7 @@ namespace Kernel
             {
                 BasicConsole.Write("Paging setup failed!");
             }
+#pragma warning restore
         }
 
         /// <summary>
@@ -137,15 +143,6 @@ namespace Kernel
                     startPDIndex + ", " + endPDIndex
                     ));
             }
-            //if (endPDIndex != startPDIndex)
-            //{
-            //    ExceptionMethods.Throw(new FOS_System.Exception(
-            //        ((FOS_System.String)"Unable to set up paging! endPDIndex != startPDIndex : ") +
-            //        startPDIndex + ", " + endPDIndex
-            //        ));
-            //}
-            //else
-            //{
             
             uint address = ((uint)kernel_MemStartPtr) & 0xFFFFF000;
             uint startPT = startPTIndex;
@@ -185,7 +182,6 @@ namespace Kernel
 #endif
 
             LoadedPaging = true;
-            //}
         }
 
         /// <summary>

@@ -1,4 +1,6 @@
 ; BEGIN - Handle No Multiboot
+jmp Kernel_Start_HandleNoMultiboot_End ; Skip over this code - we don't want to run it by accident!
+
 Kernel_Start_HandleNoMultiboot:
 
 ; Not entirely sure if we'd ever actually get as far as due to code structure but anyway...
@@ -42,4 +44,5 @@ Kernel_Start_HandleNoMultiboot:
 	cli ; Prevent any more interrupt requests re-awakening us
 	hlt ; Halt the OS / execution / etc.
 	jmp Kernel_Start_HandleNoMultiboot ; Just in case...
+Kernel_Start_HandleNoMultiboot_End:
 ; END - Handle No Multiboot

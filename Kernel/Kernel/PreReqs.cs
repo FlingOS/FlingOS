@@ -39,7 +39,7 @@ namespace Kernel
         /// Inserts the multiboot signature at the start of the file.
         /// </summary>
         [Compiler.PluggedMethod(ASMFilePath = @"ASM\PreReqs\MultibootSignature")]
-        [Compiler.SequencePriority(Priority = long.MinValue)]
+        [Compiler.SequencePriority(Priority = long.MinValue + 0)]
         private static void MultibootSignature()
         {
         }
@@ -54,12 +54,21 @@ namespace Kernel
         }
 
         /// <summary>
+        /// Initialises virtual memory (i.e. shifts to higher-half kernel).
+        /// </summary>
+        [Compiler.PluggedMethod(ASMFilePath = @"ASM\PreReqs\VirtualMemInit")]
+        [Compiler.SequencePriority(Priority = long.MinValue + 2)]
+        private static void VirtualMemInit()
+        {
+        }
+
+        /// <summary>
         /// Inserts the initialise stack code. 
         /// Kernel stack space is currently hard-coded into the 
         /// Multiboot Signature asm.
         /// </summary>
         [Compiler.PluggedMethod(ASMFilePath = @"ASM\PreReqs\InitStack")]
-        [Compiler.SequencePriority(Priority = long.MinValue + 2)]
+        [Compiler.SequencePriority(Priority = long.MinValue + 3)]
         private static void InitStack()
         {
         }
@@ -68,7 +77,7 @@ namespace Kernel
         /// Initialises the Global Descriptor Table.
         /// </summary>
         [Compiler.PluggedMethod(ASMFilePath = @"ASM\Descriptor Tables\GDT")]
-        [Compiler.SequencePriority(Priority = long.MinValue + 3)]
+        [Compiler.SequencePriority(Priority = long.MinValue + 4)]
         private static void InitGDT()
         {
         }
@@ -77,7 +86,7 @@ namespace Kernel
         /// Initialises the Interrupt Descriptor Table.
         /// </summary>
         [Compiler.PluggedMethod(ASMFilePath = @"ASM\Descriptor Tables\IDT")]
-        [Compiler.SequencePriority(Priority = long.MinValue + 4)]
+        [Compiler.SequencePriority(Priority = long.MinValue + 5)]
         private static void InitIDT()
         {
         }
@@ -86,26 +95,8 @@ namespace Kernel
         /// Initialises CPU SSE commands (i.e. allows them to be used).
         /// </summary>
         [Compiler.PluggedMethod(ASMFilePath = @"ASM\PreReqs\SSEInit")]
-        [Compiler.SequencePriority(Priority = long.MinValue + 5)]
-        private static void SSEInit()
-        {
-        }
-
-        /// <summary>
-        /// Inserts the stub that calls the main kernel entrypoint.
-        /// </summary>
-        [Compiler.PluggedMethod(ASMFilePath = @"ASM\PreReqs\MainEntrypoint")]
         [Compiler.SequencePriority(Priority = long.MinValue + 6)]
-        private static void MainEntrypoint()
-        {
-        }
-
-        /// <summary>
-        /// Resets the OS / CPU / etc. i.e. terminates the OS
-        /// </summary>
-        [Compiler.PluggedMethod(ASMFilePath = @"ASM\PreReqs\Reset")]
-        [Compiler.SequencePriority(Priority = long.MinValue + 7)]
-        public static void Reset()
+        private static void SSEInit()
         {
         }
 
@@ -114,11 +105,29 @@ namespace Kernel
         /// Signature is invalid or undetected.
         /// </summary>
         [Compiler.PluggedMethod(ASMFilePath = @"ASM\PreReqs\HandleNoMultiboot")]
-        [Compiler.SequencePriority(Priority = long.MinValue + 8)]
+        [Compiler.SequencePriority(Priority = long.MinValue + 7)]
         private static void HandleNoMultiboot()
         {
         }
+        
+        /// <summary>
+        /// Inserts the stub that calls the main kernel entrypoint.
+        /// </summary>
+        [Compiler.PluggedMethod(ASMFilePath = @"ASM\PreReqs\MainEntrypoint")]
+        [Compiler.SequencePriority(Priority = long.MinValue + 8)]
+        private static void MainEntrypoint()
+        {
+        }
 
+        /// <summary>
+        /// Resets the OS / CPU / etc. i.e. terminates the OS
+        /// </summary>
+        [Compiler.PluggedMethod(ASMFilePath = @"ASM\PreReqs\Reset")]
+        [Compiler.SequencePriority(Priority = long.MinValue + 9)]
+        public static void Reset()
+        {
+        }
+        
         /// <summary>
         /// Writes a piece of text to the first line of the screen. Note: Does not use same string memory structure as C# so cannot be called
         /// from C#. Uses format of: Length as DWORD, Characters as BYTE
@@ -126,7 +135,7 @@ namespace Kernel
         /// <param name="aText">The text to write. First dword should be the length of the string. (Inserted by compiler for string literals)</param>
         /// <param name="aColour">The foreground/background (DOS) colour to write in - 0xXY where X is background colour and Y is foreground colour.</param>
         [Compiler.PluggedMethod(ASMFilePath = @"ASM\PreReqs\WriteDebugVideo")]
-        [Compiler.SequencePriority(Priority = long.MinValue + 9)]
+        [Compiler.SequencePriority(Priority = long.MinValue + 10)]
         private static void WriteDebugVideo(string aText, UInt32 aColour)
         {
         }

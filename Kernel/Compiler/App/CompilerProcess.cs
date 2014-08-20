@@ -405,7 +405,7 @@ namespace Kernel.Compiler.App
                     }
                 }
             }
-            //Always run cleanup unless it waqs settings failure
+            //Always run cleanup unless it was settings failure
             if(resultCode != ErrorCodes.InitSettingsFail)
             {
                 try

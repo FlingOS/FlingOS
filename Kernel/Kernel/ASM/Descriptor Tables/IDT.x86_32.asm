@@ -297,11 +297,6 @@ IRet
 CommonInterruptHandler%1:
 	pushad
 
-	; push dword Interrupt124HandlerMsg
-	; push dword 0x02
-	; call method_System_Void_RETEND_Kernel_PreReqs_DECLEND_WriteDebugVideo_NAMEEND__System_String_System_UInt32_
-	; add esp, 8
-	
 	; in al, 0x60  ; read information from the keyboard - REQUIRED for keyboard interrupt else keyboard won't think the
 				 ;										character has been handled so won't send interrupts for any 
 				 ;										more keys!
