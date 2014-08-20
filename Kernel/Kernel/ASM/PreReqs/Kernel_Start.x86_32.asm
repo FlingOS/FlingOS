@@ -25,8 +25,5 @@ _Kernel_Start:
 	mov dword EAX, [EBX]
 	mov dword [MultiBootInfo_Memory_High - KERNEL_VIRTUAL_BASE], EAX
 	
-	lea eax, [Kernel_Start_HandleNoMultiboot - KERNEL_VIRTUAL_BASE]
-	call eax
-
 	; END - Multiboot Info
 ; END - Kernel Start

@@ -62,6 +62,8 @@ mov ecx, cr0
 or ecx, 0x80000000   ; Set PG bit in CR0 to enable paging.
 mov cr0, ecx
 
+	lea eax, [Kernel_Start_HandleNoMultiboot - KERNEL_VIRTUAL_BASE]
+	call eax
 
 ; 5. Load a continuation label's virtual address
 ;		Use lea to load virtual address of a label immediately following the instruction
