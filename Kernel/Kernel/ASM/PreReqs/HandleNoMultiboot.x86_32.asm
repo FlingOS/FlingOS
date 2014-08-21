@@ -41,8 +41,9 @@ Kernel_Start_HandleNoMultiboot:
 	mov byte [0xB8015], al
 	mov byte [0xB8017], al
 
-	; cli ; Prevent any more interrupt requests re-awakening us
-	; hlt ; Halt the OS / execution / etc.
-	; jmp Kernel_Start_HandleNoMultiboot ; Just in case...
+	cli ; Prevent any more interrupt requests re-awakening us
+	hlt ; Halt the OS / execution / etc.
+	jmp Kernel_Start_HandleNoMultiboot ; Just in case...
+
 Kernel_Start_HandleNoMultiboot_End:
 ; END - Handle No Multiboot

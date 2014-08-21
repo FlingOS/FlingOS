@@ -321,7 +321,7 @@ CommonInterruptHandler%1:
 
 ; END - Common interrupt handlers
 
-SkipIDTHandlers:
+SkipIDTHandlers:	
 pic_remap:
 ; Remap IRQs 0-7    to    ISRs 32-39
 ; and   IRQs 8-15    to    ISRs 40-47

@@ -11,29 +11,7 @@ MultiBootInfo_Memory_Low dd 0
 
 
 KERNEL_VIRTUAL_BASE equ 0xC0000000					; 3GiB
-KERNEL_PAGE_NUMBER equ (KERNEL_VIRTUAL_BASE >> 22)  ; Page directory index of kernel's 4MiB PTE.
-
-align 0x1000
-BootPageDirectory:
-    ; This page directory entry identity-maps the first 4MiB of the 32-bit physical address space.
-    ; All bits are clear except the following:
-    ; bit 7: PS The kernel page is 4MiB.
-    ; bit 1: RW The kernel page is read/write.
-    ; bit 0: P  The kernel page is present.
-    ; This entry must be here -- otherwise the kernel will crash immediately after paging is
-    ; enabled because it can't fetch the next instruction! It's ok to unmap this page later.
-    dd 0x00000083
-    times (KERNEL_PAGE_NUMBER - 1) dd 0                 ; Pages before kernel space.
-    ; These page directory entries define identity mapping of 4MiB pages containing the entire kernel and everything after the kernel too.
-	%macro BootPageDirectory_KernelVirtEntries 1
-		dd %1
-	%endmacro
-	%assign addr 0x00000083
-    %rep (1024 - KERNEL_PAGE_NUMBER - 1)
-		BootPageDirectory_KernelVirtEntries addr
-		%assign addr addr+0x400000
-	%endrep
-
+KERNEL_PAGE_NUMBER equ (KERNEL_VIRTUAL_BASE >> 22)
 
 Kernel_MemStart:
 

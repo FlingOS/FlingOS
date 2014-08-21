@@ -94,4 +94,12 @@ Page_Table_Kernel: TIMES 196608 dd 0
 
 Kernel_MemEnd:
 
+
+align 0x1000
+BootPage0: times 1048576 dd 0
+
+align 0x1000
+BootPageDirectory: times 1024 dd 0
+
+
 ; END - Paging

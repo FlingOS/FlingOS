@@ -1,4 +1,5 @@
 ; BEGIN - SSE Init
+jmp SkipSSEInit
 mov dword EAX, CR4
 or dword EAX, 0x100
 mov dword CR4, EAX
@@ -11,4 +12,5 @@ mov dword CR0, EAX
 mov dword EAX, CR0
 and dword EAX, 0x1
 mov dword CR0, EAX
+SkipSSEInit:
 ; END - SSE Init
