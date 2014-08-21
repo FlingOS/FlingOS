@@ -13,9 +13,6 @@ __MAIN_ENTRYPOINT__:
 	; We shouldn't ever get to this point! But just in case we do...
 	jmp method_System_Void_Kernel_PreReqs_Reset__ ; For now this is our intended behaviour
 
-	pop dword ebp
-
-	ret 0x0
 ; END - Main Entrypoint
 
 ; BEGIN - GetEIP
