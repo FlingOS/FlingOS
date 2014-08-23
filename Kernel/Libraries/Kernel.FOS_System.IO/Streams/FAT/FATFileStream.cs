@@ -17,7 +17,7 @@
 #endregion
     
 #define FATFileStream_TRACE
-#undef FATFileStream_TRACE
+//#undef FATFileStream_TRACE
     
 using System;
 
@@ -243,7 +243,7 @@ namespace Kernel.FOS_System.IO.Streams.FAT
                     uint xReadSize;
                     if (xPosInCluster + xCount > xClusterSize)
                     {
-                        xReadSize = (xClusterSize - xPosInCluster - 1);
+                        xReadSize = xClusterSize - xPosInCluster;
                     }
                     else
                     {
@@ -255,13 +255,13 @@ namespace Kernel.FOS_System.IO.Streams.FAT
                     offset += (int)xReadSize;
                     xCount -= (ulong)xReadSize;
                     read += (int)xReadSize;
+                    mPosition += xReadSize;
                 }
 
 #if FATFileStream_TRACE
                 BasicConsole.WriteLine("Read data.");
 #endif
 
-                mPosition += (ulong)offset;
                 return read;
             }
             else
