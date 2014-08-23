@@ -70,9 +70,7 @@ namespace Kernel
             BasicConsole.WriteLine("Fling OS Running...");
 
             try
-            {
-                Paging.Init();
-                
+            {                
                 Hardware.Devices.CPU.InitDefault();
                 Hardware.Devices.Timer.InitDefault();
                 Hardware.Devices.Keyboard.InitDefault();

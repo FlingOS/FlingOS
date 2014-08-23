@@ -37,167 +37,133 @@ namespace Kernel
         /// Whether paging has been loaded or not.
         /// </summary>
         static bool LoadedPaging = false;
-
-        /// <summary>
-        /// Initializes paged virtual memory.
-        /// </summary>
-        [Compiler.NoDebug]
-        public static void Init()
-        {
-#warning This needs rewriting to allow for the whole higher-half kernel thing!
-#pragma warning disable
-            //TODO - Remove the warnings disables (they prevent the "unreachable code detected" warning)
-            return;
-
-            LoadPaging();
-            if (LoadedPaging)
-            {
-                EnablePaging();
-
-                BasicConsole.WriteLine("Paging enabled.");
-            }
-            else
-            {
-                BasicConsole.Write("Paging setup failed!");
-            }
-#pragma warning restore
-        }
-
-        /// <summary>
-        /// Loads paged virtual memory.
-        /// </summary>
-        [Compiler.NoDebug]
-        private static void LoadPaging()
-        {
-            //Load empty page directory
-            uint* page_directory = GetPageDirectoryPtr();
-            for (int i = 0; i < 1024; i++)
-            {
-                //attribute: supervisor level, read/write, not present.
-                page_directory[i] = 0 | 2;
-            }
-
-            //Initially identity page everything
-            //uint* page_table = GetFirstPageTablePtr();
-            //uint address = 0;
-            //for (int pageTableNum = 0; pageTableNum < 1024; pageTableNum++, page_table += 1024)
-            //{
-            //    for (int i = 0; i < 1024; i++)
-            //    {
-            //        page_table[i] = address | 3; // attributes: supervisor level, read/write, present.
-            //        address += 4096; //advance the address to the next page boundary
-            //    }
-
-            //    page_directory[pageTableNum] = (uint)page_table;
-            //    page_directory[pageTableNum] |= 3;// attributes: supervisor level, read/write, present
-            //}
-
-            //Create the self-referencing page-directory / table
-            page_directory[1023] = ((uint)page_directory) | 3;
-            
-            //Map the first 4MB
-            uint* first_page_table = GetFirstPageTablePtr();
-            uint address = 0;
-            for(uint i = 0; i < 1024; i++)
-            {
-                first_page_table[i] = address | 3;
-                address += 4096;
-            }
-            page_directory[0] = (uint)(first_page_table) | 3;
-
-            //TODO - Remove this nasty hack (put in place so I could develop USB EHCI driver)
-            //Map the USB 4MB
-            uint* usb_page_table = GetUSBPageTablePtr();
-            address = 1013u * 1024u * 4096u;
-            for (uint i = 0; i < 1024; i++)
-            {
-                usb_page_table[i] = address | 3;
-                address += 4096;
-            }
-            page_directory[1013] = (uint)(usb_page_table) | 3;
-            
-            InitKernelPages();
-        }
-        /// <summary>
-        /// Initializes the pages that cover the kernel's memory.
-        /// </summary>
-        [Compiler.NoDebug]
-        private static void InitKernelPages()
-        {
-            uint* page_directory = GetPageDirectoryPtr();
-
-            //Initially, set up identity paged memory only for the kernel's required amount
-            uint* kernel_page_table = GetKernelPageTablePtr();
-            uint* kernel_page_table_end = kernel_page_table + (1024 * 48);
-            uint* kernel_MemStartPtr = GetKernelMemStartPtr();
-            uint* kernel_MemEndPtr = GetKernelMemEndPtr();
-            uint startPDIndex = (uint)kernel_MemStartPtr >> 22;
-            uint startPTIndex = ((uint)kernel_MemStartPtr >> 12) & 0x03FF;
-            uint endPDIndex = (uint)kernel_MemEndPtr >> 22;
-            uint endPTIndex = ((uint)kernel_MemEndPtr >> 12) & 0x03FF;
-
-            if (endPDIndex - startPDIndex > 32)
-            {
-                ExceptionMethods.Throw(new FOS_System.Exception(
-                    ((FOS_System.String)"Unable to set up paging! Insufficient pages! : ") +
-                    startPDIndex + ", " + endPDIndex
-                    ));
-            }
-            
-            uint address = ((uint)kernel_MemStartPtr) & 0xFFFFF000;
-            uint startPT = startPTIndex;
-            uint endPT = 0;
-            for (uint j = startPDIndex; j <= endPDIndex; j++)
-            {
-                endPT = j == endPDIndex ? endPTIndex : 1023;
-
-#if PAGING_TRACE
-                BasicConsole.WriteLine(((FOS_System.String)"      PD Index: ") + j);
-                BasicConsole.WriteLine(((FOS_System.String)"Start PT Index: ") + startPT);
-                BasicConsole.WriteLine(((FOS_System.String)"  End PT Index: ") + endPT);
-                BasicConsole.WriteLine(((FOS_System.String)" Start Address: ") + address);
-                BasicConsole.DelayOutput(1);
-#endif
-
-                page_directory[j] = ((uint)kernel_page_table) | 3;
                 
-                for (uint i = startPT; i <= endPT; i++)
-                {                    
-                    kernel_page_table[i] = address | 3;
-                    address += 4096;
-                }
+        public static void TestPaging()
+        {
+            BasicConsole.WriteLine("Testing paging...");
 
-                if (kernel_page_table == kernel_page_table_end)
+            try
+            {
+                uint pAddr = 0x40000000;
+                uint vAddr1 = 0x40000000;
+                uint vAddr2 = 0x60000000;
+                uint* vPtr1 = (uint*)vAddr1;
+                uint* vPtr2 = (uint*)vAddr2;
+
+                BasicConsole.WriteLine("Set up addresses.");
+                BasicConsole.WriteLine(((FOS_System.String)"pAddr=") + pAddr);
+                BasicConsole.WriteLine(((FOS_System.String)"vAddr1=") + vAddr1);
+                BasicConsole.WriteLine(((FOS_System.String)"vAddr2=") + vAddr2);
+                BasicConsole.WriteLine(((FOS_System.String)"vPtr1=") + (uint)vPtr1);
+                BasicConsole.WriteLine(((FOS_System.String)"vPtr2=") + (uint)vPtr2);
+
+                Map(pAddr, vAddr1);
+                BasicConsole.WriteLine("Mapped virtual address 1.");
+
+                Map(pAddr, vAddr2);
+                BasicConsole.WriteLine("Mapped virtual address 2.");
+
+                *vPtr1 = 5;
+                BasicConsole.WriteLine("Set value");
+                if (*vPtr1 != 5)
                 {
-                    BasicConsole.WriteLine("Out of pages to allocate for kernel!");
-                    return;
+                    BasicConsole.WriteLine("Failed test 1.");
+                }
+                else
+                {
+                    BasicConsole.WriteLine("Passed test 1.");
                 }
 
-                startPT = 0;
-
-                kernel_page_table += 1024;
+                if (*vPtr2 != 5)
+                {
+                    BasicConsole.WriteLine("Failed test 2.");
+                }
+                else
+                {
+                    BasicConsole.WriteLine("Passed test 2.");
+                }
             }
-#if PAGING_TRACE
-            BasicConsole.WriteLine("Kernel mapping completed.");
-#endif
+            catch
+            {
+                BasicConsole.WriteLine("Exception. Test failed.");
+            }
 
-            LoadedPaging = true;
+            BasicConsole.WriteLine("Test completed.");
+
+            Hardware.Devices.Timer.InitDefault();
+            Hardware.Devices.Timer.Default.Wait(3000);
         }
 
-        /// <summary>
-        /// Enables paging.
-        /// </summary>
-        [Compiler.PluggedMethod(ASMFilePath = null)]
-        public static void EnablePaging()
+        public static void Map(uint pAddr, uint vAddr)
         {
+            BasicConsole.WriteLine("Mapping addresses...");
+            
+            uint pdIdx = vAddr >> 22;
+            uint ptIdx = (vAddr >> 12) & 0x03FF;
+
+            BasicConsole.WriteLine(((FOS_System.String)"pAddr=") + pAddr);
+            BasicConsole.WriteLine(((FOS_System.String)"vAddr=") + vAddr);
+            BasicConsole.WriteLine(((FOS_System.String)"pdIdx=") + pdIdx);
+            BasicConsole.WriteLine(((FOS_System.String)"ptIdx=") + ptIdx);
+
+            uint* ptPtr = GetFixedPage(pdIdx);
+            BasicConsole.WriteLine(((FOS_System.String)"ptPtr=") + (uint)ptPtr);
+            
+            SetPageEntry(ptPtr, ptIdx, pAddr);
+            SetDirectoryEntry(pdIdx, (uint*)((uint)ptPtr - GetVToPOffset()));
+
+            InvalidatePTE(vAddr);
+        }
+
+        private static uint* GetFixedPage(uint pageNum)
+        {
+            return GetFirstPageTablePtr() + (1024 * pageNum);
+        }
+        private static void SetPageEntry(uint* pageTablePtr, uint entry, uint addr)
+        {
+            BasicConsole.WriteLine("Setting page entry...");
+            BasicConsole.WriteLine(((FOS_System.String)"pageTablePtr=") + (uint)pageTablePtr);
+            BasicConsole.WriteLine(((FOS_System.String)"entry=") + entry);
+            BasicConsole.WriteLine(((FOS_System.String)"addr=") + addr);
+            pageTablePtr[entry] = addr | 3;
+
+            if(pageTablePtr[entry] != (addr | 3))
+            {
+                BasicConsole.WriteLine("Set page entry verification failed.");
+            }
+        }
+        private static void SetDirectoryEntry(uint pageNum, uint* pageTablePhysPtr)
+        {
+            uint* dirPtr = GetPageDirectoryPtr();
+            BasicConsole.WriteLine("Setting directory entry...");
+            BasicConsole.WriteLine(((FOS_System.String)"dirPtr=") + (uint)dirPtr);
+            BasicConsole.WriteLine(((FOS_System.String)"pageTablePhysPtr=") + (uint)pageTablePhysPtr);
+            BasicConsole.WriteLine(((FOS_System.String)"pageNum=") + pageNum);
+
+            dirPtr[pageNum] = (uint)pageTablePhysPtr | 3;
+
+            if (dirPtr[pageNum] != ((uint)pageTablePhysPtr | 3))
+            {
+                BasicConsole.WriteLine("Set directory entry verification failed.");
+            }
+        }
+        [Compiler.PluggedMethod(ASMFilePath = @"ASM\Paging\Paging")]
+        [Compiler.SequencePriority(Priority = long.MaxValue)]
+        private static void InvalidatePTE(uint entry)
+        {
+
+        }
+        [Compiler.PluggedMethod(ASMFilePath = null)]
+        public static uint GetVToPOffset()
+        {
+            return 0;
         }
 
         /// <summary>
         /// Gets the page directory memory pointer.
         /// </summary>
         /// <returns>The pointer.</returns>
-        [Compiler.PluggedMethod(ASMFilePath = @"ASM\Paging\Paging")]
-        [Compiler.SequencePriority(Priority = long.MaxValue)]
+        [Compiler.PluggedMethod(ASMFilePath = null)]
         public static uint* GetPageDirectoryPtr()
         {
             return null;
@@ -208,24 +174,6 @@ namespace Kernel
         /// <returns>The pointer.</returns>
         [Compiler.PluggedMethod(ASMFilePath = null)]
         public static uint* GetFirstPageTablePtr()
-        {
-            return null;
-        }
-        /// <summary>
-        /// TODO - Remove this hacky piece of junk
-        /// </summary>
-        /// <returns>The pointer.</returns>
-        [Compiler.PluggedMethod(ASMFilePath = null)]
-        public static uint* GetUSBPageTablePtr()
-        {
-            return null;
-        }
-        /// <summary>
-        /// Gets a pointer to the page table that covers the kernel's memory.
-        /// </summary>
-        /// <returns>The pointer.</returns>
-        [Compiler.PluggedMethod(ASMFilePath = null)]
-        public static uint* GetKernelPageTablePtr()
         {
             return null;
         }

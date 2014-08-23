@@ -29,27 +29,28 @@ VirtualMemInit:
 
 ; TODO - Unhack this identity mapping shizzle
 
-lea eax, [BootPage0 - KERNEL_VIRTUAL_BASE]
+lea eax, [Page_Table1 - KERNEL_VIRTUAL_BASE]
 mov ebx, 3
-mov ecx, (768 * 1024)
+mov ecx, (49 * 1024)
 .Loop1:
 mov [eax], ebx
 add eax, 4
 add ebx, 4096
 loop .Loop1
 
-lea eax, [BootPage0 - KERNEL_VIRTUAL_BASE]
+lea eax, [Page_Table1 - KERNEL_VIRTUAL_BASE]
 add eax, 0x300000
 mov ebx, 3
-mov ecx, (256 * 1024)
+mov ecx, (49 * 1024)
 .Loop2:
 mov [eax], ebx
 add eax, 4
 add ebx, 4096
 loop .Loop2
 
-lea ebx, [BootPage0 - KERNEL_VIRTUAL_BASE]
-lea edx, [BootPageDirectory - KERNEL_VIRTUAL_BASE]
+
+lea ebx, [Page_Table1 - KERNEL_VIRTUAL_BASE]
+lea edx, [Page_Directory - KERNEL_VIRTUAL_BASE]
 or ebx, 3
 mov ecx, 1024
 .Loop3:
@@ -73,7 +74,7 @@ loop .Loop3
 ;		This requires us to load the physical address of the page directory
 ;		then move it into cr3
 
-lea ecx, [BootPageDirectory - KERNEL_VIRTUAL_BASE]
+lea ecx, [Page_Directory - KERNEL_VIRTUAL_BASE]
 mov cr3, ecx
 
 ; 4. Switch on paging

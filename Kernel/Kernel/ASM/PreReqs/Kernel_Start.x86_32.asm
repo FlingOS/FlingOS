@@ -25,5 +25,10 @@ _Kernel_Start:
 	mov dword EAX, [EBX]
 	mov dword [MultiBootInfo_Memory_High - KERNEL_VIRTUAL_BASE], EAX
 	
+	; Enable Protected Mode
+	mov eax, cr0
+	or eax, 0x1
+	mov cr0, eax
+	
 	; END - Multiboot Info
 ; END - Kernel Start

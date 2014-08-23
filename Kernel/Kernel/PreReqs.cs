@@ -90,16 +90,7 @@ namespace Kernel
         private static void InitIDT()
         {
         }
-
-        /// <summary>
-        /// Initialises CPU SSE commands (i.e. allows them to be used).
-        /// </summary>
-        [Compiler.PluggedMethod(ASMFilePath = @"ASM\PreReqs\SSEInit")]
-        [Compiler.SequencePriority(Priority = long.MinValue + 6)]
-        private static void SSEInit()
-        {
-        }
-
+        
         /// <summary>
         /// Inserts the method that handles what happens when the Multiboot
         /// Signature is invalid or undetected.
