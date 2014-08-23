@@ -19,8 +19,10 @@
 #define EHCI_TRACE
 #undef EHCI_TRACE
 
-#define EHCI_TESTS
-#undef EHCI_TESTS //Note: Also comment out the undef in EHCITesting.cs
+#if EHCI_TRACE
+    #define EHCI_TESTS
+    #undef EHCI_TESTS //Note: Also comment out the undef in EHCITesting.cs
+#endif
 
 using System;
 using Kernel.FOS_System.Collections;
@@ -296,7 +298,7 @@ namespace Kernel.Hardware.USB.HCIs
     /// </summary>
     public unsafe class EHCI : HCI
     {
-        //TODO - Reprogram bits of this to handle physical-to-virtual and reverse conversions where necessary
+        //TODO - Perhaps should avoid using identity mapping for registers etc? 
 
         /*
          * Based on the Intel EHCI Specification for USB 2.0
@@ -680,6 +682,15 @@ namespace Kernel.Hardware.USB.HCIs
         protected EHCI_QueueHead_Struct* TailQueueHead = null;
 
         /// <summary>
+        /// Whether the EHCI has hit a host system error or not.
+        /// </summary>
+        public bool HostSystemError = false;
+        /// <summary>
+        /// Whether the EHCI has hit an unrecoverable error or not.
+        /// </summary>
+        public bool IrrecoverableError = false;
+
+        /// <summary>
         /// Initialises a new EHCI device using the specified PCI device. Includes starting the host controller.
         /// </summary>
         /// <param name="aPCIDevice">The PCI device that represents the physical EHCI device.</param>
@@ -703,6 +714,10 @@ namespace Kernel.Hardware.USB.HCIs
 #endif
 
             usbBaseAddress = (byte*)((uint)pciDevice.BaseAddresses[0].BaseAddress() & 0xFFFFFF00);
+
+            //Map in the required memory - we will use identity mapping for the PCI / USB registers for now
+            VirtMemManager.Map((uint)usbBaseAddress & 0xFFFFF000, (uint)usbBaseAddress & 0xFFFFF000, 4096);
+
             CapabilitiesRegAddr = usbBaseAddress;
 #if EHCI_TRACE
             DBGMSG("CapabilitiesRegAddr: " + (FOS_System.String)(uint)CapabilitiesRegAddr);
@@ -739,7 +754,13 @@ namespace Kernel.Hardware.USB.HCIs
         /// </summary>
         public override void Update()
         {
-            if (AnyPortsChanged)
+            if(IrrecoverableError)
+            {
+#if EHCI_TRACE
+                BasicConsole.WriteLine("EHCI controller has hit an irrecoverable error!");
+#endif
+            }
+            else if (AnyPortsChanged)
             {
                 PortCheck();
             }
@@ -805,11 +826,7 @@ namespace Kernel.Hardware.USB.HCIs
             CONFIGFLAG = EHCI_Consts.CF; //Set port routing to route all ports to EHCI
 
             //Is this delay necessary? If so, why?
-            //TODO: Use Timer.Wait(100)
-            for (int i = 1000000; i > 0; i--)
-            {
-                ;
-            }
+            Hardware.Devices.Timer.Default.Wait(100);
         }
         /// <summary>
         /// Resets the host controller and consequently all ports.
@@ -822,9 +839,7 @@ namespace Kernel.Hardware.USB.HCIs
             while (!HCHalted)
             {
                 //Sleep for a bit
-                for (int i = 0; i < 100000; i++)
-                    ;
-                //TODO: Use Timer.Default.Wait(10)
+                Hardware.Devices.Timer.Default.Wait(10);
             }
 
             USBCMD |= EHCI_Consts.CMD_HCResetMask; //Set reset bit
@@ -832,9 +847,7 @@ namespace Kernel.Hardware.USB.HCIs
             int timeout = 30;
             while ((USBCMD & EHCI_Consts.CMD_HCResetMask) != 0) // Reset-bit still set to 1
             {
-                for (int i = 0; i < 100000; i++)
-                    ;
-                //TODO: Use Timer.Default.Wait(10)
+                Hardware.Devices.Timer.Default.Wait(10);
 
                 timeout--;
                 if (timeout==0)
@@ -906,9 +919,7 @@ namespace Kernel.Hardware.USB.HCIs
                     while ((pciDevice.ReadRegister8(BIOSownedSemaphore) & 0x01) != 0 && (timeout > 0))
                     {
                         timeout--;
-                        for(int i = 0; i < 100000; i++)
-                            ;
-                        //TODO: Use Timer.Default.Wait(10)
+                        Hardware.Devices.Timer.Default.Wait(10);
                     }
                     if ((pciDevice.ReadRegister8(BIOSownedSemaphore) & 0x01) == 0) // not set
                     {
@@ -919,9 +930,7 @@ namespace Kernel.Hardware.USB.HCIs
                         while ((pciDevice.ReadRegister8(OSownedSemaphore) & 0x01) == 0 && (timeout > 0))
                         {
                             timeout--;
-                            for(int i = 0; i < 100000; i++)
-                                ;
-                            //TODO: Use Timer.Default.Wait(10)
+                            Hardware.Devices.Timer.Default.Wait(10);
                         }
                     }
 #if EHCI_TRACE
@@ -1000,9 +1009,7 @@ namespace Kernel.Hardware.USB.HCIs
             PORTSC[portNum] |= EHCI_Consts.PSTS_PortReset;
 
             //~200ms
-            for (int i = 0; i < 2000000; i++)
-                ;
-            //TODO: Use Timer.Default.Wait(200)
+            Hardware.Devices.Timer.Default.Wait(200);
 
             PORTSC[portNum] &= ~EHCI_Consts.PSTS_PortReset;
 
@@ -1012,9 +1019,7 @@ namespace Kernel.Hardware.USB.HCIs
             while ((PORTSC[portNum] & EHCI_Consts.PSTS_PortReset) != 0)
             {
                 // ~1ms
-                for (int i = 0; i < 10000; i++)
-                    ;
-                //TODO: Use Timer.Default.Wait(1)
+                Hardware.Devices.Timer.Default.Wait(1);
 
                 timeout--;
                 if (timeout == 0)
@@ -1032,9 +1037,7 @@ namespace Kernel.Hardware.USB.HCIs
                       EHCI_Consts.STS_USBInterrupt | EHCI_Consts.STS_USBErrorInterrupt;
 
             //~20ms
-            for (int i = 0; i < 200000; i++)
-                ;
-            //TODO: Use Timer.Default.Wait(20)
+            Hardware.Devices.Timer.Default.Wait(20);
         }
         /// <summary>
         /// The static wrapper for the interrupt handler.
@@ -1065,7 +1068,7 @@ namespace Kernel.Hardware.USB.HCIs
             USBSTS = val; //Reset interrupt
 
 #if EHCI_TRACE
-            if((val & EHCI_Consts.STS_USBERRINT) != 0u)
+            if((val & EHCI_Consts.STS_USBErrorInterrupt) != 0u)
             {
                 USBIntCount--;
 
@@ -1084,7 +1087,27 @@ namespace Kernel.Hardware.USB.HCIs
 
             if ((val & EHCI_Consts.STS_HostSystemError) != 0u)
             {
-                Start();
+                //If we don't do this, we get stuck in an infinite-loop
+                //  of "Start HC -> (Host Error) -> Interrupt -> Start HC -> ..."
+                if (HostSystemError)
+                {
+                    IrrecoverableError = true;
+
+#if EHCI_TRACE
+                    BasicConsole.WriteLine("EHCI controller has hit an irrecoverable error!");
+#endif
+                }
+                
+                if (!IrrecoverableError)
+                {
+                    HostSystemError = true;
+                    //Attempt restart
+                    Start();
+                }
+            }
+            else
+            {
+                HostSystemError = false;
             }
 
             if ((val & EHCI_Consts.STS_USBInterrupt) != 0u)
@@ -1238,7 +1261,7 @@ namespace Kernel.Hardware.USB.HCIs
             {
                 EHCITransaction eLastTransaction = (EHCITransaction)((USBTransaction)(transfer.transactions[transfer.transactions.Count - 1])).underlyingTz;
                 EHCI_qTD lastQTD = new EHCI_qTD(eLastTransaction.qTD);
-                lastQTD.NextqTDPointer = eTransaction.qTD;
+                lastQTD.NextqTDPointer = (EHCI_qTD_Struct*)VirtMemManager.GetPhysicalAddress(eTransaction.qTD);
                 lastQTD.NextqTDPointerTerminate = false;
             }
         }
@@ -1285,7 +1308,7 @@ namespace Kernel.Hardware.USB.HCIs
             {
                 EHCITransaction eLastTransaction = (EHCITransaction)((USBTransaction)(transfer.transactions[transfer.transactions.Count - 1])).underlyingTz;
                 EHCI_qTD lastQTD = new EHCI_qTD(eLastTransaction.qTD);
-                lastQTD.NextqTDPointer = eTransaction.qTD;
+                lastQTD.NextqTDPointer = (EHCI_qTD_Struct*)VirtMemManager.GetPhysicalAddress(eTransaction.qTD);
                 lastQTD.NextqTDPointerTerminate = false;
             }
         }
@@ -1315,7 +1338,7 @@ namespace Kernel.Hardware.USB.HCIs
             {
                 EHCITransaction eLastTransaction = (EHCITransaction)((USBTransaction)(transfer.transactions[transfer.transactions.Count - 1])).underlyingTz;
                 EHCI_qTD lastQTD = new EHCI_qTD(eLastTransaction.qTD);
-                lastQTD.NextqTDPointer = eTransaction.qTD;
+                lastQTD.NextqTDPointer = (EHCI_qTD_Struct*)VirtMemManager.GetPhysicalAddress(eTransaction.qTD);
                 lastQTD.NextqTDPointerTerminate = false;
             }
         }
@@ -1334,8 +1357,8 @@ namespace Kernel.Hardware.USB.HCIs
             bool treeOK = true;
             for (int k = 0; k < transfer.transactions.Count - 1; k++)
             {
-                EHCITransaction transaction1 = (EHCITransaction)((USBTransaction)transfer.transactions[k]).data;
-                EHCITransaction transaction2 = (EHCITransaction)((USBTransaction)transfer.transactions[k + 1]).data;
+                EHCITransaction transaction1 = (EHCITransaction)((USBTransaction)transfer.transactions[k]).underlyingTz;
+                EHCITransaction transaction2 = (EHCITransaction)((USBTransaction)transfer.transactions[k + 1]).underlyingTz;
                 EHCI_qTD qtd1 = new EHCI_qTD(transaction1.qTD);
                 treeOK = treeOK && (qtd1.NextqTDPointer == transaction2.qTD) && !qtd1.NextqTDPointerTerminate;
             }
@@ -1355,7 +1378,7 @@ namespace Kernel.Hardware.USB.HCIs
                 transfer.success = true;
                 for (int k = 0; k < transfer.transactions.Count; k++)
                 {
-                    EHCITransaction transaction = (EHCITransaction)((USBTransaction)transfer.transactions[k]).data;
+                    EHCITransaction transaction = (EHCITransaction)((USBTransaction)transfer.transactions[k]).underlyingTz;
                     byte status = new EHCI_qTD(transaction.qTD).Status;
                     transfer.success = transfer.success && (status == 0 || status == Utils.BIT(0));
 
@@ -1447,7 +1470,7 @@ namespace Kernel.Hardware.USB.HCIs
                 IdleQueueHead = TailQueueHead = new EHCI_QueueHead().queueHead;
             }
             InitQH(IdleQueueHead, (uint)IdleQueueHead, null, true, 0, 0, 0);
-            ASYNCLISTADDR = IdleQueueHead;
+            ASYNCLISTADDR = (EHCI_QueueHead_Struct*)VirtMemManager.GetPhysicalAddress(IdleQueueHead);
             EnableAsyncSchedule();
         }
         /// <summary>
@@ -1464,9 +1487,7 @@ namespace Kernel.Hardware.USB.HCIs
                 if (timeout>0)
                 {
                     //~10ms
-                    for (int i = 0; i < 100000; i++)
-                        ;
-                    //TODO: Use Timer.Default.Wait(10)
+                    Hardware.Devices.Timer.Default.Wait(10);
                 }
                 else
                 {
@@ -1494,9 +1515,11 @@ namespace Kernel.Hardware.USB.HCIs
 
             EHCI_QueueHead idleQH = new EHCI_QueueHead(IdleQueueHead);
             EHCI_QueueHead tailQH = new EHCI_QueueHead(TailQueueHead);
-            tailQH.HorizontalLinkPointer = IdleQueueHead; // Create ring. Link new QH with idleQH (always head of Queue)
+            // Create ring. Link new QH with idleQH (always head of Queue)
+            tailQH.HorizontalLinkPointer = (EHCI_QueueHead_Struct*)VirtMemManager.GetPhysicalAddress(IdleQueueHead);
             tailQH.Type = 1;
-            oldTailQH.HorizontalLinkPointer = TailQueueHead; // Insert qh to Queue as element behind old queue head
+            // Insert qh to Queue as element behind old queue head
+            oldTailQH.HorizontalLinkPointer = (EHCI_QueueHead_Struct*)VirtMemManager.GetPhysicalAddress(TailQueueHead);
             oldTailQH.Type = 1;
 
             //int timeout = 10 * velocity + 25; // Wait up to 250+100*velocity milliseconds for USBasyncIntFlag to be set
@@ -1515,7 +1538,8 @@ namespace Kernel.Hardware.USB.HCIs
             //#endif
             //            }
 
-            idleQH.HorizontalLinkPointer = IdleQueueHead; // Restore link of idleQH to idleQH (endless loop)
+            // Restore link of idleQH to idleQH (endless loop)
+            idleQH.HorizontalLinkPointer = (EHCI_QueueHead_Struct*)VirtMemManager.GetPhysicalAddress(IdleQueueHead);
             idleQH.Type = 0x1;
             TailQueueHead = IdleQueueHead; // qh done. idleQH is end of Queue again (ring structure of asynchronous schedule)
         }
@@ -1538,7 +1562,7 @@ namespace Kernel.Hardware.USB.HCIs
         {
             EHCI_QueueHead head = new EHCI_QueueHead(headPtr);
             // bit 31:5 Horizontal Link Pointer
-            head.HorizontalLinkPointer = (EHCI_QueueHead_Struct*)(horizPtr);
+            head.HorizontalLinkPointer = (EHCI_QueueHead_Struct*)VirtMemManager.GetPhysicalAddress(horizPtr);
             head.Type = 0x1;      // type:  00b iTD,   01b QH,   10b siTD,   11b FSTN
             head.Terminate = false; // T-Bit: is set to zero
             head.DeviceAddress = deviceAddr;         // The device address
@@ -1562,7 +1586,7 @@ namespace Kernel.Hardware.USB.HCIs
             }
             else
             {
-                head.NextqTDPointer = firstQTD;
+                head.NextqTDPointer = (EHCI_qTD_Struct*)VirtMemManager.GetPhysicalAddress(firstQTD);
                 head.NextqTDPointerTerminate = false;
             }
         }
@@ -1635,7 +1659,7 @@ namespace Kernel.Hardware.USB.HCIs
             if ((uint)next != 0x1)
             {
                 newQTD.NextqTDPointerTerminate = false;
-                newQTD.NextqTDPointer = next;
+                newQTD.NextqTDPointer = (EHCI_qTD_Struct*)VirtMemManager.GetPhysicalAddress(next);
             }
             else
             {
@@ -1657,10 +1681,11 @@ namespace Kernel.Hardware.USB.HCIs
         /// <returns>A pointer to the new buffer.</returns>
         protected static void* AllocQTDbuffer(EHCI_qTD td)
         {
-            td.Buffer0 = (byte*)FOS_System.Heap.AllocZeroed(0x1000u, 0x1000u);
+            byte* result = (byte*)FOS_System.Heap.AllocZeroed(0x1000u, 0x1000u);
+            td.Buffer0 = (byte*)VirtMemManager.GetPhysicalAddress(result);
             td.CurrentPage = 0;
             td.CurrentOffset = 0;
-            return td.Buffer0;
+            return result;
         }
         
 #if EHCI_TRACE
@@ -1670,7 +1695,7 @@ namespace Kernel.Hardware.USB.HCIs
         }
 #endif
 
-#if EHCI_TRACE
+#if EHCI_TESTS
         #region EHCI Method Tests
 
         //SetupTransfer
