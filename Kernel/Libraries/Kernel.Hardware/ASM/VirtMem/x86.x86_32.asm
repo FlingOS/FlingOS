@@ -1,6 +1,6 @@
-﻿; BEGIN - Paging
+﻿; BEGIN - x86 Virt Mem
 
-method_System_UInt32_RETEND_Kernel_Paging_DECLEND_GetVToPOffset_NAMEEND___:
+method_System_UInt32_RETEND_Kernel_Hardware_VirtMem_x86_DECLEND_GetVToPOffset_NAMEEND___:
 
 push dword ebp
 mov dword ebp, esp
@@ -11,7 +11,7 @@ pop dword ebp
 
 ret
 
-method_System_UInt32__RETEND_Kernel_Paging_DECLEND_GetPageDirectoryPtr_NAMEEND___:
+method_System_UInt32__RETEND_Kernel_Hardware_VirtMem_x86_DECLEND_GetPageDirectoryPtr_NAMEEND___:
 
 push dword ebp
 mov dword ebp, esp
@@ -21,7 +21,7 @@ mov dword [ebp+8], Page_Directory
 pop dword ebp
 
 ret
-method_System_UInt32__RETEND_Kernel_Paging_DECLEND_GetFirstPageTablePtr_NAMEEND___:
+method_System_UInt32__RETEND_Kernel_Hardware_VirtMem_x86_DECLEND_GetFirstPageTablePtr_NAMEEND___:
 
 push dword ebp
 mov dword ebp, esp
@@ -33,7 +33,7 @@ pop dword ebp
 ret
 
 
-method_System_UInt32__RETEND_Kernel_Paging_DECLEND_GetKernelMemStartPtr_NAMEEND___:
+method_System_UInt32__RETEND_Kernel_Hardware_VirtMem_x86_DECLEND_GetKernelMemStartPtr_NAMEEND___:
 
 push dword ebp
 mov dword ebp, esp
@@ -43,7 +43,7 @@ mov dword [ebp+8], Kernel_MemStart
 pop dword ebp
 
 ret
-method_System_UInt32__RETEND_Kernel_Paging_DECLEND_GetKernelMemEndPtr_NAMEEND___:
+method_System_UInt32__RETEND_Kernel_Hardware_VirtMem_x86_DECLEND_GetKernelMemEndPtr_NAMEEND___:
 
 push dword ebp
 mov dword ebp, esp
@@ -55,7 +55,7 @@ pop dword ebp
 ret
 
 
-method_System_Void_RETEND_Kernel_Paging_DECLEND_InvalidatePTE_NAMEEND__System_UInt32_:
+method_System_Void_RETEND_Kernel_Hardware_VirtMem_x86_DECLEND_InvalidatePTE_NAMEEND__System_UInt32_:
 
 push dword ebp
 mov dword ebp, esp
@@ -74,4 +74,4 @@ Page_Table1: TIMES 1048576 dd 0
 
 Kernel_MemEnd:
 
-; END - Paging
+; END - x86 Virt Mem

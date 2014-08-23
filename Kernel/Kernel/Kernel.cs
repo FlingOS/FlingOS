@@ -70,7 +70,8 @@ namespace Kernel
             BasicConsole.WriteLine("Fling OS Running...");
 
             try
-            {                
+            {
+                Hardware.VirtMemManager.Init();
                 Hardware.Devices.CPU.InitDefault();
                 Hardware.Devices.Timer.InitDefault();
                 Hardware.Devices.Keyboard.InitDefault();

@@ -25,20 +25,15 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Kernel
+namespace Kernel.Hardware.VirtMem
 {
     /// <summary>
     /// Provides methods for setting up paged virtual memory.
     /// </summary>
     [Compiler.PluggedClass]
-    public unsafe static class Paging
+    public unsafe class x86 : VirtMemImpl
     {
-        /// <summary>
-        /// Whether paging has been loaded or not.
-        /// </summary>
-        static bool LoadedPaging = false;
-                
-        public static void TestPaging()
+        public override void Test()
         {
             BasicConsole.WriteLine("Testing paging...");
 
@@ -94,7 +89,7 @@ namespace Kernel
             Hardware.Devices.Timer.Default.Wait(3000);
         }
 
-        public static void Map(uint pAddr, uint vAddr)
+        public override void Map(uint pAddr, uint vAddr)
         {
             BasicConsole.WriteLine("Mapping addresses...");
             
@@ -114,12 +109,20 @@ namespace Kernel
 
             InvalidatePTE(vAddr);
         }
+        public override uint GetPhysicalAddress(uint vAddr)
+        {
+            uint pdIdx = vAddr >> 22;
+            uint ptIdx = (vAddr >> 12) & 0x3FF;
+            uint* ptPtr = GetFixedPage(pdIdx);
 
-        private static uint* GetFixedPage(uint pageNum)
+            return ((ptPtr[ptIdx] & 0xFFFFF000) + (vAddr & 0xFFF));
+        }
+
+        private uint* GetFixedPage(uint pageNum)
         {
             return GetFirstPageTablePtr() + (1024 * pageNum);
         }
-        private static void SetPageEntry(uint* pageTablePtr, uint entry, uint addr)
+        private void SetPageEntry(uint* pageTablePtr, uint entry, uint addr)
         {
             BasicConsole.WriteLine("Setting page entry...");
             BasicConsole.WriteLine(((FOS_System.String)"pageTablePtr=") + (uint)pageTablePtr);
@@ -132,7 +135,7 @@ namespace Kernel
                 BasicConsole.WriteLine("Set page entry verification failed.");
             }
         }
-        private static void SetDirectoryEntry(uint pageNum, uint* pageTablePhysPtr)
+        private void SetDirectoryEntry(uint pageNum, uint* pageTablePhysPtr)
         {
             uint* dirPtr = GetPageDirectoryPtr();
             BasicConsole.WriteLine("Setting directory entry...");
@@ -147,14 +150,14 @@ namespace Kernel
                 BasicConsole.WriteLine("Set directory entry verification failed.");
             }
         }
-        [Compiler.PluggedMethod(ASMFilePath = @"ASM\Paging\Paging")]
+        [Compiler.PluggedMethod(ASMFilePath = @"ASM\VirtMem\x86")]
         [Compiler.SequencePriority(Priority = long.MaxValue)]
-        private static void InvalidatePTE(uint entry)
+        private void InvalidatePTE(uint entry)
         {
 
         }
         [Compiler.PluggedMethod(ASMFilePath = null)]
-        public static uint GetVToPOffset()
+        private uint GetVToPOffset()
         {
             return 0;
         }
@@ -164,7 +167,7 @@ namespace Kernel
         /// </summary>
         /// <returns>The pointer.</returns>
         [Compiler.PluggedMethod(ASMFilePath = null)]
-        public static uint* GetPageDirectoryPtr()
+        private static uint* GetPageDirectoryPtr()
         {
             return null;
         }
@@ -173,7 +176,7 @@ namespace Kernel
         /// </summary>
         /// <returns>The pointer.</returns>
         [Compiler.PluggedMethod(ASMFilePath = null)]
-        public static uint* GetFirstPageTablePtr()
+        private static uint* GetFirstPageTablePtr()
         {
             return null;
         }
@@ -182,7 +185,7 @@ namespace Kernel
         /// </summary>
         /// <returns>The pointer.</returns>
         [Compiler.PluggedMethod(ASMFilePath = null)]
-        public static uint* GetKernelMemStartPtr()
+        private static uint* GetKernelMemStartPtr()
         {
             return null;
         }
@@ -191,7 +194,7 @@ namespace Kernel
         /// </summary>
         /// <returns>The pointer.</returns>
         [Compiler.PluggedMethod(ASMFilePath = null)]
-        public static uint* GetKernelMemEndPtr()
+        private static uint* GetKernelMemEndPtr()
         {
             return null;
         }
