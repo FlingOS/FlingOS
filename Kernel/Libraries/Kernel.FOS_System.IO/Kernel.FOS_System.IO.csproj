@@ -58,6 +58,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Disk\EBR.cs" />
+    <Compile Include="Disk\GPT.cs" />
     <Compile Include="Exceptions\IOException.cs" />
     <Compile Include="FAT\FATFileSystem.cs" />
     <Compile Include="Disk\MBR.cs" />
