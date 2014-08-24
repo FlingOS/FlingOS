@@ -91,19 +91,23 @@ namespace Kernel.Hardware.VirtMem
 
         public override void Map(uint pAddr, uint vAddr)
         {
+#if PAGING_TRACE
             BasicConsole.WriteLine("Mapping addresses...");
-            
+#endif
             uint pdIdx = vAddr >> 22;
             uint ptIdx = (vAddr >> 12) & 0x03FF;
 
+#if PAGING_TRACE
             BasicConsole.WriteLine(((FOS_System.String)"pAddr=") + pAddr);
             BasicConsole.WriteLine(((FOS_System.String)"vAddr=") + vAddr);
             BasicConsole.WriteLine(((FOS_System.String)"pdIdx=") + pdIdx);
             BasicConsole.WriteLine(((FOS_System.String)"ptIdx=") + ptIdx);
+#endif 
 
             uint* ptPtr = GetFixedPage(pdIdx);
+#if PAGING_TRACE
             BasicConsole.WriteLine(((FOS_System.String)"ptPtr=") + (uint)ptPtr);
-            
+#endif 
             SetPageEntry(ptPtr, ptIdx, pAddr);
             SetDirectoryEntry(pdIdx, (uint*)((uint)ptPtr - GetVToPOffset()));
 
@@ -124,31 +128,39 @@ namespace Kernel.Hardware.VirtMem
         }
         private void SetPageEntry(uint* pageTablePtr, uint entry, uint addr)
         {
+#if PAGING_TRACE
             BasicConsole.WriteLine("Setting page entry...");
             BasicConsole.WriteLine(((FOS_System.String)"pageTablePtr=") + (uint)pageTablePtr);
             BasicConsole.WriteLine(((FOS_System.String)"entry=") + entry);
             BasicConsole.WriteLine(((FOS_System.String)"addr=") + addr);
+#endif 
+
             pageTablePtr[entry] = addr | 3;
 
+#if PAGING_TRACE
             if(pageTablePtr[entry] != (addr | 3))
             {
                 BasicConsole.WriteLine("Set page entry verification failed.");
             }
+#endif
         }
         private void SetDirectoryEntry(uint pageNum, uint* pageTablePhysPtr)
         {
             uint* dirPtr = GetPageDirectoryPtr();
+#if PAGING_TRACE
             BasicConsole.WriteLine("Setting directory entry...");
             BasicConsole.WriteLine(((FOS_System.String)"dirPtr=") + (uint)dirPtr);
             BasicConsole.WriteLine(((FOS_System.String)"pageTablePhysPtr=") + (uint)pageTablePhysPtr);
             BasicConsole.WriteLine(((FOS_System.String)"pageNum=") + pageNum);
+#endif 
 
             dirPtr[pageNum] = (uint)pageTablePhysPtr | 3;
-
+#if PAGING_TRACE
             if (dirPtr[pageNum] != ((uint)pageTablePhysPtr | 3))
             {
                 BasicConsole.WriteLine("Set directory entry verification failed.");
             }
+#endif
         }
         [Compiler.PluggedMethod(ASMFilePath = @"ASM\VirtMem\x86")]
         [Compiler.SequencePriority(Priority = long.MaxValue)]

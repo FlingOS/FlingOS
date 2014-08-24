@@ -758,6 +758,7 @@ namespace Kernel.Hardware.USB.HCIs
             {
 #if EHCI_TRACE
                 BasicConsole.WriteLine("EHCI controller has hit an irrecoverable error!");
+                BasicConsole.DelayOutput(10);
 #endif
             }
             else if (AnyPortsChanged)
@@ -1395,26 +1396,37 @@ namespace Kernel.Hardware.USB.HCIs
                 }
 #endif
                 AddToAsyncSchedule(transfer);
-            
-                transfer.success = true;
-                for (int k = 0; k < transfer.transactions.Count; k++)
+                if (IrrecoverableError)
                 {
-                    EHCITransaction transaction = (EHCITransaction)((USBTransaction)transfer.transactions[k]).underlyingTz;
-                    byte status = new EHCI_qTD(transaction.qTD).Status;
-                    transfer.success = transfer.success && (status == 0 || status == Utils.BIT(0));
+                    transfer.success = false;
 
 #if EHCI_TRACE
-                    DBGMSG(((FOS_System.String)"POST Issue: Transaction ") + k + " status: " + status);
-#endif
-                }
-
-#if EHCI_TRACE
-                if (!transfer.success)
-                {
-                    DBGMSG(((FOS_System.String)"EHCI: Retry transfer: ") + (i + 1));
+                    DBGMSG("EHCI: Irrecoverable error! No retry.");
                     BasicConsole.DelayOutput(2);
-                }
 #endif
+                }
+                else
+                {
+                    transfer.success = true;
+                    for (int k = 0; k < transfer.transactions.Count; k++)
+                    {
+                        EHCITransaction transaction = (EHCITransaction)((USBTransaction)transfer.transactions[k]).underlyingTz;
+                        byte status = new EHCI_qTD(transaction.qTD).Status;
+                        transfer.success = transfer.success && (status == 0 || status == Utils.BIT(0));
+
+#if EHCI_TRACE
+                        DBGMSG(((FOS_System.String)"POST Issue: Transaction ") + k + " status: " + status);
+#endif
+                    }
+
+#if EHCI_TRACE
+                    if (!transfer.success)
+                    {
+                        DBGMSG(((FOS_System.String)"EHCI: Retry transfer: ") + (i + 1));
+                        BasicConsole.DelayOutput(2);
+                    }
+#endif
+                }
             }
 
             FOS_System.Heap.Free(transfer.underlyingTransferData);
@@ -1523,7 +1535,7 @@ namespace Kernel.Hardware.USB.HCIs
             oldTailQH.Type = 1;
 
             //int timeout = 10 * velocity + 25; // Wait up to 250+100*velocity milliseconds for USBasyncIntFlag to be set
-            while (USBIntCount > 0 /*&& timeout > 0*/)
+            while (USBIntCount > 0 /*&& timeout > 0*/ && !IrrecoverableError)
             {
                 //timeout--;
                 //~100ms
