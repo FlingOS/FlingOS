@@ -1,23 +1,23 @@
 ﻿#region Copyright Notice
-/// ------------------------------------------------------------------------------ ///
-///                                                                                ///
-///               All contents copyright � Edward Nutting 2014                     ///
-///                                                                                ///
-///        You may not share, reuse, redistribute or otherwise use the             ///
-///        contents this file outside of the Fling OS project without              ///
-///        the express permission of Edward Nutting or other copyright             ///
-///        holder. Any changes (including but not limited to additions,            ///
-///        edits or subtractions) made to or from this document are not            ///
-///        your copyright. They are the copyright of the main copyright            ///
-///        holder for all Fling OS files. At the time of writing, this             ///
-///        owner was Edward Nutting. To be clear, owner(s) do not include          ///
-///        developers, contributors or other project members.                      ///
-///                                                                                ///
-/// ------------------------------------------------------------------------------ ///
+// ------------------------------------------------------------------------------ //
+//                                                                                //
+//               All contents copyright � Edward Nutting 2014                     //
+//                                                                                //
+//        You may not share, reuse, redistribute or otherwise use the             //
+//        contents this file outside of the Fling OS project without              //
+//        the express permission of Edward Nutting or other copyright             //
+//        holder. Any changes (including but not limited to additions,            //
+//        edits or subtractions) made to or from this document are not            //
+//        your copyright. They are the copyright of the main copyright            //
+//        holder for all Fling OS files. At the time of writing, this             //
+//        owner was Edward Nutting. To be clear, owner(s) do not include          //
+//        developers, contributors or other project members.                      //
+//                                                                                //
+// ------------------------------------------------------------------------------ //
 #endregion
-
+    
 #define FATFileStream_TRACE
-#undef FATFileStream_TRACE
+//#undef FATFileStream_TRACE
     
 using System;
 
@@ -243,7 +243,7 @@ namespace Kernel.FOS_System.IO.Streams.FAT
                     uint xReadSize;
                     if (xPosInCluster + xCount > xClusterSize)
                     {
-                        xReadSize = (xClusterSize - xPosInCluster - 1);
+                        xReadSize = xClusterSize - xPosInCluster;
                     }
                     else
                     {
@@ -255,13 +255,13 @@ namespace Kernel.FOS_System.IO.Streams.FAT
                     offset += (int)xReadSize;
                     xCount -= (ulong)xReadSize;
                     read += (int)xReadSize;
+                    mPosition += xReadSize;
                 }
 
 #if FATFileStream_TRACE
                 BasicConsole.WriteLine("Read data.");
 #endif
 
-                mPosition += (ulong)offset;
                 return read;
             }
             else

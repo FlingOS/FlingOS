@@ -1,19 +1,19 @@
 ﻿#region Copyright Notice
-/// ------------------------------------------------------------------------------ ///
-///                                                                                ///
-///               All contents copyright � Edward Nutting 2014                     ///
-///                                                                                ///
-///        You may not share, reuse, redistribute or otherwise use the             ///
-///        contents this file outside of the Fling OS project without              ///
-///        the express permission of Edward Nutting or other copyright             ///
-///        holder. Any changes (including but not limited to additions,            ///
-///        edits or subtractions) made to or from this document are not            ///
-///        your copyright. They are the copyright of the main copyright            ///
-///        holder for all Fling OS files. At the time of writing, this             ///
-///        owner was Edward Nutting. To be clear, owner(s) do not include          ///
-///        developers, contributors or other project members.                      ///
-///                                                                                ///
-/// ------------------------------------------------------------------------------ ///
+// ------------------------------------------------------------------------------ //
+//                                                                                //
+//               All contents copyright � Edward Nutting 2014                     //
+//                                                                                //
+//        You may not share, reuse, redistribute or otherwise use the             //
+//        contents this file outside of the Fling OS project without              //
+//        the express permission of Edward Nutting or other copyright             //
+//        holder. Any changes (including but not limited to additions,            //
+//        edits or subtractions) made to or from this document are not            //
+//        your copyright. They are the copyright of the main copyright            //
+//        holder for all Fling OS files. At the time of writing, this             //
+//        owner was Edward Nutting. To be clear, owner(s) do not include          //
+//        developers, contributors or other project members.                      //
+//                                                                                //
+// ------------------------------------------------------------------------------ //
 #endregion
     
 using System;
@@ -77,6 +77,22 @@ namespace Kernel.FOS_System.IO
             {
                 return (File)baseListing;
             }
+        }
+        /// <summary>
+        /// Deletes the specified file within the file system.
+        /// </summary>
+        /// <param name="name">The name of the file to delete.</param>
+        /// <returns>True if the file was found and deleted. Otherwise, false.</returns>
+        public static bool Delete(FOS_System.String name)
+        {
+            File theFile = Open(name);
+
+            if (theFile == null)
+            {
+                return false;
+            }
+
+            return theFile.Delete();
         }
     }
 }

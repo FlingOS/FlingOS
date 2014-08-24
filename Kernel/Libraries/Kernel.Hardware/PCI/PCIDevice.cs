@@ -1,19 +1,19 @@
 ﻿#region Copyright Notice
-/// ------------------------------------------------------------------------------ ///
-///                                                                                ///
-///               All contents copyright � Edward Nutting 2014                     ///
-///                                                                                ///
-///        You may not share, reuse, redistribute or otherwise use the             ///
-///        contents this file outside of the Fling OS project without              ///
-///        the express permission of Edward Nutting or other copyright             ///
-///        holder. Any changes (including but not limited to additions,            ///
-///        edits or subtractions) made to or from this document are not            ///
-///        your copyright. They are the copyright of the main copyright            ///
-///        holder for all Fling OS files. At the time of writing, this             ///
-///        owner was Edward Nutting. To be clear, owner(s) do not include          ///
-///        developers, contributors or other project members.                      ///
-///                                                                                ///
-/// ------------------------------------------------------------------------------ ///
+// ------------------------------------------------------------------------------ //
+//                                                                                //
+//               All contents copyright � Edward Nutting 2014                     //
+//                                                                                //
+//        You may not share, reuse, redistribute or otherwise use the             //
+//        contents this file outside of the Fling OS project without              //
+//        the express permission of Edward Nutting or other copyright             //
+//        holder. Any changes (including but not limited to additions,            //
+//        edits or subtractions) made to or from this document are not            //
+//        your copyright. They are the copyright of the main copyright            //
+//        holder for all Fling OS files. At the time of writing, this             //
+//        owner was Edward Nutting. To be clear, owner(s) do not include          //
+//        developers, contributors or other project members.                      //
+//                                                                                //
+// ------------------------------------------------------------------------------ //
 #endregion
     
 using System;
@@ -398,7 +398,7 @@ namespace Kernel.Hardware.PCI
         internal byte ReadRegister8(byte aRegister)
         {
             UInt32 xAddr = GetAddressBase(bus, slot, function) | ((UInt32)(aRegister & 0xFC));
-            PCI_IO.ConfigAddressPort.Write(xAddr);
+            PCI_IO.ConfigAddressPort.Write_UInt32(xAddr);
             return (byte)((PCI_IO.ConfigDataPort.Read_UInt32() >> ((aRegister % 4) * 8)) & 0xFF);
         }
 
@@ -411,8 +411,8 @@ namespace Kernel.Hardware.PCI
         internal void WriteRegister8(byte aRegister, byte value)
         {
             UInt32 xAddr = GetAddressBase(bus, slot, function) | ((UInt32)(aRegister & 0xFC));
-            PCI_IO.ConfigAddressPort.Write(xAddr);
-            IO.IOPort.doWrite((ushort)(PCI_IO.ConfigDataPort.Port + (aRegister & 0x03)), value);
+            PCI_IO.ConfigAddressPort.Write_UInt32(xAddr);
+            IO.IOPort.doWrite_Byte((ushort)(PCI_IO.ConfigDataPort.Port + (aRegister & 0x03)), value);
         }
 
         /// <summary>
@@ -424,7 +424,7 @@ namespace Kernel.Hardware.PCI
         internal UInt16 ReadRegister16(byte aRegister)
         {
             UInt32 xAddr = GetAddressBase(bus, slot, function) | ((UInt32)(aRegister & 0xFC));
-            PCI_IO.ConfigAddressPort.Write(xAddr);
+            PCI_IO.ConfigAddressPort.Write_UInt32(xAddr);
             return (UInt16)((PCI_IO.ConfigDataPort.Read_UInt32() >> ((aRegister % 4) * 8)) & 0xFFFF);
         }
 
@@ -437,8 +437,8 @@ namespace Kernel.Hardware.PCI
         internal void WriteRegister16(byte aRegister, ushort value)
         {
             UInt32 xAddr = GetAddressBase(bus, slot, function) | ((UInt32)(aRegister & 0xFC));
-            PCI_IO.ConfigAddressPort.Write(xAddr);
-            PCI_IO.ConfigDataPort.Write(value);
+            PCI_IO.ConfigAddressPort.Write_UInt32(xAddr);
+            PCI_IO.ConfigDataPort.Write_UInt16(value);
         }
 
         /// <summary>
@@ -450,7 +450,7 @@ namespace Kernel.Hardware.PCI
         internal UInt32 ReadRegister32(byte aRegister)
         {
             UInt32 xAddr = GetAddressBase(bus, slot, function) | ((UInt32)(aRegister & 0xFC));
-            PCI_IO.ConfigAddressPort.Write(xAddr);
+            PCI_IO.ConfigAddressPort.Write_UInt32(xAddr);
             return (PCI_IO.ConfigDataPort.Read_UInt32() >> ((aRegister % 4) * 8));
         }
 
@@ -463,8 +463,8 @@ namespace Kernel.Hardware.PCI
         internal void WriteRegister32(byte aRegister, uint value)
         {
             UInt32 xAddr = GetAddressBase(bus, slot, function) | ((UInt32)(aRegister & 0xFC));
-            PCI_IO.ConfigAddressPort.Write(xAddr);
-            PCI_IO.ConfigDataPort.Write(value);
+            PCI_IO.ConfigAddressPort.Write_UInt32(xAddr);
+            PCI_IO.ConfigDataPort.Write_UInt32(value);
         }
 
         #endregion

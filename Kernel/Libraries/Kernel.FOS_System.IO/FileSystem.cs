@@ -1,19 +1,19 @@
 ﻿#region Copyright Notice
-/// ------------------------------------------------------------------------------ ///
-///                                                                                ///
-///               All contents copyright � Edward Nutting 2014                     ///
-///                                                                                ///
-///        You may not share, reuse, redistribute or otherwise use the             ///
-///        contents this file outside of the Fling OS project without              ///
-///        the express permission of Edward Nutting or other copyright             ///
-///        holder. Any changes (including but not limited to additions,            ///
-///        edits or subtractions) made to or from this document are not            ///
-///        your copyright. They are the copyright of the main copyright            ///
-///        holder for all Fling OS files. At the time of writing, this             ///
-///        owner was Edward Nutting. To be clear, owner(s) do not include          ///
-///        developers, contributors or other project members.                      ///
-///                                                                                ///
-/// ------------------------------------------------------------------------------ ///
+// ------------------------------------------------------------------------------ //
+//                                                                                //
+//               All contents copyright � Edward Nutting 2014                     //
+//                                                                                //
+//        You may not share, reuse, redistribute or otherwise use the             //
+//        contents this file outside of the Fling OS project without              //
+//        the express permission of Edward Nutting or other copyright             //
+//        holder. Any changes (including but not limited to additions,            //
+//        edits or subtractions) made to or from this document are not            //
+//        your copyright. They are the copyright of the main copyright            //
+//        holder for all Fling OS files. At the time of writing, this             //
+//        owner was Edward Nutting. To be clear, owner(s) do not include          //
+//        developers, contributors or other project members.                      //
+//                                                                                //
+// ------------------------------------------------------------------------------ //
 #endregion
     
 using System;
@@ -44,6 +44,15 @@ namespace Kernel.FOS_System.IO
         }
 
         /// <summary>
+        /// The file system mapping for the file system.
+        /// </summary>
+        public FileSystemMapping TheMapping
+        {
+            get;
+            set;
+        }
+
+        /// <summary>
         /// Initializes a new file system for the specified partition.
         /// </summary>
         /// <param name="aPartition">The partition in which the partition resides.</param>
@@ -63,10 +72,22 @@ namespace Kernel.FOS_System.IO
         /// search down the file system tree.
         /// </summary>
         /// <param name="nameParts">The parts of the full path of the listing to get.</param>
+        /// <param name="parent">The parent directory of the directory from which the listings were taken.</param>
         /// <param name="listings">The listings to search through.</param>
         /// <returns>The listing or null if not found.</returns>
-        public Base GetListingFromListings(List nameParts, List listings)
+        public Base GetListingFromListings(List nameParts, Directory parent, List listings)
         {
+            if (((FOS_System.String)nameParts[0]) == "..")
+            {
+                nameParts.RemoveAt(0);
+                if (nameParts.Count == 0)
+                {
+                    return parent;
+                }
+
+                return parent.GetListing(nameParts);
+            }
+
             for (int i = 0; i < listings.Count; i++)
             {
                 Base aListing = (Base)listings[i];

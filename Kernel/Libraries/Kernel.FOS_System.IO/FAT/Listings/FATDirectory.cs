@@ -1,19 +1,19 @@
 ﻿#region Copyright Notice
-/// ------------------------------------------------------------------------------ ///
-///                                                                                ///
-///               All contents copyright � Edward Nutting 2014                     ///
-///                                                                                ///
-///        You may not share, reuse, redistribute or otherwise use the             ///
-///        contents this file outside of the Fling OS project without              ///
-///        the express permission of Edward Nutting or other copyright             ///
-///        holder. Any changes (including but not limited to additions,            ///
-///        edits or subtractions) made to or from this document are not            ///
-///        your copyright. They are the copyright of the main copyright            ///
-///        holder for all Fling OS files. At the time of writing, this             ///
-///        owner was Edward Nutting. To be clear, owner(s) do not include          ///
-///        developers, contributors or other project members.                      ///
-///                                                                                ///
-/// ------------------------------------------------------------------------------ ///
+// ------------------------------------------------------------------------------ //
+//                                                                                //
+//               All contents copyright � Edward Nutting 2014                     //
+//                                                                                //
+//        You may not share, reuse, redistribute or otherwise use the             //
+//        contents this file outside of the Fling OS project without              //
+//        the express permission of Edward Nutting or other copyright             //
+//        holder. Any changes (including but not limited to additions,            //
+//        edits or subtractions) made to or from this document are not            //
+//        your copyright. They are the copyright of the main copyright            //
+//        holder for all Fling OS files. At the time of writing, this             //
+//        owner was Edward Nutting. To be clear, owner(s) do not include          //
+//        developers, contributors or other project members.                      //
+//                                                                                //
+// ------------------------------------------------------------------------------ //
 #endregion
     
 #define FATDIR_TRACE
@@ -57,7 +57,7 @@ namespace Kernel.FOS_System.IO.FAT
         public FATDirectory(FATFileSystem aFileSystem, FATDirectory parent, FOS_System.String aName, UInt32 aFirstCluster)
             : base(aFileSystem, parent, aName)
         {
-            _theFile = new FATFile(aFileSystem, parent, Name, 0, aFirstCluster);
+            _theFile = new FATFile(aFileSystem, parent, Name, 0, aFirstCluster) { IsDirectoryFile = true };
         }
 
         /// <summary>
@@ -111,7 +111,7 @@ namespace Kernel.FOS_System.IO.FAT
         /// <returns>The listing or null if not found.</returns>
         public override Base GetListing(List nameParts)
         {
-            return TheFileSystem.GetListingFromListings(nameParts, GetListings());
+            return TheFileSystem.GetListingFromListings(nameParts, Parent, GetListings());
         }
         /// <summary>
         /// Writes the cached listings back to disk.
@@ -148,7 +148,7 @@ namespace Kernel.FOS_System.IO.FAT
         }
 
         /// <summary>
-        /// Adds the specified listing to the directory's listings.
+        /// Adds the specified listing to the cached listings. Call WriteListings to save the new listing to disc.
         /// </summary>
         /// <param name="aListing">The listing to add.</param>
         public override void AddListing(Base aListing)
@@ -164,6 +164,64 @@ namespace Kernel.FOS_System.IO.FAT
 #if FATDIR_TRACE
             BasicConsole.WriteLine("Added listing.");
 #endif
+        }
+        /// <summary>
+        /// Removes the specified listing from the cached listings. Call WriteListings to save the change to disc.
+        /// </summary>
+        /// <param name="aListing">The listing to remove.</param>
+        public override void RemoveListing(Base aListing)
+        {
+#if FATDIR_TRACE
+            BasicConsole.WriteLine("Remove listing: Getting existing listings...");
+#endif
+            GetListings();
+#if FATDIR_TRACE
+            BasicConsole.WriteLine("Got existing listings. Removing listing from cache...");
+#endif
+            _cachedlistings.Remove(aListing);
+#if FATDIR_TRACE
+            BasicConsole.WriteLine("Removed listing.");
+#endif
+        }
+
+        /// <summary>
+        /// Gets the full, simplified, path for the directory.
+        /// </summary>
+        /// <returns>The full path.</returns>
+        public override String GetFullPath()
+        {
+            if (this == ((FATFileSystem)TheFileSystem).RootDirectory_FAT32)
+            {
+                return this.TheFileSystem.TheMapping.Prefix;
+            }
+            return base.GetFullPath();
+        }
+
+        /// <summary>
+        /// Deletes the directory from the file system.
+        /// </summary>
+        /// <returns>True if the directory was deleted. Otherwise, false.</returns>
+        public override bool Delete()
+        {
+            //Delete children
+            bool OK = true;
+            GetListings();
+            //Backwards search as items will be removed from the list.
+            for (int i = _cachedlistings.Count - 1; i > -1; i--)
+            {
+                OK = OK && ((Base)_cachedlistings[i]).Delete();
+            }
+
+            //Delete the directory file
+            OK = OK && _theFile.Delete();
+            
+            //Remove listing
+            Parent.RemoveListing(this);
+
+            //Write listings
+            Parent.WriteListings();
+            
+            return OK;
         }
     }
 }

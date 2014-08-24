@@ -1,19 +1,19 @@
 ﻿#region Copyright Notice
-/// ------------------------------------------------------------------------------ ///
-///                                                                                ///
-///               All contents copyright � Edward Nutting 2014                     ///
-///                                                                                ///
-///        You may not share, reuse, redistribute or otherwise use the             ///
-///        contents this file outside of the Fling OS project without              ///
-///        the express permission of Edward Nutting or other copyright             ///
-///        holder. Any changes (including but not limited to additions,            ///
-///        edits or subtractions) made to or from this document are not            ///
-///        your copyright. They are the copyright of the main copyright            ///
-///        holder for all Fling OS files. At the time of writing, this             ///
-///        owner was Edward Nutting. To be clear, owner(s) do not include          ///
-///        developers, contributors or other project members.                      ///
-///                                                                                ///
-/// ------------------------------------------------------------------------------ ///
+// ------------------------------------------------------------------------------ //
+//                                                                                //
+//               All contents copyright � Edward Nutting 2014                     //
+//                                                                                //
+//        You may not share, reuse, redistribute or otherwise use the             //
+//        contents this file outside of the Fling OS project without              //
+//        the express permission of Edward Nutting or other copyright             //
+//        holder. Any changes (including but not limited to additions,            //
+//        edits or subtractions) made to or from this document are not            //
+//        your copyright. They are the copyright of the main copyright            //
+//        holder for all Fling OS files. At the time of writing, this             //
+//        owner was Edward Nutting. To be clear, owner(s) do not include          //
+//        developers, contributors or other project members.                      //
+//                                                                                //
+// ------------------------------------------------------------------------------ //
 #endregion
     
 using System;
@@ -54,7 +54,7 @@ namespace Kernel.FOS_System.IO
             directoryName = theMapping.RemoveMappingPrefix(directoryName);
             
             directoryName = directoryName.ToUpper();
-
+            
             Base baseListing = theMapping.TheFileSystem.GetListing(directoryName);
             if (baseListing == null)
             {
@@ -90,6 +90,11 @@ namespace Kernel.FOS_System.IO
         /// </summary>
         /// <param name="aListing">The listing to add.</param>
         public abstract void AddListing(Base aListing);
+        /// <summary>
+        /// Removes the specified listing from the cached listings. Call WriteListings to save the change to disc.
+        /// </summary>
+        /// <param name="aListing">The listing to remove.</param>
+        public abstract void RemoveListing(Base aListing);
 
         /// <summary>
         /// Determines whether the specified listing exists or not within this directory or its sub-directories.
@@ -116,6 +121,23 @@ namespace Kernel.FOS_System.IO
                 }
             }
             return false;
+        }
+        
+        /// <summary>
+        /// Deletes the specified directory within the file system.
+        /// </summary>
+        /// <param name="name">The name of the directory to delete.</param>
+        /// <returns>True if the directory was found and deleted. Otherwise, false.</returns>
+        public static bool Delete(FOS_System.String name)
+        {
+            Directory theDir = Find(name);
+
+            if (theDir == null)
+            {
+                return false;
+            }
+
+            return theDir.Delete();
         }
     }
 }

@@ -1,19 +1,19 @@
 ﻿#region Copyright Notice
-/// ------------------------------------------------------------------------------ ///
-///                                                                                ///
-///               All contents copyright � Edward Nutting 2014                     ///
-///                                                                                ///
-///        You may not share, reuse, redistribute or otherwise use the             ///
-///        contents this file outside of the Fling OS project without              ///
-///        the express permission of Edward Nutting or other copyright             ///
-///        holder. Any changes (including but not limited to additions,            ///
-///        edits or subtractions) made to or from this document are not            ///
-///        your copyright. They are the copyright of the main copyright            ///
-///        holder for all Fling OS files. At the time of writing, this             ///
-///        owner was Edward Nutting. To be clear, owner(s) do not include          ///
-///        developers, contributors or other project members.                      ///
-///                                                                                ///
-/// ------------------------------------------------------------------------------ ///
+// ------------------------------------------------------------------------------ //
+//                                                                                //
+//               All contents copyright � Edward Nutting 2014                     //
+//                                                                                //
+//        You may not share, reuse, redistribute or otherwise use the             //
+//        contents this file outside of the Fling OS project without              //
+//        the express permission of Edward Nutting or other copyright             //
+//        holder. Any changes (including but not limited to additions,            //
+//        edits or subtractions) made to or from this document are not            //
+//        your copyright. They are the copyright of the main copyright            //
+//        holder for all Fling OS files. At the time of writing, this             //
+//        owner was Edward Nutting. To be clear, owner(s) do not include          //
+//        developers, contributors or other project members.                      //
+//                                                                                //
+// ------------------------------------------------------------------------------ //
 #endregion
     
 using System;
@@ -30,7 +30,10 @@ namespace Kernel
     [Compiler.PluggedClass]
     public static unsafe class ExceptionMethods
     {
-
+        /// <summary>
+        /// The reason the kernel is halting. Useful for debugging purposes in case an exception causes
+        /// an immediate halt.
+        /// </summary>
         public static FOS_System.String HaltReason = "";
 
         /// <summary>
@@ -143,6 +146,7 @@ namespace Kernel
         /// <summary>
         /// Throws a divide by zero exception storing the specified exception address.
         /// </summary>
+        /// <param name="address">The address of the code that caused the exception.</param>
         /// <remarks>
         /// Used by CPU interrupts to handle the creation of the exception object and calling Throw.
         /// </remarks>

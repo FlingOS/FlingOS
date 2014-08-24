@@ -1,19 +1,19 @@
 ﻿#region Copyright Notice
-/// ------------------------------------------------------------------------------ ///
-///                                                                                ///
-///               All contents copyright � Edward Nutting 2014                     ///
-///                                                                                ///
-///        You may not share, reuse, redistribute or otherwise use the             ///
-///        contents this file outside of the Fling OS project without              ///
-///        the express permission of Edward Nutting or other copyright             ///
-///        holder. Any changes (including but not limited to additions,            ///
-///        edits or subtractions) made to or from this document are not            ///
-///        your copyright. They are the copyright of the main copyright            ///
-///        holder for all Fling OS files. At the time of writing, this             ///
-///        owner was Edward Nutting. To be clear, owner(s) do not include          ///
-///        developers, contributors or other project members.                      ///
-///                                                                                ///
-/// ------------------------------------------------------------------------------ ///
+// ------------------------------------------------------------------------------ //
+//                                                                                //
+//               All contents copyright � Edward Nutting 2014                     //
+//                                                                                //
+//        You may not share, reuse, redistribute or otherwise use the             //
+//        contents this file outside of the Fling OS project without              //
+//        the express permission of Edward Nutting or other copyright             //
+//        holder. Any changes (including but not limited to additions,            //
+//        edits or subtractions) made to or from this document are not            //
+//        your copyright. They are the copyright of the main copyright            //
+//        holder for all Fling OS files. At the time of writing, this             //
+//        owner was Edward Nutting. To be clear, owner(s) do not include          //
+//        developers, contributors or other project members.                      //
+//                                                                                //
+// ------------------------------------------------------------------------------ //
 #endregion
     
 using System;
@@ -34,7 +34,7 @@ namespace Kernel.FOS_System.IO
         /// <summary>
         /// The underlying disk device on which this partition resides.
         /// </summary>
-        internal DiskDevice TheDiskDevice;
+        public DiskDevice TheDiskDevice;
         /// <summary>
         /// The sector number at which the partition starts.
         /// </summary>
@@ -72,17 +72,22 @@ namespace Kernel.FOS_System.IO
         }
 
         /// <summary>
-        /// Writes contiguous blocks to the partition. Block 0 = 1st sector of the partition.
+        /// See base class.
         /// </summary>
-        /// <param name="aBlockNo">The first sector (block) to write.</param>
-        /// <param name="aBlockCount">The number of sectors (blocks) to write.</param>
-        /// <param name="aData">The data to write.</param>
+        /// <param name="aBlockNo">See base class.</param>
+        /// <param name="aBlockCount">See base class.</param>
+        /// <param name="aData">See base class.</param>
         public override void WriteBlock(UInt64 aBlockNo, UInt32 aBlockCount, byte[] aData)
         {
             UInt64 xHostBlockNo = StartingSector + aBlockNo;
             TheDiskDevice.WriteBlock(xHostBlockNo, aBlockCount, aData);
         }
 
+        /// <summary>
+        /// Determines whether the specified disk has had any valid partitions detected.
+        /// </summary>
+        /// <param name="disk">The disk to check.</param>
+        /// <returns>Whether the specified disk has had any valid partitions detected.</returns>
         public static bool HasPartitions(DiskDevice disk)
         {
             for (int i = 0; i < FOS_System.IO.FileSystemManager.Partitions.Count; i++)
@@ -95,6 +100,11 @@ namespace Kernel.FOS_System.IO
             }
             return false;
         }
+        /// <summary>
+        /// Gets the first partition, if any, of the specified disk.
+        /// </summary>
+        /// <param name="disk">The disk to get the first partition of.</param>
+        /// <returns>The partition or null if none found.</returns>
         public static Partition GetFirstPartition(DiskDevice disk)
         {
             for (int i = 0; i < FOS_System.IO.FileSystemManager.Partitions.Count; i++)

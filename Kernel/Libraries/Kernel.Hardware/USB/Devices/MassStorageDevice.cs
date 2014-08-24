@@ -1,21 +1,21 @@
 ﻿#region Copyright Notice
-/// ------------------------------------------------------------------------------ ///
-///                                                                                ///
-///               All contents copyright � Edward Nutting 2014                     ///
-///                                                                                ///
-///        You may not share, reuse, redistribute or otherwise use the             ///
-///        contents this file outside of the Fling OS project without              ///
-///        the express permission of Edward Nutting or other copyright             ///
-///        holder. Any changes (including but not limited to additions,            ///
-///        edits or subtractions) made to or from this document are not            ///
-///        your copyright. They are the copyright of the main copyright            ///
-///        holder for all Fling OS files. At the time of writing, this             ///
-///        owner was Edward Nutting. To be clear, owner(s) do not include          ///
-///        developers, contributors or other project members.                      ///
-///                                                                                ///
-/// ------------------------------------------------------------------------------ ///
+// ------------------------------------------------------------------------------ //
+//                                                                                //
+//               All contents copyright � Edward Nutting 2014                     //
+//                                                                                //
+//        You may not share, reuse, redistribute or otherwise use the             //
+//        contents this file outside of the Fling OS project without              //
+//        the express permission of Edward Nutting or other copyright             //
+//        holder. Any changes (including but not limited to additions,            //
+//        edits or subtractions) made to or from this document are not            //
+//        your copyright. They are the copyright of the main copyright            //
+//        holder for all Fling OS files. At the time of writing, this             //
+//        owner was Edward Nutting. To be clear, owner(s) do not include          //
+//        developers, contributors or other project members.                      //
+//                                                                                //
+// ------------------------------------------------------------------------------ //
 #endregion
-
+    
 #define MSD_TRACE
 #undef MSD_TRACE
 
@@ -30,16 +30,41 @@ using Utils = Kernel.Utilities.MemoryUtils;
 
 namespace Kernel.Hardware.USB.Devices
 {
+    /// <summary>
+    /// Constant values used by the Mass Storage Device driver.
+    /// </summary>
     public static class MassStorageDevice_Consts
     {
+        /// <summary>
+        /// Indicates the SCSI command is not OK. 
+        /// </summary>
         public const uint CSWMagicNotOK = 0x01010101;
+        /// <summary>
+        /// Indiciates the SCSI command is OK.
+        /// </summary>
         public const uint CSWMagicOK = 0x53425355; // USBS
+        /// <summary>
+        /// SCSI command packet siganture.
+        /// </summary>
         public const uint CBWMagic = 0x43425355; // USBC
     }
+    /// <summary>
+    /// Represents a USB mass storage device.
+    /// </summary>
     public unsafe class MassStorageDevice : USBDevice
     {
+        /// <summary>
+        /// The underlying disk device that allows the mass storage device to be 
+        /// accessed in the same way as a disk.
+        /// </summary>
         protected MassStorageDevice_DiskDevice diskDevice;
 
+        /// <summary>
+        /// Initialises a new mass storage device with the specified USB device information.
+        /// </summary>
+        /// <param name="aDeviceInfo">
+        /// The USB device information that specifies the physical mass storage device.
+        /// </param>
         public MassStorageDevice(USBDeviceInfo aDeviceInfo)
             : base(aDeviceInfo)
         {
@@ -51,23 +76,23 @@ namespace Kernel.Hardware.USB.Devices
             Setup();
         }
 
+        /// <summary>
+        /// Sets up the mass storage device for bulk transfer. Also creates the mass storage disk device.
+        /// </summary>
         protected void Setup()
         {
-            // maxLUN (0 for USB-sticks)
-            DeviceInfo.maxLUN = 0;
-
             // start with correct endpoint toggles and reset interface
-            ((USBEndpoint)DeviceInfo.Endpoints[DeviceInfo.MSD_OUTEndpointID]).toggle = false;
-            ((USBEndpoint)DeviceInfo.Endpoints[DeviceInfo.MSD_INEndpointID]).toggle = false;
+            ((Endpoint)DeviceInfo.Endpoints[DeviceInfo.MSD_OUTEndpointID]).toggle = false;
+            ((Endpoint)DeviceInfo.Endpoints[DeviceInfo.MSD_INEndpointID]).toggle = false;
 
             BulkReset(DeviceInfo.MSD_InterfaceNum); // Reset Interface
 
             byte* inquiryBuffer = (byte*)FOS_System.Heap.AllocZeroed(26u);
             try
             {
-                SendSCSICommand(0x12 /*SCSI opcode*/, 0 /*LBA*/, 36 /*Bytes In*/, inquiryBuffer, null);
+                SendSCSICommand_IN(0x12 /*SCSI opcode*/, 0 /*LBA*/, 36 /*Bytes In*/, inquiryBuffer, null);
 
-                AnalyzeInquiry(inquiryBuffer);
+                AnalyseInquiry(inquiryBuffer);
             }
             finally
             {
@@ -80,6 +105,9 @@ namespace Kernel.Hardware.USB.Devices
             diskDevice = new MassStorageDevice_DiskDevice(this);
         }
 
+        /// <summary>
+        /// Destroys the USB device.
+        /// </summary>
         public override void Destroy()
         {
             diskDevice.Destroy();
@@ -88,38 +116,17 @@ namespace Kernel.Hardware.USB.Devices
             base.Destroy();
         }
 
-
-        // Bulk-Only Mass Storage get maximum number of Logical Units
-//        public byte GetMaxLUN(byte numInterface)
-//        {
-//#if MSD_TRACE
-//            DBGMSG(((FOS_System.String)"USB MSD: TransferBulkOnly - GetMaxLUN, interface: ") + numInterface);
-//#endif
-
-//            byte maxLUN;
-
-//            USBTransfer transfer = new USBTransfer();
-//            DeviceInfo.hc.SetupTransfer(DeviceInfo, transfer, USBTransferType.USB_CONTROL, 0, 64);
-
-//            // bmRequestType bRequest  wValue wIndex    wLength   Data
-//            // 10100001b     11111110b 0000h  Interface 0001h     1 byte
-//            DeviceInfo.hc.SETUPTransaction(transfer, 8, 0xA1, 0xFE, 0, 0, numInterface, 1);
-//            DeviceInfo.hc.INTransaction(transfer, false, &maxLUN, 1);
-//            DeviceInfo.hc.OUTTransaction(transfer, true, null, 0); // handshake
-//            DeviceInfo.hc.IssueTransfer(transfer);
-
-//            return maxLUN;
-//        }
-
-
+        /// <summary>
+        /// Resets the bulk tarnsfer interface.
+        /// </summary>
         public void BulkReset()
         {
             BulkReset(DeviceInfo.MSD_InterfaceNum);
         }
         /// <summary>
-        /// Bulk-Only Mass Storage Reset
+        /// Resets the bulk tarnsfer interface.
         /// </summary>
-        /// <param name="numInterface">Interface number to reset.</param> 
+        /// <param name="numInterface">The bulk transfer interface number to reset.</param> 
         public void BulkReset(byte numInterface)
         {
 #if MSD_TRACE
@@ -127,7 +134,7 @@ namespace Kernel.Hardware.USB.Devices
 #endif
 
             USBTransfer transfer = new USBTransfer();
-            DeviceInfo.hc.SetupTransfer(DeviceInfo, transfer, USBTransferType.USB_CONTROL, 0, 64);
+            DeviceInfo.hc.SetupTransfer(DeviceInfo, transfer, USBTransferType.Control, 0, 64);
 
             // bmRequestType bRequest  wValue wIndex    wLength   Data
             // 00100001b     11111111b 0000h  Interface 0000h     none
@@ -136,7 +143,14 @@ namespace Kernel.Hardware.USB.Devices
             DeviceInfo.hc.IssueTransfer(transfer);
         }
 
-        public void FormatSCSICommand(byte SCSIcommand, usb_CommandBlockWrapper* cbw, uint LBA, ushort TransferLength)
+        /// <summary>
+        /// Sets up a SCSI command.
+        /// </summary>
+        /// <param name="SCSIcommand">The command byte.</param>
+        /// <param name="cbw">A pointer to an existing command block wrapper.</param>
+        /// <param name="LBA">The LBA to access.</param>
+        /// <param name="TransferLength">The length of the data in bytes.</param>
+        public void SetupSCSICommand(byte SCSIcommand, CommandBlockWrapper* cbw, uint LBA, ushort TransferLength)
         {
             cbw->CBWSignature = MassStorageDevice_Consts.CBWMagic;                      // magic
             cbw->CBWTag = 0x42424200u | SCSIcommand;      // device echoes this field in the CSWTag field of the associated CSW
@@ -188,6 +202,13 @@ namespace Kernel.Hardware.USB.Devices
                     break;
             }
         }
+        /// <summary>
+        /// Checks a received SCSI command is valid and OK.
+        /// </summary>
+        /// <param name="MSDStatus">A pointer to the start of the SCSI command data.</param>
+        /// <param name="TransferLength">The length of the data in bytes.</param>
+        /// <param name="SCSIOpcode">The SCSI op coce.</param>
+        /// <returns>True if the command is completely valid. Otherwise, false.</returns>
         public int CheckSCSICommand(void* MSDStatus, ushort TransferLength, byte SCSIOpcode)
         {
             int error = 0;
@@ -279,22 +300,30 @@ namespace Kernel.Hardware.USB.Devices
             return error;
         }
 
-        // cf. http://www.beyondlogic.org/usbnutshell/usb4.htm#Bulk
-        public void SendSCSICommand(byte SCSIcommand, uint LBA, ushort TransferLength, void* dataBuffer, void* statusBuffer)
+        /// <summary>
+        /// Sends a SCSI command that receives data.
+        /// </summary>
+        /// <param name="SCSIcommand">The SCSI command to send.</param>
+        /// <param name="LBA">The LBA to access.</param>
+        /// <param name="TransferLength">The length of the data to receive.</param>
+        /// <param name="dataBuffer">The data buffer - must be at least as big as the transfer length.</param>
+        /// <param name="statusBuffer">The buffer to store the command status result in. Must be at least 13 bytes long.</param>
+        /// <see cref="!:http://www.beyondlogic.org/usbnutshell/usb4.htm#Bulk"/>
+        public void SendSCSICommand_IN(byte SCSIcommand, uint LBA, ushort TransferLength, void* dataBuffer, void* statusBuffer)
         {
 #if MSD_TRACE
             DBGMSG("OUT part");
             DBGMSG(((FOS_System.String)"Toggle OUT ") + ((USBEndpoint)DeviceInfo.Endpoints[DeviceInfo.MSD_OUTEndpointID]).toggle);
 #endif
 
-            usb_CommandBlockWrapper* cbw = (usb_CommandBlockWrapper*)FOS_System.Heap.AllocZeroed((uint)sizeof(usb_CommandBlockWrapper));
+            CommandBlockWrapper* cbw = (CommandBlockWrapper*)FOS_System.Heap.AllocZeroed((uint)sizeof(CommandBlockWrapper));
             bool FreeStatusBuffer = false;
             try
             {
-                FormatSCSICommand(SCSIcommand, cbw, LBA, TransferLength);
+                SetupSCSICommand(SCSIcommand, cbw, LBA, TransferLength);
 
                 USBTransfer transfer = new USBTransfer();
-                DeviceInfo.hc.SetupTransfer(DeviceInfo, transfer, USBTransferType.USB_BULK, DeviceInfo.MSD_OUTEndpointID, 512);
+                DeviceInfo.hc.SetupTransfer(DeviceInfo, transfer, USBTransferType.Bulk, DeviceInfo.MSD_OUTEndpointID, 512);
                 DeviceInfo.hc.OUTTransaction(transfer, false, cbw, 31);
                 DeviceInfo.hc.IssueTransfer(transfer);
 
@@ -318,7 +347,7 @@ namespace Kernel.Hardware.USB.Devices
 #if MSD_TRACE
                     DBGMSG("Setup transfer...");
 #endif
-                    DeviceInfo.hc.SetupTransfer(DeviceInfo, transfer, USBTransferType.USB_BULK, DeviceInfo.MSD_INEndpointID, 512);
+                    DeviceInfo.hc.SetupTransfer(DeviceInfo, transfer, USBTransferType.Bulk, DeviceInfo.MSD_INEndpointID, 512);
 #if MSD_TRACE
                     DBGMSG("Done.");
 #endif
@@ -378,16 +407,24 @@ namespace Kernel.Hardware.USB.Devices
                 }
             }
         }
+        /// <summary>
+        /// Sends a SCSI command that sends data.
+        /// </summary>
+        /// <param name="SCSIcommand">The SCSI command to send.</param>
+        /// <param name="LBA">The LBA to access.</param>
+        /// <param name="TransferLength">The length of the data to send.</param>
+        /// <param name="dataBuffer">The data buffer - must be at least as long as the transfer length.</param>
+        /// <param name="statusBuffer">The data buffer to store the command status result in. Must be at least 13 bytes long.</param>
         public void SendSCSICommand_OUT(byte SCSIcommand, uint LBA, ushort TransferLength, void* dataBuffer, void* statusBuffer)
         {
-            usb_CommandBlockWrapper* cbw = (usb_CommandBlockWrapper*)FOS_System.Heap.AllocZeroed((uint)sizeof(usb_CommandBlockWrapper));
+            CommandBlockWrapper* cbw = (CommandBlockWrapper*)FOS_System.Heap.AllocZeroed((uint)sizeof(CommandBlockWrapper));
             bool FreeStatusBuffer = false;
             try
             {
-                FormatSCSICommand(SCSIcommand, cbw, LBA, TransferLength);
+                SetupSCSICommand(SCSIcommand, cbw, LBA, TransferLength);
 
                 USBTransfer transfer = new USBTransfer();
-                DeviceInfo.hc.SetupTransfer(DeviceInfo, transfer, USBTransferType.USB_BULK, DeviceInfo.MSD_OUTEndpointID, 512);
+                DeviceInfo.hc.SetupTransfer(DeviceInfo, transfer, USBTransferType.Bulk, DeviceInfo.MSD_OUTEndpointID, 512);
                 DeviceInfo.hc.OUTTransaction(transfer, false, cbw, 31);
                 DeviceInfo.hc.OUTTransaction(transfer, false, dataBuffer, TransferLength);
                 DeviceInfo.hc.IssueTransfer(transfer);
@@ -400,7 +437,7 @@ namespace Kernel.Hardware.USB.Devices
                     statusBuffer = FOS_System.Heap.AllocZeroed(13u);
                 }
 
-                DeviceInfo.hc.SetupTransfer(DeviceInfo, transfer, USBTransferType.USB_BULK, DeviceInfo.MSD_INEndpointID, 512);
+                DeviceInfo.hc.SetupTransfer(DeviceInfo, transfer, USBTransferType.Bulk, DeviceInfo.MSD_INEndpointID, 512);
                 DeviceInfo.hc.INTransaction(transfer, false, statusBuffer, 13);
                 DeviceInfo.hc.IssueTransfer(transfer);
             }
@@ -413,11 +450,19 @@ namespace Kernel.Hardware.USB.Devices
                 }
             }
         }
-        
+
+        /// <summary>
+        /// The maximum number of times to resend the "ready" query. See TestDeviceReady().
+        /// </summary>
+        /// <see cref="TestDeviceReady()"/>
+        public static byte MaxReadyTests = 5;
+        /// <summary>
+        /// Tests the device is ready to send/receive data.
+        /// </summary>
+        /// <returns>The last status byte from the device.</returns>
         public byte TestDeviceReady()
         {
-            byte maxTest = 5;
-            uint timeout = maxTest;
+            uint timeout = MaxReadyTests;
             byte statusByte = 0;
 
             while (timeout != 0)
@@ -430,11 +475,11 @@ namespace Kernel.Hardware.USB.Devices
                 byte* statusBuffer = (byte*)FOS_System.Heap.AllocZeroed(13u);
                 try
                 {
-                    SendSCSICommand(0x00, 0u, 0, null, statusBuffer); // dev, endp, cmd, LBA, transfer length
+                    SendSCSICommand_IN(0x00, 0u, 0, null, statusBuffer); // dev, endp, cmd, LBA, transfer length
 
                     byte statusByteTestReady = (byte)*(((uint*)statusBuffer) + 3);
 
-                    if (timeout >= maxTest / 2 && statusByteTestReady != 0) continue;
+                    if (timeout >= MaxReadyTests / 2 && statusByteTestReady != 0) continue;
 
 #if MSD_TRACE
                 DBGMSG("SCSI: request sense");
@@ -443,11 +488,11 @@ namespace Kernel.Hardware.USB.Devices
                     byte* dataBuffer = (byte*)FOS_System.Heap.AllocZeroed(18u);
                     try
                     {
-                        SendSCSICommand(0x03, 0, 18, dataBuffer, statusBuffer); // dev, endp, cmd, LBA, transfer length
+                        SendSCSICommand_IN(0x03, 0, 18, dataBuffer, statusBuffer); // dev, endp, cmd, LBA, transfer length
 
                         statusByte = (byte)*(((uint*)statusBuffer) + 3);
 
-                        int sense = ShowResultsRequestSense(dataBuffer);
+                        int sense = GetRequestSense(dataBuffer);
                         if (sense == 0 || sense == 6)
                         {
                             break;
@@ -466,25 +511,31 @@ namespace Kernel.Hardware.USB.Devices
 
             return statusByte;
         }
-        // http://en.wikipedia.org/wiki/SCSI_Inquiry_Command
-        static void AnalyzeInquiry(byte* addr)
+        /// <summary>
+        /// Analyses the inquiry data to extract device-specific information.
+        /// </summary>
+        /// <param name="inquiryData">A pointer to the data to analyse.</param>
+        /// <see cref="!:http://en.wikipedia.org/wiki/SCSI_Inquiry_Command"/>
+        static void AnalyseInquiry(byte* inquiryData)
         {
+            //TODO: Store this data in the class for later
+
             // cf. Jan Axelson, USB Mass Storage, page 140
-            byte PeripheralDeviceType = Utils.GetField(addr, 0, 0, 5); // byte, shift, len
+            byte PeripheralDeviceType = Utils.GetField(inquiryData, 0, 0, 5); // byte, shift, len
             // uint8_t PeripheralQualifier  = getField(addr, 0, 5, 3);
             // uint8_t DeviceTypeModifier   = getField(addr, 1, 0, 7);
-            byte RMB = Utils.GetField(addr, 1, 7, 1);
+            byte RMB = Utils.GetField(inquiryData, 1, 7, 1);
 #if MSD_TRACE
             byte ANSIapprovedVersion = Utils.GetField(addr, 2, 0, 3);
 #endif
             // uint8_t ECMAversion          = getField(addr, 2, 3, 3);
             // uint8_t ISOversion           = getField(addr, 2, 6, 2);
-            byte ResponseDataFormat = Utils.GetField(addr, 3, 0, 4);
-            byte HISUP = Utils.GetField(addr, 3, 4, 1);
-            byte NORMACA = Utils.GetField(addr, 3, 5, 1);
+            byte ResponseDataFormat = Utils.GetField(inquiryData, 3, 0, 4);
+            byte HISUP = Utils.GetField(inquiryData, 3, 4, 1);
+            byte NORMACA = Utils.GetField(inquiryData, 3, 5, 1);
             // uint8_t AdditionalLength     = getField(addr, 4, 0, 8);
-            byte CmdQue = Utils.GetField(addr, 7, 1, 1);
-            byte Linked = Utils.GetField(addr, 7, 3, 1);
+            byte CmdQue = Utils.GetField(inquiryData, 7, 1, 1);
+            byte Linked = Utils.GetField(inquiryData, 7, 3, 1);
 
 #if MSD_TRACE || DEVICE_INFO
             BasicConsole.WriteLine("Vendor ID  : " + FOS_System.ByteConverter.GetASCIIStringFromASCII(addr, 8, 8));
@@ -541,59 +592,71 @@ namespace Kernel.Hardware.USB.Devices
 #endif
         }
 
-        public void TestMSD()
-        {
-            // maxLUN (0 for USB-sticks)
-            DeviceInfo.maxLUN = 0;
+//        public void TestMSD()
+//        {
+//            // maxLUN (0 for USB-sticks)
+//            DeviceInfo.maxLUN = 0;
 
-            // start with correct endpoint toggles and reset interface
-            ((USBEndpoint)DeviceInfo.Endpoints[DeviceInfo.MSD_OUTEndpointID]).toggle = false;
-            ((USBEndpoint)DeviceInfo.Endpoints[DeviceInfo.MSD_INEndpointID]).toggle = false;
+//            // start with correct endpoint toggles and reset interface
+//            ((Endpoint)DeviceInfo.Endpoints[DeviceInfo.MSD_OUTEndpointID]).toggle = false;
+//            ((Endpoint)DeviceInfo.Endpoints[DeviceInfo.MSD_INEndpointID]).toggle = false;
 
-            BulkReset(DeviceInfo.MSD_InterfaceNum); // Reset Interface
+//            BulkReset(DeviceInfo.MSD_InterfaceNum); // Reset Interface
 
-            ///////// send SCSI command "inquiry (opcode: 0x12)"
-#if MSD_TRACE
-            DBGMSG("SCSI: inquiry");
-#endif
+//            ///////// send SCSI command "inquiry (opcode: 0x12)"
+//#if MSD_TRACE
+//            DBGMSG("SCSI: inquiry");
+//#endif
               
-#if DEVICE_INFO || MSD_TRACE
-            BasicConsole.DelayOutput(10);
-#endif
+//#if DEVICE_INFO || MSD_TRACE
+//            BasicConsole.DelayOutput(10);
+//#endif
 
-            ///////// send SCSI command "test unit ready(6)"
-            TestDeviceReady();
+//            ///////// send SCSI command "test unit ready(6)"
+//            TestDeviceReady();
 
-            ///////// send SCSI command "read capacity(10)"
-#if MSD_TRACE
-            DBGMSG("SCSI: read capacity");
-#endif
+//            ///////// send SCSI command "read capacity(10)"
+//#if MSD_TRACE
+//            DBGMSG("SCSI: read capacity");
+//#endif
 
-            uint* capacityBuffer = (uint*)FOS_System.Heap.AllocZeroed(8);
-            SendSCSICommand(0x25 /*SCSI opcode*/, 0 /*LBA*/, 8 /*Bytes In*/, capacityBuffer, null);
+//            uint* capacityBuffer = (uint*)FOS_System.Heap.AllocZeroed(8);
+//            SendSCSICommand_IN(0x25 /*SCSI opcode*/, 0 /*LBA*/, 8 /*Bytes In*/, capacityBuffer, null);
 
-            // MSB ... LSB
-            capacityBuffer[0] = Utils.htonl(capacityBuffer[0]);
-            capacityBuffer[1] = Utils.htonl(capacityBuffer[1]);
+//            // MSB ... LSB
+//            capacityBuffer[0] = Utils.htonl(capacityBuffer[0]);
+//            capacityBuffer[1] = Utils.htonl(capacityBuffer[1]);
 
-            //diskDevice.SetBlockCount(((ulong)capacityBuffer[0]) + 1);
-            //diskDevice.SetBlockSize((ulong)capacityBuffer[1]);
+//            //diskDevice.SetBlockCount(((ulong)capacityBuffer[0]) + 1);
+//            //diskDevice.SetBlockSize((ulong)capacityBuffer[1]);
             
-#if MSD_TRACE
-            DBGMSG(((FOS_System.String)"Capacity: ") + (diskDevice.BlockCount * diskDevice.BlockSize) + ", Last LBA: " + capacityBuffer[0] + ", block size: " + capacityBuffer[1]);
-#endif
-        }
+//#if MSD_TRACE
+//            DBGMSG(((FOS_System.String)"Capacity: ") + (diskDevice.BlockCount * diskDevice.BlockSize) + ", Last LBA: " + capacityBuffer[0] + ", block size: " + capacityBuffer[1]);
+//#endif
+//        }
 
+        /// <summary>
+        /// Reads the specified block of the device.
+        /// </summary>
+        /// <param name="sector">The sector index to read.</param>
+        /// <param name="buffer">The buffer to store the sector data in. Must be at least as big as the sector size.</param>
+        /// <returns>True if the read was successful. Otherwise false.</returns>
         public bool Read(uint sector, void* buffer)
         {
 #if MSD_TRACE
             DBGMSG(((FOS_System.String)">SCSI: read sector: ") + sector);
 #endif
 
-            SendSCSICommand(0x28 /*SCSI opcode*/, sector /*LBA*/, (ushort)diskDevice.BlockSize /*Bytes In*/, buffer, null);
+            SendSCSICommand_IN(0x28 /*SCSI opcode*/, sector /*LBA*/, (ushort)diskDevice.BlockSize /*Bytes In*/, buffer, null);
 
             return true;
         }
+        /// <summary>
+        /// Writes the specified block of the device.
+        /// </summary>
+        /// <param name="sector">The sector index to write.</param>
+        /// <param name="buffer">The buffer storing the data to write. Must be at least as big as the sector size.</param>
+        /// <returns>True if the write was successful. Otherwise false.</returns>
         public bool Write(uint sector, void* buffer)
         {
 #if MSD_TRACE
@@ -605,6 +668,10 @@ namespace Kernel.Hardware.USB.Devices
             return true;
         }
 
+        /// <summary>
+        /// Performs the reset-recovery operation on the specified interface.
+        /// </summary>
+        /// <param name="Interface">The interface to reset.</param>
         public void ResetRecoveryMSD(byte Interface)
         {
             // Reset Interface
@@ -643,12 +710,15 @@ namespace Kernel.Hardware.USB.Devices
 #endif
 
             // start with correct endpoint toggles and reset interface
-            ((USBEndpoint)DeviceInfo.Endpoints[DeviceInfo.MSD_OUTEndpointID]).toggle = false;
-            ((USBEndpoint)DeviceInfo.Endpoints[DeviceInfo.MSD_INEndpointID]).toggle = false;
+            ((Endpoint)DeviceInfo.Endpoints[DeviceInfo.MSD_OUTEndpointID]).toggle = false;
+            ((Endpoint)DeviceInfo.Endpoints[DeviceInfo.MSD_INEndpointID]).toggle = false;
             BulkReset(DeviceInfo.MSD_InterfaceNum); // Reset Interface
         }
 
-        public static FOS_System.String[] SenseKeys =
+        /// <summary>
+        /// Human readable descriptions of the SCSI command sense keys.
+        /// </summary>
+        public static FOS_System.String[] SenseDescriptions =
         {
             "No Sense",
             "Recovered Error - last command completed with some recovery action",
@@ -667,11 +737,16 @@ namespace Kernel.Hardware.USB.Devices
             "Miscompare - source data did not match the data read from the medium",
             "not defined"
         };
-        public static int ShowResultsRequestSense(byte* addr)
+        /// <summary>
+        /// Gets the request's result's sense. 
+        /// </summary>
+        /// <param name="RequestResultData">The result data to get the sense from.</param>
+        /// <returns>The sense key.</returns>
+        public static int GetRequestSense(byte* RequestResultData)
         {
-            uint Valid = Utils.GetField(addr, 0, 7, 1); // byte 0, bit 7
-            uint ResponseCode = Utils.GetField(addr, 0, 0, 7); // byte 0, bit 6:0
-            uint SenseKey = Utils.GetField(addr, 2, 0, 4); // byte 2, bit 3:0
+            uint Valid = Utils.GetField(RequestResultData, 0, 7, 1); // byte 0, bit 7
+            uint ResponseCode = Utils.GetField(RequestResultData, 0, 0, 7); // byte 0, bit 6:0
+            uint SenseKey = Utils.GetField(RequestResultData, 2, 0, 4); // byte 2, bit 3:0
             
 #if MSD_TRACE
             DBGMSG("Results of \"request sense\":");
@@ -730,10 +805,22 @@ namespace Kernel.Hardware.USB.Devices
         }
 #endif
     }
+    /// <summary>
+    /// Represents a mass storage device as a disk device. Allows an MSD to be accessed
+    /// like a normal disk device.
+    /// </summary>
     public unsafe class MassStorageDevice_DiskDevice : DiskDevice
     {
-        MassStorageDevice msd;
+        /// <summary>
+        /// The MSD that the disk device is an interface for.
+        /// </summary>
+        protected MassStorageDevice msd;
 
+        /// <summary>
+        /// Initialises a new disk device interface for the specified MSD. 
+        /// Also determines the device's maximum size.
+        /// </summary>
+        /// <param name="anMSD">The MSD to create an interface for.</param>
         public MassStorageDevice_DiskDevice(MassStorageDevice anMSD)
         {
             msd = anMSD;
@@ -741,7 +828,7 @@ namespace Kernel.Hardware.USB.Devices
             uint* capacityBuffer = (uint*)FOS_System.Heap.AllocZeroed(8);
             try
             {
-                anMSD.SendSCSICommand(0x25 /*SCSI opcode*/, 0 /*LBA*/, 8 /*Bytes In*/, capacityBuffer, null);
+                anMSD.SendSCSICommand_IN(0x25 /*SCSI opcode*/, 0 /*LBA*/, 8 /*Bytes In*/, capacityBuffer, null);
 
                 // MSB ... LSB
                 capacityBuffer[0] = Utils.htonl(capacityBuffer[0]);
@@ -758,6 +845,12 @@ namespace Kernel.Hardware.USB.Devices
             DeviceManager.Devices.Add(this);
         }
 
+        /// <summary>
+        /// See base class.
+        /// </summary>
+        /// <param name="aBlockNo">See base class.</param>
+        /// <param name="aBlockCount">See base class.</param>
+        /// <param name="aData">See base class.</param>
         public override void ReadBlock(ulong aBlockNo, uint aBlockCount, byte[] aData)
         {
 #if MSD_TRACE
@@ -785,18 +878,40 @@ namespace Kernel.Hardware.USB.Devices
             BasicConsole.WriteLine("Completed all reading.");
 #endif
         }
+        /// <summary>
+        /// See base class.
+        /// </summary>
+        /// <param name="aBlockNo">See base class.</param>
+        /// <param name="aBlockCount">See base class.</param>
+        /// <param name="aData">See base class.</param>
         public override void WriteBlock(ulong aBlockNo, uint aBlockCount, byte[] aData)
         {
-            byte* dataPtr = ((byte*)Utilities.ObjectUtilities.GetHandle(aData)) + FOS_System.Array.FieldsBytesSize;
-            for (uint i = 0; i < aBlockCount; i++)
+            if (aData == null)
             {
-                msd.Write((uint)(aBlockNo + i), dataPtr);
-                dataPtr += blockSize;
+                byte* dataPtr = ((byte*)Utilities.ObjectUtilities.GetHandle(NewBlockArray(1))) + FOS_System.Array.FieldsBytesSize;
+                for (uint i = 0; i < aBlockCount; i++)
+                {
+                    msd.Write((uint)(aBlockNo + i), dataPtr);
 
-                FOS_System.GC.Cleanup();
+                    FOS_System.GC.Cleanup();
+                }
+            }
+            else
+            {
+                byte* dataPtr = ((byte*)Utilities.ObjectUtilities.GetHandle(aData)) + FOS_System.Array.FieldsBytesSize;
+                for (uint i = 0; i < aBlockCount; i++)
+                {
+                    msd.Write((uint)(aBlockNo + i), dataPtr);
+                    dataPtr += blockSize;
+
+                    FOS_System.GC.Cleanup();
+                }
             }
         }
         
+        /// <summary>
+        /// Destroys the MSD disk device.
+        /// </summary>
         public void Destroy()
         {
             DeviceManager.Devices.Remove(this);
@@ -804,14 +919,38 @@ namespace Kernel.Hardware.USB.Devices
         }
     }
 
-    public unsafe struct usb_CommandBlockWrapper
+    /// <summary>
+    /// The command block wrapper structure which makes up a SCSI command.
+    /// </summary>
+    public unsafe struct CommandBlockWrapper
     {
+        /// <summary>
+        /// Read the spec.
+        /// </summary>
         public uint CBWSignature;
+        /// <summary>
+        /// Read the spec.
+        /// </summary>
         public uint CBWTag;
+        /// <summary>
+        /// Read the spec.
+        /// </summary>
         public uint CBWDataTransferLength;
+        /// <summary>
+        /// Read the spec.
+        /// </summary>
         public byte CBWFlags;
+        /// <summary>
+        /// Read the spec.
+        /// </summary>
         public byte CBWLUN;           // only bits 3:0
+        /// <summary>
+        /// Read the spec.
+        /// </summary>
         public byte CBWCBLength;      // only bits 4:0
+        /// <summary>
+        /// Read the spec.
+        /// </summary>
         public fixed byte commandByte[16];
     }
 }

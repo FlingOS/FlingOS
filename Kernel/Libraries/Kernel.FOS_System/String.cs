@@ -1,19 +1,19 @@
 ﻿#region Copyright Notice
-/// ------------------------------------------------------------------------------ ///
-///                                                                                ///
-///               All contents copyright � Edward Nutting 2014                     ///
-///                                                                                ///
-///        You may not share, reuse, redistribute or otherwise use the             ///
-///        contents this file outside of the Fling OS project without              ///
-///        the express permission of Edward Nutting or other copyright             ///
-///        holder. Any changes (including but not limited to additions,            ///
-///        edits or subtractions) made to or from this document are not            ///
-///        your copyright. They are the copyright of the main copyright            ///
-///        holder for all Fling OS files. At the time of writing, this             ///
-///        owner was Edward Nutting. To be clear, owner(s) do not include          ///
-///        developers, contributors or other project members.                      ///
-///                                                                                ///
-/// ------------------------------------------------------------------------------ ///
+// ------------------------------------------------------------------------------ //
+//                                                                                //
+//               All contents copyright � Edward Nutting 2014                     //
+//                                                                                //
+//        You may not share, reuse, redistribute or otherwise use the             //
+//        contents this file outside of the Fling OS project without              //
+//        the express permission of Edward Nutting or other copyright             //
+//        holder. Any changes (including but not limited to additions,            //
+//        edits or subtractions) made to or from this document are not            //
+//        your copyright. They are the copyright of the main copyright            //
+//        holder for all Fling OS files. At the time of writing, this             //
+//        owner was Edward Nutting. To be clear, owner(s) do not include          //
+//        developers, contributors or other project members.                      //
+//                                                                                //
+// ------------------------------------------------------------------------------ //
 #endregion
     
 using System;
@@ -32,6 +32,9 @@ namespace Kernel.FOS_System
            class structure ( i.e. do all the hard work! ;) )
          */
 
+        /// <summary>
+        /// The size of the fields in an string object that come before the actual string data.
+        /// </summary>
         public const uint FieldsBytesSize = 8;
 
         /// <summary>
@@ -244,6 +247,10 @@ namespace Kernel.FOS_System
         {
             if (startIndex >= this.length)
             {
+                if (aLength == 0)
+                {
+                    return New(0);
+                }
                 ExceptionMethods.Throw_IndexOutOfRangeException();
             }
             else if (aLength > length - startIndex)
@@ -276,6 +283,32 @@ namespace Kernel.FOS_System
                 for (int i = 0; i < prefix.length; i++)
                 {
                     if (this[i] != prefix[i])
+                    {
+                        return false;
+                    }
+                }
+                return true;
+            }
+        }
+        /// <summary>
+        /// Determines whether the string ends with the specified string.
+        /// </summary>
+        /// <param name="postfix">The string to test for.</param>
+        /// <returns>Whether the string ends with the postfix.</returns>
+        [Compiler.NoDebug]
+        [Compiler.NoGC]
+        public bool EndsWith(FOS_System.String postfix)
+        {
+            if (this.length < postfix.length)
+            {
+                return false;
+            }
+            else
+            {
+                int offset = this.length - postfix.length;
+                for (int i = this.length - 1; i >= offset; i--)
+                {
+                    if (this[i] != postfix[i - offset])
                     {
                         return false;
                     }
@@ -318,6 +351,9 @@ namespace Kernel.FOS_System
         [Compiler.NoDebug]
         public FOS_System.String ToUpper()
         {
+            if (this.length == 0)
+                return "";
+
             FOS_System.String result = New(this.length);
 
             for (int i = 0; i < result.length; i++)
@@ -330,6 +366,68 @@ namespace Kernel.FOS_System
                 result[i] = cChar;
             }
 
+            return result;
+        }
+        /// <summary>
+        /// Copies the current string then converts all the alpha-characters to lower-case.
+        /// </summary>
+        /// <returns>The new, lower-case string.</returns>
+        [Compiler.NoDebug]
+        public FOS_System.String ToLower()
+        {
+            FOS_System.String result = New(this.length);
+
+            for (int i = 0; i < result.length; i++)
+            {
+                char cChar = this[i];
+                if (cChar >= 'A' && cChar <= 'Z')
+                {
+                    cChar = (char)('a' + (cChar - 'A'));
+                }
+                result[i] = cChar;
+            }
+
+            return result;
+        }
+
+        /// <summary>
+        /// Finds the first index of the specified character in the string.
+        /// </summary>
+        /// <param name="c">The character to find.</param>
+        /// <returns>The first instance of the character or -1 if not found.</returns>
+        [Compiler.NoDebug]
+        [Compiler.NoGC]
+        public int IndexOf(char c)
+        {
+            int result = -1;
+            for (int i = 0; i < length; i++)
+            {
+                if (this[i] == c)
+                {
+                    result = i;
+                    break;
+                }
+            }
+            return result;
+        }
+        /// <summary>
+        /// Finds the last index of the specified character in the string.
+        /// </summary>
+        /// <param name="c">The character to find.</param>
+        /// <returns>The last instance of the character or -1 if not found.</returns>
+        [Compiler.NoDebug]
+        [Compiler.NoGC]
+        public int LastIndexOf(char c)
+        {
+            int result = -1;
+            for (int i = length - 1; i > -1; i--)
+            {
+                if (this[i] == c)
+                {
+                    result = i;
+                    break;
+                }
+            }
             return result;
         }
         

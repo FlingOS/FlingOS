@@ -54,7 +54,6 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Debug\BasicDebug.cs" />
-    <Compile Include="Paging.cs" />
     <Compile Include="PreReqs.cs" />
     <Compile Include="Kernel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -63,6 +62,10 @@
     <ProjectReference Include="..\Compiler\Kernel.Compiler.csproj">
       <Project>{061e5f53-5eff-4e12-94ee-9e18459e5cf4}</Project>
       <Name>Kernel.Compiler</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Libraries\Kernel.Core\Kernel.Core.csproj">
+      <Project>{5ba8a9c9-d4e1-4470-a9e6-2b5657e09140}</Project>
+      <Name>Kernel.Core</Name>
     </ProjectReference>
     <ProjectReference Include="..\Libraries\Kernel.FOS_System.IO\Kernel.FOS_System.IO.csproj">
       <Project>{5c9fdb7d-604e-4927-9d3f-e2c599b20797}</Project>
@@ -136,13 +139,10 @@
     <Content Include="ASM\PreReqs\MultibootSignature.x86_32.asm">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="ASM\Paging\Paging.x86_32.asm">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
     <Content Include="ASM\PreReqs\Reset.x86_32.asm">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="ASM\PreReqs\SSEInit.x86_32.asm">
+    <Content Include="ASM\PreReqs\VirtualMemInit.x86_32.asm">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="ASM\PreReqs\WriteDebugVideo.x86_32.asm">

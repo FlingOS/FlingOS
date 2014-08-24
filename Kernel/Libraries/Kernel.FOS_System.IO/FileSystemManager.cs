@@ -1,21 +1,21 @@
 ﻿#region Copyright Notice
-/// ------------------------------------------------------------------------------ ///
-///                                                                                ///
-///               All contents copyright � Edward Nutting 2014                     ///
-///                                                                                ///
-///        You may not share, reuse, redistribute or otherwise use the             ///
-///        contents this file outside of the Fling OS project without              ///
-///        the express permission of Edward Nutting or other copyright             ///
-///        holder. Any changes (including but not limited to additions,            ///
-///        edits or subtractions) made to or from this document are not            ///
-///        your copyright. They are the copyright of the main copyright            ///
-///        holder for all Fling OS files. At the time of writing, this             ///
-///        owner was Edward Nutting. To be clear, owner(s) do not include          ///
-///        developers, contributors or other project members.                      ///
-///                                                                                ///
-/// ------------------------------------------------------------------------------ ///
+// ------------------------------------------------------------------------------ //
+//                                                                                //
+//               All contents copyright � Edward Nutting 2014                     //
+//                                                                                //
+//        You may not share, reuse, redistribute or otherwise use the             //
+//        contents this file outside of the Fling OS project without              //
+//        the express permission of Edward Nutting or other copyright             //
+//        holder. Any changes (including but not limited to additions,            //
+//        edits or subtractions) made to or from this document are not            //
+//        your copyright. They are the copyright of the main copyright            //
+//        holder for all Fling OS files. At the time of writing, this             //
+//        owner was Edward Nutting. To be clear, owner(s) do not include          //
+//        developers, contributors or other project members.                      //
+//                                                                                //
+// ------------------------------------------------------------------------------ //
 #endregion
-
+    
 #define FSM_TRACE
 #undef FSM_TRACE
 
@@ -91,10 +91,40 @@ namespace Kernel.FOS_System.IO
         /// Initializes the specified disk device.
         /// </summary>
         /// <param name="aDiskDevice">The disk device to initialize.</param>
-        internal static void InitDisk(DiskDevice aDiskDevice)
+        public static void InitDisk(DiskDevice aDiskDevice)
         {
             //TODO - Add more partitioning schemes.
 
+            //Must check for GPT before MBR because GPT uses a protective
+            //  MBR entry so will be seen as valid MBR.
+            if (InitAsGPT(aDiskDevice))
+            {
+#if DEBUG
+                BasicConsole.WriteLine("GPT formatted disk detected!");
+                BasicConsole.DelayOutput(3);
+#endif
+            }
+            else if(!InitAsMBR(aDiskDevice))
+            {
+                ExceptionMethods.Throw(new FOS_System.Exceptions.NotSupportedException("Non MBR/EBR/GPT formatted disks not supported."));
+            }
+        }
+
+        private static bool InitAsGPT(DiskDevice aDiskDevice)
+        {
+            GPT TheGPT = new GPT(aDiskDevice);
+            if (!TheGPT.IsValid)
+            {
+                return false;
+            }
+            else
+            {
+                ProcessGPT(TheGPT, aDiskDevice);
+                return true;
+            }
+        }
+        private static bool InitAsMBR(DiskDevice aDiskDevice)
+        {
 #if FSM_TRACE
             BasicConsole.WriteLine("Attempting to read MBR...");
 #endif
@@ -107,7 +137,7 @@ namespace Kernel.FOS_System.IO
 
             if (!TheMBR.IsValid)
             {
-                ExceptionMethods.Throw(new FOS_System.Exceptions.NotSupportedException("Non MBR/EBR formatted disks not supported."));
+                return false;
             }
             else
             {
@@ -115,6 +145,16 @@ namespace Kernel.FOS_System.IO
                 BasicConsole.WriteLine("Valid MBR found.");
 #endif
                 ProcessMBR(TheMBR, aDiskDevice);
+
+                return true;
+            }
+        }
+        private static void ProcessGPT(GPT aGPT, DiskDevice aDiskDevice)
+        {
+            for (int i = 0; i < aGPT.Partitions.Count; i++)
+            {
+                GPT.PartitionInfo aPartInfo = (GPT.PartitionInfo)aGPT.Partitions[i];
+                Partitions.Add(new Partition(aDiskDevice, aPartInfo.FirstLBA, aPartInfo.LastLBA - aPartInfo.FirstLBA));
             }
         }
         /// <summary>
@@ -158,7 +198,8 @@ namespace Kernel.FOS_System.IO
                     mappingPrefix[0] = (char)((int)('A') + i);
                     mappingPrefix[1] = ':';
                     mappingPrefix[2] = PathDelimiter;
-                    FileSystemMappings.Add(new FileSystemMapping(mappingPrefix, newFS));
+                    newFS.TheMapping = new FileSystemMapping(mappingPrefix, newFS);
+                    FileSystemMappings.Add(newFS.TheMapping);
                 }
                 else
                 {
@@ -189,6 +230,11 @@ namespace Kernel.FOS_System.IO
             return result;
         }
 
+        /// <summary>
+        /// Determines whether the specified partition has any file system mappings associated with it.
+        /// </summary>
+        /// <param name="part">The partition to check.</param>
+        /// <returns>Whether there are any file system mappings for the partition.</returns>
         public static bool HasMapping(Partition part)
         {
             for (int i = 0; i < FileSystemMappings.Count; i++)

@@ -185,6 +185,9 @@
     <None Include="ISO\isolinux.bin">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Include="cygwin\linker.ld">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Include="ISO\mboot.c32">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

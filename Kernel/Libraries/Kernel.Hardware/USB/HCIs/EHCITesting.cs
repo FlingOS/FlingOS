@@ -1,32 +1,35 @@
 ﻿#region Copyright Notice
-/// ------------------------------------------------------------------------------ ///
-///                                                                                ///
-///               All contents copyright � Edward Nutting 2014                     ///
-///                                                                                ///
-///        You may not share, reuse, redistribute or otherwise use the             ///
-///        contents this file outside of the Fling OS project without              ///
-///        the express permission of Edward Nutting or other copyright             ///
-///        holder. Any changes (including but not limited to additions,            ///
-///        edits or subtractions) made to or from this document are not            ///
-///        your copyright. They are the copyright of the main copyright            ///
-///        holder for all Fling OS files. At the time of writing, this             ///
-///        owner was Edward Nutting. To be clear, owner(s) do not include          ///
-///        developers, contributors or other project members.                      ///
-///                                                                                ///
-/// ------------------------------------------------------------------------------ ///
+// ------------------------------------------------------------------------------ //
+//                                                                                //
+//               All contents copyright � Edward Nutting 2014                     //
+//                                                                                //
+//        You may not share, reuse, redistribute or otherwise use the             //
+//        contents this file outside of the Fling OS project without              //
+//        the express permission of Edward Nutting or other copyright             //
+//        holder. Any changes (including but not limited to additions,            //
+//        edits or subtractions) made to or from this document are not            //
+//        your copyright. They are the copyright of the main copyright            //
+//        holder for all Fling OS files. At the time of writing, this             //
+//        owner was Edward Nutting. To be clear, owner(s) do not include          //
+//        developers, contributors or other project members.                      //
+//                                                                                //
+// ------------------------------------------------------------------------------ //
 #endregion
     
+#define EHCI_TESTS
+#undef EHCI_TESTS //Note: Also comment out the undef in EHCI.cs
+
 using System;
 
 namespace Kernel.Hardware.USB.HCIs
 {
-#if DEBUG
+#if DEBUG && EHCI_TESTS
     public static unsafe class EHCITesting
     {
         public static int errors = 0;
         public static int warnings = 0;
 
-        #region Memory Tests
+    #region Memory Tests
 
         public static void Test_PointerManipulation()
         {
@@ -466,7 +469,7 @@ namespace Kernel.Hardware.USB.HCIs
         #endregion
 
 
-        #region Wrapper Class Tests
+    #region Wrapper Class Tests
 
         public static void Test_QueueHeadWrapper()
         {
@@ -1265,7 +1268,7 @@ namespace Kernel.Hardware.USB.HCIs
         #endregion
         
 
-        #region Validation
+    #region Validation
 
         public static bool Validate_PointerBoundaryAlignment(void* ptr, uint boundary)
         {

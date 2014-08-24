@@ -1,23 +1,28 @@
 ﻿#region Copyright Notice
-/// ------------------------------------------------------------------------------ ///
-///                                                                                ///
-///               All contents copyright � Edward Nutting 2014                     ///
-///                                                                                ///
-///        You may not share, reuse, redistribute or otherwise use the             ///
-///        contents this file outside of the Fling OS project without              ///
-///        the express permission of Edward Nutting or other copyright             ///
-///        holder. Any changes (including but not limited to additions,            ///
-///        edits or subtractions) made to or from this document are not            ///
-///        your copyright. They are the copyright of the main copyright            ///
-///        holder for all Fling OS files. At the time of writing, this             ///
-///        owner was Edward Nutting. To be clear, owner(s) do not include          ///
-///        developers, contributors or other project members.                      ///
-///                                                                                ///
-/// ------------------------------------------------------------------------------ ///
+// ------------------------------------------------------------------------------ //
+//                                                                                //
+//               All contents copyright � Edward Nutting 2014                     //
+//                                                                                //
+//        You may not share, reuse, redistribute or otherwise use the             //
+//        contents this file outside of the Fling OS project without              //
+//        the express permission of Edward Nutting or other copyright             //
+//        holder. Any changes (including but not limited to additions,            //
+//        edits or subtractions) made to or from this document are not            //
+//        your copyright. They are the copyright of the main copyright            //
+//        holder for all Fling OS files. At the time of writing, this             //
+//        owner was Edward Nutting. To be clear, owner(s) do not include          //
+//        developers, contributors or other project members.                      //
+//                                                                                //
+// ------------------------------------------------------------------------------ //
 #endregion
-
+    
 #define EHCI_TRACE
 #undef EHCI_TRACE
+
+#if EHCI_TRACE
+    #define EHCI_TESTS
+    #undef EHCI_TESTS //Note: Also comment out the undef in EHCITesting.cs
+#endif
 
 using System;
 using Kernel.FOS_System.Collections;
@@ -28,109 +33,263 @@ using Kernel.Utilities;
 namespace Kernel.Hardware.USB.HCIs
 {
     #region Constants
+    /// <summary>
+    /// Interrupt threshold control values - determines the minimum time between interrupt being fired.
+    /// </summary>
+    public enum EHCI_InterruptThresholdControls : uint
+    {
+        /// <summary>
+        /// 1 Microframes (= 0.125ms)
+        /// </summary>
+        x01 = 0x010000,
+        /// <summary>
+        /// 2 Microframes (= 0.25ms)
+        /// </summary>
+        x02 = 0x020000,
+        /// <summary>
+        /// 4 Microframes (= 0.5ms)
+        /// </summary>
+        x04 =  0x040000,
+        /// <summary>
+        /// 8 Microframes (= 1ms)
+        /// </summary>
+        x08 = 0x080000,
+        /// <summary>
+        /// 16 Microframes (= 2ms)
+        /// </summary>
+        x16 = 0x100000,
+        /// <summary>
+        /// 32 Microframes (= 4ms)
+        /// </summary>
+        x32 = 0x200000,
+        /// <summary>
+        /// 64 Microframes (= 8ms)
+        /// </summary>
+        x64 = 0x400000
+    }
+    /// <summary>
+    /// Frame list size values.
+    /// </summary>
+    public enum EHCI_FrameListSizes : uint
+    {
+        /// <summary>
+        /// List size of 1024.
+        /// </summary>
+        x1024 = 0x0,
+        /// <summary>
+        /// List size of 512.
+        /// </summary>
+        x0512 = 0x4,
+        /// <summary>
+        /// List size of 256.
+        /// </summary>
+        x0256 = 0x8
+    }
+    /// <summary>
+    /// Constants used by the EHCI driver.
+    /// </summary>
     public class EHCI_Consts
     {
-        /* ****** */
-        /* USBCMD */
-        /* ****** */
+        /* ------ USBCMD ------ */
 
-        public static uint CMD_INTERRUPT_THRESHOLD = 0x00FF0000;// valid values are:
-        public static uint CMD_1_MICROFRAME = Utils.BIT(16);
-        public static uint CMD_2_MICROFRAME = Utils.BIT(17);
-        public static uint CMD_4_MICROFRAME = Utils.BIT(18);
-        public static uint CMD_8_MICROFRAME = Utils.BIT(19);// 1ms
-        public static uint CMD_16_MICROFRAME = Utils.BIT(20);
-        public static uint CMD_32_MICROFRAME = Utils.BIT(21);
-        public static uint CMD_64_MICROFRAME = Utils.BIT(22);
+        /// <summary>
+        /// Mask for the Interrupt Threshold setting in the CMD operational register.
+        /// </summary>
+        /// <see cref="EHCI_InterruptThresholdControls"/>
+        public static uint CMD_InterruptThresholdMask = 0x00FF0000;
+        /// <summary>
+        /// Mask for the Frame List Size setting in the CMD operational register.
+        /// </summary>
+        /// <see cref="EHCI_FrameListSizes"/>
+        public static uint CMD_FrameListSizeMask = 0xC;
+                
+        /// <summary>
+        /// Mask for the Park Mode setting in the CMD operational register.
+        /// </summary>
+        public static uint CMD_ParkModeMask = 0x800;
+        /// <summary>
+        /// Mask for the Park Count setting in the CMD operational register.
+        /// </summary>
+        public static uint CMD_ParkCountMask = 0x300;
+        /// <summary>
+        /// Mask for the Light Reset command in the CMD operational register.
+        /// </summary>
+        public static uint CMD_LightResetMask = Utils.BIT(7);
+        /// <summary>
+        /// Mask for the Async Interrupt Doorbell setting in the CMD operational register.
+        /// </summary>
+        public static uint CMD_AsyncInterruptDoorbellMask = Utils.BIT(6);
+        /// <summary>
+        /// Mask for the Async Schedule Enable command in the CMD operational register.
+        /// </summary>
+        public static uint CMD_AsyncScheduleEnableMask = Utils.BIT(5);
+        /// <summary>
+        /// Mask for the Periodic Schedule Enable command in the CMD operational register.
+        /// </summary>
+        public static uint CMD_PeriodicScheduleEnableMask = Utils.BIT(4);
 
-        public static uint CMD_PARK_MODE = 0x800;
-        public static uint CMD_PARK_COUNT = 0x300;
-        public static uint CMD_LIGHT_RESET = Utils.BIT(7);
-        public static uint CMD_ASYNCH_INT_DOORBELL = Utils.BIT(6);
-        public static uint CMD_ASYNCH_ENABLE = Utils.BIT(5);
-        public static uint CMD_PERIODIC_ENABLE = Utils.BIT(4);
-
-        public static uint CMD_FRAMELIST_SIZE = 0xC;// valid values are:
-        public static uint CMD_FRAMELIST_1024 = 0x0;
-        public static uint CMD_FRAMELIST_512 = 0x4;
-        public static uint CMD_FRAMELIST_256 = 0x8;
-
-        public static uint CMD_HCRESET = Utils.BIT(1);// reset
-        public static uint CMD_RUN_STOP = Utils.BIT(0);// run/stop
-
-
-        /* ************** */
-        /* USBSTS USBINTR */
-        /* ************** */
-
-        // only USBSTS
-        public static uint STS_ASYNC_ENABLED = Utils.BIT(15);
-        public static uint STS_PERIODIC_ENABLED = Utils.BIT(14);
-        public static uint STS_RECLAMATION = Utils.BIT(13);
-        public static uint STS_HCHALTED = Utils.BIT(12);
-
-        // USBSTS (Interrupts)
-        public static uint STS_ASYNC_INT = Utils.BIT(5);
-        public static uint STS_HOST_SYSTEM_ERROR = Utils.BIT(4);
-        public static uint STS_FRAMELIST_ROLLOVER = Utils.BIT(3);
-        public static uint STS_PORT_CHANGE = Utils.BIT(2);
-        public static uint STS_USBERRINT = Utils.BIT(1);
-        public static uint STS_USBINT = Utils.BIT(0);
-
-
-        /* *********/
-        /* FRINDEX */
-        /* *********/
-
-        public static uint FRI_MASK = 0x00001FFF;
+        /// <summary>
+        /// Mask for the Host Controller Reset command in the CMD operational register.
+        /// </summary>
+        public static uint CMD_HCResetMask = Utils.BIT(1);// reset
+        /// <summary>
+        /// Mask for the Run-Stop command bit in the CMD operational register.
+        /// </summary>
+        public static uint CMD_RunStopMask = Utils.BIT(0);// run/stop
 
 
-        /* **************** */
-        /* PERIODICLISTBASE */
-        /* **************** */
+        /* ------ USBSTS / USBINTR ------ */
 
-        public static uint PLB_ALIGNMENT = 0x00000FFF; // 4 KiB
+        /* Only USBSTS */
+        /// <summary>
+        /// Mask for the Async Schedule Enabled flag.
+        /// </summary>
+        public static uint STS_AsyncEnabled = Utils.BIT(15);
+        /// <summary>
+        /// Mask for the Periodic Schedule Enabled flag.
+        /// </summary>
+        public static uint STS_PeriodicEnabled = Utils.BIT(14);
+        /// <summary>
+        /// Mask for the Reclamation flag.
+        /// </summary>
+        public static uint STS_ReclamationFlag = Utils.BIT(13);
+        /// <summary>
+        /// Mask for the Host Controller Halted flag.
+        /// </summary>
+        public static uint STS_HCHalted = Utils.BIT(12);
+
+        /* USBSTS / USBINTR */
+        /// <summary>
+        /// Mask for the interrupt type flag indicating Async Interrupt occurred.
+        /// </summary>
+        public static uint STS_AsyncInterrupt = Utils.BIT(5);
+        /// <summary>
+        /// Mask for the interrupt type flag indicating a Host System Error occurred.
+        /// </summary>
+        public static uint STS_HostSystemError = Utils.BIT(4);
+        /// <summary>
+        /// Mask for the interrupt type flag indicating a Frame List Rollover occurred.
+        /// </summary>
+        public static uint STS_FrameListRollover = Utils.BIT(3);
+        /// <summary>
+        /// Mask for the interrupt type flag indicating a Port Change occurred.
+        /// </summary>
+        public static uint STS_PortChange = Utils.BIT(2);
+        /// <summary>
+        /// Mask for the interrupt type flag indicating a USB Error occurred.
+        /// </summary>
+        public static uint STS_USBErrorInterrupt = Utils.BIT(1);
+        /// <summary>
+        /// Mask for the interrupt type flag indicating a general USB Interrupt occurred.
+        /// </summary>
+        public static uint STS_USBInterrupt = Utils.BIT(0);
 
 
-        /* ************* */
-        /* ASYNCLISTADDR */
-        /* ************* */
+        /* ------ FRINDEX ------ */
+        /// <summary>
+        /// Frame index register mask.
+        /// </summary>
+        public static uint FRI_Mask = 0x00001FFF;
 
-        public static uint ALB_ALIGNMENT = 0x0000001F;  // 32 Byte
+
+        /* ------ PERIODICLISTBASE ------ */
+        /// <summary>
+        /// Periodic list base alignment mask. 4KiB alignment.
+        /// </summary>
+        public static uint PLB_Alignment = 0x00000FFF; // 4 KiB
 
 
-        /* ********** */
-        /* CONFIGFLAG */
-        /* ********** */
+        /* ------ ASYNCLISTADDR ------ */
+        /// <summary>
+        /// Async list address alignment mask. 32 byte alignment.
+        /// </summary>
+        public static uint ALB_Alignment = 0x0000001F;  // 32 Byte
 
+
+        /* ------ CONFIGFLAG ------ */
+        /// <summary>
+        /// Config flag mask.
+        /// </summary>
         public static uint CF = Utils.BIT(0);
 
 
-        /* *********** */
-        /* PORTSC[...] */
-        /* *********** */
+        /* ------ PORTSC[0-n] ------ */
+        /// <summary>
+        /// R/W. Port status mask to get/set whether the port is owned by the companion host controller.
+        /// </summary>
+        public static uint PSTS_CompanionHCOwned = Utils.BIT(13);
+        /// <summary>
+        /// R/W. Port status mask to power the port on/off. Valid if PPC == 1.
+        /// </summary>
+        public static uint PSTS_PowerOn = Utils.BIT(12);
+        /// <summary>
+        /// R/W. Port status mask to tell the port to reset.
+        /// </summary>
+        public static uint PSTS_PortReset = Utils.BIT(8);
+        /// <summary>
+        /// R/W. Port status mask to tell the port to suspend.
+        /// </summary>
+        public static uint PSTS_PortSuspend = Utils.BIT(7);
+        /// <summary>
+        /// R/W. Port status mask to tell the port to suspend.
+        /// </summary>
+        public static uint PSTS_PortResume = Utils.BIT(6);
+        /// <summary>
+        /// R/WC. Port status mask to read or clear the port overrcurrent changed status.
+        /// </summary>
+        public static uint PSTS_OverCurrentChange = Utils.BIT(5);
+        /// <summary>
+        /// R. Port status mask to read whether the port has gone into overcurrent or not.
+        /// </summary>
+        public static uint PSTS_OverCurrent = Utils.BIT(4);
+        /// <summary>
+        /// R/WC. Port status mask to read or clear the port changed status.
+        /// </summary>
+        public static uint PSTS_EnabledChange = Utils.BIT(3);
+        /// <summary>
+        /// R/W. Port status mask to get/set whether the port is enabled or not.
+        /// </summary>
+        public static uint PSTS_Enabled = Utils.BIT(2);
+        /// <summary>
+        /// R/WC. Port status mask to read or clear the port connected changed status.
+        /// </summary>
+        public static uint PSTS_ConnectedChange = Utils.BIT(1);
+        /// <summary>
+        /// R. Port status mask to read whether the port is connected to a device or not.
+        /// </summary>
+        public static uint PSTS_Connected = Utils.BIT(0);
 
-        public static uint PSTS_COMPANION_HC_OWNED = Utils.BIT(13);// rw
-        public static uint PSTS_POWERON = Utils.BIT(12);// rw valid, if PPC == 1
-        public static uint PSTS_PORT_RESET = Utils.BIT(8);// rw
-        public static uint PSTS_PORT_SUSPEND = Utils.BIT(7);// rw
-        public static uint PSTS_PORT_RESUME = Utils.BIT(6);// rw
-        public static uint PSTS_OVERCURRENT_CHANGE = Utils.BIT(5);// rwc
-        public static uint PSTS_OVERCURRENT = Utils.BIT(4);// ro
-        public static uint PSTS_ENABLED_CHANGE = Utils.BIT(3);// rwc
-        public static uint PSTS_ENABLED = Utils.BIT(2);// rw
-        public static uint PSTS_CONNECTED_CHANGE = Utils.BIT(1);// rwc
-        public static uint PSTS_CONNECTED = Utils.BIT(0);// ro
-
-        public static uint N_PORTS = 0xF;// number of ports (Utils.BITs 3:0)
-        public static uint PORT_ROUTING_RULES = Utils.BIT(7);// port routing to EHCI or cHC
-        public static uint NUMBER_OF_EHCI_ASYNCLIST_RETRIES = 3;
+        /// <summary>
+        /// Mask for the number of ports.
+        /// </summary>
+        public static uint NumPorts = 0xF;// number of ports (Bits 3:0 set)
+        /// <summary>
+        /// Mask for the overall port routing bit.
+        /// </summary>
+        public static uint PortRoutingMask = Utils.BIT(7);// port routing to EHCI or cHC
+        /// <summary>
+        /// Constant to set the number of times that software should re-attempt to send a transfer 
+        /// in the async schedule.
+        /// </summary>
+        public static uint NumAsyncListRetries = 3;
     }
-    public class EHCI_QHConsts
+    /// <summary>
+    /// The types of queue head (under EHCI): IN, OUT or SETUP.
+    /// </summary>
+    public enum EHCI_qTDTypes : byte
     {
-        public const byte OUT = 0;
-        public const byte IN = 1;
-        public const byte SETUP = 2;
+        /// <summary>
+        /// Indicates an OUT transaction where data is sent from the controller to the device.
+        /// </summary>
+        OUT = 0,
+        /// <summary>
+        /// Indicates an IN transaction where data is sent from the device to the controller.
+        /// </summary>
+        IN = 1,
+        /// <summary>
+        /// Indicates a SETUP transaction.
+        /// </summary>
+        SETUP = 2
     }
     #endregion
 
@@ -139,7 +298,7 @@ namespace Kernel.Hardware.USB.HCIs
     /// </summary>
     public unsafe class EHCI : HCI
     {
-        //TODO - Reprogram bits of this to handle physical-to-virtual and reverse conversions where necessary
+        //TODO - Perhaps should avoid using identity mapping for registers etc? 
 
         /*
          * Based on the Intel EHCI Specification for USB 2.0
@@ -150,8 +309,6 @@ namespace Kernel.Hardware.USB.HCIs
         /// The base address of the USB HCI device in memory.
         /// </summary>
         protected byte* usbBaseAddress;
-
-        //protected List QueueHeadReclaimList;
 
         #region PCI Registers
         
@@ -370,7 +527,7 @@ namespace Kernel.Hardware.USB.HCIs
         {
             get
             {
-                return (USBSTS & EHCI_Consts.STS_HCHALTED) != 0;
+                return (USBSTS & EHCI_Consts.STS_HCHalted) != 0;
             }
         }
 
@@ -499,517 +656,44 @@ namespace Kernel.Hardware.USB.HCIs
 
         #endregion
 
-        #region old stuff
-
-        ///// <summary>
-        ///// Initializes a new EHCI device.
-        ///// </summary>
-        ///// <param name="aPCIDevice">The PCI device that represents the EHCI device.</param>
-        //public EHCI(PCI.PCIDeviceNormal aPCIDevice)
-        //    : base(aPCIDevice)
-        //{
-        //    usbBaseAddress = pciDevice.BaseAddresses[0].BaseAddress();
-        //    CapabilitiesRegAddr = usbBaseAddress;
-        //    BasicConsole.WriteLine("CapabilitiesRegAddr: " + (FOS_System.String)(uint)CapabilitiesRegAddr);
-            
-        //    SBRN = pciDevice.ReadRegister8(0x60);
-        //    BasicConsole.WriteLine("SBRN: " + (FOS_System.String)SBRN);
-            
-        //    CapabilitiesRegsLength = *CapabilitiesRegAddr;
-        //    BasicConsole.WriteLine("CapabilitiesRegsLength: " + (FOS_System.String)CapabilitiesRegsLength);
-        //    HCIVersion = *((UInt16*)(CapabilitiesRegAddr + 2));
-        //    BasicConsole.WriteLine("HCIVersion: " + (FOS_System.String)HCIVersion);
-        //    HCSParams = *((UInt32*)(CapabilitiesRegAddr + 4));
-        //    BasicConsole.WriteLine("HCSParams: " + (FOS_System.String)HCSParams);
-        //    HCCParams = *((UInt32*)(CapabilitiesRegAddr + 8));
-        //    BasicConsole.WriteLine("HCCParams: " + (FOS_System.String)HCCParams);
-        //    HCSPPortRouteDesc = *((UInt64*)(CapabilitiesRegAddr + 12));
-        //    BasicConsole.WriteLine("HCSPPortRouteDesc: " + (FOS_System.String)HCSPPortRouteDesc);
-            
-        //    OpRegAddr = (uint*)(usbBaseAddress + CapabilitiesRegsLength);
-        //    BasicConsole.WriteLine("OpRegAddr: " + (FOS_System.String)(uint)OpRegAddr);
-
-        //    LoadExtendedCapabilities();
-        //}
-
-        //#region Test Methods
-
-        ///// <summary>
-        ///// Performs basic tests with the driver covering initialisation
-        ///// and the async queue.
-        ///// </summary>
-        //public void Test()
-        //{
-        //    BasicConsole.WriteLine("Testing Init()...");
-        //    Init();
-        //    BasicConsole.WriteLine("Test passed.");
-        //    BasicConsole.WriteLine("Testing EnableAsyncQueue()...");
-        //    EnableAsyncQueue();
-        //    BasicConsole.WriteLine("Test passed.");
-        //    BasicConsole.WriteLine("Testing DisableAsyncQueue()...");
-        //    DisableAsyncQueue();
-        //    BasicConsole.WriteLine("Test passed.");
-        //    BasicConsole.WriteLine("Tests complete.");
-        //}
-
-        //#endregion
-
-        //#region Initialization / setup methods
-
-        ///// <summary>
-        ///// Initializes the EHCI device.
-        ///// </summary>
-        //public void Init()
-        //{
-        //    //Host Controller Initialisation
-        //    //See section 4.1 of spec.
-
-        //    //Program CTRLDSSEGMENT   - 64-Utils.BIT segment offset ofr 64-Utils.BIT hardware.
-        //    //  - N/A
-            
-        //    //Write USBINTR           - Write to USBINTR to enable interrupts. 
-        //    //  - We are not using any interrupts
-            
-        //    //Write PERIODICLIST BASE - Base address of the period frames linked-list
-        //    //  - We won't be using periodic-based transfers
-            
-        //    //Write USBCMD            - Set interrupt threshold, frame list size and run/stop Utils.BIT
-        //    //  - Interrupt threshold = 0, Frame List Size = 0, Run/Stop = 1
-        //    USBCMD = (USBCMD | 0x1);
-            
-        //    //Write CONFIGFLAG        - Route all ports to EHCI
-        //    // - Write 1 = Route all ports to EHCI
-        //    CONFIGFLAG = CONFIGFLAG | 0x1;
-
-        //    //From the spec:
-        //    /*
-        //     * "At this point, the host controller is up and running and the port registers will 
-        //     * begin reporting device connects, etc."
-        //     */
-        //}
-        
-        //#endregion
-
-        //#region Port Routing and Control methods
-
-        ///*
-        // * See section 4.2 of spec
-        // */
-
-        ///*
-        // * See Init() method - all ports are routed to EHCI initially.
-        // * For our simple implementation, we will not use re-routing 
-        // * to companion controllers yet nor individual port power 
-        // * management.
-        // */
-
-        //#endregion
-
-        //#region Async Schedule methods
-
-        ///*
-        // * See sections 4.8 and 4.10 of spec.
-        // */
-
-        //#region Documentation - Read the comments in this region before proceeding
-
-        ///*
-        // * Key point of information (quoted from spec section 4.10, page 79):
-        // * 
-        // * "One queue head is used to manage the data stream for 
-        // *  one endpoint."
-        // *  
-        // * and
-        // * 
-        // * "Each qTD [Queue Transfer Descriptor] represents one
-        // *  or more bus transactions, which is defined in the 
-        // *  context of this specification as a transfer."
-        // */
-
-        ///*
-        // * Interpretation of the spec:
-        // * 
-        // * A queue head defines what endpoint to send data to
-        // * and points to a qTD. A qTD defines what data to send 
-        // * and points to more qTDs in a linked list. Thus, one 
-        // * queue head defines the transactions to be sent to a 
-        // * given endpoint. 
-        // * 
-        // * A queue head also has a pointer to another queue head
-        // * forming a linked list of queue heads. This linked list 
-        // * is circular i.e. the last item points to the first
-        // * item. Thus, the queue heads form a list of
-        // * endpoints and the data to be sent to them which can be
-        // * cycled through by the host controller (HC) during 
-        // * (micro)frames to process the transactions.
-        // */
-
-        //#endregion
-
-        ////Done
-        ///// <summary>
-        ///// Waits for the HCI async schedule status and enabled values to match.
-        ///// </summary>
-        //protected void WaitForAsyncQueueEnabledStatusMatch()
-        //{
-        //    //BasicConsole.WriteLine("USBCMD: " + (FOS_System.String)USBCMD);
-        //    //BasicConsole.WriteLine("USBSTS: " + (FOS_System.String)USBSTS);
-
-        //    //if (AsynchronousScheduleEnabled)
-        //    //{
-        //    //    BasicConsole.WriteLine("Schedule enabled: true");
-        //    //}
-        //    //else
-        //    //{
-        //    //    BasicConsole.WriteLine("Schedule enabled: false");
-        //    //}
-        //    //if (AsynchronousScheduleStatus)
-        //    //{
-        //    //    BasicConsole.WriteLine("Schedule status: true");
-        //    //}
-        //    //else
-        //    //{
-        //    //    BasicConsole.WriteLine("Schedule status: false");
-        //    //}
-
-        //    while (AsynchronousScheduleEnabled != AsynchronousScheduleStatus &&
-        //           ASYNCLISTADDR != null)
-        //    {
-        //        ;
-        //    }
-        //}
-        ///// <summary>
-        ///// Enables the async queue and waits for the enable to be acknowledged.
-        ///// </summary>
-        //protected void EnableAsyncQueue()
-        //{
-        //    // - Wait for AsyncQueueEnabled and corresponding Status Utils.BIT to match
-        //    WaitForAsyncQueueEnabledStatusMatch();
-        //    // - Set AsyncQueueEnabled
-        //    AsynchronousScheduleEnabled = true;
-        //    // - Wait again
-        //    WaitForAsyncQueueEnabledStatusMatch();
-        //}
-        ///// <summary>
-        ///// Disables the async queue and waits for the disable to be acknowledged.
-        ///// </summary>
-        //protected void DisableAsyncQueue()
-        //{
-        //    // - Wait for AsyncQueueStatus to equal 0 i.e. schedule goes idle
-        //    while (AsynchronousScheduleStatus)
-        //    {
-        //        ;
-        //    }
-        //    // - Set AsyncQueueEnabled to false
-        //    AsynchronousScheduleEnabled = false;
-        //}
-        
-        ///// <summary>
-        ///// Adds a queue head to the async queue.
-        ///// </summary>
-        ///// <param name="theHead">The queue head to add.</param>
-        ///// <remarks>
-        ///// See EHCI spec section 4.8.1
-        ///// </remarks>
-        //protected void AddAsyncQueueHead(QueueHead theHead)
-        //{
-        //    // - Reclaim anything from the queue that we can
-        //    // - Check if queue is empty:
-        //    //      - If so, create new queue
-
-        //    //Call Reclaim
-        //    Reclaim();
-
-        //    //Check if queue activated (/empty)
-        //    if (ASYNCLISTADDR == null)
-        //    {
-        //        //Inactive (/empty) queue
-        //        //Set as only item in queue
-        //        //(Re-)enable (/activate) queue
-
-        //        ASYNCLISTADDR = theHead.queueHead;
-        //        EnableAsyncQueue();
-        //    }
-        //    else
-        //    {
-        //        //Active (/not empty) queue
-        //        //Insert into the linked list maintaining queue coherency
-
-        //        QueueHead currQueueHead = new QueueHead(ASYNCLISTADDR);
-        //        theHead.HorizontalLinkPointer = currQueueHead.HorizontalLinkPointer;
-        //        currQueueHead.HorizontalLinkPointer = theHead.queueHead;
-        //    }
-        //}
-        ///// <summary>
-        ///// Removes a queue head from the async queue.
-        ///// </summary>
-        ///// <param name="theHead">The queue head to remove.</param>
-        ///// <remarks>
-        ///// See EHCI spec section 4.8.2
-        ///// </remarks>
-        //protected void RemoveAsyncQueueHead(QueueHead theHead)
-        //{
-        //    //Check if queue is empty: If so, do nothing
-        //    //Otherwise:
-        //    //Deactivate all qTDs in the queue head
-        //    //Wait for queue head to go inactive
-        //    //Find prev qHead. 
-        //    //If no prev: Last in the list so deactivate async list and remove
-        //    //Otherwise:
-        //    //Find next qHead
-        //    //Check H-Utils.BIT. If set, find another to have H-Utils.BIT set
-        //    //Unlink theHead maintaining queue coherency
-        //    //Handshake with the host controller to confirm cache release of theHead
-
-        //    //Check if queue is empty
-        //    if (ASYNCLISTADDR == null)
-        //    {
-        //        //If so, do nothing
-        //        return;
-        //    }
-
-        //    //Deactivate all qTDs in the queue head
-        //    if (theHead.NextqTDPointer != null)
-        //    {
-        //        qTD aqTD = new qTD(theHead.NextqTDPointer);
-        //        while (aqTD != null)
-        //        {
-        //            //Deactivate by setting status to 0
-        //            aqTD.Status &= 0x7F;
-
-        //            //Move to next qTD
-        //            if (aqTD.NextqTDPointer != null)
-        //            {
-        //                aqTD.qtd = aqTD.NextqTDPointer;
-        //            }
-        //            else
-        //            {
-        //                aqTD = null;
-        //            }
-        //        }
-        //    }
-
-        //    //Wait for queue head to go inactive
-        //    while (theHead.Active)
-        //    {
-        //        ;
-        //    }
-
-        //    //Find prev qHead.
-        //    QueueHead prevHead = new QueueHead(ASYNCLISTADDR);
-        //    while (prevHead.queueHead != null)
-        //    {
-        //        if (prevHead.HorizontalLinkPointer == theHead.queueHead)
-        //        {
-        //            break;
-        //        }
-        //        else
-        //        {
-        //            prevHead.queueHead = prevHead.HorizontalLinkPointer;
-        //        }
-        //    }
-
-        //    //If no prev: Last in the list so deactivate async list and remove
-        //    if (prevHead.queueHead == null)
-        //    {
-        //        DisableAsyncQueue();
-        //        ASYNCLISTADDR = null;
-        //    }
-        //    else
-        //    {
-        //        //Otherwise:
-        //        //Find next qHead
-        //        QueueHead nextHead = new QueueHead(theHead.HorizontalLinkPointer);
-
-        //        //Check H-Utils.BIT. If set, find another to have H-Utils.BIT set
-        //        if (theHead.HeadOfReclamationList)
-        //        {
-        //            nextHead.HeadOfReclamationList = true;
-        //            theHead.HeadOfReclamationList = false;
-        //        }
-
-        //        //Unlink theHead maintaining queue coherency
-        //        prevHead.HorizontalLinkPointer = theHead.HorizontalLinkPointer;
-        //        theHead.HorizontalLinkPointer = nextHead.queueHead;
-        //    }
-
-        //    //Handshake with the host controller to confirm cache release of theHead
-        //    InterruptOnAsyncAdvanceDoorbell = true;
-        //    //TO DO - Use actual interrupts not this ignorant/hacky solution
-        //    while(!InterruptOnAsyncAdvance)
-        //    {
-        //        ;
-        //    }
-        //    //TO DO : Use reclaimed queue heads
-        //    //TO DO : Use reclaimed qTDs
-        //    //QueueHeadReclaimList.Add(theHead);
-
-        //    //TO DO : Free qTDs
-
-        //    theHead.Free();
-        //}
-
-        ///// <summary>
-        ///// Creates a new queue head for the async queue.
-        ///// </summary>
-        ///// <param name="IsControlEndpoint">Whether the endpoint is a control endpoint or not.</param>
-        ///// <param name="MaxPacketLength">The maximum packet length to use with the endpoint.</param>
-        ///// <param name="EndpointSpeed">The endpoint speed.</param>
-        ///// <param name="EndpointNumber">The endpoint number.</param>
-        ///// <param name="DeviceAddress">The address of the device to which the endpoint belongs.</param>
-        ///// <returns>The new (or recycled) queue head.</returns>
-        //protected QueueHead CreateQueueHead(bool IsControlEndpoint, ushort MaxPacketLength, 
-        //                                    byte EndpointSpeed,     byte EndpointNumber,
-        //                                    byte DeviceAddress)
-        //{
-        //    //Check if recycle list not empty:
-        //    //  - If so, reinitialise a reclaimed queue head
-        //    //Otherwise, create a new queue head and initialise it (to valid empty values?)
-
-        //    //TO DO : Use reclaimed queue heads
-
-        //    QueueHead newHead = new QueueHead();
-        //    newHead.ControlEndpointFlag = IsControlEndpoint;
-        //    newHead.MaximumPacketLength = MaxPacketLength;
-        //    newHead.EndpointSpeed = EndpointSpeed;
-        //    newHead.EndpointNumber = EndpointNumber;
-        //    newHead.DeviceAddress = DeviceAddress;
-            
-        //    return newHead;
-        //}
-
-        ///// <summary>
-        ///// Creates a new queue transfer descriptor.
-        ///// </summary>
-        ///// <param name="TotalBytesToTransfer">The total number of bytes to transfer from the buffers. Max: 0x5000 (5 pages)</param>
-        ///// <param name="ErrorCounter">
-        ///// 2-Utils.BIT counter. Valid values: 3, 2, 1 or 0 (except for low or full speed devices in which case 0 is not valid)
-        ///// </param>
-        ///// <param name="PIDCode">0=OUT Token, 1=IN Token, 2=SETUP Token, 3=(Reserved)</param>
-        ///// <param name="Buffer0">4K page-aligned pointer to first buffer of memory.</param>
-        ///// <param name="Buffer1">4K page-aligned pointer to second buffer of memory.</param>
-        ///// <param name="Buffer2">4K page-aligned pointer to third buffer of memory.</param>
-        ///// <param name="Buffer3">4K page-aligned pointer to fourth buffer of memory.</param>
-        ///// <param name="Buffer4">4K page-aligned pointer to fifth buffer of memory.</param>
-        ///// <param name="NextqTDPtr">32-byte aligned pointer to the next qTD in the list or null ptr (value of 0)</param>
-        ///// <returns>The new (or recycled) qTD.</returns>
-        //protected qTD CreateqTD(char TotalBytesToTransfer,
-        //                        byte ErrorCounter,  byte PIDCode,
-        //                        byte* Buffer0,      byte* Buffer1,
-        //                        byte* Buffer2,      byte* Buffer3,
-        //                        byte* Buffer4,      qTD_Struct* NextqTDPtr)
-        //{
-        //    //Check if recycle list not empty:
-        //    //  - If so, reinitialise a reclaimed qTD
-        //    //Otherwise, create a new qTD and initialise it (to valid empty values?)
-
-        //    //TO DO : Use reclaimed qTDs
-
-        //    qTD newqTD = new qTD();
-        //    newqTD.ErrorCounter = ErrorCounter;
-        //    newqTD.NextqTDPointer = NextqTDPtr;
-        //    newqTD.NextqTDPointerTerminate = (uint)NextqTDPtr == 0u;
-        //    newqTD.PIDCode = PIDCode;
-        //    newqTD.TotalBytesToTransfer = TotalBytesToTransfer;
-        //    newqTD.Buffer0 = Buffer0;
-        //    newqTD.Buffer1 = Buffer1;
-        //    newqTD.Buffer2 = Buffer2;
-        //    newqTD.Buffer3 = Buffer3;
-        //    newqTD.Buffer4 = Buffer4;
-
-        //    return null;
-        //}
-
-        ///// <summary>
-        ///// Adds a qTD to a queue head.
-        ///// </summary>
-        ///// <param name="theqTD">The qTD to add.</param>
-        ///// <param name="theQueueHead">The queue head to add to.</param>
-        //protected void AddqTDToQueueHead(qTD theqTD, QueueHead theQueueHead)
-        //{
-        //    //TO DO : Don't add to active queue head
-        //    if (theQueueHead.CurrentqTDPointer == null)
-        //    {
-        //        theQueueHead.NextqTDPointer = theqTD.qtd;
-        //        theQueueHead.NextqTDPointerTerminate = false;
-        //    }
-        //    else
-        //    {
-        //        qTD currqTD = new qTD(theQueueHead.CurrentqTDPointer);
-        //        while (!currqTD.NextqTDPointerTerminate)
-        //        {
-        //            currqTD.qtd = currqTD.NextqTDPointer;
-        //        }
-        //        theqTD.NextqTDPointerTerminate = true;
-        //        currqTD.NextqTDPointer = theqTD.qtd;
-        //        currqTD.NextqTDPointerTerminate = false;
-        //    }
-        //}
-
-        ////To be done
-
-        ////TO DO - Methods for re-cycling (/re-using) queue heads
-        ////       and qTDs to reduce memory allocation load / 
-        ////       improve performance
-        ///// <summary>
-        ///// Recycles a queue head for re-use. Recycling reduces heap memory operations.
-        ///// </summary>
-        ///// <param name="theQueueHead">The queue head to recycle.</param>
-        //protected void RecycleQueueHead(QueueHead theQueueHead)
-        //{
-        //}
-        ///// <summary>
-        ///// Recycles a qTD for re-use. Recycling reduces heap memory operations.
-        ///// </summary>
-        ///// <param name="theqTD">The qTD to recycle.</param>
-        //protected void RecycleqTD(qTD theqTD)
-        //{
-        //}
-
-        ////TO DO - Methods for reclaiming QueueHeads and qTDs
-        ///// <summary>
-        ///// Reclaims queue heads and qTDs from the async transfer queue.
-        ///// </summary>
-        //protected void Reclaim()
-        //{
-        //}
-        
-        //#endregion
-        
-        //#region Control Transfer methods
-
-        ///*
-        // * See section 4.10 of spec.
-        // *      and read the USB spec
-        // */
-
-        //#endregion
-
-        //#region Bulk Transfer methods
-
-        ///*
-        // * See section 4.10 of spec.
-        // *      and read the USB spec
-        // */
-
-        //#endregion
-
-        //#region Interrupts
-
-        ///*
-        // * See section 4.15 of spec
-        // */
-
-        //#endregion
-
-        #endregion
-
+        /// <summary>
+        /// Whether any ports have changed since the last port check.
+        /// </summary>
         protected bool AnyPortsChanged = false;
-        protected bool EnabledPortFlag = false;
+        /// <summary>
+        /// Whether the ports have been enabled or not.
+        /// </summary>
+        protected bool EnabledPortsFlag = false;
+        /// <summary>
+        /// A countdown of the number of async transaction complete interrupts that have occurred since the last
+        /// reload. Used for detecting the end of an async transfer (queue head completetion).
+        /// </summary>
         protected int USBIntCount = 0;
+        /// <summary>
+        /// Pointer to the idle queue head. Required by the spec and this should always remain as the head of the 
+        /// async queue while the async queue is enabled.
+        /// </summary>
         protected EHCI_QueueHead_Struct* IdleQueueHead = null;
+        /// <summary>
+        /// Pointer to the tail queue head - the queue head at the end of the linked list. Optimisation - this allows 
+        /// us to append to the async queue without having to traverse the whole list first. This should be set to
+        /// the idle queue head pointer when the list is "empty".
+        /// </summary>
         protected EHCI_QueueHead_Struct* TailQueueHead = null;
 
+        /// <summary>
+        /// Whether the EHCI has hit a host system error or not.
+        /// </summary>
+        public bool HostSystemError = false;
+        /// <summary>
+        /// Whether the EHCI has hit an unrecoverable error or not.
+        /// </summary>
+        public bool IrrecoverableError = false;
+
+        /// <summary>
+        /// Initialises a new EHCI device using the specified PCI device. Includes starting the host controller.
+        /// </summary>
+        /// <param name="aPCIDevice">The PCI device that represents the physical EHCI device.</param>
         public EHCI(PCI.PCIDeviceNormal aPCIDevice)
             : base(aPCIDevice)
         {
@@ -1030,6 +714,10 @@ namespace Kernel.Hardware.USB.HCIs
 #endif
 
             usbBaseAddress = (byte*)((uint)pciDevice.BaseAddresses[0].BaseAddress() & 0xFFFFFF00);
+
+            //Map in the required memory - we will use identity mapping for the PCI / USB registers for now
+            VirtMemManager.Map((uint)usbBaseAddress & 0xFFFFF000, (uint)usbBaseAddress & 0xFFFFF000, 4096);
+
             CapabilitiesRegAddr = usbBaseAddress;
 #if EHCI_TRACE
             DBGMSG("CapabilitiesRegAddr: " + (FOS_System.String)(uint)CapabilitiesRegAddr);
@@ -1061,20 +749,34 @@ namespace Kernel.Hardware.USB.HCIs
             Start();
         }
 
+        /// <summary>
+        /// Updates the host controller (runs a port check if any ports have changed since the last port check).
+        /// </summary>
         public override void Update()
         {
-            if (AnyPortsChanged)
+            if(IrrecoverableError)
+            {
+#if EHCI_TRACE
+                BasicConsole.WriteLine("EHCI controller has hit an irrecoverable error!");
+                BasicConsole.DelayOutput(10);
+#endif
+            }
+            else if (AnyPortsChanged)
             {
                 PortCheck();
             }
         }
 
+        /// <summary>
+        /// Starts the host controller including all necessary initialisation, port resets and port enabling. 
+        /// Also detects any devices already connected to the controller.
+        /// </summary>
         protected void Start()
         {
             InitHC();
             ResetHC();
             StartHC();
-            InitializeAsyncScheduler();
+            InitializeAsyncSchedule();
 
             if (!HCHalted)
             {
@@ -1088,6 +790,9 @@ namespace Kernel.Hardware.USB.HCIs
                 ExceptionMethods.Throw(new FOS_System.Exception("EHCI.Start(): Host controller halted! Cannot start EHCI driver!"));
             }
         }
+        /// <summary>
+        /// Initialises the host controller.
+        /// </summary>
         protected void InitHC()
         {
             pciDevice.Command = pciDevice.Command | PCI.PCIDevice.PCICommand.Memory | PCI.PCIDevice.PCICommand.Master;
@@ -1096,53 +801,54 @@ namespace Kernel.Hardware.USB.HCIs
             DBGMSG("Hooking IRQ...");
 #endif
             //Setup InterruptHandler (IRQ number = PCIDevice.InterruptLine)
-            Interrupts.Interrupts.SetIRQHandler(pciDevice.InterruptLine, EHCI.InterruptHandler, this);
+            Interrupts.Interrupts.AddIRQHandler(pciDevice.InterruptLine, EHCI.InterruptHandler, this);
 #if EHCI_TRACE
             DBGMSG("Hooked IRQ.");
 #endif
         }
+        /// <summary>
+        /// Starts the host controller.
+        /// </summary>
         protected void StartHC()
         {
             DeactivateLegacySupport();
             CTRLDSSEGMENT = 0u;
             USBSTS = 0u; //Will this ever have any effect? According to spec, only writing bits set to 1 will have an effect??
-            USBINTR = EHCI_Consts.STS_ASYNC_INT | EHCI_Consts.STS_HOST_SYSTEM_ERROR | EHCI_Consts.STS_PORT_CHANGE | 
-                      EHCI_Consts.STS_USBINT | EHCI_Consts.STS_USBERRINT;
+            USBINTR = EHCI_Consts.STS_AsyncInterrupt | EHCI_Consts.STS_HostSystemError | EHCI_Consts.STS_PortChange | 
+                      EHCI_Consts.STS_USBInterrupt | EHCI_Consts.STS_USBErrorInterrupt;
             if (HCHalted)
             {
-                USBCMD |= EHCI_Consts.CMD_RUN_STOP; //Set run-stop bit
+                USBCMD |= EHCI_Consts.CMD_RunStopMask; //Set run-stop bit
             }
 
             //This can only be set when HCHalted != 0  !!!
-            USBCMD |= EHCI_Consts.CMD_8_MICROFRAME; //InterruptThresholdControl = 8 Microframes (1ms).
+            USBCMD |= (uint)EHCI_InterruptThresholdControls.x08; //InterruptThresholdControl = 8 Microframes (1ms).
             
             CONFIGFLAG = EHCI_Consts.CF; //Set port routing to route all ports to EHCI
 
             //Is this delay necessary? If so, why?
-            for (int i = 1000000; i > 0; i--)
-            {
-                ;
-            }
+            Hardware.Devices.Timer.Default.Wait(100);
         }
+        /// <summary>
+        /// Resets the host controller and consequently all ports.
+        /// </summary>
         protected void ResetHC()
         {
-            USBCMD &= ~EHCI_Consts.CMD_RUN_STOP; //Clear run-stop bit
+            USBCMD &= ~EHCI_Consts.CMD_RunStopMask; //Clear run-stop bit
 
             //Wait for halt
             while (!HCHalted)
             {
                 //Sleep for a bit
-                for (int i = 0; i < 100000; i++)
-                    ;
+                Hardware.Devices.Timer.Default.Wait(10);
             }
 
-            USBCMD |= EHCI_Consts.CMD_HCRESET; //Set reset bit
+            USBCMD |= EHCI_Consts.CMD_HCResetMask; //Set reset bit
 
             int timeout = 30;
-            while ((USBCMD & EHCI_Consts.CMD_HCRESET) != 0) // Reset-bit still set to 1
+            while ((USBCMD & EHCI_Consts.CMD_HCResetMask) != 0) // Reset-bit still set to 1
             {
-                for (int i = 0; i < 100000; i++)
-                    ;
+                Hardware.Devices.Timer.Default.Wait(10);
 
                 timeout--;
                 if (timeout==0)
@@ -1155,6 +861,9 @@ namespace Kernel.Hardware.USB.HCIs
                 }
             }
         }
+        /// <summary>
+        /// Deactivates legacy support mode if it is available.
+        /// </summary>
         protected void DeactivateLegacySupport()
         {
             byte eecp = EECP;
@@ -1211,8 +920,7 @@ namespace Kernel.Hardware.USB.HCIs
                     while ((pciDevice.ReadRegister8(BIOSownedSemaphore) & 0x01) != 0 && (timeout > 0))
                     {
                         timeout--;
-                        for(int i = 0; i < 100000; i++)
-                            ;
+                        Hardware.Devices.Timer.Default.Wait(10);
                     }
                     if ((pciDevice.ReadRegister8(BIOSownedSemaphore) & 0x01) == 0) // not set
                     {
@@ -1223,8 +931,7 @@ namespace Kernel.Hardware.USB.HCIs
                         while ((pciDevice.ReadRegister8(OSownedSemaphore) & 0x01) == 0 && (timeout > 0))
                         {
                             timeout--;
-                            for(int i = 0; i < 100000; i++)
-                                ;
+                            Hardware.Devices.Timer.Default.Wait(10);
                         }
                     }
 #if EHCI_TRACE
@@ -1256,6 +963,9 @@ namespace Kernel.Hardware.USB.HCIs
             BasicConsole.DelayOutput(2);
 #endif
         }
+        /// <summary>
+        /// Enables all ports and checks their line states.
+        /// </summary>
         protected void EnablePorts()
         {
 #if EHCI_TRACE
@@ -1271,7 +981,7 @@ namespace Kernel.Hardware.USB.HCIs
 #if EHCI_TRACE
             DBGMSG("Added root ports.");
 #endif
-            EnabledPortFlag = true;
+            EnabledPortsFlag = true;
 #if EHCI_TRACE
             DBGMSG("Checking line statuses...");
 #endif
@@ -1283,32 +993,34 @@ namespace Kernel.Hardware.USB.HCIs
             DBGMSG("Checked port line statuses.");
 #endif
         }
+        /// <summary>
+        /// Resets the specified port.
+        /// </summary>
+        /// <param name="portNum">The port to reset.</param>
         protected void ResetPort(byte portNum)
         {
-            PORTSC[portNum] |= EHCI_Consts.PSTS_POWERON;
-            PORTSC[portNum] &= ~EHCI_Consts.PSTS_ENABLED;
-            USBSTS |= ~EHCI_Consts.STS_PORT_CHANGE;
+            PORTSC[portNum] |= EHCI_Consts.PSTS_PowerOn;
+            PORTSC[portNum] &= ~EHCI_Consts.PSTS_Enabled;
+            USBSTS |= ~EHCI_Consts.STS_PortChange;
             if (HCHalted)
             {
                 ExceptionMethods.Throw(new FOS_System.Exception("EHCI.ResetPort(): HCHalted not zero!"));
             }
             USBINTR = 0;
-            PORTSC[portNum] |= EHCI_Consts.PSTS_PORT_RESET;
+            PORTSC[portNum] |= EHCI_Consts.PSTS_PortReset;
 
             //~200ms
-            for (int i = 0; i < 2000000; i++)
-                ;
+            Hardware.Devices.Timer.Default.Wait(200);
 
-            PORTSC[portNum] &= ~EHCI_Consts.PSTS_PORT_RESET;
+            PORTSC[portNum] &= ~EHCI_Consts.PSTS_PortReset;
 
 
             // wait and check, whether really zero
             uint timeout = 50;
-            while ((PORTSC[portNum] & EHCI_Consts.PSTS_PORT_RESET) != 0)
+            while ((PORTSC[portNum] & EHCI_Consts.PSTS_PortReset) != 0)
             {
                 // ~1ms
-                for (int i = 0; i < 10000; i++)
-                    ;
+                Hardware.Devices.Timer.Default.Wait(1);
 
                 timeout--;
                 if (timeout == 0)
@@ -1322,17 +1034,23 @@ namespace Kernel.Hardware.USB.HCIs
                 }
             }
             
-            USBINTR = EHCI_Consts.STS_ASYNC_INT | EHCI_Consts.STS_HOST_SYSTEM_ERROR | EHCI_Consts.STS_PORT_CHANGE |
-                      EHCI_Consts.STS_USBINT | EHCI_Consts.STS_USBERRINT;
+            USBINTR = EHCI_Consts.STS_AsyncInterrupt | EHCI_Consts.STS_HostSystemError | EHCI_Consts.STS_PortChange |
+                      EHCI_Consts.STS_USBInterrupt | EHCI_Consts.STS_USBErrorInterrupt;
 
             //~20ms
-            for (int i = 0; i < 200000; i++)
-                ;
+            Hardware.Devices.Timer.Default.Wait(20);
         }
+        /// <summary>
+        /// The static wrapper for the interrupt handler.
+        /// </summary>
+        /// <param name="data">The EHCI state object.</param>
         protected static void InterruptHandler(FOS_System.Object data)
         {
             ((EHCI)data).InterruptHandler();
         }
+        /// <summary>
+        /// The interrupt handler for all EHCI interrupts.
+        /// </summary>
         protected void InterruptHandler()
         {
 #if EHCI_TRACE
@@ -1351,7 +1069,7 @@ namespace Kernel.Hardware.USB.HCIs
             USBSTS = val; //Reset interrupt
 
 #if EHCI_TRACE
-            if((val & EHCI_Consts.STS_USBERRINT) != 0u)
+            if((val & EHCI_Consts.STS_USBErrorInterrupt) != 0u)
             {
                 USBIntCount--;
 
@@ -1359,21 +1077,41 @@ namespace Kernel.Hardware.USB.HCIs
             }
 #endif
 
-            if ((val & EHCI_Consts.STS_PORT_CHANGE) != 0u)
+            if ((val & EHCI_Consts.STS_PortChange) != 0u)
             {
-                if (EnabledPortFlag && pciDevice != null)
+                if (EnabledPortsFlag && pciDevice != null)
                 {
                     AnyPortsChanged = true;
                 }
             }
 
 
-            if ((val & EHCI_Consts.STS_HOST_SYSTEM_ERROR) != 0u)
+            if ((val & EHCI_Consts.STS_HostSystemError) != 0u)
             {
-                Start();
+                //If we don't do this, we get stuck in an infinite-loop
+                //  of "Start HC -> (Host Error) -> Interrupt -> Start HC -> ..."
+                if (HostSystemError)
+                {
+                    IrrecoverableError = true;
+
+#if EHCI_TRACE
+                    BasicConsole.WriteLine("EHCI controller has hit an irrecoverable error!");
+#endif
+                }
+                
+                if (!IrrecoverableError)
+                {
+                    HostSystemError = true;
+                    //Attempt restart
+                    Start();
+                }
+            }
+            else
+            {
+                HostSystemError = false;
             }
 
-            if ((val & EHCI_Consts.STS_USBINT) != 0u)
+            if ((val & EHCI_Consts.STS_USBInterrupt) != 0u)
             {
                 if (USBIntCount != 0)
                 {
@@ -1388,21 +1126,24 @@ namespace Kernel.Hardware.USB.HCIs
             BasicConsole.DelayOutput(5);
 #endif
         }
+        /// <summary>
+        /// Checks all ports for any changes.
+        /// </summary>
         protected void PortCheck()
         {
             AnyPortsChanged = false;
             for (byte j = 0; j < RootPortCount; j++)
             {
-                if ((PORTSC[j] & EHCI_Consts.PSTS_CONNECTED_CHANGE) != 0)
+                if ((PORTSC[j] & EHCI_Consts.PSTS_ConnectedChange) != 0)
                 {
-                    PORTSC[j] |= EHCI_Consts.PSTS_CONNECTED_CHANGE; // reset interrupt
-                    if ((PORTSC[j] & EHCI_Consts.PSTS_CONNECTED) != 0)
+                    PORTSC[j] |= EHCI_Consts.PSTS_ConnectedChange; // reset interrupt
+                    if ((PORTSC[j] & EHCI_Consts.PSTS_Connected) != 0)
                     {
                         CheckPortLineStatus(j);
                     }
                     else
                     {
-                        PORTSC[j] &= ~EHCI_Consts.PSTS_COMPANION_HC_OWNED; // port is given back to the EHCI
+                        PORTSC[j] &= ~EHCI_Consts.PSTS_CompanionHCOwned; // port is given back to the EHCI
 
                         if (((HCPort)RootPorts[j]).deviceInfo != null)
                         {
@@ -1414,9 +1155,14 @@ namespace Kernel.Hardware.USB.HCIs
             }
             AnyPortsChanged = false;
         }
+        /// <summary>
+        /// Checks the specified port's line state. Calls Detect device or releases the port to the companion
+        /// host controller if the connected device is a low/full speed device.
+        /// </summary>
+        /// <param name="portNum">The port to check.</param>
         protected void CheckPortLineStatus(byte portNum)
         {
-            if ((PORTSC[portNum] & EHCI_Consts.PSTS_CONNECTED) == 0)
+            if ((PORTSC[portNum] & EHCI_Consts.PSTS_Connected) == 0)
             {
 #if EHCI_TRACE
                 DBGMSG("Port not connected.");
@@ -1432,7 +1178,7 @@ namespace Kernel.Hardware.USB.HCIs
 #if EHCI_TRACE
                     DBGMSG("Low-speed device attached. Releasing port.");
 #endif
-                    PORTSC[portNum] |= EHCI_Consts.PSTS_COMPANION_HC_OWNED; // release it to the cHC
+                    PORTSC[portNum] |= EHCI_Consts.PSTS_CompanionHCOwned; // release it to the cHC
                     break;
                 case 0: // SE0
                 case 2: // J-state
@@ -1441,6 +1187,11 @@ namespace Kernel.Hardware.USB.HCIs
                     break;
             }
         }
+        /// <summary>
+        /// Attempts to detect a device connected to the specified port.
+        /// If one is detected, it creates the device through the USBManager.
+        /// </summary>
+        /// <param name="portNum">The port number to try and detect a device on.</param>
         protected void DetectDevice(byte portNum)
         {
 #if EHCI_TRACE
@@ -1450,12 +1201,12 @@ namespace Kernel.Hardware.USB.HCIs
 #if EHCI_TRACE
             DBGMSG("Reset port.");
 #endif
-            if (EnabledPortFlag && ((PORTSC[portNum] & EHCI_Consts.PSTS_POWERON) != 0)) // power on
+            if (EnabledPortsFlag && ((PORTSC[portNum] & EHCI_Consts.PSTS_PowerOn) != 0)) // power on
             {
 #if EHCI_TRACE
                 DBGMSG("Device powered on.");
 #endif
-                if ((PORTSC[portNum] & EHCI_Consts.PSTS_ENABLED) != 0) // High speed
+                if ((PORTSC[portNum] & EHCI_Consts.PSTS_Enabled) != 0) // High speed
                 {
 #if EHCI_TRACE
                     DBGMSG("Setting up USB device.");
@@ -1468,22 +1219,39 @@ namespace Kernel.Hardware.USB.HCIs
                     DBGMSG("Full-speed device attached. Releasing port.");
                     BasicConsole.DelayOutput(2);
 #endif
-                    PORTSC[portNum] |= EHCI_Consts.PSTS_COMPANION_HC_OWNED; // release it to the cHC
+                    PORTSC[portNum] |= EHCI_Consts.PSTS_CompanionHCOwned; // release it to the cHC
                 }
             }
 #if EHCI_TRACE
             DBGMSG("End DetectDevice()");
 #endif
         }
+        /// <summary>
+        /// Sets up a USB transfer for sending via the EHCI.
+        /// </summary>
+        /// <param name="transfer">The transfer to set up.</param>
         protected override void _SetupTransfer(USBTransfer transfer)
         {
-            transfer.data = (EHCI_QueueHead_Struct*)FOS_System.Heap.AllocZeroed((uint)sizeof(EHCI_QueueHead_Struct), 32);
+            transfer.underlyingTransferData = (EHCI_QueueHead_Struct*)FOS_System.Heap.AllocZeroed((uint)sizeof(EHCI_QueueHead_Struct), 32);
         }
+        /// <summary>
+        /// Sets up a SETUP transaction and adds it to the specified transfer.
+        /// </summary>
+        /// <param name="transfer">The transfer to which the transaction should be added.</param>
+        /// <param name="uTransaction">The USB Transaction to convert to an EHCI Transaction.</param>
+        /// <param name="toggle">The transaction toggle state.</param>
+        /// <param name="tokenBytes">The number of bytes to send.</param>
+        /// <param name="type">The type of the USB Request.</param>
+        /// <param name="req">The specific USB Request.</param>
+        /// <param name="hiVal">The USB Request Hi-Val.</param>
+        /// <param name="loVal">The USB Request Lo-Val.</param>
+        /// <param name="index">The USB request index.</param>
+        /// <param name="length">The length of the USB request.</param>
         protected override void _SETUPTransaction(USBTransfer transfer, USBTransaction uTransaction, bool toggle, ushort tokenBytes,
                                            byte type, byte req, byte hiVal, byte loVal, ushort index, ushort length)
         {
             EHCITransaction eTransaction = new EHCITransaction();
-            uTransaction.data = eTransaction;
+            uTransaction.underlyingTz = eTransaction;
             eTransaction.inBuffer = null;
             eTransaction.inLength = 0u;
             fixed(void** bufferPtr = &(eTransaction.qTDBuffer))
@@ -1492,16 +1260,24 @@ namespace Kernel.Hardware.USB.HCIs
             }
             if (transfer.transactions.Count > 0)
             {
-                EHCITransaction eLastTransaction = (EHCITransaction)((USBTransaction)(transfer.transactions[transfer.transactions.Count - 1])).data;
+                EHCITransaction eLastTransaction = (EHCITransaction)((USBTransaction)(transfer.transactions[transfer.transactions.Count - 1])).underlyingTz;
                 EHCI_qTD lastQTD = new EHCI_qTD(eLastTransaction.qTD);
-                lastQTD.NextqTDPointer = eTransaction.qTD;
+                lastQTD.NextqTDPointer = (EHCI_qTD_Struct*)VirtMemManager.GetPhysicalAddress(eTransaction.qTD);
                 lastQTD.NextqTDPointerTerminate = false;
             }
         }
+        /// <summary>
+        /// Sets up an IN transaction and adds it to the specified transfer.
+        /// </summary>
+        /// <param name="transfer">The transfer to which the transaction should be added.</param>
+        /// <param name="uTransaction">The USB Transaction to convert to an EHCI transaction.</param>
+        /// <param name="toggle">The transaction toggle state.</param>
+        /// <param name="buffer">The buffer to store the incoming data in.</param>
+        /// <param name="length">The length of the buffer.</param>
         protected override void _INTransaction(USBTransfer transfer, USBTransaction uTransaction, bool toggle, void* buffer, ushort length)
         {
             EHCITransaction eTransaction = new EHCITransaction();
-            uTransaction.data = eTransaction;
+            uTransaction.underlyingTz = eTransaction;
             eTransaction.inBuffer = buffer;
 #if EHCI_TRACE
             DBGMSG(((FOS_System.String)"IN Transaction : buffer=") + (uint)buffer);
@@ -1531,16 +1307,24 @@ namespace Kernel.Hardware.USB.HCIs
             }
             if (transfer.transactions.Count > 0)
             {
-                EHCITransaction eLastTransaction = (EHCITransaction)((USBTransaction)(transfer.transactions[transfer.transactions.Count - 1])).data;
+                EHCITransaction eLastTransaction = (EHCITransaction)((USBTransaction)(transfer.transactions[transfer.transactions.Count - 1])).underlyingTz;
                 EHCI_qTD lastQTD = new EHCI_qTD(eLastTransaction.qTD);
-                lastQTD.NextqTDPointer = eTransaction.qTD;
+                lastQTD.NextqTDPointer = (EHCI_qTD_Struct*)VirtMemManager.GetPhysicalAddress(eTransaction.qTD);
                 lastQTD.NextqTDPointerTerminate = false;
             }
         }
+        /// <summary>
+        /// Sets up an IN transaction and adds it to the specified transfer.
+        /// </summary>
+        /// <param name="transfer">The transfer to which the transaction should be added.</param>
+        /// <param name="uTransaction">The USB Transaction to convert to an EHCI transaction.</param>
+        /// <param name="toggle">The transaction toggle state.</param>
+        /// <param name="buffer">The buffer of outgoing data.</param>
+        /// <param name="length">The length of the buffer.</param>
         protected override void _OUTTransaction(USBTransfer transfer, USBTransaction uTransaction, bool toggle, void* buffer, ushort length)
         {
             EHCITransaction eTransaction = new EHCITransaction();
-            uTransaction.data = eTransaction;
+            uTransaction.underlyingTz = eTransaction;
             eTransaction.inBuffer = null;
             eTransaction.inLength = 0u;
             fixed (void** bufferPtr = &(eTransaction.qTDBuffer))
@@ -1553,15 +1337,19 @@ namespace Kernel.Hardware.USB.HCIs
             }
             if (transfer.transactions.Count > 0)
             {
-                EHCITransaction eLastTransaction = (EHCITransaction)((USBTransaction)(transfer.transactions[transfer.transactions.Count - 1])).data;
+                EHCITransaction eLastTransaction = (EHCITransaction)((USBTransaction)(transfer.transactions[transfer.transactions.Count - 1])).underlyingTz;
                 EHCI_qTD lastQTD = new EHCI_qTD(eLastTransaction.qTD);
-                lastQTD.NextqTDPointer = eTransaction.qTD;
+                lastQTD.NextqTDPointer = (EHCI_qTD_Struct*)VirtMemManager.GetPhysicalAddress(eTransaction.qTD);
                 lastQTD.NextqTDPointerTerminate = false;
             }
         }
+        /// <summary>
+        /// Issues the specified transfer to the physical device via the async schedule.
+        /// </summary>
+        /// <param name="transfer">The transfer to issue.</param>
         protected override void _IssueTransfer(USBTransfer transfer)
         {
-            EHCITransaction lastTransaction = (EHCITransaction)((USBTransaction)transfer.transactions[transfer.transactions.Count - 1]).data;
+            EHCITransaction lastTransaction = (EHCITransaction)((USBTransaction)transfer.transactions[transfer.transactions.Count - 1]).underlyingTz;
             EHCI_qTD lastQTD = new EHCI_qTD(lastTransaction.qTD);
             lastQTD.InterruptOnComplete = true;
 
@@ -1570,8 +1358,8 @@ namespace Kernel.Hardware.USB.HCIs
             bool treeOK = true;
             for (int k = 0; k < transfer.transactions.Count - 1; k++)
             {
-                EHCITransaction transaction1 = (EHCITransaction)((USBTransaction)transfer.transactions[k]).data;
-                EHCITransaction transaction2 = (EHCITransaction)((USBTransaction)transfer.transactions[k + 1]).data;
+                EHCITransaction transaction1 = (EHCITransaction)((USBTransaction)transfer.transactions[k]).underlyingTz;
+                EHCITransaction transaction2 = (EHCITransaction)((USBTransaction)transfer.transactions[k + 1]).underlyingTz;
                 EHCI_qTD qtd1 = new EHCI_qTD(transaction1.qTD);
                 treeOK = treeOK && (qtd1.NextqTDPointer == transaction2.qTD) && !qtd1.NextqTDPointerTerminate;
             }
@@ -1582,16 +1370,16 @@ namespace Kernel.Hardware.USB.HCIs
             BasicConsole.DelayOutput(10);
 #endif            
 
-            EHCITransaction firstTransaction = (EHCITransaction)((USBTransaction)(transfer.transactions[0])).data;
-            CreateQH((EHCI_QueueHead_Struct*)transfer.data, (uint)transfer.data, firstTransaction.qTD, false, transfer.device.num, transfer.endpoint, transfer.packetSize);
+            EHCITransaction firstTransaction = (EHCITransaction)((USBTransaction)(transfer.transactions[0])).underlyingTz;
+            InitQH((EHCI_QueueHead_Struct*)transfer.underlyingTransferData, (uint)transfer.underlyingTransferData, firstTransaction.qTD, false, transfer.device.address, transfer.endpoint, transfer.packetSize);
             
-            for (byte i = 0; i < EHCI_Consts.NUMBER_OF_EHCI_ASYNCLIST_RETRIES && !transfer.success; i++)
+            for (byte i = 0; i < EHCI_Consts.NumAsyncListRetries && !transfer.success; i++)
             {
 #if EHCI_TRACE
                 transfer.success = true;
                 for (int k = 0; k < transfer.transactions.Count; k++)
                 {
-                    EHCITransaction transaction = (EHCITransaction)((USBTransaction)transfer.transactions[k]).data;
+                    EHCITransaction transaction = (EHCITransaction)((USBTransaction)transfer.transactions[k]).underlyingTz;
                     byte status = new EHCI_qTD(transaction.qTD).Status;
                     transfer.success = transfer.success && (status == 0 || status == Utils.BIT(0));
 
@@ -1607,41 +1395,44 @@ namespace Kernel.Hardware.USB.HCIs
                     DBGMSG("EHCI: PRE Issue - Transfer OK.");
                 }
 #endif
-
-                if (transfer.type == USBTransferType.USB_CONTROL)
+                AddToAsyncSchedule(transfer);
+                if (IrrecoverableError)
                 {
-                    AddToAsyncScheduler(transfer, 0);
+                    transfer.success = false;
+
+#if EHCI_TRACE
+                    DBGMSG("EHCI: Irrecoverable error! No retry.");
+                    BasicConsole.DelayOutput(2);
+#endif
                 }
                 else
                 {
-                    AddToAsyncScheduler(transfer, (byte)(1 + transfer.packetSize / 200));
-                }
-
-                transfer.success = true;
-                for (int k = 0; k < transfer.transactions.Count; k++)
-                {
-                    EHCITransaction transaction = (EHCITransaction)((USBTransaction)transfer.transactions[k]).data;
-                    byte status = new EHCI_qTD(transaction.qTD).Status;
-                    transfer.success = transfer.success && (status == 0 || status == Utils.BIT(0));
+                    transfer.success = true;
+                    for (int k = 0; k < transfer.transactions.Count; k++)
+                    {
+                        EHCITransaction transaction = (EHCITransaction)((USBTransaction)transfer.transactions[k]).underlyingTz;
+                        byte status = new EHCI_qTD(transaction.qTD).Status;
+                        transfer.success = transfer.success && (status == 0 || status == Utils.BIT(0));
 
 #if EHCI_TRACE
-                    DBGMSG(((FOS_System.String)"POST Issue: Transaction ") + k + " status: " + status);
+                        DBGMSG(((FOS_System.String)"POST Issue: Transaction ") + k + " status: " + status);
 #endif
-                }
+                    }
 
 #if EHCI_TRACE
-                if (!transfer.success)
-                {
-                    DBGMSG(((FOS_System.String)"EHCI: Retry transfer: ") + (i + 1));
-                    BasicConsole.DelayOutput(2);
-                }
+                    if (!transfer.success)
+                    {
+                        DBGMSG(((FOS_System.String)"EHCI: Retry transfer: ") + (i + 1));
+                        BasicConsole.DelayOutput(2);
+                    }
 #endif
+                }
             }
 
-            FOS_System.Heap.Free(transfer.data);
+            FOS_System.Heap.Free(transfer.underlyingTransferData);
             for (int k = 0; k < transfer.transactions.Count; k++)
             {
-                EHCITransaction transaction = (EHCITransaction)((USBTransaction)transfer.transactions[k]).data;
+                EHCITransaction transaction = (EHCITransaction)((USBTransaction)transfer.transactions[k]).underlyingTz;
 
                 if (transaction.inBuffer != null && transaction.inLength != 0)
                 {
@@ -1681,29 +1472,34 @@ namespace Kernel.Hardware.USB.HCIs
 #endif
         }
 
-        protected void InitializeAsyncScheduler()
+        /// <summary>
+        /// Initialises the async schedule.
+        /// </summary>
+        protected void InitializeAsyncSchedule()
         {
             if (IdleQueueHead == null)
             {
                 IdleQueueHead = TailQueueHead = new EHCI_QueueHead().queueHead;
             }
-            CreateQH(IdleQueueHead, (uint)IdleQueueHead, null, true, 0, 0, 0);
-            ASYNCLISTADDR = IdleQueueHead;
-            EnableAsyncScheduler();
+            InitQH(IdleQueueHead, (uint)IdleQueueHead, null, true, 0, 0, 0);
+            ASYNCLISTADDR = (EHCI_QueueHead_Struct*)VirtMemManager.GetPhysicalAddress(IdleQueueHead);
+            EnableAsyncSchedule();
         }
-        protected void EnableAsyncScheduler()
+        /// <summary>
+        /// Enables the async schedule.
+        /// </summary>
+        protected void EnableAsyncSchedule()
         {
-            USBCMD |= EHCI_Consts.CMD_ASYNCH_ENABLE;
+            USBCMD |= EHCI_Consts.CMD_AsyncScheduleEnableMask;
 
             uint timeout = 7;
-            while ((USBSTS & EHCI_Consts.STS_ASYNC_ENABLED) == 0) // wait until it is really on
+            while ((USBSTS & EHCI_Consts.STS_AsyncEnabled) == 0) // wait until it is really on
             {
                 timeout--;
                 if (timeout>0)
                 {
                     //~10ms
-                    for (int i = 0; i < 100000; i++)
-                        ;
+                    Hardware.Devices.Timer.Default.Wait(10);
                 }
                 else
                 {
@@ -1712,85 +1508,82 @@ namespace Kernel.Hardware.USB.HCIs
                 }
             }
         }
-
-        protected EHCI_qTD CreateQTD_SETUP(EHCI_qTD_Struct* next, bool toggle, ushort tokenBytes, byte type, byte req,
-                                                 byte hiVal, byte loVal, ushort index, ushort length, void** buffer)
+        /// <summary>
+        /// Adds a transfer for the async schedule.
+        /// </summary>
+        /// <param name="transfer">The transfer to add.</param>
+        protected void AddToAsyncSchedule(USBTransfer transfer)
         {
-            EHCI_qTD td = allocQTD(next);
+            USBIntCount = 1;
 
-            td.PIDCode = EHCI_QHConsts.SETUP;      // SETUP = 2
-            td.TotalBytesToTransfer = tokenBytes; // dependent on transfer
-            td.DataToggle = toggle;     // Should be toggled every list entry
-
-                                                                     //PAGESIZE
-            //Transaction Buffer0
-            USBRequest* request = (USBRequest*)(*buffer = allocQTDbuffer(td, (uint)sizeof(USBRequest)));
-            request->type = type;
-            request->request = req;
-            request->valueHi = hiVal;
-            request->valueLo = loVal;
-            request->index = index;
-            request->length = length;
-            
-            return td;
-        }
-        protected static EHCI_qTD allocQTD(EHCI_qTD_Struct* next)
-        {
-            EHCI_qTD newQTD = new EHCI_qTD();
-
-            if ((uint)next != 0x1)
+            if ((USBSTS & EHCI_Consts.STS_AsyncEnabled) == 0)
             {
-                newQTD.NextqTDPointerTerminate = false;
-                newQTD.NextqTDPointer = next;
+                EnableAsyncSchedule(); // Start async scheduler, when it is not running
             }
-            else
+            //USBCMD |= EHCI_Consts.CMD_ASYNCH_INT_DOORBELL; // Activate Doorbell: We would like to receive an asynchronous schedule interrupt
+
+            EHCI_QueueHead oldTailQH = new EHCI_QueueHead(TailQueueHead); // save old tail QH
+            TailQueueHead = (EHCI_QueueHead_Struct*)transfer.underlyingTransferData; // new QH will now be end of Queue
+
+            EHCI_QueueHead idleQH = new EHCI_QueueHead(IdleQueueHead);
+            EHCI_QueueHead tailQH = new EHCI_QueueHead(TailQueueHead);
+            // Create ring. Link new QH with idleQH (always head of Queue)
+            tailQH.HorizontalLinkPointer = (EHCI_QueueHead_Struct*)VirtMemManager.GetPhysicalAddress(IdleQueueHead);
+            tailQH.Type = 1;
+            // Insert qh to Queue as element behind old queue head
+            oldTailQH.HorizontalLinkPointer = (EHCI_QueueHead_Struct*)VirtMemManager.GetPhysicalAddress(TailQueueHead);
+            oldTailQH.Type = 1;
+
+            //int timeout = 10 * velocity + 25; // Wait up to 250+100*velocity milliseconds for USBasyncIntFlag to be set
+            while (USBIntCount > 0 /*&& timeout > 0*/ && !IrrecoverableError)
             {
-                newQTD.NextqTDPointerTerminate = true;
+                //timeout--;
+                //~100ms
+                //for (int i = 0; i < 1000000; i++)
+                //    ;
             }
 
-            newQTD.AlternateNextqTDPointerTerminate = true;  // No alternate next, so T-Bit is set to 1
-            newQTD.Status = 0x80; // This will be filled by the Host Controller. Active bit set
-            newQTD.ErrorCounter = 0x0;  // Written by the Host Controller.
-            newQTD.CurrentPage = 0x0;  // Written by the Host Controller.
-            newQTD.InterruptOnComplete = false; //Set only for the last transaction of a transfer
+            //            if (timeout == 0)
+            //            {
+            //#if EHCI_TRACE
+            //                DBGMSG(((FOS_System.String)"EHCI.AddToAsyncScheduler(): Num interrupts not 0! not set! USBIntCount: ") + USBIntCount);
+            //#endif
+            //            }
 
-            return newQTD;
-        }
-        protected static void* allocQTDbuffer(EHCI_qTD td, uint actualSizeToAlloc)
-        {
-            td.Buffer0 = (byte*)FOS_System.Heap.AllocZeroed(0x1000u, 0x1000u);
-            td.CurrentPage = 0;
-            td.CurrentOffset = 0;
-            return td.Buffer0;
-        }
-        protected EHCI_qTD CreateQTD_IO(EHCI_qTD_Struct* next, byte direction, bool toggle, ushort tokenBytes, void** buffer, uint bufferSize)
-        {
-            EHCI_qTD td = allocQTD(next);
-
-            td.PIDCode = direction;
-            td.TotalBytesToTransfer = tokenBytes; // dependent on transfer
-            td.DataToggle = toggle;     // Should be toggled every list entry
-
-            *buffer = allocQTDbuffer(td, bufferSize);
-
-            return td;
+            // Restore link of idleQH to idleQH (endless loop)
+            idleQH.HorizontalLinkPointer = (EHCI_QueueHead_Struct*)VirtMemManager.GetPhysicalAddress(IdleQueueHead);
+            idleQH.Type = 0x1;
+            TailQueueHead = IdleQueueHead; // qh done. idleQH is end of Queue again (ring structure of asynchronous schedule)
         }
 
-        protected void CreateQH(EHCI_QueueHead_Struct* headPtr, uint horizPtr, EHCI_qTD_Struct* firstQTD, bool H, byte device, 
-                                   byte endpoint, ushort packetSize)
+        /// <summary>
+        /// Initialises a queue head - memory must already be allocated.
+        /// </summary>
+        /// <param name="headPtr">A pointer to the queue head structure to initialise.</param>
+        /// <param name="horizPtr">
+        /// The physical address of the next queue head in the list (or the first queue head since the 
+        /// async queue is a circular buffer)
+        /// </param>
+        /// <param name="firstQTD">A pointer to the first qTD of the queue head.</param>
+        /// <param name="H">The Head of Reclamation list flag.</param>
+        /// <param name="deviceAddr">The address of the USB device to which this queue head belongs.</param>
+        /// <param name="endpoint">The endpoint number of the USB device to which this queue head belongs.</param>
+        /// <param name="maxPacketSize">The maximum packet size to use when transferring.</param>
+        protected void InitQH(EHCI_QueueHead_Struct* headPtr, uint horizPtr, EHCI_qTD_Struct* firstQTD, bool H, byte deviceAddr,
+                                   byte endpoint, ushort maxPacketSize)
         {
             EHCI_QueueHead head = new EHCI_QueueHead(headPtr);
             // bit 31:5 Horizontal Link Pointer
-            head.HorizontalLinkPointer = (EHCI_QueueHead_Struct*)(horizPtr);
+            head.HorizontalLinkPointer = (EHCI_QueueHead_Struct*)VirtMemManager.GetPhysicalAddress(horizPtr);
             head.Type = 0x1;      // type:  00b iTD,   01b QH,   10b siTD,   11b FSTN
             head.Terminate = false; // T-Bit: is set to zero
-            head.DeviceAddress = device;         // The device address
+            head.DeviceAddress = deviceAddr;         // The device address
             head.InactiveOnNextTransaction = false;
             head.EndpointNumber = endpoint;       // endpoint 0 contains Device infos such as name
             head.EndpointSpeed = 2;              // 00b = full speed; 01b = low speed; 10b = high speed
             head.DataToggleControl = true;              // get the Data Toggle bit out of the included qTD
             head.HeadOfReclamationList = H;              // mark a queue head as being the head of the reclaim list
-            head.MaximumPacketLength = packetSize;     // 64 byte for a control transfer to a high speed device
+            head.MaximumPacketLength = maxPacketSize;     // 64 byte for a control transfer to a high speed device
             head.ControlEndpointFlag = false;              // only used if endpoint is a control endpoint and not high speed
             head.NakCountReload = 0;              // this value is used by EHCI to reload the Nak Counter field. 0=ignores NAK counter.
             head.InterruptScheduleMask = 0;              // not used for async schedule
@@ -1805,51 +1598,108 @@ namespace Kernel.Hardware.USB.HCIs
             }
             else
             {
-                head.NextqTDPointer = firstQTD;
+                head.NextqTDPointer = (EHCI_qTD_Struct*)VirtMemManager.GetPhysicalAddress(firstQTD);
                 head.NextqTDPointerTerminate = false;
             }
         }
-        protected void AddToAsyncScheduler(USBTransfer transfer, byte velocity)
+        /// <summary>
+        /// Creates and initialises a new qTD as a SETUP qTD.
+        /// </summary>
+        /// <param name="next">A pointer to the next qTD in the linked list or 1 to specify no pointer.</param>
+        /// <param name="toggle">The toggle state for the new qTD.</param>
+        /// <param name="tokenBytes">The number of bytes to transfer.</param>
+        /// <param name="type">The USB Request type.</param>
+        /// <param name="req">The specific USB Request.</param>
+        /// <param name="hiVal">The USB Request Hi-Val.</param>
+        /// <param name="loVal">The USB Request Lo-Val.</param>
+        /// <param name="index">The index of the USB Request.</param>
+        /// <param name="length">The length of the USB Request.</param>
+        /// <param name="buffer">OUT. A pointer to the qTD data buffer.</param>
+        /// <returns>The new qTD.</returns>
+        protected EHCI_qTD CreateQTD_SETUP(EHCI_qTD_Struct* next, bool toggle, ushort tokenBytes, byte type, byte req,
+                                                 byte hiVal, byte loVal, ushort index, ushort length, void** buffer)
         {
-            USBIntCount = 1;
+            EHCI_qTD td = AllocAndInitQTD(next);
+
+            td.PIDCode = (byte)EHCI_qTDTypes.SETUP;      // SETUP = 2
+            td.TotalBytesToTransfer = tokenBytes; // dependent on transfer
+            td.DataToggle = toggle;     // Should be toggled every list entry
+
+                                                                     //PAGESIZE
+            //Transaction Buffer0
+            USBRequest* request = (USBRequest*)(*buffer = AllocQTDbuffer(td));
+            request->type = type;
+            request->request = req;
+            request->valueHi = hiVal;
+            request->valueLo = loVal;
+            request->index = index;
+            request->length = length;
             
-            if ((USBSTS & EHCI_Consts.STS_ASYNC_ENABLED) == 0)
-            {
-                EnableAsyncScheduler(); // Start async scheduler, when it is not running
-            }
-            //USBCMD |= EHCI_Consts.CMD_ASYNCH_INT_DOORBELL; // Activate Doorbell: We would like to receive an asynchronous schedule interrupt
-
-            EHCI_QueueHead oldTailQH = new EHCI_QueueHead(TailQueueHead); // save old tail QH
-            TailQueueHead = (EHCI_QueueHead_Struct*)transfer.data; // new QH will now be end of Queue
-
-            EHCI_QueueHead idleQH = new EHCI_QueueHead(IdleQueueHead);
-            EHCI_QueueHead tailQH = new EHCI_QueueHead(TailQueueHead);
-            tailQH.HorizontalLinkPointer = IdleQueueHead; // Create ring. Link new QH with idleQH (always head of Queue)
-            tailQH.Type = 1;
-            oldTailQH.HorizontalLinkPointer = TailQueueHead; // Insert qh to Queue as element behind old queue head
-            oldTailQH.Type = 1;
-
-            //int timeout = 10 * velocity + 25; // Wait up to 250+100*velocity milliseconds for USBasyncIntFlag to be set
-            while (USBIntCount > 0 /*&& timeout > 0*/)
-            {
-                //timeout--;
-                //~100ms
-                //for (int i = 0; i < 1000000; i++)
-                //    ;
-            }
-
-//            if (timeout == 0)
-//            {
-//#if EHCI_TRACE
-//                DBGMSG(((FOS_System.String)"EHCI.AddToAsyncScheduler(): Num interrupts not 0! not set! USBIntCount: ") + USBIntCount);
-//#endif
-//            }
-
-            idleQH.HorizontalLinkPointer = IdleQueueHead; // Restore link of idleQH to idleQH (endless loop)
-            idleQH.Type = 0x1;
-            TailQueueHead = IdleQueueHead; // qh done. idleQH is end of Queue again (ring structure of asynchronous schedule)
+            return td;
         }
+        /// <summary>
+        /// Creates a new qTD and initialises it as an IN or OUT qTD.
+        /// </summary>
+        /// <param name="next">A pointer to the next qTD in the linked list or 1 to specify no pointer.</param>
+        /// <param name="direction">The direction of the qTD (in or out)</param>
+        /// <param name="toggle">The toggle state for the new qTD.</param>
+        /// <param name="tokenBytes">The number of bytes to transfer.</param>
+        /// <param name="buffer">OUT. A pointer to the qTD data buffer.</param>
+        /// <param name="bufferSize">The size of the qTD data buffer.</param>
+        /// <returns>The new qTD.</returns>
+        protected EHCI_qTD CreateQTD_IO(EHCI_qTD_Struct* next, byte direction, bool toggle, ushort tokenBytes, void** buffer, uint bufferSize)
+        {
+            EHCI_qTD td = AllocAndInitQTD(next);
 
+            td.PIDCode = direction;
+            td.TotalBytesToTransfer = tokenBytes; // dependent on transfer
+            td.DataToggle = toggle;     // Should be toggled every list entry
+
+            *buffer = AllocQTDbuffer(td);
+
+            return td;
+        }
+        /// <summary>
+        /// Allocates memory for a new qTD and does intialisation common to all qTD types.
+        /// </summary>
+        /// <param name="next">A pointer to the next qTD in the linked list or 1 to specify no pointer.</param>
+        /// <returns>The new qTD.</returns>
+        protected static EHCI_qTD AllocAndInitQTD(EHCI_qTD_Struct* next)
+        {
+            EHCI_qTD newQTD = new EHCI_qTD();
+
+            if ((uint)next != 0x1)
+            {
+                newQTD.NextqTDPointerTerminate = false;
+                newQTD.NextqTDPointer = (EHCI_qTD_Struct*)VirtMemManager.GetPhysicalAddress(next);
+            }
+            else
+            {
+                newQTD.NextqTDPointerTerminate = true;
+            }
+
+            newQTD.AlternateNextqTDPointerTerminate = true;  // No alternate next, so T-Bit is set to 1
+            newQTD.Status = 0x80; // This will be filled by the Host Controller. Active bit set
+            newQTD.ErrorCounter = 0x0;  // Written by the Host Controller.
+            newQTD.CurrentPage = 0x0;  // Written by the Host Controller.
+            newQTD.InterruptOnComplete = false; //Set only for the last transaction of a transfer
+
+            return newQTD;
+        }
+        /// <summary>
+        /// Allocates a correctly page-aligned buffer for use as a qTD data buffer. Sets it as Buffer0 of the qTD.
+        /// </summary>
+        /// <param name="td">The qTD to add the buffer to.</param>
+        /// <returns>A pointer to the new buffer.</returns>
+        protected static void* AllocQTDbuffer(EHCI_qTD td)
+        {
+            byte* result = (byte*)FOS_System.Heap.AllocZeroed(0x1000u, 0x1000u);
+            td.Buffer0 = (byte*)VirtMemManager.GetPhysicalAddress(result);
+            td.CurrentPage = 0;
+            td.CurrentOffset = 0;
+            return result;
+        }
+        
 #if EHCI_TRACE
         internal static void DBGMSG(FOS_System.String msg)
         {
@@ -1857,7 +1707,7 @@ namespace Kernel.Hardware.USB.HCIs
         }
 #endif
 
-#if EHCI_TRACE
+#if EHCI_TESTS
         #region EHCI Method Tests
 
         //SetupTransfer
@@ -1921,11 +1771,26 @@ namespace Kernel.Hardware.USB.HCIs
         #endregion
 #endif
     }
+    /// <summary>
+    /// Represents a transaction made through an EHCI.
+    /// </summary>
     public unsafe class EHCITransaction : HCTransaction
     {
+        /// <summary>
+        /// A pointer to the actual qTD of the transaction.
+        /// </summary>
         public EHCI_qTD_Struct* qTD;
+        /// <summary>
+        /// A pointer to the main qTD buffer of the transaction.
+        /// </summary>
         public void* qTDBuffer;
+        /// <summary>
+        /// A pointer to the input buffer.
+        /// </summary>
         public void* inBuffer;
+        /// <summary>
+        /// The length of the input buffer.
+        /// </summary>
         public uint inLength;
     }
 

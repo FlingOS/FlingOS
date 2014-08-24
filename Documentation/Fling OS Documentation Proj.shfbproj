@@ -120,7 +120,7 @@
       <NamespaceSummaryItem name="Kernel.FOS_System.IO.FAT" isDocumented="True">Classes for handling a FAT file system.</NamespaceSummaryItem>
       <NamespaceSummaryItem name="Kernel.FOS_System.IO.Streams" isDocumented="True">Classes for handling streams.</NamespaceSummaryItem>
       <NamespaceSummaryItem name="Kernel.FOS_System.IO.Streams.FAT" isDocumented="True">Classes for handling FAT streams such as FAT file streams.</NamespaceSummaryItem>
-      <NamespaceSummaryItem name="Kernel.FOS_System.Stubs" isDocumented="False" />
+      <NamespaceSummaryItem name="Kernel.FOS_System.Stubs" isDocumented="True">Contains stubs for the FOS_System namespace.</NamespaceSummaryItem>
       <NamespaceSummaryItem name="Kernel.Hardware" isDocumented="True">The kernel's Hardware namespace contains classes that handle specific hardware.</NamespaceSummaryItem>
       <NamespaceSummaryItem name="Kernel.Hardware.ATA" isDocumented="True">Contains classes for handling ATA devices.</NamespaceSummaryItem>
       <NamespaceSummaryItem name="Kernel.Hardware.Devices" isDocumented="True">Contains classes for generic types of hardware device e.g. DiskDevice.</NamespaceSummaryItem>
@@ -132,6 +132,15 @@
       <NamespaceSummaryItem name="Kernel.Utilities" isDocumented="True">Contains Kernel utility classes and functions that can be used throughout the kernel.</NamespaceSummaryItem>
       <NamespaceSummaryItem name="Kernel.FOS_System (Group)" isGroup="True" isDocumented="True">Contains namespaces related to Kernel.FOS_System and sub-namespaces.</NamespaceSummaryItem>
       <NamespaceSummaryItem name="Kernel.Hardware (Group)" isGroup="True" isDocumented="True">Contains namespaces related to Kernel.Hardware and sub-namespaces.</NamespaceSummaryItem>
+      <NamespaceSummaryItem name="Kernel.Core (Group)" isGroup="True" isDocumented="True">Contains namespaces related to Kernel.Core and sub-namespaces.</NamespaceSummaryItem>
+      <NamespaceSummaryItem name="Kernel.Core" isDocumented="True">The kernel's Core namespace contains classes that handle core kernel functionality but which is at leats 1-level abstracted from the specific hardware.</NamespaceSummaryItem>
+      <NamespaceSummaryItem name="Kernel.Core.Consoles" isDocumented="True">Contains specific implementations of the Console class.</NamespaceSummaryItem>
+      <NamespaceSummaryItem name="Kernel.Core.Shells" isDocumented="True">Contains specific implementations of the Shell class.</NamespaceSummaryItem>
+      <NamespaceSummaryItem name="Kernel.Hardware.CPUs" isDocumented="True">Contains specific implementations of the CPU class.</NamespaceSummaryItem>
+      <NamespaceSummaryItem name="Kernel.Hardware.Interrupts" isDocumented="True">Contains hardware-specific code for managing interrupts.</NamespaceSummaryItem>
+      <NamespaceSummaryItem name="Kernel.Hardware.Keyboards" isDocumented="True">Contains specific implementations of the Keyboard class.</NamespaceSummaryItem>
+      <NamespaceSummaryItem name="Kernel.Hardware.Timers" isDocumented="True">Contains specific implementations of the Timer class.</NamespaceSummaryItem>
+      <NamespaceSummaryItem name="Kernel.Hardware.USB.Devices" isDocumented="True">Contains implementations of drivers for USB devices.</NamespaceSummaryItem>
     </NamespaceSummaries>
     <ApiFilter>
       <Filter entryType="Namespace" fullName="" isExposed="False" />

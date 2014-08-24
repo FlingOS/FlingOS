@@ -1,19 +1,19 @@
 ﻿#region Copyright Notice
-/// ------------------------------------------------------------------------------ ///
-///                                                                                ///
-///               All contents copyright � Edward Nutting 2014                     ///
-///                                                                                ///
-///        You may not share, reuse, redistribute or otherwise use the             ///
-///        contents this file outside of the Fling OS project without              ///
-///        the express permission of Edward Nutting or other copyright             ///
-///        holder. Any changes (including but not limited to additions,            ///
-///        edits or subtractions) made to or from this document are not            ///
-///        your copyright. They are the copyright of the main copyright            ///
-///        holder for all Fling OS files. At the time of writing, this             ///
-///        owner was Edward Nutting. To be clear, owner(s) do not include          ///
-///        developers, contributors or other project members.                      ///
-///                                                                                ///
-/// ------------------------------------------------------------------------------ ///
+// ------------------------------------------------------------------------------ //
+//                                                                                //
+//               All contents copyright � Edward Nutting 2014                     //
+//                                                                                //
+//        You may not share, reuse, redistribute or otherwise use the             //
+//        contents this file outside of the Fling OS project without              //
+//        the express permission of Edward Nutting or other copyright             //
+//        holder. Any changes (including but not limited to additions,            //
+//        edits or subtractions) made to or from this document are not            //
+//        your copyright. They are the copyright of the main copyright            //
+//        holder for all Fling OS files. At the time of writing, this             //
+//        owner was Edward Nutting. To be clear, owner(s) do not include          //
+//        developers, contributors or other project members.                      //
+//                                                                                //
+// ------------------------------------------------------------------------------ //
 #endregion
     
 using System;
@@ -39,7 +39,7 @@ namespace Kernel.FOS_System
         [Compiler.NoGC]
         public static UInt16 ToUInt16(byte[] n, UInt32 aPos)
         {
-            return (UInt16)(n[aPos + 1] << 8 | n[aPos]);
+            return (UInt16)((UInt16)n[aPos + 1] << 8 | (UInt16)n[aPos]);
         }
         /// <summary>
         /// Converts 4 bytes from the specified byte array at the specified index into a UInt32.
@@ -51,7 +51,23 @@ namespace Kernel.FOS_System
         [Compiler.NoGC]
         public static UInt32 ToUInt32(byte[] n, UInt32 aPos)
         {
-            return (UInt32)(n[aPos + 3] << 24 | n[aPos + 2] << 16 | n[aPos + 1] << 8 | n[aPos]);
+            return ((UInt32)n[aPos + 3] << 24 | (UInt32)n[aPos + 2] << 16 |
+                    (UInt32)n[aPos + 1] << 8  | (UInt32)n[aPos]);
+        }
+        /// <summary>
+        /// Converts 8 bytes from the specified byte array at the specified index into a UInt64.
+        /// </summary>
+        /// <param name="n">The byte array from which to convert bytes.</param>
+        /// <param name="aPos">The index of the first of the four bytes to convert.</param>
+        /// <returns>The converted UInt64.</returns>
+        [Compiler.NoDebug]
+        [Compiler.NoGC]
+        public static UInt64 ToUInt64(byte[] n, UInt32 aPos)
+        {
+            return ((UInt64)n[aPos + 7] << 54 | (UInt64)n[aPos + 6] << 48 | 
+                    (UInt64)n[aPos + 5] << 40 | (UInt64)n[aPos + 4] << 32 |
+                    (UInt64)n[aPos + 3] << 24 | (UInt64)n[aPos + 2] << 16 |
+                    (UInt64)n[aPos + 1] << 8  | (UInt64)n[aPos]);
         }
         /// <summary>
         /// Converts the specified ASCII encoded string into an array of ASCII encoded bytes.
@@ -169,7 +185,13 @@ namespace Kernel.FOS_System
 
             return result;
         }
-
+        /// <summary>
+        /// Converts the specified bytes to an ASCII encoded string, treating the bytes as UTF16 encoded bytes.
+        /// </summary>
+        /// <param name="n">Pointer to the bytes to convert.</param>
+        /// <param name="aStart">The index in the array at which to start converting bytes.</param>
+        /// <param name="aCharCount">The number of characters to convert.</param>
+        /// <returns>The ASCII encoded string.</returns>
         public unsafe static FOS_System.String GetASCIIStringFromUTF16(byte* n, UInt32 aStart, UInt32 aCharCount)
         {
             //If you change this method, change the array version above too.
