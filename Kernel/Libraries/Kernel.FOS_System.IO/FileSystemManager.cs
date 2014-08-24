@@ -97,36 +97,64 @@ namespace Kernel.FOS_System.IO
 
             //Must check for GPT before MBR because GPT uses a protective
             //  MBR entry so will be seen as valid MBR.
-            if (GPT.IsGPTFormatted(aDiskDevice))
+            if (InitAsGPT(aDiskDevice))
             {
 #if DEBUG
                 BasicConsole.WriteLine("GPT formatted disk detected!");
-                BasicConsole.DelayOutput(30);
+                BasicConsole.DelayOutput(3);
 #endif
+            }
+            else if(!InitAsMBR(aDiskDevice))
+            {
+                ExceptionMethods.Throw(new FOS_System.Exceptions.NotSupportedException("Non MBR/EBR/GPT formatted disks not supported."));
+            }
+        }
+
+        private static bool InitAsGPT(DiskDevice aDiskDevice)
+        {
+            GPT TheGPT = new GPT(aDiskDevice);
+            if (!TheGPT.IsValid)
+            {
+                return false;
+            }
+            else
+            {
+                ProcessGPT(TheGPT, aDiskDevice);
+                return true;
+            }
+        }
+        private static bool InitAsMBR(DiskDevice aDiskDevice)
+        {
+#if FSM_TRACE
+            BasicConsole.WriteLine("Attempting to read MBR...");
+#endif
+            byte[] MBRData = new byte[512];
+            aDiskDevice.ReadBlock(0UL, 1U, MBRData);
+#if FSM_TRACE
+            BasicConsole.WriteLine("Read potential MBR data. Attempting to init MBR...");
+#endif
+            MBR TheMBR = new MBR(MBRData);
+
+            if (!TheMBR.IsValid)
+            {
+                return false;
             }
             else
             {
 #if FSM_TRACE
-            BasicConsole.WriteLine("Attempting to read MBR...");
-#endif
-                byte[] MBRData = new byte[512];
-                aDiskDevice.ReadBlock(0UL, 1U, MBRData);
-#if FSM_TRACE
-            BasicConsole.WriteLine("Read potential MBR data. Attempting to init MBR...");
-#endif
-                MBR TheMBR = new MBR(MBRData);
-
-                if (!TheMBR.IsValid)
-                {
-                    ExceptionMethods.Throw(new FOS_System.Exceptions.NotSupportedException("Non MBR/EBR formatted disks not supported."));
-                }
-                else
-                {
-#if FSM_TRACE
                 BasicConsole.WriteLine("Valid MBR found.");
 #endif
-                    ProcessMBR(TheMBR, aDiskDevice);
-                }
+                ProcessMBR(TheMBR, aDiskDevice);
+
+                return true;
+            }
+        }
+        private static void ProcessGPT(GPT aGPT, DiskDevice aDiskDevice)
+        {
+            for (int i = 0; i < aGPT.Partitions.Count; i++)
+            {
+                GPT.PartitionInfo aPartInfo = (GPT.PartitionInfo)aGPT.Partitions[i];
+                Partitions.Add(new Partition(aDiskDevice, aPartInfo.FirstLBA, aPartInfo.LastLBA - aPartInfo.FirstLBA));
             }
         }
         /// <summary>

@@ -39,7 +39,7 @@ namespace Kernel.FOS_System
         [Compiler.NoGC]
         public static UInt16 ToUInt16(byte[] n, UInt32 aPos)
         {
-            return (UInt16)(n[aPos + 1] << 8 | n[aPos]);
+            return (UInt16)((UInt16)n[aPos + 1] << 8 | (UInt16)n[aPos]);
         }
         /// <summary>
         /// Converts 4 bytes from the specified byte array at the specified index into a UInt32.
@@ -51,7 +51,23 @@ namespace Kernel.FOS_System
         [Compiler.NoGC]
         public static UInt32 ToUInt32(byte[] n, UInt32 aPos)
         {
-            return (UInt32)(n[aPos + 3] << 24 | n[aPos + 2] << 16 | n[aPos + 1] << 8 | n[aPos]);
+            return ((UInt32)n[aPos + 3] << 24 | (UInt32)n[aPos + 2] << 16 |
+                    (UInt32)n[aPos + 1] << 8  | (UInt32)n[aPos]);
+        }
+        /// <summary>
+        /// Converts 8 bytes from the specified byte array at the specified index into a UInt64.
+        /// </summary>
+        /// <param name="n">The byte array from which to convert bytes.</param>
+        /// <param name="aPos">The index of the first of the four bytes to convert.</param>
+        /// <returns>The converted UInt64.</returns>
+        [Compiler.NoDebug]
+        [Compiler.NoGC]
+        public static UInt64 ToUInt64(byte[] n, UInt32 aPos)
+        {
+            return ((UInt64)n[aPos + 7] << 54 | (UInt64)n[aPos + 6] << 48 | 
+                    (UInt64)n[aPos + 5] << 40 | (UInt64)n[aPos + 4] << 32 |
+                    (UInt64)n[aPos + 3] << 24 | (UInt64)n[aPos + 2] << 16 |
+                    (UInt64)n[aPos + 1] << 8  | (UInt64)n[aPos]);
         }
         /// <summary>
         /// Converts the specified ASCII encoded string into an array of ASCII encoded bytes.
