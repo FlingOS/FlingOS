@@ -110,6 +110,11 @@ namespace Kernel.FOS_System.IO
             }
         }
 
+        /// <summary>
+        /// Attempts to initialise a disk treating it as GPT formatted.
+        /// </summary>
+        /// <param name="aDiskDevice">The disk to initialise.</param>
+        /// <returns>True if a valid GPT was detected and the disk was successfully initialised. Otherwise, false.</returns>
         private static bool InitAsGPT(DiskDevice aDiskDevice)
         {
             GPT TheGPT = new GPT(aDiskDevice);
@@ -123,6 +128,11 @@ namespace Kernel.FOS_System.IO
                 return true;
             }
         }
+        /// <summary>
+        /// Attempts to initialise a disk treating it as MBR formatted.
+        /// </summary>
+        /// <param name="aDiskDevice">The disk to initialise.</param>
+        /// <returns>True if a valid MBR was detected and the disk was successfully initialised. Otherwise, false.</returns>
         private static bool InitAsMBR(DiskDevice aDiskDevice)
         {
 #if FSM_TRACE
@@ -149,6 +159,11 @@ namespace Kernel.FOS_System.IO
                 return true;
             }
         }
+        /// <summary>
+        /// Processes a valid GUID partition table to initialize its partitions.
+        /// </summary>
+        /// <param name="aGPT">The GPT to process.</param>
+        /// <param name="aDiskDevice">The disk device from which the GPT was read.</param>
         private static void ProcessGPT(GPT aGPT, DiskDevice aDiskDevice)
         {
             for (int i = 0; i < aGPT.Partitions.Count; i++)
@@ -158,8 +173,7 @@ namespace Kernel.FOS_System.IO
             }
         }
         /// <summary>
-        /// Processes a valid master boot record to initialize 
-        /// its partitions.
+        /// Processes a valid master boot record to initialize its partitions.
         /// </summary>
         /// <param name="anMBR">The MBR to process.</param>
         /// <param name="aDiskDevice">The disk device from which the MBR was read.</param>

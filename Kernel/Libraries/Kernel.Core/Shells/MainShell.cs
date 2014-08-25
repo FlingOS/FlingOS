@@ -809,10 +809,20 @@ namespace Kernel.Core.Shells
             console.WriteLine("Shell exited.");
         }
 
+        /// <summary>
+        /// Copies the specified file.
+        /// </summary>
+        /// <param name="src">The path to the file to copy.</param>
+        /// <param name="dst">The path to copy to.</param>
         private void CopyFile(FOS_System.String src, FOS_System.String dst)
         {
             CopyFile(File.Open(src), dst);
         }
+        /// <summary>
+        /// Copies the specified file.
+        /// </summary>
+        /// <param name="srcFile">The file to copy.</param>
+        /// <param name="dst">The path to copy to.</param>
         private void CopyFile(File srcFile, FOS_System.String dst)
         {
             if(srcFile == null)
@@ -880,6 +890,10 @@ namespace Kernel.Core.Shells
 
             console.WriteLine("Copied successfully.");
         }
+        /// <summary>
+        /// Deletes the specified file.
+        /// </summary>
+        /// <param name="fileName">The path to the file to delete.</param>
         private void DeleteFile(FOS_System.String fileName)
         {
             if (File.Delete(fileName))
@@ -891,10 +905,20 @@ namespace Kernel.Core.Shells
                 console.WriteLine("File not found: " + fileName);
             }
         }
+        /// <summary>
+        /// Copies the specified directory.
+        /// </summary>
+        /// <param name="src">The path to the directory to copy.</param>
+        /// <param name="dst">The path to copy to.</param>
         private void CopyDirectory(FOS_System.String src, FOS_System.String dst)
         {
             CopyDirectory(Directory.Find(src), dst);
         }
+        /// <summary>
+        /// Copies the specified directory.
+        /// </summary>
+        /// <param name="srcDir">The directory to copy.</param>
+        /// <param name="dst">The path to copy to.</param>
         private void CopyDirectory(Directory srcDir, FOS_System.String dst)
         {
             if (srcDir == null)
@@ -954,6 +978,10 @@ namespace Kernel.Core.Shells
                 }
             }
         }
+        /// <summary>
+        /// Deletes the specified directory.
+        /// </summary>
+        /// <param name="path">The path to the directory to delete.</param>
         private void DeleteDirectory(FOS_System.String path)
         {
             if (Directory.Delete(path))
@@ -965,6 +993,11 @@ namespace Kernel.Core.Shells
                 console.WriteLine("Directory not found: " + path);
             }
         }
+        /// <summary>
+        /// Creates a new directory (and parent directories). Used recursively.
+        /// </summary>
+        /// <param name="path">The full path of the directory (and parent directories) to create.</param>
+        /// <returns>The new (or existing) directory.</returns>
         private Directory NewDirectory(FOS_System.String path)
         {
             console.WriteLine("Searching for directory: " + path);

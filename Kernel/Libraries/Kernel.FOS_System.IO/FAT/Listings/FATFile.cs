@@ -63,6 +63,10 @@ namespace Kernel.FOS_System.IO.FAT
             FirstClusterNum = aFirstCluster;
         }
 
+        /// <summary>
+        /// Deletes the listing from the file system.
+        /// </summary>
+        /// <returns>True if the listing was deleted. Otherwise, false.</returns>
         public override bool Delete()
         {
             if (TheFATFileSystem.FATType != FATFileSystem.FATTypeEnum.FAT32)

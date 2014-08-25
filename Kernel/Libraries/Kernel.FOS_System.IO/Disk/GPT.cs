@@ -24,27 +24,78 @@ using Kernel.FOS_System.Collections;
 
 namespace Kernel.FOS_System.IO.Disk
 {
+    /// <summary>
+    /// Represents a GUID partition table partitioning scheme.
+    /// </summary>
     public class GPT : FOS_System.Object
     {
+        /// <summary>
+        /// The list of non-empty partitions found in partition table.
+        /// </summary>
         public List Partitions = new List(4);
 
+        /// <summary>
+        /// The revision number of the GPT.
+        /// </summary>
         public uint Revision = 0;
+        /// <summary>
+        /// The size of the GPT header.
+        /// </summary>
         public uint HeaderSize = 0;
+        /// <summary>
+        /// The CRC32 cheksum of the GPT header.
+        /// </summary>
         public uint HeaderCRC32 = 0;
+        /// <summary>
+        /// The LBA of the GPT header. Should always be 1.
+        /// </summary>
         public ulong HeaderLBA = 0;
+        /// <summary>
+        /// The LBA of the backup GPT header. Shoukd be last sector on the disk.
+        /// </summary>
         public ulong HeaderBackupLBA = 0;
+        /// <summary>
+        /// First LBA which can be used for partition data.
+        /// </summary>
         public ulong FirstUsableLBAForPartitions = 0;
+        /// <summary>
+        /// Last LBA which can be used for partition data.
+        /// </summary>
         public ulong LastUsableLBAForPartitions = 0;
+        /// <summary>
+        /// The bytes of the disk GUID.
+        /// </summary>
         public byte[] DiskGUID = null;
+        /// <summary>
+        /// The LBA at which the partition array starts. 
+        /// </summary>
         public ulong StartingLBAOfPartitionArray = 0;
+        /// <summary>
+        /// The number of entries in the partition array.
+        /// </summary>
         public uint NumPartitionEntries = 0;
+        /// <summary>
+        /// The size of a partition entry in the partition array.
+        /// </summary>
         public uint SizeOfPartitionEntry = 0;
+        /// <summary>
+        /// CRC32 checksum of the partition array.
+        /// </summary>
         public uint PartitionArrayCRC32 = 0;
 
+        /// <summary>
+        /// Whether the GPT is valid or not.
+        /// </summary>
         public readonly bool IsValid = false;
 
+        /// <summary>
+        /// Represents partition information read from the GPT.
+        /// </summary>
         public class PartitionInfo : FOS_System.Object
         {
+            /// <summary>
+            /// Whether the partition entry is empty or not.
+            /// </summary>
             public bool Empty
             {
                 get
@@ -67,13 +118,37 @@ namespace Kernel.FOS_System.IO.Disk
                            ID[15] == 0;
                 }
             }
+            /// <summary>
+            /// The partition Type GUID.
+            /// </summary>
             public byte[] TypeID = new byte[16];
+            /// <summary>
+            /// The partition GUID.
+            /// </summary>
             public byte[] ID = new byte[16];
+            /// <summary>
+            /// The first LBA of the partition.
+            /// </summary>
             public ulong FirstLBA = 0;
+            /// <summary>
+            /// The last LBA of the partition.
+            /// </summary>
             public ulong LastLBA = 0;
+            /// <summary>
+            /// The partition attributes.
+            /// </summary>
             public ulong Attributes = 0;
+            /// <summary>
+            /// The name of the partition.
+            /// </summary>
             public FOS_System.String Name;
 
+            /// <summary>
+            /// Initialises new partition information using the specified data.
+            /// </summary>
+            /// <param name="data">The data to read the partition info from.</param>
+            /// <param name="offset">The offset in the data at which to start reading.</param>
+            /// <param name="entrySize">The size of a partition entry.</param>
             public PartitionInfo(byte[] data, uint offset, uint entrySize)
             {
                 TypeID[0] = data[offset + 0];
@@ -124,10 +199,17 @@ namespace Kernel.FOS_System.IO.Disk
             }
         }
 
+        /// <summary>
+        /// Initialises a new, empty GPT and marks it as valid.
+        /// </summary>
         public GPT()
         {
             IsValid = true;
         }
+        /// <summary>
+        /// Initialises a new GPT and attempts to read its information from the specified disk.
+        /// </summary>
+        /// <param name="disk">The disk to read the GPT from.</param>
         public GPT(Hardware.Devices.DiskDevice disk)
         {
 #if GPT_TRACE

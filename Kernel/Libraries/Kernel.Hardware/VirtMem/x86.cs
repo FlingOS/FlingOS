@@ -33,6 +33,9 @@ namespace Kernel.Hardware.VirtMem
     [Compiler.PluggedClass]
     public unsafe class x86 : VirtMemImpl
     {
+        /// <summary>
+        /// Tests the virtual memory system.
+        /// </summary>
         public override void Test()
         {
             BasicConsole.WriteLine("Testing paging...");
@@ -89,6 +92,11 @@ namespace Kernel.Hardware.VirtMem
             Hardware.Devices.Timer.Default.Wait(3000);
         }
 
+        /// <summary>
+        /// Maps the specified virtual address to the specified physical address.
+        /// </summary>
+        /// <param name="pAddr">The physical address to map to.</param>
+        /// <param name="vAddr">The virtual address to map.</param>
         public override void Map(uint pAddr, uint vAddr)
         {
 #if PAGING_TRACE
@@ -109,10 +117,18 @@ namespace Kernel.Hardware.VirtMem
             BasicConsole.WriteLine(((FOS_System.String)"ptPtr=") + (uint)ptPtr);
 #endif 
             SetPageEntry(ptPtr, ptIdx, pAddr);
-            SetDirectoryEntry(pdIdx, (uint*)((uint)ptPtr - GetVToPOffset()));
+            SetDirectoryEntry(pdIdx, (uint*)GetPhysicalAddress((uint)ptPtr));
 
             InvalidatePTE(vAddr);
         }
+        /// <summary>
+        /// Gets the physical address for the specified virtual address.
+        /// </summary>
+        /// <param name="vAddr">The virtual address to get the physical address of.</param>
+        /// <returns>The physical address.</returns>
+        /// <remarks>
+        /// This has an undefined return value and behaviour if the virtual address is not mapped.
+        /// </remarks>
         public override uint GetPhysicalAddress(uint vAddr)
         {
             uint pdIdx = vAddr >> 22;
@@ -122,10 +138,21 @@ namespace Kernel.Hardware.VirtMem
             return ((ptPtr[ptIdx] & 0xFFFFF000) + (vAddr & 0xFFF));
         }
 
+        /// <summary>
+        /// Gets the specified built-in, pre-allocated page table.
+        /// </summary>
+        /// <param name="pageNum">The page number (directory index) of the page table to get.</param>
+        /// <returns>A uint pointer to the page table.</returns>
         private uint* GetFixedPage(uint pageNum)
         {
             return GetFirstPageTablePtr() + (1024 * pageNum);
         }
+        /// <summary>
+        /// Sets the specified page table entry.
+        /// </summary>
+        /// <param name="pageTablePtr">The page table to set the value in.</param>
+        /// <param name="entry">The entry index (page table index) of the entry to set.</param>
+        /// <param name="addr">The physical address to map the entry to.</param>
         private void SetPageEntry(uint* pageTablePtr, uint entry, uint addr)
         {
 #if PAGING_TRACE
@@ -144,6 +171,11 @@ namespace Kernel.Hardware.VirtMem
             }
 #endif
         }
+        /// <summary>
+        /// Sets the specified page directory entry.
+        /// </summary>
+        /// <param name="pageNum">The page number (directory index) of the entry to set.</param>
+        /// <param name="pageTablePhysPtr">The physical address of the page table to set the entry to point at.</param>
         private void SetDirectoryEntry(uint pageNum, uint* pageTablePhysPtr)
         {
             uint* dirPtr = GetPageDirectoryPtr();
@@ -162,16 +194,15 @@ namespace Kernel.Hardware.VirtMem
             }
 #endif
         }
+        /// <summary>
+        /// Invalidates the cache of the specified page table entry.
+        /// </summary>
+        /// <param name="entry">The entry to invalidate.</param>
         [Compiler.PluggedMethod(ASMFilePath = @"ASM\VirtMem\x86")]
         [Compiler.SequencePriority(Priority = long.MaxValue)]
         private void InvalidatePTE(uint entry)
         {
 
-        }
-        [Compiler.PluggedMethod(ASMFilePath = null)]
-        private uint GetVToPOffset()
-        {
-            return 0;
         }
 
         /// <summary>

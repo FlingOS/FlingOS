@@ -21,27 +21,61 @@ using Kernel.Hardware.VirtMem;
 
 namespace Kernel.Hardware
 {
+    /// <summary>
+    /// The virtual memory manager for the kernel. Wraps the specific implementation to allow targetting different architectures without
+    /// changing the entire kernel.
+    /// </summary>
     public static unsafe class VirtMemManager
     {
+        /// <summary>
+        /// The specific virtual memory implementation to use.
+        /// </summary>
         private static VirtMemImpl impl;
 
+        /// <summary>
+        /// Initialises the virtual memory manager.
+        /// </summary>
         public static void Init()
         {
             impl = new x86();
         }
 
+        /// <summary>
+        /// Maps the specified amount of memory.
+        /// </summary>
+        /// <param name="pAddr">The physical address to start mapping at (must be 4KiB aligned).</param>
+        /// <param name="vAddr">The virtual address to start mapping at (must be 4KiB aligned).</param>
+        /// <param name="size">The amount of memory (in bytes) to map (must be a multiple of 4KiB)</param>
         public static void Map(void* pAddr, void* vAddr, uint size)
         {
             Map((uint)pAddr, (uint)vAddr, size);
         }
+        /// <summary>
+        /// Maps the specified amount of memory.
+        /// </summary>
+        /// <param name="pAddr">The physical address to start mapping at (must be 4KiB aligned).</param>
+        /// <param name="vAddr">The virtual address to start mapping at (must be 4KiB aligned).</param>
+        /// <param name="size">The amount of memory (in bytes) to map (must be a multiple of 4KiB)</param>
         public static void Map(uint pAddr, void* vAddr, uint size)
         {
             Map(pAddr, (uint)vAddr, size);
         }
+        /// <summary>
+        /// Maps the specified amount of memory.
+        /// </summary>
+        /// <param name="pAddr">The physical address to start mapping at (must be 4KiB aligned).</param>
+        /// <param name="vAddr">The virtual address to start mapping at (must be 4KiB aligned).</param>
+        /// <param name="size">The amount of memory (in bytes) to map (must be a multiple of 4KiB)</param>
         public static void Map(void* pAddr, uint vAddr, uint size)
         {
             Map((uint)pAddr, vAddr, size);
         }
+        /// <summary>
+        /// Maps the specified amount of memory.
+        /// </summary>
+        /// <param name="pAddr">The physical address to start mapping at (must be 4KiB aligned).</param>
+        /// <param name="vAddr">The virtual address to start mapping at (must be 4KiB aligned).</param>
+        /// <param name="size">The amount of memory (in bytes) to map (must be a multiple of 4KiB)</param>
         public static void Map(uint pAddr, uint vAddr, uint size)
         {
             while (size > 0)
@@ -53,15 +87,34 @@ namespace Kernel.Hardware
             }
         }
 
+        /// <summary>
+        /// Gets the physical address for the specified virtual address.
+        /// </summary>
+        /// <param name="vAddr">The virtual address to get the physical address of.</param>
+        /// <returns>The physical address.</returns>
+        /// <remarks>
+        /// This has an undefined return value and behaviour if the virtual address is not mapped.
+        /// </remarks>
         public static void* GetPhysicalAddress(void* vAddr)
         {
             return (void*)GetPhysicalAddress((uint)vAddr);
         }
+        /// <summary>
+        /// Gets the physical address for the specified virtual address.
+        /// </summary>
+        /// <param name="vAddr">The virtual address to get the physical address of.</param>
+        /// <returns>The physical address.</returns>
+        /// <remarks>
+        /// This has an undefined return value and behaviour if the virtual address is not mapped.
+        /// </remarks>
         public static uint GetPhysicalAddress(uint vAddr)
         {
             return impl.GetPhysicalAddress(vAddr);
         }
 
+        /// <summary>
+        /// Tests the virtual memory system.
+        /// </summary>
         public static void Test()
         {
             impl.Test();
