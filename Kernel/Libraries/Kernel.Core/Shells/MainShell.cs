@@ -814,6 +814,8 @@ namespace Kernel.Core.Shells
         /// <param name="dst">The path to copy to.</param>
         private void CopyFile(FOS_System.String src, FOS_System.String dst)
         {
+            //Attempt to open the source file. If it is not found, null will be passed
+            //  and the CopyFile method will catch the failure.
             CopyFile(File.Open(src), dst);
         }
         /// <summary>
@@ -823,16 +825,23 @@ namespace Kernel.Core.Shells
         /// <param name="dst">The path to copy to.</param>
         private void CopyFile(File srcFile, FOS_System.String dst)
         {
+            //Check the source file has been opened i.e. that it exists
             if(srcFile == null)
             {
                 console.WriteLine("Source file not found!");
                 return;
             }
 
+            //Attempt to open the destination file.
             File dstFile = File.Open(dst);
+            //If opening failed, the file was not found so either the path
+            //  was invalid or the file does not currently exist. We assume
+            //  the latter. If the path is invalid, it will be caught later.
             if (dstFile == null)
             {
-                console.WriteLine("Creating destination file...");
+                //console.WriteLine("Creating destination file...");
+                //If the path is invalid because of path mapping, it will be 
+                //  caught here.
                 FileSystemMapping mapping = FileSystemManager.GetMapping(dst);
                 if (mapping == null)
                 {
@@ -845,26 +854,40 @@ namespace Kernel.Core.Shells
                 FOS_System.String dstDir = dst.Substring(0, lastIdx);
                 FOS_System.String dstName = dst.Substring(lastIdx, dst.length - lastIdx);
 
-                console.WriteLine("dstDir: " + dstDir);
-                console.WriteLine("dstName: " + dstName);
+                //console.WriteLine("dstDir: " + dstDir);
+                //console.WriteLine("dstName: " + dstName);
 
+                //New directory either creates the directory, or returns the existing directory
                 Directory parentDir = NewDirectory(dstDir);
-                dstFile = mapping.TheFileSystem.NewFile(dstName, parentDir);
+                //If the parent dir is null, the path must be invalid so we cannot create the
+                //  dest file.
+                if (parentDir != null)
+                {
+                    dstFile = mapping.TheFileSystem.NewFile(dstName, parentDir);
+                }
+                //If we still failed to create the file, then the path was totally invalid
                 if (dstFile == null)
                 {
-                    console.WriteLine("Failed to create!");
+                    console.WriteLine("Failed to create destination file!");
                     return;
                 }
 
-                console.WriteLine("Created.");
+                console.WriteLine("Destination file created.");
             }
             else
             {
                 console.WriteLine("Destination file already exists.");
             }
 
+            //Get full path resolves the path of the file without using short-hands
+            //  such as ./ and .. which can be used in the arguments to this method.
+            //  So, GetFullPath allows us to do a consistent comparison of the paths.
             FOS_System.String srcFullPath = srcFile.GetFullPath();
             FOS_System.String dstFullPath = dstFile.GetFullPath();
+            //If we are about to copy a file onto itself, well that wouldn't technically
+            //  give us an issue given our copy implementation, but it is pretty pointless.
+            //  Also, it would give a more sofisticated copy algorithm (e.g. block copying
+            //  for large files) a big problem!
             if (srcFullPath == dstFullPath)
             {
                 console.WriteLine("Atempted to copy a file to itself! (" + srcFullPath + ")");
@@ -880,9 +903,13 @@ namespace Kernel.Core.Shells
 
             byte[] data = new byte[(uint)srcFile.Size];
             
+            //Read in all source data. This will be a huge problem if the file
+            //  is large. A better implementation would be to load and copy 
+            //  blocks of data at a time.
             srcStr.Position = 0;
             srcStr.Read(data, 0, data.Length);
             
+            //Write out all the data to destination.
             dstStr.Position = 0;
             dstStr.Write(data, 0, data.Length);
 
@@ -910,6 +937,8 @@ namespace Kernel.Core.Shells
         /// <param name="dst">The path to copy to.</param>
         private void CopyDirectory(FOS_System.String src, FOS_System.String dst)
         {
+            //Attempt to load the source directory. If it is not found, null will be passed
+            //  and the CopyDirectory method will catch the failure.
             CopyDirectory(Directory.Find(src), dst);
         }
         /// <summary>
@@ -930,25 +959,11 @@ namespace Kernel.Core.Shells
                 dst += FileSystemManager.PathDelimiter;
             }
 
-            Directory dstDir = Directory.Find(dst);
-            if (dstDir == null)
-            {
-                console.WriteLine("Creating destination directory...");
-                
-                dstDir = NewDirectory(dst);
-                if(dstDir == null)
-                {
-                    console.WriteLine("Failed to create!");
-                    return;
-                }
+            //Creates the entire directory tree as required or returns
+            //  the existing directory.
+            Directory dstDir = NewDirectory(dst);
 
-                console.WriteLine("Created.");
-            }
-            else
-            {
-                console.WriteLine("Destination directory already exists.");
-            }
-
+            //For explanation of this, see CopyFile
             FOS_System.String srcFullPath = srcDir.GetFullPath();
             FOS_System.String dstFullPath = dstDir.GetFullPath();
             if (srcFullPath == dstFullPath)
@@ -1110,34 +1125,6 @@ namespace Kernel.Core.Shells
             console.WriteLine("Disk formatting OK.");
         }
 
-        /// <summary>
-        /// Outputs the specified listings.
-        /// </summary>
-        /// <param name="Listings">The listings to output.</param>
-        private void OutputListings(List Listings)
-        {
-            for (int j = 0; j < Listings.Count; j++)
-            {
-                FOS_System.IO.Base xItem = (FOS_System.IO.Base)Listings[j];
-
-                if (xItem._Type == (FOS_System.Type)(typeof(FOS_System.IO.FAT.FATDirectory)))
-                {
-                    FOS_System.String name = ((FOS_System.IO.FAT.FATDirectory)Listings[j]).Name;
-                    if (name != "." && name != "..")
-                    {
-                        console.WriteLine(((FOS_System.String)"<DIR> ") + name);
-                        console.WriteLine("                 |||||||||||||||||||||||||||||||");
-                        OutputListings(((FOS_System.IO.FAT.FATDirectory)Listings[j]).GetListings());
-                        console.WriteLine("                 |||||||||||||||||||||||||||||||");
-                    }
-                }
-                else if (xItem._Type == (FOS_System.Type)(typeof(FOS_System.IO.FAT.FATFile)))
-                {
-                    FOS_System.IO.FAT.FATFile file = ((FOS_System.IO.FAT.FATFile)Listings[j]);
-                    console.WriteLine(((FOS_System.String)"<FILE> ") + file.Name + " (" + file.Size + ")");
-                }
-            }
-        }
         /// <summary>
         /// Outputs the contents of the specified file if it exists.
         /// </summary>
