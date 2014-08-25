@@ -17,7 +17,7 @@
 #endregion
     
 #define FATFileStream_TRACE
-//#undef FATFileStream_TRACE
+#undef FATFileStream_TRACE
     
 using System;
 

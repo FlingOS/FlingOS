@@ -46,17 +46,29 @@ namespace Kernel.Core.Consoles
         /// </summary>
         protected override void Update()
         {
+            //Start at the bottom of the screen - 25th line has index 24
             char* vidMemPtr = vidMemBasePtr + (24 * LineLength);
+            //Start at the current line then move backwards through the buffer
+            //  until we've either outputted 25 lines or reached the start of 
+            //  the buffer.
             for(int i = CurrentLine; i > -1 && i > CurrentLine - 25; i--)
             {
+                //Get a pointer to the start of the current line
+                //  We could index into the string each time, but using a pointer
+                //  is much faster.
                 char* cLinePtr = ((FOS_System.String)Buffer[i]).GetCharPointer();
+                //Loop through the entire length of the line. All lines will be of
+                //  LineLength even if nothing is written in them because blank
+                //  lines are created as a LineLength of spaces.
                 for (int j = 0; j < LineLength; j++)
                 {
                     vidMemPtr[j] = cLinePtr[j];
                 }
+                //Move backwards through the video memory i.e. upwards 1 line
                 vidMemPtr -= LineLength;
             }
 
+            //Clear out the rest of the screen
             while(vidMemPtr >= vidMemBasePtr)
             {
                 for (int j = 0; j < LineLength; j++)
@@ -95,9 +107,13 @@ namespace Kernel.Core.Consoles
         /// <param name="line">The 0-based index of the line to display the cursor on.</param>
         public override void SetCursorPosition(ushort character, ushort line)
         {
+            //Offset is in number of characters from start of video memory 
+            //  (not number of bytes).
             ushort offset = (ushort)((line * LineLength) + character);
+            //Output the high-byte
             CursorCmdPort.Write_Byte((byte)14);
             CursorDataPort.Write_Byte((byte)(offset >> 8));
+            //Output the low-byte
             CursorCmdPort.Write_Byte((byte)15);
             CursorDataPort.Write_Byte((byte)(offset));
         }

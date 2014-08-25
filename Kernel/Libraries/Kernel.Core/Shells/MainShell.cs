@@ -40,12 +40,16 @@ namespace Kernel.Core.Shells
         {
             try
             {
+                //Endlessly wait for commands until we hit a total failure condition
+                //  or the user instructs us to halt
                 while(!terminating)
                 {
                     try
                     {
+                        //Output the current command line
                         console.Write(CurrentDir + " > ");
 
+                        //List of supported commands
                         /* Command { Req Arg } [Opt Arg]:
                          *  - Halt
                          *  - ExInfo
@@ -64,30 +68,54 @@ namespace Kernel.Core.Shells
                          *  - USB { Update }
                          */
 
+                        //Get the current input line from the user
                         FOS_System.String line = console.ReadLine();
-                        List lineParts = line.Split(' ');
-                        FOS_System.String cmd = ((FOS_System.String)lineParts[0]).ToLower();
+                        //Split the input into command, arguments and options
+                        //  All parts are in lower case
+                        List cmdParts = SplitCommand(line);
+                        //Get the command to run - first part of the command
+                        FOS_System.String cmd = (FOS_System.String)cmdParts[0];
+                        //Determine which command we are to run
                         if (cmd == "halt")
                         {
+                            //Halt execution of the current shell
                             terminating = true;
                         }
                         else if (cmd == "exinfo")
                         {
+                            //Output information about the current exception, if any.
+                            //  TODO - This should be changed to Last exception. 
+                            //          Because of the try-catch block inside the loop, there
+                            //          will never be a current exception to output.
                             OutputCurrentExceptionInfo();
                         }
                         else if (cmd == "init")
                         {
-                            #region Init
-                            FOS_System.String opt1 = null;
-                            if (lineParts.Count > 1)
-                            {
-                                opt1 = ((FOS_System.String)lineParts[1]).ToLower();
-                            }
+                            //Initialise the specified sub-system.
 
+                            #region Init
+                            //The user may have forgotten to input an option. Assume they
+                            //  haven't, then fill in if they have.
+                            FOS_System.String opt1 = null;
+                            //We don't know how many extra options there might be, so we test 
+                            //  for greater-than instead of equal to. It should be noted that >
+                            //  is more efficient than >=. Also, the command is in the cmdParts 
+                            //  not just the options. 
+                            //So, we want the 1st option, which is the 2nd command part. This 
+                            //  means we need > 1 command part and index 1 in the command parts 
+                            //  list.
+                            if(cmdParts.Count > 1)
+                            {
+                                opt1 = (FOS_System.String)cmdParts[1];
+                            }
+                            
+                            //If the user gave us an option
                             if (opt1 != null)
                             {
+                                //Determine which option that was
                                 if (opt1 == "all")
                                 {
+                                    //Initialise all sub-systems in order
                                     InitATA();
                                     InitPCI();
                                     InitUSB();
@@ -95,18 +123,30 @@ namespace Kernel.Core.Shells
                                 }
                                 else if (opt1 == "pci")
                                 {
+                                    //Initialise the PCI sub-system
                                     InitPCI();
                                 }
                                 else if (opt1 == "ata")
                                 {
+                                    //Initialise the ATA sub-system
                                     InitATA();
                                 }
                                 else if (opt1 == "usb")
                                 {
+                                    //Initialise the USB sub-system
+                                    //  This is dependent upon the PCI sub-system
+                                    //  but we assume the user was intelligent 
+                                    //  enough to have already initialised PCI. 
+                                    //  (Probably a bad assumption really... ;p )
                                     InitUSB();
                                 }
                                 else if (opt1 == "fs")
                                 {
+                                    //Initialise the file (sub-)system
+                                    //  This is dependent upon the USB or ATA 
+                                    //  sub-system but we assume the user was intelligent 
+                                    //  enough to have already initialised these. 
+                                    //  (Probably a bad assumption really... ;p )
                                     InitFS();
                                 }
                                 else
@@ -122,11 +162,12 @@ namespace Kernel.Core.Shells
                         }
                         else if (cmd == "output")
                         {
+                            //For details on how the code here works, see Init
                             #region Output
                             FOS_System.String opt1 = null;
-                            if (lineParts.Count > 1)
+                            if (cmdParts.Count > 1)
                             {
-                                opt1 = ((FOS_System.String)lineParts[1]).ToLower();
+                                opt1 = (FOS_System.String)cmdParts[1];
                             }
 
                             if (opt1 != null)
@@ -164,12 +205,13 @@ namespace Kernel.Core.Shells
                         }
                         else if (cmd == "checkdisk" || cmd == "chkd")
                         {
+                            //For details on how the code here works, see Init
                             #region Check Disk
 
                             FOS_System.String opt1 = null;
-                            if (lineParts.Count > 1)
+                            if (cmdParts.Count > 1)
                             {
-                                opt1 = ((FOS_System.String)lineParts[1]).ToLower();
+                                opt1 = (FOS_System.String)cmdParts[1];
                             }
 
                             if (opt1 != null)
@@ -202,12 +244,13 @@ namespace Kernel.Core.Shells
                         }
                         else if (cmd == "formatdisk" || cmd == "fmtd")
                         {
+                            //For details on how the code here works, see Init
                             #region Format Disk
 
                             FOS_System.String opt1 = null;
-                            if (lineParts.Count > 1)
+                            if (cmdParts.Count > 1)
                             {
-                                opt1 = ((FOS_System.String)lineParts[1]).ToLower();
+                                opt1 = (FOS_System.String)cmdParts[1];
                             }
 
                             if (opt1 != null)
@@ -249,11 +292,12 @@ namespace Kernel.Core.Shells
                         }
                         else if (cmd == "gc")
                         {
+                            //For details on how the code here works, see Init
                             #region GC
                             FOS_System.String opt1 = null;
-                            if (lineParts.Count > 1)
+                            if (cmdParts.Count > 1)
                             {
-                                opt1 = ((FOS_System.String)lineParts[1]).ToLower();
+                                opt1 = (FOS_System.String)cmdParts[1];
                             }
 
                             if (opt1 != null)
@@ -275,11 +319,12 @@ namespace Kernel.Core.Shells
                         }
                         else if (cmd == "usb")
                         {
+                            //For details on how the code here works, see Init
                             #region USB
                             FOS_System.String opt1 = null;
-                            if (lineParts.Count > 1)
+                            if (cmdParts.Count > 1)
                             {
-                                opt1 = ((FOS_System.String)lineParts[1]).ToLower();
+                                opt1 = (FOS_System.String)cmdParts[1];
                             }
 
                             if (opt1 != null)
@@ -301,11 +346,16 @@ namespace Kernel.Core.Shells
                         }
                         else if (cmd == "dir")
                         {
+                            //For details on how the code here works, see Init
+
+                            //Note: "./" prefix on a dir/file path means current 
+                            //      directory so it must be replaced by the 
+                            //      current directory.
                             #region Dir
                             FOS_System.String opt1 = null;
-                            if (lineParts.Count > 1)
+                            if (cmdParts.Count > 1)
                             {
-                                opt1 = ((FOS_System.String)lineParts[1]).ToLower();
+                                opt1 = (FOS_System.String)cmdParts[1];
                             }
 
                             if (opt1 != null)
@@ -313,17 +363,9 @@ namespace Kernel.Core.Shells
                                 if (opt1 == "list")
                                 {
                                     FOS_System.String opt2 = null;
-                                    if (lineParts.Count > 2)
+                                    if (cmdParts.Count > 2)
                                     {
-                                        opt2 = "";
-                                        for (int i = 2; i < lineParts.Count; i++)
-                                        {
-                                            opt2 += ((FOS_System.String)lineParts[i]).ToLower();
-                                            if (i < lineParts.Count - 1)
-                                            {
-                                                opt2 += " ";
-                                            }
-                                        }
+                                        opt2 = (FOS_System.String)cmdParts[2];
                                     }
 
                                     if (opt2 != null)
@@ -343,17 +385,9 @@ namespace Kernel.Core.Shells
                                 else if(opt1 == "open")
                                 {
                                     FOS_System.String opt2 = null;
-                                    if (lineParts.Count > 2)
+                                    if (cmdParts.Count > 2)
                                     {
-                                        opt2 = "";
-                                        for (int i = 2; i < lineParts.Count; i++)
-                                        {
-                                            opt2 += ((FOS_System.String)lineParts[i]).ToLower();
-                                            if (i < lineParts.Count - 1)
-                                            {
-                                                opt2 += " ";
-                                            }
-                                        }
+                                        opt2 = (FOS_System.String)cmdParts[2];
                                     }
 
                                     if (opt2 != null)
@@ -381,17 +415,9 @@ namespace Kernel.Core.Shells
                                 else if (opt1 == "new")
                                 {
                                     FOS_System.String opt2 = null;
-                                    if (lineParts.Count > 2)
+                                    if (cmdParts.Count > 2)
                                     {
-                                        opt2 = "";
-                                        for (int i = 2; i < lineParts.Count; i++)
-                                        {
-                                            opt2 += ((FOS_System.String)lineParts[i]).ToLower();
-                                            if (i < lineParts.Count - 1)
-                                            {
-                                                opt2 += " ";
-                                            }
-                                        }
+                                        opt2 = (FOS_System.String)cmdParts[2];
                                     }
 
                                     if (opt2 != null)
@@ -411,17 +437,9 @@ namespace Kernel.Core.Shells
                                 else if (opt1 == "delete")
                                 {
                                     FOS_System.String opt2 = null;
-                                    if (lineParts.Count > 2)
+                                    if (cmdParts.Count > 2)
                                     {
-                                        opt2 = "";
-                                        for (int i = 2; i < lineParts.Count; i++)
-                                        {
-                                            opt2 += ((FOS_System.String)lineParts[i]).ToLower();
-                                            if (i < lineParts.Count - 1)
-                                            {
-                                                opt2 += " ";
-                                            }
-                                        }
+                                        opt2 = (FOS_System.String)cmdParts[2];
                                     }
 
                                     if (opt2 != null)
@@ -440,76 +458,27 @@ namespace Kernel.Core.Shells
                                 }
                                 else if (opt1 == "copy")
                                 {
-                                    int searchPos = 2;
-                                    bool opt2SearchTillQuote = false;
                                     FOS_System.String opt2 = null;
-                                    if (lineParts.Count > searchPos)
+                                    if (cmdParts.Count > 2)
                                     {
-                                        opt2 = ((FOS_System.String)lineParts[searchPos++]);
-                                        opt2SearchTillQuote = opt2.StartsWith("\"");
-
-                                        if (opt2SearchTillQuote && !opt2.EndsWith("\""))
-                                        {
-                                            opt2 += " ";
-                                            for (; searchPos < lineParts.Count;)
-                                            {
-                                                opt2 += ((FOS_System.String)lineParts[searchPos++]).ToLower();
-
-                                                if (opt2.EndsWith("\""))
-                                                {
-                                                    break;
-                                                }
-                                                else
-                                                {
-                                                    opt2 += " ";
-                                                }
-                                            }
-                                        }
+                                        opt2 = (FOS_System.String)cmdParts[2];
                                     }
 
                                     if (opt2 != null)
                                     {
-                                        if (opt2SearchTillQuote)
-                                        {
-                                            opt2 = opt2.Substring(1, opt2.length - 2);
-                                        }
                                         if (opt2.StartsWith("./"))
                                         {
                                             opt2 = CurrentDir + opt2.Substring(2, opt2.length - 2);
                                         }
 
-                                        bool opt3SearchTillQuote = false;
                                         FOS_System.String opt3 = null;
-                                        if (lineParts.Count > searchPos)
+                                        if (cmdParts.Count > 3)
                                         {
-                                            opt3 = ((FOS_System.String)lineParts[searchPos++]);
-                                            opt3SearchTillQuote = opt3.StartsWith("\"");
-
-                                            if (opt3SearchTillQuote && !opt3.EndsWith("\""))
-                                            {
-                                                opt3 += " ";
-                                                for (; searchPos < lineParts.Count;)
-                                                {
-                                                    opt3 += ((FOS_System.String)lineParts[searchPos++]).ToLower();
-
-                                                    if (opt3.EndsWith("\""))
-                                                    {
-                                                        break;
-                                                    }
-                                                    else
-                                                    {
-                                                        opt3 += " ";
-                                                    }
-                                                }
-                                            }
+                                            opt3 = (FOS_System.String)cmdParts[3];
                                         }
 
                                         if (opt3 != null)
                                         {
-                                            if (opt3SearchTillQuote)
-                                            {
-                                                opt3 = opt3.Substring(1, opt3.length - 2);
-                                            }
                                             if (opt3.StartsWith("./"))
                                             {
                                                 opt3 = CurrentDir + opt3.Substring(2, opt3.length - 2);
@@ -541,11 +510,16 @@ namespace Kernel.Core.Shells
                         }
                         else if (cmd == "file")
                         {
+                            //For details on how the code here works, see Init
+
+                            //Note: "./" prefix on a dir/file path means current 
+                            //      directory so it must be replaced by the 
+                            //      current directory.
                             #region File
                             FOS_System.String opt1 = null;
-                            if (lineParts.Count > 1)
+                            if (cmdParts.Count > 1)
                             {
-                                opt1 = ((FOS_System.String)lineParts[1]).ToLower();
+                                opt1 = (FOS_System.String)cmdParts[1];
                             }
 
                             if (opt1 != null)
@@ -553,17 +527,9 @@ namespace Kernel.Core.Shells
                                 if (opt1 == "open")
                                 {
                                     FOS_System.String opt2 = null;
-                                    if (lineParts.Count > 2)
+                                    if (cmdParts.Count > 2)
                                     {
-                                        opt2 = "";
-                                        for (int i = 2; i < lineParts.Count; i++)
-                                        {
-                                            opt2 += ((FOS_System.String)lineParts[i]).ToLower();
-                                            if(i < lineParts.Count - 1)
-                                            {
-                                                opt2 += " ";
-                                            }
-                                        }
+                                        opt2 = (FOS_System.String)cmdParts[2];
                                     }
 
                                     if (opt2 != null)
@@ -583,17 +549,9 @@ namespace Kernel.Core.Shells
                                 else if(opt1 == "delete")
                                 {
                                     FOS_System.String opt2 = null;
-                                    if (lineParts.Count > 2)
+                                    if (cmdParts.Count > 2)
                                     {
-                                        opt2 = "";
-                                        for (int i = 2; i < lineParts.Count; i++)
-                                        {
-                                            opt2 += ((FOS_System.String)lineParts[i]).ToLower();
-                                            if (i < lineParts.Count - 1)
-                                            {
-                                                opt2 += " ";
-                                            }
-                                        }
+                                        opt2 = (FOS_System.String)cmdParts[2];
                                     }
 
                                     if (opt2 != null)
@@ -612,76 +570,27 @@ namespace Kernel.Core.Shells
                                 }
                                 else if (opt1 == "copy")
                                 {
-                                    int searchPos = 2;
-                                    bool opt2SearchTillQuote = false;
                                     FOS_System.String opt2 = null;
-                                    if (lineParts.Count > searchPos)
+                                    if (cmdParts.Count > 2)
                                     {
-                                        opt2 = ((FOS_System.String)lineParts[searchPos++]);
-                                        opt2SearchTillQuote = opt2.StartsWith("\"");
-
-                                        if (opt2SearchTillQuote && !opt2.EndsWith("\""))
-                                        {
-                                            opt2 += " ";
-                                            for (; searchPos < lineParts.Count;)
-                                            {
-                                                opt2 += ((FOS_System.String)lineParts[searchPos++]).ToLower();
-
-                                                if (opt2.EndsWith("\""))
-                                                {
-                                                    break;
-                                                }
-                                                else
-                                                {
-                                                    opt2 += " ";
-                                                }
-                                            }
-                                        }
+                                        opt2 = (FOS_System.String)cmdParts[2];
                                     }
 
                                     if (opt2 != null)
                                     {
-                                        if(opt2SearchTillQuote)
-                                        {
-                                            opt2 = opt2.Substring(1, opt2.length - 2);
-                                        }
                                         if (opt2.StartsWith("./"))
                                         {
                                             opt2 = CurrentDir + opt2.Substring(2, opt2.length - 2);
                                         }
 
-                                        bool opt3SearchTillQuote = false;
                                         FOS_System.String opt3 = null;
-                                        if (lineParts.Count > searchPos)
+                                        if (cmdParts.Count > 3)
                                         {
-                                            opt3 = ((FOS_System.String)lineParts[searchPos++]);
-                                            opt3SearchTillQuote = opt3.StartsWith("\"");
-                                                
-                                            if (opt3SearchTillQuote && !opt3.EndsWith("\""))
-                                            {
-                                                opt3 += " ";
-                                                for (; searchPos < lineParts.Count;)
-                                                {
-                                                    opt3 += ((FOS_System.String)lineParts[searchPos++]).ToLower();
-
-                                                    if (opt3.EndsWith("\""))
-                                                    {
-                                                        break;
-                                                    }
-                                                    else
-                                                    {
-                                                        opt3 += " ";
-                                                    }
-                                                }
-                                            }
+                                            opt3 = (FOS_System.String)cmdParts[3];
                                         }
 
                                         if (opt3 != null)
                                         {
-                                            if (opt3SearchTillQuote)
-                                            {
-                                                opt3 = opt3.Substring(1, opt3.length - 2);
-                                            }
                                             if (opt3.StartsWith("./"))
                                             {
                                                 opt3 = CurrentDir + opt3.Substring(2, opt3.length - 2);
@@ -713,11 +622,12 @@ namespace Kernel.Core.Shells
                         }
                         else if(cmd == "test")
                         {
+                            //For details on how the code here works, see Init
                             #region Test
                             FOS_System.String opt1 = null;
-                            if (lineParts.Count > 1)
+                            if (cmdParts.Count > 1)
                             {
-                                opt1 = ((FOS_System.String)lineParts[1]).ToLower();
+                                opt1 = (FOS_System.String)cmdParts[1];
                             }
 
                             if (opt1 != null)
@@ -796,8 +706,15 @@ namespace Kernel.Core.Shells
                     }
                     catch
                     {
+                        //Delay 5s which allows us to see any output from BasicConsole
+                        //  (BasicConsole is used by the Hardware and FOS_System.IO layers
+                        //   to output debug info.)
                         Hardware.Devices.Timer.Default.Wait(5000);
                         OutputCurrentExceptionInfo();
+                        //Wait 5s to read the current exception output. If the fault is in 
+                        //  the command code, just looping straight back to the beginning 
+                        //  would result in endless exceptions with no chance to read the
+                        //  information.
                         Hardware.Devices.Timer.Default.Wait(5000);
                     }
                 }
@@ -805,10 +722,91 @@ namespace Kernel.Core.Shells
             catch
             {
                 OutputCurrentExceptionInfo();
+                //Pause to give us the chance to read the output. 
+                //  We do not know what the code outside this shell may do.
+                Hardware.Devices.Timer.Default.Wait(5000);
             }
             console.WriteLine("Shell exited.");
         }
+        /// <summary>
+        /// Splits the input string into commands including handling quoted parts.
+        /// </summary>
+        /// <param name="input">The input to split.</param>
+        /// <returns>The list of command parts.</returns>
+        private List SplitCommand(FOS_System.String input)
+        {
+            //This method splits the input into parts separated by spaces
+            //  However, it must then also search for grouped parts which
+            //  are indicated by start and end quote marks (").
 
+            //Split the input by space
+            List parts = input.Split(' ');
+            //Create a list for the result - capacity 4 is the usual maximum we expect so this just
+            //  optimises the internal array creation a bit.
+            List result = new List(4);
+            //Stores the current part being constructed.
+            FOS_System.String currPart = "";
+            //Indicates whether we are constructing a grouped part or not.
+            bool waitingForCloseQuote = false;
+            //Loop through all parts
+            for(int i = 0; i < parts.Count; i++)
+            {
+                //If we are constructing a grouped part
+                if (waitingForCloseQuote)
+                {
+                    //Add the part (including the space which was removed by split)
+                    //  to the currently constructing part
+                    currPart += " " + (FOS_System.String)parts[i];
+
+                    //If the part ends with a quote, then we have found our closing quote
+                    //  which terminates the group part
+                    if(currPart.EndsWith("\""))
+                    {
+                        //Remove the closing quote
+                        currPart = currPart.Substring(0, currPart.length - 1);
+                        //End the search
+                        waitingForCloseQuote = false;
+                        //Add the part to the result
+                        result.Add(currPart.ToLower());
+                    }
+                }
+                else
+                {
+                    //Set the current part
+                    currPart = (FOS_System.String)parts[i];
+
+                    //If it starts with a quote, it is the start of a group part
+                    if(currPart.StartsWith("\""))
+                    {
+                        //If it ends with a quote, it is also the end of the group part
+                        //  so essentially the user grouped something which didn't 
+                        //  actually contain any spaces.
+                        if (currPart.EndsWith("\""))
+                        {
+                            //Remove the start and end quotes
+                            currPart = currPart.Substring(1, currPart.length - 2);
+                            //Add the part to the result
+                            result.Add(currPart.ToLower());
+                        }
+                        else
+                        {
+                            //Remove the start quote
+                            currPart = currPart.Substring(1, currPart.length - 1);
+                            //Begin the search for the end of the group part
+                            waitingForCloseQuote = true;
+                        }
+                    }
+                    else
+                    {
+                        //This is a normal, ungrouped part so just add it to
+                        //  the result
+                        result.Add(currPart.ToLower());
+                    }
+                }
+            }
+            return result;
+        }
+         
         /// <summary>
         /// Copies the specified file.
         /// </summary>
