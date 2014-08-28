@@ -53,11 +53,11 @@ namespace Kernel.Core.Shells
                         /* Command { Req Arg } [Opt Arg]:
                          *  - Halt
                          *  - ExInfo
-                         *  - Init { ALL/PCI/ATA/USB/FS }
-                         *  - Output { PCI/ATA/USB/FS/Memory }
+                         *  - Init { ALL / PCI / ATA / USB / FS }
+                         *  - Output { PCI / ATA / USB / FS / Memory }
                          *  - CheckDisk/ChkD  { Drive# }
                          *  - FormatDisk/FmtD { Drive# }
-                         *  - Dir  { List/Open/New/Delete/Copy }
+                         *  - Dir  { List / Open / New / Delete / Copy }
                          *  - File { Open/Delete/Copy }
                          *  - Test {    Interrupts  /   Delegates   /   FileSystems /
                          *              ULLTComp    /   StringConcat/   ObjArray    /
@@ -65,7 +65,7 @@ namespace Kernel.Core.Shells
                          *              Exceptions1 /   Exceptions2 /   PCBeep      /
                          *              Timer       /   Keyboard                        }
                          *  - GC   { Cleanup }
-                         *  - USB { Update }
+                         *  - USB { Update / Eject }
                          */
 
                         //Get the current input line from the user
@@ -849,6 +849,9 @@ namespace Kernel.Core.Shells
             return result;
         }
          
+        /// <summary>
+        /// Cleans the caches of all known disk devices.
+        /// </summary>
         private void CleanDiskCaches()
         {
             for (int i = 0; i < Hardware.DeviceManager.Devices.Count; i++)
@@ -861,6 +864,11 @@ namespace Kernel.Core.Shells
                 }
             }
         }
+        /// <summary>
+        /// Ejects the specified mass storage device.
+        /// </summary>
+        /// <param name="deviceNum">The index of the MSD in the Hardware.DeviceManager.Devices list.</param>
+        /// <seealso cref="Kernel.Hardware.USB.Devices.MassStorageDevice.Eject"/>
         private void EjectMSD(int deviceNum)
         {
             console.Write("Ejecting MSD ");
