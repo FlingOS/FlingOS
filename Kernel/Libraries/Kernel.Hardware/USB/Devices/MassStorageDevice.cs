@@ -53,11 +53,24 @@ namespace Kernel.Hardware.USB.Devices
     /// </summary>
     public unsafe class MassStorageDevice : USBDevice
     {
+        //TODO - Uncomment try-finally once try-catch-finally works properly.
+        //TODO - Test for ejected, don't send commands if ejected!
+
         /// <summary>
         /// The underlying disk device that allows the mass storage device to be 
         /// accessed in the same way as a disk.
         /// </summary>
-        protected MassStorageDevice_DiskDevice diskDevice;
+        public MassStorageDevice_DiskDevice diskDevice
+        {
+            get;
+            protected set;
+        }
+       
+        public bool Ejected
+        {
+            get;
+            protected set;
+        }
 
         /// <summary>
         /// Initialises a new mass storage device with the specified USB device information.
@@ -88,13 +101,13 @@ namespace Kernel.Hardware.USB.Devices
             BulkReset(DeviceInfo.MSD_InterfaceNum); // Reset Interface
 
             byte* inquiryBuffer = (byte*)FOS_System.Heap.AllocZeroed(26u);
-            try
+            //try
             {
                 SendSCSICommand_IN(0x12 /*SCSI opcode*/, 0 /*LBA*/, 36 /*Bytes In*/, inquiryBuffer, null);
 
                 AnalyseInquiry(inquiryBuffer);
             }
-            finally
+            //finally
             {
                 FOS_System.Heap.Free(inquiryBuffer);
             }
@@ -110,10 +123,23 @@ namespace Kernel.Hardware.USB.Devices
         /// </summary>
         public override void Destroy()
         {
+            Eject();
+
             diskDevice.Destroy();
             diskDevice = null;
 
             base.Destroy();
+        }
+
+        public void Eject()
+        {
+            if(!Ejected)
+            {
+                Ejected = true;
+
+                //Synchronise Cache (10) Command
+                SendSCSI_SyncCacheCommand(false, false, null);
+            }
         }
 
         /// <summary>
@@ -200,16 +226,26 @@ namespace Kernel.Hardware.USB.Devices
                     cbw->commandByte[7] = (byte)((TransferLength / (uint)diskDevice.BlockSize) >> 8); // MSB <--- blocks not byte!
                     cbw->commandByte[8] = (byte)(TransferLength / (uint)diskDevice.BlockSize); // LSB
                     break;
+                case 0x35: // SynchroniseCache(10)
+                    cbw->CBWFlags = 0x00;
+                    cbw->CBWCBLength = 10;
+                    cbw->CBWDataTransferLength = 0;
+                    cbw->commandByte[2] = (byte)(LBA >> 24);            // LBA MSB
+                    cbw->commandByte[3] = (byte)(LBA >> 16);            // LBA
+                    cbw->commandByte[4] = (byte)(LBA >> 8);            // LBA
+                    cbw->commandByte[5] = (byte)(LBA);            // LBA LSB
+                    cbw->commandByte[7] = (byte)((TransferLength / (uint)diskDevice.BlockSize) >> 8); // MSB <--- blocks not byte!
+                    cbw->commandByte[8] = (byte)(TransferLength / (uint)diskDevice.BlockSize); // LSB
+                    break;
             }
         }
         /// <summary>
         /// Checks a received SCSI command is valid and OK.
         /// </summary>
         /// <param name="MSDStatus">A pointer to the start of the SCSI command data.</param>
-        /// <param name="TransferLength">The length of the data in bytes.</param>
         /// <param name="SCSIOpcode">The SCSI op coce.</param>
         /// <returns>True if the command is completely valid. Otherwise, false.</returns>
-        public int CheckSCSICommand(void* MSDStatus, ushort TransferLength, byte SCSIOpcode)
+        public int CheckSCSICommand(void* MSDStatus, byte SCSIOpcode)
         {
             int error = 0;
 
@@ -313,15 +349,18 @@ namespace Kernel.Hardware.USB.Devices
         {
 #if MSD_TRACE
             DBGMSG("OUT part");
-            DBGMSG(((FOS_System.String)"Toggle OUT ") + ((USBEndpoint)DeviceInfo.Endpoints[DeviceInfo.MSD_OUTEndpointID]).toggle);
+            DBGMSG(((FOS_System.String)"Toggle OUT ") + ((Endpoint)DeviceInfo.Endpoints[DeviceInfo.MSD_OUTEndpointID]).toggle);
 #endif
 
             CommandBlockWrapper* cbw = (CommandBlockWrapper*)FOS_System.Heap.AllocZeroed((uint)sizeof(CommandBlockWrapper));
             bool FreeStatusBuffer = false;
-            try
+            //try
             {
                 SetupSCSICommand(SCSIcommand, cbw, LBA, TransferLength);
 
+#if MSD_TRACE
+                DBGMSG("Setup command. Transferring data...");
+#endif
                 USBTransfer transfer = new USBTransfer();
                 DeviceInfo.hc.SetupTransfer(DeviceInfo, transfer, USBTransferType.Bulk, DeviceInfo.MSD_OUTEndpointID, 512);
                 DeviceInfo.hc.OUTTransaction(transfer, false, cbw, 31);
@@ -375,7 +414,7 @@ namespace Kernel.Hardware.USB.Devices
                     DBGMSG("Check command...");
 #endif
 
-                    if (!transfer.success || CheckSCSICommand(statusBuffer, TransferLength, SCSIcommand) != 0)
+                    if (!transfer.success || CheckSCSICommand(statusBuffer, SCSIcommand) != 0)
                     {
                         // TODO: Handle failure/timeout
 #if MSD_TRACE
@@ -398,7 +437,7 @@ namespace Kernel.Hardware.USB.Devices
 #endif
                 }
             }
-            finally
+            //finally
             {
                 FOS_System.Heap.Free(cbw);
                 if (FreeStatusBuffer)
@@ -417,31 +456,198 @@ namespace Kernel.Hardware.USB.Devices
         /// <param name="statusBuffer">The data buffer to store the command status result in. Must be at least 13 bytes long.</param>
         public void SendSCSICommand_OUT(byte SCSIcommand, uint LBA, ushort TransferLength, void* dataBuffer, void* statusBuffer)
         {
+#if MSD_TRACE
+            DBGMSG("OUT part");
+            DBGMSG(((FOS_System.String)"Toggle OUT ") + ((Endpoint)DeviceInfo.Endpoints[DeviceInfo.MSD_OUTEndpointID]).toggle);
+#endif
+
             CommandBlockWrapper* cbw = (CommandBlockWrapper*)FOS_System.Heap.AllocZeroed((uint)sizeof(CommandBlockWrapper));
             bool FreeStatusBuffer = false;
-            try
+            //try
             {
                 SetupSCSICommand(SCSIcommand, cbw, LBA, TransferLength);
 
+#if MSD_TRACE
+                DBGMSG("Setup transfer...");
+#endif
                 USBTransfer transfer = new USBTransfer();
                 DeviceInfo.hc.SetupTransfer(DeviceInfo, transfer, USBTransferType.Bulk, DeviceInfo.MSD_OUTEndpointID, 512);
                 DeviceInfo.hc.OUTTransaction(transfer, false, cbw, 31);
-                DeviceInfo.hc.OUTTransaction(transfer, false, dataBuffer, TransferLength);
                 DeviceInfo.hc.IssueTransfer(transfer);
 
-                /**************************************************************************************************************************************/
-
-                if (statusBuffer == null)
+                if (transfer.success)
                 {
-                    FreeStatusBuffer = true;
-                    statusBuffer = FOS_System.Heap.AllocZeroed(13u);
-                }
+                    DeviceInfo.hc.SetupTransfer(DeviceInfo, transfer, USBTransferType.Bulk, DeviceInfo.MSD_OUTEndpointID, 512);
+                    DeviceInfo.hc.OUTTransaction(transfer, false, dataBuffer, TransferLength);
+                    DeviceInfo.hc.IssueTransfer(transfer);
 
-                DeviceInfo.hc.SetupTransfer(DeviceInfo, transfer, USBTransferType.Bulk, DeviceInfo.MSD_INEndpointID, 512);
-                DeviceInfo.hc.INTransaction(transfer, false, statusBuffer, 13);
-                DeviceInfo.hc.IssueTransfer(transfer);
+#if MSD_TRACE
+                    if (!transfer.success)
+                    {
+                        DBGMSG("Transfer 2 failed!");
+                        BasicConsole.DelayOutput(5);
+                    }
+#endif
+                }
+#if MSD_TRACE
+                else
+                {
+                    DBGMSG("Transfer 1 failed!");
+                    BasicConsole.DelayOutput(5);
+                }
+#endif
+
+                if (transfer.success)
+                {
+#if MSD_TRACE
+                    DBGMSG("IN part");
+#endif
+
+                    if (statusBuffer == null)
+                    {
+#if MSD_TRACE
+                        DBGMSG("Alloc 13 bytes of mem...");
+#endif
+                        FreeStatusBuffer = true;
+                        statusBuffer = FOS_System.Heap.AllocZeroed(13u);
+                    }
+
+#if MSD_TRACE
+                    DBGMSG("Setup transfer...");
+#endif
+                    DeviceInfo.hc.SetupTransfer(DeviceInfo, transfer, USBTransferType.Bulk, DeviceInfo.MSD_INEndpointID, 512);
+#if MSD_TRACE
+                    DBGMSG("Done.");
+#endif
+                    DeviceInfo.hc.INTransaction(transfer, false, statusBuffer, 13);
+#if MSD_TRACE
+                    DBGMSG("Issue transfer...");
+#endif
+                    DeviceInfo.hc.IssueTransfer(transfer);
+#if MSD_TRACE
+                    DBGMSG("Done.");
+                    DBGMSG("Check command...");
+#endif
+
+                    if (!transfer.success || CheckSCSICommand(statusBuffer, SCSIcommand) != 0)
+                    {
+                        // TODO: Handle failure/timeout
+#if MSD_TRACE
+                        DBGMSG("SCSI IN command failed!");
+#endif
+                    }
+#if MSD_TRACE
+                    else
+                    {
+                        DBGMSG("Command OK.");
+                        BasicConsole.DelayOutput(1);
+                    }
+#endif
+                }
+                else
+                {
+                    // TODO: Handle failure/timeout
+#if MSD_TRACE
+                    DBGMSG("SCSI OUT command failed!");
+#endif
+                }
             }
-            finally
+            //finally
+            {
+                FOS_System.Heap.Free(cbw);
+                if (FreeStatusBuffer)
+                {
+                    FOS_System.Heap.Free(statusBuffer);
+                }
+            }
+        }
+
+        public void SendSCSI_SyncCacheCommand(bool SyncV, bool ImmediateResponse, void* statusBuffer)
+        {
+            //0 block count means all blocks after specified LBA.
+            //Thus, using LBA=0 & Blocks=0, syncs all blocks on the device!
+            SendSCSI_SyncCacheCommand(SyncV, ImmediateResponse, 0, 0, statusBuffer);
+        }
+        public void SendSCSI_SyncCacheCommand(bool SyncV, bool ImmediateResponse, uint LBA, ushort Blocks, void* statusBuffer)
+        {
+            #if MSD_TRACE
+            DBGMSG("SyncCache Command");
+            DBGMSG("OUT part");
+            DBGMSG(((FOS_System.String)"Toggle OUT ") + ((Endpoint)DeviceInfo.Endpoints[DeviceInfo.MSD_OUTEndpointID]).toggle);
+            #endif
+
+            CommandBlockWrapper* cbw = (CommandBlockWrapper*)FOS_System.Heap.AllocZeroed((uint)sizeof(CommandBlockWrapper));
+            bool FreeStatusBuffer = false;
+            //try
+            {
+                SetupSCSICommand(0x35, cbw, LBA, Blocks);
+                cbw->commandByte[1] = (byte)((SyncV ? 0x4 : 0) | (ImmediateResponse ? 0x2 : 0));
+
+                #if MSD_TRACE
+                DBGMSG("Setup transfer...");
+                #endif
+                USBTransfer transfer = new USBTransfer();
+                DeviceInfo.hc.SetupTransfer(DeviceInfo, transfer, USBTransferType.Bulk, DeviceInfo.MSD_OUTEndpointID, 512);
+                DeviceInfo.hc.OUTTransaction(transfer, false, cbw, 31);
+                DeviceInfo.hc.IssueTransfer(transfer);
+
+
+                if (transfer.success)
+                {
+                    #if MSD_TRACE
+                    DBGMSG("IN part");
+                    #endif
+
+                    if (statusBuffer == null)
+                    {
+                        #if MSD_TRACE
+                        DBGMSG("Alloc 13 bytes of mem...");
+                        #endif
+                        FreeStatusBuffer = true;
+                        statusBuffer = FOS_System.Heap.AllocZeroed(13u);
+                    }
+
+                    #if MSD_TRACE
+                    DBGMSG("Setup transfer...");
+                    #endif
+                    DeviceInfo.hc.SetupTransfer(DeviceInfo, transfer, USBTransferType.Bulk, DeviceInfo.MSD_INEndpointID, 512);
+                    #if MSD_TRACE
+                    DBGMSG("Done.");
+                    #endif
+                    DeviceInfo.hc.INTransaction(transfer, false, statusBuffer, 13);
+                    #if MSD_TRACE
+                    DBGMSG("Issue transfer...");
+                    #endif
+                    DeviceInfo.hc.IssueTransfer(transfer);
+                    #if MSD_TRACE
+                    DBGMSG("Done.");
+                    DBGMSG("Check command...");
+                    #endif
+
+                    if (!transfer.success || CheckSCSICommand(statusBuffer, 0x35) != 0)
+                    {
+                        // TODO: Handle failure/timeout
+                        #if MSD_TRACE
+                        DBGMSG("SCSI SyncCaches (10) (In) command failed!");
+                        #endif
+                    }
+                    #if MSD_TRACE
+                    else
+                    {
+                        DBGMSG("Command OK.");
+                        BasicConsole.DelayOutput(1);
+                    }
+                    #endif
+                }
+                else
+                {
+                    // TODO: Handle failure/timeout
+                    #if MSD_TRACE
+                    DBGMSG("SCSI SyncCache (10) (Out) command failed!");
+                    #endif
+                }
+            }
+            //finally
             {
                 FOS_System.Heap.Free(cbw);
                 if (FreeStatusBuffer)
@@ -473,7 +679,7 @@ namespace Kernel.Hardware.USB.Devices
 #endif
 
                 byte* statusBuffer = (byte*)FOS_System.Heap.AllocZeroed(13u);
-                try
+                //try
                 {
                     SendSCSICommand_IN(0x00, 0u, 0, null, statusBuffer); // dev, endp, cmd, LBA, transfer length
 
@@ -486,7 +692,7 @@ namespace Kernel.Hardware.USB.Devices
 #endif
 
                     byte* dataBuffer = (byte*)FOS_System.Heap.AllocZeroed(18u);
-                    try
+                    //try
                     {
                         SendSCSICommand_IN(0x03, 0, 18, dataBuffer, statusBuffer); // dev, endp, cmd, LBA, transfer length
 
@@ -498,12 +704,12 @@ namespace Kernel.Hardware.USB.Devices
                             break;
                         }
                     }
-                    finally
+                    //finally
                     {
                         FOS_System.Heap.Free(dataBuffer);
                     }
                 }
-                finally
+                //finally
                 {
                     FOS_System.Heap.Free(statusBuffer);
                 }
@@ -526,7 +732,7 @@ namespace Kernel.Hardware.USB.Devices
             // uint8_t DeviceTypeModifier   = getField(addr, 1, 0, 7);
             byte RMB = Utils.GetField(inquiryData, 1, 7, 1);
 #if MSD_TRACE
-            byte ANSIapprovedVersion = Utils.GetField(addr, 2, 0, 3);
+            byte ANSIapprovedVersion = Utils.GetField(inquiryData, 2, 0, 3);
 #endif
             // uint8_t ECMAversion          = getField(addr, 2, 3, 3);
             // uint8_t ISOversion           = getField(addr, 2, 6, 2);
@@ -538,10 +744,10 @@ namespace Kernel.Hardware.USB.Devices
             byte Linked = Utils.GetField(inquiryData, 7, 3, 1);
 
 #if MSD_TRACE || DEVICE_INFO
-            BasicConsole.WriteLine("Vendor ID  : " + FOS_System.ByteConverter.GetASCIIStringFromASCII(addr, 8, 8));
-            BasicConsole.WriteLine("Product ID : " + FOS_System.ByteConverter.GetASCIIStringFromASCII(addr, 16, 16));
+            BasicConsole.WriteLine("Vendor ID  : " + FOS_System.ByteConverter.GetASCIIStringFromASCII(inquiryData, 8, 8));
+            BasicConsole.WriteLine("Product ID : " + FOS_System.ByteConverter.GetASCIIStringFromASCII(inquiryData, 16, 16));
 
-            DBGMSG("Revision   : " + FOS_System.ByteConverter.GetASCIIStringFromASCII(addr, 32, 4));
+            DBGMSG("Revision   : " + FOS_System.ByteConverter.GetASCIIStringFromASCII(inquiryData, 32, 4));
 
             // Book of Jan Axelson, "USB Mass Storage", page 140:
             // printf("\nVersion ANSI: %u  ECMA: %u  ISO: %u", ANSIapprovedVersion, ECMAversion, ISOversion);
@@ -714,7 +920,7 @@ namespace Kernel.Hardware.USB.Devices
             ((Endpoint)DeviceInfo.Endpoints[DeviceInfo.MSD_INEndpointID]).toggle = false;
             BulkReset(DeviceInfo.MSD_InterfaceNum); // Reset Interface
         }
-
+        
         /// <summary>
         /// Human readable descriptions of the SCSI command sense keys.
         /// </summary>
@@ -784,8 +990,8 @@ namespace Kernel.Hardware.USB.Devices
                 }
 
                 DBGMSG("Sense Key:");
-                if (SenseKey < SenseKeys.Length)
-                    DBGMSG(SenseKeys[SenseKey]);
+                if (SenseKey < SenseDescriptions.Length)
+                    DBGMSG(SenseDescriptions[SenseKey]);
                 else
                     DBGMSG("sense key not known!");
 #endif
@@ -826,7 +1032,7 @@ namespace Kernel.Hardware.USB.Devices
             msd = anMSD;
             
             uint* capacityBuffer = (uint*)FOS_System.Heap.AllocZeroed(8);
-            try
+            //try
             {
                 anMSD.SendSCSICommand_IN(0x25 /*SCSI opcode*/, 0 /*LBA*/, 8 /*Bytes In*/, capacityBuffer, null);
 
@@ -837,7 +1043,7 @@ namespace Kernel.Hardware.USB.Devices
                 blockCount = ((ulong)capacityBuffer[0]) + 1;
                 blockSize = (ulong)capacityBuffer[1];
             }
-            finally
+            //finally
             {
                 FOS_System.Heap.Free(capacityBuffer);
             }
@@ -908,7 +1114,69 @@ namespace Kernel.Hardware.USB.Devices
                 }
             }
         }
-        
+
+        public void Test()
+        {
+            try
+            {
+                int dataSize = 4096;
+                BasicConsole.WriteLine("Testing MSD...");
+
+                BasicConsole.WriteLine("Setting up write data...");
+                byte[] writeData = new byte[512];
+                for (int i = 0; i < writeData.Length; i++)
+                {
+                    writeData[i] = (byte)(i % 255);
+                }
+                for (int i = 0; i < (dataSize / 512); i++)
+                {
+                    BasicConsole.WriteLine("Writing data...");
+                    WriteBlock((uint)i, 1, null);
+                }
+
+                BasicConsole.WriteLine("Syncing caches...");
+                msd.SendSCSI_SyncCacheCommand(false, false, null);
+
+                byte[] readData = new byte[512];
+                bool DataOK = true;
+                for (int i = 0; i < (dataSize / 512); i++)
+                {
+                    BasicConsole.WriteLine("Reading data...");
+                    ReadBlock((uint)i, 1, readData);
+                    BasicConsole.WriteLine("Checking data...");
+
+                    for (int j = 0; j < 512; j++)
+                    {
+                        DataOK = (readData[j] == 0);//(j % 255));
+                        readData[j] = 0;
+                        if (!DataOK)
+                        {
+                            break;
+                        }
+                    }
+
+                    if (DataOK)
+                    {
+                        BasicConsole.WriteLine("Data OK.");
+                    }
+                    else
+                    {
+                        BasicConsole.WriteLine("Data not OK.");
+                    }
+
+                    if(!DataOK)
+                    {
+                        break;
+                    }
+                }
+            }
+            catch
+            {
+                BasicConsole.WriteLine("Exception. Test failed.");
+            }
+            BasicConsole.DelayOutput(5);
+        }
+
         /// <summary>
         /// Destroys the MSD disk device.
         /// </summary>

@@ -333,6 +333,42 @@ namespace Kernel.Core.Shells
                                 {
                                     Hardware.USB.USBManager.Update();
                                 }
+                                else if (opt1 == "eject")
+                                {
+                                    FOS_System.String opt2 = null;
+                                    if (cmdParts.Count > 2)
+                                    {
+                                        opt2 = (FOS_System.String)cmdParts[2];
+                                    }
+
+                                    if (opt2 != null)
+                                    {
+                                        if(opt2 == "msd")
+                                        {
+                                            FOS_System.String opt3 = null;
+                                            if (cmdParts.Count > 3)
+                                            {
+                                                opt3 = (FOS_System.String)cmdParts[3];
+                                            }
+                                            if(opt3 != null)
+                                            {
+                                                EjectMSD(FOS_System.Int32.Parse_DecimalSigned(opt3));
+                                            }
+                                            else
+                                            {
+                                                console.WriteLine("You must specify a device number!");
+                                            }
+                                        }
+                                        else
+                                        {
+                                            console.WriteLine("Unrecognised device type!");
+                                        }
+                                    }
+                                    else
+                                    {
+                                        console.WriteLine("You must specify a device type! (msd)");
+                                    }
+                                }
                                 else
                                 {
                                     UnrecognisedOption();
@@ -807,6 +843,20 @@ namespace Kernel.Core.Shells
             return result;
         }
          
+        private void EjectMSD(int deviceNum)
+        {
+            console.Write("Ejecting MSD ");
+            console.Write_AsDecimal(deviceNum);
+            console.WriteLine("...");
+
+            Hardware.USB.Devices.MassStorageDevice msd = (Hardware.USB.Devices.MassStorageDevice)
+                Hardware.DeviceManager.Devices[deviceNum];
+            
+            msd.Eject();
+
+            console.WriteLine("Ejected.");
+        }
+
         /// <summary>
         /// Copies the specified file.
         /// </summary>
@@ -1021,14 +1071,15 @@ namespace Kernel.Core.Shells
                 FileSystemMapping mapping = FileSystemManager.GetMapping(path);
                 if(mapping != null)
                 {
+                    //Remove trailing "/" if there is one else the code below would end
+                    //  up with a blank "new directory name"
                     if (path.EndsWith(FileSystemManager.PathDelimiter))
                     {
                         path = path.Substring(0, path.length - 1);
                     }
 
-                    //                                                              + 1 as we wish to include the path
-                    //                                                                  delimeter in parent dir name and
-                    //                                                                  not in the new dir name.
+                    //  + 1 as we wish to include the path delimeter in parent dir name and
+                    //      not in the new dir name.
                     //  Note: It is important to include the path delimeter at the end of the parent dir name
                     //        as the parent dir name may be a FS root which requires the trailing path delimeter.
                     int lastIdx = path.LastIndexOf(FileSystemManager.PathDelimiter) + 1;
@@ -1068,12 +1119,16 @@ namespace Kernel.Core.Shells
         private void FormatDisk(Hardware.Devices.DiskDevice disk)
         {
             List newPartitionInfos = new List(1);
+            
             console.WriteLine("Creating partition info...");
             newPartitionInfos.Add(FOS_System.IO.Disk.MBR.CreateFAT32PartitionInfo(disk, false));
+            
             console.WriteLine("Done. Doing MBR format...");
             FOS_System.IO.Disk.MBR.FormatDisk(disk, newPartitionInfos);
+            
             console.WriteLine("Done. Initialising disk...");
             FileSystemManager.InitDisk(disk);
+            
             console.WriteLine("Done. Finding partition...");
             Partition thePart = null;
             for (int i = 0; i < FileSystemManager.Partitions.Count; i++)
@@ -1089,6 +1144,7 @@ namespace Kernel.Core.Shells
             {
                 console.WriteLine("Done. Formatting as FAT32...");
                 FOS_System.IO.FAT.FATFileSystem.FormatPartitionAsFAT32(thePart);
+                
                 console.WriteLine("Done.");
                 console.WriteLine("Format completed successfully.");
             }
@@ -1167,6 +1223,7 @@ namespace Kernel.Core.Shells
             if (aDir != null)
             {
                 console.WriteLine(dir);
+
                 List Listings = aDir.GetListings();
                 if (Listings.Count > 0)
                 {
@@ -1174,14 +1231,14 @@ namespace Kernel.Core.Shells
                     {
                         FOS_System.IO.Base xItem = (FOS_System.IO.Base)Listings[j];
 
-                        if (xItem._Type == (FOS_System.Type)(typeof(FOS_System.IO.FAT.FATDirectory)))
+                        if (xItem.IsDirectory)
                         {
-                            console.WriteLine(((FOS_System.String)"<DIR> ") + ((FOS_System.IO.FAT.FATDirectory)Listings[j]).Name);
+                            console.WriteLine(((FOS_System.String)"<DIR> '") + ((FOS_System.IO.Directory)Listings[j]).Name + "'");
                         }
-                        else if (xItem._Type == (FOS_System.Type)(typeof(FOS_System.IO.FAT.FATFile)))
+                        else
                         {
-                            FOS_System.IO.FAT.FATFile file = ((FOS_System.IO.FAT.FATFile)Listings[j]);
-                            console.WriteLine(((FOS_System.String)"<FILE> ") + file.Name + " (" + file.Size + ")");
+                            FOS_System.IO.File file = (FOS_System.IO.File)Listings[j];
+                            console.WriteLine(((FOS_System.String)"<FILE> '") + file.Name + "' (" + file.Size + ")");
                         }
                     }
                 }
@@ -1203,8 +1260,10 @@ namespace Kernel.Core.Shells
         {
             console.Write("GC num objs: ");
             console.WriteLine(FOS_System.GC.NumObjs);
+            
             console.Write("GC num strings: ");
             console.WriteLine(FOS_System.GC.NumStrings);
+            
             console.Write("Heap memory use: ");
             console.Write_AsDecimal(Heap.FBlock->used * Heap.FBlock->bsize);
             console.Write(" / ");
@@ -1223,7 +1282,7 @@ namespace Kernel.Core.Shells
                 if (fsMapping.TheFileSystem._Type == ((FOS_System.Type)typeof(FOS_System.IO.FAT.FATFileSystem)))
                 {
                     FOS_System.IO.FAT.FATFileSystem fs = (FOS_System.IO.FAT.FATFileSystem)fsMapping.TheFileSystem;
-                    List Listings = fs.GetRootDirectoryTable();
+                    
                     console.WriteLine(((FOS_System.String)"FAT FS detected. Volume ID: ") + fs.ThePartition.VolumeID);
                     console.WriteLine("    - Prefix: " + fsMapping.Prefix);
                 }
@@ -1249,18 +1308,23 @@ namespace Kernel.Core.Shells
             for (int i = 0; i < Hardware.DeviceManager.Devices.Count; i++)
             {
                 Hardware.Device aDevice = (Hardware.Device)Hardware.DeviceManager.Devices[i];
-                if (aDevice._Type == (FOS_System.Type)(typeof(Hardware.USB.Devices.MassStorageDevice_DiskDevice)))
+                if (aDevice._Type == (FOS_System.Type)(typeof(Hardware.USB.Devices.MassStorageDevice)))
                 {
                     console.WriteLine();
+                    
                     console.Write("--------------------- Device ");
                     console.Write_AsDecimal(i);
                     console.WriteLine(" ---------------------");
-                    console.WriteLine("USB Mass Storage Disk Device found.");
-                    Hardware.USB.Devices.MassStorageDevice_DiskDevice theMSD = (Hardware.USB.Devices.MassStorageDevice_DiskDevice)aDevice;
+                    
+                    console.WriteLine("USB Mass Storage Device found.");
+                    Hardware.USB.Devices.MassStorageDevice theMSD = (Hardware.USB.Devices.MassStorageDevice)aDevice;
+                    Hardware.USB.Devices.MassStorageDevice_DiskDevice theMSDDisk = theMSD.diskDevice;
 
-                    console.WriteLine(((FOS_System.String)"Block Size: ") + theMSD.BlockSize + " bytes");
-                    console.WriteLine(((FOS_System.String)"Block Count: ") + theMSD.BlockCount);
-                    console.WriteLine(((FOS_System.String)"Size: ") + ((theMSD.BlockCount * theMSD.BlockSize) >> 20) + " MB");
+                    console.Write("Disk device num: ");
+                    console.WriteLine_AsDecimal(Hardware.DeviceManager.Devices.IndexOf(theMSDDisk));
+                    console.WriteLine(((FOS_System.String)"Block Size: ") + theMSDDisk.BlockSize + " bytes");
+                    console.WriteLine(((FOS_System.String)"Block Count: ") + theMSDDisk.BlockCount);
+                    console.WriteLine(((FOS_System.String)"Size: ") + ((theMSDDisk.BlockCount * theMSDDisk.BlockSize) >> 20) + " MB");
 
                     numDrives++;
                 }

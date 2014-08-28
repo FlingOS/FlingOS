@@ -1068,14 +1068,14 @@ namespace Kernel.Hardware.USB.HCIs
             }
             USBSTS = val; //Reset interrupt
 
-#if EHCI_TRACE
             if((val & EHCI_Consts.STS_USBErrorInterrupt) != 0u)
             {
                 USBIntCount--;
 
+#if EHCI_TRACE
                 DBGMSG("USB Error Interrupt!");
-            }
 #endif
+            }
 
             if ((val & EHCI_Consts.STS_PortChange) != 0u)
             {

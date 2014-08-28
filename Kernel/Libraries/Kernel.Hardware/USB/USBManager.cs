@@ -33,8 +33,6 @@ namespace Kernel.Hardware.USB
     /// </summary>
     public static unsafe class USBManager
     {
-        //TODO - Reprogram bits of this to handle physical-to-virtual and reverse conversions where necessary
-
         /// <summary>
         /// The number of UHCI devices detected.
         /// </summary>

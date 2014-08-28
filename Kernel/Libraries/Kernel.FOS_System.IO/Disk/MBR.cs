@@ -291,7 +291,7 @@ namespace Kernel.FOS_System.IO.Disk
         /// <returns>The new partition information.</returns>
         public static PartitionInfo CreateFAT32PartitionInfo(Hardware.Devices.DiskDevice aDisk, bool bootable)
         {
-            return new PartitionInfo(bootable, 0xC, 2U, (uint)(aDisk.BlockCount - 1));
+            return new PartitionInfo(bootable, 0xC, 2U, (uint)(aDisk.BlockCount - 2));
         }
         /// <summary>
         /// Formats the specified using the specified partition informations.
@@ -300,7 +300,13 @@ namespace Kernel.FOS_System.IO.Disk
         /// <param name="partitionInfos">The partition informations to use for the format.</param>
         public static void FormatDisk(Hardware.Devices.DiskDevice aDisk, List partitionInfos)
         {
-            //BasicConsole.WriteLine("Creating new MBR data...");
+            //Necessary to remove any trace of GPT:
+            //  Overwrite first 256 sectors with 0s (should do the trick)
+            aDisk.WriteBlock(0UL, 256U, null);
+
+#if MBR_TRACE
+            BasicConsole.WriteLine("Creating new MBR data...");
+#endif
             byte[] newMBRData = new byte[512];
 
             newMBRData[0x1FE] = 0x55;

@@ -108,6 +108,7 @@ namespace Kernel.FOS_System
             for (int i = offset, j = 0; i < endIndex; i++, j += 2)
             {
                 result[j] = (byte)asciiString[i];
+                result[j + 1] = (byte)(asciiString[i] >> 8);
             }
             return result;
         }

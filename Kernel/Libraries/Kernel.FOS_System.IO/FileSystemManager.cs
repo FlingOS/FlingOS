@@ -81,7 +81,7 @@ namespace Kernel.FOS_System.IO
                         BasicConsole.WriteLine("Error initializing MSD: " + ExceptionMethods.CurrentException.Message);
                     }
                 }
-                //TODO - Add more device types e.g. USB
+                //TODO - Add more device types e.g. USB device types such as HIDs such as Mouse
             }
             
             InitPartitions();

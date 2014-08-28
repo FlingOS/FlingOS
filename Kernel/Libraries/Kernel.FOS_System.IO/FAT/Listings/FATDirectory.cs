@@ -121,7 +121,7 @@ namespace Kernel.FOS_System.IO.FAT
 #if FATDIR_TRACE
             BasicConsole.WriteLine("Encoding listings...");
 #endif
-            byte[] listingsBytes = ((FATFileSystem)TheFileSystem).EncodeDirectoryTable(_cachedlistings, Name == "ROOT" && Parent == null);
+            byte[] listingsBytes = ((FATFileSystem)TheFileSystem).EncodeDirectoryTable(_cachedlistings, Name == "ROOT" && Parent == null, _fileStream.GetActualSize());
 #if FATDIR_TRACE
             BasicConsole.WriteLine("Encoded listings. Getting file stream...");
 #endif

@@ -140,6 +140,19 @@ namespace Kernel.FOS_System.Collections
             currIndex--;
         }
 
+        public int IndexOf(FOS_System.Object obj)
+        {
+            for (int i = 0; i < currIndex; i++)
+            {
+                if(_array[i] == obj)
+                {
+                    return i;
+                }
+            }
+
+            return -1;
+        }
+
         /// <summary>
         /// Empties the list of all objects but does not alter the list capacity.
         /// </summary>

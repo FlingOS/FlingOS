@@ -139,12 +139,17 @@ namespace Kernel.FOS_System
         [Compiler.NoDebug]
         public FOS_System.String PadLeft(int totalLength, char padChar)
         {
+            FOS_System.String result = New(totalLength);
+
             if (this.length >= totalLength)
             {
-                return this;
+                for (int i = 0; i < result.length; i++)
+                {
+                    result[i] = this[i];
+                }
+                return result;
             }
 
-            FOS_System.String result = New(totalLength);
             int offset = totalLength - this.length;
             for (int i = 0; i < this.length; i++)
             {
@@ -166,13 +171,8 @@ namespace Kernel.FOS_System
         [Compiler.NoDebug]
         public FOS_System.String PadRight(int totalLength, char padChar)
         {
-            if(this.length >= totalLength)
-            {
-                return this;
-            }
-
             FOS_System.String result = New(totalLength);
-            for (int i = 0; i < this.length; i++)
+            for (int i = 0; i < this.length && i < totalLength; i++)
             {
                 result[i] = this[i];
             }

@@ -662,7 +662,7 @@ namespace Kernel.FOS_System.IO.FAT
                         FOS_System.String xLongPart = ByteConverter.GetASCIIStringFromUTF16(xData, i + 1, 5);
                         //BasicConsole.WriteLine("xLongPart1: " + xLongPart);
                         // We have to check the length because 0xFFFF is a valid Unicode codepoint.
-                        // So we only want to stop if the 0xFFFF is AFTER a 0x0000. We can determin
+                        // So we only want to stop if the 0xFFFF is AFTER a 0x0000. We can determine
                         // this by also looking at the length. Since we short circuit the or, the length
                         // is rarely evaluated.
                         if (xLongPart.length == 5)
@@ -795,267 +795,209 @@ namespace Kernel.FOS_System.IO.FAT
         /// <param name="listings">The listings to encode.</param>
         /// <param name="includeVolumeID">Whether to include the Volume ID entry (partition name). Only true for root directory.</param>
         /// <returns>The encoded listings data.</returns>
-        public byte[] EncodeDirectoryTable(List listings, bool includeVolumeID)
+        public byte[] EncodeDirectoryTable(List listings, bool includeVolumeID, UInt64 minTableSize)
         {
             int LongFilenamesSize = 0;
-            if (FATType == FATTypeEnum.FAT32)
+            for (int i = 0; i < listings.Count; i++)
             {
-#if FATFS_TRACE
-                BasicConsole.WriteLine(((FOS_System.String)"Checking listings (") + listings.Count + ") for long file names...");
-                BasicConsole.DelayOutput(2);
-#endif
-                for (int i = 0; i < listings.Count; i++)
+                if (IsLongNameListing((Base)listings[i]))
                 {
-#if FATFS_TRACE
-                    BasicConsole.WriteLine("Checking listing...");
-                    BasicConsole.WriteLine(((Base)listings[i]).Name);
-                    BasicConsole.DelayOutput(2);
-#endif
-                    if (((FOS_System.String)((Base)listings[i]).Name.Split('.')[0]).length > 8)
+                    //+1 for null terminator on long name
+                    int nameLength = ((Base)listings[i]).Name.length + 1;
+                    LongFilenamesSize += nameLength / 13;
+                    if (nameLength % 13 > 0)
                     {
-#if FATFS_TRACE
-                        BasicConsole.WriteLine("Long name detected.");
-#endif
-                        int nameLength = ((Base)listings[i]).Name.length;
-                        LongFilenamesSize += nameLength / 13;
-                        if (nameLength % 13 > 0)
-                        {
-                            LongFilenamesSize++;
-                        }
+                        LongFilenamesSize++;
                     }
-
-#if FATFS_TRACE
-                    BasicConsole.WriteLine("Check completed.");
-#endif
                 }
             }
-#if FATFS_TRACE
-            BasicConsole.WriteLine("Calculating long file name size...");
-#endif
             LongFilenamesSize *= 32;
 
-#if FATFS_TRACE
-            BasicConsole.WriteLine("Allocating data for directory bytes...");
-#endif
             //                       +32 for VolumeID entry                         + 32 for end entry
-            byte[] result = new byte[32 + (listings.Count * 32) + LongFilenamesSize + 32];
+            byte[] result = new byte[
+                Math.Max(32 + (listings.Count * 32) + LongFilenamesSize + 32, (int)minTableSize)];
 
-            int shortNameReplacements = 0;
             int offset = 0;
 
-            if(includeVolumeID)
+            if (includeVolumeID)
             {
                 //Volume ID entry - this is only be valid for root directory.
 
                 List shortName = GetShortName(thePartition.VolumeID, true);
-                
+
                 //Put in short name entry
                 byte[] DIR_Name = ByteConverter.GetASCIIBytes((FOS_System.String)shortName[0]);
-                byte DIR_Attr = ListingAttribs.VolumeID;                
+                byte DIR_Attr = ListingAttribs.VolumeID;
                 for (int j = 0; j < DIR_Name.Length; j++)
                 {
-                    result[offset++] = DIR_Name[j];
+                    result[j] = DIR_Name[j];
                 }
-                result[offset++] = DIR_Attr;
-                offset = 32;
+                result[DIR_Name.Length] = DIR_Attr;
+
+                offset += 32;
             }
 
             for (int i = 0; i < listings.Count; i++)
             {
-#if FATFS_TRACE
-                BasicConsole.WriteLine("Encoding listing...");
-#endif
-                Base listing = ((Base)listings[i]);
-                bool isDirectory = listing._Type == (FOS_System.Type)typeof(FATDirectory);
-                FOS_System.String name = listing.Name.ToUpper();
-                FOS_System.String shortNameStr = name;
-                List nameParts = name.Split('.');
-                bool isLongName = ((FOS_System.String)nameParts[0]).length > 8;
-                if (isLongName)
+                Base currListing = (Base)listings[i];
+                if (IsLongNameListing(currListing))
                 {
-#if FATFS_TRACE
-                    BasicConsole.WriteLine("Long name detected.");
-#endif
-                    shortNameReplacements++;
-                    if (isDirectory)
-                    {
-                        shortNameStr = (FOS_System.String)shortNameReplacements;
-                    }
-                    else
-                    {
-                        shortNameStr = (FOS_System.String)shortNameReplacements + "." + ((FOS_System.String)nameParts[1]);
-                    }
-                }
-                List shortName = GetShortName(shortNameStr, isDirectory);
-                byte[] shortNameBytes;
-                if (isDirectory)
-                {
-                    shortNameBytes = ByteConverter.GetASCIIBytes((FOS_System.String)shortName[0]);
-                }
-                else
-                {
-                    shortNameBytes = ByteConverter.GetASCIIBytes((FOS_System.String)shortName[0] + (FOS_System.String)shortName[1]);
-                }
-                if (FATType == FATTypeEnum.FAT32)
-                {
-                    //Put in long name entries
-                    if (isLongName)
-                    {
-                        int count = name.length;
-                        int nameOffset = count;
-                        byte LDIR_Ord = (byte)(0x40 | ((name.length / 13) + 1));
-                        bool first = true;
-
-                        while (count > 0)
-                        {
-                            nameOffset -= (count > 13 ? 13 : count);
-                            int getCharsCount = count > 5 ? 5 : count;
-                            byte[] LDIR_Name1 = ByteConverter.GetUTF16Bytes(name, nameOffset, getCharsCount);
-                            count -= getCharsCount;
-
-                            byte LDIR_Attr = ListingAttribs.LongName;
-                            byte LDIR_Type = 0;
-                            byte LDIR_Chksum = CheckSum(shortNameBytes);
-
-                            getCharsCount = count > 6 ? 6 : count;
-                            byte[] LDIR_Name2 = ByteConverter.GetUTF16Bytes(name, nameOffset + 5, getCharsCount);
-                            count -= getCharsCount;
-
-                            byte LDIR_FstClusLO = 0;
-
-                            getCharsCount = count > 2 ? 2 : count;
-                            byte[] LDIR_Name3 = ByteConverter.GetUTF16Bytes(name, nameOffset + 11, getCharsCount);
-                            count -= getCharsCount;
-
-                            result[offset + 0] = LDIR_Ord;
-                            for (int j = 0; j < LDIR_Name1.Length; j++)
-                            {
-                                result[offset + 1 + j] = LDIR_Name1[j];
-                            }
-                            //As per spec, insert trailing periods
-                            for (int j = LDIR_Name1.Length + 1; j < 10; j++)
-                            {
-                                if (j % 2 == 0)
-                                {
-                                    result[offset + 1 + j] = 0x2E;
-                                }
-                                else
-                                {
-                                    result[offset + 1 + j] = 0x00;
-                                }
-                            }
-                            result[offset + 11] = LDIR_Attr;
-                            result[offset + 12] = LDIR_Type;
-                            result[offset + 13] = LDIR_Chksum;
-                            for (int j = 0; j < LDIR_Name2.Length; j++)
-                            {
-                                result[offset + 14 + j] = LDIR_Name2[j];
-                            }
-                            //As per spec, insert trailing periods
-                            for (int j = LDIR_Name2.Length + 1; j < 12; j++)
-                            {
-                                if (j % 2 == 0)
-                                {
-                                    result[offset + 14 + j] = 0x2E;
-                                }
-                                else
-                                {
-                                    result[offset + 14 + j] = 0x00;
-                                }
-                            }
-                            result[offset + 26] = LDIR_FstClusLO;
-                            for (int j = 0; j < LDIR_Name3.Length; j++)
-                            {
-                                result[offset + 28 + j] = LDIR_Name3[j];
-                            }
-                            //As per spec, insert trailing periods
-                            for (int j = LDIR_Name3.Length + 1; j < 4; j++)
-                            {
-                                if (j % 2 == 0)
-                                {
-                                    result[offset + 28 + j] = 0x2E;
-                                }
-                                else
-                                {
-                                    result[offset + 28 + j] = 0x00;
-                                }
-                            }
-
-                            if (first)
-                            {
-                                first = false;
-                                LDIR_Ord = (byte)(name.length / 13); //No +1 because we just did 1 already!
-                            }
-                            else
-                            {
-                                LDIR_Ord++;
-                            }
-                            offset += 32;
-                        }
-                    }
+                    offset = EncodeLongNameListing(currListing, result, offset);
                 }
 
-                //Put in short name entry
-                byte[] DIR_Name = shortNameBytes;
-                byte DIR_Attr = isDirectory ? ListingAttribs.Directory : (byte)0;
-                byte DIR_NTRes = 0;
-                //TODO: Creation time
-                byte[] DIR_FstClusHI = new byte[2];
-                byte[] DIR_FstClusLO = new byte[2];
-                UInt32 firstClusterNum = 0;
-                if (isDirectory)
-                {
-                    firstClusterNum = ((FATDirectory)listing).FirstClusterNum;
-                }
-                else
-                {
-                    firstClusterNum = ((FATFile)listing).FirstClusterNum;
-                }
-
-                DIR_FstClusLO[0] = (byte)(firstClusterNum);
-                DIR_FstClusLO[1] = (byte)(firstClusterNum >> 8);
-
-                if (FATType == FATTypeEnum.FAT32)
-                {
-                    DIR_FstClusHI[0] = (byte)(firstClusterNum >> 16);
-                    DIR_FstClusHI[1] = (byte)(firstClusterNum >> 24);
-                }
-
-                //TODO: Write Time
-                byte[] DIR_FileSize = new byte[4];
-                if (!isDirectory)
-                {
-                    UInt32 size = (UInt32)((FATFile)listing).Size;
-                    DIR_FileSize[0] = (byte)(size);
-                    DIR_FileSize[1] = (byte)(size >> 8);
-                    DIR_FileSize[2] = (byte)(size >> 16);
-                    DIR_FileSize[3] = (byte)(size >> 24);
-                }
-                for (int j = 0; j < DIR_Name.Length; j++)
-                {
-                    result[offset++] = DIR_Name[j];
-                }
-                result[offset++] = DIR_Attr;
-                result[offset++] = DIR_NTRes;
-                offset += 7;
-                result[offset++] = DIR_FstClusHI[0];
-                result[offset++] = DIR_FstClusHI[1];
-                offset += 4;
-                result[offset++] = DIR_FstClusLO[0];
-                result[offset++] = DIR_FstClusLO[1];
-
-                result[offset++] = DIR_FileSize[0];
-                result[offset++] = DIR_FileSize[1];
-                result[offset++] = DIR_FileSize[2];
-                result[offset++] = DIR_FileSize[3];
-
-#if FATFS_TRACE
-                BasicConsole.WriteLine("Encoded listing.");
-#endif
+                offset = EncodeShortNameListing(currListing, result, offset);
             }
-            
+
+
             return result;
         }
+        private bool IsLongNameListing(Base listing)
+        {
+            return ((String)listing.Name.Split('.')[0]).length > 8;
+        }
+        private int EncodeLongNameListing(Base listing, byte[] result, int offset)
+        {
+            //Long name entries only
+            String longName = listing.Name;
+            String shortName;
+            
+            List shortNameParts = GetShortName(longName, listing.IsDirectory);
+            if (shortNameParts.Count == 2)
+            {
+                shortName = (String)shortNameParts[0] + (String)shortNameParts[1];
+            }
+            else
+            {
+                shortName = (String)shortNameParts[0];
+            }
+            byte ShortNameChecksum = CheckSum(ByteConverter.GetASCIIBytes(shortName));
+
+            longName += (char)0;
+            int nameLengthDiff = 13 - (longName.length % 13);
+
+            if(nameLengthDiff < 13)
+            {
+                longName = longName.PadRight(longName.length + nameLengthDiff, (char)0xFFFF);
+            }
+
+            int longNameLength = longName.length;
+            int NumNameParts = longNameLength / 13;
+            bool first = true;
+            for(int i = NumNameParts - 1; i > -1; i--)
+            {
+                String currPart = longName.Substring(i * 13, 13);
+
+                byte[] UTF16Bytes = ByteConverter.GetUTF16Bytes(currPart, 0, currPart.length);
+
+                //[offset+ 0] = Order of entry in sequence
+                //[offset+ 1] = LSB UTF16Bytes[0]
+                //[   ...   ] = ...
+                //[offset+10] = MSB UTF16Bytes[9]
+                //[offset+11] = Attribute - LongName
+                //[offset+12] = Entry type. 0 for name entries.
+                //[offset+13] = Short name checksum
+                //[offset+14] = LSB UTF16Bytes[10]
+                //[   ...   ] = ...
+                //[offset+25] = MSB UTF16Bytes[21]
+                //[offset+26] = 0
+                //[offset+27] = 0
+                //[offset+28] = LSB UTF16Bytes[22]
+                //[   ...   ] = ...
+                //[offset+31] = MSB UTF16Bytes[25]
+
+                result[offset + 0] = (byte)(i + 1);
+                if(first)
+                {
+                    result[offset + 0] = (byte)(result[offset + 0] | 0x40);
+                    first = false;
+                }
+                for (int j = 0; j < 10; j++)
+                {
+                    result[offset + 1 + j] = UTF16Bytes[j];
+                }
+                result[offset + 11] = ListingAttribs.LongName;
+                result[offset + 12] = 0;
+                result[offset + 13] = ShortNameChecksum;
+                for (int j = 10, k = 0; j < 22; j++, k++)
+                {
+                    result[offset + 14 + k] = UTF16Bytes[j];
+                }
+                result[offset + 26] = 0;
+                result[offset + 27] = 0;
+                for (int j = 22, k = 0; j < 26; j++, k++)
+                {
+                    result[offset + 28 + k] = UTF16Bytes[j];
+                }
+
+                offset += 32;
+            }
+
+            return offset;
+        }
+        private int EncodeShortNameListing(Base listing, byte[] result, int offset)
+        {
+            //Short name entry only
+
+            String longName = listing.Name;
+            List shortNameParts = GetShortName(longName, listing.IsDirectory);
+            String shortName;
+            if (shortNameParts.Count == 2)
+            {
+                shortName = (String)shortNameParts[0] + (String)shortNameParts[1];
+            }
+            else
+            {
+                shortName = (String)shortNameParts[0];
+            }
+            
+            byte[] ASCIIBytes = ByteConverter.GetASCIIBytes(shortName);
+            for(int i = 0; i < ASCIIBytes.Length; i++)
+            {
+                result[offset + i] = ASCIIBytes[i];
+            }
+            if(listing.IsDirectory)
+            {
+                result[offset + 11] = ListingAttribs.Directory;
+            }
+            //TODO: CrtTimeTenth
+            //TODO: CrtTime
+            //TODO: CrtDate
+            //TODO: LstAccDate
+
+            UInt32 firstClusterNum;
+            if (listing.IsDirectory)
+            {
+                firstClusterNum = ((FATDirectory)listing).FirstClusterNum;
+            }
+            else
+            {
+                firstClusterNum = ((FATFile)listing).FirstClusterNum;
+            }
+
+            result[offset + 20] = (byte)(firstClusterNum >> 16);
+            result[offset + 21] = (byte)(firstClusterNum >> 24);
+            
+            //TODO: WrtTime
+            //TODO: WrtDate
+
+            result[offset + 26] = (byte)(firstClusterNum);
+            result[offset + 27] = (byte)(firstClusterNum >> 8);
+
+            if (!listing.IsDirectory)
+            {
+                UInt32 fileSize = (UInt32)listing.Size;
+
+                result[offset + 28] = (byte)fileSize;
+                result[offset + 29] = (byte)(fileSize >> 8);
+                result[offset + 30] = (byte)(fileSize >> 16);
+                result[offset + 31] = (byte)(fileSize >> 24);
+            }
+
+            offset += 32;
+
+            return offset;
+        }
+
         /// <summary>
         /// Gets the short name for the specified long name.
         /// </summary>
@@ -1067,7 +1009,7 @@ namespace Kernel.FOS_System.IO.FAT
             if (isDirectory)
             {
                 List result = new List(1);
-                result.Add(longName.Substring(0, 11).PadRight(11, ' '));
+                result.Add(longName.Substring(0, 8).PadRight(11, ' '));
                 return result;
             }
             else
@@ -1098,12 +1040,13 @@ namespace Kernel.FOS_System.IO.FAT
 		    byte Sum;
 
 		    Sum = 0;
-		    for (FcbNameLen = 10; FcbNameLen > -1; FcbNameLen--)
+            int charIdx = 0;
+            for (FcbNameLen = 11; FcbNameLen != 0; FcbNameLen--, charIdx++)
             {
 			    // NOTE: The operation is an unsigned char rotate right
-			    Sum = (byte)(((Sum & 0x1) == 0x1 ? 0x80 : 0) + (Sum >> 1) + shortName[FcbNameLen]);
+			    Sum = (byte)((((Sum & 1) == 0x1) ? 0x80 : 0) + (Sum >> 1) + shortName[charIdx]);
 		    }
-		    return Sum;
+		    return (byte)(Sum);
         }
 
         /// <summary>
@@ -1407,8 +1350,7 @@ namespace Kernel.FOS_System.IO.FAT
 #if FATFS_TRACE
                 BasicConsole.WriteLine("Failed to format properly. Scrubbing new BPB...");
 #endif
-                byte[] scrubBPB = thePartition.TheDiskDevice.NewBlockArray(1);
-                thePartition.WriteBlock(0UL, 1U, scrubBPB);
+                thePartition.WriteBlock(0UL, 1U, null);
 #if FATFS_TRACE
                 BasicConsole.WriteLine("Scrub done.");
 #endif
@@ -1431,12 +1373,22 @@ namespace Kernel.FOS_System.IO.FAT
             
 #if FATFS_TRACE
             BasicConsole.WriteLine("FAT recognised. Setting up empty FAT table...");
+            try
+            {
 #endif
-
-            //Mark all clusters as empty
-            fs.ThePartition.WriteBlock(fs.ReservedSectorCount, FATSectorCount, null);
-            
+                //Mark all clusters as empty
+                //TODO - Remove this cap! It was only put in place as formatting a usb stick
+                //  caused Out of Memory followed by page-faults!
+                fs.ThePartition.WriteBlock(fs.ReservedSectorCount, FOS_System.Math.Min(FATSectorCount, 64), null);
 #if FATFS_TRACE
+            }
+            catch
+            {
+                BasicConsole.WriteLine("Failed to clear potentially pre-existing FAT table! File system may not function as expected.");
+                FOS_System.GC.Cleanup();
+                FOS_System.GC.Cleanup();
+            }
+
             BasicConsole.WriteLine("Marking root directory cluster as used...");
 #endif
             //Mark root cluster as being 1 cluster in size.

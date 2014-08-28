@@ -160,7 +160,7 @@ namespace Kernel.Hardware.USB.HCIs
 
             if (remainingTransactions > 0)
             {
-                INTransaction(transfer, ((Endpoint)transfer.device.Endpoints[transfer.endpoint]).toggle, ((byte*)buffer + clampedLength), length);
+                INTransaction(transfer, false, ((byte*)buffer + clampedLength), length);
             }
         }
         /// <summary>
@@ -194,7 +194,7 @@ namespace Kernel.Hardware.USB.HCIs
 
             if (remainingTransactions > 0)
             {
-                OUTTransaction(transfer, ((Endpoint)transfer.device.Endpoints[transfer.endpoint]).toggle, ((byte*)buffer + clampedLength), length);
+                OUTTransaction(transfer, false, ((byte*)buffer + clampedLength), length);
             }
         }
         /// <summary>
