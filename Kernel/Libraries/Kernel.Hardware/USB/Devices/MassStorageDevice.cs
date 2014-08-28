@@ -48,6 +48,17 @@ namespace Kernel.Hardware.USB.Devices
         /// </summary>
         public const uint CBWMagic = 0x43425355; // USBC
     }
+
+    public enum MSD_PowerStates : byte
+    {
+        START_VALID = 0x0,
+        ACTIVE = 0x1,
+        IDLE = 0x2,
+        STANDBY = 0x3,
+        LU_CONTROL = 0x7,
+        FORCE_IDLE_0 = 0xA,
+        FORCE_STANDBY_0 = 0xB
+    }
     /// <summary>
     /// Represents a USB mass storage device.
     /// </summary>
@@ -67,6 +78,11 @@ namespace Kernel.Hardware.USB.Devices
         }
        
         public bool Ejected
+        {
+            get;
+            protected set;
+        }
+        public bool Active
         {
             get;
             protected set;
@@ -116,6 +132,8 @@ namespace Kernel.Hardware.USB.Devices
             TestDeviceReady();
 
             diskDevice = new MassStorageDevice_DiskDevice(this);
+
+            Idle(true);
         }
 
         /// <summary>
@@ -131,16 +149,34 @@ namespace Kernel.Hardware.USB.Devices
             base.Destroy();
         }
 
+        public void Activate()
+        {
+            if(!Active)
+            {
+                Active = true;
+
+                SendSCSI_StartStopUnitCommand(false, MSD_PowerStates.START_VALID, true, true, null);
+            }
+        }
+        public void Idle(bool overrideCondition)
+        {
+            if (Active || overrideCondition)
+            {
+                Active = false;
+
+                SendSCSI_StartStopUnitCommand(false, MSD_PowerStates.START_VALID, false, false, null);
+            }
+        }
         public void Eject()
         {
             if(!Ejected)
             {
                 Ejected = true;
 
-                //Synchronise Cache (10) Command
-                SendSCSI_SyncCacheCommand(false, false, null);
+                SendSCSI_StartStopUnitCommand(false, MSD_PowerStates.START_VALID, false, true, null);
             }
         }
+
 
         /// <summary>
         /// Resets the bulk tarnsfer interface.
@@ -236,6 +272,11 @@ namespace Kernel.Hardware.USB.Devices
                     cbw->commandByte[5] = (byte)(LBA);            // LBA LSB
                     cbw->commandByte[7] = (byte)((TransferLength / (uint)diskDevice.BlockSize) >> 8); // MSB <--- blocks not byte!
                     cbw->commandByte[8] = (byte)(TransferLength / (uint)diskDevice.BlockSize); // LSB
+                    break;
+                case 0x1B: // StartStopUnit (6)
+                    cbw->CBWFlags = 0x00;
+                    cbw->CBWCBLength = 6;
+                    cbw->CBWDataTransferLength = 0;
                     break;
             }
         }
@@ -657,6 +698,97 @@ namespace Kernel.Hardware.USB.Devices
             }
         }
 
+        public void SendSCSI_StartStopUnitCommand(bool ImmediateResponse, MSD_PowerStates PowerCondition, 
+                                                  bool Start, bool LoadEject, void* statusBuffer)
+        {
+#if MSD_TRACE
+            DBGMSG("SyncCache Command");
+            DBGMSG("OUT part");
+            DBGMSG(((FOS_System.String)"Toggle OUT ") + ((Endpoint)DeviceInfo.Endpoints[DeviceInfo.MSD_OUTEndpointID]).toggle);
+#endif
+
+            CommandBlockWrapper* cbw = (CommandBlockWrapper*)FOS_System.Heap.AllocZeroed((uint)sizeof(CommandBlockWrapper));
+            bool FreeStatusBuffer = false;
+            //try
+            {
+                SetupSCSICommand(0x1B, cbw, 0, 0);
+                cbw->commandByte[1] = (byte)(ImmediateResponse ? 0x1 : 0);
+                cbw->commandByte[4] = (byte)(((byte)PowerCondition << 4) | (LoadEject ? 0x2 : 0) | (Start ? 0x1 : 0));
+
+#if MSD_TRACE
+                DBGMSG("Setup transfer...");
+#endif
+                USBTransfer transfer = new USBTransfer();
+                DeviceInfo.hc.SetupTransfer(DeviceInfo, transfer, USBTransferType.Bulk, DeviceInfo.MSD_OUTEndpointID, 512);
+                DeviceInfo.hc.OUTTransaction(transfer, false, cbw, 31);
+                DeviceInfo.hc.IssueTransfer(transfer);
+
+
+                if (transfer.success)
+                {
+#if MSD_TRACE
+                    DBGMSG("IN part");
+#endif
+
+                    if (statusBuffer == null)
+                    {
+#if MSD_TRACE
+                        DBGMSG("Alloc 13 bytes of mem...");
+#endif
+                        FreeStatusBuffer = true;
+                        statusBuffer = FOS_System.Heap.AllocZeroed(13u);
+                    }
+
+#if MSD_TRACE
+                    DBGMSG("Setup transfer...");
+#endif
+                    DeviceInfo.hc.SetupTransfer(DeviceInfo, transfer, USBTransferType.Bulk, DeviceInfo.MSD_INEndpointID, 512);
+#if MSD_TRACE
+                    DBGMSG("Done.");
+#endif
+                    DeviceInfo.hc.INTransaction(transfer, false, statusBuffer, 13);
+#if MSD_TRACE
+                    DBGMSG("Issue transfer...");
+#endif
+                    DeviceInfo.hc.IssueTransfer(transfer);
+#if MSD_TRACE
+                    DBGMSG("Done.");
+                    DBGMSG("Check command...");
+#endif
+
+                    if (!transfer.success || CheckSCSICommand(statusBuffer, 0x35) != 0)
+                    {
+                        // TODO: Handle failure/timeout
+#if MSD_TRACE
+                        DBGMSG("SCSI SyncCaches (10) (In) command failed!");
+#endif
+                    }
+#if MSD_TRACE
+                    else
+                    {
+                        DBGMSG("Command OK.");
+                        BasicConsole.DelayOutput(1);
+                    }
+#endif
+                }
+                else
+                {
+                    // TODO: Handle failure/timeout
+#if MSD_TRACE
+                    DBGMSG("SCSI SyncCache (10) (Out) command failed!");
+#endif
+                }
+            }
+            //finally
+            {
+                FOS_System.Heap.Free(cbw);
+                if (FreeStatusBuffer)
+                {
+                    FOS_System.Heap.Free(statusBuffer);
+                }
+            }
+        }
+
         /// <summary>
         /// The maximum number of times to resend the "ready" query. See TestDeviceReady().
         /// </summary>
@@ -1063,6 +1195,8 @@ namespace Kernel.Hardware.USB.Devices
             BasicConsole.WriteLine("Beginning reading...");
 #endif
 
+            msd.Activate();
+
             byte* dataPtr = ((byte*)Utilities.ObjectUtilities.GetHandle(aData)) + FOS_System.Array.FieldsBytesSize;
             for (uint i = 0; i < aBlockCount; i++)
             {
@@ -1080,6 +1214,8 @@ namespace Kernel.Hardware.USB.Devices
                 FOS_System.GC.Cleanup();
             }
 
+            msd.Idle(false);
+
 #if MSD_TRACE
             BasicConsole.WriteLine("Completed all reading.");
 #endif
@@ -1092,6 +1228,8 @@ namespace Kernel.Hardware.USB.Devices
         /// <param name="aData">See base class.</param>
         public override void WriteBlock(ulong aBlockNo, uint aBlockCount, byte[] aData)
         {
+            msd.Activate();
+
             if (aData == null)
             {
                 byte* dataPtr = ((byte*)Utilities.ObjectUtilities.GetHandle(NewBlockArray(1))) + FOS_System.Array.FieldsBytesSize;
@@ -1113,6 +1251,8 @@ namespace Kernel.Hardware.USB.Devices
                     FOS_System.GC.Cleanup();
                 }
             }
+
+            msd.Idle(false);
         }
 
         public void Test()
