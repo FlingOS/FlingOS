@@ -117,5 +117,11 @@ namespace Kernel.FOS_System.IO
             }
             return null;
         }
+
+        public override void CleanCaches()
+        {
+            //Pass it down the chain
+            TheDiskDevice.CleanCaches();
+        }
     }
 }

@@ -78,6 +78,12 @@ namespace Kernel.Core.Shells
                         //Determine which command we are to run
                         if (cmd == "halt")
                         {
+                            //Cleanup devices
+                            console.WriteLine("Ejecting MSDs...");
+                            CleanDiskCaches();
+                            console.WriteLine("Ejected.");
+
+                            console.WriteLine("Closing...");
                             //Halt execution of the current shell
                             terminating = true;
                         }
@@ -843,6 +849,18 @@ namespace Kernel.Core.Shells
             return result;
         }
          
+        private void CleanDiskCaches()
+        {
+            for (int i = 0; i < Hardware.DeviceManager.Devices.Count; i++)
+            {
+                Hardware.Device aDevice = (Hardware.Device)Hardware.DeviceManager.Devices[i];
+                if (aDevice._Type == (FOS_System.Type)(typeof(Hardware.ATA.ATAPio)) ||
+                    aDevice._Type == (FOS_System.Type)(typeof(Hardware.USB.Devices.MassStorageDevice_DiskDevice)))
+                {
+                    ((Hardware.Devices.DiskDevice)aDevice).CleanCaches();
+                }
+            }
+        }
         private void EjectMSD(int deviceNum)
         {
             console.Write("Ejecting MSD ");

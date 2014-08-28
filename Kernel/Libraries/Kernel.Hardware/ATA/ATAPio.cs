@@ -577,5 +577,10 @@ namespace Kernel.Hardware.ATA
 
             SendCmd(Cmd.CacheFlush);
         }
+
+        public override void CleanCaches()
+        {
+            //Nothing to do for our implementation (thus far...)
+        }
     }
 }

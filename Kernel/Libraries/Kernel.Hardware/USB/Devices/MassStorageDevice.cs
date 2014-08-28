@@ -133,6 +133,7 @@ namespace Kernel.Hardware.USB.Devices
 
             diskDevice = new MassStorageDevice_DiskDevice(this);
 
+            Load();
             Idle(true);
         }
 
@@ -155,7 +156,7 @@ namespace Kernel.Hardware.USB.Devices
             {
                 Active = true;
 
-                SendSCSI_StartStopUnitCommand(false, MSD_PowerStates.START_VALID, true, true, null);
+                SendSCSI_StartStopUnitCommand(false, MSD_PowerStates.ACTIVE, true, true, null);
             }
         }
         public void Idle(bool overrideCondition)
@@ -164,7 +165,22 @@ namespace Kernel.Hardware.USB.Devices
             {
                 Active = false;
 
-                SendSCSI_StartStopUnitCommand(false, MSD_PowerStates.START_VALID, false, false, null);
+                SendSCSI_StartStopUnitCommand(false, MSD_PowerStates.IDLE, false, false, null);
+            }
+        }
+        public void Standby()
+        {
+            Active = false;
+
+            SendSCSI_StartStopUnitCommand(false, MSD_PowerStates.STANDBY, false, false, null);
+        }
+        public void Load()
+        {
+            if (Ejected)
+            {
+                Ejected = false;
+
+                SendSCSI_StartStopUnitCommand(false, MSD_PowerStates.START_VALID, true, true, null);
             }
         }
         public void Eject()
@@ -176,8 +192,26 @@ namespace Kernel.Hardware.USB.Devices
                 SendSCSI_StartStopUnitCommand(false, MSD_PowerStates.START_VALID, false, true, null);
             }
         }
+        public void CleanCaches()
+        {
+            if (!Ejected)
+            {
+                bool goIdle = false;
+                if(!Active)
+                {
+                    Activate();
+                    goIdle = true;
+                }
 
+                SendSCSI_SyncCacheCommand(false, false, null);
 
+                if(goIdle)
+                {
+                    Idle(false);
+                }
+            }
+        }
+        
         /// <summary>
         /// Resets the bulk tarnsfer interface.
         /// </summary>
@@ -1315,6 +1349,11 @@ namespace Kernel.Hardware.USB.Devices
                 BasicConsole.WriteLine("Exception. Test failed.");
             }
             BasicConsole.DelayOutput(5);
+        }
+
+        public override void CleanCaches()
+        {
+            msd.CleanCaches();
         }
 
         /// <summary>

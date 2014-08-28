@@ -29,5 +29,6 @@ namespace Kernel.Hardware.Devices
     /// </summary>
     public abstract class DiskDevice : BlockDevice
     {
+        public abstract void CleanCaches();
     }
 }
