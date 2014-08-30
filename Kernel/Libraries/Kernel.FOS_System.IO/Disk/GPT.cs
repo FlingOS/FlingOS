@@ -151,6 +151,14 @@ namespace Kernel.FOS_System.IO.Disk
             /// <param name="entrySize">The size of a partition entry.</param>
             public PartitionInfo(byte[] data, uint offset, uint entrySize)
             {
+                //There is an underlying assumption here that the
+                //  supplied data is of sufficient length (including the 
+                //  extra length required for any specified offset).
+
+                //TODO: Check the entry size is valid
+                //TODO: Throw an exception if data.length + offset < entrySize
+
+                //Copy in Type ID data
                 TypeID[0] = data[offset + 0];
                 TypeID[1] = data[offset + 1];
                 TypeID[2] = data[offset + 2];
@@ -168,6 +176,7 @@ namespace Kernel.FOS_System.IO.Disk
                 TypeID[14] = data[offset + 14];
                 TypeID[15] = data[offset + 15];
 
+                //Copy in the partition ID data
                 ID[0] = data[offset + 16];
                 ID[1] = data[offset + 17];
                 ID[2] = data[offset + 18];
@@ -185,6 +194,7 @@ namespace Kernel.FOS_System.IO.Disk
                 ID[14] = data[offset + 30];
                 ID[15] = data[offset + 31];
 
+                //Parse the other partition data
                 FirstLBA = ByteConverter.ToUInt32(data, offset + 32);
                 LastLBA = ByteConverter.ToUInt32(data, offset + 40);
                 Attributes = ByteConverter.ToUInt32(data, offset + 48);
@@ -216,13 +226,26 @@ namespace Kernel.FOS_System.IO.Disk
             BasicConsole.WriteLine("Checking for GPT...");
             BasicConsole.DelayOutput(1);
 #endif
-
+            //Assumed block size of 512.
             uint blockSize = 512;
+
+            //Note: The GPT format specifies a protective MBR entry (1 partition 
+            //          covering the entire disk) immediately followed (byte-wise)
+            //          by the GPT. Thus the GPT must come at 512th byte.
+            //      However, some disks can have 4096 bytes per sector (/block) 
+            //          so the code below might break as reading LBA 1 (2nd LBA) would
+            //          return the wrong data. We probably ought to find some way to 
+            //          check the block size and just load the required amount of data.
+
             //Check for single MBR partition with 0xEE system ID
             byte[] blockData = new byte[blockSize];
+            //Read the first sector of data.
             disk.ReadBlock(0UL, 1U, blockData);
 
+            //Attempt to read the MBR
             MBR TheMBR = new MBR(blockData);
+            //If the MBR isn't valid, the protective MBR partition specified as part of GPT
+            //  isn't present / valid so this isn't a valid GPT.
             if (!TheMBR.IsValid)
             {
 #if GPT_TRACE
@@ -232,7 +255,9 @@ namespace Kernel.FOS_System.IO.Disk
 
                 return;
             }
-            else if (TheMBR.NumPartitions == 0)
+            //Or, if there is not one and only one partition in the MBR then the 
+            //  protective MBR isn't valid so this isn't a valid GPT
+            else if (TheMBR.NumPartitions != 1)
             {
 #if GPT_TRACE
                 BasicConsole.WriteLine("No partitions in MBR.");
@@ -240,6 +265,8 @@ namespace Kernel.FOS_System.IO.Disk
 #endif
                 return;
             }
+            //Or, the first (/only) partition entry has the wrong ID. 0xEE is the partition
+            //  ID for a GOT formatted MBR partition.
             else if (TheMBR.Partitions[0].SystemID != 0xEE)
             {
 #if GPT_TRACE
@@ -258,6 +285,7 @@ namespace Kernel.FOS_System.IO.Disk
             //Now we know this is very-likely to be GPT formatted. 
             //  But we must check the GPT header for signature etc.
 
+            //Read the GPT block
             disk.ReadBlock(1UL, 1U, blockData);
 
             //Check for GPT signature: 0x45 0x46 0x49 0x20 0x50 0x41 0x52 0x54
@@ -270,6 +298,7 @@ namespace Kernel.FOS_System.IO.Disk
             OK = OK && blockData[6] == 0x52;
             OK = OK && blockData[7] == 0x54;
 
+            //If any part of the ID was wrong, this is not a valid GPT.
             if (!OK)
             {
 #if GPT_TRACE
@@ -279,6 +308,11 @@ namespace Kernel.FOS_System.IO.Disk
                 return;
             }
 
+            //Now we know, this is a valid GPT. Whether or not the actual entries are valid
+            //  is yet to be determined. There is of course the small chance that some other
+            //  data has conflicted with GPT data and that this isn't a GPT, it just looks 
+            //  like it. If that is the case, what idiot formatted the disk we are reading
+            //  because a conflict like that is impossible to detect without user input!
             IsValid = true;
             
 #if GPT_TRACE
@@ -286,6 +320,7 @@ namespace Kernel.FOS_System.IO.Disk
             BasicConsole.DelayOutput(5);
 #endif
 
+            //Load-in GPT global data
             Revision = ByteConverter.ToUInt32(blockData, 8);
             HeaderSize = ByteConverter.ToUInt32(blockData, 12);
             HeaderCRC32 = ByteConverter.ToUInt32(blockData, 16);
@@ -305,6 +340,7 @@ namespace Kernel.FOS_System.IO.Disk
             BasicConsole.DelayOutput(5);
 #endif
 
+            //Load the disk ID
             DiskGUID = new byte[16];
             DiskGUID[0] = blockData[56];
             DiskGUID[1] = blockData[57];
@@ -323,6 +359,7 @@ namespace Kernel.FOS_System.IO.Disk
             DiskGUID[14] = blockData[70];
             DiskGUID[15] = blockData[71];
 
+            //Load more global GPT data
             StartingLBAOfPartitionArray = ByteConverter.ToUInt64(blockData, 72);
             NumPartitionEntries = ByteConverter.ToUInt32(blockData, 80);
             SizeOfPartitionEntry = ByteConverter.ToUInt32(blockData, 84);
@@ -346,9 +383,18 @@ namespace Kernel.FOS_System.IO.Disk
             BasicConsole.DelayOutput(1);
 #endif
 
+            //TODO: Check the CRC32 values of the header and partition table
+            //      are correct. 
+            //Note: By not checking the CRCs, we have the option to manually edit
+            //      the GPT without rejecting it if CRCs end up incorrect.
+            //TODO: Add an override option to ignore the CRCs
+            //TODO: Add a method to update / correct the CRCs
+
             //Read partition infos
             for(uint i = 0; i < NumPartitionEntries; i++)
             {
+                //If we're on a block boundary, we need to load the next block
+                //  of data to parse.
                 if (i % entriesPerBlock == 0)
                 {
 #if GPT_TRACE
@@ -356,20 +402,26 @@ namespace Kernel.FOS_System.IO.Disk
                     BasicConsole.WriteLine(((FOS_System.String)"blockNum=") + blockNum);
                     BasicConsole.DelayOutput(1);
 #endif
+                    //Load the next block of data
                     disk.ReadBlock(blockNum++, 1u, blockData);
                 }
 
+                //Calculate the offset into the current data block
                 uint offset = (i % entriesPerBlock) * SizeOfPartitionEntry;
 #if GPT_TRACE
                 BasicConsole.WriteLine("Reading entry...");
                 BasicConsole.WriteLine(((FOS_System.String)"offset=") + offset);
 #endif
+                //Attempt to load the partition info
                 PartitionInfo inf = new PartitionInfo(blockData, offset, SizeOfPartitionEntry);
+                //Partitions are marked as empty by an all-zero type ID. If the partition is empty,
+                //  there is no point adding it.
                 if (!inf.Empty)
                 {
 #if GPT_TRACE
                     BasicConsole.WriteLine("Entry not empty.");
 #endif
+                    //Add the non-empty partition
                     Partitions.Add(inf);
                 }
 #if GPT_TRACE

@@ -160,29 +160,46 @@ namespace Kernel.FOS_System.IO.Disk
             BasicConsole.WriteLine("MBR: 2");
 #endif
 
+            //ID is valid so we must assume this is a valid MBR.
+            //  If there is data conflict that has caused this to look like MBR when it isn't, 
+            //  then we have little or no way of telling.
             IsValid = true;
 
+            //MBR has four partition entries, one or more of which may be empty. We have to check all
+            //  of them as there is nothing to say you can't have an empty first partition and non-empty
+            //  2nd for example.
+            
+            //Note: Positions of MBR entries are fixed
+
+            //Attempt to parse the first entry
             PartitionInfo partInfo = ParsePartition(aMBR, 0x1BE);
             if (partInfo != null)
             {
+                //Non-empty, valid partition so add it
                 AddPartitionToList(partInfo);
             }
 #if MBR_TRACE
             BasicConsole.WriteLine("MBR: 13");
 #endif
+            //Attempt to parse the seocnd entry
             partInfo = ParsePartition(aMBR, 0x1CE);
             if (partInfo != null)
             {
+                //Non-empty, valid partition so add it
                 AddPartitionToList(partInfo);
             }
+            //Attempt to parse the third entry
             partInfo = ParsePartition(aMBR, 0x1DE);
             if (partInfo != null)
             {
+                //Non-empty, valid partition so add it
                 AddPartitionToList(partInfo);
             }
+            //Attempt to parse the fourth entry
             partInfo = ParsePartition(aMBR, 0x1EE);
             if (partInfo != null)
             {
+                //Non-empty, valid partition so add it
                 AddPartitionToList(partInfo);
             }
         }
@@ -198,6 +215,9 @@ namespace Kernel.FOS_System.IO.Disk
 #if MBR_TRACE
             BasicConsole.WriteLine("MBR: 3");
 #endif
+            //System ID gives you preliminary information
+            //  about what type of data is in the partition and whether
+            //  the partition is empty or not.
             byte systemID = aMBR[aLoc + 4];
 
 #if MBR_TRACE
@@ -213,14 +233,16 @@ namespace Kernel.FOS_System.IO.Disk
 #if MBR_TRACE
             BasicConsole.WriteLine("MBR: 5");
 #endif
-
+            //Various System IDs for EBR (Extended Boot Record)
+            //  (I'd like to know why developers felt the need to each create their own
+            //   ID for an EBR partition entry within MBR. Seems silly...)
             if (systemID == 0x5 || systemID == 0xF || systemID == 0x85)
             {
 #if MBR_TRACE
                 BasicConsole.WriteLine("MBR: 6");
 #endif
 
-                //Extended Partition Detected
+                //Extended Boot Record formatted partition detected
                 //DOS only knows about 05, Windows 95 introduced 0F, Linux introduced 85 
                 //Search for logical volumes
                 //http://thestarman.pcministry.com/asm/mbr/PartTables2.htm
@@ -258,6 +280,8 @@ namespace Kernel.FOS_System.IO.Disk
             BasicConsole.WriteLine("MBR: 9");
 #endif
 
+            //If we need to expand the capacity of the partitions array
+            //Note: This stuff was programmed before the List class was programmed.
             if (numPartitions >= PartitionsCapacity)
             {
 #if MBR_TRACE
@@ -276,6 +300,7 @@ namespace Kernel.FOS_System.IO.Disk
 #endif
             }
 
+            //Add the partition entry.
             Partitions[numPartitions++] = partInfo;
 
 #if MBR_TRACE
@@ -291,6 +316,7 @@ namespace Kernel.FOS_System.IO.Disk
         /// <returns>The new partition information.</returns>
         public static PartitionInfo CreateFAT32PartitionInfo(Hardware.Devices.DiskDevice aDisk, bool bootable)
         {
+            //Can't remember why but we have to start at 3rd logical block
             return new PartitionInfo(bootable, 0xC, 2U, (uint)(aDisk.BlockCount - 2));
         }
         /// <summary>
@@ -336,7 +362,7 @@ namespace Kernel.FOS_System.IO.Disk
 
                 //Bootable / active
                 newMBRData[partOffset + 0] = (byte)(partInfo.Bootable ? 0x81 : 0x00);
-                //[File] System ID
+                //System ID
                 newMBRData[partOffset + 4] = partInfo.SystemID;
                 //Start sector
                 newMBRData[partOffset + 8] = (byte)(partInfo.StartSector);

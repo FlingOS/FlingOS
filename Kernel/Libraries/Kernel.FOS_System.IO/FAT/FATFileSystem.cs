@@ -762,6 +762,9 @@ namespace Kernel.FOS_System.IO.FAT
                         UInt32 xFirstCluster = (UInt32)(ByteConverter.ToUInt16(xData, i + 20) << 16 | ByteConverter.ToUInt16(xData, i + 26));
 
                         xName = xName.ToUpper();
+
+                        //TODO: Store attributes in the listings
+
                         if (xTest == 0)
                         {
                             if (xName[xName.length - 1] != '~')
@@ -955,6 +958,7 @@ namespace Kernel.FOS_System.IO.FAT
             {
                 result[offset + i] = ASCIIBytes[i];
             }
+            //TODO: Encode other attributes from listings
             if(listing.IsDirectory)
             {
                 result[offset + 11] = ListingAttribs.Directory;

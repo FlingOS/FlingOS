@@ -75,13 +75,19 @@ namespace Kernel.Core
         /// <returns>The new line.</returns>
         protected FOS_System.String CreateBlankLine()
         {
+            //Create a blank line (all characters set to 0s)
             FOS_System.String str = FOS_System.String.New(LineLength);
 
+            //Set the attr of all characters in the new blank line to
+            //  the current character.
+            //This is so that typed characters at least appear in current 
+            //  colour otherwise they wouldn't show at all.
             for (int i = 0; i < str.length; i++)
             {
                 str[i] |= (char)CurrentAttr;
             }
 
+            //Return the new blank line.
             return str;
         }
 
@@ -109,22 +115,36 @@ namespace Kernel.Core
         /// <param name="str">The string to write.</param>
         public virtual void Write(FOS_System.String str)
         {
+            //Loop through each character, outputting them.
             for (int i = 0; i < str.length; i++)
             {
+                //If we have reached the end of the current line,
+                //  create a new one using WriteLine()
                 if (CurrentChar == LineLength)
                 {
                     WriteLine();
                 }
+                //If a \n (newline) character is found,
+                //  create a new line using WriteLine()
                 if (str[i] == '\n')
                 {
                     WriteLine();
                 }
+                //Otherwise, just output the character to the current position
+                //  and move current position to the next character.
                 else
                 {
+                    //The character must also be or'ed with the current attribute so it appears the correct
+                    //  colour. 
+                    //Strings in the core kernel are stored as 2-byte unicode but we output only ASCII
+                    //  so the character must be and'ed with 0xFF to clear the top byte else it would
+                    //  interfere with the attribute (colour).
                     ((FOS_System.String)Buffer[CurrentLine])[CurrentChar++] = (char)((str[i] & 0xFF) | CurrentAttr);
                 }
             }
+            //Call update to update the screen with the new text.
             Update();
+            //Update the cursor position.
             SetCursorPosition((ushort)(CurrentChar - GetDisplayOffset_Char()),
                               (ushort)(CurrentLine - GetDisplayOffset_Line()));
         }
@@ -135,11 +155,18 @@ namespace Kernel.Core
         public virtual void Write_AsDecimal(UInt32 num)
         {
             FOS_System.String result = "";
+            //If the number is already 0, just output 0
+            //  straight off. The algorithm below does not
+            //  work if num is 0.
             if (num != 0)
             {
+                //Loop through outputting the units value (base 10)
+                //  and then dividing by 10 to move to the next digit.
                 while (num > 0)
                 {
+                    //Get the units
                     uint rem = num % 10;
+                    //Output the units character
                     switch (rem)
                     {
                         case 0:
@@ -173,6 +200,7 @@ namespace Kernel.Core
                             result = "9" + result;
                             break;
                     }
+                    //Divide by 10 to move to the next digit.
                     num /= 10;
                 }
             }
@@ -180,6 +208,7 @@ namespace Kernel.Core
             {
                 result = "0";
             }
+            //Write the resulting number
             Write(result);
         }
         /// <summary>
@@ -188,9 +217,13 @@ namespace Kernel.Core
         /// <param name="num">The number to write as a decimal.</param>
         public virtual void Write_AsDecimal(Int32 num)
         {
+            //This functions exactly the same as its unsigned 
+            //  counterpart but it adds a minus sign if the number
+            //  is negative.
             FOS_System.String result = "";
             if (num != 0)
             {
+                bool neg = num < 0;
                 while (num > 0)
                 {
                     int rem = num % 10;
@@ -230,7 +263,7 @@ namespace Kernel.Core
                     num /= 10;
                 }
 
-                if (num < 0)
+                if (neg)
                 {
                     result = "-" + result;
                 }
@@ -247,19 +280,27 @@ namespace Kernel.Core
         /// </summary>
         public virtual void WriteLine()
         {
+            //If we've reached the maximum number of lines
+            //  to store in the buffer
             if (Buffer.Count == MaxBufferSize)
             {
+                //Remove the first line (oldest line - appears at the top
+                //  of the screen if the user scrolls all the way to the top) 
+                //  to create space.
                 Buffer.RemoveAt(0);
-                Buffer.Add(CreateBlankLine());
             }
-            else
-            {
-                Buffer.Add(CreateBlankLine());
-            }
+
+            //Add a new blank line at the bottom of the buffer
+            Buffer.Add(CreateBlankLine());
+
+            //Update the current line / character
             CurrentLine = Buffer.Count - 1;
             CurrentChar = 0;
+            
+            //Update the screen
             Update();
 
+            //Update the cursor position
             SetCursorPosition((ushort)(CurrentChar - GetDisplayOffset_Char()),
                               (ushort)(CurrentLine - GetDisplayOffset_Line()));
         }
@@ -269,6 +310,7 @@ namespace Kernel.Core
         /// <param name="str">The string to write before the new line.</param>
         public virtual void WriteLine(FOS_System.String str)
         {
+            //Write the string followed by a new line
             Write(str);
             WriteLine();
         }
@@ -278,6 +320,7 @@ namespace Kernel.Core
         /// <param name="num">The number to write as a decimal.</param>
         public virtual void WriteLine_AsDecimal(UInt32 num)
         {
+            //Write the number followed by a new line
             Write_AsDecimal(num);
             WriteLine();
         }
@@ -287,6 +330,7 @@ namespace Kernel.Core
         /// <param name="num">The number to write as a decimal.</param>
         public virtual void WriteLine_AsDecimal(Int32 num)
         {
+            //Write the number followed by a new line
             Write_AsDecimal(num);
             WriteLine();
         }
@@ -298,6 +342,7 @@ namespace Kernel.Core
         /// <returns>The keyboard key that was pressed.</returns>
         public virtual Hardware.Devices.KeyboardKey ReadKey()
         {
+            //Read the key and output it to the screen
             return ReadKey(true);
         }
         /// <summary>
@@ -308,11 +353,15 @@ namespace Kernel.Core
         /// <returns>The keyboard key that was pressed.</returns>
         public virtual Hardware.Devices.KeyboardKey ReadKey(bool output)
         {
+            //Use the blocking call to get the next recognised key pressed
             Hardware.Devices.KeyMapping mapping = Hardware.Devices.Keyboard.Default.ReadMapping();
+            //If the key has a character representation and we should output the character
             if (mapping.Value != '\0' && output)
             {
+                //Write the character representation of the key
                 Write(mapping.Value);
             }
+            //Return the key
             return mapping.Key;
         }
 
@@ -322,8 +371,11 @@ namespace Kernel.Core
         /// <returns>The character that was read.</returns>
         public virtual char Read()
         {
+            //Use the blocking call to get the next recognised character entered by the user
             char result = Hardware.Devices.Keyboard.Default.ReadChar();
+            //Output the character
             Write(result);        
+            //Return the character
             return result;
         }
         /// <summary>
@@ -333,33 +385,51 @@ namespace Kernel.Core
         /// <returns>The line of text.</returns>
         public virtual FOS_System.String ReadLine()
         {
+            //Temp store for the result
             FOS_System.String result = "";
+            //Used to store the last key pressed
             Hardware.Devices.KeyMapping c;
+            //Used to store the index and position of the typing position when the 
+            //  user started inputting. This allows us to reset the display of the 
+            //  current input if the user presses the escape key.
             Int32 StartLine = CurrentLine;
             Int32 StartChar = CurrentChar;
+            //Loop through getting characters until the enter key is pressed
             while((c = Hardware.Devices.Keyboard.Default.ReadMapping()).Key != Hardware.Devices.KeyboardKey.Enter)
             {
+                //If backspace was pressed:
                 if (c.Key == Hardware.Devices.KeyboardKey.Backspace)
                 {
+                    //If we actually have something to delete:
                     if (result.length > 0)
                     {
+                        //Remove the last character
                         result = result.Substring(0, result.length - 1);
+                        //Move backwards 1 character
                         CurrentChar--;
+                        //If we have moved past the beginning of a line
                         if (CurrentChar < 0)
                         {
+                            //Remove a line
                             Buffer.RemoveAt(CurrentLine);
 
+                            //Move to end of previous line
                             CurrentChar = LineLength - 1;
+                            //Move to previous line
                             CurrentLine--;
                         }
+                        //Set the current character (the last one to be typed) to a blank character
                         ((FOS_System.String)Buffer[CurrentLine])[CurrentChar] = (char)(' ' | CurrentAttr);
+                        //Update the screen
                         Update();
+                        //Update the cursor position
                         SetCursorPosition((ushort)(CurrentChar - GetDisplayOffset_Char()),
                                           (ushort)(CurrentLine - GetDisplayOffset_Line()));
                     }
                 }
                 else if(c.Key == Hardware.Devices.KeyboardKey.Escape)
                 {
+                    //Clear out the result
                     result = "";
 
                     //Reset to StartLine, StartChar
@@ -382,25 +452,36 @@ namespace Kernel.Core
                     CurrentLine = StartLine;
                     CurrentChar = StartChar;
 
+                    //Update the screen
                     Update();
+                    //Update the cursor position
                     SetCursorPosition((ushort)(CurrentChar - GetDisplayOffset_Char()),
                                       (ushort)(CurrentLine - GetDisplayOffset_Line()));
                 }
                 else if (c.Key == Hardware.Devices.KeyboardKey.UpArrow)
                 {
+                    //Scroll up the screen 1 line
                     Scroll(-1);
                 }
                 else if (c.Key == Hardware.Devices.KeyboardKey.DownArrow)
                 {
+                    //Scroll down the screen 1 line
                     Scroll(1);
                 }
+                //If the key has a character respresentation
                 else if (c.Value != '\0')
                 {
+                    //Add the character to the result
                     result += c.Value;
+                    //Output the character
                     Write(c.Value);
                 }
             }
+            //Enter key was pressed, which is what caused us to exit the loop, 
+            //  so type a new line
             WriteLine();
+
+            //Return the resulting line
             return result;
         }
 
@@ -409,9 +490,13 @@ namespace Kernel.Core
         /// </summary>
         public virtual void Clear()
         {
+            //Empty the buffer
             Buffer.Empty();
+            //Reset the current position
             CurrentLine = 0;
             CurrentChar = 0;
+            //Write a new blank line - required as we always expect to have at
+            //  least 1 blank line to write to.
             WriteLine();
         }
 
@@ -420,6 +505,7 @@ namespace Kernel.Core
         /// </summary>
         public virtual void Beep()
         {
+            //Default beep - 245Hz for 0.5s
             Beep(245, 500);
         }
         /// <summary>
@@ -448,7 +534,9 @@ namespace Kernel.Core
         /// <param name="dist">The distance to scroll. +ve scrolls downwards, -ve scrolls upwards.</param>
         public virtual void Scroll(Int32 dist)
         {
+            //Move the current line the specified distance
             CurrentLine += dist;
+            //Clamp the current line value to within the buffer limits
             if (CurrentLine < 0)
             {
                 CurrentLine = 0;
@@ -457,6 +545,7 @@ namespace Kernel.Core
             {
                 CurrentLine = Buffer.Count - 1;
             }
+            //Update the screen
             Update();
         }
 

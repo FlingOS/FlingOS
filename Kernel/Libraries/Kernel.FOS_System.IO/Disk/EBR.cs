@@ -36,6 +36,10 @@ namespace Kernel.FOS_System.IO.Disk
         public EBR(byte[] aEBR)
             : base()
         {
+            //EBR contains (potentially) two partitions of same format 
+            //  as MBR partition entries. So attempt to parse those
+            //  two entries.
+            //(Location of EBR entries are fixed)
             ParsePartition(aEBR, 446);
             ParsePartition(aEBR, 462);
         }

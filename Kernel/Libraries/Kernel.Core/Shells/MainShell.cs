@@ -854,12 +854,15 @@ namespace Kernel.Core.Shells
         /// </summary>
         private void CleanDiskCaches()
         {
+            //Loop through all devices looking for Disk devices.
             for (int i = 0; i < Hardware.DeviceManager.Devices.Count; i++)
             {
                 Hardware.Device aDevice = (Hardware.Device)Hardware.DeviceManager.Devices[i];
+                //TODO: Once is operator is supported, just do a test for "is Hardware.Devices.DiskDevice"
                 if (aDevice._Type == (FOS_System.Type)(typeof(Hardware.ATA.ATAPio)) ||
                     aDevice._Type == (FOS_System.Type)(typeof(Hardware.USB.Devices.MassStorageDevice_DiskDevice)))
                 {
+                    //Clean caches of the device.
                     ((Hardware.Devices.DiskDevice)aDevice).CleanCaches();
                 }
             }
@@ -871,15 +874,19 @@ namespace Kernel.Core.Shells
         /// <seealso cref="Kernel.Hardware.USB.Devices.MassStorageDevice.Eject"/>
         private void EjectMSD(int deviceNum)
         {
+            //Output info to the user...
             console.Write("Ejecting MSD ");
             console.Write_AsDecimal(deviceNum);
             console.WriteLine("...");
 
+            //Get the device
             Hardware.USB.Devices.MassStorageDevice msd = (Hardware.USB.Devices.MassStorageDevice)
                 Hardware.DeviceManager.Devices[deviceNum];
             
+            //Eject the MSD
             msd.Eject();
 
+            //Output info to the user
             console.WriteLine("Ejected.");
         }
 
@@ -901,7 +908,9 @@ namespace Kernel.Core.Shells
         /// <param name="dst">The path to copy to.</param>
         private void CopyFile(File srcFile, FOS_System.String dst)
         {
-            //Check the source file has been opened i.e. that it exists
+            //If source file is null, it means it wasn't found by the caller (or some
+            //  other error but we will assume not found since that is the expected use 
+            //  case from the other overload of CopyFile).
             if(srcFile == null)
             {
                 console.WriteLine("Source file not found!");
@@ -974,9 +983,12 @@ namespace Kernel.Core.Shells
                 console.WriteLine("Copying " + srcFullPath + " to " + dstFullPath);
             }
 
+            //Get the streams to read from / write to
             FOS_System.IO.Streams.FileStream srcStr = srcFile.GetStream();
             FOS_System.IO.Streams.FileStream dstStr = dstFile.GetStream();
 
+            //Temporary storage. Note: If the file is to big, this will just fail 
+            //  as there won't be enough heap memory available
             byte[] data = new byte[(uint)srcFile.Size];
             
             //Read in all source data. This will be a huge problem if the file
@@ -997,12 +1009,15 @@ namespace Kernel.Core.Shells
         /// <param name="fileName">The path to the file to delete.</param>
         private void DeleteFile(FOS_System.String fileName)
         {
+            //Attempt to delete the file
             if (File.Delete(fileName))
             {
+                //Output info to the user.
                 console.WriteLine("File deleted: " + fileName);
             }
             else
             {
+                //Output info to the user.
                 console.WriteLine("File not found: " + fileName);
             }
         }
@@ -1024,12 +1039,16 @@ namespace Kernel.Core.Shells
         /// <param name="dst">The path to copy to.</param>
         private void CopyDirectory(Directory srcDir, FOS_System.String dst)
         {
+            //If source directory is null, it means it wasn't found by the caller (or some
+            //  other error but we will assume not found since that is the expected use 
+            //  case from the other overload of CopyDirectory).
             if (srcDir == null)
             {
                 console.WriteLine("Source directory not found!");
                 return;
             }
 
+            //Add a trailing "/" to the destination path name
             if(!dst.EndsWith(FileSystemManager.PathDelimiter))
             {
                 dst += FileSystemManager.PathDelimiter;
@@ -1053,6 +1072,9 @@ namespace Kernel.Core.Shells
             }
 
             //Copy listings
+            //  This causes CopyDirectory to be a recursive, self-calling method
+            //  which could potentially overflow. It has the benefit though that 
+            //  the entire sub-directory/sub-file tree will be copied.
             List listings = srcDir.GetListings();
             for(int i = 0; i < listings.Count; i++)
             {
@@ -1073,12 +1095,15 @@ namespace Kernel.Core.Shells
         /// <param name="path">The path to the directory to delete.</param>
         private void DeleteDirectory(FOS_System.String path)
         {
+            //Attempt to delete the directory.
             if (Directory.Delete(path))
             {
+                //Output info to the user.
                 console.WriteLine("Directory deleted: " + path);
             }
             else
             {
+                //Output info to the user.
                 console.WriteLine("Directory not found: " + path);
             }
         }
@@ -1089,12 +1114,21 @@ namespace Kernel.Core.Shells
         /// <returns>The new (or existing) directory.</returns>
         private Directory NewDirectory(FOS_System.String path)
         {
+            //Output info to the user.
             console.WriteLine("Searching for directory: " + path);
+
+            //Attempt to find the directory. If it already exists, we don't want to
+            //  accidentally re-create it!
             Directory theDir = Directory.Find(path);
+            //If the directory does not exist:
             if (theDir == null)
             {
+                //Output info to the user.
                 console.WriteLine("Creating directory...");
+
+                //Attempt to get the file system mapping for the new directory
                 FileSystemMapping mapping = FileSystemManager.GetMapping(path);
+                //If the mapping was found:
                 if(mapping != null)
                 {
                     //Remove trailing "/" if there is one else the code below would end
@@ -1113,10 +1147,16 @@ namespace Kernel.Core.Shells
                     FOS_System.String newDirName = path.Substring(lastIdx, path.length - lastIdx);
 
                     console.WriteLine("Checking parent path: " + dirParentPath);
+                    //This causes NewDirectory to become a recursive, self-calling
+                    //  method which could potentially overflow. However, if has
+                    //  the benefit that the entire new directory tree can be created
+                    //  in one call, rather than having to create each directory and 
+                    //  sub-directory one at a time.
                     Directory parentDir = NewDirectory(dirParentPath);
                     if (parentDir != null)
                     {
                         console.WriteLine("New dir name: " + newDirName);
+                        //Create the directory
                         theDir = mapping.TheFileSystem.NewDirectory(newDirName, parentDir);
                         console.WriteLine("Directory created.");
                     }
