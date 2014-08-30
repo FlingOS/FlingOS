@@ -30,16 +30,24 @@ namespace Kernel.FOS_System.Collections
     /// </remarks>
     public class List : FOS_System.Object
     {
+        //Note: The "capacity" of the list is the length of the internal array.
+
         /// <summary>
         /// The underlying object array.
         /// </summary>
+        /// <remarks>
+        /// When describing entries in the internal, the internal array should be seen
+        /// as a list which grows downards. So the first entry (index 0) is the top of 
+        /// the list. Adding an entry extends the list downwards by one. Removing an 
+        /// entry shifts the remaining items up by one.
+        /// </remarks>
         protected FOS_System.Object[] _array;
         /// <summary>
-        /// The "currentIndex" is the index to insert the next new item.
+        /// The "nextIndex" is the index to insert the next new item.
         /// It is the index immediately after the last-set item in the array.
         /// It thus also acts as an item count.
         /// </summary>
-        protected int currIndex = 0;
+        protected int nextIndex = 0;
 
         /// <summary>
         /// The number of elements in the list.
@@ -49,7 +57,7 @@ namespace Kernel.FOS_System.Collections
             [Compiler.NoDebug]
             get
             {
-                return currIndex;
+                return nextIndex;
             }
         }
 
@@ -59,6 +67,7 @@ namespace Kernel.FOS_System.Collections
         [Compiler.NoDebug]
         public List()
         {
+            //Create the internal array with default capacity of 5.
             _array = new FOS_System.Object[5];
         }
         /// <summary>
@@ -68,6 +77,7 @@ namespace Kernel.FOS_System.Collections
         [Compiler.NoDebug]
         public List(int capacity)
         {
+            //Create the internal array with specified capacity.
             _array = new FOS_System.Object[capacity];
         }
 
@@ -78,11 +88,15 @@ namespace Kernel.FOS_System.Collections
         [Compiler.NoDebug]
         public void Add(FOS_System.Object obj)
         {
-            if (currIndex >= _array.Length)
+            //If the next index to insert an item at is beyond the capacity of
+            //  the array, we need to expand the array.
+            if (nextIndex >= _array.Length)
             {
                 ExpandCapacity(5);
             }
-            _array[currIndex++] = obj;
+            //Insert the object at the next index in the internal array then increment
+            //  next index 
+            _array[nextIndex++] = obj;
         }
         /// <summary>
         /// Removes the specified object from the list.
@@ -91,23 +105,55 @@ namespace Kernel.FOS_System.Collections
         [Compiler.NoDebug]
         public void Remove(FOS_System.Object obj)
         {
+            //Determines whether we should be setting the array entries
+            //  to null or not. After we have removed an item and shifted
+            //  existing items up in the array, all remaining unused entries
+            //  must be set to null.
             bool setObjectToNull = false;
-            for (int i = 0; i < currIndex; i++)
+            //Store the current index. There is no point looping through the whole capacity
+            //  of the array, but we must at least loop through everything that has been set
+            //  including the last entry even after higher entries have been shifted or removed.
+            //Note: It would be invalid to use nextIndex+1 because that assumes an entry will 
+            //      be removed but if the object to remove is not in the list, it will not be
+            //      found and so nextIndex+1 would over-run the capacity of the list.
+            int origNextIndex = nextIndex;
+            //Loop through all items in the array that have had a value set.
+            for (int i = 0; i < origNextIndex; i++)
             {
-                if (setObjectToNull || _array[i] == obj)
+                //There are two scenarios here:
+                //  1) We are searching from the start of the list until we find
+                //     the item to be removed. Until we find the item, we don't need
+                //     to make any changes to the internal array.
+                //  2) Or, we have found the item to be removed and are in the process
+                //     of shifting entries up 1 in the array to remove the item.
+                if (_array[i] == obj || setObjectToNull)
                 {
+                    //If we are not setting objects to null, then "_array[i] == obj" must
+                    //  have been true i.e. the current search index is the index of the
+                    //  object to be removed. 
+                    //Note: This if block is just a more efficient way of writing:
+                    //                      if (_array[i] == obj)
                     if (!setObjectToNull)
                     {
-                        currIndex--;
+                        //Removing the object reduces the total count of objects by 1
+                        nextIndex--;
                     }
 
+                    //We should now start shifting objects and setting entries to null
                     setObjectToNull = true;
-                    if (i < currIndex)
+
+                    //If we are still within the (new) count of objects then simply shift the 
+                    //  next object up one in the list
+                    if (i < nextIndex)
                     {
+                        //Set current index to next value in the list.
                         _array[i] = _array[i + 1];
                     }
                     else
                     {
+                        //Otherwise, just set the entry to null.
+                        //  This ensures values aren't randomly left with entries 
+                        //  in the top of the list.
                         _array[i] = null;
                     }
                 }
@@ -120,29 +166,51 @@ namespace Kernel.FOS_System.Collections
         [Compiler.NoDebug]
         public void RemoveAt(int index)
         {
-            if (index >= currIndex)
+            //Throw and exception if the index to remove
+            //  at is beyond the length of the list
+            //Note: Beyond the length of the list not the capacity of the list.
+            if (index >= nextIndex)
             {
                 ExceptionMethods.Throw(new Exceptions.OverflowException());
             }
 
-            for (int i = index; i < currIndex; i++)
+            //Note: Because we know our starting index, this algorithm is both different
+            //      and more efficient than the one in "Remove(obj)"
+
+            //Loop through all items that have had a value set, starting at index
+            //  through to the end of the list.
+            //Note: Because we decrement nextIndex after the loop has completed, this
+            //      loop will also cover the very last entry that had a value set which
+            //      must be set to null.
+            for (int i = index; i < nextIndex; i++)
             {
-                if (i < currIndex - 1)
+                //While there is an item after the current one
+                if (i < nextIndex - 1)
                 {
+                    //Shift the next item into the current one.
+                    //  Note: The first iteration of the loop thus removes the entry for the
+                    //        index to be removed. Subsequent iterations have the effect of
+                    //        moving all the items up the list by one.
                     _array[i] = _array[i + 1];
                 }
                 else
                 {
+                    //The last entry that was set must now be set to null.
                     _array[i] = null;
                 }
             }
 
-            currIndex--;
+            //Now decrement the count (length of the list) by one
+            nextIndex--;
         }
 
         public int IndexOf(FOS_System.Object obj)
         {
-            for (int i = 0; i < currIndex; i++)
+            //This is a straight forward search. Other search algorithms
+            //  may be faster but quite frankly who cares. Optimising the compiler
+            //  ASM output would have a far greater effect than changing this
+            //  nice, simple algorithm.
+            for (int i = 0; i < nextIndex; i++)
             {
                 if(_array[i] == obj)
                 {
@@ -150,6 +218,7 @@ namespace Kernel.FOS_System.Collections
                 }
             }
 
+            //As per C# (perhaps C?) standard (convention?)
             return -1;
         }
 
@@ -159,11 +228,13 @@ namespace Kernel.FOS_System.Collections
         [Compiler.NoDebug]
         public void Empty()
         {
-            for (int i = 0; i < currIndex; i++)
+            //Nice and simple again - just set everything to null :)
+            for (int i = 0; i < nextIndex; i++)
             {
                 _array[i] = null;
             }
-            currIndex = 0;
+            //And reset the count to 0
+            nextIndex = 0;
         }
 
         /// <summary>
@@ -173,11 +244,19 @@ namespace Kernel.FOS_System.Collections
         [Compiler.NoDebug]
         private void ExpandCapacity(int amount)
         {
+            //We need to expand the size of the internal array. Unfortunately, dynamic
+            //  expansion of an array to non-contiguous memory is not supported by my OS
+            //  or compiler because it's just too darn complicated. So, we must allocate
+            //  a new array and copy everything across.
+            
+            //Allocate the new, larger array
             FOS_System.Object[] newArray = new FOS_System.Object[_array.Length + amount];
+            //Copy all the values across
             for (int i = 0; i < _array.Length; i++)
             {
                 newArray[i] = _array[i];
             }
+            //And set the internal array to the new, large array
             _array = newArray;
         }
 
@@ -194,7 +273,10 @@ namespace Kernel.FOS_System.Collections
             [Compiler.NoDebug]
             get
             {
-                if (index >= currIndex)
+                //Throw an exception if the index to get is beyond the length of
+                //  the list.
+                //Note: Beyond the length of the list not the capacity!
+                if (index >= nextIndex)
                 {
                     ExceptionMethods.Throw(new Exceptions.IndexOutOfRangeException());
                 }
@@ -204,7 +286,10 @@ namespace Kernel.FOS_System.Collections
             [Compiler.NoDebug]
             set
             {
-                if (index >= currIndex)
+                //Throw an exception if the index to set is beyond the length of
+                //  the list.
+                //Note: Beyond the length of the list not the capacity!
+                if (index >= nextIndex)
                 {
                     ExceptionMethods.Throw(new Exceptions.IndexOutOfRangeException());
                 }
@@ -213,6 +298,11 @@ namespace Kernel.FOS_System.Collections
             }
         }
     }
+
+    //These list class implementations work exactly the same as the 
+    //  original except that:
+    //  a) They are for specific value-types
+    //  b) Not all methods have been ported from List
 
     /// <summary>
     /// Represents a strongly typed list of UInt32s that can be accessed by 
@@ -282,12 +372,19 @@ namespace Kernel.FOS_System.Collections
         public void Remove(UInt32 obj)
         {
             bool setObjectToNull = false;
-            for (int i = 0; i < currIndex; i++)
+            int origCurrIndex = currIndex;
+            for (int i = 0; i < origCurrIndex; i++)
             {
                 if (setObjectToNull || _array[i] == obj)
                 {
+                    if (!setObjectToNull)
+                    {
+                        currIndex--;
+                    }
+
                     setObjectToNull = true;
-                    if (i < currIndex - 1)
+
+                    if (i < currIndex)
                     {
                         _array[i] = _array[i + 1];
                     }
@@ -441,12 +538,19 @@ namespace Kernel.FOS_System.Collections
         public void Remove(Delegate obj)
         {
             bool setObjectToNull = false;
-            for (int i = 0; i < currIndex; i++)
+            int origCurrIndex = currIndex;
+            for (int i = 0; i < origCurrIndex; i++)
             {
                 if (setObjectToNull || _array[i] == obj)
                 {
+                    if (!setObjectToNull)
+                    {
+                        currIndex--;
+                    }
+
                     setObjectToNull = true;
-                    if (i < currIndex - 1)
+
+                    if (i < currIndex)
                     {
                         _array[i] = _array[i + 1];
                     }
