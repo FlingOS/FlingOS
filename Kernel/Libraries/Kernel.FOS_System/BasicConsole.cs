@@ -25,6 +25,33 @@ namespace Kernel
     /// </summary>
     public static unsafe class BasicConsole
     {
+        //Note: This class is a very basic console. It uses the default, x86 setup for
+        //      VGA text-mode graphics and simply outputs text to graphics memory.
+        //      When a new line is required, it simply shifts the graphics memory up
+        //      one line and discards any video memory shifted off the top of the screen.
+        //      Scrolling back down is thus not possible as the information is lost.
+        
+        //For a better console implementation see Console and AdvancedConsole classes in
+        //  Kernel.Core library (/namespace)
+
+        //Note: Some of the code used appears inefficient or needlessly expanded. That's 
+        //      because it is. Deliberately so. The reason is that the code used uses the 
+        //      minimum of IL ops and the simpler IL ops making the initial compiler work
+        //      much smaller and simpler to do. It also means that if the compiler breaks
+        //      in any way, the BasicConsole class is likely to still work thus making it
+        //      the most useful debugging tool.
+
+        //Note: All of this code has been thoroughly used and abused, which means it is 
+        //      well tested i.e. reliable and robust. Do not alter the code in any way!
+        //      Really, this code does not need modifying and if you do so, you're more 
+        //      likely to break it than fix or improve it.
+
+        //Note: This code is specifically designed for 80x25 VGA text-mode. In theory you 
+        //      could change the "rows" and "cols" values, but this would actually break 
+        //      the code because some of it has values of 80, 25, 160 and 50 hard-coded
+        //      which you would need to change. I am reluctant to go changing these hard
+        //      coded values for the reasons given in prior notes.
+
         /// <summary>
         /// The offset from the start of the memory (in characters) to write the next character to.
         /// </summary>
@@ -81,11 +108,20 @@ namespace Kernel
         [Compiler.NoGC]
         public static void Init()
         {
+            //Colour info stored in the high byte:
+            //  Hi-4-bits: Background
+            //  Lo-4-bits: Foreground
+
+            //Black background
             bg_colour = (char)0x0000;
+            //White foreground
             default_colour = (char)0x0F00;
+            //Yellow foreground
             warning_colour = (char)0x0E00;
+            //Red foreground
             error_colour = (char)0x0400;
 
+            //Background | Foreground
             colour = (char)(bg_colour | default_colour);
         }
 
@@ -118,15 +154,24 @@ namespace Kernel
         [Compiler.NoGC]
         public static unsafe void Clear()
         {
+            //Clear out every character on the screen
             int numToClear = rows * cols;
+            //Start at beginning of video memory
             char* vidMemPtr = vidMemBasePtr;
+            //Loop through all video memory
             while (numToClear > 0)
             {
+                //Set output to no character, no foreground colour, just the 
+                //  background colour.
                 vidMemPtr[0] = bg_colour;
+                //Then move to the next character in
+                //  video memory.
                 vidMemPtr++;
+                //And decrement the count
                 numToClear--;
             }
 
+            //And set our offset to 0
             offset = 0;
         }
         /// <summary>
@@ -141,14 +186,19 @@ namespace Kernel
         [Compiler.NoGC]
         public static unsafe void Write(FOS_System.String str)
         {
+            //If string is null, just don't write anything
             if (str == null)
             {
+                //Do not make this throw an exception. The BasicConsole
+                //  is largely a debugging tool - it should be reliable,
+                //  robust and not throw exceptions.
                 return;
             }
 
             int strLength = str.length;
             int maxOffset = rows * cols;
 
+            //This block shifts the video memory up the required number of lines.
             if(offset + strLength > maxOffset)
             {
                 int amountToShift = (offset + strLength) - maxOffset;
@@ -166,6 +216,7 @@ namespace Kernel
                 }
             }
 
+            //This block outputs the string in the current foreground / background colours.
             char* vidMemPtr = vidMemBasePtr + offset;
             char* strPtr = str.GetCharPointer();
             while (strLength > 0)
@@ -194,7 +245,8 @@ namespace Kernel
                 return;
             }
 
-            if (offset == BasicConsole.cols * BasicConsole.rows)
+            //This block shifts the video memory up the required number of lines.
+            if (offset == cols * rows)
             {
                 char* vidMemPtr_Old = vidMemBasePtr;
                 char* vidMemPtr_New = vidMemBasePtr + cols;
@@ -208,8 +260,11 @@ namespace Kernel
                 offset -= cols;
             }
             
+            //This outputs the string
             Write(str);
             
+            //This block "writes" the new line by filling in the remainder (if any) of the
+            //  line with blank characters and correct background colour. 
             int diff = offset;
             while(diff > cols)
             {
@@ -235,6 +290,8 @@ namespace Kernel
         [Compiler.NoGC]
         public static void WriteLine()
         {
+            //We must write at least 1 character, so we just write a space since that
+            //  is any empty character.
             WriteLine(" ");
         }
 
@@ -244,6 +301,9 @@ namespace Kernel
         [Compiler.NoGC]
         public static unsafe void PrintTestString()
         {
+            //This does not use the Write functions as it is a test function to 
+            //  test that strings and the video memory output work.
+
             FOS_System.String str = "1234567890!\"£$%^&*()qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM[];'#,./{}:@~<>?\\|`¬¦";
             int strLength = str.length;
             char* strPtr = str.GetCharPointer();
@@ -277,6 +337,11 @@ namespace Kernel
             {
                 return;
             }
+
+            //This method prints "." ".." "..." and so on until 
+            //  ".........." (or some other length) is printed and
+            //  then it resets the line to blank and repeats. Thus, 
+            //  it creates a waiting bar.
 
             WriteLine();
             int a = 0;
