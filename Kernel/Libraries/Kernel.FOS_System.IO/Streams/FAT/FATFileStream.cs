@@ -31,6 +31,8 @@ namespace Kernel.FOS_System.IO.Streams.FAT
     /// </summary>
     public class FATFileStream : FileStream
     {
+        //TODO - This implementation has no way of shrinking files - only growing them!
+
         /// <summary>
         /// The cluster numbers that are part of the file.
         /// </summary>
@@ -98,12 +100,18 @@ namespace Kernel.FOS_System.IO.Streams.FAT
         /// <returns>The actual size of the file.</returns>
         public UInt64 GetActualSize()
         {
+            //This is set for streams which access a directory 
+            //  since directories look and work like files except for
+            //  the fact that directory sizes are determined solely 
+            //  by the number of clusters they use.
             if (IgnoreFileSize)
             {
                 if (ClusterNums == null)
                 {
                     GetClusterNums();
                 }
+                //We have assumed at this point that GetClusterNums worked. If it didn't,
+                //  then ClusterNums will be null and we will have a serious problem! :)
                 return (uint)ClusterNums.Count * TheFATFileSystem.BytesPerCluster;
             }
             return theFile.Size;
@@ -132,6 +140,9 @@ namespace Kernel.FOS_System.IO.Streams.FAT
         /// </summary>
         private void GetClusterNums()
         {
+            //Cluster number of 0 is invalid! Minimum is 2. Therefore, we can use
+            //  the cluster number to determine whether this stream is to a valid
+            //  / non-empty file or not.
             if (TheFATFile.FirstClusterNum > 0 || IgnoreFileSize)
             {
                 //BasicConsole.WriteLine("Reading cluster chain...");

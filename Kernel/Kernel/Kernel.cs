@@ -117,7 +117,7 @@ namespace Kernel
             //implemented.
             ExceptionMethods.HaltReason = "End of Main";
             Halt(0xFFFFFFFF);
-            //TODO: ACPI shutdown
+            //TODO: Proper shutdown method
         }
 
         /// <summary>

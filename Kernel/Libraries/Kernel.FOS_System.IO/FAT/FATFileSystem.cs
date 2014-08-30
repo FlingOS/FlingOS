@@ -31,6 +31,25 @@ namespace Kernel.FOS_System.IO.FAT
     /// </summary>
     public class FATFileSystem : FileSystem
     {
+        //Note: This implementation is capable of reading FAT 12, 16 or 32 but only capable of
+        //      writing FAT32. This is sensible since FAT12 and FAT16 have long been outdated.
+
+        //Note: A FAT file system is contained within a partition. So all read / writes should 
+        //      be done through the partition not the disk device. The partition handles
+        //      translating the sector numbers from partition relative to disk relative.
+
+        //Note: This implementation makes no use of caching for global file system data such as 
+        //      the FAT table. This means data is written straight to disk. However, this causes
+        //      a large volume of read / write traffic. A more sofisticated implementation would
+        //      utilise sector caching and dirty sector marking.
+
+
+        //TODO - The implementation for FAT12/16 does not fit will with the rest of the file
+        //       system because there is no way to create a root directory listing (it is 
+        //       possible for FAT32). A new listing class should be created to virtualise
+        //       (/simulate) a root directory for FAT12/16.
+
+
         /// <summary>
         /// Number of bytes per sector
         /// </summary>
@@ -171,16 +190,24 @@ namespace Kernel.FOS_System.IO.FAT
         public FATFileSystem(Partition aPartition)
             : base(aPartition)
         {
-            byte[] BPBData = thePartition.TheDiskDevice.NewBlockArray(1);
+            //Create an array to store the BPB data.
+            byte[] BPBData = thePartition.NewBlockArray(1);
+            //Load the BIOS Parameter Block - the first sector of the partition.
             thePartition.ReadBlock(0UL, 1U, BPBData);
 
-            UInt16 sig = ByteConverter.ToUInt16(BPBData, 510);
-            if (sig != 0xAA55)
+            //Check the top two bytes for the signature
+            if (BPBData[510] != 0x55 ||
+                BPBData[511] != 0xAA)
             {
+                //If they are wrong, this is not a valid FAT file system.
                 return;
             }
 
+            //The signature is the only thing we can check to determine if this is FAT
+            //  so we must now assume this is a valid FAT file system.
             IsValid = true;
+
+            //Load or calculate the various bits of data required to use a FAT file system.
 
             BytesPerSector = ByteConverter.ToUInt16(BPBData, 11);
             SectorsPerCluster = BPBData[13];
@@ -195,11 +222,12 @@ namespace Kernel.FOS_System.IO.FAT
                 TotalSectorCount = ByteConverter.ToUInt32(BPBData, 32);
             }
 
-            // FAT12/16
+            //Valid   for FAT12/16
+            //Invalid for FAT32, SectorCount always 0 in this field.
             FATSectorCount = ByteConverter.ToUInt16(BPBData, 22);
-            //For FAT32, SectorCount always 0 in this field.
             if (FATSectorCount == 0)
             {
+                //FAT32 has a different, larger field for sector count
                 FATSectorCount = ByteConverter.ToUInt32(BPBData, 36);
             }
             
@@ -258,6 +286,9 @@ namespace Kernel.FOS_System.IO.FAT
         /// <param name="aData">The array to store the data in.</param>
         public void ReadCluster(UInt32 aCluster, byte[] aData)
         {
+            //Translate relative cluster to absolute cluster which is then
+            //  converted to absolute sector number relative to the start 
+            //  of the partition.
             UInt64 xSector = DataSector + ((aCluster - 2) * SectorsPerCluster);
             thePartition.ReadBlock(xSector, SectorsPerCluster, aData);
         }
@@ -268,44 +299,61 @@ namespace Kernel.FOS_System.IO.FAT
         /// <param name="aData">The data to write.</param>
         public void WriteCluster(UInt32 aCluster, byte[] aData)
         {
+            //See ReadCluster.
             UInt64 xSector = DataSector + ((aCluster - 2) * SectorsPerCluster);
             thePartition.WriteBlock(xSector, SectorsPerCluster, aData);
         }
         /// <summary>
         /// Reads the cluster numbers in a cluster chain starting at the specified cluster number.
         /// </summary>
-        /// <param name="fileSize">The size of file being read (used only for estimating number of clusters)</param>
+        /// <param name="fileSize">The size of file being read (used only for estimating number of clusters). Must be non-zero.</param>
         /// <param name="FirstClusterNum">The first cluster number in the chain.</param>
         /// <returns>The list of cluster numbers in the chain.</returns>
         public UInt32List ReadClusterChain(UInt64 fileSize, UInt32 FirstClusterNum)
         {
+            //The capacity calculation is designed to make the internal array of the list exactly
+            //  the correct size for the number of cluster numbers in the chain.
             UInt32List xResult = new UInt32List((int)((UInt32)fileSize / (SectorsPerCluster * BytesPerSector)));
 
+            //Preallocated array for a sector of data. Used to store table data
             byte[] xSector = new byte[BytesPerSector];
+            //The sector number of the sector which contains the cluster chain information
+            //  for the current cluster number
             UInt64 xSectorNum = 0;
-            bool xSectorNumHasValue = false;
+            //Whether the current sector has been loaded or not. This allows us to load a given sector
+            //  the minimum number of times. If the cluster chain stays all within one sector, then 
+            //  there's no need to keep reloading the sector.
+            bool xSectorLoaded = false;
+            //The current cluster number in the chain
             UInt32 xClusterNum = FirstClusterNum;
 
+            //The sector number and offset for the next entry in the cluster chain
             UInt64 xNextSectorNum;
             UInt32 xNextSectorOffset;
 
+            //We need to do this at least once to read in the value for the starting cluster number
             do
             {
+                //Get the sector number and offset for the current cluster num in the table.
                 FATFileSystem.TableSectorDescrip tableSectorDesc = GetFATTableSectorPosition(xClusterNum);
                 xNextSectorNum = tableSectorDesc.Sector;
                 xNextSectorOffset = tableSectorDesc.Offset;
 
-                if (xSectorNumHasValue == false || xSectorNum != xNextSectorNum)
+                //Load the sector if it hasn't already been loaded
+                if (xSectorLoaded == false || xSectorNum != xNextSectorNum)
                 {
                     ReadFATSector(xNextSectorNum, xSector);
                     xSectorNum = xNextSectorNum;
-                    xSectorNumHasValue = true;
+                    xSectorLoaded = true;
                 }
 
+                //Add the current cluster number
                 xResult.Add(xClusterNum);
 
+                //Read the entry in the table for the current cluster number
                 xClusterNum = ReadFATEntry(xSector, xClusterNum, xNextSectorOffset);
             }
+            //Keep looping reading the chain until we reach the end of the file.
             while (!FATEntryIndicatesEOF(xClusterNum));
 
             return xResult;
@@ -385,15 +433,13 @@ namespace Kernel.FOS_System.IO.FAT
                 if (aOffset == (BytesPerSector - 1))
                 {
                     ExceptionMethods.Throw(new FOS_System.Exception("TODO: Sector Span"));
-                    /* This cluster access spans a sector boundary in the FAT */
-                    /* There are a number of strategies to handling this. The */
-                    /* easiest is to always load FAT sectors into memory */
-                    /* in pairs if the volume is FAT12 (if you want to load */
-                    /* FAT sector N, you also load FAT sector N+1 immediately */
-                    /* following it in memory unless sector N is the last FAT */
-                    /* sector). It is assumed that this is the strategy used here */
-                    /* which makes this if test for a sector boundary span */
-                    /* unnecessary. */
+                    /* This cluster access spans a sector boundary in the FAT *
+                     * There are a number of strategies to handling this. The *
+                     * easiest is to always load FAT sectors into memory in   *
+                     * pairs if the volume is FAT12 (if you want to load FAT  *
+                     * sector N, you also load FAT sector N+1 immediately     *
+                     * following it in memory unless sector N is the last FAT *
+                     * sector).                                               */
                 }
                 // We now access the FAT entry as a WORD just as we do for FAT16, but if the cluster number is
                 // EVEN, we only want the low 12-bits of the 16-bits we fetch. If the cluster number is ODD
@@ -414,7 +460,7 @@ namespace Kernel.FOS_System.IO.FAT
             }
             else
             {
-                return ByteConverter.ToUInt16(aFATTableSector, aOffset) & 0x0FFFFFFFu;
+                return ByteConverter.ToUInt32(aFATTableSector, aOffset) & 0x0FFFFFFFu;
             }
         }
         /// <summary>
@@ -474,7 +520,6 @@ namespace Kernel.FOS_System.IO.FAT
                 aFATTableSector[aOffset + 5] = (byte)(FATEntry >> 20);
                 aFATTableSector[aOffset + 6] = (byte)(FATEntry >> 24);
                 // --- DO NOT WRITE TOP 4 BITS --- (as per spec)
-                //aFATTableSector[aOffset + 7] = (byte)(FATEntry >> 28);
             }
         }
         /// <summary>
@@ -484,14 +529,7 @@ namespace Kernel.FOS_System.IO.FAT
         /// <returns>Whether the FAT entry value indicates end-of-file or not.</returns>
         public bool FATEntryIndicatesEOF(UInt32 aValue)
         {
-            //Hmmm...Ubuntu 10.1 FAT driver was writing 
-            //  0xFFF8 as the EOF cluster num for a FAT32 formatted drive
-            //  when it should be (as per spec) the value below.
-            //Thus, if we exactly equal 0xFFF8, we will assume a badly-written drive
-            //  and just accept it...
-
-            return aValue >= GetFATEntryEOFValue(FATType) ||
-                aValue == GetFATEntryEOFValue(FATTypeEnum.FAT16);
+            return aValue >= GetFATEntryEOFValue(FATType);
         }
         /// <summary>
         /// Determines whether the FAT entry value indicates a free cluster or not.
@@ -500,12 +538,6 @@ namespace Kernel.FOS_System.IO.FAT
         /// <returns>Whether the FAT entry value indicates a free cluster or not.</returns>
         public bool FATEntryIndicatesFree(UInt32 aValue)
         {
-            //Hmmm...Ubuntu 10.1 FAT driver was writing 
-            //  0xFFF8 as the EOF cluster num for a FAT32 formatted drive
-            //  when it should be (as per spec) the value below.
-            //Thus, if we exactly equal 0xFFF8, we will assume a badly-written drive
-            //  and just accept it...
-
             return aValue == 0;
         }
         /// <summary>
@@ -543,13 +575,11 @@ namespace Kernel.FOS_System.IO.FAT
             byte[] xSector = new byte[BytesPerSector];
             UInt64 xSectorNum = 0;
             UInt32 xSectorOffset = 0;
-            UInt32 xClusterNum = startCluster - 1;
+            UInt32 xClusterNum = startCluster;
             UInt32 xClusterPointedTo = 0xF;
 
-            //TODO - Umm...fix this! This will hit infinite loop if no free clusters left!
             do
             {
-                xClusterNum++;
                 FATFileSystem.TableSectorDescrip tableSectorDesc = GetFATTableSectorPosition(xClusterNum);
                 xSectorNum = tableSectorDesc.Sector;
                 xSectorOffset = tableSectorDesc.Offset;
@@ -558,7 +588,12 @@ namespace Kernel.FOS_System.IO.FAT
 
                 xClusterPointedTo = ReadFATEntry(xSector, xClusterNum, xSectorOffset);
             }
-            while (!FATEntryIndicatesFree(xClusterPointedTo));
+            while (!FATEntryIndicatesFree(xClusterPointedTo) && ++xClusterNum < ClusterCount);
+
+            if(xClusterNum == ClusterCount)
+            {
+                ExceptionMethods.Throw(new FOS_System.Exceptions.IndexOutOfRangeException());
+            }
 
             return xClusterNum;
         }
@@ -569,12 +604,17 @@ namespace Kernel.FOS_System.IO.FAT
         /// <param name="value">The value to set to.</param>
         public void SetFATEntryAndSave(UInt32 clusterNum, UInt32 value)
         {
+            //Get the table sector location for the specified cluster number
             FATFileSystem.TableSectorDescrip tableSectorDesc = GetFATTableSectorPosition(clusterNum);
             UInt64 sectorNum = tableSectorDesc.Sector;
             UInt32 sectorOffset = tableSectorDesc.Offset;
+            //Create an array to hold the table sector data
             byte[] sectorData = new byte[BytesPerSector];
+            //Read the existing table sector data
             ReadFATSector(sectorNum, sectorData);
+            //Set the table entry
             WriteFATEntry(sectorData, (UInt32)sectorNum, sectorOffset, value);
+            //Write the table sector data back to disk
             WriteFATSector(sectorNum, sectorData);
         }
 
@@ -591,7 +631,7 @@ namespace Kernel.FOS_System.IO.FAT
             {
                 if (_rootDirectoryFAT32 == null)
                 {
-                    GetRootDirectoryTable();
+                    GetRootDirectoryListings();
                 }
                 return _rootDirectoryFAT32;
             }
@@ -604,7 +644,7 @@ namespace Kernel.FOS_System.IO.FAT
         /// Gets the root directory listings in the FAT file system.
         /// </summary>
         /// <returns>The root directory listings.</returns>
-        public List GetRootDirectoryTable()
+        public List GetRootDirectoryListings()
         {
             if (FATType == FATTypeEnum.FAT32)
             {
@@ -873,7 +913,7 @@ namespace Kernel.FOS_System.IO.FAT
             {
                 shortName = (String)shortNameParts[0];
             }
-            byte ShortNameChecksum = CheckSum(ByteConverter.GetASCIIBytes(shortName));
+            byte ShortNameChecksum = CalculateShortNameCheckSum(ByteConverter.GetASCIIBytes(shortName));
 
             longName += (char)0;
             int nameLengthDiff = 13 - (longName.length % 13);
@@ -1001,7 +1041,6 @@ namespace Kernel.FOS_System.IO.FAT
 
             return offset;
         }
-
         /// <summary>
         /// Gets the short name for the specified long name.
         /// </summary>
@@ -1036,9 +1075,9 @@ namespace Kernel.FOS_System.IO.FAT
         /// <summary>
         /// Calculates the short name checksum.
         /// </summary>
-        /// <param name="shortName">The short name.</param>
+        /// <param name="shortNameBytes">The short name.</param>
         /// <returns>The checksum value.</returns>
-        private static byte CheckSum(byte[] shortName)
+        private static byte CalculateShortNameCheckSum(byte[] shortNameBytes)
         {
             short FcbNameLen;
 		    byte Sum;
@@ -1048,7 +1087,7 @@ namespace Kernel.FOS_System.IO.FAT
             for (FcbNameLen = 11; FcbNameLen != 0; FcbNameLen--, charIdx++)
             {
 			    // NOTE: The operation is an unsigned char rotate right
-			    Sum = (byte)((((Sum & 1) == 0x1) ? 0x80 : 0) + (Sum >> 1) + shortName[charIdx]);
+			    Sum = (byte)((((Sum & 1) == 0x1) ? 0x80 : 0) + (Sum >> 1) + shortNameBytes[charIdx]);
 		    }
 		    return (byte)(Sum);
         }
@@ -1067,7 +1106,7 @@ namespace Kernel.FOS_System.IO.FAT
             else
             {
                 List nameParts = aName.Split(FileSystemManager.PathDelimiter);
-                List listings = GetRootDirectoryTable();
+                List listings = GetRootDirectoryListings();
                 return GetListingFromListings(nameParts, null, listings);
             }
         }
@@ -1151,7 +1190,7 @@ namespace Kernel.FOS_System.IO.FAT
             List listings = null;
             if (parent == null)
             {
-                listings = GetRootDirectoryTable();
+                listings = GetRootDirectoryListings();
             }
             else
             {

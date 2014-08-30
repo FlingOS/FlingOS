@@ -299,12 +299,14 @@ namespace Kernel.Hardware.USB.HCIs
     public unsafe class EHCI : HCI
     {
         //TODO - Perhaps should avoid using identity mapping for registers etc? 
+        //TODO - Periodic schedule support
+        //TODO - Isochronous transfer support
 
         /*
          * Based on the Intel EHCI Specification for USB 2.0
          *  http://www.intel.co.uk/content/dam/www/public/us/en/documents/technical-specifications/ehci-specification-for-usb.pdf
          */
-
+        
         /// <summary>
         /// The base address of the USB HCI device in memory.
         /// </summary>

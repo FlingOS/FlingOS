@@ -25,8 +25,13 @@ using System.Threading.Tasks;
 namespace Kernel.FOS_System
 {
     /// <summary>
-    /// Represents an object type specification.
+    /// Represents an object type specification. Please see remarks before using.
     /// </summary>
+    /// <remarks>
+    /// The inheritance of the System.Type class is simply so the typeof operator can be used.
+    /// Do not use any of the members, properties or methods which are inherited from the base
+    /// class!
+    /// </remarks>
     [Compiler.TypeClass]
     public unsafe abstract class Type : System.Type
     {

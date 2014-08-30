@@ -91,6 +91,9 @@ namespace Kernel.FOS_System
         /// <param name="offset">The offset within the ASCII string at which to start converting.</param>
         /// <param name="count">The number of characters to convert.</param>
         /// <returns>The UTF16 encoded bytes.</returns>
+        /// <remarks>
+        /// This method does not add the null termination character "\0" to the end of the bytes.
+        /// </remarks>
         [Compiler.NoDebug]
         public static byte[] GetUTF16Bytes(FOS_System.String asciiString, int offset, int count)
         {
@@ -167,6 +170,9 @@ namespace Kernel.FOS_System
         /// <param name="aStart">The index in the array at which to start converting bytes.</param>
         /// <param name="aCharCount">The number of characters to convert.</param>
         /// <returns>The ASCII encoded string.</returns>
+        /// <remarks>
+        /// This method does not handle removing the null termination character if it is present.
+        /// </remarks>
         [Compiler.NoDebug]
         public static FOS_System.String GetASCIIStringFromUTF16(byte[] n, UInt32 aStart, UInt32 aCharCount)
         {
@@ -193,6 +199,9 @@ namespace Kernel.FOS_System
         /// <param name="aStart">The index in the array at which to start converting bytes.</param>
         /// <param name="aCharCount">The number of characters to convert.</param>
         /// <returns>The ASCII encoded string.</returns>
+        /// <remarks>
+        /// This method does not handle removing the null termination character if it is present.
+        /// </remarks>
         public unsafe static FOS_System.String GetASCIIStringFromUTF16(byte* n, UInt32 aStart, UInt32 aCharCount)
         {
             //If you change this method, change the array version above too.

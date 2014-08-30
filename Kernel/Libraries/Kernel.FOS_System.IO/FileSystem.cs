@@ -77,6 +77,7 @@ namespace Kernel.FOS_System.IO
         /// <returns>The listing or null if not found.</returns>
         public Base GetListingFromListings(List nameParts, Directory parent, List listings)
         {
+            //  ".." means "parent directory"
             if (((FOS_System.String)nameParts[0]) == "..")
             {
                 nameParts.RemoveAt(0);

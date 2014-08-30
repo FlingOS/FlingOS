@@ -25,6 +25,8 @@ namespace Kernel.FOS_System.IO.Streams
     /// </summary>
     public abstract class FileStream : Stream
     {
+        //TODO - This implementation has no way of shrinking files - only growing them!
+
         /// <summary>
         /// The file which the stream reads/writes from/to.
         /// </summary>
@@ -58,6 +60,8 @@ namespace Kernel.FOS_System.IO.Streams
         /// <returns>The new file stream.</returns>
         public static FileStream Create(File aFile)
         {
+            //TODO - More stream types must be added for the different types
+            //       of file system.
             if (aFile._Type == (FOS_System.Type)(typeof(IO.FAT.FATFile)))
             {
                 return new FAT.FATFileStream((IO.FAT.FATFile)aFile, false);
