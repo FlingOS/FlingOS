@@ -29,6 +29,10 @@ namespace Kernel.Hardware.Devices
     /// </summary>
     public abstract class DiskDevice : BlockDevice
     {
+        /// <summary>
+        /// Cleans the software and hardware caches (if any) by writing necessary data
+        /// to disk before wiping the caches.
+        /// </summary>
         public abstract void CleanCaches();
     }
 }

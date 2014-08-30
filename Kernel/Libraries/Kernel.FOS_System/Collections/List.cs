@@ -204,6 +204,12 @@ namespace Kernel.FOS_System.Collections
             nextIndex--;
         }
 
+        /// <summary>
+        /// Returns the index of the first instance of the specified object or -1 
+        /// if it is not found.
+        /// </summary>
+        /// <param name="obj">The object to search for.</param>
+        /// <returns>The index or -1 if not found.</returns>
         public int IndexOf(FOS_System.Object obj)
         {
             //This is a straight forward search. Other search algorithms

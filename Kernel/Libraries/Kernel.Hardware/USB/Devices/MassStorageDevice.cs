@@ -49,14 +49,48 @@ namespace Kernel.Hardware.USB.Devices
         public const uint CBWMagic = 0x43425355; // USBC
     }
 
+    /// <summary>
+    /// All the possible Mass Storage Device power states.
+    /// </summary>
     public enum MSD_PowerStates : byte
     {
+        /// <summary>
+        /// Default state used with devices which do not support the other states.
+        /// Tells the device to process the Start and LOEJ bits. 
+        /// </summary>
+        /// <remarks>
+        /// If you set the power state to something other than START_VALID, the Start 
+        /// and LOEJ bits are ignored.
+        /// </remarks>
         START_VALID = 0x0,
+        /// <summary>
+        /// Tells the device to transition into the Active power state.
+        /// </summary>
         ACTIVE = 0x1,
+        /// <summary>
+        /// Tells the device to transition into the Idle power state.
+        /// </summary>
         IDLE = 0x2,
+        /// <summary>
+        /// Tells the device to transition into the Standby power state.
+        /// </summary>
         STANDBY = 0x3,
+        /// <summary>
+        /// Tells the device to transfer power control to the logical unit.
+        /// </summary>
+        /// <remarks>
+        /// Enables the Idle timer and disables the Standby timer.
+        /// </remarks>
         LU_CONTROL = 0x7,
+        /// <summary>
+        /// Forces the Idle timer to 0 then transitions the device power state to 
+        /// Idle then hands power control back to the device server.
+        /// </summary>
         FORCE_IDLE_0 = 0xA,
+        /// <summary>
+        /// Forces the Standby timer to 0 then transitions the device power state to 
+        /// Standby then hands power control back to the device server.
+        /// </summary>
         FORCE_STANDBY_0 = 0xB
     }
     /// <summary>
@@ -77,11 +111,17 @@ namespace Kernel.Hardware.USB.Devices
             protected set;
         }
        
+        /// <summary>
+        /// Whether the device has been ejected or not.
+        /// </summary>
         public bool Ejected
         {
             get;
             protected set;
         }
+        /// <summary>
+        /// Whether the device is in the Active power state or not.
+        /// </summary>
         public bool Active
         {
             get;
@@ -150,6 +190,9 @@ namespace Kernel.Hardware.USB.Devices
             base.Destroy();
         }
 
+        /// <summary>
+        /// Transitions the device to the Active power state.
+        /// </summary>
         public void Activate()
         {
             if(!Active)
@@ -159,6 +202,12 @@ namespace Kernel.Hardware.USB.Devices
                 SendSCSI_StartStopUnitCommand(false, MSD_PowerStates.ACTIVE, true, true, null);
             }
         }
+        /// <summary>
+        /// Transitions the device to the Idle power state.
+        /// </summary>
+        /// <param name="overrideCondition">
+        /// Whether to ignore the internal Active state or not.
+        /// </param>
         public void Idle(bool overrideCondition)
         {
             if (Active || overrideCondition)
@@ -168,12 +217,18 @@ namespace Kernel.Hardware.USB.Devices
                 SendSCSI_StartStopUnitCommand(false, MSD_PowerStates.IDLE, false, false, null);
             }
         }
+        /// <summary>
+        /// Transitions the device to the Standby power state.
+        /// </summary>
         public void Standby()
         {
             Active = false;
 
             SendSCSI_StartStopUnitCommand(false, MSD_PowerStates.STANDBY, false, false, null);
         }
+        /// <summary>
+        /// Tells the device to laod the medium.
+        /// </summary>
         public void Load()
         {
             if (Ejected)
@@ -183,6 +238,9 @@ namespace Kernel.Hardware.USB.Devices
                 SendSCSI_StartStopUnitCommand(false, MSD_PowerStates.START_VALID, true, true, null);
             }
         }
+        /// <summary>
+        /// Safely ejects the device.
+        /// </summary>
         public void Eject()
         {
             if(!Ejected)
@@ -192,6 +250,10 @@ namespace Kernel.Hardware.USB.Devices
                 SendSCSI_StartStopUnitCommand(false, MSD_PowerStates.START_VALID, false, true, null);
             }
         }
+        /// <summary>
+        /// Sends the synchronise cache command to tell the device
+        /// to immediately write any cached data to the medium.
+        /// </summary>
         public void CleanCaches()
         {
             if (!Ejected)
@@ -637,13 +699,52 @@ namespace Kernel.Hardware.USB.Devices
             }
         }
 
-        public void SendSCSI_SyncCacheCommand(bool SyncV, bool ImmediateResponse, void* statusBuffer)
+        /// <summary>
+        /// Sends a SCSI Sync Cache command.
+        /// </summary>
+        /// <param name="SyncNV">
+        /// Whether the device is required to sync volatile and non-volatile caches or not. Specify 
+        /// "false" to force full cache sync including non-volatile caches. Specify "true" to force 
+        /// sync volatile caches and optionally sync non-volatile caches (up to the specific device
+        /// what it does).
+        /// </param>
+        /// <param name="ImmediateResponse">
+        /// Whether the device should send the status response as soon as the command is recognised
+        /// or the device should only send the response once the sync is completed. Specify "false"
+        /// for the latter option.
+        /// </param>
+        /// <param name="statusBuffer">
+        /// Buffer for the status response. Specify null if you don't want to keep the response data.
+        /// </param>
+        public void SendSCSI_SyncCacheCommand(bool SyncNV, bool ImmediateResponse, void* statusBuffer)
         {
             //0 block count means all blocks after specified LBA.
             //Thus, using LBA=0 & Blocks=0, syncs all blocks on the device!
-            SendSCSI_SyncCacheCommand(SyncV, ImmediateResponse, 0, 0, statusBuffer);
+            SendSCSI_SyncCacheCommand(SyncNV, ImmediateResponse, 0, 0, statusBuffer);
         }
-        public void SendSCSI_SyncCacheCommand(bool SyncV, bool ImmediateResponse, uint LBA, ushort Blocks, void* statusBuffer)
+        /// <summary>
+        /// Sends a SCSI Sync Cache command.
+        /// </summary>
+        /// <param name="SyncNV">
+        /// Whether the device is required to sync volatile and non-volatile caches or not. Specify 
+        /// "false" to force full cache sync including non-volatile caches. Specify "true" to force 
+        /// sync volatile caches and optionally sync non-volatile caches (up to the specific device
+        /// what it does).
+        /// </param>
+        /// <param name="ImmediateResponse">
+        /// Whether the device should send the status response as soon as the command is recognised
+        /// or the device should only send the response once the sync is completed. Specify "false"
+        /// for the latter option.
+        /// </param>
+        /// <param name="LBA">The LBA of the first block to sync.</param>
+        /// <param name="Blocks">
+        /// The number of blocks to sync. Specify 0 to sync all the blocks from the start LBA through
+        /// to the end of the device.
+        /// </param>
+        /// <param name="statusBuffer">
+        /// Buffer for the status response. Specify null if you don't want to keep the response data.
+        /// </param>
+        public void SendSCSI_SyncCacheCommand(bool SyncNV, bool ImmediateResponse, uint LBA, ushort Blocks, void* statusBuffer)
         {
             #if MSD_TRACE
             DBGMSG("SyncCache Command");
@@ -656,7 +757,7 @@ namespace Kernel.Hardware.USB.Devices
             //try
             {
                 SetupSCSICommand(0x35, cbw, LBA, Blocks);
-                cbw->commandByte[1] = (byte)((SyncV ? 0x4 : 0) | (ImmediateResponse ? 0x2 : 0));
+                cbw->commandByte[1] = (byte)((SyncNV ? 0x4 : 0) | (ImmediateResponse ? 0x2 : 0));
 
                 #if MSD_TRACE
                 DBGMSG("Setup transfer...");
@@ -731,7 +832,29 @@ namespace Kernel.Hardware.USB.Devices
                 }
             }
         }
-
+        /// <summary>
+        /// Sends a SCSI START_STOP Unit command.
+        /// </summary>
+        /// <param name="ImmediateResponse">
+        /// Whether the device should send the status response as soon as the command is recognised
+        /// or the device should only send the response once the command processing is completed. 
+        /// Specify "false" for the latter option.
+        /// </param>
+        /// <param name="PowerCondition">
+        /// The power condition to transition to. It is not invalid to tell the device to transition
+        /// to the same as its current power state.
+        /// </param>
+        /// <param name="Start">
+        /// If PowerCondition is START_VALID, tells the device to transition to the Active power state
+        /// or the Stopped power state (true for the former, false for the latter).
+        /// </param>
+        /// <param name="LoadEject">
+        /// False to take no load/eject action. If true then: If Start is true, the device shall load
+        /// the medium. If Start is false, the device shall eject the medium.
+        /// </param>
+        /// <param name="statusBuffer">
+        /// Buffer for the status response. Specify null if you don't want to keep the response data.
+        /// </param>
         public void SendSCSI_StartStopUnitCommand(bool ImmediateResponse, MSD_PowerStates PowerCondition, 
                                                   bool Start, bool LoadEject, void* statusBuffer)
         {
@@ -1289,6 +1412,9 @@ namespace Kernel.Hardware.USB.Devices
             msd.Idle(false);
         }
 
+        /// <summary>
+        /// Tests writing and reading from the device.
+        /// </summary>
         public void Test()
         {
             try
@@ -1351,6 +1477,9 @@ namespace Kernel.Hardware.USB.Devices
             BasicConsole.DelayOutput(5);
         }
 
+        /// <summary>
+        /// Makes sure all data is written to disk and not stored in hardware caches.
+        /// </summary>
         public override void CleanCaches()
         {
             msd.CleanCaches();

@@ -894,10 +894,29 @@ namespace Kernel.FOS_System.IO.FAT
 
             return result;
         }
+        /// <summary>
+        /// Determines whether the specified listing must be encoded as a long-name listing
+        /// or not.
+        /// </summary>
+        /// <param name="listing">The listing to check.</param>
+        /// <returns>True if it is a long-named listing. Otherwise, false.</returns>
         private bool IsLongNameListing(Base listing)
         {
             return ((String)listing.Name.Split('.')[0]).length > 8;
         }
+        /// <summary>
+        /// Encodes the specified listing as a long-name listing and 
+        /// sets the encoded data in the specified array starting at 
+        /// the specified offset. Does not encode the short-name 
+        /// listing that must immediately follow the long-name listings.
+        /// </summary>
+        /// <param name="listing">The listing to encode.</param>
+        /// <param name="result">The array to set the encoded data in.</param>
+        /// <param name="offset">The offset in the array to start storing data at.</param>
+        /// <returns>The offset in the array to the first byte after the new encoded data.</returns>
+        /// <remarks>
+        /// It is assumed that the data array is big enough to hold all the long name listings.
+        /// </remarks>
         private int EncodeLongNameListing(Base listing, byte[] result, int offset)
         {
             //Long name entries only
@@ -977,6 +996,18 @@ namespace Kernel.FOS_System.IO.FAT
 
             return offset;
         }
+        /// <summary>
+        /// Encodes the specified listing as a short-name listing and 
+        /// sets the encoded data in the specified array starting at 
+        /// the specified offset.
+        /// </summary>
+        /// <param name="listing">The listing to encode.</param>
+        /// <param name="result">The array to set the encoded data in.</param>
+        /// <param name="offset">The offset in the array to start storing data at.</param>
+        /// <returns>The offset in the array to the first byte after the new encoded data.</returns>
+        /// <remarks>
+        /// It is assumed that the data array is big enough to hold all the short name listings.
+        /// </remarks>
         private int EncodeShortNameListing(Base listing, byte[] result, int offset)
         {
             //Short name entry only

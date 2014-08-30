@@ -29,6 +29,8 @@ namespace Kernel.Hardware.ATA
     /// </summary>
     public class ATAPio : ATA
     {
+        //TODO - This implementation does not support CD drives properly.
+
         /// <summary>
         /// Device statuses.
         /// </summary>
@@ -578,6 +580,10 @@ namespace Kernel.Hardware.ATA
             SendCmd(Cmd.CacheFlush);
         }
 
+        /// <summary>
+        /// Cleans the software and hardware caches (if any) by writing cached data to disk 
+        /// if necessary before wiping the cache.
+        /// </summary>
         public override void CleanCaches()
         {
             //Nothing to do for our implementation (thus far...)

@@ -118,6 +118,9 @@ namespace Kernel.FOS_System.IO
             return null;
         }
 
+        /// <summary>
+        /// Cleans any caches of data which haven't been committed to disk.
+        /// </summary>
         public override void CleanCaches()
         {
             //Pass it down the chain
