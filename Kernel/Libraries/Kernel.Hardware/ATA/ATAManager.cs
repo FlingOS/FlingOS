@@ -46,6 +46,8 @@ namespace Kernel.Hardware.ATA
             //Try to initialise primary IDE:ATA drives.
             InitDrive(ATA.ControllerID.Primary, ATA.BusPosition.Slave);
             InitDrive(ATA.ControllerID.Primary, ATA.BusPosition.Master);
+            
+            //TODO: Detect if secondary drives present and init them if they are
         }
 
         /// <summary>
@@ -55,10 +57,14 @@ namespace Kernel.Hardware.ATA
         /// <param name="busPos">The bus position of the device.</param>
         public static void InitDrive(ATA.ControllerID ctrlId, ATA.BusPosition busPos)
         {
+            //Get the IO ports for the correct bus
             ATAIO theIO = ctrlId == ATA.ControllerID.Primary ? ATAIO1 : ATAIO2;
+            //Create / init the device on the bus
             ATAPio theATAPio = new ATAPio(theIO, ctrlId, busPos);
+            //If the device was detected as present:
             if (theATAPio.DriveType != ATAPio.SpecLevel.Null)
             {
+                //Add it to the list of devices.
                 DeviceManager.Devices.Add(theATAPio);
             }
         }

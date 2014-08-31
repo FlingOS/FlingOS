@@ -161,11 +161,15 @@ namespace Kernel.FOS_System.IO.Streams.FAT
         /// <returns>The actual number of bytes read.</returns>
         public override int Read(byte[] buffer, int offset, int count)
         {
+            //Don't attempt to read a file of 0 size.
             if (TheFile.Size > 0 || IgnoreFileSize)
             {
+                //Load cluster chain if it hasn't already been loaded.
                 if (ClusterNums == null)
                 {
                     GetClusterNums();
+                    //If loading cluster nums failed, don't throw an exception, 
+                    //  just return nothing read.
                     if(ClusterNums == null)
                     {
                         return 0;
@@ -179,6 +183,7 @@ namespace Kernel.FOS_System.IO.Streams.FAT
                 BasicConsole.WriteLine("Checking params...");
 #endif
 
+                //Conditions for being able to read from the stream.
                 if (count < 0)
                 {
                     ExceptionMethods.Throw(new Exceptions.ArgumentException("FATFileStream.Read: aCount must be > 0"));
@@ -210,7 +215,7 @@ namespace Kernel.FOS_System.IO.Streams.FAT
                 BasicConsole.WriteLine("Params OK.");
 #endif
                                 
-                // Reduce count, so that no out of bounds exceptions occur
+                // Clamp the count value so that no out of bounds exceptions occur
                 ulong fileSize = 0;
                 if (IgnoreFileSize)
                 {
@@ -231,6 +236,8 @@ namespace Kernel.FOS_System.IO.Streams.FAT
                 BasicConsole.WriteLine("Creating new cluster array...");
 #endif
 
+                //Temporary store of cluster data since we can only
+                //  read entire clusters at a time.
                 byte[] xCluster = mFS.NewClusterArray();
                 UInt32 xClusterSize = mFS.BytesPerCluster;
 
@@ -239,7 +246,7 @@ namespace Kernel.FOS_System.IO.Streams.FAT
 #if FATFileStream_TRACE
                 BasicConsole.WriteLine("Reading data...");
 #endif
-
+                //Loop reading in the data
                 while (xCount > 0)
                 {
                     UInt32 xClusterIdx = (UInt32)mPosition / xClusterSize;

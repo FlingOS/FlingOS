@@ -129,6 +129,13 @@ namespace Kernel.Hardware.Devices
         /// </summary>
         protected void CreateDefaultKeymap()
         {
+            //This creates (most/some of) a UK keyboard mapping.
+            //  You can go look up scancodes / characters etc. for other
+            //  keyboards if you like. I'd recommend you change it if 
+            //  you're on a US keyboard otherwise your life will be hell
+            //  (and demo'ing to your few remaining friends will be 
+            //  embarrassing).
+
             KeyMappings = new List(164);
 
             //TODO: fn key
@@ -296,42 +303,42 @@ namespace Kernel.Hardware.Devices
         /// <summary>
         /// Adds a new keyboard mapping.
         /// </summary>
-        /// <param name="p">The scancode received from the keyboard.</param>
-        /// <param name="p_2">The character to represent the scancode or \0.</param>
-        /// <param name="p_3">The keyboard key to respresent the scancode.</param>
-        protected void AddKey(uint p, char p_2, KeyboardKey p_3)
+        /// <param name="scancode">The scancode received from the keyboard.</param>
+        /// <param name="character">The character to represent the scancode or \0.</param>
+        /// <param name="key">The keyboard key to respresent the scancode.</param>
+        protected void AddKey(uint scancode, char character, KeyboardKey key)
         {
-            KeyMappings.Add(new KeyMapping(p, p_2, p_3));
+            KeyMappings.Add(new KeyMapping(scancode, character, key));
         }
         /// <summary>
         /// Adds a new keyboard mapping for the same key with and without the shift key.
         /// </summary>
-        /// <param name="p">The scancode received from the keyboard (without the shift key).</param>
-        /// <param name="p_2">The character to represent the scancode or \0.</param>
-        /// <param name="p_3">The keyboard key to respresent the scancode.</param>
-        protected void AddKeyWithAndWithoutShift(uint p, char p_2, KeyboardKey p_3)
+        /// <param name="scancode">The scancode received from the keyboard (without the shift key).</param>
+        /// <param name="character">The character to represent the scancode or \0.</param>
+        /// <param name="key">The keyboard key to respresent the scancode.</param>
+        protected void AddKeyWithAndWithoutShift(uint scancode, char character, KeyboardKey key)
         {
-            AddKey(p, p_2, p_3);
-            AddKey(p << 16, p_2, p_3);
+            AddKey(scancode, character, key);
+            AddKey(scancode << 16, character, key);
         }
         /// <summary>
         /// Adds a new keyboard mapping for a key which has no character representation.
         /// </summary>
-        /// <param name="p">The scancode received from the keyboard.</param>
-        /// <param name="p_3">The keyboard key to respresent the scancode.</param>
-        protected void AddKey(uint p, KeyboardKey p_3)
+        /// <param name="scancode">The scancode received from the keyboard.</param>
+        /// <param name="key">The keyboard key to respresent the scancode.</param>
+        protected void AddKey(uint scancode, KeyboardKey key)
         {
-            AddKey(p, '\0', p_3);
+            AddKey(scancode, '\0', key);
         }
         /// <summary>
         /// Adds a new keyboard mapping for a key which has no character representation.
         /// Adds entries for the key with and without the shift key modifier.
         /// </summary>
-        /// <param name="p">The scancode received from the keyboard (without the shift key).</param>
-        /// <param name="p_3">The keyboard key to respresent the scancode.</param>
-        protected void AddKeyWithShift(uint p, KeyboardKey p_3)
+        /// <param name="scancode">The scancode received from the keyboard (without the shift key).</param>
+        /// <param name="key">The keyboard key to respresent the scancode.</param>
+        protected void AddKeyWithShift(uint scancode, KeyboardKey key)
         {
-            AddKeyWithAndWithoutShift(p, '\0', p_3);
+            AddKeyWithAndWithoutShift(scancode, '\0', key);
         }
 
         /// <summary>

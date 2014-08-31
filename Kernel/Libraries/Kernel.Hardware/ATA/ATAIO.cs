@@ -83,16 +83,22 @@ namespace Kernel.Hardware.ATA
         [Compiler.NoDebug]
         internal ATAIO(bool isSecondary)
         {
+            //BAR of main registers
             UInt16 xBAR0 = (UInt16)(isSecondary ? 0x0170 : 0x01F0);
+            //BAR of alternative registers
             UInt16 xBAR1 = (UInt16)(isSecondary ? 0x0374 : 0x03F4);
             Data = new IO.IOPort(xBAR0);
             SectorCount = new IO.IOPort(xBAR0, 2);
-            LBA0 = new IO.IOPort(xBAR0, 3);
-            LBA1 = new IO.IOPort(xBAR0, 4);
-            LBA2 = new IO.IOPort(xBAR0, 5);
-            Command = new IO.IOPort(xBAR0, 7);
-            Status = new IO.IOPort(xBAR0, 7);
+            //Logical block address
+            LBA0 = new IO.IOPort(xBAR0, 3); //Lo-bits
+            LBA1 = new IO.IOPort(xBAR0, 4); //Mid-bits
+            LBA2 = new IO.IOPort(xBAR0, 5); //Hi-bits
             DeviceSelect = new IO.IOPort(xBAR0, 6);
+            //Write - command
+            Command = new IO.IOPort(xBAR0, 7);
+            //Read - status
+            Status = new IO.IOPort(xBAR0, 7);
+
             Control = new IO.IOPort(xBAR1, 2);
         }
     }
