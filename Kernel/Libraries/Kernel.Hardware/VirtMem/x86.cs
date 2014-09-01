@@ -102,6 +102,7 @@ namespace Kernel.Hardware.VirtMem
 #if PAGING_TRACE
             BasicConsole.WriteLine("Mapping addresses...");
 #endif
+            //Calculate page directory and page table indices
             uint pdIdx = vAddr >> 22;
             uint ptIdx = (vAddr >> 12) & 0x03FF;
 
@@ -111,14 +112,17 @@ namespace Kernel.Hardware.VirtMem
             BasicConsole.WriteLine(((FOS_System.String)"pdIdx=") + pdIdx);
             BasicConsole.WriteLine(((FOS_System.String)"ptIdx=") + ptIdx);
 #endif 
-
+            //Get a pointer to the pre-allocated page table
             uint* ptPtr = GetFixedPage(pdIdx);
 #if PAGING_TRACE
             BasicConsole.WriteLine(((FOS_System.String)"ptPtr=") + (uint)ptPtr);
 #endif 
+            //Set the page table entry
             SetPageEntry(ptPtr, ptIdx, pAddr);
+            //Set directory table entry
             SetDirectoryEntry(pdIdx, (uint*)GetPhysicalAddress((uint)ptPtr));
 
+            //Invalidate the page table entry so that mapping isn't CPU cached.
             InvalidatePTE(vAddr);
         }
         /// <summary>
@@ -131,15 +135,22 @@ namespace Kernel.Hardware.VirtMem
         /// </remarks>
         public override uint GetPhysicalAddress(uint vAddr)
         {
+            //Calculate page directory and page table indices
             uint pdIdx = vAddr >> 22;
             uint ptIdx = (vAddr >> 12) & 0x3FF;
+            //Get a pointer to the pre-allocated page table
             uint* ptPtr = GetFixedPage(pdIdx);
 
+            //Get the physical address using the page table entry phys address
+            //  plus the offset from the virtual address which will be the same 
+            //  as the offset from the phys address (page-aligned addresses and 
+            //  all that).
             return ((ptPtr[ptIdx] & 0xFFFFF000) + (vAddr & 0xFFF));
         }
 
         /// <summary>
-        /// Gets the specified built-in, pre-allocated page table.
+        /// Gets the specified built-in, pre-allocated page table. 
+        /// These page tables are not on the heap, they are part of the kernel pre-allocated memory.
         /// </summary>
         /// <param name="pageNum">The page number (directory index) of the page table to get.</param>
         /// <returns>A uint pointer to the page table.</returns>

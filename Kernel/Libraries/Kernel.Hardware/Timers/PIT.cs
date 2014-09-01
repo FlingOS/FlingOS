@@ -216,6 +216,7 @@ namespace Kernel.Hardware.Timers
         /// </summary>
         public void EnableSound()
         {
+            //OR with 0x03 to enable sound
             SpeakerPort.Write_Byte((byte)(SpeakerPort.Read_Byte() | 0x03));
         }
         /// <summary>
@@ -223,6 +224,7 @@ namespace Kernel.Hardware.Timers
         /// </summary>
         public void DisableSound()
         {
+            //AND with 0xFC to disable sound
             SpeakerPort.Write_Byte((byte)(SpeakerPort.Read_Byte() & 0xFC));
         }
         /// <summary>
