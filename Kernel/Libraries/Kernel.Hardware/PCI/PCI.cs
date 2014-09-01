@@ -61,32 +61,34 @@ namespace Kernel.Hardware.PCI
         /// <summary>
         /// Enumerates a particular PCI bus for connected devices.
         /// </summary>
-        /// <param name="xBus">The bus to enumerate.</param>
+        /// <param name="bus">The bus to enumerate.</param>
         /// <param name="step">The number of steps from the root bus.</param>
         [Compiler.NoDebug]
-        private static void EnumerateBus(uint xBus, uint step)
+        private static void EnumerateBus(uint bus, uint step)
         {
-            for (uint xDevice = 0; xDevice < 32; xDevice++)
+            for (uint device = 0; device < 32; device++)
             {
-                PCIDevice xPCIDevice = new PCIDevice(xBus, xDevice, 0x00);
-                if (xPCIDevice.DeviceExists)
+                PCIDevice pciDevice = new PCIDevice(bus, device, 0x00);
+                if (pciDevice.DeviceExists)
                 {
-                    if (xPCIDevice.HeaderType == PCIDevice.PCIHeaderType.Bridge)
+                    if (pciDevice.HeaderType == PCIDevice.PCIHeaderType.Bridge)
                     {
-                        for (uint xFunction = 0; xFunction < 8; xFunction++)
+                        for (uint function = 0; function < 8; function++)
                         {
-                            xPCIDevice = new PCIDevice(xBus, xDevice, xFunction);
-                            if (xPCIDevice.DeviceExists)
-                                AddDevice(new PCIDeviceBridge(xBus, xDevice, xFunction), step);
+                            pciDevice = new PCIDevice(bus, device, function);
+                            if (pciDevice.DeviceExists)
+                            {
+                                AddDevice(new PCIDeviceBridge(bus, device, function), step);
+                            }
                         }
                     }
-                    else if (xPCIDevice.HeaderType == PCIDevice.PCIHeaderType.Cardbus)
+                    else if (pciDevice.HeaderType == PCIDevice.PCIHeaderType.Cardbus)
                     {
-                        AddDevice(new PCIDeviceCardbus(xBus, xDevice, 0x00), step);
+                        AddDevice(new PCIDeviceCardbus(bus, device, 0x00), step);
                     }
                     else
                     {
-                        AddDevice(new PCIDeviceNormal(xBus, xDevice, 0x00), step);
+                        AddDevice(new PCIDeviceNormal(bus, device, 0x00), step);
                     }
                 }
             }

@@ -44,6 +44,8 @@ namespace Kernel.Hardware.Keyboards
         /// </summary>
         public override void Enable()
         {
+            //We wouldn't want to accidentally add the IRQ handler multiple times
+            //  because then any one scancode would be processed multiple times!
             if (!enabled)
             {
                 InterruptHandlerId = Interrupts.Interrupts.AddIRQHandler(1, InterruptHandler, this);
@@ -60,6 +62,9 @@ namespace Kernel.Hardware.Keyboards
             {
                 DeviceManager.Devices.Remove(this);
                 Interrupts.Interrupts.RemoveIRQHandler(1, InterruptHandlerId);
+                //As per requirements, set temp sote store of id to 0 to prevent
+                //  accidental multiple removal.
+                InterruptHandlerId = 0;
                 enabled = false;
             }
         }
@@ -77,12 +82,18 @@ namespace Kernel.Hardware.Keyboards
         /// </summary>
         private void InterruptHandler()
         {
+            //Get the scancode we are being notified of
             byte scanCode = DataPort.Read_Byte();
+            //Determine whether the key has been released or not
             bool released = (scanCode & 0x80) == 0x80;
+            //If it has:
             if (released)
             {
+                //Clear the released bit so we get the correct key scancode
                 scanCode = (byte)(scanCode ^ 0x80);
             }
+            //And handle the (now corrected) scancode and pass in whether the key was
+            //  released or not.
             HandleScancode(scanCode, released);
         }
         /// <summary>
@@ -94,36 +105,37 @@ namespace Kernel.Hardware.Keyboards
         {
             switch (scancode)
             {
+                //Left and right shift keys
                 case 0x36:
                 case 0x2A:
                     {
                         shiftPressed = !released;
                         break;
                     }
+                //Ctrl key
                 case 0x1D:
                     {
                         ctrlPressed = !released;
                         break;
                     }
+                //Alt key
                 case 0x38:
                     {
                         altPressed = !released;
                         break;
                     }
+                //All other keys
                 default:
                     {
-                        if ((ctrlPressed) && (altPressed) && (scancode == 0x53))
-                        {
-                            //TODO: Remove this Ctrl+Alt+Delete hack
-                            BasicConsole.WriteLine("Detected Ctrl-Alt-Delete! Disabling keyboard.");
-                            Disable();
-                        }
-                        if (shiftPressed)
-                        {
-                            scancode = scancode << 16;
-                        }
+                        //If the key was just pressed, enqueue it
                         if (!released)
                         {
+                            //If shift pressed, adjust the scancode appropriately.
+                            if (shiftPressed)
+                            {
+                                scancode = scancode << 16;
+                            }
+
                             Enqueue(scancode);
                         }
                         break;

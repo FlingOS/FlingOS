@@ -318,7 +318,9 @@ namespace Kernel.Hardware.Devices
         /// <param name="key">The keyboard key to respresent the scancode.</param>
         protected void AddKeyWithAndWithoutShift(uint scancode, char character, KeyboardKey key)
         {
+            //Add normal key
             AddKey(scancode, character, key);
+            //Add scancode for key with shift-key pressed
             AddKey(scancode << 16, character, key);
         }
         /// <summary>
@@ -364,6 +366,7 @@ namespace Kernel.Hardware.Devices
         /// <returns>The dequeued scancode.</returns>
         public uint Dequeue()
         {
+            //Pops the first item off the top of the queue
             uint result = scancodeBuffer[0];
             scancodeBuffer.RemoveAt(0);
             return result;
@@ -377,6 +380,14 @@ namespace Kernel.Hardware.Devices
         /// <returns>True if a character to represent the scancode was found. Otherwise false.</returns>
         public bool GetCharValue(uint aScanCode, out char aValue)
         {
+            //Loops through all the key mappings to find the one which matches
+            //  the specified scancode. Output value goes in aValue, return true
+            //  indicates a valid character was found. Return false indicates key 
+            //  mapping was not found.
+
+            //We ignore scancodes for which the character is \0 since they are "no character" 
+            //  and so not a valid return value from this method.
+
             for (int i = 0; i < KeyMappings.Count; i++)
             {
                 if (((KeyMapping)KeyMappings[i]).Scancode == aScanCode)
@@ -403,6 +414,11 @@ namespace Kernel.Hardware.Devices
         /// <returns>True if a KeyboardKey to represent the scancode was found. Otherwise false.</returns>
         public bool GetKeyValue(uint aScanCode, out KeyboardKey aValue)
         {
+            //Loops through all the key mappings to find the one which matches
+            //  the specified scancode. Output value goes in aValue, return true
+            //  indicates key mapping was found. Return false indicates key 
+            //  mapping was not found.
+
             for (int i = 0; i < KeyMappings.Count; i++)
             {
                 if (((KeyMapping)KeyMappings[i]).Scancode == aScanCode)
@@ -425,6 +441,11 @@ namespace Kernel.Hardware.Devices
         /// <returns>True if a KeyboardMapping to represent the scancode was found. Otherwise false.</returns>
         public bool GetKeyMapping(uint aScanCode, out KeyMapping aValue)
         {
+            //Loops through all the key mappings to find the one which matches
+            //  the specified scancode. Output value goes in aValue, return true
+            //  indicates key mapping was found. Return false indicates key 
+            //  mapping was not found.
+
             for (int i = 0; i < KeyMappings.Count; i++)
             {
                 if (((KeyMapping)KeyMappings[i]).Scancode == aScanCode)
@@ -446,7 +467,9 @@ namespace Kernel.Hardware.Devices
         public KeyMapping ReadMapping()
         {
             KeyMapping xResult = null;
-            while (scancodeBuffer.Count == 0 || !GetKeyMapping(Dequeue(), out xResult))
+            
+            //Wait until a recognised key mapping is found
+            while (!GetKeyMapping(ReadScancode(), out xResult))
             {
                 Timer.Default.Wait(50);
             }
@@ -460,7 +483,8 @@ namespace Kernel.Hardware.Devices
         public char ReadChar()
         {
             char xResult = '\0';
-            while (scancodeBuffer.Count == 0 || !GetCharValue(Dequeue(), out xResult))
+            //Wait until a recognised character is found
+            while (!GetCharValue(ReadScancode(), out xResult))
             {
                 Timer.Default.Wait(50);
             }
@@ -474,7 +498,8 @@ namespace Kernel.Hardware.Devices
         public KeyboardKey ReadKey()
         {
             KeyboardKey xResult = KeyboardKey.NoName;
-            while (scancodeBuffer.Count == 0 || !GetKeyValue(Dequeue(), out xResult))
+            //Wait until a recognised keyboard key is found
+            while (!GetKeyValue(ReadScancode(), out xResult))
             {
                 Timer.Default.Wait(50);
             }
@@ -487,6 +512,7 @@ namespace Kernel.Hardware.Devices
         /// <returns>The dequeued scancode.</returns>
         public uint ReadScancode()
         {
+            //Wait until we get a scancode
             while (scancodeBuffer.Count == 0)
             {
                 Timer.Default.Wait(50);
@@ -502,15 +528,21 @@ namespace Kernel.Hardware.Devices
         /// <returns>True if a character was dequeued. Otherwise false.</returns>
         public bool GetChar(out char c)
         {
-            c = '\0';
+            //This is a non-blocking method.
 
+            //If a scancode is immediately available:
             if (scancodeBuffer.Count > 0)
             {
+                //Dequeue the scancode and return the character for it.
                 GetCharValue(Dequeue(), out c);
+                //Return that we dequeued a character
                 return true;
             }
             else
             {
+                c = '\0';
+
+                //Otherwise just return that we didn't dequeue a character
                 return false;
             }
         }
@@ -521,7 +553,7 @@ namespace Kernel.Hardware.Devices
         /// <returns>True if a key was dequeued. Otherwise false.</returns>
         public bool GetKey(out KeyboardKey c)
         {
-            c = KeyboardKey.NoName;
+            //Same idea as GetChar - see that for docs.
 
             if (scancodeBuffer.Count > 0)
             {
@@ -530,6 +562,8 @@ namespace Kernel.Hardware.Devices
             }
             else
             {
+                c = KeyboardKey.NoName;
+
                 return false;
             }
         }
@@ -540,7 +574,7 @@ namespace Kernel.Hardware.Devices
         /// <returns>True if a key mapping was dequeued. Otherwise false.</returns>
         public bool GetMapping(out KeyMapping c)
         {
-            c = null;
+            //Same idea as GetChar - see that for docs.
 
             if (scancodeBuffer.Count > 0)
             {
@@ -549,6 +583,8 @@ namespace Kernel.Hardware.Devices
             }
             else
             {
+                c = null;
+
                 return false;
             }
         }
@@ -559,6 +595,8 @@ namespace Kernel.Hardware.Devices
         /// <returns>True if a scancode was dequeued. Otherwise false.</returns>
         public bool GetScancode(out uint c)
         {
+            //Same idea as GetChar - see that for docs.
+
             if (scancodeBuffer.Count > 0)
             {
                 c = Dequeue();
