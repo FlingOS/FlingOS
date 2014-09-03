@@ -64,7 +64,13 @@ namespace Kernel.Hardware.Interrupts
         /// <summary>
         /// Used to generate a unique Id number for each interrupt handler for this interrupt.
         /// </summary>
-        public int IdGenerator = 0;
+        /// <remarks>
+        /// As a safety precaution, all Ids start at one and go upwards. 0 is reserved as an 
+        /// invalid Id. After removing a handler, any temporary store of handler Id should be
+        /// set to 0 so code cannot attempt to remove a handler it does not own by accidentally
+        /// trying to remove its handler twice.
+        /// </remarks>
+        public int IdGenerator = 1;
     }
     /// <summary>
     /// Represents a handler for an interrupt.
@@ -82,6 +88,12 @@ namespace Kernel.Hardware.Interrupts
         /// <summary>
         /// The Id of this handler. Used primarily for removal.
         /// </summary>
+        /// <remarks>
+        /// As a safety precaution, all Ids start at one and go upwards. 0 is reserved as an 
+        /// invalid Id. After removing a handler, any temporary store of handler Id should be
+        /// set to 0 so code cannot attempt to remove a handler it does not own by accidentally
+        /// trying to remove its handler twice.
+        /// </remarks>
         public int id;
     }
     /// <summary>
@@ -96,6 +108,9 @@ namespace Kernel.Hardware.Interrupts
     [Compiler.PluggedClass]
     public unsafe static class Interrupts
     {
+        //TODO - This lot is all x86 specific. It needs to be abstracted into a separate x86
+        //       interrupts class to support new architectures.
+
         /// <summary>
         /// The full list of interrupt handlers. This array has an entry for all 256 interrupt numbers.
         /// If an entry is empty, then it does not have (/has never had) any handlers attached.
@@ -110,20 +125,37 @@ namespace Kernel.Hardware.Interrupts
         /// <param name="num">The IRQ to enable.</param>
         public static void EnableIRQ(byte num)
         {
+            //For x86 Programmable Interrupts Controller (PIC)
+            //  there is the master PIC and the slave PIC.
+
+            //The master PIC controls IRQs 0-7, 
+            // the slave PIC controls IRQs 8-15
+            //However, when sending commands to the slave PIC
+            //  you index IRQs 8-15 as indices 0-7 as that is 
+            //  how the slave PIC sees them.
+
+            //So, if Num > 7, we must send the info to the slave PIC
             if (num > 7)
             {
+                //-= 8 converts IRQ number to index on slave PIC
                 num -= 8;
 
+                //Bit mask - set bit indicates IRQ disabled.
+                // We want to enable, so we must clear the corresponding bit.
                 byte mask = IO.IOPort.doRead_Byte(0xA1);
                 byte bitMask = (byte)(~(1u << num));
                 mask &= bitMask;
+                //Port 0xA1 for slave PIC
                 IO.IOPort.doWrite_Byte(0xA1, mask);
             }
+            //Else we send the info to the master PIC
             else
             {
+                //See above.
                 byte mask = IO.IOPort.doRead_Byte(0x21);
                 byte bitMask = (byte)(~(1u << num));
                 mask &= bitMask;
+                //Port 0x21 for master PIC
                 IO.IOPort.doWrite_Byte(0x21, mask);
             }
         }
@@ -133,6 +165,8 @@ namespace Kernel.Hardware.Interrupts
         /// <param name="num">The IRQ to disable.</param>
         public static void DisableIRQ(byte num)
         {
+            //This functions the same as EnableIRQ except it sets 
+            //  the corresponding bit instead of clearing it.
             if (num > 7)
             {
                 num -= 8;
@@ -156,23 +190,28 @@ namespace Kernel.Hardware.Interrupts
         /// <param name="num">The IRQ number (0-15) to add a handler for.</param>
         /// <param name="handler">The handler method to call when the interrupt occurs (must be a static).</param>
         /// <param name="data">The state object to pass the handler when the interrupt occurs.</param>
-        /// <returns>The Id of the new handler. Save and use for removal.</returns>
+        /// <returns>The Id of the new handler. Save and use for removal. An Id of 0 s invalid.</returns>
         public static int AddIRQHandler(int num, InterruptHandler handler,
                                          FOS_System.Object data)
         {
+            //In this OS's implementation, IRQs 0-15 are mapped to ISRs 32-47
             int result = AddISRHandler(num + 32, handler, data);
             EnableIRQ((byte)num);
             return result;
         }
         /// <summary>
         /// Removes the handler with the specified Id and disables the IRQ if there are no handlers left.
+        /// You should set any temporary store of <paramref name="id"/> to 0 since 0 is an invalid Id
+        /// it will prevent you from accidentally trying to remove the handler twice.
         /// </summary>
         /// <param name="num">The IRQ number to remove from.</param>
         /// <param name="id">The id of the handler to remove.</param>
         public static void RemoveIRQHandler(int num, int id)
         {
+            //In this OS's implementation, IRQs 0-15 are mapped to ISRs 32-47
             RemoveISRHandler(num + 32, id);
 
+            //We only want to disable the IRQ if nothing is handling it
             if (Handlers[num + 32].HandlerDescrips.Count == 0)
             {
                 DisableIRQ((byte)num);
@@ -221,6 +260,11 @@ namespace Kernel.Hardware.Interrupts
             if (Handlers[num] != null)
             {
                 InterruptHandlers handlers = Handlers[num];
+
+                //Search for the handler with the specified id.
+                //  Note: Id does not correspond to index since we could have removed
+                //        handlers with lower ids already.
+
                 for (int i = 0; i < handlers.HandlerDescrips.Count; i++)
                 {
                     HandlerDescriptor descrip = (HandlerDescriptor)handlers.HandlerDescrips[i];
@@ -245,7 +289,7 @@ namespace Kernel.Hardware.Interrupts
                 BasicConsole.WriteLine(((FOS_System.String)"ISR: ") + ISRNum);
                 BasicConsole.SetTextColour(BasicConsole.default_colour);
 #endif
-
+                //Go through any handlers and fire them
                 InterruptHandlers handlers = Handlers[ISRNum];
                 if (handlers != null)
                 {
@@ -257,6 +301,9 @@ namespace Kernel.Hardware.Interrupts
                     }
                 }
 
+                //If the ISR is actually an IRQ, we must also notify the PIC(s)
+                //  that the IRQ has completed / been handled by sending the 
+                //  End IRQ notification.
                 if (ISRNum >= 32 && ISRNum <= 47)
                 {
                     EndIRQ(ISRNum > 39);

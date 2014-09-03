@@ -216,6 +216,7 @@ namespace Kernel.Hardware.Timers
         /// </summary>
         public void EnableSound()
         {
+            //OR with 0x03 to enable sound
             SpeakerPort.Write_Byte((byte)(SpeakerPort.Read_Byte() | 0x03));
         }
         /// <summary>
@@ -223,6 +224,7 @@ namespace Kernel.Hardware.Timers
         /// </summary>
         public void DisableSound()
         {
+            //AND with 0xFC to disable sound
             SpeakerPort.Write_Byte((byte)(SpeakerPort.Read_Byte() & 0xFC));
         }
         /// <summary>
@@ -384,6 +386,9 @@ namespace Kernel.Hardware.Timers
             {
                 DeviceManager.Devices.Remove(this);
                 Interrupts.Interrupts.RemoveIRQHandler(0, InterruptHandlerId);
+                //As per requirements, set temp sote store of id to 0 to prevent
+                //  accidental multiple removal.
+                InterruptHandlerId = 0;
                 enabled = false;
             }
         }

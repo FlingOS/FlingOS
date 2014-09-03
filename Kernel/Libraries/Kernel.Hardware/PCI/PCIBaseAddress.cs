@@ -58,15 +58,35 @@ namespace Kernel.Hardware.PCI
         [Compiler.NoDebug]
         internal PCIBaseAddress(uint raw, uint aSize)
         {
+            //Determine whether this is an IO port base address
+            //  or a memory-mapped base address
             isIO = (raw & 0x01) == 1;
 
             if (isIO)
             {
+                //Bit 0 is IO indicator
+                //Bit 1 is reserved
+                //4-byte aligned base port address
                 baseAddress = (byte*)(raw & 0xFFFFFFFC);
             }
             else
             {
+                //Type indicator is bits 1 and 2
+                /* *********************** Description taken from OSDev.org ***************************
+                 * The Type field of the Memory Space BAR Layout specifies the size of the base       *
+                 * register and where in memory it can be mapped. If it has a value of 0x00 then the  *
+                 * base register is 32-bits wide and can be mapped anywhere in the 32-bit Memory      *
+                 * Space. A value of 0x02 means the base register is 64-bits wide and can be mapped   *
+                 * anywhere in the 64-bit Memory Space (A 64-bit base address register consumes 2 of  *
+                 * the base address registers available). A value of 0x01 is reserved as of revision  *
+                 * 3.0 of the PCI Local Bus Specification. In earlier versions it was used to support *
+                 * memory space below 1MB (16-bit wide base register that can be mapped anywhere in   *
+                 * the 16-bit Memory Space).                                                          *
+                 *                                                                                    *
+                 * Source: http://wiki.osdev.org/PCI#Base_Address_Registers, para 2, 1st Sep 2014     */
                 type = (byte)((raw >> 1) & 0x03);
+                //Bit 3 - Determines whether you can prefetch data from memory or not (in C this would
+                //  determine whether something is volatile or not.)
                 prefetchable = (ushort)((raw >> 3) & 0x01);
                 switch (type)
                 {
@@ -76,6 +96,7 @@ namespace Kernel.Hardware.PCI
                     case 0x01:
                         baseAddress = (byte*)(raw & 0xFFFFFFF0);
                         break;
+                    //Type 0x2 - 64-bit address not supported
                 }
             }
 

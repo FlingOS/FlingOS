@@ -429,13 +429,20 @@ namespace Kernel.Hardware.ATA
             // Not sure if all this is needed, its different than documented elsewhere but might not be bad
             // to add code to do all listed here:
             //
-            //To use the IDENTIFY command, select a target drive by sending 0xA0 for the master drive, or 0xB0 for the slave, to the "drive select" IO port. On the Primary bus, this would be port 0x1F6. 
-            // Then set the Sectorcount, LBAlo, LBAmid, and LBAhi IO ports to 0 (port 0x1F2 to 0x1F5). 
-            // Then send the IDENTIFY command (0xEC) to the Command IO port (0x1F7). 
-            // Then read the Status port (0x1F7) again. If the value read is 0, the drive does not exist. For any other value: poll the Status port (0x1F7) until bit 7 (BSY, value = 0x80) clears. 
-            // Because of some ATAPI drives that do not follow spec, at this point you need to check the LBAmid and LBAhi ports (0x1F4 and 0x1F5) to see if they are non-zero. 
-            // If so, the drive is not ATA, and you should stop polling. Otherwise, continue polling one of the Status ports until bit 3 (DRQ, value = 8) sets, or until bit 0 (ERR, value = 1) sets.
-            // At that point, if ERR is clear, the data is ready to read from the Data port (0x1F0). Read 256 words, and store them. 
+            //To use the IDENTIFY command, select a target drive by sending 0xA0 for the master drive, 
+            //   or 0xB0 for the slave, to the "drive select" IO port. On the Primary bus, this would be 
+            //   port 0x1F6.
+            //Then set the Sectorcount, LBAlo, LBAmid, and LBAhi IO ports to 0 (port 0x1F2 to 0x1F5). 
+            //Then send the IDENTIFY command (0xEC) to the Command IO port (0x1F7). 
+            //Then read the Status port (0x1F7) again. If the value read is 0, the drive does not exist. 
+            //   For any other value: poll the Status port (0x1F7) until bit 7 (BSY, value = 0x80) clears. 
+            //Because of some ATAPI drives that do not follow spec, at this point you need to check the 
+            //   LBAmid and LBAhi ports (0x1F4 and 0x1F5) to see if they are non-zero. 
+            //   If so, the drive is not ATA, and you should stop polling. Otherwise, continue polling 
+            //   one of the Status ports until bit 3 (DRQ, value = 8) sets, or until bit 0 (ERR, value = 1) 
+            //   sets.
+            //   At that point, if ERR is clear, the data is ready to read from the Data port (0x1F0). 
+            //   Read 256 words, and store them. 
 
             // Read Identification Space of the Device
             var xBuff = new UInt16[256];
@@ -462,20 +469,24 @@ namespace Kernel.Hardware.ATA
         }
 
         /// <summary>
-        /// Gets a string from the specified UInt16. Equivalent of ASCII byte array conversion.
+        /// Gets a string from the specified UInt16[]. Equivalent of ASCII byte array conversion.
         /// </summary>
-        /// <param name="aBuffer">The data to convert.</param>
-        /// <param name="anIndexStart">The index to start converting at.</param>
-        /// <param name="aStringLength">The length of the string to create.</param>
+        /// <param name="buffer">The data to convert.</param>
+        /// <param name="startIndex">The index to start converting at.</param>
+        /// <param name="strLength">The length of the string to create.</param>
         /// <returns>The new string.</returns>
-        protected FOS_System.String GetString(UInt16[] aBuffer, int anIndexStart, int aStringLength)
+        protected FOS_System.String GetString(UInt16[] buffer, int startIndex, int strLength)
         {
-            FOS_System.String newStr = FOS_System.String.New(aStringLength);
-            for (int i = 0; i < aStringLength / 2; i++)
+            //Each UInt16 is treated as 2 ASCII characters.
+            //  The upshot is that the buffer is essentially a byte array 
+            //  and we are treating each byte as one ASCII character.
+
+            FOS_System.String newStr = FOS_System.String.New(strLength);
+            for (int i = 0; i < strLength / 2; i++)
             {
-                UInt16 xChar = aBuffer[anIndexStart + i];
-                newStr[i * 2] = (char)(xChar >> 8);
-                newStr[i * 2 + 1] = (char)xChar;
+                UInt16 xChar = buffer[startIndex + i];
+                newStr[i * 2] = (char)((xChar >> 8) & 0xFF);
+                newStr[i * 2 + 1] = (char)(xChar & 0xFF);
             }
             return newStr;
         }

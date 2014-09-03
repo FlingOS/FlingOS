@@ -378,12 +378,23 @@ namespace Kernel.Hardware.PCI
         /// <returns>The size.</returns>
         protected uint GetSize(byte bar)
         {
+            //Calculate register number for specified BAR number
             byte regNum = (byte)(0x10 + (bar * 4));
+            //Read BAR address into a temp store so we can restore it later
             uint baseAddr = ReadRegister32(regNum);
+            //As per spec:
+
+            //Write all 1s to base address register
             WriteRegister32(regNum, 0xFFFFFFFF);
+            //Read back the value
             uint size = ReadRegister32(regNum);
+            //Invert the bits of the size, OR with 0xF and then add 1
             size = (~size | 0x0F) + 1;
+
+            //Restore the base address
             WriteRegister32(regNum, baseAddr);
+
+            //Return the size
             return size;
         }
 
