@@ -1,0 +1,146 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<topic id="7941dec4-c331-4bb2-a672-33a4e73b023e" revisionNumber="1">
+  <developerConceptualDocument xmlns="http://ddue.schemas.microsoft.com/authoring/2003/5" xmlns:xlink="http://www.w3.org/1999/xlink">
+    
+    <summary>
+      <para>List of sources and credits for (only) the Kernel code</para>
+    </summary>
+    
+    <introduction>
+      <para>
+      	This page provides a list of sources from which I have copied and then heavily adapted code for the Fling OS Kernel.
+      </para>
+    </introduction>
+    
+    <section address="Credit Given">
+      <title>Credit Given</title>
+      <content>
+        <para>
+        	The following entries give details of the code I have copied and then how I have adapated it. In all cases, any code
+        	which has been directly copied has then been heavily adapted or completely re-written. This includes:
+        	<list class="bullet">
+    	      	<listItem>
+   		         	<para>Converting from the source language (often C) to C#.</para>
+	          	</listItem>
+          		<listItem>
+	            	<para>Adding classes, strctures and variables where necessary to make the code work in C#</para>
+	          	</listItem>
+	          	<listItem>
+	            	<para>Heavy refactoring</para>
+	          	</listItem>
+	          	<listItem>
+            		<para>Reprogramming to make the code actually work and meet specifications</para>
+          		</listItem>
+        	</list>
+        </para>
+        <para>
+        	I have tried my best to avoid directly re-using other people's code deliberately so that I don't have copyright infringement.
+        	However, I wish readers and other developers to note 3 things:
+        	<list class="ordered">
+        		<listItem>
+        			<para>
+	        			Occasionally I have committed other people's code to my repository without real intention to and then worked with
+	        			it there. I am sorry if this happened to your code. If you take issue with this, please see below.
+        			</para>
+        		</listItem>
+        		<listItem>
+        			<para>
+	        			Any similarities between my code and someone else's is probably because I read their code first and based my 
+	        			design off theirs. In some places, this has lead me to produce very similar (nearing-identical) code, however, 
+	        			to the best of my knowledge this is rare. If you think I have created an identical copy of your code, see below.
+        			</para>
+        		</listItem>
+        		<listItem>
+        			<para>
+	        			Finally, I am not working for personal profit but for the benefit of others. Please do not penalise me for my 
+	        			work but please do take an approach of working cooperatively with me if you feel you have a grievance.
+        			</para>
+        		</listItem>
+        	</list>
+        </para>
+        <para>
+        	If you feel I have infringed your copyright in any way or have any other grievance, please get in touch via a (polite) email 
+        	and I will endeavour to correct any such issues. Contact details can be found on the main Fling OS website at 
+        	http://www.flingos.co.uk/contact
+        </para>
+      </content>
+	</section>
+	
+	<section address="Credit Given">
+      <title>Sources</title>
+      <content>
+        <para>
+        	<list class="bullet">
+    	      	<listItem>
+   		         	<para>PrettyOS - 
+   		         		<externalLink>
+						    <linkText>Website</linkText>
+						    <linkAlternateText>PrettyOS website</linkAlternateText>
+						    <linkUri>http://prettyos.de/</linkUri>
+						</externalLink>
+   		         	</para>
+   		         	<para>
+   		         		The Pretty OS source code provided a basis for much of the workings of my EHCI, USB and USB Mass Storage Device
+   		         		drivers. (I did not directly copy their original code, however). (A copy of their UHCI code can currently be
+   		         		found commented-out in UHCI.cs. It is awaiting removal).
+   		         	</para>
+   		         	<para>
+   		         		Since I did not directly copy their code nor create a like-for-like reproduction (more details given below), 
+   		         		I have seen fit to leave their license out of my code.
+	         		</para>
+	         		<para>
+   		         		Much of the code appears similar but it was re-written especially as the orignal was fundamentally broken 
+   		         		(barely ever working even in simplified test conditions) and in many places did not match clear USB 
+   		         		specifications. It took a lot of additional programming to make the EHCI, USB and MSD drivers work. Prior to
+   		         		finding their code I had already written all my EHCI QueueHead and qTD classes and structures and I had also
+   		         		made a good start on EHCI. Using their code as a basis merely expediated my progress to a working driver.
+   		         	</para>
+	          	</listItem>
+          		<listItem>
+	            	<para>Cosmos - 
+   		         		<externalLink>
+						    <linkText>Website</linkText>
+						    <linkAlternateText>Cosmos website</linkAlternateText>
+						    <linkUri>http://cosmos.codeplex.com</linkUri>
+						</externalLink>
+					</para>
+					<para>
+						It is right and proper that I add Cosmos to this list as I have used their ideas and designs as a basis in a 
+						few places. 
+					</para>
+					<para>
+						Cosmos' idea for an IL compiler sparked my own ideas.  However, my IL compiler was written completely from scratch 
+						without any reference to theirs. Furthermore, my compiler architecture is very different especially with regards 
+						to handling ASM plugs. As such, their is no license requirement.
+					</para>
+					<para>
+						Cosmos' FAT 12/16/32 driver design was what I used originally before realising it didn't match specifications. As
+						such, much of it has been re-written from scratch though a fair few simple methods and comments are still 
+						hanging around.						
+					</para>
+					<para>
+						Cosmos' keyboard driver was also a good basis and I did directly copy the keyboard mapping setup code initially
+						but then replaced a number of the key mappings to convert it from a US keyboard to a UK keyboard. The interrupt
+						handling and key reading methods are re-written or entirely my own design.
+					</para>
+	          	</listItem>
+	          	<listItem>
+	            	<para>OSDev - 
+   		         		<externalLink>
+						    <linkText>Website</linkText>
+						    <linkAlternateText>OSDev website</linkAlternateText>
+						    <linkUri>http://wiki.osdev.org</linkUri>
+						</externalLink>
+					</para>
+					<para>
+						I have read and used code from a large number of the OSDev articles and/or forum posts. Credit to them
+						for providing the resources that they do (despite their often scattered, buried or incomplete state).
+					</para>
+	          	</listItem>
+        	</list>
+        </para>
+      </content>
+	</section>
+	
+  </developerConceptualDocument>
+</topic>
