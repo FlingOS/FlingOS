@@ -9,8 +9,8 @@
     <introduction>
       <para>Welcome to Fling OS documentation!</para>
       <para>
-      	This documentation contains conceptual documentation (explanatory articles) and technical documentation (reference articles)
-      	for the entire Fling OS kernel.
+      	This documentation contains technical documentation for the entire Fling OS kernel. In future, it will also contain reference articles
+        and tutorials.
       </para>
     </introduction>
     <!-- <inThisSection>Optional description of content in this section</inThisSection> -->

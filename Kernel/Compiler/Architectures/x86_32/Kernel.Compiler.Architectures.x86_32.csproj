@@ -39,7 +39,8 @@
     <DebugSymbols>true</DebugSymbols>
     <OutputPath>bin\Docs\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <DocumentationFile>bin\Debug\Kernel.Compiler.Architectures.x86_32.XML</DocumentationFile>
+    <DocumentationFile>
+    </DocumentationFile>
     <DebugType>full</DebugType>
     <PlatformTarget>x86</PlatformTarget>
     <ErrorReport>prompt</ErrorReport>

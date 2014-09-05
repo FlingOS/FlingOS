@@ -40,7 +40,8 @@
     <DebugSymbols>true</DebugSymbols>
     <OutputPath>bin\Docs\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <DocumentationFile>bin\Debug\Kernel.Compiler.App.XML</DocumentationFile>
+    <DocumentationFile>
+    </DocumentationFile>
     <DebugType>full</DebugType>
     <PlatformTarget>x86</PlatformTarget>
     <ErrorReport>prompt</ErrorReport>
