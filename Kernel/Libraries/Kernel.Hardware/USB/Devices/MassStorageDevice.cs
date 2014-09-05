@@ -96,11 +96,15 @@ namespace Kernel.Hardware.USB.Devices
     /// <summary>
     /// Represents a USB mass storage device.
     /// </summary>
+    /// <remarks>
+    /// The SCSI MSD commands specification is available from 
+    /// <a href="http://www.seagate.com/staticfiles/support/disc/manuals/scsi/100293068a.pdf">Seagate</a>.
+    /// </remarks>
     public unsafe class MassStorageDevice : USBDevice
     {
         //TODO - Uncomment try-finally once try-catch-finally works properly.
         //TODO - Test for ejected, don't send commands if ejected!
-
+    
         /// <summary>
         /// The underlying disk device that allows the mass storage device to be 
         /// accessed in the same way as a disk.
@@ -142,6 +146,7 @@ namespace Kernel.Hardware.USB.Devices
             DBGMSG(((FOS_System.String)"MSD Interface num: ") + DeviceInfo.MSD_InterfaceNum);
             BasicConsole.DelayOutput(1);
 #endif
+            //Immediately set up the MSD.
             Setup();
         }
 
@@ -150,12 +155,16 @@ namespace Kernel.Hardware.USB.Devices
         /// </summary>
         protected void Setup()
         {
-            // start with correct endpoint toggles and reset interface
+            // Start with correct endpoint toggles
             ((Endpoint)DeviceInfo.Endpoints[DeviceInfo.MSD_OUTEndpointID]).toggle = false;
             ((Endpoint)DeviceInfo.Endpoints[DeviceInfo.MSD_INEndpointID]).toggle = false;
 
-            BulkReset(DeviceInfo.MSD_InterfaceNum); // Reset Interface
+            // Reset the main MSD interface
+            BulkReset(DeviceInfo.MSD_InterfaceNum);
 
+            //Check the device is responding correctly. The inquiry will also return
+            //  you more information like Id string indices etc. but we just check 
+            //  then discard them for now.
             byte* inquiryBuffer = (byte*)FOS_System.Heap.AllocZeroed(26u);
             //try
             {
@@ -168,12 +177,15 @@ namespace Kernel.Hardware.USB.Devices
                 FOS_System.Heap.Free(inquiryBuffer);
             }
 
-            ///////// send SCSI command "test unit ready(6)"
+            // Send SCSI command "test unit ready(6)"
             TestDeviceReady();
 
+            // Create the paired disk device for this MSD.
             diskDevice = new MassStorageDevice_DiskDevice(this);
 
+            // Tell the MSD device to "load" the medium
             Load();
+            // Then force the code to put the MSD into the Idle power state
             Idle(true);
         }
 
@@ -182,11 +194,15 @@ namespace Kernel.Hardware.USB.Devices
         /// </summary>
         public override void Destroy()
         {
+            // Safely eject the device before destroying / allowing user
+            //  to unplug.
             Eject();
 
+            // Destroy the paired disk device.
             diskDevice.Destroy();
             diskDevice = null;
 
+            // Destroy this
             base.Destroy();
         }
 
@@ -199,6 +215,11 @@ namespace Kernel.Hardware.USB.Devices
             {
                 Active = true;
 
+                //As per spec, send Start-Stop Unit command:
+                //  - No immediate response - wait for command to complete before returning
+                //  - Set to Active power state
+                //  - If ACTIVE is ignored, makes sure we set Start and LoadEject options
+                //    to have the device start and load the medium
                 SendSCSI_StartStopUnitCommand(false, MSD_PowerStates.ACTIVE, true, true, null);
             }
         }
@@ -210,10 +231,18 @@ namespace Kernel.Hardware.USB.Devices
         /// </param>
         public void Idle(bool overrideCondition)
         {
+            //We may want to force our code to put the device into Idle
+            //  power state. It is not against the SCSI Spec to tell a device
+            //  to transition to its current power state.
             if (Active || overrideCondition)
             {
                 Active = false;
 
+                //As per spec, send Start-Stop Unit command:
+                //  - No immediate response - wait for command to complete before returning
+                //  - Set to Idle power state
+                //  - If IDLE is ignored, makes sure we clear Start and LoadEject options
+                //    to have the device stop but not eject the medium.
                 SendSCSI_StartStopUnitCommand(false, MSD_PowerStates.IDLE, false, false, null);
             }
         }
@@ -224,6 +253,11 @@ namespace Kernel.Hardware.USB.Devices
         {
             Active = false;
 
+            //As per spec, send Start-Stop Unit command:
+            //  - No immediate response - wait for command to complete before returning
+            //  - Set to Standby power state
+            //  - If STANDBY is ignored, makes sure we clear Start and LoadEject options
+            //    to have the device stop but not eject the medium.
             SendSCSI_StartStopUnitCommand(false, MSD_PowerStates.STANDBY, false, false, null);
         }
         /// <summary>
@@ -235,6 +269,10 @@ namespace Kernel.Hardware.USB.Devices
             {
                 Ejected = false;
 
+                //As per spec, send Start-Stop Unit command:
+                //  - No immediate response - wait for command to complete before returning
+                //  - Tell the device to use the START and LOEJ options
+                //  - Set Start and LoadEject options to have the device start and load the medium.
                 SendSCSI_StartStopUnitCommand(false, MSD_PowerStates.START_VALID, true, true, null);
             }
         }
@@ -247,6 +285,15 @@ namespace Kernel.Hardware.USB.Devices
             {
                 Ejected = true;
 
+                //Note: The eject command also makes the device perform (internally)
+                //      a sync of non-volatile and volatile caches so it is not
+                //      necessary to send the SyncCaches command before sending the 
+                //      eject command.
+
+                //As per spec, send Start-Stop Unit command:
+                //  - No immediate response - wait for command to complete before returning
+                //  - Tell the device to use the START and LOEJ options
+                //  - Clear Start and LoadEject options to have the device stop but not eject the medium.
                 SendSCSI_StartStopUnitCommand(false, MSD_PowerStates.START_VALID, false, true, null);
             }
         }
@@ -258,15 +305,29 @@ namespace Kernel.Hardware.USB.Devices
         {
             if (!Ejected)
             {
+                //Not sure if this is strictly necessary but it would make
+                //  sense that the device must be active and have the medium
+                //  loaded for it to be able to sync caches (i.e. write) to 
+                //  the medium.
                 bool goIdle = false;
                 if(!Active)
                 {
                     Activate();
+                    //Store the fact that this method activated the device.
+                    //  It is possible the device is already active and we are
+                    //  simply performing a sync cache command during some 
+                    //  complex operation. In which case we wouldn't want to 
+                    //  idle the device and interrupt said complex operation.
                     goIdle = true;
                 }
 
+                // As per spec, send the CleanCaches command:
+                //  - No immediate response - wait for the command to complete before returning
+                //  - Clear SyncNV : Will sync both non-volate and volatile caches to disk.
                 SendSCSI_SyncCacheCommand(false, false, null);
 
+                // Only idle the device if this method was the one which activated it.
+                //  See above to reasoning.
                 if(goIdle)
                 {
                     Idle(false);
@@ -294,82 +355,104 @@ namespace Kernel.Hardware.USB.Devices
             USBTransfer transfer = new USBTransfer();
             DeviceInfo.hc.SetupTransfer(DeviceInfo, transfer, USBTransferType.Control, 0, 64);
 
-            // bmRequestType bRequest  wValue wIndex    wLength   Data
-            // 00100001b     11111111b 0000h  Interface 0000h     none
+            // RequestType   Request   Value  Index     Length   Data
+            // 00100001b     11111111b 0000h  Interface 0000h    None
             DeviceInfo.hc.SETUPTransaction(transfer, 8, 0x21, 0xFF, 0, 0, numInterface, 0);
-            DeviceInfo.hc.INTransaction(transfer, true, null, 0); // handshake
+            DeviceInfo.hc.INTransaction(transfer, true, null, 0); // Handshake
             DeviceInfo.hc.IssueTransfer(transfer);
         }
 
         /// <summary>
         /// Sets up a SCSI command.
         /// </summary>
-        /// <param name="SCSIcommand">The command byte.</param>
+        /// <param name="SCSICommand">The command byte.</param>
         /// <param name="cbw">A pointer to an existing command block wrapper.</param>
         /// <param name="LBA">The LBA to access.</param>
         /// <param name="TransferLength">The length of the data in bytes.</param>
-        public void SetupSCSICommand(byte SCSIcommand, CommandBlockWrapper* cbw, uint LBA, ushort TransferLength)
+        public void SetupSCSICommand(byte SCSICommand, CommandBlockWrapper* cbw, uint LBA, ushort TransferLength)
         {
-            cbw->CBWSignature = MassStorageDevice_Consts.CBWMagic;                      // magic
-            cbw->CBWTag = 0x42424200u | SCSIcommand;      // device echoes this field in the CSWTag field of the associated CSW
-            cbw->CBWDataTransferLength = TransferLength;        // Transfer length in bytes (only data)
-            cbw->commandByte[0] = SCSIcommand;           // Operation code
-            switch (SCSIcommand)
+            // Magic (signature) bytes
+            cbw->CBWSignature = MassStorageDevice_Consts.CBWMagic;
+            // Device echoes this field in the CSWTag field of the associated CSW
+            cbw->CBWTag = 0x42424200u | SCSICommand;
+            // Transfer data length in bytes (only data!)
+            cbw->CBWDataTransferLength = TransferLength;
+            // Operation code
+            cbw->commandByte[0] = SCSICommand;
+            switch (SCSICommand)
             {
-                case 0x00: // test unit ready(6)
-                    cbw->CBWFlags = 0x00;          // Out: 0x00  In: 0x80
-                    cbw->CBWCBLength = 6;             // only bits 4:0
+                // Test Unit Ready (6)
+                case 0x00:
+                    // Out: 0x00  In: 0x80
+                    cbw->CBWFlags = 0x00;
+                    cbw->CBWCBLength = 6;
                     break;
-                case 0x03: // Request Sense(6)
-                    cbw->CBWFlags = 0x80;          // Out: 0x00  In: 0x80
-                    cbw->CBWCBLength = 6;             // only bits 4:0
-                    cbw->commandByte[4] = 18;            // Allocation length (max. bytes)
+                // Request Sense (6)
+                case 0x03:
+                    // Out: 0x00  In: 0x80
+                    cbw->CBWFlags = 0x80;
+                    cbw->CBWCBLength = 6;
+                    // Allocation length (max. bytes)
+                    cbw->commandByte[4] = 18;
                     break;
-                case 0x12: // Inquiry(6)
-                    cbw->CBWFlags = 0x80;          // Out: 0x00  In: 0x80
-                    cbw->CBWCBLength = 6;             // only bits 4:0
-                    cbw->commandByte[4] = 36;            // Allocation length (max. bytes)
+                // Inquiry (6)
+                case 0x12:
+                    // Out: 0x00  In: 0x80
+                    cbw->CBWFlags = 0x80;
+                    cbw->CBWCBLength = 6;
+                    // Allocation length (max. bytes)
+                    cbw->commandByte[4] = 36;
                     break;
-                case 0x25: // read capacity(10)
-                    cbw->CBWFlags = 0x80;          // Out: 0x00  In: 0x80
-                    cbw->CBWCBLength = 10;            // only bits 4:0
+                // Read Capacity (10)
+                case 0x25:
+                    // Out: 0x00  In: 0x80
+                    cbw->CBWFlags = 0x80;
+                    cbw->CBWCBLength = 10;
                     cbw->commandByte[2] = (byte)(LBA >> 24);    // LBA MSB
-                    cbw->commandByte[3] = (byte)(LBA >> 16);    // LBA
-                    cbw->commandByte[4] = (byte)(LBA >> 8);    // LBA
-                    cbw->commandByte[5] = (byte)(LBA);    // LBA LSB
+                    cbw->commandByte[3] = (byte)(LBA >> 16);    //   ...
+                    cbw->commandByte[4] = (byte)(LBA >> 8);     //   ...
+                    cbw->commandByte[5] = (byte)(LBA);          // LBA LSB
                     break;
-                case 0x28: // read(10)
-                    cbw->CBWFlags = 0x80;                  // Out: 0x00  In: 0x80
-                    cbw->CBWCBLength = 10;                    // only bits 4:0
-                    cbw->commandByte[2] = (byte)(LBA >> 24);            // LBA MSB
-                    cbw->commandByte[3] = (byte)(LBA >> 16);            // LBA
-                    cbw->commandByte[4] = (byte)(LBA >> 8);            // LBA
-                    cbw->commandByte[5] = (byte)(LBA);            // LBA LSB
+                // Read (10)
+                case 0x28:
+                    // Out: 0x00  In: 0x80
+                    cbw->CBWFlags = 0x80;
+                    cbw->CBWCBLength = 10;
+                    cbw->commandByte[2] = (byte)(LBA >> 24);    // LBA MSB
+                    cbw->commandByte[3] = (byte)(LBA >> 16);    //   ...
+                    cbw->commandByte[4] = (byte)(LBA >> 8);     //   ...
+                    cbw->commandByte[5] = (byte)(LBA);          // LBA LSB
                     cbw->commandByte[7] = (byte)((TransferLength / (uint)diskDevice.BlockSize) >> 8); // MSB <--- blocks not byte!
-                    cbw->commandByte[8] = (byte)(TransferLength / (uint)diskDevice.BlockSize); // LSB
+                    cbw->commandByte[8] = (byte)(TransferLength / (uint)diskDevice.BlockSize);        // LSB
                     break;
-                case 0x2A: // write(10)
-                    cbw->CBWFlags = 0x00;                  // Out: 0x00  In: 0x80
-                    cbw->CBWCBLength = 10;                    // only bits 4:0
-                    cbw->commandByte[2] = (byte)(LBA >> 24);            // LBA MSB
-                    cbw->commandByte[3] = (byte)(LBA >> 16);            // LBA
-                    cbw->commandByte[4] = (byte)(LBA >> 8);            // LBA
-                    cbw->commandByte[5] = (byte)(LBA);            // LBA LSB
+                // Write (10)
+                case 0x2A:
+                    // Out: 0x00  In: 0x80
+                    cbw->CBWFlags = 0x00;
+                    cbw->CBWCBLength = 10;
+                    cbw->commandByte[2] = (byte)(LBA >> 24);    // LBA MSB
+                    cbw->commandByte[3] = (byte)(LBA >> 16);    //   ...
+                    cbw->commandByte[4] = (byte)(LBA >> 8);     //   ...
+                    cbw->commandByte[5] = (byte)(LBA);          // LBA LSB
                     cbw->commandByte[7] = (byte)((TransferLength / (uint)diskDevice.BlockSize) >> 8); // MSB <--- blocks not byte!
-                    cbw->commandByte[8] = (byte)(TransferLength / (uint)diskDevice.BlockSize); // LSB
+                    cbw->commandByte[8] = (byte)(TransferLength / (uint)diskDevice.BlockSize);        // LSB
                     break;
-                case 0x35: // SynchroniseCache(10)
+                // Synchronise Cache (10)
+                case 0x35:
+                    // Out: 0x00  In: 0x80
                     cbw->CBWFlags = 0x00;
                     cbw->CBWCBLength = 10;
                     cbw->CBWDataTransferLength = 0;
                     cbw->commandByte[2] = (byte)(LBA >> 24);            // LBA MSB
-                    cbw->commandByte[3] = (byte)(LBA >> 16);            // LBA
-                    cbw->commandByte[4] = (byte)(LBA >> 8);            // LBA
-                    cbw->commandByte[5] = (byte)(LBA);            // LBA LSB
+                    cbw->commandByte[3] = (byte)(LBA >> 16);            //   ...
+                    cbw->commandByte[4] = (byte)(LBA >> 8);             //   ...
+                    cbw->commandByte[5] = (byte)(LBA);                  // LBA LSB
                     cbw->commandByte[7] = (byte)((TransferLength / (uint)diskDevice.BlockSize) >> 8); // MSB <--- blocks not byte!
-                    cbw->commandByte[8] = (byte)(TransferLength / (uint)diskDevice.BlockSize); // LSB
+                    cbw->commandByte[8] = (byte)(TransferLength / (uint)diskDevice.BlockSize);        // LSB
                     break;
-                case 0x1B: // StartStopUnit (6)
+                // Start Stop Unit (6)
+                case 0x1B:
+                    // Out: 0x00  In: 0x80
                     cbw->CBWFlags = 0x00;
                     cbw->CBWCBLength = 6;
                     cbw->CBWDataTransferLength = 0;
@@ -698,7 +781,6 @@ namespace Kernel.Hardware.USB.Devices
                 }
             }
         }
-
         /// <summary>
         /// Sends a SCSI Sync Cache command.
         /// </summary>
