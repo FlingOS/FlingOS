@@ -3,12 +3,12 @@
   <developerConceptualDocument xmlns="http://ddue.schemas.microsoft.com/authoring/2003/5" xmlns:xlink="http://www.w3.org/1999/xlink">
     
     <summary>
-      <para>List of sources and credits for (only) the Kernel code</para>
+      <para>List of sources and credits for Fling OS</para>
     </summary>
     
     <introduction>
       <para>
-      	This page provides a list of sources from which I have copied and then heavily adapted code for the Fling OS Kernel.
+      	This page provides a list of sources from which I have based my work or heavily adapted code for Fling OS.
       </para>
     </introduction>
     
@@ -16,8 +16,9 @@
       <title>Credit Given</title>
       <content>
         <para>
-        	The following entries give details of the code I have copied and then how I have adapated it. In all cases, any code
-        	which has been directly copied has then been heavily adapted or completely re-written. This includes:
+        	The following entries give details of the code I have either adapted or used as a basis for my work. 
+        	In all cases, any code which has been directly copied has then been heavily adapted or completely re-written. 
+        	This includes:
         	<list class="bullet">
     	      	<listItem>
    		         	<para>Converting from the source language (often C) to C#.</para>
@@ -34,8 +35,8 @@
         	</list>
         </para>
         <para>
-        	I have tried my best to avoid directly re-using other people's code deliberately so that I don't have copyright infringement.
-        	However, I wish readers and other developers to note 3 things:
+        	I have tried my best to avoid directly re-using other people's code without serious modifications deliberately so that 
+        	I don't run into copyright infringement. However, I wish readers and other developers to note 3 things:
         	<list class="ordered">
         		<listItem>
         			<para>
@@ -46,8 +47,9 @@
         		<listItem>
         			<para>
 	        			Any similarities between my code and someone else's is probably because I read their code first and based my 
-	        			design off theirs. In some places, this has lead me to produce very similar (nearing-identical) code, however, 
-	        			to the best of my knowledge this is rare. If you think I have created an identical copy of your code, see below.
+	        			design off theirs. In a few places, this has lead me to produce very similar (nearing-identical) code, however, 
+	        			to the best of my knowledge the code is not a direct clone. If you think I have created an identical copy of 
+	        			your code, please see below.
         			</para>
         		</listItem>
         		<listItem>

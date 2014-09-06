@@ -154,6 +154,8 @@
     <ContentLayout Include="Main Content Layout.content" />
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="Tutorials\" />
+    <Folder Include="Reference Articles\" />
     <Folder Include="Conceptual" />
     <Folder Include="Conceptual\Aims and Ideas\Aims" />
     <Folder Include="Conceptual\Aims and Ideas\Ideas" />
@@ -170,6 +172,45 @@
     <Folder Include="Conceptual\Testing" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Reference Articles\Kernel Designs.aml" />
+    <None Include="Reference Articles\x86 Paging.aml" />
+    <None Include="Reference Articles\USB Mass Storage Devices.aml" />
+    <None Include="Reference Articles\USB - Driver.aml" />
+    <None Include="Reference Articles\USB - Overview.aml" />
+    <None Include="Reference Articles\EHCI.aml" />
+    <None Include="Reference Articles\PIT.aml" />
+    <None Include="Reference Articles\PCI.aml" />
+    <None Include="Reference Articles\PS2.aml" />
+    <None Include="Reference Articles\Timers.aml" />
+    <None Include="Reference Articles\Keyboards.aml" />
+    <None Include="Reference Articles\Disk Devices.aml" />
+    <None Include="Reference Articles\ATA.aml" />
+    <None Include="Reference Articles\Ports (IO Ports).aml" />
+    <None Include="Reference Articles\CPUs.aml" />
+    <None Include="Reference Articles\Interrupts.aml" />
+    <None Include="Reference Articles\Partitions.aml" />
+    <None Include="Reference Articles\FAT File Stream.aml" />
+    <None Include="Reference Articles\Streams.aml" />
+    <None Include="Reference Articles\File Systems.aml" />
+    <None Include="Reference Articles\FAT.aml" />
+    <None Include="Reference Articles\GPT.aml" />
+    <None Include="Reference Articles\MBR and EBR.aml" />
+    <None Include="Reference Articles\Objects and Pointers.aml" />
+    <None Include="Reference Articles\Heaps.aml" />
+    <None Include="Reference Articles\Garbage Collection.aml" />
+    <None Include="Reference Articles\Exceptions.aml" />
+    <None Include="Reference Articles\Standard Libraries.aml" />
+    <None Include="Reference Articles\Shells.aml" />
+    <None Include="Reference Articles\Consoles.aml" />
+    <None Include="Reference Articles\Initialisation.aml" />
+    <None Include="Reference Articles\Debugging.aml" />
+    <None Include="Reference Articles\Interrupts Desciptor Table.aml" />
+    <None Include="Reference Articles\Global Descriptor Table.aml" />
+    <None Include="Reference Articles\Entrypoints.aml" />
+    <None Include="Reference Articles\VGA - Text-mode.aml" />
+    <None Include="Reference Articles\Virtual Memory.aml" />
+    <None Include="Reference Articles\Stacks.aml" />
+    <None Include="Reference Articles\Multiboot.aml" />
     <None Include="Credits.aml" />
     <None Include="Conceptual\Aims and Ideas\Aims and Ideas.aml" />
     <None Include="Conceptual\Aims and Ideas\Aims\Kernel modularisation.aml" />
