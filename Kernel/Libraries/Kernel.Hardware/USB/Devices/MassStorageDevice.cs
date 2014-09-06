@@ -178,7 +178,11 @@ namespace Kernel.Hardware.USB.Devices
             }
 
             // Send SCSI command "test unit ready(6)"
-            TestDeviceReady();
+            //  And check the response is OK
+            if(TestDeviceReady() != 0)
+            {
+                ExceptionMethods.Throw(new FOS_System.Exception("Mass Storage Device not ready!"));
+            }
 
             // Create the paired disk device for this MSD.
             diskDevice = new MassStorageDevice_DiskDevice(this);
@@ -571,51 +575,68 @@ namespace Kernel.Hardware.USB.Devices
             DBGMSG("OUT part");
             DBGMSG(((FOS_System.String)"Toggle OUT ") + ((Endpoint)DeviceInfo.Endpoints[DeviceInfo.MSD_OUTEndpointID]).toggle);
 #endif
-
+            //Allocate memory for the command block
+            //  This is passed to the out transaction as the SCSI command data.
             CommandBlockWrapper* cbw = (CommandBlockWrapper*)FOS_System.Heap.AllocZeroed((uint)sizeof(CommandBlockWrapper));
             bool FreeStatusBuffer = false;
             //try
             {
+                //Initialise the command data
                 SetupSCSICommand(SCSIcommand, cbw, LBA, TransferLength);
 
 #if MSD_TRACE
                 DBGMSG("Setup command. Transferring data...");
 #endif
+                // Create a new USB transfer 
+                //  This transfer is re-used for all transfers throughout this method
                 USBTransfer transfer = new USBTransfer();
+                
+                // Initialises the transfer
+                //  Sets the transfer packet size, points it to the MSD OUT endpoint and sets it as a bulk transfer
                 DeviceInfo.hc.SetupTransfer(DeviceInfo, transfer, USBTransferType.Bulk, DeviceInfo.MSD_OUTEndpointID, 512);
+                // Adds an OUT transaction to the transfer.
+                //  This OUT transaction ouptuts the SCSI command to the MSD
                 DeviceInfo.hc.OUTTransaction(transfer, false, cbw, 31);
+                // Issues the complete transfer to the device.
                 DeviceInfo.hc.IssueTransfer(transfer);
 
-                /**************************************************************************************************************************************/
-
+                // If the transfer completed successfully.
                 if (transfer.success)
                 {
 #if MSD_TRACE
                     DBGMSG("IN part");
 #endif
 
+                    // If the caller didin't provide a pre-allocated status buffer, we
+                    //  must allocate one.
                     if (statusBuffer == null)
                     {
 #if MSD_TRACE
                         DBGMSG("Alloc 13 bytes of mem...");
 #endif
+                        // And we must remember to only free it later if we created it.
                         FreeStatusBuffer = true;
+                        // Create the pre-allocated buffer. Size 13 is the size of the response.
                         statusBuffer = FOS_System.Heap.AllocZeroed(13u);
                     }
 
 #if MSD_TRACE
                     DBGMSG("Setup transfer...");
 #endif
+                    // Setup a new transfer to receive the response from the device
                     DeviceInfo.hc.SetupTransfer(DeviceInfo, transfer, USBTransferType.Bulk, DeviceInfo.MSD_INEndpointID, 512);
 #if MSD_TRACE
                     DBGMSG("Done.");
 #endif
+                    // If the amount of data to receive is greater than 0 bytes in length:
                     if (TransferLength > 0)
                     {
 #if MSD_TRACE
                         DBGMSG("Setup IN transactions...");
 #endif
+                        // We must do an IN transaction to receive the data from the device
                         DeviceInfo.hc.INTransaction(transfer, false, dataBuffer, TransferLength);
+                        // And then do the normal IN transaction to receive the status response.
                         DeviceInfo.hc.INTransaction(transfer, false, statusBuffer, 13);
 #if MSD_TRACE
                         DBGMSG("Done.");
@@ -623,17 +644,20 @@ namespace Kernel.Hardware.USB.Devices
                     }
                     else
                     {
+                        // No data to receive so just do the IN transaction to receive the status 
+                        //  response.
                         DeviceInfo.hc.INTransaction(transfer, false, statusBuffer, 13);
                     }
 #if MSD_TRACE
                     DBGMSG("Issue transfer...");
 #endif
+                    // Issue the transfer of IN data.
                     DeviceInfo.hc.IssueTransfer(transfer);
 #if MSD_TRACE
                     DBGMSG("Done.");
                     DBGMSG("Check command...");
 #endif
-
+                    // If the transfer failed or the status response indicates failure of some form:
                     if (!transfer.success || CheckSCSICommand(statusBuffer, SCSIcommand) != 0)
                     {
                         // TODO: Handle failure/timeout
@@ -660,6 +684,7 @@ namespace Kernel.Hardware.USB.Devices
             //finally
             {
                 FOS_System.Heap.Free(cbw);
+                // Only free the status buffer if we allocated it
                 if (FreeStatusBuffer)
                 {
                     FOS_System.Heap.Free(statusBuffer);
@@ -681,6 +706,8 @@ namespace Kernel.Hardware.USB.Devices
             DBGMSG(((FOS_System.String)"Toggle OUT ") + ((Endpoint)DeviceInfo.Endpoints[DeviceInfo.MSD_OUTEndpointID]).toggle);
 #endif
 
+            //This method work pretty much the same as the SendSCSICommand_IN method so see there for docs.
+
             CommandBlockWrapper* cbw = (CommandBlockWrapper*)FOS_System.Heap.AllocZeroed((uint)sizeof(CommandBlockWrapper));
             bool FreeStatusBuffer = false;
             //try
@@ -690,13 +717,25 @@ namespace Kernel.Hardware.USB.Devices
 #if MSD_TRACE
                 DBGMSG("Setup transfer...");
 #endif
+                //Issue the command transfer
                 USBTransfer transfer = new USBTransfer();
                 DeviceInfo.hc.SetupTransfer(DeviceInfo, transfer, USBTransferType.Bulk, DeviceInfo.MSD_OUTEndpointID, 512);
                 DeviceInfo.hc.OUTTransaction(transfer, false, cbw, 31);
                 DeviceInfo.hc.IssueTransfer(transfer);
 
+                // If the command transfer completed successfully:
                 if (transfer.success)
                 {
+                    //Issue the output data transfer
+                    //  Through much testing / debugging I discovered that you cannot do the data OUT
+                    //  transaction in the same transfer as the command OUT transaction. This seems odd
+                    //  to me and I have not found any documentation or specification to back up this
+                    //  behaviour. There are two possibilities here:
+                    //      1) This is a genuine part of some spec / requirement, in which case we have
+                    //          no issue.
+                    //      2) Or my implementation for issusing multiple OUT transactions in a row in 
+                    //          one is broken. In this case, I have failed to find out what causes ths issue 
+                    //          / why it occurs.
                     DeviceInfo.hc.SetupTransfer(DeviceInfo, transfer, USBTransferType.Bulk, DeviceInfo.MSD_OUTEndpointID, 512);
                     DeviceInfo.hc.OUTTransaction(transfer, false, dataBuffer, TransferLength);
                     DeviceInfo.hc.IssueTransfer(transfer);
@@ -716,7 +755,7 @@ namespace Kernel.Hardware.USB.Devices
                     BasicConsole.DelayOutput(5);
                 }
 #endif
-
+                // If the command and data transfers completed successfully:
                 if (transfer.success)
                 {
 #if MSD_TRACE
@@ -1052,10 +1091,15 @@ namespace Kernel.Hardware.USB.Devices
                 byte* statusBuffer = (byte*)FOS_System.Heap.AllocZeroed(13u);
                 //try
                 {
-                    SendSCSICommand_IN(0x00, 0u, 0, null, statusBuffer); // dev, endp, cmd, LBA, transfer length
+                    //Get the device status by sending the Tets Unit Ready command
+                    SendSCSICommand_IN(0x00, 0u, 0, null, statusBuffer);
 
-                    byte statusByteTestReady = (byte)*(((uint*)statusBuffer) + 3);
+                    // Get the status byte that tells us whether the device is ready or not.
+                    byte statusByteTestReady = *(statusBuffer + 12);
 
+                    // If we have tested more than half the intended times and the device is still 
+                    //  reporting not ready, we just skip the full test to speed up testing a bit.
+                    //  (Status byte == 0 inidicates ready).
                     if (timeout >= MaxReadyTests / 2 && statusByteTestReady != 0) continue;
 
 #if MSD_TRACE
@@ -1065,11 +1109,15 @@ namespace Kernel.Hardware.USB.Devices
                     byte* dataBuffer = (byte*)FOS_System.Heap.AllocZeroed(18u);
                     //try
                     {
-                        SendSCSICommand_IN(0x03, 0, 18, dataBuffer, statusBuffer); // dev, endp, cmd, LBA, transfer length
+                        // Now send the Request Sense command
+                        SendSCSICommand_IN(0x03, 0, 18, dataBuffer, statusBuffer);
 
-                        statusByte = (byte)*(((uint*)statusBuffer) + 3);
+                        statusByte = *(statusBuffer + 12);
 
+                        // Get the request sense. 
                         int sense = GetRequestSense(dataBuffer);
+                        //  Request sense 0 = No sense = OK
+                        //  Request sense 6 = Unit Attention = OK
                         if (sense == 0 || sense == 6)
                         {
                             break;
@@ -1099,18 +1147,18 @@ namespace Kernel.Hardware.USB.Devices
 
             // cf. Jan Axelson, USB Mass Storage, page 140
             byte PeripheralDeviceType = Utils.GetField(inquiryData, 0, 0, 5); // byte, shift, len
-            // uint8_t PeripheralQualifier  = getField(addr, 0, 5, 3);
-            // uint8_t DeviceTypeModifier   = getField(addr, 1, 0, 7);
+            // byte PeripheralQualifier  = Utils.GetField(inquiryData, 0, 5, 3);
+            // byte DeviceTypeModifier   = Utils.GetField(inquiryData, 1, 0, 7);
             byte RMB = Utils.GetField(inquiryData, 1, 7, 1);
 #if MSD_TRACE
             byte ANSIapprovedVersion = Utils.GetField(inquiryData, 2, 0, 3);
 #endif
-            // uint8_t ECMAversion          = getField(addr, 2, 3, 3);
-            // uint8_t ISOversion           = getField(addr, 2, 6, 2);
+            // byte ECMAversion          = Utils.GetField(inquiryData, 2, 3, 3);
+            // byte ISOversion           = Utils.GetField(inquiryData, 2, 6, 2);
             byte ResponseDataFormat = Utils.GetField(inquiryData, 3, 0, 4);
             byte HISUP = Utils.GetField(inquiryData, 3, 4, 1);
             byte NORMACA = Utils.GetField(inquiryData, 3, 5, 1);
-            // uint8_t AdditionalLength     = getField(addr, 4, 0, 8);
+            // byte AdditionalLength     = Utils.GetField(inquiryData, 4, 0, 8);
             byte CmdQue = Utils.GetField(inquiryData, 7, 1, 1);
             byte Linked = Utils.GetField(inquiryData, 7, 3, 1);
 
@@ -1223,8 +1271,8 @@ namespace Kernel.Hardware.USB.Devices
 #if MSD_TRACE
             DBGMSG(((FOS_System.String)">SCSI: read sector: ") + sector);
 #endif
-
-            SendSCSICommand_IN(0x28 /*SCSI opcode*/, sector /*LBA*/, (ushort)diskDevice.BlockSize /*Bytes In*/, buffer, null);
+            //Send SCSI Read (10) command
+            SendSCSICommand_IN(0x28, sector, (ushort)diskDevice.BlockSize, buffer, null);
 
             return true;
         }
@@ -1240,7 +1288,8 @@ namespace Kernel.Hardware.USB.Devices
             DBGMSG(((FOS_System.String)">SCSI: write sector: ") + sector);
 #endif
 
-            SendSCSICommand_OUT(0x2A /*SCSI opcode*/, sector /*LBA*/, (ushort)diskDevice.BlockSize /*Bytes Out*/, buffer, null);
+            //Send SCSI Write (10) command
+            SendSCSICommand_OUT(0x2A, sector, (ushort)diskDevice.BlockSize, buffer, null);
 
             return true;
         }
@@ -1405,13 +1454,18 @@ namespace Kernel.Hardware.USB.Devices
             uint* capacityBuffer = (uint*)FOS_System.Heap.AllocZeroed(8);
             //try
             {
-                anMSD.SendSCSICommand_IN(0x25 /*SCSI opcode*/, 0 /*LBA*/, 8 /*Bytes In*/, capacityBuffer, null);
+                //Send SCSI Read Capacity (10) command
+                anMSD.SendSCSICommand_IN(0x25, 0, 8, capacityBuffer, null);
 
-                // MSB ... LSB
+                // MSB ... LSB converted to LSB...MSB
+                //  i.e. big-endian converted to little endian
                 capacityBuffer[0] = Utils.htonl(capacityBuffer[0]);
                 capacityBuffer[1] = Utils.htonl(capacityBuffer[1]);
 
+                // capacityBuffer[0] = Last LBA i.e. last addressable LBA
+                //      So the count of blocks is Last LBA + 1
                 blockCount = ((ulong)capacityBuffer[0]) + 1;
+                // capacityBuffer[1] = Block size
                 blockSize = (ulong)capacityBuffer[1];
             }
             //finally
