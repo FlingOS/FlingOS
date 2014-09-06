@@ -154,6 +154,8 @@
     <ContentLayout Include="Main Content Layout.content" />
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="Tutorials\" />
+    <Folder Include="Reference Articles\" />
     <Folder Include="Conceptual" />
     <Folder Include="Conceptual\Aims and Ideas\Aims" />
     <Folder Include="Conceptual\Aims and Ideas\Ideas" />

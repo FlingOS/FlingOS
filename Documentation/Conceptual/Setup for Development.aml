@@ -22,7 +22,7 @@
       <steps class="ordered">
         <step>
           <content>
-            <para>You will already have signed up to the main Fling OS websites (since you are viewing this page).</para>
+            <para>You should already have signed up to the main Fling OS website (since you are viewing this page).</para>
           </content>
         </step>
         <step>
@@ -36,8 +36,8 @@
       </steps>
       <conclusion>
         <para>
-          At this point you should have access to all the bits of the Fling OS project you need to develop the main operating 
-          system.
+          At this point you should have access to all the bits of the Fling OS project you need to be able to develop the main 
+          operating system.
         </para>
       </conclusion>
     </procedure>
