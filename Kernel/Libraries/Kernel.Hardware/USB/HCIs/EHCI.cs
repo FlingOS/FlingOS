@@ -1950,9 +1950,6 @@ namespace Kernel.Hardware.USB.HCIs
             EHCI_QueueHead tailQH = new EHCI_QueueHead(TailQueueHead);
             // Create the ring. Link the new queue head with idleQH (which is always the head of the queue)
             tailQH.HorizontalLinkPointer = (EHCI_QueueHead_Struct*)VirtMemManager.GetPhysicalAddress(IdleQueueHead);
-            // Set the tail queue head type to inidicate it is a Queue Head 
-            //  (as opposed to an Isochronous Transfer Descriptor or other such type)
-            tailQH.Type = 1;
             // Insert the queue head into the queue as an element behind old queue head
             oldTailQH.HorizontalLinkPointer = (EHCI_QueueHead_Struct*)VirtMemManager.GetPhysicalAddress(TailQueueHead);
             
@@ -2070,6 +2067,8 @@ namespace Kernel.Hardware.USB.HCIs
             td.PIDCode = direction;
             td.TotalBytesToTransfer = tokenBytes; // dependent on transfer
             td.DataToggle = toggle;     // Should be toggled every list entry
+
+            AllocQTDbuffer(td);
 
             return td;
         }
