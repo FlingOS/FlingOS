@@ -137,7 +137,7 @@ namespace Kernel.Hardware.USB.HCIs
             USBTransaction transaction = new USBTransaction();
             transaction.type = USBTransactionType.IN;
 
-            if (controlHandshake) // Handshake transaction of control transfers have always set toggle to 1
+            if (controlHandshake) // Handshake transaction of control transfers always have toggle set to 1
             {
                 ((Endpoint)transfer.device.Endpoints[transfer.endpoint]).toggle = true;
             }
@@ -160,7 +160,7 @@ namespace Kernel.Hardware.USB.HCIs
 
             if (remainingTransactions > 0)
             {
-                INTransaction(transfer, false, ((byte*)buffer + clampedLength), length);
+                INTransaction(transfer, controlHandshake, ((byte*)buffer + clampedLength), length);
             }
         }
         /// <summary>
@@ -181,7 +181,7 @@ namespace Kernel.Hardware.USB.HCIs
             USBTransaction transaction = new USBTransaction();
             transaction.type = USBTransactionType.OUT;
 
-            if (controlHandshake) // Handshake transaction of control transfers have always set toggle to 1
+            if (controlHandshake) // Handshake transaction of control transfers always have toggle set to 1
             {
                 ((Endpoint)transfer.device.Endpoints[transfer.endpoint]).toggle = true;
             }
@@ -194,7 +194,7 @@ namespace Kernel.Hardware.USB.HCIs
 
             if (remainingTransactions > 0)
             {
-                OUTTransaction(transfer, false, ((byte*)buffer + clampedLength), length);
+                OUTTransaction(transfer, controlHandshake, ((byte*)buffer + clampedLength), length);
             }
         }
         /// <summary>

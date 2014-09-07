@@ -322,34 +322,22 @@ namespace Kernel.Hardware.USB
                 }
                 BasicConsole.DelayOutput(10);
 #endif
-
+                // Hub device
                 if (hub)
                 {
-//TODO: Uncomment these when hub driver done
+//TODO: Uncomment these #if/#endif when hub driver is done
 //#if USB_TRACE
                     BasicConsole.WriteLine("-------------------------- Hub --------------------------");
                     BasicConsole.DelayOutput(2);
 //#endif
 
                     //TODO: Hub driver
-                    //success = GetHubDescriptor(device);
-                    //if (success)
-                    //{
-                    //    printf("\nThe hub owns %u downstream ports.", ((usb_hubDescriptor_t*)device->data)->numberPorts);
-                    //    usb_setupHub(device);
-                    //}
-                    //else
-                    //{
-                    //    textColor(ERROR);
-                    //    printf("\nHubDescriptor could not be read!");
-                    //    textColor(TEXT);
-                    //}
-                    //waitForKeyStroke();
-
+                    
                     //For now, create a completely generic device instance so we don't lose track of
                     //  this device entirely.
                     new USBDevice(deviceInfo);
                 }
+                // Mass Storage Device
                 else if (deviceInfo.InterfaceClass == 0x08)
                 {
 #if USB_TRACE
@@ -367,6 +355,7 @@ namespace Kernel.Hardware.USB
 #endif
                     }
                 }
+                // Unrecognised device
                 else
                 {
 #if USB_TRACE
