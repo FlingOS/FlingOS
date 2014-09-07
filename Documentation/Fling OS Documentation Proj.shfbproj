@@ -32,13 +32,14 @@
     <PlugInConfigurations>
     </PlugInConfigurations>
     <TransformComponentArguments>
-      <Argument Key="logoFile" Value="" />
+      <Argument Key="logoFile" Value="FlingOS-Logo-Blue.png" />
       <Argument Key="logoHeight" Value="" />
-      <Argument Key="logoWidth" Value="" />
-      <Argument Key="logoAltText" Value="" />
+      <Argument Key="logoWidth" Value="100" />
+      <Argument Key="logoAltText" Value="Fling OS" />
       <Argument Key="logoPlacement" Value="left" />
       <Argument Key="logoAlignment" Value="left" />
       <Argument Key="maxVersionParts" Value="" />
+      <Argument Key="defaultLanguage" Value="cs" />
     </TransformComponentArguments>
     <ComponentConfigurations>
       <ComponentConfig id="Code Block Component" enabled="True">
@@ -55,60 +56,60 @@
 <replace elements="/*//token" item="string(.)" /></component>
       </ComponentConfig>
     </ComponentConfigurations>
-    <MaximumGroupParts>2</MaximumGroupParts>
+    <MaximumGroupParts>3</MaximumGroupParts>
     <NamespaceGrouping>True</NamespaceGrouping>
     <SyntaxFilters>C#</SyntaxFilters>
     <SdkLinkTarget>Blank</SdkLinkTarget>
     <RootNamespaceContainer>True</RootNamespaceContainer>
     <PresentationStyle>VS2013</PresentationStyle>
-    <Preliminary>False</Preliminary>
+    <Preliminary>True</Preliminary>
     <NamingMethod>Guid</NamingMethod>
     <HelpTitle>Fling OS</HelpTitle>
     <ContentPlacement>AboveNamespaces</ContentPlacement>
     <NamespaceSummaries>
       <NamespaceSummaryItem name="Kernel" isDocumented="True">Contains the main classes for the Fling OS kernel implementation.</NamespaceSummaryItem>
-      <NamespaceSummaryItem name="Kernel.Compiler" isDocumented="False">Contains the code for compiling kernel IL code into the final assembler file.</NamespaceSummaryItem>
-      <NamespaceSummaryItem name="Kernel.Compiler.App" isDocumented="False">The basic compiler application that uses Kernel.Compiler.</NamespaceSummaryItem>
-      <NamespaceSummaryItem name="Kernel.Compiler.Architectures.x86_32" isDocumented="False">Contains the Il Op conversion class implementations for converting IL op to valid x86 - 32 bit assembler.</NamespaceSummaryItem>
-      <NamespaceSummaryItem name="Kernel.Compiler.ILOps" isDocumented="False">Contains all the IL to ASM conversion classes for supported IL ops.</NamespaceSummaryItem>
-      <NamespaceSummaryItem name="Kernel.Debug" isDocumented="False">Contains code related to debugging the Fling OS kernel.</NamespaceSummaryItem>
-      <NamespaceSummaryItem name="Kernel.Debug.Data" isDocumented="False">Contains the classes for creating, managing and accessing the kernel debug database.</NamespaceSummaryItem>
-      <NamespaceSummaryItem name="Kernel.Debug.Debugger" isDocumented="False">The Fling OS Kernel Debugger application used for debugging the Fling OS kernel (currently over a serial pipe form a virtual machine).</NamespaceSummaryItem>
-      <NamespaceSummaryItem name="Kernel.Compiler (Group)" isGroup="True" isDocumented="False">Contains namespaces related to the kernel compiler.</NamespaceSummaryItem>
-      <NamespaceSummaryItem name="Kernel.Debug (Group)" isGroup="True" isDocumented="False">Contains namespaces related to the kernel debugging tools.</NamespaceSummaryItem>
-      <NamespaceSummaryItem name="Kernel (Group)" isGroup="True" isDocumented="True">Contains the main namespaces for the Fling OS kernel implementation.</NamespaceSummaryItem>
-      <NamespaceSummaryItem name="Kernel.FOS_System" isDocumented="True">The kernel's System namespace that largely replaces .Net's System namespace.</NamespaceSummaryItem>
-      <NamespaceSummaryItem name="Kernel.FOS_System.Exceptions" isDocumented="True">Contains the standard exceptions for the kernel.</NamespaceSummaryItem>
-      <NamespaceSummaryItem name="Testing._Kernel" isDocumented="False">The testing library for the Kernel library.</NamespaceSummaryItem>
-      <NamespaceSummaryItem name="Kernel.FOS_System.Collections" isDocumented="True">Classes for managing collections of objects.</NamespaceSummaryItem>
-      <NamespaceSummaryItem name="Kernel.FOS_System.IO" isDocumented="True">Classes for managing input/output tasks such as file handling.</NamespaceSummaryItem>
-      <NamespaceSummaryItem name="Kernel.FOS_System.IO.Disk" isDocumented="True">Classes for handling disks (e.g. hard-disks).</NamespaceSummaryItem>
-      <NamespaceSummaryItem name="Kernel.FOS_System.IO.FAT" isDocumented="True">Classes for handling a FAT file system.</NamespaceSummaryItem>
-      <NamespaceSummaryItem name="Kernel.FOS_System.IO.Streams" isDocumented="True">Classes for handling streams.</NamespaceSummaryItem>
-      <NamespaceSummaryItem name="Kernel.FOS_System.IO.Streams.FAT" isDocumented="True">Classes for handling FAT streams such as FAT file streams.</NamespaceSummaryItem>
-      <NamespaceSummaryItem name="Kernel.FOS_System.Stubs" isDocumented="True">Contains stubs for the FOS_System namespace.</NamespaceSummaryItem>
-      <NamespaceSummaryItem name="Kernel.Hardware" isDocumented="True">The kernel's Hardware namespace contains classes that handle specific hardware.</NamespaceSummaryItem>
-      <NamespaceSummaryItem name="Kernel.Hardware.ATA" isDocumented="True">Contains classes for handling ATA devices.</NamespaceSummaryItem>
-      <NamespaceSummaryItem name="Kernel.Hardware.Devices" isDocumented="True">Contains classes for generic types of hardware device e.g. DiskDevice.</NamespaceSummaryItem>
-      <NamespaceSummaryItem name="Kernel.Hardware.DMA" isDocumented="True">Contains classes for managing direct memory access.</NamespaceSummaryItem>
-      <NamespaceSummaryItem name="Kernel.Hardware.IO" isDocumented="True">Contains classes for managing I/O devices.</NamespaceSummaryItem>
-      <NamespaceSummaryItem name="Kernel.Hardware.PCI" isDocumented="True">Contains classes for managing PCI devices.</NamespaceSummaryItem>
-      <NamespaceSummaryItem name="Kernel.Hardware.USB" isDocumented="True">Contains classes for managing USB devices.</NamespaceSummaryItem>
-      <NamespaceSummaryItem name="Kernel.Hardware.USB.HCIs" isDocumented="True">Contains classes specifically for managing USB Host Controller Interfaces.</NamespaceSummaryItem>
-      <NamespaceSummaryItem name="Kernel.Utilities" isDocumented="True">Contains Kernel utility classes and functions that can be used throughout the kernel.</NamespaceSummaryItem>
-      <NamespaceSummaryItem name="Kernel.FOS_System (Group)" isGroup="True" isDocumented="True">Contains namespaces related to Kernel.FOS_System and sub-namespaces.</NamespaceSummaryItem>
-      <NamespaceSummaryItem name="Kernel.Hardware (Group)" isGroup="True" isDocumented="True">Contains namespaces related to Kernel.Hardware and sub-namespaces.</NamespaceSummaryItem>
-      <NamespaceSummaryItem name="Kernel.Core (Group)" isGroup="True" isDocumented="True">Contains namespaces related to Kernel.Core and sub-namespaces.</NamespaceSummaryItem>
-      <NamespaceSummaryItem name="Kernel.Core" isDocumented="True">The kernel's Core namespace contains classes that handle core kernel functionality but which is at leats 1-level abstracted from the specific hardware.</NamespaceSummaryItem>
-      <NamespaceSummaryItem name="Kernel.Core.Consoles" isDocumented="True">Contains specific implementations of the Console class.</NamespaceSummaryItem>
-      <NamespaceSummaryItem name="Kernel.Core.Shells" isDocumented="True">Contains specific implementations of the Shell class.</NamespaceSummaryItem>
-      <NamespaceSummaryItem name="Kernel.Hardware.CPUs" isDocumented="True">Contains specific implementations of the CPU class.</NamespaceSummaryItem>
-      <NamespaceSummaryItem name="Kernel.Hardware.Interrupts" isDocumented="True">Contains hardware-specific code for managing interrupts.</NamespaceSummaryItem>
-      <NamespaceSummaryItem name="Kernel.Hardware.Keyboards" isDocumented="True">Contains specific implementations of the Keyboard class.</NamespaceSummaryItem>
-      <NamespaceSummaryItem name="Kernel.Hardware.Timers" isDocumented="True">Contains specific implementations of the Timer class.</NamespaceSummaryItem>
-      <NamespaceSummaryItem name="Kernel.Hardware.USB.Devices" isDocumented="True">Contains implementations of drivers for USB devices.</NamespaceSummaryItem>
-      <NamespaceSummaryItem name="Kernel.Hardware.VirtMem" isDocumented="True">Contains specific implementations of virtual memory management for different architectures.</NamespaceSummaryItem>
-    </NamespaceSummaries>
+<NamespaceSummaryItem name="Kernel.Compiler" isDocumented="False">Contains the code for compiling kernel IL code into the final assembler file.</NamespaceSummaryItem>
+<NamespaceSummaryItem name="Kernel.Compiler.App" isDocumented="False">The basic compiler application that uses Kernel.Compiler.</NamespaceSummaryItem>
+<NamespaceSummaryItem name="Kernel.Compiler.Architectures.x86_32" isDocumented="False">Contains the Il Op conversion class implementations for converting IL op to valid x86 - 32 bit assembler.</NamespaceSummaryItem>
+<NamespaceSummaryItem name="Kernel.Compiler.ILOps" isDocumented="False">Contains all the IL to ASM conversion classes for supported IL ops.</NamespaceSummaryItem>
+<NamespaceSummaryItem name="Kernel.Debug" isDocumented="False">Contains code related to debugging the Fling OS kernel.</NamespaceSummaryItem>
+<NamespaceSummaryItem name="Kernel.Debug.Data" isDocumented="False">Contains the classes for creating, managing and accessing the kernel debug database.</NamespaceSummaryItem>
+<NamespaceSummaryItem name="Kernel.Debug.Debugger" isDocumented="False">The Fling OS Kernel Debugger application used for debugging the Fling OS kernel (currently over a serial pipe form a virtual machine).</NamespaceSummaryItem>
+<NamespaceSummaryItem name="Kernel.Compiler (Group)" isGroup="True" isDocumented="False">Contains namespaces related to the kernel compiler.</NamespaceSummaryItem>
+<NamespaceSummaryItem name="Kernel.Debug (Group)" isGroup="True" isDocumented="False">Contains namespaces related to the kernel debugging tools.</NamespaceSummaryItem>
+<NamespaceSummaryItem name="Kernel (Group)" isGroup="True" isDocumented="True">Contains the main namespaces for the Fling OS kernel implementation.</NamespaceSummaryItem>
+<NamespaceSummaryItem name="Kernel.FOS_System" isDocumented="True">The kernel's System namespace that largely replaces .Net's System namespace.</NamespaceSummaryItem>
+<NamespaceSummaryItem name="Kernel.FOS_System.Exceptions" isDocumented="True">Contains the standard exceptions for the kernel.</NamespaceSummaryItem>
+<NamespaceSummaryItem name="Testing._Kernel" isDocumented="False">The testing library for the Kernel library.</NamespaceSummaryItem>
+<NamespaceSummaryItem name="Kernel.FOS_System.Collections" isDocumented="True">Classes for managing collections of objects.</NamespaceSummaryItem>
+<NamespaceSummaryItem name="Kernel.FOS_System.IO" isDocumented="True">Classes for managing input/output tasks such as file handling.</NamespaceSummaryItem>
+<NamespaceSummaryItem name="Kernel.FOS_System.IO.Disk" isDocumented="True">Classes for handling disks (e.g. hard-disks).</NamespaceSummaryItem>
+<NamespaceSummaryItem name="Kernel.FOS_System.IO.FAT" isDocumented="True">Classes for handling a FAT file system.</NamespaceSummaryItem>
+<NamespaceSummaryItem name="Kernel.FOS_System.IO.Streams" isDocumented="True">Classes for handling streams.</NamespaceSummaryItem>
+<NamespaceSummaryItem name="Kernel.FOS_System.IO.Streams.FAT" isDocumented="True">Classes for handling FAT streams such as FAT file streams.</NamespaceSummaryItem>
+<NamespaceSummaryItem name="Kernel.FOS_System.Stubs" isDocumented="True">Contains stubs for the FOS_System namespace.</NamespaceSummaryItem>
+<NamespaceSummaryItem name="Kernel.Hardware" isDocumented="True">The kernel's Hardware namespace contains classes that handle specific hardware.</NamespaceSummaryItem>
+<NamespaceSummaryItem name="Kernel.Hardware.ATA" isDocumented="True">Contains classes for handling ATA devices.</NamespaceSummaryItem>
+<NamespaceSummaryItem name="Kernel.Hardware.Devices" isDocumented="True">Contains classes for generic types of hardware device e.g. DiskDevice.</NamespaceSummaryItem>
+<NamespaceSummaryItem name="Kernel.Hardware.DMA" isDocumented="True">Contains classes for managing direct memory access.</NamespaceSummaryItem>
+<NamespaceSummaryItem name="Kernel.Hardware.IO" isDocumented="True">Contains classes for managing I/O devices.</NamespaceSummaryItem>
+<NamespaceSummaryItem name="Kernel.Hardware.PCI" isDocumented="True">Contains classes for managing PCI devices.</NamespaceSummaryItem>
+<NamespaceSummaryItem name="Kernel.Hardware.USB" isDocumented="True">Contains classes for managing USB devices.</NamespaceSummaryItem>
+<NamespaceSummaryItem name="Kernel.Hardware.USB.HCIs" isDocumented="True">Contains classes specifically for managing USB Host Controller Interfaces.</NamespaceSummaryItem>
+<NamespaceSummaryItem name="Kernel.Utilities" isDocumented="True">Contains Kernel utility classes and functions that can be used throughout the kernel.</NamespaceSummaryItem>
+<NamespaceSummaryItem name="Kernel.FOS_System (Group)" isGroup="True" isDocumented="True">Contains namespaces related to Kernel.FOS_System and sub-namespaces.</NamespaceSummaryItem>
+<NamespaceSummaryItem name="Kernel.Hardware (Group)" isGroup="True" isDocumented="True">Contains namespaces related to Kernel.Hardware and sub-namespaces.</NamespaceSummaryItem>
+<NamespaceSummaryItem name="Kernel.Core (Group)" isGroup="True" isDocumented="True">Contains namespaces related to Kernel.Core and sub-namespaces.</NamespaceSummaryItem>
+<NamespaceSummaryItem name="Kernel.Core" isDocumented="True">The kernel's Core namespace contains classes that handle core kernel functionality but which is at leats 1-level abstracted from the specific hardware.</NamespaceSummaryItem>
+<NamespaceSummaryItem name="Kernel.Core.Consoles" isDocumented="True">Contains specific implementations of the Console class.</NamespaceSummaryItem>
+<NamespaceSummaryItem name="Kernel.Core.Shells" isDocumented="True">Contains specific implementations of the Shell class.</NamespaceSummaryItem>
+<NamespaceSummaryItem name="Kernel.Hardware.CPUs" isDocumented="True">Contains specific implementations of the CPU class.</NamespaceSummaryItem>
+<NamespaceSummaryItem name="Kernel.Hardware.Interrupts" isDocumented="True">Contains hardware-specific code for managing interrupts.</NamespaceSummaryItem>
+<NamespaceSummaryItem name="Kernel.Hardware.Keyboards" isDocumented="True">Contains specific implementations of the Keyboard class.</NamespaceSummaryItem>
+<NamespaceSummaryItem name="Kernel.Hardware.Timers" isDocumented="True">Contains specific implementations of the Timer class.</NamespaceSummaryItem>
+<NamespaceSummaryItem name="Kernel.Hardware.USB.Devices" isDocumented="True">Contains implementations of drivers for USB devices.</NamespaceSummaryItem>
+<NamespaceSummaryItem name="Kernel.Hardware.VirtMem" isDocumented="True">Contains specific implementations of virtual memory management for different architectures.</NamespaceSummaryItem>
+<NamespaceSummaryItem name="Kernel.Hardware.USB (Group)" isGroup="True" isDocumented="True">Contains namespaces related to Kernel.Hardware.USB and sub-namespaces.</NamespaceSummaryItem></NamespaceSummaries>
     <ApiFilter>
       <Filter entryType="Namespace" fullName="" isExposed="False" />
       <Filter entryType="Namespace" fullName="Kernel.Compiler" isExposed="False" />
@@ -128,6 +129,7 @@
     <SccLocalPath>SAK</SccLocalPath>
     <RootNamespaceTitle>Kernel</RootNamespaceTitle>
     <CopyrightHref>http://www.flingos.co.uk</CopyrightHref>
+    <FooterText>If you find any issues with the documentation, please log them here: &amp;lt%3ba href=&amp;quot%3bhttp://git.flingos.co.uk/fling-os/issues&amp;quot%3b&amp;gt%3bProject Issue Tracker&amp;lt%3b/a&amp;gt%3b&amp;lt%3bbr/&amp;gt%3b&amp;lt%3bbr/&amp;gt%3b</FooterText>
   </PropertyGroup>
   <!-- There are no properties for these groups.  AnyCPU needs to appear in order for Visual Studio to perform
 			 the build.  The others are optional common platform types that may appear. -->
@@ -154,6 +156,7 @@
     <ContentLayout Include="Main Content Layout.content" />
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="icons\" />
     <Folder Include="Tutorials\" />
     <Folder Include="Reference Articles\" />
     <Folder Include="Conceptual" />
@@ -172,6 +175,7 @@
     <Folder Include="Conceptual\Testing" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Reference Articles\Calling Conventions.aml" />
     <None Include="Reference Articles\Kernel Designs.aml" />
     <None Include="Reference Articles\x86 Paging.aml" />
     <None Include="Reference Articles\USB Mass Storage Devices.aml" />
@@ -234,6 +238,10 @@
     <None Include="Welcome.aml" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="icons\FlingOS-Logo-Blue.png">
+      <ImageId>FlingOS-Logo-Blue</ImageId>
+      <AlternateText>FlingOS-Logo-Blue</AlternateText>
+    </Content>
     <Image Include="Conceptual\Kernel Compiler\Architecture\Fling OS - Kernel Compiler Model 1.png">
       <ImageId>Fling OS - Kernel Compiler Model 1</ImageId>
       <AlternateText>Fling OS - Kernel Compiler Model 1</AlternateText>

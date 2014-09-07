@@ -2029,7 +2029,6 @@ namespace Kernel.Hardware.USB.HCIs
         /// <param name="loVal">The USB Request Lo-Val.</param>
         /// <param name="index">The index of the USB Request.</param>
         /// <param name="length">The length of the USB Request.</param>
-        /// <param name="buffer">OUT. A pointer to the qTD data buffer.</param>
         /// <returns>The new qTD.</returns>
         protected EHCI_qTD CreateQTD_SETUP(EHCI_qTD_Struct* next, bool toggle, ushort tokenBytes, byte type, byte req,
                                                  byte hiVal, byte loVal, ushort index, ushort length)
@@ -2057,7 +2056,6 @@ namespace Kernel.Hardware.USB.HCIs
         /// <param name="direction">The direction of the qTD (in or out)</param>
         /// <param name="toggle">The toggle state for the new qTD.</param>
         /// <param name="tokenBytes">The number of bytes to transfer.</param>
-        /// <param name="buffer">OUT. A pointer to the qTD data buffer.</param>
         /// <param name="bufferSize">The size of the qTD data buffer.</param>
         /// <returns>The new qTD.</returns>
         protected EHCI_qTD CreateQTD_IO(EHCI_qTD_Struct* next, byte direction, bool toggle, ushort tokenBytes, uint bufferSize)
