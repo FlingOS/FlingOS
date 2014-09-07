@@ -142,6 +142,11 @@ namespace Kernel.Hardware.USB.HCIs
 
         /* Only USBSTS */
         /// <summary>
+        /// A mask for all the possible interrupt bits in the USBSTS register.
+        /// </summary>
+        public static uint STS_AllInterrupts = 0xF03F;
+
+        /// <summary>
         /// Mask for the Async Schedule Enabled flag.
         /// </summary>
         public static uint STS_AsyncEnabled = Utils.BIT(15);
@@ -183,7 +188,6 @@ namespace Kernel.Hardware.USB.HCIs
         /// Mask for the interrupt type flag indicating a general USB Interrupt occurred.
         /// </summary>
         public static uint STS_USBInterrupt = Utils.BIT(0);
-
 
         /* ------ FRINDEX ------ */
         /// <summary>
@@ -376,11 +380,7 @@ namespace Kernel.Hardware.USB.HCIs
         /// HCC params
         /// </summary>
         protected uint HCCParams;
-        /// <summary>
-        /// HCSP port route desc
-        /// </summary>
-        protected UInt64 HCSPPortRouteDesc;
-
+        
         #region From HCS Params
 
         /*
@@ -665,7 +665,7 @@ namespace Kernel.Hardware.USB.HCIs
         /// <summary>
         /// Whether the ports have been enabled or not.
         /// </summary>
-        protected bool EnabledPortsFlag = false;
+        protected bool EnabledPorts = false;
         /// <summary>
         /// A countdown of the number of async transaction complete interrupts that have occurred since the last
         /// reload. Used for detecting the end of an async transfer (queue head completetion).
@@ -715,26 +715,53 @@ namespace Kernel.Hardware.USB.HCIs
             }
 #endif
 
-            usbBaseAddress = (byte*)((uint)pciDevice.BaseAddresses[0].BaseAddress() & 0xFFFFFF00);
+            // The USB Base Address is the physical address of the memory mapped registers
+            //  used to control the host controller. It is a Memory Space BAR.
+            // The BAR to use is BAR0. 
+            // Section 2.1.3 of the Intel EHCI Spec
+            usbBaseAddress = pciDevice.BaseAddresses[0].BaseAddress();
 
-            //Map in the required memory - we will use identity mapping for the PCI / USB registers for now
+            // Map in the required memory - we will use identity mapping for the PCI / USB registers for now
             VirtMemManager.Map((uint)usbBaseAddress & 0xFFFFF000, (uint)usbBaseAddress & 0xFFFFF000, 4096);
 
+            // Caps registers start at the beginning of the memory mapped IO registers.
+            // Section 2 of the Intel EHCI Spec
             CapabilitiesRegAddr = usbBaseAddress;
 #if EHCI_TRACE
             DBGMSG("CapabilitiesRegAddr: " + (FOS_System.String)(uint)CapabilitiesRegAddr);
 #endif
+            // Read the Serial Bus Release Number
+            //  This is an 8-bit register where 0xXY means Revision X.Y
+            //  e.g. 0x20 means Revision 2.0
+            // Section 2.1.4 of the Intel EHCI Spec
             SBRN = pciDevice.ReadRegister8(0x60);
 #if EHCI_TRACE
             DBGMSG("SBRN: " + (FOS_System.String)SBRN);
 #endif
 
+            // The first register of the Capabilities Registers tells you the length
+            //  of the registers (in bytes). This provides the offset from the start of
+            //  the capabilities registers to the start of the Operational registers.
             CapabilitiesRegsLength = *CapabilitiesRegAddr;
+            // BCD encoding of the HC Interface version supported by this host controller.
+            //  Most Significant Byte is major version
+            //  Least Significant Byte is minor version
+            //  e.g. 0x20 = Version 2.0
             HCIVersion = *((UInt16*)(CapabilitiesRegAddr + 2));
+            // Host Controller Structural Params
+            //  Section 2.2.3 of the Intel EHCI Spec
+            //  This register contains various bit fields providing specific information 
+            //  about the HC hardware / firmware physical design (e.g. number of root ports)
             HCSParams = *((UInt32*)(CapabilitiesRegAddr + 4));
+            // Host Controller Capability Params
+            //  Section 2.2.4 of the Intel EHCI Spec
+            //  This register contains various bit fields providing specific information 
+            //  about the HC hardware / firmware capabilities (e.g. 64-bit addressing capaiblity)
             HCCParams = *((UInt32*)(CapabilitiesRegAddr + 8));
-            HCSPPortRouteDesc = *((UInt64*)(CapabilitiesRegAddr + 12));
             
+            // Operational registers address. Calculated as stated above from:
+            //      USB Base Address + Length of Capabilities registers.
+            //  Section 2.3 of the Intel EHCI Spec
             OpRegAddr = (uint*)(usbBaseAddress + CapabilitiesRegsLength);
             
 #if EHCI_TRACE
@@ -745,9 +772,11 @@ namespace Kernel.Hardware.USB.HCIs
             DBGMSG("HCSPPortRouteDesc: " + (FOS_System.String)HCSPPortRouteDesc);
             DBGMSG("OpRegAddr: " + (FOS_System.String)(uint)OpRegAddr);
 #endif
-
+            // Number of root ports 
+            //  Section 2.2.3 of Intel EHCI Spec
             RootPortCount = (byte)(HCSParams & 0x000F);
 
+            // Start the host controller
             Start();
         }
 
@@ -756,6 +785,8 @@ namespace Kernel.Hardware.USB.HCIs
         /// </summary>
         public override void Update()
         {
+            // Don't attempt any updates or communication with the firmware
+            //  if the HC has utterly crashed...
             if(IrrecoverableError)
             {
 #if EHCI_TRACE
@@ -763,8 +794,10 @@ namespace Kernel.Hardware.USB.HCIs
                 BasicConsole.DelayOutput(10);
 #endif
             }
+            // Otherwise, if any ports have changed status (e.g. device connected / disconnected):
             else if (AnyPortsChanged)
             {
+                //Update all ports
                 PortCheck();
             }
         }
@@ -775,13 +808,26 @@ namespace Kernel.Hardware.USB.HCIs
         /// </summary>
         protected void Start()
         {
+            //Initialise the host controller
             InitHC();
+            //Reset the host controller (to a known, stable, startup state)
             ResetHC();
+            //Start the host controller
             StartHC();
+            //Initialise the Async Schedule of the host controller
             InitializeAsyncSchedule();
 
+            //In future, this could also contain initialisation of the periodic
+            //  schedule and perhaps more complex host controller features such as
+            //  the more advanced power modes / controls.
+
+            // If at this point the host controller is still in the "halted" state then it has
+            //  crashed irrecoverably...
             if (!HCHalted)
             {
+                //Otherwise, the HC is ready to be used.
+                
+                // So we attempt to enable and initialise all the ports on the HC.
                 EnablePorts();
 #if EHCI_TRACE
                 DBGMSG("USB ports enabled.");
@@ -789,7 +835,8 @@ namespace Kernel.Hardware.USB.HCIs
             }
             else
             {
-                ExceptionMethods.Throw(new FOS_System.Exception("EHCI.Start(): Host controller halted! Cannot start EHCI driver!"));
+                IrrecoverableError = true;
+                ExceptionMethods.Throw(new FOS_System.Exception("EHCI halted even after start requested! Cannot start EHCI driver!"));
             }
         }
         /// <summary>
@@ -797,12 +844,15 @@ namespace Kernel.Hardware.USB.HCIs
         /// </summary>
         protected void InitHC()
         {
+            // Set the PCI command signal that the HC should:
+            //  1) Enable the memory-mapped IO registers (Capabilities and Operational registers)
+            //  2) Set the HC as the master HC for all ports.
             pciDevice.Command = pciDevice.Command | PCI.PCIDevice.PCICommand.Memory | PCI.PCIDevice.PCICommand.Master;
 
 #if EHCI_TRACE
             DBGMSG("Hooking IRQ...");
 #endif
-            //Setup InterruptHandler (IRQ number = PCIDevice.InterruptLine)
+            // Setup the interrupt handler (IRQ number = PCIDevice.InterruptLine)
             Interrupts.Interrupts.AddIRQHandler(pciDevice.InterruptLine, EHCI.InterruptHandler, this);
 #if EHCI_TRACE
             DBGMSG("Hooked IRQ.");
@@ -813,49 +863,124 @@ namespace Kernel.Hardware.USB.HCIs
         /// </summary>
         protected void StartHC()
         {
+            // Deactive legacy support if it is available
             DeactivateLegacySupport();
-            CTRLDSSEGMENT = 0u;
-            USBSTS = 0u; //Will this ever have any effect? According to spec, only writing bits set to 1 will have an effect??
-            USBINTR = EHCI_Consts.STS_AsyncInterrupt | EHCI_Consts.STS_HostSystemError | EHCI_Consts.STS_PortChange | 
-                      EHCI_Consts.STS_USBInterrupt | EHCI_Consts.STS_USBErrorInterrupt;
+
+            //Check if 64-bit addressing is enabled
+            //  HCCParams, bit 0 set indicates enabled
+            //  Section 2.2.4 of Intel EHCI Spec
+            if ((HCCParams & 0x1) == 0x1)
+            {
+                // Set the Control Data Structure Segment Register
+                //  Section 2.3.5 of Intel EHCI Spec
+                // If 64-bit addressing is enabled, we currently want to make sure
+                //  all addresses are treated as normal 32-bit addresses so we must 
+                //  zero-out this register.
+                CTRLDSSEGMENT = 0u;
+            }
+            // Clear the USBSTS register
+            //  This is a latch register. To clear all the bits, you write 1s to all of them.
+            //      Some bits are reserved and must be set to 0 when writing to the register.
+            //  Section 2.3.2 of Intel EHCI Spec
+            USBSTS = EHCI_Consts.STS_AllInterrupts;
+            // Enable interrupts.
+            EnableInterrupts();
+
+            //If the HC is halted, start it!
+            // Also:
+            //          "Software must not write a one to [the Run/Stop] field unless the host 
+            //           controller is in the Halted state (i.e. HCHalted in the USBSTS register 
+            //           is a one). Doing so will yield undefined results."
+            //  (Intel EHCI Spec, Section 2.3.1, Table 2-9, Run/Stop
             if (HCHalted)
             {
-                USBCMD |= EHCI_Consts.CMD_RunStopMask; //Set run-stop bit
+                // Set run-stop bit to signal the start command.
+                //  Section 2.3.1 of Intel EHCI Spec
+                USBCMD |= EHCI_Consts.CMD_RunStopMask;
             }
 
-            //This can only be set when HCHalted != 0  !!!
-            USBCMD |= (uint)EHCI_InterruptThresholdControls.x08; //InterruptThresholdControl = 8 Microframes (1ms).
-            
-            CONFIGFLAG = EHCI_Consts.CF; //Set port routing to route all ports to EHCI
+            // Set the Interrupt Threshold Control (min. time between interrupts) to:
+            //      8 Microframes (1ms).
+            //  Section 2.3.1 of Intel EHCI Spec
+            //          "Software modifications to this bit while HCHalted bit is 
+            //           equal to zero results in undefined behavior."
+            //  (Intel EHCI Spec, Section 2.3.1, Table 2-9, Interrupt Threshold Control
+            USBCMD |= (uint)EHCI_InterruptThresholdControls.x08;
 
-            //Is this delay necessary? If so, why?
+            //Set port routing to route all ports to the HC as opposed to companion HCs
+            //  Section 2.3.8 of Intel EHCI Spec
+            CONFIGFLAG = EHCI_Consts.CF;
+
+            // We just told the any Companion HCs (CHCs) to transfer control to the Enhanced HC (EHC)
+            //  This takes a moment so we want to wait for the HC to stabalise and for any new 
+            //  interrupts to occur (if they are going to).
             Hardware.Devices.Timer.Default.Wait(100);
+        }
+        /// <summary>
+        /// Enables all the necessary interrupts for the EHCI driver. Does not add the Interrupts Handler.
+        /// </summary>
+        /// <remarks>
+        /// This method handles writing to the USBINTR register to enable the interrupts whic the EHCI
+        /// driver is designed to handle.
+        /// </remarks>
+        private void EnableInterrupts()
+        {
+            // Enable all the interrupts we wish to handle.
+            //  In future, you would probably have to enable the periodic schedule interrupt(s) here
+            //  too. 
+            // Section 2.3.3 of Intel EHCI Spec
+            USBINTR = EHCI_Consts.STS_AsyncInterrupt | EHCI_Consts.STS_HostSystemError | EHCI_Consts.STS_PortChange |
+                      EHCI_Consts.STS_USBInterrupt | EHCI_Consts.STS_USBErrorInterrupt;
         }
         /// <summary>
         /// Resets the host controller and consequently all ports.
         /// </summary>
         protected void ResetHC()
         {
-            USBCMD &= ~EHCI_Consts.CMD_RunStopMask; //Clear run-stop bit
+            // Clear the run/stop bit to halt the HC.
+            // Section 2.3.1 of Intel EHCI Spec
+            USBCMD &= ~EHCI_Consts.CMD_RunStopMask;
 
-            //Wait for halt
+            // Wait for halt to complete. Intel EHCI Spec (Hardware) says:
+            //  "The Host Controller must halt within 16 micro-frames after software clears the Run bit"
+            //  (Intel EHCI Spec, Section 2.3.1, Table 2-9, Run/stop)
+            // So the following loop will only ever run once or at most twice since 16 microframes is
+            //  2ms.
             while (!HCHalted)
             {
-                //Sleep for a bit
-                Hardware.Devices.Timer.Default.Wait(10);
+                //Sleep for 1ms (8 micro frames)
+                Hardware.Devices.Timer.Default.Wait(1);
             }
 
-            USBCMD |= EHCI_Consts.CMD_HCResetMask; //Set reset bit
+            // Set the reset bit to signal the reset command
+            //  Section 2.3.1 of Intel EHCI Spec
+            //  Note: "PCI Configuration registers are not affected by this reset. All operational 
+            //         registers, including port registers and port state machines are set to their 
+            //         initial values. Port ownership reverts to the companion host controller(s), 
+            //         with the side effects described in Section 4.2. Software must reinitialize 
+            //         the host controller as described in Section 4.1 in order to return the host 
+            //         controller to an operational state. 
+            
+            //          This bit is set to zero by the Host Controller when the reset process is 
+            //          complete. Software cannot terminate the reset process early by writing a 
+            //          zero to this register. 
+            //
+            //          Software should not set this bit to a one when the HCHalted bit in the 
+            //          USBSTS register is a zero. Attempting to reset an actively running host 
+            //          controller will result in undefined behavior."
+            //  (Intel EHCI Spec, Section 2.3.1, Table 2-9, Host Controller Reset)
+            USBCMD |= EHCI_Consts.CMD_HCResetMask;
 
             int timeout = 30;
-            while ((USBCMD & EHCI_Consts.CMD_HCResetMask) != 0) // Reset-bit still set to 1
+            // Wait while the reset-bit is still set
+            while ((USBCMD & EHCI_Consts.CMD_HCResetMask) != 0)
             {
                 Hardware.Devices.Timer.Default.Wait(10);
 
                 timeout--;
                 if (timeout==0)
                 {
-                    //ExceptionMethods.Throw(new FOS_System.Exception("EHCI.Reset(): Timeout! USBCMD Reset bit not cleared!"));
+                    ExceptionMethods.Throw(new FOS_System.Exception("EHCI HC Reset timed out!"));
 #if EHCI_TRACE
                     DBGMSG("EHCI.Reset(): Timeout! USBCMD Reset bit not cleared!");
 #endif
@@ -918,18 +1043,21 @@ namespace Kernel.Hardware.USB.HCIs
                     pciDevice.WriteRegister8(OSownedSemaphore, 0x01);
 
                     int timeout = 250;
-                    // Wait for BIOS-Semaphore being not set
+                    // Wait for BIOS-Semaphore to clear
                     while ((pciDevice.ReadRegister8(BIOSownedSemaphore) & 0x01) != 0 && (timeout > 0))
                     {
                         timeout--;
                         Hardware.Devices.Timer.Default.Wait(10);
                     }
-                    if ((pciDevice.ReadRegister8(BIOSownedSemaphore) & 0x01) == 0) // not set
+                    // If the bit is clear, i.e. we didn't time-out 
+                    // Note: This is a safer check than checking if "timeout == 0"
+                    if ((pciDevice.ReadRegister8(BIOSownedSemaphore) & 0x01) == 0)
                     {
 #if EHCI_TRACE
                         DBGMSG("BIOS-Semaphore being cleared.");
 #endif
                         timeout = 250;
+                        //Wait for OS Owned Semaphore to set.
                         while ((pciDevice.ReadRegister8(OSownedSemaphore) & 0x01) == 0 && (timeout > 0))
                         {
                             timeout--;
@@ -970,9 +1098,17 @@ namespace Kernel.Hardware.USB.HCIs
         /// </summary>
         protected void EnablePorts()
         {
+            // Enabling ports in this implementation just involves
+            //  setting up virtual objects to represent each port.
+            //  It then checks each port's status.
+            // A more advanced implementation may also need to set 
+            //  port power states and other similar features.
 #if EHCI_TRACE
             DBGMSG("Enabling ports...");
 #endif
+            // We must add an entry to our list of ports for each root port
+            //  This is because when we access a port (within the list) later,
+            //  the code presumes the entry has been added.
             for (byte i = 0; i < RootPortCount; i++)
             {
                 RootPorts.Add(new HCPort()
@@ -983,10 +1119,12 @@ namespace Kernel.Hardware.USB.HCIs
 #if EHCI_TRACE
             DBGMSG("Added root ports.");
 #endif
-            EnabledPortsFlag = true;
+            // Store that we have now enabled ports.
+            EnabledPorts = true;
 #if EHCI_TRACE
             DBGMSG("Checking line statuses...");
 #endif
+            // Check the status of each root port.
             for (byte i = 0; i < RootPortCount; i++)
             {
                 CheckPortLineStatus(i);
@@ -1001,24 +1139,70 @@ namespace Kernel.Hardware.USB.HCIs
         /// <param name="portNum">The port to reset.</param>
         protected void ResetPort(byte portNum)
         {
+            // Enable power for the port
+            //  Technically we only need to do this if PPC (Section 2.2.3 of Intel EHCI Spec) is 1.
+            //  However, it is faster to just set the bit regardless since it has no side effects
+            //  if PPC is 0.
+            //      "The function of this bit depends on the value of the Port Power Control (PPC) 
+            //       field in the HCSPARAMS register."
+            //  (Intel EHCI Spec, Section 2.3.9, Table 2-16, Port Power)
             PORTSC[portNum] |= EHCI_Consts.PSTS_PowerOn;
+
+            // Disable the port
+            //  Section 2.3.9 of Intel EHCI Spec
+            //  As per requirements in Port Reset:
+            //      "Note: When software writes this bit to a one, it must also write a zero 
+            //             to the Port Enable bit."
+            //  (Intel EHCI Spec, Section 2.3.9, Table 2-16, Port Reset)
             PORTSC[portNum] &= ~EHCI_Consts.PSTS_Enabled;
-            USBSTS |= ~EHCI_Consts.STS_PortChange;
+
+            // Clear the Port Change interrupt.
+            //  "...clear the connect change..."
+            //  (Intel EHCI Spec, Section 4.2.2, Bullet Point 2)
+            //  Section 2.3.2 of Intel EHCI Spec
+            USBSTS |= EHCI_Consts.STS_PortChange;
+
+            // If at this point the HC is halted, we have a fatal condition.
+            //  As per requirements in Port Reset:
+            //      "The HCHalted bit in the USBSTS register should be a zero before software 
+            //       attempts to use this bit. The host controller may hold Port Reset asserted 
+            //       to a one when the HCHalted bit is a one."
+            //  (Intel EHCI Spec, Section 2.3.9, Table 2-16, Port Reset)
             if (HCHalted)
             {
-                ExceptionMethods.Throw(new FOS_System.Exception("EHCI.ResetPort(): HCHalted not zero!"));
+                ExceptionMethods.Throw(new FOS_System.Exception("EHCI could not reset the port as the host controller is halted."));
             }
+            // Clear the Interrupts Enable register. This prevents any further Port Change interrupts 
+            //  during the reset sequence.
+            //  Section 2.3.3 of Intel EHCI Spec
             USBINTR = 0;
+
+            // Set the Port Reset bit to signal the HC to start the reset port sequence.
+            //  Section 2.3.9 of Intel EHCI Spec
             PORTSC[portNum] |= EHCI_Consts.PSTS_PortReset;
 
-            //~200ms
+            // Wait long enough for the Port Reset to complete.
+            //      "Software must keep this bit at a one long enough to ensure the reset 
+            //       sequence, as specified in the USB Specification Revision 2.0, completes."
+            //Waits ~200ms which is ample amounts of time
             Hardware.Devices.Timer.Default.Wait(200);
 
+            // Terminate the reset port sequence.
+            //      " Software writes a zero to this bit to terminate the bus reset sequence."
+            //  (Intel EHCI Spec, Section 2.3.9, Table 2-16, Port Reset)
             PORTSC[portNum] &= ~EHCI_Consts.PSTS_PortReset;
 
-
-            // wait and check, whether really zero
-            uint timeout = 50;
+            // Wait for the sequence to actually end.
+            //  "Note that when software writes a zero to this bit there may be a delay before the bit 
+            //   status changes to a zero. The bit status will not read as a zero until after the reset 
+            //   has completed."
+            //  (Intel EHCI Spec, Section 2.3.9, Table 2-16, Port Reset)
+            
+            // Timeout set to 5ms (Wait method is only approximate!)
+            // "A host controller must terminate the reset and stabilize the state of the port within 2 
+            //  milliseconds of software transitioning this bit from a one to a zero."
+            //  (Intel EHCI Spec, Section 2.3.9, Table 2-16, Port Reset)
+            uint timeout = 5;
             while ((PORTSC[portNum] & EHCI_Consts.PSTS_PortReset) != 0)
             {
                 // ~1ms
@@ -1027,19 +1211,19 @@ namespace Kernel.Hardware.USB.HCIs
                 timeout--;
                 if (timeout == 0)
                 {
-                    //ExceptionMethods.Throw(new FOS_System.Exception("EHCI.ResetPort(): Port not reset!"));
+                    ExceptionMethods.Throw(new FOS_System.Exception("EHCI port not reset and stabalised within 2ms!"));
 
-#if EHCI_TRACE
-                    DBGMSG("EHCI.ResetPort(): Port not reset!");
-#endif
                     break;
                 }
             }
-            
-            USBINTR = EHCI_Consts.STS_AsyncInterrupt | EHCI_Consts.STS_HostSystemError | EHCI_Consts.STS_PortChange |
-                      EHCI_Consts.STS_USBInterrupt | EHCI_Consts.STS_USBErrorInterrupt;
 
-            //~20ms
+            // Reenable interrupts.
+            EnableInterrupts();
+
+            // A brief wait for stabilisation / interrupts to occur.
+            //  (This is not grounded in any spec but seems logical to me. It may be possible
+            //   to remove this wait but it's only short and occurs infrequently so no harm in
+            //   having it.)
             Hardware.Devices.Timer.Default.Wait(20);
         }
         /// <summary>
@@ -1068,32 +1252,48 @@ namespace Kernel.Hardware.USB.HCIs
 #endif
                 return;
             }
-            USBSTS = val; //Reset interrupt
+            // Reset interrupt occured flag by writing the value back to the register
+            //  Section 2.3.2 of Intel EHCI Spec
+            USBSTS = val;
 
+            // If the interrupt signals a USB error:
             if((val & EHCI_Consts.STS_USBErrorInterrupt) != 0u)
             {
-                USBIntCount--;
+                // "The Host Controller sets this bit to 1 when completion of a USB transaction results 
+                //  in an error condition (e.g., error counter underflow). If the TD on which the error 
+                //  interrupt occurred also had its IOC bit set, both this bit and USBINT bit are set."
+                //  (Intel EHCI Spec, Section 2.3.2, Table 2-10, USB Error Interrupt)
 
+                // The latter part of that quote is important. Even if the transaction hit an error
+                //  condition, we will still detect the Interrupt On Complete condition further down.
+                //  This prevents us hitting an infinite while-loop in the AddToAsyncSchedule method.
 #if EHCI_TRACE
                 DBGMSG("USB Error Interrupt!");
 #endif
             }
 
+            // If the interrupt signals a port has changed:
             if ((val & EHCI_Consts.STS_PortChange) != 0u)
             {
-                if (EnabledPortsFlag && pciDevice != null)
+                // And only if we have enabled ports:
+                if (EnabledPorts)
                 {
+                    // Mark that a port has changed
                     AnyPortsChanged = true;
                 }
             }
 
-
+            // If the interrupt signals the HC has hit an error:
             if ((val & EHCI_Consts.STS_HostSystemError) != 0u)
             {
-                //If we don't do this, we get stuck in an infinite-loop
+                // We will attempt to restart the HC. If, however, the error is occurring
+                //  during the restart, we will just get another error interrupt as we try to
+                //  restart. If we don't have the check condition below, we hit an infinite loop
                 //  of "Start HC -> (Host Error) -> Interrupt -> Start HC -> ..."
                 if (HostSystemError)
                 {
+                    // Mark that this HC has hit an irrecoverable error and so cannot be
+                    //  used for the remainder of the time that the OS is running.
                     IrrecoverableError = true;
 
 #if EHCI_TRACE
@@ -1101,10 +1301,12 @@ namespace Kernel.Hardware.USB.HCIs
 #endif
                 }
                 
+                // If we haven't tried to reset the HC once already...
                 if (!IrrecoverableError)
                 {
+                    // Store that we have already hit HC error once before.
                     HostSystemError = true;
-                    //Attempt restart
+                    // And then attempt to restart the HC
                     Start();
                 }
             }
@@ -1113,10 +1315,18 @@ namespace Kernel.Hardware.USB.HCIs
                 HostSystemError = false;
             }
 
+            // If the interrupt signals the completion of the last transaction of 
+            //  an Async Queue Head (i.e. transfer)
             if ((val & EHCI_Consts.STS_USBInterrupt) != 0u)
             {
+                // And we were expecting a transfer to complete i.e. we were expecting this interrupt
+                //  to occur.
+                //  Note: Without this condition, a spurious interrupt could cause us to decrement 
+                //        unsigned 0, which would result in 0xFFFFFFFF and cause an infinite loop in 
+                //        AddToAsyncSchedule.
                 if (USBIntCount != 0)
                 {
+                    // Decrement our expected interrupt count.
                     USBIntCount--;
                 }
 #if EHCI_TRACE
@@ -1133,29 +1343,49 @@ namespace Kernel.Hardware.USB.HCIs
         /// </summary>
         protected void PortCheck()
         {
+            // We are handling port changes now so mark that there are no port changes.
             AnyPortsChanged = false;
+            
+            // Go through each root port:
             for (byte j = 0; j < RootPortCount; j++)
             {
+                // If its connected status has changed:
+                //  Section 2.3.9 of Intel EHCI Spec
                 if ((PORTSC[j] & EHCI_Consts.PSTS_ConnectedChange) != 0)
                 {
-                    PORTSC[j] |= EHCI_Consts.PSTS_ConnectedChange; // reset interrupt
+                    // Reset the connected change status
+                    //  "Software sets this bit to 0 by writing a 1 to it."
+                    //  (Intel EHCI Spec, Section 2.3.9, Table 2-16, Connect Status Change)
+                    PORTSC[j] |= EHCI_Consts.PSTS_ConnectedChange;
+
+                    // If a device is connected:
+                    //  Section 2.3.9 of Intel EHCI Spec
                     if ((PORTSC[j] & EHCI_Consts.PSTS_Connected) != 0)
                     {
                         CheckPortLineStatus(j);
                     }
                     else
                     {
-                        PORTSC[j] &= ~EHCI_Consts.PSTS_CompanionHCOwned; // port is given back to the EHCI
+                        //Otherwise, no device is connected. So we have two possibilities:
+                        //  1) A device has been disconnected.
+                        //  2) The port has been given back to the EHCI from a companion
+                        //      controller.
+                        
+                        // Clear the Port Owner bit so EHCI owns the port
+                        //    "A one in this bit means that a companion host controller owns and 
+                        //     controls the port. See Section 4.2 for operational details."
+                        //  (Intel EHCI Spec, Section 2.3.9, Table 2-16, Port Owner)
+                        PORTSC[j] &= ~EHCI_Consts.PSTS_CompanionHCOwned;
 
+                        // Free the port if a device had been connected as the device is no longer 
+                        //  connected.
                         if (((HCPort)RootPorts[j]).deviceInfo != null)
                         {
                             ((HCPort)RootPorts[j]).deviceInfo.FreePort();
                         }
-
                     }
                 }
             }
-            AnyPortsChanged = false;
         }
         /// <summary>
         /// Checks the specified port's line state. Calls Detect device or releases the port to the companion
@@ -1164,6 +1394,8 @@ namespace Kernel.Hardware.USB.HCIs
         /// <param name="portNum">The port to check.</param>
         protected void CheckPortLineStatus(byte portNum)
         {
+            // Make sure we only check ports for which a device is actually connected.
+            //  Section 2.3.9 of Intel EHCI Spec
             if ((PORTSC[portNum] & EHCI_Consts.PSTS_Connected) == 0)
             {
 #if EHCI_TRACE
@@ -1172,19 +1404,38 @@ namespace Kernel.Hardware.USB.HCIs
                 return;
             }
 
+            // Get the Line Status of the port. 
+            //  Section 2.3.9 of Intel EHCI Spec
+            //      "These bits reflect the current logical levels of the D+ (bit 11) and D- 
+            //       (bit 10) signal lines. These bits are used for detection of low-speed 
+            //       USB devices prior to the port reset and enable sequence. This field is 
+            //       valid only when the port enable bit is zero and the current connect 
+            //       status bit is set to a one."
+            //  (Intel EHCI Spec, Section 2.3.9, Table 2-16, Line Status)
+            //  This condition is met because Check Port Line Status calls Detect Device
+            //   which is the only caller of ResetPort. There are two cases:
+            //      - After an HC reset, all ports are disabled. So condition is met.
+            //      - After new device connection, the specific port is disabled, so condition is met.
             byte lineStatus = (byte)((PORTSC[portNum] >> 10) & 3); // bits 11:10
 
+            // Switch the various possible line states.
             switch (lineStatus)
             {
-                case 1: // K-state, release ownership of port, because a low speed device is attached
+                case 1: // K-state
 #if EHCI_TRACE
                     DBGMSG("Low-speed device attached. Releasing port.");
 #endif
-                    PORTSC[portNum] |= EHCI_Consts.PSTS_CompanionHCOwned; // release it to the cHC
+                    // In this case, a low-speed device has been attached so we must release it to the 
+                    //  companion host controller.
+                    //  (Intel EHCI Spec, Section 2.3.9, Table 2-16, Line Status)
+                    //  (Intel EHCI Spec, Section 2.3.9, Table 2-16, Port Owner)
+                    PORTSC[portNum] |= EHCI_Consts.PSTS_CompanionHCOwned;
                     break;
                 case 0: // SE0
                 case 2: // J-state
                 case 3: // undefined
+                    // In all these cases, we perform EHCI port reset and device detection
+                    //  (Intel EHCI Spec, Section 2.3.9, Table 2-16, Line Status)
                     DetectDevice(portNum);
                     break;
             }
@@ -1199,29 +1450,58 @@ namespace Kernel.Hardware.USB.HCIs
 #if EHCI_TRACE
             DBGMSG("Detecting device...");
 #endif
+            // Reset the port
+            //  The following is handled by ResetPort:
+            //  "...[issue] a request to clear the connect change, followed by a request to 
+            //   reset and enable the port."
+            //  (Intel EHCI Spec, Section 4.2.2, Bullet Point 2)
             ResetPort(portNum);
 #if EHCI_TRACE
             DBGMSG("Reset port.");
 #endif
-            if (EnabledPortsFlag && ((PORTSC[portNum] & EHCI_Consts.PSTS_PowerOn) != 0)) // power on
+            // If we have enabled ports and the port is powered on:
+            //  Section 2.3.9 of Intel EHCI Spec
+            if (EnabledPorts && ((PORTSC[portNum] & EHCI_Consts.PSTS_PowerOn) != 0))
             {
 #if EHCI_TRACE
                 DBGMSG("Device powered on.");
 #endif
-                if ((PORTSC[portNum] & EHCI_Consts.PSTS_Enabled) != 0) // High speed
+                //      "  The EHCI Driver checks the PortEnable bit in the PORTSC register. If set to 
+                //         a one, the connected device is a high-speed device and EHCI Driver (root hub 
+                //         emulator) issues a change report to the hub driver and the hub driver 
+                //         continues to enumerate the attached device. 
+                //       
+                //       • At the time the EHCI Driver receives the port reset and enable request the 
+                //         LineStatus bits might indicate a low-speed device. Additionally, when the port 
+                //         reset process is complete, the PortEnable field may indicate that a full-speed 
+                //         device is attached. In either case the EHCI driver sets the PortOwner bit in 
+                //         the PORTSC register to a one to release port ownership to a companion host 
+                //         controller."
+                //  (Intel EHCI Spec, Section 4.2.2, Bullet Points 2 and 3)
+
+                // If the port is enabled, it is a high-speed device
+                //  Section 2.3.9 of Intel EHCI Spec
+                if ((PORTSC[portNum] & EHCI_Consts.PSTS_Enabled) != 0)
                 {
 #if EHCI_TRACE
                     DBGMSG("Setting up USB device.");
 #endif
+                    // So we atempt to set up the USB device attached to the port
                     SetupUSBDevice(portNum);
                 }
-                else // Full speed
+                else
                 {
 #if EHCI_TRACE
                     DBGMSG("Full-speed device attached. Releasing port.");
                     BasicConsole.DelayOutput(2);
 #endif
-                    PORTSC[portNum] |= EHCI_Consts.PSTS_CompanionHCOwned; // release it to the cHC
+                    // Otherwise, the device is a full-speed device and we must release it to the 
+                    //  companion host controller
+                    // Note: Low-speed devices will have been handled in Check Port Line Status.
+                    // Note: In either case (low-speed or full-speed) the correct response is to
+                    //       hand control to the companion host controller.
+                
+                    PORTSC[portNum] |= EHCI_Consts.PSTS_CompanionHCOwned;
                 }
             }
 #if EHCI_TRACE
@@ -1233,7 +1513,16 @@ namespace Kernel.Hardware.USB.HCIs
         /// </summary>
         /// <param name="transfer">The transfer to set up.</param>
         protected override void _SetupTransfer(USBTransfer transfer)
-        {
+        { 
+            // Allocate memory for the transfer strcture. This is a queue head strcture.
+            //  It gets appended to the end of the Async Queue in AddToAsyncSchedule.
+            // This memory must be allocated on a 32-byte boundary as per EHCI spec.
+            //      "The memory structure referenced by this physical memory pointer is 
+            //       assumed to be 32-byte (cache line) aligned."
+            //  Section 2.3.7 of Intel EHCI Spec
+            // Note: This sets the virtual address. This allows it to be accessed and freed by the 
+            //       driver. However, when passing the address to the HC, it must be converted to
+            //       a physical address.
             transfer.underlyingTransferData = (EHCI_QueueHead_Struct*)FOS_System.Heap.AllocZeroed((uint)sizeof(EHCI_QueueHead_Struct), 32);
         }
         /// <summary>
@@ -1250,21 +1539,31 @@ namespace Kernel.Hardware.USB.HCIs
         /// <param name="index">The USB request index.</param>
         /// <param name="length">The length of the USB request.</param>
         protected override void _SETUPTransaction(USBTransfer transfer, USBTransaction uTransaction, bool toggle, ushort tokenBytes,
-                                           byte type, byte req, byte hiVal, byte loVal, ushort index, ushort length)
+                                                  byte type, byte req, byte hiVal, byte loVal, ushort index, ushort length)
         {
+            // Create an EHCI-specific object to describe the transaction
             EHCITransaction eTransaction = new EHCITransaction();
+            // Store the underlying HC-specific transaction info
             uTransaction.underlyingTz = eTransaction;
+            // SETUP transaction so there is no input buffer
             eTransaction.inBuffer = null;
             eTransaction.inLength = 0u;
-            fixed(void** bufferPtr = &(eTransaction.qTDBuffer))
-            {
-                eTransaction.qTD = CreateQTD_SETUP((EHCI_qTD_Struct*)1u, toggle, tokenBytes, type, req, hiVal, loVal, index, length, bufferPtr).qtd;
-            }
+            // Create and initialise the SETUP queue transfer descriptor
+            eTransaction.qTD = CreateQTD_SETUP(null, toggle, tokenBytes, type, req, hiVal, loVal, index, length).qtd;
+            
+            // If the number of existing transactions is greater than 0
+            //  i.e. some transactions have already been added.
             if (transfer.transactions.Count > 0)
             {
+                // Get the previous (i.e. last) transaction then the underlying transaction from it
                 EHCITransaction eLastTransaction = (EHCITransaction)((USBTransaction)(transfer.transactions[transfer.transactions.Count - 1])).underlyingTz;
+                // Create a wrapper for the last transaction (qTD)
                 EHCI_qTD lastQTD = new EHCI_qTD(eLastTransaction.qTD);
+                // Set the Next Transaction (qTD) Pointer on the previous qTD to point to the qTD
+                //  we just created. 
+                // Note: The NextqTDPointer must be the physical address of qTD data.
                 lastQTD.NextqTDPointer = (EHCI_qTD_Struct*)VirtMemManager.GetPhysicalAddress(eTransaction.qTD);
+                // Mark the previous qTD's Next Transaction Pointer as valid.
                 lastQTD.NextqTDPointerTerminate = false;
             }
         }
@@ -1278,40 +1577,50 @@ namespace Kernel.Hardware.USB.HCIs
         /// <param name="length">The length of the buffer.</param>
         protected override void _INTransaction(USBTransfer transfer, USBTransaction uTransaction, bool toggle, void* buffer, ushort length)
         {
+            // Create an EHCI-specific object to describe the transaction
             EHCITransaction eTransaction = new EHCITransaction();
+            // Store the underlying HC-specific transaction info
             uTransaction.underlyingTz = eTransaction;
+            // IN transaction so use the supplied input data buffer
             eTransaction.inBuffer = buffer;
+            eTransaction.inLength = length;
+
 #if EHCI_TRACE
             DBGMSG(((FOS_System.String)"IN Transaction : buffer=") + (uint)buffer);
+
+            DBGMSG(((FOS_System.String)"IN Transaction : Before CreateQTD : bufferPtr=&qTDBuffer=") + (uint)bufferPtr + 
+                                        ", *bufferPtr=" + (uint)(*bufferPtr));
 #endif
-            eTransaction.inLength = length;
-            fixed (void** bufferPtr = &(eTransaction.qTDBuffer))
+
+            // Create and initialise the IN queue transfer descriptor
+            eTransaction.qTD = CreateQTD_IO(null, 1, toggle, length, length).qtd;
+
+#if EHCI_TRACE
+            DBGMSG(((FOS_System.String)"IN Transaction : After CreateQTD : bufferPtr=&qTDBuffer=") + (uint)bufferPtr +
+                                        ", *bufferPtr=" + (uint)(*bufferPtr) + ", Buffer0=" + (uint)qtd.Buffer0);
+            for (int i = 0; i < length; i++)
             {
-#if EHCI_TRACE
-                DBGMSG(((FOS_System.String)"IN Transaction : Before CreateQTD : bufferPtr=&qTDBuffer=") + (uint)bufferPtr + 
-                                           ", *bufferPtr=" + (uint)(*bufferPtr));
-#endif
-                EHCI_qTD qtd = CreateQTD_IO((EHCI_qTD_Struct*)1u, 1, toggle, length, bufferPtr, length);
-                eTransaction.qTD = qtd.qtd;
-#if EHCI_TRACE
-                DBGMSG(((FOS_System.String)"IN Transaction : After CreateQTD : bufferPtr=&qTDBuffer=") + (uint)bufferPtr +
-                                           ", *bufferPtr=" + (uint)(*bufferPtr) + ", Buffer0=" + (uint)qtd.Buffer0);
-                for (int i = 0; i < length; i++)
-                {
-                    ((byte*)eTransaction.qTDBuffer)[i] = 0xDE;
-                    ((byte*)buffer)[i] = 0xBF;
-                }
-                for (int i = length; i < 0x1000; i++)
-                {
-                    ((byte*)eTransaction.qTDBuffer)[i] = 0x56;
-                }
-#endif
+                ((byte*)eTransaction.qTDBuffer)[i] = 0xDE;
+                ((byte*)buffer)[i] = 0xBF;
             }
+            for (int i = length; i < 0x1000; i++)
+            {
+                ((byte*)eTransaction.qTDBuffer)[i] = 0x56;
+            }
+#endif
+            // If the number of existing transactions is greater than 0
+            //  i.e. some transactions have already been added. 
             if (transfer.transactions.Count > 0)
             {
+                // Get the previous (i.e. last) transaction then the underlying transaction from it
                 EHCITransaction eLastTransaction = (EHCITransaction)((USBTransaction)(transfer.transactions[transfer.transactions.Count - 1])).underlyingTz;
+                // Create a wrapper for the last transaction (qTD)
                 EHCI_qTD lastQTD = new EHCI_qTD(eLastTransaction.qTD);
+                // Set the Next Transaction (qTD) Pointer on the previous qTD to point to the qTD
+                //  we just created. 
+                // Note: The NextqTDPointer must be the physical address of qTD data.
                 lastQTD.NextqTDPointer = (EHCI_qTD_Struct*)VirtMemManager.GetPhysicalAddress(eTransaction.qTD);
+                // Mark the previous qTD's Next Transaction Pointer as valid.
                 lastQTD.NextqTDPointerTerminate = false;
             }
         }
@@ -1325,23 +1634,41 @@ namespace Kernel.Hardware.USB.HCIs
         /// <param name="length">The length of the buffer.</param>
         protected override void _OUTTransaction(USBTransfer transfer, USBTransaction uTransaction, bool toggle, void* buffer, ushort length)
         {
+            // Create an EHCI-specific object to describe the transaction
             EHCITransaction eTransaction = new EHCITransaction();
+            // Store the underlying HC-specific transaction info
             uTransaction.underlyingTz = eTransaction;
+            // OUT transaction so there is no input buffer
             eTransaction.inBuffer = null;
             eTransaction.inLength = 0u;
-            fixed (void** bufferPtr = &(eTransaction.qTDBuffer))
+
+            // Create and initialise the OUT queue transfer descriptor
+            EHCI_qTD theQTD = CreateQTD_IO(null, 0, toggle, length, length);
+            // Set the qTD structure in the transaction description object
+            eTransaction.qTD = theQTD.qtd;
+            // If there is an output buffer and it has > 0 length:
+            if (buffer != null && length != 0)
             {
-                eTransaction.qTD = CreateQTD_IO((EHCI_qTD_Struct*)1u, 0, toggle, length, bufferPtr, length).qtd;
-                if (buffer != null && length != 0)
-                {
-                    Utilities.MemoryUtils.MemCpy_32((byte*)eTransaction.qTDBuffer, (byte*)buffer, length);
-                }
+                // Copy the data from the output buffer to the transaction's output buffer
+                // The transaction's output buffer has been allocated so it as aligned correctly
+                //  where as there is no guarantee the output buffer passed to us has been so we
+                //  must copy the data across.
+                Utilities.MemoryUtils.MemCpy_32(theQTD.Buffer0, (byte*)buffer, length);
             }
+
+            // If the number of existing transactions is greater than 0
+            //  i.e. some transactions have already been added. 
             if (transfer.transactions.Count > 0)
             {
+                // Get the previous (i.e. last) transaction then the underlying transaction from it
                 EHCITransaction eLastTransaction = (EHCITransaction)((USBTransaction)(transfer.transactions[transfer.transactions.Count - 1])).underlyingTz;
+                // Create a wrapper for the last transaction (qTD)
                 EHCI_qTD lastQTD = new EHCI_qTD(eLastTransaction.qTD);
+                // Set the Next Transaction (qTD) Pointer on the previous qTD to point to the qTD
+                //  we just created. 
+                // Note: The NextqTDPointer must be the physical address of qTD data.
                 lastQTD.NextqTDPointer = (EHCI_qTD_Struct*)VirtMemManager.GetPhysicalAddress(eTransaction.qTD);
+                // Mark the previous qTD's Next Transaction Pointer as valid.
                 lastQTD.NextqTDPointerTerminate = false;
             }
         }
@@ -1351,8 +1678,17 @@ namespace Kernel.Hardware.USB.HCIs
         /// <param name="transfer">The transfer to issue.</param>
         protected override void _IssueTransfer(USBTransfer transfer)
         {
+            // Please note: The word "completed" is not synonymous with "succeeded". 
+            //              "Completed" means the hardware, firmware or software finished
+            //              processing something.
+            //              "Succeeded" means the hardware, firmware or software finished
+            //              processing something and there were no errors during processing.
+
+            // Get the last qTD of the transfer
             EHCITransaction lastTransaction = (EHCITransaction)((USBTransaction)transfer.transactions[transfer.transactions.Count - 1]).underlyingTz;
             EHCI_qTD lastQTD = new EHCI_qTD(lastTransaction.qTD);
+            // Enable the Interrupt on Complete. This allows us to detect the end of the entire transfer 
+            //  when the USB Interrupt occurs.
             lastQTD.InterruptOnComplete = true;
 
 #if EHCI_TRACE
@@ -1371,11 +1707,22 @@ namespace Kernel.Hardware.USB.HCIs
             DBGMSG(((FOS_System.String)"Transfer transactions tree OK: ") + treeOK);
             BasicConsole.DelayOutput(10);
 #endif            
-
+            // Get the first qTD of the transfer. This is passed to InitQH to tell it the start of the linked
+            //  list of transactions.
             EHCITransaction firstTransaction = (EHCITransaction)((USBTransaction)(transfer.transactions[0])).underlyingTz;
-            InitQH((EHCI_QueueHead_Struct*)transfer.underlyingTransferData, (uint)transfer.underlyingTransferData, firstTransaction.qTD, false, transfer.device.address, transfer.endpoint, transfer.packetSize);
+            // Init the Queue Head for this transfer
+            InitQH((EHCI_QueueHead_Struct*)transfer.underlyingTransferData, 
+                   (EHCI_QueueHead_Struct*)transfer.underlyingTransferData, 
+                   firstTransaction.qTD, 
+                   false, 
+                   transfer.device.address, 
+                   transfer.endpoint, 
+                   transfer.packetSize);
             
-            for (byte i = 0; i < EHCI_Consts.NumAsyncListRetries && !transfer.success; i++)
+            // Attempt to issue the transfer until it either succeeds or we reach our 
+            //  maximum number of retries or an irrecoverable host system error occurs. 
+            //  The maxmimum number of retries is an entirely arbitary, internal number.
+            for (byte i = 0; i < EHCI_Consts.NumAsyncListRetries && !transfer.success && !IrrecoverableError; i++)
             {
 #if EHCI_TRACE
                 transfer.success = true;
@@ -1397,11 +1744,15 @@ namespace Kernel.Hardware.USB.HCIs
                     DBGMSG("EHCI: PRE Issue - Transfer OK.");
                 }
 #endif
+                // Add it to the async schedule. This will cause the HC to attempt to send the transactions.
+                //  This is a blocking method that waits until the HC signals the last transaction of the 
+                //  transfer is complete. This does not mean all or the last transaction completed succesfully.
                 AddToAsyncSchedule(transfer);
+                // If during the transfer we hit an irrecoverable host system error:
                 if (IrrecoverableError)
                 {
+                    // Mark the transfer as failed
                     transfer.success = false;
-
 #if EHCI_TRACE
                     DBGMSG("EHCI: Irrecoverable error! No retry.");
                     BasicConsole.DelayOutput(2);
@@ -1409,11 +1760,24 @@ namespace Kernel.Hardware.USB.HCIs
                 }
                 else
                 {
+                    // Assume the transfer succeeded to start with
                     transfer.success = true;
+                    // Then check each transaction to see if it succeeded.
                     for (int k = 0; k < transfer.transactions.Count; k++)
                     {
+                        // Get the transaction to check
                         EHCITransaction transaction = (EHCITransaction)((USBTransaction)transfer.transactions[k]).underlyingTz;
+                        // Get the transaction's status
                         byte status = new EHCI_qTD(transaction.qTD).Status;
+                        // If the status == 0, it indicates success
+                        // If bit 0 of the status is set and the other buts are 0, 
+                        //  then since this must be a High Speed endpoint, it is just the
+                        //  Ping State.
+                        // It is worth noting that the Ping State bit is only valid if the 
+                        //  endpoint is an OUT endpoint. However, the specification also suggests
+                        //  the this bit is only an error bit if the device is a low- or full-speed
+                        //  device. This means the value for IN endpoints on High Speed devices is 
+                        //  somewhat undefined and I am lead to assume the value must always be 0.
                         transfer.success = transfer.success && (status == 0 || status == Utils.BIT(0));
 
 #if EHCI_TRACE
@@ -1431,11 +1795,26 @@ namespace Kernel.Hardware.USB.HCIs
                 }
             }
 
+            // After the transfer has completed, we can free the underlying queue head memory.
+            //  TODO: At this point we should use the Async Doorbell to confirm the
+            //        HC has finished using the queue head and that all caches of 
+            //        pointers to the queue head have been released. 
+            // However, the implementation of transfers presented here is sufficiently
+            //  slow that I highly doubt there would ever be any cached transfers.
             FOS_System.Heap.Free(transfer.underlyingTransferData);
+            // Loop through each transaction in the transfer
             for (int k = 0; k < transfer.transactions.Count; k++)
             {
+                // Get the current transaction
                 EHCITransaction transaction = (EHCITransaction)((USBTransaction)transfer.transactions[k]).underlyingTz;
+                // Create a wrapper for the underlying qTD of the transaction
+                EHCI_qTD theQTD = new EHCI_qTD(transaction.qTD);
 
+                // If the transaction has an input buffer, we must copy the input data from the qTD
+                //  to the input buffer. 
+                // Note: The reason the qTD has a different buffer to the input buffer is because when
+                //       the input buffer was provided, there was no guarantee it had been properly 
+                //       allocated (i.e. size and alignment may have been incorrect)
                 if (transaction.inBuffer != null && transaction.inLength != 0)
                 {
 #if EHCI_TRACE
@@ -1443,8 +1822,8 @@ namespace Kernel.Hardware.USB.HCIs
                                                ", qTDBuffer=" + (uint)transaction.qTDBuffer + 
                                                ", inLength=" + transaction.inLength + ", Data to copy: ");
 #endif
-                    
-                    Utilities.MemoryUtils.MemCpy_32((byte*)transaction.inBuffer, (byte*)transaction.qTDBuffer, transaction.inLength);
+                    // Copy the memory
+                    Utilities.MemoryUtils.MemCpy_32((byte*)transaction.inBuffer, theQTD.Buffer0, transaction.inLength);
 
 #if EHCI_TRACE
                     for (int i = 0; i < transaction.inLength; i++)
@@ -1457,8 +1836,10 @@ namespace Kernel.Hardware.USB.HCIs
                     BasicConsole.DelayOutput(2);
 #endif
                 }
-                FOS_System.Heap.Free(transaction.qTDBuffer);
-                FOS_System.Heap.Free(transaction.qTD);
+                // Free the qTD buffer(s)
+                FOS_System.Heap.Free(theQTD.Buffer0);
+                // Free the qTD
+                theQTD.Free();
             }
 
 #if EHCI_TRACE
@@ -1479,12 +1860,34 @@ namespace Kernel.Hardware.USB.HCIs
         /// </summary>
         protected void InitializeAsyncSchedule()
         {
+            // If there is no idle queue head:
             if (IdleQueueHead == null)
             {
+                // Create one and set it as both the idle and tail queue heads.
                 IdleQueueHead = TailQueueHead = new EHCI_QueueHead().queueHead;
+                
+                // The Idle Queue Head always remains in the queue and it does nothing.
+                // It is also always the head of the reclamation list. (Note: The 
+                // reclamation list is not made use of by this driver implementation).
+
+                // The spec makes no explicit mention of needing an Idle Queue Head.
+                // However, the need is clearly implicitly there. The spec says that 
+                // while the async queue is enabled, it will use the ASYNCLISTADDR to
+                // try and traverse the async queue. This clearly suggests then, that 
+                // the ASYNCLISTADDR must be valid for the entire time that the async 
+                // schedule is enabled. For this to be possible without continually 
+                // sending actual transfers, we must have the idle transfer (queue head).
+
+                // Section 4.8 of Intel EHCI Spec
             }
-            InitQH(IdleQueueHead, (uint)IdleQueueHead, null, true, 0, 0, 0);
+            // Initialise the idle queue head as a circular list of 1 item - i.e. idle queue head
+            //  points to itself. And as the head of the reclamation list.
+            InitQH(IdleQueueHead, IdleQueueHead, null, true, 0, 0, 0);
+            // Set the Async List Address to point to the idle queue head.
+            // Note: Physical address of queue head is required.
+            // Section 2.3.7 of Intel EHCI Spec
             ASYNCLISTADDR = (EHCI_QueueHead_Struct*)VirtMemManager.GetPhysicalAddress(IdleQueueHead);
+            // Enable the async schedule.
             EnableAsyncSchedule();
         }
         /// <summary>
@@ -1492,10 +1895,18 @@ namespace Kernel.Hardware.USB.HCIs
         /// </summary>
         protected void EnableAsyncSchedule()
         {
+            // Set the command to enable the async schedule
+            //  Section 2.3.1 of Intel EHCI Spec
             USBCMD |= EHCI_Consts.CMD_AsyncScheduleEnableMask;
 
             uint timeout = 7;
-            while ((USBSTS & EHCI_Consts.STS_AsyncEnabled) == 0) // wait until it is really on
+            // Wait until the schedule is actually enabled
+            // Section 2.3.2 of Intel EHCI Spec
+            //      "The Host Controller is not required to immediately disable or enable the 
+            //       Asynchronous Schedule when software transitions the Asynchronous Schedule 
+            //       Enable bit in the USBCMD register"
+            //  (Intel EHCI Spec, Section 2.3.2, Table 2-10, Asynchronous Schedule Status)
+            while ((USBSTS & EHCI_Consts.STS_AsyncEnabled) == 0)
             {
                 timeout--;
                 if (timeout>0)
@@ -1505,7 +1916,7 @@ namespace Kernel.Hardware.USB.HCIs
                 }
                 else
                 {
-                    ExceptionMethods.Throw(new FOS_System.Exception("EHCI.EnableAsyncScheduler(): Timeout Error - STS_ASYNC_ENABLED not set!"));
+                    ExceptionMethods.Throw(new FOS_System.Exception("Async schedule enable timed out! The schedule was not enabled."));
                     break;
                 }
             }
@@ -1516,46 +1927,52 @@ namespace Kernel.Hardware.USB.HCIs
         /// <param name="transfer">The transfer to add.</param>
         protected void AddToAsyncSchedule(USBTransfer transfer)
         {
+            // Set the expected number of USB Interrupts to 1
+            //  1 because we expect one and only one for the last transaction of the transfer
+            //  which we flagged to Interrupt On Complete in IssueTransfer.
             USBIntCount = 1;
 
+            // If the schedule is disabled:
+            // Section 2.3.2 of Intel EHCI Spec
             if ((USBSTS & EHCI_Consts.STS_AsyncEnabled) == 0)
             {
-                EnableAsyncSchedule(); // Start async scheduler, when it is not running
+                // Enable / start the async schedule
+                EnableAsyncSchedule();
             }
-            //USBCMD |= EHCI_Consts.CMD_ASYNCH_INT_DOORBELL; // Activate Doorbell: We would like to receive an asynchronous schedule interrupt
+            
+            // Save the old tail queue head (which may not be the idle queue head) (save in a wrapper)
+            EHCI_QueueHead oldTailQH = new EHCI_QueueHead(TailQueueHead);
+            // The new queue head will now be end of the queue
+            TailQueueHead = (EHCI_QueueHead_Struct*)transfer.underlyingTransferData;
 
-            EHCI_QueueHead oldTailQH = new EHCI_QueueHead(TailQueueHead); // save old tail QH
-            TailQueueHead = (EHCI_QueueHead_Struct*)transfer.underlyingTransferData; // new QH will now be end of Queue
-
+            // Create wrappers for the idle and tail queue heads.
             EHCI_QueueHead idleQH = new EHCI_QueueHead(IdleQueueHead);
             EHCI_QueueHead tailQH = new EHCI_QueueHead(TailQueueHead);
-            // Create ring. Link new QH with idleQH (always head of Queue)
+            // Create the ring. Link the new queue head with idleQH (which is always the head of the queue)
             tailQH.HorizontalLinkPointer = (EHCI_QueueHead_Struct*)VirtMemManager.GetPhysicalAddress(IdleQueueHead);
+            // Set the tail queue head type to inidicate it is a Queue Head 
+            //  (as opposed to an Isochronous Transfer Descriptor or other such type)
             tailQH.Type = 1;
-            // Insert qh to Queue as element behind old queue head
+            // Insert the queue head into the queue as an element behind old queue head
             oldTailQH.HorizontalLinkPointer = (EHCI_QueueHead_Struct*)VirtMemManager.GetPhysicalAddress(TailQueueHead);
-            oldTailQH.Type = 1;
-
-            //int timeout = 10 * velocity + 25; // Wait up to 250+100*velocity milliseconds for USBasyncIntFlag to be set
-            while (USBIntCount > 0 /*&& timeout > 0*/ && !IrrecoverableError)
+            
+            //TODO: You may want to add a timeout to this while loop, though it won't do much good because
+            //      then you have to work out how on earth to handle the error!
+            while (USBIntCount > 0 && !IrrecoverableError)
             {
-                //timeout--;
-                //~100ms
-                //for (int i = 0; i < 1000000; i++)
-                //    ;
+                ;
+                // Note: I attempted to use Devices.Timer.Default.Wait in here BUT
+                //       that breaks the code! I suspect because it disables interrupts OR
+                //       because the USB interrupt screws up the timer. Either way round,
+                //       you cannot currently attempt to sleep in here so we must busy-wait.
             }
-
-            //            if (timeout == 0)
-            //            {
-            //#if EHCI_TRACE
-            //                DBGMSG(((FOS_System.String)"EHCI.AddToAsyncScheduler(): Num interrupts not 0! not set! USBIntCount: ") + USBIntCount);
-            //#endif
-            //            }
-
-            // Restore link of idleQH to idleQH (endless loop)
-            idleQH.HorizontalLinkPointer = (EHCI_QueueHead_Struct*)VirtMemManager.GetPhysicalAddress(IdleQueueHead);
-            idleQH.Type = 0x1;
-            TailQueueHead = IdleQueueHead; // qh done. idleQH is end of Queue again (ring structure of asynchronous schedule)
+            
+            // Restore the link of the old tail queue head to the idle queue head
+            oldTailQH.HorizontalLinkPointer = (EHCI_QueueHead_Struct*)VirtMemManager.GetPhysicalAddress(IdleQueueHead);
+            // Queue head done. 
+            // Because nothing else touches the async queue and this method is a synchronous method, 
+            //  the idle queue head will now always be the end of the queue again.
+            TailQueueHead = oldTailQH.queueHead;
         }
 
         /// <summary>
@@ -1563,22 +1980,21 @@ namespace Kernel.Hardware.USB.HCIs
         /// </summary>
         /// <param name="headPtr">A pointer to the queue head structure to initialise.</param>
         /// <param name="horizPtr">
-        /// The physical address of the next queue head in the list (or the first queue head since the 
-        /// async queue is a circular buffer)
+        /// The virtual address of the next queue head in the list (or the first queue head since the 
+        /// async queue is a circular buffer). This is translated into the physical address internally.
         /// </param>
         /// <param name="firstQTD">A pointer to the first qTD of the queue head.</param>
         /// <param name="H">The Head of Reclamation list flag.</param>
         /// <param name="deviceAddr">The address of the USB device to which this queue head belongs.</param>
         /// <param name="endpoint">The endpoint number of the USB device to which this queue head belongs.</param>
         /// <param name="maxPacketSize">The maximum packet size to use when transferring.</param>
-        protected void InitQH(EHCI_QueueHead_Struct* headPtr, uint horizPtr, EHCI_qTD_Struct* firstQTD, bool H, byte deviceAddr,
+        protected void InitQH(EHCI_QueueHead_Struct* headPtr, EHCI_QueueHead_Struct* horizPtr, EHCI_qTD_Struct* firstQTD, bool H, byte deviceAddr,
                                    byte endpoint, ushort maxPacketSize)
         {
             EHCI_QueueHead head = new EHCI_QueueHead(headPtr);
-            // bit 31:5 Horizontal Link Pointer
             head.HorizontalLinkPointer = (EHCI_QueueHead_Struct*)VirtMemManager.GetPhysicalAddress(horizPtr);
-            head.Type = 0x1;      // type:  00b iTD,   01b QH,   10b siTD,   11b FSTN
-            head.Terminate = false; // T-Bit: is set to zero
+            head.Type = 0x1;        // Types:  00b iTD,   01b QH,   10b siTD,   11b FSTN
+            head.Terminate = false;
             head.DeviceAddress = deviceAddr;         // The device address
             head.InactiveOnNextTransaction = false;
             head.EndpointNumber = endpoint;       // endpoint 0 contains Device infos such as name
@@ -1619,7 +2035,7 @@ namespace Kernel.Hardware.USB.HCIs
         /// <param name="buffer">OUT. A pointer to the qTD data buffer.</param>
         /// <returns>The new qTD.</returns>
         protected EHCI_qTD CreateQTD_SETUP(EHCI_qTD_Struct* next, bool toggle, ushort tokenBytes, byte type, byte req,
-                                                 byte hiVal, byte loVal, ushort index, ushort length, void** buffer)
+                                                 byte hiVal, byte loVal, ushort index, ushort length)
         {
             EHCI_qTD td = AllocAndInitQTD(next);
 
@@ -1627,9 +2043,7 @@ namespace Kernel.Hardware.USB.HCIs
             td.TotalBytesToTransfer = tokenBytes; // dependent on transfer
             td.DataToggle = toggle;     // Should be toggled every list entry
 
-                                                                     //PAGESIZE
-            //Transaction Buffer0
-            USBRequest* request = (USBRequest*)(*buffer = AllocQTDbuffer(td));
+            USBRequest* request = (USBRequest*)(AllocQTDbuffer(td));
             request->type = type;
             request->request = req;
             request->valueHi = hiVal;
@@ -1649,15 +2063,13 @@ namespace Kernel.Hardware.USB.HCIs
         /// <param name="buffer">OUT. A pointer to the qTD data buffer.</param>
         /// <param name="bufferSize">The size of the qTD data buffer.</param>
         /// <returns>The new qTD.</returns>
-        protected EHCI_qTD CreateQTD_IO(EHCI_qTD_Struct* next, byte direction, bool toggle, ushort tokenBytes, void** buffer, uint bufferSize)
+        protected EHCI_qTD CreateQTD_IO(EHCI_qTD_Struct* next, byte direction, bool toggle, ushort tokenBytes, uint bufferSize)
         {
             EHCI_qTD td = AllocAndInitQTD(next);
 
             td.PIDCode = direction;
             td.TotalBytesToTransfer = tokenBytes; // dependent on transfer
             td.DataToggle = toggle;     // Should be toggled every list entry
-
-            *buffer = AllocQTDbuffer(td);
 
             return td;
         }
@@ -1670,7 +2082,7 @@ namespace Kernel.Hardware.USB.HCIs
         {
             EHCI_qTD newQTD = new EHCI_qTD();
 
-            if ((uint)next != 0x1)
+            if (next != null)
             {
                 newQTD.NextqTDPointerTerminate = false;
                 newQTD.NextqTDPointer = (EHCI_qTD_Struct*)VirtMemManager.GetPhysicalAddress(next);
@@ -1782,10 +2194,6 @@ namespace Kernel.Hardware.USB.HCIs
         /// A pointer to the actual qTD of the transaction.
         /// </summary>
         public EHCI_qTD_Struct* qTD;
-        /// <summary>
-        /// A pointer to the main qTD buffer of the transaction.
-        /// </summary>
-        public void* qTDBuffer;
         /// <summary>
         /// A pointer to the input buffer.
         /// </summary>
