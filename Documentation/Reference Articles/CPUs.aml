@@ -2386,8 +2386,9 @@
           		<section address="CPUArchitecture_NASM_Examples">
           			<title>A few examples</title>
           			<content>
-          				<code lang="" numberLines="true" tabSize="4">
-		    				- - - - - - - - - - - - - - - - 32-bit Addition - - - - - - - - - - - - - - - -
+          				<code lang="" tabSize="4">
+		    				; NASM, x86 (32-bit)
+		    				; - - - - - - - - - - - - - - - - 32-bit Addition - - - - - - - - - - - - - - - -
 		    				
 		    				; This sample adds two numbers and stores the result over one of the first input
 		    				
@@ -2396,16 +2397,18 @@
 		    				add eax, ebx    ; Add the two numbers, result stored in eax
 		    				
 		    			</code>
-		    			<code lang="" numberLines="true" tabSize="4">
-		    				- - - - - - - - - - - - - - - 32-bit Port Output - - - - - - - - - - - - - - - -
+		    			<code lang="" tabSize="4">
+		    				; NASM, x86 (32-bit)
+		    				; - - - - - - - - - - - - - - - 32-bit Port Output - - - - - - - - - - - - - - - -
 		    				
 		    				; This sample outputs a 32-bit value to an IO port
 		    				mov eax, 0xDEADBEEF     ; Load the value to send
 		    				out 0xF0, eax           ; Output the value to port 0xF0
 		    				
 		    			</code>
-		    			<code lang="" numberLines="true" tabSize="4">
-		    				- - - - - - - - - - - - - - - - Conditional Branching - - - - - - - - - - - - - - - -
+		    			<code lang="" tabSize="4">
+		    				; NASM, x86 (32-bit)
+		    				; - - - - - - - - - - - - - - - - Conditional Branching - - - - - - - - - - - - - - - -
 		    				
 		    				; This sample loads a number then tests whether it is greater than a specified number.
 		    				;   If it is greater, it stores 0 in the primary general purpose register
@@ -2575,8 +2578,146 @@
 		              <title>ID</title>
 		              <content>
 		              	<para>
-		              		x86 specific example code to be added.
+		              		The CPUID op is not supported on all x86 processors. You can, however, reliably test for support. 
+		              		(I would expect most modern x86 processors to support it.) The CPUID op takes one parameter, the 
+		              		function selector. The parameter is stored in EAX prior to the CPUID call. The result of the CPUID
+		              		call is stored in EAX, EBX, ECX and EDX. More detail for each function is provided below.
 		              	</para>
+		              	<para>
+		              		The following is a list of all the basic CPUID functions and the required values to use them. The 
+		              		information is valid for both Intel and AMD specifications (links provided below). Other feature
+		              		numbers exist but they are model-specific. Please refer to the respective specifications for
+		              		details of the model-specific features.		              		
+		              	</para>
+		              	<list class="bullet">
+		              		<listItem>
+		              			<para>Max Feature Index / Vendor ID String</para>
+		              			<para>EAX = 0x0, Returns Max Feature Index and the Vendor ID string in EBX, EDX and ECX.</para>
+		              			<para>
+		              				  The Max Feature Index is the highest basic feature number that can be requested. The value
+		              				  is returned in EAX. Note: Higher feature numbers can be requested but they are extended 
+		              				  features which are model specific. The Vendor ID string characters are stored as 1-byte 
+		              				  ASCII in the following order: EBX [LSB ... MSB], EDX [LSB ... MSB], ECX [LSB ... MSB].
+		              			</para>
+		              		</listItem>
+		              		<listItem>
+		              			<para>Version / Features</para>
+		              			<para>
+		              			      EAX = 0x1, Returns Version info in EAX, misc. info in EBX and a bit field in ECX and EDX
+		              				  indicating the CPU's features.
+		              			</para>
+		              			<para>
+		              				For details of the Version, Misc and bit field values, please see the Intel or AMD CPUID specs.
+		              				Links provided below.
+		              			</para>
+		              		</listItem>
+		              		<listItem>
+		              			<para>Monitor / MWait</para>
+		              			<para>EAX = 0x5, Returns values in EAX, EBX, ECX and EDX.</para>
+		              			<para>
+		              				  Please see the Intel spec (easiest to read) for details of the bits / values. Links
+		              				  provided below.
+		              			</para>
+		              		</listItem>
+		              		<listItem>
+		              			<para>Thermal and Power Management</para>
+		              			<para>EAX = 0x6, Returns values in EAX, EBX, ECX and EDX.</para>
+		              			<para>See the respective specifications for more info. Links provided below.</para>
+		              		</listItem>
+		              		<listItem>
+		              			<para>Structured Extended Feature Identifiers</para>
+		              			<para>EAX = 0x7, Returns values in EAX, EBX and ECX.</para>
+		              			<para>See the respective specifications for more info. Links provided below.</para>
+		              		</listItem>
+		              		<listItem>
+		              			<para>Processor Extended State Enumeration (ECX = 0)</para>
+		              			<para>EAX = 0xD, ECX = 0x1, Returns bit fields and values in EAX, EBX, ECX and EDX.</para>
+		              			<para>See the respective specifications for more info. Links provided below.</para>
+		              		</listItem>
+		              		<listItem>
+		              			<para>Processor Extended State Enumeration (ECX > 1)</para>
+		              			<para>EAX = 0xD, ECX = n for n > 1, Returns bit fields and values in EAX, EBX, ECX and EDX.</para>
+		              			<para>See the respective specifications for more info. Links provided below.</para>
+		              		</listItem>
+		              	</list>
+		              	<para>
+		              		The following example shows how detect if CPUID is supported:
+		              	</para>
+		              	<code lang="" tabSize="4">
+		    				; NASM, x86 (32-bit)
+		    				; - - - - - - - - - - - - - - - - Detect CPUID Support Example - - - - - - - - - - - - - - - -
+		    				; Original source: http://wiki.osdev.org/CPUID#CPU_Features
+		    				
+		    				; Returns 1 if CPUID is supported, 0 otherwise (ZF is also set accordingly)
+		    				;   This method uses probing of bit 21 (ID bit) to detect if the CPUID instruction
+		    				;   is supported.
+		    				
+		    				pushfd                 ; get
+		    				pop eax
+		    				mov ecx, eax           ; save
+		    				xor eax, 0x200000      ; flip
+		    				push eax               ; set
+		    				popfd
+		    				pushfd                 ; and test
+		    				pop eax
+		    				xor eax, ecx           ; mask changed bits
+		    				shr eax, 21            ; move bit 21 to bit 0
+		    				and eax, 1             ; and mask others
+		    				push ecx
+		    				popfd                  ; restore original flags
+		    				ret
+		    			</code>
+		    			<para>
+		    				The following example gets the Vendor ID string:
+		    			</para>
+		    			<code lang="" tabSize="4">
+		    				; NASM, x86 (32-bit)
+		    				; - - - - - - - - - - - - - - - - CPUID Vendor ID Example - - - - - - - - - - - - - - - -
+		    				
+		    				mov eax, 0x0 ; Set feature number to 0
+		    				cpuid        ; Call CPUID op
+		    				
+		    				; The result of this instruction on an Intel processor would be the string GenuineIntel
+		    				; stored in EBX, ECX, EDX along with the Max Feature Index in EAX.
+		    				;
+		    				; The values in EBX, EDX and ECX would be: (Note the register order!!)
+		    				;       MSB         LSB
+		    				; EBX : 'u' 'n' 'e' 'G'
+		    				; EDX : 'I' 'e' 'n' 'i'
+		    				; ECX : 'l' 'e' 't' 'n'
+		    			</code>
+		    			<para>
+		    				Here are some useful links related to x86 CPUID op:
+		    			</para>
+		    			<list class="ordered">
+		    				<listItem>
+		              			<para>
+		              				<externalLink>
+		              					<linkText>Sandpie.org - An exhaustive list of features</linkText>
+		              					<linkAlternateText>http://sandpile.org/x86/cpuid.htm</linkAlternateText>
+		              					<linkUri>http://sandpile.org/x86/cpuid.htm</linkUri>
+		              				</externalLink>
+		              			</para>
+		              		</listItem>
+		              		<listItem>
+		              			<para>
+		              				<externalLink>
+		              					<linkText>Intel CPUID (and other ops) Specification</linkText>
+		              					<linkAlternateText>Intel 64 and IA-32 Architectures Developer's Manul: Vol.2A</linkAlternateText>
+		              					<linkUri>http://www.intel.com/content/www/us/en/architecture-and-technology/64-ia-32-architectures-software-developer-vol-2a-manual.html</linkUri>
+		              				</externalLink>
+		              			</para>
+		              		</listItem>
+		              		<listItem>
+		              			<para>
+		              				<externalLink>
+		              					<linkText>AMD CPUID Specification</linkText>
+		              					<linkAlternateText>http://support.amd.com/TechDocs/25481.pdf</linkAlternateText>
+		              					<linkUri>http://support.amd.com/TechDocs/25481.pdf</linkUri>
+		              				</externalLink>
+		              			</para>
+		              		</listItem>
+		    			</list>
 		              </content>
 		          </section>
 		          
@@ -2584,8 +2725,36 @@
 		              <title>Halt</title>
 		              <content>
 		              	<para>
-		              		x86 specific example code to be added.
+		              		The x86 halt op is very simple. It halts the CPU indefinitely until either an interrupt is triggered
+		              		or the CPU power is cycled (i.e. the CPU is externally reset). 
 		              	</para>
+		              	<para>
+		              		Please take special note of the following regarding interrupts. You must disable maskable interrupts 
+		              		before using the halt op if you intend to try and permanently halt the CPU. If you do not disable all
+		              		interrupts, the CPU will restart as soon as an interrupt occurs. You cannot disable non-maskable 
+		              		interrupts.
+		              	</para>
+		              	<para>
+		              		The Halt op allows you to create a proper sleep function if you have timer interrupts enabled since the
+		              		CPU will properly halt until a timer interrupt occurs. When the timer interrupt occurs, you know (approximately)
+		              		how much time has passed and can either continue execution or go back to the halted state. A proper sleep
+		              		like this is preferrable to a busy-wait (using an empty loop) since it consumes much less power. Note that
+		              		if you are in a threaded environment, your sleep function will work differently. Instead, your sleep 
+		              		function should inform the scheduler not to allocate the thread execution time until the sleep timeout 
+		              		has expired.
+		              	</para>
+		              	<para>
+		              		The following example shows how to permanently halt the CPU:
+		              	</para>
+		              	<code lang="" tabSize="4">
+		              		; NASM, x86 (32-bit)
+		              		; - - - - - - - - - - - - - - - - CPU (Permanent) Halt Example - - - - - - - - - - - - - - - -
+		    				
+		              		Halt:    ; Label to go to if the CPU does restart due to non-maskable interrupt
+		              		cli      ; Disable maskable interrupts
+		              		halt     ; Halt the CPU
+		              		jmp Halt ; If the CPU restart, jump back to the halt
+		              	</code>
 		              </content>
 		          </section>
 		          
@@ -2593,8 +2762,80 @@
 		              <title>Reset</title>
 		              <content>
 		              	<para>
-		              		x86 specific example code to be added.
+		              		The x86 processor does not have a specific reset op. Instead, you must use one of four methods (in order 
+		              		of best to worst):
 		              	</para>
+		              	<list class="ordered">
+		              		<listItem><para>
+		              			ACPI - Implement ACPI support and use the shutdown / restart functions. This is overly complex and
+		              			laborious making it beyond what even the most advanced hobby-OS developers can be bothered to do.
+		              		</para></listItem>
+		              		<listItem><para>
+		              			Keyboard reset line - A long-standing method that is still very relaible is to pulse the keyboard 
+		              			reset line, which resets the CPU.
+		              		</para></listItem>
+		              		<listItem><para>
+		              			Tell the user - Tell the user to press and hold the power button or something. 
+		              		</para></listItem>
+		              		<listItem><para>
+		              			Cause a triple fault - This is a fatal exception which causes a shutdown cycle to occur but it's pretty
+		              			nasty and will confuse users a lot. Also, causing a triple fault can actually be quite difficult if your
+		              			OS is programmed decently (i.e. programmed to handle exceptions properly) and you don't want to hack your
+		              			code to death. Basically, just don't use this method of reset.
+		              		</para></listItem>
+		              	</list>
+		              	<para>
+		              		The following examples shows how to pulse the keyboard reset line:
+		              	</para>
+		              	<code lang="C" tabSize="4">
+		              		/* C */
+		              		/* - - - - - - - - - - - - - CPU Reset using Keyboard Reset Line Example - - - - - - - - - - - - - */
+		              		/* Adapted from: http://wiki.osdev.org/Reboot */
+		              		
+		              		/* Keyboard interface IO port: Data and control
+		              		   READ:   status port
+		              		   WRITE:  control register */
+		              		#define KBRD_INTRFC 0x64
+		              		 
+		              		/* Keyboard interface bits */
+		              		#define KBRD_BIT_KDATA 0  /* Keyboard data is in buffer (output buffer is empty)  (bit 0) */
+		              		#define KBRD_BIT_UDATA 1  /* User     data is in buffer (command buffer is empty) (bit 1) */
+		              		 
+		              		#define KBRD_IO 0x60    /* Keyboard IO port */
+		              		#define KBRD_RESET 0xFE /* Reset CPU command */
+		              		
+		              		#define bit(n) (1&lt;&lt;(n)) /* Set bit n to 1 */
+		              		
+		              		/* Check if bit n in flags is set */
+		              		#define check_flag(flags, n) ((flags) &amp; bit(n))
+		              		 
+		              		void Reset()
+		              		{
+		              		    uint8_t temp;
+		              		
+		              		    /* Disable all (maskable) interrupts */
+		              		    asm volatile (&quot;cli&quot;);
+		              		
+		              		    /* Clear all keyboard buffers (output and command buffers) */
+		              		    do
+		              		    {
+		              		        /* Empty user data */
+		              		        temp = inb(KBRD_INTRFC); 
+		              		        /* Check for keyboard data */
+		              		        if (check_flag(temp, KBRD_BIT_KDATA) != 0)
+		              		        {
+		              		            /* Empty keyboard data */
+		              		            inb(KBRD_IO);
+		              		        }
+		              		    } 
+		              		    while (check_flag(temp, KBRD_BIT_UDATA) != 0);
+		              		 
+		              		    /* Pulse the CPU Reset Line */
+		              		    outb(KBRD_INTRFC, KBRD_RESET);
+		              		    
+		              		    /* If that didn't work,  execution will continue here. */
+		              		}
+		              	</code>
 		              </content>
 		          </section>
 		      </sections>
@@ -2671,6 +2912,7 @@
 		<list class="ordered">
 		  <listItem><para>25/09/14 - Inital version.</para></listItem>
 		  <listItem><para>27/09/14 - Spelling and formatting corrections.</para></listItem>
+		  <listItem><para>27/09/14 - Added x86 info / examples.</para></listItem>
 		</list>
 	  </content>
 	</section>
