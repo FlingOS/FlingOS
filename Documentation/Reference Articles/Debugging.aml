@@ -1,19 +1,99 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <topic id="f62a6762-25f2-49ea-a6cb-18267dbaf9b2" revisionNumber="1">
   <developerConceptualDocument xmlns="http://ddue.schemas.microsoft.com/authoring/2003/5" xmlns:xlink="http://www.w3.org/1999/xlink">
-    <!--
-    <summary>
-      <para>Optional summary abstract</para>
-    </summary>
-    -->
+    
     <introduction>
-      <!-- Uncomment this to generate an outline of the section and sub-section
-           titles.  Specify a numeric value as the inner text to limit it to
-           a specific number of sub-topics when creating the outline.  Specify
-           zero (0) to limit it to top-level sections only.  -->
-      <!-- <autoOutline /> -->
-      <para>Required introduction</para>
+      <autoOutline>20</autoOutline>
     </introduction>
+    
+    
+    <!--
+    	
+    	Structure:
+    		- Introduction
+    			- Scope of this article
+    			- How this article is structured
+    			- [Section titles]
+    		- What is debugging?
+    			- Definition
+    			- Explanation
+    		- Types of debugging
+    			- Definitions
+    			- Recommendations
+    		- Virtual machines / emulators
+    			- VMWare
+    			- Virtual box
+    			- Qemu
+    		- Debugging by thinking
+    		- Debugging by output
+    			- General
+    			- Recommended styles
+    			- Screen
+    			- Log file
+    			- Making use of Halt op
+    		- Debugging by interrupting
+    			- Break instruction
+    				- General idea
+    				- x86 Int3 - See later
+    			- Registers
+    			- Stack
+    			- Memory
+    			- Symbols
+    			- Virtual Machines (use serial port)
+    			- Real hardware
+    			- GUIs
+    				- GDB and alternatives
+    				- Write your own
+    				- IDE integration
+    		- Required debugging tools
+    			- Text-based output
+    			- Code-line-specific failure output
+    		- Useful debugging tools
+    			- Interrupting debugger
+    			- Integration with development environment
+    			- Register, memory and stack output
+    		- Unnessescary debugging tools
+    			- Edit and continue
+    			- Anything which takes you far too long to program
+    		- x86 Debugging
+    			- Disassembly : Thought debugging
+    			- VGA Text-Mode Video : Output Debugging
+    			- Int3 & Int1 : Interrupt debugging
+    		- Tips 'n' Tricks
+    		- Tutorials
+    		- Further Reading
+    		- References
+    		
+    -->
+    
+    
+    <!-- - - - - - - - - - - - - - - - -  Introduction  - - - - - - - - - - - - - - - - -->
+    <!--
+    
+    	Scope of this article
+    		This article looks at a variety of common techniques used in both general and OS-specific debugging. It also
+    		offers explanation of how basic debugging works and some suggestions and recommendations for your own
+    		approach. 
+    	
+    	How this article is structured
+    		This article is structured into separate sections for the different types of debugging followed by sections for
+    		related, practical information.
+    		
+    	[Section titles]
+    		
+    -->
+    
+    <!-- - - - - - - - - - - - - - - - -  What is debugging?  - - - - - - - - - - - - - - - - -->
+    <!--
+    
+    	Definition
+    		
+    		
+    	Explanation
+    		
+    		
+    -->
+    
     <!-- Add one or more top-level section elements.  These are collapsible.
          If using <autoOutline />, add an address attribute to identify it
          and specify a title so that it can be jumped to with a hyperlink. -->
