@@ -38,6 +38,7 @@
     			- Virtual Machines (use serial port)
     			- Real hardware
     			- GUIs
+					- General
     				- GDB and alternatives
     				- Write your own
     				- IDE integration
@@ -366,7 +367,7 @@
     		list of exact file paths or inexact folder paths to search through for the correct symbol file.
     		
     	Virtual Machines (use serial port)
-    		Virtual Machines have obvious value in OS development, however, there is added benefit beyond not ruining your physical
+    		Virtual Machines have obvious value in OS development. However, there is added benefit beyond not ruining your physical
     		machine. Virtual Machines allow you to easily attach to the serial port of the virtual computer which provides an
     		easy-to-use, simple, reliable and thus convenient way of passing commands and data in and out of the OS. Thus most
     		debuggers use the serial port (COM0) to communicate with the OS. Some advanced OS'es (e.g. Windows, Linux) allow
@@ -377,10 +378,53 @@
     		Details of how to use COM0 under the x86 Architecture are provided later along with a communication protocol suggestion.
     		
     	Real hardware
+			Debugging on real hardware, for OS development, is difficult. For starters, you have to work out how to connect your 
+			debugger to the machine physically. This sounds easy but unfortunately you cannot use the convenient serial port 
+			method quite so conveniently. Firewire or network debugging would both require drivers which, in the early stages, 
+			you will not have. Then you need a debugger capable of interfacing with the connection, you need to know which 
+			specific CPU your real hardware contains, you need a way of cycling the power from the debugger (or you're going
+			to get arm / back ache powering the PC on/off all the time) and a host of other issues. 
+
+			Real hardware has its place, but only for the occasional test to make sure you haven't picked up any VM-specific
+			code (or more likely, hacks). Real hardware also has the issue of how you replace the copy of the OS code on the 
+			boot device. Using a bootable USB stick is easiest, but also requires tedious unplugging, reflashing and plugging
+			back in again. 
+
+			If you still intend to do most of your debugging on real hardware, then I recommend you find a cheap USB to Serial 
+			cable (beware the cheap knock-offs of Prolific's USB to Serial chip. Genuine chips work fine, the knock-offs don't. 
+			However, the knock offs are more common and very hard to spot!) I also recommend you buy an IP Power Bar or solder
+			together your own equivalent as it will save you endlessly pressing and holding the power button.
+			
     	GUIs
-    		GDB and alternatives
+			General
+				There are probablhy hundreds of pre-built debugger GUIs out there, only a fraction of which are going to be aimed
+				at OS development. A couple of common ones are mentioned below, though I have never used them. In general, using
+				a pre-built debugger will cause you more work to set up the debugging stub code in your OS, but save you a 
+				lifetime of work writing your own (unless you happen to be writing your own compiler).
+				
+    		GDB, Visual Studio and alternatives
+				One popular debugger (which I've heard is very good) is called GDB. It's the GNU Project Debugger and is widely
+				used by hobby OS developers. An alternative that can be used is Visual Studio, however, this locks you in to 
+				the Visual Studio way of working and the Microsoft compilers and using Windows as your development platform. 
+				Some people object to this. A final place you might look is plugins for or versions of Eclipse aimed at OS
+				dev'ing in your chosen language.
+				
     		Write your own
-    		IDE integration    
+				You can write your own debugger. This is usually only recommended if you are also writing the compiler or have
+				some particular issue with existing debuggers (not just that you can't be bothered to interface with them). 
+				Writing your own debugger has the advantage that you can easily get a simple debugger working reliably and
+				have limited amounts of stub code in your OS. It also allows you to taylor the debugger to your OS. However,
+				the big downside is that it takes a lot of work and requires you to frequntly debug your debugger to work out
+				what it going wrong. Occasionally, the bug may be in your debugger not your OS!
+				
+    		IDE integration
+				IDE integration is friendly and very helpful and debuggers such as GDB often have plugins for various common 
+				IDEs freely available. Visual Studio comes with the debugger built-in and Eclipse works on a plugins based
+				system. If you are using Visual Studio, I have a word of warning for you. DO NOT try to write your own
+				integrated debugger for Visual Studio (unless you work for Microsoft). The backend of Visual Studio is horrific,
+				documentation is limited and the pain of trying to get even the most basic stuff working is unbelievable. The
+				Cosmos Project has been so stuck in their own Visual debugger development that they have made negligible other
+				progress for 3 years (see their Commits over past few years at https://cosmos.codeplex.com).
     -->
     
     <!-- - - - - - - - - - - - - - - - -  Virtual machines / emulators  - - - - - - - - - - - - - - - - -->
