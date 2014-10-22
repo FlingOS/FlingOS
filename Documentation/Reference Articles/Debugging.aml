@@ -20,11 +20,10 @@
     		- Types of debugging
     			- Definitions
     			- Recommendations
-    		- Virtual machines / emulators
-    			- VMWare
-    			- Virtual box
-    			- Qemu
     		- Debugging by thinking
+    			- 1. Logical thinking
+    			- 2. Comparative thinking
+    			- 3. Problem solving
     		- Debugging by output
     			- General
     			- Recommended styles
@@ -33,8 +32,6 @@
     			- Making use of Halt op
     		- Debugging by interrupting
     			- Break instruction
-    				- General idea
-    				- x86 Int3 - See later
     			- Registers
     			- Stack
     			- Memory
@@ -45,6 +42,11 @@
     				- GDB and alternatives
     				- Write your own
     				- IDE integration
+    		- Virtual machines / emulators
+    			- General
+    			- VMWare
+    			- Virtual box
+    			- Qemu
     		- Required debugging tools
     			- Text-based output
     			- Code-line-specific failure output
@@ -59,6 +61,7 @@
     			- Disassembly : Thought debugging
     			- VGA Text-Mode Video : Output Debugging
     			- Int3 & Int1 : Interrupt debugging
+    			- COM0 : Communication
     		- Tips 'n' Tricks
     		- Tutorials
     		- Further Reading
@@ -73,7 +76,8 @@
     	Scope of this article
     		This article looks at a variety of common techniques used in both general and OS-specific debugging. It also
     		offers explanation of how basic debugging works and some suggestions and recommendations for your own
-    		approach. 
+    		approach. The information in this article could also be used as a starting point for further research 
+    		towards writing your own debugger.
     	
     	How this article is structured
     		This article is structured into separate sections for the different types of debugging followed by sections for
@@ -87,12 +91,360 @@
     <!--
     
     	Definition
-    		
+    		The act of detecting and removing errors from a system. In an OS development context, the system is the OS
+    		and you must remove mainly logical, lexical and design bugs.
     		
     	Explanation
+    		Humans are not infallible. This is a well known fact (even if it is widely ignored). Programmers must accept 
+    		that pretty much all code they write will contain errors. These errors are called "bugs". There are several
+    		types of bugs. The three main types are:
+    			1. Logical / algorithmic
+    			2. Lexical / syntax
+    			3. Design
     		
+    		Logical or algorithm bugs aremistakes where the code does not do what the developer intended when it is 
+    		executed. These kinds of bugs require testing by execution. They are tested by passing in a set of inputs
+    		and examining the outputs. If the outputs do not match, the steps taken in between (i.e. the actual code)
+    		is examined by one of the debugging techniques described later in this article.
+    		
+    		Lexical or syntax bugs are mistakes in typing. These are usally found at compile time as the compiler will 
+    		reject invalid code. They are equivalent spelling and grammar mistakes in normal languages, except that code 
+    		must contain 0 errors (where as English grammar is frequntly used and abused).
+    		
+    		Finally design bugs. These errors are found some time during the development process. They may require only
+    		minor tweaks to fix or might require an entire redesign of the software. A design team should aim to avoid
+    		all design bugs by following proper, strict design guidelines and thinking things through. A worst case,
+    		and one which generally occurs in time regardless of initial effort, is secondary development exposing design
+    		issues. Usually these issues are called "backwards compatibility issues". A design which never gets redesigned
+    		to accomodate newer technologies is an impressively flexible one.
     		
     -->
+        
+    <!-- - - - - - - - - - - - - - - - -  Types of debugging  - - - - - - - - - - - - - - - - -->
+    <!--
+		General
+    		There are three (main) types of debugging. Debugging by thinking, by outputting and by interrupting.
+    		These types of debugging are described in more detail separately below. However, I will at this stage 
+    		suggest that no one approach is definitive or better than the other. Each should be used as appropriate
+    		to the situation. A developer who focuses on one approach more than other is either not a good developer,
+    		or is developing in a very specialist / specific context.
+    		
+    	Recommendations
+    		It is my recommendation that you always debug by leaving your desk first. In all seriousness, most bugs
+    		can be fixed fastest by leaving your desk, having a hot drink then returning to the problem with fresh 
+    		eyes. Your subconscious is probably the most powerful debugging tool available to you, so give it time
+    		to work. 
+    		
+    		Debugging by thinking is indespensible. You are never going to solve a problem using the 
+    		other two methods. They will simply help you locate and define what the problem is. Ultimately, thinking
+    		is what is going to find you the problem and solution fastest.
+    		
+    		Lastly, trust your instincts. As time goes by you will (or already have) developed an instinct as to what
+    		a problem is. Trust them and chase a problem by what you feel it might be. However, do be prepared to stop
+    		and think and backtrack if you find your instinct was wrong.
+    -->
+        
+    <!-- - - - - - - - - - - - - - - - -  Debugging by thinking  - - - - - - - - - - - - - - - - -->
+    <!--
+    	Debugging by thinking is probably the least conciously recognised form of debugging but by far the most important.
+    	Debugging by thinking has 3 aspects: 
+    		1. Thinking through the logic of what your code does and comparing it to your intentions.
+    		2. Thinking about what the computer's output is telling you versus what you expect. Then thinking about any 
+    		   differences to hypothesise what and where the bug might be.
+    		3. Thinking about a particular bug to come up with a solution
+    	
+    	Taking each of these points in turn:
+    		
+    	1. Logical thinking
+    		As described before, logical thinking is thinking through the logic of what your code does and then comparing it
+    		to the logic you intended. This is best done in two stages and usually involves a pen and paper (don't fear 
+    		old-school tech ;) ). 
+    		
+    		Start by working out all the (expected or unexpected) possible sets of input values to your code. Write them 
+    		down somewhere for later reference. Then, taking each set of sets input values in turn, go through your code
+    		line by line determining what effect each line has. Pay particularly close attention to branching statements,
+    		such as if-blocks, or mathematical calculations involing +- 1. These are most often the places where code is 
+    		wrong. 
+    		
+    		If it is helpful, make a copy of your code (printed or in note taking software such a Microsoft OneNote)
+    		and annotate what happens on each line. Record the final output that you come up with for each set of inputs.
+    		Compare these to the actual outputs when you run the code. If they match, you read your code properly If not,
+    		you got lazy and jumped some steps - go back and think through it again.
+    		
+    		Once you have the actual outputs, compare what happens on each line to what you'd expect to happen. It is often
+    		helpful to draw a flow-chart of what you expect to happen and a flow chart of what is actually happening. While
+    		tedious, it offers a different view of your code that doesn't have all the mess of actual code. It can help you 
+    		to see precisely where your code is logically wrong.
+    		
+    		By this stage, for bugs which are logic errors, you should have found your bug. However, it may not be enough to
+    		think about what your code does for expected input cases or if your code makes use of external data obver which 
+    		you have no control (e.g. a database). In this case, you may need to utilise the other debugging methods presented
+    		here.
+    		
+    	2. Comparative thinking
+    		As described before, comparative thinking is thinking about the difference between the output of the computer
+    		and the outputs you expected. You then hypothesise about what could have generated the output (irrespective of
+    		what you expected any inputs to be). It is assumed that you tried logical thinking (1) first. By working backwards
+    		from the outputs, you can work out either what the inputs were or where an internal value first stops matching
+    		the expected value given the inputs.
+    		
+    		Comparative thinking can be tackled in various ways. Experienced programmers often work off instinct, meaning
+    		when they see certain output they automatically no what (and, possibly, where) the cause of the error was. At
+    		a lower experience level you can either: apply trial and error to your hypotheses by (sensibly) guessing what
+    		and where the bug is then checking to see if you are correct. Or, you can apply logical thinking in reverse
+    		and painstakinly work backwards through the code from the outputs to the inputs, comparing internal values / logic
+    		as you go. Either is acceptable though the latter is slower but more reliable. If you find your guesses are 
+    		usally wrong, you should apply the latter method to build up your knowledge.
+    		
+    	3. Problem solving
+    		The final part of debugging by thinking is probably the most important. Problem solving. Finding and refining
+    		exactly what the bug is all very well, but that doesn't actually solve the problem. The final stage is to think
+    		of a solution (preferably a good one ;)). Often the solution is obvious and only affects a few lines of code but
+    		with bigger bugs the solution may involve design changes. In the latter case you will have to communicate with
+    		your team about the best solution and the effect of any changes you make on the rest of the software. Very
+    		occasionally you will have to program multiple solutions to a problem to allow you or your team to compare them 
+    		as complexity, efficiency, speed, global effects on the software etc. cannot be predicted before hand.
+    		
+    		However, this isn't the full story to problem solving. A good debugger (/programmer) shouldn't just fix the 
+    		immediately apparent bug. A good programmer will think where else in the software may have the same bug and see
+    		if a change elsewhere in the code can fix all possible cases of the bug. This may even involve a bigger, more
+    		significant change. However, if it improves the quality of the overall codebase, it is worthwhile in the long-term.
+    		(It should be noted that often the goal of pre-emptively fixing bugs is idealistic as companies set deadlines
+    		which prevent you from having time to fix non-immediate bugs.)
+    		
+    -->
+    
+    <!-- - - - - - - - - - - - - - - - -  Debugging by output  - - - - - - - - - - - - - - - - -->
+    <!--
+		General
+    		Debugging by output is debugging by having code generate a lot of output and reading through the output
+    		to see where the code goes wrong. Do not confuse debugging by output with debugging by comparative thinking. 
+    		The two are not the same. Debugging by output is a brute force approach where you add (often simmle, plain-text)
+    		messages that say what the code did, variable values and sometimes whether values match expected values or
+    		if an exception case was met. Debugging by thinking is a finer art where you look only at the outputs and think 
+    		about what mjst have happened to generate them. You should apply debugging by thinking before applying debugging
+    		by output, since debugging by output is generally slower due to time taken to program the messages, re-compile
+    		and then execute the code. Debug output also usually makes code run an order of magnitude or two slower.
+    		
+    	Recommended styles
+    		In my years of programming I have developed my own style of output message that I recommend to other programmers
+    		since it provides the most important information. You may choose to ignore this recommendation but you will 
+    		probably waste (collectively) hours of your life if you do.
+    		
+    		For text-based output messages I use the following format (without quotes):
+    		
+    		"File Name (no path): Method name: [Message]" e.g. "Kernel.cs: Main: Unhandled exception occurred."
+    		
+    		
+    		And for methods where two or more of the same message appear:
+    		
+    		"File Name (no path): Method name: (Repeat no.) [Message]" e.g. "Kernel.cs: Main: (1) Unhandled exception occurred."
+    		
+    		This format offers easy traceability since the message tells you precisely where it came from. There are two things
+    		to note about this format:
+    			1. Some languages offer functions to output current execution location in human-readable format (such as file,
+    			   method name and line number). Use this instead of my format if it is available since it will make the debug
+    			   messages more reliable and portable.
+    			2. The format is not portable. The onus is on the programmer to ensure the messages are kept up-to-date if the
+    			   code or messages change (e.g. repeats of a message added / removed or method moved to a different file). 
+    			   Failure to be vigilant in updating debug messages will lead to even more problems later. However, in a worst
+    			   case scenario, a developer can always do a global search for the debug message and there will be a limited
+    			   selection of results to go through to find the correct one.
+    		
+    	Screen
+    		Debugging by output via the screen is probably the most common and easiest method. It provides immediate feedback
+    		to the developer allowing you to see in real-time what the computer is doing. It is also fairly easy to set up
+    		output to a computer screen using VGA text-mode when an OS first boots. This offers the ability to debug an OS
+    		from the very start of the system. The VGA text-mode machnism also uses the very simple ASCII character set and
+    		1 byte colour system (4 bits for foreground, 4 bits of background). This makes formatting output simple and easy. 
+    		As an OS gets more advanced, better text output and more advanced graphical output can be supplied (such a loading
+    		bars! Though these can be done using text if you're feeling fancy.)
+    		
+    	Log file
+    		Debugging by output to a log file (or just listening to a COM port) is equally common and possibly more useful but
+    		can be trickier to set up in the OS. Log files offer you the opportunity to look at the output later and slowly walk
+    		through what happened, but you do not get real-time output. Listening to output on a COM port gives you real-time 
+    		information (which can also be saved for later) and offers the ability to send data back to the OS. But, while
+    		in principle it is easy to set up, it can be the cause of many problems in early-stage OSes where interrupts and port
+    		management code have not been written or formalised. This means it is harder to get debug-from-boot working
+    		and anything written will need modifying later when the OS becomes more advanced (and formalised systems are put in 
+    		place).
+    		
+    	Making use of Halt op
+    		When debugging via output, the information can often be overwhelming. This is because the computer runs so fast your
+    		messages are outputted too quickly for you to process what is happening. You can solve this in two ways. Either by
+    		using a log file or you can make use of the Halt op. By inserting the ASM halt op, you can stop the processor at
+    		specific points to give you the chance to read what is happening. If you don't clear interrupts and have the timer
+    		interrupt enabled, prcoessing will retsart some time later. Otherwise, prcoessing will never restart. This is still
+    		useful as you can just go and shift your halt op to later in the code to allow the code to run further before stopping.
+    		(Obviously shifting the halt op requires a recompile and re-run. This may not be appropriate for some specific 
+    		applications but it is useful for most beginner/low-level OS development.)
+    		
+    -->
+    
+    <!-- - - - - - - - - - - - - - - - -  Debugging by interrupting  - - - - - - - - - - - - - - - - -->
+    <!--
+		Break instruction
+			Debugging by interrupting is debugging by pausing the code, taking a peek, maybe editing some values and then
+			allowing the code to continue. The key steps are:
+				1. Breaking the execution 
+				2. Pausing indefinitely while still being able to read out values
+				3. Continuing execution
+			Most, if not all, CPU architectures have a built-in mechanism for breaking the code in at least one way. 
+			Usually, breaking the code involves inserting a break instruction into the code or setting a break flag in a
+			CPU register. In either case, the CPU is informed a break should occur and at the next available point does 
+			so. However, it should be obvious the CPU is not going to just stop executing. Instead, it stores some
+			information about the current execution state then jumps to code specified by the programmer.
+			
+			The CPU is said to be in a "broken" state while the code jumped to continues to run. Said code can do anything 
+			from nothing at all to completely replacing the program being run. (This is the reason why debugging modes can
+			be so dangerous, especially at a low level). Assuming the person debugging wishes execution to continue as 
+			normal after they are finished inspecting, the code must make sure it restores any values it changes while in
+			the broken state. The code is also likely to output values to a debugging tool (for example Visual Studio). For
+			OS development this is most often done via COM port 0.
+			
+			When execution is to be continued, the execution state (from before the break) must be restored. The CPU can 
+			then continue executing instructions as though nothing had happened. Most CPUs have special instructions for
+			storing and restoring state and for returning from the "break state" code. The "return" op may be the normal
+			interrupt return op.
+			
+			For details of the x86 break interrupt ops (Int1 and Int3) and state management ops, please see later in this 
+			article.
+    			
+    	Registers
+    		Most OS debugging software, alongside showing the current line of code, will show memory and register information.
+    		The debugger should provide the register information in both a raw-value format and, where possible, an interpretted
+    		value (such as indicating an object pointer or floating point number). The debugger should also be capable of
+    		showing values not just for the general purpose registers, but also the CPU state registers and speciliased registers.
+    		
+    		If the debugger has been designed for debugging code on more than one processor, you will probably have to tell it
+    		which processor you are debugging and how to communicate with the OS debug code. Otherwise, it will not know how
+    		to send commands to the OS in its "broken state" nor how to interpret data sent back by the OS (such as register values).
+    		
+    		When debugging, register values can prove useful for showing the intermediate processing of each assembler instruction.
+    		Registers provide, in a sense, the lowest level view of the changes the processor makes and certainly the most immediate
+    		view of the results of any op. Most (or at least a high number) of op results are stored in a register before being
+    		shifted to the stack or other memory.
+    		
+    	Stack
+    		Most OS debugging software will show you the current stack as a stack of interpretted values and will also only show
+    		the stack for the current stack frame (i.e. current method). Often (and most usefully), these values are split into
+    		arguments and local variables by the debugger so as to distinguish. A good debugger will also highlight values which
+    		change as you debug. (A good debugger does this for all values including registers, tracked memory, etc.).
+    		
+    		The stack is probably the most useful information provided by the debugger, second only to the current line of code.
+    		It shows you what the inputs and outputs of a method are. This allows you to apply the methods of debugging described
+    		in "Debugging by thinking".
+    		
+    	Memory
+    		Some OS debugging software will allow you to access any point in memory (either by virtual or physical address, 
+    		depending on the level of sophistication). It may even allow you to "watch" or "track" an area in memory and 
+    		advanced debuggers such as WinDbg or Visual Studio will allow you to create "memory breakpoints" which are hit
+    		when the value at a memory location changes.
+    		
+    		Regardless of situation, memory access is the most advanced feature as, beyond returning raw numbers, it requires
+    		the debugger to understand the values at the memory addresses requested. This requires symbolic information, 
+    		described below.
+    	
+    	Symbols
+    		Advanced compilers and debuggers will produce or use files called Symbol Files (or Symbol Databases, since they are,
+    		in fact, databases). Symbols are a summary of the structure of data within the original code. For instance, they
+    		store the names and types of local variables within a method and where in the stack the local variable can be found.
+    		
+    		Symbols allow the debugger to understand the raw data and convert it from raw numbers back to what the meanings 
+    		the programmer originally assigned. For example, it can convert raw object pointers to names of the types they point
+    		to or another example, it can convert raw numbers into the enumeration names they were assigned. Symbols also allow
+    		the debugger to understand pointers and use them to load data from memory such as object properties.
+    		
+    		Symbols are produced by the compiler at compile time. Most compilers are capable of outputting some level of symbol
+    		information but each compiler has its own format. Therefore, you must choose a compiler and debugger that are 
+    		compatible or write a program to convert symbol file formats automatically or write your own compiler or debugger.
+    		The latter two options are tough projects in themselves so are not advisable.
+    		
+    		When you start your debugger you will need to point it to the symbol file produced by the compiler when you compiled
+    		your OS. Some debuggers, such as the default one in Visual Studio, like to try and automatically detect the symbol
+    		file based off your build configuration. However, most debuggers (including Visual Studio) have a Symbol File Path
+    		list of exact file paths or inexact folder paths to search through for the correct symbol file.
+    		
+    	Virtual Machines (use serial port)
+    		Virtual Machines have obvious value in OS development, however, there is added benefit beyond not ruining your physical
+    		machine. Virtual Machines allow you to easily attach to the serial port of the virtual computer which provides an
+    		easy-to-use, simple, reliable and thus convenient way of passing commands and data in and out of the OS. Thus most
+    		debuggers use the serial port (COM0) to communicate with the OS. Some advanced OS'es (e.g. Windows, Linux) allow
+    		debugging over ethernet, but even that isn't as reliable for very low-level (i.e. sub-driver level) debugging.
+    		
+    		How you access the COM port within the OS varies from across architectures, however, it is almost universaly called
+    		COM0. Furthermore, how you communicate over the port is entirely up to you (or the debugger you selected to use).
+    		Details of how to use COM0 under the x86 Architecture are provided later along with a communication protocol suggestion.
+    		
+    	Real hardware
+    	GUIs
+    		GDB and alternatives
+    		Write your own
+    		IDE integration    
+    -->
+    
+    <!-- - - - - - - - - - - - - - - - -  Virtual machines / emulators  - - - - - - - - - - - - - - - - -->
+    <!--
+		General
+			
+    	VMWare
+    		
+    	Virtual box
+    		
+    	Qemu
+    		
+    -->
+    
+    <!-- - - - - - - - - - - - - - - - -  Required debugging tools  - - - - - - - - - - - - - - - - -->
+    <!--
+    			- Text-based output
+    			- Code-line-specific failure output
+    -->
+    
+    <!-- - - - - - - - - - - - - - - - -  Useful debugging tools  - - - - - - - - - - - - - - - - -->
+    <!--
+    			- Interrupting debugger
+    			- Integration with development environment
+    			- Register, memory and stack output
+    -->
+    
+    <!-- - - - - - - - - - - - - - - - -  Unnessescary debugging tools  - - - - - - - - - - - - - - - - -->
+    <!--
+    			- Edit and continue
+    			- Anything which takes you far too long to program
+    -->
+    
+    <!-- - - - - - - - - - - - - - - - -  x86 Debugging  - - - - - - - - - - - - - - - - -->
+    <!--
+    			- Disassembly : Thought debugging
+    			- VGA Text-Mode Video : Output Debugging
+    			- Int3 &amp; Int1 : Interrupt debugging
+    			- COM0 : Communication
+    -->
+    
+    <!-- - - - - - - - - - - - - - - - -  Tips 'n' Tricks  - - - - - - - - - - - - - - - - -->
+    <!--
+    
+    -->
+    
+    <!-- - - - - - - - - - - - - - - - -  Tutorials  - - - - - - - - - - - - - - - - -->
+    <!--
+    
+    -->
+    
+    <!-- - - - - - - - - - - - - - - - -  Further Reading  - - - - - - - - - - - - - - - - -->
+    <!--
+    
+    -->
+    
+    <!-- - - - - - - - - - - - - - - - -  References  - - - - - - - - - - - - - - - - -->
+    <!--
+    
+    -->
+    
+    
+    
     
     <!-- Add one or more top-level section elements.  These are collapsible.
          If using <autoOutline />, add an address attribute to identify it
