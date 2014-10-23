@@ -430,6 +430,31 @@
     <!-- - - - - - - - - - - - - - - - -  Virtual machines / emulators  - - - - - - - - - - - - - - - - -->
     <!--
 		General
+			As has been mentioned previously in "Debugging by interrupting", virtual machines (and emulators) offer big advantages 
+			over real hardware, not least in their ease of use and high rate of successful recovery. You can connect debuggers 
+			easily, you can easily update version of your OS as part of compilation and you can take backups of working versions all 
+			fairly easily. Real hardware is a complete pain to do any of these things with. Virtual Machines are now 
+			sufficiently good that testing on real hardware is only really necessary in two situations:
+				1. You are about to deploy your OS on real hardware so need to test your OS on real hardware
+				2. You are targetting a specific hardware setup which you cannot perfectly reproduce in a virtual machine.
+			
+			With the move towards so called "cloud" virtualisation technology, a hobby OS developer may well expect to never have 
+			to run their OS on real hardware at all! (But that takesthe fun out of it a bit...)
+			
+			Do not confuse virtual machines with emulators. An emulator "emulates" the hardware by processing each CPU instruction 
+			in special software design to interpret many different instruction sets. An emulator makes no real use of the actual 
+			hardware on which it is running. A virtual machine is just the opposite. It virtually runs the OS but the physical CPU 
+			still does all processing directly. Thus, a virtual machine can only virtualise for CPU architectures on which it is 
+			already running. You cannot virtualise ARM on an x86 machine, but you can emulate ARM on x86 hardware.
+			
+			Virtual machines offer less capability in terms of number of architectures they can simulate but they run significantly
+			faster. In fact, modern x86 machines with Intel's latest virtualisation technology can run a virtual machine in real
+			time as though it were the native OS. Emulators tend to be very slow, clunky and require a lot more setup since you
+			must specify the exact hardware to emulate in very fine detail. I would highly recommend using a virtual machine over
+			an emulator, if possible.
+			
+			The following sections give brief information about the various virtual machines and emulators that are available. It
+			is by no means comprehensive but it does cover the most common/popular ones.
 			
     	VMWare
     		
@@ -465,22 +490,12 @@
     			- Int3 &amp; Int1 : Interrupt debugging
     			- COM0 : Communication
     -->
-    
-    <!-- - - - - - - - - - - - - - - - -  Tips 'n' Tricks  - - - - - - - - - - - - - - - - -->
-    <!--
-    
-    -->
-    
+        
     <!-- - - - - - - - - - - - - - - - -  Tutorials  - - - - - - - - - - - - - - - - -->
     <!--
     
     -->
-    
-    <!-- - - - - - - - - - - - - - - - -  Further Reading  - - - - - - - - - - - - - - - - -->
-    <!--
-    
-    -->
-    
+        
     <!-- - - - - - - - - - - - - - - - -  References  - - - - - - - - - - - - - - - - -->
     <!--
     
