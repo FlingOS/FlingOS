@@ -745,24 +745,63 @@
           </section>
       </sections>
     </section>
-    
-    
-    <!-- - - - - - - - - - - - - - - - -  x86 Debugging  - - - - - - - - - - - - - - - - -->
-    <!--
-		Disassembly : Thought debugging
-			
-			
-		VGA Text-Mode Video : Output Debugging
-			
-			
-		Int3 &amp; Int1 : Interrupt debugging
-			
-			
-		COM0 : Communication
-			
-			
-    -->
-        
+
+    <section address="x86Debugging">
+      <title>x86 Debugging</title>
+      <sections>
+        <section address="x86Debugging_Disassembly">
+          <title>Disassembly : Thought debugging</title>
+          <content>
+            <para>
+              Disassembly is a partial reverse compilation of the machine code of a program. You can decompile your
+              program/OS machine code into the correct assembly code and then use this for both thought and interrupt 
+              debugging. This section will discuss its use for thought debugging. Its use in interrupt debugging will
+              be discussed further on.
+            </para>
+            <para>
+              Thought debugging disassembly code requires a good understanding of how your original code translates 
+              (/compiles) into raw machine code. Without this, you will be lost in the raw data manipulation that
+              the disassembly code exposes you to and never succeed in working out what is actually happening. If you
+              find yourself lost, you should either use disassembly level debugging only as an interrupt debugging tool
+              (see further on) or just stick to your high level code and other methods of debugging.
+            </para>
+            <para>
+              I recommend that you approach thought debugging disassembly code by working out at a higher level what your
+              specific issue is that you need to trace. Narrow this down to as small an area of disassembly code as 
+              possible. Having done this, use interrupt debugging to get the inputs and outputs to your disassembly code
+              (e.g. register and stack values). Now you can begin to think through what the assembly code does and then
+              compare that to what you thought it should do.
+            </para>
+            <para>
+              It is usually useful to print out (on paper or into OneNote) the assembly code and write down the values of 
+              registers and stack (in a structured table format) next to each line of assembler. This allows you to work 
+              out carefully and easily look back at the changes your assembly code makes. Also, if you pre-create your table 
+              then find part way through filling it in that the table does not cover a situation, you will probably have 
+              found a hint as to your bug.
+            </para>
+          </content>
+        </section>
+        <section address="x86Debugging_Disassembly">
+          <title>VGA Text-Mode Video : Output Debugging</title>
+          <content>
+
+          </content>
+        </section>
+        <section address="x86Debugging_Disassembly">
+          <title>Int3 &amp; Int1 : Interrupt debugging</title>
+          <content>
+            
+          </content>
+        </section>
+        <section address="x86Debugging_Disassembly">
+          <title>COM0 : Communication</title>
+          <content>
+
+          </content>
+        </section>
+      </sections>
+    </section>
+            
     <!-- - - - - - - - - - - - - - - - -  Tutorials  - - - - - - - - - - - - - - - - -->
     <!--
     
