@@ -1,14 +1,13 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Topics>
-  <Topic id="dd3e390e-07c0-499b-8f92-2cb8e8ca8b09" visible="True" isDefault="true" />
+  <Topic id="7941dec4-c331-4bb2-a672-33a4e73b023e" visible="True" />
+  <Topic id="603ecef9-1418-4435-b167-fb1c61c9266c" visible="True" noFile="true" title="For Fling OS developers">
+    <Topic id="d3b1bc73-d0b4-4c5b-8055-787bebd168fb" visible="True" />
+  </Topic>
   <Topic id="64d7d98a-eb1c-47ab-8fdf-f2411f237efc" visible="True" />
   <Topic id="aecd2393-2d40-49c9-894d-ebaac70adce7" visible="True" noFile="true" isExpanded="true" title="Reference Articles">
     <Topic id="8e917313-26da-456f-91be-75ddf09a2acc" visible="True" />
-    <Topic id="f62a6762-25f2-49ea-a6cb-18267dbaf9b2" visible="True" />
-    <Topic id="20ed8550-3af7-45e0-8e0b-e1ef894fb54f" visible="True" noFile="true" isExpanded="true" title="Descriptor Tables">
-      <Topic id="026f591a-e836-4913-9441-4d0df1a4c829" visible="True" />
-      <Topic id="0c66d812-15bf-47da-9574-a159925c4d7d" visible="True" />
-    </Topic>
+    <Topic id="f62a6762-25f2-49ea-a6cb-18267dbaf9b2" visible="True" isSelected="true" />
     <Topic id="33c0c8da-fd15-4cfb-983f-e29ede3f6515" visible="True" noFile="true" isExpanded="true" title="Disk Devices">
       <Topic id="c3ceab20-c685-4be3-8ad3-42bb04ac445c" visible="True" />
       <Topic id="d5b852b6-ab5a-416e-8aa6-bf3dfae2a240" visible="True" />
@@ -39,7 +38,7 @@
     </Topic>
     <Topic id="e2e39b56-547c-4364-9520-c4f385a53fa8" visible="True" />
     <Topic id="908e70c9-4437-4420-b77f-3a6197881c69" visible="True" noFile="true" isExpanded="true" title="Languages / Designs">
-      <Topic id="35eb8f40-8a0e-4621-835d-ce1b0779377b" visible="True" isSelected="true" />
+      <Topic id="35eb8f40-8a0e-4621-835d-ce1b0779377b" visible="True" />
       <Topic id="452afc9b-5a36-4ff4-911a-220c24e09f1d" visible="True" />
       <Topic id="9b503a13-e2a8-467e-be24-b6d2821a96c2" visible="True" />
       <Topic id="3b2a3b62-7f41-4b1f-9e5d-642658508ca6" visible="True" />
@@ -63,10 +62,11 @@
       <Topic id="10f1ebce-03c4-4f8a-ae3e-13cfbc53f968" visible="True" />
       <Topic id="a0092521-1254-4d1a-a3c3-0a76234aabcd" visible="True" />
     </Topic>
-  </Topic>
-  <Topic id="603ecef9-1418-4435-b167-fb1c61c9266c" visible="True" noFile="true" title="For Fling OS developers">
-    <Topic id="d3b1bc73-d0b4-4c5b-8055-787bebd168fb" visible="True" />
+    <Topic id="20ed8550-3af7-45e0-8e0b-e1ef894fb54f" visible="True" noFile="true" isExpanded="true" title="x86 Descriptor Tables">
+      <Topic id="026f591a-e836-4913-9441-4d0df1a4c829" visible="True" />
+      <Topic id="0c66d812-15bf-47da-9574-a159925c4d7d" visible="True" />
+    </Topic>
   </Topic>
   <Topic id="de5652c6-e765-4329-9493-da2fbe150bd9" visible="True" noFile="true" apiParentMode="InsertAsChild" title="Technical" />
-  <Topic id="7941dec4-c331-4bb2-a672-33a4e73b023e" visible="True" />
+  <Topic id="dd3e390e-07c0-499b-8f92-2cb8e8ca8b09" visible="True" isDefault="true" />
 </Topics>

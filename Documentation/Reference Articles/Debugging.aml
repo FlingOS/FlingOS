@@ -784,19 +784,199 @@
         <section address="x86Debugging_Disassembly">
           <title>VGA Text-Mode Video : Output Debugging</title>
           <content>
+            <para>
+              VGA text-mode video is probably the most useful debugging tool for x86, second only, perhaps, to an interrupt
+              debugger. VGA text-mode is available on pretty much every PC that has a screen attached, even if that's via
+              HDMI. VGA text-mode video is also incredibly simple (despite what many OS dev articles would have you believe).
+            </para>
+            <para>
+              VGA text-mode video is so simple it simply involves placing an 8-bit ASCII character into a specific memory
+              address, followed by two 4-bit colour codes. The ASCII character codes can be looked up (if necessary, though
+              any decent compiler will convert for you) from here:
+              <externalLink>
+                <linkText>ASCII Character code table</linkText>
+                <linkAlternateText>ASCII Character code table</linkAlternateText>
+                <linkUri>http://www.benryves.com/tutorials/winconsole/ascii.gif</linkUri>
+              </externalLink>
+              (Link valid as of 2014-11-03). Any Google search will find you a suitable equivalent. The colour codes can be 
+              found here:
+              <externalLink>
+                <linkText>VGA Basics : Mode 0x13 memory</linkText>
+                <linkAlternateText>VGA text-mode colours</linkAlternateText>
+                <linkUri>http://www.brackeen.com/vga/basics.html#5</linkUri>
+              </externalLink>
+              (Link valid as of 2014-11-03). 
+            </para>
+            <para>
+              The trick with VGA text-mode programming is not to get caught up on all the BIOS-interrupt stuff. Half of the 
+              BIOS interrupt stuff stops working once you set up your own interrupts and are in protected mode. The following
+              examples will show you how to output text to the screen (in assembly and C#). Fling OS contains several console implementations of varying complexity which are made available
+              to the reader to learn from. They include complex tasks such as scrolling and backspace. Further information
+              and examples on outputting to the screen can be found in the "Display / Video / Graphics" section.
+            </para>
+            <code lang="" tabSize="4">
+                ; NASM, x86 (32-bit)
+                ; - - - - - - - - - - - - - - - - VGA Text-mode : String Output Example - - - - - - - - - - - - - - - -
+		    				
+                ; Code taken from Fling OS source: Kernel\ASM\WriteDebugVideo.x86_32.asm
+                ; 2014-11-03
+                
+                ; BEGIN - Write Debug Video
+                ; Argument 0 : 32-bit address, pointer to string data, format of data at address:
+                ;               - First 32-bits = Length of string
+                ;               - Remaining data is treated as 16-bit Unicode with no null terminator
+                ; Argument 1 : 32-bit unsigned integer, treated as 8-bit unsigned integer, 
+                ;              the colour to print the characters (background and foreground).
+                method_System_Void_RETEND_Kernel_PreReqs_DECLEND_WriteDebugVideo_NAMEEND__System_String_System_UInt32_:
 
+                ; MethodStart
+                push dword ebp
+                mov dword ebp, esp
+
+                mov dword ebx, 0xB8000 ; Load vid mem base address
+
+                ; Set num characters to clear 
+                mov dword eax, 80   ; 80 characters per line
+                mov dword ecx, 25   ; 25 lines
+                mul dword ecx       ; eax * ecx, store in eax = numbers of characters to clear
+                mov dword ecx, eax  ; Store number of characters to clear in ecx for later use in loop
+
+                mov byte ah, 0x00   ; Set colour to clear to. Here black for background and foreground
+                mov byte al, 0      ; Set the character to the null/empty character
+
+                method_System_Void_RETEND_Kernel_PreReqs_DECLEND_WriteDebugVideo_NAMEEND__System_String_System_UInt32_.Loop1:
+                mov word [ebx], ax  ; Move the empty character/colour to vid mem
+                add dword ebx, 2    ; Move to next character space in vid mem
+                ; Uses ecx - loops till ecx = 0 i.e. till all characters cleared
+                loop method_System_Void_RETEND_Kernel_PreReqs_DECLEND_WriteDebugVideo_NAMEEND__System_String_System_UInt32_.Loop1
+
+
+                ; Load string length
+                mov eax, [ebp+12]    ; Load string address
+                mov dword ecx, [eax] ; String length is first dword of string
+
+                mov edx, [ebp+12]    ; Load string address
+                add edx, 4           ; Skip first dword because that is the length not a character
+
+                mov dword ebx, 0xB8000 ; Load vid mem base address
+
+                mov byte ah, [ebp+8]  ; Load colour
+
+                method_System_Void_RETEND_Kernel_PreReqs_DECLEND_WriteDebugVideo_NAMEEND__System_String_System_UInt32_.Loop2:
+                mov byte al, [edx]    ; Get current character of string
+                mov word [ebx], ax    ; Move character and colour into vid mem
+                add dword ebx, 2      ; Move to next character space in vid mem
+                add dword edx, 1      ; Move to next character in string
+                ; Uses ecx - loops till ecx = 0 i.e. till all characters gone through
+                loop method_System_Void_RETEND_Kernel_PreReqs_DECLEND_WriteDebugVideo_NAMEEND__System_String_System_UInt32_.Loop2
+
+                ; MethodEnd
+                pop dword ebp
+
+                ret
+                ; END - Write Debug Video
+            </code>
+            <code lang="C#" tabSize="4">
+              // Microsoft C# .Net 4.5, x86 (32-bit)
+              /******************** VGA Text-mode : String Output Example ********************/
+
+              // Code taken from Fling OS source: Kernel.Core\Consoles\AdvancedConsole.cs
+              // 2014-11-03
+
+              // Notes to the reader:
+              //      Buffer: - The text to put on the screen.
+              //              - A field of the container class. 
+              //              - Type: FOS_System.List containing FOS_System.String
+              //              - Each string must be 80 characters long.
+              //              - Buffer can contain as many lines of text as you wish. The bottom
+              //                25 will be displayed.
+
+              /// &lt;summary&gt;
+              /// A pointer to the start of the (character-based) video memory.
+              /// &lt;/summary&gt;
+              protected static char* vidMemBasePtr = (char*)0xB8000;
+
+              /// &lt;summary&gt;
+              /// Update the display.
+              /// &lt;/summary&gt;
+              protected unsafe override void Update()
+              {
+                //Start at the bottom of the screen - 25th line has index 24
+                char* vidMemPtr = vidMemBasePtr + (24 * LineLength);
+                //Start at the current line then move backwards through the buffer
+                //  until we&#39;ve either outputted 25 lines or reached the start of
+                //  the buffer.
+                for(int i = CurrentLine; i &gt; -1 &amp;&amp; i &gt; CurrentLine - 25; i--)
+                {
+                  //Get a pointer to the start of the current line
+                  //  We could index into the string each time, but using a pointer
+                  //  is much faster.
+                  char* cLinePtr = ((FOS_System.String)Buffer[i]).GetCharPointer();
+                  //Loop through the entire length of the line. All lines will be of
+                  //  LineLength even if nothing is written in them because blank
+                  //  lines are created as a LineLength of spaces.
+                  for (int j = 0; j &lt; LineLength; j++)
+                  {
+                    vidMemPtr[j] = cLinePtr[j];
+                  }
+                  //Move backwards through the video memory i.e. upwards 1 line
+                  vidMemPtr -= LineLength;
+                }
+
+                //Clear out the rest of the screen
+                while(vidMemPtr &gt;= vidMemBasePtr)
+                {
+                  for (int j = 0; j &lt; LineLength; j++)
+                  {
+                    vidMemPtr[j] = (char)(&#39; &#39; | CurrentAttr);
+                  }
+                  vidMemPtr -= LineLength;
+                }
+              }
+            </code>
           </content>
         </section>
         <section address="x86Debugging_Disassembly">
           <title>Int3 &amp; Int1 : Interrupt debugging</title>
           <content>
-            
-          </content>
-        </section>
-        <section address="x86Debugging_Disassembly">
-          <title>COM0 : Communication</title>
-          <content>
-
+            <para>
+              Interrupt debugging vies for top-spot as x86's most useful debugging tool. This article has made little attempt
+              at actually explaining the nitty-gritty of how interrupt debugging works, largely because there is no one way.
+              However, the code sample below demonstrate the basic way (which Fling OS uses).
+            </para>
+            <para>
+              Essentially what happens is when the OS starts, the interrupt table is set up with Int1 and Int3 handlers. When
+              the code hits an Int3 (which is inject by a compiler during a "debug" build), the Int3 handler is fired. The
+              Int3 handler listens to COM port 0 waiting for a "go" signal at which point it "interrupt returns" (IRet's) 
+              and execution continues as normal.
+            </para>
+            <para>
+              This process can be further advanced so that while the Int3 handler can recognise more than just a "go" 
+              command. This allows it to accept commands and parameters and return information such as register values.
+            </para>
+            <para>
+              A further advancement is having the debug code inject Int1 ops (and possibly Int3 ops) which allow op-by-op
+              stepping. However, this is complicated in x86 by instructions having variable size and so often Int3
+              place-holders (NOP ops) are put in the code by the compiler and those are replaced Int3s when required.
+              Int1 ops are then used to get from an Int3 to a more specific point in the code.
+            </para>
+            <para>
+              Information and examples for setting up the x86 Interrupts Table can be found under x86 Descriptor Tables.
+            </para>
+            <para>
+              The code for the x86 ASM Debugging was too long to directly include in this article. The sample code includes
+              everything required for the basic debugger which includes a basic command set, information transferring and
+              Int1 debugging. Under the copyright, you may only use the sample to look at, not as a basis for your own
+              debug code. A fully documented copy of the source from 2014-11-03 is available from here:
+              <externalLink>
+                <linkText>ASM x86 Interrupt Debugging - 2014-11-03</linkText>
+                <linkAlternateText>ASM x86 Interrupt Debugging - 2014-11-03</linkAlternateText>
+                <linkUri>/Source%20Samples/ASM%20x86%20Interrupt%20Debugging%20-%202014-11-03.zip</linkUri>
+              </externalLink>
+              (Link valid as of 2014-11-03).
+              Unfortunately, there is one known bug in the sample, where it will not return the correct memory data from the
+              get memory command. Otherwise, the code is known to work fully.
+            </para>
           </content>
         </section>
       </sections>
@@ -811,14 +991,6 @@
     <!--
     
     -->
-    <section address="x86Debugging">
-      <title>x86 Debugging</title>
-      <content>
-          <para>
-          	This section is coming soon.
-          </para>
-      </content>
-    </section>
     
 	<section address="Revisions">
 	  <title>Revisions</title>
@@ -829,6 +1001,7 @@
 		<list class="ordered">
 		  <listItem><para>26/10/14 - Initial version.</para></listItem>
 		  <listItem><para>02/11/14 - Spelling and grammar corrections.</para></listItem>
+      <listItem><para>03/11/14 - Added x86 Debugging sections.</para></listItem>
 		</list>
 	  </content>
 	</section>
