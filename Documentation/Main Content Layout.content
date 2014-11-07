@@ -7,10 +7,9 @@
   <Topic id="64d7d98a-eb1c-47ab-8fdf-f2411f237efc" visible="True" />
   <Topic id="aecd2393-2d40-49c9-894d-ebaac70adce7" visible="True" noFile="true" isExpanded="true" title="Reference Articles">
     <Topic id="8e917313-26da-456f-91be-75ddf09a2acc" visible="True" />
-    <Topic id="f62a6762-25f2-49ea-a6cb-18267dbaf9b2" visible="True" isSelected="true" />
-    <Topic id="33c0c8da-fd15-4cfb-983f-e29ede3f6515" visible="True" noFile="true" isExpanded="true" title="Disk Devices">
+    <Topic id="f62a6762-25f2-49ea-a6cb-18267dbaf9b2" visible="True" />
+    <Topic id="d5b852b6-ab5a-416e-8aa6-bf3dfae2a240" visible="True" isExpanded="true" isSelected="true" title="Disk Devices">
       <Topic id="c3ceab20-c685-4be3-8ad3-42bb04ac445c" visible="True" />
-      <Topic id="d5b852b6-ab5a-416e-8aa6-bf3dfae2a240" visible="True" />
       <Topic id="b164b3b0-1a8d-422c-8d90-c70b3825c731" visible="True" />
       <Topic id="5bae7d76-c48c-4a96-82f7-3d1d858a0649" visible="True" />
       <Topic id="d4ad0b56-a5dc-4c2b-8bde-b37c690b716d" visible="True" />

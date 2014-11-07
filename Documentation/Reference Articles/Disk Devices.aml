@@ -1,22 +1,118 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <topic id="d5b852b6-ab5a-416e-8aa6-bf3dfae2a240" revisionNumber="1">
   <developerConceptualDocument xmlns="http://ddue.schemas.microsoft.com/authoring/2003/5" xmlns:xlink="http://www.w3.org/1999/xlink">
-    <!--
-    <summary>
-      <para>Optional summary abstract</para>
-    </summary>
-    -->
+
     <introduction>
-      <!-- Uncomment this to generate an outline of the section and sub-section
-           titles.  Specify a numeric value as the inner text to limit it to
-           a specific number of sub-topics when creating the outline.  Specify
-           zero (0) to limit it to top-level sections only.  -->
-      <!-- <autoOutline /> -->
-      <para>Required introduction</para>
+      <autoOutline>20</autoOutline>
     </introduction>
-    <!-- Add one or more top-level section elements.  These are collapsible.
-         If using <autoOutline />, add an address attribute to identify it
-         and specify a title so that it can be jumped to with a hyperlink. -->
+    
+    <!--
+    
+    Sections:
+      - Introduction
+          - Scope of this article
+          - How this article is structured
+      - What are disk devices?
+          - Generic definition
+          - Historical naming
+          - Modern developments in storage
+          - Common types of disk device
+      - ATA devices
+          - Overview
+          - Further reading
+      - USB devices
+          - Overview
+          - USB structure
+          - USB Mass Storage Devices
+          - Further Reading
+      - Abstract devices
+          - Overview
+          - Partitions
+          - MBR, EBR and GPT
+          - Further Reading
+      - Code structure advice
+          - Recommendations 
+          - Reasons for recommendations
+      
+    -->
+    
+    <!-- - - - - - - - - - - - Introduction - - - - - - - - - - - -->
+    <!--
+    
+      Scope of this article
+        This article covers disk devices in general with brief overviews of common disk devices. The overviews provide
+        sufficient information for you to understand the differences between the specific types of disk device and 
+        thus to decide what to learn more about. Links to further reading about a specific type of disk device are 
+        provided after the relevant overview.
+        
+        This article also covers abstract disk devices (as Fling OS describes them) such as partitions. While it is not
+        apparently obvious that a data storage system is a disk device, upon inspection it is clear why treating a
+        partition as a disk device is not only useful, but also creates a clean code structure. This is discussed more
+        further on.
+      
+      How this article is structured
+        The article is structured into a section of general description followed by sections for the specific types of
+        disk device. Each device-type specific section consists of an overview followed by links to further reading.
+        The majority of the further reading links point to more detailed articles on this site which not only describe
+        and explain in more detail, but also provide code samples and practical tips. The article finishes with a few
+        recommendations for your own code structure.
+      
+    -->
+    
+    <!-- - - - - - - - - - - - What are disk devices? - - - - - - - - - - - -->
+    <!--
+      
+      Generic definition
+        As a very broad and generic definition, a modern disk device is any device which stores data. This includes
+        hard disk drives, flash memory (e.g. USB sticks) and perhaps we can even include modern cloud storage. 
+        Essentially anything which is accessed as though data is stored permanently and in some form of byte order.
+        It is important to note that for a disk device we need raw byte (or block) level access to the storage medium
+        not just file-level access. However, we could treat a raw binary file as a disk device. 
+        
+      Historical naming
+        The name "disk device" comes from the fact that the original storage mediums (post magnetic-tape era) were 
+        magnetic disks and/or compact discs (CDs). This meant they got know by their commonality - the fact that 
+        they used discs.
+        
+        The name "disk device" is now historical given the new forms of storage available (e.g. flash memory,
+        solid-state storage devices). However, many storage devices still use discs (HDD, CDs, DVDs) so the name is
+        still relevant. 
+        
+      Modern developments in storage
+        Modern developments in storage have blurred what can be thought of as a disc device. For instance, SSDs don't
+        store data anything like a disc does, but we still refer to it as a disc device because, from an OS perspective,
+        it still has all the same properties of a normal hard disk drive (excluding complex things like spin-up time).
+          
+        Other developments include multi-level partitioning schemes and cloud storage. Both of these abstract the "disk 
+        device" that the OS interacts with away from the physical device. For instance, cloud storage can be used to 
+        store one large binary file which the computer simply treats as though it were a large hard disc.
+          
+        For the sake of simplicity (and because it is mostly unnecessary to complicate things), we simply refer to most
+        modern storage technology as disk devices and, so far as possible, treat it as such. This allows easy abstraction
+        into file systems which hide the everyday developer from the physical differences between mediums.
+          
+        The main issue that affects users when it comes to different types of disk device is ejection / disconnection.
+        For instance, cloud storage can become disconnected or, as another example, USB sticks need ejecting before 
+        being pulled out. This results in a level of roughness for the user as they must consciously consider which
+        type of device they use for what. 
+          
+        Modern OSes such as Chrome OS have tried to make progress in this area by offering services such as a local 
+        cache that later uploads to cloud storage when the user has a stable connection. USB mass storage devices 
+        are also built with flush commands which, if utilised properly, can mitigate the risk of unejected disconnection.
+        
+      Common types of disk device
+        There are several common types of disk device which a hobby OS developer is likely to come across and need or want
+        to support. These are:
+            1. Hard disks (ATA, IDE, SATA, RAID) - Fling OS, and consequently this documentation, currently only supports 
+                                                    ATA.
+            2. Partitions (MBR-, EBR-, GPT-based) - These are an abstract form of disc device, all of which are supported
+                                                    by Fling OS and are discussed later.
+            3. USB Mass Storage Devices - For example USB Flash Memory Sticks, USB External Hard Drives. These are 
+                                          discussed in significantly greater detail in the USB reference articles.
+                                          Fling OS currently supports only USB 2.0 MSDs that support SCSI Over USB 
+                                          commands.
+      -->
+      
     <section address="Section1">
       <title>Optional section title</title>
       <content>
