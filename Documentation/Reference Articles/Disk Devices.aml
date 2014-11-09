@@ -218,7 +218,7 @@
               <content>
                   <para>
                     USB (inc. host controllers, USB and USB MSDs) are discussed in more detail in the USB section found 
-                    <link xlink:href="10311586-6145-4aab-ae15-b02891ee081e">here</link>
+                    <link xlink:href="116cfd83-d795-4e91-bc2f-4cf97b85b60f">here</link>
                   </para>
               </content>
           </section>
@@ -306,7 +306,7 @@
     
     <relatedTopics>
       <link xlink:href="c3ceab20-c685-4be3-8ad3-42bb04ac445c"/>
-      <link xlink:href="10311586-6145-4aab-ae15-b02891ee081e"/>
+      <link xlink:href="116cfd83-d795-4e91-bc2f-4cf97b85b60f"/>
       <link xlink:href="d4ad0b56-a5dc-4c2b-8bde-b37c690b716d"/>
       <link xlink:href="5bae7d76-c48c-4a96-82f7-3d1d858a0649"/>
       <link xlink:href="b164b3b0-1a8d-422c-8d90-c70b3825c731"/>

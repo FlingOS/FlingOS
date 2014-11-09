@@ -8,7 +8,7 @@
   <Topic id="aecd2393-2d40-49c9-894d-ebaac70adce7" visible="True" noFile="true" isExpanded="true" title="Reference Articles">
     <Topic id="8e917313-26da-456f-91be-75ddf09a2acc" visible="True" />
     <Topic id="f62a6762-25f2-49ea-a6cb-18267dbaf9b2" visible="True" />
-    <Topic id="d5b852b6-ab5a-416e-8aa6-bf3dfae2a240" visible="True" isExpanded="true" isSelected="true" title="Disk Devices">
+    <Topic id="d5b852b6-ab5a-416e-8aa6-bf3dfae2a240" visible="True" isExpanded="true" title="Disk Devices">
       <Topic id="c3ceab20-c685-4be3-8ad3-42bb04ac445c" visible="True" />
       <Topic id="b164b3b0-1a8d-422c-8d90-c70b3825c731" visible="True" />
       <Topic id="5bae7d76-c48c-4a96-82f7-3d1d858a0649" visible="True" />
@@ -55,7 +55,7 @@
       <Topic id="649ac039-7bd2-44d2-9d86-7cf7a883b88d" visible="True" />
       <Topic id="2a567f97-f31c-41b7-ae39-491676c1b336" visible="True" />
     </Topic>
-    <Topic id="10311586-6145-4aab-ae15-b02891ee081e" visible="True" noFile="true" isExpanded="true" title="USB">
+    <Topic id="116cfd83-d795-4e91-bc2f-4cf97b85b60f" visible="True" isExpanded="true" isSelected="true" title="USB">
       <Topic id="6c0f0a34-eaf0-4992-9e68-07733f1a02b6" visible="True" />
       <Topic id="bb572618-952d-46eb-90e5-cc1079ee5c14" visible="True" />
       <Topic id="10f1ebce-03c4-4f8a-ae3e-13cfbc53f968" visible="True" />
