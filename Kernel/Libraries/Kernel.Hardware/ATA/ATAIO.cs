@@ -25,7 +25,7 @@ using System.Threading.Tasks;
 namespace Kernel.Hardware.ATA
 {
     /// <summary>
-    /// Represents an ATA IO device.
+    /// Wraps the IO Ports for communicating with ATA devices.
     /// </summary>
     public class ATAIO : FOS_System.Object
     {
