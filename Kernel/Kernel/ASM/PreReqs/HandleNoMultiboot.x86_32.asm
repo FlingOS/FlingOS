@@ -5,7 +5,7 @@ Kernel_Start_HandleNoMultiboot:
 
 ; Not entirely sure if we'd ever actually get as far as due to code structure but anyway...
 ; Displays a warning message to the user saying "No multiboot" indicating the multiboot signature
-; (which should have been in eax) was not deteced so we don't think we have a valid boot setup
+; (which should have been in eax) was not detected so we don't think we have a valid boot setup
 ; so we are aborting the boot to avoid damage
 	
 	; Output following text to first bit of vid mem
