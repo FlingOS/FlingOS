@@ -11,21 +11,56 @@
       Sections:
         - Introduction
             - Scope of this article
+                - ATA history
+                - ATA as IDE, PIO but not SATA
+                - Basic hardware info
+                - Complete software explanation and sample
             - How this article is structured
+                - History and overview
+                - Followed by explanation
+                - Followed by sample code and common problems
         - History
             - Origin of ATA
+                - Originally called AT Attachment
+                - Consists of hardware and software standards: AT Attachment, AT Attachment Packet Interface
+                - Started with ATA
+                - Followed by Western Digital's IDE
+                - ATA now has many acronyms
+                - ATA now actually Parallel ATA (PATA)
+                - Due to Serial ATA (2003) (SATA)
             - ATA as Parallel ATA
+                - PATA and IDE now broadly equivalent
+                - Meaning at a hobbyist level, what you program will work with most stuff
+                - PATA much simpler than SATA
+                - Limitations of PATA
             - ATA to Serial ATA (SATA)
+                - Improvements with SATA
+                - SATA much more complex than PATA
+                - Not always backwards compatible
+                - Get PATA working first
         - Overview
             - General
+                - What does ATA do?
+                - How common is it?
+                - Why is it important?
+                - ATA for hard drives
+                - ATA for CD drives
             - ATA as IDE
+                - Which types of device?
+                - How complex to program?
+                - Basic ideas
             - PIO mode
-            - SATA
+                - What does PIO stand for?
+                - Which types of device?
+                - How does this link to IDE?
         - Hardware
             - Overview
-            - Cables
+            - Cables & Connectors
             - Backwards Compatibility
-            - Virtual hardware
+                - Versions of PATA / IDE
+                - SATA to PATA
+            - Virtual hardware / virtual disks / virtual machines
+                - Set up as IDE drive
         - Software
             - Basic outline
             - Main classes
@@ -44,7 +79,11 @@
         - Common problems
             - Second drive selection
             - CD drives
+            - Disk lock / security
             - SATA / RAID drives
+        - Sources
+            - http://en.wikipedia.org/wiki/Parallel_ATA
+            - http://en.wikipedia.org/wiki/Programmed_input/output
     -->
     
     <!-- - - - - - - - - - - - - - Introduction - - - - - - - - - - - - - -->
