@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?><Database Name="Database" Class="DatabaseDataContext" xmlns="http://schemas.microsoft.com/linqtosql/dbml/2007">
-  <Connection Mode="AppSettings" ConnectionString="Data Source=(LocalDB)\v11.0;AttachDbFilename=&quot;G:\Fling OS\Fling OS\Kernel\Debug\Kernel.Debug.Data\Database.mdf&quot;;Integrated Security=True;Connect Timeout=30" SettingsObjectName="Kernel.Debug.Data.Properties.Settings" SettingsPropertyName="DatabaseConnectionString" Provider="System.Data.SqlClient" />
+  <Connection Mode="AppSettings" ConnectionString="Data Source=(LocalDB)\v11.0;AttachDbFilename=&quot;C:\Fling OS\Fling OS\Kernel\Debug\Kernel.Debug.Data\Database.mdf&quot;;Integrated Security=True;Connect Timeout=30" SettingsObjectName="Kernel.Debug.Data.Properties.Settings" SettingsPropertyName="DatabaseConnectionString" Provider="System.Data.SqlClient" />
   <Table Name="dbo.IlOpInfos" Member="DB_ILOpInfos">
     <Type Name="DB_ILOpInfo">
       <Column Name="Id" Type="System.Guid" DbType="UniqueIdentifier NOT NULL" IsPrimaryKey="true" CanBeNull="false" />
@@ -79,12 +79,16 @@
       <Column Name="BytesSize" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
       <Column Name="StackBytesSize" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
       <Column Name="IsValueType" Type="System.Boolean" DbType="Bit NOT NULL" CanBeNull="false" />
+      <Column Name="IsPointerType" Type="System.Boolean" DbType="Bit NOT NULL" CanBeNull="false" />
+      <Column Name="BaseTypeId" Type="System.String" DbType="NVarChar(150)" CanBeNull="true" />
       <Association Name="DB_Type_DB_Argument" Member="DB_Arguments" ThisKey="Id" OtherKey="TypeID" Type="DB_Argument" />
       <Association Name="DB_Type_DB_ComplexTypeLink" Member="ParentTypes" Storage="_DB_ComplexTypeLinks" ThisKey="Id" OtherKey="ChildTypeID" Type="DB_ComplexTypeLink" />
       <Association Name="DB_Type_DB_ComplexTypeLink1" Member="ChildTypes" Storage="_DB_ComplexTypeLinks1" ThisKey="Id" OtherKey="ParentTypeID" Type="DB_ComplexTypeLink" />
       <Association Name="DB_Type_DB_LocalVariable" Member="DB_LocalVariables" Storage="_LocalVariables" ThisKey="Id" OtherKey="TypeID" Type="DB_LocalVariable" />
       <Association Name="DB_Type_DB_StaticField" Member="StaticFields" ThisKey="Id" OtherKey="TypeID" Type="DB_StaticField" />
       <Association Name="DB_Type_DB_StaticField1" Member="DB_StaticFields" Storage="_StaticFields1" ThisKey="Id" OtherKey="DeclaringTypeID" Type="DB_StaticField" />
+      <Association Name="DB_Type_DB_Type" Member="InheritedTypes" ThisKey="Id" OtherKey="BaseTypeId" Type="DB_Type" />
+      <Association Name="DB_Type_DB_Type" Member="BaseType" ThisKey="BaseTypeId" OtherKey="Id" Type="DB_Type" IsForeignKey="true" />
     </Type>
   </Table>
   <Table Name="dbo.StaticFields" Member="DB_StaticFields">

@@ -1699,6 +1699,10 @@ namespace Kernel.Debug.Data
 		
 		private bool _IsValueType;
 		
+		private bool _IsPointerType;
+		
+		private string _BaseTypeId;
+		
 		private EntitySet<DB_Argument> _DB_Arguments;
 		
 		private EntitySet<DB_ComplexTypeLink> _DB_ComplexTypeLinks;
@@ -1710,6 +1714,10 @@ namespace Kernel.Debug.Data
 		private EntitySet<DB_StaticField> _StaticFields;
 		
 		private EntitySet<DB_StaticField> _StaticFields1;
+		
+		private EntitySet<DB_Type> _InheritedTypes;
+		
+		private EntityRef<DB_Type> _BaseType;
 		
     #region Extensibility Method Definitions
     partial void OnLoaded();
@@ -1725,6 +1733,10 @@ namespace Kernel.Debug.Data
     partial void OnStackBytesSizeChanged();
     partial void OnIsValueTypeChanging(bool value);
     partial void OnIsValueTypeChanged();
+    partial void OnIsPointerTypeChanging(bool value);
+    partial void OnIsPointerTypeChanged();
+    partial void OnBaseTypeIdChanging(string value);
+    partial void OnBaseTypeIdChanged();
     #endregion
 		
 		public DB_Type()
@@ -1735,6 +1747,8 @@ namespace Kernel.Debug.Data
 			this._LocalVariables = new EntitySet<DB_LocalVariable>(new Action<DB_LocalVariable>(this.attach_LocalVariables), new Action<DB_LocalVariable>(this.detach_LocalVariables));
 			this._StaticFields = new EntitySet<DB_StaticField>(new Action<DB_StaticField>(this.attach_StaticFields), new Action<DB_StaticField>(this.detach_StaticFields));
 			this._StaticFields1 = new EntitySet<DB_StaticField>(new Action<DB_StaticField>(this.attach_StaticFields1), new Action<DB_StaticField>(this.detach_StaticFields1));
+			this._InheritedTypes = new EntitySet<DB_Type>(new Action<DB_Type>(this.attach_InheritedTypes), new Action<DB_Type>(this.detach_InheritedTypes));
+			this._BaseType = default(EntityRef<DB_Type>);
 			OnCreated();
 		}
 		
@@ -1838,6 +1852,50 @@ namespace Kernel.Debug.Data
 			}
 		}
 		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_IsPointerType", DbType="Bit NOT NULL")]
+		public bool IsPointerType
+		{
+			get
+			{
+				return this._IsPointerType;
+			}
+			set
+			{
+				if ((this._IsPointerType != value))
+				{
+					this.OnIsPointerTypeChanging(value);
+					this.SendPropertyChanging();
+					this._IsPointerType = value;
+					this.SendPropertyChanged("IsPointerType");
+					this.OnIsPointerTypeChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_BaseTypeId", DbType="NVarChar(150)")]
+		public string BaseTypeId
+		{
+			get
+			{
+				return this._BaseTypeId;
+			}
+			set
+			{
+				if ((this._BaseTypeId != value))
+				{
+					if (this._BaseType.HasLoadedOrAssignedValue)
+					{
+						throw new System.Data.Linq.ForeignKeyReferenceAlreadyHasValueException();
+					}
+					this.OnBaseTypeIdChanging(value);
+					this.SendPropertyChanging();
+					this._BaseTypeId = value;
+					this.SendPropertyChanged("BaseTypeId");
+					this.OnBaseTypeIdChanged();
+				}
+			}
+		}
+		
 		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="DB_Type_DB_Argument", Storage="_DB_Arguments", ThisKey="Id", OtherKey="TypeID")]
 		public EntitySet<DB_Argument> DB_Arguments
 		{
@@ -1913,6 +1971,53 @@ namespace Kernel.Debug.Data
 			set
 			{
 				this._StaticFields1.Assign(value);
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="DB_Type_DB_Type", Storage="_InheritedTypes", ThisKey="Id", OtherKey="BaseTypeId")]
+		public EntitySet<DB_Type> InheritedTypes
+		{
+			get
+			{
+				return this._InheritedTypes;
+			}
+			set
+			{
+				this._InheritedTypes.Assign(value);
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="DB_Type_DB_Type", Storage="_BaseType", ThisKey="BaseTypeId", OtherKey="Id", IsForeignKey=true)]
+		public DB_Type BaseType
+		{
+			get
+			{
+				return this._BaseType.Entity;
+			}
+			set
+			{
+				DB_Type previousValue = this._BaseType.Entity;
+				if (((previousValue != value) 
+							|| (this._BaseType.HasLoadedOrAssignedValue == false)))
+				{
+					this.SendPropertyChanging();
+					if ((previousValue != null))
+					{
+						this._BaseType.Entity = null;
+						previousValue.InheritedTypes.Remove(this);
+					}
+					this._BaseType.Entity = value;
+					if ((value != null))
+					{
+						value.InheritedTypes.Add(this);
+						this._BaseTypeId = value.Id;
+					}
+					else
+					{
+						this._BaseTypeId = default(string);
+					}
+					this.SendPropertyChanged("BaseType");
+				}
 			}
 		}
 		
@@ -2006,6 +2111,18 @@ namespace Kernel.Debug.Data
 		{
 			this.SendPropertyChanging();
 			entity.DB_Type1 = null;
+		}
+		
+		private void attach_InheritedTypes(DB_Type entity)
+		{
+			this.SendPropertyChanging();
+			entity.BaseType = this;
+		}
+		
+		private void detach_InheritedTypes(DB_Type entity)
+		{
+			this.SendPropertyChanging();
+			entity.BaseType = null;
 		}
 	}
 	

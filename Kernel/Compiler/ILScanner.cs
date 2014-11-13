@@ -256,6 +256,11 @@ namespace Kernel.Compiler
                 {
                     ASMChunks.Add(aChunk);
                 }
+
+                foreach (ASMChunk aChunk in TheScannerState.FieldTablesDataBlock)
+                {
+                    ASMChunks.Add(aChunk);
+                }
                 
                 ASMChunk endChunk = new ASMChunk();
                 endChunk.ASM.AppendLine("_end_code:");
@@ -1610,7 +1615,8 @@ namespace Kernel.Compiler
                         TheDBType.Signature = theType.FullName;
                         TheDBType.StackBytesSize = Utils.GetNumBytesForType(theType);
                         TheDBType.IsValueType = theType.IsValueType;
-
+                        TheDBType.IsPointerType = theType.IsPointer;
+                        
                         DebugDatabase.AddType(TheDBType);
                         DebugDatabase.SubmitChanges();
 
@@ -1627,6 +1633,7 @@ namespace Kernel.Compiler
                             if (!baseType.AssemblyQualifiedName.Contains("mscorlib"))
                             {
                                 DB_Type baseDBType = ProcessType(baseType);
+                                TheDBType.BaseTypeId = baseDBType.Id;
                                 totalMemSize += baseDBType.BytesSize;
                                 foreach (DB_ComplexTypeLink childLink in baseDBType.ChildTypes)
                                 {
@@ -1647,13 +1654,18 @@ namespace Kernel.Compiler
                         {
                             List<FieldInfo> AllFields = theType.GetFields(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic).ToList();
 
+                            if (theType.AssemblyQualifiedName.Contains("FOS_System.Type"))
+                            {
+                                System.Diagnostics.Debugger.Break();
+                            }
+
                             foreach (FieldInfo anInfo in AllFields)
                             {
                                 //Ignore inherited fields - process inherited fields above
                                 if (anInfo.DeclaringType == theType)
                                 {
                                     DB_Type childDBType = ProcessType(anInfo.FieldType);
-                                    totalMemSize += childDBType.BytesSize;
+                                    totalMemSize += childDBType.IsValueType ? childDBType.BytesSize : childDBType.StackBytesSize;
 
                                     DB_ComplexTypeLink DBTypeLink = new DB_ComplexTypeLink();
                                     DBTypeLink.Id = Guid.NewGuid();
@@ -1684,6 +1696,7 @@ namespace Kernel.Compiler
 
                         TheScannerState.AddType(TheDBType);
                         TheScannerState.AddTypeMethods(theType);
+                        TheScannerState.AddTypeFields(theType);
 
                         if (!theType.AssemblyQualifiedName.Contains("mscorlib"))
                         {

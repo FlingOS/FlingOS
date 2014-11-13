@@ -63,7 +63,7 @@ namespace Kernel.Core.Shells
                          *              ULLTComp    /   StringConcat/   ObjArray    /
                          *              IntArray    /   DummyObj    /   DivideBy0   /
                          *              Exceptions1 /   Exceptions2 /   PCBeep      /
-                         *              Timer       /   Keyboard                        }
+                         *              Timer       /   Keyboard    /   FieldsTable  }
                          *  - GC   { Cleanup }
                          *  - USB { Update / Eject }
                          */
@@ -729,6 +729,10 @@ namespace Kernel.Core.Shells
                                 else if (opt1 == "keyboard")
                                 {
                                     KeyboardTest();
+                                }
+                                else if (opt1 == "fieldstable")
+                                {
+                                    FieldsTableTest();
                                 }
                                 else
                                 {
@@ -2112,6 +2116,68 @@ namespace Kernel.Core.Shells
             }
 
             console.WriteLine("Ended advanced console test. Pausing for 5 seconds.");
+            Hardware.Devices.Timer.Default.Wait(5000);
+        }
+        /// <summary>
+        /// Tests the fields type table by outputting to the screen and 
+        /// letting the user decide if the output is correct.
+        /// </summary>
+        private unsafe void FieldsTableTest()
+        {
+            console.WriteLine("Starting fields table test.");
+
+            try
+            {
+                FOS_System.Type theType = (FOS_System.Type)typeof(FOS_System.Type);
+                if (theType == null)
+                {
+                    console.WriteLine("The type object is null!!");
+                }
+                else
+                {
+                    if (theType.TheBaseType != null)
+                    {
+                        console.WriteLine("Base type not null.");
+                    }
+                    else
+                    {
+                        console.WriteLine("Base type null.");
+                    }
+                    FieldInfo* fieldInfoPtr = theType.FieldTablePtr;
+                    while (fieldInfoPtr->Size != 0)
+                    {
+                        FOS_System.Type fieldType = (FOS_System.Type)Utilities.ObjectUtilities.GetObject(fieldInfoPtr->FieldType);
+
+                        try
+                        {
+                            console.Write("Field: ");
+                            console.Write_AsDecimal(fieldInfoPtr->Offset);
+                            console.Write(", ");
+                            console.Write_AsDecimal(fieldInfoPtr->Size);
+                            console.Write(", Value type?: ");
+                            console.Write(fieldType.IsValueType);
+                            console.Write(", Pointer type?: ");
+                            console.Write(fieldType.IsPointer);
+                            console.Write(", ");
+                            console.WriteLine((uint)fieldInfoPtr->FieldType);
+                        }
+                        catch
+                        {
+                            console.WriteLine("Error printing field info.");
+                        }
+
+                        fieldInfoPtr++;
+                    }
+                    console.Write("Parent?: ");
+                    console.WriteLine(fieldInfoPtr->FieldType != null);
+                }
+            }
+            catch
+            {
+                OutputCurrentExceptionInfo();
+            }
+
+            console.WriteLine("Ended fields table test. Pausing for 5 seconds.");
             Hardware.Devices.Timer.Default.Wait(5000);
         }
     }

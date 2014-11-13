@@ -37,7 +37,7 @@ namespace Kernel.FOS_System.Collections
         /// </summary>
         /// <remarks>
         /// When describing entries in the internal, the internal array should be seen
-        /// as a list which grows downards. So the first entry (index 0) is the top of 
+        /// as a list which grows downwards. So the first entry (index 0) is the top of 
         /// the list. Adding an entry extends the list downwards by one. Removing an 
         /// entry shifts the remaining items up by one.
         /// </remarks>
