@@ -6,3 +6,5 @@ Database.ldf
 *.ldf
 Documentation/Help/
 UpgradeLog*.htm
+*.mp4
+*.zip
