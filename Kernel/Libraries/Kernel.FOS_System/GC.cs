@@ -374,8 +374,15 @@ namespace Kernel.FOS_System
             {
                 gcHeaderPtr->RefCount--;
 
-                if (gcHeaderPtr->RefCount <= 0)
+                //If the ref count goes below 0 then there was a circular reference somewhere.
+                //  In actuality we don't care we can just only do cleanup when the ref count is
+                //  exactly 0.
+                if (gcHeaderPtr->RefCount == 0)
                 {
+#if GC_TRACE
+                    BasicConsole.WriteLine("Cleaned up object.");
+#endif
+
                     FOS_System.Object obj = (FOS_System.Object)Utilities.ObjectUtilities.GetObject(objPtr);
                     if (obj._Type == (FOS_System.Type)typeof(FOS_System.Array))
                     {
@@ -390,6 +397,33 @@ namespace Kernel.FOS_System
                             }
                         }
                     }
+                    //Cleanup fields
+                    FieldInfo* FieldInfoPtr = obj._Type.FieldTablePtr;
+                    //Loop through all fields. The if-block at the end handles moving to parent
+                    //  fields. 
+                    while (FieldInfoPtr != null)
+                    {
+                        FOS_System.Type fieldType = (FOS_System.Type)Utilities.ObjectUtilities.GetObject(FieldInfoPtr->FieldType);
+                        if (!fieldType.IsValueType && 
+                            !fieldType.IsPointer)
+                        {
+                            byte* fieldPtr = objPtr + FieldInfoPtr->Offset;
+                            FOS_System.Object theFieldObj = (FOS_System.Object)Utilities.ObjectUtilities.GetObject(fieldPtr);
+                            DecrementRefCount(theFieldObj, true);
+
+#if GC_TRACE
+                            BasicConsole.WriteLine("Cleaned up field.");
+#endif
+                        }
+
+                        FieldInfoPtr++;
+
+                        if (FieldInfoPtr->Size == 0)
+                        {
+                            FieldInfoPtr = (FieldInfo*)FieldInfoPtr->FieldType;
+                        }
+                    }
+                    
 
                     AddObjectToCleanup(gcHeaderPtr, objPtr);
                 }
@@ -485,7 +519,7 @@ namespace Kernel.FOS_System
             BasicConsole.WriteLine(((FOS_System.String)"Freed objects: ") + numObjsFreed);
             BasicConsole.WriteLine(((FOS_System.String)"Freed strings: ") + numStringsFreed);
             BasicConsole.WriteLine(((FOS_System.String)"Used memory  : ") + (Heap.FBlock->used * Heap.FBlock->bsize) + " / " + Heap.FBlock->size);
-            //BasicConsole.DelayOutput(2);
+            BasicConsole.DelayOutput(2);
             BasicConsole.SetTextColour(BasicConsole.default_colour);
         }
 
@@ -569,7 +603,7 @@ namespace Kernel.FOS_System
         /// <summary>
         /// The current reference count for the object associated with this header.
         /// </summary>
-        public uint RefCount;
+        public int RefCount;
     }
     /// <summary>
     /// Represents an object to be garbage collected (i.e. freed from memory).

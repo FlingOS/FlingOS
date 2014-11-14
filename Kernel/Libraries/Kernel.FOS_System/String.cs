@@ -451,9 +451,21 @@ namespace Kernel.FOS_System
         /// <returns>Whether the two strings are identical or not.</returns>
         [Compiler.NoDebug]
         [Compiler.NoGC]
-        public static bool operator ==(FOS_System.String x, FOS_System.String y)
+        public static unsafe bool operator ==(FOS_System.String x, FOS_System.String y)
         {
             bool equal = true;
+
+            //Prevent recursive calls to this "==" implicit method!
+            if (Utilities.ObjectUtilities.GetHandle(x) == null || 
+                Utilities.ObjectUtilities.GetHandle(y) == null)
+            {
+                if (Utilities.ObjectUtilities.GetHandle(x) == null &&
+                    Utilities.ObjectUtilities.GetHandle(y) == null)
+                {
+                    return true;
+                }
+                return false;
+            }
 
             if (x.length != y.length)
             {

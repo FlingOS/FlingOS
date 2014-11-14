@@ -297,7 +297,8 @@ namespace Kernel.Compiler.Architectures.x86_32
                 isValueTypeOffset = allChildLinks.Sum(x => x.ChildType.IsValueType ? x.ChildType.BytesSize : x.ChildType.StackBytesSize);
             }
             #endregion
-            result.AppendLine(string.Format("mov ecx, [eax+{0}]", isValueTypeOffset));
+            result.AppendLine("mov ecx, 0");
+            result.AppendLine(string.Format("mov byte cl, [eax+{0}]", isValueTypeOffset));
             //      4.5. If IsValueType, continue to 4.6., else goto 4.8.
             result.AppendLine("cmp ecx, 0");
             result.AppendLine("jz " + ContinueExecutionLabel4_1);

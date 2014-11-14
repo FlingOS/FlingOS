@@ -182,7 +182,7 @@ namespace Kernel.Compiler.Architectures.x86_32
                     //Normal callvirt
                     // - Get object ref from loaded args
                     // - Get type table entry from object ref
-                    // - Get mehtod table from type table entry
+                    // - Get method table from type table entry
                     // - Scan method table for the method we want
                     //      - If found, load method address
                     // - Else, check for parent type method table
@@ -222,8 +222,7 @@ namespace Kernel.Compiler.Architectures.x86_32
                         //This is so we can calculate the offset (in memory, in bytes) from the start of the object
                         allChildLinks = allChildLinks.Where(x => x.ParentIndex < theTypeLink.ParentIndex).ToList();
                         //Calculate the offset
-                        //We use StackBytesSize since fields that are reference types are only stored as a pointer
-                        typeOffset = allChildLinks.Sum(x => x.ChildType.StackBytesSize);
+                        typeOffset = allChildLinks.Sum(x => x.ChildType.IsValueType ? x.ChildType.BytesSize : x.ChildType.StackBytesSize);
                     }
                     #endregion
                     result.AppendLine(string.Format("mov eax, [eax+{0}]", typeOffset));
@@ -244,7 +243,7 @@ namespace Kernel.Compiler.Architectures.x86_32
                         allChildLinks = allChildLinks.Where(x => x.ParentIndex < theTypeLink.ParentIndex).ToList();
                         //Calculate the offset
                         //We use StackBytesSize since fields that are reference types are only stored as a pointer
-                        methodTablePtrOffset = allChildLinks.Sum(x => x.ChildType.StackBytesSize);
+                        methodTablePtrOffset = allChildLinks.Sum(x => x.ChildType.IsValueType ? x.ChildType.BytesSize : x.ChildType.StackBytesSize);
                     }
                     #endregion
                     result.AppendLine(string.Format("mov eax, [eax+{0}]", methodTablePtrOffset));

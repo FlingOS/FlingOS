@@ -110,6 +110,10 @@ namespace Kernel.Compiler
         /// The ASM chunk that contains the Methods Table data.
         /// </summary>
         public List<ASMChunk> MethodTablesDataBlock = new List<ASMChunk>();
+        /// <summary>
+        /// The ASM chunk that contains the Fields Table data.
+        /// </summary>
+        public List<ASMChunk> FieldTablesDataBlock = new List<ASMChunk>();
         
         /// <summary>
         /// The stack frame for the method currently being scanned.
@@ -370,9 +374,26 @@ namespace Kernel.Compiler
             string StackSizeVal = TheDBType.StackBytesSize.ToString();
             string IsValueTypeVal = (TheDBType.IsValueType ? "1" : "0");
             string MethodTablePointer = TypeId + "_MethodTable";
-            
-            TypesTableDataBlock.ASM.AppendLine(string.Format("{0}: dd {1}, {2}, {3}, {4}, {6} \t\t; {5}", 
-                TypeId, SizeVal, IdVal, StackSizeVal, IsValueTypeVal, TheDBType.Signature, MethodTablePointer));
+            string IsPointerTypeVal = (TheDBType.IsPointerType ? "1" : "0");
+            string BaseTypeIdVal = "0";
+            if (TheDBType.BaseTypeId != null)
+            {
+                BaseTypeIdVal = GetTypeIdString(TheDBType.BaseTypeId);
+            }
+            string FieldTablePointer = TypeId + "_FieldTable";
+
+            TypesTableDataBlock.ASM.AppendLine(string.Format("{0}:\t\t; {1}\n" +
+                "dd {2}, {3}, {4}\n" + 
+                "db {5}\n" + 
+                "dd {6}\n" + 
+                "db {7}\n" + 
+                "dd {8}, {9}", 
+                TypeId, TheDBType.Signature,
+                SizeVal, IdVal, StackSizeVal, 
+                IsValueTypeVal, 
+                MethodTablePointer, 
+                IsPointerTypeVal, 
+                BaseTypeIdVal, FieldTablePointer));
         }
 
         private long currentMethodTablePriorityOffset = (long.MaxValue / 2) + 1;
@@ -429,6 +450,72 @@ namespace Kernel.Compiler
                 return new MethodInfo[0];
             }
             return TheType.GetMethods(BindingFlags.NonPublic | BindingFlags.DeclaredOnly | BindingFlags.Public | BindingFlags.Instance);
+        }
+
+        private long currentFieldTablePriorityOffset = (2 * (long.MaxValue / 3)) + 1;
+        /// <summary>
+        /// Adds the non-static fields of the specified type to the type table.
+        /// </summary>
+        /// <param name="TheType">The type to process.</param>
+        public void AddTypeFields(Type TheType)
+        {
+            DB_Type objDBType = DebugDatabase.GetType(GetTypeID(TheType));
+            
+            string currentTypeId = GetTypeIdString(GetTypeID(TheType));
+            ASMChunk fieldTable = new ASMChunk();
+            fieldTable.SequencePriority = currentFieldTablePriorityOffset++;
+
+            fieldTable.ASM.AppendLine("; Field Table - " + TheType.FullName);
+            fieldTable.ASM.AppendLine(currentTypeId + "_FieldTable:");
+
+            if (TheType.BaseType == null || (TheType.BaseType.FullName != "System.Array" && 
+                                             TheType.BaseType.FullName != "System.MulticastDelegate"))
+            {
+                FieldInfo[] OwnFields = GetInstanceFields(TheType);
+                foreach (FieldInfo anOwnField in OwnFields)
+                {
+                    List<DB_ComplexTypeLink> allChildLinks = objDBType.ChildTypes.OrderBy(x => x.ParentIndex).ToList();
+                    DB_ComplexTypeLink theTypeLink = (from links in objDBType.ChildTypes
+                                                      where links.FieldId == anOwnField.Name
+                                                      select links).First();
+                    allChildLinks = allChildLinks.Where(x => x.ParentIndex < theTypeLink.ParentIndex).ToList();
+                    int offset = allChildLinks.Sum(x => x.ChildType.IsValueType ? x.ChildType.BytesSize : x.ChildType.StackBytesSize);
+                    int size = theTypeLink.ChildType.IsValueType ? theTypeLink.ChildType.BytesSize : theTypeLink.ChildType.StackBytesSize;
+                    string fieldOffsetVal = offset.ToString();
+                    string fieldSizeVal = size.ToString();
+                    string fieldTypeIdVal = GetTypeIdString(theTypeLink.ChildTypeID);
+
+                    fieldTable.ASM.AppendLine(string.Format("dd {0}, {1}, {2}", 
+                        fieldOffsetVal, fieldSizeVal, fieldTypeIdVal));
+                }
+            }
+
+            string parentTypeFieldTablePtr = "0";
+            if (TheType.BaseType != null)
+            {
+                if (!TheType.BaseType.AssemblyQualifiedName.Contains("mscorlib"))
+                {
+                    parentTypeFieldTablePtr = GetTypeIdString(GetTypeID(TheType.BaseType)) + "_FieldTable";
+                }
+            }
+            fieldTable.ASM.AppendLine("dd 0, 0, " + parentTypeFieldTablePtr);
+
+            fieldTable.ASM.AppendLine("; Field Table End - " + TheType.FullName);
+
+            FieldTablesDataBlock.Add(fieldTable);
+        }
+        /// <summary>
+        /// Returns all the instance (i.e. non-static) fields (including private fields) of the specified type excluding inherited fields.
+        /// </summary>
+        /// <param name="TheType">The type to get methods of.</param>
+        /// <returns>All the instance methods.</returns>
+        private FieldInfo[] GetInstanceFields(Type TheType)
+        {
+            if (TheType.AssemblyQualifiedName.Contains("mscorlib"))
+            {
+                return new FieldInfo[0];
+            }
+            return TheType.GetFields(BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public);
         }
 
         /// <summary>
