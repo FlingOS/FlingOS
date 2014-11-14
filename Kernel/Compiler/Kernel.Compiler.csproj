@@ -94,6 +94,7 @@
     <Compile Include="ILCompiler.cs" />
     <Compile Include="ILOpInfo.cs" />
     <Compile Include="ILOps\Callvirt.cs" />
+    <Compile Include="ILOps\Isinst.cs" />
     <Compile Include="ILOps\Initobj.cs" />
     <Compile Include="ILOps\Ldlen.cs" />
     <Compile Include="ILOps\Ldobj.cs" />

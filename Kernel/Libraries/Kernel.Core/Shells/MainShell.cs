@@ -63,7 +63,8 @@ namespace Kernel.Core.Shells
                          *              ULLTComp    /   StringConcat/   ObjArray    /
                          *              IntArray    /   DummyObj    /   DivideBy0   /
                          *              Exceptions1 /   Exceptions2 /   PCBeep      /
-                         *              Timer       /   Keyboard    /   FieldsTable  }
+                         *              Timer       /   Keyboard    /   FieldsTable /
+                         *              IsInst                                      }
                          *  - GC   { Cleanup }
                          *  - USB { Update / Eject }
                          */
@@ -734,6 +735,10 @@ namespace Kernel.Core.Shells
                                 {
                                     FieldsTableTest();
                                 }
+                                else if (opt1 == "isinst")
+                                {
+                                    IsInstTest();
+                                }
                                 else
                                 {
                                     UnrecognisedOption();
@@ -745,7 +750,8 @@ namespace Kernel.Core.Shells
                                                   "                               ULLTComp    /  StringConcat /  ObjArray    /\n" +
                                                   "                               IntArray    /  DummyObj     /  DivideBy0   /\n" +
                                                   "                               Exceptions1 /  Exceptions2  /  PCBeep      /\n" +
-                                                  "                               Timer       /  Keyboard                     }");
+                                                  "                               Timer       /  Keyboard     /  FieldsTable /\n" +
+                                                  "                               IsInst                                     }");
                             }
                             #endregion
                         }
@@ -2178,6 +2184,49 @@ namespace Kernel.Core.Shells
             }
 
             console.WriteLine("Ended fields table test. Pausing for 5 seconds.");
+            Hardware.Devices.Timer.Default.Wait(5000);
+        }
+        /// <summary>
+        /// Tests the "is" operator (i.e. the IsInst IL op)
+        /// </summary>
+        private void IsInstTest()
+        {
+            console.WriteLine("Starting IsInst test.");
+
+            try
+            {
+                FOS_System.Object anStr = (FOS_System.String)"test";
+                if (anStr is FOS_System.String)
+                {
+                    console.WriteLine("Is a String.");
+                }
+                else
+                {
+                    console.WriteLine("Is not a String.");
+                }
+                if (anStr is FOS_System.Object)
+                {
+                    console.WriteLine("Is an Object.");
+                }
+                else
+                {
+                    console.WriteLine("Is not an Object.");
+                }
+                if (anStr is FOS_System.Exception)
+                {
+                    console.WriteLine("Is an Exception.");
+                }
+                else
+                {
+                    console.WriteLine("Is not an Exception.");
+                }
+            }
+            catch
+            {
+                OutputCurrentExceptionInfo();
+            }
+
+            console.WriteLine("Ended IsInst test. Pausing for 5 seconds.");
             Hardware.Devices.Timer.Default.Wait(5000);
         }
     }

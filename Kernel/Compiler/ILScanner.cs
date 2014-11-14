@@ -1653,12 +1653,7 @@ namespace Kernel.Compiler
                         if (!theType.AssemblyQualifiedName.Contains("mscorlib"))
                         {
                             List<FieldInfo> AllFields = theType.GetFields(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic).ToList();
-
-                            if (theType.AssemblyQualifiedName.Contains("FOS_System.Type"))
-                            {
-                                System.Diagnostics.Debugger.Break();
-                            }
-
+                            
                             foreach (FieldInfo anInfo in AllFields)
                             {
                                 //Ignore inherited fields - process inherited fields above

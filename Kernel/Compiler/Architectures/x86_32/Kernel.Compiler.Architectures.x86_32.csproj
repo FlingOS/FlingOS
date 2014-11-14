@@ -58,6 +58,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Callvirt.cs" />
+    <Compile Include="Isinst.cs" />
     <Compile Include="Ldlen.cs" />
     <Compile Include="Initobj.cs" />
     <Compile Include="Ldobj.cs" />
