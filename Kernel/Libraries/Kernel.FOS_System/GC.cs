@@ -384,7 +384,7 @@ namespace Kernel.FOS_System
 #endif
 
                     FOS_System.Object obj = (FOS_System.Object)Utilities.ObjectUtilities.GetObject(objPtr);
-                    if (obj._Type == (FOS_System.Type)typeof(FOS_System.Array))
+                    if (obj is FOS_System.Array)
                     {
                         //Decrement ref count of elements
                         FOS_System.Array arr = (FOS_System.Array)obj;
@@ -485,7 +485,7 @@ namespace Kernel.FOS_System
                 if(objHeaderPtr->RefCount <= 0)
                 {
                     FOS_System.Object obj = (FOS_System.Object)Utilities.ObjectUtilities.GetObject(objPtr);
-                    if (obj._Type == (FOS_System.Type)typeof(FOS_System.String))
+                    if (obj is FOS_System.String)
                     {
                         NumStrings--;
                     }

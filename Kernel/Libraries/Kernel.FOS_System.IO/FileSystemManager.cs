@@ -59,7 +59,7 @@ namespace Kernel.FOS_System.IO
             for (int i = 0; i < DeviceManager.Devices.Count; i++)
             {
                 Device aDevice = (Device)DeviceManager.Devices[i];
-                if (aDevice._Type == (FOS_System.Type)(typeof(Hardware.ATA.ATAPio)))
+                if (aDevice is Hardware.ATA.ATAPio)
                 {
                     try
                     {
@@ -70,7 +70,7 @@ namespace Kernel.FOS_System.IO
                         BasicConsole.WriteLine("Error initializing disk: " + ExceptionMethods.CurrentException.Message);
                     }
                 }
-                else if (aDevice._Type == (FOS_System.Type)(typeof(Hardware.USB.Devices.MassStorageDevice_DiskDevice)))
+                else if (aDevice is Hardware.USB.Devices.MassStorageDevice_DiskDevice)
                 {
                     try
                     {

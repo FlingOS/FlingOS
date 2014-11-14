@@ -869,8 +869,8 @@ namespace Kernel.Core.Shells
             {
                 Hardware.Device aDevice = (Hardware.Device)Hardware.DeviceManager.Devices[i];
                 //TODO: Once is operator is supported, just do a test for "is Hardware.Devices.DiskDevice"
-                if (aDevice._Type == (FOS_System.Type)(typeof(Hardware.ATA.ATAPio)) ||
-                    aDevice._Type == (FOS_System.Type)(typeof(Hardware.USB.Devices.MassStorageDevice_DiskDevice)))
+                if (aDevice is Hardware.ATA.ATAPio ||
+                    aDevice is Hardware.USB.Devices.MassStorageDevice_DiskDevice)
                 {
                     //Clean caches of the device.
                     ((Hardware.Devices.DiskDevice)aDevice).CleanCaches();
@@ -1355,7 +1355,7 @@ namespace Kernel.Core.Shells
             for (int i = 0; i < FileSystemManager.FileSystemMappings.Count; i++)
             {
                 FileSystemMapping fsMapping = (FileSystemMapping)FileSystemManager.FileSystemMappings[i];
-                if (fsMapping.TheFileSystem._Type == ((FOS_System.Type)typeof(FOS_System.IO.FAT.FATFileSystem)))
+                if (fsMapping.TheFileSystem is FOS_System.IO.FAT.FATFileSystem)
                 {
                     FOS_System.IO.FAT.FATFileSystem fs = (FOS_System.IO.FAT.FATFileSystem)fsMapping.TheFileSystem;
                     
@@ -1384,7 +1384,7 @@ namespace Kernel.Core.Shells
             for (int i = 0; i < Hardware.DeviceManager.Devices.Count; i++)
             {
                 Hardware.Device aDevice = (Hardware.Device)Hardware.DeviceManager.Devices[i];
-                if (aDevice._Type == (FOS_System.Type)(typeof(Hardware.USB.Devices.MassStorageDevice)))
+                if (aDevice is Hardware.USB.Devices.MassStorageDevice)
                 {
                     console.WriteLine();
                     
@@ -1415,7 +1415,7 @@ namespace Kernel.Core.Shells
             for (int i = 0; i < Hardware.DeviceManager.Devices.Count; i++)
             {
                 Hardware.Device aDevice = (Hardware.Device)Hardware.DeviceManager.Devices[i];
-                if (aDevice._Type == (FOS_System.Type)(typeof(Hardware.ATA.ATAPio)))
+                if (aDevice is Hardware.ATA.ATAPio)
                 {
                     console.WriteLine();
                     console.Write("--------------------- Device ");
@@ -1921,8 +1921,7 @@ namespace Kernel.Core.Shells
                 console.WriteLine(ExceptionMethods.CurrentException.Message);
                 console.DefaultColour();
 
-                FOS_System.Type currExceptionType = ExceptionMethods.CurrentException._Type;
-                if (currExceptionType == (FOS_System.Type)typeof(FOS_System.Exceptions.DivideByZeroException))
+                if (ExceptionMethods.CurrentException is FOS_System.Exceptions.DivideByZeroException)
                 {
                     console.WriteLine("Handled divide by zero exception.");
                 }

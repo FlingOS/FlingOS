@@ -81,8 +81,7 @@ namespace Kernel
             catch
             {
                 BasicConsole.SetTextColour(BasicConsole.error_colour);
-                FOS_System.Type currExceptionType = ExceptionMethods.CurrentException._Type;
-                if (currExceptionType == (FOS_System.Type)typeof(FOS_System.Exceptions.PageFaultException))
+                if (ExceptionMethods.CurrentException is FOS_System.Exceptions.PageFaultException)
                 {
                     BasicConsole.WriteLine("Page fault exception unhandled!");
                 }
@@ -148,7 +147,7 @@ namespace Kernel
             {
                 BasicConsole.SetTextColour(BasicConsole.error_colour);
                 BasicConsole.WriteLine(ExceptionMethods.CurrentException.Message);
-                if (ExceptionMethods.CurrentException._Type == (FOS_System.Type)(typeof(FOS_System.Exceptions.PageFaultException)))
+                if (ExceptionMethods.CurrentException is FOS_System.Exceptions.PageFaultException)
                 {
                     BasicConsole.Write("Address: ");
                     BasicConsole.WriteLine(((FOS_System.Exceptions.PageFaultException)ExceptionMethods.CurrentException).address);

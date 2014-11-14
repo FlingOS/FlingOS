@@ -1158,7 +1158,7 @@ namespace Kernel.FOS_System.IO.FAT
             {
                 ExceptionMethods.Throw(new Exceptions.NullReferenceException());
             }
-            if (parent._Type != (FOS_System.Type)typeof(FATDirectory))
+            if (!(parent is FATDirectory))
             {
                 ExceptionMethods.Throw(new Exceptions.NotSupportedException("FATFileSystem.NewDirectory parent directory must be of type FATDirectory!"));
             }
@@ -1211,7 +1211,7 @@ namespace Kernel.FOS_System.IO.FAT
             {
                 ExceptionMethods.Throw(new Exceptions.NullReferenceException());
             }
-            if (parent._Type != (FOS_System.Type)typeof(FATDirectory))
+            if (!(parent is FATDirectory))
             {
                 ExceptionMethods.Throw(new Exceptions.NotSupportedException("FATFileSystem.NewFile parent directory must be of type FATDirectory!"));
             }

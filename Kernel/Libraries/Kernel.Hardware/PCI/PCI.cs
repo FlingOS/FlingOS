@@ -105,7 +105,7 @@ namespace Kernel.Hardware.PCI
             Devices.Add(device);
             DeviceManager.Devices.Add(device);
 
-            if (device._Type == (FOS_System.Type)(typeof(PCIDeviceBridge)))
+            if (device is PCIDeviceBridge)
             {
                 EnumerateBus(((PCIDeviceBridge)device).SecondaryBusNumber, step + 1);
             }
