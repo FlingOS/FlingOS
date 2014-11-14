@@ -2133,7 +2133,7 @@ namespace Kernel.Core.Shells
 
             try
             {
-                FOS_System.Type theType = (FOS_System.Type)typeof(FOS_System.IO.FAT.FATFile);
+                FOS_System.Type theType = (FOS_System.Type)typeof(FOS_System.Type);
                 if (theType == null)
                 {
                     console.WriteLine("The type object is null!!");
@@ -2159,16 +2159,14 @@ namespace Kernel.Core.Shells
 
                         try
                         {
-                            console.Write("Field: ");
+                            console.Write("Field: " + fieldType.Signature + "\n @ Offset=");
                             console.Write_AsDecimal(fieldInfoPtr->Offset);
-                            console.Write(", ");
+                            console.Write(", Size=");
                             console.Write_AsDecimal(fieldInfoPtr->Size);
                             console.Write(", Value type?: ");
                             console.Write(fieldType.IsValueType);
                             console.Write(", Pointer type?: ");
-                            console.Write(fieldType.IsPointer);
-                            console.Write(", ");
-                            console.WriteLine((uint)fieldInfoPtr->FieldType);
+                            console.WriteLine(fieldType.IsPointer);
                         }
                         catch
                         {

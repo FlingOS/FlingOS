@@ -387,18 +387,11 @@ namespace Kernel.Compiler
             string TypeSignatureLiteralLabel = AddStringLiteral(TheDBType.Signature, null);
             string TypeIdLiteralLabel = AddStringLiteral(TheDBType.Id, null);
 
-            TypesTableDataBlock.ASM.AppendLine(string.Format("{0}:\t\t; {1}\n" +
-                "dd {2}, {3}, {4}\n" + 
-                "db {5}\n" + 
-                "dd {6}\n" + 
-                "db {7}\n" + 
-                "dd {8}, {9}, {10}, {11}", 
-                TypeId, TheDBType.Signature,
-                SizeVal, IdVal, StackSizeVal, 
-                IsValueTypeVal, 
-                MethodTablePointer, 
-                IsPointerTypeVal, 
-                BaseTypeIdVal, FieldTablePointer, TypeSignatureLiteralLabel, TypeIdLiteralLabel));
+            // We add the info in a presumed order
+            //  It is rearranged into the correct order later in Finalise
+            TypesTableDataBlock.ASM.AppendLine(string.Format("{0}|{1}|{2}|{3}|{4}|{5}|{6}|{7}|{8}|{9}|{10}|{11}",
+                TypeId + ":", TheDBType.Signature, SizeVal, IdVal, StackSizeVal, IsValueTypeVal, MethodTablePointer,
+                IsPointerTypeVal, BaseTypeIdVal, FieldTablePointer, TypeSignatureLiteralLabel, TypeIdLiteralLabel));
         }
 
         private long currentMethodTablePriorityOffset = (long.MaxValue / 2) + 1;
@@ -579,7 +572,92 @@ namespace Kernel.Compiler
         /// </summary>
         public void FinaliseTypesTablesDataBlock()
         {
+            // Reprocess the types table to put fields into correct order
+
+            // Pre-calculate the order translation table
+            
+            DB_Type typeDBType = DebugDatabase.GetType(GetTypeID(TypeClass));
+
+            // + 2 because of type label and human readable label
+            int offset = 2;
+            int SizeOffset = GetTypeFieldOffset(typeDBType, "Size") + offset;
+            int IdOffset = GetTypeFieldOffset(typeDBType, "Id") + offset;
+            int StackSizeOffset = GetTypeFieldOffset(typeDBType, "StackSize") + offset;
+            int IsValueTypeOffset = GetTypeFieldOffset(typeDBType, "IsValueType") + offset;
+            int MethodTablePtrOffset = GetTypeFieldOffset(typeDBType, "MethodTablePtr") + offset;
+            int IsPointerOffset = GetTypeFieldOffset(typeDBType, "IsPointer") + offset;
+            int TheBaseTypeOffset = GetTypeFieldOffset(typeDBType, "TheBaseType") + offset;
+            int FieldTablePtrOffset = GetTypeFieldOffset(typeDBType, "FieldTablePtr") + offset;
+            int SignatureOffset = GetTypeFieldOffset(typeDBType, "Signature") + offset;
+            int IdStringOffset = GetTypeFieldOffset(typeDBType, "IdString") + offset;
+
+            int[] TranslationTable = new int[12];
+            // Output index <- Origin index
+            TranslationTable[0] = 0; //Type label
+            TranslationTable[1] = 1; //Human readable label
+            TranslationTable[SizeOffset] = 2;
+            TranslationTable[IdOffset] = 3;
+            TranslationTable[StackSizeOffset] = 4;
+            TranslationTable[IsValueTypeOffset] = 5;
+            TranslationTable[MethodTablePtrOffset] = 6;
+            TranslationTable[IsPointerOffset] = 7;
+            TranslationTable[TheBaseTypeOffset] = 8;
+            TranslationTable[FieldTablePtrOffset] = 9;
+            TranslationTable[SignatureOffset] = 10;
+            TranslationTable[IdStringOffset] = 11;
+
+            string[] PrefixesTable = new string[TranslationTable.Length];
+            PrefixesTable[0] = ""; //Type label
+            PrefixesTable[1] = "; "; //Human readable label
+            PrefixesTable[SizeOffset] = "dd ";
+            PrefixesTable[IdOffset] = "dd ";
+            PrefixesTable[StackSizeOffset] = "dd ";
+            PrefixesTable[IsValueTypeOffset] = "db ";
+            PrefixesTable[MethodTablePtrOffset] = "dd ";
+            PrefixesTable[IsPointerOffset] = "db ";
+            PrefixesTable[TheBaseTypeOffset] = "dd ";
+            PrefixesTable[FieldTablePtrOffset] = "dd ";
+            PrefixesTable[SignatureOffset] = "dd ";
+            PrefixesTable[IdStringOffset] = "dd ";
+ 
+            List<string> entries = TypesTableDataBlock.ASM.ToString().Split("\n".ToCharArray(), StringSplitOptions.RemoveEmptyEntries).ToList();
+            string beginLine = entries[0];
+            entries.RemoveAt(0);
+            TypesTableDataBlock.ASM.Clear();
+            TypesTableDataBlock.ASM.AppendLine(beginLine.Trim());
+            foreach (string anEntry in entries)
+            {
+                string[] parts = anEntry.TrimEnd().Split("|".ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
+                string finalEntry = "";
+                for (int i = 0; i < TranslationTable.Length; i++)
+                {
+                    finalEntry += PrefixesTable[i] + parts[TranslationTable[i]] + "\n";
+                }
+                TypesTableDataBlock.ASM.AppendLine(finalEntry);
+            }
+
             TypesTableDataBlock.ASM.AppendLine("; END - Types Table");
+        }
+        private int GetTypeFieldOffset(DB_Type typeDBType, string fieldName)
+        {
+            //Get the child links of the type (i.e. the fields of the type)
+            List<DB_ComplexTypeLink> allChildLinks = typeDBType.ChildTypes.OrderBy(x => x.ParentIndex).ToList();
+            //Get the DB type information for the field we want to load
+            DB_ComplexTypeLink theTypeLink = (from links in typeDBType.ChildTypes
+                                              where links.FieldId == fieldName
+                                              select links).First();
+            //Get all the fields that come before the field we want to load
+            //This is so we can calculate the offset (in memory, in bytes) from the start of the object
+            allChildLinks = allChildLinks.Where(x => x.ParentIndex < theTypeLink.ParentIndex).ToList();
+            //Calculate the offset
+            return allChildLinks.Count();
+        }
+
+        public void FinaliseMethodTables()
+        {
+        }
+        public void FinaliseFieldTables()
+        {
         }
                 
         /// <summary>

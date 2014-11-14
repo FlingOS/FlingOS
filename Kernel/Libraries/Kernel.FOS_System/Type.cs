@@ -39,13 +39,22 @@ namespace Kernel.FOS_System
     public unsafe abstract class Type : System.Type
     {
         /// <summary>
-        /// The size of the object in memory.
-        /// </summary>
-        public uint Size;
-        /// <summary>
         /// The type ID.
         /// </summary>
         public uint Id;
+        /// <summary>
+        /// The compiler-assigned type ID string. This is a hash string which is not the same as the Id.
+        /// </summary>
+        public FOS_System.String IdString;
+        /// <summary>
+        /// The human readable type signature.
+        /// </summary>
+        public FOS_System.String Signature;
+
+        /// <summary>
+        /// The size of the object in memory.
+        /// </summary>
+        public uint Size;
         /// <summary>
         /// The size of the type when on the stack or in an array.
         /// </summary>
@@ -54,37 +63,26 @@ namespace Kernel.FOS_System
         /// Whether the type is a value type or not.
         /// </summary>
         public new bool IsValueType;
-
-        /// <summary>
-        /// A pointer to the start of the method table.
-        /// </summary>
-        public MethodInfo* MethodTablePtr;
-        
         /// <summary>
         /// Whether the type is a pointer type or not.
         /// </summary>
         public new bool IsPointer;
 
         /// <summary>
+        /// A pointer to the start of the method table.
+        /// </summary>
+        public MethodInfo* MethodTablePtr;
+        /// <summary>
+        /// A pointer to the start of the field table.
+        /// </summary>
+        public FieldInfo* FieldTablePtr;
+        
+        /// <summary>
         /// The base type from which this type inherits. If this field is null,
         /// it indicates there is no base type.
         /// </summary>
         public Type TheBaseType;
 
-        /// <summary>
-        /// A pointer to the start of the field table.
-        /// </summary>
-        public FieldInfo* FieldTablePtr;
-
-        /// <summary>
-        /// The human readable type signature string.
-        /// </summary>
-        public FOS_System.String Signature;
-
-        /// <summary>
-        /// The compiler-assigned type ID string.
-        /// </summary>
-        public FOS_System.String IdString;
 
         /// <summary>
         /// Compares two types by ID to see if they represent the same type.
