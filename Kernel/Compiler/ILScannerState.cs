@@ -322,7 +322,10 @@ namespace Kernel.Compiler
                 {
                     DB_StringLiteral dbStringLiteral = new DB_StringLiteral();
                     dbStringLiteral.Id = stringID;
-                    dbStringLiteral.ILOpInfoID = ilOpInfo.DBILOpInfo.Id;
+                    if (ilOpInfo != null)
+                    {
+                        dbStringLiteral.ILOpInfoID = ilOpInfo.DBILOpInfo.Id;
+                    }
                     dbStringLiteral.Value = value;
                     DebugDatabase.AddStringLiteral(dbStringLiteral);
                 }
@@ -381,19 +384,21 @@ namespace Kernel.Compiler
                 BaseTypeIdVal = GetTypeIdString(TheDBType.BaseTypeId);
             }
             string FieldTablePointer = TypeId + "_FieldTable";
+            string TypeSignatureLiteralLabel = AddStringLiteral(TheDBType.Signature, null);
+            string TypeIdLiteralLabel = AddStringLiteral(TheDBType.Id, null);
 
             TypesTableDataBlock.ASM.AppendLine(string.Format("{0}:\t\t; {1}\n" +
                 "dd {2}, {3}, {4}\n" + 
                 "db {5}\n" + 
                 "dd {6}\n" + 
                 "db {7}\n" + 
-                "dd {8}, {9}", 
+                "dd {8}, {9}, {10}, {11}", 
                 TypeId, TheDBType.Signature,
                 SizeVal, IdVal, StackSizeVal, 
                 IsValueTypeVal, 
                 MethodTablePointer, 
                 IsPointerTypeVal, 
-                BaseTypeIdVal, FieldTablePointer));
+                BaseTypeIdVal, FieldTablePointer, TypeSignatureLiteralLabel, TypeIdLiteralLabel));
         }
 
         private long currentMethodTablePriorityOffset = (long.MaxValue / 2) + 1;

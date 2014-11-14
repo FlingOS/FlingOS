@@ -77,6 +77,16 @@ namespace Kernel.FOS_System
         public FieldInfo* FieldTablePtr;
 
         /// <summary>
+        /// The human readable type signature string.
+        /// </summary>
+        public FOS_System.String Signature;
+
+        /// <summary>
+        /// The compiler-assigned type ID string.
+        /// </summary>
+        public FOS_System.String IdString;
+
+        /// <summary>
         /// Compares two types by ID to see if they represent the same type.
         /// </summary>
         /// <param name="x">The first type to compare with the second.</param>

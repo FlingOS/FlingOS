@@ -2133,21 +2133,25 @@ namespace Kernel.Core.Shells
 
             try
             {
-                FOS_System.Type theType = (FOS_System.Type)typeof(FOS_System.Type);
+                FOS_System.Type theType = (FOS_System.Type)typeof(FOS_System.IO.FAT.FATFile);
                 if (theType == null)
                 {
                     console.WriteLine("The type object is null!!");
                 }
                 else
                 {
-                    if (theType.TheBaseType != null)
+                    console.WriteLine("Type signature: " + theType.Signature);
+                    console.WriteLine("Type id: " + theType.IdString);
+
+                    FOS_System.Type baseType = theType.TheBaseType;
+                    int inset = 0;
+                    while(baseType != null)
                     {
-                        console.WriteLine("Base type not null.");
+                        console.WriteLine(baseType.Signature.PadLeft(baseType.Signature.length + inset, ' '));
+                        inset += 4;
+                        baseType = baseType.TheBaseType;
                     }
-                    else
-                    {
-                        console.WriteLine("Base type null.");
-                    }
+
                     FieldInfo* fieldInfoPtr = theType.FieldTablePtr;
                     while (fieldInfoPtr->Size != 0)
                     {
