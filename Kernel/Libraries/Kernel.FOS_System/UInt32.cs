@@ -22,7 +22,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Kernel.FOS_System.Stubs
+namespace Kernel.FOS_System
 {
     /// <summary>
     /// Replacement class for methods, properties and fields usually found on standard System.Int32 type.
