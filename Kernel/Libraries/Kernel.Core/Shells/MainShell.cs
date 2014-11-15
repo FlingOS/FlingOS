@@ -64,7 +64,7 @@ namespace Kernel.Core.Shells
                          *              IntArray    /   DummyObj    /   DivideBy0   /
                          *              Exceptions1 /   Exceptions2 /   PCBeep      /
                          *              Timer       /   Keyboard    /   FieldsTable /
-                         *              IsInst                                      }
+                         *              IsInst      /   VirtMem                     }
                          *  - GC   { Cleanup }
                          *  - USB { Update / Eject }
                          */
@@ -739,6 +739,10 @@ namespace Kernel.Core.Shells
                                 {
                                     IsInstTest();
                                 }
+                                else if (opt1 == "virtmem")
+                                {
+                                    Hardware.VirtMemManager.Test();
+                                }
                                 else
                                 {
                                     UnrecognisedOption();
@@ -751,7 +755,7 @@ namespace Kernel.Core.Shells
                                                   "                               IntArray    /  DummyObj     /  DivideBy0   /\n" +
                                                   "                               Exceptions1 /  Exceptions2  /  PCBeep      /\n" +
                                                   "                               Timer       /  Keyboard     /  FieldsTable /\n" +
-                                                  "                               IsInst                                     }");
+                                                  "                               IsInst      /  VirtMem                     }");
                             }
                             #endregion
                         }
