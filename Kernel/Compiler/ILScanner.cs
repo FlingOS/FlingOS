@@ -1704,6 +1704,18 @@ namespace Kernel.Compiler
                             TheScannerState.TypeClass = theType;
                         }
 
+                        MethodInfoStructAttribute methodInfoStructAttr = (MethodInfoStructAttribute)theType.GetCustomAttribute(typeof(MethodInfoStructAttribute));
+                        if (methodInfoStructAttr != null)
+                        {
+                            TheScannerState.MethodInfoStruct = theType;
+                        }
+
+                        FieldInfoStructAttribute fieldInfoStructAttr = (FieldInfoStructAttribute)theType.GetCustomAttribute(typeof(FieldInfoStructAttribute));
+                        if (fieldInfoStructAttr != null)
+                        {
+                            TheScannerState.FieldInfoStruct = theType;
+                        }
+
                         ArrayClassAttribute arrayClassAttr = (ArrayClassAttribute)theType.GetCustomAttribute(typeof(ArrayClassAttribute));
                         if (arrayClassAttr != null)
                         {

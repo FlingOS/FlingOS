@@ -88,6 +88,14 @@ namespace Kernel.Compiler
         /// The class to use as the kernel's String class.
         /// </summary>
         public Type StringClass;
+        /// <summary>
+        /// The struct to use as the kernel's MethodInfo struct.
+        /// </summary>
+        public Type MethodInfoStruct;
+        /// <summary>
+        /// The struct to use as the kernel's FieldInfo struct.
+        /// </summary>
+        public Type FieldInfoStruct;
 
         /// <summary>
         /// Whether to do a debug build or not. Read-only - copied from Settings when IL scanner starts. 
@@ -417,7 +425,7 @@ namespace Kernel.Compiler
                     {
                         string methodID = GetMethodID(anOwnMethod);
                         string methodIDValue = GetMethodIDValue(anOwnMethod);
-                        methodTable.ASM.AppendLine("dd " + methodIDValue + ", " + methodID);
+                        methodTable.ASM.AppendLine(methodIDValue + "|" + methodID);
                     }
                 }
             }
@@ -430,7 +438,7 @@ namespace Kernel.Compiler
                     parentTypeMethodTablePtr = GetTypeIdString(GetTypeID(TheType.BaseType)) + "_MethodTable";
                 }
             }
-            methodTable.ASM.AppendLine("dd 0, " + parentTypeMethodTablePtr);
+            methodTable.ASM.AppendLine("0|" + parentTypeMethodTablePtr);
 
             methodTable.ASM.AppendLine("; Method Table End - " + TheType.FullName);
 
@@ -483,7 +491,7 @@ namespace Kernel.Compiler
                     string fieldSizeVal = size.ToString();
                     string fieldTypeIdVal = GetTypeIdString(theTypeLink.ChildTypeID);
 
-                    fieldTable.ASM.AppendLine(string.Format("dd {0}, {1}, {2}", 
+                    fieldTable.ASM.AppendLine(string.Format("{0}|{1}|{2}", 
                         fieldOffsetVal, fieldSizeVal, fieldTypeIdVal));
                 }
             }
@@ -496,7 +504,7 @@ namespace Kernel.Compiler
                     parentTypeFieldTablePtr = GetTypeIdString(GetTypeID(TheType.BaseType)) + "_FieldTable";
                 }
             }
-            fieldTable.ASM.AppendLine("dd 0, 0, " + parentTypeFieldTablePtr);
+            fieldTable.ASM.AppendLine("0|0|" + parentTypeFieldTablePtr);
 
             fieldTable.ASM.AppendLine("; Field Table End - " + TheType.FullName);
 
@@ -568,7 +576,7 @@ namespace Kernel.Compiler
             TypesTableDataBlock.SequencePriority = (long.MaxValue / 2) - 2;
         }
         /// <summary>
-        /// Finalises the types table data block (adds ending labels).
+        /// Finalises the types table data block (adds ending labels and performs reprocessing).
         /// </summary>
         public void FinaliseTypesTablesDataBlock()
         {
@@ -580,16 +588,16 @@ namespace Kernel.Compiler
 
             // + 2 because of type label and human readable label
             int offset = 2;
-            int SizeOffset = GetTypeFieldOffset(typeDBType, "Size") + offset;
-            int IdOffset = GetTypeFieldOffset(typeDBType, "Id") + offset;
-            int StackSizeOffset = GetTypeFieldOffset(typeDBType, "StackSize") + offset;
-            int IsValueTypeOffset = GetTypeFieldOffset(typeDBType, "IsValueType") + offset;
-            int MethodTablePtrOffset = GetTypeFieldOffset(typeDBType, "MethodTablePtr") + offset;
-            int IsPointerOffset = GetTypeFieldOffset(typeDBType, "IsPointer") + offset;
-            int TheBaseTypeOffset = GetTypeFieldOffset(typeDBType, "TheBaseType") + offset;
-            int FieldTablePtrOffset = GetTypeFieldOffset(typeDBType, "FieldTablePtr") + offset;
-            int SignatureOffset = GetTypeFieldOffset(typeDBType, "Signature") + offset;
-            int IdStringOffset = GetTypeFieldOffset(typeDBType, "IdString") + offset;
+            int SizeOffset = GetFieldIndex(typeDBType, "Size") + offset;
+            int IdOffset = GetFieldIndex(typeDBType, "Id") + offset;
+            int StackSizeOffset = GetFieldIndex(typeDBType, "StackSize") + offset;
+            int IsValueTypeOffset = GetFieldIndex(typeDBType, "IsValueType") + offset;
+            int MethodTablePtrOffset = GetFieldIndex(typeDBType, "MethodTablePtr") + offset;
+            int IsPointerOffset = GetFieldIndex(typeDBType, "IsPointer") + offset;
+            int TheBaseTypeOffset = GetFieldIndex(typeDBType, "TheBaseType") + offset;
+            int FieldTablePtrOffset = GetFieldIndex(typeDBType, "FieldTablePtr") + offset;
+            int SignatureOffset = GetFieldIndex(typeDBType, "Signature") + offset;
+            int IdStringOffset = GetFieldIndex(typeDBType, "IdString") + offset;
 
             int[] TranslationTable = new int[12];
             // Output index <- Origin index
@@ -638,12 +646,122 @@ namespace Kernel.Compiler
 
             TypesTableDataBlock.ASM.AppendLine("; END - Types Table");
         }
-        private int GetTypeFieldOffset(DB_Type typeDBType, string fieldName)
+        /// <summary>
+        /// Finalises the method tables data blocks (performs reprocessing).
+        /// </summary>
+        public void FinaliseMethodTables()
+        {
+            // Reprocess the types table to put fields into correct order
+
+            DB_Type typeDBType = DebugDatabase.GetType(GetTypeID(MethodInfoStruct));
+            int offset = 0;
+            int MethodIDOffset = GetFieldIndex(typeDBType, "MethodID") + offset;
+            int MethodPtrOffset = GetFieldIndex(typeDBType, "MethodPtr") + offset;
+
+            int[] TranslationTable = new int[2];
+            // Output index <- Origin index
+            TranslationTable[MethodIDOffset] = 0;
+            TranslationTable[MethodPtrOffset] = 1;
+
+            string[] PrefixesTable = new string[TranslationTable.Length];
+            PrefixesTable[MethodIDOffset] = "dd ";
+            PrefixesTable[MethodPtrOffset] = "dd ";
+
+            foreach (ASMChunk aChunk in MethodTablesDataBlock)
+            {
+                List<string> entries = aChunk.ASM.ToString().Split("\n".ToCharArray(), StringSplitOptions.RemoveEmptyEntries).ToList();
+                
+                string beginLine1 = entries[0];
+                string beginLine2 = entries[1];
+                string endLine1 = entries.Last();
+                entries.RemoveAt(1);
+                entries.RemoveAt(0);
+                entries.RemoveAt(entries.Count - 1);
+
+                aChunk.ASM.Clear();
+                aChunk.ASM.AppendLine(beginLine1.Trim());
+                aChunk.ASM.AppendLine(beginLine2.Trim());
+
+                foreach (string anEntry in entries)
+                {
+                    string[] parts = anEntry.TrimEnd().Split("|".ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
+                    string finalEntry = "";
+                    for (int i = 0; i < TranslationTable.Length; i++)
+                    {
+                        finalEntry += PrefixesTable[i] + parts[TranslationTable[i]] + "\n";
+                    }
+                    aChunk.ASM.AppendLine(finalEntry);
+                }
+
+                aChunk.ASM.AppendLine(endLine1.Trim());
+            }
+        }
+        /// <summary>
+        /// Finalises the field tables data blocks (performs reprocessing).
+        /// </summary>
+        public void FinaliseFieldTables()
+        {
+            // Reprocess the types table to put fields into correct order
+
+            DB_Type typeDBType = DebugDatabase.GetType(GetTypeID(FieldInfoStruct));
+            int offset = 0;
+            int OffsetOffset = GetFieldIndex(typeDBType, "Offset") + offset;
+            int SizeOffset = GetFieldIndex(typeDBType, "Size") + offset;
+            int FieldTypeOffset = GetFieldIndex(typeDBType, "FieldType") + offset;
+
+            int[] TranslationTable = new int[3];
+            // Output index <- Origin index
+            TranslationTable[OffsetOffset] = 0;
+            TranslationTable[SizeOffset] = 1;
+            TranslationTable[FieldTypeOffset] = 2;
+
+            string[] PrefixesTable = new string[TranslationTable.Length];
+            PrefixesTable[OffsetOffset] = "dd ";
+            PrefixesTable[SizeOffset] = "dd ";
+            PrefixesTable[FieldTypeOffset] = "dd ";
+
+            foreach (ASMChunk aChunk in FieldTablesDataBlock)
+            {
+                List<string> entries = aChunk.ASM.ToString().Split("\n".ToCharArray(), StringSplitOptions.RemoveEmptyEntries).ToList();
+
+                string beginLine1 = entries[0];
+                string beginLine2 = entries[1];
+                string endLine1 = entries.Last();
+                entries.RemoveAt(1);
+                entries.RemoveAt(0);
+                entries.RemoveAt(entries.Count - 1);
+
+                aChunk.ASM.Clear();
+                aChunk.ASM.AppendLine(beginLine1.Trim());
+                aChunk.ASM.AppendLine(beginLine2.Trim());
+
+                foreach (string anEntry in entries)
+                {
+                    string[] parts = anEntry.TrimEnd().Split("|".ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
+                    string finalEntry = "";
+                    for (int i = 0; i < TranslationTable.Length; i++)
+                    {
+                        finalEntry += PrefixesTable[i] + parts[TranslationTable[i]] + "\n";
+                    }
+                    aChunk.ASM.AppendLine(finalEntry);
+                }
+
+                aChunk.ASM.AppendLine(endLine1.Trim());
+            }
+        }
+
+        /// <summary>
+        /// Gets the index of a field in the specified type.
+        /// </summary>
+        /// <param name="dbType">The type to look for the field in.</param>
+        /// <param name="fieldName">The name of the field to look for.</param>
+        /// <returns>Returns the index.</returns>
+        private int GetFieldIndex(DB_Type dbType, string fieldName)
         {
             //Get the child links of the type (i.e. the fields of the type)
-            List<DB_ComplexTypeLink> allChildLinks = typeDBType.ChildTypes.OrderBy(x => x.ParentIndex).ToList();
+            List<DB_ComplexTypeLink> allChildLinks = dbType.ChildTypes.OrderBy(x => x.ParentIndex).ToList();
             //Get the DB type information for the field we want to load
-            DB_ComplexTypeLink theTypeLink = (from links in typeDBType.ChildTypes
+            DB_ComplexTypeLink theTypeLink = (from links in dbType.ChildTypes
                                               where links.FieldId == fieldName
                                               select links).First();
             //Get all the fields that come before the field we want to load
@@ -653,13 +771,6 @@ namespace Kernel.Compiler
             return allChildLinks.Count();
         }
 
-        public void FinaliseMethodTables()
-        {
-        }
-        public void FinaliseFieldTables()
-        {
-        }
-                
         /// <summary>
         /// Finalises the IL scanner state so the IL scanner is ready for use in an ASM sequencer.
         /// </summary>
@@ -668,6 +779,8 @@ namespace Kernel.Compiler
             FinaliseStringLiteralsDataBlock();
             FinaliseStaticFieldsDataBlock();
             FinaliseTypesTablesDataBlock();
+            FinaliseMethodTables();
+            FinaliseFieldTables();
         }
     }
     /// <summary>

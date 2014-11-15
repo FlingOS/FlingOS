@@ -31,9 +31,6 @@ namespace Kernel.FOS_System
     /// The inheritance of the System.Type class is simply so the typeof operator can be used.
     /// Do not use any of the members, properties or methods which are inherited from the base
     /// class!
-    /// 
-    /// The layout of this class must match exactly what the compiler
-    ///  outputs. Do not reorder fields in this class.
     /// </remarks>
     [Compiler.TypeClass]
     public unsafe abstract class Type : System.Type
@@ -124,10 +121,7 @@ namespace Kernel.FOS_System
     /// <summary>
     /// Represents the information in the methods type table.
     /// </summary>
-    /// <remarks>
-    /// The layout of this struct must match exactly what the compiler
-    /// outputs. Do not reorder fields in this struct.
-    /// </remarks>
+    [Compiler.MethodInfoStruct]
     [System.Runtime.InteropServices.StructLayout(System.Runtime.InteropServices.LayoutKind.Sequential, Pack = 1)]
     public unsafe struct MethodInfo
     {
@@ -147,10 +141,7 @@ namespace Kernel.FOS_System
     /// <summary>
     /// Represents the information in the fields type table.
     /// </summary>
-    /// <remarks>
-    /// The layout of this struct must match exactly what the compiler
-    /// outputs. Do not reorder fields in this struct.
-    /// </remarks>
+    [Compiler.FieldInfoStruct]
     [System.Runtime.InteropServices.StructLayout(System.Runtime.InteropServices.LayoutKind.Sequential, Pack = 1)]
     public unsafe struct FieldInfo
     {

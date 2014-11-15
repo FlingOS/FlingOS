@@ -65,8 +65,10 @@
     <Compile Include="AssemblyManager.cs" />
     <Compile Include="Attributes\ArrayConstructorMethodAttribute.cs" />
     <Compile Include="Attributes\DecrementRefCountMethodAttribute.cs" />
+    <Compile Include="Attributes\FieldInfoStructAttribute.cs" />
     <Compile Include="Attributes\StringClassAttribute.cs" />
     <Compile Include="Attributes\ArrayClassAttribute.cs" />
+    <Compile Include="Attributes\MethodInfoStructAttribute.cs" />
     <Compile Include="Attributes\TypeClassAttribute.cs" />
     <Compile Include="Attributes\IncrementRefCountMethodAttribute.cs" />
     <Compile Include="Attributes\HaltMethodAttribute.cs" />
