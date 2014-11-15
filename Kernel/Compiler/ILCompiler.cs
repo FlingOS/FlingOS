@@ -499,7 +499,7 @@ namespace Kernel.Compiler
                     process.BeginErrorReadLine();
                     process.BeginOutputReadLine();
                 }
-                process.WaitForExit(15 * 60 * 1000); // wait 15 minutes max. for process to exit
+                process.WaitForExit(30 * 60 * 1000); // wait 30 minutes max. for process to exit
                 if (process.ExitCode != 0)
                 {
                     if (!process.HasExited)

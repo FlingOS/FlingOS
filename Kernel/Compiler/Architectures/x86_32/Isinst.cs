@@ -110,24 +110,7 @@ namespace Kernel.Compiler.Architectures.x86_32
             result.AppendLine(Label_False2 + ":");
 
             //      3.2.1. Move to base type
-            int baseTypeOffset = 0;
-            #region Offset calculation
-            {
-                DB_Type typeDBType = DebugDatabase.GetType(aScannerState.GetTypeID(aScannerState.TypeClass));
-
-                //Get the child links of the type (i.e. the fields of the type)
-                List<DB_ComplexTypeLink> allChildLinks = typeDBType.ChildTypes.OrderBy(x => x.ParentIndex).ToList();
-                //Get the DB type information for the field we want to load
-                DB_ComplexTypeLink theTypeLink = (from links in typeDBType.ChildTypes
-                                                  where links.FieldId == "TheBaseType"
-                                                  select links).First();
-                //Get all the fields that come before the field we want to load
-                //This is so we can calculate the offset (in memory, in bytes) from the start of the object
-                allChildLinks = allChildLinks.Where(x => x.ParentIndex < theTypeLink.ParentIndex).ToList();
-                //Calculate the offset
-                baseTypeOffset = allChildLinks.Sum(x => x.ChildType.IsValueType ? x.ChildType.BytesSize : x.ChildType.StackBytesSize);
-            }
-            #endregion
+            int baseTypeOffset = aScannerState.GetTypeFieldOffset("TheBaseType");
             result.AppendLine(string.Format("mov dword ebx, [ebx+{0}]", baseTypeOffset));
 
             //      3.2.2. Test if base type null:

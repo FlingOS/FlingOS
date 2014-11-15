@@ -48,23 +48,7 @@ namespace Kernel.Compiler.Architectures.x86_32
             aScannerState.CurrentStackFrame.Stack.Pop();
 
             DB_Type arrayDBType = DebugDatabase.GetType(aScannerState.GetTypeID(aScannerState.ArrayClass));
-            int lengthOffset = 0;
-            #region Offset calculation
-            {
-                //Get the child links of the type (i.e. the fields of the type)
-                List<DB_ComplexTypeLink> allChildLinks = arrayDBType.ChildTypes.OrderBy(x => x.ParentIndex).ToList();
-                //Get the DB type information for the field we want to load
-                DB_ComplexTypeLink theTypeLink = (from links in arrayDBType.ChildTypes
-                                                  where links.FieldId == "length"
-                                                  select links).First();
-                //Get all the fields that come before the field we want to load
-                //This is so we can calculate the offset (in memory, in bytes) from the start of the object
-                allChildLinks = allChildLinks.Where(x => x.ParentIndex < theTypeLink.ParentIndex).ToList();
-                //Calculate the offset
-                //We use StackBytesSize since fields that are reference types are only stored as a pointer
-                lengthOffset = allChildLinks.Sum(x => x.ChildType.IsValueType ? x.ChildType.BytesSize : x.ChildType.StackBytesSize);
-            }
-            #endregion
+            int lengthOffset = aScannerState.GetFieldOffset(arrayDBType, "length");
 
             // 1. Check array reference is not null
             //      1.1. Move array ref into eax

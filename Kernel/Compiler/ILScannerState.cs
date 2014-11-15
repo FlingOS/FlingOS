@@ -161,6 +161,26 @@ namespace Kernel.Compiler
             InitTypesTablesDataBlock();
         }
 
+        public int GetTypeFieldOffset(string FieldName)
+        {
+            DB_Type typeDBType = DebugDatabase.GetType(GetTypeID(TypeClass));
+            return GetFieldOffset(typeDBType, FieldName);
+        }
+        public int GetFieldOffset(DB_Type dbType, string FieldName)
+        {
+            //Get the child links of the type (i.e. the fields of the type)
+            List<DB_ComplexTypeLink> allChildLinks = dbType.ChildTypes.OrderBy(x => x.ParentIndex).ToList();
+            //Get the DB type information for the field we want to load
+            DB_ComplexTypeLink theTypeLink = (from links in dbType.ChildTypes
+                                              where links.FieldId == FieldName
+                                              select links).First();
+            //Get all the fields that come before the field we want to load
+            //This is so we can calculate the offset (in memory, in bytes) from the start of the object
+            allChildLinks = allChildLinks.Where(x => x.ParentIndex < theTypeLink.ParentIndex).ToList();
+            //Calculate the offset
+            return allChildLinks.Sum(x => x.ChildType.IsValueType ? x.ChildType.BytesSize : x.ChildType.StackBytesSize);
+        }
+
         private int currentMethodIDValue = 1;
         /// <summary>
         /// Gets the specified method's ID. If the method has not been scanned already, a new ID is created.

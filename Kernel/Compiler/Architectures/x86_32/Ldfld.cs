@@ -51,19 +51,7 @@ namespace Kernel.Compiler.Architectures.x86_32
             FieldInfo theField = aScannerState.CurrentILChunk.Method.Module.ResolveField(metadataToken);
             //Get the database type information about the object that contains the field
             DB_Type objDBType = DebugDatabase.GetType(aScannerState.GetTypeID(theField.DeclaringType));
-            
-            //Get the child links of the type (i.e. the fields of the type)
-            List<DB_ComplexTypeLink> allChildLinks = objDBType.ChildTypes.OrderBy(x => x.ParentIndex).ToList();
-            //Get the DB type information for the field we want to load
-            DB_ComplexTypeLink theTypeLink = (from links in objDBType.ChildTypes
-                                              where links.FieldId == theField.Name
-                                              select links).First();
-            //Get all the fields that come before the field we want to load
-            //This is so we can calculate the offset (in memory, in bytes) from the start of the object
-            allChildLinks = allChildLinks.Where(x => x.ParentIndex < theTypeLink.ParentIndex).ToList();
-            //Calculate the offset
-            //We use StackBytesSize since fields that are reference types are only stored as a pointer
-            int offset = allChildLinks.Sum(x => x.ChildType.IsValueType ? x.ChildType.BytesSize : x.ChildType.StackBytesSize);
+            int offset = aScannerState.GetFieldOffset(objDBType, theField.Name);
 
             //Is the value to load a floating pointer number?
             bool valueisFloat = Utils.IsFloat(theField.FieldType);

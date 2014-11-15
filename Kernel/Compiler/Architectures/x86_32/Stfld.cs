@@ -48,13 +48,8 @@ namespace Kernel.Compiler.Architectures.x86_32
             int metadataToken = Utils.ReadInt32(anILOpInfo.ValueBytes, 0);
             FieldInfo theField = aScannerState.CurrentILChunk.Method.Module.ResolveField(metadataToken);
             DB_Type objDBType = DebugDatabase.GetType(aScannerState.GetTypeID(theField.DeclaringType));
-            
-            List<DB_ComplexTypeLink> allChildLinks = objDBType.ChildTypes.OrderBy(x => x.ParentIndex).ToList();
-            DB_ComplexTypeLink theTypeLink = (from links in objDBType.ChildTypes
-                                              where links.FieldId == theField.Name
-                                              select links).First();
-            allChildLinks = allChildLinks.Where(x => x.ParentIndex < theTypeLink.ParentIndex).ToList();
-            int offset = allChildLinks.Sum(x => x.ChildType.IsValueType ? x.ChildType.BytesSize : x.ChildType.StackBytesSize);
+
+            int offset = aScannerState.GetFieldOffset(objDBType, theField.Name);
 
             int stackSize = Utils.GetNumBytesForType(theField.FieldType);
             int memSize = theField.FieldType.IsValueType ? Utils.GetSizeForType(theField.FieldType) : stackSize;

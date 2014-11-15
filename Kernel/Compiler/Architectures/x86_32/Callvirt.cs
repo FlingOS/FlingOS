@@ -209,43 +209,11 @@ namespace Kernel.Compiler.Architectures.x86_32
                     result.AppendLine(string.Format("mov dword eax, [esp+{0}]", bytesForAllParams));
 
                     //Get type ref
-                    int typeOffset = 0;
-                    #region Offset calculation
-                    {
-                        //Get the child links of the type (i.e. the fields of the type)
-                        List<DB_ComplexTypeLink> allChildLinks = declaringDBType.ChildTypes.OrderBy(x => x.ParentIndex).ToList();
-                        //Get the DB type information for the field we want to load
-                        DB_ComplexTypeLink theTypeLink = (from links in declaringDBType.ChildTypes
-                                                          where links.FieldId == "_Type"
-                                                          select links).First();
-                        //Get all the fields that come before the field we want to load
-                        //This is so we can calculate the offset (in memory, in bytes) from the start of the object
-                        allChildLinks = allChildLinks.Where(x => x.ParentIndex < theTypeLink.ParentIndex).ToList();
-                        //Calculate the offset
-                        typeOffset = allChildLinks.Sum(x => x.ChildType.IsValueType ? x.ChildType.BytesSize : x.ChildType.StackBytesSize);
-                    }
-                    #endregion
+                    int typeOffset = aScannerState.GetFieldOffset(declaringDBType, "_Type");
                     result.AppendLine(string.Format("mov eax, [eax+{0}]", typeOffset));
 
                     //Get method table ref
-                    int methodTablePtrOffset = 0;
-                    #region Offset calculation
-                    {
-                        DB_Type typeDBType = DebugDatabase.GetType(aScannerState.GetTypeID(aScannerState.TypeClass));
-                        //Get the child links of the type (i.e. the fields of the type)
-                        List<DB_ComplexTypeLink> allChildLinks = typeDBType.ChildTypes.OrderBy(x => x.ParentIndex).ToList();
-                        //Get the DB type information for the field we want to load
-                        DB_ComplexTypeLink theTypeLink = (from links in typeDBType.ChildTypes
-                                                          where links.FieldId == "MethodTablePtr"
-                                                          select links).First();
-                        //Get all the fields that come before the field we want to load
-                        //This is so we can calculate the offset (in memory, in bytes) from the start of the object
-                        allChildLinks = allChildLinks.Where(x => x.ParentIndex < theTypeLink.ParentIndex).ToList();
-                        //Calculate the offset
-                        //We use StackBytesSize since fields that are reference types are only stored as a pointer
-                        methodTablePtrOffset = allChildLinks.Sum(x => x.ChildType.IsValueType ? x.ChildType.BytesSize : x.ChildType.StackBytesSize);
-                    }
-                    #endregion
+                    int methodTablePtrOffset = aScannerState.GetTypeFieldOffset("MethodTablePtr");
                     result.AppendLine(string.Format("mov eax, [eax+{0}]", methodTablePtrOffset));
 
                     //Loop through entries

@@ -148,23 +148,7 @@ namespace Kernel.Compiler.Architectures.x86_32
             //else
             //{
             //    //Should be the same for all classes since they are (indirectly) derived from ObjectWithType
-            //    int typeOffset = 0;
-            //    #region Offset calculation
-            //    {
-            //        //Get the child links of the type (i.e. the fields of the type)
-            //        List<DB_ComplexTypeLink> allChildLinks = arrayDBType.ChildTypes.OrderBy(x => x.ParentIndex).ToList();
-            //        //Get the DB type information for the field we want to load
-            //        DB_ComplexTypeLink theTypeLink = (from links in arrayDBType.ChildTypes
-            //                                          where links.FieldId == "_Type"
-            //                                          select links).First();
-            //        //Get all the fields that come before the field we want to load
-            //        //This is so we can calculate the offset (in memory, in bytes) from the start of the object
-            //        allChildLinks = allChildLinks.Where(x => x.ParentIndex < theTypeLink.ParentIndex).ToList();
-            //        //Calculate the offset
-            //        //We use StackBytesSize since fields that are reference types are only stored as a pointer
-            //        typeOffset = allChildLinks.Sum(x => x.ChildType.StackBytesSize);
-            //    }
-            //    #endregion
+            //    int typeOffset = aScannerState.GetFieldOffset(arrayDBType, "_Type");
             
             //    //      - Move value (which is a ref) into eax
             //    result.AppendLine("mov eax, [esp]");
@@ -175,23 +159,7 @@ namespace Kernel.Compiler.Architectures.x86_32
             ////              - Move array ref into ebx
             //result.AppendLine(string.Format("mov ebx, [esp+{0}]", sizeToPop == 8 ? 12 : 8));
             ////              - Move elemType ref ([ebx+offset]) into ebx
-            int elemTypeOffset = 0;
-            #region Offset calculation
-            {
-                //Get the child links of the type (i.e. the fields of the type)
-                List<DB_ComplexTypeLink> allChildLinks = arrayDBType.ChildTypes.OrderBy(x => x.ParentIndex).ToList();
-                //Get the DB type information for the field we want to load
-                DB_ComplexTypeLink theTypeLink = (from links in arrayDBType.ChildTypes
-                                                  where links.FieldId == "elemType"
-                                                  select links).First();
-                //Get all the fields that come before the field we want to load
-                //This is so we can calculate the offset (in memory, in bytes) from the start of the object
-                allChildLinks = allChildLinks.Where(x => x.ParentIndex < theTypeLink.ParentIndex).ToList();
-                //Calculate the offset
-                //We use StackBytesSize since fields that are reference types are only stored as a pointer
-                elemTypeOffset = allChildLinks.Sum(x => x.ChildType.IsValueType ? x.ChildType.BytesSize : x.ChildType.StackBytesSize);
-            }
-            #endregion
+            int elemTypeOffset = aScannerState.GetFieldOffset(arrayDBType, "elemType");
             //result.AppendLine(string.Format("mov ebx, [ebx+{0}]", elemTypeOffset));
             ////      2.3. Compare eax to ebx
             //result.AppendLine("cmp eax, ebx");
@@ -217,23 +185,7 @@ namespace Kernel.Compiler.Architectures.x86_32
             result.AppendLine(string.Format("mov eax, [esp+{0}]", sizeToPop == 8 ? 8 : 4));
             //      3.2. Move array length into ecx
             //              - Calculate the offset of the field from the start of the array object
-            int lengthOffset = 0;
-            #region Offset calculation
-            {
-                //Get the child links of the type (i.e. the fields of the type)
-                List<DB_ComplexTypeLink> allChildLinks = arrayDBType.ChildTypes.OrderBy(x => x.ParentIndex).ToList();
-                //Get the DB type information for the field we want to load
-                DB_ComplexTypeLink theTypeLink = (from links in arrayDBType.ChildTypes
-                                                  where links.FieldId == "length"
-                                                  select links).First();
-                //Get all the fields that come before the field we want to load
-                //This is so we can calculate the offset (in memory, in bytes) from the start of the object
-                allChildLinks = allChildLinks.Where(x => x.ParentIndex < theTypeLink.ParentIndex).ToList();
-                //Calculate the offset
-                //We use StackBytesSize since fields that are reference types are only stored as a pointer
-                lengthOffset = allChildLinks.Sum(x => x.ChildType.IsValueType ? x.ChildType.BytesSize : x.ChildType.StackBytesSize);
-            }
-            #endregion
+            int lengthOffset = aScannerState.GetFieldOffset(arrayDBType, "length");
             //              - Move array ref into ebx
             result.AppendLine(string.Format("mov ebx, [esp+{0}]", sizeToPop == 8 ? 12 : 8));
             //              - Move length value ([ebx+offset]) into ebx
@@ -288,24 +240,7 @@ namespace Kernel.Compiler.Architectures.x86_32
             //      4.4. Push eax
             result.AppendLine("push eax");
             //      4.5. Move IsValueType (from element ref type) into eax
-            int isValueTypeOffset = 0;
-            #region Offset calculation
-            {
-                DB_Type typeDBType = DebugDatabase.GetType(aScannerState.GetTypeID(aScannerState.TypeClass));
-                //Get the child links of the type (i.e. the fields of the type)
-                List<DB_ComplexTypeLink> allChildLinks = typeDBType.ChildTypes.OrderBy(x => x.ParentIndex).ToList();
-                //Get the DB type information for the field we want to load
-                DB_ComplexTypeLink theTypeLink = (from links in typeDBType.ChildTypes
-                                                  where links.FieldId == "IsValueType"
-                                                  select links).First();
-                //Get all the fields that come before the field we want to load
-                //This is so we can calculate the offset (in memory, in bytes) from the start of the object
-                allChildLinks = allChildLinks.Where(x => x.ParentIndex < theTypeLink.ParentIndex).ToList();
-                //Calculate the offset
-                //We use StackBytesSize since fields that are reference types are only stored as a pointer
-                isValueTypeOffset = allChildLinks.Sum(x => x.ChildType.IsValueType ? x.ChildType.BytesSize : x.ChildType.StackBytesSize);
-            }
-            #endregion
+            int isValueTypeOffset = aScannerState.GetTypeFieldOffset("IsValueType");
             result.AppendLine(string.Format("mov byte al, [eax+{0}]", isValueTypeOffset));
             // Zero-out the rest of eax
             result.AppendLine("and eax, 1");
@@ -315,24 +250,7 @@ namespace Kernel.Compiler.Architectures.x86_32
             //      4.7. Pop eax
             result.AppendLine("pop eax");
             //      4.8. Move Size (from element type ref) into eax
-            int sizeOffset = 0;
-            #region Offset calculation
-            {
-                DB_Type typeDBType = DebugDatabase.GetType(aScannerState.GetTypeID(aScannerState.TypeClass));
-                //Get the child links of the type (i.e. the fields of the type)
-                List<DB_ComplexTypeLink> allChildLinks = typeDBType.ChildTypes.OrderBy(x => x.ParentIndex).ToList();
-                //Get the DB type information for the field we want to load
-                DB_ComplexTypeLink theTypeLink = (from links in typeDBType.ChildTypes
-                                                  where links.FieldId == "Size"
-                                                  select links).First();
-                //Get all the fields that come before the field we want to load
-                //This is so we can calculate the offset (in memory, in bytes) from the start of the object
-                allChildLinks = allChildLinks.Where(x => x.ParentIndex < theTypeLink.ParentIndex).ToList();
-                //Calculate the offset
-                //We use StackBytesSize since fields that are reference types are only stored as a pointer
-                sizeOffset = allChildLinks.Sum(x => x.ChildType.IsValueType ? x.ChildType.BytesSize : x.ChildType.StackBytesSize);
-            }
-            #endregion
+            int sizeOffset = aScannerState.GetTypeFieldOffset("Size");
             result.AppendLine(string.Format("mov eax, [eax+{0}]", sizeOffset));
             //      4.9. Skip over 4.9. and 4.10.
             result.AppendLine("jmp " + ContinueExecutionLabel4_2);
@@ -340,24 +258,7 @@ namespace Kernel.Compiler.Architectures.x86_32
             result.AppendLine(ContinueExecutionLabel4_1 + ":");
             result.AppendLine("pop eax");
             //      4.11. Move StackSize (from element type ref) into eax
-            int stackSizeOffset = 0;
-            #region Offset calculation
-            {
-                DB_Type typeDBType = DebugDatabase.GetType(aScannerState.GetTypeID(aScannerState.TypeClass));
-                //Get the child links of the type (i.e. the fields of the type)
-                List<DB_ComplexTypeLink> allChildLinks = typeDBType.ChildTypes.OrderBy(x => x.ParentIndex).ToList();
-                //Get the DB type information for the field we want to load
-                DB_ComplexTypeLink theTypeLink = (from links in typeDBType.ChildTypes
-                                                  where links.FieldId == "StackSize"
-                                                  select links).First();
-                //Get all the fields that come before the field we want to load
-                //This is so we can calculate the offset (in memory, in bytes) from the start of the object
-                allChildLinks = allChildLinks.Where(x => x.ParentIndex < theTypeLink.ParentIndex).ToList();
-                //Calculate the offset
-                //We use StackBytesSize since fields that are reference types are only stored as a pointer
-                stackSizeOffset = allChildLinks.Sum(x => x.ChildType.IsValueType ? x.ChildType.BytesSize : x.ChildType.StackBytesSize);
-            }
-            #endregion
+            int stackSizeOffset = aScannerState.GetTypeFieldOffset("StackSize");
             result.AppendLine(string.Format("mov eax, [eax+{0}]", stackSizeOffset));
             //      4.12. Mulitply eax by ebx (index by element size)
             result.AppendLine(ContinueExecutionLabel4_2 + ":");
