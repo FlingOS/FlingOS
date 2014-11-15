@@ -1,5 +1,19 @@
 ﻿; BEGIN - Create GDT
 	; See MultibootSignature.x86_32.asm for memory allocations
+	
+	; Setup the primary TSS Selector to point to the TSS
+	; Only need to enter the base address. Everything else is setup
+	;	in the allocations
+	mov dword eax, _NATIVE_GDT_Contents+24
+	mov dword ebx, TSS_POINTER
+	mov byte [eax+2], bl
+	shr ebx, 8
+	mov byte [eax+3], bl
+	shr ebx, 8
+	mov byte [eax+4], bl
+	shr ebx, 8
+	mov byte [eax+7], bl
+
 	; Tell CPU about GDT
 	mov dword [_NATIVE_GDT_Pointer + 2], _NATIVE_GDT_Contents
 	mov dword eax, _NATIVE_GDT_Pointer
