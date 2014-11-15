@@ -39,19 +39,19 @@ namespace Kernel.FOS_System
         /// <summary>
         /// The size of the block of memory allocated.
         /// </summary>
-        public System.UInt32 size;
+        public UInt32 size;
         /// <summary>
         /// The amount of memory in the block that has been used.
         /// </summary>
-        public System.UInt32 used;
+        public UInt32 used;
         /// <summary>
         /// The size of the chunks to use when allocating memory.
         /// </summary>
-        public System.UInt32 bsize;
+        public UInt32 bsize;
         /// <summary>
         /// Used for optimisation.
         /// </summary>
-        public System.UInt32 lfb;
+        public UInt32 lfb;
     }
 
     /// <summary>
@@ -80,10 +80,10 @@ namespace Kernel.FOS_System
         /// Calculates the total amount of free memory in the heap.
         /// </summary>
         /// <returns>The total amount of free memory in the heap.</returns>
-        public static System.UInt32 GetTotalFreeMem()
+        public static UInt32 GetTotalFreeMem()
         {
             HeapBlock* cBlock = fblock;
-            System.UInt32 result = 0;
+            UInt32 result = 0;
             while (cBlock != null)
             {
                 result += GetFreeMem(cBlock);
@@ -96,7 +96,7 @@ namespace Kernel.FOS_System
         /// </summary>
         /// <param name="aBlock">The block to calculate free mem of.</param>
         /// <returns>The amount of free memory in bytes.</returns>
-        public static System.UInt32 GetFreeMem(HeapBlock* aBlock)
+        public static UInt32 GetFreeMem(HeapBlock* aBlock)
         {
             return aBlock->size - (aBlock->used * aBlock->bsize);
         }
@@ -111,17 +111,17 @@ namespace Kernel.FOS_System
         /// </summary>
         /// <returns>The pointer to the block of memory.</returns>
         [Compiler.PluggedMethod(ASMFilePath=@"ASM\Heap\GetFixedHeapPtr")]
-        public static System.UInt32* GetFixedHeapPtr()
+        public static UInt32* GetFixedHeapPtr()
         {
             //Stub for use by testing framework
-            return (System.UInt32*)System.Runtime.InteropServices.Marshal.AllocHGlobal((int)GetFixedHeapSize());
+            return (UInt32*)System.Runtime.InteropServices.Marshal.AllocHGlobal((int)GetFixedHeapSize());
         }
         /// <summary>
         /// Gets the size of the block of memory to allocate to the kernel's fixed heap.
         /// </summary>
         /// <returns>The size of the block of memory.</returns>
         [Compiler.PluggedMethod(ASMFilePath = null)]
-        public static System.UInt32 GetFixedHeapSize()
+        public static UInt32 GetFixedHeapSize()
         {
             //Stub for use by testing framework
             //Exact 0.5MB
@@ -162,15 +162,15 @@ namespace Kernel.FOS_System
         /// <returns>Returns 1 if the block was added successfully.</returns>
         [Compiler.NoDebug]
         [Compiler.NoGC]
-        public static int AddBlock(System.UInt32* addr, System.UInt32 size, System.UInt32 bsize)
+        public static int AddBlock(UInt32* addr, UInt32 size, UInt32 bsize)
         {
             HeapBlock* b;
-            System.UInt32 bcnt;
-            System.UInt32 x;
+            UInt32 bcnt;
+            UInt32 x;
             byte* bm;
 
             b = (HeapBlock*)addr;
-            b->size = size - (System.UInt32)sizeof(HeapBlock);
+            b->size = size - (UInt32)sizeof(HeapBlock);
             b->bsize = bsize;
 
             b->next = fblock;
@@ -222,7 +222,7 @@ namespace Kernel.FOS_System
         /// contiguous memory is available.</returns>
         [Compiler.NoDebug]
         [Compiler.NoGC]
-        public static void* Alloc(System.UInt32 size)
+        public static void* Alloc(UInt32 size)
         {
             return Alloc(size, 1);
         }
@@ -234,7 +234,7 @@ namespace Kernel.FOS_System
         /// contiguous memory is available.</returns>
         [Compiler.NoDebug]
         [Compiler.NoGC]
-        public static void* AllocZeroed(System.UInt32 size)
+        public static void* AllocZeroed(UInt32 size)
         {
             return AllocZeroed(size, 1);
         }
@@ -247,7 +247,7 @@ namespace Kernel.FOS_System
         /// contiguous memory is available.</returns>
         [Compiler.NoDebug]
         [Compiler.NoGC]
-        public static void* AllocZeroed(System.UInt32 size, System.UInt32 boundary)
+        public static void* AllocZeroed(UInt32 size, UInt32 boundary)
         {
             return Utilities.MemoryUtils.ZeroMem(Alloc(size, boundary), size);
         }
@@ -260,7 +260,7 @@ namespace Kernel.FOS_System
         /// contiguous memory is available.</returns>
         [Compiler.NoDebug]
         [Compiler.NoGC]
-        public static void* Alloc(System.UInt32 size, System.UInt32 boundary)
+        public static void* Alloc(UInt32 size, UInt32 boundary)
         {
 #if HEAP_TRACE
             BasicConsole.SetTextColour(BasicConsole.warning_colour);
@@ -270,9 +270,9 @@ namespace Kernel.FOS_System
 
             HeapBlock* b;
             byte* bm;
-            System.UInt32 bcnt;
-            System.UInt32 x, y, z;
-            System.UInt32 bneed;
+            UInt32 bcnt;
+            UInt32 x, y, z;
+            UInt32 bneed;
             byte nid;
 
             if(boundary > 1)
@@ -281,7 +281,7 @@ namespace Kernel.FOS_System
             }
 
             /* iterate blocks */
-            for (b = fblock; (System.UInt32)b != 0; b = b->next)
+            for (b = fblock; (UInt32)b != 0; b = b->next)
             {
                 /* check if block has enough room */
                 if (b->size - (b->used * b->bsize) >= size)
@@ -322,10 +322,10 @@ namespace Kernel.FOS_System
                                 /* count used blocks NOT bytes */
                                 b->used += y;
 
-                                void* result = (void*)(x * b->bsize + (System.UInt32*)&b[1]);
+                                void* result = (void*)(x * b->bsize + (UInt32*)&b[1]);
                                 if (boundary > 1)
                                 {
-                                    result = (void*)((((System.UInt32)result) + (boundary - 1)) & ~(boundary - 1));
+                                    result = (void*)((((UInt32)result) + (boundary - 1)) & ~(boundary - 1));
                                 }
                                 return result;
                             }
@@ -355,20 +355,20 @@ namespace Kernel.FOS_System
         public static void Free(void* ptr)
         {
             HeapBlock* b;
-            System.UInt32* ptroff;
-            System.UInt32 bi, x;
+            UInt32* ptroff;
+            UInt32 bi, x;
             byte* bm;
             byte id;
-            System.UInt32 max;
+            UInt32 max;
 
-            for (b = fblock; (System.UInt32)b != 0; b = b->next)
+            for (b = fblock; (UInt32)b != 0; b = b->next)
             {
-                if ((System.UInt32*)ptr > (System.UInt32*)b && (System.UInt32*)ptr < (System.UInt32*)b + b->size)
+                if ((UInt32*)ptr > (UInt32*)b && (UInt32*)ptr < (UInt32*)b + b->size)
                 {
                     /* found block */
-                    ptroff = (System.UInt32*)((System.UInt32*)ptr - (System.UInt32*)&b[1]);  /* get offset to get block */
+                    ptroff = (UInt32*)((UInt32*)ptr - (UInt32*)&b[1]);  /* get offset to get block */
                     /* block offset in BM */
-                    bi = (System.UInt32)ptroff / b->bsize;
+                    bi = (UInt32)ptroff / b->bsize;
                     /* .. */
                     bm = (byte*)&b[1];
                     /* clear allocation */

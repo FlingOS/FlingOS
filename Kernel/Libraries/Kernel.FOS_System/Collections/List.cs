@@ -319,7 +319,7 @@ namespace Kernel.FOS_System.Collections
         /// <summary>
         /// The underlying object array.
         /// </summary>
-        protected System.UInt32[] _array;
+        protected UInt32[] _array;
         /// <summary>
         /// The "currentIndex" is the index to insert the next new item.
         /// It is the index immediately after the last-set item in the array.
@@ -345,7 +345,7 @@ namespace Kernel.FOS_System.Collections
         [Compiler.NoDebug]
         public UInt32List()
         {
-            _array = new System.UInt32[5];
+            _array = new UInt32[5];
         }
         /// <summary>
         /// Creates a new list with specified initial capacity. Use this to optimise memory usage.
@@ -354,7 +354,7 @@ namespace Kernel.FOS_System.Collections
         [Compiler.NoDebug]
         public UInt32List(int capacity)
         {
-            _array = new System.UInt32[capacity];
+            _array = new UInt32[capacity];
         }
 
         /// <summary>
@@ -362,7 +362,7 @@ namespace Kernel.FOS_System.Collections
         /// </summary>
         /// <param name="obj">The UInt32 to add.</param>
         [Compiler.NoDebug]
-        public void Add(System.UInt32 obj)
+        public void Add(UInt32 obj)
         {
             if (currIndex >= _array.Length)
             {
@@ -375,7 +375,7 @@ namespace Kernel.FOS_System.Collections
         /// </summary>
         /// <param name="obj">The UInt32 to remove.</param>
         [Compiler.NoDebug]
-        public void Remove(System.UInt32 obj)
+        public void Remove(UInt32 obj)
         {
             bool setObjectToNull = false;
             int origCurrIndex = currIndex;
@@ -435,7 +435,7 @@ namespace Kernel.FOS_System.Collections
         [Compiler.NoDebug]
         private void ExpandCapacity(int amount)
         {
-            System.UInt32[] newArray = new System.UInt32[_array.Length + amount];
+            UInt32[] newArray = new UInt32[_array.Length + amount];
             for (int i = 0; i < _array.Length; i++)
             {
                 newArray[i] = _array[i];
@@ -451,7 +451,7 @@ namespace Kernel.FOS_System.Collections
         /// <exception cref="Kernel.FOS_System.Exceptions.IndexOutOfRangeException">
         /// Throws IndexOutOfRangeException if "index" is &lt; 0 or greater than the length of the list.
         /// </exception>
-        public System.UInt32 this[int index]
+        public UInt32 this[int index]
         {
             [Compiler.NoDebug]
             get

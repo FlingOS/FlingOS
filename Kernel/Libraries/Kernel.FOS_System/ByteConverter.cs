@@ -52,7 +52,7 @@ namespace Kernel.FOS_System
         public static UInt32 ToUInt32(byte[] n, UInt32 aPos)
         {
             return ((UInt32)n[aPos + 3] << 24 | (UInt32)n[aPos + 2] << 16 |
-                    (UInt32)n[aPos + 1] << 8  | (UInt32)n[aPos]);
+                    (UInt32)n[aPos + 1] << 8 | (UInt32)n[aPos]);
         }
         /// <summary>
         /// Converts 8 bytes from the specified byte array at the specified index into a UInt64.

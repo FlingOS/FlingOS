@@ -8,7 +8,7 @@ namespace Kernel.FOS_System.Collections
 {
     /// <summary>
     /// Represents a weakly typed stack of objects (which must be derived from FOS_System.Object) that can be accessed by 
-    /// pushing and popping only. Provides methods to manipulate stacks.
+    /// pushing and popping. Provides methods to manipulate stacks.
     /// </summary>
     /// <remarks>
     /// The job of knowing which type of object is contained within the list is left to the developer. This is a 
@@ -66,6 +66,15 @@ namespace Kernel.FOS_System.Collections
             internalList.RemoveAt(lastIndex);
             return result;
         }
+
+        /// <summary>
+        /// Removes the specified object from the stack.
+        /// </summary>
+        /// <param name="obj">The object to remove.</param>
+        public void Remove(FOS_System.Object obj)
+        {
+            internalList.Remove(obj);
+        }
     }
 
     //These stack class implementations work exactly the same as the 
@@ -75,7 +84,7 @@ namespace Kernel.FOS_System.Collections
 
     /// <summary>
     /// Represents a strongly typed stack of UInt32s that can be accessed by 
-    /// pushing and popping only. Provides methods to manipulate stacks.
+    /// pushing and popping. Provides methods to manipulate stacks.
     /// </summary>
     public class UInt32Stack : FOS_System.Object
     {
@@ -108,7 +117,7 @@ namespace Kernel.FOS_System.Collections
         /// Pushes the specified object onto the stack.
         /// </summary>
         /// <param name="obj">The object to push.</param>
-        public void Push(System.UInt32 obj)
+        public void Push(UInt32 obj)
         {
             internalList.Add(obj);
         }
@@ -116,18 +125,27 @@ namespace Kernel.FOS_System.Collections
         /// Pops an item off the stack. If the stack is empty, it returns UInt32.MaxValue.
         /// </summary>
         /// <returns>The popped item or UInt32.MaxValue if the stack is empty.</returns>
-        public System.UInt32 Pop()
+        public UInt32 Pop()
         {
             int lastIndex = internalList.Count - 1;
 
             if (lastIndex < 0)
             {
-                return FOS_System.UInt32.MaxValue;
+                return FOS_System.Stubs.UInt32.MaxValue;
             }
 
-            System.UInt32 result = internalList[lastIndex];
+            UInt32 result = internalList[lastIndex];
             internalList.RemoveAt(lastIndex);
             return result;
+        }
+
+        /// <summary>
+        /// Removes the specified uint from the stack.
+        /// </summary>
+        /// <param name="obj">The object to remove.</param>
+        public void Remove(UInt32 obj)
+        {
+            internalList.Remove(obj);
         }
     }
 }
