@@ -119,6 +119,15 @@ namespace Kernel.Hardware.Interrupts
         /// </summary>
         private static InterruptHandlers[] Handlers = new InterruptHandlers[256];
 
+        [Compiler.PluggedMethod(ASMFilePath=null)]
+        public static void EnableInterrupts()
+        {
+        }
+        [Compiler.PluggedMethod(ASMFilePath = null)]
+        public static void DisableInterrupts()
+        {
+        }
+
         /// <summary>
         /// Enables the specified IRQ number (0-15)
         /// </summary>

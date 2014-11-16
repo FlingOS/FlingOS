@@ -20,6 +20,8 @@ using System;
 
 namespace Kernel.Hardware.Devices
 {
+    public delegate void TimerHandler(FOS_System.Object state);
+
     /// <summary>
     /// Represents a timer device. Also contains static methods for handling the default timer.
     /// </summary>
@@ -60,6 +62,9 @@ namespace Kernel.Hardware.Devices
         /// </summary>
         /// <param name="ns">The number of nanoseconds to block.</param>
         public abstract void WaitNS(long ns);
+
+        public abstract int RegisterHandler(TimerHandler handler, long TimeoutNS, bool Recurring, FOS_System.Object state);
+        public abstract void UnregisterHandler(int handlerId);
 
         /// <summary>
         /// The default timer device for the core kernel.

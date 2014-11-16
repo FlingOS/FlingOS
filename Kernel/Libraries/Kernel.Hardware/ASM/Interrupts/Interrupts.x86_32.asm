@@ -1,4 +1,14 @@
-﻿method_Kernel_Hardware_Interrupts_InterruptDescriptor__RETEND_Kernel_Hardware_Interrupts_Interrupts_DECLEND_GetIDTPtr_NAMEEND___:
+﻿method_System_Void_RETEND_Kernel_Hardware_Interrupts_Interrupts_DECLEND_EnableInterrupts_NAMEEND___:
+sti
+nop
+ret
+
+method_System_Void_RETEND_Kernel_Hardware_Interrupts_Interrupts_DECLEND_DisableInterrupts_NAMEEND___:
+cli
+nop
+ret
+
+method_Kernel_Hardware_Interrupts_InterruptDescriptor__RETEND_Kernel_Hardware_Interrupts_Interrupts_DECLEND_GetIDTPtr_NAMEEND___:
 
 push dword ebp
 mov dword ebp, esp
@@ -8,6 +18,7 @@ mov dword [ebp+8], _NATIVE_IDT_Contents
 pop dword ebp
 
 ret
+
 
 method_System_Void_RETEND_Kernel_Hardware_Interrupts_Interrupts_DECLEND_EndIRQ_NAMEEND__System_Boolean_:
 

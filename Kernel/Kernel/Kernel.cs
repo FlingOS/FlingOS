@@ -76,22 +76,34 @@ namespace Kernel
                 Hardware.Devices.Timer.InitDefault();
                 Hardware.Devices.Keyboard.InitDefault();
 
-                Core.Processes.Process ManagedMainProcess = 
+                BasicConsole.WriteLine("Creating ManagedMain process...");
+                Core.Processes.Process ManagedMainProcess =
                     Core.Processes.ProcessManager.CreateProcess(GetManagedMainMethodPtr(), "Managed Main");
+                BasicConsole.WriteLine("Creating Sample process...");
                 Core.Processes.Process SampleProcess =
                     Core.Processes.ProcessManager.LoadSampleProcess();
 
+                BasicConsole.WriteLine("Modifying ManagedMain Main thread...");
                 Core.Processes.Thread ManagedMain_MainThread = ((Core.Processes.Thread)ManagedMainProcess.Threads[0]);
-                Heap.Free(ManagedMain_MainThread.ThreadStackTop);
-                ManagedMain_MainThread.ThreadStackTop = GetKernelStackPtr();
-                ManagedMain_MainThread.ESP = (uint)ManagedMain_MainThread.ThreadStackTop;
+                BasicConsole.WriteLine(" > Freeing stack...");
+                Heap.Free(ManagedMain_MainThread.State->ThreadStackTop - 4092);
+                BasicConsole.WriteLine(" > Setting preallocated stack...");
+                ManagedMain_MainThread.State->ThreadStackTop = GetKernelStackPtr();
+                BasicConsole.WriteLine(" > Setting ESP");
+                ManagedMain_MainThread.State->ESP = (uint)ManagedMain_MainThread.State->ThreadStackTop;
 
+                BasicConsole.WriteLine("Registering ManagedMain process...");
                 Core.Processes.ProcessManager.RegisterProcess(ManagedMainProcess);
+                BasicConsole.WriteLine("Registering sample process...");
                 Core.Processes.ProcessManager.RegisterProcess(SampleProcess);
 
+                BasicConsole.WriteLine("Initialising scheduler...");
                 Core.Processes.Scheduler.Init();
 
-                ManagedMain();
+                while (true)
+                {
+                    ;
+                }
             }
             catch
             {
@@ -185,6 +197,11 @@ namespace Kernel
         [Compiler.NoDebug]
         private static unsafe void ManagedMain()
         {
+            BasicConsole.WriteLine(" Managed Main! ");
+            BasicConsole.WriteLine(" > Enabling interrupts...");
+            Hardware.Interrupts.Interrupts.EnableInterrupts();
+
+            BasicConsole.WriteLine(" > Executing normally...");
             try
             {
                 Core.Shell.InitDefault();

@@ -59,6 +59,7 @@
     <Compile Include="Consoles\AdvancedConsole.cs" />
     <Compile Include="Processes\ProcessManager.cs" />
     <Compile Include="Processes\SampleProcess.cs" />
+    <Compile Include="Processes\Scheduler.cs" />
     <Compile Include="Processes\Thread.cs" />
     <Compile Include="Processes\Process.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -93,6 +94,9 @@
     </None>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="ASM\Processes\Scheduler.x86_32.asm">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="ASM\Processes\Process.x86_32.asm">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>

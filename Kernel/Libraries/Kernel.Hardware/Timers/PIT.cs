@@ -291,6 +291,10 @@ namespace Kernel.Hardware.Timers
             }
         }
 
+        public override int RegisterHandler(Devices.TimerHandler handler, long TimeoutNS, bool Recurring, FOS_System.Object state)
+        {
+            return RegisterHandler(new PITHandler(handler, state, TimeoutNS, Recurring));
+        }
         /// <summary>
         /// Registers the specified handler for the timer 0 interrupt.
         /// </summary>
@@ -312,7 +316,7 @@ namespace Kernel.Hardware.Timers
         /// Unregisters the handler with the specified id.
         /// </summary>
         /// <param name="handlerId">The Id of the handler to unregister.</param>
-        public void UnregisterHandler(int handlerId)
+        public override void UnregisterHandler(int handlerId)
         {
             for (int i = 0; i < ActiveHandlers.Count; i++)
             {
@@ -457,14 +461,9 @@ namespace Kernel.Hardware.Timers
         }
 
         /// <summary>
-        /// Represents a method for a handler to call. The method to call must be static.
-        /// </summary>
-        /// <param name="state">The state object.</param>
-        public delegate void OnTriggerDelegate(FOS_System.Object state);
-        /// <summary>
         /// The method to call when the handler timeout expires.
         /// </summary>
-        public OnTriggerDelegate HandleTrigger;
+        public Devices.TimerHandler HandleTrigger;
 
         /// <summary>
         /// Initialises a new PIT handler.
@@ -473,7 +472,7 @@ namespace Kernel.Hardware.Timers
         /// <param name="aState">The state object to pass to the handler.</param>
         /// <param name="NanosecondsTimeout">The timeout, in nanoseconds.</param>
         /// <param name="Recurring">Whether the handler should repeat or not.</param>
-        public PITHandler(OnTriggerDelegate HandleOnTrigger, FOS_System.Object aState, long NanosecondsTimeout, bool Recurring)
+        public PITHandler(Devices.TimerHandler HandleOnTrigger, FOS_System.Object aState, long NanosecondsTimeout, bool Recurring)
         {
             this.HandleTrigger = HandleOnTrigger;
             this.NanosecondsTimeout = NanosecondsTimeout;
@@ -488,7 +487,7 @@ namespace Kernel.Hardware.Timers
         /// <param name="aState">The state object to pass to the handler.</param>
         /// <param name="NanosecondsTimeout">The timeout, in nanoseconds.</param>
         /// <param name="NanosecondsLeft">The intial timeout value, in nanoseconds.</param>
-        public PITHandler(OnTriggerDelegate HandleOnTrigger, FOS_System.Object aState, long NanosecondsTimeout, uint NanosecondsLeft)
+        public PITHandler(Devices.TimerHandler HandleOnTrigger, FOS_System.Object aState, long NanosecondsTimeout, uint NanosecondsLeft)
         {
             this.HandleTrigger = HandleOnTrigger;
             this.NanosecondsTimeout = NanosecondsTimeout;

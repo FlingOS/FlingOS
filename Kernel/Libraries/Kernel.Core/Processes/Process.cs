@@ -19,12 +19,16 @@ namespace Kernel.Core.Processes
 
         public Process(void* MainMethodPtr, uint AnId, FOS_System.String AName)
         {
+            BasicConsole.WriteLine(" > > Constructing process object...");
             Id = AnId;
             Name = AName;
 
+            BasicConsole.WriteLine(" > > Creating thread...");
             Thread mainThread = new Thread(MainMethodPtr, ThreadIdGenerator++);
+            BasicConsole.WriteLine(" > > Adding thread object...");
             Threads.Add(mainThread);
 
+            BasicConsole.WriteLine(" > > Setting up memory layout...");
             TheMemoryLayout.CR3 = GetCR3();
         }
 

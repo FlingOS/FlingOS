@@ -1,4 +1,66 @@
-﻿; BEGIN - Create IDT
+﻿
+; START - General interrupt macros
+
+%macro ENABLE_INTERRUPTS 0
+sti
+nop
+%endmacro
+
+
+
+%macro DISABLE_INTERRUPTS 0
+cli
+nop
+%endmacro
+
+
+
+%macro INTERRUPTS_STORE_STATE 0
+; Store registers on current thread stack
+pushad
+push ds
+push es
+push fs
+push gs
+
+; Load pointer to current thread state
+mov dword eax, [staticfield_Kernel_Core_Processes_ThreadState__Kernel_Core_Processes_ProcessManager_CurrentThread_State]
+; Save thread's current stack position
+mov dword [eax+1], esp
+; Load temp kernel stack address
+mov dword ebx, [eax+7]
+; Switch to temp kernel stack
+mov dword esp, ebx
+
+; Now running on a totally empty kernel stack
+%endmacro
+
+
+
+%macro INTERRUPTS_RESTORE_STATE 0
+; Load pointer to current thread state
+mov dword eax, [staticfield_Kernel_Core_Processes_ThreadState__Kernel_Core_Processes_ProcessManager_CurrentThread_State]
+; Restore esp to thread's esp
+mov dword esp, [eax+1]
+; Load address of temp kernel stack
+mov dword ebx, [eax+7]
+; Update TSS with kernel stack pointer for next task switch
+mov dword [_NATIVE_TSS+4], ebx
+
+pop gs
+pop fs
+pop es
+pop ds
+popad
+%endmacro
+
+
+
+; END - General interrupt macros
+
+
+
+; BEGIN - Create IDT
 ; See MultibootSignature.x86_32.asm for memory allocations
 
 ; Set the Int1 handler
@@ -218,12 +280,19 @@ Interrupt12Handler:
 call method_System_Void_RETEND_Kernel_ExceptionMethods_DECLEND_Throw_StackException_NAMEEND___
 
 Interrupt14Handler:
-call Interrupts_SaveState
-call Interrupts_SwitchToKernelStack
+
+DISABLE_INTERRUPTS
+
+INTERRUPTS_STORE_STATE
+
 mov dword eax, CR2
 push eax
 call method_System_Void_RETEND_Kernel_ExceptionMethods_DECLEND_Throw_PageFaultException_NAMEEND__System_UInt32_System_UInt32_
-call Interrupts_RestoreState
+
+INTERRUPTS_RESTORE_STATE
+
+ENABLE_INTERRUPTS
+
 IRet
 
 ; END - Proper exception handlers 
@@ -298,23 +367,19 @@ IRet
 
 %macro CommonInterruptHandlerMacro 1
 CommonInterruptHandler%1:
-	call Interrupts_SaveState
-	call Interrupts_SwitchToKernelStack
 
-	; in al, 0x60  ; read information from the keyboard - REQUIRED for keyboard interrupt else keyboard won't think the
-				 ;										character has been handled so won't send interrupts for any 
-				 ;										more keys!
-	
+	DISABLE_INTERRUPTS
+
+	INTERRUPTS_STORE_STATE
+
 	push dword %1
     call method_System_Void_RETEND_Kernel_Hardware_Interrupts_Interrupts_DECLEND_CommonISR_NAMEEND__System_UInt32_
     add esp, 4
 
-	; This would send the EOI
-	; mov al, 0x20
-	; out 0x20, al
+	INTERRUPTS_RESTORE_STATE
 
-	call Interrupts_RestoreState
-				
+	ENABLE_INTERRUPTS
+		
     IRet
 %endmacro
 %assign handlernum2 17
@@ -324,31 +389,6 @@ CommonInterruptHandler%1:
 %endrep
 
 ; END - Common interrupt handlers
-
-
-; START - General interrupt methods
-
-Interrupts_SaveState:
-
-ret
-
-
-Interrupts_SwitchToKernelStack:
-
-ret
-
-
-Interrupts_RestoreState:
-
-ret
-
-
-Interrupts_SetupState:
-
-ret
-
-; END - General interrupt methods
-
 
 
 SkipIDTHandlers:	
