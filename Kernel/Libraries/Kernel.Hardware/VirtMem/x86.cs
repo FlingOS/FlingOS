@@ -117,11 +117,21 @@ namespace Kernel.Hardware.VirtMem
 
         public override uint FindFreePhysPageAddr()
         {
-            return UsedPhysPages.FindLastClearEntry() * 4096;
+            int result = UsedPhysPages.FindLastClearEntry();
+            if (result == -1)
+            {
+                ExceptionMethods.Throw(new FOS_System.Exceptions.OutOfMemoryException("Could not find any more free physical pages."));
+            }
+            return (uint)(result * 4096);
         }
         public override uint FindFreeVirtPageAddr()
         {
-            return UsedVirtPages.FindLastClearEntry() * 4096;
+            int result = UsedVirtPages.FindLastClearEntry();
+            if (result == -1)
+            {
+                ExceptionMethods.Throw(new FOS_System.Exceptions.OutOfMemoryException("Could not find any more free virtual pages."));
+            }
+            return (uint)(result * 4096);
         }
 
         /// <summary>
