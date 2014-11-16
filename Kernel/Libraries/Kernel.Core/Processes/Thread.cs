@@ -28,7 +28,7 @@ namespace Kernel.Core.Processes
             //  Used when this thread is preempted or does a sys call. Stack is switched to
             //  this thread-specific kernel stack
             BasicConsole.WriteLine(" > > > Allocating kernel stack...");
-            State->KernelStackTop = (byte*)FOS_System.Heap.Alloc(0x1000, 4); //1KiB, 4-byte aligned
+            State->KernelStackTop = (byte*)FOS_System.Heap.Alloc(0x1000, 4) + 4092; //1KiB, 4-byte aligned
 
             // Allocate free memory for the user stack for this thread
             //  Used by this thread in normal execution

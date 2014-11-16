@@ -311,7 +311,7 @@ INTERRUPTS_RESTORE_STATE RESTORE_STATE_SKIP_NUM
 
 ENABLE_INTERRUPTS
 
-IRet
+IRetd
 
 ; END - Proper exception handlers 
 
@@ -377,7 +377,7 @@ loop MessageOnlyInterruptHandler.delayLoop1
 pop dword ebp
 
 popad
-IRet
+IRetd
 
 ; END - Message-only Interrupt Handlers
 
@@ -400,7 +400,7 @@ CommonInterruptHandler%1:
 
 	ENABLE_INTERRUPTS
 		
-    IRet
+    IRetd
 %endmacro
 %assign handlernum2 17
 %rep 239
