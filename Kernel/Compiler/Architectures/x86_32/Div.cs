@@ -69,15 +69,17 @@ namespace Kernel.Compiler.Architectures.x86_32
                     result.AppendLine("pop dword ebx");
                     //Pop item A
                     result.AppendLine("pop dword eax");
-                    //Sign extend A to EAX:EDX
-                    result.AppendLine("cdq");
                     if ((OpCodes)anILOpInfo.opCode.Value == OpCodes.Div_Un)
                     {
+                        //Unsigned extend A to EAX:EDX
+                        result.AppendLine("mov edx, 0");
                         //Do the division
                         result.AppendLine("div ebx");
                     }
                     else
                     {
+                        //Sign extend A to EAX:EDX
+                        result.AppendLine("cdq");
                         //Do the division
                         result.AppendLine("idiv ebx");
                     }

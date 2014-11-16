@@ -33,6 +33,10 @@ namespace Kernel.Hardware.VirtMem
         /// Tests the virtual memory system.
         /// </summary>
         public abstract void Test();
+        /// <summary>
+        /// Prints out information about the free physical and virtual pages.
+        /// </summary>
+        public abstract void PrintFreePages();
 
         /// <summary>
         /// Maps the specified virtual address to the specified physical address.
@@ -49,5 +53,10 @@ namespace Kernel.Hardware.VirtMem
         /// This has an undefined return value and behaviour if the virtual address is not mapped.
         /// </remarks>
         public abstract uint GetPhysicalAddress(uint vAddr);
+
+        /// <summary>
+        /// Maps in the main kernel memory.
+        /// </summary>
+        public abstract void MapKernel();
     }
 }

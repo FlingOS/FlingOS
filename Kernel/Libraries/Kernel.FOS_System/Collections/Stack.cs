@@ -24,6 +24,17 @@ namespace Kernel.FOS_System.Collections
         private List internalList;
 
         /// <summary>
+        /// The number of elements in the stack.
+        /// </summary>
+        public int Count
+        {
+            get
+            {
+                return internalList.Count;
+            }
+        }
+
+        /// <summary>
         /// Creates a new stack with initial capacity of 5.
         /// </summary>
         [Compiler.NoDebug]
@@ -94,6 +105,17 @@ namespace Kernel.FOS_System.Collections
         /// The internal list that actually stores the items.
         /// </summary>
         private UInt32List internalList;
+
+        /// <summary>
+        /// The number of elements in the stack.
+        /// </summary>
+        public int Count
+        {
+            get
+            {
+                return internalList.Count;
+            }
+        }
 
         /// <summary>
         /// Creates a new stack with initial capacity of 5.

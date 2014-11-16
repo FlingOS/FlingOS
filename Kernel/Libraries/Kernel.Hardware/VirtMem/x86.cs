@@ -20,10 +20,7 @@
 #undef PAGING_TRACE
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Kernel.FOS_System.Collections;
 
 namespace Kernel.Hardware.VirtMem
 {
@@ -33,6 +30,23 @@ namespace Kernel.Hardware.VirtMem
     [Compiler.PluggedClass]
     public unsafe class x86 : VirtMemImpl
     {
+        //1024 * 1024 = 1048576
+        /// <summary>
+        /// Bitmap of all the free (unmapped) physical pages of memory.
+        /// </summary>
+        private Bitmap UsedPhysPages = new Bitmap(1048576);
+        /// <summary>
+        /// Bitmap of all the free (unmapped) virtual pages of memory.
+        /// </summary>
+        private Bitmap UsedVirtPages = new Bitmap(1048576);
+
+        /// <summary>
+        /// Initialises the new x86 object.
+        /// </summary>
+        public x86()
+        {
+        }
+
         /// <summary>
         /// Tests the virtual memory system.
         /// </summary>
@@ -91,6 +105,17 @@ namespace Kernel.Hardware.VirtMem
             Hardware.Devices.Timer.InitDefault();
             Hardware.Devices.Timer.Default.Wait(3000);
         }
+        /// <summary>
+        /// Prints out information about the free physical and virtual pages.
+        /// </summary>
+        public override void PrintFreePages()
+        {
+            BasicConsole.WriteLine("Used physical pages: " + (FOS_System.String)UsedPhysPages.Count);
+            BasicConsole.WriteLine("Used virtual pages : " + (FOS_System.String)UsedVirtPages.Count);
+            BasicConsole.DelayOutput(5);
+        }
+
+        bool print = false;
 
         /// <summary>
         /// Maps the specified virtual address to the specified physical address.
@@ -103,24 +128,35 @@ namespace Kernel.Hardware.VirtMem
             BasicConsole.WriteLine("Mapping addresses...");
 #endif
             //Calculate page directory and page table indices
-            uint pdIdx = vAddr >> 22;
-            uint ptIdx = (vAddr >> 12) & 0x03FF;
+            uint virtPDIdx = vAddr >> 22;
+            uint virtPTIdx = (vAddr >> 12) & 0x03FF;
 
-#if PAGING_TRACE
-            BasicConsole.WriteLine(((FOS_System.String)"pAddr=") + pAddr);
-            BasicConsole.WriteLine(((FOS_System.String)"vAddr=") + vAddr);
-            BasicConsole.WriteLine(((FOS_System.String)"pdIdx=") + pdIdx);
-            BasicConsole.WriteLine(((FOS_System.String)"ptIdx=") + ptIdx);
-#endif 
+            uint physPDIdx = pAddr >> 22;
+            uint physPTIdx = (pAddr >> 12) & 0x03FF;
+
+//#if PAGING_TRACE
+            if (print)
+            {
+                BasicConsole.WriteLine(((FOS_System.String)"pAddr=") + pAddr);
+                BasicConsole.WriteLine(((FOS_System.String)"vAddr=") + vAddr);
+                BasicConsole.WriteLine(((FOS_System.String)"physPDIdx=") + physPDIdx);
+                BasicConsole.WriteLine(((FOS_System.String)"physPTIdx=") + physPTIdx);
+                BasicConsole.WriteLine(((FOS_System.String)"virtPDIdx=") + virtPDIdx);
+                BasicConsole.WriteLine(((FOS_System.String)"virtPTIdx=") + virtPTIdx);
+            }
+//#endif
+            UsedPhysPages.Set((int)((physPDIdx * 1024) + physPTIdx));
+            UsedVirtPages.Set((int)((virtPDIdx * 1024) + virtPTIdx));
+
             //Get a pointer to the pre-allocated page table
-            uint* ptPtr = GetFixedPage(pdIdx);
+            uint* virtPTPtr = GetFixedPage(virtPDIdx);
 #if PAGING_TRACE
-            BasicConsole.WriteLine(((FOS_System.String)"ptPtr=") + (uint)ptPtr);
+            BasicConsole.WriteLine(((FOS_System.String)"ptPtr=") + (uint)virtPTPtr);
 #endif 
             //Set the page table entry
-            SetPageEntry(ptPtr, ptIdx, pAddr);
+            SetPageEntry(virtPTPtr, virtPTIdx, pAddr);
             //Set directory table entry
-            SetDirectoryEntry(pdIdx, (uint*)GetPhysicalAddress((uint)ptPtr));
+            SetDirectoryEntry(virtPDIdx, (uint*)GetPhysicalAddress((uint)virtPTPtr));
 
             //Invalidate the page table entry so that mapping isn't CPU cached.
             InvalidatePTE(vAddr);
@@ -146,6 +182,77 @@ namespace Kernel.Hardware.VirtMem
             //  as the offset from the phys address (page-aligned addresses and 
             //  all that).
             return ((ptPtr[ptIdx] & 0xFFFFF000) + (vAddr & 0xFFF));
+        }
+
+        /// <summary>
+        /// Maps in the main kernel memory.
+        /// </summary>
+        public override void MapKernel()
+        {
+            //By mapping memory in reverse order we optimise the use
+            // of the underlying stack (and thus list) making it vastly more
+            // efficient
+
+//#if PAGING_TRACE
+            BasicConsole.Write("Mapping 1st 1MiB...");
+//#endif
+
+            uint VirtToPhysOffset = GetKernelVirtToPhysOffset();
+
+            //Identity and virtual map the first 1MiB
+            uint physAddr = 0;
+            uint virtAddr = VirtToPhysOffset;
+            for (; physAddr < 0x100000; physAddr += 4096, virtAddr += 4096)
+            {
+                Map(physAddr, physAddr);
+                Map(physAddr, virtAddr);
+            }
+
+//#if PAGING_TRACE
+            BasicConsole.WriteLine("Done.");
+            BasicConsole.WriteLine("Mapping kernel...");
+//#endif
+
+            //Map in the main kernel memory
+
+            //Map all the required pages in between these two pointers.
+            uint KernelMemStartPtr = (uint)GetKernelMemStartPtr();
+            uint KernelMemEndPtr = (uint)GetKernelMemEndPtr();
+            
+//#if PAGING_TRACE
+            BasicConsole.WriteLine("Start pointer : " + (FOS_System.String)KernelMemStartPtr);
+            BasicConsole.WriteLine("End pointer : " + (FOS_System.String)KernelMemEndPtr);
+//#endif
+
+            // Round the start pointer down to nearest page
+            KernelMemStartPtr = ((KernelMemStartPtr / 4096) * 4096);
+
+            // Round the end pointer up to nearest page
+            KernelMemEndPtr = (((KernelMemEndPtr / 4096) + 1) * 4096);
+            
+//#if PAGING_TRACE
+            BasicConsole.WriteLine("Start pointer : " + (FOS_System.String)KernelMemStartPtr);
+            BasicConsole.WriteLine("End pointer : " + (FOS_System.String)KernelMemEndPtr);
+//#endif
+            
+            physAddr = KernelMemStartPtr - VirtToPhysOffset;
+            
+//#if PAGING_TRACE
+            BasicConsole.WriteLine("Phys addr : " + (FOS_System.String)physAddr);
+            BasicConsole.DelayOutput(5);
+//#endif
+            
+            for (; KernelMemStartPtr <= KernelMemEndPtr; KernelMemStartPtr += 4096, physAddr += 4096)
+            {
+                print = (physAddr / 4096) % 64 == 0;
+                Map(physAddr, KernelMemStartPtr);
+            }
+
+//#if PAGING_TRACE
+            BasicConsole.WriteLine("Done.");
+            BasicConsole.DelayOutput(5);
+//#endif
+
         }
 
         /// <summary>
@@ -216,6 +323,19 @@ namespace Kernel.Hardware.VirtMem
 
         }
 
+        /// <summary>
+        /// Gets the virtual to physical offset for the main kernel memory.
+        /// </summary>
+        /// <returns>The offset.</returns>
+        /// <remarks>
+        /// This is the difference between the virtual address and the 
+        /// physical address at which the bootloader loaded the kernel.
+        /// </remarks>
+        [Compiler.PluggedMethod(ASMFilePath = null)]
+        public static uint GetKernelVirtToPhysOffset()
+        {
+            return 0;
+        }
         /// <summary>
         /// Gets the page directory memory pointer.
         /// </summary>

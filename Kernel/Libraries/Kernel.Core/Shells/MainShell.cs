@@ -40,6 +40,8 @@ namespace Kernel.Core.Shells
         {
             try
             {
+                Hardware.VirtMemManager.PrintFreePages();
+
                 //Endlessly wait for commands until we hit a total failure condition
                 //  or the user instructs us to halt
                 while(!terminating)

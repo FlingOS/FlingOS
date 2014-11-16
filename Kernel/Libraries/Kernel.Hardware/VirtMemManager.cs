@@ -38,6 +38,13 @@ namespace Kernel.Hardware
         public static void Init()
         {
             impl = new x86();
+
+            // Map in the kernel pages.
+            //   - Technically this has already been done in "VirtMemInit.x86_32.asm", however,
+            //     from the C# code perspective it has no idea so the mapping done here is to
+            //     get the high level code's view of the memory up to speed with the actual
+            //     state
+            impl.MapKernel();
         }
 
         /// <summary>
@@ -118,6 +125,13 @@ namespace Kernel.Hardware
         public static void Test()
         {
             impl.Test();
+        }
+        /// <summary>
+        /// Prints out information about the free physical and virtual pages.
+        /// </summary>
+        public static void PrintFreePages()
+        {
+            impl.PrintFreePages();
         }
     }
 }
