@@ -218,9 +218,12 @@ Interrupt12Handler:
 call method_System_Void_RETEND_Kernel_ExceptionMethods_DECLEND_Throw_StackException_NAMEEND___
 
 Interrupt14Handler:
+call Interrupts_SaveState
+call Interrupts_SwitchToKernelStack
 mov dword eax, CR2
 push eax
 call method_System_Void_RETEND_Kernel_ExceptionMethods_DECLEND_Throw_PageFaultException_NAMEEND__System_UInt32_System_UInt32_
+call Interrupts_RestoreState
 IRet
 
 ; END - Proper exception handlers 
@@ -295,7 +298,8 @@ IRet
 
 %macro CommonInterruptHandlerMacro 1
 CommonInterruptHandler%1:
-	pushad
+	call Interrupts_SaveState
+	call Interrupts_SwitchToKernelStack
 
 	; in al, 0x60  ; read information from the keyboard - REQUIRED for keyboard interrupt else keyboard won't think the
 				 ;										character has been handled so won't send interrupts for any 
@@ -309,7 +313,7 @@ CommonInterruptHandler%1:
 	; mov al, 0x20
 	; out 0x20, al
 
-	popad
+	call Interrupts_RestoreState
 				
     IRet
 %endmacro
@@ -320,6 +324,32 @@ CommonInterruptHandler%1:
 %endrep
 
 ; END - Common interrupt handlers
+
+
+; START - General interrupt methods
+
+Interrupts_SaveState:
+
+ret
+
+
+Interrupts_SwitchToKernelStack:
+
+ret
+
+
+Interrupts_RestoreState:
+
+ret
+
+
+Interrupts_SetupState:
+
+ret
+
+; END - General interrupt methods
+
+
 
 SkipIDTHandlers:	
 pic_remap:

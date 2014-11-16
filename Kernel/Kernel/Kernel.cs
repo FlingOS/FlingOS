@@ -89,6 +89,8 @@ namespace Kernel
                 Core.Processes.ProcessManager.RegisterProcess(ManagedMainProcess);
                 Core.Processes.ProcessManager.RegisterProcess(SampleProcess);
 
+                Core.Processes.Scheduler.Init();
+
                 ManagedMain();
             }
             catch
@@ -198,76 +200,6 @@ namespace Kernel
                 {
                     Core.Console.Default.Clear();
                 }
-
-                //TimerTest();
-                //PCBeepTest();
-                //KeyboardTest();
-                //AdvancedConsoleTest();
-                
-                //InitATA();
-
-                //OutputDivider();
-
-                //InitPCI();
-
-                //OutputDivider();
-
-                //try
-                //{
-                //    OutputPCIInfo();
-                //    OutputDivider();
-                //}
-                //catch
-                //{
-                //    OutputCurrentExceptionInfo();
-                //}
-
-                //FOS_System.GC.Cleanup();
-
-                //InitUSB();
-
-                //OutputDivider();
-
-                //if (Hardware.DeviceManager.Devices.Count > 0)
-                //{
-                //    //try
-                //    //{
-                //    //    OutputATAInfo();
-                //    //}
-                //    //catch
-                //    //{
-                //    //    OutputCurrentExceptionInfo();
-                //    //}
-
-                //    InitFileSystem();
-
-                //    OutputDivider();
-
-                //    CheckDiskFormatting(HDD0);
-
-                //    OutputDivider();
-
-                //    try
-                //    {
-                //        OutputFileSystemsInfo();
-                //    }
-                //    catch
-                //    {
-                //        OutputCurrentExceptionInfo();
-                //    }
-
-                //    try
-                //    {
-                //        OutputFileContents("A:/Doc in Root Dir.txt");
-                //        OutputFileContents("A:/Test Dir/Doc in Test Dir.txt");
-                //    }
-                //    catch
-                //    {
-                //        OutputCurrentExceptionInfo();
-                //    }
-
-                //    FileSystemTests();
-                //}
             }
             catch
             {
@@ -278,6 +210,8 @@ namespace Kernel
             OutputDivider();
             BasicConsole.WriteLine();
             BasicConsole.WriteLine("End of managed main.");
+
+            Halt(0);
         }
 
         /// <summary>

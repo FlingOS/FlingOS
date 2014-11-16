@@ -5,19 +5,22 @@ namespace Kernel.Core.Processes
     public unsafe class Thread : FOS_System.Object
     {
         public uint Id;
-        public uint StartEIP;
-
+        
+        public uint EIP;
         public uint ESP;
         public uint SS;
         public byte* KernelStackTop;
         public byte* ThreadStackTop;
 
+        public bool Started;
         public uint TimeToRun;
 
         public Thread(void* StartMethodPtr, uint AnId)
         {
+            // Init Id and EIP
+            //  Set EIP to the first instruction of the main method
             Id = AnId;
-            StartEIP = (uint)StartMethodPtr;
+            EIP = (uint)StartMethodPtr;
 
             // Allocate kernel memory for the kernel stack for this thread
             //  Used when this thread is preempted or does a sys call. Stack is switched to
@@ -40,6 +43,10 @@ namespace Kernel.Core.Processes
             //  Stack Segment = User or Kernel space data segment selector offset
             //  Kernel data segment selector offset (offset in GDT) = 0x10 (16)
             SS = 16;
+
+            // Init Started
+            //  Not started yet so set to false
+            Started = false;
         }
     }
 }
