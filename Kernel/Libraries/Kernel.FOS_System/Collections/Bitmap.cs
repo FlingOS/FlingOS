@@ -46,7 +46,7 @@ namespace Kernel.FOS_System.Collections
             {
                 for (int j = 0x80, x = 7; x >= 0; j >>= 1, x--)
                 {
-                    if (bitmap[i] & j == 0)
+                    if ((bitmap[i] & j) == 0)
                     {
                         return (i * 8) + x;
                     }

@@ -76,6 +76,19 @@ namespace Kernel
                 Hardware.Devices.Timer.InitDefault();
                 Hardware.Devices.Keyboard.InitDefault();
 
+                Core.Processes.Process ManagedMainProcess = 
+                    Core.Processes.ProcessManager.CreateProcess(GetManagedMainMethodPtr(), "Managed Main");
+                Core.Processes.Process SampleProcess =
+                    Core.Processes.ProcessManager.LoadSampleProcess();
+
+                Core.Processes.Thread ManagedMain_MainThread = ((Core.Processes.Thread)ManagedMainProcess.Threads[0]);
+                Heap.Free(ManagedMain_MainThread.ThreadStackTop);
+                ManagedMain_MainThread.ThreadStackTop = GetKernelStackPtr();
+                ManagedMain_MainThread.ESP = (uint)ManagedMain_MainThread.ThreadStackTop;
+
+                Core.Processes.ProcessManager.RegisterProcess(ManagedMainProcess);
+                Core.Processes.ProcessManager.RegisterProcess(SampleProcess);
+
                 ManagedMain();
             }
             catch
@@ -287,6 +300,15 @@ namespace Kernel
         private static void OutputDivider()
         {
             BasicConsole.WriteLine("---------------------");
+        }
+
+        private static unsafe void* GetManagedMainMethodPtr()
+        {
+            return null;
+        }
+        private static unsafe byte* GetKernelStackPtr()
+        {
+            return null;
         }
     }
 }

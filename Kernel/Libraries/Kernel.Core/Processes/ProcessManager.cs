@@ -3,15 +3,24 @@ using Kernel.FOS_System.Collections;
 
 namespace Kernel.Core.Processes
 {
-    public static class ProcessManager
+    public static unsafe class ProcessManager
     {
-        List Processes = new List();
+        public static List Processes = new List();
+        public static Process CurrentProcess = null;
 
-        public static void LoadProcess()
+        private static uint ProcessIdGenerator = 0;
+
+        public static Process LoadSampleProcess()
         {
+            return CreateProcess(SampleProcess.GetMainMethodPtr(), "Sample Process");
         }
-        public static void StartProcess()
+        public static Process CreateProcess(void* MainMethodPtr, FOS_System.String Name)
         {
+            return new Process(MainMethodPtr, ProcessIdGenerator++, Name);
+        }
+        public static void RegisterProcess(Process process)
+        {
+            Processes.Add(process);
         }
     }
 }

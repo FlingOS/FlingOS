@@ -71,6 +71,7 @@
     <Compile Include="Devices\Keyboard.cs" />
     <Compile Include="Keyboards\PS2.cs" />
     <Compile Include="VirtMemManager.cs" />
+    <Compile Include="VirtMem\MemoryLayout.cs" />
     <Compile Include="VirtMem\VirtMemImpl.cs" />
     <Compile Include="VirtMem\x86.cs" />
     <Compile Include="PCI\PCI.cs" />

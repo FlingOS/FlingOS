@@ -60,6 +60,7 @@
     <Compile Include="Collections\Stack.cs" />
     <Compile Include="Exception.cs" />
     <Compile Include="ExceptionMethods.cs" />
+    <Compile Include="Exceptions\OutOfMemoryException.cs" />
     <Compile Include="Exceptions\NotSupportedException.cs" />
     <Compile Include="Exceptions\ArgumentException.cs" />
     <Compile Include="Exceptions\InvalidOpCodeException.cs" />
