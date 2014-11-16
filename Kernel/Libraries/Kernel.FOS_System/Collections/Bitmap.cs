@@ -39,5 +39,20 @@ namespace Kernel.FOS_System.Collections
         {
             return (bitmap[entry / 8] & ~(byte)(entry % 8)) > 0;
         }
+
+        public int FindLastClearEntry()
+        {
+            for (int i = bitmap.Length - 1; i > -1; i--)
+            {
+                for (int j = 0x80, x = 7; x >= 0; j >>= 1, x--)
+                {
+                    if (bitmap[i] & j == 0)
+                    {
+                        return (i * 8) + x;
+                    }
+                }
+            }
+            return -1;
+        }
     }
 }

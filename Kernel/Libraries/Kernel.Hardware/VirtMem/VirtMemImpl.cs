@@ -36,7 +36,10 @@ namespace Kernel.Hardware.VirtMem
         /// <summary>
         /// Prints out information about the free physical and virtual pages.
         /// </summary>
-        public abstract void PrintFreePages();
+        public abstract void PrintUsedPages();
+
+        public abstract uint FindFreePhysPageAddr();
+        public abstract uint FindFreeVirtPageAddr();
 
         /// <summary>
         /// Maps the specified virtual address to the specified physical address.

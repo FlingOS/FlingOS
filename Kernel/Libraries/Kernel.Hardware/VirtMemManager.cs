@@ -47,6 +47,14 @@ namespace Kernel.Hardware
             impl.MapKernel();
         }
 
+        public static void* MapFreePage()
+        {
+            uint physAddr = impl.FindFreePhysPageAddr();
+            uint virtAddr = impl.FindFreeVirtPageAddr();
+            impl.Map(physAddr, virtAddr);
+            return (void*)virtAddr;
+        }
+
         /// <summary>
         /// Maps the specified amount of memory.
         /// </summary>
@@ -129,9 +137,9 @@ namespace Kernel.Hardware
         /// <summary>
         /// Prints out information about the free physical and virtual pages.
         /// </summary>
-        public static void PrintFreePages()
+        public static void PrintUsedPages()
         {
-            impl.PrintFreePages();
+            impl.PrintUsedPages();
         }
     }
 }

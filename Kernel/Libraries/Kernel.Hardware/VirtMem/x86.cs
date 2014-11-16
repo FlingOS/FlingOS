@@ -108,14 +108,21 @@ namespace Kernel.Hardware.VirtMem
         /// <summary>
         /// Prints out information about the free physical and virtual pages.
         /// </summary>
-        public override void PrintFreePages()
+        public override void PrintUsedPages()
         {
             BasicConsole.WriteLine("Used physical pages: " + (FOS_System.String)UsedPhysPages.Count);
             BasicConsole.WriteLine("Used virtual pages : " + (FOS_System.String)UsedVirtPages.Count);
             BasicConsole.DelayOutput(5);
         }
 
-        bool print = false;
+        public override uint FindFreePhysPageAddr()
+        {
+            return UsedPhysPages.FindLastClearEntry() * 4096;
+        }
+        public override uint FindFreeVirtPageAddr()
+        {
+            return UsedVirtPages.FindLastClearEntry() * 4096;
+        }
 
         /// <summary>
         /// Maps the specified virtual address to the specified physical address.
@@ -134,17 +141,14 @@ namespace Kernel.Hardware.VirtMem
             uint physPDIdx = pAddr >> 22;
             uint physPTIdx = (pAddr >> 12) & 0x03FF;
 
-//#if PAGING_TRACE
-            if (print)
-            {
-                BasicConsole.WriteLine(((FOS_System.String)"pAddr=") + pAddr);
-                BasicConsole.WriteLine(((FOS_System.String)"vAddr=") + vAddr);
-                BasicConsole.WriteLine(((FOS_System.String)"physPDIdx=") + physPDIdx);
-                BasicConsole.WriteLine(((FOS_System.String)"physPTIdx=") + physPTIdx);
-                BasicConsole.WriteLine(((FOS_System.String)"virtPDIdx=") + virtPDIdx);
-                BasicConsole.WriteLine(((FOS_System.String)"virtPTIdx=") + virtPTIdx);
-            }
-//#endif
+#if PAGING_TRACE
+            BasicConsole.WriteLine(((FOS_System.String)"pAddr=") + pAddr);
+            BasicConsole.WriteLine(((FOS_System.String)"vAddr=") + vAddr);
+            BasicConsole.WriteLine(((FOS_System.String)"physPDIdx=") + physPDIdx);
+            BasicConsole.WriteLine(((FOS_System.String)"physPTIdx=") + physPTIdx);
+            BasicConsole.WriteLine(((FOS_System.String)"virtPDIdx=") + virtPDIdx);
+            BasicConsole.WriteLine(((FOS_System.String)"virtPTIdx=") + virtPTIdx);
+#endif
             UsedPhysPages.Set((int)((physPDIdx * 1024) + physPTIdx));
             UsedVirtPages.Set((int)((virtPDIdx * 1024) + virtPTIdx));
 
@@ -193,9 +197,9 @@ namespace Kernel.Hardware.VirtMem
             // of the underlying stack (and thus list) making it vastly more
             // efficient
 
-//#if PAGING_TRACE
+#if PAGING_TRACE
             BasicConsole.Write("Mapping 1st 1MiB...");
-//#endif
+#endif
 
             uint VirtToPhysOffset = GetKernelVirtToPhysOffset();
 
@@ -208,10 +212,10 @@ namespace Kernel.Hardware.VirtMem
                 Map(physAddr, virtAddr);
             }
 
-//#if PAGING_TRACE
+#if PAGING_TRACE
             BasicConsole.WriteLine("Done.");
             BasicConsole.WriteLine("Mapping kernel...");
-//#endif
+#endif
 
             //Map in the main kernel memory
 
@@ -219,10 +223,10 @@ namespace Kernel.Hardware.VirtMem
             uint KernelMemStartPtr = (uint)GetKernelMemStartPtr();
             uint KernelMemEndPtr = (uint)GetKernelMemEndPtr();
             
-//#if PAGING_TRACE
+#if PAGING_TRACE
             BasicConsole.WriteLine("Start pointer : " + (FOS_System.String)KernelMemStartPtr);
             BasicConsole.WriteLine("End pointer : " + (FOS_System.String)KernelMemEndPtr);
-//#endif
+#endif
 
             // Round the start pointer down to nearest page
             KernelMemStartPtr = ((KernelMemStartPtr / 4096) * 4096);
@@ -230,28 +234,27 @@ namespace Kernel.Hardware.VirtMem
             // Round the end pointer up to nearest page
             KernelMemEndPtr = (((KernelMemEndPtr / 4096) + 1) * 4096);
             
-//#if PAGING_TRACE
+#if PAGING_TRACE
             BasicConsole.WriteLine("Start pointer : " + (FOS_System.String)KernelMemStartPtr);
             BasicConsole.WriteLine("End pointer : " + (FOS_System.String)KernelMemEndPtr);
-//#endif
+#endif
             
             physAddr = KernelMemStartPtr - VirtToPhysOffset;
             
-//#if PAGING_TRACE
+#if PAGING_TRACE
             BasicConsole.WriteLine("Phys addr : " + (FOS_System.String)physAddr);
             BasicConsole.DelayOutput(5);
-//#endif
+#endif
             
             for (; KernelMemStartPtr <= KernelMemEndPtr; KernelMemStartPtr += 4096, physAddr += 4096)
             {
-                print = (physAddr / 4096) % 64 == 0;
                 Map(physAddr, KernelMemStartPtr);
             }
 
-//#if PAGING_TRACE
+#if PAGING_TRACE
             BasicConsole.WriteLine("Done.");
             BasicConsole.DelayOutput(5);
-//#endif
+#endif
 
         }
 
