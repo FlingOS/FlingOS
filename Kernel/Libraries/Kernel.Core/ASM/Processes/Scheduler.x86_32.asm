@@ -3,7 +3,7 @@
 push dword ebp
 mov dword ebp, esp
 
-mov dword eax, 24  ; Selector offset of TSS - see MultibootSignature ASm file for details
+mov dword eax, 24  ; Selector offset of TSS - see MultibootSignature ASM file for details
 ltr ax			   ; Load selector
 
 pop dword ebp
@@ -29,14 +29,19 @@ method_System_Void_RETEND_Kernel_Core_Processes_Scheduler_DECLEND_JumpToMainMeth
 push dword ebp
 mov dword ebp, esp
 
-; Arg 2 - EIP - EBP+8
-; Arg 1 - ESP - EBP+12
+; Arg 2 - ESP - EBP+8
+; Arg 1 - EIP - EBP+12
 
 ; Temp load eip value
-mov dword eax, [ebp+8]
+mov dword eax, [ebp+12]
 ; Temp load esp value
-mov dword ebx, [ebp+12]
+mov dword ebx, [ebp+8]
 ; Set new esp
 mov dword esp, ebx
 ; Jump to eip
 jmp eax
+
+Next:
+mov dword esp, ebp
+pop dword ebp
+ret

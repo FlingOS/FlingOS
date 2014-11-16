@@ -1,4 +1,4 @@
-﻿method_System_Void__RETEND_Kernel_Kernel_DECLEND_GetMainMethodPtr_NAMEEND___:
+﻿method_System_Void__RETEND_Kernel_Kernel_DECLEND_GetManagedMainMethodPtr_NAMEEND___:
 push dword ebp
 mov dword ebp, esp
 
@@ -7,7 +7,8 @@ mov dword [ebp+8], method_System_Void_RETEND_Kernel_Kernel_DECLEND_ManagedMain_N
 pop dword ebp
 ret
 
-method_System_Void__RETEND_Kernel_Kernel_DECLEND_GetKernelStackPtr_NAMEEND___:
+
+method_System_Byte__RETEND_Kernel_Kernel_DECLEND_GetKernelStackPtr_NAMEEND___:
 push dword ebp
 mov dword ebp, esp
 

@@ -28,9 +28,10 @@ db 0, 0, 0, 0, 0, 0, 0, 0			; Offset: 0  - Null selector - required
 db 255, 255, 0, 0, 0, 154, 207, 0	; Offset: 8  - Code selector - covers the entire 4GiB address range
 db 255, 255, 0, 0, 0, 146, 207, 0	; Offset: 16 - Data selector - covers the entire 4GiB address range
 ; TSS set so that only kernel can perform task switching
-db 0x68, 0, 0, 0, 0, 0x89, 0x10, 0	; Offset: 24 - TSS Selector - Pointer to the TSS 
+db 0x67, 0, 0, 0, 0, 0x89, 0x10, 0	; Offset: 24 - TSS Selector - Pointer to the TSS 
 
-_NATIVE_GDT_Pointer db 23, 0, 0, 0, 0, 0
+;					   Size - Change iff adding/removing rows from GDT contents
+_NATIVE_GDT_Pointer db 31, 0, 0, 0, 0, 0
 global _NATIVE_IDT_Contents
 _NATIVE_IDT_Contents: TIMES 2048 db 0
 _NATIVE_IDT_Pointer db 15, 15, 0, 0, 0, 0

@@ -4,8 +4,8 @@
 	; Setup the primary TSS Selector to point to the TSS
 	; Only need to enter the base address. Everything else is setup
 	;	in the allocations
-	mov dword eax, _NATIVE_GDT_Contents+24
-	mov dword ebx, TSS_POINTER
+	lea eax, [_NATIVE_GDT_Contents+24]
+	lea dword ebx, [TSS_POINTER]
 	mov byte [eax+2], bl
 	shr ebx, 8
 	mov byte [eax+3], bl

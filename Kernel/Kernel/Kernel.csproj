@@ -124,7 +124,9 @@
     <Content Include="ASM\Descriptor Tables\IDT.x86_32.asm">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="ASM\Kernel.x86_32.asm" />
+    <Content Include="ASM\Kernel.x86_32.asm">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="ASM\PreReqs\HandleNoMultiboot.x86_32.asm">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>

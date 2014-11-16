@@ -199,9 +199,12 @@ namespace Kernel
         {
             BasicConsole.WriteLine(" Managed Main! ");
             BasicConsole.WriteLine(" > Enabling interrupts...");
+            BasicConsole.DelayOutput(5);
             Hardware.Interrupts.Interrupts.EnableInterrupts();
 
             BasicConsole.WriteLine(" > Executing normally...");
+            BasicConsole.DelayOutput(5);
+
             try
             {
                 Core.Shell.InitDefault();
@@ -253,10 +256,12 @@ namespace Kernel
             BasicConsole.WriteLine("---------------------");
         }
 
+        [Compiler.PluggedMethod(ASMFilePath=@"ASM\Kernel")]
         private static unsafe void* GetManagedMainMethodPtr()
         {
             return null;
         }
+        [Compiler.PluggedMethod(ASMFilePath=null)]
         private static unsafe byte* GetKernelStackPtr()
         {
             return null;

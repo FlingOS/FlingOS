@@ -63,6 +63,7 @@ namespace Kernel.Core.Processes
         private static void OnTimerInterrupt(FOS_System.Object state)
         {
             BasicConsole.WriteLine("Scheduler interrupt.");
+            BasicConsole.DelayOutput(5);
         }
     }
 

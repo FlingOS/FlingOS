@@ -3,7 +3,6 @@
 
 %macro ENABLE_INTERRUPTS 0
 sti
-nop
 %endmacro
 
 
@@ -14,8 +13,10 @@ nop
 %endmacro
 
 
+%assign STORE_STATE_SKIP_NUM 0
+%assign RESTORE_STATE_SKIP_NUM 0
 
-%macro INTERRUPTS_STORE_STATE 0
+%macro INTERRUPTS_STORE_STATE 1
 ; Store registers on current thread stack
 pushad
 push ds
@@ -25,6 +26,11 @@ push gs
 
 ; Load pointer to current thread state
 mov dword eax, [staticfield_Kernel_Core_Processes_ThreadState__Kernel_Core_Processes_ProcessManager_CurrentThread_State]
+; Test for null
+cmp eax, 0
+; If null, skip
+jz INTERRUPTS_STORE_STATE_SKIP_%1
+
 ; Save thread's current stack position
 mov dword [eax+1], esp
 ; Load temp kernel stack address
@@ -33,19 +39,29 @@ mov dword ebx, [eax+7]
 mov dword esp, ebx
 
 ; Now running on a totally empty kernel stack
+
+INTERRUPTS_STORE_STATE_SKIP_%1:
+
 %endmacro
 
 
 
-%macro INTERRUPTS_RESTORE_STATE 0
+%macro INTERRUPTS_RESTORE_STATE 1
 ; Load pointer to current thread state
 mov dword eax, [staticfield_Kernel_Core_Processes_ThreadState__Kernel_Core_Processes_ProcessManager_CurrentThread_State]
+; Test for null
+cmp eax, 0
+; If null, skip
+jz INTERRUPTS_RESTORE_STATE_SKIP%1
+
 ; Restore esp to thread's esp
 mov dword esp, [eax+1]
 ; Load address of temp kernel stack
 mov dword ebx, [eax+7]
 ; Update TSS with kernel stack pointer for next task switch
 mov dword [_NATIVE_TSS+4], ebx
+
+INTERRUPTS_RESTORE_STATE_SKIP%1:
 
 pop gs
 pop fs
@@ -283,13 +299,15 @@ Interrupt14Handler:
 
 DISABLE_INTERRUPTS
 
-INTERRUPTS_STORE_STATE
+INTERRUPTS_STORE_STATE STORE_STATE_SKIP_NUM
+%assign STORE_STATE_SKIP_NUM STORE_STATE_SKIP_NUM+1
 
 mov dword eax, CR2
 push eax
 call method_System_Void_RETEND_Kernel_ExceptionMethods_DECLEND_Throw_PageFaultException_NAMEEND__System_UInt32_System_UInt32_
 
-INTERRUPTS_RESTORE_STATE
+INTERRUPTS_RESTORE_STATE RESTORE_STATE_SKIP_NUM
+%assign RESTORE_STATE_SKIP_NUM RESTORE_STATE_SKIP_NUM+1
 
 ENABLE_INTERRUPTS
 
@@ -370,13 +388,15 @@ CommonInterruptHandler%1:
 
 	DISABLE_INTERRUPTS
 
-	INTERRUPTS_STORE_STATE
+	INTERRUPTS_STORE_STATE STORE_STATE_SKIP_NUM
+	%assign STORE_STATE_SKIP_NUM STORE_STATE_SKIP_NUM+1
 
 	push dword %1
     call method_System_Void_RETEND_Kernel_Hardware_Interrupts_Interrupts_DECLEND_CommonISR_NAMEEND__System_UInt32_
     add esp, 4
 
-	INTERRUPTS_RESTORE_STATE
+	INTERRUPTS_RESTORE_STATE RESTORE_STATE_SKIP_NUM
+	%assign RESTORE_STATE_SKIP_NUM RESTORE_STATE_SKIP_NUM+1
 
 	ENABLE_INTERRUPTS
 		
