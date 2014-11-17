@@ -134,7 +134,7 @@ namespace Kernel.Core.Processes
 #if SCHEDULER_TRACE
                         BasicConsole.WriteLine("Setting process index to first process...");
 #endif
-                        Go back to start of list
+                        //Go back to start of list
                         processIdx = 0;
                     }
 
