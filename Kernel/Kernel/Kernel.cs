@@ -78,7 +78,7 @@ namespace Kernel
 
                 BasicConsole.WriteLine("Creating ManagedMain process...");
                 Core.Processes.Process ManagedMainProcess =
-                    Core.Processes.ProcessManager.CreateProcess(GetManagedMainMethodPtr(), "Managed Main");
+                    Core.Processes.ProcessManager.CreateProcess(ManagedMain, "Managed Main");
                 BasicConsole.WriteLine("Creating Sample process...");
                 Core.Processes.Process SampleProcess =
                     Core.Processes.ProcessManager.LoadSampleProcess();
@@ -100,10 +100,13 @@ namespace Kernel
                 BasicConsole.WriteLine("Initialising scheduler...");
                 Core.Processes.Scheduler.Init();
 
+                // Busy wait until the scheduler interrupts us. 
                 while (true)
                 {
                     ;
                 }
+                // We will never return to this point since there is no way for the scheduler to point
+                //  to it.
             }
             catch
             {
@@ -198,9 +201,6 @@ namespace Kernel
         private static unsafe void ManagedMain()
         {
             BasicConsole.WriteLine(" Managed Main! ");
-            //BasicConsole.WriteLine(" > Enabling interrupts...");
-            //Hardware.Interrupts.Interrupts.EnableInterrupts();
-
             BasicConsole.WriteLine(" > Executing normally...");
             
             try
@@ -229,6 +229,7 @@ namespace Kernel
             BasicConsole.WriteLine();
             BasicConsole.WriteLine("End of managed main.");
 
+            ExceptionMethods.HaltReason = "Managed main thread ended.";
             Halt(0);
         }
 

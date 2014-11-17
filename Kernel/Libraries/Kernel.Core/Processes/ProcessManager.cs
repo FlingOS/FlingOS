@@ -18,21 +18,21 @@ namespace Kernel.Core.Processes
         public static Process LoadSampleProcess()
         {
 #if PROCESSMANAGER_TRACE
-            BasicConsole.WriteLine(" > Creating sample process object...");
+            Console.Default.WriteLine(" > Creating sample process object...");
 #endif
-            return CreateProcess(SampleProcess.GetMainMethodPtr(), "Sample Process");
+            return CreateProcess(SampleProcess.Main, "Sample Process");
         }
-        public static Process CreateProcess(void* MainMethodPtr, FOS_System.String Name)
+        public static Process CreateProcess(ThreadStartMethod MainMethod, FOS_System.String Name)
         {
 #if PROCESSMANAGER_TRACE
-            BasicConsole.WriteLine(" > Creating process object...");
+            Console.Default.WriteLine(" > Creating process object...");
 #endif
-            return new Process(MainMethodPtr, ProcessIdGenerator++, Name);
+            return new Process(MainMethod, ProcessIdGenerator++, Name);
         }
         public static void RegisterProcess(Process process, Scheduler.Priority priority)
         {
 #if PROCESSMANAGER_TRACE
-            BasicConsole.WriteLine(" > > Adding process...");
+            Console.Default.WriteLine(" > > Adding process...");
 #endif
             Scheduler.InitProcess(process, priority);
 

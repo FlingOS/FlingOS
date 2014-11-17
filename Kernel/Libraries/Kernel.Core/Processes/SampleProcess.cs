@@ -9,9 +9,9 @@ namespace Kernel.Core.Processes
     [Compiler.PluggedClass]
     public static unsafe class SampleProcess
     {
-        [Compiler.PluggedMethod(ASMFilePath=@"ASM\Processes\SampleProcess")]
         public static void Main()
         {
+            Console.Default.WriteLine("Boo!");
         }
 
         [Compiler.PluggedMethod(ASMFilePath = null)]

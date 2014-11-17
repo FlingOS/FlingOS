@@ -21,26 +21,26 @@ namespace Kernel.Core.Processes
         public Scheduler.Priority Priority;
 
         private uint ThreadIdGenerator = 0;
-
-        public Process(void* MainMethodPtr, uint AnId, FOS_System.String AName)
+        
+        public Process(ThreadStartMethod MainMethod, uint AnId, FOS_System.String AName)
         {
 #if PROCESS_TRACE
-            BasicConsole.WriteLine(" > > Constructing process object...");
+            Console.Default.WriteLine(" > > Constructing process object...");
 #endif
             Id = AnId;
             Name = AName;
             
 #if PROCESS_TRACE
-            BasicConsole.WriteLine(" > > Creating thread...");
+            Console.Default.WriteLine(" > > Creating thread...");
 #endif
-            Thread mainThread = new Thread(MainMethodPtr, ThreadIdGenerator++);
+            Thread mainThread = new Thread(MainMethod, ThreadIdGenerator++);
 #if PROCESS_TRACE
-            BasicConsole.WriteLine(" > > Adding thread object...");
+            Console.Default.WriteLine(" > > Adding thread object...");
 #endif
             Threads.Add(mainThread);
             
 #if PROCESS_TRACE
-            BasicConsole.WriteLine(" > > Setting up memory layout...");
+            Console.Default.WriteLine(" > > Setting up memory layout...");
 #endif
             TheMemoryLayout.CR3 = GetCR3();
         }
