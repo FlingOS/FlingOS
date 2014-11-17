@@ -76,6 +76,8 @@ namespace Kernel
                 Hardware.Devices.Timer.InitDefault();
                 Hardware.Devices.Keyboard.InitDefault();
 
+                Core.Console.InitDefault();
+
                 BasicConsole.WriteLine("Creating ManagedMain process...");
                 Core.Processes.Process ManagedMainProcess =
                     Core.Processes.ProcessManager.CreateProcess(ManagedMain, "Managed Main");
