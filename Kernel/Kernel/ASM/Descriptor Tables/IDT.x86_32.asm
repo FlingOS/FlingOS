@@ -61,6 +61,7 @@ mov dword ebx, [eax+7]
 ; Update TSS with kernel stack pointer for next task switch
 mov dword [_NATIVE_TSS+4], ebx
 
+
 INTERRUPTS_RESTORE_STATE_SKIP%1:
 
 pop gs

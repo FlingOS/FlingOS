@@ -5,8 +5,7 @@ namespace Kernel.Core.Processes
     public unsafe class Thread : FOS_System.Object
     {
         public uint Id;
-        public uint StartEIP;
-
+        
         public ThreadState* State;
 
         public uint TimeToRun;
@@ -22,7 +21,7 @@ namespace Kernel.Core.Processes
             //  Set EIP to the first instruction of the main method
             BasicConsole.WriteLine(" > > > Setting info...");
             Id = AnId;
-            StartEIP = (uint)StartMethodPtr;
+            State->StartEIP = (uint)StartMethodPtr;
 
             // Allocate kernel memory for the kernel stack for this thread
             //  Used when this thread is preempted or does a sys call. Stack is switched to
@@ -63,11 +62,13 @@ namespace Kernel.Core.Processes
     {
         /* Do not re-order the fields in the structure. */
 
-        public bool Started;
+        public bool Started;            // Offset: 0
         
-        public uint ESP;
-        public ushort SS;
-        public byte* KernelStackTop;
-        public byte* ThreadStackTop;
+        public uint ESP;                // Offset: 1
+        public ushort SS;               // Offset: 5
+        public byte* KernelStackTop;    // Offset: 7
+        public byte* ThreadStackTop;    // Offset: 11
+        
+        public uint StartEIP;           // Offset: 15
     }
 }

@@ -199,12 +199,10 @@ namespace Kernel
         {
             BasicConsole.WriteLine(" Managed Main! ");
             BasicConsole.WriteLine(" > Enabling interrupts...");
-            BasicConsole.DelayOutput(5);
             Hardware.Interrupts.Interrupts.EnableInterrupts();
 
             BasicConsole.WriteLine(" > Executing normally...");
-            BasicConsole.DelayOutput(5);
-
+            
             try
             {
                 Core.Shell.InitDefault();
