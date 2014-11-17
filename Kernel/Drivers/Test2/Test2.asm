@@ -1,8 +1,8 @@
 BITS 32
 Start:
 	; Output following text to first bit of vid mem
-	;  P  r   o   c  e   s   s     1
-	; 80 114 111 99 101 115 115 32 49 
+	;  P  r   o   c  e   s   s     2
+	; 80 114 111 99 101 115 115 32 50
 	mov byte [0xB8000], 80
 	mov byte [0xB8002], 114
 	mov byte [0xB8004], 111
@@ -11,7 +11,7 @@ Start:
 	mov byte [0xB800A], 115
 	mov byte [0xB800C], 115
 	mov byte [0xB800E], 32
-	mov byte [0xB8010], 49
+	mov byte [0xB8010], 50
 
 	; Set the colour of the outputted text to:
 	; Green background (0x2-), 
