@@ -90,7 +90,7 @@ namespace Kernel.Core.Processes
         public static void Sleep(int ms)
         {
             Hardware.Interrupts.Interrupts.DisableInterrupts();
-            ProcessManager.CurrentThread.TimeToSleep = ms * 20 /* x * 1ms / [Scheduler period in ns] */;
+            ProcessManager.CurrentThread.TimeToSleep = ms /* x * 1ms / [Scheduler period in ns] = x * 1 = x */;
             ProcessManager.CurrentThread.TimeToRun = 0;
             Hardware.Interrupts.Interrupts.EnableInterrupts();
             // Busy wait for the scheduler to interrupt the thread, sleep it and

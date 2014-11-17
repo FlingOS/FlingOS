@@ -51,7 +51,7 @@ namespace Kernel.Hardware
         {
             uint physAddr = impl.FindFreePhysPageAddr();
             uint virtAddr = impl.FindFreeVirtPageAddr();
-            BasicConsole.WriteLine(((FOS_System.String)"Mapping free page. physAddr=") + physAddr + ", virtAddr=" + virtAddr);
+            //BasicConsole.WriteLine(((FOS_System.String)"Mapping free page. physAddr=") + physAddr + ", virtAddr=" + virtAddr);
             Map(physAddr, virtAddr, 4096);
             return (void*)virtAddr;
         }

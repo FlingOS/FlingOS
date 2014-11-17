@@ -86,7 +86,7 @@ namespace Kernel
                 ManagedMain_MainThread.State->ThreadStackTop = GetKernelStackPtr();
                 ManagedMain_MainThread.State->ESP = (uint)ManagedMain_MainThread.State->ThreadStackTop;
 
-                Core.Processes.ProcessManager.RegisterProcess(ManagedMainProcess, Core.Processes.Scheduler.Priority.High);
+                Core.Processes.ProcessManager.RegisterProcess(ManagedMainProcess, Core.Processes.Scheduler.Priority.Normal);
                 
                 Core.Processes.Scheduler.Init();
 

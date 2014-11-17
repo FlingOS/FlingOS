@@ -11,8 +11,8 @@ namespace Kernel.Core.Processes
         public enum Priority : int 
         {
             Low = 1,
-            Normal = 5,
-            High = 10
+            Normal = 2,
+            High = 5
         }
         
         public static void InitProcess(Process process, Priority priority)
@@ -76,8 +76,7 @@ namespace Kernel.Core.Processes
 #if SCHEDULER_TRACE
             Console.Default.WriteLine(" > Adding timer handler...");
 #endif
-            /* 50000 ns is ~double the minimum time period the timer can cope with hence the odd number */
-            Hardware.Devices.Timer.Default.RegisterHandler(OnTimerInterrupt, 50000, true, null);
+            Hardware.Devices.Timer.Default.RegisterHandler(OnTimerInterrupt, 1000000, true, null);
 
             Hardware.Interrupts.Interrupts.EnableInterrupts();
         }
