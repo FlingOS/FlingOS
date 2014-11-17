@@ -1,4 +1,7 @@
-﻿using System;
+﻿#define THREAD_TRACE
+#undef THREAD_TRACE
+
+using System;
 
 namespace Kernel.Core.Processes
 {
@@ -8,52 +11,66 @@ namespace Kernel.Core.Processes
         
         public ThreadState* State;
 
-        public uint TimeToRun;
+        public int TimeToRun;
+        public int TimeToRunReload;
 
         public Thread(void* StartMethodPtr, uint AnId)
         {
+#if THREAD_TRACE
             BasicConsole.WriteLine(" > > > Constructing thread object...");
+#endif
             //Init thread state
+#if THREAD_TRACE
             BasicConsole.WriteLine(" > > > Allocating state memory...");
+#endif
             State = (ThreadState*)FOS_System.Heap.Alloc((uint)sizeof(ThreadState));
 
             // Init Id and EIP
             //  Set EIP to the first instruction of the main method
+#if THREAD_TRACE
             BasicConsole.WriteLine(" > > > Setting info...");
+#endif
             Id = AnId;
             State->StartEIP = (uint)StartMethodPtr;
 
             // Allocate kernel memory for the kernel stack for this thread
             //  Used when this thread is preempted or does a sys call. Stack is switched to
             //  this thread-specific kernel stack
+#if THREAD_TRACE
             BasicConsole.WriteLine(" > > > Allocating kernel stack...");
-            State->KernelStackTop = (byte*)FOS_System.Heap.Alloc(0x1000, 4) + 0xFFC; //1KiB, 4-byte aligned
+#endif
+            State->KernelStackTop = (byte*)FOS_System.Heap.Alloc(0x1000, 4) + 0xFFC; //4KiB, 4-byte aligned
             
             // Allocate free memory for the user stack for this thread
             //  Used by this thread in normal execution
+#if THREAD_TRACE
             BasicConsole.WriteLine(" > > > Mapping thread stack page...");
-            //State->ThreadStackTop = (byte*)Hardware.VirtMemManager.MapFreePage() + 4092; //4 KiB, page-aligned
-            State->ThreadStackTop = (byte*)FOS_System.Heap.Alloc(0x4000, 4) + 0x3FFC; //4KiB, 4-byte aligned
+#endif
+            State->ThreadStackTop = (byte*)Hardware.VirtMemManager.MapFreePage() + 4092; //4 KiB, page-aligned
             
             // Set ESP to the top of the stack - 4 byte aligned, high address since x86 stack works
             //  downwards
+#if THREAD_TRACE
             BasicConsole.WriteLine(" > > > Setting ESP...");
+#endif
             State->ESP = (uint)State->ThreadStackTop;
 
-            // Init TimeToRun
-            //  - 5 timer events? Not sure how long that actually is. Adjust this...
-            BasicConsole.WriteLine(" > > > Setting time to run...");
-            TimeToRun = 5;
+            // TimeToRun and TimeToRunReload are set up in Scheduler.InitProcess which
+            //      is called when a process is registered.
 
             // Init SS
             //  Stack Segment = User or Kernel space data segment selector offset
             //  Kernel data segment selector offset (offset in GDT) = 0x10 (16)
+#if THREAD_TRACE
             BasicConsole.WriteLine(" > > > Setting SS...");
+#endif
             State->SS = 16;
 
             // Init Started
             //  Not started yet so set to false
+#if THREAD_TRACE
             BasicConsole.WriteLine(" > > > Setting started...");
+#endif
             State->Started = false;
         }
     }

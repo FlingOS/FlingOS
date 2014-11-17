@@ -47,6 +47,7 @@ namespace Kernel.Hardware.VirtMem
         /// <param name="pAddr">The physical address to map to.</param>
         /// <param name="vAddr">The virtual address to map.</param>
         public abstract void Map(uint pAddr, uint vAddr);
+        public abstract void Unmap(uint vAddr);
         /// <summary>
         /// Gets the physical address for the specified virtual address.
         /// </summary>

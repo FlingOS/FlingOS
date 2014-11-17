@@ -85,15 +85,17 @@ namespace Kernel
 
                 BasicConsole.WriteLine("Modifying ManagedMain Main thread...");
                 Core.Processes.Thread ManagedMain_MainThread = ((Core.Processes.Thread)ManagedMainProcess.Threads[0]);
+                BasicConsole.WriteLine(" > Unmapping mapped thread stack...");
+                Hardware.VirtMemManager.Unmap(ManagedMain_MainThread.State->ThreadStackTop);
                 BasicConsole.WriteLine(" > Setting preallocated stack...");
                 ManagedMain_MainThread.State->ThreadStackTop = GetKernelStackPtr();
                 BasicConsole.WriteLine(" > Setting ESP");
                 ManagedMain_MainThread.State->ESP = (uint)ManagedMain_MainThread.State->ThreadStackTop;
 
                 BasicConsole.WriteLine("Registering ManagedMain process...");
-                Core.Processes.ProcessManager.RegisterProcess(ManagedMainProcess);
+                Core.Processes.ProcessManager.RegisterProcess(ManagedMainProcess, Core.Processes.Scheduler.Priority.High);
                 BasicConsole.WriteLine("Registering sample process...");
-                Core.Processes.ProcessManager.RegisterProcess(SampleProcess);
+                Core.Processes.ProcessManager.RegisterProcess(SampleProcess, Core.Processes.Scheduler.Priority.Low);
 
                 BasicConsole.WriteLine("Initialising scheduler...");
                 Core.Processes.Scheduler.Init();

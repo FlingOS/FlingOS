@@ -30,6 +30,19 @@ namespace Kernel.Hardware.VirtMem
     [Compiler.PluggedClass]
     public unsafe class x86 : VirtMemImpl
     {
+        [Flags]
+        public enum PTEFlags : uint
+        {
+            None = 0x0,
+            Present = 0x1,
+            Writeable = 0x2,
+            SupervisorOnly = 0x4,
+            PagelevelWriteThrough = 0x8,
+            PageLevelCacheDisable = 0x10,
+            PAT = 0x80,
+            Global = 0x100
+        }
+
         //1024 * 1024 = 1048576
         /// <summary>
         /// Bitmap of all the free (unmapped) physical pages of memory.
@@ -117,7 +130,7 @@ namespace Kernel.Hardware.VirtMem
 
         public override uint FindFreePhysPageAddr()
         {
-            int result = UsedPhysPages.FindLastClearEntry();
+            int result = UsedPhysPages.FindFirstClearEntry();
             if (result == -1)
             {
                 ExceptionMethods.Throw(new FOS_System.Exceptions.OutOfMemoryException("Could not find any more free physical pages."));
@@ -126,7 +139,7 @@ namespace Kernel.Hardware.VirtMem
         }
         public override uint FindFreeVirtPageAddr()
         {
-            int result = UsedVirtPages.FindLastClearEntry();
+            int result = UsedVirtPages.FindFirstClearEntry();
             if (result == -1)
             {
                 ExceptionMethods.Throw(new FOS_System.Exceptions.OutOfMemoryException("Could not find any more free virtual pages."));
@@ -168,12 +181,29 @@ namespace Kernel.Hardware.VirtMem
             BasicConsole.WriteLine(((FOS_System.String)"ptPtr=") + (uint)virtPTPtr);
 #endif 
             //Set the page table entry
-            SetPageEntry(virtPTPtr, virtPTIdx, pAddr);
+            SetPageEntry(virtPTPtr, virtPTIdx, pAddr, PTEFlags.Present | PTEFlags.Writeable);
             //Set directory table entry
             SetDirectoryEntry(virtPDIdx, (uint*)GetPhysicalAddress((uint)virtPTPtr));
 
             //Invalidate the page table entry so that mapping isn't CPU cached.
             InvalidatePTE(vAddr);
+        }
+        public override void Unmap(uint vAddr)
+        {
+            uint pAddr = GetPhysicalAddress(vAddr);
+
+            uint virtPDIdx = vAddr >> 22;
+            uint virtPTIdx = (vAddr >> 12) & 0x03FF;
+
+            uint physPDIdx = pAddr >> 22;
+            uint physPTIdx = (pAddr >> 12) & 0x03FF;
+
+            UsedPhysPages.Clear((int)((physPDIdx * 1024) + physPTIdx));
+            UsedVirtPages.Clear((int)((virtPDIdx * 1024) + virtPTIdx));
+
+            uint* virtPTPtr = GetFixedPage(virtPDIdx);
+            SetPageEntry(virtPTPtr, virtPTIdx, 0, PTEFlags.None);
+            InvalidatePTE(vAddr);            
         }
         /// <summary>
         /// Gets the physical address for the specified virtual address.
@@ -284,7 +314,7 @@ namespace Kernel.Hardware.VirtMem
         /// <param name="pageTablePtr">The page table to set the value in.</param>
         /// <param name="entry">The entry index (page table index) of the entry to set.</param>
         /// <param name="addr">The physical address to map the entry to.</param>
-        private void SetPageEntry(uint* pageTablePtr, uint entry, uint addr)
+        private void SetPageEntry(uint* pageTablePtr, uint entry, uint addr, PTEFlags flags)
         {
 #if PAGING_TRACE
             BasicConsole.WriteLine("Setting page entry...");
@@ -293,7 +323,7 @@ namespace Kernel.Hardware.VirtMem
             BasicConsole.WriteLine(((FOS_System.String)"addr=") + addr);
 #endif 
 
-            pageTablePtr[entry] = addr | 3;
+            pageTablePtr[entry] = addr | (uint)flags;
 
 #if PAGING_TRACE
             if(pageTablePtr[entry] != (addr | 3))

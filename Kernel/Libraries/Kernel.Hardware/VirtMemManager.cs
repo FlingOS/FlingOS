@@ -51,8 +51,18 @@ namespace Kernel.Hardware
         {
             uint physAddr = impl.FindFreePhysPageAddr();
             uint virtAddr = impl.FindFreeVirtPageAddr();
-            impl.Map(physAddr, virtAddr);
+            BasicConsole.WriteLine(((FOS_System.String)"Mapping free page. physAddr=") + physAddr + ", virtAddr=" + virtAddr);
+            Map(physAddr, virtAddr, 4096);
             return (void*)virtAddr;
+        }
+
+        public static void Unmap(void* vAddr)
+        {
+            Unmap((uint)vAddr);
+        }
+        public static void Unmap(uint vAddr)
+        {
+            impl.Unmap(vAddr);
         }
 
         /// <summary>
@@ -132,7 +142,31 @@ namespace Kernel.Hardware
         /// </summary>
         public static void Test()
         {
-            impl.Test();
+            BasicConsole.WriteLine("Starting virt mem test...");
+
+            try
+            {
+                impl.Test();
+
+                byte* ptr = (byte*)MapFreePage();
+                for (int i = 0; i < 4096; i++, ptr++)
+                {
+                    *ptr = 5;
+
+                    if (*ptr != 5)
+                    {
+                        BasicConsole.WriteLine("Failed to set mem!");
+                    }
+                }
+            }
+            catch
+            {
+                BasicConsole.WriteLine("Exception. Failed test.");
+                BasicConsole.WriteLine(ExceptionMethods.CurrentException._Type.Signature);
+                BasicConsole.WriteLine(ExceptionMethods.CurrentException.Message);
+            }
+
+            BasicConsole.DelayOutput(5);
         }
         /// <summary>
         /// Prints out information about the free physical and virtual pages.
