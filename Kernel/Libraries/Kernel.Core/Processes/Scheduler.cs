@@ -24,8 +24,8 @@ namespace Kernel.Core.Processes
             ProcessManager.CurrentThread_State = ProcessManager.CurrentThread.State;
 
             //Mark the thread as started since we will be jumping to it directly
-            BasicConsole.WriteLine(" > Marking main thread as started...");
-            ProcessManager.CurrentThread_State->Started = true;
+            //BasicConsole.WriteLine(" > Marking main thread as started...");
+            //ProcessManager.CurrentThread_State->Started = true;
 
             //Init TSS
             BasicConsole.WriteLine(" > Getting TSS pointer...");
@@ -45,10 +45,12 @@ namespace Kernel.Core.Processes
             BasicConsole.WriteLine(" > Adding timer handler...");
             Hardware.Devices.Timer.Default.RegisterHandler(OnTimerInterrupt, 1000, true, null);
 
+            Hardware.Interrupts.Interrupts.EnableInterrupts();
+
             //Jump to ManagedMain start point
             //  - ManagedMain will re-enable interrupts so the scheduler can work
-            BasicConsole.WriteLine(" > Jumping to main method...");
-            JumpToMainMethod(ProcessManager.CurrentThread_State->StartEIP, (uint)ProcessManager.CurrentThread_State->ThreadStackTop);
+            //BasicConsole.WriteLine(" > Jumping to main method...");
+            //JumpToMainMethod(ProcessManager.CurrentThread_State->StartEIP, (uint)ProcessManager.CurrentThread_State->ThreadStackTop);
         }
         [Compiler.PluggedMethod(ASMFilePath=@"ASM\Processes\Scheduler")]
         private static void LoadTR()
@@ -66,32 +68,46 @@ namespace Kernel.Core.Processes
 
         private static void OnTimerInterrupt(FOS_System.Object state)
         {
-            BasicConsole.WriteLine("Scheduler interrupt started...");
+            //BasicConsole.WriteLine("Scheduler interrupt started...");
 
+            //BasicConsole.WriteLine("Getting current thread index...");
             int threadIdx = ProcessManager.CurrentProcess.Threads.IndexOf(ProcessManager.CurrentThread);
+            //BasicConsole.WriteLine("Moving to next thread index...");
             threadIdx++;
+            //BasicConsole.WriteLine("Checking thread count...");
             if (threadIdx >= ProcessManager.CurrentProcess.Threads.Count)
             {
+                //BasicConsole.WriteLine("Getting process index...");
                 int processIdx = ProcessManager.Processes.IndexOf(ProcessManager.CurrentProcess);
+                //BasicConsole.WriteLine("Moving to next process...");
                 processIdx++;
+                //BasicConsole.WriteLine("Setting thread index to first thread...");
                 threadIdx = 0;
+                //BasicConsole.WriteLine("Checking process count...");
                 if (processIdx >= ProcessManager.Processes.Count)
                 {
+                    //BasicConsole.WriteLine("Setting process index to first process...");
                     //Go back to start of list
                     processIdx = 0;
                 }
 
+                //BasicConsole.WriteLine("Setting current process...");
                 ProcessManager.CurrentProcess = (Process)ProcessManager.Processes[processIdx];
             }
 
+            //BasicConsole.WriteLine("Setting current thread...");
             ProcessManager.CurrentThread = (Thread)ProcessManager.CurrentProcess.Threads[threadIdx];
+            //BasicConsole.WriteLine("Setting current thread state...");
             ProcessManager.CurrentThread_State = ProcessManager.CurrentThread.State;
 
+            //BasicConsole.WriteLine("Checking thread started...");
             if (!ProcessManager.CurrentThread_State->Started)
             {
+                //BasicConsole.WriteLine("Marking thread as started...");
                 ProcessManager.CurrentThread_State->Started = true;
 
-                uint* stackPtr = (uint*)ProcessManager.CurrentThread_State->ESP;
+                //BasicConsole.WriteLine("Initialising thread stack...");
+                uint* stackPtr = (uint*)ProcessManager.CurrentThread_State->ThreadStackTop;
                 stackPtr--;
                 *stackPtr-- = 0x0202; // EFLAGS - IF and mandatory bit set
                 *stackPtr-- = 0x08;   // CS
@@ -103,17 +119,18 @@ namespace Kernel.Core.Processes
                 *stackPtr-- = (uint)ProcessManager.CurrentThread_State->ThreadStackTop;    //esp
                 *stackPtr-- = (uint)ProcessManager.CurrentThread_State->ThreadStackTop;    //ebp
                 *stackPtr-- = 0;    //esi
-                *stackPtr-- = 0;    //edi
+                *stackPtr-- = 0;    //edi 
                 *stackPtr-- = 0x10; //ds
                 *stackPtr-- = 0x10; //es
                 *stackPtr-- = 0x10; //fs
-                *stackPtr   = 0x10; //gs
+                *stackPtr = 0x10; //gs
 
+                //BasicConsole.WriteLine("Updating thread stack...");
                 ProcessManager.CurrentThread_State->ESP = (uint)stackPtr;
             }
 
-            BasicConsole.WriteLine("Scheduler interrupt ended.");
-            BasicConsole.DelayOutput(1);
+            //BasicConsole.WriteLine("Scheduler interrupt ended.");
+            //BasicConsole.DelayOutput(1);
         }
     }
 

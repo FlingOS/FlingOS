@@ -310,8 +310,6 @@ call method_System_Void_RETEND_Kernel_ExceptionMethods_DECLEND_Throw_PageFaultEx
 INTERRUPTS_RESTORE_STATE RESTORE_STATE_SKIP_NUM
 %assign RESTORE_STATE_SKIP_NUM RESTORE_STATE_SKIP_NUM+1
 
-ENABLE_INTERRUPTS
-
 IRetd
 
 ; END - Proper exception handlers 
@@ -399,8 +397,6 @@ CommonInterruptHandler%1:
 	INTERRUPTS_RESTORE_STATE RESTORE_STATE_SKIP_NUM
 	%assign RESTORE_STATE_SKIP_NUM RESTORE_STATE_SKIP_NUM+1
 
-	ENABLE_INTERRUPTS
-		
     IRetd
 %endmacro
 %assign handlernum2 17

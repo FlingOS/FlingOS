@@ -85,8 +85,6 @@ namespace Kernel
 
                 BasicConsole.WriteLine("Modifying ManagedMain Main thread...");
                 Core.Processes.Thread ManagedMain_MainThread = ((Core.Processes.Thread)ManagedMainProcess.Threads[0]);
-                BasicConsole.WriteLine(" > Freeing stack...");
-                Heap.Free(ManagedMain_MainThread.State->ThreadStackTop - 4092);
                 BasicConsole.WriteLine(" > Setting preallocated stack...");
                 ManagedMain_MainThread.State->ThreadStackTop = GetKernelStackPtr();
                 BasicConsole.WriteLine(" > Setting ESP");
@@ -198,8 +196,8 @@ namespace Kernel
         private static unsafe void ManagedMain()
         {
             BasicConsole.WriteLine(" Managed Main! ");
-            BasicConsole.WriteLine(" > Enabling interrupts...");
-            Hardware.Interrupts.Interrupts.EnableInterrupts();
+            //BasicConsole.WriteLine(" > Enabling interrupts...");
+            //Hardware.Interrupts.Interrupts.EnableInterrupts();
 
             BasicConsole.WriteLine(" > Executing normally...");
             

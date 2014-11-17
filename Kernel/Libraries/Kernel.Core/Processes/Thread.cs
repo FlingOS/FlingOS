@@ -27,13 +27,14 @@ namespace Kernel.Core.Processes
             //  Used when this thread is preempted or does a sys call. Stack is switched to
             //  this thread-specific kernel stack
             BasicConsole.WriteLine(" > > > Allocating kernel stack...");
-            State->KernelStackTop = (byte*)FOS_System.Heap.Alloc(0x1000, 4) + 4092; //1KiB, 4-byte aligned
-
+            State->KernelStackTop = (byte*)FOS_System.Heap.Alloc(0x1000, 4) + 0xFFC; //1KiB, 4-byte aligned
+            
             // Allocate free memory for the user stack for this thread
             //  Used by this thread in normal execution
             BasicConsole.WriteLine(" > > > Mapping thread stack page...");
-            State->ThreadStackTop = (byte*)Hardware.VirtMemManager.MapFreePage() + 4092; //4 KiB, page-aligned
-
+            //State->ThreadStackTop = (byte*)Hardware.VirtMemManager.MapFreePage() + 4092; //4 KiB, page-aligned
+            State->ThreadStackTop = (byte*)FOS_System.Heap.Alloc(0x4000, 4) + 0x3FFC; //4KiB, 4-byte aligned
+            
             // Set ESP to the top of the stack - 4 byte aligned, high address since x86 stack works
             //  downwards
             BasicConsole.WriteLine(" > > > Setting ESP...");
