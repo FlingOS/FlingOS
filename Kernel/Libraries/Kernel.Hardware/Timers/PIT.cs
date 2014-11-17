@@ -64,12 +64,12 @@ namespace Kernel.Hardware.Timers
         /// <summary>
         /// The reload value for timer 0. Sets the frequency of timer 0.
         /// </summary>
-        private ushort _T0Reload = 65535; //2048;     //Produces ~1.72ms delay between interrupts
+        private ushort _T0Reload = 32; // Produces ~0.0268ms delay between interrupts
         /// <summary>
         /// The reload value for timer 2. Sets the frequency of timer 2 hence 
         /// the frequency of the PC speaker beep.
         /// </summary>
-        private ushort _T2Reload = 65535;
+        private ushort _T2Reload = 1024;
         /// <summary>
         /// Incremented endlessly to create a unique timer id.
         /// </summary>

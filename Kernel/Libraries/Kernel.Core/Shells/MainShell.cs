@@ -67,6 +67,7 @@ namespace Kernel.Core.Shells
                          *              IsInst      /   VirtMem                     }
                          *  - GC   { Cleanup }
                          *  - USB { Update / Eject }
+                         *  - Start { Raw } { Filename }
                          */
 
                         //Get the current input line from the user
@@ -663,7 +664,7 @@ namespace Kernel.Core.Shells
                             }
                             #endregion
                         }
-                        else if(cmd == "test")
+                        else if (cmd == "test")
                         {
                             //For details on how the code here works, see Init
                             #region Test
@@ -675,55 +676,55 @@ namespace Kernel.Core.Shells
 
                             if (opt1 != null)
                             {
-                                if(opt1 == "interrupts")
+                                if (opt1 == "interrupts")
                                 {
                                     InterruptsTest();
                                 }
-                                else if(opt1 == "delegates")
+                                else if (opt1 == "delegates")
                                 {
                                     DelegateTest();
                                 }
-                                else if(opt1 == "filesystems")
+                                else if (opt1 == "filesystems")
                                 {
                                     FileSystemTests();
                                 }
-                                else if(opt1 == "ulltcomp")
+                                else if (opt1 == "ulltcomp")
                                 {
                                     ULongLTComparisonTest();
                                 }
-                                else if(opt1 == "stringconcat")
+                                else if (opt1 == "stringconcat")
                                 {
                                     StringConcatTest();
                                 }
-                                else if(opt1 == "objarray")
+                                else if (opt1 == "objarray")
                                 {
                                     ObjectArrayTest();
                                 }
-                                else if(opt1 == "intarray")
+                                else if (opt1 == "intarray")
                                 {
                                     IntArrayTest();
                                 }
-                                else if(opt1 == "dummyobj")
+                                else if (opt1 == "dummyobj")
                                 {
                                     DummyObjectTest();
                                 }
-                                else if(opt1 == "divideby0")
+                                else if (opt1 == "divideby0")
                                 {
                                     DivideByZeroTest();
                                 }
-                                else if(opt1 == "exceptions1")
+                                else if (opt1 == "exceptions1")
                                 {
                                     ExceptionsTestP1();
                                 }
-                                else if(opt1 == "exceptions2")
+                                else if (opt1 == "exceptions2")
                                 {
                                     ExceptionsTestP2();
                                 }
-                                else if(opt1 == "pcbeep")
+                                else if (opt1 == "pcbeep")
                                 {
                                     PCBeepTest();
                                 }
-                                else if(opt1 == "timer")
+                                else if (opt1 == "timer")
                                 {
                                     TimerTest();
                                 }
@@ -756,6 +757,61 @@ namespace Kernel.Core.Shells
                                                   "                               Exceptions1 /  Exceptions2  /  PCBeep      /\n" +
                                                   "                               Timer       /  Keyboard     /  FieldsTable /\n" +
                                                   "                               IsInst      /  VirtMem                     }");
+                            }
+                            #endregion
+                        }
+                        else if (cmd == "start")
+                        {
+                            //For details on how the code here works, see Init
+                            #region Test
+                            FOS_System.String opt1 = null;
+                            if (cmdParts.Count > 1)
+                            {
+                                opt1 = (FOS_System.String)cmdParts[1];
+                            }
+
+                            if (opt1 != null)
+                            {
+                                if (opt1 == "raw")
+                                {
+                                    FOS_System.String opt2 = null;
+                                    if (cmdParts.Count > 2)
+                                    {
+                                        opt2 = (FOS_System.String)cmdParts[2];
+                                    }
+
+                                    if (opt2 != null)
+                                    {
+                                        if (opt2.StartsWith("./"))
+                                        {
+                                            opt2 = CurrentDir + opt2.Substring(2, opt2.length - 2);
+                                        }
+
+                                        File aFile = File.Open(opt2);
+                                        if (aFile != null)
+                                        {
+                                            Processes.ProcessManager.RegisterProcess(
+                                                Processes.ProcessManager.LoadProcess_FromRawExe(aFile), 
+                                                Processes.Scheduler.Priority.Normal);
+                                        }
+                                        else
+                                        {
+                                            console.WriteLine("File not found.");
+                                        }
+                                    }
+                                    else
+                                    {
+                                        console.WriteLine("You must specify a file path.");
+                                    }
+                                }
+                                else
+                                {
+                                    UnrecognisedOption();
+                                }
+                            }
+                            else
+                            {
+                                console.WriteLine("You must specify the exe format.");
                             }
                             #endregion
                         }
@@ -1491,7 +1547,7 @@ namespace Kernel.Core.Shells
             Hardware.PCI.PCI.Init();
             console.WriteLine("done.");
         }
-
+        
         /// <summary>
         /// Outputs a warning to the user indicating their input was unrecognised.
         /// </summary>

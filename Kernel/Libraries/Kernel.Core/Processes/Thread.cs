@@ -14,16 +14,16 @@ namespace Kernel.Core.Processes
         public ThreadState* State;
 
         /// <remarks>
-        /// Units of 100ns
+        /// Units of [time period of scheduler]
         /// </remarks>
         public int TimeToRun;
         /// <remarks>
-        /// Units of 100ns
+        /// Units of [time period of scheduler]
         /// </remarks>
         public int TimeToRunReload;
 
         /// <remarks>
-        /// Units of 100ns
+        /// Units of ms
         /// </remarks>
         public int TimeToSleep = 0;
 
@@ -90,7 +90,7 @@ namespace Kernel.Core.Processes
         public static void Sleep(int ms)
         {
             Hardware.Interrupts.Interrupts.DisableInterrupts();
-            ProcessManager.CurrentThread.TimeToSleep = ms;
+            ProcessManager.CurrentThread.TimeToSleep = ms * 20 /* x * 1ms / [Scheduler period in ns] */;
             ProcessManager.CurrentThread.TimeToRun = 0;
             Hardware.Interrupts.Interrupts.EnableInterrupts();
             // Busy wait for the scheduler to interrupt the thread, sleep it and

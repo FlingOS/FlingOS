@@ -76,7 +76,8 @@ namespace Kernel.Core.Processes
 #if SCHEDULER_TRACE
             Console.Default.WriteLine(" > Adding timer handler...");
 #endif
-            Hardware.Devices.Timer.Default.RegisterHandler(OnTimerInterrupt, 1000000, true, null);
+            /* 50000 ns is ~double the minimum time period the timer can cope with hence the odd number */
+            Hardware.Devices.Timer.Default.RegisterHandler(OnTimerInterrupt, 50000, true, null);
 
             Hardware.Interrupts.Interrupts.EnableInterrupts();
         }
@@ -308,6 +309,8 @@ namespace Kernel.Core.Processes
         private delegate void TerminateMethod();
         private static void ThreadTerminated()
         {
+            
+#if SCHEDULER_TRACE
             // START - Trace code
             Hardware.Interrupts.Interrupts.DisableInterrupts();
             
@@ -316,12 +319,13 @@ namespace Kernel.Core.Processes
 
             Hardware.Interrupts.Interrupts.EnableInterrupts();
 
-            for (int i = 0; i < 100; i++)
+            for (int i = 0; i < 3; i++)
             {
                 Console.Default.Write(".");
                 Thread.Sleep(1000);
             }
             // END - Trace code
+#endif
 
             Hardware.Interrupts.Interrupts.DisableInterrupts();
             
