@@ -29,7 +29,17 @@ namespace Kernel.Core.Processes
 #endif
             Id = AnId;
             Name = AName;
+
+            CreateThread(MainMethod);
             
+#if PROCESS_TRACE
+            Console.Default.WriteLine(" > > Setting up memory layout...");
+#endif
+            TheMemoryLayout.CR3 = GetCR3();
+        }
+
+        public void CreateThread(ThreadStartMethod MainMethod)
+        {
 #if PROCESS_TRACE
             Console.Default.WriteLine(" > > Creating thread...");
 #endif
@@ -38,11 +48,6 @@ namespace Kernel.Core.Processes
             Console.Default.WriteLine(" > > Adding thread object...");
 #endif
             Threads.Add(mainThread);
-            
-#if PROCESS_TRACE
-            Console.Default.WriteLine(" > > Setting up memory layout...");
-#endif
-            TheMemoryLayout.CR3 = GetCR3();
         }
 
         [Compiler.PluggedMethod(ASMFilePath=@"ASM\Processes\Process")]

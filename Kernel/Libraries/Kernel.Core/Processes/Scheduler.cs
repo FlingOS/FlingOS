@@ -18,12 +18,6 @@ namespace Kernel.Core.Processes
         public static void InitProcess(Process process, Priority priority)
         {
             process.Priority = priority;
-
-            for (int i = 0; i < process.Threads.Count; i++)
-            {
-                Thread thread = ((Thread)process.Threads[i]);
-                thread.TimeToRun = thread.TimeToRunReload = (int)priority;
-            }
         }
 
         public static void Init()
@@ -32,7 +26,7 @@ namespace Kernel.Core.Processes
 #if SCHEDULER_TRACE
             Console.Default.WriteLine(" > Disabling interrupts...");
 #endif
-            Hardware.Interrupts.Interrupts.DisableInterrupts();
+            Disable();
 
             //Load first process and first thread (ManagedMain process)
 #if SCHEDULER_TRACE
@@ -78,7 +72,7 @@ namespace Kernel.Core.Processes
 #endif
             Hardware.Devices.Timer.Default.RegisterHandler(OnTimerInterrupt, 1000000, true, null);
 
-            Hardware.Interrupts.Interrupts.EnableInterrupts();
+            Enable();
         }
         [Compiler.PluggedMethod(ASMFilePath=@"ASM\Processes\Scheduler")]
         private static void LoadTR()
@@ -272,6 +266,9 @@ namespace Kernel.Core.Processes
 #if SCHEDULER_TRACE
                 Console.Default.WriteLine("Marking thread as started...");
 #endif
+            ProcessManager.CurrentThread.TimeToRunReload = (int)ProcessManager.CurrentProcess.Priority;
+            ProcessManager.CurrentThread.TimeToRun = ProcessManager.CurrentThread.TimeToRunReload;
+
             ProcessManager.CurrentThread_State->Started = true;
             ProcessManager.CurrentThread_State->Terminated = false;
 
@@ -311,12 +308,12 @@ namespace Kernel.Core.Processes
             
 #if SCHEDULER_TRACE
             // START - Trace code
-            Hardware.Interrupts.Interrupts.DisableInterrupts();
+            Disable();
             
             Console.Default.WriteLine("Thread terminated.");
             Console.Default.WriteLine("Process Name: " + ProcessManager.CurrentProcess.Name + ", Thread Id: " + ProcessManager.CurrentThread.Id);
 
-            Hardware.Interrupts.Interrupts.EnableInterrupts();
+            Enable();
 
             for (int i = 0; i < 3; i++)
             {
@@ -326,13 +323,13 @@ namespace Kernel.Core.Processes
             // END - Trace code
 #endif
 
-            Hardware.Interrupts.Interrupts.DisableInterrupts();
+            Disable();
             
             // Mark thread as terminated. Leave it to the scheduler to stop running
             //  and the process manager can destroy it later.
             ProcessManager.CurrentThread_State->Terminated = true;
 
-            Hardware.Interrupts.Interrupts.EnableInterrupts();
+            Enable();
 
             //Wait for the scheduler to interrupt us. We will never return here again (inside this thread)
             //  since it has now been terminated.
@@ -342,6 +339,15 @@ namespace Kernel.Core.Processes
                 Console.Default.WriteLine("Still running!");
 #endif
             }
+        }
+
+        public static void Enable()
+        {
+            Hardware.Interrupts.Interrupts.EnableInterrupts();
+        }
+        public static void Disable()
+        {
+            Hardware.Interrupts.Interrupts.DisableInterrupts();
         }
     }
 

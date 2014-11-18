@@ -20,6 +20,7 @@ using Kernel.FOS_System;
 using Kernel.FOS_System.Collections;
 using Kernel.FOS_System.IO;
 using System;
+using Kernel.Core.Processes;
 
 namespace Kernel
 {
@@ -78,17 +79,16 @@ namespace Kernel
 
                 Core.Console.InitDefault();
 
-                Core.Processes.Process ManagedMainProcess =
-                    Core.Processes.ProcessManager.CreateProcess(ManagedMain, "Managed Main");
+                Process ManagedMainProcess = ProcessManager.CreateProcess(ManagedMain, "Managed Main");
                 
-                Core.Processes.Thread ManagedMain_MainThread = ((Core.Processes.Thread)ManagedMainProcess.Threads[0]);
+                Thread ManagedMain_MainThread = ((Thread)ManagedMainProcess.Threads[0]);
                 Hardware.VirtMemManager.Unmap(ManagedMain_MainThread.State->ThreadStackTop);
                 ManagedMain_MainThread.State->ThreadStackTop = GetKernelStackPtr();
                 ManagedMain_MainThread.State->ESP = (uint)ManagedMain_MainThread.State->ThreadStackTop;
 
-                Core.Processes.ProcessManager.RegisterProcess(ManagedMainProcess, Core.Processes.Scheduler.Priority.Normal);
+                ProcessManager.RegisterProcess(ManagedMainProcess, Scheduler.Priority.Normal);
                 
-                Core.Processes.Scheduler.Init();
+                Scheduler.Init();
 
                 // Busy wait until the scheduler interrupts us. 
                 while (true)
@@ -195,6 +195,9 @@ namespace Kernel
             
             try
             {
+                BasicConsole.WriteLine(" > Starting GC Cleanup task...");
+                ProcessManager.CurrentProcess.CreateThread(Core.GCCleanupTask.Main);
+
                 Core.Shell.InitDefault();
                 Core.Shell.Default.Execute();
 

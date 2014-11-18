@@ -57,6 +57,7 @@
   <ItemGroup>
     <Compile Include="Console.cs" />
     <Compile Include="Consoles\AdvancedConsole.cs" />
+    <Compile Include="GCCleanupTask.cs" />
     <Compile Include="Processes\ProcessManager.cs" />
     <Compile Include="Processes\SampleProcess.cs" />
     <Compile Include="Processes\Scheduler.cs" />
