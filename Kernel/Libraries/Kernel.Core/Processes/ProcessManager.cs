@@ -16,14 +16,14 @@ namespace Kernel.Core.Processes
 
         private static uint ProcessIdGenerator = 0;
 
-        public static Process LoadSampleProcess()
+        public static Process LoadSampleProcess(bool UserMode)
         {
 #if PROCESSMANAGER_TRACE
             Console.Default.WriteLine(" > Creating sample process object...");
 #endif
-            return CreateProcess(SampleProcess.Main, "Sample Process");
+            return CreateProcess(SampleProcess.Main, "Sample Process", UserMode);
         }
-        public static Process LoadProcess_FromRawExe(File RawExeFile)
+        public static Process LoadProcess_FromRawExe(File RawExeFile, bool UserMode)
         {
             // - Read in file contents
             // - Map enough memory for the exe file contents
@@ -31,7 +31,8 @@ namespace Kernel.Core.Processes
 
             //TODO - Handle case of EXE being bigger than 4KiB?
             //          - Would need to map contiguous pages.
-            byte* destMemPtr = (byte*)Hardware.VirtMemManager.MapFreePage();
+            byte* destMemPtr = (byte*)Hardware.VirtMemManager.MapFreePage(
+                UserMode ? Hardware.VirtMem.VirtMemImpl.PageFlags.None : Hardware.VirtMem.VirtMemImpl.PageFlags.KernelOnly);
 
             int bytesRead = 0;
             byte[] readBuffer = new byte[4096];
@@ -39,14 +40,14 @@ namespace Kernel.Core.Processes
             Utilities.MemoryUtils.MemCpy_32(destMemPtr, ((byte*)Utilities.ObjectUtilities.GetHandle(readBuffer)) + FOS_System.Array.FieldsBytesSize, (uint)bytesRead);
             
             // - Create the process
-            return CreateProcess((ThreadStartMethod)Utilities.ObjectUtilities.GetObject(destMemPtr), RawExeFile.Name);                                          
+            return CreateProcess((ThreadStartMethod)Utilities.ObjectUtilities.GetObject(destMemPtr), RawExeFile.Name, UserMode);                                          
         }
-        public static Process CreateProcess(ThreadStartMethod MainMethod, FOS_System.String Name)
+        public static Process CreateProcess(ThreadStartMethod MainMethod, FOS_System.String Name, bool UserMode)
         {
 #if PROCESSMANAGER_TRACE
             Console.Default.WriteLine(" > Creating process object...");
 #endif
-            return new Process(MainMethod, ProcessIdGenerator++, Name);
+            return new Process(MainMethod, ProcessIdGenerator++, Name, UserMode);
         }
         public static void RegisterProcess(Process process, Scheduler.Priority priority)
         {

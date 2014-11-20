@@ -790,9 +790,35 @@ namespace Kernel.Core.Shells
                                         File aFile = File.Open(opt2);
                                         if (aFile != null)
                                         {
-                                            Processes.ProcessManager.RegisterProcess(
-                                                Processes.ProcessManager.LoadProcess_FromRawExe(aFile), 
-                                                Processes.Scheduler.Priority.Normal);
+                                            FOS_System.String opt3 = null;
+                                            if (cmdParts.Count > 2)
+                                            {
+                                                opt3 = (FOS_System.String)cmdParts[3];
+                                            }
+
+                                            if (opt3 != null)
+                                            {
+                                                if (opt3 == "km")
+                                                {
+                                                    Processes.ProcessManager.RegisterProcess(
+                                                        Processes.ProcessManager.LoadProcess_FromRawExe(aFile, false),
+                                                        Processes.Scheduler.Priority.Normal);
+                                                }
+                                                else if (opt3 == "um")
+                                                {
+                                                    Processes.ProcessManager.RegisterProcess(
+                                                        Processes.ProcessManager.LoadProcess_FromRawExe(aFile, true),
+                                                        Processes.Scheduler.Priority.Normal);
+                                                }
+                                                else
+                                                {
+                                                    UnrecognisedOption();
+                                                }
+                                            }
+                                            else
+                                            {
+                                                console.WriteLine("You must specify the execution mode [KM/UM].");
+                                            }
                                         }
                                         else
                                         {

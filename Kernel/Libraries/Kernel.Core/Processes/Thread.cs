@@ -26,8 +26,8 @@ namespace Kernel.Core.Processes
         /// Units of ms
         /// </remarks>
         public int TimeToSleep = 0;
-
-        public Thread(ThreadStartMethod StartMethod, uint AnId)
+        
+        public Thread(ThreadStartMethod StartMethod, uint AnId, bool UserMode)
         {
 #if THREAD_TRACE
             Console.Default.WriteLine(" > > > Constructing thread object...");
@@ -59,7 +59,10 @@ namespace Kernel.Core.Processes
 #if THREAD_TRACE
             Console.Default.WriteLine(" > > > Mapping thread stack page...");
 #endif
-            State->ThreadStackTop = (byte*)Hardware.VirtMemManager.MapFreePage() + 4092; //4 KiB, page-aligned
+            State->UserMode = UserMode;
+            State->ThreadStackTop = (byte*)Hardware.VirtMemManager.MapFreePage(
+                UserMode ? Hardware.VirtMem.VirtMemImpl.PageFlags.None :
+                           Hardware.VirtMem.VirtMemImpl.PageFlags.KernelOnly) + 4092; //4 KiB, page-aligned
             
             // Set ESP to the top of the stack - 4 byte aligned, high address since x86 stack works
             //  downwards
@@ -74,10 +77,12 @@ namespace Kernel.Core.Processes
             // Init SS
             //  Stack Segment = User or Kernel space data segment selector offset
             //  Kernel data segment selector offset (offset in GDT) = 0x10 (16)
+            //  User   data segment selector offset (offset in GDT) = 0x23 (32|3)
+            //          User data segment selector must also be or'ed with 3 for User Privilege level
 #if THREAD_TRACE
             Console.Default.WriteLine(" > > > Setting SS...");
 #endif
-            State->SS = 16;
+            State->SS = UserMode ? (ushort)0x23 : (ushort)0x10;
 
             // Init Started
             //  Not started yet so set to false
@@ -117,5 +122,7 @@ namespace Kernel.Core.Processes
         
         public uint StartEIP;           // Offset: 15
         public bool Terminated;         // Offset: 19
+
+        public bool UserMode;           // Offset: 20
     }
 }

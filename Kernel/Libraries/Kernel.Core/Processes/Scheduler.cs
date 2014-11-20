@@ -54,7 +54,9 @@ namespace Kernel.Core.Processes
 #if SCHEDULER_TRACE
             Console.Default.WriteLine(" > Setting ss0...");
 #endif
-            tss->ss0 = ProcessManager.CurrentThread_State->SS;
+            //Note: KM CS is loaded from IDT entry on ring 3 -> 0 switch
+            tss->ss0 = 0x10; //Kernel mode stack segment = KM Data segment (same for all processes)
+            
 #if SCHEDULER_TRACE
             Console.Default.WriteLine(" > Setting cr3...");
 #endif
@@ -70,7 +72,8 @@ namespace Kernel.Core.Processes
 #if SCHEDULER_TRACE
             Console.Default.WriteLine(" > Adding timer handler...");
 #endif
-            Hardware.Devices.Timer.Default.RegisterHandler(OnTimerInterrupt, 1000000, true, null);
+            /*1000000*/
+            Hardware.Devices.Timer.Default.RegisterHandler(OnTimerInterrupt, 10000000, true, null);
 
             Enable();
         }
@@ -84,10 +87,16 @@ namespace Kernel.Core.Processes
             return null;
         }
         
+#if SCHEDULER_TRACE
+        static bool wasum = false;
+#endif
         private static void OnTimerInterrupt(FOS_System.Object state)
         {
 #if SCHEDULER_TRACE
-            Console.Default.WriteLine("Scheduler interrupt started...");
+            if (print)
+            {
+                Console.Default.WriteLine("Scheduler interrupt started...");
+            }
 #endif
 
 #if SCHEDULER_TRACE
@@ -222,15 +231,28 @@ namespace Kernel.Core.Processes
 #endif
                 ProcessManager.CurrentThread_State = ProcessManager.CurrentThread.State;
             }
-
+            
 #if SCHEDULER_TRACE
+            if (wasum != ProcessManager.CurrentProcess.UserMode)
+            {
+                if (wasum)
+                {
+                    Console.Default.WriteLine("Switched to KM process.");
+                }
+                else
+                {
+                    Console.Default.WriteLine("Switched to UM process.");
+                }
+            }
+            wasum = ProcessManager.CurrentProcess.UserMode;
+
             Console.Default.WriteLine("Checking thread started...");
 #endif
             if (!ProcessManager.CurrentThread_State->Started)
             {
                 SetupThreadForStart();
             }
-            
+
 #if SCHEDULER_TRACE
             Console.Default.WriteLine("Scheduler interrupt ended.");
             for (int i = 0; i < 5000000; i++)
@@ -275,31 +297,77 @@ namespace Kernel.Core.Processes
 #if SCHEDULER_TRACE
                 Console.Default.WriteLine("Initialising thread stack...");
 #endif
+            // Selectors for user-mode must be or'ed with 3 to set privilege level
+
             uint* stackPtr = (uint*)ProcessManager.CurrentThread_State->ThreadStackTop;
             // Process terminate CS selector
-            *stackPtr-- = 0x08;
+            //      Process terminate should always be jumping into kernel-mode code (for now)
+            *stackPtr-- = 8u;
             // Process terminate return pointer
             *stackPtr-- = (uint)Utilities.ObjectUtilities.GetHandle((TerminateMethod)ThreadTerminated);
-            *stackPtr-- = 0x0202; // EFLAGS - IF and mandatory bit set
-            *stackPtr-- = 0x08;   // CS
-            *stackPtr-- = ProcessManager.CurrentThread_State->StartEIP;
-            *stackPtr-- = 0;    //eax
-            *stackPtr-- = 0;    //ecx
-            *stackPtr-- = 0;    //edx
-            *stackPtr-- = 0;    //ebx
-            *stackPtr-- = (uint)ProcessManager.CurrentThread_State->ThreadStackTop;    //esp
-            *stackPtr-- = (uint)ProcessManager.CurrentThread_State->ThreadStackTop;    //ebp
-            *stackPtr-- = 0;    //esi
-            *stackPtr-- = 0;    //edi 
-            *stackPtr-- = 0x10; //ds
-            *stackPtr-- = 0x10; //es
-            *stackPtr-- = 0x10; //fs
-            *stackPtr = 0x10; //gs
+            if (ProcessManager.CurrentProcess.UserMode)
+            {
+#if SCHEDULER_TRACE
+                Console.Default.WriteLine("Setting up UM start stack...");
+#endif
 
+                uint WantedStackPtr = (uint)stackPtr;
+                *stackPtr-- = 0x23;    //64 - SS after switch to UM
+                *stackPtr-- = WantedStackPtr; // 60 - ESP after switch to UM
+                *stackPtr-- = 0x0202u; // - 56
+                *stackPtr-- = 0x1Bu;   // CS - 52
+                *stackPtr-- = ProcessManager.CurrentThread_State->StartEIP; // - 48
+                
+                *stackPtr-- = 0;    //eax - 44
+                *stackPtr-- = 0;    //ecx - 40
+                *stackPtr-- = 0;    //edx - 36
+                *stackPtr-- = 0;    //ebx - 32
+                *stackPtr-- = 0xDEADBEEF;    //esp - 28 - This is actually ignored by Popad instruction
+                *stackPtr-- = WantedStackPtr; //ebp - 24
+                *stackPtr-- = 0;    //esi - 20
+                *stackPtr-- = 0;    //edi - 16
+
+                *stackPtr-- = 0x23u; //ds - 12
+                *stackPtr-- = 0x23u; //es - 8
+                *stackPtr-- = 0x23u; //fs - 4
+                *stackPtr   = 0x23u; //gs - 0
+            }
+            else
+            {
+#if SCHEDULER_TRACE
+                Console.Default.WriteLine("Setting up KM start stack...");
+#endif 
+
+                *stackPtr-- = 0x0202u;
+                *stackPtr-- = 0x08u;   // CS
+                *stackPtr-- = ProcessManager.CurrentThread_State->StartEIP;
+                
+                *stackPtr-- = 0;    //eax
+                *stackPtr-- = 0;    //ecx
+                *stackPtr-- = 0;    //edx
+                *stackPtr-- = 0;    //ebx
+                *stackPtr-- = 0xDEADBEEF;    //esp - This is actually ignored by Popad instruction
+                *stackPtr-- = (uint)ProcessManager.CurrentThread_State->ThreadStackTop;    //ebp
+                *stackPtr-- = 0;    //esi
+                *stackPtr-- = 0;    //edi 
+                
+                *stackPtr-- = 0x10u; //ds
+                *stackPtr-- = 0x10u; //es
+                *stackPtr-- = 0x10u; //fs
+                *stackPtr   = 0x10u; //gs
+            }
+            
 #if SCHEDULER_TRACE
                 Console.Default.WriteLine("Updating thread stack...");
 #endif
             ProcessManager.CurrentThread_State->ESP = (uint)stackPtr;
+            
+#if SCHEDULER_TRACE
+            if (ProcessManager.CurrentProcess.UserMode)
+            {
+                Console.Default.WriteLine("Starting UM thread...");
+            }
+#endif
         }
 
         private delegate void TerminateMethod();

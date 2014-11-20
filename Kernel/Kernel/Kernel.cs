@@ -79,7 +79,7 @@ namespace Kernel
 
                 Core.Console.InitDefault();
 
-                Process ManagedMainProcess = ProcessManager.CreateProcess(ManagedMain, "Managed Main");
+                Process ManagedMainProcess = ProcessManager.CreateProcess(ManagedMain, "Managed Main", false);
                 
                 Thread ManagedMain_MainThread = ((Thread)ManagedMainProcess.Threads[0]);
                 Hardware.VirtMemManager.Unmap(ManagedMain_MainThread.State->ThreadStackTop);

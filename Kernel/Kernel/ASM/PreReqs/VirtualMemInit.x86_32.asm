@@ -30,7 +30,7 @@ VirtualMemInit:
 ; TODO - Unhack this identity mapping shizzle
 
 lea eax, [Page_Table1 - KERNEL_VIRTUAL_BASE]
-mov ebx, 3
+mov ebx, 7
 mov ecx, (49 * 1024)
 .Loop1:
 mov [eax], ebx
@@ -40,7 +40,7 @@ loop .Loop1
 
 lea eax, [Page_Table1 - KERNEL_VIRTUAL_BASE]
 add eax, 0x300000
-mov ebx, 3
+mov ebx, 7
 mov ecx, (49 * 1024)
 .Loop2:
 mov [eax], ebx
@@ -51,7 +51,7 @@ loop .Loop2
 
 lea ebx, [Page_Table1 - KERNEL_VIRTUAL_BASE]
 lea edx, [Page_Directory - KERNEL_VIRTUAL_BASE]
-or ebx, 3
+or ebx, 7
 mov ecx, 1024
 .Loop3:
 mov [edx], ebx

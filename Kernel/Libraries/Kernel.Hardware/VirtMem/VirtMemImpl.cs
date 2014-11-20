@@ -29,6 +29,15 @@ namespace Kernel.Hardware.VirtMem
     /// </summary>
     public abstract class VirtMemImpl : FOS_System.Object
     {
+        [Flags]
+        public enum PageFlags : uint
+        {
+            None = 0,
+            Present = 1,
+            Writeable = 2,
+            KernelOnly = 4
+        }
+
         /// <summary>
         /// Tests the virtual memory system.
         /// </summary>
@@ -46,7 +55,11 @@ namespace Kernel.Hardware.VirtMem
         /// </summary>
         /// <param name="pAddr">The physical address to map to.</param>
         /// <param name="vAddr">The virtual address to map.</param>
-        public abstract void Map(uint pAddr, uint vAddr);
+        public virtual void Map(uint pAddr, uint vAddr)
+        {
+            Map(pAddr, vAddr, PageFlags.Present | PageFlags.KernelOnly | PageFlags.Writeable);
+        }
+        public abstract void Map(uint pAddr, uint vAddr, PageFlags flags);
         public abstract void Unmap(uint vAddr);
         /// <summary>
         /// Gets the physical address for the specified virtual address.

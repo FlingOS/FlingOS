@@ -36,7 +36,7 @@ namespace Kernel.Hardware.VirtMem
             None = 0x0,
             Present = 0x1,
             Writeable = 0x2,
-            SupervisorOnly = 0x4,
+            UserAllowed = 0x4,
             PagelevelWriteThrough = 0x8,
             PageLevelCacheDisable = 0x10,
             PAT = 0x80,
@@ -152,7 +152,24 @@ namespace Kernel.Hardware.VirtMem
         /// </summary>
         /// <param name="pAddr">The physical address to map to.</param>
         /// <param name="vAddr">The virtual address to map.</param>
-        public override void Map(uint pAddr, uint vAddr)
+        public override void Map(uint pAddr, uint vAddr, PageFlags flags)
+        {
+            PTEFlags pteFlags = PTEFlags.None;
+            if ((flags & PageFlags.Present) != 0)
+            {
+                pteFlags |= PTEFlags.Present;
+            }
+            if ((flags & PageFlags.KernelOnly) == 0)
+            {
+                pteFlags |= PTEFlags.UserAllowed;
+            }
+            if ((flags & PageFlags.Writeable) != 0)
+            {
+                pteFlags |= PTEFlags.Writeable;
+            }
+            Map(pAddr, vAddr, pteFlags);
+        }
+        private void Map(uint pAddr, uint vAddr, PTEFlags flags)
         {
 #if PAGING_TRACE
             BasicConsole.WriteLine("Mapping addresses...");
@@ -179,9 +196,9 @@ namespace Kernel.Hardware.VirtMem
             uint* virtPTPtr = GetFixedPage(virtPDIdx);
 #if PAGING_TRACE
             BasicConsole.WriteLine(((FOS_System.String)"ptPtr=") + (uint)virtPTPtr);
-#endif 
+#endif
             //Set the page table entry
-            SetPageEntry(virtPTPtr, virtPTIdx, pAddr, PTEFlags.Present | PTEFlags.Writeable);
+            SetPageEntry(virtPTPtr, virtPTIdx, pAddr, flags);
             //Set directory table entry
             SetDirectoryEntry(virtPDIdx, (uint*)GetPhysicalAddress((uint)virtPTPtr));
 
@@ -248,8 +265,8 @@ namespace Kernel.Hardware.VirtMem
             uint virtAddr = VirtToPhysOffset;
             for (; physAddr < 0x100000; physAddr += 4096, virtAddr += 4096)
             {
-                Map(physAddr, physAddr);
-                Map(physAddr, virtAddr);
+                Map(physAddr, physAddr, PageFlags.Present | PageFlags.Writeable);
+                Map(physAddr, virtAddr, PageFlags.Present | PageFlags.Writeable);
             }
 
 #if PAGING_TRACE
@@ -288,7 +305,7 @@ namespace Kernel.Hardware.VirtMem
             
             for (; KernelMemStartPtr <= KernelMemEndPtr; KernelMemStartPtr += 4096, physAddr += 4096)
             {
-                Map(physAddr, KernelMemStartPtr);
+                Map(physAddr, KernelMemStartPtr, PageFlags.Present | PageFlags.Writeable | PageFlags.KernelOnly);
             }
 
 #if PAGING_TRACE
@@ -347,7 +364,7 @@ namespace Kernel.Hardware.VirtMem
             BasicConsole.WriteLine(((FOS_System.String)"pageNum=") + pageNum);
 #endif 
 
-            dirPtr[pageNum] = (uint)pageTablePhysPtr | 3;
+            dirPtr[pageNum] = (uint)pageTablePhysPtr | 7;
 #if PAGING_TRACE
             if (dirPtr[pageNum] != ((uint)pageTablePhysPtr | 3))
             {

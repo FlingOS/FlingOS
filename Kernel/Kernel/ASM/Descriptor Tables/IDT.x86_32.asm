@@ -24,6 +24,13 @@ push es
 push fs
 push gs
 
+; Switch the segment selectors to kernel mode selectors
+mov ax, 0x10
+mov gs, ax
+mov fs, ax
+mov es, ax
+mov ds, ax
+
 ; Load pointer to current thread state
 mov dword eax, [staticfield_Kernel_Core_Processes_ThreadState__Kernel_Core_Processes_ProcessManager_CurrentThread_State]
 ; Test for null
@@ -31,12 +38,86 @@ cmp eax, 0
 ; If null, skip
 jz INTERRUPTS_STORE_STATE_SKIP_%1
 
+; Check for UserMode process. If UM, we are already
+;	on the kernel stack so don't change it or we will
+;	lose the values saved in pushes above
+mov dword ebx, 0
+mov byte bl, [eax+20]
+cmp ebx, 0
+jnz INTERRUPTS_STORE_STATE_COPYACROSS_%1
+
 ; Save thread's current stack position
 mov dword [eax+1], esp
 ; Load temp kernel stack address
 mov dword ebx, [eax+7]
 ; Switch to temp kernel stack
 mov dword esp, ebx
+
+; Now running on a totally empty kernel stack
+
+jmp INTERRUPTS_STORE_STATE_SKIP_%1
+
+INTERRUPTS_STORE_STATE_COPYACROSS_%1:
+; Load thread's UM stack position
+mov dword ebx, [esp+60]
+; Copy across all the values
+sub ebx, 4
+mov dword ecx, [esp+64]
+mov dword [ebx], ecx
+sub ebx, 4
+mov dword ecx, [esp+60]
+mov dword [ebx], ecx
+sub ebx, 4
+mov dword ecx, [esp+56]
+mov dword [ebx], ecx
+sub ebx, 4
+mov dword ecx, [esp+52]
+mov dword [ebx], ecx
+sub ebx, 4
+mov dword ecx, [esp+48]
+mov dword [ebx], ecx
+sub ebx, 4
+mov dword ecx, [esp+44]
+mov dword [ebx], ecx
+sub ebx, 4
+mov dword ecx, [esp+40]
+mov dword [ebx], ecx
+sub ebx, 4
+mov dword ecx, [esp+36]
+mov dword [ebx], ecx
+sub ebx, 4
+mov dword ecx, [esp+32]
+mov dword [ebx], ecx
+sub ebx, 4
+mov dword ecx, [esp+28]
+mov dword [ebx], ecx
+sub ebx, 4
+mov dword ecx, [esp+24]
+mov dword [ebx], ecx
+sub ebx, 4
+mov dword ecx, [esp+20]
+mov dword [ebx], ecx
+sub ebx, 4
+mov dword ecx, [esp+16]
+mov dword [ebx], ecx
+sub ebx, 4
+mov dword ecx, [esp+12]
+mov dword [ebx], ecx
+sub ebx, 4
+mov dword ecx, [esp+8]
+mov dword [ebx], ecx
+sub ebx, 4
+mov dword ecx, [esp+4]
+mov dword [ebx], ecx
+sub ebx, 4
+mov dword ecx, [esp+0]
+mov dword [ebx], ecx
+
+; Store UM stack position
+mov dword [eax+1], ebx
+
+; Restore kernel stack to its proper place
+add esp, 64
 
 ; Now running on a totally empty kernel stack
 
@@ -54,8 +135,10 @@ cmp eax, 0
 ; If null, skip
 jz INTERRUPTS_RESTORE_STATE_SKIP%1
 
+
 ; Restore esp to thread's esp
 mov dword esp, [eax+1]
+
 ; Load address of temp kernel stack
 mov dword ebx, [eax+7]
 ; Update TSS with kernel stack pointer for next task switch
@@ -318,42 +401,49 @@ IRetd
  
 Interrupt5HandlerMsg db 11, 0, 0, 0, 073, 110, 116, 101, 114, 114, 117, 112, 116, 032, 053
 Interrupt5Handler:
+	DISABLE_INTERRUPTS
 pushad
 mov dword eax, Interrupt5HandlerMsg
 jmp MessageOnlyInterruptHandler
 
 Interrupt7HandlerMsg db 11, 0, 0, 0, 073, 110, 116, 101, 114, 114, 117, 112, 116, 032, 055
 Interrupt7Handler:
+	DISABLE_INTERRUPTS
 pushad
 mov dword eax, Interrupt7HandlerMsg
 jmp MessageOnlyInterruptHandler
   
 Interrupt9HandlerMsg db 11, 0, 0, 0, 073, 110, 116, 101, 114, 114, 117, 112, 116, 032, 057
 Interrupt9Handler:
+	DISABLE_INTERRUPTS
 pushad
 mov dword eax, Interrupt9HandlerMsg
 jmp MessageOnlyInterruptHandler
  
 Interrupt10HandlerMsg db 12, 0, 0, 0, 073, 110, 116, 101, 114, 114, 117, 112, 116, 032, 049, 048
 Interrupt10Handler:
+	DISABLE_INTERRUPTS
 pushad
 mov dword eax, Interrupt10HandlerMsg
 jmp MessageOnlyInterruptHandler
  
 Interrupt11HandlerMsg db 12, 0, 0, 0, 073, 110, 116, 101, 114, 114, 117, 112, 116, 032, 049, 049
 Interrupt11Handler:
+	DISABLE_INTERRUPTS
 pushad
 mov dword eax, Interrupt11HandlerMsg
 jmp MessageOnlyInterruptHandler
  
 Interrupt16HandlerMsg db 12, 0, 0, 0, 073, 110, 116, 101, 114, 114, 117, 112, 116, 032, 049, 054
 Interrupt16Handler:
+	DISABLE_INTERRUPTS
 pushad
 mov dword eax, Interrupt16HandlerMsg
 jmp MessageOnlyInterruptHandler
  
 Interrupt124HandlerMsg db 13, 0, 0, 0, 073, 110, 116, 101, 114, 114, 117, 112, 116, 032, 049, 050, 052
 Interrupt124Handler:
+	DISABLE_INTERRUPTS
 pushad
 mov dword eax, Interrupt124HandlerMsg
 jmp MessageOnlyInterruptHandler

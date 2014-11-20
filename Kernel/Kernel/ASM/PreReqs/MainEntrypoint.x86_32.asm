@@ -6,6 +6,46 @@ __MAIN_ENTRYPOINT__:
 
 	push dword ebp
 	mov dword ebp, esp
+	
+;	cli
+	
+;	mov dword eax, 0x2B
+;	ltr ax
+
+;	mov dword eax, esp
+;	push dword 0x23
+;	push dword eax
+;	push dword 0x0002
+;	push dword 0x1B
+;	push dword __MAIN_ENTRYPOINT___Cont
+	
+;	push dword 0
+;	push dword 0
+;	push dword 0
+;	push dword 0
+;	push dword 0xDEADBEEF
+;	push dword eax
+;	push dword 0
+;	push dword 0
+
+;	push dword 0x23
+;	push dword 0x23
+;	push dword 0x23
+;	push dword 0x23
+
+;	mov dword [_NATIVE_TSS+4], eax
+
+;	INTERRUPTS_RESTORE_STATE 666
+;	iretd
+	
+	
+; __MAIN_ENTRYPOINT___Cont:
+;	push dword 0x22
+;	pop dword eax
+
+;	mov byte [0xB8001], al
+
+;	jmp __MAIN_ENTRYPOINT___Cont
 
 	call %KERNEL_CALL_STATIC_CONSTRUCTORS_METHOD% ; Call the static constructors - this is a macro used by the kernel compiler.
 	call %KERNEL_MAIN_METHOD% ; Call our main method - this is a macro used by the kernel compiler.

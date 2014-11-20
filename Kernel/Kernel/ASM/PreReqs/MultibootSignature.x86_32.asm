@@ -24,14 +24,18 @@ MultiBootInfo_Structure dd 0
 
 ; This is the GDT table pre-filled with the entries we want
 _NATIVE_GDT_Contents:
+; I have a suspicion that the order of the items in the GDT matters
+;	Code and data selectors first then TSS
 db 0, 0, 0, 0, 0, 0, 0, 0			; Offset: 0  - Null selector - required 
-db 255, 255, 0, 0, 0, 154, 207, 0	; Offset: 8  - Code selector - covers the entire 4GiB address range
-db 255, 255, 0, 0, 0, 146, 207, 0	; Offset: 16 - Data selector - covers the entire 4GiB address range
-; TSS set so that only kernel can perform task switching
-db 0x67, 0, 0, 0, 0, 0x89, 0x10, 0	; Offset: 24 - TSS Selector - Pointer to the TSS 
+db 255, 255, 0, 0, 0, 0x9A, 0xCF, 0	; Offset: 8  - KM Code selector - covers the entire 4GiB address range
+db 255, 255, 0, 0, 0, 0x92, 0xCF, 0	; Offset: 16 - KM Data selector - covers the entire 4GiB address range
+db 255, 255, 0, 0, 0, 0xFA, 0xCF, 0	; Offset: 24 - UM Code selector - covers the entire 4GiB address range
+db 255, 255, 0, 0, 0, 0xF2, 0xCF, 0	; Offset: 32 - UM Data selector - covers the entire 4GiB address range
+db 0x67,  0, 0, 0, 0, 0xE9, 0x00, 0	; Offset: 40 - TSS Selector - Pointer to the TSS 
 
 ;					   Size - Change iff adding/removing rows from GDT contents
-_NATIVE_GDT_Pointer db 31, 0, 0, 0, 0, 0
+;					   Size = Total bytes in GDT - 1
+_NATIVE_GDT_Pointer db 47, 0, 0, 0, 0, 0
 global _NATIVE_IDT_Contents
 _NATIVE_IDT_Contents: TIMES 2048 db 0
 _NATIVE_IDT_Pointer db 15, 15, 0, 0, 0, 0

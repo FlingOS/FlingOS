@@ -22,13 +22,16 @@ namespace Kernel.Core.Processes
 
         private uint ThreadIdGenerator = 0;
         
-        public Process(ThreadStartMethod MainMethod, uint AnId, FOS_System.String AName)
+        public readonly bool UserMode;
+
+        public Process(ThreadStartMethod MainMethod, uint AnId, FOS_System.String AName, bool userMode)
         {
 #if PROCESS_TRACE
             Console.Default.WriteLine(" > > Constructing process object...");
 #endif
             Id = AnId;
             Name = AName;
+            UserMode = userMode;
 
             CreateThread(MainMethod);
             
@@ -43,7 +46,7 @@ namespace Kernel.Core.Processes
 #if PROCESS_TRACE
             Console.Default.WriteLine(" > > Creating thread...");
 #endif
-            Thread mainThread = new Thread(MainMethod, ThreadIdGenerator++);
+            Thread mainThread = new Thread(MainMethod, ThreadIdGenerator++, UserMode);
 #if PROCESS_TRACE
             Console.Default.WriteLine(" > > Adding thread object...");
 #endif
