@@ -346,6 +346,7 @@ add ebx, 8
     mov byte [ebx+7], ah
     mov word [ebx+2], 0x8
     mov byte [ebx+4], 0x0
+	; Set to be user-mode accessible
     mov byte [ebx+5], 0x8F
     add ebx, 8
 %endmacro

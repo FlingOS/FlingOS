@@ -90,6 +90,7 @@ namespace Kernel.Core.Processes
 #if SCHEDULER_TRACE
         static bool wasum = false;
 #endif
+        static bool x = false;
         private static void OnTimerInterrupt(FOS_System.Object state)
         {
 #if SCHEDULER_TRACE
@@ -98,6 +99,17 @@ namespace Kernel.Core.Processes
                 Console.Default.WriteLine("Scheduler interrupt started...");
             }
 #endif
+
+            x = !x;
+            ushort* vidMemPtr = (ushort*)0xB80A0;
+            if (x)
+            {
+                *vidMemPtr = 0x0F2F;
+            }
+            else
+            {
+                *vidMemPtr = 0x0F5C;
+            }
 
 #if SCHEDULER_TRACE
             Console.Default.WriteLine("Updating sleeping threads...");
