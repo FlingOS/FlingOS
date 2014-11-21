@@ -30,12 +30,15 @@ namespace Kernel.FOS_System.Exceptions
     /// </summary>
     public class DoubleFaultException : FOS_System.Exception
     {
+        public uint ErrorCode = 0;
+
         /// <summary>
         /// Sets the message to "Double fault exception."
         /// </summary>
-        public DoubleFaultException()
+        public DoubleFaultException(uint errorCode)
             : base("Double fault exception.")
         {
+            ErrorCode = errorCode;
         }
     }
 }

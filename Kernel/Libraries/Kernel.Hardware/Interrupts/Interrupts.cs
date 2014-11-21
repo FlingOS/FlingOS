@@ -284,6 +284,11 @@ namespace Kernel.Hardware.Interrupts
                 }
             }
         }
+        
+#if INTERRUPTS_TRACE
+        public static bool print = false;
+        public static uint lastisr = 0;
+#endif
 
         /// <summary>
         /// Common method called to handle all interrupts (excluding numbers 0-16 inclusive).
@@ -294,9 +299,25 @@ namespace Kernel.Hardware.Interrupts
             try
             {
 #if INTERRUPTS_TRACE
-                BasicConsole.SetTextColour(BasicConsole.warning_colour);
-                BasicConsole.WriteLine(((FOS_System.String)"ISR: ") + ISRNum);
-                BasicConsole.SetTextColour(BasicConsole.default_colour);
+                if (print && lastisr != ISRNum || ISRNum != 0x20)
+                {
+                    lastisr = ISRNum;
+                    BasicConsole.SetTextColour(BasicConsole.warning_colour);
+                    if (ISRNum == 0x20)
+                    {
+                        BasicConsole.WriteLine("ISR: 0x20");
+                    }
+                    else if (ISRNum == 0x21)
+                    {
+                        BasicConsole.WriteLine("ISR: 0x21");
+                    }
+                    else
+                    {
+                        BasicConsole.WriteLine("ISR: Unrecognised");
+                    }
+                    //BasicConsole.WriteLine(((FOS_System.String)"ISR: ") + ISRNum);
+                    BasicConsole.SetTextColour(BasicConsole.default_colour);
+                }
 #endif
                 //Go through any handlers and fire them
                 InterruptHandlers handlers = Handlers[ISRNum];

@@ -41,10 +41,13 @@ jz INTERRUPTS_STORE_STATE_SKIP_%1
 ; Check for UserMode process. If UM, we are already
 ;	on the kernel stack so don't change it or we will
 ;	lose the values saved in pushes above
-mov dword ebx, 0
-mov byte bl, [eax+20]
-cmp ebx, 0
-jnz INTERRUPTS_STORE_STATE_COPYACROSS_%1
+; This takes the CS pushed by the processor when it
+;	invoked the interrupt, gets the DPL then sees
+;	if the DPL==3 i.e. User mode
+mov dword ebx, [esp+52]
+and ebx, 0x3
+cmp ebx, 0x3
+je INTERRUPTS_STORE_STATE_COPYACROSS_%1
 
 ; Save thread's current stack position
 mov dword [eax+1], esp
@@ -193,6 +196,8 @@ mov word [_NATIVE_IDT_Contents + 26], 0x8
 mov byte [_NATIVE_IDT_Contents + 28], 0x0
 mov byte [_NATIVE_IDT_Contents + 29], 0x8F
 
+; Set remaining interrupt handlers
+
 mov dword ebx, _NATIVE_IDT_Contents
 
 mov dword eax, Interrupt0Handler
@@ -206,8 +211,22 @@ mov byte [ebx+4], 0x0
 mov byte [ebx+5], 0x8F
 add ebx, 8
 
-add ebx, 24
-; Set remaining interrupt handlers
+; Skip Int1 - Set above
+add ebx, 8
+
+mov dword eax, Interrupt2Handler
+mov byte [ebx], al
+mov byte [ebx+1], ah
+shr dword eax, 0x10
+mov byte [ebx+6], al
+mov byte [ebx+7], ah
+mov word [ebx+2], 0x8
+mov byte [ebx+4], 0x0
+mov byte [ebx+5], 0x8F
+add ebx, 8
+
+; Skip Int3 - Set above
+add ebx, 8
  
 mov dword eax, Interrupt4Handler
 mov byte [ebx], al
@@ -322,7 +341,7 @@ mov byte [ebx+4], 0x0
 mov byte [ebx+5], 0x8F
 add ebx, 8
 
-; Skip 15
+; Skip 15 - Reserved (i.e. empty)
 add ebx, 8 
 
 mov dword eax, Interrupt16Handler
@@ -338,6 +357,7 @@ add ebx, 8
 
 %macro CommonInterruptHandler_IDTMacro 1
     ; %1
+	; Interrupt gate
     mov dword eax, CommonInterruptHandler%1
     mov byte [ebx], al
     mov byte [ebx+1], ah
@@ -346,8 +366,11 @@ add ebx, 8
     mov byte [ebx+7], ah
     mov word [ebx+2], 0x8
     mov byte [ebx+4], 0x0
-	; Set to be user-mode accessible
-    mov byte [ebx+5], 0x8F
+	; Use Interrupt gates not Trap gates!! Makes a massive
+	; difference! If you use Trap gates, you'll get 
+	; double faults as soon as you start using IRQs
+	; in-combo with User Mode processes.
+    mov byte [ebx+5], 0x8E
     add ebx, 8
 %endmacro
 %assign handlernum 17
@@ -375,7 +398,7 @@ Interrupt6Handler:
 call method_System_Void_RETEND_Kernel_ExceptionMethods_DECLEND_Throw_OverflowException_NAMEEND___
 
 Interrupt8Handler:
-call method_System_Void_RETEND_Kernel_ExceptionMethods_DECLEND_Throw_DoubleFaultException_NAMEEND___
+call method_System_Void_RETEND_Kernel_ExceptionMethods_DECLEND_Throw_DoubleFaultException_NAMEEND__System_UInt32_
 
 Interrupt12Handler:
 call method_System_Void_RETEND_Kernel_ExceptionMethods_DECLEND_Throw_StackException_NAMEEND___
@@ -384,22 +407,25 @@ Interrupt14Handler:
 
 DISABLE_INTERRUPTS
 
-INTERRUPTS_STORE_STATE STORE_STATE_SKIP_NUM
-%assign STORE_STATE_SKIP_NUM STORE_STATE_SKIP_NUM+1
-
 mov dword eax, CR2
 push eax
 call method_System_Void_RETEND_Kernel_ExceptionMethods_DECLEND_Throw_PageFaultException_NAMEEND__System_UInt32_System_UInt32_
+add esp, 8
 
-INTERRUPTS_RESTORE_STATE RESTORE_STATE_SKIP_NUM
-%assign RESTORE_STATE_SKIP_NUM RESTORE_STATE_SKIP_NUM+1
-
+ENABLE_INTERRUPTS
 IRetd
 
 ; END - Proper exception handlers 
 
 ; BEGIN - Message-only Interrupt Handlers
  
+Interrupt2HandlerMsg db 11, 0, 0, 0, 073, 110, 116, 101, 114, 114, 117, 112, 116, 032, 050
+Interrupt2Handler:
+	DISABLE_INTERRUPTS
+pushad
+mov dword eax, Interrupt2HandlerMsg
+jmp MessageOnlyInterruptHandler
+
 Interrupt5HandlerMsg db 11, 0, 0, 0, 073, 110, 116, 101, 114, 114, 117, 112, 116, 032, 053
 Interrupt5Handler:
 	DISABLE_INTERRUPTS
@@ -454,6 +480,13 @@ MessageOnlyInterruptHandler:
 push dword ebp
 mov dword ebp, esp
 
+push ds
+mov eax, 0x10
+mov ds, ax
+mov es, ax
+mov gs, ax
+mov fs, ax
+
 push dword eax
 push dword 0x02
 call method_System_Void_RETEND_Kernel_PreReqs_DECLEND_WriteDebugVideo_NAMEEND__System_String_System_UInt32_
@@ -463,6 +496,12 @@ mov ecx, 0x0F0FFFFF
 MessageOnlyInterruptHandler.delayLoop1:
 	nop
 loop MessageOnlyInterruptHandler.delayLoop1
+
+pop eax
+mov ds, ax
+mov es, ax
+mov gs, ax
+mov fs, ax
 
 pop dword ebp
 
@@ -487,7 +526,7 @@ CommonInterruptHandler%1:
 
 	INTERRUPTS_RESTORE_STATE RESTORE_STATE_SKIP_NUM
 	%assign RESTORE_STATE_SKIP_NUM RESTORE_STATE_SKIP_NUM+1
-
+	
     IRetd
 %endmacro
 %assign handlernum2 17

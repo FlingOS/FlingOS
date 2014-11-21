@@ -174,6 +174,11 @@ namespace Kernel
                     BasicConsole.Write("Code: ");
                     BasicConsole.WriteLine(((FOS_System.Exceptions.PageFaultException)ExceptionMethods.CurrentException).errorCode);
                 }
+                else if (ExceptionMethods.CurrentException is FOS_System.Exceptions.DoubleFaultException)
+                {
+                    BasicConsole.Write("Code: ");
+                    BasicConsole.WriteLine(((FOS_System.Exceptions.DoubleFaultException)ExceptionMethods.CurrentException).ErrorCode);
+                }
                 BasicConsole.SetTextColour(BasicConsole.default_colour);
             }
 

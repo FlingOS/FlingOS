@@ -12,10 +12,16 @@ namespace Kernel.Core
         {
             while (true)
             {
-                Processes.Scheduler.Disable();
-                FOS_System.GC.Cleanup();
-                Processes.Scheduler.Enable();
+                try
+                {
+                    Processes.Scheduler.Disable();
+                    FOS_System.GC.Cleanup();
+                }
+                catch
+                {
+                }
 
+                Processes.Scheduler.Enable();
                 Processes.Thread.Sleep(300);
             }
         }

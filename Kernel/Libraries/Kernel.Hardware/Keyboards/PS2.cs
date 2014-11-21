@@ -82,8 +82,8 @@ namespace Kernel.Hardware.Keyboards
         /// </summary>
         private void InterruptHandler()
         {
-            //Get the scancode we are being notified of
             byte scanCode = DataPort.Read_Byte();
+            
             //Determine whether the key has been released or not
             bool released = (scanCode & 0x80) == 0x80;
             //If it has:

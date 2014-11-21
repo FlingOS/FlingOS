@@ -490,7 +490,7 @@ namespace Kernel.FOS_System
                         NumStrings--;
                     }
 
-                    Heap.Free(objPtr);
+                    Heap.Free(objHeaderPtr);
 
                     NumObjs--;
                 }

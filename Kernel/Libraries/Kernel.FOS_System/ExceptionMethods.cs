@@ -183,10 +183,10 @@ namespace Kernel
         /// <remarks>
         /// Used by CPU interrupts to handle the creation of the exception object and calling Throw.
         /// </remarks>
-        public static void Throw_DoubleFaultException()
+        public static void Throw_DoubleFaultException(uint errorCode)
         {
             HaltReason = "Double fault exception.";
-            Throw(new FOS_System.Exceptions.DoubleFaultException());
+            Throw(new FOS_System.Exceptions.DoubleFaultException(errorCode));
         }
         /// <summary>
         /// Throws a stack exception.
@@ -207,7 +207,7 @@ namespace Kernel
         /// <remarks>
         /// Used by CPU interrupts to handle the creation of the exception object and calling Throw.
         /// </remarks>
-        public static void Throw_PageFaultException(uint errorCode, uint address)
+        public static void Throw_PageFaultException(uint address, uint errorCode)
         {
             HaltReason = "Page fault exception.";
             Throw(new FOS_System.Exceptions.PageFaultException(errorCode, address));
