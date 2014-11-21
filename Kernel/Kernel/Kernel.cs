@@ -201,7 +201,7 @@ namespace Kernel
             try
             {
                 BasicConsole.WriteLine(" > Starting GC Cleanup task...");
-                ProcessManager.CurrentProcess.CreateThread(Core.GCCleanupTask.Main);
+                ProcessManager.CurrentProcess.CreateThread(Core.Tasks.GCCleanupTask.Main);
 
                 Core.Shell.InitDefault();
                 Core.Shell.Default.Execute();

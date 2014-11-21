@@ -40,6 +40,12 @@ namespace Kernel.Core.Shells
         {
             try
             {
+                // Auto-init all to save us writing the command
+                InitATA();
+                InitPCI();
+                InitUSB();
+                InitFS();
+
                 //Endlessly wait for commands until we hit a total failure condition
                 //  or the user instructs us to halt
                 while(!terminating)
@@ -50,7 +56,7 @@ namespace Kernel.Core.Shells
                         console.Write(CurrentDir + " > ");
 
                         //List of supported commands
-                        /* Command { Req Arg } [Opt Arg]:
+                        /* Command { Req Arg } [Opt Arg] *Default val*:
                          *  - Halt
                          *  - ExInfo
                          *  - Init { ALL / PCI / ATA / USB / FS }
@@ -67,7 +73,7 @@ namespace Kernel.Core.Shells
                          *              IsInst      /   VirtMem                     }
                          *  - GC   { Cleanup }
                          *  - USB { Update / Eject }
-                         *  - Start { Raw } { Filename }
+                         *  - Start { Filename } [*KM* / UM] [*Raw*]
                          */
 
                         //Get the current input line from the user
@@ -159,7 +165,7 @@ namespace Kernel.Core.Shells
                                 }
                                 else
                                 {
-                                    UnrecognisedOption();
+                                    UnrecognisedOption(opt1);
                                 }
                             }
                             else
@@ -202,7 +208,7 @@ namespace Kernel.Core.Shells
                                 }
                                 else
                                 {
-                                    UnrecognisedOption();
+                                    UnrecognisedOption(opt1);
                                 }
                             }
                             else
@@ -316,7 +322,7 @@ namespace Kernel.Core.Shells
                                 }
                                 else
                                 {
-                                    UnrecognisedOption();
+                                    UnrecognisedOption(opt1);
                                 }
                             }
                             else
@@ -379,7 +385,7 @@ namespace Kernel.Core.Shells
                                 }
                                 else
                                 {
-                                    UnrecognisedOption();
+                                    UnrecognisedOption(opt1);
                                 }
                             }
                             else
@@ -543,7 +549,7 @@ namespace Kernel.Core.Shells
                                 }
                                 else
                                 {
-                                    UnrecognisedOption();
+                                    UnrecognisedOption(opt1);
                                 }
                             }
                             else
@@ -655,7 +661,7 @@ namespace Kernel.Core.Shells
                                 }
                                 else
                                 {
-                                    UnrecognisedOption();
+                                    UnrecognisedOption(opt1);
                                 }
                             }
                             else
@@ -746,7 +752,7 @@ namespace Kernel.Core.Shells
                                 }
                                 else
                                 {
-                                    UnrecognisedOption();
+                                    UnrecognisedOption(opt1);
                                 }
                             }
                             else
@@ -763,7 +769,7 @@ namespace Kernel.Core.Shells
                         else if (cmd == "start")
                         {
                             //For details on how the code here works, see Init
-                            #region Test
+                            #region Start
                             FOS_System.String opt1 = null;
                             if (cmdParts.Count > 1)
                             {
@@ -772,7 +778,13 @@ namespace Kernel.Core.Shells
 
                             if (opt1 != null)
                             {
-                                if (opt1 == "raw")
+                                if (opt1.StartsWith("./"))
+                                {
+                                    opt1 = CurrentDir + opt1.Substring(2, opt1.length - 2);
+                                }
+
+                                File aFile = File.Open(opt1);
+                                if (aFile != null)
                                 {
                                     FOS_System.String opt2 = null;
                                     if (cmdParts.Count > 2)
@@ -782,13 +794,7 @@ namespace Kernel.Core.Shells
 
                                     if (opt2 != null)
                                     {
-                                        if (opt2.StartsWith("./"))
-                                        {
-                                            opt2 = CurrentDir + opt2.Substring(2, opt2.length - 2);
-                                        }
-
-                                        File aFile = File.Open(opt2);
-                                        if (aFile != null)
+                                        if (opt2 == "km")
                                         {
                                             FOS_System.String opt3 = null;
                                             if (cmdParts.Count > 2)
@@ -798,13 +804,36 @@ namespace Kernel.Core.Shells
 
                                             if (opt3 != null)
                                             {
-                                                if (opt3 == "km")
+                                                if (opt3 == "raw")
                                                 {
                                                     Processes.ProcessManager.RegisterProcess(
                                                         Processes.ProcessManager.LoadProcess_FromRawExe(aFile, false),
                                                         Processes.Scheduler.Priority.Normal);
                                                 }
-                                                else if (opt3 == "um")
+                                                else
+                                                {
+                                                    UnrecognisedOption(opt3);
+                                                }
+                                            }
+                                            else
+                                            {
+                                                //Run as RAW for now
+                                                Processes.ProcessManager.RegisterProcess(
+                                                    Processes.ProcessManager.LoadProcess_FromRawExe(aFile, false),
+                                                    Processes.Scheduler.Priority.Normal);
+                                            }
+                                        }
+                                        else if (opt2 == "um")
+                                        {
+                                            FOS_System.String opt3 = null;
+                                            if (cmdParts.Count > 2)
+                                            {
+                                                opt3 = (FOS_System.String)cmdParts[3];
+                                            }
+
+                                            if (opt3 != null)
+                                            {
+                                                if (opt3 == "raw")
                                                 {
                                                     Processes.ProcessManager.RegisterProcess(
                                                         Processes.ProcessManager.LoadProcess_FromRawExe(aFile, true),
@@ -812,32 +841,38 @@ namespace Kernel.Core.Shells
                                                 }
                                                 else
                                                 {
-                                                    UnrecognisedOption();
+                                                    UnrecognisedOption(opt3);
                                                 }
                                             }
                                             else
                                             {
-                                                console.WriteLine("You must specify the execution mode [KM/UM].");
+                                                //Run as RAW for now
+                                                Processes.ProcessManager.RegisterProcess(
+                                                    Processes.ProcessManager.LoadProcess_FromRawExe(aFile, true),
+                                                    Processes.Scheduler.Priority.Normal);
                                             }
                                         }
                                         else
                                         {
-                                            console.WriteLine("File not found.");
+                                            UnrecognisedOption(opt2);
                                         }
                                     }
                                     else
                                     {
-                                        console.WriteLine("You must specify a file path.");
+                                        //Run as KM, RAW for now
+                                        Processes.ProcessManager.RegisterProcess(
+                                            Processes.ProcessManager.LoadProcess_FromRawExe(aFile, false),
+                                            Processes.Scheduler.Priority.Normal);
                                     }
                                 }
                                 else
                                 {
-                                    UnrecognisedOption();
+                                    console.WriteLine("File not found.");
                                 }
                             }
                             else
                             {
-                                console.WriteLine("You must specify the exe format.");
+                                console.WriteLine("You must specify the file path.");
                             }
                             #endregion
                         }
@@ -1577,10 +1612,10 @@ namespace Kernel.Core.Shells
         /// <summary>
         /// Outputs a warning to the user indicating their input was unrecognised.
         /// </summary>
-        private void UnrecognisedOption()
+        private void UnrecognisedOption(FOS_System.String value)
         {
             console.WarningColour();
-            console.WriteLine("Unrecognised option.");
+            console.WriteLine("Unrecognised option: " + value);
             console.DefaultColour();
         }
 
