@@ -797,7 +797,7 @@ namespace Kernel.Core.Shells
                                         if (opt2 == "km")
                                         {
                                             FOS_System.String opt3 = null;
-                                            if (cmdParts.Count > 2)
+                                            if (cmdParts.Count > 3)
                                             {
                                                 opt3 = (FOS_System.String)cmdParts[3];
                                             }
@@ -826,7 +826,7 @@ namespace Kernel.Core.Shells
                                         else if (opt2 == "um")
                                         {
                                             FOS_System.String opt3 = null;
-                                            if (cmdParts.Count > 2)
+                                            if (cmdParts.Count > 3)
                                             {
                                                 opt3 = (FOS_System.String)cmdParts[3];
                                             }
