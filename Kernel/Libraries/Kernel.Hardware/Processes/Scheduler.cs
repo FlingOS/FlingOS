@@ -3,7 +3,7 @@
 
 using System;
 
-namespace Kernel.Core.Processes
+namespace Kernel.Hardware.Processes
 {
     [Compiler.PluggedClass]
     public static unsafe class Scheduler

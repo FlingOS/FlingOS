@@ -3,7 +3,7 @@
 
 using System;
 
-namespace Kernel.Core.Processes
+namespace Kernel.Hardware.Processes
 {
     public delegate void ThreadStartMethod();
         

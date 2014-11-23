@@ -32,7 +32,7 @@ mov es, ax
 mov ds, ax
 
 ; Load pointer to current thread state
-mov dword eax, [staticfield_Kernel_Core_Processes_ThreadState__Kernel_Core_Processes_ProcessManager_CurrentThread_State]
+mov dword eax, [staticfield_Kernel_Hardware_Processes_ThreadState__Kernel_Hardware_Processes_ProcessManager_CurrentThread_State]
 ; Test for null
 cmp eax, 0
 ; If null, skip
@@ -132,7 +132,7 @@ INTERRUPTS_STORE_STATE_SKIP_%1:
 
 %macro INTERRUPTS_RESTORE_STATE 1
 ; Load pointer to current thread state
-mov dword eax, [staticfield_Kernel_Core_Processes_ThreadState__Kernel_Core_Processes_ProcessManager_CurrentThread_State]
+mov dword eax, [staticfield_Kernel_Hardware_Processes_ThreadState__Kernel_Hardware_Processes_ProcessManager_CurrentThread_State]
 ; Test for null
 cmp eax, 0
 ; If null, skip

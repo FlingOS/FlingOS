@@ -1,4 +1,4 @@
-﻿method_System_UInt32_RETEND_Kernel_Core_Processes_Process_DECLEND_GetCR3_NAMEEND___:
+﻿method_System_UInt32_RETEND_Kernel_Hardware_Processes_Process_DECLEND_GetCR3_NAMEEND___:
 
 push dword ebp
 mov dword ebp, esp

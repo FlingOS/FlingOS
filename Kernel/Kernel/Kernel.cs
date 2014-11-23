@@ -20,7 +20,7 @@ using Kernel.FOS_System;
 using Kernel.FOS_System.Collections;
 using Kernel.FOS_System.IO;
 using System;
-using Kernel.Core.Processes;
+using Kernel.Hardware.Processes;
 
 namespace Kernel
 {

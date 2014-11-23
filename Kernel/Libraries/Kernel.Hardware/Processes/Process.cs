@@ -5,9 +5,8 @@ using System;
 using Kernel.FOS_System.Collections;
 using Kernel.Hardware;
 using Kernel.Hardware.VirtMem;
-using Kernel.FOS_System.IO;
 
-namespace Kernel.Core.Processes
+namespace Kernel.Hardware.Processes
 {
     [Compiler.PluggedClass]
     public unsafe class Process : FOS_System.Object

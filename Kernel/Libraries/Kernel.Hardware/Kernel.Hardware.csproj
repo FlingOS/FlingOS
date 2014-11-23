@@ -70,6 +70,10 @@
     <Compile Include="IO\IOPort.cs" />
     <Compile Include="Devices\Keyboard.cs" />
     <Compile Include="Keyboards\PS2.cs" />
+    <Compile Include="Processes\Process.cs" />
+    <Compile Include="Processes\ProcessManager.cs" />
+    <Compile Include="Processes\Scheduler.cs" />
+    <Compile Include="Processes\Thread.cs" />
     <Compile Include="VirtMemManager.cs" />
     <Compile Include="VirtMem\MemoryLayout.cs" />
     <Compile Include="VirtMem\VirtMemImpl.cs" />
@@ -118,6 +122,12 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="ASM\IO\IOPort\Write.x86_32.asm">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="ASM\Processes\Process.x86_32.asm">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="ASM\Processes\Scheduler.x86_32.asm">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="ASM\VirtMem\x86.x86_32.asm">

@@ -74,6 +74,7 @@ namespace Kernel.Core.Shells
                          *  - GC   { Cleanup }
                          *  - USB { Update / Eject }
                          *  - Start { Filename } [*KM* / UM] [*Raw*]
+                         *  - ILY
                          */
 
                         //Get the current input line from the user
@@ -81,211 +82,171 @@ namespace Kernel.Core.Shells
                         //Split the input into command, arguments and options
                         //  All parts are in lower case
                         List cmdParts = SplitCommand(line);
-                        //Get the command to run - first part of the command
-                        FOS_System.String cmd = (FOS_System.String)cmdParts[0];
-                        //Determine which command we are to run
-                        if (cmd == "halt")
+                        //Check the user didn't just press enter without any text
+                        if (cmdParts.Count > 0)
                         {
-                            //Cleanup devices
-                            console.WriteLine("Ejecting MSDs...");
-                            CleanDiskCaches();
-                            console.WriteLine("Ejected.");
-
-                            console.WriteLine("Closing...");
-                            //Halt execution of the current shell
-                            terminating = true;
-                        }
-                        else if (cmd == "exinfo")
-                        {
-                            //Output information about the current exception, if any.
-                            //  TODO - This should be changed to Last exception. 
-                            //          Because of the try-catch block inside the loop, there
-                            //          will never be a current exception to output.
-                            OutputCurrentExceptionInfo();
-                        }
-                        else if (cmd == "init")
-                        {
-                            //Initialise the specified sub-system.
-
-                            #region Init
-                            //The user may have forgotten to input an option. Assume they
-                            //  haven't, then fill in if they have.
-                            FOS_System.String opt1 = null;
-                            //We don't know how many extra options there might be, so we test 
-                            //  for greater-than instead of equal to. It should be noted that >
-                            //  is more efficient than >=. Also, the command is in the cmdParts 
-                            //  not just the options. 
-                            //So, we want the 1st option, which is the 2nd command part. This 
-                            //  means we need > 1 command part and index 1 in the command parts 
-                            //  list.
-                            if(cmdParts.Count > 1)
+                            //Get the command to run - first part of the command
+                            FOS_System.String cmd = (FOS_System.String)cmdParts[0];
+                            //Determine which command we are to run
+                            if (cmd == "halt")
                             {
-                                opt1 = (FOS_System.String)cmdParts[1];
+                                //Cleanup devices
+                                console.WriteLine("Ejecting MSDs...");
+                                CleanDiskCaches();
+                                console.WriteLine("Ejected.");
+
+                                console.WriteLine("Closing...");
+                                //Halt execution of the current shell
+                                terminating = true;
                             }
-                            
-                            //If the user gave us an option
-                            if (opt1 != null)
+                            else if (cmd == "exinfo")
                             {
-                                //Determine which option that was
-                                if (opt1 == "all")
+                                //Output information about the current exception, if any.
+                                //  TODO - This should be changed to Last exception. 
+                                //          Because of the try-catch block inside the loop, there
+                                //          will never be a current exception to output.
+                                OutputCurrentExceptionInfo();
+                            }
+                            else if (cmd == "init")
+                            {
+                                //Initialise the specified sub-system.
+
+                                #region Init
+                                //The user may have forgotten to input an option. Assume they
+                                //  haven't, then fill in if they have.
+                                FOS_System.String opt1 = null;
+                                //We don't know how many extra options there might be, so we test 
+                                //  for greater-than instead of equal to. It should be noted that >
+                                //  is more efficient than >=. Also, the command is in the cmdParts 
+                                //  not just the options. 
+                                //So, we want the 1st option, which is the 2nd command part. This 
+                                //  means we need > 1 command part and index 1 in the command parts 
+                                //  list.
+                                if (cmdParts.Count > 1)
                                 {
-                                    //Initialise all sub-systems in order
-                                    InitATA();
-                                    InitPCI();
-                                    InitUSB();
-                                    InitFS();
+                                    opt1 = (FOS_System.String)cmdParts[1];
                                 }
-                                else if (opt1 == "pci")
+
+                                //If the user gave us an option
+                                if (opt1 != null)
                                 {
-                                    //Initialise the PCI sub-system
-                                    InitPCI();
-                                }
-                                else if (opt1 == "ata")
-                                {
-                                    //Initialise the ATA sub-system
-                                    InitATA();
-                                }
-                                else if (opt1 == "usb")
-                                {
-                                    //Initialise the USB sub-system
-                                    //  This is dependent upon the PCI sub-system
-                                    //  but we assume the user was intelligent 
-                                    //  enough to have already initialised PCI. 
-                                    //  (Probably a bad assumption really... ;p )
-                                    InitUSB();
-                                }
-                                else if (opt1 == "fs")
-                                {
-                                    //Initialise the file (sub-)system
-                                    //  This is dependent upon the USB or ATA 
-                                    //  sub-system but we assume the user was intelligent 
-                                    //  enough to have already initialised these. 
-                                    //  (Probably a bad assumption really... ;p )
-                                    InitFS();
+                                    //Determine which option that was
+                                    if (opt1 == "all")
+                                    {
+                                        //Initialise all sub-systems in order
+                                        InitATA();
+                                        InitPCI();
+                                        InitUSB();
+                                        InitFS();
+                                    }
+                                    else if (opt1 == "pci")
+                                    {
+                                        //Initialise the PCI sub-system
+                                        InitPCI();
+                                    }
+                                    else if (opt1 == "ata")
+                                    {
+                                        //Initialise the ATA sub-system
+                                        InitATA();
+                                    }
+                                    else if (opt1 == "usb")
+                                    {
+                                        //Initialise the USB sub-system
+                                        //  This is dependent upon the PCI sub-system
+                                        //  but we assume the user was intelligent 
+                                        //  enough to have already initialised PCI. 
+                                        //  (Probably a bad assumption really... ;p )
+                                        InitUSB();
+                                    }
+                                    else if (opt1 == "fs")
+                                    {
+                                        //Initialise the file (sub-)system
+                                        //  This is dependent upon the USB or ATA 
+                                        //  sub-system but we assume the user was intelligent 
+                                        //  enough to have already initialised these. 
+                                        //  (Probably a bad assumption really... ;p )
+                                        InitFS();
+                                    }
+                                    else
+                                    {
+                                        UnrecognisedOption(opt1);
+                                    }
                                 }
                                 else
                                 {
-                                    UnrecognisedOption(opt1);
+                                    console.WriteLine("You must specify what to init. { PCI/ATA/USB/FS }");
                                 }
+                                #endregion
                             }
-                            else
+                            else if (cmd == "output")
                             {
-                                console.WriteLine("You must specify what to init. { PCI/ATA/USB/FS }");
-                            }
-                            #endregion
-                        }
-                        else if (cmd == "output")
-                        {
-                            //For details on how the code here works, see Init
-                            #region Output
-                            FOS_System.String opt1 = null;
-                            if (cmdParts.Count > 1)
-                            {
-                                opt1 = (FOS_System.String)cmdParts[1];
-                            }
+                                //For details on how the code here works, see Init
+                                #region Output
+                                FOS_System.String opt1 = null;
+                                if (cmdParts.Count > 1)
+                                {
+                                    opt1 = (FOS_System.String)cmdParts[1];
+                                }
 
-                            if (opt1 != null)
-                            {
-                                if (opt1 == "pci")
+                                if (opt1 != null)
                                 {
-                                    OutputPCI();
-                                }
-                                else if (opt1 == "ata")
-                                {
-                                    OutputATA();
-                                }
-                                else if (opt1 == "usb")
-                                {
-                                    OuptutUSB();
-                                }
-                                else if (opt1 == "fs")
-                                {
-                                    OutputFS();
-                                }
-                                else if (opt1 == "memory" || opt1 == "mem")
-                                {
-                                    OutputMemory();
+                                    if (opt1 == "pci")
+                                    {
+                                        OutputPCI();
+                                    }
+                                    else if (opt1 == "ata")
+                                    {
+                                        OutputATA();
+                                    }
+                                    else if (opt1 == "usb")
+                                    {
+                                        OuptutUSB();
+                                    }
+                                    else if (opt1 == "fs")
+                                    {
+                                        OutputFS();
+                                    }
+                                    else if (opt1 == "memory" || opt1 == "mem")
+                                    {
+                                        OutputMemory();
+                                    }
+                                    else
+                                    {
+                                        UnrecognisedOption(opt1);
+                                    }
                                 }
                                 else
                                 {
-                                    UnrecognisedOption(opt1);
+                                    console.WriteLine("You must specify what to output. { PCI/ATA/USB/FS }");
                                 }
+                                #endregion
                             }
-                            else
+                            else if (cmd == "checkdisk" || cmd == "chkd")
                             {
-                                console.WriteLine("You must specify what to output. { PCI/ATA/USB/FS }");
-                            }
-                            #endregion
-                        }
-                        else if (cmd == "checkdisk" || cmd == "chkd")
-                        {
-                            //For details on how the code here works, see Init
-                            #region Check Disk
+                                //For details on how the code here works, see Init
+                                #region Check Disk
 
-                            FOS_System.String opt1 = null;
-                            if (cmdParts.Count > 1)
-                            {
-                                opt1 = (FOS_System.String)cmdParts[1];
-                            }
-
-                            if (opt1 != null)
-                            {
-                                int diskNum = (int)FOS_System.Int32.Parse_DecimalUnsigned(opt1, 0);
-
-                                console.Write("Are you sure device ");
-                                console.Write_AsDecimal(diskNum);
-                                console.Write(" is a disk device? (Y/N) : ");
-                                FOS_System.String str = console.ReadLine().ToLower();
-                                if (str == "y")
+                                FOS_System.String opt1 = null;
+                                if (cmdParts.Count > 1)
                                 {
-                                    console.Write("Checking disk ");
+                                    opt1 = (FOS_System.String)cmdParts[1];
+                                }
+
+                                if (opt1 != null)
+                                {
+                                    int diskNum = (int)FOS_System.Int32.Parse_DecimalUnsigned(opt1, 0);
+
+                                    console.Write("Are you sure device ");
                                     console.Write_AsDecimal(diskNum);
-                                    console.WriteLine("...");
-
-                                    CheckDiskFormatting((Hardware.Devices.DiskDevice)Hardware.DeviceManager.Devices[diskNum]);
-                                }
-                                else
-                                {
-                                    console.WriteLine("Cancelled.");
-                                }
-                            }
-                            else
-                            {
-                                console.WriteLine("You must specify which disk to check.");
-                            }
-
-                            #endregion
-                        }
-                        else if (cmd == "formatdisk" || cmd == "fmtd")
-                        {
-                            //For details on how the code here works, see Init
-                            #region Format Disk
-
-                            FOS_System.String opt1 = null;
-                            if (cmdParts.Count > 1)
-                            {
-                                opt1 = (FOS_System.String)cmdParts[1];
-                            }
-
-                            if (opt1 != null)
-                            {
-                                int diskNum = (int)FOS_System.Int32.Parse_DecimalUnsigned(opt1, 0);
-
-                                console.Write("Are you sure device ");
-                                console.Write_AsDecimal(diskNum);
-                                console.Write(" is a disk device? (Y/N) : ");
-                                FOS_System.String str = console.ReadLine().ToLower();
-                                if (str == "y")
-                                {
-                                    console.Write("Are you sure you wish to continue? (Y/N) : ");
-                                    str = console.ReadLine().ToLower();
+                                    console.Write(" is a disk device? (Y/N) : ");
+                                    FOS_System.String str = console.ReadLine().ToLower();
                                     if (str == "y")
                                     {
-                                        console.Write("Formatting disk ");
+                                        console.Write("Checking disk ");
                                         console.Write_AsDecimal(diskNum);
                                         console.WriteLine("...");
 
-                                        FormatDisk((Hardware.Devices.DiskDevice)Hardware.DeviceManager.Devices[diskNum]);
+                                        CheckDiskFormatting((Hardware.Devices.DiskDevice)Hardware.DeviceManager.Devices[diskNum]);
                                     }
                                     else
                                     {
@@ -294,508 +255,276 @@ namespace Kernel.Core.Shells
                                 }
                                 else
                                 {
-                                    console.WriteLine("Cancelled.");
+                                    console.WriteLine("You must specify which disk to check.");
                                 }
-                            }
-                            else
-                            {
-                                console.WriteLine("You must specify which disk to check.");
-                            }
 
-                            #endregion
-                        }
-                        else if (cmd == "gc")
-                        {
-                            //For details on how the code here works, see Init
-                            #region GC
-                            FOS_System.String opt1 = null;
-                            if (cmdParts.Count > 1)
-                            {
-                                opt1 = (FOS_System.String)cmdParts[1];
+                                #endregion
                             }
-
-                            if (opt1 != null)
+                            else if (cmd == "formatdisk" || cmd == "fmtd")
                             {
-                                if (opt1 == "cleanup")
+                                //For details on how the code here works, see Init
+                                #region Format Disk
+
+                                FOS_System.String opt1 = null;
+                                if (cmdParts.Count > 1)
                                 {
-                                    FOS_System.GC.Cleanup();
+                                    opt1 = (FOS_System.String)cmdParts[1];
+                                }
+
+                                if (opt1 != null)
+                                {
+                                    int diskNum = (int)FOS_System.Int32.Parse_DecimalUnsigned(opt1, 0);
+
+                                    console.Write("Are you sure device ");
+                                    console.Write_AsDecimal(diskNum);
+                                    console.Write(" is a disk device? (Y/N) : ");
+                                    FOS_System.String str = console.ReadLine().ToLower();
+                                    if (str == "y")
+                                    {
+                                        console.Write("Are you sure you wish to continue? (Y/N) : ");
+                                        str = console.ReadLine().ToLower();
+                                        if (str == "y")
+                                        {
+                                            console.Write("Formatting disk ");
+                                            console.Write_AsDecimal(diskNum);
+                                            console.WriteLine("...");
+
+                                            FormatDisk((Hardware.Devices.DiskDevice)Hardware.DeviceManager.Devices[diskNum]);
+                                        }
+                                        else
+                                        {
+                                            console.WriteLine("Cancelled.");
+                                        }
+                                    }
+                                    else
+                                    {
+                                        console.WriteLine("Cancelled.");
+                                    }
                                 }
                                 else
                                 {
-                                    UnrecognisedOption(opt1);
+                                    console.WriteLine("You must specify which disk to check.");
                                 }
-                            }
-                            else
-                            {
-                                console.WriteLine("You must specify what to do. { Cleanup }");
-                            }
-                            #endregion
-                        }
-                        else if (cmd == "usb")
-                        {
-                            //For details on how the code here works, see Init
-                            #region USB
-                            FOS_System.String opt1 = null;
-                            if (cmdParts.Count > 1)
-                            {
-                                opt1 = (FOS_System.String)cmdParts[1];
-                            }
 
-                            if (opt1 != null)
+                                #endregion
+                            }
+                            else if (cmd == "gc")
                             {
-                                if (opt1 == "update")
+                                //For details on how the code here works, see Init
+                                #region GC
+                                FOS_System.String opt1 = null;
+                                if (cmdParts.Count > 1)
                                 {
-                                    Hardware.USB.USBManager.Update();
+                                    opt1 = (FOS_System.String)cmdParts[1];
                                 }
-                                else if (opt1 == "eject")
+
+                                if (opt1 != null)
                                 {
-                                    FOS_System.String opt2 = null;
-                                    if (cmdParts.Count > 2)
+                                    if (opt1 == "cleanup")
                                     {
-                                        opt2 = (FOS_System.String)cmdParts[2];
+                                        FOS_System.GC.Cleanup();
                                     }
-
-                                    if (opt2 != null)
+                                    else
                                     {
-                                        if(opt2 == "msd")
+                                        UnrecognisedOption(opt1);
+                                    }
+                                }
+                                else
+                                {
+                                    console.WriteLine("You must specify what to do. { Cleanup }");
+                                }
+                                #endregion
+                            }
+                            else if (cmd == "usb")
+                            {
+                                //For details on how the code here works, see Init
+                                #region USB
+                                FOS_System.String opt1 = null;
+                                if (cmdParts.Count > 1)
+                                {
+                                    opt1 = (FOS_System.String)cmdParts[1];
+                                }
+
+                                if (opt1 != null)
+                                {
+                                    if (opt1 == "update")
+                                    {
+                                        Hardware.USB.USBManager.Update();
+                                    }
+                                    else if (opt1 == "eject")
+                                    {
+                                        FOS_System.String opt2 = null;
+                                        if (cmdParts.Count > 2)
                                         {
-                                            FOS_System.String opt3 = null;
-                                            if (cmdParts.Count > 3)
+                                            opt2 = (FOS_System.String)cmdParts[2];
+                                        }
+
+                                        if (opt2 != null)
+                                        {
+                                            if (opt2 == "msd")
                                             {
-                                                opt3 = (FOS_System.String)cmdParts[3];
-                                            }
-                                            if(opt3 != null)
-                                            {
-                                                EjectMSD(FOS_System.Int32.Parse_DecimalSigned(opt3));
+                                                FOS_System.String opt3 = null;
+                                                if (cmdParts.Count > 3)
+                                                {
+                                                    opt3 = (FOS_System.String)cmdParts[3];
+                                                }
+                                                if (opt3 != null)
+                                                {
+                                                    EjectMSD(FOS_System.Int32.Parse_DecimalSigned(opt3));
+                                                }
+                                                else
+                                                {
+                                                    console.WriteLine("You must specify a device number!");
+                                                }
                                             }
                                             else
                                             {
-                                                console.WriteLine("You must specify a device number!");
+                                                console.WriteLine("Unrecognised device type!");
                                             }
                                         }
                                         else
                                         {
-                                            console.WriteLine("Unrecognised device type!");
+                                            console.WriteLine("You must specify a device type! (msd)");
                                         }
                                     }
                                     else
                                     {
-                                        console.WriteLine("You must specify a device type! (msd)");
+                                        UnrecognisedOption(opt1);
                                     }
                                 }
                                 else
                                 {
-                                    UnrecognisedOption(opt1);
+                                    console.WriteLine("You must specify what to do. { Update }");
                                 }
+                                #endregion
                             }
-                            else
+                            else if (cmd == "dir")
                             {
-                                console.WriteLine("You must specify what to do. { Update }");
-                            }
-                            #endregion
-                        }
-                        else if (cmd == "dir")
-                        {
-                            //For details on how the code here works, see Init
+                                //For details on how the code here works, see Init
 
-                            //Note: "./" prefix on a dir/file path means current 
-                            //      directory so it must be replaced by the 
-                            //      current directory.
-                            #region Dir
-                            FOS_System.String opt1 = null;
-                            if (cmdParts.Count > 1)
-                            {
-                                opt1 = (FOS_System.String)cmdParts[1];
-                            }
-
-                            if (opt1 != null)
-                            {
-                                if (opt1 == "list")
+                                //Note: "./" prefix on a dir/file path means current 
+                                //      directory so it must be replaced by the 
+                                //      current directory.
+                                #region Dir
+                                FOS_System.String opt1 = null;
+                                if (cmdParts.Count > 1)
                                 {
-                                    FOS_System.String opt2 = null;
-                                    if (cmdParts.Count > 2)
-                                    {
-                                        opt2 = (FOS_System.String)cmdParts[2];
-                                    }
-
-                                    if (opt2 != null)
-                                    {
-                                        if (opt2.StartsWith("./"))
-                                        {
-                                            opt2 = CurrentDir + opt2.Substring(2, opt2.length - 2);
-                                        }
-                                        console.WriteLine("Listing dir: " + opt2);
-                                        OutputDirectoryContents(opt2);
-                                    }
-                                    else
-                                    {
-                                        console.WriteLine("You must specify a directory path.");
-                                    }
+                                    opt1 = (FOS_System.String)cmdParts[1];
                                 }
-                                else if(opt1 == "open")
+
+                                if (opt1 != null)
                                 {
-                                    FOS_System.String opt2 = null;
-                                    if (cmdParts.Count > 2)
+                                    if (opt1 == "list")
                                     {
-                                        opt2 = (FOS_System.String)cmdParts[2];
-                                    }
-
-                                    if (opt2 != null)
-                                    {
-                                        if (opt2.StartsWith("./"))
+                                        FOS_System.String opt2 = null;
+                                        if (cmdParts.Count > 2)
                                         {
-                                            opt2 = CurrentDir + opt2.Substring(2, opt2.length - 2);
+                                            opt2 = (FOS_System.String)cmdParts[2];
                                         }
 
-                                        Directory aDir = Directory.Find(opt2);
-                                        if (aDir != null)
+                                        if (opt2 != null)
                                         {
-                                            CurrentDir = aDir.GetFullPath();
-                                        }
-                                        else
-                                        {
-                                            console.WriteLine("Directory not found!");
-                                        }
-                                    }
-                                    else
-                                    {
-                                        console.WriteLine("You must specify a directory path.");
-                                    }
-                                }
-                                else if (opt1 == "new")
-                                {
-                                    FOS_System.String opt2 = null;
-                                    if (cmdParts.Count > 2)
-                                    {
-                                        opt2 = (FOS_System.String)cmdParts[2];
-                                    }
-
-                                    if (opt2 != null)
-                                    {
-                                        if (opt2.StartsWith("./"))
-                                        {
-                                            opt2 = CurrentDir + opt2.Substring(2, opt2.length - 2);
-                                        }
-                                        console.WriteLine("Creating dir: " + opt2);
-                                        NewDirectory(opt2);
-                                    }
-                                    else
-                                    {
-                                        console.WriteLine("You must specify a directory path.");
-                                    }
-                                }
-                                else if (opt1 == "delete")
-                                {
-                                    FOS_System.String opt2 = null;
-                                    if (cmdParts.Count > 2)
-                                    {
-                                        opt2 = (FOS_System.String)cmdParts[2];
-                                    }
-
-                                    if (opt2 != null)
-                                    {
-                                        if (opt2.StartsWith("./"))
-                                        {
-                                            opt2 = CurrentDir + opt2.Substring(2, opt2.length - 2);
-                                        }
-                                        console.WriteLine("Deleting dir: " + opt2);
-                                        DeleteDirectory(opt2);
-                                    }
-                                    else
-                                    {
-                                        console.WriteLine("You must specify a directory path.");
-                                    }
-                                }
-                                else if (opt1 == "copy")
-                                {
-                                    FOS_System.String opt2 = null;
-                                    if (cmdParts.Count > 2)
-                                    {
-                                        opt2 = (FOS_System.String)cmdParts[2];
-                                    }
-
-                                    if (opt2 != null)
-                                    {
-                                        if (opt2.StartsWith("./"))
-                                        {
-                                            opt2 = CurrentDir + opt2.Substring(2, opt2.length - 2);
-                                        }
-
-                                        FOS_System.String opt3 = null;
-                                        if (cmdParts.Count > 3)
-                                        {
-                                            opt3 = (FOS_System.String)cmdParts[3];
-                                        }
-
-                                        if (opt3 != null)
-                                        {
-                                            if (opt3.StartsWith("./"))
+                                            if (opt2.StartsWith("./"))
                                             {
-                                                opt3 = CurrentDir + opt3.Substring(2, opt3.length - 2);
+                                                opt2 = CurrentDir + opt2.Substring(2, opt2.length - 2);
                                             }
-
-                                            console.WriteLine("Copy cmd, opt2=\"" + opt2 + "\", opt3=\"" + opt3 + "\"");
-                                            CopyDirectory(opt2, opt3);
+                                            console.WriteLine("Listing dir: " + opt2);
+                                            OutputDirectoryContents(opt2);
                                         }
                                         else
                                         {
-                                            console.WriteLine("You must specify a destination path.");
+                                            console.WriteLine("You must specify a directory path.");
                                         }
                                     }
-                                    else
+                                    else if (opt1 == "open")
                                     {
-                                        console.WriteLine("You must specify a source path.");
-                                    }
-                                }
-                                else
-                                {
-                                    UnrecognisedOption(opt1);
-                                }
-                            }
-                            else
-                            {
-                                console.WriteLine("You must specify what to do. { List/Open/New/Delete/Copy }");
-                            }
-                            #endregion
-                        }
-                        else if (cmd == "file")
-                        {
-                            //For details on how the code here works, see Init
-
-                            //Note: "./" prefix on a dir/file path means current 
-                            //      directory so it must be replaced by the 
-                            //      current directory.
-                            #region File
-                            FOS_System.String opt1 = null;
-                            if (cmdParts.Count > 1)
-                            {
-                                opt1 = (FOS_System.String)cmdParts[1];
-                            }
-
-                            if (opt1 != null)
-                            {
-                                if (opt1 == "open")
-                                {
-                                    FOS_System.String opt2 = null;
-                                    if (cmdParts.Count > 2)
-                                    {
-                                        opt2 = (FOS_System.String)cmdParts[2];
-                                    }
-
-                                    if (opt2 != null)
-                                    {
-                                        if (opt2.StartsWith("./"))
+                                        FOS_System.String opt2 = null;
+                                        if (cmdParts.Count > 2)
                                         {
-                                            opt2 = CurrentDir + opt2.Substring(2, opt2.length - 2);
+                                            opt2 = (FOS_System.String)cmdParts[2];
                                         }
 
-                                        OutputFileContents(opt2);
-                                    }
-                                    else
-                                    {
-                                        console.WriteLine("You must specify a file path.");
-                                    }
-                                }
-                                else if(opt1 == "delete")
-                                {
-                                    FOS_System.String opt2 = null;
-                                    if (cmdParts.Count > 2)
-                                    {
-                                        opt2 = (FOS_System.String)cmdParts[2];
-                                    }
-
-                                    if (opt2 != null)
-                                    {
-                                        if (opt2.StartsWith("./"))
+                                        if (opt2 != null)
                                         {
-                                            opt2 = CurrentDir + opt2.Substring(2, opt2.length - 2);
-                                        }
-
-                                        DeleteFile(opt2);
-                                    }
-                                    else
-                                    {
-                                        console.WriteLine("You must specify a file path.");
-                                    }
-                                }
-                                else if (opt1 == "copy")
-                                {
-                                    FOS_System.String opt2 = null;
-                                    if (cmdParts.Count > 2)
-                                    {
-                                        opt2 = (FOS_System.String)cmdParts[2];
-                                    }
-
-                                    if (opt2 != null)
-                                    {
-                                        if (opt2.StartsWith("./"))
-                                        {
-                                            opt2 = CurrentDir + opt2.Substring(2, opt2.length - 2);
-                                        }
-
-                                        FOS_System.String opt3 = null;
-                                        if (cmdParts.Count > 3)
-                                        {
-                                            opt3 = (FOS_System.String)cmdParts[3];
-                                        }
-
-                                        if (opt3 != null)
-                                        {
-                                            if (opt3.StartsWith("./"))
+                                            if (opt2.StartsWith("./"))
                                             {
-                                                opt3 = CurrentDir + opt3.Substring(2, opt3.length - 2);
+                                                opt2 = CurrentDir + opt2.Substring(2, opt2.length - 2);
                                             }
 
-                                            console.WriteLine("Copy cmd, opt2=\"" + opt2 + "\", opt3=\"" + opt3 + "\"");
-                                            CopyFile(opt2, opt3);
+                                            Directory aDir = Directory.Find(opt2);
+                                            if (aDir != null)
+                                            {
+                                                CurrentDir = aDir.GetFullPath();
+                                            }
+                                            else
+                                            {
+                                                console.WriteLine("Directory not found!");
+                                            }
                                         }
                                         else
                                         {
-                                            console.WriteLine("You must specify a destination path.");
+                                            console.WriteLine("You must specify a directory path.");
                                         }
                                     }
-                                    else
+                                    else if (opt1 == "new")
                                     {
-                                        console.WriteLine("You must specify a source path.");
-                                    }
-                                }
-                                else
-                                {
-                                    UnrecognisedOption(opt1);
-                                }
-                            }
-                            else
-                            {
-                                console.WriteLine("You must specify what to do. { Open/Delete/Copy }");
-                            }
-                            #endregion
-                        }
-                        else if (cmd == "test")
-                        {
-                            //For details on how the code here works, see Init
-                            #region Test
-                            FOS_System.String opt1 = null;
-                            if (cmdParts.Count > 1)
-                            {
-                                opt1 = (FOS_System.String)cmdParts[1];
-                            }
-
-                            if (opt1 != null)
-                            {
-                                if (opt1 == "interrupts")
-                                {
-                                    InterruptsTest();
-                                }
-                                else if (opt1 == "delegates")
-                                {
-                                    DelegateTest();
-                                }
-                                else if (opt1 == "filesystems")
-                                {
-                                    FileSystemTests();
-                                }
-                                else if (opt1 == "ulltcomp")
-                                {
-                                    ULongLTComparisonTest();
-                                }
-                                else if (opt1 == "stringconcat")
-                                {
-                                    StringConcatTest();
-                                }
-                                else if (opt1 == "objarray")
-                                {
-                                    ObjectArrayTest();
-                                }
-                                else if (opt1 == "intarray")
-                                {
-                                    IntArrayTest();
-                                }
-                                else if (opt1 == "dummyobj")
-                                {
-                                    DummyObjectTest();
-                                }
-                                else if (opt1 == "divideby0")
-                                {
-                                    DivideByZeroTest();
-                                }
-                                else if (opt1 == "exceptions1")
-                                {
-                                    ExceptionsTestP1();
-                                }
-                                else if (opt1 == "exceptions2")
-                                {
-                                    ExceptionsTestP2();
-                                }
-                                else if (opt1 == "pcbeep")
-                                {
-                                    PCBeepTest();
-                                }
-                                else if (opt1 == "timer")
-                                {
-                                    TimerTest();
-                                }
-                                else if (opt1 == "keyboard")
-                                {
-                                    KeyboardTest();
-                                }
-                                else if (opt1 == "fieldstable")
-                                {
-                                    FieldsTableTest();
-                                }
-                                else if (opt1 == "isinst")
-                                {
-                                    IsInstTest();
-                                }
-                                else if (opt1 == "virtmem")
-                                {
-                                    Hardware.VirtMemManager.Test();
-                                }
-                                else
-                                {
-                                    UnrecognisedOption(opt1);
-                                }
-                            }
-                            else
-                            {
-                                console.WriteLine("You must specify which test. { Interrupts  /  Delegates    /  FileSystems /\n" +
-                                                  "                               ULLTComp    /  StringConcat /  ObjArray    /\n" +
-                                                  "                               IntArray    /  DummyObj     /  DivideBy0   /\n" +
-                                                  "                               Exceptions1 /  Exceptions2  /  PCBeep      /\n" +
-                                                  "                               Timer       /  Keyboard     /  FieldsTable /\n" +
-                                                  "                               IsInst      /  VirtMem                     }");
-                            }
-                            #endregion
-                        }
-                        else if (cmd == "start")
-                        {
-                            //For details on how the code here works, see Init
-                            #region Start
-                            FOS_System.String opt1 = null;
-                            if (cmdParts.Count > 1)
-                            {
-                                opt1 = (FOS_System.String)cmdParts[1];
-                            }
-
-                            if (opt1 != null)
-                            {
-                                if (opt1.StartsWith("./"))
-                                {
-                                    opt1 = CurrentDir + opt1.Substring(2, opt1.length - 2);
-                                }
-
-                                File aFile = File.Open(opt1);
-                                if (aFile != null)
-                                {
-                                    FOS_System.String opt2 = null;
-                                    if (cmdParts.Count > 2)
-                                    {
-                                        opt2 = (FOS_System.String)cmdParts[2];
-                                    }
-
-                                    if (opt2 != null)
-                                    {
-                                        if (opt2 == "km")
+                                        FOS_System.String opt2 = null;
+                                        if (cmdParts.Count > 2)
                                         {
+                                            opt2 = (FOS_System.String)cmdParts[2];
+                                        }
+
+                                        if (opt2 != null)
+                                        {
+                                            if (opt2.StartsWith("./"))
+                                            {
+                                                opt2 = CurrentDir + opt2.Substring(2, opt2.length - 2);
+                                            }
+                                            console.WriteLine("Creating dir: " + opt2);
+                                            NewDirectory(opt2);
+                                        }
+                                        else
+                                        {
+                                            console.WriteLine("You must specify a directory path.");
+                                        }
+                                    }
+                                    else if (opt1 == "delete")
+                                    {
+                                        FOS_System.String opt2 = null;
+                                        if (cmdParts.Count > 2)
+                                        {
+                                            opt2 = (FOS_System.String)cmdParts[2];
+                                        }
+
+                                        if (opt2 != null)
+                                        {
+                                            if (opt2.StartsWith("./"))
+                                            {
+                                                opt2 = CurrentDir + opt2.Substring(2, opt2.length - 2);
+                                            }
+                                            console.WriteLine("Deleting dir: " + opt2);
+                                            DeleteDirectory(opt2);
+                                        }
+                                        else
+                                        {
+                                            console.WriteLine("You must specify a directory path.");
+                                        }
+                                    }
+                                    else if (opt1 == "copy")
+                                    {
+                                        FOS_System.String opt2 = null;
+                                        if (cmdParts.Count > 2)
+                                        {
+                                            opt2 = (FOS_System.String)cmdParts[2];
+                                        }
+
+                                        if (opt2 != null)
+                                        {
+                                            if (opt2.StartsWith("./"))
+                                            {
+                                                opt2 = CurrentDir + opt2.Substring(2, opt2.length - 2);
+                                            }
+
                                             FOS_System.String opt3 = null;
                                             if (cmdParts.Count > 3)
                                             {
@@ -804,27 +533,110 @@ namespace Kernel.Core.Shells
 
                                             if (opt3 != null)
                                             {
-                                                if (opt3 == "raw")
+                                                if (opt3.StartsWith("./"))
                                                 {
-                                                    Processes.ProcessManager.RegisterProcess(
-                                                        Processes.ProcessManager.LoadProcess_FromRawExe(aFile, false),
-                                                        Processes.Scheduler.Priority.Normal);
+                                                    opt3 = CurrentDir + opt3.Substring(2, opt3.length - 2);
                                                 }
-                                                else
-                                                {
-                                                    UnrecognisedOption(opt3);
-                                                }
+
+                                                console.WriteLine("Copy cmd, opt2=\"" + opt2 + "\", opt3=\"" + opt3 + "\"");
+                                                CopyDirectory(opt2, opt3);
                                             }
                                             else
                                             {
-                                                //Run as RAW for now
-                                                Processes.ProcessManager.RegisterProcess(
-                                                    Processes.ProcessManager.LoadProcess_FromRawExe(aFile, false),
-                                                    Processes.Scheduler.Priority.Normal);
+                                                console.WriteLine("You must specify a destination path.");
                                             }
                                         }
-                                        else if (opt2 == "um")
+                                        else
                                         {
+                                            console.WriteLine("You must specify a source path.");
+                                        }
+                                    }
+                                    else
+                                    {
+                                        UnrecognisedOption(opt1);
+                                    }
+                                }
+                                else
+                                {
+                                    console.WriteLine("You must specify what to do. { List/Open/New/Delete/Copy }");
+                                }
+                                #endregion
+                            }
+                            else if (cmd == "file")
+                            {
+                                //For details on how the code here works, see Init
+
+                                //Note: "./" prefix on a dir/file path means current 
+                                //      directory so it must be replaced by the 
+                                //      current directory.
+                                #region File
+                                FOS_System.String opt1 = null;
+                                if (cmdParts.Count > 1)
+                                {
+                                    opt1 = (FOS_System.String)cmdParts[1];
+                                }
+
+                                if (opt1 != null)
+                                {
+                                    if (opt1 == "open")
+                                    {
+                                        FOS_System.String opt2 = null;
+                                        if (cmdParts.Count > 2)
+                                        {
+                                            opt2 = (FOS_System.String)cmdParts[2];
+                                        }
+
+                                        if (opt2 != null)
+                                        {
+                                            if (opt2.StartsWith("./"))
+                                            {
+                                                opt2 = CurrentDir + opt2.Substring(2, opt2.length - 2);
+                                            }
+
+                                            OutputFileContents(opt2);
+                                        }
+                                        else
+                                        {
+                                            console.WriteLine("You must specify a file path.");
+                                        }
+                                    }
+                                    else if (opt1 == "delete")
+                                    {
+                                        FOS_System.String opt2 = null;
+                                        if (cmdParts.Count > 2)
+                                        {
+                                            opt2 = (FOS_System.String)cmdParts[2];
+                                        }
+
+                                        if (opt2 != null)
+                                        {
+                                            if (opt2.StartsWith("./"))
+                                            {
+                                                opt2 = CurrentDir + opt2.Substring(2, opt2.length - 2);
+                                            }
+
+                                            DeleteFile(opt2);
+                                        }
+                                        else
+                                        {
+                                            console.WriteLine("You must specify a file path.");
+                                        }
+                                    }
+                                    else if (opt1 == "copy")
+                                    {
+                                        FOS_System.String opt2 = null;
+                                        if (cmdParts.Count > 2)
+                                        {
+                                            opt2 = (FOS_System.String)cmdParts[2];
+                                        }
+
+                                        if (opt2 != null)
+                                        {
+                                            if (opt2.StartsWith("./"))
+                                            {
+                                                opt2 = CurrentDir + opt2.Substring(2, opt2.length - 2);
+                                            }
+
                                             FOS_System.String opt3 = null;
                                             if (cmdParts.Count > 3)
                                             {
@@ -833,48 +645,252 @@ namespace Kernel.Core.Shells
 
                                             if (opt3 != null)
                                             {
-                                                if (opt3 == "raw")
+                                                if (opt3.StartsWith("./"))
                                                 {
-                                                    Processes.ProcessManager.RegisterProcess(
-                                                        Processes.ProcessManager.LoadProcess_FromRawExe(aFile, true),
-                                                        Processes.Scheduler.Priority.Normal);
+                                                    opt3 = CurrentDir + opt3.Substring(2, opt3.length - 2);
                                                 }
-                                                else
-                                                {
-                                                    UnrecognisedOption(opt3);
-                                                }
+
+                                                console.WriteLine("Copy cmd, opt2=\"" + opt2 + "\", opt3=\"" + opt3 + "\"");
+                                                CopyFile(opt2, opt3);
                                             }
                                             else
                                             {
-                                                //Run as RAW for now
-                                                Processes.ProcessManager.RegisterProcess(
-                                                    Processes.ProcessManager.LoadProcess_FromRawExe(aFile, true),
-                                                    Processes.Scheduler.Priority.Normal);
+                                                console.WriteLine("You must specify a destination path.");
                                             }
                                         }
                                         else
                                         {
-                                            UnrecognisedOption(opt2);
+                                            console.WriteLine("You must specify a source path.");
                                         }
                                     }
                                     else
                                     {
-                                        //Run as KM, RAW for now
-                                        Processes.ProcessManager.RegisterProcess(
-                                            Processes.ProcessManager.LoadProcess_FromRawExe(aFile, false),
-                                            Processes.Scheduler.Priority.Normal);
+                                        UnrecognisedOption(opt1);
                                     }
                                 }
                                 else
                                 {
-                                    console.WriteLine("File not found.");
+                                    console.WriteLine("You must specify what to do. { Open/Delete/Copy }");
                                 }
+                                #endregion
                             }
-                            else
+                            else if (cmd == "test")
                             {
-                                console.WriteLine("You must specify the file path.");
+                                //For details on how the code here works, see Init
+                                #region Test
+                                FOS_System.String opt1 = null;
+                                if (cmdParts.Count > 1)
+                                {
+                                    opt1 = (FOS_System.String)cmdParts[1];
+                                }
+
+                                if (opt1 != null)
+                                {
+                                    if (opt1 == "interrupts")
+                                    {
+                                        InterruptsTest();
+                                    }
+                                    else if (opt1 == "delegates")
+                                    {
+                                        DelegateTest();
+                                    }
+                                    else if (opt1 == "filesystems")
+                                    {
+                                        FileSystemTests();
+                                    }
+                                    else if (opt1 == "ulltcomp")
+                                    {
+                                        ULongLTComparisonTest();
+                                    }
+                                    else if (opt1 == "stringconcat")
+                                    {
+                                        StringConcatTest();
+                                    }
+                                    else if (opt1 == "objarray")
+                                    {
+                                        ObjectArrayTest();
+                                    }
+                                    else if (opt1 == "intarray")
+                                    {
+                                        IntArrayTest();
+                                    }
+                                    else if (opt1 == "dummyobj")
+                                    {
+                                        DummyObjectTest();
+                                    }
+                                    else if (opt1 == "divideby0")
+                                    {
+                                        DivideByZeroTest();
+                                    }
+                                    else if (opt1 == "exceptions1")
+                                    {
+                                        ExceptionsTestP1();
+                                    }
+                                    else if (opt1 == "exceptions2")
+                                    {
+                                        ExceptionsTestP2();
+                                    }
+                                    else if (opt1 == "pcbeep")
+                                    {
+                                        PCBeepTest();
+                                    }
+                                    else if (opt1 == "timer")
+                                    {
+                                        TimerTest();
+                                    }
+                                    else if (opt1 == "keyboard")
+                                    {
+                                        KeyboardTest();
+                                    }
+                                    else if (opt1 == "fieldstable")
+                                    {
+                                        FieldsTableTest();
+                                    }
+                                    else if (opt1 == "isinst")
+                                    {
+                                        IsInstTest();
+                                    }
+                                    else if (opt1 == "virtmem")
+                                    {
+                                        Hardware.VirtMemManager.Test();
+                                    }
+                                    else
+                                    {
+                                        UnrecognisedOption(opt1);
+                                    }
+                                }
+                                else
+                                {
+                                    console.WriteLine("You must specify which test. { Interrupts  /  Delegates    /  FileSystems /\n" +
+                                                      "                               ULLTComp    /  StringConcat /  ObjArray    /\n" +
+                                                      "                               IntArray    /  DummyObj     /  DivideBy0   /\n" +
+                                                      "                               Exceptions1 /  Exceptions2  /  PCBeep      /\n" +
+                                                      "                               Timer       /  Keyboard     /  FieldsTable /\n" +
+                                                      "                               IsInst      /  VirtMem                     }");
+                                }
+                                #endregion
                             }
-                            #endregion
+                            else if (cmd == "start")
+                            {
+                                //For details on how the code here works, see Init
+                                #region Start
+                                FOS_System.String opt1 = null;
+                                if (cmdParts.Count > 1)
+                                {
+                                    opt1 = (FOS_System.String)cmdParts[1];
+                                }
+
+                                if (opt1 != null)
+                                {
+                                    if (opt1.StartsWith("./"))
+                                    {
+                                        opt1 = CurrentDir + opt1.Substring(2, opt1.length - 2);
+                                    }
+
+                                    File aFile = File.Open(opt1);
+                                    if (aFile != null)
+                                    {
+                                        FOS_System.String opt2 = null;
+                                        if (cmdParts.Count > 2)
+                                        {
+                                            opt2 = (FOS_System.String)cmdParts[2];
+                                        }
+
+                                        if (opt2 != null)
+                                        {
+                                            if (opt2 == "km")
+                                            {
+                                                FOS_System.String opt3 = null;
+                                                if (cmdParts.Count > 3)
+                                                {
+                                                    opt3 = (FOS_System.String)cmdParts[3];
+                                                }
+
+                                                if (opt3 != null)
+                                                {
+                                                    if (opt3 == "raw")
+                                                    {
+                                                        Hardware.Processes.ProcessManager.RegisterProcess(
+                                                            Processes.DynamicLinkerLoader.LoadProcess_FromRawExe(aFile, false),
+                                                            Hardware.Processes.Scheduler.Priority.Normal);
+                                                    }
+                                                    else
+                                                    {
+                                                        UnrecognisedOption(opt3);
+                                                    }
+                                                }
+                                                else
+                                                {
+                                                    //Run as RAW for now
+                                                    Hardware.Processes.ProcessManager.RegisterProcess(
+                                                        Processes.DynamicLinkerLoader.LoadProcess_FromRawExe(aFile, false),
+                                                        Hardware.Processes.Scheduler.Priority.Normal);
+                                                }
+                                            }
+                                            else if (opt2 == "um")
+                                            {
+                                                FOS_System.String opt3 = null;
+                                                if (cmdParts.Count > 3)
+                                                {
+                                                    opt3 = (FOS_System.String)cmdParts[3];
+                                                }
+
+                                                if (opt3 != null)
+                                                {
+                                                    if (opt3 == "raw")
+                                                    {
+                                                        Hardware.Processes.ProcessManager.RegisterProcess(
+                                                            Processes.DynamicLinkerLoader.LoadProcess_FromRawExe(aFile, true),
+                                                            Hardware.Processes.Scheduler.Priority.Normal);
+                                                    }
+                                                    else
+                                                    {
+                                                        UnrecognisedOption(opt3);
+                                                    }
+                                                }
+                                                else
+                                                {
+                                                    //Run as RAW for now
+                                                    Hardware.Processes.ProcessManager.RegisterProcess(
+                                                        Processes.DynamicLinkerLoader.LoadProcess_FromRawExe(aFile, true),
+                                                        Hardware.Processes.Scheduler.Priority.Normal);
+                                                }
+                                            }
+                                            else
+                                            {
+                                                UnrecognisedOption(opt2);
+                                            }
+                                        }
+                                        else
+                                        {
+                                            //Run as KM, RAW for now
+                                            Hardware.Processes.ProcessManager.RegisterProcess(
+                                                Processes.DynamicLinkerLoader.LoadProcess_FromRawExe(aFile, false),
+                                                Hardware.Processes.Scheduler.Priority.Normal);
+                                        }
+                                    }
+                                    else
+                                    {
+                                        console.WriteLine("File not found.");
+                                    }
+                                }
+                                else
+                                {
+                                    console.WriteLine("You must specify the file path.");
+                                }
+                                #endregion
+                            }
+                            else if (cmd == "ily")
+                            {
+                                #region ILY
+
+                                Hardware.Processes.ProcessManager.RegisterProcess(
+                                    Processes.DynamicLinkerLoader.LoadProcess_FromRawExe(
+                                        File.Open("a:/ily.bin"), false),
+                                    Hardware.Processes.Scheduler.Priority.Normal);
+
+                                #endregion
+                            }
                         }
                     }
                     catch

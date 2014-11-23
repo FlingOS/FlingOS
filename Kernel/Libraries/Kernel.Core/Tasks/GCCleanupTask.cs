@@ -14,15 +14,15 @@ namespace Kernel.Core.Tasks
             {
                 try
                 {
-                    Processes.Scheduler.Disable();
+                    Hardware.Processes.Scheduler.Disable();
                     FOS_System.GC.Cleanup();
                 }
                 catch
                 {
                 }
 
-                Processes.Scheduler.Enable();
-                Processes.Thread.Sleep(300);
+                Hardware.Processes.Scheduler.Enable();
+                Hardware.Processes.Thread.Sleep(300);
             }
         }
     }
