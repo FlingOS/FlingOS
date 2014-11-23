@@ -724,6 +724,9 @@ namespace Kernel.Hardware.USB.HCIs
             // Map in the required memory - we will use identity mapping for the PCI / USB registers for now
             VirtMemManager.Map((uint)usbBaseAddress & 0xFFFFF000, (uint)usbBaseAddress & 0xFFFFF000, 4096, 
                 VirtMem.VirtMemImpl.PageFlags.KernelOnly);
+            Processes.ProcessManager.CurrentProcess.TheMemoryLayout.AddDataPage(
+                (uint)usbBaseAddress & 0xFFFFF000,
+                (uint)usbBaseAddress & 0xFFFFF000);
 
             // Caps registers start at the beginning of the memory mapped IO registers.
             // Section 2 of the Intel EHCI Spec
@@ -854,7 +857,7 @@ namespace Kernel.Hardware.USB.HCIs
             DBGMSG("Hooking IRQ...");
 #endif
             // Setup the interrupt handler (IRQ number = PCIDevice.InterruptLine)
-            Interrupts.Interrupts.AddIRQHandler(pciDevice.InterruptLine, EHCI.InterruptHandler, this);
+            Interrupts.Interrupts.AddIRQHandler(pciDevice.InterruptLine, EHCI.InterruptHandler, this, false);
 #if EHCI_TRACE
             DBGMSG("Hooked IRQ.");
 #endif

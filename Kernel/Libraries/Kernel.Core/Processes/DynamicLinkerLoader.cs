@@ -13,7 +13,7 @@ namespace Kernel.Core.Processes
             // - Copy the memory over
 
             //TODO - Handle case of EXE being bigger than 4KiB?
-            //          - Would need to map contiguous pages.
+            //          - Would need to map contiguous (virtual) pages.
             byte* destMemPtr = (byte*)Hardware.VirtMemManager.MapFreePage(
                 UserMode ? Hardware.VirtMem.VirtMemImpl.PageFlags.None : Hardware.VirtMem.VirtMemImpl.PageFlags.KernelOnly);
 
@@ -23,7 +23,10 @@ namespace Kernel.Core.Processes
             Utilities.MemoryUtils.MemCpy_32(destMemPtr, ((byte*)Utilities.ObjectUtilities.GetHandle(readBuffer)) + FOS_System.Array.FieldsBytesSize, (uint)bytesRead);
 
             // - Create the process
-            return ProcessManager.CreateProcess((ThreadStartMethod)Utilities.ObjectUtilities.GetObject(destMemPtr), RawExeFile.Name, UserMode);
+            Process process = ProcessManager.CreateProcess((ThreadStartMethod)Utilities.ObjectUtilities.GetObject(destMemPtr), RawExeFile.Name, UserMode);
+            process.TheMemoryLayout.AddCodePage((uint)Hardware.VirtMemManager.GetPhysicalAddress(destMemPtr),
+                (uint)destMemPtr);
+            return process;
         }
     }
 }

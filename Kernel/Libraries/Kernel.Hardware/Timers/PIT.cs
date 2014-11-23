@@ -373,7 +373,10 @@ namespace Kernel.Hardware.Timers
         {
             if (!enabled)
             {
-                InterruptHandlerId = Interrupts.Interrupts.AddIRQHandler(0, InterruptHandler, this);
+                //Ignore the process state for timer interrupts. Timer interrupts occur so frequently
+                //  that to continually switch state would be massively inefficient. Also, switching
+                //  state isn't necessary for the handlers queued in the timer.
+                InterruptHandlerId = Interrupts.Interrupts.AddIRQHandler(0, InterruptHandler, this, true);
                 DeviceManager.Devices.Add(this);
                 enabled = true;
                 

@@ -429,6 +429,25 @@ namespace Kernel.FOS_System.Collections
         }
 
         /// <summary>
+        /// Returns the index of the first instance of the specified object or -1 
+        /// if it is not found.
+        /// </summary>
+        /// <param name="obj">The object to search for.</param>
+        /// <returns>The index or -1 if not found.</returns>
+        public int IndexOf(UInt32 obj)
+        {
+            for (int i = 0; i < currIndex; i++)
+            {
+                if (_array[i] == obj)
+                {
+                    return i;
+                }
+            }
+
+            return -1;
+        }
+
+        /// <summary>
         /// Expands the capacity of the internel array that stores the UInt32s.
         /// </summary>
         /// <param name="amount">The amount to expand the capacity by.</param>

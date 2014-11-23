@@ -1,5 +1,17 @@
 ﻿; BEGIN - x86 Virt Mem
 
+method_System_UInt32_RETEND_Kernel_Hardware_VirtMem_x86_DECLEND_GetCR3_NAMEEND___:
+
+push dword ebp
+mov dword ebp, esp
+
+mov dword eax, cr3
+mov dword [ebp+8], eax
+
+pop dword ebp
+ret
+
+
 method_System_UInt32_RETEND_Kernel_Hardware_VirtMem_x86_DECLEND_GetKernelVirtToPhysOffset_NAMEEND___:
 
 push dword ebp
@@ -10,6 +22,8 @@ mov dword [ebp+8], KERNEL_VIRTUAL_BASE
 pop dword ebp
 
 ret
+
+
 method_System_UInt32__RETEND_Kernel_Hardware_VirtMem_x86_DECLEND_GetPageDirectoryPtr_NAMEEND___:
 
 push dword ebp
@@ -20,6 +34,8 @@ mov dword [ebp+8], Page_Directory
 pop dword ebp
 
 ret
+
+
 method_System_UInt32__RETEND_Kernel_Hardware_VirtMem_x86_DECLEND_GetFirstPageTablePtr_NAMEEND___:
 
 push dword ebp
@@ -42,6 +58,8 @@ mov dword [ebp+8], Kernel_MemStart
 pop dword ebp
 
 ret
+
+
 method_System_UInt32__RETEND_Kernel_Hardware_VirtMem_x86_DECLEND_GetKernelMemEndPtr_NAMEEND___:
 
 push dword ebp

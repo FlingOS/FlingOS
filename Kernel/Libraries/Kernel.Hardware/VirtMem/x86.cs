@@ -432,5 +432,12 @@ namespace Kernel.Hardware.VirtMem
         {
             return null;
         }
+
+
+        [Compiler.PluggedMethod(ASMFilePath = null)]
+        public static uint GetCR3()
+        {
+            return 0;
+        }
     }
 }

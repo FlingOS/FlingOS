@@ -82,7 +82,8 @@ namespace Kernel
                 Process ManagedMainProcess = ProcessManager.CreateProcess(ManagedMain, "Managed Main", false);
                 
                 Thread ManagedMain_MainThread = ((Thread)ManagedMainProcess.Threads[0]);
-                Hardware.VirtMemManager.Unmap(ManagedMain_MainThread.State->ThreadStackTop);
+                Hardware.VirtMemManager.Unmap(ManagedMain_MainThread.State->ThreadStackTop - 4092);
+                ManagedMainProcess.TheMemoryLayout.RemovePage((uint)ManagedMain_MainThread.State->ThreadStackTop - 4092);
                 ManagedMain_MainThread.State->ThreadStackTop = GetKernelStackPtr();
                 ManagedMain_MainThread.State->ESP = (uint)ManagedMain_MainThread.State->ThreadStackTop;
 

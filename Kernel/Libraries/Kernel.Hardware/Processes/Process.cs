@@ -37,7 +37,6 @@ namespace Kernel.Hardware.Processes
 #if PROCESS_TRACE
             Console.Default.WriteLine(" > > Setting up memory layout...");
 #endif
-            TheMemoryLayout.CR3 = GetCR3();
         }
 
         public void CreateThread(ThreadStartMethod MainMethod)
@@ -49,13 +48,20 @@ namespace Kernel.Hardware.Processes
 #if PROCESS_TRACE
             Console.Default.WriteLine(" > > Adding thread object...");
 #endif
+            TheMemoryLayout.AddDataPage(
+                (uint)VirtMemManager.GetPhysicalAddress(mainThread.State->ThreadStackTop - 4092),
+                (uint)mainThread.State->ThreadStackTop - 4092);
+
             Threads.Add(mainThread);
         }
 
-        [Compiler.PluggedMethod(ASMFilePath=@"ASM\Processes\Process")]
-        public static uint GetCR3()
+        public void SwitchIn()
         {
-            return 0;
+            TheMemoryLayout.Load(UserMode);
+        }
+        public void SwitchOut()
+        {
+            TheMemoryLayout.Unload();
         }
     }
 }

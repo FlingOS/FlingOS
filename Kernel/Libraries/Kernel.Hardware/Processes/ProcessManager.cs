@@ -31,5 +31,50 @@ namespace Kernel.Hardware.Processes
 
             Processes.Add(process);
         }
+
+        public static void SwitchProcess(uint processId, int threadId)
+        {
+            //Switch the current memory layout across.
+            //  Don't touch register state etc, just the memory layout
+
+            if (CurrentProcess != null)
+            {
+                CurrentProcess.SwitchOut();
+            }
+            else if (CurrentProcess.Id == processId &&
+                     CurrentThread.Id == threadId)
+            {
+                return;
+            }
+
+            for (int i = 0; i < Processes.Count; i++)
+            {
+                if (((Process)Processes[i]).Id == processId)
+                {
+                    CurrentProcess = ((Process)Processes[i]);
+                    break;
+                }
+            }
+
+            if (threadId == -1)
+            {
+                CurrentThread = (Thread)CurrentProcess.Threads[0];
+            }
+            else
+            {
+                for (int i = 0; i < CurrentProcess.Threads.Count; i++)
+                {
+                    if (((Thread)CurrentProcess.Threads[i]).Id == threadId)
+                    {
+                        CurrentThread = (Thread)CurrentProcess.Threads[i];
+                        break;
+                    }
+                }
+            }
+
+            CurrentThread_State = CurrentThread.State;
+
+            CurrentProcess.SwitchIn();
+        }
     }
 }

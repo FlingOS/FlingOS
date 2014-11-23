@@ -60,7 +60,7 @@ namespace Kernel.Hardware.Processes
 #if SCHEDULER_TRACE
             Console.Default.WriteLine(" > Setting cr3...");
 #endif
-            tss->cr3 = ProcessManager.CurrentProcess.TheMemoryLayout.CR3;
+            tss->cr3 = VirtMem.x86.GetCR3();
 
             //Load Task Register
 #if SCHEDULER_TRACE
@@ -130,7 +130,7 @@ namespace Kernel.Hardware.Processes
                 ProcessManager.CurrentThread.TimeToSleep > 0 ||
                 ProcessManager.CurrentThread_State->Terminated)
             {
-                #region Decrement Time to Run
+                #region Reset Time to Run
 #if SCHEDULER_TRACE
                 if (print)
                 {
@@ -140,6 +140,9 @@ namespace Kernel.Hardware.Processes
                 ProcessManager.CurrentThread.TimeToRun = ProcessManager.CurrentThread.TimeToRunReload;
 
                 #endregion
+
+                uint processId = ProcessManager.CurrentProcess.Id;
+                uint threadId = 0;
 
                 #region Next Thread
 #if SCHEDULER_TRACE
@@ -233,15 +236,7 @@ namespace Kernel.Hardware.Processes
                             //Go back to start of list
                             processIdx = 0;
                         }
-
-#if SCHEDULER_TRACE
-                        if (print)
-                        {
-                            Console.Default.WriteLine("Setting current process...");
-                        }
-#endif
-                        ProcessManager.CurrentProcess = (Process)ProcessManager.Processes[processIdx];
-
+                        
 #if SCHEDULER_TRACE
                         if (print)
                         {
@@ -282,6 +277,8 @@ namespace Kernel.Hardware.Processes
                         }
                     }
 
+                    processId = ((Process)ProcessManager.Processes[processIdx]).Id;
+
                     #endregion
                 }
                 else if (threadIdx >= ProcessManager.CurrentProcess.Threads.Count)
@@ -289,23 +286,9 @@ namespace Kernel.Hardware.Processes
                     threadIdx = 0;
                 }
 
-                #region  Set current thread and thread state
-#if SCHEDULER_TRACE
-                if (print)
-                {
-                    Console.Default.WriteLine("Setting current thread...");
-                }
-#endif
-                ProcessManager.CurrentThread = (Thread)ProcessManager.CurrentProcess.Threads[threadIdx];
-#if SCHEDULER_TRACE
-                    if (print)
-                    {
-                        Console.Default.WriteLine("Setting current thread state...");
-                    }
-#endif
-                ProcessManager.CurrentThread_State = ProcessManager.CurrentThread.State;
-
-                #endregion
+                ProcessManager.SwitchProcess(processId,
+                    (int)((Thread)ProcessManager.CurrentProcess.Threads[threadIdx]).Id);
+                    
             }
 
 #if SCHEDULER_TRACE

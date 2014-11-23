@@ -95,6 +95,9 @@ namespace Kernel.Hardware.Interrupts
         /// trying to remove its handler twice.
         /// </remarks>
         public int id;
+
+        public bool IgnoreProcessId;
+        public uint ProcessId;
     }
     /// <summary>
     /// Delegate type for an interrupt handler. Interrupt handlers must be static, like all methods used in 
@@ -201,10 +204,10 @@ namespace Kernel.Hardware.Interrupts
         /// <param name="data">The state object to pass the handler when the interrupt occurs.</param>
         /// <returns>The Id of the new handler. Save and use for removal. An Id of 0 s invalid.</returns>
         public static int AddIRQHandler(int num, InterruptHandler handler,
-                                         FOS_System.Object data)
+                                         FOS_System.Object data, bool IgnoreProcessState)
         {
             //In this OS's implementation, IRQs 0-15 are mapped to ISRs 32-47
-            int result = AddISRHandler(num + 32, handler, data);
+            int result = AddISRHandler(num + 32, handler, data, IgnoreProcessState);
             EnableIRQ((byte)num);
             return result;
         }
@@ -234,7 +237,7 @@ namespace Kernel.Hardware.Interrupts
         /// <param name="data">The state object to pass the handler when the interrupt occurs.</param>
         /// <returns>The Id of the new handler. Save and use for removal.</returns>
         public static int AddISRHandler(int num, InterruptHandler handler,
-                                         FOS_System.Object data)
+                                         FOS_System.Object data, bool IgnoreProcessState)
         {
             if (Handlers[num] == null)
             {
@@ -252,7 +255,9 @@ namespace Kernel.Hardware.Interrupts
             {
                 handler = handler,
                 data = data,
-                id = id
+                id = id,
+                IgnoreProcessId = IgnoreProcessState,
+                ProcessId = Processes.ProcessManager.CurrentProcess.Id
             });
 #if INTERRUPTS_TRACE
             BasicConsole.WriteLine("Added.");
@@ -319,6 +324,13 @@ namespace Kernel.Hardware.Interrupts
                     BasicConsole.SetTextColour(BasicConsole.default_colour);
                 }
 #endif
+                uint currProcessId = 0;
+                if (Processes.ProcessManager.CurrentProcess != null)
+                {
+                    currProcessId = Processes.ProcessManager.CurrentProcess.Id;
+                }
+                bool switched = false;
+
                 //Go through any handlers and fire them
                 InterruptHandlers handlers = Handlers[ISRNum];
                 if (handlers != null)
@@ -327,8 +339,23 @@ namespace Kernel.Hardware.Interrupts
                     {
                         HandlerDescriptor descrip = (HandlerDescriptor)handlers.HandlerDescrips[i];
                         InterruptHandler func = descrip.handler;
+
+                        if (Processes.ProcessManager.CurrentProcess != null)
+                        {
+                            if (!descrip.IgnoreProcessId)
+                            {
+                                Processes.ProcessManager.SwitchProcess(descrip.ProcessId, -1);
+                                switched = true;
+                            }
+                        }
+                        
                         func(descrip.data);
                     }
+                }
+
+                if (switched)
+                {
+                    Processes.ProcessManager.SwitchProcess(currProcessId, -1);
                 }
 
                 //If the ISR is actually an IRQ, we must also notify the PIC(s)
