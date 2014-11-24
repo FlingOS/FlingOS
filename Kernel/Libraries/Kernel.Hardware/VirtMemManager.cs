@@ -62,9 +62,9 @@ namespace Kernel.Hardware
         /// <param name="pAddr">The physical address to start mapping at (must be 4KiB aligned).</param>
         /// <param name="vAddr">The virtual address to start mapping at (must be 4KiB aligned).</param>
         /// <param name="size">The amount of memory (in bytes) to map (must be a multiple of 4KiB)</param>
-        public static void Map(void* pAddr, void* vAddr, uint size, VirtMemImpl.PageFlags flags)
+        public static void Map(void* pAddr, void* vAddr, uint size, VirtMemImpl.PageFlags flags, bool UpdateUsedPages = true)
         {
-            Map((uint)pAddr, (uint)vAddr, size, flags);
+            Map((uint)pAddr, (uint)vAddr, size, flags, UpdateUsedPages);
         }
         /// <summary>
         /// Maps the specified amount of memory.
@@ -72,9 +72,9 @@ namespace Kernel.Hardware
         /// <param name="pAddr">The physical address to start mapping at (must be 4KiB aligned).</param>
         /// <param name="vAddr">The virtual address to start mapping at (must be 4KiB aligned).</param>
         /// <param name="size">The amount of memory (in bytes) to map (must be a multiple of 4KiB)</param>
-        public static void Map(uint pAddr, void* vAddr, uint size, VirtMemImpl.PageFlags flags)
+        public static void Map(uint pAddr, void* vAddr, uint size, VirtMemImpl.PageFlags flags, bool UpdateUsedPages = true)
         {
-            Map(pAddr, (uint)vAddr, size, flags);
+            Map(pAddr, (uint)vAddr, size, flags, UpdateUsedPages);
         }
         /// <summary>
         /// Maps the specified amount of memory.
@@ -82,9 +82,9 @@ namespace Kernel.Hardware
         /// <param name="pAddr">The physical address to start mapping at (must be 4KiB aligned).</param>
         /// <param name="vAddr">The virtual address to start mapping at (must be 4KiB aligned).</param>
         /// <param name="size">The amount of memory (in bytes) to map (must be a multiple of 4KiB)</param>
-        public static void Map(void* pAddr, uint vAddr, uint size, VirtMemImpl.PageFlags flags)
+        public static void Map(void* pAddr, uint vAddr, uint size, VirtMemImpl.PageFlags flags, bool UpdateUsedPages = true)
         {
-            Map((uint)pAddr, vAddr, size, flags);
+            Map((uint)pAddr, vAddr, size, flags, UpdateUsedPages);
         }
         /// <summary>
         /// Maps the specified amount of memory.
@@ -92,25 +92,25 @@ namespace Kernel.Hardware
         /// <param name="pAddr">The physical address to start mapping at (must be 4KiB aligned).</param>
         /// <param name="vAddr">The virtual address to start mapping at (must be 4KiB aligned).</param>
         /// <param name="size">The amount of memory (in bytes) to map (must be a multiple of 4KiB)</param>
-        public static void Map(uint pAddr, uint vAddr, uint size, VirtMemImpl.PageFlags flags)
+        public static void Map(uint pAddr, uint vAddr, uint size, VirtMemImpl.PageFlags flags, bool UpdateUsedPages = true)
         {
             flags |= VirtMemImpl.PageFlags.Present | VirtMemImpl.PageFlags.Writeable;
             while (size > 0)
             {
-                impl.Map(pAddr, vAddr, flags);
+                impl.Map(pAddr, vAddr, flags, UpdateUsedPages);
                 size -= 4096;
                 pAddr += 4096;
                 vAddr += 4096;
             }
         }
 
-        public static void Unmap(void* vAddr)
+        public static void Unmap(void* vAddr, bool UpdateUsedPages = true)
         {
-            Unmap((uint)vAddr);
+            Unmap((uint)vAddr, UpdateUsedPages);
         }
-        public static void Unmap(uint vAddr)
+        public static void Unmap(uint vAddr, bool UpdateUsedPages = true)
         {
-            impl.Unmap(vAddr);
+            impl.Unmap(vAddr, UpdateUsedPages);
         }
 
         /// <summary>

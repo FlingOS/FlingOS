@@ -55,12 +55,12 @@ namespace Kernel.Hardware.VirtMem
         /// </summary>
         /// <param name="pAddr">The physical address to map to.</param>
         /// <param name="vAddr">The virtual address to map.</param>
-        public virtual void Map(uint pAddr, uint vAddr)
+        public virtual void Map(uint pAddr, uint vAddr, bool UpdateUsedPages = true)
         {
-            Map(pAddr, vAddr, PageFlags.Present | PageFlags.KernelOnly | PageFlags.Writeable);
+            Map(pAddr, vAddr, PageFlags.Present | PageFlags.KernelOnly | PageFlags.Writeable, UpdateUsedPages);
         }
-        public abstract void Map(uint pAddr, uint vAddr, PageFlags flags);
-        public abstract void Unmap(uint vAddr);
+        public abstract void Map(uint pAddr, uint vAddr, PageFlags flags, bool UpdateUsedPages = true);
+        public abstract void Unmap(uint vAddr, bool UpdateUsedPages = true);
         /// <summary>
         /// Gets the physical address for the specified virtual address.
         /// </summary>

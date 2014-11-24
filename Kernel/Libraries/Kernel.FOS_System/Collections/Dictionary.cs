@@ -20,7 +20,7 @@ namespace Kernel.FOS_System.Collections
             if (Keys.IndexOf(key) > -1)
             {
                 ExceptionMethods.Throw(new FOS_System.Exception(
-                    ""));
+                    "Cannot add duplicate key to the dictionary!"));
             }
 
             Keys.Add(key);

@@ -13,11 +13,17 @@ namespace Kernel.Hardware.VirtMem
 
         public void AddCodePage(uint pAddr, uint vAddr)
         {
-            CodePages.Add(vAddr, pAddr);
+            if (!CodePages.Contains(vAddr))
+            {
+                CodePages.Add(vAddr, pAddr);
+            }
         }
         public void AddDataPage(uint pAddr, uint vAddr)
         {
-            DataPages.Add(vAddr, pAddr);
+            if (!DataPages.Contains(vAddr))
+            {
+                DataPages.Add(vAddr, pAddr);
+            }
         }
         public void RemovePage(uint vAddr)
         {
@@ -37,11 +43,10 @@ namespace Kernel.Hardware.VirtMem
                 BasicConsole.WriteLine("Loading code page...");
 #endif
 
-                VirtMemManager.Map(pAddr, vAddr, 4096, flags);
+                //VirtMemManager.Map(pAddr, vAddr, 4096, flags, false);
             }
 
-            flags = VirtMemImpl.PageFlags.Writeable |
-                    (ProcessIsUM ? VirtMemImpl.PageFlags.None : VirtMemImpl.PageFlags.KernelOnly);
+            flags = ProcessIsUM ? VirtMemImpl.PageFlags.None : VirtMemImpl.PageFlags.KernelOnly;
             for (int i = 0; i < DataPages.Keys.Count; i++)
             {
                 uint vAddr = DataPages.Keys[i];
@@ -51,26 +56,26 @@ namespace Kernel.Hardware.VirtMem
                 BasicConsole.WriteLine("Loading data page...");
 #endif
 
-                VirtMemManager.Map(pAddr, vAddr, 4096, flags);
+                //VirtMemManager.Map(pAddr, vAddr, 4096, flags, false);
             }
         }
         public void Unload()
         {
-            for (int i = 0; i < CodePages.Keys.Count; i++)
+            for (int i = 0; i < CodePages.Keys.Count && i < CodePages.Values.Count; i++)
             {
 #if MEMLAYOUT_TRACE
                 BasicConsole.WriteLine("Unloading code page...");
 #endif
 
-                VirtMemManager.Unmap(CodePages.Keys[i]);
+                //VirtMemManager.Unmap(CodePages.Keys[i], false);
             }
-            for (int i = 0; i < DataPages.Keys.Count; i++)
+            for (int i = 0; i < DataPages.Keys.Count && i < DataPages.Values.Count; i++)
             {
 #if MEMLAYOUT_TRACE
                 BasicConsole.WriteLine("Unloading data page...");
 #endif
 
-                VirtMemManager.Unmap(DataPages.Keys[i]);
+                //VirtMemManager.Unmap(DataPages.Keys[i], false);
             }
         }
     }

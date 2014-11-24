@@ -30,18 +30,18 @@ namespace Kernel.Hardware.Processes
         public Thread(ThreadStartMethod StartMethod, uint AnId, bool UserMode)
         {
 #if THREAD_TRACE
-            Console.Default.WriteLine(" > > > Constructing thread object...");
+            BasicConsole.WriteLine("Constructing thread object...");
 #endif
             //Init thread state
-#if THREAD_TRACE
-            Console.Default.WriteLine(" > > > Allocating state memory...");
+            #if THREAD_TRACE
+            BasicConsole.WriteLine("Allocating state memory...");
 #endif
             State = (ThreadState*)FOS_System.Heap.Alloc((uint)sizeof(ThreadState));
 
             // Init Id and EIP
             //  Set EIP to the first instruction of the main method
 #if THREAD_TRACE
-            Console.Default.WriteLine(" > > > Setting info...");
+            BasicConsole.WriteLine("Setting thread info...");
 #endif
             Id = AnId;
             State->StartEIP = (uint)Utilities.ObjectUtilities.GetHandle(StartMethod);
@@ -50,14 +50,14 @@ namespace Kernel.Hardware.Processes
             //  Used when this thread is preempted or does a sys call. Stack is switched to
             //  this thread-specific kernel stack
 #if THREAD_TRACE
-            Console.Default.WriteLine(" > > > Allocating kernel stack...");
+            BasicConsole.WriteLine("Allocating kernel stack...");
 #endif
             State->KernelStackTop = (byte*)FOS_System.Heap.Alloc(0x1000, 4) + 0xFFC; //4KiB, 4-byte aligned
             
             // Allocate free memory for the user stack for this thread
             //  Used by this thread in normal execution
 #if THREAD_TRACE
-            Console.Default.WriteLine(" > > > Mapping thread stack page...");
+            BasicConsole.WriteLine("Mapping thread stack page...");
 #endif
             State->UserMode = UserMode;
             State->ThreadStackTop = (byte*)Hardware.VirtMemManager.MapFreePage(
@@ -67,7 +67,7 @@ namespace Kernel.Hardware.Processes
             // Set ESP to the top of the stack - 4 byte aligned, high address since x86 stack works
             //  downwards
 #if THREAD_TRACE
-            Console.Default.WriteLine(" > > > Setting ESP...");
+            BasicConsole.WriteLine("Setting ESP...");
 #endif
             State->ESP = (uint)State->ThreadStackTop;
 
@@ -92,12 +92,16 @@ namespace Kernel.Hardware.Processes
             State->Started = false;
         }
 
-        public static void Sleep(int ms)
+        public static void EnterSleep(int ms)
         {
             Scheduler.Disable();
             ProcessManager.CurrentThread.TimeToSleep = ms /* x * 1ms / [Scheduler period in ns] = x * 1 = x */;
             ProcessManager.CurrentThread.TimeToRun = 0;
             Scheduler.Enable();
+        }
+        public static void Sleep(int ms)
+        {
+            EnterSleep(ms);
             // Busy wait for the scheduler to interrupt the thread, sleep it and
             //  then as soon as the sleep is over this condition will go false
             //  so the thread will continue

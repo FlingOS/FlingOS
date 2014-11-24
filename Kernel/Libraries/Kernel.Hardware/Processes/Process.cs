@@ -25,9 +25,9 @@ namespace Kernel.Hardware.Processes
 
         public Process(ThreadStartMethod MainMethod, uint AnId, FOS_System.String AName, bool userMode)
         {
-#if PROCESS_TRACE
-            Console.Default.WriteLine(" > > Constructing process object...");
-#endif
+//#if PROCESS_TRACE
+            BasicConsole.WriteLine("Constructing process object...");
+//#endif
             Id = AnId;
             Name = AName;
             UserMode = userMode;
@@ -41,16 +41,20 @@ namespace Kernel.Hardware.Processes
 
         public void CreateThread(ThreadStartMethod MainMethod)
         {
-#if PROCESS_TRACE
-            Console.Default.WriteLine(" > > Creating thread...");
-#endif
+//#if PROCESS_TRACE
+            BasicConsole.WriteLine("Creating thread...");
+//#endif
             Thread mainThread = new Thread(MainMethod, ThreadIdGenerator++, UserMode);
-#if PROCESS_TRACE
-            Console.Default.WriteLine(" > > Adding thread object...");
-#endif
+            //#if PROCESS_TRACE
+            BasicConsole.WriteLine("Adding data page...");
+//#endif
             TheMemoryLayout.AddDataPage(
                 (uint)VirtMemManager.GetPhysicalAddress(mainThread.State->ThreadStackTop - 4092),
                 (uint)mainThread.State->ThreadStackTop - 4092);
+            
+            //#if PROCESS_TRACE
+            BasicConsole.WriteLine("Adding thread...");
+            //#endif
 
             Threads.Add(mainThread);
         }

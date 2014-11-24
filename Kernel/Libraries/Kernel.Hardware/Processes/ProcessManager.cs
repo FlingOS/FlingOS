@@ -18,18 +18,33 @@ namespace Kernel.Hardware.Processes
         public static Process CreateProcess(ThreadStartMethod MainMethod, FOS_System.String Name, bool UserMode)
         {
 #if PROCESSMANAGER_TRACE
-            Console.Default.WriteLine(" > Creating process object...");
+            BasicConsole.WriteLine("Creating process object...");
 #endif
             return new Process(MainMethod, ProcessIdGenerator++, Name, UserMode);
         }
         public static void RegisterProcess(Process process, Scheduler.Priority priority)
         {
 #if PROCESSMANAGER_TRACE
-            Console.Default.WriteLine(" > > Adding process...");
+            BasicConsole.WriteLine("Registering process...");
+            BasicConsole.WriteLine("Disabling scheduler...");
+#endif
+
+            Scheduler.Disable();
+
+#if PROCESSMANAGER_TRACE
+            BasicConsole.WriteLine("Initialising process...");
 #endif
             Scheduler.InitProcess(process, priority);
 
+#if PROCESSMANAGER_TRACE
+            BasicConsole.WriteLine("Adding process...");
+#endif
             Processes.Add(process);
+
+#if PROCESSMANAGER_TRACE
+            BasicConsole.WriteLine("Enabling scheduler...");
+#endif
+            Scheduler.Enable();
         }
 
         /// <remarks>
