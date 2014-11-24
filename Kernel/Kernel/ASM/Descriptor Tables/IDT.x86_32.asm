@@ -208,7 +208,7 @@ mov byte [ebx+6], al
 mov byte [ebx+7], ah
 mov word [ebx+2], 0x8
 mov byte [ebx+4], 0x0
-mov byte [ebx+5], 0x8F
+mov byte [ebx+5], 0x8E
 add ebx, 8
 
 ; Skip Int1 - Set above
@@ -222,7 +222,7 @@ mov byte [ebx+6], al
 mov byte [ebx+7], ah
 mov word [ebx+2], 0x8
 mov byte [ebx+4], 0x0
-mov byte [ebx+5], 0x8F
+mov byte [ebx+5], 0x8E
 add ebx, 8
 
 ; Skip Int3 - Set above
@@ -236,7 +236,7 @@ mov byte [ebx+6], al
 mov byte [ebx+7], ah
 mov word [ebx+2], 0x8
 mov byte [ebx+4], 0x0
-mov byte [ebx+5], 0x8F
+mov byte [ebx+5], 0x8E
 add ebx, 8
   
 mov dword eax, Interrupt5Handler
@@ -247,7 +247,7 @@ mov byte [ebx+6], al
 mov byte [ebx+7], ah
 mov word [ebx+2], 0x8
 mov byte [ebx+4], 0x0
-mov byte [ebx+5], 0x8F
+mov byte [ebx+5], 0x8E
 add ebx, 8
   
 mov dword eax, Interrupt6Handler
@@ -258,7 +258,7 @@ mov byte [ebx+6], al
 mov byte [ebx+7], ah
 mov word [ebx+2], 0x8
 mov byte [ebx+4], 0x0
-mov byte [ebx+5], 0x8F
+mov byte [ebx+5], 0x8E
 add ebx, 8
   
 mov dword eax, Interrupt7Handler
@@ -269,7 +269,7 @@ mov byte [ebx+6], al
 mov byte [ebx+7], ah
 mov word [ebx+2], 0x8
 mov byte [ebx+4], 0x0
-mov byte [ebx+5], 0x8F
+mov byte [ebx+5], 0x8E
 add ebx, 8
   
 mov dword eax, Interrupt8Handler
@@ -280,7 +280,7 @@ mov byte [ebx+6], al
 mov byte [ebx+7], ah
 mov word [ebx+2], 0x8
 mov byte [ebx+4], 0x0
-mov byte [ebx+5], 0x8F
+mov byte [ebx+5], 0x8E
 add ebx, 8
   
 mov dword eax, Interrupt9Handler
@@ -291,7 +291,7 @@ mov byte [ebx+6], al
 mov byte [ebx+7], ah
 mov word [ebx+2], 0x8
 mov byte [ebx+4], 0x0
-mov byte [ebx+5], 0x8F
+mov byte [ebx+5], 0x8E
 add ebx, 8
   
 mov dword eax, Interrupt10Handler
@@ -302,7 +302,7 @@ mov byte [ebx+6], al
 mov byte [ebx+7], ah
 mov word [ebx+2], 0x8
 mov byte [ebx+4], 0x0
-mov byte [ebx+5], 0x8F
+mov byte [ebx+5], 0x8E
 add ebx, 8
   
 mov dword eax, Interrupt11Handler
@@ -313,7 +313,7 @@ mov byte [ebx+6], al
 mov byte [ebx+7], ah
 mov word [ebx+2], 0x8
 mov byte [ebx+4], 0x0
-mov byte [ebx+5], 0x8F
+mov byte [ebx+5], 0x8E
 add ebx, 8
   
 mov dword eax, Interrupt12Handler
@@ -324,7 +324,7 @@ mov byte [ebx+6], al
 mov byte [ebx+7], ah
 mov word [ebx+2], 0x8
 mov byte [ebx+4], 0x0
-mov byte [ebx+5], 0x8F
+mov byte [ebx+5], 0x8E
 add ebx, 8
 
 ; Skip 13 - Triple Faults occur after every IRet!  
@@ -338,7 +338,7 @@ mov byte [ebx+6], al
 mov byte [ebx+7], ah
 mov word [ebx+2], 0x8
 mov byte [ebx+4], 0x0
-mov byte [ebx+5], 0x8F
+mov byte [ebx+5], 0x8E
 add ebx, 8
 
 ; Skip 15 - Reserved (i.e. empty)
@@ -352,7 +352,7 @@ mov byte [ebx+6], al
 mov byte [ebx+7], ah
 mov word [ebx+2], 0x8
 mov byte [ebx+4], 0x0
-mov byte [ebx+5], 0x8F
+mov byte [ebx+5], 0x8E
 add ebx, 8
 
 %macro CommonInterruptHandler_IDTMacro 1

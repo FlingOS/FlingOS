@@ -325,9 +325,11 @@ namespace Kernel.Hardware.Interrupts
                 }
 #endif
                 uint currProcessId = 0;
+                uint currThreadId = 0;
                 if (Processes.ProcessManager.CurrentProcess != null)
                 {
                     currProcessId = Processes.ProcessManager.CurrentProcess.Id;
+                    currThreadId = Processes.ProcessManager.CurrentThread.Id;
                 }
                 bool switched = false;
 
@@ -355,7 +357,7 @@ namespace Kernel.Hardware.Interrupts
 
                 if (switched)
                 {
-                    Processes.ProcessManager.SwitchProcess(currProcessId, -1);
+                    Processes.ProcessManager.SwitchProcess(currProcessId, (int)currThreadId);
                 }
 
                 //If the ISR is actually an IRQ, we must also notify the PIC(s)
