@@ -32,6 +32,12 @@ namespace Kernel.Hardware.Processes
             Processes.Add(process);
         }
 
+        /// <remarks>
+        /// Specifying threadId=-1 accepts any thread from the specified process.
+        /// No guarantees are made about the thread chosen. This is used when you
+        /// mainly want to switch process context and don't care about the specific
+        /// thread context e.g. during an interrupt.
+        /// </remarks>
         public static void SwitchProcess(uint processId, int threadId)
         {
             //Switch the current memory layout across.
@@ -40,7 +46,8 @@ namespace Kernel.Hardware.Processes
             if (CurrentProcess != null)
             {
                 if (CurrentProcess.Id == processId &&
-                     CurrentThread.Id == threadId)
+                    CurrentThread != null &&
+                    (CurrentThread.Id == threadId || threadId == -1))
                 {
                     return;
                 }
