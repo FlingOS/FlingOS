@@ -1,4 +1,7 @@
-﻿using System;
+﻿#define MEMLAYOUT_TRACE
+#undef MEMLAYOUT_TRACE
+
+using System;
 using Kernel.FOS_System.Collections;
 
 namespace Kernel.Hardware.VirtMem
@@ -30,6 +33,10 @@ namespace Kernel.Hardware.VirtMem
                 uint vAddr = CodePages.Keys[i];
                 uint pAddr = CodePages[vAddr];
 
+#if MEMLAYOUT_TRACE
+                BasicConsole.WriteLine("Loading code page...");
+#endif
+
                 VirtMemManager.Map(pAddr, vAddr, 4096, flags);
             }
 
@@ -39,6 +46,10 @@ namespace Kernel.Hardware.VirtMem
             {
                 uint vAddr = DataPages.Keys[i];
                 uint pAddr = DataPages[vAddr];
+                
+#if MEMLAYOUT_TRACE
+                BasicConsole.WriteLine("Loading data page...");
+#endif
 
                 VirtMemManager.Map(pAddr, vAddr, 4096, flags);
             }
@@ -47,11 +58,19 @@ namespace Kernel.Hardware.VirtMem
         {
             for (int i = 0; i < CodePages.Keys.Count; i++)
             {
+#if MEMLAYOUT_TRACE
+                BasicConsole.WriteLine("Unloading code page...");
+#endif
+
                 VirtMemManager.Unmap(CodePages.Keys[i]);
             }
             for (int i = 0; i < DataPages.Keys.Count; i++)
             {
-                //VirtMemManager.Unmap(DataPages.Keys[i]);
+#if MEMLAYOUT_TRACE
+                BasicConsole.WriteLine("Unloading data page...");
+#endif
+
+                VirtMemManager.Unmap(DataPages.Keys[i]);
             }
         }
     }

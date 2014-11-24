@@ -39,13 +39,18 @@ namespace Kernel.Hardware.Processes
 
             if (CurrentProcess != null)
             {
+                if (CurrentProcess.Id == processId &&
+                     CurrentThread.Id == threadId)
+                {
+                    return;
+                }
+
                 CurrentProcess.SwitchOut();
             }
-            else if (CurrentProcess.Id == processId &&
-                     CurrentThread.Id == threadId)
-            {
-                return;
-            }
+
+            CurrentProcess = null;
+            CurrentThread = null;
+            CurrentThread_State = null;
 
             for (int i = 0; i < Processes.Count; i++)
             {
@@ -56,9 +61,18 @@ namespace Kernel.Hardware.Processes
                 }
             }
 
+            // Process not found
+            if (CurrentProcess == null)
+            {
+                return;
+            }
+
             if (threadId == -1)
             {
-                CurrentThread = (Thread)CurrentProcess.Threads[0];
+                if (CurrentProcess.Threads.Count > 0)
+                {
+                    CurrentThread = (Thread)CurrentProcess.Threads[0];
+                }
             }
             else
             {
@@ -70,6 +84,12 @@ namespace Kernel.Hardware.Processes
                         break;
                     }
                 }
+            }
+
+            // No threads in the process (?!) or process not found
+            if (CurrentThread == null)
+            {
+                return;
             }
 
             CurrentThread_State = CurrentThread.State;
