@@ -12,6 +12,7 @@
         - Introduction
             - Scope of this article
                 - ATA history
+                    
                 - ATA as IDE, PIO but not SATA
                 - Basic hardware info
                 - Complete software explanation and sample
@@ -84,9 +85,12 @@
         - Sources
             - http://en.wikipedia.org/wiki/Parallel_ATA
             - http://en.wikipedia.org/wiki/Programmed_input/output
+            - http://wiki.osdev.org/ATA_PIO_Mode
+            - http://wiki.osdev.org/ATA_read/write_sectors
+            - http://wiki.osdev.org/LBA
+            - http://wiki.osdev.org/PCI_IDE_Controller
+            - http://wiki.osdev.org/SATA
     -->
-    
-    <!-- - - - - - - - - - - - - - Introduction - - - - - - - - - - - - - -->
     
     <section address="">
       <title></title>

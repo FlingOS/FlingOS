@@ -21,8 +21,13 @@ namespace Kernel.Core.Processes
 
         private static void Int48(FOS_System.Object state)
         {
-            Console.Default.WriteLine("Sys call by " + Hardware.Processes.ProcessManager.CurrentProcess.Name);
-            Hardware.Processes.Thread.EnterSleep(1000);
+            //Console.Default.WriteLine("Sys call by " + Hardware.Processes.ProcessManager.CurrentProcess.Name);
+            BasicConsole.WriteLine("Sys call:");
+            BasicConsole.WriteLine(" Process: " + Hardware.Processes.ProcessManager.CurrentProcess.Name);
+            //Hardware.Processes.Thread.EnterSleepPrint = true;
+            //Hardware.Processes.Thread.EnterSleep(1000);
+            //Hardware.Processes.Thread.EnterSleepPrint = false;
+            //BasicConsole.WriteLine("Exiting sys call.");
         }
     }
 }

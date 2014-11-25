@@ -13,13 +13,13 @@ namespace Kernel.Hardware.Processes
         public static Thread CurrentThread = null;
         public static ThreadState* CurrentThread_State = null;
 
-        private static uint ProcessIdGenerator = 0;
+        private static uint ProcessIdGenerator = 1;
 
         public static Process CreateProcess(ThreadStartMethod MainMethod, FOS_System.String Name, bool UserMode)
         {
-#if PROCESSMANAGER_TRACE
+//#if PROCESSMANAGER_TRACE
             BasicConsole.WriteLine("Creating process object...");
-#endif
+//#endif
             return new Process(MainMethod, ProcessIdGenerator++, Name, UserMode);
         }
         public static void RegisterProcess(Process process, Scheduler.Priority priority)
@@ -28,9 +28,11 @@ namespace Kernel.Hardware.Processes
             BasicConsole.WriteLine("Registering process...");
             BasicConsole.WriteLine("Disabling scheduler...");
 #endif
-
-            Scheduler.Disable();
-
+            bool reenable = Scheduler.Enabled;
+            if (reenable)
+            {
+                Scheduler.Disable();
+            }
 #if PROCESSMANAGER_TRACE
             BasicConsole.WriteLine("Initialising process...");
 #endif
@@ -44,7 +46,10 @@ namespace Kernel.Hardware.Processes
 #if PROCESSMANAGER_TRACE
             BasicConsole.WriteLine("Enabling scheduler...");
 #endif
-            Scheduler.Enable();
+            if (reenable)
+            {
+                Scheduler.Enable();
+            }
         }
 
         /// <remarks>
@@ -58,36 +63,49 @@ namespace Kernel.Hardware.Processes
             //Switch the current memory layout across.
             //  Don't touch register state etc, just the memory layout
 
-            if (CurrentProcess != null)
+            bool dontSwitchOutIn = false;
+
+            if (CurrentProcess != null &&
+                CurrentProcess.Id == processId)
             {
-                if (CurrentProcess.Id == processId &&
-                    CurrentThread != null &&
+                if (CurrentThread != null &&
                     (CurrentThread.Id == threadId || threadId == -1))
                 {
                     return;
                 }
-
-                CurrentProcess.SwitchOut();
-            }
-
-            CurrentProcess = null;
-            CurrentThread = null;
-            CurrentThread_State = null;
-
-            for (int i = 0; i < Processes.Count; i++)
-            {
-                if (((Process)Processes[i]).Id == processId)
+                else
                 {
-                    CurrentProcess = ((Process)Processes[i]);
-                    break;
+                    dontSwitchOutIn = true;
                 }
             }
 
-            // Process not found
-            if (CurrentProcess == null)
+            if (!dontSwitchOutIn)
             {
-                return;
+                //BasicConsole.WriteLine("Switching out: " + CurrentProcess.Name);
+                CurrentProcess.SwitchOut();
+
+                CurrentProcess = null;
+                
+                for (int i = 0; i < Processes.Count; i++)
+                {
+                    if (((Process)Processes[i]).Id == processId)
+                    {
+                        CurrentProcess = ((Process)Processes[i]);
+                        break;
+                    }
+                }
+
+                // Process not found
+                if (CurrentProcess == null)
+                {
+                    BasicConsole.WriteLine("Process not found.");
+                    return;
+                }
+                //BasicConsole.WriteLine("Process found. " + CurrentProcess.Name);
             }
+
+            CurrentThread = null;
+            CurrentThread_State = null;
 
             if (threadId == -1)
             {
@@ -111,12 +129,19 @@ namespace Kernel.Hardware.Processes
             // No threads in the process (?!) or process not found
             if (CurrentThread == null)
             {
+                BasicConsole.WriteLine("Thread not found.");
                 return;
             }
+            //BasicConsole.WriteLine("Thread found.");
 
             CurrentThread_State = CurrentThread.State;
-
-            CurrentProcess.SwitchIn();
+            //BasicConsole.WriteLine("Thread state updated.");
+            
+            if (!dontSwitchOutIn)
+            {
+                //BasicConsole.WriteLine("Switching in: " + CurrentProcess.Name);
+                CurrentProcess.SwitchIn();
+            }
         }
     }
 }

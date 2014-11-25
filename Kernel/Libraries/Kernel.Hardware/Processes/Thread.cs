@@ -56,9 +56,9 @@ namespace Kernel.Hardware.Processes
             
             // Allocate free memory for the user stack for this thread
             //  Used by this thread in normal execution
-#if THREAD_TRACE
+//#if THREAD_TRACE
             BasicConsole.WriteLine("Mapping thread stack page...");
-#endif
+//#endif
             State->UserMode = UserMode;
             State->ThreadStackTop = (byte*)Hardware.VirtMemManager.MapFreePage(
                 UserMode ? Hardware.VirtMem.VirtMemImpl.PageFlags.None :
@@ -66,9 +66,9 @@ namespace Kernel.Hardware.Processes
             
             // Set ESP to the top of the stack - 4 byte aligned, high address since x86 stack works
             //  downwards
-#if THREAD_TRACE
+//#if THREAD_TRACE
             BasicConsole.WriteLine("Setting ESP...");
-#endif
+//#endif
             State->ESP = (uint)State->ThreadStackTop;
 
             // TimeToRun and TimeToRunReload are set up in Scheduler.InitProcess which
@@ -92,12 +92,55 @@ namespace Kernel.Hardware.Processes
             State->Started = false;
         }
 
+        public static bool EnterSleepPrint = false;
         public static void EnterSleep(int ms)
         {
-            Scheduler.Disable();
-            ProcessManager.CurrentThread.TimeToSleep = ms /* x * 1ms / [Scheduler period in ns] = x * 1 = x */;
-            ProcessManager.CurrentThread.TimeToRun = 0;
-            Scheduler.Enable();
+            if (EnterSleepPrint)
+            {
+                BasicConsole.WriteLine("Getting enabled...");
+                bool reenable = Scheduler.Enabled;
+                if (reenable)
+                {
+                    BasicConsole.WriteLine("Disabling scheduler...");
+                    Scheduler.Disable();
+                }
+                BasicConsole.WriteLine("Checking current thread...");
+                if (ProcessManager.CurrentThread == null)
+                {
+                    BasicConsole.WriteLine("Massive problem! The current thread is null! Can't sleep null thread.");
+                    BasicConsole.DelayOutput(5);
+                }
+                BasicConsole.WriteLine("Setting time to sleep...");
+                ProcessManager.CurrentThread.TimeToSleep = ms /* x * 1ms / [Scheduler period in ns] = x * 1 = x */;
+                BasicConsole.WriteLine("Setting time to run...");
+                ProcessManager.CurrentThread.TimeToRun = 0;
+                BasicConsole.WriteLine("Checking re-enable...");
+                if (reenable)
+                {
+                    BasicConsole.WriteLine("Re-enabling scheduler...");
+                    Scheduler.Enable();
+                }
+                BasicConsole.WriteLine("Sleep method finished.");
+            }
+            else
+            {
+                bool reenable = Scheduler.Enabled;
+                if (reenable)
+                {
+                    Scheduler.Disable();
+                }
+                if (ProcessManager.CurrentThread == null)
+                {
+                    BasicConsole.WriteLine("Massive problem! The current thread is null! Can't sleep null thread.");
+                    BasicConsole.DelayOutput(5);
+                }
+                ProcessManager.CurrentThread.TimeToSleep = ms /* x * 1ms / [Scheduler period in ns] = x * 1 = x */;
+                ProcessManager.CurrentThread.TimeToRun = 0;
+                if (reenable)
+                {
+                    Scheduler.Enable();
+                }
+            }
         }
         public static void Sleep(int ms)
         {

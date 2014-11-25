@@ -12,17 +12,24 @@ namespace Kernel.Core.Tasks
         {
             while (true)
             {
+                bool reenable = Hardware.Processes.Scheduler.Enabled;
                 try
                 {
-                    Hardware.Processes.Scheduler.Disable();
+                    if (reenable)
+                    {
+                        Hardware.Processes.Scheduler.Disable();
+                    }
                     FOS_System.GC.Cleanup();
                 }
                 catch
                 {
                 }
 
-                Hardware.Processes.Scheduler.Enable();
-                Hardware.Processes.Thread.Sleep(300);
+                if (reenable)
+                {
+                    Hardware.Processes.Scheduler.Enable();
+                }
+                Hardware.Processes.Thread.Sleep(1000);
             }
         }
     }

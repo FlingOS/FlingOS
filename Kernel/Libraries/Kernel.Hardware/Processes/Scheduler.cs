@@ -14,7 +14,9 @@ namespace Kernel.Hardware.Processes
             Normal = 2,
             High = 5
         }
-        
+
+        public static bool Enabled = false;
+
         public static void InitProcess(Process process, Priority priority)
         {
             process.Priority = priority;
@@ -461,7 +463,11 @@ namespace Kernel.Hardware.Processes
         private delegate void TerminateMethod();
         private static void ThreadTerminated()
         {
-            Disable();
+            bool reenable = Hardware.Processes.Scheduler.Enabled;
+            if (reenable)
+            {
+                Disable();
+            }
 
 #if SCHEDULER_TRACE
             // START - Trace code
@@ -469,7 +475,10 @@ namespace Kernel.Hardware.Processes
             Console.Default.WriteLine("Thread terminated.");
             Console.Default.WriteLine("Process Name: " + ProcessManager.CurrentProcess.Name + ", Thread Id: " + ProcessManager.CurrentThread.Id);
 
-            //Enable();
+            //if(reenable)
+            //{
+            //    Enable();
+            //}
 
             //for (int i = 0; i < 3; i++)
             //{
@@ -478,14 +487,20 @@ namespace Kernel.Hardware.Processes
             //}
             // END - Trace code
 
-            //Disable();
+            //if(reenable)
+            //{
+            //    Disable();
+            //}
 #endif
 
             // Mark thread as terminated. Leave it to the scheduler to stop running
             //  and the process manager can destroy it later.
             ProcessManager.CurrentThread_State->Terminated = true;
 
-            Enable();
+            if (reenable)
+            {
+                Enable();
+            }
 
             //Wait for the scheduler to interrupt us. We will never return here again (inside this thread)
             //  since it has now been terminated.
@@ -500,12 +515,18 @@ namespace Kernel.Hardware.Processes
         [Compiler.NoDebug]
         public static void Enable()
         {
+            BasicConsole.WriteLine("Enabling scheduler...");
+            //BasicConsole.DelayOutput(1);
+            Enabled = true;
             Hardware.Interrupts.Interrupts.EnableInterrupts();
         }
         [Compiler.NoDebug]
         public static void Disable()
         {
             Hardware.Interrupts.Interrupts.DisableInterrupts();
+            Enabled = false;
+            BasicConsole.WriteLine("Disabled scheduler.");
+            //BasicConsole.DelayOutput(1);
         }
     }
 

@@ -19,7 +19,7 @@ namespace Kernel.Hardware.Processes
 
         public Scheduler.Priority Priority;
 
-        private uint ThreadIdGenerator = 0;
+        private uint ThreadIdGenerator = 1;
         
         public readonly bool UserMode;
 
@@ -32,11 +32,10 @@ namespace Kernel.Hardware.Processes
             Name = AName;
             UserMode = userMode;
 
+//#if PROCESS_TRACE
+            BasicConsole.WriteLine("Creating thread...");
+//#endif
             CreateThread(MainMethod);
-            
-#if PROCESS_TRACE
-            Console.Default.WriteLine(" > > Setting up memory layout...");
-#endif
         }
 
         public void CreateThread(ThreadStartMethod MainMethod)
@@ -45,16 +44,17 @@ namespace Kernel.Hardware.Processes
             BasicConsole.WriteLine("Creating thread...");
 //#endif
             Thread mainThread = new Thread(MainMethod, ThreadIdGenerator++, UserMode);
-            //#if PROCESS_TRACE
+#if PROCESS_TRACE
             BasicConsole.WriteLine("Adding data page...");
-//#endif
+#endif
+            // Add the page to the processes memory layout
             TheMemoryLayout.AddDataPage(
                 (uint)VirtMemManager.GetPhysicalAddress(mainThread.State->ThreadStackTop - 4092),
                 (uint)mainThread.State->ThreadStackTop - 4092);
             
-            //#if PROCESS_TRACE
+#if PROCESS_TRACE
             BasicConsole.WriteLine("Adding thread...");
-            //#endif
+#endif
 
             Threads.Add(mainThread);
         }

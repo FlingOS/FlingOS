@@ -1,4 +1,6 @@
-﻿
+﻿%define KERNEL_MODE_DPL 0
+%define USER_MODE_DPL 3
+
 ; START - General interrupt macros
 
 %macro ENABLE_INTERRUPTS 0
@@ -355,7 +357,7 @@ mov byte [ebx+4], 0x0
 mov byte [ebx+5], 0x8E
 add ebx, 8
 
-%macro CommonInterruptHandler_IDTMacro 1
+%macro CommonInterruptHandler_IDTMacro 2
     ; %1
 	; Interrupt gate
     mov dword eax, CommonInterruptHandler%1
@@ -370,12 +372,22 @@ add ebx, 8
 	; difference! If you use Trap gates, you'll get 
 	; double faults as soon as you start using IRQs
 	; in-combo with User Mode processes.
-    mov byte [ebx+5], 0x8E
+	;  And mark all of them as User/Kernel-mode accessible
+    mov byte [ebx+5], (0x8E | (%2 << 5))
     add ebx, 8
 %endmacro
 %assign handlernum 17
-%rep 239
-    CommonInterruptHandler_IDTMacro handlernum
+%rep (32 - 17)
+    CommonInterruptHandler_IDTMacro handlernum, USER_MODE_DPL
+    %assign handlernum handlernum+1
+%endrep
+; IRQs should not be UM accessible
+%rep 16
+    CommonInterruptHandler_IDTMacro handlernum, KERNEL_MODE_DPL
+    %assign handlernum handlernum+1
+%endrep
+%rep (256 - 48)
+    CommonInterruptHandler_IDTMacro handlernum, USER_MODE_DPL
     %assign handlernum handlernum+1
 %endrep
 

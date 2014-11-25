@@ -468,7 +468,7 @@ namespace Kernel.Core
                     //Scroll down the screen 1 line
                     Scroll(1);
                 }
-                //If the key has a character respresentation
+                //If the key has a character representation
                 else if (c.Value != '\0')
                 {
                     //Add the character to the result
