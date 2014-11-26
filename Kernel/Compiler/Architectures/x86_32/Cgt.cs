@@ -88,7 +88,8 @@ namespace Kernel.Compiler.Architectures.x86_32
                 aScannerState.CurrentStackFrame.Stack.Push(new StackItem()
                 {
                     isFloat = false,
-                    sizeOnStackInBytes = 4
+                    sizeOnStackInBytes = 4,
+                    isGCManaged = false
                 });
             }
             else if (itemA.sizeOnStackInBytes == 8 && itemB.sizeOnStackInBytes == 8)
@@ -154,7 +155,8 @@ namespace Kernel.Compiler.Architectures.x86_32
                     isFloat = false,
                     // Yes, this is supposed to be 4 - the value that just got pushed was a 
                     // true / false integer
-                    sizeOnStackInBytes = 4
+                    sizeOnStackInBytes = 4,
+                    isGCManaged = false
                 });
             }
             else

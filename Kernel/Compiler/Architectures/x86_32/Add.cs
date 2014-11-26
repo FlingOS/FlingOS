@@ -92,7 +92,8 @@ namespace Kernel.Compiler.Architectures.x86_32
                     aScannerState.CurrentStackFrame.Stack.Push(new StackItem()
                     {
                         isFloat = false,
-                        sizeOnStackInBytes = 4
+                        sizeOnStackInBytes = 4,
+                        isGCManaged = false
                     });
                 }
                 //Invalid if the operands are of different sizes.
@@ -133,7 +134,8 @@ namespace Kernel.Compiler.Architectures.x86_32
                     aScannerState.CurrentStackFrame.Stack.Push(new StackItem()
                     {
                         isFloat = false,
-                        sizeOnStackInBytes = 8
+                        sizeOnStackInBytes = 8,
+                        isGCManaged = false
                     });
                 }
             }

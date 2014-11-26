@@ -521,7 +521,8 @@ namespace Kernel.Compiler
                 {
                     sizeOnStackInBytes = Utils.GetNumBytesForType(aLocal.LocalType),
                     isFloat = Utils.IsFloat(aLocal.LocalType),
-                    TheType = aLocal.LocalType
+                    TheType = aLocal.LocalType,
+                    isGCManaged = Utils.IsGCManaged(aLocal.LocalType)
                 };
                 result.LocalVariables.Add(localItem);
             }
@@ -734,7 +735,8 @@ namespace Kernel.Compiler
                                 {
                                     isFloat = Utils.IsFloat(returnType),
                                     sizeOnStackInBytes = Utils.GetNumBytesForType(returnType),
-                                    TheType = returnType
+                                    TheType = returnType,
+                                    isGCManaged = Utils.IsGCManaged(returnType)
                                 };
                                 result.LocalVariables.Add(returnValVariable);
                                 //This will become the penultimate IL op of the try-block

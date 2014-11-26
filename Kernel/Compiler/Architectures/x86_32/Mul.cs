@@ -81,7 +81,8 @@ namespace Kernel.Compiler.Architectures.x86_32
                     aScannerState.CurrentStackFrame.Stack.Push(new StackItem()
                     {
                         isFloat = false,
-                        sizeOnStackInBytes = 4
+                        sizeOnStackInBytes = 4,
+                        isGCManaged = false
                     });
                 }
                 else if ((itemA.sizeOnStackInBytes == 8 &&
@@ -187,7 +188,8 @@ namespace Kernel.Compiler.Architectures.x86_32
                     {
                         isFloat = false,
                         isNewGCObject = false,
-                        sizeOnStackInBytes = 8
+                        sizeOnStackInBytes = 8,
+                        isGCManaged = false
                     });
 
                     //throw new NotSupportedException("64-bit by 64-bit multiplication not supported yet!.");

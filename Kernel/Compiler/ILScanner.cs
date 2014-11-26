@@ -1254,7 +1254,7 @@ namespace Kernel.Compiler
                                             bool isRefOp = false;
                                             if ((ILOps.ILOp.OpCodes)anILOpInfo.opCode.Value == ILOps.ILOp.OpCodes.Stelem_Ref)
                                             {
-                                                doDecrement = true;
+                                                doDecrement = TheScannerState.CurrentStackFrame.Stack.Peek().isGCManaged;
                                                 isRefOp = true;
                                             }
                                             else
@@ -1286,7 +1286,7 @@ namespace Kernel.Compiler
                                                 //      6. Do LdElem op to load existing element value
                                                 //      7. Call GC.DecrementRefCount
                                                 //      8. Switch (rotate) 1 times the top 3 values so that the stack is in its original state
-                                                //      (9. Continue to incremenet ref count as normal)
+                                                //      (9. Continue to increment ref count as normal)
                                                 //
                                                 // The following is a diagram of the stack manipulation occurring here:
                                                 //      Key: A=Array ref, I=Index, V=Value to store, E=Loaded element

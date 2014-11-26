@@ -97,7 +97,8 @@ namespace Kernel.Compiler.Architectures.x86_32
             {
                 isFloat = false,
                 sizeOnStackInBytes = 4,
-                isNewGCObject = true
+                isNewGCObject = true,
+                isGCManaged = true
             });
 
             return result.ToString().Trim();

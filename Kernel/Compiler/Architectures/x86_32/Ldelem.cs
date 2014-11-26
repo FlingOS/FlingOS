@@ -333,7 +333,8 @@ namespace Kernel.Compiler.Architectures.x86_32
             {
                 sizeOnStackInBytes = sizeToPush > 4 ? 8 : 4,
                 isFloat = isFloat,
-                isNewGCObject = false
+                isNewGCObject = false,
+                isGCManaged = pushValue ? Utils.IsGCManaged(elementType) : false
             });
 
             return result.ToString().Trim();

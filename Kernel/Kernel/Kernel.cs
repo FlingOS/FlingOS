@@ -197,57 +197,49 @@ namespace Kernel
             BasicConsole.WriteLine(" Managed Main! ");
             BasicConsole.WriteLine(" > Executing normally...");
 
-            BasicConsole.WriteLine("Disabling scheduler...");
-            Scheduler.Disable();
+            //BasicConsole.WriteLine("Disabling scheduler...");
+            //Scheduler.Disable();
    
             try
             {
                 BasicConsole.WriteLine(" > Starting GC Cleanup task...");
                 ProcessManager.CurrentProcess.CreateThread(Core.Tasks.GCCleanupTask.Main);
 
-                BasicConsole.WriteLine("Initialising ATA...");
-                Hardware.ATA.ATAManager.Init();
-                BasicConsole.WriteLine("Initialising FS...");
-                FileSystemManager.Init();
+                //BasicConsole.WriteLine("Initialising ATA...");
+                //Hardware.ATA.ATAManager.Init();
+                //BasicConsole.WriteLine("Initialising FS...");
+                //FileSystemManager.Init();
 
-                BasicConsole.WriteLine("Creating & registering test process...");
-                Hardware.Processes.ProcessManager.RegisterProcess(
-                    Core.Processes.DynamicLinkerLoader.LoadProcess_FromRawExe(
-                        File.Open("a:/test.bin"), false),
-                    Hardware.Processes.Scheduler.Priority.Normal);
+                //BasicConsole.WriteLine("Creating & registering test process...");
+                //Hardware.Processes.ProcessManager.RegisterProcess(
+                //    Core.Processes.DynamicLinkerLoader.LoadProcess_FromRawExe(
+                //        File.Open("a:/test.bin"), false),
+                //    Hardware.Processes.Scheduler.Priority.Normal);
 
-                BasicConsole.WriteLine("Creating & registering test 2 process...");
-                Hardware.Processes.ProcessManager.RegisterProcess(
-                    Core.Processes.DynamicLinkerLoader.LoadProcess_FromRawExe(
-                        File.Open("a:/test2.bin"), false),
-                    Hardware.Processes.Scheduler.Priority.Normal);
+                //BasicConsole.WriteLine("Creating & registering test 2 process...");
+                //Hardware.Processes.ProcessManager.RegisterProcess(
+                //    Core.Processes.DynamicLinkerLoader.LoadProcess_FromRawExe(
+                //        File.Open("a:/test2.bin"), false),
+                //    Hardware.Processes.Scheduler.Priority.Normal);
 
-                BasicConsole.WriteLine("Enabling scheduler...");
-                Scheduler.Enable();
+                //BasicConsole.WriteLine("Enabling scheduler...");
+                //Scheduler.Enable();
 
                 Hardware.Devices.Keyboard.InitDefault();
                 Core.Console.InitDefault();
+                Core.Shell.InitDefault();
+                Core.Shell.Default.Execute();
 
-                while (true)
+                if (!Core.Shell.Default.Terminating)
                 {
-                    BasicConsole.WriteLine("Running...");
-                    FOS_System.String line = Core.Console.Default.ReadLine();
-                    BasicConsole.WriteLine(line);
+                    Core.Console.Default.WarningColour();
+                    Core.Console.Default.WriteLine("Abnormal shell shutdown!");
+                    Core.Console.Default.DefaultColour();
                 }
-                                
-                //Core.Shell.InitDefault();
-                //Core.Shell.Default.Execute();
-
-                //if (!Core.Shell.Default.Terminating)
-                //{
-                //    Core.Console.Default.WarningColour();
-                //    Core.Console.Default.WriteLine("Abnormal shell shutdown!");
-                //    Core.Console.Default.DefaultColour();
-                //}
-                //else
-                //{
-                //    Core.Console.Default.Clear();
-                //}
+                else
+                {
+                    Core.Console.Default.Clear();
+                }
             }
             catch
             {

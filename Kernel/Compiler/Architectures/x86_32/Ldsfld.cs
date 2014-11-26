@@ -94,7 +94,8 @@ namespace Kernel.Compiler.Architectures.x86_32
                         aScannerState.CurrentStackFrame.Stack.Push(new StackItem()
                         {
                             isFloat = isFloat,
-                            sizeOnStackInBytes = (size == 8 ? 8 : 4)
+                            sizeOnStackInBytes = (size == 8 ? 8 : 4),
+                            isGCManaged = Utils.IsGCManaged(theField.FieldType)
                         });
                     }
                     break;
@@ -105,7 +106,8 @@ namespace Kernel.Compiler.Architectures.x86_32
                     aScannerState.CurrentStackFrame.Stack.Push(new StackItem()
                     {
                         isFloat = false,
-                        sizeOnStackInBytes = 4
+                        sizeOnStackInBytes = 4,
+                        isGCManaged = false
                     });
                     break;
             }

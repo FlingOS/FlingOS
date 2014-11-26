@@ -172,7 +172,8 @@ namespace Kernel.Compiler.Architectures.x86_32
             aScannerState.CurrentStackFrame.Stack.Push(new StackItem()
             {
                 sizeOnStackInBytes = numBytes,
-                isFloat = isFloat
+                isFloat = isFloat,
+                isGCManaged = false
             });
 
             return result.ToString().Trim();

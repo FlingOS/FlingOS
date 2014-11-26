@@ -77,7 +77,8 @@ namespace Kernel.Compiler.Architectures.x86_32
                     aScannerState.CurrentStackFrame.Stack.Push(new StackItem()
                     {
                         isFloat = false,
-                        sizeOnStackInBytes = 4
+                        sizeOnStackInBytes = 4,
+                        isGCManaged = false
                     });
                 }
                 else if ((itemA.sizeOnStackInBytes == 4 &&
@@ -103,7 +104,8 @@ namespace Kernel.Compiler.Architectures.x86_32
                     aScannerState.CurrentStackFrame.Stack.Push(new StackItem()
                     {
                         isFloat = false,
-                        sizeOnStackInBytes = 8
+                        sizeOnStackInBytes = 8,
+                        isGCManaged = false
                     });
                 }
                 else if (itemA.sizeOnStackInBytes == 8 &&

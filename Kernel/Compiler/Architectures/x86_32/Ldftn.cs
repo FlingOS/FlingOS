@@ -57,7 +57,8 @@ namespace Kernel.Compiler.Architectures.x86_32
             aScannerState.CurrentStackFrame.Stack.Push(new StackItem()
             {
                 isFloat = false,
-                sizeOnStackInBytes = 4
+                sizeOnStackInBytes = 4,
+                isGCManaged = false
             });
 
             return result.ToString().Trim();

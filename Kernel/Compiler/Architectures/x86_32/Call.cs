@@ -54,7 +54,8 @@ namespace Kernel.Compiler.Architectures.x86_32
                 StackItem returnItem = new StackItem()
                 {
                     isFloat = Utils.IsFloat(retType),
-                    sizeOnStackInBytes = Utils.GetNumBytesForType(retType)
+                    sizeOnStackInBytes = Utils.GetNumBytesForType(retType),
+                    isGCManaged = Utils.IsGCManaged(retType)
                 };
                 //We do not push the return value onto the stack unless it has size > 0
                 //We do not push the return value onto our stack at this point - it is pushed after the call is done

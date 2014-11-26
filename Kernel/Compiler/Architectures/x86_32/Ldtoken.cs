@@ -43,7 +43,7 @@ namespace Kernel.Compiler.Architectures.x86_32
             StringBuilder result = new StringBuilder();
 
             //Load token i.e. typeref
-            //It shoudl also support methodref and fieldrefs
+            //It should also support methodref and fieldrefs
 
             int metadataToken = Utils.ReadInt32(anILOpInfo.ValueBytes, 0);
             try
@@ -60,7 +60,8 @@ namespace Kernel.Compiler.Architectures.x86_32
                 aScannerState.CurrentStackFrame.Stack.Push(new StackItem()
                 {
                     isFloat = false,
-                    sizeOnStackInBytes = 4
+                    sizeOnStackInBytes = 4,
+                    isGCManaged = false
                 });
             }
             catch

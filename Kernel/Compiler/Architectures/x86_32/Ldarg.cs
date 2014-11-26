@@ -130,7 +130,8 @@ namespace Kernel.Compiler.Architectures.x86_32
                 aScannerState.CurrentStackFrame.Stack.Push(new StackItem()
                 {
                     sizeOnStackInBytes = 4,
-                    isFloat = false
+                    isFloat = false,
+                    isGCManaged = false
                 });
             }
             else
@@ -155,7 +156,8 @@ namespace Kernel.Compiler.Architectures.x86_32
                 aScannerState.CurrentStackFrame.Stack.Push(new StackItem()
                 {
                     sizeOnStackInBytes = bytesForArg,
-                    isFloat = false
+                    isFloat = false,
+                    isGCManaged = Utils.IsGCManaged(allParams[index])
                 });
             }
 

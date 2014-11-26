@@ -421,7 +421,9 @@ namespace Kernel.Compiler
         {
             bool isGCManaged = true;
 
-            if(theType.IsValueType || theType.IsPointer)
+            if(theType != null && (theType.IsValueType || 
+                                   theType.IsPointer || 
+                                   typeof(Delegate).IsAssignableFrom(theType)))
             {
                 isGCManaged = false;
             }

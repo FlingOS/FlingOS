@@ -826,6 +826,10 @@ namespace Kernel.Compiler
         /// Whether the item represents a floating point number (single or double precision).
         /// </summary>
         public bool isFloat;
+        /// <summary>
+        /// Whether or not the item is of a type which is GC managed or not.
+        /// </summary>
+        public bool isGCManaged;
 
         /// <summary>
         /// Whether the item on the stack is actually a pointer to an object

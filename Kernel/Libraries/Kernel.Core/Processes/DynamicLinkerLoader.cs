@@ -12,6 +12,12 @@ namespace Kernel.Core.Processes
             // - Map enough memory for the exe file contents
             // - Copy the memory over
 
+            bool reenable = Scheduler.Enabled;
+            if (reenable)
+            {
+                Scheduler.Disable();
+            }
+
             //TODO - Handle case of EXE being bigger than 4KiB?
             //          - Would need to map contiguous (virtual) pages.
             
@@ -26,7 +32,7 @@ namespace Kernel.Core.Processes
             //      further down.
             //  Note: The page fault will only be hit on starting a second process because
             //      the scheduler doesn't change the context when only one process is running.
-            Hardware.Processes.ProcessManager.CurrentProcess.TheMemoryLayout.AddDataPage(
+            ProcessManager.CurrentProcess.TheMemoryLayout.AddDataPage(
                 (uint)Hardware.VirtMemManager.GetPhysicalAddress(destMemPtr),
                 (uint)destMemPtr);
 
@@ -54,7 +60,12 @@ namespace Kernel.Core.Processes
 
             BasicConsole.WriteLine("Removing process' code page from current process...");
             //Remove from current processes memory layout
-            Hardware.Processes.ProcessManager.CurrentProcess.TheMemoryLayout.RemovePage((uint)destMemPtr);
+            ProcessManager.CurrentProcess.TheMemoryLayout.RemovePage((uint)destMemPtr);
+
+            if (reenable)
+            {
+                Scheduler.Enable();
+            }
 
             return process;
         }

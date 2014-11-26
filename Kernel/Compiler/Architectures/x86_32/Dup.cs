@@ -75,12 +75,14 @@ namespace Kernel.Compiler.Architectures.x86_32
             aScannerState.CurrentStackFrame.Stack.Push(new StackItem()
             {
                 isFloat = itemA.isFloat,
-                sizeOnStackInBytes = itemA.sizeOnStackInBytes
+                sizeOnStackInBytes = itemA.sizeOnStackInBytes,
+                isGCManaged = itemA.isGCManaged
             });
             aScannerState.CurrentStackFrame.Stack.Push(new StackItem()
             {
                 isFloat = itemA.isFloat,
-                sizeOnStackInBytes = itemA.sizeOnStackInBytes
+                sizeOnStackInBytes = itemA.sizeOnStackInBytes,
+                isGCManaged = itemA.isGCManaged
             });
 
             return result.ToString().Trim();

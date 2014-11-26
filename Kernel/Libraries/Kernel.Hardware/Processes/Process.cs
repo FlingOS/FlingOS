@@ -43,6 +43,12 @@ namespace Kernel.Hardware.Processes
 //#if PROCESS_TRACE
             BasicConsole.WriteLine("Creating thread...");
 //#endif
+            bool reenable = Scheduler.Enabled;
+            if (reenable)
+            {
+                Scheduler.Disable();
+            }
+
             Thread mainThread = new Thread(MainMethod, ThreadIdGenerator++, UserMode);
 #if PROCESS_TRACE
             BasicConsole.WriteLine("Adding data page...");
@@ -57,6 +63,11 @@ namespace Kernel.Hardware.Processes
 #endif
 
             Threads.Add(mainThread);
+
+            if (reenable)
+            {
+                Scheduler.Enable();
+            }
         }
 
         public void SwitchIn()
