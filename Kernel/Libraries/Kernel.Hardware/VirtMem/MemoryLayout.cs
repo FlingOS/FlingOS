@@ -19,7 +19,7 @@ namespace Kernel.Hardware.VirtMem
                 Processes.Scheduler.Disable();
             }
 
-            BasicConsole.WriteLine("Adding code page...");
+            //BasicConsole.WriteLine("Adding code page...");
             if (!CodePages.Contains(vAddr))
             {
                 CodePages.Add(vAddr, pAddr);
@@ -38,7 +38,7 @@ namespace Kernel.Hardware.VirtMem
                 Processes.Scheduler.Disable();
             }
 
-            BasicConsole.WriteLine("Adding data page...");
+            //BasicConsole.WriteLine("Adding data page...");
             if (!DataPages.Contains(vAddr))
             {
                 DataPages.Add(vAddr, pAddr);
@@ -57,7 +57,7 @@ namespace Kernel.Hardware.VirtMem
                 Processes.Scheduler.Disable();
             }
 
-            BasicConsole.WriteLine("Removing page...");
+            //BasicConsole.WriteLine("Removing page...");
             CodePages.Remove(vAddr);
             DataPages.Remove(vAddr);
 
@@ -67,8 +67,8 @@ namespace Kernel.Hardware.VirtMem
             }
         }
 
-        bool loadPrint = true;
-        bool unloadPrint = true;
+        //bool loadPrint = true;
+        //bool unloadPrint = true;
         public void Load(bool ProcessIsUM)
         {
             VirtMemImpl.PageFlags flags = ProcessIsUM ? VirtMemImpl.PageFlags.None : VirtMemImpl.PageFlags.KernelOnly;
@@ -80,10 +80,10 @@ namespace Kernel.Hardware.VirtMem
 #if MEMLAYOUT_TRACE
                 BasicConsole.WriteLine("Loading code page...");
 #endif
-                if (loadPrint)
-                {
-                    BasicConsole.WriteLine(((FOS_System.String)"Loading code page v->p: ") + vAddr + " -> " + pAddr);
-                }
+                //if (loadPrint)
+                //{
+                //    BasicConsole.WriteLine(((FOS_System.String)"Loading code page v->p: ") + vAddr + " -> " + pAddr);
+                //}
                 VirtMemManager.Map(pAddr, vAddr, 4096, flags, false);
             }
 
@@ -97,19 +97,19 @@ namespace Kernel.Hardware.VirtMem
                 BasicConsole.WriteLine("Loading data page...");
 #endif
 
-                if (loadPrint)
-                {
-                    BasicConsole.WriteLine(((FOS_System.String)"Loading data page v->p: ") + vAddr + " -> " + pAddr);
-                }
+                //if (loadPrint)
+                //{
+                //    BasicConsole.WriteLine(((FOS_System.String)"Loading data page v->p: ") + vAddr + " -> " + pAddr);
+                //}
 
                 VirtMemManager.Map(pAddr, vAddr, 4096, flags, false);
             }
 
-            if (loadPrint)
-            {
-                //BasicConsole.DelayOutput(1);
-                loadPrint = false;
-            }
+            //if (loadPrint)
+            //{
+            //    //BasicConsole.DelayOutput(1);
+            //    loadPrint = false;
+            //}
         }
         public void Unload()
         {
@@ -119,10 +119,10 @@ namespace Kernel.Hardware.VirtMem
                 BasicConsole.WriteLine("Unloading code page...");
 #endif
 
-                if (unloadPrint)
-                {
-                    BasicConsole.WriteLine(((FOS_System.String)"Unloading code page v->p: ") + CodePages.Keys[i]);
-                }
+                //if (unloadPrint)
+                //{
+                //    BasicConsole.WriteLine(((FOS_System.String)"Unloading code page v->p: ") + CodePages.Keys[i]);
+                //}
 
                 VirtMemManager.Unmap(CodePages.Keys[i], false);
             }
@@ -132,19 +132,19 @@ namespace Kernel.Hardware.VirtMem
                 BasicConsole.WriteLine("Unloading data page...");
 #endif
 
-                if (unloadPrint)
-                {
-                    BasicConsole.WriteLine(((FOS_System.String)"Unloading data page v->p: ") + DataPages.Keys[i]);
-                }
+                //if (unloadPrint)
+                //{
+                //    BasicConsole.WriteLine(((FOS_System.String)"Unloading data page v->p: ") + DataPages.Keys[i]);
+                //}
 
                VirtMemManager.Unmap(DataPages.Keys[i], false);
             }
 
-            if (unloadPrint)
-            {
-                //BasicConsole.DelayOutput(1);
-                unloadPrint = false;
-            }
+            //if (unloadPrint)
+            //{
+            //    //BasicConsole.DelayOutput(1);
+            //    unloadPrint = false;
+            //}
         }
     }
 }

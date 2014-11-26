@@ -515,7 +515,7 @@ namespace Kernel.Hardware.Processes
         [Compiler.NoDebug]
         public static void Enable()
         {
-            BasicConsole.WriteLine("Enabling scheduler...");
+            //BasicConsole.WriteLine("Enabling scheduler...");
             //BasicConsole.DelayOutput(1);
             Enabled = true;
             Hardware.Interrupts.Interrupts.EnableInterrupts();
@@ -525,7 +525,7 @@ namespace Kernel.Hardware.Processes
         {
             Hardware.Interrupts.Interrupts.DisableInterrupts();
             Enabled = false;
-            BasicConsole.WriteLine("Disabled scheduler.");
+            //BasicConsole.WriteLine("Disabled scheduler.");
             //BasicConsole.DelayOutput(1);
         }
     }

@@ -25,24 +25,24 @@ namespace Kernel.Hardware.Processes
 
         public Process(ThreadStartMethod MainMethod, uint AnId, FOS_System.String AName, bool userMode)
         {
-//#if PROCESS_TRACE
+#if PROCESS_TRACE
             BasicConsole.WriteLine("Constructing process object...");
-//#endif
+#endif
             Id = AnId;
             Name = AName;
             UserMode = userMode;
 
-//#if PROCESS_TRACE
+#if PROCESS_TRACE
             BasicConsole.WriteLine("Creating thread...");
-//#endif
+#endif
             CreateThread(MainMethod);
         }
 
         public void CreateThread(ThreadStartMethod MainMethod)
         {
-//#if PROCESS_TRACE
+#if PROCESS_TRACE
             BasicConsole.WriteLine("Creating thread...");
-//#endif
+#endif
             bool reenable = Scheduler.Enabled;
             if (reenable)
             {
