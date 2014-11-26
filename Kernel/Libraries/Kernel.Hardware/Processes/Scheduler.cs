@@ -96,6 +96,11 @@ namespace Kernel.Hardware.Processes
         [Compiler.NoDebug]
         private static void OnTimerInterrupt(FOS_System.Object state)
         {
+            if (!Enabled)
+            {
+                return;
+            }
+
 #if SCHEDULER_TRACE
             if (print)
             {
@@ -518,12 +523,12 @@ namespace Kernel.Hardware.Processes
             //BasicConsole.WriteLine("Enabling scheduler...");
             //BasicConsole.DelayOutput(1);
             Enabled = true;
-            Hardware.Interrupts.Interrupts.EnableInterrupts();
+            //Hardware.Interrupts.Interrupts.EnableInterrupts();
         }
         [Compiler.NoDebug]
         public static void Disable()
         {
-            Hardware.Interrupts.Interrupts.DisableInterrupts();
+            //Hardware.Interrupts.Interrupts.DisableInterrupts();
             Enabled = false;
             //BasicConsole.WriteLine("Disabled scheduler.");
             //BasicConsole.DelayOutput(1);
