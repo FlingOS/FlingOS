@@ -3,6 +3,12 @@ using Kernel.Hardware.Processes;
 
 namespace Kernel.Core.Processes
 {
+    public enum SystemCall : uint
+    {
+        INVALID = 0,
+        Sleep = 1
+    }
+
     public static class SystemCalls
     {
         private static UInt32 sysCallNum = 0;
@@ -102,15 +108,37 @@ namespace Kernel.Core.Processes
             param2 = ProcessManager.CurrentThread.ECXFromInterruptStack;
             param3 = ProcessManager.CurrentThread.EDXFromInterruptStack;
 
-            Console.Default.Write("Sys call ");
-            Console.Default.Write_AsDecimal(SysCallNumber);
-            Console.Default.Write(" : ");
-            Console.Default.WriteLine(ProcessManager.CurrentProcess.Name);
-            Console.Default.WriteLine(((FOS_System.String)" > Param1: ") + Param1);
-            Console.Default.WriteLine(((FOS_System.String)" > Param2: ") + Param2);
-            Console.Default.WriteLine(((FOS_System.String)" > Param3: ") + Param3);
-            ++ProcessManager.CurrentThread.EAXFromInterruptStack;
-            Console.Default.WriteLine(((FOS_System.String)" > Return: ") + ProcessManager.CurrentThread.EAXFromInterruptStack);
+            switch ((SystemCall)sysCallNum)
+            {
+                case SystemCall.INVALID:
+                    Console.Default.WriteLine("Error! INVALID System Call made.");
+                    break;
+                case SystemCall.Sleep:
+                    SysCall_Sleep((int)param1);
+                    break;
+                default:
+                    Console.Default.Write("Sys call ");
+                    Console.Default.Write_AsDecimal(sysCallNum);
+                    Console.Default.Write(" : ");
+                    Console.Default.WriteLine(ProcessManager.CurrentProcess.Name);
+                    Console.Default.WriteLine(((FOS_System.String)" > Param1: ") + Param1);
+                    Console.Default.WriteLine(((FOS_System.String)" > Param2: ") + Param2);
+                    Console.Default.WriteLine(((FOS_System.String)" > Param3: ") + Param3);
+                    Console.Default.WriteLine(((FOS_System.String)" > Return: ") + ProcessManager.CurrentThread.EAXFromInterruptStack);
+                    break;
+            }
+
+            // Prevent cross-contamination / this would count as a security consideration
+            sysCallNum = 0;
+            param1 = 0;
+            param2 = 0;
+            param3 = 0;
+        }
+
+        private static void SysCall_Sleep(int ms)
+        {
+            Thread.EnterSleep(ms);
+            Scheduler.UpdateCurrentState();
         }
     }
 }
