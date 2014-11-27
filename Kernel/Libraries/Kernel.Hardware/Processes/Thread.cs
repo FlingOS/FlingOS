@@ -92,6 +92,51 @@ namespace Kernel.Hardware.Processes
             State->Started = false;
         }
 
+        public UInt32 EAXFromInterruptStack
+        {
+            get
+            {
+                return *(UInt32*)(State->ESP + 44);
+            }
+            set
+            {
+                *(UInt32*)(State->ESP + 44) = value;
+            }
+        }
+        public UInt32 EBXFromInterruptStack
+        {
+            get
+            {
+                return *(UInt32*)(State->ESP + 32);
+            }
+            set
+            {
+                *(UInt32*)(State->ESP + 44) = value;
+            }
+        }
+        public UInt32 ECXFromInterruptStack
+        {
+            get
+            {
+                return *(UInt32*)(State->ESP + 40);
+            }
+            set
+            {
+                *(UInt32*)(State->ESP + 44) = value;
+            }
+        }
+        public UInt32 EDXFromInterruptStack
+        {
+            get
+            {
+                return *(UInt32*)(State->ESP + 36);
+            }
+            set
+            {
+                *(UInt32*)(State->ESP + 44) = value;
+            }
+        }
+
         //public static bool EnterSleepPrint = false;
         /// <remarks>
         /// Call this instead of Thread.Sleep when inside an interrupt handler.

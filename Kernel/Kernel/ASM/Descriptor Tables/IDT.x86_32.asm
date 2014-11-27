@@ -542,7 +542,7 @@ CommonInterruptHandler%1:
     IRetd
 %endmacro
 %assign handlernum2 17
-%rep 239
+%rep (256-17)
     CommonInterruptHandlerMacro handlernum2
     %assign handlernum2 handlernum2+1
 %endrep
