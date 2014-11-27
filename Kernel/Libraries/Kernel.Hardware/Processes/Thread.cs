@@ -93,6 +93,13 @@ namespace Kernel.Hardware.Processes
         }
 
         //public static bool EnterSleepPrint = false;
+        /// <remarks>
+        /// Call this instead of Thread.Sleep when inside an interrupt handler.
+        /// 
+        /// If inside an interrupt handler, you probably want to call 
+        /// Kernel.Hardware.Processes.Scheduler.UpdateCurrentState()
+        /// after calling this to immediately update the thread to return to.
+        /// </remarks>
         public static void EnterSleep(int ms)
         {
             //if (EnterSleepPrint)
@@ -136,8 +143,6 @@ namespace Kernel.Hardware.Processes
             }
             ProcessManager.CurrentThread.TimeToSleep = ms /* x * 1ms / [Scheduler period in ns] = x * 1 = x */;
             ProcessManager.CurrentThread.TimeToRun = 1;
-
-            Hardware.Processes.Scheduler.UpdateCurrentState();
              
             if (reenable)
             {

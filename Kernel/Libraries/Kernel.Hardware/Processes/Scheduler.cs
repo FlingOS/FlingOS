@@ -106,6 +106,13 @@ namespace Kernel.Hardware.Processes
         [Compiler.NoDebug]
         public static void UpdateCurrentState()
         {
+            if (ProcessManager.CurrentProcess == null ||
+               ProcessManager.CurrentThread == null ||
+               ProcessManager.CurrentThread_State == null)
+            {
+                return;
+            }
+
             UpdateSleepingThreads();
 
             UpdateCurrentThread();
