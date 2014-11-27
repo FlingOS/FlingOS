@@ -19,15 +19,18 @@ namespace Kernel.Core.Processes
             }
         }
 
+        static int x = 0;
         private static void Int48(FOS_System.Object state)
         {
             //Console.Default.WriteLine("Sys call by " + Hardware.Processes.ProcessManager.CurrentProcess.Name);
-            Console.Default.Write("Sys call: ");
-            Console.Default.WriteLine(Hardware.Processes.ProcessManager.CurrentProcess.Name);
-            //Hardware.Processes.Thread.EnterSleepPrint = true;
+            if (x++ % 10 == 0)
+            {
+                Console.Default.Write("Sys call (100): ");
+                Console.Default.WriteLine(Hardware.Processes.ProcessManager.CurrentProcess.Name);
+                //Hardware.Processes.Thread.EnterSleepPrint = true;
+                //Hardware.Processes.Thread.EnterSleepPrint = false;
+            }
             Hardware.Processes.Thread.EnterSleep(1000);
-            //Hardware.Processes.Thread.EnterSleepPrint = false;
-            Console.Default.WriteLine("Exiting sys call.");
         }
     }
 }

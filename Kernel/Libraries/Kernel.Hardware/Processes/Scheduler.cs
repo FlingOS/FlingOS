@@ -101,192 +101,44 @@ namespace Kernel.Hardware.Processes
                 return;
             }
 
-#if SCHEDULER_TRACE
-            if (print)
-            {
-                Console.Default.WriteLine("Scheduler interrupt started...");
-                Console.Default.WriteLine("Updating sleeping threads...");
-            }
-#endif
+            UpdateCurrentState();
+        }
+        [Compiler.NoDebug]
+        public static void UpdateCurrentState()
+        {
             UpdateSleepingThreads();
 
+            UpdateCurrentThread();
 
-#if SCHEDULER_TRACE
-            if (print)
-            {
-                Console.Default.WriteLine("Testing time to sleep...");
-            }
-#endif
-            if (ProcessManager.CurrentThread.TimeToSleep <= 0)
-            {
-#if SCHEDULER_TRACE
-                if (print)
-                {
-                    Console.Default.WriteLine("Decrementing time to run...");
-                }
-#endif
-                ProcessManager.CurrentThread.TimeToRun--;
-            }
-#if SCHEDULER_TRACE
-            if (print)
-            {
-                Console.Default.WriteLine("Checking time to run and terminated...");
-            }
-#endif
             if (ProcessManager.CurrentThread.TimeToRun <= 0 ||
                 ProcessManager.CurrentThread.TimeToSleep > 0 ||
                 ProcessManager.CurrentThread_State->Terminated)
             {
-                #region Reset Time to Run
-#if SCHEDULER_TRACE
-                if (print)
-                {
-                    Console.Default.WriteLine("Reloading time to run...");
-                }
-#endif
                 ProcessManager.CurrentThread.TimeToRun = ProcessManager.CurrentThread.TimeToRunReload;
 
-                #endregion
-
                 uint processId = ProcessManager.CurrentProcess.Id;
-                uint threadId = 0;
 
-                #region Next Thread
-#if SCHEDULER_TRACE
-                    if (print)
-                    {
-                        Console.Default.WriteLine("Getting current thread index...");
-                    }
-#endif
+                int processIdx = ProcessManager.Processes.IndexOf(ProcessManager.CurrentProcess);
                 int threadIdx = ProcessManager.CurrentProcess.Threads.IndexOf(ProcessManager.CurrentThread);
-#if SCHEDULER_TRACE
-                    if (print)
-                    {
-                        Console.Default.WriteLine("Moving to next thread index...");
-                    }
-#endif
-                threadIdx++;
-#if SCHEDULER_TRACE
-                    if (print)
-                    {
-                        Console.Default.WriteLine("Looping threads (1)...");
-                        Console.Default.Write("Thread count: ");
-                        Console.Default.WriteLine_AsDecimal(ProcessManager.CurrentProcess.Threads.Count);
-                    }
-#endif
-                while (threadIdx < ProcessManager.CurrentProcess.Threads.Count &&
-                      (((Thread)ProcessManager.CurrentProcess.Threads[threadIdx]).State->Terminated ||
-                       ((Thread)ProcessManager.CurrentProcess.Threads[threadIdx]).TimeToSleep > 0))
-                {
-#if SCHEDULER_TRACE
-                        if (print)
-                        {
-                            Console.Default.Write("Time to sleep: ");
-                            Console.Default.WriteLine_AsDecimal(((Thread)ProcessManager.CurrentProcess.Threads[threadIdx]).TimeToSleep);
-                            if (((Thread)ProcessManager.CurrentProcess.Threads[threadIdx]).State->Terminated)
-                            {
-                                Console.Default.WriteLine("Terminated.");
-                            }
-                            else
-                            {
-                                Console.Default.WriteLine("Not terminated.");
-                            }
-                        }
-#endif
-
-                    threadIdx++;
-                }
-
-                #endregion
-
-#if SCHEDULER_TRACE
-                    if (print)
-                    {
-                        Console.Default.WriteLine("Getting current process index...");
-                    }
-#endif
+                
+                threadIdx = NextThread(threadIdx, processIdx);
+                
                 if (ProcessManager.Processes.Count > 1)
                 {
-                    #region Next Process
+                    int startIdx = processIdx;
 
-                    int processIdx = ProcessManager.Processes.IndexOf(ProcessManager.CurrentProcess);
-#if SCHEDULER_TRACE
-                    if (print)
+                    while (threadIdx >= ((Process)ProcessManager.Processes[processIdx]).Threads.Count)
                     {
-                        Console.Default.WriteLine("Looping processes...");
-                    }
-#endif
-                    while (threadIdx >= ProcessManager.CurrentProcess.Threads.Count)
-                    {
+                        NextProcess(ref threadIdx, ref processIdx);
 
-#if SCHEDULER_TRACE
-                        if (print)
+                        //Prevent infinite blocking loop
+                        if (startIdx == processIdx)
                         {
-                            Console.Default.WriteLine("Moving to next process...");
-                        }
-#endif
-                        processIdx++;
-#if SCHEDULER_TRACE
-                        if (print)
-                        {
-                            Console.Default.WriteLine("Checking process count...");
-                        }
-#endif
-                        if (processIdx >= ProcessManager.Processes.Count)
-                        {
-#if SCHEDULER_TRACE
-                            if (print)
-                            {
-                                Console.Default.WriteLine("Setting process index to first process...");
-                            }
-#endif
-                            //Go back to start of list
-                            processIdx = 0;
-                        }
-                        
-#if SCHEDULER_TRACE
-                        if (print)
-                        {
-                            Console.Default.WriteLine("Process name: " + ProcessManager.CurrentProcess.Name);
-                            Console.Default.WriteLine("Setting thread index to first thread...");
-                        }
-#endif
-                        threadIdx = 0;
-#if SCHEDULER_TRACE
-                        if (print)
-                        {
-                            Console.Default.WriteLine("Looping threads (2)...");
-                            Console.Default.Write("Thread count: ");
-                            Console.Default.WriteLine_AsDecimal(ProcessManager.CurrentProcess.Threads.Count);
-                        }
-#endif
-                        while (threadIdx < ProcessManager.CurrentProcess.Threads.Count &&
-                              (((Thread)ProcessManager.CurrentProcess.Threads[threadIdx]).State->Terminated ||
-                               ((Thread)ProcessManager.CurrentProcess.Threads[threadIdx]).TimeToSleep > 0))
-                        {
-#if SCHEDULER_TRACE
-                            if (print)
-                            {
-                                Console.Default.Write("Time to sleep: ");
-                                Console.Default.WriteLine_AsDecimal(((Thread)ProcessManager.CurrentProcess.Threads[threadIdx]).TimeToSleep);
-                                if (((Thread)ProcessManager.CurrentProcess.Threads[threadIdx]).State->Terminated)
-                                {
-                                    Console.Default.WriteLine("Terminated.");
-                                }
-                                else
-                                {
-                                    Console.Default.WriteLine("Not terminated.");
-                                }
-                            }
-#endif
-
-                            threadIdx++;
+                            UpdateSleepingThreads();
                         }
                     }
 
                     processId = ((Process)ProcessManager.Processes[processIdx]).Id;
-
-                    #endregion
                 }
                 else if (threadIdx >= ProcessManager.CurrentProcess.Threads.Count)
                 {
@@ -295,47 +147,48 @@ namespace Kernel.Hardware.Processes
 
                 ProcessManager.SwitchProcess(processId,
                     (int)((Thread)ProcessManager.CurrentProcess.Threads[threadIdx]).Id);
-                    
             }
 
-#if SCHEDULER_TRACE
-            if (print)
-            {
-                if (wasum != ProcessManager.CurrentProcess.UserMode)
-                {
-                    if (wasum)
-                    {
-                        Console.Default.WriteLine("Switched to KM process.");
-                    }
-                    else
-                    {
-                        Console.Default.WriteLine("Switched to UM process.");
-                    }
-                }
-                wasum = ProcessManager.CurrentProcess.UserMode;
-
-                Console.Default.WriteLine("Checking thread started...");
-            }
-#endif
             if (!ProcessManager.CurrentThread_State->Started)
             {
                 SetupThreadForStart();
             }
+        }
+        [Compiler.NoDebug]
+        private static void NextProcess(ref int threadIdx, ref int processIdx)
+        {
+            processIdx++;
 
-#if SCHEDULER_TRACE
-            if (print)
+            if (processIdx >= ProcessManager.Processes.Count)
             {
-                Console.Default.WriteLine("Scheduler interrupt ended.");
-                for (int i = 0; i < 5000000; i++)
-                {
-                    if (i % 500000 == 0)
-                    {
-                        Console.Default.Write(".");
-                    }
-                }
-                Console.Default.WriteLine();
+                //Go back to start of list
+                processIdx = 0;
             }
-#endif
+
+            threadIdx = NextThread(-1, processIdx);
+        }
+        [Compiler.NoDebug]
+        private static int NextThread(int threadIdx, int processIdx)
+        {
+            threadIdx++;
+
+            Process cProcess = ((Process)ProcessManager.Processes[processIdx]);
+
+            while (threadIdx < cProcess.Threads.Count &&
+                  (((Thread)cProcess.Threads[threadIdx]).State->Terminated ||
+                   ((Thread)cProcess.Threads[threadIdx]).TimeToSleep > 0))
+            {
+                threadIdx++;
+            }
+            return threadIdx;
+        }
+        [Compiler.NoDebug]
+        private static void UpdateCurrentThread()
+        {
+            if (ProcessManager.CurrentThread.TimeToSleep <= 0)
+            {
+                ProcessManager.CurrentThread.TimeToRun--;
+            }
         }
         [Compiler.NoDebug]
         private static void UpdateSleepingThreads()
@@ -348,12 +201,6 @@ namespace Kernel.Hardware.Processes
                     Thread t = (Thread)p.Threads[tIdx];
                     if (t.TimeToSleep > 0)
                     {
-#if SCHEDULER_TRACE
-                        if (print)
-                        {
-                            Console.Default.WriteLine("Decrementing sleep counter...");
-                        }
-#endif
                         t.TimeToSleep--;
                     }
                 }

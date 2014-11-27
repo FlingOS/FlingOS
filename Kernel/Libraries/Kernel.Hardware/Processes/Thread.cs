@@ -124,22 +124,25 @@ namespace Kernel.Hardware.Processes
             //}
             //else
             //{
-                bool reenable = Scheduler.Enabled;
-                if (reenable)
-                {
-                    Scheduler.Disable();
-                }
-                if (ProcessManager.CurrentThread == null)
-                {
-                    BasicConsole.WriteLine("Massive problem! The current thread is null! Can't sleep null thread.");
-                    BasicConsole.DelayOutput(5);
-                }
-                ProcessManager.CurrentThread.TimeToSleep = ms /* x * 1ms / [Scheduler period in ns] = x * 1 = x */;
-                ProcessManager.CurrentThread.TimeToRun = 0;
-                if (reenable)
-                {
-                    Scheduler.Enable();
-                }
+            bool reenable = Scheduler.Enabled;
+            if (reenable)
+            {
+                Scheduler.Disable();
+            }
+            if (ProcessManager.CurrentThread == null)
+            {
+                BasicConsole.WriteLine("Massive problem! The current thread is null! Can't sleep null thread.");
+                BasicConsole.DelayOutput(5);
+            }
+            ProcessManager.CurrentThread.TimeToSleep = ms /* x * 1ms / [Scheduler period in ns] = x * 1 = x */;
+            ProcessManager.CurrentThread.TimeToRun = 1;
+
+            Hardware.Processes.Scheduler.UpdateCurrentState();
+             
+            if (reenable)
+            {
+                Scheduler.Enable();
+            }
             //}
         }
         public static void Sleep(int ms)
