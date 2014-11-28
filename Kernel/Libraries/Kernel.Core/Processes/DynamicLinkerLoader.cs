@@ -1,6 +1,7 @@
 ﻿using System;
 using Kernel.FOS_System.IO;
 using Kernel.Hardware.Processes;
+using Kernel.Core.Processes.ELF;
 
 namespace Kernel.Core.Processes
 {
@@ -68,6 +69,24 @@ namespace Kernel.Core.Processes
             }
 
             return process;
+        }
+        public static Process LoadProcess_FromELFExe(File RawExeFile, bool UserMode)
+        {
+            ELFFile elfFile = new ELFFile(RawExeFile);
+            if (!elfFile.CheckSiganture())
+            {
+                Console.Default.WarningColour();
+                Console.Default.WriteLine("ELF signature check failed!");
+                Console.Default.DefaultColour();
+            }
+            else
+            {
+                Console.Default.Colour(0x2F);
+                Console.Default.WriteLine("ELF signature check passed.");
+                Console.Default.DefaultColour();
+            }
+
+            return null;
         }
     }
 }

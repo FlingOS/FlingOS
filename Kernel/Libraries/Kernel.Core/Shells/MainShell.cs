@@ -814,6 +814,12 @@ namespace Kernel.Core.Shells
                                                             Processes.DynamicLinkerLoader.LoadProcess_FromRawExe(aFile, false),
                                                             Hardware.Processes.Scheduler.Priority.Normal);
                                                     }
+                                                    else if (opt3 == "elf")
+                                                    {
+                                                        Hardware.Processes.ProcessManager.RegisterProcess(
+                                                            Processes.DynamicLinkerLoader.LoadProcess_FromELFExe(aFile, false),
+                                                            Hardware.Processes.Scheduler.Priority.Normal);
+                                                    }
                                                     else
                                                     {
                                                         UnrecognisedOption(opt3);
@@ -841,6 +847,12 @@ namespace Kernel.Core.Shells
                                                     {
                                                         Hardware.Processes.ProcessManager.RegisterProcess(
                                                             Processes.DynamicLinkerLoader.LoadProcess_FromRawExe(aFile, true),
+                                                            Hardware.Processes.Scheduler.Priority.Normal);
+                                                    }
+                                                    else if (opt3 == "elf")
+                                                    {
+                                                        Hardware.Processes.ProcessManager.RegisterProcess(
+                                                            Processes.DynamicLinkerLoader.LoadProcess_FromELFExe(aFile, true),
                                                             Hardware.Processes.Scheduler.Priority.Normal);
                                                     }
                                                     else

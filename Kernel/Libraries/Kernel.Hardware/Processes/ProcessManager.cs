@@ -28,6 +28,11 @@ namespace Kernel.Hardware.Processes
             BasicConsole.WriteLine("Registering process...");
             BasicConsole.WriteLine("Disabling scheduler...");
 #endif
+            if (process == null)
+            {
+                return;
+            }
+
             bool reenable = Scheduler.Enabled;
             if (reenable)
             {
