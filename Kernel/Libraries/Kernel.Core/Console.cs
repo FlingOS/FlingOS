@@ -556,6 +556,15 @@ namespace Kernel.Core
         public virtual void Colour(byte col)
         {
             CurrentAttr = (ushort)((CurrentAttr & 0x00FF) | (col << 8));
+
+            FOS_System.String str = (FOS_System.String)Buffer[CurrentLine];
+
+            //Set the attr of all characters in the rest of the line to
+            //  the current colour.
+            for (int i = CurrentChar; i < str.length; i++)
+            {
+                str[i] = (char)((str[i] & 0x00FF) | CurrentAttr);
+            }
         }
         /// <summary>
         /// Sets the text colour to the default colour (white).

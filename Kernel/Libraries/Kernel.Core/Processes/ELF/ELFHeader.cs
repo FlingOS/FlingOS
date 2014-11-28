@@ -2,9 +2,73 @@
 
 namespace Kernel.Core.Processes.ELF
 {
-    public unsafe class ELFHeader
+    public enum ELFFileClass
+    {
+        None = 0,
+        Class32 = 1,
+        Class64 = 2
+    }
+    public enum ELFDataEncoding
+    {
+        Invalid = 0,
+        LSB = 1,
+        MSB = 2
+    }
+    public enum ELFFileType : ushort
+    {
+        None = 0,
+        Relocatable = 1,
+        Executable = 2,
+        Shared = 3,
+        Core = 4
+    }
+    public enum ELFMachines : ushort
+    {
+        None = 0,
+        M32 = 1,
+        SPARC = 2,
+        Intel80386 = 3,
+        Motorola68K = 4,
+        Motorola88K = 5,
+        Intel80860 = 7,
+        MIPS = 8
+    }
+    public unsafe class ELFHeader : FOS_System.Object
     {
         public const int HEADER_SIZE = 52;
+
+        public bool SignatureOK
+        {
+            get
+            {
+                bool OK = ident[0] == 0x7F;
+                OK = OK && ident[1] == 'E';
+                OK = OK && ident[2] == 'L';
+                OK = OK && ident[3] == 'F';
+                return OK;
+            }
+        }
+        public ELFFileClass FileClass
+        {
+            get
+            {
+                return (ELFFileClass)ident[4];
+            }
+        }
+        public ELFDataEncoding DataEncoding
+        {
+            get
+            {
+                return (ELFDataEncoding)ident[5];
+            }
+        }
+        public byte HeaderVersion
+        {
+            get
+            {
+                return ident[6];
+            }
+        }
 
         public ELFHeader(byte[] data)
         {
@@ -26,34 +90,34 @@ namespace Kernel.Core.Processes.ELF
             ident[14] = data[14];
             ident[15] = data[15];
 
-            type = ByteConverter.ToUInt16(data, 16);
-            machine = ByteConverter.ToUInt16(data, 18);
-            version = ByteConverter.ToUInt32(data, 20);
-            entry = (byte*)ByteConverter.ToUInt32(data, 24);
-            phoff = ByteConverter.ToUInt32(data, 28);
-            shoff = ByteConverter.ToUInt32(data, 32);
+            FileType = (ELFFileType)ByteConverter.ToUInt16(data, 16);
+            Machine = (ELFMachines)ByteConverter.ToUInt16(data, 18);
+            Version = ByteConverter.ToUInt32(data, 20);
+            EntryPoint = (byte*)ByteConverter.ToUInt32(data, 24);
+            ProgHeaderTableOffset = ByteConverter.ToUInt32(data, 28);
+            SecHeaderTableOffset = ByteConverter.ToUInt32(data, 32);
             flags = ByteConverter.ToUInt32(data, 36);
-            ehsize = ByteConverter.ToUInt16(data, 40);
-            phentsize = ByteConverter.ToUInt16(data, 42);
-            phnum = ByteConverter.ToUInt16(data, 44);
-            shentsize = ByteConverter.ToUInt16(data, 46);
-            shnum = ByteConverter.ToUInt16(data, 48);
-            shstrndx = ByteConverter.ToUInt16(data, 50);
+            ELFHeaderSize = ByteConverter.ToUInt16(data, 40);
+            ProgHeaderEntrySize = ByteConverter.ToUInt16(data, 42);
+            ProgHeaderNumEntries = ByteConverter.ToUInt16(data, 44);
+            SecHeaderEntrySize = ByteConverter.ToUInt16(data, 46);
+            SecHeaderNumEntries = ByteConverter.ToUInt16(data, 48);
+            SecHeaderIdxForSecNameStrings = ByteConverter.ToUInt16(data, 50);
         }
 
         public byte[] ident;
-        public ushort type;
-        public ushort machine;
-        public uint version;
-        public byte* entry;
-        public uint phoff;
-        public uint shoff;
+        public ELFFileType FileType;
+        public ELFMachines Machine;
+        public uint Version;
+        public byte* EntryPoint;
+        public uint ProgHeaderTableOffset;
+        public uint SecHeaderTableOffset;
         public uint flags;
-        public ushort ehsize;
-        public ushort phentsize;
-        public ushort phnum;
-        public ushort shentsize;
-        public ushort shnum;
-        public ushort shstrndx;
+        public ushort ELFHeaderSize;
+        public ushort ProgHeaderEntrySize;
+        public ushort ProgHeaderNumEntries;
+        public ushort SecHeaderEntrySize;
+        public ushort SecHeaderNumEntries;
+        public ushort SecHeaderIdxForSecNameStrings;
     }
 }

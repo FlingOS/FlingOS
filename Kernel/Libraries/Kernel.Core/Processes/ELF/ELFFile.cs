@@ -34,9 +34,10 @@ namespace Kernel.Core.Processes.ELF
         {
             theFile = file;
             theStream = theFile.GetStream();
+            ReadHeader();
         }
 
-        public void ReadHeader()
+        private void ReadHeader()
         {
             byte[] headerData = new byte[ELFHeader.HEADER_SIZE];
             theStream.Position = 0;
@@ -53,18 +54,9 @@ namespace Kernel.Core.Processes.ELF
         }
         public bool CheckSiganture()
         {
-            if (header == null)
-            {
-                ReadHeader();
-            }
-
             if (header != null)
             {
-                bool OK = header.ident[0] == 0x7F;
-                OK = OK && header.ident[1] == 'E';
-                OK = OK && header.ident[2] == 'L';
-                OK = OK && header.ident[3] == 'F';
-                return OK;
+                return header.SignatureOK;
             }
             else
             {
@@ -72,5 +64,61 @@ namespace Kernel.Core.Processes.ELF
             }
             return false;
         }
+        public bool CheckFileClass()
+        {
+            if (header != null)
+            {
+                ELFFileClass fileClass = header.FileClass;
+                //TODO - Support 64-bit executables
+                return fileClass == ELFFileClass.None || fileClass == ELFFileClass.Class32;
+            }
+            else
+            {
+                ExceptionMethods.Throw(new FOS_System.Exception("Failed to load ELF header so cannot check file class!"));
+            }
+            return false;
+        }
+        public bool CheckDataEncoding()
+        {
+            if (header != null)
+            {
+                return header.DataEncoding == ELFDataEncoding.LSB;
+            }
+            else
+            {
+                ExceptionMethods.Throw(new FOS_System.Exception("Failed to load ELF header so cannot check data encoding!"));
+            }
+            return false;
+        }
+        public bool CheckFileType()
+        {
+            if (header != null)
+            {
+                ELFFileType fileType = header.FileType;
+                return fileType == ELFFileType.None || 
+                       fileType == ELFFileType.Executable ||
+                       fileType == ELFFileType.Relocatable || 
+                       fileType == ELFFileType.Shared;
+            }
+            else
+            {
+                ExceptionMethods.Throw(new FOS_System.Exception("Failed to load ELF header so cannot check file class!"));
+            }
+            return false;
+        }
+        public bool CheckMachine()
+        {
+            if (header != null)
+            {
+                return header.Machine == ELFMachines.Intel80386;
+            }
+            else
+            {
+                ExceptionMethods.Throw(new FOS_System.Exception("Failed to load ELF header so cannot check file class!"));
+            }
+            return false;
+        }
+        
+
     }
 }
