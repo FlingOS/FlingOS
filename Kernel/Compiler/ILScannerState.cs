@@ -168,17 +168,29 @@ namespace Kernel.Compiler
         }
         public int GetFieldOffset(DB_Type dbType, string FieldName)
         {
-            //Get the child links of the type (i.e. the fields of the type)
-            List<DB_ComplexTypeLink> allChildLinks = dbType.ChildTypes.OrderBy(x => x.ParentIndex).ToList();
-            //Get the DB type information for the field we want to load
-            DB_ComplexTypeLink theTypeLink = (from links in dbType.ChildTypes
-                                              where links.FieldId == FieldName
-                                              select links).First();
-            //Get all the fields that come before the field we want to load
-            //This is so we can calculate the offset (in memory, in bytes) from the start of the object
-            allChildLinks = allChildLinks.Where(x => x.ParentIndex < theTypeLink.ParentIndex).ToList();
-            //Calculate the offset
-            return allChildLinks.Sum(x => x.ChildType.IsValueType ? x.ChildType.BytesSize : x.ChildType.StackBytesSize);
+            try
+            {
+                //Get the child links of the type (i.e. the fields of the type)
+                List<DB_ComplexTypeLink> allChildLinks = dbType.ChildTypes.OrderBy(x => x.ParentIndex).ToList();
+                //Get the DB type information for the field we want to load
+                DB_ComplexTypeLink theTypeLink = (from links in dbType.ChildTypes
+                                                  where links.FieldId == FieldName
+                                                  select links).First();
+                //Get all the fields that come before the field we want to load
+                //This is so we can calculate the offset (in memory, in bytes) from the start of the object
+                allChildLinks = allChildLinks.Where(x => x.ParentIndex < theTypeLink.ParentIndex).ToList();
+                //Calculate the offset
+                return allChildLinks.Sum(x => x.ChildType.IsValueType ? x.ChildType.BytesSize : x.ChildType.StackBytesSize);
+            }
+            catch(InvalidOperationException ex)
+            {
+                if (ex.Message.Contains("Sequence contains no elements") &&
+                    FieldName == "_Type")
+                {
+                    throw new Exception("Did you forget to make " + dbType.Signature + " inherit from FOS_System.Object?");
+                }
+                throw ex;
+            }
         }
 
         private int currentMethodIDValue = 1;
