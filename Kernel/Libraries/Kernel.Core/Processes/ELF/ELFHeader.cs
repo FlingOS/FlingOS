@@ -2,13 +2,13 @@
 
 namespace Kernel.Core.Processes.ELF
 {
-    public enum ELFFileClass
+    public enum ELFFileClass : byte
     {
         None = 0,
         Class32 = 1,
         Class64 = 2
     }
-    public enum ELFDataEncoding
+    public enum ELFDataEncoding : byte
     {
         Invalid = 0,
         LSB = 1,

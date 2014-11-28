@@ -2,6 +2,7 @@
 using Kernel.FOS_System;
 using Kernel.FOS_System.IO;
 using Kernel.FOS_System.IO.Streams;
+using Kernel.FOS_System.Collections;
 
 namespace Kernel.Core.Processes.ELF
 {
@@ -30,11 +31,18 @@ namespace Kernel.Core.Processes.ELF
             }
         }
 
+        private List Sections = new List();
+
         public ELFFile(File file)
         {
             theFile = file;
             theStream = theFile.GetStream();
             ReadHeader();
+
+            if (IsValidFile())
+            {
+                ReadSections();
+            }
         }
 
         private void ReadHeader()
@@ -49,8 +57,126 @@ namespace Kernel.Core.Processes.ELF
             }
             else
             {
-                ExceptionMethods.Throw(new FOS_System.Exception("Failed to read data from file!"));
+                ExceptionMethods.Throw(new FOS_System.Exception("Failed to read header data from file!"));
             }
+        }
+        public void ReadSections()
+        {
+            byte[] sectionsData = new byte[header.SecHeaderEntrySize * header.SecHeaderNumEntries];
+            theStream.Position = header.SecHeaderTableOffset;
+            int bytesRead = theStream.Read(sectionsData, 0, sectionsData.Length);
+
+            if (bytesRead == sectionsData.Length)
+            {
+                uint offset = 0;
+                while (offset < sectionsData.Length)
+                {
+                    ELFSectionHeader newHeader = new ELFSectionHeader(sectionsData, ref offset);
+                    ELFSection newSection = new ELFSection(newHeader);
+                    Sections.Add(newSection);
+
+                    Console.Default.WriteLine("ELF section: ");
+                    Console.Default.Write(" - Type : ");
+                    Console.Default.WriteLine_AsDecimal((uint)newHeader.SectionType);
+                    Console.Default.Write(" - Flags : ");
+                    Console.Default.WriteLine_AsDecimal((uint)newHeader.Flags);
+                    Console.Default.Write(" - Offset : ");
+                    Console.Default.WriteLine_AsDecimal((uint)newHeader.SectionFileOffset);
+                    Console.Default.Write(" - Size : ");
+                    Console.Default.WriteLine_AsDecimal((uint)newHeader.SectionSize);
+                    Console.Default.Write(" - Load address : ");
+                    Console.Default.WriteLine_AsDecimal((uint)newHeader.LoadAddress);
+                }
+            }
+            else
+            {
+                ExceptionMethods.Throw(new FOS_System.Exception("Failed to read sections data from file!"));
+            }
+        }
+
+        public bool IsValidFile()
+        {
+            #region CHECK : Signature
+            if (!CheckSiganture())
+            {
+                Console.Default.WarningColour();
+                Console.Default.WriteLine("ELF signature check failed!");
+                Console.Default.DefaultColour();
+                return false;
+            }
+            else
+            {
+                Console.Default.Colour(0x2F);
+                Console.Default.WriteLine("ELF signature check passed.");
+                Console.Default.DefaultColour();
+            }
+            #endregion
+            #region CHECK : File Class
+            if (!CheckFileClass())
+            {
+                Console.Default.WarningColour();
+                Console.Default.WriteLine("ELF file class check failed!");
+                Console.Default.DefaultColour();
+                return false;
+            }
+            else
+            {
+                Console.Default.Colour(0x2F);
+                Console.Default.WriteLine("ELF file class check passed.");
+                Console.Default.DefaultColour();
+            }
+            #endregion
+            #region CHECK : Data Encoding
+            if (!CheckDataEncoding())
+            {
+                Console.Default.WarningColour();
+                Console.Default.WriteLine("ELF data encoding check failed!");
+                Console.Default.DefaultColour();
+                return false;
+            }
+            else
+            {
+                Console.Default.Colour(0x2F);
+                Console.Default.WriteLine("ELF data encoding check passed.");
+                Console.Default.DefaultColour();
+            }
+            #endregion
+            #region CHECK : File Type
+            if (!CheckFileType())
+            {
+                Console.Default.WarningColour();
+                Console.Default.WriteLine("ELF file type check failed!");
+                Console.Default.DefaultColour();
+                return false;
+            }
+            else
+            {
+                Console.Default.Colour(0x2F);
+                Console.Default.WriteLine("ELF file type check passed.");
+                Console.Default.DefaultColour();
+            }
+            #endregion
+            #region CHECK : Machine
+            if (!CheckMachine())
+            {
+                Console.Default.WarningColour();
+                Console.Default.WriteLine("ELF machine check failed!");
+                Console.Default.DefaultColour();
+                return false;
+            }
+            else
+            {
+                Console.Default.Colour(0x2F);
+                Console.Default.WriteLine("ELF machine check passed.");
+                Console.Default.DefaultColour();
+            }
+            #endregion
+            #region INFO : Header Version
+            Console.Default.Write("ELF Header version: ");
+            Console.Default.WriteLine_AsDecimal(Header.HeaderVersion);
+            #endregion
+
+            return true;
         }
         public bool CheckSiganture()
         {
@@ -118,7 +244,5 @@ namespace Kernel.Core.Processes.ELF
             }
             return false;
         }
-        
-
     }
 }
