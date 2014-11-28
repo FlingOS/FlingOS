@@ -1,4 +1,7 @@
 ﻿using Kernel.FOS_System;
+using Kernel.FOS_System.Collections;
+using Kernel.FOS_System.IO;
+using Kernel.FOS_System.IO.Streams;
 
 namespace Kernel.Core.Processes.ELF
 {
@@ -71,9 +74,84 @@ namespace Kernel.Core.Processes.ELF
             }
         }
 
-        public ELFSection(ELFSectionHeader aHeader)
+        protected byte[] data;
+
+        protected ELFSection(ELFSectionHeader aHeader)
         {
             header = aHeader;
+        }
+
+        public virtual int Read(FileStream stream)
+        {
+            data = new byte[header.SectionSize];
+            stream.Position = header.SectionFileOffset;
+            int bytesRead = stream.Read(data, 0, data.Length);
+            if (bytesRead != data.Length)
+            {
+                ExceptionMethods.Throw(new FOS_System.Exception("Failed to read section data from file!"));
+            }
+            return bytesRead;
+        }
+
+        public static ELFSection GetSection(ELFSectionHeader header)
+        {
+            if (header.SectionType == ElfSectionTypes.StrTab)
+            {
+                return new ELFStringTableSection(header);
+            }
+
+            return new ELFSection(header);
+        }
+    }
+    public class ELFStringTableSection : ELFSection
+    {
+        private List strings = new List();
+        private UInt32Dictionary indexTranslations = new UInt32Dictionary();
+        public List Strings
+        {
+            get
+            {
+                return strings;
+            }
+        }
+        public UInt32Dictionary IndexTranslations
+        {
+            get
+            {
+                return indexTranslations;
+            }
+        }
+
+        public ELFStringTableSection(ELFSectionHeader header)
+            : base(header)
+        {
+        }
+
+        public override int Read(FileStream stream)
+        {
+            strings.Empty();
+
+            int bytesRead = base.Read(stream);
+            uint offset = 0;
+            FOS_System.String currString;
+            while (offset < bytesRead)
+            {
+                currString = ByteConverter.GetASCIIStringFromASCII(data, offset, (uint)(bytesRead - offset));
+                indexTranslations.Add(offset, (uint)strings.Count);
+
+                offset += (uint)currString.length + 1; //+1 for null terminator
+                strings.Add(currString);
+            }
+
+            return strings.Count;
+        }
+
+        public FOS_System.String this[uint index]
+        {
+            get
+            {
+                return (FOS_System.String)strings[(int)indexTranslations[index]];
+            }
         }
     }
 }

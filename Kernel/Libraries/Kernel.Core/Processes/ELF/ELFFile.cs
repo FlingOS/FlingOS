@@ -32,6 +32,7 @@ namespace Kernel.Core.Processes.ELF
         }
 
         private List Sections = new List();
+        private ELFStringTableSection SectionNamesTable;
 
         public ELFFile(File file)
         {
@@ -72,25 +73,55 @@ namespace Kernel.Core.Processes.ELF
                 while (offset < sectionsData.Length)
                 {
                     ELFSectionHeader newHeader = new ELFSectionHeader(sectionsData, ref offset);
-                    ELFSection newSection = new ELFSection(newHeader);
-                    Sections.Add(newSection);
+                    ELFSection newSection = ELFSection.GetSection(newHeader);
 
+                    if (Sections.Count == header.SecHeaderIdxForSecNameStrings)
+                    {
+                        if(!(newSection is ELFStringTableSection))
+                        {
+                            ExceptionMethods.Throw(new FOS_System.Exception("Expected Strings Table section was not a strings table section!"));
+                        }
+                        SectionNamesTable = (ELFStringTableSection)newSection;
+                        SectionNamesTable.Read(theStream);
+                    }
+
+                    Sections.Add(newSection);
+                }
+
+                //Console.Default.Write("Section names (");
+                //Console.Default.Write_AsDecimal(SectionNamesTable.Strings.Count);
+                //Console.Default.WriteLine(") :");
+
+                //for (int i = 0; i < SectionNamesTable.Strings.Count; i++)
+                //{
+                //    Console.Default.WriteLine((FOS_System.String)SectionNamesTable.Strings[i]);
+                //}
+                
+                Console.Default.WriteLine();
+
+                for (int i = 0; i < Sections.Count; i++)
+                {
+                    ELFSectionHeader newHeader = ((ELFSection)Sections[i]).Header;
                     Console.Default.WriteLine("ELF section: ");
+                    Console.Default.Write(" - Name index : ");
+                    Console.Default.WriteLine_AsDecimal(newHeader.NameIndex);
+                    Console.Default.Write(" - Name : ");
+                    Console.Default.WriteLine(SectionNamesTable[newHeader.NameIndex]);
                     Console.Default.Write(" - Type : ");
                     Console.Default.WriteLine_AsDecimal((uint)newHeader.SectionType);
                     Console.Default.Write(" - Flags : ");
                     Console.Default.WriteLine_AsDecimal((uint)newHeader.Flags);
                     Console.Default.Write(" - Offset : ");
-                    Console.Default.WriteLine_AsDecimal((uint)newHeader.SectionFileOffset);
+                    Console.Default.WriteLine_AsDecimal(newHeader.SectionFileOffset);
                     Console.Default.Write(" - Size : ");
-                    Console.Default.WriteLine_AsDecimal((uint)newHeader.SectionSize);
+                    Console.Default.WriteLine_AsDecimal(newHeader.SectionSize);
                     Console.Default.Write(" - Load address : ");
                     Console.Default.WriteLine_AsDecimal((uint)newHeader.LoadAddress);
                 }
             }
             else
             {
-                ExceptionMethods.Throw(new FOS_System.Exception("Failed to read sections data from file!"));
+                ExceptionMethods.Throw(new FOS_System.Exception("Failed to read sections table data from file!"));
             }
         }
 
