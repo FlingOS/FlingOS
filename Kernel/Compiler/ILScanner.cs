@@ -1569,13 +1569,21 @@ namespace Kernel.Compiler
         /// All of the types currently being processed by the IL Scanner.
         /// </summary>
         private List<Type> ProcessingTypes = new List<Type>();
+
+        private List<Guid> KeysUsed = new List<Guid>();
+
         /// <summary>
         /// Processes the specified type.
         /// </summary>
         /// <param name="theType">The type to process.</param>
         /// <returns>The debug database type info created during processing.</returns>
-        private DB_Type ProcessType(Type theType)
+        private DB_Type ProcessType(Type theType, bool partialprocess = false)
         {
+            if (theType.IsValueType || theType.IsPointer)
+            {
+                partialprocess = false;
+            }
+
             //TODO - How are we handling interfaces?
 
             if (!AllTypes.Contains(theType))
@@ -1588,7 +1596,7 @@ namespace Kernel.Compiler
                 if (ProcessingTypes.Count == 0)
                 {
                     //We must start processing of types from the bottom of a type inheritance chain 
-                    //  otheriwse we end up in a dependency loop!
+                    //  otherwise we end up in a dependency loop!
                     List<Type> childTypes = (from types in AllTypes
                                              where (types.IsSubclassOf(theType))
                                              select types).ToList();
@@ -1606,96 +1614,106 @@ namespace Kernel.Compiler
                     try
                     {
                         ProcessingTypes.Add(theType);
-                        ProcessedTypes.Add(theType);
-
+                        if (!partialprocess)
+                        {
+                            ProcessedTypes.Add(theType);
+                        }
+                        
                         string TypeId = TheScannerState.GetTypeID(theType);
 
-                        DB_Type TheDBType = new DB_Type();
-                        TheDBType.Id = TypeId;
-                        TheDBType.Signature = theType.FullName;
-                        TheDBType.StackBytesSize = Utils.GetNumBytesForType(theType);
-                        TheDBType.IsValueType = theType.IsValueType;
-                        TheDBType.IsPointerType = theType.IsPointer;
-                        
-                        DebugDatabase.AddType(TheDBType);
-                        DebugDatabase.SubmitChanges();
-
-                        int totalMemSize = 0;
-                        int index = 0;
-                        List<DB_ComplexTypeLink> complexTypeLinks = new List<DB_ComplexTypeLink>();
-
-                        //Process inherited fields like this so that (start of) the memory structures
-                        //  of all types that inherit from this base type are the same i.e. inherited 
-                        //  fields appear in at same offset memory for all inheriting types
-                        if (theType.BaseType != null)
+                        DB_Type TheDBType = DebugDatabase.GetType(TypeId);
+                        if (TheDBType == null)
                         {
-                            Type baseType = theType.BaseType;
-                            if (!baseType.AssemblyQualifiedName.Contains("mscorlib"))
-                            {
-                                DB_Type baseDBType = ProcessType(baseType);
-                                TheDBType.BaseTypeId = baseDBType.Id;
-                                totalMemSize += baseDBType.BytesSize;
-                                foreach (DB_ComplexTypeLink childLink in baseDBType.ChildTypes)
-                                {
-                                    DB_ComplexTypeLink DBTypeLink = new DB_ComplexTypeLink();
-                                    DBTypeLink.Id = Guid.NewGuid();
-                                    DBTypeLink.ParentTypeID = TheDBType.Id;
-                                    DBTypeLink.ChildTypeID = childLink.ChildTypeID;
-                                    DBTypeLink.ParentIndex = childLink.ParentIndex;
-                                    DBTypeLink.FieldId = childLink.FieldId;
-                                    complexTypeLinks.Add(DBTypeLink);
-
-                                    index++;
-                                }
-                            }
-                        }
-
-                        if (!theType.AssemblyQualifiedName.Contains("mscorlib"))
-                        {
-                            List<FieldInfo> AllFields = theType.GetFields(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic).ToList();
+                            TheDBType = new DB_Type();
+                            TheDBType.Id = TypeId;
+                            TheDBType.Signature = theType.FullName;
+                            TheDBType.StackBytesSize = Utils.GetNumBytesForType(theType);
+                            TheDBType.IsValueType = theType.IsValueType;
+                            TheDBType.IsPointerType = theType.IsPointer;
                             
-                            foreach (FieldInfo anInfo in AllFields)
+                            DebugDatabase.AddType(TheDBType);
+                            DebugDatabase.SubmitChanges();
+                        }
+
+                        if (!partialprocess)
+                        {
+                            int totalMemSize = 0;
+                            int index = 0;
+                            List<DB_ComplexTypeLink> complexTypeLinks = new List<DB_ComplexTypeLink>();
+
+                            //Process inherited fields like this so that (start of) the memory structures
+                            //  of all types that inherit from this base type are the same i.e. inherited 
+                            //  fields appear in at same offset memory for all inheriting types
+                            if (theType.BaseType != null)
                             {
-                                //Ignore inherited fields - process inherited fields above
-                                if (anInfo.DeclaringType == theType)
+                                Type baseType = theType.BaseType;
+                                if (!baseType.AssemblyQualifiedName.Contains("mscorlib"))
                                 {
-                                    DB_Type childDBType = ProcessType(anInfo.FieldType);
-                                    totalMemSize += childDBType.IsValueType ? childDBType.BytesSize : childDBType.StackBytesSize;
+                                    DB_Type baseDBType = ProcessType(baseType);
+                                    TheDBType.BaseTypeId = baseDBType.Id;
+                                    totalMemSize += baseDBType.BytesSize;
+                                    foreach (DB_ComplexTypeLink childLink in baseDBType.ChildTypes)
+                                    {
+                                        DB_ComplexTypeLink DBTypeLink = new DB_ComplexTypeLink();
+                                        DBTypeLink.Id = Guid.NewGuid();
+                                        DBTypeLink.ParentTypeID = TheDBType.Id;
+                                        DBTypeLink.ChildTypeID = childLink.ChildTypeID;
+                                        DBTypeLink.ParentIndex = childLink.ParentIndex;
+                                        DBTypeLink.FieldId = childLink.FieldId;
+                                        complexTypeLinks.Add(DBTypeLink);
 
-                                    DB_ComplexTypeLink DBTypeLink = new DB_ComplexTypeLink();
-                                    DBTypeLink.Id = Guid.NewGuid();
-                                    DBTypeLink.ParentTypeID = TheDBType.Id;
-                                    DBTypeLink.ChildTypeID = childDBType.Id;
-                                    DBTypeLink.ParentIndex = index;
-                                    DBTypeLink.FieldId = anInfo.Name;
-                                    complexTypeLinks.Add(DBTypeLink);
-
-                                    index++;
+                                        index++;
+                                    }
                                 }
                             }
-                        }
 
-                        if ((theType.IsValueType && totalMemSize == 0) || theType.IsPointer)
-                        {
-                            totalMemSize = Utils.GetSizeForType(theType);
-                        }
+                            if (!theType.AssemblyQualifiedName.Contains("mscorlib"))
+                            {
+                                List<FieldInfo> AllFields = theType.GetFields(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic).ToList();
 
-                        TheDBType.BytesSize = totalMemSize;
+                                foreach (FieldInfo anInfo in AllFields)
+                                {
+                                    //Ignore inherited fields - process inherited fields above
+                                    if (anInfo.DeclaringType == theType)
+                                    {
+                                        DB_Type childDBType = ProcessType(anInfo.FieldType, true);
+                                        totalMemSize += childDBType.IsValueType ? childDBType.BytesSize : childDBType.StackBytesSize;
 
-                        foreach (DB_ComplexTypeLink typeLink in complexTypeLinks)
-                        {
-                            DebugDatabase.AddComplexTypeLink(typeLink);
-                        }
+                                        DB_ComplexTypeLink DBTypeLink = new DB_ComplexTypeLink();
+                                        DBTypeLink.Id = Guid.NewGuid();
+                                        DBTypeLink.ParentTypeID = TheDBType.Id;
+                                        DBTypeLink.ChildTypeID = childDBType.Id;
+                                        DBTypeLink.ParentIndex = index;
+                                        DBTypeLink.FieldId = anInfo.Name;
+                                        complexTypeLinks.Add(DBTypeLink);
 
-                        DebugDatabase.SubmitChanges();
+                                        index++;
+                                    }
+                                }
+                            }
 
-                        TheScannerState.AddType(TheDBType);
-                        TheScannerState.AddTypeMethods(theType);
-                        TheScannerState.AddTypeFields(theType);
+                            if ((theType.IsValueType && totalMemSize == 0) || theType.IsPointer)
+                            {
+                                totalMemSize = Utils.GetSizeForType(theType);
+                            }
 
-                        if (!theType.AssemblyQualifiedName.Contains("mscorlib"))
-                        {
-                            ProcessStaticFields(theType);
+                            TheDBType.BytesSize = totalMemSize;
+
+                            foreach (DB_ComplexTypeLink typeLink in complexTypeLinks)
+                            {
+                                DebugDatabase.AddComplexTypeLink(typeLink);
+                            }
+
+                            DebugDatabase.SubmitChanges();
+
+                            TheScannerState.AddType(TheDBType);
+                            TheScannerState.AddTypeMethods(theType);
+                            TheScannerState.AddTypeFields(theType);
+
+                            if (!theType.AssemblyQualifiedName.Contains("mscorlib"))
+                            {
+                                ProcessStaticFields(theType);
+                            }
                         }
 
                         TypeClassAttribute typeClassAttr = (TypeClassAttribute)theType.GetCustomAttribute(typeof(TypeClassAttribute));
@@ -1734,6 +1752,8 @@ namespace Kernel.Compiler
                     {
                         ProcessingTypes.Remove(theType);
                     }
+
+                    return null;
                 }
                 else
                 {
