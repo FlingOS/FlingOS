@@ -1,5 +1,7 @@
 BITS 32
-Start:
+GLOBAL _start
+SECTION .text
+_start:
 
 	; Starting colour	
 	mov dword ecx, 0x11

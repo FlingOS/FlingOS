@@ -44,6 +44,7 @@ namespace Kernel.Core.Processes.ELF
             if (IsValidFile())
             {
                 ReadSections();
+                ReadSegments();
             }
         }
 
