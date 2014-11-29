@@ -32,7 +32,7 @@ namespace Kernel.Core.Processes.ELF
         }
 
         private List Sections = new List();
-        private ELFStringTableSection SectionNamesTable;
+        private ELFStringTableSection NamesTable;
 
         public ELFFile(File file)
         {
@@ -81,9 +81,10 @@ namespace Kernel.Core.Processes.ELF
                         {
                             ExceptionMethods.Throw(new FOS_System.Exception("Expected Strings Table section was not a strings table section!"));
                         }
-                        SectionNamesTable = (ELFStringTableSection)newSection;
-                        SectionNamesTable.Read(theStream);
+                        NamesTable = (ELFStringTableSection)newSection;
                     }
+
+                    newSection.Read(theStream);
 
                     Sections.Add(newSection);
                 }
@@ -101,22 +102,48 @@ namespace Kernel.Core.Processes.ELF
 
                 for (int i = 0; i < Sections.Count; i++)
                 {
-                    ELFSectionHeader newHeader = ((ELFSection)Sections[i]).Header;
+                    ELFSection theSection = (ELFSection)Sections[i];
+                    ELFSectionHeader theHeader = theSection.Header;
                     Console.Default.WriteLine("ELF section: ");
                     Console.Default.Write(" - Name index : ");
-                    Console.Default.WriteLine_AsDecimal(newHeader.NameIndex);
+                    Console.Default.WriteLine_AsDecimal(theHeader.NameIndex);
                     Console.Default.Write(" - Name : ");
-                    Console.Default.WriteLine(SectionNamesTable[newHeader.NameIndex]);
+                    Console.Default.WriteLine(NamesTable[theHeader.NameIndex]);
                     Console.Default.Write(" - Type : ");
-                    Console.Default.WriteLine_AsDecimal((uint)newHeader.SectionType);
+                    Console.Default.WriteLine_AsDecimal((uint)theHeader.SectionType);
                     Console.Default.Write(" - Flags : ");
-                    Console.Default.WriteLine_AsDecimal((uint)newHeader.Flags);
+                    Console.Default.WriteLine_AsDecimal((uint)theHeader.Flags);
                     Console.Default.Write(" - Offset : ");
-                    Console.Default.WriteLine_AsDecimal(newHeader.SectionFileOffset);
+                    Console.Default.WriteLine_AsDecimal(theHeader.SectionFileOffset);
                     Console.Default.Write(" - Size : ");
-                    Console.Default.WriteLine_AsDecimal(newHeader.SectionSize);
+                    Console.Default.WriteLine_AsDecimal(theHeader.SectionSize);
                     Console.Default.Write(" - Load address : ");
-                    Console.Default.WriteLine_AsDecimal((uint)newHeader.LoadAddress);
+                    Console.Default.WriteLine_AsDecimal((uint)theHeader.LoadAddress);
+
+                    if (theSection is ELFSymbolTableSection)
+                    {
+                        Console.Default.WriteLine(" - Symbol table :");
+                        
+                        ELFSymbolTableSection theSymTable = (ELFSymbolTableSection)theSection;
+                        ELFStringTableSection theStringTable = (ELFStringTableSection)(Sections[theSymTable.StringsSectionIndex]); 
+                        for (uint j = 0; j < theSymTable.Symbols.Count; j++)
+                        {
+                            ELFSymbolTableSection.Symbol theSym = theSymTable[j];
+
+                            Console.Default.Write("     - Symbol : ");
+                            Console.Default.WriteLine(theStringTable[theSym.NameIdx]);
+                            Console.Default.Write("         - Type : ");
+                            Console.Default.WriteLine_AsDecimal((uint)theSym.Type);
+                            Console.Default.Write("         - Binding : ");
+                            Console.Default.WriteLine_AsDecimal((uint)theSym.Binding);
+                            Console.Default.Write("         - Section index : ");
+                            Console.Default.WriteLine_AsDecimal(theSym.SectionIndex);
+                            Console.Default.Write("         - Value : ");
+                            Console.Default.WriteLine_AsDecimal((uint)theSym.Value);
+                            Console.Default.Write("         - Size : ");
+                            Console.Default.WriteLine_AsDecimal(theSym.Size);
+                        }
+                    }
                 }
             }
             else

@@ -65,7 +65,7 @@ namespace Kernel.Core.Processes.ELF
     }
     public class ELFSection : FOS_System.Object
     {
-        private ELFSectionHeader header;
+        protected ELFSectionHeader header;
         public ELFSectionHeader Header
         {
             get
@@ -99,14 +99,17 @@ namespace Kernel.Core.Processes.ELF
             {
                 return new ELFStringTableSection(header);
             }
+            else if (header.SectionType == ElfSectionTypes.SymTab)
+            {
+                return new ELFSymbolTableSection(header);
+            }
 
             return new ELFSection(header);
         }
     }
     public class ELFStringTableSection : ELFSection
     {
-        private List strings = new List();
-        private UInt32Dictionary indexTranslations = new UInt32Dictionary();
+        protected List strings = new List();
         public List Strings
         {
             get
@@ -114,6 +117,7 @@ namespace Kernel.Core.Processes.ELF
                 return strings;
             }
         }
+        protected UInt32Dictionary indexTranslations = new UInt32Dictionary();
         public UInt32Dictionary IndexTranslations
         {
             get
@@ -151,6 +155,104 @@ namespace Kernel.Core.Processes.ELF
             get
             {
                 return (FOS_System.String)strings[(int)indexTranslations[index]];
+            }
+        }
+    }
+    public unsafe class ELFSymbolTableSection : ELFSection
+    {
+        public enum SymbolBinding : byte
+        {
+            Local = 0,
+            Global = 1,
+            Weak = 2
+        }
+        public enum SymbolType : byte
+        {
+            NoType = 0,
+            Object = 1,
+            Func = 2,
+            Section = 3,
+            File = 4
+        }
+        public unsafe class Symbol : FOS_System.Object
+        {
+            //Interpreted from Info field
+            public SymbolBinding Binding
+            {
+                get
+                {
+                    return (SymbolBinding)(Info >> 4);
+                }
+            }
+            public SymbolType Type
+            {
+                get
+                {
+                    return (SymbolType)(Info & 0xF);
+                }
+            }
+
+            public uint NameIdx;
+            public byte* Value;
+            public uint Size;
+            public byte Info;
+            public byte Other;
+            public ushort SectionIndex;
+        }
+
+        private List symbols = new List();
+        public List Symbols
+        {
+            get
+            {
+                return symbols;
+            }
+        }
+
+        public int StringsSectionIndex
+        {
+            get
+            {
+                return (int)header.Link;
+            }
+        }
+
+        public ELFSymbolTableSection(ELFSectionHeader header)
+            : base(header)
+        {
+        }
+
+        public override int Read(FileStream stream)
+        {
+            symbols.Empty();
+
+            int bytesRead = base.Read(stream);
+            uint offset = 0;
+            Symbol currSymbol;
+            while (offset < bytesRead)
+            {
+                currSymbol = new Symbol();
+
+                currSymbol.NameIdx = ByteConverter.ToUInt32(data, offset + 0);
+                currSymbol.Value = (byte*)ByteConverter.ToUInt32(data, offset + 4);
+                currSymbol.Size = ByteConverter.ToUInt32(data, offset + 8);
+                currSymbol.Info = data[offset + 12];
+                currSymbol.Other = data[offset + 13];
+                currSymbol.SectionIndex = ByteConverter.ToUInt16(data, offset + 14);
+
+                symbols.Add(currSymbol);
+
+                offset += header.EntrySize;
+            }
+
+            return symbols.Count;
+        }
+
+        public Symbol this[uint index]
+        {
+            get
+            {
+                return (Symbol)symbols[(int)index];
             }
         }
     }
