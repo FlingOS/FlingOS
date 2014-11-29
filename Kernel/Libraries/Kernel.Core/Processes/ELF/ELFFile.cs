@@ -32,6 +32,7 @@ namespace Kernel.Core.Processes.ELF
         }
 
         private List Sections = new List();
+        private List Segments = new List();
         private ELFStringTableSection NamesTable;
 
         public ELFFile(File file)
@@ -89,16 +90,9 @@ namespace Kernel.Core.Processes.ELF
                     Sections.Add(newSection);
                 }
 
-                //Console.Default.Write("Section names (");
-                //Console.Default.Write_AsDecimal(SectionNamesTable.Strings.Count);
-                //Console.Default.WriteLine(") :");
-
-                //for (int i = 0; i < SectionNamesTable.Strings.Count; i++)
-                //{
-                //    Console.Default.WriteLine((FOS_System.String)SectionNamesTable.Strings[i]);
-                //}
-
                 Console.Default.WriteLine();
+
+                #region Sections Output
 
                 for (int i = 0; i < Sections.Count; i++)
                 {
@@ -122,6 +116,8 @@ namespace Kernel.Core.Processes.ELF
 
                     if (theSection is ELFSymbolTableSection)
                     {
+                        #region ELFSymbolTableSection
+
                         Console.Default.WriteLine(" - Symbol table :");
 
                         ELFSymbolTableSection theSymTable = (ELFSymbolTableSection)theSection;
@@ -143,9 +139,13 @@ namespace Kernel.Core.Processes.ELF
                             Console.Default.Write("         - Size : ");
                             Console.Default.WriteLine_AsDecimal(theSym.Size);
                         }
+
+                        #endregion
                     }
                     else if (theSection is ELFRelocationAddendTableSection)
                     {
+                        #region ELFRelocationAddendTableSection
+
                         ELFRelocationAddendTableSection theRelASection = (ELFRelocationAddendTableSection)theSection;
 
                         Console.Default.WriteLine(" - Relocation (with addends) table :");
@@ -168,9 +168,13 @@ namespace Kernel.Core.Processes.ELF
                             Console.Default.Write("         - Addend : ");
                             Console.Default.WriteLine_AsDecimal(theRel.Addend);
                         }
+
+                        #endregion
                     }
                     else if (theSection is ELFRelocationTableSection)
                     {
+                        #region ELFRelocationTableSection
+
                         ELFRelocationTableSection theRelSection = (ELFRelocationTableSection)theSection;
 
                         Console.Default.WriteLine(" - Relocation table :");
@@ -191,12 +195,69 @@ namespace Kernel.Core.Processes.ELF
                             Console.Default.Write("         - Offset : ");
                             Console.Default.WriteLine_AsDecimal((uint)theRel.Offset);
                         }
+
+                        #endregion
                     }
                 }
+
+                #endregion
             }
             else
             {
                 ExceptionMethods.Throw(new FOS_System.Exception("Failed to read sections table data from file!"));
+            }
+        }
+        public void ReadSegments()
+        {
+            byte[] segmentsData = new byte[header.ProgHeaderEntrySize * header.ProgHeaderNumEntries];
+            theStream.Position = header.ProgHeaderTableOffset;
+            int bytesRead = theStream.Read(segmentsData, 0, segmentsData.Length);
+
+            if (bytesRead == segmentsData.Length)
+            {
+                uint offset = 0;
+                while (offset < segmentsData.Length)
+                {
+                    ELFSegmentHeader newHeader = new ELFSegmentHeader(segmentsData, ref offset);
+                    ELFSegment newSegment = ELFSegment.GetSegment(newHeader);
+                    
+                    newSegment.Read(theStream);
+
+                    Segments.Add(newSegment);
+                }
+                
+                Console.Default.WriteLine();
+
+                #region Segments Output
+
+                for (int i = 0; i < Segments.Count; i++)
+                {
+                    ELFSegment theSegment = (ELFSegment)Segments[i];
+                    ELFSegmentHeader theHeader = theSegment.Header;
+                    Console.Default.WriteLine("ELF Segment: ");
+                    Console.Default.Write(" - Type : ");
+                    Console.Default.WriteLine_AsDecimal((uint)theHeader.Type);
+                    Console.Default.Write(" - File offset : ");
+                    Console.Default.WriteLine_AsDecimal(theHeader.FileOffset);
+                    Console.Default.Write(" - Virtual address : ");
+                    Console.Default.WriteLine_AsDecimal((uint)theHeader.VAddr);
+                    Console.Default.Write(" - Physical address : ");
+                    Console.Default.WriteLine_AsDecimal((uint)theHeader.PAddr);
+                    Console.Default.Write(" - File size : ");
+                    Console.Default.WriteLine_AsDecimal(theHeader.FileSize);
+                    Console.Default.Write(" - Memory size : ");
+                    Console.Default.WriteLine_AsDecimal(theHeader.MemSize);
+                    Console.Default.Write(" - Flags : ");
+                    Console.Default.WriteLine_AsDecimal(theHeader.Flags);
+                    Console.Default.Write(" - Alignment : ");
+                    Console.Default.WriteLine_AsDecimal(theHeader.Align);
+                }
+
+                #endregion
+            }
+            else
+            {
+                ExceptionMethods.Throw(new FOS_System.Exception("Failed to read segments table data from file!"));
             }
         }
 
