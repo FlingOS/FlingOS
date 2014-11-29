@@ -60,6 +60,7 @@
     <Compile Include="Processes\DynamicLinkerLoader.cs" />
     <Compile Include="Processes\ELF\ELFFile.cs" />
     <Compile Include="Processes\ELF\ELFHeader.cs" />
+    <Compile Include="Processes\ELF\ELFProcess.cs" />
     <Compile Include="Processes\ELF\ELFSections.cs" />
     <Compile Include="Processes\ELF\ELFSegments.cs" />
     <Compile Include="Processes\SystemCalls.cs" />

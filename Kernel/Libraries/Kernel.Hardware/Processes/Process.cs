@@ -19,7 +19,7 @@ namespace Kernel.Hardware.Processes
 
         public Scheduler.Priority Priority;
 
-        private uint ThreadIdGenerator = 1;
+        protected uint ThreadIdGenerator = 1;
         
         public readonly bool UserMode;
 
@@ -38,7 +38,7 @@ namespace Kernel.Hardware.Processes
             CreateThread(MainMethod);
         }
 
-        public void CreateThread(ThreadStartMethod MainMethod)
+        public virtual void CreateThread(ThreadStartMethod MainMethod)
         {
 #if PROCESS_TRACE
             BasicConsole.WriteLine("Creating thread...");
@@ -70,11 +70,11 @@ namespace Kernel.Hardware.Processes
             }
         }
 
-        public void SwitchIn()
+        public virtual void SwitchIn()
         {
             TheMemoryLayout.Load(UserMode);
         }
-        public void SwitchOut()
+        public virtual void SwitchOut()
         {
             TheMemoryLayout.Unload();
         }

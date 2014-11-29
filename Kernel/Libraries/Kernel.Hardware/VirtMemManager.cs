@@ -47,6 +47,14 @@ namespace Kernel.Hardware
             impl.MapKernel();
         }
 
+        public static uint FindFreePhysPage()
+        {
+            return impl.FindFreePhysPageAddr();
+        }
+        public static uint FindFreeVirtsPage()
+        {
+            return impl.FindFreeVirtPageAddr();
+        }
         public static void* MapFreePage(VirtMemImpl.PageFlags flags)
         {
             uint physAddr = impl.FindFreePhysPageAddr();

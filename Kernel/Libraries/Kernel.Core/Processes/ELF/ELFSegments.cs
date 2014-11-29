@@ -15,6 +15,12 @@ namespace Kernel.Core.Processes.ELF
         SHLib = 5,
         PHDR = 6
     }
+    public enum ELFFlags : uint
+    {
+        Executable = 1,
+        Writeable = 2,
+        Readable = 4
+    }
     public unsafe class ELFSegmentHeader : FOS_System.Object
     {
         public ELFSegmentHeader(byte[] header, ref uint offset)
@@ -31,7 +37,7 @@ namespace Kernel.Core.Processes.ELF
             offset += 4;
             MemSize = ByteConverter.ToUInt32(header, offset);
             offset += 4;
-            Flags = ByteConverter.ToUInt32(header, offset);
+            Flags = (ELFFlags)ByteConverter.ToUInt32(header, offset);
             offset += 4;
             Align = ByteConverter.ToUInt32(header, offset);
             offset += 4;
@@ -43,7 +49,7 @@ namespace Kernel.Core.Processes.ELF
         public byte* PAddr;
         public uint FileSize;
         public uint MemSize;
-        public uint Flags;
+        public ELFFlags Flags;
         public uint Align;
     }
     public unsafe class ELFSegment : FOS_System.Object
@@ -58,6 +64,13 @@ namespace Kernel.Core.Processes.ELF
         }
 
         protected byte[] data;
+        public byte[] Data
+        {
+            get
+            {
+                return data;
+            }
+        }
 
         protected ELFSegment(ELFSegmentHeader aHeader)
         {

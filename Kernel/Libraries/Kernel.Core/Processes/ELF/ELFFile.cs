@@ -17,6 +17,13 @@ namespace Kernel.Core.Processes.ELF
                 return theFile;
             }
         }
+        public FileStream TheStream
+        {
+            get
+            {
+                return theStream;
+            }
+        }
 
         private ELFHeader header;
         public ELFHeader Header
@@ -31,9 +38,9 @@ namespace Kernel.Core.Processes.ELF
             }
         }
 
-        private List Sections = new List();
-        private List Segments = new List();
-        private ELFStringTableSection NamesTable;
+        public List Sections = new List();
+        public List Segments = new List();
+        public ELFStringTableSection NamesTable;
 
         public ELFFile(File file)
         {
@@ -43,8 +50,8 @@ namespace Kernel.Core.Processes.ELF
 
             if (IsValidFile())
             {
-                ReadSections();
-                ReadSegments();
+                ReadSectionHeaders();
+                ReadSegmentHeaders();
             }
         }
 
@@ -63,7 +70,7 @@ namespace Kernel.Core.Processes.ELF
                 ExceptionMethods.Throw(new FOS_System.Exception("Failed to read header data from file!"));
             }
         }
-        public void ReadSections()
+        public void ReadSectionHeaders()
         {
             byte[] sectionsData = new byte[header.SecHeaderEntrySize * header.SecHeaderNumEntries];
             theStream.Position = header.SecHeaderTableOffset;
@@ -208,7 +215,7 @@ namespace Kernel.Core.Processes.ELF
                 ExceptionMethods.Throw(new FOS_System.Exception("Failed to read sections table data from file!"));
             }
         }
-        public void ReadSegments()
+        public void ReadSegmentHeaders()
         {
             byte[] segmentsData = new byte[header.ProgHeaderEntrySize * header.ProgHeaderNumEntries];
             theStream.Position = header.ProgHeaderTableOffset;
@@ -249,7 +256,7 @@ namespace Kernel.Core.Processes.ELF
                     Console.Default.Write(" - Memory size : ");
                     Console.Default.WriteLine_AsDecimal(theHeader.MemSize);
                     Console.Default.Write(" - Flags : ");
-                    Console.Default.WriteLine_AsDecimal(theHeader.Flags);
+                    Console.Default.WriteLine_AsDecimal((uint)theHeader.Flags);
                     Console.Default.Write(" - Alignment : ");
                     Console.Default.WriteLine_AsDecimal(theHeader.Align);
                 }
@@ -411,6 +418,31 @@ namespace Kernel.Core.Processes.ELF
                 ExceptionMethods.Throw(new FOS_System.Exception("Failed to load ELF header so cannot check file class!"));
             }
             return false;
+        }
+
+        public bool IsExecutable()
+        {
+            if (header != null)
+            {
+                return header.FileType == ELFFileType.Executable;
+            }
+            else
+            {
+                ExceptionMethods.Throw(new FOS_System.Exception("Failed to load ELF header so cannot check file class!"));
+            }
+            return false;
+        }
+
+        public ELFProcess LoadExecutable(bool UserMode)
+        {
+            if (!IsExecutable())
+            {
+                ExceptionMethods.Throw(new FOS_System.Exception("Attempted to load non-executable ELF as executable!"));
+            }
+
+            ELFProcess process = new ELFProcess(this);
+            process.Load(UserMode);
+            return process;
         }
     }
 }

@@ -27,15 +27,15 @@ namespace Kernel.Core.Processes
                 UserMode ? Hardware.VirtMem.VirtMemImpl.PageFlags.None : Hardware.VirtMem.VirtMemImpl.PageFlags.KernelOnly);
             //BasicConsole.WriteLine(((FOS_System.String)"destMemPtr=") + (uint)destMemPtr);
 
-            // Add the page to the current processes memory layout
-            //  So we can access the memory while we load the process. 
-            //  Otherwise we will hit a page fault as soon as we try copying the memory
-            //      further down.
-            //  Note: The page fault will only be hit on starting a second process because
-            //      the scheduler doesn't change the context when only one process is running.
-            ProcessManager.CurrentProcess.TheMemoryLayout.AddDataPage(
-                (uint)Hardware.VirtMemManager.GetPhysicalAddress(destMemPtr),
-                (uint)destMemPtr);
+            //// Add the page to the current processes memory layout
+            ////  So we can access the memory while we load the process. 
+            ////  Otherwise we will hit a page fault as soon as we try copying the memory
+            ////      further down.
+            ////  Note: The page fault will only be hit on starting a second process because
+            ////      the scheduler doesn't change the context when only one process is running.
+            //ProcessManager.CurrentProcess.TheMemoryLayout.AddDataPage(
+            //    (uint)Hardware.VirtMemManager.GetPhysicalAddress(destMemPtr),
+            //    (uint)destMemPtr);
 
             //BasicConsole.WriteLine("Reading file...");
             int bytesRead = 0;
@@ -59,9 +59,9 @@ namespace Kernel.Core.Processes
             process.TheMemoryLayout.AddCodePage((uint)Hardware.VirtMemManager.GetPhysicalAddress(destMemPtr),
                 (uint)destMemPtr);
 
-            //BasicConsole.WriteLine("Removing process' code page from current process...");
-            //Remove from current processes memory layout
-            ProcessManager.CurrentProcess.TheMemoryLayout.RemovePage((uint)destMemPtr);
+            ////BasicConsole.WriteLine("Removing process' code page from current process...");
+            ////Remove from current processes memory layout
+            //ProcessManager.CurrentProcess.TheMemoryLayout.RemovePage((uint)destMemPtr);
 
             if (reenable)
             {
@@ -70,12 +70,9 @@ namespace Kernel.Core.Processes
 
             return process;
         }
-        public static Process LoadProcess_FromELFExe(File RawExeFile, bool UserMode)
+        public static ELFProcess LoadProcess_FromELFExe(File RawExeFile, bool UserMode)
         {
-            ELFFile elfFile = new ELFFile(RawExeFile);
-            
-
-            return null;
+            return new ELFFile(RawExeFile).LoadExecutable(UserMode);
         }
     }
 }
