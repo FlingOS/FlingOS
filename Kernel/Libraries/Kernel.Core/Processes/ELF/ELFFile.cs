@@ -77,7 +77,7 @@ namespace Kernel.Core.Processes.ELF
 
                     if (Sections.Count == header.SecHeaderIdxForSecNameStrings)
                     {
-                        if(!(newSection is ELFStringTableSection))
+                        if (!(newSection is ELFStringTableSection))
                         {
                             ExceptionMethods.Throw(new FOS_System.Exception("Expected Strings Table section was not a strings table section!"));
                         }
@@ -97,7 +97,7 @@ namespace Kernel.Core.Processes.ELF
                 //{
                 //    Console.Default.WriteLine((FOS_System.String)SectionNamesTable.Strings[i]);
                 //}
-                
+
                 Console.Default.WriteLine();
 
                 for (int i = 0; i < Sections.Count; i++)
@@ -123,9 +123,9 @@ namespace Kernel.Core.Processes.ELF
                     if (theSection is ELFSymbolTableSection)
                     {
                         Console.Default.WriteLine(" - Symbol table :");
-                        
+
                         ELFSymbolTableSection theSymTable = (ELFSymbolTableSection)theSection;
-                        ELFStringTableSection theStringTable = (ELFStringTableSection)(Sections[theSymTable.StringsSectionIndex]); 
+                        ELFStringTableSection theStringTable = (ELFStringTableSection)(Sections[theSymTable.StringsSectionIndex]);
                         for (uint j = 0; j < theSymTable.Symbols.Count; j++)
                         {
                             ELFSymbolTableSection.Symbol theSym = theSymTable[j];
@@ -142,6 +142,54 @@ namespace Kernel.Core.Processes.ELF
                             Console.Default.WriteLine_AsDecimal((uint)theSym.Value);
                             Console.Default.Write("         - Size : ");
                             Console.Default.WriteLine_AsDecimal(theSym.Size);
+                        }
+                    }
+                    else if (theSection is ELFRelocationAddendTableSection)
+                    {
+                        ELFRelocationAddendTableSection theRelASection = (ELFRelocationAddendTableSection)theSection;
+
+                        Console.Default.WriteLine(" - Relocation (with addends) table :");
+                        Console.Default.Write("     - Symbol table index : ");
+                        Console.Default.WriteLine_AsDecimal(theRelASection.SymbolTableSectionIndex);
+                        Console.Default.Write("     - Section to relocate index : ");
+                        Console.Default.WriteLine_AsDecimal(theRelASection.SectionToRelocateIndex);
+
+                        for (uint j = 0; j < theRelASection.Relocations.Count; j++)
+                        {
+                            ELFRelocationAddendTableSection.RelocationAddend theRel = theRelASection[j];
+
+                            Console.Default.WriteLine("     - Relocation : ");
+                            Console.Default.Write("         - Type : ");
+                            Console.Default.WriteLine_AsDecimal(theRel.Type);
+                            Console.Default.Write("         - Symbol : ");
+                            Console.Default.WriteLine_AsDecimal(theRel.Symbol);
+                            Console.Default.Write("         - Offset : ");
+                            Console.Default.WriteLine_AsDecimal((uint)theRel.Offset);
+                            Console.Default.Write("         - Addend : ");
+                            Console.Default.WriteLine_AsDecimal(theRel.Addend);
+                        }
+                    }
+                    else if (theSection is ELFRelocationTableSection)
+                    {
+                        ELFRelocationTableSection theRelSection = (ELFRelocationTableSection)theSection;
+
+                        Console.Default.WriteLine(" - Relocation table :");
+                        Console.Default.Write("     - Symbol table index : ");
+                        Console.Default.WriteLine_AsDecimal(theRelSection.SymbolTableSectionIndex);
+                        Console.Default.Write("     - Section to relocate index : ");
+                        Console.Default.WriteLine_AsDecimal(theRelSection.SectionToRelocateIndex);
+
+                        for (uint j = 0; j < theRelSection.Relocations.Count; j++)
+                        {
+                            ELFRelocationTableSection.Relocation theRel = theRelSection[j];
+
+                            Console.Default.WriteLine("     - Relocation : ");
+                            Console.Default.Write("         - Type : ");
+                            Console.Default.WriteLine_AsDecimal(theRel.Type);
+                            Console.Default.Write("         - Symbol : ");
+                            Console.Default.WriteLine_AsDecimal(theRel.Symbol);
+                            Console.Default.Write("         - Offset : ");
+                            Console.Default.WriteLine_AsDecimal((uint)theRel.Offset);
                         }
                     }
                 }

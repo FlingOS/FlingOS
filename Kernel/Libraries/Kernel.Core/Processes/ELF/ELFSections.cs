@@ -103,6 +103,14 @@ namespace Kernel.Core.Processes.ELF
             {
                 return new ELFSymbolTableSection(header);
             }
+            else if (header.SectionType == ElfSectionTypes.Rel)
+            {
+                return new ELFRelocationTableSection(header);
+            }
+            else if (header.SectionType == ElfSectionTypes.RelA)
+            {
+                return new ELFRelocationAddendTableSection(header);
+            }
 
             return new ELFSection(header);
         }
@@ -255,5 +263,174 @@ namespace Kernel.Core.Processes.ELF
                 return (Symbol)symbols[(int)index];
             }
         }
+    }
+    public unsafe class ELFRelocationTableSection : ELFSection
+    {
+        public unsafe class Relocation : FOS_System.Object
+        {
+            //Interpreted from Info field
+            public uint Symbol
+            {
+                get
+                {
+                    return (Info >> 8);
+                }
+            }
+            public byte Type
+            {
+                get
+                {
+                    return (byte)(Info & 0xFF);
+                }
+            }
+
+            public uint Info;
+            public byte* Offset;
+        }
+
+        protected List relocations = new List();
+        public List Relocations
+        {
+            get
+            {
+                return relocations;
+            }
+        }
+
+        public int SymbolTableSectionIndex
+        {
+            get
+            {
+                return (int)header.Link;
+            }
+        }
+        public int SectionToRelocateIndex
+        {
+            get
+            {
+                return (int)header.Info;
+            }
+        }
+
+        public ELFRelocationTableSection(ELFSectionHeader header)
+            : base(header)
+        {
+        }
+
+        public override int Read(FileStream stream)
+        {
+            relocations.Empty();
+
+            int bytesRead = base.Read(stream);
+            uint offset = 0;
+            Relocation currRelocation;
+            while (offset < bytesRead)
+            {
+                currRelocation = new Relocation();
+
+                currRelocation.Offset = (byte*)ByteConverter.ToUInt32(data, offset + 0);
+                currRelocation.Info = ByteConverter.ToUInt32(data, offset + 4);
+                
+                relocations.Add(currRelocation);
+
+                offset += header.EntrySize;
+            }
+
+            return relocations.Count;
+        }
+
+        public Relocation this[uint index]
+        {
+            get
+            {
+                return (Relocation)Relocations[(int)index];
+            }
+        }
+    }
+    public unsafe class ELFRelocationAddendTableSection : ELFSection
+    {
+        public unsafe class RelocationAddend : FOS_System.Object
+        {
+            //Interpreted from Info field
+            public uint Symbol
+            {
+                get
+                {
+                    return (Info >> 8);
+                }
+            }
+            public byte Type
+            {
+                get
+                {
+                    return (byte)(Info & 0xFF);
+                }
+            }
+
+            public uint Info;
+            public byte* Offset;
+            public short Addend;
+        }
+
+        protected List relocations = new List();
+        public List Relocations
+        {
+            get
+            {
+                return relocations;
+            }
+        }
+
+        public int SymbolTableSectionIndex
+        {
+            get
+            {
+                return (int)header.Link;
+            }
+        }
+        public int SectionToRelocateIndex
+        {
+            get
+            {
+                return (int)header.Info;
+            }
+        }
+        
+        public ELFRelocationAddendTableSection(ELFSectionHeader header)
+            : base(header)
+        {
+        }
+
+        public override int Read(FileStream stream)
+        {
+            relocations.Empty();
+
+            int bytesRead = base.Read(stream);
+            uint offset = 0;
+            RelocationAddend currRelocation;
+            while (offset < bytesRead)
+            {
+                currRelocation = new RelocationAddend();
+
+                currRelocation.Offset = (byte*)ByteConverter.ToUInt32(data, offset + 0);
+                currRelocation.Info = ByteConverter.ToUInt32(data, offset + 4);
+                currRelocation.Addend = (short)ByteConverter.ToUInt16(data, offset + 8);
+
+                relocations.Add(currRelocation);
+
+                offset += header.EntrySize;
+            }
+
+            return relocations.Count;
+        }
+
+        public RelocationAddend this[uint index]
+        {
+            get
+            {
+                return (RelocationAddend)Relocations[(int)index];
+            }
+        }
+
     }
 }
