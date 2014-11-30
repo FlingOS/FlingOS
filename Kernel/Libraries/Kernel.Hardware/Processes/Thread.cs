@@ -195,8 +195,16 @@ namespace Kernel.Hardware.Processes
             }
             //}
         }
-        public static void Sleep(int ms)
+        public static bool Sleep(int ms)
         {
+            //Prevent getting stuck forever.
+            //  This may cause other problems later but at least we don't end up in the infinite
+            //  while loop.
+            if (!Scheduler.Enabled)
+            {
+                return false;
+            }
+
             EnterSleep(ms);
             // Busy wait for the scheduler to interrupt the thread, sleep it and
             //  then as soon as the sleep is over this condition will go false
@@ -205,6 +213,8 @@ namespace Kernel.Hardware.Processes
             {
                 ;
             }
+
+            return true;
         }
     }
 

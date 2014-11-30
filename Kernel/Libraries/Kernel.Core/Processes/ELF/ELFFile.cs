@@ -45,6 +45,33 @@ namespace Kernel.Core.Processes.ELF
         public ELFDynamicSection DynamicSection;
         public ELFDynamicSymbolTableSection DynamicSymbolsSection;
 
+        private bool FoundBaseAddress = false;
+        private uint baseAddress;
+        public uint BaseAddress
+        {
+            get
+            {
+                if (!FoundBaseAddress)
+                {
+                    FoundBaseAddress = true;
+
+                    baseAddress = FOS_System.Stubs.UInt32.MaxValue;
+                    for (int i = 0; i < Segments.Count; i++)
+                    {
+                        ELFSegment segment = (ELFSegment)Segments[i];
+                        if (segment.Header.Type == ELFSegmentType.Load)
+                        {
+                            if ((uint)segment.Header.VAddr < baseAddress)
+                            {
+                                baseAddress = (uint)segment.Header.VAddr;
+                            }
+                        }
+                    }
+                }
+                return baseAddress;
+            }
+        }
+
         public ELFFile(File file)
         {
             theFile = file;
@@ -486,6 +513,18 @@ namespace Kernel.Core.Processes.ELF
             }
             return false;
         }
+        public bool IsSharedObject()
+        {
+            if (header != null)
+            {
+                return header.FileType == ELFFileType.Shared;
+            }
+            else
+            {
+                ExceptionMethods.Throw(new FOS_System.Exception("Failed to load ELF header so cannot check file class!"));
+            }
+            return false;
+        }
 
         public ELFProcess LoadExecutable(bool UserMode)
         {
@@ -497,6 +536,17 @@ namespace Kernel.Core.Processes.ELF
             ELFProcess process = new ELFProcess(this);
             process.Load(UserMode);
             return process;
+        }
+        public ELFSharedObject LoadSharedObject(ELFProcess theProcess)
+        {
+            if (!IsSharedObject())
+            {
+                ExceptionMethods.Throw(new FOS_System.Exception("Attempted to load non-shared ELF as shared object!"));
+            }
+
+            ELFSharedObject sharedObject = new ELFSharedObject(this, theProcess);
+            sharedObject.Load();
+            return sharedObject;
         }
     }
 }

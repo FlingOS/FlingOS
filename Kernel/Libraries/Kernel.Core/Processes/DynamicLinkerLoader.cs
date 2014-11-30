@@ -70,10 +70,13 @@ namespace Kernel.Core.Processes
 
             return process;
         }
-        public static ELFProcess LoadProcess_FromELFExe(File RawExeFile, bool UserMode)
+        public static ELFProcess LoadProcess_FromELFExe(File ELFExeFile, bool UserMode)
         {
-            return new ELFFile(RawExeFile).LoadExecutable(UserMode);
+            return new ELFFile(ELFExeFile).LoadExecutable(UserMode);
         }
-        //public static 
+        public static ELFSharedObject LoadLibrary_FromELFSO(File ELFSharedObjectFile, ELFProcess theProcess)
+        {
+            return new ELFFile(ELFSharedObjectFile).LoadSharedObject(theProcess);
+        }
     }
 }

@@ -228,6 +228,16 @@ namespace Kernel.FOS_System.Collections
             return -1;
         }
 
+        public FOS_System.Object Last()
+        {
+            if (nextIndex == 0)
+            {
+                return null;
+            }
+
+            return _array[nextIndex - 1];
+        }
+
         /// <summary>
         /// Empties the list of all objects but does not alter the list capacity.
         /// </summary>
