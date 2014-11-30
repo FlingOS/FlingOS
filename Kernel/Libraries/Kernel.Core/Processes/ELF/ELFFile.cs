@@ -42,6 +42,9 @@ namespace Kernel.Core.Processes.ELF
         public List Segments = new List();
         public ELFStringTableSection NamesTable;
 
+        public ELFDynamicSection DynamicSection;
+        public ELFDynamicSymbolTableSection DynamicSymbolsSection;
+
         public ELFFile(File file)
         {
             theFile = file;
@@ -51,6 +54,7 @@ namespace Kernel.Core.Processes.ELF
             if (IsValidFile())
             {
                 ReadSectionHeaders();
+                Hardware.Processes.Thread.Sleep(500);
                 ReadSegmentHeaders();
             }
         }
@@ -94,6 +98,15 @@ namespace Kernel.Core.Processes.ELF
                     }
 
                     newSection.Read(theStream);
+
+                    if (newSection is ELFDynamicSection)
+                    {
+                        DynamicSection = (ELFDynamicSection)newSection;
+                    }
+                    else if (newSection is ELFDynamicSymbolTableSection)
+                    {
+                        DynamicSymbolsSection = (ELFDynamicSymbolTableSection)newSection;
+                    }
 
                     Sections.Add(newSection);
                 }
@@ -206,6 +219,45 @@ namespace Kernel.Core.Processes.ELF
 
                         #endregion
                     }
+                    if (theSection is ELFDynamicSection)
+                    {
+                        #region ELFDynamicSection
+
+                        Console.Default.WriteLine(" - Dynamics table :");
+
+                        ELFDynamicSection theDynTable = (ELFDynamicSection)theSection;
+                        ELFDynamicSection.Dynamic StrTabDynamic = theDynTable.StrTabDynamic;
+                        ELFDynamicSection.Dynamic StrTabSizeDynamic = theDynTable.StrTabSizeDynamic;
+                        if (StrTabDynamic == null ||
+                            StrTabSizeDynamic == null)
+                        {
+                            Console.Default.WarningColour();
+                            Console.Default.WriteLine("WARNING: Dynamic Table's String Table not found!");
+                            Console.Default.DefaultColour();
+                        }
+                        else
+                        {
+                            Console.Default.Write("     - String table offset : ");
+                            Console.Default.WriteLine_AsDecimal(StrTabDynamic.Val_Ptr);
+                            Console.Default.Write("     - String table size : ");
+                            Console.Default.WriteLine_AsDecimal(StrTabSizeDynamic.Val_Ptr);
+                            
+                            for (uint j = 0; j < theDynTable.Dynamics.Count; j++)
+                            {
+                                ELFDynamicSection.Dynamic theDyn = theDynTable[j];
+
+                                Console.Default.WriteLine("     - Dynamic : ");
+                                Console.Default.Write("         - Tag : ");
+                                Console.Default.WriteLine_AsDecimal((int)theDyn.Tag);
+                                Console.Default.Write("         - Value or Pointer : ");
+                                Console.Default.WriteLine_AsDecimal(theDyn.Val_Ptr);
+                            }
+                        }
+
+                        #endregion
+                    }
+
+                    Hardware.Processes.Thread.Sleep(500);
                 }
 
                 #endregion
@@ -259,6 +311,8 @@ namespace Kernel.Core.Processes.ELF
                     Console.Default.WriteLine_AsDecimal((uint)theHeader.Flags);
                     Console.Default.Write(" - Alignment : ");
                     Console.Default.WriteLine_AsDecimal(theHeader.Align);
+
+                    Hardware.Processes.Thread.Sleep(500);
                 }
 
                 #endregion

@@ -74,5 +74,6 @@ namespace Kernel.Core.Processes
         {
             return new ELFFile(RawExeFile).LoadExecutable(UserMode);
         }
+        //public static 
     }
 }

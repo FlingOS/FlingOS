@@ -63,6 +63,7 @@
     <Compile Include="Processes\ELF\ELFProcess.cs" />
     <Compile Include="Processes\ELF\ELFSections.cs" />
     <Compile Include="Processes\ELF\ELFSegments.cs" />
+    <Compile Include="Processes\ELF\ELFStringTable.cs" />
     <Compile Include="Processes\SystemCalls.cs" />
     <Compile Include="Tasks\GCCleanupTask.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

@@ -103,6 +103,10 @@ namespace Kernel.Core.Processes.ELF
             {
                 return new ELFSymbolTableSection(header);
             }
+            else if (header.SectionType == ElfSectionTypes.DynSym)
+            {
+                return new ELFDynamicSymbolTableSection(header);
+            }
             else if (header.SectionType == ElfSectionTypes.Rel)
             {
                 return new ELFRelocationTableSection(header);
@@ -111,58 +115,31 @@ namespace Kernel.Core.Processes.ELF
             {
                 return new ELFRelocationAddendTableSection(header);
             }
+            else if (header.SectionType == ElfSectionTypes.Dynamic)
+            {
+                return new ELFDynamicSection(header);
+            }
 
             return new ELFSection(header);
         }
     }
     public class ELFStringTableSection : ELFSection
     {
-        protected List strings = new List();
-        public List Strings
-        {
-            get
-            {
-                return strings;
-            }
-        }
-        protected UInt32Dictionary indexTranslations = new UInt32Dictionary();
-        public UInt32Dictionary IndexTranslations
-        {
-            get
-            {
-                return indexTranslations;
-            }
-        }
-
         public ELFStringTableSection(ELFSectionHeader header)
             : base(header)
         {
         }
-
-        public override int Read(FileStream stream)
-        {
-            strings.Empty();
-
-            int bytesRead = base.Read(stream);
-            uint offset = 0;
-            FOS_System.String currString;
-            while (offset < bytesRead)
-            {
-                currString = ByteConverter.GetASCIIStringFromASCII(data, offset, (uint)(bytesRead - offset));
-                indexTranslations.Add(offset, (uint)strings.Count);
-
-                offset += (uint)currString.length + 1; //+1 for null terminator
-                strings.Add(currString);
-            }
-
-            return strings.Count;
-        }
-
-        public FOS_System.String this[uint index]
+        
+        public FOS_System.String this[uint offset]
         {
             get
             {
-                return (FOS_System.String)strings[(int)indexTranslations[index]];
+                FOS_System.String currString = "";
+                if (offset < data.Length)
+                {
+                    currString = ByteConverter.GetASCIIStringFromASCII(data, offset, (uint)(data.Length - offset));
+                }
+                return currString;
             }
         }
     }
@@ -208,7 +185,7 @@ namespace Kernel.Core.Processes.ELF
             public ushort SectionIndex;
         }
 
-        private List symbols = new List();
+        protected List symbols = new List();
         public List Symbols
         {
             get
@@ -262,6 +239,13 @@ namespace Kernel.Core.Processes.ELF
             {
                 return (Symbol)symbols[(int)index];
             }
+        }
+    }
+    public unsafe class ELFDynamicSymbolTableSection : ELFSymbolTableSection
+    {
+        public ELFDynamicSymbolTableSection(ELFSectionHeader header)
+            : base(header)
+        {
         }
     }
     public unsafe class ELFRelocationTableSection : ELFSection
@@ -431,6 +415,123 @@ namespace Kernel.Core.Processes.ELF
                 return (RelocationAddend)Relocations[(int)index];
             }
         }
+    }
+    public unsafe class ELFDynamicSection : ELFSection
+    {
+        public enum DynamicTag : int
+        {
+            Null = 0,
+            Needed = 1,
+            PLTRELSZ = 2,
+            PLTGOT = 3,
+            Hash = 4,
+            StrTab = 5,
+            SymTab = 6,
+            RelA = 7,
+            RelASZ = 8,
+            RelAEnt = 9,
+            StrSZ = 10,
+            SymEnt = 11,
+            Init = 12,
+            Fini = 13,
+            SOName = 14,
+            RPath = 15,
+            Symbolic = 16,
+            Rel = 17,
+            RelSZ = 18,
+            RelEnt = 19,
+            PLTRel = 20,
+            Debug = 21,
+            TextRel = 22,
+            JmpRel = 23,
+            Bind_Now = 24,
+            Init_Array = 25,
+            Fini_Array = 26,
+            Init_ArraySz = 27,
+            Fini_ArraySz = 28, 
+            RunPath = 29,
+            Flags = 30,
+            Encoding = 32
+        }
+        public unsafe class Dynamic : FOS_System.Object
+        {
+            public DynamicTag Tag;
+            public uint Val_Ptr;
+        }
 
+        protected List dynamics = new List();
+        public List Dynamics
+        {
+            get
+            {
+                return dynamics;
+            }
+        }
+
+        public Dynamic StrTabDynamic
+        {
+            get
+            {
+                for (int i = 0; i < dynamics.Count; i++)
+                {
+                    Dynamic theDyn = (Dynamic)dynamics[i];
+                    if (theDyn.Tag == DynamicTag.StrTab)
+                    {
+                        return theDyn;
+                    }
+                }
+                return null;
+            }
+        }
+        public Dynamic StrTabSizeDynamic
+        {
+            get
+            {
+                for (int i = 0; i < dynamics.Count; i++)
+                {
+                    Dynamic theDyn = (Dynamic)dynamics[i];
+                    if (theDyn.Tag == DynamicTag.StrSZ)
+                    {
+                        return theDyn;
+                    }
+                }
+                return null;
+            }
+        }
+
+        public ELFDynamicSection(ELFSectionHeader header)
+            : base(header)
+        {
+        }
+
+        public override int Read(FileStream stream)
+        {
+            dynamics.Empty();
+
+            int bytesRead = base.Read(stream);
+            uint offset = 0;
+            Dynamic currDynamic;
+            while (offset < bytesRead)
+            {
+                currDynamic = new Dynamic();
+
+                currDynamic.Tag = (DynamicTag)ByteConverter.ToUInt32(data, offset + 0);
+                currDynamic.Val_Ptr = ByteConverter.ToUInt32(data, offset + 4);
+
+                dynamics.Add(currDynamic);
+
+                offset += header.EntrySize;
+            }
+
+            return dynamics.Count;
+        }
+
+        public Dynamic this[uint index]
+        {
+            get
+            {
+                return (Dynamic)dynamics[(int)index];
+            }
+        }
     }
 }
