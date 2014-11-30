@@ -51,7 +51,7 @@ namespace Kernel.Hardware
         {
             return impl.FindFreePhysPageAddr();
         }
-        public static uint FindFreeVirtsPage()
+        public static uint FindFreeVirtPage()
         {
             return impl.FindFreeVirtPageAddr();
         }

@@ -109,7 +109,80 @@ namespace Kernel.Core.Processes.ELF
                             }
                         }
                     }
+
+                    Console.Default.WriteLine("Relocation");
+
+                    // Perform relocation / dynamic linking of all libraries
+                    for (int i = 0; i < SharedObjectDependencies.Count; i++)
+                    {
+                        ELFSharedObject SO = (ELFSharedObject)SharedObjectDependencies[i];
+                        List SOSections = SO.TheFile.Sections;
+                        for(int j = 0; j < SOSections.Count; j++)
+                        {
+                            ELFSection SOSection = (ELFSection)SOSections[j];
+                            if (SOSection is ELFRelocationTableSection)
+                            {
+                                Console.Default.WriteLine(" - Normal Relocation");
+
+                                ELFRelocationTableSection relocTableSection = (ELFRelocationTableSection)SOSection;
+                                List Relocations = relocTableSection.Relocations;
+                                for (int k = 0; k < Relocations.Count; k++)
+                                {
+                                    ELFRelocationTableSection.Relocation relocation = (ELFRelocationTableSection.Relocation)Relocations[k];
+                                    if (relocation.Type == ELFRelocationTableSection.RelocationType.R_386_NONE)
+                                    {
+                                        continue;
+                                    }
+
+                                    uint* resolvedRelLocation = (uint*)(SO.BaseAddress + (relocation.Offset - SO.TheFile.BaseAddress));
+                                    uint newValue = 0;
+                                    switch (relocation.Type)
+                                    {
+                                        default:
+                                            Console.Default.WarningColour();
+                                            Console.Default.WriteLine("WARNING: Unrecognised relocation type!");
+                                            Console.Default.DefaultColour();
+                                            break;
+                                    }
+                                    *resolvedRelLocation = newValue;
+                                }
+                            }
+                            else if (SOSection is ELFRelocationAddendTableSection)
+                            {
+                                Console.Default.WriteLine(" - Addend Relocation");
+
+                                ELFRelocationAddendTableSection relocTableSection = (ELFRelocationAddendTableSection)SOSection;
+                                List Relocations = relocTableSection.Relocations;
+                                for (int k = 0; k < Relocations.Count; k++)
+                                {
+                                    ELFRelocationAddendTableSection.RelocationAddend relocation = (ELFRelocationAddendTableSection.RelocationAddend)Relocations[k];
+                                    if (relocation.Type == ELFRelocationTableSection.RelocationType.R_386_NONE)
+                                    {
+                                        continue;
+                                    }
+
+                                    uint* resolvedRelLocation = (uint*)(SO.BaseAddress + (relocation.Offset - SO.TheFile.BaseAddress));
+                                    uint newValue = 0;
+                                    switch (relocation.Type)
+                                    {
+                                        default:
+                                            Console.Default.WarningColour();
+                                            Console.Default.WriteLine("WARNING: Unrecognised relocation type!");
+                                            Console.Default.DefaultColour();
+                                            break;
+                                    }
+                                    *resolvedRelLocation = newValue;
+                                }
+                            }
+                        }
+                    }
+
+                    // Perform dynamic linking of executable
+                    
+                    // Call Init functions of libraries
                 }
+
+                // Unmap process memory from current processes' memory
             }
             finally
             {

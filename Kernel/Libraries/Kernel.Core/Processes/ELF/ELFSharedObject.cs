@@ -27,6 +27,8 @@ namespace Kernel.Core.Processes.ELF
             }
         }
 
+        public uint BaseAddress = 0;
+
         public ELFSharedObject(ELFFile anELFFile, ELFProcess aProcess)
         {
             theFile = anELFFile;
@@ -41,10 +43,7 @@ namespace Kernel.Core.Processes.ELF
             //          SharedObjectDependencyFilePaths.Add(sharedObjectFile.GetFullPath());
             //
             // - Read in segments / map in memory
-            // - Perform relocation
-            // - Perform dynamic linking
-            // - Execute Init method(s)
-
+            
             FOS_System.String fullFilePath = theFile.TheFile.GetFullPath();
             if (theProcess.SharedObjectDependencyFilePaths.IndexOf(fullFilePath) > -1)
             {
@@ -57,15 +56,8 @@ namespace Kernel.Core.Processes.ELF
             bool DynamicLinkingRequired = false;
 
             // Load the ELF segments (i.e. the library code and data)
-            uint memBaseAddress = theFile.BaseAddress;
-            theProcess.LoadSegments(theFile, ref OK, ref DynamicLinkingRequired, memBaseAddress);
-
-            // Perform relocation
-
-            // Perform dynamic linking
-
-
-            // Execute Init methods
+            BaseAddress = Hardware.VirtMemManager.FindFreeVirtPage();
+            theProcess.LoadSegments(theFile, ref OK, ref DynamicLinkingRequired, BaseAddress);
         }
     }
 }

@@ -208,7 +208,7 @@ namespace Kernel.Core.Processes.ELF
 
                             Console.Default.WriteLine("     - Relocation : ");
                             Console.Default.Write("         - Type : ");
-                            Console.Default.WriteLine_AsDecimal(theRel.Type);
+                            Console.Default.WriteLine_AsDecimal((uint)theRel.Type);
                             Console.Default.Write("         - Symbol : ");
                             Console.Default.WriteLine_AsDecimal(theRel.Symbol);
                             Console.Default.Write("         - Offset : ");
@@ -237,7 +237,7 @@ namespace Kernel.Core.Processes.ELF
 
                             Console.Default.WriteLine("     - Relocation : ");
                             Console.Default.Write("         - Type : ");
-                            Console.Default.WriteLine_AsDecimal(theRel.Type);
+                            Console.Default.WriteLine_AsDecimal((uint)theRel.Type);
                             Console.Default.Write("         - Symbol : ");
                             Console.Default.WriteLine_AsDecimal(theRel.Symbol);
                             Console.Default.Write("         - Offset : ");
