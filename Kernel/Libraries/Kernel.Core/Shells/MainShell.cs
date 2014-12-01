@@ -816,9 +816,9 @@ namespace Kernel.Core.Shells
                                                     }
                                                     else if (opt3 == "elf")
                                                     {
-                                                        //Hardware.Processes.ProcessManager.RegisterProcess(
-                                                        Processes.DynamicLinkerLoader.LoadProcess_FromELFExe(aFile, false);//.TheProcess,
-                                                            //Hardware.Processes.Scheduler.Priority.Normal);
+                                                        Hardware.Processes.ProcessManager.RegisterProcess(
+                                                            Processes.DynamicLinkerLoader.LoadProcess_FromELFExe(aFile, false).TheProcess,
+                                                            Hardware.Processes.Scheduler.Priority.Normal);
                                                     }
                                                     else
                                                     {
@@ -851,9 +851,9 @@ namespace Kernel.Core.Shells
                                                     }
                                                     else if (opt3 == "elf")
                                                     {
-                                                        //Hardware.Processes.ProcessManager.RegisterProcess(
-                                                        Processes.DynamicLinkerLoader.LoadProcess_FromELFExe(aFile, true);//.TheProcess,
-                                                        //Hardware.Processes.Scheduler.Priority.Normal);
+                                                        Hardware.Processes.ProcessManager.RegisterProcess(
+                                                            Processes.DynamicLinkerLoader.LoadProcess_FromELFExe(aFile, true).TheProcess,
+                                                            Hardware.Processes.Scheduler.Priority.Normal);
                                                     }
                                                     else
                                                     {
