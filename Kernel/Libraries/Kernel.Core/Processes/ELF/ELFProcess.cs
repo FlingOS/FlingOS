@@ -306,6 +306,12 @@ namespace Kernel.Core.Processes.ELF
                     byte* destMemPtr = (segment.Header.VAddr - fileBaseAddress) + memBaseAddress;
                     byte* pageAlignedDestMemPtr = (byte*)((uint)destMemPtr & 0xFFFFF000);
 
+                    Console.Default.Write(" Loading segment from ");
+                    Console.Default.Write_AsDecimal((uint)segment.Header.VAddr);
+                    Console.Default.Write(" to ");
+                    Console.Default.WriteLine_AsDecimal((uint)destMemPtr);
+                    Hardware.Processes.Thread.Sleep(1000);
+
                     uint copyOffset = (uint)(destMemPtr - pageAlignedDestMemPtr);
                     uint copyFromOffset = 0;
 
@@ -383,7 +389,10 @@ namespace Kernel.Core.Processes.ELF
                             if (strTabSection[aSymbol.NameIdx] == theSymbolName)
                             {
                                 Console.Default.WriteLine("     Found symbol.");
-                                return ((uint)aSymbol.Value - theFile.BaseAddress) + BaseAddress;
+                                Console.Default.Write("     Address : ");
+                                uint result = ((uint)aSymbol.Value - theFile.BaseAddress) + BaseAddress;
+                                Console.Default.WriteLine_AsDecimal(result);
+                                return result;
                             }
                         }
                     }
@@ -411,7 +420,10 @@ namespace Kernel.Core.Processes.ELF
                                 if (strTabSection[aSymbol.NameIdx] == theSymbolName)
                                 {
                                     Console.Default.WriteLine("     Found symbol.");
-                                    return ((uint)aSymbol.Value - SO.TheFile.BaseAddress) + BaseAddress;
+                                    Console.Default.Write("     Address : ");
+                                    uint result  =((uint)aSymbol.Value - SO.TheFile.BaseAddress) + SO.BaseAddress;
+                                    Console.Default.WriteLine_AsDecimal(result);
+                                    return result;
                                 }
                             }
                         }
