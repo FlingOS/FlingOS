@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Kernel.Hardware.Processes.Synchronisation
 {
@@ -35,18 +31,39 @@ namespace Kernel.Hardware.Processes.Synchronisation
             }
         }
 
+        SpinLock ExclLock = new SpinLock(-1);
+
         public Semaphore(int anId, int aLimit)
         {
             id = anId;
             count = limit = aLimit;
         }
 
-        public bool Wait()
+        public void Wait()
         {
-            return false;
+            bool locked = false;
+            do
+            {
+                ExclLock.Enter();
+                locked = count == 0;
+                if (!locked)
+                {
+                    count--;
+                    ExclLock.Exit();
+                }
+                else
+                {
+                    ExclLock.Exit();
+                    Thread.Sleep(5);
+                }
+            }
+            while (locked);
         }
         public void Signal()
         {
+            ExclLock.Enter();
+            count++;
+            ExclLock.Exit();
         }
     }
 }

@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 namespace Kernel.Hardware.Processes.Synchronisation
 {
+    [Compiler.PluggedClass]
     public class SpinLock : FOS_System.Object
     {
         private int id;
@@ -25,15 +26,18 @@ namespace Kernel.Hardware.Processes.Synchronisation
                 return locked;
             }
         }
+        private bool padding = false;
 
         public SpinLock(int anId)
         {
             id = anId;
         }
 
+        [Compiler.PluggedMethod(ASMFilePath=@"ASM\Processes\Synchronisation\SpinLock")]
         public void Enter()
         {
         }
+        [Compiler.PluggedMethod(ASMFilePath=null)]
         public void Exit()
         {
         }

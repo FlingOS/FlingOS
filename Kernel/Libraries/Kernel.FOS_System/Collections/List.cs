@@ -378,7 +378,8 @@ namespace Kernel.FOS_System.Collections
             {
                 ExpandCapacity(5);
             }
-            _array[currIndex++] = obj;
+            _array[currIndex] = obj;
+            currIndex++;
         }
         /// <summary>
         /// Removes the first equal value of the specified UInt32 from the list.
