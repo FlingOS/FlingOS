@@ -40,12 +40,7 @@ namespace Kernel.Core.Processes.ELF
         public void Load(bool UserMode)
         {
             bool OK = true;
-            //bool reenable = Scheduler.Enabled;
-            //if (reenable)
-            //{
-            //    Scheduler.Disable();
-            //}
-
+            
             try
             {
                 bool DynamicLinkingRequired = false;
@@ -71,7 +66,7 @@ namespace Kernel.Core.Processes.ELF
 
                     ELFStringTable DynamicsStringTable = new ELFStringTable(
                         dynamicSection.StrTabDynamic.Val_Ptr, dynamicSection.StrTabSizeDynamic.Val_Ptr);
-                    
+
                     for (uint i = 0; i < dynamicSection.Dynamics.Count; i++)
                     {
                         ELFDynamicSection.Dynamic theDyn = dynamicSection[i];
@@ -106,7 +101,7 @@ namespace Kernel.Core.Processes.ELF
 
                                 ELFSharedObject sharedObject = DynamicLinkerLoader.LoadLibrary_FromELFSO(sharedObjectFile, this);
                                 SharedObjectDependencies.Add(sharedObject);
-            
+
                                 Console.Default.WriteLine("Library loaded.");
                             }
                         }
@@ -119,7 +114,7 @@ namespace Kernel.Core.Processes.ELF
                     {
                         ELFSharedObject SO = (ELFSharedObject)SharedObjectDependencies[i];
                         List SOSections = SO.TheFile.Sections;
-                        for(int j = 0; j < SOSections.Count; j++)
+                        for (int j = 0; j < SOSections.Count; j++)
                         {
                             ELFSection SOSection = (ELFSection)SOSections[j];
                             if (SOSection is ELFRelocationTableSection)
@@ -140,6 +135,7 @@ namespace Kernel.Core.Processes.ELF
                                     uint newValue = 0;
                                     switch (relocation.Type)
                                     {
+                                        //TODO: Support more relocation types
                                         default:
                                             Console.Default.WarningColour();
                                             Console.Default.WriteLine("WARNING: Unrecognised relocation type!");
@@ -167,6 +163,7 @@ namespace Kernel.Core.Processes.ELF
                                     uint newValue = 0;
                                     switch (relocation.Type)
                                     {
+                                        //TODO: Support more relocation types
                                         default:
                                             Console.Default.WarningColour();
                                             Console.Default.WriteLine("WARNING: Unrecognised relocation type!");
@@ -207,7 +204,7 @@ namespace Kernel.Core.Processes.ELF
                                 Console.Default.WriteLine("     - Relocation :");
                                 Console.Default.Write("         - Type : ");
                                 Console.Default.WriteLine_AsDecimal((uint)relocation.Type);
-                                
+
                                 ELFSymbolTableSection.Symbol symbol = (ELFSymbolTableSection.Symbol)symbolTable[relocation.Symbol];
                                 FOS_System.String symbolName = symbolNamesTable[symbol.NameIdx];
 
@@ -218,6 +215,7 @@ namespace Kernel.Core.Processes.ELF
                                 uint newValue = 0;
                                 switch (relocation.Type)
                                 {
+                                    //TODO: Support more relocation types
                                     case ELFRelocationTableSection.RelocationType.R_386_JMP_SLOT:
                                         newValue = GetSymbolAddress(symbol, symbolName);
                                         break;
@@ -248,6 +246,7 @@ namespace Kernel.Core.Processes.ELF
                                 uint newValue = 0;
                                 switch (relocation.Type)
                                 {
+                                    //TODO: Support more relocation types
                                     default:
                                         Console.Default.WarningColour();
                                         Console.Default.Write("WARNING: Unrecognised relocation type! (");
@@ -261,10 +260,8 @@ namespace Kernel.Core.Processes.ELF
                         }
                     }
 
-                    // Call Init functions of libraries
+                    // TODO: Call Init functions of libraries
                 }
-
-                // Unmap process memory from current processes' memory
             }
             finally
             {
@@ -272,11 +269,6 @@ namespace Kernel.Core.Processes.ELF
                 {
                     theProcess = null;
                 }
-
-                //if (reenable)
-                //{
-                //    Scheduler.Enable();
-                //}
             }
         }
 
@@ -328,7 +320,7 @@ namespace Kernel.Core.Processes.ELF
                             4096,
                             theProcess.UserMode ? Hardware.VirtMem.VirtMemImpl.PageFlags.None : Hardware.VirtMem.VirtMemImpl.PageFlags.KernelOnly);
                         //TODO: Remove these pages somewhere later after loading has finished
-                        ProcessManager.CurrentProcess.TheMemoryLayout.AddDataPage(physPageAddr, virtPageAddr);
+                        //ProcessManager.CurrentProcess.TheMemoryLayout.AddDataPage(physPageAddr, virtPageAddr);
 
                         if (executable)
                         {

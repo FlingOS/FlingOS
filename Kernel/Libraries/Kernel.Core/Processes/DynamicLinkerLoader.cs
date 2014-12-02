@@ -72,11 +72,31 @@ namespace Kernel.Core.Processes
         }
         public static ELFProcess LoadProcess_FromELFExe(File ELFExeFile, bool UserMode)
         {
-            return new ELFFile(ELFExeFile).LoadExecutable(UserMode);
+            bool reenable = Scheduler.Enabled;
+            if (reenable)
+            {
+                Scheduler.Disable();
+            }
+            ELFProcess result = new ELFFile(ELFExeFile).LoadExecutable(UserMode);
+            if (reenable)
+            {
+                Scheduler.Enable();
+            }
+            return result;
         }
         public static ELFSharedObject LoadLibrary_FromELFSO(File ELFSharedObjectFile, ELFProcess theProcess)
         {
-            return new ELFFile(ELFSharedObjectFile).LoadSharedObject(theProcess);
+            bool reenable = Scheduler.Enabled;
+            if (reenable)
+            {
+                Scheduler.Disable();
+            }
+            ELFSharedObject result = new ELFFile(ELFSharedObjectFile).LoadSharedObject(theProcess);
+            if (reenable)
+            {
+                Scheduler.Enable();
+            }
+            return result;
         }
     }
 }
