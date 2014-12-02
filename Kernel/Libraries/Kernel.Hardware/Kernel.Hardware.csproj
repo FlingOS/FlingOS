@@ -73,6 +73,9 @@
     <Compile Include="Processes\Process.cs" />
     <Compile Include="Processes\ProcessManager.cs" />
     <Compile Include="Processes\Scheduler.cs" />
+    <Compile Include="Processes\Synchronisation\Mutex.cs" />
+    <Compile Include="Processes\Synchronisation\Semaphore.cs" />
+    <Compile Include="Processes\Synchronisation\SpinLock.cs" />
     <Compile Include="Processes\Thread.cs" />
     <Compile Include="VirtMemManager.cs" />
     <Compile Include="VirtMem\MemoryLayout.cs" />

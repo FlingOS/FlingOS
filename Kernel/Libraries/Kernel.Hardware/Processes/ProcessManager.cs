@@ -3,6 +3,7 @@
 
 using System;
 using Kernel.FOS_System.Collections;
+using Kernel.Hardware.Processes.Synchronisation;
 
 namespace Kernel.Hardware.Processes
 {
@@ -148,5 +149,193 @@ namespace Kernel.Hardware.Processes
                 CurrentProcess.SwitchIn();
             }
         }
+
+        #region Locks
+
+        public static List SpinLocks = new List();
+        public static List Semaphores = new List();
+        public static List Mutexes = new List();
+
+        private static SpinLock SpinLocks_Lock = new SpinLock(0);
+        private static SpinLock Semaphores_Lock = new SpinLock(0);
+        private static SpinLock Mutexes_Lock = new SpinLock(0);
+
+        private static int SpinLocks_IdGenerator = 1;
+        private static int Semaphores_IdGenerator = 1;
+        private static int Mutexes_IdGenerator = 1;
+
+        public static int CreateSpinLock()
+        {
+            SpinLock newLock = new SpinLock(SpinLocks_IdGenerator++);
+            SpinLocks.Add(newLock);
+            return newLock.Id;
+        }
+        public static int CreateSemaphore(int limit)
+        {
+            Semaphore newLock = new Semaphore(Semaphores_IdGenerator++, limit);
+            Semaphores.Add(newLock);
+            return newLock.Id;
+        }
+        public static int CreateMutex()
+        {
+            Mutex newLock = new Mutex(Mutexes_IdGenerator++);
+            Mutexes.Add(newLock);
+            return newLock.Id;
+        }
+
+        public static int CreateSpinLock_Safe()
+        {
+            SpinLocks_Lock.Enter();
+            int result = CreateSpinLock();
+            SpinLocks_Lock.Exit();
+            return result;
+        }
+        public static int CreateSemaphore_Safe(int limit)
+        {
+            Semaphores_Lock.Enter();
+            int result = CreateSemaphore(limit);
+            Semaphores_Lock.Exit();
+            return result;
+        }
+        public static int CreateMutex_Safe()
+        {
+            Mutexes_Lock.Enter();
+            int result = CreateMutex();
+            Mutexes_Lock.Exit();
+            return result;
+        }
+
+        public static void DestroySpinLock(int id)
+        {
+            for (int i = 0; i < SpinLocks.Count; i++)
+            {
+                SpinLock aLock = (SpinLock)SpinLocks[i];
+                if (aLock.Id == id)
+                {
+                    SpinLocks.RemoveAt(i);
+                    break;
+                }
+            }
+        }
+        public static void DestroySemaphore(int id)
+        {
+            for (int i = 0; i < Semaphores.Count; i++)
+            {
+                Semaphore aLock = (Semaphore)Semaphores[i];
+                if (aLock.Id == id)
+                {
+                    Semaphores.RemoveAt(i);
+                    break;
+                }
+            }
+        }
+        public static void DestroyMutex(int id)
+        {
+            for (int i = 0; i < Mutexes.Count; i++)
+            {
+                Mutex aLock = (Mutex)Mutexes[i];
+                if (aLock.Id == id)
+                {
+                    Mutexes.RemoveAt(i);
+                    break;
+                }
+            }
+        }
+        
+        public static void DestroySpinLock_Safe(int id)
+        {
+            SpinLocks_Lock.Enter();
+            DestroySpinLock(id);
+            SpinLocks_Lock.Exit();
+        }
+        public static void DestroySemaphore_Safe(int id)
+        {
+            Semaphores_Lock.Enter();
+            DestroySemaphore(id);
+            Semaphores_Lock.Exit();
+        }
+        public static void DestroyMutex_Safe(int id)
+        {
+            Mutexes_Lock.Enter();
+            DestroyMutex(id);
+            Mutexes_Lock.Exit();
+        }
+
+        public static void EnterSpinLock(int id)
+        {
+            for (int i = 0; i < SpinLocks.Count; i++)
+            {
+                SpinLock aLock = (SpinLock)SpinLocks[i];
+                if (aLock.Id == id)
+                {
+                    aLock.Enter();
+                    break;
+                }
+            }
+        }
+        public static void ExitSpinLock(int id)
+        {
+            for (int i = 0; i < SpinLocks.Count; i++)
+            {
+                SpinLock aLock = (SpinLock)SpinLocks[i];
+                if (aLock.Id == id)
+                {
+                    aLock.Exit();
+                    break;
+                }
+            }
+        }
+
+        public static bool WaitSemaphore(int id)
+        {
+            for (int i = 0; i < Semaphores.Count; i++)
+            {
+                Semaphore aLock = (Semaphore)Semaphores[i];
+                if (aLock.Id == id)
+                {
+                    return aLock.Wait();
+                }
+            }
+            return false;
+        }
+        public static void SignalSemaphore(int id)
+        {
+            for (int i = 0; i < Semaphores.Count; i++)
+            {
+                Semaphore aLock = (Semaphore)Semaphores[i];
+                if (aLock.Id == id)
+                {
+                    aLock.Signal();
+                    break;
+                }
+            }
+        }
+
+        public static bool WaitMutex(int id)
+        {
+            for (int i = 0; i < Mutexes.Count; i++)
+            {
+                Mutex aLock = (Mutex)Mutexes[i];
+                if (aLock.Id == id)
+                {
+                    return aLock.Wait();
+                }
+            }
+            return false;
+        }
+        public static void SignalMutex(int id)
+        {
+            for (int i = 0; i < Mutexes.Count; i++)
+            {
+                Mutex aLock = (Mutex)Mutexes[i];
+                if (aLock.Id == id)
+                {
+                    aLock.Signal();
+                    break;
+                }
+            }
+        }
+
+        #endregion
     }
 }

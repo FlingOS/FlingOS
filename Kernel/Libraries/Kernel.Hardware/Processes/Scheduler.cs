@@ -118,7 +118,7 @@ namespace Kernel.Hardware.Processes
             UpdateCurrentThread();
 
             if (ProcessManager.CurrentThread.TimeToRun <= 0 ||
-                ProcessManager.CurrentThread.TimeToSleep > 0 ||
+                ProcessManager.CurrentThread.TimeToSleep != 0 ||
                 ProcessManager.CurrentThread_State->Terminated)
             {
                 ProcessManager.CurrentThread.TimeToRun = ProcessManager.CurrentThread.TimeToRunReload;
@@ -183,7 +183,7 @@ namespace Kernel.Hardware.Processes
 
             while (threadIdx < cProcess.Threads.Count &&
                   (((Thread)cProcess.Threads[threadIdx]).State->Terminated ||
-                   ((Thread)cProcess.Threads[threadIdx]).TimeToSleep > 0))
+                   ((Thread)cProcess.Threads[threadIdx]).TimeToSleep != 0))
             {
                 threadIdx++;
             }
@@ -192,10 +192,7 @@ namespace Kernel.Hardware.Processes
         [Compiler.NoDebug]
         private static void UpdateCurrentThread()
         {
-            if (ProcessManager.CurrentThread.TimeToSleep <= 0)
-            {
-                ProcessManager.CurrentThread.TimeToRun--;
-            }
+            ProcessManager.CurrentThread.TimeToRun--;
         }
         [Compiler.NoDebug]
         private static void UpdateSleepingThreads()

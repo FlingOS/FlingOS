@@ -188,7 +188,7 @@ namespace Kernel.Hardware.Processes
             }
             ProcessManager.CurrentThread.TimeToSleep = ms /* x * 1ms / [Scheduler period in ns] = x * 1 = x */;
             ProcessManager.CurrentThread.TimeToRun = 1;
-             
+            
             if (reenable)
             {
                 Scheduler.Enable();
@@ -209,12 +209,29 @@ namespace Kernel.Hardware.Processes
             // Busy wait for the scheduler to interrupt the thread, sleep it and
             //  then as soon as the sleep is over this condition will go false
             //  so the thread will continue
-            while (ProcessManager.CurrentThread.TimeToSleep > 0)
+            while (ProcessManager.CurrentThread.TimeToSleep != 0)
             {
                 ;
             }
 
             return true;
+        }
+        public static bool Sleep_Indefinitely()
+        {
+            return Sleep(-1);
+        }
+        public static void Wake()
+        {
+            bool reenable = Scheduler.Enabled;
+            if (reenable)
+            {
+                Scheduler.Disable();
+            }
+            ProcessManager.CurrentThread.TimeToSleep = 0;
+            if (reenable)
+            {
+                Scheduler.Enable();
+            }
         }
     }
 
