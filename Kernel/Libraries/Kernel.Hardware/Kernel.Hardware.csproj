@@ -70,6 +70,7 @@
     <Compile Include="IO\IOPort.cs" />
     <Compile Include="Devices\Keyboard.cs" />
     <Compile Include="Keyboards\PS2.cs" />
+    <Compile Include="Processes\IPC\PipesManager.cs" />
     <Compile Include="Processes\Process.cs" />
     <Compile Include="Processes\ProcessManager.cs" />
     <Compile Include="Processes\Scheduler.cs" />
