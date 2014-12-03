@@ -88,7 +88,7 @@ namespace Kernel.Hardware.Processes
             if (!dontSwitchOutIn)
             {
                 //BasicConsole.WriteLine("Switching out: " + CurrentProcess.Name);
-                CurrentProcess.SwitchOut();
+                CurrentProcess.UnloadMemLayout();
 
                 CurrentProcess = null;
                 
@@ -146,7 +146,7 @@ namespace Kernel.Hardware.Processes
             if (!dontSwitchOutIn)
             {
                 //BasicConsole.WriteLine("Switching in: " + CurrentProcess.Name);
-                CurrentProcess.SwitchIn();
+                CurrentProcess.LoadMemLayout();
             }
         }
     }

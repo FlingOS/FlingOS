@@ -6,11 +6,14 @@ using System.Threading.Tasks;
 
 namespace Kernel.Core.Tasks
 {
-    public static unsafe class SampleTask
+    public static unsafe class IdleTask
     {
         public static void Main()
         {
-            Console.Default.WriteLine("Boo!");
+            while (true)
+            {
+                Hardware.Devices.Timer.Default.Wait(1000);
+            }
         }
     }
 }

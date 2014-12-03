@@ -84,7 +84,7 @@ namespace Kernel.Hardware.VirtMem
                 //{
                 //    BasicConsole.WriteLine(((FOS_System.String)"Loading code page v->p: ") + vAddr + " -> " + pAddr);
                 //}
-                VirtMemManager.Map(pAddr, vAddr, 4096, flags, false);
+                VirtMemManager.Map(pAddr, vAddr, 4096, flags, UpdateUsedPagesFlags.Virtual);
             }
 
             flags = ProcessIsUM ? VirtMemImpl.PageFlags.None : VirtMemImpl.PageFlags.KernelOnly;
@@ -102,7 +102,7 @@ namespace Kernel.Hardware.VirtMem
                 //    BasicConsole.WriteLine(((FOS_System.String)"Loading data page v->p: ") + vAddr + " -> " + pAddr);
                 //}
 
-                VirtMemManager.Map(pAddr, vAddr, 4096, flags, false);
+                VirtMemManager.Map(pAddr, vAddr, 4096, flags, UpdateUsedPagesFlags.Virtual);
             }
 
             //if (loadPrint)
@@ -124,7 +124,7 @@ namespace Kernel.Hardware.VirtMem
                 //    BasicConsole.WriteLine(((FOS_System.String)"Unloading code page v->p: ") + CodePages.Keys[i]);
                 //}
 
-                VirtMemManager.Unmap(CodePages.Keys[i], false);
+                VirtMemManager.Unmap(CodePages.Keys[i], UpdateUsedPagesFlags.Virtual);
             }
             for (int i = 0; i < DataPages.Keys.Count && i < DataPages.Values.Count; i++)
             {
@@ -137,7 +137,7 @@ namespace Kernel.Hardware.VirtMem
                 //    BasicConsole.WriteLine(((FOS_System.String)"Unloading data page v->p: ") + DataPages.Keys[i]);
                 //}
 
-               VirtMemManager.Unmap(DataPages.Keys[i], false);
+               VirtMemManager.Unmap(DataPages.Keys[i], UpdateUsedPagesFlags.Virtual);
             }
 
             //if (unloadPrint)

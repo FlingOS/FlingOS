@@ -13,29 +13,33 @@ namespace Kernel.Core.Processes
             // - Map enough memory for the exe file contents
             // - Copy the memory over
 
-            bool reenable = Scheduler.Enabled;
-            if (reenable)
-            {
-                Scheduler.Disable();
-            }
+            //bool reenable = Scheduler.Enabled;
+            //if (reenable)
+            //{
+            //    Scheduler.Disable();
+            //}
 
             //TODO - Handle case of EXE being bigger than 4KiB?
             //          - Would need to map contiguous (virtual) pages.
             
-            //BasicConsole.WriteLine("Mapping free page for process...");
+            BasicConsole.WriteLine("Mapping free page for process...");
             byte* destMemPtr = (byte*)Hardware.VirtMemManager.MapFreePage(
                 UserMode ? Hardware.VirtMem.VirtMemImpl.PageFlags.None : Hardware.VirtMem.VirtMemImpl.PageFlags.KernelOnly);
-            //BasicConsole.WriteLine(((FOS_System.String)"destMemPtr=") + (uint)destMemPtr);
+            BasicConsole.WriteLine(((FOS_System.String)"Physical address = ") + (uint)Hardware.VirtMemManager.GetPhysicalAddress(destMemPtr));
+            BasicConsole.WriteLine(((FOS_System.String)"Virtual address = ") + (uint)destMemPtr);
 
-            //// Add the page to the current processes memory layout
-            ////  So we can access the memory while we load the process. 
-            ////  Otherwise we will hit a page fault as soon as we try copying the memory
-            ////      further down.
-            ////  Note: The page fault will only be hit on starting a second process because
-            ////      the scheduler doesn't change the context when only one process is running.
-            //ProcessManager.CurrentProcess.TheMemoryLayout.AddDataPage(
-            //    (uint)Hardware.VirtMemManager.GetPhysicalAddress(destMemPtr),
-            //    (uint)destMemPtr);
+            // Add the page to the current processes memory layout
+            //  So we can access the memory while we load the process. 
+            //  Otherwise we will hit a page fault as soon as we try copying the memory
+            //      further down.
+            //  Note: The page fault will only be hit on starting a second process because
+            //      the scheduler doesn't change the context when only one process is running.
+            ProcessManager.CurrentProcess.TheMemoryLayout.AddDataPage(
+                (uint)Hardware.VirtMemManager.GetPhysicalAddress(destMemPtr),
+                (uint)destMemPtr);
+            // We could have been "scheduler interrupted" just after the map but just before the 
+            //  add data page...
+            ProcessManager.CurrentProcess.LoadMemLayout();
 
             //BasicConsole.WriteLine("Reading file...");
             int bytesRead = 0;
@@ -59,14 +63,14 @@ namespace Kernel.Core.Processes
             process.TheMemoryLayout.AddCodePage((uint)Hardware.VirtMemManager.GetPhysicalAddress(destMemPtr),
                 (uint)destMemPtr);
 
-            ////BasicConsole.WriteLine("Removing process' code page from current process...");
-            ////Remove from current processes memory layout
-            //ProcessManager.CurrentProcess.TheMemoryLayout.RemovePage((uint)destMemPtr);
+            //BasicConsole.WriteLine("Removing process' code page from current process...");
+            //Remove from current processes memory layout
+            ProcessManager.CurrentProcess.TheMemoryLayout.RemovePage((uint)destMemPtr);
 
-            if (reenable)
-            {
-                Scheduler.Enable();
-            }
+            //if (reenable)
+            //{
+            //    Scheduler.Enable();
+            //}
 
             return process;
         }
@@ -86,16 +90,16 @@ namespace Kernel.Core.Processes
         }
         public static ELFSharedObject LoadLibrary_FromELFSO(File ELFSharedObjectFile, ELFProcess theProcess)
         {
-            bool reenable = Scheduler.Enabled;
-            if (reenable)
-            {
-                Scheduler.Disable();
-            }
+            //bool reenable = Scheduler.Enabled;
+            //if (reenable)
+            //{
+            //    Scheduler.Disable();
+            //}
             ELFSharedObject result = new ELFFile(ELFSharedObjectFile).LoadSharedObject(theProcess);
-            if (reenable)
-            {
-                Scheduler.Enable();
-            }
+            //if (reenable)
+            //{
+            //    Scheduler.Enable();
+            //}
             return result;
         }
     }

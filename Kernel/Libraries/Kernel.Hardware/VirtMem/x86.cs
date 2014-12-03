@@ -152,7 +152,7 @@ namespace Kernel.Hardware.VirtMem
         /// </summary>
         /// <param name="pAddr">The physical address to map to.</param>
         /// <param name="vAddr">The virtual address to map.</param>
-        public override void Map(uint pAddr, uint vAddr, PageFlags flags, bool UpdateUsedPages = true)
+        public override void Map(uint pAddr, uint vAddr, PageFlags flags, UpdateUsedPagesFlags UpdateUsedPages = UpdateUsedPagesFlags.Both)
         {
             PTEFlags pteFlags = PTEFlags.None;
             if ((flags & PageFlags.Present) != 0)
@@ -169,7 +169,7 @@ namespace Kernel.Hardware.VirtMem
             }
             Map(pAddr, vAddr, pteFlags, UpdateUsedPages);
         }
-        private void Map(uint pAddr, uint vAddr, PTEFlags flags, bool UpdateUsedPages=true)
+        private void Map(uint pAddr, uint vAddr, PTEFlags flags, UpdateUsedPagesFlags UpdateUsedPages = UpdateUsedPagesFlags.Both)
         {
 #if PAGING_TRACE
             BasicConsole.WriteLine("Mapping addresses...");
@@ -189,9 +189,12 @@ namespace Kernel.Hardware.VirtMem
             BasicConsole.WriteLine(((FOS_System.String)"virtPDIdx=") + virtPDIdx);
             BasicConsole.WriteLine(((FOS_System.String)"virtPTIdx=") + virtPTIdx);
 #endif
-            if (UpdateUsedPages)
+            if ((UpdateUsedPages & UpdateUsedPagesFlags.Physical) != 0)
             {
                 UsedPhysPages.Set((int)((physPDIdx * 1024) + physPTIdx));
+            }
+            if((UpdateUsedPages & UpdateUsedPagesFlags.Virtual) != 0)
+            {
                 UsedVirtPages.Set((int)((virtPDIdx * 1024) + virtPTIdx));
             }
 
@@ -208,7 +211,7 @@ namespace Kernel.Hardware.VirtMem
             //Invalidate the page table entry so that mapping isn't CPU cached.
             InvalidatePTE(vAddr);
         }
-        public override void Unmap(uint vAddr, bool UpdateUsedPages = true)
+        public override void Unmap(uint vAddr, UpdateUsedPagesFlags UpdateUsedPages = UpdateUsedPagesFlags.Both)
         {
             uint pAddr = GetPhysicalAddress(vAddr);
 
@@ -218,9 +221,12 @@ namespace Kernel.Hardware.VirtMem
             uint physPDIdx = pAddr >> 22;
             uint physPTIdx = (pAddr >> 12) & 0x03FF;
 
-            if (UpdateUsedPages)
+            if ((UpdateUsedPages & UpdateUsedPagesFlags.Physical) != 0)
             {
                 UsedPhysPages.Clear((int)((physPDIdx * 1024) + physPTIdx));
+            }
+            if ((UpdateUsedPages & UpdateUsedPagesFlags.Virtual) != 0)
+            {
                 UsedVirtPages.Clear((int)((virtPDIdx * 1024) + virtPTIdx));
             }
 

@@ -53,7 +53,7 @@ namespace Kernel.Core.Processes.ELF
                 BaseAddress = theFile.BaseAddress;
                 LoadSegments(theFile, ref OK, ref DynamicLinkingRequired, BaseAddress);
 
-                Console.Default.WriteLine();
+                //Console.Default.WriteLine();
 
                 //Relocation happens here if this were a library / shared object
 
@@ -71,15 +71,15 @@ namespace Kernel.Core.Processes.ELF
                     {
                         ELFDynamicSection.Dynamic theDyn = dynamicSection[i];
 
-                        Console.Default.WriteLine("     - Dynamic : ");
-                        Console.Default.Write("         - Tag : ");
-                        Console.Default.WriteLine_AsDecimal((int)theDyn.Tag);
-                        Console.Default.Write("         - Value or Pointer : ");
-                        Console.Default.WriteLine_AsDecimal(theDyn.Val_Ptr);
+                        //Console.Default.WriteLine("     - Dynamic : ");
+                        //Console.Default.Write("         - Tag : ");
+                        //Console.Default.WriteLine_AsDecimal((int)theDyn.Tag);
+                        //Console.Default.Write("         - Value or Pointer : ");
+                        //Console.Default.WriteLine_AsDecimal(theDyn.Val_Ptr);
 
                         if (theDyn.Tag == ELFDynamicSection.DynamicTag.Needed)
                         {
-                            Console.Default.Write("         - Needed library name : ");
+                            //Console.Default.Write("         - Needed library name : ");
 
                             FOS_System.String libFullPath = DynamicsStringTable[theDyn.Val_Ptr];
                             Console.Default.WriteLine(libFullPath);
@@ -107,6 +107,8 @@ namespace Kernel.Core.Processes.ELF
                         }
                     }
 
+                    FOS_System.GC.Cleanup();
+
                     Console.Default.WriteLine("Library Relocations");
 
                     // Perform relocation / dynamic linking of all libraries
@@ -119,7 +121,7 @@ namespace Kernel.Core.Processes.ELF
                             ELFSection SOSection = (ELFSection)SOSections[j];
                             if (SOSection is ELFRelocationTableSection)
                             {
-                                Console.Default.WriteLine(" - Normal Relocation");
+                                //Console.Default.WriteLine(" - Normal Relocation");
 
                                 ELFRelocationTableSection relocTableSection = (ELFRelocationTableSection)SOSection;
                                 List Relocations = relocTableSection.Relocations;
@@ -138,7 +140,9 @@ namespace Kernel.Core.Processes.ELF
                                         //TODO: Support more relocation types
                                         default:
                                             Console.Default.WarningColour();
-                                            Console.Default.WriteLine("WARNING: Unrecognised relocation type!");
+                                            Console.Default.Write("WARNING: Unrecognised relocation type! (");
+                                            Console.Default.Write_AsDecimal((uint)relocation.Type);
+                                            Console.Default.WriteLine(")");
                                             Console.Default.DefaultColour();
                                             break;
                                     }
@@ -147,7 +151,7 @@ namespace Kernel.Core.Processes.ELF
                             }
                             else if (SOSection is ELFRelocationAddendTableSection)
                             {
-                                Console.Default.WriteLine(" - Addend Relocation");
+                                //Console.Default.WriteLine(" - Addend Relocation");
 
                                 ELFRelocationAddendTableSection relocTableSection = (ELFRelocationAddendTableSection)SOSection;
                                 List Relocations = relocTableSection.Relocations;
@@ -166,7 +170,9 @@ namespace Kernel.Core.Processes.ELF
                                         //TODO: Support more relocation types
                                         default:
                                             Console.Default.WarningColour();
-                                            Console.Default.WriteLine("WARNING: Unrecognised relocation type!");
+                                            Console.Default.Write("WARNING: Unrecognised relocation type! (");
+                                            Console.Default.Write_AsDecimal((uint)relocation.Type);
+                                            Console.Default.WriteLine(")");
                                             Console.Default.DefaultColour();
                                             break;
                                     }
@@ -176,6 +182,7 @@ namespace Kernel.Core.Processes.ELF
                         }
                     }
 
+                    FOS_System.GC.Cleanup();
 
                     Console.Default.WriteLine("Executable Relocations");
 
@@ -183,12 +190,12 @@ namespace Kernel.Core.Processes.ELF
                     List ExeSections = theFile.Sections;
                     for (int j = 0; j < ExeSections.Count; j++)
                     {
-                        ELFSection SOSection = (ELFSection)ExeSections[j];
-                        if (SOSection is ELFRelocationTableSection)
+                        ELFSection ExeSection = (ELFSection)ExeSections[j];
+                        if (ExeSection is ELFRelocationTableSection)
                         {
-                            Console.Default.WriteLine(" - Normal Relocations");
+                            //Console.Default.WriteLine(" - Normal Relocations");
 
-                            ELFRelocationTableSection relocTableSection = (ELFRelocationTableSection)SOSection;
+                            ELFRelocationTableSection relocTableSection = (ELFRelocationTableSection)ExeSection;
                             ELFSymbolTableSection symbolTable = (ELFSymbolTableSection)theFile.Sections[relocTableSection.SymbolTableSectionIndex];
                             ELFStringTableSection symbolNamesTable = (ELFStringTableSection)theFile.Sections[symbolTable.StringsSectionIndex];
 
@@ -201,15 +208,15 @@ namespace Kernel.Core.Processes.ELF
                                     continue;
                                 }
 
-                                Console.Default.WriteLine("     - Relocation :");
-                                Console.Default.Write("         - Type : ");
-                                Console.Default.WriteLine_AsDecimal((uint)relocation.Type);
+                                //Console.Default.WriteLine("     - Relocation :");
+                                //Console.Default.Write("         - Type : ");
+                                //Console.Default.WriteLine_AsDecimal((uint)relocation.Type);
 
                                 ELFSymbolTableSection.Symbol symbol = (ELFSymbolTableSection.Symbol)symbolTable[relocation.Symbol];
                                 FOS_System.String symbolName = symbolNamesTable[symbol.NameIdx];
 
-                                Console.Default.Write("         - Symbol Name : ");
-                                Console.Default.WriteLine(symbolName);
+                                //Console.Default.Write("         - Symbol Name : ");
+                                //Console.Default.WriteLine(symbolName);
 
                                 uint* resolvedRelLocation = (uint*)(BaseAddress + (relocation.Offset - theFile.BaseAddress));
                                 uint newValue = 0;
@@ -221,18 +228,20 @@ namespace Kernel.Core.Processes.ELF
                                         break;
                                     default:
                                         Console.Default.WarningColour();
-                                        Console.Default.Write("WARNING: Unrecognised relocation type!");
+                                        Console.Default.Write("WARNING: Unrecognised relocation type! (");
+                                        Console.Default.Write_AsDecimal((uint)relocation.Type);
+                                        Console.Default.WriteLine(")");
                                         Console.Default.DefaultColour();
                                         break;
                                 }
                                 *resolvedRelLocation = newValue;
                             }
                         }
-                        else if (SOSection is ELFRelocationAddendTableSection)
+                        else if (ExeSection is ELFRelocationAddendTableSection)
                         {
-                            Console.Default.WriteLine(" - Addend Relocations");
+                            //Console.Default.WriteLine(" - Addend Relocations");
 
-                            ELFRelocationAddendTableSection relocTableSection = (ELFRelocationAddendTableSection)SOSection;
+                            ELFRelocationAddendTableSection relocTableSection = (ELFRelocationAddendTableSection)ExeSection;
                             List Relocations = relocTableSection.Relocations;
                             for (int k = 0; k < Relocations.Count; k++)
                             {
@@ -260,7 +269,37 @@ namespace Kernel.Core.Processes.ELF
                         }
                     }
 
+                    FOS_System.GC.Cleanup();
+
                     // TODO: Call Init functions of libraries
+                }
+
+                // Unmap processes' memory from current processes' memory
+                for (int i = 0; i < SharedObjectDependencies.Count; i++)
+                {
+                    ELFSharedObject SO = (ELFSharedObject)SharedObjectDependencies[i];
+                    uint FileBaseAddress = SO.TheFile.BaseAddress;
+                    uint MemBaseAddress = SO.BaseAddress;
+
+                    List SOSegments = SO.TheFile.Segments;
+                    for (int j = 0; j < SOSegments.Count; j++)
+                    {
+                        ELFSegment SOSegment = (ELFSegment)SOSegments[j];
+                        ProcessManager.CurrentProcess.TheMemoryLayout.RemovePage(
+                            (MemBaseAddress + ((uint)SOSegment.Header.VAddr - FileBaseAddress)) & 0xFFFFF000);
+                    }
+                }
+                {
+                    uint FileBaseAddress = theFile.BaseAddress;
+                    uint MemBaseAddress = BaseAddress;
+
+                    List ExeSegments = theFile.Segments;
+                    for (int j = 0; j < ExeSegments.Count; j++)
+                    {
+                        ELFSegment ExeSegment = (ELFSegment)ExeSegments[j];
+                        ProcessManager.CurrentProcess.TheMemoryLayout.RemovePage(
+                            (MemBaseAddress + ((uint)ExeSegment.Header.VAddr - FileBaseAddress)) & 0xFFFFF000);
+                    }
                 }
             }
             finally
@@ -320,7 +359,7 @@ namespace Kernel.Core.Processes.ELF
                             4096,
                             theProcess.UserMode ? Hardware.VirtMem.VirtMemImpl.PageFlags.None : Hardware.VirtMem.VirtMemImpl.PageFlags.KernelOnly);
                         //TODO: Remove these pages somewhere later after loading has finished
-                        //ProcessManager.CurrentProcess.TheMemoryLayout.AddDataPage(physPageAddr, virtPageAddr);
+                        ProcessManager.CurrentProcess.TheMemoryLayout.AddDataPage(physPageAddr, virtPageAddr);
 
                         if (executable)
                         {
@@ -355,15 +394,17 @@ namespace Kernel.Core.Processes.ELF
                     }
                 }
             }
+
+            FOS_System.GC.Cleanup();
         }
 
         public uint GetSymbolAddress(ELFDynamicSymbolTableSection.Symbol theSymbol, FOS_System.String theSymbolName)
         {
-            Console.Default.WriteLine("Searching for symbol...");
-            Console.Default.Write("     - Name : ");
-            Console.Default.WriteLine(theSymbolName);
+            //Console.Default.WriteLine("Searching for symbol...");
+            //Console.Default.Write("     - Name : ");
+            //Console.Default.WriteLine(theSymbolName);
 
-            Console.Default.WriteLine("     Searching executable's symbols...");
+            //Console.Default.WriteLine("     Searching executable's symbols...");
             for(int i = 0; i < theFile.Sections.Count; i++)
             {
                 ELFSection aSection = (ELFSection)theFile.Sections[i];
@@ -380,10 +421,10 @@ namespace Kernel.Core.Processes.ELF
                         {
                             if (strTabSection[aSymbol.NameIdx] == theSymbolName)
                             {
-                                Console.Default.WriteLine("     Found symbol.");
-                                Console.Default.Write("     Address : ");
+                                //Console.Default.WriteLine("     Found symbol.");
+                                //Console.Default.Write("     Address : ");
                                 uint result = ((uint)aSymbol.Value - theFile.BaseAddress) + BaseAddress;
-                                Console.Default.WriteLine_AsDecimal(result);
+                                //Console.Default.WriteLine_AsDecimal(result);
                                 return result;
                             }
                         }
@@ -392,7 +433,7 @@ namespace Kernel.Core.Processes.ELF
             }
             for (int k = 0; k < SharedObjectDependencies.Count; k++)
             {
-                Console.Default.WriteLine("     Searching shared object's symbols...");
+                //Console.Default.WriteLine("     Searching shared object's symbols...");
 
                 ELFSharedObject SO = (ELFSharedObject)SharedObjectDependencies[k];
                 for (int i = 0; i < SO.TheFile.Sections.Count; i++)
@@ -411,10 +452,10 @@ namespace Kernel.Core.Processes.ELF
                             {
                                 if (strTabSection[aSymbol.NameIdx] == theSymbolName)
                                 {
-                                    Console.Default.WriteLine("     Found symbol.");
-                                    Console.Default.Write("     Address : ");
+                                    //Console.Default.WriteLine("     Found symbol.");
+                                    //Console.Default.Write("     Address : ");
                                     uint result  =((uint)aSymbol.Value - SO.TheFile.BaseAddress) + SO.BaseAddress;
-                                    Console.Default.WriteLine_AsDecimal(result);
+                                    //Console.Default.WriteLine_AsDecimal(result);
                                     return result;
                                 }
                             }

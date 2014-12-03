@@ -77,12 +77,14 @@ namespace Kernel.Core.Processes.ELF
             theFile = file;
             theStream = theFile.GetStream();
             ReadHeader();
+            FOS_System.GC.Cleanup();
 
             if (IsValidFile())
             {
                 ReadSectionHeaders();
-                Hardware.Processes.Thread.Sleep(500);
+                FOS_System.GC.Cleanup();
                 ReadSegmentHeaders();
+                FOS_System.GC.Cleanup();
             }
         }
 
@@ -138,156 +140,156 @@ namespace Kernel.Core.Processes.ELF
                     Sections.Add(newSection);
                 }
 
-                Console.Default.WriteLine();
+                //Console.Default.WriteLine();
 
-                #region Sections Output
+                //#region Sections Output
 
-                for (int i = 0; i < Sections.Count; i++)
-                {
-                    ELFSection theSection = (ELFSection)Sections[i];
-                    ELFSectionHeader theHeader = theSection.Header;
-                    Console.Default.WriteLine("ELF section: ");
-                    Console.Default.Write(" - Name index : ");
-                    Console.Default.WriteLine_AsDecimal(theHeader.NameIndex);
-                    Console.Default.Write(" - Name : ");
-                    Console.Default.WriteLine(NamesTable[theHeader.NameIndex]);
-                    Console.Default.Write(" - Type : ");
-                    Console.Default.WriteLine_AsDecimal((uint)theHeader.SectionType);
-                    Console.Default.Write(" - Flags : ");
-                    Console.Default.WriteLine_AsDecimal((uint)theHeader.Flags);
-                    Console.Default.Write(" - Offset : ");
-                    Console.Default.WriteLine_AsDecimal(theHeader.SectionFileOffset);
-                    Console.Default.Write(" - Size : ");
-                    Console.Default.WriteLine_AsDecimal(theHeader.SectionSize);
-                    Console.Default.Write(" - Load address : ");
-                    Console.Default.WriteLine_AsDecimal((uint)theHeader.LoadAddress);
+                //for (int i = 0; i < Sections.Count; i++)
+                //{
+                //    ELFSection theSection = (ELFSection)Sections[i];
+                //    ELFSectionHeader theHeader = theSection.Header;
+                //    Console.Default.WriteLine("ELF section: ");
+                //    Console.Default.Write(" - Name index : ");
+                //    Console.Default.WriteLine_AsDecimal(theHeader.NameIndex);
+                //    Console.Default.Write(" - Name : ");
+                //    Console.Default.WriteLine(NamesTable[theHeader.NameIndex]);
+                //    Console.Default.Write(" - Type : ");
+                //    Console.Default.WriteLine_AsDecimal((uint)theHeader.SectionType);
+                //    Console.Default.Write(" - Flags : ");
+                //    Console.Default.WriteLine_AsDecimal((uint)theHeader.Flags);
+                //    Console.Default.Write(" - Offset : ");
+                //    Console.Default.WriteLine_AsDecimal(theHeader.SectionFileOffset);
+                //    Console.Default.Write(" - Size : ");
+                //    Console.Default.WriteLine_AsDecimal(theHeader.SectionSize);
+                //    Console.Default.Write(" - Load address : ");
+                //    Console.Default.WriteLine_AsDecimal((uint)theHeader.LoadAddress);
 
-                    if (theSection is ELFSymbolTableSection)
-                    {
-                        #region ELFSymbolTableSection
+                //    if (theSection is ELFSymbolTableSection)
+                //    {
+                //        #region ELFSymbolTableSection
 
-                        Console.Default.WriteLine(" - Symbol table :");
+                //        Console.Default.WriteLine(" - Symbol table :");
 
-                        ELFSymbolTableSection theSymTable = (ELFSymbolTableSection)theSection;
-                        ELFStringTableSection theStringTable = (ELFStringTableSection)(Sections[theSymTable.StringsSectionIndex]);
-                        for (uint j = 0; j < theSymTable.Symbols.Count; j++)
-                        {
-                            ELFSymbolTableSection.Symbol theSym = theSymTable[j];
+                //        ELFSymbolTableSection theSymTable = (ELFSymbolTableSection)theSection;
+                //        ELFStringTableSection theStringTable = (ELFStringTableSection)(Sections[theSymTable.StringsSectionIndex]);
+                //        for (uint j = 0; j < theSymTable.Symbols.Count; j++)
+                //        {
+                //            ELFSymbolTableSection.Symbol theSym = theSymTable[j];
 
-                            Console.Default.Write("     - Symbol : ");
-                            Console.Default.WriteLine(theStringTable[theSym.NameIdx]);
-                            Console.Default.Write("         - Type : ");
-                            Console.Default.WriteLine_AsDecimal((uint)theSym.Type);
-                            Console.Default.Write("         - Binding : ");
-                            Console.Default.WriteLine_AsDecimal((uint)theSym.Binding);
-                            Console.Default.Write("         - Section index : ");
-                            Console.Default.WriteLine_AsDecimal(theSym.SectionIndex);
-                            Console.Default.Write("         - Value : ");
-                            Console.Default.WriteLine_AsDecimal((uint)theSym.Value);
-                            Console.Default.Write("         - Size : ");
-                            Console.Default.WriteLine_AsDecimal(theSym.Size);
-                        }
+                //            Console.Default.Write("     - Symbol : ");
+                //            Console.Default.WriteLine(theStringTable[theSym.NameIdx]);
+                //            Console.Default.Write("         - Type : ");
+                //            Console.Default.WriteLine_AsDecimal((uint)theSym.Type);
+                //            Console.Default.Write("         - Binding : ");
+                //            Console.Default.WriteLine_AsDecimal((uint)theSym.Binding);
+                //            Console.Default.Write("         - Section index : ");
+                //            Console.Default.WriteLine_AsDecimal(theSym.SectionIndex);
+                //            Console.Default.Write("         - Value : ");
+                //            Console.Default.WriteLine_AsDecimal((uint)theSym.Value);
+                //            Console.Default.Write("         - Size : ");
+                //            Console.Default.WriteLine_AsDecimal(theSym.Size);
+                //        }
 
-                        #endregion
-                    }
-                    else if (theSection is ELFRelocationAddendTableSection)
-                    {
-                        #region ELFRelocationAddendTableSection
+                //        #endregion
+                //    }
+                //    else if (theSection is ELFRelocationAddendTableSection)
+                //    {
+                //        #region ELFRelocationAddendTableSection
 
-                        ELFRelocationAddendTableSection theRelASection = (ELFRelocationAddendTableSection)theSection;
+                //        ELFRelocationAddendTableSection theRelASection = (ELFRelocationAddendTableSection)theSection;
 
-                        Console.Default.WriteLine(" - Relocation (with addends) table :");
-                        Console.Default.Write("     - Symbol table index : ");
-                        Console.Default.WriteLine_AsDecimal(theRelASection.SymbolTableSectionIndex);
-                        Console.Default.Write("     - Section to relocate index : ");
-                        Console.Default.WriteLine_AsDecimal(theRelASection.SectionToRelocateIndex);
+                //        Console.Default.WriteLine(" - Relocation (with addends) table :");
+                //        Console.Default.Write("     - Symbol table index : ");
+                //        Console.Default.WriteLine_AsDecimal(theRelASection.SymbolTableSectionIndex);
+                //        Console.Default.Write("     - Section to relocate index : ");
+                //        Console.Default.WriteLine_AsDecimal(theRelASection.SectionToRelocateIndex);
 
-                        for (uint j = 0; j < theRelASection.Relocations.Count; j++)
-                        {
-                            ELFRelocationAddendTableSection.RelocationAddend theRel = theRelASection[j];
+                //        for (uint j = 0; j < theRelASection.Relocations.Count; j++)
+                //        {
+                //            ELFRelocationAddendTableSection.RelocationAddend theRel = theRelASection[j];
 
-                            Console.Default.WriteLine("     - Relocation : ");
-                            Console.Default.Write("         - Type : ");
-                            Console.Default.WriteLine_AsDecimal((uint)theRel.Type);
-                            Console.Default.Write("         - Symbol : ");
-                            Console.Default.WriteLine_AsDecimal(theRel.Symbol);
-                            Console.Default.Write("         - Offset : ");
-                            Console.Default.WriteLine_AsDecimal((uint)theRel.Offset);
-                            Console.Default.Write("         - Addend : ");
-                            Console.Default.WriteLine_AsDecimal(theRel.Addend);
-                        }
+                //            Console.Default.WriteLine("     - Relocation : ");
+                //            Console.Default.Write("         - Type : ");
+                //            Console.Default.WriteLine_AsDecimal((uint)theRel.Type);
+                //            Console.Default.Write("         - Symbol : ");
+                //            Console.Default.WriteLine_AsDecimal(theRel.Symbol);
+                //            Console.Default.Write("         - Offset : ");
+                //            Console.Default.WriteLine_AsDecimal((uint)theRel.Offset);
+                //            Console.Default.Write("         - Addend : ");
+                //            Console.Default.WriteLine_AsDecimal(theRel.Addend);
+                //        }
 
-                        #endregion
-                    }
-                    else if (theSection is ELFRelocationTableSection)
-                    {
-                        #region ELFRelocationTableSection
+                //        #endregion
+                //    }
+                //    else if (theSection is ELFRelocationTableSection)
+                //    {
+                //        #region ELFRelocationTableSection
 
-                        ELFRelocationTableSection theRelSection = (ELFRelocationTableSection)theSection;
+                //        ELFRelocationTableSection theRelSection = (ELFRelocationTableSection)theSection;
 
-                        Console.Default.WriteLine(" - Relocation table :");
-                        Console.Default.Write("     - Symbol table index : ");
-                        Console.Default.WriteLine_AsDecimal(theRelSection.SymbolTableSectionIndex);
-                        Console.Default.Write("     - Section to relocate index : ");
-                        Console.Default.WriteLine_AsDecimal(theRelSection.SectionToRelocateIndex);
+                //        Console.Default.WriteLine(" - Relocation table :");
+                //        Console.Default.Write("     - Symbol table index : ");
+                //        Console.Default.WriteLine_AsDecimal(theRelSection.SymbolTableSectionIndex);
+                //        Console.Default.Write("     - Section to relocate index : ");
+                //        Console.Default.WriteLine_AsDecimal(theRelSection.SectionToRelocateIndex);
 
-                        for (uint j = 0; j < theRelSection.Relocations.Count; j++)
-                        {
-                            ELFRelocationTableSection.Relocation theRel = theRelSection[j];
+                //        for (uint j = 0; j < theRelSection.Relocations.Count; j++)
+                //        {
+                //            ELFRelocationTableSection.Relocation theRel = theRelSection[j];
 
-                            Console.Default.WriteLine("     - Relocation : ");
-                            Console.Default.Write("         - Type : ");
-                            Console.Default.WriteLine_AsDecimal((uint)theRel.Type);
-                            Console.Default.Write("         - Symbol : ");
-                            Console.Default.WriteLine_AsDecimal(theRel.Symbol);
-                            Console.Default.Write("         - Offset : ");
-                            Console.Default.WriteLine_AsDecimal((uint)theRel.Offset);
-                        }
+                //            Console.Default.WriteLine("     - Relocation : ");
+                //            Console.Default.Write("         - Type : ");
+                //            Console.Default.WriteLine_AsDecimal((uint)theRel.Type);
+                //            Console.Default.Write("         - Symbol : ");
+                //            Console.Default.WriteLine_AsDecimal(theRel.Symbol);
+                //            Console.Default.Write("         - Offset : ");
+                //            Console.Default.WriteLine_AsDecimal((uint)theRel.Offset);
+                //        }
 
-                        #endregion
-                    }
-                    if (theSection is ELFDynamicSection)
-                    {
-                        #region ELFDynamicSection
+                //        #endregion
+                //    }
+                //    if (theSection is ELFDynamicSection)
+                //    {
+                //        #region ELFDynamicSection
 
-                        Console.Default.WriteLine(" - Dynamics table :");
+                //        Console.Default.WriteLine(" - Dynamics table :");
 
-                        ELFDynamicSection theDynTable = (ELFDynamicSection)theSection;
-                        ELFDynamicSection.Dynamic StrTabDynamic = theDynTable.StrTabDynamic;
-                        ELFDynamicSection.Dynamic StrTabSizeDynamic = theDynTable.StrTabSizeDynamic;
-                        if (StrTabDynamic == null ||
-                            StrTabSizeDynamic == null)
-                        {
-                            Console.Default.WarningColour();
-                            Console.Default.WriteLine("WARNING: Dynamic Table's String Table not found!");
-                            Console.Default.DefaultColour();
-                        }
-                        else
-                        {
-                            Console.Default.Write("     - String table offset : ");
-                            Console.Default.WriteLine_AsDecimal(StrTabDynamic.Val_Ptr);
-                            Console.Default.Write("     - String table size : ");
-                            Console.Default.WriteLine_AsDecimal(StrTabSizeDynamic.Val_Ptr);
+                //        ELFDynamicSection theDynTable = (ELFDynamicSection)theSection;
+                //        ELFDynamicSection.Dynamic StrTabDynamic = theDynTable.StrTabDynamic;
+                //        ELFDynamicSection.Dynamic StrTabSizeDynamic = theDynTable.StrTabSizeDynamic;
+                //        if (StrTabDynamic == null ||
+                //            StrTabSizeDynamic == null)
+                //        {
+                //            Console.Default.WarningColour();
+                //            Console.Default.WriteLine("WARNING: Dynamic Table's String Table not found!");
+                //            Console.Default.DefaultColour();
+                //        }
+                //        else
+                //        {
+                //            Console.Default.Write("     - String table offset : ");
+                //            Console.Default.WriteLine_AsDecimal(StrTabDynamic.Val_Ptr);
+                //            Console.Default.Write("     - String table size : ");
+                //            Console.Default.WriteLine_AsDecimal(StrTabSizeDynamic.Val_Ptr);
                             
-                            for (uint j = 0; j < theDynTable.Dynamics.Count; j++)
-                            {
-                                ELFDynamicSection.Dynamic theDyn = theDynTable[j];
+                //            for (uint j = 0; j < theDynTable.Dynamics.Count; j++)
+                //            {
+                //                ELFDynamicSection.Dynamic theDyn = theDynTable[j];
 
-                                Console.Default.WriteLine("     - Dynamic : ");
-                                Console.Default.Write("         - Tag : ");
-                                Console.Default.WriteLine_AsDecimal((int)theDyn.Tag);
-                                Console.Default.Write("         - Value or Pointer : ");
-                                Console.Default.WriteLine_AsDecimal(theDyn.Val_Ptr);
-                            }
-                        }
+                //                Console.Default.WriteLine("     - Dynamic : ");
+                //                Console.Default.Write("         - Tag : ");
+                //                Console.Default.WriteLine_AsDecimal((int)theDyn.Tag);
+                //                Console.Default.Write("         - Value or Pointer : ");
+                //                Console.Default.WriteLine_AsDecimal(theDyn.Val_Ptr);
+                //            }
+                //        }
 
-                        #endregion
-                    }
+                //        #endregion
+                //    }
 
-                    Hardware.Processes.Thread.Sleep(500);
-                }
+                //    Hardware.Processes.Thread.Sleep(500);
+                //}
 
-                #endregion
+                //#endregion
             }
             else
             {
@@ -313,36 +315,36 @@ namespace Kernel.Core.Processes.ELF
                     Segments.Add(newSegment);
                 }
                 
-                Console.Default.WriteLine();
+                //Console.Default.WriteLine();
 
-                #region Segments Output
+                //#region Segments Output
 
-                for (int i = 0; i < Segments.Count; i++)
-                {
-                    ELFSegment theSegment = (ELFSegment)Segments[i];
-                    ELFSegmentHeader theHeader = theSegment.Header;
-                    Console.Default.WriteLine("ELF Segment: ");
-                    Console.Default.Write(" - Type : ");
-                    Console.Default.WriteLine_AsDecimal((uint)theHeader.Type);
-                    Console.Default.Write(" - File offset : ");
-                    Console.Default.WriteLine_AsDecimal(theHeader.FileOffset);
-                    Console.Default.Write(" - Virtual address : ");
-                    Console.Default.WriteLine_AsDecimal((uint)theHeader.VAddr);
-                    Console.Default.Write(" - Physical address : ");
-                    Console.Default.WriteLine_AsDecimal((uint)theHeader.PAddr);
-                    Console.Default.Write(" - File size : ");
-                    Console.Default.WriteLine_AsDecimal(theHeader.FileSize);
-                    Console.Default.Write(" - Memory size : ");
-                    Console.Default.WriteLine_AsDecimal(theHeader.MemSize);
-                    Console.Default.Write(" - Flags : ");
-                    Console.Default.WriteLine_AsDecimal((uint)theHeader.Flags);
-                    Console.Default.Write(" - Alignment : ");
-                    Console.Default.WriteLine_AsDecimal(theHeader.Align);
+                //for (int i = 0; i < Segments.Count; i++)
+                //{
+                //    ELFSegment theSegment = (ELFSegment)Segments[i];
+                //    ELFSegmentHeader theHeader = theSegment.Header;
+                //    Console.Default.WriteLine("ELF Segment: ");
+                //    Console.Default.Write(" - Type : ");
+                //    Console.Default.WriteLine_AsDecimal((uint)theHeader.Type);
+                //    Console.Default.Write(" - File offset : ");
+                //    Console.Default.WriteLine_AsDecimal(theHeader.FileOffset);
+                //    Console.Default.Write(" - Virtual address : ");
+                //    Console.Default.WriteLine_AsDecimal((uint)theHeader.VAddr);
+                //    Console.Default.Write(" - Physical address : ");
+                //    Console.Default.WriteLine_AsDecimal((uint)theHeader.PAddr);
+                //    Console.Default.Write(" - File size : ");
+                //    Console.Default.WriteLine_AsDecimal(theHeader.FileSize);
+                //    Console.Default.Write(" - Memory size : ");
+                //    Console.Default.WriteLine_AsDecimal(theHeader.MemSize);
+                //    Console.Default.Write(" - Flags : ");
+                //    Console.Default.WriteLine_AsDecimal((uint)theHeader.Flags);
+                //    Console.Default.Write(" - Alignment : ");
+                //    Console.Default.WriteLine_AsDecimal(theHeader.Align);
 
-                    Hardware.Processes.Thread.Sleep(500);
-                }
+                //    Hardware.Processes.Thread.Sleep(500);
+                //}
 
-                #endregion
+                //#endregion
             }
             else
             {

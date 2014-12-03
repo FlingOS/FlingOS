@@ -77,16 +77,17 @@ namespace Kernel
                 Hardware.Devices.Timer.InitDefault();
                 Core.Processes.SystemCalls.Init();
 
-                Process ManagedMainProcess = ProcessManager.CreateProcess(ManagedMain, "Managed Main", false);
-                
+                Process ManagedMainProcess = ProcessManager.CreateProcess(ManagedMain, "Managed Main", false);                
                 Thread ManagedMain_MainThread = ((Thread)ManagedMainProcess.Threads[0]);
                 Hardware.VirtMemManager.Unmap(ManagedMain_MainThread.State->ThreadStackTop - 4092);
                 ManagedMainProcess.TheMemoryLayout.RemovePage((uint)ManagedMain_MainThread.State->ThreadStackTop - 4092);
                 ManagedMain_MainThread.State->ThreadStackTop = GetKernelStackPtr();
                 ManagedMain_MainThread.State->ESP = (uint)ManagedMain_MainThread.State->ThreadStackTop;
-
                 ProcessManager.RegisterProcess(ManagedMainProcess, Scheduler.Priority.Normal);
-                
+
+                Process IdleProcess = ProcessManager.CreateProcess(Core.Tasks.IdleTask.Main, "Idle Process", false);
+                ProcessManager.RegisterProcess(IdleProcess, Scheduler.Priority.Low);
+
                 Scheduler.Init();
 
                 // Busy wait until the scheduler interrupts us. 

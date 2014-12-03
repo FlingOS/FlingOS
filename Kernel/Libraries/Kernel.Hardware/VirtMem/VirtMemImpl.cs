@@ -24,6 +24,15 @@ using System.Threading.Tasks;
 
 namespace Kernel.Hardware.VirtMem
 {
+    [Flags]
+    public enum UpdateUsedPagesFlags : byte
+    {
+        None = 0,
+        Physical = 1,
+        Virtual = 2,
+        Both = 3
+    }
+
     /// <summary>
     /// Represents a specific implementation of a virtual memory system.
     /// </summary>
@@ -55,12 +64,12 @@ namespace Kernel.Hardware.VirtMem
         /// </summary>
         /// <param name="pAddr">The physical address to map to.</param>
         /// <param name="vAddr">The virtual address to map.</param>
-        public virtual void Map(uint pAddr, uint vAddr, bool UpdateUsedPages = true)
+        public virtual void Map(uint pAddr, uint vAddr, UpdateUsedPagesFlags UpdateUsedPages = UpdateUsedPagesFlags.Both)
         {
             Map(pAddr, vAddr, PageFlags.Present | PageFlags.KernelOnly | PageFlags.Writeable, UpdateUsedPages);
         }
-        public abstract void Map(uint pAddr, uint vAddr, PageFlags flags, bool UpdateUsedPages = true);
-        public abstract void Unmap(uint vAddr, bool UpdateUsedPages = true);
+        public abstract void Map(uint pAddr, uint vAddr, PageFlags flags, UpdateUsedPagesFlags UpdateUsedPages = UpdateUsedPagesFlags.Both);
+        public abstract void Unmap(uint vAddr, UpdateUsedPagesFlags UpdateUsedPages = UpdateUsedPagesFlags.Both);
         /// <summary>
         /// Gets the physical address for the specified virtual address.
         /// </summary>

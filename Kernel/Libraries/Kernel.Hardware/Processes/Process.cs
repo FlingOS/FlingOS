@@ -70,11 +70,11 @@ namespace Kernel.Hardware.Processes
             }
         }
 
-        public virtual void SwitchIn()
+        public virtual void LoadMemLayout()
         {
             TheMemoryLayout.Load(UserMode);
         }
-        public virtual void SwitchOut()
+        public virtual void UnloadMemLayout()
         {
             TheMemoryLayout.Unload();
         }
