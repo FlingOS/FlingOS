@@ -12,7 +12,6 @@
         - Introduction
             - Scope of this article
                 - ATA history
-                    
                 - ATA as IDE, PIO but not SATA
                 - Basic hardware info
                 - Complete software explanation and sample
@@ -21,20 +20,89 @@
                 - Followed by explanation
                 - Followed by sample code and common problems
         - History
+            - Foreword
+                    ATA has a long and winding history which is reasonably well documented across the internet
+                    (see references and Google search). So for the purposes of this article I will provide only 
+                    a brief summary of its history. Note, the information in this article is drawn largely from
+                    the references provided at the end of this article, so specific citations are not being
+                    provided.
+                    
             - Origin of ATA
                 - Originally called AT Attachment
+                    ATA is the old name for what is now called "Parallel ATA" (PATA). ATA originally stood for AT 
+                    Attachment and ATAPI stood for AT Attachment Packet Interface. These two standards are described
+                    in more detail throughout this article.
+                    
+                    Notably, the "AT" in "AT Attachment" stood for "Advanced Technology", however, to avoid possible
+                    trademark infringement with IBM, current specifications simply use AT. (And developers would 
+                    be well advised to follow suit...)
+                    
                 - Consists of hardware and software standards: AT Attachment, AT Attachment Packet Interface
-                - Started with ATA
-                - Followed by Western Digital's IDE
+                    ATA is a hardware interface standard for connecting storage devices to a PC (originally via
+                    the 16-bit ISA bus created by IBM for the IBM PC/AT). 
+                    
+                    ATAPI is a software protocol which was layered on top of ATA to allow it to connect a wider 
+                    range of devices than the original protocol allowed for. Over time the two have become so
+                    entwined that you wouldn't really consider one without the other.
+                    
+                - Started with Western Digital's IDE
+                    The first version of what would later become ATA was developed by Western Digital in around 1983.
+                    They developed a standard called Integrated Drive Electronics (IDE). The first hardware for IDE 
+                    arrived in 1986. Over time ATA and IDE have become used somewhat interchangeably, since the 
+                    versions of IDE have essentially always been implementations of the versions of ATA (though 
+                    often Western Digital released new IDE drives before the official release of a new ATA standard).
+                
+                - Turned into ATA
+                    Western Digital co-developed, along with Control Data Corporation and Compaq Computer, the ATA
+                    standard and in 1994 it was officially adopted as ANSI standard 
+                    "X3.221-1994, AT Attachment Interface for Disk Drives". Since then there have been 7 major 
+                    versions of the ATA standard (up to Dec 2014) with the last one introducing SATA (Serial ATA) 
+                    in 2005. Parallel ATA drives and Serial ATA drives are not compatible but all IDE drives are 
+                    compatible with at least one version of ATA. The current working version (8) will standardise
+                    so-called Hybrid drives (which utilise non-volatile caches for frequently accessed or high
+                    priority files).
+                
                 - ATA now has many acronyms
+                    Due to its long history and many versions, ATA now has many acronyms associated with it. The 
+                    common ones have already been mentioned (ATA, ATAPI and IDE) but it is worth mentioning these
+                    few too:
+                        - EIDE - Enhanced IDE (Western Digital, IDE version 2, ATA 2 and 3 compatible)
+                        - Fast ATA, Fast IDE - All ATA-2 related versions developed by manufacturers. 
+                        - Ultra ATA - associated with ATA version 2 and 4 to 7 with assorted suffixes. 
+                    
                 - ATA now actually Parallel ATA (PATA)
-                - Due to Serial ATA (2003) (SATA)
+                    Since the introduction of ATA/ATAPI-7 it has become technically incorrect to refer to anything
+                    as an ATA or IDE drive. Devices are now either Parallel ATA devices (the old way) or Serial ATA
+                    devices (the new way). These are referred to as PATA and SATA, though frequently PATA is simply
+                    ATA and SATA is SATA. 
+                    
+                    The original ATA standard cable had 40 wires to create a connection which could transfer 16-bits
+                    in parallel. Later, this increased to 80 wires, with the additional 40 wires interleaved with the
+                    original 40 to act as ground wires. This was required to reduce capacitive coupling between
+                    data wires when running at higher bit rates. The connector remained the same size (40 pins)
+                    since the additional wires could be connected to the existing ground pin.
+                    
+                    As with most hardware, PATA (and SATA) only communicate with one device at once. It is a common
+                    misconception that Parallel means you can communicate with multiple devices at once. This is
+                    not true and has never been true. A consequence of this is that many driver developers forget that 
+                    you have to select which drive you wish to communicate with at any given moment. This is described
+                    in more detail later.
+                
+                - Serial ATA (2003) (SATA)
+                   While this article does not provide hardware or software description for SATA, it is worth 
+                   mentioning since it is probably the most common type of drive (though many SATA drives are IDE
+                   compatible). SATA stands for Serial ATA and is a very different hardware and software standard.
+                   
+                   For hobby OS developers, SATA is initially much harder to implement than PATA. It is worth getting
+                   a PATA driver working which you can use to load driver executables from a hard disc or CD drive
+                   which can the be executed to control SATA drives.
+                  
             - ATA as Parallel ATA
                 - PATA and IDE now broadly equivalent
                 - Meaning at a hobbyist level, what you program will work with most stuff
                 - PATA much simpler than SATA
                 - Limitations of PATA
-            - ATA to Serial ATA (SATA)
+            - ATA as Serial ATA (SATA)
                 - Improvements with SATA
                 - SATA much more complex than PATA
                 - Not always backwards compatible
@@ -84,6 +152,7 @@
             - SATA / RAID drives
         - Sources
             - http://en.wikipedia.org/wiki/Parallel_ATA
+            - http://en.wikipedia.org/wiki/ATA_Packet_Interface
             - http://en.wikipedia.org/wiki/Programmed_input/output
             - http://wiki.osdev.org/ATA_PIO_Mode
             - http://wiki.osdev.org/ATA_read/write_sectors
