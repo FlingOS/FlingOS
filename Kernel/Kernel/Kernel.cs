@@ -85,9 +85,6 @@ namespace Kernel
                 ManagedMain_MainThread.State->ESP = (uint)ManagedMain_MainThread.State->ThreadStackTop;
                 ProcessManager.RegisterProcess(ManagedMainProcess, Scheduler.Priority.Normal);
 
-                Process IdleProcess = ProcessManager.CreateProcess(Core.Tasks.IdleTask.Main, "Idle Process", false);
-                ProcessManager.RegisterProcess(IdleProcess, Scheduler.Priority.Low);
-
                 Scheduler.Init();
 
                 // Busy wait until the scheduler interrupts us. 

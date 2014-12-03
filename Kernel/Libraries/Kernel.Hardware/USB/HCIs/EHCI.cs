@@ -722,12 +722,12 @@ namespace Kernel.Hardware.USB.HCIs
             usbBaseAddress = pciDevice.BaseAddresses[0].BaseAddress();
 
             // Map in the required memory - we will use identity mapping for the PCI / USB registers for now
-            VirtMemManager.Map((uint)usbBaseAddress & 0xFFFFF000, (uint)usbBaseAddress & 0xFFFFF000, 4096, 
-                VirtMem.VirtMemImpl.PageFlags.KernelOnly);
             Processes.ProcessManager.CurrentProcess.TheMemoryLayout.AddDataPage(
                 (uint)usbBaseAddress & 0xFFFFF000,
                 (uint)usbBaseAddress & 0xFFFFF000);
-
+            VirtMemManager.Map((uint)usbBaseAddress & 0xFFFFF000, (uint)usbBaseAddress & 0xFFFFF000, 4096, 
+                VirtMem.VirtMemImpl.PageFlags.KernelOnly);
+            
             // Caps registers start at the beginning of the memory mapped IO registers.
             // Section 2 of the Intel EHCI Spec
             CapabilitiesRegAddr = usbBaseAddress;

@@ -358,7 +358,6 @@ namespace Kernel.Core.Processes.ELF
                             virtPageAddr,
                             4096,
                             theProcess.UserMode ? Hardware.VirtMem.VirtMemImpl.PageFlags.None : Hardware.VirtMem.VirtMemImpl.PageFlags.KernelOnly);
-                        //TODO: Remove these pages somewhere later after loading has finished
                         ProcessManager.CurrentProcess.TheMemoryLayout.AddDataPage(physPageAddr, virtPageAddr);
 
                         if (executable)

@@ -58,7 +58,7 @@ namespace Kernel.Hardware.Devices
         /// <param name="ms">The number of milliseconds to block.</param>
         public abstract void Wait(uint ms);
         /// <summary>
-        /// Blocks the calller for the specified nuymber of nanoseconds.
+        /// Blocks the caller for the specified number of nanoseconds.
         /// </summary>
         /// <param name="ns">The number of nanoseconds to block.</param>
         public abstract void WaitNS(long ns);
