@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Drivers.Compiler
 {
-    class LibraryLoader
+    static class LibraryLoader
     {
     }
 }

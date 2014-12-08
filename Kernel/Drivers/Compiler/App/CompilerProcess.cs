@@ -38,8 +38,8 @@ namespace Drivers.Compiler.App
             DateTime startTime = DateTime.Now;
             Logger.LogMessage("", 0, "Driver compiler started  @ " + startTime.ToLongTimeString());
 
-            // IL Library - In a list of libraries returned to the higher-level control app (this app)
-            //              from Library Loader
+            // IL Library       - In a list of libraries returned to the higher-level control app (this app)
+            //                    from Library Loader
             //  : Type Info         - In a list of types in the IL Library
             //      : Field Info        - In a list of static and non-static fields in the Type Info
             //      : Method Info       - In a list of methods in the Type Info
@@ -47,10 +47,12 @@ namespace Drivers.Compiler.App
             //  : IL Block          - In a list of blocks in the IL Library and held against the origin Method Info
             //      : IL Op             - In a list of ops in the IL Block
             //
-            // ASM Library - In a list of libraries returned to the higher-level control app (this app)
-            //               from IL Compiler
+            // ASM Library      - In a list of libraries returned to the higher-level control app (this app)
+            //                    from IL Compiler
             //  : ASM Block         - In a list of blocks in the ASM Library and held against the origin IL Block
             //      : ASM Op            - In a list of ops in the ASM Block
+            //
+            // Options          - Compiler options used throughout the compiler
 
             // Library loader   - Loads IL Libraries to be compiled
             //      - Type Scanner     - Loads all the Type Infos, Field Infos and Method Infos

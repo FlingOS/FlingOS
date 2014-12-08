@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Drivers.Compiler
 {
-    class LinkManager
+    static class LinkManager
     {
     }
 }

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Drivers.Compiler
 {
-    class DebugDataManager
+    static class DebugDataManager
     {
     }
 }

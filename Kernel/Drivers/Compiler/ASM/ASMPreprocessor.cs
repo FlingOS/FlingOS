@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Drivers.Compiler.ASM
 {
-    class ASMPreprocessor
+    static class ASMPreprocessor
     {
     }
 }

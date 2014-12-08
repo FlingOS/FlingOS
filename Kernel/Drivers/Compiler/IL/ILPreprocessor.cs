@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Drivers.Compiler.IL
 {
-    class ILPreprocessor
+    static class ILPreprocessor
     {
     }
 }

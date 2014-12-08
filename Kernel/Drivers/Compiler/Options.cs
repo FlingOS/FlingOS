@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Drivers.Compiler.IL
+namespace Drivers.Compiler
 {
-    static class ILReader
+    static class Options
     {
     }
 }

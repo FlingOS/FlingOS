@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Drivers.Compiler.Types
 {
-    class TypeScanner
+    static class TypeScanner
     {
     }
 }
