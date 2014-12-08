@@ -55,6 +55,6 @@
   <Target Name="BeforeBuild">
   </Target>
   <Target Name="AfterBuild">
-      <BuildTask Name="TestVal" value="TEST" />
+      <BuildTask />
   </Target>
 </Project>

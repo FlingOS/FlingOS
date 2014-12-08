@@ -9,11 +9,10 @@ namespace Drivers.Compiler.MSBuildTask
         
         public override bool Execute()
         {
-            App.Logger.OnLogMessage += Logger_OnLogMessage;
-            App.Logger.OnLogWarning += Logger_OnLogWarning;
-            App.Logger.OnLogError += Logger_OnLogError;
-
-            return false;
+            return App.CompilerProcess.Execute(
+                    Logger_OnLogMessage,
+                    Logger_OnLogWarning,
+                    Logger_OnLogError) != App.CompilerProcess.ErrorCode.NoError;
         }
 
         private void Logger_OnLogError(string errorCode, string file, int lineNumber, string message)
