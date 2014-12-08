@@ -104,11 +104,13 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KernelABI", "Kernel\Drivers
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Drivers.Framework", "Kernel\Drivers\Libraries\Drivers.Framework\Drivers.Framework.csproj", "{F9DA529F-D53A-4F0C-9F45-7DDDDC648099}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Drivers.Compiler.Architectures.x86", "Kernel\Drivers\Compiler\Architectures\Drivers.Compiler.Architectures.x86\Drivers.Compiler.Architectures.x86.csproj", "{EEBEC7B2-9F93-4A8A-BCB7-C9F8F79FA77E}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Drivers.Compiler.Architectures.x86", "Kernel\Drivers\Compiler\Architectures\x86_32\Drivers.Compiler.Architectures.x86.csproj", "{EEBEC7B2-9F93-4A8A-BCB7-C9F8F79FA77E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Drivers.Compiler", "Kernel\Drivers\Compiler\Drivers.Compiler\Drivers.Compiler.csproj", "{1FB0E622-D2C6-4A5C-B5B6-D2BB5E502AF1}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Drivers.Compiler", "Kernel\Drivers\Compiler\Drivers.Compiler.csproj", "{1FB0E622-D2C6-4A5C-B5B6-D2BB5E502AF1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Drivers.CompilerApp", "Kernel\Drivers\Compiler\Drivers.CompilerApp\Drivers.CompilerApp.csproj", "{4E28A467-4D90-4315-9113-AE93F54280B0}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Drivers.Compiler.App", "Kernel\Drivers\Compiler\App\Drivers.Compiler.App.csproj", "{4E28A467-4D90-4315-9113-AE93F54280B0}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Drivers.Compiler.MSBuildTask", "Kernel\Drivers\Compiler\MSBuildTask\Drivers.Compiler.MSBuildTask.csproj", "{4A6F3FA1-CA27-442A-AA2E-5C036A54209D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -225,6 +227,12 @@ Global
 		{4E28A467-4D90-4315-9113-AE93F54280B0}.Docs|Any CPU.Build.0 = Debug|Any CPU
 		{4E28A467-4D90-4315-9113-AE93F54280B0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4E28A467-4D90-4315-9113-AE93F54280B0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4A6F3FA1-CA27-442A-AA2E-5C036A54209D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4A6F3FA1-CA27-442A-AA2E-5C036A54209D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4A6F3FA1-CA27-442A-AA2E-5C036A54209D}.Docs|Any CPU.ActiveCfg = Debug|Any CPU
+		{4A6F3FA1-CA27-442A-AA2E-5C036A54209D}.Docs|Any CPU.Build.0 = Debug|Any CPU
+		{4A6F3FA1-CA27-442A-AA2E-5C036A54209D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4A6F3FA1-CA27-442A-AA2E-5C036A54209D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -263,5 +271,6 @@ Global
 		{EEBEC7B2-9F93-4A8A-BCB7-C9F8F79FA77E} = {8B0975AB-3B75-458D-94A6-2B263366661B}
 		{1FB0E622-D2C6-4A5C-B5B6-D2BB5E502AF1} = {9D0BAF06-26B6-4A5A-9620-CC7EA227C904}
 		{4E28A467-4D90-4315-9113-AE93F54280B0} = {9D0BAF06-26B6-4A5A-9620-CC7EA227C904}
+		{4A6F3FA1-CA27-442A-AA2E-5C036A54209D} = {9D0BAF06-26B6-4A5A-9620-CC7EA227C904}
 	EndGlobalSection
 EndGlobal

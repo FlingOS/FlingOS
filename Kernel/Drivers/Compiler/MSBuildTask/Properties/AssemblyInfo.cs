@@ -5,11 +5,11 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("Drivers.CompilerApp")]
+[assembly: AssemblyTitle("Drivers.Compiler.MSBuildTask")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("Drivers.CompilerApp")]
+[assembly: AssemblyProduct("Drivers.Compiler.MSBuildTask")]
 [assembly: AssemblyCopyright("Copyright ©  2014")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
@@ -20,7 +20,7 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
-[assembly: Guid("a356584e-1b05-4268-bd0f-946488404e56")]
+[assembly: Guid("173d80cc-b923-4481-b122-820ee64b1044")]
 
 // Version information for an assembly consists of the following four values:
 //

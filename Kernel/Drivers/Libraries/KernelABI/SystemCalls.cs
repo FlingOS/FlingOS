@@ -22,7 +22,7 @@ namespace KernelABI
         }
         public static void Sleep(uint ms)
         {
-            Call(Calls.Sleep, ms, 0, 0, 0);
+            Call(Calls.Sleep, ms, 0, 0);
         }
     }
 }

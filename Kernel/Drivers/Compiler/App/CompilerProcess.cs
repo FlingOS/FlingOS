@@ -1,13 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Drivers.CompilerApp
 {
-    class Program
+    public class CompilerProcess
     {
+        
+
         static void Main(string[] args)
         {
         }
