@@ -99,9 +99,24 @@
                   
             - ATA as Parallel ATA
                 - PATA and IDE now broadly equivalent
+                    As has been mentioned earlier, ATA, now known at Parallel ATA (PATA), is used now broadly equivalent
+                    to IDE due to the standards long, intertwined history with IDE devices. Equally, due to the historical
+                    naming, most information refers to PATA as ATA since PATA is the original, old hardware standard, as 
+                    opposed to the latest ATA standard Serial ATA (SATA).
+                                    
                 - Meaning at a hobbyist level, what you program will work with most stuff
+                    Since ATA and IDE are broadly equivalent, and both are the de-facto old-school hard drive standard, 
+                    if you as a hobbyist choose to write ATA drivers, you will find that your code work with almost
+                    all virtualisation technologies and a vast number of real hard drives.
+                
                 - PATA much simpler than SATA
                 - Limitations of PATA
+                    PATA is simple, very simple. Much, much simpler than SATA. This is possibly because its old, from a time 
+                    when software had to be simpler or because its a more mature technology (by nearly 20 years). However,
+                    the simplicity comes at a slight penalty (by modern standards). The penalty is primarily speed. PATA
+                    disks are significantly slower than SATA disks (how much slower depends on version etc. It is left to the 
+                    reader to research the potential difference, especially given the ever increasing speed of SATA disks).
+                
             - ATA as Serial ATA (SATA)
                 - Improvements with SATA
                 - SATA much more complex than PATA
