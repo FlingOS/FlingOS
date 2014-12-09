@@ -120,17 +120,33 @@
             - ATA as Serial ATA (SATA)
                 - Improvements with SATA
                 - SATA much more complex than PATA
+                    SATA drives offer significantly faster disk access times and much higher data transfer rates along with 
+                    high burst access speeds and the ability to connect more devices to the bus than PATA allows. However, this
+                    comes at the cost of complexity. To use a SATA drive you must support the significantly more complex 
+                    protocol along with the Advance Host Controller Interface hardware that Intel developed to allow SATA
+                    bus control.
+                    
                 - Not always backwards compatible
+                    SATA is also often not backwards compatible. Older SATA devices would present themselves as PATA devices and 
+                    then require the BIOS or OS to switch the bus to SATA mode. However, newer SATA devices are either in SATA
+                    mode or PATA mode and only a BIOS setting can be used to switch (if available). However, switching will often 
+                    cause the pre-installed OS to stop working since it will expect a SATA drive. As a consequence, to run a hobby
+                    OS on a very new laptop or desktop, SATA support will be required, unless USB support or similar is added.
+                
                 - Get PATA working first
-        - Overview
+                    Due to PATA's comparative simplicity, wide support in virtualisation and high stability, it is worth getting
+                    PATA working before moving on to SATA. This will allow you to develop partition and file system drivers 
+                    that work and are stable, thus eliminating two big areas of potential issue when getting a SATA driver to 
+                    work.
+                    
+        - Overview (PATA)
             - General
                 - What does ATA do?
+                - What does ATAPI do?
                 - How common is it?
                 - Why is it important?
                 - ATA for hard drives
                 - ATA for CD drives
-            - ATA as IDE
-                - Which types of device?
                 - How complex to program?
                 - Basic ideas
             - PIO mode
