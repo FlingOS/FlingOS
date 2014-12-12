@@ -4,9 +4,19 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+using Drivers.Compiler.IL;
+
 namespace Drivers.Compiler
 {
-    static class LibraryLoader
+    public static class LibraryLoader
     {
+        public static ILLibrary LoadILLibrary(string FilePath)
+        {
+            return null;
+        }
+        public static int LoadDependencies(ILLibrary aLibrary)
+        {
+            return 0;
+        }
     }
 }

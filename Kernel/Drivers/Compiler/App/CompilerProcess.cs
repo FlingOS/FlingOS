@@ -8,10 +8,33 @@ namespace Drivers.Compiler.App
         {
             NoError = 0
         }
+        
+        public static string LibraryPath
+        {
+            get;
+            set;
+        }
+        public static string OutputPath
+        {
+            get;
+            set;
+        }
+        public static string ToolsPath
+        {
+            get;
+            set;
+        }
 
         static int Main(string[] args)
         {
             Console.ForegroundColor = ConsoleColor.Gray;
+
+            LibraryPath = args[0];
+            OutputPath = args[1];
+            ToolsPath = args[2];
+
+            Options.BuildMode = (args[3] == "Debug" ? Options.BuildModes.Debug : Options.BuildModes.Release);
+            Options.TargetArchitecture = args[4];
 
             int result = (int)Execute(
                 Logger_OnLogMessage,
@@ -37,6 +60,11 @@ namespace Drivers.Compiler.App
 
             DateTime startTime = DateTime.Now;
             Logger.LogMessage("", 0, "Driver compiler started  @ " + startTime.ToLongTimeString());
+            Logger.LogMessage("", 0, "Library path             = \"" + LibraryPath + "\"");
+            Logger.LogMessage("", 0, "Output path              = \"" + OutputPath + "\"");
+            Logger.LogMessage("", 0, "Tools path               = \"" + ToolsPath + "\"");
+            Logger.LogMessage("", 0, "Target architecture      = \"" + Options.TargetArchitecture + "\"");
+            Logger.LogMessage("", 0, "Build mode               = "   + Enum.GetName(typeof(Options.BuildModes), Options.BuildMode));
 
             // IL Library       - In a list of libraries returned to the higher-level control app (this app)
             //                    from Library Loader
@@ -66,6 +94,11 @@ namespace Drivers.Compiler.App
             //                           optimisation
             //      - ASM Processor    - Converts ASM ops into ASM text then runs NASM
             // Link Manager     - Manages the linker stage. Links together all the NASM outputs using "ld".
+            
+
+            IL.ILLibrary TheLibrary = LibraryLoader.LoadILLibrary(LibraryPath);
+            int NumDependencies = LibraryLoader.LoadDependencies(TheLibrary);
+
 
             DateTime endTime = DateTime.Now;
             Logger.LogMessage("", 0, "Driver compiler finished @ " + endTime.ToLongTimeString());

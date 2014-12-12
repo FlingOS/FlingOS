@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Drivers.Compiler.IL
 {
-    class ILLibrary
+    public class ILLibrary
     {
     }
 }

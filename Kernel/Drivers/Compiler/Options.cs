@@ -6,7 +6,23 @@ using System.Threading.Tasks;
 
 namespace Drivers.Compiler
 {
-    static class Options
+    public static class Options
     {
+        public enum BuildModes
+        {
+            Debug,
+            Release
+        }
+
+        public static BuildModes BuildMode
+        {
+            get;
+            set;
+        }
+        public static string TargetArchitecture
+        {
+            get;
+            set;
+        }
     }
 }

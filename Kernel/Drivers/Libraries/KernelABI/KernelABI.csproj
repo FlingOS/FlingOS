@@ -31,6 +31,7 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <PlatformTarget>x86</PlatformTarget>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -51,10 +52,12 @@
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.-->
-  <UsingTask AssemblyFile="..\..\Compiler\MSBuildTask\bin\Debug\Drivers.Compiler.MSBuildTask.dll" TaskName="MSBuildTask.BuildTask" />  
+  <UsingTask Condition="'$(Configuration)' == 'Debug'" AssemblyFile="..\..\Compiler\MSBuildTask\bin\Debug\Drivers.Compiler.MSBuildTask.dll" TaskName="MSBuildTask.BuildTask" />
+  <UsingTask Condition="'$(Configuration)' == 'Release'" AssemblyFile="..\..\Compiler\MSBuildTask\bin\Release\Drivers.Compiler.MSBuildTask.dll" TaskName="MSBuildTask.BuildTask" />
   <Target Name="BeforeBuild">
   </Target>
   <Target Name="AfterBuild">
-      <BuildTask />
+    <BuildTask Condition="'$(Configuration)' == 'Debug'" LibraryPath="$(TargetPath)" TargetArchitecture="$(PlatformTarget)" OutputPath="$(TargetDir)$(TargetName)" ToolsPath="$(SolutionDir)Drivers\Compiler\App\bin\Debug" DebugBuild="True" />
+    <BuildTask Condition="'$(Configuration)' == 'Release'" LibraryPath="$(TargetPath)" TargetArchitecture="$(PlatformTarget)" OutputPath="$(TargetDir)$(TargetName)" ToolsPath="$(SolutionDir)Drivers\Compiler\App\bin\Release" DebugBuild="False" />
   </Target>
 </Project>

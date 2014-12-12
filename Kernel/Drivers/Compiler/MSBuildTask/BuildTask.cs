@@ -6,9 +6,47 @@ namespace Drivers.Compiler.MSBuildTask
 {
     public class BuildTask : Task
     {
+        [Required]
+        public string LibraryPath
+        {
+            get;
+            set;
+        }
+
+        [Required]
+        public string TargetArchitecture
+        {
+            get;
+            set;
+        }
+        [Required]
+        public string OutputPath
+        {
+            get;
+            set;
+        }
+        [Required]
+        public string ToolsPath
+        {
+            get;
+            set;
+        }
+        [Required]
+        public bool DebugBuild
+        {
+            get;
+            set;
+        }
         
         public override bool Execute()
         {
+            App.CompilerProcess.LibraryPath = LibraryPath;
+            App.CompilerProcess.OutputPath = OutputPath;
+            App.CompilerProcess.ToolsPath = ToolsPath;
+
+            Options.BuildMode = DebugBuild ? Options.BuildModes.Debug : Options.BuildModes.Release;
+            Options.TargetArchitecture = TargetArchitecture;
+            
             return App.CompilerProcess.Execute(
                     Logger_OnLogMessage,
                     Logger_OnLogWarning,
