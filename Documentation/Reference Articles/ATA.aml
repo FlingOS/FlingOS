@@ -142,13 +142,34 @@
         - Overview (PATA)
             - General
                 - What does ATA do?
+                        : Hardware standard
+                        : Electronic signals
+                        : Wiring standard
+                        : Hardware faults / errors
+                        : Processor interface standard
                 - What does ATAPI do?
+                        : Software standard
+                        : Packet protocol
+                        : Commands and data
+                        : Abstracts type of device
                 - How common is it?
+                        : Extremely. In almost all PCs (bar newest) and laptop (bar newest)
                 - Why is it important?
-                - ATA for hard drives
-                - ATA for CD drives
+                        : Hard Disk and CD Drive control
+                        : Simplest permanent storage
+                        : Needed to install OS
+                        : Needed as hobbyist for setting up Partition/FS drivers
+                - ATA for hard drives vs. CD drives
+                        ? Look up the key differences
+                        : Support for hard disk by Fling OS
                 - How complex to program?
+                        : Relatively simple. 
+                        : Requires knowledge of IO ports, hard disk structure and the protocol only
                 - Basic ideas
+                        : IO port access
+                        : Commands and data
+                        : CHS and LBA
+                        : Device select
             - PIO mode
                 - What does PIO stand for?
                 - Which types of device?
