@@ -1597,6 +1597,18 @@ namespace Kernel.Core.Shells
             {
                 Hardware.PCI.PCIDevice aDevice = (Hardware.PCI.PCIDevice)Hardware.PCI.PCI.Devices[i];
                 console.WriteLine(Hardware.PCI.PCIDevice.DeviceClassInfo.GetString(aDevice));
+                console.Write(" - Address: ");
+                console.Write(aDevice.bus);
+                console.Write(":");
+                console.Write(aDevice.slot);
+                console.Write(":");
+                console.WriteLine(aDevice.function);
+
+                console.Write(" - Vendor Id: ");
+                console.WriteLine(aDevice.VendorID);
+
+                console.Write(" - Device Id: ");
+                console.WriteLine(aDevice.DeviceID);
             }
         }
 

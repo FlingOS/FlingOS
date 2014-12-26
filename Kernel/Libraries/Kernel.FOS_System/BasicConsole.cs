@@ -369,5 +369,17 @@ namespace Kernel
             offset -= a;
             offset -= 80;
         }
+
+        public static void DumpMemory(void* ptr, int size)
+        {
+            uint* uPtr = (uint*)ptr;
+            size /= 4;
+            for (int i = 0; i < size; i++)
+            {
+                Write(*(uPtr + i));
+                Write(" ");
+            }
+            WriteLine();
+        }
     }
 }

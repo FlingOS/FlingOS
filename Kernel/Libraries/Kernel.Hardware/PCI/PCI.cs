@@ -68,27 +68,29 @@ namespace Kernel.Hardware.PCI
         {
             for (uint device = 0; device < 32; device++)
             {
-                PCIDevice pciDevice = new PCIDevice(bus, device, 0x00);
-                if (pciDevice.DeviceExists)
+                PCIDevice zeroFuncDevice = new PCIDevice(bus, device, 0x00);
+                if (zeroFuncDevice.DeviceExists)
                 {
-                    if (pciDevice.HeaderType == PCIDevice.PCIHeaderType.Bridge)
+                    uint max = ((uint)zeroFuncDevice.HeaderType & 0x80) != 0 ? 8u : 1u;
+
+                    for (uint function = 0; function < max; function++)
                     {
-                        for (uint function = 0; function < 8; function++)
+                        PCIDevice pciDevice = new PCIDevice(bus, device, function);
+                        if (pciDevice.DeviceExists)
                         {
-                            pciDevice = new PCIDevice(bus, device, function);
-                            if (pciDevice.DeviceExists)
+                            if (pciDevice.HeaderType == PCIDevice.PCIHeaderType.Bridge)
                             {
                                 AddDevice(new PCIDeviceBridge(bus, device, function), step);
                             }
+                            else if (pciDevice.HeaderType == PCIDevice.PCIHeaderType.Cardbus)
+                            {
+                                AddDevice(new PCIDeviceCardbus(bus, device, function), step);
+                            }
+                            else
+                            {
+                                AddDevice(new PCIDeviceNormal(bus, device, function), step);
+                            }
                         }
-                    }
-                    else if (pciDevice.HeaderType == PCIDevice.PCIHeaderType.Cardbus)
-                    {
-                        AddDevice(new PCIDeviceCardbus(bus, device, 0x00), step);
-                    }
-                    else
-                    {
-                        AddDevice(new PCIDeviceNormal(bus, device, 0x00), step);
                     }
                 }
             }
@@ -107,6 +109,9 @@ namespace Kernel.Hardware.PCI
 
             if (device is PCIDeviceBridge)
             {
+                BasicConsole.WriteLine("Enumerating PCI Bridge Device...");
+                BasicConsole.DelayOutput(5);
+                 
                 EnumerateBus(((PCIDeviceBridge)device).SecondaryBusNumber, step + 1);
             }
         }

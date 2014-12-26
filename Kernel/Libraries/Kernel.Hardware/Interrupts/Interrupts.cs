@@ -324,6 +324,17 @@ namespace Kernel.Hardware.Interrupts
                     BasicConsole.SetTextColour(BasicConsole.default_colour);
                 }
 #endif
+                //  --- Useful for UHCI driver testing ---
+                //if (ISRNum == (32 + 0x10) ||
+                //    ISRNum == (32 + 0x11) ||
+                //    ISRNum == (32 + 0x0A) ||
+                //    ISRNum == (32 + 0x0B))
+                //{
+                //    BasicConsole.SetTextColour(BasicConsole.warning_colour);
+                //    BasicConsole.WriteLine(((FOS_System.String)"ISR: ") + ISRNum);
+                //    BasicConsole.SetTextColour(BasicConsole.default_colour);
+                //}
+
                 uint currProcessId = 0;
                 uint currThreadId = 0;
                 if (Processes.ProcessManager.CurrentProcess != null)

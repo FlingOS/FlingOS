@@ -611,7 +611,9 @@ namespace Kernel.Hardware.PCI
                     case 0x11:
                         return "Data Acquisition and Signal Processing Controller";
                     //case 0xFF:
-                    //    return "Unkown device";
+                    //    return "Unknown device (Spec unspecified)";
+                    //default:
+                    //    return "Unknown device (Unrecognised)";
                 }
                 FOS_System.String result = "ClassCode: ";
                 result = result + device.ClassCode + "     Subclass: " + device.Subclass + "     ProgIF: " + device.ProgIF;

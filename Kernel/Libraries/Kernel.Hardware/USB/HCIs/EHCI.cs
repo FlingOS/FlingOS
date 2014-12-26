@@ -1113,6 +1113,7 @@ namespace Kernel.Hardware.USB.HCIs
             // We must add an entry to our list of ports for each root port
             //  This is because when we access a port (within the list) later,
             //  the code presumes the entry has been added.
+            RootPorts.Empty();
             for (byte i = 0; i < RootPortCount; i++)
             {
                 RootPorts.Add(new HCPort()
@@ -1710,7 +1711,7 @@ namespace Kernel.Hardware.USB.HCIs
             }
             DBGMSG(((FOS_System.String)"Transfer transactions tree OK: ") + treeOK);
             BasicConsole.DelayOutput(10);
-#endif            
+#endif
             // Get the first qTD of the transfer. This is passed to InitQH to tell it the start of the linked
             //  list of transactions.
             EHCITransaction firstTransaction = (EHCITransaction)((USBTransaction)(transfer.transactions[0])).underlyingTz;

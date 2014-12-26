@@ -135,6 +135,44 @@ namespace Kernel.Hardware.IO
         }
 
         /// <summary>
+        /// Reads a byte from the port at the specified offset from this port.
+        /// </summary>
+        /// <returns>The value read.</returns>
+        [Compiler.NoDebug]
+        public UInt16 Read_Byte(UInt16 offset)
+        {
+            return doRead_Byte((UInt16)(this.Port + offset));
+        }
+        /// <summary>
+        /// Reads a UInt16 from the port at the specified offset from this port.
+        /// </summary>
+        /// <returns>The value read.</returns>
+        [Compiler.NoDebug]
+        public UInt16 Read_UInt16(UInt16 offset)
+        {
+            return doRead_UInt16((UInt16)(this.Port + offset));
+        }
+        /// <summary>
+        /// Reads a UInt32 from the port at the specified offset from this port.
+        /// </summary>
+        /// <returns>The value read.</returns>
+        [Compiler.NoDebug]
+        public UInt32 Read_UInt32(UInt16 offset)
+        {
+            return doRead_UInt32((UInt16)(this.Port + offset));
+        }
+        /// <summary>
+        /// Reads a UInt64 from the port at the specified offset from this port.
+        /// </summary>
+        /// <returns>The value read.</returns>
+        [Compiler.NoDebug]
+        public UInt64 Read_UInt64(UInt16 offset)
+        {
+            return doRead_UInt64((UInt16)(this.Port + offset));
+        }
+        
+
+        /// <summary>
         /// Writes a byte to the specified port.
         /// </summary>
         /// <param name="port">The port to write to.</param>
@@ -206,6 +244,43 @@ namespace Kernel.Hardware.IO
         public void Write_UInt64(UInt64 aVal)
         {
             doWrite_UInt64(this.Port, aVal);
+        }
+
+        /// <summary>
+        /// Writes a byte to the port at the specified offset from this port.
+        /// </summary>
+        /// <param name="aVal">The value to write.</param>
+        [Compiler.NoDebug]
+        public virtual void Write_Byte(byte aVal, UInt16 offset)
+        {
+            doWrite_Byte((UInt16)(this.Port + offset), aVal);
+        }
+        /// <summary>
+        /// Writes a UInt16 to the port at the specified offset from this port.
+        /// </summary>
+        /// <param name="aVal">The value to write.</param>
+        [Compiler.NoDebug]
+        public virtual void Write_UInt16(UInt16 aVal, UInt16 offset)
+        {
+            doWrite_UInt16((UInt16)(this.Port + offset), aVal);
+        }
+        /// <summary>
+        /// Writes a UInt32 to the port at the specified offset from this port.
+        /// </summary>
+        /// <param name="aVal">The value to write.</param>
+        [Compiler.NoDebug]
+        public virtual void Write_UInt32(UInt32 aVal, UInt16 offset)
+        {
+            doWrite_UInt32((UInt16)(this.Port + offset), aVal);
+        }
+        /// <summary>
+        /// Writes a UInt64 to the port at the specified offset from this port.
+        /// </summary>
+        /// <param name="aVal">The value to write.</param>
+        [Compiler.NoDebug]
+        public virtual void Write_UInt64(UInt64 aVal, UInt16 offset)
+        {
+            doWrite_UInt64((UInt16)(this.Port + offset), aVal);
         }
 
         /// <summary>
