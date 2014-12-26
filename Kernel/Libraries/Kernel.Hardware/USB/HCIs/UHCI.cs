@@ -98,7 +98,6 @@ namespace Kernel.Hardware.USB.HCIs
     }
 
     //TODO: Something is wrong with this UHCI driver.
-    //  - Transfers do not complete (ever)
     //  - Interrupts never occur
     //  Literally no ideas why!
 
@@ -728,8 +727,6 @@ namespace Kernel.Hardware.USB.HCIs
 
             for (byte i = 0; i < UHCI_Consts.NUMBER_OF_UHCI_RETRIES && !transfer.success; i++)
             {
-                transfer.success = true;
-
                 TransactionsCompleted = 0;
 
                 // stop scheduler
@@ -760,10 +757,10 @@ namespace Kernel.Hardware.USB.HCIs
                 while (TransactionsCompleted < transfer.transactions.Count &&
                       timeout > 0)
                 {
-                    //BasicConsole.WriteLine("UHCI: Waiting on transfer complete...");
-                    BasicConsole.WriteLine(((FOS_System.String)"FRNUM val: ") + FRNUM.Read_UInt16());
+                    BasicConsole.WriteLine("UHCI: Waiting on transfer complete...");
+                    //BasicConsole.WriteLine(((FOS_System.String)"FRNUM val: ") + FRNUM.Read_UInt16());
 
-                    Hardware.Devices.Timer.Default.Wait(50);
+                    Hardware.Devices.Timer.Default.Wait(500);
 
                     timeout--;
                 }
@@ -781,25 +778,34 @@ namespace Kernel.Hardware.USB.HCIs
 
                     transfer.success = false;
 
+                    bool completeDespiteNoInterrupt = true;
                     for (int j = 0; j < transfer.transactions.Count; j++)
                     {
                         USBTransaction elem = (USBTransaction)transfer.transactions[j];
                         UHCITransaction uT = (UHCITransaction)(elem.underlyingTz);
-                        
+
                         BasicConsole.WriteLine(((FOS_System.String)"u1=") + uT.qTD->u1 + ", u2=" + uT.qTD->u2);
                         BasicConsole.WriteLine(((FOS_System.String)"Status=") + (byte)(uT.qTD->u1 >> 16));
+                        completeDespiteNoInterrupt = completeDespiteNoInterrupt && ((byte)(uT.qTD->u1 >> 16) == 0);
                     }
 
-                    BasicConsole.DelayOutput(10);
+                    transfer.success = completeDespiteNoInterrupt;
+
+                    BasicConsole.WriteLine(((FOS_System.String)"Complete despite no interrupts: ") + completeDespiteNoInterrupt);
+                    BasicConsole.DelayOutput(5);
                 }
                 else
+                {
+                    transfer.success = true;
+                }
+
+                if (transfer.success)
                 {
                     // check conditions and save data
                     for (int j = 0; j < transfer.transactions.Count; j++)
                     {
                         USBTransaction elem = (USBTransaction)transfer.transactions[j];
                         UHCITransaction uT = (UHCITransaction)(elem.underlyingTz);
-                        //uhci_showStatusbyteTD(uT->TD);
                         transfer.success = transfer.success && isTransactionSuccessful(uT); // executed w/o error
 
                         if (uT.inBuffer != null && uT.inLength != 0)

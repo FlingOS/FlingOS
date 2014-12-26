@@ -17,7 +17,7 @@
 #endregion
     
 #define USB_TRACE
-#undef USB_TRACE
+//#undef USB_TRACE
 
 using System;
 using Kernel.FOS_System.Collections;
@@ -142,7 +142,7 @@ namespace Kernel.Hardware.USB
                             EHCI newEHCI = new EHCI(EHCI_PCIDevice);
                             HCIDevices.Add(newEHCI);
                             DeviceManager.Devices.Add(newEHCI);
-
+                            
 #if USB_TRACE
                             BasicConsole.DelayOutput(10);
 #endif
@@ -168,19 +168,19 @@ namespace Kernel.Hardware.USB
 #endif
                             NumUHCIDevices++;
 
-                            BasicConsole.SetTextColour(BasicConsole.warning_colour);
-                            BasicConsole.WriteLine("Note: UHCI device support incomplete. UHC disabled.");
-                            BasicConsole.SetTextColour(BasicConsole.default_colour);
+                            //BasicConsole.SetTextColour(BasicConsole.warning_colour);
+                            //BasicConsole.WriteLine("Note: UHCI device support incomplete. UHC disabled.");
+                            //BasicConsole.SetTextColour(BasicConsole.default_colour);
 
                             //TODO: Reenable if UHCI is ever needed and the UHCI driver is fixed.
 
-                            //PCIDeviceNormal UHCI_PCIDevice = (PCIDeviceNormal)aDevice;
-                            //UHCI_PCIDevice.Claimed = true;
+                            PCIDeviceNormal UHCI_PCIDevice = (PCIDeviceNormal)aDevice;
+                            UHCI_PCIDevice.Claimed = true;
 
-                            //UHCI newUHCI = new UHCI(UHCI_PCIDevice);
+                            UHCI newUHCI = new UHCI(UHCI_PCIDevice);
 
-                            //HCIDevices.Add(newUHCI);
-                            //DeviceManager.Devices.Add(newUHCI);
+                            HCIDevices.Add(newUHCI);
+                            DeviceManager.Devices.Add(newUHCI);
                             
 #if USB_TRACE
                             BasicConsole.DelayOutput(10);
