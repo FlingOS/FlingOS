@@ -16,6 +16,9 @@
 // ------------------------------------------------------------------------------ //
 #endregion
 
+#define UHCI_TRACE
+#undef UHCI_TRACE
+
 using System;
 using Kernel.FOS_System.Collections;
 using Kernel.Hardware.USB.Devices;
@@ -125,8 +128,10 @@ namespace Kernel.Hardware.USB.HCIs
         public UHCI(PCI.PCIDeviceNormal aPCIDevice)
             : base(aPCIDevice)
         {
+#if UHCI_TRACE
             BasicConsole.WriteLine("UHCI: Constructor");
             BasicConsole.DelayOutput(5);
+#endif
 
             usbBaseAddress = pciDevice.BaseAddresses[4].BaseAddress();
             Processes.ProcessManager.CurrentProcess.TheMemoryLayout.AddDataPage(
@@ -174,19 +179,23 @@ namespace Kernel.Hardware.USB.HCIs
 
         protected void Start()
         {
+#if UHCI_TRACE
             BasicConsole.WriteLine("UHCI: Start");
             BasicConsole.DelayOutput(5);
+#endif
 
             InitHC();
         }
         protected void InitHC()
         {
+#if UHCI_TRACE
             BasicConsole.WriteLine("UHCI: InitHC");
             BasicConsole.DelayOutput(5);
 
             BasicConsole.WriteLine(((FOS_System.String)"IRQ: ") + pciDevice.InterruptLine);
             BasicConsole.WriteLine(((FOS_System.String)"USBCMD Port: ") + USBCMD.Port);
             BasicConsole.DelayOutput(5);
+#endif
 
             // prepare PCI command register
             // bit 9: Fast Back-to-Back Enable // not necessary
@@ -199,8 +208,10 @@ namespace Kernel.Hardware.USB.HCIs
         }
         protected void ResetHC()
         {
+#if UHCI_TRACE
             BasicConsole.WriteLine("UHCI: ResetHC");
             BasicConsole.DelayOutput(5);
+#endif
 
             //Processes.Scheduler.Disable();
 
@@ -214,7 +225,9 @@ namespace Kernel.Hardware.USB.HCIs
             USBCMD.Write_UInt16(0);
             
             RootPortCount = (byte)(pciDevice.BaseAddresses[4].Size() / 2);
+#if UHCI_TRACE
             BasicConsole.WriteLine(((FOS_System.String)"UHCI: RootPortCount=") + RootPortCount);
+#endif
             for (byte i = 2; i < RootPortCount; i++)
             {
                 if ((PORTSC1.Read_UInt16((ushort)(i * 2)) & UHCI_Consts.PORT_VALID) == 0 ||
@@ -224,14 +237,18 @@ namespace Kernel.Hardware.USB.HCIs
                     break;
                 }
             }
+#if UHCI_TRACE
             BasicConsole.WriteLine(((FOS_System.String)"UHCI: RootPortCount=") + RootPortCount);
+#endif
 
             if (RootPortCount > UHCI_Consts.PORTMAX)
             {
                 RootPortCount = UHCI_Consts.PORTMAX;
             }
+#if UHCI_TRACE
             BasicConsole.WriteLine(((FOS_System.String)"UHCI: RootPortCount=") + RootPortCount);
             BasicConsole.DelayOutput(1);
+#endif
 
             RootPorts.Empty();
             for (byte i = 0; i < RootPortCount; i++)
@@ -241,21 +258,27 @@ namespace Kernel.Hardware.USB.HCIs
                     portNum = i
                 });
             }
-
+            
+#if UHCI_TRACE
             BasicConsole.WriteLine("UHCI: Checking HC state: Get USBCMD...");
             BasicConsole.DelayOutput(1);
+#endif
 
             ushort usbcmd = USBCMD.Read_UInt16();
+#if UHCI_TRACE
             BasicConsole.WriteLine("UHCI: Checking HC state: Check...");
             BasicConsole.DelayOutput(1);
+#endif
             if ((legacySupport & ~(UHCI_Consts.PCI_LEGACY_SUPPORT_STATUS | UHCI_Consts.PCI_LEGACY_SUPPORT_NO_CHG | UHCI_Consts.PCI_LEGACY_SUPPORT_PIRQ)) != 0 ||
                 (usbcmd & UHCI_Consts.CMD_RS) != 0 ||
                 (usbcmd & UHCI_Consts.CMD_CF) != 0 ||
                 (usbcmd & UHCI_Consts.CMD_EGSM) == 0 ||
                 (USBINTR.Read_UInt16() & UHCI_Consts.INT_MASK) != 0)
             {
+#if UHCI_TRACE
                 BasicConsole.WriteLine("UHCI: Checking HC state: Do reset...");
                 BasicConsole.DelayOutput(1);
+#endif
 
                 USBSTS.Write_UInt16(UHCI_Consts.STS_MASK);
                 Hardware.Devices.Timer.Default.Wait(1);
@@ -266,22 +289,28 @@ namespace Kernel.Hardware.USB.HCIs
                 {
                     if (timeout == 0)
                     {
+#if UHCI_TRACE
                         BasicConsole.WriteLine("UHCI: HC Reset timed out!");
                         BasicConsole.DelayOutput(1);
+#endif
                         break;
                     }
                     Hardware.Devices.Timer.Default.Wait(10);
                     timeout--;
                 }
-
+                
+#if UHCI_TRACE
                 BasicConsole.WriteLine("UHCI: Checking HC state: Turning off interrupts and HC...");
                 BasicConsole.DelayOutput(1);
+#endif
 
                 USBINTR.Write_UInt16(0); // switch off all interrupts
                 USBCMD.Write_UInt16(0); // switch off the host controller
-
+                
+#if UHCI_TRACE
                 BasicConsole.WriteLine("UHCI: Checking HC state: Disabling ports...");
                 BasicConsole.DelayOutput(1);
+#endif
 
                 for (byte i = 0; i < RootPortCount; i++) // switch off the valid root ports
                 {
@@ -290,9 +319,11 @@ namespace Kernel.Hardware.USB.HCIs
             }
 
             // TODO: mutex for frame list
-
+            
+#if UHCI_TRACE
             BasicConsole.WriteLine("UHCI: Creating queue head...");
             BasicConsole.DelayOutput(1);
+#endif
 
             UHCI_QueueHead_Struct* qh = (UHCI_QueueHead_Struct*)FOS_System.Heap.Alloc((uint)sizeof(UHCI_QueueHead_Struct), 16);
             qh->next = (UHCI_QueueHead_Struct*)UHCI_Consts.BIT_T;
@@ -300,70 +331,91 @@ namespace Kernel.Hardware.USB.HCIs
             qh->q_first = null;
             qh->q_last = null;
             qhPointer = qh;
-
+            
+#if UHCI_TRACE
             BasicConsole.WriteLine("UHCI: Setting up frame list entries...");
             BasicConsole.DelayOutput(1);
+#endif
 
             for (ushort i = 0; i < 1024; i++)
             {
                 FrameList[i] = UHCI_Consts.BIT_T;
             }
-
+            
+#if UHCI_TRACE
             BasicConsole.WriteLine("UHCI: Setting SOFMOD...");
             BasicConsole.DelayOutput(1);
+#endif
 
             // define each millisecond one frame, provide physical address of frame list, and start at frame 0
             SOFMOD.Write_Byte(0x40); // SOF cycle time: 12000. For a 12 MHz SOF counter clock input, this produces a 1 ms Frame period.
-
+            
+#if UHCI_TRACE
             BasicConsole.WriteLine("UHCI: Setting frame base addr and frame num...");
             BasicConsole.DelayOutput(1);
+#endif
 
             FRBASEADD.Write_UInt32((uint)VirtMemManager.GetPhysicalAddress(FrameList));
             FRNUM.Write_UInt16(0);
-
+            
+#if UHCI_TRACE
             BasicConsole.WriteLine("UHCI: Setting PCI PIRQ...");
             BasicConsole.DelayOutput(1);
+#endif
 
             // set PIRQ
             pciDevice.WriteRegister16(UHCI_Consts.PCI_LEGACY_SUPPORT, UHCI_Consts.PCI_LEGACY_SUPPORT_PIRQ);
-
+            
+#if UHCI_TRACE
             BasicConsole.WriteLine("UHCI: Starting HC...");
             BasicConsole.DelayOutput(1);
+#endif
 
             // start host controller and mark it configured with a 64-byte max packet
             USBSTS.Write_UInt16(UHCI_Consts.STS_MASK);
             USBINTR.Write_UInt16(UHCI_Consts.INT_MASK); // switch on all interrupts
             USBCMD.Write_UInt16((ushort)(UHCI_Consts.CMD_RS | UHCI_Consts.CMD_CF | UHCI_Consts.CMD_MAXP));
             
+#if UHCI_TRACE
             BasicConsole.WriteLine("UHCI: Reset CSC ports...");
             BasicConsole.DelayOutput(1);
+#endif
 
             for (byte i = 0; i < RootPortCount; i++) // reset the CSC of the valid root ports
             {
                 PORTSC1.Write_UInt16(UHCI_Consts.PORT_CS_CHANGE, (ushort)(i * 2));
             }
-
+            
+#if UHCI_TRACE
             BasicConsole.WriteLine("UHCI: Forcing global resume...");
             BasicConsole.DelayOutput(1);
+#endif
 
             USBSTS.Write_UInt16(UHCI_Consts.STS_MASK);
+#if UHCI_TRACE
             BasicConsole.WriteLine("     - STS MASK set");
+#endif
             USBCMD.Write_UInt16((ushort)(UHCI_Consts.CMD_RS | UHCI_Consts.CMD_CF | UHCI_Consts.CMD_MAXP | UHCI_Consts.CMD_FGR));
+#if UHCI_TRACE
             BasicConsole.WriteLine("     - FGR issued");
+#endif
             Hardware.Devices.Timer.Default.Wait(20);
             USBCMD.Write_UInt16((ushort)(UHCI_Consts.CMD_RS | UHCI_Consts.CMD_CF | UHCI_Consts.CMD_MAXP));
-            BasicConsole.WriteLine("     - FGR cleared");
-            
+#if UHCI_TRACE
+            BasicConsole.WriteLine("     - FGR cleared");            
             BasicConsole.DelayOutput(1);
+#endif
 
-            //Hardware.Devices.Timer.Default.Wait(100);
-
+            Hardware.Devices.Timer.Default.Wait(100);
+            
+#if UHCI_TRACE
             BasicConsole.WriteLine("UHCI: Getting run state...");
             BasicConsole.DelayOutput(1);
+#endif
 
             run = (USBCMD.Read_UInt16() & UHCI_Consts.CMD_RS) != 0;
 
-            //Processes.Scheduler.Enable();
+            
 
             if (!run)
             {
@@ -389,8 +441,10 @@ namespace Kernel.Hardware.USB.HCIs
         }        
         protected void EnablePorts()
         {
+#if UHCI_TRACE
             BasicConsole.WriteLine("UHCI: Enable ports");
             BasicConsole.DelayOutput(5);
+#endif
 
             EnabledPorts = true;
 
@@ -405,10 +459,12 @@ namespace Kernel.Hardware.USB.HCIs
 
             //TODO: Shift this EnabledPorts = true; to this location
         }
-        protected void ResetPort(byte port)
+        public override void ResetPort(byte port)
         {
+#if UHCI_TRACE
             BasicConsole.WriteLine(((FOS_System.String)"UHCI: Reset port : ") + port);
             BasicConsole.DelayOutput(5);
+#endif
 
             //Processes.Scheduler.Disable();
 
@@ -427,7 +483,9 @@ namespace Kernel.Hardware.USB.HCIs
 
                 if ((val & UHCI_Consts.PORT_CS) == 0)
                 {
+#if UHCI_TRACE
                     BasicConsole.WriteLine("UHCI: Nothing attached so not enabling.");
+#endif
                     BasicConsole.DelayOutput(1);
 
                     //Nothing attached so don't enable
@@ -441,24 +499,29 @@ namespace Kernel.Hardware.USB.HCIs
 
                 if ((val & UHCI_Consts.PORT_ENABLE) != 0)
                 {
+#if UHCI_TRACE
                     BasicConsole.WriteLine("UHCI: Nothing attached so not enabling.");
                     BasicConsole.DelayOutput(1);
+#endif
 
                     break;
                 }
             }
-
+            
+#if UHCI_TRACE
             BasicConsole.WriteLine("UHCI: Enabling...");
             BasicConsole.DelayOutput(1);
+#endif
 
             // Enable
             PORTSC1.Write_UInt16(0xF, portOffset);
             Hardware.Devices.Timer.Default.Wait(10);
 
-            //Processes.Scheduler.Enable();
-
+            
+#if UHCI_TRACE
             BasicConsole.WriteLine(((FOS_System.String)"UHCI: Port ") + port + " reset and enabled.");
             BasicConsole.DelayOutput(5);
+#endif
         }
 
         protected static void InterruptHandler(FOS_System.Object data)
@@ -532,8 +595,10 @@ namespace Kernel.Hardware.USB.HCIs
         
         protected void AnalysePortStatus(byte j, ushort val)
         {
+#if UHCI_TRACE
             BasicConsole.WriteLine("UHCI: Anaylse port status");
             BasicConsole.DelayOutput(5);
+#endif
 
             HCPort port = GetPort(j);
             if ((val & UHCI_Consts.PORT_LOWSPEED_DEVICE) != 0)
@@ -565,35 +630,11 @@ namespace Kernel.Hardware.USB.HCIs
                     port.deviceInfo.FreePort();
                 }
             }
+            else
+            {
+                BasicConsole.WriteLine(" not attached.");
+            }
         }
-               
-        //////////////////////
-        //// analysis tools //
-        //////////////////////
-
-        //void uhci_showStatusbyteTD(uhciTD_t* TD)
-        //{
-        //    textColor(ERROR);
-        //    if (TD->bitstuffError)     printf("\nBitstuff Error");          // receive data stream contained a sequence of more than 6 ones in a row
-        //    if (TD->crc_timeoutError)  printf("\nNo Response from Device"); // no response from the device (CRC or timeout)
-        //    if (TD->nakReceived)       printf("\nNAK received");            // NAK handshake
-        //    if (TD->babbleDetected)    printf("\nBabble detected");         // Babble (fatal error), e.g. more data from the device than MAXP
-        //    if (TD->dataBufferError)   printf("\nData Buffer Error");       // HC cannot keep up with the data  (overrun) or cannot supply data fast enough (underrun)
-        //    if (TD->stall)             printf("\nStalled");                 // can be caused by babble, error counter (0) or STALL from device
-
-        //    textColor(GRAY);
-        //    if (TD->active)            printf("\nactive");                  // 1: HC will execute   0: set by HC after excution (HC will not excute next time)
-
-        //  #ifdef _UHCI_DIAGNOSIS_
-        //    textColor(IMPORTANT);
-        //    if (TD->intOnComplete)     printf("\ninterrupt on complete");   // 1: HC issues interrupt on completion of the frame in which the TD is executed
-        //    if (TD->isochrSelect)      printf("\nisochronous TD");          // 1: Isochronous TD
-        //    if (TD->lowSpeedDevice)    printf("\nLowspeed Device");         // 1: LS   0: FS
-        //    if (TD->shortPacketDetect) printf("\nShortPacketDetect");       // 1: enable   0: disable
-        //  #endif
-
-        //    textColor(TEXT);
-        //}
 
         protected static void ShowPortState(ushort val)
         {
@@ -618,8 +659,11 @@ namespace Kernel.Hardware.USB.HCIs
 
         protected bool isTransactionSuccessful(UHCITransaction uT)
         {
+#if UHCI_TRACE
             BasicConsole.WriteLine("UHCI: Is Transaction Successful");
             BasicConsole.DelayOutput(5);
+#endif
+            //TODO: Check actual length field
 
             //Zero bits:
             //  17, 18, 19, 20, 21, 22, 23
@@ -628,8 +672,10 @@ namespace Kernel.Hardware.USB.HCIs
 
         protected override void _SETUPTransaction(USBTransfer transfer, USBTransaction uTransaction, bool toggle, ushort tokenBytes, byte type, byte req, byte hiVal, byte loVal, ushort index, ushort length)
         {
+#if UHCI_TRACE
             BasicConsole.WriteLine("UHCI: SETUP Transaction");
             BasicConsole.DelayOutput(5);
+#endif
 
             UHCITransaction uT = new UHCITransaction();
             uTransaction.underlyingTz = uT;
@@ -648,8 +694,10 @@ namespace Kernel.Hardware.USB.HCIs
         }
         protected override void _INTransaction(USBTransfer transfer, USBTransaction uTransaction, bool toggle, void* buffer, ushort length)
         {
+#if UHCI_TRACE
             BasicConsole.WriteLine("UHCI: IN Transaction");
             BasicConsole.DelayOutput(5);
+#endif
 
             UHCITransaction uT = new UHCITransaction();
             uTransaction.underlyingTz = uT;
@@ -668,8 +716,10 @@ namespace Kernel.Hardware.USB.HCIs
         }
         protected override void _OUTTransaction(USBTransfer transfer, USBTransaction uTransaction, bool toggle, void* buffer, ushort length)
         {
+#if UHCI_TRACE
             BasicConsole.WriteLine("UHCI: OUT Transaction");
             BasicConsole.DelayOutput(5);
+#endif
 
             UHCITransaction uT = new UHCITransaction();
             uTransaction.underlyingTz = uT;
@@ -693,19 +743,26 @@ namespace Kernel.Hardware.USB.HCIs
         }
         protected override void _SetupTransfer(USBTransfer transfer)
         {
+#if UHCI_TRACE
             BasicConsole.WriteLine("UHCI: Setup Transfer");
             BasicConsole.DelayOutput(5);
+#endif
 
             transfer.underlyingTransferData = qhPointer; // QH
         }
         protected override void _IssueTransfer(USBTransfer transfer)
         {
+#if UHCI_TRACE
             BasicConsole.WriteLine("UHCI: Issue Transfer");
             BasicConsole.DelayOutput(5);
+#endif
 
             UHCITransaction firstTransaction = (UHCITransaction)((USBTransaction)transfer.transactions[0]).underlyingTz;
+            UHCITransaction lastTransaction = (UHCITransaction)((USBTransaction)transfer.transactions[transfer.transactions.Count - 1]).underlyingTz;
+            UHCI_qTD.SetIntOnComplete(lastTransaction.qTD, true);  // We want an interrupt after complete transfer
             CreateQH((UHCI_QueueHead_Struct*)transfer.underlyingTransferData, (uint)transfer.underlyingTransferData, firstTransaction.qTD);
-
+            
+#if UHCI_TRACE
             BasicConsole.WriteLine("    Queue head data:");
             BasicConsole.DumpMemory(transfer.underlyingTransferData, sizeof(UHCI_QueueHead_Struct));
             BasicConsole.WriteLine("    Transactions data:");
@@ -724,10 +781,18 @@ namespace Kernel.Hardware.USB.HCIs
             BasicConsole.DelayOutput(60);
 
             BasicConsole.WriteLine("UHCI: Issuing transfer...");
+#endif
 
             for (byte i = 0; i < UHCI_Consts.NUMBER_OF_UHCI_RETRIES && !transfer.success; i++)
             {
                 TransactionsCompleted = 0;
+                for (int j = 0; j < transfer.transactions.Count; j++)
+                {
+                    USBTransaction elem = (USBTransaction)transfer.transactions[j];
+                    UHCITransaction uT = (UHCITransaction)(elem.underlyingTz);
+                    uT.qTD->u1 = uT.qTD->u1 & 0xFF00FFFF;
+                    UHCI_qTD.SetActive(uT.qTD, true);
+                }
 
                 // stop scheduler
                 USBSTS.Write_UInt16(UHCI_Consts.STS_MASK);
@@ -753,28 +818,45 @@ namespace Kernel.Hardware.USB.HCIs
                 BasicConsole.WriteLine(((FOS_System.String)"USBINT val: ") + USBINTR.Read_UInt16());
 
                 // run transactions
-                int timeout = 20;
-                while (TransactionsCompleted < transfer.transactions.Count &&
-                      timeout > 0)
+                bool active = true;
+                int timeout = 1000;
+                while (active && timeout > 0)
                 {
-                    BasicConsole.WriteLine("UHCI: Waiting on transfer complete...");
-                    //BasicConsole.WriteLine(((FOS_System.String)"FRNUM val: ") + FRNUM.Read_UInt16());
+                    active = false;
+                    for (int j = 0; j < transfer.transactions.Count; j++)
+                    {
+                        USBTransaction elem = (USBTransaction)transfer.transactions[j];
+                        UHCITransaction uT = (UHCITransaction)(elem.underlyingTz);
+                        active = active || ((uT.qTD->u1 & 0x00FF0000) == 0x00800000);
+                    }
 
-                    Hardware.Devices.Timer.Default.Wait(500);
-
+                    Hardware.Devices.Timer.Default.Wait(50);
                     timeout--;
                 }
 
+#if UHCI_TRACE
                 BasicConsole.WriteLine("Finished waiting.");
+#endif
 
+                FrameList[0] = UHCI_Consts.BIT_T;
+                
                 if (timeout == 0 ||
                     TransactionsCompleted != transfer.transactions.Count)
                 {
+#if UHCI_TRACE
                     BasicConsole.SetTextColour(BasicConsole.error_colour);
                     BasicConsole.WriteLine("UHCI: Error! Transactions wait timed out or wrong number of transactions completed.");
                     BasicConsole.SetTextColour(BasicConsole.default_colour);
 
                     BasicConsole.WriteLine(((FOS_System.String)"Transactions completed: ") + TransactionsCompleted);
+#endif
+
+                    if (timeout == 0)
+                    {
+                        BasicConsole.SetTextColour(BasicConsole.error_colour);
+                        BasicConsole.WriteLine("UHCI: Error! Transfer timed out.");
+                        BasicConsole.SetTextColour(BasicConsole.default_colour);
+                    }
 
                     transfer.success = false;
 
@@ -783,16 +865,23 @@ namespace Kernel.Hardware.USB.HCIs
                     {
                         USBTransaction elem = (USBTransaction)transfer.transactions[j];
                         UHCITransaction uT = (UHCITransaction)(elem.underlyingTz);
-
+                        
+#if UHCI_TRACE
                         BasicConsole.WriteLine(((FOS_System.String)"u1=") + uT.qTD->u1 + ", u2=" + uT.qTD->u2);
                         BasicConsole.WriteLine(((FOS_System.String)"Status=") + (byte)(uT.qTD->u1 >> 16));
-                        completeDespiteNoInterrupt = completeDespiteNoInterrupt && ((byte)(uT.qTD->u1 >> 16) == 0);
+#endif
+                        completeDespiteNoInterrupt = completeDespiteNoInterrupt && isTransactionSuccessful(uT);
                     }
 
                     transfer.success = completeDespiteNoInterrupt;
 
+                    BasicConsole.SetTextColour(BasicConsole.warning_colour);
                     BasicConsole.WriteLine(((FOS_System.String)"Complete despite no interrupts: ") + completeDespiteNoInterrupt);
+                    BasicConsole.SetTextColour(BasicConsole.default_colour);
+                    
+#if UHCI_TRACE
                     BasicConsole.DelayOutput(5);
+#endif
                 }
                 else
                 {
@@ -821,13 +910,21 @@ namespace Kernel.Hardware.USB.HCIs
                     BasicConsole.WriteLine("Transfer failed.");
                     BasicConsole.SetTextColour(BasicConsole.default_colour);
                 }
+                else
+                {
+                    BasicConsole.SetTextColour((char)0x0200);
+                    BasicConsole.WriteLine("Transfer succeeded.");
+                    BasicConsole.SetTextColour(BasicConsole.default_colour);
+                }
             }
         }
 
         protected static UHCI_qTD_Struct* AllocQTD(uint* next)
         {
+#if UHCI_TRACE
             BasicConsole.WriteLine("UHCI: Alloc qTD");
             BasicConsole.DelayOutput(5);
+#endif
 
             UHCI_qTD_Struct* td = (UHCI_qTD_Struct*)FOS_System.Heap.Alloc((uint)sizeof(UHCI_qTD_Struct), 16);
 
@@ -842,7 +939,6 @@ namespace Kernel.Hardware.USB.HCIs
             }
 
             UHCI_qTD.SetActive(td, true); // to be executed
-            UHCI_qTD.SetIntOnComplete(td, true);  // We want an interrupt after complete transfer
             UHCI_qTD.SetPacketID(td, UHCI_Consts.TD_SETUP);
             UHCI_qTD.SetMaxLength(td, 0x3F); // 64 byte // uhci, rev. 1.1, page 24
 
@@ -850,8 +946,10 @@ namespace Kernel.Hardware.USB.HCIs
         }
         protected static void* AllocQTDbuffer(UHCI_qTD_Struct* td)
         {
+#if UHCI_TRACE
             BasicConsole.WriteLine("UHCI: Alloc qTD Buffer");
             BasicConsole.DelayOutput(5);
+#endif
 
             td->virtBuffer = FOS_System.Heap.Alloc(1024);
             MemoryUtils.ZeroMem(td->virtBuffer, 1024);
@@ -861,8 +959,10 @@ namespace Kernel.Hardware.USB.HCIs
         }
         protected UHCI_qTD_Struct* CreateQTD_SETUP(UHCI_QueueHead_Struct* uQH, uint* next, bool toggle, ushort tokenBytes, byte type, byte req, byte hiVal, byte loVal, ushort i, ushort length, byte device, byte endpoint, uint packetSize)
         {
+#if UHCI_TRACE
             BasicConsole.WriteLine("UHCI: Create qTD SETUP");
             BasicConsole.DelayOutput(5);
+#endif
 
             UHCI_qTD_Struct* td = AllocQTD(next);
 
@@ -887,8 +987,10 @@ namespace Kernel.Hardware.USB.HCIs
         }
         protected UHCI_qTD_Struct* CreateQTD_IO(UHCI_QueueHead_Struct* uQH, uint* next, byte direction, bool toggle, ushort tokenBytes, byte device, byte endpoint, uint packetSize)
         {
+#if UHCI_TRACE
             BasicConsole.WriteLine("UHCI: Create qTD IO");
             BasicConsole.DelayOutput(5);
+#endif
 
             UHCI_qTD_Struct* td = AllocQTD(next);
 
@@ -915,8 +1017,10 @@ namespace Kernel.Hardware.USB.HCIs
         }
         protected void CreateQH(UHCI_QueueHead_Struct* head, uint horizPtr, UHCI_qTD_Struct* firstTD)
         {
+#if UHCI_TRACE
             BasicConsole.WriteLine("UHCI: Create QH");
             BasicConsole.DelayOutput(5);
+#endif
 
             head->next = (UHCI_QueueHead_Struct*)UHCI_Consts.BIT_T; // (paging_getPhysAddr((void*)horizPtr) & 0xFFFFFFF0) | BIT_QH;
 
@@ -933,8 +1037,10 @@ namespace Kernel.Hardware.USB.HCIs
 
         public override void Update()
         {
+#if UHCI_TRACE
             BasicConsole.WriteLine("UHCI: Update");
             BasicConsole.DelayOutput(5);
+#endif
 
             for (byte j = 0; j < RootPortCount; j++)
             {
@@ -942,7 +1048,9 @@ namespace Kernel.Hardware.USB.HCIs
 
                 if ((val & UHCI_Consts.PORT_CS_CHANGE) != 0)
                 {
-                    //printf("\nUHCI %u: Port %u changed: ", u->num, j + 1);
+#if UHCI_TRACE
+                    BasicConsole.WriteLine(((FOS_System.String)"UHCI: Port ") + j + " changed.");
+#endif
                     PORTSC1.Write_UInt16(UHCI_Consts.PORT_CS_CHANGE, (ushort)(2 * j));
                     AnalysePortStatus(j, val);
                 }

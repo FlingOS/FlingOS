@@ -16,6 +16,9 @@
 // ------------------------------------------------------------------------------ //
 #endregion
     
+#define PCI_TRACE
+#undef PCI_TRACE
+
 using System;
 using Kernel.FOS_System;
 using Kernel.FOS_System.Collections;
@@ -109,8 +112,10 @@ namespace Kernel.Hardware.PCI
 
             if (device is PCIDeviceBridge)
             {
+#if PCI_TRACE
                 BasicConsole.WriteLine("Enumerating PCI Bridge Device...");
                 BasicConsole.DelayOutput(5);
+#endif
                  
                 EnumerateBus(((PCIDeviceBridge)device).SecondaryBusNumber, step + 1);
             }

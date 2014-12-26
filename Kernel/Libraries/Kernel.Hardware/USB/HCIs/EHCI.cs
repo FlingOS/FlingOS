@@ -1142,7 +1142,7 @@ namespace Kernel.Hardware.USB.HCIs
         /// Resets the specified port.
         /// </summary>
         /// <param name="portNum">The port to reset.</param>
-        protected void ResetPort(byte portNum)
+        public override void ResetPort(byte portNum)
         {
             // Enable power for the port
             //  Technically we only need to do this if PPC (Section 2.2.3 of Intel EHCI Spec) is 1.

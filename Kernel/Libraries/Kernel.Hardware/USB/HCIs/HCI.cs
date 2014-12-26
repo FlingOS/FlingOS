@@ -250,6 +250,8 @@ namespace Kernel.Hardware.USB.HCIs
         /// <param name="transfer">The transfer to issue.</param>
         protected abstract void _IssueTransfer(USBTransfer transfer);
 
+        public abstract void ResetPort(byte port);
+
         /// <summary>
         /// Updates the HC such as checking for port/device changes.
         /// </summary>
@@ -350,6 +352,11 @@ namespace Kernel.Hardware.USB.HCIs
         /// The speed of the port. Default: UNSET.
         /// </summary>
         public USBPortSpeed speed = USBPortSpeed.UNSET;
+
+        public void Reset()
+        {
+            deviceInfo.hc.ResetPort(portNum);
+        }
     }
 
     /// <summary>

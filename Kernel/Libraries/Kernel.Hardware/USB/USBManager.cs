@@ -17,7 +17,7 @@
 #endregion
     
 #define USB_TRACE
-//#undef USB_TRACE
+#undef USB_TRACE
 
 using System;
 using Kernel.FOS_System.Collections;
@@ -28,6 +28,16 @@ using Kernel.Utilities;
 
 namespace Kernel.Hardware.USB
 {
+    //TODO: Read Benjamin Lunt's book "USB: The Universal Serial Bus (FYSOS: Operating System Design Book 8)"
+    //  It contains a lot of practical points about USB implementation which this driver fails to account for.
+    //  For example, this driver does not follow the practice of requesting the first 8 bytes of descriptors,
+    //  to get the length info, then requesting the remaining bytes. Nor does it separately send the STATUS
+    //  packet at the end of a successful request. 
+    //
+    //  For this driver to be 100% proper, it should be modified to include Lunt's practical notes. However,
+    //  this is only the low-level USB driver which will be superseded by the proper USB driver in the full 
+    //  Kernel Driver Framework, so for now, this will do.
+
     /// <summary>
     /// Provides methods for managing USB access.
     /// </summary>
@@ -249,30 +259,96 @@ namespace Kernel.Hardware.USB
 
             try
             {
-                success = GetDeviceDescriptor(deviceInfo);
-                if (!success)
+                // Windows Legacy Compatiblity code
+                //  See:
+                //      USB: The Universal Serial Bus (FYSOS: Operating System Design Book 8)
+                //      Part 2 : Chapter 11 : Device Enumeration with the UHCI
+                //          -> Inserting your queue into the stack, Paragraph 6
+                //  "
+                //      The main reason is that some devices were only expected to work with the Windows
+                //      Operating System. Win98SE for example, gets the first 8 bytes, does a reset of the port,
+                //      sets the address of the device and then finally gets all 18 bytes of the descriptor.
+                //      Therefore, these few devices don't expect to send more than the first 8 bytes while in the
+                //      default state, the state before it is given an address, and may not function properly until
+                //      that sequence is received. It completely defies the given operation of the USB
+                //      specification, but this is how some devices function. I have not personally seen or used 
+                //      any device that functions in this way, but have read documentation that states this may 
+                //      happen.
+                //  "
+
+                HCPort port = deviceInfo.hc.GetPort(deviceInfo.portNum);
+                USBPortSpeed speed = port.speed;
+                if (speed == USBPortSpeed.Low ||
+                    speed == USBPortSpeed.Full)
+                {
+                    success = GetDeviceDescriptor(deviceInfo, true);
+                    if (!success)
+                    {
+                        success = GetDeviceDescriptor(deviceInfo, true);
+                    }
+                    FOS_System.GC.Cleanup();
+
+                    if (!success)
+                    {
+#if USB_TRACE
+                        DBGMSG("Partial device descriptor could not be read! Setup device aborted.");
+                        BasicConsole.DelayOutput(10);
+#endif
+                        return;
+                    }
+
+#if USB_TRACE
+                    BasicConsole.DelayOutput(3);
+#endif
+
+                    port.Reset();
+
+                    deviceInfo.address = SetDeviceAddress(deviceInfo, address);
+                    FOS_System.GC.Cleanup();
+
+                    success = GetDeviceDescriptor(deviceInfo, false);
+                    if (!success)
+                    {
+                        success = GetDeviceDescriptor(deviceInfo, false);
+                    }
+                    FOS_System.GC.Cleanup();
+
+                    if (!success)
+                    {
+#if USB_TRACE
+                        DBGMSG("Full device descriptor could not be read! Setup device aborted.");
+                        BasicConsole.DelayOutput(10);
+#endif
+                        return;
+                    }
+                }
+                else
                 {
                     success = GetDeviceDescriptor(deviceInfo);
-                }
-                FOS_System.GC.Cleanup();
+                    if (!success)
+                    {
+                        success = GetDeviceDescriptor(deviceInfo);
+                    }
+                    FOS_System.GC.Cleanup();
 
-                if (!success)
-                {
+                    if (!success)
+                    {
 #if USB_TRACE
-                    DBGMSG("Device descriptor could not be read! Setup device aborted.");
-                    BasicConsole.DelayOutput(10);
+                        DBGMSG("Device descriptor could not be read! Setup device aborted.");
+                        BasicConsole.DelayOutput(10);
 #endif
-                    return;
-                }
+                        return;
+                    }
 
 #if USB_TRACE
-                BasicConsole.DelayOutput(3);
+                    BasicConsole.DelayOutput(3);
 #endif
 
+                    deviceInfo.address = SetDeviceAddress(deviceInfo, address);
+                    FOS_System.GC.Cleanup();
+                }
+                
                 bool hub = deviceInfo.usbClass == 0x09;
-
-                deviceInfo.address = SetDeviceAddress(deviceInfo, address);
-                FOS_System.GC.Cleanup();
 #if USB_TRACE
                 if (hub)
                 {
@@ -305,10 +381,6 @@ namespace Kernel.Hardware.USB
 #if USB_TRACE
                 if (!hub)
                 {
-                    GetDeviceDescriptor(deviceInfo);
-                    FOS_System.GC.Cleanup();
-                    BasicConsole.DelayOutput(2);
-
                     for (byte i = 1; i < 4; i++) // Fetch descriptor strings 1, 2
                     {
                         GetUnicodeStringDescriptor(deviceInfo, i);
@@ -425,7 +497,7 @@ namespace Kernel.Hardware.USB
         /// </summary>
         /// <param name="device">The device info of the device to get the descriptor from.</param>
         /// <returns>True if USB transfer completed successfully. Otherwise, false.</returns>
-        public static bool GetDeviceDescriptor(USBDeviceInfo device)
+        public static bool GetDeviceDescriptor(USBDeviceInfo device, bool first8BytesOnly = false)
         {
 #if USB_TRACE
             DBGMSG("USB: GET_DESCRIPTOR Device");
@@ -436,8 +508,8 @@ namespace Kernel.Hardware.USB
             try
             {
                 device.hc.SetupTransfer(device, transfer, USBTransferType.Control, 0, 64);
-                device.hc.SETUPTransaction(transfer, 8, 0x80, 6, 1, 0, 0, 18);
-                device.hc.INTransaction(transfer, false, descriptor, 18);
+                device.hc.SETUPTransaction(transfer, 8, 0x80, 6, 1, 0, 0, (first8BytesOnly ? (ushort)8u : (ushort)18u));
+                device.hc.INTransaction(transfer, false, descriptor, (first8BytesOnly ? (ushort)8u : (ushort)18u));
                 device.hc.OUTTransaction(transfer, true, null, 0);
                 device.hc.IssueTransfer(transfer);
 

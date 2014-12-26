@@ -1503,8 +1503,6 @@ namespace Kernel.Hardware.USB.Devices
 #if MSD_TRACE
                 BasicConsole.WriteLine(" - Read.");
 #endif
-
-                FOS_System.GC.Cleanup();
             }
 
             msd.Idle(false);
@@ -1529,8 +1527,6 @@ namespace Kernel.Hardware.USB.Devices
                 for (uint i = 0; i < aBlockCount; i++)
                 {
                     msd.Write((uint)(aBlockNo + i), dataPtr);
-
-                    FOS_System.GC.Cleanup();
                 }
             }
             else
@@ -1540,8 +1536,6 @@ namespace Kernel.Hardware.USB.Devices
                 {
                     msd.Write((uint)(aBlockNo + i), dataPtr);
                     dataPtr += blockSize;
-
-                    FOS_System.GC.Cleanup();
                 }
             }
 
