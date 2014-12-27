@@ -77,6 +77,48 @@ namespace Kernel
                 Hardware.Devices.Timer.InitDefault();
                 Core.Processes.SystemCalls.Init();
 
+                uint bpm = 140;
+                Hardware.Timers.PIT.ThePIT.PlayNote(
+                    Hardware.Timers.PIT.MusicalNote.C4,
+                    Hardware.Timers.PIT.MusicalNoteValue.Quaver,
+                    bpm);
+                Hardware.Timers.PIT.ThePIT.PlayNote(
+                    Hardware.Timers.PIT.MusicalNote.Silent,
+                    Hardware.Timers.PIT.MusicalNoteValue.Minim,
+                    bpm);
+                Hardware.Timers.PIT.ThePIT.PlayNote(
+                    Hardware.Timers.PIT.MusicalNote.E4,
+                    Hardware.Timers.PIT.MusicalNoteValue.Quaver,
+                    bpm);
+                Hardware.Timers.PIT.ThePIT.PlayNote(
+                    Hardware.Timers.PIT.MusicalNote.Silent,
+                    Hardware.Timers.PIT.MusicalNoteValue.Minim,
+                    bpm);
+                Hardware.Timers.PIT.ThePIT.PlayNote(
+                    Hardware.Timers.PIT.MusicalNote.G4,
+                    Hardware.Timers.PIT.MusicalNoteValue.Quaver,
+                    bpm);
+                Hardware.Timers.PIT.ThePIT.PlayNote(
+                    Hardware.Timers.PIT.MusicalNote.Silent,
+                    Hardware.Timers.PIT.MusicalNoteValue.Minim,
+                    bpm);
+                Hardware.Timers.PIT.ThePIT.PlayNote(
+                    Hardware.Timers.PIT.MusicalNote.C5,
+                    Hardware.Timers.PIT.MusicalNoteValue.Minim,
+                    bpm);
+                Hardware.Timers.PIT.ThePIT.PlayNote(
+                    Hardware.Timers.PIT.MusicalNote.Silent,
+                    Hardware.Timers.PIT.MusicalNoteValue.Minim,
+                    bpm);
+                Hardware.Timers.PIT.ThePIT.PlayNote(
+                    Hardware.Timers.PIT.MusicalNote.G4,
+                    Hardware.Timers.PIT.MusicalNoteValue.Minim,
+                    bpm);
+                Hardware.Timers.PIT.ThePIT.PlayNote(
+                    Hardware.Timers.PIT.MusicalNote.C5,
+                    Hardware.Timers.PIT.MusicalNoteValue.Minim,
+                    bpm);
+                
                 Process ManagedMainProcess = ProcessManager.CreateProcess(ManagedMain, "Managed Main", false);                
                 Thread ManagedMain_MainThread = ((Thread)ManagedMainProcess.Threads[0]);
                 Hardware.VirtMemManager.Unmap(ManagedMain_MainThread.State->ThreadStackTop - 4092);

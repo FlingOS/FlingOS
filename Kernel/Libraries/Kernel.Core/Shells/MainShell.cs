@@ -1533,25 +1533,93 @@ namespace Kernel.Core.Shells
             for (int i = 0; i < Hardware.DeviceManager.Devices.Count; i++)
             {
                 Hardware.Device aDevice = (Hardware.Device)Hardware.DeviceManager.Devices[i];
-                if (aDevice is Hardware.USB.Devices.MassStorageDevice)
+
+                if (aDevice is Hardware.USB.Devices.USBDevice)
                 {
+                    Hardware.USB.Devices.USBDevice usbDevice = (Hardware.USB.Devices.USBDevice)aDevice;
+                    Hardware.USB.Devices.USBDeviceInfo usbDeviceInfo = usbDevice.DeviceInfo;
                     console.WriteLine();
-                    
+
                     console.Write("--------------------- Device ");
                     console.Write_AsDecimal(i);
                     console.WriteLine(" ---------------------");
-                    
-                    console.WriteLine("USB Mass Storage Device found.");
-                    Hardware.USB.Devices.MassStorageDevice theMSD = (Hardware.USB.Devices.MassStorageDevice)aDevice;
-                    Hardware.USB.Devices.MassStorageDevice_DiskDevice theMSDDisk = theMSD.diskDevice;
 
-                    console.Write("Disk device num: ");
-                    console.WriteLine_AsDecimal(Hardware.DeviceManager.Devices.IndexOf(theMSDDisk));
-                    console.WriteLine(((FOS_System.String)"Block Size: ") + theMSDDisk.BlockSize + " bytes");
-                    console.WriteLine(((FOS_System.String)"Block Count: ") + theMSDDisk.BlockCount);
-                    console.WriteLine(((FOS_System.String)"Size: ") + ((theMSDDisk.BlockCount * theMSDDisk.BlockSize) >> 20) + " MB");
+                    if (aDevice is Hardware.USB.Devices.MassStorageDevice)
+                    {
+                        console.WriteLine("USB Mass Storage Device found.");
+                        Hardware.USB.Devices.MassStorageDevice theMSD = (Hardware.USB.Devices.MassStorageDevice)usbDevice;
+                        Hardware.USB.Devices.MassStorageDevice_DiskDevice theMSDDisk = theMSD.diskDevice;
 
-                    numDrives++;
+                        console.Write("Disk device num: ");
+                        console.WriteLine_AsDecimal(Hardware.DeviceManager.Devices.IndexOf(theMSDDisk));
+                        console.WriteLine(((FOS_System.String)"Block Size: ") + theMSDDisk.BlockSize + " bytes");
+                        console.WriteLine(((FOS_System.String)"Block Count: ") + theMSDDisk.BlockCount);
+                        console.WriteLine(((FOS_System.String)"Size: ") + ((theMSDDisk.BlockCount * theMSDDisk.BlockSize) >> 20) + " MB");
+
+                        numDrives++;
+                    }
+                    else
+                    {
+                        console.WriteLine("Unrecognised USB device found.");
+                    }
+
+                    console.WriteLine();
+
+                    if (usbDeviceInfo.usbSpec == 0x0100 || usbDeviceInfo.usbSpec == 0x0110 || usbDeviceInfo.usbSpec == 0x0200 || usbDeviceInfo.usbSpec == 0x0201 || usbDeviceInfo.usbSpec == 0x0210 || usbDeviceInfo.usbSpec == 0x0213 || usbDeviceInfo.usbSpec == 0x0300)
+                    {
+                        console.Write("USB ");
+                        console.Write_AsDecimal((usbDeviceInfo.usbSpec >> 8) & 0xFF);
+                        console.Write(".");
+                        console.WriteLine_AsDecimal(usbDeviceInfo.usbSpec & 0xFF);
+                    }
+                    else
+                    {
+                        console.ErrorColour();
+                        console.Write("Invalid USB version ");
+                        console.Write_AsDecimal((usbDeviceInfo.usbSpec >> 8) & 0xFF);
+                        console.Write(".");
+                        console.WriteLine_AsDecimal(usbDeviceInfo.usbSpec & 0xFF);
+                        console.DefaultColour();
+                    }
+
+                    if (usbDeviceInfo.usbClass == 0x09)
+                    {
+                        switch (usbDeviceInfo.usbProtocol)
+                        {
+                            case 0:
+                                console.WriteLine(" - Full speed USB hub");
+                                break;
+                            case 1:
+                                console.WriteLine(" - Hi-speed USB hub with single TT");
+                                break;
+                            case 2:
+                                console.WriteLine(" - Hi-speed USB hub with multiple TTs");
+                                break;
+                        }
+                    }
+
+                    console.Write("endpoint 0 mps: ");
+                    console.Write_AsDecimal(((Hardware.USB.Endpoint)usbDeviceInfo.Endpoints[0]).mps);
+                    console.WriteLine(" byte.");
+                    console.Write("vendor:            ");
+                    console.WriteLine_AsDecimal(usbDeviceInfo.vendor);
+                    console.Write("product:           ");
+                    console.WriteLine_AsDecimal(usbDeviceInfo.product);
+                    console.Write("release number:    ");
+                    console.Write_AsDecimal((usbDeviceInfo.releaseNumber >> 8) & 0xFF);
+                    console.Write(".");
+                    console.WriteLine_AsDecimal(usbDeviceInfo.releaseNumber & 0xFF);
+                    console.Write("manufacturer:      ");
+                    console.WriteLine_AsDecimal(usbDeviceInfo.manufacturerStringID);
+                    console.Write("product:           ");
+                    console.WriteLine_AsDecimal(usbDeviceInfo.productStringID);
+                    console.Write("serial number:     ");
+                    console.WriteLine_AsDecimal(usbDeviceInfo.serNumberStringID);
+                    console.Write("number of config.: ");
+                    console.WriteLine_AsDecimal(usbDeviceInfo.numConfigurations); // number of possible configurations
+                    console.Write("MSDInterfaceNum:   ");
+                    console.WriteLine_AsDecimal(usbDeviceInfo.MSD_InterfaceNum);
+                    Hardware.Devices.Timer.Default.Wait(1000);
                 }
             }
         }

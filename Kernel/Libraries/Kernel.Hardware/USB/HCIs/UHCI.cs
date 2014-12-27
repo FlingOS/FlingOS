@@ -453,7 +453,9 @@ namespace Kernel.Hardware.USB.HCIs
                 ResetPort(j);
 
                 ushort val = PORTSC1.Read_UInt16((ushort)(2 * j));
+#if UHCI_TRACE
                 BasicConsole.WriteLine(((FOS_System.String)"UHCI: Port ") + j + " : " + val);
+#endif
                 AnalysePortStatus(j, val);
             }
 
@@ -485,8 +487,8 @@ namespace Kernel.Hardware.USB.HCIs
                 {
 #if UHCI_TRACE
                     BasicConsole.WriteLine("UHCI: Nothing attached so not enabling.");
-#endif
                     BasicConsole.DelayOutput(1);
+#endif
 
                     //Nothing attached so don't enable
                     return;
@@ -603,18 +605,24 @@ namespace Kernel.Hardware.USB.HCIs
             HCPort port = GetPort(j);
             if ((val & UHCI_Consts.PORT_LOWSPEED_DEVICE) != 0)
             {
+#if UHCI_TRACE
                 BasicConsole.Write("UHCI: Lowspeed device");
+#endif
                 port.speed = USBPortSpeed.Low; // Save lowspeed/fullspeed information in data
             }
             else
             {
+#if UHCI_TRACE
                 BasicConsole.Write("UHCI: Fullspeed device");
+#endif
                 port.speed = USBPortSpeed.Full; // Save lowspeed/fullspeed information in data
             }
 
             if (((val & UHCI_Consts.PORT_CS) != 0) && !port.connected)
             {
+#if UHCI_TRACE
                 BasicConsole.WriteLine(" attached.");
+#endif
                 port.connected = true;
                 ResetPort(j);      // reset on attached
                 
@@ -622,7 +630,9 @@ namespace Kernel.Hardware.USB.HCIs
             }
             else if (port.connected)
             {
+#if UHCI_TRACE
                 BasicConsole.WriteLine(" removed.");
+#endif
                 port.connected = false;
 
                 if (port.deviceInfo != null)
@@ -630,10 +640,12 @@ namespace Kernel.Hardware.USB.HCIs
                     port.deviceInfo.FreePort();
                 }
             }
+#if UHCI_TRACE
             else
             {
                 BasicConsole.WriteLine(" not attached.");
             }
+#endif
         }
 
         protected static void ShowPortState(ushort val)
@@ -815,11 +827,13 @@ namespace Kernel.Hardware.USB.HCIs
                     Hardware.Devices.Timer.Default.Wait(10);
                 }
 
+#if UHCI_TRACE
                 BasicConsole.WriteLine(((FOS_System.String)"USBINT val: ") + USBINTR.Read_UInt16());
+#endif
 
                 // run transactions
                 bool active = true;
-                int timeout = 1000;
+                int timeout = 40; //2 seconds
                 while (active && timeout > 0)
                 {
                     active = false;
@@ -849,7 +863,6 @@ namespace Kernel.Hardware.USB.HCIs
                     BasicConsole.SetTextColour(BasicConsole.default_colour);
 
                     BasicConsole.WriteLine(((FOS_System.String)"Transactions completed: ") + TransactionsCompleted);
-#endif
 
                     if (timeout == 0)
                     {
@@ -857,6 +870,7 @@ namespace Kernel.Hardware.USB.HCIs
                         BasicConsole.WriteLine("UHCI: Error! Transfer timed out.");
                         BasicConsole.SetTextColour(BasicConsole.default_colour);
                     }
+#endif
 
                     transfer.success = false;
 
@@ -875,11 +889,11 @@ namespace Kernel.Hardware.USB.HCIs
 
                     transfer.success = completeDespiteNoInterrupt;
 
+#if UHCI_TRACE
                     BasicConsole.SetTextColour(BasicConsole.warning_colour);
                     BasicConsole.WriteLine(((FOS_System.String)"Complete despite no interrupts: ") + completeDespiteNoInterrupt);
                     BasicConsole.SetTextColour(BasicConsole.default_colour);
                     
-#if UHCI_TRACE
                     BasicConsole.DelayOutput(5);
 #endif
                 }
@@ -910,12 +924,14 @@ namespace Kernel.Hardware.USB.HCIs
                     BasicConsole.WriteLine("Transfer failed.");
                     BasicConsole.SetTextColour(BasicConsole.default_colour);
                 }
+#if UHCI_TRACE
                 else
                 {
                     BasicConsole.SetTextColour((char)0x0200);
                     BasicConsole.WriteLine("Transfer succeeded.");
                     BasicConsole.SetTextColour(BasicConsole.default_colour);
                 }
+#endif
             }
         }
 

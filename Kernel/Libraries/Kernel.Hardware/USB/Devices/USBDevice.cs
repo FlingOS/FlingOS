@@ -29,7 +29,11 @@ namespace Kernel.Hardware.USB.Devices
         /// <summary>
         /// The device info that specifies the physical device to communicate with.
         /// </summary>
-        protected USBDeviceInfo DeviceInfo;
+        public USBDeviceInfo DeviceInfo
+        {
+            get;
+            protected set;
+        }
 
         /// <summary>
         /// Initialises a new USB device with specified USB device info. Includes adding it to Devices lists in
