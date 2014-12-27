@@ -142,9 +142,13 @@
         - Overview (PATA)
             - General
                 - What does ATA do?
-                        : Hardware standard
-                        : Electronic signals
-                        : Wiring standard
+                    ATA is a hardware standard which sets out the physical cable, electronic signal and hardware requirements for 
+                    connecting storage devices. For PATA, the cable is a 40 or 80 pin connector which can transfer 16 bits at a 
+                    time. The later versions of PATA used an 80-pin connector to increase the maximum transfer speed. All the 
+                    additional wires were shielding wires connected to the ground pin. Thus, the connectors (plugs/sockets) remained
+                    40-pins wide, thereby ensuring backwards compatability.
+                    
+                    ATA also sets out standards
                         : Hardware faults / errors
                         : Processor interface standard
                 - What does ATAPI do?
