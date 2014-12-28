@@ -6,7 +6,8 @@ namespace Kernel.Core.Processes
     public enum SystemCall : uint
     {
         INVALID = 0,
-        Sleep = 1
+        Sleep = 1,
+        PlayNote = 2
     }
 
     public static class SystemCalls
@@ -116,6 +117,9 @@ namespace Kernel.Core.Processes
                 case SystemCall.Sleep:
                     SysCall_Sleep((int)param1);
                     break;
+                case SystemCall.PlayNote:
+                    SysCall_PlayNote((Hardware.Timers.PIT.MusicalNote)param1, (Hardware.Timers.PIT.MusicalNoteValue)param2, param3);
+                    break;
                 default:
                     Console.Default.Write("Sys call ");
                     Console.Default.Write_AsDecimal(sysCallNum);
@@ -139,6 +143,36 @@ namespace Kernel.Core.Processes
         {
             Thread.EnterSleep(ms);
             Scheduler.UpdateCurrentState();
+        }
+
+        public class NoteState : FOS_System.Object
+        {
+            public uint dur_ms;
+            public int handlerId;
+        }
+        private static void SysCall_PlayNote(Hardware.Timers.PIT.MusicalNote note, Hardware.Timers.PIT.MusicalNoteValue duration, uint bpm)
+        {
+            Hardware.Timers.PIT.ThePIT.PlaySound((int)note);
+
+            uint dur_ms = (uint)duration * 60 * 1000 / (bpm * 16);
+            dur_ms -= 2000;
+            NoteState state = new NoteState()
+            {
+                dur_ms = dur_ms
+            };
+            state.handlerId = Hardware.Timers.PIT.ThePIT.RegisterHandler(new Hardware.Timers.PITHandler(SysCall_StopNoteHandler, state, 1000000L * 2000L, true)); 
+        }
+        private static void SysCall_StopNoteHandler(FOS_System.Object objState)
+        {
+            NoteState state = (NoteState)objState;
+            if (state.dur_ms >= 0)
+            {
+                state.dur_ms -= 2000;
+            }
+            else
+            {
+                Hardware.Timers.PIT.ThePIT.UnregisterHandler(state.handlerId);
+            }
         }
     }
 }

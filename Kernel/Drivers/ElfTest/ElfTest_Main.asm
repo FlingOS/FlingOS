@@ -3,16 +3,23 @@ BITS 32
 GLOBAL _start
 
 EXTERN SysCall_Sleep
+EXTERN SysCall_PlayNote
 
 SECTION .text
 _start:
 
+	Continue:
+
+	mov dword ebx, 261
+	mov dword ecx, 16
+	mov dword edx, 140	
+	call SysCall_PlayNote
+
+	mov dword ebx, 1000
+	call SysCall_Sleep
+
 	; Starting colour	
 	mov dword ecx, 0x11
-
-	Continue:
-	
-	call SysCall_Sleep
 
 	; Output following text to first bit of vid mem
 	;  P  r   o   c  e   s   s     5

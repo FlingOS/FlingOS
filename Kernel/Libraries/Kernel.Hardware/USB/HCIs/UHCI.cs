@@ -921,7 +921,7 @@ namespace Kernel.Hardware.USB.HCIs
                 if (!transfer.success)
                 {
                     BasicConsole.SetTextColour(BasicConsole.error_colour);
-                    BasicConsole.WriteLine("Transfer failed.");
+                    BasicConsole.WriteLine("UHCI: Transfer failed.");
                     BasicConsole.SetTextColour(BasicConsole.default_colour);
                 }
 #if UHCI_TRACE
