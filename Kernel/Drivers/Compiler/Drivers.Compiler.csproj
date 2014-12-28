@@ -46,6 +46,7 @@
     <Compile Include="ASM\ASMBlock.cs" />
     <Compile Include="ASM\ASMOp.cs" />
     <Compile Include="DebugDataManager.cs" />
+    <Compile Include="Global.cs" />
     <Compile Include="IL\ILCompiler.cs" />
     <Compile Include="IL\ILLibrary.cs" />
     <Compile Include="IL\ILPreprocessor.cs" />
@@ -55,6 +56,7 @@
     <Compile Include="IL\ILOp.cs" />
     <Compile Include="LibraryLoader.cs" />
     <Compile Include="LinkManager.cs" />
+    <Compile Include="Logger.cs" />
     <Compile Include="Options.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Types\FieldInfo.cs" />
