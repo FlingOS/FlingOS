@@ -833,7 +833,7 @@ namespace Kernel.Hardware.USB.HCIs
 
                 // run transactions
                 bool active = true;
-                int timeout = 40; //2 seconds
+                int timeout = 100; //5 seconds
                 while (active && timeout > 0)
                 {
                     active = false;
@@ -918,13 +918,13 @@ namespace Kernel.Hardware.USB.HCIs
                     }
                 }
 
+#if UHCI_TRACE
                 if (!transfer.success)
                 {
                     BasicConsole.SetTextColour(BasicConsole.error_colour);
                     BasicConsole.WriteLine("UHCI: Transfer failed.");
                     BasicConsole.SetTextColour(BasicConsole.default_colour);
                 }
-#if UHCI_TRACE
                 else
                 {
                     BasicConsole.SetTextColour((char)0x0200);

@@ -43,6 +43,8 @@ namespace Kernel.Hardware.USB
     /// </summary>
     public static unsafe class USBManager
     {
+        public static bool IgnoreUSB10and11Devices = true;
+
         /// <summary>
         /// The number of UHCI devices detected.
         /// </summary>
@@ -97,7 +99,12 @@ namespace Kernel.Hardware.USB
             //      EHCI:  Class ID: 0x0C, Sub-class: 0x03, Prog(ramming) Interface: 0x20
             //      xHCI:  Class ID: 0x0C, Sub-class: 0x03, Prog(ramming) Interface: 0x30
 
-            //TODO - Check host controllers haven't already been claimed / initialised!
+            if (IgnoreUSB10and11Devices)
+            {
+                BasicConsole.SetTextColour(BasicConsole.warning_colour);
+                BasicConsole.WriteLine("USB driver will ignore USB 1.0 and 1.1 mode +devices (Low and full-speed devices).");
+                BasicConsole.SetTextColour(BasicConsole.default_colour);
+            }
 
             for (int i = 0; i < PCI.PCI.Devices.Count; i++)
             {
@@ -120,7 +127,18 @@ namespace Kernel.Hardware.USB
                             //Supported by VMWare
                             //  - This is USB 3.0
 
-                            NumxHCIDevices++;
+                            if (!aDevice.Claimed)
+                            {
+                                NumxHCIDevices++;
+                            }
+#if USB_TRACE
+                            else
+                            {
+                                BasicConsole.WriteLine(" - Already claimed.");
+                            }
+
+                            BasicConsole.DelayOutput(10);
+#endif
                         }
                     }
                 }
@@ -141,19 +159,26 @@ namespace Kernel.Hardware.USB
 #if USB_TRACE
                             BasicConsole.WriteLine("EHCI detected.");
 #endif
-                            NumEHCIDevices++;
+                            if (!aDevice.Claimed)
+                            {
+                                NumEHCIDevices++;
 
-                            PCIDeviceNormal EHCI_PCIDevice = (PCIDeviceNormal)aDevice;
-                            EHCI_PCIDevice.Claimed = true;
+                                PCIDeviceNormal EHCI_PCIDevice = (PCIDeviceNormal)aDevice;
+                                EHCI_PCIDevice.Claimed = true;
 
-                            //BasicConsole.SetTextColour(BasicConsole.warning_colour);
-                            //BasicConsole.WriteLine("WARNING! EHCI device support disabled.");
-                            //BasicConsole.SetTextColour(BasicConsole.default_colour);
-                            EHCI newEHCI = new EHCI(EHCI_PCIDevice);
-                            HCIDevices.Add(newEHCI);
-                            DeviceManager.Devices.Add(newEHCI);
-                            
+                                //BasicConsole.SetTextColour(BasicConsole.warning_colour);
+                                //BasicConsole.WriteLine("WARNING! EHCI device support disabled.");
+                                //BasicConsole.SetTextColour(BasicConsole.default_colour);
+                                EHCI newEHCI = new EHCI(EHCI_PCIDevice);
+                                HCIDevices.Add(newEHCI);
+                                DeviceManager.Devices.Add(newEHCI);
+                            }
 #if USB_TRACE
+                            else
+                            {
+                                BasicConsole.WriteLine(" - Already claimed.");
+                            }
+
                             BasicConsole.DelayOutput(10);
 #endif
                         }
@@ -176,23 +201,24 @@ namespace Kernel.Hardware.USB
 #if USB_TRACE
                             BasicConsole.WriteLine("UHCI detected.");
 #endif
-                            NumUHCIDevices++;
+                            if (!aDevice.Claimed)
+                            {
+                                NumUHCIDevices++;
 
-                            //BasicConsole.SetTextColour(BasicConsole.warning_colour);
-                            //BasicConsole.WriteLine("Note: UHCI device support incomplete. UHC disabled.");
-                            //BasicConsole.SetTextColour(BasicConsole.default_colour);
+                                PCIDeviceNormal UHCI_PCIDevice = (PCIDeviceNormal)aDevice;
+                                UHCI_PCIDevice.Claimed = true;
 
-                            //TODO: Reenable if UHCI is ever needed and the UHCI driver is fixed.
+                                UHCI newUHCI = new UHCI(UHCI_PCIDevice);
 
-                            PCIDeviceNormal UHCI_PCIDevice = (PCIDeviceNormal)aDevice;
-                            UHCI_PCIDevice.Claimed = true;
-
-                            UHCI newUHCI = new UHCI(UHCI_PCIDevice);
-
-                            HCIDevices.Add(newUHCI);
-                            DeviceManager.Devices.Add(newUHCI);
-                            
+                                HCIDevices.Add(newUHCI);
+                                DeviceManager.Devices.Add(newUHCI);
+                            }
 #if USB_TRACE
+                            else
+                            {
+                                BasicConsole.WriteLine(" - Already claimed.");
+                            }
+
                             BasicConsole.DelayOutput(10);
 #endif
                         }
@@ -208,7 +234,18 @@ namespace Kernel.Hardware.USB
                             //Not supported by VMWare or my laptop 
                             //  so we aren't going to program this any further for now.
 
-                            NumOHCIDevices++;
+                            if (!aDevice.Claimed)
+                            {
+                                NumOHCIDevices++;
+                            }
+#if USB_TRACE
+                            else
+                            {
+                                BasicConsole.WriteLine(" - Already claimed.");
+                            }
+
+                            BasicConsole.DelayOutput(10);
+#endif
                         }
                     }
                 }
@@ -281,6 +318,16 @@ namespace Kernel.Hardware.USB
                 if (speed == USBPortSpeed.Low ||
                     speed == USBPortSpeed.Full)
                 {
+                    if (IgnoreUSB10and11Devices)
+                    {
+#if USB_TRACE
+                        BasicConsole.SetTextColour(BasicConsole.warning_colour);
+                        BasicConsole.WriteLine("Ignoring USB 1.0 or 1.1 device!");
+                        BasicConsole.SetTextColour(BasicConsole.default_colour);
+#endif
+                        return;
+                    }
+
                     success = GetDeviceDescriptor(deviceInfo, true);
                     if (!success)
                     {

@@ -99,6 +99,34 @@ namespace Drivers.Compiler.App
             IL.ILLibrary TheLibrary = LibraryLoader.LoadILLibrary(LibraryPath);
             int NumDependencies = LibraryLoader.LoadDependencies(TheLibrary);
 
+            CompileResult ILCompileResult = IL.ILCompiler.Compile(TheLibrary);
+            
+            if (ILCompileResult == CompileResult.OK)
+            {
+                CompileResult ASMCompileResult = ASM.ASMCompiler.Compile(TheLibrary.TheASMLibrary);
+
+                if (ASMCompileResult == CompileResult.OK)
+                {
+                    CompileResult LinkResult = LinkManager.Link(TheLibrary.TheASMLibrary);
+
+                    if (LinkResult == CompileResult.OK)
+                    {
+                        //Success
+                    }
+                    else
+                    {
+                        //Fail
+                    }
+                }
+                else
+                {
+                    //Fail
+                }
+            }
+            else
+            {
+                //Fail
+            }
 
             DateTime endTime = DateTime.Now;
             Logger.LogMessage("", 0, "Driver compiler finished @ " + endTime.ToLongTimeString());

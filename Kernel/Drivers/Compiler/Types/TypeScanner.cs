@@ -6,7 +6,10 @@ using System.Threading.Tasks;
 
 namespace Drivers.Compiler.Types
 {
-    static class TypeScanner
+    public static class TypeScanner
     {
+        public static void ScanTypes(IL.ILLibrary TheLibrary)
+        {
+        }
     }
 }

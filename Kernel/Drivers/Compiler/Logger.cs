@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Drivers.Compiler.App
+namespace Drivers.Compiler
 {
     public static class Logger
     {

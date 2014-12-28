@@ -6,7 +6,11 @@ using System.Threading.Tasks;
 
 namespace Drivers.Compiler
 {
-    static class LinkManager
+    public static class LinkManager
     {
+        public static CompileResult Link(ASM.ASMLibrary TheLibrary)
+        {
+            return CompileResult.OK;
+        }
     }
 }

@@ -8,5 +8,8 @@ namespace Drivers.Compiler.IL
 {
     public class ILLibrary
     {
+        public ASM.ASMLibrary TheASMLibrary;
+
+        public List<ILLibrary> Dependencies = new List<ILLibrary>();
     }
 }

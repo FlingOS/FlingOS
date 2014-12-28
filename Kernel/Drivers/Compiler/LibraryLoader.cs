@@ -10,9 +10,20 @@ namespace Drivers.Compiler
 {
     public static class LibraryLoader
     {
-        public static ILLibrary LoadILLibrary(string FilePath)
+        private static ILLibrary LoadILLibraryFromFile(string FilePath)
         {
             return null;
+        }
+
+        public static ILLibrary LoadILLibrary(string FilePath)
+        {
+            ILLibrary TheLibrary = LoadILLibraryFromFile(FilePath);
+
+            LoadDependencies(TheLibrary);
+
+            Types.TypeScanner.ScanTypes(TheLibrary);
+
+            return TheLibrary;
         }
         public static int LoadDependencies(ILLibrary aLibrary)
         {
