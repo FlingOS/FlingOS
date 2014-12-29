@@ -60,6 +60,13 @@ namespace Kernel.FOS_System.Collections
                 return nextIndex;
             }
         }
+        public int Capacity
+        {
+            get
+            {
+                return _array.Length;
+            }
+        }
 
         /// <summary>
         /// Creates a new list with initial capacity of 5.
@@ -346,6 +353,14 @@ namespace Kernel.FOS_System.Collections
             get
             {
                 return currIndex;
+            }
+        }
+
+        public int Capacity
+        {
+            get
+            {
+                return _array.Length;
             }
         }
 

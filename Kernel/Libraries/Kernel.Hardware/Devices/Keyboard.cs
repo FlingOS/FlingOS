@@ -37,7 +37,7 @@ namespace Kernel.Hardware.Devices
         /// Scancode at index 0 is the first received.
         /// Scancode at index Count-1 is the latest received.
         /// </summary>
-        protected UInt32List scancodeBuffer = new UInt32List(64);
+        protected UInt32List scancodeBuffer = new UInt32List(512);
         /// <summary>
         /// Whether the keyboard is enabled or not.
         /// </summary>
@@ -358,7 +358,10 @@ namespace Kernel.Hardware.Devices
         /// <param name="scancode">The scancode to queue.</param>
         protected void Enqueue(uint scancode)
         {
-            scancodeBuffer.Add(scancode);
+            if (scancodeBuffer.Count < scancodeBuffer.Capacity)
+            {
+                scancodeBuffer.Add(scancode);
+            }
         }
         /// <summary>
         /// Dequeues the oldest scancode from the scancode buffer.

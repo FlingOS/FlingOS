@@ -88,6 +88,10 @@ namespace Kernel.FOS_System
         {
             if(!GCInitialised || InsideGC)
             {
+                BasicConsole.SetTextColour(BasicConsole.error_colour);
+                BasicConsole.WriteLine("Error! GC can't create a new object since already inside GC.");
+                BasicConsole.DelayOutput(5);
+                BasicConsole.SetTextColour(BasicConsole.default_colour);
                 return null;
             }
 
@@ -104,6 +108,11 @@ namespace Kernel.FOS_System
             if((UInt32)newObjPtr == 0)
             {
                 InsideGC = false;
+
+                BasicConsole.SetTextColour(BasicConsole.error_colour);
+                BasicConsole.WriteLine("Error! GC can't create a new object because the heap returned a null pointer.");
+                BasicConsole.DelayOutput(5);
+                BasicConsole.SetTextColour(BasicConsole.default_colour);
 
                 return null;
             }
@@ -140,6 +149,11 @@ namespace Kernel.FOS_System
         {
             if (!GCInitialised || InsideGC)
             {
+                BasicConsole.SetTextColour(BasicConsole.error_colour);
+                BasicConsole.WriteLine("Error! GC can't create a new array since already inside GC.");
+                BasicConsole.DelayOutput(5);
+                BasicConsole.SetTextColour(BasicConsole.default_colour);
+
                 return null;
             }
 
@@ -171,7 +185,11 @@ namespace Kernel.FOS_System
             {
                 InsideGC = false;
 
-                ExceptionMethods.Throw(new FOS_System.Exception("Out of memory!"));
+                BasicConsole.SetTextColour(BasicConsole.error_colour);
+                BasicConsole.WriteLine("Error! GC can't create a new array because the heap returned a null pointer.");
+                BasicConsole.DelayOutput(5);
+                BasicConsole.SetTextColour(BasicConsole.default_colour);
+
                 return null;
             }
 
@@ -206,11 +224,21 @@ namespace Kernel.FOS_System
         {
             if (!GCInitialised || InsideGC)
             {
+                BasicConsole.SetTextColour(BasicConsole.error_colour);
+                BasicConsole.WriteLine("Error! GC can't create a new string since already inside GC.");
+                BasicConsole.DelayOutput(5);
+                BasicConsole.SetTextColour(BasicConsole.default_colour);
+
                 return null;
             }
 
             if (length < 0)
             {
+                BasicConsole.SetTextColour(BasicConsole.error_colour);
+                BasicConsole.WriteLine("Error! GC can't create a new string because \"length\" is less than 0.");
+                BasicConsole.DelayOutput(5);
+                BasicConsole.SetTextColour(BasicConsole.default_colour);
+
                 ExceptionMethods.Throw_OverflowException();
             }
 
@@ -230,7 +258,11 @@ namespace Kernel.FOS_System
             {
                 InsideGC = false;
 
-                ExceptionMethods.Throw(new FOS_System.Exception("Out of memory!"));
+                BasicConsole.SetTextColour(BasicConsole.error_colour);
+                BasicConsole.WriteLine("Error! GC can't create a new string because the heap returned a null pointer.");
+                BasicConsole.DelayOutput(5);
+                BasicConsole.SetTextColour(BasicConsole.default_colour);
+
                 return null;
             }
 
@@ -298,6 +330,14 @@ namespace Kernel.FOS_System
         [Compiler.NoGC]
         public static void _IncrementRefCount(byte* objPtr)
         {
+            if ((uint)objPtr < (uint)sizeof(GCHeader))
+            {
+                BasicConsole.SetTextColour(BasicConsole.error_colour);
+                BasicConsole.WriteLine("Error! GC can't increment ref count of an object in low memory.");
+                BasicConsole.DelayOutput(5);
+                BasicConsole.SetTextColour(BasicConsole.default_colour);
+            }
+            
             objPtr -= sizeof(GCHeader);
             GCHeader* gcHeaderPtr = (GCHeader*)objPtr;
             if (CheckSignature(gcHeaderPtr))
@@ -369,6 +409,14 @@ namespace Kernel.FOS_System
         [Compiler.NoGC]
         public static void _DecrementRefCount(byte* objPtr)
         {
+            if ((uint)objPtr < (uint)sizeof(GCHeader))
+            {
+                BasicConsole.SetTextColour(BasicConsole.error_colour);
+                BasicConsole.WriteLine("Error! GC can't decrement ref count of an object in low memory.");
+                BasicConsole.DelayOutput(5);
+                BasicConsole.SetTextColour(BasicConsole.default_colour);
+            }
+            
             GCHeader* gcHeaderPtr = (GCHeader*)(objPtr - sizeof(GCHeader));
             if (CheckSignature(gcHeaderPtr))
             {

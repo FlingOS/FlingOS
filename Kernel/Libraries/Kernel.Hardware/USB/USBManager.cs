@@ -102,7 +102,7 @@ namespace Kernel.Hardware.USB
             if (IgnoreUSB10and11Devices)
             {
                 BasicConsole.SetTextColour(BasicConsole.warning_colour);
-                BasicConsole.WriteLine("USB driver will ignore USB 1.0 and 1.1 mode +devices (Low and full-speed devices).");
+                BasicConsole.WriteLine("USB driver will ignore USB 1.0 and 1.1 mode devices (Low and full-speed devices).");
                 BasicConsole.SetTextColour(BasicConsole.default_colour);
             }
 

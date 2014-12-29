@@ -60,6 +60,16 @@ namespace Kernel.FOS_System
             return (x < y ? x : y);
         }
         /// <summary>
+        /// Returns the lower of the two inputs.
+        /// </summary>
+        /// <param name="x">Input 1.</param>
+        /// <param name="y">Input 2.</param>
+        /// <returns>The lower of the two inputs.</returns>
+        public static int Min(int x, int y)
+        {
+            return (x < y ? x : y);
+        }
+        /// <summary>
         /// Returns the higher of the two inputs.
         /// </summary>
         /// <param name="x">Input 1.</param>

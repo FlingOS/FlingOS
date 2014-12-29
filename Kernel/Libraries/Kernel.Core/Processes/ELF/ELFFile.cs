@@ -75,7 +75,7 @@ namespace Kernel.Core.Processes.ELF
         public ELFFile(File file)
         {
             theFile = file;
-            theStream = theFile.GetStream();
+            theStream = new CachedFileStream(theFile.GetStream());
             ReadHeader();
             FOS_System.GC.Cleanup();
 
