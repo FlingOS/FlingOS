@@ -155,12 +155,21 @@ namespace Kernel.Core.Processes
             Hardware.Timers.PIT.ThePIT.PlaySound((int)note);
 
             uint dur_ms = (uint)duration * 60 * 1000 / (bpm * 16);
-            dur_ms -= 2000;
+            uint do_ms = dur_ms;
+            if (dur_ms >= 2000)
+            {
+                dur_ms -= 2000;
+                do_ms = 0;
+            }
+            else
+            {
+                dur_ms = 0;
+            }
             NoteState state = new NoteState()
             {
                 dur_ms = dur_ms
             };
-            state.handlerId = Hardware.Timers.PIT.ThePIT.RegisterHandler(new Hardware.Timers.PITHandler(SysCall_StopNoteHandler, state, 1000000L * 2000L, true)); 
+            state.handlerId = Hardware.Timers.PIT.ThePIT.RegisterHandler(new Hardware.Timers.PITHandler(SysCall_StopNoteHandler, state, 1000000L * do_ms, true)); 
         }
         private static void SysCall_StopNoteHandler(FOS_System.Object objState)
         {
@@ -171,6 +180,7 @@ namespace Kernel.Core.Processes
             }
             else
             {
+                Hardware.Timers.PIT.ThePIT.MuteSound();
                 Hardware.Timers.PIT.ThePIT.UnregisterHandler(state.handlerId);
             }
         }

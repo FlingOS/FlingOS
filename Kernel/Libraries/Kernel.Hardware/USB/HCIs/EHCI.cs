@@ -721,6 +721,10 @@ namespace Kernel.Hardware.USB.HCIs
             // Section 2.1.3 of the Intel EHCI Spec
             usbBaseAddress = pciDevice.BaseAddresses[0].BaseAddress();
 
+#if EHCI_TRACE
+            BasicConsole.WriteLine(((FOS_System.String)"EHCI: usbBaseAddress=") + (uint)usbBaseAddress);
+#endif
+
             // Map in the required memory - we will use identity mapping for the PCI / USB registers for now
             Processes.ProcessManager.CurrentProcess.TheMemoryLayout.AddDataPage(
                 (uint)usbBaseAddress & 0xFFFFF000,

@@ -421,7 +421,7 @@ DISABLE_INTERRUPTS
 
 mov dword eax, CR2
 push eax
-call method_System_Void_RETEND_Kernel_ExceptionMethods_DECLEND_Throw_PageFaultException_NAMEEND__System_UInt32_System_UInt32_
+call method_System_Void_RETEND_Kernel_ExceptionMethods_DECLEND_Throw_PageFaultException_NAMEEND__System_UInt32_System_UInt32_System_UInt32_
 add esp, 8
 
 ENABLE_INTERRUPTS
