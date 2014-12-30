@@ -363,7 +363,7 @@ namespace Kernel
             offset = 80;
             #region EIP
 
-            while (offset < 72)
+            while (offset > 72)
             {
                 uint rem = y & 0xFu;
                 switch (rem)
