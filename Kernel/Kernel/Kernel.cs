@@ -75,7 +75,13 @@ namespace Kernel
             //  - We must have an intial, empty handler to always 
             //    "return" to.
             ExceptionMethods.AddExceptionHandlerInfo((void*)0, (void*)0);
-            
+
+            BasicConsole.WriteLine("Fling OS  Copyright (C) 2015  Edward Nutting");
+            BasicConsole.WriteLine("This program comes with ABSOLUTELY NO WARRANTY;.");
+            BasicConsole.WriteLine("This is free software, and you are welcome to redistribute it");
+            BasicConsole.WriteLine("under certain conditions; See GPL V3 for details, a copy of");
+            BasicConsole.WriteLine("which should have been provided with the executable.");
+        
             BasicConsole.WriteLine("Fling OS Running...");
 
             try
