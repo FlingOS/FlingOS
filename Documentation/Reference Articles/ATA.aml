@@ -146,29 +146,66 @@
                     connecting storage devices. For PATA, the cable is a 40 or 80 pin connector which can transfer 16 bits at a 
                     time. The later versions of PATA used an 80-pin connector to increase the maximum transfer speed. All the 
                     additional wires were shielding wires connected to the ground pin. Thus, the connectors (plugs/sockets) remained
-                    40-pins wide, thereby ensuring backwards compatability.
+                    40-pins wide, thereby ensuring backwards compatibility.
                     
-                    ATA also sets out standards
-                        : Hardware faults / errors
-                        : Processor interface standard
+                    ATA also sets out standards for handling hardware faults, unrecoverable errors and one possible standard for 
+                    connecting (P)ATA devices to the motherboard and processor. However, other possibilities do exist. Many PATA
+                    (and SATA) devices now appear on the PCI bus.
+                    
                 - What does ATAPI do?
-                        : Software standard
-                        : Packet protocol
-                        : Commands and data
-                        : Abstracts type of device
+                    ATAPI is a software standard ("packet interface") which sets out the command and data transfer protocols. 
+                    This is separate from the hardware standard. The hardware standard sets out how to transfer individual bits 
+                    and bytes. The software standard sets out what those bits and bytes actually mean and in what order they m
+                    must be sent. 
+                    
+                    The packet protocol is now supported by all ATA devices, but there are alternative protocols layered on top
+                    of the ATAPI protocol (e.g. SCSI Attached devices such ad CD drives). This means that you can use ATAPI to 
+                    detect devices and what protocol they use but you may not be able to control them with ATAPI. That said, 
+                    you can control most modern hard disk devices using ATAPI.
+                    
                 - How common is it?
-                        : Extremely. In almost all PCs (bar newest) and laptop (bar newest)
+                    ATA is extremely common. It has been included in PCs and laptop for over a decade. This means most PCs and 
+                    laptops that are more than 3 years old will have PATA support. However, with the recent introduction of 
+                    SATA, some laptops and PCs no longer include PATA connectors or support. The Sony Vaio Fit Multiflip 15A,
+                    for example, only has a SATA drive with no detectable backwards compatibility for PATA.
+                    
+                    Note, many manufacturers or specifications list drives as IDE. As discussed previously, this is broadly 
+                    equivalent to a PATA drive. If your PC or laptop says it has an IDE drive, then it has PAAT support.
+                    
                 - Why is it important?
-                        : Hard Disk and CD Drive control
-                        : Simplest permanent storage
-                        : Needed to install OS
-                        : Needed as hobbyist for setting up Partition/FS drivers
+                    ATA is important as it has long been the standard for hard disk and CD drive control. So much so, that 
+                    the only successful alternative connector for storage mediums (excluding ethernet, for obvious reasons)
+                    has been USB. 
+                    
+                    For a hobby OS developer, ATA is important as it (meaning PATA) is the easiest route to accessing 
+                    permanent storage. The only 4 other viable alternatives are: 
+                      1. Network stack to access cloud files,
+                      2. Serial connection to a file stored on a connected or host computer,
+                      3. Firewire connection to a file stored on a connected or host computer,
+                      4. USB Mass Storage support (which is recommended (necessary?) anyway).
+                        
+                    ATA (as PATA or SATA) is also important as the hard disk remains the primary boot device in most 
+                    tablets, laptops and PCs. To install an operating system in a way which is user friendly essentially
+                    requires you to install it to the primary boot device.
+                    
+                    Finally, for hobby OS developers, ATA support is useful as ATA is reliable and fairly easy to implement.
+                    This makes developing partition and file system drivers significantly easier as it eliminates a whole
+                    subsystem of potential error. Having weel tested, reliable file system drivers means writing USB and USB 
+                    Mass Storage support is easier.
+                    
                 - ATA for hard drives vs. CD drives
-                        ? Look up the key differences
-                        : Support for hard disk by Fling OS
+                    TODO: Look up the key differences
+                        
+                    Fling OS currently only supports PATA, ATAPI hard disk devices and not CD ROM devices. However, many 
+                    modern laptops and PCs do not come with CD drives and external drives are usually attached via USB. 
+                    This means that CD drive support is fairly unnecessary for a hobby OS.
+                        
                 - How complex to program?
-                        : Relatively simple. 
-                        : Requires knowledge of IO ports, hard disk structure and the protocol only
+                    PATA support is relatively simply to program. It requires only a basic knowledge of IO ports, hard disk 
+                    structure and the protocol. There is plenty of information on the first two but details of the protocol
+                    are hard to come by in a useful way. This article will cover basic hard disk structure (ignoring legacy 
+                    CHS structure wherever possible) and cover the practical implementation of the protocol in detail.
+                
                 - Basic ideas
                         : IO port access
                         : Commands and data
