@@ -8,18 +8,22 @@ EXTERN SysCall_PlayNote
 SECTION .text
 _start:
 
+	; Starting colour	
+	mov dword ecx, 0x11
+
 	Continue:
+
+	push dword ecx
 
 	mov dword ebx, 261
 	mov dword ecx, 16
-	mov dword edx, 140	
+	mov dword edx, 120
 	call SysCall_PlayNote
 
-	mov dword ebx, 1000
+	mov dword ebx, 10000
 	call SysCall_Sleep
 
-	; Starting colour	
-	mov dword ecx, 0x11
+	pop dword ecx
 
 	; Output following text to first bit of vid mem
 	;  P  r   o   c  e   s   s     5

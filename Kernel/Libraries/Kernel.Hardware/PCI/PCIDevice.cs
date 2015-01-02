@@ -1,18 +1,26 @@
-﻿#region Copyright Notice
-// ------------------------------------------------------------------------------ //
-//                                                                                //
-//               All contents copyright � Edward Nutting 2014                     //
-//                                                                                //
-//        You may not share, reuse, redistribute or otherwise use the             //
-//        contents this file outside of the Fling OS project without              //
-//        the express permission of Edward Nutting or other copyright             //
-//        holder. Any changes (including but not limited to additions,            //
-//        edits or subtractions) made to or from this document are not            //
-//        your copyright. They are the copyright of the main copyright            //
-//        holder for all Fling OS files. At the time of writing, this             //
-//        owner was Edward Nutting. To be clear, owner(s) do not include          //
-//        developers, contributors or other project members.                      //
-//                                                                                //
+﻿#region LICENSE
+// ---------------------------------- LICENSE ---------------------------------- //
+//
+//    Fling OS - The educational operating system
+//    Copyright (C) 2015 Edward Nutting
+//
+//    This program is free software: you can redistribute it and/or modify
+//    it under the terms of the GNU General Public License as published by
+//    the Free Software Foundation, either version 3 of the License, or
+//    (at your option) any later version.
+//
+//    This program is distributed in the hope that it will be useful,
+//    but WITHOUT ANY WARRANTY; without even the implied warranty of
+//    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//    GNU General Public License for more details.
+//
+//    You should have received a copy of the GNU General Public License
+//    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+//
+//  Project owner: 
+//		Email: edwardnutting@outlook.com
+//		For paper mail address, please contact via email for details.
+//
 // ------------------------------------------------------------------------------ //
 #endregion
     
@@ -483,6 +491,9 @@ namespace Kernel.Hardware.PCI
         /// <summary>
         /// Provides device class information for PCI devices.
         /// </summary>
+        /// <remarks>
+        /// Device class information found at https://pci-ids.ucw.cz/read/PD/
+        /// </remarks>
         public static class DeviceClassInfo
         {
             /// <summary>
@@ -548,19 +559,57 @@ namespace Kernel.Hardware.PCI
                     case 0x00:
                         if (device.Subclass == 0x01)
                         {
-                            return "VGA-Compatible Device";
+                            return "VGA-Compatible unclassified device";
                         }
-                        //return "Any device (not VGA-Compatible)";
+                        return "Non-VGA unclassified device";
                         break;
                     case 0x01:
-                        if (device.Subclass == 0x01)
+                        #region Mass Storage Controllers
+                        if (device.Subclass == 0x00)
+                        {
+                            return "Mass Storage Controller (SCSI)";
+                        }
+                        else if (device.Subclass == 0x01)
                         {
                             return "Mass Storage Controller (IDE)";
                         }
+                        else if (device.Subclass == 0x02)
+                        {
+                            return "Mass Storage Controller (Floppy)";
+                        }
+                        else if (device.Subclass == 0x03)
+                        {
+                            return "Mass Storage Controller (IPI)";
+                        }
+                        else if (device.Subclass == 0x04)
+                        {
+                            return "Mass Storage Controller (RAID)";
+                        }
+                        else if (device.Subclass == 0x05)
+                        {
+                            return "Mass Storage Controller (ATA)";
+                        }
+                        else if (device.Subclass == 0x06)
+                        {
+                            return "Mass Storage Controller (SATA)";
+                        }
+                        else if (device.Subclass == 0x07)
+                        {
+                            return "Mass Storage Controller (Serial Attached SCSI)";
+                        }
+                        else if (device.Subclass == 0x08)
+                        {
+                            return "Mass Storage Controller (Non-volatile memory)";
+                        }
+                        else if (device.Subclass == 0x80)
+                        {
+                            return "Mass Storage Controller (Other)";
+                        }
                         else
                         {
-                            return "Mass Storage Controller";
+                            return "Mass Storage Controller (Unrecognised)";
                         }
+                        #endregion
                     case 0x02:
                         return "Network Controller";
                     case 0x03:
@@ -582,10 +631,18 @@ namespace Kernel.Hardware.PCI
                     case 0x0B:
                         return "Processor";
                     case 0x0C:
-                        if (device.Subclass == 0x03)
+                        #region Serial Bus Controllers
+                        if (device.Subclass == 0x00)
                         {
-                            //UHCI = 0x00
-                            switch(device.ProgIF)
+                            return "FireWire (IEEE 1394) Controller";
+                        }
+                        else if (device.Subclass == 0x02)
+                        {
+                            return "ACCESS Bus";
+                        }
+                        else if (device.Subclass == 0x03)
+                        {
+                            switch (device.ProgIF)
                             {
                                 case 0x00:
                                     return "USB Universal Host Controller Interface";
@@ -599,7 +656,35 @@ namespace Kernel.Hardware.PCI
                                     return "USB (Not host controller)";
                             }
                         }
-                        return "Serial Bus Controller";
+                        else if (device.Subclass == 0x04)
+                        {
+                            return "Fibre Channel";
+                        }
+                        else if (device.Subclass == 0x05)
+                        {
+                            return "SMBus";
+                        }
+                        else if (device.Subclass == 0x06)
+                        {
+                            return "InfiniBand";
+                        }
+                        else if (device.Subclass == 0x07)
+                        {
+                            return "IPMI SMIC interface";
+                        }
+                        else if (device.Subclass == 0x08)
+                        {
+                            return "SERCOS interface";
+                        }
+                        else if (device.Subclass == 0x03)
+                        {
+                            return "CANBUS";
+                        }
+                        else
+                        {
+                            return "Serial Bus Controller";
+                        }
+                        #endregion
                     case 0x0D:
                         return "Wireless Controller";
                     case 0x0E:

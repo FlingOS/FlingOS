@@ -1,18 +1,26 @@
-﻿#region Copyright Notice
-// ------------------------------------------------------------------------------ //
-//                                                                                //
-//               All contents copyright � Edward Nutting 2014                     //
-//                                                                                //
-//        You may not share, reuse, redistribute or otherwise use the             //
-//        contents this file outside of the Fling OS project without              //
-//        the express permission of Edward Nutting or other copyright             //
-//        holder. Any changes (including but not limited to additions,            //
-//        edits or subtractions) made to or from this document are not            //
-//        your copyright. They are the copyright of the main copyright            //
-//        holder for all Fling OS files. At the time of writing, this             //
-//        owner was Edward Nutting. To be clear, owner(s) do not include          //
-//        developers, contributors or other project members.                      //
-//                                                                                //
+﻿#region LICENSE
+// ---------------------------------- LICENSE ---------------------------------- //
+//
+//    Fling OS - The educational operating system
+//    Copyright (C) 2015 Edward Nutting
+//
+//    This program is free software: you can redistribute it and/or modify
+//    it under the terms of the GNU General Public License as published by
+//    the Free Software Foundation, either version 3 of the License, or
+//    (at your option) any later version.
+//
+//    This program is distributed in the hope that it will be useful,
+//    but WITHOUT ANY WARRANTY; without even the implied warranty of
+//    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//    GNU General Public License for more details.
+//
+//    You should have received a copy of the GNU General Public License
+//    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+//
+//  Project owner: 
+//		Email: edwardnutting@outlook.com
+//		For paper mail address, please contact via email for details.
+//
 // ------------------------------------------------------------------------------ //
 #endregion
     
@@ -97,11 +105,13 @@ namespace Kernel.Compiler.Architectures.x86_32
                     if (sizeToSub != sizeNotInMem)
                     {
                         result.AppendLine("mov ax, 0");
+                        GlobalMethods.CheckAddrFromRegister(result, aScannerState, "ecx", offset + i - 2);
                         result.AppendLine(string.Format("mov byte al, [ecx+{0}]", offset + i - 2));
                         result.AppendLine("push word ax");
                     }
                     else
                     {
+                        GlobalMethods.CheckAddrFromRegister(result, aScannerState, "ecx", offset + i - 2);
                         result.AppendLine(string.Format("mov word ax, [ecx+{0}]", offset + i - 2));
                         result.AppendLine("push word ax");
                     }

@@ -1,18 +1,26 @@
-﻿#region Copyright Notice
-// ------------------------------------------------------------------------------ //
-//                                                                                //
-//               All contents copyright � Edward Nutting 2014                     //
-//                                                                                //
-//        You may not share, reuse, redistribute or otherwise use the             //
-//        contents this file outside of the Fling OS project without              //
-//        the express permission of Edward Nutting or other copyright             //
-//        holder. Any changes (including but not limited to additions,            //
-//        edits or subtractions) made to or from this document are not            //
-//        your copyright. They are the copyright of the main copyright            //
-//        holder for all Fling OS files. At the time of writing, this             //
-//        owner was Edward Nutting. To be clear, owner(s) do not include          //
-//        developers, contributors or other project members.                      //
-//                                                                                //
+﻿#region LICENSE
+// ---------------------------------- LICENSE ---------------------------------- //
+//
+//    Fling OS - The educational operating system
+//    Copyright (C) 2015 Edward Nutting
+//
+//    This program is free software: you can redistribute it and/or modify
+//    it under the terms of the GNU General Public License as published by
+//    the Free Software Foundation, either version 3 of the License, or
+//    (at your option) any later version.
+//
+//    This program is distributed in the hope that it will be useful,
+//    but WITHOUT ANY WARRANTY; without even the implied warranty of
+//    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//    GNU General Public License for more details.
+//
+//    You should have received a copy of the GNU General Public License
+//    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+//
+//  Project owner: 
+//		Email: edwardnutting@outlook.com
+//		For paper mail address, please contact via email for details.
+//
 // ------------------------------------------------------------------------------ //
 #endregion
     
@@ -54,7 +62,9 @@ namespace Kernel.Compiler.Architectures.x86_32
                 result.AppendLine("; Ignore newobj calls for Delegates");
                 //Still need to: 
                 // - Remove the "object" param but preserve the "function pointer"
+                GlobalMethods.CheckAddrFromRegister(result, aScannerState, "esp", 0);
                 result.AppendLine("mov dword eax, [esp]");
+                GlobalMethods.CheckAddrFromRegister(result, aScannerState, "esp", 4);
                 result.AppendLine("mov dword [esp+4], eax");
                 result.AppendLine("add esp, 4");
                 return result.ToString().Trim();
@@ -126,11 +136,14 @@ namespace Kernel.Compiler.Architectures.x86_32
                         aScannerState.GetMethodID(aScannerState.CurrentILChunk.Method),
                         anILOpInfo.Position);
                 result.AppendLine(ShiftArgsLoopLabel + ":");
+                GlobalMethods.CheckAddrFromRegister(result, aScannerState, "ebx", 4);
                 result.AppendLine("mov dword edx, [ebx+4]");
+                GlobalMethods.CheckAddrFromRegister(result, aScannerState, "ebx", 0);
                 result.AppendLine("mov dword [ebx], edx");
                 result.AppendLine("add ebx, 4");
                 result.AppendLine(string.Format("loop {0}", ShiftArgsLoopLabel));
             }
+            GlobalMethods.CheckAddrFromRegister(result, aScannerState, "ebx", 0);
             result.AppendLine("mov dword [ebx], eax");
             result.AppendLine(string.Format("call {0}", aScannerState.GetMethodID(constructorMethod)));
             //Only remove args from stack - we want the object pointer to remain on the stack

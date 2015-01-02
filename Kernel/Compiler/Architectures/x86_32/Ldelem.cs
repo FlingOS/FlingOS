@@ -1,18 +1,26 @@
-﻿#region Copyright Notice
-// ------------------------------------------------------------------------------ //
-//                                                                                //
-//               All contents copyright � Edward Nutting 2014                     //
-//                                                                                //
-//        You may not share, reuse, redistribute or otherwise use the             //
-//        contents this file outside of the Fling OS project without              //
-//        the express permission of Edward Nutting or other copyright             //
-//        holder. Any changes (including but not limited to additions,            //
-//        edits or subtractions) made to or from this document are not            //
-//        your copyright. They are the copyright of the main copyright            //
-//        holder for all Fling OS files. At the time of writing, this             //
-//        owner was Edward Nutting. To be clear, owner(s) do not include          //
-//        developers, contributors or other project members.                      //
-//                                                                                //
+﻿#region LICENSE
+// ---------------------------------- LICENSE ---------------------------------- //
+//
+//    Fling OS - The educational operating system
+//    Copyright (C) 2015 Edward Nutting
+//
+//    This program is free software: you can redistribute it and/or modify
+//    it under the terms of the GNU General Public License as published by
+//    the Free Software Foundation, either version 3 of the License, or
+//    (at your option) any later version.
+//
+//    This program is distributed in the hope that it will be useful,
+//    but WITHOUT ANY WARRANTY; without even the implied warranty of
+//    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//    GNU General Public License for more details.
+//
+//    You should have received a copy of the GNU General Public License
+//    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+//
+//  Project owner: 
+//		Email: edwardnutting@outlook.com
+//		For paper mail address, please contact via email for details.
+//
 // ------------------------------------------------------------------------------ //
 #endregion
     
@@ -151,6 +159,7 @@ namespace Kernel.Compiler.Architectures.x86_32
 
             string ContinueExecutionLabel1 = ContinueExecutionLabelBase + "1";
             //      1.1. Move array ref into eax
+            GlobalMethods.CheckAddrFromRegister(result, aScannerState, "esp", 4);
             result.AppendLine("mov eax, [esp+4]");
             //      1.2. Compare eax (array ref) to 0
             result.AppendLine("cmp eax, 0");
@@ -177,8 +186,10 @@ namespace Kernel.Compiler.Architectures.x86_32
             //    //      2.2. Move element type ref from array object into ebx
             //    //              - Calculate the offset of the field from the start of the array object
             //    //              - Move array ref into ebx
+            //GlobalMethods.CheckAddrFromRegister(result, aScannerState, "esp", 4);
             //    result.AppendLine("mov ebx, [esp+4]");
             //    //              - Move elemType ref ([ebx+offset]) into ebx
+            //    GlobalMethods.CheckAddrFromRegister(result, aScannerState, "ebx", elemTypeOffset);
             //    result.AppendLine(string.Format("mov ebx, [ebx+{0}]", elemTypeOffset));
             //    //      2.3. Compare eax to ebx
             //    result.AppendLine("cmp eax, ebx");
@@ -202,14 +213,17 @@ namespace Kernel.Compiler.Architectures.x86_32
             string ContinueExecutionLabel3_1 = ContinueExecutionLabelBase + "3_1";
             string ContinueExecutionLabel3_2 = ContinueExecutionLabelBase + "3_2";
             //      3.1. Move index into eax
+            GlobalMethods.CheckAddrFromRegister(result, aScannerState, "esp", 0);
             result.AppendLine("mov eax, [esp]");
             //      3.2. Move array length into ecx
             //              - Calculate the offset of the field from the start of the array object
             int lengthOffset = aScannerState.GetFieldOffset(arrayDBType, "length");
 
             //              - Move array ref into ebx
+            GlobalMethods.CheckAddrFromRegister(result, aScannerState, "esp", 4);
             result.AppendLine("mov ebx, [esp+4]");
             //              - Move length value ([ebx+offset]) into ebx
+            GlobalMethods.CheckAddrFromRegister(result, aScannerState, "ebx", lengthOffset);
             result.AppendLine(string.Format("mov ebx, [ebx+{0}]", lengthOffset));
             //      3.2. Compare eax to 0
             result.AppendLine("cmp eax, 0");
@@ -245,24 +259,29 @@ namespace Kernel.Compiler.Architectures.x86_32
             //      4.1. Pop index into ebx
             result.AppendLine("pop ebx");
             //      4.2. Move array ref into eax
+            GlobalMethods.CheckAddrFromRegister(result, aScannerState, "esp", 0);
             result.AppendLine("mov eax, [esp]");
             //      4.3. Move element type ref (from array ref) into eax
+            GlobalMethods.CheckAddrFromRegister(result, aScannerState, "eax", elemTypeOffset);
             result.AppendLine(string.Format("mov eax, [eax+{0}]", elemTypeOffset));
             //      4.4. Move IsValueType (from element ref type) into ecx
             int isValueTypeOffset = aScannerState.GetTypeFieldOffset("IsValueType");
             result.AppendLine("mov ecx, 0");
+            GlobalMethods.CheckAddrFromRegister(result, aScannerState, "eax", isValueTypeOffset);
             result.AppendLine(string.Format("mov byte cl, [eax+{0}]", isValueTypeOffset));
             //      4.5. If IsValueType, continue to 4.6., else goto 4.8.
             result.AppendLine("cmp ecx, 0");
             result.AppendLine("jz " + ContinueExecutionLabel4_1);
             //      4.6. Move Size (from element type ref) into eax
             int sizeOffset = aScannerState.GetTypeFieldOffset("Size");
+            GlobalMethods.CheckAddrFromRegister(result, aScannerState, "eax", sizeOffset);
             result.AppendLine(string.Format("mov eax, [eax+{0}]", sizeOffset));
             //      4.7. Skip over 4.8.
             result.AppendLine("jmp " + ContinueExecutionLabel4_2);
             //      4.8. Move StackSize (from element type ref) into eax
             result.AppendLine(ContinueExecutionLabel4_1 + ":");
             int stackSizeOffset = aScannerState.GetTypeFieldOffset("StackSize");
+            GlobalMethods.CheckAddrFromRegister(result, aScannerState, "eax", stackSizeOffset);
             result.AppendLine(string.Format("mov eax, [eax+{0}]", stackSizeOffset));
             //      4.9. Mulitply eax by ebx (index by element size)
             result.AppendLine(ContinueExecutionLabel4_2 + ":");
@@ -292,6 +311,7 @@ namespace Kernel.Compiler.Architectures.x86_32
                 {
                     case 1:
                         result.AppendLine("mov dword ebx, 0");
+                        GlobalMethods.CheckAddrFromRegister(result, aScannerState, "eax", 0);
                         result.AppendLine("mov byte bl, [eax]");
                         if (signExtend)
                         {
@@ -300,6 +320,7 @@ namespace Kernel.Compiler.Architectures.x86_32
                         break;
                     case 2:
                         result.AppendLine("mov dword ebx, 0");
+                        GlobalMethods.CheckAddrFromRegister(result, aScannerState, "eax", 0);
                         result.AppendLine("mov word bx, [eax]");
                         if (signExtend)
                         {
@@ -307,10 +328,13 @@ namespace Kernel.Compiler.Architectures.x86_32
                         }
                         break;
                     case 4:
+                        GlobalMethods.CheckAddrFromRegister(result, aScannerState, "eax", 0);
                         result.AppendLine("mov dword ebx, [eax]");
                         break;
                     case 8:
+                        GlobalMethods.CheckAddrFromRegister(result, aScannerState, "eax", 0);
                         result.AppendLine("mov word ebx, [eax]");
+                        GlobalMethods.CheckAddrFromRegister(result, aScannerState, "eax", 4);
                         result.AppendLine("mov word ecx, [eax+4]");
                         break;
                 }

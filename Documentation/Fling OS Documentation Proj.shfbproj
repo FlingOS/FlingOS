@@ -177,6 +177,7 @@
     <Folder Include="Conceptual\Testing" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Docs.licenseheader" />
     <None Include="Reference Articles\Calling Conventions.aml" />
     <None Include="Reference Articles\Kernel Designs.aml" />
     <None Include="Reference Articles\USB.aml" />
