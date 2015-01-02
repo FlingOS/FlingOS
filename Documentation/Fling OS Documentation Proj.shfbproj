@@ -121,15 +121,15 @@
       <Filter entryType="Namespace" fullName="Kernel.Debug.Data" isExposed="False" />
       <Filter entryType="Namespace" fullName="Kernel.Debug.Debugger" isExposed="False" />
     </ApiFilter>
-    <FeedbackEMailLinkText>Edward Nutting</FeedbackEMailLinkText>
-    <FeedbackEMailAddress>edwardnutting%40outlook.com</FeedbackEMailAddress>
-    <CopyrightText>Copyright Edward Nutting 2014</CopyrightText>
+    <FeedbackEMailLinkText>Edward Nutting - Project Founder</FeedbackEMailLinkText>
+    <FeedbackEMailAddress>flingos%40outlook.com</FeedbackEMailAddress>
+    <CopyrightText>Fling OS  Copyright Edward Nutting 2014 under GPL V3</CopyrightText>
     <SccProjectName>SAK</SccProjectName>
     <SccProvider>SAK</SccProvider>
     <SccAuxPath>SAK</SccAuxPath>
     <SccLocalPath>SAK</SccLocalPath>
     <RootNamespaceTitle>Kernel</RootNamespaceTitle>
-    <CopyrightHref>http://www.flingos.co.uk</CopyrightHref>
+    <CopyrightHref>http://www.flingos.co.uk/License</CopyrightHref>
     <FooterText>If you find any issues with the documentation, please log them here: &amp;lt%3ba href=&amp;quot%3bhttp://git.flingos.co.uk/fling-os/issues&amp;quot%3b&amp;gt%3bProject Issue Tracker&amp;lt%3b/a&amp;gt%3b&amp;lt%3bbr/&amp;gt%3b&amp;lt%3bbr/&amp;gt%3b</FooterText>
   </PropertyGroup>
   <!-- There are no properties for these groups.  AnyCPU needs to appear in order for Visual Studio to perform

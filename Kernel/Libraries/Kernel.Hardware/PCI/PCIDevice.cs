@@ -680,10 +680,7 @@ namespace Kernel.Hardware.PCI
                         {
                             return "CANBUS";
                         }
-                        else
-                        {
-                            return "Serial Bus Controller";
-                        }
+                        return "Serial Bus Controller";
                         #endregion
                     case 0x0D:
                         return "Wireless Controller";
