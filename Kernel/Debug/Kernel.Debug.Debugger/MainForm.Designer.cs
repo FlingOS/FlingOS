@@ -128,7 +128,7 @@
             this.BuildPathBox.Name = "BuildPathBox";
             this.BuildPathBox.Size = new System.Drawing.Size(335, 22);
             this.BuildPathBox.TabIndex = 5;
-            this.BuildPathBox.Text = "G:\\Fling OS\\Fling OS\\Kernel\\Kernel\\bin\\Debug";
+            this.BuildPathBox.Text = "C:\\Fling OS\\Fling OS\\Kernel\\Kernel\\bin\\Debug";
             // 
             // ContinueButton
             // 
@@ -183,7 +183,6 @@
             this.CSBox.CharWidth = 10;
             this.CSBox.Cursor = System.Windows.Forms.Cursors.IBeam;
             this.CSBox.DisabledColor = System.Drawing.Color.FromArgb(((int)(((byte)(100)))), ((int)(((byte)(180)))), ((int)(((byte)(180)))), ((int)(((byte)(180)))));
-            this.CSBox.Font = new System.Drawing.Font("Courier New", 9.75F);
             this.CSBox.IsReplaceMode = false;
             this.CSBox.Language = FastColoredTextBoxNS.Language.CSharp;
             this.CSBox.LeftBracket = '(';

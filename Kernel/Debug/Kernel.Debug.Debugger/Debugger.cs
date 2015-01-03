@@ -626,7 +626,7 @@ namespace Kernel.Debug.Debugger
         /// <summary>
         /// Stops the debugger and closes the connection.
         /// </summary>
-        /// <returns>True if debugger is succesfully stopped.</returns>
+        /// <returns>True if debugger is successfully stopped.</returns>
         public bool Stop()
         {
             State = States.Stopping;
@@ -1319,11 +1319,11 @@ namespace Kernel.Debug.Debugger
             GetMemory_Length = length;
 
             TheSerial.Write((byte)DebugCommands.GetMemory);
-            TheSerial.Write(0x020970c3);
-            //for (int i = 0; i < address.Length; i++)
-            //{
-            //    TheSerial.Write(address[i]);
-            //}
+            //TheSerial.Write(0x020970c3);
+            for (int i = 0; i < address.Length; i++)
+            {
+                TheSerial.Write(address[i]);
+            }
             TheSerial.Write(length);
 
             WaitForCommand();
@@ -1601,8 +1601,6 @@ namespace Kernel.Debug.Debugger
         /// <param name="recursive">Whether to load recursively down the object tree.</param>
         public void LoadFields(Debugger debugger, OnLoadFieldsCompleteDelegate callback, bool recursive = false)
         {
-            return;
-
             if (dbType.Signature == "System.String")
             {
                 #region String Load
@@ -1655,100 +1653,111 @@ namespace Kernel.Debug.Debugger
                     List<DB_ComplexTypeLink> children = dbType.ChildTypes.OrderBy(x => x.ParentIndex).ToList();
                     uint offset = 0;
                     int fieldsLoading = children.Count;
-                    foreach (DB_ComplexTypeLink aChild in children)
+                    if (fieldsLoading == 0)
                     {
-                        Tuple<ulong, byte> fieldAddress = new Tuple<ulong, byte>(thisAddress.Item1 + offset, thisAddress.Item2);
-                        byte[] fieldAddressBytes = Utils.AddressToBytes(fieldAddress);
-
-                        Variable fieldVar = new Variable()
+                        callback();
+                    }
+                    else
+                    {
+                        foreach (DB_ComplexTypeLink aChild in children)
                         {
-                            dbType = aChild.ChildType,
-                            value = fieldAddressBytes
-                        };
-                        Fields.Add(fieldVar);
+                            Tuple<ulong, byte> fieldAddress = new Tuple<ulong, byte>(thisAddress.Item1 + offset, thisAddress.Item2);
+                            byte[] fieldAddressBytes = Utils.AddressToBytes(fieldAddress);
 
-                        if (fieldVar.dbType.IsValueType || fieldVar.dbType.Signature == "System.String")
-                        {
-                            //Load the actual value
-
-                            if (fieldVar.dbType.Signature == "System.String")
+                            Variable fieldVar = new Variable()
                             {
-                                #region String Load
+                                dbType = aChild.ChildType,
+                                value = fieldAddressBytes
+                            };
+                            Fields.Add(fieldVar);
 
-                                fieldVar.StringValueLoaded = false;
+                            if (fieldVar.dbType.IsValueType || fieldVar.dbType.Signature == "System.String")
+                            {
+                                //Load the actual value
+
+                                if (fieldVar.dbType.Signature == "System.String")
+                                {
+                                    #region String Load
+
+                                    fieldVar.StringValueLoaded = false;
+                                    debugger.LoadMemoryValue(fieldVar.value, (uint)fieldVar.dbType.StackBytesSize, delegate(byte[] data, Tuple<byte[], uint, Debugger.LoadMemoryCompletedDelegate, object> state)
+                                    {
+                                        Variable fieldVar1 = (Variable)state.Item4;
+
+                                        //This stuff relies entirely on how string data is compiled into the kernel
+
+                                        uint stringLength = BitConverter.ToUInt32(data, 0);
+
+                                        //TODO - Create a proper test condition
+                                        //This was inserted because when stepping into a method,
+                                        //the first two instructions set up EBP/ESP correctly
+                                        //but during that time the returned values are all screwy
+                                        //usually resulting in incorrect values, in this case the length 
+                                        //ends up insanely big!
+                                        if (stringLength < 500)
+                                        {
+                                            Tuple<ulong, byte> fieldAddress1 = Utils.BytesToAddress(fieldVar1.value);
+                                            fieldAddress1 = new Tuple<ulong, byte>(fieldAddress1.Item1 + 4, fieldAddress1.Item2);
+                                            fieldVar1.value = Utils.AddressToBytes(fieldAddress1);
+
+                                            debugger.LoadMemoryValue(fieldVar1.value, stringLength * 2, delegate(byte[] data1, Tuple<byte[], uint, Debugger.LoadMemoryCompletedDelegate, object> state1)
+                                            {
+                                                Variable fieldVar2 = (Variable)state1.Item4;
+                                                fieldVar2.value = data1;
+
+                                                fieldsLoading--;
+                                                if (fieldsLoading == 0)
+                                                {
+                                                    callback();
+                                                }
+                                            }, fieldVar1);
+                                        }
+                                    }, fieldVar);
+
+                                    #endregion
+                                }
+                                else
+                                {
+                                    debugger.LoadMemoryValue(fieldVar.value, (uint)fieldVar.dbType.BytesSize, delegate(byte[] data, Tuple<byte[], uint, Debugger.LoadMemoryCompletedDelegate, object> state)
+                                    {
+                                        Variable fieldVar1 = (Variable)state.Item4;
+                                        fieldVar1.value = data;
+                                        fieldVar1.StringValueLoaded = true;
+
+                                        fieldsLoading--;
+                                        if (fieldsLoading == 0)
+                                        {
+                                            callback();
+                                        }
+                                    }, fieldVar);
+                                }
+                            }
+                            else if (recursive && dbType.Signature != "Kernel.FOS_System.Type")
+                            {
+                                //Load the field's fields - i.e. recursive
+
                                 debugger.LoadMemoryValue(fieldVar.value, (uint)fieldVar.dbType.StackBytesSize, delegate(byte[] data, Tuple<byte[], uint, Debugger.LoadMemoryCompletedDelegate, object> state)
                                 {
                                     Variable fieldVar1 = (Variable)state.Item4;
+                                    fieldVar1.value = data;
 
-                                    //This stuff relies entirely on how string data is compiled into the kernel
-
-                                    uint stringLength = BitConverter.ToUInt32(data, 0);
-
-                                    //TODO - Create a proper test condition
-                                    //This was inserted because when stepping into a method,
-                                    //the first two instructions set up EBP/ESP correctly
-                                    //but during that time the returned values are all screwy
-                                    //usually resulting in incorrect values, in this case the length 
-                                    //ends up insanely big!
-                                    if (stringLength < 500)
+                                    fieldVar1.LoadFields(debugger, delegate()
                                     {
-                                        Tuple<ulong, byte> fieldAddress1 = Utils.BytesToAddress(fieldVar1.value);
-                                        fieldAddress1 = new Tuple<ulong, byte>(fieldAddress1.Item1 + 4, fieldAddress1.Item2);
-                                        fieldVar1.value = Utils.AddressToBytes(fieldAddress1);
-
-                                        debugger.LoadMemoryValue(fieldVar1.value, stringLength * 2, delegate(byte[] data1, Tuple<byte[], uint, Debugger.LoadMemoryCompletedDelegate, object> state1)
+                                        fieldsLoading--;
+                                        if (fieldsLoading == 0)
                                         {
-                                            Variable fieldVar2 = (Variable)state1.Item4;
-                                            fieldVar2.value = data1;
-
-                                            fieldsLoading--;
-                                            if (fieldsLoading == 0)
-                                            {
-                                                callback();
-                                            }
-                                        }, fieldVar1);
-                                    }
+                                            callback();
+                                        }
+                                    }, recursive);
                                 }, fieldVar);
-
-                                #endregion
                             }
                             else
                             {
-                                debugger.LoadMemoryValue(fieldVar.value, (uint)fieldVar.dbType.BytesSize, delegate(byte[] data, Tuple<byte[], uint, Debugger.LoadMemoryCompletedDelegate, object> state)
-                                {
-                                    Variable fieldVar1 = (Variable)state.Item4;
-                                    fieldVar1.value = data;
-                                    fieldVar1.StringValueLoaded = true;
-
-                                    fieldsLoading--;
-                                    if (fieldsLoading == 0)
-                                    {
-                                        callback();
-                                    }                                    
-                                }, fieldVar);
+                                fieldsLoading--;
                             }
+
+                            offset += (uint)fieldVar.dbType.StackBytesSize;
                         }
-                        else if (recursive)
-                        {
-                            //Load the field's fields - i.e. recursive
-
-                            debugger.LoadMemoryValue(fieldVar.value, (uint)fieldVar.dbType.StackBytesSize, delegate(byte[] data, Tuple<byte[], uint, Debugger.LoadMemoryCompletedDelegate, object> state)
-                            {
-                                Variable fieldVar1 = (Variable)state.Item4;
-                                fieldVar1.value = data;
-
-                                fieldVar1.LoadFields(debugger, delegate()
-                                {
-                                    fieldsLoading--;
-                                    if (fieldsLoading == 0)
-                                    {
-                                        callback();
-                                    }
-                                }, recursive);
-                            }, fieldVar);
-                        }
-
-                        offset += (uint)fieldVar.dbType.StackBytesSize;
                     }
                 }
             }
