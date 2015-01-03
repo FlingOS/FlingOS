@@ -77,12 +77,15 @@ namespace Kernel.Hardware.ATA
         /// Status port.
         /// </summary>
         public readonly IO.IOPort Status;
-        //* Alternate Status Register: BAR1 + 2; // Read Only.
+        
         /// <summary>
-        /// Control port.
+        /// Control port. Read only.
         /// </summary>
+        /// <remarks>
+        /// Control port is also called Alternate Status Register: BAR1 + 2.
+        /// </remarks>
         public readonly IO.IOPort Control;
-        //* DEVADDRESS: BAR1 + 2; //Don't know what this register is for
+        //* DEVADDRESS: BAR1 + 3; //Don't know what this register is for
 
         /// <summary>
         /// Initialises a new ATA IO device including the various ports.

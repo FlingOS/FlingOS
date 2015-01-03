@@ -207,10 +207,28 @@
                     CHS structure wherever possible) and cover the practical implementation of the protocol in detail.
                 
                 - Basic ideas
-                        : IO port access
-                        : Commands and data
-                        : CHS and LBA
-                        : Device select
+                    ATA devices each come with a number of registers. These registers are accessed through IO ports. The IO
+                    port numbers are determined by which ATA bus the device is attached to. ATA supports a Primary bus and a 
+                    Secondary bus, each of which can have at least a Master device and up to one Slave device. This allows a 
+                    maximum of 4 devices to be attached. Up to 2 devices share the same set of ports. As a consequence, you 
+                    can only access one of the two devices on a single bus at the same time.
+                    
+                    There are a number of different things you can do with an ATA device. But to do anything you must first
+                    detect what devices are present and then select the one you want to communicate with. This utilises the 
+                    Device Select register (/port). Once you have selected a device you can send it commands through the 
+                    Command register. Data is sent though the Data register and there are a few other registers for extra 
+                    important information.
+                        
+                    Accessing a memory location on a disk is done in blocks. The block size used depends on the disk but in 
+                    general the minimum block size if 512 bytes. This means you can only read or write a minimum of 512 bytes 
+                    at a time. Each block has an address. Not so long ago, disks were accessed based on their real-world 
+                    physical structure. Addresses were supplied as three numbers to select which Cylinder, Head and Sector.
+                    However, with advances in modern hardware, disks now used Logical Block Addressing (LBA for short). 
+                        
+                    There are a fixed number of LBAs on a disk and the block size is fixed. So if the block size is 512, and 
+                    you want the byte 1024, you would read LBA 2 from the disk. Nowadays, all disks are accessed via LBA not 
+                    CHS addresses so in this article we will focus on LBA addresses.
+                    
             - PIO mode
                 - What does PIO stand for?
                 - Which types of device?
