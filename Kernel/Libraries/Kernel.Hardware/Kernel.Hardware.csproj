@@ -56,9 +56,12 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ATA\ATA.cs" />
-    <Compile Include="ATA\ATAIO.cs" />
+    <Compile Include="ATA\ATAIOPorts.cs" />
     <Compile Include="ATA\ATAManager.cs" />
-    <Compile Include="ATA\ATAPio.cs" />
+    <Compile Include="ATA\PATA.cs" />
+    <Compile Include="ATA\SATAPI.cs" />
+    <Compile Include="ATA\SATA.cs" />
+    <Compile Include="ATA\PATAPI.cs" />
     <Compile Include="BlockDevice.cs" />
     <Compile Include="CPUs\CPUx86_32.cs" />
     <Compile Include="Device.cs" />

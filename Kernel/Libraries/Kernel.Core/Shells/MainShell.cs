@@ -1026,7 +1026,7 @@ namespace Kernel.Core.Shells
             {
                 Hardware.Device aDevice = (Hardware.Device)Hardware.DeviceManager.Devices[i];
                 //TODO: Once is operator is supported, just do a test for "is Hardware.Devices.DiskDevice"
-                if (aDevice is Hardware.ATA.ATAPio ||
+                if (aDevice is Hardware.ATA.PATA ||
                     aDevice is Hardware.USB.Devices.MassStorageDevice_DiskDevice)
                 {
                     //Clean caches of the device.
@@ -1640,16 +1640,15 @@ namespace Kernel.Core.Shells
             for (int i = 0; i < Hardware.DeviceManager.Devices.Count; i++)
             {
                 Hardware.Device aDevice = (Hardware.Device)Hardware.DeviceManager.Devices[i];
-                if (aDevice is Hardware.ATA.ATAPio)
+                if (aDevice is Hardware.ATA.PATA)
                 {
                     console.WriteLine();
                     console.Write("--------------------- Device ");
                     console.Write_AsDecimal(i);
                     console.WriteLine(" ---------------------");
-                    console.WriteLine("ATAPio device found.");
-                    Hardware.ATA.ATAPio theATA = (Hardware.ATA.ATAPio)aDevice;
-
-                    console.WriteLine(((FOS_System.String)"Type: ") + (theATA.DriveType == Hardware.ATA.ATAPio.SpecLevel.ATA ? "ATA" : "ATAPI"));
+                    console.WriteLine("Type: PATA");
+                    
+                    Hardware.ATA.PATA theATA = (Hardware.ATA.PATA)aDevice;
                     console.WriteLine(((FOS_System.String)"Serial No: ") + theATA.SerialNo);
                     console.WriteLine(((FOS_System.String)"Firmware Rev: ") + theATA.FirmwareRev);
                     console.WriteLine(((FOS_System.String)"Model No: ") + theATA.ModelNo);
@@ -1658,6 +1657,33 @@ namespace Kernel.Core.Shells
                     console.WriteLine(((FOS_System.String)"Size: ") + ((theATA.BlockCount * theATA.BlockSize) >> 20) + " MB");
 
                     numDrives++;
+                }
+                else if (aDevice is Hardware.ATA.PATAPI)
+                {
+                    console.WriteLine();
+                    console.Write("--------------------- Device ");
+                    console.Write_AsDecimal(i);
+                    console.WriteLine(" ---------------------");
+                    console.WriteLine("Type: PATAPI");
+                    console.WriteLine("Warning: This disk device type is not supported.");
+                }
+                else if (aDevice is Hardware.ATA.SATA)
+                {
+                    console.WriteLine();
+                    console.Write("--------------------- Device ");
+                    console.Write_AsDecimal(i);
+                    console.WriteLine(" ---------------------");
+                    console.WriteLine("Type: SATA");
+                    console.WriteLine("Warning: This disk device type is not supported.");
+                }
+                else if (aDevice is Hardware.ATA.SATAPI)
+                {
+                    console.WriteLine();
+                    console.Write("--------------------- Device ");
+                    console.Write_AsDecimal(i);
+                    console.WriteLine(" ---------------------");
+                    console.WriteLine("Type: SATAPI");
+                    console.WriteLine("Warning: This disk device type is not supported.");
                 }
             }
 

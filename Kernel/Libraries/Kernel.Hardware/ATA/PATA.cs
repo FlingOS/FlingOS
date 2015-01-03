@@ -35,9 +35,10 @@ namespace Kernel.Hardware.ATA
     /// <summary>
     /// Represents an ATA Pio device.
     /// </summary>
-    public class ATAPio : ATA
+    public class PATA : ATA
     {
-        //TODO - This implementation does not support CD drives properly.
+        //TODO - This implementation does not support CD drives. I.e. does not support PATAPI devices.
+        //  Note: This driver should never support SATA or SATAPI devices. Write a separate driver for that.
 
         /// <summary>
         /// Device statuses.
@@ -271,19 +272,27 @@ namespace Kernel.Hardware.ATA
             /// </summary>
             Null,
             /// <summary>
-            /// ATA
+            /// PATA
             /// </summary>
-            ATA,
+            PATA,
             /// <summary>
-            /// ATAPI
+            /// SATA
             /// </summary>
-            ATAPI
+            SATA,
+            /// <summary>
+            /// PATAPI
+            /// </summary>
+            PATAPI,
+            /// <summary>
+            /// SATAPI
+            /// </summary>
+            SATAPI
         }
 
         /// <summary>
         /// IO ports for this device.
         /// </summary>
-        protected ATAIO IO;
+        protected ATAIOPorts IO;
 
         /// <summary>
         /// Pio drive type.
@@ -333,13 +342,31 @@ namespace Kernel.Hardware.ATA
             get { return mModelNo; }
         }
 
+        protected bool mLBA48Mode = false;
+        public bool LBA48Mode
+        {
+            get
+            {
+                return mLBA48Mode;
+            }
+        }
+
+        protected bool initialised = false;
+        public bool Initialised
+        {
+            get
+            {
+                return initialised;
+            }
+        }
+
         /// <summary>
         /// Initialises a new ATA pio device.
         /// </summary>
         /// <param name="anIO">The IO ports for the new Pio device.</param>
         /// <param name="aControllerId">The controller ID for the new device.</param>
         /// <param name="aBusPosition">The bus position of the new device.</param>
-        public ATAPio(ATAIO anIO, ATA.ControllerID aControllerId, ATA.BusPosition aBusPosition)
+        public PATA(ATAIOPorts anIO, ATA.ControllerID aControllerId, ATA.BusPosition aBusPosition)
         {
             IO = anIO;
             controllerId = aControllerId;
@@ -348,9 +375,10 @@ namespace Kernel.Hardware.ATA
             IO.Control.Write_Byte((byte)0x02);
 
             mDriveType = DiscoverDrive();
-            if (mDriveType != SpecLevel.Null)
+            if (mDriveType == SpecLevel.PATA)
             {
                 InitDrive();
+                initialised = true;
             }
         }
 
@@ -358,9 +386,16 @@ namespace Kernel.Hardware.ATA
         /// Sends the drive select command.
         /// </summary>
         /// <param name="aLbaHigh4">LBA High 4 bits</param>
-        public void SelectDrive(byte aLbaHigh4)
+        public void SelectDrive(byte aLbaHigh4, bool setLBA)
         {
-            IO.DeviceSelect.Write_Byte((byte)((byte)(DvcSelVal.Default | DvcSelVal.LBA | (busPosition == BusPosition.Slave ? DvcSelVal.Slave : 0)) | aLbaHigh4));
+            if (setLBA)
+            {
+                IO.DeviceSelect.Write_Byte((byte)((byte)(DvcSelVal.Default | DvcSelVal.LBA | (busPosition == BusPosition.Slave ? DvcSelVal.Slave : 0)) | aLbaHigh4));
+            }
+            else
+            {
+                IO.DeviceSelect.Write_Byte((byte)((byte)(DvcSelVal.Default | (busPosition == BusPosition.Slave ? DvcSelVal.Slave : 0)) | aLbaHigh4));
+            }
             Wait();
         }
         
@@ -390,22 +425,31 @@ namespace Kernel.Hardware.ATA
         /// <returns>The specification level of the discovered drive. SpecLevel.Null if not found.</returns>
         public SpecLevel DiscoverDrive()
         {
-            SelectDrive(0);
-            var xIdentifyStatus = SendCmd(Cmd.Identify, false);
-            // No drive found, go to next
-            if (xIdentifyStatus == Status.None)
-            {
-                return SpecLevel.Null;
-            }
-            else if ((xIdentifyStatus & Status.Error) != 0)
+            SelectDrive(0, false);
+            IO.SectorCount.Write_Byte(0);
+            IO.LBA0.Write_Byte(0);
+            IO.LBA1.Write_Byte(0);
+            IO.LBA2.Write_Byte(0);
+            var status = SendCmd(Cmd.Identify, false);
+
+            if ((status & Status.Error) != 0)
             {
                 // Can look in Error port for more info
                 // Device is not ATA
-                // This is also triggered by ATAPI devices
-                int xTypeId = IO.LBA2.Read_Byte() << 8 | IO.LBA1.Read_Byte();
-                if (xTypeId == 0xEB14 || xTypeId == 0x9669)
+                // Error status can also triggered by ATAPI devices
+                // So check LBA1 and LBA2 to detect an ATAPI device.
+                int typeId = IO.LBA2.Read_Byte() << 8 | IO.LBA1.Read_Byte();
+                if (typeId == 0xEB14)
                 {
-                    return SpecLevel.ATAPI;
+                    return SpecLevel.PATAPI;
+                }
+                else if (typeId == 0x9669)
+                {
+                    return SpecLevel.SATAPI;
+                }
+                else if (typeId == 0xC33C)
+                {
+                    return SpecLevel.SATA;
                 }
                 else
                 {
@@ -413,44 +457,62 @@ namespace Kernel.Hardware.ATA
                     return SpecLevel.Null;
                 }
             }
-            else if ((xIdentifyStatus & Status.DRQ) == 0)
+
+            // No drive found, go to next
+            if (status == Status.None)
+            {
+                return SpecLevel.Null;
+            }
+
+            // To handle some ATAPI devices that do not conform to spec 
+            // (i.e. they do not throw an error response to the Device Select command),
+            //  check LBA1 and LBA2 ports for non-zero values.
+            //  If they are non-zero, then the drive is not ATA.
+            {
+                int typeId = IO.LBA2.Read_Byte() << 8 | IO.LBA1.Read_Byte();
+                // It is, however, possible to detect what type of device is actually attached.
+                if (typeId == 0xEB14)
+                {
+                    return SpecLevel.PATAPI;
+                }
+                else if (typeId == 0x9669)
+                {
+                    return SpecLevel.SATAPI;
+                }
+                else if (typeId == 0xC33C)
+                {
+                    return SpecLevel.SATA;
+                }
+            }
+
+            do
+            {
+                Wait();
+                status = (Status)IO.Status.Read_Byte();
+            } while ((status & Status.DRQ) == 0 &&
+                     (status & Status.Error) == 0);
+
+            if ((status & Status.Error) != 0)
             {
                 // Error
                 return SpecLevel.Null;
             }
-            return SpecLevel.ATA;
+
+            if ((status & Status.DRQ) == 0)
+            {
+                // Error
+                return SpecLevel.Null;
+            }
+
+            return SpecLevel.PATA;
         }
         /// <summary>
         /// Attempts to initialise the ATA drive.
         /// </summary>
         protected void InitDrive()
         {
-            if (mDriveType == SpecLevel.ATA)
-            {
-                SendCmd(Cmd.Identify);
-            }
-            else
-            {
-                SendCmd(Cmd.IdentifyPacket);
-            }
-            //IDENTIFY command
-            // Not sure if all this is needed, its different than documented elsewhere but might not be bad
-            // to add code to do all listed here:
-            //
-            //To use the IDENTIFY command, select a target drive by sending 0xA0 for the master drive, 
-            //   or 0xB0 for the slave, to the "drive select" IO port. On the Primary bus, this would be 
-            //   port 0x1F6.
-            //Then set the Sectorcount, LBAlo, LBAmid, and LBAhi IO ports to 0 (port 0x1F2 to 0x1F5). 
-            //Then send the IDENTIFY command (0xEC) to the Command IO port (0x1F7). 
-            //Then read the Status port (0x1F7) again. If the value read is 0, the drive does not exist. 
-            //   For any other value: poll the Status port (0x1F7) until bit 7 (BSY, value = 0x80) clears. 
-            //Because of some ATAPI drives that do not follow spec, at this point you need to check the 
-            //   LBAmid and LBAhi ports (0x1F4 and 0x1F5) to see if they are non-zero. 
-            //   If so, the drive is not ATA, and you should stop polling. Otherwise, continue polling 
-            //   one of the Status ports until bit 3 (DRQ, value = 8) sets, or until bit 0 (ERR, value = 1) 
-            //   sets.
-            //   At that point, if ERR is clear, the data is ready to read from the Data port (0x1F0). 
-            //   Read 256 words, and store them. 
+            // At this point, DiscoverDrive has been called, but the additional identification data 
+            // has not been read
 
             // Read Identification Space of the Device
             var xBuff = new UInt16[256];
@@ -460,19 +522,19 @@ namespace Kernel.Hardware.ATA
             mModelNo = GetString(xBuff, 27, 40);
 
             //Words (61:60) shall contain the value one greater than the total number of user-addressable
-            //sectors in 28-bit addressing and shall not exceed 0FFFFFFFh.  The content of words (61:60) shall
-            //be greater than or equal to one and less than or equal to 268,435,455.
+            //sectors in 28-bit addressing and shall not exceed 0x0FFFFFFF. 
             // We need 28 bit addressing - small drives on VMWare and possibly other cases are 28 bit
             blockCount = ((UInt32)xBuff[61] << 16 | xBuff[60]) - 1;
 
             //Words (103:100) shall contain the value one greater than the total number of user-addressable
-            //sectors in 48-bit addressing and shall not exceed 0000FFFFFFFFFFFFh.
+            //sectors in 48-bit addressing and shall not exceed 0x0000FFFFFFFFFFFF.
             //The contents of words (61:60) and (103:100) shall not be used to determine if 48-bit addressing is
             //supported. IDENTIFY DEVICE bit 10 word 83 indicates support for 48-bit addressing.
             bool xLba48Capable = (xBuff[83] & 0x400) != 0;
             if (xLba48Capable)
             {
-                blockCount = ((UInt64)xBuff[102] << 32 | (UInt64)xBuff[101] << 16 | (UInt64)xBuff[100]) - 1;
+                blockCount = ((UInt64)xBuff[103] << 48 | (UInt64)xBuff[102] << 32 | (UInt64)xBuff[101] << 16 | (UInt64)xBuff[100]) - 1;
+                mLBA48Mode = true;
             }
         }
 
@@ -521,17 +583,22 @@ namespace Kernel.Hardware.ATA
         {
             IO.Command.Write_Byte((byte)aCmd);
             Status xStatus;
+            int timeout = 20000000;
             do
             {
                 Wait();
                 xStatus = (Status)IO.Status.Read_Byte();
-            } while ((xStatus & Status.Busy) != 0);
+            } while ((xStatus & Status.Busy) != 0 &&
+                     (xStatus & Status.Error) == 0 && 
+                     timeout-- > 0);
 
             // Error occurred
             if (aThrowOnError && (xStatus & Status.Error) != 0)
             {
-                // TODO: Read error port
-                ExceptionMethods.Throw(new FOS_System.Exception("ATA Read port error!"));
+                // TODO: ATA - Handle Send Command error
+                //ExceptionMethods.Throw(new FOS_System.Exception("ATA Read port error!"));
+                BasicConsole.WriteLine("ATA: Send command error unhandled!");
+                BasicConsole.DelayOutput(5);
             }
             return xStatus;
         }
@@ -544,7 +611,7 @@ namespace Kernel.Hardware.ATA
         protected void SelectSector(UInt64 aSectorNo, UInt32 aSectorCount)
         {
             //TODO: Check for 48 bit sectorno mode and select 48 bits
-            SelectDrive((byte)(aSectorNo >> 24));
+            SelectDrive((byte)(aSectorNo >> 24), true);
 
             // Number of sectors to read
             IO.SectorCount.Write_Byte((byte)aSectorCount);
@@ -561,6 +628,11 @@ namespace Kernel.Hardware.ATA
         /// <param name="aData">The data array to read into.</param>
         public override void ReadBlock(UInt64 aBlockNo, UInt32 aBlockCount, byte[] aData)
         {
+            if (!initialised)
+            {
+                return;
+            }
+
             SelectSector(aBlockNo, aBlockCount);
             SendCmd(Cmd.ReadPio);
             IO.Data.Read_Bytes(aData);
@@ -573,6 +645,11 @@ namespace Kernel.Hardware.ATA
         /// <param name="aData">See base class.</param>
         public override void WriteBlock(UInt64 aBlockNo, UInt32 aBlockCount, byte[] aData)
         {
+            if (!initialised)
+            {
+                return;
+            }
+
             SelectSector(aBlockNo, aBlockCount);
             SendCmd(Cmd.WritePio);
 
