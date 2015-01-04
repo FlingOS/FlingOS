@@ -39,11 +39,12 @@
                     
                 - Consists of hardware and software standards: AT Attachment, AT Attachment Packet Interface
                     ATA is a hardware interface standard for connecting storage devices to a PC (originally via
-                    the 16-bit ISA bus created by IBM for the IBM PC/AT). 
+                    the 16-bit ISA bus created by IBM for the IBM PC/AT). It also includes the basic Parallel ATA
+                    transfer protocol.
                     
                     ATAPI is a software protocol which was layered on top of ATA to allow it to connect a wider 
-                    range of devices than the original protocol allowed for. Over time the two have become so
-                    entwined that you wouldn't really consider one without the other.
+                    range of devices than the original protocol allowed for. It is essentially a way to send SCSI
+                    commands over the existing ATA protocol.
                     
                 - Started with Western Digital's IDE
                     The first version of what would later become ATA was developed by Western Digital in around 1983.
@@ -152,16 +153,18 @@
                     connecting (P)ATA devices to the motherboard and processor. However, other possibilities do exist. Many PATA
                     (and SATA) devices now appear on the PCI bus.
                     
-                - What does ATAPI do?
-                    ATAPI is a software standard ("packet interface") which sets out the command and data transfer protocols. 
-                    This is separate from the hardware standard. The hardware standard sets out how to transfer individual bits 
-                    and bytes. The software standard sets out what those bits and bytes actually mean and in what order they m
-                    must be sent. 
+                    Lastly, ATA defines a basic protocol for communicating with disk devices. Essentially a basic software
+                    protocol. This is the protocol used by IDE drives such as hard disks. For CD Drives it is usually 
+                    replaced by ATAPI.
                     
-                    The packet protocol is now supported by all ATA devices, but there are alternative protocols layered on top
-                    of the ATAPI protocol (e.g. SCSI Attached devices such ad CD drives). This means that you can use ATAPI to 
-                    detect devices and what protocol they use but you may not be able to control them with ATAPI. That said, 
-                    you can control most modern hard disk devices using ATAPI.
+                - What does ATAPI do?
+                    ATAPI is a software standard ("packet interface") which sets out new command and data transfer protocols that
+                    sit on top of (but essentially replace) the basic ATA protocol. This is still separate from the hardware standard
+                    though. The hardware standard sets out how to transfer individual bits and bytes. The software standard sets out what 
+                    those bits and bytes actually mean and in what order they must be sent. The ATAPI protocol makes used 
+                    of only one of the original ATA commands (Identify packet). It replaces all other commands by SCSI commands.
+                    
+                    In general, hard disks use plain PATA, CD Drives used PATAPI. PATAPI is itself essentially SCSI commands.
                     
                 - How common is it?
                     ATA is extremely common. It has been included in PCs and laptop for over a decade. This means most PCs and 
@@ -170,7 +173,7 @@
                     for example, only has a SATA drive with no detectable backwards compatibility for PATA.
                     
                     Note, many manufacturers or specifications list drives as IDE. As discussed previously, this is broadly 
-                    equivalent to a PATA drive. If your PC or laptop says it has an IDE drive, then it has PAAT support.
+                    equivalent to a PATA drive. If your PC or laptop says it has an IDE drive, then it has PATA support.
                     
                 - Why is it important?
                     ATA is important as it has long been the standard for hard disk and CD drive control. So much so, that 
@@ -196,7 +199,7 @@
                 - ATA for hard drives vs. CD drives
                     TODO: Look up the key differences
                         
-                    Fling OS currently only supports PATA, ATAPI hard disk devices and not CD ROM devices. However, many 
+                    Fling OS currently only supports PATA (hard disk) devices and not PATAPI (CD ROM) devices. However, many 
                     modern laptops and PCs do not come with CD drives and external drives are usually attached via USB. 
                     This means that CD drive support is fairly unnecessary for a hobby OS.
                         
@@ -231,8 +234,20 @@
                     
             - PIO mode
                 - What does PIO stand for?
+                    PIO stands for Programmed Input/Output. It is a common way of connecting an external device to the CPU.
+                    It allows data to be transferred by using input/output commands to addresses in the I/O address space.
+                    These are often referred to as IO ports. 
+                    
+                    PIO is in contrast to DMA (Direct Memory Access) where data is transferred by directly reading/writing
+                    memory addresses. PIO is significantly more costly than DMA since it requires the CPU to transfer
+                    every byte of data not via memory. PIO mode is still important because when a CPU is just beginning to
+                    boot it must be able to load from a boot device without knowledge of what memory is available.
+                
                 - Which types of device?
-                - How does this link to IDE?
+                    ATA PIO mode is now the default mode at startup for all ATA compliant devices. It is what allows the CPU
+                    to use any ATA device as a boot device. However, many modern devices which are ATA compliant also support
+                    switching to more advanced modes such as DMA.
+                    
         - Hardware
             - Overview
             - Cables & Connectors
@@ -270,6 +285,7 @@
             - http://wiki.osdev.org/LBA
             - http://wiki.osdev.org/PCI_IDE_Controller
             - http://wiki.osdev.org/SATA
+            - http://en.wikipedia.org/wiki/Programmed_input/output
     -->
     
     <section address="">
