@@ -67,7 +67,7 @@ namespace Kernel.FOS_System.IO
             for (int i = 0; i < DeviceManager.Devices.Count; i++)
             {
                 Device aDevice = (Device)DeviceManager.Devices[i];
-                if (aDevice is Hardware.ATA.ATAPio)
+                if (aDevice is DiskDevice)
                 {
                     try
                     {
@@ -78,18 +78,6 @@ namespace Kernel.FOS_System.IO
                         BasicConsole.WriteLine("Error initializing disk: " + ExceptionMethods.CurrentException.Message);
                     }
                 }
-                else if (aDevice is Hardware.USB.Devices.MassStorageDevice_DiskDevice)
-                {
-                    try
-                    {
-                        InitDisk((DiskDevice)aDevice);
-                    }
-                    catch
-                    {
-                        BasicConsole.WriteLine("Error initializing MSD: " + ExceptionMethods.CurrentException.Message);
-                    }
-                }
-                //TODO - Add more disk device types
             }
             
             InitPartitions();

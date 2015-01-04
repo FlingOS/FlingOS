@@ -53,8 +53,20 @@ namespace Kernel.Debug
             InitSerial();
             BasicConsole.WriteLine("initialised.");
             BasicConsole.WriteLine("Waiting for debug connection signature...");
+            uint timeout = 100000;
             uint connectionSignature = Serial_SafeReadUInt32();
-            if (connectionSignature != 0)
+            while ((connectionSignature != 0xDEADBEEF && 
+                    connectionSignature != 0xEFDEADBE &&
+                    connectionSignature != 0xBEEFDEAD && 
+                    connectionSignature != 0xADBEEFDE) && timeout > 0)
+            {
+                connectionSignature = Serial_SafeReadUInt32();
+                timeout--;
+            }
+            if (connectionSignature == 0xDEADBEEF || 
+                connectionSignature == 0xEFDEADBE ||
+                connectionSignature == 0xBEEFDEAD || 
+                connectionSignature == 0xADBEEFDE)
             {
                 BasicConsole.Write("Debug signature received. Enabling debugging...");
                 BeginEnableDebug();

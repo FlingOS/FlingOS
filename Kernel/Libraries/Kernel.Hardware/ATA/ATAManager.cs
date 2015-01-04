@@ -40,22 +40,25 @@ namespace Kernel.Hardware.ATA
         /// <summary>
         /// ATA primary IO device.
         /// </summary>
-        private static readonly ATAIO ATAIO1 = new ATAIO(false);
+        private static readonly ATAIOPorts ATAIO1 = new ATAIOPorts(false);
         /// <summary>
         /// ATA secondary IO device.
         /// </summary>
-        private static readonly ATAIO ATAIO2 = new ATAIO(true);
+        private static readonly ATAIOPorts ATAIO2 = new ATAIOPorts(true);
 
         /// <summary>
         /// Initialises all available ATA devices on the primary bus.
         /// </summary>
         public static void Init()
         {
-            //Try to initialise primary IDE:ATA drives.
+            //Try to initialise primary IDE:PATA/PATAPI drives.
             InitDrive(ATA.ControllerID.Primary, ATA.BusPosition.Slave);
             InitDrive(ATA.ControllerID.Primary, ATA.BusPosition.Master);
-            
-            //TODO: Detect if secondary drives present and init them if they are
+
+            InitDrive(ATA.ControllerID.Secondary, ATA.BusPosition.Slave);
+            InitDrive(ATA.ControllerID.Secondary, ATA.BusPosition.Master);
+
+            //TODO: Init SATA/SATAPI devices by enumerating the PCI bus.
         }
 
         /// <summary>
@@ -66,14 +69,35 @@ namespace Kernel.Hardware.ATA
         public static void InitDrive(ATA.ControllerID ctrlId, ATA.BusPosition busPos)
         {
             //Get the IO ports for the correct bus
-            ATAIO theIO = ctrlId == ATA.ControllerID.Primary ? ATAIO1 : ATAIO2;
+            ATAIOPorts theIO = ctrlId == ATA.ControllerID.Primary ? ATAIO1 : ATAIO2;
             //Create / init the device on the bus
-            ATAPio theATAPio = new ATAPio(theIO, ctrlId, busPos);
+            PATA theATAPio = new PATA(theIO, ctrlId, busPos);
             //If the device was detected as present:
-            if (theATAPio.DriveType != ATAPio.SpecLevel.Null)
+            if (theATAPio.DriveType != PATA.SpecLevel.Null)
             {
-                //Add it to the list of devices.
-                DeviceManager.Devices.Add(theATAPio);
+                //If the device was actually a PATA device:
+                if (theATAPio.DriveType == PATA.SpecLevel.PATA)
+                {
+                    //Add it to the list of devices.
+                    DeviceManager.Devices.Add(theATAPio);
+                }
+                else if(theATAPio.DriveType == PATA.SpecLevel.PATAPI)
+                {
+                    // Add a PATAPI device
+                    DeviceManager.Devices.Add(new PATAPI(theIO, ctrlId, busPos));
+                }
+                //TODO: Remove the SATA/SATAPI initialisation from here. It should be done
+                //  in the ATAManager.Init method.
+                else if (theATAPio.DriveType == PATA.SpecLevel.SATA)
+                {
+                    // Add a SATA device
+                    DeviceManager.Devices.Add(new SATA());
+                }
+                else if (theATAPio.DriveType == PATA.SpecLevel.SATAPI)
+                {
+                    // Add a SATAPI device
+                    DeviceManager.Devices.Add(new SATAPI());
+                }
             }
         }
     }

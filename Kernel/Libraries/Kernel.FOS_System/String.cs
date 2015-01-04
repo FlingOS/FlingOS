@@ -449,6 +449,22 @@ namespace Kernel.FOS_System
         [Compiler.NoGC]
         public static FOS_System.String operator +(FOS_System.String x, FOS_System.String y)
         {
+            if (x == null)
+            {
+                if (y == null)
+                {
+                    return null;
+                }
+                else
+                {
+                    return y;
+                }
+            }
+            else if (y == null)
+            {
+                return x;
+            }
+
             return FOS_System.String.Concat(x, y);
         }
         /// <summary>

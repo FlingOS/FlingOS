@@ -109,7 +109,7 @@ pop ebp
 ; Return
 ret
 
-; Method not written to C# calling convention. Uses debugger internel calling convention - optimised system.
+; Method not written to C# calling convention. Uses debugger internal calling convention - optimized system.
 method_System_UInt32_Kernel_Debug_BasicDebug_Serial_ReadUInt32__:
 
 push ebp

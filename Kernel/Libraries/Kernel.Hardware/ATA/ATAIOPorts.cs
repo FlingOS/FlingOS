@@ -35,7 +35,7 @@ namespace Kernel.Hardware.ATA
     /// <summary>
     /// Wraps the IO Ports for communicating with ATA devices.
     /// </summary>
-    public class ATAIO : FOS_System.Object
+    public class ATAIOPorts : FOS_System.Object
     {
         /// <summary>
         /// The data port.
@@ -92,7 +92,7 @@ namespace Kernel.Hardware.ATA
         /// </summary>
         /// <param name="isSecondary">Whether the device is a secondary ATA device.</param>
         [Compiler.NoDebug]
-        internal ATAIO(bool isSecondary)
+        internal ATAIOPorts(bool isSecondary)
         {
             //BAR of main registers
             UInt16 xBAR0 = (UInt16)(isSecondary ? 0x0170 : 0x01F0);
