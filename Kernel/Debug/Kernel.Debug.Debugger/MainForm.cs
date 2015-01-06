@@ -483,8 +483,8 @@ namespace Kernel.Debug.Debugger
                         WaitForCommand();
                     };
 
-                    theVM = new VMWare_VM();
-                    theVM.PowerOn();
+                    //theVM = new VMWare_VM();
+                    //theVM.PowerOn();
                 }
             }).Start();
         }
