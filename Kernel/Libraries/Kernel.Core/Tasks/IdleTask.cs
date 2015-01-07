@@ -41,10 +41,11 @@ namespace Kernel.Core.Tasks
                 //TODO: Enable when GC is thread-safe
                 //Hardware.Devices.Timer.Default.Wait(1000);
                 //TODO: Disable when GC is thread-safe
+                *((ushort*)0xB809E) = (0x1F00 | ' ');
                 Hardware.Devices.CPU.Default.Halt();
 
-                *((ushort*)0xB80E9) = (0x0200 | '/');
-                *((ushort*)0xB80E9) = (0x0200 | '\\');
+                *((ushort*)0xB809E) = (0x3F00 | ' ');
+                Hardware.Devices.CPU.Default.Halt();
             }
         }
     }
