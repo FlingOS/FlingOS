@@ -27,6 +27,9 @@
 #define PROCESSMANAGER_TRACE
 #undef PROCESSMANAGER_TRACE
 
+#define PROCESSMANAGER_SWITCH_TRACE
+#undef PROCESSMANAGER_SWITCH_TRACE
+
 using System;
 using Kernel.FOS_System.Collections;
 using Kernel.Hardware.Processes.Synchronisation;
@@ -103,17 +106,25 @@ namespace Kernel.Hardware.Processes
                 if (CurrentThread != null &&
                     (CurrentThread.Id == threadId || threadId == -1))
                 {
+#if PROCESSMANAGER_SWITCH_TRACE
+                    BasicConsole.WriteLine("No switch. (1)");
+#endif
                     return;
                 }
                 else
                 {
+#if PROCESSMANAGER_SWITCH_TRACE
+                    BasicConsole.WriteLine("No switch. (2)");
+#endif
                     dontSwitchOutIn = true;
                 }
             }
 
             if (!dontSwitchOutIn)
             {
-                //BasicConsole.WriteLine("Switching out: " + CurrentProcess.Name);
+#if PROCESSMANAGER_SWITCH_TRACE
+                BasicConsole.WriteLine("Switching out: " + CurrentProcess.Name);
+#endif
                 CurrentProcess.UnloadMemLayout();
 
                 CurrentProcess = null;
@@ -130,10 +141,14 @@ namespace Kernel.Hardware.Processes
                 // Process not found
                 if (CurrentProcess == null)
                 {
+#if PROCESSMANAGER_SWITCH_TRACE
                     BasicConsole.WriteLine("Process not found.");
+#endif
                     return;
                 }
-                //BasicConsole.WriteLine("Process found. " + CurrentProcess.Name);
+#if PROCESSMANAGER_SWITCH_TRACE
+                BasicConsole.WriteLine("Process found. " + CurrentProcess.Name);
+#endif
             }
 
             CurrentThread = null;
@@ -161,17 +176,25 @@ namespace Kernel.Hardware.Processes
             // No threads in the process (?!) or process not found
             if (CurrentThread == null)
             {
+#if PROCESSMANAGER_SWITCH_TRACE
                 BasicConsole.WriteLine("Thread not found.");
+#endif
                 return;
             }
-            //BasicConsole.WriteLine("Thread found.");
+#if PROCESSMANAGER_SWITCH_TRACE
+            BasicConsole.WriteLine("Thread found.");
+#endif
 
             CurrentThread_State = CurrentThread.State;
-            //BasicConsole.WriteLine("Thread state updated.");
+#if PROCESSMANAGER_SWITCH_TRACE
+            BasicConsole.WriteLine("Thread state updated.");
+#endif
             
             if (!dontSwitchOutIn)
             {
-                //BasicConsole.WriteLine("Switching in: " + CurrentProcess.Name);
+#if PROCESSMANAGER_SWITCH_TRACE
+                BasicConsole.WriteLine("Switching in: " + CurrentProcess.Name);
+#endif
                 CurrentProcess.LoadMemLayout();
             }
         }

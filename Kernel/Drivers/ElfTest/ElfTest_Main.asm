@@ -9,18 +9,18 @@ SECTION .text
 _start:
 
 	; Starting colour	
-	mov dword ecx, 0x11
+	mov dword ecx, 0x12
 
 	Continue:
 
 	push dword ecx
 
-	mov dword ebx, 261
-	mov dword ecx, 16
-	mov dword edx, 120
-	call SysCall_PlayNote
+	; mov dword ebx, 261
+	; mov dword ecx, 16
+	; mov dword edx, 120
+	; call SysCall_PlayNote
 
-	mov dword ebx, 10000
+	mov dword ebx, 1000
 	call SysCall_Sleep
 
 	pop dword ecx
@@ -49,7 +49,7 @@ _start:
 	mov byte [0xB800F], cl
 	mov byte [0xB8011], cl
 
-	add ecx, 0x11
+	add ecx, 0x10
 	and ecx, 0xFF
 
 	jmp Continue

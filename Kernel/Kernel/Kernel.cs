@@ -259,6 +259,9 @@ namespace Kernel
                 BasicConsole.WriteLine(" > Starting GC Cleanup task...");
                 ProcessManager.CurrentProcess.CreateThread(Core.Tasks.GCCleanupTask.Main);
 
+                BasicConsole.WriteLine(" > Starting Idle task...");
+                ProcessManager.CurrentProcess.CreateThread(Core.Tasks.IdleTask.Main);
+
                 //BasicConsole.WriteLine("Initialising ATA...");
                 //Hardware.ATA.ATAManager.Init();
                 //BasicConsole.WriteLine("Initialising FS...");

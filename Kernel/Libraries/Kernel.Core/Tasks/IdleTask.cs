@@ -38,7 +38,13 @@ namespace Kernel.Core.Tasks
         {
             while (true)
             {
-                Hardware.Devices.Timer.Default.Wait(1000);
+                //TODO: Enable when GC is thread-safe
+                //Hardware.Devices.Timer.Default.Wait(1000);
+                //TODO: Disable when GC is thread-safe
+                Hardware.Devices.CPU.Default.Halt();
+
+                *((ushort*)0xB80E9) = (0x0200 | '/');
+                *((ushort*)0xB80E9) = (0x0200 | '\\');
             }
         }
     }

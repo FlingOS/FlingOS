@@ -27,6 +27,9 @@
 #define SCHEDULER_TRACE
 #undef SCHEDULER_TRACE
 
+#define SCHEDULER_HANDLER_TRACE
+#undef SCHEDULER_HANDLER_TRACE
+
 using System;
 
 namespace Kernel.Hardware.Processes
@@ -42,6 +45,8 @@ namespace Kernel.Hardware.Processes
         }
 
         public static bool Enabled = false;
+
+        public const int MSFreq = 5;
 
         public static void InitProcess(Process process, Priority priority)
         {
@@ -101,7 +106,7 @@ namespace Kernel.Hardware.Processes
             Console.Default.WriteLine(" > Adding timer handler...");
 #endif
             /*1000000*/
-            Hardware.Devices.Timer.Default.RegisterHandler(OnTimerInterrupt, 1000000, true, null);
+            Hardware.Devices.Timer.Default.RegisterHandler(OnTimerInterrupt, /* MSFreq * 1000000 */ 5000000, true, null);
 
             Enable();
         }
@@ -132,6 +137,11 @@ namespace Kernel.Hardware.Processes
         [Compiler.NoDebug]
         public static void UpdateCurrentState()
         {
+#if SCHEDULER_HANDLER_TRACE
+            BasicConsole.SetTextColour(BasicConsole.warning_colour);
+            BasicConsole.WriteLine("Scheduler interrupt started...");
+#endif
+                
             if (ProcessManager.CurrentProcess == null ||
                ProcessManager.CurrentThread == null ||
                ProcessManager.CurrentThread_State == null)
@@ -147,6 +157,10 @@ namespace Kernel.Hardware.Processes
                 ProcessManager.CurrentThread.TimeToSleep != 0 ||
                 ProcessManager.CurrentThread_State->Terminated)
             {
+#if SCHEDULER_HANDLER_TRACE
+                BasicConsole.WriteLine("Scheduler: Required to switch thread.");
+#endif
+
                 ProcessManager.CurrentThread.TimeToRun = ProcessManager.CurrentThread.TimeToRunReload;
 
                 uint processId = ProcessManager.CurrentProcess.Id;
@@ -155,29 +169,65 @@ namespace Kernel.Hardware.Processes
                 int threadIdx = ProcessManager.CurrentProcess.Threads.IndexOf(ProcessManager.CurrentThread);
                 
                 threadIdx = NextThread(threadIdx, processIdx);
-                
+
                 if (ProcessManager.Processes.Count > 1)
                 {
+#if SCHEDULER_HANDLER_TRACE
+                    BasicConsole.WriteLine("Scheduler: Multiple process exist.");
+#endif
+
                     int startIdx = processIdx;
+                    
+#if SCHEDULER_HANDLER_TRACE
+                    BasicConsole.WriteLine("Trying to find runnable process...");
+#endif
 
                     while (threadIdx >= ((Process)ProcessManager.Processes[processIdx]).Threads.Count)
                     {
+#if SCHEDULER_HANDLER_TRACE
+                        BasicConsole.WriteLine("Next process...");
+#endif
                         NextProcess(ref threadIdx, ref processIdx);
 
                         //Prevent infinite blocking loop
-                        if (startIdx == processIdx)
+                        if (startIdx == processIdx &&
+                            threadIdx >= ((Process)ProcessManager.Processes[processIdx]).Threads.Count)
                         {
+#if SCHEDULER_HANDLER_TRACE
+                            BasicConsole.WriteLine("Scheduler: WARNING preventing infinite loop by early-updating sleeping threads. (1)");
+#endif
+                            
                             UpdateSleepingThreads();
                         }
                     }
+                    
+#if SCHEDULER_HANDLER_TRACE
+                    BasicConsole.WriteLine("Scheduler: Found runnable process and thread.");
+#endif
 
                     processId = ((Process)ProcessManager.Processes[processIdx]).Id;
                 }
-                else if (threadIdx >= ProcessManager.CurrentProcess.Threads.Count)
+                else
                 {
-                    threadIdx = 0;
-                }
+                    while (threadIdx >= ProcessManager.CurrentProcess.Threads.Count)
+                    {
+                        threadIdx = NextThread(-1, processIdx);
 
+                        if (threadIdx >= ProcessManager.CurrentProcess.Threads.Count)
+                        {
+#if SCHEDULER_HANDLER_TRACE
+                            BasicConsole.WriteLine("WARNING: Scheduler preventing infinite loop by early-updating sleeping threads. (2)");
+#endif
+                            
+                            UpdateSleepingThreads();
+                        }
+                    }
+                }
+                
+#if SCHEDULER_HANDLER_TRACE
+                BasicConsole.WriteLine("Scheduler: Switching process/thread.");
+#endif
+                
                 ProcessManager.SwitchProcess(processId,
                     (int)((Thread)ProcessManager.CurrentProcess.Threads[threadIdx]).Id);
             }
@@ -186,6 +236,11 @@ namespace Kernel.Hardware.Processes
             {
                 SetupThreadForStart();
             }
+            
+#if SCHEDULER_HANDLER_TRACE
+            BasicConsole.WriteLine("Scheduler interrupt ended.");
+#endif
+            BasicConsole.SetTextColour(BasicConsole.default_colour);
         }
         [Compiler.NoDebug]
         private static void NextProcess(ref int threadIdx, ref int processIdx)
@@ -231,7 +286,7 @@ namespace Kernel.Hardware.Processes
                     Thread t = (Thread)p.Threads[tIdx];
                     if (t.TimeToSleep > 0)
                     {
-                        t.TimeToSleep--;
+                        t.TimeToSleep -= MSFreq;
                     }
                 }
             }

@@ -49,7 +49,7 @@ namespace Kernel.Hardware.Timers
         protected IO.IOPort Data0 = new IO.IOPort(0x40);
         /*<summary>
         /// The PIT Data1 port used to send data about timer 1.
-        /// Timer 1 is outdataed and "probably doesn't exist on most modern hardware".
+        /// Timer 1 is outdated and "probably doesn't exist on most modern hardware".
         /// Hence this port is pointless and so commented out.
         /// </summary>
         //protected IO.IOPort Data1 = new IO.IOPort(0x41);*/
@@ -73,7 +73,7 @@ namespace Kernel.Hardware.Timers
         /// The reload value for timer 0. Sets the frequency of timer 0.
         /// </summary>
         //private ushort _T0Reload = 32; // Produces ~0.0268ms delay between interrupts
-        private ushort _T0Reload = 2048; // Produces ~1.7164ms delay between interrupts
+        private ushort _T0Reload = 0x1000;  // Produces ~3.4324ms delay between interrupts
         /// <summary>
         /// The reload value for timer 2. Sets the frequency of timer 2 hence 
         /// the frequency of the PC speaker beep.
