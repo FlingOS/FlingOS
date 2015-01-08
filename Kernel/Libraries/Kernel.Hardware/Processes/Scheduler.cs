@@ -286,7 +286,14 @@ namespace Kernel.Hardware.Processes
                     Thread t = (Thread)p.Threads[tIdx];
                     if (t.TimeToSleep > 0)
                     {
-                        t.TimeToSleep -= MSFreq;
+                        if (t.TimeToSleep < MSFreq)
+                        {
+                            t.TimeToSleep = 0;
+                        }
+                        else
+                        {
+                            t.TimeToSleep -= MSFreq;
+                        }
                     }
                 }
             }

@@ -123,7 +123,7 @@ namespace Kernel.Core.Processes
             {
                 // We want to ignore process state so that we handle the interrupt in the context of
                 //  the calling process.
-                Int48HandlerId = Hardware.Interrupts.Interrupts.AddISRHandler(48, Int48, null, true);
+                Int48HandlerId = Hardware.Interrupts.Interrupts.AddISRHandler(48, Int48, null, true, true);
             }
         }
 

@@ -70,6 +70,7 @@
     <Compile Include="Devices\DiskDevice.cs" />
     <Compile Include="Devices\Timer.cs" />
     <Compile Include="Interrupts\Interrupts.cs" />
+    <Compile Include="Interrupts\NonCriticalInterruptsTask.cs" />
     <Compile Include="IO\IOPort.cs" />
     <Compile Include="Devices\Keyboard.cs" />
     <Compile Include="Keyboards\PS2.cs" />

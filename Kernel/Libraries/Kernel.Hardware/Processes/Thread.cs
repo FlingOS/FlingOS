@@ -164,6 +164,7 @@ namespace Kernel.Hardware.Processes
         }
 
         //public static bool EnterSleepPrint = false;
+
         /// <remarks>
         /// Call this instead of Thread.Sleep when inside an interrupt handler.
         /// 
@@ -171,7 +172,8 @@ namespace Kernel.Hardware.Processes
         /// Kernel.Hardware.Processes.Scheduler.UpdateCurrentState()
         /// after calling this to immediately update the thread to return to.
         /// </remarks>
-        public static void EnterSleep(int ms)
+        [Compiler.NoGC]
+        public void _EnterSleep(int ms)
         {
             //if (EnterSleepPrint)
             //{
@@ -207,13 +209,9 @@ namespace Kernel.Hardware.Processes
             {
                 Scheduler.Disable();
             }
-            if (ProcessManager.CurrentThread == null)
-            {
-                BasicConsole.WriteLine("Massive problem! The current thread is null! Can't sleep null thread.");
-                BasicConsole.DelayOutput(5);
-            }
-            ProcessManager.CurrentThread.TimeToSleep = ms /* x * 1ms / [Scheduler period in ns] = x * 1 = x */;
-            ProcessManager.CurrentThread.TimeToRun = 1;
+            
+            this.TimeToSleep = ms /* x * 1ms / [Scheduler period in ns] = x * 1 = x */;
+            this.TimeToRun = 1;
             
             if (reenable)
             {
@@ -221,7 +219,8 @@ namespace Kernel.Hardware.Processes
             }
             //}
         }
-        public static bool Sleep(int ms)
+        [Compiler.NoGC]
+        public bool _Sleep(int ms)
         {
             //Prevent getting stuck forever.
             //  This may cause other problems later but at least we don't end up in the infinite
@@ -231,7 +230,7 @@ namespace Kernel.Hardware.Processes
                 return false;
             }
 
-            EnterSleep(ms);
+            this._EnterSleep(ms);
             // Busy wait for the scheduler to interrupt the thread, sleep it and
             //  then as soon as the sleep is over this condition will go false
             //  so the thread will continue
@@ -242,22 +241,66 @@ namespace Kernel.Hardware.Processes
 
             return true;
         }
-        public static bool Sleep_Indefinitely()
+        [Compiler.NoGC]
+        public bool _Sleep_Indefinitely()
         {
-            return Sleep(-1);
+            return this._Sleep(-1);
         }
-        public static void Wake()
+        [Compiler.NoGC]
+        public void _Wake()
         {
             bool reenable = Scheduler.Enabled;
             if (reenable)
             {
                 Scheduler.Disable();
             }
-            ProcessManager.CurrentThread.TimeToSleep = 0;
+            this.TimeToSleep = 0;
+            this.TimeToRun = this.TimeToRunReload;
             if (reenable)
             {
                 Scheduler.Enable();
             }
+        }
+
+        [Compiler.NoGC]
+        public static void EnterSleep(int ms)
+        {
+            if (ProcessManager.CurrentThread == null)
+            {
+                BasicConsole.WriteLine("Massive problem! The current thread is null! Can't sleep null thread.");
+                BasicConsole.DelayOutput(5);
+            }
+            ProcessManager.CurrentThread._EnterSleep(ms);
+        }
+        [Compiler.NoGC]
+        public static bool Sleep(int ms)
+        {
+            if (ProcessManager.CurrentThread == null)
+            {
+                BasicConsole.WriteLine("Massive problem! The current thread is null! Can't sleep null thread.");
+                BasicConsole.DelayOutput(5);
+            }
+            return ProcessManager.CurrentThread._Sleep(ms);
+        }
+        [Compiler.NoGC]
+        public static bool Sleep_Indefinitely()
+        {
+            if (ProcessManager.CurrentThread == null)
+            {
+                BasicConsole.WriteLine("Massive problem! The current thread is null! Can't sleep null thread.");
+                BasicConsole.DelayOutput(5);
+            }
+            return ProcessManager.CurrentThread._Sleep_Indefinitely();
+        }
+        [Compiler.NoGC]
+        public static void Wake()
+        {
+            if (ProcessManager.CurrentThread == null)
+            {
+                BasicConsole.WriteLine("Massive problem! The current thread is null! Can't wake null thread.");
+                BasicConsole.DelayOutput(5);
+            }
+            ProcessManager.CurrentThread._Wake();
         }
     }
 

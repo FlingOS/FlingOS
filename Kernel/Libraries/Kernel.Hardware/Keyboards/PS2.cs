@@ -56,7 +56,7 @@ namespace Kernel.Hardware.Keyboards
             //  because then any one scancode would be processed multiple times!
             if (!enabled)
             {
-                InterruptHandlerId = Interrupts.Interrupts.AddIRQHandler(1, InterruptHandler, this, false);
+                InterruptHandlerId = Interrupts.Interrupts.AddIRQHandler(1, InterruptHandler, this, false, false);
                 DeviceManager.Devices.Add(this);
                 enabled = true;
             }

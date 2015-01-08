@@ -262,6 +262,9 @@ namespace Kernel
                 BasicConsole.WriteLine(" > Starting Idle task...");
                 ProcessManager.CurrentProcess.CreateThread(Core.Tasks.IdleTask.Main);
 
+                BasicConsole.WriteLine(" > Starting Non-critical interrupts task...");
+                ProcessManager.CurrentProcess.CreateThread(Hardware.Interrupts.NonCriticalInterruptsTask.Main);
+
                 //BasicConsole.WriteLine("Initialising ATA...");
                 //Hardware.ATA.ATAManager.Init();
                 //BasicConsole.WriteLine("Initialising FS...");

@@ -54,7 +54,7 @@ namespace Kernel.FOS_System
         /// Whether the GC has been initialised yet or not.
         /// Used to prevent the GC running before it has been initialised properly.
         /// </summary>
-        private static bool GCInitialised = false;
+        public static bool Enabled = false;
         /// <summary>
         /// Whether the GC is currently executing. Used to prevent the GC calling itself (or ending up in loops with
         /// called methods re-calling the GC!)
@@ -81,7 +81,7 @@ namespace Kernel.FOS_System
         public static void Init()
         {
             Heap.InitFixedHeap();
-            GCInitialised = true;
+            Enabled = true;
         }
 
         /// <summary>
@@ -94,7 +94,7 @@ namespace Kernel.FOS_System
         [Compiler.NoGC]
         public static void* NewObj(FOS_System.Type theType)
         {
-            if(!GCInitialised || InsideGC)
+            if(!Enabled || InsideGC)
             {
                 BasicConsole.SetTextColour(BasicConsole.error_colour);
                 BasicConsole.WriteLine("Error! GC can't create a new object since already inside GC.");
@@ -155,7 +155,7 @@ namespace Kernel.FOS_System
         [Compiler.NoGC]
         public static void* NewArr(int length, FOS_System.Type elemType)
         {
-            if (!GCInitialised || InsideGC)
+            if (!Enabled || InsideGC)
             {
                 BasicConsole.SetTextColour(BasicConsole.error_colour);
                 BasicConsole.WriteLine("Error! GC can't create a new array since already inside GC.");
@@ -230,7 +230,7 @@ namespace Kernel.FOS_System
         [Compiler.NoGC]
         public static void* NewString(int length)
         {
-            if (!GCInitialised || InsideGC)
+            if (!Enabled || InsideGC)
             {
                 BasicConsole.SetTextColour(BasicConsole.error_colour);
                 BasicConsole.WriteLine("Error! GC can't create a new string since already inside GC.");
@@ -314,7 +314,7 @@ namespace Kernel.FOS_System
         [Compiler.NoGC]
         public static void IncrementRefCount(FOS_System.Object anObj)
         {
-            if (!GCInitialised || InsideGC || anObj == null)
+            if (!Enabled || InsideGC || anObj == null)
             {
                 return;
             }
@@ -387,7 +387,7 @@ namespace Kernel.FOS_System
         [Compiler.NoGC]
         public static void DecrementRefCount(FOS_System.Object anObj, bool overrideInside)
         {
-            if (!GCInitialised || (InsideGC && !overrideInside) || anObj == null)
+            if (!Enabled || (InsideGC && !overrideInside) || anObj == null)
             {
                 return;
             }
@@ -520,7 +520,7 @@ namespace Kernel.FOS_System
         [Compiler.NoGC]
         public static void Cleanup()
         {
-            if (!GCInitialised || InsideGC)
+            if (!Enabled || InsideGC)
             {
                 return;
             }

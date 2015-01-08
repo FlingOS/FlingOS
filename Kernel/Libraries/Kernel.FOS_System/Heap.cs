@@ -68,6 +68,9 @@ namespace Kernel.FOS_System
     [Compiler.PluggedClass]
     public static unsafe class Heap
     {
+        public static bool PreventAllocation = false;
+        public static FOS_System.String PreventReason = "[NONE]";
+
         /// <summary>
         /// A pointer to the most-recently added heap block.
         /// </summary>
@@ -275,6 +278,16 @@ namespace Kernel.FOS_System
             BasicConsole.WriteLine("Attempt to alloc mem....");
             BasicConsole.SetTextColour(BasicConsole.default_colour);
 #endif
+
+            if (PreventAllocation)
+            {
+                BasicConsole.SetTextColour(BasicConsole.error_colour);
+                BasicConsole.WriteLine("Allocation of memory prevented! Reason:");
+                BasicConsole.WriteLine(PreventReason);
+                BasicConsole.DelayOutput(5);
+                BasicConsole.SetTextColour(BasicConsole.default_colour);
+                return null;
+            }
 
             HeapBlock* b;
             byte* bm;

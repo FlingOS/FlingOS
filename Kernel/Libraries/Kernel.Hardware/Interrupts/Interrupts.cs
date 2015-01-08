@@ -79,6 +79,9 @@ namespace Kernel.Hardware.Interrupts
         /// trying to remove its handler twice.
         /// </remarks>
         public int IdGenerator = 1;
+
+        public int QueuedOccurrences = 0; 
+        public int QueuedOccurrencesOld = 0;
     }
     /// <summary>
     /// Represents a handler for an interrupt.
@@ -106,6 +109,8 @@ namespace Kernel.Hardware.Interrupts
 
         public bool IgnoreProcessId;
         public uint ProcessId;
+
+        public bool CriticalHandler;
     }
     /// <summary>
     /// Delegate type for an interrupt handler. Interrupt handlers must be static, like all methods used in 
@@ -122,13 +127,37 @@ namespace Kernel.Hardware.Interrupts
         //TODO - This lot is all x86 specific. It needs to be abstracted into a separate x86
         //       interrupts class to support new architectures.
 
+        public static bool insideCriticalHandler = false;
+        public static bool InsideCriticalHandler
+        {
+            get
+            {
+                return insideCriticalHandler;
+            }
+            set
+            {
+                insideCriticalHandler = value;
+
+                FOS_System.Heap.PreventAllocation = value;
+                if (value)
+                {
+                    FOS_System.Heap.PreventReason = "Inside critical interrupt handler.";
+                }
+                else
+                {
+                    FOS_System.Heap.PreventReason = "[NONE]";
+                }
+                FOS_System.GC.Enabled = !value;
+            }
+        }
+
         /// <summary>
         /// The full list of interrupt handlers. This array has an entry for all 256 interrupt numbers.
         /// If an entry is empty, then it does not have (/has never had) any handlers attached.
         /// Note: Interrupts 0 to 16 (inclusive) are set up in the IDT assembler and do not call the 
         /// common handler in this class so cannot be handled without code-modifications.
         /// </summary>
-        private static InterruptHandlers[] Handlers = new InterruptHandlers[256];
+        public static InterruptHandlers[] Handlers = new InterruptHandlers[256];
 
         [Compiler.PluggedMethod(ASMFilePath=null)]
         public static void EnableInterrupts()
@@ -212,10 +241,11 @@ namespace Kernel.Hardware.Interrupts
         /// <param name="data">The state object to pass the handler when the interrupt occurs.</param>
         /// <returns>The Id of the new handler. Save and use for removal. An Id of 0 s invalid.</returns>
         public static int AddIRQHandler(int num, InterruptHandler handler,
-                                         FOS_System.Object data, bool IgnoreProcessState)
+                                        FOS_System.Object data, bool IgnoreProcessState,
+                                        bool CriticalHandler)
         {
             //In this OS's implementation, IRQs 0-15 are mapped to ISRs 32-47
-            int result = AddISRHandler(num + 32, handler, data, IgnoreProcessState);
+            int result = AddISRHandler(num + 32, handler, data, IgnoreProcessState, CriticalHandler);
             EnableIRQ((byte)num);
             return result;
         }
@@ -245,7 +275,8 @@ namespace Kernel.Hardware.Interrupts
         /// <param name="data">The state object to pass the handler when the interrupt occurs.</param>
         /// <returns>The Id of the new handler. Save and use for removal.</returns>
         public static int AddISRHandler(int num, InterruptHandler handler,
-                                         FOS_System.Object data, bool IgnoreProcessState)
+                                        FOS_System.Object data, bool IgnoreProcessState,
+                                        bool CriticalHandler)
         {
             if (Handlers[num] == null)
             {
@@ -265,7 +296,8 @@ namespace Kernel.Hardware.Interrupts
                 data = data,
                 id = id,
                 IgnoreProcessId = IgnoreProcessState,
-                ProcessId = Processes.ProcessManager.CurrentProcess.Id
+                ProcessId = Processes.ProcessManager.CurrentProcess.Id,
+                CriticalHandler = CriticalHandler
             });
 #if INTERRUPTS_TRACE
             BasicConsole.WriteLine("Added.");
@@ -307,8 +339,11 @@ namespace Kernel.Hardware.Interrupts
         /// Common method called to handle all interrupts (excluding numbers 0-16 inclusive).
         /// </summary>
         /// <param name="ISRNum">The number of the interrupt which occurred.</param>
+        [Compiler.NoGC]
         private static void CommonISR(uint ISRNum)
         {
+            InsideCriticalHandler = true;
+
             try
             {
 #if INTERRUPTS_TRACE
@@ -356,21 +391,46 @@ namespace Kernel.Hardware.Interrupts
                 InterruptHandlers handlers = Handlers[ISRNum];
                 if (handlers != null)
                 {
+                    bool NonCriticalDetected = false;
+
                     for (int i = 0; i < handlers.HandlerDescrips.Count; i++)
                     {
                         HandlerDescriptor descrip = (HandlerDescriptor)handlers.HandlerDescrips[i];
-                        InterruptHandler func = descrip.handler;
 
-                        if (Processes.ProcessManager.CurrentProcess != null)
+                        if (descrip.CriticalHandler)
                         {
-                            if (!descrip.IgnoreProcessId)
+                            InterruptHandler func = descrip.handler;
+
+                            if (Processes.ProcessManager.CurrentProcess != null)
                             {
-                                Processes.ProcessManager.SwitchProcess(descrip.ProcessId, -1);
-                                switched = true;
+                                if (!descrip.IgnoreProcessId)
+                                {
+                                    Processes.ProcessManager.SwitchProcess(descrip.ProcessId, -1);
+                                    switched = true;
+                                }
                             }
+
+                            func(descrip.data);
                         }
-                        
-                        func(descrip.data);
+                        else
+                        {
+                            NonCriticalDetected = true;
+                        }
+                    }
+
+                    if (NonCriticalDetected)
+                    {
+                        if (handlers.QueuedOccurrences == FOS_System.Int32.MaxValue)
+                        {
+                            handlers.QueuedOccurrences = 0;
+                        }
+                        handlers.QueuedOccurrences++;
+                        if (NonCriticalInterruptsTask.OwnerThread != null)
+                        {
+                            //BasicConsole.WriteLine("Waking non-critical interrupts thread...");
+                            NonCriticalInterruptsTask.Awake = true;
+                            NonCriticalInterruptsTask.OwnerThread._Wake();
+                        }
                     }
                 }
 
@@ -396,6 +456,8 @@ namespace Kernel.Hardware.Interrupts
                 BasicConsole.SetTextColour(BasicConsole.default_colour);
 #endif
             }
+
+            InsideCriticalHandler = false;
         }
         /// <summary>
         /// Sends the End of Interrupt to the PIC to signify the end of an IRQ.
