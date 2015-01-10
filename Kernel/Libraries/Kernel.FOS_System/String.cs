@@ -197,14 +197,14 @@ namespace Kernel.FOS_System
         [Compiler.NoDebug]
         public FOS_System.String Trim()
         {
-            char[] TrimChars = new char[] { '\n','\r',' '};
+            FOS_System.String TrimChars = "\n\r ";
 
             int removeStart = 0;
             int removeEnd = 0;
             for (int i = 0; i < this.length; removeStart++, i++)
             {
-                var ShouldBreak = true;
-                for (int j = 0; j < TrimChars.Length; j++)
+                bool ShouldBreak = true;
+                for (int j = 0; j < TrimChars.length; j++)
                 {
                     if(this[i] == TrimChars[j])
                     {
@@ -218,8 +218,8 @@ namespace Kernel.FOS_System
             }
             for (int i = this.length - 1; i > removeStart; removeEnd++, i--)
             {
-                var ShouldBreak = true;
-                for (int j = 0; j < TrimChars.Length; j++)
+                bool ShouldBreak = true;
+                for (int j = 0; j < TrimChars.length; j++)
                 {
                     if (this[i] == TrimChars[j])
                     {

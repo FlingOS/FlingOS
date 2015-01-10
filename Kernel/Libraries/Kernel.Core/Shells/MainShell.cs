@@ -84,8 +84,8 @@ namespace Kernel.Core.Shells
                          *  - USB { Update / Eject }
                          *  - Start { Filename } [*KM* / UM] [*Raw*]
                          *  - ILY
-                         *  - Show {c/w}
-                         *  - Help {<Command Name>}
+                         *  - Show { c / w }
+                         *  - Help { <Command Name> }
                          *  - Clear
                          * 
                          */
@@ -918,32 +918,36 @@ namespace Kernel.Core.Shells
                             }
                             else if (cmd == "show")
                             {
-                                #region show
+                                #region Show
+
                                 FOS_System.String opt1 = null;
                                 if (cmdParts.Count > 1)
                                 {
                                     opt1 = (FOS_System.String)cmdParts[1];
                                 }
                                 ShowLicense(opt1);
+
                                 #endregion
                             }
                             else if(cmd == "help")
                             {
-                                #region help
+                                #region Help
+
                                 FOS_System.String opt1 = null;
                                 if (cmdParts.Count > 1)
                                 {
                                     opt1 = (FOS_System.String)cmdParts[1];
-                                    opt1 = opt1.Trim();
-                                }
-                                
+                                }                                
                                 ShowHelp(opt1);
+
                                 #endregion
                             }
                             else if(cmd == "clear")
                             {
-                                #region
+                                #region Clear
+
                                 console.Clear();
+                                
                                 #endregion
                             }
                         }
@@ -981,16 +985,15 @@ namespace Kernel.Core.Shells
         {
             if(commandName != null)
             {
-                console.WriteLine(CommandHelp.GetCommandDescription((string)commandName));
-               
+                console.WriteLine(CommandHelp.GetCommandDescription(commandName));
             }
             else
             {
-                console.WriteLine("For more information on a specific command, type help <command-name>");
+                console.WriteLine("For more information on a specific command, type help <command-name>.");
                 console.WriteLine("Possible commands are: ");
                 for (int i = 0; i < CommandHelp.CommandDescriptions.Count; i++)
                 {
-                    var cmdDesc = CommandHelp.CommandDescriptions[i] as CommandDescription;
+                    CommandDescription cmdDesc = (CommandDescription)CommandHelp.CommandDescriptions[i];
                     console.WriteLine(cmdDesc.CommandName);
                 }
             }
@@ -1003,11 +1006,11 @@ namespace Kernel.Core.Shells
         private void ShowLicense(FOS_System.String option = null)
         {
 
-            string LicenseConditions = "This program is distributed under GPL V3; See GPL V3 License for details";
+            string LicenseConditions = "This program is distributed under GPL V3; See GPL V3 License for details.";
             
-            string LicenseCommandUnrecognized = @"Unrecognized option passed, to see the license, enter show
-To see License warnings, enter show w
-To see license conditions, enter show c";
+            string LicenseCommandUnrecognized = @"Unrecognized option passed, to see the license, enter 'show'.
+To see license warnings, enter 'show w'.
+To see license conditions, enter 'show c'.";
 
             string LicenseWarnings = @"This program is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY without even the implied warranty of
@@ -1016,11 +1019,11 @@ GNU General Public License for more details";
 
             if(option == null) // If no options is passed, then just display the License
             {
-                console.WriteLine("Fling OS  Copyright (C) 2015  Edward Nutting");
-                console.WriteLine("This program comes with ABSOLUTELY NO WARRANTY;.");
-                console.WriteLine("This is free software, and you are welcome to redistribute it");
-                console.WriteLine("under certain conditions; See GPL V3 for details, a copy of");
-                console.WriteLine("which should have been provided with the executable.");
+                console.WriteLine(@"Fling OS  Copyright (C) 2015  Edward Nutting
+This program comes with ABSOLUTELY NO WARRANTY.
+This is free software, and you are welcome to redistribute it
+under certain conditions; See GPL V3 for details, a copy of
+which should have been provided with the executable.");
             }
             else
             {
