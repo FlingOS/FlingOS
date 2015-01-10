@@ -40,7 +40,7 @@ namespace Kernel.Core.Shells
         /// The current directory to prepend to relative paths.
         /// </summary>
         protected FOS_System.String CurrentDir = "";
-
+        
         /// <summary>
         /// See base class.
         /// </summary>
@@ -53,8 +53,6 @@ namespace Kernel.Core.Shells
                 InitPCI();
                 InitUSB();
                 InitFS();
-                
-                //ShowLicense();
 
                 //Endlessly wait for commands until we hit a total failure condition
                 //  or the user instructs us to halt
@@ -936,7 +934,9 @@ namespace Kernel.Core.Shells
                                 if (cmdParts.Count > 1)
                                 {
                                     opt1 = (FOS_System.String)cmdParts[1];
+                                    opt1 = opt1.Trim();
                                 }
+                                
                                 ShowHelp(opt1);
                                 #endregion
                             }
@@ -981,16 +981,8 @@ namespace Kernel.Core.Shells
         {
             if(commandName != null)
             {
-                console.WriteLine(CommandHelp.GetCommandDescription(commandName));
-                for (int i = 0; i < CommandHelp.CommandDescriptions.Count; i++)
-                {
-                    var cmdDesc = CommandHelp.CommandDescriptions[i] as CommandDescription;
-                    console.WriteLine(cmdDesc.CommandName);
-                    if ((FOS_System.String)cmdDesc.CommandName == (FOS_System.String)commandName)
-                    {
-                        console.WriteLine(cmdDesc.Description);
-                    }
-                }
+                console.WriteLine(CommandHelp.GetCommandDescription((string)commandName));
+               
             }
             else
             {

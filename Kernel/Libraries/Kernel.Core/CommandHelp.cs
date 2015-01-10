@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,7 +8,7 @@ namespace Kernel.Core
 {
     public class CommandDescription : FOS_System.Object
     {
-        public FOS_System.String CommandName
+        public String CommandName
         { get; set; }
         public FOS_System.String Description
         { get; set; }
@@ -62,12 +62,12 @@ namespace Kernel.Core
             });
         }
 
-        public static FOS_System.String GetCommandDescription(FOS_System.String command)
+        public static FOS_System.String GetCommandDescription(String command)
         {
             for(int i=0; i<CommandDescriptions.Count; i++)
             {
                 var cmdDesc = (CommandDescription)CommandHelp.CommandDescriptions[i];
-                if ((FOS_System.String)cmdDesc.CommandName == (FOS_System.String)command)
+                if (cmdDesc.CommandName == command)
                 {
                     return cmdDesc.Description;
                 }
