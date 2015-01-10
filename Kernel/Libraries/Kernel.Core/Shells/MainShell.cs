@@ -87,6 +87,9 @@ namespace Kernel.Core.Shells
                          *  - Start { Filename } [*KM* / UM] [*Raw*]
                          *  - ILY
                          *  - Show {c/w}
+                         *  - Help {<Command Name>}
+                         *  - Clear
+                         * 
                          */
 
                         //Get the current input line from the user
@@ -926,6 +929,23 @@ namespace Kernel.Core.Shells
                                 ShowLicense(opt1);
                                 #endregion
                             }
+                            else if(cmd == "help")
+                            {
+                                #region help
+                                FOS_System.String opt1 = null;
+                                if (cmdParts.Count > 1)
+                                {
+                                    opt1 = (FOS_System.String)cmdParts[1];
+                                }
+                                ShowHelp(opt1);
+                                #endregion
+                            }
+                            else if(cmd == "clear")
+                            {
+                                #region
+                                console.Clear();
+                                #endregion
+                            }
                         }
                     }
                     catch
@@ -951,6 +971,37 @@ namespace Kernel.Core.Shells
                 Hardware.Devices.Timer.Default.Wait(5000);
             }
             console.WriteLine("Shell exited.");
+        }
+
+        /// <summary>
+        /// Displays command
+        /// </summary>
+        /// <param name="option"></param>
+        private void ShowHelp(FOS_System.String commandName = null)
+        {
+            if(commandName != null)
+            {
+                console.WriteLine(CommandHelp.GetCommandDescription(commandName));
+                for (int i = 0; i < CommandHelp.CommandDescriptions.Count; i++)
+                {
+                    var cmdDesc = CommandHelp.CommandDescriptions[i] as CommandDescription;
+                    console.WriteLine(cmdDesc.CommandName);
+                    if ((FOS_System.String)cmdDesc.CommandName == (FOS_System.String)commandName)
+                    {
+                        console.WriteLine(cmdDesc.Description);
+                    }
+                }
+            }
+            else
+            {
+                console.WriteLine("For more information on a specific command, type help <command-name>");
+                console.WriteLine("Possible commands are: ");
+                for (int i = 0; i < CommandHelp.CommandDescriptions.Count; i++)
+                {
+                    var cmdDesc = CommandHelp.CommandDescriptions[i] as CommandDescription;
+                    console.WriteLine(cmdDesc.CommandName);
+                }
+            }
         }
 
         /// <summary>
