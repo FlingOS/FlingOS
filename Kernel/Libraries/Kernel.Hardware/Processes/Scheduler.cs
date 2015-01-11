@@ -139,7 +139,9 @@ namespace Kernel.Hardware.Processes
         {
 #if SCHEDULER_HANDLER_TRACE
             BasicConsole.SetTextColour(BasicConsole.warning_colour);
-            BasicConsole.WriteLine("Scheduler interrupt started...");
+
+            if (Processes.ProcessManager.Processes.Count > 1)
+                BasicConsole.WriteLine("Scheduler interrupt started...");
 #endif
                 
             if (ProcessManager.CurrentProcess == null ||
@@ -158,7 +160,8 @@ namespace Kernel.Hardware.Processes
                 ProcessManager.CurrentThread_State->Terminated)
             {
 #if SCHEDULER_HANDLER_TRACE
-                BasicConsole.WriteLine("Scheduler: Required to switch thread.");
+                if (Processes.ProcessManager.Processes.Count > 1)
+                    BasicConsole.WriteLine("Scheduler: Required to switch thread.");
 #endif
 
                 ProcessManager.CurrentThread.TimeToRun = ProcessManager.CurrentThread.TimeToRunReload;
@@ -225,7 +228,8 @@ namespace Kernel.Hardware.Processes
                 }
                 
 #if SCHEDULER_HANDLER_TRACE
-                BasicConsole.WriteLine("Scheduler: Switching process/thread.");
+                if (Processes.ProcessManager.Processes.Count > 1)
+                    BasicConsole.WriteLine("Scheduler: Switching process/thread.");
 #endif
                 
                 ProcessManager.SwitchProcess(processId,
@@ -238,9 +242,11 @@ namespace Kernel.Hardware.Processes
             }
             
 #if SCHEDULER_HANDLER_TRACE
-            BasicConsole.WriteLine("Scheduler interrupt ended.");
-#endif
+            if (Processes.ProcessManager.Processes.Count > 1)
+                BasicConsole.WriteLine("Scheduler interrupt ended.");
+
             BasicConsole.SetTextColour(BasicConsole.default_colour);
+#endif
         }
         [Compiler.NoDebug]
         private static void NextProcess(ref int threadIdx, ref int processIdx)

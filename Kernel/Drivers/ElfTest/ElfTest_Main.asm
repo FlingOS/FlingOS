@@ -20,8 +20,8 @@ _start:
 	; mov dword edx, 120
 	; call SysCall_PlayNote
 
-	mov dword ebx, 1000
-	call SysCall_Sleep
+	; mov dword ebx, 1000
+	; call SysCall_Sleep
 
 	pop dword ecx
 

@@ -98,6 +98,8 @@ namespace Kernel.FOS_System
             {
                 BasicConsole.SetTextColour(BasicConsole.error_colour);
                 BasicConsole.WriteLine("Error! GC can't create a new object since already inside GC.");
+                BasicConsole.Write("Heap prevent reason: ");
+                BasicConsole.WriteLine(Heap.PreventReason);
                 BasicConsole.DelayOutput(5);
                 BasicConsole.SetTextColour(BasicConsole.default_colour);
                 return null;
@@ -159,6 +161,8 @@ namespace Kernel.FOS_System
             {
                 BasicConsole.SetTextColour(BasicConsole.error_colour);
                 BasicConsole.WriteLine("Error! GC can't create a new array since already inside GC.");
+                BasicConsole.Write("Heap prevent reason: ");
+                BasicConsole.WriteLine(Heap.PreventReason);
                 BasicConsole.DelayOutput(5);
                 BasicConsole.SetTextColour(BasicConsole.default_colour);
 
@@ -234,6 +238,8 @@ namespace Kernel.FOS_System
             {
                 BasicConsole.SetTextColour(BasicConsole.error_colour);
                 BasicConsole.WriteLine("Error! GC can't create a new string since already inside GC.");
+                BasicConsole.Write("Heap prevent reason: ");
+                BasicConsole.WriteLine(Heap.PreventReason);
                 BasicConsole.DelayOutput(5);
                 BasicConsole.SetTextColour(BasicConsole.default_colour);
 

@@ -869,7 +869,7 @@ namespace Kernel.Hardware.USB.HCIs
             DBGMSG("Hooking IRQ...");
 #endif
             // Setup the interrupt handler (IRQ number = PCIDevice.InterruptLine)
-            Interrupts.Interrupts.AddIRQHandler(pciDevice.InterruptLine, EHCI.InterruptHandler, this, false, true);
+            Interrupts.Interrupts.AddIRQHandler(pciDevice.InterruptLine, EHCI.InterruptHandler, this, false, true, "EHCI");
 #if EHCI_TRACE
             DBGMSG("Hooked IRQ.");
 #endif

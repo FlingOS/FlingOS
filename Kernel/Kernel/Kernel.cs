@@ -212,8 +212,72 @@ namespace Kernel
             BasicConsole.SetTextColour(BasicConsole.warning_colour);
             BasicConsole.Write("Halt Reason: ");
             BasicConsole.WriteLine(ExceptionMethods.HaltReason);
-            //BasicConsole.Write("Last address: ");
-            //BasicConsole.WriteLine(lastAddress);
+
+            FOS_System.String LastAddressStr = "Last address: 0x        ";
+            uint y = lastAddress;
+            int offset = 23;
+            #region Address
+            while (offset > 15)
+            {
+                uint rem = y & 0xFu;
+                switch (rem)
+                {
+                    case 0:
+                        LastAddressStr[offset] = '0';
+                        break;
+                    case 1:
+                        LastAddressStr[offset] = '1';
+                        break;
+                    case 2:
+                        LastAddressStr[offset] = '2';
+                        break;
+                    case 3:
+                        LastAddressStr[offset] = '3';
+                        break;
+                    case 4:
+                        LastAddressStr[offset] = '4';
+                        break;
+                    case 5:
+                        LastAddressStr[offset] = '5';
+                        break;
+                    case 6:
+                        LastAddressStr[offset] = '6';
+                        break;
+                    case 7:
+                        LastAddressStr[offset] = '7';
+                        break;
+                    case 8:
+                        LastAddressStr[offset] = '8';
+                        break;
+                    case 9:
+                        LastAddressStr[offset] = '9';
+                        break;
+                    case 10:
+                        LastAddressStr[offset] = 'A';
+                        break;
+                    case 11:
+                        LastAddressStr[offset] = 'B';
+                        break;
+                    case 12:
+                        LastAddressStr[offset] = 'C';
+                        break;
+                    case 13:
+                        LastAddressStr[offset] = 'D';
+                        break;
+                    case 14:
+                        LastAddressStr[offset] = 'E';
+                        break;
+                    case 15:
+                        LastAddressStr[offset] = 'F';
+                        break;
+                }
+                y >>= 4;
+                offset--;
+            }
+
+            #endregion
+            BasicConsole.WriteLine(LastAddressStr);
+
             BasicConsole.SetTextColour(BasicConsole.default_colour);
 
             if (ExceptionMethods.CurrentException != null)
