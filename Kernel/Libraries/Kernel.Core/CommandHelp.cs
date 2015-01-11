@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 namespace Kernel.Core
 {
     /// <summary>
-    /// Class to describe the command descriptions
+    /// Class to describe the command descriptions.
     /// </summary>
     public class CommandDescription : FOS_System.Object
     {
@@ -17,7 +17,7 @@ namespace Kernel.Core
     }
 
     /// <summary>
-    /// Class that has all the command descriptions and related methods
+    /// Class that has all the command descriptions and related methods.
     /// </summary>
     public static class CommandHelp
     {
@@ -86,7 +86,7 @@ Possible options:
                 CommandName = "CheckDisk",
                 CommandNameLower = "checkdisk",
                 Description = @"CheckDisk/ChkD  { Drive# }
-Check disks passed in option for errors
+Check disks passed in option for errors.
 ",
             });
             #endregion
@@ -97,7 +97,7 @@ Check disks passed in option for errors
                 CommandName = "Chkd",
                 CommandNameLower = "chkd",
                 Description = @"CheckDisk/ChkD  { Drive# }
-Alias for CheckDisk commmand
+Alias for CheckDisk commmand.
 ",
             });
             #endregion
@@ -108,7 +108,7 @@ Alias for CheckDisk commmand
                 CommandName = "FormatDisk",
                 CommandNameLower = "formatdisk",
                 Description = @"FormatDisk/FmtD { Drive# }
-Formats a disk passed in option in FAT 32 format
+Formats a disk passed in option in FAT 32 format.
 ",
             });
             #endregion
@@ -119,7 +119,7 @@ Formats a disk passed in option in FAT 32 format
                 CommandName = "Fmtd",
                 CommandNameLower = "fmtd",
                 Description = @"FormatDisk/FmtD { Drive# }
-Alias for FormatDisk
+Alias for FormatDisk.
 ",
             });
             #endregion
@@ -130,11 +130,13 @@ Alias for FormatDisk
                 CommandName = "Dir",
                 CommandNameLower = "dir",
                 Description = @"Dir  { List / Open / New / Delete / Copy }
-Dir List <Path> : List files/directories in the path specified
-Dir Open <Path> : Open specified directory
-Dir New <Path>  : Create a new directory
-Dir Delete <Path>: Delete specified directory
-Dir Copy <SrcPath> <DestPath> : Copy specified directory specified in SrcPath to DestPath
+Dir List <Path> : List files/directories in the path specified.
+Dir Open <Path> : Open specified directory.
+Dir New <Path>  : Create a new directory.
+Dir Delete <Path>: Delete specified directory.
+Dir Copy <SrcPath> <DestPath> : Copy specified directory in SrcPath to DestPath.
+On changing directory, it will set ./ to current directory.
+To refer current directory, you can use ./ and for the parent directory, use ../
 ",
             });
             #endregion
@@ -145,9 +147,9 @@ Dir Copy <SrcPath> <DestPath> : Copy specified directory specified in SrcPath to
                 CommandName = "File",
                 CommandNameLower = "file",
                 Description = @"File { Open/Delete/Copy }
-File Open <File> : Open a file  and outputs its content
-File Delete <File> : Delete a specified File
-File Copy <SrcFile> <DestFile>  : Copies specified source file <SrcFile> to destination
+File Open <File> : Open a file  and outputs its content.
+File Delete <File> : Delete a specified File.
+File Copy <SrcFile> <DestFile>  : Copies specified source file <SrcFile> to destination.
 ",
             });
             #endregion
@@ -158,8 +160,8 @@ File Copy <SrcFile> <DestFile>  : Copies specified source file <SrcFile> to dest
                 CommandName = "GC",
                 CommandNameLower = "gc",
                 Description = @"GC { [Cleanup] }
-Calls garbage collection and performs memory clean up
-Cleanup: This argument is optional and doesn't modify the behaviour
+Calls garbage collection and performs memory clean up.
+Cleanup: This argument is optional and doesn't modify the behaviour.
 ",
             });
             #endregion
@@ -170,7 +172,7 @@ Cleanup: This argument is optional and doesn't modify the behaviour
                 CommandName = "Clear",
                 CommandNameLower = "clear",
                 Description = @"Clear
-Clears the command shell and displays the empty prompt",
+Clears the command shell and displays the empty prompt.",
             });
             #endregion
 
@@ -180,9 +182,9 @@ Clears the command shell and displays the empty prompt",
                 CommandName = "Show",
                 CommandNameLower = "show",
                 Description = @"Show {w/c}
-Show: Show the License information
-Show w: Show the license warnings
-Show c: Show the license conditions"
+Show: Show the License information.
+Show w: Show the license warnings.
+Show c: Show the license conditions."
             });
             #endregion
 
@@ -206,7 +208,7 @@ Show c: Show the license conditions"
                     return cmdDesc.Description;
                 }
             }
-            return "[No such command found]";
+            return "[No command description found]";
         }
     }
 }
