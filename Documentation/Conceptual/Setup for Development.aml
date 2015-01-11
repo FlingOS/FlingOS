@@ -104,7 +104,7 @@
                   <externalLink>
                     <linkText>VMWare Player</linkText>
                     <linkUri>https://my.vmware.com/web/vmware/free#desktop_end_user_computing/vmware_player/6_0</linkUri>
-                  </externalLink>
+                  </externalLink> or VirtualBox or HyperVisor
                 </para>
               </listItem>
               <listItem>
