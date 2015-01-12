@@ -401,9 +401,9 @@ namespace Kernel
             BasicConsole.WriteLine("---------------------");
         }
 
-        public static void OutputAddressDetectedMethod(uint eip)
+        public static void OutputAddressDetectedMethod(uint EIP, uint OpNum)
         {
-            BasicConsole.WriteLine(((FOS_System.String)"Test address detected! EIP: ") + eip);
+            BasicConsole.WriteLine(((FOS_System.String)"Test address detected! EIP: ") + EIP + ", Op Num: " + OpNum);
             BasicConsole.DelayOutput(5);
         }
 

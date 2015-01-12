@@ -109,9 +109,9 @@ namespace Kernel.Compiler.Architectures.x86_32
                 result.AppendLine("pop dword ebx");
 
                 //Mov [address], value
-                GlobalMethods.CheckAddrFromRegister(result, aScannerState, "ebx", 4);
+                GlobalMethods.CheckAddrFromRegister(result, aScannerState, "ebx", 4, (OpCodes)anILOpInfo.opCode.Value);
                 result.AppendLine("mov dword [ebx+4], edx");
-                GlobalMethods.CheckAddrFromRegister(result, aScannerState, "ebx", 0);
+                GlobalMethods.CheckAddrFromRegister(result, aScannerState, "ebx", 0, (OpCodes)anILOpInfo.opCode.Value);
                 result.AppendLine("mov dword [ebx], eax");
             }
             else if (bytesToStore == 4)
@@ -123,7 +123,7 @@ namespace Kernel.Compiler.Architectures.x86_32
                 result.AppendLine("pop dword ebx");
 
                 //Mov [address], value
-                GlobalMethods.CheckAddrFromRegister(result, aScannerState, "ebx", 0);
+                GlobalMethods.CheckAddrFromRegister(result, aScannerState, "ebx", 0, (OpCodes)anILOpInfo.opCode.Value);
                 result.AppendLine("mov dword [ebx], eax");
             }
             else if (bytesToStore == 2)
@@ -135,7 +135,7 @@ namespace Kernel.Compiler.Architectures.x86_32
                 result.AppendLine("pop dword ebx");
 
                 //Mov [address], value
-                GlobalMethods.CheckAddrFromRegister(result, aScannerState, "ebx", 0);
+                GlobalMethods.CheckAddrFromRegister(result, aScannerState, "ebx", 0, (OpCodes)anILOpInfo.opCode.Value);
                 result.AppendLine("mov word [ebx], ax");
             }
             else if (bytesToStore == 1)
@@ -147,7 +147,7 @@ namespace Kernel.Compiler.Architectures.x86_32
                 result.AppendLine("pop dword ebx");
 
                 //Mov [address], value
-                GlobalMethods.CheckAddrFromRegister(result, aScannerState, "ebx", 0);
+                GlobalMethods.CheckAddrFromRegister(result, aScannerState, "ebx", 0, (OpCodes)anILOpInfo.opCode.Value);
                 result.AppendLine("mov byte [ebx], al");
             }
 

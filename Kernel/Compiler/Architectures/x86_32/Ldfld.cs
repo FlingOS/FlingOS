@@ -105,13 +105,13 @@ namespace Kernel.Compiler.Architectures.x86_32
                     if (sizeToSub != sizeNotInMem)
                     {
                         result.AppendLine("mov ax, 0");
-                        GlobalMethods.CheckAddrFromRegister(result, aScannerState, "ecx", offset + i - 2);
+                        GlobalMethods.CheckAddrFromRegister(result, aScannerState, "ecx", offset + i - 2, (OpCodes)anILOpInfo.opCode.Value);
                         result.AppendLine(string.Format("mov byte al, [ecx+{0}]", offset + i - 2));
                         result.AppendLine("push word ax");
                     }
                     else
                     {
-                        GlobalMethods.CheckAddrFromRegister(result, aScannerState, "ecx", offset + i - 2);
+                        GlobalMethods.CheckAddrFromRegister(result, aScannerState, "ecx", offset + i - 2, (OpCodes)anILOpInfo.opCode.Value);
                         result.AppendLine(string.Format("mov word ax, [ecx+{0}]", offset + i - 2));
                         result.AppendLine("push word ax");
                     }

@@ -54,23 +54,23 @@ namespace Kernel.Compiler.Architectures.x86_32
             {
                 if (i == 0)
                 {
-                    GlobalMethods.CheckAddrFromRegister(result, aScannerState, "esp", bytesShift);
+                    GlobalMethods.CheckAddrFromRegister(result, aScannerState, "esp", bytesShift, OpCodes.Unbox);
                     result.AppendLine(string.Format("mov eax, [esp+{0}]", bytesShift));
-                    GlobalMethods.CheckAddrFromRegister(result, aScannerState, "esp", bytesShift + 4);
+                    GlobalMethods.CheckAddrFromRegister(result, aScannerState, "esp", bytesShift + 4, OpCodes.Unbox);
                     result.AppendLine(string.Format("mov dword ebx, [esp+{0}]", bytesShift + 4));
-                    GlobalMethods.CheckAddrFromRegister(result, aScannerState, "esp", bytesShift);
+                    GlobalMethods.CheckAddrFromRegister(result, aScannerState, "esp", bytesShift, OpCodes.Unbox);
                     result.AppendLine(string.Format("mov dword [esp+{0}], ebx", bytesShift));
                 }
                 else if (i == dwordsToRotate - 1)
                 {
-                    GlobalMethods.CheckAddrFromRegister(result, aScannerState, "esp", bytesShift);
+                    GlobalMethods.CheckAddrFromRegister(result, aScannerState, "esp", bytesShift, OpCodes.Unbox);
                     result.AppendLine(string.Format("mov [esp+{0}], eax", bytesShift));
                 }
                 else
                 {
-                    GlobalMethods.CheckAddrFromRegister(result, aScannerState, "esp", bytesShift + 4);
+                    GlobalMethods.CheckAddrFromRegister(result, aScannerState, "esp", bytesShift + 4, OpCodes.Unbox);
                     result.AppendLine(string.Format("mov dword ebx, [esp+{0}]", bytesShift + 4));
-                    GlobalMethods.CheckAddrFromRegister(result, aScannerState, "esp", bytesShift);
+                    GlobalMethods.CheckAddrFromRegister(result, aScannerState, "esp", bytesShift, OpCodes.Unbox);
                     result.AppendLine(string.Format("mov dword [esp+{0}], ebx", bytesShift));
                 }
                 bytesShift += 4;

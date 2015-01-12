@@ -62,9 +62,9 @@ namespace Kernel.Compiler.Architectures.x86_32
                 result.AppendLine("; Ignore newobj calls for Delegates");
                 //Still need to: 
                 // - Remove the "object" param but preserve the "function pointer"
-                GlobalMethods.CheckAddrFromRegister(result, aScannerState, "esp", 0);
+                GlobalMethods.CheckAddrFromRegister(result, aScannerState, "esp", 0, (OpCodes)anILOpInfo.opCode.Value);
                 result.AppendLine("mov dword eax, [esp]");
-                GlobalMethods.CheckAddrFromRegister(result, aScannerState, "esp", 4);
+                GlobalMethods.CheckAddrFromRegister(result, aScannerState, "esp", 4, (OpCodes)anILOpInfo.opCode.Value);
                 result.AppendLine("mov dword [esp+4], eax");
                 result.AppendLine("add esp, 4");
                 return result.ToString().Trim();
@@ -136,14 +136,14 @@ namespace Kernel.Compiler.Architectures.x86_32
                         aScannerState.GetMethodID(aScannerState.CurrentILChunk.Method),
                         anILOpInfo.Position);
                 result.AppendLine(ShiftArgsLoopLabel + ":");
-                GlobalMethods.CheckAddrFromRegister(result, aScannerState, "ebx", 4);
+                GlobalMethods.CheckAddrFromRegister(result, aScannerState, "ebx", 4, (OpCodes)anILOpInfo.opCode.Value);
                 result.AppendLine("mov dword edx, [ebx+4]");
-                GlobalMethods.CheckAddrFromRegister(result, aScannerState, "ebx", 0);
+                GlobalMethods.CheckAddrFromRegister(result, aScannerState, "ebx", 0, (OpCodes)anILOpInfo.opCode.Value);
                 result.AppendLine("mov dword [ebx], edx");
                 result.AppendLine("add ebx, 4");
                 result.AppendLine(string.Format("loop {0}", ShiftArgsLoopLabel));
             }
-            GlobalMethods.CheckAddrFromRegister(result, aScannerState, "ebx", 0);
+            GlobalMethods.CheckAddrFromRegister(result, aScannerState, "ebx", 0, (OpCodes)anILOpInfo.opCode.Value);
             result.AppendLine("mov dword [ebx], eax");
             result.AppendLine(string.Format("call {0}", aScannerState.GetMethodID(constructorMethod)));
             //Only remove args from stack - we want the object pointer to remain on the stack

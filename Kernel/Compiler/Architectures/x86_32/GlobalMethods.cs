@@ -34,11 +34,11 @@ namespace Kernel.Compiler.Architectures.x86_32
 {
     public static class GlobalMethods
     {
-        public static string CheckAddrTestAddress = ""/*"0xA5F000C8"*/;
-        public static string CheckAddrDisplayMethod = "method_System_Void_RETEND_Kernel_Kernel_DECLEND_OutputAddressDetectedMethod_NAMEEND__System_UInt32_";
+        public static string CheckAddrTestAddress = "0xF000FF69"/*"0xA5F000C8"*/;
+        public static string CheckAddrDisplayMethod = "method_System_Void_RETEND_Kernel_Kernel_DECLEND_OutputAddressDetectedMethod_NAMEEND__System_UInt32_System_UInt32_";
         public static int CheckAddrCount = 0;
-
-        public static void CheckAddrFromRegister(StringBuilder result, ILScannerState aScannerState, string reg, int offset)
+        
+        public static void CheckAddrFromRegister(StringBuilder result, ILScannerState aScannerState, string reg, int offset, ILOps.ILOp.OpCodes opCode)
         {
             if(!string.IsNullOrWhiteSpace(CheckAddrTestAddress))
             {
@@ -57,6 +57,7 @@ namespace Kernel.Compiler.Architectures.x86_32
                 result.AppendLine("jne " + jumpToLabel);
 
                 result.AppendLine("call GetEIP");
+                result.AppendLine(string.Format("push dword {0} ; OpCode:{0}={1}", (int)opCode, System.Enum.GetName(typeof(ILOps.ILOp.OpCodes), opCode)));
                 result.AppendLine("call " + CheckAddrDisplayMethod);
                 result.AppendLine("add esp, 4");
                 

@@ -70,7 +70,7 @@ namespace Kernel.Compiler.Architectures.x86_32
                     anILOpInfo.Position);
             string ContinueExecutionLabel1 = ContinueExecutionLabelBase + "1";
             //      1.1. Move array ref into eax
-            GlobalMethods.CheckAddrFromRegister(result, aScannerState, "esp", 0);
+            GlobalMethods.CheckAddrFromRegister(result, aScannerState, "esp", 0, (OpCodes)anILOpInfo.opCode.Value);
             result.AppendLine("mov eax, [esp]");
             //      1.2. Compare eax (array ref) to 0
             result.AppendLine("cmp eax, 0");
@@ -84,7 +84,7 @@ namespace Kernel.Compiler.Architectures.x86_32
             //  - Pop array ref
             result.AppendLine("pop dword ecx");
             //  - Load length from array ref
-            GlobalMethods.CheckAddrFromRegister(result, aScannerState, "ecx", lengthOffset);
+            GlobalMethods.CheckAddrFromRegister(result, aScannerState, "ecx", lengthOffset, (OpCodes)anILOpInfo.opCode.Value);
             result.AppendLine(string.Format("mov eax, [ecx+{0}]", lengthOffset));
             //  - Push array length
             result.AppendLine("push dword eax");

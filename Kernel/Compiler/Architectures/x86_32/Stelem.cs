@@ -131,7 +131,7 @@ namespace Kernel.Compiler.Architectures.x86_32
 
             string ContinueExecutionLabel1 = ContinueExecutionLabelBase + "1";
             //      1.1. Move array ref into eax
-            GlobalMethods.CheckAddrFromRegister(result, aScannerState, "esp", sizeToPop == 8 ? 12 : 8);
+            GlobalMethods.CheckAddrFromRegister(result, aScannerState, "esp", sizeToPop == 8 ? 12 : 8, (OpCodes)anILOpInfo.opCode.Value);
             result.AppendLine(string.Format("mov eax, [esp+{0}]", sizeToPop == 8 ? 12 : 8));
             //      1.2. Compare eax (array ref) to 0
             result.AppendLine("cmp eax, 0");
@@ -195,16 +195,16 @@ namespace Kernel.Compiler.Architectures.x86_32
             string ContinueExecutionLabel3_1 = ContinueExecutionLabelBase + "3_1";
             string ContinueExecutionLabel3_2 = ContinueExecutionLabelBase + "3_2";
             //      3.1. Move index into eax
-            GlobalMethods.CheckAddrFromRegister(result, aScannerState, "esp", sizeToPop == 8 ? 8 : 4);
+            GlobalMethods.CheckAddrFromRegister(result, aScannerState, "esp", sizeToPop == 8 ? 8 : 4, (OpCodes)anILOpInfo.opCode.Value);
             result.AppendLine(string.Format("mov eax, [esp+{0}]", sizeToPop == 8 ? 8 : 4));
             //      3.2. Move array length into ecx
             //              - Calculate the offset of the field from the start of the array object
             int lengthOffset = aScannerState.GetFieldOffset(arrayDBType, "length");
             //              - Move array ref into ebx
-            GlobalMethods.CheckAddrFromRegister(result, aScannerState, "esp", sizeToPop == 8 ? 12 : 8);
+            GlobalMethods.CheckAddrFromRegister(result, aScannerState, "esp", sizeToPop == 8 ? 12 : 8, (OpCodes)anILOpInfo.opCode.Value);
             result.AppendLine(string.Format("mov ebx, [esp+{0}]", sizeToPop == 8 ? 12 : 8));
             //              - Move length value ([ebx+offset]) into ebx
-            GlobalMethods.CheckAddrFromRegister(result, aScannerState, "ebx", lengthOffset);
+            GlobalMethods.CheckAddrFromRegister(result, aScannerState, "ebx", lengthOffset, (OpCodes)anILOpInfo.opCode.Value);
             result.AppendLine(string.Format("mov ebx, [ebx+{0}]", lengthOffset));
             //      3.2. Compare eax to 0
             result.AppendLine("cmp eax, 0");
@@ -250,16 +250,16 @@ namespace Kernel.Compiler.Architectures.x86_32
             //      4.1. Pop index into ebx
             result.AppendLine("pop ebx");
             //      4.2. Move array ref into eax
-            GlobalMethods.CheckAddrFromRegister(result, aScannerState, "esp", 0);
+            GlobalMethods.CheckAddrFromRegister(result, aScannerState, "esp", 0, (OpCodes)anILOpInfo.opCode.Value);
             result.AppendLine("mov eax, [esp]");
             //      4.3. Move element type ref (from array ref) into eax
-            GlobalMethods.CheckAddrFromRegister(result, aScannerState, "eax", elemTypeOffset);
+            GlobalMethods.CheckAddrFromRegister(result, aScannerState, "eax", elemTypeOffset, (OpCodes)anILOpInfo.opCode.Value);
             result.AppendLine(string.Format("mov eax, [eax+{0}]", elemTypeOffset));
             //      4.4. Push eax
             result.AppendLine("push eax");
             //      4.5. Move IsValueType (from element ref type) into eax
             int isValueTypeOffset = aScannerState.GetTypeFieldOffset("IsValueType");
-            GlobalMethods.CheckAddrFromRegister(result, aScannerState, "eax", isValueTypeOffset);
+            GlobalMethods.CheckAddrFromRegister(result, aScannerState, "eax", isValueTypeOffset, (OpCodes)anILOpInfo.opCode.Value);
             result.AppendLine(string.Format("mov byte al, [eax+{0}]", isValueTypeOffset));
             // Zero-out the rest of eax
             result.AppendLine("and eax, 1");
@@ -270,7 +270,7 @@ namespace Kernel.Compiler.Architectures.x86_32
             result.AppendLine("pop eax");
             //      4.8. Move Size (from element type ref) into eax
             int sizeOffset = aScannerState.GetTypeFieldOffset("Size");
-            GlobalMethods.CheckAddrFromRegister(result, aScannerState, "eax", sizeOffset);
+            GlobalMethods.CheckAddrFromRegister(result, aScannerState, "eax", sizeOffset, (OpCodes)anILOpInfo.opCode.Value);
             result.AppendLine(string.Format("mov eax, [eax+{0}]", sizeOffset));
             //      4.9. Skip over 4.9. and 4.10.
             result.AppendLine("jmp " + ContinueExecutionLabel4_2);
@@ -279,7 +279,7 @@ namespace Kernel.Compiler.Architectures.x86_32
             result.AppendLine("pop eax");
             //      4.11. Move StackSize (from element type ref) into eax
             int stackSizeOffset = aScannerState.GetTypeFieldOffset("StackSize");
-            GlobalMethods.CheckAddrFromRegister(result, aScannerState, "eax", stackSizeOffset);
+            GlobalMethods.CheckAddrFromRegister(result, aScannerState, "eax", stackSizeOffset, (OpCodes)anILOpInfo.opCode.Value);
             result.AppendLine(string.Format("mov eax, [eax+{0}]", stackSizeOffset));
             //      4.12. Mulitply eax by ebx (index by element size)
             result.AppendLine(ContinueExecutionLabel4_2 + ":");
@@ -305,24 +305,24 @@ namespace Kernel.Compiler.Architectures.x86_32
             //      5.1. Move value in edx:ecx to [eax]
             if (sizeToPop == 8)
             {
-                GlobalMethods.CheckAddrFromRegister(result, aScannerState, "eax", 0);
+                GlobalMethods.CheckAddrFromRegister(result, aScannerState, "eax", 0, (OpCodes)anILOpInfo.opCode.Value);
                 result.AppendLine("mov dword [eax], ecx");
-                GlobalMethods.CheckAddrFromRegister(result, aScannerState, "eax", 4);
+                GlobalMethods.CheckAddrFromRegister(result, aScannerState, "eax", 4, (OpCodes)anILOpInfo.opCode.Value);
                 result.AppendLine("mov dword [eax+4], edx");
             }
             else if(sizeToPop == 4)
             {
-                GlobalMethods.CheckAddrFromRegister(result, aScannerState, "eax", 0);
+                GlobalMethods.CheckAddrFromRegister(result, aScannerState, "eax", 0, (OpCodes)anILOpInfo.opCode.Value);
                 result.AppendLine("mov dword [eax], ecx");
             }
             else if (sizeToPop == 2)
             {
-                GlobalMethods.CheckAddrFromRegister(result, aScannerState, "eax", 0);
+                GlobalMethods.CheckAddrFromRegister(result, aScannerState, "eax", 0, (OpCodes)anILOpInfo.opCode.Value);
                 result.AppendLine("mov word [eax], cx");
             }
             else if (sizeToPop == 1)
             {
-                GlobalMethods.CheckAddrFromRegister(result, aScannerState, "eax", 0);
+                GlobalMethods.CheckAddrFromRegister(result, aScannerState, "eax", 0, (OpCodes)anILOpInfo.opCode.Value);
                 result.AppendLine("mov byte [eax], cl");
             }
 

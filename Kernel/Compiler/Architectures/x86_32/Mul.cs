@@ -125,10 +125,10 @@ namespace Kernel.Compiler.Architectures.x86_32
                     result.AppendLine("mov edx, 0");
 
                     // mov eax, [ESP+0]  - Load BL
-                    GlobalMethods.CheckAddrFromRegister(result, aScannerState, "esp", 0);
+                    GlobalMethods.CheckAddrFromRegister(result, aScannerState, "esp", 0, (OpCodes)anILOpInfo.opCode.Value);
                     result.AppendLine("mov eax, [ESP+0]");
                     // mov ebx, [ESP+8] - Load AL
-                    GlobalMethods.CheckAddrFromRegister(result, aScannerState, "esp", 8);
+                    GlobalMethods.CheckAddrFromRegister(result, aScannerState, "esp", 8, (OpCodes)anILOpInfo.opCode.Value);
                     result.AppendLine("mov ebx, [ESP+8]");
                     // mul ebx           - BL * AL, result in eax:edx
                     result.AppendLine("mul ebx");
@@ -144,7 +144,7 @@ namespace Kernel.Compiler.Architectures.x86_32
                     // mov edx, 0
                     result.AppendLine("mov edx, 0");
                     // mov eax [ESP+4+8] - Load BH
-                    GlobalMethods.CheckAddrFromRegister(result, aScannerState, "esp", 12);
+                    GlobalMethods.CheckAddrFromRegister(result, aScannerState, "esp", 12, (OpCodes)anILOpInfo.opCode.Value);
                     result.AppendLine("mov eax, [ESP+12]");
                     // mul ebx           - BH * AL, result in eax:edx
                     result.AppendLine("mul ebx");
@@ -158,10 +158,10 @@ namespace Kernel.Compiler.Architectures.x86_32
                     // mov edx, 0
                     result.AppendLine("mov edx, 0");
                     // mov eax, [ESP+0+12] - Load BL
-                    GlobalMethods.CheckAddrFromRegister(result, aScannerState, "esp", 12);
+                    GlobalMethods.CheckAddrFromRegister(result, aScannerState, "esp", 12, (OpCodes)anILOpInfo.opCode.Value);
                     result.AppendLine("mov eax, [ESP+12]");
                     // mov ebx, [ESP+12+12] - Load AH
-                    GlobalMethods.CheckAddrFromRegister(result, aScannerState, "esp", 24);
+                    GlobalMethods.CheckAddrFromRegister(result, aScannerState, "esp", 24, (OpCodes)anILOpInfo.opCode.Value);
                     result.AppendLine("mov ebx, [ESP+24]");
                     // mul ebx             - BL * AH, result in eax:edx
                     result.AppendLine("mul ebx");
@@ -175,20 +175,20 @@ namespace Kernel.Compiler.Architectures.x86_32
                     // AH * BL = [ESP+0] , 32 bits - high bits
 
                     // mov eax, [ESP+8]  - Load AL * BL
-                    GlobalMethods.CheckAddrFromRegister(result, aScannerState, "esp", 8);
+                    GlobalMethods.CheckAddrFromRegister(result, aScannerState, "esp", 8, (OpCodes)anILOpInfo.opCode.Value);
                     result.AppendLine("mov eax, [ESP+8]");
                     // mov edx, [ESP+12]
-                    GlobalMethods.CheckAddrFromRegister(result, aScannerState, "esp", 12);
+                    GlobalMethods.CheckAddrFromRegister(result, aScannerState, "esp", 12, (OpCodes)anILOpInfo.opCode.Value);
                     result.AppendLine("mov edx, [ESP+12]");
                     // mov ebx, 0
                     result.AppendLine("mov ebx, 0");
                     // mov ecx, [ESP+4]   - Load AL * BH
-                    GlobalMethods.CheckAddrFromRegister(result, aScannerState, "esp", 4);
+                    GlobalMethods.CheckAddrFromRegister(result, aScannerState, "esp", 4, (OpCodes)anILOpInfo.opCode.Value);
                     result.AppendLine("mov ecx, [ESP+4]");
                     // add edx, ecx       - Add (AL * BL) + (AL * BH), result in eax:edx
                     result.AppendLine("add edx, ecx");
                     // mov ecx, [ESP+0]   - Load AH * BL
-                    GlobalMethods.CheckAddrFromRegister(result, aScannerState, "esp", 0);
+                    GlobalMethods.CheckAddrFromRegister(result, aScannerState, "esp", 0, (OpCodes)anILOpInfo.opCode.Value);
                     result.AppendLine("mov ecx, [ESP+0]");
                     // add edx, ecx       - Add ((AL * BL) + (AL * BH)) + (AH * BL), result in eax:edx
                     result.AppendLine("add edx, ecx");
