@@ -121,8 +121,8 @@ namespace Kernel.Hardware.Devices
         public Keyboard()
         {
             // The type of keyboard mapping to use
-            ///define UKKEYBOARD in project properties // Use UK Keyboard layout
-            // define USKEYBOARD in project properties // Use US Keyboard layout
+            ///Define UKKEYBOARD in project properties // Use UK Keyboard layout
+            // Define USKEYBOARD in project properties // Use US Keyboard layout
             if (KeyMappings == null)
             {
 #if UKKEYBOARD
