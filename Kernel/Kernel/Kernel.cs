@@ -405,6 +405,22 @@ namespace Kernel
         {
             BasicConsole.WriteLine(((FOS_System.String)"Test address detected! EIP: ") + EIP + ", Op Num: " + OpNum);
             BasicConsole.DelayOutput(5);
+            BasicConsole.WriteLine(((FOS_System.String)"Stack values: ESP = ") + GetESP() + " (Offset from ESP : Value)");
+            for (uint i = 0x1C; i < 120 /*0x1C + (23 * 4)*/; i += 4)
+            {
+                BasicConsole.WriteLine(((FOS_System.String)i) + " : " + GetStackValue(i));
+            }
+            BasicConsole.DelayOutput(1000);
+        }
+        [Compiler.PluggedMethod(ASMFilePath = null)]
+        public static uint GetStackValue(uint offset)
+        {
+            return 0;
+        }
+        [Compiler.PluggedMethod(ASMFilePath = null)]
+        public static uint GetESP()
+        {
+            return 0;
         }
 
         [Compiler.PluggedMethod(ASMFilePath=@"ASM\Kernel")]
