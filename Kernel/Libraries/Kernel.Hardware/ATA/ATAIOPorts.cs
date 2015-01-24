@@ -49,6 +49,9 @@ namespace Kernel.Hardware.ATA
         /// The sector count.
         /// </summary>
         public readonly IO.IOPort SectorCount;
+
+        /********* HOB = High Order Byte = LBA48 mode *********/
+
         // ATA_REG_SECCOUNT1  0x08 - HOB
         /// <summary>
         /// LBA0 port.

@@ -123,10 +123,10 @@ namespace Kernel.Hardware.ATA
             ATA_ER_AMNF = 0x01
         };
         /// <summary>
-        /// Dvc Sel values.
+        /// Drive Select values.
         /// </summary>
         [Flags]
-        enum DvcSelVal : byte
+        enum DriveSelectValue : byte
         {
             // Bits 0-3: Head Number for CHS.
             // Bit 4: Slave Bit. (0: Selecting Master Drive, 1: Selecting Slave Drive).
@@ -134,13 +134,13 @@ namespace Kernel.Hardware.ATA
             /// Slave value.
             /// </summary>
             Slave = 0x10,
-            //* Bit 6: LBA (0: CHS, 1: LBA).
+            // Bit 6: LBA (0: CHS, 1: LBA).
             /// <summary>
             /// LBA value.
             /// </summary>
             LBA = 0x40,
-            //* Bit 5: Obsolete and isn't used, but should be set.
-            //* Bit 7: Obsolete and isn't used, but should be set. 
+            // Bit 5: Obsolete and isn't used, but should be set.
+            // Bit 7: Obsolete and isn't used, but should be set. 
             /// <summary>
             /// Default value.
             /// </summary>
@@ -198,6 +198,9 @@ namespace Kernel.Hardware.ATA
             /// <summary>
             /// Identify packet command.
             /// </summary>
+            /// <remarks>
+            /// Unused. This is for PATAPI devices only.
+            /// </remarks>
             IdentifyPacket = 0xA1,
             /// <summary>
             /// Identify command.
@@ -213,80 +216,45 @@ namespace Kernel.Hardware.ATA
             Eject = 0x1B
         }
         /// <summary>
-        /// Identity values.
+        /// Specification levels (Drive types and identifiers)
         /// </summary>
-        public enum Ident : byte
-        {
-            /// <summary>
-            /// Device type
-            /// </summary>
-            DEVICETYPE = 0,
-            /// <summary>
-            /// Cylinders
-            /// </summary>
-            CYLINDERS = 2,
-            /// <summary>
-            /// Heads
-            /// </summary>
-            HEADS = 6,
-            /// <summary>
-            /// Sectors
-            /// </summary>
-            SECTORS = 12,
-            /// <summary>
-            /// Serial
-            /// </summary>
-            SERIAL = 20,
-            /// <summary>
-            /// Model
-            /// </summary>
-            MODEL = 54,
-            /// <summary>
-            /// Capabilities
-            /// </summary>
-            CAPABILITIES = 98,
-            /// <summary>
-            /// Field valid
-            /// </summary>
-            FIELDVALID = 106,
-            /// <summary>
-            /// Max LBA
-            /// </summary>
-            MAX_LBA = 120,
-            /// <summary>
-            /// Command sets
-            /// </summary>
-            COMMANDSETS = 164,
-            /// <summary>
-            /// Max LBA extended
-            /// </summary>
-            MAX_LBA_EXT = 200
-        }
-        /// <summary>
-        /// Specification levels
-        /// </summary>
-        public enum SpecLevel
+        public enum SpecLevel : ushort
         {
             /// <summary>
             /// Null
             /// </summary>
-            Null,
+            /// <remarks>
+            /// This value is arbitary and has no meaning in the ATA spec.
+            /// </remarks>
+            Null = 0x0000,
             /// <summary>
             /// PATA
             /// </summary>
-            PATA,
+            /// <remarks>
+            /// This value is arbitary and has no meaning in the ATA spec.
+            /// </remarks>
+            PATA = 0x0001,
             /// <summary>
             /// SATA
             /// </summary>
-            SATA,
+            /// <remarks>
+            /// This value is NOT arbitary. It is the SATA device identifier.
+            /// </remarks>
+            SATA = 0xC33C,
             /// <summary>
             /// PATAPI
             /// </summary>
-            PATAPI,
+            /// <remarks>
+            /// This value is NOT arbitary. It is the PATAPI device identifier.
+            /// </remarks>
+            PATAPI = 0xEB14,
             /// <summary>
             /// SATAPI
             /// </summary>
-            SATAPI
+            /// <remarks>
+            /// This value is NOT arbitary. It is the SATAPI device identifier.
+            /// </remarks>
+            SATAPI = 0x9669
         }
 
         /// <summary>
@@ -390,11 +358,11 @@ namespace Kernel.Hardware.ATA
         {
             if (setLBA)
             {
-                IO.DeviceSelect.Write_Byte((byte)((byte)(DvcSelVal.Default | DvcSelVal.LBA | (busPosition == BusPosition.Slave ? DvcSelVal.Slave : 0)) | aLbaHigh4));
+                IO.DeviceSelect.Write_Byte((byte)((byte)(DriveSelectValue.Default | DriveSelectValue.LBA | (busPosition == BusPosition.Slave ? DriveSelectValue.Slave : 0)) | aLbaHigh4));
             }
             else
             {
-                IO.DeviceSelect.Write_Byte((byte)((byte)(DvcSelVal.Default | (busPosition == BusPosition.Slave ? DvcSelVal.Slave : 0)) | aLbaHigh4));
+                IO.DeviceSelect.Write_Byte((byte)((byte)(DriveSelectValue.Default | (busPosition == BusPosition.Slave ? DriveSelectValue.Slave : 0)) | aLbaHigh4));
             }
             Wait();
         }
@@ -413,11 +381,10 @@ namespace Kernel.Hardware.ATA
         protected void Wait()
         {
             // Wait 400 ns
-            byte xVoid;
-            xVoid = IO.Status.Read_Byte();
-            xVoid = IO.Status.Read_Byte();
-            xVoid = IO.Status.Read_Byte();
-            xVoid = IO.Status.Read_Byte();
+            IO.Status.Read_Byte();
+            IO.Status.Read_Byte();
+            IO.Status.Read_Byte();
+            IO.Status.Read_Byte();
         }
         /// <summary>
         /// Attempts to discover the ATA drive.
@@ -438,16 +405,16 @@ namespace Kernel.Hardware.ATA
                 // Device is not ATA
                 // Error status can also triggered by ATAPI devices
                 // So check LBA1 and LBA2 to detect an ATAPI device.
-                int typeId = IO.LBA2.Read_Byte() << 8 | IO.LBA1.Read_Byte();
-                if (typeId == 0xEB14)
+                ushort typeId = (ushort)(IO.LBA2.Read_Byte() << 8 | IO.LBA1.Read_Byte());
+                if (typeId == (ushort)SpecLevel.PATAPI)
                 {
                     return SpecLevel.PATAPI;
                 }
-                else if (typeId == 0x9669)
+                else if (typeId == (ushort)SpecLevel.SATAPI)
                 {
                     return SpecLevel.SATAPI;
                 }
-                else if (typeId == 0xC33C)
+                else if (typeId == (ushort)SpecLevel.SATA)
                 {
                     return SpecLevel.SATA;
                 }
@@ -469,19 +436,24 @@ namespace Kernel.Hardware.ATA
             //  check LBA1 and LBA2 ports for non-zero values.
             //  If they are non-zero, then the drive is not ATA.
             {
-                int typeId = IO.LBA2.Read_Byte() << 8 | IO.LBA1.Read_Byte();
+                ushort typeId = (ushort)(IO.LBA2.Read_Byte() << 8 | IO.LBA1.Read_Byte());
                 // It is, however, possible to detect what type of device is actually attached.
-                if (typeId == 0xEB14)
+                if (typeId == (ushort)SpecLevel.PATAPI)
                 {
                     return SpecLevel.PATAPI;
                 }
-                else if (typeId == 0x9669)
+                else if (typeId == (ushort)SpecLevel.SATAPI)
                 {
                     return SpecLevel.SATAPI;
                 }
-                else if (typeId == 0xC33C)
+                else if (typeId == (ushort)SpecLevel.SATA)
                 {
                     return SpecLevel.SATA;
+                }
+                else if (typeId != 0u)
+                {
+                    // Unknown type. Might not be a device.
+                    return SpecLevel.Null;
                 }
             }
 
@@ -682,7 +654,66 @@ namespace Kernel.Hardware.ATA
         /// </summary>
         public override void CleanCaches()
         {
-            //Nothing to do for our implementation (thus far...)
+            //TODO: Presumably Drive Select needs to happen first? But does the sector number 
+            //      need to be set?
+            //SendCmd(Cmd.CacheFlush);
         }
     }
 }
+
+/*
+ * This is PATAPI related:
+ *
+ 
+        /// <summary>
+        /// Identity values.
+        /// </summary>
+        public enum Ident : byte
+        {
+            /// <summary>
+            /// Device type
+            /// </summary>
+            DEVICETYPE = 0,
+            /// <summary>
+            /// Cylinders
+            /// </summary>
+            CYLINDERS = 2,
+            /// <summary>
+            /// Heads
+            /// </summary>
+            HEADS = 6,
+            /// <summary>
+            /// Sectors
+            /// </summary>
+            SECTORS = 12,
+            /// <summary>
+            /// Serial
+            /// </summary>
+            SERIAL = 20,
+            /// <summary>
+            /// Model
+            /// </summary>
+            MODEL = 54,
+            /// <summary>
+            /// Capabilities
+            /// </summary>
+            CAPABILITIES = 98,
+            /// <summary>
+            /// Field valid
+            /// </summary>
+            FIELDVALID = 106,
+            /// <summary>
+            /// Max LBA
+            /// </summary>
+            MAX_LBA = 120,
+            /// <summary>
+            /// Command sets
+            /// </summary>
+            COMMANDSETS = 164,
+            /// <summary>
+            /// Max LBA extended
+            /// </summary>
+            MAX_LBA_EXT = 200
+        }
+ 
+*/
