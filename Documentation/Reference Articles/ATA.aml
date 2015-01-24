@@ -250,12 +250,31 @@
                     
         - Hardware
             - Overview
+                ATA hardware works by having a controller chip on the motherboard which links the CPU IO ports or links memory 
+                to the pins of the IDE connector (the physical cable). Each attached device also has a controller chip that 
+                processes the signals on the cable and responds appropriately. 
+                
             - Cables & Connectors
+                Old ATA cables are 40-wires with 40-pin connectors at either end. Modern ATA cables use the same size connector
+                but have 80 wires in the cable. The additional wires are in between the existing 40 wires and are connected to
+                the existing ground pin in the connector. The additional ground wires create a shield between the data wires
+                allowing them to use a higher data rate (as the cross-wire inductive effects are significantly reduced).
+            
             - Backwards Compatibility
                 - Versions of PATA / IDE
+                    Hardware that is PATA or IDE is usually fully backwards compatible. The new 80-wire cables are fully 
+                    compatible with devices designed to use the old 40-wire cable. However, new devices will not work with the
+                    old 40-wire cables if they use the higher data rates introduced in newer PATA devices. 
+                
                 - SATA to PATA
+                    Some SATA devices support a PATA compatible mode but most new SATA devices do not. All SATA devices support 
+                    the IDENTIFY command, as required by the specification. This allows your PATA driver to detect a SATA device
+                    but not retrieve any data from it.
+                
             - Virtual hardware / virtual disks / virtual machines
-                - Set up as IDE drive
+                Most VMs will give you a choice of device type to add. The choices are generally listed as: IDE, SCSI and SATA.
+                IDE means PATA, SCSI means PATAPI or SATAPI (probably given the version choice later) and SATA means, well, SATA.
+                
         - Software
             - Basic outline
             - Main classes
@@ -268,14 +287,41 @@
             - Drive Select
             - Getting info (strings)
             - Reading & Writing
+            
         - Example Code
             - Overview
             - Download
+            
         - Common problems
-            - Second drive selection
+            - Drive/device selection (often secondary)
+                A common problem with ATA is drive/device selection. This is a bit of a misleading trail, as I experienced.
+                The problem is often not device selection. If you can select and use a PATA hard drive then your code
+                is working. The issue is more likely to be the device is actually PATAPI (i.e. SCSI ATA) or SATA/SATAPI. For
+                example, a CD Drive is a PATAPI device.
+                
+                Unfortunately, common samples of "PATA only" code on the internet fail to handle PATAPI/SATA/SATAPI devices
+                properly and so hang when one is encountered during bus enumeration. This gives the impression that an entire
+                bus is failing to work, often the secondary bus. 
+                
+                To fix the issue, take a look at the sample code which demonstrates how to handle PATAPI/SATA/SATAPI devices
+                without hanging.
+                
             - CD drives
+                CD Drives are PATAPI devices and often cause "PATA only" code samples to hang during devic eenumaration. 
+                Failing that, PATA only code simply cannot retrieve data from PATAPI devices. Take a look at the sample code 
+                which demonstrates how to detect and avoid PATAPI/SATA/SATAPI devices.
+            
             - Disk lock / security
+                Some hard-disk and CD drives come with locking or security mechanisms which prevent them being read and/or
+                 written to until the lock is switched off or a security code is passed. Fling OS currently does not handle 
+                 these devices. However, I have yet to come across one "in the wild" so if you've found one, good work! Google
+                 just became your best friend... ;)
+            
             - SATA / RAID drives
+                Take a look at the sample code 
+                which demonstrates how to detect and avoid PATAPI/SATA/SATAPI devices. If you want PATAPI/SATA/SATAPI/RAID 
+                support, please check the other Fling OS reference articles or research further online.
+            
         - Sources
             - http://en.wikipedia.org/wiki/Parallel_ATA
             - http://en.wikipedia.org/wiki/ATA_Packet_Interface
