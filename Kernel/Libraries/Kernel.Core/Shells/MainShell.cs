@@ -1025,9 +1025,7 @@ namespace Kernel.Core.Shells
             for (int i = 0; i < Hardware.DeviceManager.Devices.Count; i++)
             {
                 Hardware.Device aDevice = (Hardware.Device)Hardware.DeviceManager.Devices[i];
-                //TODO: Once is operator is supported, just do a test for "is Hardware.Devices.DiskDevice"
-                if (aDevice is Hardware.ATA.PATA ||
-                    aDevice is Hardware.USB.Devices.MassStorageDevice_DiskDevice)
+                if (aDevice is Hardware.Devices.DiskDevice)
                 {
                     //Clean caches of the device.
                     ((Hardware.Devices.DiskDevice)aDevice).CleanCaches();
