@@ -55,6 +55,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CommandHelp.cs" />
     <Compile Include="Console.cs" />
     <Compile Include="Consoles\AdvancedConsole.cs" />
     <Compile Include="Processes\DynamicLinkerLoader.cs" />

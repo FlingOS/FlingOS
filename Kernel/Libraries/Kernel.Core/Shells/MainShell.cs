@@ -40,7 +40,7 @@ namespace Kernel.Core.Shells
         /// The current directory to prepend to relative paths.
         /// </summary>
         protected FOS_System.String CurrentDir = "";
-
+        
         /// <summary>
         /// See base class.
         /// </summary>
@@ -49,15 +49,16 @@ namespace Kernel.Core.Shells
             try
             {
                 // Auto-init all to save us writing the command
-                //InitATA();
-                //InitPCI();
-                //InitUSB();
-                //InitFS();
+                InitATA();
+                InitPCI();
+                InitUSB();
+                InitFS();
 
                 //Endlessly wait for commands until we hit a total failure condition
                 //  or the user instructs us to halt
                 while(!terminating)
                 {
+                    
                     try
                     {
                         //Output the current command line
@@ -83,6 +84,10 @@ namespace Kernel.Core.Shells
                          *  - USB { Update / Eject }
                          *  - Start { Filename } [*KM* / UM] [*Raw*]
                          *  - ILY
+                         *  - Show { c / w }
+                         *  - Help { <Command Name> }
+                         *  - Clear
+                         * 
                          */
 
                         //Get the current input line from the user
@@ -911,6 +916,40 @@ namespace Kernel.Core.Shells
 
                                 #endregion
                             }
+                            else if (cmd == "show")
+                            {
+                                #region Show
+
+                                FOS_System.String opt1 = null;
+                                if (cmdParts.Count > 1)
+                                {
+                                    opt1 = (FOS_System.String)cmdParts[1];
+                                }
+                                ShowLicense(opt1);
+
+                                #endregion
+                            }
+                            else if(cmd == "help")
+                            {
+                                #region Help
+
+                                FOS_System.String opt1 = null;
+                                if (cmdParts.Count > 1)
+                                {
+                                    opt1 = (FOS_System.String)cmdParts[1];
+                                }                                
+                                ShowHelp(opt1);
+
+                                #endregion
+                            }
+                            else if(cmd == "clear")
+                            {
+                                #region Clear
+
+                                console.Clear();
+                                
+                                #endregion
+                            }
                         }
                     }
                     catch
@@ -937,6 +976,72 @@ namespace Kernel.Core.Shells
             }
             console.WriteLine("Shell exited.");
         }
+
+        /// <summary>
+        /// Displays command
+        /// </summary>
+        /// <param name="option"></param>
+        private void ShowHelp(FOS_System.String commandName = null)
+        {
+            if(commandName != null)
+            {
+                console.WriteLine(CommandHelp.GetCommandDescription(commandName));
+            }
+            else
+            {
+                console.WriteLine("For more information on a specific command, type help <command-name>.");
+                console.WriteLine("Possible commands are: ");
+                for (int i = 0; i < CommandHelp.CommandDescriptions.Count; i++)
+                {
+                    CommandDescription cmdDesc = (CommandDescription)CommandHelp.CommandDescriptions[i];
+                    console.WriteLine(cmdDesc.CommandName);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Displayes license information on the console, also called at start of the shell session
+        /// </summary>
+        /// <param name="option">if "c", displays license conditions and if "w" displayes warnings</param>
+        private void ShowLicense(FOS_System.String option = null)
+        {
+
+            string LicenseConditions = "This program is distributed under GPL V3; See GPL V3 License for details.";
+            
+            string LicenseCommandUnrecognized = @"Unrecognized option passed, to see the license, enter 'show'.
+To see license warnings, enter 'show w'.
+To see license conditions, enter 'show c'.";
+
+            string LicenseWarnings = @"This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details";
+
+            if(option == null) // If no options is passed, then just display the License
+            {
+                console.WriteLine(@"Fling OS  Copyright (C) 2015  Edward Nutting
+This program comes with ABSOLUTELY NO WARRANTY.
+This is free software, and you are welcome to redistribute it
+under certain conditions; See GPL V3 for details, a copy of
+which should have been provided with the executable.");
+            }
+            else
+            {
+                if(option == "c")   // If option is conditions
+                {
+                    console.WriteLine(LicenseConditions); // Show conditions
+                }
+                else if (option == "w") // If option is license warnings
+                {
+                    console.WriteLine(LicenseWarnings);
+                }
+                else
+                {
+                    console.WriteLine(LicenseCommandUnrecognized);  // In case it is not a valid option
+                }
+            }
+        }
+
         /// <summary>
         /// Splits the input string into commands including handling quoted parts.
         /// </summary>

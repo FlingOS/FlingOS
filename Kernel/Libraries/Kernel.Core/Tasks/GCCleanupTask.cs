@@ -24,6 +24,9 @@
 // ------------------------------------------------------------------------------ //
 #endregion
     
+#define GCTASK_TRACE
+#undef GCTASK_TRACE
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -45,7 +48,21 @@ namespace Kernel.Core.Tasks
                     {
                         Hardware.Processes.Scheduler.Disable();
                     }
+
+#if GCTASK_TRACE
+                    BasicConsole.SetTextColour(BasicConsole.warning_colour);
+                    BasicConsole.WriteLine("GC cleaning...");
+                    BasicConsole.SetTextColour(BasicConsole.default_colour);
+#endif
+                    
                     FOS_System.GC.Cleanup();
+
+#if GCTASK_TRACE
+                    BasicConsole.SetTextColour(BasicConsole.warning_colour);
+                    BasicConsole.WriteLine("GC stopped.");
+                    BasicConsole.SetTextColour(BasicConsole.default_colour);
+#endif
+
                 }
                 catch
                 {

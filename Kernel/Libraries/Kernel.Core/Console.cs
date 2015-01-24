@@ -132,6 +132,15 @@ namespace Kernel.Core
                 {
                     WriteLine();
                 }
+
+                // This take cares if the text has CRLF line termination instead of expected LF
+                if (str[i] == '\r') // Checks for Carriage return (\r)
+                {
+                    if (str[i + 1] == '\n') // Checks that the next charcter is a Line feed
+                    {
+                        i++;
+                    }
+                }
                 //If a \n (newline) character is found,
                 //  create a new line using WriteLine()
                 if (str[i] == '\n')
