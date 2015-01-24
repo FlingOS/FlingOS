@@ -586,7 +586,8 @@
                 
                 The information read includes the Serial Number string, Firmware revision string,
                 Model Number string and disk size. The data is an array of 256 UInt16s. The read 
-                must be read as words (UInt16s) not single bytes.                 
+                must be read as words (UInt16s) not single bytes. At an assembly level, this
+                means calling "in word ax, dx" instead of "in byte al, dx".
                 
                 The strings are one-byte ASCII characters at specific offsets in the data read. The
                 Block Count (i.e. sector count) is "the value one greater than the total number of 
@@ -616,11 +617,33 @@
                 }
             
             - Select Sector
-                TODO
+                To be able to read/write a drive, the drive needs to know which sectors to read or write.
+                Selecting a sector is the process of selecting a drive, telling it the sector to start 
+                at and the number of sectors to read/write.
+                
+                To select a sector, the following steps must be performed:
+                  0. Let the starting sector number be SectorNum and the number of sectors to 
+                     read/write to be SectorCount
+                  1. Perform the Select Drive process.
+                      Note: LBAHigh4Bits should be set to (byte)(SectorNum >> 24).
+                      Note: The LBA bit should be set.
+                  2. Write the sector count (as a byte) to the SectorCount register.
+                  3. Write the sector number (LBA) to the LBA registers.
+                      The LBA is written as single bytes to each LBA port.
+                      For LBA28 the following code sample demonstrates the necessary steps:
+                        IO.LBA0.Write_Byte((byte)(aSectorNo & 0xFF));
+                        IO.LBA1.Write_Byte((byte)((aSectorNo & 0xFF00) >> 8));
+                        IO.LBA2.Write_Byte((byte)((aSectorNo & 0xFF0000) >> 16));
                 
             - Reading & Writing
-                TODO
+                To read or write one or more sectors, the following steps should be performed:
                 
+                1. Perform the Select Sector process for the sectors to be read/written
+                2. Send the ReadPio or WritePio command as appropriate
+                3. Read / write the data from / to the Data port. 
+                    Note: The data needs to be read or written in words (NOT bytes).  
+                    At an assembly level, this means calling "in word ax, dx" instead of 
+                    "in byte al, dx".                
             
         - Example Code
             - Overview

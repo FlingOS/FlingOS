@@ -38,7 +38,8 @@ namespace Kernel.Hardware.ATA
     public class PATA : ATA
     {
         //TODO - This implementation does not support CD drives. I.e. does not support PATAPI devices.
-        //  Note: This driver should never support SATA or SATAPI devices. Write a separate driver for that.
+        //       PATAPI, SATA and SATAPI drivers should be implemented in their respective classes.
+        //TODO - This implementation does not support LBA48 mode.
 
         /// <summary>
         /// Device statuses.
