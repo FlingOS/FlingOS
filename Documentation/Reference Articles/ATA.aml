@@ -228,7 +228,16 @@
                 <title>Improvements with SATA</title>
                 <content>
                   <para>
-                    TODO
+                    The key improvement is the increase in data transfer rate (in both directions). 
+                    PATA has a maximum data transfer rate of 133MBps where as SATA (latest revision 
+                    3.2 - SATA Express) can do up to 2,000MBps which is 15 times faster.
+                  </para>
+                  <para>
+                    SATA also offers physical improvements such as allowing more disks to be connected
+                    to the motherboard and thinner cables making them easier to use. Interestingly, it
+                    is possible that the thinner cable allows increased air flow in laptops and 
+                    high-performance PCs allowing better cooling of important components such as CPUs
+                    and GPUs.
                   </para>
                 </content>
               </section>
@@ -1374,6 +1383,24 @@ IO.LBA2.Write_Byte((byte)((aSectorNo &amp; 0xFF0000) &gt;&gt; 16));
                 <linkText>http://wiki.osdev.org/SATA</linkText>
                 <linkAlternateText>OSDev - SATA</linkAlternateText>
                 <linkUri>http://wiki.osdev.org/SATA</linkUri>
+              </externalLink>
+            </para>
+          </listItem>
+          <listItem>
+            <para>
+              <externalLink>
+                <linkText>http://www.computerhope.com/issues/ch001325.htm</linkText>
+                <linkAlternateText>Computer Hope - Advantages of SATA over PATA</linkAlternateText>
+                <linkUri>http://www.computerhope.com/issues/ch001325.htm</linkUri>
+              </externalLink>
+            </para>
+          </listItem>
+          <listItem>
+            <para>
+              <externalLink>
+                <linkText>http://en.wikipedia.org/wiki/List_of_device_bit_rates</linkText>
+                <linkAlternateText>Wikipedia - List of device bit rates</linkAlternateText>
+                <linkUri>http://en.wikipedia.org/wiki/List_of_device_bit_rates</linkUri>
               </externalLink>
             </para>
           </listItem>
