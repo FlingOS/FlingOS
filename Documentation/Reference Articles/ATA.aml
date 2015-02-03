@@ -1026,7 +1026,10 @@ DriveSelectValue.Default | (busPosition == BusPosition.Slave ? DriveSelectValue.
                       </para>
                       <list class="ordered">
                         <listItem>
-                          <para>TODO</para>
+                          <para>
+                            Return the combined value from LBA1 and LBA2 (e.g. LBA2 &lt;&lt; 8 | LBA1). The combined
+                            value tells you the Specification Level of the device (see SpecLevel enumerable).
+                          </para>
                         </listItem>
                       </list>
                     </listItem>
@@ -1046,7 +1049,21 @@ DriveSelectValue.Default | (busPosition == BusPosition.Slave ? DriveSelectValue.
                       </para>
                       <list class="ordered">
                         <listItem>
-                          <para>TODO</para>
+                          <para>
+                            Compare the combined value from LBA1 and LBA2 (e.g. LBA2 &lt;&lt; 8 | LBA1) to non-arbitrary
+                            values in the SpecLevel enumerable. If one is found, that is the spec level of the device 
+                            so return it. 
+                          </para>
+                        </listItem>
+                        <listItem>
+                          <para>
+                            If the combined value from LBA1 &amp; LAB2 is non-zero, return SpecLevel.Null.
+                          </para>
+                        </listItem>
+                        <listItem>
+                          <para>
+                            Otherwise, continue.
+                          </para>
                         </listItem>
                       </list>
                     </listItem>
@@ -1228,19 +1245,26 @@ IO.LBA2.Write_Byte((byte)((aSectorNo &amp; 0xFF0000) &gt;&gt; 16));
           <section address="ExampleCode_Overview">
               <title>Overview</title>
               <content>
-                  <!--
-                  TODO
-                  -->
-                  <para></para>
+                  <para>
+                    The sample code provided here contains everything required to implement PATA support for hard
+                    disks. It also includes code for cleanly handling PATAPI, SATA and SATAPI devices.
+                  </para>
+                  <para>
+                    The code is a direct copy of the Fling OS source code from 3rd February 2015. Most is in C# but
+                    for reference the IO Port x86-32bit assembler code is included.
+                  </para>
               </content>
           </section>
           <section address="ExampleCode_Download">
-              <title>Dowload</title>
+              <title>Download</title>
               <content>
-                  <!--
-                  TODO
-                  -->
-                  <para></para>
+                  <para>
+                    <externalLink>
+                      <linkText>ATA - 2015-02-03</linkText>
+                      <linkAlternateText>ATA - 2015-02-03</linkAlternateText>
+                      <linkUri>/Source%20Samples/ATA%20-%202015-02-03.zip</linkUri>
+                    </externalLink>
+                  </para>
               </content>
           </section>
       </sections>
