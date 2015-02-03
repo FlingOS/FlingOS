@@ -10,26 +10,18 @@
       <title>Introduction</title>
       <sections>
           <section address="Introduction_ScopeOfThisArticle">
-              <title></title>
+              <title>Scope of the article</title>
               <content>
-                  <para></para>
-                  <!-- 
-                    - ATA history
-                    - ATA as IDE, PIO but not SATA
-                    - Basic hardware info
-                    - Complete software explanation and sample 
-                  -->
-              </content>
-          </section>
-          <section address="Introduction_HowThisArticleIsStructured">
-              <title></title>
-              <content>
-                  <para></para>
-                  <!-- 
-                    - History and overview
-                    - Followed by explanation
-                    - Followed by sample code and common problems
-                  -->
+                  <para>
+                    This article covers all the aspects of the ATA specification to at least a general/broad level.
+                    It goes into detail about ATA as PATA/IDE but provides limited information for PATAPI, SATA and
+                    SATAPI drives. 
+                  </para>
+                  <para>
+                    This article includes a useful but relatively brief history of ATA and includes basic information
+                    about the hardware that ATA specifies. The article then includes a detailed description of how to
+                    implement a PATA driver along with complete sample code.
+                  </para>
               </content>
           </section>
       </sections>
@@ -1433,41 +1425,6 @@ IO.LBA2.Write_Byte((byte)((aSectorNo &amp; 0xFF0000) &gt;&gt; 16));
     </section>
     
     <relatedTopics>
-      <!-- One or more of the following:
-           - A local link
-           - An external link
-           - A code entity reference
-
-      <link xlink:href="Other Topic's ID"/>
-      <link xlink:href="Other Topic's ID">Link inner text</link>
-
-      <externalLink>
-          <linkText>Link text</linkText>
-          <linkAlternateText>Optional alternate link text</linkAlternateText>
-          <linkUri>URI</linkUri>
-      </externalLink>
-
-      <codeEntityReference>API member ID</codeEntityReference>
-
-      Examples:
-
-      <link xlink:href="00e97994-e9e6-46e0-b420-5be86b2f8270" />
-      <link xlink:href="00e97994-e9e6-46e0-b420-5be86b2f8278">Some other topic</link>
-
-      <externalLink>
-          <linkText>SHFB on CodePlex</linkText>
-          <linkAlternateText>Go to CodePlex</linkAlternateText>
-          <linkUri>http://shfb.codeplex.com</linkUri>
-      </externalLink>
-
-      <codeEntityReference>T:TestDoc.TestClass</codeEntityReference>
-      <codeEntityReference>P:TestDoc.TestClass.SomeProperty</codeEntityReference>
-      <codeEntityReference>M:TestDoc.TestClass.#ctor</codeEntityReference>
-      <codeEntityReference>M:TestDoc.TestClass.#ctor(System.String,System.Int32)</codeEntityReference>
-      <codeEntityReference>M:TestDoc.TestClass.ToString</codeEntityReference>
-      <codeEntityReference>M:TestDoc.TestClass.FirstMethod</codeEntityReference>
-      <codeEntityReference>M:TestDoc.TestClass.SecondMethod(System.Int32,System.String)</codeEntityReference>
-      -->
     </relatedTopics>
   </developerConceptualDocument>
 </topic>
