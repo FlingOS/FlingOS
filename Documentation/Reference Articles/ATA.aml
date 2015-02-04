@@ -376,7 +376,7 @@
                   <para>
                     Finally, for hobby OS developers, ATA support is useful as ATA is reliable and fairly easy to implement.
                     This makes developing partition and file system drivers significantly easier as it eliminates a whole
-                    subsystem of potential error. Having weel tested, reliable file system drivers means writing USB and USB 
+                    subsystem of potential error. Having tested, reliable file system drivers means writing USB and USB 
                     Mass Storage support is easier.
                   </para>
               </content>
@@ -426,7 +426,7 @@
                   <para>
                     There are a number of different things you can do with an ATA device. But to do 
                     anything you must first detect what devices are present and then select the one 
-                    you want to communicate with. This utilises the Device Select register (/port). 
+                    you want to communicate with. This utilizes the Device Select register (/port). 
                     Once you have selected a device you can send it commands through the Command 
                     register. Data is sent though the Data register and there are a few other 
                     registers for extra important information.
@@ -596,7 +596,7 @@
                       <para>Disable IRQS</para>
                     </listItem>
                     <listItem>
-                      <para>Enumrate buses:</para>
+                      <para>Enumerate buses:</para>
                       <list class="ordered">
                         <listItem>
                           <para>Discover a particular drive (based on which bus and position on bus)</para>
@@ -679,7 +679,7 @@
                       <para>
                         This allows an instance of ATAIOPorts to be passed to the driver so it 
                         needn't worry about which IO Ports to use. It just accesses them through 
-                        this class. This calss creates IO Port objects which point to the correct 
+                        this class. This class creates IO Port objects which point to the correct 
                         ports when it is initialised. The ports for primary and secondary bus are 
                         different.
                       </para>
@@ -687,7 +687,7 @@
                     <listItem>
                       <para>
                         ATAManager : Handles overall ATA functionality such as bus enumeration and 
-                        initialisng all drive types not just PATA.
+                        initialising all drive types not just PATA.
                       </para>
                     </listItem>
                     <listItem>
@@ -725,15 +725,15 @@
                   <code lang="" tabSize="4">
 ControllerID (inside ATA class)
 - - - - - - -
-Primary   = 0, //(Value is arbitary)
-Secondary = 1 //(Value is arbitary)
+Primary   = 0, //(Value is arbitrary)
+Secondary = 1 //(Value is arbitrary)
 - - - - - - -
                 
                 
 BusPosition (inside ATA class)
 - - - - - - -
-Master = 0, //(Value is arbitary)
-Slave  = 1 //(Value is arbitary)
+Master = 0, //(Value is arbitrary)
+Slave  = 1 //(Value is arbitrary)
 - - - - - - -
                 
                 
@@ -800,11 +800,11 @@ Eject          = 0x1B
                 
 SpecLevel (Specification level = drive type and identifier, inside PATA class)
 - - - - - - - 
-Null   = 0x0000, // This value is arbitary and has no meaning in the ATA spec.
-PATA   = 0x0001, // This value is arbitary and has no meaning in the ATA spec.
-SATA   = 0xC33C, // This value is NOT arbitary. It is the SATA device identifier.
-PATAPI = 0xEB14, // This value is NOT arbitary. It is the PATAPI device identifier.
-SATAPI = 0x9669  // This value is NOT arbitary. It is the SATAPI device identifier.
+Null   = 0x0000, // This value is arbitrary and has no meaning in the ATA spec.
+PATA   = 0x0001, // This value is arbitrary and has no meaning in the ATA spec.
+SATA   = 0xC33C, // This value is NOT arbitrary. It is the SATA device identifier.
+PATAPI = 0xEB14, // This value is NOT arbitrary. It is the PATAPI device identifier.
+SATAPI = 0x9669  // This value is NOT arbitrary. It is the SATAPI device identifier.
 - - - - - - -                  
                   </code>
               </content>
@@ -822,11 +822,11 @@ SATAPI = 0x9669  // This value is NOT arbitary. It is the SATAPI device identifi
                   <para>
                     The following lists the port names and their respective addresses. Not all ports 
                     are necessary for a basic PATA driver. necessary ports are marked with an 
-                    asteriks (*).
+                    asterisk (*).
                   </para>
                   <code lang="" tabSize="4">
-*BAR 0 - Primary = 0x01F0, Seconary = 0x0170
-*BAR 1 - Primary = 0x03F4, Seconary = 0x0374
+*BAR 0 - Primary = 0x01F0, Secondary = 0x0170
+*BAR 1 - Primary = 0x03F4, Secondary = 0x0374
                 
 *Data          - BAR0 + 0
 Error          - BAR0 + 1 : Read only
@@ -870,7 +870,7 @@ Device Address - BAR1 + 3 : Unknown purpose. Please contact via link at the bott
                     400ns delay. The widely accepted way to do this is to read the Status register 
                     (one byte) four times which creates an approximately 400ns delay. The value 
                     returned by reading the port should be ignored as it may well be a transitioning 
-                    value and so be innacurate.
+                    value and so be inaccurate.
                   </para>
               </content>
           </section>
@@ -887,7 +887,7 @@ Device Address - BAR1 + 3 : Unknown purpose. Please contact via link at the bott
                     </listItem>
                     <listItem>
                       <para>
-                        Wait for the "busy" status bit to clear or "error" bit to set or an arbitary 
+                        Wait for the "busy" status bit to clear or "error" bit to set or an arbitrary 
                         timeout condition is met. This involves a loop which must occur at least 
                         once (this is best implemented using a do-while loop) and contains these steps:
                       </para>
@@ -955,7 +955,7 @@ Device Address - BAR1 + 3 : Unknown purpose. Please contact via link at the bott
               <content>
                   <para>
                     All operations which follow will require drive selection to be done at some point 
-                    prior to the operation occuring. Drive selection is performed by writing to the
+                    prior to the operation occurring. Drive selection is performed by writing to the
                     Drive Select register. Drive Select tells the drives on the ATA bus which one
                     is being sent commands or data. You should not try to issue a Drive Select while 
                     there is a pending or ongoing operation (such as read/write).
@@ -1071,7 +1071,7 @@ DriveSelectValue.Default | (busPosition == BusPosition.Slave ? DriveSelectValue.
                         <listItem>
                           <para>
                             Condition: Loop while DRQ (Data Request bit) and Error bits are not set 
-                            in Status. May also want to apply an arbitary timeout to this.
+                            in Status. May also want to apply an arbitrary timeout to this.
                           </para>
                         </listItem>
                       </list>
@@ -1292,7 +1292,7 @@ IO.LBA2.Write_Byte((byte)((aSectorNo &amp; 0xFF0000) &gt;&gt; 16));
               <content>
                   <para>
                     CD Drives are PATAPI devices and often cause "PATA only" code samples to hang 
-                    during devic eenumaration. Failing that, PATA only code simply cannot retrieve 
+                    during device enumeration. Failing that, PATA only code simply cannot retrieve 
                     data from PATAPI devices. Take a look at the sample code which demonstrates how 
                     to detect and avoid PATAPI/SATA/SATAPI devices.
                   </para>
