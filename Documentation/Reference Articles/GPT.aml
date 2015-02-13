@@ -70,6 +70,7 @@
                       The GPT standard sets out GUIDs to identify all the types of file system which a GPT
                       partition holds. These are well defined and easily accessible values. This an improvement
                       over the often conflicted MBR file system identifiers. 
+                  - TODO: Use of CRC
             
         - Overview
             - General partition tables
@@ -134,8 +135,77 @@
                 TODO: Data layout figure
                 
             - Protective MBR
+                The protective MBR resides at the first LBA on the disk (LBA0). If the disk is GPT formatted, it will
+                indicate a single partition of type EEh (0xEE) which will cover the "entire" drive. In this situation,
+                "entire" actually means as much of the drive as MBR allows, since MBR uses 32-bit LBAs, larger disks
+                cannot be fully covered. In any case, the size of the MBR partition should be ignored.
+                
+                If multiple partitions are specified, a lot of software will not treat a partition as GPT even if it
+                is marked with 0xEE. 
+                
+                For legacy BIOS support (i.e. non EFI/UEFI), the first sector also contains the first stage bootloader.
+                For GPT formatted disks, this first stage bootloader must be GPT aware and also not assume a 512-byte
+                sector size. 
+            
             - Primary Header
+                The primary GPT header is the main copy of the GPT header. If it becomes corrupted, it can be compared 
+                to (and/or restored using) the secondary GPT header (see Secondary Header). The GPT header contains 
+                global information about the disk and data on the disk. The following table presents the data stored
+                in the header:
+                
+                TODO: Add more info to this table
+                
+                Offset	  Length	  Contents
+                0 (0x00)	8 bytes	  Signature ("EFI PART", 45h 46h 49h 20h 50h 41h 52h 54h or 0x5452415020494645ULL on little-endian machines)
+                8 (0x08)	4 bytes	  Revision (for GPT version 1.0 (through at least UEFI version 2.3.1), the value is 00h 00h 01h 00h)
+                12 (0x0C)	4 bytes	  Header size in little endian (in bytes, usually 5Ch 00h 00h 00h meaning 92 bytes)
+                16 (0x10)	4 bytes	  CRC32 of header (offset +0 up to header size), with this field zeroed during calculation
+                20 (0x14)	4 bytes	  Reserved; must be zero
+                24 (0x18)	8 bytes	  Current LBA (location of this header copy)
+                32 (0x20)	8 bytes	  Backup LBA (location of the other header copy)
+                40 (0x28)	8 bytes	  First usable LBA for partitions (primary partition table last LBA + 1)
+                48 (0x30)	8 bytes	  Last usable LBA (secondary partition table first LBA - 1)
+                56 (0x38)	16 bytes	Disk GUID (also referred as UUID on UNIXes)
+                72 (0x48)	8 bytes	  Starting LBA of array of partition entries (always 2 in primary copy)
+                80 (0x50)	4 bytes	  Number of partition entries in array
+                84 (0x54)	4 bytes	  Size of a single partition entry (usually 128)
+                88 (0x58)	4 bytes	  CRC32 of partition array
+                92 (0x5C)	*	Reserved; must be zeros for the rest of the block (420 bytes for a sector size of 512 bytes; but can be more with larger sector sizes)
+                ( Original source: http://en.wikipedia.org/wiki/GUID_Partition_Table#Partition_table_header_.28LBA_1.29 )                
+            
             - Primary Partition Table
+                The primary partition table contains the main copy of the partition table. It can be found at the LBA 
+                specified in the header (offset 72, size 8 bytes). However, the standard sets this value at 2 for the
+                primary partition table and header. The table can be treated as an array of partition entries 
+                (typically 128). Each entry has a specific format. The actual size of each entry and the number of
+                entries can be found in the GPT header. Each entry is usually 128 bytes in size.
+                
+                The following table specifies the format of a partition entry. The table shows the minimum size of a 
+                partition entry:
+                
+                Offset	  Length	  Contents
+                0  (0x00)	16 bytes	Partition type GUID
+                16 (0x10)	16 bytes	Unique partition GUID
+                32 (0x20)	8 bytes	  First LBA (little endian)
+                40 (0x28)	8 bytes	  Last LBA (inclusive, usually odd)
+                48 (0x30)	8 bytes	  Attribute flags (e.g. bit 60 denotes read-only)
+                56 (0x38)	72 bytes	Partition name (36 UTF-16LE code units)
+                          128 bytes total
+                ( Original source: http://en.wikipedia.org/wiki/GUID_Partition_Table#Partition_entries )
+                
+                The following table specifies the partition attributes:
+                
+                Bit	  Content
+                0	    System partition (disk partitioning utilities must preserve the partition as is)
+                1	    EFI firmware should ignore the content of the partition and not try to read from it
+                2	    Legacy BIOS bootable (equivalent to active flag (typically bit 7 set) at offset +0h in partition 
+                      entries of the MBR partition table)[9]
+                3–47	  Reserved for future use
+                48–63	Defined and used by the individual partition type
+                ( Original source: http://en.wikipedia.org/wiki/GUID_Partition_Table#Partition_entries )
+                
+                TODO: Partition types and GUIDs source
+            
             - Partitions
             - Secondary Partition Table
             - Secondary Header
@@ -149,6 +219,11 @@
             - Overview
             - Download
         - References
+            - http://en.wikipedia.org/wiki/GUID_Partition_Table
+            - http://en.wikipedia.org/wiki/Apple_Partition_Map
+            - http://wiki.osdev.org/GPT
+            - https://msdn.microsoft.com/en-us/library/windows/hardware/dn653580(v=vs.85).aspx
+            - http://www.ibm.com/developerworks/linux/library/l-gpt/
     
     -->
     
