@@ -11,22 +11,128 @@
       Sections:
         - Introduction
             - What is GPT?
+                GPT stands for GUID Partition Table (where GUID means Global Unique IDentifier).
+                GPT is a method for splitting a disk up into sections (partitions) each of which
+                is uniquely identified by its ID. Each partition also has a type ID which uniquely 
+                identifies the type of file system within the partition.
+                
             - How difficult is GPT to understand?
-            - How useful is GPT?
+                GPT is fairly simple to understand though an understanding of data layout on a hard
+                disk in general is useful advance knowledge. Familiarity with the MBR partitioning 
+                scheme is also useful as GPT retains (vital) legacy support for MBR.
+            
+            - How important / useful is GPT?
+                GPT is fast becoming the default / most popular way to format hard disks (especially
+                in modern laptops / tablets) so it is both important and useful.
+                
             - Scope of the article
+                This article will cover background as to what GPT is, where it comes from and what 
+                problems GPT solves which previous partitioning scheme failed to. This article will
+                then move on to a practical understanding of GPT concepts, how GOT organizes data 
+                on a disk and lastly software implementation details.
+            
         - Background
             - Why are partition tables necessary?
+                Partition tables are necessary because frequently you want more than one file system 
+                to be physically present on a single disk. You may want multiple file systems simply
+                for security and protection or as it allows you to use different file system types.
+                
+                Also, multiple file systems allows you to install multiple operating systems side by 
+                side on the same disk, so long as both understand the disk formatting (i.e. the 
+                partition table). This is the case even if the two OSes can't understand eachother's
+                file systems.
+                
             - What came before GPT?
+                Before GPT there were two partitioning schemes in common use. The main one was MBR 
+                (Master Boot Record) which remains in use today. GPT has legacy support for MBR since
+                MBR is built into nearly every PC boot-sequence in existence. 
+                
+                The second significant partitioning scheme was the Apple Partition Map (APM), which was 
+                in use on Apple's PowerPC based hardware. They have subsequently switched to GPT on their
+                Intel based hardware. However, Intel Macs do have support for APM.
+            
             - What problems does GPT solve?
+                GPT solves a number of issues, most of which were issues with MBR. The key issues tackled 
+                are:
+                  - 32-bit Logical Block Addresses
+                      GPT allows for a variable bit-lengths for Logical Block Addresses (LBAs) which are used 
+                      for accessing sectors of data on the disk. This allows larger disks to be support.
+                  - Maximum 4 partitions
+                      GPT allows a minimum of 128 partitions to be defined in the partition table though more
+                      can be added (at the expense of "real" data on the disk).
+                  - 512-byte sectors
+                      GPT improves support for 4096-byte size sectors where as much MBR software only supports
+                      (or assumes) MBR partitions to be on 512-byte sector-size disks.
+                  - Partition identification
+                      GPT uses GUIDs to uniquely identify each partition. This means that no two partitions
+                      can become confused by identical naming (or at least, not by the computer). 
+                  - File system identification
+                      The GPT standard sets out GUIDs to identify all the types of file system which a GPT
+                      partition holds. These are well defined and easily accessible values. This an improvement
+                      over the often conflicted MBR file system identifiers. 
+            
         - Overview
             - General partition tables
+                In general a partition table simply splits a disk into one or more logical, contiguous chunks
+                of data. What lies within a partition needn't be understood by an OS for it to be able to
+                identify the partition. Equally, a partition does not have to contain a conventional file
+                system, though more often than not it does. Notably, if a partition does not contain a valid 
+                file system, it usually means the partition is unformatted or corrupted.
+                
+                Note that an unformatted partition is not the same as an unused partition. Unformatted means
+                the partition has a chunk of data assigned to it, but the data itself is not in a valid or
+                recognisable format. An unused partition means either the partition entry does not assign
+                any data from the disk to that partition or the chunk of data being referred to has no 
+                partition entry associated with it. The latter case can occur if the total size of partitions
+                on the disk doesn't cover the full disk or, where partition size boundaries cause cut off leaving
+                unused areas of the disk.
+                
             - GPT Header
+                GPT has a header structure near the start of the disk which provides global information about
+                the GPT. This data includes information such as GOT signature, GPT Version, LBA of the Secondary 
+                (/Backup/Recovery) GPT Header, Disk GUID, partition table entry size (usually 128 bytes) and more.
+            
             - Protective (Legacy) MBR
+                The Primary GPT Header is preceded on disk by a "protective" MBR. The protective MBR protects the 
+                disk from corruption by older software (e.g. old BIOS) which does not understand GPT. The 
+                protective MBR has a single entry which covers the entire disk (or as much as possible under
+                32-bit LBAs). 
+            
             - GUID Partition Table
-            - Data Redundancy / Recovery
-            - General Support
+                The GUID partition table can be treated as an array of structures. Typically, each entry is a 
+                structure of 128 bytes but a larger size can be specified in the GPT Header. Each entry has a 
+                specific format, as presented in the figure below.
+                
+                TODO: GPT Table Entry Format figure
+                
+                Each entry contains the GUID of the partition which should be used to identify the partition
+                in all cases. It also contains the GUID of the file system type within the partition. This can
+                be compared to the list of IDs provided by the GPT standard to find out the type of file system
+                with the partition and thus whether that partition can be read properly or not.
+                
+                Usual information is also included such as first and last LBA of the partition along with 
+                attributes and a human-readable name string (UTF16-LE).
+              
+            - Data Redundancy / Recovery (Secondary GPT Header)
+                GPT has a reasonable level of redundancy built in to help with data recovery should the disk
+                become corrupted. This duplicate information comes in the form of the Secondary GPT Header
+                and Secondary GPT Partition Table both of which are located in the opposite order at the end
+                of the disk.
+                
+            - OS Support
+                The vast majority of modern OSes support GPT and some of the latest bootloader standards 
+                (including popular UEFI) have made GPT a requirement.
+                
+                GPT has been supported in Windows since Windows Vista. Modern (Intel-based) Macs use GPT by
+                default. Linux and, importantly, GRUB have support for GPT along with various Linux drivers
+                and applications supporting GPT. A very useful tool for editing GPT is "gparted" on Linux.
+            
         - Data Layout
             - Overall
+                The following figure presents the basic layout of data on a disk which is GPT formatted:
+                
+                TODO: Data layout figure
+                
             - Protective MBR
             - Primary Header
             - Primary Partition Table
