@@ -206,15 +206,66 @@
                 
                 TODO: Partition types and GUIDs source
             
-            - Partitions
             - Secondary Partition Table
+                The secondary partition table has the same format as the primary partition table. In normal operation, 
+                the secondary partition should be identical to the primary partition table. In the event that the disk
+                becomes corrupted, the secondary partition can be used to restore the primary partition table. Various
+                methods, not discussed here, can be employed for reconciling corrupted primary and secondary partiton
+                tables.
+                
+                The secondary partition table is always stored at the end of the disk just prior to the secondary 
+                header. The starting LBA can be found by reading the Secondary Header and using the Current LBA value.
+                You can also verify this value by comparing it to the value of "Last usable LBA + 1" from the primary
+                header.
+                            
             - Secondary Header
+                The secondary header has the same format as the primary header. Unlike the Secondary Partition Table,
+                it should not be an identical copy of the primary header. It should, however, verify all the data in
+                the primary header.
+                
+                The secondary header is stored in the last LBA sectors on the disk. The starting LBA should be read
+                from Backup LBA in the primary header. However, in the event that the primary header is corrupted,
+                the value can be calculated by subtracting the size of the header from the size of the disk 
+                (with all size units in whole/integer sectors not bytes).
+            
         - Software
             - GPT Detection
-            - GPT Signature
+                Detecting GPT involves steps of reading and data verification. The GPT specification requires a 
+                protective MBR and single partition covering the whole of the disk. So the first step of GPT
+                detection is to read the first sector of the disk and look for/read the MBR partition table.
+                
+                Software should then verify the MBR is valid/uncorrupted, then check that there is one and only one
+                partition, covering as much of the disk as 32-bit LBAs allow. Finally, the single partition should
+                have a System ID (see MBR for details) of 0xEE. If all these conditions pass, then the disk may have 
+                a valid GPT on it.
+                
+                The next step is to read the second sector of the disk (LBA 1). This should be the primary GPT header.
+                It should start with the GPT Signature/ID. Software should verify the signature is correct.
+                
+                At this point, software can safely assume a valid GPT partitioning scheme exists on the disk. However,
+                software should not assume the headers, partition tables or partitions themselves are not corrupted.
+                
             - GPT Global Data
+                The next step software should take is to read in the global GPT data from the primary GPT header. Lazy
+                software can assume it is uncorrupted and proceed as normal. Good software will verify the header
+                against the secondary header and provide the user with a choice of what to do next in the event that 
+                the primary header is corrupted.
+            
             - CRC32 Values
+                At this stage, good software will check the CRC32 values of the partition tables match the expected 
+                values. This should be the primary way of detecting a corrupted disk. If either partition table
+                is corrupted, the software must decide whether to ignore the error and attempt to use the disk,
+                auto-correct the error by some algorithm or, if possible, present the user with a choice. The safest
+                option in the event that the user can't be given a choice is to display and error message and abandon
+                using the disk. This ensures no further corruption can occur (or at least, no corruption due to 
+                software. Clearly hardware corruption is still a possibility).
+            
             - Partition Entries
+                The last thing software should do is read the individual partition entries in the partition table
+                and fill in structures to represent these. At this point, the partition structures should be 
+                passable to other I/O software. Notably, there is no reason why the same partition structure
+                cannot be used for representing GPT and MBR partitions for general I/O use.
+            
         - Example Code
             - Overview
             - Download
