@@ -6,302 +6,526 @@
       <autoOutline>20</autoOutline>
     </introduction>
     
-    <!--
-      
-      Sections:
-        - Introduction
-            - What is GPT?
-                GPT stands for GUID Partition Table (where GUID means Global Unique IDentifier).
-                GPT is a method for splitting a disk up into sections (partitions) each of which
-                is uniquely identified by its ID. Each partition also has a type ID which uniquely 
-                identifies the type of file system within the partition.
-                
-            - How difficult is GPT to understand?
-                GPT is fairly simple to understand though an understanding of data layout on a hard
-                disk in general is useful advance knowledge. Familiarity with the MBR partitioning 
-                scheme is also useful as GPT retains (vital) legacy support for MBR.
-            
-            - How important / useful is GPT?
-                GPT is fast becoming the default / most popular way to format hard disks (especially
-                in modern laptops / tablets) so it is both important and useful.
-                
-            - Scope of the article
-                This article will cover background as to what GPT is, where it comes from and what 
-                problems GPT solves which previous partitioning scheme failed to. This article will
-                then move on to a practical understanding of GPT concepts, how GOT organizes data 
-                on a disk and lastly software implementation details.
-            
-        - Background
-            - Why are partition tables necessary?
-                Partition tables are necessary because frequently you want more than one file system 
-                to be physically present on a single disk. You may want multiple file systems simply
-                for security and protection or as it allows you to use different file system types.
-                
-                Also, multiple file systems allows you to install multiple operating systems side by 
-                side on the same disk, so long as both understand the disk formatting (i.e. the 
-                partition table). This is the case even if the two OSes can't understand eachother's
-                file systems.
-                
-            - What came before GPT?
-                Before GPT there were two partitioning schemes in common use. The main one was MBR 
-                (Master Boot Record) which remains in use today. GPT has legacy support for MBR since
-                MBR is built into nearly every PC boot-sequence in existence. 
-                
-                The second significant partitioning scheme was the Apple Partition Map (APM), which was 
-                in use on Apple's PowerPC based hardware. They have subsequently switched to GPT on their
-                Intel based hardware. However, Intel Macs do have support for APM.
-            
-            - What problems does GPT solve?
-                GPT solves a number of issues, most of which were issues with MBR. The key issues tackled 
-                are:
-                  - 32-bit Logical Block Addresses
-                      GPT allows for a variable bit-lengths for Logical Block Addresses (LBAs) which are used 
-                      for accessing sectors of data on the disk. This allows larger disks to be support.
-                  - Maximum 4 partitions
-                      GPT allows a minimum of 128 partitions to be defined in the partition table though more
-                      can be added (at the expense of "real" data on the disk).
-                  - 512-byte sectors
-                      GPT improves support for 4096-byte size sectors where as much MBR software only supports
-                      (or assumes) MBR partitions to be on 512-byte sector-size disks.
-                  - Partition identification
-                      GPT uses GUIDs to uniquely identify each partition. This means that no two partitions
-                      can become confused by identical naming (or at least, not by the computer). 
-                  - File system identification
-                      The GPT standard sets out GUIDs to identify all the types of file system which a GPT
-                      partition holds. These are well defined and easily accessible values. This an improvement
-                      over the often conflicted MBR file system identifiers. 
-                  - TODO: Use of CRC
-            
-        - Overview
-            - General partition tables
-                In general a partition table simply splits a disk into one or more logical, contiguous chunks
-                of data. What lies within a partition needn't be understood by an OS for it to be able to
-                identify the partition. Equally, a partition does not have to contain a conventional file
-                system, though more often than not it does. Notably, if a partition does not contain a valid 
-                file system, it usually means the partition is unformatted or corrupted.
-                
-                Note that an unformatted partition is not the same as an unused partition. Unformatted means
-                the partition has a chunk of data assigned to it, but the data itself is not in a valid or
-                recognisable format. An unused partition means either the partition entry does not assign
-                any data from the disk to that partition or the chunk of data being referred to has no 
-                partition entry associated with it. The latter case can occur if the total size of partitions
-                on the disk doesn't cover the full disk or, where partition size boundaries cause cut off leaving
-                unused areas of the disk.
-                
-            - GPT Header
-                GPT has a header structure near the start of the disk which provides global information about
-                the GPT. This data includes information such as GOT signature, GPT Version, LBA of the Secondary 
-                (/Backup/Recovery) GPT Header, Disk GUID, partition table entry size (usually 128 bytes) and more.
-            
-            - Protective (Legacy) MBR
-                The Primary GPT Header is preceded on disk by a "protective" MBR. The protective MBR protects the 
-                disk from corruption by older software (e.g. old BIOS) which does not understand GPT. The 
-                protective MBR has a single entry which covers the entire disk (or as much as possible under
-                32-bit LBAs). 
-            
-            - GUID Partition Table
-                The GUID partition table can be treated as an array of structures. Typically, each entry is a 
-                structure of 128 bytes but a larger size can be specified in the GPT Header. Each entry has a 
-                specific format, as presented in the figure below.
-                
-                TODO: GPT Table Entry Format figure
-                
-                Each entry contains the GUID of the partition which should be used to identify the partition
-                in all cases. It also contains the GUID of the file system type within the partition. This can
-                be compared to the list of IDs provided by the GPT standard to find out the type of file system
-                with the partition and thus whether that partition can be read properly or not.
-                
-                Usual information is also included such as first and last LBA of the partition along with 
-                attributes and a human-readable name string (UTF16-LE).
-              
-            - Data Redundancy / Recovery (Secondary GPT Header)
-                GPT has a reasonable level of redundancy built in to help with data recovery should the disk
-                become corrupted. This duplicate information comes in the form of the Secondary GPT Header
-                and Secondary GPT Partition Table both of which are located in the opposite order at the end
-                of the disk.
-                
-            - OS Support
-                The vast majority of modern OSes support GPT and some of the latest bootloader standards 
-                (including popular UEFI) have made GPT a requirement.
-                
-                GPT has been supported in Windows since Windows Vista. Modern (Intel-based) Macs use GPT by
-                default. Linux and, importantly, GRUB have support for GPT along with various Linux drivers
-                and applications supporting GPT. A very useful tool for editing GPT is "gparted" on Linux.
-            
-        - Data Layout
-            - Overall
-                The following figure presents the basic layout of data on a disk which is GPT formatted:
-                
-                TODO: Data layout figure
-                
-            - Protective MBR
-                The protective MBR resides at the first LBA on the disk (LBA0). If the disk is GPT formatted, it will
-                indicate a single partition of type EEh (0xEE) which will cover the "entire" drive. In this situation,
-                "entire" actually means as much of the drive as MBR allows, since MBR uses 32-bit LBAs, larger disks
-                cannot be fully covered. In any case, the size of the MBR partition should be ignored.
-                
-                If multiple partitions are specified, a lot of software will not treat a partition as GPT even if it
-                is marked with 0xEE. 
-                
-                For legacy BIOS support (i.e. non EFI/UEFI), the first sector also contains the first stage bootloader.
-                For GPT formatted disks, this first stage bootloader must be GPT aware and also not assume a 512-byte
-                sector size. 
-            
-            - Primary Header
-                The primary GPT header is the main copy of the GPT header. If it becomes corrupted, it can be compared 
-                to (and/or restored using) the secondary GPT header (see Secondary Header). The GPT header contains 
-                global information about the disk and data on the disk. The following table presents the data stored
-                in the header:
-                
-                TODO: Add more info to this table
-                
-                Offset	  Length	  Contents
-                0 (0x00)	8 bytes	  Signature ("EFI PART", 45h 46h 49h 20h 50h 41h 52h 54h or 0x5452415020494645ULL on little-endian machines)
-                8 (0x08)	4 bytes	  Revision (for GPT version 1.0 (through at least UEFI version 2.3.1), the value is 00h 00h 01h 00h)
-                12 (0x0C)	4 bytes	  Header size in little endian (in bytes, usually 5Ch 00h 00h 00h meaning 92 bytes)
-                16 (0x10)	4 bytes	  CRC32 of header (offset +0 up to header size), with this field zeroed during calculation
-                20 (0x14)	4 bytes	  Reserved; must be zero
-                24 (0x18)	8 bytes	  Current LBA (location of this header copy)
-                32 (0x20)	8 bytes	  Backup LBA (location of the other header copy)
-                40 (0x28)	8 bytes	  First usable LBA for partitions (primary partition table last LBA + 1)
-                48 (0x30)	8 bytes	  Last usable LBA (secondary partition table first LBA - 1)
-                56 (0x38)	16 bytes	Disk GUID (also referred as UUID on UNIXes)
-                72 (0x48)	8 bytes	  Starting LBA of array of partition entries (always 2 in primary copy)
-                80 (0x50)	4 bytes	  Number of partition entries in array
-                84 (0x54)	4 bytes	  Size of a single partition entry (usually 128)
-                88 (0x58)	4 bytes	  CRC32 of partition array
-                92 (0x5C)	*	Reserved; must be zeros for the rest of the block (420 bytes for a sector size of 512 bytes; but can be more with larger sector sizes)
-                ( Original source: http://en.wikipedia.org/wiki/GUID_Partition_Table#Partition_table_header_.28LBA_1.29 )                
-            
-            - Primary Partition Table
-                The primary partition table contains the main copy of the partition table. It can be found at the LBA 
-                specified in the header (offset 72, size 8 bytes). However, the standard sets this value at 2 for the
-                primary partition table and header. The table can be treated as an array of partition entries 
-                (typically 128). Each entry has a specific format. The actual size of each entry and the number of
-                entries can be found in the GPT header. Each entry is usually 128 bytes in size.
-                
-                The following table specifies the format of a partition entry. The table shows the minimum size of a 
-                partition entry:
-                
-                Offset	  Length	  Contents
-                0  (0x00)	16 bytes	Partition type GUID
-                16 (0x10)	16 bytes	Unique partition GUID
-                32 (0x20)	8 bytes	  First LBA (little endian)
-                40 (0x28)	8 bytes	  Last LBA (inclusive, usually odd)
-                48 (0x30)	8 bytes	  Attribute flags (e.g. bit 60 denotes read-only)
-                56 (0x38)	72 bytes	Partition name (36 UTF-16LE code units)
-                          128 bytes total
-                ( Original source: http://en.wikipedia.org/wiki/GUID_Partition_Table#Partition_entries )
-                
-                The following table specifies the partition attributes:
-                
-                Bit	  Content
-                0	    System partition (disk partitioning utilities must preserve the partition as is)
-                1	    EFI firmware should ignore the content of the partition and not try to read from it
-                2	    Legacy BIOS bootable (equivalent to active flag (typically bit 7 set) at offset +0h in partition 
-                      entries of the MBR partition table)[9]
-                3–47	  Reserved for future use
-                48–63	Defined and used by the individual partition type
-                ( Original source: http://en.wikipedia.org/wiki/GUID_Partition_Table#Partition_entries )
-                
-                TODO: Partition types and GUIDs source
-            
-            - Secondary Partition Table
-                The secondary partition table has the same format as the primary partition table. In normal operation, 
-                the secondary partition should be identical to the primary partition table. In the event that the disk
-                becomes corrupted, the secondary partition can be used to restore the primary partition table. Various
-                methods, not discussed here, can be employed for reconciling corrupted primary and secondary partiton
-                tables.
-                
-                The secondary partition table is always stored at the end of the disk just prior to the secondary 
-                header. The starting LBA can be found by reading the Secondary Header and using the Current LBA value.
-                You can also verify this value by comparing it to the value of "Last usable LBA + 1" from the primary
-                header.
-                            
-            - Secondary Header
-                The secondary header has the same format as the primary header. Unlike the Secondary Partition Table,
-                it should not be an identical copy of the primary header. It should, however, verify all the data in
-                the primary header.
-                
-                The secondary header is stored in the last LBA sectors on the disk. The starting LBA should be read
-                from Backup LBA in the primary header. However, in the event that the primary header is corrupted,
-                the value can be calculated by subtracting the size of the header from the size of the disk 
-                (with all size units in whole/integer sectors not bytes).
-            
-        - Software
-            - GPT Detection
-                Detecting GPT involves steps of reading and data verification. The GPT specification requires a 
-                protective MBR and single partition covering the whole of the disk. So the first step of GPT
-                detection is to read the first sector of the disk and look for/read the MBR partition table.
-                
-                Software should then verify the MBR is valid/uncorrupted, then check that there is one and only one
-                partition, covering as much of the disk as 32-bit LBAs allow. Finally, the single partition should
-                have a System ID (see MBR for details) of 0xEE. If all these conditions pass, then the disk may have 
-                a valid GPT on it.
-                
-                The next step is to read the second sector of the disk (LBA 1). This should be the primary GPT header.
-                It should start with the GPT Signature/ID. Software should verify the signature is correct.
-                
-                At this point, software can safely assume a valid GPT partitioning scheme exists on the disk. However,
-                software should not assume the headers, partition tables or partitions themselves are not corrupted.
-                
-            - GPT Global Data
-                The next step software should take is to read in the global GPT data from the primary GPT header. Lazy
-                software can assume it is uncorrupted and proceed as normal. Good software will verify the header
-                against the secondary header and provide the user with a choice of what to do next in the event that 
-                the primary header is corrupted.
-            
-            - CRC32 Values
-                At this stage, good software will check the CRC32 values of the partition tables match the expected 
-                values. This should be the primary way of detecting a corrupted disk. If either partition table
-                is corrupted, the software must decide whether to ignore the error and attempt to use the disk,
-                auto-correct the error by some algorithm or, if possible, present the user with a choice. The safest
-                option in the event that the user can't be given a choice is to display and error message and abandon
-                using the disk. This ensures no further corruption can occur (or at least, no corruption due to 
-                software. Clearly hardware corruption is still a possibility).
-            
-            - Partition Entries
-                The last thing software should do is read the individual partition entries in the partition table
-                and fill in structures to represent these. At this point, the partition structures should be 
-                passable to other I/O software. Notably, there is no reason why the same partition structure
-                cannot be used for representing GPT and MBR partitions for general I/O use.
-            
-        - Example Code
-            - Overview
-            - Download
-        - References
-            - http://en.wikipedia.org/wiki/GUID_Partition_Table
-            - http://en.wikipedia.org/wiki/Apple_Partition_Map
-            - http://wiki.osdev.org/GPT
-            - https://msdn.microsoft.com/en-us/library/windows/hardware/dn653580(v=vs.85).aspx
-            - http://www.ibm.com/developerworks/linux/library/l-gpt/
-    
-    -->
-    
-    <section address="Section1">
-      <title>Optional section title</title>
-      <content>
-        <!-- Uncomment this to create a sub-section outline
-        <autoOutline /> -->
-        <para>Add one or more sections with content</para>
-      </content>
-      <!-- If a section contains a sections element, its content creates
-           sub-sections.  These are not collapsible.
+    <section address="Introduction">
+      <title>Introduction</title>
       <sections>
-          <section address="SubSection1">
-              <title>Sub-section 1</title>
+          <section address="Introduction_WhatIsGPT">
+              <title>What is GPT?</title>
               <content>
-                  <para>Sub-section content.</para>
+                  <para>
+                    GPT stands for GUID Partition Table (where GUID means Global Unique IDentifier).
+                    GPT is a method for splitting a disk up into sections (partitions) each of which
+                    is uniquely identified by its ID. Each partition also has a type ID which uniquely 
+                    identifies the type of file system within the partition.
+                  </para>
               </content>
           </section>
-          <section address="SubSection2">
-              <title>Sub-section 2</title>
+          <section address="Introduction_Understanding">
+              <title>How difficult is GPT to understand?</title>
               <content>
-                  <para>Sub-section content.</para>
+                  <para>
+                    GPT is fairly simple to understand though an understanding of data layout on a hard
+                    disk in general is useful advance knowledge. Familiarity with the MBR partitioning 
+                    scheme is also useful as GPT retains (vital) legacy support for MBR.
+                  </para>
               </content>
           </section>
-      </sections> -->
+          <section address="Introduction_ImportanceOfGPT">
+              <title>How important / useful is GPT?</title>
+              <content>
+                  <para>
+                    GPT is fast becoming the default / most popular way to format hard disks (especially
+                    in modern laptops / tablets) so it is both important and useful.
+                  </para>
+              </content>
+          </section>
+          <section address="Introduction_ScopeOfArticle">
+              <title>Scope of the article</title>
+              <content>
+                  <para>
+                    This article will cover background as to what GPT is, where it comes from and what 
+                    problems GPT solves which previous partitioning scheme failed to. This article will
+                    then move on to a practical understanding of GPT concepts, how GOT organizes data 
+                    on a disk and lastly software implementation details.
+                  </para>
+              </content>
+          </section>
+      </sections>
     </section>
+    
+    <section address="Background">
+      <title>Background</title>
+      <sections>
+          <section address="Background_NecessityOfPartitionTables">
+              <title>Why are partition tables necessary?</title>
+              <content>
+                  <para>
+                    Partition tables are necessary because frequently you want more than one file system 
+                    to be physically present on a single disk. You may want multiple file systems simply
+                    for security and protection or as it allows you to use different file system types.
+                  </para>
+                  <para>
+                    Also, multiple file systems allows you to install multiple operating systems side by 
+                    side on the same disk, so long as both understand the disk formatting (i.e. the 
+                    partition table). This is the case even if the two OSes can't understand eachother's
+                    file systems.
+                  </para>
+              </content>
+          </section>
+          <section address="Background_BeforeGPT">
+              <title>What came before GPT?</title>
+              <content>
+                  <para>
+                    Before GPT there were two partitioning schemes in common use. The main one was MBR 
+                    (Master Boot Record) which remains in use today. GPT has legacy support for MBR since
+                    MBR is built into nearly every PC boot-sequence in existence. 
+                  </para>
+                  <para>
+                    The second significant partitioning scheme was the Apple Partition Map (APM), which was 
+                    in use on Apple's PowerPC based hardware. They have subsequently switched to GPT on their
+                    Intel based hardware. However, Intel Macs do have support for APM.
+                  </para>
+              </content>
+          </section>
+          <section address="Background_ProblemsSolvedByGPT">
+              <title>What problems does GPT solve?</title>
+              <content>
+                  <para>
+                    GPT solves a number of issues, most of which were issues with MBR. The key issues tackled 
+                    are:
+                  </para>
+                  <list class="bullet">
+                    <listItem>
+                      <para>32-bit Logical Block Addresses</para>
+                      <para>
+                        GPT allows for a variable bit-lengths for Logical Block Addresses (LBAs) which are used 
+                        for accessing sectors of data on the disk. This allows larger disks to be support.
+                      </para>
+                    </listItem>
+                    <listItem>
+                      <para>Maximum 4 partitions</para>
+                      <para>
+                        GPT allows a minimum of 128 partitions to be defined in the partition table though more
+                        can be added (at the expense of "real" data on the disk).
+                      </para>
+                    </listItem>
+                    <listItem>
+                      <para>512-byte sectors</para>
+                      <para>
+                        GPT improves support for 4096-byte size sectors where as much MBR software only supports
+                        (or assumes) MBR partitions to be on 512-byte sector-size disks.
+                      </para>
+                    </listItem>
+                    <listItem>
+                      <para>Partition identification</para>
+                      <para>
+                        GPT uses GUIDs to uniquely identify each partition. This means that no two partitions
+                        can become confused by identical naming (or at least, not by the computer). 
+                      </para>
+                    </listItem>
+                    <listItem>
+                      <para>File system identification</para>
+                      <para>
+                        The GPT standard sets out GUIDs to identify all the types of file system which a GPT
+                        partition holds. These are well defined and easily accessible values. This an improvement
+                        over the often conflicted MBR file system identifiers. 
+                      </para>
+                    </listItem>
+                    <listItem>
+                      <para>TODO: Use of CRC</para>
+                      <para>
+                        
+                      </para>
+                    </listItem>
+                  </list>
+              </content>
+          </section>
+      </sections>
+    </section>
+    
+    <section address="Overview">
+      <title>Overview</title>
+      <sections>
+          <section address="Overview_PartitionTables">
+              <title>General partition tables</title>
+              <content>
+                  <para>
+                    In general a partition table simply splits a disk into one or more logical, contiguous chunks
+                    of data. What lies within a partition needn't be understood by an OS for it to be able to
+                    identify the partition. Equally, a partition does not have to contain a conventional file
+                    system, though more often than not it does. Notably, if a partition does not contain a valid 
+                    file system, it usually means the partition is unformatted or corrupted.
+                  </para>
+                  <para>
+                    Note that an unformatted partition is not the same as an unused partition. Unformatted means
+                    the partition has a chunk of data assigned to it, but the data itself is not in a valid or
+                    recognisable format. An unused partition means either the partition entry does not assign
+                    any data from the disk to that partition or the chunk of data being referred to has no 
+                    partition entry associated with it. The latter case can occur if the total size of partitions
+                    on the disk doesn't cover the full disk or, where partition size boundaries cause cut off leaving
+                    unused areas of the disk.
+                  </para>
+              </content>
+          </section>
+          <section address="Overview_GPTHeader">
+              <title>GPT Header</title>
+              <content>
+                  <para>
+                    GPT has a header structure near the start of the disk which provides global information about
+                    the GPT. This data includes information such as GOT signature, GPT Version, LBA of the Secondary 
+                    (/Backup/Recovery) GPT Header, Disk GUID, partition table entry size (usually 128 bytes) and more.
+                  </para>
+              </content>
+          </section>
+          <section address="Overview_MBR">
+              <title>Protective (Legacy) MBR</title>
+              <content>
+                  <para>
+                    The Primary GPT Header is preceded on disk by a "protective" MBR. The protective MBR protects the 
+                    disk from corruption by older software (e.g. old BIOS) which does not understand GPT. The 
+                    protective MBR has a single entry which covers the entire disk (or as much as possible under
+                    32-bit LBAs).
+                  </para>
+              </content>
+          </section>
+          <section address="Overview_GPT">
+              <title>GUID Partition Table</title>
+              <content>
+                  <para>
+                    The GUID partition table can be treated as an array of structures. Typically, each entry is a 
+                    structure of 128 bytes but a larger size can be specified in the GPT Header. Each entry has a 
+                    specific format, as presented in the figure below.
+                  </para>
+                  <para>
+                    TODO: GPT Table Entry Format figure
+                  </para>
+                  <para>
+                    Each entry contains the GUID of the partition which should be used to identify the partition
+                    in all cases. It also contains the GUID of the file system type within the partition. This can
+                    be compared to the list of IDs provided by the GPT standard to find out the type of file system
+                    with the partition and thus whether that partition can be read properly or not.
+                  </para>
+                  <para>
+                    Usual information is also included such as first and last LBA of the partition along with 
+                    attributes and a human-readable name string (UTF16-LE).
+                  </para>
+              </content>
+          </section>
+          <section address="Overview_DataRedundancy">
+              <title>Data Redundancy / Recovery (Secondary GPT Header)</title>
+              <content>
+                  <para>
+                    GPT has a reasonable level of redundancy built in to help with data recovery should the disk
+                    become corrupted. This duplicate information comes in the form of the Secondary GPT Header
+                    and Secondary GPT Partition Table both of which are located in the opposite order at the end
+                    of the disk.
+                  </para>
+              </content>
+          </section>
+          <section address="Overview_OSSupport">
+              <title>OS Support</title>
+              <content>
+                  <para>
+                    The vast majority of modern OSes support GPT and some of the latest bootloader standards 
+                    (including popular UEFI) have made GPT a requirement.
+                  </para>
+                  <para>
+                    GPT has been supported in Windows since Windows Vista. Modern (Intel-based) Macs use GPT by
+                    default. Linux and, importantly, GRUB have support for GPT along with various Linux drivers
+                    and applications supporting GPT. A very useful tool for editing GPT is "gparted" on Linux.
+                  </para>
+              </content>
+          </section>
+      </sections>
+    </section>
+      
+    <section address="DataLayout">
+      <title>Data Layout</title>
+      <sections>
+          <section address="DataLayout_Overall">
+              <title>Overall</title>
+              <content>
+                  <para>
+                    The following figure presents the basic layout of data on a disk which is GPT formatted:
+                  </para>
+                  <para>
+                    TODO: Data layout figure
+                  </para>
+              </content>
+          </section>
+          <section address="DataLayout_ProtectiveMBR">
+              <title>Protective MBR</title>
+              <content>
+                  <para>
+                    The protective MBR resides at the first LBA on the disk (LBA0). If the disk is GPT formatted, it will
+                    indicate a single partition of type EEh (0xEE) which will cover the "entire" drive. In this situation,
+                    "entire" actually means as much of the drive as MBR allows, since MBR uses 32-bit LBAs, larger disks
+                    cannot be fully covered. In any case, the size of the MBR partition should be ignored.
+                  </para>
+                  <para>                
+                    If multiple partitions are specified, a lot of software will not treat a partition as GPT even if it
+                    is marked with 0xEE. 
+                  </para>
+                  <para>
+                    For legacy BIOS support (i.e. non EFI/UEFI), the first sector also contains the first stage bootloader.
+                    For GPT formatted disks, this first stage bootloader must be GPT aware and also not assume a 512-byte
+                    sector size.
+                  </para>
+              </content>
+          </section>
+          <section address="DataLayout_PrimaryHeader">
+              <title>Primary Header</title>
+              <content>
+                  <para>
+                    The primary GPT header is the main copy of the GPT header. If it becomes corrupted, it can be compared 
+                    to (and/or restored using) the secondary GPT header (see Secondary Header). The GPT header contains 
+                    global information about the disk and data on the disk. The following table presents the data stored
+                    in the header:
+                  </para>
+                  <para>                
+                    TODO: Add more info to this table
+                  </para>
+                  <para>
+                    Offset	  Length	  Contents
+                    0 (0x00)	8 bytes	  Signature ("EFI PART", 45h 46h 49h 20h 50h 41h 52h 54h or 0x5452415020494645ULL on little-endian machines)
+                    8 (0x08)	4 bytes	  Revision (for GPT version 1.0 (through at least UEFI version 2.3.1), the value is 00h 00h 01h 00h)
+                    12 (0x0C)	4 bytes	  Header size in little endian (in bytes, usually 5Ch 00h 00h 00h meaning 92 bytes)
+                    16 (0x10)	4 bytes	  CRC32 of header (offset +0 up to header size), with this field zeroed during calculation
+                    20 (0x14)	4 bytes	  Reserved; must be zero
+                    24 (0x18)	8 bytes	  Current LBA (location of this header copy)
+                    32 (0x20)	8 bytes	  Backup LBA (location of the other header copy)
+                    40 (0x28)	8 bytes	  First usable LBA for partitions (primary partition table last LBA + 1)
+                    48 (0x30)	8 bytes	  Last usable LBA (secondary partition table first LBA - 1)
+                    56 (0x38)	16 bytes	Disk GUID (also referred as UUID on UNIXes)
+                    72 (0x48)	8 bytes	  Starting LBA of array of partition entries (always 2 in primary copy)
+                    80 (0x50)	4 bytes	  Number of partition entries in array
+                    84 (0x54)	4 bytes	  Size of a single partition entry (usually 128)
+                    88 (0x58)	4 bytes	  CRC32 of partition array
+                    92 (0x5C)	*	Reserved; must be zeros for the rest of the block (420 bytes for a sector size of 512 bytes; but can be more with larger sector sizes)
+                    ( Original source: http://en.wikipedia.org/wiki/GUID_Partition_Table#Partition_table_header_.28LBA_1.29 )                
+                  </para>
+              </content>
+          </section>
+          <section address="DataLayout_PrimaryPartitionTable">
+              <title>Primary Partition Table</title>
+              <content>
+                  <para>
+                    The primary partition table contains the main copy of the partition table. It can be found at the LBA 
+                    specified in the header (offset 72, size 8 bytes). However, the standard sets this value at 2 for the
+                    primary partition table and header. The table can be treated as an array of partition entries 
+                    (typically 128). Each entry has a specific format. The actual size of each entry and the number of
+                    entries can be found in the GPT header. Each entry is usually 128 bytes in size.
+                  </para>
+                  <para>
+                    The following table specifies the format of a partition entry. The table shows the minimum size of a 
+                    partition entry:
+                  </para>
+                  <para>
+                    Offset	  Length	  Contents
+                    0  (0x00)	16 bytes	Partition type GUID
+                    16 (0x10)	16 bytes	Unique partition GUID
+                    32 (0x20)	8 bytes	  First LBA (little endian)
+                    40 (0x28)	8 bytes	  Last LBA (inclusive, usually odd)
+                    48 (0x30)	8 bytes	  Attribute flags (e.g. bit 60 denotes read-only)
+                    56 (0x38)	72 bytes	Partition name (36 UTF-16LE code units)
+                              128 bytes total
+                    ( Original source: http://en.wikipedia.org/wiki/GUID_Partition_Table#Partition_entries )
+                  </para>
+                  <para>
+                    The following table specifies the partition attributes:
+                  </para>
+                  <para>
+                    Bit	  Content
+                    0	    System partition (disk partitioning utilities must preserve the partition as is)
+                    1	    EFI firmware should ignore the content of the partition and not try to read from it
+                    2	    Legacy BIOS bootable (equivalent to active flag (typically bit 7 set) at offset +0h in partition 
+                          entries of the MBR partition table)[9]
+                    3–47	  Reserved for future use
+                    48–63	Defined and used by the individual partition type
+                    ( Original source: http://en.wikipedia.org/wiki/GUID_Partition_Table#Partition_entries )
+                  </para>
+                  <para>
+                    TODO: Partition types and GUIDs source
+                  </para>
+              </content>
+          </section>
+          <section address="DataLayout_SecondaryPartitionTable">
+              <title>Secondary Partition Table</title>
+              <content>
+                  <para>
+                    The secondary partition table has the same format as the primary partition table. In normal operation, 
+                    the secondary partition should be identical to the primary partition table. In the event that the disk
+                    becomes corrupted, the secondary partition can be used to restore the primary partition table. Various
+                    methods, not discussed here, can be employed for reconciling corrupted primary and secondary partiton
+                    tables.
+                  </para>
+                  <para>
+                    The secondary partition table is always stored at the end of the disk just prior to the secondary 
+                    header. The starting LBA can be found by reading the Secondary Header and using the Current LBA value.
+                    You can also verify this value by comparing it to the value of "Last usable LBA + 1" from the primary
+                    header.
+                  </para>
+              </content>
+          </section>
+          <section address="DataLayout_SecondaryHeader">
+              <title>Secondary Header</title>
+              <content>
+                  <para>
+                    The secondary header has the same format as the primary header. Unlike the Secondary Partition Table,
+                    it should not be an identical copy of the primary header. It should, however, verify all the data in
+                    the primary header.
+                  </para>
+                  <para>
+                    The secondary header is stored in the last LBA sectors on the disk. The starting LBA should be read
+                    from Backup LBA in the primary header. However, in the event that the primary header is corrupted,
+                    the value can be calculated by subtracting the size of the header from the size of the disk 
+                    (with all size units in whole/integer sectors not bytes).
+                  </para>
+              </content>
+          </section>
+      </sections>
+    </section>
+      
+    <section address="Software">
+      <title>Software</title>
+      <sections>
+          <section address="Software_GPTDetection">
+              <title>GPT Detection</title>
+              <content>
+                  <para>
+                    Detecting GPT involves steps of reading and data verification. The GPT specification requires a 
+                    protective MBR and single partition covering the whole of the disk. So the first step of GPT
+                    detection is to read the first sector of the disk and look for/read the MBR partition table.
+                  </para>
+                  <para>
+                    Software should then verify the MBR is valid/uncorrupted, then check that there is one and only one
+                    partition, covering as much of the disk as 32-bit LBAs allow. Finally, the single partition should
+                    have a System ID (see MBR for details) of 0xEE. If all these conditions pass, then the disk may have 
+                    a valid GPT on it.
+                  </para>
+                  <para>
+                    The next step is to read the second sector of the disk (LBA 1). This should be the primary GPT header.
+                    It should start with the GPT Signature/ID. Software should verify the signature is correct.
+                  </para>
+                  <para>
+                    At this point, software can safely assume a valid GPT partitioning scheme exists on the disk. However,
+                    software should not assume the headers, partition tables or partitions themselves are not corrupted.
+                  </para>
+              </content>
+          </section>
+          <section address="Software_GPTGlobalData">
+              <title>GPT Global Data</title>
+              <content>
+                  <para>
+                    The next step software should take is to read in the global GPT data from the primary GPT header. Lazy
+                    software can assume it is uncorrupted and proceed as normal. Good software will verify the header
+                    against the secondary header and provide the user with a choice of what to do next in the event that 
+                    the primary header is corrupted.
+                  </para>
+              </content>
+          </section>
+          <section address="Software_CRC32Values">
+              <title>CRC32 Values</title>
+              <content>
+                  <para>
+                    At this stage, good software will check the CRC32 values of the partition tables match the expected 
+                    values. This should be the primary way of detecting a corrupted disk. If either partition table
+                    is corrupted, the software must decide whether to ignore the error and attempt to use the disk,
+                    auto-correct the error by some algorithm or, if possible, present the user with a choice. The safest
+                    option in the event that the user can't be given a choice is to display and error message and abandon
+                    using the disk. This ensures no further corruption can occur (or at least, no corruption due to 
+                    software. Clearly hardware corruption is still a possibility).
+                  </para>
+              </content>
+          </section>
+          <section address="Software_PartitionEntries">
+              <title>Partition Entries</title>
+              <content>
+                  <para>
+                    The last thing software should do is read the individual partition entries in the partition table
+                    and fill in structures to represent these. At this point, the partition structures should be 
+                    passable to other I/O software. Notably, there is no reason why the same partition structure
+                    cannot be used for representing GPT and MBR partitions for general I/O use.
+                  </para>
+              </content>
+          </section>
+      </sections>
+    </section>
+    
+    <section address="ExampleCode">
+      <title>Example Code</title>
+      <sections>
+          <section address="ExampleCode_Overview">
+              <title>Overview</title>
+              <content>
+                  <para>TODO</para>
+              </content>
+          </section>
+          <section address="ExampleCode_Download">
+              <title>Download</title>
+              <content>
+                  <para>TODO</para>
+              </content>
+          </section>
+      </sections>
+    </section>
+      
+    <section address="References">
+      <title>References</title>
+      <content>
+        <para>
+          The following links were valid as of 19th March 2015. 
+        </para>
+        <list class="bullet">
+          <listItem>
+            <para>
+              <externalLink>
+                <linkText>http://en.wikipedia.org/wiki/GUID_Partition_Table</linkText>
+                <linkAlternateText>Wikipedia - Guid Partition Table</linkAlternateText>
+                <linkUri>http://en.wikipedia.org/wiki/GUID_Partition_Table</linkUri>
+              </externalLink>
+            </para>
+          </listItem>
+          <listItem>
+            <para>
+              <externalLink>
+                <linkText>http://en.wikipedia.org/wiki/Apple_Partition_Map</linkText>
+                <linkAlternateText>Wikipedia - Apple Partition Map</linkAlternateText>
+                <linkUri>http://en.wikipedia.org/wiki/Apple_Partition_Map</linkUri>
+              </externalLink>
+            </para>
+          </listItem>
+          <listItem>
+            <para>
+              <externalLink>
+                <linkText>http://wiki.osdev.org/GPT</linkText>
+                <linkAlternateText>OSDev - GPT</linkAlternateText>
+                <linkUri>http://wiki.osdev.org/GPT</linkUri>
+              </externalLink>
+            </para>
+          </listItem>
+          <listItem>
+            <para>
+              <externalLink>
+                <linkText>https://msdn.microsoft.com/en-us/library/windows/hardware/dn653580(v=vs.85).aspx</linkText>
+                <linkAlternateText>MSDN - Using GPT Drives</linkAlternateText>
+                <linkUri>https://msdn.microsoft.com/en-us/library/windows/hardware/dn653580(v=vs.85).aspx</linkUri>
+              </externalLink>
+            </para>
+          </listItem>
+          <listItem>
+            <para>
+              <externalLink>
+                <linkText>http://www.ibm.com/developerworks/linux/library/l-gpt/</linkText>
+                <linkAlternateText>IBM - GPT</linkAlternateText>
+                <linkUri>http://www.ibm.com/developerworks/linux/library/l-gpt/</linkUri>
+              </externalLink>
+            </para>
+          </listItem>
+        </list>
+      </content>
+    </section>
+    
     
     <relatedTopics>
     </relatedTopics>
