@@ -6,342 +6,1425 @@
       <autoOutline>20</autoOutline>
     </introduction>
     
-    <!--
-      
-      Sections:
-        - Introduction
-            - Scope of this article
-                - ATA history
-                - ATA as IDE, PIO but not SATA
-                - Basic hardware info
-                - Complete software explanation and sample
-            - How this article is structured
-                - History and overview
-                - Followed by explanation
-                - Followed by sample code and common problems
-        - History
-            - Foreword
-                    ATA has a long and winding history which is reasonably well documented across the internet
-                    (see references and Google search). So for the purposes of this article I will provide only 
-                    a brief summary of its history. Note, the information in this article is drawn largely from
-                    the references provided at the end of this article, so specific citations are not being
-                    provided.
-                    
-            - Origin of ATA
-                - Originally called AT Attachment
-                    ATA is the old name for what is now called "Parallel ATA" (PATA). ATA originally stood for AT 
-                    Attachment and ATAPI stood for AT Attachment Packet Interface. These two standards are described
-                    in more detail throughout this article.
-                    
-                    Notably, the "AT" in "AT Attachment" stood for "Advanced Technology", however, to avoid possible
-                    trademark infringement with IBM, current specifications simply use AT. (And developers would 
-                    be well advised to follow suit...)
-                    
-                - Consists of hardware and software standards: AT Attachment, AT Attachment Packet Interface
-                    ATA is a hardware interface standard for connecting storage devices to a PC (originally via
-                    the 16-bit ISA bus created by IBM for the IBM PC/AT). It also includes the basic Parallel ATA
-                    transfer protocol.
-                    
-                    ATAPI is a software protocol which was layered on top of ATA to allow it to connect a wider 
-                    range of devices than the original protocol allowed for. It is essentially a way to send SCSI
-                    commands over the existing ATA protocol.
-                    
-                - Started with Western Digital's IDE
-                    The first version of what would later become ATA was developed by Western Digital in around 1983.
-                    They developed a standard called Integrated Drive Electronics (IDE). The first hardware for IDE 
-                    arrived in 1986. Over time ATA and IDE have become used somewhat interchangeably, since the 
-                    versions of IDE have essentially always been implementations of the versions of ATA (though 
-                    often Western Digital released new IDE drives before the official release of a new ATA standard).
-                
-                - Turned into ATA
-                    Western Digital co-developed, along with Control Data Corporation and Compaq Computer, the ATA
-                    standard and in 1994 it was officially adopted as ANSI standard 
-                    "X3.221-1994, AT Attachment Interface for Disk Drives". Since then there have been 7 major 
-                    versions of the ATA standard (up to Dec 2014) with the last one introducing SATA (Serial ATA) 
-                    in 2005. Parallel ATA drives and Serial ATA drives are not compatible but all IDE drives are 
-                    compatible with at least one version of ATA. The current working version (8) will standardise
-                    so-called Hybrid drives (which utilise non-volatile caches for frequently accessed or high
-                    priority files).
-                
-                - ATA now has many acronyms
-                    Due to its long history and many versions, ATA now has many acronyms associated with it. The 
-                    common ones have already been mentioned (ATA, ATAPI and IDE) but it is worth mentioning these
-                    few too:
-                        - EIDE - Enhanced IDE (Western Digital, IDE version 2, ATA 2 and 3 compatible)
-                        - Fast ATA, Fast IDE - All ATA-2 related versions developed by manufacturers. 
-                        - Ultra ATA - associated with ATA version 2 and 4 to 7 with assorted suffixes. 
-                    
-                - ATA now actually Parallel ATA (PATA)
-                    Since the introduction of ATA/ATAPI-7 it has become technically incorrect to refer to anything
-                    as an ATA or IDE drive. Devices are now either Parallel ATA devices (the old way) or Serial ATA
-                    devices (the new way). These are referred to as PATA and SATA, though frequently PATA is simply
-                    ATA and SATA is SATA. 
-                    
-                    The original ATA standard cable had 40 wires to create a connection which could transfer 16-bits
-                    in parallel. Later, this increased to 80 wires, with the additional 40 wires interleaved with the
-                    original 40 to act as ground wires. This was required to reduce capacitive coupling between
-                    data wires when running at higher bit rates. The connector remained the same size (40 pins)
-                    since the additional wires could be connected to the existing ground pin.
-                    
-                    As with most hardware, PATA (and SATA) only communicate with one device at once. It is a common
-                    misconception that Parallel means you can communicate with multiple devices at once. This is
-                    not true and has never been true. A consequence of this is that many driver developers forget that 
-                    you have to select which drive you wish to communicate with at any given moment. This is described
-                    in more detail later.
-                
-                - Serial ATA (2003) (SATA)
-                   While this article does not provide hardware or software description for SATA, it is worth 
-                   mentioning since it is probably the most common type of drive (though many SATA drives are IDE
-                   compatible). SATA stands for Serial ATA and is a very different hardware and software standard.
-                   
-                   For hobby OS developers, SATA is initially much harder to implement than PATA. It is worth getting
-                   a PATA driver working which you can use to load driver executables from a hard disc or CD drive
-                   which can the be executed to control SATA drives.
-                  
-            - ATA as Parallel ATA
-                - PATA and IDE now broadly equivalent
-                    As has been mentioned earlier, ATA, now known at Parallel ATA (PATA), is used now broadly equivalent
-                    to IDE due to the standards long, intertwined history with IDE devices. Equally, due to the historical
-                    naming, most information refers to PATA as ATA since PATA is the original, old hardware standard, as 
-                    opposed to the latest ATA standard Serial ATA (SATA).
-                                    
-                - Meaning at a hobbyist level, what you program will work with most stuff
-                    Since ATA and IDE are broadly equivalent, and both are the de-facto old-school hard drive standard, 
-                    if you as a hobbyist choose to write ATA drivers, you will find that your code work with almost
-                    all virtualisation technologies and a vast number of real hard drives.
-                
-                - PATA much simpler than SATA
-                - Limitations of PATA
-                    PATA is simple, very simple. Much, much simpler than SATA. This is possibly because its old, from a time 
-                    when software had to be simpler or because its a more mature technology (by nearly 20 years). However,
-                    the simplicity comes at a slight penalty (by modern standards). The penalty is primarily speed. PATA
-                    disks are significantly slower than SATA disks (how much slower depends on version etc. It is left to the 
-                    reader to research the potential difference, especially given the ever increasing speed of SATA disks).
-                
-            - ATA as Serial ATA (SATA)
-                - Improvements with SATA
-                - SATA much more complex than PATA
-                    SATA drives offer significantly faster disk access times and much higher data transfer rates along with 
-                    high burst access speeds and the ability to connect more devices to the bus than PATA allows. However, this
-                    comes at the cost of complexity. To use a SATA drive you must support the significantly more complex 
-                    protocol along with the Advance Host Controller Interface hardware that Intel developed to allow SATA
-                    bus control.
-                    
-                - Not always backwards compatible
-                    SATA is also often not backwards compatible. Older SATA devices would present themselves as PATA devices and 
-                    then require the BIOS or OS to switch the bus to SATA mode. However, newer SATA devices are either in SATA
-                    mode or PATA mode and only a BIOS setting can be used to switch (if available). However, switching will often 
-                    cause the pre-installed OS to stop working since it will expect a SATA drive. As a consequence, to run a hobby
-                    OS on a very new laptop or desktop, SATA support will be required, unless USB support or similar is added.
-                
-                - Get PATA working first
-                    Due to PATA's comparative simplicity, wide support in virtualisation and high stability, it is worth getting
-                    PATA working before moving on to SATA. This will allow you to develop partition and file system drivers 
-                    that work and are stable, thus eliminating two big areas of potential issue when getting a SATA driver to 
-                    work.
-                    
-        - Overview (PATA)
-            - General
-                - What does ATA do?
-                    ATA is a hardware standard which sets out the physical cable, electronic signal and hardware requirements for 
-                    connecting storage devices. For PATA, the cable is a 40 or 80 pin connector which can transfer 16 bits at a 
-                    time. The later versions of PATA used an 80-pin connector to increase the maximum transfer speed. All the 
-                    additional wires were shielding wires connected to the ground pin. Thus, the connectors (plugs/sockets) remained
-                    40-pins wide, thereby ensuring backwards compatibility.
-                    
-                    ATA also sets out standards for handling hardware faults, unrecoverable errors and one possible standard for 
-                    connecting (P)ATA devices to the motherboard and processor. However, other possibilities do exist. Many PATA
-                    (and SATA) devices now appear on the PCI bus.
-                    
-                    Lastly, ATA defines a basic protocol for communicating with disk devices. Essentially a basic software
-                    protocol. This is the protocol used by IDE drives such as hard disks. For CD Drives it is usually 
-                    replaced by ATAPI.
-                    
-                - What does ATAPI do?
-                    ATAPI is a software standard ("packet interface") which sets out new command and data transfer protocols that
-                    sit on top of (but essentially replace) the basic ATA protocol. This is still separate from the hardware standard
-                    though. The hardware standard sets out how to transfer individual bits and bytes. The software standard sets out what 
-                    those bits and bytes actually mean and in what order they must be sent. The ATAPI protocol makes used 
-                    of only one of the original ATA commands (Identify packet). It replaces all other commands by SCSI commands.
-                    
-                    In general, hard disks use plain PATA, CD Drives used PATAPI. PATAPI is itself essentially SCSI commands.
-                    
-                - How common is it?
-                    ATA is extremely common. It has been included in PCs and laptop for over a decade. This means most PCs and 
-                    laptops that are more than 3 years old will have PATA support. However, with the recent introduction of 
-                    SATA, some laptops and PCs no longer include PATA connectors or support. The Sony Vaio Fit Multiflip 15A,
-                    for example, only has a SATA drive with no detectable backwards compatibility for PATA.
-                    
-                    Note, many manufacturers or specifications list drives as IDE. As discussed previously, this is broadly 
-                    equivalent to a PATA drive. If your PC or laptop says it has an IDE drive, then it has PATA support.
-                    
-                - Why is it important?
-                    ATA is important as it has long been the standard for hard disk and CD drive control. So much so, that 
-                    the only successful alternative connector for storage mediums (excluding ethernet, for obvious reasons)
-                    has been USB. 
-                    
-                    For a hobby OS developer, ATA is important as it (meaning PATA) is the easiest route to accessing 
-                    permanent storage. The only 4 other viable alternatives are: 
-                      1. Network stack to access cloud files,
-                      2. Serial connection to a file stored on a connected or host computer,
-                      3. Firewire connection to a file stored on a connected or host computer,
-                      4. USB Mass Storage support (which is recommended (necessary?) anyway).
-                        
-                    ATA (as PATA or SATA) is also important as the hard disk remains the primary boot device in most 
-                    tablets, laptops and PCs. To install an operating system in a way which is user friendly essentially
-                    requires you to install it to the primary boot device.
-                    
-                    Finally, for hobby OS developers, ATA support is useful as ATA is reliable and fairly easy to implement.
-                    This makes developing partition and file system drivers significantly easier as it eliminates a whole
-                    subsystem of potential error. Having weel tested, reliable file system drivers means writing USB and USB 
-                    Mass Storage support is easier.
-                    
-                - ATA for hard drives vs. CD drives
-                    TODO: Look up the key differences
-                        
-                    Fling OS currently only supports PATA (hard disk) devices and not PATAPI (CD ROM) devices. However, many 
-                    modern laptops and PCs do not come with CD drives and external drives are usually attached via USB. 
-                    This means that CD drive support is fairly unnecessary for a hobby OS.
-                        
-                - How complex to program?
-                    PATA support is relatively simply to program. It requires only a basic knowledge of IO ports, hard disk 
-                    structure and the protocol. There is plenty of information on the first two but details of the protocol
-                    are hard to come by in a useful way. This article will cover basic hard disk structure (ignoring legacy 
-                    CHS structure wherever possible) and cover the practical implementation of the protocol in detail.
-                
-                - Basic ideas
-                    ATA devices each come with a number of registers. These registers are accessed through IO ports. The IO
-                    port numbers are determined by which ATA bus the device is attached to. ATA supports a Primary bus and a 
-                    Secondary bus, each of which can have at least a Master device and up to one Slave device. This allows a 
-                    maximum of 4 devices to be attached. Up to 2 devices share the same set of ports. As a consequence, you 
-                    can only access one of the two devices on a single bus at the same time.
-                    
-                    There are a number of different things you can do with an ATA device. But to do anything you must first
-                    detect what devices are present and then select the one you want to communicate with. This utilises the 
-                    Device Select register (/port). Once you have selected a device you can send it commands through the 
-                    Command register. Data is sent though the Data register and there are a few other registers for extra 
-                    important information.
-                        
-                    Accessing a memory location on a disk is done in blocks. The block size used depends on the disk but in 
-                    general the minimum block size if 512 bytes. This means you can only read or write a minimum of 512 bytes 
-                    at a time. Each block has an address. Not so long ago, disks were accessed based on their real-world 
-                    physical structure. Addresses were supplied as three numbers to select which Cylinder, Head and Sector.
-                    However, with advances in modern hardware, disks now used Logical Block Addressing (LBA for short). 
-                        
-                    There are a fixed number of LBAs on a disk and the block size is fixed. So if the block size is 512, and 
-                    you want the byte 1024, you would read LBA 2 from the disk. Nowadays, all disks are accessed via LBA not 
-                    CHS addresses so in this article we will focus on LBA addresses.
-                    
-            - PIO mode
-                - What does PIO stand for?
-                    PIO stands for Programmed Input/Output. It is a common way of connecting an external device to the CPU.
-                    It allows data to be transferred by using input/output commands to addresses in the I/O address space.
-                    These are often referred to as IO ports. 
-                    
-                    PIO is in contrast to DMA (Direct Memory Access) where data is transferred by directly reading/writing
-                    memory addresses. PIO is significantly more costly than DMA since it requires the CPU to transfer
-                    every byte of data not via memory. PIO mode is still important because when a CPU is just beginning to
-                    boot it must be able to load from a boot device without knowledge of what memory is available.
-                
-                - Which types of device?
-                    ATA PIO mode is now the default mode at startup for all ATA compliant devices. It is what allows the CPU
-                    to use any ATA device as a boot device. However, many modern devices which are ATA compliant also support
-                    switching to more advanced modes such as DMA.
-                    
-        - Hardware
-            - Overview
-            - Cables & Connectors
-            - Backwards Compatibility
-                - Versions of PATA / IDE
-                - SATA to PATA
-            - Virtual hardware / virtual disks / virtual machines
-                - Set up as IDE drive
-        - Software
-            - Basic outline
-            - Main classes
-            - Enumerations
-            - IO Ports
-            - Device info
-            - Sending commands
-            - Initialisation
-            - Drive Discovery
-            - Drive Select
-            - Getting info (strings)
-            - Reading & Writing
-        - Example Code
-            - Overview
-            - Download
-        - Common problems
-            - Second drive selection
-            - CD drives
-            - Disk lock / security
-            - SATA / RAID drives
-        - Sources
-            - http://en.wikipedia.org/wiki/Parallel_ATA
-            - http://en.wikipedia.org/wiki/ATA_Packet_Interface
-            - http://en.wikipedia.org/wiki/Programmed_input/output
-            - http://wiki.osdev.org/ATA_PIO_Mode
-            - http://wiki.osdev.org/ATA_read/write_sectors
-            - http://wiki.osdev.org/LBA
-            - http://wiki.osdev.org/PCI_IDE_Controller
-            - http://wiki.osdev.org/SATA
-            - http://en.wikipedia.org/wiki/Programmed_input/output
-    -->
-    
-    <section address="">
-      <title></title>
+    <section address="Introduction">
+      <title>Introduction</title>
       <sections>
-          <section address="">
-              <title></title>
+          <section address="Introduction_ScopeOfThisArticle">
+              <title>Scope of the article</title>
               <content>
-                  <para></para>
-              </content>
-          </section>
-          <section address="">
-              <title></title>
-              <content>
-                  <para></para>
+                  <para>
+                    This article covers all the aspects of the ATA specification to at least a general/broad level.
+                    It goes into detail about ATA as PATA/IDE but provides limited information for PATAPI, SATA and
+                    SATAPI drives. 
+                  </para>
+                  <para>
+                    This article includes a useful but relatively brief history of ATA and includes basic information
+                    about the hardware that ATA specifies. The article then includes a detailed description of how to
+                    implement a PATA driver along with complete sample code.
+                  </para>
               </content>
           </section>
       </sections>
     </section>
     
+    <section address="History">
+      <title>History</title>
+      <sections>
+          <section address="History_Foreword">
+              <title>Foreword</title>
+              <content>
+                  <para>
+                    ATA has a long and winding history which is reasonably well documented across 
+                    the internet (see references and Google search). So for the purposes of this 
+                    article I will provide only a brief summary of its history. Note, the 
+                    information in this article is drawn largely from the references provided at 
+                    the end of this article, so specific citations are not being provided.
+                  </para>
+              </content>
+          </section>
+          <section address="History_ATAttachment">
+              <title>Originally called AT Attachment</title>
+              <content>
+                  <para>
+                    ATA is the old name for what is now called "Parallel ATA" (PATA). ATA originally 
+                    stood for AT Attachment and ATAPI stood for AT Attachment Packet Interface. 
+                    These two standards are described in more detail throughout this article.
+                  </para>
+                  <para>
+                    Notably, the "AT" in "AT Attachment" stood for "Advanced Technology", however, 
+                    to avoid possible trademark infringement with IBM, current specifications 
+                    simply use AT. (And developers would be well advised to follow suit...)
+                  </para>
+              </content>
+          </section>
+          <section address="History_ATA_ATAPI">
+              <title>AT Attachment, AT Attachment Packet Interface</title>
+              <content>
+                  <para>
+                    ATA is a hardware interface standard for connecting storage devices to a PC 
+                    (originally via the 16-bit ISA bus created by IBM for the IBM PC/AT). It also 
+                    includes the basic Parallel ATA transfer protocol.
+                  </para>
+                  <para>
+                    ATAPI is a software protocol which was layered on top of ATA to allow it to 
+                    connect a wider range of devices than the original protocol allowed for. It 
+                    is essentially a way to send SCSI commands over the existing ATA protocol.
+                  </para>
+              </content>
+          </section>
+          <section address="History_WesternDigitalIDE">
+              <title>Started with Western Digital's IDE</title>
+              <content>
+                  <para>
+                    The first version of what would later become ATA was developed by Western Digital 
+                    in around 1983. They developed a standard called Integrated Drive Electronics 
+                    (IDE). The first hardware for IDE arrived in 1986. Over time ATA and IDE have 
+                    become used somewhat interchangeably, since the versions of IDE have essentially 
+                    always been implementations of the versions of ATA (though often Western Digital 
+                    released new IDE drives before the official release of a new ATA standard).
+                  </para>
+              </content>
+          </section>
+          <section address="History_TurnedIntoATA">
+              <title>Turned into ATA</title>
+              <content>
+                  <para>
+                    Western Digital co-developed, along with Control Data Corporation and Compaq 
+                    Computer, the ATA standard and in 1994 it was officially adopted as ANSI 
+                    standard "X3.221-1994, AT Attachment Interface for Disk Drives". Since then 
+                    there have been 7 major versions of the ATA standard (up to Dec 2014) with the 
+                    last one introducing SATA (Serial ATA) in 2005. Parallel ATA drives and Serial 
+                    ATA drives are not compatible but all IDE drives are compatible with at least 
+                    one version of ATA. The current working version (8) will standardise so-called 
+                    Hybrid drives (which utilise non-volatile caches for frequently accessed or 
+                    high priority files).
+                  </para>
+              </content>
+          </section>
+          <section address="History_ATAAcronyms">
+              <title>ATA now has many acronyms</title>
+              <content>
+                  <para>
+                    Due to its long history and many versions, ATA now has many acronyms associated 
+                    with it. The common ones have already been mentioned (ATA, ATAPI and IDE) but it 
+                    is worth mentioning these few too:
+                  </para>
+                  <list class="bullet">
+                    <listItem>
+                      <para>EIDE - Enhanced IDE (Western Digital, IDE version 2, ATA 2 and 3 compatible)</para>
+                    </listItem>
+                    <listItem>
+                      <para>Fast ATA, Fast IDE - All ATA-2 related versions developed by manufacturers.</para>
+                    </listItem>
+                    <listItem>
+                      <para>Ultra ATA - associated with ATA version 2 and 4 to 7 with assorted suffixes.</para>
+                    </listItem>
+                  </list>
+              </content>
+          </section>
+          <section address="History_ATANowAsPATA">
+              <title>ATA now actually Parallel ATA (PATA)</title>
+              <content>
+                  <para>
+                    Since the introduction of ATA/ATAPI-7 it has become technically incorrect to refer 
+                    to anything as an ATA or IDE drive. Devices are now either Parallel ATA devices 
+                    (the old way) or Serial ATA devices (the new way). These are referred to as PATA 
+                    and SATA, though frequently PATA is simply ATA and SATA is SATA. 
+                  </para>
+                  <para>
+                    The original ATA standard cable had 40 wires to create a connection which could 
+                    transfer 16-bits in parallel. Later, this increased to 80 wires, with the 
+                    additional 40 wires interleaved with the original 40 to act as ground wires. This 
+                    was required to reduce capacitive coupling between data wires when running at 
+                    higher bit rates. The connector remained the same size (40 pins) since the 
+                    additional wires could be connected to the existing ground pin.
+                  </para>
+                  <para>
+                    As with most hardware, PATA (and SATA) only communicate with one device at once. 
+                    It is a common misconception that Parallel means you can communicate with 
+                    multiple devices at once. This is not true and has never been true. A consequence 
+                    of this is that many driver developers forget that you have to select which drive 
+                    you wish to communicate with at any given moment. This is described in more 
+                    detail later.
+                  </para>
+              </content>
+          </section>
+          <section address="History_SATA">
+              <title>Serial ATA (2003) (SATA)</title>
+              <content>
+                  <para>
+                    While this article does not provide hardware or software description for SATA, 
+                    it is worth mentioning since it is probably the most common type of drive 
+                    (though many SATA drives are IDE compatible). SATA stands for Serial ATA and 
+                    is a very different hardware and software standard.
+                  </para>
+                  <para>
+                    For hobby OS developers, SATA is initially much harder to implement than PATA. 
+                    It is worth getting a PATA driver working which you can use to load driver 
+                    executables from a hard disc or CD drive which can the be executed to control 
+                    SATA drives.
+                  </para>
+              </content>
+          </section>
+          <section address="History_PATA">
+            <title>ATA as Parallel ATA (PATA)</title>
+            <content>
+              <para>
+                PATA is much simpler than SATA. There are also some other things worth discussing.
+              </para>
+            </content>
+            <sections>
+              <section address="History_PATA_PATAEquivIDE">
+                <title>PATA and IDE now broadly equivalent</title>
+                <content>
+                  <para> 
+                    As has been mentioned earlier, ATA, now known at Parallel ATA (PATA), is 
+                    used now broadly equivalent to IDE due to the standards long, intertwined 
+                    history with IDE devices. Equally, due to the historical naming, most 
+                    information refers to PATA as ATA since PATA is the original, old 
+                    hardware standard, as opposed to the latest ATA standard Serial ATA (SATA). 
+                  </para>
+                </content>
+              </section>
+              <section address="History_PATA_HobbysitLevel">
+                <title>At a hobbyist level, what you program will work with most stuff</title>
+                <content>
+                  <para>  
+                    Since ATA and IDE are broadly equivalent, and both are the de-facto old-school 
+                    hard drive standard, if you as a hobbyist choose to write ATA drivers, you will 
+                    find that your code work with almost all virtualisation technologies and a vast 
+                    number of real hard drives.
+                  </para>
+                </content>
+              </section>
+              <section address="History_PATA_LimitationsOfPATA">
+                <title>Limitations of PATA</title>
+                <content>
+                  <para> 
+                    PATA is simple, very simple. Much, much simpler than SATA. This is possibly 
+                    because its old, from a time when software had to be simpler or because its 
+                    a more mature technology (by nearly 20 years). However, the simplicity comes 
+                    at a slight penalty (by modern standards). The penalty is primarily speed. 
+                    PATA disks are significantly slower than SATA disks (how much slower depends 
+                    on version etc. It is left to the reader to research the potential difference, 
+                    especially given the ever increasing speed of SATA disks).
+                  </para>
+                </content>
+              </section>
+            </sections>
+          </section>
+          <section address="History_SATA">
+            <title>ATA as Serial ATA (SATA)</title>
+            <sections>
+              <section address="History_SATA_Improvements">
+                <title>Improvements with SATA</title>
+                <content>
+                  <para>
+                    The key improvement is the increase in data transfer rate (in both directions). 
+                    PATA has a maximum data transfer rate of 133MBps where as SATA (latest revision 
+                    3.2 - SATA Express) can do up to 2,000MBps which is 15 times faster.
+                  </para>
+                  <para>
+                    SATA also offers physical improvements such as allowing more disks to be connected
+                    to the motherboard and thinner cables making them easier to use. Interestingly, it
+                    is possible that the thinner cable allows increased air flow in laptops and 
+                    high-performance PCs allowing better cooling of important components such as CPUs
+                    and GPUs.
+                  </para>
+                </content>
+              </section>
+              <section address="History_SATA_MoreComplexThanPATA">
+                <title>SATA much more complex than PATA</title>
+                <content>
+                  <para>
+                    SATA drives offer significantly faster disk access times and much higher data 
+                    transfer rates along with high burst access speeds and the ability to connect 
+                    more devices to the bus than PATA allows. However, this comes at the cost of 
+                    complexity. To use a SATA drive you must support the significantly more complex 
+                    protocol along with the Advance Host Controller Interface hardware that Intel 
+                    developed to allow SATA bus control.
+                  </para>
+                </content>
+              </section>
+              <section address="History_SATA_BackwardsCompatibility">
+                <title>Not always backwards compatible</title>
+                <content>
+                  <para>
+                    SATA is also often not backwards compatible. Older SATA devices would present 
+                    themselves as PATA devices and then require the BIOS or OS to switch the bus 
+                    to SATA mode. However, newer SATA devices are either in SATA mode or PATA 
+                    mode and only a BIOS setting can be used to switch (if available). However, 
+                    switching will often cause the pre-installed OS to stop working since it will 
+                    expect a SATA drive. As a consequence, to run a hobby OS on a very new laptop 
+                    or desktop, SATA support will be required, unless USB support or similar is 
+                    added.
+                  </para>
+                </content>
+              </section>
+              <section address="History_SATA_GetPATAWorkingFirst">
+                <title>Get PATA working first</title>
+                <content>
+                  <para>
+                    Due to PATA's comparative simplicity, wide support in virtualisation and 
+                    high stability, it is worth getting PATA working before moving on to SATA. 
+                    This will allow you to develop partition and file system drivers that work 
+                    and are stable, thus eliminating two big areas of potential issue when 
+                    getting a SATA driver to work.
+                  </para>
+                </content>
+              </section>
+            </sections>
+          </section>
+      </sections>
+    </section>
+    
+    <section address="Overview">
+      <title>Overview</title>
+      <sections>
+          <section address="Overview_WhatDoesATADo">
+              <title>What does ATA do?</title>
+              <content>
+                  <para>
+                    ATA is a hardware standard which sets out the physical cable, electronic signal 
+                    and hardware requirements for connecting storage devices. For PATA, the cable is 
+                    a 40 or 80 pin connector which can transfer 16 bits at a time. The later versions 
+                    of PATA used an 80-pin connector to increase the maximum transfer speed. All the 
+                    additional wires were shielding wires connected to the ground pin. Thus, the 
+                    connectors (plugs/sockets) remained 40-pins wide, thereby ensuring backwards 
+                    compatibility.
+                  </para>
+                  <para>
+                    ATA also sets out standards for handling hardware faults, unrecoverable errors 
+                    and one possible standard for connecting (P)ATA devices to the motherboard and 
+                    processor. However, other possibilities do exist. Many PATA (and SATA) devices 
+                    now appear on the PCI bus.
+                  </para>
+                  <para>
+                    Lastly, ATA defines a basic protocol for communicating with disk devices. 
+                    Essentially a basic software protocol. This is the protocol used by IDE drives 
+                    such as hard disks. For CD Drives it is usually replaced by ATAPI.
+                  </para>
+              </content>
+          </section>
+          <section address="Overview_WhatDoesATAPIDo">
+              <title>What does ATAPI do?</title>
+              <content>
+                  <para>
+                    ATAPI is a software standard ("packet interface") which sets out new command and 
+                    data transfer protocols that sit on top of (but essentially replace) the basic 
+                    ATA protocol. This is still separate from the hardware standard though. The 
+                    hardware standard sets out how to transfer individual bits and bytes. The 
+                    software standard sets out what those bits and bytes actually mean and in what 
+                    order they must be sent. The ATAPI protocol makes used of only one of the 
+                    original ATA commands (Identify packet). It replaces all other commands by SCSI 
+                    commands.
+                  </para>
+                  <para>
+                    In general, hard disks use plain PATA, CD Drives used PATAPI. PATAPI is itself 
+                    essentially SCSI commands.
+                  </para>
+              </content>
+          </section>
+          <section address="Overview_Commonality">
+              <title>How common is it?</title>
+              <content>
+                  <para>
+                    ATA is extremely common. It has been included in PCs and laptop for over a decade. 
+                    This means most PCs and laptops that are more than 3 years old will have PATA 
+                    support. However, with the recent introduction of SATA, some laptops and PCs no 
+                    longer include PATA connectors or support. The Sony Vaio Fit Multiflip 15A, for 
+                    example, only has a SATA drive with no detectable backwards compatibility for PATA.
+                  </para>
+                  <para>
+                    Note, many manufacturers or specifications list drives as IDE. As discussed 
+                    previously, this is broadly equivalent to a PATA drive. If your PC or laptop says 
+                    it has an IDE drive, then it has PATA support.
+                  </para>
+              </content>
+          </section>
+          <section address="Overview_Importance">
+              <title>Why is it important?</title>
+              <content>
+                  <para>
+                    ATA is important as it has long been the standard for hard disk and CD drive control. So much so, that 
+                    the only successful alternative connector for storage mediums (excluding ethernet, for obvious reasons)
+                    has been USB. 
+                  </para>
+                  <para>
+                    For a hobby OS developer, ATA is important as it (meaning PATA) is the easiest route to accessing 
+                    permanent storage. The only 4 other viable alternatives are: 
+                  </para>
+                  <list class="ordered">
+                      <listItem>
+                        <para>Network stack to access cloud files,</para>
+                      </listItem>
+                      <listItem>
+                        <para>Serial connection to a file stored on a connected or host computer,</para>
+                      </listItem>
+                      <listItem>
+                        <para>Firewire connection to a file stored on a connected or host computer,</para>
+                      </listItem>
+                      <listItem>
+                        <para>USB Mass Storage support (which is recommended (necessary?) anyway)</para>
+                      </listItem>
+                  </list>
+                  <para>
+                    ATA (as PATA or SATA) is also important as the hard disk remains the primary boot device in most 
+                    tablets, laptops and PCs. To install an operating system in a way which is user friendly essentially
+                    requires you to install it to the primary boot device.
+                  </para>
+                  <para>
+                    Finally, for hobby OS developers, ATA support is useful as ATA is reliable and fairly easy to implement.
+                    This makes developing partition and file system drivers significantly easier as it eliminates a whole
+                    subsystem of potential error. Having tested, reliable file system drivers means writing USB and USB 
+                    Mass Storage support is easier.
+                  </para>
+              </content>
+          </section>
+          <section address="Overview_HDDVsCD">
+              <title>ATA for hard drives vs. CD drives</title>
+              <content>
+                  <para>
+                    The key difference is that hard drives use plain old PATA (or newer SATA). CD 
+                    Drives and other types of drive use PATAPI (or newer SATAPI). ATA only allows 
+                    for drives that are hard drives. The Packet Interface adds the additional
+                    protocol which allows commands for other drive types to be controlled. 
+                  </para>
+                  <para>
+                    Fling OS currently only supports PATA (hard disk) devices and not PATAPI (CD ROM) 
+                    devices. However, many modern laptops and PCs do not come with CD drives and 
+                    external drives are usually attached via USB. This means that CD drive support is 
+                    fairly unnecessary for a hobby OS.
+                  </para>
+              </content>
+          </section>
+          <section address="Overview_Complexity">
+              <title>How complex to program?</title>
+              <content>
+                  <para>
+                    PATA support is relatively simply to program. It requires only a basic knowledge 
+                    of IO ports, hard disk structure and the protocol. There is plenty of information 
+                    on the first two but details of the protocol are hard to come by in a useful way. 
+                    This article will cover basic hard disk structure (ignoring legacy CHS structure 
+                    wherever possible) and cover the practical implementation of the protocol in 
+                    detail.
+                  </para>
+              </content>
+          </section>
+          <section address="Overview_BasicIdeas">
+              <title>Basic ideas</title>
+              <content>
+                  <para>
+                    ATA devices each come with a number of registers. These registers are accessed 
+                    through IO ports. The IO port numbers are determined by which ATA bus the 
+                    device is attached to. ATA supports a Primary bus and a Secondary bus, each of 
+                    which can have at least a Master device and up to one Slave device. This allows 
+                    a maximum of 4 devices to be attached. Up to 2 devices share the same set of 
+                    ports. As a consequence, you can only access one of the two devices on a single 
+                    bus at the same time.
+                  </para>
+                  <para>
+                    There are a number of different things you can do with an ATA device. But to do 
+                    anything you must first detect what devices are present and then select the one 
+                    you want to communicate with. This utilizes the Device Select register (/port). 
+                    Once you have selected a device you can send it commands through the Command 
+                    register. Data is sent though the Data register and there are a few other 
+                    registers for extra important information.
+                  </para>
+                  <para>
+                    Accessing a memory location on a disk is done in blocks. The block size used 
+                    depends on the disk but in general the minimum block size if 512 bytes. This 
+                    means you can only read or write a minimum of 512 bytes at a time. Each block 
+                    has an address. Not so long ago, disks were accessed based on their real-world 
+                    physical structure. Addresses were supplied as three numbers to select which 
+                    Cylinder, Head and Sector. However, with advances in modern hardware, disks now 
+                    used Logical Block Addressing (LBA for short). 
+                  </para>
+                  <para>
+                    There are a fixed number of LBAs on a disk and the block size is fixed. So if 
+                    the block size is 512, and you want the byte 1024, you would read LBA 2 from 
+                    the disk. Nowadays, all disks are accessed via LBA not CHS addresses so in 
+                    this article we will focus on LBA addresses.
+                  </para>
+              </content>
+          </section>
+          <section address="Overview_PIOMode_Meaning">
+              <title>PIO mode : What does PIO stand for?</title>
+              <content>
+                  <para>
+                    PIO stands for Programmed Input/Output. It is a common way of connecting an 
+                    external device to the CPU. It allows data to be transferred by using 
+                    input/output commands to addresses in the I/O address space. These are often 
+                    referred to as IO ports. 
+                  </para>
+                  <para>
+                    PIO is in contrast to DMA (Direct Memory Access) where data is transferred by 
+                    directly reading/writing memory addresses. PIO is significantly more costly 
+                    than DMA since it requires the CPU to transfer every byte of data not via 
+                    memory. PIO mode is still important because when a CPU is just beginning to 
+                    boot it must be able to load from a boot device without knowledge of what 
+                    memory is available.
+                  </para>
+              </content>
+          </section>
+          <section address="Overview_PIOMode_WhichDeviceTypes">
+              <title>PIO mode : Which types of device?</title>
+              <content>
+                  <para>
+                    ATA PIO mode is now the default mode at startup for all ATA compliant devices. 
+                    It is what allows the CPU to use any ATA device as a boot device. However, 
+                    many modern devices which are ATA compliant also support switching to more 
+                    advanced modes such as DMA.
+                  </para>
+              </content>
+          </section>
+      </sections>
+    </section>
+    
+    <section address="Hardware">
+      <title>Hardware</title>
+      <sections>
+          <section address="Hardware_Overview">
+              <title>Overview</title>
+              <content>
+                  <para>
+                    ATA hardware works by having a controller chip on the motherboard which links 
+                    the CPU IO ports or links memory to the pins of the IDE connector (the 
+                    physical cable). Each attached device also has a controller chip that 
+                    processes the signals on the cable and responds appropriately.
+                  </para>
+              </content>
+          </section>
+          <section address="Hardware_CablesAndConnectors">
+              <title>Cables &amp; Connectors</title>
+              <content>
+                  <para>
+                    Old ATA cables are 40-wires with 40-pin connectors at either end. Modern ATA 
+                    cables use the same size connector but have 80 wires in the cable. The 
+                    additional wires are in between the existing 40 wires and are connected to the 
+                    existing ground pin in the connector. The additional ground wires create a 
+                    shield between the data wires allowing them to use a higher data rate (as the 
+                    cross-wire inductive effects are significantly reduced).
+                  </para>
+              </content>
+          </section>
+          <section address="Hardware_VersionsOfPATA">
+              <title>Backwards Compatibility : Versions of PATA / IDE</title>
+              <content>
+                  <para>
+                    Hardware that is PATA or IDE is usually fully backwards compatible. The new 
+                    80-wire cables are fully compatible with devices designed to use the old 
+                    40-wire cable. However, new devices will not work with the old 40-wire cables 
+                    if they use the higher data rates introduced in newer PATA devices. 
+                  </para>
+              </content>
+          </section>
+          <section address="Hardware_SATAToPATA">
+              <title>Backwards Compatibility : SATA to PATA</title>
+              <content>
+                  <para>
+                    Some SATA devices support a PATA compatible mode but most new SATA devices do not. 
+                    All SATA devices support the IDENTIFY command, as required by the specification. 
+                    This allows your PATA driver to detect a SATA device but not retrieve any data 
+                    from it.
+                  </para>
+              </content>
+          </section>
+          <section address="Hardware_VirtualHardware">
+              <title>Virtual hardware / virtual disks / virtual machines</title>
+              <content>
+                  <para>
+                    Most VMs will give you a choice of device type to add. The choices are generally 
+                    listed as: IDE, SCSI and SATA. IDE means PATA, SCSI means PATAPI or SATAPI 
+                    (probably given the version choice later) and SATA means, well, SATA.
+                  </para>
+              </content>
+          </section>
+      </sections>
+    </section>
+    
+    <section address="Software">
+      <title>Software</title>
+      <sections>
+          <section address="Software_Introduction">
+              <title>Introduction</title>
+              <content>
+                  <para>
+                    This software section will cover how to implement a PATA-only driver but one 
+                    which is capable of detecting and cleanly handling PATAPI, SATA and SATAPI 
+                    devices. 
+                  </para>
+                  <para>
+                    From the information provided in earlier sections, the remaining technical 
+                    and practical information shouldn't be difficult to understand. If it is, 
+                    please provide feedback via the link at the bottom of the page so the article 
+                    can be improved.
+                  </para>
+                  <para>
+                    This implementation of a PATA driver will use Programmed I/O mode - the oldest 
+                    way of accessing PATA devices and the default way at startup. Regardless of 
+                    what technique you may wish to switch to (e.g. Direct Memory Access mode - DMA) 
+                    you need to use PIO mode initially to detect and configure devices. However, 
+                    PIO mode is slower than DMA mode (the only other mode available) since it uses 
+                    CPU IO Ports. For a fast, more modern PATA driver, you should consider adding 
+                    DMA mode to this driver.
+                  </para>
+                  <para>
+                    Finally, please note this implementation uses disk polling instead of IRQs 
+                    (interrupts) which makes it simpler but slower. It is not difficult to work 
+                    out how the code could be improved to use IRQs and non-blocking method calls 
+                    if that is what is desired. The IRQ numbers required are IRQ14 for the primary 
+                    bus and IRQ15 for the secondary bus. IRQs are also required for DMA mode. The 
+                    following section from OSDev may be useful: 
+                    <externalLink>
+                      <linkText>http://wiki.osdev.org/ATA_PIO_Mode#IRQs</linkText>
+                      <linkAlternateText>OSDev - PIO Mode - IRQs</linkAlternateText>
+                      <linkUri>http://wiki.osdev.org/ATA_PIO_Mode#IRQs</linkUri>
+                    </externalLink>
+                  </para>
+              </content>
+          </section>
+          <section address="Software_BasicOutline">
+              <title>Basic outline</title>
+              <content>
+                  <para>
+                    The following will outline all the steps, and in what order they may or must 
+                    occur, for a working PATA driver that can read and write hard disks:
+                  </para>
+                  <list class="ordered">
+                    <listItem>
+                      <para>Disable IRQS</para>
+                    </listItem>
+                    <listItem>
+                      <para>Enumerate buses:</para>
+                      <list class="ordered">
+                        <listItem>
+                          <para>Discover a particular drive (based on which bus and position on bus)</para>
+                        </listItem>
+                        <listItem>
+                          <para>Check drive type (PATA/PATAPI/SATA/SATAPI)</para>
+                        </listItem>
+                        <listItem>
+                          <para>Initialise the drive</para>
+                          <list class="ordered">
+                            <listItem>
+                              <para>Read version / model information</para>
+                            </listItem>
+                            <listItem>
+                              <para>Read block count (determines drive size)</para>
+                            </listItem>
+                          </list>
+                        </listItem>
+                      </list>
+                    </listItem>
+                    <listItem>
+                      <para>For a particular drive, A and B can be done in either order:</para>
+                      <para>A. To read:</para>
+                      <list class="ordered">
+                        <listItem>
+                          <para>Select sector (sets block number to read and size of read)</para>
+                        </listItem>
+                        <listItem>
+                          <para>Send the read command</para>
+                        </listItem>
+                        <listItem>
+                          <para>Read the data</para>
+                        </listItem>
+                      </list>
+                      <para>B. To write:</para>
+                      <list class="ordered">
+                        <listItem>
+                          <para>(Read in partial blocks to fill data to write to a whole number of blocks)</para>
+                        </listItem>
+                        <listItem>
+                          <para>Select sector (sets block number to read and size of read)</para>
+                        </listItem>
+                        <listItem>
+                          <para>Send the write command</para>
+                        </listItem>
+                        <listItem>
+                          <para>Write the data</para>
+                        </listItem>
+                        <listItem>
+                          <para>(Clean drive caches to ensure data written to disk)</para>
+                        </listItem>
+                      </list>
+                    </listItem>
+                  </list>
+                  <para>
+                    Please note: This sample driver only supports LBA28 mode and not LBA48 mode. 
+                    This limits the maximum disk size it is capable of accessing to 2^28 bits. 
+                    LBA48 mode is, essentially, an extension and can be added if required. Some 
+                    LBA48 information is provided in this article.
+                  </para>
+              </content>
+          </section>
+          <section address="Software_MainClasses">
+              <title>Main classes</title>
+              <content>
+                  <para>The recommended classes are:</para>
+                  <list class="bullet">
+                    <listItem>
+                      <para>ATA : Abstract base class for all ATA drive types. </para>
+                      <para>
+                        Contains properties common to all devices (i.e. bus, bus position (often 
+                        called Controller ID))
+                      </para>
+                    </listItem>
+                    <listItem>
+                      <para>
+                        ATAIOPorts : Groups together IO Port objects needed to read/write the ATA 
+                        specific IO ports.
+                      </para>
+                      <para>
+                        This allows an instance of ATAIOPorts to be passed to the driver so it 
+                        needn't worry about which IO Ports to use. It just accesses them through 
+                        this class. This class creates IO Port objects which point to the correct 
+                        ports when it is initialised. The ports for primary and secondary bus are 
+                        different.
+                      </para>
+                    </listItem>
+                    <listItem>
+                      <para>
+                        ATAManager : Handles overall ATA functionality such as bus enumeration and 
+                        initialising all drive types not just PATA.
+                      </para>
+                    </listItem>
+                    <listItem>
+                      <para>PATA : The main PATA driver. </para>
+                      <para>
+                        Represents a PATA drive and has code for handling a PATA drive. Also contains 
+                        the base code for detecting drives and handling non-PATA drives.
+                      </para>
+                    </listItem>
+                    <listItem>
+                      <para>PATAPI : A stub class for a PATAPI drive.</para>
+                    </listItem>
+                    <listItem>
+                      <para>SATA : A stub class for a SATA drive.</para>
+                    </listItem>
+                    <listItem>
+                      <para>SATAPI : A stub class for a SATAPI drive.</para>
+                    </listItem>
+                  </list>
+                  <para>
+                     Stub classes allow you to keep track of unsupported drives so they can be 
+                     displayed to the user, even if you aren't able to use them. This is helpful 
+                     during debugging and setup.
+                  </para>
+              </content>
+          </section>
+          <section address="Software_Enumerables">
+              <title>Enumerables</title>
+              <content>
+                  <para>
+                    A number of enumerables are used in the implementation so their details are 
+                    presented here. All of these enumerations can be found in the places specified 
+                    in the Fling OS code.
+                  </para>
+                  <code lang="" tabSize="4">
+ControllerID (inside ATA class)
+- - - - - - -
+Primary   = 0, //(Value is arbitrary)
+Secondary = 1 //(Value is arbitrary)
+- - - - - - -
+                
+                
+BusPosition (inside ATA class)
+- - - - - - -
+Master = 0, //(Value is arbitrary)
+Slave  = 1 //(Value is arbitrary)
+- - - - - - -
+                
+                
+Status (Flags, inside PATA class)
+- - - - - - - 
+None       = 0x00,
+Busy       = 0x80,
+ATA_SR_DRD = 0x40,
+ATA_SR_DF  = 0x20,
+ATA_SR_DSC = 0x10,
+DRQ        = 0x08,
+ATA_SR_COR = 0x04,
+ATA_SR_IDX = 0x02,
+Error      = 0x01
+- - - - - - -
+                
+                
+Error (Flags, inside PATA class)
+- - - - - - - 
+ATA_ER_BBK   = 0x80,
+ATA_ER_UNC   = 0x40,
+ATA_ER_MC    = 0x20,
+ATA_ER_IDNF  = 0x10,
+ATA_ER_MCR   = 0x08,
+ATA_ER_ABRT  = 0x04,
+ATA_ER_TK0NF = 0x02,
+ATA_ER_AMNF  = 0x01
+- - - - - - - 
+                
+                
+DriveSelectValue (Flags, inside PATA class)
+- - - - - - -
+// Bits 0-3: Head Number for CHS.
+// Bit 4: Slave Bit. (0: Selecting Master Drive, 1: Selecting Slave Drive).
+                
+Slave   = 0x10,
+// Bit 6: LBA (0: CHS, 1: LBA).
+LBA     = 0x40,
+// Bit 5: Obsolete and isn't used, but should be set.
+// Bit 7: Obsolete and isn't used, but should be set. 
+Default = 0xA0
+- - - - - - -
+                
+                
+Cmd (Commands, inside PATA class)
+- - - - - - - 
+ReadPio        = 0x20,
+ReadPioExt     = 0x24,
+ReadDma        = 0xC8,
+ReadDmaExt     = 0x25,
+WritePio       = 0x30,
+WritePioExt    = 0x34,
+WriteDma       = 0xCA,
+WriteDmaExt    = 0x35,
+CacheFlush     = 0xE7,
+CacheFlushExt  = 0xEA,
+Packet         = 0xA0,
+IdentifyPacket = 0xA1, // Unused. This is for PATAPI devices only.
+Identify       = 0xEC,
+Read           = 0xA8,
+Eject          = 0x1B
+- - - - - - -
+                
+                
+SpecLevel (Specification level = drive type and identifier, inside PATA class)
+- - - - - - - 
+Null   = 0x0000, // This value is arbitrary and has no meaning in the ATA spec.
+PATA   = 0x0001, // This value is arbitrary and has no meaning in the ATA spec.
+SATA   = 0xC33C, // This value is NOT arbitrary. It is the SATA device identifier.
+PATAPI = 0xEB14, // This value is NOT arbitrary. It is the PATAPI device identifier.
+SATAPI = 0x9669  // This value is NOT arbitrary. It is the SATAPI device identifier.
+- - - - - - -                  
+                  </code>
+              </content>
+          </section>
+          <section address="Software_IOPorts">
+              <title>IO Ports</title>
+              <content>
+                  <para>
+                    There are four base address register ports (BARs for short). Reading the correct 
+                    two provides the two base addresses for the IO ports used by either the primary 
+                    or secondary bus. The IO ports used by ATA are calculated as fixed offsets from 
+                    these base addresses. The offsets are the same for both the primary and 
+                    secondary bus.
+                  </para>
+                  <para>
+                    The following lists the port names and their respective addresses. Not all ports 
+                    are necessary for a basic PATA driver. necessary ports are marked with an 
+                    asterisk (*).
+                  </para>
+                  <code lang="" tabSize="4">
+*BAR 0 - Primary = 0x01F0, Secondary = 0x0170
+*BAR 1 - Primary = 0x03F4, Secondary = 0x0374
+                
+*Data          - BAR0 + 0
+Error          - BAR0 + 1 : Read only
+Features       - BAR0 + 1 : Write only
+*Sector Count  - BAR0 + 2
+*LBA0          - BAR0 + 3
+*LBA1          - BAR0 + 4
+*LBA2          - BAR0 + 5
+*Device Select - BAR0 + 6
+*Command       - BAR0 + 7 : Write only
+*Status        - BAR0 + 7 : read only
+Sector Count 1 - BAR0 + 8 : Used for LBA48 mode.
+LBA3           - BAR0 + 9 : Used for LBA48 mode.
+LBA4           - BAR0 + 10 : Used for LBA48 mode.
+LBA5           - BAR0 + 11 : Used for LBA48 mode.
+                
+*Control       - BAR1 + 2
+Device Address - BAR1 + 3 : Unknown purpose. Please contact via link at the bottom of 
+                            the page if you know more about this register.
+                  </code>
+                  <para>
+                    You will notice that some port addresses are used twice. They are always separated 
+                    by read / write only conditions. This means there are actually two registers at 
+                    the same address but only one can be written to and the other read from. Take care 
+                    when using these ports that you don't accidentally try to write to something which 
+                    is read only since it can overwrite other data without throwing an error.
+                  </para>
+              </content>
+          </section>
+          <section address="Software_DisablingIRQs">
+              <title>Disabling IRQs</title>
+              <content>
+                  <para>Simply write 0x02 to the Control register (/port) to disable ALL ATA IRQs.</para>
+              </content>
+          </section>
+          <section address="Software_">
+              <title>Waiting 400ns</title>
+              <content>
+                  <para>
+                    Due to PATA and IO port latency, various parts of the implementation call for a 
+                    400ns delay. The widely accepted way to do this is to read the Status register 
+                    (one byte) four times which creates an approximately 400ns delay. The value 
+                    returned by reading the port should be ignored as it may well be a transitioning 
+                    value and so be inaccurate.
+                  </para>
+              </content>
+          </section>
+          <section address="Software_SendingCommands">
+              <title>Sending commands</title>
+              <content>
+                  <para>
+                    To send a command to a drive (after setup such as selecting the drive) the 
+                    following steps must be performed:
+                  </para>
+                  <list class="ordered">
+                    <listItem>
+                      <para>Write the command byte to Command port</para>
+                    </listItem>
+                    <listItem>
+                      <para>
+                        Wait for the "busy" status bit to clear or "error" bit to set or an arbitrary 
+                        timeout condition is met. This involves a loop which must occur at least 
+                        once (this is best implemented using a do-while loop) and contains these steps:
+                      </para>
+                      <list class="ordered">
+                        <listItem>
+                          <para>Wait for 400ns (see "Waiting for 400ns" above).</para>
+                        </listItem>
+                        <listItem>
+                          <para>Read "Status" register (one byte)</para>
+                        </listItem>
+                      </list>
+                    </listItem>
+                    <listItem>
+                      <para>Check for an error by checking "error" bit</para>
+                      <list class="ordered">
+                        <listItem>
+                          <para>
+                            If the error bit is set, you must handle the error as you see fit. 
+                            Aborting the command will require your code to fail gracefully or 
+                            crash the OS.
+                          </para>
+                        </listItem>
+                      </list>
+                    </listItem>
+                    <listItem>
+                      <para>Return the Status (for use by the caller)</para>
+                    </listItem>
+                  </list>
+                  <para>
+                    The Status register returns a value which corresponds to the Status enumerable. 
+                    (See section above.)
+                  </para>
+              </content>
+          </section>
+          <section address="Software_InitialisationBusEnumeration">
+              <title>Initialisation / Bus Enumeration</title>
+              <content>
+                  <para>
+                    Initialisation is bus enumeration. Whatever is managing all ATA devices should 
+                    attempt to discover a drive on all the buses and positions. This means going 
+                    through primary and secondary buses and master and slave positions on them one 
+                    by one. Four simple calls really.
+                  </para>
+                  <para>
+                    The driver should try to initialise a device by calling the PATA class init code
+                    (probably a constructor). This should perform the Discover Drive process. If a PATA
+                    drive is discovered, the Drive Init process should then be performed. If not, the
+                    drive type information (PATAPI/SATA/SATAPI) should be passed up to the ATA driver 
+                    for it to handle.
+                  </para>
+                  <para>
+                    If the Discover Drive process returns SpecLevel.Null, it indicates no drive is 
+                    attached and bus enumeration should move to the next position on the bus or to 
+                    the next bus.
+                  </para>
+                  <para>
+                    A drive can be attached to the slave position on a bus without a master drive being 
+                    attached. This means all positions on all buses should be enumerated regardless of
+                    the state of other positions.
+                  </para>
+              </content>
+          </section>
+          <section address="Software_DriveSelect">
+              <title>Drive Select</title>
+              <content>
+                  <para>
+                    All operations which follow will require drive selection to be done at some point 
+                    prior to the operation occurring. Drive selection is performed by writing to the
+                    Drive Select register. Drive Select tells the drives on the ATA bus which one
+                    is being sent commands or data. You should not try to issue a Drive Select while 
+                    there is a pending or ongoing operation (such as read/write).
+                  </para>
+                  <para>
+                    To perform Drive Select you should write the selection byte to the Drive Select 
+                    register then wait 400ns. The selection byte is determined as follows:
+                  </para>
+                  <para>
+                    If the next command is not the Identify command, the LBA (Logical Block Address) 
+                    bit should be set and the value used as follows:
+                  </para>
+                  <code lang="" tabSize="4">
+DriveSelectValue.Default | DriveSelectValue.LBA | (busPosition == BusPosition.Slave ? DriveSelectValue.Slave : 0)) | LBAHigh4Bits
+                  </code>
+                  <para>
+                    Otherwise, the selection byte should be this:
+                  </para>
+                  <code lang="" tabSize="4">
+DriveSelectValue.Default | (busPosition == BusPosition.Slave ? DriveSelectValue.Slave : 0)) | LBAHigh4Bits
+                  </code>
+                  <para>
+                    Where LBAHigh4Bits is the value of the high four bits of the 28-bit sector number 
+                    to be accessed. This should be set to 0 during Drive Discovery. I am uncertain 
+                    how these bits are treated in LBA48 mode. If you know more, please provide 
+                    feedback via the link at the bottom of the page.
+                  </para>
+              </content>
+          </section>
+          <section address="Software_DriveDiscovery">
+              <title>Drive Discovery</title>
+              <content>
+                  <para>
+                    Drive Discovery should be a very simple process but it is made more complicated by the
+                    fact that some manufacturers failed to stick to the specification when developing 
+                    PATAPI, SATA and SATAPI devices. This means the process is a bit more convoluted to
+                    ensure all non-PATA deices are detected properly.
+                  </para>
+                  <para>
+                    The following steps should be followed for Drive Discovery. Drive Discovery should be
+                    immediately followed by Drive Init is a PATA device is found. There should be no
+                    commands sent over ATA between Drive Discovery and Drive Init if a PATA device is
+                    detected.
+                  </para>
+                  <list class="ordered">
+                    <listItem>
+                      <para>Select Drive (set LBAHigh4Bits to 0, LBA bit should NOT be set)</para>
+                    </listItem>
+                    <listItem>
+                      <para>Write "0" to SevtorCount, LBA0, LBA1 and LBA2 registers</para>
+                    </listItem>
+                    <listItem>
+                      <para>Send the Identify command, store the Status value returned by Send Command</para>
+                    </listItem>
+                    <listItem>
+                      <para>Check to see if the Error bit is set. If it is:</para>
+                      <para>
+                        The device is not a PATA drive. An error flag is the expected response from
+                        PATAPI, SATA and SATAPI devices.
+                      </para>
+                      <list class="ordered">
+                        <listItem>
+                          <para>
+                            Return the combined value from LBA1 and LBA2 (e.g. LBA2 &lt;&lt; 8 | LBA1). The combined
+                            value tells you the Specification Level of the device (see SpecLevel enumerable).
+                          </para>
+                        </listItem>
+                      </list>
+                    </listItem>
+                    <listItem>
+                      <para>Check to see if Status is "0". If it is:</para>
+                      <list class="ordered">
+                        <listItem>
+                          <para>No drive is attached. Return SpecLevel.Null.</para>
+                        </listItem>
+                      </list>
+                    </listItem>
+                    <listItem>
+                      <para>Check the Status value for other SpecLevel Id's:</para>
+                      <para>
+                        This is due to non-conformant devices which don't throw an error even if 
+                        they are non-PATA devices.
+                      </para>
+                      <list class="ordered">
+                        <listItem>
+                          <para>
+                            Compare the combined value from LBA1 and LBA2 (e.g. LBA2 &lt;&lt; 8 | LBA1) to non-arbitrary
+                            values in the SpecLevel enumerable. If one is found, that is the spec level of the device 
+                            so return it. 
+                          </para>
+                        </listItem>
+                        <listItem>
+                          <para>
+                            If the combined value from LBA1 &amp; LAB2 is non-zero, return SpecLevel.Null.
+                          </para>
+                        </listItem>
+                        <listItem>
+                          <para>
+                            Otherwise, continue.
+                          </para>
+                        </listItem>
+                      </list>
+                    </listItem>
+                    <listItem>
+                      <para>Do-while loop:</para>
+                      <list class="ordered">
+                        <listItem>
+                          <para>Wait 400ns</para>
+                        </listItem>
+                        <listItem>
+                          <para>Read Status register (one-byte)</para>
+                        </listItem>
+                        <listItem>
+                          <para>
+                            Condition: Loop while DRQ (Data Request bit) and Error bits are not set 
+                            in Status. May also want to apply an arbitrary timeout to this.
+                          </para>
+                        </listItem>
+                      </list>
+                    </listItem>
+                    <listItem>
+                      <para>Check if Error bit is set</para>
+                    </listItem>
+                    <listItem>
+                      <para>Check if DRQ bit is not set</para>
+                    </listItem>
+                    <listItem>
+                      <para>Return SpecLevel.PATA - This IS a PATA drive :D</para>
+                    </listItem>
+                    <listItem>
+                      <para>(Immediately call Drive Init now that a PATA drive has been found).</para>
+                    </listItem>
+                  </list>
+              </content>
+          </section>
+          <section address="Software_DriveInit">
+              <title>Drive Init / Drive Info</title>
+              <content>
+                  <para>
+                    Drive Init involves reading drive information (such as firmware revision) and drive
+                    size. IMPORTANT: The information MUST be read from the drive before anything can
+                    continue. This is because the data is "in the pipeline" so to speak. Nothing else
+                    can come through until the information is cleared (i.e. read).
+                  </para>
+                  <para>
+                    The information read includes the Serial Number string, Firmware revision string,
+                    Model Number string and disk size. The data is an array of 256 UInt16s. The read 
+                    must be read as words (UInt16s) not single bytes. At an assembly level, this
+                    means calling "in word ax, dx" instead of "in byte al, dx".
+                  </para>
+                  <para>
+                    The strings are one-byte ASCII characters at specific offsets in the data read. The
+                    Block Count (i.e. sector count) is "the value one greater than the total number of 
+                    user-addressable sectors".
+                  </para>
+                  <para>
+                    The following details the indices (in the UInt16 array) and sizes of the values 
+                    (in terms of number of UInt16s):
+                  </para>
+                  <list class="nobullet">
+                    <listItem>
+                      <para>Serial Number      - Type: ASCII String, Index: 10, Length:20</para>
+                    </listItem>
+                    <listItem>
+                      <para>Firmware Revision  - Type: ASCII String, Index: 23, Length:8</para>
+                    </listItem>
+                    <listItem>
+                      <para>Model Number       - Type: ASCII String, Index: 27, Length:40</para>
+                    </listItem>
+                    <listItem>
+                      <para>Block Count (size) - Type: ULong,        Index: 60, Length 2</para>
+                    </listItem>
+                  </list>
+                  <para>
+                    And in LBA48 mode, the Block Count above should be ignored if:
+                  </para>
+                  <list class="nobullet">
+                    <listItem>
+                      <para>
+                        (UInt16Array[82] &amp; 0x0400) != 0
+                      </para>
+                    </listItem>
+                  </list>
+                  <para>
+                    The block count used should be the following:
+                  </para>
+                  <list class="nobullet">
+                    <listItem>
+                      <para>
+                        Block Count (size) - Type: ULong,        Offset: 100, Length 4
+                      </para>
+                    </listItem>
+                  </list>
+                  <para>
+                    Thus:
+                  </para>
+                  <code lang="" tabSize="4">
+blockCount = (xBuff[61] &lt;&lt; 16 | xBuff[60]) - 1;
+bool LBA48Capable = (xBuff[83] &amp; 0x400) != 0;
+if (LBA48Capable)
+{
+    blockCount = (xBuff[103] &lt;&lt; 48 | xBuff[102] &lt;&lt; 32 | xBuff[101] &lt;&lt; 16 | xBuff[100]) - 1;
+    LBA48Mode = true;
+}
+                  </code>
+              </content>
+          </section>
+          <section address="Software_SelectSector">
+              <title>Select Sector</title>
+              <content>
+                <para>
+                  To be able to read/write a drive, the drive needs to know which sectors to read or 
+                  write. Selecting a sector is the process of selecting a drive, telling it the sector 
+                  to start at and the number of sectors to read/write.
+                </para>
+                <para>
+                  To select a sector, the following steps must be performed:
+                </para>
+                <list class="ordered">
+                  <listItem>
+                    <para>
+                      Let the starting sector number be SectorNum and the number of sectors to 
+                      read/write to be SectorCount
+                    </para>
+                  </listItem>
+                  <listItem>
+                    <para>Perform the Select Drive process.</para>
+                    <para>Note: LBAHigh4Bits should be set to (byte)(SectorNum &gt;&gt; 24).</para>
+                    <para>Note: The LBA bit should be set.</para>
+                  </listItem>
+                  <listItem>
+                    <para>Write the sector count (as a byte) to the SectorCount register.</para>
+                  </listItem>
+                  <listItem>
+                    <para>Write the sector number (LBA) to the LBA registers.</para>
+                    <para>The LBA is written as single bytes to each LBA port.</para>
+                    <para>For LBA28 the following code sample demonstrates the necessary steps:</para>
+                    <code lang="" tabSize="4">
+IO.LBA0.Write_Byte((byte)(aSectorNo &amp; 0xFF));
+IO.LBA1.Write_Byte((byte)((aSectorNo &amp; 0xFF00) &gt;&gt; 8));
+IO.LBA2.Write_Byte((byte)((aSectorNo &amp; 0xFF0000) &gt;&gt; 16));
+                    </code>                    
+                  </listItem>
+                </list>
+              </content>
+          </section>
+          <section address="Software_ReadingAndWriting">
+              <title>Reading &amp; Writing</title>
+              <content>
+                  <para>
+                    To read or write one or more sectors, the following steps should be performed:
+                  </para>
+                  <list class="ordered">
+                    <listItem>
+                      <para>Perform the Select Sector process for the sectors to be read/written</para>
+                    </listItem>
+                    <listItem>
+                      <para>Send the ReadPio or WritePio command as appropriate</para>
+                    </listItem>
+                    <listItem>
+                      <para>
+                        Read / write the data from / to the Data port. 
+                      </para>
+                      <para>
+                        Note: The data needs to be read or written in words (NOT bytes).  
+                        At an assembly level, this means calling "in word ax, dx" instead of 
+                        "in byte al, dx".
+                      </para>
+                    </listItem>
+                  </list>
+              </content>
+          </section>
+      </sections>
+    </section>
+    
+    <section address="ExampleCode">
+      <title>Example Code</title>
+      <sections>
+          <section address="ExampleCode_Overview">
+              <title>Overview</title>
+              <content>
+                  <para>
+                    The sample code provided here contains everything required to implement PATA support for hard
+                    disks. It also includes code for cleanly handling PATAPI, SATA and SATAPI devices.
+                  </para>
+                  <para>
+                    The code is a direct copy of the Fling OS source code from 3rd February 2015. Most is in C# but
+                    for reference the IO Port x86-32bit assembler code is included.
+                  </para>
+              </content>
+          </section>
+          <section address="ExampleCode_Download">
+              <title>Download</title>
+              <content>
+                  <para>
+                    <externalLink>
+                      <linkText>ATA - 2015-02-03</linkText>
+                      <linkAlternateText>ATA - 2015-02-03</linkAlternateText>
+                      <linkUri>/Source%20Samples/ATA%20-%202015-02-03.zip</linkUri>
+                    </externalLink>
+                  </para>
+              </content>
+          </section>
+      </sections>
+    </section>
+    
+    <section address="CommonProblems">
+      <title>Common Problems</title>
+      <sections>
+          <section address="CommonProblems_DriveSelection">
+              <title>Drive Selection (often on secondary bus)</title>
+              <content>
+                  <para>
+                    A common problem with ATA is drive/device selection. This is a bit of a misleading 
+                    trail, as I experienced. The problem is often not device selection. If you can 
+                    select and use a PATA hard drive then your code is working. The issue is more 
+                    likely to be the device is actually PATAPI (i.e. SCSI ATA) or SATA/SATAPI. For
+                    example, a CD Drive is a PATAPI device.
+                  </para>
+                  <para>
+                    Unfortunately, common samples of "PATA only" code on the internet fail to handle 
+                    PATAPI/SATA/SATAPI devices properly and so hang when one is encountered during 
+                    bus enumeration. This gives the impression that an entire bus is failing to 
+                    work, often the secondary bus. 
+                  </para>
+                  <para>
+                    To fix the issue, take a look at the sample code which demonstrates how to handle 
+                    PATAPI/SATA/SATAPI devices without hanging.
+                  </para>
+              </content>
+          </section>
+          <section address="CommonProblems_CDDrives">
+              <title>CD Drives</title>
+              <content>
+                  <para>
+                    CD Drives are PATAPI devices and often cause "PATA only" code samples to hang 
+                    during device enumeration. Failing that, PATA only code simply cannot retrieve 
+                    data from PATAPI devices. Take a look at the sample code which demonstrates how 
+                    to detect and avoid PATAPI/SATA/SATAPI devices.
+                  </para>
+              </content>
+          </section>
+          <section address="CommonProblems_DiskLockSecurity">
+              <title>Disk Lock / Security</title>
+              <content>
+                  <para>
+                    Some hard-disk and CD drives come with locking or security mechanisms which 
+                    prevent them being read and/or written to until the lock is switched off or 
+                    a security code is passed. Fling OS currently does not handle these devices. 
+                    However, I have yet to come across one "in the wild" so if you've found one, 
+                    good work! Google just became your best friend... ;)
+                  </para>
+              </content>
+          </section>
+          <section address="CommonProblems_SATARAIDDrives">
+              <title>SATA / RAID Drives</title>
+              <content>
+                  <para>
+                    Take a look at the sample code which demonstrates how to detect and avoid 
+                    PATAPI/SATA/SATAPI devices. If you want PATAPI/SATA/SATAPI/RAID support, 
+                    please check the other Fling OS reference articles or research further online.
+                  </para>
+              </content>
+          </section>
+      </sections>
+    </section>
+    
+    <section address="References">
+      <title>References</title>
+      <content>
+        <para>
+          The following links were valid as of 27th January 2015. 
+        </para>
+        <list class="bullet">
+          <listItem>
+            <para>
+              <externalLink>
+                <linkText>http://en.wikipedia.org/wiki/Parallel_ATA</linkText>
+                <linkAlternateText>Wikipedia - Parallel ATA</linkAlternateText>
+                <linkUri>http://en.wikipedia.org/wiki/Parallel_ATA</linkUri>
+              </externalLink>
+            </para>
+          </listItem>
+          <listItem>
+            <para>
+              <externalLink>
+                <linkText>http://en.wikipedia.org/wiki/ATA_Packet_Interface</linkText>
+                <linkAlternateText>Wikipedia - ATA Packet Interface</linkAlternateText>
+                <linkUri>http://en.wikipedia.org/wiki/ATA_Packet_Interface</linkUri>
+              </externalLink>
+            </para>
+          </listItem>
+          <listItem>
+            <para>
+              <externalLink>
+                <linkText>http://en.wikipedia.org/wiki/Programmed_input/output</linkText>
+                <linkAlternateText>Wikipedia - Programmed Input/Output (PIO)</linkAlternateText>
+                <linkUri>http://en.wikipedia.org/wiki/Programmed_input/output</linkUri>
+              </externalLink>
+            </para>
+          </listItem>
+          <listItem>
+            <para>
+              <externalLink>
+                <linkText>http://wiki.osdev.org/ATA_PIO_Mode</linkText>
+                <linkAlternateText>OSDev - ATA PIO Mode</linkAlternateText>
+                <linkUri>http://wiki.osdev.org/ATA_PIO_Mode</linkUri>
+              </externalLink>
+            </para>
+          </listItem>
+          <listItem>
+            <para>
+              <externalLink>
+                <linkText>http://wiki.osdev.org/ATA_read/write_sectors</linkText>
+                <linkAlternateText>OSDev - ATA read/write sectors</linkAlternateText>
+                <linkUri>http://wiki.osdev.org/ATA_read/write_sectors</linkUri>
+              </externalLink>
+            </para>
+          </listItem>
+          <listItem>
+            <para>
+              <externalLink>
+                <linkText>http://wiki.osdev.org/LBA</linkText>
+                <linkAlternateText>OSDev - LBA</linkAlternateText>
+                <linkUri>http://wiki.osdev.org/LBA</linkUri>
+              </externalLink>
+            </para>
+          </listItem>
+          <listItem>
+            <para>
+              <externalLink>
+                <linkText>http://wiki.osdev.org/PCI_IDE_Controller</linkText>
+                <linkAlternateText>OSDev - PCI IDE Controller</linkAlternateText>
+                <linkUri>http://wiki.osdev.org/PCI_IDE_Controller</linkUri>
+              </externalLink>
+            </para>
+          </listItem>
+          <listItem>
+            <para>
+              <externalLink>
+                <linkText>http://wiki.osdev.org/SATA</linkText>
+                <linkAlternateText>OSDev - SATA</linkAlternateText>
+                <linkUri>http://wiki.osdev.org/SATA</linkUri>
+              </externalLink>
+            </para>
+          </listItem>
+          <listItem>
+            <para>
+              <externalLink>
+                <linkText>http://www.computerhope.com/issues/ch001325.htm</linkText>
+                <linkAlternateText>Computer Hope - Advantages of SATA over PATA</linkAlternateText>
+                <linkUri>http://www.computerhope.com/issues/ch001325.htm</linkUri>
+              </externalLink>
+            </para>
+          </listItem>
+          <listItem>
+            <para>
+              <externalLink>
+                <linkText>http://en.wikipedia.org/wiki/List_of_device_bit_rates</linkText>
+                <linkAlternateText>Wikipedia - List of device bit rates</linkAlternateText>
+                <linkUri>http://en.wikipedia.org/wiki/List_of_device_bit_rates</linkUri>
+              </externalLink>
+            </para>
+          </listItem>
+        </list>
+      </content>
+    </section>
+    
     <relatedTopics>
-      <!-- One or more of the following:
-           - A local link
-           - An external link
-           - A code entity reference
-
-      <link xlink:href="Other Topic's ID"/>
-      <link xlink:href="Other Topic's ID">Link inner text</link>
-
-      <externalLink>
-          <linkText>Link text</linkText>
-          <linkAlternateText>Optional alternate link text</linkAlternateText>
-          <linkUri>URI</linkUri>
-      </externalLink>
-
-      <codeEntityReference>API member ID</codeEntityReference>
-
-      Examples:
-
-      <link xlink:href="00e97994-e9e6-46e0-b420-5be86b2f8270" />
-      <link xlink:href="00e97994-e9e6-46e0-b420-5be86b2f8278">Some other topic</link>
-
-      <externalLink>
-          <linkText>SHFB on CodePlex</linkText>
-          <linkAlternateText>Go to CodePlex</linkAlternateText>
-          <linkUri>http://shfb.codeplex.com</linkUri>
-      </externalLink>
-
-      <codeEntityReference>T:TestDoc.TestClass</codeEntityReference>
-      <codeEntityReference>P:TestDoc.TestClass.SomeProperty</codeEntityReference>
-      <codeEntityReference>M:TestDoc.TestClass.#ctor</codeEntityReference>
-      <codeEntityReference>M:TestDoc.TestClass.#ctor(System.String,System.Int32)</codeEntityReference>
-      <codeEntityReference>M:TestDoc.TestClass.ToString</codeEntityReference>
-      <codeEntityReference>M:TestDoc.TestClass.FirstMethod</codeEntityReference>
-      <codeEntityReference>M:TestDoc.TestClass.SecondMethod(System.Int32,System.String)</codeEntityReference>
-      -->
     </relatedTopics>
   </developerConceptualDocument>
 </topic>

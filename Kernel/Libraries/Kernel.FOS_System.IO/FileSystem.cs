@@ -131,5 +131,7 @@ namespace Kernel.FOS_System.IO
         /// <param name="parent">The parent directory of the new directory.</param>
         /// <returns>The new directory listing.</returns>
         public abstract Directory NewDirectory(FOS_System.String name, Directory parent);
+
+        public abstract void CleanDiskCaches();
     }
 }

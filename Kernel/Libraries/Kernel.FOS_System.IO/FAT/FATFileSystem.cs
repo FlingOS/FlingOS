@@ -624,6 +624,8 @@ namespace Kernel.FOS_System.IO.FAT
             WriteFATEntry(sectorData, (UInt32)sectorNum, sectorOffset, value);
             //Write the table sector data back to disk
             WriteFATSector(sectorNum, sectorData);
+
+            CleanDiskCaches();
         }
 
         /// <summary>
@@ -1426,6 +1428,8 @@ namespace Kernel.FOS_System.IO.FAT
             BasicConsole.WriteLine("Written new BPB. Attempting to load new file system...");
 #endif
 
+            thePartition.CleanCaches();
+
             FATFileSystem fs = new FATFileSystem(thePartition);
             if (!fs.IsValid)
             {
@@ -1485,6 +1489,12 @@ namespace Kernel.FOS_System.IO.FAT
 #if FATFS_TRACE
             BasicConsole.WriteLine("Format complete.");
 #endif
+            fs.thePartition.CleanCaches();
+        }
+
+        public override void CleanDiskCaches()
+        {
+            thePartition.CleanCaches();
         }
     }
 }

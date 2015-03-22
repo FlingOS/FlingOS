@@ -398,6 +398,8 @@ namespace Kernel.FOS_System.IO.Streams.FAT
                 mPosition += (uint)writeSize;
             }
 
+            mFS.CleanDiskCaches();
+
             //BasicConsole.WriteLine("Write completed.");
 
             if (!IgnoreFileSize)

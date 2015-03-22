@@ -405,6 +405,7 @@ namespace Kernel.FOS_System.IO.Disk
             BasicConsole.WriteLine("Data written.");
             BasicConsole.DelayOutput(1);
 #endif
+            aDisk.CleanCaches();
         }
     }
 }
