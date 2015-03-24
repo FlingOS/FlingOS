@@ -65,14 +65,14 @@ namespace Kernel.Compiler.Architectures.x86_32
             result.AppendLine("pop dword ecx");
             for (int i = size - 4; i >= 0; i -= 4)
             {
-                GlobalMethods.CheckAddrFromRegister(result, aScannerState, "ecx", i, (OpCodes)anILOpInfo.opCode.Value);
+                GlobalMethods.InsertPageFaultDetection(result, aScannerState, "ecx", i, (OpCodes)anILOpInfo.opCode.Value);
                 result.AppendLine(string.Format("mov dword eax, [ecx+{0}]", i));
                 result.AppendLine("push dword eax");
             }
             int extra = size % 4;
             for (int i = extra - 1; i >= 0; i--)
             {
-                GlobalMethods.CheckAddrFromRegister(result, aScannerState, "ecx", i, (OpCodes)anILOpInfo.opCode.Value);
+                GlobalMethods.InsertPageFaultDetection(result, aScannerState, "ecx", i, (OpCodes)anILOpInfo.opCode.Value);
                 result.AppendLine(string.Format("mov byte al, [ecx+{0}]", i));
                 result.AppendLine("push byte al");
             }

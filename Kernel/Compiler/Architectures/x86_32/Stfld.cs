@@ -72,7 +72,7 @@ namespace Kernel.Compiler.Architectures.x86_32
             }
 
             //Get object pointer
-            GlobalMethods.CheckAddrFromRegister(result, aScannerState, "esp", stackSize, (OpCodes)anILOpInfo.opCode.Value);
+            GlobalMethods.InsertPageFaultDetection(result, aScannerState, "esp", stackSize, (OpCodes)anILOpInfo.opCode.Value);
             result.AppendLine(string.Format("mov ecx, [esp+{0}]", stackSize));
             //Pop and mov value
             for (int i = 0; i < memSize; i += 2)
@@ -80,13 +80,13 @@ namespace Kernel.Compiler.Architectures.x86_32
                 if (memSize - i == 1)
                 {
                     result.AppendLine("pop word ax");
-                    GlobalMethods.CheckAddrFromRegister(result, aScannerState, "ecx", offset + i, (OpCodes)anILOpInfo.opCode.Value);
+                    GlobalMethods.InsertPageFaultDetection(result, aScannerState, "ecx", offset + i, (OpCodes)anILOpInfo.opCode.Value);
                     result.AppendLine(string.Format("mov byte [ecx+{0}], al", offset + i));
                 }
                 else
                 {
                     result.AppendLine("pop word ax");
-                    GlobalMethods.CheckAddrFromRegister(result, aScannerState, "ecx", offset + i, (OpCodes)anILOpInfo.opCode.Value);
+                    GlobalMethods.InsertPageFaultDetection(result, aScannerState, "ecx", offset + i, (OpCodes)anILOpInfo.opCode.Value);
                     result.AppendLine(string.Format("mov word [ecx+{0}], ax", offset + i));
                 }
             }

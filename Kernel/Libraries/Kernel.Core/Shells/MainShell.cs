@@ -54,13 +54,6 @@ namespace Kernel.Core.Shells
                 InitUSB();
                 InitFS();
                 
-                {
-                    File aFile = File.Open("b:/elftest.elf");
-                    Hardware.Processes.ProcessManager.RegisterProcess(
-                        Processes.DynamicLinkerLoader.LoadProcess_FromELFExe(aFile, false).TheProcess,
-                        Hardware.Processes.Scheduler.Priority.Normal);
-                }
-
                 //Endlessly wait for commands until we hit a total failure condition
                 //  or the user instructs us to halt
                 while (!terminating)

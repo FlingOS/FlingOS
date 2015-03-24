@@ -104,7 +104,16 @@ namespace Kernel.Core.Processes.ELF
             if (theFile == null)
             {
                 Console.Default.ErrorColour();
-                Console.Default.WriteLine("Error constructing ELF file! The file is null!");
+                Console.Default.Write("Error constructing ELF file! theFile is null");
+                if (file == null)
+                {
+                    Console.Default.Write(" and file is null");
+                }
+                else
+                {
+                    Console.Default.Write(" and file is NOT null");
+                }
+                Console.Default.WriteLine(".");
                 Console.Default.DefaultColour();
                 ExceptionMethods.Throw(new FOS_System.Exception("Error loading ELF file! Supplied file is null."));
             }

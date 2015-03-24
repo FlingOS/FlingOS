@@ -80,27 +80,27 @@ namespace Kernel.Compiler.Architectures.x86_32
             if (bytesToLoad == 1)
             {
                 result.AppendLine("xor eax, eax");
-                GlobalMethods.CheckAddrFromRegister(result, aScannerState, "ebx", 0, (OpCodes)anILOpInfo.opCode.Value);
+                GlobalMethods.InsertPageFaultDetection(result, aScannerState, "ebx", 0, (OpCodes)anILOpInfo.opCode.Value);
                 result.AppendLine("mov byte al, [ebx]");
                 result.AppendLine("push dword eax");
             }
             else if (bytesToLoad == 2)
             {
                 result.AppendLine("xor eax, eax");
-                GlobalMethods.CheckAddrFromRegister(result, aScannerState, "ebx", 0, (OpCodes)anILOpInfo.opCode.Value);
+                GlobalMethods.InsertPageFaultDetection(result, aScannerState, "ebx", 0, (OpCodes)anILOpInfo.opCode.Value);
                 result.AppendLine("mov word ax, [ebx]");
                 result.AppendLine("push dword eax");
             }
             else if (bytesToLoad == 4)
             {
-                GlobalMethods.CheckAddrFromRegister(result, aScannerState, "ebx", 0, (OpCodes)anILOpInfo.opCode.Value);
+                GlobalMethods.InsertPageFaultDetection(result, aScannerState, "ebx", 0, (OpCodes)anILOpInfo.opCode.Value);
                 result.AppendLine("push dword [ebx]");
             }
             else if (bytesToLoad == 8)
             {
-                GlobalMethods.CheckAddrFromRegister(result, aScannerState, "ebx", 4, (OpCodes)anILOpInfo.opCode.Value);
+                GlobalMethods.InsertPageFaultDetection(result, aScannerState, "ebx", 4, (OpCodes)anILOpInfo.opCode.Value);
                 result.AppendLine("push dword [ebx+4]");
-                GlobalMethods.CheckAddrFromRegister(result, aScannerState, "ebx", 0, (OpCodes)anILOpInfo.opCode.Value);
+                GlobalMethods.InsertPageFaultDetection(result, aScannerState, "ebx", 0, (OpCodes)anILOpInfo.opCode.Value);
                 result.AppendLine("push dword [ebx]");
             }
 

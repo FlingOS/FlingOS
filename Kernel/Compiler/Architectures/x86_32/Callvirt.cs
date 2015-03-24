@@ -82,7 +82,7 @@ namespace Kernel.Compiler.Architectures.x86_32
                     List<Type> allParams = ((MethodInfo)methodToCall).GetParameters().Select(x => x.ParameterType).ToList();
 
                     int bytesForParams = allParams.Select(x => Utils.GetNumBytesForType(x)).Sum();
-                    GlobalMethods.CheckAddrFromRegister(result, aScannerState, "esp", bytesForParams, (OpCodes)anILOpInfo.opCode.Value);
+                    GlobalMethods.InsertPageFaultDetection(result, aScannerState, "esp", bytesForParams, (OpCodes)anILOpInfo.opCode.Value);
                     result.AppendLine(string.Format("mov dword eax, [esp+{0}]", bytesForParams));
 
 
@@ -216,29 +216,29 @@ namespace Kernel.Compiler.Architectures.x86_32
 
                     //Get object ref
                     int bytesForAllParams = ((MethodInfo)methodToCall).GetParameters().Select(x => Utils.GetNumBytesForType(x.ParameterType)).Sum();
-                    GlobalMethods.CheckAddrFromRegister(result, aScannerState, "esp", bytesForAllParams, (OpCodes)anILOpInfo.opCode.Value);
+                    GlobalMethods.InsertPageFaultDetection(result, aScannerState, "esp", bytesForAllParams, (OpCodes)anILOpInfo.opCode.Value);
                     result.AppendLine(string.Format("mov dword eax, [esp+{0}]", bytesForAllParams));
 
                     //Get type ref
                     int typeOffset = aScannerState.GetFieldOffset(declaringDBType, "_Type");
-                    GlobalMethods.CheckAddrFromRegister(result, aScannerState, "eax", typeOffset, (OpCodes)anILOpInfo.opCode.Value);
+                    GlobalMethods.InsertPageFaultDetection(result, aScannerState, "eax", typeOffset, (OpCodes)anILOpInfo.opCode.Value);
                     result.AppendLine(string.Format("mov eax, [eax+{0}]", typeOffset));
 
                     //Get method table ref
                     int methodTablePtrOffset = aScannerState.GetTypeFieldOffset("MethodTablePtr");
-                    GlobalMethods.CheckAddrFromRegister(result, aScannerState, "eax", methodTablePtrOffset, (OpCodes)anILOpInfo.opCode.Value);
+                    GlobalMethods.InsertPageFaultDetection(result, aScannerState, "eax", methodTablePtrOffset, (OpCodes)anILOpInfo.opCode.Value);
                     result.AppendLine(string.Format("mov eax, [eax+{0}]", methodTablePtrOffset));
 
                     //Loop through entries
                     result.AppendLine(loopTableEntries_Label + ":");
                     //Load ID Val for current entry
-                    GlobalMethods.CheckAddrFromRegister(result, aScannerState, "eax", 0, (OpCodes)anILOpInfo.opCode.Value);
+                    GlobalMethods.InsertPageFaultDetection(result, aScannerState, "eax", 0, (OpCodes)anILOpInfo.opCode.Value);
                     result.AppendLine("mov ebx, [eax]");
                     //Compare to wanted ID value
                     result.AppendLine("cmp ebx, " + methodIDValueWanted);
                     //If equal, load method address into eax
                     result.AppendLine("jne " + notEqual_Label);
-                    GlobalMethods.CheckAddrFromRegister(result, aScannerState, "eax", 4, (OpCodes)anILOpInfo.opCode.Value);
+                    GlobalMethods.InsertPageFaultDetection(result, aScannerState, "eax", 4, (OpCodes)anILOpInfo.opCode.Value);
                     result.AppendLine("mov eax, [eax+4]");
                     result.AppendLine("jmp " + call_Label);
                     result.AppendLine(notEqual_Label + ":");
@@ -251,7 +251,7 @@ namespace Kernel.Compiler.Architectures.x86_32
                     result.AppendLine(endOfTable_Label + ":");
                     //Compare address value to 0
                     //If not zero, there is a parent method table to check
-                    GlobalMethods.CheckAddrFromRegister(result, aScannerState, "eax", 4, (OpCodes)anILOpInfo.opCode.Value);
+                    GlobalMethods.InsertPageFaultDetection(result, aScannerState, "eax", 4, (OpCodes)anILOpInfo.opCode.Value);
                     result.AppendLine("mov ebx, [eax+4]");
                     result.AppendLine("cmp ebx, 0");
                     result.AppendLine("jz " + notFound_Label);

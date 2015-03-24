@@ -94,7 +94,7 @@ namespace Kernel.Compiler.Architectures.x86_32
             result.AppendLine(Label_False1 + ":");
 
             // 2. Load object type
-            GlobalMethods.CheckAddrFromRegister(result, aScannerState, "eax", 0, (OpCodes)anILOpInfo.opCode.Value);
+            GlobalMethods.InsertPageFaultDetection(result, aScannerState, "eax", 0, (OpCodes)anILOpInfo.opCode.Value);
             result.AppendLine("mov dword ebx, [eax]");
             
 
@@ -120,7 +120,7 @@ namespace Kernel.Compiler.Architectures.x86_32
 
             //      3.2.1. Move to base type
             int baseTypeOffset = aScannerState.GetTypeFieldOffset("TheBaseType");
-            GlobalMethods.CheckAddrFromRegister(result, aScannerState, "ebx", baseTypeOffset, (OpCodes)anILOpInfo.opCode.Value);
+            GlobalMethods.InsertPageFaultDetection(result, aScannerState, "ebx", baseTypeOffset, (OpCodes)anILOpInfo.opCode.Value);
             result.AppendLine(string.Format("mov dword ebx, [ebx+{0}]", baseTypeOffset));
 
             //      3.2.2. Test if base type null:
