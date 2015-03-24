@@ -101,6 +101,13 @@ namespace Kernel.Core.Processes.ELF
         public ELFFile(File file)
         {
             theFile = file;
+            if (theFile == null)
+            {
+                Console.Default.ErrorColour();
+                Console.Default.WriteLine("Error constructing ELF file! The file is null!");
+                Console.Default.DefaultColour();
+                ExceptionMethods.Throw(new FOS_System.Exception("Error loading ELF file! Supplied file is null."));
+            }
             theStream = new CachedFileStream(theFile.GetStream());
             ReadHeader();
             FOS_System.GC.Cleanup();

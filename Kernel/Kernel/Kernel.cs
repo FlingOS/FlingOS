@@ -84,6 +84,8 @@ namespace Kernel
         
             BasicConsole.WriteLine("Fling OS Running...");
 
+            PreReqs.PageFaultDetection_Initialised = true;
+            
             try
             {
                 Hardware.VirtMemManager.Init();

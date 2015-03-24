@@ -138,5 +138,13 @@ namespace Kernel
         private static void WriteDebugVideo(string aText, UInt32 aColour)
         {
         }
+
+        public static string PageFaultDetection_ErrorString = "Page Fault Detection caught potentially fatal value/address:";
+        public static string PageFaultDetection_SeparatorString = "  ";
+        public static bool PageFaultDetection_Initialised = false;
+        public static bool PageFaultDetection_LoopPrevention = false;
+        [Compiler.PluggedMethod(ASMFilePath = @"ASM\PreReqs\PageFaultDetection")]
+        [Compiler.SequencePriority(Priority = long.MinValue + 11)]
+        private static void PageFaultDetection() { }
     }
 }
