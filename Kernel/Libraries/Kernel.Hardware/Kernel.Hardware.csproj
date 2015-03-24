@@ -82,7 +82,6 @@
     <Compile Include="Processes\Scheduler.cs" />
     <Compile Include="Processes\Synchronisation\Mutex.cs" />
     <Compile Include="Processes\Synchronisation\Semaphore.cs" />
-    <Compile Include="Processes\Synchronisation\SpinLock.cs" />
     <Compile Include="Processes\Thread.cs" />
     <Compile Include="USB\HCIs\UHCI.cs" />
     <Compile Include="VirtMemManager.cs" />
@@ -139,9 +138,6 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="ASM\Processes\Synchronisation\Mutex.x86_32.asm">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="ASM\Processes\Synchronisation\SpinLock.x86_32.asm">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="ASM\VirtMem\x86.x86_32.asm">

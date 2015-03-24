@@ -79,6 +79,7 @@
     <Compile Include="Int32.cs" />
     <Compile Include="Math.cs" />
     <Compile Include="Object.cs" />
+    <Compile Include="Processes\Synchronisation\SpinLock.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="String.cs" />
     <Compile Include="Type.cs" />
@@ -117,6 +118,9 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="ASM\Math\Divide.x86_32.asm">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="ASM\Processes\Synchronisation\SpinLock.x86_32.asm">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="ASM\String\GetLength.x86_32.asm">

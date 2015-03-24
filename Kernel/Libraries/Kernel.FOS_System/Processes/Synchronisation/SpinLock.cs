@@ -44,15 +44,14 @@ namespace Kernel.Hardware.Processes.Synchronisation
             }
         }
 
-        private bool locked = false;
+        private UInt16 locked = 0;
         public bool Locked
         {
             get
             {
-                return locked;
+                return locked != 0;
             }
         }
-        private bool padding = false;
 
         public SpinLock(int anId)
         {
@@ -60,12 +59,25 @@ namespace Kernel.Hardware.Processes.Synchronisation
         }
 
         [Compiler.PluggedMethod(ASMFilePath=@"ASM\Processes\Synchronisation\SpinLock")]
-        public void Enter()
+        public void _Enter()
         {
         }
         [Compiler.PluggedMethod(ASMFilePath=null)]
+        public void _Exit()
+        {
+        }
+
+        public void Enter()
+        {
+            BasicConsole.WriteLine("Entering spin lock...");
+            _Enter();
+            BasicConsole.WriteLine("Lock acquired.");
+        }
         public void Exit()
         {
+            BasicConsole.WriteLine("Exiting spin lock...");
+            _Exit();
+            BasicConsole.WriteLine("Released lock.");
         }
     }
 }

@@ -32,6 +32,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Kernel.Hardware.Processes.Synchronisation;
 
 namespace Kernel.FOS_System
 {
@@ -60,6 +61,8 @@ namespace Kernel.FOS_System
         /// called methods re-calling the GC!)
         /// </summary>
         public static bool InsideGC = false;
+
+        private static SpinLock GCAccessLock = new SpinLock(0);
 
         /// <summary>
         /// The number of strings currently allocated on the heap.
@@ -94,54 +97,74 @@ namespace Kernel.FOS_System
         [Compiler.NoGC]
         public static void* NewObj(FOS_System.Type theType)
         {
-            if(!Enabled || InsideGC)
+            //if(!Enabled || InsideGC)
+            //{
+            //    BasicConsole.SetTextColour(BasicConsole.error_colour);
+            //    BasicConsole.WriteLine("Error! GC can't create a new object since already inside GC.");
+            //    BasicConsole.Write("Heap prevent reason: ");
+            //    BasicConsole.WriteLine(Heap.PreventReason);
+            //    BasicConsole.DelayOutput(5);
+            //    BasicConsole.SetTextColour(BasicConsole.default_colour);
+            //    return null;
+            //}
+
+            if (!Enabled)
             {
-                BasicConsole.SetTextColour(BasicConsole.error_colour);
-                BasicConsole.WriteLine("Error! GC can't create a new object since already inside GC.");
-                BasicConsole.Write("Heap prevent reason: ");
-                BasicConsole.WriteLine(Heap.PreventReason);
-                BasicConsole.DelayOutput(5);
-                BasicConsole.SetTextColour(BasicConsole.default_colour);
                 return null;
             }
 
-            InsideGC = true;
-
-            //Alloc space for GC header that prefixes object data
-            //Alloc space for new object
-            
-            uint totalSize = theType.Size;
-            totalSize += (uint)sizeof(GCHeader);
-
-            GCHeader* newObjPtr = (GCHeader*)Heap.AllocZeroed(totalSize);
-            
-            if((UInt32)newObjPtr == 0)
+            if (InsideGC)
             {
+                BasicConsole.SetTextColour(BasicConsole.warning_colour);
+                BasicConsole.WriteLine("Warning: GC about to try to re-enter spin lock...");
+                BasicConsole.SetTextColour(BasicConsole.default_colour);
+            }
+            GCAccessLock.Enter();
+
+            try
+            {
+                InsideGC = true;
+
+                //Alloc space for GC header that prefixes object data
+                //Alloc space for new object
+
+                uint totalSize = theType.Size;
+                totalSize += (uint)sizeof(GCHeader);
+
+                GCHeader* newObjPtr = (GCHeader*)Heap.AllocZeroed(totalSize);
+
+                if ((UInt32)newObjPtr == 0)
+                {
+                    InsideGC = false;
+
+                    BasicConsole.SetTextColour(BasicConsole.error_colour);
+                    BasicConsole.WriteLine("Error! GC can't create a new object because the heap returned a null pointer.");
+                    BasicConsole.DelayOutput(5);
+                    BasicConsole.SetTextColour(BasicConsole.default_colour);
+
+                    return null;
+                }
+
+                NumObjs++;
+
+                //Initialise the GCHeader
+                SetSignature(newObjPtr);
+                newObjPtr->RefCount = 1;
+                //Initialise the object _Type field
+                FOS_System.ObjectWithType newObj = (FOS_System.ObjectWithType)Utilities.ObjectUtilities.GetObject(newObjPtr + 1);
+                newObj._Type = theType;
+
+                //Move past GCHeader
+                byte* newObjBytePtr = (byte*)(newObjPtr + 1);
+
                 InsideGC = false;
 
-                BasicConsole.SetTextColour(BasicConsole.error_colour);
-                BasicConsole.WriteLine("Error! GC can't create a new object because the heap returned a null pointer.");
-                BasicConsole.DelayOutput(5);
-                BasicConsole.SetTextColour(BasicConsole.default_colour);
-
-                return null;
+                return newObjBytePtr;
             }
-
-            NumObjs++;
-
-            //Initialise the GCHeader
-            SetSignature(newObjPtr);
-            newObjPtr->RefCount = 1;
-            //Initialise the object _Type field
-            FOS_System.ObjectWithType newObj = (FOS_System.ObjectWithType)Utilities.ObjectUtilities.GetObject(newObjPtr + 1);
-            newObj._Type = theType;
-            
-            //Move past GCHeader
-            byte* newObjBytePtr = (byte*)(newObjPtr + 1);
-
-            InsideGC = false;
-
-            return newObjBytePtr;
+            finally
+            {
+                GCAccessLock.Exit();
+            }
         }
 
         /// <summary>
@@ -157,71 +180,92 @@ namespace Kernel.FOS_System
         [Compiler.NoGC]
         public static void* NewArr(int length, FOS_System.Type elemType)
         {
-            if (!Enabled || InsideGC)
-            {
-                BasicConsole.SetTextColour(BasicConsole.error_colour);
-                BasicConsole.WriteLine("Error! GC can't create a new array since already inside GC.");
-                BasicConsole.Write("Heap prevent reason: ");
-                BasicConsole.WriteLine(Heap.PreventReason);
-                BasicConsole.DelayOutput(5);
-                BasicConsole.SetTextColour(BasicConsole.default_colour);
+            //if (!Enabled || InsideGC)
+            //{
+            //    BasicConsole.SetTextColour(BasicConsole.error_colour);
+            //    BasicConsole.WriteLine("Error! GC can't create a new array since already inside GC.");
+            //    BasicConsole.Write("Heap prevent reason: ");
+            //    BasicConsole.WriteLine(Heap.PreventReason);
+            //    BasicConsole.DelayOutput(5);
+            //    BasicConsole.SetTextColour(BasicConsole.default_colour);
 
+            //    return null;
+            //}
+
+            if (InsideGC)
+            {
+                BasicConsole.SetTextColour(BasicConsole.warning_colour);
+                BasicConsole.WriteLine("Warning: GC about to try to re-enter spin lock...");
+                BasicConsole.SetTextColour(BasicConsole.default_colour);
+            }
+            if (!Enabled)
+            {
                 return null;
             }
 
-            if (length < 0)
+            GCAccessLock.Enter();
+
+            try
             {
-                ExceptionMethods.Throw_OverflowException();
-            }
 
-            InsideGC = true;
+                if (length < 0)
+                {
+                    ExceptionMethods.Throw_OverflowException();
+                }
 
-            //Alloc space for GC header that prefixes object data
-            //Alloc space for new array object
-            //Alloc space for new array elems
+                InsideGC = true;
 
-            uint totalSize = ((FOS_System.Type)typeof(FOS_System.Array)).Size;
-            if (elemType.IsValueType)
-            {
-                totalSize += elemType.Size * (uint)length;
-            }
-            else
-            {
-                totalSize += elemType.StackSize * (uint)length;
-            }
-            totalSize += (uint)sizeof(GCHeader);
+                //Alloc space for GC header that prefixes object data
+                //Alloc space for new array object
+                //Alloc space for new array elems
 
-            GCHeader* newObjPtr = (GCHeader*)Heap.AllocZeroed(totalSize);
+                uint totalSize = ((FOS_System.Type)typeof(FOS_System.Array)).Size;
+                if (elemType.IsValueType)
+                {
+                    totalSize += elemType.Size * (uint)length;
+                }
+                else
+                {
+                    totalSize += elemType.StackSize * (uint)length;
+                }
+                totalSize += (uint)sizeof(GCHeader);
 
-            if ((UInt32)newObjPtr == 0)
-            {
+                GCHeader* newObjPtr = (GCHeader*)Heap.AllocZeroed(totalSize);
+
+                if ((UInt32)newObjPtr == 0)
+                {
+                    InsideGC = false;
+
+                    BasicConsole.SetTextColour(BasicConsole.error_colour);
+                    BasicConsole.WriteLine("Error! GC can't create a new array because the heap returned a null pointer.");
+                    BasicConsole.DelayOutput(5);
+                    BasicConsole.SetTextColour(BasicConsole.default_colour);
+
+                    return null;
+                }
+
+                NumObjs++;
+
+                //Initialise the GCHeader
+                SetSignature(newObjPtr);
+                newObjPtr->RefCount = 1;
+
+                FOS_System.Array newArr = (FOS_System.Array)Utilities.ObjectUtilities.GetObject(newObjPtr + 1);
+                newArr._Type = (FOS_System.Type)typeof(FOS_System.Array);
+                newArr.length = length;
+                newArr.elemType = elemType;
+
+                //Move past GCHeader
+                byte* newObjBytePtr = (byte*)(newObjPtr + 1);
+
                 InsideGC = false;
 
-                BasicConsole.SetTextColour(BasicConsole.error_colour);
-                BasicConsole.WriteLine("Error! GC can't create a new array because the heap returned a null pointer.");
-                BasicConsole.DelayOutput(5);
-                BasicConsole.SetTextColour(BasicConsole.default_colour);
-
-                return null;
+                return newObjBytePtr;
             }
-
-            NumObjs++;
-
-            //Initialise the GCHeader
-            SetSignature(newObjPtr);
-            newObjPtr->RefCount = 1;
-
-            FOS_System.Array newArr = (FOS_System.Array)Utilities.ObjectUtilities.GetObject(newObjPtr + 1);
-            newArr._Type = (FOS_System.Type)typeof(FOS_System.Array);
-            newArr.length = length;
-            newArr.elemType = elemType;
-            
-            //Move past GCHeader
-            byte* newObjBytePtr = (byte*)(newObjPtr + 1);
-
-            InsideGC = false;
-            
-            return newObjBytePtr;
+            finally
+            {
+                GCAccessLock.Exit();
+            }
         }
 
         /// <summary>
@@ -234,78 +278,99 @@ namespace Kernel.FOS_System
         [Compiler.NoGC]
         public static void* NewString(int length)
         {
-            if (!Enabled || InsideGC)
-            {
-                BasicConsole.SetTextColour(BasicConsole.error_colour);
-                BasicConsole.WriteLine("Error! GC can't create a new string since already inside GC.");
-                BasicConsole.Write("Heap prevent reason: ");
-                BasicConsole.WriteLine(Heap.PreventReason);
-                BasicConsole.DelayOutput(5);
-                BasicConsole.SetTextColour(BasicConsole.default_colour);
+            //if (!Enabled || InsideGC)
+            //{
+            //    BasicConsole.SetTextColour(BasicConsole.error_colour);
+            //    BasicConsole.WriteLine("Error! GC can't create a new string since already inside GC.");
+            //    BasicConsole.Write("Heap prevent reason: ");
+            //    BasicConsole.WriteLine(Heap.PreventReason);
+            //    BasicConsole.DelayOutput(5);
+            //    BasicConsole.SetTextColour(BasicConsole.default_colour);
 
+            //    return null;
+            //}
+
+            if (!Enabled)
+            {
                 return null;
             }
 
-            if (length < 0)
+            if (InsideGC)
             {
-                BasicConsole.SetTextColour(BasicConsole.error_colour);
-                BasicConsole.WriteLine("Error! GC can't create a new string because \"length\" is less than 0.");
-                BasicConsole.DelayOutput(5);
+                BasicConsole.SetTextColour(BasicConsole.warning_colour);
+                BasicConsole.WriteLine("Warning: GC about to try to re-enter spin lock...");
                 BasicConsole.SetTextColour(BasicConsole.default_colour);
-
-                ExceptionMethods.Throw_OverflowException();
             }
+            GCAccessLock.Enter();
 
-            InsideGC = true;
-
-            //Alloc space for GC header that prefixes object data
-            //Alloc space for new string object
-            //Alloc space for new string chars
-
-            uint totalSize = ((FOS_System.Type)typeof(FOS_System.String)).Size;
-            totalSize += /*char size in bytes*/2 * (uint)length;
-            totalSize += (uint)sizeof(GCHeader);
-
-            GCHeader* newObjPtr = (GCHeader*)Heap.AllocZeroed(totalSize);
-
-            if ((UInt32)newObjPtr == 0)
+            try
             {
+
+                if (length < 0)
+                {
+                    BasicConsole.SetTextColour(BasicConsole.error_colour);
+                    BasicConsole.WriteLine("Error! GC can't create a new string because \"length\" is less than 0.");
+                    BasicConsole.DelayOutput(5);
+                    BasicConsole.SetTextColour(BasicConsole.default_colour);
+
+                    ExceptionMethods.Throw_OverflowException();
+                }
+
+                InsideGC = true;
+
+                //Alloc space for GC header that prefixes object data
+                //Alloc space for new string object
+                //Alloc space for new string chars
+
+                uint totalSize = ((FOS_System.Type)typeof(FOS_System.String)).Size;
+                totalSize += /*char size in bytes*/2 * (uint)length;
+                totalSize += (uint)sizeof(GCHeader);
+
+                GCHeader* newObjPtr = (GCHeader*)Heap.AllocZeroed(totalSize);
+
+                if ((UInt32)newObjPtr == 0)
+                {
+                    InsideGC = false;
+
+                    BasicConsole.SetTextColour(BasicConsole.error_colour);
+                    BasicConsole.WriteLine("Error! GC can't create a new string because the heap returned a null pointer.");
+                    BasicConsole.DelayOutput(5);
+                    BasicConsole.SetTextColour(BasicConsole.default_colour);
+
+                    return null;
+                }
+
+                NumObjs++;
+                NumStrings++;
+
+                //Initialise the GCHeader
+                SetSignature(newObjPtr);
+                //RefCount to 0 initially because of FOS_System.String.New should be used
+                //      - In theory, New should be called, creates new string and passes it back to caller
+                //        Caller is then required to store the string in a variable resulting in inc.
+                //        ref count so ref count = 1 in only stored location. 
+                //        Caller is not allowed to just "discard" (i.e. use Pop IL op or C# that generates
+                //        Pop IL op) so ref count will always at some point be incremented and later
+                //        decremented by managed code. OR the variable will stay in a static var until
+                //        the OS exits...
+
+                newObjPtr->RefCount = 0;
+
+                FOS_System.String newStr = (FOS_System.String)Utilities.ObjectUtilities.GetObject(newObjPtr + 1);
+                newStr._Type = (FOS_System.Type)typeof(FOS_System.String);
+                newStr.length = length;
+
+                //Move past GCHeader
+                byte* newObjBytePtr = (byte*)(newObjPtr + 1);
+
                 InsideGC = false;
 
-                BasicConsole.SetTextColour(BasicConsole.error_colour);
-                BasicConsole.WriteLine("Error! GC can't create a new string because the heap returned a null pointer.");
-                BasicConsole.DelayOutput(5);
-                BasicConsole.SetTextColour(BasicConsole.default_colour);
-
-                return null;
+                return newObjBytePtr;
             }
-
-            NumObjs++;
-            NumStrings++;
-
-            //Initialise the GCHeader
-            SetSignature(newObjPtr);
-            //RefCount to 0 initially because of FOS_System.String.New should be used
-            //      - In theory, New should be called, creates new string and passes it back to caller
-            //        Caller is then required to store the string in a variable resulting in inc.
-            //        ref count so ref count = 1 in only stored location. 
-            //        Caller is not allowed to just "discard" (i.e. use Pop IL op or C# that generates
-            //        Pop IL op) so ref count will always at some point be incremented and later
-            //        decremented by managed code. OR the variable will stay in a static var until
-            //        the OS exits...
-
-            newObjPtr->RefCount = 0;
-
-            FOS_System.String newStr = (FOS_System.String)Utilities.ObjectUtilities.GetObject(newObjPtr + 1);
-            newStr._Type = (FOS_System.Type)typeof(FOS_System.String);
-            newStr.length = length;
-            
-            //Move past GCHeader
-            byte* newObjBytePtr = (byte*)(newObjPtr + 1);
-
-            InsideGC = false;
-
-            return newObjBytePtr;
+            finally
+            {
+                GCAccessLock.Exit();
+            }
         }
 
         /// <summary>
@@ -320,7 +385,7 @@ namespace Kernel.FOS_System
         [Compiler.NoGC]
         public static void IncrementRefCount(FOS_System.Object anObj)
         {
-            if (!Enabled || InsideGC || anObj == null)
+            if (!Enabled /*|| InsideGC*/ || anObj == null)
             {
                 return;
             }
@@ -393,7 +458,7 @@ namespace Kernel.FOS_System
         [Compiler.NoGC]
         public static void DecrementRefCount(FOS_System.Object anObj, bool overrideInside)
         {
-            if (!Enabled || (InsideGC && !overrideInside) || anObj == null)
+            if (!Enabled /*|| (InsideGC && !overrideInside)*/ || anObj == null)
             {
                 return;
             }
@@ -485,7 +550,6 @@ namespace Kernel.FOS_System
                             FieldInfoPtr = (FieldInfo*)FieldInfoPtr->FieldType;
                         }
                     }
-                    
 
                     AddObjectToCleanup(gcHeaderPtr, objPtr);
                 }
@@ -526,47 +590,62 @@ namespace Kernel.FOS_System
         [Compiler.NoGC]
         public static void Cleanup()
         {
-            if (!Enabled || InsideGC)
+            if (!Enabled /*|| InsideGC*/)
             {
                 return;
             }
 
-            InsideGC = true;
+            if (InsideGC)
+            {
+                BasicConsole.SetTextColour(BasicConsole.warning_colour);
+                BasicConsole.WriteLine("Warning: GC about to try to re-enter spin lock...");
+                BasicConsole.SetTextColour(BasicConsole.default_colour);
+            }
+            GCAccessLock.Enter();
+
+            try
+            {
+                InsideGC = true;
 
 #if GC_TRACE
             int startNumObjs = NumObjs;
             int startNumStrings = NumStrings;
 #endif
 
-            ObjectToCleanup* currObjToCleanupPtr = CleanupList;
-            ObjectToCleanup* prevObjToCleanupPtr = null;
-            while (currObjToCleanupPtr != null)
-            {
-                GCHeader* objHeaderPtr = currObjToCleanupPtr->objHeaderPtr;
-                void* objPtr = currObjToCleanupPtr->objPtr;
-                if(objHeaderPtr->RefCount <= 0)
+                ObjectToCleanup* currObjToCleanupPtr = CleanupList;
+                ObjectToCleanup* prevObjToCleanupPtr = null;
+                while (currObjToCleanupPtr != null)
                 {
-                    FOS_System.Object obj = (FOS_System.Object)Utilities.ObjectUtilities.GetObject(objPtr);
-                    if (obj is FOS_System.String)
+                    GCHeader* objHeaderPtr = currObjToCleanupPtr->objHeaderPtr;
+                    void* objPtr = currObjToCleanupPtr->objPtr;
+                    if (objHeaderPtr->RefCount <= 0)
                     {
-                        NumStrings--;
+                        FOS_System.Object obj = (FOS_System.Object)Utilities.ObjectUtilities.GetObject(objPtr);
+                        if (obj is FOS_System.String)
+                        {
+                            NumStrings--;
+                        }
+
+                        Heap.Free(objHeaderPtr);
+
+                        NumObjs--;
                     }
 
-                    Heap.Free(objHeaderPtr);
-
-                    NumObjs--;
+                    prevObjToCleanupPtr = currObjToCleanupPtr;
+                    currObjToCleanupPtr = currObjToCleanupPtr->prevPtr;
+                    RemoveObjectToCleanup(prevObjToCleanupPtr);
                 }
 
-                prevObjToCleanupPtr = currObjToCleanupPtr;
-                currObjToCleanupPtr = currObjToCleanupPtr->prevPtr;
-                RemoveObjectToCleanup(prevObjToCleanupPtr);
-            }
+                InsideGC = false;
 
-            InsideGC = false;
-            
 #if GC_TRACE
             PrintCleanupData(startNumObjs, startNumStrings);
 #endif
+            }
+            finally
+            {
+                GCAccessLock.Exit();
+            }
         }
         /// <summary>
         /// Outputs, via the basic console, how much memory was cleaned up.
@@ -594,14 +673,28 @@ namespace Kernel.FOS_System
         [Compiler.NoGC]
         private static void AddObjectToCleanup(GCHeader* objHeaderPtr, void* objPtr)
         {
-            ObjectToCleanup* newObjToCleanupPtr = (ObjectToCleanup*)Heap.Alloc((uint)sizeof(ObjectToCleanup));
-            newObjToCleanupPtr->objHeaderPtr = objHeaderPtr;
-            newObjToCleanupPtr->objPtr = objPtr;
+            if (InsideGC)
+            {
+                BasicConsole.SetTextColour(BasicConsole.warning_colour);
+                BasicConsole.WriteLine("Warning: GC about to try to re-enter spin lock...");
+                BasicConsole.SetTextColour(BasicConsole.default_colour);
+            }
+            GCAccessLock.Enter();
+            try
+            {
+                ObjectToCleanup* newObjToCleanupPtr = (ObjectToCleanup*)Heap.Alloc((uint)sizeof(ObjectToCleanup));
+                newObjToCleanupPtr->objHeaderPtr = objHeaderPtr;
+                newObjToCleanupPtr->objPtr = objPtr;
 
-            newObjToCleanupPtr->prevPtr = CleanupList;
-            CleanupList->nextPtr = newObjToCleanupPtr;
+                newObjToCleanupPtr->prevPtr = CleanupList;
+                CleanupList->nextPtr = newObjToCleanupPtr;
 
-            CleanupList = newObjToCleanupPtr;
+                CleanupList = newObjToCleanupPtr;
+            }
+            finally
+            {
+                GCAccessLock.Exit();
+            }
         }
         /// <summary>
         /// Removes an object from the cleanup list.
@@ -611,15 +704,29 @@ namespace Kernel.FOS_System
         [Compiler.NoGC]
         private static void RemoveObjectToCleanup(GCHeader* objHeaderPtr)
         {
-            ObjectToCleanup* currObjToCleanupPtr = CleanupList;
-            while (currObjToCleanupPtr != null)
+            if (InsideGC)
             {
-                if (currObjToCleanupPtr->objHeaderPtr == objHeaderPtr)
+                BasicConsole.SetTextColour(BasicConsole.warning_colour);
+                BasicConsole.WriteLine("Warning: GC about to try to re-enter spin lock...");
+                BasicConsole.SetTextColour(BasicConsole.default_colour);
+            }
+            GCAccessLock.Enter();
+            try
+            {
+                ObjectToCleanup* currObjToCleanupPtr = CleanupList;
+                while (currObjToCleanupPtr != null)
                 {
-                    RemoveObjectToCleanup(currObjToCleanupPtr);
-                    return;
+                    if (currObjToCleanupPtr->objHeaderPtr == objHeaderPtr)
+                    {
+                        RemoveObjectToCleanup(currObjToCleanupPtr);
+                        return;
+                    }
+                    currObjToCleanupPtr = currObjToCleanupPtr->prevPtr;
                 }
-                currObjToCleanupPtr = currObjToCleanupPtr->prevPtr;
+            }
+            finally
+            {
+                GCAccessLock.Exit();
             }
         }
         /// <summary>

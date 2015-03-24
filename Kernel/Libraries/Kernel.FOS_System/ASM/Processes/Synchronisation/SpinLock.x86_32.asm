@@ -1,4 +1,4 @@
-﻿method_System_Void_RETEND_Kernel_Hardware_Processes_Synchronisation_SpinLock_DECLEND_Enter_NAMEEND___:
+﻿method_System_Void_RETEND_Kernel_Hardware_Processes_Synchronisation_SpinLock_DECLEND__Enter_NAMEEND___:
 
 push dword ebp
 mov dword ebp, esp
@@ -19,12 +19,12 @@ ret
 
 
 
-method_System_Void_RETEND_Kernel_Hardware_Processes_Synchronisation_SpinLock_DECLEND_Exit_NAMEEND___:
+method_System_Void_RETEND_Kernel_Hardware_Processes_Synchronisation_SpinLock_DECLEND__Exit_NAMEEND___:
 
 push dword ebp
 mov dword ebp, esp
 
-mov dword ebx, [ebp+12]
+mov dword ebx, [ebp+8]
 mov byte [ebx+8], 0
 
 pop dword ebp
