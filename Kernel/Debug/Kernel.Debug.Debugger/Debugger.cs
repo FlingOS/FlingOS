@@ -1319,7 +1319,6 @@ namespace Kernel.Debug.Debugger
             GetMemory_Length = length;
 
             TheSerial.Write((byte)DebugCommands.GetMemory);
-            //TheSerial.Write(0x020970c3);
             for (int i = 0; i < address.Length; i++)
             {
                 TheSerial.Write(address[i]);

@@ -39,6 +39,7 @@ namespace Kernel.Hardware.Processes.Synchronisation
         public int Id
         {
             [Compiler.NoGC]
+            [Compiler.NoDebug]
             get
             {
                 return id;
@@ -49,12 +50,14 @@ namespace Kernel.Hardware.Processes.Synchronisation
         public bool Locked
         {
             [Compiler.NoGC]
+            [Compiler.NoDebug]
             get
             {
                 return locked != 0;
             }
         }
 
+        [Compiler.NoDebug]
         public SpinLock(int anId)
         {
             id = anId;
@@ -70,6 +73,7 @@ namespace Kernel.Hardware.Processes.Synchronisation
         }
 
         [Compiler.NoGC]
+        [Compiler.NoDebug]
         public void Enter()
         {
             //BasicConsole.WriteLine("Entering spin lock...");
@@ -77,6 +81,7 @@ namespace Kernel.Hardware.Processes.Synchronisation
             //BasicConsole.WriteLine("Lock acquired.");
         }
         [Compiler.NoGC]
+        [Compiler.NoDebug]
         public void Exit()
         {
             //BasicConsole.WriteLine("Exiting spin lock...");
