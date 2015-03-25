@@ -196,14 +196,24 @@ call method_System_UInt32_Kernel_Debug_BasicDebug_Serial_ReadUInt32__
 mov ebx, eax
 
 ; Get num bytes to send
+push ebx
 call method_System_UInt32_Kernel_Debug_BasicDebug_Serial_ReadUInt32__
 mov ecx, eax
+pop ebx
 
 BasicDebug_SendMemory_Loop:
 mov byte al, [ebx]
+
+push dword ebx
+push dword ecx
+
 push dword eax
 call method_System_Void_Kernel_Debug_BasicDebug_Serial_WriteByte_System_Byte_
 add esp, 4
+
+pop dword ecx
+pop dword ebx
+
 add ebx, 1
 loop BasicDebug_SendMemory_Loop
 
