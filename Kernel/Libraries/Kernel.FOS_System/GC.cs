@@ -93,9 +93,9 @@ namespace Kernel.FOS_System
 
         [Compiler.NoDebug]
         [Compiler.NoGC]
-        private static void EnterCritical()
+        private static void EnterCritical(FOS_System.String caller)
         {
-            BasicConsole.WriteLine("Entering critical section...");
+            //BasicConsole.WriteLine("Entering critical section...");
             if (GCAccessLockInitialised)
             {
                 if (GCAccessLock == null)
@@ -109,24 +109,24 @@ namespace Kernel.FOS_System
                     {
                         BasicConsole.SetTextColour(BasicConsole.warning_colour);
                         BasicConsole.WriteLine("Warning: GC about to try to re-enter spin lock...");
+                        BasicConsole.Write("Enter lock caller: ");
+                        BasicConsole.WriteLine(caller);
                         BasicConsole.SetTextColour(BasicConsole.default_colour);
                     }
-                    BasicConsole.WriteLine("Acquiring lock...");
                     GCAccessLock.Enter();
-                    BasicConsole.WriteLine("Lock acquired.");
                 }
             }
-            else
-            {
-                BasicConsole.WriteLine("GCAccessLock not initialised - ignoring lock conditions.");
-                BasicConsole.DelayOutput(5);
-            }
+            //else
+            //{
+            //    BasicConsole.WriteLine("GCAccessLock not initialised - ignoring lock conditions.");
+            //    BasicConsole.DelayOutput(5);
+            //}
         }
         [Compiler.NoDebug]
         [Compiler.NoGC]
         private static void ExitCritical()
         {
-            BasicConsole.WriteLine("Exiting critical section...");
+            //BasicConsole.WriteLine("Exiting critical section...");
             if (GCAccessLockInitialised)
             {
                 if (GCAccessLock == null)
@@ -139,11 +139,11 @@ namespace Kernel.FOS_System
                     GCAccessLock.Exit();
                 }
             }
-            else
-            {
-                BasicConsole.WriteLine("GCAccessLock not initialised - ignoring lock conditions.");
-                BasicConsole.DelayOutput(5);
-            }
+            //else
+            //{
+            //    BasicConsole.WriteLine("GCAccessLock not initialised - ignoring lock conditions.");
+            //    BasicConsole.DelayOutput(5);
+            //}
         }
 
         /// <summary>
@@ -172,9 +172,9 @@ namespace Kernel.FOS_System
                 return null;
             }
 
-            EnterCritical();
+            EnterCritical("NewObj");
 
-            //try
+            try
             {
                 InsideGC = true;
 
@@ -214,7 +214,7 @@ namespace Kernel.FOS_System
 
                 return newObjBytePtr;
             }
-            //finally
+            finally
             {
                 ExitCritical();
             }
@@ -250,9 +250,9 @@ namespace Kernel.FOS_System
                 return null;
             }
 
-            EnterCritical();
+            EnterCritical("NewArr");
 
-            //try
+            try
             {
 
                 if (length < 0)
@@ -309,7 +309,7 @@ namespace Kernel.FOS_System
 
                 return newObjBytePtr;
             }
-            //finally
+            finally
             {
                 ExitCritical();
             }
@@ -342,9 +342,9 @@ namespace Kernel.FOS_System
                 return null;
             }
 
-            EnterCritical();
+            EnterCritical("NewString");
 
-            //try
+            try
             {
 
                 if (length < 0)
@@ -408,7 +408,7 @@ namespace Kernel.FOS_System
 
                 return newObjBytePtr;
             }
-            //finally
+            finally
             {
                 ExitCritical();
             }
@@ -636,9 +636,9 @@ namespace Kernel.FOS_System
                 return;
             }
 
-            EnterCritical();
+            EnterCritical("Cleanup");
 
-            //try
+            try
             {
                 InsideGC = true;
 
@@ -677,7 +677,7 @@ namespace Kernel.FOS_System
             PrintCleanupData(startNumObjs, startNumStrings);
 #endif
             }
-            //finally
+            finally
             {
                 ExitCritical();
             }
@@ -708,9 +708,9 @@ namespace Kernel.FOS_System
         [Compiler.NoGC]
         private static void AddObjectToCleanup(GCHeader* objHeaderPtr, void* objPtr)
         {
-            EnterCritical();
+            EnterCritical("AddObjectToCleanup");
 
-            //try
+            try
             {
                 ObjectToCleanup* newObjToCleanupPtr = (ObjectToCleanup*)Heap.Alloc((uint)sizeof(ObjectToCleanup));
                 newObjToCleanupPtr->objHeaderPtr = objHeaderPtr;
@@ -721,7 +721,7 @@ namespace Kernel.FOS_System
 
                 CleanupList = newObjToCleanupPtr;
             }
-            //finally
+            finally
             {
                 ExitCritical();
             }
@@ -734,9 +734,9 @@ namespace Kernel.FOS_System
         [Compiler.NoGC]
         private static void RemoveObjectToCleanup(GCHeader* objHeaderPtr)
         {
-            EnterCritical();
+            EnterCritical("RemoveObjectToCleanup");
 
-            //try
+            try
             {
                 ObjectToCleanup* currObjToCleanupPtr = CleanupList;
                 while (currObjToCleanupPtr != null)
@@ -749,7 +749,7 @@ namespace Kernel.FOS_System
                     currObjToCleanupPtr = currObjToCleanupPtr->prevPtr;
                 }
             }
-            //finally
+            finally
             {
                 ExitCritical();
             }

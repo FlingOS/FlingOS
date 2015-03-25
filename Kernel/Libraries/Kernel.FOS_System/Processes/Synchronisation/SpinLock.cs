@@ -72,16 +72,16 @@ namespace Kernel.Hardware.Processes.Synchronisation
         [Compiler.NoGC]
         public void Enter()
         {
-            BasicConsole.WriteLine("Entering spin lock...");
+            //BasicConsole.WriteLine("Entering spin lock...");
             _Enter();
-            BasicConsole.WriteLine("Lock acquired.");
+            //BasicConsole.WriteLine("Lock acquired.");
         }
         [Compiler.NoGC]
         public void Exit()
         {
-            BasicConsole.WriteLine("Exiting spin lock...");
+            //BasicConsole.WriteLine("Exiting spin lock...");
             _Exit();
-            BasicConsole.WriteLine("Released lock.");
+            //BasicConsole.WriteLine("Released lock.");
         }
     }
 }
