@@ -22,7 +22,7 @@ BasicDebug_CallerEIP dd 0
 BasicDebug_CallerESP dd 0
 BasicDebug_Enabled dd 0
 BasicDebug_BreakIsInt1 dd 0
-BasicDebug_ReadAttempts dd 1024
+BasicDebug_ReadAttempts dd 1024 ; X = { X attempts (X != 0), Infinite attempts (X == 0) }
 
 BasicDebug_InterruptHandler:
 
