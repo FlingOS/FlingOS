@@ -7,12 +7,15 @@ mov dword ebp, esp
 mov dword ebx, [ebp+8]
 lock bts word [ebx+8], 0
 jc .spin_with_pause
+jmp .lockAcquired
 
 .spin_with_pause:
 pause
 test byte [ebx+8], 1
 jnz .spin_with_pause
 jmp .acquireLock
+
+.lockAcquired:
 
 pop dword ebp
 ret
@@ -25,7 +28,7 @@ push dword ebp
 mov dword ebp, esp
 
 mov dword ebx, [ebp+8]
-mov byte [ebx+8], 0
+mov word [ebx+8], 0
 
 pop dword ebp
 ret

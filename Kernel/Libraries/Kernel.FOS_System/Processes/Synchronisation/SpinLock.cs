@@ -38,6 +38,7 @@ namespace Kernel.Hardware.Processes.Synchronisation
         private int id;
         public int Id
         {
+            [Compiler.NoGC]
             get
             {
                 return id;
@@ -47,6 +48,7 @@ namespace Kernel.Hardware.Processes.Synchronisation
         private UInt16 locked = 0;
         public bool Locked
         {
+            [Compiler.NoGC]
             get
             {
                 return locked != 0;
@@ -67,16 +69,18 @@ namespace Kernel.Hardware.Processes.Synchronisation
         {
         }
 
+        [Compiler.NoGC]
         public void Enter()
         {
             BasicConsole.WriteLine("Entering spin lock...");
-            //_Enter();
+            _Enter();
             BasicConsole.WriteLine("Lock acquired.");
         }
+        [Compiler.NoGC]
         public void Exit()
         {
             BasicConsole.WriteLine("Exiting spin lock...");
-            //_Exit();
+            _Exit();
             BasicConsole.WriteLine("Released lock.");
         }
     }
