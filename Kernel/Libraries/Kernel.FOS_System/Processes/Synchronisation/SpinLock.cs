@@ -59,24 +59,24 @@ namespace Kernel.Hardware.Processes.Synchronisation
         }
 
         [Compiler.PluggedMethod(ASMFilePath=@"ASM\Processes\Synchronisation\SpinLock")]
-        public void _Enter()
+        private void _Enter()
         {
         }
         [Compiler.PluggedMethod(ASMFilePath=null)]
-        public void _Exit()
+        private void _Exit()
         {
         }
 
         public void Enter()
         {
             BasicConsole.WriteLine("Entering spin lock...");
-            _Enter();
+            //_Enter();
             BasicConsole.WriteLine("Lock acquired.");
         }
         public void Exit()
         {
             BasicConsole.WriteLine("Exiting spin lock...");
-            _Exit();
+            //_Exit();
             BasicConsole.WriteLine("Released lock.");
         }
     }
