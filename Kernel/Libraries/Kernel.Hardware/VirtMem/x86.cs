@@ -64,6 +64,7 @@ namespace Kernel.Hardware.VirtMem
         /// <summary>
         /// Initialises the new x86 object.
         /// </summary>
+        [Compiler.NoDebug]
         public x86()
         {
         }
@@ -136,6 +137,7 @@ namespace Kernel.Hardware.VirtMem
             BasicConsole.DelayOutput(5);
         }
 
+        [Compiler.NoDebug]
         public override uint FindFreePhysPageAddr()
         {
             int result = UsedPhysPages.FindFirstClearEntry();
@@ -145,6 +147,7 @@ namespace Kernel.Hardware.VirtMem
             }
             return (uint)(result * 4096);
         }
+        [Compiler.NoDebug]
         public override uint FindFreeVirtPageAddr()
         {
             int result = UsedVirtPages.FindFirstClearEntry();
@@ -160,6 +163,7 @@ namespace Kernel.Hardware.VirtMem
         /// </summary>
         /// <param name="pAddr">The physical address to map to.</param>
         /// <param name="vAddr">The virtual address to map.</param>
+        [Compiler.NoDebug]
         public override void Map(uint pAddr, uint vAddr, PageFlags flags, UpdateUsedPagesFlags UpdateUsedPages = UpdateUsedPagesFlags.Both)
         {
             PTEFlags pteFlags = PTEFlags.None;
@@ -177,6 +181,7 @@ namespace Kernel.Hardware.VirtMem
             }
             Map(pAddr, vAddr, pteFlags, UpdateUsedPages);
         }
+        [Compiler.NoDebug]
         private void Map(uint pAddr, uint vAddr, PTEFlags flags, UpdateUsedPagesFlags UpdateUsedPages = UpdateUsedPagesFlags.Both)
         {
 #if PAGING_TRACE
@@ -219,6 +224,7 @@ namespace Kernel.Hardware.VirtMem
             //Invalidate the page table entry so that mapping isn't CPU cached.
             InvalidatePTE(vAddr);
         }
+        [Compiler.NoDebug]
         public override void Unmap(uint vAddr, UpdateUsedPagesFlags UpdateUsedPages = UpdateUsedPagesFlags.Both)
         {
             uint pAddr = GetPhysicalAddress(vAddr);
@@ -250,6 +256,7 @@ namespace Kernel.Hardware.VirtMem
         /// <remarks>
         /// This has an undefined return value and behaviour if the virtual address is not mapped.
         /// </remarks>
+        [Compiler.NoDebug]
         public override uint GetPhysicalAddress(uint vAddr)
         {
             //Calculate page directory and page table indices
@@ -268,6 +275,7 @@ namespace Kernel.Hardware.VirtMem
         /// <summary>
         /// Maps in the main kernel memory.
         /// </summary>
+        [Compiler.NoDebug]
         public override void MapKernel()
         {
             //By mapping memory in reverse order we optimise the use
@@ -341,6 +349,7 @@ namespace Kernel.Hardware.VirtMem
         /// </summary>
         /// <param name="pageNum">The page number (directory index) of the page table to get.</param>
         /// <returns>A uint pointer to the page table.</returns>
+        [Compiler.NoDebug]
         private uint* GetFixedPage(uint pageNum)
         {
             return GetFirstPageTablePtr() + (1024 * pageNum);
@@ -351,6 +360,7 @@ namespace Kernel.Hardware.VirtMem
         /// <param name="pageTablePtr">The page table to set the value in.</param>
         /// <param name="entry">The entry index (page table index) of the entry to set.</param>
         /// <param name="addr">The physical address to map the entry to.</param>
+        [Compiler.NoDebug]
         private void SetPageEntry(uint* pageTablePtr, uint entry, uint addr, PTEFlags flags)
         {
 #if PAGING_TRACE
@@ -374,6 +384,7 @@ namespace Kernel.Hardware.VirtMem
         /// </summary>
         /// <param name="pageNum">The page number (directory index) of the entry to set.</param>
         /// <param name="pageTablePhysPtr">The physical address of the page table to set the entry to point at.</param>
+        [Compiler.NoDebug]
         private void SetDirectoryEntry(uint pageNum, uint* pageTablePhysPtr)
         {
             uint* dirPtr = GetPageDirectoryPtr();

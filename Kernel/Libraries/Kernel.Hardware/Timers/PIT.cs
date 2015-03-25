@@ -351,30 +351,30 @@ namespace Kernel.Hardware.Timers
         /// </summary>
         protected void InterruptHandler()
         {
-            if (Processes.ProcessManager.Processes.Count > 1)
-                BasicConsole.WriteLine("PIT: 1");
+            //if (Processes.ProcessManager.Processes.Count > 1)
+            //    BasicConsole.WriteLine("PIT: 1");
 
             uint T0Delay = T0DelyNS;
             PITHandler hndlr = null;
             for (int i = ActiveHandlers.Count - 1; i >= 0; i--)
             {
-                if (Processes.ProcessManager.Processes.Count > 1)
-                    BasicConsole.WriteLine("PIT: 2");
+                //if (Processes.ProcessManager.Processes.Count > 1)
+                //    BasicConsole.WriteLine("PIT: 2");
                 
                 hndlr = (PITHandler)ActiveHandlers[i];
 
-                if (Processes.ProcessManager.Processes.Count > 1)
-                    BasicConsole.WriteLine("PIT: 3");
+                //if (Processes.ProcessManager.Processes.Count > 1)
+                //    BasicConsole.WriteLine("PIT: 3");
 
                 hndlr.NSRemaining -= T0Delay;
 
-                if (Processes.ProcessManager.Processes.Count > 1)
-                    BasicConsole.WriteLine("PIT: 4");
+                //if (Processes.ProcessManager.Processes.Count > 1)
+                //    BasicConsole.WriteLine("PIT: 4");
 
                 if (hndlr.NSRemaining < T0Delay)
                 {
-                    if (Processes.ProcessManager.Processes.Count > 1)
-                        BasicConsole.WriteLine("PIT: 5");
+                    //if (Processes.ProcessManager.Processes.Count > 1)
+                    //    BasicConsole.WriteLine("PIT: 5");
 
                     if (hndlr.Recurring)
                     {
@@ -384,14 +384,14 @@ namespace Kernel.Hardware.Timers
                     {
                         hndlr.id = -1;
 
-                        if (Processes.ProcessManager.Processes.Count > 1)
-                            BasicConsole.WriteLine("PIT: 6");
+                        //if (Processes.ProcessManager.Processes.Count > 1)
+                        //    BasicConsole.WriteLine("PIT: 6");
 
                         ActiveHandlers.RemoveAt(i);
                     }
 
-                    if (Processes.ProcessManager.Processes.Count > 1)
-                        BasicConsole.WriteLine("PIT: 7");
+                    //if (Processes.ProcessManager.Processes.Count > 1)
+                    //    BasicConsole.WriteLine("PIT: 7");
 
                     hndlr.HandleTrigger(hndlr.state);
                 }
