@@ -695,23 +695,6 @@ namespace Kernel.Debug.Debugger
                     }
                 }
 
-                DB_Method currMethod = TheDebugger.CurrentMethod;
-                if (currMethod != null)
-                {
-                    if (!currMethod.Plugged.HasValue || !currMethod.Plugged.Value)
-                    {
-                        ReloadCSText();
-                    }
-
-                    TheDebugger.GetArguments();
-                    ReloadArguments();
-                }
-
-                TheDebugger.GetLocals();
-                ReloadLocals();
-
-                ReloadASMText();
-
                 TheDebugger.GetRegisters();
                 string regText = "";
                 int num = 0;
@@ -729,6 +712,23 @@ namespace Kernel.Debug.Debugger
                     }
                 }
                 SetText(regText, RegistersBox);
+
+                TheDebugger.GetLocals();
+                ReloadLocals();
+
+                DB_Method currMethod = TheDebugger.CurrentMethod;
+                if (currMethod != null)
+                {
+                    if (!currMethod.Plugged.HasValue || !currMethod.Plugged.Value)
+                    {
+                        ReloadCSText();
+                    }
+
+                    TheDebugger.GetArguments();
+                    ReloadArguments();
+                }
+                
+                ReloadASMText();
             }
             catch (Exception ex)
             {
