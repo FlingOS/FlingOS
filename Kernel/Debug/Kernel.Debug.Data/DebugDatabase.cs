@@ -798,6 +798,18 @@ namespace Kernel.Debug.Data
             }
             return null;
         }
+
+        public static DB_Type GetTypeBySignature(string aTypeSig)
+        {
+            IQueryable<DB_Type> potTypes = (from Types in DB.DB_Types
+                                            where (Types.Signature == aTypeSig)
+                                            select Types);
+            if (potTypes.Count() > 0)
+            {
+                return potTypes.First();
+            }
+            return null;
+        }
         /// <summary>
         /// Adds the pre-created type to the database. All the entries's
         /// required parameters (i.e. ones which cannot be null) should 

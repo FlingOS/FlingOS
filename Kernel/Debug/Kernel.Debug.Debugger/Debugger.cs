@@ -1047,17 +1047,17 @@ namespace Kernel.Debug.Debugger
             if(bytesForTempLocals % 4 == 0)
             {
                 bytesPerLocal = 4;
-                dbTempLocalType = DebugDatabase.GetType("System.UInt32");
+                dbTempLocalType = DebugDatabase.GetTypeBySignature("System.UInt32");
             }
             else if (bytesForTempLocals % 2 == 0)
             {
                 bytesPerLocal = 2;
-                dbTempLocalType = DebugDatabase.GetType("System.UInt16");
+                dbTempLocalType = DebugDatabase.GetTypeBySignature("System.UInt16");
             }
             else
             {
                 bytesPerLocal = 1;
-                dbTempLocalType = DebugDatabase.GetType("System.Byte");
+                dbTempLocalType = DebugDatabase.GetTypeBySignature("System.Byte");
             }
             for (int i = bytesForTempLocals - bytesPerLocal; i > -1; i -= bytesPerLocal)
             {
