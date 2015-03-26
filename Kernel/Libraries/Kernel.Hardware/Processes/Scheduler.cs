@@ -231,7 +231,16 @@ namespace Kernel.Hardware.Processes
                 if (Processes.ProcessManager.Processes.Count > 1)
                     BasicConsole.WriteLine("Scheduler: Switching process/thread.");
 #endif
-                
+
+                if (threadIdx > ProcessManager.CurrentProcess.Threads.Count)
+                {
+                    BasicConsole.WriteLine("Error! Scheduler has picked a thread index which is out of range!");
+                }
+                else if (threadIdx < 0)
+                {
+                    BasicConsole.WriteLine("Error! Scheduler has picked a thread index less than 0!");
+                }
+
                 ProcessManager.SwitchProcess(processId,
                     (int)((Thread)ProcessManager.CurrentProcess.Threads[threadIdx]).Id);
             }
