@@ -111,7 +111,9 @@ namespace Kernel.Compiler.Architectures.x86_32
             result.AppendLine("mov dword eax, 0xDEADBEEF");
             result.AppendLine("mov dword ebx, 0x1");
             result.AppendLine("mov dword ecx, 1");
-            result.AppendLine("jmp method_System_Void_RETEND_Kernel_PreReqs_DECLEND_PageFaultDetection_NAMEEND___FAIL");
+            result.AppendLine("mov dword [staticfield_System_Boolean_Kernel_FOS_System_GC_Enabled], 1");
+            result.AppendLine("mov dword [staticfield_System_Boolean_Kernel_FOS_System_Heap_PreventAllocation], 0");
+            result.AppendLine("jmp method_System_Void_RETEND_Kernel_PreReqs_DECLEND_PageFaultDetection_NAMEEND___Fail");
 
             result.AppendLine("call GetEIP");
             result.AppendLine(string.Format("call {0}", aScannerState.GetMethodID(aScannerState.HaltMethod)));

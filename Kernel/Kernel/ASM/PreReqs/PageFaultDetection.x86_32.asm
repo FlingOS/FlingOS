@@ -166,6 +166,7 @@ ret
 
 ; ---------------------- FAILURE HANDLING ----------------------
 .FAIL:
+method_System_Void_RETEND_Kernel_PreReqs_DECLEND_PageFaultDetection_NAMEEND___Fail:
 ; INPUT to this section of code: 
 ;		EAX = Value of register which caused failure
 ;		EBX = Value at address which caused failure

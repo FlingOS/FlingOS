@@ -85,7 +85,7 @@ namespace Kernel
             BasicConsole.WriteLine("Fling OS Running...");
 
             // DO NOT REMOVE THE FOLLOWING LINE -- ednutting
-            //PreReqs.PageFaultDetection_Initialised = true;
+            PreReqs.PageFaultDetection_Initialised = true;
             
             try
             {
