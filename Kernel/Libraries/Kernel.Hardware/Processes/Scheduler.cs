@@ -125,6 +125,7 @@ namespace Kernel.Hardware.Processes
         public static bool print = false;
 #endif
         [Compiler.NoDebug]
+        [Compiler.NoGC]
         private static void OnTimerInterrupt(FOS_System.Object state)
         {
             if (!Enabled)
@@ -135,6 +136,7 @@ namespace Kernel.Hardware.Processes
             UpdateCurrentState();
         }
         [Compiler.NoDebug]
+        [Compiler.NoGC]
         public static void UpdateCurrentState()
         {
 #if SCHEDULER_HANDLER_TRACE
@@ -203,7 +205,7 @@ namespace Kernel.Hardware.Processes
                             UpdateSleepingThreads();
                         }
                     }
-                    
+
 #if SCHEDULER_HANDLER_TRACE
                     BasicConsole.WriteLine("Scheduler: Found runnable process and thread.");
 #endif
@@ -228,11 +230,12 @@ namespace Kernel.Hardware.Processes
                 }
                 
 #if SCHEDULER_HANDLER_TRACE
-                if (Processes.ProcessManager.Processes.Count > 1)
-                    BasicConsole.WriteLine("Scheduler: Switching process/thread.");
-#endif
+                //if (Processes.ProcessManager.Processes.Count > 1)
+                //{
+                //    BasicConsole.WriteLine("Scheduler: Switching process/thread.");
+                //}
 
-                if (threadIdx > ProcessManager.CurrentProcess.Threads.Count)
+                if (threadIdx >= ((Process)ProcessManager.Processes[processIdx]).Threads.Count)
                 {
                     BasicConsole.WriteLine("Error! Scheduler has picked a thread index which is out of range!");
                 }
@@ -240,9 +243,10 @@ namespace Kernel.Hardware.Processes
                 {
                     BasicConsole.WriteLine("Error! Scheduler has picked a thread index less than 0!");
                 }
+#endif
 
                 ProcessManager.SwitchProcess(processId,
-                    (int)((Thread)ProcessManager.CurrentProcess.Threads[threadIdx]).Id);
+                    (int)((Thread)((Process)ProcessManager.Processes[processIdx]).Threads[threadIdx]).Id);
             }
 
             if (!ProcessManager.CurrentThread_State->Started)
@@ -258,6 +262,7 @@ namespace Kernel.Hardware.Processes
 #endif
         }
         [Compiler.NoDebug]
+        [Compiler.NoGC]
         private static void NextProcess(ref int threadIdx, ref int processIdx)
         {
             processIdx++;
@@ -271,6 +276,7 @@ namespace Kernel.Hardware.Processes
             threadIdx = NextThread(-1, processIdx);
         }
         [Compiler.NoDebug]
+        [Compiler.NoGC]
         private static int NextThread(int threadIdx, int processIdx)
         {
             threadIdx++;
