@@ -138,7 +138,16 @@ namespace Kernel.Core.Processes
             switch ((SystemCall)sysCallNum)
             {
                 case SystemCall.INVALID:
+                    FOS_System.GC.Enabled = true;
+                    FOS_System.Heap.PreventAllocation = false;
+                    Console.Default.WarningColour();
+                    Console.Default.WriteLine("WARNING: Enabled GC/Heap inside critical interrupt! (SysCalls: invalid)");
+                    Console.Default.DefaultColour();
+
                     Console.Default.WriteLine("Error! INVALID System Call made.");
+                    
+                    FOS_System.GC.Enabled = false;
+                    FOS_System.Heap.PreventAllocation = true;
                     break;
                 case SystemCall.Sleep:
                     SysCall_Sleep((int)param1);
@@ -147,6 +156,12 @@ namespace Kernel.Core.Processes
                     SysCall_PlayNote((Hardware.Timers.PIT.MusicalNote)param1, (Hardware.Timers.PIT.MusicalNoteValue)param2, param3);
                     break;
                 default:
+                    FOS_System.GC.Enabled = true;
+                    FOS_System.Heap.PreventAllocation = false;
+                    Console.Default.WarningColour();
+                    Console.Default.WriteLine("WARNING: Enabled GC/Heap inside critical interrupt! (SysCalls: default)");
+                    Console.Default.DefaultColour();
+
                     Console.Default.Write("Sys call ");
                     Console.Default.Write_AsDecimal(sysCallNum);
                     Console.Default.Write(" : ");
@@ -155,6 +170,9 @@ namespace Kernel.Core.Processes
                     Console.Default.WriteLine(((FOS_System.String)" > Param2: ") + Param2);
                     Console.Default.WriteLine(((FOS_System.String)" > Param3: ") + Param3);
                     Console.Default.WriteLine(((FOS_System.String)" > Return: ") + ProcessManager.CurrentThread.EAXFromInterruptStack);
+
+                    FOS_System.GC.Enabled = false;
+                    FOS_System.Heap.PreventAllocation = true;
                     break;
             }
 
@@ -171,44 +189,9 @@ namespace Kernel.Core.Processes
             Scheduler.UpdateCurrentState();
         }
 
-        public class NoteState : FOS_System.Object
-        {
-            public uint dur_ms;
-            public int handlerId;
-        }
         private static void SysCall_PlayNote(Hardware.Timers.PIT.MusicalNote note, Hardware.Timers.PIT.MusicalNoteValue duration, uint bpm)
         {
-            Hardware.Timers.PIT.ThePIT.PlaySound((int)note);
-
-            uint dur_ms = (uint)duration * 60 * 1000 / (bpm * 16);
-            long do_ms = dur_ms;
-            if (dur_ms >= 2000)
-            {
-                dur_ms -= 2000;
-                do_ms = 2000;
-            }
-            else
-            {
-                dur_ms = 0;
-            }
-            NoteState state = new NoteState()
-            {
-                dur_ms = dur_ms
-            };
-            state.handlerId = Hardware.Timers.PIT.ThePIT.RegisterHandler(new Hardware.Timers.PITHandler(SysCall_StopNoteHandler, state, 1000000L * do_ms, true)); 
-        }
-        private static void SysCall_StopNoteHandler(FOS_System.Object objState)
-        {
-            NoteState state = (NoteState)objState;
-            if (state.dur_ms >= 0)
-            {
-                state.dur_ms -= 2000;
-            }
-            else
-            {
-                Hardware.Timers.PIT.ThePIT.MuteSound();
-                Hardware.Timers.PIT.ThePIT.UnregisterHandler(state.handlerId);
-            }
+            Core.Tasks.PlayNotesTask.RequestNote(note, duration, bpm);
         }
     }
 }

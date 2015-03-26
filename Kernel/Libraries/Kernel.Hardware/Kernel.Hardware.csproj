@@ -72,6 +72,7 @@
     <Compile Include="Devices\Key Maps\USKeymap.cs" />
     <Compile Include="Devices\Timer.cs" />
     <Compile Include="Interrupts\Interrupts.cs" />
+    <Compile Include="Interrupts\PlayNotesTask.cs" />
     <Compile Include="Interrupts\NonCriticalInterruptsTask.cs" />
     <Compile Include="IO\IOPort.cs" />
     <Compile Include="Devices\Keyboard.cs" />
