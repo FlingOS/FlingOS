@@ -129,6 +129,7 @@ namespace Kernel.Core.Tasks
             }
             else
             {
+                BasicConsole.WriteLine("Note muted.");
                 Hardware.Timers.PIT.ThePIT.MuteSound();
                 Hardware.Timers.PIT.ThePIT.UnregisterHandler(state.handlerId);
             }
