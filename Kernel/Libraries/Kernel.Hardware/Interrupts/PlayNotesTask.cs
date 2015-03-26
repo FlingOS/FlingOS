@@ -33,7 +33,7 @@ namespace Kernel.Core.Tasks
     {
         public class NoteState : FOS_System.Object
         {
-            public uint dur_ms;
+            public int dur_ms;
             public int handlerId;
         }
         public class NoteRequest : FOS_System.Object
@@ -41,7 +41,7 @@ namespace Kernel.Core.Tasks
             public bool Handled = false;
             public Hardware.Timers.PIT.MusicalNote note;
             public Hardware.Timers.PIT.MusicalNoteValue duration;
-            public uint bpm;
+            public int bpm;
         }
 
         public static Thread OwnerThread = null;
@@ -82,11 +82,11 @@ namespace Kernel.Core.Tasks
 
                 Hardware.Timers.PIT.MusicalNote note = Hardware.Timers.PIT.MusicalNote.C4;
                 Hardware.Timers.PIT.MusicalNoteValue duration = Hardware.Timers.PIT.MusicalNoteValue.Minim;
-                uint bpm = 120;
+                int bpm = 120;
 
                 Hardware.Timers.PIT.ThePIT.PlaySound((int)note);
 
-                uint dur_ms = (uint)duration * 60 * 1000 / (bpm * 16);
+                int dur_ms = (int)duration * 60 * 1000 / (bpm * 16);
                 long do_ms = dur_ms;
                 if (dur_ms >= 2000)
                 {
