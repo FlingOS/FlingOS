@@ -149,7 +149,6 @@ namespace Kernel.Hardware.Interrupts
                 {
                     FOS_System.Heap.PreventReason = "[NONE]";
                 }
-                FOS_System.GC.Enabled = !value;
             }
         }
 
