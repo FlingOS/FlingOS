@@ -78,7 +78,7 @@ namespace Kernel.Core.Shells
                          *              IntArray    /   DummyObj    /   DivideBy0   /
                          *              Exceptions1 /   Exceptions2 /   PCBeep      /
                          *              Timer       /   Keyboard    /   FieldsTable /
-                         *              IsInst      /   VirtMem                     }
+                         *              IsInst      /   VirtMem     /   Longs       }
                          *  - GC   { Cleanup }
                          *  - USB { Update / Eject }
                          *  - Start { Filename } [*KM* / UM] [*Raw*]
@@ -765,6 +765,10 @@ namespace Kernel.Core.Shells
                                     else if (opt1 == "virtmem")
                                     {
                                         Hardware.VirtMemManager.Test();
+                                    }
+                                    else if (opt1 == "longs")
+                                    {
+                                        LongsTest();
                                     }
                                     else
                                     {
@@ -2594,6 +2598,125 @@ which should have been provided with the executable.");
 
             console.WriteLine("Ended IsInst test. Pausing for 5 seconds.");
             Hardware.Devices.Timer.Default.Wait(5000);
+        }
+
+        private void LongsTest()
+        {
+            console.WriteLine("Starting Longs test...");
+            try
+            {
+                {
+                    long x = 1;
+                    if (x == 1)
+                    {
+                        console.WriteLine("Pass: x == 1");
+                    }
+                    else
+                    {
+                        console.WriteLine("Fail: x != 1");
+                    }
+                }
+
+                {
+                    long x = 1;
+                    x = 0;
+                    if (x == 0)
+                    {
+                        console.WriteLine("Pass: x == 0");
+                    }
+                    else
+                    {
+                        console.WriteLine("Fail: x != 0");
+                    }
+                }
+
+                {
+                    ulong x = 0xEFFFFFFFFFFFFFFF;
+                    if (x == 0xEFFFFFFFFFFFFFFF)
+                    {
+                        console.WriteLine("Pass: x == 0xEFFFFFFFFFFFFFFF");
+                    }
+                    else
+                    {
+                        console.WriteLine("Fail: x != 0xEFFFFFFFFFFFFFFF");
+                    }
+                }
+
+                {
+                    ulong x = 0xEFFFFFFFFFFFFFFF;
+                    ulong y = 0x1;
+                    ulong z = x + y;
+                    if (z == 0xF000000000000000)
+                    {
+                        console.WriteLine("Pass: z == 0xF000000000000000");
+                    }
+                    else
+                    {
+                        console.WriteLine("Fail: z != 0xF000000000000000");
+                    }
+                }
+
+                {
+                    ulong x = 0xEFFFFFFFFFFFFFFF;
+                    ulong y = 0x1;
+                    ulong z = x - y;
+                    if (z == 0xEFFFFFFFFFFFFFFE)
+                    {
+                        console.WriteLine("Pass: z == 0xEFFFFFFFFFFFFFFE");
+                    }
+                    else
+                    {
+                        console.WriteLine("Fail: z != 0xEFFFFFFFFFFFFFFE");
+                    }
+                }
+
+                {
+                    long x = -1;
+                    long y = 1;
+                    long z = x * y;
+                    if (z == -1)
+                    {
+                        console.WriteLine("Pass: z == -1");
+                    }
+                    else
+                    {
+                        console.WriteLine("Fail: z != -1");
+                    }
+                }
+
+                {
+                    long x = -2;
+                    long y = -10;
+                    long z = x * y;
+                    if (z == 20)
+                    {
+                        console.WriteLine("Pass: z == 20");
+                    }
+                    else
+                    {
+                        console.WriteLine("Fail: z != 20");
+                    }
+                }
+
+                {
+                    long x = -10;
+                    long y = 5;
+                    long z = x / y;
+                    if (z == -2)
+                    {
+                        console.WriteLine("Pass: z == -2");
+                    }
+                    else
+                    {
+                        console.WriteLine("Fail: z != -2");
+                    }
+                }
+            }
+            catch
+            {
+                OutputCurrentExceptionInfo();
+            }
+            console.WriteLine("Finished Longs test.");
         }
     }
 
