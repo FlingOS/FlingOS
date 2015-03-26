@@ -156,19 +156,13 @@ namespace Kernel.FOS_System
         [Compiler.NoGC]
         public static void* NewObj(FOS_System.Type theType)
         {
-            //if(!Enabled || InsideGC)
-            //{
-            //    BasicConsole.SetTextColour(BasicConsole.error_colour);
-            //    BasicConsole.WriteLine("Error! GC can't create a new object since already inside GC.");
-            //    BasicConsole.Write("Heap prevent reason: ");
-            //    BasicConsole.WriteLine(Heap.PreventReason);
-            //    BasicConsole.DelayOutput(5);
-            //    BasicConsole.SetTextColour(BasicConsole.default_colour);
-            //    return null;
-            //}
-
             if (!Enabled)
             {
+                BasicConsole.SetTextColour(BasicConsole.warning_colour);
+                BasicConsole.WriteLine("Warning! GC returning null pointer because GC not enabled.");
+                BasicConsole.DelayOutput(10);
+                BasicConsole.SetTextColour(BasicConsole.default_colour);
+
                 return null;
             }
 
@@ -192,7 +186,7 @@ namespace Kernel.FOS_System
 
                     BasicConsole.SetTextColour(BasicConsole.error_colour);
                     BasicConsole.WriteLine("Error! GC can't create a new object because the heap returned a null pointer.");
-                    BasicConsole.DelayOutput(5);
+                    BasicConsole.DelayOutput(10);
                     BasicConsole.SetTextColour(BasicConsole.default_colour);
 
                     return null;
@@ -233,20 +227,13 @@ namespace Kernel.FOS_System
         [Compiler.NoGC]
         public static void* NewArr(int length, FOS_System.Type elemType)
         {
-            //if (!Enabled || InsideGC)
-            //{
-            //    BasicConsole.SetTextColour(BasicConsole.error_colour);
-            //    BasicConsole.WriteLine("Error! GC can't create a new array since already inside GC.");
-            //    BasicConsole.Write("Heap prevent reason: ");
-            //    BasicConsole.WriteLine(Heap.PreventReason);
-            //    BasicConsole.DelayOutput(5);
-            //    BasicConsole.SetTextColour(BasicConsole.default_colour);
-
-            //    return null;
-            //}
-
             if (!Enabled)
             {
+                BasicConsole.SetTextColour(BasicConsole.warning_colour);
+                BasicConsole.WriteLine("Warning! GC returning null pointer because GC not enabled.");
+                BasicConsole.DelayOutput(10);
+                BasicConsole.SetTextColour(BasicConsole.default_colour);
+
                 return null;
             }
 
@@ -285,7 +272,7 @@ namespace Kernel.FOS_System
 
                     BasicConsole.SetTextColour(BasicConsole.error_colour);
                     BasicConsole.WriteLine("Error! GC can't create a new array because the heap returned a null pointer.");
-                    BasicConsole.DelayOutput(5);
+                    BasicConsole.DelayOutput(10);
                     BasicConsole.SetTextColour(BasicConsole.default_colour);
 
                     return null;
@@ -325,20 +312,13 @@ namespace Kernel.FOS_System
         [Compiler.NoGC]
         public static void* NewString(int length)
         {
-            //if (!Enabled || InsideGC)
-            //{
-            //    BasicConsole.SetTextColour(BasicConsole.error_colour);
-            //    BasicConsole.WriteLine("Error! GC can't create a new string since already inside GC.");
-            //    BasicConsole.Write("Heap prevent reason: ");
-            //    BasicConsole.WriteLine(Heap.PreventReason);
-            //    BasicConsole.DelayOutput(5);
-            //    BasicConsole.SetTextColour(BasicConsole.default_colour);
-
-            //    return null;
-            //}
-
             if (!Enabled)
             {
+                BasicConsole.SetTextColour(BasicConsole.warning_colour);
+                BasicConsole.WriteLine("Warning! GC returning null pointer because GC not enabled.");
+                BasicConsole.DelayOutput(10);
+                BasicConsole.SetTextColour(BasicConsole.default_colour);
+
                 return null;
             }
 
@@ -375,7 +355,7 @@ namespace Kernel.FOS_System
 
                     BasicConsole.SetTextColour(BasicConsole.error_colour);
                     BasicConsole.WriteLine("Error! GC can't create a new string because the heap returned a null pointer.");
-                    BasicConsole.DelayOutput(5);
+                    BasicConsole.DelayOutput(10);
                     BasicConsole.SetTextColour(BasicConsole.default_colour);
 
                     return null;

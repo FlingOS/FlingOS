@@ -94,6 +94,15 @@ namespace Kernel.Compiler.Architectures.x86_32
             //So ultimately we just have to throw a kernel panic
             //Throw a panic attack... ( :/ ) by calling kernel Halt(uint lastAddress)
             result.AppendLine("call GetEIP");
+            result.AppendLine("push dword esp");
+            result.AppendLine("push dword ebp");
+            result.AppendLine("pushad");
+            result.AppendLine("mov dword eax, 0xDEADBEEF");
+            result.AppendLine("mov dword ebx, 0x2");
+            result.AppendLine("mov dword ecx, 1");
+            result.AppendLine("jmp method_System_Void_RETEND_Kernel_PreReqs_DECLEND_PageFaultDetection_NAMEEND___FAIL");
+
+            result.AppendLine("call GetEIP");
             result.AppendLine(string.Format("call {0}", aScannerState.GetMethodID(aScannerState.HaltMethod)));
             //Insert the not null label
             result.AppendLine(NotNullLabel + ":");
