@@ -2605,46 +2605,12 @@ which should have been provided with the executable.");
             console.WriteLine("Starting Longs test...");
             try
             {
-                {
-                    long x = 1;
-                    if (x == 1)
-                    {
-                        console.WriteLine("Pass: x == 1");
-                    }
-                    else
-                    {
-                        console.WriteLine("Fail: x != 1");
-                    }
-                }
+                #region Unsigned
 
-                {
-                    long x = 1;
-                    x = 0;
-                    if (x == 0)
-                    {
-                        console.WriteLine("Pass: x == 0");
-                    }
-                    else
-                    {
-                        console.WriteLine("Fail: x != 0");
-                    }
-                }
-
+                #region Addition & Subtraction
                 {
                     ulong x = 0xEFFFFFFFFFFFFFFF;
-                    if (x == 0xEFFFFFFFFFFFFFFF)
-                    {
-                        console.WriteLine("Pass: x == 0xEFFFFFFFFFFFFFFF");
-                    }
-                    else
-                    {
-                        console.WriteLine("Fail: x != 0xEFFFFFFFFFFFFFFF");
-                    }
-                }
-
-                {
-                    ulong x = 0xEFFFFFFFFFFFFFFF;
-                    ulong y = 0x1;
+                    ulong y = 1;
                     ulong z = x + y;
                     if (z == 0xF000000000000000)
                     {
@@ -2655,62 +2621,297 @@ which should have been provided with the executable.");
                         console.WriteLine("Fail: z != 0xF000000000000000");
                     }
                 }
-
                 {
-                    ulong x = 0xEFFFFFFFFFFFFFFF;
-                    ulong y = 0x1;
+                    ulong x = 0xF000000000000000;
+                    ulong y = 1;
                     ulong z = x - y;
-                    if (z == 0xEFFFFFFFFFFFFFFE)
+                    if (z == 0xEFFFFFFFFFFFFFFF)
                     {
-                        console.WriteLine("Pass: z == 0xEFFFFFFFFFFFFFFE");
+                        console.WriteLine("Pass: z == 0xEFFFFFFFFFFFFFFF");
                     }
                     else
                     {
-                        console.WriteLine("Fail: z != 0xEFFFFFFFFFFFFFFE");
+                        console.WriteLine("Fail: z != 0xEFFFFFFFFFFFFFFF");
                     }
                 }
+                #endregion
 
+                #region Multiplication, division operators
                 {
-                    long x = -1;
-                    long y = 1;
-                    long z = x * y;
-                    if (z == -1)
+                    ulong x = 0x7000000000000082;
+                    ulong y = 2;
+                    ulong z = x * y;
+                    if (z == 0xE000000000000104)
                     {
-                        console.WriteLine("Pass: z == -1");
+                        console.WriteLine("Pass: z == 0xE000000000000104");
                     }
                     else
                     {
-                        console.WriteLine("Fail: z != -1");
+                        console.WriteLine("Fail: z != 0xE000000000000104");
                     }
                 }
+                {
+                    ulong x = 0xE000000000000104;
+                    ulong y = 2;
+                    ulong z = x / y;
+                    if (z == 0x7000000000000082)
+                    {
+                        console.WriteLine("Pass: z == 0x7000000000000082");
+                    }
+                    else
+                    {
+                        console.WriteLine("Fail: z != 0x7000000000000082");
+                    }
+                }
+                #endregion
 
+                #region Modulo (%) operator
                 {
-                    long x = -2;
-                    long y = -10;
-                    long z = x * y;
-                    if (z == 20)
+                    ulong x = 0x7000000000000000;
+                    ulong y = 5;
+                    ulong z = x % y;
+                    if (z == 2)
                     {
-                        console.WriteLine("Pass: z == 20");
+                        console.WriteLine("Pass: z == 2");
                     }
                     else
                     {
-                        console.WriteLine("Fail: z != 20");
+                        console.WriteLine("Fail: z != 2");
                     }
                 }
+                #endregion
 
+                #region Comparison operators (==, !=, >, <, >=, <=)
                 {
-                    long x = -10;
-                    long y = 5;
-                    long z = x / y;
-                    if (z == -2)
+                    ulong x = 0xDEADBEEFDEADBEEF;
+                    ulong y = 0xDEADBEEFDEADBEEF;
+                    if (x == y)
                     {
-                        console.WriteLine("Pass: z == -2");
+                        console.WriteLine("Pass: x == y == 0xDEADBEEFDEADBEEF");
                     }
                     else
                     {
-                        console.WriteLine("Fail: z != -2");
+                        console.WriteLine("Fail: x != y != 0xDEADBEEFDEADBEEF");
                     }
                 }
+                {
+                    ulong x = 0xDEADBEEFDEADBEEF;
+                    ulong y = 0xFEADBEEFDEADBEEF;
+                    if (x != y)
+                    {
+                        console.WriteLine("Pass: x != y (0xDEADBEEFDEADBEEF != 0xFEADBEEFDEADBEEF)");
+                    }
+                    else
+                    {
+                        console.WriteLine("Fail: x == y (0xDEADBEEFDEADBEEF == 0xFEADBEEFDEADBEEF)");
+                    }
+                }
+                {
+                    ulong x = 0xDEADBEEFDEADBEEF;
+                    ulong y = 0xFEADBEEFDEADBEEF;
+                    if (x < y)
+                    {
+                        console.WriteLine("Pass: x < y (0xDEADBEEFDEADBEEF < 0xFEADBEEFDEADBEEF)");
+                    }
+                    else
+                    {
+                        console.WriteLine("Fail: x >= y (0xDEADBEEFDEADBEEF >= 0xFEADBEEFDEADBEEF)");
+                    }
+                }
+                {
+                    ulong x = 0xFFADBEEFDEADBEEF;
+                    ulong y = 0xFEADBEEFDEADBEEF;
+                    if (x > y)
+                    {
+                        console.WriteLine("Pass: x > y (0xFFADBEEFDEADBEEF < 0xFEADBEEFDEADBEEF)");
+                    }
+                    else
+                    {
+                        console.WriteLine("Fail: x <= y (0xFFADBEEFDEADBEEF >= 0xFEADBEEFDEADBEEF)");
+                    }
+                }
+                {
+                    ulong x = 0xDEADBEEFDEADBEEF;
+                    ulong y = 0xDEADBEEFDEADBEEF;
+                    if (x <= y)
+                    {
+                        console.WriteLine("Pass: x <= y (0xDEADBEEFDEADBEEF)");
+                    }
+                    else
+                    {
+                        console.WriteLine("Fail: x > y (0xDEADBEEFDEADBEEF)");
+                    }
+                }
+                {
+                    ulong x = 0xAEADBEEFDEADBEEF;
+                    ulong y = 0xDEADBEEFDEADBEEF;
+                    if (x <= y)
+                    {
+                        console.WriteLine("Pass: x <= y (0xAEADBEEFDEADBEEF)");
+                    }
+                    else
+                    {
+                        console.WriteLine("Fail: x > y (0xAEADBEEFDEADBEEF)");
+                    }
+                }
+                {
+                    ulong x = 0xDEADBEEFDEADBEEF;
+                    ulong y = 0xDEADBEEFDEADBEEF;
+                    if (x >= y)
+                    {
+                        console.WriteLine("Pass: x >= y (0xDEADBEEFDEADBEEF)");
+                    }
+                    else
+                    {
+                        console.WriteLine("Fail: x < y (0xDEADBEEFDEADBEEF)");
+                    }
+                }
+                {
+                    ulong x = 0xDEADBEEFDEADBEEF;
+                    ulong y = 0xAEADBEEFDEADBEEF;
+                    if (x >= y)
+                    {
+                        console.WriteLine("Pass: x >= y (0xAEADBEEFDEADBEEF)");
+                    }
+                    else
+                    {
+                        console.WriteLine("Fail: x < y (0xAEADBEEFDEADBEEF)");
+                    }
+                }
+                #endregion
+                
+                #region Shift operators (<<, >>) by less and more than 32 bits and 64 bits
+                {
+                    ulong x = 0x2;
+                    int y = 2;
+                    ulong z = x << y;
+                    if (z == 0x8)
+                    {
+                        console.WriteLine("Pass: z == 8 (<<)");
+                    }
+                    else
+                    {
+                        console.WriteLine("Fail: z != 8 (<<)");
+                    }
+                }
+                {
+                    ulong x = 0x2;
+                    int y = 62;
+                    ulong z = x << y;
+                    if (z == 0x8000000000000000)
+                    {
+                        console.WriteLine("Pass: z == 0x8000000000000000 (<<)");
+                    }
+                    else
+                    {
+                        console.WriteLine("Fail: z != 0x8000000000000000 (<<)");
+                    }
+                }
+                {
+                    ulong x = 0x8;
+                    int y = 2;
+                    ulong z = x >> y;
+                    if (z == 0x2)
+                    {
+                        console.WriteLine("Pass: z == 2 (>>)");
+                    }
+                    else
+                    {
+                        console.WriteLine("Fail: z != 2 (>>)");
+                    }
+                }
+                {
+                    ulong x = 0x8000000000000000;
+                    int y = 62;
+                    ulong z = x >> y;
+                    if (z == 0x2)
+                    {
+                        console.WriteLine("Pass: z == 0x2 (>>)");
+                    }
+                    else
+                    {
+                        console.WriteLine("Fail: z != 0x2 (>>)");
+                    }
+                }
+                #endregion
+                
+                #region Bitwise operators (&, |, ^, ~) 
+                {
+                    ulong x = 0xFFFFFFFFFFFFFFFF;
+                    ulong y = 0xF0FDFFF0FFFDFFFF;
+                    ulong z = x & y;
+                    if (z == 0xF0FDFFF0FFFDFFFF)
+                    {
+                        console.WriteLine("Pass: z == 0xF0FDFFF0FFFDFFFF (&)");
+                    }
+                    else
+                    {
+                        console.WriteLine("Fail: z != 0xF0FDFFF0FFFDFFFF (&)");
+                    }
+                }
+                {
+                    ulong x = 0xF1000002000F0000;
+                    ulong y = 0xF0FDFFF0FFFDFFFF;
+                    ulong z = x | y;
+                    if (z == 0xF1FDFFF2FFFFFFFF)
+                    {
+                        console.WriteLine("Pass: z == 0xF1FDFFF2FFFFFFFF (|)");
+                    }
+                    else
+                    {
+                        console.WriteLine("Fail: z != 0xF1FDFFF2FFFFFFFF (|)");
+                    }
+                }
+                {
+                    ulong x = 0xFFFFFFFFFFFFFFFF;
+                    ulong y = 0xF0FDFFF0FFFDFFFF;
+                    ulong z = x ^ y;
+                    if (z == 0x0F02000F00020000)
+                    {
+                        console.WriteLine("Pass: z == 0x0F02000F00020000 (^)");
+                    }
+                    else
+                    {
+                        console.WriteLine("Fail: z != 0x0F02000F00020000 (^)");
+                    }
+                }
+                {
+                    ulong x = 0x8FFFFFFFFFFFF8FF;
+                    ulong z = ~x;
+                    if (z == 0x7000000000000700)
+                    {
+                        console.WriteLine("Pass: z == 0x7000000000000700 (~)");
+                    }
+                    else
+                    {
+                        console.WriteLine("Fail: z != 0x7000000000000700 (~)");
+                    }
+                }
+                #endregion
+
+                #region Cast to FOS_System.String
+                {
+                    ulong x = 0x8FFFFFFFFFFFF8FF;
+                    FOS_System.String casted = (FOS_System.String)x;
+                    FOS_System.String expected = "0x8FFFFFFFFFFFF8FF";
+                    if (casted == expected)
+                    {
+                        console.WriteLine("Pass: casted == expected");
+                    }
+                    else
+                    {
+                        console.WriteLine("Fail: casted != expected (" + casted + " != " + expected);
+                    }
+                }
+                #endregion
+
+                #endregion
+
+
+
+                #region Signed
+
+                #endregion
             }
             catch
             {
