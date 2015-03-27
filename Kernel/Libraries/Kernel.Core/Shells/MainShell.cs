@@ -2966,19 +2966,19 @@ which should have been provided with the executable.");
                     long x = 0x6FFFFFFFFFFFFFFF;
                     long y = 1;
                     long z = x + y;
-                    if (z == 0x7FFFFFFFFFFFFFFF)
+                    if (z == 0x7000000000000000)
                     {
-                        console.WriteLine("Pass: z == 0x7FFFFFFFFFFFFFFF");
+                        console.WriteLine("Pass: z == 0x7000000000000000");
                     }
                     else
                     {
                         console.ErrorColour();
-                        console.WriteLine("Fail: z != 0x7FFFFFFFFFFFFFFF");
+                        console.WriteLine("Fail: z != 0x7000000000000000");
                         console.Colour(passColour);
                     }
                 }
                 {
-                    long x = 0x7FFFFFFFFFFFFFFF;
+                    long x = 0x7000000000000000;
                     long y = 1;
                     long z = x - y;
                     if (z == 0x6FFFFFFFFFFFFFFF)
