@@ -2893,7 +2893,7 @@ which should have been provided with the executable.");
                 {
                     ulong x = 0x8FFFFFFFFFFFF8FF;
                     FOS_System.String casted = (FOS_System.String)x;
-                    FOS_System.String expected = "0x8FFFFFFFFFFFF8FF";
+                    FOS_System.String expected = "0x8FFFFFFF 0xFFFFF8FF";
                     if (casted == expected)
                     {
                         console.WriteLine("Pass: casted == expected");
