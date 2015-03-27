@@ -102,7 +102,7 @@ namespace Kernel.Compiler.Architectures.x86_32
                     //Pop item A (8 bytes)
                     result.AppendLine("pop dword eax");
                     result.AppendLine("pop dword edx");
-                    //Shrd
+                    //Shld
                     result.AppendLine("shld edx, eax, cl");
                     result.AppendLine("shl eax, cl");
                     //Push result
@@ -119,8 +119,47 @@ namespace Kernel.Compiler.Architectures.x86_32
                 else if (itemA.sizeOnStackInBytes == 8 &&
                     itemB.sizeOnStackInBytes == 8)
                 {
-                    //SUPPORT - Int 64 Support
-                    throw new NotSupportedException("Shift left on 64-bits is unsupported!");
+                    //Note: Shifting by more than 64 bits is pointless since the value will be annihilated entirely.
+                    //          "64" fits well within the low 32-bits
+                    //      So for this op, we do the same as the 8-4 byte version but discard the top four bytes
+                    //          of the second operand
+                    //      Except we must check the high bytes for non-zero value. If they are non-zero, we simply
+                    //          push a result of zero.
+
+                    string zeroLabelName = string.Format("{0}.IL_{1}_Zero",
+                    aScannerState.GetMethodID(aScannerState.CurrentILChunk.Method),
+                    anILOpInfo.Position);
+                    string endLabelName = string.Format("{0}.IL_{1}_End",
+                    aScannerState.GetMethodID(aScannerState.CurrentILChunk.Method),
+                    anILOpInfo.Position);
+                
+                    //Pop item B
+                    result.AppendLine("pop dword ecx");
+                    result.AppendLine("pop dword ebx");
+                    //Pop item A (8 bytes)
+                    result.AppendLine("pop dword eax");
+                    result.AppendLine("pop dword edx");
+                    //Check high 4 bytes of second param
+                    result.AppendLine("cmp ebx, 0");
+                    result.AppendLine("jz " + zeroLabelName);
+                    result.AppendLine("push dword 0");
+                    result.AppendLine("push dword 0");
+                    result.AppendLine("jmp " + endLabelName);
+                    result.AppendLine(zeroLabelName + ":");
+                    //Shld
+                    result.AppendLine("shld edx, eax, cl");
+                    result.AppendLine("shl eax, cl");
+                    //Push result
+                    result.AppendLine("push dword edx");
+                    result.AppendLine("push dword eax");
+                    result.AppendLine(endLabelName + ":");
+
+                    aScannerState.CurrentStackFrame.Stack.Push(new StackItem()
+                    {
+                        isFloat = false,
+                        sizeOnStackInBytes = 8,
+                        isGCManaged = false
+                    });
                 }
             }
 
