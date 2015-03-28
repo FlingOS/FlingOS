@@ -34,6 +34,7 @@ namespace Drivers.Compiler
 {
     public enum CompileResult
     {
+        Fail,
         OK
     }
 }

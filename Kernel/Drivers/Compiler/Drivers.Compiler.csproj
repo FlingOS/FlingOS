@@ -46,6 +46,7 @@
     <Compile Include="ASM\ASMBlock.cs" />
     <Compile Include="ASM\ASMOp.cs" />
     <Compile Include="DebugDataManager.cs" />
+    <Compile Include="Errors.cs" />
     <Compile Include="Global.cs" />
     <Compile Include="IL\ILCompiler.cs" />
     <Compile Include="IL\ILLibrary.cs" />
@@ -67,6 +68,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="IL\ILOps\" />
+    <Folder Include="Tools\" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\Kernel\Kernel.licenseheader">

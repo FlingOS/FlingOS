@@ -25,6 +25,7 @@
 #endregion
     
 using System;
+using System.IO;
 
 namespace Drivers.Compiler.App
 {
@@ -32,40 +33,33 @@ namespace Drivers.Compiler.App
     {
         public enum ErrorCode : int
         {
-            NoError = 0
+            NoError = 0,
+            InvalidOptions = 1,
+            ILCompilerFailed = 2,
+            ASMCompilerFailed = 3,
+            LinkerFailed = 4
         }
         
-        public static string LibraryPath
-        {
-            get;
-            set;
-        }
-        public static string OutputPath
-        {
-            get;
-            set;
-        }
-        public static string ToolsPath
-        {
-            get;
-            set;
-        }
-
         static int Main(string[] args)
         {
             Console.ForegroundColor = ConsoleColor.Gray;
 
-            LibraryPath = args[0];
-            OutputPath = args[1];
-            ToolsPath = args[2];
+            int result = -1;
 
-            Options.BuildMode = (args[3] == "Debug" ? Options.BuildModes.Debug : Options.BuildModes.Release);
-            Options.TargetArchitecture = args[4];
+            if (ValidateArguments(args))
+            {
+                Options.LibraryPath = args[0];
+                Options.OutputPath = args[1];
+                Options.ToolsPath = args[2];
 
-            int result = (int)Execute(
-                Logger_OnLogMessage,
-                Logger_OnLogWarning,
-                Logger_OnLogError);
+                Options.BuildMode = (args[3].ToLower() == "debug" ? Options.BuildModes.Debug : Options.BuildModes.Release);
+                Options.TargetArchitecture = args[4];
+
+                result = (int)Execute(
+                    Logger_OnLogMessage,
+                    Logger_OnLogWarning,
+                    Logger_OnLogError);
+            }
 
             Console.WriteLine();
             Console.WriteLine("Press any key to continue...");
@@ -73,6 +67,35 @@ namespace Drivers.Compiler.App
 
             return result;
         }
+        static bool ValidateArguments(string[] args)
+        {
+            if (args.Length != 5)
+            {
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.WriteLine("Expected 5 arguments:");
+                Console.WriteLine(@"0 : Library Path - The path to the library to compile.
+1 : Output Path - The path to the output directory.
+2 : Tools Path - The path to the tools directory.
+3 : Build Mode - Debug or Release.
+4 : Target Architecture - e.g. x86, x64
+");
+                Console.ForegroundColor = ConsoleColor.Gray;
+
+                return false;
+            }
+            
+            if (args[3].ToLower() != "debug" && args[4].ToLower() != "release")
+            {
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.WriteLine("Build Mode argument invalid! Should be \"Debug\" or \"Release\".");
+                Console.ForegroundColor = ConsoleColor.Gray;
+
+                return false;
+            }
+            
+            return true;
+        }
+
         public static ErrorCode Execute(
             Logger.LogMessageEventHandler messageHandler, 
             Logger.LogWarningEventHandler warningHandler,
@@ -84,11 +107,13 @@ namespace Drivers.Compiler.App
             Logger.OnLogWarning += warningHandler;
             Logger.OnLogError += errorHandler;
 
+            Options.Format();
+
             DateTime startTime = DateTime.Now;
             Logger.LogMessage("", 0, "Driver compiler started  @ " + startTime.ToLongTimeString());
-            Logger.LogMessage("", 0, "Library path             = \"" + LibraryPath + "\"");
-            Logger.LogMessage("", 0, "Output path              = \"" + OutputPath + "\"");
-            Logger.LogMessage("", 0, "Tools path               = \"" + ToolsPath + "\"");
+            Logger.LogMessage("", 0, "Library path             = \"" + Options.LibraryPath + "\"");
+            Logger.LogMessage("", 0, "Output path              = \"" + Options.OutputPath + "\"");
+            Logger.LogMessage("", 0, "Tools path               = \"" + Options.ToolsPath + "\"");
             Logger.LogMessage("", 0, "Target architecture      = \"" + Options.TargetArchitecture + "\"");
             Logger.LogMessage("", 0, "Build mode               = "   + Enum.GetName(typeof(Options.BuildModes), Options.BuildMode));
 
@@ -120,38 +145,60 @@ namespace Drivers.Compiler.App
             //                           optimisation
             //      - ASM Processor    - Converts ASM ops into ASM text then runs NASM
             // Link Manager     - Manages the linker stage. Links together all the NASM outputs using "ld".
-            
 
-            IL.ILLibrary TheLibrary = LibraryLoader.LoadILLibrary(LibraryPath);
-            int NumDependencies = LibraryLoader.LoadDependencies(TheLibrary);
-
-            CompileResult ILCompileResult = IL.ILCompiler.Compile(TheLibrary);
-            
-            if (ILCompileResult == CompileResult.OK)
+            Tuple<bool, string> ValidateOptions_Result = Options.Validate();
+            if (ValidateOptions_Result.Item1)
             {
-                CompileResult ASMCompileResult = ASM.ASMCompiler.Compile(TheLibrary.TheASMLibrary);
+                IL.ILLibrary TheLibrary = LibraryLoader.LoadILLibrary(Options.LibraryPath);
+                int NumDependencies = LibraryLoader.LoadDependencies(TheLibrary);
 
-                if (ASMCompileResult == CompileResult.OK)
+                CompileResult ILCompileResult = IL.ILCompiler.Compile(TheLibrary);
+
+                if (ILCompileResult == CompileResult.OK)
                 {
-                    CompileResult LinkResult = LinkManager.Link(TheLibrary.TheASMLibrary);
+                    CompileResult ASMCompileResult = ASM.ASMCompiler.Compile(TheLibrary.TheASMLibrary);
 
-                    if (LinkResult == CompileResult.OK)
+                    if (ASMCompileResult == CompileResult.OK)
                     {
-                        //Success
+                        CompileResult LinkResult = LinkManager.Link(TheLibrary.TheASMLibrary);
+
+                        if (LinkResult == CompileResult.OK)
+                        {
+                            //Success
+                            Logger.LogMessage("", 0, "Compilation succeeded.");
+                        }
+                        else
+                        {
+                            //Fail
+                            Logger.LogError(Errors.Linker_LinkFailed_ErrorCode, "", 0,
+                                            Errors.ErrorMessages[Errors.Linker_LinkFailed_ErrorCode]);
+                            result = ErrorCode.LinkerFailed;
+                        }
                     }
                     else
                     {
                         //Fail
+                        Logger.LogError(Errors.ASMCompiler_CompileFailed_ErrorCode, "", 0,
+                                        Errors.ErrorMessages[Errors.ASMCompiler_CompileFailed_ErrorCode]);
+                        result = ErrorCode.ASMCompilerFailed;
                     }
                 }
                 else
                 {
                     //Fail
+                    Logger.LogError(Errors.ILCompiler_CompileFailed_ErrorCode, "", 0,
+                                    Errors.ErrorMessages[Errors.ILCompiler_CompileFailed_ErrorCode]);
+                    result = ErrorCode.ILCompilerFailed;
                 }
             }
             else
             {
                 //Fail
+                Logger.LogError(Errors.PreReqs_OptionsInvalid_ErrorCode, "", 0,
+                                string.Format(
+                                    Errors.ErrorMessages[Errors.PreReqs_OptionsInvalid_ErrorCode],
+                                    ValidateOptions_Result.Item2));
+                result = ErrorCode.InvalidOptions;
             }
 
             DateTime endTime = DateTime.Now;

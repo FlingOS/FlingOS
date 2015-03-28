@@ -109,6 +109,9 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Drivers.Compiler", "Kernel\Drivers\Compiler\Drivers.Compiler.csproj", "{1FB0E622-D2C6-4A5C-B5B6-D2BB5E502AF1}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Drivers.Compiler.App", "Kernel\Drivers\Compiler\App\Drivers.Compiler.App.csproj", "{4E28A467-4D90-4315-9113-AE93F54280B0}"
+	ProjectSection(ProjectDependencies) = postProject
+		{EEBEC7B2-9F93-4A8A-BCB7-C9F8F79FA77E} = {EEBEC7B2-9F93-4A8A-BCB7-C9F8F79FA77E}
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Drivers.Compiler.MSBuildTask", "Kernel\Drivers\Compiler\MSBuildTask\Drivers.Compiler.MSBuildTask.csproj", "{4A6F3FA1-CA27-442A-AA2E-5C036A54209D}"
 EndProject

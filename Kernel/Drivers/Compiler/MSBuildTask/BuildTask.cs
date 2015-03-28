@@ -66,9 +66,9 @@ namespace Drivers.Compiler.MSBuildTask
         
         public override bool Execute()
         {
-            App.CompilerProcess.LibraryPath = LibraryPath;
-            App.CompilerProcess.OutputPath = OutputPath;
-            App.CompilerProcess.ToolsPath = ToolsPath;
+            Options.LibraryPath = LibraryPath;
+            Options.OutputPath = OutputPath;
+            Options.ToolsPath = ToolsPath;
 
             Options.BuildMode = DebugBuild ? Options.BuildModes.Debug : Options.BuildModes.Release;
             Options.TargetArchitecture = TargetArchitecture;
