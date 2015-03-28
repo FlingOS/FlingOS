@@ -44,10 +44,10 @@ namespace Kernel.Core.Tasks
                 bool reenable = Hardware.Processes.Scheduler.Enabled;
                 try
                 {
-                    if (reenable)
-                    {
-                        Hardware.Processes.Scheduler.Disable();
-                    }
+                    //if (reenable)
+                    //{
+                    //    Hardware.Processes.Scheduler.Disable();
+                    //}
 
 #if GCTASK_TRACE
                     BasicConsole.SetTextColour(BasicConsole.warning_colour);
@@ -68,10 +68,10 @@ namespace Kernel.Core.Tasks
                 {
                 }
 
-                if (reenable)
-                {
-                    Hardware.Processes.Scheduler.Enable();
-                }
+                //if (reenable)
+                //{
+                //    Hardware.Processes.Scheduler.Enable();
+                //}
                 Hardware.Processes.Thread.Sleep(1000);
             }
         }

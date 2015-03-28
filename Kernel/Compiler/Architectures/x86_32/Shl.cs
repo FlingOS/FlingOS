@@ -97,15 +97,37 @@ namespace Kernel.Compiler.Architectures.x86_32
                 else if ((itemA.sizeOnStackInBytes == 8 &&
                     itemB.sizeOnStackInBytes == 4))
                 {
+                    string shiftMoreThan32LabelName = string.Format("{0}.IL_{1}_Shift64",
+                    aScannerState.GetMethodID(aScannerState.CurrentILChunk.Method),
+                    anILOpInfo.Position);
+                    string endLabelName = string.Format("{0}.IL_{1}_End",
+                    aScannerState.GetMethodID(aScannerState.CurrentILChunk.Method),
+                    anILOpInfo.Position);
+
                     //Pop item B
                     result.AppendLine("pop dword ecx");
                     //Pop item A (8 bytes)
                     result.AppendLine("pop dword eax");
                     result.AppendLine("pop dword edx");
-                    //Shld
+                    
+                    //Check shift size
+                    result.AppendLine("cmp ecx, 32");
+                    result.AppendLine("jae " + shiftMoreThan32LabelName);
+                    
+                    //Shld (< 32)
                     result.AppendLine("shld edx, eax, cl");
                     result.AppendLine("shl eax, cl");
+                    result.AppendLine("jmp " + endLabelName);
+
+                    //Shld (>= 32)
+                    result.AppendLine(shiftMoreThan32LabelName + ":");
+                    result.AppendLine("mov edx, eax");
+                    result.AppendLine("mov eax, 0");
+                    result.AppendLine("sub ecx, 32");
+                    result.AppendLine("shl edx, cl");
+
                     //Push result
+                    result.AppendLine(endLabelName + ":");
                     result.AppendLine("push dword edx");
                     result.AppendLine("push dword eax");
 
@@ -129,10 +151,16 @@ namespace Kernel.Compiler.Architectures.x86_32
                     string zeroLabelName = string.Format("{0}.IL_{1}_Zero",
                     aScannerState.GetMethodID(aScannerState.CurrentILChunk.Method),
                     anILOpInfo.Position);
-                    string endLabelName = string.Format("{0}.IL_{1}_End",
+                    string end1LabelName = string.Format("{0}.IL_{1}_End1",
                     aScannerState.GetMethodID(aScannerState.CurrentILChunk.Method),
                     anILOpInfo.Position);
-                
+                    string end2LabelName = string.Format("{0}.IL_{1}_End2",
+                    aScannerState.GetMethodID(aScannerState.CurrentILChunk.Method),
+                    anILOpInfo.Position);
+                    string shiftMoreThan32LabelName = string.Format("{0}.IL_{1}_Shift64",
+                    aScannerState.GetMethodID(aScannerState.CurrentILChunk.Method),
+                    anILOpInfo.Position);
+                    
                     //Pop item B
                     result.AppendLine("pop dword ecx");
                     result.AppendLine("pop dword ebx");
@@ -144,15 +172,30 @@ namespace Kernel.Compiler.Architectures.x86_32
                     result.AppendLine("jz " + zeroLabelName);
                     result.AppendLine("push dword 0");
                     result.AppendLine("push dword 0");
-                    result.AppendLine("jmp " + endLabelName);
+                    result.AppendLine("jmp " + end2LabelName);
                     result.AppendLine(zeroLabelName + ":");
-                    //Shld
+
+                    result.AppendLine("cmp ecx, 32");
+                    result.AppendLine("jae " + shiftMoreThan32LabelName);
+
+                    //Shld (< 32)
                     result.AppendLine("shld edx, eax, cl");
                     result.AppendLine("shl eax, cl");
+                    result.AppendLine("jmp " + end1LabelName);
+
+                    //Shld (>= 32)
+                    result.AppendLine(shiftMoreThan32LabelName + ":");
+                    result.AppendLine("mov edx, eax");
+                    result.AppendLine("mov eax, 0");
+                    result.AppendLine("sub ecx, 32");
+                    result.AppendLine("shl edx, cl");
+
+
                     //Push result
+                    result.AppendLine(end1LabelName + ":");
                     result.AppendLine("push dword edx");
                     result.AppendLine("push dword eax");
-                    result.AppendLine(endLabelName + ":");
+                    result.AppendLine(end2LabelName + ":");
 
                     aScannerState.CurrentStackFrame.Stack.Push(new StackItem()
                     {
