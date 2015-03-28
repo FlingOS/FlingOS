@@ -63,11 +63,11 @@ namespace Kernel.Hardware.Processes
                 return;
             }
 
-            bool reenable = Scheduler.Enabled;
-            if (reenable)
-            {
-                Scheduler.Disable();
-            }
+            //bool reenable = Scheduler.Enabled;
+            //if (reenable)
+            //{
+            //    Scheduler.Disable();
+            //}
 #if PROCESSMANAGER_TRACE
             BasicConsole.WriteLine("Initialising process...");
 #endif
@@ -81,10 +81,10 @@ namespace Kernel.Hardware.Processes
 #if PROCESSMANAGER_TRACE
             BasicConsole.WriteLine("Enabling scheduler...");
 #endif
-            if (reenable)
-            {
-                Scheduler.Enable();
-            }
+            //if (reenable)
+            //{
+            //    Scheduler.Enable();
+            //}
         }
 
         /// <remarks>

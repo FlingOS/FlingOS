@@ -40,11 +40,11 @@ namespace Kernel.Hardware.VirtMem
         [Compiler.NoDebug]
         public void AddCodePage(uint pAddr, uint vAddr)
         {
-            bool reenable = Processes.Scheduler.Enabled;
-            if(reenable)
-            {
-                Processes.Scheduler.Disable();
-            }
+            //bool reenable = Processes.Scheduler.Enabled;
+            //if(reenable)
+            //{
+            //    Processes.Scheduler.Disable();
+            //}
 
             //BasicConsole.WriteLine("Adding code page...");
             if (!CodePages.Contains(vAddr))
@@ -52,19 +52,19 @@ namespace Kernel.Hardware.VirtMem
                 CodePages.Add(vAddr, pAddr);
             }
 
-            if (reenable)
-            {
-                Processes.Scheduler.Enable();
-            }
+            //if (reenable)
+            //{
+            //    Processes.Scheduler.Enable();
+            //}
         }
         [Compiler.NoDebug]
         public void AddDataPage(uint pAddr, uint vAddr)
         {
-            bool reenable = Processes.Scheduler.Enabled;
-            if (reenable)
-            {
-                Processes.Scheduler.Disable();
-            }
+            //bool reenable = Processes.Scheduler.Enabled;
+            //if (reenable)
+            //{
+            //    Processes.Scheduler.Disable();
+            //}
 
             //BasicConsole.WriteLine("Adding data page...");
             if (!DataPages.Contains(vAddr))
@@ -72,28 +72,28 @@ namespace Kernel.Hardware.VirtMem
                 DataPages.Add(vAddr, pAddr);
             }
 
-            if (reenable)
-            {
-                Processes.Scheduler.Enable();
-            }
+            //if (reenable)
+            //{
+            //    Processes.Scheduler.Enable();
+            //}
         }
         [Compiler.NoDebug]
         public void RemovePage(uint vAddr)
         {
-            bool reenable = Processes.Scheduler.Enabled;
-            if (reenable)
-            {
-                Processes.Scheduler.Disable();
-            }
+            //bool reenable = Processes.Scheduler.Enabled;
+            //if (reenable)
+            //{
+            //    Processes.Scheduler.Disable();
+            //}
 
             //BasicConsole.WriteLine("Removing page...");
             CodePages.Remove(vAddr);
             DataPages.Remove(vAddr);
 
-            if (reenable)
-            {
-                Processes.Scheduler.Enable();
-            }
+            //if (reenable)
+            //{
+            //    Processes.Scheduler.Enable();
+            //}
         }
 
         //bool loadPrint = true;

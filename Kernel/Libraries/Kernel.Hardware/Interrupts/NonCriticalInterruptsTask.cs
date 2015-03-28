@@ -42,7 +42,7 @@ namespace Kernel.Hardware.Interrupts
 
             while (true)
             {
-                Scheduler.Disable();
+                //Scheduler.Disable();
                 Awake = false;
                 
                 //BasicConsole.WriteLine("Handling non-critical interrupts...");
@@ -117,7 +117,7 @@ namespace Kernel.Hardware.Interrupts
                 {
                     //BasicConsole.WriteLine("Sleeping non-critical interrupts thread...");
 
-                    Scheduler.Enable();
+                    //Scheduler.Enable();
                     if (!Thread.Sleep_Indefinitely())
                     {
                         BasicConsole.SetTextColour(BasicConsole.error_colour);

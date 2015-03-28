@@ -204,19 +204,19 @@ namespace Kernel.Hardware.Processes
             //}
             //else
             //{
-            bool reenable = Scheduler.Enabled;
-            if (reenable)
-            {
-                Scheduler.Disable();
-            }
+            //bool reenable = Scheduler.Enabled;
+            //if (reenable)
+            //{
+            //    Scheduler.Disable();
+            //}
             
             this.TimeToSleep = ms /* x * 1ms / [Scheduler period in ns] = x * 1 = x */;
             this.TimeToRun = 1;
             
-            if (reenable)
-            {
-                Scheduler.Enable();
-            }
+            //if (reenable)
+            //{
+            //    Scheduler.Enable();
+            //}
             //}
         }
         [Compiler.NoGC]
@@ -249,17 +249,17 @@ namespace Kernel.Hardware.Processes
         [Compiler.NoGC]
         public void _Wake()
         {
-            bool reenable = Scheduler.Enabled;
-            if (reenable)
-            {
-                Scheduler.Disable();
-            }
+            //bool reenable = Scheduler.Enabled;
+            //if (reenable)
+            //{
+            //    Scheduler.Disable();
+            //}
             this.TimeToSleep = 0;
             this.TimeToRun = this.TimeToRunReload;
-            if (reenable)
-            {
-                Scheduler.Enable();
-            }
+            //if (reenable)
+            //{
+            //    Scheduler.Enable();
+            //}
         }
 
         [Compiler.NoGC]
