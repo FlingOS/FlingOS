@@ -32,7 +32,12 @@ using System.Threading.Tasks;
 
 namespace Drivers.Compiler.ASM
 {
-    class ASMBlock
+    public class ASMBlock
     {
+        public Types.MethodInfo OriginMethodInfo;
+        public string PlugPath = null;
+        public bool Plugged { get { return PlugPath != null; } }
+
+        public List<ASMOp> ASMOps = new List<ASMOp>();
     }
 }

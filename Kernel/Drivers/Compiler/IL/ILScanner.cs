@@ -111,7 +111,9 @@ namespace Drivers.Compiler.IL
             catch (Exception ex)
             {
                 OK = false;
-                Logger.LogError(Errors.ILCompiler_LoadTargetArchError_ErrorCode, "", 0, Errors.ErrorMessages[Errors.ILCompiler_LoadTargetArchError_ErrorCode]);
+                Logger.LogError(Errors.ILCompiler_LoadTargetArchError_ErrorCode, "", 0, 
+                    string.Format(Errors.ErrorMessages[Errors.ILCompiler_LoadTargetArchError_ErrorCode],
+                                    ex.Message));
             }
 
             return OK;
@@ -134,9 +136,43 @@ namespace Drivers.Compiler.IL
         }
         private static void ScanPluggedILBlock(ILLibrary TheLibrary, Types.MethodInfo theMethodInfo, ILBlock theILBlock)
         {
+            TheLibrary.TheASMLibrary.ASMBlocks.Add(new ASM.ASMBlock()
+            {
+                PlugPath = theILBlock.PlugPath,
+                OriginMethodInfo = theMethodInfo
+            });
         }
         private static void ScanNonpluggedILBlock(ILLibrary TheLibrary, Types.MethodInfo theMethodInfo, ILBlock theILBlock)
         {
+            ASM.ASMBlock result = new ASM.ASMBlock()
+            {
+                OriginMethodInfo = theMethodInfo
+            };
+
+            foreach (ILOp anOp in theILBlock.ILOps)
+            {
+                try
+                {
+                    ILOp ConverterOp = TargetILOps[(ILOp.OpCodes)anOp.opCode.Value];
+                    ILConversionState convState = new ILConversionState()
+                    {
+                        TheILLibrary = TheLibrary
+                    };
+                    ConverterOp.Convert(convState, anOp);
+                }
+                catch (KeyNotFoundException)
+                {
+                    Logger.LogError(Errors.ILCompiler_ScanILOpFailure_ErrorCode, theMethodInfo.ToString(), anOp.Offset,
+                        string.Format(Errors.ErrorMessages[Errors.ILCompiler_ScanILOpFailure_ErrorCode], "Conversion IL op not found."));
+                }
+                catch (Exception ex)
+                {
+                    Logger.LogError(Errors.ILCompiler_ScanILOpFailure_ErrorCode, theMethodInfo.ToString(), anOp.Offset,
+                        string.Format(Errors.ErrorMessages[Errors.ILCompiler_ScanILOpFailure_ErrorCode], ex.Message));
+                }
+            }
+
+            TheLibrary.TheASMLibrary.ASMBlocks.Add(result);
         }
     }
 }

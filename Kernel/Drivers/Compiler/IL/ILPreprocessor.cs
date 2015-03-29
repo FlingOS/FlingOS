@@ -39,6 +39,7 @@ namespace Drivers.Compiler.IL
          *              - Static constructors
          *      - Pre-scan IL ops to:
          *              - Type Scan any local variable which are of an unscanned types
+         *      - Inject general ops (method start, method end, etc.)
          *      - Inject GC IL ops
          *      - Inject wrapping try-finally for GC
          *      - Inject IL ops for try-catch-finally
@@ -66,6 +67,7 @@ namespace Drivers.Compiler.IL
 
             foreach (Types.MethodInfo aMethodInfo in TheLibrary.ILBlocks.Keys)
             {
+                InjectGeneral(aMethodInfo, TheLibrary.ILBlocks[aMethodInfo]);
                 InjectGC(aMethodInfo, TheLibrary.ILBlocks[aMethodInfo]);
                 InjectTryCatchFinally(aMethodInfo, TheLibrary.ILBlocks[aMethodInfo]);
             }
@@ -137,6 +139,10 @@ namespace Drivers.Compiler.IL
             //TODO
         }
         private static void PreprocessSpecialMethods(ILLibrary TheLibrary)
+        {
+            //TODO
+        }
+        private static void InjectGeneral(Types.MethodInfo theMethodInfo, ILBlock theILBlock)
         {
             //TODO
         }

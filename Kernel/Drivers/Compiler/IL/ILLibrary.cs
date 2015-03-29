@@ -38,7 +38,7 @@ namespace Drivers.Compiler.IL
     {
         public Assembly TheAssembly;
 
-        public ASM.ASMLibrary TheASMLibrary;
+        public ASM.ASMLibrary TheASMLibrary = new ASM.ASMLibrary();
 
         public List<ILLibrary> Dependencies = new List<ILLibrary>();
         

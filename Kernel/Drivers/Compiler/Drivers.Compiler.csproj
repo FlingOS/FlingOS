@@ -45,6 +45,7 @@
     <Compile Include="ASM\ASMProcessor.cs" />
     <Compile Include="ASM\ASMBlock.cs" />
     <Compile Include="ASM\ASMOp.cs" />
+    <Compile Include="IL\ILConversionState.cs" />
     <Compile Include="IL\ILOps\ILOpTargetAttribute.cs" />
     <Compile Include="Attributes\NoDebugAttribute.cs" />
     <Compile Include="Attributes\NoGCAttribute.cs" />
@@ -124,6 +125,7 @@
     <Compile Include="Utilities.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="ASM\ASMOps\" />
     <Folder Include="Tools\" />
   </ItemGroup>
   <ItemGroup>

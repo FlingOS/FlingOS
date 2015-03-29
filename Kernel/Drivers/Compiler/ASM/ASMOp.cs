@@ -32,7 +32,7 @@ using System.Threading.Tasks;
 
 namespace Drivers.Compiler.ASM
 {
-    class ASMOp
+    public class ASMOp
     {
     }
 }

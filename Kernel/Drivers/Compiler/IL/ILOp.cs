@@ -725,5 +725,10 @@ namespace Drivers.Compiler.IL
         public System.Reflection.MethodBase MethodToCall;
 
         public bool LabelRequired = false;
+
+        public virtual List<ASM.ASMOp> Convert(ILConversionState conversionState, ILOp theOp)
+        {
+            return null;
+        }
     }
 }

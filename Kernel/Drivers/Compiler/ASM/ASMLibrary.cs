@@ -34,5 +34,6 @@ namespace Drivers.Compiler.ASM
 {
     public class ASMLibrary
     {
+        public List<ASMBlock> ASMBlocks = new List<ASMBlock>();
     }
 }
