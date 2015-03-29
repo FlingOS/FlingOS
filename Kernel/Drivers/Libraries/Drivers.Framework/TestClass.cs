@@ -12,7 +12,10 @@ namespace Drivers.Framework
     {
         public static void Test()
         {
-            KernelABI.SystemCalls.Call(SystemCalls.Calls.Sleep, 1000, 0, 0);
+            int x = 0xF;
+            int y = 0xF;
+            int z = x & y;
+            //KernelABI.SystemCalls.Call(SystemCalls.Calls.Sleep, 1000, 0, 0);
         }
     }
 }

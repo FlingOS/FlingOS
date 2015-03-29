@@ -73,7 +73,16 @@ namespace Drivers.Compiler.Types
 
         public override string ToString()
         {
-            return UnderlyingInfo.Name;
+            string result = UnderlyingInfo.DeclaringType.FullName + "." + UnderlyingInfo.Name + "(";
+
+            if (ArgumentInfos.Count-1 > 0)
+            {
+                result += string.Join(", ", ArgumentInfos.ConvertAll(x => x.ToString()).ToArray(), 0, ArgumentInfos.Count - 1);
+            }
+
+            result += ")";
+
+            return result;
         }
     }
 }

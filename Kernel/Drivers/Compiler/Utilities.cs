@@ -71,5 +71,14 @@ namespace Drivers.Compiler
         {
             return (double)(BitConverter.ToDouble(bytes, 0));
         }
+
+        public static string CleanFileName(string filename)
+        {
+            foreach (char c in System.IO.Path.GetInvalidFileNameChars())
+            {
+                filename = filename.Replace(c, '_');
+            }
+            return filename;
+        }
     }
 }

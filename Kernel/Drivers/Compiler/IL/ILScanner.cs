@@ -119,32 +119,47 @@ namespace Drivers.Compiler.IL
             return OK;
         }
 
-        public static void Scan(ILLibrary TheLibrary)
+        public static CompileResult Scan(ILLibrary TheLibrary)
         {
+            CompileResult result = CompileResult.OK;
+
             foreach (Types.MethodInfo aMethodInfo in TheLibrary.ILBlocks.Keys)
             {
                 ILBlock anILBlock = TheLibrary.ILBlocks[aMethodInfo];
+                CompileResult singleResult = CompileResult.OK;
+                
                 if (anILBlock.Plugged)
                 {
-                    ScanPluggedILBlock(TheLibrary, aMethodInfo, anILBlock);
+                    singleResult = ScanPluggedILBlock(TheLibrary, aMethodInfo, anILBlock);
                 }
                 else
                 {
-                    ScanNonpluggedILBlock(TheLibrary, aMethodInfo, anILBlock);
+                    singleResult = ScanNonpluggedILBlock(TheLibrary, aMethodInfo, anILBlock);
+                }
+
+                if (result == CompileResult.OK)
+                {
+                    result = singleResult;
                 }
             }
+
+            return result;
         }
-        private static void ScanPluggedILBlock(ILLibrary TheLibrary, Types.MethodInfo theMethodInfo, ILBlock theILBlock)
+        private static CompileResult ScanPluggedILBlock(ILLibrary TheLibrary, Types.MethodInfo theMethodInfo, ILBlock theILBlock)
         {
             TheLibrary.TheASMLibrary.ASMBlocks.Add(new ASM.ASMBlock()
             {
                 PlugPath = theILBlock.PlugPath,
                 OriginMethodInfo = theMethodInfo
             });
+
+            return CompileResult.OK;
         }
-        private static void ScanNonpluggedILBlock(ILLibrary TheLibrary, Types.MethodInfo theMethodInfo, ILBlock theILBlock)
+        private static CompileResult ScanNonpluggedILBlock(ILLibrary TheLibrary, Types.MethodInfo theMethodInfo, ILBlock theILBlock)
         {
-            ASM.ASMBlock result = new ASM.ASMBlock()
+            CompileResult result = CompileResult.OK;
+
+            ASM.ASMBlock TheASMBlock = new ASM.ASMBlock()
             {
                 OriginMethodInfo = theMethodInfo
             };
@@ -158,21 +173,27 @@ namespace Drivers.Compiler.IL
                     {
                         TheILLibrary = TheLibrary
                     };
-                    ConverterOp.Convert(convState, anOp);
+                    TheASMBlock.ASMOps.AddRange(ConverterOp.Convert(convState, anOp));
                 }
                 catch (KeyNotFoundException)
                 {
+                    result = CompileResult.PartialFailure;
+                    
                     Logger.LogError(Errors.ILCompiler_ScanILOpFailure_ErrorCode, theMethodInfo.ToString(), anOp.Offset,
                         string.Format(Errors.ErrorMessages[Errors.ILCompiler_ScanILOpFailure_ErrorCode], "Conversion IL op not found."));
                 }
                 catch (Exception ex)
                 {
+                    result = CompileResult.Fail;
+
                     Logger.LogError(Errors.ILCompiler_ScanILOpFailure_ErrorCode, theMethodInfo.ToString(), anOp.Offset,
                         string.Format(Errors.ErrorMessages[Errors.ILCompiler_ScanILOpFailure_ErrorCode], ex.Message));
                 }
             }
 
-            TheLibrary.TheASMLibrary.ASMBlocks.Add(result);
+            TheLibrary.TheASMLibrary.ASMBlocks.Add(TheASMBlock);
+
+            return result;
         }
     }
 }

@@ -29,10 +29,78 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.IO;
 
 namespace Drivers.Compiler.ASM
 {
-    static class ASMProcessor
+    public static class ASMProcessor
     {
+        public static CompileResult Process(ASMLibrary TheLibrary)
+        {
+            CompileResult result = CompileResult.OK;
+
+            int MaxConcurrentNASMProcesses = Environment.ProcessorCount;
+            List<List<ASMBlock>> NASMLabourDivision = new List<List<ASMBlock>>();
+            for (int i = 0; i < MaxConcurrentNASMProcesses; i++)
+            {
+                NASMLabourDivision.Add(new List<ASMBlock>());
+            }
+
+            int num = 0;
+            foreach (ASMBlock aBlock in TheLibrary.ASMBlocks)
+            {
+                ProcessBlock(aBlock);
+
+                NASMLabourDivision[num % MaxConcurrentNASMProcesses].Add(aBlock);
+
+                num++;
+            }
+
+            for (int i = 0; i < MaxConcurrentNASMProcesses; i++)
+            {
+                ExecuteNASMAsync(NASMLabourDivision[i]);
+            }
+            
+            return result;
+        }
+
+        private static void ProcessBlock(ASMBlock TheBlock)
+        {
+            string ASMText = "";
+            
+            if (TheBlock.Plugged)
+            {
+                //TODO - Load plug file text
+            }
+            else
+            {
+                foreach (ASMOp anASMOp in TheBlock.ASMOps)
+                {
+                    ASMText += anASMOp.Convert() + "\r\n";
+                }
+            }
+
+            string Name = TheBlock.OriginMethodInfo.ToString();
+            string FileName = Utilities.CleanFileName(Name + "." + Options.TargetArchitecture) + ".asm";
+            string OutputPath = GetASMOutputPath();
+            FileName = Path.Combine(OutputPath, FileName);
+            TheBlock.OutputFilePath = FileName;
+            File.WriteAllText(FileName, ASMText);
+        }
+
+        private static void ExecuteNASMAsync(List<ASMBlock> Blocks)
+        {
+            //TODO
+        }
+
+        private static string GetASMOutputPath()
+        {
+            string OutputPath = Path.Combine(Options.OutputPath, "ASM");
+            if (!Directory.Exists(OutputPath))
+            {
+                Directory.CreateDirectory(OutputPath);
+            }
+            return OutputPath;
+        }
     }
 }

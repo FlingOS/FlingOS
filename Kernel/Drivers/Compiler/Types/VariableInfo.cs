@@ -41,7 +41,7 @@ namespace Drivers.Compiler.Types
 
         public override string ToString()
         {
-            return UnderlyingType.AssemblyQualifiedName + " : " + Position.ToString();
+            return UnderlyingType.FullName;
         }
     }
 }

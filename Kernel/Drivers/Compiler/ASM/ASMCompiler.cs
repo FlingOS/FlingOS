@@ -48,12 +48,12 @@ namespace Drivers.Compiler.ASM
 
         private static CompileResult ExecuteASMPreprocessor(ASMLibrary TheLibrary)
         {
-            return CompileResult.OK;
+            return ASMPreprocessor.Preprocess(TheLibrary);
         }
 
         private static CompileResult ExecuteASMProcessor(ASMLibrary TheLibrary)
         {
-            return CompileResult.OK;
+            return ASMProcessor.Process(TheLibrary);
         }
     }
 }

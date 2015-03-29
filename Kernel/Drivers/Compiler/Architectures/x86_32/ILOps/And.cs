@@ -27,13 +27,19 @@
 using Drivers.Compiler.IL;
 using Drivers.Compiler.IL.ILOps;
 
-namespace Drivers.Compiler.Architectures.x86
+namespace Drivers.Compiler.Architectures.x86.ILOps
 {
     /// <summary>
     /// See base class documentation.
     /// </summary>
     public class And : IL.ILOps.And
     {
-        
+        public override System.Collections.Generic.List<ASM.ASMOp> Convert(ILConversionState conversionState, ILOp theOp)
+        {
+            return new System.Collections.Generic.List<ASM.ASMOp>()
+            {
+                new ASMOps.And() { Src = ASMOps.Registers.EAX, Dest = ASMOps.Registers.EBX }
+            };
+        }
     }
 }

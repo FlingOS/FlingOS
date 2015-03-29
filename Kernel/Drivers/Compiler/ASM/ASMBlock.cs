@@ -38,6 +38,8 @@ namespace Drivers.Compiler.ASM
         public string PlugPath = null;
         public bool Plugged { get { return PlugPath != null; } }
 
+        public string OutputFilePath;
+
         public List<ASMOp> ASMOps = new List<ASMOp>();
     }
 }

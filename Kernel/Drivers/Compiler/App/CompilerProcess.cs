@@ -172,7 +172,8 @@ namespace Drivers.Compiler.App
                     
                     CompileResult ILCompileResult = IL.ILCompiler.Compile(TheLibrary);
 
-                    if (ILCompileResult == CompileResult.OK)
+                    if (ILCompileResult == CompileResult.OK ||
+                        ILCompileResult == CompileResult.PartialFailure)
                     {
                         CompileResult ASMCompileResult = ASM.ASMCompiler.Compile(TheLibrary.TheASMLibrary);
 
@@ -182,6 +183,11 @@ namespace Drivers.Compiler.App
 
                             if (LinkResult == CompileResult.OK)
                             {
+                                if (ILCompileResult == CompileResult.PartialFailure)
+                                {
+                                    result = ErrorCode.ILCompilerFailed;
+                                }
+
                                 //Success
                                 Logger.LogMessage("", 0, "Compilation succeeded.");
                             }

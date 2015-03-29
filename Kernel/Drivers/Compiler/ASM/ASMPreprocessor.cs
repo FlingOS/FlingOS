@@ -32,7 +32,15 @@ using System.Threading.Tasks;
 
 namespace Drivers.Compiler.ASM
 {
-    static class ASMPreprocessor
+    public static class ASMPreprocessor
     {
+        public static CompileResult Preprocess(ASMLibrary TheLibrary)
+        {
+            CompileResult result = CompileResult.OK;
+
+            // TODO
+
+            return result;
+        }
     }
 }

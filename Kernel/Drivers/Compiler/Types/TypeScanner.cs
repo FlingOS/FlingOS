@@ -158,23 +158,26 @@ namespace Drivers.Compiler.Types
 
                 foreach (System.Reflection.MethodInfo aMethodInfo in allMethods)
                 {
-                    MethodInfo newMethodInfo = new MethodInfo()
+                    if (aMethodInfo.DeclaringType.Equals(aType))
                     {
-                        UnderlyingInfo = aMethodInfo,
-                        PlugAttribute = (Attributes.PluggedMethodAttribute)aMethodInfo.GetCustomAttribute(typeof(Attributes.PluggedMethodAttribute))
-                    };
-                    newTypeInfo.MethodInfos.Add(newMethodInfo);
-
-                    object[] CustAttrs = aMethodInfo.GetCustomAttributes(false);
-                    foreach (object aCustAttr in CustAttrs)
-                    {
-                        if (!aCustAttr.GetType().AssemblyQualifiedName.Contains("mscorlib"))
+                        MethodInfo newMethodInfo = new MethodInfo()
                         {
-                            if (!TheLibrary.SpecialMethods.ContainsKey(aCustAttr.GetType()))
+                            UnderlyingInfo = aMethodInfo,
+                            PlugAttribute = (Attributes.PluggedMethodAttribute)aMethodInfo.GetCustomAttribute(typeof(Attributes.PluggedMethodAttribute))
+                        };
+                        newTypeInfo.MethodInfos.Add(newMethodInfo);
+
+                        object[] CustAttrs = aMethodInfo.GetCustomAttributes(false);
+                        foreach (object aCustAttr in CustAttrs)
+                        {
+                            if (!aCustAttr.GetType().AssemblyQualifiedName.Contains("mscorlib"))
                             {
-                                TheLibrary.SpecialMethods.Add(aCustAttr.GetType(), new List<MethodInfo>());
+                                if (!TheLibrary.SpecialMethods.ContainsKey(aCustAttr.GetType()))
+                                {
+                                    TheLibrary.SpecialMethods.Add(aCustAttr.GetType(), new List<MethodInfo>());
+                                }
+                                TheLibrary.SpecialMethods[aCustAttr.GetType()].Add(newMethodInfo);
                             }
-                            TheLibrary.SpecialMethods[aCustAttr.GetType()].Add(newMethodInfo);
                         }
                     }
                 }
@@ -184,23 +187,26 @@ namespace Drivers.Compiler.Types
                                                .ToArray();
                 foreach (ConstructorInfo aConstructorInfo in staticConstructors)
                 {
-                    MethodInfo newMethodInfo = new MethodInfo()
+                    if (aConstructorInfo.DeclaringType.Equals(aType))
                     {
-                        UnderlyingInfo = aConstructorInfo,
-                        PlugAttribute = (Attributes.PluggedMethodAttribute)aConstructorInfo.GetCustomAttribute(typeof(Attributes.PluggedMethodAttribute))
-                    };
-                    newTypeInfo.MethodInfos.Add(newMethodInfo);
-
-                    object[] CustAttrs = aConstructorInfo.GetCustomAttributes(false);
-                    foreach (object aCustAttr in CustAttrs)
-                    {
-                        if (!aCustAttr.GetType().AssemblyQualifiedName.Contains("mscorlib"))
+                        MethodInfo newMethodInfo = new MethodInfo()
                         {
-                            if (!TheLibrary.SpecialMethods.ContainsKey(aCustAttr.GetType()))
+                            UnderlyingInfo = aConstructorInfo,
+                            PlugAttribute = (Attributes.PluggedMethodAttribute)aConstructorInfo.GetCustomAttribute(typeof(Attributes.PluggedMethodAttribute))
+                        };
+                        newTypeInfo.MethodInfos.Add(newMethodInfo);
+
+                        object[] CustAttrs = aConstructorInfo.GetCustomAttributes(false);
+                        foreach (object aCustAttr in CustAttrs)
+                        {
+                            if (!aCustAttr.GetType().AssemblyQualifiedName.Contains("mscorlib"))
                             {
-                                TheLibrary.SpecialMethods.Add(aCustAttr.GetType(), new List<MethodInfo>());
+                                if (!TheLibrary.SpecialMethods.ContainsKey(aCustAttr.GetType()))
+                                {
+                                    TheLibrary.SpecialMethods.Add(aCustAttr.GetType(), new List<MethodInfo>());
+                                }
+                                TheLibrary.SpecialMethods[aCustAttr.GetType()].Add(newMethodInfo);
                             }
-                            TheLibrary.SpecialMethods[aCustAttr.GetType()].Add(newMethodInfo);
                         }
                     }
                 }

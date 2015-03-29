@@ -39,6 +39,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ASMOps\And.cs" />
+    <Compile Include="ASMOps\Registers.cs" />
     <Compile Include="ILOps\And.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -53,9 +55,7 @@
       <Link>Kernel.licenseheader</Link>
     </None>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="ASMOps\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

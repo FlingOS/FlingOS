@@ -34,5 +34,9 @@ namespace Drivers.Compiler.ASM
 {
     public class ASMOp
     {
+        public virtual string Convert()
+        {
+            return "";
+        }
     }
 }

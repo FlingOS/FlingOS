@@ -81,7 +81,7 @@ namespace Drivers.Compiler.IL
 
             if (ILScanner.Init())
             {
-                ILScanner.Scan(TheLibrary);
+                result = ILScanner.Scan(TheLibrary);
             }
             else
             {
