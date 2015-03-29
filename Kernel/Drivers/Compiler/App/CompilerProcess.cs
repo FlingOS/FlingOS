@@ -134,11 +134,13 @@ namespace Drivers.Compiler.App
             // Options          - Compiler options used throughout the compiler
 
             // Library loader   - Loads IL Libraries to be compiled
-            //      - Type Scanner     - Loads all the Type Infos, Field Infos and Method Infos
+            //      - Type Scanner     - Loads all the Type Infos, Field Infos and Method Infos.
             // IL Compiler      - Manages the IL compile stage
-            //      - IL Reader        - Loads IL ops from IL Methods in IL Types. Also load plug info.
+            //      - IL Reader        - Loads IL ops from IL Methods in IL Types. Also loads plug info.
             //      - IL Preprocessor  - Pre-scans IL ops to find things like necessary branching labels
-            //                           and check for unchanged methods
+            //                           and any necessary mscorlib types. Also hanldes injecting any
+            //                           necessary IL ops for try-catch-finally and GC in such a way
+            //                           that IL integrity is maintained.
             //      - IL Scanner       - Converts IL ops to ASM ops
             // ASM Compiler     - Manages the ASM compile stage
             //      - ASM Preprocessor - Pre-scans the ASM ops to store things like debug info or perform
@@ -146,48 +148,81 @@ namespace Drivers.Compiler.App
             //      - ASM Processor    - Converts ASM ops into ASM text then runs NASM
             // Link Manager     - Manages the linker stage. Links together all the NASM outputs using "ld".
 
+            // To think about:
+            //      - Try-catch-finally blocks
+            //      - Static constructor dependency tree
+            //      - GC (inc. wrapping try-finally, calls to inc/dec)
+            //      - Release / Debug IL (differences? Potential issues?)
+
+            // Resultant thoughts from above:
+            //      - IL labels based on IL Op index NOT IL op offset
+            //      - IL Preprocessor handle injecting any IL ops inc. try-catch-finally and GC stuff
+            //      - IL Preprocessor needs to maintain the integrity of the IL so that no assumption are made
+            //          so that Release mode IL also works
+
+            // TODO:
+            //      - Check for unchanged methods (in IL Preprocessor) and exclude them from recompile
+
             Tuple<bool, string> ValidateOptions_Result = Options.Validate();
             if (ValidateOptions_Result.Item1)
             {
-                IL.ILLibrary TheLibrary = LibraryLoader.LoadILLibrary(Options.LibraryPath);
-                int NumDependencies = LibraryLoader.LoadDependencies(TheLibrary);
-
-                CompileResult ILCompileResult = IL.ILCompiler.Compile(TheLibrary);
-
-                if (ILCompileResult == CompileResult.OK)
+                try
                 {
-                    CompileResult ASMCompileResult = ASM.ASMCompiler.Compile(TheLibrary.TheASMLibrary);
+                    IL.ILLibrary TheLibrary = LibraryLoader.LoadILLibrary(Options.LibraryPath);
+                    
+                    CompileResult ILCompileResult = IL.ILCompiler.Compile(TheLibrary);
 
-                    if (ASMCompileResult == CompileResult.OK)
+                    if (ILCompileResult == CompileResult.OK)
                     {
-                        CompileResult LinkResult = LinkManager.Link(TheLibrary.TheASMLibrary);
+                        CompileResult ASMCompileResult = ASM.ASMCompiler.Compile(TheLibrary.TheASMLibrary);
 
-                        if (LinkResult == CompileResult.OK)
+                        if (ASMCompileResult == CompileResult.OK)
                         {
-                            //Success
-                            Logger.LogMessage("", 0, "Compilation succeeded.");
+                            CompileResult LinkResult = LinkManager.Link(TheLibrary.TheASMLibrary);
+
+                            if (LinkResult == CompileResult.OK)
+                            {
+                                //Success
+                                Logger.LogMessage("", 0, "Compilation succeeded.");
+                            }
+                            else
+                            {
+                                //Fail
+                                Logger.LogError(Errors.Linker_LinkFailed_ErrorCode, "", 0,
+                                                Errors.ErrorMessages[Errors.Linker_LinkFailed_ErrorCode]);
+                                result = ErrorCode.LinkerFailed;
+                            }
                         }
                         else
                         {
                             //Fail
-                            Logger.LogError(Errors.Linker_LinkFailed_ErrorCode, "", 0,
-                                            Errors.ErrorMessages[Errors.Linker_LinkFailed_ErrorCode]);
-                            result = ErrorCode.LinkerFailed;
+                            Logger.LogError(Errors.ASMCompiler_CompileFailed_ErrorCode, "", 0,
+                                            Errors.ErrorMessages[Errors.ASMCompiler_CompileFailed_ErrorCode]);
+                            result = ErrorCode.ASMCompilerFailed;
                         }
                     }
                     else
                     {
                         //Fail
-                        Logger.LogError(Errors.ASMCompiler_CompileFailed_ErrorCode, "", 0,
-                                        Errors.ErrorMessages[Errors.ASMCompiler_CompileFailed_ErrorCode]);
-                        result = ErrorCode.ASMCompilerFailed;
+                        Logger.LogError(Errors.ILCompiler_CompileFailed_ErrorCode, "", 0,
+                                        Errors.ErrorMessages[Errors.ILCompiler_CompileFailed_ErrorCode]);
+                        result = ErrorCode.ILCompilerFailed;
                     }
                 }
-                else
+                catch (NullReferenceException ex)
                 {
-                    //Fail
-                    Logger.LogError(Errors.ILCompiler_CompileFailed_ErrorCode, "", 0,
-                                    Errors.ErrorMessages[Errors.ILCompiler_CompileFailed_ErrorCode]);
+                    Logger.LogError(Errors.ILCompiler_NullRefException_ErrorCode, "", 0,
+                                    string.Format(
+                                        Errors.ErrorMessages[Errors.ILCompiler_NullRefException_ErrorCode],
+                                        ex.Message));
+                    result = ErrorCode.ILCompilerFailed;
+                }
+                catch (Exception ex)
+                {
+                    Logger.LogError(Errors.ILCompiler_UnexpectedException_ErrorCode, "", 0,
+                                    string.Format(
+                                        Errors.ErrorMessages[Errors.ILCompiler_UnexpectedException_ErrorCode],
+                                        ex.Message, ex.StackTrace));
                     result = ErrorCode.ILCompilerFailed;
                 }
             }

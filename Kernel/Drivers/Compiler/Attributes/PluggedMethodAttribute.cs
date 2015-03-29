@@ -30,16 +30,15 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Drivers.Compiler.Types
+namespace Drivers.Compiler.Attributes
 {
-    public class VariableInfo
+    [AttributeUsage(AttributeTargets.Method, AllowMultiple = false, Inherited = false)]
+    public class PluggedMethodAttribute : Attribute
     {
-        public Type UnderlyingType;
-        public int Position;
-
-        public override string ToString()
+        public string ASMFilePath
         {
-            return UnderlyingType.AssemblyQualifiedName + " : " + Position.ToString();
+            get;
+            set;
         }
     }
 }

@@ -32,7 +32,34 @@ using System.Threading.Tasks;
 
 namespace Drivers.Compiler.Types
 {
-    class MethodInfo
+    public class MethodInfo
     {
+        public System.Reflection.MethodBase UnderlyingInfo;
+        public Attributes.PluggedMethodAttribute PlugAttribute = null;
+
+        public List<VariableInfo> ArgumentInfos = new List<VariableInfo>();
+        public List<VariableInfo> LocalInfos = new List<VariableInfo>();
+
+        public bool IsPlugged { get { return PlugAttribute != null; } }
+        public bool IsConstructor { get { return UnderlyingInfo is System.Reflection.ConstructorInfo; } }
+        public bool IsStatic { get { return UnderlyingInfo.IsStatic; } }
+
+        private System.Reflection.MethodBody methodBody;
+        public System.Reflection.MethodBody MethodBody
+        {
+            get
+            {
+                if (methodBody == null)
+                {
+                    methodBody = UnderlyingInfo.GetMethodBody();
+                }
+                return methodBody;
+            }
+        }
+
+        public override string ToString()
+        {
+            return UnderlyingInfo.Name;
+        }
     }
 }

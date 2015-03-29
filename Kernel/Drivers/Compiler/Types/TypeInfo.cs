@@ -32,7 +32,17 @@ using System.Threading.Tasks;
 
 namespace Drivers.Compiler.Types
 {
-    class TypeInfo
+    public class TypeInfo
     {
+        public Type UnderlyingType;
+        public bool ContainsPlugs;
+
+        public List<FieldInfo> FieldInfos = new List<FieldInfo>();
+        public List<MethodInfo> MethodInfos = new List<MethodInfo>();
+
+        public override string ToString()
+        {
+            return UnderlyingType.AssemblyQualifiedName;
+        }
     }
 }

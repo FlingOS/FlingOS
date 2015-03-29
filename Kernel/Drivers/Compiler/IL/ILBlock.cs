@@ -32,7 +32,11 @@ using System.Threading.Tasks;
 
 namespace Drivers.Compiler.IL
 {
-    class ILBlock
+    public class ILBlock
     {
+        public string PlugPath = null;
+        public bool Plugged { get { return PlugPath != null; } }
+
+        public List<ILOp> ILOps = new List<ILOp>();
     }
 }
