@@ -51,7 +51,7 @@ namespace Drivers.Compiler.IL
 
         public Types.TypeInfo GetTypeInfo(Type theType, bool FullyProcess = true)
         {
-            return GetTypeInfo(theType, true);
+            return GetTypeInfo(theType, true, FullyProcess);
         }
         private Types.TypeInfo GetTypeInfo(Type theType, bool topLevel, bool FullyProcess)
         {
