@@ -45,6 +45,7 @@
     <Compile Include="ASM\ASMProcessor.cs" />
     <Compile Include="ASM\ASMBlock.cs" />
     <Compile Include="ASM\ASMOp.cs" />
+    <Compile Include="IL\ILOps\ILOpTargetAttribute.cs" />
     <Compile Include="Attributes\NoDebugAttribute.cs" />
     <Compile Include="Attributes\NoGCAttribute.cs" />
     <Compile Include="Attributes\PluggedClassAttribute.cs" />
@@ -54,6 +55,57 @@
     <Compile Include="Global.cs" />
     <Compile Include="IL\ILCompiler.cs" />
     <Compile Include="IL\ILLibrary.cs" />
+    <Compile Include="IL\ILOps\Add.cs" />
+    <Compile Include="IL\ILOps\And.cs" />
+    <Compile Include="IL\ILOps\Br.cs" />
+    <Compile Include="IL\ILOps\Call.cs" />
+    <Compile Include="IL\ILOps\Callvirt.cs" />
+    <Compile Include="IL\ILOps\Ceq.cs" />
+    <Compile Include="IL\ILOps\Cgt.cs" />
+    <Compile Include="IL\ILOps\Clt.cs" />
+    <Compile Include="IL\ILOps\Convi.cs" />
+    <Compile Include="IL\ILOps\Convu.cs" />
+    <Compile Include="IL\ILOps\Div.cs" />
+    <Compile Include="IL\ILOps\Dup.cs" />
+    <Compile Include="IL\ILOps\Initobj.cs" />
+    <Compile Include="IL\ILOps\Isinst.cs" />
+    <Compile Include="IL\ILOps\Ldarg.cs" />
+    <Compile Include="IL\ILOps\Ldc.cs" />
+    <Compile Include="IL\ILOps\Ldelem.cs" />
+    <Compile Include="IL\ILOps\Ldfld.cs" />
+    <Compile Include="IL\ILOps\Ldftn.cs" />
+    <Compile Include="IL\ILOps\Ldind.cs" />
+    <Compile Include="IL\ILOps\Ldlen.cs" />
+    <Compile Include="IL\ILOps\Ldloc.cs" />
+    <Compile Include="IL\ILOps\Ldnull.cs" />
+    <Compile Include="IL\ILOps\Ldobj.cs" />
+    <Compile Include="IL\ILOps\Ldsfld.cs" />
+    <Compile Include="IL\ILOps\Ldstr.cs" />
+    <Compile Include="IL\ILOps\Ldtoken.cs" />
+    <Compile Include="IL\ILOps\MethodEnd.cs" />
+    <Compile Include="IL\ILOps\MethodStart.cs" />
+    <Compile Include="IL\ILOps\Mul.cs" />
+    <Compile Include="IL\ILOps\NewArr.cs" />
+    <Compile Include="IL\ILOps\NewObj.cs" />
+    <Compile Include="IL\ILOps\Nop.cs" />
+    <Compile Include="IL\ILOps\Not.cs" />
+    <Compile Include="IL\ILOps\Or.cs" />
+    <Compile Include="IL\ILOps\Pop.cs" />
+    <Compile Include="IL\ILOps\Rem.cs" />
+    <Compile Include="IL\ILOps\Ret.cs" />
+    <Compile Include="IL\ILOps\Shl.cs" />
+    <Compile Include="IL\ILOps\Shr.cs" />
+    <Compile Include="IL\ILOps\Sizeof.cs" />
+    <Compile Include="IL\ILOps\StackSwitch.cs" />
+    <Compile Include="IL\ILOps\Starg.cs" />
+    <Compile Include="IL\ILOps\Stelem.cs" />
+    <Compile Include="IL\ILOps\Stfld.cs" />
+    <Compile Include="IL\ILOps\Stind.cs" />
+    <Compile Include="IL\ILOps\Stloc.cs" />
+    <Compile Include="IL\ILOps\Stsfld.cs" />
+    <Compile Include="IL\ILOps\Sub.cs" />
+    <Compile Include="IL\ILOps\Switch.cs" />
+    <Compile Include="IL\ILOps\Xor.cs" />
     <Compile Include="IL\ILPreprocessor.cs" />
     <Compile Include="IL\ILReader.cs" />
     <Compile Include="IL\ILScanner.cs" />
@@ -72,13 +124,15 @@
     <Compile Include="Utilities.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="IL\ILOps\" />
     <Folder Include="Tools\" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\Kernel\Kernel.licenseheader">
       <Link>Kernel.licenseheader</Link>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="IL\ILOps\AllIlOps.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
