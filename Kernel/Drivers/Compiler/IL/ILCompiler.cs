@@ -53,7 +53,17 @@ namespace Drivers.Compiler.IL
 
         private static CompileResult ExecuteILReader(ILLibrary TheLibrary)
         {
-            return CompileResult.OK;
+            CompileResult result = CompileResult.OK;
+
+            foreach (Types.TypeInfo aTypeInfo in TheLibrary.TypeInfos)
+            {
+                foreach (Types.MethodInfo aMethodInfo in aTypeInfo.MethodInfos)
+                {
+                    TheLibrary.ILBlocks.Add(aMethodInfo, ILReader.Read(aMethodInfo));
+                }
+            }
+
+            return result;
         }
 
         private static CompileResult ExecuteILPreprocessor(ILLibrary TheLibrary)

@@ -29,13 +29,75 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Reflection;
+using System.ComponentModel;
 
 namespace Drivers.Compiler.IL
 {
     public class ILLibrary
     {
+        public Assembly TheAssembly;
+
         public ASM.ASMLibrary TheASMLibrary;
 
         public List<ILLibrary> Dependencies = new List<ILLibrary>();
+        //public List<ILLibrary> CompressedDependencyTree = new List<ILLibrary>();
+
+        public List<Types.TypeInfo> TypeInfos = new List<Types.TypeInfo>();
+
+        public Dictionary<Types.MethodInfo, ILBlock> ILBlocks = new Dictionary<Types.MethodInfo, ILBlock>();
+
+        public Dictionary<Type, List<Types.MethodInfo>> SpecialMethods = new Dictionary<Type, List<Types.MethodInfo>>();
+
+        public Types.TypeInfo GetTypeInfo(Type theType)
+        {
+            return GetTypeInfo(theType, true);
+        }
+        private Types.TypeInfo GetTypeInfo(Type theType, bool topLevel)
+        {
+            foreach (Types.TypeInfo aTypeInfo in TypeInfos)
+            {
+                if (aTypeInfo.UnderlyingType.Equals(theType))
+                {
+                    return aTypeInfo;
+                }
+            }
+
+            foreach (ILLibrary depLib in Dependencies)
+            {
+                Types.TypeInfo result = depLib.GetTypeInfo(theType, false);
+                if (result != null)
+                {
+                    return result;
+                }
+            }
+
+            if (topLevel)
+            {
+                return Types.TypeScanner.ScanType(this, theType);
+            }
+            else
+            {
+                return null;
+            }
+        }
+
+        public override int GetHashCode()
+        {
+            return TheAssembly.FullName.GetHashCode();
+        }
+        public override bool Equals(object obj)
+        {
+            if(obj is ILLibrary)
+            {
+                return this.GetHashCode() == ((ILLibrary)obj).GetHashCode();
+            }
+
+            return base.Equals(obj);
+        }
+        public override string ToString()
+        {
+            return TheAssembly.FullName;
+        }
     }
 }

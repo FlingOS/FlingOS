@@ -29,10 +29,15 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Reflection.Emit;
 
 namespace Drivers.Compiler.IL
 {
-    class ILOp
+    public class ILOp
     {
+        public OpCode opCode;
+        public int Offset;
+        public byte[] ValueBytes;
+        public System.Reflection.MethodBase MethodToCall;
     }
 }

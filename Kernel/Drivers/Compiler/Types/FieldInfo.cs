@@ -32,7 +32,14 @@ using System.Threading.Tasks;
 
 namespace Drivers.Compiler.Types
 {
-    class FieldInfo
+    public class FieldInfo
     {
+        public System.Reflection.FieldInfo UnderlyingInfo;
+        public bool IsStatic;
+
+        public override string ToString()
+        {
+            return UnderlyingInfo.Name;
+        }
     }
 }

@@ -45,6 +45,8 @@
     <Compile Include="ASM\ASMProcessor.cs" />
     <Compile Include="ASM\ASMBlock.cs" />
     <Compile Include="ASM\ASMOp.cs" />
+    <Compile Include="Attributes\PluggedClassAttribute.cs" />
+    <Compile Include="Attributes\PluggedMethodAttribute.cs" />
     <Compile Include="DebugDataManager.cs" />
     <Compile Include="Errors.cs" />
     <Compile Include="Global.cs" />
@@ -65,6 +67,7 @@
     <Compile Include="Types\TypeInfo.cs" />
     <Compile Include="Types\TypeScanner.cs" />
     <Compile Include="Types\VariableInfo.cs" />
+    <Compile Include="Utilities.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="IL\ILOps\" />

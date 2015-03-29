@@ -72,6 +72,24 @@ namespace Drivers.Compiler
             set;
         }
 
+        private static List<string> ignoreAssemblies = new List<string>
+        {
+            "mscorlib",
+            "Kernel.Compiler",
+            "Drivers.Compiler"
+        };
+        public static List<string> IgnoreAssemblies
+        {
+            get
+            {
+                return ignoreAssemblies;
+            }
+            set
+            {
+                ignoreAssemblies = value;
+            }
+        }
+
         public static void Format()
         {
             TargetArchitecture = TargetArchitecture.ToLower();
