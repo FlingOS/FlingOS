@@ -40,6 +40,16 @@ namespace Drivers.Compiler.Types
         public List<FieldInfo> FieldInfos = new List<FieldInfo>();
         public List<MethodInfo> MethodInfos = new List<MethodInfo>();
 
+        public bool Processed = false;
+        public bool ProcessedFields = false;
+        public bool IsValueType { get { return UnderlyingType.IsValueType; } }
+        public bool IsPointer { get { return UnderlyingType.IsPointer; } }
+
+        public int SizeOnStackInBytes { get; set; }
+        public int SizeOnHeapInBytes { get; set; }
+
+        public bool IsGCManaged { get; set; }
+
         public override string ToString()
         {
             return UnderlyingType.AssemblyQualifiedName;

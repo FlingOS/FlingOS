@@ -45,6 +45,11 @@ namespace Drivers.Compiler
             Release
         }
 
+        static Options()
+        {
+            AddressSizeInBytes = 4;
+        }
+
         public static string LibraryPath
         {
             get;
@@ -67,6 +72,12 @@ namespace Drivers.Compiler
             set;
         }
         public static string TargetArchitecture
+        {
+            get;
+            set;
+        }
+
+        public static int AddressSizeInBytes
         {
             get;
             set;

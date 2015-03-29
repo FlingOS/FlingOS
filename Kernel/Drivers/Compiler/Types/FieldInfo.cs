@@ -35,7 +35,10 @@ namespace Drivers.Compiler.Types
     public class FieldInfo
     {
         public System.Reflection.FieldInfo UnderlyingInfo;
-        public bool IsStatic;
+        public Type FieldType { get { return UnderlyingInfo.FieldType; } }
+        public bool IsStatic { get { return UnderlyingInfo.IsStatic; } }
+
+        public int OffsetInBytes { get; set; }
 
         public override string ToString()
         {

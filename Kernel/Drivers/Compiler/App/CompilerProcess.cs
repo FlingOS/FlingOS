@@ -137,10 +137,9 @@ namespace Drivers.Compiler.App
             //      - Type Scanner     - Loads all the Type Infos, Field Infos and Method Infos.
             // IL Compiler      - Manages the IL compile stage
             //      - IL Reader        - Loads IL ops from IL Methods in IL Types. Also loads plug info.
-            //      - IL Preprocessor  - Pre-scans IL ops to find things like necessary branching labels
-            //                           and any necessary mscorlib types. Also hanldes injecting any
-            //                           necessary IL ops for try-catch-finally and GC in such a way
-            //                           that IL integrity is maintained.
+            //      - IL Preprocessor  - Pre-scans IL ops to find things like necessary branching labels. 
+            //                           Also handles injecting any necessary IL ops in such a way that 
+            //                           IL integrity is maintained.
             //      - IL Scanner       - Converts IL ops to ASM ops
             // ASM Compiler     - Manages the ASM compile stage
             //      - ASM Preprocessor - Pre-scans the ASM ops to store things like debug info or perform
@@ -156,7 +155,8 @@ namespace Drivers.Compiler.App
 
             // Resultant thoughts from above:
             //      - IL labels based on IL Op index NOT IL op offset
-            //      - IL Preprocessor handle injecting any IL ops inc. try-catch-finally and GC stuff
+            //      - IL Preprocessor handle injecting any IL ops inc. try-catch-finally, GC stuff and special
+            //        class / method stuff (e.g. static variables, static constructors etc.)
             //      - IL Preprocessor needs to maintain the integrity of the IL so that no assumption are made
             //          so that Release mode IL also works
 

@@ -53,10 +53,62 @@ namespace Drivers.Compiler.Types
                 ScanTypes(aDependency);
             }
 
-            Type[] types = TheLibrary.TheAssembly.GetTypes();
+            List<Type> types = TheLibrary.TheAssembly.GetTypes().ToList();
+
+            //Add in the standard types (which come from mscorlib)
+            #region Standard Types (from mscorlib)
+
+            types.Add(typeof(object));
+
+            types.Add(typeof(float));
+            types.Add(typeof(double));
+            types.Add(typeof(decimal));
+            types.Add(typeof(string));
+            types.Add(typeof(IntPtr));
+
+            types.Add(typeof(void));
+            types.Add(typeof(bool));
+            types.Add(typeof(byte));
+            types.Add(typeof(sbyte));
+            types.Add(typeof(char));
+            types.Add(typeof(int));
+            types.Add(typeof(long));
+            types.Add(typeof(Int16));
+            types.Add(typeof(Int32));
+            types.Add(typeof(Int64));
+            types.Add(typeof(UInt16));
+            types.Add(typeof(UInt32));
+            types.Add(typeof(UInt64));
+
+            types.Add(typeof(void*));
+            types.Add(typeof(bool*));
+            types.Add(typeof(byte*));
+            types.Add(typeof(sbyte*));
+            types.Add(typeof(char*));
+            types.Add(typeof(int*));
+            types.Add(typeof(long*));
+            types.Add(typeof(Int16*));
+            types.Add(typeof(Int32*));
+            types.Add(typeof(Int64*));
+            types.Add(typeof(UInt16*));
+            types.Add(typeof(UInt32*));
+            types.Add(typeof(UInt64*));
+
+            #endregion
+
             foreach (Type aType in types)
             {
                 ScanType(TheLibrary, aType);
+            }
+
+            for (int i = 0; i < TheLibrary.TypeInfos.Count; i++)
+            {
+                ProcessType(TheLibrary, TheLibrary.TypeInfos[i]);
+            }
+
+            for (int i = 0; i < TheLibrary.TypeInfos.Count; i++)
+            {
+                ProcessTypeFields(TheLibrary, TheLibrary.TypeInfos[i]);
             }
         }
 
@@ -70,81 +122,333 @@ namespace Drivers.Compiler.Types
 
             TheLibrary.TypeInfos.Add(newTypeInfo);
 
-            // Static Fields
-            System.Reflection.FieldInfo[] staticFields = aType.GetFields(BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.Public);
-            foreach (System.Reflection.FieldInfo aFieldInfo in staticFields)
             {
-                newTypeInfo.FieldInfos.Add(new FieldInfo()
-                {
-                    UnderlyingInfo = aFieldInfo,
-                    IsStatic = true
-                });
-            }
-
-            // Instance Fields
-            System.Reflection.FieldInfo[] nonStaticFields = aType.GetFields(BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.Public);
-            foreach (System.Reflection.FieldInfo aFieldInfo in nonStaticFields)
-            {
-                newTypeInfo.FieldInfos.Add(new FieldInfo()
-                {
-                    UnderlyingInfo = aFieldInfo,
-                    IsStatic = false
-                });
-            }
-
-            // Plugged / Unplugged Methods
-            System.Reflection.MethodInfo[] allMethods = aType.GetMethods(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static).ToArray();
-
-            foreach (System.Reflection.MethodInfo aMethodInfo in allMethods)
-            {
-                MethodInfo newMethodInfo = new MethodInfo()
-                {
-                    UnderlyingInfo = aMethodInfo,
-                    PlugAttribute = (Attributes.PluggedMethodAttribute)aMethodInfo.GetCustomAttribute(typeof(Attributes.PluggedMethodAttribute))
-                };
-                newTypeInfo.MethodInfos.Add(newMethodInfo);
-
-                object[] CustAttrs = aMethodInfo.GetCustomAttributes(false);
+                object[] CustAttrs = aType.GetCustomAttributes(false);
                 foreach (object aCustAttr in CustAttrs)
                 {
                     if (!aCustAttr.GetType().AssemblyQualifiedName.Contains("mscorlib"))
                     {
-                        if (!TheLibrary.SpecialMethods.ContainsKey(aCustAttr.GetType()))
+                        if (!TheLibrary.SpecialClasses.ContainsKey(aCustAttr.GetType()))
                         {
-                            TheLibrary.SpecialMethods.Add(aCustAttr.GetType(), new List<MethodInfo>());
+                            TheLibrary.SpecialClasses.Add(aCustAttr.GetType(), new List<TypeInfo>());
                         }
-                        TheLibrary.SpecialMethods[aCustAttr.GetType()].Add(newMethodInfo);
+                        TheLibrary.SpecialClasses[aCustAttr.GetType()].Add(newTypeInfo);
                     }
                 }
             }
 
-            // Plugged / unplugged Constructors
-            ConstructorInfo[] staticConstructors = aType.GetConstructors(BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic)
-                                           .ToArray();
-            foreach (ConstructorInfo aConstructorInfo in staticConstructors)
+            //Ignore all internal data of types from mscorlib
+            if (!aType.AssemblyQualifiedName.Contains("mscorlib"))
             {
-                MethodInfo newMethodInfo = new MethodInfo()
+                // All Fields
+                System.Reflection.FieldInfo[] allFields = aType.GetFields(BindingFlags.Instance | BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.Public);
+                foreach (System.Reflection.FieldInfo aFieldInfo in allFields)
                 {
-                    UnderlyingInfo = aConstructorInfo,
-                    PlugAttribute = (Attributes.PluggedMethodAttribute)aConstructorInfo.GetCustomAttribute(typeof(Attributes.PluggedMethodAttribute))
-                };
-                newTypeInfo.MethodInfos.Add(newMethodInfo);
-
-                object[] CustAttrs = aConstructorInfo.GetCustomAttributes(false);
-                foreach (object aCustAttr in CustAttrs)
-                {
-                    if (!aCustAttr.GetType().AssemblyQualifiedName.Contains("mscorlib"))
+                    if (aFieldInfo.DeclaringType.Equals(newTypeInfo.UnderlyingType))
                     {
-                        if (!TheLibrary.SpecialMethods.ContainsKey(aCustAttr.GetType()))
+                        newTypeInfo.FieldInfos.Add(new FieldInfo()
                         {
-                            TheLibrary.SpecialMethods.Add(aCustAttr.GetType(), new List<MethodInfo>());
+                            UnderlyingInfo = aFieldInfo
+                        });
+                    }
+                }
+
+                // Plugged / Unplugged Methods
+                System.Reflection.MethodInfo[] allMethods = aType.GetMethods(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static).ToArray();
+
+                foreach (System.Reflection.MethodInfo aMethodInfo in allMethods)
+                {
+                    MethodInfo newMethodInfo = new MethodInfo()
+                    {
+                        UnderlyingInfo = aMethodInfo,
+                        PlugAttribute = (Attributes.PluggedMethodAttribute)aMethodInfo.GetCustomAttribute(typeof(Attributes.PluggedMethodAttribute))
+                    };
+                    newTypeInfo.MethodInfos.Add(newMethodInfo);
+
+                    object[] CustAttrs = aMethodInfo.GetCustomAttributes(false);
+                    foreach (object aCustAttr in CustAttrs)
+                    {
+                        if (!aCustAttr.GetType().AssemblyQualifiedName.Contains("mscorlib"))
+                        {
+                            if (!TheLibrary.SpecialMethods.ContainsKey(aCustAttr.GetType()))
+                            {
+                                TheLibrary.SpecialMethods.Add(aCustAttr.GetType(), new List<MethodInfo>());
+                            }
+                            TheLibrary.SpecialMethods[aCustAttr.GetType()].Add(newMethodInfo);
                         }
-                        TheLibrary.SpecialMethods[aCustAttr.GetType()].Add(newMethodInfo);
+                    }
+                }
+
+                // Plugged / unplugged Constructors
+                ConstructorInfo[] staticConstructors = aType.GetConstructors(BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic)
+                                               .ToArray();
+                foreach (ConstructorInfo aConstructorInfo in staticConstructors)
+                {
+                    MethodInfo newMethodInfo = new MethodInfo()
+                    {
+                        UnderlyingInfo = aConstructorInfo,
+                        PlugAttribute = (Attributes.PluggedMethodAttribute)aConstructorInfo.GetCustomAttribute(typeof(Attributes.PluggedMethodAttribute))
+                    };
+                    newTypeInfo.MethodInfos.Add(newMethodInfo);
+
+                    object[] CustAttrs = aConstructorInfo.GetCustomAttributes(false);
+                    foreach (object aCustAttr in CustAttrs)
+                    {
+                        if (!aCustAttr.GetType().AssemblyQualifiedName.Contains("mscorlib"))
+                        {
+                            if (!TheLibrary.SpecialMethods.ContainsKey(aCustAttr.GetType()))
+                            {
+                                TheLibrary.SpecialMethods.Add(aCustAttr.GetType(), new List<MethodInfo>());
+                            }
+                            TheLibrary.SpecialMethods[aCustAttr.GetType()].Add(newMethodInfo);
+                        }
                     }
                 }
             }
 
             return newTypeInfo;
+        }
+        public static void ProcessType(IL.ILLibrary TheLibrary, TypeInfo theTypeInfo)
+        {
+            if(theTypeInfo.Processed)
+            {
+                return;
+            }
+
+            theTypeInfo.Processed = true;
+
+            theTypeInfo.IsGCManaged = GetIsGCManaged(theTypeInfo.UnderlyingType);
+
+            if (theTypeInfo.IsValueType)
+            {
+                theTypeInfo.SizeOnStackInBytes = GetSizeOnStackInBytes(theTypeInfo.UnderlyingType);
+                theTypeInfo.SizeOnHeapInBytes = GetSizeOnHeapInBytes(theTypeInfo.UnderlyingType);
+            }
+            else
+            {
+                theTypeInfo.SizeOnStackInBytes = GetSizeOnStackInBytes(theTypeInfo.UnderlyingType);
+                
+                theTypeInfo.SizeOnHeapInBytes = 0;
+                if (theTypeInfo.UnderlyingType.BaseType != null)
+                {
+                    Type baseType = theTypeInfo.UnderlyingType.BaseType;
+                    if (!baseType.AssemblyQualifiedName.Contains("mscorlib"))
+                    {
+                        TypeInfo baseTypeInfo = TheLibrary.GetTypeInfo(baseType, false);
+                        ProcessType(TheLibrary, baseTypeInfo);
+                        theTypeInfo.SizeOnHeapInBytes += baseTypeInfo.SizeOnHeapInBytes;
+                    }
+                }
+                foreach (FieldInfo aFieldInfo in theTypeInfo.FieldInfos)
+                {
+                    TypeInfo fieldTypeInfo = TheLibrary.GetTypeInfo(aFieldInfo.FieldType, false);
+                    if (fieldTypeInfo.IsValueType)
+                    {
+                        ProcessType(TheLibrary, fieldTypeInfo);
+                    }
+                    theTypeInfo.SizeOnHeapInBytes += fieldTypeInfo.IsValueType ? fieldTypeInfo.SizeOnHeapInBytes : Options.AddressSizeInBytes;
+                }
+            }
+        }
+        public static void ProcessTypeFields(IL.ILLibrary TheLibrary, TypeInfo theTypeInfo)
+        {
+            if (theTypeInfo.ProcessedFields)
+            {
+                return;
+            }
+
+            theTypeInfo.ProcessedFields = true;
+
+            int totalOffset = 0;
+
+            //Base class fields
+            if (theTypeInfo.UnderlyingType.BaseType != null)
+            {
+                Type baseType = theTypeInfo.UnderlyingType.BaseType;
+                if (!baseType.AssemblyQualifiedName.Contains("mscorlib"))
+                {
+                    totalOffset = TheLibrary.GetTypeInfo(baseType, false).SizeOnHeapInBytes;
+                }
+            }
+
+            foreach (FieldInfo aFieldInfo in theTypeInfo.FieldInfos)
+            {
+                aFieldInfo.OffsetInBytes = totalOffset;
+                TypeInfo fieldTypeInfo =  TheLibrary.GetTypeInfo(aFieldInfo.FieldType, false);
+                totalOffset += fieldTypeInfo.IsValueType ? fieldTypeInfo.SizeOnHeapInBytes : fieldTypeInfo.SizeOnStackInBytes;
+            }
+        }
+
+        private static int GetSizeOnStackInBytes(Type theType)
+        {
+            //Assume its a pointer/reference unless it is:
+            // - A value type
+            int result = Options.AddressSizeInBytes;
+
+            if (theType.IsValueType)
+            {
+                if (theType.AssemblyQualifiedName == typeof(void).AssemblyQualifiedName)
+                {
+                    result = 0;
+                }
+                else if (theType.AssemblyQualifiedName == typeof(byte).AssemblyQualifiedName ||
+                         theType.AssemblyQualifiedName == typeof(sbyte).AssemblyQualifiedName)
+                {
+                    result = 4;
+                }
+                else if (theType.AssemblyQualifiedName == typeof(UInt16).AssemblyQualifiedName ||
+                         theType.AssemblyQualifiedName == typeof(Int16).AssemblyQualifiedName)
+                {
+                    result = 4;
+                }
+                else if (theType.AssemblyQualifiedName == typeof(UInt32).AssemblyQualifiedName ||
+                         theType.AssemblyQualifiedName == typeof(Int32).AssemblyQualifiedName)
+                {
+                    result = 4;
+                }
+                else if (theType.AssemblyQualifiedName == typeof(UInt64).AssemblyQualifiedName ||
+                         theType.AssemblyQualifiedName == typeof(Int64).AssemblyQualifiedName)
+                {
+                    result = 8;
+                }
+                else if (theType.AssemblyQualifiedName == typeof(string).AssemblyQualifiedName)
+                {
+                    result = 4;
+                }
+                else if (theType.AssemblyQualifiedName == typeof(char).AssemblyQualifiedName)
+                {
+                    result = 4;
+                }
+                else if (theType.AssemblyQualifiedName == typeof(float).AssemblyQualifiedName)
+                {
+                    result = 4;
+                }
+                else if (theType.AssemblyQualifiedName == typeof(double).AssemblyQualifiedName)
+                {
+                    result = 8;
+                }
+                else if (theType.AssemblyQualifiedName == typeof(bool).AssemblyQualifiedName)
+                {
+                    result = 4;
+                }
+                else if (theType.AssemblyQualifiedName == typeof(decimal).AssemblyQualifiedName)
+                {
+                    result = 16;
+                }
+                else if (theType.AssemblyQualifiedName == typeof(IntPtr).AssemblyQualifiedName)
+                {
+                    result = Options.AddressSizeInBytes;
+                }
+                else
+                {
+                    List<System.Reflection.FieldInfo> AllFields = theType.GetFields(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic).ToList();
+
+                    //This is a value type from a struct
+                    result = 0;
+                    foreach (System.Reflection.FieldInfo anInfo in AllFields)
+                    {
+                        result += GetSizeOnStackInBytes(anInfo.FieldType);
+                    }
+                }
+            }
+
+            return result;
+        }
+        private static int GetSizeOnHeapInBytes(Type theType)
+        {
+            //Assume its a pointer/reference unless it is:
+            // - A value type
+            int result = Options.AddressSizeInBytes;
+
+            if (theType.IsValueType)
+            {
+                if (theType.AssemblyQualifiedName == typeof(void).AssemblyQualifiedName)
+                {
+                    result = 0;
+                }
+                else if (theType.AssemblyQualifiedName == typeof(byte).AssemblyQualifiedName ||
+                         theType.AssemblyQualifiedName == typeof(sbyte).AssemblyQualifiedName)
+                {
+                    result = 1;
+                }
+                else if (theType.AssemblyQualifiedName == typeof(UInt16).AssemblyQualifiedName ||
+                         theType.AssemblyQualifiedName == typeof(Int16).AssemblyQualifiedName)
+                {
+                    result = 2;
+                }
+                else if (theType.AssemblyQualifiedName == typeof(UInt32).AssemblyQualifiedName ||
+                         theType.AssemblyQualifiedName == typeof(Int32).AssemblyQualifiedName)
+                {
+                    result = 4;
+                }
+                else if (theType.AssemblyQualifiedName == typeof(UInt64).AssemblyQualifiedName ||
+                         theType.AssemblyQualifiedName == typeof(Int64).AssemblyQualifiedName)
+                {
+                    result = 8;
+                }
+                else if (theType.AssemblyQualifiedName == typeof(string).AssemblyQualifiedName)
+                {
+                    result = 4;
+                }
+                else if (theType.AssemblyQualifiedName == typeof(char).AssemblyQualifiedName)
+                {
+                    result = 2;
+                }
+                else if (theType.AssemblyQualifiedName == typeof(float).AssemblyQualifiedName)
+                {
+                    result = 4;
+                }
+                else if (theType.AssemblyQualifiedName == typeof(double).AssemblyQualifiedName)
+                {
+                    result = 8;
+                }
+                else if (theType.AssemblyQualifiedName == typeof(bool).AssemblyQualifiedName)
+                {
+                    result = 1;
+                }
+                else if (theType.AssemblyQualifiedName == typeof(decimal).AssemblyQualifiedName)
+                {
+                    result = 16;
+                }
+                else if (theType.AssemblyQualifiedName == typeof(IntPtr).AssemblyQualifiedName)
+                {
+                    result = Options.AddressSizeInBytes;
+                }
+                else if (theType.IsPointer)
+                {
+                    result = 4;
+                }
+                else
+                {
+                    List<System.Reflection.FieldInfo> AllFields = theType.GetFields(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic).ToList();
+
+                    //This is a value type from a struct
+                    result = 0;
+                    foreach (System.Reflection.FieldInfo anInfo in AllFields)
+                    {
+                        result += GetSizeOnHeapInBytes(anInfo.FieldType);
+                    }
+                }
+            }
+            else if (theType.IsPointer)
+            {
+                result = Options.AddressSizeInBytes;
+            }
+
+            return result;
+        }
+        private static bool GetIsGCManaged(Type theType)
+        {
+            bool isGCManaged = true;
+
+            if (theType != null && (theType.IsValueType ||
+                                   theType.IsPointer ||
+                                   typeof(Delegate).IsAssignableFrom(theType)))
+            {
+                isGCManaged = false;
+            }
+
+            return isGCManaged;
         }
     }
 }
