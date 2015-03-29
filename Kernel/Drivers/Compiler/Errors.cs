@@ -18,6 +18,7 @@ namespace Drivers.Compiler
         public const string ILCompiler_CompileFailed_ErrorCode = "ILC0001";
         public const string ILCompiler_NullRefException_ErrorCode = "ILC0002";
         public const string ILCompiler_UnexpectedException_ErrorCode = "ILC0003";
+        public const string ILCompiler_LoadTargetArchError_ErrorCode = "ILC0004";
 
         public const string ASMCompiler_CompileFailed_ErrorCode = "ASMC0001";
         public const string ASMCompiler_UnexpectedException_ErrorCode = "ASMC0003";
@@ -38,6 +39,7 @@ namespace Drivers.Compiler
             { "ILC0001", "The IL compiler failed to compile." },
             { "ILC0002", "The IL compiler failed to compile due to null reference. {0}" },
             { "ILC0003", "The IL compiler failed to compile due to an unexpected error. {0}\r\n{1}" },
+            { "ILC0004", "The IL scanner failed to load the target architecture. {0}" },
             
             { "ASMC0001", "The ASM compiler failed to compile." },
             { "ASMC0002", "" },
