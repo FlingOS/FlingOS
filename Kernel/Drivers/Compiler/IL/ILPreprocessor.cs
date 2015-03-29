@@ -73,10 +73,63 @@ namespace Drivers.Compiler.IL
 
         private static void PreprocessILOps(ILLibrary TheLibrary, Types.MethodInfo theMethodInfo, ILBlock theILBlock)
         {
+            int totalLocalsOffset = 0;
             foreach (Types.VariableInfo aVarInfo in theMethodInfo.LocalInfos)
             {
                 //Causes processing of the type - in case it hasn't already been processed
-                TheLibrary.GetTypeInfo(aVarInfo.UnderlyingType);
+                Types.TypeInfo aTypeInfo = TheLibrary.GetTypeInfo(aVarInfo.UnderlyingType);
+                aVarInfo.TheTypeInfo = aTypeInfo;
+                aVarInfo.Offset = totalLocalsOffset;
+                totalLocalsOffset += aTypeInfo.SizeOnStackInBytes;
+            }
+
+            int totalArgsSize = 0;
+            if (!theMethodInfo.IsStatic)
+            {
+                Types.VariableInfo newVarInfo = new Types.VariableInfo()
+                {
+                    UnderlyingType = theMethodInfo.UnderlyingInfo.DeclaringType,
+                    Position = 0,
+                    TheTypeInfo = TheLibrary.GetTypeInfo(theMethodInfo.UnderlyingInfo.DeclaringType)
+                };
+
+                theMethodInfo.ArgumentInfos.Add(newVarInfo);
+
+                totalArgsSize += newVarInfo.TheTypeInfo.SizeOnStackInBytes;
+            }
+            System.Reflection.ParameterInfo[] args = theMethodInfo.UnderlyingInfo.GetParameters();
+            foreach (System.Reflection.ParameterInfo argItem in args)
+            {
+                Types.VariableInfo newVarInfo = new Types.VariableInfo()
+                {
+                    UnderlyingType = argItem.ParameterType,
+                    Position = theMethodInfo.ArgumentInfos.Count,
+                    TheTypeInfo = TheLibrary.GetTypeInfo(argItem.ParameterType)
+                };
+
+                theMethodInfo.ArgumentInfos.Add(newVarInfo);
+                totalArgsSize += newVarInfo.TheTypeInfo.SizeOnStackInBytes;
+            }
+
+            System.Reflection.ParameterInfo returnArgItem = (theMethodInfo.IsConstructor ? null : ((System.Reflection.MethodInfo)theMethodInfo.UnderlyingInfo).ReturnParameter);
+            if (returnArgItem != null)
+            {
+                Types.VariableInfo newVarInfo = new Types.VariableInfo()
+                {
+                    UnderlyingType = returnArgItem.ParameterType,
+                    Position = theMethodInfo.ArgumentInfos.Count,
+                    TheTypeInfo = TheLibrary.GetTypeInfo(returnArgItem.ParameterType)
+                };
+
+                theMethodInfo.ArgumentInfos.Add(newVarInfo);
+                totalArgsSize += newVarInfo.TheTypeInfo.SizeOnStackInBytes;
+            }
+
+            int offset = totalArgsSize;
+            for (int i = 0; i < theMethodInfo.ArgumentInfos.Count; i++)
+            {
+                offset -= theMethodInfo.ArgumentInfos[i].TheTypeInfo.SizeOnStackInBytes;
+                theMethodInfo.ArgumentInfos[i].Offset = offset;
             }
         }
         private static void PreprocessSpecialClasses(ILLibrary TheLibrary)

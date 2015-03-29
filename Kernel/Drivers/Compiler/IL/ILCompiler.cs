@@ -77,7 +77,18 @@ namespace Drivers.Compiler.IL
 
         private static CompileResult ExecuteILScanner(ILLibrary TheLibrary)
         {
-            return CompileResult.OK;
+            CompileResult result = CompileResult.OK;
+
+            if (ILScanner.Init())
+            {
+                ILScanner.Scan(TheLibrary);
+            }
+            else
+            {
+                result = CompileResult.Fail;
+            }
+
+            return result;
         }
     }
 }

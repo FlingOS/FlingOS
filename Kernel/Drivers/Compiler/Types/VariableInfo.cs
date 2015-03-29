@@ -35,7 +35,9 @@ namespace Drivers.Compiler.Types
     public class VariableInfo
     {
         public Type UnderlyingType;
+        public TypeInfo TheTypeInfo;
         public int Position;
+        public int Offset;
 
         public override string ToString()
         {
