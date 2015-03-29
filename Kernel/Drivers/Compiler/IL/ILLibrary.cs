@@ -77,8 +77,21 @@ namespace Drivers.Compiler.IL
                 Types.TypeInfo theTypeInfo = Types.TypeScanner.ScanType(this, theType);
                 if (FullyProcess)
                 {
-                    Types.TypeScanner.ProcessType(this, theTypeInfo);
-                    Types.TypeScanner.ProcessTypeFields(this, theTypeInfo);
+                    int count = 0;
+                    do
+                    {
+                        count = TypeInfos.Count;
+                        int start = count - 1;
+                        for (int i = start; i < count; i++)
+                        {
+                            Types.TypeScanner.ProcessType(this, TypeInfos[i]);
+                        }
+                        for (int i = start; i < count; i++)
+                        {
+                            Types.TypeScanner.ProcessTypeFields(this, TypeInfos[i]);
+                        }
+                    }
+                    while (count < TypeInfos.Count);
                 }
                 return theTypeInfo;
             }
