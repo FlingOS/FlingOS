@@ -25,7 +25,8 @@ namespace Drivers.Compiler.IL
 
         public Types.FieldInfo GetFieldInfo(Type aType, string FieldName)
         {
-            return GetFieldInfo(aType, FieldName);
+            Types.TypeInfo aTypeInfo = TheILLibrary.GetTypeInfo(aType);
+            return GetFieldInfo(aTypeInfo, FieldName);
         }
         public Types.FieldInfo GetFieldInfo(Types.TypeInfo aTypeInfo, string FieldName)
         {
