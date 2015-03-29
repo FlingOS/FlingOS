@@ -39,6 +39,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ASMOps\Int.cs" />
+    <Compile Include="ASMOps\Ret.cs" />
+    <Compile Include="ASMOps\Nop.cs" />
+    <Compile Include="ASMOps\Not.cs" />
+    <Compile Include="ASMOps\Or.cs" />
+    <Compile Include="ASMOps\Xor.cs" />
     <Compile Include="ASMOps\Div.cs" />
     <Compile Include="ASMOps\Cdq.cs" />
     <Compile Include="ASMOps\Cwde.cs" />
@@ -69,6 +75,57 @@
     <Compile Include="ILOps\GlobalMethods.cs" />
     <Compile Include="ILOps\Initobj.cs" />
     <Compile Include="ILOps\Isinst.cs" />
+    <Compile Include="ILOps\Ldarg.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="ILOps\Ldc.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="ILOps\Ldfld.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="ILOps\Ldftn.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="ILOps\Ldind.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="ILOps\Ldlen.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="ILOps\Ldnull.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="ILOps\Ldsfld.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="ILOps\Ldstr.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="ILOps\Ldtoken.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="ILOps\Nop.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="ILOps\Not.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="ILOps\Or.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="ILOps\Pop.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="ILOps\Ret.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="ILOps\Sizeof.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="ILOps\Xor.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

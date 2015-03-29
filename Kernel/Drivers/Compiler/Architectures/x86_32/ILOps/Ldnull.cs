@@ -29,29 +29,32 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Reflection;
+using Drivers.Compiler.IL;
 
-namespace Drivers.Compiler.Types
+namespace Drivers.Compiler.Architectures.x86
 {
-    public class FieldInfo
+    /// <summary>
+    /// See base class documentation.
+    /// </summary>
+    public class Ldnull : IL.ILOps.Ldnull
     {
-        public System.Reflection.FieldInfo UnderlyingInfo;
-        public Type FieldType { get { return UnderlyingInfo.FieldType; } }
-        public bool IsStatic { get { return UnderlyingInfo.IsStatic; } }
-
-        public int OffsetInBytes { get; set; }
-
-        public string ID
+        /// <summary>
+        /// See base class documentation.
+        /// </summary>
+        /// <param name="theOp">See base class documentation.</param>
+        /// <param name="conversionState">See base class documentation.</param>
+        /// <returns>See base class documentation.</returns>
+        public override void Convert(ILConversionState conversionState, ILOp theOp)
         {
-            get
+            //Load null (i.e. 0 as dword)
+            conversionState.CurrentStackFrame.Stack.Push(new StackItem()
             {
-                return "field_" + Utilities.FilterIdentifierForInvalidChars(UnderlyingInfo.FieldType.FullName + "-" + UnderlyingInfo.DeclaringType.FullName + "." + UnderlyingInfo.Name);
-            }
-        }
-        public string Name { get { return UnderlyingInfo.Name; } }
-
-        public override string ToString()
-        {
-            return UnderlyingInfo.Name;
+                isFloat = false,
+                sizeOnStackInBytes = 4,
+                isGCManaged = false
+            });
+            conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Dword, Src = "0" });
         }
     }
 }

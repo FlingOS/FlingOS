@@ -726,6 +726,9 @@ namespace Drivers.Compiler.IL
         public System.Reflection.MethodBase MethodToCall;
 
         public bool LabelRequired = false;
+        public bool IsDebugOp = false;
+
+        public int LoadAtILPosition = int.MaxValue;
 
         public int NextOffset
         {

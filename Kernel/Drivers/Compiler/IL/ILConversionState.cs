@@ -23,20 +23,33 @@ namespace Drivers.Compiler.IL
             return Input.PositionOf(anOp);
         }
 
-        public int GetFieldOffset(Type aType, string FieldName)
+        public Types.FieldInfo GetFieldInfo(Type aType, string FieldName)
         {
-            return GetFieldOffset(TheILLibrary.GetTypeInfo(aType), FieldName);            
+            return GetFieldInfo(aType, FieldName);
         }
-        public int GetFieldOffset(Types.TypeInfo aTypeInfo, string FieldName)
+        public Types.FieldInfo GetFieldInfo(Types.TypeInfo aTypeInfo, string FieldName)
         {
             foreach (Types.FieldInfo aFieldInfo in aTypeInfo.FieldInfos)
             {
                 if (aFieldInfo.Name.Equals(FieldName))
                 {
-                    return aFieldInfo.OffsetInBytes;
+                    return aFieldInfo;
                 }
             }
             throw new NullReferenceException("Field \"" + FieldName + "\" not found in type \"" + aTypeInfo.ToString() + "\".");
+        }
+        public int GetFieldOffset(Type aType, string FieldName)
+        {
+            return GetFieldInfo(aType, FieldName).OffsetInBytes;
+        }
+        public int GetFieldOffset(Types.TypeInfo aTypeInfo, string FieldName)
+        {
+            return GetFieldInfo(aTypeInfo, FieldName).OffsetInBytes;
+        }
+
+        public Types.TypeInfo GetArrayTypeInfo()
+        {
+            return TheILLibrary.SpecialClasses[typeof(Attributes.ArrayClassAttribute)].First();
         }
 
         public Types.MethodInfo GetHaltMethodInfo()
@@ -46,6 +59,10 @@ namespace Drivers.Compiler.IL
         public Types.MethodInfo GetThrowNullReferenceExceptionMethodInfo()
         {
             return TheILLibrary.SpecialMethods[typeof(Attributes.ThrowNullReferenceExceptionMethodAttribute)].First();
+        }
+        public Types.MethodInfo GetDecrementRefCountMethodInfo()
+        {
+            return TheILLibrary.SpecialMethods[typeof(Attributes.DecrementRefCountMethodAttribute)].First();
         }
 
         public int GetTypeFieldOffset(string FieldName)

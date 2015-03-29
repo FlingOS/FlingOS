@@ -30,28 +30,14 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Drivers.Compiler.Types
+namespace Drivers.Compiler.Attributes
 {
-    public class FieldInfo
+    /// <summary>
+    /// Indicates the method is the kernel's GC.DecrementRefCount method. 
+    /// Note: There should only ever be one of these used!
+    /// </summary>
+    [AttributeUsage(AttributeTargets.Method, AllowMultiple=false, Inherited=false)]
+    public class DecrementRefCountMethodAttribute : Attribute
     {
-        public System.Reflection.FieldInfo UnderlyingInfo;
-        public Type FieldType { get { return UnderlyingInfo.FieldType; } }
-        public bool IsStatic { get { return UnderlyingInfo.IsStatic; } }
-
-        public int OffsetInBytes { get; set; }
-
-        public string ID
-        {
-            get
-            {
-                return "field_" + Utilities.FilterIdentifierForInvalidChars(UnderlyingInfo.FieldType.FullName + "-" + UnderlyingInfo.DeclaringType.FullName + "." + UnderlyingInfo.Name);
-            }
-        }
-        public string Name { get { return UnderlyingInfo.Name; } }
-
-        public override string ToString()
-        {
-            return UnderlyingInfo.Name;
-        }
     }
 }

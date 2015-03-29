@@ -29,29 +29,34 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Drivers.Compiler.IL;
 
-namespace Drivers.Compiler.Types
+namespace Drivers.Compiler.Architectures.x86
 {
-    public class FieldInfo
+    /// <summary>
+    /// See base class documentation.
+    /// </summary>
+    public class Sizeof : IL.ILOps.Sizeof
     {
-        public System.Reflection.FieldInfo UnderlyingInfo;
-        public Type FieldType { get { return UnderlyingInfo.FieldType; } }
-        public bool IsStatic { get { return UnderlyingInfo.IsStatic; } }
-
-        public int OffsetInBytes { get; set; }
-
-        public string ID
+        /// <summary>
+        /// See base class documentation.
+        /// </summary>
+        /// <param name="theOp">See base class documentation.</param>
+        /// <param name="conversionState">See base class documentation.</param>
+        /// <returns>See base class documentation.</returns>
+        public override void Convert(ILConversionState conversionState, ILOp theOp)
         {
-            get
+            int metadataToken = Utilities.ReadInt32(theOp.ValueBytes, 0);
+            Type theType = conversionState.Input.TheMethodInfo.UnderlyingInfo.Module.ResolveType(metadataToken);
+            Types.TypeInfo theTypeInfo = conversionState.TheILLibrary.GetTypeInfo(theType);
+            conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Dword, Src = theTypeInfo.SizeOnStackInBytes.ToString() });
+            
+            conversionState.CurrentStackFrame.Stack.Push(new StackItem()
             {
-                return "field_" + Utilities.FilterIdentifierForInvalidChars(UnderlyingInfo.FieldType.FullName + "-" + UnderlyingInfo.DeclaringType.FullName + "." + UnderlyingInfo.Name);
-            }
-        }
-        public string Name { get { return UnderlyingInfo.Name; } }
-
-        public override string ToString()
-        {
-            return UnderlyingInfo.Name;
+                isFloat = false,
+                sizeOnStackInBytes = 4,
+                isGCManaged = false
+            });
         }
     }
 }

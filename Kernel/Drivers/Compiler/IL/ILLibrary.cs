@@ -53,6 +53,8 @@ namespace Drivers.Compiler.IL
         public bool ILPreprocessed = false;
         public bool ILScanned = false;
 
+        public Dictionary<string, string> StringLiterals = new Dictionary<string, string>();
+
         public Types.TypeInfo GetTypeInfo(Type theType, bool FullyProcess = true)
         {
             return GetTypeInfo(theType, true, FullyProcess);
@@ -128,6 +130,15 @@ namespace Drivers.Compiler.IL
             }
 
             return null;
+        }
+
+        public string AddStringLiteral(string value)
+        {
+            //TODO: Don't add identical strings multiple times
+
+            string ID = Guid.NewGuid().ToString();
+            StringLiterals.Add(ID, value);
+            return ID;
         }
 
         public override int GetHashCode()
