@@ -31,15 +31,14 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Reflection.Emit;
 
-namespace Drivers.Compiler.IL
+namespace Drivers.Compiler.Attributes
 {
-    public class ILOp
+    /// <summary>
+    /// Indicates to the compiler that a method should not have debug ops
+    /// emitted for it.
+    /// </summary>
+    [AttributeUsage(AttributeTargets.Method | AttributeTargets.Constructor, AllowMultiple=false, Inherited=false)]
+    public class NoDebugAttribute : Attribute
     {
-        public OpCode opCode;
-        public int Offset;
-        public byte[] ValueBytes;
-        public System.Reflection.MethodBase MethodToCall;
-
-        public bool LabelRequired = false;
     }
 }

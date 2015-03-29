@@ -45,6 +45,8 @@
     <Compile Include="ASM\ASMProcessor.cs" />
     <Compile Include="ASM\ASMBlock.cs" />
     <Compile Include="ASM\ASMOp.cs" />
+    <Compile Include="Attributes\NoDebugAttribute.cs" />
+    <Compile Include="Attributes\NoGCAttribute.cs" />
     <Compile Include="Attributes\PluggedClassAttribute.cs" />
     <Compile Include="Attributes\PluggedMethodAttribute.cs" />
     <Compile Include="DebugDataManager.cs" />

@@ -40,6 +40,20 @@ namespace Drivers.Compiler.Types
         public List<VariableInfo> ArgumentInfos = new List<VariableInfo>();
         public List<VariableInfo> LocalInfos = new List<VariableInfo>();
 
+        public bool ApplyGC
+        {
+            get
+            {
+                return UnderlyingInfo.GetCustomAttributes(typeof(Attributes.NoGCAttribute), false).Length == 0;
+            }
+        }
+        public bool ApplyDebug
+        {
+            get
+            {
+                return UnderlyingInfo.GetCustomAttributes(typeof(Attributes.NoDebugAttribute), false).Length == 0;
+            }
+        }
         public bool IsPlugged { get { return PlugAttribute != null; } }
         public bool IsConstructor { get { return UnderlyingInfo is System.Reflection.ConstructorInfo; } }
         public bool IsStatic { get { return UnderlyingInfo.IsStatic; } }

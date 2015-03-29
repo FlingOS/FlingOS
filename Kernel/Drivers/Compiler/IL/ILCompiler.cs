@@ -68,7 +68,11 @@ namespace Drivers.Compiler.IL
 
         private static CompileResult ExecuteILPreprocessor(ILLibrary TheLibrary)
         {
-            return CompileResult.OK;
+            CompileResult result = CompileResult.OK;
+
+            ILPreprocessor.Preprocess(TheLibrary);
+
+            return result;
         }
 
         private static CompileResult ExecuteILScanner(ILLibrary TheLibrary)
