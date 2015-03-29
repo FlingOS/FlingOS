@@ -175,7 +175,7 @@ namespace Drivers.Compiler.App
                     if (ILCompileResult == CompileResult.OK ||
                         ILCompileResult == CompileResult.PartialFailure)
                     {
-                        CompileResult ASMCompileResult = ASM.ASMCompiler.Compile(TheLibrary.TheASMLibrary);
+                        CompileResult ASMCompileResult = ASM.ASMCompiler.Compile(TheLibrary);
 
                         if (ASMCompileResult == CompileResult.OK)
                         {

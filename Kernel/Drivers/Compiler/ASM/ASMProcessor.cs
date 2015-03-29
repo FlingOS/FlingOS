@@ -39,6 +39,12 @@ namespace Drivers.Compiler.ASM
         {
             CompileResult result = CompileResult.OK;
 
+            if (TheLibrary.ASMProcessed)
+            {
+                return result;
+            }
+            TheLibrary.ASMProcessed = true;
+            
             int MaxConcurrentNASMProcesses = Environment.ProcessorCount;
             List<List<ASMBlock>> NASMLabourDivision = new List<List<ASMBlock>>();
             for (int i = 0; i < MaxConcurrentNASMProcesses; i++)

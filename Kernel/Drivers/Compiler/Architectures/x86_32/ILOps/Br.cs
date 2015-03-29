@@ -47,7 +47,7 @@ namespace Drivers.Compiler.Architectures.x86
         /// <exception cref="System.NotSupportedException">
         /// Thrown if branch test operand value is a floating point value.
         /// </exception>
-        public virtual void Convert(ILConversionState conversionState, ILOp theOp)
+        public override void Convert(ILConversionState conversionState, ILOp theOp)
         {
             
 
@@ -278,7 +278,7 @@ namespace Drivers.Compiler.Architectures.x86
             if (ILOffset == 0)
             {
                 //Err..why bother jumping at all if the offset is 0?
-                conversionState.Append(new ASMOps.Comment() { Text = "; No jump insert - pointless 0 distance jump" });
+                conversionState.Append(new ASMOps.Comment() { Text = "No jump insert - pointless 0 distance jump" });
             }
             else
             {

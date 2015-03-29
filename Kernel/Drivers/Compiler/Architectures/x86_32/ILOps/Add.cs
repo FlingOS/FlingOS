@@ -48,7 +48,7 @@ namespace Drivers.Compiler.Architectures.x86
         /// <exception cref="System.InvalidOperationException">
         /// Thrown if either stack argument is &lt; 4 bytes in size.
         /// </exception>
-        public virtual void Convert(ILConversionState conversionState, ILOp theOp)
+        public override void Convert(ILConversionState conversionState, ILOp theOp)
         {
             //Pop the operands from our stack in reverse order
             //i.e. second operand was pushed last so comes off the 

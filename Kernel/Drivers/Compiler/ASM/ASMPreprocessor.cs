@@ -38,6 +38,13 @@ namespace Drivers.Compiler.ASM
         {
             CompileResult result = CompileResult.OK;
 
+            if (TheLibrary.ASMPreprocessed)
+            {
+                return result;
+            }
+            TheLibrary.ASMPreprocessed = true;
+            
+
             // TODO
 
             return result;

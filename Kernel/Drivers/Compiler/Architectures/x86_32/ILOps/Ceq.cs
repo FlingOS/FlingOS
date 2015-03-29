@@ -48,7 +48,7 @@ namespace Drivers.Compiler.Architectures.x86
         /// Thrown if compare operands are floating point numbers or if either value is &lt; 4 bytes in length or
         /// operands are not of the same size.
         /// </exception>
-        public virtual void Convert(ILConversionState conversionState, ILOp theOp)
+        public override void Convert(ILConversionState conversionState, ILOp theOp)
         {
             
 

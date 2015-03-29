@@ -34,13 +34,20 @@ namespace Drivers.Compiler.ASM
 {
     public static class ASMCompiler
     {
-        public static CompileResult Compile(ASMLibrary TheLibrary)
+        public static CompileResult Compile(IL.ILLibrary TheILLibrary)
         {
-            CompileResult Result = ExecuteASMPreprocessor(TheLibrary);
+            CompileResult Result = CompileResult.OK;
+
+            foreach(IL.ILLibrary depLib in TheILLibrary.Dependencies)
+            {
+                Compile(depLib);
+            }
+
+            Result = Result == CompileResult.OK ? ExecuteASMPreprocessor(TheILLibrary.TheASMLibrary) : Result;
 
             if (Result == CompileResult.OK)
             {
-                Result = ExecuteASMProcessor(TheLibrary);
+                Result = ExecuteASMProcessor(TheILLibrary.TheASMLibrary);
             }
 
             return Result;

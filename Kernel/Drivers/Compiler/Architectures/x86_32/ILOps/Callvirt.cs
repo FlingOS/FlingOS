@@ -48,7 +48,7 @@ namespace Drivers.Compiler.Architectures.x86
         /// <exception cref="System.NotSupportedException">
         /// Thrown if any argument or the return value is a floating point number.
         /// </exception>
-        public virtual void Convert(ILConversionState conversionState, ILOp theOp)
+        public override void Convert(ILConversionState conversionState, ILOp theOp)
         {
             MethodBase methodToCall = theOp.MethodToCall;
             Types.MethodInfo methodToCallInfo = conversionState.TheILLibrary.GetMethodInfo(methodToCall);

@@ -49,7 +49,7 @@ namespace Drivers.Compiler.Architectures.x86
         /// Thrown if either or both values to multiply are not 4 or 8 bytes
         /// in size or if the values are of different size.
         /// </exception>
-        public virtual void Convert(ILConversionState conversionState, ILOp theOp)
+        public override void Convert(ILConversionState conversionState, ILOp theOp)
         {
             //Pop in reverse order to push
             StackItem itemB = conversionState.CurrentStackFrame.Stack.Pop();

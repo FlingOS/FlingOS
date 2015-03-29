@@ -50,7 +50,7 @@ namespace Drivers.Compiler.Architectures.x86
         /// <exception cref="System.InvalidOperationException">
         /// Thrown if either operand is &lt; 4 bytes long.
         /// </exception>
-        public virtual void Convert(ILConversionState conversionState, ILOp theOp)
+        public override void Convert(ILConversionState conversionState, ILOp theOp)
         {
             
 

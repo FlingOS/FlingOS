@@ -45,7 +45,7 @@ namespace Drivers.Compiler.Architectures.x86
         /// <param name="theOp">See base class documentation.</param>
         /// <param name="conversionState">See base class documentation.</param>
         /// <returns>See base class documentation.</returns>
-        public virtual void Convert(ILConversionState conversionState, ILOp theOp)
+        public override void Convert(ILConversionState conversionState, ILOp theOp)
         {
             int currOpPosition = conversionState.PositionOf(theOp);
 
