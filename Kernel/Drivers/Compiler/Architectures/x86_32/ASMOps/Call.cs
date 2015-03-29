@@ -6,14 +6,13 @@ using System.Threading.Tasks;
 
 namespace Drivers.Compiler.Architectures.x86.ASMOps
 {
-    public class And : ASM.ASMOp
+    public class Call : ASM.ASMOp
     {
-        public string Src;
-        public string Dest;
+        public string Target;
 
         public override string Convert(ASM.ASMBlock theBlock)
         {
-            return "and " + Dest + ", " + Src;
+            return "call " + Target;
         }
     }
 }

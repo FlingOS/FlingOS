@@ -71,6 +71,34 @@ namespace Drivers.Compiler.Types
             }
         }
 
+        private string id = null;
+        public string ID
+        {
+            get
+            {
+                if (id == null)
+                {
+                    id = CreateMethodID(Signature);
+                }
+                return id;
+            }
+        }
+
+        public string signature = null;
+        public string Signature
+        {
+            get
+            {
+                if (signature == null)
+                {
+                    signature = GetMethodSignature(UnderlyingInfo);
+                }
+                return signature;
+            }
+        }
+
+        public int IDValue = -1;
+        
         public override string ToString()
         {
             string result = UnderlyingInfo.DeclaringType.FullName + "." + UnderlyingInfo.Name + "(";
@@ -83,6 +111,50 @@ namespace Drivers.Compiler.Types
             result += ")";
 
             return result;
+        }
+
+        private static string GetMethodSignature(System.Reflection.MethodBase aMethod)
+        {
+            string[] paramTypes = aMethod.GetParameters().Select(x => x.ParameterType).Select(x => x.FullName).ToArray();
+            string returnType = "";
+            string declaringType = "";
+            string methodName = "";
+            if (aMethod.IsConstructor || aMethod is System.Reflection.ConstructorInfo)
+            {
+                returnType = typeof(void).FullName;
+                declaringType = aMethod.DeclaringType.FullName;
+                methodName = aMethod.Name;
+            }
+            else
+            {
+                returnType = ((System.Reflection.MethodInfo)aMethod).ReturnType.FullName;
+                declaringType = aMethod.DeclaringType.FullName;
+                methodName = aMethod.Name;
+            }
+
+            return GetMethodSignature(returnType, declaringType, methodName, paramTypes);
+        }
+        private static string GetMethodSignature(string returnType, string declaringType, string methodName, string[] paramTypes)
+        {
+            string aMethodSignature = "";
+            aMethodSignature = returnType + "_RETEND_" + declaringType + "_DECLEND_" + methodName + "_NAMEEND_(";
+            bool firstParam = true;
+            foreach (string aParam in paramTypes)
+            {
+                if (!firstParam)
+                {
+                    aMethodSignature += ",";
+                }
+                firstParam = false;
+
+                aMethodSignature += aParam;
+            }
+            aMethodSignature += ")";
+            return aMethodSignature;
+        }
+        private static string CreateMethodID(string methodSignature)
+        {
+            return "method_" + Utilities.FilterIdentifierForInvalidChars(methodSignature);
         }
     }
 }

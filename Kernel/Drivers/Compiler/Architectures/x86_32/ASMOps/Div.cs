@@ -6,14 +6,21 @@ using System.Threading.Tasks;
 
 namespace Drivers.Compiler.Architectures.x86.ASMOps
 {
-    public class And : ASM.ASMOp
+    public class Div : ASM.ASMOp
     {
-        public string Src;
         public string Dest;
+        public bool Signed = false;
 
         public override string Convert(ASM.ASMBlock theBlock)
         {
-            return "and " + Dest + ", " + Src;
+            if (Signed)
+            {
+                return "idiv " + Dest;
+            }
+            else
+            {
+                return "div " + Dest;
+            }
         }
     }
 }

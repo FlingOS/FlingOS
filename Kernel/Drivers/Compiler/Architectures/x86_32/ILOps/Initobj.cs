@@ -29,38 +29,26 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Drivers.Compiler.IL;
 
-namespace Drivers.Compiler.ASM
+namespace Drivers.Compiler.Architectures.x86
 {
-    public class ASMBlock
+    /// <summary>
+    /// See base class documentation.
+    /// </summary>
+    public class Initobj : IL.ILOps.Initobj
     {
-        public Types.MethodInfo OriginMethodInfo;
-        public string PlugPath = null;
-        public bool Plugged { get { return PlugPath != null; } }
-
-        public string OutputFilePath;
-
-        public List<ASMOp> ASMOps = new List<ASMOp>();
-
-        public void Append(ASMOp anOp)
+        /// <summary>
+        /// See base class documentation.
+        /// </summary>
+        /// <param name="theOp">See base class documentation.</param>
+        /// <param name="conversionState">See base class documentation.</param>
+        /// <returns>See base class documentation.</returns>
+        public virtual void Convert(ILConversionState conversionState, ILOp theOp)
         {
-            ASMOps.Add(anOp);
-        }
-
-        public string GenerateMethodLabel()
-        {
-            return OriginMethodInfo.ID;
-        }
-        public string GenerateILOpLabel(int ILPosition, string Extension)
-        {
-            if (!string.IsNullOrWhiteSpace(Extension))
-            {
-                return string.Format(".IL_{0}_{1}", ILPosition, Extension);
-            }
-            else
-            {
-                return string.Format(".IL_{0}", ILPosition);
-            }
+            //Ignore for now
+            //TODO: Do we need to do any proper initialisation?
+            conversionState.Append(new ASMOps.Add() { Src = "4", Dest = "ESP" });
         }
     }
 }

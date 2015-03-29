@@ -76,7 +76,11 @@ namespace Drivers.Compiler.ASM
             {
                 foreach (ASMOp anASMOp in TheBlock.ASMOps)
                 {
-                    ASMText += anASMOp.Convert() + "\r\n";
+                    if (anASMOp.RequiresILLabel)
+                    {
+                        ASMText += TheBlock.GenerateILOpLabel(anASMOp.ILLabelPosition, "") + ":\r\n";
+                    }
+                    ASMText += anASMOp.Convert(TheBlock) + "\r\n";
                 }
             }
 

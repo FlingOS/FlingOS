@@ -29,37 +29,20 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Drivers.Compiler.IL;
 
-namespace Drivers.Compiler.ASM
+namespace Drivers.Compiler.Architectures.x86
 {
-    public class ASMBlock
+    public static class GlobalMethods
     {
-        public Types.MethodInfo OriginMethodInfo;
-        public string PlugPath = null;
-        public bool Plugged { get { return PlugPath != null; } }
+        public static string PageFaultDetectionMethod = "method_System_Void_RETEND_Kernel_PreReqs_DECLEND_PageFaultDetection_NAMEEND___";
+        public static bool PageFaultDetectionEnabled = false;
 
-        public string OutputFilePath;
-
-        public List<ASMOp> ASMOps = new List<ASMOp>();
-
-        public void Append(ASMOp anOp)
+        public static void InsertPageFaultDetection(ILConversionState conversionState, string reg, int offset, ILOp.OpCodes opCode)
         {
-            ASMOps.Add(anOp);
-        }
-
-        public string GenerateMethodLabel()
-        {
-            return OriginMethodInfo.ID;
-        }
-        public string GenerateILOpLabel(int ILPosition, string Extension)
-        {
-            if (!string.IsNullOrWhiteSpace(Extension))
+            if (PageFaultDetectionEnabled)
             {
-                return string.Format(".IL_{0}_{1}", ILPosition, Extension);
-            }
-            else
-            {
-                return string.Format(".IL_{0}", ILPosition);
+                conversionState.Append(new ASMOps.Call() { Target = PageFaultDetectionMethod });
             }
         }
     }

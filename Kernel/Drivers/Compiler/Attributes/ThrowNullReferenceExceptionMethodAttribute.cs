@@ -30,37 +30,14 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Drivers.Compiler.ASM
+namespace Drivers.Compiler.Attributes
 {
-    public class ASMBlock
+    /// <summary>
+    /// Indicates the method is the kernel's exception ThrowNullReference method. 
+    /// Note: There should only ever be one of these used!
+    /// </summary>
+    [AttributeUsage(AttributeTargets.Method, AllowMultiple=false, Inherited=false)]
+    public class ThrowNullReferenceExceptionMethodAttribute : Attribute
     {
-        public Types.MethodInfo OriginMethodInfo;
-        public string PlugPath = null;
-        public bool Plugged { get { return PlugPath != null; } }
-
-        public string OutputFilePath;
-
-        public List<ASMOp> ASMOps = new List<ASMOp>();
-
-        public void Append(ASMOp anOp)
-        {
-            ASMOps.Add(anOp);
-        }
-
-        public string GenerateMethodLabel()
-        {
-            return OriginMethodInfo.ID;
-        }
-        public string GenerateILOpLabel(int ILPosition, string Extension)
-        {
-            if (!string.IsNullOrWhiteSpace(Extension))
-            {
-                return string.Format(".IL_{0}_{1}", ILPosition, Extension);
-            }
-            else
-            {
-                return string.Format(".IL_{0}", ILPosition);
-            }
-        }
     }
 }

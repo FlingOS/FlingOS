@@ -34,9 +34,36 @@ namespace Drivers.Compiler.IL
 {
     public class ILBlock
     {
+        public Types.MethodInfo TheMethodInfo;
+
         public string PlugPath = null;
         public bool Plugged { get { return PlugPath != null; } }
 
         public List<ILOp> ILOps = new List<ILOp>();
+
+        //public ILOp Next(ILOp current)
+        //{
+        //    int index = ILOps.IndexOf(current);
+        //    if (index + 1 < ILOps.Count)
+        //    {
+        //        return ILOps[index + 1];
+        //    }
+        //    return null;
+        //}
+        public int PositionOf(ILOp anOp)
+        {
+            return ILOps.IndexOf(anOp);
+        }
+        public ILOp At(int offset)
+        {
+            List<ILOp> potOps = (from ops in ILOps
+                                 where ops.Offset == offset
+                                 select ops).ToList();
+            if (potOps.Count > 0)
+            {
+                return potOps.First();
+            }
+            return null;
+        }
     }
 }

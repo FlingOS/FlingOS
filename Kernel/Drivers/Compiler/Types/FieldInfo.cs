@@ -40,6 +40,8 @@ namespace Drivers.Compiler.Types
 
         public int OffsetInBytes { get; set; }
 
+        public string Name { get { return UnderlyingInfo.Name; } }
+
         public override string ToString()
         {
             return UnderlyingInfo.Name;

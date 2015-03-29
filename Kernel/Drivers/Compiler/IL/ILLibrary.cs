@@ -49,6 +49,10 @@ namespace Drivers.Compiler.IL
         public Dictionary<Type, List<Types.TypeInfo>> SpecialClasses = new Dictionary<Type, List<Types.TypeInfo>>();
         public Dictionary<Type, List<Types.MethodInfo>> SpecialMethods = new Dictionary<Type, List<Types.MethodInfo>>();
 
+        public bool ILRead = false;
+        public bool ILPreprocessed = false;
+        public bool ILScanned = false;
+
         public Types.TypeInfo GetTypeInfo(Type theType, bool FullyProcess = true)
         {
             return GetTypeInfo(theType, true, FullyProcess);
@@ -99,6 +103,31 @@ namespace Drivers.Compiler.IL
             {
                 return null;
             }
+        }
+
+        public Types.MethodInfo GetMethodInfo(MethodBase theMethod)
+        {
+            foreach (Types.TypeInfo aTypeInfo in TypeInfos)
+            {
+                foreach (Types.MethodInfo aMethodInfo in aTypeInfo.MethodInfos)
+                {
+                    if (aMethodInfo.UnderlyingInfo.Equals(theMethod))
+                    {
+                        return aMethodInfo;
+                    }
+                }
+            }
+
+            foreach (ILLibrary depLib in Dependencies)
+            {
+                Types.MethodInfo result = depLib.GetMethodInfo(theMethod);
+                if (result != null)
+                {
+                    return result;
+                }
+            }
+
+            return null;
         }
 
         public override int GetHashCode()

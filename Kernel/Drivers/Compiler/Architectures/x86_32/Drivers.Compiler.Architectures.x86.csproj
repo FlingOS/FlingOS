@@ -39,9 +39,36 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ASMOps\Div.cs" />
+    <Compile Include="ASMOps\Cdq.cs" />
+    <Compile Include="ASMOps\Cwde.cs" />
+    <Compile Include="ASMOps\Mov.cs" />
+    <Compile Include="ASMOps\Label.cs" />
+    <Compile Include="ASMOps\Comment.cs" />
+    <Compile Include="ASMOps\Jmp.cs" />
+    <Compile Include="ASMOps\Cmp.cs" />
+    <Compile Include="ASMOps\Call.cs" />
     <Compile Include="ASMOps\And.cs" />
-    <Compile Include="ASMOps\Registers.cs" />
+    <Compile Include="ASMOps\ASMUtilities.cs" />
+    <Compile Include="ASMOps\OperandSizes.cs" />
+    <Compile Include="ASMOps\Add.cs" />
+    <Compile Include="ASMOps\Pop.cs" />
+    <Compile Include="ASMOps\Push.cs" />
+    <Compile Include="ILOps\Add.cs" />
     <Compile Include="ILOps\And.cs" />
+    <Compile Include="ILOps\Br.cs" />
+    <Compile Include="ILOps\Call.cs" />
+    <Compile Include="ILOps\Callvirt.cs" />
+    <Compile Include="ILOps\Ceq.cs" />
+    <Compile Include="ILOps\Cgt.cs" />
+    <Compile Include="ILOps\Clt.cs" />
+    <Compile Include="ILOps\Convi.cs" />
+    <Compile Include="ILOps\Convu.cs" />
+    <Compile Include="ILOps\Div.cs" />
+    <Compile Include="ILOps\Dup.cs" />
+    <Compile Include="ILOps\GlobalMethods.cs" />
+    <Compile Include="ILOps\Initobj.cs" />
+    <Compile Include="ILOps\Isinst.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

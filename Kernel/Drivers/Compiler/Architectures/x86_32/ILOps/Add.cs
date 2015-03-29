@@ -36,38 +36,51 @@ namespace Drivers.Compiler.Architectures.x86
     /// <summary>
     /// See base class documentation.
     /// </summary>
-    public class And : IL.ILOps.And
+    public class Add : IL.ILOps.Add
     {
         /// <summary>
         /// See base class documentation.
         /// </summary>
         /// <returns>See base class documentation.</returns>
         /// <exception cref="System.NotSupportedException">
-        /// Thrown if either or both values to 'or' are floating point values.
+        /// Thrown if attempt to add a floating point number since floats are not supported yet.
         /// </exception>
         /// <exception cref="System.InvalidOperationException">
-        /// Thrown if either or both values to multiply are not 4 or 8 bytes
-        /// in size or if the values are of different size.
+        /// Thrown if either stack argument is &lt; 4 bytes in size.
         /// </exception>
         public virtual void Convert(ILConversionState conversionState, ILOp theOp)
         {
-            //Pop in reverse order to push
+            //Pop the operands from our stack in reverse order
+            //i.e. second operand was pushed last so comes off the 
+            //top of the stack first
+
+            //Pop item B - one of the items to add
             StackItem itemB = conversionState.CurrentStackFrame.Stack.Pop();
+            //Pop item A - the other item to add
             StackItem itemA = conversionState.CurrentStackFrame.Stack.Pop();
 
-
+            //If either item item is < 4 bytes then we have a stack error.
             if (itemB.sizeOnStackInBytes < 4 ||
                 itemA.sizeOnStackInBytes < 4)
             {
                 throw new InvalidOperationException("Invalid stack operand sizes!");
             }
+            //If either item is floating point, we must use floating point conversions
+            //and floating point arithmetic
             else if (itemB.isFloat || itemA.isFloat)
             {
                 //SUPPORT - floats
+                //  - We need to convert items to float if necessary
+                //  - Then use floating point arithmetic
+                //  - Then push the result onto the stack and mark it as float
+                // Note: Check but I think floating point arithmetic is done using 
+                //       XMM registers and their specific ops.
                 throw new NotSupportedException("Add floats is unsupported!");
             }
             else
             {
+                //If both items are Int32s (or UInt32s - it is irrelevant)
+                //Note: IL handles type conversions using other ops
                 if (itemA.sizeOnStackInBytes == 4 &&
                     itemB.sizeOnStackInBytes == 4)
                 {
@@ -75,11 +88,12 @@ namespace Drivers.Compiler.Architectures.x86
                     conversionState.Append(new ASMOps.Pop() { Size = ASMOps.OperandSize.Dword, Dest = "EBX" });
                     //Pop item A
                     conversionState.Append(new ASMOps.Pop() { Size = ASMOps.OperandSize.Dword, Dest = "EAX" });
-                    //And the two
-                    conversionState.Append(new ASMOps.And() { Src = "EBX", Dest = "EAX" });
+                    //Add the two
+                    conversionState.Append(new ASMOps.Add() { Src = "EBX", Dest = "EAX" });
                     //Push the result onto the stack
                     conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Dword, Src = "EAX" });
 
+                    //Push the result onto our stack
                     conversionState.CurrentStackFrame.Stack.Push(new StackItem()
                     {
                         isFloat = false,
@@ -87,6 +101,8 @@ namespace Drivers.Compiler.Architectures.x86
                         isGCManaged = false
                     });
                 }
+                //Invalid if the operands are of different sizes.
+                //Note: This usually occurs when a previous IL op failed to process properly.
                 else if ((itemA.sizeOnStackInBytes == 8 &&
                     itemB.sizeOnStackInBytes == 4) || 
                     (itemA.sizeOnStackInBytes == 4 &&
@@ -107,13 +123,19 @@ namespace Drivers.Compiler.Architectures.x86
                     conversionState.Append(new ASMOps.Pop() { Size = ASMOps.OperandSize.Dword, Dest = "EAX" });
                     //Pop high bits
                     conversionState.Append(new ASMOps.Pop() { Size = ASMOps.OperandSize.Dword, Dest = "EDX" });
-                    //And ecx:ebx with edx:eax
-                    conversionState.Append(new ASMOps.And() { Src = "EBX", Dest = "EAX" });
-                    conversionState.Append(new ASMOps.And() { Src = "ECX", Dest = "EDX" });
-                    //Push the result onto the stack
+                    //Add ecx:ebx to edx:eax
+                    //Add low bits
+                    conversionState.Append(new ASMOps.Add() { Src = "EBX", Dest = "EAX" });
+                    //Add high bits including any carry from 
+                    //when low bits were added
+                    conversionState.Append(new ASMOps.Add() { Src = "ECX", Dest = "EDX", WithCarry = true });
+                    //Push the result
+                    //Push high bits
                     conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Dword, Src = "EDX" });
+                    //Push low bits
                     conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Dword, Src = "EAX" });
 
+                    //Push the result onto our stack
                     conversionState.CurrentStackFrame.Stack.Push(new StackItem()
                     {
                         isFloat = false,

@@ -721,14 +721,22 @@ namespace Drivers.Compiler.IL
 
         public OpCode opCode;
         public int Offset;
+        public int BytesSize;
         public byte[] ValueBytes;
         public System.Reflection.MethodBase MethodToCall;
 
         public bool LabelRequired = false;
 
-        public virtual List<ASM.ASMOp> Convert(ILConversionState conversionState, ILOp theOp)
+        public int NextOffset
         {
-            return null;
+            get
+            {
+                return Offset + BytesSize;
+            }
+        }
+
+        public virtual void Convert(ILConversionState conversionState, ILOp theOp)
+        {
         }
     }
 }

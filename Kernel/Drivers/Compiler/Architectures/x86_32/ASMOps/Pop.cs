@@ -6,14 +6,14 @@ using System.Threading.Tasks;
 
 namespace Drivers.Compiler.Architectures.x86.ASMOps
 {
-    public class And : ASM.ASMOp
+    public class Pop : ASM.ASMOp
     {
-        public string Src;
+        public OperandSize Size;
         public string Dest;
 
         public override string Convert(ASM.ASMBlock theBlock)
         {
-            return "and " + Dest + ", " + Src;
+            return "pop " + ASMUtilities.GetOpSizeStr(Size) + " " + Dest;
         }
     }
 }

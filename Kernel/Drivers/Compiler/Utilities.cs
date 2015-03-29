@@ -72,6 +72,7 @@ namespace Drivers.Compiler
             return (double)(BitConverter.ToDouble(bytes, 0));
         }
 
+
         public static string CleanFileName(string filename)
         {
             foreach (char c in System.IO.Path.GetInvalidFileNameChars())
@@ -80,5 +81,18 @@ namespace Drivers.Compiler
             }
             return filename;
         }
+
+
+        public const string IllegalIdentifierChars = "&,+$<>{}-`\'/\\ ()[]*!=.";
+        public static string FilterIdentifierForInvalidChars(string x)
+        {
+            string xTempResult = x;
+            foreach (char c in IllegalIdentifierChars)
+            {
+                xTempResult = xTempResult.Replace(c, '_');
+            }
+            return String.Intern(xTempResult);
+        }
+
     }
 }

@@ -36,21 +36,24 @@ namespace Drivers.Compiler.Architectures.x86
     /// <summary>
     /// See base class documentation.
     /// </summary>
-    public class And : IL.ILOps.And
+    public class Div : IL.ILOps.Div
     {
         /// <summary>
         /// See base class documentation.
         /// </summary>
+        /// <param name="theOp">See base class documentation.</param>
+        /// <param name="conversionState">See base class documentation.</param>
         /// <returns>See base class documentation.</returns>
         /// <exception cref="System.NotSupportedException">
-        /// Thrown if either or both values to 'or' are floating point values.
+        /// Thrown if divide operands are floating point numbers or if attempting to divide 64-bit numbers.
         /// </exception>
         /// <exception cref="System.InvalidOperationException">
-        /// Thrown if either or both values to multiply are not 4 or 8 bytes
-        /// in size or if the values are of different size.
+        /// Thrown if either operand is &lt; 4 bytes long.
         /// </exception>
         public virtual void Convert(ILConversionState conversionState, ILOp theOp)
         {
+            
+
             //Pop in reverse order to push
             StackItem itemB = conversionState.CurrentStackFrame.Stack.Pop();
             StackItem itemA = conversionState.CurrentStackFrame.Stack.Pop();
@@ -64,7 +67,7 @@ namespace Drivers.Compiler.Architectures.x86
             else if (itemB.isFloat || itemA.isFloat)
             {
                 //SUPPORT - floats
-                throw new NotSupportedException("Add floats is unsupported!");
+                throw new NotSupportedException("Divide floats is unsupported!");
             }
             else
             {
@@ -75,9 +78,21 @@ namespace Drivers.Compiler.Architectures.x86
                     conversionState.Append(new ASMOps.Pop() { Size = ASMOps.OperandSize.Dword, Dest = "EBX" });
                     //Pop item A
                     conversionState.Append(new ASMOps.Pop() { Size = ASMOps.OperandSize.Dword, Dest = "EAX" });
-                    //And the two
-                    conversionState.Append(new ASMOps.And() { Src = "EBX", Dest = "EAX" });
-                    //Push the result onto the stack
+                    if ((OpCodes)theOp.opCode.Value == OpCodes.Div_Un)
+                    {
+                        //Unsigned extend A to EAX:EDX
+                        conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Dword, Src = "0", Dest = "EDX" });
+                        //Do the division
+                        conversionState.Append(new ASMOps.Div() { Dest = "ebx" });
+                    }
+                    else
+                    {
+                        //Sign extend A to EAX:EDX
+                        conversionState.Append(new ASMOps.Cdq());
+                        //Do the division
+                        conversionState.Append(new ASMOps.Div() { Dest = "EBX", Signed = true });
+                    }
+                    //Result stored in eax
                     conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Dword, Src = "EAX" });
 
                     conversionState.CurrentStackFrame.Stack.Push(new StackItem()
@@ -88,38 +103,17 @@ namespace Drivers.Compiler.Architectures.x86
                     });
                 }
                 else if ((itemA.sizeOnStackInBytes == 8 &&
-                    itemB.sizeOnStackInBytes == 4) || 
-                    (itemA.sizeOnStackInBytes == 4 &&
-                    itemB.sizeOnStackInBytes == 8))
+                          itemB.sizeOnStackInBytes == 4) || 
+                         (itemA.sizeOnStackInBytes == 4 &&
+                          itemB.sizeOnStackInBytes == 8))
                 {
-                    throw new InvalidOperationException("Invalid stack operand sizes! They should be the same size.");
+                    throw new InvalidOperationException("Invalid stack operand sizes! They should be the 32-32 or 64-64.");
                 }
                 else if (itemA.sizeOnStackInBytes == 8 &&
                     itemB.sizeOnStackInBytes == 8)
                 {
-                    //Pop item B to ecx:ebx
-                    //Pop low bits
-                    conversionState.Append(new ASMOps.Pop() { Size = ASMOps.OperandSize.Dword, Dest = "EBX" });
-                    //Pop high bits
-                    conversionState.Append(new ASMOps.Pop() { Size = ASMOps.OperandSize.Dword, Dest = "ECX" });
-                    //Pop item A to edx:eax
-                    //Pop low bits
-                    conversionState.Append(new ASMOps.Pop() { Size = ASMOps.OperandSize.Dword, Dest = "EAX" });
-                    //Pop high bits
-                    conversionState.Append(new ASMOps.Pop() { Size = ASMOps.OperandSize.Dword, Dest = "EDX" });
-                    //And ecx:ebx with edx:eax
-                    conversionState.Append(new ASMOps.And() { Src = "EBX", Dest = "EAX" });
-                    conversionState.Append(new ASMOps.And() { Src = "ECX", Dest = "EDX" });
-                    //Push the result onto the stack
-                    conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Dword, Src = "EDX" });
-                    conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Dword, Src = "EAX" });
-
-                    conversionState.CurrentStackFrame.Stack.Push(new StackItem()
-                    {
-                        isFloat = false,
-                        sizeOnStackInBytes = 8,
-                        isGCManaged = false
-                    });
+                    //SUPPORT - 64-bit division
+                    throw new NotSupportedException("64-bit by 64-bit division not supported yet!");
                 }
             }
         }

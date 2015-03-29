@@ -123,6 +123,17 @@ namespace Drivers.Compiler.IL
         {
             CompileResult result = CompileResult.OK;
 
+            if (TheLibrary.ILScanned)
+            {
+                return result;
+            }
+            TheLibrary.ILScanned = true;
+
+            foreach (ILLibrary depLib in TheLibrary.Dependencies)
+            {
+                Scan(depLib);
+            }
+
             foreach (Types.MethodInfo aMethodInfo in TheLibrary.ILBlocks.Keys)
             {
                 ILBlock anILBlock = TheLibrary.ILBlocks[aMethodInfo];
@@ -163,17 +174,31 @@ namespace Drivers.Compiler.IL
             {
                 OriginMethodInfo = theMethodInfo
             };
-
+            
+            ILConversionState convState = new ILConversionState()
+            {
+                TheILLibrary = TheLibrary,
+                CurrentStackFrame = new StackFrame(),
+                Input = theILBlock,
+                Result = TheASMBlock
+            };
             foreach (ILOp anOp in theILBlock.ILOps)
             {
                 try
                 {
                     ILOp ConverterOp = TargetILOps[(ILOp.OpCodes)anOp.opCode.Value];
-                    ILConversionState convState = new ILConversionState()
+                    int currCount = TheASMBlock.ASMOps.Count;
+
+                    ConverterOp.Convert(convState, anOp);
+
+                    if (anOp.LabelRequired)
                     {
-                        TheILLibrary = TheLibrary
-                    };
-                    TheASMBlock.ASMOps.AddRange(ConverterOp.Convert(convState, anOp));
+                        if (currCount < TheASMBlock.ASMOps.Count)
+                        {
+                            TheASMBlock.ASMOps[currCount].ILLabelPosition = convState.PositionOf(anOp);
+                            TheASMBlock.ASMOps[currCount].RequiresILLabel = true;
+                        }
+                    }
                 }
                 catch (KeyNotFoundException)
                 {

@@ -50,6 +50,16 @@ namespace Drivers.Compiler.Types
 
         public bool IsGCManaged { get; set; }
 
+        public int MethodIDGenerator = 0;
+
+        public string ID
+        {
+            get
+            {
+                return "type_" + Utilities.FilterIdentifierForInvalidChars(UnderlyingType.FullName);
+            }
+        }
+
         public override string ToString()
         {
             return UnderlyingType.AssemblyQualifiedName;

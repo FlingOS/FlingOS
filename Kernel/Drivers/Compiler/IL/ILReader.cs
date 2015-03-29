@@ -72,12 +72,16 @@ namespace Drivers.Compiler.IL
         {
             return new ILBlock()
             {
-                PlugPath = aMethodInfo.PlugAttribute.ASMFilePath
+                PlugPath = aMethodInfo.PlugAttribute.ASMFilePath,
+                TheMethodInfo = aMethodInfo
             };
         }
         public static ILBlock ReadNonPlugged(Types.MethodInfo aMethodInfo)
         {
-            ILBlock result = new ILBlock();
+            ILBlock result = new ILBlock()
+            {
+                TheMethodInfo = aMethodInfo
+            };
 
             MethodBody methodBody = aMethodInfo.MethodBody;
             //Method body for something like [DelegateType].Invoke() is null. 
@@ -201,6 +205,7 @@ namespace Drivers.Compiler.IL
                     {
                         opCode = currOpCode,
                         Offset = ILBytesPos,
+                        BytesSize = currOpBytesSize + operandSize,
                         ValueBytes = valueBytes,
                         MethodToCall = methodToCall
                     });

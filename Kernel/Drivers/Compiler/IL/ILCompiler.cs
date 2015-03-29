@@ -55,6 +55,17 @@ namespace Drivers.Compiler.IL
         {
             CompileResult result = CompileResult.OK;
 
+            if (TheLibrary.ILRead)
+            {
+                return result;
+            }
+            TheLibrary.ILRead = true;
+
+            foreach (ILLibrary depLib in TheLibrary.Dependencies)
+            {
+                result = result == CompileResult.OK ? ExecuteILReader(depLib) : result;
+            }
+
             foreach (Types.TypeInfo aTypeInfo in TheLibrary.TypeInfos)
             {
                 foreach (Types.MethodInfo aMethodInfo in aTypeInfo.MethodInfos)

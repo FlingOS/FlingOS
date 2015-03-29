@@ -52,16 +52,23 @@ namespace Drivers.Compiler.IL
                 return;
             }
 
+            if (TheLibrary.ILPreprocessed)
+            {
+                return;
+            }
+            TheLibrary.ILPreprocessed = true;
+
             foreach (IL.ILLibrary aDependency in TheLibrary.Dependencies)
             {
                 Preprocess(aDependency);
             }
-
+            
             PreprocessSpecialClasses(TheLibrary);
             PreprocessSpecialMethods(TheLibrary);
 
             foreach (Types.MethodInfo aMethodInfo in TheLibrary.ILBlocks.Keys)
             {
+                PreprocessMethodInfo(TheLibrary, aMethodInfo);
                 PreprocessILOps(TheLibrary, aMethodInfo, TheLibrary.ILBlocks[aMethodInfo]);
             }
 
@@ -73,6 +80,30 @@ namespace Drivers.Compiler.IL
             }
         }
 
+        private static void PreprocessMethodInfo(ILLibrary TheLibrary, Types.MethodInfo theMethodInfo)
+        {
+            Types.TypeInfo aTypeInfo = TheLibrary.GetTypeInfo(theMethodInfo.UnderlyingInfo.DeclaringType);
+            int ID = GetMethodIDGenerator(TheLibrary, aTypeInfo);
+            theMethodInfo.IDValue = ID + 1;
+            aTypeInfo.MethodIDGenerator++;
+        }
+        private static int GetMethodIDGenerator(ILLibrary TheLibrary, Type aType)
+        {
+            Types.TypeInfo aTypeInfo = TheLibrary.GetTypeInfo(aType);
+            return GetMethodIDGenerator(TheLibrary, aTypeInfo);
+        }
+        private static int GetMethodIDGenerator(ILLibrary TheLibrary, Types.TypeInfo aTypeInfo)
+        {
+            int totalGen = 0;
+            if (aTypeInfo.UnderlyingType.BaseType != null)
+            {
+                if (!aTypeInfo.UnderlyingType.BaseType.AssemblyQualifiedName.Contains("mscorlib"))
+                {
+                    totalGen += GetMethodIDGenerator(TheLibrary, aTypeInfo.UnderlyingType.BaseType);
+                }
+            }
+            return totalGen;
+        }
         private static void PreprocessILOps(ILLibrary TheLibrary, Types.MethodInfo theMethodInfo, ILBlock theILBlock)
         {
             int totalLocalsOffset = 0;

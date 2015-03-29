@@ -34,7 +34,10 @@ namespace Drivers.Compiler.ASM
 {
     public class ASMOp
     {
-        public virtual string Convert()
+        internal int ILLabelPosition = -1;
+        internal bool RequiresILLabel = false;
+
+        public virtual string Convert(ASMBlock theBlock)
         {
             return "";
         }
