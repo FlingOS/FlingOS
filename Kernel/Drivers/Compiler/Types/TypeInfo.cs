@@ -60,6 +60,18 @@ namespace Drivers.Compiler.Types
             }
         }
 
+        public Types.FieldInfo GetFieldInfo(string FieldName)
+        {
+            foreach (Types.FieldInfo aFieldInfo in FieldInfos)
+            {
+                if (aFieldInfo.Name.Equals(FieldName))
+                {
+                    return aFieldInfo;
+                }
+            }
+            throw new NullReferenceException("Field \"" + FieldName + "\" not found in type \"" + ToString() + "\".");
+        }
+
         public override string ToString()
         {
             return UnderlyingType.AssemblyQualifiedName;

@@ -26,28 +26,9 @@ namespace Drivers.Compiler.IL
         public Types.FieldInfo GetFieldInfo(Type aType, string FieldName)
         {
             Types.TypeInfo aTypeInfo = TheILLibrary.GetTypeInfo(aType);
-            return GetFieldInfo(aTypeInfo, FieldName);
+            return aTypeInfo.GetFieldInfo(FieldName);
         }
-        public Types.FieldInfo GetFieldInfo(Types.TypeInfo aTypeInfo, string FieldName)
-        {
-            foreach (Types.FieldInfo aFieldInfo in aTypeInfo.FieldInfos)
-            {
-                if (aFieldInfo.Name.Equals(FieldName))
-                {
-                    return aFieldInfo;
-                }
-            }
-            throw new NullReferenceException("Field \"" + FieldName + "\" not found in type \"" + aTypeInfo.ToString() + "\".");
-        }
-        public int GetFieldOffset(Type aType, string FieldName)
-        {
-            return GetFieldInfo(aType, FieldName).OffsetInBytes;
-        }
-        public int GetFieldOffset(Types.TypeInfo aTypeInfo, string FieldName)
-        {
-            return GetFieldInfo(aTypeInfo, FieldName).OffsetInBytes;
-        }
-
+        
         public Types.TypeInfo GetArrayTypeInfo()
         {
             return TheILLibrary.SpecialClasses[typeof(Attributes.ArrayClassAttribute)].First();
@@ -61,15 +42,27 @@ namespace Drivers.Compiler.IL
         {
             return TheILLibrary.SpecialMethods[typeof(Attributes.ThrowNullReferenceExceptionMethodAttribute)].First();
         }
+        public Types.MethodInfo GetThrowIndexOutOfRangeExceptionMethodInfo()
+        {
+            return TheILLibrary.SpecialMethods[typeof(Attributes.ThrowIndexOutOfRangeExceptionMethodAttribute)].First();
+        }
         public Types.MethodInfo GetDecrementRefCountMethodInfo()
         {
             return TheILLibrary.SpecialMethods[typeof(Attributes.DecrementRefCountMethodAttribute)].First();
+        }
+        public Types.MethodInfo GetNewArrMethodInfo()
+        {
+            return TheILLibrary.SpecialMethods[typeof(Attributes.NewArrMethodAttribute)].First();
+        }
+        public Types.MethodInfo GetNewObjMethodInfo()
+        {
+            return TheILLibrary.SpecialMethods[typeof(Attributes.NewObjMethodAttribute)].First();
         }
 
         public int GetTypeFieldOffset(string FieldName)
         {
             Types.TypeInfo aTypeInfo = TheILLibrary.SpecialClasses[typeof(Attributes.TypeClassAttribute)].First();
-            return GetFieldOffset(aTypeInfo, FieldName);
+            return aTypeInfo.GetFieldInfo(FieldName).OffsetInBytes;
         }
     }
 

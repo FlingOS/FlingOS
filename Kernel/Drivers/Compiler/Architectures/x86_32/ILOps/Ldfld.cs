@@ -57,7 +57,7 @@ namespace Drivers.Compiler.Architectures.x86
             FieldInfo theField = conversionState.Input.TheMethodInfo.UnderlyingInfo.Module.ResolveField(metadataToken);
             //Get the database type information about the object that contains the field
             Types.TypeInfo objTypeInfo = conversionState.TheILLibrary.GetTypeInfo(theField.DeclaringType);
-            int offset = conversionState.GetFieldOffset(objTypeInfo, theField.Name);
+            int offset = objTypeInfo.GetFieldInfo(theField.Name).OffsetInBytes;
 
             //Is the value to load a floating pointer number?
             bool valueisFloat = Utilities.IsFloat(theField.FieldType);

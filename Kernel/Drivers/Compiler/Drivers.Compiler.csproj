@@ -48,6 +48,9 @@
     <Compile Include="Attributes\ArrayClassAttribute.cs" />
     <Compile Include="Attributes\DecrementRefCountMethodAttribute.cs" />
     <Compile Include="Attributes\HaltMethodAttribute.cs" />
+    <Compile Include="Attributes\NewArrMethodAttribute.cs" />
+    <Compile Include="Attributes\NewObjMethodAttribute.cs" />
+    <Compile Include="Attributes\ThrowIndexOutOfRangeExceptionMethodAttribute.cs" />
     <Compile Include="Attributes\ThrowNullReferenceExceptionMethodAttribute.cs" />
     <Compile Include="Attributes\TypeClassAttribute.cs" />
     <Compile Include="IL\ILConversionState.cs" />
