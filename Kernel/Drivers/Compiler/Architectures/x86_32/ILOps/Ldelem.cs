@@ -341,9 +341,7 @@ namespace Drivers.Compiler.Architectures.x86
             {
                 conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Dword, Src = "EAX" });
             }
-
-            Types.TypeInfo elementTypeInfo = conversionState.TheILLibrary.GetTypeInfo(elementType);
-
+            
             //      5.2. Pop index and array ref from our stack
             conversionState.CurrentStackFrame.Stack.Pop();
             conversionState.CurrentStackFrame.Stack.Pop();
@@ -353,7 +351,7 @@ namespace Drivers.Compiler.Architectures.x86
                 sizeOnStackInBytes = sizeToPush > 4 ? 8 : 4,
                 isFloat = isFloat,
                 isNewGCObject = false,
-                isGCManaged = pushValue ? elementTypeInfo.IsGCManaged : false
+                isGCManaged = pushValue ? conversionState.TheILLibrary.GetTypeInfo(elementType).IsGCManaged : false
             });
         }
     }
