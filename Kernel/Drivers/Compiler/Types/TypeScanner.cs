@@ -128,11 +128,11 @@ namespace Drivers.Compiler.Types
                 {
                     if (!aCustAttr.GetType().AssemblyQualifiedName.Contains("mscorlib"))
                     {
-                        if (!TheLibrary.SpecialClasses.ContainsKey(aCustAttr.GetType()))
+                        if (!IL.ILLibrary.SpecialClasses.ContainsKey(aCustAttr.GetType()))
                         {
-                            TheLibrary.SpecialClasses.Add(aCustAttr.GetType(), new List<TypeInfo>());
+                            IL.ILLibrary.SpecialClasses.Add(aCustAttr.GetType(), new List<TypeInfo>());
                         }
-                        TheLibrary.SpecialClasses[aCustAttr.GetType()].Add(newTypeInfo);
+                        IL.ILLibrary.SpecialClasses[aCustAttr.GetType()].Add(newTypeInfo);
                     }
                 }
             }
@@ -172,11 +172,11 @@ namespace Drivers.Compiler.Types
                         {
                             if (!aCustAttr.GetType().AssemblyQualifiedName.Contains("mscorlib"))
                             {
-                                if (!TheLibrary.SpecialMethods.ContainsKey(aCustAttr.GetType()))
+                                if (!IL.ILLibrary.SpecialMethods.ContainsKey(aCustAttr.GetType()))
                                 {
-                                    TheLibrary.SpecialMethods.Add(aCustAttr.GetType(), new List<MethodInfo>());
+                                    IL.ILLibrary.SpecialMethods.Add(aCustAttr.GetType(), new List<MethodInfo>());
                                 }
-                                TheLibrary.SpecialMethods[aCustAttr.GetType()].Add(newMethodInfo);
+                                IL.ILLibrary.SpecialMethods[aCustAttr.GetType()].Add(newMethodInfo);
                             }
                         }
                     }
@@ -201,11 +201,11 @@ namespace Drivers.Compiler.Types
                         {
                             if (!aCustAttr.GetType().AssemblyQualifiedName.Contains("mscorlib"))
                             {
-                                if (!TheLibrary.SpecialMethods.ContainsKey(aCustAttr.GetType()))
+                                if (!IL.ILLibrary.SpecialMethods.ContainsKey(aCustAttr.GetType()))
                                 {
-                                    TheLibrary.SpecialMethods.Add(aCustAttr.GetType(), new List<MethodInfo>());
+                                    IL.ILLibrary.SpecialMethods.Add(aCustAttr.GetType(), new List<MethodInfo>());
                                 }
-                                TheLibrary.SpecialMethods[aCustAttr.GetType()].Add(newMethodInfo);
+                                IL.ILLibrary.SpecialMethods[aCustAttr.GetType()].Add(newMethodInfo);
                             }
                         }
                     }

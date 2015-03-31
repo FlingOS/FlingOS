@@ -46,8 +46,8 @@ namespace Drivers.Compiler.IL
 
         public Dictionary<Types.MethodInfo, ILBlock> ILBlocks = new Dictionary<Types.MethodInfo, ILBlock>();
 
-        public Dictionary<Type, List<Types.TypeInfo>> SpecialClasses = new Dictionary<Type, List<Types.TypeInfo>>();
-        public Dictionary<Type, List<Types.MethodInfo>> SpecialMethods = new Dictionary<Type, List<Types.MethodInfo>>();
+        public static Dictionary<Type, List<Types.TypeInfo>> SpecialClasses = new Dictionary<Type, List<Types.TypeInfo>>();
+        public static Dictionary<Type, List<Types.MethodInfo>> SpecialMethods = new Dictionary<Type, List<Types.MethodInfo>>();
 
         public bool ILRead = false;
         public bool ILPreprocessed = false;
