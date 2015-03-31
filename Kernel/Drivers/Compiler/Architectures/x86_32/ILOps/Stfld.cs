@@ -30,7 +30,6 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Reflection;
-using Kernel.Debug.Data;
 using Drivers.Compiler.IL;
 
 namespace Drivers.Compiler.Architectures.x86

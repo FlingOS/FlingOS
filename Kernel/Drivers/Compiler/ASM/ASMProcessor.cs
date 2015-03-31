@@ -90,8 +90,7 @@ namespace Drivers.Compiler.ASM
                 }
             }
 
-            string Name = TheBlock.OriginMethodInfo.ToString();
-            string FileName = Utilities.CleanFileName(Name + "." + Options.TargetArchitecture) + ".asm";
+            string FileName = Utilities.CleanFileName(Guid.NewGuid().ToString() + "." + Options.TargetArchitecture) + ".asm";
             string OutputPath = GetASMOutputPath();
             FileName = Path.Combine(OutputPath, FileName);
             TheBlock.OutputFilePath = FileName;

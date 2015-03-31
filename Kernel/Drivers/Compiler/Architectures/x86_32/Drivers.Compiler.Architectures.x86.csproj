@@ -39,6 +39,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ASMOps\Test.cs" />
+    <Compile Include="ASMOps\Shr.cs" />
+    <Compile Include="ASMOps\Shl.cs" />
     <Compile Include="ASMOps\Loop.cs" />
     <Compile Include="ASMOps\Sub.cs" />
     <Compile Include="ASMOps\Mul.cs" />
@@ -130,13 +133,24 @@
     <Compile Include="ILOps\Pop.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="ILOps\Rem.cs" />
     <Compile Include="ILOps\Ret.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="ILOps\Shl.cs" />
+    <Compile Include="ILOps\Shr.cs" />
     <Compile Include="ILOps\Sizeof.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="ILOps\StackSwitch.cs" />
     <Compile Include="ILOps\Starg.cs" />
+    <Compile Include="ILOps\Stelem.cs" />
+    <Compile Include="ILOps\Stfld.cs" />
+    <Compile Include="ILOps\Stind.cs" />
+    <Compile Include="ILOps\Stloc.cs" />
+    <Compile Include="ILOps\Stsfld.cs" />
+    <Compile Include="ILOps\Sub.cs" />
+    <Compile Include="ILOps\Switch.cs" />
     <Compile Include="ILOps\Xor.cs">
       <SubType>Code</SubType>
     </Compile>

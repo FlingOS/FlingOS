@@ -29,7 +29,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Kernel.Debug.Data;
 using Drivers.Compiler.IL;
 
 namespace Drivers.Compiler.Architectures.x86
