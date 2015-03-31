@@ -36,7 +36,7 @@ namespace Drivers.Compiler.Architectures.x86
     /// <summary>
     /// See base class documentation.
     /// </summary>
-    public class Div : IL.ILOps.Div
+    public class Rem : IL.ILOps.Rem
     {
         /// <summary>
         /// See base class documentation.
@@ -52,8 +52,6 @@ namespace Drivers.Compiler.Architectures.x86
         /// </exception>
         public override void Convert(ILConversionState conversionState, ILOp theOp)
         {
-            
-
             //Pop in reverse order to push
             StackItem itemB = conversionState.CurrentStackFrame.Stack.Pop();
             StackItem itemA = conversionState.CurrentStackFrame.Stack.Pop();
@@ -78,12 +76,12 @@ namespace Drivers.Compiler.Architectures.x86
                     conversionState.Append(new ASMOps.Pop() { Size = ASMOps.OperandSize.Dword, Dest = "EBX" });
                     //Pop item A
                     conversionState.Append(new ASMOps.Pop() { Size = ASMOps.OperandSize.Dword, Dest = "EAX" });
-                    if ((OpCodes)theOp.opCode.Value == OpCodes.Div_Un)
+                    if ((OpCodes)theOp.opCode.Value == OpCodes.Rem_Un)
                     {
                         //Unsigned extend A to EAX:EDX
                         conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Dword, Src = "0", Dest = "EDX" });
                         //Do the division
-                        conversionState.Append(new ASMOps.Div() { Arg = "ebx" });
+                        conversionState.Append(new ASMOps.Div() { Arg = "EBX" });
                     }
                     else
                     {
@@ -92,8 +90,8 @@ namespace Drivers.Compiler.Architectures.x86
                         //Do the division
                         conversionState.Append(new ASMOps.Div() { Arg = "EBX", Signed = true });
                     }
-                    //Result stored in eax
-                    conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Dword, Src = "EAX" });
+                    //Result stored in edx
+                    conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Dword, Src = "EDX" });
 
                     conversionState.CurrentStackFrame.Stack.Push(new StackItem()
                     {
@@ -113,7 +111,7 @@ namespace Drivers.Compiler.Architectures.x86
                     itemB.sizeOnStackInBytes == 8)
                 {
                     //SUPPORT - 64-bit division
-                    throw new NotSupportedException("64-bit by 64-bit division not supported yet!");
+                    throw new NotSupportedException("64-bit by 64-bit modulo not supported yet!");
                 }
             }
         }

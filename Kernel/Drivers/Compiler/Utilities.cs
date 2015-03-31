@@ -42,6 +42,16 @@ namespace Drivers.Compiler
             return BitConverter.ToInt32(bytes, offset);
         }
         /// <summary>
+        /// Reads an unsigned integer 32 from the specified bytes starting at the specified offset.
+        /// </summary>
+        /// <param name="bytes">The bytes to read from.</param>
+        /// <param name="offset">The offset in the bytes to read from.</param>
+        /// <returns>The number.</returns>
+        public static UInt32 ReadUInt32(byte[] bytes, int offset)
+        {
+            return BitConverter.ToUInt32(bytes, offset);
+        }
+        /// <summary>
         /// Reads a signed integer 64 from the specified bytes starting at the specified offset.
         /// </summary>
         /// <param name="bytes">The bytes to read from.</param>

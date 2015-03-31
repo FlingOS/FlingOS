@@ -152,9 +152,9 @@ namespace Drivers.Compiler.IL
                             break;
                         case OperandType.InlineSwitch:
                             {
-                                int count = Utilities.ReadInt32(ILBytes, ILBytesPos + currOpBytesSize);
-                                ILBytesPos += 4;
-                                operandSize = count * 4;
+                                uint count = Utilities.ReadUInt32(ILBytes, ILBytesPos + currOpBytesSize);
+                                currOpBytesSize += 4;
+                                operandSize = (int)(count * 4);
                             }
                             break;
                         case OperandType.InlineTok:
