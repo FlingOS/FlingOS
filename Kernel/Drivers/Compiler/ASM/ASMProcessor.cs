@@ -62,9 +62,29 @@ namespace Drivers.Compiler.ASM
                 num++;
             }
 
+            //List<bool> Completed = new List<bool>();
+            //for (int i = 0; i < MaxConcurrentNASMProcesses; i++)
+            //{
+            //    Completed.Add(false);
+            //    ExecuteNASMAsync(NASMLabourDivision[i],
+            //        delegate(object state)
+            //        {
+            //            Completed[(int)state] = true;
+            //        },
+            //        i);
+            //}
+
+            //for (int i = 0; i < MaxConcurrentNASMProcesses; i++)
+            //{
+            //    while (!Completed[i])
+            //    {
+            //        System.Threading.Thread.Sleep(100);
+            //    }
+            //}
+            
             for (int i = 0; i < MaxConcurrentNASMProcesses; i++)
             {
-                ExecuteNASMAsync(NASMLabourDivision[i]);
+                ExecuteNASMSync(NASMLabourDivision[i]);
             }
             
             return result;
@@ -97,11 +117,42 @@ namespace Drivers.Compiler.ASM
             File.WriteAllText(FileName, ASMText);
         }
 
-        private static void ExecuteNASMAsync(List<ASMBlock> Blocks)
+        private static void ExecuteNASMAsync(List<ASMBlock> Blocks, VoidDelegate OnComplete, object aState)
         {
-            //TODO
+            string ASMOutputPath = GetASMOutputPath();
+            string ObjectsOutputPath = GetObjectsOutputPath();
+            VoidDelegate onComplete = null;
+            onComplete = delegate(object state)
+            {
+                int index = (int)state;
+                if (index < Blocks.Count)
+                {
+                    string inputPath = Blocks[index].OutputFilePath;
+                    string outputPath = inputPath.Replace(ASMOutputPath, ObjectsOutputPath).Replace(".asm", ".obj");
+                    ExecuteNASM(inputPath, outputPath, onComplete, index + 1);
+                }
+                else
+                {
+                    OnComplete(aState);
+                }
+            };
+            onComplete(0);
         }
 
+        private static void ExecuteNASMSync(List<ASMBlock> Blocks)
+        {
+            string ASMOutputPath = GetASMOutputPath();
+            string ObjectsOutputPath = GetObjectsOutputPath();
+
+            for (int index = 0; index < Blocks.Count; index++)
+            {
+                string inputPath = Blocks[index].OutputFilePath;
+                string outputPath = inputPath.Replace(ASMOutputPath, ObjectsOutputPath).Replace(".asm", ".obj");
+                ExecuteNASM(inputPath, outputPath);
+            }
+        }
+
+        private static bool CleanedASMOutputFolder = false;
         private static string GetASMOutputPath()
         {
             string OutputPath = Path.Combine(Options.OutputPath, "ASM");
@@ -109,7 +160,66 @@ namespace Drivers.Compiler.ASM
             {
                 Directory.CreateDirectory(OutputPath);
             }
+            else
+            {
+                if (!CleanedASMOutputFolder)
+                {
+                    Directory.Delete(OutputPath, true);
+                    Directory.CreateDirectory(OutputPath);
+                    CleanedASMOutputFolder = true;
+                }
+            }
             return OutputPath;
         }
+        private static bool CleanedObjectsOutputFolder = false;
+        private static string GetObjectsOutputPath()
+        {
+            string OutputPath = Path.Combine(Options.OutputPath, "Objects");
+            if (!Directory.Exists(OutputPath))
+            {
+                Directory.CreateDirectory(OutputPath);
+            }
+            else
+            {
+                if (!CleanedObjectsOutputFolder)
+                {
+                    Directory.Delete(OutputPath, true);
+                    Directory.CreateDirectory(OutputPath);
+                    CleanedObjectsOutputFolder = true;
+                }
+            }
+            return OutputPath;
+        }
+
+
+        /// <summary>
+        /// Executes NASM on the output file. It is assumed the output file now exists.
+        /// </summary>
+        /// <returns>True if execution completed successfully. Otherwise false.</returns>
+        private static bool ExecuteNASM(string inputFilePath, string outputFilePath, VoidDelegate OnComplete = null, object state = null)
+        {
+            bool OK = true;
+
+            //Compile the .ASM file to .BIN file
+            string NasmPath = Path.Combine(Options.ToolsPath, @"NASM\nasm.exe");
+            //Delete an existing output file so we start from scratch
+            if (File.Exists(outputFilePath))
+            {
+                File.Delete(outputFilePath);
+            }
+
+            OK = Utilities.ExecuteProcess(Path.GetDirectoryName(outputFilePath), NasmPath, String.Format("-g -f {0} -o \"{1}\" -D{3}_COMPILATION \"{2}\"",
+                                                  "elf",
+                                                  outputFilePath,
+                                                  inputFilePath,
+                                                  "ELF"), "NASM",
+                                                  false,
+                                                  null,
+                                                  OnComplete,
+                                                  state);
+
+            return OK;
+        }
+
     }
 }

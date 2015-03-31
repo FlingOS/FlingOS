@@ -3,9 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.IO;
+using System.Diagnostics;
 
 namespace Drivers.Compiler
 {
+    public delegate void VoidDelegate(object state);
+
     public static class Utilities
     {
         public static bool IsFloat(Type aType)
@@ -102,6 +106,155 @@ namespace Drivers.Compiler
                 xTempResult = xTempResult.Replace(c, '_');
             }
             return String.Intern(xTempResult);
+        }
+
+        private static Dictionary<int, Process> Processes = new Dictionary<int, Process>();
+        private static Dictionary<int, Tuple<VoidDelegate, object>> OnCompleteCallbacks = new Dictionary<int, Tuple<VoidDelegate, object>>();
+        private static Object CallbacksLock = new Object();
+
+        /// <summary>
+        /// Uses Process class to start a new instance of the specified process on the machine with specified start arguments.
+        /// Note: This is a blocking function.
+        /// Note: Waits a maximum of 15 minutes before assuming the process has failed to execute.
+        /// </summary>
+        /// <param name="workingDir">The working directory for the new process instance.</param>
+        /// <param name="processFile">The process file (.EXE file)</param>
+        /// <param name="args">The start arguments to pass the process.</param>
+        /// <param name="displayName">The display name of the process to show in messages.</param>
+        /// <param name="ignoreErrors">Whether to ignore messages and errors from the process or not.</param>
+        /// <param name="outputMessagesToFileName">A file path to output error and standard messages to instead of the console window. 
+        /// Ignore errors should be set to false.</param>
+        /// <returns>True if process executed successfully without errors. Otherwise false.</returns>
+        public static bool ExecuteProcess(string workingDir,
+            string processFile,
+            string args,
+            string displayName,
+            bool ignoreErrors = false,
+            string outputMessagesToFileName = null,
+            VoidDelegate OnComplete = null,
+            object state = null)
+        {
+            bool OK = true;
+
+            ProcessStartInfo processStartInfo = new ProcessStartInfo();
+            processStartInfo.WorkingDirectory = workingDir;
+            processStartInfo.FileName = processFile;
+            processStartInfo.Arguments = args;
+            processStartInfo.UseShellExecute = false;
+            processStartInfo.RedirectStandardOutput = true;
+            processStartInfo.RedirectStandardError = true;
+            processStartInfo.CreateNoWindow = true;
+            var process = new Process();
+
+            StreamWriter outputStream = null;
+
+            //if (!ignoreErrors)
+            //{
+            //    if (outputMessagesToFileName != null && OnComplete == null)
+            //    {
+            //        outputStream = new StreamWriter(outputMessagesToFileName);
+            //        process.ErrorDataReceived += delegate(object sender, DataReceivedEventArgs e)
+            //        {
+            //            if (e.Data != null)
+            //            {
+            //                outputStream.WriteLine(e.Data);
+            //            }
+            //        };
+            //        process.OutputDataReceived += delegate(object sender, DataReceivedEventArgs e)
+            //        {
+            //            if (e.Data != null)
+            //            {
+            //                outputStream.WriteLine(e.Data);
+            //            }
+            //        };
+            //    }
+            //    else
+            //    {
+            //        process.ErrorDataReceived += delegate(object sender, DataReceivedEventArgs e)
+            //        {
+            //            if (e.Data != null)
+            //            {
+            //                //OutputError(new Exception(displayName + ": " + e.Data));
+            //            }
+            //        };
+            //        process.OutputDataReceived += delegate(object sender, DataReceivedEventArgs e)
+            //        {
+            //            if (e.Data != null)
+            //            {
+            //                //OutputMessage(displayName + ": " + e.Data);
+            //            }
+            //        };
+            //    }
+            //}
+            process.StartInfo = processStartInfo;
+            process.EnableRaisingEvents = true;
+
+            if (OnComplete != null)
+            {
+                process.Exited += delegate(object sender, EventArgs e)
+                {
+                    System.Threading.Thread.Sleep(1000);
+
+                    try
+                    {
+                        Tuple<VoidDelegate, object> Callback = null;
+                        lock (CallbacksLock)
+                        {
+                            Process theProc = (Process)sender;
+                            Callback = OnCompleteCallbacks[theProc.Id];
+                            OnCompleteCallbacks.Remove(theProc.Id);
+                            Processes.Remove(theProc.Id);
+                            theProc.Dispose();
+                        }
+                        Callback.Item1(Callback.Item2);
+                    }
+                    catch (Exception ex)
+                    {
+                        Logger.LogError("", "", 0, ex.Message);
+                    }
+                };
+                process.Disposed += delegate(object sender, EventArgs e)
+                {
+                };
+
+                process.Start();
+                lock (CallbacksLock)
+                {
+                    OnCompleteCallbacks.Add(process.Id, new Tuple<VoidDelegate, object>(OnComplete, state));
+                    Processes.Add(process.Id, process);
+                }
+            }
+            else
+            {
+                process.Start();
+
+                if (!ignoreErrors)
+                {
+                    process.BeginErrorReadLine();
+                    process.BeginOutputReadLine();
+                }
+                process.WaitForExit(4 * 60 * 60 * 1000); // wait 4 hours max. for process to exit
+                if (process.ExitCode != 0)
+                {
+                    if (!process.HasExited)
+                    {
+                        process.Kill();
+                        //OutputError(new Exception(displayName + " timed out."));
+                    }
+                    else
+                    {
+                        //OutputError(new Exception("Error occurred while invoking " + displayName + "."));
+                    }
+                }
+                if (outputStream != null)
+                {
+                    outputStream.Flush();
+                    outputStream.Close();
+                    outputStream.Dispose();
+                }
+                OK = process.ExitCode == 0;
+            }
+            return OK;
         }
 
     }

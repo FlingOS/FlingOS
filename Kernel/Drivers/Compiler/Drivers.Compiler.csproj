@@ -132,9 +132,7 @@
     <Compile Include="Types\VariableInfo.cs" />
     <Compile Include="Utilities.cs" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Tools\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <None Include="..\..\Kernel\Kernel.licenseheader">
       <Link>Kernel.licenseheader</Link>
@@ -142,6 +140,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="IL\ILOps\AllIlOps.txt" />
+    <Content Include="Tools\NASM\nasm.exe" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
