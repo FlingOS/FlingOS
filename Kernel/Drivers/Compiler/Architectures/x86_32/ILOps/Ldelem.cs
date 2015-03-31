@@ -177,7 +177,7 @@ namespace Drivers.Compiler.Architectures.x86
 
             //string ContinueExecutionLabel2 = ContinueExecutionLabelBase + "2";
             ////      2.1. Move element type ref into eax
-            int elemTypeOffset = arrayTypeInfo.GetFieldInfo("elemType").OffsetInBytes;
+            int elemTypeOffset = conversionState.TheILLibrary.GetFieldInfo(arrayTypeInfo, "elemType").OffsetInBytes;
 
             //if (elementType != null)
             //{
@@ -214,7 +214,7 @@ namespace Drivers.Compiler.Architectures.x86
             conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Dword, Src = "[ESP]", Dest = "eax" });
             //      3.2. Move array length into ecx
             //              - Calculate the offset of the field from the start of the array object
-            int lengthOffset = arrayTypeInfo.GetFieldInfo("length").OffsetInBytes;
+            int lengthOffset = conversionState.TheILLibrary.GetFieldInfo(arrayTypeInfo, "length").OffsetInBytes;
 
             //              - Move array ref into ebx
             GlobalMethods.InsertPageFaultDetection(conversionState, "esp", 4, (OpCodes)theOp.opCode.Value);

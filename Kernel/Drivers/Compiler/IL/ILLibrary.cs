@@ -132,6 +132,26 @@ namespace Drivers.Compiler.IL
             return null;
         }
 
+        public Types.FieldInfo GetFieldInfo(Types.TypeInfo aTypeInfo, string FieldName)
+        {
+            foreach (Types.FieldInfo aFieldInfo in aTypeInfo.FieldInfos)
+            {
+                if (aFieldInfo.Name.Equals(FieldName))
+                {
+                    return aFieldInfo;
+                }
+            }
+
+            if (aTypeInfo.UnderlyingType.BaseType != null &&
+                !aTypeInfo.UnderlyingType.AssemblyQualifiedName.Contains("mscorlib"))
+            {
+                Types.TypeInfo baseTypeInfo = GetTypeInfo(aTypeInfo.UnderlyingType.BaseType);
+                return GetFieldInfo(baseTypeInfo, FieldName);
+            }
+            
+            throw new NullReferenceException("Field \"" + FieldName + "\" not found in type \"" + aTypeInfo.ToString() + "\".");
+        }
+
         public string AddStringLiteral(string value)
         {
             //TODO: Don't add identical strings multiple times

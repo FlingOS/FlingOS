@@ -214,7 +214,7 @@ namespace Drivers.Compiler.Architectures.x86
                     conversionState.Append(new ASMOps.Label() { ILPosition = currOpPosition, Extension = "NotNull" });
 
                     //Get type ref
-                    int typeOffset = declaringTypeInfo.GetFieldInfo("_Type").OffsetInBytes;
+                    int typeOffset = conversionState.TheILLibrary.GetFieldInfo(declaringTypeInfo, "_Type").OffsetInBytes;
                     GlobalMethods.InsertPageFaultDetection(conversionState, "eax", typeOffset, (OpCodes)theOp.opCode.Value);
                     conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Dword, Src = "[EAX+" + typeOffset.ToString() + "]", Dest = "EAX" });
                     

@@ -54,7 +54,7 @@ namespace Drivers.Compiler.Architectures.x86
             conversionState.CurrentStackFrame.Stack.Pop();
 
             Types.TypeInfo arrayTypeInfo = conversionState.GetArrayTypeInfo();
-            int lengthOffset = arrayTypeInfo.GetFieldInfo("length").OffsetInBytes;
+            int lengthOffset = conversionState.TheILLibrary.GetFieldInfo(arrayTypeInfo, "length").OffsetInBytes;
 
             int currOpPosition = conversionState.PositionOf(theOp);
 

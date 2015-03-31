@@ -167,7 +167,7 @@ namespace Drivers.Compiler.Architectures.x86
             //GlobalMethods.CheckAddrFromRegister(conversionState, "esp", sizeToPop == 8 ? 12 : 8);
             //result.AppendLine(string.Format("mov ebx, [esp+{0}]", sizeToPop == 8 ? 12 : 8));
             ////              - Move elemType ref ([ebx+offset]) into ebx
-            int elemTypeOffset = arrayTypeInfo.GetFieldInfo("elemType").OffsetInBytes;
+            int elemTypeOffset = conversionState.TheILLibrary.GetFieldInfo(arrayTypeInfo, "elemType").OffsetInBytes;
             //GlobalMethods.CheckAddrFromRegister(conversionState, "ebx", elemTypeOffset);
             //result.AppendLine(string.Format("mov ebx, [ebx+{0}]", elemTypeOffset));
             ////      2.3. Compare eax to ebx
@@ -193,7 +193,7 @@ namespace Drivers.Compiler.Architectures.x86
             conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Dword, Src = "[ESP+" + (sizeToPop == 8 ? 8 : 4).ToString() + "]", Dest = "EAX" });
             //      3.2. Move array length into ecx
             //              - Calculate the offset of the field from the start of the array object
-            int lengthOffset = arrayTypeInfo.GetFieldInfo("length").OffsetInBytes;
+            int lengthOffset = conversionState.TheILLibrary.GetFieldInfo(arrayTypeInfo, "length").OffsetInBytes;
             //              - Move array ref into ebx
             GlobalMethods.InsertPageFaultDetection(conversionState, "esp", sizeToPop == 8 ? 12 : 8, (OpCodes)theOp.opCode.Value);
             conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Dword, Src = "[ESP+" + (sizeToPop == 8 ? 12 : 8).ToString() + "]", Dest = "EBX" });

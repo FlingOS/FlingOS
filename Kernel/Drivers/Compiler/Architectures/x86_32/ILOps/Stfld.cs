@@ -55,7 +55,7 @@ namespace Drivers.Compiler.Architectures.x86
             FieldInfo theField = conversionState.Input.TheMethodInfo.UnderlyingInfo.Module.ResolveField(metadataToken);
             Types.TypeInfo objTypeInfo = conversionState.TheILLibrary.GetTypeInfo(theField.DeclaringType);
             Types.TypeInfo fieldTypeInfo = conversionState.TheILLibrary.GetTypeInfo(theField.FieldType);
-            Types.FieldInfo theFieldInfo = objTypeInfo.GetFieldInfo(theField.Name);
+            Types.FieldInfo theFieldInfo = conversionState.TheILLibrary.GetFieldInfo(objTypeInfo, theField.Name);
             
 
             int offset = theFieldInfo.OffsetInBytes;

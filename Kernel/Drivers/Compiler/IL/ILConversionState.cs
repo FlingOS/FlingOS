@@ -26,7 +26,7 @@ namespace Drivers.Compiler.IL
         public Types.FieldInfo GetFieldInfo(Type aType, string FieldName)
         {
             Types.TypeInfo aTypeInfo = TheILLibrary.GetTypeInfo(aType);
-            return aTypeInfo.GetFieldInfo(FieldName);
+            return TheILLibrary.GetFieldInfo(aTypeInfo, FieldName);
         }
         
         public Types.TypeInfo GetArrayTypeInfo()
@@ -62,7 +62,7 @@ namespace Drivers.Compiler.IL
         public int GetTypeFieldOffset(string FieldName)
         {
             Types.TypeInfo aTypeInfo = ILLibrary.SpecialClasses[typeof(Attributes.TypeClassAttribute)].First();
-            return aTypeInfo.GetFieldInfo(FieldName).OffsetInBytes;
+            return TheILLibrary.GetFieldInfo(aTypeInfo, FieldName).OffsetInBytes;
         }
     }
 
