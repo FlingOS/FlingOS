@@ -165,6 +165,11 @@ namespace Drivers.Compiler.IL
                 theMethodInfo.ArgumentInfos[i].Offset = offset;
             }
 
+            ILPreprocessState preprosState = new ILPreprocessState()
+            {
+                Input = theILBlock
+            };
+
             for (int i = 0; i < theILBlock.ILOps.Count; i++)
             {
                 ILOp theOp = theILBlock.ILOps[i];
@@ -175,6 +180,22 @@ namespace Drivers.Compiler.IL
                     theILBlock.ILOps.RemoveAt(i);
                     i--;
                     continue;
+                }
+
+                try
+                {
+                    ILOp ConverterOp = ILScanner.TargetILOps[(ILOp.OpCodes)theOp.opCode.Value];
+
+                    ConverterOp.Preprocess(preprosState, theOp);
+                }
+                catch (KeyNotFoundException)
+                {
+                    //Ignore - will be caught by Il scanner
+                }
+                catch (Exception ex)
+                {
+                    Logger.LogError("ILPRE", theILBlock.TheMethodInfo.ToString(), 0,
+                        "Il Preprocessor error: " + ex.Message);
                 }
             }
         }

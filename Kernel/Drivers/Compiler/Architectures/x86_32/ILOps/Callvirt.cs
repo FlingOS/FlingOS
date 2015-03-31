@@ -52,7 +52,10 @@ namespace Drivers.Compiler.Architectures.x86
         {
             MethodBase methodToCall = theOp.MethodToCall;
             Types.MethodInfo methodToCallInfo = conversionState.TheILLibrary.GetMethodInfo(methodToCall);
-            
+
+            conversionState.AddExternalLabel(conversionState.GetHaltMethodInfo().ID);
+            conversionState.AddExternalLabel(conversionState.GetThrowNullReferenceExceptionMethodInfo().ID);
+
             //The method to call is a method base
             //A method base can be either a method info i.e. a normal method
             //or a constructor method. The two types are treated separately.
@@ -210,6 +213,7 @@ namespace Drivers.Compiler.Architectures.x86
                     conversionState.Append(new ASMOps.Cmp() { Arg2 = "0", Arg1 = "eax" });
                     conversionState.Append(new ASMOps.Jmp() { JumpType = ASMOps.JmpOp.JumpNotZero, DestILPosition = currOpPosition, Extension = "NotNull" });
                     conversionState.Append(new ASMOps.Call() { Target = "GetEIP" });
+                    conversionState.AddExternalLabel("GetEIP");
                     conversionState.Append(new ASMOps.Call() { Target = conversionState.GetHaltMethodInfo().ID });
                     conversionState.Append(new ASMOps.Label() { ILPosition = currOpPosition, Extension = "NotNull" });
 
@@ -233,7 +237,7 @@ namespace Drivers.Compiler.Architectures.x86
                     //If equal, load method address into eax
                     conversionState.Append(new ASMOps.Jmp() { JumpType = ASMOps.JmpOp.JumpNotEqual, DestILPosition = currOpPosition, Extension = "NotEqual" });
                     GlobalMethods.InsertPageFaultDetection(conversionState, "eax", 4, (OpCodes)theOp.opCode.Value);
-                    conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Dword, Src = "[EAX+4]", Dest = "[EAX]" });
+                    conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Dword, Src = "[EAX+4]", Dest = "EAX" });
                     conversionState.Append(new ASMOps.Jmp() { JumpType = ASMOps.JmpOp.Jump, DestILPosition = currOpPosition, Extension = "Call" });
                     conversionState.Append(new ASMOps.Label() { ILPosition = currOpPosition, Extension = "NotEqual" });
                     //Else, compare to 0 to check for end of table

@@ -88,6 +88,7 @@ namespace Drivers.Compiler.Architectures.x86
             Type theType = conversionState.Input.TheMethodInfo.UnderlyingInfo.Module.ResolveType(metadataToken);
             Types.TypeInfo theTypeInfo = conversionState.TheILLibrary.GetTypeInfo(theType);
             string TestTypeId = theTypeInfo.ID;
+            conversionState.AddExternalLabel(TestTypeId);
 
             conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Dword, Src = TestTypeId, Dest = "ECX" });
 

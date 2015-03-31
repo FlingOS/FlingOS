@@ -32,44 +32,26 @@ using System.Threading.Tasks;
 
 namespace Drivers.Compiler.ASM
 {
-    public static class ASMPreprocessor
+    public class ASMExternalLabel : ASMOp
     {
-        public static CompileResult Preprocess(ASMLibrary TheLibrary)
+        public string Label;
+
+        public override string Convert(ASMBlock theBlock)
         {
-            CompileResult result = CompileResult.OK;
-
-            if (TheLibrary.ASMPreprocessed)
-            {
-                return result;
-            }
-            TheLibrary.ASMPreprocessed = true;
-
-            foreach (ASMBlock aBlock in TheLibrary.ASMBlocks)
-            {
-                Preprocess(aBlock);
-            }
-
-            return result;
+            return "extern " + Label;
         }
 
-        private static void Preprocess(ASMBlock theBlock)
+        public override int GetHashCode()
         {
-            // Due to "insert 0", asm ops are constructed in reverse order here
-
-            theBlock.ASMOps.Insert(0, new ASMLabel() { MethodLabel = true });
-            theBlock.ASMOps.Insert(0, new ASMGeneric() { Text = "SECTION .text" });
-            string currMethodLabel = theBlock.GenerateMethodLabel();
-            theBlock.ASMOps.Insert(0, new ASMGlobalLabel() { Label = currMethodLabel });
-
-            foreach (string anExternalLabel in theBlock.ExternalLabels.Distinct())
+            return Label.GetHashCode();
+        }
+        public override bool Equals(object obj)
+        {
+            if (obj is ASMExternalLabel)
             {
-                if (anExternalLabel != currMethodLabel)
-                {
-                    theBlock.ASMOps.Insert(0, new ASMExternalLabel() { Label = anExternalLabel });
-                }
+                return Label.Equals(((ASMExternalLabel)obj).Label);
             }
-
-            theBlock.ASMOps.Insert(0, new ASMGeneric() { Text = "BITS 32" });
+            return base.Equals(obj);
         }
     }
 }

@@ -49,6 +49,8 @@ namespace Drivers.Compiler.Architectures.x86
         {
             //Get the ID (i.e. ASM label) of the method to load a pointer to
             string methodID = conversionState.TheILLibrary.GetMethodInfo(theOp.MethodToCall).ID;
+            conversionState.AddExternalLabel(methodID);
+
             //If we want to load the pointer at a specified IL op number:
             if(theOp.LoadAtILPosition != int.MaxValue)
             {

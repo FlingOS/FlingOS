@@ -41,10 +41,16 @@ namespace Drivers.Compiler.ASM
         public string OutputFilePath;
 
         public List<ASMOp> ASMOps = new List<ASMOp>();
+        public List<string> ExternalLabels = new List<string>();
 
         public void Append(ASMOp anOp)
         {
             ASMOps.Add(anOp);
+        }
+
+        public void AddExternalLabel(string label)
+        {
+            ExternalLabels.Add(label);
         }
 
         public string GenerateMethodLabel()

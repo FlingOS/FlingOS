@@ -51,7 +51,10 @@ namespace Drivers.Compiler.Architectures.x86
             int metadataToken = Utilities.ReadInt32(theOp.ValueBytes, 0);
             //Get the type info for the element type
             Type elementType = conversionState.Input.TheMethodInfo.UnderlyingInfo.Module.ResolveType(metadataToken);
-            
+
+            conversionState.AddExternalLabel(conversionState.GetHaltMethodInfo().ID);
+            conversionState.AddExternalLabel(conversionState.GetNewArrMethodInfo().ID);
+
             //New array must:
             // - Allocate memory on the heap for the object
             //          - If no memory is left, throw a panic attack because we're out of memory...
@@ -68,6 +71,7 @@ namespace Drivers.Compiler.Architectures.x86
 
             //Push type reference
             string typeIdStr = conversionState.TheILLibrary.GetTypeInfo(elementType).ID;
+            conversionState.AddExternalLabel(typeIdStr);
             conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Dword, Src = typeIdStr });
             //Push a dword for return value (i.e. new array pointer)
             conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Dword, Src = "0" });
@@ -100,6 +104,7 @@ namespace Drivers.Compiler.Architectures.x86
             //result.AppendLine("jmp method_System_Void_RETEND_Kernel_PreReqs_DECLEND_PageFaultDetection_NAMEEND___Fail");
 
             conversionState.Append(new ASMOps.Call() { Target = "GetEIP" });
+            conversionState.AddExternalLabel("GetEIP");
             conversionState.Append(new ASMOps.Call() { Target = conversionState.GetHaltMethodInfo().ID });
             //Insert the not null label
             conversionState.Append(new ASMOps.Label() { ILPosition = currOpPosition, Extension = "NotNullMem" });

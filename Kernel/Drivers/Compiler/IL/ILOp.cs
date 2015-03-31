@@ -738,6 +738,9 @@ namespace Drivers.Compiler.IL
             }
         }
 
+        public virtual void Preprocess(ILPreprocessState preprocessState, ILOp theOp)
+        {
+        }
         public virtual void Convert(ILConversionState conversionState, ILOp theOp)
         {
         }

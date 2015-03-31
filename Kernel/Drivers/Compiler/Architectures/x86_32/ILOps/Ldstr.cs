@@ -54,6 +54,7 @@ namespace Drivers.Compiler.Architectures.x86
             string theString = conversionState.Input.TheMethodInfo.UnderlyingInfo.Module.ResolveString(StringMetadataToken);
             //Add the string literal and get its ID
             string theStringID = conversionState.TheILLibrary.AddStringLiteral(theString);
+            conversionState.AddExternalLabel(theStringID);
 
             //Push the address of the string (i.e. address of ID - ASM label)
             conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Dword, Src = theStringID });

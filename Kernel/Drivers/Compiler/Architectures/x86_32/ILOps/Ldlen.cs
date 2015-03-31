@@ -58,6 +58,8 @@ namespace Drivers.Compiler.Architectures.x86
 
             int currOpPosition = conversionState.PositionOf(theOp);
 
+            conversionState.AddExternalLabel(conversionState.GetThrowNullReferenceExceptionMethodInfo().ID);
+            
             // 1. Check array reference is not null
             //      1.1. Move array ref into eax
             //      1.2. Compare eax (array ref) to 0

@@ -81,7 +81,14 @@ namespace Drivers.Compiler.IL
         {
             CompileResult result = CompileResult.OK;
 
-            ILPreprocessor.Preprocess(TheLibrary);
+            if (ILScanner.Init())
+            {
+                ILPreprocessor.Preprocess(TheLibrary);
+            }
+            else
+            {
+                result = CompileResult.Fail;
+            }
 
             return result;
         }
@@ -90,14 +97,7 @@ namespace Drivers.Compiler.IL
         {
             CompileResult result = CompileResult.OK;
 
-            if (ILScanner.Init())
-            {
-                result = ILScanner.Scan(TheLibrary);
-            }
-            else
-            {
-                result = CompileResult.Fail;
-            }
+            result = ILScanner.Scan(TheLibrary);
 
             return result;
         }

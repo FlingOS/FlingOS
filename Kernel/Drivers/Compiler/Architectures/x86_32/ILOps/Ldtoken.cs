@@ -61,6 +61,7 @@ namespace Drivers.Compiler.Architectures.x86
                     throw new NullReferenceException();
                 }
                 string typeTableId = conversionState.TheILLibrary.GetTypeInfo(theType).ID;
+                conversionState.AddExternalLabel(typeTableId);
 
                 conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Dword, Src = typeTableId });
                 

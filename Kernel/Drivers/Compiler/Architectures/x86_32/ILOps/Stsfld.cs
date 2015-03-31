@@ -58,6 +58,8 @@ namespace Drivers.Compiler.Architectures.x86
             int size = conversionState.TheILLibrary.GetTypeInfo(theFieldInfo.FieldType).SizeOnStackInBytes;
             bool isFloat = Utilities.IsFloat(theField.FieldType);
 
+            conversionState.AddExternalLabel(fieldId);
+
             StackItem value = conversionState.CurrentStackFrame.Stack.Pop();
             
             if (isFloat)

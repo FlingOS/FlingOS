@@ -6,13 +6,7 @@ using System.Threading.Tasks;
 
 namespace Drivers.Compiler.Architectures.x86.ASMOps
 {
-    public class Comment : ASM.ASMOp
+    public class Comment : ASM.ASMComment
     {
-        public string Text;
-
-        public override string Convert(ASM.ASMBlock theBlock)
-        {
-            return "; " + Text;
-        }
     }
 }

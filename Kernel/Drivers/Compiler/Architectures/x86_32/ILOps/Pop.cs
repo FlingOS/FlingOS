@@ -53,7 +53,9 @@ namespace Drivers.Compiler.Architectures.x86
                 //Decrement ref count
 
                 //Get the ID of method to call as it will be labeled in the output ASM.
-                string methodID = conversionState.GetDecrementRefCountMethodInfo().ID;
+                Types.MethodInfo anInfo = conversionState.GetDecrementRefCountMethodInfo();
+                string methodID = anInfo.ID;
+                conversionState.AddExternalLabel(anInfo.ID);
                 //Append the actual call
                 conversionState.Append(new ASMOps.Call() { Target = methodID });
             }

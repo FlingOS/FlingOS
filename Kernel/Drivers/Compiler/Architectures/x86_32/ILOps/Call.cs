@@ -53,6 +53,8 @@ namespace Drivers.Compiler.Architectures.x86
             MethodBase methodToCall = theOp.MethodToCall;
             Types.MethodInfo methodToCallInfo = conversionState.TheILLibrary.GetMethodInfo(methodToCall);
 
+            conversionState.AddExternalLabel(methodToCallInfo.ID);
+
             //The method to call is a method base
             //A method base can be either a method info i.e. a normal method
             //or a constructor method. The two types are treated separately.

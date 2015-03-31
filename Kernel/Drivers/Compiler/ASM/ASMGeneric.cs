@@ -32,14 +32,13 @@ using System.Threading.Tasks;
 
 namespace Drivers.Compiler.ASM
 {
-    public class ASMOp
+    public class ASMGeneric : ASMOp
     {
-        internal int ILLabelPosition = -1;
-        internal bool RequiresILLabel = false;
+        public string Text;
         
-        public virtual string Convert(ASMBlock theBlock)
+        public override string Convert(ASMBlock theBlock)
         {
-            return "";
+            return Text;
         }
     }
 }

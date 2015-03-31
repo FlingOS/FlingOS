@@ -38,6 +38,16 @@ namespace Drivers.Compiler.Architectures.x86
     /// </summary>
     public class Switch : IL.ILOps.Switch
     {
+        public override void Preprocess(ILPreprocessState preprocessState, ILOp theOp)
+        {
+            for (int i = 0; i < theOp.ValueBytes.Length / 4; i++)
+            {
+                int branchOffset = theOp.NextOffset + Utilities.ReadInt32(theOp.ValueBytes, i * 4);
+                ILOp opToGoTo = preprocessState.Input.At(branchOffset);
+                opToGoTo.LabelRequired = true;
+            }
+        }
+
         /// <summary>
         /// See base class documentation.
         /// </summary>
@@ -66,18 +76,15 @@ namespace Drivers.Compiler.Architectures.x86
             }
 
             
-            int currOpPosition = conversionState.PositionOf(theOp);
-
             conversionState.Append(new ASMOps.Pop() { Size = ASMOps.OperandSize.Dword, Dest = "EAX" });
             for (int i = 0; i < theOp.ValueBytes.Length / 4; i++)
             {
                 int branchOffset = theOp.NextOffset + Utilities.ReadInt32(theOp.ValueBytes, i * 4);
                 ILOp opToGoTo = conversionState.Input.At(branchOffset);
                 int branchPos = conversionState.PositionOf(opToGoTo);
-                opToGoTo.LabelRequired = true;
-
+                
                 conversionState.Append(new ASMOps.Cmp() { Arg1 = "EAX", Arg2 = i.ToString() });
-                conversionState.Append(new ASMOps.Jmp() { JumpType = ASMOps.JmpOp.JumpEqual, DestILPosition = currOpPosition, Extension = "SwitchPoint" + i.ToString() });
+                conversionState.Append(new ASMOps.Jmp() { JumpType = ASMOps.JmpOp.JumpEqual, DestILPosition = branchPos });
             }
         }
     }

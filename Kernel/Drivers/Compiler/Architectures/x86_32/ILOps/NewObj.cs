@@ -48,8 +48,13 @@ namespace Drivers.Compiler.Architectures.x86
         public override void Convert(ILConversionState conversionState, ILOp theOp)
         {
             MethodBase constructorMethod = theOp.MethodToCall;
+            Types.MethodInfo constructorMethodInfo = conversionState.TheILLibrary.GetMethodInfo(constructorMethod);
             Type objectType = constructorMethod.DeclaringType;
-            
+
+            conversionState.AddExternalLabel(conversionState.GetHaltMethodInfo().ID);
+            conversionState.AddExternalLabel(conversionState.GetNewObjMethodInfo().ID);
+            conversionState.AddExternalLabel(constructorMethodInfo.ID);
+
             //New obj must:
             // - Ignore for creation of Delegates
             // - Allocate memory on the heap for the object
@@ -79,6 +84,7 @@ namespace Drivers.Compiler.Architectures.x86
 
             //Push type reference
             string typeIdStr = conversionState.TheILLibrary.GetTypeInfo(objectType).ID;
+            conversionState.AddExternalLabel(typeIdStr);
             conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Dword, Src = typeIdStr });
             //Push a dword for return value (i.e. new object pointer)
             conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Dword, Src = "0" });
@@ -111,6 +117,7 @@ namespace Drivers.Compiler.Architectures.x86
             //result.AppendLine("jmp method_System_Void_RETEND_Kernel_PreReqs_DECLEND_PageFaultDetection_NAMEEND___Fail");
 
             conversionState.Append(new ASMOps.Call() { Target = "GetEIP" });
+            conversionState.AddExternalLabel("GetEIP");
             conversionState.Append(new ASMOps.Call() { Target = conversionState.GetHaltMethodInfo().ID });
             //Insert the not null label
             conversionState.Append(new ASMOps.Label() { ILPosition = currOpPosition, Extension = "NotNullMem" });
@@ -151,7 +158,7 @@ namespace Drivers.Compiler.Architectures.x86
             }
             GlobalMethods.InsertPageFaultDetection(conversionState, "ebx", 0, (OpCodes)theOp.opCode.Value);
             conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Dword, Src = "[EBX]", Dest = "EAX" });
-            conversionState.Append(new ASMOps.Call() { Target = conversionState.TheILLibrary.GetMethodInfo(constructorMethod).ID });    
+            conversionState.Append(new ASMOps.Call() { Target = constructorMethodInfo.ID });    
             //Only remove args from stack - we want the object pointer to remain on the stack
             conversionState.Append(new ASMOps.Add() { Src = sizeOfArgs.ToString(), Dest = "ESP" });
 

@@ -40,8 +40,12 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ASM\ASMCompiler.cs" />
+    <Compile Include="ASM\ASMComment.cs" />
+    <Compile Include="ASM\ASMGlobalLabel.cs" />
+    <Compile Include="ASM\ASMExternalLabel.cs" />
     <Compile Include="ASM\ASMLibrary.cs" />
     <Compile Include="ASM\ASMLabel.cs" />
+    <Compile Include="ASM\ASMGeneric.cs" />
     <Compile Include="ASM\ASMPreprocessor.cs" />
     <Compile Include="ASM\ASMProcessor.cs" />
     <Compile Include="ASM\ASMBlock.cs" />
@@ -118,6 +122,7 @@
     <Compile Include="IL\ILOps\Switch.cs" />
     <Compile Include="IL\ILOps\Xor.cs" />
     <Compile Include="IL\ILPreprocessor.cs" />
+    <Compile Include="IL\ILPreprocessState.cs" />
     <Compile Include="IL\ILReader.cs" />
     <Compile Include="IL\ILScanner.cs" />
     <Compile Include="IL\ILBlock.cs" />

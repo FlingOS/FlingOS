@@ -18,6 +18,10 @@ namespace Drivers.Compiler.IL
         {
             Result.Append(anOp);
         }
+        public void AddExternalLabel(string label)
+        {
+            Result.AddExternalLabel(label);
+        }
         public int PositionOf(ILOp anOp)
         {
             return Input.PositionOf(anOp);

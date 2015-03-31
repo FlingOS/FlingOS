@@ -35,10 +35,10 @@ namespace Drivers.Compiler.IL
     public static class ILScanner
     {
         private static System.Reflection.Assembly TargetArchitectureAssembly = null;
-        private static Dictionary<ILOp.OpCodes, ILOp> TargetILOps = new Dictionary<ILOp.OpCodes, ILOp>();
-        private static ILOps.MethodStart MethodStartOp;
-        private static ILOps.MethodEnd MethodEndOp;
-        private static ILOps.StackSwitch StackSwitchOp;
+        public static Dictionary<ILOp.OpCodes, ILOp> TargetILOps = new Dictionary<ILOp.OpCodes, ILOp>();
+        public static ILOps.MethodStart MethodStartOp;
+        public static ILOps.MethodEnd MethodEndOp;
+        public static ILOps.StackSwitch StackSwitchOp;
 
         public static bool Init()
         {
@@ -186,6 +186,8 @@ namespace Drivers.Compiler.IL
             {
                 try
                 {
+                    TheASMBlock.ASMOps.Add(new ASM.ASMComment() { Text = TheASMBlock.GenerateILOpLabel(convState.PositionOf(anOp), "") + "  --  " + anOp.opCode.ToString() });
+                    
                     ILOp ConverterOp = TargetILOps[(ILOp.OpCodes)anOp.opCode.Value];
                     int currCount = TheASMBlock.ASMOps.Count;
 

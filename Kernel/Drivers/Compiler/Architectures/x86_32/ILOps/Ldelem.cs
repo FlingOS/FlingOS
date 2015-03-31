@@ -51,6 +51,9 @@ namespace Drivers.Compiler.Architectures.x86
         {
             int currOpPosition = conversionState.PositionOf(theOp);
 
+            conversionState.AddExternalLabel(conversionState.GetThrowNullReferenceExceptionMethodInfo().ID);
+            conversionState.AddExternalLabel(conversionState.GetThrowIndexOutOfRangeExceptionMethodInfo().ID);
+
             Type elementType = null;
             bool pushValue = true;
             int sizeToPush = 4;

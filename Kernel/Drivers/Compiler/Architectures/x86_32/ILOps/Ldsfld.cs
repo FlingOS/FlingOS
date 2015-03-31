@@ -61,6 +61,8 @@ namespace Drivers.Compiler.Architectures.x86
             //Get the ID (i.e. ASM label) of the field to load
             string fieldID = conversionState.GetFieldInfo(theField.DeclaringType, theField.Name).ID;
 
+            conversionState.AddExternalLabel(fieldID);
+
             //Load the field or field address
             switch ((OpCodes)theOp.opCode.Value)
             {
