@@ -303,6 +303,7 @@ namespace Kernel.Hardware.PCI
         /// <param name="slot">The PCI slot number.</param>
         /// <param name="function">The PCI function number.</param>
         [Compiler.NoDebug]
+        [Drivers.Compiler.Attributes.NoDebug]
         public PCIDevice(uint bus, uint slot, uint function)
         {
             this.bus = bus;
@@ -346,6 +347,7 @@ namespace Kernel.Hardware.PCI
         /// <param name="aFunction">PCI function number.</param>
         /// <returns>The base address.</returns>
         [Compiler.NoDebug]
+        [Drivers.Compiler.Attributes.NoDebug]
         protected static UInt32 GetAddressBase(uint aBus, uint aSlot, uint aFunction)
         {
             // 31 	        30 - 24    23 - 16      15 - 11 	    10 - 8 	          7 - 2 	        1 - 0
@@ -414,6 +416,7 @@ namespace Kernel.Hardware.PCI
         /// <param name="aRegister">The register to read.</param>
         /// <returns>The byte that has been read.</returns>
         [Compiler.NoDebug]
+        [Drivers.Compiler.Attributes.NoDebug]
         internal byte ReadRegister8(byte aRegister)
         {
             UInt32 xAddr = GetAddressBase(bus, slot, function) | ((UInt32)(aRegister & 0xFC));
@@ -427,6 +430,7 @@ namespace Kernel.Hardware.PCI
         /// <param name="aRegister">The register to write.</param>
         /// <param name="value">The value to write.</param>
         [Compiler.NoDebug]
+        [Drivers.Compiler.Attributes.NoDebug]
         internal void WriteRegister8(byte aRegister, byte value)
         {
             UInt32 xAddr = GetAddressBase(bus, slot, function) | ((UInt32)(aRegister & 0xFC));
@@ -440,6 +444,7 @@ namespace Kernel.Hardware.PCI
         /// <param name="aRegister">The register to read.</param>
         /// <returns>The UInt16 that has been read.</returns>
         [Compiler.NoDebug]
+        [Drivers.Compiler.Attributes.NoDebug]
         internal UInt16 ReadRegister16(byte aRegister)
         {
             UInt32 xAddr = GetAddressBase(bus, slot, function) | ((UInt32)(aRegister & 0xFC));
@@ -453,6 +458,7 @@ namespace Kernel.Hardware.PCI
         /// <param name="aRegister">The register to write.</param>
         /// <param name="value">The value to write.</param>
         [Compiler.NoDebug]
+        [Drivers.Compiler.Attributes.NoDebug]
         internal void WriteRegister16(byte aRegister, ushort value)
         {
             UInt32 xAddr = GetAddressBase(bus, slot, function) | ((UInt32)(aRegister & 0xFC));
@@ -466,6 +472,7 @@ namespace Kernel.Hardware.PCI
         /// <param name="aRegister">The register to read.</param>
         /// <returns>The UInt32 that has been read.</returns>
         [Compiler.NoDebug]
+        [Drivers.Compiler.Attributes.NoDebug]
         internal UInt32 ReadRegister32(byte aRegister)
         {
             UInt32 xAddr = GetAddressBase(bus, slot, function) | ((UInt32)(aRegister & 0xFC));
@@ -479,6 +486,7 @@ namespace Kernel.Hardware.PCI
         /// <param name="aRegister">The register to write.</param>
         /// <param name="value">The value to write.</param>
         [Compiler.NoDebug]
+        [Drivers.Compiler.Attributes.NoDebug]
         internal void WriteRegister32(byte aRegister, uint value)
         {
             UInt32 xAddr = GetAddressBase(bus, slot, function) | ((UInt32)(aRegister & 0xFC));

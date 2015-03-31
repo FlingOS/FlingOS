@@ -164,6 +164,19 @@ namespace Drivers.Compiler.IL
                 offset -= theMethodInfo.ArgumentInfos[i].TheTypeInfo.SizeOnStackInBytes;
                 theMethodInfo.ArgumentInfos[i].Offset = offset;
             }
+
+            for (int i = 0; i < theILBlock.ILOps.Count; i++)
+            {
+                ILOp theOp = theILBlock.ILOps[i];
+
+                // Remove cast class ops
+                if ((ILOp.OpCodes)theOp.opCode.Value == ILOp.OpCodes.Castclass)
+                {
+                    theILBlock.ILOps.RemoveAt(i);
+                    i--;
+                    continue;
+                }
+            }
         }
         private static void PreprocessSpecialClasses(ILLibrary TheLibrary)
         {

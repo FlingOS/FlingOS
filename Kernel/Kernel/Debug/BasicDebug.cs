@@ -40,13 +40,16 @@ namespace Kernel.Debug
     /// kernel compiler is broken, the debugger will still work.
     /// </remarks>
     [Compiler.PluggedClass]
+    [Drivers.Compiler.Attributes.PluggedClass]
     public static class BasicDebug
     {
         /// <summary>
         /// Initialises the basic debugger
         /// </summary>
         [Compiler.NoDebug]
+        [Drivers.Compiler.Attributes.NoDebug]
         [Compiler.NoGC]
+        [Drivers.Compiler.Attributes.NoGC]
         public static void Init()
         {
             BasicConsole.Write("Attempting to init serial port for debug connection...");
@@ -261,7 +264,9 @@ namespace Kernel.Debug
         ///// Clears the screen
         ///// </summary>
         //[Compiler.NoDebug]
+        //[Drivers.Compiler.Attributes.NoDebug]
         //[Compiler.NoGC]
+        //[Drivers.Compiler.Attributes.NoGC]
         //public static void ClearMessage()
         //{
         //    PreReqs.WriteDebugVideo(" ", 0x00);
@@ -271,7 +276,9 @@ namespace Kernel.Debug
         ///// </summary>
         ///// <param name="message">The message to display.</param>
         //[Compiler.NoDebug]
+        //[Drivers.Compiler.Attributes.NoDebug]
         //[Compiler.NoGC]
+        //[Drivers.Compiler.Attributes.NoGC]
         //public static void DisplayMessage(string message)
         //{
         //    PreReqs.WriteDebugVideo(message, 0x02);

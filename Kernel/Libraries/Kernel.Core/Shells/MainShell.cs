@@ -1872,6 +1872,7 @@ which should have been provided with the executable.");
         /// Tests all interrupts in the range 17 to 255 by firing them.
         /// </summary>
         [Compiler.NoGC]
+        [Drivers.Compiler.Attributes.NoGC]
         private void InterruptsTest()
         {
             for (uint i = 17; i < 256; i++)
@@ -1884,6 +1885,7 @@ which should have been provided with the executable.");
         /// Tests delegates.
         /// </summary>
         [Compiler.NoGC]
+        [Drivers.Compiler.Attributes.NoGC]
         private void DelegateTest()
         {
             IntDelegate del = CallbackMethod;

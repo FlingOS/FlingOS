@@ -81,6 +81,7 @@ namespace Kernel.Hardware.PCI
         /// <param name="slot">The PCI device's Slot number.</param>
         /// <param name="function">The PCI device's Function number.</param>
         [Compiler.NoDebug]
+        [Drivers.Compiler.Attributes.NoDebug]
         public PCIDeviceNormal(uint bus, uint slot, uint function)
             : base(bus, slot, function)
         {

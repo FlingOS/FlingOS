@@ -63,6 +63,10 @@
       <Project>{061e5f53-5eff-4e12-94ee-9e18459e5cf4}</Project>
       <Name>Kernel.Compiler</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Drivers\Compiler\Drivers.Compiler.csproj">
+      <Project>{1fb0e622-d2c6-4a5c-b5b6-d2bb5e502af1}</Project>
+      <Name>Drivers.Compiler</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Libraries\Kernel.Core\Kernel.Core.csproj">
       <Project>{5ba8a9c9-d4e1-4470-a9e6-2b5657e09140}</Project>
       <Name>Kernel.Core</Name>
@@ -169,8 +173,8 @@
   </Target>
   -->
   <UsingTask TaskName="KernelCompiler" AssemblyFile="$(SolutionDir)Kernel\Compiler\App\$(OutputPath)Kernel.Compiler.App.exe" />
-  <Target Name="AfterBuild">
+  <!--<Target Name="AfterBuild">
     <KernelCompiler Condition="'$(Configuration)' == 'Debug'" InputFile="$(TargetPath)" TargetArchitecture="$(PlatformTarget)" OutputFile="$(TargetDir)$(TargetName)" ToolsPath="$(SolutionDir)Kernel\Compiler\App\bin\Debug" DebugBuild="True" />
     <KernelCompiler Condition="'$(Configuration)' == 'Release'" InputFile="$(TargetPath)" TargetArchitecture="$(PlatformTarget)" OutputFile="$(TargetDir)$(TargetName)" ToolsPath="$(SolutionDir)Kernel\Compiler\App\bin\Release" />
-  </Target>
+  </Target>-->
 </Project>

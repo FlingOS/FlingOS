@@ -36,12 +36,14 @@ namespace Kernel
     /// The main class (containing the kernel entry point) for the Fling OS kernel.
     /// </summary>
     [Compiler.PluggedClass]
+    [Drivers.Compiler.Attributes.PluggedClass]
     public static class Kernel
     {
         /// <summary>
         /// Initialises static stuff within the kernel (such as calling GC.Init and BasicDebug.Init)
         /// </summary>
         [Compiler.NoDebug]
+        [Drivers.Compiler.Attributes.NoDebug]
         static Kernel()
         {
             BasicConsole.Init();
@@ -59,6 +61,7 @@ namespace Kernel
         /// Filled-in by the compiler.
         /// </summary>
         [Compiler.CallStaticConstructorsMethod]
+        //[Drivers.Compiler.Attributes.CallStaticConstructorsMethod]
         public static void CallStaticConstructors()
         {
         }
@@ -67,8 +70,11 @@ namespace Kernel
         /// Main kernel entry point
         /// </summary>
         [Compiler.KernelMainMethod]
+        //[Drivers.Compiler.Attributes.KernelMainMethod]
         [Compiler.NoGC]
+        [Drivers.Compiler.Attributes.NoGC]
         [Compiler.NoDebug]
+        [Drivers.Compiler.Attributes.NoDebug]
         static unsafe void Main()
         {
             //Necessary for exception handling stuff to work
@@ -200,7 +206,9 @@ namespace Kernel
         /// </summary>
         /// <param name="lastAddress">The address of the last line of code which ran or 0xFFFFFFFF.</param>
         [Compiler.HaltMethod]
+        [Drivers.Compiler.Attributes.HaltMethod]
         [Compiler.NoGC]
+        [Drivers.Compiler.Attributes.NoGC]
         public static void Halt(uint lastAddress)
         {
             try
@@ -313,6 +321,7 @@ namespace Kernel
         /// etc has been set up properly.
         /// </summary>
         [Compiler.NoDebug]
+        [Drivers.Compiler.Attributes.NoDebug]
         private static unsafe void ManagedMain()
         {
             BasicConsole.WriteLine(" Managed Main! ");
@@ -389,6 +398,7 @@ namespace Kernel
         /// Outputs the current exception information.
         /// </summary>
         [Compiler.NoDebug]
+        [Drivers.Compiler.Attributes.NoDebug]
         private static void OutputCurrentExceptionInfo()
         {
             BasicConsole.SetTextColour(BasicConsole.warning_colour);

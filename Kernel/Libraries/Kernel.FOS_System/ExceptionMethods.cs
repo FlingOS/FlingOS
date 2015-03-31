@@ -36,6 +36,7 @@ namespace Kernel
     /// Implements the lowest-level kernel exception handling.
     /// </summary>
     [Compiler.PluggedClass]
+    [Drivers.Compiler.Attributes.PluggedClass]
     public static unsafe class ExceptionMethods
     {
         /// <summary>
@@ -75,6 +76,7 @@ namespace Kernel
         /// <param name="filterPtr">0 = finally handler, 0xFFFFFFFF = catch handler with no filter. 
         /// Original intended use was as a pointer to the first op of the catch filter but never implemented like this.</param>
         [Compiler.AddExceptionHandlerInfoMethod]
+        //[Drivers.Compiler.Attributes.AddExceptionHandlerInfoMethod]
         [Compiler.PluggedMethod(ASMFilePath=@"ASM\Exceptions\AddExceptionHandlerInfo")]
         public static unsafe void AddExceptionHandlerInfo(
             void* handlerPtr,
@@ -88,6 +90,7 @@ namespace Kernel
         /// </summary>
         /// <param name="ex">The exception to throw.</param>
         [Compiler.ThrowExceptionMethod]
+        //[Drivers.Compiler.Attributes.ThrowExceptionMethod]
         [Compiler.PluggedMethod(ASMFilePath = @"ASM\Exceptions\Throw")]
         public static unsafe void Throw(FOS_System.Exception ex)
         {
@@ -107,6 +110,7 @@ namespace Kernel
         /// Handles the current pending exception.
         /// </summary>
         [Compiler.HandleExceptionMethod]
+        //[Drivers.Compiler.Attributes.HandleExceptionMethod]
         [Compiler.PluggedMethod(ASMFilePath = @"ASM\Exceptions\HandleException")]
         public static unsafe void HandleException()
         {
@@ -116,6 +120,7 @@ namespace Kernel
         /// </summary>
         /// <param name="continuePtr">A pointer to the instruction to continue execution at.</param>
         [Compiler.ExceptionsHandleLeaveMethod]
+        //[Drivers.Compiler.Attributes.ExceptionsHandleLeaveMethod]
         [Compiler.PluggedMethod(ASMFilePath = @"ASM\Exceptions\HandleLeave")]
         public static unsafe void HandleLeave(void* continuePtr)
         {
@@ -125,6 +130,7 @@ namespace Kernel
         /// This may result in an exception being passed to the next handler if it has not been caught &amp; handled yet.
         /// </summary>
         [Compiler.ExceptionsHandleEndFinallyMethod]
+        //[Drivers.Compiler.Attributes.ExceptionsHandleEndFinallyMethod]
         [Compiler.PluggedMethod(ASMFilePath = @"ASM\Exceptions\HandleEndFinally")]
         public static unsafe void HandleEndFinally()
         {
@@ -444,6 +450,7 @@ namespace Kernel
         /// Used by compiler to handle the creation of the exception object and calling Throw.
         /// </remarks>
         [Compiler.ThrowNullReferenceExceptionMethod]
+        [Drivers.Compiler.Attributes.ThrowNullReferenceExceptionMethod]
         public static void Throw_NullReferenceException()
         {
             HaltReason = "Null reference exception.";
@@ -456,6 +463,7 @@ namespace Kernel
         /// Used by compiler to handle the creation of the exception object and calling Throw.
         /// </remarks>
         [Compiler.ThrowArrayTypeMismatchExceptionMethod]
+        //[Drivers.Compiler.Attributes.ThrowArrayTypeMismatchExceptionMethod]
         public static void Throw_ArrayTypeMismatchException()
         {
             HaltReason = "Array type mismatch exception.";
@@ -468,6 +476,7 @@ namespace Kernel
         /// Used by compiler to handle the creation of the exception object and calling Throw.
         /// </remarks>
         [Compiler.ThrowIndexOutOfRangeExceptionMethod]
+        [Drivers.Compiler.Attributes.ThrowIndexOutOfRangeExceptionMethod]
         public static void Throw_IndexOutOfRangeException()
         {
             HaltReason = "Index out of range exception.";

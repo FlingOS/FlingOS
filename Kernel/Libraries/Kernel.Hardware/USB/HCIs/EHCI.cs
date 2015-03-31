@@ -2343,11 +2343,13 @@ namespace Kernel.Hardware.USB.HCIs
         public EHCI_qTD_Struct* NextqTDPointer
         {
             [Compiler.NoGC]
+            [Drivers.Compiler.Attributes.NoGC]
             get
             {
                 return (EHCI_qTD_Struct*)(qtd->u1 & 0xFFFFFFE0u);
             }
             [Compiler.NoGC]
+            [Drivers.Compiler.Attributes.NoGC]
             set
             {
                 qtd->u1 = (qtd->u1 & 0x0000001Fu) | ((uint)value & 0xFFFFFFE0u);
@@ -2359,11 +2361,13 @@ namespace Kernel.Hardware.USB.HCIs
         public bool NextqTDPointerTerminate
         {
             [Compiler.NoGC]
+            [Drivers.Compiler.Attributes.NoGC]
             get
             {
                 return (qtd->u1 & 0x00000001u) > 0;
             }
             [Compiler.NoGC]
+            [Drivers.Compiler.Attributes.NoGC]
             set
             {
                 if (value)
@@ -2382,11 +2386,13 @@ namespace Kernel.Hardware.USB.HCIs
         public bool AlternateNextqTDPointerTerminate
         {
             [Compiler.NoGC]
+            [Drivers.Compiler.Attributes.NoGC]
             get
             {
                 return (qtd->u2 & 0x00000001u) > 0;
             }
             [Compiler.NoGC]
+            [Drivers.Compiler.Attributes.NoGC]
             set
             {
                 if (value)
@@ -2405,11 +2411,13 @@ namespace Kernel.Hardware.USB.HCIs
         public byte Status
         {
             [Compiler.NoGC]
+            [Drivers.Compiler.Attributes.NoGC]
             get
             {
                 return (byte)(qtd->u3);
             }
             [Compiler.NoGC]
+            [Drivers.Compiler.Attributes.NoGC]
             set
             {
                 qtd->u3 = (qtd->u3 & 0xFFFFFF00u) | value;
@@ -2421,11 +2429,13 @@ namespace Kernel.Hardware.USB.HCIs
         public byte PIDCode
         {
             [Compiler.NoGC]
+            [Drivers.Compiler.Attributes.NoGC]
             get
             {
                 return (byte)((qtd->u3 & 0x000000300u) >> 8);
             }
             [Compiler.NoGC]
+            [Drivers.Compiler.Attributes.NoGC]
             set
             {
                 qtd->u3 = (qtd->u3 & 0xFFFFFCFFu) | ((uint)value << 8); 
@@ -2437,11 +2447,13 @@ namespace Kernel.Hardware.USB.HCIs
         public byte ErrorCounter
         {
             [Compiler.NoGC]
+            [Drivers.Compiler.Attributes.NoGC]
             get
             {
                 return (byte)((qtd->u3 & 0x00000C00u) >> 10);
             }
             [Compiler.NoGC]
+            [Drivers.Compiler.Attributes.NoGC]
             set
             {
                 qtd->u3 = (qtd->u3 & 0xFFFFF3FFu) | ((uint)value << 10);
@@ -2453,11 +2465,13 @@ namespace Kernel.Hardware.USB.HCIs
         public byte CurrentPage
         {
             [Compiler.NoGC]
+            [Drivers.Compiler.Attributes.NoGC]
             get
             {
                 return (byte)((qtd->u3 & 0x00007000) >> 12);
             }
             [Compiler.NoGC]
+            [Drivers.Compiler.Attributes.NoGC]
             set
             {
                 qtd->u3 = (qtd->u3 & 0xFFFF8FFF) | ((uint)value << 12);
@@ -2469,11 +2483,13 @@ namespace Kernel.Hardware.USB.HCIs
         public bool InterruptOnComplete
         {
             [Compiler.NoGC]
+            [Drivers.Compiler.Attributes.NoGC]
             get
             {
                 return (qtd->u3 & 0x00008000u) > 0;
             }
             [Compiler.NoGC]
+            [Drivers.Compiler.Attributes.NoGC]
             set
             {
                 if (value)
@@ -2492,11 +2508,13 @@ namespace Kernel.Hardware.USB.HCIs
         public UInt16 TotalBytesToTransfer
         {
             [Compiler.NoGC]
+            [Drivers.Compiler.Attributes.NoGC]
             get
             {
                 return (UInt16)((qtd->u3 >> 16) & 0x00007FFF);
             }
             [Compiler.NoGC]
+            [Drivers.Compiler.Attributes.NoGC]
             set
             {
                 qtd->u3 = (qtd->u3 & 0x8000FFFF) | ((uint)value << 16);
@@ -2508,11 +2526,13 @@ namespace Kernel.Hardware.USB.HCIs
         public bool DataToggle
         {
             [Compiler.NoGC]
+            [Drivers.Compiler.Attributes.NoGC]
             get
             {
                 return (qtd->u3 & 0x80000000u) > 0;
             }
             [Compiler.NoGC]
+            [Drivers.Compiler.Attributes.NoGC]
             set
             {
                 if (value)
@@ -2532,11 +2552,13 @@ namespace Kernel.Hardware.USB.HCIs
         public ushort CurrentOffset
         {
             [Compiler.NoGC]
+            [Drivers.Compiler.Attributes.NoGC]
             get
             {
                 return (ushort)(qtd->u4 & 0x00000FFFu);
             }
             [Compiler.NoGC]
+            [Drivers.Compiler.Attributes.NoGC]
             set
             {
                 qtd->u4 = (qtd->u4 & 0xFFFFF000u) | ((uint)value & 0x00000FFFu);
@@ -2549,11 +2571,13 @@ namespace Kernel.Hardware.USB.HCIs
         public byte* Buffer0
         {
             [Compiler.NoGC]
+            [Drivers.Compiler.Attributes.NoGC]
             get
             {
                 return (byte*)(qtd->u4 & 0xFFFFF000u);
             }
             [Compiler.NoGC]
+            [Drivers.Compiler.Attributes.NoGC]
             set
             {
                 qtd->u4 = (qtd->u4 & 0x00000FFFu) | ((uint)value & 0xFFFFF000u);
@@ -2565,11 +2589,13 @@ namespace Kernel.Hardware.USB.HCIs
         public byte* Buffer1
         {
             [Compiler.NoGC]
+            [Drivers.Compiler.Attributes.NoGC]
             get
             {
                 return (byte*)(qtd->u5 & 0xFFFFF000);
             }
             [Compiler.NoGC]
+            [Drivers.Compiler.Attributes.NoGC]
             set
             {
                 qtd->u5 = (uint)value & 0xFFFFF000;
@@ -2581,11 +2607,13 @@ namespace Kernel.Hardware.USB.HCIs
         public byte* Buffer2
         {
             [Compiler.NoGC]
+            [Drivers.Compiler.Attributes.NoGC]
             get
             {
                 return (byte*)(qtd->u6 & 0xFFFFF000);
             }
             [Compiler.NoGC]
+            [Drivers.Compiler.Attributes.NoGC]
             set
             {
                 qtd->u6 = (uint)value & 0xFFFFF000;
@@ -2597,11 +2625,13 @@ namespace Kernel.Hardware.USB.HCIs
         public byte* Buffer3
         {
             [Compiler.NoGC]
+            [Drivers.Compiler.Attributes.NoGC]
             get
             {
                 return (byte*)(qtd->u7 & 0xFFFFF000);
             }
             [Compiler.NoGC]
+            [Drivers.Compiler.Attributes.NoGC]
             set
             {
                 qtd->u7 = (uint)value & 0xFFFFF000;
@@ -2613,11 +2643,13 @@ namespace Kernel.Hardware.USB.HCIs
         public byte* Buffer4
         {
             [Compiler.NoGC]
+            [Drivers.Compiler.Attributes.NoGC]
             get
             {
                 return (byte*)(qtd->u8 & 0xFFFFF000);
             }
             [Compiler.NoGC]
+            [Drivers.Compiler.Attributes.NoGC]
             set
             {
                 qtd->u8 = (uint)value & 0xFFFFF000;
@@ -2644,6 +2676,7 @@ namespace Kernel.Hardware.USB.HCIs
         /// Frees the underlying memory structure.
         /// </summary>
         [Compiler.NoGC]
+        [Drivers.Compiler.Attributes.NoGC]
         public void Free()
         {
             FOS_System.Heap.Free(qtd);
@@ -2671,11 +2704,13 @@ namespace Kernel.Hardware.USB.HCIs
         public bool Terminate
         {
             [Compiler.NoGC]
+            [Drivers.Compiler.Attributes.NoGC]
             get
             {
                 return (queueHead->u1 & 0x00000001u) != 0;
             }
             [Compiler.NoGC]
+            [Drivers.Compiler.Attributes.NoGC]
             set
             {
                 if (value)
@@ -2694,11 +2729,13 @@ namespace Kernel.Hardware.USB.HCIs
         public byte Type
         {
             [Compiler.NoGC]
+            [Drivers.Compiler.Attributes.NoGC]
             get
             {
                 return (byte)((queueHead->u1 >> 1) & 0x00000003u);
             }
             [Compiler.NoGC]
+            [Drivers.Compiler.Attributes.NoGC]
             set
             {
                 queueHead->u1 = (queueHead->u1 & 0xFFFFFFF9u) | (uint)((value & 0x00000003u) << 1);
@@ -2710,11 +2747,13 @@ namespace Kernel.Hardware.USB.HCIs
         public EHCI_QueueHead_Struct* HorizontalLinkPointer
         {
             [Compiler.NoGC]
+            [Drivers.Compiler.Attributes.NoGC]
             get
             {
                 return (EHCI_QueueHead_Struct*)(queueHead->u1 & 0xFFFFFFE0u);
             }
             [Compiler.NoGC]
+            [Drivers.Compiler.Attributes.NoGC]
             set
             {
                 queueHead->u1 = ((uint)value & 0xFFFFFFE0u) | (queueHead->u1 & 0x0000001Fu);
@@ -2726,11 +2765,13 @@ namespace Kernel.Hardware.USB.HCIs
         public byte DeviceAddress
         {
             [Compiler.NoGC]
+            [Drivers.Compiler.Attributes.NoGC]
             get
             {
                 return (byte)(queueHead->u2 & 0x0000007Fu);
             }
             [Compiler.NoGC]
+            [Drivers.Compiler.Attributes.NoGC]
             set
             {
                 queueHead->u2 = (queueHead->u2 & 0xFFFFFF80u) | (value & 0x0000007Fu);
@@ -2742,11 +2783,13 @@ namespace Kernel.Hardware.USB.HCIs
         public bool InactiveOnNextTransaction
         {
             [Compiler.NoGC]
+            [Drivers.Compiler.Attributes.NoGC]
             get
             {
                 return (queueHead->u2 & 0x00000080u) > 0;
             }
             [Compiler.NoGC]
+            [Drivers.Compiler.Attributes.NoGC]
             set
             {
                 if (value)
@@ -2765,11 +2808,13 @@ namespace Kernel.Hardware.USB.HCIs
         public byte EndpointNumber
         {
             [Compiler.NoGC]
+            [Drivers.Compiler.Attributes.NoGC]
             get
             {
                 return (byte)((queueHead->u2 & 0x00000F00u) >> 8);
             }
             [Compiler.NoGC]
+            [Drivers.Compiler.Attributes.NoGC]
             set
             {
                 queueHead->u2 = (queueHead->u2 & 0xFFFFF0FFu) | (((uint)value) << 8);
@@ -2781,11 +2826,13 @@ namespace Kernel.Hardware.USB.HCIs
         public byte EndpointSpeed
         {
             [Compiler.NoGC]
+            [Drivers.Compiler.Attributes.NoGC]
             get
             {
                 return (byte)((queueHead->u2 & 0x00003000u) >> 12);
             }
             [Compiler.NoGC]
+            [Drivers.Compiler.Attributes.NoGC]
             set
             {
                 queueHead->u2 = (queueHead->u2 & 0xFFFFCFFFu) | (((uint)value) << 12);
@@ -2797,11 +2844,13 @@ namespace Kernel.Hardware.USB.HCIs
         public bool DataToggleControl
         {
             [Compiler.NoGC]
+            [Drivers.Compiler.Attributes.NoGC]
             get
             {
                 return (queueHead->u2 & 0x00004000u) > 0;
             }
             [Compiler.NoGC]
+            [Drivers.Compiler.Attributes.NoGC]
             set
             {
                 if (value)
@@ -2820,11 +2869,13 @@ namespace Kernel.Hardware.USB.HCIs
         public bool HeadOfReclamationList
         {
             [Compiler.NoGC]
+            [Drivers.Compiler.Attributes.NoGC]
             get
             {
                 return (queueHead->u2 & 0x00008000u) > 0;
             }
             [Compiler.NoGC]
+            [Drivers.Compiler.Attributes.NoGC]
             set
             {
                 if (value)
@@ -2843,11 +2894,13 @@ namespace Kernel.Hardware.USB.HCIs
         public UInt16 MaximumPacketLength
         {
             [Compiler.NoGC]
+            [Drivers.Compiler.Attributes.NoGC]
             get
             {
                 return (UInt16)((queueHead->u2 & 0x07FF0000u) >> 16);
             }
             [Compiler.NoGC]
+            [Drivers.Compiler.Attributes.NoGC]
             set
             {
                 queueHead->u2 = (queueHead->u2 & 0xF800FFFFu) | (((uint)value << 16) & 0x07FF0000u);
@@ -2859,11 +2912,13 @@ namespace Kernel.Hardware.USB.HCIs
         public bool ControlEndpointFlag
         {
             [Compiler.NoGC]
+            [Drivers.Compiler.Attributes.NoGC]
             get
             {
                 return (queueHead->u2 & 0x08000000u) > 0;
             }
             [Compiler.NoGC]
+            [Drivers.Compiler.Attributes.NoGC]
             set
             {
                 if (value)
@@ -2882,11 +2937,13 @@ namespace Kernel.Hardware.USB.HCIs
         public byte NakCountReload
         {
             [Compiler.NoGC]
+            [Drivers.Compiler.Attributes.NoGC]
             get
             {
                 return (byte)((queueHead->u2 & 0xF0000000u) >> 28);
             }
             [Compiler.NoGC]
+            [Drivers.Compiler.Attributes.NoGC]
             set
             {
                 queueHead->u2 = (queueHead->u2 & 0x0FFFFFFFu) | ((uint)value << 28);
@@ -2898,11 +2955,13 @@ namespace Kernel.Hardware.USB.HCIs
         public byte InterruptScheduleMask
         {
             [Compiler.NoGC]
+            [Drivers.Compiler.Attributes.NoGC]
             get
             {
                 return (byte)(queueHead->u3);
             }
             [Compiler.NoGC]
+            [Drivers.Compiler.Attributes.NoGC]
             set
             {
                 queueHead->u3 = (queueHead->u3 & 0xFFFFFF00u) | value;
@@ -2914,11 +2973,13 @@ namespace Kernel.Hardware.USB.HCIs
         public byte SplitCompletionMask
         {
             [Compiler.NoGC]
+            [Drivers.Compiler.Attributes.NoGC]
             get
             {
                 return (byte)(queueHead->u3 >> 8);
             }
             [Compiler.NoGC]
+            [Drivers.Compiler.Attributes.NoGC]
             set
             {
                 queueHead->u3 = (queueHead->u3 & 0xFFFF00FFu) | ((uint)value << 8);
@@ -2930,11 +2991,13 @@ namespace Kernel.Hardware.USB.HCIs
         public byte HubAddr
         {
             [Compiler.NoGC]
+            [Drivers.Compiler.Attributes.NoGC]
             get
             {
                 return (byte)((queueHead->u3 & 0x007F0000u) >> 16);
             }
             [Compiler.NoGC]
+            [Drivers.Compiler.Attributes.NoGC]
             set
             {
                 queueHead->u3 = (queueHead->u3 & 0xFF80FFFFu) | ((uint)value << 16);
@@ -2946,11 +3009,13 @@ namespace Kernel.Hardware.USB.HCIs
         public byte PortNumber
         {
             [Compiler.NoGC]
+            [Drivers.Compiler.Attributes.NoGC]
             get
             {
                 return (byte)((queueHead->u3 & 0x3f800000u) >> 23);
             }
             [Compiler.NoGC]
+            [Drivers.Compiler.Attributes.NoGC]
             set
             {
                 queueHead->u3 = (queueHead->u3 & 0xC07FFFFFu) | ((uint)value << 23);
@@ -2962,11 +3027,13 @@ namespace Kernel.Hardware.USB.HCIs
         public byte HighBandwidthPipeMultiplier
         {
             [Compiler.NoGC]
+            [Drivers.Compiler.Attributes.NoGC]
             get
             {
                 return (byte)((queueHead->u3 & 0xC0000000u) >> 30);
             }
             [Compiler.NoGC]
+            [Drivers.Compiler.Attributes.NoGC]
             set
             {
                 queueHead->u3 = (queueHead->u3 & 0x3FFFFFFFu) | ((uint)value << 30);
@@ -2978,11 +3045,13 @@ namespace Kernel.Hardware.USB.HCIs
         public EHCI_qTD_Struct* CurrentqTDPointer
         {
             [Compiler.NoGC]
+            [Drivers.Compiler.Attributes.NoGC]
             get
             {
                 return (EHCI_qTD_Struct*)(queueHead->u4 & 0xFFFFFFF0u);
             }
             [Compiler.NoGC]
+            [Drivers.Compiler.Attributes.NoGC]
             set
             {
                 queueHead->u4 = (queueHead->u4 & 0x0000000Fu) | ((uint)value & 0xFFFFFFF0u);
@@ -2994,11 +3063,13 @@ namespace Kernel.Hardware.USB.HCIs
         public EHCI_qTD_Struct* NextqTDPointer
         {
             [Compiler.NoGC]
+            [Drivers.Compiler.Attributes.NoGC]
             get
             {
                 return (EHCI_qTD_Struct*)(queueHead->u5 & 0xFFFFFFF0u);
             }
             [Compiler.NoGC]
+            [Drivers.Compiler.Attributes.NoGC]
             set
             {
                 queueHead->u5 = (queueHead->u5 & 0x0000000Fu) | ((uint)value & 0xFFFFFFF0u);
@@ -3010,11 +3081,13 @@ namespace Kernel.Hardware.USB.HCIs
         public bool NextqTDPointerTerminate
         {
             [Compiler.NoGC]
+            [Drivers.Compiler.Attributes.NoGC]
             get
             {
                 return (queueHead->u5 & 0x00000001u) > 0;
             }
             [Compiler.NoGC]
+            [Drivers.Compiler.Attributes.NoGC]
             set
             {
                 if (value)
@@ -3034,11 +3107,13 @@ namespace Kernel.Hardware.USB.HCIs
         public bool Active
         {
             [Compiler.NoGC]
+            [Drivers.Compiler.Attributes.NoGC]
             get
             {
                 return (queueHead->u7 & 0x00000080u) > 0;
             }
             [Compiler.NoGC]
+            [Drivers.Compiler.Attributes.NoGC]
             set
             {
                 if (value)
@@ -3072,6 +3147,7 @@ namespace Kernel.Hardware.USB.HCIs
         /// Frees the underlying memory structure.
         /// </summary>
         [Compiler.NoGC]
+        [Drivers.Compiler.Attributes.NoGC]
         public void Free()
         {
             FOS_System.Heap.Free(queueHead);

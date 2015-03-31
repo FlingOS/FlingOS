@@ -63,6 +63,7 @@ namespace Kernel.FOS_System.Collections
         public int Count
         {
             [Compiler.NoDebug]
+            [Drivers.Compiler.Attributes.NoDebug]
             get
             {
                 return nextIndex;
@@ -80,6 +81,7 @@ namespace Kernel.FOS_System.Collections
         /// Creates a new list with initial capacity of 5.
         /// </summary>
         [Compiler.NoDebug]
+        [Drivers.Compiler.Attributes.NoDebug]
         public List()
         {
             //Create the internal array with default capacity of 5.
@@ -90,6 +92,7 @@ namespace Kernel.FOS_System.Collections
         /// </summary>
         /// <param name="capacity">The initial capacity of the list.</param>
         [Compiler.NoDebug]
+        [Drivers.Compiler.Attributes.NoDebug]
         public List(int capacity)
         {
             //Create the internal array with specified capacity.
@@ -101,6 +104,7 @@ namespace Kernel.FOS_System.Collections
         /// </summary>
         /// <param name="obj">The object to add.</param>
         [Compiler.NoDebug]
+        [Drivers.Compiler.Attributes.NoDebug]
         public void Add(FOS_System.Object obj)
         {
             //If the next index to insert an item at is beyond the capacity of
@@ -118,6 +122,7 @@ namespace Kernel.FOS_System.Collections
         /// </summary>
         /// <param name="obj">The object to remove.</param>
         [Compiler.NoDebug]
+        [Drivers.Compiler.Attributes.NoDebug]
         public void Remove(FOS_System.Object obj)
         {
             //Determines whether we should be setting the array entries
@@ -179,6 +184,7 @@ namespace Kernel.FOS_System.Collections
         /// </summary>
         /// <param name="index">The index of the object to remove.</param>
         [Compiler.NoDebug]
+        [Drivers.Compiler.Attributes.NoDebug]
         public void RemoveAt(int index)
         {
             //Throw and exception if the index to remove
@@ -257,6 +263,7 @@ namespace Kernel.FOS_System.Collections
         /// Empties the list of all objects but does not alter the list capacity.
         /// </summary>
         [Compiler.NoDebug]
+        [Drivers.Compiler.Attributes.NoDebug]
         public void Empty()
         {
             //Nice and simple again - just set everything to null :)
@@ -273,6 +280,7 @@ namespace Kernel.FOS_System.Collections
         /// </summary>
         /// <param name="amount">The amount to expand the capacity by.</param>
         [Compiler.NoDebug]
+        [Drivers.Compiler.Attributes.NoDebug]
         private void ExpandCapacity(int amount)
         {
             //We need to expand the size of the internal array. Unfortunately, dynamic
@@ -302,6 +310,7 @@ namespace Kernel.FOS_System.Collections
         public FOS_System.Object this[int index]
         {
             [Compiler.NoDebug]
+            [Drivers.Compiler.Attributes.NoDebug]
             get
             {
                 //Throw an exception if the index to get is beyond the length of
@@ -315,6 +324,7 @@ namespace Kernel.FOS_System.Collections
                 return _array[index];
             }
             [Compiler.NoDebug]
+            [Drivers.Compiler.Attributes.NoDebug]
             set
             {
                 //Throw an exception if the index to set is beyond the length of
@@ -358,6 +368,7 @@ namespace Kernel.FOS_System.Collections
         public int Count
         {
             [Compiler.NoDebug]
+            [Drivers.Compiler.Attributes.NoDebug]
             get
             {
                 return currIndex;
@@ -376,6 +387,7 @@ namespace Kernel.FOS_System.Collections
         /// Creates a new list with initial capacity of 5.
         /// </summary>
         [Compiler.NoDebug]
+        [Drivers.Compiler.Attributes.NoDebug]
         public UInt32List()
         {
             _array = new UInt32[5];
@@ -385,6 +397,7 @@ namespace Kernel.FOS_System.Collections
         /// </summary>
         /// <param name="capacity">The initial capacity of the list.</param>
         [Compiler.NoDebug]
+        [Drivers.Compiler.Attributes.NoDebug]
         public UInt32List(int capacity)
         {
             _array = new UInt32[capacity];
@@ -395,6 +408,7 @@ namespace Kernel.FOS_System.Collections
         /// </summary>
         /// <param name="obj">The UInt32 to add.</param>
         [Compiler.NoDebug]
+        [Drivers.Compiler.Attributes.NoDebug]
         public void Add(UInt32 obj)
         {
             if (currIndex >= _array.Length)
@@ -409,6 +423,7 @@ namespace Kernel.FOS_System.Collections
         /// </summary>
         /// <param name="obj">The UInt32 to remove.</param>
         [Compiler.NoDebug]
+        [Drivers.Compiler.Attributes.NoDebug]
         public void Remove(UInt32 obj)
         {
             bool setObjectToNull = false;
@@ -440,6 +455,7 @@ namespace Kernel.FOS_System.Collections
         /// </summary>
         /// <param name="index">The index of the UInt32 to remove.</param>
         [Compiler.NoDebug]
+        [Drivers.Compiler.Attributes.NoDebug]
         public void RemoveAt(int index)
         {
             if (index >= currIndex)
@@ -486,6 +502,7 @@ namespace Kernel.FOS_System.Collections
         /// </summary>
         /// <param name="amount">The amount to expand the capacity by.</param>
         [Compiler.NoDebug]
+        [Drivers.Compiler.Attributes.NoDebug]
         private void ExpandCapacity(int amount)
         {
             UInt32[] newArray = new UInt32[_array.Length + amount];
@@ -507,6 +524,7 @@ namespace Kernel.FOS_System.Collections
         public UInt32 this[int index]
         {
             [Compiler.NoDebug]
+            [Drivers.Compiler.Attributes.NoDebug]
             get
             {
                 if (index >= currIndex)
@@ -517,6 +535,7 @@ namespace Kernel.FOS_System.Collections
                 return _array[index];
             }
             [Compiler.NoDebug]
+            [Drivers.Compiler.Attributes.NoDebug]
             set
             {
                 if (index >= currIndex)
@@ -552,6 +571,7 @@ namespace Kernel.FOS_System.Collections
         public int Count
         {
             [Compiler.NoDebug]
+            [Drivers.Compiler.Attributes.NoDebug]
             get
             {
                 return currIndex;
@@ -562,6 +582,7 @@ namespace Kernel.FOS_System.Collections
         /// Creates a new list with initial capacity of 5.
         /// </summary>
         [Compiler.NoDebug]
+        [Drivers.Compiler.Attributes.NoDebug]
         public DelegateList()
         {
             _array = new Delegate[5];
@@ -571,6 +592,7 @@ namespace Kernel.FOS_System.Collections
         /// </summary>
         /// <param name="capacity">The initial capacity of the list.</param>
         [Compiler.NoDebug]
+        [Drivers.Compiler.Attributes.NoDebug]
         public DelegateList(int capacity)
         {
             _array = new Delegate[capacity];
@@ -581,6 +603,7 @@ namespace Kernel.FOS_System.Collections
         /// </summary>
         /// <param name="obj">The Delegate to add.</param>
         [Compiler.NoDebug]
+        [Drivers.Compiler.Attributes.NoDebug]
         public void Add(Delegate obj)
         {
             if (currIndex >= _array.Length)
@@ -594,6 +617,7 @@ namespace Kernel.FOS_System.Collections
         /// </summary>
         /// <param name="obj">The Delegate to remove.</param>
         [Compiler.NoDebug]
+        [Drivers.Compiler.Attributes.NoDebug]
         public void Remove(Delegate obj)
         {
             bool setObjectToNull = false;
@@ -626,6 +650,7 @@ namespace Kernel.FOS_System.Collections
         /// </summary>
         /// <param name="amount">The amount to expand the capacity by.</param>
         [Compiler.NoDebug]
+        [Drivers.Compiler.Attributes.NoDebug]
         private void ExpandCapacity(int amount)
         {
             Delegate[] newArray = new Delegate[_array.Length + amount];
@@ -647,6 +672,7 @@ namespace Kernel.FOS_System.Collections
         public Delegate this[int index]
         {
             [Compiler.NoDebug]
+            [Drivers.Compiler.Attributes.NoDebug]
             get
             {
                 if (index >= currIndex)
@@ -657,6 +683,7 @@ namespace Kernel.FOS_System.Collections
                 return _array[index];
             }
             [Compiler.NoDebug]
+            [Drivers.Compiler.Attributes.NoDebug]
             set
             {
                 if (index >= currIndex)

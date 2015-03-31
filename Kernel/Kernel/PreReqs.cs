@@ -33,6 +33,7 @@ namespace Kernel
     /// For example, the Multiboot Signature.
     /// </summary>
     [Compiler.PluggedClass]
+    [Drivers.Compiler.Attributes.PluggedClass]
     public static class PreReqs
     {
         //These methods are listed in the order they are included

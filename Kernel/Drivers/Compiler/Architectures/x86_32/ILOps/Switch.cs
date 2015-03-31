@@ -71,7 +71,10 @@ namespace Drivers.Compiler.Architectures.x86
             conversionState.Append(new ASMOps.Pop() { Size = ASMOps.OperandSize.Dword, Dest = "EAX" });
             for (int i = 0; i < theOp.ValueBytes.Length / 4; i++)
             {
-                int branchPos = theOp.NextOffset + Utilities.ReadInt32(theOp.ValueBytes, i * 4);
+                int branchOffset = theOp.NextOffset + Utilities.ReadInt32(theOp.ValueBytes, i * 4);
+                ILOp opToGoTo = conversionState.Input.At(branchOffset);
+                int branchPos = conversionState.PositionOf(opToGoTo);
+                opToGoTo.LabelRequired = true;
 
                 conversionState.Append(new ASMOps.Cmp() { Arg1 = "EAX", Arg2 = i.ToString() });
                 conversionState.Append(new ASMOps.Jmp() { JumpType = ASMOps.JmpOp.JumpEqual, DestILPosition = currOpPosition, Extension = "SwitchPoint" + i.ToString() });

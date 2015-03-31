@@ -33,13 +33,16 @@ using System.Threading.Tasks;
 namespace Kernel.Hardware.Processes.Synchronisation
 {
     [Compiler.PluggedClass]
+    [Drivers.Compiler.Attributes.PluggedClass]
     public class SpinLock : FOS_System.Object
     {
         private int id;
         public int Id
         {
             [Compiler.NoGC]
+            [Drivers.Compiler.Attributes.NoGC]
             [Compiler.NoDebug]
+            [Drivers.Compiler.Attributes.NoDebug]
             get
             {
                 return id;
@@ -50,7 +53,9 @@ namespace Kernel.Hardware.Processes.Synchronisation
         public bool Locked
         {
             [Compiler.NoGC]
+            [Drivers.Compiler.Attributes.NoGC]
             [Compiler.NoDebug]
+            [Drivers.Compiler.Attributes.NoDebug]
             get
             {
                 return locked != 0;
@@ -58,6 +63,7 @@ namespace Kernel.Hardware.Processes.Synchronisation
         }
 
         [Compiler.NoDebug]
+        [Drivers.Compiler.Attributes.NoDebug]
         public SpinLock(int anId)
         {
             id = anId;
@@ -73,7 +79,9 @@ namespace Kernel.Hardware.Processes.Synchronisation
         }
 
         [Compiler.NoGC]
+        [Drivers.Compiler.Attributes.NoGC]
         [Compiler.NoDebug]
+        [Drivers.Compiler.Attributes.NoDebug]
         public void Enter()
         {
             //BasicConsole.WriteLine("Entering spin lock...");
@@ -81,7 +89,9 @@ namespace Kernel.Hardware.Processes.Synchronisation
             //BasicConsole.WriteLine("Lock acquired.");
         }
         [Compiler.NoGC]
+        [Drivers.Compiler.Attributes.NoGC]
         [Compiler.NoDebug]
+        [Drivers.Compiler.Attributes.NoDebug]
         public void Exit()
         {
             //BasicConsole.WriteLine("Exiting spin lock...");

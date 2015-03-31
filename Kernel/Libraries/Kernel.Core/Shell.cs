@@ -74,6 +74,7 @@ namespace Kernel.Core
         /// Outputs informations about the current exception, if any.
         /// </summary>
         [Compiler.NoDebug]
+        [Drivers.Compiler.Attributes.NoDebug]
         protected void OutputCurrentExceptionInfo()
         {
             if (ExceptionMethods.CurrentException != null)
@@ -97,6 +98,7 @@ namespace Kernel.Core
         /// Outputs a divider line.
         /// </summary>
         [Compiler.NoDebug]
+        [Drivers.Compiler.Attributes.NoDebug]
         protected void OutputDivider()
         {
             console.WriteLine("--------------------------------------------------------");

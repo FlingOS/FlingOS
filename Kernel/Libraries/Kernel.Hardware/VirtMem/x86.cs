@@ -36,6 +36,7 @@ namespace Kernel.Hardware.VirtMem
     /// Provides methods for setting up paged virtual memory.
     /// </summary>
     [Compiler.PluggedClass]
+    [Drivers.Compiler.Attributes.PluggedClass]
     public unsafe class x86 : VirtMemImpl
     {
         [Flags]
@@ -65,6 +66,7 @@ namespace Kernel.Hardware.VirtMem
         /// Initialises the new x86 object.
         /// </summary>
         [Compiler.NoDebug]
+        [Drivers.Compiler.Attributes.NoDebug]
         public x86()
         {
         }
@@ -138,6 +140,7 @@ namespace Kernel.Hardware.VirtMem
         }
 
         [Compiler.NoDebug]
+        [Drivers.Compiler.Attributes.NoDebug]
         public override uint FindFreePhysPageAddr()
         {
             int result = UsedPhysPages.FindFirstClearEntry();
@@ -148,6 +151,7 @@ namespace Kernel.Hardware.VirtMem
             return (uint)(result * 4096);
         }
         [Compiler.NoDebug]
+        [Drivers.Compiler.Attributes.NoDebug]
         public override uint FindFreeVirtPageAddr()
         {
             int result = UsedVirtPages.FindFirstClearEntry();
@@ -164,6 +168,7 @@ namespace Kernel.Hardware.VirtMem
         /// <param name="pAddr">The physical address to map to.</param>
         /// <param name="vAddr">The virtual address to map.</param>
         [Compiler.NoDebug]
+        [Drivers.Compiler.Attributes.NoDebug]
         public override void Map(uint pAddr, uint vAddr, PageFlags flags, UpdateUsedPagesFlags UpdateUsedPages = UpdateUsedPagesFlags.Both)
         {
             PTEFlags pteFlags = PTEFlags.None;
@@ -182,6 +187,7 @@ namespace Kernel.Hardware.VirtMem
             Map(pAddr, vAddr, pteFlags, UpdateUsedPages);
         }
         [Compiler.NoDebug]
+        [Drivers.Compiler.Attributes.NoDebug]
         private void Map(uint pAddr, uint vAddr, PTEFlags flags, UpdateUsedPagesFlags UpdateUsedPages = UpdateUsedPagesFlags.Both)
         {
 #if PAGING_TRACE
@@ -225,6 +231,7 @@ namespace Kernel.Hardware.VirtMem
             InvalidatePTE(vAddr);
         }
         [Compiler.NoDebug]
+        [Drivers.Compiler.Attributes.NoDebug]
         public override void Unmap(uint vAddr, UpdateUsedPagesFlags UpdateUsedPages = UpdateUsedPagesFlags.Both)
         {
             uint pAddr = GetPhysicalAddress(vAddr);
@@ -257,6 +264,7 @@ namespace Kernel.Hardware.VirtMem
         /// This has an undefined return value and behaviour if the virtual address is not mapped.
         /// </remarks>
         [Compiler.NoDebug]
+        [Drivers.Compiler.Attributes.NoDebug]
         public override uint GetPhysicalAddress(uint vAddr)
         {
             //Calculate page directory and page table indices
@@ -276,6 +284,7 @@ namespace Kernel.Hardware.VirtMem
         /// Maps in the main kernel memory.
         /// </summary>
         [Compiler.NoDebug]
+        [Drivers.Compiler.Attributes.NoDebug]
         public override void MapKernel()
         {
             //By mapping memory in reverse order we optimise the use
@@ -350,6 +359,7 @@ namespace Kernel.Hardware.VirtMem
         /// <param name="pageNum">The page number (directory index) of the page table to get.</param>
         /// <returns>A uint pointer to the page table.</returns>
         [Compiler.NoDebug]
+        [Drivers.Compiler.Attributes.NoDebug]
         private uint* GetFixedPage(uint pageNum)
         {
             return GetFirstPageTablePtr() + (1024 * pageNum);
@@ -361,6 +371,7 @@ namespace Kernel.Hardware.VirtMem
         /// <param name="entry">The entry index (page table index) of the entry to set.</param>
         /// <param name="addr">The physical address to map the entry to.</param>
         [Compiler.NoDebug]
+        [Drivers.Compiler.Attributes.NoDebug]
         private void SetPageEntry(uint* pageTablePtr, uint entry, uint addr, PTEFlags flags)
         {
 #if PAGING_TRACE
@@ -385,6 +396,7 @@ namespace Kernel.Hardware.VirtMem
         /// <param name="pageNum">The page number (directory index) of the entry to set.</param>
         /// <param name="pageTablePhysPtr">The physical address of the page table to set the entry to point at.</param>
         [Compiler.NoDebug]
+        [Drivers.Compiler.Attributes.NoDebug]
         private void SetDirectoryEntry(uint pageNum, uint* pageTablePhysPtr)
         {
             uint* dirPtr = GetPageDirectoryPtr();

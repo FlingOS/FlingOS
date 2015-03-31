@@ -173,6 +173,7 @@ namespace Kernel.Hardware.Processes
         /// after calling this to immediately update the thread to return to.
         /// </remarks>
         [Compiler.NoGC]
+        [Drivers.Compiler.Attributes.NoGC]
         public void _EnterSleep(int ms)
         {
             //if (EnterSleepPrint)
@@ -220,6 +221,7 @@ namespace Kernel.Hardware.Processes
             //}
         }
         [Compiler.NoGC]
+        [Drivers.Compiler.Attributes.NoGC]
         public bool _Sleep(int ms)
         {
             //Prevent getting stuck forever.
@@ -242,11 +244,13 @@ namespace Kernel.Hardware.Processes
             return true;
         }
         [Compiler.NoGC]
+        [Drivers.Compiler.Attributes.NoGC]
         public bool _Sleep_Indefinitely()
         {
             return this._Sleep(-1);
         }
         [Compiler.NoGC]
+        [Drivers.Compiler.Attributes.NoGC]
         public void _Wake()
         {
             //bool reenable = Scheduler.Enabled;
@@ -263,6 +267,7 @@ namespace Kernel.Hardware.Processes
         }
 
         [Compiler.NoGC]
+        [Drivers.Compiler.Attributes.NoGC]
         public static void EnterSleep(int ms)
         {
             if (ProcessManager.CurrentThread == null)
@@ -273,6 +278,7 @@ namespace Kernel.Hardware.Processes
             ProcessManager.CurrentThread._EnterSleep(ms);
         }
         [Compiler.NoGC]
+        [Drivers.Compiler.Attributes.NoGC]
         public static bool Sleep(int ms)
         {
             if (ProcessManager.CurrentThread == null)
@@ -283,6 +289,7 @@ namespace Kernel.Hardware.Processes
             return ProcessManager.CurrentThread._Sleep(ms);
         }
         [Compiler.NoGC]
+        [Drivers.Compiler.Attributes.NoGC]
         public static bool Sleep_Indefinitely()
         {
             if (ProcessManager.CurrentThread == null)
@@ -293,6 +300,7 @@ namespace Kernel.Hardware.Processes
             return ProcessManager.CurrentThread._Sleep_Indefinitely();
         }
         [Compiler.NoGC]
+        [Drivers.Compiler.Attributes.NoGC]
         public static void Wake()
         {
             if (ProcessManager.CurrentThread == null)

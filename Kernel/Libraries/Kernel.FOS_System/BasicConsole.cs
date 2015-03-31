@@ -113,7 +113,9 @@ namespace Kernel
         /// Initialises the BasicConsole class.
         /// </summary>
         [Compiler.NoDebug]
+        [Drivers.Compiler.Attributes.NoDebug]
         [Compiler.NoGC]
+        [Drivers.Compiler.Attributes.NoGC]
         public static void Init()
         {
             //Colour info stored in the high byte:
@@ -138,7 +140,9 @@ namespace Kernel
         /// </summary>
         /// <param name="aText_colour">The text colour to use.</param>
         [Compiler.NoDebug]
+        [Drivers.Compiler.Attributes.NoDebug]
         [Compiler.NoGC]
+        [Drivers.Compiler.Attributes.NoGC]
         public static void SetTextColour(char aText_colour)
         {
             colour = (char)(bg_colour | (aText_colour & 0x0F00));
@@ -148,7 +152,9 @@ namespace Kernel
         /// </summary>
         /// <param name="aBg_colour">The background colour to use.</param>
         [Compiler.NoDebug]
+        [Drivers.Compiler.Attributes.NoDebug]
         [Compiler.NoGC]
+        [Drivers.Compiler.Attributes.NoGC]
         public static void SetBgColour(char aBg_colour)
         {
             bg_colour = (char)(aBg_colour & 0xF000);
@@ -159,7 +165,9 @@ namespace Kernel
         /// Clears the output to all black.
         /// </summary>
         [Compiler.NoDebug]
+        [Drivers.Compiler.Attributes.NoDebug]
         [Compiler.NoGC]
+        [Drivers.Compiler.Attributes.NoGC]
         public static unsafe void Clear()
         {
             //Clear out every character on the screen
@@ -191,7 +199,9 @@ namespace Kernel
         /// of the screen.
         /// </remarks>
         [Compiler.NoDebug]
+        [Drivers.Compiler.Attributes.NoDebug]
         [Compiler.NoGC]
+        [Drivers.Compiler.Attributes.NoGC]
         public static unsafe void Write(FOS_System.String str)
         {
             //If string is null, just don't write anything
@@ -245,7 +255,9 @@ namespace Kernel
         /// This also blanks out the rest of the line to make sure no artifacts are left behind.
         /// </remarks>
         [Compiler.NoDebug]
+        [Drivers.Compiler.Attributes.NoDebug]
         [Compiler.NoGC]
+        [Drivers.Compiler.Attributes.NoGC]
         public static unsafe void WriteLine(FOS_System.String str)
         {
             if (str == null)
@@ -295,7 +307,9 @@ namespace Kernel
         /// Writes a blank line (line with a space).
         /// </summary>
         [Compiler.NoDebug]
+        [Drivers.Compiler.Attributes.NoDebug]
         [Compiler.NoGC]
+        [Drivers.Compiler.Attributes.NoGC]
         public static void WriteLine()
         {
             //We must write at least 1 character, so we just write a space since that
@@ -307,6 +321,7 @@ namespace Kernel
         /// Prints the test string (all the keyboard characters) to the start of the output - overwrites any existing text.
         /// </summary>
         [Compiler.NoGC]
+        [Drivers.Compiler.Attributes.NoGC]
         public static unsafe void PrintTestString()
         {
             //This does not use the Write functions as it is a test function to 

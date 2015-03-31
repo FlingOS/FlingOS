@@ -44,7 +44,9 @@ namespace Kernel.FOS_System
         /// <param name="aPos">The index of the first of the two bytes to convert.</param>
         /// <returns>The converted UInt16.</returns>
         [Compiler.NoDebug]
+        [Drivers.Compiler.Attributes.NoDebug]
         [Compiler.NoGC]
+        [Drivers.Compiler.Attributes.NoGC]
         public static UInt16 ToUInt16(byte[] n, UInt32 aPos)
         {
             return (UInt16)((UInt16)n[aPos + 1] << 8 | (UInt16)n[aPos]);
@@ -56,7 +58,9 @@ namespace Kernel.FOS_System
         /// <param name="aPos">The index of the first of the four bytes to convert.</param>
         /// <returns>The converted UInt32.</returns>
         [Compiler.NoDebug]
+        [Drivers.Compiler.Attributes.NoDebug]
         [Compiler.NoGC]
+        [Drivers.Compiler.Attributes.NoGC]
         public static UInt32 ToUInt32(byte[] n, UInt32 aPos)
         {
             return ((UInt32)n[aPos + 3] << 24 | (UInt32)n[aPos + 2] << 16 |
@@ -69,7 +73,9 @@ namespace Kernel.FOS_System
         /// <param name="aPos">The index of the first of the four bytes to convert.</param>
         /// <returns>The converted UInt64.</returns>
         [Compiler.NoDebug]
+        [Drivers.Compiler.Attributes.NoDebug]
         [Compiler.NoGC]
+        [Drivers.Compiler.Attributes.NoGC]
         public static UInt64 ToUInt64(byte[] n, UInt32 aPos)
         {
             return ((UInt64)n[aPos + 7] << 54 | (UInt64)n[aPos + 6] << 48 | 
@@ -83,6 +89,7 @@ namespace Kernel.FOS_System
         /// <param name="asciiString">The ASCII encoded string to convert.</param>
         /// <returns>The ASCII encoded bytes.</returns>
         [Compiler.NoDebug]
+        [Drivers.Compiler.Attributes.NoDebug]
         public static byte[] GetASCIIBytes(FOS_System.String asciiString)
         {
             byte[] result = new byte[asciiString.length];
@@ -103,6 +110,7 @@ namespace Kernel.FOS_System
         /// This method does not add the null termination character "\0" to the end of the bytes.
         /// </remarks>
         [Compiler.NoDebug]
+        [Drivers.Compiler.Attributes.NoDebug]
         public static byte[] GetUTF16Bytes(FOS_System.String asciiString, int offset, int count)
         {
             if (count == 0)
@@ -131,6 +139,7 @@ namespace Kernel.FOS_System
         /// <param name="aCharCount">The number of characters to convert.</param>
         /// <returns>The ASCII encoded string.</returns>
         [Compiler.NoDebug]
+        [Drivers.Compiler.Attributes.NoDebug]
         public static FOS_System.String GetASCIIStringFromASCII(byte[] n, UInt32 aStart, UInt32 aCharCount)
         {
             FOS_System.String result = FOS_System.String.New((int)aCharCount);
@@ -155,6 +164,7 @@ namespace Kernel.FOS_System
         /// <param name="aCharCount">The number of characters to convert.</param>
         /// <returns>The ASCII encoded string.</returns>
         [Compiler.NoDebug]
+        [Drivers.Compiler.Attributes.NoDebug]
         public static unsafe FOS_System.String GetASCIIStringFromASCII(byte* n, UInt32 aStart, UInt32 aCharCount)
         {
             FOS_System.String result = FOS_System.String.New((int)aCharCount);
@@ -182,6 +192,7 @@ namespace Kernel.FOS_System
         /// This method does not handle removing the null termination character if it is present.
         /// </remarks>
         [Compiler.NoDebug]
+        [Drivers.Compiler.Attributes.NoDebug]
         public static FOS_System.String GetASCIIStringFromUTF16(byte[] n, UInt32 aStart, UInt32 aCharCount)
         {
             //If you change this method, change the pointer version below too.

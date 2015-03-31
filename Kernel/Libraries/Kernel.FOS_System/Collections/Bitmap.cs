@@ -40,6 +40,7 @@ namespace Kernel.FOS_System.Collections
         public int Count
         {
             [Compiler.NoDebug]
+            [Drivers.Compiler.Attributes.NoDebug]
             get
             {
                 return setCount;
@@ -47,18 +48,21 @@ namespace Kernel.FOS_System.Collections
         }
 
         [Compiler.NoDebug]
+        [Drivers.Compiler.Attributes.NoDebug]
         public Bitmap(int size)
         {
             bitmap = new byte[size / 8];
         }
 
         [Compiler.NoDebug]
+        [Drivers.Compiler.Attributes.NoDebug]
         public void Set(int entry)
         {
             bitmap[entry / 8] = (byte)(bitmap[entry / 8] | (1 << (entry % 8)));
             setCount++;
         }
         [Compiler.NoDebug]
+        [Drivers.Compiler.Attributes.NoDebug]
         public void Clear(int entry)
         {
             bitmap[entry / 8] = (byte)(bitmap[entry / 8] & ~(1 << (entry % 8)));
@@ -66,12 +70,14 @@ namespace Kernel.FOS_System.Collections
         }
 
         [Compiler.NoDebug]
+        [Drivers.Compiler.Attributes.NoDebug]
         public bool IsSet(int entry)
         {
             return (bitmap[entry / 8] & ~(byte)(entry % 8)) > 0;
         }
 
         [Compiler.NoDebug]
+        [Drivers.Compiler.Attributes.NoDebug]
         public int FindFirstClearEntry()
         {
             for (int i = 0; i < bitmap.Length; i++)
@@ -87,6 +93,7 @@ namespace Kernel.FOS_System.Collections
             return -1;
         }
         [Compiler.NoDebug]
+        [Drivers.Compiler.Attributes.NoDebug]
         public int FindLastClearEntry()
         {
             for (int i = bitmap.Length - 1; i > -1; i--)

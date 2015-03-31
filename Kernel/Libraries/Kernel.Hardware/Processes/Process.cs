@@ -35,6 +35,7 @@ using Kernel.Hardware.VirtMem;
 namespace Kernel.Hardware.Processes
 {
     [Compiler.PluggedClass]
+    [Drivers.Compiler.Attributes.PluggedClass]
     public unsafe class Process : FOS_System.Object
     {
         public List Threads = new List();

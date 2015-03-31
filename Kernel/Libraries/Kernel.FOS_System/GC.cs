@@ -45,6 +45,7 @@ namespace Kernel.FOS_System
     /// declaration (/name).
     /// </remarks>
     [Compiler.PluggedClass]
+    [Drivers.Compiler.Attributes.PluggedClass]
     public static unsafe class GC
     {
         /// <summary>
@@ -81,7 +82,9 @@ namespace Kernel.FOS_System
         /// Intialises the GC.
         /// </summary>
         [Compiler.NoDebug]
+        [Drivers.Compiler.Attributes.NoDebug]
         [Compiler.NoGC]
+        [Drivers.Compiler.Attributes.NoGC]
         public static void Init()
         {
             Heap.InitFixedHeap();
@@ -92,7 +95,9 @@ namespace Kernel.FOS_System
         }
 
         [Compiler.NoDebug]
+        [Drivers.Compiler.Attributes.NoDebug]
         [Compiler.NoGC]
+        [Drivers.Compiler.Attributes.NoGC]
         private static void EnterCritical(FOS_System.String caller)
         {
             //BasicConsole.WriteLine("Entering critical section...");
@@ -123,7 +128,9 @@ namespace Kernel.FOS_System
             //}
         }
         [Compiler.NoDebug]
+        [Drivers.Compiler.Attributes.NoDebug]
         [Compiler.NoGC]
+        [Drivers.Compiler.Attributes.NoGC]
         private static void ExitCritical()
         {
             //BasicConsole.WriteLine("Exiting critical section...");
@@ -152,8 +159,11 @@ namespace Kernel.FOS_System
         /// <param name="theType">The type of object to create.</param>
         /// <returns>A pointer to the new object in memory.</returns>
         [Compiler.NewObjMethod]
+        [Drivers.Compiler.Attributes.NewObjMethod]
         [Compiler.NoDebug]
+        [Drivers.Compiler.Attributes.NoDebug]
         [Compiler.NoGC]
+        [Drivers.Compiler.Attributes.NoGC]
         public static void* NewObj(FOS_System.Type theType)
         {
             if (!Enabled)
@@ -223,8 +233,11 @@ namespace Kernel.FOS_System
         /// <param name="elemType">The type of element in the array to create.</param>
         /// <returns>A pointer to the new array in memory.</returns>
         [Compiler.NewArrMethod]
+        [Drivers.Compiler.Attributes.NewArrMethod]
         [Compiler.NoDebug]
+        [Drivers.Compiler.Attributes.NoDebug]
         [Compiler.NoGC]
+        [Drivers.Compiler.Attributes.NoGC]
         public static void* NewArr(int length, FOS_System.Type elemType)
         {
             if (!Enabled)
@@ -309,7 +322,9 @@ namespace Kernel.FOS_System
         /// <param name="length">The length of the string to create.</param>
         /// <returns>A pointer to the new string in memory.</returns>
         [Compiler.NoDebug]
+        [Drivers.Compiler.Attributes.NoDebug]
         [Compiler.NoGC]
+        [Drivers.Compiler.Attributes.NoGC]
         public static void* NewString(int length)
         {
             if (!Enabled)
@@ -402,8 +417,11 @@ namespace Kernel.FOS_System
         /// </remarks>
         /// <param name="anObj">The object to increment the ref count of.</param>
         [Compiler.IncrementRefCountMethod]
+        //[Drivers.Compiler.Attributes.IncrementRefCountMethod]
         [Compiler.NoDebug]
+        [Drivers.Compiler.Attributes.NoDebug]
         [Compiler.NoGC]
+        [Drivers.Compiler.Attributes.NoGC]
         public static void IncrementRefCount(FOS_System.Object anObj)
         {
             if (!Enabled /*|| InsideGC*/ || anObj == null)
@@ -427,7 +445,9 @@ namespace Kernel.FOS_System
         /// </remarks>
         /// <param name="objPtr">Pointer to the object to increment the ref count of.</param>
         [Compiler.NoDebug]
+        [Drivers.Compiler.Attributes.NoDebug]
         [Compiler.NoGC]
+        [Drivers.Compiler.Attributes.NoGC]
         public static void _IncrementRefCount(byte* objPtr)
         {
             if ((uint)objPtr < (uint)sizeof(GCHeader))
@@ -460,8 +480,11 @@ namespace Kernel.FOS_System
         /// </remarks>
         /// <param name="anObj">The object to decrement the ref count of.</param>
         [Compiler.DecrementRefCountMethod]
+        [Drivers.Compiler.Attributes.DecrementRefCountMethod]
         [Compiler.NoDebug]
+        [Drivers.Compiler.Attributes.NoDebug]
         [Compiler.NoGC]
+        [Drivers.Compiler.Attributes.NoGC]
         public static void DecrementRefCount(FOS_System.Object anObj)
         {
             DecrementRefCount(anObj, false);
@@ -476,7 +499,9 @@ namespace Kernel.FOS_System
         /// <param name="anObj">The object to decrement the ref count of.</param>
         /// <param name="overrideInside">Whether to ignore the InsideGC test or not.</param>
         [Compiler.NoDebug]
+        [Drivers.Compiler.Attributes.NoDebug]
         [Compiler.NoGC]
+        [Drivers.Compiler.Attributes.NoGC]
         public static void DecrementRefCount(FOS_System.Object anObj, bool overrideInside)
         {
             if (!Enabled /*|| (InsideGC && !overrideInside)*/ || anObj == null)
@@ -506,7 +531,9 @@ namespace Kernel.FOS_System
         /// </remarks>
         /// <param name="objPtr">A pointer to the object to decrement the ref count of.</param>
         [Compiler.NoDebug]
+        [Drivers.Compiler.Attributes.NoDebug]
         [Compiler.NoGC]
+        [Drivers.Compiler.Attributes.NoGC]
         public static void _DecrementRefCount(byte* objPtr)
         {
             if ((uint)objPtr < (uint)sizeof(GCHeader))
@@ -583,7 +610,9 @@ namespace Kernel.FOS_System
         /// <param name="headerPtr">A pointer to the header to check.</param>
         /// <returns>True if the signature is found and is correct.</returns>
         [Compiler.NoDebug]
+        [Drivers.Compiler.Attributes.NoDebug]
         [Compiler.NoGC]
+        [Drivers.Compiler.Attributes.NoGC]
         public static unsafe bool CheckSignature(GCHeader* headerPtr)
         {
             bool OK = headerPtr->Sig1 == 0x5C0EADE2U;
@@ -596,7 +625,9 @@ namespace Kernel.FOS_System
         /// </summary>
         /// <param name="headerPtr">A pointer to the header to set the signature in.</param>
         [Compiler.NoDebug]
+        [Drivers.Compiler.Attributes.NoDebug]
         [Compiler.NoGC]
+        [Drivers.Compiler.Attributes.NoGC]
         public static void SetSignature(GCHeader* headerPtr)
         {
             headerPtr->Sig1 = 0x5C0EADE2U;
@@ -608,7 +639,9 @@ namespace Kernel.FOS_System
         /// Scans the CleanupList to free objects from memory.
         /// </summary>
         [Compiler.NoDebug]
+        [Drivers.Compiler.Attributes.NoDebug]
         [Compiler.NoGC]
+        [Drivers.Compiler.Attributes.NoGC]
         public static void Cleanup()
         {
             if (!Enabled /*|| InsideGC*/)
@@ -685,7 +718,9 @@ namespace Kernel.FOS_System
         /// <param name="objHeaderPtr">A pointer to the object's header.</param>
         /// <param name="objPtr">A pointer to the object.</param>
         [Compiler.NoDebug]
+        [Drivers.Compiler.Attributes.NoDebug]
         [Compiler.NoGC]
+        [Drivers.Compiler.Attributes.NoGC]
         private static void AddObjectToCleanup(GCHeader* objHeaderPtr, void* objPtr)
         {
             EnterCritical("AddObjectToCleanup");
@@ -711,7 +746,9 @@ namespace Kernel.FOS_System
         /// </summary>
         /// <param name="objHeaderPtr">A pointer to the object's header.</param>
         [Compiler.NoDebug]
+        [Drivers.Compiler.Attributes.NoDebug]
         [Compiler.NoGC]
+        [Drivers.Compiler.Attributes.NoGC]
         private static void RemoveObjectToCleanup(GCHeader* objHeaderPtr)
         {
             EnterCritical("RemoveObjectToCleanup");
@@ -739,7 +776,9 @@ namespace Kernel.FOS_System
         /// </summary>
         /// <param name="objToCleanupPtr">A pointer to the cleanup-list element.</param>
         [Compiler.NoDebug]
+        [Drivers.Compiler.Attributes.NoDebug]
         [Compiler.NoGC]
+        [Drivers.Compiler.Attributes.NoGC]
         private static void RemoveObjectToCleanup(ObjectToCleanup* objToCleanupPtr)
         {
             ObjectToCleanup* prevPtr = objToCleanupPtr->prevPtr;
