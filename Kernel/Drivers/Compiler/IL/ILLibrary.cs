@@ -156,7 +156,7 @@ namespace Drivers.Compiler.IL
         {
             //TODO: Don't add identical strings multiple times
 
-            string ID = Guid.NewGuid().ToString();
+            string ID = Utilities.FilterIdentifierForInvalidChars("StringLiteral_" + Guid.NewGuid().ToString());
             StringLiterals.Add(ID, value);
             return ID;
         }
