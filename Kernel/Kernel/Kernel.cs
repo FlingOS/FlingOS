@@ -429,22 +429,26 @@ namespace Kernel
             BasicConsole.DelayOutput(1000);
         }
         [Compiler.PluggedMethod(ASMFilePath = null)]
+        [Drivers.Compiler.Attributes.PluggedMethod(ASMFilePath = null)]
         public static uint GetStackValue(uint offset)
         {
             return 0;
         }
         [Compiler.PluggedMethod(ASMFilePath = null)]
+        [Drivers.Compiler.Attributes.PluggedMethod(ASMFilePath = null)]
         public static uint GetESP()
         {
             return 0;
         }
 
         [Compiler.PluggedMethod(ASMFilePath=@"ASM\Kernel")]
+        [Drivers.Compiler.Attributes.PluggedMethod(ASMFilePath=@"ASM\Kernel")]
         private static unsafe void* GetManagedMainMethodPtr()
         {
             return null;
         }
         [Compiler.PluggedMethod(ASMFilePath=null)]
+        [Drivers.Compiler.Attributes.PluggedMethod(ASMFilePath=null)]
         private static unsafe byte* GetKernelStackPtr()
         {
             return null;

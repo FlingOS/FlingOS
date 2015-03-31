@@ -32,29 +32,22 @@ using System.Threading.Tasks;
 
 namespace Drivers.Compiler.ASM
 {
-    public static class ASMPreprocessor
+    public class ASMLabel : ASMOp
     {
-        public static CompileResult Preprocess(ASMLibrary TheLibrary)
+        public bool MethodLabel = false;
+        public int ILPosition;
+        public string Extension;
+
+        public override string Convert(ASMBlock theBlock)
         {
-            CompileResult result = CompileResult.OK;
-
-            if (TheLibrary.ASMPreprocessed)
+            if (MethodLabel)
             {
-                return result;
+                return theBlock.GenerateMethodLabel() + ":";
             }
-            TheLibrary.ASMPreprocessed = true;
-
-            foreach (ASMBlock aBlock in TheLibrary.ASMBlocks)
+            else
             {
-                Preprocess(aBlock);
+                return theBlock.GenerateILOpLabel(ILPosition, Extension) + ":";
             }
-
-            return result;
-        }
-
-        private static void Preprocess(ASMBlock theBlock)
-        {
-            theBlock.ASMOps.Insert(0, new ASMLabel() { MethodLabel = true });
         }
     }
 }

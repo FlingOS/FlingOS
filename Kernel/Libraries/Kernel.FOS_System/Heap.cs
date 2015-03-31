@@ -123,6 +123,7 @@ namespace Kernel.FOS_System
         /// </summary>
         /// <returns>The pointer to the block of memory.</returns>
         [Compiler.PluggedMethod(ASMFilePath=@"ASM\Heap\GetFixedHeapPtr")]
+        [Drivers.Compiler.Attributes.PluggedMethod(ASMFilePath=@"ASM\Heap\GetFixedHeapPtr")]
         public static UInt32* GetFixedHeapPtr()
         {
             //Stub for use by testing framework
@@ -133,6 +134,7 @@ namespace Kernel.FOS_System
         /// </summary>
         /// <returns>The size of the block of memory.</returns>
         [Compiler.PluggedMethod(ASMFilePath = null)]
+        [Drivers.Compiler.Attributes.PluggedMethod(ASMFilePath = null)]
         public static UInt32 GetFixedHeapSize()
         {
             //Stub for use by testing framework

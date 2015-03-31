@@ -23,10 +23,13 @@ namespace Drivers.Compiler
         public const string ILCompiler_ScanILOpCustomWarning_ErrorCode = "ILC0006";
 
         public const string ASMCompiler_CompileFailed_ErrorCode = "ASMC0001";
+        public const string ASMCompiler_NASMException_ErrorCode = "ASMC0002";
         public const string ASMCompiler_UnexpectedException_ErrorCode = "ASMC0003";
 
         public const string Linker_LinkFailed_ErrorCode = "LL0001";
         public const string Linker_UnexpectedException_ErrorCode = "LL0003";
+
+        public const string Utilities_ExternalError_ErrorCode = "UT0001";
 
         public static Dictionary<string, string> ErrorMessages = new Dictionary<string, string>()
         {
@@ -46,13 +49,14 @@ namespace Drivers.Compiler
             { "ILC0006", "Scanned an IL op which warns the following: {0}" },
             
             { "ASMC0001", "The ASM compiler failed to compile." },
-            { "ASMC0002", "" },
+            { "ASMC0002", "NASM failed to execute for file {0}" },
             { "ASMC0003", "The ASM compiler failed to compile due to an unexpected error. {0}\r\n{1}." },
             
             { "LL0001", "The linker failed to link." },
             { "LL0002", "" },
             { "LL0003", "The linker failed to link due to an unexpected error. {0}\r\n{1}." },
             
+            { "UT0001", "Utilities: External process reported an error: {0}" }
         };
     }
 }

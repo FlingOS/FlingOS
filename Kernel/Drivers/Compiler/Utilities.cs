@@ -148,44 +148,48 @@ namespace Drivers.Compiler
 
             StreamWriter outputStream = null;
 
-            //if (!ignoreErrors)
-            //{
-            //    if (outputMessagesToFileName != null && OnComplete == null)
-            //    {
-            //        outputStream = new StreamWriter(outputMessagesToFileName);
-            //        process.ErrorDataReceived += delegate(object sender, DataReceivedEventArgs e)
-            //        {
-            //            if (e.Data != null)
-            //            {
-            //                outputStream.WriteLine(e.Data);
-            //            }
-            //        };
-            //        process.OutputDataReceived += delegate(object sender, DataReceivedEventArgs e)
-            //        {
-            //            if (e.Data != null)
-            //            {
-            //                outputStream.WriteLine(e.Data);
-            //            }
-            //        };
-            //    }
-            //    else
-            //    {
-            //        process.ErrorDataReceived += delegate(object sender, DataReceivedEventArgs e)
-            //        {
-            //            if (e.Data != null)
-            //            {
-            //                //OutputError(new Exception(displayName + ": " + e.Data));
-            //            }
-            //        };
-            //        process.OutputDataReceived += delegate(object sender, DataReceivedEventArgs e)
-            //        {
-            //            if (e.Data != null)
-            //            {
-            //                //OutputMessage(displayName + ": " + e.Data);
-            //            }
-            //        };
-            //    }
-            //}
+            if (!ignoreErrors)
+            {
+                if (outputMessagesToFileName != null && OnComplete == null)
+                {
+                    outputStream = new StreamWriter(outputMessagesToFileName);
+                    process.ErrorDataReceived += delegate(object sender, DataReceivedEventArgs e)
+                    {
+                        if (e.Data != null)
+                        {
+                            outputStream.WriteLine(e.Data);
+                        }
+                    };
+                    process.OutputDataReceived += delegate(object sender, DataReceivedEventArgs e)
+                    {
+                        if (e.Data != null)
+                        {
+                            outputStream.WriteLine(e.Data);
+                        }
+                    };
+                }
+                else
+                {
+                    process.ErrorDataReceived += delegate(object sender, DataReceivedEventArgs e)
+                    {
+                        if (e.Data != null)
+                        {
+                            Logger.LogError(Errors.Utilities_ExternalError_ErrorCode, "", 0,
+                                string.Format(Errors.ErrorMessages[Errors.Utilities_ExternalError_ErrorCode],
+                                displayName + ": " + e.Data));
+                        }
+                    };
+                    process.OutputDataReceived += delegate(object sender, DataReceivedEventArgs e)
+                    {
+                        if (e.Data != null)
+                        {
+                            Logger.LogMessage("", 0,
+                                string.Format("Utilities: message from external process: {0}",
+                                displayName + ": " + e.Data));
+                        }
+                    };
+                }
+            }
             process.StartInfo = processStartInfo;
             process.EnableRaisingEvents = true;
 
@@ -239,11 +243,15 @@ namespace Drivers.Compiler
                     if (!process.HasExited)
                     {
                         process.Kill();
-                        //OutputError(new Exception(displayName + " timed out."));
+                        Logger.LogError(Errors.Utilities_ExternalError_ErrorCode, "", 0,
+                            string.Format(Errors.ErrorMessages[Errors.Utilities_ExternalError_ErrorCode],
+                            displayName + ": Timed out."));
                     }
                     else
                     {
-                        //OutputError(new Exception("Error occurred while invoking " + displayName + "."));
+                        Logger.LogError(Errors.Utilities_ExternalError_ErrorCode, "", 0,
+                            string.Format(Errors.ErrorMessages[Errors.Utilities_ExternalError_ErrorCode],
+                            displayName + ": Error occurred while invoking the process."));
                     }
                 }
                 if (outputStream != null)

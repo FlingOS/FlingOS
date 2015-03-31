@@ -96,7 +96,18 @@ namespace Drivers.Compiler.ASM
             
             if (TheBlock.Plugged)
             {
-                //TODO - Load plug file text
+                string ASMPlugPath = Path.Combine(Options.OutputPath, TheBlock.PlugPath);
+                // Legacy file name support
+                if (Options.TargetArchitecture == "x86" &&
+                    !File.Exists(ASMPlugPath + "." + Options.TargetArchitecture + ".asm"))
+                {
+                    ASMPlugPath += ".x86_32.asm";
+                }
+                else
+                {
+                    ASMPlugPath += "." + Options.TargetArchitecture + ".asm";
+                }
+                ASMText = File.ReadAllText(ASMPlugPath);
             }
             else
             {
@@ -148,14 +159,23 @@ namespace Drivers.Compiler.ASM
             {
                 string inputPath = Blocks[index].OutputFilePath;
                 string outputPath = inputPath.Replace(ASMOutputPath, ObjectsOutputPath).Replace(".asm", ".obj");
-                ExecuteNASM(inputPath, outputPath);
+
+                try
+                {
+                    ExecuteNASM(inputPath, outputPath);
+                }
+                catch(Exception ex)
+                {
+                    Logger.LogError(Errors.ASMCompiler_NASMException_ErrorCode, inputPath, 0,
+                        string.Format(Errors.ErrorMessages[Errors.ASMCompiler_NASMException_ErrorCode], inputPath));
+                }
             }
         }
 
         private static bool CleanedASMOutputFolder = false;
         private static string GetASMOutputPath()
         {
-            string OutputPath = Path.Combine(Options.OutputPath, "ASM");
+            string OutputPath = Path.Combine(Options.OutputPath, "DriversCompiler\\ASM");
             if (!Directory.Exists(OutputPath))
             {
                 Directory.CreateDirectory(OutputPath);
@@ -174,7 +194,7 @@ namespace Drivers.Compiler.ASM
         private static bool CleanedObjectsOutputFolder = false;
         private static string GetObjectsOutputPath()
         {
-            string OutputPath = Path.Combine(Options.OutputPath, "Objects");
+            string OutputPath = Path.Combine(Options.OutputPath, "DriversCompiler\\Objects");
             if (!Directory.Exists(OutputPath))
             {
                 Directory.CreateDirectory(OutputPath);

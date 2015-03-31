@@ -163,10 +163,12 @@ namespace Kernel.Hardware.Interrupts
         public static InterruptHandlers[] Handlers = new InterruptHandlers[256];
 
         [Compiler.PluggedMethod(ASMFilePath=null)]
+        [Drivers.Compiler.Attributes.PluggedMethod(ASMFilePath=null)]
         public static void EnableInterrupts()
         {
         }
         [Compiler.PluggedMethod(ASMFilePath = null)]
+        [Drivers.Compiler.Attributes.PluggedMethod(ASMFilePath = null)]
         public static void DisableInterrupts()
         {
         }
@@ -561,6 +563,7 @@ namespace Kernel.Hardware.Interrupts
         /// </summary>
         /// <param name="slave">Whether to send the EOI to the slave PIC too.</param>
         [Compiler.PluggedMethod(ASMFilePath = null)]
+        [Drivers.Compiler.Attributes.PluggedMethod(ASMFilePath = null)]
         private static void EndIRQ(bool slave)
         {
         }
@@ -570,6 +573,7 @@ namespace Kernel.Hardware.Interrupts
         /// </summary>
         /// <returns>The pointer to the IDT.</returns>
         [Compiler.PluggedMethod(ASMFilePath=@"ASM\Interrupts\Interrupts")]
+        [Drivers.Compiler.Attributes.PluggedMethod(ASMFilePath=@"ASM\Interrupts\Interrupts")]
         private static InterruptDescriptor* GetIDTPtr()
         {
             return null;
@@ -582,6 +586,7 @@ namespace Kernel.Hardware.Interrupts
         /// </summary>
         /// <param name="IntNum">The interrupt number to fire.</param>
         [Compiler.PluggedMethod(ASMFilePath = null)]
+        [Drivers.Compiler.Attributes.PluggedMethod(ASMFilePath = null)]
         public static void InvokeInterrupt(uint IntNum)
         {
         }

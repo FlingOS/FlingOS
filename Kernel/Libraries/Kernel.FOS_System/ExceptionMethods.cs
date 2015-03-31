@@ -78,6 +78,7 @@ namespace Kernel
         [Compiler.AddExceptionHandlerInfoMethod]
         //[Drivers.Compiler.Attributes.AddExceptionHandlerInfoMethod]
         [Compiler.PluggedMethod(ASMFilePath=@"ASM\Exceptions\AddExceptionHandlerInfo")]
+        [Drivers.Compiler.Attributes.PluggedMethod(ASMFilePath=@"ASM\Exceptions\AddExceptionHandlerInfo")]
         public static unsafe void AddExceptionHandlerInfo(
             void* handlerPtr,
             void* filterPtr)
@@ -92,6 +93,7 @@ namespace Kernel
         [Compiler.ThrowExceptionMethod]
         //[Drivers.Compiler.Attributes.ThrowExceptionMethod]
         [Compiler.PluggedMethod(ASMFilePath = @"ASM\Exceptions\Throw")]
+        [Drivers.Compiler.Attributes.PluggedMethod(ASMFilePath = @"ASM\Exceptions\Throw")]
         public static unsafe void Throw(FOS_System.Exception ex)
         {
         }
@@ -102,6 +104,7 @@ namespace Kernel
         /// </summary>
         /// <param name="exPtr">The pointer to the exception to throw.</param>
         [Compiler.PluggedMethod(ASMFilePath = null)]
+        [Drivers.Compiler.Attributes.PluggedMethod(ASMFilePath = null)]
         public static void ThrowFromPtr(UInt32* exPtr)
         {
         }
@@ -112,6 +115,7 @@ namespace Kernel
         [Compiler.HandleExceptionMethod]
         //[Drivers.Compiler.Attributes.HandleExceptionMethod]
         [Compiler.PluggedMethod(ASMFilePath = @"ASM\Exceptions\HandleException")]
+        [Drivers.Compiler.Attributes.PluggedMethod(ASMFilePath = @"ASM\Exceptions\HandleException")]
         public static unsafe void HandleException()
         {
         }
@@ -122,6 +126,7 @@ namespace Kernel
         [Compiler.ExceptionsHandleLeaveMethod]
         //[Drivers.Compiler.Attributes.ExceptionsHandleLeaveMethod]
         [Compiler.PluggedMethod(ASMFilePath = @"ASM\Exceptions\HandleLeave")]
+        [Drivers.Compiler.Attributes.PluggedMethod(ASMFilePath = @"ASM\Exceptions\HandleLeave")]
         public static unsafe void HandleLeave(void* continuePtr)
         {
         }
@@ -132,6 +137,7 @@ namespace Kernel
         [Compiler.ExceptionsHandleEndFinallyMethod]
         //[Drivers.Compiler.Attributes.ExceptionsHandleEndFinallyMethod]
         [Compiler.PluggedMethod(ASMFilePath = @"ASM\Exceptions\HandleEndFinally")]
+        [Drivers.Compiler.Attributes.PluggedMethod(ASMFilePath = @"ASM\Exceptions\HandleEndFinally")]
         public static unsafe void HandleEndFinally()
         {
         }

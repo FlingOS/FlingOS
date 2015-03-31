@@ -59,10 +59,12 @@ namespace Kernel.Hardware.Processes.Synchronisation
         }
 
         [Compiler.PluggedMethod(ASMFilePath=@"ASM\Processes\Synchronisation\Mutex")]
+        [Drivers.Compiler.Attributes.PluggedMethod(ASMFilePath=@"ASM\Processes\Synchronisation\Mutex")]
         public void Enter()
         {
         }
         [Compiler.PluggedMethod(ASMFilePath=null)]
+        [Drivers.Compiler.Attributes.PluggedMethod(ASMFilePath=null)]
         public void Exit()
         {
         }

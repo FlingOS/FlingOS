@@ -48,6 +48,7 @@ namespace Kernel.Utilities
         /// <param name="anObj">The object to get a handle of.</param>
         /// <returns>The pointer to the object.</returns>
         [Compiler.PluggedMethod(ASMFilePath = @"ASM\ObjectUtilities\GetHandle")]
+        [Drivers.Compiler.Attributes.PluggedMethod(ASMFilePath = @"ASM\ObjectUtilities\GetHandle")]
         [Compiler.NoDebug]
         [Drivers.Compiler.Attributes.NoDebug]
         [Compiler.NoGC]
@@ -65,6 +66,7 @@ namespace Kernel.Utilities
         /// <param name="anObjPtr">The pointer to get an object of.</param>
         /// <returns>The object the pointer points to.</returns>
         [Compiler.PluggedMethod(ASMFilePath = @"ASM\ObjectUtilities\GetObject")]
+        [Drivers.Compiler.Attributes.PluggedMethod(ASMFilePath = @"ASM\ObjectUtilities\GetObject")]
         [Compiler.NoDebug]
         [Drivers.Compiler.Attributes.NoDebug]
         [Compiler.NoGC]

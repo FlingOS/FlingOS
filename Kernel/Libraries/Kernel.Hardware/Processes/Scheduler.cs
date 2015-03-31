@@ -112,10 +112,12 @@ namespace Kernel.Hardware.Processes
             Enable();
         }
         [Compiler.PluggedMethod(ASMFilePath = @"ASM\Processes\Scheduler")]
+        [Drivers.Compiler.Attributes.PluggedMethod(ASMFilePath = @"ASM\Processes\Scheduler")]
         private static void LoadTR()
         {
         }
         [Compiler.PluggedMethod(ASMFilePath = null)]
+        [Drivers.Compiler.Attributes.PluggedMethod(ASMFilePath = null)]
         private static TSS* GetTSSPointer()
         {
             return null;

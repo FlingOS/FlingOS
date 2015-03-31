@@ -43,6 +43,7 @@ namespace Kernel.FOS_System
         /// <param name="divisor">The UInt32 to divide by.</param>
         /// <returns>The quotient of the division.</returns>
         [Compiler.PluggedMethod(ASMFilePath = @"ASM\Math\Divide")]
+        [Drivers.Compiler.Attributes.PluggedMethod(ASMFilePath = @"ASM\Math\Divide")]
         public static ulong Divide(ulong dividend, uint divisor)
         {
             return 0;

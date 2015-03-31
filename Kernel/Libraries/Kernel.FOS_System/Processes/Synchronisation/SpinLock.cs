@@ -70,10 +70,12 @@ namespace Kernel.Hardware.Processes.Synchronisation
         }
 
         [Compiler.PluggedMethod(ASMFilePath=@"ASM\Processes\Synchronisation\SpinLock")]
+        [Drivers.Compiler.Attributes.PluggedMethod(ASMFilePath=@"ASM\Processes\Synchronisation\SpinLock")]
         private void _Enter()
         {
         }
         [Compiler.PluggedMethod(ASMFilePath=null)]
+        [Drivers.Compiler.Attributes.PluggedMethod(ASMFilePath=null)]
         private void _Exit()
         {
         }

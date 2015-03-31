@@ -41,6 +41,7 @@
   <ItemGroup>
     <Compile Include="ASM\ASMCompiler.cs" />
     <Compile Include="ASM\ASMLibrary.cs" />
+    <Compile Include="ASM\ASMLabel.cs" />
     <Compile Include="ASM\ASMPreprocessor.cs" />
     <Compile Include="ASM\ASMProcessor.cs" />
     <Compile Include="ASM\ASMBlock.cs" />
@@ -50,6 +51,7 @@
     <Compile Include="Attributes\HaltMethodAttribute.cs" />
     <Compile Include="Attributes\NewArrMethodAttribute.cs" />
     <Compile Include="Attributes\NewObjMethodAttribute.cs" />
+    <Compile Include="Attributes\SequencePriorityAttribute.cs" />
     <Compile Include="Attributes\ThrowIndexOutOfRangeExceptionMethodAttribute.cs" />
     <Compile Include="Attributes\ThrowNullReferenceExceptionMethodAttribute.cs" />
     <Compile Include="Attributes\TypeClassAttribute.cs" />

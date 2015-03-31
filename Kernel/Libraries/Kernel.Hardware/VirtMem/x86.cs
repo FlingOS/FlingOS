@@ -420,7 +420,9 @@ namespace Kernel.Hardware.VirtMem
         /// </summary>
         /// <param name="entry">The entry to invalidate.</param>
         [Compiler.PluggedMethod(ASMFilePath = @"ASM\VirtMem\x86")]
+        [Drivers.Compiler.Attributes.PluggedMethod(ASMFilePath = @"ASM\VirtMem\x86")]
         [Compiler.SequencePriority(Priority = long.MaxValue)]
+        [Drivers.Compiler.Attributes.SequencePriority(Priority = long.MaxValue)]
         private void InvalidatePTE(uint entry)
         {
 
@@ -435,6 +437,7 @@ namespace Kernel.Hardware.VirtMem
         /// physical address at which the bootloader loaded the kernel.
         /// </remarks>
         [Compiler.PluggedMethod(ASMFilePath = null)]
+        [Drivers.Compiler.Attributes.PluggedMethod(ASMFilePath = null)]
         public static uint GetKernelVirtToPhysOffset()
         {
             return 0;
@@ -444,6 +447,7 @@ namespace Kernel.Hardware.VirtMem
         /// </summary>
         /// <returns>The pointer.</returns>
         [Compiler.PluggedMethod(ASMFilePath = null)]
+        [Drivers.Compiler.Attributes.PluggedMethod(ASMFilePath = null)]
         private static uint* GetPageDirectoryPtr()
         {
             return null;
@@ -453,6 +457,7 @@ namespace Kernel.Hardware.VirtMem
         /// </summary>
         /// <returns>The pointer.</returns>
         [Compiler.PluggedMethod(ASMFilePath = null)]
+        [Drivers.Compiler.Attributes.PluggedMethod(ASMFilePath = null)]
         private static uint* GetFirstPageTablePtr()
         {
             return null;
@@ -462,6 +467,7 @@ namespace Kernel.Hardware.VirtMem
         /// </summary>
         /// <returns>The pointer.</returns>
         [Compiler.PluggedMethod(ASMFilePath = null)]
+        [Drivers.Compiler.Attributes.PluggedMethod(ASMFilePath = null)]
         private static uint* GetKernelMemStartPtr()
         {
             return null;
@@ -471,6 +477,7 @@ namespace Kernel.Hardware.VirtMem
         /// </summary>
         /// <returns>The pointer.</returns>
         [Compiler.PluggedMethod(ASMFilePath = null)]
+        [Drivers.Compiler.Attributes.PluggedMethod(ASMFilePath = null)]
         private static uint* GetKernelMemEndPtr()
         {
             return null;
@@ -478,6 +485,7 @@ namespace Kernel.Hardware.VirtMem
 
 
         [Compiler.PluggedMethod(ASMFilePath = null)]
+        [Drivers.Compiler.Attributes.PluggedMethod(ASMFilePath = null)]
         public static uint GetCR3()
         {
             return 0;

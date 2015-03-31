@@ -117,6 +117,7 @@ namespace Kernel.Utilities
         /// <param name="aUInt32">The value to convert.</param>
         /// <returns>The converted value.</returns>
         [Compiler.PluggedMethod(ASMFilePath=@"ASM\MemoryUtils")]
+        [Drivers.Compiler.Attributes.PluggedMethod(ASMFilePath=@"ASM\MemoryUtils")]
         public static uint htonl(uint aUInt32)
         {
             return 0;

@@ -43,6 +43,7 @@ namespace Kernel.Hardware.CPUs
         /// Halts the CPU using the Hlt instruction.
         /// </summary>
         [Compiler.PluggedMethod(ASMFilePath=@"ASM\CPUs\CPUx86_32\Halt")]
+        [Drivers.Compiler.Attributes.PluggedMethod(ASMFilePath=@"ASM\CPUs\CPUx86_32\Halt")]
         public override void Halt()
         {
         }
