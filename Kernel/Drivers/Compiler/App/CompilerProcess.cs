@@ -84,7 +84,7 @@ namespace Drivers.Compiler.App
                 return false;
             }
             
-            if (args[3].ToLower() != "debug" && args[4].ToLower() != "release")
+            if (args[3].ToLower() != "debug" && args[3].ToLower() != "release")
             {
                 Console.ForegroundColor = ConsoleColor.Red;
                 Console.WriteLine("Build Mode argument invalid! Should be \"Debug\" or \"Release\".");
