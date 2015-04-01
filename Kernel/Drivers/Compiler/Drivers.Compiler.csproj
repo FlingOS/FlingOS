@@ -62,6 +62,7 @@
     <Compile Include="Attributes\ThrowIndexOutOfRangeExceptionMethodAttribute.cs" />
     <Compile Include="Attributes\ThrowNullReferenceExceptionMethodAttribute.cs" />
     <Compile Include="Attributes\TypeClassAttribute.cs" />
+    <Compile Include="IL\ExceptionBlock.cs" />
     <Compile Include="IL\ILConversionState.cs" />
     <Compile Include="IL\ILOps\ILOpTargetAttribute.cs" />
     <Compile Include="Attributes\NoDebugAttribute.cs" />

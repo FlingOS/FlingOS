@@ -1,3 +1,10 @@
+BITS 32
+
+SECTION .text
+
+GLOBAL method_System_Void_Kernel_PreReqs_Reset__:function
+GLOBAL method_System_Void_RETEND_Kernel_PreReqs_DECLEND_Reset_NAMEEND___:function
+
 ; BEGIN - Reset
 method_System_Void_Kernel_PreReqs_Reset__:
 method_System_Void_RETEND_Kernel_PreReqs_DECLEND_Reset_NAMEEND___:

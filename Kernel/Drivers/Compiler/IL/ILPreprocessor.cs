@@ -168,6 +168,7 @@ namespace Drivers.Compiler.IL
 
             ILPreprocessState preprosState = new ILPreprocessState()
             {
+                TheILLibrary = TheLibrary,
                 Input = theILBlock
             };
 
@@ -260,8 +261,6 @@ namespace Drivers.Compiler.IL
         }
         private static void InjectGeneral(Types.MethodInfo theMethodInfo, ILBlock theILBlock)
         {
-            //TODO
-
             // Inject MethodStart op
             theILBlock.ILOps.Insert(0, ILScanner.MethodStartOp);
             // Inject MethodEnd op just before anywhere where there is a ret
@@ -282,8 +281,6 @@ namespace Drivers.Compiler.IL
         }
         private static void InjectTryCatchFinally(Types.MethodInfo theMethodInfo, ILBlock theILBlock)
         {
-            //TODO
-
             // Replace Leave and Leave_S ops
             for (int i = 0; i < theILBlock.ILOps.Count; i++)
             {
@@ -293,7 +290,7 @@ namespace Drivers.Compiler.IL
                     (ILOp.OpCodes)theOp.opCode.Value == ILOp.OpCodes.Leave_S)
                 {
                     theILBlock.ILOps.RemoveAt(i);
-                    
+
                     int ILOffset = 0;
                     if ((int)theOp.opCode.Value == (int)ILOp.OpCodes.Leave)
                     {
@@ -307,7 +304,7 @@ namespace Drivers.Compiler.IL
                     theILBlock.ILOps.Insert(i, new ILOp()
                     {
                         opCode = System.Reflection.Emit.OpCodes.Ldftn,
-                        LoadAtILPosition = theILBlock.PositionOf(theILBlock.At(theOp.NextOffset + ILOffset)),
+                        LoadAtILOffset = theOp.NextOffset + ILOffset,
                         MethodToCall = theILBlock.TheMethodInfo.UnderlyingInfo
                     });
                     theILBlock.ILOps.Insert(i + 1, new ILOp()
@@ -333,6 +330,47 @@ namespace Drivers.Compiler.IL
                         MethodToCall = ILLibrary.SpecialMethods[typeof(Attributes.ExceptionsHandleEndFinallyMethodAttribute)].First().UnderlyingInfo
                     });
                 }
+            }
+
+
+            foreach (ExceptionHandledBlock exBlock in theILBlock.ExceptionHandledBlocks)
+            {
+                #region Try-sections
+                //      Insert the start of try-block
+
+                //Consists of adding a new ExceptionHandlerInfos
+                //  built from the info in exBlock so we:
+                //      - Add infos for all finally blocks first
+                //      - Then add infos for all catch blocks
+                //  Since finally code is always run after catch code in C#,
+                //      by adding catch handlers after finally handlers, they 
+                //      appear as the inner-most exception handlers and so get 
+                //      run before finally handlers.
+
+                //To add a new ExceptionHandlerInfo we must set up args for 
+                //  calling Exceptions.AddExceptionHandlerInfo:
+                // 1. We load a pointer to the handler
+                //      - This is calculated from an offset from the start of the function to the handler
+                // 2. We load a pointer to the filter
+                //      - This is calculated from an offset from the start of the function to the filter
+                //      Note: Filter has not been implemented as an actual filter. 
+                //            At the moment, 0x00000000 indicates a finally handler,
+                //                           0xFFFFFFFF indicates no filter block 
+                //                                      (i.e. an unfiltered catch handler)
+                //                           0xXXXXXXXX has undetermined behaviour!
+                #endregion
+
+                #region Catch-sections
+
+                // Strip the first pop of catch-handler
+
+                foreach (CatchBlock aCatchBlock in exBlock.CatchBlocks)
+                {
+                    ILOp catchPopOp = theILBlock.At(aCatchBlock.Offset);
+                    theILBlock.ILOps.Remove(catchPopOp);
+                }
+
+                #endregion
             }
         }
     }

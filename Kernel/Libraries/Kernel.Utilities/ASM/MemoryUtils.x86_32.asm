@@ -1,4 +1,10 @@
-﻿method_System_UInt32_RETEND_Kernel_Utilities_MemoryUtils_DECLEND_htonl_NAMEEND__System_UInt32_:
+﻿BITS 32
+
+SECTION .text
+
+GLOBAL method_System_UInt32_RETEND_Kernel_Utilities_MemoryUtils_DECLEND_htonl_NAMEEND__System_UInt32_:function
+
+method_System_UInt32_RETEND_Kernel_Utilities_MemoryUtils_DECLEND_htonl_NAMEEND__System_UInt32_:
 
 push dword ebp
 mov dword ebp, esp

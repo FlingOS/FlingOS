@@ -1,3 +1,12 @@
+BITS 32
+
+SECTION .text
+
+GLOBAL GetEIP:function
+
+EXTERN %KERNEL_CALL_STATIC_CONSTRUCTORS_METHOD%
+EXTERN %KERNEL_MAIN_METHOD%
+
 ; BEGIN - Main Entrypoint
 call __MAIN_ENTRYPOINT__ ; Call our main entry point 
 						 ; - not strictly necessary but good for setting up esp etc.

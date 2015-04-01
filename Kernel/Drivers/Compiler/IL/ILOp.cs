@@ -728,7 +728,7 @@ namespace Drivers.Compiler.IL
         public bool LabelRequired = false;
         public bool IsDebugOp = false;
 
-        public int LoadAtILPosition = int.MaxValue;
+        public int LoadAtILOffset = int.MaxValue;
 
         public int NextOffset
         {

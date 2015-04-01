@@ -1,4 +1,25 @@
-﻿; BEGIN - x86 Virt Mem
+﻿BITS 32
+
+SECTION .text
+
+KERNEL_VIRTUAL_BASE equ 0xC0000000					; 3GiB
+KERNEL_PAGE_NUMBER equ (KERNEL_VIRTUAL_BASE >> 22)
+
+GLOBAL method_System_UInt32_RETEND_Kernel_Hardware_VirtMem_x86_DECLEND_GetCR3_NAMEEND___:function
+GLOBAL method_System_UInt32_RETEND_Kernel_Hardware_VirtMem_x86_DECLEND_GetKernelVirtToPhysOffset_NAMEEND___:function
+GLOBAL method_System_UInt32__RETEND_Kernel_Hardware_VirtMem_x86_DECLEND_GetPageDirectoryPtr_NAMEEND___:function
+GLOBAL method_System_UInt32__RETEND_Kernel_Hardware_VirtMem_x86_DECLEND_GetFirstPageTablePtr_NAMEEND___:function
+GLOBAL method_System_UInt32__RETEND_Kernel_Hardware_VirtMem_x86_DECLEND_GetKernelMemStartPtr_NAMEEND___:function
+GLOBAL method_System_UInt32__RETEND_Kernel_Hardware_VirtMem_x86_DECLEND_GetKernelMemEndPtr_NAMEEND___:function
+GLOBAL method_System_Void_RETEND_Kernel_Hardware_VirtMem_x86_DECLEND_InvalidatePTE_NAMEEND__System_UInt32_:function
+
+GLOBAL Page_Directory:data
+GLOBAL Page_Table1:data
+GLOBAL Kernel_MemEnd:data
+
+EXTERN Kernel_MemStart
+
+; BEGIN - x86 Virt Mem
 
 method_System_UInt32_RETEND_Kernel_Hardware_VirtMem_x86_DECLEND_GetCR3_NAMEEND___:
 

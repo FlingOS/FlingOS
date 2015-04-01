@@ -149,9 +149,6 @@ namespace Drivers.Compiler.Architectures.x86
                 }
 
                 conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Dword, Src = (sizeOfArgs / 4).ToString(), Dest = "ECX" });
-                //string ShiftArgsLoopLabel = string.Format("{0}.IL_{1}_ShiftArgsLoop",
-                //        conversionState.GetMethodID(conversionState.CurrentILChunk.Method),
-                //        theOp.Position);
                 conversionState.Append(new ASMOps.Label() { ILPosition = currOpPosition, Extension = "ShiftArgsLoop" });
                 GlobalMethods.InsertPageFaultDetection(conversionState, "ebx", 4, (OpCodes)theOp.opCode.Value);
                 conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Dword, Src = "[EBX+4]", Dest = "EDX" });

@@ -1,6 +1,19 @@
+BITS 32
+
+SECTION .text
+
+GLOBAL Kernel_Start
+
+EXTERN Kernel_Start_HandleNoMultiboot
+EXTERN MultiBootInfo_Structure
+EXTERN MultiBootInfo_Memory_Low
+EXTERN MultiBootInfo_Memory_High
+
+KERNEL_VIRTUAL_BASE equ 0xC0000000					; 3GiB
+KERNEL_PAGE_NUMBER equ (KERNEL_VIRTUAL_BASE >> 22)
+
 ; BEGIN - Kernel Start
 
-global Kernel_Start
 Kernel_Start equ (_Kernel_Start - KERNEL_VIRTUAL_BASE)
 
 _Kernel_Start:

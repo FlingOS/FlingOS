@@ -1,4 +1,10 @@
-﻿method_System_Void__RETEND_Kernel_Utilities_ObjectUtilities_DECLEND_GetHandle_NAMEEND__System_Object_:
+﻿BITS 32
+
+SECTION .text
+
+GLOBAL method_System_Void__RETEND_Kernel_Utilities_ObjectUtilities_DECLEND_GetHandle_NAMEEND__System_Object_:function
+
+method_System_Void__RETEND_Kernel_Utilities_ObjectUtilities_DECLEND_GetHandle_NAMEEND__System_Object_:
 
 push ebp
 mov ebp, esp

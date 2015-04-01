@@ -55,18 +55,36 @@ namespace Drivers.Compiler.ASM
 
         public string GenerateMethodLabel()
         {
-            return OriginMethodInfo.ID;
+            return GenerateLabel(OriginMethodInfo.ID);
         }
-        public string GenerateILOpLabel(int ILPosition, string Extension)
+        public string GenerateILOpLabel(int ILPosition, string Extension = null)
         {
-            if (!string.IsNullOrWhiteSpace(Extension))
+            return GenerateLabel(null, ILPosition, Extension);
+        }
+
+        public static string GenerateLabel(string MethodID, int ILPosition = int.MinValue, string Extension = null)
+        {
+            if (ILPosition != int.MinValue)
             {
-                return string.Format(".IL_{0}_{1}", ILPosition, Extension);
+                if (!string.IsNullOrWhiteSpace(MethodID))
+                {
+                    if (!string.IsNullOrWhiteSpace(Extension))
+                    {
+                        return string.Format("{0}.IL_{1}_{2}", MethodID, ILPosition.ToString("X2"), Extension);
+                    }
+
+                    return string.Format("{0}.IL_{1}", MethodID, ILPosition.ToString("X2"));
+                }
+
+                if (!string.IsNullOrWhiteSpace(Extension))
+                {
+                    return string.Format(".IL_{0}_{1}", ILPosition.ToString("X2"), Extension);
+                }
+                
+                return string.Format(".IL_{0}", ILPosition.ToString("X2"));
             }
-            else
-            {
-                return string.Format(".IL_{0}", ILPosition);
-            }
+
+            return MethodID;
         }
     }
 }

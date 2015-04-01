@@ -14,6 +14,18 @@
 ;                                                                                ;
 ; - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  ;
 
+BITS 32
+
+SECTION .text
+
+GLOBAL method_System_Void_Kernel_Debug_BasicDebug_Serial_WriteUInt32_System_UInt32_:function
+GLOBAL method_System_Void_Kernel_Debug_BasicDebug_Serial_WriteUInt16_System_UInt16_:function
+GLOBAL method_System_Void_Kernel_Debug_BasicDebug_Serial_WriteByte_System_Byte_:function
+GLOBAL method_System_Void_Kernel_Debug_BasicDebug_Serial_WriteString_System_String_:function
+GLOBAL BasicDebug_SerialWrite32:function
+GLOBAL BasicDebug_SerialWrite16:function
+GLOBAL BasicDebug_SerialWrite8:function
+
 ; BEGIN - Basic Debug : Serial Write
 
 method_System_Void_Kernel_Debug_BasicDebug_Serial_WriteUInt32_System_UInt32_:
@@ -88,10 +100,10 @@ call BasicDebug_SerialWrite8
 call BasicDebug_SerialWrite8
 
 ; Write the string
-method_System_Void_Kernel_Debug_BasicDebug_Serial_WriteString_System_String_.loop1:
+.loop1:
 call BasicDebug_SerialWrite8
 add esi, 3
-loop method_System_Void_Kernel_Debug_BasicDebug_Serial_WriteString_System_String_.loop1
+loop .loop1
 
 pop dword ebp
 

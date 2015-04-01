@@ -39,6 +39,18 @@ namespace Drivers.Compiler.Architectures.x86
     /// </summary>
     public class Ldftn : IL.ILOps.Ldftn
     {
+        public override void Preprocess(ILPreprocessState preprocessState, ILOp theOp)
+        {
+            Types.MethodInfo methodInfo = preprocessState.TheILLibrary.GetMethodInfo(theOp.MethodToCall);
+            
+            if (theOp.LoadAtILOffset != int.MaxValue)
+            {
+                int offset = theOp.LoadAtILOffset;
+                ILOp theLoadedOp = preprocessState.TheILLibrary.ILBlocks[methodInfo].At(offset);
+                theLoadedOp.LabelRequired = true;
+            }
+        }
+
         /// <summary>
         /// See base class documentation.
         /// </summary>
@@ -48,18 +60,26 @@ namespace Drivers.Compiler.Architectures.x86
         public override void Convert(ILConversionState conversionState, ILOp theOp)
         {
             //Get the ID (i.e. ASM label) of the method to load a pointer to
-            string methodID = conversionState.TheILLibrary.GetMethodInfo(theOp.MethodToCall).ID;
-            conversionState.AddExternalLabel(methodID);
-
+            Types.MethodInfo methodInfo = conversionState.TheILLibrary.GetMethodInfo(theOp.MethodToCall);
+            string methodID = methodInfo.ID;
+            bool addExternalLabel = methodID != conversionState.Input.TheMethodInfo.ID;
+            
             //If we want to load the pointer at a specified IL op number:
-            if(theOp.LoadAtILPosition != int.MaxValue)
+            if(theOp.LoadAtILOffset != int.MaxValue)
             {
                 //Append the IL sub-label to the ID
-                methodID += ".IL_" + theOp.LoadAtILPosition;
+                ILBlock anILBlock = conversionState.TheILLibrary.ILBlocks[methodInfo];
+                methodID = ASM.ASMBlock.GenerateLabel(methodID, anILBlock.PositionOf(anILBlock.At(theOp.LoadAtILOffset)));
 
                 //Note: This is used by try/catch/finally blocks for pushing pointers 
                 //      to catch/finally handlers and filters
             }
+
+            if (addExternalLabel)
+            {
+                conversionState.AddExternalLabel(methodID);
+            }
+
             //Push the pointer to the function
             conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Dword, Src = methodID });
 

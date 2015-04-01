@@ -1,4 +1,14 @@
-﻿method_System_Void_RETEND_Kernel_ExceptionMethods_DECLEND_HandleEndFinally_NAMEEND___:
+﻿BITS 32
+
+SECTION .text
+
+GLOBAL method_System_Void_RETEND_Kernel_ExceptionMethods_DECLEND_HandleEndFinally_NAMEEND___:function
+
+EXTERN staticfield_Kernel_ExceptionHandlerInfo__Kernel_ExceptionMethods_CurrentHandlerPtr
+EXTERN staticfield_System_Boolean_Kernel_ExceptionMethods_PendingException
+EXTERN method_System_Void_RETEND_Kernel_ExceptionMethods_DECLEND_HandleException_NAMEEND__
+
+method_System_Void_RETEND_Kernel_ExceptionMethods_DECLEND_HandleEndFinally_NAMEEND___:
 
 ; Leaving a "finally" critical section cleanly
 ; We need to handle 2 cases:

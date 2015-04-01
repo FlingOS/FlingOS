@@ -44,7 +44,14 @@ namespace Drivers.Compiler.Types
         {
             get
             {
-                return "field_" + Utilities.FilterIdentifierForInvalidChars(UnderlyingInfo.FieldType.FullName + "-" + UnderlyingInfo.DeclaringType.FullName + "." + UnderlyingInfo.Name);
+                if (IsStatic)
+                {
+                    return "staticfield_" + Utilities.FilterIdentifierForInvalidChars(UnderlyingInfo.FieldType.FullName + "-" + UnderlyingInfo.DeclaringType.FullName + "." + UnderlyingInfo.Name);
+                }
+                else
+                {
+                    return "field_" + Utilities.FilterIdentifierForInvalidChars(UnderlyingInfo.FieldType.FullName + "-" + UnderlyingInfo.DeclaringType.FullName + "." + UnderlyingInfo.Name);
+                }
             }
         }
         public string Name { get { return UnderlyingInfo.Name; } }

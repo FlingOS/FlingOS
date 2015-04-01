@@ -67,11 +67,7 @@ namespace Drivers.Compiler.Architectures.x86
             //      1.4. Otherwise, call Exceptions.ThrowNullReferenceException
             // 2. Load array length
 
-            //string ContinueExecutionLabelBase = string.Format("{0}.IL_{1}_ContinueExecution",
-            //        conversionState.GetMethodID(conversionState.CurrentILChunk.Method),
-            //        theOp.Position);
-            //string ContinueExecutionLabel1 = ContinueExecutionLabelBase + "1";
-
+            
             //      1.1. Move array ref into eax
             GlobalMethods.InsertPageFaultDetection(conversionState, "esp", 0, (OpCodes)theOp.opCode.Value);
             conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Dword, Src = "[ESP]", Dest = "EAX" });

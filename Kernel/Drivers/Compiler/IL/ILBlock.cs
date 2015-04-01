@@ -65,5 +65,46 @@ namespace Drivers.Compiler.IL
             }
             return null;
         }
+
+        public List<ExceptionHandledBlock> ExceptionHandledBlocks = new List<ExceptionHandledBlock>();
+        public ExceptionHandledBlock GetExactExceptionHandledBlock(int Offset)
+        {
+            List<ExceptionHandledBlock> potBlocks = (from blocks in ExceptionHandledBlocks
+                                                     where (blocks.Offset == Offset)
+                                                     select blocks)
+                                                     .ToList();
+            if (potBlocks.Count > 0)
+            {
+                return potBlocks.First();
+            }
+            return null;
+        }
+        public ExceptionHandledBlock GetExceptionHandledBlock(int Offset)
+        {
+            List<ExceptionHandledBlock> potBlocks = (from blocks in ExceptionHandledBlocks
+                                                     where (
+                                                     (blocks.Offset <= Offset &&
+                                                      blocks.Offset + blocks.Length >= Offset)
+                                                     || (from catchBlocks in blocks.CatchBlocks
+                                                         where (
+                                                           catchBlocks.Offset <= Offset &&
+                                                           catchBlocks.Offset + catchBlocks.Length >= Offset
+                                                         )
+                                                         select catchBlocks).Count() > 0
+                                                     || (from finallyBlocks in blocks.FinallyBlocks
+                                                         where (
+                                                            finallyBlocks.Offset <= Offset &&
+                                                            finallyBlocks.Offset + finallyBlocks.Length >= Offset
+                                                         )
+                                                         select finallyBlocks).Count() > 0
+                                                     )
+                                                     select blocks).OrderByDescending(x => x.Offset)
+                                                     .ToList();
+            if (potBlocks.Count > 0)
+            {
+                return potBlocks.First();
+            }
+            return null;
+        }
     }
 }

@@ -14,6 +14,12 @@
 ;                                                                                ;
 ; - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  ;
 
+BITS 32
+
+SECTION .text
+
+GLOBAL BasicDebug_WaitForCommand:function
+
 ; BEGIN - Basic Debug : Receive Commands
 
 BasicDebug_WaitForCommand:

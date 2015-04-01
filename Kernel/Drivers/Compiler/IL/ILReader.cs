@@ -212,6 +212,49 @@ namespace Drivers.Compiler.IL
 
                     ILBytesPos += currOpBytesSize + operandSize;
                 }
+
+                foreach (ExceptionHandlingClause aClause in methodBody.ExceptionHandlingClauses)
+                {
+                    ExceptionHandledBlock exBlock = result.GetExactExceptionHandledBlock(aClause.TryOffset);
+                    if (exBlock == null)
+                    {
+                        exBlock = new ExceptionHandledBlock();
+                        exBlock.Offset = aClause.TryOffset;
+                        exBlock.Length = aClause.TryLength;
+                        result.ExceptionHandledBlocks.Add(exBlock);
+                    }
+
+                    switch (aClause.Flags)
+                    {
+                        case ExceptionHandlingClauseOptions.Fault:
+                        case ExceptionHandlingClauseOptions.Clause:
+                            {
+                                CatchBlock catchBlock = new CatchBlock()
+                                {
+                                    Offset = aClause.HandlerOffset,
+                                    Length = aClause.HandlerLength,
+                                    //Though not used, we may as well set it anyway
+                                    FilterType = aClause.CatchType
+                                };
+                                exBlock.CatchBlocks.Add(catchBlock);
+                            }
+                            break;
+                        case ExceptionHandlingClauseOptions.Finally:
+                            {
+                                FinallyBlock finallyBlock = new FinallyBlock()
+                                {
+                                    Offset = aClause.HandlerOffset,
+                                    Length = aClause.HandlerLength
+                                };
+                                exBlock.FinallyBlocks.Add(finallyBlock);
+                            }
+                            break;
+                        default:
+                            Logger.LogError("IL0010", "", 0,
+                                "Exception handling clause not supported! Type: " + aClause.Flags.ToString());
+                            break;
+                    }
+                }
             }
 
             return result;

@@ -1,4 +1,14 @@
-﻿; BEGIN - Virtual Mem Init
+﻿BITS 32
+
+SECTION .text
+
+EXTERN Page_Table1
+EXTERN Page_Directory
+
+KERNEL_VIRTUAL_BASE equ 0xC0000000					; 3GiB
+KERNEL_PAGE_NUMBER equ (KERNEL_VIRTUAL_BASE >> 22)
+
+; BEGIN - Virtual Mem Init
 
 VirtualMemInit:
 ; See MultibootSignature for memory allocations

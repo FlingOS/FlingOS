@@ -1,4 +1,12 @@
-﻿method_System_Void_RETEND_Kernel_ExceptionMethods_DECLEND_AddExceptionHandlerInfo_NAMEEND__System_Void__System_Void__:
+﻿BITS 32
+
+SECTION .text
+
+GLOBAL method_System_Void_RETEND_Kernel_ExceptionMethods_DECLEND_AddExceptionHandlerInfo_NAMEEND__System_Void__System_Void__:function
+
+EXTERN staticfield_Kernel_ExceptionHandlerInfo__Kernel_ExceptionMethods_CurrentHandlerPtr
+
+method_System_Void_RETEND_Kernel_ExceptionMethods_DECLEND_AddExceptionHandlerInfo_NAMEEND__System_Void__System_Void__:
 
 ; 1. Push new ExceptionHandler structure to stack
 ; 2. Store return address

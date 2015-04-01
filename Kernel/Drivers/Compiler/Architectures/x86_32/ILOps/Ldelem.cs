@@ -149,9 +149,6 @@ namespace Drivers.Compiler.Architectures.x86
             // 0. Index of element to get as Int32 (dword)
             // 1. Array object reference as address (dword)
 
-            //string ContinueExecutionLabelBase = string.Format("{0}.IL_{1}_Load_ContinueExecution",
-            //        conversionState.GetMethodID(conversionState.CurrentILChunk.Method),
-            //        theOp.Position);
             Types.TypeInfo arrayTypeInfo = conversionState.GetArrayTypeInfo();
                 
             // 1. Check array reference is not null

@@ -1,4 +1,28 @@
-section .text
+BITS 32
+
+SECTION .text
+
+GLOBAL MultibootSignature:data
+GLOBAL MultibootFlags:data
+GLOBAL MultibootChecksum:data
+GLOBAL MultibootGraphicsRuntime_VbeModeInfoAddr:data
+GLOBAL MultibootGraphicsRuntime_VbeControlInfoAddr:data
+GLOBAL MultibootGraphicsRuntime_VbeMode:data
+GLOBAL MultiBootInfo_Memory_High:data
+GLOBAL MultiBootInfo_Memory_Low:data
+
+GLOBAL Kernel_MemStart:data
+GLOBAL Before_Kernel_Stack:data
+GLOBAL Kernel_Stack:data
+GLOBAL MultiBootInfo_Structure:data
+
+GLOBAL _NATIVE_GDT_Contents:data
+GLOBAL _NATIVE_GDT_Pointer:data
+GLOBAL _NATIVE_IDT_Contents:data
+GLOBAL _NATIVE_IDT_Pointer:data
+GLOBAL _NATIVE_TSS:data
+GLOBAL TSS_POINTER:data
+
 ; BEGIN - Multiboot Signature
 MultibootSignature dd 464367618
 MultibootFlags dd 3
@@ -36,7 +60,6 @@ db 0x67,  0, 0, 0, 0, 0xE9, 0x00, 0	; Offset: 40 - TSS Selector - Pointer to the
 ;					   Size - Change iff adding/removing rows from GDT contents
 ;					   Size = Total bytes in GDT - 1
 _NATIVE_GDT_Pointer db 47, 0, 0, 0, 0, 0
-global _NATIVE_IDT_Contents
 _NATIVE_IDT_Contents: TIMES 2048 db 0
 _NATIVE_IDT_Pointer db 15, 15, 0, 0, 0, 0
 

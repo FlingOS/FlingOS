@@ -1,3 +1,9 @@
+BITS 32
+
+SECTION .text
+
+GLOBAL method_System_Void_RETEND_Kernel_PreReqs_DECLEND_WriteDebugVideo_NAMEEND__System_String_System_UInt32_:function
+
 ; BEGIN - Write Debug Video
 method_System_Void_RETEND_Kernel_PreReqs_DECLEND_WriteDebugVideo_NAMEEND__System_String_System_UInt32_:
 
@@ -16,11 +22,11 @@ mov dword ecx, eax	; Store number of characters to clear in ecx for later use in
 mov byte ah, 0x00	; Set colour to clear to. Here black for background and foreground
 mov byte al, 0		; Set the character to the null/empty character
 
-method_System_Void_RETEND_Kernel_PreReqs_DECLEND_WriteDebugVideo_NAMEEND__System_String_System_UInt32_.Loop1:
+.Loop1:
 mov word [ebx], ax	; Move the empty character/colour to vid mem
 add dword ebx, 2	; Move to next character space in vid mem
 ; Uses ecx - loops till ecx = 0 i.e. till all characters cleared
-loop method_System_Void_RETEND_Kernel_PreReqs_DECLEND_WriteDebugVideo_NAMEEND__System_String_System_UInt32_.Loop1
+loop .Loop1
 
 
 ; Load string length
@@ -34,13 +40,13 @@ mov dword ebx, 0xB81E0 ; Load vid mem base address
 
 mov byte ah, [ebp+8] ; Load colour
 
-method_System_Void_RETEND_Kernel_PreReqs_DECLEND_WriteDebugVideo_NAMEEND__System_String_System_UInt32_.Loop2:
+.Loop2:
 mov byte al, [edx]		; Get current character of string
 mov word [ebx], ax		; Move character and colour into vid mem
 add dword ebx, 2		; Move to next character space in vid mem
 add dword edx, 1		; Move to next character in string
 ; Uses ecx - loops till ecx = 0 i.e. till all characters gone through
-loop method_System_Void_RETEND_Kernel_PreReqs_DECLEND_WriteDebugVideo_NAMEEND__System_String_System_UInt32_.Loop2
+loop .Loop2
 
 ; MethodEnd
 pop dword ebp

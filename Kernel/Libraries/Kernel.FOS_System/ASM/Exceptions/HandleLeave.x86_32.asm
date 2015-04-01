@@ -1,4 +1,13 @@
-﻿method_System_Void_RETEND_Kernel_ExceptionMethods_DECLEND_HandleLeave_NAMEEND__System_Void__:
+﻿BITS 32
+
+SECTION .text
+
+GLOBAL method_System_Void_RETEND_Kernel_ExceptionMethods_DECLEND_HandleLeave_NAMEEND__System_Void__:function
+
+EXTERN staticfield_Kernel_ExceptionHandlerInfo__Kernel_ExceptionMethods_CurrentHandlerPtr
+EXTERN method_System_Void_RETEND_Kernel_FOS_System_GC_DECLEND_DecrementRefCount_NAMEEND__Kernel_FOS_System_Object_
+
+method_System_Void_RETEND_Kernel_ExceptionMethods_DECLEND_HandleLeave_NAMEEND__System_Void__:
 
 ; Leaving a critical section cleanly
 ; We need to handle 2 cases:

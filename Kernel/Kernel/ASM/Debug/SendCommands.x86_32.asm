@@ -14,6 +14,27 @@
 ;                                                                                ;
 ; - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  ;
 
+BITS 32
+
+SECTION .text
+
+GLOBAL BasicDebug_SendConnectedCmd:function
+GLOBAL BasicDebug_SendBreakCmd:function
+GLOBAL BasicDebug_SendBreakAddress:function
+GLOBAL BasicDebug_SendRegisters:function
+GLOBAL BasicDebug_SendArguments:function
+GLOBAL BasicDebug_SendLocals:function
+GLOBAL BasicDebug_SendMemory:function
+GLOBAL BasicDebug_SendCmd:function
+
+EXTERN BasicDebug_ConnectedCmd
+EXTERN BasicDebug_BreakCmd
+EXTERN BasicDebug_BreakAddressCmd
+EXTERN BasicDebug_RegistersCmd
+EXTERN BasicDebug_ArgumentsCmd
+EXTERN BasicDebug_LocalsCmd
+EXTERN BasicDebug_MemoryCmd
+
 ; BEGIN - Basic Debug : Send Commands
 
 BasicDebug_SendConnectedCmd:
