@@ -52,7 +52,10 @@
     <Compile Include="ASM\ASMOp.cs" />
     <Compile Include="Attributes\ArrayClassAttribute.cs" />
     <Compile Include="Attributes\DecrementRefCountMethodAttribute.cs" />
+    <Compile Include="Attributes\ExceptionsHandleEndFinallyMethodAttribute.cs" />
+    <Compile Include="Attributes\ExceptionsHandleLeaveMethodAttribute.cs" />
     <Compile Include="Attributes\HaltMethodAttribute.cs" />
+    <Compile Include="Attributes\HandleExceptionMethodAttribute.cs" />
     <Compile Include="Attributes\NewArrMethodAttribute.cs" />
     <Compile Include="Attributes\NewObjMethodAttribute.cs" />
     <Compile Include="Attributes\SequencePriorityAttribute.cs" />

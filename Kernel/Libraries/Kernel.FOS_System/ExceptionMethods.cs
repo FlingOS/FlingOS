@@ -113,7 +113,7 @@ namespace Kernel
         /// Handles the current pending exception.
         /// </summary>
         [Compiler.HandleExceptionMethod]
-        //[Drivers.Compiler.Attributes.HandleExceptionMethod]
+        [Drivers.Compiler.Attributes.HandleExceptionMethod]
         [Compiler.PluggedMethod(ASMFilePath = @"ASM\Exceptions\HandleException")]
         [Drivers.Compiler.Attributes.PluggedMethod(ASMFilePath = @"ASM\Exceptions\HandleException")]
         public static unsafe void HandleException()
@@ -124,7 +124,7 @@ namespace Kernel
         /// </summary>
         /// <param name="continuePtr">A pointer to the instruction to continue execution at.</param>
         [Compiler.ExceptionsHandleLeaveMethod]
-        //[Drivers.Compiler.Attributes.ExceptionsHandleLeaveMethod]
+        [Drivers.Compiler.Attributes.ExceptionsHandleLeaveMethod]
         [Compiler.PluggedMethod(ASMFilePath = @"ASM\Exceptions\HandleLeave")]
         [Drivers.Compiler.Attributes.PluggedMethod(ASMFilePath = @"ASM\Exceptions\HandleLeave")]
         public static unsafe void HandleLeave(void* continuePtr)
@@ -135,7 +135,7 @@ namespace Kernel
         /// This may result in an exception being passed to the next handler if it has not been caught &amp; handled yet.
         /// </summary>
         [Compiler.ExceptionsHandleEndFinallyMethod]
-        //[Drivers.Compiler.Attributes.ExceptionsHandleEndFinallyMethod]
+        [Drivers.Compiler.Attributes.ExceptionsHandleEndFinallyMethod]
         [Compiler.PluggedMethod(ASMFilePath = @"ASM\Exceptions\HandleEndFinally")]
         [Drivers.Compiler.Attributes.PluggedMethod(ASMFilePath = @"ASM\Exceptions\HandleEndFinally")]
         public static unsafe void HandleEndFinally()

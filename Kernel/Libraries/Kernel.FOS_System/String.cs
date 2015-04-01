@@ -57,7 +57,8 @@ namespace Kernel.FOS_System
         /// </summary>
         /// <param name="aString">The string to get the length of.</param>
         /// <returns>The length of the specified string.</returns>
-        [Kernel.Compiler.PluggedMethod(ASMFilePath=@"ASM\String\GetLength")]
+        [Compiler.PluggedMethod(ASMFilePath=@"ASM\String\GetLength")]
+        [Drivers.Compiler.Attributes.PluggedMethod(ASMFilePath = @"ASM\String\GetLength")]
         public static int GetLength(string aString)
         {
             //Stub for use by testing frameworks.

@@ -187,11 +187,17 @@ namespace Drivers.Compiler.IL
                 try
                 {
                     TheASMBlock.ASMOps.Add(new ASM.ASMComment() { Text = TheASMBlock.GenerateILOpLabel(convState.PositionOf(anOp), "") + "  --  " + anOp.opCode.ToString() });
-                    
-                    ILOp ConverterOp = TargetILOps[(ILOp.OpCodes)anOp.opCode.Value];
-                    int currCount = TheASMBlock.ASMOps.Count;
 
-                    ConverterOp.Convert(convState, anOp);
+                    int currCount = TheASMBlock.ASMOps.Count;
+                    if (anOp is ILOps.MethodStart || anOp is ILOps.MethodEnd)
+                    {
+                        anOp.Convert(convState, anOp);
+                    }
+                    else
+                    {
+                        ILOp ConverterOp = TargetILOps[(ILOp.OpCodes)anOp.opCode.Value];
+                        ConverterOp.Convert(convState, anOp);
+                    }
 
                     if (anOp.LabelRequired)
                     {
@@ -205,9 +211,23 @@ namespace Drivers.Compiler.IL
                 catch (KeyNotFoundException)
                 {
                     result = CompileResult.PartialFailure;
-                    
+
                     Logger.LogError(Errors.ILCompiler_ScanILOpFailure_ErrorCode, theMethodInfo.ToString(), anOp.Offset,
                         string.Format(Errors.ErrorMessages[Errors.ILCompiler_ScanILOpFailure_ErrorCode], "Conversion IL op not found: " + Enum.GetName(typeof(ILOp.OpCodes), anOp.opCode.Value) + "."));
+                }
+                catch (InvalidOperationException)
+                {
+                    result = CompileResult.PartialFailure;
+
+                    Logger.LogError(Errors.ILCompiler_ScanILOpFailure_ErrorCode, theMethodInfo.ToString(), anOp.Offset,
+                        string.Format(Errors.ErrorMessages[Errors.ILCompiler_ScanILOpFailure_ErrorCode], "Stack was probably empty at start of a catch block. " + Enum.GetName(typeof(ILOp.OpCodes), anOp.opCode.Value) + "."));
+                }
+                catch (NotSupportedException ex)
+                {
+                    result = CompileResult.PartialFailure;
+
+                    Logger.LogError(Errors.ILCompiler_ScanILOpFailure_ErrorCode, theMethodInfo.ToString(), anOp.Offset,
+                        string.Format(Errors.ErrorMessages[Errors.ILCompiler_ScanILOpFailure_ErrorCode], "An IL op reported something as not supported. " + Enum.GetName(typeof(ILOp.OpCodes), anOp.opCode.Value) + ". " + ex.Message));
                 }
                 catch (Exception ex)
                 {

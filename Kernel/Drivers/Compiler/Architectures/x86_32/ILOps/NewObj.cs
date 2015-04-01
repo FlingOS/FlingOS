@@ -60,12 +60,16 @@ namespace Drivers.Compiler.Architectures.x86
             // - Allocate memory on the heap for the object
             //          - If no memory is left, throw a panic attack because we're out of memory...
             // - Call the specified constructor
-
+            
             if (typeof(Delegate).IsAssignableFrom(objectType))
             {
                 conversionState.Append(new ASMOps.Comment() { Text = "Ignore newobj calls for Delegates" });
                 //Still need to: 
                 // - Remove the "object" param but preserve the "function pointer"
+                StackItem funcPtrItem = conversionState.CurrentStackFrame.Stack.Pop(); ;
+                conversionState.CurrentStackFrame.Stack.Pop();
+                conversionState.CurrentStackFrame.Stack.Push(funcPtrItem);
+
                 GlobalMethods.InsertPageFaultDetection(conversionState, "esp", 0, (OpCodes)theOp.opCode.Value);
                 conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Dword, Src = "[ESP]", Dest = "EAX" });
                 GlobalMethods.InsertPageFaultDetection(conversionState, "esp", 4, (OpCodes)theOp.opCode.Value);
@@ -73,7 +77,7 @@ namespace Drivers.Compiler.Architectures.x86
                 conversionState.Append(new ASMOps.Add() { Src = "4", Dest = "ESP" });
                 return;
             }
-
+            
             int currOpPosition = conversionState.PositionOf(theOp);
 
             //Attempt to allocate memory on the heap for the new object

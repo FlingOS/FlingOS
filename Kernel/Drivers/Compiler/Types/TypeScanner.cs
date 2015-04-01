@@ -114,6 +114,7 @@ namespace Drivers.Compiler.Types
 
         public static TypeInfo ScanType(IL.ILLibrary TheLibrary, Type aType)
         {
+            string typeName = aType.Name;
             TypeInfo newTypeInfo = new TypeInfo()
             {
                 UnderlyingType = aType,
@@ -273,14 +274,14 @@ namespace Drivers.Compiler.Types
                 Type baseType = theTypeInfo.UnderlyingType.BaseType;
                 if (!baseType.AssemblyQualifiedName.Contains("mscorlib"))
                 {
-                    totalOffset = TheLibrary.GetTypeInfo(baseType, false).SizeOnHeapInBytes;
+                    totalOffset = TheLibrary.GetTypeInfo(baseType).SizeOnHeapInBytes;
                 }
             }
 
             foreach (FieldInfo aFieldInfo in theTypeInfo.FieldInfos)
             {
                 aFieldInfo.OffsetInBytes = totalOffset;
-                TypeInfo fieldTypeInfo =  TheLibrary.GetTypeInfo(aFieldInfo.FieldType, false);
+                TypeInfo fieldTypeInfo =  TheLibrary.GetTypeInfo(aFieldInfo.FieldType);
                 totalOffset += fieldTypeInfo.IsValueType ? fieldTypeInfo.SizeOnHeapInBytes : fieldTypeInfo.SizeOnStackInBytes;
             }
         }

@@ -69,7 +69,6 @@ namespace Drivers.Compiler.IL
             foreach (Types.MethodInfo aMethodInfo in TheLibrary.ILBlocks.Keys)
             {
                 PreprocessMethodInfo(TheLibrary, aMethodInfo);
-                PreprocessILOps(TheLibrary, aMethodInfo, TheLibrary.ILBlocks[aMethodInfo]);
             }
 
             foreach (Types.MethodInfo aMethodInfo in TheLibrary.ILBlocks.Keys)
@@ -77,6 +76,8 @@ namespace Drivers.Compiler.IL
                 InjectGeneral(aMethodInfo, TheLibrary.ILBlocks[aMethodInfo]);
                 InjectGC(aMethodInfo, TheLibrary.ILBlocks[aMethodInfo]);
                 InjectTryCatchFinally(aMethodInfo, TheLibrary.ILBlocks[aMethodInfo]);
+                
+                PreprocessILOps(TheLibrary, aMethodInfo, TheLibrary.ILBlocks[aMethodInfo]);
             }
         }
 
@@ -181,6 +182,56 @@ namespace Drivers.Compiler.IL
                     i--;
                     continue;
                 }
+                else if ((ILOp.OpCodes)theOp.opCode.Value == ILOp.OpCodes.Call)
+                {
+                    if (theOp.MethodToCall != null && 
+                        theOp.MethodToCall.DeclaringType.AssemblyQualifiedName.Contains("mscorlib"))
+                    {
+                        //We do not want to process ops which attempt to call methods in mscorlib!
+                        theILBlock.ILOps.RemoveAt(i);
+                        i--;
+
+                        //We do not allow calls to methods declared in MSCorLib.
+                        //Some of these calls can just be ignored (e.g. GetTypeFromHandle is
+                        //  called by typeof operator).
+                        //Ones which can't be ignored, will result in an error...by virtue of
+                        //  the fact that they were ignored when they were required.
+
+                        //But just to make sure we save ourselves a headache later when
+                        //  runtime debugging, output a message saying we ignored the call.
+
+                        // TODO - IL level comments
+                        // result.ASM.AppendLine("; Call to method defined in MSCorLib ignored:"); // DEBUG INFO
+                        // result.ASM.AppendLine("; " + anILOpInfo.MethodToCall.DeclaringType.FullName + "." + anILOpInfo.MethodToCall.Name); // DEBUG INFO
+
+                        //If the method is a call to a constructor in MsCorLib:
+                        if (theOp.MethodToCall is System.Reflection.ConstructorInfo)
+                        {
+                            //Then we can presume it was a call to a base-class constructor (e.g. the Object constructor)
+                            //  and so we just need to remove any args that were loaded onto the stack.
+                            // TODO: result.ASM.AppendLine("; Method to call was constructor so removing params"); // DEBUG INFO
+                            
+                            //Remove args from stack
+                            //If the constructor was non-static, then the first arg is the instance reference.
+                            if (!theOp.MethodToCall.IsStatic)
+                            {
+                                i++;
+                                theILBlock.ILOps.Insert(i, new ILOp()
+                                {
+                                    opCode = System.Reflection.Emit.OpCodes.Pop
+                                });
+                            }
+                            foreach (System.Reflection.ParameterInfo anInfo in theOp.MethodToCall.GetParameters())
+                            {
+                                i++;
+                                theILBlock.ILOps.Insert(i, new ILOp()
+                                {
+                                    opCode = System.Reflection.Emit.OpCodes.Pop
+                                });
+                            }
+                        }
+                    }
+                }
 
                 try
                 {
@@ -210,6 +261,20 @@ namespace Drivers.Compiler.IL
         private static void InjectGeneral(Types.MethodInfo theMethodInfo, ILBlock theILBlock)
         {
             //TODO
+
+            // Inject MethodStart op
+            theILBlock.ILOps.Insert(0, ILScanner.MethodStartOp);
+            // Inject MethodEnd op just before anywhere where there is a ret
+            for (int i = 0; i < theILBlock.ILOps.Count; i++)
+            {
+                ILOp theOp = theILBlock.ILOps[i];
+
+                if ((ILOp.OpCodes)theOp.opCode.Value == ILOp.OpCodes.Ret)
+                {
+                    theILBlock.ILOps.Insert(i, ILScanner.MethodEndOp);
+                    i++;
+                }
+            }
         }
         private static void InjectGC(Types.MethodInfo theMethodInfo, ILBlock theILBlock)
         {
@@ -218,6 +283,57 @@ namespace Drivers.Compiler.IL
         private static void InjectTryCatchFinally(Types.MethodInfo theMethodInfo, ILBlock theILBlock)
         {
             //TODO
+
+            // Replace Leave and Leave_S ops
+            for (int i = 0; i < theILBlock.ILOps.Count; i++)
+            {
+                ILOp theOp = theILBlock.ILOps[i];
+
+                if ((ILOp.OpCodes)theOp.opCode.Value == ILOp.OpCodes.Leave ||
+                    (ILOp.OpCodes)theOp.opCode.Value == ILOp.OpCodes.Leave_S)
+                {
+                    theILBlock.ILOps.RemoveAt(i);
+                    
+                    int ILOffset = 0;
+                    if ((int)theOp.opCode.Value == (int)ILOp.OpCodes.Leave)
+                    {
+                        ILOffset = BitConverter.ToInt32(theOp.ValueBytes, 0);
+                    }
+                    else
+                    {
+                        ILOffset = (int)theOp.ValueBytes[0];
+                    }
+
+                    theILBlock.ILOps.Insert(i, new ILOp()
+                    {
+                        opCode = System.Reflection.Emit.OpCodes.Ldftn,
+                        LoadAtILPosition = theILBlock.PositionOf(theILBlock.At(theOp.NextOffset + ILOffset)),
+                        MethodToCall = theILBlock.TheMethodInfo.UnderlyingInfo
+                    });
+                    theILBlock.ILOps.Insert(i + 1, new ILOp()
+                    {
+                        opCode = System.Reflection.Emit.OpCodes.Call,
+                        MethodToCall = ILLibrary.SpecialMethods[typeof(Attributes.ExceptionsHandleLeaveMethodAttribute)].First().UnderlyingInfo
+                    });
+
+                    i++;
+                }
+                else if ((int)theOp.opCode.Value == (int)ILOp.OpCodes.Endfinally)
+                {
+                    //Endfinally is for leaving a (critical) finally section
+                    //We handle it by a higher-level implementation rather than 
+                    //  leaving it to each architecture to implement.
+
+                    //Endfinally is handled by inserting a call to the Exceptions.HandleEndFinally method
+
+                    theILBlock.ILOps.RemoveAt(i);
+                    theILBlock.ILOps.Insert(i, new ILOp()
+                    {
+                        opCode = System.Reflection.Emit.OpCodes.Call,
+                        MethodToCall = ILLibrary.SpecialMethods[typeof(Attributes.ExceptionsHandleEndFinallyMethodAttribute)].First().UnderlyingInfo
+                    });
+                }
+            }
         }
     }
 }
