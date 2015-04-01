@@ -2646,7 +2646,7 @@ which should have been provided with the executable.");
                 }
                 #endregion
 
-                #region Multiplication, division operators
+                #region Multiplication, (DISABLED - division) operators
                 {
                     ulong x = 0x7000000000000082;
                     ulong y = 2;
@@ -2662,39 +2662,39 @@ which should have been provided with the executable.");
                         console.Colour(passColour);
                     }
                 }
-                {
-                    ulong x = 0xE000000000000104;
-                    ulong y = 2;
-                    ulong z = x / y;
-                    if (z == 0x7000000000000082)
-                    {
-                        console.WriteLine("Pass: z == 0x7000000000000082");
-                    }
-                    else
-                    {
-                        console.ErrorColour();
-                        console.WriteLine("Fail: z != 0x7000000000000082");
-                        console.Colour(passColour);
-                    }
-                }
+                //{
+                //    ulong x = 0xE000000000000104;
+                //    ulong y = 2;
+                //    ulong z = x / y;
+                //    if (z == 0x7000000000000082)
+                //    {
+                //        console.WriteLine("Pass: z == 0x7000000000000082");
+                //    }
+                //    else
+                //    {
+                //        console.ErrorColour();
+                //        console.WriteLine("Fail: z != 0x7000000000000082");
+                //        console.Colour(passColour);
+                //    }
+                //}
                 #endregion
 
-                #region Modulo (%) operator
-                {
-                    ulong x = 0x7000000000000000;
-                    ulong y = 5;
-                    ulong z = x % y;
-                    if (z == 2)
-                    {
-                        console.WriteLine("Pass: z == 2");
-                    }
-                    else
-                    {
-                        console.ErrorColour();
-                        console.WriteLine("Fail: z != 2");
-                        console.Colour(passColour);
-                    }
-                }
+                #region DISABLED - Modulo (%) operator
+                //{
+                //    ulong x = 0x7000000000000000;
+                //    ulong y = 5;
+                //    ulong z = x % y;
+                //    if (z == 2)
+                //    {
+                //        console.WriteLine("Pass: z == 2");
+                //    }
+                //    else
+                //    {
+                //        console.ErrorColour();
+                //        console.WriteLine("Fail: z != 2");
+                //        console.Colour(passColour);
+                //    }
+                //}
                 #endregion
 
                 #region Comparison operators (==, !=, >, <, >=, <=)
@@ -3056,7 +3056,7 @@ which should have been provided with the executable.");
                 }
                 #endregion
 
-                #region Multiplication, division operators
+                #region Multiplication, (DISABLED - division) operators
                 {
                     long x = 0x20FFFFFFFFFFFFFF;
                     long y = 2;
@@ -3072,39 +3072,39 @@ which should have been provided with the executable.");
                         console.Colour(passColour);
                     }
                 }
-                {
-                    long x = 0x6066666666666666;
-                    long y = 2;
-                    long z = x / y;
-                    if (z == 0x3033333333333333)
-                    {
-                        console.WriteLine("Pass: z == 0x3033333333333333");
-                    }
-                    else
-                    {
-                        console.ErrorColour();
-                        console.WriteLine("Fail: z != 0x3033333333333333");
-                        console.Colour(passColour);
-                    }
-                }
+                //{
+                //    long x = 0x6066666666666666;
+                //    long y = 2;
+                //    long z = x / y;
+                //    if (z == 0x3033333333333333)
+                //    {
+                //        console.WriteLine("Pass: z == 0x3033333333333333");
+                //    }
+                //    else
+                //    {
+                //        console.ErrorColour();
+                //        console.WriteLine("Fail: z != 0x3033333333333333");
+                //        console.Colour(passColour);
+                //    }
+                //}
                 #endregion
 
-                #region Modulo (%) operator
-                {
-                    long x = 0x7000000000000000;
-                    long y = 5;
-                    long z = x % y;
-                    if (z == 2)
-                    {
-                        console.WriteLine("Pass: z == 2");
-                    }
-                    else
-                    {
-                        console.ErrorColour();
-                        console.WriteLine("Fail: z != 2");
-                        console.Colour(passColour);
-                    }
-                }
+                #region DISABLED - Modulo (%) operator
+                //{
+                //    long x = 0x7000000000000000;
+                //    long y = 5;
+                //    long z = x % y;
+                //    if (z == 2)
+                //    {
+                //        console.WriteLine("Pass: z == 2");
+                //    }
+                //    else
+                //    {
+                //        console.ErrorColour();
+                //        console.WriteLine("Fail: z != 2");
+                //        console.Colour(passColour);
+                //    }
+                //}
                 #endregion
 
                 #region Comparison operators (==, !=, >, <, >=, <=)

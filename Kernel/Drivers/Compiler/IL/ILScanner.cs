@@ -220,7 +220,7 @@ namespace Drivers.Compiler.IL
                     result = CompileResult.PartialFailure;
 
                     Logger.LogError(Errors.ILCompiler_ScanILOpFailure_ErrorCode, theMethodInfo.ToString(), anOp.Offset,
-                        string.Format(Errors.ErrorMessages[Errors.ILCompiler_ScanILOpFailure_ErrorCode], "Stack was probably empty at start of a catch block. " + Enum.GetName(typeof(ILOp.OpCodes), anOp.opCode.Value) + "."));
+                        string.Format(Errors.ErrorMessages[Errors.ILCompiler_ScanILOpFailure_ErrorCode], Enum.GetName(typeof(ILOp.OpCodes), anOp.opCode.Value)));
                 }
                 catch (NotSupportedException ex)
                 {
