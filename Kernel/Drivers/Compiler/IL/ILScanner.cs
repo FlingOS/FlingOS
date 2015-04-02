@@ -133,6 +133,44 @@ namespace Drivers.Compiler.IL
             {
                 Scan(depLib);
             }
+            
+            // Create / Add Static Fields ASM Block
+            ASM.ASMBlock StaticFieldsBlock = new ASM.ASMBlock()
+            {
+                Priority = (long.MaxValue / 2) - 1
+            };
+            TheLibrary.TheASMLibrary.ASMBlocks.Add(StaticFieldsBlock);
+
+            // Create / Add Types Table ASM Block
+            ASM.ASMBlock TypesTableBlock = new ASM.ASMBlock()
+            {
+                Priority = (long.MaxValue / 2) - 1
+            };
+            TheLibrary.TheASMLibrary.ASMBlocks.Add(TypesTableBlock);
+
+            // Create / Add Method Tables ASM Block
+            ASM.ASMBlock MethodTablesBlock = new ASM.ASMBlock()
+            {
+                Priority = (long.MaxValue / 2) + 0
+            };
+            TheLibrary.TheASMLibrary.ASMBlocks.Add(MethodTablesBlock);
+
+            // Create / Add Field Tables ASM Block
+            ASM.ASMBlock FieldTablesBlock = new ASM.ASMBlock()
+            {
+                Priority = (long.MaxValue / 2) + 1
+            };
+            TheLibrary.TheASMLibrary.ASMBlocks.Add(FieldTablesBlock);
+
+            // Don't use foreach or you get collection modified exceptions
+            for (int i = 0; i < TheLibrary.TypeInfos.Count; i++)
+            {
+                Types.TypeInfo aTypeInfo = TheLibrary.TypeInfos[i];
+                ScanStaticFields(TheLibrary, aTypeInfo, StaticFieldsBlock);
+                ScanType(TheLibrary, aTypeInfo, TypesTableBlock);
+                ScanMethods(TheLibrary, aTypeInfo, MethodTablesBlock);
+                ScanFields(TheLibrary, aTypeInfo, FieldTablesBlock);
+            }
 
             foreach (Types.MethodInfo aMethodInfo in TheLibrary.ILBlocks.Keys)
             {
@@ -154,8 +192,178 @@ namespace Drivers.Compiler.IL
                 }
             }
 
+            // Create / Add String Literals ASM Block
+            #region String Literals Block
+
+            ASM.ASMBlock StringLiteralsBlock = new ASM.ASMBlock()
+            {
+                Priority = (long.MaxValue / 2) - 2
+            };
+            TheLibrary.TheASMLibrary.ASMBlocks.Add(StringLiteralsBlock);
+
+            string StringTypeId = ILLibrary.SpecialClasses[typeof(Attributes.StringClassAttribute)].First().ID;
+            StringLiteralsBlock.AddExternalLabel(StringTypeId);
+            foreach (KeyValuePair<string, string> aStringLiteral in TheLibrary.StringLiterals)
+            {
+                string value = aStringLiteral.Value;
+                Encoding xEncoding = Encoding.ASCII;
+                var NumBytes = xEncoding.GetByteCount(value);
+                var stringData = new byte[4 + NumBytes];
+                Array.Copy(BitConverter.GetBytes(value.Length), 0, stringData, 0, 4);
+                Array.Copy(xEncoding.GetBytes(value), 0, stringData, 4, NumBytes);
+
+                StringBuilder LiteralASM = new StringBuilder();
+                //This is UTF-16 (Unicode)/ASCII text
+                LiteralASM.AppendLine(string.Format("GLOBAL {0}:data", aStringLiteral.Key));
+                LiteralASM.AppendLine(string.Format("{0}:", aStringLiteral.Key));
+                //Put in type info as FOS_System.String type
+                LiteralASM.AppendLine(string.Format("dd {0}", StringTypeId));
+                //Put in string length bytes
+                LiteralASM.Append("db ");
+                for (int i = 0; i < 3; i++)
+                {
+                    LiteralASM.Append(stringData[i]);
+                    LiteralASM.Append(", ");
+                }
+                LiteralASM.Append(stringData[3]);
+                //Put in string characters (as words)
+                LiteralASM.Append("\ndw ");
+                for (int i = 4; i < (stringData.Length - 1); i++)
+                {
+                    LiteralASM.Append(stringData[i]);
+                    LiteralASM.Append(", ");
+                }
+                LiteralASM.Append(stringData.Last());
+                LiteralASM.AppendLine();
+                StringLiteralsBlock.Append(new ASM.ASMGeneric()
+                {
+                    Text = LiteralASM.ToString()
+                });
+            }
+
+            #endregion
+
             return result;
         }
+
+        private static int TypesScanned = 1;
+        private static void ScanType(ILLibrary TheLibrary, Types.TypeInfo TheTypeInfo, ASM.ASMBlock TypesTableBlock)
+        {
+            string TypeId = TheTypeInfo.ID;
+            string SizeVal = TheTypeInfo.SizeOnHeapInBytes.ToString();
+            string IdVal = (TypesScanned++).ToString();
+            string StackSizeVal = TheTypeInfo.SizeOnStackInBytes.ToString();
+            string IsValueTypeVal = (TheTypeInfo.IsValueType ? "1" : "0");
+            string MethodTablePointer = TypeId + "_MethodTable";
+            string IsPointerTypeVal = (TheTypeInfo.IsPointer ? "1" : "0");
+            string BaseTypeIdVal = "0";
+            if (TheTypeInfo.UnderlyingType.BaseType != null)
+            {
+                if (!TheTypeInfo.UnderlyingType.BaseType.AssemblyQualifiedName.Contains("mscorlib"))
+                {
+                    Types.TypeInfo baseTypeInfo = TheLibrary.GetTypeInfo(TheTypeInfo.UnderlyingType.BaseType);
+                    BaseTypeIdVal = baseTypeInfo.ID;
+                    //Declared external to this library, so won't appear in this library's type tables
+                    if (!TheLibrary.TypeInfos.Contains(baseTypeInfo))
+                    {
+                        TypesTableBlock.AddExternalLabel(BaseTypeIdVal);
+                    }
+                }
+            }
+            string FieldTablePointer = TypeId + "_FieldTable";
+            string TypeSignatureLiteralLabel = TheLibrary.AddStringLiteral(TheTypeInfo.ID); // Legacy
+            string TypeIdLiteralLabel = TheLibrary.AddStringLiteral(TheTypeInfo.ID);
+
+            StringBuilder ASMResult = new StringBuilder();
+            ASMResult.AppendLine(TypeId + ":");
+
+            Types.TypeInfo typeTypeInfo = ILLibrary.SpecialClasses[typeof(Attributes.TypeClassAttribute)].First();
+            List<Types.FieldInfo> OrderedFields = typeTypeInfo.FieldInfos.OrderBy(x => x.OffsetInBytes).ToList();
+            foreach (Types.FieldInfo aTypeField in OrderedFields)
+            {
+                Types.TypeInfo FieldTypeInfo = TheLibrary.GetTypeInfo(aTypeField.FieldType);
+                string allocStr = GetAllocStringForSize(
+                    FieldTypeInfo.IsValueType ? FieldTypeInfo.SizeOnHeapInBytes : FieldTypeInfo.SizeOnStackInBytes);
+                switch (aTypeField.Name)
+                {
+                    case "Size":
+                        ASMResult.AppendLine(allocStr + " " + SizeVal);
+                        break;
+                    case "Id":
+                        ASMResult.AppendLine(allocStr + " " + IdVal);
+                        break;
+                    case "StackSize":
+                        ASMResult.AppendLine(allocStr + " " + StackSizeVal);
+                        break;
+                    case "IsValueType":
+                        ASMResult.AppendLine(allocStr + " " + IsValueTypeVal);
+                        break;
+                    case "MethodTablePtr":
+                        ASMResult.AppendLine(allocStr + " " + MethodTablePointer);
+                        break;
+                    case "IsPointer":
+                        ASMResult.AppendLine(allocStr + " " + IsPointerTypeVal);
+                        break;
+                    case "TheBaseType":
+                        ASMResult.AppendLine(allocStr + " " + BaseTypeIdVal);
+                        break;
+                    case "FieldTablePtr":
+                        ASMResult.AppendLine(allocStr + " " + FieldTablePointer);
+                        break;
+                    case "Signature":
+                        ASMResult.AppendLine(allocStr + " " + TypeSignatureLiteralLabel);
+                        break;
+                    case "IdString":
+                        ASMResult.AppendLine(allocStr + " " + TypeIdLiteralLabel);
+                        break;
+                }
+            }
+            ASMResult.AppendLine();
+
+            TypesTableBlock.Append(new ASM.ASMGeneric()
+            {
+                Text = ASMResult.ToString()
+            });
+            TypesTableBlock.AddExternalLabel(MethodTablePointer);
+            TypesTableBlock.AddExternalLabel(FieldTablePointer);
+            TypesTableBlock.AddExternalLabel(TypeSignatureLiteralLabel);
+            TypesTableBlock.AddExternalLabel(TypeIdLiteralLabel);
+        }
+        private static void ScanStaticFields(ILLibrary TheLibrary, Types.TypeInfo TheTypeInfo, ASM.ASMBlock StaticFieldsBlock)
+        {
+        }
+        private static void ScanMethods(ILLibrary TheLibrary, Types.TypeInfo TheTypeInfo, ASM.ASMBlock MethodTablesBlock)
+        {
+        }
+        private static void ScanMethod(ILLibrary TheLibrary, Types.TypeInfo DeclarerTypeInfo, Types.MethodInfo TheMethodInfo, ASM.ASMBlock MethodTablesBlock)
+        {
+        }
+        private static void ScanFields(ILLibrary TheLibrary, Types.TypeInfo TheTypeInfo, ASM.ASMBlock FieldTablesBlock)
+        {
+        }
+        private static void ScanField(ILLibrary TheLibrary, Types.TypeInfo DeclarerTypeInfo, Types.MethodInfo TheMethodInfo, ASM.ASMBlock FieldTablesBlock)
+        {
+        }
+
+        private static string GetAllocStringForSize(int numBytes)
+        {
+            switch (numBytes)
+            {
+                case 1:
+                    return "db";
+                    break;
+                case 2:
+                    return "dw";
+                    break;
+                case 4:
+                    return "dd";
+                    break;
+                default:
+                    return "NOSIZEALLOC";
+                    break;
+            }
+        }
+
         private static CompileResult ScanPluggedILBlock(ILLibrary TheLibrary, Types.MethodInfo theMethodInfo, ILBlock theILBlock)
         {
             TheLibrary.TheASMLibrary.ASMBlocks.Add(new ASM.ASMBlock()

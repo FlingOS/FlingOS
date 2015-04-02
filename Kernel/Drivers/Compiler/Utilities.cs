@@ -101,6 +101,9 @@ namespace Drivers.Compiler
         public static string FilterIdentifierForInvalidChars(string x)
         {
             string xTempResult = x;
+            // & can result in conflict with * in type names, where both are used singularly in the same position
+            //  e.g. Type* and Type&
+            xTempResult = xTempResult.Replace("&", "_AMP_");
             foreach (char c in IllegalIdentifierChars)
             {
                 xTempResult = xTempResult.Replace(c, '_');

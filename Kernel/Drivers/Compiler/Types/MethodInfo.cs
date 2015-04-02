@@ -98,7 +98,30 @@ namespace Drivers.Compiler.Types
         }
 
         public int IDValue = -1;
-        
+
+        private long? priority = null;
+        public long Priority
+        {
+            get
+            {
+                if (!priority.HasValue)
+                {
+                    object[] priorAttrs = UnderlyingInfo.GetCustomAttributes(typeof(Attributes.SequencePriorityAttribute), false);
+                    if (priorAttrs.Length > 0)
+                    {
+                        Attributes.SequencePriorityAttribute priorAttr = (Attributes.SequencePriorityAttribute)priorAttrs[0];
+                        priority = priorAttr.Priority;
+                    }
+                    else
+                    {
+                        priority = 0;
+                    }
+                }
+                return priority.Value;
+            }
+        }
+
+
         public override string ToString()
         {
             string result = UnderlyingInfo.DeclaringType.FullName + "." + UnderlyingInfo.Name + "(";

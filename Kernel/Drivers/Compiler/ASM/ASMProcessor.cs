@@ -142,7 +142,7 @@ namespace Drivers.Compiler.ASM
                 if (index < Blocks.Count)
                 {
                     string inputPath = Blocks[index].OutputFilePath;
-                    string outputPath = inputPath.Replace(ASMOutputPath, ObjectsOutputPath).Replace(".asm", ".obj");
+                    string outputPath = inputPath.Replace(ASMOutputPath, ObjectsOutputPath).Replace(".asm", ".o");
                     ExecuteNASM(inputPath, outputPath, onComplete, index + 1);
                 }
                 else

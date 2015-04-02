@@ -86,7 +86,7 @@ namespace Drivers.Compiler.Attributes
     public class SequencePriorityAttribute : Attribute
     {
         /// <summary>
-        /// The priority of the targetted method.
+        /// The priority of the targeted method.
         /// </summary>
         /// <remarks>
         /// Please see class remarks.

@@ -40,7 +40,7 @@ namespace Drivers.Compiler.IL
         public bool Plugged { get { return PlugPath != null; } }
 
         public List<ILOp> ILOps = new List<ILOp>();
-
+        
         //public ILOp Next(ILOp current)
         //{
         //    int index = ILOps.IndexOf(current);

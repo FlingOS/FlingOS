@@ -56,45 +56,45 @@ namespace Drivers.Compiler.Types
             List<Type> types = TheLibrary.TheAssembly.GetTypes().ToList();
 
             //Add in the standard types (which come from mscorlib)
-            #region Standard Types (from mscorlib)
+            //#region Standard Types (from mscorlib)
 
-            types.Add(typeof(object));
+            //types.Add(typeof(object));
 
-            types.Add(typeof(float));
-            types.Add(typeof(double));
-            types.Add(typeof(decimal));
-            types.Add(typeof(string));
-            types.Add(typeof(IntPtr));
+            //types.Add(typeof(float));
+            //types.Add(typeof(double));
+            //types.Add(typeof(decimal));
+            //types.Add(typeof(string));
+            //types.Add(typeof(IntPtr));
 
-            types.Add(typeof(void));
-            types.Add(typeof(bool));
-            types.Add(typeof(byte));
-            types.Add(typeof(sbyte));
-            types.Add(typeof(char));
-            types.Add(typeof(int));
-            types.Add(typeof(long));
-            types.Add(typeof(Int16));
-            types.Add(typeof(Int32));
-            types.Add(typeof(Int64));
-            types.Add(typeof(UInt16));
-            types.Add(typeof(UInt32));
-            types.Add(typeof(UInt64));
+            //types.Add(typeof(void));
+            //types.Add(typeof(bool));
+            //types.Add(typeof(byte));
+            //types.Add(typeof(sbyte));
+            //types.Add(typeof(char));
+            //types.Add(typeof(int));
+            //types.Add(typeof(long));
+            //types.Add(typeof(Int16));
+            //types.Add(typeof(Int32));
+            //types.Add(typeof(Int64));
+            //types.Add(typeof(UInt16));
+            //types.Add(typeof(UInt32));
+            //types.Add(typeof(UInt64));
 
-            types.Add(typeof(void*));
-            types.Add(typeof(bool*));
-            types.Add(typeof(byte*));
-            types.Add(typeof(sbyte*));
-            types.Add(typeof(char*));
-            types.Add(typeof(int*));
-            types.Add(typeof(long*));
-            types.Add(typeof(Int16*));
-            types.Add(typeof(Int32*));
-            types.Add(typeof(Int64*));
-            types.Add(typeof(UInt16*));
-            types.Add(typeof(UInt32*));
-            types.Add(typeof(UInt64*));
+            //types.Add(typeof(void*));
+            //types.Add(typeof(bool*));
+            //types.Add(typeof(byte*));
+            //types.Add(typeof(sbyte*));
+            //types.Add(typeof(char*));
+            //types.Add(typeof(int*));
+            //types.Add(typeof(long*));
+            //types.Add(typeof(Int16*));
+            //types.Add(typeof(Int32*));
+            //types.Add(typeof(Int64*));
+            //types.Add(typeof(UInt16*));
+            //types.Add(typeof(UInt32*));
+            //types.Add(typeof(UInt64*));
 
-            #endregion
+            //#endregion
 
             foreach (Type aType in types)
             {
@@ -114,6 +114,11 @@ namespace Drivers.Compiler.Types
 
         public static TypeInfo ScanType(IL.ILLibrary TheLibrary, Type aType)
         {
+            if(TheLibrary.TypeInfos.Where(x => x.UnderlyingType.Equals(aType)).Count() > 0)
+            {
+                return TheLibrary.TypeInfos.Where(x => x.UnderlyingType.Equals(aType)).First();
+            }
+
             string typeName = aType.Name;
             TypeInfo newTypeInfo = new TypeInfo()
             {
@@ -138,7 +143,8 @@ namespace Drivers.Compiler.Types
                 }
             }
 
-            //Ignore all internal data of types from mscorlib
+            //Ignore all internal data of types from mscorlib except for value types such as
+            //  int, uint etc. and associated pointer types
             if (!aType.AssemblyQualifiedName.Contains("mscorlib"))
             {
                 // All Fields
@@ -226,7 +232,7 @@ namespace Drivers.Compiler.Types
 
             theTypeInfo.IsGCManaged = GetIsGCManaged(theTypeInfo.UnderlyingType);
 
-            if (theTypeInfo.IsValueType)
+            if (theTypeInfo.IsValueType || theTypeInfo.IsPointer)
             {
                 theTypeInfo.SizeOnStackInBytes = GetSizeOnStackInBytes(theTypeInfo.UnderlyingType);
                 theTypeInfo.SizeOnHeapInBytes = GetSizeOnHeapInBytes(theTypeInfo.UnderlyingType);
@@ -249,7 +255,7 @@ namespace Drivers.Compiler.Types
                 foreach (FieldInfo aFieldInfo in theTypeInfo.FieldInfos)
                 {
                     TypeInfo fieldTypeInfo = TheLibrary.GetTypeInfo(aFieldInfo.FieldType, false);
-                    if (fieldTypeInfo.IsValueType)
+                    if (fieldTypeInfo.IsValueType || fieldTypeInfo.IsPointer)
                     {
                         ProcessType(TheLibrary, fieldTypeInfo);
                     }

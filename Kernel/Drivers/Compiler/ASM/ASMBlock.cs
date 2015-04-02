@@ -43,6 +43,8 @@ namespace Drivers.Compiler.ASM
         public List<ASMOp> ASMOps = new List<ASMOp>();
         public List<string> ExternalLabels = new List<string>();
 
+        public long Priority = 0;
+
         public void Append(ASMOp anOp)
         {
             ASMOps.Add(anOp);
@@ -55,7 +57,14 @@ namespace Drivers.Compiler.ASM
 
         public string GenerateMethodLabel()
         {
-            return GenerateLabel(OriginMethodInfo.ID);
+            if (OriginMethodInfo != null)
+            {
+                return GenerateLabel(OriginMethodInfo.ID);
+            }
+            else
+            {
+                return null;
+            }
         }
         public string GenerateILOpLabel(int ILPosition, string Extension = null)
         {

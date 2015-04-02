@@ -30,22 +30,14 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Drivers.Compiler
+namespace Drivers.Compiler.Attributes
 {
-    public static class LinkManager
+    /// <summary>
+    /// Indicates the class is the kernel's String class. 
+    /// Note: There should only ever be one of these used!
+    /// </summary>
+    [AttributeUsage(AttributeTargets.Class, AllowMultiple=false, Inherited=false)]
+    public class StringClassAttribute : Attribute
     {
-        public static CompileResult Link(ASM.ASMLibrary TheLibrary)
-        {
-            // If: Link to Libraries
-            //      - TODO
-            // If: Link to ELF and Libraries
-            //      - TODO
-            // If: Link to ISO
-            //      - Generate basic link-script
-            //      - Generate full link-script by inserting necessary file location instructions for all object files
-            //      - Execute ld to build bin file
-            //      - Execute ISO9660Generator to build .ISO file
-            return CompileResult.OK;
-        }
     }
 }

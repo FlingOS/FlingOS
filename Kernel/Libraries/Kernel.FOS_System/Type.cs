@@ -135,7 +135,7 @@ namespace Kernel.FOS_System
     /// Represents the information in the methods type table.
     /// </summary>
     [Compiler.MethodInfoStruct]
-    //[Drivers.Compiler.Attributes.MethodInfoStruct]
+    [Drivers.Compiler.Attributes.MethodInfoStruct]
     [System.Runtime.InteropServices.StructLayout(System.Runtime.InteropServices.LayoutKind.Sequential, Pack = 1)]
     public unsafe struct MethodInfo
     {
@@ -156,7 +156,7 @@ namespace Kernel.FOS_System
     /// Represents the information in the fields type table.
     /// </summary>
     [Compiler.FieldInfoStruct]
-    //[Drivers.Compiler.Attributes.FieldInfoStruct]
+    [Drivers.Compiler.Attributes.FieldInfoStruct]
     [System.Runtime.InteropServices.StructLayout(System.Runtime.InteropServices.LayoutKind.Sequential, Pack = 1)]
     public unsafe struct FieldInfo
     {

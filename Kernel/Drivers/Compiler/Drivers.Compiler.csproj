@@ -55,12 +55,15 @@
     <Compile Include="Attributes\DecrementRefCountMethodAttribute.cs" />
     <Compile Include="Attributes\ExceptionsHandleEndFinallyMethodAttribute.cs" />
     <Compile Include="Attributes\ExceptionsHandleLeaveMethodAttribute.cs" />
+    <Compile Include="Attributes\FieldInfoStructAttribute.cs" />
     <Compile Include="Attributes\HaltMethodAttribute.cs" />
     <Compile Include="Attributes\HandleExceptionMethodAttribute.cs" />
     <Compile Include="Attributes\KernelMainMethodAttribute.cs" />
+    <Compile Include="Attributes\MethodInfoStructAttribute.cs" />
     <Compile Include="Attributes\NewArrMethodAttribute.cs" />
     <Compile Include="Attributes\NewObjMethodAttribute.cs" />
     <Compile Include="Attributes\SequencePriorityAttribute.cs" />
+    <Compile Include="Attributes\StringClassAttribute.cs" />
     <Compile Include="Attributes\ThrowIndexOutOfRangeExceptionMethodAttribute.cs" />
     <Compile Include="Attributes\ThrowNullReferenceExceptionMethodAttribute.cs" />
     <Compile Include="Attributes\TypeClassAttribute.cs" />

@@ -44,8 +44,15 @@ namespace Drivers.Compiler.ASM
             }
             TheLibrary.ASMPreprocessed = true;
 
-            foreach (ASMBlock aBlock in TheLibrary.ASMBlocks)
+            for (int i = 0; i < TheLibrary.ASMBlocks.Count; i++)
             {
+                ASMBlock aBlock = TheLibrary.ASMBlocks[i];
+                if (aBlock.ASMOps.Count == 0)
+                {
+                    TheLibrary.ASMBlocks.RemoveAt(i);
+                    i--;
+                    continue;
+                }
                 Preprocess(aBlock);
             }
 
@@ -56,10 +63,16 @@ namespace Drivers.Compiler.ASM
         {
             // Due to "insert 0", asm ops are constructed in reverse order here
 
-            theBlock.ASMOps.Insert(0, new ASMLabel() { MethodLabel = true });
-            theBlock.ASMOps.Insert(0, new ASMGeneric() { Text = "SECTION .text" });
             string currMethodLabel = theBlock.GenerateMethodLabel();
-            theBlock.ASMOps.Insert(0, new ASMGlobalLabel() { Label = currMethodLabel });
+            if (currMethodLabel != null)
+            {
+                theBlock.ASMOps.Insert(0, new ASMLabel() { MethodLabel = true });
+            }
+            theBlock.ASMOps.Insert(0, new ASMGeneric() { Text = "SECTION .text" });
+            if (currMethodLabel != null)
+            {
+                theBlock.ASMOps.Insert(0, new ASMGlobalLabel() { Label = currMethodLabel });
+            }
 
             foreach (string anExternalLabel in theBlock.ExternalLabels.Distinct())
             {
