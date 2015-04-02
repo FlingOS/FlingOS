@@ -154,6 +154,8 @@ namespace Drivers.Compiler.ASM
                     try
                     {
                         ExecuteNASM(inputPath, outputPath, onComplete, index + 1);
+
+                        Blocks[index].OutputFilePath = outputPath;
                     }
                     catch (Exception ex)
                     {
@@ -182,6 +184,8 @@ namespace Drivers.Compiler.ASM
                 try
                 {
                     ExecuteNASM(inputPath, outputPath);
+
+                    Blocks[index].OutputFilePath = outputPath;
                 }
                 catch(Exception ex)
                 {

@@ -149,7 +149,6 @@ namespace Drivers.Compiler.App
 
             // To think about:
             //      - Try-catch-finally blocks
-            //      - Static constructor dependency tree
             //      - GC (inc. wrapping try-finally, calls to inc/dec)
             //      - Release / Debug IL (differences? Potential issues?)
 
@@ -179,7 +178,7 @@ namespace Drivers.Compiler.App
 
                         if (ASMCompileResult == CompileResult.OK)
                         {
-                            CompileResult LinkResult = LinkManager.Link(TheLibrary.TheASMLibrary);
+                            CompileResult LinkResult = LinkManager.Link(TheLibrary);
 
                             if (LinkResult == CompileResult.OK)
                             {

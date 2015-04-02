@@ -202,5 +202,29 @@ namespace Drivers.Compiler.IL
         {
             return TheAssembly.FullName;
         }
+
+        public List<ILLibrary> Flatten()
+        {
+            List<ILLibrary> result = new List<ILLibrary>();
+
+            foreach (ILLibrary aDepLib in Dependencies)
+            {
+                List<ILLibrary> intermResult = aDepLib.Flatten();
+                foreach (ILLibrary subLib in intermResult)
+                {
+                    if (!result.Contains(subLib))
+                    {
+                        result.Add(subLib);
+                    }
+                }
+            }
+
+            if (!result.Contains(this))
+            {
+                result.Add(this);
+            }
+
+            return result;
+        }
     }
 }
