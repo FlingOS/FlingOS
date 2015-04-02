@@ -119,6 +119,7 @@ namespace Drivers.Compiler.IL
             return OK;
         }
 
+        private static Dictionary<string, ILLibrary> ScannedTypes = new Dictionary<string, ILLibrary>();
         public static CompileResult Scan(ILLibrary TheLibrary)
         {
             CompileResult result = CompileResult.OK;
@@ -137,28 +138,28 @@ namespace Drivers.Compiler.IL
             // Create / Add Static Fields ASM Block
             ASM.ASMBlock StaticFieldsBlock = new ASM.ASMBlock()
             {
-                Priority = (long.MaxValue / 2) - 1
+                Priority = (long.MinValue / 2) - 9
             };
             TheLibrary.TheASMLibrary.ASMBlocks.Add(StaticFieldsBlock);
 
             // Create / Add Types Table ASM Block
             ASM.ASMBlock TypesTableBlock = new ASM.ASMBlock()
             {
-                Priority = (long.MaxValue / 2) - 1
+                Priority = (long.MinValue / 2) - 8
             };
             TheLibrary.TheASMLibrary.ASMBlocks.Add(TypesTableBlock);
 
             // Create / Add Method Tables ASM Block
             ASM.ASMBlock MethodTablesBlock = new ASM.ASMBlock()
             {
-                Priority = (long.MaxValue / 2) + 0
+                Priority = (long.MinValue / 2) + 0
             };
             TheLibrary.TheASMLibrary.ASMBlocks.Add(MethodTablesBlock);
 
             // Create / Add Field Tables ASM Block
             ASM.ASMBlock FieldTablesBlock = new ASM.ASMBlock()
             {
-                Priority = (long.MaxValue / 2) + 1
+                Priority = (long.MinValue / 2) + 1
             };
             TheLibrary.TheASMLibrary.ASMBlocks.Add(FieldTablesBlock);
 
@@ -166,10 +167,14 @@ namespace Drivers.Compiler.IL
             for (int i = 0; i < TheLibrary.TypeInfos.Count; i++)
             {
                 Types.TypeInfo aTypeInfo = TheLibrary.TypeInfos[i];
-                ScanStaticFields(TheLibrary, aTypeInfo, StaticFieldsBlock);
-                ScanType(TheLibrary, aTypeInfo, TypesTableBlock);
-                ScanMethods(TheLibrary, aTypeInfo, MethodTablesBlock);
-                ScanFields(TheLibrary, aTypeInfo, FieldTablesBlock);
+                if (!ScannedTypes.ContainsKey(aTypeInfo.ID))
+                {
+                    ScannedTypes.Add(aTypeInfo.ID, TheLibrary);
+                    ScanStaticFields(TheLibrary, aTypeInfo, StaticFieldsBlock);
+                    ScanType(TheLibrary, aTypeInfo, TypesTableBlock);
+                    ScanMethods(TheLibrary, aTypeInfo, MethodTablesBlock);
+                    ScanFields(TheLibrary, aTypeInfo, FieldTablesBlock);
+                }
             }
 
             foreach (Types.MethodInfo aMethodInfo in TheLibrary.ILBlocks.Keys)
@@ -197,7 +202,7 @@ namespace Drivers.Compiler.IL
 
             ASM.ASMBlock StringLiteralsBlock = new ASM.ASMBlock()
             {
-                Priority = (long.MaxValue / 2) - 2
+                Priority = (long.MinValue / 2) - 10
             };
             TheLibrary.TheASMLibrary.ASMBlocks.Add(StringLiteralsBlock);
 
@@ -264,7 +269,9 @@ namespace Drivers.Compiler.IL
                     Types.TypeInfo baseTypeInfo = TheLibrary.GetTypeInfo(TheTypeInfo.UnderlyingType.BaseType);
                     BaseTypeIdVal = baseTypeInfo.ID;
                     //Declared external to this library, so won't appear in this library's type tables
-                    if (!TheLibrary.TypeInfos.Contains(baseTypeInfo))
+                    if ((ScannedTypes.ContainsKey(baseTypeInfo.ID) &&
+                         ScannedTypes[baseTypeInfo.ID] != TheLibrary) ||
+                        !TheLibrary.TypeInfos.Contains(baseTypeInfo))
                     {
                         TypesTableBlock.AddExternalLabel(BaseTypeIdVal);
                     }
@@ -392,7 +399,8 @@ namespace Drivers.Compiler.IL
                 if (!TheTypeInfo.UnderlyingType.BaseType.AssemblyQualifiedName.Contains("mscorlib"))
                 {
                     Types.TypeInfo baseTypeInfo = TheLibrary.GetTypeInfo(TheTypeInfo.UnderlyingType.BaseType);
-                    parentPtrIsExternal = !TheLibrary.TypeInfos.Contains(baseTypeInfo);
+                    parentPtrIsExternal = (ScannedTypes.ContainsKey(baseTypeInfo.ID) && ScannedTypes[baseTypeInfo.ID] != TheLibrary) 
+                        || !TheLibrary.TypeInfos.Contains(baseTypeInfo);
                     parentTypeMethodTablePtr = baseTypeInfo.ID + "_MethodTable";
                 }
             }
@@ -485,7 +493,8 @@ namespace Drivers.Compiler.IL
                 if (!TheTypeInfo.UnderlyingType.BaseType.AssemblyQualifiedName.Contains("mscorlib"))
                 {
                     Types.TypeInfo baseTypeInfo = TheLibrary.GetTypeInfo(TheTypeInfo.UnderlyingType.BaseType);
-                    parentPtrIsExternal = !TheLibrary.TypeInfos.Contains(baseTypeInfo);
+                    parentPtrIsExternal = (ScannedTypes.ContainsKey(baseTypeInfo.ID) &&
+                         ScannedTypes[baseTypeInfo.ID] != TheLibrary) || !TheLibrary.TypeInfos.Contains(baseTypeInfo);
                     parentTypeFieldTablePtr = baseTypeInfo.ID + "_FieldTable";
                 }
             }

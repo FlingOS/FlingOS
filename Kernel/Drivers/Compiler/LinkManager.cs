@@ -85,7 +85,9 @@ OUTPUT_FORMAT(elf32-i386)
 
 INPUT(");
 
-            LinkScript.Append(string.Join(", ", SequencedASMBlocks.Select(x => "\"" + x.OutputFilePath + "\"")));
+            LinkScript.Append(string.Join(", ", SequencedASMBlocks
+                .Where(x => File.Exists(x.OutputFilePath))
+                .Select(x => "\"" + x.OutputFilePath + "\"")));
             
             LinkScript.AppendLine(@")
 
@@ -100,14 +102,14 @@ SECTIONS {
 
             for (int i = 0; i < SequencedASMBlocks.Count; i++)
             {
-                LinkScript.AppendLine(string.Format("       {0} (.text);", SequencedASMBlocks[i].OutputFilePath.Replace(LdWorkingDir + "Objects", "")));
+                LinkScript.AppendLine(string.Format("       \"{0}\" (.text);", SequencedASMBlocks[i].OutputFilePath));
             }
 
 
             LinkScript.AppendLine(@"
-       * (.text);
-       * (.rodata*);
-       * (.data*);
+       /* * (.text);
+          * (.rodata*);
+          * (.data*);   */
    }
 }
 ");
