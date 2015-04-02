@@ -46,7 +46,7 @@ namespace Drivers.Compiler.Architectures.x86
             if (theOp.LoadAtILOffset != int.MaxValue)
             {
                 int offset = theOp.LoadAtILOffset;
-                ILOp theLoadedOp = preprocessState.TheILLibrary.ILBlocks[methodInfo].At(offset);
+                ILOp theLoadedOp = preprocessState.TheILLibrary.GetILBlock(methodInfo).At(offset);
                 theLoadedOp.LabelRequired = true;
             }
         }
@@ -68,7 +68,7 @@ namespace Drivers.Compiler.Architectures.x86
             if(theOp.LoadAtILOffset != int.MaxValue)
             {
                 //Append the IL sub-label to the ID
-                ILBlock anILBlock = conversionState.TheILLibrary.ILBlocks[methodInfo];
+                ILBlock anILBlock = conversionState.TheILLibrary.GetILBlock(methodInfo);
                 methodID = ASM.ASMBlock.GenerateLabel(methodID, anILBlock.PositionOf(anILBlock.At(theOp.LoadAtILOffset)));
 
                 //Note: This is used by try/catch/finally blocks for pushing pointers 

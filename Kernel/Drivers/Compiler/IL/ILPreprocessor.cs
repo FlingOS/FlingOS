@@ -63,9 +63,6 @@ namespace Drivers.Compiler.IL
                 Preprocess(aDependency);
             }
             
-            PreprocessSpecialClasses(TheLibrary);
-            PreprocessSpecialMethods(TheLibrary);
-
             foreach (Types.MethodInfo aMethodInfo in TheLibrary.ILBlocks.Keys)
             {
                 PreprocessMethodInfo(TheLibrary, aMethodInfo);
@@ -78,6 +75,29 @@ namespace Drivers.Compiler.IL
                 InjectTryCatchFinally(aMethodInfo, TheLibrary.ILBlocks[aMethodInfo]);
                 
                 PreprocessILOps(TheLibrary, aMethodInfo, TheLibrary.ILBlocks[aMethodInfo]);
+            }
+        }
+
+        public static void PreprocessSpecialClasses(ILLibrary RootLibrary)
+        {
+            //Is there anything to do here?
+        }
+        public static void PreprocessSpecialMethods(ILLibrary RootLibrary)
+        {
+            // Setup calls to Static Constructors
+            Types.MethodInfo CallStaticConstructorsInfo = ILLibrary.SpecialMethods[typeof(Attributes.CallStaticConstructorsMethodAttribute)].First();
+            ILBlock CallStaticConstructorsBlock = RootLibrary.GetILBlock(CallStaticConstructorsInfo);
+            List<System.Reflection.ConstructorInfo> staticConstructorsToCall = ILLibrary.TheStaticConstructorDependencyTree.Flatten();
+            foreach (System.Reflection.ConstructorInfo anInfo in staticConstructorsToCall)
+            {
+                CallStaticConstructorsBlock.ILOps.Insert(CallStaticConstructorsBlock.ILOps.Count - 1,
+                    new ILOp()
+                    {
+                        opCode = System.Reflection.Emit.OpCodes.Call,
+                        ValueBytes = null,
+                        MethodToCall = anInfo
+                    }
+                );
             }
         }
 
@@ -166,6 +186,22 @@ namespace Drivers.Compiler.IL
                 theMethodInfo.ArgumentInfos[i].Offset = offset;
             }
 
+            StaticConstructorDependency staticConstructorDependencyRoot = null;
+            if (theMethodInfo.UnderlyingInfo is System.Reflection.ConstructorInfo &&
+                        theMethodInfo.IsStatic)
+            {
+                System.Reflection.ConstructorInfo aConstructor = (System.Reflection.ConstructorInfo)theMethodInfo.UnderlyingInfo;
+                staticConstructorDependencyRoot = ILLibrary.TheStaticConstructorDependencyTree[aConstructor];
+                if (staticConstructorDependencyRoot == null)
+                {
+                    staticConstructorDependencyRoot = new StaticConstructorDependency()
+                    {
+                        TheConstructor = aConstructor
+                    };
+                    ILLibrary.TheStaticConstructorDependencyTree.Children.Add(staticConstructorDependencyRoot);
+                }
+            }
+
             ILPreprocessState preprosState = new ILPreprocessState()
             {
                 TheILLibrary = TheLibrary,
@@ -239,6 +275,65 @@ namespace Drivers.Compiler.IL
                     ILOp ConverterOp = ILScanner.TargetILOps[(ILOp.OpCodes)theOp.opCode.Value];
 
                     ConverterOp.Preprocess(preprosState, theOp);
+
+                    if (staticConstructorDependencyRoot != null)
+                    {
+                        //Create our static constructor dependency tree
+
+                        //Each of these ops could try to access a static method or field
+                        switch ((ILOp.OpCodes)theOp.opCode.Value)
+                        {
+                            case ILOp.OpCodes.Call:
+                                //Check if the method to call is static and not a constructor itself
+                                //If so, we must add the declaring type's static constructors to the tree
+                                {
+                                    int metadataToken = Utilities.ReadInt32(theOp.ValueBytes, 0);
+                                    System.Reflection.MethodBase methodBaseInf = theMethodInfo.UnderlyingInfo.Module.ResolveMethod(metadataToken);
+                                    if (!(methodBaseInf.IsConstructor || methodBaseInf is System.Reflection.ConstructorInfo))
+                                    {
+                                        System.Reflection.MethodInfo methodInf = (System.Reflection.MethodInfo)methodBaseInf;
+                                        System.Reflection.ConstructorInfo[] staticConstructors = 
+                                            methodInf.DeclaringType.GetConstructors(System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.Public)
+                                                .Concat(methodInf.DeclaringType.GetConstructors(System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.NonPublic))
+                                                .ToArray();
+                                        if (staticConstructors.Length > 0)
+                                        {
+                                            System.Reflection.ConstructorInfo TheConstructor = staticConstructors[0];
+                                            if (staticConstructorDependencyRoot[TheConstructor] == null)
+                                            {
+                                                staticConstructorDependencyRoot.Children.Add(new StaticConstructorDependency()
+                                                {
+                                                    TheConstructor = TheConstructor
+                                                });
+                                            }
+                                        }
+                                    }
+                                }
+                                break;
+                            case ILOp.OpCodes.Ldsfld:
+                            case ILOp.OpCodes.Ldsflda:
+                            case ILOp.OpCodes.Stsfld:
+                                {
+                                    int metadataToken = Utilities.ReadInt32(theOp.ValueBytes, 0);
+                                    System.Reflection.FieldInfo fieldInf = theMethodInfo.UnderlyingInfo.Module.ResolveField(metadataToken);
+                                    System.Reflection.ConstructorInfo[] staticConstructors = fieldInf.DeclaringType.GetConstructors(System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.Public)
+                                                                   .Concat(fieldInf.DeclaringType.GetConstructors(System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.NonPublic))
+                                                                   .ToArray();
+                                    if (staticConstructors.Length > 0)
+                                    {
+                                        System.Reflection.ConstructorInfo TheConstructor = staticConstructors[0];
+                                        if (staticConstructorDependencyRoot[TheConstructor] == null)
+                                        {
+                                            staticConstructorDependencyRoot.Children.Add(new StaticConstructorDependency()
+                                            {
+                                                TheConstructor = TheConstructor
+                                            });
+                                        }
+                                    }
+                                }
+                                break;
+                        }
+                    }                    
                 }
                 catch (KeyNotFoundException)
                 {
@@ -250,14 +345,6 @@ namespace Drivers.Compiler.IL
                         "Il Preprocessor error: " + ex.Message);
                 }
             }
-        }
-        private static void PreprocessSpecialClasses(ILLibrary TheLibrary)
-        {
-            //TODO
-        }
-        private static void PreprocessSpecialMethods(ILLibrary TheLibrary)
-        {
-            //TODO
         }
         private static void InjectGeneral(Types.MethodInfo theMethodInfo, ILBlock theILBlock)
         {

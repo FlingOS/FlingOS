@@ -53,6 +53,11 @@ namespace Drivers.Compiler.IL
         public bool ILPreprocessed = false;
         public bool ILScanned = false;
 
+        public static StaticConstructorDependency TheStaticConstructorDependencyTree = new StaticConstructorDependency()
+        {
+            TheConstructor = null
+        };
+
         public Dictionary<string, string> StringLiterals = new Dictionary<string, string>();
 
         public Types.TypeInfo GetTypeInfo(Type theType, bool FullyProcess = true)
@@ -150,6 +155,25 @@ namespace Drivers.Compiler.IL
             }
             
             throw new NullReferenceException("Field \"" + FieldName + "\" not found in type \"" + aTypeInfo.ToString() + "\".");
+        }
+
+        public ILBlock GetILBlock(Types.MethodInfo theInfo)
+        {
+            if (ILBlocks.ContainsKey(theInfo))
+            {
+                return ILBlocks[theInfo];
+            }
+
+            foreach (ILLibrary depLib in Dependencies)
+            {
+                ILBlock result = depLib.GetILBlock(theInfo);
+                if (result != null)
+                {
+                    return result;
+                }
+            }
+
+            return null;
         }
 
         public string AddStringLiteral(string value)

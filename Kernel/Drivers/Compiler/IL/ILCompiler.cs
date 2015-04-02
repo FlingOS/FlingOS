@@ -84,6 +84,9 @@ namespace Drivers.Compiler.IL
             if (ILScanner.Init())
             {
                 ILPreprocessor.Preprocess(TheLibrary);
+
+                ILPreprocessor.PreprocessSpecialClasses(TheLibrary);
+                ILPreprocessor.PreprocessSpecialMethods(TheLibrary);
             }
             else
             {
