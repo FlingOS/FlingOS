@@ -29,11 +29,20 @@ GLOBAL BasicDebug_SendCmd:function
 
 EXTERN BasicDebug_ConnectedCmd
 EXTERN BasicDebug_BreakCmd
-EXTERN BasicDebug_BreakAddressCmd
-EXTERN BasicDebug_RegistersCmd
-EXTERN BasicDebug_ArgumentsCmd
-EXTERN BasicDebug_LocalsCmd
-EXTERN BasicDebug_MemoryCmd
+EXTERN BasicDebug_SendBreakAddressCmd
+EXTERN BasicDebug_SendRegistersCmd
+EXTERN BasicDebug_SendArgumentsCmd
+EXTERN BasicDebug_SendLocalsCmd
+EXTERN BasicDebug_SendMemoryCmd
+
+EXTERN BasicDebug_CallerEIP
+EXTERN BasicDebug_CallerESP
+EXTERN BasicDebug_CallerEBP
+EXTERN BasicDebug_RegistersESP
+
+EXTERN method_System_Void_Kernel_Debug_BasicDebug_Serial_WriteByte_System_Byte_
+EXTERN method_System_Void_Kernel_Debug_BasicDebug_Serial_WriteUInt32_System_UInt32_
+EXTERN method_System_UInt32_Kernel_Debug_BasicDebug_Serial_ReadUInt32__
 
 ; BEGIN - Basic Debug : Send Commands
 

@@ -14,6 +14,7 @@ EXTERN _NATIVE_IDT_Pointer
 EXTERN _NATIVE_IDT_Contents
 EXTERN staticfield_Kernel_Hardware_Processes_ThreadState__Kernel_Hardware_Processes_ProcessManager_CurrentThread_State
 EXTERN _NATIVE_TSS
+EXTERN BasicDebug_InterruptHandler
 
 %define KERNEL_MODE_DPL 0
 %define USER_MODE_DPL 3

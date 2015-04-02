@@ -26,6 +26,8 @@ GLOBAL BasicDebug_SerialWrite32:function
 GLOBAL BasicDebug_SerialWrite16:function
 GLOBAL BasicDebug_SerialWrite8:function
 
+EXTERN BasicDebug_Serial_ComPortMemAddr
+
 ; BEGIN - Basic Debug : Serial Write
 
 method_System_Void_Kernel_Debug_BasicDebug_Serial_WriteUInt32_System_UInt32_:

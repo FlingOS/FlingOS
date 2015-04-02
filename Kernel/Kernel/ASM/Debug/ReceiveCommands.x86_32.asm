@@ -20,6 +20,8 @@ SECTION .text
 
 GLOBAL BasicDebug_WaitForCommand:function
 
+EXTERN method_System_Byte_Kernel_Debug_BasicDebug_Serial_ReadByte__
+
 ; BEGIN - Basic Debug : Receive Commands
 
 BasicDebug_WaitForCommand:
