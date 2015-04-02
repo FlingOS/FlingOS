@@ -431,9 +431,100 @@ namespace Drivers.Compiler.IL
         }
         private static void ScanFields(ILLibrary TheLibrary, Types.TypeInfo TheTypeInfo, ASM.ASMBlock FieldTablesBlock)
         {
-        }
-        private static void ScanField(ILLibrary TheLibrary, Types.TypeInfo DeclarerTypeInfo, Types.MethodInfo TheMethodInfo, ASM.ASMBlock FieldTablesBlock)
-        {
+            string currentTypeId = TheTypeInfo.ID;
+            StringBuilder ASMResult = new StringBuilder();
+
+            ASMResult.AppendLine("; Field Table - " + TheTypeInfo.UnderlyingType.FullName);
+            ASMResult.AppendLine("GLOBAL " + currentTypeId + "_FieldTable:data");
+            ASMResult.AppendLine(currentTypeId + "_FieldTable:");
+
+            Types.TypeInfo typeTypeInfo = ILLibrary.SpecialClasses[typeof(Attributes.FieldInfoStructAttribute)].First();
+            List<Types.FieldInfo> OrderedFields = typeTypeInfo.FieldInfos.OrderBy(x => x.OffsetInBytes).ToList();
+
+            if (TheTypeInfo.UnderlyingType.BaseType == null || (TheTypeInfo.UnderlyingType.BaseType.FullName != "System.Array" &&
+                                                                TheTypeInfo.UnderlyingType.BaseType.FullName != "System.MulticastDelegate"))
+            {
+                foreach (Types.FieldInfo anOwnField in TheTypeInfo.FieldInfos)
+                {
+                    if (!anOwnField.IsStatic)
+                    {
+                        Types.TypeInfo FieldTypeInfo = TheLibrary.GetTypeInfo(anOwnField.FieldType);
+
+                        string fieldOffsetVal = anOwnField.OffsetInBytes.ToString();
+                        string fieldSizeVal = (FieldTypeInfo.IsValueType ? FieldTypeInfo.SizeOnHeapInBytes : FieldTypeInfo.SizeOnStackInBytes).ToString();
+                        string fieldTypeIdVal = FieldTypeInfo.ID;
+
+                        FieldTablesBlock.AddExternalLabel(fieldTypeIdVal);
+
+                        foreach (Types.FieldInfo aTypeField in OrderedFields)
+                        {
+                            Types.TypeInfo structFieldTypeInfo = TheLibrary.GetTypeInfo(aTypeField.FieldType);
+                            string allocStr = GetAllocStringForSize(
+                                structFieldTypeInfo.IsValueType ? structFieldTypeInfo.SizeOnHeapInBytes : structFieldTypeInfo.SizeOnStackInBytes);
+                            switch (aTypeField.Name)
+                            {
+                                case "Offset":
+                                    ASMResult.AppendLine(allocStr + " " + fieldOffsetVal);
+                                    break;
+                                case "Size":
+                                    ASMResult.AppendLine(allocStr + " " + fieldSizeVal);
+                                    break;
+                                case "FieldType":
+                                    ASMResult.AppendLine(allocStr + " " + fieldTypeIdVal);
+                                    break;
+                            }
+                        }
+                    }
+                }
+            }
+
+            string parentTypeFieldTablePtr = "0";
+            bool parentPtrIsExternal = false;
+            if (TheTypeInfo.UnderlyingType.BaseType != null)
+            {
+                if (!TheTypeInfo.UnderlyingType.BaseType.AssemblyQualifiedName.Contains("mscorlib"))
+                {
+                    Types.TypeInfo baseTypeInfo = TheLibrary.GetTypeInfo(TheTypeInfo.UnderlyingType.BaseType);
+                    parentPtrIsExternal = !TheLibrary.TypeInfos.Contains(baseTypeInfo);
+                    parentTypeFieldTablePtr = baseTypeInfo.ID + "_FieldTable";
+                }
+            }
+            {
+                string fieldOffsetVal = "0";
+                string fieldSizeVal = "0";
+                string fieldTypeIdVal = parentTypeFieldTablePtr;
+
+                if (parentPtrIsExternal)
+                {
+                    FieldTablesBlock.AddExternalLabel(fieldTypeIdVal);
+                }
+
+                foreach (Types.FieldInfo aTypeField in OrderedFields)
+                {
+                    Types.TypeInfo structFieldTypeInfo = TheLibrary.GetTypeInfo(aTypeField.FieldType);
+                    string allocStr = GetAllocStringForSize(
+                        structFieldTypeInfo.IsValueType ? structFieldTypeInfo.SizeOnHeapInBytes : structFieldTypeInfo.SizeOnStackInBytes);
+                    switch (aTypeField.Name)
+                    {
+                        case "Offset":
+                            ASMResult.AppendLine(allocStr + " " + fieldOffsetVal);
+                            break;
+                        case "Size":
+                            ASMResult.AppendLine(allocStr + " " + fieldSizeVal);
+                            break;
+                        case "FieldType":
+                            ASMResult.AppendLine(allocStr + " " + fieldTypeIdVal);
+                            break;
+                    }
+                }
+            }
+
+            ASMResult.AppendLine("; Field Table End - " + TheTypeInfo.UnderlyingType.FullName);
+
+            FieldTablesBlock.Append(new ASM.ASMGeneric()
+            {
+                Text = ASMResult.ToString()
+            });
         }
 
         private static string GetAllocStringForSize(int numBytes)
