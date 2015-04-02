@@ -24,6 +24,9 @@
 // ------------------------------------------------------------------------------ //
 #endregion
     
+#define NASM_ASYNC
+//#undef NASM_ASYNC
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -62,30 +65,34 @@ namespace Drivers.Compiler.ASM
                 num++;
             }
 
-            //List<bool> Completed = new List<bool>();
-            //for (int i = 0; i < MaxConcurrentNASMProcesses; i++)
-            //{
-            //    Completed.Add(false);
-            //    ExecuteNASMAsync(NASMLabourDivision[i],
-            //        delegate(object state)
-            //        {
-            //            Completed[(int)state] = true;
-            //        },
-            //        i);
-            //}
+#if NASM_ASYNC
+            List<bool> Completed = new List<bool>();
+            for (int i = 0; i < MaxConcurrentNASMProcesses; i++)
+            {
+                Completed.Add(false);
+                ExecuteNASMAsync(NASMLabourDivision[i],
+                    delegate(object state)
+                    {
+                        Completed[(int)state] = true;
+                    },
+                    i);
+            }
 
-            //for (int i = 0; i < MaxConcurrentNASMProcesses; i++)
-            //{
-            //    while (!Completed[i])
-            //    {
-            //        System.Threading.Thread.Sleep(100);
-            //    }
-            //}
-            
+            for (int i = 0; i < MaxConcurrentNASMProcesses; i++)
+            {
+                while (!Completed[i])
+                {
+                    System.Threading.Thread.Sleep(100);
+                }
+            }
+#else
+
             for (int i = 0; i < MaxConcurrentNASMProcesses; i++)
             {
                 ExecuteNASMSync(NASMLabourDivision[i]);
             }
+
+#endif
             
             return result;
         }
@@ -143,7 +150,16 @@ namespace Drivers.Compiler.ASM
                 {
                     string inputPath = Blocks[index].OutputFilePath;
                     string outputPath = inputPath.Replace(ASMOutputPath, ObjectsOutputPath).Replace(".asm", ".o");
-                    ExecuteNASM(inputPath, outputPath, onComplete, index + 1);
+
+                    try
+                    {
+                        ExecuteNASM(inputPath, outputPath, onComplete, index + 1);
+                    }
+                    catch (Exception ex)
+                    {
+                        Logger.LogError(Errors.ASMCompiler_NASMException_ErrorCode, inputPath, 0,
+                            string.Format(Errors.ErrorMessages[Errors.ASMCompiler_NASMException_ErrorCode], inputPath));
+                    }
                 }
                 else
                 {
@@ -161,7 +177,7 @@ namespace Drivers.Compiler.ASM
             for (int index = 0; index < Blocks.Count; index++)
             {
                 string inputPath = Blocks[index].OutputFilePath;
-                string outputPath = inputPath.Replace(ASMOutputPath, ObjectsOutputPath).Replace(".asm", ".obj");
+                string outputPath = inputPath.Replace(ASMOutputPath, ObjectsOutputPath).Replace(".asm", ".o");
 
                 try
                 {

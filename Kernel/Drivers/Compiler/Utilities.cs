@@ -200,7 +200,7 @@ namespace Drivers.Compiler
             {
                 process.Exited += delegate(object sender, EventArgs e)
                 {
-                    System.Threading.Thread.Sleep(1000);
+                    //System.Threading.Thread.Sleep(1000);
 
                     try
                     {
