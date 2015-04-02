@@ -61,7 +61,7 @@ namespace Kernel
         /// Filled-in by the compiler.
         /// </summary>
         [Compiler.CallStaticConstructorsMethod]
-        //[Drivers.Compiler.Attributes.CallStaticConstructorsMethod]
+        [Drivers.Compiler.Attributes.CallStaticConstructorsMethod]
         public static void CallStaticConstructors()
         {
         }
@@ -70,7 +70,7 @@ namespace Kernel
         /// Main kernel entry point
         /// </summary>
         [Compiler.KernelMainMethod]
-        //[Drivers.Compiler.Attributes.KernelMainMethod]
+        [Drivers.Compiler.Attributes.KernelMainMethod]
         [Compiler.NoGC]
         [Drivers.Compiler.Attributes.NoGC]
         [Compiler.NoDebug]

@@ -36,8 +36,6 @@ EXTERN BasicDebug_ClearInt3Cmd
 EXTERN BasicDebug_GetMemoryCmd
 
 EXTERN BasicDebug_SendBreakCmd
-EXTERN BasicDebug_SetInt1TrapFlag
-EXTERN BasicDebug_ClearInt1TrapFlag
 EXTERN BasicDebug_SendBreakAddress
 EXTERN BasicDebug_SendRegisters
 EXTERN BasicDebug_SendArguments

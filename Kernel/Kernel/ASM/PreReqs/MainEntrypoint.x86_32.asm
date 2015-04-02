@@ -6,6 +6,7 @@ GLOBAL GetEIP:function
 
 EXTERN %KERNEL_CALL_STATIC_CONSTRUCTORS_METHOD%
 EXTERN %KERNEL_MAIN_METHOD%
+EXTERN method_System_Void_Kernel_PreReqs_Reset__
 
 ; BEGIN - Main Entrypoint
 call __MAIN_ENTRYPOINT__ ; Call our main entry point 
