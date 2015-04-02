@@ -345,9 +345,89 @@ namespace Drivers.Compiler.IL
         }
         private static void ScanMethods(ILLibrary TheLibrary, Types.TypeInfo TheTypeInfo, ASM.ASMBlock MethodTablesBlock)
         {
-        }
-        private static void ScanMethod(ILLibrary TheLibrary, Types.TypeInfo DeclarerTypeInfo, Types.MethodInfo TheMethodInfo, ASM.ASMBlock MethodTablesBlock)
-        {
+            string currentTypeId = TheTypeInfo.ID;
+            StringBuilder ASMResult = new StringBuilder();
+
+            ASMResult.AppendLine("; Method Table - " + TheTypeInfo.UnderlyingType.FullName);
+            ASMResult.AppendLine("GLOBAL " + currentTypeId + "_MethodTable:data");
+            ASMResult.AppendLine(currentTypeId + "_MethodTable:");
+
+            Types.TypeInfo typeTypeInfo = ILLibrary.SpecialClasses[typeof(Attributes.MethodInfoStructAttribute)].First();
+            List<Types.FieldInfo> OrderedFields = typeTypeInfo.FieldInfos.OrderBy(x => x.OffsetInBytes).ToList();
+
+            if (TheTypeInfo.UnderlyingType.BaseType == null || TheTypeInfo.UnderlyingType.BaseType.FullName != "System.Array")
+            {
+                foreach (Types.MethodInfo anOwnMethod in TheTypeInfo.MethodInfos)
+                {
+                    if (!anOwnMethod.IsStatic && !anOwnMethod.UnderlyingInfo.IsAbstract)
+                    {
+                        string methodID = anOwnMethod.ID;
+                        string methodIDValue = anOwnMethod.IDValue.ToString();
+
+                        MethodTablesBlock.AddExternalLabel(methodID);
+
+                        foreach (Types.FieldInfo aTypeField in OrderedFields)
+                        {
+                            Types.TypeInfo FieldTypeInfo = TheLibrary.GetTypeInfo(aTypeField.FieldType);
+                            string allocStr = GetAllocStringForSize(
+                                FieldTypeInfo.IsValueType ? FieldTypeInfo.SizeOnHeapInBytes : FieldTypeInfo.SizeOnStackInBytes);
+                            switch (aTypeField.Name)
+                            {
+                                case "MethodID":
+                                    ASMResult.AppendLine(allocStr + " " + methodIDValue);
+                                    break;
+                                case "MethodPtr":
+                                    ASMResult.AppendLine(allocStr + " " + methodID);
+                                    break;
+                            }
+                        }
+                    }
+                }
+            }
+
+            string parentTypeMethodTablePtr = "0";
+            bool parentPtrIsExternal = false;
+            if (TheTypeInfo.UnderlyingType.BaseType != null)
+            {
+                if (!TheTypeInfo.UnderlyingType.BaseType.AssemblyQualifiedName.Contains("mscorlib"))
+                {
+                    Types.TypeInfo baseTypeInfo = TheLibrary.GetTypeInfo(TheTypeInfo.UnderlyingType.BaseType);
+                    parentPtrIsExternal = !TheLibrary.TypeInfos.Contains(baseTypeInfo);
+                    parentTypeMethodTablePtr = baseTypeInfo.ID + "_MethodTable";
+                }
+            }
+            {
+                string methodID = parentTypeMethodTablePtr;
+                string methodIDValue = "0";
+
+                if (parentPtrIsExternal)
+                {
+                    MethodTablesBlock.AddExternalLabel(methodID);
+                }
+
+                foreach (Types.FieldInfo aTypeField in OrderedFields)
+                {
+                    Types.TypeInfo FieldTypeInfo = TheLibrary.GetTypeInfo(aTypeField.FieldType);
+                    string allocStr = GetAllocStringForSize(
+                        FieldTypeInfo.IsValueType ? FieldTypeInfo.SizeOnHeapInBytes : FieldTypeInfo.SizeOnStackInBytes);
+                    switch (aTypeField.Name)
+                    {
+                        case "MethodID":
+                            ASMResult.AppendLine(allocStr + " " + methodIDValue);
+                            break;
+                        case "MethodPtr":
+                            ASMResult.AppendLine(allocStr + " " + methodID);
+                            break;
+                    }
+                }
+            }
+            
+            ASMResult.AppendLine("; Method Table End - " + TheTypeInfo.UnderlyingType.FullName);
+
+            MethodTablesBlock.Append(new ASM.ASMGeneric()
+            {
+                Text = ASMResult.ToString()
+            });
         }
         private static void ScanFields(ILLibrary TheLibrary, Types.TypeInfo TheTypeInfo, ASM.ASMBlock FieldTablesBlock)
         {

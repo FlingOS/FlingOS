@@ -103,6 +103,23 @@ namespace Drivers.Compiler.IL
 
         private static void PreprocessMethodInfo(ILLibrary TheLibrary, Types.MethodInfo theMethodInfo)
         {
+            if (theMethodInfo.Preprocessed)
+            {
+                return;
+            }
+            theMethodInfo.Preprocessed = true;
+
+            if (!theMethodInfo.IsConstructor)
+            {
+                System.Reflection.MethodInfo methodInf = (System.Reflection.MethodInfo)theMethodInfo.UnderlyingInfo;
+                if (methodInf.GetBaseDefinition() != methodInf)
+                {
+                    Types.MethodInfo baseMethodInfo = TheLibrary.GetMethodInfo(methodInf.GetBaseDefinition());
+                    PreprocessMethodInfo(TheLibrary, baseMethodInfo);
+                    theMethodInfo.IDValue = baseMethodInfo.IDValue;
+                    return;
+                }
+            }
             Types.TypeInfo aTypeInfo = TheLibrary.GetTypeInfo(theMethodInfo.UnderlyingInfo.DeclaringType);
             int ID = GetMethodIDGenerator(TheLibrary, aTypeInfo);
             theMethodInfo.IDValue = ID + 1;

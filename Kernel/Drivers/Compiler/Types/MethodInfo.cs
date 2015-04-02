@@ -121,6 +121,7 @@ namespace Drivers.Compiler.Types
             }
         }
 
+        public bool Preprocessed = false;
 
         public override string ToString()
         {
