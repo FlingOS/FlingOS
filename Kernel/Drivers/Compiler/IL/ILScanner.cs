@@ -331,6 +331,17 @@ namespace Drivers.Compiler.IL
         }
         private static void ScanStaticFields(ILLibrary TheLibrary, Types.TypeInfo TheTypeInfo, ASM.ASMBlock StaticFieldsBlock)
         {
+            foreach (Types.FieldInfo aFieldInfo in TheTypeInfo.FieldInfos)
+            {
+                if (aFieldInfo.IsStatic)
+                {
+                    string FieldID = aFieldInfo.ID;
+                    int Size = TheLibrary.GetTypeInfo(aFieldInfo.FieldType).SizeOnStackInBytes;
+                    StaticFieldsBlock.Append(new ASM.ASMGeneric() {
+                        Text = string.Format("GLOBAL {0}:data\r\n{0}: times {1} db 0", FieldID, Size)
+                    });
+                }
+            }
         }
         private static void ScanMethods(ILLibrary TheLibrary, Types.TypeInfo TheTypeInfo, ASM.ASMBlock MethodTablesBlock)
         {
