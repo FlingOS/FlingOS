@@ -417,7 +417,7 @@ namespace Kernel.FOS_System
         /// </remarks>
         /// <param name="anObj">The object to increment the ref count of.</param>
         [Compiler.IncrementRefCountMethod]
-        //[Drivers.Compiler.Attributes.IncrementRefCountMethod]
+        [Drivers.Compiler.Attributes.IncrementRefCountMethod]
         [Compiler.NoDebug]
         [Drivers.Compiler.Attributes.NoDebug]
         [Compiler.NoGC]

@@ -43,7 +43,7 @@ namespace Drivers.Compiler.IL.ILOps
     /// will fail to execute. It was added so the ILScanner could optimise 
     /// some code injections that it has to make.
     /// </remarks>
-    public abstract class StackSwitch : ILOp
+    public class StackSwitch : ILOp
     {
     }
 }

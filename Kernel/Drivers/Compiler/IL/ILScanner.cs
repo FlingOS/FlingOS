@@ -36,9 +36,9 @@ namespace Drivers.Compiler.IL
     {
         private static System.Reflection.Assembly TargetArchitectureAssembly = null;
         public static Dictionary<ILOp.OpCodes, ILOp> TargetILOps = new Dictionary<ILOp.OpCodes, ILOp>();
-        public static ILOps.MethodStart MethodStartOp;
-        public static ILOps.MethodEnd MethodEndOp;
-        public static ILOps.StackSwitch StackSwitchOp;
+        private static ILOps.MethodStart MethodStartOp;
+        private static ILOps.MethodEnd MethodEndOp;
+        private static ILOps.StackSwitch StackSwitchOp;
 
         public static bool Init()
         {
@@ -591,9 +591,17 @@ namespace Drivers.Compiler.IL
                     TheASMBlock.ASMOps.Add(new ASM.ASMComment() { Text = TheASMBlock.GenerateILOpLabel(convState.PositionOf(anOp), "") + "  --  " + anOp.opCode.ToString() });
 
                     int currCount = TheASMBlock.ASMOps.Count;
-                    if (anOp is ILOps.MethodStart || anOp is ILOps.MethodEnd)
+                    if (anOp is ILOps.MethodStart)
                     {
-                        anOp.Convert(convState, anOp);
+                        MethodStartOp.Convert(convState, anOp);
+                    }
+                    else if (anOp is ILOps.MethodEnd)
+                    {
+                        MethodEndOp.Convert(convState, anOp);
+                    }
+                    else if (anOp is ILOps.StackSwitch)
+                    {
+                        StackSwitchOp.Convert(convState, anOp);
                     }
                     else
                     {

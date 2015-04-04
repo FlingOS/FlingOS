@@ -30,19 +30,14 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Drivers.Compiler.IL.ILOps
+namespace Drivers.Compiler.Attributes
 {
     /// <summary>
-    /// Custom IL op that is inserted as the last IL op before the 
-    /// <see cref="Ret"/> op in a method.
+    /// Indicates the method is the kernel's GC.IncrementRefCount method. 
+    /// Note: There should only ever be one of these used!
     /// </summary>
-    /// <remarks>
-    /// This must at least have an empty stub implementation or the compiler
-    /// will fail to execute. It was added so x86_32 architecture could
-    /// do some stack management at the end of the method (e.g. restoring 
-    /// the base pointer).
-    /// </remarks>
-    public class MethodEnd : ILOp
+    [AttributeUsage(AttributeTargets.Method, AllowMultiple=false, Inherited=false)]
+    public class IncrementRefCountMethodAttribute : Attribute
     {
     }
 }

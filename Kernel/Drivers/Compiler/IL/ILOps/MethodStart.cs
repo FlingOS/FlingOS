@@ -41,7 +41,7 @@ namespace Drivers.Compiler.IL.ILOps
     /// do some stack management at the start of the method (e.g. allocating
     /// space for local variables).
     /// </remarks>
-    public abstract class MethodStart : ILOp
+    public class MethodStart : ILOp
     {
     }
 }

@@ -109,6 +109,7 @@ namespace Drivers.Compiler.IL
             }
             theMethodInfo.Preprocessed = true;
 
+            bool SetMethodID = true;
             if (!theMethodInfo.IsConstructor)
             {
                 System.Reflection.MethodInfo methodInf = (System.Reflection.MethodInfo)theMethodInfo.UnderlyingInfo;
@@ -117,33 +118,17 @@ namespace Drivers.Compiler.IL
                     Types.MethodInfo baseMethodInfo = TheLibrary.GetMethodInfo(methodInf.GetBaseDefinition());
                     PreprocessMethodInfo(TheLibrary, baseMethodInfo);
                     theMethodInfo.IDValue = baseMethodInfo.IDValue;
-                    return;
+                    SetMethodID = false;
                 }
             }
-            Types.TypeInfo aTypeInfo = TheLibrary.GetTypeInfo(theMethodInfo.UnderlyingInfo.DeclaringType);
-            int ID = GetMethodIDGenerator(TheLibrary, aTypeInfo);
-            theMethodInfo.IDValue = ID + 1;
-            aTypeInfo.MethodIDGenerator++;
-        }
-        private static int GetMethodIDGenerator(ILLibrary TheLibrary, Type aType)
-        {
-            Types.TypeInfo aTypeInfo = TheLibrary.GetTypeInfo(aType);
-            return GetMethodIDGenerator(TheLibrary, aTypeInfo);
-        }
-        private static int GetMethodIDGenerator(ILLibrary TheLibrary, Types.TypeInfo aTypeInfo)
-        {
-            int totalGen = 0;
-            if (aTypeInfo.UnderlyingType.BaseType != null)
+            if (SetMethodID)
             {
-                if (!aTypeInfo.UnderlyingType.BaseType.AssemblyQualifiedName.Contains("mscorlib"))
-                {
-                    totalGen += GetMethodIDGenerator(TheLibrary, aTypeInfo.UnderlyingType.BaseType);
-                }
+                Types.TypeInfo declarerTypeInfo = TheLibrary.GetTypeInfo(theMethodInfo.UnderlyingInfo.DeclaringType);
+                int ID = GetMethodIDGenerator(TheLibrary, declarerTypeInfo);
+                theMethodInfo.IDValue = ID + 1;
+                declarerTypeInfo.MethodIDGenerator++;
             }
-            return totalGen;
-        }
-        private static void PreprocessILOps(ILLibrary TheLibrary, Types.MethodInfo theMethodInfo, ILBlock theILBlock)
-        {
+
             int totalLocalsOffset = 0;
             foreach (Types.VariableInfo aVarInfo in theMethodInfo.LocalInfos)
             {
@@ -202,7 +187,26 @@ namespace Drivers.Compiler.IL
                 offset -= theMethodInfo.ArgumentInfos[i].TheTypeInfo.SizeOnStackInBytes;
                 theMethodInfo.ArgumentInfos[i].Offset = offset;
             }
-
+        }
+        private static int GetMethodIDGenerator(ILLibrary TheLibrary, Type aType)
+        {
+            Types.TypeInfo aTypeInfo = TheLibrary.GetTypeInfo(aType);
+            return GetMethodIDGenerator(TheLibrary, aTypeInfo);
+        }
+        private static int GetMethodIDGenerator(ILLibrary TheLibrary, Types.TypeInfo aTypeInfo)
+        {
+            int totalGen = 0;
+            if (aTypeInfo.UnderlyingType.BaseType != null)
+            {
+                if (!aTypeInfo.UnderlyingType.BaseType.AssemblyQualifiedName.Contains("mscorlib"))
+                {
+                    totalGen += GetMethodIDGenerator(TheLibrary, aTypeInfo.UnderlyingType.BaseType);
+                }
+            }
+            return totalGen;
+        }
+        private static void PreprocessILOps(ILLibrary TheLibrary, Types.MethodInfo theMethodInfo, ILBlock theILBlock)
+        {
             StaticConstructorDependency staticConstructorDependencyRoot = null;
             if (theMethodInfo.UnderlyingInfo is System.Reflection.ConstructorInfo &&
                         theMethodInfo.IsStatic)
@@ -366,7 +370,7 @@ namespace Drivers.Compiler.IL
         private static void InjectGeneral(Types.MethodInfo theMethodInfo, ILBlock theILBlock)
         {
             // Inject MethodStart op
-            theILBlock.ILOps.Insert(0, ILScanner.MethodStartOp);
+            theILBlock.ILOps.Insert(0, new ILOps.MethodStart());
             // Inject MethodEnd op just before anywhere where there is a ret
             for (int i = 0; i < theILBlock.ILOps.Count; i++)
             {
@@ -374,14 +378,46 @@ namespace Drivers.Compiler.IL
 
                 if ((ILOp.OpCodes)theOp.opCode.Value == ILOp.OpCodes.Ret)
                 {
-                    theILBlock.ILOps.Insert(i, ILScanner.MethodEndOp);
+                    theILBlock.ILOps.Insert(i, new ILOps.MethodEnd());
                     i++;
                 }
             }
         }
         private static void InjectGC(Types.MethodInfo theMethodInfo, ILBlock theILBlock)
         {
-            //TODO
+            if (theMethodInfo.ApplyGC)
+            {
+                // Find the index of the MethodStart op
+                int MethodStartOpPos = theILBlock.PositionOf(theILBlock.ILOps.Where(x => x is ILOps.MethodStart).First());
+
+                // Inject ops for incrementing ref. count of args at start of method
+                int InjectIncArgsRefCountPos = MethodStartOpPos + 1;
+                foreach (Types.VariableInfo argInfo in theMethodInfo.ArgumentInfos)
+                {
+                    theILBlock.ILOps.Insert(InjectIncArgsRefCountPos, new ILOp()
+                    {
+                        opCode = System.Reflection.Emit.OpCodes.Ldarg,
+                        ValueBytes = BitConverter.GetBytes(argInfo.Position)
+                    });
+                    theILBlock.ILOps.Insert(InjectIncArgsRefCountPos, new ILOp()
+                    {
+                        opCode = System.Reflection.Emit.OpCodes.Call,
+                        MethodToCall = ILLibrary.SpecialMethods[typeof(Attributes.IncrementRefCountMethodAttribute)].First().UnderlyingInfo
+                    });
+                }
+
+                // Inject ops for inc./dec. ref. counts of objects when written to:
+                //      - Arguments / Locals
+                //      - Fields / Static Fields
+                //      - Elements of Arrays
+
+                // Add Cleanup Block and Inject finally-block ops for it
+                //      - Also remember the op for storing return value (if any)
+
+                // Replace any Ret ops contained within Cleanup Block with:
+                //      - Op to store return value (if any)
+                //      - Leave op to start of the cleanup block's finally section
+            }
         }
         private static void InjectTryCatchFinally(Types.MethodInfo theMethodInfo, ILBlock theILBlock)
         {
@@ -443,6 +479,10 @@ namespace Drivers.Compiler.IL
             {
                 #region Try-sections
                 //      Insert the start of try-block
+                //          Also remember that other ops (e.g. branch and leave) can hold references
+                //          to the first op INSIDE a try block, even if they themselves are OUTSIDE 
+                //          the block. This means we need to correct which op has the Offset value
+                //          set so those ops point at the new start op of the try block.
 
                 //Consists of adding a new ExceptionHandlerInfos
                 //  built from the info in exBlock so we:
