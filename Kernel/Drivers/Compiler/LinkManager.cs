@@ -53,6 +53,7 @@ namespace Drivers.Compiler
             {
                 SequencedASMBlocks.AddRange(depLib.TheASMLibrary.ASMBlocks);
             }
+            SortBlocks(SequencedASMBlocks);
             SequencedASMBlocks.Sort(GetOrder);
 
             string AssemblyName = Utilities.CleanFileName(TheLibrary.TheAssembly.GetName().Name);
@@ -61,10 +62,10 @@ namespace Drivers.Compiler
             string ObjdumpPath = Path.Combine(Options.ToolsPath, @"Cygwin\ld.exe");
             string ISOGenPath = Path.Combine(Options.ToolsPath, @"ISO9660Generator.exe");
             string ISOToolsDirPath = Path.Combine(Options.ToolsPath, @"ISO");
-            string ISODirPath = Path.Combine(Options.OutputPath, @"DriversCompiler\\ISO");
-            string LinkScriptPath = Path.Combine(Options.OutputPath, "DriversCompiler\\linker.ld");
-            string BinPath = Path.Combine(Options.OutputPath, "DriversCompiler\\ISO\\" + AssemblyName + ".bin");
-            string ISOLinuxPath = Path.Combine(Options.OutputPath, "DriversCompiler\\ISO\\isolinux.bin");
+            string ISODirPath = Path.Combine(Options.OutputPath, @"DriversCompiler\ISO");
+            string LinkScriptPath = Path.Combine(Options.OutputPath, @"DriversCompiler\linker.ld");
+            string BinPath = Path.Combine(Options.OutputPath, @"DriversCompiler\ISO\" + AssemblyName + ".bin");
+            string ISOLinuxPath = Path.Combine(Options.OutputPath, @"DriversCompiler\ISO\isolinux.bin");
             string ISOPath = Path.Combine(Options.OutputPath, AssemblyName + ".iso");
             string MapPath = Path.Combine(Options.OutputPath, AssemblyName + ".map");
 
@@ -77,7 +78,7 @@ namespace Drivers.Compiler
             CopyDirectory(ISOToolsDirPath, ISODirPath, true);
 
             StringBuilder CommandLineArgsBuilder = new StringBuilder();
-            CommandLineArgsBuilder.Append("-T '" + LinkScriptPath + "' -o '" + BinPath + "'");
+            CommandLineArgsBuilder.Append("--warn-unresolved-symbols -T '" + LinkScriptPath + "' -o '" + BinPath + "'");
 
             StringBuilder LinkScript = new StringBuilder();
             LinkScript.Append(@"ENTRY(Kernel_Start)
@@ -100,10 +101,10 @@ SECTIONS {
    .text : AT(ADDR(.text) - 0xC0000000) {
 ");
 
-            for (int i = 0; i < SequencedASMBlocks.Count; i++)
-            {
-                LinkScript.AppendLine(string.Format("       \"{0}\" (.text);", SequencedASMBlocks[i].OutputFilePath));
-            }
+            //for (int i = 0; i < SequencedASMBlocks.Count; i++)
+            //{
+            //    LinkScript.AppendLine(string.Format("       \"{0}\" (.text);", SequencedASMBlocks[i].OutputFilePath));
+            //}
 
 
             LinkScript.AppendLine(@"
@@ -125,7 +126,7 @@ SECTIONS {
                 }
 
                 OK = Utilities.ExecuteProcess(Options.OutputPath, ISOGenPath, 
-                    string.Format("4 '{0}' '{1}' '{2}' '{3}'", ISOPath, ISOLinuxPath, ISODirPath), "ISO9660Generator");
+                    string.Format("4 \"{0}\" \"{1}\" true \"{2}\"", ISOPath, ISOLinuxPath, ISODirPath), "ISO9660Generator");
 
                 if (OK)
                 {
@@ -180,10 +181,45 @@ SECTIONS {
             }
         }
 
-
         public static int GetOrder(ASM.ASMBlock a, ASM.ASMBlock b)
         {
             return a.Priority.CompareTo(b.Priority);
+        }
+        private static void SortBlocks(List<ASM.ASMBlock> AllBlocks)
+        {
+            List<ASM.ASMBlock> LastLayerBlocks = AllBlocks.Where(x => x.ExternalLabels.Count == 0).ToList();
+            long Priority = 0;
+            foreach (ASM.ASMBlock Layer0Block in LastLayerBlocks)
+            {
+                Layer0Block.Priority = Priority;
+            }
+
+            List<ASM.ASMBlock> CurrentLayerBlocks = null;
+            do
+            {
+                CurrentLayerBlocks = AllBlocks.Where(delegate(ASM.ASMBlock aBlock)
+                {
+                    foreach (ASM.ASMBlock lastBlock in LastLayerBlocks)
+                    {
+                        if (lastBlock.GlobalLabels.Intersect(aBlock.ExternalLabels).Count() > 0)
+                        {
+                            return true;
+                        }
+                    }
+
+                    return false;
+                }).ToList();
+
+                Priority = LastLayerBlocks[0].Priority + 1;
+                foreach (ASM.ASMBlock aBlock in CurrentLayerBlocks)
+                {
+                    aBlock.Priority = Priority;
+                }
+
+                LastLayerBlocks = CurrentLayerBlocks;
+            }
+            while (CurrentLayerBlocks.Count > 0 &&
+                LastLayerBlocks.Count != CurrentLayerBlocks.Count);
         }
     }
 }

@@ -47,7 +47,7 @@ namespace Drivers.Compiler.ASM
             for (int i = 0; i < TheLibrary.ASMBlocks.Count; i++)
             {
                 ASMBlock aBlock = TheLibrary.ASMBlocks[i];
-                if (aBlock.ASMOps.Count == 0)
+                if (aBlock.ASMOps.Count == 0 && !aBlock.Plugged)
                 {
                     TheLibrary.ASMBlocks.RemoveAt(i);
                     i--;
@@ -68,12 +68,11 @@ namespace Drivers.Compiler.ASM
             {
                 theBlock.ASMOps.Insert(0, new ASMLabel() { MethodLabel = true });
             }
-            theBlock.ASMOps.Insert(0, new ASMGeneric() { Text = "SECTION .text" });
             if (currMethodLabel != null)
             {
                 theBlock.ASMOps.Insert(0, new ASMGlobalLabel() { Label = currMethodLabel });
             }
-
+            
             foreach (string anExternalLabel in theBlock.ExternalLabels.Distinct())
             {
                 if (anExternalLabel != currMethodLabel)
@@ -82,6 +81,7 @@ namespace Drivers.Compiler.ASM
                 }
             }
 
+            theBlock.ASMOps.Insert(0, new ASMGeneric() { Text = "SECTION .text" });
             theBlock.ASMOps.Insert(0, new ASMGeneric() { Text = "BITS 32" });
         }
     }

@@ -191,7 +191,7 @@ namespace Drivers.Compiler.IL
                     singleResult = ScanNonpluggedILBlock(TheLibrary, aMethodInfo, anILBlock);
                 }
 
-                if (result == CompileResult.OK)
+                if (result != CompileResult.OK)
                 {
                     result = singleResult;
                 }
@@ -282,8 +282,9 @@ namespace Drivers.Compiler.IL
             string TypeIdLiteralLabel = TheLibrary.AddStringLiteral(TheTypeInfo.ID);
 
             StringBuilder ASMResult = new StringBuilder();
+            ASMResult.AppendLine("GLOBAL " + TypeId + ":data");
             ASMResult.AppendLine(TypeId + ":");
-
+            
             Types.TypeInfo typeTypeInfo = ILLibrary.SpecialClasses[typeof(Attributes.TypeClassAttribute)].First();
             List<Types.FieldInfo> OrderedFields = typeTypeInfo.FieldInfos.OrderBy(x => x.OffsetInBytes).ToList();
             foreach (Types.FieldInfo aTypeField in OrderedFields)

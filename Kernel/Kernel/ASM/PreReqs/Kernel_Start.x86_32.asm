@@ -2,7 +2,7 @@ BITS 32
 
 SECTION .text
 
-GLOBAL Kernel_Start
+GLOBAL Kernel_Start:function
 
 EXTERN Kernel_Start_HandleNoMultiboot
 EXTERN MultiBootInfo_Structure

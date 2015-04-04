@@ -25,7 +25,7 @@
 #endregion
     
 #define NASM_ASYNC
-//#undef NASM_ASYNC
+#undef NASM_ASYNC
 
 using System;
 using System.Collections.Generic;
@@ -130,7 +130,27 @@ namespace Drivers.Compiler.ASM
                     ASMText += anASMOp.Convert(TheBlock) + "\r\n";
                 }
             }
-            
+
+            // Create lists of extern and global labels
+            TheBlock.ExternalLabels.Clear();
+            List<string> ExternLines = ASMText.Replace("\r", "")
+                                              .Split('\n')
+                                              .Where(x => x.ToLower().Contains("extern "))
+                                              .Select(x => x.Split(' ')[1].Split(':')[0])
+                                              .ToList();
+            TheBlock.ExternalLabels.AddRange(ExternLines);
+
+            TheBlock.GlobalLabels.Clear();
+            List<string> GlobalLines = ASMText.Replace("\r", "")
+                                              .Split('\n')
+                                              .Where(x => x.ToLower().Contains("global "))
+                                              .Select(x => x.Split(' ')[1].Split(':')[0])
+                                              .ToList();
+            TheBlock.GlobalLabels.AddRange(GlobalLines);
+
+            ASMText = ASMText.Replace("GLOBAL ", "global ");
+            ASMText = ASMText.Replace("EXTERN ", "extern ");
+
             string FileName = Utilities.CleanFileName(Guid.NewGuid().ToString() + "." + Options.TargetArchitecture) + ".asm";
             string OutputPath = GetASMOutputPath();
             FileName = Path.Combine(OutputPath, FileName);

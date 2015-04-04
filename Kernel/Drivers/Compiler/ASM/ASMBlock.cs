@@ -42,6 +42,7 @@ namespace Drivers.Compiler.ASM
 
         public List<ASMOp> ASMOps = new List<ASMOp>();
         public List<string> ExternalLabels = new List<string>();
+        public List<string> GlobalLabels = new List<string>();
 
         public long Priority = 0;
 
@@ -53,6 +54,10 @@ namespace Drivers.Compiler.ASM
         public void AddExternalLabel(string label)
         {
             ExternalLabels.Add(label);
+        }
+        public void AddGlobalLabel(string label)
+        {
+            GlobalLabels.Add(label);
         }
 
         public string GenerateMethodLabel()

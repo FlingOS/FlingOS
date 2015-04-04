@@ -186,9 +186,7 @@ namespace Drivers.Compiler
                     {
                         if (e.Data != null)
                         {
-                            Logger.LogMessage("", 0,
-                                string.Format("Utilities: message from external process: {0}",
-                                displayName + ": " + e.Data));
+                            Logger.LogMessage("", 0, displayName + ": " + e.Data);
                         }
                     };
                 }
