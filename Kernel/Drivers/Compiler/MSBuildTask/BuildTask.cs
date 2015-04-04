@@ -76,7 +76,7 @@ namespace Drivers.Compiler.MSBuildTask
             return App.CompilerProcess.Execute(
                     Logger_OnLogMessage,
                     Logger_OnLogWarning,
-                    Logger_OnLogError) != App.CompilerProcess.ErrorCode.NoError;
+                    Logger_OnLogError) == App.CompilerProcess.ErrorCode.NoError;
         }
 
         private void Logger_OnLogError(string errorCode, string file, int lineNumber, string message)
