@@ -181,7 +181,7 @@ namespace Drivers.Compiler.IL
             {
                 ILBlock anILBlock = TheLibrary.ILBlocks[aMethodInfo];
                 CompileResult singleResult = CompileResult.OK;
-                
+
                 if (anILBlock.Plugged)
                 {
                     singleResult = ScanPluggedILBlock(TheLibrary, aMethodInfo, anILBlock);
@@ -190,7 +190,7 @@ namespace Drivers.Compiler.IL
                 {
                     singleResult = ScanNonpluggedILBlock(TheLibrary, aMethodInfo, anILBlock);
                 }
-
+            
                 if (result != CompileResult.OK)
                 {
                     result = singleResult;
@@ -561,7 +561,8 @@ namespace Drivers.Compiler.IL
             TheLibrary.TheASMLibrary.ASMBlocks.Add(new ASM.ASMBlock()
             {
                 PlugPath = theILBlock.PlugPath,
-                OriginMethodInfo = theMethodInfo
+                OriginMethodInfo = theMethodInfo,
+                Priority = theMethodInfo.Priority
             });
 
             return CompileResult.OK;
@@ -572,7 +573,8 @@ namespace Drivers.Compiler.IL
 
             ASM.ASMBlock TheASMBlock = new ASM.ASMBlock()
             {
-                OriginMethodInfo = theMethodInfo
+                OriginMethodInfo = theMethodInfo,
+                Priority = theMethodInfo.Priority
             };
             
             ILConversionState convState = new ILConversionState()

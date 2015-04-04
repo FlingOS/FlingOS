@@ -70,9 +70,10 @@ namespace Drivers.Compiler.IL
 
         public static ILBlock ReadPlugged(Types.MethodInfo aMethodInfo)
         {
+            string PlugPath = aMethodInfo.PlugAttribute.ASMFilePath;
             return new ILBlock()
             {
-                PlugPath = aMethodInfo.PlugAttribute.ASMFilePath,
+                PlugPath = string.IsNullOrWhiteSpace(PlugPath) ? " " : PlugPath,
                 TheMethodInfo = aMethodInfo
             };
         }

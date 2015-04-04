@@ -47,13 +47,25 @@ namespace Drivers.Compiler.ASM
             for (int i = 0; i < TheLibrary.ASMBlocks.Count; i++)
             {
                 ASMBlock aBlock = TheLibrary.ASMBlocks[i];
-                if (aBlock.ASMOps.Count == 0 && !aBlock.Plugged)
+                if (aBlock.Plugged)
                 {
-                    TheLibrary.ASMBlocks.RemoveAt(i);
-                    i--;
-                    continue;
+                    if (string.IsNullOrWhiteSpace(aBlock.PlugPath))
+                    {
+                        TheLibrary.ASMBlocks.RemoveAt(i);
+                        i--;
+                        continue;
+                    }
                 }
-                Preprocess(aBlock);
+                else
+                {
+                    if (aBlock.ASMOps.Count == 0)
+                    {
+                        TheLibrary.ASMBlocks.RemoveAt(i);
+                        i--;
+                        continue;
+                    }
+                    Preprocess(aBlock);
+                }
             }
 
             return result;

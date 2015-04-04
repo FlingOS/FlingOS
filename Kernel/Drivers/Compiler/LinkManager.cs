@@ -53,13 +53,13 @@ namespace Drivers.Compiler
             {
                 SequencedASMBlocks.AddRange(depLib.TheASMLibrary.ASMBlocks);
             }
-            SortBlocks(SequencedASMBlocks);
+            //SortBlocks(SequencedASMBlocks);
             SequencedASMBlocks.Sort(GetOrder);
 
             string AssemblyName = Utilities.CleanFileName(TheLibrary.TheAssembly.GetName().Name);
 
             string LdPath = Path.Combine(Options.ToolsPath, @"Cygwin\ld.exe");
-            string ObjdumpPath = Path.Combine(Options.ToolsPath, @"Cygwin\ld.exe");
+            string ObjdumpPath = Path.Combine(Options.ToolsPath, @"Cygwin\objdump.exe");
             string ISOGenPath = Path.Combine(Options.ToolsPath, @"ISO9660Generator.exe");
             string ISOToolsDirPath = Path.Combine(Options.ToolsPath, @"ISO");
             string ISODirPath = Path.Combine(Options.OutputPath, @"DriversCompiler\ISO");
@@ -78,13 +78,13 @@ namespace Drivers.Compiler
             CopyDirectory(ISOToolsDirPath, ISODirPath, true);
 
             StringBuilder CommandLineArgsBuilder = new StringBuilder();
-            CommandLineArgsBuilder.Append("--warn-unresolved-symbols -T '" + LinkScriptPath + "' -o '" + BinPath + "'");
+            CommandLineArgsBuilder.Append("--fatal-warnings -T '" + LinkScriptPath + "' -o '" + BinPath + "'");
 
             StringBuilder LinkScript = new StringBuilder();
             LinkScript.Append(@"ENTRY(Kernel_Start)
 OUTPUT_FORMAT(elf32-i386)
 
-INPUT(");
+GROUP(");
 
             LinkScript.Append(string.Join(", ", SequencedASMBlocks
                 .Where(x => File.Exists(x.OutputFilePath))
@@ -101,16 +101,16 @@ SECTIONS {
    .text : AT(ADDR(.text) - 0xC0000000) {
 ");
 
-            //for (int i = 0; i < SequencedASMBlocks.Count; i++)
-            //{
-            //    LinkScript.AppendLine(string.Format("       \"{0}\" (.text);", SequencedASMBlocks[i].OutputFilePath));
-            //}
+            for (int i = 0; i < SequencedASMBlocks.Count; i++)
+            {
+                LinkScript.AppendLine(string.Format("       \"{0}\" (.text);", SequencedASMBlocks[i].OutputFilePath));
+            }
 
 
             LinkScript.AppendLine(@"
-       /* * (.text);
+          * (.text);
           * (.rodata*);
-          * (.data*);   */
+          * (.data*);
    }
 }
 ");
