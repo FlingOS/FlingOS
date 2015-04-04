@@ -407,6 +407,7 @@ namespace Drivers.Compiler.IL
 
                     theILBlock.ILOps.Insert(i, new ILOp()
                     {
+                        Offset = theOp.Offset,
                         opCode = System.Reflection.Emit.OpCodes.Ldftn,
                         LoadAtILOffset = theOp.NextOffset + ILOffset,
                         MethodToCall = theILBlock.TheMethodInfo.UnderlyingInfo
@@ -430,6 +431,7 @@ namespace Drivers.Compiler.IL
                     theILBlock.ILOps.RemoveAt(i);
                     theILBlock.ILOps.Insert(i, new ILOp()
                     {
+                        Offset = theOp.Offset,
                         opCode = System.Reflection.Emit.OpCodes.Call,
                         MethodToCall = ILLibrary.SpecialMethods[typeof(Attributes.ExceptionsHandleEndFinallyMethodAttribute)].First().UnderlyingInfo
                     });

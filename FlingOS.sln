@@ -26,6 +26,7 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kernel", "Kernel\Kernel\Kernel.csproj", "{E4076F67-686F-48E3-A5AF-55B841665F77}"
 	ProjectSection(ProjectDependencies) = postProject
 		{B8F06B4D-C068-4802-8E06-02022F955D7B} = {B8F06B4D-C068-4802-8E06-02022F955D7B}
+		{4A6F3FA1-CA27-442A-AA2E-5C036A54209D} = {4A6F3FA1-CA27-442A-AA2E-5C036A54209D}
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kernel.Compiler.Architectures.x86_32", "Kernel\Compiler\Architectures\x86_32\Kernel.Compiler.Architectures.x86_32.csproj", "{E48F7F1A-9794-4D71-87FE-0711ECD3BEAA}"
