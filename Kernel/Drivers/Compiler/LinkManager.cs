@@ -110,6 +110,10 @@ SECTIONS {
             LinkScript.AppendLine(@"
           * (.text);
           * (.rodata*);
+   }
+
+   . = ALIGN(0x1000);
+   .data : AT(ADDR(.data) - 0xC0000000) {
           * (.data*);
    }
 }

@@ -25,7 +25,7 @@
 #endregion
     
 #define NASM_ASYNC
-#undef NASM_ASYNC
+//#undef NASM_ASYNC
 
 using System;
 using System.Collections.Generic;
