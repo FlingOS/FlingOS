@@ -86,6 +86,7 @@ namespace Kernel.Core.Shells
                          *  - Show { c / w }
                          *  - Help { <Command Name> }
                          *  - Clear
+                         *  - Easter
                          * 
                          */
 
@@ -947,6 +948,14 @@ namespace Kernel.Core.Shells
 
                                 console.Clear();
                                 
+                                #endregion
+                            }
+                            else if (cmd == "easter")
+                            {
+                                #region Easter
+
+                                Hardware.Processes.ProcessManager.CurrentProcess.CreateThread(Tasks.EasterTask.Main);
+
                                 #endregion
                             }
                         }

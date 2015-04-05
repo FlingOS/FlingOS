@@ -67,6 +67,7 @@
     <Compile Include="Processes\ELF\ELFSharedObject.cs" />
     <Compile Include="Processes\ELF\ELFStringTable.cs" />
     <Compile Include="Processes\SystemCalls.cs" />
+    <Compile Include="Tasks\EasterTask.cs" />
     <Compile Include="Tasks\GCCleanupTask.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Shell.cs" />
