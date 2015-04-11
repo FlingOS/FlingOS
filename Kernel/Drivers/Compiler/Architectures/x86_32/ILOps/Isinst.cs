@@ -39,6 +39,10 @@ namespace Drivers.Compiler.Architectures.x86
     /// </summary>
     public class Isinst : IL.ILOps.Isinst
     {
+        public override void PerformStackOperations(ILPreprocessState conversionState, ILOp theOp)
+        {
+            //Weirdly this is not a true/false returning op - it actually returns a null or object ref.
+        } 
         /// <summary>
         /// See base class documentation.
         /// </summary>

@@ -1,6 +1,7 @@
 BITS 32
 
 SECTION .text
+File_MultibootSignature:
 
 GLOBAL MultibootSignature:data
 GLOBAL MultibootFlags:data
@@ -13,7 +14,7 @@ GLOBAL MultiBootInfo_Memory_Low:data
 
 GLOBAL Kernel_MemStart:data
 GLOBAL Before_Kernel_Stack:data
-GLOBAL Kernel_Stack:data
+GLOBAL Kernel_Stack
 GLOBAL MultiBootInfo_Structure:data
 
 GLOBAL _NATIVE_GDT_Contents:data
@@ -39,7 +40,6 @@ KERNEL_PAGE_NUMBER equ (KERNEL_VIRTUAL_BASE >> 22)
 
 Kernel_MemStart:
 
-global Before_Kernel_Stack
 Before_Kernel_Stack: TIMES 65535 db 0
 Kernel_Stack:
 

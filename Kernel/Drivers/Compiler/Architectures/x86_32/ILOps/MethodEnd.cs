@@ -39,6 +39,17 @@ namespace Drivers.Compiler.Architectures.x86
     /// </summary>
     public class MethodEnd : IL.ILOps.MethodEnd
     {
+        public override void PerformStackOperations(ILPreprocessState conversionState, ILOp theOp)
+        {
+            Type retType = (conversionState.Input.TheMethodInfo.IsConstructor ?
+                typeof(void) : ((MethodInfo)conversionState.Input.TheMethodInfo.UnderlyingInfo).ReturnType);
+            Types.TypeInfo retTypeInfo = conversionState.TheILLibrary.GetTypeInfo(retType);
+            if (retTypeInfo.SizeOnStackInBytes != 0)
+            {
+                conversionState.CurrentStackFrame.Stack.Pop();
+            }
+        }
+
         /// <summary>
         /// See base class documentation.
         /// </summary>

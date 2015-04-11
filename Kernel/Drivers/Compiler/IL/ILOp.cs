@@ -730,6 +730,8 @@ namespace Drivers.Compiler.IL
 
         public int LoadAtILOffset = int.MaxValue;
 
+        public int StackSwitch_Items = 0;
+
         public int NextOffset
         {
             get
@@ -738,11 +740,26 @@ namespace Drivers.Compiler.IL
             }
         }
 
+        public virtual void PerformStackOperations(ILPreprocessState conversionState, ILOp theOp)
+        {
+        }
         public virtual void Preprocess(ILPreprocessState preprocessState, ILOp theOp)
         {
         }
         public virtual void Convert(ILConversionState conversionState, ILOp theOp)
         {
+        }
+
+        public override string ToString()
+        {
+            if (this.GetType().Name != "ILOp")
+            {
+                return this.GetType().Name + (MethodToCall == null ? "" : " - " + MethodToCall.ToString());
+            }
+            else
+            {
+                return Enum.GetName(typeof(ILOp.OpCodes), (ILOp.OpCodes)opCode.Value) + (MethodToCall == null ? "" : " - " + MethodToCall.ToString());
+            }
         }
     }
 }

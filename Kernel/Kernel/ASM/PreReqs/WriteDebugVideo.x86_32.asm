@@ -1,6 +1,8 @@
 BITS 32
 
 SECTION .text
+GLOBAL File_WriteDebugVideo:function
+File_WriteDebugVideo:
 
 GLOBAL method_System_Void_RETEND_Kernel_PreReqs_DECLEND_WriteDebugVideo_NAMEEND__System_String_System_UInt32_:function
 

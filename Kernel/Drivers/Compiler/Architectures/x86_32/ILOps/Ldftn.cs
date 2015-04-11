@@ -39,6 +39,16 @@ namespace Drivers.Compiler.Architectures.x86
     /// </summary>
     public class Ldftn : IL.ILOps.Ldftn
     {
+        public override void PerformStackOperations(ILPreprocessState conversionState, ILOp theOp)
+        {
+            conversionState.CurrentStackFrame.Stack.Push(new StackItem()
+            {
+                isFloat = false,
+                sizeOnStackInBytes = 4,
+                isGCManaged = false
+            });
+        }
+
         public override void Preprocess(ILPreprocessState preprocessState, ILOp theOp)
         {
             Types.MethodInfo methodInfo = preprocessState.TheILLibrary.GetMethodInfo(theOp.MethodToCall);

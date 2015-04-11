@@ -39,6 +39,12 @@ namespace Drivers.Compiler.Architectures.x86
     /// </summary>
     public class Stfld : IL.ILOps.Stfld
     {
+        public override void PerformStackOperations(ILPreprocessState conversionState, ILOp theOp)
+        {
+            conversionState.CurrentStackFrame.Stack.Pop();
+            conversionState.CurrentStackFrame.Stack.Pop();
+        }
+
         /// <summary>
         /// See base class documentation.
         /// </summary>

@@ -39,6 +39,66 @@ namespace Drivers.Compiler.Architectures.x86
     /// </summary>
     public class Ldarg : IL.ILOps.Ldarg
     {
+        public override void PerformStackOperations(ILPreprocessState conversionState, ILOp theOp)
+        {
+            Int16 index = 0;
+            switch ((OpCodes)theOp.opCode.Value)
+            {
+                case OpCodes.Ldarg:
+                    index = Utilities.ReadInt16(theOp.ValueBytes, 0);
+                    break;
+                case OpCodes.Ldarg_0:
+                    index = 0;
+                    break;
+                case OpCodes.Ldarg_1:
+                    index = 1;
+                    break;
+                case OpCodes.Ldarg_2:
+                    index = 2;
+                    break;
+                case OpCodes.Ldarg_3:
+                    index = 3;
+                    break;
+                case OpCodes.Ldarg_S:
+                    index = (Int16)theOp.ValueBytes[0];
+                    break;
+                case OpCodes.Ldarga:
+                    index = Utilities.ReadInt16(theOp.ValueBytes, 0);
+                    break;
+                case OpCodes.Ldarga_S:
+                    index = (Int16)theOp.ValueBytes[0];
+                    break;
+            }
+
+            List<Type> allParams = conversionState.Input.TheMethodInfo.UnderlyingInfo.GetParameters().Select(x => x.ParameterType).ToList();
+            if (!conversionState.Input.TheMethodInfo.IsStatic)
+            {
+                allParams.Insert(0, conversionState.Input.TheMethodInfo.UnderlyingInfo.DeclaringType);
+            }
+            
+            if ((OpCodes)theOp.opCode.Value == OpCodes.Ldarga ||
+                (OpCodes)theOp.opCode.Value == OpCodes.Ldarga_S)
+            {
+                conversionState.CurrentStackFrame.Stack.Push(new StackItem()
+                {
+                    sizeOnStackInBytes = 4,
+                    isFloat = false,
+                    isGCManaged = false
+                });
+            }
+            else
+            {
+                Types.TypeInfo paramTypeInfo = conversionState.TheILLibrary.GetTypeInfo(allParams[index]);
+                int bytesForArg = paramTypeInfo.SizeOnStackInBytes;
+                conversionState.CurrentStackFrame.Stack.Push(new StackItem()
+                {
+                    sizeOnStackInBytes = bytesForArg,
+                    isFloat = false,
+                    isGCManaged = paramTypeInfo.IsGCManaged
+                });
+            }
+        }
+
         /// <summary>
         /// See base class documentation.
         /// <para>To Do's:</para>

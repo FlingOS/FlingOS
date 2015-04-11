@@ -1,6 +1,8 @@
 ﻿BITS 32
 
 SECTION .text
+GLOBAL File_IDT:function
+File_IDT:
 
 EXTERN method_System_Void_RETEND_Kernel_Hardware_Interrupts_Interrupts_DECLEND_CommonISR_NAMEEND__System_UInt32_
 EXTERN method_System_Void_RETEND_Kernel_PreReqs_DECLEND_WriteDebugVideo_NAMEEND__System_String_System_UInt32_
@@ -602,5 +604,5 @@ pic_remap:
     xchg al, ah
     out 0xA1, al        ; Set mask of PIC2_DATA
 
-	sti					; Enable interrupts
+	;sti					; Enable interrupts - TODO: Re-enable
 	nop					; Required - STI takes effect after the next instruction runs

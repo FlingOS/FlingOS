@@ -38,6 +38,68 @@ namespace Drivers.Compiler.Architectures.x86
     /// </summary>
     public class Shr : IL.ILOps.Shr
     {
+        public override void PerformStackOperations(ILPreprocessState conversionState, ILOp theOp)
+        {
+            //Pop in reverse order to push
+            StackItem itemB = conversionState.CurrentStackFrame.Stack.Pop();
+            StackItem itemA = conversionState.CurrentStackFrame.Stack.Pop();
+
+            if (itemA.sizeOnStackInBytes == 4 &&
+                itemB.sizeOnStackInBytes == 4)
+            {
+                conversionState.CurrentStackFrame.Stack.Push(new StackItem()
+                {
+                    isFloat = false,
+                    sizeOnStackInBytes = 4,
+                    isGCManaged = false
+                });
+            }
+            else if ((itemA.sizeOnStackInBytes == 8 &&
+                itemB.sizeOnStackInBytes == 4))
+            {
+                if ((OpCodes)theOp.opCode.Value == OpCodes.Shr_Un)
+                {
+                    conversionState.CurrentStackFrame.Stack.Push(new StackItem()
+                    {
+                        isFloat = false,
+                        sizeOnStackInBytes = 8,
+                        isGCManaged = false
+                    });
+                }
+                else
+                {
+                    conversionState.CurrentStackFrame.Stack.Push(new StackItem()
+                    {
+                        isFloat = false,
+                        sizeOnStackInBytes = 8,
+                        isGCManaged = false
+                    });
+                }
+            }
+            else if (itemA.sizeOnStackInBytes == 8 &&
+                itemB.sizeOnStackInBytes == 8)
+            {
+                if ((OpCodes)theOp.opCode.Value == OpCodes.Shr_Un)
+                {
+                    conversionState.CurrentStackFrame.Stack.Push(new StackItem()
+                    {
+                        isFloat = false,
+                        sizeOnStackInBytes = 8,
+                        isGCManaged = false
+                    });
+                }
+                else
+                {
+                    conversionState.CurrentStackFrame.Stack.Push(new StackItem()
+                    {
+                        isFloat = false,
+                        sizeOnStackInBytes = 8,
+                        isGCManaged = false
+                    });
+                }
+            }
+        }
+
         /// <summary>
         /// See base class documentation.
         /// </summary>

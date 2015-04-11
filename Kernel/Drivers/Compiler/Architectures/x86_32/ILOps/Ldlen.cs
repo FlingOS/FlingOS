@@ -39,6 +39,18 @@ namespace Drivers.Compiler.Architectures.x86
     /// </summary>
     public class Ldlen : IL.ILOps.Ldlen
     {
+        public override void PerformStackOperations(ILPreprocessState conversionState, ILOp theOp)
+        {
+            conversionState.CurrentStackFrame.Stack.Pop();
+
+            conversionState.CurrentStackFrame.Stack.Push(new StackItem()
+            {
+                isFloat = false,
+                sizeOnStackInBytes = 4,
+                isGCManaged = false
+            });
+        }
+
         /// <summary>
         /// See base class documentation.
         /// </summary>

@@ -38,6 +38,39 @@ namespace Drivers.Compiler.Architectures.x86
     /// </summary>
     public class Ldind : IL.ILOps.Ldind
     {
+        public override void PerformStackOperations(ILPreprocessState conversionState, ILOp theOp)
+        {
+            StackItem addressItem = conversionState.CurrentStackFrame.Stack.Pop();
+            int bytesToLoad = 0;
+
+            switch ((OpCodes)theOp.opCode.Value)
+            {
+                case OpCodes.Ldind_U1:
+                case OpCodes.Ldind_I1:
+                    bytesToLoad = 1;
+                    break;
+                case OpCodes.Ldind_U2:
+                case OpCodes.Ldind_I2:
+                    bytesToLoad = 2;
+                    break;
+                case OpCodes.Ldind_U4:
+                case OpCodes.Ldind_I4:
+                case OpCodes.Ldind_I:
+                    bytesToLoad = 4;
+                    break;
+                case OpCodes.Ldind_I8:
+                    bytesToLoad = 8;
+                    break;
+            }
+
+            conversionState.CurrentStackFrame.Stack.Push(new StackItem()
+            {
+                sizeOnStackInBytes = bytesToLoad == 8 ? 8 : 4,
+                isFloat = false,
+                isGCManaged = false
+            });
+        }
+
         /// <summary>
         /// See base class documentation.
         /// </summary>

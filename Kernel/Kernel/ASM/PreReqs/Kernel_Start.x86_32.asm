@@ -1,6 +1,8 @@
 BITS 32
 
 SECTION .text
+GLOBAL File_Kernel_Start:function
+File_Kernel_Start:
 
 GLOBAL Kernel_Start:function
 
@@ -18,7 +20,6 @@ Kernel_Start equ (_Kernel_Start - KERNEL_VIRTUAL_BASE)
 
 _Kernel_Start:
 
-	xchg bx, bx
 	cli
 
 	; MultiBoot compliant loader provides info in registers: 

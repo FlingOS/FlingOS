@@ -39,6 +39,17 @@ namespace Drivers.Compiler.Architectures.x86
     /// </summary>
     public class Newarr : IL.ILOps.Newarr
     {
+        public override void PerformStackOperations(ILPreprocessState conversionState, ILOp theOp)
+        {
+            conversionState.CurrentStackFrame.Stack.Push(new StackItem()
+            {
+                isFloat = false,
+                sizeOnStackInBytes = 4,
+                isNewGCObject = true,
+                isGCManaged = true
+            });
+        }
+
         /// <summary>
         /// See base class documentation.
         /// </summary>

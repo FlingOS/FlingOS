@@ -38,6 +38,11 @@ namespace Drivers.Compiler.Architectures.x86
     /// </summary>
     public class Nop : IL.ILOps.Nop
     {
+        public override void PerformStackOperations(ILPreprocessState conversionState, ILOp theOp)
+        {
+            
+        }
+
         /// <summary>
         /// See base class documentation.
         /// </summary>

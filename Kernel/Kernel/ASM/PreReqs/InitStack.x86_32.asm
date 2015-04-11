@@ -1,6 +1,8 @@
 BITS 32
 
 SECTION .text
+GLOBAL File_InitStack:function
+File_InitStack:
 
 EXTERN Kernel_Stack
 

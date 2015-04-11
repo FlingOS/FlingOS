@@ -38,6 +38,24 @@ namespace Drivers.Compiler.Architectures.x86
     /// </summary>
     public class Div : IL.ILOps.Div
     {
+        public override void PerformStackOperations(ILPreprocessState conversionState, ILOp theOp)
+        {
+            //Pop in reverse order to push
+            StackItem itemB = conversionState.CurrentStackFrame.Stack.Pop();
+            StackItem itemA = conversionState.CurrentStackFrame.Stack.Pop();
+
+            if (itemA.sizeOnStackInBytes == 4 &&
+                itemB.sizeOnStackInBytes == 4)
+            {
+                conversionState.CurrentStackFrame.Stack.Push(new StackItem()
+                {
+                    isFloat = false,
+                    sizeOnStackInBytes = 4,
+                    isGCManaged = false
+                });
+            }
+        }
+
         /// <summary>
         /// See base class documentation.
         /// </summary>
@@ -52,8 +70,6 @@ namespace Drivers.Compiler.Architectures.x86
         /// </exception>
         public override void Convert(ILConversionState conversionState, ILOp theOp)
         {
-            
-
             //Pop in reverse order to push
             StackItem itemB = conversionState.CurrentStackFrame.Stack.Pop();
             StackItem itemA = conversionState.CurrentStackFrame.Stack.Pop();

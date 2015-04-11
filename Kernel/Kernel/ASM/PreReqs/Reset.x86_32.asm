@@ -1,6 +1,8 @@
 BITS 32
 
 SECTION .text
+GLOBAL File_Reset:function
+File_Reset:
 
 GLOBAL method_System_Void_Kernel_PreReqs_Reset__:function
 GLOBAL method_System_Void_RETEND_Kernel_PreReqs_DECLEND_Reset_NAMEEND___:function

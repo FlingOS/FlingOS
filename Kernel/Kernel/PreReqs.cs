@@ -119,7 +119,7 @@ namespace Kernel
         [Compiler.PluggedMethod(ASMFilePath = @"ASM\PreReqs\HandleNoMultiboot")]
         [Drivers.Compiler.Attributes.PluggedMethod(ASMFilePath = @"ASM\PreReqs\HandleNoMultiboot")]
         [Compiler.SequencePriority(Priority = long.MinValue + 7)]
-        [Drivers.Compiler.Attributes.SequencePriority(Priority = long.MinValue + 7)]
+        [Drivers.Compiler.Attributes.SequencePriority(Priority = long.MinValue + 8)]
         private static void HandleNoMultiboot()
         {
         }
@@ -130,7 +130,7 @@ namespace Kernel
         [Compiler.PluggedMethod(ASMFilePath = @"ASM\PreReqs\MainEntrypoint")]
         [Drivers.Compiler.Attributes.PluggedMethod(ASMFilePath = @"ASM\PreReqs\MainEntrypoint")]
         [Compiler.SequencePriority(Priority = long.MinValue + 8)]
-        [Drivers.Compiler.Attributes.SequencePriority(Priority = long.MinValue + 8)]
+        [Drivers.Compiler.Attributes.SequencePriority(Priority = long.MinValue + 7)]
         private static void MainEntrypoint()
         {
         }

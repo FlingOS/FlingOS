@@ -39,6 +39,35 @@ namespace Drivers.Compiler.Architectures.x86
     /// </summary>
     public class Newobj : IL.ILOps.Newobj
     {
+        public override void PerformStackOperations(ILPreprocessState conversionState, ILOp theOp)
+        {
+            MethodBase constructorMethod = theOp.MethodToCall;
+            Types.MethodInfo constructorMethodInfo = conversionState.TheILLibrary.GetMethodInfo(constructorMethod);
+            Type objectType = constructorMethod.DeclaringType;
+
+            if (typeof(Delegate).IsAssignableFrom(objectType))
+            {
+                StackItem funcPtrItem = conversionState.CurrentStackFrame.Stack.Pop(); ;
+                conversionState.CurrentStackFrame.Stack.Pop();
+                conversionState.CurrentStackFrame.Stack.Push(funcPtrItem);
+                return;
+            }
+
+            ParameterInfo[] allParams = constructorMethod.GetParameters();
+            foreach (ParameterInfo aParam in allParams)
+            {
+                conversionState.CurrentStackFrame.Stack.Pop();
+            }
+
+            conversionState.CurrentStackFrame.Stack.Push(new StackItem()
+            {
+                isFloat = false,
+                sizeOnStackInBytes = 4,
+                isNewGCObject = true,
+                isGCManaged = true
+            });
+        }
+
         /// <summary>
         /// See base class documentation.
         /// </summary>

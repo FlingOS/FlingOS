@@ -38,6 +38,40 @@ namespace Drivers.Compiler.Architectures.x86
     /// </summary>
     public class Convi : IL.ILOps.Convi
     {
+        public override void PerformStackOperations(ILPreprocessState conversionState, ILOp theOp)
+        {
+            StackItem itemToConvert = conversionState.CurrentStackFrame.Stack.Pop();
+            int numBytesToConvertTo = 0;
+
+            switch ((OpCodes)theOp.opCode.Value)
+            {
+                case OpCodes.Conv_I:
+                    numBytesToConvertTo = 4;
+                    break;
+                case OpCodes.Conv_I1:
+                    numBytesToConvertTo = 1;
+                    break;
+                case OpCodes.Conv_I2:
+                    numBytesToConvertTo = 2;
+                    break;
+                case OpCodes.Conv_I4:
+                    numBytesToConvertTo = 4;
+                    break;
+                case OpCodes.Conv_I8:
+                    numBytesToConvertTo = 8;
+                    break;
+            }
+
+            bool pushEDX = numBytesToConvertTo == 8;
+            
+            conversionState.CurrentStackFrame.Stack.Push(new StackItem()
+            {
+                sizeOnStackInBytes = (pushEDX ? 8 : 4),
+                isFloat = false,
+                isGCManaged = false
+            });
+        }
+
         /// <summary>
         /// See base class documentation.
         /// </summary>
@@ -46,8 +80,6 @@ namespace Drivers.Compiler.Architectures.x86
         /// <returns>See base class documentation.</returns>
         public override void Convert(ILConversionState conversionState, ILOp theOp)
         {
-            
-
             StackItem itemToConvert = conversionState.CurrentStackFrame.Stack.Pop();
             int numBytesToConvertTo = 0;
 

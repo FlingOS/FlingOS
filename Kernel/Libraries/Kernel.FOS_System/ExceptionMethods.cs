@@ -76,7 +76,7 @@ namespace Kernel
         /// <param name="filterPtr">0 = finally handler, 0xFFFFFFFF = catch handler with no filter. 
         /// Original intended use was as a pointer to the first op of the catch filter but never implemented like this.</param>
         [Compiler.AddExceptionHandlerInfoMethod]
-        //[Drivers.Compiler.Attributes.AddExceptionHandlerInfoMethod]
+        [Drivers.Compiler.Attributes.AddExceptionHandlerInfoMethod]
         [Compiler.PluggedMethod(ASMFilePath=@"ASM\Exceptions\AddExceptionHandlerInfo")]
         [Drivers.Compiler.Attributes.PluggedMethod(ASMFilePath=@"ASM\Exceptions\AddExceptionHandlerInfo")]
         public static unsafe void AddExceptionHandlerInfo(

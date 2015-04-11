@@ -38,6 +38,11 @@ namespace Drivers.Compiler.Architectures.x86
     /// </summary>
     public class StackSwitch : IL.ILOps.StackSwitch
     {
+        public override void PerformStackOperations(ILPreprocessState conversionState, ILOp theOp)
+        {
+            rotateStackItems(conversionState, theOp.StackSwitch_Items, 1);
+        }
+
         /// <summary>
         /// See base class documentation.
         /// </summary>
@@ -73,6 +78,49 @@ namespace Drivers.Compiler.Architectures.x86
                     conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Dword, Src = "EBX", Dest = "[ESP+" + bytesShift.ToString() + "]" });
                 }
                 bytesShift += 4;
+            }
+
+            rotateStackItems(conversionState, theOp.StackSwitch_Items, 1);
+        }
+
+        private static void rotateStackItems(ILPreprocessState state, int items, int distance)
+        {
+            if (distance >= items)
+            {
+                throw new IndexOutOfRangeException("IlPreprocessor.rotateStackItems: distance >= items invalid!");
+            }
+            List<StackItem> poppedItems = new List<StackItem>();
+            for (int i = 0; i < items; i++)
+            {
+                poppedItems.Add(state.CurrentStackFrame.Stack.Pop());
+            }
+            for (int i = distance; i > -1; i--)
+            {
+                state.CurrentStackFrame.Stack.Push(poppedItems[i]);
+            }
+            for (int i = items - 1; i > distance; i--)
+            {
+                state.CurrentStackFrame.Stack.Push(poppedItems[i]);
+            }
+        }
+        private static void rotateStackItems(ILConversionState state, int items, int distance)
+        {
+            if (distance >= items)
+            {
+                throw new IndexOutOfRangeException("IlPreprocessor.rotateStackItems: distance >= items invalid!");
+            }
+            List<StackItem> poppedItems = new List<StackItem>();
+            for (int i = 0; i < items; i++)
+            {
+                poppedItems.Add(state.CurrentStackFrame.Stack.Pop());
+            }
+            for (int i = distance; i > -1; i--)
+            {
+                state.CurrentStackFrame.Stack.Push(poppedItems[i]);
+            }
+            for (int i = items - 1; i > distance; i--)
+            {
+                state.CurrentStackFrame.Stack.Push(poppedItems[i]);
             }
         }
     }

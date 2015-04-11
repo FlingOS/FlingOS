@@ -38,6 +38,69 @@ namespace Drivers.Compiler.Architectures.x86
     /// </summary>
     public class Ldc : IL.ILOps.Ldc
     {
+        public override void PerformStackOperations(ILPreprocessState conversionState, ILOp theOp)
+        {
+            bool isFloat = false;
+            int numBytes = 0;
+
+            switch ((OpCodes)theOp.opCode.Value)
+            {
+                case OpCodes.Ldc_I4:
+                    numBytes = 4;
+                    break;
+                case OpCodes.Ldc_I4_0:
+                    numBytes = 4;
+                    break;
+                case OpCodes.Ldc_I4_1:
+                    numBytes = 4;
+                    break;
+                case OpCodes.Ldc_I4_2:
+                    numBytes = 4;
+                    break;
+                case OpCodes.Ldc_I4_3:
+                    numBytes = 4;
+                    break;
+                case OpCodes.Ldc_I4_4:
+                    numBytes = 4;
+                    break;
+                case OpCodes.Ldc_I4_5:
+                    numBytes = 4;
+                    break;
+                case OpCodes.Ldc_I4_6:
+                    numBytes = 4;
+                    break;
+                case OpCodes.Ldc_I4_7:
+                    numBytes = 4;
+                    break;
+                case OpCodes.Ldc_I4_8:
+                    numBytes = 4;
+                    break;
+                case OpCodes.Ldc_I4_M1:
+                    numBytes = 4;
+                    break;
+                case OpCodes.Ldc_I4_S:
+                    numBytes = 4;
+                    break;
+                case OpCodes.Ldc_I8:
+                    numBytes = 8;
+                    break;
+                case OpCodes.Ldc_R4:
+                    numBytes = 4;
+                    isFloat = true;
+                    break;
+                case OpCodes.Ldc_R8:
+                    numBytes = 8;
+                    isFloat = true;
+                    break;
+            }
+
+            conversionState.CurrentStackFrame.Stack.Push(new StackItem()
+            {
+                sizeOnStackInBytes = numBytes,
+                isFloat = isFloat,
+                isGCManaged = false
+            });
+        }
         /// <summary>
         /// See base class documentation.
         /// </summary>

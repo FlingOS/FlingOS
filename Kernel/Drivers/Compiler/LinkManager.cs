@@ -55,7 +55,7 @@ namespace Drivers.Compiler
             }
             //SortBlocks(SequencedASMBlocks);
             SequencedASMBlocks.Sort(GetOrder);
-
+            
             string AssemblyName = Utilities.CleanFileName(TheLibrary.TheAssembly.GetName().Name);
 
             string LdPath = Path.Combine(Options.ToolsPath, @"Cygwin\ld.exe");
@@ -68,6 +68,9 @@ namespace Drivers.Compiler
             string ISOLinuxPath = Path.Combine(Options.OutputPath, @"DriversCompiler\ISO\isolinux.bin");
             string ISOPath = Path.Combine(Options.OutputPath, AssemblyName + ".iso");
             string MapPath = Path.Combine(Options.OutputPath, AssemblyName + ".map");
+            string ASMPath = Path.Combine(Options.OutputPath, AssemblyName + ".new.asm");
+
+            StreamWriter ASMWriter = new StreamWriter(ASMPath, false);
 
             string LdWorkingDir = Path.Combine(Options.OutputPath, "DriversCompiler") + "\\";
 
@@ -104,6 +107,7 @@ SECTIONS {
             for (int i = 0; i < SequencedASMBlocks.Count; i++)
             {
                 LinkScript.AppendLine(string.Format("       \"{0}\" (.text);", SequencedASMBlocks[i].OutputFilePath));
+                ASMWriter.WriteLine(File.ReadAllText(SequencedASMBlocks[i].OutputFilePath.Replace("\\Objects", "\\ASM").Replace(".o", ".asm")));
             }
 
 
@@ -119,9 +123,11 @@ SECTIONS {
 }
 ");
 
+            ASMWriter.Close();
+
             File.WriteAllText(LinkScriptPath, LinkScript.ToString());
             bool OK = Utilities.ExecuteProcess(LdWorkingDir, LdPath, CommandLineArgsBuilder.ToString(), "Ld");
-
+            
             if (OK)
             {
                 if (File.Exists(ISOPath))

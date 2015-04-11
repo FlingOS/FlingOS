@@ -38,6 +38,59 @@ namespace Drivers.Compiler.Architectures.x86
     /// </summary>
     public class Ldloc : IL.ILOps.Ldloc
     {
+        public override void PerformStackOperations(ILPreprocessState conversionState, ILOp theOp)
+        {
+            bool loadAddr = (ILOp.OpCodes)theOp.opCode.Value == OpCodes.Ldloca ||
+                            (ILOp.OpCodes)theOp.opCode.Value == OpCodes.Ldloca_S;
+            UInt16 localIndex = 0;
+            switch ((ILOp.OpCodes)theOp.opCode.Value)
+            {
+                case OpCodes.Ldloc:
+                case OpCodes.Ldloca:
+                    localIndex = (UInt16)Utilities.ReadInt16(theOp.ValueBytes, 0);
+                    break;
+                case OpCodes.Ldloc_0:
+                    localIndex = 0;
+                    break;
+                case OpCodes.Ldloc_1:
+                    localIndex = 1;
+                    break;
+                case OpCodes.Ldloc_2:
+                    localIndex = 2;
+                    break;
+                case OpCodes.Ldloc_3:
+                    localIndex = 3;
+                    break;
+                case OpCodes.Ldloc_S:
+                case OpCodes.Ldloca_S:
+                    localIndex = (UInt16)theOp.ValueBytes[0];
+                    break;
+            }
+
+            Types.VariableInfo theLoc = conversionState.Input.TheMethodInfo.LocalInfos.ElementAt(localIndex);
+            
+            if (loadAddr)
+            {
+                conversionState.CurrentStackFrame.Stack.Push(new StackItem()
+                {
+                    isFloat = false,
+                    sizeOnStackInBytes = 4,
+                    isGCManaged = false
+                });
+            }
+            else
+            {
+                int pushedLocalSizeVal = theLoc.TheTypeInfo.SizeOnStackInBytes;
+
+                conversionState.CurrentStackFrame.Stack.Push(new StackItem()
+                {
+                    isFloat = Utilities.IsFloat(theLoc.UnderlyingType),
+                    sizeOnStackInBytes = pushedLocalSizeVal,
+                    isGCManaged = theLoc.TheTypeInfo.IsGCManaged
+                });
+            }
+        }
+
         /// <summary>
         /// See base class documentation.
         /// </summary>
@@ -51,8 +104,6 @@ namespace Drivers.Compiler.Architectures.x86
         /// </exception>
         public override void Convert(ILConversionState conversionState, ILOp theOp)
         {
-            
-
             //Load local
 
             bool loadAddr = (ILOp.OpCodes)theOp.opCode.Value == OpCodes.Ldloca ||
@@ -85,9 +136,12 @@ namespace Drivers.Compiler.Architectures.x86
             int bytesOffset = 0;
             for (int i = 0; i < conversionState.Input.TheMethodInfo.LocalInfos.Count && i <= localIndex; i++)
             {
-                bytesOffset += conversionState.Input.TheMethodInfo.LocalInfos.ElementAt(i).TheTypeInfo.SizeOnStackInBytes;
+                bytesOffset += conversionState.Input.TheMethodInfo.LocalInfos[i].TheTypeInfo.SizeOnStackInBytes;
             }
-            Types.VariableInfo theLoc = conversionState.Input.TheMethodInfo.LocalInfos.ElementAt(localIndex);
+            if (localIndex >= conversionState.Input.TheMethodInfo.LocalInfos.Count)
+            {
+            }
+            Types.VariableInfo theLoc = conversionState.Input.TheMethodInfo.LocalInfos[localIndex];
             if (Utilities.IsFloat(theLoc.UnderlyingType))
             {
                 //SUPPORT - floats

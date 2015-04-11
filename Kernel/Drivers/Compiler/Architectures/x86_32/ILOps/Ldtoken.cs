@@ -38,6 +38,23 @@ namespace Drivers.Compiler.Architectures.x86
     /// </summary>
     public class Ldtoken : IL.ILOps.Ldtoken
     {
+        public override void PerformStackOperations(ILPreprocessState conversionState, ILOp theOp)
+        {
+            try
+            {
+                conversionState.CurrentStackFrame.Stack.Push(new StackItem()
+                {
+                    isFloat = false,
+                    sizeOnStackInBytes = 4,
+                    isGCManaged = false
+                });
+            }
+            catch
+            {
+                throw new NotSupportedException("The metadata token specifies a fieldref or methodref which isn't supported yet!");
+            }
+        }
+
         /// <summary>
         /// See base class documentation.
         /// </summary>

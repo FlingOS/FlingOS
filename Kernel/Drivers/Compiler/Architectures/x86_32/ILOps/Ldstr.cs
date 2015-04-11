@@ -38,6 +38,16 @@ namespace Drivers.Compiler.Architectures.x86
     /// </summary>
     public class Ldstr : IL.ILOps.Ldstr
     {
+        public override void PerformStackOperations(ILPreprocessState conversionState, ILOp theOp)
+        {
+            conversionState.CurrentStackFrame.Stack.Push(new StackItem()
+            {
+                sizeOnStackInBytes = 4,
+                isFloat = false,
+                isGCManaged = true
+            });
+        }
+
         /// <summary>
         /// See base class documentation.
         /// </summary>

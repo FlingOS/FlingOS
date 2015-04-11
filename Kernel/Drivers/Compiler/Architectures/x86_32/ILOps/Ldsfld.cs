@@ -39,6 +39,38 @@ namespace Drivers.Compiler.Architectures.x86
     /// </summary>
     public class Ldsfld : IL.ILOps.Ldsfld
     {
+        public override void PerformStackOperations(ILPreprocessState conversionState, ILOp theOp)
+        {
+            int metadataToken = Utilities.ReadInt32(theOp.ValueBytes, 0);
+            FieldInfo theField = conversionState.Input.TheMethodInfo.UnderlyingInfo.Module.ResolveField(metadataToken);
+            
+            switch ((OpCodes)theOp.opCode.Value)
+            {
+                case OpCodes.Ldsfld:
+                    {
+                        Types.TypeInfo theTypeInfo = conversionState.TheILLibrary.GetTypeInfo(theField.FieldType);
+                        int size = theTypeInfo.SizeOnStackInBytes;
+                        bool isFloat = Utilities.IsFloat(theField.FieldType);
+                        
+                        conversionState.CurrentStackFrame.Stack.Push(new StackItem()
+                        {
+                            isFloat = isFloat,
+                            sizeOnStackInBytes = (size == 8 ? 8 : 4),
+                            isGCManaged = theTypeInfo.IsGCManaged
+                        });
+                    }
+                    break;
+                case OpCodes.Ldsflda:
+                    conversionState.CurrentStackFrame.Stack.Push(new StackItem()
+                    {
+                        isFloat = false,
+                        sizeOnStackInBytes = 4,
+                        isGCManaged = false
+                    });
+                    break;
+            }
+        }
+
         /// <summary>
         /// See base class documentation.
         /// </summary>
@@ -50,8 +82,6 @@ namespace Drivers.Compiler.Architectures.x86
         /// </exception>
         public override void Convert(ILConversionState conversionState, ILOp theOp)
         {
-            
-
             //Load static field
 
             //Load the metadata token used to get the field info

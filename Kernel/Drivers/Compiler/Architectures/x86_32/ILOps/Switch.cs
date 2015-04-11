@@ -38,6 +38,11 @@ namespace Drivers.Compiler.Architectures.x86
     /// </summary>
     public class Switch : IL.ILOps.Switch
     {
+        public override void PerformStackOperations(ILPreprocessState conversionState, ILOp theOp)
+        {
+            conversionState.CurrentStackFrame.Stack.Pop();
+        }
+
         public override void Preprocess(ILPreprocessState preprocessState, ILOp theOp)
         {
             for (int i = 0; i < theOp.ValueBytes.Length / 4; i++)

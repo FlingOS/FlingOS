@@ -1,6 +1,8 @@
 BITS 32
 
 SECTION .text
+GLOBAL File_HandleNoMultiboot:function
+File_HandleNoMultiboot:
 
 GLOBAL Kernel_Start_HandleNoMultiboot:function
 

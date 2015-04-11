@@ -1,6 +1,8 @@
 ﻿BITS 32
 
 SECTION .text
+GLOBAL File_PageFaultDetection:function
+File_PageFaultDetection:
 
 GLOBAL method_System_Void_RETEND_Kernel_PreReqs_DECLEND_PageFaultDetection_NAMEEND___:function
 

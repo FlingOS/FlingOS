@@ -39,6 +39,11 @@ namespace Drivers.Compiler.Architectures.x86
     /// </summary>
     public class Starg : IL.ILOps.Starg
     {
+        public override void PerformStackOperations(ILPreprocessState conversionState, ILOp theOp)
+        {
+            conversionState.CurrentStackFrame.Stack.Pop();
+        }
+
         /// <summary>
         /// See base class documentation.
         /// <para>To Do's:</para>

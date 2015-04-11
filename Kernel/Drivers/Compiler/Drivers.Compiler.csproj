@@ -50,6 +50,7 @@
     <Compile Include="ASM\ASMProcessor.cs" />
     <Compile Include="ASM\ASMBlock.cs" />
     <Compile Include="ASM\ASMOp.cs" />
+    <Compile Include="Attributes\AddExceptionHandlerInfoMethodAttribute.cs" />
     <Compile Include="Attributes\ArrayClassAttribute.cs" />
     <Compile Include="Attributes\CallStaticConstructorsMethodAttribute.cs" />
     <Compile Include="Attributes\DecrementRefCountMethodAttribute.cs" />

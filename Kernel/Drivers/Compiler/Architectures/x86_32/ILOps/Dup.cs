@@ -38,6 +38,24 @@ namespace Drivers.Compiler.Architectures.x86
     /// </summary>
     public class Dup : IL.ILOps.Dup
     {
+        public override void PerformStackOperations(ILPreprocessState conversionState, ILOp theOp)
+        {
+            StackItem itemA = conversionState.CurrentStackFrame.Stack.Pop();
+
+            conversionState.CurrentStackFrame.Stack.Push(new StackItem()
+            {
+                isFloat = itemA.isFloat,
+                sizeOnStackInBytes = itemA.sizeOnStackInBytes,
+                isGCManaged = itemA.isGCManaged
+            });
+            conversionState.CurrentStackFrame.Stack.Push(new StackItem()
+            {
+                isFloat = itemA.isFloat,
+                sizeOnStackInBytes = itemA.sizeOnStackInBytes,
+                isGCManaged = itemA.isGCManaged
+            });
+        }
+
         /// <summary>
         /// See base class documentation.
         /// </summary>
@@ -50,8 +68,6 @@ namespace Drivers.Compiler.Architectures.x86
         /// </exception>
         public override void Convert(ILConversionState conversionState, ILOp theOp)
         {
-            
-
             //Pop item to duplicate
             StackItem itemA = conversionState.CurrentStackFrame.Stack.Pop();
 

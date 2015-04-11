@@ -38,6 +38,12 @@ namespace Drivers.Compiler.Architectures.x86
     /// </summary>
     public class Stind : IL.ILOps.Stind
     {
+        public override void PerformStackOperations(ILPreprocessState conversionState, ILOp theOp)
+        {
+            conversionState.CurrentStackFrame.Stack.Pop();
+            conversionState.CurrentStackFrame.Stack.Pop();
+        }
+
         /// <summary>
         /// See base class documentation.
         /// </summary>
@@ -131,7 +137,7 @@ namespace Drivers.Compiler.Architectures.x86
                 conversionState.Append(new ASMOps.Pop() { Size = ASMOps.OperandSize.Dword, Dest = "EAX" });
                 
                 //Pop address
-                conversionState.Append(new ASMOps.Pop() { Size = ASMOps.OperandSize.Dword, Dest = "EDX" });
+                conversionState.Append(new ASMOps.Pop() { Size = ASMOps.OperandSize.Dword, Dest = "EBX" });
 
                 //Mov [address], value
                 GlobalMethods.InsertPageFaultDetection(conversionState, "ebx", 0, (OpCodes)theOp.opCode.Value);
@@ -143,7 +149,7 @@ namespace Drivers.Compiler.Architectures.x86
                 conversionState.Append(new ASMOps.Pop() { Size = ASMOps.OperandSize.Dword, Dest = "EAX" });
             
                 //Pop address
-                conversionState.Append(new ASMOps.Pop() { Size = ASMOps.OperandSize.Dword, Dest = "EDX" });
+                conversionState.Append(new ASMOps.Pop() { Size = ASMOps.OperandSize.Dword, Dest = "EBX" });
 
                 //Mov [address], value
                 GlobalMethods.InsertPageFaultDetection(conversionState, "ebx", 0, (OpCodes)theOp.opCode.Value);

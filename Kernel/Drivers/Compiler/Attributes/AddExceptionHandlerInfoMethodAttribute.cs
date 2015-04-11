@@ -29,41 +29,15 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using System.Reflection;
-using Drivers.Compiler.IL;
 
-namespace Drivers.Compiler.Architectures.x86
+namespace Drivers.Compiler.Attributes
 {
     /// <summary>
-    /// See base class documentation.
+    /// Indicates the method is the kernel's AddExceptionHandlerInfo method. 
+    /// Note: There should only ever be one of these used!
     /// </summary>
-    public class Ldnull : IL.ILOps.Ldnull
+    [AttributeUsage(AttributeTargets.Method, AllowMultiple=false, Inherited=false)]
+    public class AddExceptionHandlerInfoMethodAttribute : Attribute
     {
-        public override void PerformStackOperations(ILPreprocessState conversionState, ILOp theOp)
-        {
-            conversionState.CurrentStackFrame.Stack.Push(new StackItem()
-            {
-                isFloat = false,
-                sizeOnStackInBytes = 4,
-                isGCManaged = false
-            });
-        }
-        /// <summary>
-        /// See base class documentation.
-        /// </summary>
-        /// <param name="theOp">See base class documentation.</param>
-        /// <param name="conversionState">See base class documentation.</param>
-        /// <returns>See base class documentation.</returns>
-        public override void Convert(ILConversionState conversionState, ILOp theOp)
-        {
-            //Load null (i.e. 0 as dword)
-            conversionState.CurrentStackFrame.Stack.Push(new StackItem()
-            {
-                isFloat = false,
-                sizeOnStackInBytes = 4,
-                isGCManaged = false
-            });
-            conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Dword, Src = "0" });
-        }
     }
 }

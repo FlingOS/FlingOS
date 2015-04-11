@@ -61,7 +61,7 @@ namespace Drivers.Compiler.IL
                                  select ops).ToList();
             if (potOps.Count > 0)
             {
-                return potOps.First();
+                return potOps.OrderBy(x => ILOps.IndexOf(x)).First();
             }
             return null;
         }

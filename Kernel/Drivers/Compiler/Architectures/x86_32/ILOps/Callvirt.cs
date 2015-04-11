@@ -39,6 +39,80 @@ namespace Drivers.Compiler.Architectures.x86
     /// </summary>
     public class Callvirt : IL.ILOps.Callvirt
     {
+        public override void PerformStackOperations(ILPreprocessState conversionState, ILOp theOp)
+        {
+            MethodBase methodToCall = theOp.MethodToCall;
+            Types.MethodInfo methodToCallInfo = conversionState.TheILLibrary.GetMethodInfo(methodToCall);
+
+            if (methodToCall is MethodInfo)
+            {
+                if (typeof(Delegate).IsAssignableFrom(((MethodInfo)methodToCall).DeclaringType))
+                {
+                    List<Type> allParams = ((MethodInfo)methodToCall).GetParameters().Select(x => x.ParameterType).ToList();
+                    
+                    Type retType = ((MethodInfo)methodToCall).ReturnType;
+                    Types.TypeInfo retTypeInfo = conversionState.TheILLibrary.GetTypeInfo(retType);
+                    StackItem returnItem = new StackItem()
+                    {
+                        isFloat = Utilities.IsFloat(retType),
+                        sizeOnStackInBytes = retTypeInfo.SizeOnStackInBytes,
+                        isGCManaged = retTypeInfo.IsGCManaged
+                    };
+
+                    
+                    int bytesToAdd = 4;
+                    foreach (Type aParam in allParams)
+                    {
+                        conversionState.CurrentStackFrame.Stack.Pop();
+                        bytesToAdd += conversionState.TheILLibrary.GetTypeInfo(aParam).SizeOnStackInBytes;
+                    }
+
+                    if (returnItem.sizeOnStackInBytes != 0)
+                    {
+                        conversionState.CurrentStackFrame.Stack.Push(returnItem);
+                    }
+                }
+                else
+                {
+                    string methodIDValueWanted = methodToCallInfo.IDValue.ToString();
+                    int currOpPosition = conversionState.PositionOf(theOp);
+
+                    Types.TypeInfo declaringTypeInfo = conversionState.TheILLibrary.GetTypeInfo(methodToCall.DeclaringType);
+                    
+                    Type retType = ((MethodInfo)methodToCall).ReturnType;
+                    Types.TypeInfo retTypeInfo = conversionState.TheILLibrary.GetTypeInfo(retType);
+                    StackItem returnItem = new StackItem()
+                    {
+                        isFloat = Utilities.IsFloat(retType),
+                        sizeOnStackInBytes = retTypeInfo.SizeOnStackInBytes,
+                        isGCManaged = retTypeInfo.IsGCManaged
+                    };
+                    
+                    int bytesToAdd = 0;
+                    List<Type> allParams = ((MethodInfo)methodToCall).GetParameters().Select(x => x.ParameterType).ToList();
+                    if (!methodToCall.IsStatic)
+                    {
+                        allParams.Insert(0, methodToCall.DeclaringType);
+                    }
+                    foreach (Type aParam in allParams)
+                    {
+                        conversionState.CurrentStackFrame.Stack.Pop();
+                        bytesToAdd += conversionState.TheILLibrary.GetTypeInfo(aParam).SizeOnStackInBytes;
+                    }
+                    if (bytesToAdd > 0)
+                    {
+                        if (returnItem.sizeOnStackInBytes != 0)
+                        {
+                            conversionState.CurrentStackFrame.Stack.Push(returnItem);
+                        }
+                    }
+                    else if (returnItem.sizeOnStackInBytes != 0)
+                    {
+                        conversionState.CurrentStackFrame.Stack.Push(returnItem);
+                    }
+                }
+            }
+        }
         /// <summary>
         /// See base class documentation.
         /// </summary>

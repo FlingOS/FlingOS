@@ -25,7 +25,7 @@
 #endregion
     
 #define NASM_ASYNC
-//#undef NASM_ASYNC
+#undef NASM_ASYNC
 
 using System;
 using System.Collections.Generic;
@@ -116,8 +116,8 @@ namespace Drivers.Compiler.ASM
                 }
                 ASMText = File.ReadAllText(ASMPlugPath);
 
-                ASMText = ASMText.Replace("%KERNEL_MAIN_METHOD%", IL.ILLibrary.SpecialMethods[typeof(Attributes.CallStaticConstructorsMethodAttribute)].First().ID);
-                ASMText = ASMText.Replace("%KERNEL_CALL_STATIC_CONSTRUCTORS_METHOD%", IL.ILLibrary.SpecialMethods[typeof(Attributes.KernelMainMethodAttribute)].First().ID);
+                ASMText = ASMText.Replace("%KERNEL_CALL_STATIC_CONSTRUCTORS_METHOD%", IL.ILLibrary.SpecialMethods[typeof(Attributes.CallStaticConstructorsMethodAttribute)].First().ID);
+                ASMText = ASMText.Replace("%KERNEL_MAIN_METHOD%", IL.ILLibrary.SpecialMethods[typeof(Attributes.KernelMainMethodAttribute)].First().ID);
             }
             else
             {

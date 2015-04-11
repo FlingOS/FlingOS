@@ -70,8 +70,10 @@ namespace Drivers.Compiler.IL
 
             foreach (Types.MethodInfo aMethodInfo in TheLibrary.ILBlocks.Keys)
             {
-                InjectGeneral(aMethodInfo, TheLibrary.ILBlocks[aMethodInfo]);
-                InjectGC(aMethodInfo, TheLibrary.ILBlocks[aMethodInfo]);
+                DealWithCatchHandlers(aMethodInfo, TheLibrary.ILBlocks[aMethodInfo]);
+                InjectGeneral1(aMethodInfo, TheLibrary.ILBlocks[aMethodInfo]);
+                InjectGC(TheLibrary, aMethodInfo, TheLibrary.ILBlocks[aMethodInfo]);
+                InjectGeneral2(aMethodInfo, TheLibrary.ILBlocks[aMethodInfo]);
                 InjectTryCatchFinally(aMethodInfo, TheLibrary.ILBlocks[aMethodInfo]);
                 
                 PreprocessILOps(TheLibrary, aMethodInfo, TheLibrary.ILBlocks[aMethodInfo]);
@@ -167,19 +169,19 @@ namespace Drivers.Compiler.IL
                 totalArgsSize += newVarInfo.TheTypeInfo.SizeOnStackInBytes;
             }
 
-            System.Reflection.ParameterInfo returnArgItem = (theMethodInfo.IsConstructor ? null : ((System.Reflection.MethodInfo)theMethodInfo.UnderlyingInfo).ReturnParameter);
-            if (returnArgItem != null)
-            {
-                Types.VariableInfo newVarInfo = new Types.VariableInfo()
-                {
-                    UnderlyingType = returnArgItem.ParameterType,
-                    Position = theMethodInfo.ArgumentInfos.Count,
-                    TheTypeInfo = TheLibrary.GetTypeInfo(returnArgItem.ParameterType)
-                };
+            //System.Reflection.ParameterInfo returnArgItem = (theMethodInfo.IsConstructor ? null : ((System.Reflection.MethodInfo)theMethodInfo.UnderlyingInfo).ReturnParameter);
+            //if (returnArgItem != null)
+            //{
+            //    Types.VariableInfo newVarInfo = new Types.VariableInfo()
+            //    {
+            //        UnderlyingType = returnArgItem.ParameterType,
+            //        Position = theMethodInfo.ArgumentInfos.Count,
+            //        TheTypeInfo = TheLibrary.GetTypeInfo(returnArgItem.ParameterType)
+            //    };
 
-                theMethodInfo.ArgumentInfos.Add(newVarInfo);
-                totalArgsSize += newVarInfo.TheTypeInfo.SizeOnStackInBytes;
-            }
+            //    theMethodInfo.ArgumentInfos.Add(newVarInfo);
+            //    totalArgsSize += newVarInfo.TheTypeInfo.SizeOnStackInBytes;
+            //}
 
             int offset = totalArgsSize;
             for (int i = 0; i < theMethodInfo.ArgumentInfos.Count; i++)
@@ -307,6 +309,7 @@ namespace Drivers.Compiler.IL
                             case ILOp.OpCodes.Call:
                                 //Check if the method to call is static and not a constructor itself
                                 //If so, we must add the declaring type's static constructors to the tree
+                                if(theOp.ValueBytes != null && theOp.ValueBytes.Length > 0)
                                 {
                                     int metadataToken = Utilities.ReadInt32(theOp.ValueBytes, 0);
                                     System.Reflection.MethodBase methodBaseInf = theMethodInfo.UnderlyingInfo.Module.ResolveMethod(metadataToken);
@@ -367,10 +370,16 @@ namespace Drivers.Compiler.IL
                 }
             }
         }
-        private static void InjectGeneral(Types.MethodInfo theMethodInfo, ILBlock theILBlock)
+        private static void InjectGeneral1(Types.MethodInfo theMethodInfo, ILBlock theILBlock)
         {
             // Inject MethodStart op
-            theILBlock.ILOps.Insert(0, new ILOps.MethodStart());
+            theILBlock.ILOps.Insert(0, new ILOps.MethodStart()
+                {
+                    Offset = -1
+                });
+        }
+        private static void InjectGeneral2(Types.MethodInfo theMethodInfo, ILBlock theILBlock)
+        {
             // Inject MethodEnd op just before anywhere where there is a ret
             for (int i = 0; i < theILBlock.ILOps.Count; i++)
             {
@@ -383,7 +392,7 @@ namespace Drivers.Compiler.IL
                 }
             }
         }
-        private static void InjectGC(Types.MethodInfo theMethodInfo, ILBlock theILBlock)
+        private static void InjectGC(ILLibrary TheLibrary, Types.MethodInfo theMethodInfo, ILBlock theILBlock)
         {
             if (theMethodInfo.ApplyGC)
             {
@@ -394,18 +403,23 @@ namespace Drivers.Compiler.IL
                 int InjectIncArgsRefCountPos = MethodStartOpPos + 1;
                 foreach (Types.VariableInfo argInfo in theMethodInfo.ArgumentInfos)
                 {
-                    theILBlock.ILOps.Insert(InjectIncArgsRefCountPos, new ILOp()
+                    if (argInfo.TheTypeInfo.IsGCManaged)
                     {
-                        opCode = System.Reflection.Emit.OpCodes.Ldarg,
-                        ValueBytes = BitConverter.GetBytes(argInfo.Position)
-                    });
-                    theILBlock.ILOps.Insert(InjectIncArgsRefCountPos, new ILOp()
-                    {
-                        opCode = System.Reflection.Emit.OpCodes.Call,
-                        MethodToCall = ILLibrary.SpecialMethods[typeof(Attributes.IncrementRefCountMethodAttribute)].First().UnderlyingInfo
-                    });
+                        theILBlock.ILOps.Insert(InjectIncArgsRefCountPos, new ILOp()
+                        {
+                            opCode = System.Reflection.Emit.OpCodes.Ldarg,
+                            ValueBytes = BitConverter.GetBytes(argInfo.Position)
+                        });
+                        theILBlock.ILOps.Insert(InjectIncArgsRefCountPos + 1, new ILOp()
+                        {
+                            opCode = System.Reflection.Emit.OpCodes.Call,
+                            MethodToCall = ILLibrary.SpecialMethods[typeof(Attributes.IncrementRefCountMethodAttribute)].First().UnderlyingInfo
+                        });
+                    }
                 }
 
+                // The following two things can be done within the same loop:
+                
                 // Inject ops for inc./dec. ref. counts of objects when written to:
                 //      - Arguments / Locals
                 //      - Fields / Static Fields
@@ -414,11 +428,636 @@ namespace Drivers.Compiler.IL
                 // Add Cleanup Block and Inject finally-block ops for it
                 //      - Also remember the op for storing return value (if any)
 
-                // Replace any Ret ops contained within Cleanup Block with:
-                //      - Op to store return value (if any)
-                //      - Leave op to start of the cleanup block's finally section
+                ILPreprocessState preprocessState = new ILPreprocessState()
+                {
+                    TheILLibrary = TheLibrary,
+                    Input = theILBlock,
+                    CurrentStackFrame = new StackFrame()
+                };
+
+                ExceptionHandledBlock CleanupExBlock = new ExceptionHandledBlock();
+                
+                for (int opIndx = 0; opIndx < theILBlock.ILOps.Count; opIndx++)
+                {
+                    ILOp currOp = theILBlock.ILOps[opIndx];
+                    bool IncRefCount = false;
+                    int incOpIndexBy = 0;
+                    
+                    switch ((ILOp.OpCodes)currOp.opCode.Value)
+                    {
+                        case ILOp.OpCodes.Stsfld:
+                            #region Stsfld
+                            {
+                                int metadataToken = Utilities.ReadInt32(currOp.ValueBytes, 0);
+                                System.Reflection.FieldInfo theField = theMethodInfo.UnderlyingInfo.Module.ResolveField(metadataToken);
+                                Types.TypeInfo theFieldTypeInfo = TheLibrary.GetTypeInfo(theField.FieldType);
+                                if (theFieldTypeInfo.IsGCManaged)
+                                {
+                                    theILBlock.ILOps.Insert(opIndx, new ILOp()
+                                    {
+                                        opCode = System.Reflection.Emit.OpCodes.Ldsfld,
+                                        ValueBytes = currOp.ValueBytes
+                                    });
+                                    theILBlock.ILOps.Insert(opIndx + 1, new ILOp()
+                                    {
+                                        opCode = System.Reflection.Emit.OpCodes.Call,
+                                        MethodToCall = ILLibrary.SpecialMethods[typeof(Attributes.DecrementRefCountMethodAttribute)].First().UnderlyingInfo
+                                    });
+                                    
+                                    IncRefCount = true;
+                                    incOpIndexBy = 2;
+                                }
+                            }
+                            #endregion
+                            break;
+                        case ILOp.OpCodes.Stloc:
+                        case ILOp.OpCodes.Stloc_0:
+                        case ILOp.OpCodes.Stloc_1:
+                        case ILOp.OpCodes.Stloc_2:
+                        case ILOp.OpCodes.Stloc_3:
+                        case ILOp.OpCodes.Stloc_S:
+                            #region Stloc
+                            {
+                                UInt16 localIndex = 0;
+                                switch ((ILOp.OpCodes)currOp.opCode.Value)
+                                {
+                                    case ILOp.OpCodes.Stloc:
+                                        localIndex = (UInt16)Utilities.ReadInt16(currOp.ValueBytes, 0);
+                                        break;
+                                    case ILOp.OpCodes.Stloc_0:
+                                        localIndex = 0;
+                                        break;
+                                    case ILOp.OpCodes.Stloc_1:
+                                        localIndex = 1;
+                                        break;
+                                    case ILOp.OpCodes.Stloc_2:
+                                        localIndex = 2;
+                                        break;
+                                    case ILOp.OpCodes.Stloc_3:
+                                        localIndex = 3;
+                                        break;
+                                    case ILOp.OpCodes.Stloc_S:
+                                        localIndex = (UInt16)currOp.ValueBytes[0];
+                                        break;
+                                }
+                                Types.TypeInfo LocalTypeInfo = theMethodInfo.LocalInfos[localIndex].TheTypeInfo;
+                                if (LocalTypeInfo.IsGCManaged)
+                                {
+                                    theILBlock.ILOps.Insert(opIndx, new ILOp()
+                                    {
+                                        opCode = System.Reflection.Emit.OpCodes.Ldloc,
+                                        ValueBytes = BitConverter.GetBytes(localIndex)
+                                    });
+                                    theILBlock.ILOps.Insert(opIndx + 1, new ILOp()
+                                    {
+                                        opCode = System.Reflection.Emit.OpCodes.Call,
+                                        MethodToCall = ILLibrary.SpecialMethods[typeof(Attributes.DecrementRefCountMethodAttribute)].First().UnderlyingInfo
+                                    });
+                                    
+                                    IncRefCount = true;
+                                    incOpIndexBy = 2;
+                                }
+                            }
+                            #endregion
+                            break;
+                        case ILOp.OpCodes.Stfld:
+                            #region Stfld
+                            {
+                                int metadataToken = Utilities.ReadInt32(currOp.ValueBytes, 0);
+                                System.Reflection.FieldInfo theField = theMethodInfo.UnderlyingInfo.Module.ResolveField(metadataToken);
+                                Types.TypeInfo theFieldTypeInfo = TheLibrary.GetTypeInfo(theField.FieldType);
+                                if (theFieldTypeInfo.IsGCManaged)
+                                {
+                                    // Items on stack:
+                                    //  - Object reference
+                                    //  - (New) Value to store
+                                    //
+                                    // We want to load the current value of the field
+                                    //  for which we must duplicate the object ref
+                                    // But first, we must remove the (new) value to store
+                                    //  off the stack, while also storing it to put back
+                                    //  on the stack after so the store can continue
+                                    //
+                                    // So:
+                                    //      1. Switch value to store and object ref on stack
+                                    //      3. Duplicate the object ref
+                                    //      4. Load the field value
+                                    //      5. Call dec ref count
+                                    //      6. Switch value to store and object ref back again
+
+                                    //USE A SWITCH STACK ITEMS OP!!
+
+                                    theILBlock.ILOps.Insert(opIndx, new ILOps.StackSwitch()
+                                    {
+                                        StackSwitch_Items = 2
+                                    });
+                                    
+                                    theILBlock.ILOps.Insert(opIndx + 1, new ILOp()
+                                    {
+                                        opCode = System.Reflection.Emit.OpCodes.Dup
+                                    });
+                                    theILBlock.ILOps.Insert(opIndx + 2, new ILOp()
+                                    {
+                                        opCode = System.Reflection.Emit.OpCodes.Ldfld,
+                                        ValueBytes = currOp.ValueBytes
+                                    });
+                                    theILBlock.ILOps.Insert(opIndx + 3, new ILOp()
+                                    {
+                                        opCode = System.Reflection.Emit.OpCodes.Call,
+                                        MethodToCall = ILLibrary.SpecialMethods[typeof(Attributes.DecrementRefCountMethodAttribute)].First().UnderlyingInfo
+                                    });
+
+                                    theILBlock.ILOps.Insert(opIndx + 4, new ILOps.StackSwitch()
+                                    {
+                                        StackSwitch_Items = 2
+                                    });
+
+                                    IncRefCount = true;
+                                    incOpIndexBy = 5;
+                                }
+                            }
+                            #endregion
+                            break;
+                        case ILOp.OpCodes.Stelem:
+                        case ILOp.OpCodes.Stelem_Ref:
+                            #region Stelem / Stelem_Ref
+                            {
+                                bool doDecrement = false;
+                                bool isRefOp = false;
+                                if ((ILOp.OpCodes)currOp.opCode.Value == ILOp.OpCodes.Stelem_Ref)
+                                {
+                                    doDecrement = preprocessState.CurrentStackFrame.Stack.Peek().isGCManaged;
+                                    isRefOp = true;
+                                }
+                                else
+                                {
+                                    int metadataToken = Utilities.ReadInt32(currOp.ValueBytes, 0);
+                                    Type elementType = theMethodInfo.UnderlyingInfo.Module.ResolveType(metadataToken);
+                                    doDecrement = TheLibrary.GetTypeInfo(elementType).IsGCManaged;
+                                }
+
+                                if (doDecrement)
+                                {
+                                    // Items on stack:
+                                    //  - Array reference
+                                    //  - Index
+                                    //  - (New) Value to store
+                                    //
+                                    // We want to load the current value of the element at Index in the array
+                                    //  for which we must duplicate the array ref and index
+                                    // But first, we must remove the (new) value to store
+                                    //  off the stack, while also storing it to put back
+                                    //  on the stack after so the store can continue
+                                    //
+                                    // So:
+                                    //      1. Switch (rotate) 1 times the top 3 values so that index is on top
+                                    //      2. Duplicate the index
+                                    //      3. Switch (rotate) 2 times the top 4 values so that array ref is on top
+                                    //      4. Duplicate the array ref
+                                    //      5. Switch (rotate) 4 times the top 5 values so that duplicate array ref and index are on top
+                                    //      6. Do LdElem op to load existing element value
+                                    //      7. Call GC.DecrementRefCount
+                                    //      8. Switch (rotate) 1 times the top 3 values so that the stack is in its original state
+                                    //      (9. Continue to increment ref count as normal)
+                                    //
+                                    // The following is a diagram of the stack manipulation occurring here:
+                                    //      Key: A=Array ref, I=Index, V=Value to store, E=Loaded element
+                                    //      Top-most stack item appears last
+                                    //  
+                                    //     1) Rotate x 1    2) Duplicate       3)  Rot x 2         4)  Dup
+                                    //  A,I,V ---------> V,A,I ---------> V,A,I,I ---------> I,I,V,A ---------> I,I,V,A,A
+                                    //
+                                    //
+                                    //          5) Rot x 4           6) Ldelem        7) Call GC (Dec)
+                                    //  I,I,V,A,A ---------> I,V,A,A,I ---------> I,V,A,E ---------> I,V,A
+                                    //
+                                    //
+                                    //      8) Rot x 1       9)  Dup         10) Call GC (Inc)
+                                    //  I,V,A ---------> A,I,V ---------> A,I,V,V ---------> A,I,V
+
+                                    #region 1.
+                                    theILBlock.ILOps.Insert(opIndx, new ILOps.StackSwitch()
+                                    {
+                                        ValueBytes = BitConverter.GetBytes(3),
+                                        StackSwitch_Items = 3
+                                    });
+                                    incOpIndexBy++;
+                                    #endregion
+                                    #region 2.
+                                    theILBlock.ILOps.Insert(opIndx + incOpIndexBy, new ILOp()
+                                    {
+                                        opCode = System.Reflection.Emit.OpCodes.Dup
+                                    });
+                                    incOpIndexBy++;
+                                    #endregion
+                                    #region 3.
+                                    theILBlock.ILOps.Insert(opIndx + incOpIndexBy, new ILOps.StackSwitch()
+                                    {
+                                        ValueBytes = BitConverter.GetBytes(4),
+                                        StackSwitch_Items = 4
+                                    });
+                                    incOpIndexBy++;
+
+                                    theILBlock.ILOps.Insert(opIndx + incOpIndexBy, new ILOps.StackSwitch()
+                                    {
+                                        ValueBytes = BitConverter.GetBytes(4),
+                                        StackSwitch_Items = 4
+                                    });
+                                    incOpIndexBy++;
+                                    #endregion
+                                    #region 4.
+                                    theILBlock.ILOps.Insert(opIndx + incOpIndexBy, new ILOp()
+                                    {
+                                        opCode = System.Reflection.Emit.OpCodes.Dup
+                                    });
+                                    incOpIndexBy++;
+                                    #endregion
+                                    #region 5.
+                                    theILBlock.ILOps.Insert(opIndx + incOpIndexBy, new ILOps.StackSwitch()
+                                    {
+                                        ValueBytes = BitConverter.GetBytes(5),
+                                        StackSwitch_Items = 5
+                                    });
+                                    incOpIndexBy++;
+                                    theILBlock.ILOps.Insert(opIndx + incOpIndexBy, new ILOps.StackSwitch()
+                                    {
+                                        ValueBytes = BitConverter.GetBytes(5),
+                                        StackSwitch_Items = 5
+                                    });
+                                    incOpIndexBy++;
+                                    theILBlock.ILOps.Insert(opIndx + incOpIndexBy, new ILOps.StackSwitch()
+                                    {
+                                        ValueBytes = BitConverter.GetBytes(5),
+                                        StackSwitch_Items = 5
+                                    });
+                                    incOpIndexBy++;
+                                    theILBlock.ILOps.Insert(opIndx + incOpIndexBy, new ILOps.StackSwitch()
+                                    {
+                                        ValueBytes = BitConverter.GetBytes(5),
+                                        StackSwitch_Items = 5
+                                    });
+                                    incOpIndexBy++;
+                                    #endregion
+                                    #region 6.
+                                    theILBlock.ILOps.Insert(opIndx + incOpIndexBy, new ILOp()
+                                    {
+                                        opCode = isRefOp ? System.Reflection.Emit.OpCodes.Ldelem_Ref : System.Reflection.Emit.OpCodes.Ldelem,
+                                        ValueBytes = currOp.ValueBytes
+                                    });
+                                    incOpIndexBy++;
+                                    #endregion
+                                    #region 7.
+                                    theILBlock.ILOps.Insert(opIndx + incOpIndexBy, new ILOp()
+                                    {
+                                        opCode = System.Reflection.Emit.OpCodes.Call,
+                                        MethodToCall = ILLibrary.SpecialMethods[typeof(Attributes.DecrementRefCountMethodAttribute)].First().UnderlyingInfo
+                                    });
+                                    incOpIndexBy++;
+                                    #endregion
+                                    #region 8.
+                                    theILBlock.ILOps.Insert(opIndx + incOpIndexBy, new ILOps.StackSwitch()
+                                    {
+                                        ValueBytes = BitConverter.GetBytes(3),
+                                        StackSwitch_Items = 3
+                                    });
+                                    incOpIndexBy++;
+                                    #endregion
+
+                                    IncRefCount = true;
+                                }
+                            }
+                            #endregion
+                            break;
+                        case ILOp.OpCodes.Starg:
+                        case ILOp.OpCodes.Starg_S:
+                            #region Starg
+                            {
+                                UInt16 index = (ILOp.OpCodes)currOp.opCode.Value == ILOp.OpCodes.Starg_S ? 
+                                    (UInt16)currOp.ValueBytes[0] : (UInt16)Utilities.ReadInt16(currOp.ValueBytes, 0);
+                                if (theMethodInfo.ArgumentInfos[index].TheTypeInfo.IsGCManaged)
+                                {
+                                    theILBlock.ILOps.Insert(opIndx, new ILOp()
+                                    {
+                                        opCode = System.Reflection.Emit.OpCodes.Ldarg,
+                                        ValueBytes = BitConverter.GetBytes(index)
+                                    });
+                                    theILBlock.ILOps.Insert(opIndx + 1, new ILOp()
+                                    {
+                                        opCode = System.Reflection.Emit.OpCodes.Call,
+                                        MethodToCall = ILLibrary.SpecialMethods[typeof(Attributes.DecrementRefCountMethodAttribute)].First().UnderlyingInfo
+                                    });
+
+                                    IncRefCount = true;
+                                    incOpIndexBy = 2;
+                                }
+                            }
+                            #endregion
+                            break;
+                    }
+
+                    if (IncRefCount &&
+                        !preprocessState.CurrentStackFrame.Stack.Peek().isNewGCObject)
+                    {
+                        theILBlock.ILOps.Insert(opIndx + incOpIndexBy, new ILOp()
+                        {
+                            opCode = System.Reflection.Emit.OpCodes.Dup
+                        });
+                        incOpIndexBy++;
+                        theILBlock.ILOps.Insert(opIndx + incOpIndexBy, new ILOp()
+                        {
+                            opCode = System.Reflection.Emit.OpCodes.Call,
+                            MethodToCall = ILLibrary.SpecialMethods[typeof(Attributes.IncrementRefCountMethodAttribute)].First().UnderlyingInfo
+                        });
+                        incOpIndexBy++;
+                    }
+
+                    // If op changed
+                    if (theILBlock.ILOps[opIndx] != currOp)
+                    {
+                        theILBlock.ILOps[opIndx].Offset = currOp.Offset;
+                        theILBlock.ILOps[opIndx].BytesSize = currOp.BytesSize;
+                    }
+
+                    // <= is correct. E.g. if 1 extra op added, incOpIndex=1 so <= results in currOp processed
+                    //      + extra op processed
+                    bool UseNextOpAsCleanupStart = false;
+                    for (int i = 0; i <= incOpIndexBy; i++)
+                    {
+                        currOp = theILBlock.ILOps[opIndx];
+
+                        if (UseNextOpAsCleanupStart)
+                        {
+                            UseNextOpAsCleanupStart = false;
+
+                            CleanupExBlock.Offset = currOp.Offset;
+                        }
+
+                        if (currOp is ILOps.MethodStart)
+                        {
+                            ILScanner.MethodStartOp.PerformStackOperations(preprocessState, theILBlock.ILOps[opIndx]);
+                            UseNextOpAsCleanupStart = true;
+                        }
+                        else if (currOp is ILOps.MethodEnd)
+                        {
+                            ILScanner.MethodEndOp.PerformStackOperations(preprocessState, theILBlock.ILOps[opIndx]);
+                        }
+                        else if (currOp is ILOps.StackSwitch)
+                        {
+                            ILScanner.StackSwitchOp.PerformStackOperations(preprocessState, theILBlock.ILOps[opIndx]);
+                        }
+                        else
+                        {
+                            // Leave unsupported ops for the IL Scanner to deal with (or later code e.g. castclass op)
+                            if (ILScanner.TargetILOps.ContainsKey((ILOp.OpCodes)currOp.opCode.Value))
+                            {
+                                ILOp ConverterOp = ILScanner.TargetILOps[(ILOp.OpCodes)currOp.opCode.Value];
+                                ConverterOp.PerformStackOperations(preprocessState, currOp);
+                            }
+                        }
+
+                        if (i > 0)
+                        {
+                            opIndx++;
+                        }
+                    }
+                }
+
+                if (theMethodInfo.ArgumentInfos.Count > 0 ||
+                    theMethodInfo.LocalInfos.Count > 0)
+                {
+                    bool AddCleanupBlock = false;
+                    foreach (Types.VariableInfo anArgInfo in theMethodInfo.ArgumentInfos)
+                    {
+                        if (anArgInfo.TheTypeInfo.IsGCManaged)
+                        {
+                            AddCleanupBlock = true;
+                            break;
+                        }
+                    }
+                    if (!AddCleanupBlock)
+                    {
+                        foreach (Types.VariableInfo aLocInfo in theMethodInfo.LocalInfos)
+                        {
+                            if (aLocInfo.TheTypeInfo.IsGCManaged)
+                            {
+                                AddCleanupBlock = true;
+                                break;
+                            }
+                        }
+                    }
+
+                    if (AddCleanupBlock)
+                    {
+                        ILOp lastOp = theILBlock.ILOps.Last();
+                        int lastOpOffset = lastOp.Offset + 1;
+                        int lastOpIndex = theILBlock.ILOps.Count - 1;
+                        bool MethodHasReturnValue = false;
+
+                        // If there is a return value, we will need to temp store it
+                        if (theMethodInfo.UnderlyingInfo is System.Reflection.MethodInfo)
+                        {
+                            Type returnType = ((System.Reflection.MethodInfo)theMethodInfo.UnderlyingInfo).ReturnType;
+                            //Void return type = no return value
+                            if (returnType != typeof(void))
+                            {
+                                // Add local variable for storing return value
+                                int lastLocalOffset = theMethodInfo.LocalInfos.Count > 0 ? theMethodInfo.LocalInfos.Last().Offset : 0;
+                                int lastLocalSize = theMethodInfo.LocalInfos.Count > 0 ? theMethodInfo.LocalInfos.Last().TheTypeInfo.SizeOnStackInBytes : 0;
+                                theMethodInfo.LocalInfos.Add(new Types.VariableInfo()
+                                {
+                                    UnderlyingType = returnType,
+                                    TheTypeInfo = TheLibrary.GetTypeInfo(returnType),
+                                    Position = theMethodInfo.LocalInfos.Count,
+                                    Offset = lastLocalOffset + lastLocalSize
+                                });
+
+                                // Add op for storing return value, update op offsets
+                                theILBlock.ILOps.Insert(lastOpIndex, new ILOp()
+                                {
+                                    opCode = System.Reflection.Emit.OpCodes.Stloc,
+                                    Offset = lastOpOffset,
+                                    BytesSize = 1,
+                                    ValueBytes = BitConverter.GetBytes(theMethodInfo.LocalInfos.Count - 1)
+                                });
+                                lastOpOffset++;
+                                lastOpIndex++;
+
+                                MethodHasReturnValue = true;
+                            }
+                        }
+
+                        // Add the Leave op of the try-block
+                        theILBlock.ILOps.Insert(lastOpIndex, new ILOp()
+                        {
+                            opCode = System.Reflection.Emit.OpCodes.Leave,
+                            Offset = lastOpOffset,
+                            BytesSize = 1,
+                            ValueBytes = BitConverter.GetBytes(0)
+                        });
+                        lastOpIndex++;
+
+                        FinallyBlock CleanupFinallyBlock = new FinallyBlock()
+                        {
+                            Offset = lastOpOffset + 1,
+                            Length = 0
+                        };
+                        CleanupExBlock.Length = lastOpOffset - CleanupExBlock.Offset;
+                        CleanupExBlock.FinallyBlocks.Add(CleanupFinallyBlock);
+
+                        int cleanupOpsOffset = lastOpOffset + 1;
+
+                        // Add cleanup code for local variables (including the return value local)
+                        foreach (Types.VariableInfo aLocInfo in theMethodInfo.LocalInfos)
+                        {
+                            if (aLocInfo.TheTypeInfo.IsGCManaged)
+                            {
+                                theILBlock.ILOps.Insert(lastOpIndex, new ILOp()
+                                {
+                                    opCode = System.Reflection.Emit.OpCodes.Ldloc,
+                                    Offset = cleanupOpsOffset,
+                                    BytesSize = 1,
+                                    ValueBytes = BitConverter.GetBytes(aLocInfo.Position)
+                                });
+                                cleanupOpsOffset++;
+                                lastOpIndex++;
+
+                                theILBlock.ILOps.Insert(lastOpIndex, new ILOp()
+                                {
+                                    opCode = System.Reflection.Emit.OpCodes.Call,
+                                    Offset = cleanupOpsOffset,
+                                    BytesSize = 1,
+                                    MethodToCall = ILLibrary.SpecialMethods[typeof(Attributes.DecrementRefCountMethodAttribute)].First().UnderlyingInfo
+                                });
+                                cleanupOpsOffset++;
+                                lastOpIndex++;
+
+                                CleanupFinallyBlock.Length += 2;
+                            }
+                        }
+
+                        // Add cleanup code for arguments
+                        foreach (Types.VariableInfo anArgInfo in theMethodInfo.ArgumentInfos)
+                        {
+                            if (anArgInfo.TheTypeInfo.IsGCManaged)
+                            {
+                                theILBlock.ILOps.Insert(lastOpIndex, new ILOp()
+                                {
+                                    opCode = System.Reflection.Emit.OpCodes.Ldarg,
+                                    Offset = cleanupOpsOffset,
+                                    BytesSize = 1,
+                                    ValueBytes = BitConverter.GetBytes(anArgInfo.Position)
+                                });
+                                cleanupOpsOffset++;
+                                lastOpIndex++;
+
+                                theILBlock.ILOps.Insert(lastOpIndex, new ILOp()
+                                {
+                                    opCode = System.Reflection.Emit.OpCodes.Call,
+                                    Offset = cleanupOpsOffset,
+                                    BytesSize = 1,
+                                    MethodToCall = ILLibrary.SpecialMethods[typeof(Attributes.DecrementRefCountMethodAttribute)].First().UnderlyingInfo
+                                });
+                                cleanupOpsOffset++;
+                                lastOpIndex++;
+
+                                CleanupFinallyBlock.Length += 2;
+                            }
+                        }
+
+                        // Add end finally op
+                        theILBlock.ILOps.Insert(lastOpIndex, new ILOp()
+                        {
+                            opCode = System.Reflection.Emit.OpCodes.Endfinally,
+                            Offset = cleanupOpsOffset,
+                            BytesSize = 1
+                        });
+                        cleanupOpsOffset++;
+                        lastOpIndex++;
+
+                        CleanupFinallyBlock.Length++;
+
+                        // Add restore return value op
+                        if (MethodHasReturnValue)
+                        {
+                            theILBlock.ILOps.Insert(lastOpIndex, new ILOp()
+                            {
+                                opCode = System.Reflection.Emit.OpCodes.Ldloc,
+                                Offset = cleanupOpsOffset,
+                                BytesSize = 1,
+                                ValueBytes = BitConverter.GetBytes(theMethodInfo.LocalInfos.Count - 1)
+                            });
+                            cleanupOpsOffset++;
+                            lastOpIndex++;
+                        }
+
+                        // Add ex block to the method
+                        theILBlock.ExceptionHandledBlocks.Add(CleanupExBlock);
+
+                        // Replace any Ret ops contained within Cleanup Block with:
+                        //      - Op to store return value (if any)
+                        bool Inside = false;
+                        for(int opIndx = 0; opIndx < theILBlock.ILOps.Count; opIndx++)
+                        {
+                            if (theILBlock.ILOps[opIndx].Offset > CleanupExBlock.Offset + CleanupExBlock.Length)
+                            {
+                                break;
+                            }
+                            else if (theILBlock.ILOps[opIndx].Offset >= CleanupExBlock.Offset)
+                            {
+                                Inside = true;
+                            }
+
+                            if (Inside &&
+                                (ILOp.OpCodes)theILBlock.ILOps[opIndx].opCode.Value == ILOp.OpCodes.Ret)
+                            {
+                                ILOp ARetOp = theILBlock.ILOps[opIndx];
+                                theILBlock.ILOps.RemoveAt(opIndx);
+
+                                if (MethodHasReturnValue)
+                                {
+                                    theILBlock.ILOps.Insert(opIndx, new ILOp()
+                                    {
+                                        opCode = System.Reflection.Emit.OpCodes.Stloc,
+                                        Offset = ARetOp.Offset,
+                                        ValueBytes = BitConverter.GetBytes(theMethodInfo.LocalInfos.Count - 1)
+                                    });
+                                    theILBlock.ILOps.Insert(opIndx + 1, new ILOp()
+                                    {
+                                        opCode = System.Reflection.Emit.OpCodes.Leave,
+                                        ValueBytes = BitConverter.GetBytes(CleanupFinallyBlock.Offset - ARetOp.Offset)
+                                    });
+                                }
+                            }
+                        }
+                    }
+                }
             }
         }
+        private static void DealWithCatchHandlers(Types.MethodInfo theMethodInfo, ILBlock theILBlock)
+        {
+            foreach (ExceptionHandledBlock exBlock in theILBlock.ExceptionHandledBlocks)
+            {
+                #region Catch-sections
+
+                // Strip the first pop of catch-handler
+
+                foreach (CatchBlock aCatchBlock in exBlock.CatchBlocks)
+                {
+                    ILOp catchPopOp = theILBlock.At(aCatchBlock.Offset);
+                    int pos = theILBlock.PositionOf(catchPopOp);
+                    theILBlock.ILOps.RemoveAt(pos);
+                    theILBlock.ILOps.Insert(pos, new ILOp()
+                    {
+                        opCode = System.Reflection.Emit.OpCodes.Nop,
+                        Offset = catchPopOp.Offset,
+                        BytesSize = catchPopOp.BytesSize
+                    });
+                }
+
+                #endregion
+            }
+        }
+
         private static void InjectTryCatchFinally(Types.MethodInfo theMethodInfo, ILBlock theILBlock)
         {
             // Replace Leave and Leave_S ops
@@ -444,6 +1083,7 @@ namespace Drivers.Compiler.IL
                     theILBlock.ILOps.Insert(i, new ILOp()
                     {
                         Offset = theOp.Offset,
+                        BytesSize = theOp.BytesSize,
                         opCode = System.Reflection.Emit.OpCodes.Ldftn,
                         LoadAtILOffset = theOp.NextOffset + ILOffset,
                         MethodToCall = theILBlock.TheMethodInfo.UnderlyingInfo
@@ -468,6 +1108,7 @@ namespace Drivers.Compiler.IL
                     theILBlock.ILOps.Insert(i, new ILOp()
                     {
                         Offset = theOp.Offset,
+                        BytesSize = theOp.BytesSize,
                         opCode = System.Reflection.Emit.OpCodes.Call,
                         MethodToCall = ILLibrary.SpecialMethods[typeof(Attributes.ExceptionsHandleEndFinallyMethodAttribute)].First().UnderlyingInfo
                     });
@@ -504,18 +1145,48 @@ namespace Drivers.Compiler.IL
                 //                           0xFFFFFFFF indicates no filter block 
                 //                                      (i.e. an unfiltered catch handler)
                 //                           0xXXXXXXXX has undetermined behaviour!
-                #endregion
 
-                #region Catch-sections
-
-                // Strip the first pop of catch-handler
-
-                foreach (CatchBlock aCatchBlock in exBlock.CatchBlocks)
+                //For each finally block:
+                int insertPos = theILBlock.PositionOf(theILBlock.At(exBlock.Offset));
+                foreach (FinallyBlock finBlock in exBlock.FinallyBlocks)
                 {
-                    ILOp catchPopOp = theILBlock.At(aCatchBlock.Offset);
-                    theILBlock.ILOps.Remove(catchPopOp);
+                    // 1. Load the pointer to the handler code:
+                    theILBlock.ILOps.Insert(insertPos++, new ILOp()
+                    {
+                        opCode = System.Reflection.Emit.OpCodes.Ldftn, 
+                        MethodToCall = theMethodInfo.UnderlyingInfo,
+                        LoadAtILOffset = finBlock.Offset
+                    });
+                    theILBlock.ILOps.Insert(insertPos++, new ILOp()
+                    {
+                        opCode = System.Reflection.Emit.OpCodes.Ldc_I4,
+                        ValueBytes = BitConverter.GetBytes(0x00000000)
+                    });
+                    theILBlock.ILOps.Insert(insertPos++, new ILOp()
+                    {
+                        opCode = System.Reflection.Emit.OpCodes.Call,
+                        MethodToCall = ILLibrary.SpecialMethods[typeof(Attributes.AddExceptionHandlerInfoMethodAttribute)].First().UnderlyingInfo
+                    });
                 }
-
+                foreach (CatchBlock catchBlock in exBlock.CatchBlocks)
+                {
+                    theILBlock.ILOps.Insert(insertPos++, new ILOp()
+                    {
+                        opCode = System.Reflection.Emit.OpCodes.Ldftn,
+                        MethodToCall = theMethodInfo.UnderlyingInfo,
+                        LoadAtILOffset = catchBlock.Offset
+                    });
+                    theILBlock.ILOps.Insert(insertPos++, new ILOp()
+                    {
+                        opCode = System.Reflection.Emit.OpCodes.Ldc_I4,
+                        ValueBytes = BitConverter.GetBytes(0xFFFFFFFF)
+                    });
+                    theILBlock.ILOps.Insert(insertPos++, new ILOp()
+                    {
+                        opCode = System.Reflection.Emit.OpCodes.Call,
+                        MethodToCall = ILLibrary.SpecialMethods[typeof(Attributes.AddExceptionHandlerInfoMethodAttribute)].First().UnderlyingInfo
+                    });
+                }
                 #endregion
             }
         }

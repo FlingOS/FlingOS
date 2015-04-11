@@ -39,6 +39,37 @@ namespace Drivers.Compiler.Architectures.x86
     /// </summary>
     public class Ldfld : IL.ILOps.Ldfld
     {
+        public override void PerformStackOperations(ILPreprocessState conversionState, ILOp theOp)
+        {
+            int metadataToken = Utilities.ReadInt32(theOp.ValueBytes, 0);
+            FieldInfo theField = conversionState.Input.TheMethodInfo.UnderlyingInfo.Module.ResolveField(metadataToken);
+            
+            bool valueisFloat = Utilities.IsFloat(theField.FieldType);
+            Types.TypeInfo fieldTypeInfo = conversionState.TheILLibrary.GetTypeInfo(theField.FieldType);
+            int stackSize = fieldTypeInfo.SizeOnStackInBytes;
+            
+            StackItem objPointer = conversionState.CurrentStackFrame.Stack.Pop();
+
+            if ((OpCodes)theOp.opCode.Value == OpCodes.Ldflda)
+            {
+                conversionState.CurrentStackFrame.Stack.Push(new StackItem()
+                {
+                    isFloat = false,
+                    sizeOnStackInBytes = 4,
+                    isGCManaged = false
+                });
+            }
+            else
+            {
+                conversionState.CurrentStackFrame.Stack.Push(new StackItem()
+                {
+                    isFloat = valueisFloat,
+                    sizeOnStackInBytes = stackSize,
+                    isGCManaged = fieldTypeInfo.IsGCManaged
+                });
+            }
+        }
+
         /// <summary>
         /// See base class documentation.
         /// </summary>

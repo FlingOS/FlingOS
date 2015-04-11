@@ -38,6 +38,40 @@ namespace Drivers.Compiler.Architectures.x86
     /// </summary>
     public class Convu : IL.ILOps.Convu
     {
+        public override void PerformStackOperations(ILPreprocessState conversionState, ILOp theOp)
+        {
+            StackItem itemToConvert = conversionState.CurrentStackFrame.Stack.Pop();
+            int numBytesToConvertTo = 0;
+
+            switch ((OpCodes)theOp.opCode.Value)
+            {
+                case OpCodes.Conv_U:
+                    numBytesToConvertTo = 4;
+                    break;
+                case OpCodes.Conv_U1:
+                    numBytesToConvertTo = 1;
+                    break;
+                case OpCodes.Conv_U2:
+                    numBytesToConvertTo = 2;
+                    break;
+                case OpCodes.Conv_U4:
+                    numBytesToConvertTo = 4;
+                    break;
+                case OpCodes.Conv_U8:
+                    numBytesToConvertTo = 8;
+                    break;
+            }
+
+            bool pushEDX = numBytesToConvertTo == 8;
+
+            conversionState.CurrentStackFrame.Stack.Push(new StackItem()
+            {
+                sizeOnStackInBytes = (pushEDX ? 8 : 4),
+                isFloat = false,
+                isGCManaged = false
+            });
+        }
+
         /// <summary>
         /// See base class documentation.
         /// </summary>
@@ -46,8 +80,6 @@ namespace Drivers.Compiler.Architectures.x86
         /// <returns>See base class documentation.</returns>
         public override void Convert(ILConversionState conversionState, ILOp theOp)
         {
-            
-
             StackItem itemToConvert = conversionState.CurrentStackFrame.Stack.Pop();
             int numBytesToConvertTo = 0;
 

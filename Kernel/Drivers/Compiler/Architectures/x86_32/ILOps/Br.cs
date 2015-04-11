@@ -38,6 +38,106 @@ namespace Drivers.Compiler.Architectures.x86
     /// </summary>
     public class Br : IL.ILOps.Br
     {
+        public override void PerformStackOperations(ILPreprocessState conversionState, ILOp theOp)
+        {
+            ASMOps.JmpOp jumpOp = ASMOps.JmpOp.Jump;
+            
+            switch ((OpCodes)theOp.opCode.Value)
+            {
+                case OpCodes.Br:
+                case OpCodes.Br_S:
+                    break;
+                case OpCodes.Brtrue:
+                    jumpOp = ASMOps.JmpOp.JumpNotZero;
+                    break;
+                case OpCodes.Brtrue_S:
+                    jumpOp = ASMOps.JmpOp.JumpNotZero;
+                    break;
+                case OpCodes.Brfalse:
+                    jumpOp = ASMOps.JmpOp.JumpZero;
+                    break;
+                case OpCodes.Brfalse_S:
+                    jumpOp = ASMOps.JmpOp.JumpZero;
+                    break;
+                case OpCodes.Beq:
+                    jumpOp = ASMOps.JmpOp.JumpEqual;
+                    break;
+                case OpCodes.Beq_S:
+                    jumpOp = ASMOps.JmpOp.JumpEqual;
+                    break;
+                case OpCodes.Bne_Un:
+                    jumpOp = ASMOps.JmpOp.JumpNotEqual;
+                    break;
+                case OpCodes.Bne_Un_S:
+                    jumpOp = ASMOps.JmpOp.JumpNotEqual;
+                    break;
+                case OpCodes.Bge:
+                    jumpOp = ASMOps.JmpOp.JumpGreaterThanEqual;
+                    break;
+                case OpCodes.Bge_S:
+                    jumpOp = ASMOps.JmpOp.JumpGreaterThanEqual;
+                    break;
+                case OpCodes.Bge_Un:
+                    jumpOp = ASMOps.JmpOp.JumpGreaterThanEqual;
+                    break;
+                case OpCodes.Bge_Un_S:
+                    jumpOp = ASMOps.JmpOp.JumpGreaterThanEqual;
+                    break;
+                case OpCodes.Ble:
+                    jumpOp = ASMOps.JmpOp.JumpLessThanEqual;
+                    break;
+                case OpCodes.Ble_S:
+                    jumpOp = ASMOps.JmpOp.JumpLessThanEqual;
+                    break;
+                case OpCodes.Ble_Un:
+                    jumpOp = ASMOps.JmpOp.JumpLessThanEqual;
+                    break;
+                case OpCodes.Ble_Un_S:
+                    jumpOp = ASMOps.JmpOp.JumpLessThanEqual;
+                    break;
+                case OpCodes.Blt:
+                    jumpOp = ASMOps.JmpOp.JumpLessThan;
+                    break;
+                case OpCodes.Blt_S:
+                    jumpOp = ASMOps.JmpOp.JumpLessThan;
+                    break;
+                case OpCodes.Blt_Un:
+                    jumpOp = ASMOps.JmpOp.JumpLessThan;
+                    break;
+                case OpCodes.Blt_Un_S:
+                    jumpOp = ASMOps.JmpOp.JumpLessThan;
+                    break;
+                case OpCodes.Bgt:
+                    jumpOp = ASMOps.JmpOp.JumpGreaterThan;
+                    break;
+                case OpCodes.Bgt_S:
+                    jumpOp = ASMOps.JmpOp.JumpGreaterThan;
+                    break;
+                case OpCodes.Bgt_Un:
+                    jumpOp = ASMOps.JmpOp.JumpGreaterThan;
+                    break;
+                case OpCodes.Bgt_Un_S:
+                    jumpOp = ASMOps.JmpOp.JumpGreaterThan;
+                    break;
+            }
+
+            if (jumpOp == ASMOps.JmpOp.JumpZero || jumpOp == ASMOps.JmpOp.JumpNotZero)
+            {
+                //Pop from our stack the test item to use in the condition
+                StackItem testItem = conversionState.CurrentStackFrame.Stack.Pop();
+            }
+            else if (jumpOp == ASMOps.JmpOp.JumpEqual || jumpOp == ASMOps.JmpOp.JumpNotEqual ||
+                         jumpOp == ASMOps.JmpOp.JumpGreaterThanEqual ||
+                         jumpOp == ASMOps.JmpOp.JumpLessThanEqual ||
+                         jumpOp == ASMOps.JmpOp.JumpLessThan ||
+                         jumpOp == ASMOps.JmpOp.JumpGreaterThan)
+            {
+                //Pop from our stack the test items to use in the condition
+                StackItem itemB = conversionState.CurrentStackFrame.Stack.Pop();
+                StackItem itemA = conversionState.CurrentStackFrame.Stack.Pop();
+            }
+        }
+
         public override void Preprocess(ILPreprocessState preprocessState, ILOp theOp)
         {
             //This will store the offset from the current next op's position

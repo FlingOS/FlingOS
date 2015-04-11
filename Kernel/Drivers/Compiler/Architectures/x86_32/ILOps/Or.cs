@@ -38,6 +38,33 @@ namespace Drivers.Compiler.Architectures.x86
     /// </summary>
     public class Or : IL.ILOps.Or
     {
+        public override void PerformStackOperations(ILPreprocessState conversionState, ILOp theOp)
+        {
+            StackItem itemB = conversionState.CurrentStackFrame.Stack.Pop();
+            StackItem itemA = conversionState.CurrentStackFrame.Stack.Pop();
+
+            if (itemA.sizeOnStackInBytes == 4 &&
+                itemB.sizeOnStackInBytes == 4)
+            {
+                conversionState.CurrentStackFrame.Stack.Push(new StackItem()
+                {
+                    isFloat = false,
+                    sizeOnStackInBytes = 4,
+                    isGCManaged = false
+                });
+            }
+            else if (itemA.sizeOnStackInBytes == 8 &&
+                itemB.sizeOnStackInBytes == 8)
+            {
+                conversionState.CurrentStackFrame.Stack.Push(new StackItem()
+                {
+                    isFloat = false,
+                    sizeOnStackInBytes = 8,
+                    isGCManaged = false
+                });
+            }
+        }
+
         /// <summary>
         /// See base class documentation.
         /// </summary>

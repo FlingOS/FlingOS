@@ -39,6 +39,21 @@ namespace Drivers.Compiler.Architectures.x86
     /// </summary>
     public class Ldobj : IL.ILOps.Ldobj
     {
+        public override void PerformStackOperations(ILPreprocessState conversionState, ILOp theOp)
+        {
+            int metadataToken = Utilities.ReadInt32(theOp.ValueBytes, 0);
+            Type theType = conversionState.Input.TheMethodInfo.UnderlyingInfo.Module.ResolveType(metadataToken);
+            Types.TypeInfo theTypeInfo = conversionState.TheILLibrary.GetTypeInfo(theType);
+            int size = theTypeInfo.SizeOnStackInBytes;
+
+            conversionState.CurrentStackFrame.Stack.Push(new StackItem()
+            {
+                isFloat = false,
+                sizeOnStackInBytes = size,
+                isGCManaged = false
+            });
+        }
+
         /// <summary>
         /// See base class documentation.
         /// </summary>

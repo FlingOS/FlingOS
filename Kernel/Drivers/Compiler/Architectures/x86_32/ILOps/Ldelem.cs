@@ -38,6 +38,83 @@ namespace Drivers.Compiler.Architectures.x86
     /// </summary>
     public class Ldelem : IL.ILOps.Ldelem
     {
+        public override void PerformStackOperations(ILPreprocessState conversionState, ILOp theOp)
+        {
+            Type elementType = null;
+            bool pushValue = true;
+            int sizeToPush = 4;
+            bool isFloat = false;
+
+            switch ((OpCodes)theOp.opCode.Value)
+            {
+                case OpCodes.Ldelem:
+                    {
+                        int metadataToken = Utilities.ReadInt32(theOp.ValueBytes, 0);
+                        elementType = conversionState.Input.TheMethodInfo.UnderlyingInfo.Module.ResolveType(metadataToken);
+                    }
+                    break;
+
+                case OpCodes.Ldelema:
+                    {
+                        int metadataToken = Utilities.ReadInt32(theOp.ValueBytes, 0);
+                        elementType = conversionState.Input.TheMethodInfo.UnderlyingInfo.Module.ResolveType(metadataToken);
+
+                        pushValue = false;
+                    }
+                    break;
+
+                case OpCodes.Ldelem_R4:
+                case OpCodes.Ldelem_R8:
+                    throw new NotSupportedException("Ldelem op variant not supported yet!");
+
+                case OpCodes.Ldelem_I1:
+                    sizeToPush = 1;
+                    elementType = typeof(sbyte);
+                    break;
+                case OpCodes.Ldelem_I2:
+                    sizeToPush = 2;
+                    elementType = typeof(Int16);
+                    break;
+
+                case OpCodes.Ldelem_U1:
+                    sizeToPush = 1;
+                    elementType = typeof(byte);
+                    break;
+                case OpCodes.Ldelem_U2:
+                    sizeToPush = 2;
+                    elementType = typeof(UInt16);
+                    break;
+
+                case OpCodes.Ldelem_Ref:
+                    elementType = null;
+                    break;
+
+                case OpCodes.Ldelem_U4:
+                    elementType = typeof(UInt32);
+                    break;
+
+                case OpCodes.Ldelem_I4:
+                    elementType = typeof(Int32);
+                    break;
+
+                case OpCodes.Ldelem_I8:
+                    elementType = typeof(Int64);
+                    break;
+            }
+
+            //      5.2. Pop index and array ref from our stack
+            conversionState.CurrentStackFrame.Stack.Pop();
+            conversionState.CurrentStackFrame.Stack.Pop();
+            //      5.3. Push element onto our stack
+            conversionState.CurrentStackFrame.Stack.Push(new StackItem()
+            {
+                sizeOnStackInBytes = sizeToPush > 4 ? 8 : 4,
+                isFloat = isFloat,
+                isNewGCObject = false,
+                isGCManaged = pushValue && elementType != null ? conversionState.TheILLibrary.GetTypeInfo(elementType).IsGCManaged : false
+            });
+        }
+
         /// <summary>
         /// See base class documentation.
         /// </summary>
@@ -79,6 +156,8 @@ namespace Drivers.Compiler.Architectures.x86
                         int metadataToken = Utilities.ReadInt32(theOp.ValueBytes, 0);
                         //Get the type info for the element type
                         elementType = conversionState.Input.TheMethodInfo.UnderlyingInfo.Module.ResolveType(metadataToken);
+
+                        pushValue = false;
                     }
                     break;
 

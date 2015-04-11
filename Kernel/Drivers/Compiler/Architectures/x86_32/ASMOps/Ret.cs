@@ -11,7 +11,7 @@ namespace Drivers.Compiler.Architectures.x86.ASMOps
 
         public override string Convert(ASM.ASMBlock theBlock)
         {
-            return "nop";
+            return "ret";
         }
     }
 }

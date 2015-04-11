@@ -1,6 +1,8 @@
 ﻿BITS 32
 
 SECTION .text
+GLOBAL File_GDT:function
+File_GDT:
 
 EXTERN _NATIVE_GDT_Contents
 EXTERN _NATIVE_GDT_Pointer

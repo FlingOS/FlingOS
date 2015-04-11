@@ -36,9 +36,9 @@ namespace Drivers.Compiler.IL
     {
         private static System.Reflection.Assembly TargetArchitectureAssembly = null;
         public static Dictionary<ILOp.OpCodes, ILOp> TargetILOps = new Dictionary<ILOp.OpCodes, ILOp>();
-        private static ILOps.MethodStart MethodStartOp;
-        private static ILOps.MethodEnd MethodEndOp;
-        private static ILOps.StackSwitch StackSwitchOp;
+        public static ILOps.MethodStart MethodStartOp;
+        public static ILOps.MethodEnd MethodEndOp;
+        public static ILOps.StackSwitch StackSwitchOp;
 
         public static bool Init()
         {

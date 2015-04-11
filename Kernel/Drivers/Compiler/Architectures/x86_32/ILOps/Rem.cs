@@ -38,6 +38,23 @@ namespace Drivers.Compiler.Architectures.x86
     /// </summary>
     public class Rem : IL.ILOps.Rem
     {
+        public override void PerformStackOperations(ILPreprocessState conversionState, ILOp theOp)
+        {
+            StackItem itemB = conversionState.CurrentStackFrame.Stack.Pop();
+            StackItem itemA = conversionState.CurrentStackFrame.Stack.Pop();
+
+            if (itemA.sizeOnStackInBytes == 4 &&
+                itemB.sizeOnStackInBytes == 4)
+            {
+                conversionState.CurrentStackFrame.Stack.Push(new StackItem()
+                {
+                    isFloat = false,
+                    sizeOnStackInBytes = 4,
+                    isGCManaged = false
+                });
+            }
+        }
+
         /// <summary>
         /// See base class documentation.
         /// </summary>
