@@ -53,17 +53,56 @@ namespace Drivers.Compiler.IL
 
         private static CompileResult ExecuteILReader(ILLibrary TheLibrary)
         {
-            return CompileResult.OK;
+            CompileResult result = CompileResult.OK;
+
+            if (TheLibrary.ILRead)
+            {
+                return result;
+            }
+            TheLibrary.ILRead = true;
+
+            foreach (ILLibrary depLib in TheLibrary.Dependencies)
+            {
+                result = result == CompileResult.OK ? ExecuteILReader(depLib) : result;
+            }
+
+            foreach (Types.TypeInfo aTypeInfo in TheLibrary.TypeInfos)
+            {
+                foreach (Types.MethodInfo aMethodInfo in aTypeInfo.MethodInfos)
+                {
+                    TheLibrary.ILBlocks.Add(aMethodInfo, ILReader.Read(aMethodInfo));
+                }
+            }
+
+            return result;
         }
 
         private static CompileResult ExecuteILPreprocessor(ILLibrary TheLibrary)
         {
-            return CompileResult.OK;
+            CompileResult result = CompileResult.OK;
+
+            if (ILScanner.Init())
+            {
+                ILPreprocessor.Preprocess(TheLibrary);
+
+                ILPreprocessor.PreprocessSpecialClasses(TheLibrary);
+                ILPreprocessor.PreprocessSpecialMethods(TheLibrary);
+            }
+            else
+            {
+                result = CompileResult.Fail;
+            }
+
+            return result;
         }
 
         private static CompileResult ExecuteILScanner(ILLibrary TheLibrary)
         {
-            return CompileResult.OK;
+            CompileResult result = CompileResult.OK;
+
+            result = ILScanner.Scan(TheLibrary);
+
+            return result;
         }
     }
 }

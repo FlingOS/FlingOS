@@ -99,35 +99,223 @@ namespace Kernel.Compiler.Architectures.x86_32
                 else if ((itemA.sizeOnStackInBytes == 8 &&
                     itemB.sizeOnStackInBytes == 4))
                 {
-                    if ((OpCodes)anILOpInfo.opCode.Value != OpCodes.Shr_Un)
+                    if ((OpCodes)anILOpInfo.opCode.Value == OpCodes.Shr_Un)
                     {
-                        throw new InvalidOperationException("Invalid stack operand sizes! 8,4 not supported for signed shift.");
+                        string shiftMoreThan32LabelName = string.Format("{0}.IL_{1}_Shift64",
+                        aScannerState.GetMethodID(aScannerState.CurrentILChunk.Method),
+                        anILOpInfo.Position);
+                        string endLabelName = string.Format("{0}.IL_{1}_End",
+                        aScannerState.GetMethodID(aScannerState.CurrentILChunk.Method),
+                        anILOpInfo.Position);
+
+                        //Pop item B
+                        result.AppendLine("pop dword ecx");
+                        //Pop item A (8 bytes)
+                        result.AppendLine("pop dword eax");
+                        result.AppendLine("pop dword edx");
+
+                        //Check shift size
+                        result.AppendLine("cmp ecx, 32");
+                        result.AppendLine("jae " + shiftMoreThan32LabelName);
+
+                        //Shr (< 32)
+                        result.AppendLine("shrd eax, edx, cl");
+                        result.AppendLine("shr edx, cl");
+                        result.AppendLine("jmp " + endLabelName);
+
+                        //Shr (>= 32)
+                        result.AppendLine(shiftMoreThan32LabelName + ":");
+                        result.AppendLine("mov eax, edx");
+                        result.AppendLine("mov edx, 0");
+                        result.AppendLine("sub ecx, 32");
+                        result.AppendLine("shr eax, cl");
+
+                        //Push result
+                        result.AppendLine(endLabelName + ":");
+                        result.AppendLine("push dword edx");
+                        result.AppendLine("push dword eax");
+
+                        aScannerState.CurrentStackFrame.Stack.Push(new StackItem()
+                        {
+                            isFloat = false,
+                            sizeOnStackInBytes = 8,
+                            isGCManaged = false
+                        });
                     }
-
-                    //Pop item B
-                    result.AppendLine("pop dword ecx");
-                    //Pop item A (8 bytes)
-                    result.AppendLine("pop dword eax");
-                    result.AppendLine("pop dword edx");
-                    //Shrd
-                    result.AppendLine("shrd eax, edx, cl");
-                    result.AppendLine("shr edx, cl");
-                    //Push result
-                    result.AppendLine("push dword edx");
-                    result.AppendLine("push dword eax");
-
-                    aScannerState.CurrentStackFrame.Stack.Push(new StackItem()
+                    else
                     {
-                        isFloat = false,
-                        sizeOnStackInBytes = 8,
-                        isGCManaged = false
-                    });
+                        string shiftMoreThan32LabelName = string.Format("{0}.IL_{1}_Shift64",
+                        aScannerState.GetMethodID(aScannerState.CurrentILChunk.Method),
+                        anILOpInfo.Position);
+                        string endLabelName = string.Format("{0}.IL_{1}_End",
+                        aScannerState.GetMethodID(aScannerState.CurrentILChunk.Method),
+                        anILOpInfo.Position);
+
+                        //Pop item B
+                        result.AppendLine("pop dword ecx");
+                        //Pop item A (8 bytes)
+                        result.AppendLine("pop dword eax");
+                        result.AppendLine("pop dword edx");
+
+                        //Check shift size
+                        result.AppendLine("cmp ecx, 32");
+                        result.AppendLine("jae " + shiftMoreThan32LabelName);
+
+                        //Shr (< 32)
+                        result.AppendLine("shrd eax, edx, cl");
+                        result.AppendLine("sar edx, cl");
+                        result.AppendLine("jmp " + endLabelName);
+
+                        //Shr (>= 32)
+                        result.AppendLine(shiftMoreThan32LabelName + ":");
+                        result.AppendLine("mov eax, edx");
+                        // (Preserve sign bit)
+                        result.AppendLine("sar edx, 32");
+                        result.AppendLine("sub ecx, 32");
+                        result.AppendLine("sar eax, cl");
+
+                        //Push result
+                        result.AppendLine(endLabelName + ":");
+                        result.AppendLine("push dword edx");
+                        result.AppendLine("push dword eax");
+
+                        aScannerState.CurrentStackFrame.Stack.Push(new StackItem()
+                        {
+                            isFloat = false,
+                            sizeOnStackInBytes = 8,
+                            isGCManaged = false
+                        });
+                    }
                 }
                 else if (itemA.sizeOnStackInBytes == 8 &&
                     itemB.sizeOnStackInBytes == 8)
                 {
-                    //SUPPORT - Int 64 Support
-                    throw new NotSupportedException("Shift right on 64-bits is unsupported!");
+                    //Note: Shifting by more than 64 bits is pointless since the value will be annihilated entirely.
+                    //          "64" fits well within the low 32-bits
+                    //      So for this op, we do the same as the 8-4 byte version but discard the top four bytes
+                    //          of the second operand
+                    //      Except we must check the high bytes for non-zero value. If they are non-zero, we simply
+                    //          push a result of zero.
+
+                    if ((OpCodes)anILOpInfo.opCode.Value == OpCodes.Shr_Un)
+                    {
+                        string zeroLabelName = string.Format("{0}.IL_{1}_Zero",
+                        aScannerState.GetMethodID(aScannerState.CurrentILChunk.Method),
+                        anILOpInfo.Position);
+                        string shiftMoreThan32LabelName = string.Format("{0}.IL_{1}_Shift64",
+                        aScannerState.GetMethodID(aScannerState.CurrentILChunk.Method),
+                        anILOpInfo.Position);
+                        string end1LabelName = string.Format("{0}.IL_{1}_End1",
+                        aScannerState.GetMethodID(aScannerState.CurrentILChunk.Method),
+                        anILOpInfo.Position);
+                        string end2LabelName = string.Format("{0}.IL_{1}_End2",
+                        aScannerState.GetMethodID(aScannerState.CurrentILChunk.Method),
+                        anILOpInfo.Position);
+
+                        //Pop item B
+                        result.AppendLine("pop dword ecx");
+                        result.AppendLine("pop dword ebx");
+                        //Pop item A (8 bytes)
+                        result.AppendLine("pop dword eax");
+                        result.AppendLine("pop dword edx");
+                        //Check high 4 bytes of second param
+                        result.AppendLine("cmp ebx, 0");
+                        result.AppendLine("jz " + zeroLabelName);
+                        result.AppendLine("push dword 0");
+                        result.AppendLine("push dword 0");
+                        result.AppendLine("jmp " + end2LabelName);
+                        result.AppendLine(zeroLabelName + ":");
+
+                        //Check shift size
+                        result.AppendLine("cmp ecx, 32");
+                        result.AppendLine("jae " + shiftMoreThan32LabelName);
+
+                        //Shr (< 32)
+                        result.AppendLine("shrd eax, edx, cl");
+                        result.AppendLine("shr edx, cl");
+                        result.AppendLine("jmp " + end1LabelName);
+
+                        //Shr (>= 32)
+                        result.AppendLine(shiftMoreThan32LabelName + ":");
+                        result.AppendLine("mov eax, edx");
+                        result.AppendLine("mov edx, 0");
+                        result.AppendLine("sub ecx, 32");
+                        result.AppendLine("shr eax, cl");
+
+                        //Push result
+                        result.AppendLine(end1LabelName + ":");
+                        result.AppendLine("push dword edx");
+                        result.AppendLine("push dword eax");
+                        result.AppendLine(end2LabelName + ":");
+
+                        aScannerState.CurrentStackFrame.Stack.Push(new StackItem()
+                        {
+                            isFloat = false,
+                            sizeOnStackInBytes = 8,
+                            isGCManaged = false
+                        });
+                    }
+                    else
+                    {
+                        string zeroLabelName = string.Format("{0}.IL_{1}_Zero",
+                        aScannerState.GetMethodID(aScannerState.CurrentILChunk.Method),
+                        anILOpInfo.Position);
+                        string shiftMoreThan32LabelName = string.Format("{0}.IL_{1}_Shift64",
+                        aScannerState.GetMethodID(aScannerState.CurrentILChunk.Method),
+                        anILOpInfo.Position);
+                        string end1LabelName = string.Format("{0}.IL_{1}_End1",
+                        aScannerState.GetMethodID(aScannerState.CurrentILChunk.Method),
+                        anILOpInfo.Position);
+                        string end2LabelName = string.Format("{0}.IL_{1}_End2",
+                        aScannerState.GetMethodID(aScannerState.CurrentILChunk.Method),
+                        anILOpInfo.Position);
+
+                        //Pop item B
+                        result.AppendLine("pop dword ecx");
+                        result.AppendLine("pop dword ebx");
+                        //Pop item A (8 bytes)
+                        result.AppendLine("pop dword eax");
+                        result.AppendLine("pop dword edx");
+                        //Check high 4 bytes of second param
+                        result.AppendLine("cmp ebx, 0");
+                        result.AppendLine("jz " + zeroLabelName);
+                        // (Preserve sign bit)
+                        result.AppendLine("sar edx, 32");
+                        result.AppendLine("push dword edx");
+                        result.AppendLine("push dword edx");
+                        result.AppendLine("jmp " + end2LabelName);
+                        result.AppendLine(zeroLabelName + ":");
+
+                        //Check shift size
+                        result.AppendLine("cmp ecx, 32");
+                        result.AppendLine("jae " + shiftMoreThan32LabelName);
+
+                        //Shr (< 32)
+                        result.AppendLine("shrd eax, edx, cl");
+                        result.AppendLine("sar edx, cl");
+                        result.AppendLine("jmp " + end1LabelName);
+
+                        //Shr (>= 32)
+                        result.AppendLine(shiftMoreThan32LabelName + ":");
+                        result.AppendLine("mov eax, edx");
+                        // (Preserve sign bit)
+                        result.AppendLine("sar edx, 32");
+                        result.AppendLine("sub ecx, 32");
+                        result.AppendLine("sar eax, cl");
+
+                        //Push result
+                        result.AppendLine(end1LabelName + ":");
+                        result.AppendLine("push dword edx");
+                        result.AppendLine("push dword eax");
+                        result.AppendLine(end2LabelName + ":");
+
+                        aScannerState.CurrentStackFrame.Stack.Push(new StackItem()
+                        {
+                            isFloat = false,
+                            sizeOnStackInBytes = 8,
+                            isGCManaged = false
+                        });
+                    }
                 }
             }
 

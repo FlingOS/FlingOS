@@ -14,6 +14,21 @@
 ;                                                                                ;
 ; - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  ;
 
+BITS 32
+
+SECTION .text
+
+GLOBAL BasicDebug_SerialRead8:function
+GLOBAL BasicDebug_SerialRead16:function
+GLOBAL BasicDebug_SerialRead32:function
+GLOBAL method_System_Byte_Kernel_Debug_BasicDebug_Serial_ReadByte__:function
+GLOBAL method_System_UInt16_Kernel_Debug_BasicDebug_Serial_ReadUInt16__:function
+GLOBAL method_System_UInt32_Kernel_Debug_BasicDebug_Serial_ReadUInt32__:function
+GLOBAL method_System_UInt32_RETEND_Kernel_Debug_BasicDebug_DECLEND_Serial_SafeReadUInt32_NAMEEND___:function
+
+EXTERN BasicDebug_ReadAttempts
+EXTERN BasicDebug_Serial_ComPortMemAddr
+
 ; BEGIN - BasicDebug : Serial Read
 
 BasicDebug_SerialRead8:
@@ -76,7 +91,7 @@ ror eax, 8
 ret
 
 
-; Method not written to C# calling convention. Uses debugger internel calling convention - optimised system.
+; Method not written to C# calling convention. Uses debugger internal calling convention - optimised system.
 method_System_Byte_Kernel_Debug_BasicDebug_Serial_ReadByte__:
 
 push ebp

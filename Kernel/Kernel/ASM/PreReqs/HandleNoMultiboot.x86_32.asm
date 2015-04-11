@@ -1,3 +1,11 @@
+BITS 32
+
+SECTION .text
+GLOBAL File_HandleNoMultiboot:function
+File_HandleNoMultiboot:
+
+GLOBAL Kernel_Start_HandleNoMultiboot:function
+
 ; BEGIN - Handle No Multiboot
 jmp Kernel_Start_HandleNoMultiboot_End ; Skip over this code - we don't want to run it by accident!
 

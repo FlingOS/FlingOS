@@ -15,13 +15,13 @@ _start:
 
 	push dword ecx
 
-	; mov dword ebx, 261
-	; mov dword ecx, 16
-	; mov dword edx, 120
-	; call SysCall_PlayNote
+	mov dword ebx, 261
+	mov dword ecx, 16
+	mov dword edx, 120
+	call SysCall_PlayNote
 
-	; mov dword ebx, 1000
-	; call SysCall_Sleep
+	mov dword ebx, 1000
+	call SysCall_Sleep
 
 	pop dword ecx
 

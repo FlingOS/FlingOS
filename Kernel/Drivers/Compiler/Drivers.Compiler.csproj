@@ -40,20 +40,105 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ASM\ASMCompiler.cs" />
+    <Compile Include="ASM\ASMComment.cs" />
+    <Compile Include="ASM\ASMGlobalLabel.cs" />
+    <Compile Include="ASM\ASMExternalLabel.cs" />
     <Compile Include="ASM\ASMLibrary.cs" />
+    <Compile Include="ASM\ASMLabel.cs" />
+    <Compile Include="ASM\ASMGeneric.cs" />
     <Compile Include="ASM\ASMPreprocessor.cs" />
     <Compile Include="ASM\ASMProcessor.cs" />
     <Compile Include="ASM\ASMBlock.cs" />
     <Compile Include="ASM\ASMOp.cs" />
+    <Compile Include="Attributes\AddExceptionHandlerInfoMethodAttribute.cs" />
+    <Compile Include="Attributes\ArrayClassAttribute.cs" />
+    <Compile Include="Attributes\CallStaticConstructorsMethodAttribute.cs" />
+    <Compile Include="Attributes\DecrementRefCountMethodAttribute.cs" />
+    <Compile Include="Attributes\ExceptionsHandleEndFinallyMethodAttribute.cs" />
+    <Compile Include="Attributes\ExceptionsHandleLeaveMethodAttribute.cs" />
+    <Compile Include="Attributes\FieldInfoStructAttribute.cs" />
+    <Compile Include="Attributes\HaltMethodAttribute.cs" />
+    <Compile Include="Attributes\HandleExceptionMethodAttribute.cs" />
+    <Compile Include="Attributes\IncrementRefCountMethodAttribute.cs" />
+    <Compile Include="Attributes\KernelMainMethodAttribute.cs" />
+    <Compile Include="Attributes\MethodInfoStructAttribute.cs" />
+    <Compile Include="Attributes\NewArrMethodAttribute.cs" />
+    <Compile Include="Attributes\NewObjMethodAttribute.cs" />
+    <Compile Include="Attributes\SequencePriorityAttribute.cs" />
+    <Compile Include="Attributes\StringClassAttribute.cs" />
+    <Compile Include="Attributes\ThrowIndexOutOfRangeExceptionMethodAttribute.cs" />
+    <Compile Include="Attributes\ThrowNullReferenceExceptionMethodAttribute.cs" />
+    <Compile Include="Attributes\TypeClassAttribute.cs" />
+    <Compile Include="IL\ExceptionBlock.cs" />
+    <Compile Include="IL\ILConversionState.cs" />
+    <Compile Include="IL\ILOps\ILOpTargetAttribute.cs" />
+    <Compile Include="Attributes\NoDebugAttribute.cs" />
+    <Compile Include="Attributes\NoGCAttribute.cs" />
+    <Compile Include="Attributes\PluggedClassAttribute.cs" />
+    <Compile Include="Attributes\PluggedMethodAttribute.cs" />
     <Compile Include="DebugDataManager.cs" />
+    <Compile Include="Errors.cs" />
     <Compile Include="Global.cs" />
     <Compile Include="IL\ILCompiler.cs" />
     <Compile Include="IL\ILLibrary.cs" />
+    <Compile Include="IL\ILOps\Add.cs" />
+    <Compile Include="IL\ILOps\And.cs" />
+    <Compile Include="IL\ILOps\Br.cs" />
+    <Compile Include="IL\ILOps\Call.cs" />
+    <Compile Include="IL\ILOps\Callvirt.cs" />
+    <Compile Include="IL\ILOps\Ceq.cs" />
+    <Compile Include="IL\ILOps\Cgt.cs" />
+    <Compile Include="IL\ILOps\Clt.cs" />
+    <Compile Include="IL\ILOps\Convi.cs" />
+    <Compile Include="IL\ILOps\Convu.cs" />
+    <Compile Include="IL\ILOps\Div.cs" />
+    <Compile Include="IL\ILOps\Dup.cs" />
+    <Compile Include="IL\ILOps\Initobj.cs" />
+    <Compile Include="IL\ILOps\Isinst.cs" />
+    <Compile Include="IL\ILOps\Ldarg.cs" />
+    <Compile Include="IL\ILOps\Ldc.cs" />
+    <Compile Include="IL\ILOps\Ldelem.cs" />
+    <Compile Include="IL\ILOps\Ldfld.cs" />
+    <Compile Include="IL\ILOps\Ldftn.cs" />
+    <Compile Include="IL\ILOps\Ldind.cs" />
+    <Compile Include="IL\ILOps\Ldlen.cs" />
+    <Compile Include="IL\ILOps\Ldloc.cs" />
+    <Compile Include="IL\ILOps\Ldnull.cs" />
+    <Compile Include="IL\ILOps\Ldobj.cs" />
+    <Compile Include="IL\ILOps\Ldsfld.cs" />
+    <Compile Include="IL\ILOps\Ldstr.cs" />
+    <Compile Include="IL\ILOps\Ldtoken.cs" />
+    <Compile Include="IL\ILOps\MethodEnd.cs" />
+    <Compile Include="IL\ILOps\MethodStart.cs" />
+    <Compile Include="IL\ILOps\Mul.cs" />
+    <Compile Include="IL\ILOps\NewArr.cs" />
+    <Compile Include="IL\ILOps\NewObj.cs" />
+    <Compile Include="IL\ILOps\Nop.cs" />
+    <Compile Include="IL\ILOps\Not.cs" />
+    <Compile Include="IL\ILOps\Or.cs" />
+    <Compile Include="IL\ILOps\Pop.cs" />
+    <Compile Include="IL\ILOps\Rem.cs" />
+    <Compile Include="IL\ILOps\Ret.cs" />
+    <Compile Include="IL\ILOps\Shl.cs" />
+    <Compile Include="IL\ILOps\Shr.cs" />
+    <Compile Include="IL\ILOps\Sizeof.cs" />
+    <Compile Include="IL\ILOps\StackSwitch.cs" />
+    <Compile Include="IL\ILOps\Starg.cs" />
+    <Compile Include="IL\ILOps\Stelem.cs" />
+    <Compile Include="IL\ILOps\Stfld.cs" />
+    <Compile Include="IL\ILOps\Stind.cs" />
+    <Compile Include="IL\ILOps\Stloc.cs" />
+    <Compile Include="IL\ILOps\Stsfld.cs" />
+    <Compile Include="IL\ILOps\Sub.cs" />
+    <Compile Include="IL\ILOps\Switch.cs" />
+    <Compile Include="IL\ILOps\Xor.cs" />
     <Compile Include="IL\ILPreprocessor.cs" />
+    <Compile Include="IL\ILPreprocessState.cs" />
     <Compile Include="IL\ILReader.cs" />
     <Compile Include="IL\ILScanner.cs" />
     <Compile Include="IL\ILBlock.cs" />
     <Compile Include="IL\ILOp.cs" />
+    <Compile Include="IL\StaticConstructorDependency.cs" />
     <Compile Include="LibraryLoader.cs" />
     <Compile Include="LinkManager.cs" />
     <Compile Include="Logger.cs" />
@@ -64,14 +149,33 @@
     <Compile Include="Types\TypeInfo.cs" />
     <Compile Include="Types\TypeScanner.cs" />
     <Compile Include="Types\VariableInfo.cs" />
+    <Compile Include="Utilities.cs" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="IL\ILOps\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <None Include="..\..\Kernel\Kernel.licenseheader">
       <Link>Kernel.licenseheader</Link>
     </None>
+    <None Include="Tools\ISO\isolinux.bin">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Tools\ISO\mboot.c32">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Tools\ISO\syslinux.cfg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="IL\ILOps\AllIlOps.txt" />
+    <Content Include="Tools\Cygwin\ld.exe">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Tools\Cygwin\objdump.exe">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Tools\ISO9660Generator.exe" />
+    <Content Include="Tools\NASM\nasm.exe" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

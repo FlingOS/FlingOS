@@ -1,4 +1,21 @@
-﻿; BEGIN - x86 Virt Mem
+﻿BITS 32
+
+SECTION .text
+
+KERNEL_VIRTUAL_BASE equ 0xC0000000					; 3GiB
+KERNEL_PAGE_NUMBER equ (KERNEL_VIRTUAL_BASE >> 22)
+
+GLOBAL method_System_UInt32_RETEND_Kernel_Hardware_VirtMem_x86_DECLEND_GetCR3_NAMEEND___:function
+GLOBAL method_System_UInt32_RETEND_Kernel_Hardware_VirtMem_x86_DECLEND_GetKernelVirtToPhysOffset_NAMEEND___:function
+GLOBAL method_System_UInt32__RETEND_Kernel_Hardware_VirtMem_x86_DECLEND_GetPageDirectoryPtr_NAMEEND___:function
+GLOBAL method_System_UInt32__RETEND_Kernel_Hardware_VirtMem_x86_DECLEND_GetFirstPageTablePtr_NAMEEND___:function
+GLOBAL method_System_UInt32__RETEND_Kernel_Hardware_VirtMem_x86_DECLEND_GetKernelMemStartPtr_NAMEEND___:function
+GLOBAL method_System_UInt32__RETEND_Kernel_Hardware_VirtMem_x86_DECLEND_GetKernelMemEndPtr_NAMEEND___:function
+GLOBAL method_System_Void_RETEND_Kernel_Hardware_VirtMem_x86_DECLEND_InvalidatePTE_NAMEEND__System_UInt32_:function
+
+EXTERN Kernel_MemStart
+
+; BEGIN - x86 Virt Mem
 
 method_System_UInt32_RETEND_Kernel_Hardware_VirtMem_x86_DECLEND_GetCR3_NAMEEND___:
 
@@ -84,10 +101,16 @@ pop dword ebp
 
 ret
 
+SECTION .data
+
+GLOBAL Page_Directory:data
+GLOBAL Page_Table1:data
+GLOBAL Kernel_MemEnd:data
 
 align 4096
 Page_Directory: TIMES 1024 dd 0
-Page_Table1: TIMES 1048576 dd 0
+Page_Table1: TIMES 4194304 db 0
+				 ; 4194304 = 1024 * 1024 * 4 = Page tables to cover 4GiB
 
 Kernel_MemEnd:
 

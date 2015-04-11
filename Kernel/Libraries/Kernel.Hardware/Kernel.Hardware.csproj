@@ -26,7 +26,7 @@
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
-    <Optimize>false</Optimize>
+    <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
     <DefineConstants>TRACE;USKEYBOARD</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
@@ -72,6 +72,7 @@
     <Compile Include="Devices\Key Maps\USKeymap.cs" />
     <Compile Include="Devices\Timer.cs" />
     <Compile Include="Interrupts\Interrupts.cs" />
+    <Compile Include="Interrupts\PlayNotesTask.cs" />
     <Compile Include="Interrupts\NonCriticalInterruptsTask.cs" />
     <Compile Include="IO\IOPort.cs" />
     <Compile Include="Devices\Keyboard.cs" />
@@ -82,7 +83,6 @@
     <Compile Include="Processes\Scheduler.cs" />
     <Compile Include="Processes\Synchronisation\Mutex.cs" />
     <Compile Include="Processes\Synchronisation\Semaphore.cs" />
-    <Compile Include="Processes\Synchronisation\SpinLock.cs" />
     <Compile Include="Processes\Thread.cs" />
     <Compile Include="USB\HCIs\UHCI.cs" />
     <Compile Include="VirtMemManager.cs" />
@@ -113,6 +113,10 @@
       <Project>{061e5f53-5eff-4e12-94ee-9e18459e5cf4}</Project>
       <Name>Kernel.Compiler</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\Drivers\Compiler\Drivers.Compiler.csproj">
+      <Project>{1fb0e622-d2c6-4a5c-b5b6-d2bb5e502af1}</Project>
+      <Name>Drivers.Compiler</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Kernel.FOS_System\Kernel.FOS_System.csproj">
       <Project>{66c9b617-b6d9-4006-a7f9-e1df62ed30ad}</Project>
       <Name>Kernel.FOS_System</Name>
@@ -139,9 +143,6 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="ASM\Processes\Synchronisation\Mutex.x86_32.asm">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="ASM\Processes\Synchronisation\SpinLock.x86_32.asm">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="ASM\VirtMem\x86.x86_32.asm">

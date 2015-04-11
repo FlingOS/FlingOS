@@ -1,4 +1,10 @@
-﻿; BEGIN - int Kernel.FOS_System.String.GetLength(string)
+﻿BITS 32
+
+SECTION .text
+
+GLOBAL method_System_Int32_RETEND_Kernel_FOS_System_String_DECLEND_GetLength_NAMEEND__System_String_:function
+
+; BEGIN - int Kernel.FOS_System.String.GetLength(string)
 method_System_Int32_RETEND_Kernel_FOS_System_String_DECLEND_GetLength_NAMEEND__System_String_:
 
 ; MethodStart

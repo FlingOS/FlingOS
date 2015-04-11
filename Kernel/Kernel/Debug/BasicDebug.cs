@@ -40,13 +40,16 @@ namespace Kernel.Debug
     /// kernel compiler is broken, the debugger will still work.
     /// </remarks>
     [Compiler.PluggedClass]
+    [Drivers.Compiler.Attributes.PluggedClass]
     public static class BasicDebug
     {
         /// <summary>
         /// Initialises the basic debugger
         /// </summary>
         [Compiler.NoDebug]
+        [Drivers.Compiler.Attributes.NoDebug]
         [Compiler.NoGC]
+        [Drivers.Compiler.Attributes.NoGC]
         public static void Init()
         {
             BasicConsole.Write("Attempting to init serial port for debug connection...");
@@ -90,6 +93,7 @@ namespace Kernel.Debug
         /// Initialises COM1 as serial connection to debug over
         /// </summary>
         [Compiler.PluggedMethod(ASMFilePath=@"..\..\ASM\Debug\InitSerial")]
+        [Drivers.Compiler.Attributes.PluggedMethod(ASMFilePath=@"..\..\ASM\Debug\InitSerial")]
         private static void InitSerial()
         {
         }
@@ -97,6 +101,7 @@ namespace Kernel.Debug
         /// Begins enabling the debug interrupt handler
         /// </summary>
         [Compiler.PluggedMethod(ASMFilePath = @"..\..\ASM\Debug\EnableDebug")]
+        [Drivers.Compiler.Attributes.PluggedMethod(ASMFilePath = @"..\..\ASM\Debug\EnableDebug")]
         private static void BeginEnableDebug()
         {
         }
@@ -104,6 +109,7 @@ namespace Kernel.Debug
         /// Ends enabling the debug interrupt handler
         /// </summary>
         [Compiler.PluggedMethod(ASMFilePath = null)]
+        [Drivers.Compiler.Attributes.PluggedMethod(ASMFilePath = null)]
         private static void EndEnableDebug()
         {
         }
@@ -112,6 +118,7 @@ namespace Kernel.Debug
         /// Invokes interrupt 3.
         /// </summary>
         [Compiler.PluggedMethod(ASMFilePath = @"ASM\Debug\Break")]
+        [Drivers.Compiler.Attributes.PluggedMethod(ASMFilePath = @"ASM\Debug\Break")]
         public static void Int3()
         {
         }
@@ -120,6 +127,7 @@ namespace Kernel.Debug
         /// The main execute method for the basic debugger
         /// </summary>
         [Compiler.PluggedMethod(ASMFilePath=@"..\..\ASM\Debug\Execute")]
+        [Drivers.Compiler.Attributes.PluggedMethod(ASMFilePath=@"..\..\ASM\Debug\Execute")]
         private static void Execute()
         {
         }
@@ -128,6 +136,7 @@ namespace Kernel.Debug
         /// Inserts the debug commands into the ASM.
         /// </summary>
         [Compiler.PluggedMethod(ASMFilePath = @"..\..\ASM\Debug\Commands")]
+        [Drivers.Compiler.Attributes.PluggedMethod(ASMFilePath = @"..\..\ASM\Debug\Commands")]
         private static void InsertCommandsList()
         {
 
@@ -137,6 +146,7 @@ namespace Kernel.Debug
         /// Sends the Break command.
         /// </summary>
         [Compiler.PluggedMethod(ASMFilePath = @"..\..\ASM\Debug\SendCommands")]
+        [Drivers.Compiler.Attributes.PluggedMethod(ASMFilePath = @"..\..\ASM\Debug\SendCommands")]
         private static void SendBreakCmd()
         {
         }
@@ -145,6 +155,7 @@ namespace Kernel.Debug
         /// break occurred.
         /// </summary>
         [Compiler.PluggedMethod(ASMFilePath = null)]
+        [Drivers.Compiler.Attributes.PluggedMethod(ASMFilePath = null)]
         private static void SendBreakAddress()
         {
         }
@@ -152,6 +163,7 @@ namespace Kernel.Debug
         /// Sends the register values as they were before the interrupt.
         /// </summary>
         [Compiler.PluggedMethod(ASMFilePath = null)]
+        [Drivers.Compiler.Attributes.PluggedMethod(ASMFilePath = null)]
         private static void SendRegisters()
         {
         }
@@ -161,6 +173,7 @@ namespace Kernel.Debug
         /// the arguments there are.
         /// </summary>
         [Compiler.PluggedMethod(ASMFilePath = null)]
+        [Drivers.Compiler.Attributes.PluggedMethod(ASMFilePath = null)]
         private static void SendArguments()
         {
         }
@@ -170,6 +183,7 @@ namespace Kernel.Debug
         /// the arguments there are.
         /// </summary>
         [Compiler.PluggedMethod(ASMFilePath = null)]
+        [Drivers.Compiler.Attributes.PluggedMethod(ASMFilePath = null)]
         private static void SendLocals()
         {
         }
@@ -178,6 +192,7 @@ namespace Kernel.Debug
         /// Waits for a command from the debugger.
         /// </summary>
         [Compiler.PluggedMethod(ASMFilePath = @"..\..\ASM\Debug\ReceiveCommands")]
+        [Drivers.Compiler.Attributes.PluggedMethod(ASMFilePath = @"..\..\ASM\Debug\ReceiveCommands")]
         private static void WaitForCommand()
         {
         }
@@ -187,6 +202,7 @@ namespace Kernel.Debug
         /// </summary>
         /// <param name="value">The value to write.</param>
         [Compiler.PluggedMethod(ASMFilePath = @"..\..\ASM\Debug\SerialWrite")]
+        [Drivers.Compiler.Attributes.PluggedMethod(ASMFilePath = @"..\..\ASM\Debug\SerialWrite")]
         public static void Serial_WriteByte(byte value)
         {
         }
@@ -195,6 +211,7 @@ namespace Kernel.Debug
         /// </summary>
         /// <param name="value">The value to write.</param>
         [Compiler.PluggedMethod(ASMFilePath = null)]
+        [Drivers.Compiler.Attributes.PluggedMethod(ASMFilePath = null)]
         public static void Serial_WriteUInt16(UInt16 value)
         {
         }
@@ -203,6 +220,7 @@ namespace Kernel.Debug
         /// </summary>
         /// <param name="value">The value to write.</param>
         [Compiler.PluggedMethod(ASMFilePath = null)]
+        [Drivers.Compiler.Attributes.PluggedMethod(ASMFilePath = null)]
         public static void Serial_WriteUInt32(UInt32 value)
         {
         }
@@ -211,6 +229,7 @@ namespace Kernel.Debug
         /// </summary>
         /// <param name="value">The value to write.</param>
         [Compiler.PluggedMethod(ASMFilePath = null)]
+        [Drivers.Compiler.Attributes.PluggedMethod(ASMFilePath = null)]
         public static void Serial_WriteString(string value)
         {
         }
@@ -220,6 +239,7 @@ namespace Kernel.Debug
         /// </summary>
         /// <returns>The byte read.</returns>
         [Compiler.PluggedMethod(ASMFilePath = @"..\..\ASM\Debug\SerialRead")]
+        [Drivers.Compiler.Attributes.PluggedMethod(ASMFilePath = @"..\..\ASM\Debug\SerialRead")]
         public static byte Serial_ReadByte()
         {
             //To keep the C# compiler happy
@@ -230,6 +250,7 @@ namespace Kernel.Debug
         /// </summary>
         /// <returns>The UInt16 read.</returns>
         [Compiler.PluggedMethod(ASMFilePath = null)]
+        [Drivers.Compiler.Attributes.PluggedMethod(ASMFilePath = null)]
         public static UInt16 Serial_ReadUInt16()
         {
             //To keep the C# compiler happy
@@ -240,6 +261,7 @@ namespace Kernel.Debug
         /// </summary>
         /// <returns>The UInt32 read.</returns>
         [Compiler.PluggedMethod(ASMFilePath = null)]
+        [Drivers.Compiler.Attributes.PluggedMethod(ASMFilePath = null)]
         public static UInt32 Serial_ReadUInt32()
         {
             //To keep the C# compiler happy
@@ -251,6 +273,7 @@ namespace Kernel.Debug
         /// </summary>
         /// <returns>The UInt32 read.</returns>
         [Compiler.PluggedMethod(ASMFilePath = null)]
+        [Drivers.Compiler.Attributes.PluggedMethod(ASMFilePath = null)]
         public static UInt32 Serial_SafeReadUInt32()
         {
             //To keep the C# compiler happy
@@ -261,7 +284,9 @@ namespace Kernel.Debug
         ///// Clears the screen
         ///// </summary>
         //[Compiler.NoDebug]
+        //[Drivers.Compiler.Attributes.NoDebug]
         //[Compiler.NoGC]
+        //[Drivers.Compiler.Attributes.NoGC]
         //public static void ClearMessage()
         //{
         //    PreReqs.WriteDebugVideo(" ", 0x00);
@@ -271,7 +296,9 @@ namespace Kernel.Debug
         ///// </summary>
         ///// <param name="message">The message to display.</param>
         //[Compiler.NoDebug]
+        //[Drivers.Compiler.Attributes.NoDebug]
         //[Compiler.NoGC]
+        //[Drivers.Compiler.Attributes.NoGC]
         //public static void DisplayMessage(string message)
         //{
         //    PreReqs.WriteDebugVideo(message, 0x02);
@@ -281,6 +308,7 @@ namespace Kernel.Debug
         /// Inserts the plug for the Int1 and Int3 interrupt handler.
         /// </summary>
         [Compiler.PluggedMethod(ASMFilePath = @"..\..\ASM\Debug\InterruptHandler")]
+        [Drivers.Compiler.Attributes.PluggedMethod(ASMFilePath = @"..\..\ASM\Debug\InterruptHandler")]
         private static void InterruptHandler()
         {
         }

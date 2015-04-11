@@ -14,6 +14,28 @@
 ;                                                                                ;
 ; - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  ;
 
+BITS 32
+
+SECTION .text
+
+GLOBAL BasicDebug_BreakCmd:data
+GLOBAL BasicDebug_ContinueCmd:data
+GLOBAL BasicDebug_StepNextCmd:data
+GLOBAL BasicDebug_GetBreakAddressCmd:data
+GLOBAL BasicDebug_SendBreakAddressCmd:data
+GLOBAL BasicDebug_GetRegistersCmd:data
+GLOBAL BasicDebug_SendRegistersCmd:data
+GLOBAL BasicDebug_GetArgumentsCmd:data
+GLOBAL BasicDebug_SendArgumentsCmd:data
+GLOBAL BasicDebug_GetLocalsCmd:data
+GLOBAL BasicDebug_SendLocalsCmd:data
+GLOBAL BasicDebug_MessageCmd:data
+GLOBAL BasicDebug_SetInt3Cmd:data
+GLOBAL BasicDebug_ClearInt3Cmd:data
+GLOBAL BasicDebug_GetMemoryCmd:data
+GLOBAL BasicDebug_SendMemoryCmd:data
+GLOBAL BasicDebug_ConnectedCmd:data
+
 BasicDebug_BreakCmd db 1
 BasicDebug_ContinueCmd db 2
 BasicDebug_StepNextCmd db 3

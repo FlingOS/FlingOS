@@ -124,6 +124,7 @@ namespace Kernel.Hardware.Interrupts
     /// Provides methods for handling hardware and software interrupts (excluding interrupts 0 through 16).
     /// </summary>
     [Compiler.PluggedClass]
+    [Drivers.Compiler.Attributes.PluggedClass]
     public unsafe static class Interrupts
     {
         //TODO - This lot is all x86 specific. It needs to be abstracted into a separate x86
@@ -162,10 +163,12 @@ namespace Kernel.Hardware.Interrupts
         public static InterruptHandlers[] Handlers = new InterruptHandlers[256];
 
         [Compiler.PluggedMethod(ASMFilePath=null)]
+        [Drivers.Compiler.Attributes.PluggedMethod(ASMFilePath=null)]
         public static void EnableInterrupts()
         {
         }
         [Compiler.PluggedMethod(ASMFilePath = null)]
+        [Drivers.Compiler.Attributes.PluggedMethod(ASMFilePath = null)]
         public static void DisableInterrupts()
         {
         }
@@ -345,6 +348,7 @@ namespace Kernel.Hardware.Interrupts
         /// </summary>
         /// <param name="ISRNum">The number of the interrupt which occurred.</param>
         [Compiler.NoGC]
+        [Drivers.Compiler.Attributes.NoGC]
         private static void CommonISR(uint ISRNum)
         {
             InsideCriticalHandler = true;
@@ -559,6 +563,7 @@ namespace Kernel.Hardware.Interrupts
         /// </summary>
         /// <param name="slave">Whether to send the EOI to the slave PIC too.</param>
         [Compiler.PluggedMethod(ASMFilePath = null)]
+        [Drivers.Compiler.Attributes.PluggedMethod(ASMFilePath = null)]
         private static void EndIRQ(bool slave)
         {
         }
@@ -568,6 +573,7 @@ namespace Kernel.Hardware.Interrupts
         /// </summary>
         /// <returns>The pointer to the IDT.</returns>
         [Compiler.PluggedMethod(ASMFilePath=@"ASM\Interrupts\Interrupts")]
+        [Drivers.Compiler.Attributes.PluggedMethod(ASMFilePath=@"ASM\Interrupts\Interrupts")]
         private static InterruptDescriptor* GetIDTPtr()
         {
             return null;
@@ -580,6 +586,7 @@ namespace Kernel.Hardware.Interrupts
         /// </summary>
         /// <param name="IntNum">The interrupt number to fire.</param>
         [Compiler.PluggedMethod(ASMFilePath = null)]
+        [Drivers.Compiler.Attributes.PluggedMethod(ASMFilePath = null)]
         public static void InvokeInterrupt(uint IntNum)
         {
         }

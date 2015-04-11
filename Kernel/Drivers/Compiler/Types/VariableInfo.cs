@@ -32,7 +32,16 @@ using System.Threading.Tasks;
 
 namespace Drivers.Compiler.Types
 {
-    class VariableInfo
+    public class VariableInfo
     {
+        public Type UnderlyingType;
+        public TypeInfo TheTypeInfo;
+        public int Position;
+        public int Offset;
+
+        public override string ToString()
+        {
+            return UnderlyingType.FullName;
+        }
     }
 }

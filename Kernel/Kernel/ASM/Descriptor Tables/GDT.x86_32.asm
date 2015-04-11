@@ -1,4 +1,14 @@
-﻿; BEGIN - Create GDT
+﻿BITS 32
+
+SECTION .text
+GLOBAL File_GDT:function
+File_GDT:
+
+EXTERN _NATIVE_GDT_Contents
+EXTERN _NATIVE_GDT_Pointer
+EXTERN TSS_POINTER
+
+; BEGIN - Create GDT
 	; See MultibootSignature.x86_32.asm for memory allocations
 	
 	; Setup the primary TSS Selector to point to the TSS

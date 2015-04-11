@@ -78,7 +78,7 @@ namespace Kernel.Core.Shells
                          *              IntArray    /   DummyObj    /   DivideBy0   /
                          *              Exceptions1 /   Exceptions2 /   PCBeep      /
                          *              Timer       /   Keyboard    /   FieldsTable /
-                         *              IsInst      /   VirtMem                     }
+                         *              IsInst      /   VirtMem     /   Longs       }
                          *  - GC   { Cleanup }
                          *  - USB { Update / Eject }
                          *  - Start { Filename } [*KM* / UM] [*Raw*]
@@ -766,6 +766,10 @@ namespace Kernel.Core.Shells
                                     else if (opt1 == "virtmem")
                                     {
                                         Hardware.VirtMemManager.Test();
+                                    }
+                                    else if (opt1 == "longs")
+                                    {
+                                        LongsTest();
                                     }
                                     else
                                     {
@@ -1877,6 +1881,7 @@ which should have been provided with the executable.");
         /// Tests all interrupts in the range 17 to 255 by firing them.
         /// </summary>
         [Compiler.NoGC]
+        [Drivers.Compiler.Attributes.NoGC]
         private void InterruptsTest()
         {
             for (uint i = 17; i < 256; i++)
@@ -1889,6 +1894,7 @@ which should have been provided with the executable.");
         /// Tests delegates.
         /// </summary>
         [Compiler.NoGC]
+        [Drivers.Compiler.Attributes.NoGC]
         private void DelegateTest()
         {
             IntDelegate del = CallbackMethod;
@@ -2603,6 +2609,780 @@ which should have been provided with the executable.");
 
             console.WriteLine("Ended IsInst test. Pausing for 5 seconds.");
             Hardware.Devices.Timer.Default.Wait(5000);
+        }
+
+        private void LongsTest()
+        {
+            console.WriteLine("Starting Longs test...");
+            try
+            {
+                byte passColour = 0x2;
+
+                console.WriteLine("Unsigned tests...");
+                console.Colour(passColour);
+                #region Unsigned
+
+                #region Addition & Subtraction
+                {
+                    ulong x = 0xEFFFFFFFFFFFFFFF;
+                    ulong y = 1;
+                    ulong z = x + y;
+                    if (z == 0xF000000000000000)
+                    {
+                        console.WriteLine("Pass: z == 0xF000000000000000");
+                    }
+                    else
+                    {
+                        console.ErrorColour();
+                        console.WriteLine("Fail: z != 0xF000000000000000");
+                        console.Colour(passColour);
+                    }
+                }
+                {
+                    ulong x = 0xF000000000000000;
+                    ulong y = 1;
+                    ulong z = x - y;
+                    if (z == 0xEFFFFFFFFFFFFFFF)
+                    {
+                        console.WriteLine("Pass: z == 0xEFFFFFFFFFFFFFFF");
+                    }
+                    else
+                    {
+                        console.ErrorColour();
+                        console.WriteLine("Fail: z != 0xEFFFFFFFFFFFFFFF");
+                        console.Colour(passColour);
+                    }
+                }
+                #endregion
+
+                #region Multiplication, (DISABLED - division) operators
+                {
+                    ulong x = 0x7000000000000082;
+                    ulong y = 2;
+                    ulong z = x * y;
+                    if (z == 0xE000000000000104)
+                    {
+                        console.WriteLine("Pass: z == 0xE000000000000104");
+                    }
+                    else
+                    {
+                        console.ErrorColour();
+                        console.WriteLine("Fail: z != 0xE000000000000104");
+                        console.Colour(passColour);
+                    }
+                }
+                //{
+                //    ulong x = 0xE000000000000104;
+                //    ulong y = 2;
+                //    ulong z = x / y;
+                //    if (z == 0x7000000000000082)
+                //    {
+                //        console.WriteLine("Pass: z == 0x7000000000000082");
+                //    }
+                //    else
+                //    {
+                //        console.ErrorColour();
+                //        console.WriteLine("Fail: z != 0x7000000000000082");
+                //        console.Colour(passColour);
+                //    }
+                //}
+                #endregion
+
+                #region DISABLED - Modulo (%) operator
+                //{
+                //    ulong x = 0x7000000000000000;
+                //    ulong y = 5;
+                //    ulong z = x % y;
+                //    if (z == 2)
+                //    {
+                //        console.WriteLine("Pass: z == 2");
+                //    }
+                //    else
+                //    {
+                //        console.ErrorColour();
+                //        console.WriteLine("Fail: z != 2");
+                //        console.Colour(passColour);
+                //    }
+                //}
+                #endregion
+
+                #region Comparison operators (==, !=, >, <, >=, <=)
+                {
+                    ulong x = 0xDEADBEEFDEADBEEF;
+                    ulong y = 0xDEADBEEFDEADBEEF;
+                    if (x == y)
+                    {
+                        console.WriteLine("Pass: x == y == 0xDEADBEEFDEADBEEF");
+                    }
+                    else
+                    {
+                        console.ErrorColour();
+                        console.WriteLine("Fail: x != y != 0xDEADBEEFDEADBEEF");
+                        console.Colour(passColour);
+                    }
+                }
+                {
+                    ulong x = 0xDEADBEEFDEADBEEF;
+                    ulong y = 0xFEADBEEFDEADBEEF;
+                    if (x != y)
+                    {
+                        console.WriteLine("Pass: x != y (0xDEADBEEFDEADBEEF != 0xFEADBEEFDEADBEEF)");
+                    }
+                    else
+                    {
+                        console.ErrorColour();
+                        console.WriteLine("Fail: x == y (0xDEADBEEFDEADBEEF == 0xFEADBEEFDEADBEEF)");
+                        console.Colour(passColour);
+                    }
+                }
+                {
+                    ulong x = 0xDEADBEEFDEADBEEF;
+                    ulong y = 0xFEADBEEFDEADBEEF;
+                    if (x < y)
+                    {
+                        console.WriteLine("Pass: x < y (0xDEADBEEFDEADBEEF < 0xFEADBEEFDEADBEEF)");
+                    }
+                    else
+                    {
+                        console.ErrorColour();
+                        console.WriteLine("Fail: x >= y (0xDEADBEEFDEADBEEF >= 0xFEADBEEFDEADBEEF)");
+                        console.Colour(passColour);
+                    }
+                }
+                {
+                    ulong x = 0xFFADBEEFDEADBEEF;
+                    ulong y = 0xFEADBEEFDEADBEEF;
+                    if (x > y)
+                    {
+                        console.WriteLine("Pass: x > y (0xFFADBEEFDEADBEEF < 0xFEADBEEFDEADBEEF)");
+                    }
+                    else
+                    {
+                        console.ErrorColour();
+                        console.WriteLine("Fail: x <= y (0xFFADBEEFDEADBEEF >= 0xFEADBEEFDEADBEEF)");
+                        console.Colour(passColour);
+                    }
+                }
+                {
+                    ulong x = 0xDEADBEEFDEADBEEF;
+                    ulong y = 0xDEADBEEFDEADBEEF;
+                    if (x <= y)
+                    {
+                        console.WriteLine("Pass: x <= y (0xDEADBEEFDEADBEEF)");
+                    }
+                    else
+                    {
+                        console.ErrorColour();
+                        console.WriteLine("Fail: x > y (0xDEADBEEFDEADBEEF)");
+                        console.Colour(passColour);
+                    }
+                }
+                {
+                    ulong x = 0xAEADBEEFDEADBEEF;
+                    ulong y = 0xDEADBEEFDEADBEEF;
+                    if (x <= y)
+                    {
+                        console.WriteLine("Pass: x <= y (0xAEADBEEFDEADBEEF)");
+                    }
+                    else
+                    {
+                        console.ErrorColour();
+                        console.WriteLine("Fail: x > y (0xAEADBEEFDEADBEEF)");
+                        console.Colour(passColour);
+                    }
+                }
+                {
+                    ulong x = 0xDEADBEEFDEADBEEF;
+                    ulong y = 0xDEADBEEFDEADBEEF;
+                    if (x >= y)
+                    {
+                        console.WriteLine("Pass: x >= y (0xDEADBEEFDEADBEEF)");
+                    }
+                    else
+                    {
+                        console.ErrorColour();
+                        console.WriteLine("Fail: x < y (0xDEADBEEFDEADBEEF)");
+                        console.Colour(passColour);
+                    }
+                }
+                {
+                    ulong x = 0xDEADBEEFDEADBEEF;
+                    ulong y = 0xAEADBEEFDEADBEEF;
+                    if (x >= y)
+                    {
+                        console.WriteLine("Pass: x >= y (0xAEADBEEFDEADBEEF)");
+                    }
+                    else
+                    {
+                        console.ErrorColour();
+                        console.WriteLine("Fail: x < y (0xAEADBEEFDEADBEEF)");
+                        console.Colour(passColour);
+                    }
+                }
+                #endregion
+                
+                #region Shift operators (<<, >>) by less and more than 32 bits and 64 bits
+                {
+                    ulong x = 0x2;
+                    int y = 2;
+                    ulong z = x << y;
+                    if (z == 0x8)
+                    {
+                        console.WriteLine("Pass: z == 8 (<<)");
+                    }
+                    else
+                    {
+                        console.ErrorColour();
+                        console.WriteLine("Fail: z != 8 (<<)");
+                        console.Colour(passColour);
+                    }
+                }
+                {
+                    ulong x = 0x2;
+                    int y = 62;
+                    ulong z = x << y;
+                    if (z == 0x8000000000000000)
+                    {
+                        console.WriteLine("Pass: z == 0x8000000000000000 (<<)");
+                    }
+                    else
+                    {
+                        console.ErrorColour();
+                        console.WriteLine("Fail: z != 0x8000000000000000 (<<)");
+                        console.Colour(passColour);
+                    }
+                }
+                {
+                    ulong x = 0x8;
+                    int y = 2;
+                    ulong z = x >> y;
+                    if (z == 0x2)
+                    {
+                        console.WriteLine("Pass: z == 2 (>>)");
+                    }
+                    else
+                    {
+                        console.ErrorColour();
+                        console.WriteLine("Fail: z != 2 (>>)");
+                        console.Colour(passColour);
+                    }
+                }
+                {
+                    ulong x = 0x8000000000000000;
+                    int y = 62;
+                    ulong z = x >> y;
+                    if (z == 0x2)
+                    {
+                        console.WriteLine("Pass: z == 0x2 (>>)");
+                    }
+                    else
+                    {
+                        console.ErrorColour();
+                        console.WriteLine("Fail: z != 0x2 (>>)");
+                        console.Colour(passColour);
+                    }
+                }
+                #endregion
+                
+                #region Bitwise operators (&, |, ^, ~) 
+                {
+                    ulong x = 0xFFFFFFFFFFFFFFFF;
+                    ulong y = 0xF0FDFFF0FFFDFFFF;
+                    ulong z = x & y;
+                    if (z == 0xF0FDFFF0FFFDFFFF)
+                    {
+                        console.WriteLine("Pass: z == 0xF0FDFFF0FFFDFFFF (&)");
+                    }
+                    else
+                    {
+                        console.ErrorColour();
+                        console.WriteLine("Fail: z != 0xF0FDFFF0FFFDFFFF (&)");
+                        console.Colour(passColour);
+                    }
+                }
+                {
+                    ulong x = 0xF1000002000F0000;
+                    ulong y = 0xF0FDFFF0FFFDFFFF;
+                    ulong z = x | y;
+                    if (z == 0xF1FDFFF2FFFFFFFF)
+                    {
+                        console.WriteLine("Pass: z == 0xF1FDFFF2FFFFFFFF (|)");
+                    }
+                    else
+                    {
+                        console.ErrorColour();
+                        console.WriteLine("Fail: z != 0xF1FDFFF2FFFFFFFF (|)");
+                        console.Colour(passColour);
+                    }
+                }
+                {
+                    ulong x = 0xFFFFFFFFFFFFFFFF;
+                    ulong y = 0xF0FDFFF0FFFDFFFF;
+                    ulong z = x ^ y;
+                    if (z == 0x0F02000F00020000)
+                    {
+                        console.WriteLine("Pass: z == 0x0F02000F00020000 (^)");
+                    }
+                    else
+                    {
+                        console.ErrorColour();
+                        console.WriteLine("Fail: z != 0x0F02000F00020000 (^)");
+                        console.Colour(passColour);
+                    }
+                }
+                {
+                    ulong x = 0x8FFFFFFFFFFFF8FF;
+                    ulong z = ~x;
+                    if (z == 0x7000000000000700)
+                    {
+                        console.WriteLine("Pass: z == 0x7000000000000700 (~)");
+                    }
+                    else
+                    {
+                        console.ErrorColour();
+                        console.WriteLine("Fail: z != 0x7000000000000700 (~)");
+                        console.Colour(passColour);
+                    }
+                }
+                #endregion
+
+                #region Cast to FOS_System.String
+                {
+                    ulong x = 0x8FFFFFFFFFFFF8FF;
+                    FOS_System.String casted = (FOS_System.String)x;
+                    FOS_System.String expected = "0x8FFFFFFF 0xFFFFF8FF";
+                    if (casted == expected)
+                    {
+                        console.WriteLine("Pass: casted == expected");
+                    }
+                    else
+                    {
+                        console.ErrorColour();
+                        console.WriteLine("Fail: casted != expected (" + casted + " != " + expected);
+                        console.Colour(passColour);
+                    }
+                }
+                #endregion
+
+                #endregion
+                console.DefaultColour();
+                console.WriteLine("Unsigned tests ended.");
+
+                console.WriteLine("Signed tests...");
+                console.Colour(passColour);
+                #region Signed
+
+                #region Addition & Subtraction
+                {
+                    long x = 0x6FFFFFFFFFFFFFFF;
+                    long y = 1;
+                    long z = x + y;
+                    if (z == 0x7000000000000000)
+                    {
+                        console.WriteLine("Pass: z == 0x7000000000000000");
+                    }
+                    else
+                    {
+                        console.ErrorColour();
+                        console.WriteLine("Fail: z != 0x7000000000000000");
+                        console.Colour(passColour);
+                    }
+                }
+                {
+                    long x = 0x7000000000000000;
+                    long y = 1;
+                    long z = x - y;
+                    if (z == 0x6FFFFFFFFFFFFFFF)
+                    {
+                        console.WriteLine("Pass: z == 0x6FFFFFFFFFFFFFFF");
+                    }
+                    else
+                    {
+                        console.ErrorColour();
+                        console.WriteLine("Fail: z != 0x6FFFFFFFFFFFFFFF");
+                        console.Colour(passColour);
+                    }
+                }
+                {
+                    long x = -1;
+                    long y = 1;
+                    long z = x + y;
+                    if (z == 0)
+                    {
+                        console.WriteLine("Pass: z == 0");
+                    }
+                    else
+                    {
+                        console.ErrorColour();
+                        console.WriteLine("Fail: z != 0");
+                        console.Colour(passColour);
+                    }
+                }
+                {
+                    long x = -9223372036854775808;
+                    long y = 0x0F00000000000000;
+                    long z = x + y;
+                    if (z == -8142508126285856768)
+                    {
+                        console.WriteLine("Pass: z == -8142508126285856768");
+                    }
+                    else
+                    {
+                        console.ErrorColour();
+                        console.WriteLine("Fail: z != -8142508126285856768");
+                        console.Colour(passColour);
+                    }
+                }
+                {
+                    long x = -9223372036854775808;
+                    long y = 0x7FFFFFFFFFFFFFFF;
+                    long z = x + y;
+                    if (z == -1)
+                    {
+                        console.WriteLine("Pass: z == -1");
+                    }
+                    else
+                    {
+                        console.ErrorColour();
+                        console.WriteLine("Fail: z != -1");
+                        console.Colour(passColour);
+                    }
+                }
+                {
+                    long x = -1;
+                    long y = 0x7FFFFFFFFFFFFFFF;
+                    long z = x + y;
+                    if (z == 0x7FFFFFFFFFFFFFFE)
+                    {
+                        console.WriteLine("Pass: z == 0x7FFFFFFFFFFFFFFE");
+                    }
+                    else
+                    {
+                        console.ErrorColour();
+                        console.WriteLine("Fail: z != 0x7FFFFFFFFFFFFFFE");
+                        console.Colour(passColour);
+                    }
+                }
+                #endregion
+
+                #region Multiplication, (DISABLED - division) operators
+                {
+                    long x = 0x20FFFFFFFFFFFFFF;
+                    long y = 2;
+                    long z = x * y;
+                    if (z == 0x41FFFFFFFFFFFFFE)
+                    {
+                        console.WriteLine("Pass: z == 0x41FFFFFFFFFFFFFE");
+                    }
+                    else
+                    {
+                        console.ErrorColour();
+                        console.WriteLine("Fail: z != 0x41FFFFFFFFFFFFFE");
+                        console.Colour(passColour);
+                    }
+                }
+                //{
+                //    long x = 0x6066666666666666;
+                //    long y = 2;
+                //    long z = x / y;
+                //    if (z == 0x3033333333333333)
+                //    {
+                //        console.WriteLine("Pass: z == 0x3033333333333333");
+                //    }
+                //    else
+                //    {
+                //        console.ErrorColour();
+                //        console.WriteLine("Fail: z != 0x3033333333333333");
+                //        console.Colour(passColour);
+                //    }
+                //}
+                #endregion
+
+                #region DISABLED - Modulo (%) operator
+                //{
+                //    long x = 0x7000000000000000;
+                //    long y = 5;
+                //    long z = x % y;
+                //    if (z == 2)
+                //    {
+                //        console.WriteLine("Pass: z == 2");
+                //    }
+                //    else
+                //    {
+                //        console.ErrorColour();
+                //        console.WriteLine("Fail: z != 2");
+                //        console.Colour(passColour);
+                //    }
+                //}
+                #endregion
+
+                #region Comparison operators (==, !=, >, <, >=, <=)
+                {
+                    long x = 0x6EADBEEFDEADBEEF;
+                    long y = 0x6EADBEEFDEADBEEF;
+                    if (x == y)
+                    {
+                        console.WriteLine("Pass: x == y == 0x6EADBEEFDEADBEEF");
+                    }
+                    else
+                    {
+                        console.ErrorColour();
+                        console.WriteLine("Fail: x != y != 0x6EADBEEFDEADBEEF");
+                        console.Colour(passColour);
+                    }
+                }
+                {
+                    long x = 0x5EADBEEFDEADBEEF;
+                    long y = 0x6EADBEEFDEADBEEF;
+                    if (x != y)
+                    {
+                        console.WriteLine("Pass: x != y (0x5EADBEEFDEADBEEF != 0x6EADBEEFDEADBEEF)");
+                    }
+                    else
+                    {
+                        console.ErrorColour();
+                        console.WriteLine("Fail: x == y (0x5EADBEEFDEADBEEF == 0x6EADBEEFDEADBEEF)");
+                        console.Colour(passColour);
+                    }
+                }
+                {
+                    long x = 0x5EADBEEFDEADBEEF;
+                    long y = 0x6EADBEEFDEADBEEF;
+                    if (x < y)
+                    {
+                        console.WriteLine("Pass: x < y (0x5EADBEEFDEADBEEF < 0x6EADBEEFDEADBEEF)");
+                    }
+                    else
+                    {
+                        console.ErrorColour();
+                        console.WriteLine("Fail: x >= y (0x5EADBEEFDEADBEEF >= 0x6EADBEEFDEADBEEF)");
+                        console.Colour(passColour);
+                    }
+                }
+                {
+                    long x = 0x6FADBEEFDEADBEEF;
+                    long y = 0x6EADBEEFDEADBEEF;
+                    if (x > y)
+                    {
+                        console.WriteLine("Pass: x > y (0x6FADBEEFDEADBEEF < 0x6EADBEEFDEADBEEF)");
+                    }
+                    else
+                    {
+                        console.ErrorColour();
+                        console.WriteLine("Fail: x <= y (0x6FADBEEFDEADBEEF >= 0x6EADBEEFDEADBEEF)");
+                        console.Colour(passColour);
+                    }
+                }
+                {
+                    long x = 0x6EADBEEFDEADBEEF;
+                    long y = 0x6EADBEEFDEADBEEF;
+                    if (x <= y)
+                    {
+                        console.WriteLine("Pass: x <= y (0x6EADBEEFDEADBEEF)");
+                    }
+                    else
+                    {
+                        console.ErrorColour();
+                        console.WriteLine("Fail: x > y (0x6EADBEEFDEADBEEF)");
+                        console.Colour(passColour);
+                    }
+                }
+                {
+                    long x = 0x3EADBEEFDEADBEEF;
+                    long y = 0x6EADBEEFDEADBEEF;
+                    if (x <= y)
+                    {
+                        console.WriteLine("Pass: x <= y (0x3EADBEEFDEADBEEF)");
+                    }
+                    else
+                    {
+                        console.ErrorColour();
+                        console.WriteLine("Fail: x > y (0x3EADBEEFDEADBEEF)");
+                        console.Colour(passColour);
+                    }
+                }
+                {
+                    ulong x = 0x6EADBEEFDEADBEEF;
+                    ulong y = 0x6EADBEEFDEADBEEF;
+                    if (x >= y)
+                    {
+                        console.WriteLine("Pass: x >= y (0x6EADBEEFDEADBEEF)");
+                    }
+                    else
+                    {
+                        console.ErrorColour();
+                        console.WriteLine("Fail: x < y (0x6EADBEEFDEADBEEF)");
+                        console.Colour(passColour);
+                    }
+                }
+                {
+                    ulong x = 0x6EADBEEFDEADBEEF;
+                    ulong y = 0x3EADBEEFDEADBEEF;
+                    if (x >= y)
+                    {
+                        console.WriteLine("Pass: x >= y (0x3EADBEEFDEADBEEF)");
+                    }
+                    else
+                    {
+                        console.ErrorColour();
+                        console.WriteLine("Fail: x < y (0x3EADBEEFDEADBEEF)");
+                        console.Colour(passColour);
+                    }
+                }
+                #endregion
+
+                #region Shift operators (<<, >>) by less and more than 32 bits and 64 bits
+                {
+                    long x = 0x2;
+                    int y = 2;
+                    long z = x << y;
+                    if (z == 0x8)
+                    {
+                        console.WriteLine("Pass: z == 8 (<<)");
+                    }
+                    else
+                    {
+                        console.ErrorColour();
+                        console.WriteLine("Fail: z != 8 (<<)");
+                        console.Colour(passColour);
+                    }
+                }
+                {
+                    long x = 0x2;
+                    int y = 61;
+                    long z = x << y;
+                    if (z == 0x4000000000000000)
+                    {
+                        console.WriteLine("Pass: z == 0x4000000000000000 (<<)");
+                    }
+                    else
+                    {
+                        console.ErrorColour();
+                        console.WriteLine("Fail: z != 0x4000000000000000 (<<)");
+                        console.Colour(passColour);
+                    }
+                }
+                {
+                    long x = 0x8;
+                    int y = 2;
+                    long z = x >> y;
+                    if (z == 0x2)
+                    {
+                        console.WriteLine("Pass: z == 2 (>>)");
+                    }
+                    else
+                    {
+                        console.ErrorColour();
+                        console.WriteLine("Fail: z != 2 (>>)");
+                        console.Colour(passColour);
+                    }
+                }
+                {
+                    long x = 0x4000000000000000;
+                    int y = 61;
+                    long z = x >> y;
+                    if (z == 0x2)
+                    {
+                        console.WriteLine("Pass: z == 0x2 (>>)");
+                    }
+                    else
+                    {
+                        console.ErrorColour();
+                        console.WriteLine("Fail: z != 0x2 (>>)");
+                        console.Colour(passColour);
+                    }
+                }
+                #endregion
+
+                #region Bitwise operators (&, |, ^, ~)
+                {
+                    long x = 0x0FFFFFFFFFFFFFFF;
+                    long y = 0x00FDFFF0FFFDFFFF;
+                    long z = x & y;
+                    if (z == 0x00FDFFF0FFFDFFFF)
+                    {
+                        console.WriteLine("Pass: z == 0x00FDFFF0FFFDFFFF (&)");
+                    }
+                    else
+                    {
+                        console.ErrorColour();
+                        console.WriteLine("Fail: z != 0x00FDFFF0FFFDFFFF (&)");
+                        console.Colour(passColour);
+                    }
+                }
+                {
+                    long x = 0x71000002000F0000;
+                    long y = 0x70FDFFF0FFFDFFFF;
+                    long z = x | y;
+                    if (z == 0x71FDFFF2FFFFFFFF)
+                    {
+                        console.WriteLine("Pass: z == 0x71FDFFF2FFFFFFFF (|)");
+                    }
+                    else
+                    {
+                        console.ErrorColour();
+                        console.WriteLine("Fail: z != 0x71FDFFF2FFFFFFFF (|)");
+                        console.Colour(passColour);
+                    }
+                }
+                {
+                    long x = 0x0FFFFFFFFFFFFFFF;
+                    long y = 0x00FDFFF0FFFDFFFF;
+                    long z = x ^ y;
+                    if (z == 0x0F02000F00020000)
+                    {
+                        console.WriteLine("Pass: z == 0x0F02000F00020000 (^)");
+                    }
+                    else
+                    {
+                        console.ErrorColour();
+                        console.WriteLine("Fail: z != 0x0F02000F00020000 (^)");
+                        console.Colour(passColour);
+                    }
+                }
+                {
+                    long x = -8070450532247930625;
+                    long z = ~x;
+                    if (z == 0x7000000000000700)
+                    {
+                        console.WriteLine("Pass: z == 0x7000000000000700 (~)");
+                    }
+                    else
+                    {
+                        console.ErrorColour();
+                        console.WriteLine("Fail: z != 0x7000000000000700 (~)");
+                        console.Colour(passColour);
+                    }
+                }
+                #endregion
+
+                #region Cast to FOS_System.String
+                {
+                    long x = -8070450532247930625;
+                    FOS_System.String casted = (FOS_System.String)x;
+                    FOS_System.String expected = "0x8FFFFFFF 0xFFFFF8FF";
+                    if (casted == expected)
+                    {
+                        console.WriteLine("Pass: casted == expected");
+                    }
+                    else
+                    {
+                        console.ErrorColour();
+                        console.WriteLine("Fail: casted != expected (" + casted + " != " + expected);
+                        console.Colour(passColour);
+                    }
+                }
+                #endregion
+
+                #endregion
+                console.DefaultColour();
+                console.WriteLine("Signed tests ended.");
+            }
+            catch
+            {
+                OutputCurrentExceptionInfo();
+            }
+            console.WriteLine("Finished Longs test.");
         }
     }
 

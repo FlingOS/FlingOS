@@ -36,15 +36,14 @@ namespace Kernel.Core.Tasks
     {
         public static void Main()
         {
+            //Note: Do not use Thread.Sleep within this task because this is the idle task. Its purpose
+            //      is to be the only thread left awake when all others are slept.
             while (true)
             {
-                //TODO: Enable when GC is thread-safe
-                //Hardware.Devices.Timer.Default.Wait(1000);
-                //TODO: Disable when GC is thread-safe
-                *((ushort*)0xB809E) = (0x1F00 | ' ');
+                *((ushort*)0xB809E) = (0x1F00 | '1');
                 Hardware.Devices.CPU.Default.Halt();
 
-                *((ushort*)0xB809E) = (0x3F00 | ' ');
+                *((ushort*)0xB809E) = (0x3F00 | '2');
                 Hardware.Devices.CPU.Default.Halt();
             }
         }

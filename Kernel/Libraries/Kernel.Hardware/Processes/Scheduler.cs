@@ -35,6 +35,7 @@ using System;
 namespace Kernel.Hardware.Processes
 {
     [Compiler.PluggedClass]
+    [Drivers.Compiler.Attributes.PluggedClass]
     public static unsafe class Scheduler
     {
         public enum Priority : int 
@@ -111,10 +112,12 @@ namespace Kernel.Hardware.Processes
             Enable();
         }
         [Compiler.PluggedMethod(ASMFilePath = @"ASM\Processes\Scheduler")]
+        [Drivers.Compiler.Attributes.PluggedMethod(ASMFilePath = @"ASM\Processes\Scheduler")]
         private static void LoadTR()
         {
         }
         [Compiler.PluggedMethod(ASMFilePath = null)]
+        [Drivers.Compiler.Attributes.PluggedMethod(ASMFilePath = null)]
         private static TSS* GetTSSPointer()
         {
             return null;
@@ -125,6 +128,9 @@ namespace Kernel.Hardware.Processes
         public static bool print = false;
 #endif
         [Compiler.NoDebug]
+        [Drivers.Compiler.Attributes.NoDebug]
+        [Compiler.NoGC]
+        [Drivers.Compiler.Attributes.NoGC]
         private static void OnTimerInterrupt(FOS_System.Object state)
         {
             if (!Enabled)
@@ -135,6 +141,9 @@ namespace Kernel.Hardware.Processes
             UpdateCurrentState();
         }
         [Compiler.NoDebug]
+        [Drivers.Compiler.Attributes.NoDebug]
+        [Compiler.NoGC]
+        [Drivers.Compiler.Attributes.NoGC]
         public static void UpdateCurrentState()
         {
 #if SCHEDULER_HANDLER_TRACE
@@ -203,7 +212,7 @@ namespace Kernel.Hardware.Processes
                             UpdateSleepingThreads();
                         }
                     }
-                    
+
 #if SCHEDULER_HANDLER_TRACE
                     BasicConsole.WriteLine("Scheduler: Found runnable process and thread.");
 #endif
@@ -228,12 +237,23 @@ namespace Kernel.Hardware.Processes
                 }
                 
 #if SCHEDULER_HANDLER_TRACE
-                if (Processes.ProcessManager.Processes.Count > 1)
-                    BasicConsole.WriteLine("Scheduler: Switching process/thread.");
+                //if (Processes.ProcessManager.Processes.Count > 1)
+                //{
+                //    BasicConsole.WriteLine("Scheduler: Switching process/thread.");
+                //}
+
+                if (threadIdx >= ((Process)ProcessManager.Processes[processIdx]).Threads.Count)
+                {
+                    BasicConsole.WriteLine("Error! Scheduler has picked a thread index which is out of range!");
+                }
+                else if (threadIdx < 0)
+                {
+                    BasicConsole.WriteLine("Error! Scheduler has picked a thread index less than 0!");
+                }
 #endif
-                
+
                 ProcessManager.SwitchProcess(processId,
-                    (int)((Thread)ProcessManager.CurrentProcess.Threads[threadIdx]).Id);
+                    (int)((Thread)((Process)ProcessManager.Processes[processIdx]).Threads[threadIdx]).Id);
             }
 
             if (!ProcessManager.CurrentThread_State->Started)
@@ -249,6 +269,9 @@ namespace Kernel.Hardware.Processes
 #endif
         }
         [Compiler.NoDebug]
+        [Drivers.Compiler.Attributes.NoDebug]
+        [Compiler.NoGC]
+        [Drivers.Compiler.Attributes.NoGC]
         private static void NextProcess(ref int threadIdx, ref int processIdx)
         {
             processIdx++;
@@ -262,6 +285,9 @@ namespace Kernel.Hardware.Processes
             threadIdx = NextThread(-1, processIdx);
         }
         [Compiler.NoDebug]
+        [Drivers.Compiler.Attributes.NoDebug]
+        [Compiler.NoGC]
+        [Drivers.Compiler.Attributes.NoGC]
         private static int NextThread(int threadIdx, int processIdx)
         {
             threadIdx++;
@@ -277,11 +303,13 @@ namespace Kernel.Hardware.Processes
             return threadIdx;
         }
         [Compiler.NoDebug]
+        [Drivers.Compiler.Attributes.NoDebug]
         private static void UpdateCurrentThread()
         {
             ProcessManager.CurrentThread.TimeToRun--;
         }
         [Compiler.NoDebug]
+        [Drivers.Compiler.Attributes.NoDebug]
         private static void UpdateSleepingThreads()
         {
             for (int pIdx = 0; pIdx < ProcessManager.Processes.Count; pIdx++)
@@ -305,6 +333,7 @@ namespace Kernel.Hardware.Processes
             }
         }
         [Compiler.NoDebug]
+        [Drivers.Compiler.Attributes.NoDebug]
         private static void SetupThreadForStart()
         {
 #if SCHEDULER_TRACE
@@ -463,6 +492,7 @@ namespace Kernel.Hardware.Processes
         }
 
         [Compiler.NoDebug]
+        [Drivers.Compiler.Attributes.NoDebug]
         public static void Enable()
         {
             //BasicConsole.WriteLine("Enabling scheduler...");
@@ -471,6 +501,7 @@ namespace Kernel.Hardware.Processes
             //Hardware.Interrupts.Interrupts.EnableInterrupts();
         }
         [Compiler.NoDebug]
+        [Drivers.Compiler.Attributes.NoDebug]
         public static void Disable()
         {
             //Hardware.Interrupts.Interrupts.DisableInterrupts();

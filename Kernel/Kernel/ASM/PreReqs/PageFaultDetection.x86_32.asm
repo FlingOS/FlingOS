@@ -1,4 +1,26 @@
-﻿method_System_Void_RETEND_Kernel_PreReqs_DECLEND_PageFaultDetection_NAMEEND___:
+﻿BITS 32
+
+SECTION .text
+GLOBAL File_PageFaultDetection:function
+File_PageFaultDetection:
+
+GLOBAL method_System_Void_RETEND_Kernel_PreReqs_DECLEND_PageFaultDetection_NAMEEND___:function
+
+EXTERN staticfield_System_Boolean_Kernel_PreReqs_PageFaultDetection_Initialised
+EXTERN staticfield_System_Boolean_Kernel_PreReqs_PageFaultDetection_LoopPrevention
+EXTERN staticfield_System_String_Kernel_PreReqs_PageFaultDetection_ErrorString
+EXTERN staticfield_System_String_Kernel_PreReqs_PageFaultDetection_SeparatorString
+EXTERN method_System_Void_RETEND_Kernel_BasicConsole_DECLEND_WriteLine_NAMEEND___
+EXTERN method_System_Void_RETEND_Kernel_BasicConsole_DECLEND_WriteLine_NAMEEND__Kernel_FOS_System_String_
+EXTERN method_System_Void_RETEND_Kernel_BasicConsole_DECLEND_Write_NAMEEND__Kernel_FOS_System_String_
+EXTERN method_System_Void_RETEND_Kernel_BasicConsole_DECLEND_DelayOutput_NAMEEND__System_Int32_
+EXTERN method_Kernel_FOS_System_String_RETEND_Kernel_FOS_System_String_DECLEND_op_Implicit_NAMEEND__System_UInt32_
+
+EXTERN Kernel_MemStart
+EXTERN Kernel_MemEnd
+EXTERN Kernel_Stack
+
+method_System_Void_RETEND_Kernel_PreReqs_DECLEND_PageFaultDetection_NAMEEND___:
 
 ; This method is designed for debugging hard to trace page faults
 ;	It was originally written for tackling bug "Issue #14 - 0xA5F000C8 Page-fault"
@@ -166,6 +188,7 @@ ret
 
 ; ---------------------- FAILURE HANDLING ----------------------
 .FAIL:
+method_System_Void_RETEND_Kernel_PreReqs_DECLEND_PageFaultDetection_NAMEEND___Fail:
 ; INPUT to this section of code: 
 ;		EAX = Value of register which caused failure
 ;		EBX = Value at address which caused failure

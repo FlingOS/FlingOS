@@ -14,6 +14,38 @@
 ;                                                                                ;
 ; - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  ;
 
+BITS 32
+
+SECTION .text
+
+GLOBAL BasicDebug_Execute:function
+GLOBAL BasicDebug_SetInt1TrapFlag:function
+GLOBAL BasicDebug_ClearInt1TrapFlag:function
+GLOBAL BasicDebug_SetInt3:function
+GLOBAL BasicDebug_ClearInt3:function
+
+EXTERN BasicDebug_WaitForCommand
+EXTERN BasicDebug_ContinueCmd
+EXTERN BasicDebug_StepNextCmd
+EXTERN BasicDebug_GetBreakAddressCmd
+EXTERN BasicDebug_GetRegistersCmd
+EXTERN BasicDebug_GetArgumentsCmd
+EXTERN BasicDebug_GetLocalsCmd
+EXTERN BasicDebug_SetInt3Cmd
+EXTERN BasicDebug_ClearInt3Cmd
+EXTERN BasicDebug_GetMemoryCmd
+
+EXTERN BasicDebug_SendBreakCmd
+EXTERN BasicDebug_SendBreakAddress
+EXTERN BasicDebug_SendRegisters
+EXTERN BasicDebug_SendArguments
+EXTERN BasicDebug_SendLocals
+EXTERN BasicDebug_SendMemory
+
+EXTERN BasicDebug_CallerESP
+
+EXTERN method_System_UInt32_Kernel_Debug_BasicDebug_Serial_ReadUInt32__
+
 ; BEGIN - BasicDebug_Execute
 ; See BasicDebug_InterruptHandler for global variables
 

@@ -41,6 +41,7 @@ namespace Kernel.FOS_System
     /// class!
     /// </remarks>
     [Compiler.TypeClass]
+    [Drivers.Compiler.Attributes.TypeClass]
     public unsafe abstract class Type : System.Type
     {
         /// <summary>
@@ -96,7 +97,9 @@ namespace Kernel.FOS_System
         /// <param name="y">The second type to compare with the first.</param>
         /// <returns>True if they are equal, otherwise false.</returns>
         [Compiler.NoDebug]
+        [Drivers.Compiler.Attributes.NoDebug]
         [Compiler.NoGC]
+        [Drivers.Compiler.Attributes.NoGC]
         public static bool operator ==(Type x, Type y)
         {
             //Prevent recursive calls to this "==" implicit method!
@@ -119,7 +122,9 @@ namespace Kernel.FOS_System
         /// <param name="y">The second type to compare with the first.</param>
         /// <returns>True if they are not equal, otherwise false.</returns>
         [Compiler.NoDebug]
+        [Drivers.Compiler.Attributes.NoDebug]
         [Compiler.NoGC]
+        [Drivers.Compiler.Attributes.NoGC]
         public static bool operator !=(Type x, Type y)
         {
             return !(x == y);
@@ -130,6 +135,7 @@ namespace Kernel.FOS_System
     /// Represents the information in the methods type table.
     /// </summary>
     [Compiler.MethodInfoStruct]
+    [Drivers.Compiler.Attributes.MethodInfoStruct]
     [System.Runtime.InteropServices.StructLayout(System.Runtime.InteropServices.LayoutKind.Sequential, Pack = 1)]
     public unsafe struct MethodInfo
     {
@@ -150,6 +156,7 @@ namespace Kernel.FOS_System
     /// Represents the information in the fields type table.
     /// </summary>
     [Compiler.FieldInfoStruct]
+    [Drivers.Compiler.Attributes.FieldInfoStruct]
     [System.Runtime.InteropServices.StructLayout(System.Runtime.InteropServices.LayoutKind.Sequential, Pack = 1)]
     public unsafe struct FieldInfo
     {

@@ -26,7 +26,7 @@
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
-    <Optimize>false</Optimize>
+    <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
@@ -79,6 +79,10 @@
     <ProjectReference Include="..\..\Compiler\Kernel.Compiler.csproj">
       <Project>{061e5f53-5eff-4e12-94ee-9e18459e5cf4}</Project>
       <Name>Kernel.Compiler</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Drivers\Compiler\Drivers.Compiler.csproj">
+      <Project>{1fb0e622-d2c6-4a5c-b5b6-d2bb5e502af1}</Project>
+      <Name>Drivers.Compiler</Name>
     </ProjectReference>
     <ProjectReference Include="..\Kernel.FOS_System.IO\Kernel.FOS_System.IO.csproj">
       <Project>{5c9fdb7d-604e-4927-9d3f-e2c599b20797}</Project>

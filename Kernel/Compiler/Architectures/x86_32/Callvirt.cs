@@ -191,6 +191,7 @@ namespace Kernel.Compiler.Architectures.x86_32
                 {
                     //Normal callvirt
                     // - Get object ref from loaded args
+                    // - Check object ref not null
                     // - Get type table entry from object ref
                     // - Get method table from type table entry
                     // - Scan method table for the method we want
@@ -212,12 +213,24 @@ namespace Kernel.Compiler.Architectures.x86_32
                     string notFound_Label = string.Format("{0}.IL_{1}_NotFound",
                                                     aScannerState.GetMethodID(aScannerState.CurrentILChunk.Method),
                                                     anILOpInfo.Position);
+                    string notNull_Label = string.Format("{0}.IL_{1}_NotNullMem",
+                    aScannerState.GetMethodID(aScannerState.CurrentILChunk.Method),
+                    anILOpInfo.Position);
+
+                    
                     DB_Type declaringDBType = DebugDatabase.GetType(aScannerState.GetTypeID(methodToCall.DeclaringType));
 
                     //Get object ref
                     int bytesForAllParams = ((MethodInfo)methodToCall).GetParameters().Select(x => Utils.GetNumBytesForType(x.ParameterType)).Sum();
                     GlobalMethods.InsertPageFaultDetection(result, aScannerState, "esp", bytesForAllParams, (OpCodes)anILOpInfo.opCode.Value);
                     result.AppendLine(string.Format("mov dword eax, [esp+{0}]", bytesForAllParams));
+
+                    //Check object ref
+                    result.AppendLine("cmp eax, 0");
+                    result.AppendLine(string.Format("jnz {0}", notNull_Label));
+                    result.AppendLine("call GetEIP");
+                    result.AppendLine(string.Format("call {0}", aScannerState.GetMethodID(aScannerState.HaltMethod)));
+                    result.AppendLine(notNull_Label + ":");
 
                     //Get type ref
                     int typeOffset = aScannerState.GetFieldOffset(declaringDBType, "_Type");

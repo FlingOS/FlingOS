@@ -32,7 +32,33 @@ using System.Threading.Tasks;
 
 namespace Drivers.Compiler.Types
 {
-    class FieldInfo
+    public class FieldInfo
     {
+        public System.Reflection.FieldInfo UnderlyingInfo;
+        public Type FieldType { get { return UnderlyingInfo.FieldType; } }
+        public bool IsStatic { get { return UnderlyingInfo.IsStatic; } }
+
+        public int OffsetInBytes { get; set; }
+
+        public string ID
+        {
+            get
+            {
+                if (IsStatic)
+                {
+                    return "staticfield_" + Utilities.FilterIdentifierForInvalidChars(UnderlyingInfo.FieldType.FullName + "-" + UnderlyingInfo.DeclaringType.FullName + "." + UnderlyingInfo.Name);
+                }
+                else
+                {
+                    return "field_" + Utilities.FilterIdentifierForInvalidChars(UnderlyingInfo.FieldType.FullName + "-" + UnderlyingInfo.DeclaringType.FullName + "." + UnderlyingInfo.Name);
+                }
+            }
+        }
+        public string Name { get { return UnderlyingInfo.Name; } }
+
+        public override string ToString()
+        {
+            return UnderlyingInfo.Name;
+        }
     }
 }

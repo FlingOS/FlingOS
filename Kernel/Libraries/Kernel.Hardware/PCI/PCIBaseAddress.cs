@@ -64,6 +64,7 @@ namespace Kernel.Hardware.PCI
         /// <param name="raw">The raw address value.</param>
         /// <param name="aSize">The size of the PCI registers pointed to by the base address.</param>
         [Compiler.NoDebug]
+        [Drivers.Compiler.Attributes.NoDebug]
         internal PCIBaseAddress(uint raw, uint aSize)
         {
             //Determine whether this is an IO port base address

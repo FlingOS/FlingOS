@@ -1,4 +1,10 @@
-﻿method_System_UInt64_RETEND_Kernel_FOS_System_Math_DECLEND_Divide_NAMEEND__System_UInt64_System_UInt32_:
+﻿BITS 32
+
+SECTION .text
+
+GLOBAL method_System_UInt64_RETEND_Kernel_FOS_System_Math_DECLEND_Divide_NAMEEND__System_UInt64_System_UInt32_:function
+
+method_System_UInt64_RETEND_Kernel_FOS_System_Math_DECLEND_Divide_NAMEEND__System_UInt64_System_UInt32_:
 
 push dword ebp
 mov dword ebp, esp

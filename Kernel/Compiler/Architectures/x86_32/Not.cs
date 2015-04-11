@@ -56,14 +56,31 @@ namespace Kernel.Compiler.Architectures.x86_32
             StringBuilder result = new StringBuilder();
 
             StackItem theItem = aScannerState.CurrentStackFrame.Stack.Peek();
-            if (theItem.sizeOnStackInBytes != 4 || theItem.isFloat)
+            if (theItem.isFloat)
             {
-                throw new NotSupportedException("Not op not supported for specified operand type!");
+                //SUPPORT - Not op for floats
+                throw new NotSupportedException("Not op not supported for float operands!");
             }
 
-            result.AppendLine("pop dword eax");
-            result.AppendLine("not eax");
-            result.AppendLine("push dword eax");
+            if (theItem.sizeOnStackInBytes == 4)
+            {
+                result.AppendLine("pop dword eax");
+                result.AppendLine("not eax");
+                result.AppendLine("push dword eax");
+            }
+            else if (theItem.sizeOnStackInBytes == 8)
+            {
+                result.AppendLine("pop dword eax");
+                result.AppendLine("pop dword ebx");
+                result.AppendLine("not eax");
+                result.AppendLine("not ebx");
+                result.AppendLine("push dword ebx");
+                result.AppendLine("push dword eax");
+            }
+            else
+            {
+                throw new NotSupportedException("Not op not supported for operand size!");
+            }
 
             return result.ToString().Trim();
         }

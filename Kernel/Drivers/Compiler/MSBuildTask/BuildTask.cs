@@ -66,9 +66,9 @@ namespace Drivers.Compiler.MSBuildTask
         
         public override bool Execute()
         {
-            App.CompilerProcess.LibraryPath = LibraryPath;
-            App.CompilerProcess.OutputPath = OutputPath;
-            App.CompilerProcess.ToolsPath = ToolsPath;
+            Options.LibraryPath = LibraryPath;
+            Options.OutputPath = OutputPath;
+            Options.ToolsPath = ToolsPath;
 
             Options.BuildMode = DebugBuild ? Options.BuildModes.Debug : Options.BuildModes.Release;
             Options.TargetArchitecture = TargetArchitecture;
@@ -76,7 +76,7 @@ namespace Drivers.Compiler.MSBuildTask
             return App.CompilerProcess.Execute(
                     Logger_OnLogMessage,
                     Logger_OnLogWarning,
-                    Logger_OnLogError) != App.CompilerProcess.ErrorCode.NoError;
+                    Logger_OnLogError) == App.CompilerProcess.ErrorCode.NoError;
         }
 
         private void Logger_OnLogError(string errorCode, string file, int lineNumber, string message)

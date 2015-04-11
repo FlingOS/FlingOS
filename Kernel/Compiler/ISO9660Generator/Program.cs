@@ -34,6 +34,7 @@ namespace ISO9660Generator
         static void Main(string[] args)
         {
             Console.WriteLine("Generating ISO...");
+            Console.WriteLine("Args: " + string.Join(", ", args));
 
             short BootLoadSize = short.Parse(args[0]);
             string IsoFileName = args[1];

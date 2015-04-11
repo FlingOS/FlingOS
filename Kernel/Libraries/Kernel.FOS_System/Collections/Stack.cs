@@ -64,6 +64,7 @@ namespace Kernel.FOS_System.Collections
         /// Creates a new stack with initial capacity of 5.
         /// </summary>
         [Compiler.NoDebug]
+        [Drivers.Compiler.Attributes.NoDebug]
         public Stack()
             : this(5)
         {
@@ -73,6 +74,7 @@ namespace Kernel.FOS_System.Collections
         /// </summary>
         /// <param name="capacity">The initial capacity of the list.</param>
         [Compiler.NoDebug]
+        [Drivers.Compiler.Attributes.NoDebug]
         public Stack(int capacity)
         {
             internalList = new List(capacity);
@@ -147,6 +149,7 @@ namespace Kernel.FOS_System.Collections
         /// Creates a new stack with initial capacity of 5.
         /// </summary>
         [Compiler.NoDebug]
+        [Drivers.Compiler.Attributes.NoDebug]
         public UInt32Stack()
             : this(5)
         {
@@ -156,6 +159,7 @@ namespace Kernel.FOS_System.Collections
         /// </summary>
         /// <param name="capacity">The initial capacity of the list.</param>
         [Compiler.NoDebug]
+        [Drivers.Compiler.Attributes.NoDebug]
         public UInt32Stack(int capacity)
         {
             internalList = new UInt32List(capacity);

@@ -1,4 +1,24 @@
-﻿%define KERNEL_MODE_DPL 0
+﻿BITS 32
+
+SECTION .text
+GLOBAL File_IDT:function
+File_IDT:
+
+EXTERN method_System_Void_RETEND_Kernel_Hardware_Interrupts_Interrupts_DECLEND_CommonISR_NAMEEND__System_UInt32_
+EXTERN method_System_Void_RETEND_Kernel_PreReqs_DECLEND_WriteDebugVideo_NAMEEND__System_String_System_UInt32_
+EXTERN method_System_Void_RETEND_Kernel_ExceptionMethods_DECLEND_Throw_PageFaultException_NAMEEND__System_UInt32_System_UInt32_System_UInt32_
+EXTERN method_System_Void_RETEND_Kernel_ExceptionMethods_DECLEND_Throw_StackException_NAMEEND___
+EXTERN method_System_Void_RETEND_Kernel_ExceptionMethods_DECLEND_Throw_DoubleFaultException_NAMEEND__System_UInt32_
+EXTERN method_System_Void_RETEND_Kernel_ExceptionMethods_DECLEND_Throw_OverflowException_NAMEEND___
+EXTERN method_System_Void_RETEND_Kernel_ExceptionMethods_DECLEND_Throw_OverflowException_NAMEEND___
+EXTERN method_System_Void_RETEND_Kernel_ExceptionMethods_DECLEND_Throw_DivideByZeroException_NAMEEND__System_UInt32_
+EXTERN _NATIVE_IDT_Pointer
+EXTERN _NATIVE_IDT_Contents
+EXTERN staticfield_Kernel_Hardware_Processes_ThreadState__Kernel_Hardware_Processes_ProcessManager_CurrentThread_State
+EXTERN _NATIVE_TSS
+EXTERN BasicDebug_InterruptHandler
+
+%define KERNEL_MODE_DPL 0
 %define USER_MODE_DPL 3
 
 ; START - General interrupt macros
@@ -584,5 +604,5 @@ pic_remap:
     xchg al, ah
     out 0xA1, al        ; Set mask of PIC2_DATA
 
-	sti					; Enable interrupts
+	;sti					; Enable interrupts - TODO: Re-enable
 	nop					; Required - STI takes effect after the next instruction runs

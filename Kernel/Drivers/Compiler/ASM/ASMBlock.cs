@@ -32,7 +32,73 @@ using System.Threading.Tasks;
 
 namespace Drivers.Compiler.ASM
 {
-    class ASMBlock
+    public class ASMBlock
     {
+        public Types.MethodInfo OriginMethodInfo;
+        public string PlugPath = null;
+        public bool Plugged { get { return PlugPath != null; } }
+
+        public string OutputFilePath;
+
+        public List<ASMOp> ASMOps = new List<ASMOp>();
+        public List<string> ExternalLabels = new List<string>();
+        public List<string> GlobalLabels = new List<string>();
+
+        public long Priority = 0;
+
+        public void Append(ASMOp anOp)
+        {
+            ASMOps.Add(anOp);
+        }
+
+        public void AddExternalLabel(string label)
+        {
+            ExternalLabels.Add(label);
+        }
+        public void AddGlobalLabel(string label)
+        {
+            GlobalLabels.Add(label);
+        }
+
+        public string GenerateMethodLabel()
+        {
+            if (OriginMethodInfo != null)
+            {
+                return GenerateLabel(OriginMethodInfo.ID);
+            }
+            else
+            {
+                return null;
+            }
+        }
+        public string GenerateILOpLabel(int ILPosition, string Extension = null)
+        {
+            return GenerateLabel(null, ILPosition, Extension);
+        }
+
+        public static string GenerateLabel(string MethodID, int ILPosition = int.MinValue, string Extension = null)
+        {
+            if (ILPosition != int.MinValue)
+            {
+                if (!string.IsNullOrWhiteSpace(MethodID))
+                {
+                    if (!string.IsNullOrWhiteSpace(Extension))
+                    {
+                        return string.Format("{0}.IL_{1}_{2}", MethodID, ILPosition.ToString("X2"), Extension);
+                    }
+
+                    return string.Format("{0}.IL_{1}", MethodID, ILPosition.ToString("X2"));
+                }
+
+                if (!string.IsNullOrWhiteSpace(Extension))
+                {
+                    return string.Format(".IL_{0}_{1}", ILPosition.ToString("X2"), Extension);
+                }
+                
+                return string.Format(".IL_{0}", ILPosition.ToString("X2"));
+            }
+
+            return MethodID;
+        }
     }
 }

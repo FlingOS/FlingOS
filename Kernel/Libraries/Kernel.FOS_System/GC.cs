@@ -32,6 +32,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Kernel.Hardware.Processes.Synchronisation;
 
 namespace Kernel.FOS_System
 {
@@ -44,6 +45,7 @@ namespace Kernel.FOS_System
     /// declaration (/name).
     /// </remarks>
     [Compiler.PluggedClass]
+    [Drivers.Compiler.Attributes.PluggedClass]
     public static unsafe class GC
     {
         /// <summary>
@@ -61,6 +63,9 @@ namespace Kernel.FOS_System
         /// </summary>
         public static bool InsideGC = false;
 
+        private static SpinLock GCAccessLock;
+        private static bool GCAccessLockInitialised = false;
+
         /// <summary>
         /// The number of strings currently allocated on the heap.
         /// </summary>
@@ -77,11 +82,75 @@ namespace Kernel.FOS_System
         /// Intialises the GC.
         /// </summary>
         [Compiler.NoDebug]
+        [Drivers.Compiler.Attributes.NoDebug]
         [Compiler.NoGC]
+        [Drivers.Compiler.Attributes.NoGC]
         public static void Init()
         {
             Heap.InitFixedHeap();
             Enabled = true;
+
+            GCAccessLock = new SpinLock(0);
+            GCAccessLockInitialised = true;
+        }
+
+        [Compiler.NoDebug]
+        [Drivers.Compiler.Attributes.NoDebug]
+        [Compiler.NoGC]
+        [Drivers.Compiler.Attributes.NoGC]
+        private static void EnterCritical(FOS_System.String caller)
+        {
+            //BasicConsole.WriteLine("Entering critical section...");
+            if (GCAccessLockInitialised)
+            {
+                if (GCAccessLock == null)
+                {
+                    BasicConsole.WriteLine("GCAccessLock is initialised but null?!");
+                    BasicConsole.DelayOutput(10);
+                }
+                else
+                {
+                    if (GCAccessLock.Locked)
+                    {
+                        BasicConsole.SetTextColour(BasicConsole.warning_colour);
+                        BasicConsole.WriteLine("Warning: GC about to try to re-enter spin lock...");
+                        BasicConsole.Write("Enter lock caller: ");
+                        BasicConsole.WriteLine(caller);
+                        BasicConsole.SetTextColour(BasicConsole.default_colour);
+                    }
+                    GCAccessLock.Enter();
+                }
+            }
+            //else
+            //{
+            //    BasicConsole.WriteLine("GCAccessLock not initialised - ignoring lock conditions.");
+            //    BasicConsole.DelayOutput(5);
+            //}
+        }
+        [Compiler.NoDebug]
+        [Drivers.Compiler.Attributes.NoDebug]
+        [Compiler.NoGC]
+        [Drivers.Compiler.Attributes.NoGC]
+        private static void ExitCritical()
+        {
+            //BasicConsole.WriteLine("Exiting critical section...");
+            if (GCAccessLockInitialised)
+            {
+                if (GCAccessLock == null)
+                {
+                    BasicConsole.WriteLine("GCAccessLock is initialised but null?!");
+                    BasicConsole.DelayOutput(10);
+                }
+                else
+                {
+                    GCAccessLock.Exit();
+                }
+            }
+            //else
+            //{
+            //    BasicConsole.WriteLine("GCAccessLock not initialised - ignoring lock conditions.");
+            //    BasicConsole.DelayOutput(5);
+            //}
         }
 
         /// <summary>
@@ -90,58 +159,69 @@ namespace Kernel.FOS_System
         /// <param name="theType">The type of object to create.</param>
         /// <returns>A pointer to the new object in memory.</returns>
         [Compiler.NewObjMethod]
+        [Drivers.Compiler.Attributes.NewObjMethod]
         [Compiler.NoDebug]
+        [Drivers.Compiler.Attributes.NoDebug]
         [Compiler.NoGC]
+        [Drivers.Compiler.Attributes.NoGC]
         public static void* NewObj(FOS_System.Type theType)
         {
-            if(!Enabled || InsideGC)
+            if (!Enabled)
             {
-                BasicConsole.SetTextColour(BasicConsole.error_colour);
-                BasicConsole.WriteLine("Error! GC can't create a new object since already inside GC.");
-                BasicConsole.Write("Heap prevent reason: ");
-                BasicConsole.WriteLine(Heap.PreventReason);
-                BasicConsole.DelayOutput(5);
+                BasicConsole.SetTextColour(BasicConsole.warning_colour);
+                BasicConsole.WriteLine("Warning! GC returning null pointer because GC not enabled.");
+                BasicConsole.DelayOutput(10);
                 BasicConsole.SetTextColour(BasicConsole.default_colour);
+
                 return null;
             }
 
-            InsideGC = true;
+            EnterCritical("NewObj");
 
-            //Alloc space for GC header that prefixes object data
-            //Alloc space for new object
-            
-            uint totalSize = theType.Size;
-            totalSize += (uint)sizeof(GCHeader);
-
-            GCHeader* newObjPtr = (GCHeader*)Heap.AllocZeroed(totalSize);
-            
-            if((UInt32)newObjPtr == 0)
+            try
             {
+                InsideGC = true;
+
+                //Alloc space for GC header that prefixes object data
+                //Alloc space for new object
+
+                uint totalSize = theType.Size;
+                totalSize += (uint)sizeof(GCHeader);
+
+                GCHeader* newObjPtr = (GCHeader*)Heap.AllocZeroed(totalSize);
+
+                if ((UInt32)newObjPtr == 0)
+                {
+                    InsideGC = false;
+
+                    BasicConsole.SetTextColour(BasicConsole.error_colour);
+                    BasicConsole.WriteLine("Error! GC can't create a new object because the heap returned a null pointer.");
+                    BasicConsole.DelayOutput(10);
+                    BasicConsole.SetTextColour(BasicConsole.default_colour);
+
+                    return null;
+                }
+
+                NumObjs++;
+
+                //Initialise the GCHeader
+                SetSignature(newObjPtr);
+                newObjPtr->RefCount = 1;
+                //Initialise the object _Type field
+                FOS_System.ObjectWithType newObj = (FOS_System.ObjectWithType)Utilities.ObjectUtilities.GetObject(newObjPtr + 1);
+                newObj._Type = theType;
+
+                //Move past GCHeader
+                byte* newObjBytePtr = (byte*)(newObjPtr + 1);
+
                 InsideGC = false;
 
-                BasicConsole.SetTextColour(BasicConsole.error_colour);
-                BasicConsole.WriteLine("Error! GC can't create a new object because the heap returned a null pointer.");
-                BasicConsole.DelayOutput(5);
-                BasicConsole.SetTextColour(BasicConsole.default_colour);
-
-                return null;
+                return newObjBytePtr;
             }
-
-            NumObjs++;
-
-            //Initialise the GCHeader
-            SetSignature(newObjPtr);
-            newObjPtr->RefCount = 1;
-            //Initialise the object _Type field
-            FOS_System.ObjectWithType newObj = (FOS_System.ObjectWithType)Utilities.ObjectUtilities.GetObject(newObjPtr + 1);
-            newObj._Type = theType;
-            
-            //Move past GCHeader
-            byte* newObjBytePtr = (byte*)(newObjPtr + 1);
-
-            InsideGC = false;
-
-            return newObjBytePtr;
+            finally
+            {
+                ExitCritical();
+            }
         }
 
         /// <summary>
@@ -153,75 +233,86 @@ namespace Kernel.FOS_System
         /// <param name="elemType">The type of element in the array to create.</param>
         /// <returns>A pointer to the new array in memory.</returns>
         [Compiler.NewArrMethod]
+        [Drivers.Compiler.Attributes.NewArrMethod]
         [Compiler.NoDebug]
+        [Drivers.Compiler.Attributes.NoDebug]
         [Compiler.NoGC]
+        [Drivers.Compiler.Attributes.NoGC]
         public static void* NewArr(int length, FOS_System.Type elemType)
         {
-            if (!Enabled || InsideGC)
+            if (!Enabled)
             {
-                BasicConsole.SetTextColour(BasicConsole.error_colour);
-                BasicConsole.WriteLine("Error! GC can't create a new array since already inside GC.");
-                BasicConsole.Write("Heap prevent reason: ");
-                BasicConsole.WriteLine(Heap.PreventReason);
-                BasicConsole.DelayOutput(5);
+                BasicConsole.SetTextColour(BasicConsole.warning_colour);
+                BasicConsole.WriteLine("Warning! GC returning null pointer because GC not enabled.");
+                BasicConsole.DelayOutput(10);
                 BasicConsole.SetTextColour(BasicConsole.default_colour);
 
                 return null;
             }
 
-            if (length < 0)
+            EnterCritical("NewArr");
+
+            try
             {
-                ExceptionMethods.Throw_OverflowException();
-            }
 
-            InsideGC = true;
+                if (length < 0)
+                {
+                    ExceptionMethods.Throw_OverflowException();
+                }
 
-            //Alloc space for GC header that prefixes object data
-            //Alloc space for new array object
-            //Alloc space for new array elems
+                InsideGC = true;
 
-            uint totalSize = ((FOS_System.Type)typeof(FOS_System.Array)).Size;
-            if (elemType.IsValueType)
-            {
-                totalSize += elemType.Size * (uint)length;
-            }
-            else
-            {
-                totalSize += elemType.StackSize * (uint)length;
-            }
-            totalSize += (uint)sizeof(GCHeader);
+                //Alloc space for GC header that prefixes object data
+                //Alloc space for new array object
+                //Alloc space for new array elems
 
-            GCHeader* newObjPtr = (GCHeader*)Heap.AllocZeroed(totalSize);
+                uint totalSize = ((FOS_System.Type)typeof(FOS_System.Array)).Size;
+                if (elemType.IsValueType)
+                {
+                    totalSize += elemType.Size * (uint)length;
+                }
+                else
+                {
+                    totalSize += elemType.StackSize * (uint)length;
+                }
+                totalSize += (uint)sizeof(GCHeader);
 
-            if ((UInt32)newObjPtr == 0)
-            {
+                GCHeader* newObjPtr = (GCHeader*)Heap.AllocZeroed(totalSize);
+
+                if ((UInt32)newObjPtr == 0)
+                {
+                    InsideGC = false;
+
+                    BasicConsole.SetTextColour(BasicConsole.error_colour);
+                    BasicConsole.WriteLine("Error! GC can't create a new array because the heap returned a null pointer.");
+                    BasicConsole.DelayOutput(10);
+                    BasicConsole.SetTextColour(BasicConsole.default_colour);
+
+                    return null;
+                }
+
+                NumObjs++;
+
+                //Initialise the GCHeader
+                SetSignature(newObjPtr);
+                newObjPtr->RefCount = 1;
+
+                FOS_System.Array newArr = (FOS_System.Array)Utilities.ObjectUtilities.GetObject(newObjPtr + 1);
+                newArr._Type = (FOS_System.Type)typeof(FOS_System.Array);
+                newArr.length = length;
+                newArr.elemType = elemType;
+
+                //Move past GCHeader
+                byte* newObjBytePtr = (byte*)(newObjPtr + 1);
+
                 InsideGC = false;
 
-                BasicConsole.SetTextColour(BasicConsole.error_colour);
-                BasicConsole.WriteLine("Error! GC can't create a new array because the heap returned a null pointer.");
-                BasicConsole.DelayOutput(5);
-                BasicConsole.SetTextColour(BasicConsole.default_colour);
-
-                return null;
+                return newObjBytePtr;
             }
-
-            NumObjs++;
-
-            //Initialise the GCHeader
-            SetSignature(newObjPtr);
-            newObjPtr->RefCount = 1;
-
-            FOS_System.Array newArr = (FOS_System.Array)Utilities.ObjectUtilities.GetObject(newObjPtr + 1);
-            newArr._Type = (FOS_System.Type)typeof(FOS_System.Array);
-            newArr.length = length;
-            newArr.elemType = elemType;
-            
-            //Move past GCHeader
-            byte* newObjBytePtr = (byte*)(newObjPtr + 1);
-
-            InsideGC = false;
-            
-            return newObjBytePtr;
+            finally
+            {
+                ExitCritical();
+            }
         }
 
         /// <summary>
@@ -231,81 +322,91 @@ namespace Kernel.FOS_System
         /// <param name="length">The length of the string to create.</param>
         /// <returns>A pointer to the new string in memory.</returns>
         [Compiler.NoDebug]
+        [Drivers.Compiler.Attributes.NoDebug]
         [Compiler.NoGC]
+        [Drivers.Compiler.Attributes.NoGC]
         public static void* NewString(int length)
         {
-            if (!Enabled || InsideGC)
+            if (!Enabled)
             {
-                BasicConsole.SetTextColour(BasicConsole.error_colour);
-                BasicConsole.WriteLine("Error! GC can't create a new string since already inside GC.");
-                BasicConsole.Write("Heap prevent reason: ");
-                BasicConsole.WriteLine(Heap.PreventReason);
-                BasicConsole.DelayOutput(5);
+                BasicConsole.SetTextColour(BasicConsole.warning_colour);
+                BasicConsole.WriteLine("Warning! GC returning null pointer because GC not enabled.");
+                BasicConsole.DelayOutput(10);
                 BasicConsole.SetTextColour(BasicConsole.default_colour);
 
                 return null;
             }
 
-            if (length < 0)
+            EnterCritical("NewString");
+
+            try
             {
-                BasicConsole.SetTextColour(BasicConsole.error_colour);
-                BasicConsole.WriteLine("Error! GC can't create a new string because \"length\" is less than 0.");
-                BasicConsole.DelayOutput(5);
-                BasicConsole.SetTextColour(BasicConsole.default_colour);
 
-                ExceptionMethods.Throw_OverflowException();
-            }
+                if (length < 0)
+                {
+                    BasicConsole.SetTextColour(BasicConsole.error_colour);
+                    BasicConsole.WriteLine("Error! GC can't create a new string because \"length\" is less than 0.");
+                    BasicConsole.DelayOutput(5);
+                    BasicConsole.SetTextColour(BasicConsole.default_colour);
 
-            InsideGC = true;
+                    ExceptionMethods.Throw_OverflowException();
+                }
 
-            //Alloc space for GC header that prefixes object data
-            //Alloc space for new string object
-            //Alloc space for new string chars
+                InsideGC = true;
 
-            uint totalSize = ((FOS_System.Type)typeof(FOS_System.String)).Size;
-            totalSize += /*char size in bytes*/2 * (uint)length;
-            totalSize += (uint)sizeof(GCHeader);
+                //Alloc space for GC header that prefixes object data
+                //Alloc space for new string object
+                //Alloc space for new string chars
 
-            GCHeader* newObjPtr = (GCHeader*)Heap.AllocZeroed(totalSize);
+                uint totalSize = ((FOS_System.Type)typeof(FOS_System.String)).Size;
+                totalSize += /*char size in bytes*/2 * (uint)length;
+                totalSize += (uint)sizeof(GCHeader);
 
-            if ((UInt32)newObjPtr == 0)
-            {
+                GCHeader* newObjPtr = (GCHeader*)Heap.AllocZeroed(totalSize);
+
+                if ((UInt32)newObjPtr == 0)
+                {
+                    InsideGC = false;
+
+                    BasicConsole.SetTextColour(BasicConsole.error_colour);
+                    BasicConsole.WriteLine("Error! GC can't create a new string because the heap returned a null pointer.");
+                    BasicConsole.DelayOutput(10);
+                    BasicConsole.SetTextColour(BasicConsole.default_colour);
+
+                    return null;
+                }
+
+                NumObjs++;
+                NumStrings++;
+
+                //Initialise the GCHeader
+                SetSignature(newObjPtr);
+                //RefCount to 0 initially because of FOS_System.String.New should be used
+                //      - In theory, New should be called, creates new string and passes it back to caller
+                //        Caller is then required to store the string in a variable resulting in inc.
+                //        ref count so ref count = 1 in only stored location. 
+                //        Caller is not allowed to just "discard" (i.e. use Pop IL op or C# that generates
+                //        Pop IL op) so ref count will always at some point be incremented and later
+                //        decremented by managed code. OR the variable will stay in a static var until
+                //        the OS exits...
+
+                newObjPtr->RefCount = 0;
+
+                FOS_System.String newStr = (FOS_System.String)Utilities.ObjectUtilities.GetObject(newObjPtr + 1);
+                newStr._Type = (FOS_System.Type)typeof(FOS_System.String);
+                newStr.length = length;
+
+                //Move past GCHeader
+                byte* newObjBytePtr = (byte*)(newObjPtr + 1);
+
                 InsideGC = false;
 
-                BasicConsole.SetTextColour(BasicConsole.error_colour);
-                BasicConsole.WriteLine("Error! GC can't create a new string because the heap returned a null pointer.");
-                BasicConsole.DelayOutput(5);
-                BasicConsole.SetTextColour(BasicConsole.default_colour);
-
-                return null;
+                return newObjBytePtr;
             }
-
-            NumObjs++;
-            NumStrings++;
-
-            //Initialise the GCHeader
-            SetSignature(newObjPtr);
-            //RefCount to 0 initially because of FOS_System.String.New should be used
-            //      - In theory, New should be called, creates new string and passes it back to caller
-            //        Caller is then required to store the string in a variable resulting in inc.
-            //        ref count so ref count = 1 in only stored location. 
-            //        Caller is not allowed to just "discard" (i.e. use Pop IL op or C# that generates
-            //        Pop IL op) so ref count will always at some point be incremented and later
-            //        decremented by managed code. OR the variable will stay in a static var until
-            //        the OS exits...
-
-            newObjPtr->RefCount = 0;
-
-            FOS_System.String newStr = (FOS_System.String)Utilities.ObjectUtilities.GetObject(newObjPtr + 1);
-            newStr._Type = (FOS_System.Type)typeof(FOS_System.String);
-            newStr.length = length;
-            
-            //Move past GCHeader
-            byte* newObjBytePtr = (byte*)(newObjPtr + 1);
-
-            InsideGC = false;
-
-            return newObjBytePtr;
+            finally
+            {
+                ExitCritical();
+            }
         }
 
         /// <summary>
@@ -316,11 +417,14 @@ namespace Kernel.FOS_System
         /// </remarks>
         /// <param name="anObj">The object to increment the ref count of.</param>
         [Compiler.IncrementRefCountMethod]
+        [Drivers.Compiler.Attributes.IncrementRefCountMethod]
         [Compiler.NoDebug]
+        [Drivers.Compiler.Attributes.NoDebug]
         [Compiler.NoGC]
+        [Drivers.Compiler.Attributes.NoGC]
         public static void IncrementRefCount(FOS_System.Object anObj)
         {
-            if (!Enabled || InsideGC || anObj == null)
+            if (!Enabled /*|| InsideGC*/ || anObj == null)
             {
                 return;
             }
@@ -341,7 +445,9 @@ namespace Kernel.FOS_System
         /// </remarks>
         /// <param name="objPtr">Pointer to the object to increment the ref count of.</param>
         [Compiler.NoDebug]
+        [Drivers.Compiler.Attributes.NoDebug]
         [Compiler.NoGC]
+        [Drivers.Compiler.Attributes.NoGC]
         public static void _IncrementRefCount(byte* objPtr)
         {
             if ((uint)objPtr < (uint)sizeof(GCHeader))
@@ -374,8 +480,11 @@ namespace Kernel.FOS_System
         /// </remarks>
         /// <param name="anObj">The object to decrement the ref count of.</param>
         [Compiler.DecrementRefCountMethod]
+        [Drivers.Compiler.Attributes.DecrementRefCountMethod]
         [Compiler.NoDebug]
+        [Drivers.Compiler.Attributes.NoDebug]
         [Compiler.NoGC]
+        [Drivers.Compiler.Attributes.NoGC]
         public static void DecrementRefCount(FOS_System.Object anObj)
         {
             DecrementRefCount(anObj, false);
@@ -390,10 +499,12 @@ namespace Kernel.FOS_System
         /// <param name="anObj">The object to decrement the ref count of.</param>
         /// <param name="overrideInside">Whether to ignore the InsideGC test or not.</param>
         [Compiler.NoDebug]
+        [Drivers.Compiler.Attributes.NoDebug]
         [Compiler.NoGC]
+        [Drivers.Compiler.Attributes.NoGC]
         public static void DecrementRefCount(FOS_System.Object anObj, bool overrideInside)
         {
-            if (!Enabled || (InsideGC && !overrideInside) || anObj == null)
+            if (!Enabled /*|| (InsideGC && !overrideInside)*/ || anObj == null)
             {
                 return;
             }
@@ -420,7 +531,9 @@ namespace Kernel.FOS_System
         /// </remarks>
         /// <param name="objPtr">A pointer to the object to decrement the ref count of.</param>
         [Compiler.NoDebug]
+        [Drivers.Compiler.Attributes.NoDebug]
         [Compiler.NoGC]
+        [Drivers.Compiler.Attributes.NoGC]
         public static void _DecrementRefCount(byte* objPtr)
         {
             if ((uint)objPtr < (uint)sizeof(GCHeader))
@@ -485,7 +598,6 @@ namespace Kernel.FOS_System
                             FieldInfoPtr = (FieldInfo*)FieldInfoPtr->FieldType;
                         }
                     }
-                    
 
                     AddObjectToCleanup(gcHeaderPtr, objPtr);
                 }
@@ -498,7 +610,9 @@ namespace Kernel.FOS_System
         /// <param name="headerPtr">A pointer to the header to check.</param>
         /// <returns>True if the signature is found and is correct.</returns>
         [Compiler.NoDebug]
+        [Drivers.Compiler.Attributes.NoDebug]
         [Compiler.NoGC]
+        [Drivers.Compiler.Attributes.NoGC]
         public static unsafe bool CheckSignature(GCHeader* headerPtr)
         {
             bool OK = headerPtr->Sig1 == 0x5C0EADE2U;
@@ -511,7 +625,9 @@ namespace Kernel.FOS_System
         /// </summary>
         /// <param name="headerPtr">A pointer to the header to set the signature in.</param>
         [Compiler.NoDebug]
+        [Drivers.Compiler.Attributes.NoDebug]
         [Compiler.NoGC]
+        [Drivers.Compiler.Attributes.NoGC]
         public static void SetSignature(GCHeader* headerPtr)
         {
             headerPtr->Sig1 = 0x5C0EADE2U;
@@ -523,50 +639,61 @@ namespace Kernel.FOS_System
         /// Scans the CleanupList to free objects from memory.
         /// </summary>
         [Compiler.NoDebug]
+        [Drivers.Compiler.Attributes.NoDebug]
         [Compiler.NoGC]
+        [Drivers.Compiler.Attributes.NoGC]
         public static void Cleanup()
         {
-            if (!Enabled || InsideGC)
+            if (!Enabled /*|| InsideGC*/)
             {
                 return;
             }
 
-            InsideGC = true;
+            EnterCritical("Cleanup");
+
+            try
+            {
+                InsideGC = true;
 
 #if GC_TRACE
             int startNumObjs = NumObjs;
             int startNumStrings = NumStrings;
 #endif
 
-            ObjectToCleanup* currObjToCleanupPtr = CleanupList;
-            ObjectToCleanup* prevObjToCleanupPtr = null;
-            while (currObjToCleanupPtr != null)
-            {
-                GCHeader* objHeaderPtr = currObjToCleanupPtr->objHeaderPtr;
-                void* objPtr = currObjToCleanupPtr->objPtr;
-                if(objHeaderPtr->RefCount <= 0)
+                ObjectToCleanup* currObjToCleanupPtr = CleanupList;
+                ObjectToCleanup* prevObjToCleanupPtr = null;
+                while (currObjToCleanupPtr != null)
                 {
-                    FOS_System.Object obj = (FOS_System.Object)Utilities.ObjectUtilities.GetObject(objPtr);
-                    if (obj is FOS_System.String)
+                    GCHeader* objHeaderPtr = currObjToCleanupPtr->objHeaderPtr;
+                    void* objPtr = currObjToCleanupPtr->objPtr;
+                    if (objHeaderPtr->RefCount <= 0)
                     {
-                        NumStrings--;
+                        FOS_System.Object obj = (FOS_System.Object)Utilities.ObjectUtilities.GetObject(objPtr);
+                        if (obj is FOS_System.String)
+                        {
+                            NumStrings--;
+                        }
+
+                        Heap.Free(objHeaderPtr);
+
+                        NumObjs--;
                     }
 
-                    Heap.Free(objHeaderPtr);
-
-                    NumObjs--;
+                    prevObjToCleanupPtr = currObjToCleanupPtr;
+                    currObjToCleanupPtr = currObjToCleanupPtr->prevPtr;
+                    RemoveObjectToCleanup(prevObjToCleanupPtr);
                 }
 
-                prevObjToCleanupPtr = currObjToCleanupPtr;
-                currObjToCleanupPtr = currObjToCleanupPtr->prevPtr;
-                RemoveObjectToCleanup(prevObjToCleanupPtr);
-            }
+                InsideGC = false;
 
-            InsideGC = false;
-            
 #if GC_TRACE
             PrintCleanupData(startNumObjs, startNumStrings);
 #endif
+            }
+            finally
+            {
+                ExitCritical();
+            }
         }
         /// <summary>
         /// Outputs, via the basic console, how much memory was cleaned up.
@@ -591,35 +718,57 @@ namespace Kernel.FOS_System
         /// <param name="objHeaderPtr">A pointer to the object's header.</param>
         /// <param name="objPtr">A pointer to the object.</param>
         [Compiler.NoDebug]
+        [Drivers.Compiler.Attributes.NoDebug]
         [Compiler.NoGC]
+        [Drivers.Compiler.Attributes.NoGC]
         private static void AddObjectToCleanup(GCHeader* objHeaderPtr, void* objPtr)
         {
-            ObjectToCleanup* newObjToCleanupPtr = (ObjectToCleanup*)Heap.Alloc((uint)sizeof(ObjectToCleanup));
-            newObjToCleanupPtr->objHeaderPtr = objHeaderPtr;
-            newObjToCleanupPtr->objPtr = objPtr;
+            EnterCritical("AddObjectToCleanup");
 
-            newObjToCleanupPtr->prevPtr = CleanupList;
-            CleanupList->nextPtr = newObjToCleanupPtr;
+            try
+            {
+                ObjectToCleanup* newObjToCleanupPtr = (ObjectToCleanup*)Heap.Alloc((uint)sizeof(ObjectToCleanup));
+                newObjToCleanupPtr->objHeaderPtr = objHeaderPtr;
+                newObjToCleanupPtr->objPtr = objPtr;
 
-            CleanupList = newObjToCleanupPtr;
+                newObjToCleanupPtr->prevPtr = CleanupList;
+                CleanupList->nextPtr = newObjToCleanupPtr;
+
+                CleanupList = newObjToCleanupPtr;
+            }
+            finally
+            {
+                ExitCritical();
+            }
         }
         /// <summary>
         /// Removes an object from the cleanup list.
         /// </summary>
         /// <param name="objHeaderPtr">A pointer to the object's header.</param>
         [Compiler.NoDebug]
+        [Drivers.Compiler.Attributes.NoDebug]
         [Compiler.NoGC]
+        [Drivers.Compiler.Attributes.NoGC]
         private static void RemoveObjectToCleanup(GCHeader* objHeaderPtr)
         {
-            ObjectToCleanup* currObjToCleanupPtr = CleanupList;
-            while (currObjToCleanupPtr != null)
+            EnterCritical("RemoveObjectToCleanup");
+
+            try
             {
-                if (currObjToCleanupPtr->objHeaderPtr == objHeaderPtr)
+                ObjectToCleanup* currObjToCleanupPtr = CleanupList;
+                while (currObjToCleanupPtr != null)
                 {
-                    RemoveObjectToCleanup(currObjToCleanupPtr);
-                    return;
+                    if (currObjToCleanupPtr->objHeaderPtr == objHeaderPtr)
+                    {
+                        RemoveObjectToCleanup(currObjToCleanupPtr);
+                        return;
+                    }
+                    currObjToCleanupPtr = currObjToCleanupPtr->prevPtr;
                 }
-                currObjToCleanupPtr = currObjToCleanupPtr->prevPtr;
+            }
+            finally
+            {
+                ExitCritical();
             }
         }
         /// <summary>
@@ -627,7 +776,9 @@ namespace Kernel.FOS_System
         /// </summary>
         /// <param name="objToCleanupPtr">A pointer to the cleanup-list element.</param>
         [Compiler.NoDebug]
+        [Drivers.Compiler.Attributes.NoDebug]
         [Compiler.NoGC]
+        [Drivers.Compiler.Attributes.NoGC]
         private static void RemoveObjectToCleanup(ObjectToCleanup* objToCleanupPtr)
         {
             ObjectToCleanup* prevPtr = objToCleanupPtr->prevPtr;

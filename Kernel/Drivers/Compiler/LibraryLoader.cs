@@ -29,6 +29,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.IO;
+using System.Reflection;
+using System.ComponentModel;
 
 using Drivers.Compiler.IL;
 
@@ -36,8 +39,40 @@ namespace Drivers.Compiler
 {
     public static class LibraryLoader
     {
+        //Library caching means only one ILLibrary object used per assembly (even if multiple refs exist in
+        //  different dependency locations) so type scanner, compiler etc. don't duplicate work later.
+        private static Dictionary<string, ILLibrary> LibraryCache = new Dictionary<string, ILLibrary>();
+
         private static ILLibrary LoadILLibraryFromFile(string FilePath)
         {
+            if (string.IsNullOrWhiteSpace(FilePath))
+            {
+                Logger.LogError(Errors.Loader_LibraryPathNullOrEmpty_ErrorCode, FilePath, 0,
+                    Errors.ErrorMessages[Errors.Loader_LibraryPathNullOrEmpty_ErrorCode]);
+
+                return null;
+            }
+            else if (!File.Exists(FilePath))
+            {
+                Logger.LogError(Errors.Loader_LibraryFileDoesntExist_ErrorCode, FilePath, 0,
+                    Errors.ErrorMessages[Errors.Loader_LibraryFileDoesntExist_ErrorCode]);
+
+                return null;
+            }
+
+            try
+            {
+                ILLibrary result = new ILLibrary();
+                result.TheAssembly = Assembly.LoadFrom(FilePath);
+                return result;
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError(Errors.Loader_UnexpectedError_ErrorCode, FilePath, 0,
+                    string.Format(
+                        Errors.ErrorMessages[Errors.Loader_UnexpectedError_ErrorCode],
+                        ex.Message, ex.StackTrace));
+            }
             return null;
         }
 
@@ -45,15 +80,91 @@ namespace Drivers.Compiler
         {
             ILLibrary TheLibrary = LoadILLibraryFromFile(FilePath);
 
-            LoadDependencies(TheLibrary);
+            if (TheLibrary != null)
+            {
+                LoadDependencies(TheLibrary);
 
-            Types.TypeScanner.ScanTypes(TheLibrary);
+                Types.TypeScanner.ScanTypes(TheLibrary);
+
+                //TheLibrary.CompressedDependencyTree = CompressDependencyTree(TheLibrary);
+            }
 
             return TheLibrary;
         }
         public static int LoadDependencies(ILLibrary aLibrary)
         {
-            return 0;
+            if (aLibrary == null)
+            {
+                return 0;
+            }
+
+            int DependenciesLoaded = 0;
+
+            Assembly RootAssembly = aLibrary.TheAssembly;
+            AssemblyName[] refAssemblyNames = RootAssembly.GetReferencedAssemblies();
+            foreach (AssemblyName aRefName in refAssemblyNames)
+            {
+                if (IsAssemblyFullNameIgnored(aRefName.FullName))
+                {
+                    continue;
+                }
+
+                string refFilePath = Path.Combine(Path.GetDirectoryName(RootAssembly.Location), aRefName.Name + ".dll");
+                ILLibrary refLibrary = LoadILLibrary(refFilePath);
+                if (refLibrary == null)
+                {
+                    throw new NullReferenceException("Loaded dependency library was null!");
+                }
+                else
+                {
+                    if (LibraryCache.ContainsKey(refLibrary.ToString()))
+                    {
+                        aLibrary.Dependencies.Add(LibraryCache[refLibrary.ToString()]);
+                    }
+                    else
+                    {
+                        aLibrary.Dependencies.Add(refLibrary);
+                        LibraryCache.Add(refLibrary.ToString(), refLibrary);
+                    }
+                }
+            }
+
+            return DependenciesLoaded;
+        }
+        //public static List<ILLibrary> CompressDependencyTree(ILLibrary RootLibrary)
+        //{
+        //    List<ILLibrary> CompressedResult = new List<ILLibrary>();
+
+        //    foreach (ILLibrary DepLibrary in RootLibrary.Dependencies)
+        //    {
+        //        if (!CompressedResult.Contains(DepLibrary))
+        //        {
+        //            CompressedResult.Add(DepLibrary);
+        //        }
+
+        //        List<ILLibrary> moreDeps = CompressDependencyTree(DepLibrary);
+        //        foreach (ILLibrary subDepLib in moreDeps)
+        //        {
+        //            if (!CompressedResult.Contains(subDepLib))
+        //            {
+        //                CompressedResult.Add(subDepLib);
+        //            }
+        //        }
+        //    }
+
+        //    return CompressedResult;
+        //}
+
+        public static bool IsAssemblyFullNameIgnored(string fullName)
+        {
+            foreach (string ignoreName in Options.IgnoreAssemblies)
+            {
+                if (fullName.Contains(ignoreName))
+                {
+                    return true;
+                }
+            }
+            return false;
         }
     }
 }

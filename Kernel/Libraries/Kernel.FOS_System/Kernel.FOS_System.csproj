@@ -31,7 +31,7 @@
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
-    <Optimize>false</Optimize>
+    <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
@@ -79,6 +79,7 @@
     <Compile Include="Int32.cs" />
     <Compile Include="Math.cs" />
     <Compile Include="Object.cs" />
+    <Compile Include="Processes\Synchronisation\SpinLock.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="String.cs" />
     <Compile Include="Type.cs" />
@@ -88,6 +89,10 @@
     <ProjectReference Include="..\..\Compiler\Kernel.Compiler.csproj">
       <Project>{061e5f53-5eff-4e12-94ee-9e18459e5cf4}</Project>
       <Name>Kernel.Compiler</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Drivers\Compiler\Drivers.Compiler.csproj">
+      <Project>{1fb0e622-d2c6-4a5c-b5b6-d2bb5e502af1}</Project>
+      <Name>Drivers.Compiler</Name>
     </ProjectReference>
     <ProjectReference Include="..\Kernel.Utilities\Kernel.Utilities.csproj">
       <Project>{97702b40-af74-4df8-b2ac-9438f85e6b46}</Project>
@@ -117,6 +122,9 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="ASM\Math\Divide.x86_32.asm">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="ASM\Processes\Synchronisation\SpinLock.x86_32.asm">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="ASM\String\GetLength.x86_32.asm">

@@ -32,7 +32,79 @@ using System.Threading.Tasks;
 
 namespace Drivers.Compiler.IL
 {
-    class ILBlock
+    public class ILBlock
     {
+        public Types.MethodInfo TheMethodInfo;
+
+        public string PlugPath = null;
+        public bool Plugged { get { return PlugPath != null; } }
+
+        public List<ILOp> ILOps = new List<ILOp>();
+        
+        //public ILOp Next(ILOp current)
+        //{
+        //    int index = ILOps.IndexOf(current);
+        //    if (index + 1 < ILOps.Count)
+        //    {
+        //        return ILOps[index + 1];
+        //    }
+        //    return null;
+        //}
+        public int PositionOf(ILOp anOp)
+        {
+            return ILOps.IndexOf(anOp);
+        }
+        public ILOp At(int offset)
+        {
+            List<ILOp> potOps = (from ops in ILOps
+                                 where ops.Offset == offset
+                                 select ops).ToList();
+            if (potOps.Count > 0)
+            {
+                return potOps.OrderBy(x => ILOps.IndexOf(x)).First();
+            }
+            return null;
+        }
+
+        public List<ExceptionHandledBlock> ExceptionHandledBlocks = new List<ExceptionHandledBlock>();
+        public ExceptionHandledBlock GetExactExceptionHandledBlock(int Offset)
+        {
+            List<ExceptionHandledBlock> potBlocks = (from blocks in ExceptionHandledBlocks
+                                                     where (blocks.Offset == Offset)
+                                                     select blocks)
+                                                     .ToList();
+            if (potBlocks.Count > 0)
+            {
+                return potBlocks.First();
+            }
+            return null;
+        }
+        public ExceptionHandledBlock GetExceptionHandledBlock(int Offset)
+        {
+            List<ExceptionHandledBlock> potBlocks = (from blocks in ExceptionHandledBlocks
+                                                     where (
+                                                     (blocks.Offset <= Offset &&
+                                                      blocks.Offset + blocks.Length >= Offset)
+                                                     || (from catchBlocks in blocks.CatchBlocks
+                                                         where (
+                                                           catchBlocks.Offset <= Offset &&
+                                                           catchBlocks.Offset + catchBlocks.Length >= Offset
+                                                         )
+                                                         select catchBlocks).Count() > 0
+                                                     || (from finallyBlocks in blocks.FinallyBlocks
+                                                         where (
+                                                            finallyBlocks.Offset <= Offset &&
+                                                            finallyBlocks.Offset + finallyBlocks.Length >= Offset
+                                                         )
+                                                         select finallyBlocks).Count() > 0
+                                                     )
+                                                     select blocks).OrderByDescending(x => x.Offset)
+                                                     .ToList();
+            if (potBlocks.Count > 0)
+            {
+                return potBlocks.First();
+            }
+            return null;
+        }
     }
 }

@@ -32,7 +32,69 @@ using System.Threading.Tasks;
 
 namespace Drivers.Compiler.ASM
 {
-    static class ASMPreprocessor
+    public static class ASMPreprocessor
     {
+        public static CompileResult Preprocess(ASMLibrary TheLibrary)
+        {
+            CompileResult result = CompileResult.OK;
+
+            if (TheLibrary.ASMPreprocessed)
+            {
+                return result;
+            }
+            TheLibrary.ASMPreprocessed = true;
+
+            for (int i = 0; i < TheLibrary.ASMBlocks.Count; i++)
+            {
+                ASMBlock aBlock = TheLibrary.ASMBlocks[i];
+                if (aBlock.Plugged)
+                {
+                    if (string.IsNullOrWhiteSpace(aBlock.PlugPath))
+                    {
+                        TheLibrary.ASMBlocks.RemoveAt(i);
+                        i--;
+                        continue;
+                    }
+                }
+                else
+                {
+                    if (aBlock.ASMOps.Count == 0)
+                    {
+                        TheLibrary.ASMBlocks.RemoveAt(i);
+                        i--;
+                        continue;
+                    }
+                    Preprocess(aBlock);
+                }
+            }
+
+            return result;
+        }
+
+        private static void Preprocess(ASMBlock theBlock)
+        {
+            // Due to "insert 0", asm ops are constructed in reverse order here
+
+            string currMethodLabel = theBlock.GenerateMethodLabel();
+            if (currMethodLabel != null)
+            {
+                theBlock.ASMOps.Insert(0, new ASMLabel() { MethodLabel = true });
+            }
+            if (currMethodLabel != null)
+            {
+                theBlock.ASMOps.Insert(0, new ASMGlobalLabel() { Label = currMethodLabel });
+            }
+            
+            foreach (string anExternalLabel in theBlock.ExternalLabels.Distinct())
+            {
+                if (anExternalLabel != currMethodLabel)
+                {
+                    theBlock.ASMOps.Insert(0, new ASMExternalLabel() { Label = anExternalLabel });
+                }
+            }
+
+            theBlock.ASMOps.Insert(0, new ASMGeneric() { Text = "SECTION .text" });
+            theBlock.ASMOps.Insert(0, new ASMGeneric() { Text = "BITS 32" });
+        }
     }
 }

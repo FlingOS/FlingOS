@@ -14,6 +14,36 @@
 ;                                                                                ;
 ; - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  ;
 
+BITS 32
+
+SECTION .text
+
+GLOBAL BasicDebug_SendConnectedCmd:function
+GLOBAL BasicDebug_SendBreakCmd:function
+GLOBAL BasicDebug_SendBreakAddress:function
+GLOBAL BasicDebug_SendRegisters:function
+GLOBAL BasicDebug_SendArguments:function
+GLOBAL BasicDebug_SendLocals:function
+GLOBAL BasicDebug_SendMemory:function
+GLOBAL BasicDebug_SendCmd:function
+
+EXTERN BasicDebug_ConnectedCmd
+EXTERN BasicDebug_BreakCmd
+EXTERN BasicDebug_SendBreakAddressCmd
+EXTERN BasicDebug_SendRegistersCmd
+EXTERN BasicDebug_SendArgumentsCmd
+EXTERN BasicDebug_SendLocalsCmd
+EXTERN BasicDebug_SendMemoryCmd
+
+EXTERN BasicDebug_CallerEIP
+EXTERN BasicDebug_CallerESP
+EXTERN BasicDebug_CallerEBP
+EXTERN BasicDebug_RegistersESP
+
+EXTERN method_System_Void_Kernel_Debug_BasicDebug_Serial_WriteByte_System_Byte_
+EXTERN method_System_Void_Kernel_Debug_BasicDebug_Serial_WriteUInt32_System_UInt32_
+EXTERN method_System_UInt32_Kernel_Debug_BasicDebug_Serial_ReadUInt32__
+
 ; BEGIN - Basic Debug : Send Commands
 
 BasicDebug_SendConnectedCmd:
@@ -196,14 +226,24 @@ call method_System_UInt32_Kernel_Debug_BasicDebug_Serial_ReadUInt32__
 mov ebx, eax
 
 ; Get num bytes to send
+push ebx
 call method_System_UInt32_Kernel_Debug_BasicDebug_Serial_ReadUInt32__
 mov ecx, eax
+pop ebx
 
 BasicDebug_SendMemory_Loop:
 mov byte al, [ebx]
+
+push dword ebx
+push dword ecx
+
 push dword eax
 call method_System_Void_Kernel_Debug_BasicDebug_Serial_WriteByte_System_Byte_
 add esp, 4
+
+pop dword ecx
+pop dword ebx
+
 add ebx, 1
 loop BasicDebug_SendMemory_Loop
 

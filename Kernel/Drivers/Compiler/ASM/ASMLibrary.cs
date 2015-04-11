@@ -34,5 +34,9 @@ namespace Drivers.Compiler.ASM
 {
     public class ASMLibrary
     {
+        public bool ASMPreprocessed = false;
+        public bool ASMProcessed = false;
+
+        public List<ASMBlock> ASMBlocks = new List<ASMBlock>();
     }
 }

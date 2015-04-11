@@ -95,6 +95,7 @@ namespace Kernel.Hardware.ATA
         /// </summary>
         /// <param name="isSecondary">Whether the device is a secondary ATA device.</param>
         [Compiler.NoDebug]
+        [Drivers.Compiler.Attributes.NoDebug]
         internal ATAIOPorts(bool isSecondary)
         {
             //BAR of main registers

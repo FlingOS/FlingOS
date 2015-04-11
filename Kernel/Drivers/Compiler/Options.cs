@@ -29,15 +29,41 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.IO;
 
 namespace Drivers.Compiler
 {
     public static class Options
     {
+        public static List<string> ValidTargetArchitectures = new List<string> {
+            "x86"
+        };
+
         public enum BuildModes
         {
             Debug,
             Release
+        }
+
+        static Options()
+        {
+            AddressSizeInBytes = 4;
+        }
+
+        public static string LibraryPath
+        {
+            get;
+            set;
+        }
+        public static string OutputPath
+        {
+            get;
+            set;
+        }
+        public static string ToolsPath
+        {
+            get;
+            set;
         }
 
         public static BuildModes BuildMode
@@ -49,6 +75,61 @@ namespace Drivers.Compiler
         {
             get;
             set;
+        }
+
+        public static int AddressSizeInBytes
+        {
+            get;
+            set;
+        }
+
+        private static List<string> ignoreAssemblies = new List<string>
+        {
+            "mscorlib",
+            "Kernel.Compiler",
+            "Drivers.Compiler"
+        };
+        public static List<string> IgnoreAssemblies
+        {
+            get
+            {
+                return ignoreAssemblies;
+            }
+            set
+            {
+                ignoreAssemblies = value;
+            }
+        }
+
+        public static void Format()
+        {
+            TargetArchitecture = TargetArchitecture.ToLower();
+        }
+        public static Tuple<bool, string> Validate()
+        {
+            if (!File.Exists(LibraryPath))
+            {
+                return new Tuple<bool,string>(false, "Could not find library file! Library Path argument is invalid.");
+            }
+
+            if (!Directory.Exists(OutputPath))
+            {
+                return new Tuple<bool,string>(false, "Could not find output directory! Output Path argument is invalid.");
+            }
+
+            if (!Directory.Exists(ToolsPath))
+            {
+                return new Tuple<bool,string>(false, "Could not find tools directory! Tools Path argument is invalid.");
+            }
+
+            if (!Options.ValidTargetArchitectures.Contains(TargetArchitecture))
+            {
+                return new Tuple<bool,string>(false, 
+                    "Invalid Target Architecture specified! Valid architectures: " +
+                    string.Join(", ", Options.ValidTargetArchitectures));
+            }
+
+            return new Tuple<bool,string>(true, "");
         }
     }
 }

@@ -14,6 +14,23 @@
 ;                                                                                ;
 ; - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  ;
 
+BITS 32
+
+SECTION .text
+
+GLOBAL BasicDebug_RegistersESP:data
+GLOBAL BasicDebug_CallerEBP:data
+GLOBAL BasicDebug_CallerEIP:data
+GLOBAL BasicDebug_CallerESP:data
+GLOBAL BasicDebug_Enabled:data
+GLOBAL BasicDebug_BreakIsInt1:data
+GLOBAL BasicDebug_ReadAttempts:data
+
+GLOBAL BasicDebug_InterruptHandler:function
+
+EXTERN BasicDebug_ClearInt1TrapFlag
+EXTERN BasicDebug_Execute
+
 ; BEGIN - BasicDebug_InterruptHandler
 
 BasicDebug_RegistersESP dd 0
@@ -22,7 +39,7 @@ BasicDebug_CallerEIP dd 0
 BasicDebug_CallerESP dd 0
 BasicDebug_Enabled dd 0
 BasicDebug_BreakIsInt1 dd 0
-BasicDebug_ReadAttempts dd 1024
+BasicDebug_ReadAttempts dd 1024 ; X = { X attempts (X != 0), Infinite attempts (X == 0) }
 
 BasicDebug_InterruptHandler:
 

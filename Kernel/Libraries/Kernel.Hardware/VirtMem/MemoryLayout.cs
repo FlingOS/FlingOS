@@ -37,13 +37,15 @@ namespace Kernel.Hardware.VirtMem
         public UInt32Dictionary CodePages = new UInt32Dictionary();
         public UInt32Dictionary DataPages = new UInt32Dictionary();
 
+        [Compiler.NoDebug]
+        [Drivers.Compiler.Attributes.NoDebug]
         public void AddCodePage(uint pAddr, uint vAddr)
         {
-            bool reenable = Processes.Scheduler.Enabled;
-            if(reenable)
-            {
-                Processes.Scheduler.Disable();
-            }
+            //bool reenable = Processes.Scheduler.Enabled;
+            //if(reenable)
+            //{
+            //    Processes.Scheduler.Disable();
+            //}
 
             //BasicConsole.WriteLine("Adding code page...");
             if (!CodePages.Contains(vAddr))
@@ -51,18 +53,20 @@ namespace Kernel.Hardware.VirtMem
                 CodePages.Add(vAddr, pAddr);
             }
 
-            if (reenable)
-            {
-                Processes.Scheduler.Enable();
-            }
+            //if (reenable)
+            //{
+            //    Processes.Scheduler.Enable();
+            //}
         }
+        [Compiler.NoDebug]
+        [Drivers.Compiler.Attributes.NoDebug]
         public void AddDataPage(uint pAddr, uint vAddr)
         {
-            bool reenable = Processes.Scheduler.Enabled;
-            if (reenable)
-            {
-                Processes.Scheduler.Disable();
-            }
+            //bool reenable = Processes.Scheduler.Enabled;
+            //if (reenable)
+            //{
+            //    Processes.Scheduler.Disable();
+            //}
 
             //BasicConsole.WriteLine("Adding data page...");
             if (!DataPages.Contains(vAddr))
@@ -70,31 +74,35 @@ namespace Kernel.Hardware.VirtMem
                 DataPages.Add(vAddr, pAddr);
             }
 
-            if (reenable)
-            {
-                Processes.Scheduler.Enable();
-            }
+            //if (reenable)
+            //{
+            //    Processes.Scheduler.Enable();
+            //}
         }
+        [Compiler.NoDebug]
+        [Drivers.Compiler.Attributes.NoDebug]
         public void RemovePage(uint vAddr)
         {
-            bool reenable = Processes.Scheduler.Enabled;
-            if (reenable)
-            {
-                Processes.Scheduler.Disable();
-            }
+            //bool reenable = Processes.Scheduler.Enabled;
+            //if (reenable)
+            //{
+            //    Processes.Scheduler.Disable();
+            //}
 
             //BasicConsole.WriteLine("Removing page...");
             CodePages.Remove(vAddr);
             DataPages.Remove(vAddr);
 
-            if (reenable)
-            {
-                Processes.Scheduler.Enable();
-            }
+            //if (reenable)
+            //{
+            //    Processes.Scheduler.Enable();
+            //}
         }
 
         //bool loadPrint = true;
         //bool unloadPrint = true;
+        [Compiler.NoDebug]
+        [Drivers.Compiler.Attributes.NoDebug]
         public void Load(bool ProcessIsUM)
         {
             VirtMemImpl.PageFlags flags = ProcessIsUM ? VirtMemImpl.PageFlags.None : VirtMemImpl.PageFlags.KernelOnly;
@@ -137,6 +145,8 @@ namespace Kernel.Hardware.VirtMem
             //    loadPrint = false;
             //}
         }
+        [Compiler.NoDebug]
+        [Drivers.Compiler.Attributes.NoDebug]
         public void Unload()
         {
             for (int i = 0; i < CodePages.Keys.Count && i < CodePages.Values.Count; i++)

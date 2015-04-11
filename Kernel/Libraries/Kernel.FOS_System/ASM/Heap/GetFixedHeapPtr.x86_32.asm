@@ -1,4 +1,13 @@
-﻿global KernelFixedHeap_Start
+﻿BITS 32
+
+SECTION .text
+
+GLOBAL method_System_UInt32__RETEND_Kernel_FOS_System_Heap_DECLEND_GetFixedHeapPtr_NAMEEND___:function
+GLOBAL method_System_UInt32_RETEND_Kernel_FOS_System_Heap_DECLEND_GetFixedHeapSize_NAMEEND___:function
+
+GLOBAL KernelFixedHeap_Start:data
+GLOBAL KernelFixedHeap_End:data
+
 ; 104 857 600 bytes = 16MiB (using proper powers of 2 not the powers of 10 crap...)
 KernelFixedHeap_Start: TIMES 104857600 db 0
 KernelFixedHeap_End:

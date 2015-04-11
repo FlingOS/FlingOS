@@ -51,6 +51,10 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Architectures\x86_32\Drivers.Compiler.Architectures.x86.csproj">
+      <Project>{eebec7b2-9f93-4a8a-bcb7-c9f8f79fa77e}</Project>
+      <Name>Drivers.Compiler.Architectures.x86</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Drivers.Compiler.csproj">
       <Project>{1fb0e622-d2c6-4a5c-b5b6-d2bb5e502af1}</Project>
       <Name>Drivers.Compiler</Name>
