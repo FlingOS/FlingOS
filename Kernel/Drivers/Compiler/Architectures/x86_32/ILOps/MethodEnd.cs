@@ -87,15 +87,15 @@ namespace Drivers.Compiler.Architectures.x86
                 else if (retSize == 4)
                 {
                     conversionState.Append(new ASMOps.Pop() { Size = ASMOps.OperandSize.Dword, Dest = "EAX" });
-                    conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Dword, Src = "[EBP+8]", Dest = "EAX" });
+                    conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Dword, Dest = "[EBP+8]", Src = "EAX" });
                 }
                 else if (retSize == 8)
                 {
                     conversionState.Append(new ASMOps.Pop() { Size = ASMOps.OperandSize.Dword, Dest = "EAX" });
-                    conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Dword, Src = "[EBP+8]", Dest = "EAX" });
+                    conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Dword, Dest = "[EBP+8]", Src = "EAX" });
 
                     conversionState.Append(new ASMOps.Pop() { Size = ASMOps.OperandSize.Dword, Dest = "EAX" });
-                    conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Dword, Src = "[EBP+12]", Dest = "EAX" });
+                    conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Dword, Dest = "[EBP+12]", Src = "EAX" });
                 }
                 else
                 {

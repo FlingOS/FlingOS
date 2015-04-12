@@ -121,10 +121,6 @@
       <Project>{66c9b617-b6d9-4006-a7f9-e1df62ed30ad}</Project>
       <Name>Kernel.FOS_System</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Kernel.Utilities\Kernel.Utilities.csproj">
-      <Project>{97702b40-af74-4df8-b2ac-9438f85e6b46}</Project>
-      <Name>Kernel.Utilities</Name>
-    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Content Include="ASM\CPUs\CPUx86_32\Halt.x86_32.asm">

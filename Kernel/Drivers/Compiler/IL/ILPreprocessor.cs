@@ -111,6 +111,7 @@ namespace Drivers.Compiler.IL
             }
             theMethodInfo.Preprocessed = true;
 
+            string sig = theMethodInfo.Signature;
             bool SetMethodID = true;
             if (!theMethodInfo.IsConstructor)
             {
@@ -197,7 +198,7 @@ namespace Drivers.Compiler.IL
         }
         private static int GetMethodIDGenerator(ILLibrary TheLibrary, Types.TypeInfo aTypeInfo)
         {
-            int totalGen = 0;
+            int totalGen = aTypeInfo.MethodIDGenerator;
             if (aTypeInfo.UnderlyingType.BaseType != null)
             {
                 if (!aTypeInfo.UnderlyingType.BaseType.AssemblyQualifiedName.Contains("mscorlib"))

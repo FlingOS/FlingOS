@@ -59,6 +59,7 @@
     <Compile Include="Collections\Dictionary.cs" />
     <Compile Include="Collections\List.cs" />
     <Compile Include="Collections\Stack.cs" />
+    <Compile Include="ConstantsUtils.cs" />
     <Compile Include="Exception.cs" />
     <Compile Include="ExceptionMethods.cs" />
     <Compile Include="Exceptions\OutOfMemoryException.cs" />
@@ -78,7 +79,9 @@
     <Compile Include="Int64.cs" />
     <Compile Include="Int32.cs" />
     <Compile Include="Math.cs" />
+    <Compile Include="MemoryUtils.cs" />
     <Compile Include="Object.cs" />
+    <Compile Include="ObjectUtilities.cs" />
     <Compile Include="Processes\Synchronisation\SpinLock.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="String.cs" />
@@ -93,10 +96,6 @@
     <ProjectReference Include="..\..\Drivers\Compiler\Drivers.Compiler.csproj">
       <Project>{1fb0e622-d2c6-4a5c-b5b6-d2bb5e502af1}</Project>
       <Name>Drivers.Compiler</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Kernel.Utilities\Kernel.Utilities.csproj">
-      <Project>{97702b40-af74-4df8-b2ac-9438f85e6b46}</Project>
-      <Name>Kernel.Utilities</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
@@ -122,6 +121,15 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="ASM\Math\Divide.x86_32.asm">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="ASM\MemoryUtils.x86_32.asm">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="ASM\ObjectUtilities\GetHandle.x86_32.asm">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="ASM\ObjectUtilities\GetObject.x86_32.asm">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="ASM\Processes\Synchronisation\SpinLock.x86_32.asm">
