@@ -4,13 +4,11 @@ SECTION .text
 GLOBAL File_MainEntryPoint:function
 File_MainEntryPoint:
 
-mov dword eax, 0x5530
-mov word [0xB8004], ax
-mov dword eax, 0x6630
-mov word [0xB8006], ax
-mov dword ecx, 0xFFFFFFFF
-LoopXYZ2:
-loop LoopXYZ2
+
+; Hmm... something has to go before the call op otherwise the OS crashes at boot.
+;		It can be min. ~12 NOPs or this mov or probably many other things...
+;	This is the same phenomenon observed at the start of VirtualMemInit
+mov dword ecx, 0x0
 
 ; BEGIN - Main Entrypoint
 call __MAIN_ENTRYPOINT__ ; Call our main entry point 
@@ -22,8 +20,11 @@ EXTERN %KERNEL_MAIN_METHOD%
 EXTERN method_System_Void_Kernel_PreReqs_Reset__
 
 EXTERN method_System_Void_RETEND_Kernel_BasicConsole_DECLEND__cctor_NAMEEND___
+EXTERN method_System_Void_RETEND_Kernel_BasicConsole_DECLEND_Init_NAMEEND___
 EXTERN method_System_Void_RETEND_Kernel_BasicConsole_DECLEND_Clear_NAMEEND___
+EXTERN method_System_Void_RETEND_Kernel_BasicConsole_DECLEND_Write_NAMEEND__Kernel_FOS_System_String_
 EXTERN method_System_Void_RETEND_Kernel_BasicConsole_DECLEND_WriteLine_NAMEEND__Kernel_FOS_System_String_
+EXTERN method_System_Void_RETEND_Kernel_BasicConsole_DECLEND_PrintTestString_NAMEEND___
 
 extern type_Kernel_FOS_System_String
 StringLiteral_e5e336c6_42a4_4ec6_be45_088caaf386c3:
@@ -37,34 +38,15 @@ __MAIN_ENTRYPOINT__:
 	mov dword ebp, esp
 	
 	call method_System_Void_RETEND_Kernel_BasicConsole_DECLEND__cctor_NAMEEND___
+	call method_System_Void_RETEND_Kernel_BasicConsole_DECLEND_Init_NAMEEND___
 	
-mov dword eax, 0x7730
-mov word [0xB8008], ax
-
 	push dword StringLiteral_e5e336c6_42a4_4ec6_be45_088caaf386c3
-
-mov dword eax, 0x2230
-mov word [0xB800A], ax
-
-	call method_System_Void_RETEND_Kernel_BasicConsole_DECLEND_Clear_NAMEEND___
-
-mov dword eax, 0x3330
-mov word [0xB800A], ax
-
 	call method_System_Void_RETEND_Kernel_BasicConsole_DECLEND_WriteLine_NAMEEND__Kernel_FOS_System_String_
-	
-mov dword eax, 0x4430
-mov word [0xB800C], ax
-
-mov dword ecx, 0xFFFFFFFF
-LoopXYZ7:
-loop LoopXYZ7
-
 	add ESP, 4
-	
-mov dword ecx, 0xFFFFFFFF
-LoopXYZ8:
-loop LoopXYZ8
+
+mov dword ecx, 0x60000000
+LoopXYZ9:
+loop LoopXYZ9
 
 	call %KERNEL_CALL_STATIC_CONSTRUCTORS_METHOD% ; Call the static constructors - this is a macro used by the kernel compiler.
 	call %KERNEL_MAIN_METHOD% ; Call our main method - this is a macro used by the kernel compiler.

@@ -85,7 +85,7 @@ namespace Kernel.FOS_System
         [Drivers.Compiler.Attributes.NoDebug]
         [Compiler.NoGC]
         [Drivers.Compiler.Attributes.NoGC]
-        public static void Init()
+        static GC()
         {
             Heap.InitFixedHeap();
             Enabled = true;

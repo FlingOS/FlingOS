@@ -111,6 +111,7 @@ namespace Drivers.Compiler.IL
             }
             theMethodInfo.Preprocessed = true;
 
+            string sig = theMethodInfo.Signature;
             bool SetMethodID = true;
             if (!theMethodInfo.IsConstructor)
             {
@@ -197,7 +198,7 @@ namespace Drivers.Compiler.IL
         }
         private static int GetMethodIDGenerator(ILLibrary TheLibrary, Types.TypeInfo aTypeInfo)
         {
-            int totalGen = 0;
+            int totalGen = aTypeInfo.MethodIDGenerator;
             if (aTypeInfo.UnderlyingType.BaseType != null)
             {
                 if (!aTypeInfo.UnderlyingType.BaseType.AssemblyQualifiedName.Contains("mscorlib"))
@@ -387,7 +388,12 @@ namespace Drivers.Compiler.IL
 
                 if ((ILOp.OpCodes)theOp.opCode.Value == ILOp.OpCodes.Ret)
                 {
-                    theILBlock.ILOps.Insert(i, new ILOps.MethodEnd());
+                    theILBlock.ILOps.Insert(i, new ILOps.MethodEnd()
+                    {
+                        Offset = theOp.Offset,
+                        BytesSize = theOp.BytesSize
+                    });
+                    theOp.Offset = -1;
                     i++;
                 }
             }

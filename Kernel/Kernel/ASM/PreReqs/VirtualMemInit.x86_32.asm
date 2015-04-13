@@ -1,18 +1,18 @@
 ﻿BITS 32
 
 SECTION .text
-GLOBAL File_VirtMemInit:function
-File_VirtMemInit:
-
-EXTERN Page_Table1
-EXTERN Page_Directory
 
 KERNEL_VIRTUAL_BASE equ 0xC0000000					; 3GiB
 KERNEL_PAGE_NUMBER equ (KERNEL_VIRTUAL_BASE >> 22)
 
+EXTERN Page_Table1
+EXTERN Page_Directory
+
+GLOBAL File_VirtMemInit:function
+File_VirtMemInit:
+
 ; BEGIN - Virtual Mem Init
 
-VirtualMemInit:
 ; See MultibootSignature for memory allocations
 
 ; 1. Map virtual memory for physical address execution
@@ -38,20 +38,9 @@ VirtualMemInit:
 ; LoopXYZ0:
 ; loop LoopXYZ0
 
-nop
-nop
-nop
-nop
-
-nop
-nop
-nop
-nop
-
-nop
-nop
-nop
-nop
+; Hmm... something has to go before the lea op otherwise the OS crashes at boot.
+;		It can be min. ~12 NOPs or this mov or probably many other things...
+mov dword ecx, 0x0
 
 lea eax, [Page_Table1 - KERNEL_VIRTUAL_BASE]
 mov ebx, 7

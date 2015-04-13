@@ -52,7 +52,6 @@ namespace Kernel
 #if DEBUG
             Debug.BasicDebug.Init();
 #endif
-            FOS_System.GC.Init();
 
             BasicConsole.WriteLine();
         }

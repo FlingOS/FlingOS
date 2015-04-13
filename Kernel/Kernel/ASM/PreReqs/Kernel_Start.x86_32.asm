@@ -45,6 +45,5 @@ _Kernel_Start:
 	or eax, 0x1
 	mov cr0, eax
 	
-
 	; END - Multiboot Info
 ; END - Kernel Start
