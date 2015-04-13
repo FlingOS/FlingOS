@@ -38,36 +38,15 @@ __MAIN_ENTRYPOINT__:
 	mov dword ebp, esp
 	
 	call method_System_Void_RETEND_Kernel_BasicConsole_DECLEND__cctor_NAMEEND___
-	
-mov dword eax, 0x7730
-mov word [0xB8008], ax
-
 	call method_System_Void_RETEND_Kernel_BasicConsole_DECLEND_Init_NAMEEND___
-
-mov dword eax, 0x2230
-mov word [0xB800A], ax
-
-	call method_System_Void_RETEND_Kernel_BasicConsole_DECLEND_Clear_NAMEEND___
-
-mov dword eax, 0x3330
-mov word [0xB800A], ax
-
-	call method_System_Void_RETEND_Kernel_BasicConsole_DECLEND_PrintTestString_NAMEEND___
-
-mov dword eax, 0x4430
-mov word [0xB800C], ax
-
-mov dword ecx, 0x0F000000
-LoopXYZ7:
-loop LoopXYZ7
-
-	push dword StringLiteral_e5e336c6_42a4_4ec6_be45_088caaf386c3
-	call method_System_Void_RETEND_Kernel_BasicConsole_DECLEND_Write_NAMEEND__Kernel_FOS_System_String_
-	add ESP, 4
 	
-mov dword ecx, 0x0F000000
-LoopXYZ8:
-loop LoopXYZ8
+	push dword StringLiteral_e5e336c6_42a4_4ec6_be45_088caaf386c3
+	call method_System_Void_RETEND_Kernel_BasicConsole_DECLEND_WriteLine_NAMEEND__Kernel_FOS_System_String_
+	add ESP, 4
+
+mov dword ecx, 0x60000000
+LoopXYZ9:
+loop LoopXYZ9
 
 	call %KERNEL_CALL_STATIC_CONSTRUCTORS_METHOD% ; Call the static constructors - this is a macro used by the kernel compiler.
 	call %KERNEL_MAIN_METHOD% ; Call our main method - this is a macro used by the kernel compiler.
