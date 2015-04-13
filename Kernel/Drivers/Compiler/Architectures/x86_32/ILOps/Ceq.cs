@@ -88,7 +88,7 @@ namespace Drivers.Compiler.Architectures.x86
             if (itemB.isFloat || itemA.isFloat)
             {
                 //SUPPORT - floats
-                throw new NotSupportedException("Add floats is unsupported!");
+                throw new NotSupportedException("Compare floats is unsupported!");
             }
             else if(itemA.sizeOnStackInBytes == 4 && itemB.sizeOnStackInBytes == 4)
             {
@@ -103,7 +103,7 @@ namespace Drivers.Compiler.Architectures.x86
                 //Otherwise, A = B, so push true (true=1)
                 conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Dword, Src = "1" });
                 //And then jump to the end of this IL op.
-                conversionState.Append(new ASMOps.Jmp() { JumpType = ASMOps.JmpOp.JumpNotEqual, DestILPosition = currOpPosition, Extension = "End" });
+                conversionState.Append(new ASMOps.Jmp() { JumpType = ASMOps.JmpOp.Jump, DestILPosition = currOpPosition, Extension = "End" });
                 //Insert the Else label.
                 conversionState.Append(new ASMOps.Label() { ILPosition = currOpPosition, Extension = "Else" });
                 //Else case - Push false (false=0)
@@ -144,7 +144,7 @@ namespace Drivers.Compiler.Architectures.x86
                 //True case - Push true (true=1)
                 conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Dword, Src = "1" });
                 //And then jump to the end of this IL op.
-                conversionState.Append(new ASMOps.Jmp() { JumpType = ASMOps.JmpOp.JumpNotEqual, DestILPosition = currOpPosition, Extension = "End" });
+                conversionState.Append(new ASMOps.Jmp() { JumpType = ASMOps.JmpOp.Jump, DestILPosition = currOpPosition, Extension = "End" });
                 //Insert Else case label
                 conversionState.Append(new ASMOps.Label() { ILPosition = currOpPosition, Extension = "Else" });
                 //Else case - Push false (false=0)

@@ -388,7 +388,12 @@ namespace Drivers.Compiler.IL
 
                 if ((ILOp.OpCodes)theOp.opCode.Value == ILOp.OpCodes.Ret)
                 {
-                    theILBlock.ILOps.Insert(i, new ILOps.MethodEnd());
+                    theILBlock.ILOps.Insert(i, new ILOps.MethodEnd()
+                    {
+                        Offset = theOp.Offset,
+                        BytesSize = theOp.BytesSize
+                    });
+                    theOp.Offset = -1;
                     i++;
                 }
             }
