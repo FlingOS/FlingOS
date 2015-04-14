@@ -286,7 +286,7 @@ namespace Drivers.Compiler.IL
             ASMResult.AppendLine(TypeId + ":");
             
             Types.TypeInfo typeTypeInfo = ILLibrary.SpecialClasses[typeof(Attributes.TypeClassAttribute)].First();
-            List<Types.FieldInfo> OrderedFields = typeTypeInfo.FieldInfos.OrderBy(x => x.OffsetInBytes).ToList();
+            List<Types.FieldInfo> OrderedFields = typeTypeInfo.FieldInfos.Where(x => !x.IsStatic).OrderBy(x => x.OffsetInBytes).ToList();
             foreach (Types.FieldInfo aTypeField in OrderedFields)
             {
                 Types.TypeInfo FieldTypeInfo = TheLibrary.GetTypeInfo(aTypeField.FieldType);
@@ -361,7 +361,7 @@ namespace Drivers.Compiler.IL
             ASMResult.AppendLine(currentTypeId + "_MethodTable:");
 
             Types.TypeInfo typeTypeInfo = ILLibrary.SpecialClasses[typeof(Attributes.MethodInfoStructAttribute)].First();
-            List<Types.FieldInfo> OrderedFields = typeTypeInfo.FieldInfos.OrderBy(x => x.OffsetInBytes).ToList();
+            List<Types.FieldInfo> OrderedFields = typeTypeInfo.FieldInfos.Where(x => !x.IsStatic).OrderBy(x => x.OffsetInBytes).ToList();
 
             if (TheTypeInfo.UnderlyingType.BaseType == null || TheTypeInfo.UnderlyingType.BaseType.FullName != "System.Array")
             {
@@ -448,7 +448,7 @@ namespace Drivers.Compiler.IL
             ASMResult.AppendLine(currentTypeId + "_FieldTable:");
 
             Types.TypeInfo typeTypeInfo = ILLibrary.SpecialClasses[typeof(Attributes.FieldInfoStructAttribute)].First();
-            List<Types.FieldInfo> OrderedFields = typeTypeInfo.FieldInfos.OrderBy(x => x.OffsetInBytes).ToList();
+            List<Types.FieldInfo> OrderedFields = typeTypeInfo.FieldInfos.Where(x => !x.IsStatic).OrderBy(x => x.OffsetInBytes).ToList();
 
             if (TheTypeInfo.UnderlyingType.BaseType == null || (TheTypeInfo.UnderlyingType.BaseType.FullName != "System.Array" &&
                                                                 TheTypeInfo.UnderlyingType.BaseType.FullName != "System.MulticastDelegate"))
