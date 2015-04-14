@@ -111,7 +111,7 @@ namespace Drivers.Compiler.Architectures.x86
                 sizeOnStackInBytes = sizeToPush > 4 ? 8 : 4,
                 isFloat = isFloat,
                 isNewGCObject = false,
-                isGCManaged = pushValue && elementType != null ? conversionState.TheILLibrary.GetTypeInfo(elementType).IsGCManaged : false
+                isGCManaged = pushValue ? (elementType == null || conversionState.TheILLibrary.GetTypeInfo(elementType).IsGCManaged) : false
             });
         }
 
@@ -430,7 +430,7 @@ namespace Drivers.Compiler.Architectures.x86
                 sizeOnStackInBytes = sizeToPush > 4 ? 8 : 4,
                 isFloat = isFloat,
                 isNewGCObject = false,
-                isGCManaged = pushValue && elementType != null ? conversionState.TheILLibrary.GetTypeInfo(elementType).IsGCManaged : false
+                isGCManaged = pushValue ? (elementType == null || conversionState.TheILLibrary.GetTypeInfo(elementType).IsGCManaged) : false
             });
         }
     }
