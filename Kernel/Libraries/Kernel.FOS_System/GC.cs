@@ -578,20 +578,24 @@ namespace Kernel.FOS_System
                     //  fields. 
                     while (FieldInfoPtr != null)
                     {
-                        FOS_System.Type fieldType = (FOS_System.Type)Utilities.ObjectUtilities.GetObject(FieldInfoPtr->FieldType);
-                        if (!fieldType.IsValueType && 
-                            !fieldType.IsPointer)
+                        if (FieldInfoPtr->Size > 0)
                         {
-                            byte* fieldPtr = objPtr + FieldInfoPtr->Offset;
-                            FOS_System.Object theFieldObj = (FOS_System.Object)Utilities.ObjectUtilities.GetObject(fieldPtr);
-                            DecrementRefCount(theFieldObj, true);
+                            FOS_System.Type fieldType = (FOS_System.Type)Utilities.ObjectUtilities.GetObject(FieldInfoPtr->FieldType);
+                            if (!fieldType.IsValueType &&
+                                !fieldType.IsPointer)
+                            {
+                                byte* fieldPtr = objPtr + FieldInfoPtr->Offset;
+                                FOS_System.Object theFieldObj = (FOS_System.Object)Utilities.ObjectUtilities.GetObject(fieldPtr);
+                                
+                                DecrementRefCount(theFieldObj, true);
 
 #if GC_TRACE
                             BasicConsole.WriteLine("Cleaned up field.");
 #endif
+                            }
+                            
+                            FieldInfoPtr++;
                         }
-
-                        FieldInfoPtr++;
 
                         if (FieldInfoPtr->Size == 0)
                         {
