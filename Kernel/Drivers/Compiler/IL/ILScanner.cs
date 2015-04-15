@@ -588,7 +588,7 @@ namespace Drivers.Compiler.IL
             {
                 try
                 {
-                    TheASMBlock.ASMOps.Add(new ASM.ASMComment() { Text = TheASMBlock.GenerateILOpLabel(convState.PositionOf(anOp), "") + "  --  " + anOp.opCode.ToString() });
+                    TheASMBlock.ASMOps.Add(new ASM.ASMComment() { Text = TheASMBlock.GenerateILOpLabel(convState.PositionOf(anOp), "") + "  --  " + anOp.opCode.ToString() + " -- Offset: " + anOp.Offset.ToString("X2") });
 
                     int currCount = TheASMBlock.ASMOps.Count;
                     if (anOp is ILOps.MethodStart)

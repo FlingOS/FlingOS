@@ -604,5 +604,5 @@ pic_remap:
     xchg al, ah
     out 0xA1, al        ; Set mask of PIC2_DATA
 
-	;sti					; Enable interrupts - TODO: Re-enable
+	sti					; Enable interrupts
 	nop					; Required - STI takes effect after the next instruction runs
