@@ -126,12 +126,12 @@ namespace Kernel.Hardware.Devices
             if (KeyMappings == null)
             {
 #if UKKEYBOARD
-                CreateUKKeymap ();
+                CreateUKKeymap();
 #elif USKEYBOARD
                 CreateUSKeymap();
 #else
                 BasicConsole.WriteLine("No default keymap specified at compile time! Using UK keymap.");
-                CreateUKKeymap ();
+                CreateUKKeymap();
 #endif
             }
         }

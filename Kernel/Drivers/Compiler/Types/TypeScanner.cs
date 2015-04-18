@@ -366,8 +366,10 @@ namespace Drivers.Compiler.Types
                     result = 0;
                     foreach (System.Reflection.FieldInfo anInfo in AllFields)
                     {
-                        result += GetSizeOnStackInBytes(anInfo.FieldType);
+                        result += GetSizeOnHeapInBytes(anInfo.FieldType);
                     }
+
+                    result = Math.Max(result, 4);
                 }
             }
 

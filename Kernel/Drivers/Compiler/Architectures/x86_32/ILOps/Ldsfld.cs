@@ -99,7 +99,7 @@ namespace Drivers.Compiler.Architectures.x86
                 case OpCodes.Ldsfld:
                     {
                         Types.TypeInfo theTypeInfo = conversionState.TheILLibrary.GetTypeInfo(theField.FieldType);
-                        int size = theTypeInfo.SizeOnStackInBytes;
+                        int size = /*theTypeInfo.IsValueType ? theTypeInfo.SizeOnHeapInBytes : */theTypeInfo.SizeOnStackInBytes;
                         bool isFloat = Utilities.IsFloat(theField.FieldType);
                         
                         if (isFloat)

@@ -344,7 +344,8 @@ namespace Drivers.Compiler.IL
                 if (aFieldInfo.IsStatic)
                 {
                     string FieldID = aFieldInfo.ID;
-                    int Size = TheLibrary.GetTypeInfo(aFieldInfo.FieldType).SizeOnStackInBytes;
+                    Types.TypeInfo fieldTypeInfo = TheLibrary.GetTypeInfo(aFieldInfo.FieldType);
+                    int Size = /*fieldTypeInfo.IsValueType ? fieldTypeInfo.SizeOnHeapInBytes : */fieldTypeInfo.SizeOnStackInBytes;
                     StaticFieldsBlock.Append(new ASM.ASMGeneric() {
                         Text = string.Format("GLOBAL {0}:data\r\n{0}: times {1} db 0", FieldID, Size)
                     });

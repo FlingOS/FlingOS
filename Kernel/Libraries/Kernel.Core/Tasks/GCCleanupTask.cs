@@ -41,7 +41,7 @@ namespace Kernel.Core.Tasks
         {
             while (true)
             {
-                bool reenable = Hardware.Processes.Scheduler.Enabled;
+                //bool reenable = Hardware.Processes.Scheduler.Enabled;
                 try
                 {
                     //if (reenable)
@@ -54,20 +54,29 @@ namespace Kernel.Core.Tasks
                     BasicConsole.WriteLine("GC cleaning...");
                     BasicConsole.SetTextColour(BasicConsole.default_colour);
 #endif
-                    
                     FOS_System.GC.Cleanup();
 
 #if GCTASK_TRACE
                     BasicConsole.SetTextColour(BasicConsole.warning_colour);
-                    BasicConsole.WriteLine("GC stopped.");
+                    BasicConsole.WriteLine("GC stopped (1).");
                     BasicConsole.SetTextColour(BasicConsole.default_colour);
 #endif
 
                 }
                 catch
                 {
+#if GCTASK_TRACE
+                    BasicConsole.SetTextColour(BasicConsole.error_colour);
+                    BasicConsole.WriteLine("GC error.");
+                    BasicConsole.SetTextColour(BasicConsole.default_colour);
+#endif
                 }
 
+#if GCTASK_TRACE
+                BasicConsole.SetTextColour(BasicConsole.warning_colour);
+                BasicConsole.WriteLine("GC stopped (2).");
+                BasicConsole.SetTextColour(BasicConsole.default_colour);
+#endif
                 //if (reenable)
                 //{
                 //    Hardware.Processes.Scheduler.Enable();

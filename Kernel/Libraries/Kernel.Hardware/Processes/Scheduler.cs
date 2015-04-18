@@ -58,53 +58,53 @@ namespace Kernel.Hardware.Processes
         {
             //Disable interrupts - critical section
 #if SCHEDULER_TRACE
-            Console.Default.WriteLine(" > Disabling interrupts...");
+            BasicConsole.WriteLine(" > Disabling interrupts...");
 #endif
             Disable();
 
             //Load first process and first thread (ManagedMain process)
 #if SCHEDULER_TRACE
-            Console.Default.WriteLine(" > Setting current process...");
+            BasicConsole.WriteLine(" > Setting current process...");
 #endif
             ProcessManager.CurrentProcess = (Process)ProcessManager.Processes[0];
 #if SCHEDULER_TRACE
-            Console.Default.WriteLine(" > Setting current thread...");
+            BasicConsole.WriteLine(" > Setting current thread...");
 #endif
             ProcessManager.CurrentThread = (Thread)ProcessManager.CurrentProcess.Threads[0];
 #if SCHEDULER_TRACE
-            Console.Default.WriteLine(" > Setting current thread state...");
+            BasicConsole.WriteLine(" > Setting current thread state...");
 #endif
             ProcessManager.CurrentThread_State = ProcessManager.CurrentThread.State;
                         
             //Init TSS
 #if SCHEDULER_TRACE
-            Console.Default.WriteLine(" > Getting TSS pointer...");
+            BasicConsole.WriteLine(" > Getting TSS pointer...");
 #endif
             TSS* tss = GetTSSPointer();
 #if SCHEDULER_TRACE
-            Console.Default.WriteLine(" > Setting esp0...");
+            BasicConsole.WriteLine(" > Setting esp0...");
 #endif
             tss->esp0 = (uint)ProcessManager.CurrentThread_State->KernelStackTop;
 #if SCHEDULER_TRACE
-            Console.Default.WriteLine(" > Setting ss0...");
+            BasicConsole.WriteLine(" > Setting ss0...");
 #endif
             //Note: KM CS is loaded from IDT entry on ring 3 -> 0 switch
             tss->ss0 = 0x10; //Kernel mode stack segment = KM Data segment (same for all processes)
             
 #if SCHEDULER_TRACE
-            Console.Default.WriteLine(" > Setting cr3...");
+            BasicConsole.WriteLine(" > Setting cr3...");
 #endif
             tss->cr3 = VirtMem.x86.GetCR3();
 
             //Load Task Register
 #if SCHEDULER_TRACE
-            Console.Default.WriteLine(" > Loading TR...");
+            BasicConsole.WriteLine(" > Loading TR...");
 #endif
             LoadTR();
 
             //Enable timer
 #if SCHEDULER_TRACE
-            Console.Default.WriteLine(" > Adding timer handler...");
+            BasicConsole.WriteLine(" > Adding timer handler...");
 #endif
             /*1000000*/
             Hardware.Devices.Timer.Default.RegisterHandler(OnTimerInterrupt, /* MSFreq * 1000000 */ 5000000, true, null);
@@ -265,7 +265,7 @@ namespace Kernel.Hardware.Processes
             if (Processes.ProcessManager.Processes.Count > 1)
                 BasicConsole.WriteLine("Scheduler interrupt ended.");
 
-            BasicConsole.SetTextColour(BasicConsole.default_colour);
+            BasicConsole.SetTextColour(BasicBasicConsole_colour);
 #endif
         }
         [Compiler.NoDebug]
@@ -339,7 +339,7 @@ namespace Kernel.Hardware.Processes
 #if SCHEDULER_TRACE
             if (print)
             {
-                Console.Default.WriteLine("Marking thread as started...");
+                BasicConsole.WriteLine("Marking thread as started...");
             }
 #endif
             ProcessManager.CurrentThread.TimeToRunReload = (int)ProcessManager.CurrentProcess.Priority;
@@ -351,7 +351,7 @@ namespace Kernel.Hardware.Processes
 #if SCHEDULER_TRACE
             if (print)
             {
-                Console.Default.WriteLine("Initialising thread stack...");
+                BasicConsole.WriteLine("Initialising thread stack...");
             }
 #endif
             // Selectors for user-mode must be or'ed with 3 to set privilege level
@@ -367,7 +367,7 @@ namespace Kernel.Hardware.Processes
 #if SCHEDULER_TRACE
                 if (print)
                 {
-                    Console.Default.WriteLine("Setting up UM start stack...");
+                    BasicConsole.WriteLine("Setting up UM start stack...");
                 }
 #endif
 
@@ -397,7 +397,7 @@ namespace Kernel.Hardware.Processes
 #if SCHEDULER_TRACE
                 if (print)
                 {
-                    Console.Default.WriteLine("Setting up KM start stack...");
+                    BasicConsole.WriteLine("Setting up KM start stack...");
                 }
 #endif
 
@@ -423,7 +423,7 @@ namespace Kernel.Hardware.Processes
 #if SCHEDULER_TRACE
             if (print)
             {
-                Console.Default.WriteLine("Updating thread stack...");
+                BasicConsole.WriteLine("Updating thread stack...");
             }
 #endif
             ProcessManager.CurrentThread_State->ESP = (uint)stackPtr;
@@ -433,7 +433,7 @@ namespace Kernel.Hardware.Processes
             {
                 if (ProcessManager.CurrentProcess.UserMode)
                 {
-                    Console.Default.WriteLine("Starting UM thread...");
+                    BasicConsole.WriteLine("Starting UM thread...");
                 }
             }
 #endif
@@ -451,8 +451,8 @@ namespace Kernel.Hardware.Processes
 #if SCHEDULER_TRACE
             // START - Trace code
             
-            Console.Default.WriteLine("Thread terminated.");
-            Console.Default.WriteLine("Process Name: " + ProcessManager.CurrentProcess.Name + ", Thread Id: " + ProcessManager.CurrentThread.Id);
+            BasicConsole.WriteLine("Thread terminated.");
+            BasicConsole.WriteLine("Process Name: " + ProcessManager.CurrentProcess.Name + ", Thread Id: " + ProcessManager.CurrentThread.Id);
 
             //if(reenable)
             //{
@@ -461,7 +461,7 @@ namespace Kernel.Hardware.Processes
 
             //for (int i = 0; i < 3; i++)
             //{
-            //    Console.Default.Write(".");
+            //    BasicConsole.Write(".");
             //    Thread.Sleep(1000);
             //}
             // END - Trace code
@@ -486,7 +486,7 @@ namespace Kernel.Hardware.Processes
             while (true)
             {
 #if SCHEDULER_TRACE
-                Console.Default.WriteLine("Still running!");
+                BasicConsole.WriteLine("Still running!");
 #endif
             }
         }
