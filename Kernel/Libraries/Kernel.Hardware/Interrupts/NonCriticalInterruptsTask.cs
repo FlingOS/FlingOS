@@ -46,7 +46,7 @@ namespace Kernel.Hardware.Interrupts
             {
                 Awake = false;
                 
-                BasicConsole.WriteLine("Handling non-critical interrupts...");
+                //BasicConsole.WriteLine("Handling non-critical interrupts...");
 
                 uint currProcessId = 0;
                 uint currThreadId = 0;
@@ -107,9 +107,9 @@ namespace Kernel.Hardware.Interrupts
                                     {
                                         try
                                         {
-                                            BasicConsole.WriteLine("Calling func...");
+                                            //BasicConsole.WriteLine("Calling func...");
                                             func(descrip.data);
-                                            BasicConsole.WriteLine("Call completed.");
+                                            //BasicConsole.WriteLine("Call completed.");
                                         }
                                         catch
                                         {
@@ -126,11 +126,11 @@ namespace Kernel.Hardware.Interrupts
 
                 if (switched)
                 {
-                    BasicConsole.WriteLine("Switching process back...");
+                    //BasicConsole.WriteLine("Switching process back...");
                     ProcessManager.SwitchProcess(currProcessId, (int)currThreadId);
                 }
 
-                BasicConsole.WriteLine("Finished handling.");
+                //BasicConsole.WriteLine("Finished handling.");
 
                 if (!Awake)
                 {
