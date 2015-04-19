@@ -254,12 +254,15 @@ namespace Drivers.Compiler.Types
                 }
                 foreach (FieldInfo aFieldInfo in theTypeInfo.FieldInfos)
                 {
-                    TypeInfo fieldTypeInfo = TheLibrary.GetTypeInfo(aFieldInfo.FieldType, false);
-                    if (fieldTypeInfo.IsValueType || fieldTypeInfo.IsPointer)
+                    if (!aFieldInfo.IsStatic)
                     {
-                        ProcessType(TheLibrary, fieldTypeInfo);
+                        TypeInfo fieldTypeInfo = TheLibrary.GetTypeInfo(aFieldInfo.FieldType, false);
+                        if (fieldTypeInfo.IsValueType || fieldTypeInfo.IsPointer)
+                        {
+                            ProcessType(TheLibrary, fieldTypeInfo);
+                        }
+                        theTypeInfo.SizeOnHeapInBytes += fieldTypeInfo.IsValueType ? fieldTypeInfo.SizeOnHeapInBytes : Options.AddressSizeInBytes;
                     }
-                    theTypeInfo.SizeOnHeapInBytes += fieldTypeInfo.IsValueType ? fieldTypeInfo.SizeOnHeapInBytes : Options.AddressSizeInBytes;
                 }
             }
         }
@@ -286,9 +289,12 @@ namespace Drivers.Compiler.Types
 
             foreach (FieldInfo aFieldInfo in theTypeInfo.FieldInfos)
             {
-                aFieldInfo.OffsetInBytes = totalOffset;
-                TypeInfo fieldTypeInfo =  TheLibrary.GetTypeInfo(aFieldInfo.FieldType);
-                totalOffset += fieldTypeInfo.IsValueType ? fieldTypeInfo.SizeOnHeapInBytes : fieldTypeInfo.SizeOnStackInBytes;
+                if (!aFieldInfo.IsStatic)
+                {
+                    aFieldInfo.OffsetInBytes = totalOffset;
+                    TypeInfo fieldTypeInfo = TheLibrary.GetTypeInfo(aFieldInfo.FieldType);
+                    totalOffset += fieldTypeInfo.IsValueType ? fieldTypeInfo.SizeOnHeapInBytes : fieldTypeInfo.SizeOnStackInBytes;
+                }
             }
         }
 
@@ -360,8 +366,10 @@ namespace Drivers.Compiler.Types
                     result = 0;
                     foreach (System.Reflection.FieldInfo anInfo in AllFields)
                     {
-                        result += GetSizeOnStackInBytes(anInfo.FieldType);
+                        result += GetSizeOnHeapInBytes(anInfo.FieldType);
                     }
+
+                    result = Math.Max(result, 4);
                 }
             }
 

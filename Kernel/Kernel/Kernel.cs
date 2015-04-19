@@ -50,7 +50,7 @@ namespace Kernel
             BasicConsole.Clear();
 
 #if DEBUG
-            Debug.BasicDebug.Init();
+            //Debug.BasicDebug.Init();
 #endif
 
             BasicConsole.WriteLine();
@@ -76,11 +76,6 @@ namespace Kernel
         [Drivers.Compiler.Attributes.NoDebug]
         static unsafe void Main()
         {
-            //Necessary for exception handling stuff to work
-            //  - We must have an intial, empty handler to always 
-            //    "return" to.
-            ExceptionMethods.AddExceptionHandlerInfo((void*)0, (void*)0);
-
             BasicConsole.WriteLine("Fling OS  Copyright (C) 2015  Edward Nutting");
             BasicConsole.WriteLine("This program comes with ABSOLUTELY NO WARRANTY;.");
             BasicConsole.WriteLine("This is free software, and you are welcome to redistribute it");
@@ -94,9 +89,13 @@ namespace Kernel
             
             try
             {
+                BasicConsole.WriteLine("Virt mem init...");
                 Hardware.VirtMemManager.Init();
+                BasicConsole.WriteLine("CPU init...");
                 Hardware.Devices.CPU.InitDefault();
+                BasicConsole.WriteLine("Timer init...");
                 Hardware.Devices.Timer.InitDefault();
+                BasicConsole.WriteLine("System calls init...");
                 Core.Processes.SystemCalls.Init();
 
                 uint bpm = 140;
@@ -340,8 +339,8 @@ namespace Kernel
                 BasicConsole.WriteLine(" > Starting Non-critical interrupts task...");
                 ProcessManager.CurrentProcess.CreateThread(Hardware.Interrupts.NonCriticalInterruptsTask.Main);
 
-                BasicConsole.WriteLine(" > Starting Play Notes task...");
-                ProcessManager.CurrentProcess.CreateThread(Core.Tasks.PlayNotesTask.Main);
+                //BasicConsole.WriteLine(" > Starting Play Notes task...");
+                //ProcessManager.CurrentProcess.CreateThread(Core.Tasks.PlayNotesTask.Main);
 
                 //BasicConsole.WriteLine("Initialising ATA...");
                 //Hardware.ATA.ATAManager.Init();
@@ -362,10 +361,14 @@ namespace Kernel
 
                 //BasicConsole.WriteLine("Enabling scheduler...");
                 //Scheduler.Enable();
-
+                
+                BasicConsole.WriteLine("Init default keyboard...");
                 Hardware.Devices.Keyboard.InitDefault();
+                BasicConsole.WriteLine("Init default console...");
                 Core.Console.InitDefault();
+                BasicConsole.WriteLine("Init default shell...");
                 Core.Shell.InitDefault();
+                BasicConsole.WriteLine("Execute default shell...");
                 Core.Shell.Default.Execute();
 
                 if (!Core.Shell.Default.Terminating)
@@ -402,10 +405,7 @@ namespace Kernel
         {
             BasicConsole.SetTextColour(BasicConsole.warning_colour);
             BasicConsole.WriteLine(ExceptionMethods.CurrentException.Message);
-
             BasicConsole.SetTextColour(BasicConsole.default_colour);
-
-            ExceptionMethods.CurrentException = null;
         }
 
         /// <summary>

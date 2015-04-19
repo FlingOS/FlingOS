@@ -367,7 +367,7 @@ namespace Drivers.Compiler.IL
                 catch (Exception ex)
                 {
                     Logger.LogError("ILPRE", theILBlock.TheMethodInfo.ToString(), 0,
-                        "Il Preprocessor error: " + ex.Message);
+                        "Il Preprocessor error: PreprocessILOps: " + ex.Message);
                 }
             }
         }
@@ -855,7 +855,7 @@ namespace Drivers.Compiler.IL
                     if (AddCleanupBlock)
                     {
                         ILOp lastOp = theILBlock.ILOps.Last();
-                        int lastOpOffset = lastOp.Offset + 1;
+                        int lastOpOffset = lastOp.Offset;
                         int lastOpIndex = theILBlock.ILOps.Count - 1;
                         bool MethodHasReturnValue = false;
 
@@ -882,10 +882,9 @@ namespace Drivers.Compiler.IL
                                 {
                                     opCode = System.Reflection.Emit.OpCodes.Stloc,
                                     Offset = lastOpOffset,
-                                    BytesSize = 1,
+                                    BytesSize = lastOp.BytesSize,
                                     ValueBytes = BitConverter.GetBytes(theMethodInfo.LocalInfos.Count - 1)
                                 });
-                                lastOpOffset++;
                                 lastOpIndex++;
 
                                 MethodHasReturnValue = true;
@@ -897,14 +896,14 @@ namespace Drivers.Compiler.IL
                         {
                             opCode = System.Reflection.Emit.OpCodes.Leave,
                             Offset = lastOpOffset,
-                            BytesSize = 1,
+                            BytesSize = lastOp.BytesSize,
                             ValueBytes = BitConverter.GetBytes(0)
                         });
                         lastOpIndex++;
 
                         FinallyBlock CleanupFinallyBlock = new FinallyBlock()
                         {
-                            Offset = lastOpOffset + 1,
+                            Offset = lastOpOffset + lastOp.BytesSize,
                             Length = 0
                         };
                         CleanupExBlock.Length = lastOpOffset - CleanupExBlock.Offset;
@@ -1001,6 +1000,7 @@ namespace Drivers.Compiler.IL
 
                         // Replace any Ret ops contained within Cleanup Block with:
                         //      - Op to store return value (if any)
+                        //      - Leave op
                         bool Inside = false;
                         for(int opIndx = 0; opIndx < theILBlock.ILOps.Count; opIndx++)
                         {
@@ -1029,6 +1029,16 @@ namespace Drivers.Compiler.IL
                                     });
                                     theILBlock.ILOps.Insert(opIndx + 1, new ILOp()
                                     {
+                                        Offset = ARetOp.Offset,
+                                        opCode = System.Reflection.Emit.OpCodes.Leave,
+                                        ValueBytes = BitConverter.GetBytes(CleanupFinallyBlock.Offset - ARetOp.Offset)
+                                    });
+                                }
+                                else
+                                {
+                                    theILBlock.ILOps.Insert(opIndx + 1, new ILOp()
+                                    {
+                                        Offset = ARetOp.Offset,
                                         opCode = System.Reflection.Emit.OpCodes.Leave,
                                         ValueBytes = BitConverter.GetBytes(CleanupFinallyBlock.Offset - ARetOp.Offset)
                                     });

@@ -102,7 +102,7 @@ namespace Kernel.FOS_System.IO
             }
             else if(!InitAsMBR(aDiskDevice))
             {
-                ExceptionMethods.Throw(new FOS_System.Exceptions.NotSupportedException("Non MBR/EBR/GPT formatted disks not supported."));
+                //ExceptionMethods.Throw(new FOS_System.Exceptions.NotSupportedException("Non MBR/EBR/GPT formatted disks not supported."));
             }
         }
 

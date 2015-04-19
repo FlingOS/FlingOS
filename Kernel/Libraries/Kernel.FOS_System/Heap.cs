@@ -72,6 +72,12 @@ namespace Kernel.FOS_System
         public static bool PreventAllocation = false;
         public static FOS_System.String PreventReason = "[NONE]";
 
+        [Drivers.Compiler.Attributes.NoDebug]
+        [Drivers.Compiler.Attributes.NoGC]
+        static Heap()
+        {
+        }
+
         /// <summary>
         /// A pointer to the most-recently added heap block.
         /// </summary>

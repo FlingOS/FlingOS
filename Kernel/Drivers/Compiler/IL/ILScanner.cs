@@ -286,7 +286,7 @@ namespace Drivers.Compiler.IL
             ASMResult.AppendLine(TypeId + ":");
             
             Types.TypeInfo typeTypeInfo = ILLibrary.SpecialClasses[typeof(Attributes.TypeClassAttribute)].First();
-            List<Types.FieldInfo> OrderedFields = typeTypeInfo.FieldInfos.OrderBy(x => x.OffsetInBytes).ToList();
+            List<Types.FieldInfo> OrderedFields = typeTypeInfo.FieldInfos.Where(x => !x.IsStatic).OrderBy(x => x.OffsetInBytes).ToList();
             foreach (Types.FieldInfo aTypeField in OrderedFields)
             {
                 Types.TypeInfo FieldTypeInfo = TheLibrary.GetTypeInfo(aTypeField.FieldType);
@@ -344,7 +344,8 @@ namespace Drivers.Compiler.IL
                 if (aFieldInfo.IsStatic)
                 {
                     string FieldID = aFieldInfo.ID;
-                    int Size = TheLibrary.GetTypeInfo(aFieldInfo.FieldType).SizeOnStackInBytes;
+                    Types.TypeInfo fieldTypeInfo = TheLibrary.GetTypeInfo(aFieldInfo.FieldType);
+                    int Size = /*fieldTypeInfo.IsValueType ? fieldTypeInfo.SizeOnHeapInBytes : */fieldTypeInfo.SizeOnStackInBytes;
                     StaticFieldsBlock.Append(new ASM.ASMGeneric() {
                         Text = string.Format("GLOBAL {0}:data\r\n{0}: times {1} db 0", FieldID, Size)
                     });
@@ -361,7 +362,7 @@ namespace Drivers.Compiler.IL
             ASMResult.AppendLine(currentTypeId + "_MethodTable:");
 
             Types.TypeInfo typeTypeInfo = ILLibrary.SpecialClasses[typeof(Attributes.MethodInfoStructAttribute)].First();
-            List<Types.FieldInfo> OrderedFields = typeTypeInfo.FieldInfos.OrderBy(x => x.OffsetInBytes).ToList();
+            List<Types.FieldInfo> OrderedFields = typeTypeInfo.FieldInfos.Where(x => !x.IsStatic).OrderBy(x => x.OffsetInBytes).ToList();
 
             if (TheTypeInfo.UnderlyingType.BaseType == null || TheTypeInfo.UnderlyingType.BaseType.FullName != "System.Array")
             {
@@ -448,7 +449,7 @@ namespace Drivers.Compiler.IL
             ASMResult.AppendLine(currentTypeId + "_FieldTable:");
 
             Types.TypeInfo typeTypeInfo = ILLibrary.SpecialClasses[typeof(Attributes.FieldInfoStructAttribute)].First();
-            List<Types.FieldInfo> OrderedFields = typeTypeInfo.FieldInfos.OrderBy(x => x.OffsetInBytes).ToList();
+            List<Types.FieldInfo> OrderedFields = typeTypeInfo.FieldInfos.Where(x => !x.IsStatic).OrderBy(x => x.OffsetInBytes).ToList();
 
             if (TheTypeInfo.UnderlyingType.BaseType == null || (TheTypeInfo.UnderlyingType.BaseType.FullName != "System.Array" &&
                                                                 TheTypeInfo.UnderlyingType.BaseType.FullName != "System.MulticastDelegate"))
@@ -588,7 +589,7 @@ namespace Drivers.Compiler.IL
             {
                 try
                 {
-                    TheASMBlock.ASMOps.Add(new ASM.ASMComment() { Text = TheASMBlock.GenerateILOpLabel(convState.PositionOf(anOp), "") + "  --  " + anOp.opCode.ToString() });
+                    TheASMBlock.ASMOps.Add(new ASM.ASMComment() { Text = TheASMBlock.GenerateILOpLabel(convState.PositionOf(anOp), "") + "  --  " + anOp.opCode.ToString() + " -- Offset: " + anOp.Offset.ToString("X2") });
 
                     int currCount = TheASMBlock.ASMOps.Count;
                     if (anOp is ILOps.MethodStart)

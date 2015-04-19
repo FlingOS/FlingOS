@@ -19,35 +19,10 @@ EXTERN %KERNEL_CALL_STATIC_CONSTRUCTORS_METHOD%
 EXTERN %KERNEL_MAIN_METHOD%
 EXTERN method_System_Void_Kernel_PreReqs_Reset__
 
-EXTERN method_System_Void_RETEND_Kernel_BasicConsole_DECLEND__cctor_NAMEEND___
-EXTERN method_System_Void_RETEND_Kernel_BasicConsole_DECLEND_Init_NAMEEND___
-EXTERN method_System_Void_RETEND_Kernel_BasicConsole_DECLEND_Clear_NAMEEND___
-EXTERN method_System_Void_RETEND_Kernel_BasicConsole_DECLEND_Write_NAMEEND__Kernel_FOS_System_String_
-EXTERN method_System_Void_RETEND_Kernel_BasicConsole_DECLEND_WriteLine_NAMEEND__Kernel_FOS_System_String_
-EXTERN method_System_Void_RETEND_Kernel_BasicConsole_DECLEND_PrintTestString_NAMEEND___
-
-extern type_Kernel_FOS_System_String
-StringLiteral_e5e336c6_42a4_4ec6_be45_088caaf386c3:
-dd type_Kernel_FOS_System_String
-db 28, 0, 0, 0
-dw 116, 121, 112, 101, 95, 75, 101, 114, 110, 101, 108, 95, 68, 101, 98, 117, 103, 95, 66, 97, 115, 105, 99, 68, 101, 98, 117, 103
-						 ; - not strictly necessary but good for setting up esp etc.
-		
 __MAIN_ENTRYPOINT__:
 	push dword ebp
 	mov dword ebp, esp
 	
-	call method_System_Void_RETEND_Kernel_BasicConsole_DECLEND__cctor_NAMEEND___
-	call method_System_Void_RETEND_Kernel_BasicConsole_DECLEND_Init_NAMEEND___
-	
-	push dword StringLiteral_e5e336c6_42a4_4ec6_be45_088caaf386c3
-	call method_System_Void_RETEND_Kernel_BasicConsole_DECLEND_WriteLine_NAMEEND__Kernel_FOS_System_String_
-	add ESP, 4
-
-mov dword ecx, 0x60000000
-LoopXYZ9:
-loop LoopXYZ9
-
 	call %KERNEL_CALL_STATIC_CONSTRUCTORS_METHOD% ; Call the static constructors - this is a macro used by the kernel compiler.
 	call %KERNEL_MAIN_METHOD% ; Call our main method - this is a macro used by the kernel compiler.
 	

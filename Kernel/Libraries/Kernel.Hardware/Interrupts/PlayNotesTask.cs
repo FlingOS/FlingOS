@@ -47,6 +47,8 @@ namespace Kernel.Core.Tasks
         public static Thread OwnerThread = null;
         public static bool Awake = true;
 
+        public static bool Terminate = false;
+
         private static NoteRequest[] NoteRequests;
         static PlayNotesTask()
         {
@@ -73,7 +75,7 @@ namespace Kernel.Core.Tasks
 
             Thread.Sleep_Indefinitely();
 
-            while (true)
+            while (!Terminate)
             {
                 //Scheduler.Disable();
                 Awake = false;

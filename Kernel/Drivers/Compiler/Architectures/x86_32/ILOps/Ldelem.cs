@@ -111,7 +111,7 @@ namespace Drivers.Compiler.Architectures.x86
                 sizeOnStackInBytes = sizeToPush > 4 ? 8 : 4,
                 isFloat = isFloat,
                 isNewGCObject = false,
-                isGCManaged = pushValue && elementType != null ? conversionState.TheILLibrary.GetTypeInfo(elementType).IsGCManaged : false
+                isGCManaged = pushValue ? (elementType == null || conversionState.TheILLibrary.GetTypeInfo(elementType).IsGCManaged) : false
             });
         }
 
@@ -366,7 +366,7 @@ namespace Drivers.Compiler.Architectures.x86
             int allFieldsOffset = 0;
             #region Offset calculation
             {
-                Types.FieldInfo highestOffsetFieldInfo = arrayTypeInfo.FieldInfos.OrderByDescending(x => x.OffsetInBytes).First();
+                Types.FieldInfo highestOffsetFieldInfo = arrayTypeInfo.FieldInfos.Where(x => !x.IsStatic).OrderByDescending(x => x.OffsetInBytes).First();
                 Types.TypeInfo fieldTypeInfo = conversionState.TheILLibrary.GetTypeInfo(highestOffsetFieldInfo.UnderlyingInfo.FieldType);
                 allFieldsOffset = highestOffsetFieldInfo.OffsetInBytes + (fieldTypeInfo.IsValueType ? fieldTypeInfo.SizeOnHeapInBytes : fieldTypeInfo.SizeOnStackInBytes);
             }
@@ -430,7 +430,7 @@ namespace Drivers.Compiler.Architectures.x86
                 sizeOnStackInBytes = sizeToPush > 4 ? 8 : 4,
                 isFloat = isFloat,
                 isNewGCObject = false,
-                isGCManaged = pushValue && elementType != null ? conversionState.TheILLibrary.GetTypeInfo(elementType).IsGCManaged : false
+                isGCManaged = pushValue ? (elementType == null || conversionState.TheILLibrary.GetTypeInfo(elementType).IsGCManaged) : false
             });
         }
     }

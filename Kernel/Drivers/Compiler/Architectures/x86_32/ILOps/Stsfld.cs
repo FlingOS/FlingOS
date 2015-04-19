@@ -58,9 +58,10 @@ namespace Drivers.Compiler.Architectures.x86
             int metadataToken = Utilities.ReadInt32(theOp.ValueBytes, 0);
             FieldInfo theField = conversionState.Input.TheMethodInfo.UnderlyingInfo.Module.ResolveField(metadataToken);
             Types.FieldInfo theFieldInfo = conversionState.GetFieldInfo(theField.DeclaringType, theField.Name);
+            Types.TypeInfo theFieldTypeInfo = conversionState.TheILLibrary.GetTypeInfo(theFieldInfo.FieldType);
 
             string fieldId = theFieldInfo.ID;
-            int size = conversionState.TheILLibrary.GetTypeInfo(theFieldInfo.FieldType).SizeOnStackInBytes;
+            int size = /*theFieldTypeInfo.IsValueType ? theFieldTypeInfo.SizeOnHeapInBytes : */theFieldTypeInfo.SizeOnStackInBytes;
             bool isFloat = Utilities.IsFloat(theField.FieldType);
 
             conversionState.AddExternalLabel(fieldId);
@@ -94,6 +95,15 @@ namespace Drivers.Compiler.Architectures.x86
                 conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Dword, Src = "EAX", Dest = "[" + fieldId + "]" });
                 conversionState.Append(new ASMOps.Pop() { Size = ASMOps.OperandSize.Dword, Dest = "EAX" });
                 conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Dword, Src = "EAX", Dest = "[" + fieldId + "+4]" });
+            }
+            else
+            {
+                throw new ArgumentOutOfRangeException("Storing static field that has stack size greater than 8 not supported!");
+            }
+
+            if (value.sizeOnStackInBytes - size > 0)
+            {
+                conversionState.Append(new ASMOps.Add() { Src = (value.sizeOnStackInBytes - size).ToString(), Dest = "ESP" });
             }
         }
     }

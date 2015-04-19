@@ -86,7 +86,7 @@ namespace Kernel.Hardware.Devices
             AddKey(0x320000, 'M', KeyboardKey.M);
             #endregion
 
-            #region digits
+            #region Digits
             AddKey(0x29, '`', KeyboardKey.NoName);
             AddKey(0x290000, (char)170u, KeyboardKey.NoName);
             AddKey(0x2, '1', KeyboardKey.D1);

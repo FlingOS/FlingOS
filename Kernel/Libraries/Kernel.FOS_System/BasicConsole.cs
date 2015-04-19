@@ -60,6 +60,8 @@ namespace Kernel
         //      which you would need to change. I am reluctant to go changing these hard
         //      coded values for the reasons given in prior notes.
 
+        public static bool Initialised = false;
+
         /// <summary>
         /// The offset from the start of the memory (in characters) to write the next character to.
         /// </summary>
@@ -133,6 +135,8 @@ namespace Kernel
 
             //Background | Foreground
             colour = (char)(bg_colour | default_colour);
+
+            Initialised = true;
         }
 
         /// <summary>
@@ -145,6 +149,7 @@ namespace Kernel
         [Drivers.Compiler.Attributes.NoGC]
         public static void SetTextColour(char aText_colour)
         {
+            if (!Initialised) return;
             colour = (char)(bg_colour | (aText_colour & 0x0F00));
         }
         /// <summary>
@@ -157,6 +162,7 @@ namespace Kernel
         [Drivers.Compiler.Attributes.NoGC]
         public static void SetBgColour(char aBg_colour)
         {
+            if (!Initialised) return;
             bg_colour = (char)(aBg_colour & 0xF000);
             colour = (char)(bg_colour | (colour & 0x0F00));
         }
@@ -170,6 +176,7 @@ namespace Kernel
         [Drivers.Compiler.Attributes.NoGC]
         public static unsafe void Clear()
         {
+            if (!Initialised) return;
             //Clear out every character on the screen
             int numToClear = rows * cols;
             //Start at beginning of video memory
@@ -204,6 +211,7 @@ namespace Kernel
         [Drivers.Compiler.Attributes.NoGC]
         public static unsafe void Write(FOS_System.String str)
         {
+            if (!Initialised) return;
             //If string is null, just don't write anything
             if (str == null)
             {
@@ -260,6 +268,7 @@ namespace Kernel
         [Drivers.Compiler.Attributes.NoGC]
         public static unsafe void WriteLine(FOS_System.String str)
         {
+            if (!Initialised) return;
             if (str == null)
             {
                 return;
@@ -312,6 +321,7 @@ namespace Kernel
         [Drivers.Compiler.Attributes.NoGC]
         public static void WriteLine()
         {
+            if (!Initialised) return;
             //We must write at least 1 character, so we just write a space since that
             //  is any empty character.
             WriteLine(" ");
@@ -324,6 +334,7 @@ namespace Kernel
         [Drivers.Compiler.Attributes.NoGC]
         public static unsafe void PrintTestString()
         {
+            if (!Initialised) return;
             //This does not use the Write functions as it is a test function to 
             //  test that strings and the video memory output work.
 
@@ -351,6 +362,7 @@ namespace Kernel
         /// <param name="amount">The amount of time to delay (approx. 1 = 1 second).</param>
         public static void DelayOutput(int amount)
         {
+            if (!Initialised) return;
             /*********************************************
              * DO NOT CHANGE THIS IMPLEMENTATION TO USE  *
              *    Devices.Timer.Wait/WaitNS functions!   *
@@ -395,6 +407,7 @@ namespace Kernel
 
         public static void DumpMemory(void* ptr, int size)
         {
+            if (!Initialised) return;
             uint* uPtr = (uint*)ptr;
             size /= 4;
             for (int i = 0; i < size; i++)
