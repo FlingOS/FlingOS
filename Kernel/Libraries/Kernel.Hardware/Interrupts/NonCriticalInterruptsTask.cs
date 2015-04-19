@@ -34,18 +34,19 @@ namespace Kernel.Hardware.Interrupts
         public static Thread OwnerThread = null;
         public static bool Awake = true;
 
+        public static bool Terminate = false;
+
         public static void Main()
         {
             OwnerThread = ProcessManager.CurrentThread;
 
             Thread.Sleep_Indefinitely();
 
-            while (true)
+            while (!Terminate)
             {
-                //Scheduler.Disable();
                 Awake = false;
                 
-                //BasicConsole.WriteLine("Handling non-critical interrupts...");
+                BasicConsole.WriteLine("Handling non-critical interrupts...");
 
                 uint currProcessId = 0;
                 uint currThreadId = 0;
@@ -56,42 +57,59 @@ namespace Kernel.Hardware.Interrupts
                 }
                 bool switched = false;
 
+                //BasicConsole.WriteLine("Looping ISRs...");
+
                 for (int ISRNum = 0; ISRNum < Interrupts.Handlers.Length; ISRNum++)
                 {
+                    //BasicConsole.WriteLine("Getting handlers...");
                     InterruptHandlers handlers = Interrupts.Handlers[ISRNum];
+
+                    //BasicConsole.WriteLine("Checking handlers aren't null...");
                     if (handlers != null)
                     {
+                        //BasicConsole.WriteLine("Resetting queued occurrences...");
                         if (handlers.QueuedOccurrences < handlers.QueuedOccurrencesOld)
                         {
                             handlers.QueuedOccurrencesOld = 0;
                         }
 
+                        //BasicConsole.WriteLine("Getting queued occurrences data...");
                         int QueuedOccurrences = handlers.QueuedOccurrences;
                         int Occurrences = QueuedOccurrences - handlers.QueuedOccurrencesOld;
                         handlers.QueuedOccurrencesOld = QueuedOccurrences;
 
                         // Prevent potential weird cases
+                        //BasicConsole.WriteLine("Checking number of occurrences...");
                         if (Occurrences > 0 && Occurrences < 1000)
                         {
+                            //BasicConsole.WriteLine("Looping handlers...");
                             for (int i = 0; i < handlers.HandlerDescrips.Count; i++)
                             {
+                                //BasicConsole.WriteLine("Getting handler descrip...");
                                 HandlerDescriptor descrip = (HandlerDescriptor)handlers.HandlerDescrips[i];
 
+                                //BasicConsole.WriteLine("Checking is not a critical handler...");
                                 if (!descrip.CriticalHandler)
                                 {
+                                    //BasicConsole.WriteLine("Getting func...");
                                     InterruptHandler func = descrip.handler;
 
+                                    //BasicConsole.WriteLine("Checking ignore process id...");
                                     if (!descrip.IgnoreProcessId)
                                     {
+                                        //BasicConsole.WriteLine("Switching process...");
                                         ProcessManager.SwitchProcess(descrip.ProcessId, -1);
                                         switched = true;
                                     }
 
+                                    //BasicConsole.WriteLine("Looping occurrences...");
                                     for (int x = 0; x < Occurrences; x++)
                                     {
                                         try
                                         {
+                                            BasicConsole.WriteLine("Calling func...");
                                             func(descrip.data);
+                                            BasicConsole.WriteLine("Call completed.");
                                         }
                                         catch
                                         {
@@ -108,16 +126,17 @@ namespace Kernel.Hardware.Interrupts
 
                 if (switched)
                 {
+                    BasicConsole.WriteLine("Switching process back...");
                     ProcessManager.SwitchProcess(currProcessId, (int)currThreadId);
                 }
 
-                //BasicConsole.WriteLine("Finished handling...");
+                BasicConsole.WriteLine("Finished handling.");
 
                 if (!Awake)
                 {
                     //BasicConsole.WriteLine("Sleeping non-critical interrupts thread...");
 
-                    //Scheduler.Enable();
+                    //Thread.Sleep(1000);
                     if (!Thread.Sleep_Indefinitely())
                     {
                         BasicConsole.SetTextColour(BasicConsole.error_colour);

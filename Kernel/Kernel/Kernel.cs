@@ -76,11 +76,6 @@ namespace Kernel
         [Drivers.Compiler.Attributes.NoDebug]
         static unsafe void Main()
         {
-            //Necessary for exception handling stuff to work
-            //  - We must have an intial, empty handler to always 
-            //    "return" to.
-            ExceptionMethods.AddExceptionHandlerInfo((void*)0, (void*)0);
-
             BasicConsole.WriteLine("Fling OS  Copyright (C) 2015  Edward Nutting");
             BasicConsole.WriteLine("This program comes with ABSOLUTELY NO WARRANTY;.");
             BasicConsole.WriteLine("This is free software, and you are welcome to redistribute it");

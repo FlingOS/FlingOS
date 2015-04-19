@@ -37,9 +37,12 @@ namespace Kernel.Core.Tasks
 {
     public static class GCCleanupTask
     {
+
+        public static bool Terminate = false;
+
         public static void Main()
         {
-            while (true)
+            while (!Terminate)
             {
                 //bool reenable = Hardware.Processes.Scheduler.Enabled;
                 try

@@ -116,6 +116,9 @@ namespace Kernel.Hardware.Processes
             Console.Default.WriteLine(" > > > Setting started...");
 #endif
             State->Started = false;
+
+            // Init Exception State
+            State->ExState = (ExceptionState*)FOS_System.Heap.AllocZeroed((uint)sizeof(ExceptionState));
         }
 
         public UInt32 EAXFromInterruptStack
@@ -328,5 +331,7 @@ namespace Kernel.Hardware.Processes
         public bool Terminated;         // Offset: 19
 
         public bool UserMode;           // Offset: 20
+
+        public ExceptionState* ExState; // Offset: 21
     }
 }

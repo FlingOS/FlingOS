@@ -88,6 +88,9 @@ namespace Kernel.FOS_System
         static GC()
         {
             Heap.InitFixedHeap();
+
+            ExceptionMethods.State = ExceptionMethods.DefaultState = (ExceptionState*)Heap.AllocZeroed((uint)sizeof(ExceptionState));
+
             Enabled = true;
 
             GCAccessLock = new SpinLock(0);

@@ -34,6 +34,8 @@ namespace Kernel.Core.Tasks
 {
     public static unsafe class IdleTask
     {
+        [Drivers.Compiler.Attributes.NoDebug]
+        [Drivers.Compiler.Attributes.NoGC]
         public static void Main()
         {
             //Note: Do not use Thread.Sleep within this task because this is the idle task. Its purpose

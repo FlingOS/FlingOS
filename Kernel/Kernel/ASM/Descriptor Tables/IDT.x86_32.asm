@@ -15,6 +15,9 @@ EXTERN method_System_Void_RETEND_Kernel_ExceptionMethods_DECLEND_Throw_DivideByZ
 EXTERN _NATIVE_IDT_Pointer
 EXTERN _NATIVE_IDT_Contents
 EXTERN staticfield_Kernel_Hardware_Processes_ThreadState__Kernel_Hardware_Processes_ProcessManager_CurrentThread_State
+EXTERN staticfield_Kernel_ExceptionState__Kernel_ExceptionMethods_State
+EXTERN staticfield_Kernel_ExceptionState__Kernel_Hardware_Interrupts_Interrupts_InterruptsExState
+EXTERN staticfield_Kernel_ExceptionState__Kernel_ExceptionMethods_DefaultState
 EXTERN _NATIVE_TSS
 EXTERN BasicDebug_InterruptHandler
 
@@ -148,6 +151,10 @@ add esp, 64
 
 INTERRUPTS_STORE_STATE_SKIP_%1:
 
+; Put in interrupts ex state
+mov dword ebx, [staticfield_Kernel_ExceptionState__Kernel_Hardware_Interrupts_Interrupts_InterruptsExState]
+mov dword [staticfield_Kernel_ExceptionState__Kernel_ExceptionMethods_State], ebx
+
 %endmacro
 
 
@@ -158,7 +165,7 @@ mov dword eax, [staticfield_Kernel_Hardware_Processes_ThreadState__Kernel_Hardwa
 ; Test for null
 cmp eax, 0
 ; If null, skip
-jz INTERRUPTS_RESTORE_STATE_SKIP%1
+jz INTERRUPTS_RESTORE_STATE_SKIP_%1
 
 
 ; Restore esp to thread's esp
@@ -169,8 +176,19 @@ mov dword ebx, [eax+7]
 ; Update TSS with kernel stack pointer for next task switch
 mov dword [_NATIVE_TSS+4], ebx
 
+; Put in thread ex state
+mov dword ebx, [eax+21]
+mov dword [staticfield_Kernel_ExceptionState__Kernel_ExceptionMethods_State], ebx
 
-INTERRUPTS_RESTORE_STATE_SKIP%1:
+jmp INTERRUPTS_RESTORE_STATE_SKIP_END_%1
+
+INTERRUPTS_RESTORE_STATE_SKIP_%1:
+
+; Put in default ex state
+mov dword ebx, [staticfield_Kernel_ExceptionState__Kernel_ExceptionMethods_DefaultState]
+mov dword [staticfield_Kernel_ExceptionState__Kernel_ExceptionMethods_State], ebx
+
+INTERRUPTS_RESTORE_STATE_SKIP_END_%1:
 
 pop gs
 pop fs

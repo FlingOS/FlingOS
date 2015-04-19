@@ -154,6 +154,13 @@ namespace Kernel.Hardware.Interrupts
             }
         }
 
+        public static ExceptionState* InterruptsExState;
+
+        static Interrupts()
+        {
+            InterruptsExState = (ExceptionState*)FOS_System.Heap.AllocZeroed((uint)sizeof(ExceptionState));
+        }
+
         /// <summary>
         /// The full list of interrupt handlers. This array has an entry for all 256 interrupt numbers.
         /// If an entry is empty, then it does not have (/has never had) any handlers attached.
@@ -339,7 +346,7 @@ namespace Kernel.Hardware.Interrupts
         }
         
 #if INTERRUPTS_TRACE
-        public static bool print = false;
+        public static bool print = true;
         public static uint lastisr = 0;
 #endif
 
@@ -391,7 +398,7 @@ namespace Kernel.Hardware.Interrupts
                 //}
 
                 //  --- Useful for PS2 driver testing ---
-                //if (ISRNum == 33)
+                ////if (ISRNum == 33)
                 //{
                 //    //HACK
                 //    InsideCriticalHandler = false;
@@ -403,7 +410,7 @@ namespace Kernel.Hardware.Interrupts
 
 #if INTERRUPTS_TRACE
                 //if(Processes.ProcessManager.Processes.Count > 1)
-                if (ISRNum == 33)
+                //if (ISRNum == 33)
                     BasicConsole.WriteLine("Interrupts: 1");
 #endif
 
@@ -418,7 +425,7 @@ namespace Kernel.Hardware.Interrupts
                 
 #if INTERRUPTS_TRACE
                 //if (Processes.ProcessManager.Processes.Count > 1)
-                if (ISRNum == 33)
+                //if (ISRNum == 33)
                     BasicConsole.WriteLine("Interrupts: 2");
 #endif
 
@@ -428,7 +435,7 @@ namespace Kernel.Hardware.Interrupts
                 {
 #if INTERRUPTS_TRACE
                     //if (Processes.ProcessManager.Processes.Count > 1)
-                    if (ISRNum == 33)
+                    //if (ISRNum == 33)
                         BasicConsole.WriteLine("Interrupts: 3");
 #endif
 
@@ -438,7 +445,7 @@ namespace Kernel.Hardware.Interrupts
                     {
 #if INTERRUPTS_TRACE
                         //if (Processes.ProcessManager.Processes.Count > 1)
-                        if (ISRNum == 33)
+                        //if (ISRNum == 33)
                             BasicConsole.WriteLine("Interrupts: 4");
 #endif
 
@@ -448,7 +455,7 @@ namespace Kernel.Hardware.Interrupts
                         {
 #if INTERRUPTS_TRACE
                             //if (Processes.ProcessManager.Processes.Count > 1)
-                            if (ISRNum == 33)
+                            //if (ISRNum == 33)
                                 BasicConsole.WriteLine("Interrupts: 5");
 #endif
 
@@ -456,7 +463,7 @@ namespace Kernel.Hardware.Interrupts
                 
 #if INTERRUPTS_TRACE
                             //if (Processes.ProcessManager.Processes.Count > 1)
-                            if (ISRNum == 33)
+                            //if (ISRNum == 33)
                                 BasicConsole.WriteLine("Interrupts: 6");
 #endif
 
@@ -464,7 +471,7 @@ namespace Kernel.Hardware.Interrupts
                             {
 #if INTERRUPTS_TRACE
                                 //if (Processes.ProcessManager.Processes.Count > 1)
-                                if (ISRNum == 33)
+                                //if (ISRNum == 33)
                                     BasicConsole.WriteLine("Interrupts: 7");
 #endif
 
@@ -472,7 +479,7 @@ namespace Kernel.Hardware.Interrupts
                                 {
 #if INTERRUPTS_TRACE
                                     //if (Processes.ProcessManager.Processes.Count > 1)
-                                    if (ISRNum == 33)
+                                    //if (ISRNum == 33)
                                         BasicConsole.WriteLine("Interrupts: 8");
 #endif
 
@@ -483,7 +490,7 @@ namespace Kernel.Hardware.Interrupts
                 
 #if INTERRUPTS_TRACE
                             //if (Processes.ProcessManager.Processes.Count > 1)
-                            if (ISRNum == 33)
+                            //if (ISRNum == 33)
                             {
                                 BasicConsole.WriteLine("Interrupts: 9");
                                 BasicConsole.Write("Handler function name: ");
@@ -495,7 +502,7 @@ namespace Kernel.Hardware.Interrupts
                 
 #if INTERRUPTS_TRACE
                             //if (Processes.ProcessManager.Processes.Count > 1)
-                            if (ISRNum == 33)
+                            //if (ISRNum == 33)
                                 BasicConsole.WriteLine("Interrupts: 10");
 #endif
                         }
@@ -507,7 +514,7 @@ namespace Kernel.Hardware.Interrupts
                 
 #if INTERRUPTS_TRACE
                     //if (Processes.ProcessManager.Processes.Count > 1)
-                    if (ISRNum == 33)
+                    //if (ISRNum == 33)
                         BasicConsole.WriteLine("Interrupts: 11");
 #endif
 
@@ -515,7 +522,7 @@ namespace Kernel.Hardware.Interrupts
                     {
 #if INTERRUPTS_TRACE
                         //if (Processes.ProcessManager.Processes.Count > 1)
-                        if (ISRNum == 33)
+                        //if (ISRNum == 33)
                             BasicConsole.WriteLine("Interrupts: 12");
 #endif
 
@@ -527,7 +534,7 @@ namespace Kernel.Hardware.Interrupts
                 
 #if INTERRUPTS_TRACE
                         //if (Processes.ProcessManager.Processes.Count > 1)
-                        if (ISRNum == 33)
+                        //if (ISRNum == 33)
                             BasicConsole.WriteLine("Interrupts: 13");
 #endif
 
@@ -535,7 +542,7 @@ namespace Kernel.Hardware.Interrupts
                         {
 #if INTERRUPTS_TRACE
                             //if (Processes.ProcessManager.Processes.Count > 1)
-                            if (ISRNum == 33)
+                            //if (ISRNum == 33)
                                 BasicConsole.WriteLine("Interrupts: 14");
 #endif
 
@@ -546,7 +553,7 @@ namespace Kernel.Hardware.Interrupts
                 
 #if INTERRUPTS_TRACE
                         //if (Processes.ProcessManager.Processes.Count > 1)
-                        if (ISRNum == 33)
+                        //if (ISRNum == 33)
                             BasicConsole.WriteLine("Interrupts: 15");
 #endif
                     }
@@ -556,7 +563,7 @@ namespace Kernel.Hardware.Interrupts
                 {
 #if INTERRUPTS_TRACE
                     //if (Processes.ProcessManager.Processes.Count > 1)
-                    if (ISRNum == 33)
+                    //if (ISRNum == 33)
                         BasicConsole.WriteLine("Interrupts: 16");
 #endif
 
@@ -565,7 +572,7 @@ namespace Kernel.Hardware.Interrupts
                 
 #if INTERRUPTS_TRACE
                 //if (Processes.ProcessManager.Processes.Count > 1)
-                if (ISRNum == 33)
+                //if (ISRNum == 33)
                     BasicConsole.WriteLine("Interrupts: 17");
 #endif
 
@@ -579,18 +586,23 @@ namespace Kernel.Hardware.Interrupts
 
 #if INTERRUPTS_TRACE
                 //if (Processes.ProcessManager.Processes.Count > 1)
-                if (ISRNum == 33)
+                //if (ISRNum == 33)
                     BasicConsole.WriteLine("Interrupts: 18");
 #endif
             }
             catch
             {
 #if DEBUG
+                BasicConsole.WriteLine("Error processing ISR!");
+
                 //Hack
                 InsideCriticalHandler = false;
                 BasicConsole.SetTextColour(BasicConsole.error_colour);
                 BasicConsole.WriteLine(((FOS_System.String)"Error processing ISR: ") + ISRNum);
-                BasicConsole.WriteLine(ExceptionMethods.CurrentException.Message);
+                if (ExceptionMethods.CurrentException != null)
+                {
+                    BasicConsole.WriteLine(ExceptionMethods.CurrentException.Message);
+                }
                 BasicConsole.SetTextColour(BasicConsole.default_colour);
                 InsideCriticalHandler = true;
 #endif
@@ -600,7 +612,7 @@ namespace Kernel.Hardware.Interrupts
 
 #if INTERRUPTS_TRACE
             //if (Processes.ProcessManager.Processes.Count > 1)
-            if (ISRNum == 33)
+            //if (ISRNum == 33)
                 BasicConsole.WriteLine("Interrupts: 19");
 #endif
         }
