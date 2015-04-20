@@ -158,7 +158,7 @@ namespace Kernel.Hardware.Interrupts
 
         static Interrupts()
         {
-            InterruptsExState = (ExceptionState*)FOS_System.Heap.AllocZeroed((uint)sizeof(ExceptionState));
+            /*ExceptionMethods.InterruptsState = */InterruptsExState = (ExceptionState*)FOS_System.Heap.AllocZeroed((uint)sizeof(ExceptionState));
         }
 
         /// <summary>

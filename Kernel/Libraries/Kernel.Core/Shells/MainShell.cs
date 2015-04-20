@@ -118,7 +118,7 @@ namespace Kernel.Core.Shells
                                 //  TODO - This should be changed to Last exception. 
                                 //          Because of the try-catch block inside the loop, there
                                 //          will never be a current exception to output.
-                                OutputCurrentExceptionInfo();
+                                OutputExceptionInfo(ExceptionMethods.CurrentException);
                             }
                             else if (cmd == "init")
                             {
@@ -966,25 +966,16 @@ namespace Kernel.Core.Shells
                     }
                     catch
                     {
-                        //Delay 5s which allows us to see any output from BasicConsole
-                        //  (BasicConsole is used by the Hardware and FOS_System.IO layers
-                        //   to output debug info.)
-                        Hardware.Devices.Timer.Default.Wait(5000);
-                        OutputCurrentExceptionInfo();
-                        //Wait 5s to read the current exception output. If the fault is in 
-                        //  the command code, just looping straight back to the beginning 
-                        //  would result in endless exceptions with no chance to read the
-                        //  information.
-                        Hardware.Devices.Timer.Default.Wait(5000);
+                        OutputExceptionInfo(ExceptionMethods.CurrentException);
                     }
                 }
             }
             catch
             {
-                OutputCurrentExceptionInfo();
+                OutputExceptionInfo(ExceptionMethods.CurrentException);
                 //Pause to give us the chance to read the output. 
                 //  We do not know what the code outside this shell may do.
-                Hardware.Devices.Timer.Default.Wait(5000);
+                Hardware.Processes.Thread.Sleep(5000);
             }
             console.WriteLine("Shell exited.");
         }
@@ -2341,11 +2332,12 @@ which should have been provided with the executable.");
 
             try
             {
-                ExceptionMethods.Throw(new FOS_System.Exception("An exception."));
+                ExceptionMethods.Throw(new FOS_System.Exception("An inner exception."));
             }
             finally
             {
                 console.WriteLine("Finally ran.");
+                ExceptionMethods.Throw(new FOS_System.Exception("An outer exception."));
             }
         }
         /// <summary>
@@ -2367,7 +2359,7 @@ which should have been provided with the executable.");
             }
             catch
             {
-                OutputCurrentExceptionInfo();
+                OutputExceptionInfo(ExceptionMethods.CurrentException);
             }
 
             console.WriteLine("Ended PC Beep test.");
@@ -2400,7 +2392,7 @@ which should have been provided with the executable.");
             }
             catch
             {
-                OutputCurrentExceptionInfo();
+                OutputExceptionInfo(ExceptionMethods.CurrentException);
             }
 
             console.WriteLine("Ended PIT test.");
@@ -2444,7 +2436,7 @@ which should have been provided with the executable.");
             }
             catch
             {
-                OutputCurrentExceptionInfo();
+                OutputExceptionInfo(ExceptionMethods.CurrentException);
             }
 
             console.WriteLine();
@@ -2497,7 +2489,7 @@ which should have been provided with the executable.");
             }
             catch
             {
-                OutputCurrentExceptionInfo();
+                OutputExceptionInfo(ExceptionMethods.CurrentException);
             }
 
             console.WriteLine("Ended advanced console test. Pausing for 5 seconds.");
@@ -2561,7 +2553,7 @@ which should have been provided with the executable.");
             }
             catch
             {
-                OutputCurrentExceptionInfo();
+                OutputExceptionInfo(ExceptionMethods.CurrentException);
             }
 
             console.WriteLine("Ended fields table test. Pausing for 5 seconds.");
@@ -2604,7 +2596,7 @@ which should have been provided with the executable.");
             }
             catch
             {
-                OutputCurrentExceptionInfo();
+                OutputExceptionInfo(ExceptionMethods.CurrentException);
             }
 
             console.WriteLine("Ended IsInst test. Pausing for 5 seconds.");
@@ -3380,7 +3372,7 @@ which should have been provided with the executable.");
             }
             catch
             {
-                OutputCurrentExceptionInfo();
+                OutputExceptionInfo(ExceptionMethods.CurrentException);
             }
             console.WriteLine("Finished Longs test.");
         }

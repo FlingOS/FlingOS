@@ -37,10 +37,30 @@ namespace Kernel.FOS_System
     /// </summary>
     public class Exception : Object
     {
+        protected FOS_System.String message;
         /// <summary>
         /// The exception message.
         /// </summary>
-        public FOS_System.String Message;
+        public FOS_System.String Message
+        {
+            get
+            {
+                if (InnerException != null)
+                {
+                    return message + "\nInner exception:\n" + InnerException.Message;
+                }
+                else
+                {
+                    return message;
+                }
+            }
+            set
+            {
+                message = value;
+            }
+        }
+
+        public Kernel.FOS_System.Exception InnerException;
 
         /// <summary>
         /// Creates a new, empty exception.

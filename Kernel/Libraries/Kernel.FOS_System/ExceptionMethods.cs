@@ -32,19 +32,6 @@ using System.Threading.Tasks;
 
 namespace Kernel
 {
-    public unsafe struct ExceptionState
-    {
-        public ExceptionStackItem* CurrentException;
-        public ExceptionHandlerInfo* CurrentHandlerPtr;
-    }
-    public unsafe struct ExceptionStackItem
-    {
-        public bool Pending;
-        public void* Ex;
-        public ExceptionStackItem* PrevException;
-    }
-
-
     /// <summary>
     /// Implements the lowest-level kernel exception handling.
     /// </summary>
@@ -84,6 +71,13 @@ namespace Kernel
         public static ExceptionState* State;
         public static ExceptionState* DefaultState;
 
+        //public static ExceptionState* InterruptsState
+        //{
+        //    private get;
+        //    set;
+        //}
+        //public static bool Print = false;
+
         public static bool InsideExHandling = false;
 
         [Drivers.Compiler.Attributes.NoGC]
@@ -94,14 +88,14 @@ namespace Kernel
 
         public static FOS_System.Exception CurrentException
         {
+            [Drivers.Compiler.Attributes.NoGC]
+            [Drivers.Compiler.Attributes.NoDebug]
             get
             {
-                if (State != null)
+                if (State != null &&
+                    State->CurrentHandlerPtr != null)
                 {
-                    if (State->CurrentException != null)
-                    {
-                        return (FOS_System.Exception)Utilities.ObjectUtilities.GetObject(State->CurrentException->Ex);
-                    }
+                    return (FOS_System.Exception)Utilities.ObjectUtilities.GetObject(State->CurrentHandlerPtr->Ex);
                 }
                 return null;
             }
@@ -129,7 +123,11 @@ namespace Kernel
                 return;
             }
 
-            //BasicConsole.WriteLine("Adding exception handler info...");
+            //if (Print)
+            //{
+            //    //BasicConsole.WriteLine("Adding exception handler info...");
+            //    OutputCurrentStateInfo("AddExceptionHandlerInfo");
+            //}
 
             //InsideExHandling = true;
             //BasicConsole.WriteLine((uint)BasePointer);
@@ -175,18 +173,6 @@ namespace Kernel
                 BasicConsole.SetTextColour(BasicConsole.default_colour);
             }
 
-            if (State->CurrentException != null &&
-                State->CurrentException->Ex != null)
-            {
-                BasicConsole.WriteLine("Adding ex handler when exception already exists.");
-                BasicConsole.WriteLine("Creating empty exception item...");
-                ExceptionStackItem* NewItemPtr = (ExceptionStackItem*)FOS_System.Heap.AllocZeroed((uint)sizeof(ExceptionStackItem));
-                NewItemPtr->PrevException = State->CurrentException;
-                NewItemPtr->Ex = null;
-                NewItemPtr->Pending = false;
-                State->CurrentException = NewItemPtr;
-            }
-
             //BasicConsole.WriteLine("Getting base ptr...");
             AddExceptionHandlerInfo_EntryStackState* BasePtr = (AddExceptionHandlerInfo_EntryStackState*)BasePointer;
 
@@ -215,8 +201,10 @@ namespace Kernel
             ExHndlrPtr->ESP = (uint)BasePtr + 8 + 8 - (uint)sizeof(ExceptionHandlerInfo);
             ExHndlrPtr->FilterAddress = (byte*)filterPtr;
             ExHndlrPtr->HandlerAddress = (byte*)handlerPtr;
-            ExHndlrPtr->PrevHandlerAddress = State->CurrentHandlerPtr;
+            ExHndlrPtr->PrevHandlerPtr = State->CurrentHandlerPtr;
             ExHndlrPtr->InHandler = 0;
+            ExHndlrPtr->ExPending = 0;
+            ExHndlrPtr->Ex = null;
 
             State->CurrentHandlerPtr = (ExceptionHandlerInfo*)((byte*)ExHndlrPtr + (LocalsSize + 12));
 
@@ -296,30 +284,35 @@ namespace Kernel
         [Drivers.Compiler.Attributes.NoGC]
         public static unsafe void Throw(FOS_System.Exception ex)
         {
-            BasicConsole.WriteLine("Throwing exception...");
+            //BasicConsole.WriteLine("Throwing exception...");
             //BasicConsole.DelayOutput(10);
             
-            InsideExHandling = true;
-            FOS_System.Heap.PreventAllocation = false;
-            FOS_System.GC.Enabled = true;
-            MethodEnterStackState* EnterState = (MethodEnterStackState*)BasePointer;
-            BasicConsole.Write("Caller's EBP: ");
-            BasicConsole.WriteLine(EnterState->EBP);
-            BasicConsole.Write("Return (to caller) addr: ");
-            BasicConsole.WriteLine(EnterState->RetAddr);
-            BasicConsole.WriteLine("Top 10 DWords of stack:");
-            BasicConsole.DumpMemory(StackPointer, 40);
-            BasicConsole.DelayOutput(50);
-            InsideExHandling = false;
+            //InsideExHandling = true;
+            //FOS_System.Heap.PreventAllocation = false;
+            //FOS_System.GC.Enabled = true;
+            //MethodEnterStackState* EnterState = (MethodEnterStackState*)BasePointer;
+            //BasicConsole.Write("Return (to caller) addr: ");
+            //BasicConsole.WriteLine(EnterState->RetAddr);
+            //BasicConsole.Write("Caller's EBP: ");
+            //BasicConsole.WriteLine(EnterState->EBP);
+            //BasicConsole.WriteLine("Top 10 DWords of stack:");
+            //BasicConsole.DumpMemory(StackPointer, 40);
+            //OutputCurrentStateInfo("Throw");
+            //BasicConsole.DelayOutput(50);
+            //InsideExHandling = false;
 
             Kernel.FOS_System.GC.IncrementRefCount(ex);
 
-            BasicConsole.WriteLine("Creating exception item...");
-            ExceptionStackItem* NewItemPtr = (ExceptionStackItem*)FOS_System.Heap.AllocZeroed((uint)sizeof(ExceptionStackItem));
-            NewItemPtr->PrevException = State->CurrentException;
-            NewItemPtr->Ex = Utilities.ObjectUtilities.GetHandle(ex);
-            NewItemPtr->Pending = true;
-            State->CurrentException = NewItemPtr;
+            //BasicConsole.WriteLine("Creating exception item...");
+            if (State->CurrentHandlerPtr->Ex != null)
+            {
+                //GC ref count remains consistent because the Ex pointer below is going to be replaced but
+                //  same pointer stored in InnerException.
+                // Result is ref count goes: +1 here, -1 below
+                ex.InnerException = (Kernel.FOS_System.Exception)Utilities.ObjectUtilities.GetObject(State->CurrentHandlerPtr->Ex);
+            }
+            State->CurrentHandlerPtr->Ex = Utilities.ObjectUtilities.GetHandle(ex);
+            State->CurrentHandlerPtr->ExPending = 1;
 
             HandleException();
 
@@ -355,15 +348,11 @@ namespace Kernel
         [Drivers.Compiler.Attributes.NoGC]
         public static unsafe void HandleException()
         {
-            // 0. If we are already in handler, shift to previous handler
-            // 1. Get current exception handler
-            // 2. Do a check to see if handler address == 0, if it is, this is not a valid handler
-            //      and so we have an unhandled exception!
-            // 3. Restore ESP / EBP to current handler locations
-            // 4. Check filter != 0x00000000, if so, set PendingException to 0
-            // 5. Return control to handler
-
-            BasicConsole.WriteLine("Handling exception...");
+            //BasicConsole.WriteLine("Handling exception...");
+            //if (Print)
+            //{
+            //    OutputCurrentStateInfo("HandleException");
+            //}
 
             if(State != null)
             {
@@ -371,10 +360,15 @@ namespace Kernel
                 {
                     if (State->CurrentHandlerPtr->InHandler != 0)
                     {
-                        BasicConsole.WriteLine("In handler. Shifting to previous...");
+                        //BasicConsole.WriteLine("In handler. Shifting to previous...");
 
                         State->CurrentHandlerPtr->InHandler = 0;
-                        State->CurrentHandlerPtr = State->CurrentHandlerPtr->PrevHandlerAddress;
+                        if (State->CurrentHandlerPtr->PrevHandlerPtr != null)
+                        {
+                            State->CurrentHandlerPtr->PrevHandlerPtr->Ex = State->CurrentHandlerPtr->Ex;
+                            State->CurrentHandlerPtr->PrevHandlerPtr->ExPending = State->CurrentHandlerPtr->ExPending;
+                        }
+                        State->CurrentHandlerPtr = State->CurrentHandlerPtr->PrevHandlerPtr;
                     }
                 }
 
@@ -385,18 +379,19 @@ namespace Kernel
                     {
                         if ((uint)CurrHandlerPtr->FilterAddress != 0x00000000u)
                         {
-                            BasicConsole.WriteLine("Catch handler.");
-                            // Catch handler
-                            State->CurrentException->Pending = false;
+                            //Catch handler
+                            //BasicConsole.WriteLine("Catch handler.");
+
+                            CurrHandlerPtr->ExPending = 0;
                         }
-                        else
-                        {
-                            BasicConsole.WriteLine("Finally handler.");
-                        }
+                        //else
+                        //{
+                        //    BasicConsole.WriteLine("Finally handler.");
+                        //}
 
                         CurrHandlerPtr->InHandler = 1;
 
-                        BasicConsole.WriteLine("Returning to handler...");
+                        //BasicConsole.WriteLine("Returning to handler...");
                         ArbitaryReturn(CurrHandlerPtr->EBP, CurrHandlerPtr->ESP, CurrHandlerPtr->HandlerAddress);
                     }
                 }
@@ -425,29 +420,32 @@ namespace Kernel
                 return;
             }
 
-            //BasicConsole.WriteLine("Handling leave...");
+            //if (Print)
+            //{
+            //    //BasicConsole.WriteLine("Handling leave...");
+            //    OutputCurrentStateInfo("HandleLeave");
+            //}
 
             if (State == null || 
                 State->CurrentHandlerPtr == null)
             {
                 // If we get to here, it's an unhandled exception
                 HaltReason = "Cannot leave on null handler!";
+                BasicConsole.WriteLine(HaltReason);
                 BasicConsole.DelayOutput(5);
 
-                BasicConsole.WriteLine(HaltReason);
-
-                InsideExHandling = true;
-                FOS_System.Heap.PreventAllocation = false;
-                FOS_System.GC.Enabled = true;
-                MethodEnterStackState* EnterState = (MethodEnterStackState*)BasePointer;
-                BasicConsole.Write("Caller's EBP: ");
-                BasicConsole.WriteLine(EnterState->EBP);
-                BasicConsole.Write("Return (to caller) addr: ");
-                BasicConsole.WriteLine(EnterState->RetAddr);
-                BasicConsole.WriteLine("Top 10 DWords of stack:");
-                BasicConsole.DumpMemory(StackPointer, 40);
-                BasicConsole.DelayOutput(50);
-                InsideExHandling = false;
+                //InsideExHandling = true;
+                //FOS_System.Heap.PreventAllocation = false;
+                //FOS_System.GC.Enabled = true;
+                //MethodEnterStackState* EnterState = (MethodEnterStackState*)BasePointer;
+                //BasicConsole.Write("Caller's EBP: ");
+                //BasicConsole.WriteLine(EnterState->EBP);
+                //BasicConsole.Write("Return (to caller) addr: ");
+                //BasicConsole.WriteLine(EnterState->RetAddr);
+                //BasicConsole.WriteLine("Top 10 DWords of stack:");
+                //BasicConsole.DumpMemory(StackPointer, 40);
+                //BasicConsole.DelayOutput(50);
+                //InsideExHandling = false;
 
 
                 // Try to cause fault
@@ -470,29 +468,16 @@ namespace Kernel
                 //BasicConsole.WriteLine("Leaving try-catch...");
                 //BasicConsole.DelayOutput(10);
 
-                // Case 1: Leaving try-catch
-                //  - Cleanup current (non-pending) exception, if any
-                //  - Cleanup stack then return control to Continue Address
-                // 0. If curr ex not null: Dec ref count of curr ex, set curr item to prev item, deallocate old item mem
-                // 1. Set current exception handler to previous handler
-                // 2. Restore EBP and ESP to current handler places (this will also remove current handler from stack)
-                // 3. Return control to Continue Address (arg 0)
-
-                if (State->CurrentException != null)
+                // Case 1 : Leaving "try" or "catch" of a try-catch
+            
+                if (State->CurrentHandlerPtr->Ex != null)
                 {
-                    BasicConsole.WriteLine("Cleaning up current exception...");
+                    //BasicConsole.WriteLine("Cleaning up current exception...");
 
-                    ExceptionStackItem* CurrExItemPtr = State->CurrentException;
-                    if (State->CurrentException->Ex != null)
-                    {
-                        BasicConsole.WriteLine("Decrementing ref count...");
-                        FOS_System.GC.DecrementRefCount((FOS_System.Object)Utilities.ObjectUtilities.GetObject(CurrExItemPtr->Ex));
-                    }
-                    BasicConsole.WriteLine("Moving to prev exception...");
-                    State->CurrentException = CurrExItemPtr->PrevException;
-                    BasicConsole.WriteLine("Freeing ex item mem...");
-                    FOS_System.Heap.Free(CurrExItemPtr);
-                    BasicConsole.WriteLine("Cleaned up.");
+                    //BasicConsole.WriteLine("Decrementing ref count...");
+                    FOS_System.GC.DecrementRefCount((FOS_System.Object)Utilities.ObjectUtilities.GetObject(State->CurrentHandlerPtr->Ex));
+                    State->CurrentHandlerPtr->Ex = null;
+                    //BasicConsole.WriteLine("Cleaned up.");
                 }
 
                 State->CurrentHandlerPtr->InHandler = 0;
@@ -500,7 +485,7 @@ namespace Kernel
                 uint EBP = State->CurrentHandlerPtr->EBP;
                 uint ESP = State->CurrentHandlerPtr->ESP;
 
-                State->CurrentHandlerPtr = State->CurrentHandlerPtr->PrevHandlerAddress;
+                State->CurrentHandlerPtr = State->CurrentHandlerPtr->PrevHandlerPtr;
                 
                 ArbitaryReturn(EBP, ESP + (uint)sizeof(ExceptionHandlerInfo), (byte*)continuePtr);
             }
@@ -509,13 +494,8 @@ namespace Kernel
                 //BasicConsole.WriteLine("Leaving try-finally...");
                 //BasicConsole.DelayOutput(5);
 
-                // Case 2: Leaving try-finally
-                // We need to cleanup stack then return control to Finally Handler Address (in current handler)
-                // 1. Set continue address to finally (current) handler address
-                // 2. Restore EBP and ESP to current handler places
-                // 3. Remove current handler from stack by adding to esp
-                // 4. Return control to Finally Handler Address
-
+                // Case 2 : Leaving the "try" of a try-finally
+                
                 State->CurrentHandlerPtr->InHandler = 1;
 
                 ArbitaryReturn(State->CurrentHandlerPtr->EBP,
@@ -541,16 +521,29 @@ namespace Kernel
                 return;
             }
 
-            //BasicConsole.WriteLine("Handling end finally...");
+            //if (Print)
+            //{
+            //    //BasicConsole.WriteLine("Handling end finally...");
+            //    OutputCurrentStateInfo("HandleEndFinally");
+            //}
 
             if (State == null ||
                 State->CurrentHandlerPtr == null)
             {
                 // If we get to here, it's an unhandled exception
                 HaltReason = "Cannot end finally on null handler!";
-                BasicConsole.DelayOutput(5);
-
                 BasicConsole.WriteLine(HaltReason);
+                BasicConsole.DelayOutput(5);
+                
+                //InsideExHandling = true;
+                //FOS_System.Heap.PreventAllocation = false;
+                //FOS_System.GC.Enabled = true;
+                //MethodEnterStackState* EnterState = (MethodEnterStackState*)BasePointer;
+                //BasicConsole.Write("Return (to caller) addr: ");
+                //BasicConsole.WriteLine(EnterState->RetAddr);
+                //BasicConsole.DelayOutput(10);
+                //InsideExHandling = false;
+
                 // Try to cause fault
                 *((byte*)0x800000000) = 0;
             }
@@ -560,12 +553,11 @@ namespace Kernel
             // Case 1 : Pending exception
             // Case 2 : No pending exception
 
-            if (State->CurrentException != null &&
-                State->CurrentException->Pending)
+            if (State->CurrentHandlerPtr->ExPending != 0)
             {
-                BasicConsole.WriteLine("Handle end finally...");
-                BasicConsole.WriteLine("Pending exception.");
-                BasicConsole.DelayOutput(10);
+                //BasicConsole.WriteLine("Handle end finally...");
+                //BasicConsole.WriteLine("Pending exception.");
+                //BasicConsole.DelayOutput(10);
 
                 // Case 1 : Pending exception
                 // We call HandleException to continue passing the exception up the chain
@@ -608,7 +600,7 @@ namespace Kernel
                 //    BasicConsole.WriteLine("Ending finally with a previous handler.");
                 //}
 
-                State->CurrentHandlerPtr = State->CurrentHandlerPtr->PrevHandlerAddress;
+                State->CurrentHandlerPtr = State->CurrentHandlerPtr->PrevHandlerPtr;
 
                 ArbitaryReturn(EBP,
                     ESP + (uint)sizeof(ExceptionHandlerInfo),
@@ -642,6 +634,27 @@ namespace Kernel
             public uint EBP;
             public uint RetAddr;
         }
+
+        //[Drivers.Compiler.Attributes.NoDebug]
+        //[Drivers.Compiler.Attributes.NoGC]
+        //private static void OutputCurrentStateInfo(string Caller)
+        //{
+        //    if (State == DefaultState)
+        //    {
+        //        BasicConsole.WriteLine(Caller);
+        //        BasicConsole.WriteLine("Current state: Default state");
+        //    }
+        //    else if (State == InterruptsState)
+        //    {
+        //        //BasicConsole.WriteLine("Current state: Interrupts state");
+        //    }
+        //    else
+        //    {
+        //        BasicConsole.WriteLine(Caller);
+        //        BasicConsole.WriteLine("Current state: Other state");
+        //    }
+        //    //BasicConsole.DelayOutput(50);
+        //}
 
         private static unsafe byte* StackPointer
         {
@@ -1152,6 +1165,11 @@ namespace Kernel
         }        
     }
 
+    [System.Runtime.InteropServices.StructLayout(System.Runtime.InteropServices.LayoutKind.Sequential, Pack = 1)]
+    public unsafe struct ExceptionState
+    {
+        public ExceptionHandlerInfo* CurrentHandlerPtr;
+    }
     /// <summary>
     /// Represents an Exception Handler Info.
     /// </summary>
@@ -1167,48 +1185,38 @@ namespace Kernel
     [System.Runtime.InteropServices.StructLayout(System.Runtime.InteropServices.LayoutKind.Sequential, Pack = 1)]
     public unsafe struct ExceptionHandlerInfo
     {
-        //DO NOT (!!!!!!!) MODIFY THIS STRUCTURE WITHOUT CHECKING / 
-        //CHANGING THE ASM
-
-        //DO NOT (!!!!!!!) MODIFY THIS STRUCTURE! PLEASE!! 
-        
-        //YOU ALMOST CERTAINLY DON'T KNOW WHAT YOU ARE DOING! :)
-
         /// <summary>
         /// The value of ESP when the handler info was created. This value of 
         /// ESP is also a pointer to the first byte of this Exception Handler Info structure.
         /// The ESP register is restored to this value when a handler is entered or re-entered.
         /// </summary>
-        public UInt32 ESP;                                  //[CurrentHandlerPtr+0]
+        public UInt32 ESP;
         /// <summary>
         /// The value of EBP when the handler info was created.
         /// The EBP register is restored to this value when a handler is entered or re-entered.
         /// </summary>
-        public UInt32 EBP;                                  //[CurrentHandlerPtr+4]
+        public UInt32 EBP;
         /// <summary>
         /// The address of the first op of the handler / a pointer to the first op of the handler.
         /// </summary>
-        public byte* HandlerAddress;                        //[CurrentHandlerPtr+8]
+        public byte* HandlerAddress;
         /// <summary>
         /// 0x00000000 = indicates this is a finally handler. 
         /// 0xFFFFFFFF = indicates this is a catch handler with no filter.
         /// 0xXXXXXXXX = The address of the first op of the filter - has not actually been implemented! Behaviour for such values is undetermined.
         /// </summary>
-        public byte* FilterAddress;                         //[CurrentHandlerPtr+12]
+        public byte* FilterAddress;
         /// <summary>
         /// A pointer to the previous exception handler info (i.e. the address of the previous info).
         /// </summary>
-        public ExceptionHandlerInfo* PrevHandlerAddress;    //[CurrentHandlerPtr+16]
+        public ExceptionHandlerInfo* PrevHandlerPtr;
         /// <summary>
         /// Whether execution is currently inside the try-section or the handler-section of this exception handler info.
         /// </summary>
-        public UInt32 InHandler;                            //[CurrentHandlerPtr+20]
+        public UInt32 InHandler;
 
-        //DO NOT (!!!!!!!) MODIFY THIS STRUCTURE WITHOUT CHECKING / 
-        //CHANGING THE ASM
-
-        //DO NOT (!!!!!!!) MODIFY THIS STRUCTURE! PLEASE!! 
-
-        //YOU ALMOST CERTAINLY DON'T KNOW WHAT YOU ARE DOING! :)
+        public UInt32 ExPending;
+         
+        public void* Ex;
     }
 }

@@ -75,16 +75,16 @@ namespace Kernel.Core
         /// </summary>
         [Compiler.NoDebug]
         [Drivers.Compiler.Attributes.NoDebug]
-        protected void OutputCurrentExceptionInfo()
+        protected void OutputExceptionInfo(FOS_System.Exception Ex)
         {
-            if (ExceptionMethods.CurrentException != null)
+            if (Ex != null)
             {
                 console.WarningColour();
-                console.WriteLine(ExceptionMethods.CurrentException.Message);
-                if (ExceptionMethods.CurrentException is FOS_System.Exceptions.PageFaultException)
+                console.WriteLine(Ex.Message);
+                if (Ex is FOS_System.Exceptions.PageFaultException)
                 {
-                    console.WriteLine(((FOS_System.String)"    - Address: ") + ((FOS_System.Exceptions.PageFaultException)ExceptionMethods.CurrentException).address);
-                    console.WriteLine(((FOS_System.String)"    - Error code: ") + ((FOS_System.Exceptions.PageFaultException)ExceptionMethods.CurrentException).errorCode);
+                    console.WriteLine(((FOS_System.String)"    - Address: ") + ((FOS_System.Exceptions.PageFaultException)Ex).address);
+                    console.WriteLine(((FOS_System.String)"    - Error code: ") + ((FOS_System.Exceptions.PageFaultException)Ex).errorCode);
                 }
                 console.DefaultColour();
             }
