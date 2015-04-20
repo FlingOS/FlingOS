@@ -89,13 +89,9 @@ namespace Kernel
             
             try
             {
-                BasicConsole.WriteLine("Virt mem init...");
                 Hardware.VirtMemManager.Init();
-                BasicConsole.WriteLine("CPU init...");
                 Hardware.Devices.CPU.InitDefault();
-                BasicConsole.WriteLine("Timer init...");
                 Hardware.Devices.Timer.InitDefault();
-                BasicConsole.WriteLine("System calls init...");
                 Core.Processes.SystemCalls.Init();
 
                 uint bpm = 140;
@@ -325,9 +321,6 @@ namespace Kernel
             BasicConsole.WriteLine(" Managed Main! ");
             BasicConsole.WriteLine(" > Executing normally...");
 
-            //BasicConsole.WriteLine("Disabling scheduler...");
-            //Scheduler.Disable();
-   
             try
             {
                 BasicConsole.WriteLine(" > Starting GC Cleanup task...");
@@ -339,36 +332,12 @@ namespace Kernel
                 BasicConsole.WriteLine(" > Starting Non-critical interrupts task...");
                 ProcessManager.CurrentProcess.CreateThread(Hardware.Interrupts.NonCriticalInterruptsTask.Main);
 
-                //BasicConsole.WriteLine(" > Starting Play Notes task...");
-                //ProcessManager.CurrentProcess.CreateThread(Core.Tasks.PlayNotesTask.Main);
-
-                //BasicConsole.WriteLine("Initialising ATA...");
-                //Hardware.ATA.ATAManager.Init();
-                //BasicConsole.WriteLine("Initialising FS...");
-                //FileSystemManager.Init();
-
-                //BasicConsole.WriteLine("Creating & registering test process...");
-                //Hardware.Processes.ProcessManager.RegisterProcess(
-                //    Core.Processes.DynamicLinkerLoader.LoadProcess_FromRawExe(
-                //        File.Open("a:/test.bin"), false),
-                //    Hardware.Processes.Scheduler.Priority.Normal);
-
-                //BasicConsole.WriteLine("Creating & registering test 2 process...");
-                //Hardware.Processes.ProcessManager.RegisterProcess(
-                //    Core.Processes.DynamicLinkerLoader.LoadProcess_FromRawExe(
-                //        File.Open("a:/test2.bin"), false),
-                //    Hardware.Processes.Scheduler.Priority.Normal);
-
-                //BasicConsole.WriteLine("Enabling scheduler...");
-                //Scheduler.Enable();
-                
-                BasicConsole.WriteLine("Init default keyboard...");
+                BasicConsole.WriteLine(" > Starting Play Notes task...");
+                ProcessManager.CurrentProcess.CreateThread(Core.Tasks.PlayNotesTask.Main);
+                                
                 Hardware.Devices.Keyboard.InitDefault();
-                BasicConsole.WriteLine("Init default console...");
                 Core.Console.InitDefault();
-                BasicConsole.WriteLine("Init default shell...");
                 Core.Shell.InitDefault();
-                BasicConsole.WriteLine("Execute default shell...");
                 Core.Shell.Default.Execute();
 
                 if (!Core.Shell.Default.Terminating)
