@@ -25,9 +25,10 @@
 #endregion
     
 using System;
+using Kernel.FOS_System.Collections;
 using Kernel.Hardware.Processes;
 
-namespace Kernel.Core.Tasks
+namespace Kernel.Hardware.Tasks
 {
     public static unsafe class PlayNotesTask
     {
@@ -38,7 +39,6 @@ namespace Kernel.Core.Tasks
         }
         public class NoteRequest : FOS_System.Object
         {
-            public bool Handled = false;
             public Hardware.Timers.PIT.MusicalNote note;
             public Hardware.Timers.PIT.MusicalNoteValue duration;
             public int bpm;
@@ -49,26 +49,43 @@ namespace Kernel.Core.Tasks
 
         public static bool Terminate = false;
 
-        private static NoteRequest[] NoteRequests;
+        private static CircularBuffer LiveNoteRequests;
+        private static CircularBuffer DeadNoteRequests;
         static PlayNotesTask()
         {
-            NoteRequests = new NoteRequest[256];
-            for (int i = 0; i < NoteRequests.Length; i++)
+            DeadNoteRequests = new CircularBuffer(256, false);
+            LiveNoteRequests = new CircularBuffer(DeadNoteRequests.Size, false);
+            for (int i = 0; i < DeadNoteRequests.Size; i++)
             {
-                NoteRequests[i] = new NoteRequest();
+                DeadNoteRequests.Push(new NoteRequest());
             }
         }
 
         public static void RequestNote(Hardware.Timers.PIT.MusicalNote note, Hardware.Timers.PIT.MusicalNoteValue duration, uint bpm)
         {
             //TODO
-
-            if (OwnerThread != null)
+            NoteRequest next = (NoteRequest)DeadNoteRequests.Pop();
+            if (next == null)
             {
-                OwnerThread._Wake();
+                BasicConsole.WriteLine("Cannot set note request because a null object was returned from the circular buffer. Buffer may be full.");
+                BasicConsole.DelayOutput(10);
+            }
+            else
+            {
+                next.note = note;
+                next.duration = duration;
+                next.bpm = (int)bpm;
+
+                LiveNoteRequests.Push(next);
+
+                if (OwnerThread != null)
+                {
+                    OwnerThread._Wake();
+                }
             }
         }
 
+        private static bool Playing = false;
         public static void Main()
         {
             OwnerThread = ProcessManager.CurrentThread;
@@ -82,28 +99,61 @@ namespace Kernel.Core.Tasks
 
                 BasicConsole.WriteLine("Playing notes...");
 
-                Hardware.Timers.PIT.MusicalNote note = Hardware.Timers.PIT.MusicalNote.C4;
-                Hardware.Timers.PIT.MusicalNoteValue duration = Hardware.Timers.PIT.MusicalNoteValue.Minim;
-                int bpm = 120;
+                while (LiveNoteRequests.Count > 0)
+                {
+                    BasicConsole.WriteLine("Playing note...");
 
-                Hardware.Timers.PIT.ThePIT.PlaySound((int)note);
+                    NoteRequest theReq = (NoteRequest)LiveNoteRequests.Pop();
 
-                int dur_ms = (int)duration * 60 * 1000 / (bpm * 16);
-                long do_ms = dur_ms;
-                if (dur_ms >= 2000)
-                {
-                    dur_ms -= 2000;
-                    do_ms = 2000;
+                    try
+                    {
+                        Hardware.Timers.PIT.MusicalNote note = theReq.note;
+                        Hardware.Timers.PIT.MusicalNoteValue duration = theReq.duration;
+                        int bpm = theReq.bpm;
+
+                        int dur_ms = (int)duration * 60 * 1000 / (bpm * 16);
+                        long do_ms = dur_ms;
+                        if (dur_ms >= 2000)
+                        {
+                            dur_ms -= 2000;
+                            do_ms = 2000;
+                        }
+                        else
+                        {
+                            dur_ms = 0;
+                        }
+                        NoteState state = new NoteState()
+                        {
+                            dur_ms = dur_ms
+                        };
+
+                        Hardware.Timers.PIT.ThePIT.PlaySound((int)note);
+                        Playing = true;
+
+                        state.handlerId = Hardware.Timers.PIT.ThePIT.RegisterHandler(new Hardware.Timers.PITHandler(SysCall_StopNoteHandler, state, 1000000L * do_ms, true));
+
+                        while (Playing)
+                        {
+                            Thread.Sleep(50);
+                        }
+                    }
+                    catch
+                    {
+                        BasicConsole.Write("Error processing note request! ");
+                        if (ExceptionMethods.CurrentException != null)
+                        {
+                            BasicConsole.Write(ExceptionMethods.CurrentException.Message);
+                        }
+                        BasicConsole.WriteLine();
+                        Playing = false;
+                        Hardware.Timers.PIT.ThePIT.MuteSound();
+                        BasicConsole.DelayOutput(15);
+                    }
+                    finally
+                    {
+                        DeadNoteRequests.Push(theReq);
+                    }
                 }
-                else
-                {
-                    dur_ms = 0;
-                }
-                NoteState state = new NoteState()
-                {
-                    dur_ms = dur_ms
-                };
-                state.handlerId = Hardware.Timers.PIT.ThePIT.RegisterHandler(new Hardware.Timers.PITHandler(SysCall_StopNoteHandler, state, 1000000L * do_ms, true));
 
                 BasicConsole.WriteLine("Finished playing notes.");
 
@@ -132,6 +182,9 @@ namespace Kernel.Core.Tasks
             else
             {
                 BasicConsole.WriteLine("Note muted.");
+
+                Playing = false;
+
                 Hardware.Timers.PIT.ThePIT.MuteSound();
                 Hardware.Timers.PIT.ThePIT.UnregisterHandler(state.handlerId);
             }

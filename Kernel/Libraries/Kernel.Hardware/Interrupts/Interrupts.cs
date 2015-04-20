@@ -538,7 +538,7 @@ namespace Kernel.Hardware.Interrupts
                             BasicConsole.WriteLine("Interrupts: 13");
 #endif
 
-                        if (NonCriticalInterruptsTask.OwnerThread != null)
+                        if (Tasks.NonCriticalInterruptsTask.OwnerThread != null)
                         {
 #if INTERRUPTS_TRACE
                             //if (Processes.ProcessManager.Processes.Count > 1)
@@ -547,8 +547,8 @@ namespace Kernel.Hardware.Interrupts
 #endif
 
                             //BasicConsole.WriteLine("Waking non-critical interrupts thread...");
-                            NonCriticalInterruptsTask.Awake = true;
-                            NonCriticalInterruptsTask.OwnerThread._Wake();
+                            Tasks.NonCriticalInterruptsTask.Awake = true;
+                            Tasks.NonCriticalInterruptsTask.OwnerThread._Wake();
                         }
                 
 #if INTERRUPTS_TRACE

@@ -32,7 +32,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Kernel.Hardware.Processes.Synchronisation;
+using Kernel.FOS_System.Processes.Synchronisation;
 
 namespace Kernel.FOS_System
 {
@@ -113,14 +113,14 @@ namespace Kernel.FOS_System
                 }
                 else
                 {
-                    if (GCAccessLock.Locked)
-                    {
-                        BasicConsole.SetTextColour(BasicConsole.warning_colour);
-                        BasicConsole.WriteLine("Warning: GC about to try to re-enter spin lock...");
-                        BasicConsole.Write("Enter lock caller: ");
-                        BasicConsole.WriteLine(caller);
-                        BasicConsole.SetTextColour(BasicConsole.default_colour);
-                    }
+                    //if (GCAccessLock.Locked)
+                    //{
+                    //    BasicConsole.SetTextColour(BasicConsole.warning_colour);
+                    //    BasicConsole.WriteLine("Warning: GC about to try to re-enter spin lock...");
+                    //    BasicConsole.Write("Enter lock caller: ");
+                    //    BasicConsole.WriteLine(caller);
+                    //    BasicConsole.SetTextColour(BasicConsole.default_colour);
+                    //}
                     GCAccessLock.Enter();
                 }
             }

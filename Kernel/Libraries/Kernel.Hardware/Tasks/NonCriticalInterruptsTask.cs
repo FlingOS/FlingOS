@@ -26,8 +26,9 @@
     
 using System;
 using Kernel.Hardware.Processes;
+using Kernel.Hardware.Interrupts;
 
-namespace Kernel.Hardware.Interrupts
+namespace Kernel.Hardware.Tasks
 {
     public static unsafe class NonCriticalInterruptsTask
     {
@@ -59,10 +60,10 @@ namespace Kernel.Hardware.Interrupts
 
                 //BasicConsole.WriteLine("Looping ISRs...");
 
-                for (int ISRNum = 0; ISRNum < Interrupts.Handlers.Length; ISRNum++)
+                for (int ISRNum = 0; ISRNum < Interrupts.Interrupts.Handlers.Length; ISRNum++)
                 {
                     //BasicConsole.WriteLine("Getting handlers...");
-                    InterruptHandlers handlers = Interrupts.Handlers[ISRNum];
+                    InterruptHandlers handlers = Interrupts.Interrupts.Handlers[ISRNum];
 
                     //BasicConsole.WriteLine("Checking handlers aren't null...");
                     if (handlers != null)
