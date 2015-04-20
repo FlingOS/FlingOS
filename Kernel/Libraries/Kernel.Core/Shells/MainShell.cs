@@ -53,7 +53,7 @@ namespace Kernel.Core.Shells
                 InitPCI();
                 InitUSB();
                 InitFS();
-                
+
                 //Endlessly wait for commands until we hit a total failure condition
                 //  or the user instructs us to halt
                 while (!terminating)
@@ -933,7 +933,7 @@ namespace Kernel.Core.Shells
 
                                 #endregion
                             }
-                            else if(cmd == "help")
+                            else if (cmd == "help")
                             {
                                 #region Help
 
@@ -941,17 +941,17 @@ namespace Kernel.Core.Shells
                                 if (cmdParts.Count > 1)
                                 {
                                     opt1 = (FOS_System.String)cmdParts[1];
-                                }                                
+                                }
                                 ShowHelp(opt1);
 
                                 #endregion
                             }
-                            else if(cmd == "clear")
+                            else if (cmd == "clear")
                             {
                                 #region Clear
 
                                 console.Clear();
-                                
+
                                 #endregion
                             }
                             else if (cmd == "easter")
@@ -975,7 +975,7 @@ namespace Kernel.Core.Shells
                 OutputExceptionInfo(ExceptionMethods.CurrentException);
                 //Pause to give us the chance to read the output. 
                 //  We do not know what the code outside this shell may do.
-                Hardware.Processes.Thread.Sleep(5000);
+                Hardware.Processes.Thread.Sleep(1000);
             }
             console.WriteLine("Shell exited.");
         }

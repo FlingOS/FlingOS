@@ -72,8 +72,8 @@
     <Compile Include="Devices\Key Maps\USKeymap.cs" />
     <Compile Include="Devices\Timer.cs" />
     <Compile Include="Interrupts\Interrupts.cs" />
-    <Compile Include="Interrupts\PlayNotesTask.cs" />
-    <Compile Include="Interrupts\NonCriticalInterruptsTask.cs" />
+    <Compile Include="Tasks\PlayNotesTask.cs" />
+    <Compile Include="Tasks\NonCriticalInterruptsTask.cs" />
     <Compile Include="IO\IOPort.cs" />
     <Compile Include="Devices\Keyboard.cs" />
     <Compile Include="Keyboards\PS2.cs" />

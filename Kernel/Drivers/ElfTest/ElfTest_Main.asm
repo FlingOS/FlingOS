@@ -19,6 +19,14 @@ _start:
 	mov dword ecx, 16
 	mov dword edx, 120
 	call SysCall_PlayNote
+	mov dword ebx, 261
+	mov dword ecx, 8
+	mov dword edx, 240
+	call SysCall_PlayNote
+	mov dword ebx, 261
+	mov dword ecx, 16
+	mov dword edx, 120
+	call SysCall_PlayNote
 
 	mov dword ebx, 1000
 	call SysCall_Sleep

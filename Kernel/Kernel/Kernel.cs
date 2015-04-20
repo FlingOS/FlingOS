@@ -330,11 +330,11 @@ namespace Kernel
                 ProcessManager.CurrentProcess.CreateThread(Core.Tasks.IdleTask.Main);
 
                 BasicConsole.WriteLine(" > Starting Non-critical interrupts task...");
-                ProcessManager.CurrentProcess.CreateThread(Hardware.Interrupts.NonCriticalInterruptsTask.Main);
+                ProcessManager.CurrentProcess.CreateThread(Hardware.Tasks.NonCriticalInterruptsTask.Main);
 
                 BasicConsole.WriteLine(" > Starting Play Notes task...");
-                ProcessManager.CurrentProcess.CreateThread(Core.Tasks.PlayNotesTask.Main);
-                                
+                ProcessManager.CurrentProcess.CreateThread(Hardware.Tasks.PlayNotesTask.Main);
+                
                 Hardware.Devices.Keyboard.InitDefault();
                 Core.Console.InitDefault();
                 Core.Shell.InitDefault();

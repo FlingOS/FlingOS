@@ -30,7 +30,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Kernel.Hardware.Processes.Synchronisation
+namespace Kernel.FOS_System.Processes.Synchronisation
 {
     [Compiler.PluggedClass]
     [Drivers.Compiler.Attributes.PluggedClass]

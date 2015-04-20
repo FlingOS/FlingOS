@@ -191,7 +191,7 @@ namespace Kernel.Core.Processes
 
         private static void SysCall_PlayNote(Hardware.Timers.PIT.MusicalNote note, Hardware.Timers.PIT.MusicalNoteValue duration, uint bpm)
         {
-            Core.Tasks.PlayNotesTask.RequestNote(note, duration, bpm);
+            Hardware.Tasks.PlayNotesTask.RequestNote(note, duration, bpm);
         }
     }
 }

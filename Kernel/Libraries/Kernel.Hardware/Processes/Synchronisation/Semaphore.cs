@@ -25,6 +25,7 @@
 #endregion
     
 using System;
+using Kernel.FOS_System.Processes.Synchronisation;
 
 namespace Kernel.Hardware.Processes.Synchronisation
 {
