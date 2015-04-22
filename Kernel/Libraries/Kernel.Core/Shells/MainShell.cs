@@ -48,11 +48,22 @@ namespace Kernel.Core.Shells
         {
             try
             {
-                // Auto-init all to save us writing the command
-                InitATA();
-                InitPCI();
-                InitUSB();
-                InitFS();
+                try
+                {
+                    // Auto-init all to save us writing the command
+                    InitATA();
+                    InitPCI();
+                    InitUSB();
+                    InitFS();
+                }
+                catch
+                {
+                    console.WriteLine();
+                    console.WarningColour();
+                    console.WriteLine("Error initialising one of the basic subsystems:");
+                    console.WriteLine(ExceptionMethods.CurrentException.Message);
+                    console.DefaultColour();
+                }
 
                 //Endlessly wait for commands until we hit a total failure condition
                 //  or the user instructs us to halt
@@ -1772,6 +1783,14 @@ which should have been provided with the executable.");
                     console.WriteLine(" ---------------------");
                     console.WriteLine("Type: PATAPI");
                     console.WriteLine("Warning: This disk device type is not supported.");
+
+                    Hardware.ATA.PATAPI theATA = (Hardware.ATA.PATAPI)aDevice;
+                    console.WriteLine(((FOS_System.String)"Serial No: ") + theATA.SerialNo);
+                    console.WriteLine(((FOS_System.String)"Firmware Rev: ") + theATA.FirmwareRev);
+                    console.WriteLine(((FOS_System.String)"Model No: ") + theATA.ModelNo);
+                    console.WriteLine(((FOS_System.String)"Block Size: ") + theATA.BlockSize + " bytes");
+                    console.WriteLine(((FOS_System.String)"Block Count: ") + theATA.BlockCount);
+                    console.WriteLine(((FOS_System.String)"Size: ") + ((theATA.BlockCount * theATA.BlockSize) >> 20) + " MB");
                 }
                 else if (aDevice is Hardware.ATA.SATA)
                 {

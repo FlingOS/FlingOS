@@ -200,20 +200,29 @@ namespace Kernel.FOS_System.IO
         {
             for (int i = 0; i < Partitions.Count; i++)
             {
-                Partition aPartition = (Partition)Partitions[i];
-                FOS_System.IO.FAT.FATFileSystem newFS = new FOS_System.IO.FAT.FATFileSystem(aPartition);
-                if (newFS.IsValid)
+                try
                 {
-                    FOS_System.String mappingPrefix = FOS_System.String.New(3);
-                    mappingPrefix[0] = (char)((int)('A') + i);
-                    mappingPrefix[1] = ':';
-                    mappingPrefix[2] = PathDelimiter;
-                    newFS.TheMapping = new FileSystemMapping(mappingPrefix, newFS);
-                    FileSystemMappings.Add(newFS.TheMapping);
+                    Partition aPartition = (Partition)Partitions[i];
+                    BasicConsole.WriteLine("Attempting to create FAT File System...");
+                    FOS_System.IO.FAT.FATFileSystem newFS = new FOS_System.IO.FAT.FATFileSystem(aPartition);
+                    if (newFS.IsValid)
+                    {
+                        FOS_System.String mappingPrefix = FOS_System.String.New(3);
+                        mappingPrefix[0] = (char)((int)('A') + i);
+                        mappingPrefix[1] = ':';
+                        mappingPrefix[2] = PathDelimiter;
+                        newFS.TheMapping = new FileSystemMapping(mappingPrefix, newFS);
+                        FileSystemMappings.Add(newFS.TheMapping);
+                    }
+                    else
+                    {
+                        BasicConsole.WriteLine("Partition not formatted as valid FAT file-system.");
+                    }
                 }
-                else
+                catch
                 {
-                    BasicConsole.WriteLine("Partition not formatted as valid FAT file-system.");
+                    BasicConsole.Write("Error initialising partition: ");
+                    BasicConsole.WriteLine(i);
                 }
             }
         }

@@ -118,6 +118,7 @@ namespace Kernel.Hardware.IO
         /// <returns>The value read.</returns>
         [Compiler.NoDebug]
         [Drivers.Compiler.Attributes.NoDebug]
+        [Drivers.Compiler.Attributes.NoGC]
         public byte Read_Byte()
         {
             return doRead_Byte(this.Port);
@@ -128,6 +129,7 @@ namespace Kernel.Hardware.IO
         /// <returns>The value read.</returns>
         [Compiler.NoDebug]
         [Drivers.Compiler.Attributes.NoDebug]
+        [Drivers.Compiler.Attributes.NoGC]
         public UInt16 Read_UInt16()
         {
             return doRead_UInt16(this.Port);
@@ -138,6 +140,7 @@ namespace Kernel.Hardware.IO
         /// <returns>The value read.</returns>
         [Compiler.NoDebug]
         [Drivers.Compiler.Attributes.NoDebug]
+        [Drivers.Compiler.Attributes.NoGC]
         public UInt32 Read_UInt32()
         {
             return doRead_UInt32(this.Port);
@@ -148,6 +151,7 @@ namespace Kernel.Hardware.IO
         /// <returns>The value read.</returns>
         [Compiler.NoDebug]
         [Drivers.Compiler.Attributes.NoDebug]
+        [Drivers.Compiler.Attributes.NoGC]
         public UInt64 Read_UInt64()
         {
             return doRead_UInt64(this.Port);
@@ -159,6 +163,7 @@ namespace Kernel.Hardware.IO
         /// <returns>The value read.</returns>
         [Compiler.NoDebug]
         [Drivers.Compiler.Attributes.NoDebug]
+        [Drivers.Compiler.Attributes.NoGC]
         public UInt16 Read_Byte(UInt16 offset)
         {
             return doRead_Byte((UInt16)(this.Port + offset));
@@ -169,6 +174,7 @@ namespace Kernel.Hardware.IO
         /// <returns>The value read.</returns>
         [Compiler.NoDebug]
         [Drivers.Compiler.Attributes.NoDebug]
+        [Drivers.Compiler.Attributes.NoGC]
         public UInt16 Read_UInt16(UInt16 offset)
         {
             return doRead_UInt16((UInt16)(this.Port + offset));
@@ -179,6 +185,7 @@ namespace Kernel.Hardware.IO
         /// <returns>The value read.</returns>
         [Compiler.NoDebug]
         [Drivers.Compiler.Attributes.NoDebug]
+        [Drivers.Compiler.Attributes.NoGC]
         public UInt32 Read_UInt32(UInt16 offset)
         {
             return doRead_UInt32((UInt16)(this.Port + offset));
@@ -189,6 +196,7 @@ namespace Kernel.Hardware.IO
         /// <returns>The value read.</returns>
         [Compiler.NoDebug]
         [Drivers.Compiler.Attributes.NoDebug]
+        [Drivers.Compiler.Attributes.NoGC]
         public UInt64 Read_UInt64(UInt16 offset)
         {
             return doRead_UInt64((UInt16)(this.Port + offset));
@@ -242,6 +250,7 @@ namespace Kernel.Hardware.IO
         /// <param name="aVal">The value to write.</param>
         [Compiler.NoDebug]
         [Drivers.Compiler.Attributes.NoDebug]
+        [Drivers.Compiler.Attributes.NoGC]
         public virtual void Write_Byte(byte aVal)
         {
             doWrite_Byte(this.Port, aVal);
@@ -252,6 +261,7 @@ namespace Kernel.Hardware.IO
         /// <param name="aVal">The value to write.</param>
         [Compiler.NoDebug]
         [Drivers.Compiler.Attributes.NoDebug]
+        [Drivers.Compiler.Attributes.NoGC]
         public void Write_UInt16(UInt16 aVal)
         {
             doWrite_UInt16(this.Port, aVal);
@@ -262,6 +272,7 @@ namespace Kernel.Hardware.IO
         /// <param name="aVal">The value to write.</param>
         [Compiler.NoDebug]
         [Drivers.Compiler.Attributes.NoDebug]
+        [Drivers.Compiler.Attributes.NoGC]
         public void Write_UInt32(UInt32 aVal)
         {
             doWrite_UInt32(this.Port, aVal);
@@ -272,6 +283,7 @@ namespace Kernel.Hardware.IO
         /// <param name="aVal">The value to write.</param>
         [Compiler.NoDebug]
         [Drivers.Compiler.Attributes.NoDebug]
+        [Drivers.Compiler.Attributes.NoGC]
         public void Write_UInt64(UInt64 aVal)
         {
             doWrite_UInt64(this.Port, aVal);
@@ -283,6 +295,7 @@ namespace Kernel.Hardware.IO
         /// <param name="aVal">The value to write.</param>
         [Compiler.NoDebug]
         [Drivers.Compiler.Attributes.NoDebug]
+        [Drivers.Compiler.Attributes.NoGC]
         public virtual void Write_Byte(byte aVal, UInt16 offset)
         {
             doWrite_Byte((UInt16)(this.Port + offset), aVal);
@@ -293,6 +306,7 @@ namespace Kernel.Hardware.IO
         /// <param name="aVal">The value to write.</param>
         [Compiler.NoDebug]
         [Drivers.Compiler.Attributes.NoDebug]
+        [Drivers.Compiler.Attributes.NoGC]
         public virtual void Write_UInt16(UInt16 aVal, UInt16 offset)
         {
             doWrite_UInt16((UInt16)(this.Port + offset), aVal);
@@ -303,6 +317,7 @@ namespace Kernel.Hardware.IO
         /// <param name="aVal">The value to write.</param>
         [Compiler.NoDebug]
         [Drivers.Compiler.Attributes.NoDebug]
+        [Drivers.Compiler.Attributes.NoGC]
         public virtual void Write_UInt32(UInt32 aVal, UInt16 offset)
         {
             doWrite_UInt32((UInt16)(this.Port + offset), aVal);
@@ -313,6 +328,7 @@ namespace Kernel.Hardware.IO
         /// <param name="aVal">The value to write.</param>
         [Compiler.NoDebug]
         [Drivers.Compiler.Attributes.NoDebug]
+        [Drivers.Compiler.Attributes.NoGC]
         public virtual void Write_UInt64(UInt64 aVal, UInt16 offset)
         {
             doWrite_UInt64((UInt16)(this.Port + offset), aVal);
@@ -324,6 +340,7 @@ namespace Kernel.Hardware.IO
         /// <param name="aData">The byte array to read data into.</param>
         [Compiler.NoDebug]
         [Drivers.Compiler.Attributes.NoDebug]
+        [Drivers.Compiler.Attributes.NoGC]
         public void Read_Bytes(byte[] aData)
         {
             UInt16 xValue;
@@ -340,6 +357,7 @@ namespace Kernel.Hardware.IO
         /// <param name="aData">The UInt16 array to read data into.</param>
         [Compiler.NoDebug]
         [Drivers.Compiler.Attributes.NoDebug]
+        [Drivers.Compiler.Attributes.NoGC]
         public void Read_UInt16s(UInt16[] aData)
         {
             for (int i = 0; i < aData.Length; i++)
@@ -353,11 +371,41 @@ namespace Kernel.Hardware.IO
         /// <param name="aData">The UInt32 array to read data into.</param>
         [Compiler.NoDebug]
         [Drivers.Compiler.Attributes.NoDebug]
+        [Drivers.Compiler.Attributes.NoGC]
         public void Read_UInt32s(UInt32[] aData)
         {
             for (int i = 0; i < aData.Length; i++)
             {
                 aData[i] = Read_UInt32();
+            }
+        }
+
+        /// <summary>
+        /// Writes UInt16s from the specified byte array. Length of byte array must be multiple of 2.
+        /// </summary>
+        /// <param name="aData">The byte array to write data from.</param>
+        [Compiler.NoDebug]
+        [Drivers.Compiler.Attributes.NoDebug]
+        [Drivers.Compiler.Attributes.NoGC]
+        public void Write_UInt16s(byte[] aData)
+        {
+            for (int i = 0; i < aData.Length; i += 2)
+            {
+                Write_UInt16((UInt16)(aData[i] | (aData[i+1] << 8)));
+            }
+        }
+        /// <summary>
+        /// Writes UInt16s from the specified UInt16 array.
+        /// </summary>
+        /// <param name="aData">The UInt16 array to write data from.</param>
+        [Compiler.NoDebug]
+        [Drivers.Compiler.Attributes.NoDebug]
+        [Drivers.Compiler.Attributes.NoGC]
+        public void Write_UInt16s(UInt16[] aData)
+        {
+            for (int i = 0; i < aData.Length; i++)
+            {
+                Write_UInt16(aData[i]);
             }
         }
     }

@@ -59,6 +59,7 @@
     <Compile Include="ATA\ATAIOPorts.cs" />
     <Compile Include="ATA\ATAManager.cs" />
     <Compile Include="ATA\PATA.cs" />
+    <Compile Include="ATA\PATABase.cs" />
     <Compile Include="ATA\SATAPI.cs" />
     <Compile Include="ATA\SATA.cs" />
     <Compile Include="ATA\PATAPI.cs" />

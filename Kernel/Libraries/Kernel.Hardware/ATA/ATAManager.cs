@@ -71,29 +71,29 @@ namespace Kernel.Hardware.ATA
             //Get the IO ports for the correct bus
             ATAIOPorts theIO = ctrlId == ATA.ControllerID.Primary ? ATAIO1 : ATAIO2;
             //Create / init the device on the bus
-            PATA theATAPio = new PATA(theIO, ctrlId, busPos);
+            PATABase ThePATABase = new PATABase(theIO, ctrlId, busPos);
             //If the device was detected as present:
-            if (theATAPio.DriveType != PATA.SpecLevel.Null)
+            if (ThePATABase.DriveType != PATABase.SpecLevel.Null)
             {
                 //If the device was actually a PATA device:
-                if (theATAPio.DriveType == PATA.SpecLevel.PATA)
+                if (ThePATABase.DriveType == PATABase.SpecLevel.PATA)
                 {
                     //Add it to the list of devices.
-                    DeviceManager.Devices.Add(theATAPio);
+                    DeviceManager.Devices.Add(new PATA(ThePATABase));
                 }
-                else if(theATAPio.DriveType == PATA.SpecLevel.PATAPI)
+                else if (ThePATABase.DriveType == PATABase.SpecLevel.PATAPI)
                 {
                     // Add a PATAPI device
-                    DeviceManager.Devices.Add(new PATAPI(theIO, ctrlId, busPos));
+                    DeviceManager.Devices.Add(new PATAPI(ThePATABase));
                 }
                 //TODO: Remove the SATA/SATAPI initialisation from here. It should be done
                 //  in the ATAManager.Init method.
-                else if (theATAPio.DriveType == PATA.SpecLevel.SATA)
+                else if (ThePATABase.DriveType == PATABase.SpecLevel.SATA)
                 {
                     // Add a SATA device
                     DeviceManager.Devices.Add(new SATA());
                 }
-                else if (theATAPio.DriveType == PATA.SpecLevel.SATAPI)
+                else if (ThePATABase.DriveType == PATABase.SpecLevel.SATAPI)
                 {
                     // Add a SATAPI device
                     DeviceManager.Devices.Add(new SATAPI());

@@ -171,6 +171,10 @@ namespace Kernel
                 // Result is ref count goes: +1 here, -1 below
                 ex.InnerException = (Kernel.FOS_System.Exception)Utilities.ObjectUtilities.GetObject(State->CurrentHandlerPtr->Ex);
             }
+            if (ex.InstructionAddress == 0)
+            {
+                ex.InstructionAddress = *((uint*)BasePointer + 1);
+            }
             State->CurrentHandlerPtr->Ex = Utilities.ObjectUtilities.GetHandle(ex);
             State->CurrentHandlerPtr->ExPending = 1;
 
@@ -194,7 +198,9 @@ namespace Kernel
         [Drivers.Compiler.Attributes.NoGC]
         public static void ThrowFromPtr(UInt32* exPtr)
         {
-            Throw((FOS_System.Exception)Utilities.ObjectUtilities.GetObject(exPtr));
+            FOS_System.Exception ex = (FOS_System.Exception)Utilities.ObjectUtilities.GetObject(exPtr);
+            ex.InstructionAddress = *((uint*)BasePointer + 1);
+            Throw(ex);
         }
 
         /// <summary>
@@ -859,7 +865,9 @@ namespace Kernel
         public static void Throw_IndexOutOfRangeException()
         {
             HaltReason = "Index out of range exception.";
-            Throw(new FOS_System.Exceptions.IndexOutOfRangeException());
+            FOS_System.Exception ex = new FOS_System.Exceptions.IndexOutOfRangeException();
+            ex.InstructionAddress = *((uint*)BasePointer + 1);
+            Throw(ex);
         }        
     }
 

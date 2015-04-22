@@ -47,7 +47,7 @@ namespace Kernel.FOS_System
             {
                 if (InnerException != null)
                 {
-                    return message + "\nInner exception:\n" + InnerException.Message;
+                    return message + "\nInner exception:\n" + InnerException.Message + "\nInstruction address: " + InstructionAddress;
                 }
                 else
                 {
@@ -61,6 +61,8 @@ namespace Kernel.FOS_System
         }
 
         public Kernel.FOS_System.Exception InnerException;
+
+        public uint InstructionAddress = 0;
 
         /// <summary>
         /// Creates a new, empty exception.
