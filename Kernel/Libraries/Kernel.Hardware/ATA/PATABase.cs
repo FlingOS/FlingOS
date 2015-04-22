@@ -413,11 +413,12 @@ namespace Kernel.Hardware.ATA
         /// </remarks>
         internal void Wait()
         {
-            // Wait 400 ns
-            IO.Status.Read_Byte();
-            IO.Status.Read_Byte();
-            IO.Status.Read_Byte();
-            IO.Status.Read_Byte();
+            // Wait 400 ns (by reading alternate status register)
+            //   Note: The alternate status register does not affect interrupts.
+            IO.Control.Read_Byte();
+            IO.Control.Read_Byte();
+            IO.Control.Read_Byte();
+            IO.Control.Read_Byte();
         }
         /// <summary>
         /// Attempts to discover the ATA drive.
@@ -538,7 +539,7 @@ namespace Kernel.Hardware.ATA
             do
             {
                 Wait();
-                xStatus = (Status)IO.Status.Read_Byte();
+                xStatus = (Status)IO.Control.Read_Byte();
             } while ((xStatus & Status.Busy) != 0 &&
                      (xStatus & Status.Error) == 0 &&
                      timeout-- > 0);
@@ -546,7 +547,7 @@ namespace Kernel.Hardware.ATA
             // Error occurred
             if (aThrowOnError && (xStatus & Status.Error) != 0)
             {
-                ExceptionMethods.Throw(new FOS_System.Exception("ATA Read port error!"));
+                ExceptionMethods.Throw(new FOS_System.Exception("ATA send command error!"));
             }
             return xStatus;
         }

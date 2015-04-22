@@ -75,7 +75,9 @@ namespace Kernel.FOS_System.IO
                     }
                     catch
                     {
-                        BasicConsole.WriteLine("Error initializing disk: " + ExceptionMethods.CurrentException.Message);
+                        BasicConsole.WriteLine("Error initializing disk: " + (FOS_System.String)i);
+                        BasicConsole.WriteLine(ExceptionMethods.CurrentException.Message);
+                        //BasicConsole.DelayOutput(20);
                     }
                 }
             }
@@ -223,6 +225,8 @@ namespace Kernel.FOS_System.IO
                 {
                     BasicConsole.Write("Error initialising partition: ");
                     BasicConsole.WriteLine(i);
+                    BasicConsole.WriteLine(ExceptionMethods.CurrentException.Message);
+                    //BasicConsole.DelayOutput(20);
                 }
             }
         }
