@@ -1,4 +1,5 @@
 ﻿using System;
+using Kernel.FOS_System.IO;
 using Kernel.Hardware.Processes;
 
 namespace Kernel.Core.Tasks
@@ -50,12 +51,13 @@ namespace Kernel.Core.Tasks
                     StatusConsole.Clear();
                     if (StatusLine1)
                     {
-                        StatusConsole.WriteLine("State 1");
+                        StatusConsole.WriteLine("State: 1");
                     }
                     else
                     {
-                        StatusConsole.WriteLine("State 2");
+                        StatusConsole.WriteLine("State: 2");
                     }
+                    StatusLine1 = !StatusLine1;
 
                     StatusConsole.Write("Processes: ");
                     StatusConsole.WriteLine_AsDecimal(ProcessManager.Processes.Count);
@@ -68,9 +70,18 @@ namespace Kernel.Core.Tasks
                     StatusConsole.Write("Threads: ");
                     StatusConsole.WriteLine_AsDecimal(ThreadCount);
 
+                    StatusConsole.Write("Devices: ");
+                    StatusConsole.WriteLine_AsDecimal(Hardware.DeviceManager.Devices.Count);
+                    StatusConsole.Write("File Sys:");
+                    for(int i = 0; i < FileSystemManager.FileSystemMappings.Count; i++)
+                    {
+                        FileSystemMapping mapping = (FileSystemMapping)FileSystemManager.FileSystemMappings[i];
+                        StatusConsole.Write(" ");
+                        StatusConsole.Write(mapping.Prefix);
+                    }
                     StatusConsole.WriteLine();
-                    StatusConsole.WriteLine();
-                    StatusConsole.WriteLine();
+                    StatusConsole.Write("USB Devices: ");
+                    StatusConsole.WriteLine_AsDecimal(Hardware.USB.USBManager.Devices.Count);
                 }
                 catch
                 {
