@@ -49,11 +49,11 @@ namespace Kernel.FOS_System.IO
         /// <summary>
         /// The list of initialized partitions.
         /// </summary>
-        public static List Partitions = new List(2);
+        public static List Partitions = new List(3);
         /// <summary>
         /// The list of file system mappings.
         /// </summary>
-        public static List FileSystemMappings = new List(2);
+        public static List FileSystemMappings = new List(3);
 
         /// <summary>
         /// Initializes all available file systems by searching for 
@@ -105,6 +105,46 @@ namespace Kernel.FOS_System.IO
             else if (!InitAsMBR(aDiskDevice))
             {
                 ExceptionMethods.Throw(new FOS_System.Exceptions.NotSupportedException("Non MBR/EBR/GPT formatted disks not supported."));
+            }
+        }
+        /// <summary>
+        /// Initializes all available partitions looking for valid 
+        /// file systems.
+        /// </summary>
+        public static void InitPartitions()
+        {
+            for (int i = 0; i < Partitions.Count; i++)
+            {
+                try
+                {
+                    Partition aPartition = (Partition)Partitions[i];
+                    if (!aPartition.Mapped)
+                    {
+                        //BasicConsole.WriteLine("Attempting to create FAT File System...");
+                        FOS_System.IO.FAT.FATFileSystem newFS = new FOS_System.IO.FAT.FATFileSystem(aPartition);
+                        if (newFS.IsValid)
+                        {
+                            FOS_System.String mappingPrefix = FOS_System.String.New(3);
+                            mappingPrefix[0] = (char)((int)('A') + i);
+                            mappingPrefix[1] = ':';
+                            mappingPrefix[2] = PathDelimiter;
+                            newFS.TheMapping = new FileSystemMapping(mappingPrefix, newFS);
+                            FileSystemMappings.Add(newFS.TheMapping);
+                            aPartition.Mapped = true;
+                        }
+                        //else
+                        //{
+                        //    BasicConsole.WriteLine("Partition not formatted as valid FAT file-system.");
+                        //}
+                    }
+                }
+                catch
+                {
+                    BasicConsole.Write("Error initialising partition: ");
+                    BasicConsole.WriteLine(i);
+                    BasicConsole.WriteLine(ExceptionMethods.CurrentException.Message);
+                    //BasicConsole.DelayOutput(20);
+                }
             }
         }
 
@@ -190,43 +230,6 @@ namespace Kernel.FOS_System.IO
                 else
                 {
                     Partitions.Add(new Partition(aDiskDevice, aPartInfo.StartSector, aPartInfo.SectorCount));
-                }
-            }
-        }
-
-        /// <summary>
-        /// Initializes all available partitions looking for valid 
-        /// file systems.
-        /// </summary>
-        private static void InitPartitions()
-        {
-            for (int i = 0; i < Partitions.Count; i++)
-            {
-                try
-                {
-                    Partition aPartition = (Partition)Partitions[i];
-                    BasicConsole.WriteLine("Attempting to create FAT File System...");
-                    FOS_System.IO.FAT.FATFileSystem newFS = new FOS_System.IO.FAT.FATFileSystem(aPartition);
-                    if (newFS.IsValid)
-                    {
-                        FOS_System.String mappingPrefix = FOS_System.String.New(3);
-                        mappingPrefix[0] = (char)((int)('A') + i);
-                        mappingPrefix[1] = ':';
-                        mappingPrefix[2] = PathDelimiter;
-                        newFS.TheMapping = new FileSystemMapping(mappingPrefix, newFS);
-                        FileSystemMappings.Add(newFS.TheMapping);
-                    }
-                    else
-                    {
-                        BasicConsole.WriteLine("Partition not formatted as valid FAT file-system.");
-                    }
-                }
-                catch
-                {
-                    BasicConsole.Write("Error initialising partition: ");
-                    BasicConsole.WriteLine(i);
-                    BasicConsole.WriteLine(ExceptionMethods.CurrentException.Message);
-                    //BasicConsole.DelayOutput(20);
                 }
             }
         }

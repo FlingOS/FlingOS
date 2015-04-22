@@ -57,7 +57,7 @@ namespace Kernel.Hardware.Keyboards
             if (!enabled)
             {
                 InterruptHandlerId = Interrupts.Interrupts.AddIRQHandler(1, InterruptHandler, this, false, false, "PS2");
-                DeviceManager.Devices.Add(this);
+                DeviceManager.AddDevice(this);
                 enabled = true;
             }
         }

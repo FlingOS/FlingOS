@@ -278,7 +278,7 @@ namespace Drivers.Compiler.IL
                 }
             }
             string FieldTablePointer = TypeId + "_FieldTable";
-            string TypeSignatureLiteralLabel = TheLibrary.AddStringLiteral(TheTypeInfo.ID); // Legacy
+            string TypeSignatureLiteralLabel = TheLibrary.AddStringLiteral(TheTypeInfo.UnderlyingType.FullName); // Legacy
             string TypeIdLiteralLabel = TheLibrary.AddStringLiteral(TheTypeInfo.ID);
 
             StringBuilder ASMResult = new StringBuilder();

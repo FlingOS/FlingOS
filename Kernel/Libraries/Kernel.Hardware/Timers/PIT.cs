@@ -73,7 +73,7 @@ namespace Kernel.Hardware.Timers
         /// The reload value for timer 0. Sets the frequency of timer 0.
         /// </summary>
         //private ushort _T0Reload = 32; // Produces ~0.0268ms delay between interrupts
-        private ushort _T0Reload = 0x8000;
+        private ushort _T0Reload = 0x1000; // ~3.43284333ms
         /// <summary>
         /// The reload value for timer 2. Sets the frequency of timer 2 hence 
         /// the frequency of the PC speaker beep.
@@ -402,7 +402,7 @@ namespace Kernel.Hardware.Timers
                 //  that to continually switch state would be massively inefficient. Also, switching
                 //  state isn't necessary for the handlers queued in the timer.
                 InterruptHandlerId = Interrupts.Interrupts.AddIRQHandler(0, InterruptHandler, this, true, true, "PIT");
-                DeviceManager.Devices.Add(this);
+                DeviceManager.AddDevice(this);
                 enabled = true;
                 
                 T0RateGen = true;

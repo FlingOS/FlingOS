@@ -37,5 +37,6 @@ namespace Kernel.Hardware
     /// </summary>
     public class Device : FOS_System.Object
     {
+        public bool IsNew = true;
     }
 }

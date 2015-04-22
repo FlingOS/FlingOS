@@ -79,24 +79,24 @@ namespace Kernel.Hardware.ATA
                 if (ThePATABase.DriveType == PATABase.SpecLevel.PATA)
                 {
                     //Add it to the list of devices.
-                    DeviceManager.Devices.Add(new PATA(ThePATABase));
+                    DeviceManager.AddDevice(new PATA(ThePATABase));
                 }
                 else if (ThePATABase.DriveType == PATABase.SpecLevel.PATAPI)
                 {
                     // Add a PATAPI device
-                    DeviceManager.Devices.Add(new PATAPI(ThePATABase));
+                    DeviceManager.AddDevice(new PATAPI(ThePATABase));
                 }
                 //TODO: Remove the SATA/SATAPI initialisation from here. It should be done
                 //  in the ATAManager.Init method.
                 else if (ThePATABase.DriveType == PATABase.SpecLevel.SATA)
                 {
                     // Add a SATA device
-                    DeviceManager.Devices.Add(new SATA());
+                    DeviceManager.AddDevice(new SATA());
                 }
                 else if (ThePATABase.DriveType == PATABase.SpecLevel.SATAPI)
                 {
                     // Add a SATAPI device
-                    DeviceManager.Devices.Add(new SATAPI());
+                    DeviceManager.AddDevice(new SATAPI());
                 }
             }
         }

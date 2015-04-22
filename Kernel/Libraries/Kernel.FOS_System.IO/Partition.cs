@@ -48,6 +48,8 @@ namespace Kernel.FOS_System.IO
         /// </summary>
         internal UInt64 StartingSector;
 
+        public bool Mapped = false;
+
         /// <summary>
         /// The ID of this partition (volume).
         /// </summary>

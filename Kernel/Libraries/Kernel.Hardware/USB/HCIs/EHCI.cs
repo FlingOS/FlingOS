@@ -666,10 +666,26 @@ namespace Kernel.Hardware.USB.HCIs
 
         #endregion
 
+        private bool anyPortsChanged = false;
         /// <summary>
         /// Whether any ports have changed since the last port check.
         /// </summary>
-        protected bool AnyPortsChanged = false;
+        protected bool AnyPortsChanged
+        {
+            get
+            {
+                return anyPortsChanged;
+            }
+            set
+            {
+                anyPortsChanged = value;
+
+                if (value)
+                {
+                    USBManager.NotifyDevicesNeedUpdate();
+                }
+            }
+        }
         /// <summary>
         /// Whether the ports have been enabled or not.
         /// </summary>

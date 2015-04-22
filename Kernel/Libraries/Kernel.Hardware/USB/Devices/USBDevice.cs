@@ -52,7 +52,7 @@ namespace Kernel.Hardware.USB.Devices
         {
             DeviceInfo = aDeviceInfo;
 
-            DeviceManager.Devices.Add(this);
+            DeviceManager.AddDevice(this);
             USBManager.Devices.Add(this);
         }
 

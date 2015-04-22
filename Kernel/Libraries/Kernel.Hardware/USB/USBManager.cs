@@ -179,7 +179,7 @@ namespace Kernel.Hardware.USB
                                 //BasicConsole.SetTextColour(BasicConsole.default_colour);
                                 EHCI newEHCI = new EHCI(EHCI_PCIDevice);
                                 HCIDevices.Add(newEHCI);
-                                DeviceManager.Devices.Add(newEHCI);
+                                DeviceManager.AddDevice(newEHCI);
                             }
 #if USB_TRACE
                             else
@@ -219,7 +219,7 @@ namespace Kernel.Hardware.USB
                                 UHCI newUHCI = new UHCI(UHCI_PCIDevice);
 
                                 HCIDevices.Add(newUHCI);
-                                DeviceManager.Devices.Add(newUHCI);
+                                DeviceManager.AddDevice(newUHCI);
                             }
 #if USB_TRACE
                             else
@@ -259,6 +259,125 @@ namespace Kernel.Hardware.USB
                 }
             }
         }
+        public static void CheckDeviceForHCI(PCIDeviceNormal aDevice)
+        {
+            //0x0C = Serial bus controllers
+            if (aDevice.ClassCode == 0x0C)
+            {
+                //0x03 = USB controllers
+                if (aDevice.Subclass == 0x03)
+                {
+                    //xHCI = 0x30
+                    if (aDevice.ProgIF == 0x30)
+                    {
+                        //xHCI detected
+#if USB_TRACE
+                                        BasicConsole.WriteLine("xHCI detected.");
+#endif
+
+                        //TODO - Add xHCI support
+                        //Supported by VMWare
+                        //  - This is USB 3.0
+
+                        if (!aDevice.Claimed)
+                        {
+                            NumxHCIDevices++;
+                        }
+#if USB_TRACE
+                            else
+                            {
+                                BasicConsole.WriteLine(" - Already claimed.");
+                            }
+
+                            BasicConsole.DelayOutput(10);
+#endif
+                    }
+                    //EHCI = 0x20
+                    else if (aDevice.ProgIF == 0x20)
+                    {
+                        //EHCI detected
+#if USB_TRACE
+                            BasicConsole.WriteLine("EHCI detected.");
+#endif
+                        if (!aDevice.Claimed)
+                        {
+                            NumEHCIDevices++;
+
+                            PCIDeviceNormal EHCI_PCIDevice = (PCIDeviceNormal)aDevice;
+                            EHCI_PCIDevice.Claimed = true;
+
+                            //BasicConsole.SetTextColour(BasicConsole.warning_colour);
+                            //BasicConsole.WriteLine("WARNING! EHCI device support disabled.");
+                            //BasicConsole.SetTextColour(BasicConsole.default_colour);
+                            EHCI newEHCI = new EHCI(EHCI_PCIDevice);
+                            HCIDevices.Add(newEHCI);
+                            DeviceManager.AddDevice(newEHCI);
+                        }
+#if USB_TRACE
+                            else
+                            {
+                                BasicConsole.WriteLine(" - Already claimed.");
+                            }
+
+                            BasicConsole.DelayOutput(10);
+#endif
+                    }
+                    //UHCI = 0x00
+                    else if (aDevice.ProgIF == 0x00)
+                    {
+                        //UHCI detected
+#if USB_TRACE
+                            BasicConsole.WriteLine("UHCI detected.");
+#endif
+                        if (!aDevice.Claimed)
+                        {
+                            NumUHCIDevices++;
+
+                            PCIDeviceNormal UHCI_PCIDevice = (PCIDeviceNormal)aDevice;
+                            UHCI_PCIDevice.Claimed = true;
+
+                            UHCI newUHCI = new UHCI(UHCI_PCIDevice);
+
+                            HCIDevices.Add(newUHCI);
+                            DeviceManager.AddDevice(newUHCI);
+                        }
+#if USB_TRACE
+                            else
+                            {
+                                BasicConsole.WriteLine(" - Already claimed.");
+                            }
+
+                            BasicConsole.DelayOutput(10);
+#endif
+                    }
+                    //OHCI = 0x10
+                    else if (aDevice.ProgIF == 0x10)
+                    {
+                        //OHCI detected
+#if USB_TRACE
+                                        BasicConsole.WriteLine("OHCI detected.");
+#endif
+
+                        //TODO - Add OHCI support
+                        //Not supported by VMWare or my laptop 
+                        //  so we aren't going to program this any further for now.
+
+                        if (!aDevice.Claimed)
+                        {
+                            NumOHCIDevices++;
+                        }
+#if USB_TRACE
+                            else
+                            {
+                                BasicConsole.WriteLine(" - Already claimed.");
+                            }
+
+                            BasicConsole.DelayOutput(10);
+#endif
+                    }
+                }
+            }
+        }
         /// <summary>
         /// Updates the USb manager and all host controller devices.
         /// </summary>
@@ -269,6 +388,12 @@ namespace Kernel.Hardware.USB
                 ((HCI)HCIDevices[i]).Update();
             }
         }
+
+        public static void NotifyDevicesNeedUpdate()
+        {
+            DeviceManager.NotifyDevicesNeedUpdate();
+        }
+
 
         /// <summary>
         /// Creates new device info for the specified port.

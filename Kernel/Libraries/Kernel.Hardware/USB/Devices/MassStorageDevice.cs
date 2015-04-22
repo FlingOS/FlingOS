@@ -1480,7 +1480,7 @@ namespace Kernel.Hardware.USB.Devices
                 FOS_System.Heap.Free(capacityBuffer);
             }
 
-            DeviceManager.Devices.Add(this);
+            DeviceManager.AddDevice(this);
         }
 
         /// <summary>

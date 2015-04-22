@@ -50,11 +50,11 @@ namespace Kernel.Core.Shells
             {
                 try
                 {
+                    Hardware.DeviceManager.AddDeviceAddedListener(MainShell.DeviceManager_DeviceAdded, this);
+
                     // Auto-init all to save us writing the command
                     InitATA();
                     InitPCI();
-                    InitUSB();
-                    InitFS();
                 }
                 catch
                 {
@@ -89,7 +89,8 @@ namespace Kernel.Core.Shells
                          *              IntArray    /   DummyObj    /   DivideBy0   /
                          *              Exceptions1 /   Exceptions2 /   PCBeep      /
                          *              Timer       /   Keyboard    /   FieldsTable /
-                         *              IsInst      /   VirtMem     /   Longs       }
+                         *              IsInst      /   VirtMem     /   Longs       /
+                         *              ThreadSleep /                                   }
                          *  - GC   { Cleanup }
                          *  - USB { Update / Eject }
                          *  - Start { Filename } [*KM* / UM] [*Raw*]
@@ -781,6 +782,10 @@ namespace Kernel.Core.Shells
                                     else if (opt1 == "longs")
                                     {
                                         LongsTest();
+                                    }
+                                    else if (opt1 == "threadsleep")
+                                    {
+                                        ThreadSleepTest();
                                     }
                                     else
                                     {
@@ -1875,7 +1880,50 @@ which should have been provided with the executable.");
             Hardware.PCI.PCI.Init();
             console.WriteLine("done.");
         }
-        
+
+        private static void DeviceManager_DeviceAdded(FOS_System.Object state, Hardware.Device device)
+        {
+            ((MainShell)state)._DeviceManager_DeviceAdded(device);
+        }
+        private void _DeviceManager_DeviceAdded(Hardware.Device device)
+        {
+            if (device is Hardware.Devices.DiskDevice)
+            {
+                try
+                {
+                    FileSystemManager.InitDisk((Hardware.Devices.DiskDevice)device);
+                    FileSystemManager.InitPartitions();
+                }
+                catch
+                {
+                    if (!(ExceptionMethods.CurrentException is FOS_System.Exceptions.NotSupportedException))
+                    {
+                        console.ErrorColour();
+                        console.WriteLine("Error initialising disk device:");
+                        console.WriteLine(ExceptionMethods.CurrentException.Message);
+                        console.DefaultColour();
+                    }
+                }
+            }
+            else if (device is Hardware.PCI.PCIDeviceNormal)
+            {
+                try
+                {
+                    Hardware.USB.USBManager.CheckDeviceForHCI((Hardware.PCI.PCIDeviceNormal)device);
+                }
+                catch
+                {
+                    if (!(ExceptionMethods.CurrentException is FOS_System.Exceptions.NotSupportedException))
+                    {
+                        console.ErrorColour();
+                        console.WriteLine("Error initialising PCI device:");
+                        console.WriteLine(ExceptionMethods.CurrentException.Message);
+                        console.DefaultColour();
+                    }
+                }
+            }
+        }
+
         /// <summary>
         /// Outputs a warning to the user indicating their input was unrecognised.
         /// </summary>
@@ -2621,7 +2669,6 @@ which should have been provided with the executable.");
             console.WriteLine("Ended IsInst test. Pausing for 5 seconds.");
             Hardware.Devices.Timer.Default.Wait(5000);
         }
-
         private void LongsTest()
         {
             console.WriteLine("Starting Longs test...");
@@ -3394,6 +3441,36 @@ which should have been provided with the executable.");
                 OutputExceptionInfo(ExceptionMethods.CurrentException);
             }
             console.WriteLine("Finished Longs test.");
+        }
+        private void ThreadSleepTest()
+        {
+            console.WriteLine("Running Thread Sleep test...");
+
+            try
+            {
+                console.Write("Sleeping for 5 lot(s) of 1 second(s)");
+                for (int i = 0; i < 5; i++)
+                {
+                    Hardware.Processes.Thread.Sleep(1000);
+                    console.Write(".");
+                }
+                console.WriteLine("completed.");
+
+
+                console.Write("Sleeping for 1 lot(s) of 5 second(s)");
+                //for (int i = 0; i < 5; i++)
+                {
+                    Hardware.Processes.Thread.Sleep(5000);
+                    console.Write(".");
+                }
+                console.WriteLine("completed.");
+            }
+            catch
+            {
+                OutputExceptionInfo(ExceptionMethods.CurrentException);
+            }
+
+            console.WriteLine("Ended Thread Sleep test.");
         }
     }
 
