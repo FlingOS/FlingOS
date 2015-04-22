@@ -332,9 +332,12 @@ namespace Kernel
                 BasicConsole.WriteLine(" > Starting Non-critical interrupts task...");
                 ProcessManager.CurrentProcess.CreateThread(Hardware.Tasks.NonCriticalInterruptsTask.Main);
 
+                BasicConsole.WriteLine(" > Starting System Status task...");
+                ProcessManager.CurrentProcess.CreateThread(Core.Tasks.SystemStatusTask.Main);
+
                 BasicConsole.WriteLine(" > Starting Device Manager task...");
                 ProcessManager.CurrentProcess.CreateThread(Hardware.Tasks.DeviceManagerTask.Main);
-
+                
                 BasicConsole.WriteLine(" > Starting Play Notes task...");
                 ProcessManager.CurrentProcess.CreateThread(Hardware.Tasks.PlayNotesTask.Main);
                 

@@ -58,7 +58,7 @@ namespace Kernel.Core
         /// <summary>
         /// The maximum length of a line.
         /// </summary>
-        protected Int32 LineLength = 80;
+        public Int32 LineLength = 80;
         /// <summary>
         /// The maxmimum size of the buffer (in lines).
         /// </summary>
@@ -67,7 +67,14 @@ namespace Kernel.Core
         /// The current character attribute.
         /// </summary>
         protected ushort CurrentAttr = 0;
-        
+
+        public int ScreenStartLineOffset = 0;
+        public int ScreenLineWidth = 80;
+        public int ScreenStartLine = 0;
+        public int ScreenHeightInLines = 25;
+
+        public bool UpdateCursorPosition = true;
+
         /// <summary>
         /// Initialises a new instance of a Console.
         /// </summary>
@@ -102,7 +109,7 @@ namespace Kernel.Core
         /// <summary>
         /// When overridden in a derived class, updates the display output.
         /// </summary>
-        protected abstract void Update();
+        public abstract void Update();
         /// <summary>
         /// When overriden in a dervied class, gets the offset from the current line to the actual line position of
         /// the cursor.

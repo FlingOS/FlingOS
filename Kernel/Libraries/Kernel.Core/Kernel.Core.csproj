@@ -74,6 +74,7 @@
     <Compile Include="Shells\MainShell.cs" />
     <Compile Include="Tasks\IdleTask.cs" />
     <Compile Include="Tasks\SampleTask.cs" />
+    <Compile Include="Tasks\SystemStatusTask.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Compiler\Kernel.Compiler.csproj">

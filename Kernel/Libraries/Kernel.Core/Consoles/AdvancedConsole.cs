@@ -47,19 +47,25 @@ namespace Kernel.Core.Consoles
         /// <summary>
         /// A pointer to the start of the (character-based) video memory.
         /// </summary>
-        protected static char* vidMemBasePtr = (char*)0xB8000;
-
+        protected char* vidMemBasePtr 
+        {
+            get
+            {
+                return ((char*)0xB8000) + (ScreenStartLine * ScreenLineWidth) + ScreenStartLineOffset;
+            }
+        }
+        
         /// <summary>
         /// Update the display.
         /// </summary>
-        protected override void Update()
+        public override void Update()
         {
-            //Start at the bottom of the screen - 25th line has index 24
-            char* vidMemPtr = vidMemBasePtr + (24 * LineLength);
+            //Start at beginning of first line at the bottom of the screen
+            char* vidMemPtr = vidMemBasePtr + ((ScreenHeightInLines - 1) * ScreenLineWidth);
             //Start at the current line then move backwards through the buffer
             //  until we've either outputted 25 lines or reached the start of 
             //  the buffer.
-            for(int i = CurrentLine; i > -1 && i > CurrentLine - 25; i--)
+            for (int i = CurrentLine; i > -1 && i > CurrentLine - ScreenHeightInLines; i--)
             {
                 //Get a pointer to the start of the current line
                 //  We could index into the string each time, but using a pointer
@@ -72,8 +78,9 @@ namespace Kernel.Core.Consoles
                 {
                     vidMemPtr[j] = cLinePtr[j];
                 }
+
                 //Move backwards through the video memory i.e. upwards 1 line
-                vidMemPtr -= LineLength;
+                vidMemPtr -= ScreenLineWidth;
             }
 
             //Clear out the rest of the screen
@@ -83,7 +90,7 @@ namespace Kernel.Core.Consoles
                 {
                     vidMemPtr[j] = (char)(' ' | CurrentAttr);
                 }
-                vidMemPtr -= LineLength;
+                vidMemPtr -= ScreenLineWidth;
             }
         }
 
@@ -93,7 +100,7 @@ namespace Kernel.Core.Consoles
         /// <returns>The offset to be subtracted.</returns>
         protected override int GetDisplayOffset_Char()
         {
-            return 0;
+            return -ScreenStartLineOffset;
         }
         /// <summary>
         /// Gets the offset from the current line to where the cursor should be displayed.
@@ -103,7 +110,7 @@ namespace Kernel.Core.Consoles
         {
             //Creates a fixed-position cursor on line 24 (the bottom line of the screen in 25-line
             //  VGA text-mode)
-            return CurrentLine - 24;
+            return CurrentLine - (ScreenStartLine + ScreenHeightInLines - 1);
         }
 
         /// <summary>
@@ -115,15 +122,37 @@ namespace Kernel.Core.Consoles
         /// <param name="line">The 0-based index of the line to display the cursor on.</param>
         public override void SetCursorPosition(ushort character, ushort line)
         {
-            //Offset is in number of characters from start of video memory 
-            //  (not number of bytes).
-            ushort offset = (ushort)((line * LineLength) + character);
-            //Output the high-byte
-            CursorCmdPort.Write_Byte((byte)14);
-            CursorDataPort.Write_Byte((byte)(offset >> 8));
-            //Output the low-byte
-            CursorCmdPort.Write_Byte((byte)15);
-            CursorDataPort.Write_Byte((byte)(offset));
+            if (UpdateCursorPosition)
+            {
+                //Offset is in number of characters from start of video memory 
+                //  (not number of bytes).
+                ushort offset = (ushort)((line * ScreenLineWidth) + character);
+                //Output the high-byte
+                CursorCmdPort.Write_Byte((byte)14);
+                CursorDataPort.Write_Byte((byte)(offset >> 8));
+                //Output the low-byte
+                CursorCmdPort.Write_Byte((byte)15);
+                CursorDataPort.Write_Byte((byte)(offset));
+            }
+        }
+
+        public void DrawBottomBorder()
+        {
+            char* vidMemPtr = vidMemBasePtr + (ScreenHeightInLines * ScreenLineWidth);
+            for (int j = 0; j < LineLength; j++)
+            {
+                vidMemPtr[j] = (char)('-' | CurrentAttr);
+            }
+        }
+        public void DrawLeftBorder()
+        {
+            char* vidMemPtr = vidMemBasePtr - 1;
+            for (int j = 0; j < ScreenHeightInLines; j++)
+            {
+                *vidMemPtr = (char)('|' | CurrentAttr);
+                vidMemPtr += ScreenLineWidth;
+            }
+            *vidMemPtr = (char)('-' | CurrentAttr);
         }
     }
 }

@@ -96,11 +96,11 @@ namespace Kernel.Hardware.Tasks
                 //Scheduler.Disable();
                 Awake = false;
 
-                BasicConsole.WriteLine("Playing notes...");
+                //BasicConsole.WriteLine("Playing notes...");
 
                 while (LiveNoteRequests.Count > 0)
                 {
-                    BasicConsole.WriteLine("Playing note...");
+                    //BasicConsole.WriteLine("Playing note...");
 
                     NoteRequest theReq = (NoteRequest)LiveNoteRequests.Pop();
 
@@ -154,7 +154,7 @@ namespace Kernel.Hardware.Tasks
                     }
                 }
 
-                BasicConsole.WriteLine("Finished playing notes.");
+                //BasicConsole.WriteLine("Finished playing notes.");
 
                 if (!Awake)
                 {
@@ -180,7 +180,7 @@ namespace Kernel.Hardware.Tasks
             }
             else
             {
-                BasicConsole.WriteLine("Note muted.");
+                //BasicConsole.WriteLine("Note muted.");
 
                 Playing = false;
 
