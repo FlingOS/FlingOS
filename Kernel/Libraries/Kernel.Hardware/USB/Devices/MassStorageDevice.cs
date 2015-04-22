@@ -110,7 +110,6 @@ namespace Kernel.Hardware.USB.Devices
     /// </remarks>
     public unsafe class MassStorageDevice : USBDevice
     {
-        //TODO - Uncomment try-finally once try-catch-finally works properly.
         //TODO - Test for ejected, don't send commands if ejected!
     
         /// <summary>
@@ -174,13 +173,13 @@ namespace Kernel.Hardware.USB.Devices
             //  you more information like Id string indices etc. but we just check 
             //  then discard them for now.
             byte* inquiryBuffer = (byte*)FOS_System.Heap.AllocZeroed(26u);
-            //try
+            try
             {
                 SendSCSICommand_IN(0x12 /*SCSI opcode*/, 0 /*LBA*/, 36 /*Bytes In*/, inquiryBuffer, null);
 
                 AnalyseInquiry(inquiryBuffer);
             }
-            //finally
+            finally
             {
                 FOS_System.Heap.Free(inquiryBuffer);
             }
@@ -587,7 +586,7 @@ namespace Kernel.Hardware.USB.Devices
             //  This is passed to the out transaction as the SCSI command data.
             CommandBlockWrapper* cbw = (CommandBlockWrapper*)FOS_System.Heap.AllocZeroed((uint)sizeof(CommandBlockWrapper));
             bool FreeStatusBuffer = false;
-            //try
+            try
             {
                 //Initialise the command data
                 SetupSCSICommand(SCSIcommand, cbw, LBA, TransferLength);
@@ -689,7 +688,7 @@ namespace Kernel.Hardware.USB.Devices
 #endif
                 }
             }
-            //finally
+            finally
             {
                 FOS_System.Heap.Free(cbw);
                 // Only free the status buffer if we allocated it
@@ -718,7 +717,7 @@ namespace Kernel.Hardware.USB.Devices
 
             CommandBlockWrapper* cbw = (CommandBlockWrapper*)FOS_System.Heap.AllocZeroed((uint)sizeof(CommandBlockWrapper));
             bool FreeStatusBuffer = false;
-            //try
+            try
             {
                 SetupSCSICommand(SCSIcommand, cbw, LBA, TransferLength);
 
@@ -819,7 +818,7 @@ namespace Kernel.Hardware.USB.Devices
 #endif
                 }
             }
-            //finally
+            finally
             {
                 FOS_System.Heap.Free(cbw);
                 if (FreeStatusBuffer)
@@ -883,7 +882,7 @@ namespace Kernel.Hardware.USB.Devices
 
             CommandBlockWrapper* cbw = (CommandBlockWrapper*)FOS_System.Heap.AllocZeroed((uint)sizeof(CommandBlockWrapper));
             bool FreeStatusBuffer = false;
-            //try
+            try
             {
                 SetupSCSICommand(0x35, cbw, LBA, Blocks);
                 cbw->commandByte[1] = (byte)((SyncNV ? 0x4 : 0) | (ImmediateResponse ? 0x2 : 0));
@@ -952,7 +951,7 @@ namespace Kernel.Hardware.USB.Devices
                     #endif
                 }
             }
-            //finally
+            finally
             {
                 FOS_System.Heap.Free(cbw);
                 if (FreeStatusBuffer)
@@ -995,7 +994,7 @@ namespace Kernel.Hardware.USB.Devices
 
             CommandBlockWrapper* cbw = (CommandBlockWrapper*)FOS_System.Heap.AllocZeroed((uint)sizeof(CommandBlockWrapper));
             bool FreeStatusBuffer = false;
-            //try
+            try
             {
                 SetupSCSICommand(0x1B, cbw, 0, 0);
                 cbw->commandByte[1] = (byte)(ImmediateResponse ? 0x1 : 0);
@@ -1065,7 +1064,7 @@ namespace Kernel.Hardware.USB.Devices
 #endif
                 }
             }
-            //finally
+            finally
             {
                 FOS_System.Heap.Free(cbw);
                 if (FreeStatusBuffer)
@@ -1097,7 +1096,7 @@ namespace Kernel.Hardware.USB.Devices
 #endif
 
                 byte* statusBuffer = (byte*)FOS_System.Heap.AllocZeroed(13u);
-                //try
+                try
                 {
                     //Get the device status by sending the Tets Unit Ready command
                     SendSCSICommand_IN(0x00, 0u, 0, null, statusBuffer);
@@ -1115,7 +1114,7 @@ namespace Kernel.Hardware.USB.Devices
 #endif
 
                     byte* dataBuffer = (byte*)FOS_System.Heap.AllocZeroed(18u);
-                    //try
+                    try
                     {
                         // Now send the Request Sense command
                         SendSCSICommand_IN(0x03, 0, 18, dataBuffer, statusBuffer);
@@ -1131,12 +1130,12 @@ namespace Kernel.Hardware.USB.Devices
                             break;
                         }
                     }
-                    //finally
+                    finally
                     {
                         FOS_System.Heap.Free(dataBuffer);
                     }
                 }
-                //finally
+                finally
                 {
                     FOS_System.Heap.Free(statusBuffer);
                 }
@@ -1460,7 +1459,7 @@ namespace Kernel.Hardware.USB.Devices
             msd = anMSD;
             
             uint* capacityBuffer = (uint*)FOS_System.Heap.AllocZeroed(8);
-            //try
+            try
             {
                 //Send SCSI Read Capacity (10) command
                 anMSD.SendSCSICommand_IN(0x25, 0, 8, capacityBuffer, null);
@@ -1476,7 +1475,7 @@ namespace Kernel.Hardware.USB.Devices
                 // capacityBuffer[1] = Block size
                 blockSize = (ulong)capacityBuffer[1];
             }
-            //finally
+            finally
             {
                 FOS_System.Heap.Free(capacityBuffer);
             }

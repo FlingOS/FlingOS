@@ -37,8 +37,6 @@ namespace Kernel.Hardware.ATA
     /// </summary>
     public class PATA : Devices.DiskDevice
     {
-        //TODO - This implementation does not support CD drives. I.e. does not support PATAPI devices.
-        //       PATAPI, SATA and SATAPI drivers should be implemented in their respective classes.
         //TODO - This implementation does not support LBA48 mode.
 
         protected PATABase BaseDevice;
@@ -121,7 +119,7 @@ namespace Kernel.Hardware.ATA
 
             if (aData == null)
             {
-                //TODO: Remove the cast-down - only due to multiplication of longs not working...
+                //TODO: Remove the cast-down - only due to division of longs not working...
                 ulong size = (aBlockCount * (uint)blockSize) / 2;
                 for (ulong i = 0; i < size; i++)
                 {

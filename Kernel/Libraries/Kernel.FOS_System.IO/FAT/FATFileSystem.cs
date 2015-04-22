@@ -1463,9 +1463,7 @@ namespace Kernel.FOS_System.IO.FAT
             {
 #endif
                 //Mark all clusters as empty
-                //TODO - Remove this cap! It was only put in place as formatting a usb stick
-                //  caused Out of Memory followed by page-faults!
-                fs.ThePartition.WriteBlock(fs.ReservedSectorCount, FOS_System.Math.Min(FATSectorCount, 64), null);
+                fs.ThePartition.WriteBlock(fs.ReservedSectorCount, FATSectorCount, null);
 #if FATFS_TRACE
             }
             catch

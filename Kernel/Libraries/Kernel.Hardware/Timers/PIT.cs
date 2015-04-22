@@ -275,13 +275,6 @@ namespace Kernel.Hardware.Timers
         /// <param name="TimeoutMS">The length of time to wait in milliseconds.</param>
         public override void Wait(uint TimeoutMS)
         {
-            //TODO Remove this hack.
-            //  - 03/08/2014 : This hack is a solution for 64-64 multiplication and/or subtraction not working.
-            while (TimeoutMS >= 2000)
-            {
-                WaitNS(1000000L * 2000L);
-                TimeoutMS -= 2000;
-            }
             WaitNS(1000000L * TimeoutMS);
         }
         /// <summary>

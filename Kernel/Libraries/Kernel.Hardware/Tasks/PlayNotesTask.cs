@@ -63,7 +63,6 @@ namespace Kernel.Hardware.Tasks
 
         public static void RequestNote(Hardware.Timers.PIT.MusicalNote note, Hardware.Timers.PIT.MusicalNoteValue duration, uint bpm)
         {
-            //TODO
             NoteRequest next = (NoteRequest)DeadNoteRequests.Pop();
             if (next == null)
             {
