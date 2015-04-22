@@ -12,6 +12,14 @@ namespace Kernel.Core.Tasks
 
         public static void Main()
         {
+            BasicConsole.Clear();
+            Console.InitDefault();
+            Console.Default.ScreenHeightInLines = 25 - 8;
+            Console.Default.ScreenStartLine = 8;
+
+            // Wait for other system startup to occur
+            Thread.Sleep(1000);
+            
             MainConsole = new Consoles.AdvancedConsole();
             MainConsole.ScreenHeightInLines = 7;
             MainConsole.LineLength = 60;
@@ -24,18 +32,6 @@ namespace Kernel.Core.Tasks
             StatusConsole.ScreenStartLineOffset = 61;
             StatusConsole.UpdateCursorPosition = false;
 
-            // Wait for other system startup to occur
-            Thread.Sleep(1000);
-
-            BasicConsole.Clear();
-            Console.InitDefault();
-            Console.Default.ScreenHeightInLines = 25 - 8;
-            Console.Default.ScreenStartLine = 8;
-
-            ((Consoles.AdvancedConsole)StatusConsole).DrawBottomBorder();
-            ((Consoles.AdvancedConsole)StatusConsole).DrawLeftBorder();
-            ((Consoles.AdvancedConsole)MainConsole).DrawBottomBorder();
-            
             MainConsole.Clear();
             StatusConsole.Clear();
 
@@ -47,6 +43,10 @@ namespace Kernel.Core.Tasks
             {
                 try
                 {
+                    ((Consoles.AdvancedConsole)StatusConsole).DrawBottomBorder();
+                    ((Consoles.AdvancedConsole)StatusConsole).DrawLeftBorder();
+                    ((Consoles.AdvancedConsole)MainConsole).DrawBottomBorder();
+            
                     StatusConsole.Clear();
                     if (StatusLine1)
                     {
