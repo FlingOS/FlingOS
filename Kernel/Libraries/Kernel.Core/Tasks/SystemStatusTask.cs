@@ -1,4 +1,5 @@
 ﻿using System;
+using Kernel.FOS_System.Collections;
 using Kernel.FOS_System.IO;
 using Kernel.Hardware.Processes;
 
@@ -23,14 +24,14 @@ namespace Kernel.Core.Tasks
             
             MainConsole = new Consoles.AdvancedConsole();
             MainConsole.ScreenHeightInLines = 7;
-            MainConsole.LineLength = 60;
+            MainConsole.LineLength = 55;
             MainConsole.ScreenStartLineOffset = 0;
             MainConsole.UpdateCursorPosition = false;
 
             StatusConsole = new Consoles.AdvancedConsole();
             StatusConsole.ScreenHeightInLines = 7;
-            StatusConsole.LineLength = 19;
-            StatusConsole.ScreenStartLineOffset = 61;
+            StatusConsole.LineLength = 24;
+            StatusConsole.ScreenStartLineOffset = 56;
             StatusConsole.UpdateCursorPosition = false;
 
             MainConsole.Clear();
@@ -63,12 +64,32 @@ namespace Kernel.Core.Tasks
                     StatusConsole.WriteLine_AsDecimal(ProcessManager.Processes.Count);
 
                     int ThreadCount = 0;
+                    int SleptThreads = 0;
+                    int IndefiniteSleptThreads = 0;
                     for (int i = 0; i < ProcessManager.Processes.Count; i++)
                     {
-                        ThreadCount += ((Process)ProcessManager.Processes[i]).Threads.Count;
+                        List threads = ((Process)ProcessManager.Processes[i]).Threads;
+                        ThreadCount += threads.Count;
+                        for (int j = 0; j < threads.Count; j++)
+                        {
+                            Thread thread = (Thread)threads[j];
+                            if (thread.TimeToSleep == -1)
+                            {
+                                IndefiniteSleptThreads++;
+                                SleptThreads++;
+                            }
+                            else if (thread.TimeToSleep > 0)
+                            {
+                                SleptThreads++;
+                            }
+                        }
                     }
                     StatusConsole.Write("Threads: ");
-                    StatusConsole.WriteLine_AsDecimal(ThreadCount);
+                    StatusConsole.Write_AsDecimal(ThreadCount);
+                    StatusConsole.Write(" / ");
+                    StatusConsole.Write_AsDecimal(SleptThreads);
+                    StatusConsole.Write(" / ");
+                    StatusConsole.WriteLine_AsDecimal(IndefiniteSleptThreads);
 
                     StatusConsole.Write("Devices: ");
                     StatusConsole.WriteLine_AsDecimal(Hardware.DeviceManager.Devices.Count);

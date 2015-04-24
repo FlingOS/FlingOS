@@ -76,6 +76,7 @@ namespace Kernel.Hardware.Processes
 #if PROCESSMANAGER_TRACE
             BasicConsole.WriteLine("Adding process...");
 #endif
+
             Processes.Add(process);
 
 #if PROCESSMANAGER_TRACE

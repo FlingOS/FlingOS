@@ -466,7 +466,6 @@ namespace Kernel.Hardware.USB
                     {
                         success = GetDeviceDescriptor(deviceInfo, true);
                     }
-                    FOS_System.GC.Cleanup();
 
                     if (!success)
                     {
@@ -484,14 +483,12 @@ namespace Kernel.Hardware.USB
                     port.Reset();
 
                     deviceInfo.address = SetDeviceAddress(deviceInfo, address);
-                    FOS_System.GC.Cleanup();
 
                     success = GetDeviceDescriptor(deviceInfo, false);
                     if (!success)
                     {
                         success = GetDeviceDescriptor(deviceInfo, false);
                     }
-                    FOS_System.GC.Cleanup();
 
                     if (!success)
                     {
@@ -509,7 +506,6 @@ namespace Kernel.Hardware.USB
                     {
                         success = GetDeviceDescriptor(deviceInfo);
                     }
-                    FOS_System.GC.Cleanup();
 
                     if (!success)
                     {
@@ -525,7 +521,6 @@ namespace Kernel.Hardware.USB
 #endif
 
                     deviceInfo.address = SetDeviceAddress(deviceInfo, address);
-                    FOS_System.GC.Cleanup();
                 }
                 
                 bool hub = deviceInfo.usbClass == 0x09;
@@ -542,7 +537,6 @@ namespace Kernel.Hardware.USB
                 {
                     success = GetConfigDescriptor(deviceInfo);
                 }
-                FOS_System.GC.Cleanup();
 
                 if (!success)
                 {

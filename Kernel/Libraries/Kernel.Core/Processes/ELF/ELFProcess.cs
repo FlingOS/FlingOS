@@ -75,6 +75,10 @@ namespace Kernel.Core.Processes.ELF
                 theProcess = ProcessManager.CreateProcess(
                     mainMethod, theFile.TheFile.Name, UserMode);
 
+                ProcessManager.CurrentProcess.TheMemoryLayout.AddDataPage(
+                    (uint)Hardware.VirtMemManager.GetPhysicalAddress(((Thread)theProcess.Threads[0]).State->ThreadStackTop - 4092),
+                    (uint)((Thread)theProcess.Threads[0]).State->ThreadStackTop - 4092);
+
                 // Load the ELF segments (i.e. the program code and data)
                 BaseAddress = theFile.BaseAddress;
                 LoadSegments(theFile, ref OK, ref DynamicLinkingRequired, BaseAddress);
@@ -82,6 +86,8 @@ namespace Kernel.Core.Processes.ELF
                 //Console.Default.WriteLine();
 
                 //Relocation happens here if this were a library / shared object
+
+                #region Relocations
 
                 if (DynamicLinkingRequired)
                 {
@@ -132,8 +138,6 @@ namespace Kernel.Core.Processes.ELF
                             }
                         }
                     }
-
-                    FOS_System.GC.Cleanup();
 
                     Console.Default.WriteLine("Library Relocations");
 
@@ -207,8 +211,6 @@ namespace Kernel.Core.Processes.ELF
                             }
                         }
                     }
-
-                    FOS_System.GC.Cleanup();
 
                     Console.Default.WriteLine("Executable Relocations");
 
@@ -295,8 +297,6 @@ namespace Kernel.Core.Processes.ELF
                         }
                     }
 
-                    FOS_System.GC.Cleanup();
-
                     // TODO: Call Init functions of libraries
                 }
 
@@ -327,6 +327,12 @@ namespace Kernel.Core.Processes.ELF
                             (MemBaseAddress + ((uint)ExeSegment.Header.VAddr - FileBaseAddress)) & 0xFFFFF000);
                     }
                 }
+
+                #endregion
+
+                ProcessManager.CurrentProcess.TheMemoryLayout.RemovePage(
+                    (uint)((Thread)theProcess.Threads[0]).State->ThreadStackTop - 4092);
+
             }
             finally
             {
@@ -419,8 +425,6 @@ namespace Kernel.Core.Processes.ELF
                     }
                 }
             }
-
-            FOS_System.GC.Cleanup();
         }
 
         public uint GetSymbolAddress(ELFDynamicSymbolTableSection.Symbol theSymbol, FOS_System.String theSymbolName)

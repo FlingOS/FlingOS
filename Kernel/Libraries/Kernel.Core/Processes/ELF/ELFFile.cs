@@ -119,14 +119,11 @@ namespace Kernel.Core.Processes.ELF
             }
             theStream = new CachedFileStream(theFile.GetStream());
             ReadHeader();
-            FOS_System.GC.Cleanup();
-
+            
             if (IsValidFile())
             {
                 ReadSectionHeaders();
-                FOS_System.GC.Cleanup();
                 ReadSegmentHeaders();
-                FOS_System.GC.Cleanup();
             }
         }
 

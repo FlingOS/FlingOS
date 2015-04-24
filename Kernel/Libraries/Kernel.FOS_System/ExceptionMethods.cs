@@ -32,6 +32,8 @@ using System.Threading.Tasks;
 
 namespace Kernel
 {
+    public delegate void PageFaultHandler(uint eip, uint errorCode, uint address);
+
     /// <summary>
     /// Implements the lowest-level kernel exception handling.
     /// </summary>
@@ -626,207 +628,216 @@ namespace Kernel
         /// </remarks>
         public static void Throw_PageFaultException(uint eip, uint errorCode, uint address)
         {
-            BasicConsole.SetTextColour(BasicConsole.error_colour);
-            BasicConsole.WriteLine("Page fault exception!");
-
-            HaltReason = "Page fault exception. Address: 0x        , errorCode: 0x        , eip: 0x        ";
-
-            uint y = address;
-            int offset = 40;
-            #region Address
-            while (offset > 32)
+            if (ThePageFaultHandler != null)
             {
-                uint rem = y & 0xFu;
-                switch (rem)
-                {
-                    case 0:
-                        HaltReason[offset] = '0';
-                        break;
-                    case 1:
-                        HaltReason[offset] = '1';
-                        break;
-                    case 2:
-                        HaltReason[offset] = '2';
-                        break;
-                    case 3:
-                        HaltReason[offset] = '3';
-                        break;
-                    case 4:
-                        HaltReason[offset] = '4';
-                        break;
-                    case 5:
-                        HaltReason[offset] = '5';
-                        break;
-                    case 6:
-                        HaltReason[offset] = '6';
-                        break;
-                    case 7:
-                        HaltReason[offset] = '7';
-                        break;
-                    case 8:
-                        HaltReason[offset] = '8';
-                        break;
-                    case 9:
-                        HaltReason[offset] = '9';
-                        break;
-                    case 10:
-                        HaltReason[offset] = 'A';
-                        break;
-                    case 11:
-                        HaltReason[offset] = 'B';
-                        break;
-                    case 12:
-                        HaltReason[offset] = 'C';
-                        break;
-                    case 13:
-                        HaltReason[offset] = 'D';
-                        break;
-                    case 14:
-                        HaltReason[offset] = 'E';
-                        break;
-                    case 15:
-                        HaltReason[offset] = 'F';
-                        break;
-                }
-                y >>= 4;
-                offset--;
+                ThePageFaultHandler(eip, errorCode, address);
             }
-
-            #endregion
-
-            y = errorCode;
-            offset = 63;
-            #region Error Code
-
-            while (offset > 55)
+            else
             {
-                uint rem = y & 0xFu;
-                switch (rem)
+                BasicConsole.SetTextColour(BasicConsole.error_colour);
+                BasicConsole.WriteLine("Page fault exception!");
+
+                HaltReason = "Page fault exception. Address: 0x        , errorCode: 0x        , eip: 0x        ";
+
+                uint y = address;
+                int offset = 40;
+                #region Address
+                while (offset > 32)
                 {
-                    case 0:
-                        HaltReason[offset] = '0';
-                        break;
-                    case 1:
-                        HaltReason[offset] = '1';
-                        break;
-                    case 2:
-                        HaltReason[offset] = '2';
-                        break;
-                    case 3:
-                        HaltReason[offset] = '3';
-                        break;
-                    case 4:
-                        HaltReason[offset] = '4';
-                        break;
-                    case 5:
-                        HaltReason[offset] = '5';
-                        break;
-                    case 6:
-                        HaltReason[offset] = '6';
-                        break;
-                    case 7:
-                        HaltReason[offset] = '7';
-                        break;
-                    case 8:
-                        HaltReason[offset] = '8';
-                        break;
-                    case 9:
-                        HaltReason[offset] = '9';
-                        break;
-                    case 10:
-                        HaltReason[offset] = 'A';
-                        break;
-                    case 11:
-                        HaltReason[offset] = 'B';
-                        break;
-                    case 12:
-                        HaltReason[offset] = 'C';
-                        break;
-                    case 13:
-                        HaltReason[offset] = 'D';
-                        break;
-                    case 14:
-                        HaltReason[offset] = 'E';
-                        break;
-                    case 15:
-                        HaltReason[offset] = 'F';
-                        break;
+                    uint rem = y & 0xFu;
+                    switch (rem)
+                    {
+                        case 0:
+                            HaltReason[offset] = '0';
+                            break;
+                        case 1:
+                            HaltReason[offset] = '1';
+                            break;
+                        case 2:
+                            HaltReason[offset] = '2';
+                            break;
+                        case 3:
+                            HaltReason[offset] = '3';
+                            break;
+                        case 4:
+                            HaltReason[offset] = '4';
+                            break;
+                        case 5:
+                            HaltReason[offset] = '5';
+                            break;
+                        case 6:
+                            HaltReason[offset] = '6';
+                            break;
+                        case 7:
+                            HaltReason[offset] = '7';
+                            break;
+                        case 8:
+                            HaltReason[offset] = '8';
+                            break;
+                        case 9:
+                            HaltReason[offset] = '9';
+                            break;
+                        case 10:
+                            HaltReason[offset] = 'A';
+                            break;
+                        case 11:
+                            HaltReason[offset] = 'B';
+                            break;
+                        case 12:
+                            HaltReason[offset] = 'C';
+                            break;
+                        case 13:
+                            HaltReason[offset] = 'D';
+                            break;
+                        case 14:
+                            HaltReason[offset] = 'E';
+                            break;
+                        case 15:
+                            HaltReason[offset] = 'F';
+                            break;
+                    }
+                    y >>= 4;
+                    offset--;
                 }
-                y >>= 4;
-                offset--;
-            }
 
-            #endregion
+                #endregion
 
-            y = eip;
-            offset = 80;
-            #region EIP
+                y = errorCode;
+                offset = 63;
+                #region Error Code
 
-            while (offset > 72)
-            {
-                uint rem = y & 0xFu;
-                switch (rem)
+                while (offset > 55)
                 {
-                    case 0:
-                        HaltReason[offset] = '0';
-                        break;
-                    case 1:
-                        HaltReason[offset] = '1';
-                        break;
-                    case 2:
-                        HaltReason[offset] = '2';
-                        break;
-                    case 3:
-                        HaltReason[offset] = '3';
-                        break;
-                    case 4:
-                        HaltReason[offset] = '4';
-                        break;
-                    case 5:
-                        HaltReason[offset] = '5';
-                        break;
-                    case 6:
-                        HaltReason[offset] = '6';
-                        break;
-                    case 7:
-                        HaltReason[offset] = '7';
-                        break;
-                    case 8:
-                        HaltReason[offset] = '8';
-                        break;
-                    case 9:
-                        HaltReason[offset] = '9';
-                        break;
-                    case 10:
-                        HaltReason[offset] = 'A';
-                        break;
-                    case 11:
-                        HaltReason[offset] = 'B';
-                        break;
-                    case 12:
-                        HaltReason[offset] = 'C';
-                        break;
-                    case 13:
-                        HaltReason[offset] = 'D';
-                        break;
-                    case 14:
-                        HaltReason[offset] = 'E';
-                        break;
-                    case 15:
-                        HaltReason[offset] = 'F';
-                        break;
+                    uint rem = y & 0xFu;
+                    switch (rem)
+                    {
+                        case 0:
+                            HaltReason[offset] = '0';
+                            break;
+                        case 1:
+                            HaltReason[offset] = '1';
+                            break;
+                        case 2:
+                            HaltReason[offset] = '2';
+                            break;
+                        case 3:
+                            HaltReason[offset] = '3';
+                            break;
+                        case 4:
+                            HaltReason[offset] = '4';
+                            break;
+                        case 5:
+                            HaltReason[offset] = '5';
+                            break;
+                        case 6:
+                            HaltReason[offset] = '6';
+                            break;
+                        case 7:
+                            HaltReason[offset] = '7';
+                            break;
+                        case 8:
+                            HaltReason[offset] = '8';
+                            break;
+                        case 9:
+                            HaltReason[offset] = '9';
+                            break;
+                        case 10:
+                            HaltReason[offset] = 'A';
+                            break;
+                        case 11:
+                            HaltReason[offset] = 'B';
+                            break;
+                        case 12:
+                            HaltReason[offset] = 'C';
+                            break;
+                        case 13:
+                            HaltReason[offset] = 'D';
+                            break;
+                        case 14:
+                            HaltReason[offset] = 'E';
+                            break;
+                        case 15:
+                            HaltReason[offset] = 'F';
+                            break;
+                    }
+                    y >>= 4;
+                    offset--;
                 }
-                y >>= 4;
-                offset--;
+
+                #endregion
+
+                y = eip;
+                offset = 80;
+                #region EIP
+
+                while (offset > 72)
+                {
+                    uint rem = y & 0xFu;
+                    switch (rem)
+                    {
+                        case 0:
+                            HaltReason[offset] = '0';
+                            break;
+                        case 1:
+                            HaltReason[offset] = '1';
+                            break;
+                        case 2:
+                            HaltReason[offset] = '2';
+                            break;
+                        case 3:
+                            HaltReason[offset] = '3';
+                            break;
+                        case 4:
+                            HaltReason[offset] = '4';
+                            break;
+                        case 5:
+                            HaltReason[offset] = '5';
+                            break;
+                        case 6:
+                            HaltReason[offset] = '6';
+                            break;
+                        case 7:
+                            HaltReason[offset] = '7';
+                            break;
+                        case 8:
+                            HaltReason[offset] = '8';
+                            break;
+                        case 9:
+                            HaltReason[offset] = '9';
+                            break;
+                        case 10:
+                            HaltReason[offset] = 'A';
+                            break;
+                        case 11:
+                            HaltReason[offset] = 'B';
+                            break;
+                        case 12:
+                            HaltReason[offset] = 'C';
+                            break;
+                        case 13:
+                            HaltReason[offset] = 'D';
+                            break;
+                        case 14:
+                            HaltReason[offset] = 'E';
+                            break;
+                        case 15:
+                            HaltReason[offset] = 'F';
+                            break;
+                    }
+                    y >>= 4;
+                    offset--;
+                }
+
+                #endregion
+
+                BasicConsole.WriteLine(HaltReason);
+                BasicConsole.SetTextColour(BasicConsole.default_colour);
+
+                Throw(new FOS_System.Exceptions.PageFaultException(errorCode, address));
             }
-
-            #endregion
-
-            BasicConsole.WriteLine(HaltReason);
-            BasicConsole.SetTextColour(BasicConsole.default_colour);
-
-            Throw(new FOS_System.Exceptions.PageFaultException(errorCode, address));
         }
+
+        public static PageFaultHandler ThePageFaultHandler = null;
 
         /// <summary>
         /// Throws a Null Reference exception.

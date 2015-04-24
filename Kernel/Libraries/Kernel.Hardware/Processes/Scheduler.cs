@@ -56,6 +56,8 @@ namespace Kernel.Hardware.Processes
 
         public static void Init()
         {
+            //ExceptionMethods.ThePageFaultHandler = HandlePageFault;
+
             //Disable interrupts - critical section
 #if SCHEDULER_TRACE
             BasicConsole.WriteLine(" > Disabling interrupts...");
@@ -121,6 +123,95 @@ namespace Kernel.Hardware.Processes
         private static TSS* GetTSSPointer()
         {
             return null;
+        }
+
+        [Drivers.Compiler.Attributes.NoDebug]
+        [Drivers.Compiler.Attributes.NoGC]
+        public static void HandlePageFault(uint eip, uint errorCode, uint address)
+        {
+            Hardware.VirtMem.MemoryLayout memLayout = ProcessManager.CurrentProcess.TheMemoryLayout;
+            BasicConsole.WriteLine("Code pages:");
+            string TempDisplayString = "0x        ";
+            for (int i = 0; i < memLayout.CodePages.Keys.Count; i++)
+            {
+                uint vAddr = memLayout.CodePages.Keys[i];
+                WriteNumber(TempDisplayString, vAddr);
+                BasicConsole.WriteLine(TempDisplayString);
+            }
+            BasicConsole.WriteLine("Data pages:");
+            for (int i = 0; i < memLayout.DataPages.Keys.Count; i++)
+            {
+                uint vAddr = memLayout.DataPages.Keys[i];
+                WriteNumber(TempDisplayString, vAddr);
+                BasicConsole.WriteLine(TempDisplayString);
+            }
+            BasicConsole.DelayOutput(100);
+        }
+        [Drivers.Compiler.Attributes.NoDebug]
+        [Drivers.Compiler.Attributes.NoGC]
+        private static void WriteNumber(FOS_System.String str, uint val)
+        {
+            int offset = 9;
+            #region Address
+            while (offset > 1)
+            {
+                uint rem = val & 0xFu;
+                switch (rem)
+                {
+                    case 0:
+                        str[offset] = '0';
+                        break;
+                    case 1:
+                        str[offset] = '1';
+                        break;
+                    case 2:
+                        str[offset] = '2';
+                        break;
+                    case 3:
+                        str[offset] = '3';
+                        break;
+                    case 4:
+                        str[offset] = '4';
+                        break;
+                    case 5:
+                        str[offset] = '5';
+                        break;
+                    case 6:
+                        str[offset] = '6';
+                        break;
+                    case 7:
+                        str[offset] = '7';
+                        break;
+                    case 8:
+                        str[offset] = '8';
+                        break;
+                    case 9:
+                        str[offset] = '9';
+                        break;
+                    case 10:
+                        str[offset] = 'A';
+                        break;
+                    case 11:
+                        str[offset] = 'B';
+                        break;
+                    case 12:
+                        str[offset] = 'C';
+                        break;
+                    case 13:
+                        str[offset] = 'D';
+                        break;
+                    case 14:
+                        str[offset] = 'E';
+                        break;
+                    case 15:
+                        str[offset] = 'F';
+                        break;
+                }
+                val >>= 4;
+                offset--;
+            }
+
+            #endregion
         }
 
 #if SCHEDULER_TRACE

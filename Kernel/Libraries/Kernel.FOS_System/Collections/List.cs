@@ -115,7 +115,8 @@ namespace Kernel.FOS_System.Collections
             }
             //Insert the object at the next index in the internal array then increment
             //  next index 
-            _array[nextIndex++] = obj;
+            _array[nextIndex] = obj;
+            nextIndex++;
         }
         /// <summary>
         /// Removes the specified object from the list.
