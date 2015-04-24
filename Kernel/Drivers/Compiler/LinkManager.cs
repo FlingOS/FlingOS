@@ -120,6 +120,11 @@ SECTIONS {
    .data : AT(ADDR(.data) - 0xC0000000) {
           * (.data*);
    }
+
+   . = ALIGN(0x1000);
+   .bss : AT(ADDR(.bss) - 0xC0000000) {
+          * (.bss*);
+   }
 }
 ");
 

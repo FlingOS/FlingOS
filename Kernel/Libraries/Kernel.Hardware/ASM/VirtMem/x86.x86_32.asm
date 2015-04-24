@@ -101,15 +101,15 @@ pop dword ebp
 
 ret
 
-SECTION .data
+SECTION .bss
 
 GLOBAL Page_Directory:data
 GLOBAL Page_Table1:data
 GLOBAL Kernel_MemEnd:data
 
 align 4096
-Page_Directory: TIMES 1024 dd 0
-Page_Table1: TIMES 4194304 db 0
+Page_Directory: resb 4096
+Page_Table1: resb 4194304
 				 ; 4194304 = 1024 * 1024 * 4 = Page tables to cover 4GiB
 
 Kernel_MemEnd:
