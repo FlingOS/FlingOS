@@ -1992,9 +1992,8 @@ namespace Kernel.Hardware.USB.HCIs
             {
                 ;
                 // Note: I attempted to use Devices.Timer.Default.Wait in here BUT
-                //       that breaks the code! I suspect because it disables interrupts OR
-                //       because the USB interrupt screws up the timer. Either way round,
-                //       you cannot currently attempt to sleep in here so we must busy-wait.
+                //       that breaks the code! I suspect because the USB interrupt screws up the timer. 
+                //       Either way round, you cannot currently attempt to sleep in here so we must busy-wait.
             }
             
             // Restore the link of the old tail queue head to the idle queue head

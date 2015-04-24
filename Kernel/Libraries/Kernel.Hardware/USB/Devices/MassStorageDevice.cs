@@ -1150,7 +1150,7 @@ namespace Kernel.Hardware.USB.Devices
         /// <see cref="!:http://en.wikipedia.org/wiki/SCSI_Inquiry_Command"/>
         static void AnalyseInquiry(byte* inquiryData)
         {
-            //TODO: Store this data in the class for later
+            //TODO: Store this data (inc. #region stuff) in the class for later
 
             // cf. Jan Axelson, USB Mass Storage, page 140
             byte PeripheralDeviceType = Utils.GetField(inquiryData, 0, 0, 5); // byte, shift, len

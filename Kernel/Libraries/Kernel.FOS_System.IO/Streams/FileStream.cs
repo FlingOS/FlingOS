@@ -68,8 +68,7 @@ namespace Kernel.FOS_System.IO.Streams
         /// <returns>The new file stream.</returns>
         public static FileStream Create(File aFile)
         {
-            //TODO - More stream types must be added for the different types
-            //       of file system.
+            //TODO - Change this to a factory pattern
             if (aFile is IO.FAT.FATFile)
             {
                 return new FAT.FATFileStream((IO.FAT.FATFile)aFile, false);
