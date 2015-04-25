@@ -1362,7 +1362,10 @@ which should have been provided with the executable.");
                 Base listing = (Base)listings[i];
                 if(listing.IsDirectory)
                 {
-                    CopyDirectory((Directory)listing, dst + listing.Name + FileSystemManager.PathDelimiter);
+                    if (listing.Name != "." && listing.Name != "..")
+                    {
+                        CopyDirectory((Directory)listing, dst + listing.Name + FileSystemManager.PathDelimiter);
+                    }
                 }
                 else
                 {
