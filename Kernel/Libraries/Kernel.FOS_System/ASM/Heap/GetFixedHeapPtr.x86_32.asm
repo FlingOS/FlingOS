@@ -8,10 +8,6 @@ GLOBAL method_System_UInt32_RETEND_Kernel_FOS_System_Heap_DECLEND_GetFixedHeapSi
 GLOBAL KernelFixedHeap_Start:data
 GLOBAL KernelFixedHeap_End:data
 
-; 104 857 600 bytes = 16MiB (using proper powers of 2 not the powers of 10 crap...)
-KernelFixedHeap_Start: TIMES 104857600 db 0
-KernelFixedHeap_End:
-
 method_System_UInt32__RETEND_Kernel_FOS_System_Heap_DECLEND_GetFixedHeapPtr_NAMEEND___:
 
 push ebp
@@ -35,3 +31,8 @@ mov dword [ebp+8], KernelFixedHeap_End-KernelFixedHeap_Start
 pop ebp
 
 ret
+
+SECTION .bss
+; 104 857 600 bytes = 16MiB (using proper powers of 2 not the powers of 10 crap...)
+KernelFixedHeap_Start: resb 104857600
+KernelFixedHeap_End:

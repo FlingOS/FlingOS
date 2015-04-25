@@ -1,4 +1,5 @@
 ﻿using System;
+using Kernel.FOS_System;
 using Kernel.FOS_System.Collections;
 using Kernel.FOS_System.IO;
 using Kernel.Hardware.Processes;
@@ -103,6 +104,13 @@ namespace Kernel.Core.Tasks
                     StatusConsole.WriteLine();
                     StatusConsole.Write("USB Devices: ");
                     StatusConsole.WriteLine_AsDecimal(Hardware.USB.USBManager.Devices.Count);
+
+                    unsafe
+                    {
+                        StatusConsole.Write("Heap: ");
+                        StatusConsole.Write_AsDecimal((Heap.FBlock->used * Heap.FBlock->bsize * 100) / Heap.FBlock->size);
+                        StatusConsole.Write("%");
+                    }
                 }
                 catch
                 {

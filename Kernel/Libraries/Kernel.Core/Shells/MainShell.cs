@@ -261,11 +261,7 @@ namespace Kernel.Core.Shells
                                 {
                                     int diskNum = (int)FOS_System.Int32.Parse_DecimalUnsigned(opt1, 0);
 
-                                    console.Write("Are you sure device ");
-                                    console.Write_AsDecimal(diskNum);
-                                    console.Write(" is a disk device? (Y/N) : ");
-                                    FOS_System.String str = console.ReadLine().ToLower();
-                                    if (str == "y")
+                                    if (Hardware.DeviceManager.Devices[diskNum] is Hardware.Devices.DiskDevice)
                                     {
                                         console.Write("Checking disk ");
                                         console.Write_AsDecimal(diskNum);
@@ -275,7 +271,7 @@ namespace Kernel.Core.Shells
                                     }
                                     else
                                     {
-                                        console.WriteLine("Cancelled.");
+                                        console.WriteLine("Cancelled - Specified device is not a disk device.");
                                     }
                                 }
                                 else
@@ -300,14 +296,10 @@ namespace Kernel.Core.Shells
                                 {
                                     int diskNum = (int)FOS_System.Int32.Parse_DecimalUnsigned(opt1, 0);
 
-                                    console.Write("Are you sure device ");
-                                    console.Write_AsDecimal(diskNum);
-                                    console.Write(" is a disk device? (Y/N) : ");
-                                    FOS_System.String str = console.ReadLine().ToLower();
-                                    if (str == "y")
+                                    if (Hardware.DeviceManager.Devices[diskNum] is Hardware.Devices.DiskDevice)
                                     {
                                         console.Write("Are you sure you wish to continue? (Y/N) : ");
-                                        str = console.ReadLine().ToLower();
+                                        FOS_System.String str = console.ReadLine().ToLower();
                                         if (str == "y")
                                         {
                                             console.Write("Formatting disk ");
@@ -323,7 +315,7 @@ namespace Kernel.Core.Shells
                                     }
                                     else
                                     {
-                                        console.WriteLine("Cancelled.");
+                                        console.WriteLine("Cancelled - Specified device is not a disk device.");
                                     }
                                 }
                                 else
