@@ -304,18 +304,30 @@ namespace Kernel.Core
         /// </summary>
         public virtual void WriteLine()
         {
+            FOS_System.String line = null;
             //If we've reached the maximum number of lines
             //  to store in the buffer
             if (Buffer.Count == MaxBufferSize)
             {
-                //Remove the first line (oldest line - appears at the top
-                //  of the screen if the user scrolls all the way to the top) 
-                //  to create space.
+                // Remove the first line (oldest line - appears at the top
+                //   of the screen if the user scrolls all the way to the top) 
+                //   to create space.
+                line = (FOS_System.String)Buffer[0];
                 Buffer.RemoveAt(0);
-            }
 
-            //Add a new blank line at the bottom of the buffer
-            Buffer.Add(CreateBlankLine());
+                // And make it into a new blank line
+                for (int i = 0; i < line.length; i++)
+                {
+                    line[i] = ' ';
+                }
+            }
+            else
+            {
+                //Create a new blank line
+                line = CreateBlankLine();
+            }
+            // Add the blank line to the bottom of the buffer
+            Buffer.Add(line);
 
             //Update the current line / character
             CurrentLine = Buffer.Count - 1;

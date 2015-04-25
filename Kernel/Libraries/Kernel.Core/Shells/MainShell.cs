@@ -1543,10 +1543,16 @@ which should have been provided with the executable.");
                     console.WriteLine(fileName);
 
                     FOS_System.IO.Streams.FileStream fileStream = FOS_System.IO.Streams.FileStream.Create(aFile);
-                    byte[] xData = new byte[(int)(uint)aFile.Size];
-                    int actuallyRead = fileStream.Read(xData, 0, xData.Length);
-                    FOS_System.String xText = ByteConverter.GetASCIIStringFromASCII(xData, 0u, (uint)actuallyRead);
-                    console.WriteLine(xText);
+                    int offset = 0;
+                    byte[] xData = new byte[2048];
+                    while (offset < (int)(uint)aFile.Size)
+                    {
+                        int actuallyRead = fileStream.Read(xData, 0, xData.Length);
+                        FOS_System.String xText = ByteConverter.GetASCIIStringFromASCII(xData, 0u, (uint)actuallyRead);
+                        console.Write(xText);
+                        offset += actuallyRead;
+                    }
+                    console.WriteLine();
                 }
                 else
                 {

@@ -33,6 +33,6 @@ pop ebp
 ret
 
 SECTION .bss
-; 104 857 600 bytes = 16MiB (using proper powers of 2 not the powers of 10 crap...)
+; 104 857 600 bytes = 100MiB (using proper powers of 2 not the powers of 10 crap...)
 KernelFixedHeap_Start: resb 104857600
 KernelFixedHeap_End:
