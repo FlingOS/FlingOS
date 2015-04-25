@@ -1582,7 +1582,7 @@ namespace Kernel.Hardware.USB.HCIs
             eTransaction.inBuffer = null;
             eTransaction.inLength = 0u;
             // Create and initialise the SETUP queue transfer descriptor
-            eTransaction.qTD = CreateQTD_SETUP(null, toggle, tokenBytes, type, req, hiVal, loVal, index, length).qtd;
+            eTransaction.qTD = CreateQTD_SETUP(null, toggle, tokenBytes, type, req, hiVal, loVal, index, length);
             
             // If the number of existing transactions is greater than 0
             //  i.e. some transactions have already been added.
@@ -1591,11 +1591,11 @@ namespace Kernel.Hardware.USB.HCIs
                 // Get the previous (i.e. last) transaction then the underlying transaction from it
                 EHCITransaction eLastTransaction = (EHCITransaction)((USBTransaction)(transfer.transactions[transfer.transactions.Count - 1])).underlyingTz;
                 // Create a wrapper for the last transaction (qTD)
-                EHCI_qTD lastQTD = new EHCI_qTD(eLastTransaction.qTD);
+                EHCI_qTD lastQTD = eLastTransaction.qTD;
                 // Set the Next Transaction (qTD) Pointer on the previous qTD to point to the qTD
                 //  we just created. 
                 // Note: The NextqTDPointer must be the physical address of qTD data.
-                lastQTD.NextqTDPointer = (EHCI_qTD_Struct*)VirtMemManager.GetPhysicalAddress(eTransaction.qTD);
+                lastQTD.NextqTDPointer = (EHCI_qTD_Struct*)VirtMemManager.GetPhysicalAddress(eTransaction.qTD.qtd);
                 // Mark the previous qTD's Next Transaction Pointer as valid.
                 lastQTD.NextqTDPointerTerminate = false;
             }
@@ -1626,7 +1626,7 @@ namespace Kernel.Hardware.USB.HCIs
 #endif
 
             // Create and initialise the IN queue transfer descriptor
-            eTransaction.qTD = CreateQTD_IO(null, 1, toggle, length, length).qtd;
+            eTransaction.qTD = CreateQTD_IO(null, 1, toggle, length, length);
 
 #if EHCI_TRACE
             DBGMSG(((FOS_System.String)"IN Transaction : After CreateQTD : bufferPtr=&qTDBuffer=") + (uint)bufferPtr +
@@ -1648,11 +1648,11 @@ namespace Kernel.Hardware.USB.HCIs
                 // Get the previous (i.e. last) transaction then the underlying transaction from it
                 EHCITransaction eLastTransaction = (EHCITransaction)((USBTransaction)(transfer.transactions[transfer.transactions.Count - 1])).underlyingTz;
                 // Create a wrapper for the last transaction (qTD)
-                EHCI_qTD lastQTD = new EHCI_qTD(eLastTransaction.qTD);
+                EHCI_qTD lastQTD = eLastTransaction.qTD;
                 // Set the Next Transaction (qTD) Pointer on the previous qTD to point to the qTD
                 //  we just created. 
                 // Note: The NextqTDPointer must be the physical address of qTD data.
-                lastQTD.NextqTDPointer = (EHCI_qTD_Struct*)VirtMemManager.GetPhysicalAddress(eTransaction.qTD);
+                lastQTD.NextqTDPointer = (EHCI_qTD_Struct*)VirtMemManager.GetPhysicalAddress(eTransaction.qTD.qtd);
                 // Mark the previous qTD's Next Transaction Pointer as valid.
                 lastQTD.NextqTDPointerTerminate = false;
             }
@@ -1678,7 +1678,7 @@ namespace Kernel.Hardware.USB.HCIs
             // Create and initialise the OUT queue transfer descriptor
             EHCI_qTD theQTD = CreateQTD_IO(null, 0, toggle, length, length);
             // Set the qTD structure in the transaction description object
-            eTransaction.qTD = theQTD.qtd;
+            eTransaction.qTD = theQTD;
             // If there is an output buffer and it has > 0 length:
             if (buffer != null && length != 0)
             {
@@ -1686,7 +1686,7 @@ namespace Kernel.Hardware.USB.HCIs
                 // The transaction's output buffer has been allocated so it as aligned correctly
                 //  where as there is no guarantee the output buffer passed to us has been so we
                 //  must copy the data across.
-                Utilities.MemoryUtils.MemCpy_32(theQTD.Buffer0, (byte*)buffer, length);
+                Utilities.MemoryUtils.MemCpy_32(theQTD.Buffer0VirtAddr, (byte*)buffer, length);
             }
 
             // If the number of existing transactions is greater than 0
@@ -1696,11 +1696,11 @@ namespace Kernel.Hardware.USB.HCIs
                 // Get the previous (i.e. last) transaction then the underlying transaction from it
                 EHCITransaction eLastTransaction = (EHCITransaction)((USBTransaction)(transfer.transactions[transfer.transactions.Count - 1])).underlyingTz;
                 // Create a wrapper for the last transaction (qTD)
-                EHCI_qTD lastQTD = new EHCI_qTD(eLastTransaction.qTD);
+                EHCI_qTD lastQTD = eLastTransaction.qTD;
                 // Set the Next Transaction (qTD) Pointer on the previous qTD to point to the qTD
                 //  we just created. 
                 // Note: The NextqTDPointer must be the physical address of qTD data.
-                lastQTD.NextqTDPointer = (EHCI_qTD_Struct*)VirtMemManager.GetPhysicalAddress(eTransaction.qTD);
+                lastQTD.NextqTDPointer = (EHCI_qTD_Struct*)VirtMemManager.GetPhysicalAddress(eTransaction.qTD.qtd);
                 // Mark the previous qTD's Next Transaction Pointer as valid.
                 lastQTD.NextqTDPointerTerminate = false;
             }
@@ -1719,7 +1719,7 @@ namespace Kernel.Hardware.USB.HCIs
 
             // Get the last qTD of the transfer
             EHCITransaction lastTransaction = (EHCITransaction)((USBTransaction)transfer.transactions[transfer.transactions.Count - 1]).underlyingTz;
-            EHCI_qTD lastQTD = new EHCI_qTD(lastTransaction.qTD);
+            EHCI_qTD lastQTD = lastTransaction.qTD;
             // Enable the Interrupt on Complete. This allows us to detect the end of the entire transfer 
             //  when the USB Interrupt occurs.
             lastQTD.InterruptOnComplete = true;
@@ -1746,7 +1746,7 @@ namespace Kernel.Hardware.USB.HCIs
             // Init the Queue Head for this transfer
             InitQH((EHCI_QueueHead_Struct*)transfer.underlyingTransferData, 
                    (EHCI_QueueHead_Struct*)transfer.underlyingTransferData, 
-                   firstTransaction.qTD, 
+                   firstTransaction.qTD.qtd, 
                    false, 
                    transfer.device.address, 
                    transfer.endpoint, 
@@ -1801,7 +1801,7 @@ namespace Kernel.Hardware.USB.HCIs
                         // Get the transaction to check
                         EHCITransaction transaction = (EHCITransaction)((USBTransaction)transfer.transactions[k]).underlyingTz;
                         // Get the transaction's status
-                        byte status = new EHCI_qTD(transaction.qTD).Status;
+                        byte status = transaction.qTD.Status;
                         // If the status == 0, it indicates success
                         // If bit 0 of the status is set and the other buts are 0, 
                         //  then since this must be a High Speed endpoint, it is just the
@@ -1841,7 +1841,7 @@ namespace Kernel.Hardware.USB.HCIs
                 // Get the current transaction
                 EHCITransaction transaction = (EHCITransaction)((USBTransaction)transfer.transactions[k]).underlyingTz;
                 // Create a wrapper for the underlying qTD of the transaction
-                EHCI_qTD theQTD = new EHCI_qTD(transaction.qTD);
+                EHCI_qTD theQTD = transaction.qTD;
 
                 // If the transaction has an input buffer, we must copy the input data from the qTD
                 //  to the input buffer. 
@@ -1856,7 +1856,7 @@ namespace Kernel.Hardware.USB.HCIs
                                                ", inLength=" + transaction.inLength + ", Data to copy: ");
 #endif
                     // Copy the memory
-                    Utilities.MemoryUtils.MemCpy_32((byte*)transaction.inBuffer, theQTD.Buffer0, transaction.inLength);
+                    Utilities.MemoryUtils.MemCpy_32((byte*)transaction.inBuffer, theQTD.Buffer0VirtAddr, transaction.inLength);
 
 #if EHCI_TRACE
                     for (int i = 0; i < transaction.inLength; i++)
@@ -1870,7 +1870,7 @@ namespace Kernel.Hardware.USB.HCIs
 #endif
                 }
                 // Free the qTD buffer(s)
-                FOS_System.Heap.Free(theQTD.Buffer0);
+                FOS_System.Heap.Free(theQTD.Buffer0VirtAddr);
                 // Free the qTD
                 theQTD.Free();
             }
@@ -2140,6 +2140,7 @@ namespace Kernel.Hardware.USB.HCIs
             td.Buffer0 = (byte*)VirtMemManager.GetPhysicalAddress(result);
             td.CurrentPage = 0;
             td.CurrentOffset = 0;
+            td.Buffer0VirtAddr = result;
             return result;
         }
         
@@ -2222,7 +2223,7 @@ namespace Kernel.Hardware.USB.HCIs
         /// <summary>
         /// A pointer to the actual qTD of the transaction.
         /// </summary>
-        public EHCI_qTD_Struct* qTD;
+        public EHCI_qTD qTD;
         /// <summary>
         /// A pointer to the input buffer.
         /// </summary>
@@ -2351,6 +2352,8 @@ namespace Kernel.Hardware.USB.HCIs
         /// The qTD data/memory structure that can be passed to the HCI.
         /// </summary>
         public EHCI_qTD_Struct* qtd;
+
+        public byte* Buffer0VirtAddr;
 
         /// <summary>
         /// Pointer to the next qTD in the linked list.

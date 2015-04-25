@@ -65,7 +65,7 @@ namespace Kernel.Hardware.Processes
             CreateThread(MainMethod);
         }
 
-        public virtual void CreateThread(ThreadStartMethod MainMethod)
+        public virtual Thread CreateThread(ThreadStartMethod MainMethod)
         {
 #if PROCESS_TRACE
             BasicConsole.WriteLine("Creating thread...");
@@ -76,25 +76,27 @@ namespace Kernel.Hardware.Processes
             //    Scheduler.Disable();
             //}
 
-            Thread mainThread = new Thread(MainMethod, ThreadIdGenerator++, UserMode);
+            Thread newThread = new Thread(MainMethod, ThreadIdGenerator++, UserMode);
 #if PROCESS_TRACE
             BasicConsole.WriteLine("Adding data page...");
 #endif
             // Add the page to the processes memory layout
             TheMemoryLayout.AddDataPage(
-                (uint)VirtMemManager.GetPhysicalAddress(mainThread.State->ThreadStackTop - 4092),
-                (uint)mainThread.State->ThreadStackTop - 4092);
+                (uint)VirtMemManager.GetPhysicalAddress(newThread.State->ThreadStackTop - 4092),
+                (uint)newThread.State->ThreadStackTop - 4092);
             
 #if PROCESS_TRACE
             BasicConsole.WriteLine("Adding thread...");
 #endif
 
-            Threads.Add(mainThread);
+            Threads.Add(newThread);
 
             //if (reenable)
             //{
             //    Scheduler.Enable();
             //}
+
+            return newThread;
         }
 
         public virtual void LoadMemLayout()
