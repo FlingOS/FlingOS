@@ -37,7 +37,7 @@ namespace Drivers.Compiler.Attributes
     /// Note: There should only ever be one of these used!
     /// </summary>
     [AttributeUsage(AttributeTargets.Method, AllowMultiple=false, Inherited=false)]
-    public class KernelMainMethodAttribute : Attribute
+    public class MainMethodAttribute : Attribute
     {
     }
 }
