@@ -47,13 +47,13 @@
     <Compile Include="TestClass.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\..\Libraries\Kernel.FOS_System\Kernel.FOS_System.csproj">
+      <Project>{66c9b617-b6d9-4006-a7f9-e1df62ed30ad}</Project>
+      <Name>Kernel.FOS_System</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\Compiler\Drivers.Compiler.csproj">
       <Project>{1fb0e622-d2c6-4a5c-b5b6-d2bb5e502af1}</Project>
       <Name>Drivers.Compiler</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\KernelABI\KernelABI.csproj">
-      <Project>{cdabf909-4548-46ea-9870-a5f79c890962}</Project>
-      <Name>KernelABI</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
@@ -69,7 +69,7 @@
   <Target Name="BeforeBuild">
   </Target>
   <Target Name="AfterBuild">
-    <BuildTask Condition="'$(Configuration)' == 'Debug'" LibraryPath="$(TargetPath)" TargetArchitecture="$(PlatformTarget)" OutputPath="$(TargetDir)" ToolsPath="$(SolutionDir)Kernel\Drivers\Compiler\Tools" DebugBuild="True" />
-    <BuildTask Condition="'$(Configuration)' == 'Release'" LibraryPath="$(TargetPath)" TargetArchitecture="$(PlatformTarget)" OutputPath="$(TargetDir)" ToolsPath="$(SolutionDir)Kernel\Drivers\Compiler\Tools" DebugBuild="False" />
+    <BuildTask Condition="'$(Configuration)' == 'Debug'" LibraryPath="$(TargetPath)" TargetArchitecture="$(PlatformTarget)" OutputPath="$(TargetDir)" ToolsPath="$(SolutionDir)Kernel\Drivers\Compiler\Tools" DebugBuild="True" ISOLink="False" />
+    <BuildTask Condition="'$(Configuration)' == 'Release'" LibraryPath="$(TargetPath)" TargetArchitecture="$(PlatformTarget)" OutputPath="$(TargetDir)" ToolsPath="$(SolutionDir)Kernel\Drivers\Compiler\Tools" DebugBuild="False" ISOLink="False" />
   </Target>
 </Project>

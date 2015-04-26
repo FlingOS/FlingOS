@@ -63,6 +63,12 @@ namespace Drivers.Compiler.MSBuildTask
             get;
             set;
         }
+        [Required]
+        public bool ISOLink
+        {
+            get;
+            set;
+        }
         
         public override bool Execute()
         {
@@ -71,6 +77,7 @@ namespace Drivers.Compiler.MSBuildTask
             Options.ToolsPath = ToolsPath;
 
             Options.BuildMode = DebugBuild ? Options.BuildModes.Debug : Options.BuildModes.Release;
+            Options.LinkMode = ISOLink ? Options.LinkModes.ISO : Options.LinkModes.ELF;
             Options.TargetArchitecture = TargetArchitecture;
             
             return App.CompilerProcess.Execute(

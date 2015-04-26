@@ -45,6 +45,12 @@ namespace Drivers.Compiler
             Release
         }
 
+        public enum LinkModes
+        {
+            ISO,
+            ELF
+        }
+
         static Options()
         {
             AddressSizeInBytes = 4;
@@ -67,6 +73,11 @@ namespace Drivers.Compiler
         }
 
         public static BuildModes BuildMode
+        {
+            get;
+            set;
+        }
+        public static LinkModes LinkMode
         {
             get;
             set;

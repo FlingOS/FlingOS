@@ -53,6 +53,7 @@ namespace Drivers.Compiler.App
                 Options.ToolsPath = args[2];
 
                 Options.BuildMode = (args[3].ToLower() == "debug" ? Options.BuildModes.Debug : Options.BuildModes.Release);
+                Options.LinkMode = (args[5].ToLower() == "iso" ? Options.LinkModes.ISO : Options.LinkModes.ELF);
                 Options.TargetArchitecture = args[4];
 
                 result = (int)Execute(
@@ -69,7 +70,7 @@ namespace Drivers.Compiler.App
         }
         static bool ValidateArguments(string[] args)
         {
-            if (args.Length != 5)
+            if (args.Length != 6)
             {
                 Console.ForegroundColor = ConsoleColor.Red;
                 Console.WriteLine("Expected 5 arguments:");
@@ -78,6 +79,7 @@ namespace Drivers.Compiler.App
 2 : Tools Path - The path to the tools directory.
 3 : Build Mode - Debug or Release.
 4 : Target Architecture - e.g. x86, x64
+5 : Link Mode - ISO or ELF.
 ");
                 Console.ForegroundColor = ConsoleColor.Gray;
 
@@ -88,6 +90,15 @@ namespace Drivers.Compiler.App
             {
                 Console.ForegroundColor = ConsoleColor.Red;
                 Console.WriteLine("Build Mode argument invalid! Should be \"Debug\" or \"Release\".");
+                Console.ForegroundColor = ConsoleColor.Gray;
+
+                return false;
+            }
+
+            if (args[5].ToLower() != "iso" && args[5].ToLower() != "elf")
+            {
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.WriteLine("Link Mode argument invalid! Should be \"ISO\" or \"ELF\".");
                 Console.ForegroundColor = ConsoleColor.Gray;
 
                 return false;
@@ -116,6 +127,7 @@ namespace Drivers.Compiler.App
             Logger.LogMessage("", 0, "Tools path               = \"" + Options.ToolsPath + "\"");
             Logger.LogMessage("", 0, "Target architecture      = \"" + Options.TargetArchitecture + "\"");
             Logger.LogMessage("", 0, "Build mode               = "   + Enum.GetName(typeof(Options.BuildModes), Options.BuildMode));
+            Logger.LogMessage("", 0, "Link mode               = " + Enum.GetName(typeof(Options.LinkModes), Options.LinkMode));
 
             // IL Library       - In a list of libraries returned to the higher-level control app (this app)
             //                    from Library Loader

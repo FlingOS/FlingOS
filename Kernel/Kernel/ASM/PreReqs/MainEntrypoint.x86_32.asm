@@ -13,8 +13,6 @@ mov dword ecx, 0x0
 ; BEGIN - Main Entrypoint
 call __MAIN_ENTRYPOINT__ ; Call our main entry point 
 
-GLOBAL GetEIP:function
-
 EXTERN %KERNEL_CALL_STATIC_CONSTRUCTORS_METHOD%
 EXTERN %KERNEL_MAIN_METHOD%
 EXTERN method_System_Void_Kernel_PreReqs_Reset__
@@ -30,13 +28,3 @@ __MAIN_ENTRYPOINT__:
 	jmp method_System_Void_Kernel_PreReqs_Reset__ ; For now this is our intended behaviour
 
 ; END - Main Entrypoint
-
-; BEGIN - GetEIP
-
-; NOTE: Leaves a "dirty stack" on purpose. The aim of this method is for EIP
-;		to be on top of the stack after it returns.
-GetEIP:
-	push dword [ESP]
-ret
-
-; END  - GetEIP

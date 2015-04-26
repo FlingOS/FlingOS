@@ -60,7 +60,7 @@
     <Compile Include="Attributes\HaltMethodAttribute.cs" />
     <Compile Include="Attributes\HandleExceptionMethodAttribute.cs" />
     <Compile Include="Attributes\IncrementRefCountMethodAttribute.cs" />
-    <Compile Include="Attributes\KernelMainMethodAttribute.cs" />
+    <Compile Include="Attributes\MainMethodAttribute.cs" />
     <Compile Include="Attributes\MethodInfoStructAttribute.cs" />
     <Compile Include="Attributes\NewArrMethodAttribute.cs" />
     <Compile Include="Attributes\NewObjMethodAttribute.cs" />

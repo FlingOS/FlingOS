@@ -117,7 +117,10 @@ namespace Drivers.Compiler.ASM
                 ASMText = File.ReadAllText(ASMPlugPath);
 
                 ASMText = ASMText.Replace("%KERNEL_CALL_STATIC_CONSTRUCTORS_METHOD%", IL.ILLibrary.SpecialMethods[typeof(Attributes.CallStaticConstructorsMethodAttribute)].First().ID);
-                ASMText = ASMText.Replace("%KERNEL_MAIN_METHOD%", IL.ILLibrary.SpecialMethods[typeof(Attributes.KernelMainMethodAttribute)].First().ID);
+                if (IL.ILLibrary.SpecialMethods.ContainsKey(typeof(Attributes.MainMethodAttribute)))
+                {
+                    ASMText = ASMText.Replace("%KERNEL_MAIN_METHOD%", IL.ILLibrary.SpecialMethods[typeof(Attributes.MainMethodAttribute)].First().ID);
+                }
             }
             else
             {

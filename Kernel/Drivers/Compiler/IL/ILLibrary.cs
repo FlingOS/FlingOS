@@ -157,22 +157,25 @@ namespace Drivers.Compiler.IL
             throw new NullReferenceException("Field \"" + FieldName + "\" not found in type \"" + aTypeInfo.ToString() + "\".");
         }
 
-        public ILBlock GetILBlock(Types.MethodInfo theInfo)
+        public ILBlock GetILBlock(Types.MethodInfo theInfo, bool checkDepLibs = true)
         {
             if (ILBlocks.ContainsKey(theInfo))
             {
                 return ILBlocks[theInfo];
             }
 
-            foreach (ILLibrary depLib in Dependencies)
+            if (checkDepLibs)
             {
-                ILBlock result = depLib.GetILBlock(theInfo);
-                if (result != null)
+                foreach (ILLibrary depLib in Dependencies)
                 {
-                    return result;
+                    ILBlock result = depLib.GetILBlock(theInfo);
+                    if (result != null)
+                    {
+                        return result;
+                    }
                 }
             }
-
+            
             return null;
         }
 

@@ -879,7 +879,12 @@ namespace Kernel
             FOS_System.Exception ex = new FOS_System.Exceptions.IndexOutOfRangeException();
             ex.InstructionAddress = *((uint*)BasePointer + 1);
             Throw(ex);
-        }        
+        }
+
+        [Drivers.Compiler.Attributes.PluggedMethod(ASMFilePath=@"ASM\GetEIP")]
+        private static void GetEIP()
+        {
+        }
     }
 
     [System.Runtime.InteropServices.StructLayout(System.Runtime.InteropServices.LayoutKind.Sequential, Pack = 1)]

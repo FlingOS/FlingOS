@@ -69,7 +69,7 @@ namespace Kernel
         /// Main kernel entry point
         /// </summary>
         [Compiler.KernelMainMethod]
-        [Drivers.Compiler.Attributes.KernelMainMethod]
+        [Drivers.Compiler.Attributes.MainMethod]
         [Compiler.NoGC]
         [Drivers.Compiler.Attributes.NoGC]
         [Compiler.NoDebug]
