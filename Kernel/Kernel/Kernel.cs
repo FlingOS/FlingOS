@@ -6,7 +6,7 @@
 //
 //    This program is free software: you can redistribute it and/or modify
 //    it under the terms of the GNU General Public License as published by
-//    the Free Software Foundation, either version 3 of the License, or
+//    the Free Software Foundation, either version 2 of the License, or
 //    (at your option) any later version.
 //
 //    This program is distributed in the hope that it will be useful,
@@ -79,7 +79,7 @@ namespace Kernel
             BasicConsole.WriteLine("Fling OS  Copyright (C) 2015  Edward Nutting");
             BasicConsole.WriteLine("This program comes with ABSOLUTELY NO WARRANTY;.");
             BasicConsole.WriteLine("This is free software, and you are welcome to redistribute it");
-            BasicConsole.WriteLine("under certain conditions; See GPL V3 for details, a copy of");
+            BasicConsole.WriteLine("under certain conditions; See GPL V2 for details, a copy of");
             BasicConsole.WriteLine("which should have been provided with the executable.");
         
             BasicConsole.WriteLine("Fling OS Running...");

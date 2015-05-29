@@ -6,7 +6,7 @@
 //
 //    This program is free software: you can redistribute it and/or modify
 //    it under the terms of the GNU General Public License as published by
-//    the Free Software Foundation, either version 3 of the License, or
+//    the Free Software Foundation, either version 2 of the License, or
 //    (at your option) any later version.
 //
 //    This program is distributed in the hope that it will be useful,
@@ -1017,7 +1017,7 @@ namespace Kernel.Core.Shells
         private void ShowLicense(FOS_System.String option = null)
         {
 
-            string LicenseConditions = "This program is distributed under GPL V3; See GPL V3 License for details.";
+            string LicenseConditions = "This program is distributed under GPL V2; See GPL V2 License for details.";
             
             string LicenseCommandUnrecognized = @"Unrecognized option passed, to see the license, enter 'show'.
 To see license warnings, enter 'show w'.
@@ -1033,7 +1033,7 @@ GNU General Public License for more details";
                 console.WriteLine(@"Fling OS  Copyright (C) 2015  Edward Nutting
 This program comes with ABSOLUTELY NO WARRANTY.
 This is free software, and you are welcome to redistribute it
-under certain conditions; See GPL V3 for details, a copy of
+under certain conditions; See GPL V2 for details, a copy of
 which should have been provided with the executable.");
             }
             else
