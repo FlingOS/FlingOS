@@ -1103,12 +1103,12 @@ namespace Kernel.FOS_System.IO.FAT
                 if (nameParts.Count > 1)
                 {
                     result.Add(((FOS_System.String)nameParts[0]).Substring(0, 8).PadRight(8, ' '));
-                    result.Add(((FOS_System.String)nameParts[1]).Substring(0, 3).PadLeft(3, ' '));
+                    result.Add(((FOS_System.String)nameParts[1]).Substring(0, 3).PadRight(3, ' '));
                 }
                 else
                 {
                     result.Add(longName.Substring(0, 8).PadRight(8, ' '));
-                    result.Add(((FOS_System.String)"").PadLeft(3, ' '));
+                    result.Add(((FOS_System.String)"").PadRight(3, ' '));
                 }
                 return result;
             }

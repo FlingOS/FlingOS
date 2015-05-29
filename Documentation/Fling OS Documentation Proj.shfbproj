@@ -27,7 +27,7 @@
     <DocumentationSources>
       <DocumentationSource sourceFile="..\FlingOS.sln" xmlns="" />
     </DocumentationSources>
-    <MissingTags>Summary, Parameter, Returns, AutoDocumentCtors, Namespace, TypeParameter, AutoDocumentDispose</MissingTags>
+    <MissingTags>Summary, Parameter, Returns, Value, Remarks, AutoDocumentCtors, Namespace, TypeParameter, AutoDocumentDispose</MissingTags>
     <VisibleItems>Attributes, ExplicitInterfaceImplementations, InheritedMembers, Internals, Privates, PrivateFields, Protected, SealedProtected</VisibleItems>
     <PlugInConfigurations>
     </PlugInConfigurations>

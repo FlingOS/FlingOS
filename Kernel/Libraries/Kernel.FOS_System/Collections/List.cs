@@ -382,6 +382,13 @@ namespace Kernel.FOS_System.Collections
             {
                 return _array.Length;
             }
+            set
+            {
+                if (value > _array.Length)
+                {
+                    ExpandCapacity(value - _array.Length);
+                }
+            }
         }
 
         /// <summary>

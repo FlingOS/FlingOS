@@ -31,44 +31,70 @@ namespace Kernel
     /// <summary>
     /// A basic console implementation - uses the BIOS's fixed text-video memory to output ASCII text.
     /// </summary>
+    /// <remarks>
+    /// This class is a very basic console. It uses the default, x86 setup for
+    /// VGA text-mode graphics and simply outputs text to graphics memory.
+    /// When a new line is required, it simply shifts the graphics memory up
+    /// one line and discards any video memory shifted off the top of the screen.
+    /// Scrolling back down is thus not possible as the information is lost.
+
+    /// For a better console implementation see Console and AdvancedConsole classes in
+    /// Kernel.Core library (/namespace)
+
+    /// Some of the code used appears inefficient or needlessly expanded. That's 
+    /// because it is. Deliberately so. The reason is that the code used uses the 
+    /// minimum of IL ops and the simpler IL ops making the initial compiler work
+    /// much smaller and simpler to do. It also means that if the compiler breaks
+    /// in any way, the BasicConsole class is likely to still work thus making it
+    /// the most useful debugging tool.
+
+    /// All of this code has been thoroughly used and abused, which means it is 
+    /// well tested i.e. reliable and robust. Do not alter the code in any way!
+    /// Really, this code does not need modifying and if you do so, you're more 
+    /// likely to break it than fix or improve it.
+
+    /// This code is specifically designed for 80x25 VGA text-mode. In theory you 
+    /// could change the "rows" and "cols" values, but this would actually break 
+    /// the code because some of it has values of 80, 25, 160 and 50 hard-coded
+    /// which you would need to change. I am reluctant to go changing these hard
+    /// coded values for the reasons given in prior notes.
+    /// </remarks>
     public static unsafe class BasicConsole
     {
-        //Note: This class is a very basic console. It uses the default, x86 setup for
-        //      VGA text-mode graphics and simply outputs text to graphics memory.
-        //      When a new line is required, it simply shifts the graphics memory up
-        //      one line and discards any video memory shifted off the top of the screen.
-        //      Scrolling back down is thus not possible as the information is lost.
-        
-        //For a better console implementation see Console and AdvancedConsole classes in
-        //  Kernel.Core library (/namespace)
+        /// <summary>
+        /// Static constructor for the Basic Console.
+        /// </summary>
+        /// <remarks>
+        /// This constructor should, assuming the compiler hasn't changed much, be one of the first, if not
+        /// the first, static constructor to be called. Almost all other static constructors rely on the
+        /// Basic Console being enable, one way or another.
+        /// </remarks>
+        static BasicConsole()
+        {
+        }
 
-        //Note: Some of the code used appears inefficient or needlessly expanded. That's 
-        //      because it is. Deliberately so. The reason is that the code used uses the 
-        //      minimum of IL ops and the simpler IL ops making the initial compiler work
-        //      much smaller and simpler to do. It also means that if the compiler breaks
-        //      in any way, the BasicConsole class is likely to still work thus making it
-        //      the most useful debugging tool.
-
-        //Note: All of this code has been thoroughly used and abused, which means it is 
-        //      well tested i.e. reliable and robust. Do not alter the code in any way!
-        //      Really, this code does not need modifying and if you do so, you're more 
-        //      likely to break it than fix or improve it.
-
-        //Note: This code is specifically designed for 80x25 VGA text-mode. In theory you 
-        //      could change the "rows" and "cols" values, but this would actually break 
-        //      the code because some of it has values of 80, 25, 160 and 50 hard-coded
-        //      which you would need to change. I am reluctant to go changing these hard
-        //      coded values for the reasons given in prior notes.
-
+        /// <summary>
+        /// Used to indicate whether the Basic Console has been initialised or not.
+        /// </summary>
+        /// <remarks>
+        /// Useful for when fixing low-level errors in compiler which result in incorrect execution order
+        /// and thus use of Basic Console before it is ready.
+        /// </remarks>
         public static bool Initialised = false;
 
         /// <summary>
         /// The offset from the start of the memory (in characters) to write the next character to.
         /// </summary>
+        /// <remarks>
+        /// This would cause an issue if you changed the line length after already having printed text
+        /// because you'd want to leave the next print location at the start of a new line.
+        /// </remarks>
         static int offset = 0;
         /// <summary>
         /// The offset from the start of the memory (in characters) to write the next character to.
         /// </summary>
+        /// <remarks>
+        /// </remarks>
         public static int Offset
         {
             get
