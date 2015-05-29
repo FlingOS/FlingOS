@@ -19,7 +19,7 @@
                     provided after the relevant overview.
                   </para>
                   <para>
-                    This article also covers abstract disk devices (as Fling OS describes them) such as partitions. While it is not
+                    This article also covers abstract disk devices (as FlingOS describes them) such as partitions. While it is not
                     apparently obvious that a data storage system is a disk device, upon inspection it is clear why treating a
                     partition as a disk device is not only useful, but also creates a clean code structure. This is discussed more
                     further on.
@@ -113,20 +113,20 @@
                   <list class="ordered">
                     <listItem>
                       <para>
-                        Hard disks (ATA, IDE, SATA, RAID) - Fling OS, and consequently this documentation, currently only supports ATA.
+                        Hard disks (ATA, IDE, SATA, RAID) - FlingOS, and consequently this documentation, currently only supports ATA.
                       </para>
                     </listItem>
                     <listItem>
                       <para>
                         Partitions (MBR-, EBR-, GPT-based) - These are an abstract form of disc device, all of which are supported
-                                                    by Fling OS and are discussed later.
+                                                    by FlingOS and are discussed later.
                       </para>
                     </listItem>
                     <listItem>
                       <para>
                         USB Mass Storage Devices - For example USB Flash Memory Sticks, USB External Hard Drives. These are 
                                           discussed in significantly greater detail in the USB reference articles.
-                                          Fling OS currently supports only USB 2.0 MSDs that support SCSI Over USB 
+                                          FlingOS currently supports only USB 2.0 MSDs that support SCSI Over USB 
                                           commands.
                       </para>
                     </listItem>
@@ -181,7 +181,7 @@
                     and recognise. USB Mass Storage Devices (USB MSDs) have become the most common way of using portable storage
                     to the point where booting from a USB stick is now the easiest way to test-boot a Hobby OS. As a result,
                     supporting reading and writing USB MSDs is tremendously helpful. However, a USB stack (even just for one version
-                    and only MSD type devices) is a complex and difficult thing to write. Fling OS currently only supports USB 2.0
+                    and only MSD type devices) is a complex and difficult thing to write. FlingOS currently only supports USB 2.0
                     MSDs (excl. 1.0 or 1.1). It is recommended that a hobby developer get ATA (much easier!) and a file system driver 
                     working before setting up USB so that they can be sure USB is their issue when testing and not the file system.
                   </para>
@@ -196,7 +196,7 @@
                     top of the device driver you might put a file system driver or application level software.
                   </para>
                   <para>
-                    Developing and testing all this for Fling OS took a month alone and a weekend or two of very long hours. If you
+                    Developing and testing all this for FlingOS took a month alone and a weekend or two of very long hours. If you
                     are going to attempt USB support you will need a good level of commitment. However, the rewards are well worth it.
                   </para>
               </content>

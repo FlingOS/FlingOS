@@ -33,7 +33,7 @@
             <para>May not want to build the OS after every C# compile since compiling the OS could take a long time</para>
           </listItem>
           <listItem>
-            <para>Creating a separate, small, C# application to manage the kernel compiler will allow an easier shift to running the compiler on Fling OS itself in future.</para>
+            <para>Creating a separate, small, C# application to manage the kernel compiler will allow an easier shift to running the compiler on FlingOS itself in future.</para>
           </listItem>
           <listItem>
             <para>Despite this adding an extra step to the build process, it can be automatically started using Visual Studio’s Post Build events.</para>
@@ -116,7 +116,7 @@
         <para>
           The compiler’s execution environment contains many of the usual things but the main one 
           specific to this application is the list of assemblies to be built into the kernel / OS. 
-          The list of assemblies includes all the Fling OS standard libraries along with the actual 
+          The list of assemblies includes all the FlingOS standard libraries along with the actual 
           OS code itself such as built-in drivers etc.
         </para>
         <para>
@@ -158,7 +158,7 @@
         <para>
           The compiler will always try and include the standard C# libraries (since Microsoft’s well document NoStdLib option doesn’t seem to 
           work with newer version of the .Net Framework / CSC.EXE). So all non-standard C# libraries / assemblies should be loaded and any standard 
-          types ignored except for those explicitly added by the IL Compiler (e.g. value types such as Int32). Fling OS will create its own standard 
+          types ignored except for those explicitly added by the IL Compiler (e.g. value types such as Int32). FlingOS will create its own standard 
           libraries which follow similar names to Microsoft’s but will be preceded by “FOS”. When the kernel compiler comes across a type, it should 
           check whether the type is in the standard libraries and if it is, ignore it.
         </para>
