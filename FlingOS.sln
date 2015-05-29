@@ -113,6 +113,8 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{32E1F38F-0F50-411D-B32C-B9D99DFBB238}"
 	ProjectSection(SolutionItems) = preProject
 		LICENSE.txt = LICENSE.txt
+		MissingTags.txt = MissingTags.txt
+		MissingTags.xlsx = MissingTags.xlsx
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MissingTagProcessor", "Tools\MissingTagProcessor\MissingTagProcessor.csproj", "{814EB441-89A3-4DF5-B99A-43639A690AF7}"

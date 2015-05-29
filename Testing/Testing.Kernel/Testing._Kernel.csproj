@@ -79,6 +79,11 @@
       <Name>Kernel.FOS_System</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\Kernel\Kernel\Kernel.licenseheader">
+      <Link>Kernel.licenseheader</Link>
+    </None>
+  </ItemGroup>
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">
       <ItemGroup>
