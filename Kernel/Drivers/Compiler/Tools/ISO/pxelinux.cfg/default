@@ -1,0 +1,2 @@
+﻿label FlingOS
+	default mboot.c32 Kernel.bin
