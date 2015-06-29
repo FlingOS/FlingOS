@@ -101,6 +101,23 @@ mov cr0, ecx
 ; 5. Load a continuation label's virtual address
 ;		Use lea to load virtual address of a label immediately following the instruction
 
+	mov dword eax, 0x3F
+	mov byte [0xB8001], al
+	mov byte [0xB8003], al
+	mov byte [0xB8005], al
+	mov byte [0xB8007], al
+	mov byte [0xB8009], al
+	mov byte [0xB800B], al
+	mov byte [0xB800D], al
+	mov byte [0xB800F], al
+	mov byte [0xB8011], al
+	mov byte [0xB8013], al
+	mov byte [0xB8015], al
+	mov byte [0xB8017], al	
+	mov ecx, 0x0F000000
+	.LoopDisp1:
+	loop .LoopDisp1
+
 lea ecx, [StartInHigherHalf]
 
 ; 6. Jump to the virtual address
@@ -110,6 +127,24 @@ jmp ecx							; NOTE: Must be absolute jump!
  
 StartInHigherHalf:
 nop
+
+
+	mov dword eax, 0x4F
+	mov byte [0xB8001], al
+	mov byte [0xB8003], al
+	mov byte [0xB8005], al
+	mov byte [0xB8007], al
+	mov byte [0xB8009], al
+	mov byte [0xB800B], al
+	mov byte [0xB800D], al
+	mov byte [0xB800F], al
+	mov byte [0xB8011], al
+	mov byte [0xB8013], al
+	mov byte [0xB8015], al
+	mov byte [0xB8017], al	
+	mov ecx, 0x0F000000
+	.LoopDisp2:
+	loop .LoopDisp2
 
 ; We are now working in the higher-half virtual address space :)
 

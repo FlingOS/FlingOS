@@ -624,3 +624,21 @@ pic_remap:
 
 	sti					; Enable interrupts
 	nop					; Required - STI takes effect after the next instruction runs
+
+	
+	mov dword eax, 0x9F
+	mov byte [0xB8001], al
+	mov byte [0xB8003], al
+	mov byte [0xB8005], al
+	mov byte [0xB8007], al
+	mov byte [0xB8009], al
+	mov byte [0xB800B], al
+	mov byte [0xB800D], al
+	mov byte [0xB800F], al
+	mov byte [0xB8011], al
+	mov byte [0xB8013], al
+	mov byte [0xB8015], al
+	mov byte [0xB8017], al	
+	mov ecx, 0x0F000000
+	.Loop1:
+	loop .Loop1

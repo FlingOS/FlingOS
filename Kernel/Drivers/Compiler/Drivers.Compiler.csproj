@@ -157,9 +157,12 @@
     <None Include="..\..\Kernel\Kernel.licenseheader">
       <Link>Kernel.licenseheader</Link>
     </None>
+    <None Include="Tools\ISO\isolinux-debug.bin" />
     <None Include="Tools\ISO\isolinux.bin">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Include="Tools\ISO\ldlinux.c32" />
+    <None Include="Tools\ISO\libcom32.c32" />
     <None Include="Tools\ISO\mboot.c32">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

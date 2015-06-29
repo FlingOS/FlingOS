@@ -540,10 +540,12 @@ namespace Kernel.Hardware.USB.HCIs
         }
         protected void InterruptHandler()
         {
+#if UHCI_TRACE
             BasicConsole.SetTextColour(BasicConsole.warning_colour);
             BasicConsole.WriteLine("UHCI: Interrupt handler");
             BasicConsole.SetTextColour(BasicConsole.default_colour);
             BasicConsole.DelayOutput(20);
+#endif
 
             ushort val = USBSTS.Read_UInt16();
 
@@ -558,49 +560,67 @@ namespace Kernel.Hardware.USB.HCIs
             //}
 
             //textColor(IMPORTANT);
-
+            
+#if UHCI_TRACE
             BasicConsole.SetTextColour(BasicConsole.warning_colour);
+#endif
 
             if ((val & UHCI_Consts.STS_USBINT) != 0)
             {
+#if UHCI_TRACE
                 BasicConsole.WriteLine(((FOS_System.String)"UHCI Frame: ") + FRNUM.Read_UInt16() + " - USB transaction completed");
+#endif
                 USBSTS.Write_UInt16(UHCI_Consts.STS_USBINT); // reset interrupt
                 TransactionsCompleted++;
             }
 
             if ((val & UHCI_Consts.STS_RESUME_DETECT) != 0)
             {
+#if UHCI_TRACE
                 BasicConsole.WriteLine("UHCI: Resume Detect");
+#endif
                 USBSTS.Write_UInt16(UHCI_Consts.STS_RESUME_DETECT); // reset interrupt
             }
-
+            
+#if UHCI_TRACE
             BasicConsole.SetTextColour(BasicConsole.error_colour);
+#endif
 
             if ((val & UHCI_Consts.STS_HCHALTED) != 0)
             {
+#if UHCI_TRACE
                 BasicConsole.WriteLine("UHCI: Host Controller Halted");
+#endif
                 USBSTS.Write_UInt16(UHCI_Consts.STS_HCHALTED); // reset interrupt
             }
 
             if ((val & UHCI_Consts.STS_HC_PROCESS_ERROR) != 0)
             {
+#if UHCI_TRACE
                 BasicConsole.WriteLine("UHCI: Host Controller Process Error");
+#endif
                 USBSTS.Write_UInt16(UHCI_Consts.STS_HC_PROCESS_ERROR); // reset interrupt
             }
 
             if ((val & UHCI_Consts.STS_USB_ERROR) != 0)
             {
+#if UHCI_TRACE
                 BasicConsole.WriteLine("UHCI: USB Error");
+#endif
                 USBSTS.Write_UInt16(UHCI_Consts.STS_USB_ERROR); // reset interrupt
             }
 
             if ((val & UHCI_Consts.STS_HOST_SYSTEM_ERROR) != 0)
             {
+#if UHCI_TRACE
                 BasicConsole.WriteLine("UHCI: Host System Error");
+#endif
                 USBSTS.Write_UInt16(UHCI_Consts.STS_HOST_SYSTEM_ERROR); // reset interrupt
             }
-
+            
+#if UHCI_TRACE
             BasicConsole.SetTextColour(BasicConsole.default_colour);
+#endif
         }
         
         protected void AnalysePortStatus(byte j, ushort val)
