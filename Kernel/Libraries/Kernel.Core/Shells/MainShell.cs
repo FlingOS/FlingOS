@@ -23,7 +23,9 @@
 //
 // ------------------------------------------------------------------------------ //
 #endregion
-    
+ 
+#define PERIODIC_REBOOT
+   
 using System;
 using Kernel.FOS_System;
 using Kernel.FOS_System.Collections;
@@ -65,6 +67,11 @@ namespace Kernel.Core.Shells
                     console.DefaultColour();
                 }
 
+#if PERIODIC_REBOOT
+                // 60 seconds
+                Hardware.Timers.PIT.Default.RegisterHandler(TriggerPeriodicReboot, 60000000000L, true, this);
+#endif
+
                 //Endlessly wait for commands until we hit a total failure condition
                 //  or the user instructs us to halt
                 while (!terminating)
@@ -99,7 +106,7 @@ namespace Kernel.Core.Shells
                          *  - Help { <Command Name> }
                          *  - Clear
                          *  - Easter
-                         * 
+                         *  - Reboot
                          */
 
                         //Get the current input line from the user
@@ -970,6 +977,14 @@ namespace Kernel.Core.Shells
 
                                 #endregion
                             }
+                            else if (cmd == "reboot")
+                            {
+                                #region Reboot
+
+                                Reboot();
+
+                                #endregion
+                            }
                         }
                     }
                     catch
@@ -986,6 +1001,42 @@ namespace Kernel.Core.Shells
                 Hardware.Processes.Thread.Sleep(1000);
             }
             console.WriteLine("Shell exited.");
+        }
+        
+        /// <summary>
+        /// Handler for the periodic reboot timer event.
+        /// </summary>
+        /// <param name="state">The state object. Should be null.</param>
+        [Compiler.NoGC]
+        [Compiler.NoDebug]
+        private void TriggerPeriodicReboot(object state)
+        {
+            ((MainShell)state).Reboot();
+        }
+        /// <summary>
+        /// Reboots the computer
+        /// </summary>
+        [Compiler.NoGC]
+        [Compiler.NoDebug]
+        private void Reboot()
+        {
+            if (Hardware.Keyboards.PS2.ThePS2 != null)
+            {
+                console.WarningColour();
+                console.Write("Attempting 8042 reset...");
+
+                Hardware.Keyboards.PS2.ThePS2.Reset();
+
+                console.ErrorColour();
+                console.WriteLine("failed.");
+            }
+            else
+            {
+                console.ErrorColour();
+                console.WriteLine("No reboot method available.");
+            }
+
+            console.DefaultColour();
         }
 
         /// <summary>

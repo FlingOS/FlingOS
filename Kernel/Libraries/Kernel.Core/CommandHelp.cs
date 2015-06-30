@@ -214,7 +214,16 @@ Show c: Show the license conditions."
             });
             #endregion
 
-           }
+            #region Reboot
+            CommandDescriptions.Add(new CommandDescription()
+            {
+                CommandName = "Reboot",
+                CommandNameLower = "reboot",
+                Description = @"Reboot
+Safely reboots the computer."
+            });
+            #endregion
+        }
         
 
 
