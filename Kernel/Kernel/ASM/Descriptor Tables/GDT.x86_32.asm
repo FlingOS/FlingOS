@@ -11,21 +11,30 @@ EXTERN TSS_POINTER
 ; BEGIN - Create GDT
 	; See MultibootSignature.x86_32.asm for memory allocations
 	
-	
-	mov dword eax, 0x7F
-	mov byte [0xB8001], al
-	mov byte [0xB8003], al
-	mov byte [0xB8005], al
-	mov byte [0xB8007], al
-	mov byte [0xB8009], al
-	mov byte [0xB800B], al
-	mov byte [0xB800D], al
-	mov byte [0xB800F], al
-	mov byte [0xB8011], al
-	mov byte [0xB8013], al
-	mov byte [0xB8015], al
-	mov byte [0xB8017], al	
-	mov ecx, 0x0F000000
+	; See comment at start of Main Entrypoint
+	mov dword ecx, 0x0
+
+	; Initialising GDT...
+	mov byte [0xB8280], 0x49
+	mov byte [0xB8282], 0x6e
+	mov byte [0xB8284], 0x69
+	mov byte [0xB8286], 0x74
+	mov byte [0xB8288], 0x69
+	mov byte [0xB828A], 0x61
+	mov byte [0xB828C], 0x6c
+	mov byte [0xB828E], 0x69
+	mov byte [0xB8290], 0x73
+	mov byte [0xB8292], 0x69
+	mov byte [0xB8294], 0x6e
+	mov byte [0xB8296], 0x67
+	mov byte [0xB8298], 0x20
+	mov byte [0xB829A], 0x47
+	mov byte [0xB829C], 0x44
+	mov byte [0xB829E], 0x54
+	mov byte [0xB82A0], 0x2e
+	mov byte [0xB82A2], 0x2e
+	mov byte [0xB82A4], 0x2e
+	mov ecx, 0x00F00000
 	.Loop1:
 	loop .Loop1
 
@@ -58,20 +67,13 @@ EXTERN TSS_POINTER
 Boot_FlushCsGDT:
 
 	
-	mov dword eax, 0x8F
-	mov byte [0xB8001], al
-	mov byte [0xB8003], al
-	mov byte [0xB8005], al
-	mov byte [0xB8007], al
-	mov byte [0xB8009], al
-	mov byte [0xB800B], al
-	mov byte [0xB800D], al
-	mov byte [0xB800F], al
-	mov byte [0xB8011], al
-	mov byte [0xB8013], al
-	mov byte [0xB8015], al
-	mov byte [0xB8017], al	
-	mov ecx, 0x0F000000
+	; done.
+	mov byte [0xB82A6], 0x64
+	mov byte [0xB82A8], 0x6f
+	mov byte [0xB82AA], 0x6e
+	mov byte [0xB82AC], 0x65
+	mov byte [0xB82AE], 0x2e
+	mov ecx, 0x00F00000
 	.Loop2:
 	loop .Loop2
 

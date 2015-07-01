@@ -24,7 +24,7 @@
 // ------------------------------------------------------------------------------ //
 #endregion
  
-#define PERIODIC_REBOOT
+//#define PERIODIC_REBOOT
    
 using System;
 using Kernel.FOS_System;

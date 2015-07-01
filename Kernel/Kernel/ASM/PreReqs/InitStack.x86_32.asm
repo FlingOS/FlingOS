@@ -8,40 +8,45 @@ EXTERN Kernel_Stack
 
 ; BEGIN - Init stack
 
-	mov dword eax, 0x5F
-	mov byte [0xB8001], al
-	mov byte [0xB8003], al
-	mov byte [0xB8005], al
-	mov byte [0xB8007], al
-	mov byte [0xB8009], al
-	mov byte [0xB800B], al
-	mov byte [0xB800D], al
-	mov byte [0xB800F], al
-	mov byte [0xB8011], al
-	mov byte [0xB8013], al
-	mov byte [0xB8015], al
-	mov byte [0xB8017], al	
-	mov ecx, 0x0F000000
+	; See comment at start of Main Entrypoint
+	mov dword ecx, 0x0
+
+	; Initialising stack...
+	mov byte [0xB81E0], 0x49
+	mov byte [0xB81E2], 0x6e
+	mov byte [0xB81E4], 0x69
+	mov byte [0xB81E6], 0x74
+	mov byte [0xB81E8], 0x69
+	mov byte [0xB81EA], 0x61
+	mov byte [0xB81EC], 0x6c
+	mov byte [0xB81EE], 0x69
+	mov byte [0xB81F0], 0x73
+	mov byte [0xB81F2], 0x69
+	mov byte [0xB81F4], 0x6e
+	mov byte [0xB81F6], 0x67
+	mov byte [0xB81F8], 0x20
+	mov byte [0xB81FA], 0x73
+	mov byte [0xB81FC], 0x74
+	mov byte [0xB81FE], 0x61
+	mov byte [0xB8200], 0x63
+	mov byte [0xB8202], 0x6b
+	mov byte [0xB8204], 0x2e
+	mov byte [0xB8206], 0x2e
+	mov byte [0xB8208], 0x2e
+	mov ecx, 0x00F00000
 	.Loop1:
 	loop .Loop1
 
 mov dword ESP, Kernel_Stack ; Set the stack pointer to point at our pre-allocated block of memory
 
 
-	mov dword eax, 0x6F
-	mov byte [0xB8001], al
-	mov byte [0xB8003], al
-	mov byte [0xB8005], al
-	mov byte [0xB8007], al
-	mov byte [0xB8009], al
-	mov byte [0xB800B], al
-	mov byte [0xB800D], al
-	mov byte [0xB800F], al
-	mov byte [0xB8011], al
-	mov byte [0xB8013], al
-	mov byte [0xB8015], al
-	mov byte [0xB8017], al	
-	mov ecx, 0x0F000000
+	; done.
+	mov byte [0xB820A], 0x64
+	mov byte [0xB820C], 0x6f
+	mov byte [0xB820E], 0x6e
+	mov byte [0xB8210], 0x65
+	mov byte [0xB8212], 0x2e
+	mov ecx, 0x00F00000
 	.Loop2:
 	loop .Loop2
 ; END - Init stack

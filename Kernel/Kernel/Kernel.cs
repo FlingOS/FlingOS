@@ -49,9 +49,6 @@ namespace Kernel
             BasicConsole.Init();
             BasicConsole.Clear();
 
-            BasicConsole.WriteLine("Booted!");
-            BasicConsole.DelayOutput(5);
-
 #if DEBUG
             //Debug.BasicDebug.Init();
 #endif
