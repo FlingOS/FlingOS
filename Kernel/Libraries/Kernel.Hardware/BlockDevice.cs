@@ -88,7 +88,7 @@ namespace Kernel.Hardware
         {
             //TODO - Err..this cast here is really really bad practice but it's just because 
             //  we can't do 64 bit x 64 bit multiplication nor support the conv.ovf.i.un op
-            return new byte[aBlockCount * (UInt32)blockSize];
+            return new byte[aBlockCount * (UInt32)BlockSize];
         }
     }
 }
