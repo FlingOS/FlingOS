@@ -49,6 +49,21 @@ namespace Kernel.Hardware.ATA
             get { return BaseDevice.ModelNo; }
         }
 
+        public override ulong BlockCount
+        {
+            get
+            {
+                return BaseDevice.BlockCount;
+            }
+        }
+        public override ulong BlockSize
+        {
+            get
+            {
+                return BaseDevice.BlockSize;
+            }
+        }
+
         private bool IRQInvoked = false;
 
         public PATAPI(PATABase baseDevice)

@@ -54,6 +54,21 @@ namespace Kernel.Hardware.ATA
             get { return BaseDevice.ModelNo; }
         }
 
+        public override ulong BlockCount
+        {
+            get
+            {
+                return BaseDevice.BlockCount;
+            }
+        }
+        public override ulong BlockSize
+        {
+            get
+            {
+                return BaseDevice.BlockSize;
+            }
+        }
+
         /// <summary>
         /// Initialises a new ATA pio device.
         /// </summary>
@@ -63,8 +78,6 @@ namespace Kernel.Hardware.ATA
         public PATA(PATABase baseDevice)
         {
             BaseDevice = baseDevice;
-
-            blockSize = BaseDevice.BlockSize;
         }
                 
         /// <summary>

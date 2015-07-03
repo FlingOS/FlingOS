@@ -51,12 +51,87 @@ namespace Kernel.Hardware.ATA
         /// </summary>
         public static void Init()
         {
-            //Try to initialise primary IDE:PATA/PATAPI drives.
-            InitDrive(ATA.ControllerID.Primary, ATA.BusPosition.Slave);
-            InitDrive(ATA.ControllerID.Primary, ATA.BusPosition.Master);
+            FOS_System.Exception ex = null;
+            int exCount = 0;
 
-            InitDrive(ATA.ControllerID.Secondary, ATA.BusPosition.Slave);
-            InitDrive(ATA.ControllerID.Secondary, ATA.BusPosition.Master);
+            //Try to initialise primary IDE:PATA/PATAPI drives.
+            try
+            {
+                InitDrive(ATA.ControllerID.Primary, ATA.BusPosition.Master);
+            }
+            catch
+            {
+                exCount++;
+                if (exCount == 1)
+                {
+                    ex = ExceptionMethods.CurrentException;
+                }
+                else
+                {
+                    FOS_System.Exception newEx = new FOS_System.Exception("Multiple errors occurred while initialising the ATA stack. Count=" + (FOS_System.String)exCount);
+                    newEx.InnerException = ex;
+                    ex = newEx;
+                }
+            }
+            try
+            {
+                InitDrive(ATA.ControllerID.Primary, ATA.BusPosition.Slave);
+            }
+            catch
+            {
+                exCount++;
+                if (exCount == 1)
+                {
+                    ex = ExceptionMethods.CurrentException;
+                }
+                else
+                {
+                    FOS_System.Exception newEx = new FOS_System.Exception("Multiple errors occurred while initialising the ATA stack. Count=" + (FOS_System.String)exCount);
+                    newEx.InnerException = ex;
+                    ex = newEx;
+                }
+            }
+            try
+            {
+                InitDrive(ATA.ControllerID.Secondary, ATA.BusPosition.Master);
+            }
+            catch
+            {
+                exCount++;
+                if (exCount == 1)
+                {
+                    ex = ExceptionMethods.CurrentException;
+                }
+                else
+                {
+                    FOS_System.Exception newEx = new FOS_System.Exception("Multiple errors occurred while initialising the ATA stack. Count=" + (FOS_System.String)exCount);
+                    newEx.InnerException = ex;
+                    ex = newEx;
+                }
+            }
+            try
+            {
+                InitDrive(ATA.ControllerID.Secondary, ATA.BusPosition.Slave);
+            }
+            catch
+            {
+                exCount++;
+                if (exCount == 1)
+                {
+                    ex = ExceptionMethods.CurrentException;
+                }
+                else
+                {
+                    FOS_System.Exception newEx = new FOS_System.Exception("Multiple errors occurred while initialising the ATA stack. Count=" + (FOS_System.String)exCount);
+                    newEx.InnerException = ex;
+                    ex = newEx;
+                }
+            }
+
+            if (exCount > 0)
+            {
+                ExceptionMethods.Throw(ex);
+            }
 
             //TODO: Init SATA/SATAPI devices by enumerating the PCI bus.
         }
@@ -71,33 +146,70 @@ namespace Kernel.Hardware.ATA
             //Get the IO ports for the correct bus
             ATAIOPorts theIO = ctrlId == ATA.ControllerID.Primary ? ATAIO1 : ATAIO2;
             //Create / init the device on the bus
-            PATABase ThePATABase = new PATABase(theIO, ctrlId, busPos);
-            //If the device was detected as present:
-            if (ThePATABase.DriveType != PATABase.SpecLevel.Null)
+            try
             {
-                //If the device was actually a PATA device:
-                if (ThePATABase.DriveType == PATABase.SpecLevel.PATA)
+                PATABase ThePATABase = new PATABase(theIO, ctrlId, busPos);
+                //If the device was detected as present:
+                if (ThePATABase.DriveType != PATABase.SpecLevel.Null)
                 {
-                    //Add it to the list of devices.
-                    DeviceManager.AddDevice(new PATA(ThePATABase));
+                    //If the device was actually a PATA device:
+                    if (ThePATABase.DriveType == PATABase.SpecLevel.PATA)
+                    {
+                        //Add it to the list of devices.
+                        try
+                        {
+                            DeviceManager.AddDevice(new PATA(ThePATABase));
+                        }
+                        catch
+                        {
+                            ExceptionMethods.Throw(new FOS_System.Exception("Error initialising PATA device."));
+                        }
+                    }
+                    else if (ThePATABase.DriveType == PATABase.SpecLevel.PATAPI)
+                    {
+                        // Add a PATAPI device
+                        try
+                        {
+                            DeviceManager.AddDevice(new PATAPI(ThePATABase));
+                        }
+                        catch
+                        {
+                            ExceptionMethods.Throw(new FOS_System.Exception("Error initialising PATAPI device."));
+                        }
+                    }
+                    //TODO: Remove the SATA/SATAPI initialisation from here. It should be done
+                    //  in the ATAManager.Init method.
+                    else if (ThePATABase.DriveType == PATABase.SpecLevel.SATA)
+                    {
+                        // Add a SATA device
+                        try
+                        {
+                            DeviceManager.AddDevice(new SATA());
+                        }
+                        catch
+                        {
+                            ExceptionMethods.Throw(new FOS_System.Exception("Error initialising SATA device."));
+                        }
+                    }
+                    else if (ThePATABase.DriveType == PATABase.SpecLevel.SATAPI)
+                    {
+                        // Add a SATAPI device
+                        try
+                        {
+                            DeviceManager.AddDevice(new SATAPI());
+                        }
+                        catch
+                        {
+                            ExceptionMethods.Throw(new FOS_System.Exception("Error initialising SATAPI device."));
+                        }
+                    }
                 }
-                else if (ThePATABase.DriveType == PATABase.SpecLevel.PATAPI)
-                {
-                    // Add a PATAPI device
-                    DeviceManager.AddDevice(new PATAPI(ThePATABase));
-                }
-                //TODO: Remove the SATA/SATAPI initialisation from here. It should be done
-                //  in the ATAManager.Init method.
-                else if (ThePATABase.DriveType == PATABase.SpecLevel.SATA)
-                {
-                    // Add a SATA device
-                    DeviceManager.AddDevice(new SATA());
-                }
-                else if (ThePATABase.DriveType == PATABase.SpecLevel.SATAPI)
-                {
-                    // Add a SATAPI device
-                    DeviceManager.AddDevice(new SATAPI());
-                }
+            }
+            catch
+            {
+                ExceptionMethods.Throw(new FOS_System.Exception((FOS_System.String)"Error initialising PATA Base device. Controller ID: " + 
+                    (ctrlId == ATA.ControllerID.Primary ? "Primary" : "Secondary") + " , Position: " + 
+                    (busPos == ATA.BusPosition.Master ? "Master" : "Slave")));
             }
         }
     }

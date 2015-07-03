@@ -44,7 +44,7 @@ namespace Kernel.Hardware
         /// <summary>
         /// The number of logical blocks in the device.
         /// </summary>
-        public UInt64 BlockCount
+        public virtual UInt64 BlockCount
         {
             get { return blockCount; }
         }
@@ -56,7 +56,7 @@ namespace Kernel.Hardware
         /// <summary>
         /// The size of the logical blocks.
         /// </summary>
-        public UInt64 BlockSize
+        public virtual UInt64 BlockSize
         {
             get { return blockSize; }
         }

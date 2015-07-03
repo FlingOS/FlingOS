@@ -358,15 +358,16 @@ namespace Kernel.Hardware.ATA
             // If it's a PATAPI drive, we need to send the IDENTIFY_PACKET command
             if (mDriveType == SpecLevel.PATAPI)
             {
+                Reset();
                 SendCmd(Cmd.IdentifyPacket);
             }
 
             // Read Identification Space of the Device
             var xBuff = new UInt16[256];
             IO.Data.Read_UInt16s(xBuff);
-            mSerialNo = GetString(xBuff, 10, 20);
-            mFirmwareRev = GetString(xBuff, 23, 8);
-            mModelNo = GetString(xBuff, 27, 40);
+            mSerialNo = GetString(xBuff, 10, 20).Trim();
+            mFirmwareRev = GetString(xBuff, 23, 8).Trim();
+            mModelNo = GetString(xBuff, 27, 40).Trim();
 
             //Words (61:60) shall contain the value one greater than the total number of user-addressable
             //sectors in 28-bit addressing and shall not exceed 0x0FFFFFFF. 
@@ -461,6 +462,8 @@ namespace Kernel.Hardware.ATA
 
             if ((status & Status.Error) != 0)
             {
+
+
                 // Can look in Error port for more info
                 // Device is not ATA
                 // Error status can also triggered by ATAPI devices
@@ -573,9 +576,94 @@ namespace Kernel.Hardware.ATA
             // Error occurred
             if (aThrowOnError && (xStatus & Status.Error) != 0)
             {
-                ExceptionMethods.Throw(new FOS_System.Exception("ATA send command error!"));
+                #region Throw Exception 
+
+                FOS_System.String cmdName = "";
+                switch (aCmd)
+                {
+                    case Cmd.CacheFlush:
+                        cmdName = "CacheFlush";
+                        break;
+                    case Cmd.CacheFlushExt:
+                        cmdName = "CacheFlushExt";
+                        break;
+                    case Cmd.Eject:
+                        cmdName = "Eject";
+                        break;
+                    case Cmd.Identify:
+                        cmdName = "Identify";
+                        break;
+                    case Cmd.IdentifyPacket:
+                        cmdName = "IdentifyPacket";
+                        break;
+                    case Cmd.Packet:
+                        cmdName = "Packet";
+                        break;
+                    case Cmd.Read:
+                        cmdName = "Read";
+                        break;
+                    case Cmd.ReadDma:
+                        cmdName = "ReadDma";
+                        break;
+                    case Cmd.ReadDmaExt:
+                        cmdName = "ReadDmaExt";
+                        break;
+                    case Cmd.ReadPio:
+                        cmdName = "ReadPio";
+                        break;
+                    case Cmd.ReadPioExt:
+                        cmdName = "ReadPioExt";
+                        break;
+                    case Cmd.WriteDma:
+                        cmdName = "WriteDma";
+                        break;
+                    case Cmd.WriteDmaExt:
+                        cmdName = "WriteDmaExt";
+                        break;
+                    case Cmd.WritePio:
+                        cmdName = "WritePio";
+                        break;
+                    case Cmd.WritePioExt:
+                        cmdName = "WritePioExt";
+                        break;
+                    default:
+                        cmdName = "[Unrecognised]";
+                        break;
+                }
+                ExceptionMethods.Throw(new FOS_System.Exception("ATA send command error! Command was: " + cmdName));
+
+                #endregion
             }
             return xStatus;
+        }
+
+        public virtual void Reset()
+        {
+            IO.Control.Write_Byte(0x4);
+            Wait();
+            IO.Control.Write_Byte(0x0);
+            Status xStatus;
+            int timeout = 20000000;
+            do
+            {
+                Wait();
+                xStatus = (Status)IO.Control.Read_Byte();
+            } while ((xStatus & Status.Busy) != 0 &&
+                     (xStatus & Status.Error) == 0 &&
+                     timeout-- > 0);
+
+            // Error occurred
+            if ((xStatus & Status.Error) != 0)
+            {
+                ExceptionMethods.Throw(new FOS_System.Exception("ATA software reset error!"));
+            }
+            else if (timeout == 0)
+            {
+                ExceptionMethods.Throw(new FOS_System.Exception("ATA software reset timeout!"));
+            }
+
+            //Reselect the correct drive
+            SelectDrive(0, false);
         }
 
         public override void ReadBlock(ulong aBlockNo, uint aBlockCount, byte[] aData)

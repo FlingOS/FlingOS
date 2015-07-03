@@ -50,21 +50,31 @@ namespace Kernel.Core.Shells
         {
             try
             {
+                Hardware.DeviceManager.AddDeviceAddedListener(MainShell.DeviceManager_DeviceAdded, this);
+
                 try
                 {
-                    Hardware.DeviceManager.AddDeviceAddedListener(MainShell.DeviceManager_DeviceAdded, this);
-
                     // Auto-init all to save us writing the command
-                    InitATA();
                     InitPCI();
                 }
                 catch
                 {
                     console.WriteLine();
                     console.WarningColour();
-                    console.WriteLine("Error initialising one of the basic subsystems:");
-                    console.WriteLine(ExceptionMethods.CurrentException.Message);
-                    console.DefaultColour();
+                    console.WriteLine("Error initialising PCI subsystem:");
+                    OutputExceptionInfo(ExceptionMethods.CurrentException);
+                }
+                try
+                {
+                    // Auto-init all to save us writing the command
+                    InitATA();
+                }
+                catch
+                {
+                    console.WriteLine();
+                    console.WarningColour();
+                    console.WriteLine("Error initialising ATA subsystem:");
+                    OutputExceptionInfo(ExceptionMethods.CurrentException);
                 }
 
 #if PERIODIC_REBOOT
