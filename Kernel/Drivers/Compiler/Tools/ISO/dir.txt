@@ -1,0 +1,14 @@
+astamp.dat	02/07/20	4
+dir.txt	02/07/20	0
+isolinux-debug.bin	01/07/20	45056
+isolinux.bin	01/07/20	45056
+Kernel.bin	01/07/20	8513977
+ldlinux.c32	01/07/20	122308
+libcom32.c32	01/07/20	186500
+mboot.c32	01/04/20	30380
+memdisk	19/11/20	25340
+pxechain.cbt	19/11/20	1301
+pxelinux.0	01/07/20	46909
+pxeserva.0	19/11/20	16798
+syslinux.cfg	01/07/20	79
+vesamenu.c32	30/11/20	162508
