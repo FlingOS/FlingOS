@@ -69,6 +69,8 @@ namespace Kernel.Hardware.ATA
             }
         }
 
+        public bool Hitachi_Fujtisu_Support = true;
+
         /// <summary>
         /// Initialises a new ATA pio device.
         /// </summary>
@@ -127,13 +129,48 @@ namespace Kernel.Hardware.ATA
                 return;
             }
 
+            if (Hitachi_Fujtisu_Support)
+            {
+                if (aData == null)
+                {
+                    for (uint i = 0; i < aBlockCount; i++)
+                    {
+                        _WriteBlock(aBlockNo + i, 1, null);
+                    }
+                }
+                else
+                {
+                    int offset = 0;
+                    for (uint i = 0; i < aBlockCount; i++)
+                    {
+                        SelectSector(aBlockNo + i, 1);
+                        BaseDevice.SendCmd(PATABase.Cmd.WritePio);
+                        UInt16 xValue;
+                        for (int j = 0; j < ((int)(uint)BlockSize / 2); j++)
+                        {
+                            xValue = (UInt16)((aData[j * 2 + 1 + offset] << 8) | aData[j * 2 + offset]);
+                            BaseDevice.IO.Data.Write_UInt16(xValue);
+                        }
+                        offset += (int)(uint)BlockSize;
+                        BaseDevice.SendCmd(PATABase.Cmd.CacheFlush);
+                    }
+                }
+            }
+            else
+            {
+                _WriteBlock(aBlockNo, aBlockCount, aData);
+            }
+        }
+
+        private void _WriteBlock(UInt64 aBlockNo, UInt32 aBlockCount, byte[] aData)
+        {
             SelectSector(aBlockNo, aBlockCount);
             BaseDevice.SendCmd(PATABase.Cmd.WritePio);
 
             if (aData == null)
             {
                 //TODO: Remove the cast-down - only due to division of longs not working...
-                ulong size = (aBlockCount * (uint)blockSize) / 2;
+                ulong size = (aBlockCount * (uint)BlockSize) / 2;
                 for (ulong i = 0; i < size; i++)
                 {
                     BaseDevice.IO.Data.Write_UInt16(0);
@@ -161,7 +198,8 @@ namespace Kernel.Hardware.ATA
         {
             //TODO: Presumably Drive Select needs to happen first? But does the sector number 
             //      need to be set?
-            //SendCmd(Cmd.CacheFlush);
+            BaseDevice.SelectDrive(0, false);
+            BaseDevice.SendCmd(PATABase.Cmd.CacheFlush);
         }
     }
 }

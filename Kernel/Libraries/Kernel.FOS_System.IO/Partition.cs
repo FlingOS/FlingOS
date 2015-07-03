@@ -48,6 +48,21 @@ namespace Kernel.FOS_System.IO
         /// </summary>
         internal UInt64 StartingSector;
 
+        public override ulong BlockCount
+        {
+            get
+            {
+                return TheDiskDevice.BlockCount;
+            }
+        }
+        public override ulong BlockSize
+        {
+            get
+            {
+                return TheDiskDevice.BlockSize;
+            }
+        }
+
         public bool Mapped = false;
 
         /// <summary>
@@ -65,8 +80,6 @@ namespace Kernel.FOS_System.IO
         {
             TheDiskDevice = aDiskDevice;
             StartingSector = aStartingSector;
-            blockCount = aSectorCount;
-            blockSize = aDiskDevice.BlockSize;
         }
 
         /// <summary>

@@ -1505,7 +1505,7 @@ namespace Kernel.Hardware.USB.Devices
 #endif
 
                 msd.Read((uint)(aBlockNo + i), dataPtr);
-                dataPtr += blockSize;
+                dataPtr += BlockSize;
                 
 #if MSD_TRACE
                 BasicConsole.WriteLine(" - Read.");
@@ -1542,7 +1542,7 @@ namespace Kernel.Hardware.USB.Devices
                 for (uint i = 0; i < aBlockCount; i++)
                 {
                     msd.Write((uint)(aBlockNo + i), dataPtr);
-                    dataPtr += blockSize;
+                    dataPtr += BlockSize;
                 }
             }
 
