@@ -1839,6 +1839,7 @@ which should have been provided with the executable.");
                     console.WriteLine(((FOS_System.String)"Block Size: ") + theATA.BlockSize + " bytes");
                     console.WriteLine(((FOS_System.String)"Block Count: ") + theATA.BlockCount);
                     console.WriteLine(((FOS_System.String)"Size: ") + ((theATA.BlockCount * theATA.BlockSize) >> 20) + " MB");
+                    console.WriteLine(((FOS_System.String)"Max Write Pio Blocks: ") + (theATA.MaxWritePioBlocks));
 
                     numDrives++;
                 }
@@ -1858,6 +1859,7 @@ which should have been provided with the executable.");
                     console.WriteLine(((FOS_System.String)"Block Size: ") + theATA.BlockSize + " bytes");
                     console.WriteLine(((FOS_System.String)"Block Count: ") + theATA.BlockCount);
                     console.WriteLine(((FOS_System.String)"Size: ") + ((theATA.BlockCount * theATA.BlockSize) >> 20) + " MB");
+                    console.WriteLine(((FOS_System.String)"Max Write Pio Blocks: ") + (theATA.MaxWritePioBlocks));
                 }
                 else if (aDevice is Hardware.ATA.SATA)
                 {

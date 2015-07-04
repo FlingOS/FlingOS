@@ -69,7 +69,13 @@ namespace Kernel.Hardware.ATA
             }
         }
 
-        public bool Hitachi_Fujtisu_Support = true;
+        public UInt32 MaxWritePioBlocks
+        {
+            get
+            {
+                return BaseDevice.MaxWritePioBlocks;
+            }
+        }
 
         /// <summary>
         /// Initialises a new ATA pio device.
@@ -129,36 +135,42 @@ namespace Kernel.Hardware.ATA
                 return;
             }
 
-            if (Hitachi_Fujtisu_Support)
+            if (aData == null)
             {
-                if (aData == null)
+                for (uint i = 0; i < aBlockCount; i += MaxWritePioBlocks)
                 {
-                    for (uint i = 0; i < aBlockCount; i++)
+                    if (i + MaxWritePioBlocks <= aBlockCount)
                     {
-                        _WriteBlock(aBlockNo + i, 1, null);
+                        _WriteBlock(aBlockNo + i, MaxWritePioBlocks, null);
                     }
-                }
-                else
-                {
-                    int offset = 0;
-                    for (uint i = 0; i < aBlockCount; i++)
+                    else
                     {
-                        SelectSector(aBlockNo + i, 1);
-                        BaseDevice.SendCmd(PATABase.Cmd.WritePio);
-                        UInt16 xValue;
-                        for (int j = 0; j < ((int)(uint)BlockSize / 2); j++)
-                        {
-                            xValue = (UInt16)((aData[j * 2 + 1 + offset] << 8) | aData[j * 2 + offset]);
-                            BaseDevice.IO.Data.Write_UInt16(xValue);
-                        }
-                        offset += (int)(uint)BlockSize;
-                        BaseDevice.SendCmd(PATABase.Cmd.CacheFlush);
+                        _WriteBlock(aBlockNo + i, aBlockCount - i, null);
                     }
                 }
             }
             else
             {
-                _WriteBlock(aBlockNo, aBlockCount, aData);
+                int offset = 0;
+                for (uint i = 0; i < aBlockCount; i += MaxWritePioBlocks)
+                {
+                    uint currBlockCount = MaxWritePioBlocks;
+                    if (i + MaxWritePioBlocks > aBlockCount)
+                    {
+                        currBlockCount = aBlockCount - i;
+                    }
+
+                    SelectSector(aBlockNo + i, currBlockCount);
+                    BaseDevice.SendCmd(PATABase.Cmd.WritePio);
+                    UInt16 xValue;
+                    for (int j = 0; j < (int)(((uint)BlockSize / 2) * currBlockCount); j++)
+                    {
+                        xValue = (UInt16)((aData[j * 2 + 1 + offset] << 8) | aData[j * 2 + offset]);
+                        BaseDevice.IO.Data.Write_UInt16(xValue);
+                    }
+                    offset += (int)((uint)BlockSize * currBlockCount);
+                    BaseDevice.SendCmd(PATABase.Cmd.CacheFlush);
+                }
             }
         }
 
