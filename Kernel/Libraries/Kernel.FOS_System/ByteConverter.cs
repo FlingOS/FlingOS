@@ -143,15 +143,23 @@ namespace Kernel.FOS_System
         public static FOS_System.String GetASCIIStringFromASCII(byte[] n, UInt32 aStart, UInt32 aCharCount)
         {
             FOS_System.String result = FOS_System.String.New((int)aCharCount);
-            for (int i = 0; i < aCharCount; i++)
+
+            if (result == null)
             {
-                UInt32 pos = (UInt32)(aStart + i);
-                UInt16 aChar = (UInt16)(n[pos]);
-                if (aChar == 0)
+                ExceptionMethods.Throw(new Exceptions.NullReferenceException());
+            }
+            else
+            {
+                for (int i = 0; i < aCharCount; i++)
                 {
-                    return result.Substring(0, i);
+                    UInt32 pos = (UInt32)(aStart + i);
+                    UInt16 aChar = (UInt16)(n[pos]);
+                    if (aChar == 0)
+                    {
+                        return result.Substring(0, i);
+                    }
+                    result[i] = (char)aChar;
                 }
-                result[i] = (char)aChar;
             }
 
             return result;
@@ -168,15 +176,23 @@ namespace Kernel.FOS_System
         public static unsafe FOS_System.String GetASCIIStringFromASCII(byte* n, UInt32 aStart, UInt32 aCharCount)
         {
             FOS_System.String result = FOS_System.String.New((int)aCharCount);
-            for (int i = 0; i < aCharCount; i++)
+            
+            if (result == null)
             {
-                UInt32 pos = (UInt32)(aStart + i);
-                UInt16 aChar = (UInt16)(n[pos]);
-                if (aChar == 0)
+                ExceptionMethods.Throw(new Exceptions.NullReferenceException());
+            }
+            else
+            {
+                for (int i = 0; i < aCharCount; i++)
                 {
-                    return result.Substring(0, i);
+                    UInt32 pos = (UInt32)(aStart + i);
+                    UInt16 aChar = (UInt16)(n[pos]);
+                    if (aChar == 0)
+                    {
+                        return result.Substring(0, i);
+                    }
+                    result[i] = (char)aChar;
                 }
-                result[i] = (char)aChar;
             }
 
             return result;
@@ -198,17 +214,24 @@ namespace Kernel.FOS_System
             //If you change this method, change the pointer version below too.
 
             FOS_System.String result = FOS_System.String.New((int)aCharCount);
-            for (int i = 0; i < aCharCount; i++)
+            
+            if (result == null)
             {
-                UInt32 pos = (UInt32)(aStart + (i * 2));
-                UInt16 aChar = (UInt16)(n[pos + 1] << 8 | n[pos]);
-                if (aChar == 0)
-                {
-                    return result.Substring(0, i);
-                }
-                result[i] = (char)aChar;
+                ExceptionMethods.Throw(new Exceptions.NullReferenceException());
             }
-
+            else
+            {
+                for (int i = 0; i < aCharCount; i++)
+                {
+                    UInt32 pos = (UInt32)(aStart + (i * 2));
+                    UInt16 aChar = (UInt16)(n[pos + 1] << 8 | n[pos]);
+                    if (aChar == 0)
+                    {
+                        return result.Substring(0, i);
+                    }
+                    result[i] = (char)aChar;
+                }
+            }
             return result;
         }
         /// <summary>
@@ -226,15 +249,23 @@ namespace Kernel.FOS_System
             //If you change this method, change the array version above too.
 
             FOS_System.String result = FOS_System.String.New((int)aCharCount);
-            for (int i = 0; i < aCharCount; i++)
+
+            if (result == null)
             {
-                UInt32 pos = (UInt32)(aStart + (i * 2));
-                UInt16 aChar = (UInt16)(n[pos + 1] << 8 | n[pos]);
-                if (aChar == 0)
+                ExceptionMethods.Throw(new Exceptions.NullReferenceException());
+            }
+            else
+            {
+                for (int i = 0; i < aCharCount; i++)
                 {
-                    return result.Substring(0, i);
+                    UInt32 pos = (UInt32)(aStart + (i * 2));
+                    UInt16 aChar = (UInt16)(n[pos + 1] << 8 | n[pos]);
+                    if (aChar == 0)
+                    {
+                        return result.Substring(0, i);
+                    }
+                    result[i] = (char)aChar;
                 }
-                result[i] = (char)aChar;
             }
 
             return result;

@@ -356,7 +356,7 @@ namespace Kernel.FOS_System.IO.Streams.FAT
                 {
                     //BasicConsole.WriteLine("Expanding clusters...");
 
-                    UInt32 lastClusterNum = ClusterNums[ClusterNums.Count];
+                    UInt32 lastClusterNum = ClusterNums[ClusterNums.Count - 1];
                     UInt32 nextClusterNum = mFS.GetNextFreeCluster(lastClusterNum);
 
                     //Clear cluster

@@ -85,7 +85,12 @@ namespace Kernel.FOS_System
             {
                 ExceptionMethods.Throw(new Exceptions.ArgumentException("Parameter \"length\" cannot be less than 0 in FOS_System.String.New(int length)."));
             }
-            return (FOS_System.String)Utilities.ObjectUtilities.GetObject(GC.NewString(length));
+            FOS_System.String result = (FOS_System.String)Utilities.ObjectUtilities.GetObject(GC.NewString(length));
+            if (result == null)
+            {
+                ExceptionMethods.Throw(new Exceptions.NullReferenceException());
+            }
+            return result;
         }
 
         /// <summary>
@@ -292,7 +297,7 @@ namespace Kernel.FOS_System
                 {
                     return New(0);
                 }
-                ExceptionMethods.Throw_IndexOutOfRangeException();
+                ExceptionMethods.Throw(new Exceptions.IndexOutOfRangeException(startIndex, this.length));
             }
             else if (aLength > length - startIndex)
             {

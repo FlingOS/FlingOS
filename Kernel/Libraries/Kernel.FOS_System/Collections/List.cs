@@ -319,7 +319,11 @@ namespace Kernel.FOS_System.Collections
                 //Note: Beyond the length of the list not the capacity!
                 if (index >= nextIndex)
                 {
-                    ExceptionMethods.Throw(new Exceptions.IndexOutOfRangeException());
+                    ExceptionMethods.Throw(new Exceptions.IndexOutOfRangeException(index, nextIndex));
+                }
+                else if (index < 0)
+                {
+                    ExceptionMethods.Throw(new Exceptions.IndexOutOfRangeException(index, nextIndex));
                 }
 
                 return _array[index];
@@ -333,7 +337,11 @@ namespace Kernel.FOS_System.Collections
                 //Note: Beyond the length of the list not the capacity!
                 if (index >= nextIndex)
                 {
-                    ExceptionMethods.Throw(new Exceptions.IndexOutOfRangeException());
+                    ExceptionMethods.Throw(new Exceptions.IndexOutOfRangeException(index, nextIndex));
+                }
+                else if (index < 0)
+                {
+                    ExceptionMethods.Throw(new Exceptions.IndexOutOfRangeException(index, nextIndex));
                 }
 
                 _array[index] = value;
@@ -537,7 +545,11 @@ namespace Kernel.FOS_System.Collections
             {
                 if (index >= currIndex)
                 {
-                    ExceptionMethods.Throw(new Exceptions.IndexOutOfRangeException());
+                    ExceptionMethods.Throw(new Exceptions.IndexOutOfRangeException(index, currIndex));
+                }
+                else if (index < 0)
+                {
+                    ExceptionMethods.Throw(new Exceptions.IndexOutOfRangeException(index, currIndex));
                 }
 
                 return _array[index];
@@ -548,7 +560,11 @@ namespace Kernel.FOS_System.Collections
             {
                 if (index >= currIndex)
                 {
-                    ExceptionMethods.Throw(new Exceptions.IndexOutOfRangeException());
+                    ExceptionMethods.Throw(new Exceptions.IndexOutOfRangeException(index, currIndex));
+                }
+                else if (index < 0)
+                {
+                    ExceptionMethods.Throw(new Exceptions.IndexOutOfRangeException(index, currIndex));
                 }
 
                 _array[index] = value;
@@ -685,7 +701,11 @@ namespace Kernel.FOS_System.Collections
             {
                 if (index >= currIndex)
                 {
-                    ExceptionMethods.Throw(new Exceptions.IndexOutOfRangeException());
+                    ExceptionMethods.Throw(new Exceptions.IndexOutOfRangeException(index, currIndex));
+                }
+                else if (index < 0)
+                {
+                    ExceptionMethods.Throw(new Exceptions.IndexOutOfRangeException(index, currIndex));
                 }
 
                 return _array[index];
@@ -696,7 +716,11 @@ namespace Kernel.FOS_System.Collections
             {
                 if (index >= currIndex)
                 {
-                    ExceptionMethods.Throw(new Exceptions.IndexOutOfRangeException());
+                    ExceptionMethods.Throw(new Exceptions.IndexOutOfRangeException(index, currIndex));
+                }
+                else if (index < 0)
+                {
+                    ExceptionMethods.Throw(new Exceptions.IndexOutOfRangeException(index, currIndex));
                 }
 
                 _array[index] = value;

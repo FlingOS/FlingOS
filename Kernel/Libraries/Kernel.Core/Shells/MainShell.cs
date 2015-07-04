@@ -107,7 +107,7 @@ namespace Kernel.Core.Shells
                          *              Exceptions1 /   Exceptions2 /   PCBeep      /
                          *              Timer       /   Keyboard    /   FieldsTable /
                          *              IsInst      /   VirtMem     /   Longs       /
-                         *              ThreadSleep /                                   }
+                         *              ThreadSleep /   Heap        /   GC          }
                          *  - GC   { Cleanup }
                          *  - USB { Update / Eject }
                          *  - Start { Filename } [*KM* / UM] [*Raw*]
@@ -796,6 +796,14 @@ namespace Kernel.Core.Shells
                                     {
                                         ThreadSleepTest();
                                     }
+                                    else if (opt1 == "heap")
+                                    {
+                                        HeapTest();
+                                    }
+                                    else if (opt1 == "gc")
+                                    {
+                                        GCTest();
+                                    }
                                     else
                                     {
                                         UnrecognisedOption(opt1);
@@ -1331,18 +1339,34 @@ which should have been provided with the executable.");
 
             //Temporary storage. Note: If the file is to big, this will just fail 
             //  as there won't be enough heap memory available
-            byte[] data = new byte[(uint)srcFile.Size];
-            
-            //Read in all source data. This will be a huge problem if the file
-            //  is large. A better implementation would be to load and copy 
-            //  blocks of data at a time.
-            srcStr.Position = 0;
-            srcStr.Read(data, 0, data.Length);
-            
-            //Write out all the data to destination.
-            dstStr.Position = 0;
-            dstStr.Write(data, 0, data.Length);
+            byte[] data = new byte[(uint)srcFile.TheFileSystem.ThePartition.BlockSize];
 
+            //Force stream positions
+            srcStr.Position = 0;
+            dstStr.Position = 0;
+
+            console.Write("[");
+
+            int percentile = (int)(uint)FOS_System.Math.Divide(srcFile.Size, 100u);
+            int dist = 0;
+            while ((ulong)srcStr.Position < srcFile.Size)
+            {
+                //Read in source data.
+                srcStr.Read(data, 0, data.Length);
+
+                //Write out data to destination.
+                dstStr.Write(data, 0, data.Length);
+
+                dist += data.Length;
+
+                if (dist >= percentile)
+                {
+                    console.Write(".");
+                    dist -= percentile;
+                }
+            }
+
+            console.WriteLine("]");
             console.WriteLine("Copied successfully.");
         }
         /// <summary>
@@ -1608,7 +1632,7 @@ which should have been provided with the executable.");
 
                     FOS_System.IO.Streams.FileStream fileStream = FOS_System.IO.Streams.FileStream.Create(aFile);
                     int offset = 0;
-                    byte[] xData = new byte[2048];
+                    byte[] xData = new byte[(int)(uint)aFile.TheFileSystem.ThePartition.BlockSize];
                     while (offset < (int)(uint)aFile.Size)
                     {
                         int actuallyRead = fileStream.Read(xData, 0, xData.Length);
@@ -1998,6 +2022,55 @@ which should have been provided with the executable.");
             console.DefaultColour();
         }
 
+        private unsafe void HeapTest()
+        {
+            try
+            {
+                console.WriteLine("Testing heap...");
+                uint allocSize = 16;
+                while (Heap.GetTotalFreeMem() - 0x10000 > 0)
+                {
+                    void* val = Heap.Alloc(allocSize);
+                    if (val == null)
+                    {
+                        break;
+                    }
+                    else
+                    {
+                        //allocSize *= 2;
+                        if (allocSize > 4096)
+                        {
+                            allocSize = 16;
+                        }
+                    }
+                }
+                console.WriteLine("Complete without error.");
+            }
+            catch
+            {
+                console.WriteLine("Complete with errors.");
+                OutputExceptionInfo(ExceptionMethods.CurrentException);
+            }
+            console.WriteLine("Returning.");
+        }
+        private unsafe void GCTest()
+        {
+            try
+            {
+                console.WriteLine("Testing GC...");
+                while (Heap.GetTotalFreeMem() - 0x10000 > 0)
+                {
+                    FOS_System.GC.NewObj((FOS_System.Type)typeof(FOS_System.Object));
+                }
+                console.WriteLine("Complete without error.");
+            }
+            catch
+            {
+                console.WriteLine("Complete with errors.");
+                OutputExceptionInfo(ExceptionMethods.CurrentException);
+            }
+            console.WriteLine("Returning.");
+        }
 
         /// <summary>
         /// Tests all interrupts in the range 17 to 255 by firing them.

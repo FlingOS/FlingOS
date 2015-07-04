@@ -134,7 +134,10 @@ namespace Kernel.Core.Tasks
                     unsafe
                     {
                         StatusConsole.Write("Heap: ");
-                        StatusConsole.Write_AsDecimal((Heap.FBlock->used * Heap.FBlock->bsize * 100) / Heap.FBlock->size);
+                        //StatusConsole.Write_AsDecimal(Heap.GetTotalUsedMem());
+                        //StatusConsole.Write(" / ");
+                        //StatusConsole.Write_AsDecimal(Heap.GetTotalMem());
+                        StatusConsole.Write_AsDecimal(Heap.GetTotalUsedMem() / (Heap.GetTotalMem() / 100));
                         StatusConsole.Write("%");
                     }
                 }

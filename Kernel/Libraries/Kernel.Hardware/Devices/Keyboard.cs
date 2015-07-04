@@ -216,9 +216,22 @@ namespace Kernel.Hardware.Devices
         public uint Dequeue()
         {
             //Pops the first item off the top of the queue
-            uint result = scancodeBuffer[0];
-            scancodeBuffer.RemoveAt(0);
-            return result;
+            try
+            {
+                uint result = scancodeBuffer[0];
+                scancodeBuffer.RemoveAt(0);
+                return result;
+            }
+            catch
+            {
+                for (int i = 0; i < 20; i++)
+                {
+                    BasicConsole.WriteLine(ExceptionMethods.CurrentException.Message);
+                    BasicConsole.DelayOutput(1);
+                }
+                ExceptionMethods.Rethrow();
+            }
+            return 0xFFFFFFFF;
         }
 
         /// <summary>

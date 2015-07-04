@@ -95,6 +95,36 @@ namespace Kernel.FOS_System
         }
 
         /// <summary>
+        /// Calculates the total amount of memory in the heap.
+        /// </summary>
+        /// <returns>The total amount of memory in the heap.</returns>
+        public static UInt32 GetTotalMem()
+        {
+            HeapBlock* cBlock = fblock;
+            UInt32 result = 0;
+            while (cBlock != null)
+            {
+                result += cBlock->size;
+                cBlock = cBlock->next;
+            }
+            return result;
+        }
+        /// <summary>
+        /// Calculates the total amount of used memory in the heap.
+        /// </summary>
+        /// <returns>The total amount of used memory in the heap.</returns>
+        public static UInt32 GetTotalUsedMem()
+        {
+            HeapBlock* cBlock = fblock;
+            UInt32 result = 0;
+            while (cBlock != null)
+            {
+                result += GetUsedMem(cBlock);
+                cBlock = cBlock->next;
+            }
+            return result;
+        }
+        /// <summary>
         /// Calculates the total amount of free memory in the heap.
         /// </summary>
         /// <returns>The total amount of free memory in the heap.</returns>
@@ -108,6 +138,15 @@ namespace Kernel.FOS_System
                 cBlock = cBlock->next;
             }
             return result;
+        }
+        /// <summary>
+        /// Calculates the amount of used memory in the specified block.
+        /// </summary>
+        /// <param name="aBlock">The block to calculate used mem of.</param>
+        /// <returns>The amount of used memory in bytes.</returns>
+        public static UInt32 GetUsedMem(HeapBlock* aBlock)
+        {
+            return (aBlock->used * aBlock->bsize);
         }
         /// <summary>
         /// Calculates the amount of free memory in the specified block.
@@ -283,7 +322,12 @@ namespace Kernel.FOS_System
         [Drivers.Compiler.Attributes.NoGC]
         public static void* AllocZeroed(UInt32 size, UInt32 boundary)
         {
-            return Utilities.MemoryUtils.ZeroMem(Alloc(size, boundary), size);
+            void* result = Alloc(size, boundary);
+            if(result == null)
+            {
+                return null;
+            }
+            return Utilities.MemoryUtils.ZeroMem(result, size);
         }
         /// <summary>
         /// Attempts to allocate the specified amount of memory from the heap.

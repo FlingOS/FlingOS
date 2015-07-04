@@ -876,7 +876,7 @@ namespace Kernel
         public static void Throw_IndexOutOfRangeException()
         {
             HaltReason = "Index out of range exception.";
-            FOS_System.Exception ex = new FOS_System.Exceptions.IndexOutOfRangeException();
+            FOS_System.Exception ex = new FOS_System.Exceptions.IndexOutOfRangeException(0, 0);
             ex.InstructionAddress = *((uint*)BasePointer + 1);
             Throw(ex);
         }
