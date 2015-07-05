@@ -86,6 +86,9 @@
     <Compile Include="Processes\Synchronisation\Mutex.cs" />
     <Compile Include="Processes\Synchronisation\Semaphore.cs" />
     <Compile Include="Processes\Thread.cs" />
+    <Compile Include="Testing\ATATests.cs" />
+    <Compile Include="Testing\ATA\Tests_PATA_RW.cs" />
+    <Compile Include="Testing\Test.cs" />
     <Compile Include="USB\HCIs\UHCI.cs" />
     <Compile Include="VirtMemManager.cs" />
     <Compile Include="VirtMem\MemoryLayout.cs" />

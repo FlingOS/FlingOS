@@ -107,7 +107,8 @@ namespace Kernel.Core.Shells
                          *              Exceptions1 /   Exceptions2 /   PCBeep      /
                          *              Timer       /   Keyboard    /   FieldsTable /
                          *              IsInst      /   VirtMem     /   Longs       /
-                         *              ThreadSleep /   Heap        /   GC          }
+                         *              ThreadSleep /   Heap        /   GC          /
+                         *              ATA         /                                   }
                          *  - GC   { Cleanup }
                          *  - USB { Update / Eject }
                          *  - Start { Filename } [*KM* / UM] [*Raw*]
@@ -803,6 +804,10 @@ namespace Kernel.Core.Shells
                                     else if (opt1 == "gc")
                                     {
                                         GCTest();
+                                    }
+                                    else if (opt1 == "ata")
+                                    {
+                                        ATATest();
                                     }
                                     else
                                     {
@@ -2070,6 +2075,26 @@ which should have been provided with the executable.");
                 OutputExceptionInfo(ExceptionMethods.CurrentException);
             }
             console.WriteLine("Returning.");
+        }
+        private void ATATest()
+        {
+            new Hardware.Testing.ATATests().Test_LongRead(OutputMessageFromTest, OutputWarningFromTest, OutputErrorFromTest);
+        }
+        private static void OutputMessageFromTest(FOS_System.String TestName, FOS_System.String Message)
+        {
+            Console.Default.WriteLine(TestName + " : " + Message);
+        }
+        private static void OutputWarningFromTest(FOS_System.String TestName, FOS_System.String Message)
+        {
+            Console.Default.WarningColour();
+            OutputMessageFromTest(TestName, Message);
+            Console.Default.DefaultColour();
+        }
+        private static void OutputErrorFromTest(FOS_System.String TestName, FOS_System.String Message)
+        {
+            Console.Default.ErrorColour();
+            OutputMessageFromTest(TestName, Message);
+            Console.Default.DefaultColour();
         }
 
         /// <summary>

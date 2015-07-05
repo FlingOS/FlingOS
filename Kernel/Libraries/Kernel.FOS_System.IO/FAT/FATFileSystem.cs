@@ -600,7 +600,7 @@ namespace Kernel.FOS_System.IO.FAT
 
             if(xClusterNum == ClusterCount)
             {
-                ExceptionMethods.Throw(new FOS_System.Exceptions.IndexOutOfRangeException());
+                ExceptionMethods.Throw(new FOS_System.Exceptions.IndexOutOfRangeException(xClusterNum, ClusterCount));
             }
 
             return xClusterNum;

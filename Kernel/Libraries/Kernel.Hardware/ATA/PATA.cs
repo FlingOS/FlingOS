@@ -69,6 +69,21 @@ namespace Kernel.Hardware.ATA
             }
         }
 
+        public ATA.BusPosition BusPosition
+        {
+            get
+            {
+                return BaseDevice.busPosition;
+            }
+        }
+        public ATA.ControllerID ControllerID
+        {
+            get
+            {
+                return BaseDevice.controllerId;
+            }
+        }
+
         public UInt32 MaxWritePioBlocks
         {
             get
