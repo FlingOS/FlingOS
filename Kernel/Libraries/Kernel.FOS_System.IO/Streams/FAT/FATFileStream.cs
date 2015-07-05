@@ -70,7 +70,7 @@ namespace Kernel.FOS_System.IO.Streams.FAT
         /// <summary>
         /// The position (as an offset from the start of the file) of the stream in the file.
         /// </summary>
-        protected UInt64 mPosition = 0;
+        protected UInt64 position = 0;
         /// <summary>
         /// Gets or sets the position (as an offset from the start of the file) of the stream in the file.
         /// </summary>
@@ -78,7 +78,7 @@ namespace Kernel.FOS_System.IO.Streams.FAT
         {
             get
             {
-                return (long)mPosition;
+                return (long)position;
             }
             set
             {
@@ -86,7 +86,7 @@ namespace Kernel.FOS_System.IO.Streams.FAT
                 {
                     ExceptionMethods.Throw(new Exceptions.ArgumentException("FATFileStream.Position value must be > 0!"));
                 }
-                mPosition = (ulong)value;
+                position = (ulong)value;
             }
         }
 
@@ -122,7 +122,7 @@ namespace Kernel.FOS_System.IO.Streams.FAT
                 //  then ClusterNums will be null and we will have a serious problem! :)
                 return (uint)ClusterNums.Count * TheFATFileSystem.BytesPerCluster;
             }
-            return theFile.Size;
+            return TheFile.Size;
         }
 
         /// <summary>
@@ -159,6 +159,11 @@ namespace Kernel.FOS_System.IO.Streams.FAT
             }
         }
 
+        byte[] ReadClusterBuffer = null;
+        UInt32 ReadClusterSize = 0;
+
+        public bool ActuallyDoRead = true;
+
         /// <summary>
         /// Reads the specified number of bytes from the stream from the current position into the buffer at the 
         /// specified offset or as many bytes as are available before the end of the stream is met.
@@ -184,9 +189,8 @@ namespace Kernel.FOS_System.IO.Streams.FAT
                     }
                 }
 
-                FATFileSystem mFS = (FATFileSystem)TheFile.TheFileSystem;
-                FATFile mFile = TheFATFile;
-
+                FATFileSystem TheFS = (FATFileSystem)TheFile.TheFileSystem;
+                
 #if FATFileStream_TRACE
                 BasicConsole.WriteLine("Checking params...");
 #endif
@@ -208,12 +212,12 @@ namespace Kernel.FOS_System.IO.Streams.FAT
                 {
                     ExceptionMethods.Throw(new Exceptions.ArgumentException("FATFileStream.Read: Invalid offset / length values!"));
                 }
-                else if (mFile.FirstClusterNum == 0)
+                else if (TheFATFile.FirstClusterNum == 0)
                 {
-                    // FirstSector can be 0 for 0 length files
+                    // First cluster number can be 0 for 0 length files
                     return 0;
                 }
-                else if (!IgnoreFileSize && mPosition == mFile.Size)
+                else if (!IgnoreFileSize && position == TheFile.Size)
                 {
                     // EOF
                     return 0;
@@ -224,20 +228,20 @@ namespace Kernel.FOS_System.IO.Streams.FAT
 #endif
                                 
                 // Clamp the count value so that no out of bounds exceptions occur
-                ulong fileSize = 0;
+                ulong FileSize = 0;
                 if (IgnoreFileSize)
                 {
-                    fileSize = (ulong)ClusterNums.Count * TheFATFileSystem.BytesPerCluster;
+                    FileSize = (ulong)ClusterNums.Count * TheFATFileSystem.BytesPerCluster;
                 }
                 else
                 {
-                    fileSize = mFile.Size;
+                    FileSize = TheFile.Size;
                 }
-                ulong xMaxReadableBytes = fileSize - mPosition;
-                ulong xCount = (ulong)count;
-                if (xCount > xMaxReadableBytes)
+                ulong MaxReadableBytes = FileSize - position;
+                ulong ActualCount = (ulong)count;
+                if (ActualCount > MaxReadableBytes)
                 {
-                    xCount = xMaxReadableBytes;
+                    ActualCount = MaxReadableBytes;
                 }
 
 #if FATFileStream_TRACE
@@ -246,8 +250,11 @@ namespace Kernel.FOS_System.IO.Streams.FAT
 
                 //Temporary store of cluster data since we can only
                 //  read entire clusters at a time.
-                byte[] xCluster = mFS.NewClusterArray();
-                UInt32 xClusterSize = mFS.BytesPerCluster;
+                if (ReadClusterBuffer == null)
+                {
+                    ReadClusterBuffer = TheFS.NewClusterArray();
+                    ReadClusterSize = TheFS.BytesPerCluster;
+                }                
 
                 int read = 0;
 
@@ -255,33 +262,33 @@ namespace Kernel.FOS_System.IO.Streams.FAT
                 BasicConsole.WriteLine("Reading data...");
 #endif
                 //Loop reading in the data
-                while (xCount > 0)
+                while (ActualCount > 0)
                 {
-                    UInt32 xClusterIdx = (UInt32)mPosition / xClusterSize;
-                    UInt32 xPosInCluster = (UInt32)mPosition % xClusterSize;
+                    UInt32 ClusterIdx = (UInt32)position / ReadClusterSize;
+                    UInt32 PosInCluster = (UInt32)position % ReadClusterSize;
 #if FATFileStream_TRACE
                     BasicConsole.WriteLine(((FOS_System.String)"Reading cluster ") + ClusterNums[(int)xClusterIdx]);
 #endif
-                    mFS.ReadCluster(ClusterNums[(int)xClusterIdx], xCluster);
+                    TheFS.ReadCluster(ClusterNums[(int)ClusterIdx], ReadClusterBuffer);
 #if FATFileStream_TRACE
                     BasicConsole.WriteLine("Read cluster.");
 #endif
-                    uint xReadSize;
-                    if (xPosInCluster + xCount > xClusterSize)
+                    uint ReadSize;
+                    if (PosInCluster + ActualCount > ReadClusterSize)
                     {
-                        xReadSize = xClusterSize - xPosInCluster;
+                        ReadSize = ReadClusterSize - PosInCluster;
                     }
                     else
                     {
-                        xReadSize = (uint)xCount;
+                        ReadSize = (uint)ActualCount;
                     }
 
                     // TODO: Should we do an argument check here just in case?
-                    FOS_System.Array.Copy(xCluster, (int)xPosInCluster, buffer, offset, (int)xReadSize);
-                    offset += (int)xReadSize;
-                    xCount -= (ulong)xReadSize;
-                    read += (int)xReadSize;
-                    mPosition += xReadSize;
+                    FOS_System.Array.Copy(ReadClusterBuffer, (int)PosInCluster, buffer, offset, (int)ReadSize);
+                    offset += (int)ReadSize;
+                    ActualCount -= (ulong)ReadSize;
+                    read += (int)ReadSize;
+                    position += ReadSize;
                 }
 
 #if FATFileStream_TRACE
@@ -348,8 +355,8 @@ namespace Kernel.FOS_System.IO.Streams.FAT
 
             while(count > 0)
             {
-                UInt32 clusterIdx = (UInt32)mPosition / xClusterSize;
-                UInt32 posInCluster = (UInt32)mPosition % xClusterSize;
+                UInt32 clusterIdx = (UInt32)position / xClusterSize;
+                UInt32 posInCluster = (UInt32)position % xClusterSize;
 
                 bool newCluster = false;
                 while (clusterIdx >= ClusterNums.Count)
@@ -395,7 +402,7 @@ namespace Kernel.FOS_System.IO.Streams.FAT
 
                 count -= writeSize;
                 offset += writeSize;
-                mPosition += (uint)writeSize;
+                position += (uint)writeSize;
             }
 
             mFS.CleanDiskCaches();
@@ -404,10 +411,10 @@ namespace Kernel.FOS_System.IO.Streams.FAT
 
             if (!IgnoreFileSize)
             {
-                if (mPosition > mFile.Size)
+                if (position > mFile.Size)
                 {
                     //Update file info
-                    mFile.Size = mPosition;
+                    mFile.Size = position;
                     //Update directory entry
                     mFile.Parent.WriteListings();
                 }

@@ -55,8 +55,8 @@ namespace Kernel.Hardware.Testing
                 bool a = true;
                 OutputMessage("ATATests : Test_LongRead", "done.");
 
-                OutputMessage("ATATests : Test_LongRead", "Reading disk one sector at a time...");
-                // Attempt to read every sector of the disk 1 at a time
+                OutputMessage("ATATests : Test_LongRead", "Reading disk 32 sectors at a time...");
+                // Attempt to read every sector of the disk 32 at a time
                 for (ulong i = 0; i < FractionOfDisk; i += 32, dist += 32)
                 {
                     TestDevice.ReadBlock(i, 32, buffer);

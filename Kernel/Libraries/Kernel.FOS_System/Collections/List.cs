@@ -62,7 +62,7 @@ namespace Kernel.FOS_System.Collections
         /// </summary>
         public int Count
         {
-            [Compiler.NoDebug]
+            [Drivers.Compiler.Attributes.NoGC]
             [Drivers.Compiler.Attributes.NoDebug]
             get
             {
@@ -71,6 +71,8 @@ namespace Kernel.FOS_System.Collections
         }
         public int Capacity
         {
+            [Drivers.Compiler.Attributes.NoGC]
+            [Drivers.Compiler.Attributes.NoDebug]
             get
             {
                 return _array.Length;

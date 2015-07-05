@@ -94,6 +94,69 @@ namespace Kernel.FOS_System
             }
         }
 
+        internal static Processes.Synchronisation.SpinLock HeapAccessLock;
+        internal static bool HeapAccessLockInitialised = false;
+
+        [Compiler.NoDebug]
+        [Drivers.Compiler.Attributes.NoDebug]
+        [Compiler.NoGC]
+        [Drivers.Compiler.Attributes.NoGC]
+        private static void EnterCritical(FOS_System.String caller)
+        {
+            //BasicConsole.WriteLine("Entering critical section...");
+            if (HeapAccessLockInitialised)
+            {
+                if (HeapAccessLock == null)
+                {
+                    BasicConsole.WriteLine("HeapAccessLock is initialised but null?!");
+                    BasicConsole.DelayOutput(10);
+                }
+                else
+                {
+                    if (HeapAccessLock.Locked)
+                    {
+                        BasicConsole.SetTextColour(BasicConsole.warning_colour);
+                        BasicConsole.WriteLine("Warning: Heap about to try to re-enter spin lock...");
+                        BasicConsole.Write("Enter lock caller: ");
+                        BasicConsole.WriteLine(caller);
+                        BasicConsole.SetTextColour(BasicConsole.default_colour);
+                    }
+                    HeapAccessLock.Enter();
+                }
+            }
+            //else
+            //{
+            //    BasicConsole.WriteLine("HeapAccessLock not initialised - ignoring lock conditions.");
+            //    BasicConsole.DelayOutput(5);
+            //}
+        }
+        [Compiler.NoDebug]
+        [Drivers.Compiler.Attributes.NoDebug]
+        [Compiler.NoGC]
+        [Drivers.Compiler.Attributes.NoGC]
+        private static void ExitCritical()
+        {
+            //BasicConsole.WriteLine("Exiting critical section...");
+            if (HeapAccessLockInitialised)
+            {
+                if (HeapAccessLock == null)
+                {
+                    BasicConsole.WriteLine("HeapAccessLock is initialised but null?!");
+                    BasicConsole.DelayOutput(10);
+                }
+                else
+                {
+                    HeapAccessLock.Exit();
+                }
+            }
+            //else
+            //{
+            //    BasicConsole.WriteLine("HeapAccessLock not initialised - ignoring lock conditions.");
+            //    BasicConsole.DelayOutput(5);
+            //}
+        }
+
+
         /// <summary>
         /// Calculates the total amount of memory in the heap.
         /// </summary>
@@ -347,7 +410,7 @@ namespace Kernel.FOS_System
             BasicConsole.WriteLine("Attempt to alloc mem....");
             BasicConsole.SetTextColour(BasicConsole.default_colour);
 #endif
-
+            
             if (PreventAllocation)
             {
                 BasicConsole.SetTextColour(BasicConsole.error_colour);
@@ -357,6 +420,8 @@ namespace Kernel.FOS_System
                 BasicConsole.SetTextColour(BasicConsole.default_colour);
                 return null;
             }
+
+            EnterCritical("Alloc");
 
             HeapBlock* b;
             byte* bm;
@@ -417,6 +482,8 @@ namespace Kernel.FOS_System
                                 {
                                     result = (void*)((((UInt32)result) + (boundary - 1)) & ~(boundary - 1));
                                 }
+
+                                ExitCritical();
                                 return result;
                             }
 
@@ -434,6 +501,8 @@ namespace Kernel.FOS_System
             BasicConsole.SetTextColour(BasicConsole.default_colour);
             BasicConsole.DelayOutput(2);
 #endif
+
+            ExitCritical();
             return null;
         }
         /// <summary>
@@ -446,6 +515,8 @@ namespace Kernel.FOS_System
         [Drivers.Compiler.Attributes.NoGC]
         public static void Free(void* ptr)
         {
+            EnterCritical("Free");
+
             HeapBlock* b;
             UInt32* ptroff;
             UInt32 bi, x;
@@ -465,7 +536,7 @@ namespace Kernel.FOS_System
                     bm = (byte*)&b[1];
                     /* clear allocation */
                     id = bm[bi];
-                    /* oddly.. GCC did not optimize this */
+                    /* oddly.. HeapC did not optimize this */
                     max = b->size / b->bsize;
                     for (x = bi; bm[x] == id && x < max; ++x)
                     {
@@ -473,12 +544,14 @@ namespace Kernel.FOS_System
                     }
                     /* update free block count */
                     b->used -= x - bi;
+
+                    ExitCritical();
                     return;
                 }
             }
 
             /* this error needs to be raised or reported somehow */
-            return;
+            ExitCritical();
         }
     }
 }

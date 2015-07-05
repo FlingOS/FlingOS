@@ -108,10 +108,10 @@ namespace Kernel.Core.Shells
                          *              Timer       /   Keyboard    /   FieldsTable /
                          *              IsInst      /   VirtMem     /   Longs       /
                          *              ThreadSleep /   Heap        /   GC          /
-                         *              ATA         /                                   }
+                         *              ATA         /   USB                             }
                          *  - GC   { Cleanup }
                          *  - USB { Update / Eject }
-                         *  - Start { Filename } [*KM* / UM] [*Raw*]
+                         *  - Start { Filename } [*KM* / UM] [*Raw* / ELF]
                          *  - ILY
                          *  - Show { c / w }
                          *  - Help { <Command Name> }
@@ -808,6 +808,10 @@ namespace Kernel.Core.Shells
                                     else if (opt1 == "ata")
                                     {
                                         ATATest();
+                                    }
+                                    else if (opt1 == "usb")
+                                    {
+                                        USBTest();
                                     }
                                     else
                                     {
@@ -1636,16 +1640,34 @@ which should have been provided with the executable.");
                     console.WriteLine(fileName);
 
                     FOS_System.IO.Streams.FileStream fileStream = FOS_System.IO.Streams.FileStream.Create(aFile);
-                    int offset = 0;
-                    byte[] xData = new byte[(int)(uint)aFile.TheFileSystem.ThePartition.BlockSize];
-                    while (offset < (int)(uint)aFile.Size)
+                    
+                    ((FOS_System.IO.Streams.FAT.FATFileStream)fileStream).ActuallyDoRead = false;
+
+                    byte[] DataBuffer = aFile.TheFileSystem.ThePartition.NewBlockArray(1);
+                    console.Write("[");
+                    int x = 0;
+                    int max = 79;
+                    while ((ulong)fileStream.Position < aFile.Size)
                     {
-                        int actuallyRead = fileStream.Read(xData, 0, xData.Length);
-                        FOS_System.String xText = ByteConverter.GetASCIIStringFromASCII(xData, 0u, (uint)actuallyRead);
-                        console.Write(xText);
-                        offset += actuallyRead;
+                        int actuallyRead = fileStream.Read(DataBuffer, 0, DataBuffer.Length);
+                        console.Write(".");
+                        //FOS_System.String xText = ByteConverter.GetASCIIStringFromASCII(DataBuffer, 0u, (uint)actuallyRead);
+                        //console.Write(xText);
+
+                        x++;
+                        if (x == max)
+                        {
+                            Hardware.Processes.Thread.Sleep(1000);
+                            x = 0;
+                            max = 80;
+                        }
+
+                        if (actuallyRead == 0)
+                        {
+                            break;
+                        }
                     }
-                    console.WriteLine();
+                    console.WriteLine("]");
                 }
                 else
                 {
@@ -2079,6 +2101,10 @@ which should have been provided with the executable.");
         private void ATATest()
         {
             new Hardware.Testing.ATATests().Test_LongRead(OutputMessageFromTest, OutputWarningFromTest, OutputErrorFromTest);
+        }
+        private void USBTest()
+        {
+            new Hardware.Testing.USBTests().Test_LongRead(OutputMessageFromTest, OutputWarningFromTest, OutputErrorFromTest);
         }
         private static void OutputMessageFromTest(FOS_System.String TestName, FOS_System.String Message)
         {
