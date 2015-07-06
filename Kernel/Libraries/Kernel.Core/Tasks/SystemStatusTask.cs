@@ -43,8 +43,6 @@ namespace Kernel.Core.Tasks
         {
             BasicConsole.Clear();
             Console.InitDefault();
-            Console.Default.ScreenHeightInLines = 25 - 8;
-            Console.Default.ScreenStartLine = 8;
 
             // Wait for other system startup to occur
             Thread.Sleep(1000);
@@ -67,6 +65,10 @@ namespace Kernel.Core.Tasks
             bool StatusLine1 = true;
 
             Hardware.DeviceManager.AddDeviceAddedListener(DeviceManager_DeviceAdded, null);
+
+            Thread.Sleep(500);
+            Console.Default.ScreenHeightInLines = 25 - 8;
+            Console.Default.ScreenStartLine = 8;
 
             while (!Terminating)
             {

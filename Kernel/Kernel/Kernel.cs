@@ -48,7 +48,7 @@ namespace Kernel
         {
             BasicConsole.Init();
             BasicConsole.Clear();
-
+            
 #if DEBUG
             //Debug.BasicDebug.Init();
 #endif
@@ -76,6 +76,9 @@ namespace Kernel
         [Drivers.Compiler.Attributes.NoDebug]
         static unsafe void Main()
         {
+            Hardware.IO.Serial.Serial.InitCOM1();
+            BasicConsole.SecondaryOutput = SecondaryOutput;
+
             BasicConsole.WriteLine("Fling OS  Copyright (C) 2015  Edward Nutting");
             BasicConsole.WriteLine("This program comes with ABSOLUTELY NO WARRANTY;.");
             BasicConsole.WriteLine("This is free software, and you are welcome to redistribute it");
@@ -205,6 +208,8 @@ namespace Kernel
         [Drivers.Compiler.Attributes.NoGC]
         public static void Halt(uint lastAddress)
         {
+            BasicConsole.PrimaryOutputEnabled = true;
+
             try
             {
                 Hardware.Devices.Keyboard.CleanDefault();
@@ -344,7 +349,9 @@ namespace Kernel
                 Hardware.Devices.Keyboard.InitDefault();
                 Core.Console.InitDefault();
                 Core.Shell.InitDefault();
+                BasicConsole.PrimaryOutputEnabled = false;
                 Core.Shell.Default.Execute();
+                BasicConsole.PrimaryOutputEnabled = true;
 
                 if (!Core.Shell.Default.Terminating)
                 {
@@ -359,6 +366,7 @@ namespace Kernel
             }
             catch
             {
+                BasicConsole.PrimaryOutputEnabled = true;
                 OutputCurrentExceptionInfo();
             }
             
@@ -389,6 +397,14 @@ namespace Kernel
         private static void OutputDivider()
         {
             BasicConsole.WriteLine("---------------------");
+        }
+
+        private static bool InsideSecondaryOutput = false;
+        [Drivers.Compiler.Attributes.NoGC]
+        [Drivers.Compiler.Attributes.NoDebug]
+        private static void SecondaryOutput(FOS_System.String str)
+        {
+            Hardware.IO.Serial.Serial.COM1.Write(str);
         }
 
         public static void OutputAddressDetectedMethod(uint EIP, uint OpNum)
