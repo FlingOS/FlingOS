@@ -126,7 +126,11 @@ namespace Kernel.Hardware.Tasks
                             dur_ms = dur_ms
                         };
 
-                        Hardware.Timers.PIT.ThePIT.PlaySound((int)note);
+                        if (note != Timers.PIT.MusicalNote.Silent)
+                        {
+                            Hardware.Timers.PIT.ThePIT.PlaySound((int)note);
+                        }
+
                         Playing = true;
 
                         state.handlerId = Hardware.Timers.PIT.ThePIT.RegisterHandler(new Hardware.Timers.PITHandler(SysCall_StopNoteHandler, state, 1000000L * do_ms, true));

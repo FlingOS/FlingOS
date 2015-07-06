@@ -51,13 +51,57 @@ namespace KernelABI
             //int x = 0xF;
             //int y = 0xF;
             //int z = x < y ? x : y;
-            
+
+            byte bpm = 180;
             while (true)
             {
                 *((ushort*)0xB881E) = (0x1F00 | '3');
                 SystemCalls.Sleep(1000);
                 *((ushort*)0xB881E) = (0x3F00 | '4');
                 SystemCalls.Sleep(1000);
+
+                //bpm += 1;
+                SystemCalls.PlayNote(
+                    SystemCalls.MusicalNote.C4,
+                    SystemCalls.MusicalNoteValue.Quaver,
+                    bpm);
+                SystemCalls.PlayNote(
+                    SystemCalls.MusicalNote.Silent,
+                    SystemCalls.MusicalNoteValue.Minim,
+                    bpm);
+                SystemCalls.PlayNote(
+                    SystemCalls.MusicalNote.E4,
+                    SystemCalls.MusicalNoteValue.Quaver,
+                    bpm);
+                SystemCalls.PlayNote(
+                    SystemCalls.MusicalNote.Silent,
+                    SystemCalls.MusicalNoteValue.Minim,
+                    bpm);
+                SystemCalls.PlayNote(
+                    SystemCalls.MusicalNote.G4,
+                    SystemCalls.MusicalNoteValue.Quaver,
+                    bpm);
+                SystemCalls.PlayNote(
+                    SystemCalls.MusicalNote.Silent,
+                    SystemCalls.MusicalNoteValue.Minim,
+                    bpm);
+                SystemCalls.PlayNote(
+                    SystemCalls.MusicalNote.C5,
+                    SystemCalls.MusicalNoteValue.Minim,
+                    bpm);
+                SystemCalls.PlayNote(
+                    SystemCalls.MusicalNote.Silent,
+                    SystemCalls.MusicalNoteValue.Minim,
+                    bpm);
+                SystemCalls.PlayNote(
+                    SystemCalls.MusicalNote.G4,
+                    SystemCalls.MusicalNoteValue.Minim,
+                    bpm);
+                SystemCalls.PlayNote(
+                    SystemCalls.MusicalNote.C5,
+                    SystemCalls.MusicalNoteValue.Minim,
+                    bpm);
+                
             }
         }
         
