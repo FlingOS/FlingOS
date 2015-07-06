@@ -25,7 +25,7 @@
 #endregion
     
 #define MSD_TRACE
-#undef MSD_TRACE
+//#undef MSD_TRACE
 
 #define DEVICE_INFO
 #undef DEVICE_INFO

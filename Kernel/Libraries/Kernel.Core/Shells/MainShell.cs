@@ -2055,16 +2055,21 @@ which should have been provided with the executable.");
             {
                 console.WriteLine("Testing heap...");
                 uint allocSize = 16;
-                while (Heap.GetTotalFreeMem() - 0x10000 > 0)
+                while (Heap.GetTotalFreeMem() - 0x100000 > 0)
                 {
-                    void* val = Heap.Alloc(allocSize);
+                    byte* val = (byte*)Heap.Alloc(allocSize);
                     if (val == null)
                     {
                         break;
                     }
                     else
                     {
-                        //allocSize *= 2;
+                        for (int i = 0; i < allocSize; i++)
+                        {
+                            val[i] = 0xFF;
+                        }
+
+                        allocSize *= 2;
                         if (allocSize > 4096)
                         {
                             allocSize = 16;

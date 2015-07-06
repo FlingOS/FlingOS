@@ -25,7 +25,7 @@
 #endregion
     
 #define EHCI_TRACE
-#undef EHCI_TRACE
+//#undef EHCI_TRACE
 
 #if EHCI_TRACE
     #define EHCI_TESTS
@@ -801,7 +801,7 @@ namespace Kernel.Hardware.USB.HCIs
             DBGMSG("HCIVersion: " + (FOS_System.String)HCIVersion);
             DBGMSG("HCSParams: " + (FOS_System.String)HCSParams);
             DBGMSG("HCCParams: " + (FOS_System.String)HCCParams);
-            DBGMSG("HCSPPortRouteDesc: " + (FOS_System.String)HCSPPortRouteDesc);
+            //DBGMSG("HCSPPortRouteDesc: " + (FOS_System.String)HCSPPortRouteDesc);
             DBGMSG("OpRegAddr: " + (FOS_System.String)(uint)OpRegAddr);
 #endif
             // Number of root ports 
@@ -1621,25 +1621,14 @@ namespace Kernel.Hardware.USB.HCIs
 #if EHCI_TRACE
             DBGMSG(((FOS_System.String)"IN Transaction : buffer=") + (uint)buffer);
 
-            DBGMSG(((FOS_System.String)"IN Transaction : Before CreateQTD : bufferPtr=&qTDBuffer=") + (uint)bufferPtr + 
-                                        ", *bufferPtr=" + (uint)(*bufferPtr));
+            DBGMSG(((FOS_System.String)"IN Transaction : Before CreateQTD : bufferPtr=&qTDBuffer=") + (uint)buffer);
 #endif
 
             // Create and initialise the IN queue transfer descriptor
             eTransaction.qTD = CreateQTD_IO(null, 1, toggle, length, length);
 
 #if EHCI_TRACE
-            DBGMSG(((FOS_System.String)"IN Transaction : After CreateQTD : bufferPtr=&qTDBuffer=") + (uint)bufferPtr +
-                                        ", *bufferPtr=" + (uint)(*bufferPtr) + ", Buffer0=" + (uint)qtd.Buffer0);
-            for (int i = 0; i < length; i++)
-            {
-                ((byte*)eTransaction.qTDBuffer)[i] = 0xDE;
-                ((byte*)buffer)[i] = 0xBF;
-            }
-            for (int i = length; i < 0x1000; i++)
-            {
-                ((byte*)eTransaction.qTDBuffer)[i] = 0x56;
-            }
+            DBGMSG(((FOS_System.String)"IN Transaction : After CreateQTD : bufferPtr=&qTDBuffer=") + (uint)buffer + ", Buffer0=" + (uint)eTransaction.qTD.Buffer0);
 #endif
             // If the number of existing transactions is greater than 0
             //  i.e. some transactions have already been added. 
@@ -1731,8 +1720,8 @@ namespace Kernel.Hardware.USB.HCIs
             {
                 EHCITransaction transaction1 = (EHCITransaction)((USBTransaction)transfer.transactions[k]).underlyingTz;
                 EHCITransaction transaction2 = (EHCITransaction)((USBTransaction)transfer.transactions[k + 1]).underlyingTz;
-                EHCI_qTD qtd1 = new EHCI_qTD(transaction1.qTD);
-                treeOK = treeOK && (qtd1.NextqTDPointer == transaction2.qTD) && !qtd1.NextqTDPointerTerminate;
+                EHCI_qTD qtd1 = transaction1.qTD;
+                treeOK = treeOK && (qtd1.NextqTDPointer == transaction2.qTD.qtd) && !qtd1.NextqTDPointerTerminate;
             }
             {
                 treeOK = treeOK && lastQTD.NextqTDPointerTerminate;
@@ -1762,7 +1751,7 @@ namespace Kernel.Hardware.USB.HCIs
                 for (int k = 0; k < transfer.transactions.Count; k++)
                 {
                     EHCITransaction transaction = (EHCITransaction)((USBTransaction)transfer.transactions[k]).underlyingTz;
-                    byte status = new EHCI_qTD(transaction.qTD).Status;
+                    byte status = transaction.qTD.Status;
                     transfer.success = transfer.success && (status == 0 || status == Utils.BIT(0));
 
                     DBGMSG(((FOS_System.String)"PRE Issue: Transaction ") + k + " status: " + status);
@@ -1852,7 +1841,7 @@ namespace Kernel.Hardware.USB.HCIs
                 {
 #if EHCI_TRACE
                     DBGMSG(((FOS_System.String)"Doing MemCpy of in data... inBuffer=") + (uint)transaction.inBuffer + 
-                                               ", qTDBuffer=" + (uint)transaction.qTDBuffer + 
+                                               ", qTDBuffer=" + (uint)transaction.qTD.qtd + 
                                                ", inLength=" + transaction.inLength + ", Data to copy: ");
 #endif
                     // Copy the memory
@@ -1861,7 +1850,7 @@ namespace Kernel.Hardware.USB.HCIs
 #if EHCI_TRACE
                     for (int i = 0; i < transaction.inLength; i++)
                     {
-                        DBGMSG(((FOS_System.String)"i=") + i + ", qTDBuffer[i]=" + ((byte*)transaction.qTDBuffer)[i] + ", inBuffer[i]=" + ((byte*)transaction.inBuffer)[i]);
+                        DBGMSG(((FOS_System.String)"i=") + i + ", qTDBuffer[i]=" + ((byte*)transaction.qTD.qtd)[i] + ", inBuffer[i]=" + ((byte*)transaction.inBuffer)[i]);
                     }
 #endif
 #if EHCI_TRACE

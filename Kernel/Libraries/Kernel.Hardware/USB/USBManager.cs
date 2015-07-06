@@ -25,7 +25,7 @@
 #endregion
     
 #define USB_TRACE
-#undef USB_TRACE
+//#undef USB_TRACE
 
 using System;
 using Kernel.FOS_System.Collections;
