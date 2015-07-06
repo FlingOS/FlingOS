@@ -333,7 +333,7 @@ namespace Kernel.Hardware.USB.HCIs
             BasicConsole.DelayOutput(1);
 #endif
 
-            UHCI_QueueHead_Struct* qh = (UHCI_QueueHead_Struct*)FOS_System.Heap.Alloc((uint)sizeof(UHCI_QueueHead_Struct), 16);
+            UHCI_QueueHead_Struct* qh = (UHCI_QueueHead_Struct*)FOS_System.Heap.AllocZeroedAPB((uint)sizeof(UHCI_QueueHead_Struct), 1024);
             qh->next = (UHCI_QueueHead_Struct*)UHCI_Consts.BIT_T;
             qh->transfer = (UHCI_qTD_Struct*)UHCI_Consts.BIT_T;
             qh->q_first = null;
@@ -970,7 +970,7 @@ namespace Kernel.Hardware.USB.HCIs
             BasicConsole.DelayOutput(5);
 #endif
 
-            UHCI_qTD_Struct* td = (UHCI_qTD_Struct*)FOS_System.Heap.Alloc((uint)sizeof(UHCI_qTD_Struct), 16);
+            UHCI_qTD_Struct* td = (UHCI_qTD_Struct*)FOS_System.Heap.AllocZeroedAPB((uint)sizeof(UHCI_qTD_Struct), 1024);
 
             if ((uint)next != Utils.BIT(0))
             {
@@ -995,8 +995,7 @@ namespace Kernel.Hardware.USB.HCIs
             BasicConsole.DelayOutput(5);
 #endif
 
-            td->virtBuffer = FOS_System.Heap.Alloc(1024);
-            MemoryUtils.ZeroMem(td->virtBuffer, 1024);
+            td->virtBuffer = FOS_System.Heap.AllocZeroed(1024, 1024);
             td->buffer = (uint*)VirtMemManager.GetPhysicalAddress(td->virtBuffer);
 
             return td->virtBuffer;
@@ -1125,7 +1124,7 @@ namespace Kernel.Hardware.USB.HCIs
     }
 
     // Transfer Descriptors (TD) are always aligned on 16-byte boundaries.
-    // All transfer descriptors have the same basic, 32-byte structure.
+    // All transfer descriptors have the same basic, 1024-byte structure.
     // The last 4 DWORDs are for software use.
     [System.Runtime.InteropServices.StructLayout(System.Runtime.InteropServices.LayoutKind.Sequential, Pack = 1)]
     public unsafe struct UHCI_qTD_Struct

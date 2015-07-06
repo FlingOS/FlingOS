@@ -372,6 +372,33 @@ namespace Kernel.FOS_System
         {
             return AllocZeroed(size, 1);
         }
+
+        /// <summary>
+        /// Avoids Page Boundary.
+        /// </summary>
+        /// <param name="size"></param>
+        /// <param name="boundary"></param>
+        /// <returns></returns>
+        public static void* AllocZeroedAPB(UInt32 size, UInt32 boundary)
+        {
+            void* result = null;
+            UInt32 resultAddr;
+            bool looped = false;
+            do
+            {
+                void* oldValue = result;
+                result = AllocZeroed(size, boundary);
+                resultAddr = (UInt32)result;
+                if (oldValue != null)
+                {
+                    Free(oldValue);
+                }
+            }
+            while (resultAddr / 0x1000 != (resultAddr + size) / 0x1000);
+
+            return result;
+        }
+
         /// <summary>
         /// Attempts to allocate the specified amount of memory from the heap and then zero all of it.
         /// </summary>

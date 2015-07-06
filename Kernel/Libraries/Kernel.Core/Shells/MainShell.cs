@@ -1356,7 +1356,7 @@ which should have been provided with the executable.");
 
             console.Write("[");
 
-            int percentile = (int)(uint)FOS_System.Math.Divide(srcFile.Size, 100u);
+            int percentile = (int)(uint)FOS_System.Math.Divide(srcFile.Size, 78u);
             int dist = 0;
             while ((ulong)srcStr.Position < srcFile.Size)
             {
@@ -1644,22 +1644,20 @@ which should have been provided with the executable.");
                     ((FOS_System.IO.Streams.FAT.FATFileStream)fileStream).ActuallyDoRead = false;
 
                     byte[] DataBuffer = aFile.TheFileSystem.ThePartition.NewBlockArray(1);
-                    console.Write("[");
-                    int x = 0;
-                    int max = 79;
+                    Tasks.SystemStatusTask.MainConsole.Write("[");
+                    ulong percentile = FOS_System.Math.Divide(aFile.Size, 53u);
+                    ulong pos = 0;
                     while ((ulong)fileStream.Position < aFile.Size)
                     {
                         int actuallyRead = fileStream.Read(DataBuffer, 0, DataBuffer.Length);
-                        console.Write(".");
-                        //FOS_System.String xText = ByteConverter.GetASCIIStringFromASCII(DataBuffer, 0u, (uint)actuallyRead);
-                        //console.Write(xText);
-
-                        x++;
-                        if (x == max)
+                        FOS_System.String xText = ByteConverter.GetASCIIStringFromASCII(DataBuffer, 0u, (uint)actuallyRead);
+                        console.Write(xText);
+                        
+                        pos += (ulong)actuallyRead;
+                        if (pos >= percentile)
                         {
-                            Hardware.Processes.Thread.Sleep(1000);
-                            x = 0;
-                            max = 80;
+                            pos -= percentile;
+                            Tasks.SystemStatusTask.MainConsole.Write(".");
                         }
 
                         if (actuallyRead == 0)
@@ -1667,7 +1665,7 @@ which should have been provided with the executable.");
                             break;
                         }
                     }
-                    console.WriteLine("]");
+                    Tasks.SystemStatusTask.MainConsole.WriteLine("]");
                 }
                 else
                 {

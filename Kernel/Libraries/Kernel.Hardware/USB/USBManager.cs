@@ -25,7 +25,7 @@
 #endregion
     
 #define USB_TRACE
-//#undef USB_TRACE
+#undef USB_TRACE
 
 using System;
 using Kernel.FOS_System.Collections;
@@ -677,7 +677,7 @@ namespace Kernel.Hardware.USB
             DBGMSG("USB: GET_DESCRIPTOR Device");
 #endif
 
-            DeviceDescriptor* descriptor = (DeviceDescriptor*)FOS_System.Heap.AllocZeroed((uint)sizeof(DeviceDescriptor));
+            DeviceDescriptor* descriptor = (DeviceDescriptor*)FOS_System.Heap.AllocZeroedAPB((uint)sizeof(DeviceDescriptor), 1024);
             USBTransfer transfer = new USBTransfer();
             try
             {
@@ -744,7 +744,7 @@ namespace Kernel.Hardware.USB
 
             //64 byte buffer
             ushort bufferSize = 64;
-            byte* buffer = (byte*)FOS_System.Heap.AllocZeroed(bufferSize);
+            byte* buffer = (byte*)FOS_System.Heap.AllocZeroedAPB(bufferSize, 1024);
 
             USBTransfer transfer = new USBTransfer();
             device.hc.SetupTransfer(device, transfer, USBTransferType.Control, 0, bufferSize);
@@ -884,7 +884,7 @@ namespace Kernel.Hardware.USB
             DBGMSG("USB: GET_DESCRIPTOR string");
 #endif
 
-            StringDescriptor* descriptor = (StringDescriptor*)FOS_System.Heap.AllocZeroed((uint)sizeof(StringDescriptor));
+            StringDescriptor* descriptor = (StringDescriptor*)FOS_System.Heap.AllocZeroedAPB((uint)sizeof(StringDescriptor), 1024);
 
             try
             {
@@ -923,7 +923,7 @@ namespace Kernel.Hardware.USB
 
             //64 byte buffer
             ushort bufferSize = 64;
-            byte* buffer = (byte*)FOS_System.Heap.AllocZeroed(bufferSize);
+            byte* buffer = (byte*)FOS_System.Heap.AllocZeroedAPB(bufferSize, 1024);
 
             USBTransfer transfer = new USBTransfer();
             device.hc.SetupTransfer(device, transfer, USBTransferType.Control, 0, bufferSize);

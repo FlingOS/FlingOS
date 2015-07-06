@@ -30,10 +30,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-//using KernelABI;
-using Kernel.FOS_System;
+//using Drivers.Framework;
 
-namespace Drivers.Framework
+namespace KernelABI
 {
     public static class TestClass
     {
@@ -41,19 +40,27 @@ namespace Drivers.Framework
         [Drivers.Compiler.Attributes.NoGC]
         static TestClass()
         {
+            //Drivers.Framework.Type x;
         }
 
         [Drivers.Compiler.Attributes.NoDebug]
         [Drivers.Compiler.Attributes.NoGC]
         [Drivers.Compiler.Attributes.MainMethod]
-        public static void Test()
+        public static unsafe void Test()
         {
-            int x = 0xF;
-            int y = 0xF;
-            int z = Kernel.FOS_System.Math.Min(x, y);
-            //KernelABI.SystemCalls.Call(SystemCalls.Calls.Sleep, 1000, 0, 0);
+            //int x = 0xF;
+            //int y = 0xF;
+            //int z = x < y ? x : y;
+            
+            while (true)
+            {
+                *((ushort*)0xB881E) = (0x1F00 | '3');
+                SystemCalls.Sleep(1000);
+                *((ushort*)0xB881E) = (0x3F00 | '4');
+                SystemCalls.Sleep(1000);
+            }
         }
-
+        
         [Drivers.Compiler.Attributes.NoDebug]
         [Drivers.Compiler.Attributes.NoGC]
         [Drivers.Compiler.Attributes.CallStaticConstructorsMethod]

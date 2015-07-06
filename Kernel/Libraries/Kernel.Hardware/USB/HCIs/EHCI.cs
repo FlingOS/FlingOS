@@ -25,7 +25,7 @@
 #endregion
     
 #define EHCI_TRACE
-//#undef EHCI_TRACE
+#undef EHCI_TRACE
 
 #if EHCI_TRACE
     #define EHCI_TESTS
@@ -283,7 +283,7 @@ namespace Kernel.Hardware.USB.HCIs
         /// Constant to set the number of times that software should re-attempt to send a transfer 
         /// in the async schedule.
         /// </summary>
-        public static uint NumAsyncListRetries = 3;
+        public static uint NumAsyncListRetries = 1; //Min val. = 1
     }
     /// <summary>
     /// The types of queue head (under EHCI): IN, OUT or SETUP.
@@ -1363,7 +1363,8 @@ namespace Kernel.Hardware.USB.HCIs
                     USBIntCount--;
                 }
 #if EHCI_TRACE
-                DBGMSG(((FOS_System.String)"EHCI: USB Interrupt occurred! USBIntCount: ") + USBIntCount);
+                //DBGMSG(((FOS_System.String)"EHCI: USB Interrupt occurred! USBIntCount: ") + USBIntCount);
+                DBGMSG("EHCI: USB Interrupt occurred!");
 #endif
             }
 
@@ -1556,7 +1557,7 @@ namespace Kernel.Hardware.USB.HCIs
             // Note: This sets the virtual address. This allows it to be accessed and freed by the 
             //       driver. However, when passing the address to the HC, it must be converted to
             //       a physical address.
-            transfer.underlyingTransferData = (EHCI_QueueHead_Struct*)FOS_System.Heap.AllocZeroed((uint)sizeof(EHCI_QueueHead_Struct), 32);
+            transfer.underlyingTransferData = (EHCI_QueueHead_Struct*)FOS_System.Heap.AllocZeroedAPB((uint)sizeof(EHCI_QueueHead_Struct), 1024);
         }
         /// <summary>
         /// Sets up a SETUP transaction and adds it to the specified transfer.
@@ -1721,10 +1722,38 @@ namespace Kernel.Hardware.USB.HCIs
                 EHCITransaction transaction1 = (EHCITransaction)((USBTransaction)transfer.transactions[k]).underlyingTz;
                 EHCITransaction transaction2 = (EHCITransaction)((USBTransaction)transfer.transactions[k + 1]).underlyingTz;
                 EHCI_qTD qtd1 = transaction1.qTD;
-                treeOK = treeOK && (qtd1.NextqTDPointer == transaction2.qTD.qtd) && !qtd1.NextqTDPointerTerminate;
+                treeOK = treeOK && (qtd1.NextqTDPointer == VirtMemManager.GetPhysicalAddress(transaction2.qTD.qtd)) && !qtd1.NextqTDPointerTerminate;
+                if (!treeOK)
+                {
+                    BasicConsole.Write(((FOS_System.String)"Incorrect tansfer index: ") + k);
+                    if (qtd1.NextqTDPointer != VirtMemManager.GetPhysicalAddress(transaction2.qTD.qtd))
+                    {
+                        BasicConsole.WriteLine(((FOS_System.String)"    > Pointers incorrect! QTD1.NextPtr=") + (uint)qtd1.NextqTDPointer + ", &QTD2=" + (uint)VirtMemManager.GetPhysicalAddress(transaction2.qTD.qtd));
+                    }
+                    else if (qtd1.NextqTDPointerTerminate)
+                    {
+                        BasicConsole.WriteLine("    > QTD1.NextTerminate incorrect!");
+                    }
+                    else
+                    {
+                        BasicConsole.WriteLine("    > Previous transaction was incorrect.");
+                    }
+                }
             }
             {
                 treeOK = treeOK && lastQTD.NextqTDPointerTerminate;
+                if (!treeOK)
+                {
+                    BasicConsole.WriteLine("Incorrect tansfer index: last");
+                    if (!lastQTD.NextqTDPointerTerminate)
+                    {
+                        BasicConsole.WriteLine("    > LastQTD.NextTerminate incorrect!");
+                    }
+                    else
+                    {
+                        BasicConsole.WriteLine("    > Previous transaction was incorrect.");
+                    }
+                }
             }
             DBGMSG(((FOS_System.String)"Transfer transactions tree OK: ") + treeOK);
             BasicConsole.DelayOutput(10);
@@ -1812,6 +1841,17 @@ namespace Kernel.Hardware.USB.HCIs
                     {
                         DBGMSG(((FOS_System.String)"EHCI: Retry transfer: ") + (i + 1));
                         BasicConsole.DelayOutput(2);
+
+                        // Reset the status bits so the transactions are active again
+                        for (int k = 0; k < transfer.transactions.Count; k++)
+                        {
+                            EHCITransaction transaction = (EHCITransaction)((USBTransaction)transfer.transactions[k]).underlyingTz;
+                            byte status = transaction.qTD.Status;
+                            if (!(status == 0 || status == Utils.BIT(0)))
+                            {
+                                transaction.qTD.Status = 0x80;
+                            }
+                        }
                     }
 #endif
                 }
@@ -1848,10 +1888,10 @@ namespace Kernel.Hardware.USB.HCIs
                     Utilities.MemoryUtils.MemCpy_32((byte*)transaction.inBuffer, theQTD.Buffer0VirtAddr, transaction.inLength);
 
 #if EHCI_TRACE
-                    for (int i = 0; i < transaction.inLength; i++)
-                    {
-                        DBGMSG(((FOS_System.String)"i=") + i + ", qTDBuffer[i]=" + ((byte*)transaction.qTD.qtd)[i] + ", inBuffer[i]=" + ((byte*)transaction.inBuffer)[i]);
-                    }
+                    //for (int i = 0; i < transaction.inLength; i++)
+                    //{
+                    //    DBGMSG(((FOS_System.String)"i=") + i + ", qTDBuffer[i]=" + ((byte*)transaction.qTD.qtd)[i] + ", inBuffer[i]=" + ((byte*)transaction.inBuffer)[i]);
+                    //}
 #endif
 #if EHCI_TRACE
                     DBGMSG("Done.");
@@ -1974,17 +2014,31 @@ namespace Kernel.Hardware.USB.HCIs
             tailQH.HorizontalLinkPointer = (EHCI_QueueHead_Struct*)VirtMemManager.GetPhysicalAddress(IdleQueueHead);
             // Insert the queue head into the queue as an element behind old queue head
             oldTailQH.HorizontalLinkPointer = (EHCI_QueueHead_Struct*)VirtMemManager.GetPhysicalAddress(TailQueueHead);
-            
+
+            int timeout = 10;
             //TODO: You may want to add a timeout to this while loop, though it won't do much good because
             //      then you have to work out how on earth to handle the error!
-            while (USBIntCount > 0 && !IrrecoverableError)
+            while (USBIntCount > 0 && !IrrecoverableError && --timeout > 0)
             {
-                ;
+                Processes.Thread.Sleep(50);
+#if EHCI_TRACE
+                if (timeout % 10 == 0)
+                {
+                    BasicConsole.WriteLine("Waiting for transfer to complete...");
+                }
+#endif
                 // Note: I attempted to use Devices.Timer.Default.Wait in here BUT
                 //       that breaks the code! I suspect because the USB interrupt screws up the timer. 
                 //       Either way round, you cannot currently attempt to sleep in here so we must busy-wait.
             }
-            
+
+#if EHCI_TRACE
+            if (timeout == 0)
+            {
+                BasicConsole.WriteLine("Transfer timed out.");
+            }
+#endif
+
             // Restore the link of the old tail queue head to the idle queue head
             oldTailQH.HorizontalLinkPointer = (EHCI_QueueHead_Struct*)VirtMemManager.GetPhysicalAddress(IdleQueueHead);
             // Queue head done. 
@@ -2668,7 +2722,7 @@ namespace Kernel.Hardware.USB.HCIs
         /// </summary>
         public EHCI_qTD()
         {
-            qtd = (EHCI_qTD_Struct*)FOS_System.Heap.AllocZeroed((uint)sizeof(EHCI_qTD_Struct), 32);
+            qtd = (EHCI_qTD_Struct*)FOS_System.Heap.AllocZeroedAPB((uint)sizeof(EHCI_qTD_Struct), 1024);
         }
         /// <summary>
         /// Initializes a qTD with specified underlying data structure.
@@ -3139,7 +3193,7 @@ namespace Kernel.Hardware.USB.HCIs
         /// </summary>
         public EHCI_QueueHead()
         {
-            queueHead = (EHCI_QueueHead_Struct*)FOS_System.Heap.AllocZeroed((uint)sizeof(EHCI_QueueHead_Struct), 32);
+            queueHead = (EHCI_QueueHead_Struct*)FOS_System.Heap.AllocZeroedAPB((uint)sizeof(EHCI_QueueHead_Struct), 1024);
         }
         /// <summary>
         /// Initializes a new queue head with specified underlying memory structure.

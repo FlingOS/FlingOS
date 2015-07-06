@@ -87,7 +87,13 @@ namespace Kernel.Hardware.USB.HCIs
             transfer.device = usbDevice;
             transfer.endpoint = endpoint;
             transfer.type = type;
+#if HCI_TRACE
+            BasicConsole.WriteLine(((FOS_System.String)"SetupTransfer: maxLength=") + maxLength + ", endpoint=" + endpoint + ", mps=" + ((Endpoint)usbDevice.Endpoints[endpoint]).mps);
+#endif
             transfer.packetSize = FOS_System.Math.Min(maxLength, ((Endpoint)usbDevice.Endpoints[endpoint]).mps);
+#if HCI_TRACE
+            BasicConsole.WriteLine(((FOS_System.String)"SetupTransfer: packetSize=") + transfer.packetSize);
+#endif
             transfer.success = false;
             transfer.transactions = new List(3);
 
@@ -125,11 +131,14 @@ namespace Kernel.Hardware.USB.HCIs
         /// <param name="length">The length of the buffer.</param>
         public void INTransaction(USBTransfer transfer, bool controlHandshake, void* buffer, ushort length)
         {
+#if HCI_TRACE || USB_TRACE
+            BasicConsole.WriteLine(((FOS_System.String)"transfer.packetSize=") + transfer.packetSize +
+                                                       ", length=" + length);
+#endif
             ushort clampedLength = FOS_System.Math.Min(transfer.packetSize, length);
             length -= clampedLength;
 #if HCI_TRACE || USB_TRACE
-            BasicConsole.WriteLine(((FOS_System.String)"transfer.packetSize=") + transfer.packetSize + 
-                                                       ", length=" + length);
+            BasicConsole.WriteLine(((FOS_System.String)"clampedLength=") + clampedLength);
             BasicConsole.DelayOutput(1);
 #endif
             ushort remainingTransactions = (ushort)(length / transfer.packetSize);

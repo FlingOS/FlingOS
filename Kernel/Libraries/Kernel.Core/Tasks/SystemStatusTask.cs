@@ -34,8 +34,8 @@ namespace Kernel.Core.Tasks
 {
     public static class SystemStatusTask
     {
-        private static Console MainConsole;
-        private static Console StatusConsole;
+        internal static Console MainConsole;
+        internal static Console StatusConsole;
 
         private static bool Terminating = false;
 
