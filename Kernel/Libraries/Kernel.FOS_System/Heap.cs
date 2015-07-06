@@ -262,7 +262,7 @@ namespace Kernel.FOS_System
             if (!FixedHeapInitialised)
             {
                 Heap.Init();
-                Heap.AddBlock(Heap.GetFixedHeapPtr(), Heap.GetFixedHeapSize(), 16);
+                Heap.AddBlock((UInt32)Heap.GetFixedHeapPtr(), Heap.GetFixedHeapSize(), 16);
                 FixedHeapInitialised = true;
             }
         }
@@ -290,7 +290,7 @@ namespace Kernel.FOS_System
         [Drivers.Compiler.Attributes.NoDebug]
         [Compiler.NoGC]
         [Drivers.Compiler.Attributes.NoGC]
-        public static int AddBlock(UInt32* addr, UInt32 size, UInt32 bsize)
+        public static int AddBlock(UInt32 addr, UInt32 size, UInt32 bsize)
         {
             HeapBlock* b;
             UInt32 bcnt;
@@ -477,7 +477,7 @@ namespace Kernel.FOS_System
                                 /* count used blocks NOT bytes */
                                 b->used += y;
 
-                                void* result = (void*)(x * b->bsize + (UInt32*)&b[1]);
+                                void* result = (void*)(x * b->bsize + (UInt32)(&b[1]));
                                 if (boundary > 1)
                                 {
                                     result = (void*)((((UInt32)result) + (boundary - 1)) & ~(boundary - 1));
@@ -502,7 +502,10 @@ namespace Kernel.FOS_System
             BasicConsole.DelayOutput(2);
 #endif
 
+            BasicConsole.WriteLine("Heap out of memory!");
+            
             ExitCritical();
+
             return null;
         }
         /// <summary>
@@ -518,7 +521,7 @@ namespace Kernel.FOS_System
             EnterCritical("Free");
 
             HeapBlock* b;
-            UInt32* ptroff;
+            UInt32 ptroff;
             UInt32 bi, x;
             byte* bm;
             byte id;
@@ -526,10 +529,10 @@ namespace Kernel.FOS_System
 
             for (b = fblock; (UInt32)b != 0; b = b->next)
             {
-                if ((UInt32*)ptr > (UInt32*)b && (UInt32*)ptr < (UInt32*)b + b->size)
+                if ((UInt32)ptr > (UInt32)b && (UInt32)ptr < (UInt32)b + b->size)
                 {
                     /* found block */
-                    ptroff = (UInt32*)((UInt32*)ptr - (UInt32*)&b[1]);  /* get offset to get block */
+                    ptroff = (UInt32)ptr - (UInt32)(&b[1]);  /* get offset to get block */
                     /* block offset in BM */
                     bi = (UInt32)ptroff / b->bsize;
                     /* .. */
