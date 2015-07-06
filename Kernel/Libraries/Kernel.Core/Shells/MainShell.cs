@@ -2055,7 +2055,7 @@ which should have been provided with the executable.");
             {
                 console.WriteLine("Testing heap...");
                 uint allocSize = 16;
-                while (Heap.GetTotalFreeMem() - 0x100000 > 0)
+                while (Heap.GetTotalFreeMem() > 0x5000000)
                 {
                     byte* val = (byte*)Heap.Alloc(allocSize);
                     if (val == null)
