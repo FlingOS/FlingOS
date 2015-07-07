@@ -172,7 +172,7 @@ namespace Kernel.Hardware.USB.Devices
             //Check the device is responding correctly. The inquiry will also return
             //  you more information like Id string indices etc. but we just check 
             //  then discard them for now.
-            byte* inquiryBuffer = (byte*)FOS_System.Heap.AllocZeroedAPB(26u, 1024);
+            byte* inquiryBuffer = (byte*)FOS_System.Heap.AllocZeroed(26u, "MassStorageDevice : Setup");
             try
             {
                 SendSCSICommand_IN(0x12 /*SCSI opcode*/, 0 /*LBA*/, 36 /*Bytes In*/, inquiryBuffer, null);
@@ -586,14 +586,27 @@ namespace Kernel.Hardware.USB.Devices
 
             //Allocate memory for the command block
             //  This is passed to the out transaction as the SCSI command data.
-            CommandBlockWrapper* cbw = (CommandBlockWrapper*)FOS_System.Heap.AllocZeroedAPB((uint)sizeof(CommandBlockWrapper), 1024);
+#if MSD_TRACE
+            BasicConsole.Write("CBW Size: ");
+            BasicConsole.Write(sizeof(CommandBlockWrapper));
+            if(sizeof(CommandBlockWrapper) != 31)
+            {
+                BasicConsole.WriteLine(" - INCORRECT! FAILED!");
+            }
+            else
+            {
+                BasicConsole.WriteLine(" - correct.");
+            }
+#endif
+            CommandBlockWrapper* cbw = (CommandBlockWrapper*)FOS_System.Heap.AllocZeroed((uint)sizeof(CommandBlockWrapper), "MassStorageDevice : SendSCSICommand_IN (1)");
             bool FreeStatusBuffer = false;
             try
             {
                 //Initialise the command data
                 SetupSCSICommand(SCSIcommand, cbw, LBA, TransferLength);
-
 #if MSD_TRACE
+                BasicConsole.WriteLine("cbw: ");
+                BasicConsole.DumpMemory(cbw, sizeof(CommandBlockWrapper));
                 DBGMSG("Setup command. Transferring data...");
 #endif
                 // Create a new USB transfer 
@@ -626,7 +639,7 @@ namespace Kernel.Hardware.USB.Devices
                         // And we must remember to only free it later if we created it.
                         FreeStatusBuffer = true;
                         // Create the pre-allocated buffer. Size 13 is the size of the response.
-                        statusBuffer = FOS_System.Heap.AllocZeroedAPB(13u, 1024);
+                        statusBuffer = FOS_System.Heap.AllocZeroed(13u, "MassStorageDevice : SendSCSICommand_IN (2)");
                     }
 
 #if MSD_TRACE
@@ -726,7 +739,7 @@ namespace Kernel.Hardware.USB.Devices
 
             //This method work pretty much the same as the SendSCSICommand_IN method so see there for docs.
 
-            CommandBlockWrapper* cbw = (CommandBlockWrapper*)FOS_System.Heap.AllocZeroedAPB((uint)sizeof(CommandBlockWrapper), 1024);
+            CommandBlockWrapper* cbw = (CommandBlockWrapper*)FOS_System.Heap.AllocZeroed((uint)sizeof(CommandBlockWrapper), "MassStorageDevice : SendSCSICommand_OUT (1)");
             bool FreeStatusBuffer = false;
             try
             {
@@ -786,7 +799,7 @@ namespace Kernel.Hardware.USB.Devices
                         DBGMSG("Alloc 13 bytes of mem...");
 #endif
                         FreeStatusBuffer = true;
-                        statusBuffer = FOS_System.Heap.AllocZeroedAPB(13u, 1024);
+                        statusBuffer = FOS_System.Heap.AllocZeroed(13u, "MassStorageDevice : SendSCSICommand_OUT (2)");
                     }
 
 #if MSD_TRACE
@@ -891,7 +904,7 @@ namespace Kernel.Hardware.USB.Devices
             DBGMSG(((FOS_System.String)"Toggle OUT ") + ((Endpoint)DeviceInfo.Endpoints[DeviceInfo.MSD_OUTEndpointID]).toggle);
             #endif
 
-            CommandBlockWrapper* cbw = (CommandBlockWrapper*)FOS_System.Heap.AllocZeroedAPB((uint)sizeof(CommandBlockWrapper), 1024);
+            CommandBlockWrapper* cbw = (CommandBlockWrapper*)FOS_System.Heap.AllocZeroed((uint)sizeof(CommandBlockWrapper), "MassStorageDevice : SendSCSI_SyncCacheCommand (1)");
             bool FreeStatusBuffer = false;
             try
             {
@@ -919,7 +932,7 @@ namespace Kernel.Hardware.USB.Devices
                         DBGMSG("Alloc 13 bytes of mem...");
                         #endif
                         FreeStatusBuffer = true;
-                        statusBuffer = FOS_System.Heap.AllocZeroedAPB(13u, 1024);
+                        statusBuffer = FOS_System.Heap.AllocZeroed(13u, "MassStorageDevice : SendSCSI_SyncCacheCommand (2)");
                     }
 
                     #if MSD_TRACE
@@ -1004,9 +1017,7 @@ namespace Kernel.Hardware.USB.Devices
             DBGMSG("OUT part");
             DBGMSG(((FOS_System.String)"Toggle OUT ") + ((Endpoint)DeviceInfo.Endpoints[DeviceInfo.MSD_OUTEndpointID]).toggle);
 #endif
-            return;
-
-            CommandBlockWrapper* cbw = (CommandBlockWrapper*)FOS_System.Heap.AllocZeroedAPB((uint)sizeof(CommandBlockWrapper), 1024);
+            CommandBlockWrapper* cbw = (CommandBlockWrapper*)FOS_System.Heap.AllocZeroed((uint)sizeof(CommandBlockWrapper), "MassStorageDevice : SendSCSI_StartStopUnitCommand (1)");
             bool FreeStatusBuffer = false;
             try
             {
@@ -1035,7 +1046,7 @@ namespace Kernel.Hardware.USB.Devices
                         DBGMSG("Alloc 13 bytes of mem...");
 #endif
                         FreeStatusBuffer = true;
-                        statusBuffer = FOS_System.Heap.AllocZeroedAPB(13u, 1024);
+                        statusBuffer = FOS_System.Heap.AllocZeroed(13u, "MassStorageDevice : SendSCSI_StartStopUnitCommand (2)");
                     }
 
 #if MSD_TRACE
@@ -1110,7 +1121,7 @@ namespace Kernel.Hardware.USB.Devices
 #endif
 
                 bool doBreak = true;
-                byte* statusBuffer = (byte*)FOS_System.Heap.AllocZeroedAPB(13u, 1024);
+                byte* statusBuffer = (byte*)FOS_System.Heap.AllocZeroed(13u, "MassStorageDevice : TestDeviceReady (1)");
                 try
                 {
                     //Get the device status by sending the Test Unit Ready command
@@ -1128,7 +1139,7 @@ namespace Kernel.Hardware.USB.Devices
                     DBGMSG("SCSI: request sense");
 #endif
 
-                    byte* dataBuffer = (byte*)FOS_System.Heap.AllocZeroedAPB(18u, 1024);
+                    byte* dataBuffer = (byte*)FOS_System.Heap.AllocZeroed(18u, "MassStorageDevice : TestDeviceReady (2)");
                     try
                     {
                         // Now send the Request Sense command
@@ -1310,6 +1321,7 @@ namespace Kernel.Hardware.USB.Devices
             {
                 ;
             }
+            Hardware.Processes.Thread.Sleep(20);
 
             return retries > 0;
         }
@@ -1485,7 +1497,7 @@ namespace Kernel.Hardware.USB.Devices
         {
             msd = anMSD;
 
-            uint* capacityBuffer = (uint*)FOS_System.Heap.AllocZeroedAPB(8, 1024);
+            uint* capacityBuffer = (uint*)FOS_System.Heap.AllocZeroed(8, "MassStorageDevice : MassStorageDevice_DiskDevice()");
             try
             {
                 //Send SCSI Read Capacity (10) command
@@ -1670,30 +1682,30 @@ namespace Kernel.Hardware.USB.Devices
         /// <summary>
         /// Read the spec.
         /// </summary>
-        public uint CBWSignature;
+        public uint CBWSignature; // Offset: 0
         /// <summary>
         /// Read the spec.
         /// </summary>
-        public uint CBWTag;
+        public uint CBWTag; // Offset: 4
         /// <summary>
         /// Read the spec.
         /// </summary>
-        public uint CBWDataTransferLength;
+        public uint CBWDataTransferLength; // Offset: 8
         /// <summary>
         /// Read the spec.
         /// </summary>
-        public byte CBWFlags;
+        public byte CBWFlags; // Offset: 12
         /// <summary>
         /// Read the spec.
         /// </summary>
-        public byte CBWLUN;           // only bits 3:0
+        public byte CBWLUN;           // only bits 3:0, Offset: 13
         /// <summary>
         /// Read the spec.
         /// </summary>
-        public byte CBWCBLength;      // only bits 4:0
+        public byte CBWCBLength;      // only bits 4:0: Offset: 14
         /// <summary>
         /// Read the spec.
         /// </summary>
-        public fixed byte commandByte[16];
+        public fixed byte commandByte[16]; // Offset: 15
     }
 }

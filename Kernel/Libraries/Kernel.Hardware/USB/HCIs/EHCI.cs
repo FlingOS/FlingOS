@@ -25,7 +25,7 @@
 #endregion
     
 #define EHCI_TRACE
-//#undef EHCI_TRACE
+#undef EHCI_TRACE
 
 #if EHCI_TRACE
     #define EHCI_TESTS
@@ -1575,7 +1575,7 @@ namespace Kernel.Hardware.USB.HCIs
             // Note: This sets the virtual address. This allows it to be accessed and freed by the 
             //       driver. However, when passing the address to the HC, it must be converted to
             //       a physical address.
-            transfer.underlyingTransferData = (EHCI_QueueHead_Struct*)FOS_System.Heap.AllocZeroedAPB((uint)sizeof(EHCI_QueueHead_Struct), 1024);
+            transfer.underlyingTransferData = (EHCI_QueueHead_Struct*)FOS_System.Heap.AllocZeroedAPB((uint)sizeof(EHCI_QueueHead_Struct), 32, "EHCI : _SetupTransfer");
         }
         /// <summary>
         /// Sets up a SETUP transaction and adds it to the specified transfer.
@@ -1695,6 +1695,11 @@ namespace Kernel.Hardware.USB.HCIs
                 //  where as there is no guarantee the output buffer passed to us has been so we
                 //  must copy the data across.
                 Utilities.MemoryUtils.MemCpy_32(theQTD.Buffer0VirtAddr, (byte*)buffer, length);
+
+#if EHCI_TRACE
+                BasicConsole.WriteLine("EHCI: OUTTransaction - Buffer0:");
+                BasicConsole.DumpMemory(theQTD.Buffer0VirtAddr, length);
+#endif
             }
 
             // If the number of existing transactions is greater than 0
@@ -2039,7 +2044,7 @@ namespace Kernel.Hardware.USB.HCIs
             // Insert the queue head into the queue as an element behind old queue head
             oldTailQH.HorizontalLinkPointer = (EHCI_QueueHead_Struct*)VirtMemManager.GetPhysicalAddress(TailQueueHead);
 
-            int timeout = 10;
+            int timeout = 100;
             while (USBIntCount > 0 && !IrrecoverableError && --timeout > 0)
             {
                 Processes.Thread.Sleep(50);
@@ -2049,9 +2054,6 @@ namespace Kernel.Hardware.USB.HCIs
                     BasicConsole.WriteLine("Waiting for transfer to complete...");
                 }
 #endif
-                // Note: I attempted to use Devices.Timer.Default.Wait in here BUT
-                //       that breaks the code! I suspect because the USB interrupt screws up the timer. 
-                //       Either way round, you cannot currently attempt to sleep in here so we must busy-wait.
             }
 
 #if EHCI_TRACE
@@ -2201,7 +2203,7 @@ namespace Kernel.Hardware.USB.HCIs
         /// <returns>A pointer to the new buffer.</returns>
         protected static void* AllocQTDbuffer(EHCI_qTD td)
         {
-            byte* result = (byte*)FOS_System.Heap.AllocZeroedAPB(0x1000u, 0x1000u);
+            byte* result = (byte*)FOS_System.Heap.AllocZeroedAPB(0x1000u, 0x1000u, "EHCI : AllocQTDBuffer");
             td.Buffer0 = (byte*)VirtMemManager.GetPhysicalAddress(result);
             td.CurrentPage = 0;
             td.CurrentOffset = 0;
@@ -2744,7 +2746,7 @@ namespace Kernel.Hardware.USB.HCIs
         /// </summary>
         public EHCI_qTD()
         {
-            qtd = (EHCI_qTD_Struct*)FOS_System.Heap.AllocZeroedAPB((uint)sizeof(EHCI_qTD_Struct), 1024);
+            qtd = (EHCI_qTD_Struct*)FOS_System.Heap.AllocZeroedAPB((uint)sizeof(EHCI_qTD_Struct), 32, "EHCI : EHCI_qtd()");
         }
         /// <summary>
         /// Initializes a qTD with specified underlying data structure.
@@ -3215,7 +3217,7 @@ namespace Kernel.Hardware.USB.HCIs
         /// </summary>
         public EHCI_QueueHead()
         {
-            queueHead = (EHCI_QueueHead_Struct*)FOS_System.Heap.AllocZeroedAPB((uint)sizeof(EHCI_QueueHead_Struct), 1024);
+            queueHead = (EHCI_QueueHead_Struct*)FOS_System.Heap.AllocZeroedAPB((uint)sizeof(EHCI_QueueHead_Struct), 32, "EHCI : EHCI_QueueHead()");
         }
         /// <summary>
         /// Initializes a new queue head with specified underlying memory structure.

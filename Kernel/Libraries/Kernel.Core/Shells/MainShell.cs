@@ -2055,7 +2055,7 @@ which should have been provided with the executable.");
                 uint allocSize = 16;
                 while (Heap.GetTotalFreeMem() > 0x100000)
                 {
-                    byte* val = (byte*)Heap.Alloc(allocSize);
+                    byte* val = (byte*)Heap.Alloc(allocSize, "MainShell : HeapTest");
                     if (val == null)
                     {
                         break;

@@ -354,9 +354,9 @@ namespace Kernel.FOS_System
         [Drivers.Compiler.Attributes.NoDebug]
         [Compiler.NoGC]
         [Drivers.Compiler.Attributes.NoGC]
-        public static void* Alloc(UInt32 size)
+        public static void* Alloc(UInt32 size, FOS_System.String caller)
         {
-            return Alloc(size, 1);
+            return Alloc(size, 1, caller);
         }
         /// <summary>
         /// Attempts to allocate the specified amount of memory from the heap and then zero all of it.
@@ -368,9 +368,9 @@ namespace Kernel.FOS_System
         [Drivers.Compiler.Attributes.NoDebug]
         [Compiler.NoGC]
         [Drivers.Compiler.Attributes.NoGC]
-        public static void* AllocZeroed(UInt32 size)
+        public static void* AllocZeroed(UInt32 size, FOS_System.String caller)
         {
-            return AllocZeroed(size, 1);
+            return AllocZeroed(size, 1, caller);
         }
 
         /// <summary>
@@ -379,22 +379,22 @@ namespace Kernel.FOS_System
         /// <param name="size"></param>
         /// <param name="boundary"></param>
         /// <returns></returns>
-        public static void* AllocZeroedAPB(UInt32 size, UInt32 boundary)
+        public static void* AllocZeroedAPB(UInt32 size, UInt32 boundary, FOS_System.String caller)
         {
             void* result = null;
+            void* oldValue = null;
             UInt32 resultAddr;
-            bool looped = false;
             do
             {
-                void* oldValue = result;
-                result = AllocZeroed(size, boundary);
+                oldValue = result;
+                result = AllocZeroed(size, boundary, caller);
                 resultAddr = (UInt32)result;
                 if (oldValue != null)
                 {
                     Free(oldValue);
                 }
             }
-            while (resultAddr / 0x1000 != (resultAddr + size) / 0x1000);
+            while (resultAddr / 0x1000 != (resultAddr + size - 1) / 0x1000);
 
             return result;
         }
@@ -410,9 +410,9 @@ namespace Kernel.FOS_System
         [Drivers.Compiler.Attributes.NoDebug]
         [Compiler.NoGC]
         [Drivers.Compiler.Attributes.NoGC]
-        public static void* AllocZeroed(UInt32 size, UInt32 boundary)
+        public static void* AllocZeroed(UInt32 size, UInt32 boundary, FOS_System.String caller)
         {
-            void* result = Alloc(size, boundary);
+            void* result = Alloc(size, boundary, caller);
             if(result == null)
             {
                 return null;
@@ -430,7 +430,7 @@ namespace Kernel.FOS_System
         [Drivers.Compiler.Attributes.NoDebug]
         [Compiler.NoGC]
         [Drivers.Compiler.Attributes.NoGC]
-        public static void* Alloc(UInt32 size, UInt32 boundary)
+        public static void* Alloc(UInt32 size, UInt32 boundary, FOS_System.String caller)
         {
 #if HEAP_TRACE
             BasicConsole.SetTextColour(BasicConsole.warning_colour);
@@ -508,8 +508,12 @@ namespace Kernel.FOS_System
                                 if (boundary > 1)
                                 {
                                     result = (void*)((((UInt32)result) + (boundary - 1)) & ~(boundary - 1));
-                                }
 
+                                    ExitCritical();
+                                    BasicConsole.WriteLine(((FOS_System.String)"Allocated address ") + (uint)result + " on boundary " + boundary + " for " + caller);
+                                    EnterCritical("Alloc:Boundary condition");
+                                }
+                                
                                 ExitCritical();
                                 return result;
                             }

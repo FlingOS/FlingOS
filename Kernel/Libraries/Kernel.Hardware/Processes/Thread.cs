@@ -62,7 +62,7 @@ namespace Kernel.Hardware.Processes
             #if THREAD_TRACE
             BasicConsole.WriteLine("Allocating state memory...");
 #endif
-            State = (ThreadState*)FOS_System.Heap.Alloc((uint)sizeof(ThreadState));
+            State = (ThreadState*)FOS_System.Heap.Alloc((uint)sizeof(ThreadState), "Thread : Thread() (1)");
 
             // Init Id and EIP
             //  Set EIP to the first instruction of the main method
@@ -118,7 +118,7 @@ namespace Kernel.Hardware.Processes
             State->Started = false;
 
             // Init Exception State
-            State->ExState = (ExceptionState*)FOS_System.Heap.AllocZeroed((uint)sizeof(ExceptionState));
+            State->ExState = (ExceptionState*)FOS_System.Heap.AllocZeroed((uint)sizeof(ExceptionState), "Thread : Thread() (2)");
         }
 
         public UInt32 EAXFromInterruptStack

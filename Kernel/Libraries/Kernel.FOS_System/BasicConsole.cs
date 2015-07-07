@@ -468,6 +468,10 @@ namespace Kernel
         {
             if (!Initialised) return;
             uint* uPtr = (uint*)ptr;
+            if ((size % 4) != 0)
+            {
+                size += 3;
+            }
             size /= 4;
             for (int i = 0; i < size; i++)
             {

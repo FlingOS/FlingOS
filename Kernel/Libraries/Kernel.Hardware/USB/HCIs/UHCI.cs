@@ -333,7 +333,7 @@ namespace Kernel.Hardware.USB.HCIs
             BasicConsole.DelayOutput(1);
 #endif
 
-            UHCI_QueueHead_Struct* qh = (UHCI_QueueHead_Struct*)FOS_System.Heap.AllocZeroedAPB((uint)sizeof(UHCI_QueueHead_Struct), 1024);
+            UHCI_QueueHead_Struct* qh = (UHCI_QueueHead_Struct*)FOS_System.Heap.AllocZeroedAPB((uint)sizeof(UHCI_QueueHead_Struct), 32, "UHCI : ResetHC");
             qh->next = (UHCI_QueueHead_Struct*)UHCI_Consts.BIT_T;
             qh->transfer = (UHCI_qTD_Struct*)UHCI_Consts.BIT_T;
             qh->q_first = null;
@@ -466,8 +466,6 @@ namespace Kernel.Hardware.USB.HCIs
 #endif
                 AnalysePortStatus(j, val);
             }
-
-            //TODO: Shift this EnabledPorts = true; to this location
         }
         public override void ResetPort(byte port)
         {
@@ -970,7 +968,7 @@ namespace Kernel.Hardware.USB.HCIs
             BasicConsole.DelayOutput(5);
 #endif
 
-            UHCI_qTD_Struct* td = (UHCI_qTD_Struct*)FOS_System.Heap.AllocZeroedAPB((uint)sizeof(UHCI_qTD_Struct), 1024);
+            UHCI_qTD_Struct* td = (UHCI_qTD_Struct*)FOS_System.Heap.AllocZeroedAPB((uint)sizeof(UHCI_qTD_Struct), 32, "UHCI : AllocQTD");
 
             if ((uint)next != Utils.BIT(0))
             {
@@ -995,7 +993,7 @@ namespace Kernel.Hardware.USB.HCIs
             BasicConsole.DelayOutput(5);
 #endif
 
-            td->virtBuffer = FOS_System.Heap.AllocZeroed(1024, 1024);
+            td->virtBuffer = FOS_System.Heap.AllocZeroedAPB(0x1000, 0x1000, "UHCI : AllocQTDBuffer");
             td->buffer = (uint*)VirtMemManager.GetPhysicalAddress(td->virtBuffer);
 
             return td->virtBuffer;

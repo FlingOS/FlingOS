@@ -302,6 +302,7 @@ namespace Drivers.Compiler.Types
         {
             //Assume its a pointer/reference unless it is:
             // - A value type
+            string name = theType.Name;
             int result = Options.AddressSizeInBytes;
 
             if (theType.IsValueType)
@@ -438,6 +439,10 @@ namespace Drivers.Compiler.Types
                 else if (theType.IsPointer)
                 {
                     result = 4;
+                }
+                else if (theType.Name.Contains("FixedBuffer"))
+                {
+                    return theType.StructLayoutAttribute.Size;
                 }
                 else
                 {

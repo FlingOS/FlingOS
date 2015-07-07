@@ -89,7 +89,7 @@ namespace Kernel.FOS_System
         {
             Heap.InitFixedHeap();
 
-            ExceptionMethods.State = ExceptionMethods.DefaultState = (ExceptionState*)Heap.AllocZeroed((uint)sizeof(ExceptionState));
+            ExceptionMethods.State = ExceptionMethods.DefaultState = (ExceptionState*)Heap.AllocZeroed((uint)sizeof(ExceptionState), "GC()");
 
             Enabled = true;
 
@@ -194,7 +194,7 @@ namespace Kernel.FOS_System
                 uint totalSize = theType.Size;
                 totalSize += (uint)sizeof(GCHeader);
 
-                GCHeader* newObjPtr = (GCHeader*)Heap.AllocZeroed(totalSize);
+                GCHeader* newObjPtr = (GCHeader*)Heap.AllocZeroed(totalSize, "GC : NewObject");
 
                 if ((UInt32)newObjPtr == 0)
                 {
@@ -283,7 +283,7 @@ namespace Kernel.FOS_System
                 }
                 totalSize += (uint)sizeof(GCHeader);
 
-                GCHeader* newObjPtr = (GCHeader*)Heap.AllocZeroed(totalSize);
+                GCHeader* newObjPtr = (GCHeader*)Heap.AllocZeroed(totalSize, "GC : NewArray");
 
                 if ((UInt32)newObjPtr == 0)
                 {
@@ -368,7 +368,7 @@ namespace Kernel.FOS_System
                 totalSize += /*char size in bytes*/2 * (uint)length;
                 totalSize += (uint)sizeof(GCHeader);
 
-                GCHeader* newObjPtr = (GCHeader*)Heap.AllocZeroed(totalSize);
+                GCHeader* newObjPtr = (GCHeader*)Heap.AllocZeroed(totalSize, "GC : NewString");
 
                 if ((UInt32)newObjPtr == 0)
                 {
@@ -737,7 +737,7 @@ namespace Kernel.FOS_System
 
             try
             {
-                ObjectToCleanup* newObjToCleanupPtr = (ObjectToCleanup*)Heap.Alloc((uint)sizeof(ObjectToCleanup));
+                ObjectToCleanup* newObjToCleanupPtr = (ObjectToCleanup*)Heap.Alloc((uint)sizeof(ObjectToCleanup), "GC : AddObjectToCleanup");
                 newObjToCleanupPtr->objHeaderPtr = objHeaderPtr;
                 newObjToCleanupPtr->objPtr = objPtr;
 
