@@ -25,7 +25,7 @@
 #endregion
     
 #define EHCI_TRACE
-#undef EHCI_TRACE
+//#undef EHCI_TRACE
 
 #if EHCI_TRACE
     #define EHCI_TESTS
@@ -707,6 +707,8 @@ namespace Kernel.Hardware.USB.HCIs
         /// </summary>
         protected EHCI_QueueHead_Struct* TailQueueHead = null;
 
+        protected int AsyncDoorbellIntCount = 0;
+
         /// <summary>
         /// Whether the EHCI has hit a host system error or not.
         /// </summary>
@@ -1368,6 +1370,22 @@ namespace Kernel.Hardware.USB.HCIs
 #endif
             }
 
+            if ((val & EHCI_Consts.STS_AsyncInterrupt) != 0u)
+            {
+                // And we were expecting an Async Doorbell to occur i.e. we were expecting this interrupt
+                //  to occur.
+                //  Note: Without this condition, a spurious interrupt could cause us to decrement 
+                //        unsigned 0, which would result in 0xFFFFFFFF and cause an infinite loop in _IssueTransfer.
+                if (AsyncDoorbellIntCount != 0)
+                {
+                    // Decrement our expected interrupt count.
+                    AsyncDoorbellIntCount--;
+                }
+#if EHCI_TRACE
+                DBGMSG("EHCI: Async Doorbell interrupt occurred!");
+#endif
+            }
+
 #if EHCI_TRACE
             BasicConsole.DelayOutput(5);
 #endif
@@ -1858,11 +1876,17 @@ namespace Kernel.Hardware.USB.HCIs
             }
 
             // After the transfer has completed, we can free the underlying queue head memory.
-            //  TODO: At this point we should use the Async Doorbell to confirm the
+            //        At this point we use the Async Doorbell to confirm the
             //        HC has finished using the queue head and that all caches of 
             //        pointers to the queue head have been released. 
-            // However, the implementation of transfers presented here is sufficiently
-            //  slow that I highly doubt there would ever be any cached transfers.
+
+            AsyncDoorbellIntCount = 1;
+            USBCMD |= EHCI_Consts.CMD_AsyncInterruptDoorbellMask;
+            while (AsyncDoorbellIntCount > 0)
+            {
+                Hardware.Processes.Thread.Sleep(5);
+            }
+
             FOS_System.Heap.Free(transfer.underlyingTransferData);
             // Loop through each transaction in the transfer
             for (int k = 0; k < transfer.transactions.Count; k++)
@@ -2016,8 +2040,6 @@ namespace Kernel.Hardware.USB.HCIs
             oldTailQH.HorizontalLinkPointer = (EHCI_QueueHead_Struct*)VirtMemManager.GetPhysicalAddress(TailQueueHead);
 
             int timeout = 10;
-            //TODO: You may want to add a timeout to this while loop, though it won't do much good because
-            //      then you have to work out how on earth to handle the error!
             while (USBIntCount > 0 && !IrrecoverableError && --timeout > 0)
             {
                 Processes.Thread.Sleep(50);
@@ -2179,7 +2201,7 @@ namespace Kernel.Hardware.USB.HCIs
         /// <returns>A pointer to the new buffer.</returns>
         protected static void* AllocQTDbuffer(EHCI_qTD td)
         {
-            byte* result = (byte*)FOS_System.Heap.AllocZeroed(0x1000u, 0x1000u);
+            byte* result = (byte*)FOS_System.Heap.AllocZeroedAPB(0x1000u, 0x1000u);
             td.Buffer0 = (byte*)VirtMemManager.GetPhysicalAddress(result);
             td.CurrentPage = 0;
             td.CurrentOffset = 0;
