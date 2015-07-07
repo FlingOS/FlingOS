@@ -75,7 +75,9 @@ namespace Kernel.Hardware.ATA
             /// <summary>
             /// Error status.
             /// </summary>
-            Error = 0x01
+            Error = 0x01,
+
+            Timeout = 0xFF
         };
         /// <summary>
         /// Error masks.
@@ -595,7 +597,7 @@ namespace Kernel.Hardware.ATA
                      timeout-- > 0);
 
             // Error occurred
-            if (aThrowOnError && (xStatus & Status.Error) != 0)
+            if (aThrowOnError && ((xStatus & Status.Error) != 0 || timeout == 0))
             {
                 #region Throw Exception 
 
@@ -655,7 +657,7 @@ namespace Kernel.Hardware.ATA
 
                 #endregion
             }
-            return xStatus;
+            return timeout == 0 ? Status.Timeout : xStatus;
         }
 
         public virtual void Reset()

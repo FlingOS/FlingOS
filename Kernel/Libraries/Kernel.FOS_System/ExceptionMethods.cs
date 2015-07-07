@@ -166,6 +166,9 @@ namespace Kernel
         {
             Kernel.FOS_System.GC.IncrementRefCount(ex);
 
+            BasicConsole.WriteLine("Exception thrown:");
+            BasicConsole.WriteLine(ex.Message);
+
             if (State->CurrentHandlerPtr->Ex != null)
             {
                 //GC ref count remains consistent because the Ex pointer below is going to be replaced but

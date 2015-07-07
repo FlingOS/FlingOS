@@ -93,18 +93,26 @@ namespace Kernel.FOS_System.IO
         {
             //TODO - Add more partitioning schemes.
 
+
+            if (InitAsISO9660(aDiskDevice))
+            {
+#if FSM_TRACE
+                BasicConsole.WriteLine("ISO9660 CD/DVD disc detected!");
+                BasicConsole.DelayOutput(3);
+#endif
+            }
             //Must check for GPT before MBR because GPT uses a protective
             //  MBR entry so will be seen as valid MBR.
-            if (InitAsGPT(aDiskDevice))
+            else if (InitAsGPT(aDiskDevice))
             {
-#if DEBUG
+#if FSM_TRACE
                 BasicConsole.WriteLine("GPT formatted disk detected!");
                 BasicConsole.DelayOutput(3);
 #endif
             }
             else if (!InitAsMBR(aDiskDevice))
             {
-                ExceptionMethods.Throw(new FOS_System.Exceptions.NotSupportedException("Non MBR/EBR/GPT formatted disks not supported."));
+                ExceptionMethods.Throw(new FOS_System.Exceptions.NotSupportedException("Non MBR/EBR/GPT/ISO9660 formatted disks not supported."));
             }
         }
         /// <summary>
@@ -148,6 +156,22 @@ namespace Kernel.FOS_System.IO
             }
         }
 
+        private static bool InitAsISO9660(DiskDevice aDiskDevice)
+        {
+            // Must check for ISO9660 only on CD/DVD drives
+            if (aDiskDevice is Hardware.ATA.PATAPI)
+            {
+                ISO9660 TheISO9660 = new ISO9660(aDiskDevice);
+
+//#if FSM_TRACE
+                TheISO9660.Print();
+//#endif
+
+                return true;
+            }
+
+            return false;
+        }
         /// <summary>
         /// Attempts to initialise a disk treating it as GPT formatted.
         /// </summary>

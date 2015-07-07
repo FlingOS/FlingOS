@@ -59,6 +59,7 @@
   <ItemGroup>
     <Compile Include="Disk\EBR.cs" />
     <Compile Include="Disk\GPT.cs" />
+    <Compile Include="Disk\ISO9660.cs" />
     <Compile Include="Exceptions\IOException.cs" />
     <Compile Include="FAT\FATFileSystem.cs" />
     <Compile Include="Disk\MBR.cs" />
@@ -95,6 +96,9 @@
     <None Include="..\..\Kernel\Kernel.licenseheader">
       <Link>Kernel.licenseheader</Link>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="ISO9660\Listings\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
