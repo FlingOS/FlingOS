@@ -509,9 +509,11 @@ namespace Kernel.FOS_System
                                 {
                                     result = (void*)((((UInt32)result) + (boundary - 1)) & ~(boundary - 1));
 
+#if HEAP_TRACE
                                     ExitCritical();
                                     BasicConsole.WriteLine(((FOS_System.String)"Allocated address ") + (uint)result + " on boundary " + boundary + " for " + caller);
                                     EnterCritical("Alloc:Boundary condition");
+#endif
                                 }
                                 
                                 ExitCritical();
