@@ -162,8 +162,6 @@ namespace Kernel.FOS_System.IO.Streams.FAT
         byte[] ReadClusterBuffer = null;
         UInt32 ReadClusterSize = 0;
 
-        public bool ActuallyDoRead = true;
-
         /// <summary>
         /// Reads the specified number of bytes from the stream from the current position into the buffer at the 
         /// specified offset or as many bytes as are available before the end of the stream is met.

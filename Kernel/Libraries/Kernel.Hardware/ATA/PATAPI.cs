@@ -284,16 +284,16 @@ namespace Kernel.Hardware.ATA
                 BaseDevice.IO.Data.Read_UInt16();
             }
 
+#if PATAPI_TRACE
             unsafe
             {
                 BasicConsole.DumpMemory((byte*)Utilities.ObjectUtilities.GetHandle(aData) + FOS_System.Array.FieldsBytesSize, aData.Length);
             }
 
-            // Wait for IRQ
-#if PATAPI_TRACE
             BasicConsole.WriteLine("Wait for IRQ");
 #endif
-            if(WaitForIRQ())
+            // Wait for IRQ
+            if (WaitForIRQ())
             {
 #if PATAPI_TRACE
                 BasicConsole.WriteLine("Error! Wait for IRQ timed out. (1)");
@@ -340,6 +340,7 @@ namespace Kernel.Hardware.ATA
 
         public override void CleanCaches()
         {
+            //TODO - Look at this when Write is implemented
         }
     }
 }

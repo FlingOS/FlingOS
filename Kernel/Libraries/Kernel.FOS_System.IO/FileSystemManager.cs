@@ -129,7 +129,16 @@ namespace Kernel.FOS_System.IO
                     if (!aPartition.Mapped)
                     {
                         //BasicConsole.WriteLine("Attempting to create FAT File System...");
-                        FOS_System.IO.FAT.FATFileSystem newFS = new FOS_System.IO.FAT.FATFileSystem(aPartition);
+                        FileSystem newFS = null;
+                        if (aPartition is Disk.ISO9660.PrimaryVolumeDescriptor)
+                        {
+                            newFS = new ISO9660.ISO9660FileSystem((Disk.ISO9660.PrimaryVolumeDescriptor)aPartition);
+                        }
+                        else
+                        {
+                            newFS = new FOS_System.IO.FAT.FATFileSystem(aPartition);
+                        }
+
                         if (newFS.IsValid)
                         {
                             FOS_System.String mappingPrefix = FOS_System.String.New(3);
@@ -161,11 +170,12 @@ namespace Kernel.FOS_System.IO
             // Must check for ISO9660 only on CD/DVD drives
             if (aDiskDevice is Hardware.ATA.PATAPI)
             {
-                ISO9660 TheISO9660 = new ISO9660(aDiskDevice);
+                Disk.ISO9660 TheISO9660 = new Disk.ISO9660(aDiskDevice);
 
-//#if FSM_TRACE
+#if FSM_TRACE
                 TheISO9660.Print();
-//#endif
+#endif
+                ProcessISO9660(TheISO9660, aDiskDevice);
 
                 return true;
             }
@@ -219,6 +229,17 @@ namespace Kernel.FOS_System.IO
                 ProcessMBR(TheMBR, aDiskDevice);
 
                 return true;
+            }
+        }
+        private static void ProcessISO9660(Disk.ISO9660 aISO9660, DiskDevice aDiskDevice)
+        {
+            for (int i = 0; i < aISO9660.VolumeDescriptors.Count; i++)
+            {
+                Disk.ISO9660.VolumeDescriptor volDescrip = (Disk.ISO9660.VolumeDescriptor)aISO9660.VolumeDescriptors[i];
+                if (volDescrip is Disk.ISO9660.PrimaryVolumeDescriptor)
+                {
+                    Partitions.Add(volDescrip);
+                }
             }
         }
         /// <summary>

@@ -120,11 +120,6 @@ namespace Kernel.FOS_System.IO.FAT
         public readonly UInt32 DataSectorCount;
 
         /// <summary>
-        /// Whether the file system is valid or not.
-        /// </summary>
-        public readonly bool IsValid = false;
-
-        /// <summary>
         /// FAT listing attributes
         /// </summary>
         public static class ListingAttribs
@@ -213,7 +208,7 @@ namespace Kernel.FOS_System.IO.FAT
 
             //The signature is the only thing we can check to determine if this is FAT
             //  so we must now assume this is a valid FAT file system.
-            IsValid = true;
+            isValid = true;
 
             //Load or calculate the various bits of data required to use a FAT file system.
 

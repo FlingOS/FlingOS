@@ -61,6 +61,21 @@ namespace Kernel.FOS_System.IO
         }
 
         /// <summary>
+        /// Whether the file system is valid or not.
+        /// </summary>
+        protected bool isValid = false;
+        /// <summary>
+        /// Whether the file system is valid or not.
+        /// </summary>
+        public bool IsValid
+        {
+            get
+            {
+                return isValid;
+            }
+        }
+
+        /// <summary>
         /// Initializes a new file system for the specified partition.
         /// </summary>
         /// <param name="aPartition">The partition in which the partition resides.</param>

@@ -66,6 +66,9 @@
     <Compile Include="FAT\Listings\FATDirectory.cs" />
     <Compile Include="FAT\Listings\FATFile.cs" />
     <Compile Include="FileSystemMapping.cs" />
+    <Compile Include="ISO9660\ISO9660FileSystem.cs" />
+    <Compile Include="ISO9660\Listings\ISO9660Directory.cs" />
+    <Compile Include="ISO9660\Listings\ISO9660File.cs" />
     <Compile Include="Partition.cs" />
     <Compile Include="FileSystem.cs" />
     <Compile Include="FileSystemManager.cs" />
@@ -76,6 +79,7 @@
     <Compile Include="Streams\CachedStream.cs" />
     <Compile Include="Streams\FAT\FATFileStream.cs" />
     <Compile Include="Streams\FileStream.cs" />
+    <Compile Include="Streams\ISO9660\ISO9660FileStream.cs" />
     <Compile Include="Streams\Stream.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -97,9 +101,7 @@
       <Link>Kernel.licenseheader</Link>
     </None>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="ISO9660\Listings\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

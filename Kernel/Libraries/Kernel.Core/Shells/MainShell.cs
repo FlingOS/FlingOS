@@ -1641,8 +1641,6 @@ which should have been provided with the executable.");
 
                     FOS_System.IO.Streams.FileStream fileStream = FOS_System.IO.Streams.FileStream.Create(aFile);
                     
-                    ((FOS_System.IO.Streams.FAT.FATFileStream)fileStream).ActuallyDoRead = false;
-
                     byte[] DataBuffer = aFile.TheFileSystem.ThePartition.NewBlockArray(1);
                     Tasks.SystemStatusTask.MainConsole.Write("[");
                     ulong percentile = FOS_System.Math.Divide(aFile.Size, 53u);
@@ -1749,13 +1747,17 @@ which should have been provided with the executable.");
                 {
                     FOS_System.IO.FAT.FATFileSystem fs = (FOS_System.IO.FAT.FATFileSystem)fsMapping.TheFileSystem;
                     
-                    console.WriteLine(((FOS_System.String)"FAT FS detected. Volume ID: ") + fs.ThePartition.VolumeID);
-                    console.WriteLine("    - Prefix: " + fsMapping.Prefix);
+                    console.WriteLine(((FOS_System.String)"FAT file system detected. Volume ID: ") + fs.ThePartition.VolumeID);
+                }
+                else if (fsMapping.TheFileSystem is FOS_System.IO.ISO9660.ISO9660FileSystem)
+                {
+                    console.WriteLine("ISO9660 file system detected.");
                 }
                 else
                 {
-                    console.WriteLine("Non-FAT file-system added! (???)");
+                    console.WriteLine("Unrecognised file system type added! (Did we implement a new one?)");
                 }
+                console.WriteLine("    - Prefix: " + fsMapping.Prefix);
             }
         }
         /// <summary>

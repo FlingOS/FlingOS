@@ -15,7 +15,7 @@ namespace Kernel.FOS_System.IO.Disk
             do
             {
                 disk.ReadBlock(sector, 1, data);
-                desciptor = VolumeDescriptor.CreateDescriptor(data);
+                desciptor = VolumeDescriptor.CreateDescriptor(disk, sector, 1);
                 VolumeDescriptors.Add(desciptor);
 
                 sector++;
@@ -32,7 +32,7 @@ namespace Kernel.FOS_System.IO.Disk
             }
         }
 
-        public class VolumeDescriptor : FOS_System.Object
+        public class VolumeDescriptor : Partition
         {
             public enum TypeCodes : byte
             {
@@ -47,25 +47,29 @@ namespace Kernel.FOS_System.IO.Disk
             public FOS_System.String Id;
             public byte Version;
 
-            public VolumeDescriptor(byte[] data)
+            public VolumeDescriptor(Hardware.Devices.DiskDevice disk, uint startBlock, uint numBlocks, byte[] data)
+                : base(disk, 0, 0)
             {
                 Code = (TypeCodes)data[0];
                 Id = ByteConverter.GetASCIIStringFromASCII(data, 1, 5);
                 Version = data[6];
             }
 
-            public static VolumeDescriptor CreateDescriptor(byte[] data)
+            public static VolumeDescriptor CreateDescriptor(Hardware.Devices.DiskDevice disk, uint startBlock, uint numBlocks)
             {
+                byte[] data = disk.NewBlockArray(numBlocks);
+                disk.ReadBlock(startBlock, numBlocks, data);
+
                 switch ((TypeCodes)data[0])
                 {
                     case TypeCodes.BootRecord:
-                        return new BootRecord(data);
+                        return new BootRecord(disk, startBlock, numBlocks, data);
                     case TypeCodes.Primary:
-                        return new PrimaryVolumeDescriptor(data);
+                        return new PrimaryVolumeDescriptor(disk, startBlock, numBlocks, data);
                     case TypeCodes.SetTerminator:
-                        return new SetTerminatorVolumeDescriptor(data);
+                        return new SetTerminatorVolumeDescriptor(disk, startBlock, numBlocks, data);
                     default:
-                        return new VolumeDescriptor(data);
+                        return new VolumeDescriptor(disk, startBlock, numBlocks, data);
                 }
             }
 
@@ -82,8 +86,8 @@ namespace Kernel.FOS_System.IO.Disk
             public FOS_System.String BootSystemIdentifier;
             public FOS_System.String BootSystem;
 
-            public BootRecord(byte[] data)
-                : base(data)
+            public BootRecord(Hardware.Devices.DiskDevice disk, uint startBlock, uint numBlocks, byte[] data)
+                : base(disk, startBlock, numBlocks, data)
             {
                 BootSystemIdentifier = ByteConverter.GetASCIIStringFromASCII(data, 7, 32);
                 BootSystem = ByteConverter.GetASCIIStringFromASCII(data, 39, 32);
@@ -122,9 +126,9 @@ namespace Kernel.FOS_System.IO.Disk
             public DateTime VolumeExpirationDateTime;
             public DateTime VolumeEffectiveDateTime;
             public byte FileStructureVersion;
-            
-            public PrimaryVolumeDescriptor(byte[] data)
-                : base(data)
+
+            public PrimaryVolumeDescriptor(Hardware.Devices.DiskDevice disk, uint startBlock, uint numBlocks, byte[] data)
+                : base(disk, startBlock, numBlocks, data)
             {
                 SystemIdentifier = ByteConverter.GetASCIIStringFromASCII(data, 8, 32);
                 VolumeIdentifier = ByteConverter.GetASCIIStringFromASCII(data, 40, 32);
@@ -135,7 +139,7 @@ namespace Kernel.FOS_System.IO.Disk
                 PathTableSize = ByteConverter.ToUInt32(data, 132);
                 Location_PathTable_TypeL = ByteConverter.ToUInt32(data, 140);
                 Location_PathTable_Optional_TypeL = ByteConverter.ToUInt32(data, 144);
-                RootDirectory = new DirectoryRecord(data, 156);
+                RootDirectory = new DirectoryRecord(data, 156, true);
                 VolumeSetIdentifier = ByteConverter.GetASCIIStringFromASCII(data, 190, 128);
                 PublisherIdentifier = ByteConverter.GetASCIIStringFromASCII(data, 318, 128);
                 DataPreparerIdentifier = ByteConverter.GetASCIIStringFromASCII(data, 446, 128);
@@ -205,12 +209,14 @@ namespace Kernel.FOS_System.IO.Disk
                 BasicConsole.WriteLine("        > VolumeExpirationDateTime : " + VolumeExpirationDateTime.ConvertToString());
                 BasicConsole.WriteLine("        > VolumeEffectiveDateTime : " + VolumeEffectiveDateTime.ConvertToString());
                 BasicConsole.WriteLine("        > FileStructureVersion : " + (FOS_System.String)FileStructureVersion);
+                BasicConsole.WriteLine("        Root directory: ");
+                BasicConsole.WriteLine(RootDirectory.ConvertToString());
             }
         }
         public class SetTerminatorVolumeDescriptor : VolumeDescriptor
         {
-            public SetTerminatorVolumeDescriptor(byte[] data)
-                : base(data)
+            public SetTerminatorVolumeDescriptor(Hardware.Devices.DiskDevice disk, uint startBlock, uint numBlocks, byte[] data)
+                : base(disk, startBlock, numBlocks, data)
             {
             }
 
@@ -224,13 +230,110 @@ namespace Kernel.FOS_System.IO.Disk
 
         public class DirectoryRecord : FOS_System.Object
         {
-            public DirectoryRecord(byte[] data, uint offset)
+            public enum FileFlags : byte
             {
+
+                /// <summary>
+                ///	If set, the existence of this file need not be made known to the user (basically a 'hidden' flag).
+                /// </summary>
+                Hidden = 0,
+                /// <summary>
+                /// If set, this record describes a directory (in other words, it is a subdirectory extent).
+                /// </summary>
+                Directory = 1,
+                /// <summary>
+                /// If set, this file is an "Associated File".
+                /// </summary>
+                AssociatedFile = 2,
+                /// <summary>
+                /// If set, the extended attribute record contains information about the format of this file.
+                /// </summary>
+                ExtAttrContainsFormatInfo = 3,
+                /// <summary>
+                /// If set, owner and group permissions are set in the extended attribute record.
+                /// </summary>
+                ExtAttrContainsOwnerAndGroupPermissions = 4,
+                /// <summary>
+                /// If set, this is not the final directory record for this file (for files spanning several extents, for example files over 4GiB long.
+                /// </summary>
+                RemainingRecords = 7,
+            }
+
+            public byte RecordLength;
+            public byte ExtAttrRecordLength;
+            public UInt32 LBALocation;
+            public UInt32 DataLength;
+            public DateTime RecordingDateTime;
+            public FileFlags TheFileFlags;
+            public byte FileUnitSize;
+            public byte FileInterleaveGapSize;
+            public UInt16 VolumeSequenceNumber;
+            public byte FileIdentifierLength;
+            public FOS_System.String FileIdentifier;
+
+            public bool IsRootDirectory;
+
+            public DirectoryRecord(byte[] data, uint offset, bool isRootDirectory = false)
+            {
+                IsRootDirectory = isRootDirectory;
+
+                RecordLength = data[offset + 0];
+                ExtAttrRecordLength = data[offset + 1];
+                LBALocation = ByteConverter.ToUInt32(data, offset + 2);
+                DataLength = ByteConverter.ToUInt32(data, offset + 10);
+                RecordingDateTime = new DateTime(data, offset + 18);
+                TheFileFlags = (FileFlags)data[offset + 25];
+                FileUnitSize = data[offset + 26];
+                FileInterleaveGapSize = data[offset + 27];
+                VolumeSequenceNumber = ByteConverter.ToUInt16(data, offset + 28);
+                FileIdentifierLength = data[offset + 32];
+                FileIdentifier = IsRootDirectory ? "ROOT_DIRECTORY" : ByteConverter.GetASCIIStringFromASCII(data, offset + 33, FileIdentifierLength);
             }
 
             public FOS_System.String ConvertToString()
             {
-                return "";
+                FOS_System.String result = "Directory record: ";
+
+                result += "\r\n     > RecordLength : " + (FOS_System.String)RecordLength;
+                result += "\r\n     > ExtAttrRecordLength : " + (FOS_System.String)ExtAttrRecordLength;
+                result += "\r\n     > LBALocation : " + (FOS_System.String)LBALocation;
+                result += "\r\n     > DataLength : " + (FOS_System.String)DataLength;
+                result += "\r\n     > RecordingDateTime : " + RecordingDateTime.ConvertToString();
+                result += "\r\n     > TheFileFlags : " + (FOS_System.String)(byte)TheFileFlags;
+                result += "\r\n     > FileUnitSize : " + (FOS_System.String)FileUnitSize;
+                result += "\r\n     > FileInterleaveGapSize : " + (FOS_System.String)FileInterleaveGapSize;
+                result += "\r\n     > VolumeSequenceNumber : " + (FOS_System.String)VolumeSequenceNumber;
+                result += "\r\n     > FileIdentifierLength : " + (FOS_System.String)FileIdentifierLength;
+                result += "\r\n     > FileIdentifier : " + FileIdentifier;
+
+                return result;
+            }
+
+            public class DateTime : FOS_System.Object
+            {
+                public byte YearsSince1990;
+                public byte Month;
+                public byte Day;
+                public byte Hour;
+                public byte Minute;
+                public byte Second;
+                public byte GMTOffsetInterval;
+
+                public DateTime(byte[] data, uint offset)
+                {
+                    YearsSince1990 = data[offset + 0];
+                    Month = data[offset + 1];
+                    Day = data[offset + 2];
+                    Hour = data[offset + 3];
+                    Minute = data[offset + 4];
+                    Second = data[offset + 5];
+                    GMTOffsetInterval = data[offset + 6];
+                }
+
+                public FOS_System.String ConvertToString()
+                {
+                    return (FOS_System.String)Day + "/" + Month + "/" + (YearsSince1990 + 1990) + " " + Hour + ":" + Minute + ":" + Second;
+                }
             }
         }
     }
