@@ -140,6 +140,30 @@ namespace Kernel.FOS_System
             }
         }
         /// <summary>
+        /// Gets the character at the specified index.
+        /// </summary>
+        /// <param name="index">The index of the character to get.</param>
+        /// <returns>The character at the specified index.</returns>
+        public unsafe char this[uint index]
+        {
+            [Compiler.NoDebug]
+            [Drivers.Compiler.Attributes.NoDebug]
+            get
+            {
+                byte* thisPtr = (byte*)Utilities.ObjectUtilities.GetHandle(this);
+                thisPtr += 8; /*For fields inc. inherited*/
+                return ((char*)thisPtr)[index];
+            }
+            [Compiler.NoDebug]
+            [Drivers.Compiler.Attributes.NoDebug]
+            set
+            {
+                byte* thisPtr = (byte*)Utilities.ObjectUtilities.GetHandle(this);
+                thisPtr += 8; /*For fields inc. inherited*/
+                ((char*)thisPtr)[index] = value;
+            }
+        }
+        /// <summary>
         /// Gets a pointer to the first character in the string.
         /// </summary>
         /// <returns>A pointer to the first char (that represents a character) of the specified string.</returns>

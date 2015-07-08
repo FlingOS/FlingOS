@@ -155,7 +155,27 @@ namespace Kernel.Core.Processes.ELF
             : base(header)
         {
         }
-        
+
+        public bool IsMatch(uint offset, FOS_System.String value)
+        {
+            if (value == null || (offset == data.Length && value.length != 0))
+            {
+                return false;
+            }
+
+            bool result = true;
+
+            uint i = 0;
+            for (; i < value.length && (i + offset) < data.Length && data[i + offset] != 0; i++)
+            {
+                result &= value[i] == data[i + offset];
+            }
+            
+            result &= (i == value.length);
+
+            return result;
+        }
+
         public FOS_System.String this[uint offset]
         {
             get
@@ -315,7 +335,29 @@ namespace Kernel.Core.Processes.ELF
                 }
             }
 
+            /// <summary>
+            /// This member gives both the symbol table index with respect to which the 
+            /// relocation must be made, and the type of relocation to apply. For example, 
+            /// a call instruction's relocation entry would hold the symbol table index 
+            /// of the function being called. If the index is STN_UNDEF, the undefined 
+            /// symbol index, the relocation uses 0 as the "symbol value". Relocation 
+            /// types are processor-specific; descriptions of their behavior appear in the 
+            /// processor supplement.
+            /// </summary>
+            /// <remarks>
+            /// Quoted from http://www.scs.stanford.edu/14wi-cs140/pintos/specs/sysv-abi-update.html/ch4.reloc.html
+            /// </remarks>
             public uint Info;
+            /// <summary>
+            /// This member gives the location at which to apply the relocation action. 
+            /// For a relocatable file, the value is the byte offset from the beginning 
+            /// of the section to the storage unit affected by the relocation. For an 
+            /// executable file or a shared object, the value is the virtual address of 
+            /// the storage unit affected by the relocation.
+            /// </summary>
+            /// <remarks>
+            /// Quoted from http://www.scs.stanford.edu/14wi-cs140/pintos/specs/sysv-abi-update.html/ch4.reloc.html
+            /// </remarks>
             public byte* Offset;
         }
 
@@ -398,8 +440,37 @@ namespace Kernel.Core.Processes.ELF
                 }
             }
 
+            /// <summary>
+            /// This member gives both the symbol table index with respect to which the 
+            /// relocation must be made, and the type of relocation to apply. For example, 
+            /// a call instruction's relocation entry would hold the symbol table index 
+            /// of the function being called. If the index is STN_UNDEF, the undefined 
+            /// symbol index, the relocation uses 0 as the "symbol value". Relocation 
+            /// types are processor-specific; descriptions of their behavior appear in the 
+            /// processor supplement.
+            /// </summary>
+            /// <remarks>
+            /// Quoted from http://www.scs.stanford.edu/14wi-cs140/pintos/specs/sysv-abi-update.html/ch4.reloc.html
+            /// </remarks>
             public uint Info;
+            /// <summary>
+            /// This member gives the location at which to apply the relocation action. 
+            /// For a relocatable file, the value is the byte offset from the beginning 
+            /// of the section to the storage unit affected by the relocation. For an 
+            /// executable file or a shared object, the value is the virtual address of 
+            /// the storage unit affected by the relocation.
+            /// </summary>
+            /// <remarks>
+            /// Quoted from http://www.scs.stanford.edu/14wi-cs140/pintos/specs/sysv-abi-update.html/ch4.reloc.html
+            /// </remarks>
             public byte* Offset;
+            /// <summary>
+            /// This member specifies a constant addend used to compute the value to be 
+            /// stored into the relocatable field.
+            /// </summary>
+            /// <remarks>
+            /// Quoted from http://www.scs.stanford.edu/14wi-cs140/pintos/specs/sysv-abi-update.html/ch4.reloc.html
+            /// </remarks>
             public short Addend;
         }
 

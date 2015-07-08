@@ -25,37 +25,18 @@
 #endregion
     
 using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace Drivers.Framework
 {
-    /// <summary>
-    /// Replacement class for methods, properties and fields usually found on standard System.String type.
-    /// Also contains utility methods for low-level string manipulation.
-    /// </summary>
-    [Drivers.Compiler.Attributes.PluggedClass]
-    [Drivers.Compiler.Attributes.StringClass]
-    public class String : Object
+    public static class Math
     {
-        /* If you add more fields here, remember to update the compiler and all the ASM files that depend on the string
-           class structure ( i.e. do all the hard work! ;) )
-         */
-
-        /// <summary>
-        /// The size of the fields in an string object that come before the actual string data.
-        /// </summary>
-        public const uint FieldsBytesSize = 8;
-
-        /// <summary>
-        /// The length of the string.
-        /// </summary>
-        public int length;
-
-        /*   ----------- DO NOT CREATE A CONSTRUCTOR FOR THIS CLASS - IT WILL NEVER BE CALLED IF YOU DO ----------- */
-
-        [Drivers.Compiler.Attributes.NoGC]
-        [Drivers.Compiler.Attributes.NoDebug]
-        public String()
+        public static int Add(int x, int y)
         {
+            return x + y;
         }
     }
 }

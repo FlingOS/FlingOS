@@ -76,68 +76,68 @@ namespace Kernel
         [Drivers.Compiler.Attributes.NoDebug]
         static unsafe void Main()
         {
-            Hardware.IO.Serial.Serial.InitCOM1();
-            BasicConsole.SecondaryOutput = SecondaryOutput;
+            ExceptionMethods.AddExceptionHandlerInfo(null, null);
 
-            BasicConsole.WriteLine("Fling OS  Copyright (C) 2015  Edward Nutting");
-            BasicConsole.WriteLine("This program comes with ABSOLUTELY NO WARRANTY;.");
-            BasicConsole.WriteLine("This is free software, and you are welcome to redistribute it");
-            BasicConsole.WriteLine("under certain conditions; See GPL V2 for details, a copy of");
-            BasicConsole.WriteLine("which should have been provided with the executable.");
-        
-            BasicConsole.WriteLine("Fling OS Running...");
-
-            // DO NOT REMOVE THE FOLLOWING LINE -- ednutting
-            PreReqs.PageFaultDetection_Initialised = true;
-            
             try
             {
+                BasicConsole.WriteLine("Fling OS  Copyright (C) 2015  Edward Nutting");
+                BasicConsole.WriteLine("This program comes with ABSOLUTELY NO WARRANTY;.");
+                BasicConsole.WriteLine("This is free software, and you are welcome to redistribute it");
+                BasicConsole.WriteLine("under certain conditions; See GPL V2 for details, a copy of");
+                BasicConsole.WriteLine("which should have been provided with the executable.");
+
+                BasicConsole.WriteLine("Fling OS Running...");
+
+                // DO NOT REMOVE THE FOLLOWING LINE -- ednutting
+
+                PreReqs.PageFaultDetection_Initialised = true;
+            
                 Hardware.VirtMemManager.Init();
                 Hardware.Devices.CPU.InitDefault();
                 Hardware.Devices.Timer.InitDefault();
                 Core.Processes.SystemCalls.Init();
 
-                uint bpm = 140;
-                Hardware.Timers.PIT.ThePIT.PlayNote(
-                    Hardware.Timers.PIT.MusicalNote.C4,
-                    Hardware.Timers.PIT.MusicalNoteValue.Quaver,
-                    bpm);
-                Hardware.Timers.PIT.ThePIT.PlayNote(
-                    Hardware.Timers.PIT.MusicalNote.Silent,
-                    Hardware.Timers.PIT.MusicalNoteValue.Minim,
-                    bpm);
-                Hardware.Timers.PIT.ThePIT.PlayNote(
-                    Hardware.Timers.PIT.MusicalNote.E4,
-                    Hardware.Timers.PIT.MusicalNoteValue.Quaver,
-                    bpm);
-                Hardware.Timers.PIT.ThePIT.PlayNote(
-                    Hardware.Timers.PIT.MusicalNote.Silent,
-                    Hardware.Timers.PIT.MusicalNoteValue.Minim,
-                    bpm);
-                Hardware.Timers.PIT.ThePIT.PlayNote(
-                    Hardware.Timers.PIT.MusicalNote.G4,
-                    Hardware.Timers.PIT.MusicalNoteValue.Quaver,
-                    bpm);
-                Hardware.Timers.PIT.ThePIT.PlayNote(
-                    Hardware.Timers.PIT.MusicalNote.Silent,
-                    Hardware.Timers.PIT.MusicalNoteValue.Minim,
-                    bpm);
-                Hardware.Timers.PIT.ThePIT.PlayNote(
-                    Hardware.Timers.PIT.MusicalNote.C5,
-                    Hardware.Timers.PIT.MusicalNoteValue.Minim,
-                    bpm);
-                Hardware.Timers.PIT.ThePIT.PlayNote(
-                    Hardware.Timers.PIT.MusicalNote.Silent,
-                    Hardware.Timers.PIT.MusicalNoteValue.Minim,
-                    bpm);
-                Hardware.Timers.PIT.ThePIT.PlayNote(
-                    Hardware.Timers.PIT.MusicalNote.G4,
-                    Hardware.Timers.PIT.MusicalNoteValue.Minim,
-                    bpm);
-                Hardware.Timers.PIT.ThePIT.PlayNote(
-                    Hardware.Timers.PIT.MusicalNote.C5,
-                    Hardware.Timers.PIT.MusicalNoteValue.Minim,
-                    bpm);
+                //uint bpm = 140;
+                //Hardware.Timers.PIT.ThePIT.PlayNote(
+                //    Hardware.Timers.PIT.MusicalNote.C4,
+                //    Hardware.Timers.PIT.MusicalNoteValue.Quaver,
+                //    bpm);
+                //Hardware.Timers.PIT.ThePIT.PlayNote(
+                //    Hardware.Timers.PIT.MusicalNote.Silent,
+                //    Hardware.Timers.PIT.MusicalNoteValue.Minim,
+                //    bpm);
+                //Hardware.Timers.PIT.ThePIT.PlayNote(
+                //    Hardware.Timers.PIT.MusicalNote.E4,
+                //    Hardware.Timers.PIT.MusicalNoteValue.Quaver,
+                //    bpm);
+                //Hardware.Timers.PIT.ThePIT.PlayNote(
+                //    Hardware.Timers.PIT.MusicalNote.Silent,
+                //    Hardware.Timers.PIT.MusicalNoteValue.Minim,
+                //    bpm);
+                //Hardware.Timers.PIT.ThePIT.PlayNote(
+                //    Hardware.Timers.PIT.MusicalNote.G4,
+                //    Hardware.Timers.PIT.MusicalNoteValue.Quaver,
+                //    bpm);
+                //Hardware.Timers.PIT.ThePIT.PlayNote(
+                //    Hardware.Timers.PIT.MusicalNote.Silent,
+                //    Hardware.Timers.PIT.MusicalNoteValue.Minim,
+                //    bpm);
+                //Hardware.Timers.PIT.ThePIT.PlayNote(
+                //    Hardware.Timers.PIT.MusicalNote.C5,
+                //    Hardware.Timers.PIT.MusicalNoteValue.Minim,
+                //    bpm);
+                //Hardware.Timers.PIT.ThePIT.PlayNote(
+                //    Hardware.Timers.PIT.MusicalNote.Silent,
+                //    Hardware.Timers.PIT.MusicalNoteValue.Minim,
+                //    bpm);
+                //Hardware.Timers.PIT.ThePIT.PlayNote(
+                //    Hardware.Timers.PIT.MusicalNote.G4,
+                //    Hardware.Timers.PIT.MusicalNoteValue.Minim,
+                //    bpm);
+                //Hardware.Timers.PIT.ThePIT.PlayNote(
+                //    Hardware.Timers.PIT.MusicalNote.C5,
+                //    Hardware.Timers.PIT.MusicalNoteValue.Minim,
+                //    bpm);
                 
                 Process ManagedMainProcess = ProcessManager.CreateProcess(ManagedMain, "Managed Main", false);                
                 Thread ManagedMain_MainThread = ((Thread)ManagedMainProcess.Threads[0]);
@@ -349,6 +349,10 @@ namespace Kernel
                 Hardware.Devices.Keyboard.InitDefault();
                 Core.Console.InitDefault();
                 Core.Shell.InitDefault();
+
+                Hardware.IO.Serial.Serial.InitCOM1();
+                Hardware.IO.Serial.Serial.InitCOM2();
+                BasicConsole.SecondaryOutput = BasicConsole_SecondaryOutput;
                 BasicConsole.PrimaryOutputEnabled = false;
                 Core.Shell.Default.Execute();
                 BasicConsole.PrimaryOutputEnabled = true;
@@ -399,10 +403,9 @@ namespace Kernel
             BasicConsole.WriteLine("---------------------");
         }
 
-        private static bool InsideSecondaryOutput = false;
         [Drivers.Compiler.Attributes.NoGC]
         [Drivers.Compiler.Attributes.NoDebug]
-        private static void SecondaryOutput(FOS_System.String str)
+        private static void BasicConsole_SecondaryOutput(FOS_System.String str)
         {
             Hardware.IO.Serial.Serial.COM1.Write(str);
         }

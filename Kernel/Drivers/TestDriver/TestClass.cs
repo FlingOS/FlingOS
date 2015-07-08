@@ -25,34 +25,17 @@
 #endregion
     
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Drivers.Framework;
+using KernelABI;
 
-//using Drivers.Framework;
-
-namespace KernelABI
+namespace TestDriver
 {
     public static class TestClass
     {
-        [Drivers.Compiler.Attributes.NoDebug]
-        [Drivers.Compiler.Attributes.NoGC]
-        static TestClass()
-        {
-            //Drivers.Framework.Type x;
-        }
-
-        [Drivers.Compiler.Attributes.NoDebug]
-        [Drivers.Compiler.Attributes.NoGC]
         [Drivers.Compiler.Attributes.MainMethod]
         public static unsafe void Test()
         {
-            //int x = 0xF;
-            //int y = 0xF;
-            //int z = x < y ? x : y;
-
-            byte bpm = 180;
+            byte bpm = (byte)Drivers.Framework.Math.Add(140, 100);
             while (true)
             {
                 *((ushort*)0xB881E) = (0x1F00 | '3');
@@ -60,7 +43,7 @@ namespace KernelABI
                 *((ushort*)0xB881E) = (0x3F00 | '4');
                 SystemCalls.Sleep(1000);
 
-                //bpm += 1;
+                //bpm += 1;z`
                 SystemCalls.PlayNote(
                     SystemCalls.MusicalNote.C4,
                     SystemCalls.MusicalNoteValue.Quaver,
@@ -101,19 +84,15 @@ namespace KernelABI
                     SystemCalls.MusicalNote.C5,
                     SystemCalls.MusicalNoteValue.Minim,
                     bpm);
-                
+
             }
         }
-        
-        [Drivers.Compiler.Attributes.NoDebug]
-        [Drivers.Compiler.Attributes.NoGC]
+
         [Drivers.Compiler.Attributes.CallStaticConstructorsMethod]
         public static void CallStaticConstructors()
         {
         }
 
-        [Drivers.Compiler.Attributes.NoDebug]
-        [Drivers.Compiler.Attributes.NoGC]
         [Drivers.Compiler.Attributes.HaltMethod]
         public static void Halt()
         {

@@ -142,6 +142,19 @@ namespace Kernel.FOS_System
         [Drivers.Compiler.Attributes.NoDebug]
         public static FOS_System.String GetASCIIStringFromASCII(byte[] n, UInt32 aStart, UInt32 aCharCount)
         {
+            {
+                uint maxExtent = (aCharCount + aStart);
+                uint i = aStart;
+                for (;  i < n.Length && i < maxExtent; i++)
+                {
+                    if (n[i] == 0)
+                    {
+                        break;
+                    }
+                }
+                aCharCount = i - aStart;
+            }
+
             FOS_System.String result = FOS_System.String.New((int)aCharCount);
 
             if (result == null)
@@ -150,7 +163,7 @@ namespace Kernel.FOS_System
             }
             else
             {
-                for (int i = 0; i < aCharCount; i++)
+                for (int i = 0; i < aCharCount && (i + aStart) < n.Length; i++)
                 {
                     UInt32 pos = (UInt32)(aStart + i);
                     UInt16 aChar = (UInt16)(n[pos]);
@@ -175,6 +188,19 @@ namespace Kernel.FOS_System
         [Drivers.Compiler.Attributes.NoDebug]
         public static unsafe FOS_System.String GetASCIIStringFromASCII(byte* n, UInt32 aStart, UInt32 aCharCount)
         {
+            {
+                uint maxExtent = (aCharCount + aStart);
+                uint i = aStart;
+                for (; i < maxExtent; i++)
+                {
+                    if (n[i] == 0)
+                    {
+                        break;
+                    }
+                }
+                aCharCount = i - aStart;
+            }
+
             FOS_System.String result = FOS_System.String.New((int)aCharCount);
             
             if (result == null)
@@ -213,6 +239,19 @@ namespace Kernel.FOS_System
         {
             //If you change this method, change the pointer version below too.
 
+            {
+                uint maxExtent = (aCharCount * 2) + aStart;
+                uint i = aStart;
+                for (; i < n.Length && i < maxExtent; i += 2)
+                {
+                    if (n[i] == 0 && n[i + 1] == 0)
+                    {
+                        break;
+                    }
+                }
+                aCharCount = (i - aStart) / 2;
+            }
+
             FOS_System.String result = FOS_System.String.New((int)aCharCount);
             
             if (result == null)
@@ -221,7 +260,7 @@ namespace Kernel.FOS_System
             }
             else
             {
-                for (int i = 0; i < aCharCount; i++)
+                for (int i = 0; i < aCharCount && ((i * 2) + aStart + 1) < n.Length; i++)
                 {
                     UInt32 pos = (UInt32)(aStart + (i * 2));
                     UInt16 aChar = (UInt16)(n[pos + 1] << 8 | n[pos]);
@@ -247,6 +286,19 @@ namespace Kernel.FOS_System
         public unsafe static FOS_System.String GetASCIIStringFromUTF16(byte* n, UInt32 aStart, UInt32 aCharCount)
         {
             //If you change this method, change the array version above too.
+
+            {
+                uint maxExtent = (aCharCount * 2) + aStart;
+                uint i = aStart;
+                for (; i < maxExtent; i += 2)
+                {
+                    if (n[i] == 0 && n[i + 1] == 0)
+                    {
+                        break;
+                    }
+                }
+                aCharCount = (i - aStart) / 2;
+            }
 
             FOS_System.String result = FOS_System.String.New((int)aCharCount);
 
