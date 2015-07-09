@@ -94,6 +94,99 @@ namespace Kernel.FOS_System
             }
         }
 
+        internal static Processes.Synchronisation.SpinLock HeapAccessLock;
+        internal static bool HeapAccessLockInitialised = false;
+
+        [Compiler.NoDebug]
+        [Drivers.Compiler.Attributes.NoDebug]
+        [Compiler.NoGC]
+        [Drivers.Compiler.Attributes.NoGC]
+        private static void EnterCritical(FOS_System.String caller)
+        {
+            //BasicConsole.WriteLine("Entering critical section...");
+            if (HeapAccessLockInitialised)
+            {
+                if (HeapAccessLock == null)
+                {
+                    BasicConsole.WriteLine("HeapAccessLock is initialised but null?!");
+                    BasicConsole.DelayOutput(10);
+                }
+                else
+                {
+                    if (HeapAccessLock.Locked)
+                    {
+                        BasicConsole.SetTextColour(BasicConsole.warning_colour);
+                        BasicConsole.WriteLine("Warning: Heap about to try to re-enter spin lock...");
+                        BasicConsole.Write("Enter lock caller: ");
+                        BasicConsole.WriteLine(caller);
+                        BasicConsole.SetTextColour(BasicConsole.default_colour);
+                    }
+                    HeapAccessLock.Enter();
+                }
+            }
+            //else
+            //{
+            //    BasicConsole.WriteLine("HeapAccessLock not initialised - ignoring lock conditions.");
+            //    BasicConsole.DelayOutput(5);
+            //}
+        }
+        [Compiler.NoDebug]
+        [Drivers.Compiler.Attributes.NoDebug]
+        [Compiler.NoGC]
+        [Drivers.Compiler.Attributes.NoGC]
+        private static void ExitCritical()
+        {
+            //BasicConsole.WriteLine("Exiting critical section...");
+            if (HeapAccessLockInitialised)
+            {
+                if (HeapAccessLock == null)
+                {
+                    BasicConsole.WriteLine("HeapAccessLock is initialised but null?!");
+                    BasicConsole.DelayOutput(10);
+                }
+                else
+                {
+                    HeapAccessLock.Exit();
+                }
+            }
+            //else
+            //{
+            //    BasicConsole.WriteLine("HeapAccessLock not initialised - ignoring lock conditions.");
+            //    BasicConsole.DelayOutput(5);
+            //}
+        }
+
+
+        /// <summary>
+        /// Calculates the total amount of memory in the heap.
+        /// </summary>
+        /// <returns>The total amount of memory in the heap.</returns>
+        public static UInt32 GetTotalMem()
+        {
+            HeapBlock* cBlock = fblock;
+            UInt32 result = 0;
+            while (cBlock != null)
+            {
+                result += cBlock->size;
+                cBlock = cBlock->next;
+            }
+            return result;
+        }
+        /// <summary>
+        /// Calculates the total amount of used memory in the heap.
+        /// </summary>
+        /// <returns>The total amount of used memory in the heap.</returns>
+        public static UInt32 GetTotalUsedMem()
+        {
+            HeapBlock* cBlock = fblock;
+            UInt32 result = 0;
+            while (cBlock != null)
+            {
+                result += GetUsedMem(cBlock);
+                cBlock = cBlock->next;
+            }
+            return result;
+        }
         /// <summary>
         /// Calculates the total amount of free memory in the heap.
         /// </summary>
@@ -108,6 +201,15 @@ namespace Kernel.FOS_System
                 cBlock = cBlock->next;
             }
             return result;
+        }
+        /// <summary>
+        /// Calculates the amount of used memory in the specified block.
+        /// </summary>
+        /// <param name="aBlock">The block to calculate used mem of.</param>
+        /// <returns>The amount of used memory in bytes.</returns>
+        public static UInt32 GetUsedMem(HeapBlock* aBlock)
+        {
+            return (aBlock->used * aBlock->bsize);
         }
         /// <summary>
         /// Calculates the amount of free memory in the specified block.
@@ -160,7 +262,7 @@ namespace Kernel.FOS_System
             if (!FixedHeapInitialised)
             {
                 Heap.Init();
-                Heap.AddBlock(Heap.GetFixedHeapPtr(), Heap.GetFixedHeapSize(), 16);
+                Heap.AddBlock((UInt32)Heap.GetFixedHeapPtr(), Heap.GetFixedHeapSize(), 16);
                 FixedHeapInitialised = true;
             }
         }
@@ -188,7 +290,7 @@ namespace Kernel.FOS_System
         [Drivers.Compiler.Attributes.NoDebug]
         [Compiler.NoGC]
         [Drivers.Compiler.Attributes.NoGC]
-        public static int AddBlock(UInt32* addr, UInt32 size, UInt32 bsize)
+        public static int AddBlock(UInt32 addr, UInt32 size, UInt32 bsize)
         {
             HeapBlock* b;
             UInt32 bcnt;
@@ -252,9 +354,9 @@ namespace Kernel.FOS_System
         [Drivers.Compiler.Attributes.NoDebug]
         [Compiler.NoGC]
         [Drivers.Compiler.Attributes.NoGC]
-        public static void* Alloc(UInt32 size)
+        public static void* Alloc(UInt32 size, FOS_System.String caller)
         {
-            return Alloc(size, 1);
+            return Alloc(size, 1, caller);
         }
         /// <summary>
         /// Attempts to allocate the specified amount of memory from the heap and then zero all of it.
@@ -266,10 +368,37 @@ namespace Kernel.FOS_System
         [Drivers.Compiler.Attributes.NoDebug]
         [Compiler.NoGC]
         [Drivers.Compiler.Attributes.NoGC]
-        public static void* AllocZeroed(UInt32 size)
+        public static void* AllocZeroed(UInt32 size, FOS_System.String caller)
         {
-            return AllocZeroed(size, 1);
+            return AllocZeroed(size, 1, caller);
         }
+
+        /// <summary>
+        /// Avoids Page Boundary.
+        /// </summary>
+        /// <param name="size"></param>
+        /// <param name="boundary"></param>
+        /// <returns></returns>
+        public static void* AllocZeroedAPB(UInt32 size, UInt32 boundary, FOS_System.String caller)
+        {
+            void* result = null;
+            void* oldValue = null;
+            UInt32 resultAddr;
+            do
+            {
+                oldValue = result;
+                result = AllocZeroed(size, boundary, caller);
+                resultAddr = (UInt32)result;
+                if (oldValue != null)
+                {
+                    Free(oldValue);
+                }
+            }
+            while (resultAddr / 0x1000 != (resultAddr + size - 1) / 0x1000);
+
+            return result;
+        }
+
         /// <summary>
         /// Attempts to allocate the specified amount of memory from the heap and then zero all of it.
         /// </summary>
@@ -281,9 +410,14 @@ namespace Kernel.FOS_System
         [Drivers.Compiler.Attributes.NoDebug]
         [Compiler.NoGC]
         [Drivers.Compiler.Attributes.NoGC]
-        public static void* AllocZeroed(UInt32 size, UInt32 boundary)
+        public static void* AllocZeroed(UInt32 size, UInt32 boundary, FOS_System.String caller)
         {
-            return Utilities.MemoryUtils.ZeroMem(Alloc(size, boundary), size);
+            void* result = Alloc(size, boundary, caller);
+            if(result == null)
+            {
+                return null;
+            }
+            return Utilities.MemoryUtils.ZeroMem(result, size);
         }
         /// <summary>
         /// Attempts to allocate the specified amount of memory from the heap.
@@ -296,7 +430,7 @@ namespace Kernel.FOS_System
         [Drivers.Compiler.Attributes.NoDebug]
         [Compiler.NoGC]
         [Drivers.Compiler.Attributes.NoGC]
-        public static void* Alloc(UInt32 size, UInt32 boundary)
+        public static void* Alloc(UInt32 size, UInt32 boundary, FOS_System.String caller)
         {
 #if HEAP_TRACE
             BasicConsole.SetTextColour(BasicConsole.warning_colour);
@@ -306,13 +440,20 @@ namespace Kernel.FOS_System
 
             if (PreventAllocation)
             {
+                bool BCPOEnabled = BasicConsole.PrimaryOutputEnabled;
+                BasicConsole.PrimaryOutputEnabled = true;
                 BasicConsole.SetTextColour(BasicConsole.error_colour);
-                BasicConsole.WriteLine("Allocation of memory prevented! Reason:");
+                BasicConsole.Write("Allocation of memory prevented! Reason: ");
                 BasicConsole.WriteLine(PreventReason);
+                BasicConsole.Write("    > Caller: ");
+                BasicConsole.WriteLine(caller);
                 BasicConsole.DelayOutput(5);
                 BasicConsole.SetTextColour(BasicConsole.default_colour);
+                BasicConsole.PrimaryOutputEnabled = BCPOEnabled;
                 return null;
             }
+
+            EnterCritical("Alloc");
 
             HeapBlock* b;
             byte* bm;
@@ -321,7 +462,7 @@ namespace Kernel.FOS_System
             UInt32 bneed;
             byte nid;
 
-            if(boundary > 1)
+            if (boundary > 1)
             {
                 size += (boundary - 1);
             }
@@ -368,11 +509,19 @@ namespace Kernel.FOS_System
                                 /* count used blocks NOT bytes */
                                 b->used += y;
 
-                                void* result = (void*)(x * b->bsize + (UInt32*)&b[1]);
+                                void* result = (void*)(x * b->bsize + (UInt32)(&b[1]));
                                 if (boundary > 1)
                                 {
                                     result = (void*)((((UInt32)result) + (boundary - 1)) & ~(boundary - 1));
+
+#if HEAP_TRACE
+                                    ExitCritical();
+                                    BasicConsole.WriteLine(((FOS_System.String)"Allocated address ") + (uint)result + " on boundary " + boundary + " for " + caller);
+                                    EnterCritical("Alloc:Boundary condition");
+#endif
                                 }
+
+                                ExitCritical();
                                 return result;
                             }
 
@@ -390,6 +539,16 @@ namespace Kernel.FOS_System
             BasicConsole.SetTextColour(BasicConsole.default_colour);
             BasicConsole.DelayOutput(2);
 #endif
+
+            {
+                bool BCPOEnabled = BasicConsole.PrimaryOutputEnabled;
+                BasicConsole.PrimaryOutputEnabled = true;
+                BasicConsole.WriteLine("Heap out of memory!");
+                BasicConsole.PrimaryOutputEnabled = BCPOEnabled;
+            }
+
+            ExitCritical();
+
             return null;
         }
         /// <summary>
@@ -402,8 +561,10 @@ namespace Kernel.FOS_System
         [Drivers.Compiler.Attributes.NoGC]
         public static void Free(void* ptr)
         {
+            EnterCritical("Free");
+
             HeapBlock* b;
-            UInt32* ptroff;
+            UInt32 ptroff;
             UInt32 bi, x;
             byte* bm;
             byte id;
@@ -411,17 +572,17 @@ namespace Kernel.FOS_System
 
             for (b = fblock; (UInt32)b != 0; b = b->next)
             {
-                if ((UInt32*)ptr > (UInt32*)b && (UInt32*)ptr < (UInt32*)b + b->size)
+                if ((UInt32)ptr > (UInt32)b && (UInt32)ptr < (UInt32)b + b->size)
                 {
                     /* found block */
-                    ptroff = (UInt32*)((UInt32*)ptr - (UInt32*)&b[1]);  /* get offset to get block */
+                    ptroff = (UInt32)ptr - (UInt32)(&b[1]);  /* get offset to get block */
                     /* block offset in BM */
                     bi = (UInt32)ptroff / b->bsize;
                     /* .. */
                     bm = (byte*)&b[1];
                     /* clear allocation */
                     id = bm[bi];
-                    /* oddly.. GCC did not optimize this */
+                    /* oddly.. HeapC did not optimize this */
                     max = b->size / b->bsize;
                     for (x = bi; bm[x] == id && x < max; ++x)
                     {
@@ -429,12 +590,14 @@ namespace Kernel.FOS_System
                     }
                     /* update free block count */
                     b->used -= x - bi;
+
+                    ExitCritical();
                     return;
                 }
             }
 
             /* this error needs to be raised or reported somehow */
-            return;
+            ExitCritical();
         }
     }
 }

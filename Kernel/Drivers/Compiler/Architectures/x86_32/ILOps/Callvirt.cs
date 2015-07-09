@@ -127,7 +127,6 @@ namespace Drivers.Compiler.Architectures.x86
             MethodBase methodToCall = theOp.MethodToCall;
             Types.MethodInfo methodToCallInfo = conversionState.TheILLibrary.GetMethodInfo(methodToCall);
 
-            conversionState.AddExternalLabel(conversionState.GetHaltMethodInfo().ID);
             conversionState.AddExternalLabel(conversionState.GetThrowNullReferenceExceptionMethodInfo().ID);
 
             //The method to call is a method base
@@ -288,7 +287,7 @@ namespace Drivers.Compiler.Architectures.x86
                     conversionState.Append(new ASMOps.Jmp() { JumpType = ASMOps.JmpOp.JumpNotZero, DestILPosition = currOpPosition, Extension = "NotNull" });
                     conversionState.Append(new ASMOps.Call() { Target = "GetEIP" });
                     conversionState.AddExternalLabel("GetEIP");
-                    conversionState.Append(new ASMOps.Call() { Target = conversionState.GetHaltMethodInfo().ID });
+                    conversionState.Append(new ASMOps.Call() { Target = conversionState.GetThrowNullReferenceExceptionMethodInfo().ID });
                     conversionState.Append(new ASMOps.Label() { ILPosition = currOpPosition, Extension = "NotNull" });
 
                     //Get type ref
@@ -332,6 +331,8 @@ namespace Drivers.Compiler.Architectures.x86
                     conversionState.Append(new ASMOps.Jmp() { JumpType = ASMOps.JmpOp.Jump, DestILPosition = currOpPosition, Extension = "LoopMethodTable" });
                     conversionState.Append(new ASMOps.Label() { ILPosition = currOpPosition, Extension = "NotFound" });
                     //Throw exception!
+                    conversionState.Append(new ASMOps.Call() { Target = "GetEIP" });
+                    conversionState.AddExternalLabel("GetEIP");
                     conversionState.Append(new ASMOps.Call() { Target = conversionState.GetThrowNullReferenceExceptionMethodInfo().ID });
 
                     conversionState.Append(new ASMOps.Label() { ILPosition = currOpPosition, Extension = "Call" });

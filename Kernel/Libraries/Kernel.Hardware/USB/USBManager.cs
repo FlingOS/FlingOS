@@ -306,9 +306,6 @@ namespace Kernel.Hardware.USB
                             PCIDeviceNormal EHCI_PCIDevice = (PCIDeviceNormal)aDevice;
                             EHCI_PCIDevice.Claimed = true;
 
-                            //BasicConsole.SetTextColour(BasicConsole.warning_colour);
-                            //BasicConsole.WriteLine("WARNING! EHCI device support disabled.");
-                            //BasicConsole.SetTextColour(BasicConsole.default_colour);
                             EHCI newEHCI = new EHCI(EHCI_PCIDevice);
                             HCIDevices.Add(newEHCI);
                             DeviceManager.AddDevice(newEHCI);
@@ -379,7 +376,7 @@ namespace Kernel.Hardware.USB
             }
         }
         /// <summary>
-        /// Updates the USb manager and all host controller devices.
+        /// Updates the USB manager and all host controller devices.
         /// </summary>
         public static void Update()
         {
@@ -388,7 +385,7 @@ namespace Kernel.Hardware.USB
                 ((HCI)HCIDevices[i]).Update();
             }
         }
-
+        
         public static void NotifyDevicesNeedUpdate()
         {
             DeviceManager.NotifyDevicesNeedUpdate();
@@ -677,7 +674,7 @@ namespace Kernel.Hardware.USB
             DBGMSG("USB: GET_DESCRIPTOR Device");
 #endif
 
-            DeviceDescriptor* descriptor = (DeviceDescriptor*)FOS_System.Heap.AllocZeroed((uint)sizeof(DeviceDescriptor));
+            DeviceDescriptor* descriptor = (DeviceDescriptor*)FOS_System.Heap.AllocZeroed((uint)sizeof(DeviceDescriptor), "USBManager : GetDeviceDescriptor");
             USBTransfer transfer = new USBTransfer();
             try
             {
@@ -744,7 +741,7 @@ namespace Kernel.Hardware.USB
 
             //64 byte buffer
             ushort bufferSize = 64;
-            byte* buffer = (byte*)FOS_System.Heap.AllocZeroed(bufferSize);
+            byte* buffer = (byte*)FOS_System.Heap.AllocZeroed(bufferSize, "USBManager: GetConfigDescriptor");
 
             USBTransfer transfer = new USBTransfer();
             device.hc.SetupTransfer(device, transfer, USBTransferType.Control, 0, bufferSize);
@@ -884,7 +881,7 @@ namespace Kernel.Hardware.USB
             DBGMSG("USB: GET_DESCRIPTOR string");
 #endif
 
-            StringDescriptor* descriptor = (StringDescriptor*)FOS_System.Heap.AllocZeroed((uint)sizeof(StringDescriptor));
+            StringDescriptor* descriptor = (StringDescriptor*)FOS_System.Heap.AllocZeroed((uint)sizeof(StringDescriptor), "USBManager : GetDeviceStringDescriptor");
 
             try
             {
@@ -923,7 +920,7 @@ namespace Kernel.Hardware.USB
 
             //64 byte buffer
             ushort bufferSize = 64;
-            byte* buffer = (byte*)FOS_System.Heap.AllocZeroed(bufferSize);
+            byte* buffer = (byte*)FOS_System.Heap.AllocZeroed(bufferSize, "USBManager : GetUnicodeStringDescriptor");
 
             USBTransfer transfer = new USBTransfer();
             device.hc.SetupTransfer(device, transfer, USBTransferType.Control, 0, bufferSize);

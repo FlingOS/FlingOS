@@ -158,6 +158,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="icons\" />
+    <Folder Include="Specs" />
     <Folder Include="Source Samples" />
     <Folder Include="Tutorials\" />
     <Folder Include="Reference Articles\" />
@@ -242,6 +243,7 @@
     <Content Include="Source Samples\ASM x86 Interrupt Debugging - 2014-11-03.zip" />
     <Content Include="Source Samples\1. Setting up a bootstrap.zip" />
     <Content Include="Source Samples\ATA - 2015-02-03.zip" />
+    <None Include="Specs\XML Comment Specifications.aml" />
     <None Include="Welcome.aml" />
   </ItemGroup>
   <ItemGroup>

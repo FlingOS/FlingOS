@@ -51,7 +51,7 @@ namespace Kernel.FOS_System
                 }
                 else
                 {
-                    return message;
+                    return message + "\nInstruction address: " + InstructionAddress;
                 }
             }
             set

@@ -47,7 +47,7 @@ namespace Kernel.Hardware.Devices
             //  (and demo'ing to your few remaining friends will be 
             //  embarrassing).
             BasicConsole.WriteLine("Using UK Keyboard layout.");
-            BasicConsole.DelayOutput(3);
+            //BasicConsole.DelayOutput(3);
 
             KeyMappings = new List(164);
 

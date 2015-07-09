@@ -166,6 +166,9 @@ namespace Kernel
         {
             Kernel.FOS_System.GC.IncrementRefCount(ex);
 
+            BasicConsole.WriteLine("Exception thrown:");
+            BasicConsole.WriteLine(ex.Message);
+
             if (State->CurrentHandlerPtr->Ex != null)
             {
                 //GC ref count remains consistent because the Ex pointer below is going to be replaced but
@@ -268,7 +271,71 @@ namespace Kernel
                 State->CurrentHandlerPtr == null)
             {
                 // If we get to here, it's an unhandled exception
-                HaltReason = "Cannot leave on null handler!";
+                HaltReason = "Cannot leave on null handler! Address: 0x        ";
+
+                uint y = *((uint*)(BasePointer + 4));
+                int offset = 48;
+                #region Address
+                while (offset > 40)
+                {
+                    uint rem = y & 0xFu;
+                    switch (rem)
+                    {
+                        case 0:
+                            HaltReason[offset] = '0';
+                            break;
+                        case 1:
+                            HaltReason[offset] = '1';
+                            break;
+                        case 2:
+                            HaltReason[offset] = '2';
+                            break;
+                        case 3:
+                            HaltReason[offset] = '3';
+                            break;
+                        case 4:
+                            HaltReason[offset] = '4';
+                            break;
+                        case 5:
+                            HaltReason[offset] = '5';
+                            break;
+                        case 6:
+                            HaltReason[offset] = '6';
+                            break;
+                        case 7:
+                            HaltReason[offset] = '7';
+                            break;
+                        case 8:
+                            HaltReason[offset] = '8';
+                            break;
+                        case 9:
+                            HaltReason[offset] = '9';
+                            break;
+                        case 10:
+                            HaltReason[offset] = 'A';
+                            break;
+                        case 11:
+                            HaltReason[offset] = 'B';
+                            break;
+                        case 12:
+                            HaltReason[offset] = 'C';
+                            break;
+                        case 13:
+                            HaltReason[offset] = 'D';
+                            break;
+                        case 14:
+                            HaltReason[offset] = 'E';
+                            break;
+                        case 15:
+                            HaltReason[offset] = 'F';
+                            break;
+                    }
+                    y >>= 4;
+                    offset--;
+                }
+
+                #endregion
+
                 BasicConsole.WriteLine(HaltReason);
                 BasicConsole.DelayOutput(5);
 
@@ -362,7 +429,7 @@ namespace Kernel
             }
         }
         
-        private static unsafe byte* StackPointer
+        internal static unsafe byte* StackPointer
         {
             [Drivers.Compiler.Attributes.PluggedMethod(ASMFilePath=@"ASM\Exceptions\StackPointer")]
             get
@@ -374,7 +441,7 @@ namespace Kernel
             {
             }
         }
-        private static unsafe byte* BasePointer
+        internal static unsafe byte* BasePointer
         {
             [Drivers.Compiler.Attributes.PluggedMethod(ASMFilePath = @"ASM\Exceptions\BasePointer")]
             get
@@ -847,10 +914,20 @@ namespace Kernel
         /// </remarks>
         [Compiler.ThrowNullReferenceExceptionMethod]
         [Drivers.Compiler.Attributes.ThrowNullReferenceExceptionMethod]
-        public static void Throw_NullReferenceException()
+        public static void Throw_NullReferenceException(uint address)
         {
-            HaltReason = "Null reference exception.";
-            Throw(new FOS_System.Exceptions.NullReferenceException());
+            HaltReason = "Null reference exception. Instruction: 0x        ";
+            FillString(address, 48, HaltReason);
+            
+            bool BCPOEnabled = BasicConsole.PrimaryOutputEnabled;
+            BasicConsole.PrimaryOutputEnabled = true;
+            BasicConsole.WriteLine(HaltReason);
+            BasicConsole.DelayOutput(10);
+            BasicConsole.PrimaryOutputEnabled = BCPOEnabled;
+
+            FOS_System.Exception ex = new FOS_System.Exceptions.NullReferenceException();
+            ex.InstructionAddress = address;
+            Throw(ex);
         }
         /// <summary>
         /// Throws an Array Type Mismatch exception.
@@ -876,14 +953,78 @@ namespace Kernel
         public static void Throw_IndexOutOfRangeException()
         {
             HaltReason = "Index out of range exception.";
-            FOS_System.Exception ex = new FOS_System.Exceptions.IndexOutOfRangeException();
+            FOS_System.Exception ex = new FOS_System.Exceptions.IndexOutOfRangeException(0, 0);
             ex.InstructionAddress = *((uint*)BasePointer + 1);
             Throw(ex);
         }
 
         [Drivers.Compiler.Attributes.PluggedMethod(ASMFilePath=@"ASM\GetEIP")]
-        private static void GetEIP()
+        public static void GetEIP()
         {
+        }
+
+        [Drivers.Compiler.Attributes.NoDebug]
+        [Drivers.Compiler.Attributes.NoGC]
+        public static void FillString(uint value, int offset, FOS_System.String str)
+        {
+            int end = offset - 8;
+            while (offset > end)
+            {
+                uint rem = value & 0xFu;
+                switch (rem)
+                {
+                    case 0:
+                        str[offset] = '0';
+                        break;
+                    case 1:
+                        str[offset] = '1';
+                        break;
+                    case 2:
+                        str[offset] = '2';
+                        break;
+                    case 3:
+                        str[offset] = '3';
+                        break;
+                    case 4:
+                        str[offset] = '4';
+                        break;
+                    case 5:
+                        str[offset] = '5';
+                        break;
+                    case 6:
+                        str[offset] = '6';
+                        break;
+                    case 7:
+                        str[offset] = '7';
+                        break;
+                    case 8:
+                        str[offset] = '8';
+                        break;
+                    case 9:
+                        str[offset] = '9';
+                        break;
+                    case 10:
+                        str[offset] = 'A';
+                        break;
+                    case 11:
+                        str[offset] = 'B';
+                        break;
+                    case 12:
+                        str[offset] = 'C';
+                        break;
+                    case 13:
+                        str[offset] = 'D';
+                        break;
+                    case 14:
+                        str[offset] = 'E';
+                        break;
+                    case 15:
+                        str[offset] = 'F';
+                        break;
+                }
+                value >>= 4;
+                offset--;
+            }
         }
     }
 

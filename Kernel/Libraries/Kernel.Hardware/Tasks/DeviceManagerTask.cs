@@ -24,7 +24,6 @@
 // ------------------------------------------------------------------------------ //
 #endregion
     
-
 using System;
 using Kernel.Hardware.Processes;
 using Kernel.Hardware.Interrupts;

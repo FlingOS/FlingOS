@@ -44,7 +44,7 @@ namespace Kernel.Hardware.Devices
             //  You can go look up scancodes / characters etc. for other
             //  keyboards if you like.
             BasicConsole.WriteLine("Using US Keyboard layout.");
-            BasicConsole.DelayOutput(3);
+            //BasicConsole.DelayOutput(3);
             KeyMappings = new List(164);
 
             //TODO: fn key

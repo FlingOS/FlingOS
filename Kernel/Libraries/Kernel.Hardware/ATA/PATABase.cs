@@ -75,7 +75,9 @@ namespace Kernel.Hardware.ATA
             /// <summary>
             /// Error status.
             /// </summary>
-            Error = 0x01
+            Error = 0x01,
+
+            Timeout = 0xFF
         };
         /// <summary>
         /// Error masks.
@@ -322,6 +324,15 @@ namespace Kernel.Hardware.ATA
             }
         }
 
+        internal UInt32 maxWritePioBlocks = 128;
+        public UInt32 MaxWritePioBlocks
+        {
+            get
+            {
+                return maxWritePioBlocks;
+            }
+        }
+
         public PATABase(ATAIOPorts anIO, ATA.ControllerID aControllerId, ATA.BusPosition aBusPosition)
         {
             IO = anIO;
@@ -358,29 +369,42 @@ namespace Kernel.Hardware.ATA
             // If it's a PATAPI drive, we need to send the IDENTIFY_PACKET command
             if (mDriveType == SpecLevel.PATAPI)
             {
+                Reset();
                 SendCmd(Cmd.IdentifyPacket);
             }
 
             // Read Identification Space of the Device
-            var xBuff = new UInt16[256];
-            IO.Data.Read_UInt16s(xBuff);
-            mSerialNo = GetString(xBuff, 10, 20);
-            mFirmwareRev = GetString(xBuff, 23, 8);
-            mModelNo = GetString(xBuff, 27, 40);
+            var deviceInfoBuffer = new UInt16[256];
+            IO.Data.Read_UInt16s(deviceInfoBuffer);
+            mSerialNo = GetString(deviceInfoBuffer, 10, 20).Trim();
+            mFirmwareRev = GetString(deviceInfoBuffer, 23, 8).Trim();
+            mModelNo = GetString(deviceInfoBuffer, 27, 40).Trim();
+
+            // Hitachi hardrives found in real-world hardware failed in that:
+            //      They only work with one-sector writes at a time
+            //  This may be due to the fact that I'm working with old laptops and a sample size of one
+            //  Hitachi drive. Newer drives may work properly. All drives will work with a max size of 
+            //  one though.
+            //  
+            //  Fujitsu drives suffer a similar fault.
+            if (mModelNo.StartsWith("Hitachi") || mModelNo.StartsWith("FUJITSU"))
+            {
+                maxWritePioBlocks = 1;
+            }
 
             //Words (61:60) shall contain the value one greater than the total number of user-addressable
             //sectors in 28-bit addressing and shall not exceed 0x0FFFFFFF. 
             // We need 28 bit addressing - small drives on VMWare and possibly other cases are 28 bit
-            blockCount = ((UInt32)xBuff[61] << 16 | xBuff[60]) - 1;
+            blockCount = ((UInt32)deviceInfoBuffer[61] << 16 | deviceInfoBuffer[60]) - 1;
 
             //Words (103:100) shall contain the value one greater than the total number of user-addressable
             //sectors in 48-bit addressing and shall not exceed 0x0000FFFFFFFFFFFF.
             //The contents of words (61:60) and (103:100) shall not be used to determine if 48-bit addressing is
             //supported. IDENTIFY DEVICE bit 10 word 83 indicates support for 48-bit addressing.
-            bool xLba48Capable = (xBuff[83] & 0x400) != 0;
+            bool xLba48Capable = (deviceInfoBuffer[83] & 0x400) != 0;
             if (xLba48Capable)
             {
-                blockCount = ((UInt64)xBuff[103] << 48 | (UInt64)xBuff[102] << 32 | (UInt64)xBuff[101] << 16 | (UInt64)xBuff[100]) - 1;
+                blockCount = ((UInt64)deviceInfoBuffer[103] << 48 | (UInt64)deviceInfoBuffer[102] << 32 | (UInt64)deviceInfoBuffer[101] << 16 | (UInt64)deviceInfoBuffer[100]) - 1;
                 mLBA48Mode = true;
             }
         }
@@ -461,6 +485,8 @@ namespace Kernel.Hardware.ATA
 
             if ((status & Status.Error) != 0)
             {
+
+
                 // Can look in Error port for more info
                 // Device is not ATA
                 // Error status can also triggered by ATAPI devices
@@ -571,11 +597,96 @@ namespace Kernel.Hardware.ATA
                      timeout-- > 0);
 
             // Error occurred
-            if (aThrowOnError && (xStatus & Status.Error) != 0)
+            if (aThrowOnError && ((xStatus & Status.Error) != 0 || timeout == 0))
             {
-                ExceptionMethods.Throw(new FOS_System.Exception("ATA send command error!"));
+                #region Throw Exception 
+
+                FOS_System.String cmdName = "";
+                switch (aCmd)
+                {
+                    case Cmd.CacheFlush:
+                        cmdName = "CacheFlush";
+                        break;
+                    case Cmd.CacheFlushExt:
+                        cmdName = "CacheFlushExt";
+                        break;
+                    case Cmd.Eject:
+                        cmdName = "Eject";
+                        break;
+                    case Cmd.Identify:
+                        cmdName = "Identify";
+                        break;
+                    case Cmd.IdentifyPacket:
+                        cmdName = "IdentifyPacket";
+                        break;
+                    case Cmd.Packet:
+                        cmdName = "Packet";
+                        break;
+                    case Cmd.Read:
+                        cmdName = "Read";
+                        break;
+                    case Cmd.ReadDma:
+                        cmdName = "ReadDma";
+                        break;
+                    case Cmd.ReadDmaExt:
+                        cmdName = "ReadDmaExt";
+                        break;
+                    case Cmd.ReadPio:
+                        cmdName = "ReadPio";
+                        break;
+                    case Cmd.ReadPioExt:
+                        cmdName = "ReadPioExt";
+                        break;
+                    case Cmd.WriteDma:
+                        cmdName = "WriteDma";
+                        break;
+                    case Cmd.WriteDmaExt:
+                        cmdName = "WriteDmaExt";
+                        break;
+                    case Cmd.WritePio:
+                        cmdName = "WritePio";
+                        break;
+                    case Cmd.WritePioExt:
+                        cmdName = "WritePioExt";
+                        break;
+                    default:
+                        cmdName = "[Unrecognised]";
+                        break;
+                }
+                ExceptionMethods.Throw(new FOS_System.Exception("ATA send command error! Command was: " + cmdName));
+
+                #endregion
             }
-            return xStatus;
+            return timeout == 0 ? Status.Timeout : xStatus;
+        }
+
+        public virtual void Reset()
+        {
+            IO.Control.Write_Byte(0x4);
+            Wait();
+            IO.Control.Write_Byte(0x0);
+            Status xStatus;
+            int timeout = 20000000;
+            do
+            {
+                Wait();
+                xStatus = (Status)IO.Control.Read_Byte();
+            } while ((xStatus & Status.Busy) != 0 &&
+                     (xStatus & Status.Error) == 0 &&
+                     timeout-- > 0);
+
+            // Error occurred
+            if ((xStatus & Status.Error) != 0)
+            {
+                ExceptionMethods.Throw(new FOS_System.Exception("ATA software reset error!"));
+            }
+            else if (timeout == 0)
+            {
+                ExceptionMethods.Throw(new FOS_System.Exception("ATA software reset timeout!"));
+            }
+
+            //Reselect the correct drive
+            SelectDrive(0, false);
         }
 
         public override void ReadBlock(ulong aBlockNo, uint aBlockCount, byte[] aData)

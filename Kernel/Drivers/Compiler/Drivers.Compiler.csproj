@@ -157,15 +157,33 @@
     <None Include="..\..\Kernel\Kernel.licenseheader">
       <Link>Kernel.licenseheader</Link>
     </None>
+    <None Include="Tools\ISO\astamp.dat" />
+    <None Include="Tools\ISO\isolinux-debug.bin">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Include="Tools\ISO\isolinux.bin">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Tools\ISO\ldlinux.c32">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Tools\ISO\libcom32.c32">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="Tools\ISO\mboot.c32">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Include="Tools\ISO\memdisk" />
+    <None Include="Tools\ISO\pxechain.cbt" />
+    <None Include="Tools\ISO\pxelinux.0">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Tools\ISO\pxeserva.0" />
+    <None Include="Tools\ISO\pxeserva.cfg\F1" />
     <None Include="Tools\ISO\syslinux.cfg">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Include="Tools\ISO\vesamenu.c32" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="IL\ILOps\AllIlOps.txt" />
@@ -176,6 +194,14 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Tools\ISO9660Generator.exe" />
+    <None Include="Tools\ISO\pxelinux.cfg\default">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <Content Include="Tools\ISO\dir.txt" />
+    <Content Include="Tools\ISO\NWA_PXE\ServaReadme.txt" />
+    <Content Include="Tools\ISO\pxeserva.cfg\menu.def" />
+    <Content Include="Tools\ISO\WIA_RIS\ServaReadme.txt" />
+    <Content Include="Tools\ISO\WIA_WDS\ServaReadme.txt" />
     <Content Include="Tools\NASM\nasm.exe" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

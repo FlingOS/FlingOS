@@ -325,6 +325,8 @@ namespace Kernel.FOS_System.IO.Disk
         public static PartitionInfo CreateFAT32PartitionInfo(Hardware.Devices.DiskDevice aDisk, bool bootable)
         {
             //Can't remember why but we have to start at 3rd logical block
+            //  - First sector (sector 0) is for the MBR
+            //  - Why do we leave a second sector empty after it?
             return new PartitionInfo(bootable, 0xC, 2U, (uint)(aDisk.BlockCount - 2));
         }
         /// <summary>

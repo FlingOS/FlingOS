@@ -28,6 +28,8 @@ using System;
 
 namespace Kernel
 {
+    public delegate void SecondaryOutputHandler(FOS_System.String str);
+
     /// <summary>
     /// A basic console implementation - uses the BIOS's fixed text-video memory to output ASCII text.
     /// </summary>
@@ -61,6 +63,10 @@ namespace Kernel
     /// </remarks>
     public static unsafe class BasicConsole
     {
+        public static bool PrimaryOutputEnabled = true;
+        public static bool SecondaryOutputEnabled = true;
+        public static SecondaryOutputHandler SecondaryOutput = null;
+
         /// <summary>
         /// Static constructor for the Basic Console.
         /// </summary>
@@ -247,38 +253,46 @@ namespace Kernel
                 return;
             }
 
-            int strLength = str.length;
-            int maxOffset = rows * cols;
-
-            //This block shifts the video memory up the required number of lines.
-            if(offset + strLength > maxOffset)
+            if (PrimaryOutputEnabled)
             {
-                int amountToShift = (offset + strLength) - maxOffset;
-                amountToShift = amountToShift + (80 - (amountToShift % 80));
-                offset -= amountToShift;
+                int strLength = str.length;
+                int maxOffset = rows * cols;
 
-                char* vidMemPtr_Old = vidMemBasePtr;
-                char* vidMemPtr_New = vidMemBasePtr + amountToShift;
-                char* maxVidMemPtr = vidMemBasePtr + (cols * rows);
-                while(vidMemPtr_New < maxVidMemPtr)
+                //This block shifts the video memory up the required number of lines.
+                if (offset + strLength > maxOffset)
                 {
-                    vidMemPtr_Old[0] = vidMemPtr_New[0];
-                    vidMemPtr_Old++;
-                    vidMemPtr_New++;
+                    int amountToShift = (offset + strLength) - maxOffset;
+                    amountToShift = amountToShift + (80 - (amountToShift % 80));
+                    offset -= amountToShift;
+
+                    char* vidMemPtr_Old = vidMemBasePtr;
+                    char* vidMemPtr_New = vidMemBasePtr + amountToShift;
+                    char* maxVidMemPtr = vidMemBasePtr + (cols * rows);
+                    while (vidMemPtr_New < maxVidMemPtr)
+                    {
+                        vidMemPtr_Old[0] = vidMemPtr_New[0];
+                        vidMemPtr_Old++;
+                        vidMemPtr_New++;
+                    }
+                }
+
+                //This block outputs the string in the current foreground / background colours.
+                char* vidMemPtr = vidMemBasePtr + offset;
+                char* strPtr = str.GetCharPointer();
+                while (strLength > 0)
+                {
+                    vidMemPtr[0] = (char)((*strPtr & 0x00FF) | colour);
+
+                    strLength--;
+                    vidMemPtr++;
+                    strPtr++;
+                    offset++;
                 }
             }
 
-            //This block outputs the string in the current foreground / background colours.
-            char* vidMemPtr = vidMemBasePtr + offset;
-            char* strPtr = str.GetCharPointer();
-            while (strLength > 0)
+            if (SecondaryOutput != null && SecondaryOutputEnabled)
             {
-                vidMemPtr[0] = (char)((*strPtr & 0x00FF) | colour);
-
-                strLength--;
-                vidMemPtr++;
-                strPtr++;
-                offset++;
+                SecondaryOutput(str);
             }
         }
         /// <summary>
@@ -300,41 +314,52 @@ namespace Kernel
                 return;
             }
 
-            //This block shifts the video memory up the required number of lines.
-            if (offset == cols * rows)
+            if (PrimaryOutputEnabled)
             {
-                char* vidMemPtr_Old = vidMemBasePtr;
-                char* vidMemPtr_New = vidMemBasePtr + cols;
-                char* maxVidMemPtr = vidMemBasePtr + (cols * rows);
-                while (vidMemPtr_New < maxVidMemPtr)
+                //This block shifts the video memory up the required number of lines.
+                if (offset == cols * rows)
                 {
-                    vidMemPtr_Old[0] = vidMemPtr_New[0];
-                    vidMemPtr_Old++;
-                    vidMemPtr_New++;
+                    char* vidMemPtr_Old = vidMemBasePtr;
+                    char* vidMemPtr_New = vidMemBasePtr + cols;
+                    char* maxVidMemPtr = vidMemBasePtr + (cols * rows);
+                    while (vidMemPtr_New < maxVidMemPtr)
+                    {
+                        vidMemPtr_Old[0] = vidMemPtr_New[0];
+                        vidMemPtr_Old++;
+                        vidMemPtr_New++;
+                    }
+                    offset -= cols;
                 }
-                offset -= cols;
             }
-            
+
             //This outputs the string
             Write(str);
-            
-            //This block "writes" the new line by filling in the remainder (if any) of the
-            //  line with blank characters and correct background colour. 
-            int diff = offset;
-            while(diff > cols)
+
+            if (PrimaryOutputEnabled)
             {
-                diff -= cols;
+                //This block "writes" the new line by filling in the remainder (if any) of the
+                //  line with blank characters and correct background colour. 
+                int diff = offset;
+                while (diff > cols)
+                {
+                    diff -= cols;
+                }
+                diff = cols - diff;
+
+                char* vidMemPtr = vidMemBasePtr + offset;
+                while (diff > 0)
+                {
+                    vidMemPtr[0] = bg_colour;
+
+                    diff--;
+                    vidMemPtr++;
+                    offset++;
+                }
             }
-            diff = cols - diff;
 
-            char* vidMemPtr = vidMemBasePtr + offset;
-            while (diff > 0)
+            if (SecondaryOutput != null && SecondaryOutputEnabled)
             {
-                vidMemPtr[0] = bg_colour;
-
-                diff--;
-                vidMemPtr++;
-                offset++;
+                SecondaryOutput("\r\n");
             }
         }
 
@@ -399,42 +424,54 @@ namespace Kernel
                 return;
             }
 
-            //This method prints "." ".." "..." and so on until 
-            //  ".........." (or some other length) is printed and
-            //  then it resets the line to blank and repeats. Thus, 
-            //  it creates a waiting bar.
+            if (PrimaryOutputEnabled)
+            {
+                bool SecondaryOutputWasEnabled = SecondaryOutputEnabled;
+                SecondaryOutputEnabled = false;
 
-            WriteLine();
-            int a = 0;
-            amount *= 5000000;
-            for (int i = 0; i < amount; i++)
-            {
-                if (i % 500000 == 0)
+                //This method prints "." ".." "..." and so on until 
+                //  ".........." (or some other length) is printed and
+                //  then it resets the line to blank and repeats. Thus, 
+                //  it creates a waiting bar.
+
+                WriteLine();
+                int a = 0;
+                amount *= 5000000;
+                for (int i = 0; i < amount; i++)
                 {
-                    if (a == 10)
+                    if (i % 500000 == 0)
                     {
-                        a = 0;
-                        offset -= 10;
-                        Write("          ");
-                        offset -= 10;
+                        if (a == 10)
+                        {
+                            a = 0;
+                            offset -= 10;
+                            Write("          ");
+                            offset -= 10;
+                        }
+                        Write(".");
+                        a++;
                     }
-                    Write(".");
-                    a++;
                 }
+                offset -= a;
+                for (int i = 0; i < a; i++)
+                {
+                    Write(" ");
+                }
+                offset -= a;
+                offset -= 80;
+
+                SecondaryOutputEnabled = SecondaryOutputWasEnabled;
             }
-            offset -= a;
-            for (int i = 0; i < a; i++)
-            {
-                Write(" ");
-            }
-            offset -= a;
-            offset -= 80;
         }
 
         public static void DumpMemory(void* ptr, int size)
         {
             if (!Initialised) return;
             uint* uPtr = (uint*)ptr;
+            if ((size % 4) != 0)
+            {
+                size += 3;
+            }
             size /= 4;
             for (int i = 0; i < size; i++)
             {

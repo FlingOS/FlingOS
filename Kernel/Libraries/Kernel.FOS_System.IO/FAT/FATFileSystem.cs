@@ -120,11 +120,6 @@ namespace Kernel.FOS_System.IO.FAT
         public readonly UInt32 DataSectorCount;
 
         /// <summary>
-        /// Whether the file system is valid or not.
-        /// </summary>
-        public readonly bool IsValid = false;
-
-        /// <summary>
         /// FAT listing attributes
         /// </summary>
         public static class ListingAttribs
@@ -213,7 +208,7 @@ namespace Kernel.FOS_System.IO.FAT
 
             //The signature is the only thing we can check to determine if this is FAT
             //  so we must now assume this is a valid FAT file system.
-            IsValid = true;
+            isValid = true;
 
             //Load or calculate the various bits of data required to use a FAT file system.
 
@@ -320,94 +315,97 @@ namespace Kernel.FOS_System.IO.FAT
         public UInt32List ReadClusterChain(UInt64 fileSize, UInt32 FirstClusterNum)
         {
             //The capacity calculation is designed to make the internal array of the list exactly
-            //  the correct size for the number of cluster numbers in the chain.
-            UInt32List xResult = new UInt32List((int)((UInt32)fileSize / (SectorsPerCluster * BytesPerSector)));
+            //  the correct size (or one bigger) for the number of cluster numbers in the chain.
+            UInt32List Result = new UInt32List((int)((UInt32)fileSize / (SectorsPerCluster * BytesPerSector)) + 1);
 
             //Preallocated array for a sector of data. Used to store table data
-            byte[] xSector = new byte[BytesPerSector];
+            byte[] SectorBuffer = new byte[BytesPerSector];
             //The sector number of the sector which contains the cluster chain information
             //  for the current cluster number
-            UInt64 xSectorNum = 0;
+            UInt64 SectorNum = 0;
             //Whether the current sector has been loaded or not. This allows us to load a given sector
             //  the minimum number of times. If the cluster chain stays all within one sector, then 
             //  there's no need to keep reloading the sector.
-            bool xSectorLoaded = false;
+            bool SectorLoaded = false;
             //The current cluster number in the chain
-            UInt32 xClusterNum = FirstClusterNum;
+            UInt32 ClusterNum = FirstClusterNum;
 
             //The sector number and offset for the next entry in the cluster chain
-            UInt64 xNextSectorNum;
-            UInt32 xNextSectorOffset;
+            UInt64 NextSectorNum;
+            UInt32 NextSectorOffset;
 
             //We need to do this at least once to read in the value for the starting cluster number
             do
             {
                 //Get the sector number and offset for the current cluster num in the table.
-                FATFileSystem.TableSectorDescrip tableSectorDesc = GetFATTableSectorPosition(xClusterNum);
-                xNextSectorNum = tableSectorDesc.Sector;
-                xNextSectorOffset = tableSectorDesc.Offset;
+                NextSectorNum = GetFATTableSectorPosition_SectorNum(ClusterNum);
+                NextSectorOffset = GetFATTableSectorPosition_Offset(ClusterNum);
 
                 //Load the sector if it hasn't already been loaded
-                if (xSectorLoaded == false || xSectorNum != xNextSectorNum)
+                if (SectorLoaded == false || SectorNum != NextSectorNum)
                 {
-                    ReadFATSector(xNextSectorNum, xSector);
-                    xSectorNum = xNextSectorNum;
-                    xSectorLoaded = true;
+                    ReadFATSector(NextSectorNum, SectorBuffer);
+                    SectorNum = NextSectorNum;
+                    SectorLoaded = true;
                 }
 
                 //Add the current cluster number
-                xResult.Add(xClusterNum);
+                Result.Add(ClusterNum);
 
                 //Read the entry in the table for the current cluster number
-                xClusterNum = ReadFATEntry(xSector, xClusterNum, xNextSectorOffset);
+                ClusterNum = ReadFATEntry(SectorBuffer, ClusterNum, NextSectorOffset);
             }
             //Keep looping reading the chain until we reach the end of the file.
-            while (!FATEntryIndicatesEOF(xClusterNum));
+            while (!FATEntryIndicatesEOF(ClusterNum));
 
-            return xResult;
+            return Result;
         }
 
         /// <summary>
         /// Gets the sector number containing the FAT data and offset in that sector for the specified cluster number.
         /// </summary>
-        /// <param name="aClusterNum">The cluster number.</param>
+        /// <param name="ClusterNum">The cluster number.</param>
         /// <returns>The sector number and offset within the sector.</returns>
-        public TableSectorDescrip GetFATTableSectorPosition(UInt32 aClusterNum)
+        public UInt32 GetFATTableSectorPosition_SectorNum(UInt32 ClusterNum)
         {
-            TableSectorDescrip result = new TableSectorDescrip();
-
-            UInt32 xOffset = 0;
+            UInt32 offset = 0;
             if (FATType == FATTypeEnum.FAT12)
             {
                 // Multiply by 1.5 without using floating point, the divide by 2 rounds DOWN
-                xOffset = aClusterNum + (aClusterNum / 2);
+                offset = ClusterNum + (ClusterNum / 2);
             }
             else if (FATType == FATTypeEnum.FAT16)
             {
-                xOffset = aClusterNum * 2;
+                offset = ClusterNum * 2;
             }
             else if (FATType == FATTypeEnum.FAT32)
             {
-                xOffset = aClusterNum * 4;
+                offset = ClusterNum * 4;
             }
-            result.Sector = (xOffset / BytesPerSector);
-            result.Offset = xOffset % BytesPerSector;
-
-            return result;
+            return (offset / BytesPerSector);
         }
         /// <summary>
-        /// Describes the position of FAT data on the disk.
+        /// Gets the sector number containing the FAT data and offset in that sector for the specified cluster number.
         /// </summary>
-        public class TableSectorDescrip : FOS_System.Object
+        /// <param name="ClusterNum">The cluster number.</param>
+        /// <returns>The sector number and offset within the sector.</returns>
+        public UInt32 GetFATTableSectorPosition_Offset(UInt32 ClusterNum)
         {
-            /// <summary>
-            /// The sector number.
-            /// </summary>
-            public UInt64 Sector;
-            /// <summary>
-            /// The offset to the cluster entry within the sector.
-            /// </summary>
-            public UInt32 Offset;
+            UInt32 offset = 0;
+            if (FATType == FATTypeEnum.FAT12)
+            {
+                // Multiply by 1.5 without using floating point, the divide by 2 rounds DOWN
+                offset = ClusterNum + (ClusterNum / 2);
+            }
+            else if (FATType == FATTypeEnum.FAT16)
+            {
+                offset = ClusterNum * 2;
+            }
+            else if (FATType == FATTypeEnum.FAT32)
+            {
+                offset = ClusterNum * 4;
+            }
+            return offset % BytesPerSector;
         }
         /// <summary>
         /// Reads the specified sector of the FAT into the specified data array.
@@ -580,50 +578,48 @@ namespace Kernel.FOS_System.IO.FAT
         /// </remarks>
         public UInt32 GetNextFreeCluster(UInt32 startCluster)
         {
-            byte[] xSector = new byte[BytesPerSector];
-            UInt64 xSectorNum = 0;
-            UInt32 xSectorOffset = 0;
-            UInt32 xClusterNum = startCluster;
-            UInt32 xClusterPointedTo = 0xF;
+            byte[] SectorBuffer = new byte[BytesPerSector];
+            UInt64 SectorNum = 0;
+            UInt32 SectorOffset = 0;
+            UInt32 ClusterNum = startCluster;
+            UInt32 ClusterPointedTo = 0xF;
 
             do
             {
-                FATFileSystem.TableSectorDescrip tableSectorDesc = GetFATTableSectorPosition(xClusterNum);
-                xSectorNum = tableSectorDesc.Sector;
-                xSectorOffset = tableSectorDesc.Offset;
+                SectorNum = GetFATTableSectorPosition_SectorNum(ClusterNum);
+                SectorOffset = GetFATTableSectorPosition_Offset(ClusterNum);
 
-                ReadFATSector(xSectorNum, xSector);
+                ReadFATSector(SectorNum, SectorBuffer);
 
-                xClusterPointedTo = ReadFATEntry(xSector, xClusterNum, xSectorOffset);
+                ClusterPointedTo = ReadFATEntry(SectorBuffer, ClusterNum, SectorOffset);
             }
-            while (!FATEntryIndicatesFree(xClusterPointedTo) && ++xClusterNum < ClusterCount);
+            while (!FATEntryIndicatesFree(ClusterPointedTo) && ++ClusterNum < ClusterCount);
 
-            if(xClusterNum == ClusterCount)
+            if(ClusterNum == ClusterCount)
             {
-                ExceptionMethods.Throw(new FOS_System.Exceptions.IndexOutOfRangeException());
+                ExceptionMethods.Throw(new FOS_System.Exceptions.IndexOutOfRangeException(ClusterNum, ClusterCount));
             }
 
-            return xClusterNum;
+            return ClusterNum;
         }
         /// <summary>
         /// Sets the specified FAT entry to the specified value and saves it to disk.
         /// </summary>
-        /// <param name="clusterNum">The cluster number to set.</param>
-        /// <param name="value">The value to set to.</param>
-        public void SetFATEntryAndSave(UInt32 clusterNum, UInt32 value)
+        /// <param name="ClusterNum">The cluster number to set.</param>
+        /// <param name="Value">The value to set to.</param>
+        public void SetFATEntryAndSave(UInt32 ClusterNum, UInt32 Value)
         {
             //Get the table sector location for the specified cluster number
-            FATFileSystem.TableSectorDescrip tableSectorDesc = GetFATTableSectorPosition(clusterNum);
-            UInt64 sectorNum = tableSectorDesc.Sector;
-            UInt32 sectorOffset = tableSectorDesc.Offset;
+            UInt32 SectorNum = GetFATTableSectorPosition_SectorNum(ClusterNum);
+            UInt32 SectorOffset = GetFATTableSectorPosition_Offset(ClusterNum);
             //Create an array to hold the table sector data
             byte[] sectorData = new byte[BytesPerSector];
             //Read the existing table sector data
-            ReadFATSector(sectorNum, sectorData);
+            ReadFATSector(SectorNum, sectorData);
             //Set the table entry
-            WriteFATEntry(sectorData, (UInt32)sectorNum, sectorOffset, value);
+            WriteFATEntry(sectorData, (UInt32)SectorNum, SectorOffset, Value);
             //Write the table sector data back to disk
-            WriteFATSector(sectorNum, sectorData);
+            WriteFATSector(SectorNum, sectorData);
 
             CleanDiskCaches();
         }

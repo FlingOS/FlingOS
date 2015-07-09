@@ -393,14 +393,15 @@ namespace Kernel.Hardware.Processes
             }
             return threadIdx;
         }
-        [Compiler.NoDebug]
         [Drivers.Compiler.Attributes.NoDebug]
+        [Drivers.Compiler.Attributes.NoGC]
         private static void UpdateCurrentThread()
         {
             ProcessManager.CurrentThread.TimeToRun--;
         }
         [Compiler.NoDebug]
         [Drivers.Compiler.Attributes.NoDebug]
+        [Drivers.Compiler.Attributes.NoGC]
         private static void UpdateSleepingThreads()
         {
             for (int pIdx = 0; pIdx < ProcessManager.Processes.Count; pIdx++)

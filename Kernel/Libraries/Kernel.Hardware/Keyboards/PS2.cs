@@ -42,6 +42,10 @@ namespace Kernel.Hardware.Keyboards
         /// </summary>
         protected IO.IOPort DataPort = new IO.IOPort(0x60);
         /// <summary>
+        /// The keyboard command port.
+        /// </summary>
+        protected IO.IOPort CommandPort = new IO.IOPort(0x64);
+        /// <summary>
         /// The interrupt handler Id returned when the interrupt handler is set.
         /// Use to remove the interrupt handler when disabling.
         /// </summary>
@@ -148,6 +152,19 @@ namespace Kernel.Hardware.Keyboards
                         }
                         break;
                     }
+            }
+        }
+
+        [Compiler.NoGC]
+        [Compiler.NoDebug]
+        public void Reset()
+        {
+            if (enabled)
+            {
+                byte good = 0x02;
+                while ((good & 0x02) != 0)
+                    good = CommandPort.Read_Byte();
+                CommandPort.Write_Byte(0xFE);
             }
         }
 

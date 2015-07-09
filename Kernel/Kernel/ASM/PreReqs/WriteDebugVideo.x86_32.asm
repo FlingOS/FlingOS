@@ -38,7 +38,7 @@ mov dword ecx, [eax] ; String length is first dword of string
 mov edx, [ebp+12]	; Load string address
 add edx, 4			; Skip first dword because that is the length not a character
 
-mov dword ebx, 0xB81E0 ; Load vid mem base address
+mov dword ebx, 0xB8000 ; Load vid mem base address
 
 mov byte ah, [ebp+8] ; Load colour
 

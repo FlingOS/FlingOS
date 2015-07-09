@@ -54,6 +54,44 @@ namespace Kernel.Hardware.ATA
             get { return BaseDevice.ModelNo; }
         }
 
+        public override ulong BlockCount
+        {
+            get
+            {
+                return BaseDevice.BlockCount;
+            }
+        }
+        public override ulong BlockSize
+        {
+            get
+            {
+                return BaseDevice.BlockSize;
+            }
+        }
+
+        public ATA.BusPosition BusPosition
+        {
+            get
+            {
+                return BaseDevice.busPosition;
+            }
+        }
+        public ATA.ControllerID ControllerID
+        {
+            get
+            {
+                return BaseDevice.controllerId;
+            }
+        }
+
+        public UInt32 MaxWritePioBlocks
+        {
+            get
+            {
+                return BaseDevice.MaxWritePioBlocks;
+            }
+        }
+
         /// <summary>
         /// Initialises a new ATA pio device.
         /// </summary>
@@ -63,8 +101,6 @@ namespace Kernel.Hardware.ATA
         public PATA(PATABase baseDevice)
         {
             BaseDevice = baseDevice;
-
-            blockSize = BaseDevice.BlockSize;
         }
                 
         /// <summary>
@@ -114,13 +150,54 @@ namespace Kernel.Hardware.ATA
                 return;
             }
 
+            if (aData == null)
+            {
+                for (uint i = 0; i < aBlockCount; i += MaxWritePioBlocks)
+                {
+                    if (i + MaxWritePioBlocks <= aBlockCount)
+                    {
+                        _WriteBlock(aBlockNo + i, MaxWritePioBlocks, null);
+                    }
+                    else
+                    {
+                        _WriteBlock(aBlockNo + i, aBlockCount - i, null);
+                    }
+                }
+            }
+            else
+            {
+                int offset = 0;
+                for (uint i = 0; i < aBlockCount; i += MaxWritePioBlocks)
+                {
+                    uint currBlockCount = MaxWritePioBlocks;
+                    if (i + MaxWritePioBlocks > aBlockCount)
+                    {
+                        currBlockCount = aBlockCount - i;
+                    }
+
+                    SelectSector(aBlockNo + i, currBlockCount);
+                    BaseDevice.SendCmd(PATABase.Cmd.WritePio);
+                    UInt16 xValue;
+                    for (int j = 0; j < (int)(((uint)BlockSize / 2) * currBlockCount); j++)
+                    {
+                        xValue = (UInt16)((aData[j * 2 + 1 + offset] << 8) | aData[j * 2 + offset]);
+                        BaseDevice.IO.Data.Write_UInt16(xValue);
+                    }
+                    offset += (int)((uint)BlockSize * currBlockCount);
+                    BaseDevice.SendCmd(PATABase.Cmd.CacheFlush);
+                }
+            }
+        }
+
+        private void _WriteBlock(UInt64 aBlockNo, UInt32 aBlockCount, byte[] aData)
+        {
             SelectSector(aBlockNo, aBlockCount);
             BaseDevice.SendCmd(PATABase.Cmd.WritePio);
 
             if (aData == null)
             {
                 //TODO: Remove the cast-down - only due to division of longs not working...
-                ulong size = (aBlockCount * (uint)blockSize) / 2;
+                ulong size = (aBlockCount * (uint)BlockSize) / 2;
                 for (ulong i = 0; i < size; i++)
                 {
                     BaseDevice.IO.Data.Write_UInt16(0);
@@ -148,7 +225,8 @@ namespace Kernel.Hardware.ATA
         {
             //TODO: Presumably Drive Select needs to happen first? But does the sector number 
             //      need to be set?
-            //SendCmd(Cmd.CacheFlush);
+            BaseDevice.SelectDrive(0, false);
+            BaseDevice.SendCmd(PATABase.Cmd.CacheFlush);
         }
     }
 }

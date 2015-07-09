@@ -24,6 +24,8 @@
 // ------------------------------------------------------------------------------ //
 #endregion
     
+//#define PERIODIC_REBOOT
+   
 using System;
 using Kernel.FOS_System;
 using Kernel.FOS_System.Collections;
@@ -48,22 +50,37 @@ namespace Kernel.Core.Shells
         {
             try
             {
+                Hardware.DeviceManager.AddDeviceAddedListener(MainShell.DeviceManager_DeviceAdded, this);
+
                 try
                 {
-                    Hardware.DeviceManager.AddDeviceAddedListener(MainShell.DeviceManager_DeviceAdded, this);
-
                     // Auto-init all to save us writing the command
-                    InitATA();
                     InitPCI();
                 }
                 catch
                 {
                     console.WriteLine();
                     console.WarningColour();
-                    console.WriteLine("Error initialising one of the basic subsystems:");
-                    console.WriteLine(ExceptionMethods.CurrentException.Message);
-                    console.DefaultColour();
+                    console.WriteLine("Error initialising PCI subsystem:");
+                    OutputExceptionInfo(ExceptionMethods.CurrentException);
                 }
+                try
+                {
+                    // Auto-init all to save us writing the command
+                    InitATA();
+                }
+                catch
+                {
+                    console.WriteLine();
+                    console.WarningColour();
+                    console.WriteLine("Error initialising ATA subsystem:");
+                    OutputExceptionInfo(ExceptionMethods.CurrentException);
+                }
+
+#if PERIODIC_REBOOT
+                // 60 seconds
+                Hardware.Timers.PIT.Default.RegisterHandler(TriggerPeriodicReboot, 60000000000L, true, this);
+#endif
 
                 //Endlessly wait for commands until we hit a total failure condition
                 //  or the user instructs us to halt
@@ -90,16 +107,17 @@ namespace Kernel.Core.Shells
                          *              Exceptions1 /   Exceptions2 /   PCBeep      /
                          *              Timer       /   Keyboard    /   FieldsTable /
                          *              IsInst      /   VirtMem     /   Longs       /
-                         *              ThreadSleep /                                   }
+                         *              ThreadSleep /   Heap        /   GC          /
+                         *              ATA         /   USB                             }
                          *  - GC   { Cleanup }
                          *  - USB { Update / Eject }
-                         *  - Start { Filename } [*KM* / UM] [*Raw*]
+                         *  - Start { Filename } [*KM* / UM] [*Raw* / ELF]
                          *  - ILY
                          *  - Show { c / w }
                          *  - Help { <Command Name> }
                          *  - Clear
                          *  - Easter
-                         * 
+                         *  - Reboot
                          */
 
                         //Get the current input line from the user
@@ -779,6 +797,22 @@ namespace Kernel.Core.Shells
                                     {
                                         ThreadSleepTest();
                                     }
+                                    else if (opt1 == "heap")
+                                    {
+                                        HeapTest();
+                                    }
+                                    else if (opt1 == "gc")
+                                    {
+                                        GCTest();
+                                    }
+                                    else if (opt1 == "ata")
+                                    {
+                                        ATATest();
+                                    }
+                                    else if (opt1 == "usb")
+                                    {
+                                        USBTest();
+                                    }
                                     else
                                     {
                                         UnrecognisedOption(opt1);
@@ -900,9 +934,9 @@ namespace Kernel.Core.Shells
                                         }
                                         else
                                         {
-                                            //Run as KM, RAW for now
+                                            //Run as KM, ELF for now
                                             Hardware.Processes.ProcessManager.RegisterProcess(
-                                                Processes.DynamicLinkerLoader.LoadProcess_FromRawExe(aFile, false),
+                                                Processes.DynamicLinkerLoader.LoadProcess_FromELFExe(aFile, false).TheProcess,
                                                 Hardware.Processes.Scheduler.Priority.Normal);
                                         }
                                     }
@@ -970,6 +1004,14 @@ namespace Kernel.Core.Shells
 
                                 #endregion
                             }
+                            else if (cmd == "reboot")
+                            {
+                                #region Reboot
+
+                                Reboot();
+
+                                #endregion
+                            }
                         }
                     }
                     catch
@@ -986,6 +1028,42 @@ namespace Kernel.Core.Shells
                 Hardware.Processes.Thread.Sleep(1000);
             }
             console.WriteLine("Shell exited.");
+        }
+        
+        /// <summary>
+        /// Handler for the periodic reboot timer event.
+        /// </summary>
+        /// <param name="state">The state object. Should be null.</param>
+        [Compiler.NoGC]
+        [Compiler.NoDebug]
+        private void TriggerPeriodicReboot(object state)
+        {
+            ((MainShell)state).Reboot();
+        }
+        /// <summary>
+        /// Reboots the computer
+        /// </summary>
+        [Compiler.NoGC]
+        [Compiler.NoDebug]
+        private void Reboot()
+        {
+            if (Hardware.Keyboards.PS2.ThePS2 != null)
+            {
+                console.WarningColour();
+                console.Write("Attempting 8042 reset...");
+
+                Hardware.Keyboards.PS2.ThePS2.Reset();
+
+                console.ErrorColour();
+                console.WriteLine("failed.");
+            }
+            else
+            {
+                console.ErrorColour();
+                console.WriteLine("No reboot method available.");
+            }
+
+            console.DefaultColour();
         }
 
         /// <summary>
@@ -1270,18 +1348,34 @@ which should have been provided with the executable.");
 
             //Temporary storage. Note: If the file is to big, this will just fail 
             //  as there won't be enough heap memory available
-            byte[] data = new byte[(uint)srcFile.Size];
-            
-            //Read in all source data. This will be a huge problem if the file
-            //  is large. A better implementation would be to load and copy 
-            //  blocks of data at a time.
-            srcStr.Position = 0;
-            srcStr.Read(data, 0, data.Length);
-            
-            //Write out all the data to destination.
-            dstStr.Position = 0;
-            dstStr.Write(data, 0, data.Length);
+            byte[] data = new byte[(uint)srcFile.TheFileSystem.ThePartition.BlockSize];
 
+            //Force stream positions
+            srcStr.Position = 0;
+            dstStr.Position = 0;
+
+            console.Write("[");
+
+            int percentile = (int)(uint)FOS_System.Math.Divide(srcFile.Size, 78u);
+            int dist = 0;
+            while ((ulong)srcStr.Position < srcFile.Size)
+            {
+                //Read in source data.
+                srcStr.Read(data, 0, data.Length);
+
+                //Write out data to destination.
+                dstStr.Write(data, 0, data.Length);
+
+                dist += data.Length;
+
+                if (dist >= percentile)
+                {
+                    console.Write(".");
+                    dist -= percentile;
+                }
+            }
+
+            console.WriteLine("]");
             console.WriteLine("Copied successfully.");
         }
         /// <summary>
@@ -1546,16 +1640,30 @@ which should have been provided with the executable.");
                     console.WriteLine(fileName);
 
                     FOS_System.IO.Streams.FileStream fileStream = FOS_System.IO.Streams.FileStream.Create(aFile);
-                    int offset = 0;
-                    byte[] xData = new byte[2048];
-                    while (offset < (int)(uint)aFile.Size)
+                    
+                    byte[] DataBuffer = aFile.TheFileSystem.ThePartition.NewBlockArray(1);
+                    Tasks.SystemStatusTask.MainConsole.Write("[");
+                    ulong percentile = FOS_System.Math.Divide(aFile.Size, 53u);
+                    ulong pos = 0;
+                    while ((ulong)fileStream.Position < aFile.Size)
                     {
-                        int actuallyRead = fileStream.Read(xData, 0, xData.Length);
-                        FOS_System.String xText = ByteConverter.GetASCIIStringFromASCII(xData, 0u, (uint)actuallyRead);
+                        int actuallyRead = fileStream.Read(DataBuffer, 0, DataBuffer.Length);
+                        FOS_System.String xText = ByteConverter.GetASCIIStringFromASCII(DataBuffer, 0u, (uint)actuallyRead);
                         console.Write(xText);
-                        offset += actuallyRead;
+                        
+                        pos += (ulong)actuallyRead;
+                        if (pos >= percentile)
+                        {
+                            pos -= percentile;
+                            Tasks.SystemStatusTask.MainConsole.Write(".");
+                        }
+
+                        if (actuallyRead == 0)
+                        {
+                            break;
+                        }
                     }
-                    console.WriteLine();
+                    Tasks.SystemStatusTask.MainConsole.WriteLine("]");
                 }
                 else
                 {
@@ -1639,13 +1747,17 @@ which should have been provided with the executable.");
                 {
                     FOS_System.IO.FAT.FATFileSystem fs = (FOS_System.IO.FAT.FATFileSystem)fsMapping.TheFileSystem;
                     
-                    console.WriteLine(((FOS_System.String)"FAT FS detected. Volume ID: ") + fs.ThePartition.VolumeID);
-                    console.WriteLine("    - Prefix: " + fsMapping.Prefix);
+                    console.WriteLine(((FOS_System.String)"FAT file system detected. Volume ID: ") + fs.ThePartition.VolumeID);
+                }
+                else if (fsMapping.TheFileSystem is FOS_System.IO.ISO9660.ISO9660FileSystem)
+                {
+                    console.WriteLine("ISO9660 file system detected.");
                 }
                 else
                 {
-                    console.WriteLine("Non-FAT file-system added! (???)");
+                    console.WriteLine("Unrecognised file system type added! (Did we implement a new one?)");
                 }
+                console.WriteLine("    - Prefix: " + fsMapping.Prefix);
             }
         }
         /// <summary>
@@ -1665,7 +1777,34 @@ which should have been provided with the executable.");
             {
                 Hardware.Device aDevice = (Hardware.Device)Hardware.DeviceManager.Devices[i];
 
-                if (aDevice is Hardware.USB.Devices.USBDevice)
+                if (aDevice is Hardware.USB.HCIs.HCI)
+                {
+                    Hardware.USB.HCIs.HCI hciDevice = (Hardware.USB.HCIs.HCI)aDevice;
+                    console.WriteLine();
+
+                    console.Write("--------------------- HCI ");
+                    console.Write_AsDecimal(i);
+                    console.WriteLine(" ---------------------");
+
+                    FOS_System.String statusText = "";
+                    switch (hciDevice.Status)
+                    {
+                        case Hardware.USB.HCIs.HCI.HCIStatus.Dead:
+                            statusText = "Dead";
+                            break;
+                        case Hardware.USB.HCIs.HCI.HCIStatus.Unset:
+                            statusText = "Unset";
+                            break;
+                        case Hardware.USB.HCIs.HCI.HCIStatus.Active:
+                            statusText = "Active";
+                            break;
+                        default:
+                            statusText = "Uncreognised (was a new status type added?)";
+                            break;
+                    }
+                    console.WriteLine("Status: " + statusText);
+                }
+                else if (aDevice is Hardware.USB.Devices.USBDevice)
                 {
                     Hardware.USB.Devices.USBDevice usbDevice = (Hardware.USB.Devices.USBDevice)aDevice;
                     Hardware.USB.Devices.USBDeviceInfo usbDeviceInfo = usbDevice.DeviceInfo;
@@ -1778,6 +1917,7 @@ which should have been provided with the executable.");
                     console.WriteLine(((FOS_System.String)"Block Size: ") + theATA.BlockSize + " bytes");
                     console.WriteLine(((FOS_System.String)"Block Count: ") + theATA.BlockCount);
                     console.WriteLine(((FOS_System.String)"Size: ") + ((theATA.BlockCount * theATA.BlockSize) >> 20) + " MB");
+                    console.WriteLine(((FOS_System.String)"Max Write Pio Blocks: ") + (theATA.MaxWritePioBlocks));
 
                     numDrives++;
                 }
@@ -1788,7 +1928,7 @@ which should have been provided with the executable.");
                     console.Write_AsDecimal(i);
                     console.WriteLine(" ---------------------");
                     console.WriteLine("Type: PATAPI");
-                    console.WriteLine("Warning: This disk device type is not supported.");
+                    console.WriteLine("Warning: Read-only support.");
 
                     Hardware.ATA.PATAPI theATA = (Hardware.ATA.PATAPI)aDevice;
                     console.WriteLine(((FOS_System.String)"Serial No: ") + theATA.SerialNo);
@@ -1797,6 +1937,7 @@ which should have been provided with the executable.");
                     console.WriteLine(((FOS_System.String)"Block Size: ") + theATA.BlockSize + " bytes");
                     console.WriteLine(((FOS_System.String)"Block Count: ") + theATA.BlockCount);
                     console.WriteLine(((FOS_System.String)"Size: ") + ((theATA.BlockCount * theATA.BlockSize) >> 20) + " MB");
+                    console.WriteLine(((FOS_System.String)"Max Write Pio Blocks: ") + (theATA.MaxWritePioBlocks));
                 }
                 else if (aDevice is Hardware.ATA.SATA)
                 {
@@ -1935,6 +2076,84 @@ which should have been provided with the executable.");
             console.DefaultColour();
         }
 
+        private unsafe void HeapTest()
+        {
+            try
+            {
+                console.WriteLine("Testing heap...");
+                uint allocSize = 16;
+                while (Heap.GetTotalFreeMem() > 0x100000)
+                {
+                    byte* val = (byte*)Heap.Alloc(allocSize, "MainShell : HeapTest");
+                    if (val == null)
+                    {
+                        break;
+                    }
+                    else
+                    {
+                        for (int i = 0; i < allocSize; i++)
+                        {
+                            val[i] = 0xFF;
+                        }
+
+                        allocSize *= 2;
+                        if (allocSize > 4096)
+                        {
+                            allocSize = 16;
+                        }
+                    }
+                }
+                console.WriteLine("Complete without error.");
+            }
+            catch
+            {
+                console.WriteLine("Complete with errors.");
+                OutputExceptionInfo(ExceptionMethods.CurrentException);
+            }
+            console.WriteLine("Returning.");
+        }
+        private unsafe void GCTest()
+        {
+            try
+            {
+                console.WriteLine("Testing GC...");
+                while (Heap.GetTotalFreeMem() - 0x10000 > 0)
+                {
+                    FOS_System.GC.NewObj((FOS_System.Type)typeof(FOS_System.Object));
+                }
+                console.WriteLine("Complete without error.");
+            }
+            catch
+            {
+                console.WriteLine("Complete with errors.");
+                OutputExceptionInfo(ExceptionMethods.CurrentException);
+            }
+            console.WriteLine("Returning.");
+        }
+        private void ATATest()
+        {
+            new Hardware.Testing.ATATests().Test_LongRead(OutputMessageFromTest, OutputWarningFromTest, OutputErrorFromTest);
+        }
+        private void USBTest()
+        {
+            new Hardware.Testing.USBTests().Test_LongRead(OutputMessageFromTest, OutputWarningFromTest, OutputErrorFromTest);
+        }
+        private static void OutputMessageFromTest(FOS_System.String TestName, FOS_System.String Message)
+        {
+            Console.Default.WriteLine(TestName + " : " + Message);
+        }
+        private static void OutputWarningFromTest(FOS_System.String TestName, FOS_System.String Message)
+        {
+            Console.Default.WarningColour();
+            OutputMessageFromTest(TestName, Message);
+            Console.Default.DefaultColour();
+        }
+        private static void OutputErrorFromTest(FOS_System.String TestName, FOS_System.String Message)
+        {
+            Console.Default.ErrorColour();
+            OutputMessageFromTest(TestName, Message);
+            Console.Default.DefaultColour();
+        }
 
         /// <summary>
         /// Tests all interrupts in the range 17 to 255 by firing them.

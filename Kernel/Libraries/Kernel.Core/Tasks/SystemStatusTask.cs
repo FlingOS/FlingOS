@@ -34,8 +34,8 @@ namespace Kernel.Core.Tasks
 {
     public static class SystemStatusTask
     {
-        private static Console MainConsole;
-        private static Console StatusConsole;
+        internal static Console MainConsole;
+        internal static Console StatusConsole;
 
         private static bool Terminating = false;
 
@@ -43,8 +43,6 @@ namespace Kernel.Core.Tasks
         {
             BasicConsole.Clear();
             Console.InitDefault();
-            Console.Default.ScreenHeightInLines = 25 - 8;
-            Console.Default.ScreenStartLine = 8;
 
             // Wait for other system startup to occur
             Thread.Sleep(1000);
@@ -67,6 +65,10 @@ namespace Kernel.Core.Tasks
             bool StatusLine1 = true;
 
             Hardware.DeviceManager.AddDeviceAddedListener(DeviceManager_DeviceAdded, null);
+
+            Thread.Sleep(500);
+            Console.Default.ScreenHeightInLines = 25 - 8;
+            Console.Default.ScreenStartLine = 8;
 
             while (!Terminating)
             {
@@ -134,7 +136,10 @@ namespace Kernel.Core.Tasks
                     unsafe
                     {
                         StatusConsole.Write("Heap: ");
-                        StatusConsole.Write_AsDecimal((Heap.FBlock->used * Heap.FBlock->bsize * 100) / Heap.FBlock->size);
+                        //StatusConsole.Write_AsDecimal(Heap.GetTotalUsedMem());
+                        //StatusConsole.Write(" / ");
+                        //StatusConsole.Write_AsDecimal(Heap.GetTotalMem());
+                        StatusConsole.Write_AsDecimal(Heap.GetTotalUsedMem() / (Heap.GetTotalMem() / 100));
                         StatusConsole.Write("%");
                     }
                 }

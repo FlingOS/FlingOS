@@ -6,6 +6,9 @@ File_HandleNoMultiboot:
 
 GLOBAL Kernel_Start_HandleNoMultiboot:function
 
+	; See comment at start of Main Entrypoint
+	mov dword ecx, 0x0
+
 ; BEGIN - Handle No Multiboot
 jmp Kernel_Start_HandleNoMultiboot_End ; Skip over this code - we don't want to run it by accident!
 

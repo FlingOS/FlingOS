@@ -63,7 +63,7 @@ namespace Drivers.Compiler.Architectures.x86
             //Get the type info for the element type
             Type elementType = conversionState.Input.TheMethodInfo.UnderlyingInfo.Module.ResolveType(metadataToken);
 
-            conversionState.AddExternalLabel(conversionState.GetHaltMethodInfo().ID);
+            conversionState.AddExternalLabel(conversionState.GetThrowNullReferenceExceptionMethodInfo().ID);
             conversionState.AddExternalLabel(conversionState.GetNewArrMethodInfo().ID);
 
             //New array must:
@@ -116,7 +116,7 @@ namespace Drivers.Compiler.Architectures.x86
 
             conversionState.Append(new ASMOps.Call() { Target = "GetEIP" });
             conversionState.AddExternalLabel("GetEIP");
-            conversionState.Append(new ASMOps.Call() { Target = conversionState.GetHaltMethodInfo().ID });
+            conversionState.Append(new ASMOps.Call() { Target = conversionState.GetThrowNullReferenceExceptionMethodInfo().ID });
             //Insert the not null label
             conversionState.Append(new ASMOps.Label() { ILPosition = currOpPosition, Extension = "NotNullMem" });
 
