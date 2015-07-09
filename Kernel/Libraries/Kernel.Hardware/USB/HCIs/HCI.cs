@@ -37,6 +37,13 @@ namespace Kernel.Hardware.USB.HCIs
     /// </summary>
     public unsafe abstract class HCI : Device
     {
+        public enum HCIStatus
+        {
+            Dead = -1,
+            Unset = 0,
+            Active = 1
+        }
+
         /// <summary>
         /// The root ports (that make up the root hub) of the host controller.
         /// </summary>
@@ -50,10 +57,23 @@ namespace Kernel.Hardware.USB.HCIs
         /// </summary>
         protected byte RootPortCount = 0;
 
+        public HCIStatus Status
+        {
+            get;
+            protected set;
+        }
+
         /// <summary>
         /// The underlying PCI device for the host controller.
         /// </summary>
         protected PCI.PCIDeviceNormal pciDevice;
+        public PCI.PCIDeviceNormal ThePCIDevice
+        {
+            get
+            {
+                return pciDevice;
+            }
+        }
 
         /// <summary>
         /// Initializes a new generic host controller interface using the specified PCI device.
@@ -62,6 +82,8 @@ namespace Kernel.Hardware.USB.HCIs
         public HCI(PCI.PCIDeviceNormal aPCIDevice)
             : base()
         {
+            Status = HCIStatus.Unset;
+
             pciDevice = aPCIDevice;
 
             for (byte i = 0; i < RootPortCount; i++)
@@ -273,7 +295,7 @@ namespace Kernel.Hardware.USB.HCIs
         /// Updates the HC such as checking for port/device changes.
         /// </summary>
         public abstract void Update();
-
+        
         /// <summary>
         /// Sets up a USb device connected to the specified port.
         /// </summary>

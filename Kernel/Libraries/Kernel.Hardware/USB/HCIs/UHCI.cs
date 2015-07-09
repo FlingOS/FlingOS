@@ -133,6 +133,8 @@ namespace Kernel.Hardware.USB.HCIs
 
         protected UHCI_QueueHead_Struct* qhPointer;
 
+        protected int IRQHandlerID = 0;
+
         public UHCI(PCI.PCIDeviceNormal aPCIDevice)
             : base(aPCIDevice)
         {
@@ -210,7 +212,10 @@ namespace Kernel.Hardware.USB.HCIs
             // bit 2: Bus Master               // cf. http://forum.osdev.org/viewtopic.php?f=1&t=20255&start=0
             pciDevice.Command = pciDevice.Command | PCI.PCIDevice.PCICommand.IO | PCI.PCIDevice.PCICommand.Master;
 
-            Interrupts.Interrupts.AddIRQHandler(pciDevice.InterruptLine, UHCI.InterruptHandler, this, false, true, "UHCI");
+            if (IRQHandlerID == 0)
+            {
+                IRQHandlerID = Interrupts.Interrupts.AddIRQHandler(pciDevice.InterruptLine, UHCI.InterruptHandler, this, false, true, "UHCI");
+            }
 
             ResetHC();
         }
@@ -436,6 +441,8 @@ namespace Kernel.Hardware.USB.HCIs
             {
                 if ((USBSTS.Read_UInt16() & UHCI_Consts.STS_HCHALTED) == 0)
                 {
+                    Status = HCIStatus.Active;
+
                     EnablePorts(); // attaches the ports
                 }
                 else

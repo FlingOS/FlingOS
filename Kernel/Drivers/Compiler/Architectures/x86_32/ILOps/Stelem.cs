@@ -144,6 +144,8 @@ namespace Drivers.Compiler.Architectures.x86
             //      1.3. If not zero, jump to continue execution further down
             conversionState.Append(new ASMOps.Jmp() { JumpType = ASMOps.JmpOp.JumpNotZero, DestILPosition = currOpPosition, Extension = "Continue1" });
             //      1.4. Otherwise, call Exceptions.ThrowNullReferenceException
+            conversionState.Append(new ASMOps.Call() { Target = "GetEIP" });
+            conversionState.AddExternalLabel("GetEIP");
             conversionState.Append(new ASMOps.Call() { Target = conversionState.GetThrowNullReferenceExceptionMethodInfo().ID });
             conversionState.Append(new ASMOps.Label() { ILPosition = currOpPosition, Extension = "Continue1" });
 

@@ -437,14 +437,19 @@ namespace Kernel.FOS_System
             BasicConsole.WriteLine("Attempt to alloc mem....");
             BasicConsole.SetTextColour(BasicConsole.default_colour);
 #endif
-            
+
             if (PreventAllocation)
             {
+                bool BCPOEnabled = BasicConsole.PrimaryOutputEnabled;
+                BasicConsole.PrimaryOutputEnabled = true;
                 BasicConsole.SetTextColour(BasicConsole.error_colour);
-                BasicConsole.WriteLine("Allocation of memory prevented! Reason:");
+                BasicConsole.Write("Allocation of memory prevented! Reason: ");
                 BasicConsole.WriteLine(PreventReason);
+                BasicConsole.Write("    > Caller: ");
+                BasicConsole.WriteLine(caller);
                 BasicConsole.DelayOutput(5);
                 BasicConsole.SetTextColour(BasicConsole.default_colour);
+                BasicConsole.PrimaryOutputEnabled = BCPOEnabled;
                 return null;
             }
 
@@ -457,7 +462,7 @@ namespace Kernel.FOS_System
             UInt32 bneed;
             byte nid;
 
-            if(boundary > 1)
+            if (boundary > 1)
             {
                 size += (boundary - 1);
             }
@@ -515,7 +520,7 @@ namespace Kernel.FOS_System
                                     EnterCritical("Alloc:Boundary condition");
 #endif
                                 }
-                                
+
                                 ExitCritical();
                                 return result;
                             }
@@ -535,8 +540,13 @@ namespace Kernel.FOS_System
             BasicConsole.DelayOutput(2);
 #endif
 
-            BasicConsole.WriteLine("Heap out of memory!");
-            
+            {
+                bool BCPOEnabled = BasicConsole.PrimaryOutputEnabled;
+                BasicConsole.PrimaryOutputEnabled = true;
+                BasicConsole.WriteLine("Heap out of memory!");
+                BasicConsole.PrimaryOutputEnabled = BCPOEnabled;
+            }
+
             ExitCritical();
 
             return null;

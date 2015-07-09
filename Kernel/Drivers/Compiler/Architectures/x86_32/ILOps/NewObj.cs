@@ -80,8 +80,8 @@ namespace Drivers.Compiler.Architectures.x86
             Types.MethodInfo constructorMethodInfo = conversionState.TheILLibrary.GetMethodInfo(constructorMethod);
             Type objectType = constructorMethod.DeclaringType;
 
-            conversionState.AddExternalLabel(conversionState.GetHaltMethodInfo().ID);
             conversionState.AddExternalLabel(conversionState.GetNewObjMethodInfo().ID);
+            conversionState.AddExternalLabel(conversionState.GetThrowNullReferenceExceptionMethodInfo().ID);
             conversionState.AddExternalLabel(constructorMethodInfo.ID);
 
             //New obj must:
@@ -151,7 +151,7 @@ namespace Drivers.Compiler.Architectures.x86
 
             conversionState.Append(new ASMOps.Call() { Target = "GetEIP" });
             conversionState.AddExternalLabel("GetEIP");
-            conversionState.Append(new ASMOps.Call() { Target = conversionState.GetHaltMethodInfo().ID });
+            conversionState.Append(new ASMOps.Call() { Target = conversionState.GetThrowNullReferenceExceptionMethodInfo().ID });
             //Insert the not null label
             conversionState.Append(new ASMOps.Label() { ILPosition = currOpPosition, Extension = "NotNullMem" });
 

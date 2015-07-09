@@ -306,9 +306,6 @@ namespace Kernel.Hardware.USB
                             PCIDeviceNormal EHCI_PCIDevice = (PCIDeviceNormal)aDevice;
                             EHCI_PCIDevice.Claimed = true;
 
-                            //BasicConsole.SetTextColour(BasicConsole.warning_colour);
-                            //BasicConsole.WriteLine("WARNING! EHCI device support disabled.");
-                            //BasicConsole.SetTextColour(BasicConsole.default_colour);
                             EHCI newEHCI = new EHCI(EHCI_PCIDevice);
                             HCIDevices.Add(newEHCI);
                             DeviceManager.AddDevice(newEHCI);
@@ -379,7 +376,7 @@ namespace Kernel.Hardware.USB
             }
         }
         /// <summary>
-        /// Updates the USb manager and all host controller devices.
+        /// Updates the USB manager and all host controller devices.
         /// </summary>
         public static void Update()
         {
@@ -388,7 +385,7 @@ namespace Kernel.Hardware.USB
                 ((HCI)HCIDevices[i]).Update();
             }
         }
-
+        
         public static void NotifyDevicesNeedUpdate()
         {
             DeviceManager.NotifyDevicesNeedUpdate();

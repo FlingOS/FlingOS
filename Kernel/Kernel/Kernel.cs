@@ -80,6 +80,11 @@ namespace Kernel
 
             try
             {
+                Hardware.IO.Serial.Serial.InitCOM1();
+                Hardware.IO.Serial.Serial.InitCOM2();
+                BasicConsole.SecondaryOutput = BasicConsole_SecondaryOutput;
+                BasicConsole.SecondaryOutputEnabled = true;
+
                 BasicConsole.WriteLine("Fling OS  Copyright (C) 2015  Edward Nutting");
                 BasicConsole.WriteLine("This program comes with ABSOLUTELY NO WARRANTY;.");
                 BasicConsole.WriteLine("This is free software, and you are welcome to redistribute it");
@@ -350,10 +355,7 @@ namespace Kernel
                 Core.Console.InitDefault();
                 Core.Shell.InitDefault();
 
-                Hardware.IO.Serial.Serial.InitCOM1();
-                Hardware.IO.Serial.Serial.InitCOM2();
-                BasicConsole.SecondaryOutput = BasicConsole_SecondaryOutput;
-                BasicConsole.PrimaryOutputEnabled = false;
+                //BasicConsole.PrimaryOutputEnabled = false;
                 Core.Shell.Default.Execute();
                 BasicConsole.PrimaryOutputEnabled = true;
 

@@ -709,14 +709,47 @@ namespace Kernel.Hardware.USB.HCIs
 
         protected int AsyncDoorbellIntCount = 0;
 
+        private int IRQHandlerID = 0;
+
+        private bool hostSystemError = false;
         /// <summary>
         /// Whether the EHCI has hit a host system error or not.
         /// </summary>
-        public bool HostSystemError = false;
+        public bool HostSystemError
+        {
+            get
+            {
+                return hostSystemError;
+            }
+            protected set
+            {
+                hostSystemError = value;
+                if (value)
+                {
+                    Status = HCIStatus.Dead;
+                    USBManager.NotifyDevicesNeedUpdate();
+                }
+            }
+        }
+        private bool irrecoverableError = false;
         /// <summary>
         /// Whether the EHCI has hit an unrecoverable error or not.
         /// </summary>
-        public bool IrrecoverableError = false;
+        public bool IrrecoverableError
+        {
+            get
+            {
+                return irrecoverableError;
+            }
+            protected set
+            {
+                irrecoverableError = value;
+                if (value)
+                {
+                    Status = HCIStatus.Dead;
+                }
+            }
+        }
 
         /// <summary>
         /// Initialises a new EHCI device using the specified PCI device. Includes starting the host controller.
@@ -823,10 +856,24 @@ namespace Kernel.Hardware.USB.HCIs
             //  if the HC has utterly crashed...
             if(IrrecoverableError)
             {
-#if EHCI_TRACE
+//#if EHCI_TRACE
+                BasicConsole.SetTextColour(BasicConsole.warning_colour);
                 BasicConsole.WriteLine("EHCI controller has hit an irrecoverable error!");
                 BasicConsole.DelayOutput(10);
-#endif
+                BasicConsole.SetTextColour(BasicConsole.default_colour);
+//#endif
+            }
+            else if (HostSystemError)
+            {
+//#if EHCI_TRACE
+                BasicConsole.SetTextColour(BasicConsole.warning_colour);
+                BasicConsole.WriteLine("EHCI Host System error occurred!");
+                BasicConsole.DelayOutput(10);
+                BasicConsole.SetTextColour(BasicConsole.default_colour);
+//#endif
+
+                // Attempt to restart the HC
+                Start();
             }
             // Otherwise, if any ports have changed status (e.g. device connected / disconnected):
             else if (AnyPortsChanged)
@@ -848,6 +895,9 @@ namespace Kernel.Hardware.USB.HCIs
             ResetHC();
             //Start the host controller
             StartHC();
+
+            Status = HCIStatus.Active;
+
             //Initialise the Async Schedule of the host controller
             InitializeAsyncSchedule();
 
@@ -886,8 +936,11 @@ namespace Kernel.Hardware.USB.HCIs
 #if EHCI_TRACE
             DBGMSG("Hooking IRQ...");
 #endif
-            // Setup the interrupt handler (IRQ number = PCIDevice.InterruptLine)
-            Interrupts.Interrupts.AddIRQHandler(pciDevice.InterruptLine, EHCI.InterruptHandler, this, false, true, "EHCI");
+            if (IRQHandlerID == 0)
+            {
+                // Setup the interrupt handler (IRQ number = PCIDevice.InterruptLine)
+                IRQHandlerID = Interrupts.Interrupts.AddIRQHandler(pciDevice.InterruptLine, EHCI.InterruptHandler, this, false, true, "EHCI");
+            }
 #if EHCI_TRACE
             DBGMSG("Hooked IRQ.");
 #endif
@@ -1341,8 +1394,7 @@ namespace Kernel.Hardware.USB.HCIs
                 {
                     // Store that we have already hit HC error once before.
                     HostSystemError = true;
-                    // And then attempt to restart the HC
-                    Start();
+                    // HC Restart will occur the next time Update is called.
                 }
             }
             else
@@ -1724,6 +1776,15 @@ namespace Kernel.Hardware.USB.HCIs
         /// <param name="transfer">The transfer to issue.</param>
         protected override void _IssueTransfer(USBTransfer transfer)
         {
+            if (HostSystemError || IrrecoverableError)
+            {
+                ExceptionMethods.Throw(new FOS_System.Exception("Cannot issue transfer through EHCI because the host controller has encountered a host system error."));
+            }
+            else if(HCHalted)
+            {
+                ExceptionMethods.Throw(new FOS_System.Exception("Cannot issue transfer through EHCI because the host controller is currently halted."));
+            }
+
             // Please note: The word "completed" is not synonymous with "succeeded". 
             //              "Completed" means the hardware, firmware or software finished
             //              processing something.
@@ -2045,7 +2106,7 @@ namespace Kernel.Hardware.USB.HCIs
             oldTailQH.HorizontalLinkPointer = (EHCI_QueueHead_Struct*)VirtMemManager.GetPhysicalAddress(TailQueueHead);
 
             int timeout = 100;
-            while (USBIntCount > 0 && !IrrecoverableError && --timeout > 0)
+            while (USBIntCount > 0 && !HostSystemError && !IrrecoverableError && --timeout > 0)
             {
                 Processes.Thread.Sleep(50);
 #if EHCI_TRACE

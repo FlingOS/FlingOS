@@ -138,15 +138,15 @@ namespace Kernel.Core.Processes
             switch ((SystemCall)sysCallNum)
             {
                 case SystemCall.INVALID:
-                    FOS_System.GC.Enabled = true;
+                    FOS_System.GC.Enable("System calls : INVALID");
                     FOS_System.Heap.PreventAllocation = false;
                     Console.Default.WarningColour();
                     Console.Default.WriteLine("WARNING: Enabled GC/Heap inside critical interrupt! (SysCalls: invalid)");
                     Console.Default.DefaultColour();
 
                     Console.Default.WriteLine("Error! INVALID System Call made.");
-                    
-                    FOS_System.GC.Enabled = false;
+
+                    FOS_System.GC.Disable("System calls : INVALID");
                     FOS_System.Heap.PreventAllocation = true;
                     break;
                 case SystemCall.Sleep:
@@ -156,7 +156,7 @@ namespace Kernel.Core.Processes
                     SysCall_PlayNote((Hardware.Timers.PIT.MusicalNote)param1, (Hardware.Timers.PIT.MusicalNoteValue)param2, param3);
                     break;
                 default:
-                    FOS_System.GC.Enabled = true;
+                    FOS_System.GC.Enable("System calls : default");
                     FOS_System.Heap.PreventAllocation = false;
                     Console.Default.WarningColour();
                     Console.Default.WriteLine("WARNING: Enabled GC/Heap inside critical interrupt! (SysCalls: default)");
@@ -171,7 +171,7 @@ namespace Kernel.Core.Processes
                     Console.Default.WriteLine(((FOS_System.String)" > Param3: ") + Param3);
                     Console.Default.WriteLine(((FOS_System.String)" > Return: ") + ProcessManager.CurrentThread.EAXFromInterruptStack);
 
-                    FOS_System.GC.Enabled = false;
+                    FOS_System.GC.Disable("System calls : default");
                     FOS_System.Heap.PreventAllocation = true;
                     break;
             }

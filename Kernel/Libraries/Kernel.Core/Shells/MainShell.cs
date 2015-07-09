@@ -934,9 +934,9 @@ namespace Kernel.Core.Shells
                                         }
                                         else
                                         {
-                                            //Run as KM, RAW for now
+                                            //Run as KM, ELF for now
                                             Hardware.Processes.ProcessManager.RegisterProcess(
-                                                Processes.DynamicLinkerLoader.LoadProcess_FromRawExe(aFile, false),
+                                                Processes.DynamicLinkerLoader.LoadProcess_FromELFExe(aFile, false).TheProcess,
                                                 Hardware.Processes.Scheduler.Priority.Normal);
                                         }
                                     }
@@ -1777,7 +1777,34 @@ which should have been provided with the executable.");
             {
                 Hardware.Device aDevice = (Hardware.Device)Hardware.DeviceManager.Devices[i];
 
-                if (aDevice is Hardware.USB.Devices.USBDevice)
+                if (aDevice is Hardware.USB.HCIs.HCI)
+                {
+                    Hardware.USB.HCIs.HCI hciDevice = (Hardware.USB.HCIs.HCI)aDevice;
+                    console.WriteLine();
+
+                    console.Write("--------------------- HCI ");
+                    console.Write_AsDecimal(i);
+                    console.WriteLine(" ---------------------");
+
+                    FOS_System.String statusText = "";
+                    switch (hciDevice.Status)
+                    {
+                        case Hardware.USB.HCIs.HCI.HCIStatus.Dead:
+                            statusText = "Dead";
+                            break;
+                        case Hardware.USB.HCIs.HCI.HCIStatus.Unset:
+                            statusText = "Unset";
+                            break;
+                        case Hardware.USB.HCIs.HCI.HCIStatus.Active:
+                            statusText = "Active";
+                            break;
+                        default:
+                            statusText = "Uncreognised (was a new status type added?)";
+                            break;
+                    }
+                    console.WriteLine("Status: " + statusText);
+                }
+                else if (aDevice is Hardware.USB.Devices.USBDevice)
                 {
                     Hardware.USB.Devices.USBDevice usbDevice = (Hardware.USB.Devices.USBDevice)aDevice;
                     Hardware.USB.Devices.USBDeviceInfo usbDeviceInfo = usbDevice.DeviceInfo;
@@ -1901,7 +1928,7 @@ which should have been provided with the executable.");
                     console.Write_AsDecimal(i);
                     console.WriteLine(" ---------------------");
                     console.WriteLine("Type: PATAPI");
-                    console.WriteLine("Warning: This disk device type is not supported.");
+                    console.WriteLine("Warning: Read-only support.");
 
                     Hardware.ATA.PATAPI theATA = (Hardware.ATA.PATAPI)aDevice;
                     console.WriteLine(((FOS_System.String)"Serial No: ") + theATA.SerialNo);

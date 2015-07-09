@@ -56,12 +56,15 @@ namespace Kernel.FOS_System
         /// Whether the GC has been initialised yet or not.
         /// Used to prevent the GC running before it has been initialised properly.
         /// </summary>
-        public static bool Enabled = false;
+        private static bool Enabled = false;
         /// <summary>
         /// Whether the GC is currently executing. Used to prevent the GC calling itself (or ending up in loops with
         /// called methods re-calling the GC!)
         /// </summary>
         public static bool InsideGC = false;
+
+        private static FOS_System.String lastEnabler = "";
+        private static FOS_System.String lastDisabler = "";
 
         private static SpinLock GCAccessLock;
         private static bool GCAccessLockInitialised = false;
@@ -98,6 +101,25 @@ namespace Kernel.FOS_System
 
             GCAccessLock = new SpinLock(-1);
             GCAccessLockInitialised = true;
+        }
+
+        public static void Enable(FOS_System.String caller)
+        {
+            //BasicConsole.Write(caller);
+            //BasicConsole.WriteLine(" enabling GC.");
+            //BasicConsole.DelayOutput(2);
+
+            lastEnabler = caller;
+            GC.Enabled = true;
+        }
+        public static void Disable(FOS_System.String caller)
+        {
+            //BasicConsole.Write(caller);
+            //BasicConsole.WriteLine(" disabling GC.");
+            //BasicConsole.DelayOutput(2);
+
+            lastDisabler = caller;
+            GC.Enabled = false;
         }
 
         [Compiler.NoDebug]
@@ -176,6 +198,8 @@ namespace Kernel.FOS_System
             {
                 BasicConsole.SetTextColour(BasicConsole.warning_colour);
                 BasicConsole.WriteLine("Warning! GC returning null pointer because GC not enabled.");
+                BasicConsole.Write("Last disabler: ");
+                BasicConsole.WriteLine(lastDisabler);
                 BasicConsole.DelayOutput(10);
                 BasicConsole.SetTextColour(BasicConsole.default_colour);
 
@@ -250,6 +274,8 @@ namespace Kernel.FOS_System
             {
                 BasicConsole.SetTextColour(BasicConsole.warning_colour);
                 BasicConsole.WriteLine("Warning! GC returning null pointer because GC not enabled.");
+                BasicConsole.Write("Last disabler: ");
+                BasicConsole.WriteLine(lastDisabler);
                 BasicConsole.DelayOutput(10);
                 BasicConsole.SetTextColour(BasicConsole.default_colour);
 
@@ -337,6 +363,8 @@ namespace Kernel.FOS_System
             {
                 BasicConsole.SetTextColour(BasicConsole.warning_colour);
                 BasicConsole.WriteLine("Warning! GC returning null pointer because GC not enabled.");
+                BasicConsole.Write("Last disabler: ");
+                BasicConsole.WriteLine(lastDisabler);
                 BasicConsole.DelayOutput(10);
                 BasicConsole.SetTextColour(BasicConsole.default_colour);
 
