@@ -234,7 +234,7 @@ namespace Kernel.Hardware.Processes
             return Woken;
         }
 
-        public static int Semaphore_Allocate(int limit)
+        public static int Semaphore_Allocate(int limit, Process aProcess)
         {
             int result = -1;
             Semaphore theSemaphore = null;
@@ -260,13 +260,13 @@ namespace Kernel.Hardware.Processes
 
             SemaphoresLock.Exit();
 
-            theSemaphore.OwnerProcesses.Add(CurrentProcess.Id);
+            theSemaphore.OwnerProcesses.Add(aProcess.Id);
 
             return result;
         }
-        public static bool Semaphore_Deallocate(int id)
+        public static bool Semaphore_Deallocate(int id, Process aProcess)
         {
-            if (Semaphore_VerifyOwner(id))
+            if (Semaphore_VerifyOwner(id, aProcess))
             {
                 SemaphoresLock.Enter();
                 Semaphores[id] = null;
@@ -276,39 +276,38 @@ namespace Kernel.Hardware.Processes
             }
             return false;
         }
-        public static bool Semaphore_Wait(int id)
+        public static int Semaphore_Wait(int id, Process aProcess, Thread aThread)
         {
-            if (Semaphore_VerifyOwner(id))
+            if (Semaphore_VerifyOwner(id, aProcess))
             {
-                ((Semaphore)Semaphores[id]).Wait();
+                return ((Semaphore)Semaphores[id]).WaitOnBehalf(aProcess, aThread) ? 1 : 0;
+            }
+            return -1;
+        }
+        public static bool Semaphore_Signal(int id, Process aProcess)
+        {
+            if (Semaphore_VerifyOwner(id, aProcess))
+            {
+                ((Semaphore)Semaphores[id]).SignalOnBehalf();
                 return true;
             }
             return false;
         }
-        public static bool Semaphore_Signal(int id)
+        public static bool Semaphore_AddOwner(int semaphoreId, uint processId, Process aProcess)
         {
-            if (Semaphore_VerifyOwner(id))
-            {
-                ((Semaphore)Semaphores[id]).Signal();
-                return true;
-            }
-            return false;
-        }
-        public static bool Semaphore_AddOwner(int semaphoreId, uint processId)
-        {
-            if (Semaphore_VerifyOwner(semaphoreId))
+            if (Semaphore_VerifyOwner(semaphoreId, aProcess))
             {
                 ((Semaphore)Semaphores[semaphoreId]).OwnerProcesses.Add(processId);
                 return true;
             }
             return false;
         }
-        private static bool Semaphore_VerifyOwner(int id)
+        private static bool Semaphore_VerifyOwner(int id, Process aProcess)
         {
-            if (id < Semaphores.Count && Semaphores[id] != null)
+            if (id > -1 && id < Semaphores.Count && Semaphores[id] != null)
             {
                 Semaphore theSemaphore = ((Semaphore)Semaphores[id]);
-                return theSemaphore.OwnerProcesses.IndexOf(CurrentProcess.Id) >= 0;
+                return theSemaphore.OwnerProcesses.IndexOf(aProcess.Id) >= 0;
             }
             return false;
         }

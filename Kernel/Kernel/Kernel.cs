@@ -357,7 +357,7 @@ namespace Kernel
                 Core.Console.InitDefault();
                 Core.Shell.InitDefault();
 
-                //BasicConsole.PrimaryOutputEnabled = false;
+                BasicConsole.PrimaryOutputEnabled = false;
                 Core.Shell.Default.Execute();
                 BasicConsole.PrimaryOutputEnabled = true;
 

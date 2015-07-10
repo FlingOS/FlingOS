@@ -70,47 +70,92 @@ namespace Kernel.Hardware.Processes.Synchronisation
             count = limit = aLimit;
         }
 
-        public void Wait()
+        public bool WaitOnBehalf(Process aProcess, Thread aThread)
         {
-            bool locked = false;
-            bool addedIdentifier = false;
-            ulong identifier = ((UInt64)ProcessManager.CurrentProcess.Id << 32) | ProcessManager.CurrentThread.Id;
-            do
+            ulong identifier = ((UInt64)aProcess.Id << 32) | aThread.Id;
+        
+            ExclLock.Enter();
+            bool notLocked = count > 0;
+            if (notLocked)
             {
-                ExclLock.Enter();
-                locked = count == 0;
-                if (!locked)
-                {
-                    WaitingThreads.Remove(identifier);
-                    count--;
-                    ExclLock.Exit();
-                }
-                else
-                {
-                    if (!addedIdentifier)
-                    {
-                        WaitingThreads.Add(identifier);
-                        addedIdentifier = true;
-                    }
-
-                    ExclLock.Exit();
-                    
-                    Thread.Sleep_Indefinitely();
-                }
+                count--;
             }
-            while (locked);
+            else
+            {
+                aThread._EnterSleep(Thread.IndefiniteSleep);
+                WaitingThreads.Add(identifier);
+            }
+            ExclLock.Exit();
+            return notLocked;
         }
-        public void Signal()
+        public void SignalOnBehalf()
         {
             ExclLock.Enter();
             count++;
-            ulong identifier = WaitingThreads[0];
-            while (!ProcessManager.WakeProcess((uint)(identifier >> 32), (uint)identifier))
+
+            if (WaitingThreads.Count > 0)
             {
-                WaitingThreads.RemoveAt(0);
-                identifier = WaitingThreads[0];
+                BasicConsole.WriteLine("Waiting threads > 0");
+                ulong identifier = 0;
+                do
+                {
+                    identifier = WaitingThreads[0];
+                    WaitingThreads.RemoveAt(0);
+                    BasicConsole.Write("Identifier: ");
+                    BasicConsole.WriteLine(identifier);
+                }
+                while (!ProcessManager.WakeProcess((uint)(identifier >> 32), (uint)identifier) && WaitingThreads.Count > 0);
             }
             ExclLock.Exit();
         }
+        //public void Wait()
+        //{
+        //    bool locked = false;
+        //    bool addedIdentifier = false;
+        //    ulong identifier = ((UInt64)ProcessManager.CurrentProcess.Id << 32) | ProcessManager.CurrentThread.Id;
+        //    do
+        //    {
+        //        ExclLock.Enter();
+        //        locked = count == 0;
+        //        if (!locked)
+        //        {
+        //            if (addedIdentifier)
+        //            {
+        //                WaitingThreads.Remove(identifier);
+        //            }
+
+        //            count--;
+        //            ExclLock.Exit();
+        //        }
+        //        else
+        //        {
+        //            if (!addedIdentifier)
+        //            {
+        //                WaitingThreads.Add(identifier);
+        //                addedIdentifier = true;
+        //            }
+
+        //            ExclLock.Exit();
+
+        //            Thread.Sleep_Indefinitely();
+        //        }
+        //    }
+        //    while (locked);
+        //}
+        //public void Signal()
+        //{
+        //    ExclLock.Enter();
+        //    count++;
+        //    if (WaitingThreads.Count > 0)
+        //    {
+        //        ulong identifier = WaitingThreads[0];
+        //        while (!ProcessManager.WakeProcess((uint)(identifier >> 32), (uint)identifier))
+        //        {
+        //            WaitingThreads.RemoveAt(0);
+        //            identifier = WaitingThreads[0];
+        //        }
+        //    }
+        //    ExclLock.Exit();
+        //}
     }
 }

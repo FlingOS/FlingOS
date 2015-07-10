@@ -42,7 +42,6 @@ namespace Drivers.Compiler.Architectures.x86
         public override void PerformStackOperations(ILPreprocessState conversionState, ILOp theOp)
         {
             MethodBase constructorMethod = theOp.MethodToCall;
-            Types.MethodInfo constructorMethodInfo = conversionState.TheILLibrary.GetMethodInfo(constructorMethod);
             Type objectType = constructorMethod.DeclaringType;
 
             if (typeof(Delegate).IsAssignableFrom(objectType))
@@ -52,7 +51,9 @@ namespace Drivers.Compiler.Architectures.x86
                 conversionState.CurrentStackFrame.Stack.Push(funcPtrItem);
                 return;
             }
-
+            
+            Types.MethodInfo constructorMethodInfo = conversionState.TheILLibrary.GetMethodInfo(constructorMethod);
+            
             ParameterInfo[] allParams = constructorMethod.GetParameters();
             foreach (ParameterInfo aParam in allParams)
             {
@@ -77,12 +78,7 @@ namespace Drivers.Compiler.Architectures.x86
         public override void Convert(ILConversionState conversionState, ILOp theOp)
         {
             MethodBase constructorMethod = theOp.MethodToCall;
-            Types.MethodInfo constructorMethodInfo = conversionState.TheILLibrary.GetMethodInfo(constructorMethod);
             Type objectType = constructorMethod.DeclaringType;
-
-            conversionState.AddExternalLabel(conversionState.GetNewObjMethodInfo().ID);
-            conversionState.AddExternalLabel(conversionState.GetThrowNullReferenceExceptionMethodInfo().ID);
-            conversionState.AddExternalLabel(constructorMethodInfo.ID);
 
             //New obj must:
             // - Ignore for creation of Delegates
@@ -106,7 +102,13 @@ namespace Drivers.Compiler.Architectures.x86
                 conversionState.Append(new ASMOps.Add() { Src = "4", Dest = "ESP" });
                 return;
             }
+
+            Types.MethodInfo constructorMethodInfo = conversionState.TheILLibrary.GetMethodInfo(constructorMethod);
             
+            conversionState.AddExternalLabel(conversionState.GetNewObjMethodInfo().ID);
+            conversionState.AddExternalLabel(conversionState.GetThrowNullReferenceExceptionMethodInfo().ID);
+            conversionState.AddExternalLabel(constructorMethodInfo.ID);
+
             int currOpPosition = conversionState.PositionOf(theOp);
 
             //Attempt to allocate memory on the heap for the new object
