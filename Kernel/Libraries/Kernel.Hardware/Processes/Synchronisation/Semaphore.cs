@@ -25,6 +25,7 @@
 #endregion
     
 using System;
+using Kernel.FOS_System.Collections;
 using Kernel.FOS_System.Processes.Synchronisation;
 
 namespace Kernel.Hardware.Processes.Synchronisation
@@ -59,6 +60,9 @@ namespace Kernel.Hardware.Processes.Synchronisation
         }
 
         SpinLock ExclLock = new SpinLock(-1);
+        UInt64List WaitingThreads = new UInt64List();
+
+        public UInt32List OwnerProcesses = new UInt32List(2);
 
         public Semaphore(int anId, int aLimit)
         {
@@ -69,19 +73,29 @@ namespace Kernel.Hardware.Processes.Synchronisation
         public void Wait()
         {
             bool locked = false;
+            bool addedIdentifier = false;
+            ulong identifier = ((UInt64)ProcessManager.CurrentProcess.Id << 32) | ProcessManager.CurrentThread.Id;
             do
             {
                 ExclLock.Enter();
                 locked = count == 0;
                 if (!locked)
                 {
+                    WaitingThreads.Remove(identifier);
                     count--;
                     ExclLock.Exit();
                 }
                 else
                 {
+                    if (!addedIdentifier)
+                    {
+                        WaitingThreads.Add(identifier);
+                        addedIdentifier = true;
+                    }
+
                     ExclLock.Exit();
-                    Thread.Sleep(5);
+                    
+                    Thread.Sleep_Indefinitely();
                 }
             }
             while (locked);
@@ -90,6 +104,12 @@ namespace Kernel.Hardware.Processes.Synchronisation
         {
             ExclLock.Enter();
             count++;
+            ulong identifier = WaitingThreads[0];
+            while (!ProcessManager.WakeProcess((uint)(identifier >> 32), (uint)identifier))
+            {
+                WaitingThreads.RemoveAt(0);
+                identifier = WaitingThreads[0];
+            }
             ExclLock.Exit();
         }
     }

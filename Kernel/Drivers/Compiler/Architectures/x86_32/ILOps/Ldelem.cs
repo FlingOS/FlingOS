@@ -98,6 +98,7 @@ namespace Drivers.Compiler.Architectures.x86
                     break;
 
                 case OpCodes.Ldelem_I8:
+                    sizeToPush = 8;
                     elementType = typeof(Int64);
                     break;
             }
@@ -201,6 +202,7 @@ namespace Drivers.Compiler.Architectures.x86
                     break;
 
                 case OpCodes.Ldelem_I8:
+                    sizeToPush = 8;
                     elementType = typeof(Int64);
                     break;
             }

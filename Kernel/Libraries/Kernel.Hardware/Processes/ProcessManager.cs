@@ -32,6 +32,7 @@
 
 using System;
 using Kernel.FOS_System.Collections;
+using Kernel.FOS_System.Processes.Synchronisation;
 using Kernel.Hardware.Processes.Synchronisation;
 
 namespace Kernel.Hardware.Processes
@@ -44,6 +45,9 @@ namespace Kernel.Hardware.Processes
         public static ThreadState* CurrentThread_State = null;
 
         private static uint ProcessIdGenerator = 1;
+
+        private static List Semaphores = new List(1024, 1024);
+        private static SpinLock SemaphoresLock = new SpinLock(-1);
 
         public static Process CreateProcess(ThreadStartMethod MainMethod, FOS_System.String Name, bool UserMode)
         {
@@ -198,6 +202,115 @@ namespace Kernel.Hardware.Processes
 #endif
                 CurrentProcess.LoadMemLayout();
             }
+        }
+
+        public static bool WakeProcess(uint processId, uint threadId)
+        {
+            bool Woken = false;
+            Process theProcess = null;
+            
+            for (int i = 0; i < Processes.Count; i++)
+            {
+                Process aProcess = ((Process)Processes[i]);
+                if (aProcess.Id == processId)
+                {
+                    theProcess = aProcess;
+                }
+            }
+
+            if (theProcess != null)
+            {
+                for (int i = 0; i < theProcess.Threads.Count; i++)
+                {
+                    Thread aThread = ((Thread)theProcess.Threads[i]);
+                    if (aThread.Id == threadId)
+                    {
+                        aThread._Wake();
+                        Woken = true;
+                    }
+                }
+            }
+
+            return Woken;
+        }
+
+        public static int Semaphore_Allocate(int limit)
+        {
+            int result = -1;
+            Semaphore theSemaphore = null;
+
+            SemaphoresLock.Enter();
+
+            for (int i = 0; i < Semaphores.Count; i++)
+            {
+                Semaphore aSemaphore = (Semaphore)Semaphores[i];
+                if (aSemaphore == null)
+                {
+                    Semaphores[i] = theSemaphore = new Semaphore(i, limit);
+                    result = i;
+                    break;
+                }
+            }
+
+            if (result == -1)
+            {
+                result = Semaphores.Count;
+                Semaphores.Add(theSemaphore = new Semaphore(result, limit));
+            }
+
+            SemaphoresLock.Exit();
+
+            theSemaphore.OwnerProcesses.Add(CurrentProcess.Id);
+
+            return result;
+        }
+        public static bool Semaphore_Deallocate(int id)
+        {
+            if (Semaphore_VerifyOwner(id))
+            {
+                SemaphoresLock.Enter();
+                Semaphores[id] = null;
+                SemaphoresLock.Exit();
+
+                return true;
+            }
+            return false;
+        }
+        public static bool Semaphore_Wait(int id)
+        {
+            if (Semaphore_VerifyOwner(id))
+            {
+                ((Semaphore)Semaphores[id]).Wait();
+                return true;
+            }
+            return false;
+        }
+        public static bool Semaphore_Signal(int id)
+        {
+            if (Semaphore_VerifyOwner(id))
+            {
+                ((Semaphore)Semaphores[id]).Signal();
+                return true;
+            }
+            return false;
+        }
+        public static bool Semaphore_AddOwner(int semaphoreId, uint processId)
+        {
+            if (Semaphore_VerifyOwner(semaphoreId))
+            {
+                ((Semaphore)Semaphores[semaphoreId]).OwnerProcesses.Add(processId);
+                return true;
+            }
+            return false;
+        }
+        private static bool Semaphore_VerifyOwner(int id)
+        {
+            if (id < Semaphores.Count && Semaphores[id] != null)
+            {
+                Semaphore theSemaphore = ((Semaphore)Semaphores[id]);
+                return theSemaphore.OwnerProcesses.IndexOf(CurrentProcess.Id) >= 0;
+            }
+            return false;
         }
     }
 }

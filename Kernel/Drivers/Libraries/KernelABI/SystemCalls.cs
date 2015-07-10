@@ -40,7 +40,24 @@ namespace KernelABI
         {
             INVALID = 0,
             Sleep = 1,
-            PlayNote = 2
+            PlayNote = 2,
+            Semaphore = 3
+        }
+
+        public enum SemaphoreRequests
+        {
+            INVALID = 0,
+            Allocate = 1,
+            Deallocate = 2,
+            Wait = 3,
+            Signal = 4,
+            AddOwner = 5
+        }
+        public enum SemaphoreResponses
+        {
+            Error = -1,
+            INVALID = 0,
+            Success = 1
         }
 
         #region Play Note
@@ -216,27 +233,51 @@ namespace KernelABI
 
         #endregion
 
-        [Drivers.Compiler.Attributes.PluggedMethod(ASMFilePath=@"ASM\SystemCalls")]
-        public static uint Call(Calls callNumber,
+        [Drivers.Compiler.Attributes.PluggedMethod(ASMFilePath = @"ASM\SystemCalls")]
+        public static void Call(Calls callNumber,
             uint Param1,
             uint Param2,
-            uint Param3)
+            uint Param3,
+            ref uint Return1,
+            ref uint Return2,
+            ref uint Return3,
+            ref uint Return4)
         {
-            return 0;
         }
 
         [Drivers.Compiler.Attributes.NoDebug]
         [Drivers.Compiler.Attributes.NoGC]
         public static void Sleep(uint ms)
         {
-            Call(Calls.Sleep, ms, 0, 0);
+            uint Return1 = 0;
+            uint Return2 = 0;
+            uint Return3 = 0;
+            uint Return4 = 0;
+            Call(Calls.Sleep, ms, 0, 0, ref Return1, ref Return2, ref Return3, ref Return4);
         }
 
         [Drivers.Compiler.Attributes.NoDebug]
         [Drivers.Compiler.Attributes.NoGC]
         public static void PlayNote(MusicalNote note, MusicalNoteValue duration, uint bpm)
         {
-            Call(Calls.PlayNote, (uint)note, (uint)duration, bpm);
+            uint Return1 = 0;
+            uint Return2 = 0;
+            uint Return3 = 0;
+            uint Return4 = 0;
+            Call(Calls.PlayNote, (uint)note, (uint)duration, bpm, ref Return1, ref Return2, ref Return3, ref Return4);
+        }
+
+        [Drivers.Compiler.Attributes.NoDebug]
+        [Drivers.Compiler.Attributes.NoGC]
+        public static SemaphoreResponses AllocateSemaphore(int limit, ref int Id)
+        {
+            uint Return1 = 0;
+            uint Return2 = 0;
+            uint Return3 = 0;
+            uint Return4 = 0;
+            Call(Calls.Semaphore, (uint)SemaphoreRequests.Allocate, (uint)Id, (uint)limit, ref Return1, ref Return2, ref Return3, ref Return4);
+            Id = (int)Return2;
+            return (SemaphoreResponses)Return1;
         }
     }
 }

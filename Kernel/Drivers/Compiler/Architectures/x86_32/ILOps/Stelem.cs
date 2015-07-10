@@ -100,6 +100,7 @@ namespace Drivers.Compiler.Architectures.x86
                     break;
 
                 case OpCodes.Stelem_I8:
+                    sizeToPop = 8;
                     elementType = typeof(Int64);
                     break;
             }

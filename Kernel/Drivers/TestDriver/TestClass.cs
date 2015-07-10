@@ -36,6 +36,9 @@ namespace TestDriver
         public static unsafe void Test()
         {
             byte bpm = (byte)Drivers.Framework.Math.Add(140, 100);
+
+            int semaphorHandle = -1;
+            SystemCalls.SemaphoreResponses response = SystemCalls.SemaphoreResponses.INVALID;
             while (true)
             {
                 *((ushort*)0xB881E) = (0x1F00 | '3');
@@ -43,48 +46,79 @@ namespace TestDriver
                 *((ushort*)0xB881E) = (0x3F00 | '4');
                 SystemCalls.Sleep(1000);
 
-                //bpm += 1;z`
-                SystemCalls.PlayNote(
-                    SystemCalls.MusicalNote.C4,
-                    SystemCalls.MusicalNoteValue.Quaver,
-                    bpm);
-                SystemCalls.PlayNote(
-                    SystemCalls.MusicalNote.Silent,
-                    SystemCalls.MusicalNoteValue.Minim,
-                    bpm);
-                SystemCalls.PlayNote(
-                    SystemCalls.MusicalNote.E4,
-                    SystemCalls.MusicalNoteValue.Quaver,
-                    bpm);
-                SystemCalls.PlayNote(
-                    SystemCalls.MusicalNote.Silent,
-                    SystemCalls.MusicalNoteValue.Minim,
-                    bpm);
-                SystemCalls.PlayNote(
-                    SystemCalls.MusicalNote.G4,
-                    SystemCalls.MusicalNoteValue.Quaver,
-                    bpm);
-                SystemCalls.PlayNote(
-                    SystemCalls.MusicalNote.Silent,
-                    SystemCalls.MusicalNoteValue.Minim,
-                    bpm);
-                SystemCalls.PlayNote(
-                    SystemCalls.MusicalNote.C5,
-                    SystemCalls.MusicalNoteValue.Minim,
-                    bpm);
-                SystemCalls.PlayNote(
-                    SystemCalls.MusicalNote.Silent,
-                    SystemCalls.MusicalNoteValue.Minim,
-                    bpm);
-                SystemCalls.PlayNote(
-                    SystemCalls.MusicalNote.G4,
-                    SystemCalls.MusicalNoteValue.Minim,
-                    bpm);
-                SystemCalls.PlayNote(
-                    SystemCalls.MusicalNote.C5,
-                    SystemCalls.MusicalNoteValue.Minim,
-                    bpm);
+                if (semaphorHandle == -1)
+                {
+                    *((ushort*)0xB881E) = (0x3F00 | '5');
+                    SystemCalls.Sleep(1000);
 
+                    if (response == SystemCalls.SemaphoreResponses.INVALID)
+                    {
+                        *((ushort*)0xB881E) = (0x3F00 | '6');
+                        SystemCalls.Sleep(1000);
+                        
+                        response = SystemCalls.AllocateSemaphore(5, ref semaphorHandle);
+                    }
+
+                    *((ushort*)0xB881E) = (0x3F00 | '7');
+                    SystemCalls.Sleep(1000);
+                }
+
+                *((ushort*)0xB881E) = (0x3F00 | '8');
+                SystemCalls.Sleep(1000);
+
+                if (response == SystemCalls.SemaphoreResponses.Success)
+                {
+                    *((ushort*)0xB881E) = (0x3F00 | '9');
+                    SystemCalls.Sleep(1000);
+
+                    //bpm += 1;z`
+                    SystemCalls.PlayNote(
+                        SystemCalls.MusicalNote.C4,
+                        SystemCalls.MusicalNoteValue.Quaver,
+                        bpm);
+                    SystemCalls.PlayNote(
+                        SystemCalls.MusicalNote.Silent,
+                        SystemCalls.MusicalNoteValue.Minim,
+                        bpm);
+                    SystemCalls.PlayNote(
+                        SystemCalls.MusicalNote.E4,
+                        SystemCalls.MusicalNoteValue.Quaver,
+                        bpm);
+                    SystemCalls.PlayNote(
+                        SystemCalls.MusicalNote.Silent,
+                        SystemCalls.MusicalNoteValue.Minim,
+                        bpm);
+                    SystemCalls.PlayNote(
+                        SystemCalls.MusicalNote.G4,
+                        SystemCalls.MusicalNoteValue.Quaver,
+                        bpm);
+                    SystemCalls.PlayNote(
+                        SystemCalls.MusicalNote.Silent,
+                        SystemCalls.MusicalNoteValue.Minim,
+                        bpm);
+                    SystemCalls.PlayNote(
+                        SystemCalls.MusicalNote.C5,
+                        SystemCalls.MusicalNoteValue.Minim,
+                        bpm);
+                    SystemCalls.PlayNote(
+                        SystemCalls.MusicalNote.Silent,
+                        SystemCalls.MusicalNoteValue.Minim,
+                        bpm);
+                    SystemCalls.PlayNote(
+                        SystemCalls.MusicalNote.G4,
+                        SystemCalls.MusicalNoteValue.Minim,
+                        bpm);
+                    SystemCalls.PlayNote(
+                        SystemCalls.MusicalNote.C5,
+                        SystemCalls.MusicalNoteValue.Minim,
+                        bpm);
+
+                    *((ushort*)0xB881E) = (0x3F00 | 'A');
+                    SystemCalls.Sleep(1000);
+                }
+
+                *((ushort*)0xB881E) = (0x3F00 | 'B');
+                SystemCalls.Sleep(1000);
             }
         }
 

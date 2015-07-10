@@ -100,7 +100,6 @@ namespace Kernel
                 Hardware.VirtMemManager.Init();
                 Hardware.Devices.CPU.InitDefault();
                 Hardware.Devices.Timer.InitDefault();
-                Core.Processes.SystemCalls.Init();
 
                 //uint bpm = 140;
                 //Hardware.Timers.PIT.ThePIT.PlayNote(
@@ -333,6 +332,9 @@ namespace Kernel
 
             try
             {
+                BasicConsole.WriteLine(" > Initialising system calls...");
+                Core.Processes.SystemCalls.Init();
+
                 BasicConsole.WriteLine(" > Starting GC Cleanup task...");
                 ProcessManager.CurrentProcess.CreateThread(Core.Tasks.GCCleanupTask.Main);
 

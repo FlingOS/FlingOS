@@ -49,15 +49,6 @@ namespace Kernel.Hardware.Tasks
                 
                 //BasicConsole.WriteLine("Handling non-critical interrupts...");
 
-                uint currProcessId = 0;
-                uint currThreadId = 0;
-                if (ProcessManager.CurrentProcess != null)
-                {
-                    currProcessId = ProcessManager.CurrentProcess.Id;
-                    currThreadId = ProcessManager.CurrentThread.Id;
-                }
-                bool switched = false;
-
                 //BasicConsole.WriteLine("Looping ISRs...");
 
                 for (int ISRNum = 0; ISRNum < Interrupts.Interrupts.Handlers.Length; ISRNum++)
@@ -94,15 +85,7 @@ namespace Kernel.Hardware.Tasks
                                 {
                                     //BasicConsole.WriteLine("Getting func...");
                                     InterruptHandler func = descrip.handler;
-
-                                    //BasicConsole.WriteLine("Checking ignore process id...");
-                                    if (!descrip.IgnoreProcessId)
-                                    {
-                                        //BasicConsole.WriteLine("Switching process...");
-                                        ProcessManager.SwitchProcess(descrip.ProcessId, -1);
-                                        switched = true;
-                                    }
-
+                                    
                                     //BasicConsole.WriteLine("Looping occurrences...");
                                     for (int x = 0; x < Occurrences; x++)
                                     {
@@ -123,12 +106,6 @@ namespace Kernel.Hardware.Tasks
                             }
                         }
                     }
-                }
-
-                if (switched)
-                {
-                    //BasicConsole.WriteLine("Switching process back...");
-                    ProcessManager.SwitchProcess(currProcessId, (int)currThreadId);
                 }
 
                 //BasicConsole.WriteLine("Finished handling.");

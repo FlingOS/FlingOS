@@ -60,7 +60,7 @@ namespace Kernel.Hardware.Keyboards
             //  because then any one scancode would be processed multiple times!
             if (!enabled)
             {
-                InterruptHandlerId = Interrupts.Interrupts.AddIRQHandler(1, InterruptHandler, this, false, false, "PS2");
+                InterruptHandlerId = Interrupts.Interrupts.AddIRQHandler(1, InterruptHandler, this, true, false, "PS2");
                 DeviceManager.AddDevice(this);
                 enabled = true;
             }

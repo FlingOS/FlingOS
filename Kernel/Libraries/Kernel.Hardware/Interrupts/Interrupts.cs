@@ -264,6 +264,11 @@ namespace Kernel.Hardware.Interrupts
                                         bool CriticalHandler,
                                         FOS_System.String Name)
         {
+            if (!IgnoreProcessState && !CriticalHandler)
+            {
+                //See AddISRHandler for explanation
+                ExceptionMethods.Throw(new FOS_System.Exceptions.NotSupportedException("Cannot have non-critical IRQ which is process-dependent!"));
+            }
             //In this OS's implementation, IRQs 0-15 are mapped to ISRs 32-47
             int result = AddISRHandler(num + 32, handler, data, IgnoreProcessState, CriticalHandler, Name);
             EnableIRQ((byte)num);
@@ -299,6 +304,16 @@ namespace Kernel.Hardware.Interrupts
                                         bool CriticalHandler,
                                         FOS_System.String Name)
         {
+            if (!IgnoreProcessState && !CriticalHandler)
+            {
+                // Non-critical interrupts get executed in the non-critical interrupts thread
+                //  The non-critical interrupts thread does not support switching process because it would be
+                //  very difficult to guarantee the processes'/thread's state didn't becom corrupted. Primarily,
+                //  we would need to store the general purpose registers (and others) and restore their values
+                //  before allowing return to the original process.
+                ExceptionMethods.Throw(new FOS_System.Exceptions.NotSupportedException("Cannot have non-critical interrupt which is process-dependent!"));
+            }
+
 #if INTERRUPTS_TRACE
             BasicConsole.Write("Adding ISR handler for ");
             BasicConsole.WriteLine(Name);

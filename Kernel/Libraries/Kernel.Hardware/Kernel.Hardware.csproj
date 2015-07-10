@@ -84,7 +84,6 @@
     <Compile Include="Processes\Process.cs" />
     <Compile Include="Processes\ProcessManager.cs" />
     <Compile Include="Processes\Scheduler.cs" />
-    <Compile Include="Processes\Synchronisation\Mutex.cs" />
     <Compile Include="Processes\Synchronisation\Semaphore.cs" />
     <Compile Include="Processes\Thread.cs" />
     <Compile Include="Testing\USBTests.cs" />
@@ -144,9 +143,6 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="ASM\Processes\Scheduler.x86_32.asm">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="ASM\Processes\Synchronisation\Mutex.x86_32.asm">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="ASM\VirtMem\x86.x86_32.asm">

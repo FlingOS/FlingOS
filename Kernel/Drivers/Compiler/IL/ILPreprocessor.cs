@@ -70,13 +70,16 @@ namespace Drivers.Compiler.IL
 
             foreach (Types.MethodInfo aMethodInfo in TheLibrary.ILBlocks.Keys)
             {
-                DealWithCatchHandlers(aMethodInfo, TheLibrary.ILBlocks[aMethodInfo]);
-                InjectGeneral1(aMethodInfo, TheLibrary.ILBlocks[aMethodInfo]);
-                InjectGC(TheLibrary, aMethodInfo, TheLibrary.ILBlocks[aMethodInfo]);
-                InjectGeneral2(aMethodInfo, TheLibrary.ILBlocks[aMethodInfo]);
-                InjectTryCatchFinally(aMethodInfo, TheLibrary.ILBlocks[aMethodInfo]);
-                
-                PreprocessILOps(TheLibrary, aMethodInfo, TheLibrary.ILBlocks[aMethodInfo]);
+                if (!aMethodInfo.IsPlugged)
+                {
+                    DealWithCatchHandlers(aMethodInfo, TheLibrary.ILBlocks[aMethodInfo]);
+                    InjectGeneral1(aMethodInfo, TheLibrary.ILBlocks[aMethodInfo]);
+                    InjectGC(TheLibrary, aMethodInfo, TheLibrary.ILBlocks[aMethodInfo]);
+                    InjectGeneral2(aMethodInfo, TheLibrary.ILBlocks[aMethodInfo]);
+                    InjectTryCatchFinally(aMethodInfo, TheLibrary.ILBlocks[aMethodInfo]);
+
+                    PreprocessILOps(TheLibrary, aMethodInfo, TheLibrary.ILBlocks[aMethodInfo]);
+                }
             }
         }
 

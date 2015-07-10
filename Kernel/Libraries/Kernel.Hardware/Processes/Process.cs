@@ -50,6 +50,8 @@ namespace Kernel.Hardware.Processes
         
         public readonly bool UserMode;
 
+        public bool ContainsThreadsWaitingOnDeferredSystemCall = false;
+
         public Process(ThreadStartMethod MainMethod, uint AnId, FOS_System.String AName, bool userMode)
         {
 #if PROCESS_TRACE
