@@ -84,15 +84,15 @@ namespace Kernel.Core.Processes
                     SysCall_Sleep((int)ProcessManager.CurrentThread.Param1);
                     break;
                 case Kernel.Shared.SystemCalls.PlayNote:
-                    BasicConsole.WriteLine("System call : PlayNote");
+                    //BasicConsole.WriteLine("System call : PlayNote");
                     DeferSystemCall();
                     break;
                 case Kernel.Shared.SystemCalls.Semaphore:
-                    BasicConsole.WriteLine("System call : Semaphore");
+                    //BasicConsole.WriteLine("System call : Semaphore");
                     DeferSystemCall();
                     break;
                 case Kernel.Shared.SystemCalls.Thread:
-                    BasicConsole.WriteLine("System call : Thread");
+                    //BasicConsole.WriteLine("System call : Thread");
                     DeferSystemCall();
                     break;
                 default:
@@ -148,9 +148,9 @@ namespace Kernel.Core.Processes
 
                 Hardware.VirtMem.MemoryLayout OriginalMemoryLayout = ProcessManager.CurrentProcess.TheMemoryLayout;
 
-                BasicConsole.WriteLine("Handling deferred system calls.");
+                //BasicConsole.WriteLine("Handling deferred system calls.");
 
-                BasicConsole.WriteLine("Enumerating processes...");
+                //BasicConsole.WriteLine("Enumerating processes...");
                 for (int i = 0; i < ProcessManager.Processes.Count; i++)
                 {
                     Process aProcess = (Process)ProcessManager.Processes[i];
@@ -166,19 +166,19 @@ namespace Kernel.Core.Processes
                         ProcessManager.CurrentProcess.TheMemoryLayout.Load(false);
                         Scheduler.Enable();
 
-                        BasicConsole.WriteLine("Found marked process. Enumerating threads...");
+                        //BasicConsole.WriteLine("Found marked process. Enumerating threads...");
                         for (int j = 0; j < aProcess.Threads.Count; j++)
                         {
                             Thread aThread = (Thread)aProcess.Threads[j];
                             if (aThread.WaitingOnDeferredSystemCall)
                             {
-                                BasicConsole.WriteLine("Found marked thread. Processing...");
+                                //BasicConsole.WriteLine("Found marked thread. Processing...");
                                 aThread.WaitingOnDeferredSystemCall = false;
 
                                 DeferredSystemCalls_CurrentThread = aThread;
                                 DeferredSystemCalls_WakeCurrentThread = true;
 
-                                BasicConsole.WriteLine("Gathering info...");
+                                //BasicConsole.WriteLine("Gathering info...");
                                 //BasicConsole.WriteLine(ProcessManager.CurrentProcess.TheMemoryLayout.ToString());
                                 //Temp store because return value 1 is put in EAX
                                 uint sysCallNum = DeferredSystemCalls_CurrentThread.SysCallNumber;
@@ -191,15 +191,15 @@ namespace Kernel.Core.Processes
                                 //  The caller should not expect any registers to remain constant during a system
                                 //  call (aside from EBP, ESP, EIP and related registers)
 
-                                BasicConsole.WriteLine("Evaluating system call...");
+                                //BasicConsole.WriteLine("Evaluating system call...");
 
-                                BasicConsole.Write("Deferred sys call ");
-                                BasicConsole.Write(sysCallNum);
-                                BasicConsole.Write(" : ");
-                                BasicConsole.WriteLine(DeferredSystemCalls_CurrentProcess.Name);
-                                BasicConsole.WriteLine(((FOS_System.String)" > Param1: ") + DeferredSystemCalls_CurrentThread.Param1);
-                                BasicConsole.WriteLine(((FOS_System.String)" > Param2: ") + DeferredSystemCalls_CurrentThread.Param2);
-                                BasicConsole.WriteLine(((FOS_System.String)" > Param3: ") + DeferredSystemCalls_CurrentThread.Param3);
+                                //BasicConsole.Write("Deferred sys call ");
+                                //BasicConsole.Write(sysCallNum);
+                                //BasicConsole.Write(" : ");
+                                //BasicConsole.WriteLine(DeferredSystemCalls_CurrentProcess.Name);
+                                //BasicConsole.WriteLine(((FOS_System.String)" > Param1: ") + DeferredSystemCalls_CurrentThread.Param1);
+                                //BasicConsole.WriteLine(((FOS_System.String)" > Param2: ") + DeferredSystemCalls_CurrentThread.Param2);
+                                //BasicConsole.WriteLine(((FOS_System.String)" > Param3: ") + DeferredSystemCalls_CurrentThread.Param3);
 
                                 switch ((Kernel.Shared.SystemCalls)sysCallNum)
                                 {
@@ -223,10 +223,10 @@ namespace Kernel.Core.Processes
                                         break;
                                 }
 
-                                BasicConsole.WriteLine(((FOS_System.String)" > Return 1: ") + DeferredSystemCalls_CurrentThread.Return1);
-                                BasicConsole.WriteLine(((FOS_System.String)" > Return 2: ") + DeferredSystemCalls_CurrentThread.Return2);
-                                BasicConsole.WriteLine(((FOS_System.String)" > Return 3: ") + DeferredSystemCalls_CurrentThread.Return3);
-                                BasicConsole.WriteLine(((FOS_System.String)" > Return 4: ") + DeferredSystemCalls_CurrentThread.Return4);
+                                //BasicConsole.WriteLine(((FOS_System.String)" > Return 1: ") + DeferredSystemCalls_CurrentThread.Return1);
+                                //BasicConsole.WriteLine(((FOS_System.String)" > Return 2: ") + DeferredSystemCalls_CurrentThread.Return2);
+                                //BasicConsole.WriteLine(((FOS_System.String)" > Return 3: ") + DeferredSystemCalls_CurrentThread.Return3);
+                                //BasicConsole.WriteLine(((FOS_System.String)" > Return 4: ") + DeferredSystemCalls_CurrentThread.Return4);
 
                                 if (DeferredSystemCalls_WakeCurrentThread)
                                 {
@@ -250,7 +250,7 @@ namespace Kernel.Core.Processes
                 ProcessManager.CurrentProcess.TheMemoryLayout.Load(false);
                 Scheduler.Enable();
 
-                BasicConsole.WriteLine("Completed deferred system call handling.");
+                //BasicConsole.WriteLine("Completed deferred system call handling.");
             }
         }
 
@@ -305,7 +305,7 @@ namespace Kernel.Core.Processes
                     break;
             }
 
-            BasicConsole.WriteLine("----- Completed -----");
+            //BasicConsole.WriteLine("----- Completed -----");
             
             DeferredSystemCalls_CurrentThread.Return1 = (uint)response;
             DeferredSystemCalls_CurrentThread.Return2 = (uint)id;

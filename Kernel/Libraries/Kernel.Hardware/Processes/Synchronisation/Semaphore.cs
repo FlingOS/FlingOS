@@ -95,14 +95,14 @@ namespace Kernel.Hardware.Processes.Synchronisation
 
             if (WaitingThreads.Count > 0)
             {
-                BasicConsole.WriteLine("Waiting threads > 0");
+                //BasicConsole.WriteLine("Waiting threads > 0");
                 ulong identifier = 0;
                 do
                 {
                     identifier = WaitingThreads[0];
                     WaitingThreads.RemoveAt(0);
-                    BasicConsole.Write("Identifier: ");
-                    BasicConsole.WriteLine(identifier);
+                    //BasicConsole.Write("Identifier: ");
+                    //BasicConsole.WriteLine(identifier);
                 }
                 while (!ProcessManager.WakeProcess((uint)(identifier >> 32), (uint)identifier) && WaitingThreads.Count > 0);
             }
