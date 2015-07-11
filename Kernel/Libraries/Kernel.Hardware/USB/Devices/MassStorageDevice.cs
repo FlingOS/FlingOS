@@ -1309,14 +1309,14 @@ namespace Kernel.Hardware.USB.Devices
         /// <param name="sector">The sector index to read.</param>
         /// <param name="buffer">The buffer to store the sector data in. Must be at least as big as the sector size.</param>
         /// <returns>True if the read was successful. Otherwise false.</returns>
-        public bool Read(uint sector, void* buffer)
+        public bool Read(uint sector, uint numSectors, void* buffer)
         {
 #if MSD_TRACE
             DBGMSG(((FOS_System.String)">SCSI: read sector: ") + sector);
 #endif
             int retries = 3;
             //Send SCSI Read (10) command
-            while (!SendSCSICommand_IN(0x28, sector, (ushort)diskDevice.BlockSize, buffer, null) &&
+            while (!SendSCSICommand_IN(0x28, sector, (ushort)((uint)diskDevice.BlockSize * numSectors), buffer, null) &&
                     --retries > 0)
             {
                 ;
@@ -1537,22 +1537,19 @@ namespace Kernel.Hardware.USB.Devices
             msd.Activate();
 
             byte* dataPtr = ((byte*)Utilities.ObjectUtilities.GetHandle(aData)) + FOS_System.Array.FieldsBytesSize;
-            for (uint i = 0; i < aBlockCount; i++)
-            {
 #if MSD_TRACE
-                BasicConsole.Write(((FOS_System.String)"Reading block: ") + i);
+            BasicConsole.Write(((FOS_System.String)"Reading block: ") + i);
 #endif
 
-                if (!msd.Read((uint)(aBlockNo + i), dataPtr))
-                {
-                    ExceptionMethods.Throw(new FOS_System.Exception("Could not read from Mass Storage Device!"));
-                }
-                dataPtr += BlockSize;
-                
-#if MSD_TRACE
-                BasicConsole.WriteLine(" - Read.");
-#endif
+            if (!msd.Read((uint)(aBlockNo), aBlockCount, dataPtr))
+            {
+                ExceptionMethods.Throw(new FOS_System.Exception("Could not read from Mass Storage Device!"));
             }
+            dataPtr += BlockSize;
+
+#if MSD_TRACE
+            BasicConsole.WriteLine(" - Read.");
+#endif
 
             msd.Idle(false);
 

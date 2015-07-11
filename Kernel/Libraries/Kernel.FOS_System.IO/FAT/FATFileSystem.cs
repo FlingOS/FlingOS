@@ -287,13 +287,13 @@ namespace Kernel.FOS_System.IO.FAT
         /// </summary>
         /// <param name="aCluster">The cluster number to read.</param>
         /// <param name="aData">The array to store the data in.</param>
-        public void ReadCluster(UInt32 aCluster, byte[] aData)
+        public void ReadClusters(UInt32 aCluster, UInt32 numClusters, byte[] aData)
         {
             //Translate relative cluster to absolute cluster which is then
             //  converted to absolute sector number relative to the start 
             //  of the partition.
             UInt64 xSector = DataSector + ((aCluster - 2) * SectorsPerCluster);
-            thePartition.ReadBlock(xSector, SectorsPerCluster, aData);
+            thePartition.ReadBlock(xSector, SectorsPerCluster * numClusters, aData);
         }
         /// <summary>
         /// Writes the specified data to specified cluster number on the disk.
