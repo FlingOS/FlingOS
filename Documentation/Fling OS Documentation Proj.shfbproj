@@ -158,6 +158,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="icons\" />
+    <Folder Include="Images" />
     <Folder Include="Specs" />
     <Folder Include="Source Samples" />
     <Folder Include="Tutorials\" />
@@ -258,6 +259,11 @@
     <Image Include="Conceptual\Kernel Debugger\Fling OS - Debug Architecture.png">
       <ImageId>Fling OS - Debug Architecture</ImageId>
       <AlternateText>Fling OS - Debug Architecture</AlternateText>
+    </Image>
+    <Image Include="Images\GUID_Partition_Table_Scheme.svg.png">
+      <AlternateText>GUID Partition Table Scheme.svg</AlternateText>
+      <ImageId>GUID_Partition_Table_Scheme.svg</ImageId>
+      <CopyToMedia>False</CopyToMedia>
     </Image>
   </ItemGroup>
   <!-- Import the SHFB build targets -->
