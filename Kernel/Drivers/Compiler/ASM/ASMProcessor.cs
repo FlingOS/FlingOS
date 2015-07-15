@@ -183,7 +183,7 @@ namespace Drivers.Compiler.ASM
                     catch (Exception ex)
                     {
                         Logger.LogError(Errors.ASMCompiler_NASMException_ErrorCode, inputPath, 0,
-                            string.Format(Errors.ErrorMessages[Errors.ASMCompiler_NASMException_ErrorCode], inputPath));
+                            string.Format(Errors.ErrorMessages[Errors.ASMCompiler_NASMException_ErrorCode], inputPath, ex.Message));
                     }
                 }
                 else
@@ -213,7 +213,7 @@ namespace Drivers.Compiler.ASM
                 catch(Exception ex)
                 {
                     Logger.LogError(Errors.ASMCompiler_NASMException_ErrorCode, inputPath, 0,
-                        string.Format(Errors.ErrorMessages[Errors.ASMCompiler_NASMException_ErrorCode], inputPath));
+                        string.Format(Errors.ErrorMessages[Errors.ASMCompiler_NASMException_ErrorCode], inputPath, ex.Message));
                 }
             }
         }
@@ -274,11 +274,20 @@ namespace Drivers.Compiler.ASM
                 File.Delete(outputFilePath);
             }
 
-            OK = Utilities.ExecuteProcess(Path.GetDirectoryName(outputFilePath), NasmPath, String.Format("-g -f {0} -o \"{1}\" -D{3}_COMPILATION \"{2}\"",
+            if (!File.Exists(inputFilePath))
+            {
+                throw new NullReferenceException("ASM file does not exist! Path: \"" + inputFilePath + "\"");
+            }
+
+            string inputCommand = String.Format("-g -f {0} -o \"{1}\" -D{3}_COMPILATION \"{2}\"",
                                                   "elf",
                                                   outputFilePath,
                                                   inputFilePath,
-                                                  "ELF"), "NASM",
+                                                  "ELF");
+
+            //Logger.LogMessage(inputFilePath, 0, inputCommand);
+
+            OK = Utilities.ExecuteProcess(Path.GetDirectoryName(outputFilePath), NasmPath, inputCommand, "NASM",
                                                   false,
                                                   null,
                                                   OnComplete,

@@ -187,7 +187,7 @@ SECTIONS {
                 string ISOToolsDirPath = Path.Combine(Options.ToolsPath, @"ISO");
                 string ISODirPath = Path.Combine(Options.OutputPath, @"DriversCompiler\ISO");
                 string LinkScriptPath = Path.Combine(Options.OutputPath, @"DriversCompiler\linker.ld");
-                string BinPath = Path.Combine(Options.OutputPath, @"DriversCompiler\ISO\" + AssemblyName + ".bin");
+                string BinPath = Path.Combine(Options.OutputPath, @"DriversCompiler\ISO\Kernel.bin");
                 string ISOLinuxPath = Path.Combine(Options.OutputPath, @"DriversCompiler\ISO\" + (Options.BuildMode == Options.BuildModes.Debug ? "isolinux-debug.bin" : "isolinux.bin"));
                 string ISOPath = Path.Combine(Options.OutputPath, AssemblyName + ".iso");
                 string MapPath = Path.Combine(Options.OutputPath, AssemblyName + ".map");
