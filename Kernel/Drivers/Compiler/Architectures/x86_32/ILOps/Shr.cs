@@ -161,7 +161,7 @@ namespace Drivers.Compiler.Architectures.x86
                 else if ((itemA.sizeOnStackInBytes == 8 &&
                     itemB.sizeOnStackInBytes == 4))
                 {
-                    if (SignedShift)
+                    if (!SignedShift)
                     {
                         //Pop item B
                         conversionState.Append(new ASMOps.Pop() { Size = ASMOps.OperandSize.Dword, Dest = "ECX" });
@@ -244,7 +244,7 @@ namespace Drivers.Compiler.Architectures.x86
                     //      Except we must check the high bytes for non-zero value. If they are non-zero, we simply
                     //          push a result of zero.
 
-                    if (SignedShift)
+                    if (!SignedShift)
                     {
                         //Pop item B
                         conversionState.Append(new ASMOps.Pop() { Size = ASMOps.OperandSize.Dword, Dest = "ECX" });

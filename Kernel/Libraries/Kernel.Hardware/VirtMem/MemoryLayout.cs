@@ -182,5 +182,65 @@ namespace Kernel.Hardware.VirtMem
             //    unloadPrint = false;
             //}
         }
+
+        public MemoryLayout Merge(MemoryLayout y)
+        {
+            MemoryLayout result = new MemoryLayout();
+
+            for (int i = 0; i < CodePages.Keys.Count; i++)
+            {
+                uint vAddr = CodePages.Keys[i];
+                uint pAddr = CodePages[vAddr];
+                result.AddCodePage(pAddr, vAddr);
+            }
+            for (int i = 0; i < DataPages.Keys.Count; i++)
+            {
+                uint vAddr = DataPages.Keys[i];
+                uint pAddr = DataPages[vAddr];
+                result.AddDataPage(pAddr, vAddr);
+            }
+
+            for (int i = 0; i < y.CodePages.Keys.Count; i++)
+            {
+                uint vAddr = y.CodePages.Keys[i];
+                uint pAddr = y.CodePages[vAddr];
+                result.AddCodePage(pAddr, vAddr);
+            }
+            for (int i = 0; i < y.DataPages.Keys.Count; i++)
+            {
+                uint vAddr = y.DataPages.Keys[i];
+                uint pAddr = y.DataPages[vAddr];
+                result.AddDataPage(pAddr, vAddr);
+            }
+
+            return result;
+        }
+
+        public FOS_System.String ToString()
+        {
+            FOS_System.String result = "";
+
+            result = result + "Code pages:\r\n";
+            for (int i = 0; i < CodePages.Keys.Count; i++)
+            {
+                uint vAddr = CodePages.Keys[i];
+                uint pAddr = CodePages[vAddr];
+
+                result = result + vAddr + " -> " + pAddr + "\r\n";
+            }
+
+            result = result + "\r\n";
+
+            result = result + "Data pages:\r\n";
+            for (int i = 0; i < DataPages.Keys.Count; i++)
+            {
+                uint vAddr = DataPages.Keys[i];
+                uint pAddr = DataPages[vAddr];
+
+                result = result + vAddr + " -> " + pAddr + "\r\n";
+            }
+
+            return result;
+        }
     }
 }

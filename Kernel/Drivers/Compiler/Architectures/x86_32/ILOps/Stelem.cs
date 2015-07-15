@@ -100,6 +100,7 @@ namespace Drivers.Compiler.Architectures.x86
                     break;
 
                 case OpCodes.Stelem_I8:
+                    sizeToPop = 8;
                     elementType = typeof(Int64);
                     break;
             }
@@ -228,8 +229,8 @@ namespace Drivers.Compiler.Architectures.x86
             conversionState.Append(new ASMOps.Label() { ILPosition = currOpPosition, Extension = "Continue3_2" });
             
             // 4. Calculate address of element
-            //      4.0. Pop value into ecx:edx
-            //      4.1. Pop index into ebx
+            //      4.0. Pop value into ecx:ebx
+            //      4.1. Pop index into edx
             //      4.2. Pop array ref into eax
             //      4.3. Move element type ref (from array ref) into eax
             //      4.4. Push eax
@@ -240,19 +241,19 @@ namespace Drivers.Compiler.Architectures.x86
             //      4.9. Skip over 4.9. and 4.10.
             //      4.10. Pop eax
             //      4.11. Move StackSize (from element type ref) into eax
-            //      4.12. Mulitply eax by ebx (index by element size)
-            //      4.13. Move array ref into ebx
+            //      4.12. Mulitply eax by edx (index by element size)
+            //      4.13. Move array ref into edx
             //      4.14. Add enough to go past Kernel.FOS_System.Array fields
             //      4.15. Add eax and ebx (array ref + fields + (index * element size))
 
-            //      4.0. Pop value into ecx:edx
+            //      4.0. Pop value into ecx:ebx
             conversionState.Append(new ASMOps.Pop() { Size = ASMOps.OperandSize.Dword, Dest = "ECX" });
             if (sizeToPop == 8)
             {
-                conversionState.Append(new ASMOps.Pop() { Size = ASMOps.OperandSize.Dword, Dest = "EDX" });
+                conversionState.Append(new ASMOps.Pop() { Size = ASMOps.OperandSize.Dword, Dest = "EBX" });
             }
             //      4.1. Pop index into ebx
-            conversionState.Append(new ASMOps.Pop() { Size = ASMOps.OperandSize.Dword, Dest = "EBX" });
+            conversionState.Append(new ASMOps.Pop() { Size = ASMOps.OperandSize.Dword, Dest = "EDX" });
             //      4.2. Move array ref into eax
             GlobalMethods.InsertPageFaultDetection(conversionState, "esp", 0, (OpCodes)theOp.opCode.Value);
             conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Dword, Src = "[ESP]", Dest = "EAX" });
@@ -285,9 +286,9 @@ namespace Drivers.Compiler.Architectures.x86
             conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Dword, Src = "[EAX+" + stackSizeOffset.ToString() + "]", Dest = "EAX" });
             //      4.12. Mulitply eax by ebx (index by element size)
             conversionState.Append(new ASMOps.Label() { ILPosition = currOpPosition, Extension = "Continue4_2" });
-            conversionState.Append(new ASMOps.Mul() { Arg = "EBX" });
+            conversionState.Append(new ASMOps.Mul() { Arg = "EDX" });
             //      4.13. Pop array ref into ebx
-            conversionState.Append(new ASMOps.Pop() { Size = ASMOps.OperandSize.Dword, Dest = "EBX" });
+            conversionState.Append(new ASMOps.Pop() { Size = ASMOps.OperandSize.Dword, Dest = "EDX" });
             //      4.14. Add enough to go past Kernel.FOS_System.Array fields
             int allFieldsOffset = 0;
             #region Offset calculation
@@ -297,9 +298,9 @@ namespace Drivers.Compiler.Architectures.x86
                 allFieldsOffset = highestOffsetFieldInfo.OffsetInBytes + (fieldTypeInfo.IsValueType ? fieldTypeInfo.SizeOnHeapInBytes : fieldTypeInfo.SizeOnStackInBytes);
             }
             #endregion
-            conversionState.Append(new ASMOps.Add() { Src = allFieldsOffset.ToString(), Dest = "EBX" });
+            conversionState.Append(new ASMOps.Add() { Src = allFieldsOffset.ToString(), Dest = "EDX" });
             //      4.15. Add eax and ebx (array ref + fields + (index * element size))
-            conversionState.Append(new ASMOps.Add() { Src = "EBX", Dest = "EAX" });
+            conversionState.Append(new ASMOps.Add() { Src = "EDX", Dest = "EAX" });
 
             // 5. Pop the element from the stack to array
             //      5.1. Move value in edx:ecx to [eax]
@@ -308,7 +309,7 @@ namespace Drivers.Compiler.Architectures.x86
                 GlobalMethods.InsertPageFaultDetection(conversionState, "eax", 0, (OpCodes)theOp.opCode.Value);
                 conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Dword, Src = "ECX", Dest = "[EAX]" });
                 GlobalMethods.InsertPageFaultDetection(conversionState, "eax", 4, (OpCodes)theOp.opCode.Value);
-                conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Dword, Src = "EDX", Dest = "[EAX+4]" });
+                conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Dword, Src = "EBX", Dest = "[EAX+4]" });
             }
             else if(sizeToPop == 4)
             {

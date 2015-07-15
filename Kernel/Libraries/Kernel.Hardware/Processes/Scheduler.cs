@@ -410,7 +410,7 @@ namespace Kernel.Hardware.Processes
                 for (int tIdx = 0; tIdx < p.Threads.Count; tIdx++)
                 {
                     Thread t = (Thread)p.Threads[tIdx];
-                    if (t.TimeToSleep > 0)
+                    if (t.TimeToSleep != Thread.IndefiniteSleep)
                     {
                         if (t.TimeToSleep < MSFreq)
                         {
@@ -540,7 +540,7 @@ namespace Kernel.Hardware.Processes
                 Disable();
             }
 
-#if SCHEDULER_TRACE
+//#if SCHEDULER_TRACE
             // START - Trace code
             
             BasicConsole.WriteLine("Thread terminated.");
@@ -562,7 +562,7 @@ namespace Kernel.Hardware.Processes
             //{
             //    Disable();
             //}
-#endif
+//#endif
 
             // Mark thread as terminated. Leave it to the scheduler to stop running
             //  and the process manager can destroy it later.
@@ -577,9 +577,9 @@ namespace Kernel.Hardware.Processes
             //  since it has now been terminated.
             while (true)
             {
-#if SCHEDULER_TRACE
+//#if SCHEDULER_TRACE
                 BasicConsole.WriteLine("Still running!");
-#endif
+//#endif
             }
         }
 

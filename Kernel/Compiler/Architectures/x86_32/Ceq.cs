@@ -136,7 +136,7 @@ namespace Kernel.Compiler.Architectures.x86_32
             }
             else
             {
-                throw new NotSupportedException("Unsupported number of bytes for compare less than!");
+                throw new NotSupportedException("Unsupported number of bytes for compare equal to!");
             }
 
             //Always append the end label

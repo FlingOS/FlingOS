@@ -190,9 +190,9 @@ namespace Drivers.Compiler.Types
                 }
 
                 // Plugged / unplugged Constructors
-                ConstructorInfo[] staticConstructors = aType.GetConstructors(BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic)
+                ConstructorInfo[] allConstructors = aType.GetConstructors(BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic)
                                                .ToArray();
-                foreach (ConstructorInfo aConstructorInfo in staticConstructors)
+                foreach (ConstructorInfo aConstructorInfo in allConstructors)
                 {
                     if (aConstructorInfo.DeclaringType.Equals(aType))
                     {

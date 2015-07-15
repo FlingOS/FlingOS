@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Topics>
   <Topic id="7941dec4-c331-4bb2-a672-33a4e73b023e" visible="True" />
-  <Topic id="603ecef9-1418-4435-b167-fb1c61c9266c" visible="True" noFile="true" isExpanded="true" isSelected="true" title="For FlingOS developers">
+  <Topic id="603ecef9-1418-4435-b167-fb1c61c9266c" visible="True" noFile="true" isSelected="true" title="For FlingOS developers">
     <Topic id="d3b1bc73-d0b4-4c5b-8055-787bebd168fb" visible="True" />
     <Topic id="f046a193-a8bd-43e0-b401-8a964a1445bf" visible="True" />
   </Topic>
@@ -56,7 +56,7 @@
       <Topic id="649ac039-7bd2-44d2-9d86-7cf7a883b88d" visible="True" />
       <Topic id="2a567f97-f31c-41b7-ae39-491676c1b336" visible="True" />
     </Topic>
-    <Topic id="116cfd83-d795-4e91-bc2f-4cf97b85b60f" visible="True" isExpanded="true" title="USB">
+    <Topic id="116cfd83-d795-4e91-bc2f-4cf97b85b60f" visible="True" title="USB">
       <Topic id="6c0f0a34-eaf0-4992-9e68-07733f1a02b6" visible="True" />
       <Topic id="bb572618-952d-46eb-90e5-cc1079ee5c14" visible="True" />
       <Topic id="10f1ebce-03c4-4f8a-ae3e-13cfbc53f968" visible="True" />

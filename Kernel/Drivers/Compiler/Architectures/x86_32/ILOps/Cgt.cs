@@ -163,7 +163,7 @@ namespace Drivers.Compiler.Architectures.x86
             }
             else
             {
-                throw new NotSupportedException("Unsupported number of bytes for compare less than!");
+                throw new NotSupportedException("Unsupported number of bytes for compare greater than!");
             }
 
             //Always append the end label

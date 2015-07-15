@@ -161,6 +161,7 @@ namespace Kernel.FOS_System.IO.Streams.FAT
 
         byte[] ReadClusterBuffer = null;
         UInt32 ReadClusterSize = 0;
+        const uint NumReadClusters = 64;
 
         /// <summary>
         /// Reads the specified number of bytes from the stream from the current position into the buffer at the 
@@ -250,48 +251,99 @@ namespace Kernel.FOS_System.IO.Streams.FAT
                 //  read entire clusters at a time.
                 if (ReadClusterBuffer == null)
                 {
-                    ReadClusterBuffer = TheFS.NewClusterArray();
+                    ReadClusterBuffer = new byte[TheFS.BytesPerCluster * NumReadClusters];
                     ReadClusterSize = TheFS.BytesPerCluster;
                 }                
 
                 int read = 0;
 
-#if FATFileStream_TRACE
-                BasicConsole.WriteLine("Reading data...");
-#endif
-                //Loop reading in the data
                 while (ActualCount > 0)
                 {
-                    UInt32 ClusterIdx = (UInt32)position / ReadClusterSize;
-                    UInt32 PosInCluster = (UInt32)position % ReadClusterSize;
-#if FATFileStream_TRACE
-                    BasicConsole.WriteLine(((FOS_System.String)"Reading cluster ") + ClusterNums[(int)xClusterIdx]);
-#endif
-                    TheFS.ReadCluster(ClusterNums[(int)ClusterIdx], ReadClusterBuffer);
-#if FATFileStream_TRACE
-                    BasicConsole.WriteLine("Read cluster.");
-#endif
-                    uint ReadSize;
-                    if (PosInCluster + ActualCount > ReadClusterSize)
+                    uint NumClustersToRead = (uint)ActualCount / ReadClusterSize;
+                    if ((uint)ActualCount % ReadClusterSize != 0)
                     {
-                        ReadSize = ReadClusterSize - PosInCluster;
+                        NumClustersToRead++;
                     }
-                    else
+
+                    uint StartPosition = (uint)position;
+                    int StartClusterIdx = (int)(StartPosition / ReadClusterSize);
+                    uint StartClusterNum = ClusterNums[StartClusterIdx];
+
+                    uint ContiguousClusters = 1;
+                    int CurrentClusterIdx = StartClusterIdx;
+                    uint CurrentClusterNum = ClusterNums[CurrentClusterIdx];
+
+                    while (ContiguousClusters < NumClustersToRead && ContiguousClusters < NumReadClusters)
+                    {
+                        if (CurrentClusterNum + 1 != ClusterNums[CurrentClusterIdx + 1])
+                        {
+                            break;
+                        }
+                        else
+                        {
+                            CurrentClusterIdx++;
+                            CurrentClusterNum++;
+                            ContiguousClusters++;
+                        }
+                    }
+
+                    TheFS.ReadClusters(StartClusterNum, ContiguousClusters, ReadClusterBuffer);
+
+                    uint StartClusterOffset = StartPosition % ReadClusterSize;
+                    uint ContiguousClusterSize = ContiguousClusters * ReadClusterSize;
+                    uint ReadSize = ContiguousClusterSize;
+                    if (StartClusterOffset > 0)
+                    {
+                        ReadSize -= StartClusterOffset;
+                    }
+                    if (ReadSize > ActualCount)
                     {
                         ReadSize = (uint)ActualCount;
                     }
+                    Array.Copy(ReadClusterBuffer, (int)StartClusterOffset, buffer, offset, (int)ReadSize);
 
-                    // TODO: Should we do an argument check here just in case?
-                    FOS_System.Array.Copy(ReadClusterBuffer, (int)PosInCluster, buffer, offset, (int)ReadSize);
-                    offset += (int)ReadSize;
-                    ActualCount -= (ulong)ReadSize;
-                    read += (int)ReadSize;
                     position += ReadSize;
+                    offset += (int)ReadSize;
+                    ActualCount -= ReadSize;
+                    read += (int)ReadSize;
                 }
 
-#if FATFileStream_TRACE
-                BasicConsole.WriteLine("Read data.");
-#endif
+//#if FATFileStream_TRACE
+//                BasicConsole.WriteLine("Reading data...");
+//#endif
+//                //Loop reading in the data
+//                while (ActualCount > 0)
+//                {
+//                    UInt32 ClusterIdx = (UInt32)position / ReadClusterSize;
+//                    UInt32 PosInCluster = (UInt32)position % ReadClusterSize;
+//#if FATFileStream_TRACE
+//                    BasicConsole.WriteLine(((FOS_System.String)"Reading cluster ") + ClusterNums[(int)xClusterIdx]);
+//#endif
+//                    TheFS.ReadClusters(ClusterNums[(int)ClusterIdx], ReadClusterBuffer);
+//#if FATFileStream_TRACE
+//                    BasicConsole.WriteLine("Read cluster.");
+//#endif
+//                    uint ReadSize;
+//                    if (PosInCluster + ActualCount > ReadClusterSize)
+//                    {
+//                        ReadSize = ReadClusterSize - PosInCluster;
+//                    }
+//                    else
+//                    {
+//                        ReadSize = (uint)ActualCount;
+//                    }
+
+//                    // TODO: Should we do an argument check here just in case?
+//                    FOS_System.Array.Copy(ReadClusterBuffer, (int)PosInCluster, buffer, offset, (int)ReadSize);
+//                    offset += (int)ReadSize;
+//                    ActualCount -= (ulong)ReadSize;
+//                    read += (int)ReadSize;
+//                    position += ReadSize;
+//                }
+
+//#if FATFileStream_TRACE
+//                BasicConsole.WriteLine("Read data.");
+//#endif
 
                 return read;
             }
@@ -382,7 +434,7 @@ namespace Kernel.FOS_System.IO.Streams.FAT
                 {
                     //BasicConsole.WriteLine("Reading existing data...");
 
-                    mFS.ReadCluster(ClusterNums[(int)clusterIdx], writeBuffer);
+                    mFS.ReadClusters(ClusterNums[(int)clusterIdx], 1, writeBuffer);
 
                     //BasicConsole.WriteLine("Read existing data.");
                 }

@@ -27,64 +27,148 @@
 using System;
 using Drivers.Framework;
 using KernelABI;
+using Kernel.Shared;
 
 namespace TestDriver
 {
     public static class TestClass
     {
+        public static int SemaphorHandle = -1;
+        /// <summary>
+        /// This serves a purpose. We can't use while(true) on its own in any thread 
+        /// methods because the compiler has a bug in the way it handles injection of 
+        /// GC cleanup / exception handling.
+        /// </summary>
+        public static bool Terminating = false;
+
         [Drivers.Compiler.Attributes.MainMethod]
         public static unsafe void Test()
         {
+            CallStaticConstructors();
+
             byte bpm = (byte)Drivers.Framework.Math.Add(140, 100);
-            while (true)
+            
+            *((ushort*)0xB881E) = (0x1F00 | '1');
+            KernelABI.SystemCalls.Sleep(1000);
+
+            
+            SemaphoreResponses response = SemaphoreResponses.INVALID;
+            while (!Terminating)
             {
-                *((ushort*)0xB881E) = (0x1F00 | '3');
-                SystemCalls.Sleep(1000);
-                *((ushort*)0xB881E) = (0x3F00 | '4');
-                SystemCalls.Sleep(1000);
+                *((ushort*)0xB881E) = (0x3F00 | '2');
+                KernelABI.SystemCalls.Sleep(1000);
 
-                //bpm += 1;z`
-                SystemCalls.PlayNote(
-                    SystemCalls.MusicalNote.C4,
-                    SystemCalls.MusicalNoteValue.Quaver,
-                    bpm);
-                SystemCalls.PlayNote(
-                    SystemCalls.MusicalNote.Silent,
-                    SystemCalls.MusicalNoteValue.Minim,
-                    bpm);
-                SystemCalls.PlayNote(
-                    SystemCalls.MusicalNote.E4,
-                    SystemCalls.MusicalNoteValue.Quaver,
-                    bpm);
-                SystemCalls.PlayNote(
-                    SystemCalls.MusicalNote.Silent,
-                    SystemCalls.MusicalNoteValue.Minim,
-                    bpm);
-                SystemCalls.PlayNote(
-                    SystemCalls.MusicalNote.G4,
-                    SystemCalls.MusicalNoteValue.Quaver,
-                    bpm);
-                SystemCalls.PlayNote(
-                    SystemCalls.MusicalNote.Silent,
-                    SystemCalls.MusicalNoteValue.Minim,
-                    bpm);
-                SystemCalls.PlayNote(
-                    SystemCalls.MusicalNote.C5,
-                    SystemCalls.MusicalNoteValue.Minim,
-                    bpm);
-                SystemCalls.PlayNote(
-                    SystemCalls.MusicalNote.Silent,
-                    SystemCalls.MusicalNoteValue.Minim,
-                    bpm);
-                SystemCalls.PlayNote(
-                    SystemCalls.MusicalNote.G4,
-                    SystemCalls.MusicalNoteValue.Minim,
-                    bpm);
-                SystemCalls.PlayNote(
-                    SystemCalls.MusicalNote.C5,
-                    SystemCalls.MusicalNoteValue.Minim,
-                    bpm);
+                if (SemaphorHandle == -1)
+                {
+                    *((ushort*)0xB881E) = (0x3F00 | '3');
+                    KernelABI.SystemCalls.Sleep(1000);
 
+                    if (response == SemaphoreResponses.INVALID)
+                    {
+                        *((ushort*)0xB881E) = (0x3F00 | '4');
+                        KernelABI.SystemCalls.Sleep(1000);
+
+                        response = KernelABI.SystemCalls.Semaphore_Allocate(1, ref SemaphorHandle);
+
+                        if (response == SemaphoreResponses.Success)
+                        {
+                            if (KernelABI.SystemCalls.Thread_Create(ParallelTest) == ThreadResponses.Success)
+                            {
+                                *((ushort*)0xB881E) = (0x1F00 | '5');
+                                KernelABI.SystemCalls.Sleep(1000);
+                            }
+                        }
+                    }
+
+                    *((ushort*)0xB881E) = (0x3F00 | '6');
+                    KernelABI.SystemCalls.Sleep(1000);
+                }
+
+                *((ushort*)0xB881E) = (0x3F00 | '7');
+                KernelABI.SystemCalls.Sleep(1000);
+
+                if (response == SemaphoreResponses.Success)
+                {
+                    *((ushort*)0xB881E) = (0x3F00 | '8');
+                    KernelABI.SystemCalls.Sleep(1000);
+
+                    while (KernelABI.SystemCalls.Semaphore_Wait(SemaphorHandle) != SemaphoreResponses.Success)
+                    {
+                        *((ushort*)0xB881E) = (0x3F00 | '9');
+                    }
+
+                    KernelABI.SystemCalls.PlayNote(
+                        MusicalNote.C4,
+                        MusicalNoteValue.Quaver,
+                        bpm);
+                    KernelABI.SystemCalls.PlayNote(
+                        MusicalNote.Silent,
+                        MusicalNoteValue.Minim,
+                        bpm);
+                    KernelABI.SystemCalls.PlayNote(
+                        MusicalNote.E4,
+                        MusicalNoteValue.Quaver,
+                        bpm);
+                    KernelABI.SystemCalls.PlayNote(
+                        MusicalNote.Silent,
+                        MusicalNoteValue.Minim,
+                        bpm);
+                    KernelABI.SystemCalls.PlayNote(
+                        MusicalNote.G4,
+                        MusicalNoteValue.Quaver,
+                        bpm);
+                    KernelABI.SystemCalls.PlayNote(
+                        MusicalNote.Silent,
+                        MusicalNoteValue.Minim,
+                        bpm);
+                    KernelABI.SystemCalls.PlayNote(
+                        MusicalNote.C5,
+                        MusicalNoteValue.Minim,
+                        bpm);
+                    KernelABI.SystemCalls.PlayNote(
+                        MusicalNote.Silent,
+                        MusicalNoteValue.Minim,
+                        bpm);
+                    KernelABI.SystemCalls.PlayNote(
+                        MusicalNote.G4,
+                        MusicalNoteValue.Minim,
+                        bpm);
+                    KernelABI.SystemCalls.PlayNote(
+                        MusicalNote.C5,
+                        MusicalNoteValue.Minim,
+                        bpm);
+
+                    while (KernelABI.SystemCalls.Semaphore_Signal(SemaphorHandle) != SemaphoreResponses.Success)
+                    {
+                        *((ushort*)0xB881E) = (0x3F00 | 'A');
+                    }
+                }
+
+                *((ushort*)0xB881E) = (0x3F00 | 'B');
+                KernelABI.SystemCalls.Sleep(1000);
+            }
+        }
+
+        public static unsafe void ParallelTest()
+        {
+            while (!Terminating)
+            {
+                *((ushort*)0xB881C) = (0x3F00 | '1');
+                
+                while (KernelABI.SystemCalls.Semaphore_Wait(SemaphorHandle) != SemaphoreResponses.Success)
+                {
+                    *((ushort*)0xB881C) = (0x3F00 | '2');
+                }
+                
+                *((ushort*)0xB881C) = (0x3F00 | '3');
+                KernelABI.SystemCalls.Sleep(10000);
+
+                while (KernelABI.SystemCalls.Semaphore_Signal(SemaphorHandle) != SemaphoreResponses.Success)
+                {
+                    *((ushort*)0xB881C) = (0x3F00 | '4');
+                }
+
+                *((ushort*)0xB881C) = (0x3F00 | '5');
             }
         }
 

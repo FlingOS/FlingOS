@@ -64,7 +64,7 @@
     <PresentationStyle>VS2013</PresentationStyle>
     <Preliminary>True</Preliminary>
     <NamingMethod>Guid</NamingMethod>
-    <HelpTitle>Fling OS</HelpTitle>
+    <HelpTitle>FlingOS™</HelpTitle>
     <ContentPlacement>AboveNamespaces</ContentPlacement>
     <NamespaceSummaries>
       <NamespaceSummaryItem name="Kernel" isDocumented="True">Contains the main classes for the Fling OS kernel implementation.</NamespaceSummaryItem>
@@ -123,14 +123,14 @@
     </ApiFilter>
     <FeedbackEMailLinkText>Edward Nutting - Project Founder</FeedbackEMailLinkText>
     <FeedbackEMailAddress>flingos%40outlook.com</FeedbackEMailAddress>
-    <CopyrightText>Fling OS  Copyright Edward Nutting 2014 under GPL V3</CopyrightText>
+    <CopyrightText>FlingOS™ Copyright Edward Nutting 2014-15 under GPLv2</CopyrightText>
     <SccProjectName>SAK</SccProjectName>
     <SccProvider>SAK</SccProvider>
     <SccAuxPath>SAK</SccAuxPath>
     <SccLocalPath>SAK</SccLocalPath>
     <RootNamespaceTitle>Kernel</RootNamespaceTitle>
     <CopyrightHref>http://www.flingos.co.uk/License</CopyrightHref>
-    <FooterText>If you find any issues with the documentation, please log them here: &amp;lt%3ba href=&amp;quot%3bhttp://git.flingos.co.uk/fling-os/issues&amp;quot%3b&amp;gt%3bProject Issue Tracker&amp;lt%3b/a&amp;gt%3b&amp;lt%3bbr/&amp;gt%3b&amp;lt%3bbr/&amp;gt%3b</FooterText>
+    <FooterText>If you find any issues with the documentation, please log them here: &amp;lt%3ba href=&amp;quot%3bhttps://bitbucket.org/flingos/fling-os/issues&amp;quot%3b&amp;gt%3bProject Issue Tracker&amp;lt%3b/a&amp;gt%3b&amp;lt%3bbr/&amp;gt%3b&amp;lt%3bbr/&amp;gt%3b</FooterText>
   </PropertyGroup>
   <!-- There are no properties for these groups.  AnyCPU needs to appear in order for Visual Studio to perform
 			 the build.  The others are optional common platform types that may appear. -->
@@ -158,6 +158,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="icons\" />
+    <Folder Include="Images" />
     <Folder Include="Specs" />
     <Folder Include="Source Samples" />
     <Folder Include="Tutorials\" />
@@ -258,6 +259,11 @@
     <Image Include="Conceptual\Kernel Debugger\Fling OS - Debug Architecture.png">
       <ImageId>Fling OS - Debug Architecture</ImageId>
       <AlternateText>Fling OS - Debug Architecture</AlternateText>
+    </Image>
+    <Image Include="Images\GUID_Partition_Table_Scheme.svg.png">
+      <AlternateText>GUID Partition Table Scheme.svg</AlternateText>
+      <ImageId>GUID_Partition_Table_Scheme.svg</ImageId>
+      <CopyToMedia>False</CopyToMedia>
     </Image>
   </ItemGroup>
   <!-- Import the SHFB build targets -->

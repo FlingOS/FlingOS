@@ -6,7 +6,7 @@
 
     
     <summary>
-      <para>A brief introduction to Fling OS and this documentation.</para>
+      <para>A brief introduction to FlingOS and this documentation.</para>
     </summary>
     
 
@@ -19,7 +19,7 @@
 
       <para>
         This documentation contains, or will contain, all the details and specifications for 
-        Fling OS. Typical documentation contain just the technical specification of one 
+        FlingOS. Typical documentation contain just the technical specification of one 
         or a few aspects of a project, with conceptual details split into separate sites
         or documents. However, this appears to be a needless waste of effort both on the part 
         of the authors and the readers. Thus, this documentation is or will be one, large, 
@@ -50,9 +50,9 @@
       <title>About the name</title>
       <content>
         <para>
-          The name “Fling OS” originates from the first idea for Fling OS. The idea was to be able 
+          The name “FlingOS” originates from the first idea for FlingOS. The idea was to be able 
           to “fling” (transfer) an application from one device to another . Consequently,  the name became 
-          Fling OS.
+          FlingOS.
         </para>
       </content>
     </section>

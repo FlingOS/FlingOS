@@ -111,6 +111,8 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{32E1F38F-0F50-411D-B32C-B9D99DFBB238}"
 	ProjectSection(SolutionItems) = preProject
 		LICENSE.txt = LICENSE.txt
+		MissingTags.txt = MissingTags.txt
+		MissingTags.xlsx = MissingTags.xlsx
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MissingTagProcessor", "Tools\MissingTagProcessor\MissingTagProcessor.csproj", "{814EB441-89A3-4DF5-B99A-43639A690AF7}"
@@ -118,6 +120,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MemoryAllocationAnalyser", "Tools\Kernel\MemoryAllocationAnalyser\MemoryAllocationAnalyser.csproj", "{3E707BE6-FC33-434A-AAA7-B47D0D9AE499}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestDriver", "Kernel\Drivers\TestDriver\TestDriver.csproj", "{8B50B714-6428-4057-836D-E188C719365A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kernel.Shared", "Kernel\Libraries\Kernel.Shared\Kernel.Shared.csproj", "{93584240-DA57-4E22-8FC8-E25CDFF1E872}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -249,6 +253,12 @@ Global
 		{8B50B714-6428-4057-836D-E188C719365A}.Docs|Any CPU.Build.0 = Debug|Any CPU
 		{8B50B714-6428-4057-836D-E188C719365A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8B50B714-6428-4057-836D-E188C719365A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{93584240-DA57-4E22-8FC8-E25CDFF1E872}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{93584240-DA57-4E22-8FC8-E25CDFF1E872}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{93584240-DA57-4E22-8FC8-E25CDFF1E872}.Docs|Any CPU.ActiveCfg = Debug|Any CPU
+		{93584240-DA57-4E22-8FC8-E25CDFF1E872}.Docs|Any CPU.Build.0 = Debug|Any CPU
+		{93584240-DA57-4E22-8FC8-E25CDFF1E872}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{93584240-DA57-4E22-8FC8-E25CDFF1E872}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -289,6 +299,7 @@ Global
 		{814EB441-89A3-4DF5-B99A-43639A690AF7} = {9CC7D8B1-30B5-4099-ADAD-F32067871179}
 		{3E707BE6-FC33-434A-AAA7-B47D0D9AE499} = {C45DB19D-6041-46C9-B654-BE22EF79D3E5}
 		{8B50B714-6428-4057-836D-E188C719365A} = {E88A84A4-4FA0-4D4D-9523-C9A24CA4659C}
+		{93584240-DA57-4E22-8FC8-E25CDFF1E872} = {4A8B3E99-15F3-4567-BDDB-11F4057DC3BF}
 	EndGlobalSection
 	GlobalSection(CodealikeProperties) = postSolution
 		SolutionGuid = 66273eb9-d630-4692-8958-6fd85d2bfe5c

@@ -102,7 +102,7 @@ namespace Kernel.Core.Tasks
                         for (int j = 0; j < threads.Count; j++)
                         {
                             Thread thread = (Thread)threads[j];
-                            if (thread.TimeToSleep == -1)
+                            if (thread.TimeToSleep == Thread.IndefiniteSleep)
                             {
                                 IndefiniteSleptThreads++;
                                 SleptThreads++;

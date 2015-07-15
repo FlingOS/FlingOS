@@ -47,6 +47,10 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\Libraries\Kernel.Shared\Kernel.Shared.csproj">
+      <Project>{93584240-da57-4e22-8fc8-e25cdff1e872}</Project>
+      <Name>Kernel.Shared</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Compiler\Drivers.Compiler.csproj">
       <Project>{1fb0e622-d2c6-4a5c-b5b6-d2bb5e502af1}</Project>
       <Name>Drivers.Compiler</Name>

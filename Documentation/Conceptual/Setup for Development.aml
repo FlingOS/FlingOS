@@ -11,7 +11,7 @@
     -->
 
     <introduction>
-      <para>The following page describes the steps to get your development PC set up for developing Fling OS.</para>
+      <para>The following page describes the steps to get your development PC set up for developing FlingOS.</para>
       <para>If you are going to be developing mockups, you should not be following the tutorial on this page.</para>
     </introduction>
     
@@ -25,9 +25,9 @@
             <para>You should already have
             <externalLink>
               <linkText>signed up</linkText>
-              <linkAlternateText>Fling OS Sign Up page</linkAlternateText>
+              <linkAlternateText>FlingOS Sign Up page</linkAlternateText>
               <linkUri>http://flingos.co.uk/Account/Register</linkUri>
-            </externalLink> to the main Fling OS website.</para>
+            </externalLink> to the main FlingOS website.</para>
           </content>
         </step>
         <step>
@@ -46,7 +46,7 @@
         <step>
           <content>
             <para>
-              Follow Fling OS on
+              Follow FlingOS on
               <externalLink>
                 <linkText>Twitter</linkText>
                 <linkAlternateText>@Fling_OS</linkAlternateText>
@@ -54,7 +54,7 @@
               </externalLink> and
               <externalLink>
                 <linkText>Facebook</linkText>
-                <linkAlternateText>Fling OS on Facebook</linkAlternateText>
+                <linkAlternateText>FlingOS on Facebook</linkAlternateText>
                 <linkUri>https://www.facebook.com/FlingOperatingSystem</linkUri>
               </externalLink>. Please also send your Twitter username to Ed Nutting (or follow via @EdNutting).
             </para>
@@ -70,7 +70,7 @@
       </steps>
       <conclusion>
         <para>
-          At this point you should have access to all the bits of the Fling OS project you need to be able to develop the main 
+          At this point you should have access to all the bits of the FlingOS project you need to be able to develop the main 
           operating system.
         </para>
       </conclusion>
@@ -153,7 +153,7 @@
           <content>
             <para>
               Add Edward Nutting's email to your contacts and safe-senders list: edwardnutting@outlook.com. Also add the other
-              Fling OS email addresses (flingos@outook.com and contact@flingos.co.uk).
+              FlingOS email addresses (flingos@outook.com and contact@flingos.co.uk).
             </para>
           </content>
         </step>
@@ -263,7 +263,7 @@
         <step>
           <content>
             <para>
-              Clone the Fling OS source from BitBucket using SourceTree. To do this, you will need to add the 
+              Clone the FlingOS source from BitBucket using SourceTree. To do this, you will need to add the 
               repository in BitBucket. Allow it to save your credentials. Please put your name as either:
             </para>
             <list class="bullet">
@@ -275,14 +275,14 @@
               </listItem>
             </list>
             <para>
-              All commit messages are posted live to the Fling OS Twitter feed with @YourName inserted so people can
+              All commit messages are posted live to the FlingOS Twitter feed with @YourName inserted so people can
               see the progress we are making. For this reason, all commit messages must be "Politically correct"/polite! Commit
               messages should also be informative about the feature added, how and why or the issue fixed and how. Try to use 
               proper English grammar (that means full sentences and punctuation).
             </para>
             <para>
               You can clone it to any local or network path and the path is allowed to contain spaces with the following
-              requirement; your path must end in the following form: "PATH_TO_DEV_FOLDER\Fling OS\Fling OS\CLONE_TO_HERE".
+              requirement; your path must end in the following form: "PATH_TO_DEV_FOLDER\FlingOS\FlingOS\CLONE_TO_HERE".
             </para>
             <para>
               The reason for this duplication of folder/sub-folder name will become clear later.
@@ -306,7 +306,7 @@
         <step>
           <content>
             <para>
-              Locate and open the solution file: "...\Fling OS\Fling OS\Fling OS.sln". The solution should open without
+              Locate and open the solution file: "...\FlingOS\FlingOS\FlingOS.sln". The solution should open without
               any errors (aside from potentially Untrusted Location warnings which can be ignored). 
             </para>
           </content>
@@ -325,7 +325,7 @@
         <!--<step>
           <content>
             <para>
-              Open Configuration Manager and confirm that all the projects are selected to build except for "Fling OS 
+              Open Configuration Manager and confirm that all the projects are selected to build except for "FlingOS 
               Documentation proj" and "Testing._Kernel".
             </para>
           </content>
@@ -367,7 +367,7 @@
         <step>
           <content>
             <para>
-              In windows explorer you should now be able to navigate to "...\Fling OS\Fling OS\Kernel\Kernel\bin\Release"
+              In windows explorer you should now be able to navigate to "...\FlingOS\FlingOS\Kernel\Kernel\bin\Release"
               within which there should be a Kernel.iso. If this is not the case, or you get a build error, contact 
               Edward Nutting for help.
             </para>
@@ -405,7 +405,7 @@
           <content>
             <para>
               Select "Installer disc image file" from the options then browse for the Kernel.iso file in
-              "...\Fling OS\Fling OS\Kernel\Kernel\bin\Release\".
+              "...\FlingOS\FlingOS\Kernel\Kernel\bin\Release\".
             </para>
           </content>
         </step>
@@ -419,7 +419,7 @@
         <step>
           <content>
             <para>
-              Name the virtual machine "Fling OS - Release". Change the VM path to "...\Fling OS\VMWare\Release".
+              Name the virtual machine "FlingOS - Release". Change the VM path to "...\FlingOS\VMWare\Release".
               A common path for storing files allows other developers to help more easily as they are familiar with
               the directory structure.
             </para>
@@ -460,7 +460,7 @@
             <para>
               Your release-mode VM should now be set up. You should be able to select it and click "Play virtual machine"
               and see a load of text printed out. If you get one line of text from Syslinux, just direct input to your VM and 
-              hit the "Enter" key to boot the (default) OS (which is Fling OS).
+              hit the "Enter" key to boot the (default) OS (which is FlingOS).
             </para>
           </content>
         </step>
