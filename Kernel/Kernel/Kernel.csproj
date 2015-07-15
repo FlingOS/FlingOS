@@ -178,7 +178,7 @@
   <Target Name="BeforeBuild">
   </Target>
   <Target Name="AfterBuild">
-    <BuildTask Condition="'$(Configuration)' == 'Debug'" LibraryPath="$(TargetPath)" TargetArchitecture="$(PlatformTarget)" OutputPath="$(TargetDir)" ToolsPath="$(SolutionDir)Kernel\Drivers\Compiler\Tools" DebugBuild="True" ISOLink="True" />
-    <BuildTask Condition="'$(Configuration)' == 'Release'" LibraryPath="$(TargetPath)" TargetArchitecture="$(PlatformTarget)" OutputPath="$(TargetDir)" ToolsPath="$(SolutionDir)Kernel\Drivers\Compiler\Tools" DebugBuild="False" ISOLink="True" />
+    <BuildTask Condition="'$(Configuration)' == 'Debug'" LibraryPath="$(TargetPath)" TargetArchitecture="$(PlatformTarget)" OutputPath="$(TargetDir)" ToolsPath="$(SolutionDir)Kernel\Drivers\Compiler\Tools" DebugBuild="True" ISOLink="True" BaseAddress="0xC0100000" LoadOffset="0xC0000000" />
+    <BuildTask Condition="'$(Configuration)' == 'Release'" LibraryPath="$(TargetPath)" TargetArchitecture="$(PlatformTarget)" OutputPath="$(TargetDir)" ToolsPath="$(SolutionDir)Kernel\Drivers\Compiler\Tools" DebugBuild="False" ISOLink="True" BaseAddress="0xC0100000" LoadOffset="0xC0000000" />
   </Target>
 </Project>

@@ -54,6 +54,8 @@ namespace Drivers.Compiler
         static Options()
         {
             AddressSizeInBytes = 4;
+            BaseAddress = 0;
+            LoadOffset = 0;
         }
 
         public static string LibraryPath
@@ -89,6 +91,17 @@ namespace Drivers.Compiler
         }
 
         public static int AddressSizeInBytes
+        {
+            get;
+            set;
+        }
+
+        public static ulong BaseAddress
+        {
+            get;
+            set;
+        }
+        public static long LoadOffset
         {
             get;
             set;
