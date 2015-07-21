@@ -14,7 +14,7 @@ This document provides the basic standard and Markdown content for FlingOS refer
     layout: ref_article
     title: TITLE
     date: YYYY-MM-DD HH:mm:ss
-    categories: docs spec
+    categories: docs reference
     ---
 
     # Introduction
