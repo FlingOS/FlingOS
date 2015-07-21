@@ -17,7 +17,6 @@
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
@@ -70,6 +69,7 @@
     <Compile Include="Devices\CPU.cs" />
     <Compile Include="Devices\DiskDevice.cs" />
     <Compile Include="Devices\Key Maps\UKKeymap.cs" />
+    <Compile Include="Devices\Key Maps\SPKeymap.cs" />
     <Compile Include="Devices\Key Maps\USKeymap.cs" />
     <Compile Include="Devices\Timer.cs" />
     <Compile Include="Interrupts\Interrupts.cs" />

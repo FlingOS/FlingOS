@@ -512,6 +512,17 @@ namespace Kernel.Core
                     //Scroll down the screen 1 line
                     Scroll(1);
                 }
+                //If the key pressed is tab key
+                else if (c.Key == Hardware.Devices.KeyboardKey.Tab)
+                {
+                    int currentChar = CurrentChar;
+                    //Add four spaces
+                    for (int i = currentChar; i < currentChar + 4; i++)
+                    {
+                        result += ' ';
+                        Write(' ');
+                    }
+                }
                 //If the key has a character representation
                 else if (c.Value != '\0')
                 {
