@@ -1,6 +1,5 @@
 ---
-#layout: ref_article
-layout: post
+layout: ref_article
 title: ATA
 date: 2015-07-20 11:40:00
 categories: docs reference
