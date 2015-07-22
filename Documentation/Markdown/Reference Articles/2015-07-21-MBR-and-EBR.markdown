@@ -17,7 +17,7 @@ EBR stands for Extended Boot Record. EBR is an addition to the MBR scheme which 
 MBR and EBR are relatively easy to understand because their data formats are simple. An understanding of partitioning and disk data layout is useful prior knowledge. In fact, EBR uses the same header format as MBR so it is very simple to extend MBR support to add EBR.
 
 ## Importance of MBR
-MBR is porbbably the most important partioning scheme that you need to know about it. Not least because it is now an integral part of the newer GPT standard but also because every PC in the world supports it. It is fundamental to the boot process, the BIOS and most disks you use on a day to day basis (including USB sticks).
+MBR is probably the most important partitioning scheme that you need to know about it. Not least because it is now an integral part of the newer GPT standard but also because every PC in the world supports it. It is fundamental to the boot process, the BIOS and most disks you use on a day to day basis (including USB sticks).
 
 ## Scope of this article
 This article will cover the background of what MBR is and where it comes from. It will then move on to a practical understanding of MBR/EBR concepts and look at how to implement MBR and EBR driver software.
@@ -32,7 +32,7 @@ Partition tables are necessary because frequently you want more than one file sy
 Also, multiple file systems allows you to install multiple operating systems side by side on the same disk, so long as both understand the disk formatting (i.e. the partition table). This is the case even if the two OSes can't understand eachother's file systems.
 
 ## What came before MBR?
-There is little to be said for what came before MBR. Most of the storage mediums around at the time were small hard disks or prior to that floppy disks and cassettes. As such, anything that might have resembled a partioning scheme was proprietary and/or not widely adopted. Prior to MBR machines used custom disk formats, of which there were many even within one single company's products. As such, many tools for chaining and converting formats were developed. I found the following section of the article on the CP/M system developed by Digital Research most informative: https://en.wikipedia.org/wiki/CP/M#Disk_formats Readers older than myself are warmly invited to send me anecdotes of their experiences "back in the day" (but please, limit them to stories about disk formats...)
+There is little to be said for what came before MBR. Most of the storage mediums around at the time were small hard disks or prior to that floppy disks and cassettes. As such, anything that might have resembled a partitioning scheme was proprietary and/or not widely adopted. Prior to MBR machines used custom disk formats, of which there were many even within one single company's products. As such, many tools for chaining and converting formats were developed. I found the following section of the article on the CP/M system developed by Digital Research most informative: https://en.wikipedia.org/wiki/CP/M#Disk_formats Readers older than myself are warmly invited to send me anecdotes of their experiences "back in the day" (but please, limit them to stories about disk formats...)
 
 ## Is there anything newer than MBR?
 GPT (Guid Partition Table) is the latest partioning scheme which is more complex but still retains a protective MBR which has to be supported. There are also alternative standards that originate from outside the PC market such as the Apple Partition Map (though after Apple Macs shifted to Intel processors from PowerPC, APM is no longer supported).
@@ -86,15 +86,20 @@ Each "Partition entry" has the following format:
 CHS fields are redundant now since practically all disks support (the much better) LBA addressing mode. However, for disks less than 8GiB (max size that CHS can address) the CHS fields must be consistent with the LBA fields and visa-versa. For disks larger than 8GiB, the CHS fields must be set to their maximum values. CHS fields set to their maximum values should always be considered invalid by an MBR driver. CHS fields may not be set to 0.
 
 ## EBR structure
-EBR has the same structure as MBR except that the table sector only contains two partition entries instead of four. EBR tables reside inside of an MBR partition. Only one MBR partition may contain EBR partitions. If an MBR partition contains EBR partitions, the first sector of the MBR partition will always contain an EBR table (including the same signature bytes).
+EBR has the same structure as MBR except that the table sector only contains two partition entries instead of four. EBRs reside inside of an MBR partition. Only one MBR partition may contain EBRs. If an MBR partition contains EBRs, the first sector of the MBR partition will always contain an EBR (which includes the same signature bytes as an MBR).
 
- There can be multiple EBR tables in the MBR partition. The first EBR will always appear in the first sector of the MBR partition. The EBR will specify only one actual partition, in the first partition entry. If the second partition entry is zero, there are no more EBR tables in the MBR partition. If the second partition entry is non-zero, it specifies a new partition which will also start with an EBR table as the first sector. Thus EBR partitions can be chained to give a large number of partitions.
+ There can be multiple EBRs in the MBR partition. The first EBR will always appear in the first sector of the MBR partition. The EBR will specify only one actual partition, in the first partition entry. If the second partition entry is zero, there are no more EBRs in the MBR partition. If the second partition entry is non-zero, it specifies a new partition which will also start with an EBR as the first sector. Thus EBR partitions can be chained to give a large number of partitions.
 
 ## Boot sector
+The boot sector is the first sector on disk (which is also the sector which contains the MBR). The boot sector provides bootstrap code which the BIOS or other firmware can load as the start of the boot process. Typically this boot sector contains a primary bootloader which, due to its size limitation, is only capable of reading a simple FAT formatted partition. There is more detail on the booting process in other articles.
 
 ## Bootable partitions
+Bootable partitions are partitions flagged as containing a valid secondary bootloader or operating system. Under official MBR, only one partition may be marked as bootable. The primary bootloader (mentioned above) usually looks for the bootable partition then proceeds to search it for a secondary bootloader or operating system. This process is described in more detail in other articles.
+
+Bootable partitions are often referred to as active partitions and have the Active bit set in their partition entry (see table above).
 
 ## Partition file systems
+
 
 ## BIOS Compatibility
 
@@ -130,7 +135,7 @@ EBR has the same structure as MBR except that the table sector only contains two
 
 *[MBR]: Master Boot Record
 *[EBR]: Extended Boot Record
-*[GPT]: Guid Partition Table
+*[GPT]: GUID Partition Table
 *[APM]: Apple Partition Map
 *[CHS]: Cylinder, Head, Sector address
 *[LBA]: Logical Block Address
