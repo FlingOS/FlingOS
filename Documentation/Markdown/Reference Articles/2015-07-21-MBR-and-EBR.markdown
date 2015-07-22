@@ -99,35 +99,95 @@ Bootable partitions are partitions flagged as containing a valid secondary bootl
 Bootable partitions are often referred to as active partitions and have the Active bit set in their partition entry (see table above).
 
 ## Partition file systems
+Partitions on a disk usually contain a file system. File system driver software is given a helping hand identifying the type of file system inside of a partition by the System ID found in the partition entry. Equivalents of the System ID field also exist in other partition table standards. The System ID is a (theoretically unique though sometimes abused) identifier that matches a particular file system type. Some of the common System IDs and their respective file system types are listed below. A decently accurate, complete list can be found at [Wikipedia - Partition Type](https://en.wikipedia.org/wiki/Partition_type#List_of_partition_IDs)
 
+##### Common File System Identifiers (System IDs)
+|   ID   | File System Type                                                    |
+|:------:|:--------------------------------------------------------------------|
+| 0x00   | Empty / No Partition
+| 0x01   | FAT12 (inside first 32MiB)
+| 0x04   | FAT16 (size < 32MiB)
+| 0x05   | EBR (CHS addressing, inside first 8GiB)
+| 0x06   | FAT16(B) (size > 32MiB, inside first 8GiB) or FAT12/FAT16 (outside first 32MiB)
+| 0x07   | IFS or HPFS or NTFS or exFAT
+| 0x08   | FAT12/FAT16 (logical sectored) or various others
+| 0x0B   | FAT32 (CHS addressing)
+| 0x0C   | FAT32 (LBA addressing)
+| 0x0E   | FAT16(B) (LBA addressing)
+| 0x0F   | EBR (LBA addressing)
+| 0x11   | FAT12/FAT16 (logical sectored) or Hidden FAT12
+| 0x14   | FAT12/FAT16 (logical sectored) or Hidden FAT16 or Omega File System
+| 0x15   | Hidden EBR (CHS addressing)
+| 0x16   | Hidden FAT16(B)
+| 0x17   | IFS or HPFS or NTFS or exFAT
+| 0x1B   | Hidden FAT32
+| 0x1C   | Hidden FAT32 (LBA addressing)
+| 0x1E   | Hidden FAT16 (LBA addressing)
+| 0x1F   | Hidden EBR (LBA addressing)
+| 0x24   | FAT12/FAT16 (logical sectored)
+| 0x27   | FAT32 or NTFS (rescue partition)
+| 0x56   | FAT12/FAT16 (logical sectored)
+| 0x83   | Any native Linux file system
+| 0x88   | Linux plaintext partition table
+| 0x8D   | Hidden FAT12
+| 0x90   | Hidden FAT16
+| 0x91   | Hidden EBR (CHS addressing)
+| 0x92   | Hidden FAT16(B)
+| 0x96   | ISO9660 partition (found largely on CDs/DVDs)
+| 0x97   | Hidden FAT32
+| 0x98   | Hidden FAT32 or bootable FAT
+| 0xED   | Disk is GPT / MBR hybrid formatted
+| 0xEE   | Disk is GPT formatted with protective MBR
+| 0xEF   | EFI System Partition (FAT12/16/32 or other)
+| 0xF7   | EFAT
+| 0xFB   | VMWare VMS
+| 0xFC   | VMWare swap / VMKCORE kernel dump
 
 ## BIOS Compatibility
+MBR is and remains one of if not the widest used partitioning scheme in the world, most likely because of its compatibility with BIOS. BIOS (generally) only understands MBR formatted disks so if you want to have a PC that actually boots, the disk is going to have to be MBR formatted. (Though MBR and BIOS are rapidly being replaced by GPT and UEFI). The tight relationship between BIOS, MBR and Windows means that a lot of the file system IDs are used by FAT and a lot of the terminology for BIOS, MBR and FAT is shared between them with similar if not identical meanings.
 
 ## GPT Compatibility
+GPT retains limited compatibility with MBR in that it uses a protective MBR. The protective MBR serves to make sure that no GPT formatted disk can accidentally be overwritten by old software which only understands or expects MBR formatted disks. However, do not expect to be able to read or write a GPT formatted disk using only the protective MBR - it is exceedingly unlikely to work as most GPT software does not create valid MBR partition entries. Again, this is for protection reasons.
 
 ---
 
 # Software
 
 ## Overview
+MBR software is relatively simple due to the relatively simple nature of the structure of MBR. By the time an OS comes to read a disk it (hopefully) won't need to worry about the bootcode area. All it really needs to worry about is checking for the signature, checking for GPT and, if it's plain MBR, reading the partition entries. Beyong that point, other OS driver software should handle the various possible file system types within a partition.
 
-## Basic outline
+## Software outline
+The basic outline of MBR software is as follows:
 
-## Technical details
-**Enumerations, classes, other such details**
+1. Read first sector of disk
+2. Check for signature bytes:
+    * If not 0xAA55, abort as the disk isn't MBR formatted.
+3. Attempt to parse each partition entry in turn (offsets 0x1BE, 0x1CE, 0x1DE, 0x1EE)
+    1. Read SystemID byte
+    2. Check System ID:
+        * If zero, partition entry is not valid.
+        * If matching an EBR ID, this partition entry should not be used but should be scanned for EBR tables.
+        * Otherwise, read start sector LBA and sector count and any other properties (e.g. active/inactive)
 
-## Implementation details
-**Methods, steps, etc.**
+There really isn't much more to it than that. For EBR partitions, you need to read the first sector, read the first partition entry and use that as an actual partition. You should then read the second partition entry. If it is non-zero then it will point to another EBR partition. Good software structure will make the recursive nature of this entirely inevitable without any extra work.
 
-## Compatibility
+## Software structure
+
+The following classes are recommended:
+* File System Manager - to begin scanning of a particular disk by reading in sector data and to follow-up on EBR partitions.
+* MBR - to handle checking signature and methods for interpretting/checking partition entries.
+* EBR - child class of MBR for handling EBR partitions. Shoudl reuse the interpretting/checking methods of parent MBR class.
+* PartitionInfo - to represent partition information (e.g. start sector, sector count and active/inactive)
 
 ---
 
 # Example Code
 
 ## Overview
+TODO
 
 ## Download
+TODO
 
 ---
 
@@ -139,3 +199,10 @@ Bootable partitions are often referred to as active partitions and have the Acti
 *[APM]: Apple Partition Map
 *[CHS]: Cylinder, Head, Sector address
 *[LBA]: Logical Block Address
+*[FAT]: File Allocation Table (12, 16 or 32 bit)
+*[NTFS]: New Technology File System
+*[IFS]: Installable File System
+*[HPFS]: High Performance File System
+*[ISO]: International Organisation for Standardisation
+*[CD]: Compact Disc
+*[DVD]: Digital Versatile Disc
