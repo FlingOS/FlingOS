@@ -35,15 +35,60 @@ Also, multiple file systems allows you to install multiple operating systems sid
 There is little to be said for what came before MBR. Most of the storage mediums around at the time were small hard disks or prior to that floppy disks and cassettes. As such, anything that might have resembled a partioning scheme was proprietary and/or not widely adopted. Prior to MBR machines used custom disk formats, of which there were many even within one single company's products. As such, many tools for chaining and converting formats were developed. I found the following section of the article on the CP/M system developed by Digital Research most informative: https://en.wikipedia.org/wiki/CP/M#Disk_formats Readers older than myself are warmly invited to send me anecdotes of their experiences "back in the day" (but please, limit them to stories about disk formats...)
 
 ## Is there anything newer than MBR?
-GPT (Guid Partition Table) is the latest partioning scheme which is more complex but still retains a protective MBR which has to be supported. There are also alternative standards that originate from outside the PC market such as the Apple Partition Map ()
+GPT (Guid Partition Table) is the latest partioning scheme which is more complex but still retains a protective MBR which has to be supported. There are also alternative standards that originate from outside the PC market such as the Apple Partition Map (though after Apple Macs shifted to Intel processors from PowerPC, APM is no longer supported).
 
 ---
 
 # Overview
 
 ## General partition tables
+In general a partition table simply splits a disk into one or more logical, contiguous chunks of data. What lies within a partition needn't be understood by an OS for it to be able to identify the partition. Equally, a partition does not have to contain a conventional file system, though more often than not it does. Notably, if a partition does not contain a valid file system, it usually means the partition is unformatted or corrupted.
+
+Note that an unformatted partition is not the same as an unused partition. Unformatted means the partition has a chunk of data assigned to it, but the data itself is not in a valid or
+recognisable format. An unused partition means either the partition entry does not assign any data from the disk to that partition or the chunk of data being referred to has no partition entry associated with it. The latter case can occur if the total size of partitions on the disk doesn't cover the full disk or, where partition size boundaries cause cut off leaving unused areas of the disk.
 
 ## MBR structure
+MBR has a very simple structure. The first sector of an MBR formatted disk will always have the following layout:
+
+##### First sector (LBA 0) structure
+| Offset      | Description           | Size |
+|:-----------:|:----------------------|:----:|
+| 0x000 (000) | Bootstrap code        |  446 |
+| 0x1BE	(446)	| Partition entry #1	  |  16  |
+| 0x1CE	(462)	| Partition entry #2	  |  16  |
+| 0x1DE	(478)	| Partition entry #3	  |  16  |
+| 0x1EE	(494)	| Partition entry #4	  |  16  |
+| 0x1FE	(510)	| MBR signature - always 0x55 |  1   |
+| 0x1FF	(511)	| MBR signature - always 0xAA |  1   |
+|============================================|
+|             | Total size:           |  512 |
+
+The last two bytes of the first sector will always be 0xAA55 (where 0xAA is the last/high byte and 0x55 is the penultimate byte). These are the MBR signature bytes and should be checked to verify that the disk is MBR formatted. Note, however, that a GPT formatted disk will appear to be MBR formatted to an MBR driver due to its protective MBR.
+
+Note also that the bootstrap code area was originally entirely code but subsequent versions of the MBR standard have added additional areas that use particular parts of the bootstrap code area. None of the additions which use the bootstrap code area are particularly standard nor compatible, so for complete reliability and backwards compatibility it is generally best to ignore the newer versions.
+
+Each "Partition entry" has the following format:
+
+##### Partition entry structure
+| Offset | Size (bits) | Description |
+|:------:|:-----------:|:------------|
+| 0      | 8           | Bootable indicator flag: 0x00 = inactive, 0x80 = active
+| 1      | 8           | CHS - Starting head
+| 2	     | 6           | CHS - Starting sector (Bits 6-7 are the upper two bits of the  Starting cylinder)
+| 3	     | 10          | CHS - Starting cylinder
+| 4	     | 8	         | System ID - identifies file system type that is within the partition
+| 5	     | 8	         | CHS - Ending head
+| 6	     | 6           | CHS - Ending sector (Bits 6-7 are the upper two bits for the ending cylinder field)
+| 7      | 10 	       | CHS - Ending cylinder
+| 8      | 32          | LBA - Partition's starting sector (relative to MBR's sector num, relevant for EBR)
+| 12     | 32	         | LBA - Partition's total sectors
+
+CHS fields are redundant now since practically all disks support (the much better) LBA addressing mode. However, for disks less than 8GiB (max size that CHS can address) the CHS fields must be consistent with the LBA fields and visa-versa. For disks larger than 8GiB, the CHS fields must be set to their maximum values. CHS fields set to their maximum values should always be considered invalid by an MBR driver. CHS fields may not be set to 0.
+
+## EBR structure
+EBR has the same structure as MBR except that the table sector only contains two partition entries instead of four. EBR tables reside inside of an MBR partition. Only one MBR partition may contain EBR partitions. If an MBR partition contains EBR partitions, the first sector of the MBR partition will always contain an EBR table (including the same signature bytes).
+
+ There can be multiple EBR tables in the MBR partition. The first EBR will always appear in the first sector of the MBR partition. The EBR will specify only one actual partition, in the first partition entry. If the second partition entry is zero, there are no more EBR tables in the MBR partition. If the second partition entry is non-zero, it specifies a new partition which will also start with an EBR table as the first sector. Thus EBR partitions can be chained to give a large number of partitions.
 
 ## Boot sector
 
@@ -86,3 +131,6 @@ GPT (Guid Partition Table) is the latest partioning scheme which is more complex
 *[MBR]: Master Boot Record
 *[EBR]: Extended Boot Record
 *[GPT]: Guid Partition Table
+*[APM]: Apple Partition Map
+*[CHS]: Cylinder, Head, Sector address
+*[LBA]: Logical Block Address

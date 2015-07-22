@@ -507,6 +507,7 @@ Take a look at the sample code which demonstrates how to detect and avoid PATAPI
 ---
 
 # References
+
 The following links were valid as of 27th January 2015.
 
 * [Wikipedia - Parallel ATA](http://en.wikipedia.org/wiki/Parallel_ATA)
