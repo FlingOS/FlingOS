@@ -544,16 +544,12 @@ namespace Drivers.Compiler.IL
             {
                 case 1:
                     return "db";
-                    break;
                 case 2:
                     return "dw";
-                    break;
                 case 4:
                     return "dd";
-                    break;
                 default:
                     return "NOSIZEALLOC";
-                    break;
             }
         }
 

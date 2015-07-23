@@ -36,8 +36,21 @@ using System.IO;
 
 namespace Drivers.Compiler.ASM
 {
+    /// <summary>
+    /// The ASM Processor manages converting ASM blocks into actuakl assembly code, saving that code
+    /// to files and then executing a build tool to convert assembly code into ELF binaries.
+    /// </summary>
+    /// <remarks>
+    /// TODO: Currently the ASM Processor always uses NASM regardless of the target archiecture. The
+    /// actual build tool for ASM -> Machine Code should be moved into the target architecture library.
+    /// </remarks>
     public static class ASMProcessor
     {
+        /// <summary>
+        /// Processes the given ASM library.
+        /// </summary>
+        /// <param name="TheLibrary">The library to process.</param>
+        /// <returns>Always CompileResult.OK. In all other cases, exceptions are thrown.</returns>
         public static CompileResult Process(ASMLibrary TheLibrary)
         {
             CompileResult result = CompileResult.OK;
@@ -97,6 +110,10 @@ namespace Drivers.Compiler.ASM
             return result;
         }
 
+        /// <summary>
+        /// Processes the given ASM block.
+        /// </summary>
+        /// <param name="TheBlock">The ASM block to process.</param>
         private static void ProcessBlock(ASMBlock TheBlock)
         {
             string ASMText = "";
@@ -161,6 +178,12 @@ namespace Drivers.Compiler.ASM
             File.WriteAllText(FileName, ASMText);
         }
 
+        /// <summary>
+        /// Executes NASM asynchronously.
+        /// </summary>
+        /// <param name="Blocks">The blocks to execute NASM for.</param>
+        /// <param name="OnComplete">Method to call when NASM has finished executing for all the blocks.</param>
+        /// <param name="aState">The state object to use when calling the OnComplete method.</param>
         private static void ExecuteNASMAsync(List<ASMBlock> Blocks, VoidDelegate OnComplete, object aState)
         {
             string ASMOutputPath = GetASMOutputPath();
@@ -180,7 +203,7 @@ namespace Drivers.Compiler.ASM
 
                         Blocks[index].OutputFilePath = outputPath;
                     }
-                    catch (Exception ex)
+                    catch// (Exception ex)
                     {
                         Logger.LogError(Errors.ASMCompiler_NASMException_ErrorCode, inputPath, 0,
                             string.Format(Errors.ErrorMessages[Errors.ASMCompiler_NASMException_ErrorCode], inputPath));
@@ -194,6 +217,10 @@ namespace Drivers.Compiler.ASM
             onComplete(0);
         }
 
+        /// <summary>
+        /// Executes NASM synchronously.
+        /// </summary>
+        /// <param name="Blocks">The blocks to execute NASM for.</param>
         private static void ExecuteNASMSync(List<ASMBlock> Blocks)
         {
             string ASMOutputPath = GetASMOutputPath();
@@ -210,7 +237,7 @@ namespace Drivers.Compiler.ASM
 
                     Blocks[index].OutputFilePath = outputPath;
                 }
-                catch(Exception ex)
+                catch// (Exception ex)
                 {
                     Logger.LogError(Errors.ASMCompiler_NASMException_ErrorCode, inputPath, 0,
                         string.Format(Errors.ErrorMessages[Errors.ASMCompiler_NASMException_ErrorCode], inputPath));
@@ -218,7 +245,23 @@ namespace Drivers.Compiler.ASM
             }
         }
 
+        /// <summary>
+        /// Whether the output ASM folder has been cleaned or not.
+        /// </summary>
+        /// <remarks>
+        /// Prevents the compiler cleaning the output folder half-way through the compile process
+        /// i.e. between processing libraries.
+        /// </remarks>
         private static bool CleanedASMOutputFolder = false;
+        /// <summary>
+        /// Gets the output path for the directory to save the ASM files into. Also, creates the output 
+        /// directory if it doesn't exist or cleans the output directory if it hasn't already been cleaned.
+        /// </summary>
+        /// <remarks>
+        /// Currently, the path provided is the build directory (e.g. "bin\Debug") added to "DriversCompiler\ASM" 
+        /// giving: "bin\Debug\DriversCompiler\ASM". 
+        /// </remarks>
+        /// <returns>The path.</returns>
         private static string GetASMOutputPath()
         {
             string OutputPath = Path.Combine(Options.OutputPath, "DriversCompiler\\ASM");
@@ -237,7 +280,23 @@ namespace Drivers.Compiler.ASM
             }
             return OutputPath;
         }
+        /// <summary>
+        /// Whether the output Objects folder has been cleaned or not.
+        /// </summary>
+        /// <remarks>
+        /// Prevents the compiler cleaning the output folder half-way through the compile process
+        /// i.e. between processing libraries.
+        /// </remarks>
         private static bool CleanedObjectsOutputFolder = false;
+        /// <summary>
+        /// Gets the output path for the directory to save the object files into. Also, creates the output 
+        /// directory if it doesn't exist or cleans the output directory if it hasn't already been cleaned.
+        /// </summary>
+        /// <remarks>
+        /// Currently, the path provided is the build directory (e.g. "bin\Debug") added to "DriversCompiler\Objects" 
+        /// giving: "bin\Debug\DriversCompiler\Objects". 
+        /// </remarks>
+        /// <returns>The path.</returns>
         private static string GetObjectsOutputPath()
         {
             string OutputPath = Path.Combine(Options.OutputPath, "DriversCompiler\\Objects");
@@ -256,11 +315,14 @@ namespace Drivers.Compiler.ASM
             }
             return OutputPath;
         }
-
-
+        
         /// <summary>
         /// Executes NASM on the output file. It is assumed the output file now exists.
         /// </summary>
+        /// <param name="inputFilePath">Path to the ASM file to process.</param>
+        /// <param name="outputFilePath">Path to output the object file to.</param>
+        /// <param name="OnComplete">Handler to call once NASM has completed. Default: null.</param>
+        /// <param name="state">The state object to use when calling the OnComplete handler. Default: null.</param>
         /// <returns>True if execution completed successfully. Otherwise false.</returns>
         private static bool ExecuteNASM(string inputFilePath, string outputFilePath, VoidDelegate OnComplete = null, object state = null)
         {
@@ -273,7 +335,7 @@ namespace Drivers.Compiler.ASM
             {
                 File.Delete(outputFilePath);
             }
-
+            
             OK = Utilities.ExecuteProcess(Path.GetDirectoryName(outputFilePath), NasmPath, String.Format("-g -f {0} -o \"{1}\" -D{3}_COMPILATION \"{2}\"",
                                                   "elf",
                                                   outputFilePath,
