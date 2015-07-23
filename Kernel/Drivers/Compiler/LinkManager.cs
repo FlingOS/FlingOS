@@ -33,8 +33,16 @@ using System.IO;
 
 namespace Drivers.Compiler
 {
+    /// <summary>
+    /// Manages linking the object files into the final ELF/A file(s) or ISO file.
+    /// </summary>
     public static class LinkManager
     {
+        /// <summary>
+        /// Performs the link.
+        /// </summary>
+        /// <param name="TheLibrary">The root library to link.</param>
+        /// <returns>CompileResult.OK if the link succeeded. Otherwise, CompileResult.Fail.</returns>
         public static CompileResult Link(IL.ILLibrary TheLibrary)
         {
             bool OK = true;
@@ -281,7 +289,15 @@ SECTIONS {
             return OK ? CompileResult.OK : CompileResult.Fail;
         }
 
-        //From MSDN: https://msdn.microsoft.com/en-us/library/bb762914%28v=vs.110%29.aspx
+        /// <summary>
+        /// Copies a directory from one location to another, optionally including sub directories.
+        /// </summary>
+        /// <remarks>
+        /// From MSDN: https://msdn.microsoft.com/en-us/library/bb762914%28v=vs.110%29.aspx
+        /// </remarks>
+        /// <param name="sourceDirName">The source directory path.</param>
+        /// <param name="destDirName">The destination directory path.</param>
+        /// <param name="copySubDirs">Whether to copy sub directories or not.</param>
         private static void CopyDirectory(string sourceDirName, string destDirName, bool copySubDirs)
         {
             // Get the subdirectories for the specified directory.
@@ -320,10 +336,20 @@ SECTIONS {
             }
         }
 
+        /// <summary>
+        /// Gets the order of two ASM blocks based on their priorities.
+        /// </summary>
+        /// <param name="a">First block to order.</param>
+        /// <param name="b">Second block to order.</param>
+        /// <returns>/// -1 = a before b, 0 = a or b in either order, +1 = a after b.</returns>
         public static int GetOrder(ASM.ASMBlock a, ASM.ASMBlock b)
         {
             return a.Priority.CompareTo(b.Priority);
         }
+        /// <summary>
+        /// Sorts the list of blocks according to their priorities.
+        /// </summary>
+        /// <param name="AllBlocks">The list of blocks to sort.</param>
         private static void SortBlocks(List<ASM.ASMBlock> AllBlocks)
         {
             List<ASM.ASMBlock> LastLayerBlocks = AllBlocks.Where(x => x.ExternalLabels.Count == 0).ToList();

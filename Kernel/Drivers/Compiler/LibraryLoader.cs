@@ -39,10 +39,17 @@ namespace Drivers.Compiler
 {
     public static class LibraryLoader
     {
-        //Library caching means only one ILLibrary object used per assembly (even if multiple refs exist in
-        //  different dependency locations) so type scanner, compiler etc. don't duplicate work later.
+        /// <summary>
+        /// Library caching means only one ILLibrary object used per assembly (even if multiple refs exist in
+        ///  different dependency locations) so type scanner, compiler etc. don't duplicate work later.
+        /// </summary>
         private static Dictionary<string, ILLibrary> LibraryCache = new Dictionary<string, ILLibrary>();
 
+        /// <summary>
+        /// Loads an IL Library from the specified file.
+        /// </summary>
+        /// <param name="FilePath">The path to the file to load as an IL Library.</param>
+        /// <returns>The loaded IL Library.</returns>
         private static ILLibrary LoadILLibraryFromFile(string FilePath)
         {
             if (string.IsNullOrWhiteSpace(FilePath))
@@ -76,6 +83,11 @@ namespace Drivers.Compiler
             return null;
         }
 
+        /// <summary>
+        /// Loads an IL Library from the specified file and scans types within the library.
+        /// </summary>
+        /// <param name="FilePath">The path to the file to load as an IL Library.</param>
+        /// <returns>The loaded IL Library.</returns>
         public static ILLibrary LoadILLibrary(string FilePath)
         {
             ILLibrary TheLibrary = LoadILLibraryFromFile(FilePath);
@@ -85,12 +97,15 @@ namespace Drivers.Compiler
                 LoadDependencies(TheLibrary);
 
                 Types.TypeScanner.ScanTypes(TheLibrary);
-
-                //TheLibrary.CompressedDependencyTree = CompressDependencyTree(TheLibrary);
             }
 
             return TheLibrary;
         }
+        /// <summary>
+        /// Loads all the dependencies of a library.
+        /// </summary>
+        /// <param name="aLibrary">The library to load dependencies of.</param>
+        /// <returns>The number of dependencies loaded.</returns>
         public static int LoadDependencies(ILLibrary aLibrary)
         {
             if (aLibrary == null)
@@ -131,30 +146,12 @@ namespace Drivers.Compiler
 
             return DependenciesLoaded;
         }
-        //public static List<ILLibrary> CompressDependencyTree(ILLibrary RootLibrary)
-        //{
-        //    List<ILLibrary> CompressedResult = new List<ILLibrary>();
-
-        //    foreach (ILLibrary DepLibrary in RootLibrary.Dependencies)
-        //    {
-        //        if (!CompressedResult.Contains(DepLibrary))
-        //        {
-        //            CompressedResult.Add(DepLibrary);
-        //        }
-
-        //        List<ILLibrary> moreDeps = CompressDependencyTree(DepLibrary);
-        //        foreach (ILLibrary subDepLib in moreDeps)
-        //        {
-        //            if (!CompressedResult.Contains(subDepLib))
-        //            {
-        //                CompressedResult.Add(subDepLib);
-        //            }
-        //        }
-        //    }
-
-        //    return CompressedResult;
-        //}
-
+        
+        /// <summary>
+        /// Determines whether the assembly name is in the list of names to ignore.
+        /// </summary>
+        /// <param name="fullName">The name to test.</param>
+        /// <returns>True if it is in the ignore list, otherwise false.</returns>
         public static bool IsAssemblyFullNameIgnored(string fullName)
         {
             foreach (string ignoreName in Options.IgnoreAssemblies)
