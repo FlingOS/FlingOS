@@ -34,8 +34,15 @@ using System.Reflection;
 
 namespace Drivers.Compiler.Types
 {
+    /// <summary>
+    /// Manages scanning the types in an IL library.
+    /// </summary>
     public static class TypeScanner
     {
+        /// <summary>
+        /// Scans the library for types.
+        /// </summary>
+        /// <param name="TheLibrary">The library to scan.</param>
         public static void ScanTypes(IL.ILLibrary TheLibrary)
         {
             if (TheLibrary == null)
@@ -112,6 +119,13 @@ namespace Drivers.Compiler.Types
             }
         }
 
+        /// <summary>
+        /// Scans a type to generate type info for the type. Also scans methods and constructors of the type
+        /// amongst some other information.
+        /// </summary>
+        /// <param name="TheLibrary">The library from which the type originated.</param>
+        /// <param name="aType">The type to scan.</param>
+        /// <returns>The new type info.</returns>
         public static TypeInfo ScanType(IL.ILLibrary TheLibrary, Type aType)
         {
             if(TheLibrary.TypeInfos.Where(x => x.UnderlyingType.Equals(aType)).Count() > 0)
@@ -220,6 +234,11 @@ namespace Drivers.Compiler.Types
 
             return newTypeInfo;
         }
+        /// <summary>
+        /// Processes the specified type info to fill in the required data.
+        /// </summary>
+        /// <param name="TheLibrary">The library from which the type originated.</param>
+        /// <param name="theTypeInfo">The type info to process.</param>
         public static void ProcessType(IL.ILLibrary TheLibrary, TypeInfo theTypeInfo)
         {
             if(theTypeInfo.Processed)
@@ -265,6 +284,11 @@ namespace Drivers.Compiler.Types
                 }
             }
         }
+        /// <summary>
+        /// Processes the specified type's fields to fill in required data.
+        /// </summary>
+        /// <param name="TheLibrary">The library from which the type originated.</param>
+        /// <param name="theTypeInfo">The type info to process.</param>
         public static void ProcessTypeFields(IL.ILLibrary TheLibrary, TypeInfo theTypeInfo)
         {
             if (theTypeInfo.ProcessedFields)
@@ -297,6 +321,11 @@ namespace Drivers.Compiler.Types
             }
         }
 
+        /// <summary>
+        /// Gets the size, in bytes, of the specified type when it is represented on the stack.
+        /// </summary>
+        /// <param name="theType">The type to determine the stack size of.</param>
+        /// <returns>The size in bytes.</returns>
         private static int GetSizeOnStackInBytes(Type theType)
         {
             //Assume its a pointer/reference unless it is:
@@ -375,6 +404,11 @@ namespace Drivers.Compiler.Types
 
             return result;
         }
+        /// <summary>
+        /// Gets the size, in bytes, of the specified type when it is allocated on the heap.
+        /// </summary>
+        /// <param name="theType">The type to determine the heap size of.</param>
+        /// <returns>The size in bytes.</returns>
         private static int GetSizeOnHeapInBytes(Type theType)
         {
             //Assume its a pointer/reference unless it is:
@@ -462,6 +496,11 @@ namespace Drivers.Compiler.Types
 
             return result;
         }
+        /// <summary>
+        /// Determines whether the specified type is managed by the garbage collector or not.
+        /// </summary>
+        /// <param name="theType">The type to check.</param>
+        /// <returns>True if it is managed by the GC. Otherwise, false.</returns>
         private static bool GetIsGCManaged(Type theType)
         {
             bool isGCManaged = true;

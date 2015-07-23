@@ -32,13 +32,35 @@ using System.Threading.Tasks;
 
 namespace Drivers.Compiler.Types
 {
+    /// <summary>
+    /// Container for information about a variable loaded from a method in a library being compiled.
+    /// </summary>
     public class VariableInfo
     {
+        /// <summary>
+        /// The type of the variable.
+        /// </summary>
         public Type UnderlyingType;
+        /// <summary>
+        /// The type info for the variable.
+        /// </summary>
         public TypeInfo TheTypeInfo;
+        /// <summary>
+        /// The position (as an index) of the variable.
+        /// </summary>
         public int Position;
+        /// <summary>
+        /// The offset of the variable from EBP in bytes.
+        /// </summary>
         public int Offset;
 
+        /// <summary>
+        /// Gets a human-readable representation of the variable.
+        /// </summary>
+        /// <remarks>
+        /// Uses the variable's full name.
+        /// </remarks>
+        /// <returns>The string representation.</returns>
         public override string ToString()
         {
             return UnderlyingType.FullName;
