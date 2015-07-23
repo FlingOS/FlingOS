@@ -2219,7 +2219,7 @@ namespace Kernel.Hardware.USB.HCIs
             return td;
         }
         /// <summary>
-        /// Allocates memory for a new qTD and does intialisation common to all qTD types.
+        /// Allocates memory for a new qTD and does initialisation common to all qTD types.
         /// </summary>
         /// <param name="next">A pointer to the next qTD in the linked list or 1 to specify no pointer.</param>
         /// <returns>The new qTD.</returns>

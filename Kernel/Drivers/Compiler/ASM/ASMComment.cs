@@ -32,10 +32,26 @@ using System.Threading.Tasks;
 
 namespace Drivers.Compiler.ASM
 {
+    /// <summary>
+    /// Represents a comment in assembly code.
+    /// </summary>
+    /// <remarks>
+    /// The Convert method ought to be abstracted to the target architecture library
+    /// since different assembly syntaxes use different syntaxes for denoting comments.
+    /// The target architecture determines the syntax.
+    /// </remarks>
     public class ASMComment : ASMOp
     {
+        /// <summary>
+        /// The single-line text of the comment.
+        /// </summary>
         public string Text;
         
+        /// <summary>
+        /// Generates the complete line of assembling using the Text field.
+        /// </summary>
+        /// <param name="theBlock">The block for which the comment is to be generated.</param>
+        /// <returns>The complete line of assembly code.</returns>
         public override string Convert(ASMBlock theBlock)
         {
             return ";" + Text;

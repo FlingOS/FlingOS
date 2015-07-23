@@ -32,10 +32,22 @@ using System.Threading.Tasks;
 
 namespace Drivers.Compiler.ASM
 {
+    /// <summary>
+    /// Represents generic assembly code. Can be used to output any assembly code you
+    /// like.
+    /// </summary>
     public class ASMGeneric : ASMOp
     {
+        /// <summary>
+        /// The (valid) assembly code text to output.
+        /// </summary>
         public string Text;
-        
+
+        /// <summary>
+        /// Generates the line of assembly by returning the value of Text.
+        /// </summary>
+        /// <param name="theBlock">The block for which the comment is to be generated.</param>
+        /// <returns>The assembly code (i.e. value of Text).</returns>
         public override string Convert(ASMBlock theBlock)
         {
             return Text;

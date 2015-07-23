@@ -32,6 +32,16 @@ using System.Threading.Tasks;
 
 namespace Drivers.Compiler.ASM
 {
+    /// <summary>
+    /// The ASM Compiler is the high-level class which manages the ASM compilation step
+    /// including executing the ASM Preprocessor and the ASM Processor. 
+    /// </summary>
+    /// <remarks>
+    /// The ASM compiler itself does very little work. It is mostly a wrapper to ensure
+    /// that the processing steps (i.e. preprocess followed by process) happen in the 
+    /// correct order and are hidden from other parts of the compiler. It also allows
+    /// additional ASM processing steps to be added more easily later.
+    /// </remarks>
     public static class ASMCompiler
     {
         public static CompileResult Compile(IL.ILLibrary TheILLibrary)

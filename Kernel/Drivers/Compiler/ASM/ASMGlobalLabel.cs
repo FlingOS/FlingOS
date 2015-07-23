@@ -32,19 +32,51 @@ using System.Threading.Tasks;
 
 namespace Drivers.Compiler.ASM
 {
+    /// <summary>
+    /// Represents a label which external ASM blocks can depend upon i.e. a global label.
+    /// </summary>
+    /// <remarks>
+    /// The Convert method ought to be abstracted to the target architecture library
+    /// since different assembly syntaxes use different syntaxes for denoting global 
+    /// labels. The target architecture determines the syntax.
+    /// </remarks>
     public class ASMGlobalLabel : ASMOp
     {
+        /// <summary>
+        /// The global label.
+        /// </summary>
         public string Label;
+        /// <summary>
+        /// The type specifier for the label. e.g. "function" or "data".
+        /// </summary>
         public string LabelType = "function";
 
+        /// <summary>
+        /// Generates the line of assembly for the global label.
+        /// </summary>
+        /// <param name="theBlock">The block for which the comment is to be generated.</param>
+        /// <returns>The complete line of assembly code.</returns>
         public override string Convert(ASMBlock theBlock)
         {
             return "global " + Label + ":" + LabelType;
         }
+        /// <summary>
+        /// Gets a hash code for the global label which can be used for comparison to prevent
+        /// duplicate global labels being added.
+        /// </summary>
+        /// <remarks>
+        /// Uses the hash code of (Label + ":" + LabelType).
+        /// </remarks>
+        /// <returns>The hash code value.</returns>
         public override int GetHashCode()
         {
             return (Label + ":" + LabelType).GetHashCode();
         }
+        /// <summary>
+        /// Compares the global label to the specified object.
+        /// </summary>
+        /// <param name="obj">The object to compare to.</param>
+        /// <returns>True if the object is a global label and has the same value for Label and LabelType. Otherwise, false.</returns>
         public override bool Equals(object obj)
         {
             if (obj is ASMGlobalLabel)
