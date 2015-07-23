@@ -36,7 +36,6 @@ namespace Kernel
     /// The main class (containing the kernel entry point) for the Fling OS kernel.
     /// </summary>
     [Compiler.PluggedClass]
-    [Drivers.Compiler.Attributes.PluggedClass]
     public static class Kernel
     {
         /// <summary>

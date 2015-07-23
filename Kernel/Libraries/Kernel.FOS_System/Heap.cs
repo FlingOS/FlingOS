@@ -66,7 +66,6 @@ namespace Kernel.FOS_System
     /// The kernel heap - currently a very simple implementation.
     /// </summary>
     [Compiler.PluggedClass]
-    [Drivers.Compiler.Attributes.PluggedClass]
     public static unsafe class Heap
     {
         public static bool PreventAllocation = false;

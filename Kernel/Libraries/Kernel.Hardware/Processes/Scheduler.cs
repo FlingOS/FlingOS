@@ -35,7 +35,6 @@ using System;
 namespace Kernel.Hardware.Processes
 {
     [Compiler.PluggedClass]
-    [Drivers.Compiler.Attributes.PluggedClass]
     public static unsafe class Scheduler
     {
         public enum Priority : int 

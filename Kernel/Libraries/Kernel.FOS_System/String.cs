@@ -34,7 +34,6 @@ namespace Kernel.FOS_System
     /// </summary>
     [Kernel.Compiler.PluggedClass]
     [Kernel.Compiler.StringClass]
-    [Drivers.Compiler.Attributes.PluggedClass]
     [Drivers.Compiler.Attributes.StringClass]
     public class String : Object
     {

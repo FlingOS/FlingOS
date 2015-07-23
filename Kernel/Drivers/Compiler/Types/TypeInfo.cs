@@ -35,7 +35,6 @@ namespace Drivers.Compiler.Types
     public class TypeInfo
     {
         public Type UnderlyingType;
-        public bool ContainsPlugs;
 
         public List<FieldInfo> FieldInfos = new List<FieldInfo>();
         public List<MethodInfo> MethodInfos = new List<MethodInfo>();

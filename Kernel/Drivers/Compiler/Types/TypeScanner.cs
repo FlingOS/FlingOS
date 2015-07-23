@@ -122,8 +122,7 @@ namespace Drivers.Compiler.Types
             string typeName = aType.Name;
             TypeInfo newTypeInfo = new TypeInfo()
             {
-                UnderlyingType = aType,
-                ContainsPlugs = aType.GetCustomAttribute(typeof(Attributes.PluggedClassAttribute)) != null
+                UnderlyingType = aType
             };
 
             TheLibrary.TypeInfos.Add(newTypeInfo);

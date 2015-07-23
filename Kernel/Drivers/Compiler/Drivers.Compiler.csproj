@@ -75,7 +75,6 @@
     <Compile Include="IL\ILOps\ILOpTargetAttribute.cs" />
     <Compile Include="Attributes\NoDebugAttribute.cs" />
     <Compile Include="Attributes\NoGCAttribute.cs" />
-    <Compile Include="Attributes\PluggedClassAttribute.cs" />
     <Compile Include="Attributes\PluggedMethodAttribute.cs" />
     <Compile Include="DebugDataManager.cs" />
     <Compile Include="Errors.cs" />

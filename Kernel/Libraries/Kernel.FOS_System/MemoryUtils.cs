@@ -32,7 +32,6 @@ namespace Kernel.Utilities
     /// Static utility methods for memory manipulation.
     /// </summary>
     [Compiler.PluggedClass]
-    [Drivers.Compiler.Attributes.PluggedClass]
     public static unsafe class MemoryUtils
     {
         /// <summary>

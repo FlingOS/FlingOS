@@ -33,7 +33,6 @@ namespace Kernel.FOS_System
     /// IL code.
     /// </summary>
     [Compiler.PluggedClass]
-    [Drivers.Compiler.Attributes.PluggedClass]
     public static class Math
     {
         /// <summary>
