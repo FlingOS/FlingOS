@@ -465,6 +465,7 @@ namespace Drivers.Compiler.IL
         /// <summary>
         /// Injects the garbage collector related IL ops into the specified method.
         /// </summary>
+        /// <param name="TheLibrary">The library being compiled.</param>
         /// <param name="theMethodInfo">The method to inject ops into.</param>
         /// <param name="theILBlock">The IL block for the method to inject ops into.</param>
         private static void InjectGC(ILLibrary TheLibrary, Types.MethodInfo theMethodInfo, ILBlock theILBlock)

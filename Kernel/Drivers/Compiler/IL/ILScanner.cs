@@ -428,7 +428,7 @@ namespace Drivers.Compiler.IL
         /// </summary>
         /// <param name="TheLibrary">The library currently being compiled.</param>
         /// <param name="TheTypeInfo">The type to scan the methods of.</param>
-        /// <param name="StaticFieldsBlock">The ASM block for the methods table for the library currently being compiled.</param>
+        /// <param name="MethodTablesBlock">The ASM block for the methods table for the library currently being compiled.</param>
         private static void ScanMethods(ILLibrary TheLibrary, Types.TypeInfo TheTypeInfo, ASM.ASMBlock MethodTablesBlock)
         {
             string currentTypeId = TheTypeInfo.ID;
@@ -521,7 +521,7 @@ namespace Drivers.Compiler.IL
         /// </summary>
         /// <param name="TheLibrary">The library currently being compiled.</param>
         /// <param name="TheTypeInfo">The type to scan the non-static fields of.</param>
-        /// <param name="StaticFieldsBlock">The ASM block for the fields table for the library currently being compiled.</param>
+        /// <param name="FieldTablesBlock">The ASM block for the fields table for the library currently being compiled.</param>
         private static void ScanFields(ILLibrary TheLibrary, Types.TypeInfo TheTypeInfo, ASM.ASMBlock FieldTablesBlock)
         {
             string currentTypeId = TheTypeInfo.ID;
