@@ -32,25 +32,64 @@ using System.Threading.Tasks;
 
 namespace Drivers.Compiler.Types
 {
+    /// <summary>
+    /// Container for information about a type loaded from an IL library being compiled.
+    /// </summary>
     public class TypeInfo
     {
+        /// <summary>
+        /// The underlying System.Type obtained from the library's Assembly.
+        /// </summary>
         public Type UnderlyingType;
 
+        /// <summary>
+        /// List of information about fields in the type.
+        /// </summary>
         public List<FieldInfo> FieldInfos = new List<FieldInfo>();
+        /// <summary>
+        /// List of information about methods in the type.
+        /// </summary>
         public List<MethodInfo> MethodInfos = new List<MethodInfo>();
 
+        /// <summary>
+        /// Whether the type has been processed or not (excludes fields).
+        /// </summary>
         public bool Processed = false;
+        /// <summary>
+        /// Whether the type's fields have been processed or not.
+        /// </summary>
         public bool ProcessedFields = false;
+        /// <summary>
+        /// Whether the type is a value type or not.
+        /// </summary>
         public bool IsValueType { get { return UnderlyingType.IsValueType; } }
+        /// <summary>
+        /// Whether the type is a pointer type or not.
+        /// </summary>
         public bool IsPointer { get { return UnderlyingType.IsPointer; } }
 
+        /// <summary>
+        /// The size of an object of this type when it is represented on the stack.
+        /// </summary>
         public int SizeOnStackInBytes { get; set; }
+        /// <summary>
+        /// The size of an object of this type when it is allocated on the heap.
+        /// </summary>
         public int SizeOnHeapInBytes { get; set; }
 
+        /// <summary>
+        /// Whether objects of this type are managed by the GC or not.
+        /// </summary>
         public bool IsGCManaged { get; set; }
 
+        /// <summary>
+        /// ID generator for the methods' IDs in this type.
+        /// </summary>
         public int MethodIDGenerator = 0;
 
+        /// <summary>
+        /// The ID of this type (can be used as a label).
+        /// </summary>
         public string ID
         {
             get
@@ -58,7 +97,14 @@ namespace Drivers.Compiler.Types
                 return "type_" + Utilities.FilterIdentifierForInvalidChars(UnderlyingType.FullName);
             }
         }
-        
+
+        /// <summary>
+        /// Gets a human-readable representation of the type.
+        /// </summary>
+        /// <remarks>
+        /// Uses the type's assembly qualified name.
+        /// </remarks>
+        /// <returns>The string representation.</returns>
         public override string ToString()
         {
             return UnderlyingType.AssemblyQualifiedName;

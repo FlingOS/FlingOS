@@ -32,14 +32,47 @@ using System.Threading.Tasks;
 
 namespace Drivers.Compiler.IL
 {
+    /// <summary>
+    /// The IL Sanner manages scanning types, fields and methods to generate the final assembly code.
+    /// </summary>
+    /// <remarks>
+    /// Some parts of this (e.g. GetAllocStringForSize) generate ASM but they shouldn't. The code
+    /// generating ASM should be shifted to the target architecture library.
+    /// </remarks>
     public static class ILScanner
     {
+        /// <summary>
+        /// The target archiecture library.
+        /// </summary>
+        /// <remarks>
+        /// Used for loading IL and ASM ops used to convert IL to ASM and ASM to machine code
+        /// for the target architecture.
+        /// </remarks>
         private static System.Reflection.Assembly TargetArchitectureAssembly = null;
+        /// <summary>
+        /// Map of op codes to IL ops which are loaded from the target architecture.
+        /// </summary>
         public static Dictionary<ILOp.OpCodes, ILOp> TargetILOps = new Dictionary<ILOp.OpCodes, ILOp>();
+        /// <summary>
+        /// The method start IL op. This is a fake IL op used by the Drivers Compiler.
+        /// </summary>
         public static ILOps.MethodStart MethodStartOp;
+        /// <summary>
+        /// The method end IL op. This is a fake IL op used by the Drivers Compiler.
+        /// </summary>
         public static ILOps.MethodEnd MethodEndOp;
+        /// <summary>
+        /// The stack switch IL op. This is a fake IL op used by the Drivers Compiler.
+        /// </summary>
         public static ILOps.StackSwitch StackSwitchOp;
 
+        /// <summary>
+        /// Initialises the IL scanner.
+        /// </summary>
+        /// <remarks>
+        /// Loads the target architecture library.
+        /// </remarks>
+        /// <returns>True if initialisation was successful. Otherwise, false.</returns>
         public static bool Init()
         {
             bool OK = true;
@@ -48,6 +81,11 @@ namespace Drivers.Compiler.IL
 
             return OK;
         }
+        /// <summary>
+        /// Loads the target architecture library and fills in the TargetILOps, MethodStartOp, MethodEndOp and StackSwitchOp
+        /// fields.
+        /// </summary>
+        /// <returns>True if fully loaded without error. Otherwise, false.</returns>
         private static bool LoadTargetArchiecture()
         {
             bool OK = false;
@@ -119,7 +157,22 @@ namespace Drivers.Compiler.IL
             return OK;
         }
 
+        /// <summary>
+        /// Map of type IDs to the library from which they originated. 
+        /// </summary>
+        /// <remarks>
+        /// Used to detect when types are external to the library being compiled.
+        /// </remarks>
         private static Dictionary<string, ILLibrary> ScannedTypes = new Dictionary<string, ILLibrary>();
+        /// <summary>
+        /// Scans the specified library and any dependencies.
+        /// </summary>
+        /// <param name="TheLibrary">The library to scan.</param>
+        /// <returns>
+        /// CompileResult.OK if completed successfully. 
+        /// Otherwise CompileResult.PartialFail or CompileResult.Error depending on 
+        /// the extent of the problem.
+        /// </returns>
         public static CompileResult Scan(ILLibrary TheLibrary)
         {
             CompileResult result = CompileResult.OK;
@@ -251,7 +304,19 @@ namespace Drivers.Compiler.IL
             return result;
         }
 
+        /// <summary>
+        /// The number of types scanned.
+        /// </summary>
+        /// <remarks>
+        /// Used as an ID generator for the types table(s).
+        /// </remarks>
         private static int TypesScanned = 1;
+        /// <summary>
+        /// Scans the specified type (excludes fields and methods).
+        /// </summary>
+        /// <param name="TheLibrary">The library currently being compiled.</param>
+        /// <param name="TheTypeInfo">The type to scan.</param>
+        /// <param name="TypesTableBlock">The ASM block for the types table for the library currently being compiled.</param>
         private static void ScanType(ILLibrary TheLibrary, Types.TypeInfo TheTypeInfo, ASM.ASMBlock TypesTableBlock)
         {
             string TypeId = TheTypeInfo.ID;
@@ -337,6 +402,12 @@ namespace Drivers.Compiler.IL
             TypesTableBlock.AddExternalLabel(TypeSignatureLiteralLabel);
             TypesTableBlock.AddExternalLabel(TypeIdLiteralLabel);
         }
+        /// <summary>
+        /// Scans the specified type's static fields.
+        /// </summary>
+        /// <param name="TheLibrary">The library currently being compiled.</param>
+        /// <param name="TheTypeInfo">The type to scan the static fields of.</param>
+        /// <param name="StaticFieldsBlock">The ASM block for the static fields for the library currently being compiled.</param>
         private static void ScanStaticFields(ILLibrary TheLibrary, Types.TypeInfo TheTypeInfo, ASM.ASMBlock StaticFieldsBlock)
         {
             foreach (Types.FieldInfo aFieldInfo in TheTypeInfo.FieldInfos)
@@ -352,6 +423,12 @@ namespace Drivers.Compiler.IL
                 }
             }
         }
+        /// <summary>
+        /// Scans the specified type's methods.
+        /// </summary>
+        /// <param name="TheLibrary">The library currently being compiled.</param>
+        /// <param name="TheTypeInfo">The type to scan the methods of.</param>
+        /// <param name="StaticFieldsBlock">The ASM block for the methods table for the library currently being compiled.</param>
         private static void ScanMethods(ILLibrary TheLibrary, Types.TypeInfo TheTypeInfo, ASM.ASMBlock MethodTablesBlock)
         {
             string currentTypeId = TheTypeInfo.ID;
@@ -439,6 +516,12 @@ namespace Drivers.Compiler.IL
                 Text = ASMResult.ToString()
             });
         }
+        /// <summary>
+        /// Scans the specified type's non-static fields.
+        /// </summary>
+        /// <param name="TheLibrary">The library currently being compiled.</param>
+        /// <param name="TheTypeInfo">The type to scan the non-static fields of.</param>
+        /// <param name="StaticFieldsBlock">The ASM block for the fields table for the library currently being compiled.</param>
         private static void ScanFields(ILLibrary TheLibrary, Types.TypeInfo TheTypeInfo, ASM.ASMBlock FieldTablesBlock)
         {
             string currentTypeId = TheTypeInfo.ID;
@@ -538,6 +621,14 @@ namespace Drivers.Compiler.IL
             });
         }
 
+        /// <summary>
+        /// Gets the allocation string for the specified number of bytes.
+        /// </summary>
+        /// <remarks>
+        /// TODO: Shift this to target architecture library.
+        /// </remarks>
+        /// <param name="numBytes">The number of bytes being allocated.</param>
+        /// <returns>The allocation string.</returns>
         private static string GetAllocStringForSize(int numBytes)
         {
             switch (numBytes)
@@ -553,6 +644,13 @@ namespace Drivers.Compiler.IL
             }
         }
 
+        /// <summary>
+        /// Scans the specified plugged IL block.
+        /// </summary>
+        /// <param name="TheLibrary">The library currently being compiled.</param>
+        /// <param name="theMethodInfo">The method which generated the IL block.</param>
+        /// <param name="theILBlock">The IL block to scan.</param>
+        /// <returns>CompileResult.OK.</returns>
         private static CompileResult ScanPluggedILBlock(ILLibrary TheLibrary, Types.MethodInfo theMethodInfo, ILBlock theILBlock)
         {
             TheLibrary.TheASMLibrary.ASMBlocks.Add(new ASM.ASMBlock()
@@ -564,6 +662,13 @@ namespace Drivers.Compiler.IL
 
             return CompileResult.OK;
         }
+        /// <summary>
+        /// Scans the specified non-plugged IL block.
+        /// </summary>
+        /// <param name="TheLibrary">The library currently being compiled.</param>
+        /// <param name="theMethodInfo">The method which generated the IL block.</param>
+        /// <param name="theILBlock">The IL block to scan.</param>
+        /// <returns>CompileResult.OK.</returns>
         private static CompileResult ScanNonpluggedILBlock(ILLibrary TheLibrary, Types.MethodInfo theMethodInfo, ILBlock theILBlock)
         {
             CompileResult result = CompileResult.OK;

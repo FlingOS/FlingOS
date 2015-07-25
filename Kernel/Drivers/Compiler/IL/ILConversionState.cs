@@ -33,7 +33,7 @@ using System.Threading.Tasks;
 namespace Drivers.Compiler.IL
 {
     /// <summary>
-    /// Represents the current state of the IL Compiler during compilation of a single, non-plugged IL block.
+    /// Represents the current state of the IL Scanner during compilation of a single, non-plugged IL block.
     /// </summary>
     public class ILConversionState
     {
