@@ -77,9 +77,10 @@ In the pursuit quality (and usually to achieve that, performance) hundreds of co
 | LED, Plasma      | Traditionally (though as of 2015 it may not be true) Plasma displays were able to produce much clearer dark/black images than LED. However, LED displays could consistently create brighter light/white images. | Plasma for home cinema, LED for public displays |
 | PNG, JPEG        | Both are based on compressing and saving colours of pixels in an image but they have very different approaches. PNG uses a colour palette and saves data about large areas/blocks of an image that are the same colour. JPEG is a lossy compression format that uses the Discrete Cosine Transform (DCT). JPEG is good for images where the colour of neighboring pixels varies a lot. | JPEG is best for photographs, PNG is best for logos / web images |
 | Ray tracing, Shading | Ray tracing uses virtual rays of light from light sources and traces them around in 3D space until they hit the "screen". After tracing thousands of rays, the final colour of the virtual screen is used as the image. Ray tracing is computationally expensive but produces highly realistic looking results. Shading uses objects (with surfaces) covered in colour. The colour is varied to give the look of shadows and 3D objects. It is computationally less expensive but produces less realistic (sometimes innacurate) results. | Ray tracing for movies, shading for games (though the two techniques are gradually merging / shifting usage) |
-|
+| VGA, HDMI        | HDMI basically replaces VGA. VGA was analogue, HDMI is digital. VGA had limited resolutions, frame rates and quality, HDMI has higher resolutions, frame rates and quality. Ultimately, HDMI has compromises but in almost every aspect it is less compromising than VGA so is thus better than VGA in almost all cases. This is an example of new technology replacing old rather than just adding another competitor. | &nbsp; |
 
 ## How do they all fit together?
+Displays, graphics and video all fit together relatively nicely (when you ignore all the incompatible, proprietary interfaces at the technical level). 
 
 ## So where to start?
 
