@@ -25,9 +25,9 @@ This document outlines the scope of the reference articles as a set of aims and 
 | 11 | Disk Devices                  | Complete  | Yes | 2014-11 |
 | 12 | - ATA                         | Complete  | Yes | 2015-01 |
 | 13 | - GPT                         | Complete  | No  | 2015-06 |
-| 14 | - MBR and EBR                 | Unstarted | N/A | 2015-09 |
-| 15 | - Partitions                  | Unstarted | N/A | 2015-09 |
-| 16 | Display / Video / Graphics    | Unstarted | N/A | 2015-09 |
+| 14 | - MBR and EBR                 | Complete  | No  | 2015-09 |
+| 15 | - Partitions                  | Complete  | No  | 2015-09 |
+| 16 | Display / Video / Graphics    | Started   | No  | 2015-09 |
 | 17 | - Consoles                    | Unstarted | N/A | 2015-09 |
 | 18 | - Shells                      | Unstarted | N/A | 2015-09 |
 | 19 | - VGA - Text-mode             | Unstarted | N/A | 2015-09 |

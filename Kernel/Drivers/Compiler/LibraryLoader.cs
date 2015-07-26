@@ -37,6 +37,9 @@ using Drivers.Compiler.IL;
 
 namespace Drivers.Compiler
 {
+    /// <summary>
+    /// Manages loading libraries from files (e.g. IL libraries from .dll or .exe files).
+    /// </summary>
     public static class LibraryLoader
     {
         /// <summary>

@@ -87,6 +87,9 @@ namespace Drivers.Compiler
         /// <summary>
         /// Path to the IL library to compile (the .dll or .exe file).
         /// </summary>
+        /// <value>
+        /// Gets/sets an implicitly defined field.
+        /// </value>
         public static string LibraryPath
         {
             get;
@@ -95,6 +98,9 @@ namespace Drivers.Compiler
         /// <summary>
         /// Path to the output folder.
         /// </summary>
+        /// <value>
+        /// Gets/sets an implicitly defined field.
+        /// </value>
         public static string OutputPath
         {
             get;
@@ -103,6 +109,9 @@ namespace Drivers.Compiler
         /// <summary>
         /// Path to the Drivers Compiler's Tools folder.
         /// </summary>
+        /// <value>
+        /// Gets/sets an implicitly defined field.
+        /// </value>
         public static string ToolsPath
         {
             get;
@@ -112,6 +121,9 @@ namespace Drivers.Compiler
         /// <summary>
         /// The build mode.
         /// </summary>
+        /// <value>
+        /// Gets/sets an implicitly defined field.
+        /// </value>
         public static BuildModes BuildMode
         {
             get;
@@ -120,6 +132,9 @@ namespace Drivers.Compiler
         /// <summary>
         /// The link mode.
         /// </summary>
+        /// <value>
+        /// Gets/sets an implicitly defined field.
+        /// </value>
         public static LinkModes LinkMode
         {
             get;
@@ -128,6 +143,9 @@ namespace Drivers.Compiler
         /// <summary>
         /// The target architecture. Should be one of the ones listed in <see cref="ValidTargetArchitectures"/>.
         /// </summary>
+        /// <value>
+        /// Gets/sets an implicitly defined field.
+        /// </value>
         public static string TargetArchitecture
         {
             get;
@@ -137,6 +155,9 @@ namespace Drivers.Compiler
         /// <summary>
         /// The size of an address in bytes. 4 for 32-bit architecture, 8 for 64-bit, etc.
         /// </summary>
+        /// <value>
+        /// Gets/sets an implicitly defined field.
+        /// </value>
         public static int AddressSizeInBytes
         {
             get;
@@ -155,6 +176,9 @@ namespace Drivers.Compiler
         /// <summary>
         /// List of assembly names to ignore when compiling.
         /// </summary>
+        /// <value>
+        /// Gets/sets <see cref="ignoreAssemblies"/>.
+        /// </value>
         public static List<string> IgnoreAssemblies
         {
             get

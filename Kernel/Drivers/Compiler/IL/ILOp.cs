@@ -782,9 +782,9 @@ namespace Drivers.Compiler.IL
         /// <summary>
         /// The offset of the next IL op.
         /// </summary>
-        /// <remarks>
+        /// <value>
         /// Calculated as Offset + BytesSize even if no "next op" exists.
-        /// </remarks>
+        /// </value>
         public int NextOffset
         {
             get

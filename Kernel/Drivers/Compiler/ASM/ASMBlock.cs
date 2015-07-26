@@ -78,9 +78,9 @@ namespace Drivers.Compiler.ASM
         /// </summary>
         public string PlugPath = null;
         /// <summary>
-        /// Whether the ASM block is plugged or not. This just returns whether the PlugPath 
-        /// is null or not.
+        /// Whether the ASM block is plugged or not.
         /// </summary>
+        /// <value>Gets whether the PlugPath is not null.</value>
         public bool Plugged { get { return PlugPath != null; } }
 
         /// <summary>

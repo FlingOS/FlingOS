@@ -62,24 +62,29 @@ namespace Drivers.Compiler.Types
         /// <summary>
         /// Whether the type is a value type or not.
         /// </summary>
+        /// <value>Gets the value of the underlying info's IsValueType property.</value>
         public bool IsValueType { get { return UnderlyingType.IsValueType; } }
         /// <summary>
         /// Whether the type is a pointer type or not.
         /// </summary>
+        /// <value>Gets the value of the underlying info's IsPointer property.</value>
         public bool IsPointer { get { return UnderlyingType.IsPointer; } }
 
         /// <summary>
         /// The size of an object of this type when it is represented on the stack.
         /// </summary>
+        /// <value>Gets/sets the value of an implicitly defined field.</value>
         public int SizeOnStackInBytes { get; set; }
         /// <summary>
         /// The size of an object of this type when it is allocated on the heap.
         /// </summary>
+        /// <value>Gets/sets the value of an implicitly defined field.</value>
         public int SizeOnHeapInBytes { get; set; }
 
         /// <summary>
         /// Whether objects of this type are managed by the GC or not.
         /// </summary>
+        /// <value>Gets/sets the value of an implicitly defined field.</value>
         public bool IsGCManaged { get; set; }
 
         /// <summary>
@@ -90,6 +95,7 @@ namespace Drivers.Compiler.Types
         /// <summary>
         /// The ID of this type (can be used as a label).
         /// </summary>
+        /// <value>Generates the value from the underlying info's FullName and filters it to make it usable as an ASM label.</value>
         public string ID
         {
             get

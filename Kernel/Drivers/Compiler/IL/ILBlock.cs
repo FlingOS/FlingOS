@@ -67,6 +67,7 @@ namespace Drivers.Compiler.IL
         /// the block is plugged but should be ignored! The block will thus produce
         /// no output.
         /// </remarks>
+        /// <value>Gets whether the plug path is not equal to null.</value>
         public bool Plugged { get { return PlugPath != null; } }
 
         /// <summary>

@@ -58,6 +58,7 @@ namespace Drivers.Compiler.Types
         /// <summary>
         /// Whether to apply the garbage collector modifications to the method or not.
         /// </summary>
+        /// <value>Gets whether the method had the NoGC attribute applied or not.</value>
         public bool ApplyGC
         {
             get
@@ -68,6 +69,7 @@ namespace Drivers.Compiler.Types
         /// <summary>
         /// Whether to apply the debug modifications to the method or not.
         /// </summary>
+        /// <value>Gets whether the method had the NoDebug attribute applied or not.</value>
         public bool ApplyDebug
         {
             get
@@ -78,14 +80,17 @@ namespace Drivers.Compiler.Types
         /// <summary>
         /// Whether the method is plugged or not.
         /// </summary>
+        /// <value>Gets whether the method had the PluggedMethod attribute applied or not.</value>
         public bool IsPlugged { get { return PlugAttribute != null; } }
         /// <summary>
         /// Whether the method is a constructor or not.
         /// </summary>
+        /// <value>Gets whether the underlying info is System.Reflection.ConstructorInfo or not.</value>
         public bool IsConstructor { get { return UnderlyingInfo is System.Reflection.ConstructorInfo; } }
         /// <summary>
         /// Whether the method is static or not.
         /// </summary>
+        /// <value>Gets the value of the underlying info's IsStatic property.</value>
         public bool IsStatic { get { return UnderlyingInfo.IsStatic; } }
 
         /// <summary>
@@ -95,6 +100,7 @@ namespace Drivers.Compiler.Types
         /// <summary>
         /// The method body (i.e. IL bytes) extracted from the underlying method base.
         /// </summary>
+        /// <value>Gets the value of the methodBody field or generates the value if it is null.</value>
         public System.Reflection.MethodBody MethodBody
         {
             get
@@ -114,6 +120,7 @@ namespace Drivers.Compiler.Types
         /// <summary>
         /// The ID of the method (can also be used as a label).
         /// </summary>
+        /// <value>Gets the value of the id field or generates the value if it is null.</value>
         public string ID
         {
             get
@@ -133,6 +140,7 @@ namespace Drivers.Compiler.Types
         /// <summary>
         /// The signature of the method (used to construct to ID).
         /// </summary>
+        /// <value>Gets the value of the signature field or generates the value if it is null.</value>
         public string Signature
         {
             get
@@ -157,6 +165,7 @@ namespace Drivers.Compiler.Types
         /// <summary>
         /// The priority value of the method (if any).
         /// </summary>
+        /// <value>Gets the value of the priority field or generates the value if it is null.</value>
         public long Priority
         {
             get

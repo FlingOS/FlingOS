@@ -60,6 +60,7 @@ namespace Drivers.Compiler.Attributes
         /// <summary>
         /// The path (relative to the build directory, excluding extension - see attribute summary) to the plug file.
         /// </summary>
+        /// <value>Gets/sets an implicitly defined field.</value>
         public string ASMFilePath
         {
             get;

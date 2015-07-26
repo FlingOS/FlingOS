@@ -91,6 +91,7 @@ namespace Drivers.Compiler.Attributes
         /// <remarks>
         /// Please see class remarks.
         /// </remarks>
+        /// <value>Gets/sets an implicitly defined field.</value>
         public long Priority
         {
             get;

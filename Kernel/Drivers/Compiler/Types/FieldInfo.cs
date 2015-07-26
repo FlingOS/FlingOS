@@ -44,20 +44,24 @@ namespace Drivers.Compiler.Types
         /// <summary>
         /// The type of the field.
         /// </summary>
+        /// <value>Gets the value of underlying info's FieldType property.</value>
         public Type FieldType { get { return UnderlyingInfo.FieldType; } }
         /// <summary>
         /// Whether the field is static or not.
         /// </summary>
+        /// <value>Gets the value of underlying info's IsStatic property.</value>
         public bool IsStatic { get { return UnderlyingInfo.IsStatic; } }
 
         /// <summary>
         /// The offset to the beginning of the field from the start of the type, in bytes.
         /// </summary>
+        /// <value>Gets/sets an implicitly defined field.</value>
         public int OffsetInBytes { get; set; }
 
         /// <summary>
         /// Generates a unique ID for the field (which can also be used as a label in assembly code).
         /// </summary>
+        /// <value>Generates the ID from the field information and filters it to make it valid for use as an ASM label.</value>
         public string ID
         {
             get
@@ -75,6 +79,7 @@ namespace Drivers.Compiler.Types
         /// <summary>
         /// Gets the name of the field.
         /// </summary>
+        /// <value>Gets the value of underlying info's Name property.</value>
         public string Name { get { return UnderlyingInfo.Name; } }
 
         /// <summary>
