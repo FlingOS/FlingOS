@@ -1,5 +1,5 @@
 ---
-layout: ref_article
+layout: reference-article
 title: Reference article standard
 date: 2015-07-21 01:40:00
 categories: docs spec
@@ -11,7 +11,7 @@ This document provides the basic standard and Markdown content for FlingOS refer
 # Standard
 
     ---
-    layout: ref_article
+    layout: reference-article
     title: TITLE
     date: YYYY-MM-DD HH:mm:ss
     categories: docs reference

@@ -1,5 +1,5 @@
 ---
-layout: ref_article
+layout: reference-article
 title: Reference articles scope
 date: 2015-07-21 00:30:00
 categories: docs spec

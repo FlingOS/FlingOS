@@ -1,5 +1,5 @@
 ---
-layout: ref_article
+layout: reference-article
 title: MBR and EBR
 date: 2015-07-21 11:38:00
 categories: docs reference

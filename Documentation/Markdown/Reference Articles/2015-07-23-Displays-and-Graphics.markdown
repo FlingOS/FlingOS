@@ -1,5 +1,5 @@
 ---
-layout: ref_article
+layout: reference-article
 title: Displays & Graphics
 date: 2015-07-23 12:20:00
 categories: docs reference
@@ -46,7 +46,7 @@ There are a few basic types of graphics technology in common use nowadays. These
 - Sprite graphics (largely hardware & software specific. Only widespread example: Tiles of Icons combined with CSS)
 - Vector graphics (e.g. SVG)
 - Anti-aliasing (specifically spatial anti-aliasing)
-- 3D (inc. modeling (e.g. polygonal modeling, curve modeling and digital sculpting)):
+- 3D (inc. modelling (e.g. polygonal modelling, curve modelling and digital sculpting)):
     - 3D projection (orthographic or perspective)
     - Shading
     - Ray tracing
@@ -70,6 +70,14 @@ There are a few basic video technologies for each type. For the first type (medi
  - S-Video (Separate Video / Super Video / Y/C)
 
 ## Why so many different technologies?
+In the pursuit quality (and usually to achieve that, performance) hundreds of compromises are made. For the many different applications and situations that displays, graphics and video are used in, different compromises are made. Here are just a few examples of the different compromises and situations to which they apply.
+
+| Technologies     | Compromise / Differences     | Situations      |
+| :------------- | :------------- |
+| LED, Plasma      | Traditionally (though as of 2015 it may not be true) Plasma displays were able to produce much clearer dark/black images than LED. However, LED displays could consistently create brighter light/white images. | Plasma for home cinema, LED for public displays |
+| PNG, JPEG        | Both are based on compressing and saving colours of pixels in an image but they have very different approaches. PNG uses a colour palette and saves data about large areas/blocks of an image that are the same colour. JPEG is a lossy compression format that uses the Discrete Cosine Transform (DCT). JPEG is good for images where the colour of neighboring pixels varies a lot. | JPEG is best for photographs, PNG is best for logos / web images |
+| Ray tracing, Shading | Ray tracing uses virtual rays of light from light sources and traces them around in 3D space until they hit the "screen". After tracing thousands of rays, the final colour of the virtual screen is used as the image. Ray tracing is computationally expensive but produces highly realistic looking results. Shading uses objects (with surfaces) covered in colour. The colour is varied to give the look of shadows and 3D objects. It is computationally less expensive but produces less realistic (sometimes innacurate) results. | Ray tracing for movies, shading for games (though the two techniques are gradually merging / shifting usage) |
+|
 
 ## How do they all fit together?
 
