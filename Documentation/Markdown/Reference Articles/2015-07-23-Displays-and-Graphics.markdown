@@ -15,6 +15,12 @@ Instead, it is more important to understand a range of the basic designs and sys
 ## Scope of this article
 As stated, this article does not cover specific display, video or graphics technologies (except where they are used as useful examples or for historical understanding). Instead this article will cover the important points of the long history of digital pictures and also provide the knowledge and understanding of theoretical concepts which applied by a wide range technologies.
 
+## Caveats
+1. This article does use simplifications - it has to. The aim is provide sufficient understanding, not 100% technical detail.
+2. This article is forced to touch upon some areas of electronics and physics. Where it does so, it makes some assumptions and generalisations which I know are not strictly true but are more than a reasonable description.
+
+In both cases the word "almost" is often applied to indicate to the reader that what is being said may not be 100% accurate, true or sufficiently detailed.
+
 ---
 
 # Overview
@@ -80,15 +86,59 @@ In the pursuit quality (and usually to achieve that, performance) hundreds of co
 | VGA, HDMI        | HDMI basically replaces VGA. VGA was analogue, HDMI is digital. VGA had limited resolutions, frame rates and quality, HDMI has higher resolutions, frame rates and quality. Ultimately, HDMI has compromises but in almost every aspect it is less compromising than VGA so is thus better than VGA in almost all cases. This is an example of new technology replacing old rather than just adding another competitor. | &nbsp; |
 
 ## How do they all fit together?
-Displays, graphics and video all fit together relatively nicely (when you ignore all the incompatible, proprietary interfaces at the technical level). 
+Displays, graphics and video all fit together relatively nicely (when you ignore all the incompatible, proprietary interfaces at the technical level). Essentially it's all one big chain of components linked together. It looks roughly like this:
+
+    [Application]-.-->Graphics pipeline (e.g. 2D, 3D rendering)----------------|--->Display controller--->(Video) Cable to display (e.g. HDMI)--->Screen
+                  |-->Video pipeline    (e.g. MP4 file decode)---.-->(Video)---^
+                                                                 |-->(Audio)------->Speaker controller
+
+What this shows is how an application can use graphics to render 2D and 3D stuff along with video to play an MP4 file. The video is split into video and audio, with audio sent to the speakers. The video part of the MP4 file is merged (by the graphics card) with the application graphics (the image output) and then sent to the display controller. The display controller then uses video (described as type 2 above, e.g. HDMI) to send that to the physical screen.
+
+So graphics and video (type 1) sit alongside eachother. Graphics combines with video to provide the input for display. Display then uses video (type 2) to transmit to the screen and the screen uses a display technology to actually produce the light which a human can see.
 
 ## So where to start?
+To start working with graphics there are a number of concepts which must be touched upon to provide sufficient understanding for the reader to be able to read other technical documents. The following sections will begin to explain some of the basic terminology.
+
+For starters I'll explain that a pipeline just means a set a functions which data is passed through in order. So a graphics pipeline (often shortened to pipe) just means a set of functions which graphics data is passed through. Such a pipe would consist of shading functions, texture functions, collision detection functions, and render functions that take the abstract graphics data and gradually transform it to produce the final image. Often (in graphics, video and audio at least) the specific functions are implemented in firmware on a specific graphics card, to get the best performance.
 
 ### Pixels in software
+Pixels in software are distinct from pixels in hardware primarily because hardware pixels may not work in the way software pretends they do. So please pay attention to whether you are dealing with the software end of things or the hardware. Here we will describe pixels as software would describe them.
+
+Pixels are a single dot of colour on the screen. The number of pixels which span the width and height of the screen define the resolution. Modern HD displays have a resolution of 1920x1080 pixels. Each pixel consists of three light components - red, green and blue. Mixing red, green and blue can form (almost) any colour. Each component (RGB) has an intensity value with 0 meaning off (no light - not black!) and 255 (max value of a byte) meaning fully on (max brightness/full intensity - not white!). If all the components are 0, you get black. If all the components are 255, you get white. If just the red component was 255 and the others 0, you get bright red. If all the components were 128 you would get a dull grey colour.
+
+There are alternative ways of representing pixel colour (most of which get translated in RGB at some point). The few main ones are listed below.
+| Name | Description |
+|:----:|:------------|
+| RGB  | Red, Green, Blue components as intensity values from 0 to 255 (normally) |
+| HSL  | Hue, Saturation, Luminescence components. Hue from 0 to 360 (distance round colour wheel), Saturation from 0 to 100 (%age) and Luminescence from 0 to 100 (%age) |
+| HSB  | Hue, Saturation, Brightness. Commonly confused with HSL but not the same. Notably Photoshop CS3 used a colour picker which used HSB but called it HSL |
+| CMYK | Cyan, Magenta, Yellow, Key (black). Commonly used in printing process as it describes proportion of ink required for a point on a page. CMY are the secondary colours (where as RBB are the primary colours). Primary/Secondary colours with respect to light not paint! |
+| YUV  | Y (luma), U (chrominance), V (chrominance). Alternative system RGB often used in video which takes into account human perception allowing compression or transmission errors to be masked more easily. |
+
+Each of these colour systems may also be extended to include an alpha component (e.g. ARGB) which allows the specification of transparency. 0 alpha means opaque, 255 alpha means completely transparent so the colour is invisible and only what is behind is shown.
 
 ### 2D
+2D graphics is conceptually fairly simple. You have an X-Y plane which is blank. Blank in a computing sense just means filled with all one colour. Often this is black but it can be set to any colour you like. During debugging, bright red or blue is often used to make "background leaks" very obvious. The same technique is used in 3D graphics.
+
+2D graphics makes used of the concept of painting. To paint an area, conceptually means to wipe a brush across the entire area. A brush is a thing which defines how to transform the starting value of a pixel to the end value. There are three main types of brush.
+| Name     | Description     |
+| :------------- | :------------- |
+| Solid Brush    | Ignores the existing colour of a pixel and just replaces it with a solid colour. Used to fill pixels with a set colour.       |
+| Gradient Brush | Ignores the existing colour of a pixel and just replaces it with a solid colour. The brush keeps track of how far it has brushed vertically and horizontally and gradually changes from a start colour to an end colour, thus producing a gradient across the area to which it is applied. |
+| Texture Brush  | May or may not ignore the existing colour of a pixel. Either it paints an image of the application area or it combines the existing values of pixels to create a new output. For instance, a blur texture brush would combine values of surrounding pixels to "blur" the result. |
+
+2D graphics also uses sprites and texture as described in the next section.
+
+2D graphics makes use of two main types of image. These are pixel images (pixel art) and SVG, both of which have been mentioned briefly earlier. Pixel art images are also known as bitmaps because they specify the colour of every pixel in the image. They may also use an alpha component to "leave out" certain pixels from the image. PNG and JPEG are both methods for saving bitmaps in a compressed format. The alternative is SVG - Scalable Vector Graphics. SVG images do not specify the colour of individual pixels. Instead, they desribe the location, colour and size of lines and shapes. SVG is more abstract data about an image (hence why they are called graphics). A graphics card can interpret the data to set areas of pixels to the correct colour. For example, an SVG file might specify a black rectangle at location (5,5) in the image with width and height 100.
+
+The advantage of bitmaps over SVG is that for highly detailed or varied images (such as a photograph) it uses less space to save all the data. However, for an image that consists of large areas of the same colour (such as a logo), SVG may be better. However, SVG has one key advantage. SVG specifies shapes and relative sizes. So to increase the size of an SVG image, you simply increase all the relative sizes and recalculate which pixels are filled in. This allows it to retain 100% sharpness for basic shapes. For a bitmap, however, when you increase or decrease the size of the image, the image has to be resampled and the computer must guess the colour of the extra (or fewer) pixels. This means bitmap images do not scale as well as SVG. However, if you apply some thought, it should be apparent that SVG would be just as (if not more) useless for a photograph. You wouldn't want each pixel scaled as just a square (which is what SVG would do).
+
+2D graphics makes use of one final key concept - layers. Layers are complete images of the screen except that the background is transparent. Each layer forms one (or more) parts of the final image. Layers are stacked on top of one another, which higher images blocking out lower images. This allows more complex outputs to be produced. Here are two examples of using layers.
+1. Cursor layer and application layer. Allows the computer cursor to be painted on top of the application without affecting the application's image.
+2. Character layer and background layer. Allows a character in a 2D game to be moved around and painted on top of a background.
 
 ### Sprites and textures
+
 
 ### 3D
 
@@ -108,18 +158,29 @@ Displays, graphics and video all fit together relatively nicely (when you ignore
 # History
 
 ## Introduction
-While it may not seem necessary to know the history of displays, video and graphics, I can assure you it is. Like most areas of computing, the terminology and concepts have developed over time and are now baked into everything. Historical terms (even for things which have totally changed meaning) are everywhere so it's useful to know where they came from. History can also teach us many of the lessons learnt over time particularly with graphics, where there are unobvious cases that lead to bad results.
+The history of displays, video and graphics offers us insight into the problems (and their solutions) which have been discovered over time and are now solved. If you are intending on writing your own graphics driver, video decoder or display driver you will need to be aware of the issues. If you are not, you will probably end up with low-quality, flickery results.
 
 
 ## Displays
+_The following dates are the earliest date for which a commercial product became available. The specific technology or concept may have be discovered, proposed or successfully implemented some years earlier._
 
 ### 1922 - Monochrome CRT
+Displays started way back in 1922 with CRT - Cathode Ray Tube. Cathode ray tube screens were in common use right up until around 2000/2005 but (sadly) the most modern generation have probably never used one. They were large, bulky screens by necessity of the technology.
+
+A cathode ray tube screen consisted of a front pane of glass, coated on the inside with a phosphor layer. The phosphor layer was divided into dots, each of which was a monochrome pixel. Behind the screen was an anode (positive electrode). At the back of the display was an electron gun which formed the cathode (negative electrode). Between the cathode and the anode were a set of coils. When powered on, beams of electrons would be emitted from the cathode and fly forwards (very fast) towards the anode. With so much momentum the electrons would fly past the anode and hit the phosphor layer on the screen. An atom in phosphor would absorb the electron's energy causing it to become excited. The phosphor atom would then lose that energy by emitting a beam of light out to the viewer. The set of coils inside the display were used to focus the beam of electrons to particular pixels on the screen. This allowed control over which pixels on the screen were switched on or off and at different intensities.
+
+I won't go into the physics of why this works but sufficed to say the coils created a magnetic field used to bend the beam of electrons. This had the amusing effect (or catastrophic, depending on perspective) that applying a magnetic to the side of the display or the front of the screen would warp then image. If you left a strong magnet near the screen for too long, you could magnetise the phosphor layer, resulting in permanent warping (otherwise known as damage!)
 
 ### 1954 - Colour CRT
+Thirty two years later and along came the colour CRT. The colour CRT extended the monochrome CRT by adding two extra ray guns and a physical layering mechanism for the phosphor layers. The now three phosphor layers used different phosphor chemicals that emitted red, green or blue light. The three ray guns were used to excite parts of each of the three layers to form RGB light which, to the viewer, looked like a particular colour. It is important to remember that RGB pixels rely on the relative naivety of the human eye. The human eye cannot see the individual RGB components, so sees their combined colour. The light itself, however, is still three separate beams of red, green and blue. It is physically possible to have a yellow beam of light since the colour of light is based on its frequency and frequency is a continuous scale, but yellow seen from a screen is not like this. With a good enough camera, a photograph of any screen (even modern) can be enlarged to reveal the individual RGB components of a pixel.
 
-### 1968 - LED
+### 1960s/1970s - LED
+It is hard to put an exact date on the first LED display since lots of small developments each attempt to claim the title. It certainly wasn't until the late 80s that commercial, full-colour LED displays became available but monochrome/duochrome displays had existed since the mid 60s. Monochrome LED displays are still in wide use today, most iconically at bus stops and railway stations.
+
+Full-colour LED displays work much more simply than a CRT screen. Each pixel consists of a red, green and blue LED each of which can have variable brightness. An additional backlight boosts the output brightness of the screen allowing the viewer to see the colours.
 
 ### 1969 - Braille
+Braille displays, though not widely used or even supported, have existed since the late 1960s. They are a pin screen where each "pixel" is a pin which is raised or lowered in the screen. 
 
 ### 1971 - LCD
 
