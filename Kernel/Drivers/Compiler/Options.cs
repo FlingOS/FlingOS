@@ -82,6 +82,8 @@ namespace Drivers.Compiler
         {
             // Assume 32-bit architecture
             AddressSizeInBytes = 4;
+            BaseAddress = 0;
+            LoadOffset = 0;
         }
 
         /// <summary>
@@ -159,6 +161,17 @@ namespace Drivers.Compiler
         /// Gets/sets an implicitly defined field.
         /// </value>
         public static int AddressSizeInBytes
+        {
+            get;
+            set;
+        }
+
+        public static ulong BaseAddress
+        {
+            get;
+            set;
+        }
+        public static long LoadOffset
         {
             get;
             set;

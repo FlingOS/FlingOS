@@ -96,7 +96,18 @@ namespace Drivers.Compiler.MSBuildTask
             get;
             set;
         }
-        
+
+        public string BaseAddress
+        {
+            get;
+            set;
+        }
+        public string LoadOffset
+        {
+            get;
+            set;
+        }
+
         /// <summary>
         /// Executes the compiler.
         /// </summary>
@@ -110,7 +121,10 @@ namespace Drivers.Compiler.MSBuildTask
             Options.BuildMode = DebugBuild ? Options.BuildModes.Debug : Options.BuildModes.Release;
             Options.LinkMode = ISOLink ? Options.LinkModes.ISO : Options.LinkModes.ELF;
             Options.TargetArchitecture = TargetArchitecture;
-            
+
+            Options.BaseAddress = Convert.ToUInt64(BaseAddress, 16);
+            Options.LoadOffset = Convert.ToInt64(LoadOffset, 16);
+
             return App.CompilerProcess.Execute(
                     Logger_OnLogMessage,
                     Logger_OnLogWarning,

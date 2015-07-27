@@ -83,6 +83,16 @@ namespace Drivers.Compiler.App
                 Options.LinkMode = (args[5].ToLower() == "iso" ? Options.LinkModes.ISO : Options.LinkModes.ELF);
                 Options.TargetArchitecture = args[4];
 
+                if (args.Length >= 7)
+                {
+                    Options.BaseAddress = Convert.ToUInt64(args[6], 16);
+
+                    if (args.Length >= 8)
+                    {
+                        Options.LoadOffset = Convert.ToInt64(args[7], 16);
+                    }
+                }
+
                 result = (int)Execute(
                     Logger_OnLogMessage,
                     Logger_OnLogWarning,
@@ -102,7 +112,7 @@ namespace Drivers.Compiler.App
         /// <returns>True if the arguments appear to be valid, otherwise false.</returns>
         static bool ValidateArguments(string[] args)
         {
-            if (args.Length != 6)
+            if (args.Length < 6)
             {
                 Console.ForegroundColor = ConsoleColor.Red;
                 Console.WriteLine("Expected 5 arguments:");
@@ -112,6 +122,8 @@ namespace Drivers.Compiler.App
 3 : Build Mode - Debug or Release.
 4 : Target Architecture - e.g. x86, x64
 5 : Link Mode - ISO or ELF.
+6 : [Optional] ISO Kernel base address
+7 : [Optional] ISO Kernel load offset (subtracted from ISO Kernel base address)
 ");
                 Console.ForegroundColor = ConsoleColor.Gray;
 
@@ -135,7 +147,6 @@ namespace Drivers.Compiler.App
 
                 return false;
             }
-            
             return true;
         }
 
@@ -166,7 +177,9 @@ namespace Drivers.Compiler.App
             Logger.LogMessage("", 0, "Tools path               = \"" + Options.ToolsPath + "\"");
             Logger.LogMessage("", 0, "Target architecture      = \"" + Options.TargetArchitecture + "\"");
             Logger.LogMessage("", 0, "Build mode               = "   + Enum.GetName(typeof(Options.BuildModes), Options.BuildMode));
-            Logger.LogMessage("", 0, "Link mode               = " + Enum.GetName(typeof(Options.LinkModes), Options.LinkMode));
+            Logger.LogMessage("", 0, "Link mode                = " + Enum.GetName(typeof(Options.LinkModes), Options.LinkMode));
+            Logger.LogMessage("", 0, "Base address             = " + Options.BaseAddress.ToString());
+            Logger.LogMessage("", 0, "Load offset              = " + Options.LoadOffset.ToString());
 
             // IL Library       - In a list of libraries returned to the higher-level control app (this app)
             //                    from Library Loader

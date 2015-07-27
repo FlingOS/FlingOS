@@ -137,7 +137,7 @@ namespace Drivers.Compiler
             { "ILC0006", "Scanned an IL op which warns the following: {0}" },
             
             { "ASMC0001", "The ASM compiler failed to compile." },
-            { "ASMC0002", "NASM failed to execute for file {0}" },
+            { "ASMC0002", "NASM failed to execute for file {0}. Message: {1}" },
             { "ASMC0003", "The ASM compiler failed to compile due to an unexpected error. {0}\r\n{1}." },
             
             { "LL0001", "The linker failed to link." },

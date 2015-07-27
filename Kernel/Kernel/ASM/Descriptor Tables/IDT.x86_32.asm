@@ -617,11 +617,7 @@ pic_remap:
     dec al              ; al is now 1. This is the x86 mode code for both 8259 PIC chips
     out 0x21, al        ; set PIC1
     out 0xA1, al        ; set PIC2
-
-    dec al              ; al is now 0.
-    out 0x21, al        ; set PIC1
-    out 0xA1, al        ; set PIC2
-
+	
 	mov ax, 0xFFFF		; Set interrupt mask to disable all interrupts
     out 0x21, al        ; Set mask of PIC1_DATA
     xchg al, ah
