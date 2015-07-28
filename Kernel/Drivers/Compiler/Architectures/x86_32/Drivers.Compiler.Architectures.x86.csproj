@@ -57,6 +57,7 @@
     <Compile Include="ASMOps\Nop.cs" />
     <Compile Include="ASMOps\Not.cs" />
     <Compile Include="ASMOps\Or.cs" />
+    <Compile Include="ASMOps\TypeTable.cs" />
     <Compile Include="ASMOps\Xor.cs" />
     <Compile Include="ASMOps\Div.cs" />
     <Compile Include="ASMOps\Cdq.cs" />

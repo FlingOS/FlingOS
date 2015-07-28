@@ -327,57 +327,18 @@ namespace Drivers.Compiler.IL
             string TypeSignatureLiteralLabel = TheLibrary.AddStringLiteral(TheTypeInfo.UnderlyingType.FullName); // Legacy
             string TypeIdLiteralLabel = TheLibrary.AddStringLiteral(TheTypeInfo.ID);
 
-            StringBuilder ASMResult = new StringBuilder();
-            ASMResult.AppendLine("GLOBAL " + TypeId + ":data");
-            ASMResult.AppendLine(TypeId + ":");
-            
             Types.TypeInfo typeTypeInfo = ILLibrary.SpecialClasses[typeof(Attributes.TypeClassAttribute)].First();
             List<Types.FieldInfo> OrderedFields = typeTypeInfo.FieldInfos.Where(x => !x.IsStatic).OrderBy(x => x.OffsetInBytes).ToList();
+            List<Tuple<string, Types.TypeInfo>> FieldInformation = new List<Tuple<string, Types.TypeInfo>>();
             foreach (Types.FieldInfo aTypeField in OrderedFields)
             {
                 Types.TypeInfo FieldTypeInfo = TheLibrary.GetTypeInfo(aTypeField.FieldType);
-                string allocStr = GetAllocStringForSize(
-                    FieldTypeInfo.IsValueType ? FieldTypeInfo.SizeOnHeapInBytes : FieldTypeInfo.SizeOnStackInBytes);
-                switch (aTypeField.Name)
-                {
-                    case "Size":
-                        ASMResult.AppendLine(allocStr + " " + SizeVal);
-                        break;
-                    case "Id":
-                        ASMResult.AppendLine(allocStr + " " + IdVal);
-                        break;
-                    case "StackSize":
-                        ASMResult.AppendLine(allocStr + " " + StackSizeVal);
-                        break;
-                    case "IsValueType":
-                        ASMResult.AppendLine(allocStr + " " + IsValueTypeVal);
-                        break;
-                    case "MethodTablePtr":
-                        ASMResult.AppendLine(allocStr + " " + MethodTablePointer);
-                        break;
-                    case "IsPointer":
-                        ASMResult.AppendLine(allocStr + " " + IsPointerTypeVal);
-                        break;
-                    case "TheBaseType":
-                        ASMResult.AppendLine(allocStr + " " + BaseTypeIdVal);
-                        break;
-                    case "FieldTablePtr":
-                        ASMResult.AppendLine(allocStr + " " + FieldTablePointer);
-                        break;
-                    case "Signature":
-                        ASMResult.AppendLine(allocStr + " " + TypeSignatureLiteralLabel);
-                        break;
-                    case "IdString":
-                        ASMResult.AppendLine(allocStr + " " + TypeIdLiteralLabel);
-                        break;
-                }
+                FieldInformation.Add(new Tuple<string, Types.TypeInfo>(aTypeField.Name, FieldTypeInfo));
             }
-            ASMResult.AppendLine();
 
-            TypesTableBlock.Append(new ASM.ASMGeneric()
-            {
-                Text = ASMResult.ToString()
-            });
+            ASM.ASMOp newTypeTableOp = (ASM.ASMOp)Activator.CreateInstance(TargetASMOps[ASM.OpCodes.TypeTable], TypeId, SizeVal, IdVal, StackSizeVal, IsValueTypeVal, MethodTablePointer, IsPointerTypeVal, BaseTypeIdVal, FieldTablePointer, TypeSignatureLiteralLabel, TypeIdLiteralLabel, FieldInformation);
+            TypesTableBlock.Append(newTypeTableOp);
+
             TypesTableBlock.AddExternalLabel(MethodTablePointer);
             TypesTableBlock.AddExternalLabel(FieldTablePointer);
             TypesTableBlock.AddExternalLabel(TypeSignatureLiteralLabel);
@@ -602,15 +563,7 @@ namespace Drivers.Compiler.IL
             });
         }
 
-        /// <summary>
-        /// Gets the allocation string for the specified number of bytes.
-        /// </summary>
-        /// <remarks>
-        /// TODO: Shift this to target architecture library.
-        /// </remarks>
-        /// <param name="numBytes">The number of bytes being allocated.</param>
-        /// <returns>The allocation string.</returns>
-        private static string GetAllocStringForSize(int numBytes)
+        public static string GetAllocStringForSize(int numBytes)
         {
             switch (numBytes)
             {

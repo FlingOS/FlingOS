@@ -40,7 +40,8 @@ namespace Drivers.Compiler.ASM
         GlobalLabel,
         Label,
         Header,
-        StringLiteral
+        StringLiteral,
+        TypeTable
     }
 
     /// <summary>
