@@ -185,13 +185,43 @@ Braille displays, though not widely used or even supported, have existed since t
 Due to manufacturing and construction methods used (and, in my opinion, probably a lack of research rather than demand) braille displays are very expensive. Also, it was only in 2015 that any commercial company produced a full-page braille display (see [Tactisplay](http://www.tactisplay.com/product/tactisplay-table)) which had 12,000 pixels (40 cells by 25 cells).
 
 ### 1971 - LCD
+LCD first made its appearance in 1971 and has since become one of the most popular display technologies. This is probably largely due to three factors:
+1. It is more energy efficient than CRT
+2. It produces a better quality of image than plain LED (brighter, better gamut amongst other factors)
+3. LCD screens can be made thinner and lighter than most other screen technologies.
+
+LCD works in the conventional way with pixels made up of the normal three components: RGB.
 
 ### 1995 - Full-colour Plasma
+Full-colour Plasma displays have a wider colour gamut, can (traditionally) produce darker black than LCD and have a wider viewing angle. However, particularly older Plasma displays, suffered from loss of quality over time, screen-door effects (especially at larger sizes) and suffer from pressure and radio wave interference problems due to the way the light is produced.
+
+Plasma displays work by having cells (very small containers) of a mixture of gases. Each cell mostly contains noble gases but with some mercury vapour. By applying a current to the cell, electrons fly across it. Occasionally an electron hits a mercury atom in the vapour causing the atom to become exciting. The mercury atom then de-excites, releasing UV radiation. The UV light hits the phosphor layer which is coated on the inside of the cell causing excitation of the phosphor. The phosphor de-excites by releasing visible light. This is much the same way fluorescent lamps work and similar to how old CRT screens work.
+
+To form a pixel, three cells are placed next to each other, one for each of red, green and blue. The phosphor coatings determine the colour outputted by each cell.
+
+One particular issue with this method of light production is called screen burn-in. This occurs on both CRTs and Plasma displays. When the same image is displayed for a long period of time, the phosphor overheats and becomes permanently damanged. The damage causes loss of luminosity which, when the screen is turned off, can be seen as a darkened shadow on the display.
+
+Plasma displays also suffer from another effect due to cell design. The cells build up a storage of charge over time, resulting in them remaining on even after the displayed image has changed. This is called a ghost image and is sometimes confused with burn-in. Unlike burn-in it, can be cleared by switching off the screen for a long period of time, allowing the affected cells to discharge.
 
 ### 2003 - OLED
+Organic light emitting diodes are the latest and (arguably) greatest in display technologies. Yet it is only now in 2015 that we are starting to see significant recognition and use of OLED in commercial products. The high-end smartphone market is currently the biggest user of OLED displays where as in the TV market, LG is the sole manufacturer of an OLED based product. So despite their improvements, OLED is still not completely replacing LCD. This is largely due to the fact that, like any new technology, OLED is expensive to design and manufacture.
+
+OLED screens are special because each OLED is emissive. This means that the OLED itself produces the bright red, green or blue light that the eye sees. This is completely different to LCD or conventional LED. In LCD and conventional LED, the light seen is produced by a bright backlight which is then filtered to give the correct colour. Using backlight means that brightness control can only happen for either the whole screen or, in some advanced products, patches of the screen. With OLED, brightness control happens per pixel. This means that OLED can produce much darker or higher-contrast images than LCD as it can very accurately select areas of the image to be very bright or very dark. LCD can, at best, only make certain patches very dark and other patches very bright. So OLED produces a better, more natural quality of image. It is also lower power than LCD.
+
+Unfortunately, blue OLEDs suffer from degradation issues which is one of the reasons why Samsung ceased manufacturing its OLED TV. Phones which use OLED do not suffer the issue as badly because the smaller screens use a different variant of the OLED technology.
+
+Ultimately OLEDs look like they will be the way forward but cost amongst a few other issues is a major prohibitor (though cost is likely to reduce roughly according to the widely accepted concept presented by Moore's law).
 
 ### 2004 - Electronic Paper
+Electronic paper is perhaps more recent than OLED but its use has been fairly limited. This is largely because it is a slow and monochrome (full-colour is only seen in research labs). This has meant it is basically only used for E-Reader products. Little to no attempts have been made to replace traditional paper applications such as newspaper. E-ink displays are also comparatively expensive to produce.
 
+E-ink displays come in essentially two forms. One form of the technology relies on having small cells which contain either a white/black ball or a white liquid and a black liquid. Applying a voltage flips the ball one way up or the other thus revealing the white or black side. The liquid version does the same but the white or black liquids are pushed to the top of the cell to place them one top thus allowing the user to see white or black. These forms of e-ink are called Electrophoretic displays.
+
+The second form of the technology is called Electrowetting. This is somewhat different in that it allows more than just an "on-off" format for pixels. In fact these pixels can achieve gray-scale images and brighter whites and darker blacks than electrophoretic displays. Electrowetting is based upon controlling the shape of a droplet of dark liquid inside each cell. The drop of liquid acts as an optical switch. When no voltage is applied, the droplet sits flat on top of a hydrophobic surface. Thus a dark pixel (i.e. black colour) is seen. When a voltage is applied the droplet no longer sits flat on top of the underlying surface. Instead it forms a ball on top of the surface and is moved to one side of the cell. Thus the cell effectively becomes transparent allow the viewer to see whatever is behind (usually a white or reflective surface).
+
+Electrowetting displays are much faster than electrophoretic displays. For example, electrowetting displays are capable of playing reasonable video quality. However, they are very expensive and suffer from dramatic loss of visiblity in bright sunlight or similar siutations.
+
+Lastly, some e-ink displays (primarily electrophoretic-based displays) are bendable due to the plastic used to manufacture the grid of cells. Such bendable displays have seen low uptake, however. Ultimately e-ink is an innovative technology that, with time, will no doubt find its place in the market. It is not intended to, nor likely to, ever supplant more conventional display technologies.
 
 ## Graphics
 

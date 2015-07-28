@@ -32,6 +32,12 @@ using System.Threading.Tasks;
 
 namespace Drivers.Compiler.ASM
 {
+    public enum OpCodes
+    {
+        Any,
+        Comment
+    }
+
     /// <summary>
     /// Represents an ASM op which will be translated into assembly language (i.e. assembly text).
     /// </summary>
