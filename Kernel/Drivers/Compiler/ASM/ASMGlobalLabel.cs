@@ -35,11 +35,6 @@ namespace Drivers.Compiler.ASM
     /// <summary>
     /// Represents a label which external ASM blocks can depend upon i.e. a global label.
     /// </summary>
-    /// <remarks>
-    /// The Convert method ought to be abstracted to the target architecture library
-    /// since different assembly syntaxes use different syntaxes for denoting global 
-    /// labels. The target architecture determines the syntax.
-    /// </remarks>
     [ASMOpTarget(Target = OpCodes.GlobalLabel)]
     public abstract class ASMGlobalLabel : ASMOp
     {

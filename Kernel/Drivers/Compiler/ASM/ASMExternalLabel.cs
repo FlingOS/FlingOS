@@ -35,11 +35,6 @@ namespace Drivers.Compiler.ASM
     /// <summary>
     /// Represents a label for an external dependency of an ASM block.
     /// </summary>
-    /// <remarks>
-    /// The Convert method ought to be abstracted to the target architecture library
-    /// since different assembly syntaxes use different syntaxes for denoting external 
-    /// labels. The target architecture determines the syntax.
-    /// </remarks>
     [ASMOpTarget(Target = OpCodes.ExternalLabel)]
     public abstract class ASMExternalLabel : ASMOp
     {

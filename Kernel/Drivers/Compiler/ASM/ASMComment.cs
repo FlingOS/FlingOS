@@ -35,11 +35,6 @@ namespace Drivers.Compiler.ASM
     /// <summary>
     /// Represents a comment in assembly code.
     /// </summary>
-    /// <remarks>
-    /// The Convert method ought to be abstracted to the target architecture library
-    /// since different assembly syntaxes use different syntaxes for denoting comments.
-    /// The target architecture determines the syntax.
-    /// </remarks>
     [ASMOpTarget(Target=OpCodes.Comment)]
     public abstract class ASMComment : ASMOp
     {

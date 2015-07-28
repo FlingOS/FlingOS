@@ -35,16 +35,6 @@ namespace Drivers.Compiler.ASM
     /// <summary>
     /// Represents a label in assembly code.
     /// </summary>
-    /// <remarks>
-    /// The Convert method ought to be abstracted to the target architecture library
-    /// since different assembly syntaxes use different syntaxes for denoting labels. 
-    /// The target architecture determines the syntax.
-    /// </remarks>
-    /// <remarks>
-    /// The Convert method ought to be abstracted to the target architecture library
-    /// since different assembly syntaxes use different syntaxes for denoting labels. 
-    /// The target architecture determines the syntax.
-    /// </remarks>
     [ASMOpTarget(Target = OpCodes.Label)]
     public abstract class ASMLabel : ASMOp
     {
