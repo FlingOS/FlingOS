@@ -180,7 +180,9 @@ It is hard to put an exact date on the first LED display since lots of small dev
 Full-colour LED displays work much more simply than a CRT screen. Each pixel consists of a red, green and blue LED each of which can have variable brightness. An additional backlight boosts the output brightness of the screen allowing the viewer to see the colours.
 
 ### 1969 - Braille
-Braille displays, though not widely used or even supported, have existed since the late 1960s. They are a pin screen where each "pixel" is a pin which is raised or lowered in the screen. 
+Braille displays, though not widely used or even supported, have existed since the late 1960s. They are a pin screen where each "pixel" is a pin which is raised or lowered in the screen. Rather than being an entire screen, braille displays are almost exclusively seen as a single line of braille characters attached to the bottom of a keyboard. Each character consists of eight pins, four rows and two columns. This gives 256 possible patterns (2^8 since each pin can either by up or down). Typically a braille keyboard will have an output braille display with forty to eighty characters (known as character cells).
+
+Due to manufacturing and construction methods used (and, in my opinion, probably a lack of research rather than demand) braille displays are very expensive. Also, it was only in 2015 that any commercial company produced a full-page braille display (see [Tactisplay](http://www.tactisplay.com/product/tactisplay-table)) which had 12,000 pixels (40 cells by 25 cells).
 
 ### 1971 - LCD
 
