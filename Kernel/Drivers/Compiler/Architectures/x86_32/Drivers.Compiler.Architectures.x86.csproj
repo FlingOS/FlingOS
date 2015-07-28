@@ -43,6 +43,7 @@
   <ItemGroup>
     <Compile Include="ASMOps\ExternalLabel.cs" />
     <Compile Include="ASMOps\GlobalLabel.cs" />
+    <Compile Include="ASMOps\Header.cs" />
     <Compile Include="ASMOps\Neg.cs" />
     <Compile Include="ASMOps\Test.cs" />
     <Compile Include="ASMOps\Shr.cs" />

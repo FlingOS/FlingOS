@@ -38,7 +38,8 @@ namespace Drivers.Compiler.ASM
         Comment,
         ExternalLabel,
         GlobalLabel,
-        Label
+        Label,
+        Header
     }
 
     /// <summary>

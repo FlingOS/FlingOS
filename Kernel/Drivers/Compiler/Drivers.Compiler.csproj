@@ -42,17 +42,18 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ASM\ASMCompiler.cs" />
-    <Compile Include="ASM\ASMComment.cs" />
-    <Compile Include="ASM\ASMGlobalLabel.cs" />
-    <Compile Include="ASM\ASMExternalLabel.cs" />
+    <Compile Include="ASM\ASMOps\ASMComment.cs" />
+    <Compile Include="ASM\ASMOps\ASMGlobalLabel.cs" />
+    <Compile Include="ASM\ASMOps\ASMExternalLabel.cs" />
     <Compile Include="ASM\ASMLibrary.cs" />
-    <Compile Include="ASM\ASMLabel.cs" />
+    <Compile Include="ASM\ASMOps\ASMHeader.cs" />
+    <Compile Include="ASM\ASMOps\ASMLabel.cs" />
     <Compile Include="ASM\ASMGeneric.cs" />
-    <Compile Include="ASM\ASMOpTargetAttribute.cs" />
+    <Compile Include="ASM\ASMOps\ASMOpTargetAttribute.cs" />
     <Compile Include="ASM\ASMPreprocessor.cs" />
     <Compile Include="ASM\ASMProcessor.cs" />
     <Compile Include="ASM\ASMBlock.cs" />
-    <Compile Include="ASM\ASMOp.cs" />
+    <Compile Include="ASM\ASMOps\ASMOp.cs" />
     <Compile Include="Attributes\AddExceptionHandlerInfoMethodAttribute.cs" />
     <Compile Include="Attributes\ArrayClassAttribute.cs" />
     <Compile Include="Attributes\CallStaticConstructorsMethodAttribute.cs" />

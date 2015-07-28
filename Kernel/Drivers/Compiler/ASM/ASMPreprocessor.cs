@@ -131,9 +131,8 @@ namespace Drivers.Compiler.ASM
                     theBlock.ASMOps.Insert(0, newExternalLabelOp);
                 }
             }
-
-            theBlock.ASMOps.Insert(0, new ASMGeneric() { Text = "SECTION .text" });
-            theBlock.ASMOps.Insert(0, new ASMGeneric() { Text = "BITS 32" });
+            ASM.ASMOp newHeaderOp = (ASM.ASMOp)Activator.CreateInstance(IL.ILScanner.TargetASMOps[ASM.OpCodes.Header]);
+            theBlock.ASMOps.Insert(0, newHeaderOp);
         }
     }
 }
