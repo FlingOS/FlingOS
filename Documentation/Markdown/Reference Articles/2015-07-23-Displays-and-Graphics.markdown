@@ -180,9 +180,15 @@ It is hard to put an exact date on the first LED display since lots of small dev
 Full-colour LED displays work much more simply than a CRT screen. Each pixel consists of a red, green and blue LED each of which can have variable brightness. An additional backlight boosts the output brightness of the screen allowing the viewer to see the colours.
 
 ### 1969 - Braille
-Braille displays, though not widely used or even supported, have existed since the late 1960s. They are a pin screen where each "pixel" is a pin which is raised or lowered in the screen. 
+Braille displays, though not widely used or even supported, have existed since the late 1960s. They are a pin screen where each "pixel" is a pin which is raised or lowered in the screen.
 
 ### 1971 - LCD
+LCD first made its appearance in 1971 and has since become one of the most popular display technologies. This is probably largely due to three factors:
+1. It is more energy efficient than CRT
+2. It produces a better quality of image than plain LED (brighter, better gamut amongst other factors)
+3. LCD screens can be made thinner and lighter than most other screen technologies.
+
+LCD works in the conventional way with pixels made up of the normal three components: RGB.
 
 ### 1995 - Full-colour Plasma
 
