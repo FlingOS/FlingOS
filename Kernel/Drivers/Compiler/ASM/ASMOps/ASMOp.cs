@@ -39,7 +39,8 @@ namespace Drivers.Compiler.ASM
         ExternalLabel,
         GlobalLabel,
         Label,
-        Header
+        Header,
+        StringLiteral
     }
 
     /// <summary>

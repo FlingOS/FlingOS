@@ -274,39 +274,10 @@ namespace Drivers.Compiler.IL
             foreach (KeyValuePair<string, string> aStringLiteral in TheLibrary.StringLiterals)
             {
                 string value = aStringLiteral.Value;
-                Encoding xEncoding = Encoding.ASCII;
-                var NumBytes = xEncoding.GetByteCount(value);
-                var stringData = new byte[4 + NumBytes];
-                Array.Copy(BitConverter.GetBytes(value.Length), 0, stringData, 0, 4);
-                Array.Copy(xEncoding.GetBytes(value), 0, stringData, 4, NumBytes);
+                byte[] lengthBytes = BitConverter.GetBytes(value.Length);
 
-                StringBuilder LiteralASM = new StringBuilder();
-                //This is UTF-16 (Unicode)/ASCII text
-                LiteralASM.AppendLine(string.Format("GLOBAL {0}:data", aStringLiteral.Key));
-                LiteralASM.AppendLine(string.Format("{0}:", aStringLiteral.Key));
-                //Put in type info as FOS_System.String type
-                LiteralASM.AppendLine(string.Format("dd {0}", StringTypeId));
-                //Put in string length bytes
-                LiteralASM.Append("db ");
-                for (int i = 0; i < 3; i++)
-                {
-                    LiteralASM.Append(stringData[i]);
-                    LiteralASM.Append(", ");
-                }
-                LiteralASM.Append(stringData[3]);
-                //Put in string characters (as words)
-                LiteralASM.Append("\ndw ");
-                for (int i = 4; i < (stringData.Length - 1); i++)
-                {
-                    LiteralASM.Append(stringData[i]);
-                    LiteralASM.Append(", ");
-                }
-                LiteralASM.Append(stringData.Last());
-                LiteralASM.AppendLine();
-                StringLiteralsBlock.Append(new ASM.ASMGeneric()
-                {
-                    Text = LiteralASM.ToString()
-                });
+                ASM.ASMOp newLiteralOp = (ASM.ASMOp)Activator.CreateInstance(TargetASMOps[ASM.OpCodes.StringLiteral], aStringLiteral.Key, StringTypeId, lengthBytes, value.ToCharArray());
+                StringLiteralsBlock.Append(newLiteralOp);
             }
 
             #endregion
