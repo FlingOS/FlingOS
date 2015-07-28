@@ -55,78 +55,79 @@
     <ContentPlacement>AboveNamespaces</ContentPlacement>
     <NamespaceSummaries>
       <NamespaceSummaryItem name="Kernel" isDocumented="True">Contains the main classes for the Fling OS kernel.</NamespaceSummaryItem>
-<NamespaceSummaryItem name="Kernel.Compiler" isDocumented="False">Contains the code for compiling kernel IL code into the final assembler file.</NamespaceSummaryItem>
-<NamespaceSummaryItem name="Kernel.Compiler.App" isDocumented="False">The basic compiler application that uses Kernel.Compiler.</NamespaceSummaryItem>
-<NamespaceSummaryItem name="Kernel.Compiler.Architectures.x86_32" isDocumented="False">Contains the Il Op conversion class implementations for converting IL op to valid x86 - 32 bit assembler.</NamespaceSummaryItem>
-<NamespaceSummaryItem name="Kernel.Compiler.ILOps" isDocumented="False">Contains all the IL to ASM conversion classes for supported IL ops.</NamespaceSummaryItem>
-<NamespaceSummaryItem name="Kernel.Debug" isDocumented="False">Contains code related to debugging the Fling OS kernel.</NamespaceSummaryItem>
-<NamespaceSummaryItem name="Kernel.Debug.Data" isDocumented="False">Contains the classes for creating, managing and accessing the kernel debug database.</NamespaceSummaryItem>
-<NamespaceSummaryItem name="Kernel.Debug.Debugger" isDocumented="False">The Fling OS Kernel Debugger application used for debugging the Fling OS kernel (currently over a serial pipe form a virtual machine).</NamespaceSummaryItem>
-<NamespaceSummaryItem name="Kernel.Compiler (Group)" isGroup="True" isDocumented="False">Contains namespaces related to the kernel compiler.</NamespaceSummaryItem>
-<NamespaceSummaryItem name="Kernel.Debug (Group)" isGroup="True" isDocumented="False">Contains namespaces related to the kernel debugging tools.</NamespaceSummaryItem>
-<NamespaceSummaryItem name="Kernel (Group)" isGroup="True" isDocumented="True">Contains the main namespaces for the Fling OS kernel.</NamespaceSummaryItem>
-<NamespaceSummaryItem name="Kernel.FOS_System" isDocumented="True">The kernel's System namespace that largely replaces .Net's System namespace.</NamespaceSummaryItem>
-<NamespaceSummaryItem name="Kernel.FOS_System.Exceptions" isDocumented="True">Contains the standard exceptions for the kernel.</NamespaceSummaryItem>
-<NamespaceSummaryItem name="Testing._Kernel" isDocumented="False">The testing library for the Kernel library.</NamespaceSummaryItem>
-<NamespaceSummaryItem name="Kernel.FOS_System.Collections" isDocumented="True">Classes for managing collections of objects.</NamespaceSummaryItem>
-<NamespaceSummaryItem name="Kernel.FOS_System.IO" isDocumented="True">Classes for managing input/output tasks such as file handling.</NamespaceSummaryItem>
-<NamespaceSummaryItem name="Kernel.FOS_System.IO.Disk" isDocumented="True">Classes for handling disks (e.g. hard-disks).</NamespaceSummaryItem>
-<NamespaceSummaryItem name="Kernel.FOS_System.IO.FAT" isDocumented="True">Classes for handling a FAT file system.</NamespaceSummaryItem>
-<NamespaceSummaryItem name="Kernel.FOS_System.IO.Streams" isDocumented="True">Classes for handling streams.</NamespaceSummaryItem>
-<NamespaceSummaryItem name="Kernel.FOS_System.IO.Streams.FAT" isDocumented="True">Classes for handling FAT streams such as FAT file streams.</NamespaceSummaryItem>
-<NamespaceSummaryItem name="Kernel.FOS_System.Stubs" isDocumented="True">Contains stubs for the FOS_System namespace.</NamespaceSummaryItem>
-<NamespaceSummaryItem name="Kernel.Hardware" isDocumented="True">The kernel's Hardware namespace contains classes that handle specific hardware.</NamespaceSummaryItem>
-<NamespaceSummaryItem name="Kernel.Hardware.ATA" isDocumented="True">Contains classes for handling ATA devices.</NamespaceSummaryItem>
-<NamespaceSummaryItem name="Kernel.Hardware.Devices" isDocumented="True">Contains classes for generic types of hardware device e.g. DiskDevice.</NamespaceSummaryItem>
-<NamespaceSummaryItem name="Kernel.Hardware.DMA" isDocumented="True">Contains classes for managing direct memory access.</NamespaceSummaryItem>
-<NamespaceSummaryItem name="Kernel.Hardware.IO" isDocumented="True">Contains classes for managing I/O devices.</NamespaceSummaryItem>
-<NamespaceSummaryItem name="Kernel.Hardware.PCI" isDocumented="True">Contains classes for managing PCI devices.</NamespaceSummaryItem>
-<NamespaceSummaryItem name="Kernel.Hardware.USB" isDocumented="True">Contains classes for managing USB devices.</NamespaceSummaryItem>
-<NamespaceSummaryItem name="Kernel.Hardware.USB.HCIs" isDocumented="True">Contains classes specifically for managing USB Host Controller Interfaces.</NamespaceSummaryItem>
-<NamespaceSummaryItem name="Kernel.Utilities" isDocumented="True">Contains Kernel utility classes and functions that can be used throughout the kernel.</NamespaceSummaryItem>
-<NamespaceSummaryItem name="Kernel.FOS_System (Group)" isGroup="True" isDocumented="True">Contains namespaces related to Kernel.FOS_System and sub-namespaces.</NamespaceSummaryItem>
-<NamespaceSummaryItem name="Kernel.Hardware (Group)" isGroup="True" isDocumented="True">Contains namespaces related to Kernel.Hardware and sub-namespaces.</NamespaceSummaryItem>
-<NamespaceSummaryItem name="Kernel.Core (Group)" isGroup="True" isDocumented="True">Contains namespaces related to Kernel.Core and sub-namespaces.</NamespaceSummaryItem>
-<NamespaceSummaryItem name="Kernel.Core" isDocumented="True">Contains classes that handle core kernel functionality but which is at least 1-level abstracted from the specific hardware.</NamespaceSummaryItem>
-<NamespaceSummaryItem name="Kernel.Core.Consoles" isDocumented="True">Contains specific implementations of the Console class.</NamespaceSummaryItem>
-<NamespaceSummaryItem name="Kernel.Core.Shells" isDocumented="True">Contains specific implementations of the Shell class.</NamespaceSummaryItem>
-<NamespaceSummaryItem name="Kernel.Hardware.CPUs" isDocumented="True">Contains specific implementations of the CPU class.</NamespaceSummaryItem>
-<NamespaceSummaryItem name="Kernel.Hardware.Interrupts" isDocumented="True">Contains hardware-specific code for managing interrupts.</NamespaceSummaryItem>
-<NamespaceSummaryItem name="Kernel.Hardware.Keyboards" isDocumented="True">Contains specific implementations of the Keyboard class.</NamespaceSummaryItem>
-<NamespaceSummaryItem name="Kernel.Hardware.Timers" isDocumented="True">Contains specific implementations of the Timer class.</NamespaceSummaryItem>
-<NamespaceSummaryItem name="Kernel.Hardware.USB.Devices" isDocumented="True">Contains implementations of drivers for USB devices.</NamespaceSummaryItem>
-<NamespaceSummaryItem name="Kernel.Hardware.VirtMem" isDocumented="True">Contains specific implementations of virtual memory management for different architectures.</NamespaceSummaryItem>
-<NamespaceSummaryItem name="Kernel.Hardware.USB (Group)" isGroup="True" isDocumented="True">Contains namespaces related to Kernel.Hardware.USB and sub-namespaces.</NamespaceSummaryItem>
-<NamespaceSummaryItem name="(global)" isDocumented="True" />
-<NamespaceSummaryItem name="Drivers.Compiler" isDocumented="True">Contains all libraries and classes related to the compiler which is capable of compiling both the Kernel and drivers. The Drivers Compiler replaces the Kernel Compiler and significantly improves speed and compiler architecture.</NamespaceSummaryItem>
-<NamespaceSummaryItem name="Drivers.Compiler.App" isDocumented="True">Contains the command-line application and related classes which provide a command line interface to the Drivers Compiler. It is the primary point of invocation for the Drivers Compiler.</NamespaceSummaryItem>
-<NamespaceSummaryItem name="Drivers.Compiler.Architectures.x86" isDocumented="True">Contains namespaces and classes for targetting the x86 (32 bit) processor architecture.</NamespaceSummaryItem>
-<NamespaceSummaryItem name="Drivers.Compiler.Architectures.x86.ASMOps" isDocumented="True">Contains classes representing all the x86 operations used by the compiler when targetting the x86 (32-bit) architecture.</NamespaceSummaryItem>
-<NamespaceSummaryItem name="Drivers.Compiler.ASM" isDocumented="True">Contains the framework for converting IL ops into ASM code and compiling that ASM code into machine code.</NamespaceSummaryItem>
-<NamespaceSummaryItem name="Drivers.Compiler.Attributes" isDocumented="True">Contains attribute classes used by the compiler for identification of key classes and methods within the operating system code, such as the entrypoint and garbage collector methods.</NamespaceSummaryItem>
-<NamespaceSummaryItem name="Drivers.Compiler.IL" isDocumented="True">Contains the framework for reading IL bytes, representation of IL ops and the construction and manipulation of IL methods, type tables and related aspects.</NamespaceSummaryItem>
-<NamespaceSummaryItem name="Drivers.Compiler.IL.ILOps" isDocumented="True">Contains classes representing all the IL ops supported by the compiler. The classes give the root operation and list support for variants. The IL op classes are base classes containing abstract Preprocess and Convert methods which, when overridden, handle conversion of IL ops into ASM ops.</NamespaceSummaryItem>
-<NamespaceSummaryItem name="Drivers.Compiler.MSBuildTask" isDocumented="True">Contains the build task implementation and related classes which provide an interface for MSBuild to the Drivers Compiler. It is a primary point of invocation for the Drivers Compiler when using automated compilation through MSBuild.</NamespaceSummaryItem>
-<NamespaceSummaryItem name="Drivers.Compiler.Types" isDocumented="True">Contains classes and framework for reading an IL library and scanning the contained types for classes, methods, structures, enumerations, properties, etc. etc.</NamespaceSummaryItem>
-<NamespaceSummaryItem name="Drivers.Framework" isDocumented="True">Provides a basic framework for all C# drivers to link against.</NamespaceSummaryItem>
-<NamespaceSummaryItem name="ISO9660Generator" isDocumented="True">The ISO9660 Generator application is a wrapper app for Mosa's ISO9660 Generator library.</NamespaceSummaryItem>
-<NamespaceSummaryItem name="Kernel.Core.Processes" isDocumented="True">Contains classes related to loading and management of processes at a high-level.</NamespaceSummaryItem>
-<NamespaceSummaryItem name="Kernel.Core.Processes.ELF" isDocumented="True">Contains classes for loading, initialising and starting ELF executables (either as drivers or user-mode apps).</NamespaceSummaryItem>
-<NamespaceSummaryItem name="Kernel.Core.Tasks" isDocumented="True">Contains specific implementations of Tasks which are built-in sub-processes of the main kernel.</NamespaceSummaryItem>
-<NamespaceSummaryItem name="Kernel.FOS_System.IO.ISO9660" isDocumented="True">Classes for handling an ISO9660 file system.</NamespaceSummaryItem>
-<NamespaceSummaryItem name="Kernel.FOS_System.IO.Streams.ISO9660" isDocumented="True">Classes for handling ISO9660 streams such as ISO9660 file streams.</NamespaceSummaryItem>
-<NamespaceSummaryItem name="Kernel.FOS_System.Processes.Synchronisation" isDocumented="True">Contains implementations of widely needed synchronisation primitives such as spin-locks.</NamespaceSummaryItem>
-<NamespaceSummaryItem name="Kernel.Hardware.IO.Serial" isDocumented="True">Contains classes for handling Serial ports.</NamespaceSummaryItem>
-<NamespaceSummaryItem name="Kernel.Hardware.Processes" isDocumented="True">Contains classes for managing processes and threads including scheduling.</NamespaceSummaryItem>
-<NamespaceSummaryItem name="Kernel.Hardware.Processes.IPC" isDocumented="True">Contains classes for managing inter-process communication that goes via the kernel.</NamespaceSummaryItem>
-<NamespaceSummaryItem name="Kernel.Hardware.Processes.Synchronisation" isDocumented="True">Contains implementations of synchronisation primitives (that are not needed by FOS_System level classes) such as mutexes.</NamespaceSummaryItem>
-<NamespaceSummaryItem name="Kernel.Hardware.Tasks" isDocumented="True">Contains specific implementations of Tasks which are related directly to the hardware or hardware classes; They are built-in sub-processes of the main kernel.</NamespaceSummaryItem>
-<NamespaceSummaryItem name="Kernel.Hardware.Testing" isDocumented="True">Contains classes for testing aspects of the hardware drivers.</NamespaceSummaryItem>
-<NamespaceSummaryItem name="Kernel.Shared" isDocumented="True">Shared between the kernel and drivers. Contains definitions which must be the same for both kernel and drivers (such as system call numbers).</NamespaceSummaryItem>
-<NamespaceSummaryItem name="MemoryAllocationAnalyser" isDocumented="False" />
-<NamespaceSummaryItem name="MissingTagProcessor" isDocumented="False" />
-<NamespaceSummaryItem name="TestDriver" isDocumented="True">A sample driver for testing against. Does very little but useful for testing Kernel's ELF loading and ABI.</NamespaceSummaryItem>
-<NamespaceSummaryItem name="KernelABI" isDocumented="True">Contains classes for driver or application side access to the Kernel's Application Binary Interface.</NamespaceSummaryItem></NamespaceSummaries>
+      <NamespaceSummaryItem name="Kernel.Compiler" isDocumented="False">Contains the code for compiling kernel IL code into the final assembler file.</NamespaceSummaryItem>
+      <NamespaceSummaryItem name="Kernel.Compiler.App" isDocumented="False">The basic compiler application that uses Kernel.Compiler.</NamespaceSummaryItem>
+      <NamespaceSummaryItem name="Kernel.Compiler.Architectures.x86_32" isDocumented="False">Contains the Il Op conversion class implementations for converting IL op to valid x86 - 32 bit assembler.</NamespaceSummaryItem>
+      <NamespaceSummaryItem name="Kernel.Compiler.ILOps" isDocumented="False">Contains all the IL to ASM conversion classes for supported IL ops.</NamespaceSummaryItem>
+      <NamespaceSummaryItem name="Kernel.Debug" isDocumented="False">Contains code related to debugging the Fling OS kernel.</NamespaceSummaryItem>
+      <NamespaceSummaryItem name="Kernel.Debug.Data" isDocumented="False">Contains the classes for creating, managing and accessing the kernel debug database.</NamespaceSummaryItem>
+      <NamespaceSummaryItem name="Kernel.Debug.Debugger" isDocumented="False">The Fling OS Kernel Debugger application used for debugging the Fling OS kernel (currently over a serial pipe form a virtual machine).</NamespaceSummaryItem>
+      <NamespaceSummaryItem name="Kernel.Compiler (Group)" isGroup="True" isDocumented="False">Contains namespaces related to the kernel compiler.</NamespaceSummaryItem>
+      <NamespaceSummaryItem name="Kernel.Debug (Group)" isGroup="True" isDocumented="False">Contains namespaces related to the kernel debugging tools.</NamespaceSummaryItem>
+      <NamespaceSummaryItem name="Kernel (Group)" isGroup="True" isDocumented="True">Contains the main namespaces for the Fling OS kernel.</NamespaceSummaryItem>
+      <NamespaceSummaryItem name="Kernel.FOS_System" isDocumented="True">The kernel's System namespace that largely replaces .Net's System namespace.</NamespaceSummaryItem>
+      <NamespaceSummaryItem name="Kernel.FOS_System.Exceptions" isDocumented="True">Contains the standard exceptions for the kernel.</NamespaceSummaryItem>
+      <NamespaceSummaryItem name="Testing._Kernel" isDocumented="False">The testing library for the Kernel library.</NamespaceSummaryItem>
+      <NamespaceSummaryItem name="Kernel.FOS_System.Collections" isDocumented="True">Classes for managing collections of objects.</NamespaceSummaryItem>
+      <NamespaceSummaryItem name="Kernel.FOS_System.IO" isDocumented="True">Classes for managing input/output tasks such as file handling.</NamespaceSummaryItem>
+      <NamespaceSummaryItem name="Kernel.FOS_System.IO.Disk" isDocumented="True">Classes for handling disks (e.g. hard-disks).</NamespaceSummaryItem>
+      <NamespaceSummaryItem name="Kernel.FOS_System.IO.FAT" isDocumented="True">Classes for handling a FAT file system.</NamespaceSummaryItem>
+      <NamespaceSummaryItem name="Kernel.FOS_System.IO.Streams" isDocumented="True">Classes for handling streams.</NamespaceSummaryItem>
+      <NamespaceSummaryItem name="Kernel.FOS_System.IO.Streams.FAT" isDocumented="True">Classes for handling FAT streams such as FAT file streams.</NamespaceSummaryItem>
+      <NamespaceSummaryItem name="Kernel.FOS_System.Stubs" isDocumented="True">Contains stubs for the FOS_System namespace.</NamespaceSummaryItem>
+      <NamespaceSummaryItem name="Kernel.Hardware" isDocumented="True">The kernel's Hardware namespace contains classes that handle specific hardware.</NamespaceSummaryItem>
+      <NamespaceSummaryItem name="Kernel.Hardware.ATA" isDocumented="True">Contains classes for handling ATA devices.</NamespaceSummaryItem>
+      <NamespaceSummaryItem name="Kernel.Hardware.Devices" isDocumented="True">Contains classes for generic types of hardware device e.g. DiskDevice.</NamespaceSummaryItem>
+      <NamespaceSummaryItem name="Kernel.Hardware.DMA" isDocumented="True">Contains classes for managing direct memory access.</NamespaceSummaryItem>
+      <NamespaceSummaryItem name="Kernel.Hardware.IO" isDocumented="True">Contains classes for managing I/O devices.</NamespaceSummaryItem>
+      <NamespaceSummaryItem name="Kernel.Hardware.PCI" isDocumented="True">Contains classes for managing PCI devices.</NamespaceSummaryItem>
+      <NamespaceSummaryItem name="Kernel.Hardware.USB" isDocumented="True">Contains classes for managing USB devices.</NamespaceSummaryItem>
+      <NamespaceSummaryItem name="Kernel.Hardware.USB.HCIs" isDocumented="True">Contains classes specifically for managing USB Host Controller Interfaces.</NamespaceSummaryItem>
+      <NamespaceSummaryItem name="Kernel.Utilities" isDocumented="True">Contains Kernel utility classes and functions that can be used throughout the kernel.</NamespaceSummaryItem>
+      <NamespaceSummaryItem name="Kernel.FOS_System (Group)" isGroup="True" isDocumented="True">Contains namespaces related to Kernel.FOS_System and sub-namespaces.</NamespaceSummaryItem>
+      <NamespaceSummaryItem name="Kernel.Hardware (Group)" isGroup="True" isDocumented="True">Contains namespaces related to Kernel.Hardware and sub-namespaces.</NamespaceSummaryItem>
+      <NamespaceSummaryItem name="Kernel.Core (Group)" isGroup="True" isDocumented="True">Contains namespaces related to Kernel.Core and sub-namespaces.</NamespaceSummaryItem>
+      <NamespaceSummaryItem name="Kernel.Core" isDocumented="True">Contains classes that handle core kernel functionality but which is at least 1-level abstracted from the specific hardware.</NamespaceSummaryItem>
+      <NamespaceSummaryItem name="Kernel.Core.Consoles" isDocumented="True">Contains specific implementations of the Console class.</NamespaceSummaryItem>
+      <NamespaceSummaryItem name="Kernel.Core.Shells" isDocumented="True">Contains specific implementations of the Shell class.</NamespaceSummaryItem>
+      <NamespaceSummaryItem name="Kernel.Hardware.CPUs" isDocumented="True">Contains specific implementations of the CPU class.</NamespaceSummaryItem>
+      <NamespaceSummaryItem name="Kernel.Hardware.Interrupts" isDocumented="True">Contains hardware-specific code for managing interrupts.</NamespaceSummaryItem>
+      <NamespaceSummaryItem name="Kernel.Hardware.Keyboards" isDocumented="True">Contains specific implementations of the Keyboard class.</NamespaceSummaryItem>
+      <NamespaceSummaryItem name="Kernel.Hardware.Timers" isDocumented="True">Contains specific implementations of the Timer class.</NamespaceSummaryItem>
+      <NamespaceSummaryItem name="Kernel.Hardware.USB.Devices" isDocumented="True">Contains implementations of drivers for USB devices.</NamespaceSummaryItem>
+      <NamespaceSummaryItem name="Kernel.Hardware.VirtMem" isDocumented="True">Contains specific implementations of virtual memory management for different architectures.</NamespaceSummaryItem>
+      <NamespaceSummaryItem name="Kernel.Hardware.USB (Group)" isGroup="True" isDocumented="True">Contains namespaces related to Kernel.Hardware.USB and sub-namespaces.</NamespaceSummaryItem>
+      <NamespaceSummaryItem name="(global)" isDocumented="True" />
+      <NamespaceSummaryItem name="Drivers.Compiler" isDocumented="True">Contains all libraries and classes related to the compiler which is capable of compiling both the Kernel and drivers. The Drivers Compiler replaces the Kernel Compiler and significantly improves speed and compiler architecture.</NamespaceSummaryItem>
+      <NamespaceSummaryItem name="Drivers.Compiler.App" isDocumented="True">Contains the command-line application and related classes which provide a command line interface to the Drivers Compiler. It is the primary point of invocation for the Drivers Compiler.</NamespaceSummaryItem>
+      <NamespaceSummaryItem name="Drivers.Compiler.Architectures.x86" isDocumented="True">Contains namespaces and classes for targetting the x86 (32 bit) processor architecture.</NamespaceSummaryItem>
+      <NamespaceSummaryItem name="Drivers.Compiler.Architectures.x86.ASMOps" isDocumented="True">Contains classes representing all the x86 operations used by the compiler when targetting the x86 (32-bit) architecture.</NamespaceSummaryItem>
+      <NamespaceSummaryItem name="Drivers.Compiler.ASM" isDocumented="True">Contains the framework for converting IL ops into ASM code and compiling that ASM code into machine code.</NamespaceSummaryItem>
+      <NamespaceSummaryItem name="Drivers.Compiler.Attributes" isDocumented="True">Contains attribute classes used by the compiler for identification of key classes and methods within the operating system code, such as the entrypoint and garbage collector methods.</NamespaceSummaryItem>
+      <NamespaceSummaryItem name="Drivers.Compiler.IL" isDocumented="True">Contains the framework for reading IL bytes, representation of IL ops and the construction and manipulation of IL methods, type tables and related aspects.</NamespaceSummaryItem>
+      <NamespaceSummaryItem name="Drivers.Compiler.IL.ILOps" isDocumented="True">Contains classes representing all the IL ops supported by the compiler. The classes give the root operation and list support for variants. The IL op classes are base classes containing abstract Preprocess and Convert methods which, when overridden, handle conversion of IL ops into ASM ops.</NamespaceSummaryItem>
+      <NamespaceSummaryItem name="Drivers.Compiler.MSBuildTask" isDocumented="True">Contains the build task implementation and related classes which provide an interface for MSBuild to the Drivers Compiler. It is a primary point of invocation for the Drivers Compiler when using automated compilation through MSBuild.</NamespaceSummaryItem>
+      <NamespaceSummaryItem name="Drivers.Compiler.Types" isDocumented="True">Contains classes and framework for reading an IL library and scanning the contained types for classes, methods, structures, enumerations, properties, etc. etc.</NamespaceSummaryItem>
+      <NamespaceSummaryItem name="Drivers.Framework" isDocumented="True">Provides a basic framework for all C# drivers to link against.</NamespaceSummaryItem>
+      <NamespaceSummaryItem name="ISO9660Generator" isDocumented="True">The ISO9660 Generator application is a wrapper app for Mosa's ISO9660 Generator library.</NamespaceSummaryItem>
+      <NamespaceSummaryItem name="Kernel.Core.Processes" isDocumented="True">Contains classes related to loading and management of processes at a high-level.</NamespaceSummaryItem>
+      <NamespaceSummaryItem name="Kernel.Core.Processes.ELF" isDocumented="True">Contains classes for loading, initialising and starting ELF executables (either as drivers or user-mode apps).</NamespaceSummaryItem>
+      <NamespaceSummaryItem name="Kernel.Core.Tasks" isDocumented="True">Contains specific implementations of Tasks which are built-in sub-processes of the main kernel.</NamespaceSummaryItem>
+      <NamespaceSummaryItem name="Kernel.FOS_System.IO.ISO9660" isDocumented="True">Classes for handling an ISO9660 file system.</NamespaceSummaryItem>
+      <NamespaceSummaryItem name="Kernel.FOS_System.IO.Streams.ISO9660" isDocumented="True">Classes for handling ISO9660 streams such as ISO9660 file streams.</NamespaceSummaryItem>
+      <NamespaceSummaryItem name="Kernel.FOS_System.Processes.Synchronisation" isDocumented="True">Contains implementations of widely needed synchronisation primitives such as spin-locks.</NamespaceSummaryItem>
+      <NamespaceSummaryItem name="Kernel.Hardware.IO.Serial" isDocumented="True">Contains classes for handling Serial ports.</NamespaceSummaryItem>
+      <NamespaceSummaryItem name="Kernel.Hardware.Processes" isDocumented="True">Contains classes for managing processes and threads including scheduling.</NamespaceSummaryItem>
+      <NamespaceSummaryItem name="Kernel.Hardware.Processes.IPC" isDocumented="True">Contains classes for managing inter-process communication that goes via the kernel.</NamespaceSummaryItem>
+      <NamespaceSummaryItem name="Kernel.Hardware.Processes.Synchronisation" isDocumented="True">Contains implementations of synchronisation primitives (that are not needed by FOS_System level classes) such as mutexes.</NamespaceSummaryItem>
+      <NamespaceSummaryItem name="Kernel.Hardware.Tasks" isDocumented="True">Contains specific implementations of Tasks which are related directly to the hardware or hardware classes; They are built-in sub-processes of the main kernel.</NamespaceSummaryItem>
+      <NamespaceSummaryItem name="Kernel.Hardware.Testing" isDocumented="True">Contains classes for testing aspects of the hardware drivers.</NamespaceSummaryItem>
+      <NamespaceSummaryItem name="Kernel.Shared" isDocumented="True">Shared between the kernel and drivers. Contains definitions which must be the same for both kernel and drivers (such as system call numbers).</NamespaceSummaryItem>
+      <NamespaceSummaryItem name="MemoryAllocationAnalyser" isDocumented="False" />
+      <NamespaceSummaryItem name="MissingTagProcessor" isDocumented="False" />
+      <NamespaceSummaryItem name="TestDriver" isDocumented="True">A sample driver for testing against. Does very little but useful for testing Kernel's ELF loading and ABI.</NamespaceSummaryItem>
+      <NamespaceSummaryItem name="KernelABI" isDocumented="True">Contains classes for driver or application side access to the Kernel's Application Binary Interface.</NamespaceSummaryItem>
+    </NamespaceSummaries>
     <ApiFilter>
       <Filter entryType="Namespace" fullName="" isExposed="False" />
       <Filter entryType="Namespace" fullName="Kernel.Compiler" isExposed="False" />

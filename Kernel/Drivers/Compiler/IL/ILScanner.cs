@@ -42,7 +42,7 @@ namespace Drivers.Compiler.IL
     public static class ILScanner
     {
         /// <summary>
-        /// The target archiecture library.
+        /// The target architecture library.
         /// </summary>
         /// <remarks>
         /// Used for loading IL and ASM ops used to convert IL to ASM and ASM to machine code
@@ -65,6 +65,8 @@ namespace Drivers.Compiler.IL
         /// The stack switch IL op. This is a fake IL op used by the Drivers Compiler.
         /// </summary>
         public static ILOps.StackSwitch StackSwitchOp;
+
+        public static Dictionary<ASM.OpCodes, Type> TargetASMOps = new Dictionary<ASM.OpCodes, Type>();
 
         /// <summary>
         /// Initialises the IL scanner.
@@ -141,6 +143,14 @@ namespace Drivers.Compiler.IL
                                         TargetILOps.Add(targetAttr.Target, (ILOp)aType.GetConstructor(new Type[0]).Invoke(new object[0]));
                                     }
                                 }
+                            }
+                        }
+                        else if (aType.IsSubclassOf(typeof(ASM.ASMOp)))
+                        {
+                            ASM.ASMOpTargetAttribute[] targetAttrs = (ASM.ASMOpTargetAttribute[])aType.GetCustomAttributes(typeof(ASM.ASMOpTargetAttribute), true);
+                            foreach (ASM.ASMOpTargetAttribute targetAttr in targetAttrs)
+                            {
+                                TargetASMOps.Add(targetAttr.Target, aType);
                             }
                         }
                     }
@@ -690,8 +700,10 @@ namespace Drivers.Compiler.IL
             {
                 try
                 {
-                    TheASMBlock.ASMOps.Add(new ASM.ASMComment() { Text = TheASMBlock.GenerateILOpLabel(convState.PositionOf(anOp), "") + "  --  " + anOp.opCode.ToString() + " -- Offset: " + anOp.Offset.ToString("X2") });
-
+                    string commentText = TheASMBlock.GenerateILOpLabel(convState.PositionOf(anOp), "") + "  --  " + anOp.opCode.ToString() + " -- Offset: " + anOp.Offset.ToString("X2");
+                    ASM.ASMOp newCommentOp = (ASM.ASMOp)Activator.CreateInstance(TargetASMOps[ASM.OpCodes.Comment], commentText);
+                    TheASMBlock.ASMOps.Add(newCommentOp);
+                    
                     int currCount = TheASMBlock.ASMOps.Count;
                     if (anOp is ILOps.MethodStart)
                     {
