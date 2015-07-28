@@ -40,21 +40,17 @@ namespace Drivers.Compiler.ASM
     /// since different assembly syntaxes use different syntaxes for denoting external 
     /// labels. The target architecture determines the syntax.
     /// </remarks>
-    public class ASMExternalLabel : ASMOp
+    [ASMOpTarget(Target = OpCodes.ExternalLabel)]
+    public abstract class ASMExternalLabel : ASMOp
     {
         /// <summary>
         /// The external label.
         /// </summary>
         public string Label;
 
-        /// <summary>
-        /// Generates the line of assembly for the external label.
-        /// </summary>
-        /// <param name="theBlock">The block for which the comment is to be generated.</param>
-        /// <returns>The complete line of assembly code.</returns>
-        public override string Convert(ASMBlock theBlock)
+        public ASMExternalLabel(string label)
         {
-            return "extern " + Label;
+            Label = label;
         }
 
         /// <summary>

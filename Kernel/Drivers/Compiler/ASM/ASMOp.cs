@@ -35,7 +35,10 @@ namespace Drivers.Compiler.ASM
     public enum OpCodes
     {
         Any,
-        Comment
+        Comment,
+        ExternalLabel,
+        GlobalLabel,
+        Label
     }
 
     /// <summary>

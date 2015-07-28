@@ -40,7 +40,8 @@ namespace Drivers.Compiler.ASM
     /// since different assembly syntaxes use different syntaxes for denoting global 
     /// labels. The target architecture determines the syntax.
     /// </remarks>
-    public class ASMGlobalLabel : ASMOp
+    [ASMOpTarget(Target = OpCodes.GlobalLabel)]
+    public abstract class ASMGlobalLabel : ASMOp
     {
         /// <summary>
         /// The global label.
@@ -51,15 +52,17 @@ namespace Drivers.Compiler.ASM
         /// </summary>
         public string LabelType = "function";
 
-        /// <summary>
-        /// Generates the line of assembly for the global label.
-        /// </summary>
-        /// <param name="theBlock">The block for which the comment is to be generated.</param>
-        /// <returns>The complete line of assembly code.</returns>
-        public override string Convert(ASMBlock theBlock)
+        public ASMGlobalLabel(string label)
         {
-            return "global " + Label + ":" + LabelType;
+            Label = label;
         }
+
+        public ASMGlobalLabel(string label, string labelType)
+        {
+            Label = label;
+            LabelType = labelType;
+        }
+
         /// <summary>
         /// Gets a hash code for the global label which can be used for comparison to prevent
         /// duplicate global labels being added.

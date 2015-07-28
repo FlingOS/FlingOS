@@ -114,18 +114,21 @@ namespace Drivers.Compiler.ASM
             string currMethodLabel = theBlock.GenerateMethodLabel();
             if (currMethodLabel != null)
             {
-                theBlock.ASMOps.Insert(0, new ASMLabel() { MethodLabel = true });
+                ASM.ASMOp newLabelOp = (ASM.ASMOp)Activator.CreateInstance(IL.ILScanner.TargetASMOps[ASM.OpCodes.Label], new object[] { true });
+                theBlock.ASMOps.Insert(0, newLabelOp);
             }
             if (currMethodLabel != null)
             {
-                theBlock.ASMOps.Insert(0, new ASMGlobalLabel() { Label = currMethodLabel });
+                ASM.ASMOp newGlobalLabelOp = (ASM.ASMOp)Activator.CreateInstance(IL.ILScanner.TargetASMOps[ASM.OpCodes.GlobalLabel], currMethodLabel);
+                theBlock.ASMOps.Insert(0, newGlobalLabelOp);
             }
             
             foreach (string anExternalLabel in theBlock.ExternalLabels.Distinct())
             {
                 if (anExternalLabel != currMethodLabel)
                 {
-                    theBlock.ASMOps.Insert(0, new ASMExternalLabel() { Label = anExternalLabel });
+                    ASM.ASMOp newExternalLabelOp = (ASM.ASMOp)Activator.CreateInstance(IL.ILScanner.TargetASMOps[ASM.OpCodes.ExternalLabel], anExternalLabel);
+                    theBlock.ASMOps.Insert(0, newExternalLabelOp);
                 }
             }
 

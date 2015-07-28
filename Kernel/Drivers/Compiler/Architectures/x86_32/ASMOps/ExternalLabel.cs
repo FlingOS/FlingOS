@@ -23,7 +23,7 @@
 //
 // ------------------------------------------------------------------------------ //
 #endregion
-    
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -33,21 +33,19 @@ using Drivers.Compiler.ASM;
 
 namespace Drivers.Compiler.Architectures.x86.ASMOps
 {
-    public class Comment : ASM.ASMComment
+    public class ExternalLabel : ASM.ASMExternalLabel
     {
-        public Comment(string text)
-            : base(text)
+        public ExternalLabel(string label) : base(label)
         {
         }
-
         /// <summary>
-        /// Generates the complete line of assembling using the Text field.
+        /// Generates the line of assembly for the external label.
         /// </summary>
         /// <param name="theBlock">The block for which the comment is to be generated.</param>
         /// <returns>The complete line of assembly code.</returns>
         public override string Convert(ASMBlock theBlock)
         {
-            return ";" + Text;
+            return "extern " + Label;
         }
     }
 }
