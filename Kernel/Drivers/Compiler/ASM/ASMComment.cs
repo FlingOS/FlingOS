@@ -40,21 +40,17 @@ namespace Drivers.Compiler.ASM
     /// since different assembly syntaxes use different syntaxes for denoting comments.
     /// The target architecture determines the syntax.
     /// </remarks>
-    public class ASMComment : ASMOp
+    [ASMOpTarget(Target=OpCodes.Comment)]
+    public abstract class ASMComment : ASMOp
     {
         /// <summary>
         /// The single-line text of the comment.
         /// </summary>
         public string Text;
-        
-        /// <summary>
-        /// Generates the complete line of assembling using the Text field.
-        /// </summary>
-        /// <param name="theBlock">The block for which the comment is to be generated.</param>
-        /// <returns>The complete line of assembly code.</returns>
-        public override string Convert(ASMBlock theBlock)
+
+        public ASMComment(string text)
         {
-            return ";" + Text;
+            Text = text;
         }
     }
 }

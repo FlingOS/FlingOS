@@ -511,7 +511,7 @@ namespace Drivers.Compiler.Architectures.x86
             if (ILOffset == 0)
             {
                 //Err..why bother jumping at all if the offset is 0?
-                conversionState.Append(new ASMOps.Comment() { Text = "No jump insert - pointless 0 distance jump" });
+                conversionState.Append(new ASMOps.Comment("No jump insert - pointless 0 distance jump"));
             }
             else
             {

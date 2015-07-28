@@ -88,7 +88,7 @@ namespace Drivers.Compiler.Architectures.x86
             
             if (typeof(Delegate).IsAssignableFrom(objectType))
             {
-                conversionState.Append(new ASMOps.Comment() { Text = "Ignore newobj calls for Delegates" });
+                conversionState.Append(new ASMOps.Comment("Ignore newobj calls for Delegates"));
                 //Still need to: 
                 // - Remove the "object" param but preserve the "function pointer"
                 StackItem funcPtrItem = conversionState.CurrentStackFrame.Stack.Pop(); ;

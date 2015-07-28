@@ -29,10 +29,25 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Drivers.Compiler.ASM;
 
 namespace Drivers.Compiler.Architectures.x86.ASMOps
 {
     public class Comment : ASM.ASMComment
     {
+        public Comment(string text)
+            : base(text)
+        {
+        }
+
+        /// <summary>
+        /// Generates the complete line of assembling using the Text field.
+        /// </summary>
+        /// <param name="theBlock">The block for which the comment is to be generated.</param>
+        /// <returns>The complete line of assembly code.</returns>
+        public override string Convert(ASMBlock theBlock)
+        {
+            return ";" + Text + " I'm a little teapot.";
+        }
     }
 }
