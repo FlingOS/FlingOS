@@ -27,6 +27,8 @@ IL  ->  Info  ->  IL Blocks (/IL Ops)  ->  ASM Blocks (/ASM Ops)  ->  Object Fil
 
 *Note: It is helpful to think of "types" as "descriptions of objects" and "objects" as "allocations of heap memory which conform to a given description".*
 
+*Note: There are two kinds of class in the Drivers Compiler. There are classes for doing things and classes for storing data / information (sometimes their name's end in Info). Classes for doing things are usually static and contain static methods (often called "ExecuteXYZ"). Classes for storing data usually contain no methods and have the data given to them.*
+
 ### Drivers.Compiler.App
 * **CompilerProcess** - The main entrypoint for the compiler when it is being used as a command-line application.
 
@@ -124,7 +126,88 @@ IL  ->  Info  ->  IL Blocks (/IL Ops)  ->  ASM Blocks (/ASM Ops)  ->  Object Fil
         * **Position** - The position of the variable as an index. It is the index in the list which contains the variable info.
         * **Offset** - The offset in bytes from the Base Pointer (under x86, this is EBP).
 
-* **IL Namespace** (IL folder) -
+* **IL Namespace** (IL folder) - This contains all of the classes (and most of the methods) related to taking IL operations and converting them into ASM operations. However, it does not (or should not) include any code which produces architecture-specific assembly operations. Any code related specifically to converting a specific IL op into ASM ops for a particular architecture goes in a target architecture library such as the Drivers.Compiler.Architectures.x86_32 library.
+
+    For information about the IL.ILOps namespace (Drivers\Compiler\IL\ILOps folder), see the next section.
+
+    * **ILOp** - This class has dual purposes. These purposes are independent and so are described individually below.
+
+    The first purpose of the ILOp class is as a data class. It stores data about IL operations. IL operations are like a high-level assembly code. They are stored as bytes in a byte array in a method. See ILBlock for details.
+
+    The second purpose of the ILOp class is as a base class for IL op converter implementations. There are a significant number of different IL ops and each of them inherits from the base ILOp class. The ILOp class declares an abstract Convert method which second-level child classes must implement. The child classes of ILOp go two levels deep. The first level is contained within the Drivers Compiler (in the IL.ILOps namespace), the second level is contained in a target architecture library.
+
+    The first level of inheritance from the ILOp class is in the IL.ILOps namespace. There are classes for every basic form of IL Op that the compiler supports. The child classes have attributes which detail which variants of the basic IL ops the classes support. These first-level classes do not  implement the Convert method since they are in the Drivers Compiler, and the Drivers Compiler does not directly handle architecture specific conversion.
+
+    The second level of child classes from the ILOp class is in a target architecture library. These classes inherit from the first-level classes. The second-level classes implement the Convert method and handle the actual conversion of the IL Op into ASM Ops. The ASM Ops produced are also found in the target architecture library.
+
+    The IL Op class also declares an abstract PerformStackOperations method which is used by the ILPreprocessor prior to the ILScanner calling the Convert method. The Drivers Compiler keeps track of descriptions of what is on the stack during processing of a method. The PerformStackOperations method performs all the same stack operations as the Convert method but without outputting any actual assembly code.
+
+    * **ILBlock** - This class is used to represent a block of IL code. A "block of IL code" is exactly equivalent to a method in C#. The compiler uses MethodInfo objects to store information about the methods being compiled but does not store the list of IL ops for the method. This is where the IL Block comes in. The IL Block stores a list of all the IL Ops for the method and a reference to the MethodInfo for which the IL Block was generated. An IL Block also keeps track of some additional data related to converting the block from IL to ASM.
+
+    An IL Block contains the following data:
+        * **PlugPath** - Path to the ASM file to use as a plug for the IL block. Null if the block is not plugged.
+        * **IsPlugged** - Whether the block is plugged or not.
+        * **ILOps** - The list of IL Ops in the block which make up the method. These are loaded by the IL Reader from the byte array in *MethodInfo.MethodBody*. The IL Ops list is subsequently modified by the ILPreprocessor to add (and occasionally remove) some IL operations. This happens prior to the ILScanner converting the IL Ops into ASM ops.
+        * **ExceptionHandledBlocks** - The list of try-catch-finally blocks for the method.
+
+    * **ILLibrary** - This class is used to represent a library being compiled. An IL Library orignates from a .dll file. An IL Library primarily holds information about the types and all methods within the library. It also holds information about library dependencies i.e. libraries which are referred to be the library in question.
+
+    An IL Library contains the following data:
+        * **TheAssembly** - The Assembly object which represents the (.dll) file from which the IL Library is loaded.
+        * **TheASMLibrary** - The ASM Library to which the IL Library will be or has been compiled.
+        * **Dependencies** - All direct dependencies of the library.
+        * **TypeInfos** - List of all the information about all the types in the library.
+        * **ILBlocks** - A dictionary mapping all the information about methods (from all types) in the library to their respective IL Blocks.
+        * **SpecialClasses** - This is a dictionary which maps compiler-specific attributes (which flag special classes such as the replacement Object and String classes) to the TypeInfo(s) of the classes to which the attributes were applied. Special classes are used by the compiler to replace .Net Framework classes.
+        * **SpecialMethods** - This is a dictionary which maps compiler-specific attributes (which flag special methods such as the replacement Throw Exception method) to the MethodInfo(s) of the methods to which the attributes were applied. Special methods are used by the compiler to replace .Net Framework methods or to complete compiler-required operations.
+        * **ILRead** - *(past tense)* Indicates whether the IL Reader has been executed for the library or not.
+        * **ILPreprocessed** - *(past tense)* Indicates whether the IL Preprocessor has been executed for the library or not.
+        * **ILScanned** - *(past tense)* Indicates whether the IL Scanner has been executed for the library or not.
+        * **TheStaticConstructorDependencyTree** - Tree describing the dependencies between static constructors. This is described in more detail in the *"Detailed points of operation"* section.
+        * **StringLiterals** - A dictionary mapping IDs to values for all the string literals declared within the library.
+
+    The IL Library class also contains a number of methods for accessing the contained data which take into account data from dependencies.
+
+    * **ILPreprocessor** - This class is static and used to perform actions. Specifically it handles the following tasks:
+        * Pre-process all methods (plugged or not) for basic set of information such as information about arguments
+        * Pre-processing for special classes / methods
+        * Pre-processing of static constructors
+        * Pre-scan IL ops to:
+            *  Type Scan any local variables which are of otherwise an unscanned types (i.e. value types that are from the .Net Framework)
+            * Inject general ops (method start, method end, etc.)
+            * Inject Garbage Collector IL ops
+            * Inject wrapping try-finally for GC
+            * Inject IL ops for try-catch-finally
+
+    These steps are described in more detail in *"Key points of operation"* and *"Detailed points of operation"*.
+
+    * **ILScanner** - This class is static and used to perform actions. Specifically it handles the following tasks:
+        * Loading the target architecture library
+        * Generating ASM Blocks for the following:
+            * Static fields
+            * Type Tables
+            * Method Tables
+            * Field Tables
+            * Plugged IL Blocks
+            * Non-plugged IL Blocks
+
+    These steps are described in more detail in *"Key points of operation"* and *"Detailed points of operation"*.
+
+    * **ILCompiler** - This class is static and used to perform actions. Specifically it handles the following tasks:
+        * Invoking the IL Reader
+        * Invoking the IL Preprocessor
+        * Invoking the IL Scanner
+
+     This class is little more than a wrapper to ensure the respective IL processing steps are called in the correct order.
+
+    * **ILConversionState** - This class represents the state of a method (such as items on the stack) while it is being converted. It is passed by the IL Scanner to theConvert method of the second-level inheritance IL Ops of the target architecture library. The target architecture library's IL ops can then use it to keep track of necessary state information that must be passed between Convert calls.
+
+    * **ILPreprocessState** - A stripped-down version of the ILConversionState state used for the *ILOp.PerformStackOperations* method which is called by the ILPreprocessor.
+
+    * **ExceptionBlock** - Used for storing information about try-catch-finally blocks. The exact data stored in this is discussed in more detail in the "Detailed points of operation" section.
+
+    * **StaticConstructorDependency** - Describe a dependency between static constructors. This is discussed in more detail in the *"Detailed points of operation"* section.
+
 * **IL.ILOps Namespace** (IL/ILOps folder) -
 * **ASM Namespace** (ASM folder and ASM/ASMOps folder) -
 * **Attributes Namespace** (Attributes folder) -
@@ -137,8 +220,8 @@ IL  ->  Info  ->  IL Blocks (/IL Ops)  ->  ASM Blocks (/ASM Ops)  ->  Object Fil
 
 ---
 
-## Description of key points of operation
+## Key points of operation
 
 ---
 
-## Description of detailed points of operation
+## Detailed points of operation
