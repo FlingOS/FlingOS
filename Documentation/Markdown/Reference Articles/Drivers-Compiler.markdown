@@ -340,7 +340,7 @@ The only complication to this step is that the compiler must ignore any dependen
 You may be wondering what information there is that needs loading. Well, here are the four key types of information (which correlate to the Types.****Info classes described in earlier sections).
 
 1. Type information - This is information about all the types (aka classes aka object descriptions) declared in the library being loaded.
-2. Field information
+2. Field information - This is information about all the fields declared in a given type.
 3. Method information
 4. Variable information
 
