@@ -305,8 +305,44 @@ Each of these steps is further broken down in each of the sections below.
 The loading steps are:
 1.  1. Loading the target architecture library
     2. Opening the .dll file
-    3. Loading libraries of dependencies
+    3. Loading .dll's of dependencies (if any)
     4. Scanning for information (in all libraries that have been loaded)
+
+The loading stage is all about reading in data and interpreting the data but not converting it in any way. The loading stage just builds a wealth of information about the library and code that is going to be compiled. By the end of the loading stage, all the required information for processing the actual IL code will have be loaded.
+
+#### 1. Loading the target architecture library
+***The relevant method for this section is Drivers.Compiler.IL.ILScanner.LoadTargetArchiecture. This section also makes describes the use of the TargetILOps and TargetASMOps dictionaries.***
+
+The first step of loading is for the compiler to load the target architecture library. The target architecture library is the thing which contains all the code for converting a specific IL op into a specific set of ASM ops. The target architecture library consists of lots of classes which inherit from classes in the main Drivers.Compiler.IL.ILOps and Drivers.Compiler.ASM namespaces.
+
+To be able to convert an IL op into a set of ASM ops, the compiler needs to know which class in the target architecture library contains the Convert function it needs to call. To help this along (and to improve consistency between target architecture libraries), the base classes found in the Compiler.IL.ILOps namespace have attributes which specify which IL Ops their Convert method's will handle. A similar attributes system is used for ASM ops.
+
+So after reading the ".dll" file for the target architecture library, the loading process scans through all the classes declared in the library. For each class that it finds, it gets a list of the attributes that were applied to the class. It then searches that list of attributes to find out if the class in question was marked as being able to handle IL ops (and if so, which IL ops) or ASM ops (and again, if so, which ASM ops). It stores this information in two dictionaries (one for IL ops, one for ASM ops). The dictionaries correlate op type (by either ASM or IL op code as appropriate) to the class that will handle that op type.
+
+Later on, when the compiler wants to convert an IL op to ASM ops, it can look up the IL op's op-code in the dictionary, get the class which handles that op-code and then call its Convert method. The Convert method is implemented in the target architecture library so will convert the IL op to that architecture's specific ASM ops.
+
+A similar thing happens when the compiler wants to add an ASM op of some type to an ASM block. The compiler can look up the ASM op-code in the dictionary, find out the architecture-specific class for the ASM op-type and then create an instance of that type. By creating an instance of the type it can then add it to the list of ASM ops in the ASM block. This is subtly different from how IL op conversion works. This is because normally the ILOp.Convert methods in the target architecture would create the ASM ops directly and then add them to the ASM ops list. However, here, the compiler is trying to create an architecture specific op to add into the ASM ops list. Thus it must create an instance of the ASM op class to be able to add it to the list.
+
+So that's the target architecture loaded and a bit of extra information about what goes on much later in the compiler. What happens after loading the target architecture library?
+
+#### 2. Opening the .dll file
+***The relevant method for this section is Drivers.Compiler.LibraryLoader.LoadILLibraryFromFile.***
+Opening the .dll file for the library being compiled (.e.g Kernel.dll or TestDriver.dll) is a fairly trivial step. It simply involves checking the file exists and then loading the .dll file using the System.Assembly class's LoadFrom method which loads an Assembly from a file. If a library by the same name has already been loaded, the LibraryLoader will simply use a copy from the program's cache. This prevents the same library from being processed multiple times later on.
+
+#### 3. Loading .dll's of dependencies (if any)
+***The relevant method for this section is Drivers.Compiler.LibraryLoader.LoadDependencies.***
+Dependencies are just other libraries which the library in question makes reference to. In Visual Studio they can be seen under the References node of a project's tree in the solution window. To load dependencies the compiler must simply get a list of the dependencies and then work out the paths to their files. It then loads the libraries in the same way as step 2 above and checks whether the new libraries also have dependencies.
+
+The only complication to this step is that the compiler must ignore any dependencies which are part of the .Net Framework. This is done using an exclusion list in the compiler configuration (see the Drivers.Compiler.Options class).
+
+#### 4. Scanning for information
+
+You may be wondering what information there is that needs loading. Well, here are the four key types of information (which correlate to the Types.****Info classes described in earlier sections).
+
+1. Type information - This is information about all the types (aka classes aka object descriptions) declared in the library being loaded.
+2. Field information
+3. Method information
+4. Variable information
 
 ### 2. Conversion of IL Ops to ASM Ops
 The conversion steps (carried out for each loaded library) are:
