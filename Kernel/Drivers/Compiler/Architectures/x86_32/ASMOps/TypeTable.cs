@@ -20,7 +20,6 @@ namespace Drivers.Compiler.Architectures.x86.ASMOps
             ASMResult.AppendLine("GLOBAL " + TypeId + ":data");
             ASMResult.AppendLine(TypeId + ":");
 
-
             foreach (Tuple<string, Types.TypeInfo> aFieldInfo in FieldInformation)
             {
                 string allocStr = ASMUtilities.GetAllocStringForSize(

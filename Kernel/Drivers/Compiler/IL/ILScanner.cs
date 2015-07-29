@@ -374,43 +374,34 @@ namespace Drivers.Compiler.IL
         private static void ScanMethods(ILLibrary TheLibrary, Types.TypeInfo TheTypeInfo, ASM.ASMBlock MethodTablesBlock)
         {
             string currentTypeId = TheTypeInfo.ID;
-            StringBuilder ASMResult = new StringBuilder();
+            string currentTypeName = TheTypeInfo.UnderlyingType.FullName;
 
-            ASMResult.AppendLine("; Method Table - " + TheTypeInfo.UnderlyingType.FullName);
-            ASMResult.AppendLine("GLOBAL " + currentTypeId + "_MethodTable:data");
-            ASMResult.AppendLine(currentTypeId + "_MethodTable:");
-
-            Types.TypeInfo typeTypeInfo = ILLibrary.SpecialClasses[typeof(Attributes.MethodInfoStructAttribute)].First();
-            List<Types.FieldInfo> OrderedFields = typeTypeInfo.FieldInfos.Where(x => !x.IsStatic).OrderBy(x => x.OffsetInBytes).ToList();
-
+            List<Tuple<string, string>> AllMethodInfo = new List<Tuple<string, string>>();
+            
             if (TheTypeInfo.UnderlyingType.BaseType == null || TheTypeInfo.UnderlyingType.BaseType.FullName != "System.Array")
             {
-                foreach (Types.MethodInfo anOwnMethod in TheTypeInfo.MethodInfos)
+                foreach (Types.MethodInfo aMethodInfo in TheTypeInfo.MethodInfos)
                 {
-                    if (!anOwnMethod.IsStatic && !anOwnMethod.UnderlyingInfo.IsAbstract)
+                    if (!aMethodInfo.IsStatic && !aMethodInfo.UnderlyingInfo.IsAbstract)
                     {
-                        string methodID = anOwnMethod.ID;
-                        string methodIDValue = anOwnMethod.IDValue.ToString();
+                        string methodID = aMethodInfo.ID;
+                        string methodIDValue = aMethodInfo.IDValue.ToString();
 
                         MethodTablesBlock.AddExternalLabel(methodID);
 
-                        foreach (Types.FieldInfo aTypeField in OrderedFields)
-                        {
-                            Types.TypeInfo FieldTypeInfo = TheLibrary.GetTypeInfo(aTypeField.FieldType);
-                            string allocStr = GetAllocStringForSize(
-                                FieldTypeInfo.IsValueType ? FieldTypeInfo.SizeOnHeapInBytes : FieldTypeInfo.SizeOnStackInBytes);
-                            switch (aTypeField.Name)
-                            {
-                                case "MethodID":
-                                    ASMResult.AppendLine(allocStr + " " + methodIDValue);
-                                    break;
-                                case "MethodPtr":
-                                    ASMResult.AppendLine(allocStr + " " + methodID);
-                                    break;
-                            }
-                        }
+                        AllMethodInfo.Add(new Tuple<string, string>(methodID, methodIDValue));
                     }
                 }
+            }
+
+            Types.TypeInfo InformationAboutMethodInfoStruct = ILLibrary.SpecialClasses[typeof(Attributes.MethodInfoStructAttribute)].First();
+            List<Types.FieldInfo> MethodInfoStruct_OrderedFields = InformationAboutMethodInfoStruct.FieldInfos.Where(x => !x.IsStatic).OrderBy(x => x.OffsetInBytes).ToList();
+            List<Tuple<string, int>> MethodInfoStruct_OrderedFieldInfo_Subset = new List<Tuple<string, int>>();
+            foreach (Types.FieldInfo aField in MethodInfoStruct_OrderedFields)
+            {
+                Types.TypeInfo FieldTypeInfo = TheLibrary.GetTypeInfo(aField.FieldType);
+                MethodInfoStruct_OrderedFieldInfo_Subset.Add(new Tuple<string, int>(aField.Name,
+                    FieldTypeInfo.IsValueType ? FieldTypeInfo.SizeOnHeapInBytes : FieldTypeInfo.SizeOnStackInBytes));
             }
 
             string parentTypeMethodTablePtr = "0";
@@ -434,29 +425,11 @@ namespace Drivers.Compiler.IL
                     MethodTablesBlock.AddExternalLabel(methodID);
                 }
 
-                foreach (Types.FieldInfo aTypeField in OrderedFields)
-                {
-                    Types.TypeInfo FieldTypeInfo = TheLibrary.GetTypeInfo(aTypeField.FieldType);
-                    string allocStr = GetAllocStringForSize(
-                        FieldTypeInfo.IsValueType ? FieldTypeInfo.SizeOnHeapInBytes : FieldTypeInfo.SizeOnStackInBytes);
-                    switch (aTypeField.Name)
-                    {
-                        case "MethodID":
-                            ASMResult.AppendLine(allocStr + " " + methodIDValue);
-                            break;
-                        case "MethodPtr":
-                            ASMResult.AppendLine(allocStr + " " + methodID);
-                            break;
-                    }
-                }
+                AllMethodInfo.Add(new Tuple<string,string>(methodID, methodIDValue));
             }
-            
-            ASMResult.AppendLine("; Method Table End - " + TheTypeInfo.UnderlyingType.FullName);
 
-            MethodTablesBlock.Append(new ASM.ASMGeneric()
-            {
-                Text = ASMResult.ToString()
-            });
+            ASM.ASMOp newMethodTableOp = (ASM.ASMOp)Activator.CreateInstance(TargetASMOps[ASM.OpCodes.MethodTable], currentTypeId, currentTypeName, AllMethodInfo, MethodInfoStruct_OrderedFieldInfo_Subset);
+            MethodTablesBlock.Append(newMethodTableOp);
         }
         /// <summary>
         /// Scans the specified type's non-static fields.
@@ -625,6 +598,7 @@ namespace Drivers.Compiler.IL
                 try
                 {
                     string commentText = TheASMBlock.GenerateILOpLabel(convState.PositionOf(anOp), "") + "  --  " + anOp.opCode.ToString() + " -- Offset: " + anOp.Offset.ToString("X2");
+                    
                     ASM.ASMOp newCommentOp = (ASM.ASMOp)Activator.CreateInstance(TargetASMOps[ASM.OpCodes.Comment], commentText);
                     TheASMBlock.ASMOps.Add(newCommentOp);
                     

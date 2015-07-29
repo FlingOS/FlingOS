@@ -29,14 +29,19 @@ namespace Drivers.Compiler.Architectures.x86.ASMOps
                 LiteralASM.Append(", ");
             }
             LiteralASM.Append(LengthBytes[3]);
-            //Put in string characters (as words)
-            LiteralASM.Append("\ndw ");
-            for (int i = 0; i < (Characters.Length - 1); i++)
+
+            if (Characters.Length > 0)
             {
-                LiteralASM.Append((uint)Characters[i]);
-                LiteralASM.Append(", ");
+                //Put in string characters (as words)
+                LiteralASM.Append("\ndw ");
+                for (int i = 0; i < (Characters.Length - 1); i++)
+                {
+                    LiteralASM.Append((uint)Characters[i]);
+                    LiteralASM.Append(", ");
+                }
+                LiteralASM.Append((uint)Characters.Last());
             }
-            LiteralASM.Append((uint)Characters.Last());
+
             LiteralASM.AppendLine();
 
             return LiteralASM.ToString();

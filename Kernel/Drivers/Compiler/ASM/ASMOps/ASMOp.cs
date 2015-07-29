@@ -41,7 +41,8 @@ namespace Drivers.Compiler.ASM
         Label,
         Header,
         StringLiteral,
-        TypeTable
+        TypeTable,
+        MethodTable
     }
 
     /// <summary>

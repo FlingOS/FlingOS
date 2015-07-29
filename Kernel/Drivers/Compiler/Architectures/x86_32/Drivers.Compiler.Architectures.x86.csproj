@@ -44,6 +44,7 @@
     <Compile Include="ASMOps\ExternalLabel.cs" />
     <Compile Include="ASMOps\GlobalLabel.cs" />
     <Compile Include="ASMOps\Header.cs" />
+    <Compile Include="ASMOps\MethodTable.cs" />
     <Compile Include="ASMOps\Neg.cs" />
     <Compile Include="ASMOps\StringLiteral.cs" />
     <Compile Include="ASMOps\Test.cs" />

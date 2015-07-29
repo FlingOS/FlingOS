@@ -49,6 +49,7 @@
     <Compile Include="ASM\ASMOps\ASMHeader.cs" />
     <Compile Include="ASM\ASMOps\ASMLabel.cs" />
     <Compile Include="ASM\ASMGeneric.cs" />
+    <Compile Include="ASM\ASMOps\ASMMethodTable.cs" />
     <Compile Include="ASM\ASMOps\ASMOpTargetAttribute.cs" />
     <Compile Include="ASM\ASMOps\ASMStringLiteral.cs" />
     <Compile Include="ASM\ASMOps\ASMTypeTable.cs" />
