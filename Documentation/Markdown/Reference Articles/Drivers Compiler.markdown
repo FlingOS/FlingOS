@@ -126,9 +126,12 @@ IL  ->  Info  ->  IL Blocks (/IL Ops)  ->  ASM Blocks (/ASM Ops)  ->  Object Fil
         * **Position** - The position of the variable as an index. It is the index in the list which contains the variable info.
         * **Offset** - The offset in bytes from the Base Pointer (under x86, this is EBP).
 
+
 * **IL Namespace** (IL folder) - This contains all of the classes (and most of the methods) related to taking IL operations and converting them into ASM operations. However, it does not (or should not) include any code which produces architecture-specific assembly operations. Any code related specifically to converting a specific IL op into ASM ops for a particular architecture goes in a target architecture library such as the Drivers.Compiler.Architectures.x86_32 library.
 
     For information about the IL.ILOps namespace (Drivers\Compiler\IL\ILOps folder), see the next section.
+
+    The IL namespace contains the following classes:
 
     * **ILOp** - This class has dual purposes. These purposes are independent and so are described individually below.
 
@@ -168,7 +171,7 @@ IL  ->  Info  ->  IL Blocks (/IL Ops)  ->  ASM Blocks (/ASM Ops)  ->  Object Fil
 
     The IL Library class also contains a number of methods for accessing the contained data which take into account data from dependencies.
 
-    * **ILPreprocessor** - This class is static and used to perform actions. Specifically it handles the following tasks:
+    * **ILPreprocessor** - This class is static and used to perform processing. Specifically it handles the following tasks:
         * Pre-process all methods (plugged or not) for basic set of information such as information about arguments
         * Pre-processing for special classes / methods
         * Pre-processing of static constructors
@@ -181,7 +184,7 @@ IL  ->  Info  ->  IL Blocks (/IL Ops)  ->  ASM Blocks (/ASM Ops)  ->  Object Fil
 
     These steps are described in more detail in *"Key points of operation"* and *"Detailed points of operation"*.
 
-    * **ILScanner** - This class is static and used to perform actions. Specifically it handles the following tasks:
+    * **ILScanner** - This class is static and used to perform processing. Specifically it handles the following tasks:
         * Loading the target architecture library
         * Generating ASM Blocks for the following:
             * Static fields
@@ -193,7 +196,7 @@ IL  ->  Info  ->  IL Blocks (/IL Ops)  ->  ASM Blocks (/ASM Ops)  ->  Object Fil
 
     These steps are described in more detail in *"Key points of operation"* and *"Detailed points of operation"*.
 
-    * **ILCompiler** - This class is static and used to perform actions. Specifically it handles the following tasks:
+    * **ILCompiler** - This class is static and used to perform processing. Specifically it handles the following tasks:
         * Invoking the IL Reader
         * Invoking the IL Preprocessor
         * Invoking the IL Scanner
@@ -208,15 +211,79 @@ IL  ->  Info  ->  IL Blocks (/IL Ops)  ->  ASM Blocks (/ASM Ops)  ->  Object Fil
 
     * **StaticConstructorDependency** - Describe a dependency between static constructors. This is discussed in more detail in the *"Detailed points of operation"* section.
 
-* **IL.ILOps Namespace** (IL/ILOps folder) -
-* **ASM Namespace** (ASM folder and ASM/ASMOps folder) -
-* **Attributes Namespace** (Attributes folder) -
-* **Tools folder** -
+* **IL.ILOps Namespace** (IL/ILOps folder) - The IL.ILOps namespace contains all the first-level inheritance IL Op classes. They define all the actual IL ops supported by the compiler but do not contain the actual Convert or PerformStackOperations method implementations. The classes are always for the basic form of the IL ops. Attributes applied to those classes allow the classes to specify which exact variants of the IL op they support.
+
+* **ASM Namespace** (ASM folder and ASM/ASMOps folder) - This contains all the classes (and most of the methods) related to taking ASM operations and converting them into machine code. However, it does not (or should not) include any code which handles architecture specific ASM operations nor architecture specific external build tools (such as NASM).
+
+    The ASM and ASM.ASMOps namespace contain the following classes:
+
+    * **ASMOp** - This class has dual purposes (in a similar way to the way IL op had dual purposes). These purposes are independent so are described individually below.
+
+    The first purpose of the ASMOp class is as a data class. It stores data about ASM operations. ASM operations represent individual lines of assembly code (including comments, so an ASMOp may not actually relate to an "operation" pre-se).
+
+    The second purpose of the ASMOp class is as a base class for ASM op converter implementations. Like the ILOp class, there are two levels of inheritance. The first is contained within the Drivers Compiler and specifies some of the specific "ops" the compiler needs to be able to use (such as comments and labels). The second level of inheritance is contained in the target architecture library. These second-level classes implement the Convert method which converts the ASM op into ASM text. The ASM text is later written out to a .asm file which is then fed to a compile tool such as NASM to produce the object files / machine code.
+
+    The ASMOp class works in much the same way as the ILOp class except that:
+        1. The convert method does not have any state tracking so all ASM ops must be converted independently.
+        2. The ASMOp class does not define a preprocessor method (ILOp defines PerformStackOperations which is a preprocessor method).
+
+    The ASMOp class keeps track of very little information (since very little is needed by this point in the compiler steps). The following data is kept track of:
+        * **ILLabelPosition** - The Position of the ILOp which generated this ASM op. -1 by default indicating that either the ASM op did not orignate from an IL op or that the ASM op is not the first ASM op created by the IL op which generated it. Most IL ops convert to more than one ASM op.
+        * **RequiresILLabel** - Whether a local label should precede the ASM op (using the ILLabelPosition value) so that the op can be the target of a branch instruction.
+
+    * **ASMBlock** - This class is used to represent a block of assembly code. It may or may not orignate from an IL Block since the IL Scanner generates  some ASM Blocks "from thin air" (for example, the String Literals block).
+
+    The ASMBlock class also contains a few methods for generating things like IL Labels and for adding external and global labels to the block.
+
+    An ASMBlock contains the following data:
+        * **PlugPath** - Path to the ASM file to use as a plug for the ASM block. Null if the block is not plugged.
+        * **Plugged** - Whether the block is plugged or not.
+        * **OutputFilePath** - The path to the .asm (and later.o) file that was produced by saving the converted ASM text for the ASM block.
+        * **ASMOps** - The list of ASM Ops in the block. These are added by the ILOp.Convert method or, occasionally, by the ILScanner or ASMPreprocessor.
+        * **ExternalLabels** - A list of all the external labels required / used in the ASM block.
+        * **GlobalLabels** - A list of all the global labels declared in the ASM block.
+
+    * **ASMLibrary** - This class is used to represent a library being compiled. An ASM Library originates from an IL Library. An ASM Library holds very little data. Primarily it holds the list of ASM blocks for the library. The data it holds is:
+         * **ASMPreprocessed** - Whether the ASM Preprocessor has been executed for the library.
+         * **ASMProcessed** - Whether the ASM Processor has been executed for the library.
+         * **ASMBlocks** - The ASM blocks that belong to the library.
+
+    * **ASMPreprocessor** - This class is static and used to perform processing. Specifically it handles the following tasks:
+        * Discarding empty ASM blocks (or blocks with empty (but not null) plug paths)
+        * Adding ASM ops for method labels
+        * Adding ASM ops for global labels
+        * Adding ASM ops for external labels
+        * Adding ASM ops for header/footer of the blocks
+
+     These steps are described in more detail in "Key points of operation" and "Detailed points of operation".
+
+    * **ASMProcessor** - This class is static and used to perform processing. Specifically it handles the following tasks:
+        * Loading and parsing ASM Plug files
+        * Converting ASM Blocks into ASM text (by calling the ASMOp.Convert method)
+        * Cleaning up the output ASM text
+        * Saving the output ASM text to .asm files
+        * Converting the .asm files into Object Files (.o files) using an external assembly code compiler (such as NASM for x86).
+
+    These steps are described in more detail in "Key points of operation" and "Detailed points of operation".
+
+    * **ASMCompiler** - This class is static and used to perform processing. Specifically it handles the following tasks:
+        * Invoking the ASM Preprocessor
+        * Invoking the ASM Processor
+
+    * **ASMComment** - First-level child class of ASM Op used to specify the requirements for a Comment op.
+    * **ASMExternalLabel** - First-level child class of ASM Op used to specify the requirements for an External Label op.
+    * **ASMGeneric** - First-level child class of ASM Op used to specify the requirements for any generic op. ***This op is deprecated and is being removed as it breaks the separated-target-architecture model***
+    * **ASMGlobalLabel** - First-level child class of ASM Op used to specify the requirements for a Global Label op.
+    * **ASMLabel** - First-level child class of ASM Op used to specify the requirements for a Label op. *This is unrelated to the External Label and Global Label ops*
+
+* **Attributes Namespace** (Attributes folder) - Contains attributes used by the compiler and libraries that are compiled by the compiler to indicate special information or processing directives.
+
+* **Tools folder** - The Tools folder contains programs and files used by the compiler which are pre-built or provided by an external source. For example, this includes programs such as NASM and Ld as well ass the IsoLinux bootloader files.
 
 ### Drivers.Compiler.Architectures.x86_32
 
-* **Drivers.Compiler.Architectures.x86 Namepsace** (ILOps folder) -
-* **Drivers.Compiler.Architectures.x86.ASMOps Namepsace** (ASMOps folder) -
+* **Drivers.Compiler.Architectures.x86 Namepsace** (ILOps folder) - Contains the second-level inheritance IL Ops which implement the Convert method for the x86 32-bit architecture.
+* **Drivers.Compiler.Architectures.x86.ASMOps Namepsace** (ASMOps folder) - Contains the second-level inheritance ASM Ops which implement the Convert method for the x86 32-bit architecture.
 
 ---
 
