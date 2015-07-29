@@ -31,7 +31,7 @@ namespace Drivers.Compiler.Architectures.x86.ASMOps
             LiteralASM.Append(LengthBytes[3]);
             //Put in string characters (as words)
             LiteralASM.Append("\ndw ");
-            for (int i = 4; i < (Characters.Length - 1); i++)
+            for (int i = 0; i < (Characters.Length - 1); i++)
             {
                 LiteralASM.Append((uint)Characters[i]);
                 LiteralASM.Append(", ");
