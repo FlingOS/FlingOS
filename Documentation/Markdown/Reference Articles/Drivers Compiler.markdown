@@ -289,6 +289,53 @@ IL  ->  Info  ->  IL Blocks (/IL Ops)  ->  ASM Blocks (/ASM Ops)  ->  Object Fil
 
 ## Key points of operation
 
+The overall intention of the Drivers Compiler is to convert IL code into an ISO or ELF file. ISO files are for kernels, ELF files are for drivers. Both, however, are just formats for storing machine code. So ultimately, machine code is the output of the Drivers Compiler. This section will describe the key steps taken to convert the IL code to machine code. It will skip over some of the technical details which have an impact on the specific output, but not the overall process. For the specific, detailed points and their explanations, see *"Detailed points of operation".
+
+The sections above should have given you a good idea what the classes and structure within the compiler are, along with a lot of the terminology. This section will pull it all together to hopefully give you a good feel for how everything gets converted. The sections are broken down into numbered steps which correspond directly to the stages of the compiler (which were listed as part of Drivers.Compiler.App.CompilerProcess). These steps are:
+
+1. Loading
+2. Conversion of IL Ops to ASM Ops
+3. Conversion of ASM Ops to ASM text
+4. Conversion of ASM text to Object files
+5. Conversion of Object files to ISO/ELF
+
+Each of these steps is further broken down in each of the sections below.
+
+### 1. Loading
+The loading steps are:
+1.  1. Loading the target architecture library
+    2. Opening the .dll file
+    3. Loading libraries of dependencies
+    4. Scanning for information (in all libraries that have been loaded)
+
+### 2. Conversion of IL Ops to ASM Ops
+The conversion steps (carried out for each loaded library) are:
+2.  1. Reading in IL bytes to create IL Ops in an IL block
+    2. Pre-processing the IL Ops in an IL block to handle special cases
+        *Further explanation of this will be skipped as it consists of detailed points.*
+    3. Generating Static Fields ASM block
+    4. Generating Types Table ASM block
+    5. Generating Method Tables ASM block
+    6. Generating Field Tables ASM block
+    7. Generating ASM blocks for IL blocks
+    8. Generating String Literals ASM block
+
+### 3. Conversion of ASM Ops to ASM text
+The conversion steps (carried out for each loaded library) are:
+3.  1. Pre-processing the ASM ops in an ASM block to handle consistent and special cases
+        *While this contains detailed points, there are few of them and they are fairly simple, so this will be covered further in ths section.*
+    2. Generating ASM text (code) for ASM blocks
+
+### 4. Conversion of ASM text to Object files
+The conversion steps (carried out for each loaded library) are:
+4.  1. Saving ASM text (code) to .asm files
+    2. Converting the .asm files to Object files (.o) using an external ASM compiler (e.g. NASM for x86 ASm code)
+
+### 5. Conversion of Object files to ISO/ELF
+5.  1. Ordering ASM blocks (by this stage they are Object files)
+    2. using a linker (e.g. ld) to link the output into a binary file (either .elf or .bin)
+    3. If compiling to ISO, using the ISO9660Generator to create the .ISO file from the .bin file.
+
 ---
 
 ## Detailed points of operation
