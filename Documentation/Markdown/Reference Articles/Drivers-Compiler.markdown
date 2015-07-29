@@ -336,13 +336,71 @@ Dependencies are just other libraries which the library in question makes refere
 The only complication to this step is that the compiler must ignore any dependencies which are part of the .Net Framework. This is done using an exclusion list in the compiler configuration (see the Drivers.Compiler.Options class).
 
 #### 4. Scanning for information
+***The relevant method for this section is Drivers.Compiler.Types.TypeScanner and the Info classes in the same namespace.***
 
-You may be wondering what information there is that needs loading. Well, here are the four key types of information (which correlate to the Types.****Info classes described in earlier sections).
+You may be wondering what information there is that needs loading. Well, here are the four key types of information (which correlate to the Drivers.Compiler.Types.XXXXInfo classes described in earlier sections).
 
 1. Type information - This is information about all the types (aka classes aka object descriptions) declared in the library being loaded.
-2. Field information - This is information about all the fields declared in a given type.
-3. Method information
-4. Variable information
+2. Field information - This is information about all the fields declared in a given type. Each TypeInfo contains a list of FieldInfos.
+3. Method information - This is information about all the methods declared in a given type. Each TypeInfo contains a list of MethodInfos.
+4. Variable information - This is information about all the variables declared for a given method. Each MethodInfo contains two lists of VariableInfos. One for arguments and one for locals.
+
+All of this information becomes very important later in the compiler. Here are a few highlights of some of the most important ways the information gets used.
+
+Type information is used to:
+* Calculate the size of a type when it is represented on the stack or allocated on the heap (the two sizes may be different. This will be explained later.)
+* Determine whether fields and variables of a given type need to be managed by the Garbage Collector.
+* Many more things...
+
+Field information is used to:
+* Calculate a consistent position (relative to the start of an object in memory) for non-static fields to be stored at.
+* Determine if a field is static or not. If it is static, it will need to be statically allocated (as opposed to being allocated on the heap every time a new instance of the type is created).
+* Some more things...
+
+Method information is used to:
+* Load the IL ops that need to be compiled (this is probably one of the most important things in the compiler!)
+* Create labels for use in assembly code. (Labels provide the mechanism for calling the methods.)
+* Many more things...
+
+Variable information is used to:
+* Calculate the location of the variables and arguments in memory relative to the stack pointer,
+* Determine where to temporarily store return values
+* Very few more things...
+
+So how is all this information loaded? Well, it's done in stages. Each stage contains a recursive step. Also, the following stages occur for each library separately (with the bottom-most dependencies going first).
+
+1. Scan all types in the library doing a single-depth search to load cursory information about the types (i.e. load what fields there are, but not information about the type of those fields. Also, don't scan base types).
+2. Scan all types in the library doing a full-depth search to load detailed information about the types (i.e. look at all the fields and base types and thus determine information about the type in question.)
+3. Scan all fields of all types in the library to load information about the fields
+
+Steps 2 and 3 both scan the fields of a type. The difference is that step 2 focuses on determining information about the type (in which the fields were declared). Step 3 focuses on determining information about the fields themselves.
+
+Step 1 (ScanType method) determines basic information about the type. This means compiler will know:
+* Some unchanging-global type information such as whether it is a reference type or not. This information is stuff that remains the same regardless of the number of fields or methods.
+* All the attributes applied to the type
+* The existence of all the fields declared by the type (but no more information than that)
+* All the methods (including constructors) declared by the type and the attributes applied to those methods
+
+With this information the compiler can determine whether a type is a reference type or not, whether the type is managed by the garbage collector or not and the name of the type (amongst some other information which isn't used at this stage so is not worth outlining.)
+
+Step 2 (ProcessType method) determines more detailed information about the type. Primarily it aims to determine the size of the type when it is on the stack and the heap. It uses the information loaded in step 1 to allow each type to be processed without the risk of entering an infinite loop. This will be explained after the recursive nature of step 2 is explained. Step 2 goes through all the types in the library. For each type it does the following:
+1. If the type is a value type:
+	* It can directly, without any further processing / without an recursive processing, determine the size of the type on the heap and stack. This is because value types cannot have base types so will not require another type to be processed before the size of the value type can be determined.
+2. If the type is a reference type:
+	1. It determines the size of the type on the stack. For reference types this will always just be the size of a pointer (4 bytes for a 32-bit target architecture).
+		* It can determine the size on the stack without processing any fields or the base type because when a reference type is on the stack it is just a pointer to the object in memory! It is very important to note that the stack size is unaffected by the number and size of fields because it is key to why the recursive processing works.
+	2. It checks if there is a base type that isn't from the .Net Framework (i.e. not from MSCorLib.dll). If there is, then it calls ProcessType on the base type - this is the recursive step!
+	3. It adds up the size of all non-static fields within the type. It adds the result to the size of the base type to give the overall size of the type when it is on the heap.
+		* For fields which are value types, it calls ProcessType on the types of the fields.
+		* Note: It does **not** call ProcessType for the types of fields which are reference types. 
+	
+By not calling ProcessType for reference type fields, we avoid getting caught in an infinite loop. If we didn't avoid this, for example, we could suppose that we start processing a type. That type has a base type, so we start processing the base type. The base type has a field which has the same type as the type we'd started processing in the first place. The result would be us trying to process the first type all over again and we'd get stuck in an infinite loop. It is safe to call ProcessType for types of fields which are value types because value types cannot have base types so cannot end up in the infinite recursive calls situation.
+
+If steps 1 and 2 were to happen simultaneously, then there would be even more situations where we would end up in infinite recursive loops, some of which are only avoidable by separating out the processing.
+
+So steps 1 and 2 allow us to determine all the information about types. Step 3 (ProcessTypeFields mehtod) then proceeds to use this information to determine all information about fields. Most importantly, it calculates the offset of every field (in both value and reference types). This uses the information about the size of types, which is why it is important that step 2 is complete before we start to process field information. For each type, it loops through the fields. It starts with an offset of zero and sets the first field's offset to that. It then adds the size of the first field to the offset and goes to the next. It sets the next field's offset to the current value, then adds its size to the current offset value. And so on and so forth until it reaches the last field.
+
+By this point, the compiler should have determined everything about all the types, methods, fields and variables - most importantly, the two sizes for each type and the offset of every field.
 
 ### 2. Conversion of IL Ops to ASM Ops
 The conversion steps (carried out for each loaded library) are:
@@ -355,21 +413,172 @@ The conversion steps (carried out for each loaded library) are:
     6. Generating Field Tables ASM block
     7. Generating ASM blocks for IL blocks
     8. Generating String Literals ASM block
+	
+#### 1. Reading in IL bytes to create IL ops in an IL block
+***The relevant method for this section is Drivers.Compiler.IL.ILReader.ReadNonPlugged.***
+
+The IL library does not provide us with the IL ops represented in a particularly convenient format for processing. The IL ops are stored as a byte code. This means that for each method there is a byte array. The byte array consists of IL ops and their associated parameters (such as which method to call etc.) in a highly compact format. So for each method in an IL library, the compiler must read the byte code and create instances of the IL op class to represent the IL ops in the method. It adds these IL ops to the IL Block for the method.
+
+Each MethodInfo provides a MethodBody (see properties of the MethodInfo class). The MethodBody has a function called GetILAsByteArray() which allows the compiler to get the IL code as a byte array. The IL Reader then proceeds to read the bytes one by one, interpreting them to construct IL ops and then adding those IL ops to the IL Block. The MethodBody also supplies the information about try-catch-finally blocks defined by the C# code within the method (these are referred to as ExceptionBlocks or ExceptionHandledBlocks within the compiler).
+
+The precise format of the byte code will not be discussed here as it is:
+1. Inconsequential,
+2. Apparent from the code,
+3. Well documented by Microsoft online (see MSDN)
+
+I should point out, however, that each IL op may (or may not) have a Metadata Token associated with it. For many ops, this just supplies a constant value to load (e.g. for ldc ops it will specify the value to load). For some ops, it specifies a reference to something else in the IL Library. The reference can be resolved using the Assembly property (contained in the ILLibrary class) and the ILLibrary class functions.
+
+It should be pointed out, that for Call, Calli, Callvirt, Ldftn and NewObj ops, the metadata token refers to a method to call. The method to call is pre-loaded from the Metadata Token into the MethodToCall field of the IL op. The MethodToCall field should always be used instead of the Metadata token. This is because later, the IL Preprocessor will inject some call operations which do not use the metadata token - they only set the MethodToCall field. The MethodToCall field will, therefore, always be valid. The Metadata Token will not always be valid.
+
+#### 2. Preprocessing the IL ops in an IL block
+***The relevant class for this section is Drivers.Compiler.IL.ILPreprocessor.***
+*Further explanation of this will be skipped as it consists of detailed points.*
+
+#### 3. Generating Static Fields ASM block
+***The relevant method for this section is Drivers.Compiler.IL.ILScanner.ScanStaticFields.***
+
+The compiler outputs (to the final assembly code) fixed memory allocations for static fields. This saves the driver or kernel from having to allocate them at runtime and allows the static constructors to initialise the static fields directly. Also, for kernels, there would be a logical problem with having static fields allocated once at runtime. That issue is that the Heap implementation (which manages memory allocation) uses static fields. So it would have to succeed in allocating memory for its own fields, before its initialised! Clearly this is impossible.
+
+The Static Fields ASM block, therefore, is used to allocate fixed locations of memory for static fields at compile time so they are available from startup at runtime.
+
+*Further explanation of this will be skipped as it consists of detailed points.*
+
+#### 4. Generating Types Table ASM block
+***The relevant method for this section is Drivers.Compiler.IL.ILScanner.ScanType.***
+
+The compiler outputs (to the final assembly code) a table of entries called the Types Table. Each entry contains information about a type in the library. This information is used, for example, when the garbage collector needs to create a new object of a particular type. It loads the type information (which is an entry in the Types Table) then loads the size of the type from the entry and then allocates that amount of memory for the new object. 
+
+Each entry in the Types Table has the format defined by the Kernel.FOS_System.Type class (which can be found in Kernel\Libraries\Kernel.FOS_System\Type.cs). The entry consists of the fields from the type class. The fields have the following layout in memory (and thus are allocated in the assembly code in this order). *Sizes and offsets are in bytes*
+
+| Offset | Size | Name | Description |
+|:--------:|:-------:|:---------|:---------------|
+| 0    | 4   | Id    | Unique identifier number for the type. |
+| 4    | 4   | IDString | Unique identifier string for the type. |
+| 8    | 4   | Signature | Human-readable, unique signature of the type. |
+| 12   | 4   | Size     | Size of an instance of the type when it is allocated on the heap. |
+| 16   | 4   | StackSize | Size of an instance of the type when it is represented on the stack. |
+| 20   | 1   | IsValueType | Whether the type is a value type or not. |
+| 21   | 1   | IsPointer    | Whether the type is a pointer type or not. |
+| 22   | 4   | MethodTablePtr | Pointer to the type's method table. |
+| 26   | 4   | FieldTablePtr   | Pointer to the type's field table. |
+| 30   | 4   | TheBaseType   | Reference to the base type (in fact this is a pointer to the base type's Type Table entry) |
+|===========================================================================================|
+|      | 34  | Total Size |   |
+
+*Further explanation of this will be skipped as it consists of detailed points.*
+
+#### 5. Generating Method Tables ASM block
+***The relevant method for this section is Drivers.Compiler.IL.ILScanner.ScanMethods.***
+
+The compiler outputs (to the final assembly code) a set of tables i.e. multiple tables! These tables are methods tables. There is one methods table per type. A methods table contains information about all the non-static methods defined by a given type. This information is used, for example, when a virtual call is made. The runtime code searches through the method tables from the lowest child-type to the highest base-type until it finds an entry with the same Id value as the one it wants to call. It then loads the pointer to the method from the table entry and then calls it like a normal method.
+
+Each entry in a method table has the following format (i.e. layout in memory). *Sizes and offsets are in bytes*
+
+| Offset | Size | Name | Description |
+|:--------:|:-------:|:---------|:---------------|
+| 0    | 4   | MethodID | The Id Value (i.e. unique number) which identifies the method. If this is zero, then it is the last entry in the table and the MethodPtr field does not contain a pointer to a method. |
+| 4    | 4   | MethodPtr | The pointer to the method. If it is the last entry in the table then: If this field is zero, the pointer is invalid and this is the methods table for highest base-type. Otherwise, the pointer is a pointer to the start of the type's, base-type's methods table. |
+|========================|
+|      | 8   | Total Size |   |
+
+*Further explanation of this will be skipped as it consists of detailed points.*
+
+#### 6. Generating Field Tables ASM block
+***The relevant method for this section is Drivers.Compiler.IL.ILScanner.ScanFields.***
+
+The compiler outputs (to the final assembly code) another set of tables i.e. even more tables! These tables are fields tables. They work in exactly the same way as methods tables except they are used by the garbage collector for identifying fields which are of reference type and so will need cleaning up. 
+
+Each entry in a field table has the following format (i.e. layout in memory). *Sizes and offsets are in bytes*
+
+| Offset | Size | Name | Description |
+|:--------:|:-------:|:---------|:---------------|
+| 0    | 4   | Offset | The offset of the field from the start of an object's memory. |
+| 4    | 4   | Size  | The size of the field in an object's memory. If this is zero, then it is the last entry in the table and the FieldType field does not contain a pointer to a type. |
+| 8    | 4   | FieldType | A pointer to the type (i.e. an entry in the Types Table) for the type of the field. If it is the last entry in the table then: If this field is zero, the pointer is invalid and this is the fields table for highest base-type. Otherwise, the pointer is a pointer to the start of the type's, base-type's fields table. |
+|========================|
+|      | 12   | Total Size |   |
+
+*Further explanation of this will be skipped as it consists of detailed points.*
+
+#### 7. Generating ASM blocks for IL blocks
+***The relevant method for this section is Drivers.Compiler.IL.ILScanner.ScanNonpluggedILBlock.***
+
+The actual conversion of IL to ASM (from the compiler's perspective not the target architecture perspective) is very simple. The following simple steps are performed for each IL block:
+1. Create a new ASM block
+2. Create an ILConversionState object (which the target architecture's IL op implementation use to keep track of state between converting IL ops)
+3. For each IL op in the IL block:
+	1. Add an ASM Comment op to mark the ASM output with information about the IL op 
+	2. Check whether the op is a custom IL op (i.e. one added by the Drivers Compiler and not specified by Microsoft):
+		* If it is, call the Convert method for the custom op (passing in the conversion state and the current IL Op's information)
+	3. Otherwise:
+		1. Load the op-code for the current IL op from the current IL op's information
+		2. Load the target architecture's IL op implementation from the TargetILOp's dictionary (described earlier in the Loading section).
+		3. Call the target architecture IL op's Convert method (passing in the conversion state and the current IL Op's information)
+	4. If the current IL op's information indicates the first ASM op produced for the IL should be marked with an IL label:
+		* *(The IL op's information is changed during the Convert method call to indicate whether the IL Label is required or not()*
+		* Set the ILLabelPosition and RequiresILLabel fields of first ASM op produced by calling the Convert method.
+4. Add the ASM block to the ASM Library for the IL Library of the method being compiled.
+		
+#### 8. Generating String Literals ASM block
+***The relevant method for this section is Drivers.Compiler.IL.ILScanner.Scan.***
+
+The code contains string literals (the stuff in double quotes e.g. "Hello, world!"). Each string literal must be stored in the output assembly code for use at runtime. The Drivers Compiler does this by outputting a block of assembly code which contains allocations of memory for string objects which have pre-initialised values. I.e. the character array for the string is pre-set to the correct values for each string literal. A string literal in the ASM code has the same format as a String object (see FOS_System.String in Kernel\Libraries\Kernel.FOS_System\String.cs). This format is:
+
+| Offset | Size | Name | Description |
+|:--------:|:-------:|:---------|:---------------|
+| 0    | 4   | _Type | *Field inherited from Object from ObjectWithType*. Always a reference to the String type (i.e. the String type's Types Table entry) |
+| 4    | 4   | length | The length of the string (in characters).
+| 8    | ???  | --- | The remaining memory is a char array (where a char is two bytes). The length of the char array is equal to the value of the *length* field. |
+|==========================|
+|      | (*length* * 2) + 8 | Total Size |   |
+
+*Further explanation of this will be skipped as it consists of detailed points.*
 
 ### 3. Conversion of ASM Ops to ASM text
 The conversion steps (carried out for each loaded library) are:
-3.  1. Pre-processing the ASM ops in an ASM block to handle consistent and special cases
-        *While this contains detailed points, there are few of them and they are fairly simple, so this will be covered further in ths section.*
+3.  1. Pre-processing the ASM ops in an ASM block to handle consistent or special cases
+        *While this contains detailed points, there are few of them and they are fairly simple, so this will be covered further in this section.*
     2. Generating ASM text (code) for ASM blocks
 
+#### 1. Pre-processing the ASM ops in an ASM block
+***The relevant methods for this section are the Drivers.Compiler.ASM.ASMPreprocessor.Preprocess methods (both versions of the overloaded function).***
+
+The ASM Compiler calls the ASM Preprocessor's public Preprocess method, passing it an ASMLibrary to preprocess. The ASM Preprocessor takes the following steps for each ASM Block in the ASM Library:
+1. If the block is plugged:
+	1. If the plug path is empty or just white space (which is not the same as being null), it ignores the block's contents and plug specification and removes it from the ASM Library's list of ASM blocks.
+	2. Otherwise, it leaves the ASM block as-is
+2. Otherwise, the ASM block is not plugged, so it:
+	1. Adds a Label op in front of the first ASM op that is the method label. The method label is the label called when a method call occurs. The method label is a substitute for the address of the start of the method. (*Note: Labels are always substitutes for addresses and are used like pointers).
+	2. Adds an ASM Global Label op in front of the method label op to make the method label accessible outside of the output .asm file (which will contain only the single ASM block's code).
+	3. Adds ASM External Label ops for all distinct, required external labels (in front of the global label). Required external labels are registered during calls to ILOp.Convert method in the ILScanner stage.
+	4. Add an ASM Header op in front of the external labels to add directives to the assembler compiler (e.g. the "BITS 32" directive for NASM when the target architecture is x86).
+
+#### 2. Generating ASM text (code) for ASM blocks
+***The relevant method for this section is the Drivers.Compiler.ASM.ASMPreprocessor.ProcessBlock method.***
+
+At this stage, generating the ASM text for an ASM block is fairly simple. The following steps are followed for each ASM block in the ASM Library being compiled:
+1. If the ASM block is plugged:
+	1. Generate the plug file's full file name from the plug path and target architecture name.
+	2. Read the plug file's contents and use it as the block's ASM text
+	3. Replace any macros in the ASM text with their actual values
+2. Otherwise, if the ASM block is not plugged:
+	1. For each ASM op in the ASM block, call the op's Convert method and append the resulting text to the ASM block's Text.
+3. In both cases:
+	1. Clean up the ASM text (by forcing capitalisation of extern and global statements)
+	2. Save the ASM text to the .asm output file.
+	
 ### 4. Conversion of ASM text to Object files
 The conversion steps (carried out for each loaded library) are:
-4.  1. Saving ASM text (code) to .asm files
-    2. Converting the .asm files to Object files (.o) using an external ASM compiler (e.g. NASM for x86 ASm code)
+4.  1. Converting the .asm files to Object files (.o) using an external ASM compiler (e.g. NASM for x86 ASM code)
+
+Basically this just executes NASM or a similar tool for every ASM block in an ASM Library. It passes the full file path of the output .asm file to the external compiler tool. 
+
+Output ASM Fil Path: "bin\Debug\DriversCompiler\ASM\*.asm"
+Output Object File Path: "bin\Debug\DriversCompiler\Objects\*.o"
 
 ### 5. Conversion of Object files to ISO/ELF
 5.  1. Ordering ASM blocks (by this stage they are Object files)
-    2. using a linker (e.g. ld) to link the output into a binary file (either .elf or .bin)
+    2. Using a linker (e.g. ld) to link the output into a binary file (either .elf or .bin)
     3. If compiling to ISO, using the ISO9660Generator to create the .ISO file from the .bin file.
 
 ---
