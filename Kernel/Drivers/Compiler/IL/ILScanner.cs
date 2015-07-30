@@ -150,8 +150,7 @@ namespace Drivers.Compiler.IL
                 string value = aStringLiteral.Value;
                 byte[] lengthBytes = BitConverter.GetBytes(value.Length);
 
-                ASM.ASMOp newLiteralOp = (ASM.ASMOp)Activator.CreateInstance(
-                    TargetArchitecture.TargetASMOps[ASM.OpCodes.StringLiteral], 
+                ASM.ASMOp newLiteralOp = TargetArchitecture.CreateASMOp(ASM.OpCodes.StringLiteral, 
                     aStringLiteral.Key, StringTypeId, lengthBytes, value.ToCharArray());
 
                 StringLiteralsBlock.Append(newLiteralOp);
@@ -213,8 +212,7 @@ namespace Drivers.Compiler.IL
                 FieldInformation.Add(new Tuple<string, Types.TypeInfo>(aTypeField.Name, FieldTypeInfo));
             }
 
-            ASM.ASMOp newTypeTableOp = (ASM.ASMOp)Activator.CreateInstance(
-                TargetArchitecture.TargetASMOps[ASM.OpCodes.TypeTable], 
+            ASM.ASMOp newTypeTableOp = TargetArchitecture.CreateASMOp(ASM.OpCodes.TypeTable, 
                 TypeId, SizeVal, IdVal, StackSizeVal, IsValueTypeVal, MethodTablePointer, IsPointerTypeVal, 
                 BaseTypeIdVal, FieldTablePointer, TypeSignatureLiteralLabel, TypeIdLiteralLabel, FieldInformation);
             TypesTableBlock.Append(newTypeTableOp);
@@ -241,8 +239,7 @@ namespace Drivers.Compiler.IL
                     string FieldID = aFieldInfo.ID;
                     string Size = fieldTypeInfo.SizeOnStackInBytes.ToString();
 
-                    ASM.ASMOp newStaticFieldOp = (ASM.ASMOp)Activator.CreateInstance(
-                        TargetArchitecture.TargetASMOps[ASM.OpCodes.StaticField], FieldID, Size);
+                    ASM.ASMOp newStaticFieldOp = TargetArchitecture.CreateASMOp(ASM.OpCodes.StaticField, FieldID, Size);
                     StaticFieldsBlock.Append(newStaticFieldOp);
                 }
             }
@@ -302,8 +299,7 @@ namespace Drivers.Compiler.IL
 
             List<Tuple<string, int>> TableEntryFieldInfos = GetSpecialClassFieldInfo(TheLibrary, typeof(Attributes.MethodInfoStructAttribute));
 
-            ASM.ASMOp newMethodTableOp = (ASM.ASMOp)Activator.CreateInstance(
-                TargetArchitecture.TargetASMOps[ASM.OpCodes.MethodTable], 
+            ASM.ASMOp newMethodTableOp = TargetArchitecture.CreateASMOp(ASM.OpCodes.MethodTable, 
                 currentTypeId, currentTypeName, AllMethodInfo, TableEntryFieldInfos);
             MethodTablesBlock.Append(newMethodTableOp);
         }
@@ -365,8 +361,7 @@ namespace Drivers.Compiler.IL
 
             List<Tuple<string, int>> TableEntryFieldInfos = GetSpecialClassFieldInfo(TheLibrary, typeof(Attributes.FieldInfoStructAttribute));
 
-            ASM.ASMOp newFieldTableOp = (ASM.ASMOp)Activator.CreateInstance(
-                TargetArchitecture.TargetASMOps[ASM.OpCodes.FieldTable], 
+            ASM.ASMOp newFieldTableOp = TargetArchitecture.CreateASMOp(ASM.OpCodes.FieldTable, 
                 currentTypeId, currentTypeName, AllFieldInfo, TableEntryFieldInfos);
             FieldTablesBlock.Append(newFieldTableOp);
         }
@@ -433,8 +428,7 @@ namespace Drivers.Compiler.IL
                 {
                     string commentText = TheASMBlock.GenerateILOpLabel(convState.PositionOf(anOp), "") + "  --  " + anOp.opCode.ToString() + " -- Offset: " + anOp.Offset.ToString("X2");
                     
-                    ASM.ASMOp newCommentOp = (ASM.ASMOp)Activator.CreateInstance(
-                        TargetArchitecture.TargetASMOps[ASM.OpCodes.Comment], commentText);
+                    ASM.ASMOp newCommentOp = TargetArchitecture.CreateASMOp(ASM.OpCodes.Comment, commentText);
                     TheASMBlock.ASMOps.Add(newCommentOp);
                     
                     int currCount = TheASMBlock.ASMOps.Count;

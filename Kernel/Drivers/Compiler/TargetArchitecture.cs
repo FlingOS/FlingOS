@@ -42,7 +42,7 @@ namespace Drivers.Compiler
         /// The stack switch IL op. This is a fake IL op used by the Drivers Compiler.
         /// </summary>
         public static IL.ILOps.StackSwitch StackSwitchOp;
-
+        
         /// <summary>
         /// Initialises the IL scanner.
         /// </summary>
@@ -84,7 +84,7 @@ namespace Drivers.Compiler
                         OK = false;
                         throw new ArgumentException("Unrecognised target architecture!");
                 }
-
+                
                 if (OK)
                 {
                     Type[] AllTypes = TargetArchitectureAssembly.GetTypes();
@@ -94,15 +94,15 @@ namespace Drivers.Compiler
                         {
                             if (aType.IsSubclassOf(typeof(IL.ILOps.MethodStart)))
                             {
-                                MethodStartOp = (IL.ILOps.MethodStart)aType.GetConstructor(new Type[0]).Invoke(new object[0]);
+                                MethodStartOp = (IL.ILOps.MethodStart)Activator.CreateInstance(aType);
                             }
                             else if (aType.IsSubclassOf(typeof(IL.ILOps.MethodEnd)))
                             {
-                                MethodEndOp = (IL.ILOps.MethodEnd)aType.GetConstructor(new Type[0]).Invoke(new object[0]);
+                                MethodEndOp = (IL.ILOps.MethodEnd)Activator.CreateInstance(aType);
                             }
                             else if (aType.IsSubclassOf(typeof(IL.ILOps.StackSwitch)))
                             {
-                                StackSwitchOp = (IL.ILOps.StackSwitch)aType.GetConstructor(new Type[0]).Invoke(new object[0]);
+                                StackSwitchOp = (IL.ILOps.StackSwitch)Activator.CreateInstance(aType);
                             }
                             else
                             {
@@ -115,7 +115,7 @@ namespace Drivers.Compiler
                                 {
                                     foreach (IL.ILOps.ILOpTargetAttribute targetAttr in targetAttrs)
                                     {
-                                        TargetILOps.Add(targetAttr.Target, (ILOp)aType.GetConstructor(new Type[0]).Invoke(new object[0]));
+                                        TargetILOps.Add(targetAttr.Target, (ILOp)Activator.CreateInstance(aType));
                                     }
                                 }
                             }
@@ -142,5 +142,9 @@ namespace Drivers.Compiler
             return OK;
         }
 
+        public static ASM.ASMOp CreateASMOp(ASM.OpCodes ASMOpCode, params object[] ConstructorArgs)
+        {
+            return (ASM.ASMOp)Activator.CreateInstance(TargetASMOps[ASMOpCode], ConstructorArgs);
+        }
     }
 }
