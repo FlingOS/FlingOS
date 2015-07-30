@@ -82,7 +82,7 @@ namespace Drivers.Compiler
         {
             bool OK = true;
 
-            OK = LoadTargetArchiecture();
+            OK = LoadTargetArchitecture();
 
             return OK;
         }
@@ -91,7 +91,7 @@ namespace Drivers.Compiler
         /// fields.
         /// </summary>
         /// <returns>True if fully loaded without error. Otherwise, false.</returns>
-        private static bool LoadTargetArchiecture()
+        private static bool LoadTargetArchitecture()
         {
             bool OK = false;
 
