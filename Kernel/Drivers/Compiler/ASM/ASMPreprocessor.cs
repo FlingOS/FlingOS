@@ -47,11 +47,6 @@ namespace Drivers.Compiler.ASM
     /// The ASM Preprocessor also handles injecting IL ops for the method label, the global 
     /// labels and the external labels.
     /// </para>
-    /// <para>
-    /// TODO: The ASM Preprocessor is also injecting compiler directives such as BITS 32, 
-    /// which should be moved into the target architecture library as some form of 
-    /// library-wide preprocessing step.
-    /// </para>
     /// </remarks>
     public static class ASMPreprocessor
     {
