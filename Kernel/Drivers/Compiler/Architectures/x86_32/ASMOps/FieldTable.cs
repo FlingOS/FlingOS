@@ -46,7 +46,7 @@ namespace Drivers.Compiler.Architectures.x86.ASMOps
             }
             ASMResult.AppendLine("; Field Table End - " + CurrentTypeName);
 
-            return Text = ASMResult.ToString();
+            return ASMResult.ToString();
         }
     }
 }

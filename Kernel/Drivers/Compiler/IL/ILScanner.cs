@@ -461,7 +461,7 @@ namespace Drivers.Compiler.IL
                     }
                 }
             }
- 
+
             Types.TypeInfo InformationAboutFieldInfoStruct = ILLibrary.SpecialClasses[typeof(Attributes.FieldInfoStructAttribute)].First();
             List<Types.FieldInfo> FieldInfoStruct_OrderedFields = InformationAboutFieldInfoStruct.FieldInfos.Where(x => !x.IsStatic).OrderBy(x => x.OffsetInBytes).ToList();
             List<Tuple<string, int>> FieldInfoStruct_OrderedFieldInfo_Subset = new List<Tuple<string, int>>();
@@ -484,6 +484,7 @@ namespace Drivers.Compiler.IL
                     parentTypeFieldTablePtr = baseTypeInfo.ID + "_FieldTable";
                 }
             }
+            {
                 string fieldOffsetVal = "0";
                 string fieldSizeVal = "0";
                 string fieldTypeIdVal = parentTypeFieldTablePtr;
@@ -493,27 +494,10 @@ namespace Drivers.Compiler.IL
                     FieldTablesBlock.AddExternalLabel(fieldTypeIdVal);
                 }
 
-                foreach (Types.FieldInfo aTypeField in OrderedFields)
-                {
-                    Types.TypeInfo structFieldTypeInfo = TheLibrary.GetTypeInfo(aTypeField.FieldType);
-                    string allocStr = GetAllocStringForSize(
-                        structFieldTypeInfo.IsValueType ? structFieldTypeInfo.SizeOnHeapInBytes : structFieldTypeInfo.SizeOnStackInBytes);
-                    switch (aTypeField.Name)
-                    {
-                        case "Offset":
-                            ASMResult.AppendLine(allocStr + " " + fieldOffsetVal);
-                            break;
-                        case "Size":
-                            ASMResult.AppendLine(allocStr + " " + fieldSizeVal);
-                            break;
-                        case "FieldType":
-                            ASMResult.AppendLine(allocStr + " " + fieldTypeIdVal);
-                            break;
-                    }
-                }
+                AllFieldInfo.Add(new Tuple<string, string, string>(fieldOffsetVal, fieldSizeVal, fieldTypeIdVal));
             }
 
-            ASM.ASMOp newFieldTableOp = (ASM.ASMOp)Activator.CreateInstance(TargetASMOps[ASM.OpCodes.MethodTable], currentTypeId, currentTypeName, AllFieldInfo, FieldInfoStruct_OrderedFieldInfo_Subset);
+            ASM.ASMOp newFieldTableOp = (ASM.ASMOp)Activator.CreateInstance(TargetASMOps[ASM.OpCodes.FieldTable], currentTypeId, currentTypeName, AllFieldInfo, FieldInfoStruct_OrderedFieldInfo_Subset);
             FieldTablesBlock.Append(newFieldTableOp);
         }
 
