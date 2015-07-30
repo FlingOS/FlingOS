@@ -43,6 +43,7 @@
   <ItemGroup>
     <Compile Include="ASM\ASMCompiler.cs" />
     <Compile Include="ASM\ASMOps\ASMComment.cs" />
+    <Compile Include="ASM\ASMOps\ASMFieldTable.cs" />
     <Compile Include="ASM\ASMOps\ASMGlobalLabel.cs" />
     <Compile Include="ASM\ASMOps\ASMExternalLabel.cs" />
     <Compile Include="ASM\ASMLibrary.cs" />
