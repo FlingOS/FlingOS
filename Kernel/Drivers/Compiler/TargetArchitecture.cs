@@ -71,20 +71,31 @@ namespace Drivers.Compiler
 
             try
             {
+                string CurrentAssemblyDir = System.IO.Path.GetDirectoryName(typeof(TargetArchitecture).Assembly.Location);
+                string fileName = null;
                 switch (Options.TargetArchitecture)
                 {
                     case "x86":
                         {
-                            string dir = System.IO.Path.GetDirectoryName(typeof(ILCompiler).Assembly.Location);
-                            string fileName = System.IO.Path.Combine(dir, @"Drivers.Compiler.Architectures.x86.dll");
-                            fileName = System.IO.Path.GetFullPath(fileName);
-                            TargetArchitectureAssembly = System.Reflection.Assembly.LoadFrom(fileName);
+                            fileName = System.IO.Path.Combine(CurrentAssemblyDir, @"Drivers.Compiler.Architectures.x86.dll");
+                            OK = true;
+                        }
+                        break;
+                    case "mips":
+                        {
+                            fileName = System.IO.Path.Combine(CurrentAssemblyDir, @"Drivers.Compiler.Architectures.MIPS32.dll");
                             OK = true;
                         }
                         break;
                     default:
                         OK = false;
                         throw new ArgumentException("Unrecognised target architecture!");
+                }
+
+                if (OK)
+                {
+                    fileName = System.IO.Path.GetFullPath(fileName);
+                    TargetArchitectureAssembly = System.Reflection.Assembly.LoadFrom(fileName);
                 }
                 
                 if (OK)

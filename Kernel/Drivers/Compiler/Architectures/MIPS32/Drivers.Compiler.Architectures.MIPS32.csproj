@@ -4,16 +4,15 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{4E28A467-4D90-4315-9113-AE93F54280B0}</ProjectGuid>
-    <OutputType>Exe</OutputType>
+    <ProjectGuid>{B18EBB5F-CC63-43CD-BE7B-188901E2016A}</ProjectGuid>
+    <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Drivers.Compiler.App</RootNamespace>
-    <AssemblyName>Drivers.Compiler.App</AssemblyName>
+    <RootNamespace>Drivers.Compiler.Architectures.MIPS32</RootNamespace>
+    <AssemblyName>Drivers.Compiler.Architectures.MIPS32</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
@@ -21,17 +20,14 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <DocumentationFile>bin\Debug\Drivers.Compiler.App.XML</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <DocumentationFile>bin\Release\Drivers.Compiler.App.XML</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -43,30 +39,13 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="CompilerProcess.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\..\..\Kernel\Kernel.licenseheader">
-      <Link>Kernel.licenseheader</Link>
-    </None>
-    <None Include="App.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\Architectures\MIPS32\Drivers.Compiler.Architectures.MIPS32.csproj">
-      <Project>{b18ebb5f-cc63-43cd-be7b-188901e2016a}</Project>
-      <Name>Drivers.Compiler.Architectures.MIPS32</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Architectures\x86_32\Drivers.Compiler.Architectures.x86.csproj">
-      <Project>{eebec7b2-9f93-4a8a-bcb7-c9f8f79fa77e}</Project>
-      <Name>Drivers.Compiler.Architectures.x86</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Drivers.Compiler.csproj">
+    <ProjectReference Include="..\..\Drivers.Compiler.csproj">
       <Project>{1fb0e622-d2c6-4a5c-b5b6-d2bb5e502af1}</Project>
       <Name>Drivers.Compiler</Name>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Properties\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

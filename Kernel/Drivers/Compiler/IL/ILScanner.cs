@@ -35,10 +35,6 @@ namespace Drivers.Compiler.IL
     /// <summary>
     /// The IL Sanner manages scanning types, fields and methods to generate the final assembly code.
     /// </summary>
-    /// <remarks>
-    /// Some parts of this (e.g. GetAllocStringForSize) generate ASM but they shouldn't. The code
-    /// generating ASM should be shifted to the target architecture library.
-    /// </remarks>
     public static class ILScanner
     {
         /// <summary>

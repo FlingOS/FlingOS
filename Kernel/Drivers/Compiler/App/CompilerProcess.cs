@@ -120,7 +120,7 @@ namespace Drivers.Compiler.App
 1 : Output Path - The path to the output directory.
 2 : Tools Path - The path to the tools directory.
 3 : Build Mode - Debug or Release.
-4 : Target Architecture - e.g. x86, x64
+4 : Target Architecture - e.g. x86, x64, MIPS
 5 : Link Mode - ISO or ELF.
 6 : [Optional] ISO Kernel base address
 7 : [Optional] ISO Kernel load offset (subtracted from ISO Kernel base address)

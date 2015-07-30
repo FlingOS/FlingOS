@@ -42,7 +42,8 @@ namespace Drivers.Compiler
         /// List of all valid target architectures that are supported by the compiler.
         /// </summary>
         public static List<string> ValidTargetArchitectures = new List<string> {
-            "x86"
+            "x86",
+            "mips"
         };
 
         /// <summary>
