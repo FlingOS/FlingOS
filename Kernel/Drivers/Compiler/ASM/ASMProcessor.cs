@@ -37,7 +37,7 @@ using System.IO;
 namespace Drivers.Compiler.ASM
 {
     /// <summary>
-    /// The ASM Processor manages converting ASM blocks into actuakl assembly code, saving that code
+    /// The ASM Processor manages converting ASM blocks into actual assembly code, saving that code
     /// to files and then executing a build tool to convert assembly code into ELF binaries.
     /// </summary>
     public static class ASMProcessor
@@ -159,7 +159,7 @@ namespace Drivers.Compiler.ASM
         /// <summary>
         /// Executes the target architecture's assembly code compiler (e.g. NASM) asynchronously.
         /// </summary>
-        /// <param name="Blocks">The blocks to execute the compiler tool  for.</param>
+        /// <param name="Blocks">The blocks to execute the compiler tool for.</param>
         /// <param name="OnComplete">Method to call when the compiler tool has finished executing for all the blocks.</param>
         /// <param name="aState">The state object to use when calling the OnComplete method.</param>
         private static void ExecuteAssemblyCodeCompilerAsync(List<ASMBlock> Blocks, VoidDelegate OnComplete, object aState)
