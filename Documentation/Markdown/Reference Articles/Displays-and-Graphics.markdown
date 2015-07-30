@@ -138,22 +138,49 @@ The advantage of bitmaps over SVG is that for highly detailed or varied images (
 2. Character layer and background layer. Allows a character in a 2D game to be moved around and painted on top of a background.
 
 ### Sprites and textures
-
+- Sprites:
+	- 2D graphic / image 
+	- Layered together 
+	- Animated
+- Texture:
+	- 2D image
+	- Layered on top by blending
+	- Provides a texture / look 
+	- Can be stretched over a 3D object to provide a "surface" look
 
 ### 3D
+- 3D space / coordinates
+- Vertices, edges, surfaces
+- Everything is triangles / polygons
+- 3D modelling
+- Hidden surfaces
+- One-sided surfaces
+- Circles and spheres
 
 ### 3D Projection
-
-### Ray tracing
-
-### Shading
+- Lighting points & shadows
+- Projection
+- Shaders
+- Ray tracing
 
 ### Anti-aliasing
+- Example of issue
+- Why? 
+- How?
 
 ### Incorporating animation
+- Background animation
+- Sprite animation
+- Object animation 
+- Lighting animation 
+- Colour animation 
+- Skeletons
+- Per-vertex animation
+- Animation through physics modelling
 
 
 ---
+
 
 # History
 
@@ -180,64 +207,170 @@ It is hard to put an exact date on the first LED display since lots of small dev
 Full-colour LED displays work much more simply than a CRT screen. Each pixel consists of a red, green and blue LED each of which can have variable brightness. An additional backlight boosts the output brightness of the screen allowing the viewer to see the colours.
 
 ### 1969 - Braille
-Braille displays, though not widely used or even supported, have existed since the late 1960s. They are a pin screen where each "pixel" is a pin which is raised or lowered in the screen. 
+Braille displays, though not widely used or even supported, have existed since the late 1960s. They are a pin screen where each "pixel" is a pin which is raised or lowered in the screen. Rather than being an entire screen, Braille displays are almost exclusively seen as a single line of Braille characters attached to the bottom of a keyboard. Each character consists of eight pins, four rows and two columns. This gives 256 possible patterns (2^8 since each pin can either by up or down). Typically a Braille keyboard will have an output Braille display with forty to eighty characters (known as character cells).
+
+Due to manufacturing and construction methods used (and, in my opinion, probably a lack of research rather than demand) Braille displays are very expensive. Also, it was only in 2015 that any commercial company produced a full-page Braille display (see [Tactisplay](http://www.tactisplay.com/product/tactisplay-table)) which had 12,000 pixels (40 cells by 25 cells).
 
 ### 1971 - LCD
+LCD first made its appearance in 1971 and has since become one of the most popular display technologies. This is probably largely due to three factors:
+1. It is more energy efficient than CRT
+2. It produces a better quality of image than plain LED (brighter, better gamut amongst other factors)
+3. LCD screens can be made thinner and lighter than most other screen technologies.
+
+LCD works in the conventional way with pixels made up of the normal three components: RGB.
 
 ### 1995 - Full-colour Plasma
+Full-colour Plasma displays have a wider colour gamut, can (traditionally) produce darker black than LCD and have a wider viewing angle. However, particularly older Plasma displays, suffered from loss of quality over time, screen-door effects (especially at larger sizes) and suffer from pressure and radio wave interference problems due to the way the light is produced.
+
+Plasma displays work by having cells (very small containers) of a mixture of gases. Each cell mostly contains noble gases but with some mercury vapour. By applying a current to the cell, electrons fly across it. Occasionally an electron hits a mercury atom in the vapour causing the atom to become exciting. The mercury atom then de-excites, releasing UV radiation. The UV light hits the phosphor layer which is coated on the inside of the cell causing excitation of the phosphor. The phosphor de-excites by releasing visible light. This is much the same way fluorescent lamps work and similar to how old CRT screens work.
+
+To form a pixel, three cells are placed next to each other, one for each of red, green and blue. The phosphor coatings determine the colour outputted by each cell.
+
+One particular issue with this method of light production is called screen burn-in. This occurs on both CRTs and Plasma displays. When the same image is displayed for a long period of time, the phosphor overheats and becomes permanently damanged. The damage causes loss of luminosity which, when the screen is turned off, can be seen as a darkened shadow on the display.
+
+Plasma displays also suffer from another effect due to cell design. The cells build up a storage of charge over time, resulting in them remaining on even after the displayed image has changed. This is called a ghost image and is sometimes confused with burn-in. Unlike burn-in it, can be cleared by switching off the screen for a long period of time, allowing the affected cells to discharge.
 
 ### 2003 - OLED
+Organic light emitting diodes are the latest and (arguably) greatest in display technologies. Yet it is only now in 2015 that we are starting to see significant recognition and use of OLED in commercial products. The high-end smartphone market is currently the biggest user of OLED displays where as in the TV market, LG is the sole manufacturer of an OLED based product. So despite their improvements, OLED is still not completely replacing LCD. This is largely due to the fact that, like any new technology, OLED is expensive to design and manufacture.
+
+OLED screens are special because each OLED is emissive. This means that the OLED itself produces the bright red, green or blue light that the eye sees. This is completely different to LCD or conventional LED. In LCD and conventional LED, the light seen is produced by a bright backlight which is then filtered to give the correct colour. Using backlight means that brightness control can only happen for either the whole screen or, in some advanced products, patches of the screen. With OLED, brightness control happens per pixel. This means that OLED can produce much darker or higher-contrast images than LCD as it can very accurately select areas of the image to be very bright or very dark. LCD can, at best, only make certain patches very dark and other patches very bright. So OLED produces a better, more natural quality of image. It is also lower power than LCD.
+
+Unfortunately, blue OLEDs suffer from degradation issues which is one of the reasons why Samsung ceased manufacturing its OLED TV. Phones which use OLED do not suffer the issue as badly because the smaller screens use a different variant of the OLED technology.
+
+Ultimately OLEDs look like they will be the way forward but cost amongst a few other issues is a major prohibiter (though cost is likely to reduce roughly according to the widely accepted concept presented by Moore's law).
 
 ### 2004 - Electronic Paper
+Electronic paper is perhaps more recent than OLED but its use has been fairly limited. This is largely because it is a slow and monochrome (full-colour is only seen in research labs). This has meant it is basically only used for E-Reader products. Little to no attempts have been made to replace traditional paper applications such as newspaper. E-ink displays are also comparatively expensive to produce.
 
+E-ink displays come in essentially two forms. One form of the technology relies on having small cells which contain either a white/black ball or a white liquid and a black liquid. Applying a voltage flips the ball one way up or the other thus revealing the white or black side. The liquid version does the same but the white or black liquids are pushed to the top of the cell to place them one top thus allowing the user to see white or black. These forms of e-ink are called Electrophoretic displays.
+
+The second form of the technology is called Electrowetting. This is somewhat different in that it allows more than just an "on-off" format for pixels. In fact these pixels can achieve gray-scale images and brighter whites and darker blacks than electrophoretic displays. Electrowetting is based upon controlling the shape of a droplet of dark liquid inside each cell. The drop of liquid acts as an optical switch. When no voltage is applied, the droplet sits flat on top of a hydrophobic surface. Thus a dark pixel (i.e. black colour) is seen. When a voltage is applied the droplet no longer sits flat on top of the underlying surface. Instead it forms a ball on top of the surface and is moved to one side of the cell. Thus the cell effectively becomes transparent allow the viewer to see whatever is behind (usually a white or reflective surface).
+
+Electrowetting displays are much faster than electrophoretic displays. For example, electrowetting displays are capable of playing reasonable video quality. However, they are very expensive and suffer from dramatic loss of visibility in bright sunlight or similar situations.
+
+Lastly, some e-ink displays (primarily electrophoretic-based displays) are bendable due to the plastic used to manufacture the grid of cells. Such bendable displays have seen low uptake, however. Ultimately e-ink is an innovative technology that, with time, will no doubt find its place in the market. It is not intended to, nor likely to, ever supplant more conventional display technologies.
 
 ## Graphics
 
 ### 1950s
+- First time computer graphics was seen
+- Initial output on oscilloscopes and display scopes (difference?)
+- Interactivity limited but present (finger tracking)
+- Graphics hardware introduced
+- Saving / recalling of images
+- Basis point for solving many graphics problems:
+	- Ivan Sutherland : Long lasting solutions / principles
+	- Picture made up of images of objects not just an image for the whole thing
 
 ### 1960s
+- "Computer graphics" coined by William Fetter
+- Second video game created. First world wide video game to be played.
+- Scientists / researchers begin to use graphics for simulation / demonstration
+- Renault contribute to study of curves - now called Bézier curves
+- IBM 2250 first graphics terminal
+- University of Utah forms CompSci department employing David C. Evans. World centre of computer graphics research
+- First stereoscopic 3D display : Sword of Damocles
+- SIGGRAPH - Special Interest Group on Graphics - formed
 
 ### 1970s
+- Most important early breakthroughs in this decade - at University of Utah
+- Hidden-surface algorithm & Core invented!
+- Utah Teapot
+- Advances in models, shading and mapping allowing shadows, better 3D and surface textures
+- Pong : 1972
+- Space Invaders : 1978
+	- Both used Intel 8080 microprocessor and Fujitsu MB14241 video shifter to improve 2D sprite rendering
 
 ### 1980s
+- Graphics become serious commercial feature
+- Graphics in standalone workstations
+- Orca, Commodore Amiga and Macintosh become popular, serious graphics and design tools
+- Full, animated 3D computer graphics now used commercially
+- First Ray Tracing graphics done by Japan - LINKS-1 Computer Graphics System - super-computer
+- Chroma-keying ("bluescreening") become reasonable / viable
+- Shaders introduced by Pixar
+- Real-time 3D graphics for arcades became commercially viable
 
 ### 1990s
+- Massive increase in CGI and 3D performance
+- Silicon Graphics decline. Rise of Microsoft Windows and Apple Macintosh
+- First computer graphics TV series made in France
+- 1995 : Toy Story (Pixar)
+- Atari, Nintendo and Sega selling millions
+- Quake, Doom
+- PS1 and Nintendo 64
+- Nvidia - GeForce 256 - First home video card, first actual GPU
+- DirectX and OpenGL popular by end of decade
 
 ### 2000s
+- Graphics, CGI and 3D ubiquitous
+- PS2, PS3, XBox, GameCube, Wii, PC games
+- Finding Nemo (Pixar), Ice Age, Madagascar, Star Wars
+- GPGPU for research improved performance. Bitcoin mining.
+- Uncanny valley
 
 ### 2010s
-
+- Ultra-HD
+- Photorealism
 
 ## Video
 
 ### Connectors
 
+1956 : Composite video
+1979 : S-Video
+1987 : VGA
+1999 : DVI
+2003 : HDMI
+
 ### Formats
 
-### Encode and decode
+- Composite
+- VHS
+- PAL
+- NTSC
+- 720p / 720i
+- 1080p / 1080i
+- Ultra-HD TV
 
+### Encode and decode
+- Video codec (hardware) for compress / decompress
+- Files / streaming
+	- H.264 / MP4
+	- WMV
+	- Quicktime H.264
+	- Google On2 codecs (VP9)
 
 ---
 
 # Hardware
 
 ## Overview
+- Many competing standards
+- Always a compromise
+- VGA most common and probably easiest
+- HDMI taking over
 
 ## Current display technologies
+- Plasma
+- LCD LED
+- OLED
 
 ## Current graphics technologies
+- Whatever graphics card you own
 
 ## Current video technologies
+- VGA : common, easier, more docs
+- HDMI : common, taking over
 
 ## Compatibility between hardware
-
+- None :)
 
 ---
 
 # Software
 
 ## Overview
-
 
 ## Displays
 
@@ -271,6 +404,13 @@ Braille displays, though not widely used or even supported, have existed since t
 
 # FAQ & Common Problems
 
+## "I want to write a graphics driver" - Day 1
+
+## "I want to write a graphics driver" - Day 2
+
+## "I want to write a graphics driver" - Year 2
+
+## After the graphics driver (or along the way)
 ---
 
 # References
