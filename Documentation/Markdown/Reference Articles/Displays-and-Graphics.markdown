@@ -226,23 +226,75 @@ Lastly, some e-ink displays (primarily electrophoretic-based displays) are benda
 ## Graphics
 
 ### 1950s
+- First time computer graphics was seen
+- Initial output on oscilloscopes and display scopes (difference?)
+- Interactivity limited but present (finger tracking)
+- Graphics hardware introduced
+- Saving / recalling of images
+- Basis point for solving many graphics problems:
+	- Ivan Sutherland : Long lasting solutions / principles
+	- Picture made up of images of objects not just an image for the whole thing
 
 ### 1960s
+- "Computer graphics" coined by William Fetter
+- Second video game created. First world wide video game to be played.
+- Scientists / researchers begin to use graphics for simulation / demonstration
+- Renault contribute to study of curves - now called Bézier curves
+- IBM 2250 first graphics terminal
+- University of Utah forms CompSci department employing David C. Evans. World centre of computer graphics research
+- First stereoscopic 3D display : Sword of Damocles
+- SIGGRAPH - Special Interest Group on Graphics - formed
 
 ### 1970s
+- Most important early breakthroughs in this decade - at University of Utah
+- Hidden-surface algorithm & Core invented!
+- Utah Teapot
+- Advances in models, shading and mapping allowing shadows, better 3D and surface textures
+- Pong : 1972
+- Space Invaders : 1978
+	- Both used Intel 8080 microprocessor and Fujitsu MB14241 video shifter to improve 2D sprite rendering
 
 ### 1980s
+- Graphics become serious commercial feature
+- Graphics in standalone workstations
+- Orca, Commodore Amiga and Macintosh become popular, serious graphics and design tools
+- Full, animated 3D computer graphics now used commercially
+- First Ray Tracing graphics done by Japan - LINKS-1 Computer Graphics System - super-computer
+- Chroma-keying ("bluescreening") become reasonable / viable
+- Shaders introduced by Pixar
+- Real-time 3D graphics for arcades became commercially viable
 
 ### 1990s
+- Massive increase in CGI and 3D performance
+- Silicon Graphics decline. Rise of Microsoft Windows and Apple Macintosh
+- First computer graphics TV series made in France
+- 1995 : Toy Story (Pixar)
+- Atari, Nintendo and Sega selling millions
+- Quake, Doom
+- PS1 and Nintendo 64
+- Nvidia - GeForce 256 - First home video card, first actual GPU
+- DirectX and OpenGL popular by end of decade
 
 ### 2000s
+- Graphics, CGI and 3D ubiquitous
+- PS2, PS3, XBox, GameCube, Wii, PC games
+- Finding Nemo (Pixar), Ice Age, Madagascar, Star Wars
+- GPGPU for research improved performance. Bitcoin mining.
+- Uncanny valley
 
 ### 2010s
-
+- Ultra-HD
+- Photorealism
 
 ## Video
 
 ### Connectors
+
+1956 : Composite video
+1979 : S-Video
+1987 : VGA
+1999 : DVI
+2003 : HDMI
 
 ### Formats
 
