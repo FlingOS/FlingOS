@@ -138,22 +138,49 @@ The advantage of bitmaps over SVG is that for highly detailed or varied images (
 2. Character layer and background layer. Allows a character in a 2D game to be moved around and painted on top of a background.
 
 ### Sprites and textures
-
+- Sprites:
+	- 2D graphic / image 
+	- Layered together 
+	- Animated
+- Texture:
+	- 2D image
+	- Layered on top by blending
+	- Provides a texture / look 
+	- Can be stretched over a 3D object to provide a "surface" look
 
 ### 3D
+- 3D space / coordinates
+- Vertices, edges, surfaces
+- Everything is triangles / polygons
+- 3D modelling
+- Hidden surfaces
+- One-sided surfaces
+- Circles and spheres
 
 ### 3D Projection
-
-### Ray tracing
-
-### Shading
+- Lighting points & shadows
+- Projection
+- Shaders
+- Ray tracing
 
 ### Anti-aliasing
+- Example of issue
+- Why? 
+- How?
 
 ### Incorporating animation
+- Background animation
+- Sprite animation
+- Object animation 
+- Lighting animation 
+- Colour animation 
+- Skeletons
+- Per-vertex animation
+- Animation through physics modelling
 
 
 ---
+
 
 # History
 
@@ -180,9 +207,9 @@ It is hard to put an exact date on the first LED display since lots of small dev
 Full-colour LED displays work much more simply than a CRT screen. Each pixel consists of a red, green and blue LED each of which can have variable brightness. An additional backlight boosts the output brightness of the screen allowing the viewer to see the colours.
 
 ### 1969 - Braille
-Braille displays, though not widely used or even supported, have existed since the late 1960s. They are a pin screen where each "pixel" is a pin which is raised or lowered in the screen. Rather than being an entire screen, braille displays are almost exclusively seen as a single line of braille characters attached to the bottom of a keyboard. Each character consists of eight pins, four rows and two columns. This gives 256 possible patterns (2^8 since each pin can either by up or down). Typically a braille keyboard will have an output braille display with forty to eighty characters (known as character cells).
+Braille displays, though not widely used or even supported, have existed since the late 1960s. They are a pin screen where each "pixel" is a pin which is raised or lowered in the screen. Rather than being an entire screen, Braille displays are almost exclusively seen as a single line of Braille characters attached to the bottom of a keyboard. Each character consists of eight pins, four rows and two columns. This gives 256 possible patterns (2^8 since each pin can either by up or down). Typically a Braille keyboard will have an output Braille display with forty to eighty characters (known as character cells).
 
-Due to manufacturing and construction methods used (and, in my opinion, probably a lack of research rather than demand) braille displays are very expensive. Also, it was only in 2015 that any commercial company produced a full-page braille display (see [Tactisplay](http://www.tactisplay.com/product/tactisplay-table)) which had 12,000 pixels (40 cells by 25 cells).
+Due to manufacturing and construction methods used (and, in my opinion, probably a lack of research rather than demand) Braille displays are very expensive. Also, it was only in 2015 that any commercial company produced a full-page Braille display (see [Tactisplay](http://www.tactisplay.com/product/tactisplay-table)) which had 12,000 pixels (40 cells by 25 cells).
 
 ### 1971 - LCD
 LCD first made its appearance in 1971 and has since become one of the most popular display technologies. This is probably largely due to three factors:
@@ -210,7 +237,7 @@ OLED screens are special because each OLED is emissive. This means that the OLED
 
 Unfortunately, blue OLEDs suffer from degradation issues which is one of the reasons why Samsung ceased manufacturing its OLED TV. Phones which use OLED do not suffer the issue as badly because the smaller screens use a different variant of the OLED technology.
 
-Ultimately OLEDs look like they will be the way forward but cost amongst a few other issues is a major prohibitor (though cost is likely to reduce roughly according to the widely accepted concept presented by Moore's law).
+Ultimately OLEDs look like they will be the way forward but cost amongst a few other issues is a major prohibiter (though cost is likely to reduce roughly according to the widely accepted concept presented by Moore's law).
 
 ### 2004 - Electronic Paper
 Electronic paper is perhaps more recent than OLED but its use has been fairly limited. This is largely because it is a slow and monochrome (full-colour is only seen in research labs). This has meant it is basically only used for E-Reader products. Little to no attempts have been made to replace traditional paper applications such as newspaper. E-ink displays are also comparatively expensive to produce.
@@ -219,7 +246,7 @@ E-ink displays come in essentially two forms. One form of the technology relies 
 
 The second form of the technology is called Electrowetting. This is somewhat different in that it allows more than just an "on-off" format for pixels. In fact these pixels can achieve gray-scale images and brighter whites and darker blacks than electrophoretic displays. Electrowetting is based upon controlling the shape of a droplet of dark liquid inside each cell. The drop of liquid acts as an optical switch. When no voltage is applied, the droplet sits flat on top of a hydrophobic surface. Thus a dark pixel (i.e. black colour) is seen. When a voltage is applied the droplet no longer sits flat on top of the underlying surface. Instead it forms a ball on top of the surface and is moved to one side of the cell. Thus the cell effectively becomes transparent allow the viewer to see whatever is behind (usually a white or reflective surface).
 
-Electrowetting displays are much faster than electrophoretic displays. For example, electrowetting displays are capable of playing reasonable video quality. However, they are very expensive and suffer from dramatic loss of visiblity in bright sunlight or similar siutations.
+Electrowetting displays are much faster than electrophoretic displays. For example, electrowetting displays are capable of playing reasonable video quality. However, they are very expensive and suffer from dramatic loss of visibility in bright sunlight or similar situations.
 
 Lastly, some e-ink displays (primarily electrophoretic-based displays) are bendable due to the plastic used to manufacture the grid of cells. Such bendable displays have seen low uptake, however. Ultimately e-ink is an innovative technology that, with time, will no doubt find its place in the market. It is not intended to, nor likely to, ever supplant more conventional display technologies.
 
@@ -298,30 +325,52 @@ Lastly, some e-ink displays (primarily electrophoretic-based displays) are benda
 
 ### Formats
 
-### Encode and decode
+- Composite
+- VHS
+- PAL
+- NTSC
+- 720p / 720i
+- 1080p / 1080i
+- Ultra-HD TV
 
+### Encode and decode
+- Video codec (hardware) for compress / decompress
+- Files / streaming
+	- H.264 / MP4
+	- WMV
+	- Quicktime H.264
+	- Google On2 codecs (VP9)
 
 ---
 
 # Hardware
 
 ## Overview
+- Many competing standards
+- Always a compromise
+- VGA most common and probably easiest
+- HDMI taking over
 
 ## Current display technologies
+- Plasma
+- LCD LED
+- OLED
 
 ## Current graphics technologies
+- Whatever graphics card you own
 
 ## Current video technologies
+- VGA : common, easier, more docs
+- HDMI : common, taking over
 
 ## Compatibility between hardware
-
+- None :)
 
 ---
 
 # Software
 
 ## Overview
-
 
 ## Displays
 
@@ -355,6 +404,13 @@ Lastly, some e-ink displays (primarily electrophoretic-based displays) are benda
 
 # FAQ & Common Problems
 
+## "I want to write a graphics driver" - Day 1
+
+## "I want to write a graphics driver" - Day 2
+
+## "I want to write a graphics driver" - Year 2
+
+## After the graphics driver (or along the way)
 ---
 
 # References
