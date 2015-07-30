@@ -33,7 +33,7 @@ using Drivers.Compiler.ASM;
 
 namespace Drivers.Compiler.Architectures.x86.ASMOps
 {
-    public class Label : ASM.ASMLabel
+    public class Label : ASM.ASMOps.ASMLabel
     {
         public Label()
             : base()

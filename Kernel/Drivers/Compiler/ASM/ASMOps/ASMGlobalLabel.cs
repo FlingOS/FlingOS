@@ -30,7 +30,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Drivers.Compiler.ASM
+namespace Drivers.Compiler.ASM.ASMOps
 {
     /// <summary>
     /// Represents a label which external ASM blocks can depend upon i.e. a global label.

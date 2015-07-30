@@ -33,7 +33,7 @@ using Drivers.Compiler;
 
 namespace Drivers.Compiler.Architectures.x86.ASMOps
 {
-    public class MethodTable : ASM.ASMMethodTable
+    public class MethodTable : ASM.ASMOps.ASMMethodTable
     {
         public MethodTable(string currentTypeId, string currentTypeName, List<Tuple<string, string>> allMethodInfos, List<Tuple<string, int>> tableEntryFieldInfos)
             : base(currentTypeId, currentTypeName, allMethodInfos, tableEntryFieldInfos)

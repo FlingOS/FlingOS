@@ -33,7 +33,7 @@ using Drivers.Compiler.ASM;
 
 namespace Drivers.Compiler.Architectures.x86.ASMOps
 {
-    public class ExternalLabel : ASM.ASMExternalLabel
+    public class ExternalLabel : ASM.ASMOps.ASMExternalLabel
     {
         public ExternalLabel(string label) : base(label)
         {

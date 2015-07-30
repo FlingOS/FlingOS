@@ -32,7 +32,7 @@ using System.Threading.Tasks;
 
 namespace Drivers.Compiler.Architectures.x86.ASMOps
 {
-    public class StaticField : ASM.ASMStaticField
+    public class StaticField : ASM.ASMOps.ASMStaticField
     {
         public StaticField(string fieldID, string size)
             : base(fieldID, size)

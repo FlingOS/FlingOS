@@ -33,7 +33,7 @@ using Drivers.Compiler.ASM;
 
 namespace Drivers.Compiler.Architectures.x86.ASMOps
 {
-    class GlobalLabel : ASMGlobalLabel
+    public class GlobalLabel : ASM.ASMOps.ASMGlobalLabel
     {
         public GlobalLabel(string label) : base(label)
         {

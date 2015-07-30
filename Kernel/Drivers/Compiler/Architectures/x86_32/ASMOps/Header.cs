@@ -32,7 +32,7 @@ using System.Threading.Tasks;
 
 namespace Drivers.Compiler.Architectures.x86.ASMOps
 {
-    public class Header : ASM.ASMHeader
+    public class Header : ASM.ASMOps.ASMHeader
     {
         public override string Convert(ASM.ASMBlock theBlock)
         {

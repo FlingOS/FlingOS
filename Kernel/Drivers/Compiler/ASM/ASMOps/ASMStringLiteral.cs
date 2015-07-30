@@ -30,7 +30,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Drivers.Compiler.ASM
+namespace Drivers.Compiler.ASM.ASMOps
 {
     [ASMOpTarget(Target=OpCodes.StringLiteral)]
     public abstract class ASMStringLiteral : ASMOp

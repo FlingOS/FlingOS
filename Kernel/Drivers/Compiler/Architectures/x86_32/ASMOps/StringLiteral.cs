@@ -32,7 +32,7 @@ using System.Threading.Tasks;
 
 namespace Drivers.Compiler.Architectures.x86.ASMOps
 {
-    public class StringLiteral : ASM.ASMStringLiteral
+    public class StringLiteral : ASM.ASMOps.ASMStringLiteral
     {
         public StringLiteral(string id, string stringTypeId, byte[] lengthBytes, char[] characters)
             : base(id, stringTypeId, lengthBytes, characters)

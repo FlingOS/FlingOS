@@ -33,7 +33,7 @@ using Drivers.Compiler;
 
 namespace Drivers.Compiler.Architectures.x86.ASMOps
 {
-    public class FieldTable : ASM.ASMFieldTable
+    public class FieldTable : ASM.ASMOps.ASMFieldTable
     {
         public FieldTable(string currentTypeId, string currentTypeName, List<Tuple<string, string, string>> allFieldInfos, List<Tuple<string, int>> tableEntryFieldInfos)
             : base(currentTypeId, currentTypeName, allFieldInfos, tableEntryFieldInfos)

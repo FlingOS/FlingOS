@@ -57,7 +57,7 @@
     <Compile Include="ASM\ASMPreprocessor.cs" />
     <Compile Include="ASM\ASMProcessor.cs" />
     <Compile Include="ASM\ASMBlock.cs" />
-    <Compile Include="ASM\ASMOps\ASMOp.cs" />
+    <Compile Include="ASM\ASMOp.cs" />
     <Compile Include="Attributes\AddExceptionHandlerInfoMethodAttribute.cs" />
     <Compile Include="Attributes\ArrayClassAttribute.cs" />
     <Compile Include="Attributes\CallStaticConstructorsMethodAttribute.cs" />

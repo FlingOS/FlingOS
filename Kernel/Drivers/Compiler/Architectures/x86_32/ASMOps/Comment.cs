@@ -33,7 +33,7 @@ using Drivers.Compiler.ASM;
 
 namespace Drivers.Compiler.Architectures.x86.ASMOps
 {
-    public class Comment : ASM.ASMComment
+    public class Comment : ASM.ASMOps.ASMComment
     {
         public Comment(string text)
             : base(text)

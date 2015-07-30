@@ -29,7 +29,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Drivers.Compiler.IL;
+using Drivers.Compiler.IL.ILOps;
+using Drivers.Compiler.ASM.ASMOps;
 
 namespace Drivers.Compiler
 {
@@ -52,7 +53,7 @@ namespace Drivers.Compiler
         /// <summary>
         /// Map of op codes to IL ops which are loaded from the target architecture.
         /// </summary>
-        public static Dictionary<ILOp.OpCodes, ILOp> TargetILOps = new Dictionary<ILOp.OpCodes, ILOp>();
+        public static Dictionary<IL.ILOp.OpCodes, IL.ILOp> TargetILOps = new Dictionary<IL.ILOp.OpCodes, IL.ILOp>();
         /// <summary>
         /// Map of op codes to ASM op classes which are loaded from the target architecture.
         /// </summary>
@@ -61,15 +62,15 @@ namespace Drivers.Compiler
         /// <summary>
         /// The method start IL op. This is a fake IL op used by the Drivers Compiler.
         /// </summary>
-        public static IL.ILOps.MethodStart MethodStartOp;
+        public static MethodStart MethodStartOp;
         /// <summary>
         /// The method end IL op. This is a fake IL op used by the Drivers Compiler.
         /// </summary>
-        public static IL.ILOps.MethodEnd MethodEndOp;
+        public static MethodEnd MethodEndOp;
         /// <summary>
         /// The stack switch IL op. This is a fake IL op used by the Drivers Compiler.
         /// </summary>
-        public static IL.ILOps.StackSwitch StackSwitchOp;
+        public static StackSwitch StackSwitchOp;
         
         /// <summary>
         /// Initialises the IL scanner.
@@ -129,19 +130,19 @@ namespace Drivers.Compiler
                     Type[] AllTypes = TargetArchitectureAssembly.GetTypes();
                     foreach (Type aType in AllTypes)
                     {
-                        if (aType.IsSubclassOf(typeof(ILOp)))
+                        if (aType.IsSubclassOf(typeof(IL.ILOp)))
                         {
-                            if (aType.IsSubclassOf(typeof(IL.ILOps.MethodStart)))
+                            if (aType.IsSubclassOf(typeof(MethodStart)))
                             {
-                                MethodStartOp = (IL.ILOps.MethodStart)Activator.CreateInstance(aType);
+                                MethodStartOp = (MethodStart)Activator.CreateInstance(aType);
                             }
-                            else if (aType.IsSubclassOf(typeof(IL.ILOps.MethodEnd)))
+                            else if (aType.IsSubclassOf(typeof(MethodEnd)))
                             {
-                                MethodEndOp = (IL.ILOps.MethodEnd)Activator.CreateInstance(aType);
+                                MethodEndOp = (MethodEnd)Activator.CreateInstance(aType);
                             }
-                            else if (aType.IsSubclassOf(typeof(IL.ILOps.StackSwitch)))
+                            else if (aType.IsSubclassOf(typeof(StackSwitch)))
                             {
-                                StackSwitchOp = (IL.ILOps.StackSwitch)Activator.CreateInstance(aType);
+                                StackSwitchOp = (StackSwitch)Activator.CreateInstance(aType);
                             }
                             else
                             {
@@ -154,15 +155,15 @@ namespace Drivers.Compiler
                                 {
                                     foreach (IL.ILOps.ILOpTargetAttribute targetAttr in targetAttrs)
                                     {
-                                        TargetILOps.Add(targetAttr.Target, (ILOp)Activator.CreateInstance(aType));
+                                        TargetILOps.Add(targetAttr.Target, (IL.ILOp)Activator.CreateInstance(aType));
                                     }
                                 }
                             }
                         }
                         else if (aType.IsSubclassOf(typeof(ASM.ASMOp)))
                         {
-                            ASM.ASMOpTargetAttribute[] targetAttrs = (ASM.ASMOpTargetAttribute[])aType.GetCustomAttributes(typeof(ASM.ASMOpTargetAttribute), true);
-                            foreach (ASM.ASMOpTargetAttribute targetAttr in targetAttrs)
+                            ASMOpTargetAttribute[] targetAttrs = (ASMOpTargetAttribute[])aType.GetCustomAttributes(typeof(ASMOpTargetAttribute), true);
+                            foreach (ASMOpTargetAttribute targetAttr in targetAttrs)
                             {
                                 TargetASMOps.Add(targetAttr.Target, aType);
                             }

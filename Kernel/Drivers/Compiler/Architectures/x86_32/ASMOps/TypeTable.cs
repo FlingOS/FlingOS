@@ -33,7 +33,7 @@ using Drivers.Compiler;
 
 namespace Drivers.Compiler.Architectures.x86.ASMOps
 {
-    public class TypeTable : ASM.ASMTypeTable
+    public class TypeTable : ASM.ASMOps.ASMTypeTable
     {
         public TypeTable(string typeId, string sizeVal, string idVal, string stackSizeVal, string isValueTypeVal, string methodTablePointer, string isPointerTypeVal, string baseTypeIdVal, string fieldTablePointer, string typeSignatureLiteralLabel, string typeIdLiteralLabel, List<Tuple<string, Types.TypeInfo>> fieldInformation)
             : base(typeId, sizeVal, idVal, stackSizeVal, isValueTypeVal, methodTablePointer, isPointerTypeVal, baseTypeIdVal, fieldTablePointer, typeSignatureLiteralLabel, typeIdLiteralLabel, fieldInformation)
