@@ -49,9 +49,9 @@
     <Compile Include="ASM\ASMLibrary.cs" />
     <Compile Include="ASM\ASMOps\ASMHeader.cs" />
     <Compile Include="ASM\ASMOps\ASMLabel.cs" />
-    <Compile Include="ASM\ASMGeneric.cs" />
     <Compile Include="ASM\ASMOps\ASMMethodTable.cs" />
     <Compile Include="ASM\ASMOps\ASMOpTargetAttribute.cs" />
+    <Compile Include="ASM\ASMOps\ASMStaticField.cs" />
     <Compile Include="ASM\ASMOps\ASMStringLiteral.cs" />
     <Compile Include="ASM\ASMOps\ASMTypeTable.cs" />
     <Compile Include="ASM\ASMPreprocessor.cs" />
@@ -152,6 +152,7 @@
     <Compile Include="Logger.cs" />
     <Compile Include="Options.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="TargetArchitecture.cs" />
     <Compile Include="Types\FieldInfo.cs" />
     <Compile Include="Types\MethodInfo.cs" />
     <Compile Include="Types\TypeInfo.cs" />

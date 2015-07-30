@@ -43,7 +43,8 @@ namespace Drivers.Compiler.ASM
         StringLiteral,
         TypeTable,
         MethodTable,
-        FieldTable
+        FieldTable,
+        StaticField
     }
 
     /// <summary>

@@ -231,6 +231,8 @@ namespace Drivers.Compiler.App
             {
                 try
                 {
+                    TargetArchitecture.Init();
+
                     IL.ILLibrary TheLibrary = LibraryLoader.LoadILLibrary(Options.LibraryPath);
                     
                     CompileResult ILCompileResult = IL.ILCompiler.Compile(TheLibrary);

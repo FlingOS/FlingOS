@@ -42,132 +42,6 @@ namespace Drivers.Compiler.IL
     public static class ILScanner
     {
         /// <summary>
-        /// The target architecture library.
-        /// </summary>
-        /// <remarks>
-        /// Used for loading IL and ASM ops used to convert IL to ASM and ASM to machine code
-        /// for the target architecture.
-        /// </remarks>
-        private static System.Reflection.Assembly TargetArchitectureAssembly = null;
-        /// <summary>
-        /// Map of op codes to IL ops which are loaded from the target architecture.
-        /// </summary>
-        public static Dictionary<ILOp.OpCodes, ILOp> TargetILOps = new Dictionary<ILOp.OpCodes, ILOp>();
-        /// <summary>
-        /// The method start IL op. This is a fake IL op used by the Drivers Compiler.
-        /// </summary>
-        public static ILOps.MethodStart MethodStartOp;
-        /// <summary>
-        /// The method end IL op. This is a fake IL op used by the Drivers Compiler.
-        /// </summary>
-        public static ILOps.MethodEnd MethodEndOp;
-        /// <summary>
-        /// The stack switch IL op. This is a fake IL op used by the Drivers Compiler.
-        /// </summary>
-        public static ILOps.StackSwitch StackSwitchOp;
-
-        public static Dictionary<ASM.OpCodes, Type> TargetASMOps = new Dictionary<ASM.OpCodes, Type>();
-
-        /// <summary>
-        /// Initialises the IL scanner.
-        /// </summary>
-        /// <remarks>
-        /// Loads the target architecture library.
-        /// </remarks>
-        /// <returns>True if initialisation was successful. Otherwise, false.</returns>
-        public static bool Init()
-        {
-            bool OK = true;
-
-            OK = LoadTargetArchiecture();
-
-            return OK;
-        }
-        /// <summary>
-        /// Loads the target architecture library and fills in the TargetILOps, MethodStartOp, MethodEndOp and StackSwitchOp
-        /// fields.
-        /// </summary>
-        /// <returns>True if fully loaded without error. Otherwise, false.</returns>
-        private static bool LoadTargetArchiecture()
-        {
-            bool OK = false;
-
-            try
-            {
-                switch (Options.TargetArchitecture)
-                {
-                    case "x86":
-                        {
-                            string dir = System.IO.Path.GetDirectoryName(typeof(ILCompiler).Assembly.Location);
-                            string fileName = System.IO.Path.Combine(dir, @"Drivers.Compiler.Architectures.x86.dll");
-                            fileName = System.IO.Path.GetFullPath(fileName);
-                            TargetArchitectureAssembly = System.Reflection.Assembly.LoadFrom(fileName);
-                            OK = true;
-                        }
-                        break;
-                    default:
-                        OK = false;
-                        throw new ArgumentException("Unrecognised target architecture!");
-                }
-
-                if (OK)
-                {
-                    Type[] AllTypes = TargetArchitectureAssembly.GetTypes();
-                    foreach (Type aType in AllTypes)
-                    {
-                        if (aType.IsSubclassOf(typeof(ILOp)))
-                        {
-                            if (aType.IsSubclassOf(typeof(ILOps.MethodStart)))
-                            {
-                                MethodStartOp = (ILOps.MethodStart)aType.GetConstructor(new Type[0]).Invoke(new object[0]);
-                            }
-                            else if (aType.IsSubclassOf(typeof(ILOps.MethodEnd)))
-                            {
-                                MethodEndOp = (ILOps.MethodEnd)aType.GetConstructor(new Type[0]).Invoke(new object[0]);
-                            }
-                            else if (aType.IsSubclassOf(typeof(ILOps.StackSwitch)))
-                            {
-                                StackSwitchOp = (ILOps.StackSwitch)aType.GetConstructor(new Type[0]).Invoke(new object[0]);
-                            }
-                            else
-                            {
-                                ILOps.ILOpTargetAttribute[] targetAttrs = (ILOps.ILOpTargetAttribute[])aType.GetCustomAttributes(typeof(ILOps.ILOpTargetAttribute), true);
-                                if (targetAttrs == null || targetAttrs.Length == 0)
-                                {
-                                    throw new Exception("ILScanner could not load target architecture ILOp because target attribute was not specified!");
-                                }
-                                else
-                                {
-                                    foreach (ILOps.ILOpTargetAttribute targetAttr in targetAttrs)
-                                    {
-                                        TargetILOps.Add(targetAttr.Target, (ILOp)aType.GetConstructor(new Type[0]).Invoke(new object[0]));
-                                    }
-                                }
-                            }
-                        }
-                        else if (aType.IsSubclassOf(typeof(ASM.ASMOp)))
-                        {
-                            ASM.ASMOpTargetAttribute[] targetAttrs = (ASM.ASMOpTargetAttribute[])aType.GetCustomAttributes(typeof(ASM.ASMOpTargetAttribute), true);
-                            foreach (ASM.ASMOpTargetAttribute targetAttr in targetAttrs)
-                            {
-                                TargetASMOps.Add(targetAttr.Target, aType);
-                            }
-                        }
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                OK = false;
-                Logger.LogError(Errors.ILCompiler_LoadTargetArchError_ErrorCode, "", 0, 
-                    string.Format(Errors.ErrorMessages[Errors.ILCompiler_LoadTargetArchError_ErrorCode],
-                                    ex.Message));
-            }
-
-            return OK;
-        }
-
-        /// <summary>
         /// Map of type IDs to the library from which they originated. 
         /// </summary>
         /// <remarks>
@@ -276,7 +150,10 @@ namespace Drivers.Compiler.IL
                 string value = aStringLiteral.Value;
                 byte[] lengthBytes = BitConverter.GetBytes(value.Length);
 
-                ASM.ASMOp newLiteralOp = (ASM.ASMOp)Activator.CreateInstance(TargetASMOps[ASM.OpCodes.StringLiteral], aStringLiteral.Key, StringTypeId, lengthBytes, value.ToCharArray());
+                ASM.ASMOp newLiteralOp = (ASM.ASMOp)Activator.CreateInstance(
+                    TargetArchitecture.TargetASMOps[ASM.OpCodes.StringLiteral], 
+                    aStringLiteral.Key, StringTypeId, lengthBytes, value.ToCharArray());
+
                 StringLiteralsBlock.Append(newLiteralOp);
             }
 
@@ -336,7 +213,10 @@ namespace Drivers.Compiler.IL
                 FieldInformation.Add(new Tuple<string, Types.TypeInfo>(aTypeField.Name, FieldTypeInfo));
             }
 
-            ASM.ASMOp newTypeTableOp = (ASM.ASMOp)Activator.CreateInstance(TargetASMOps[ASM.OpCodes.TypeTable], TypeId, SizeVal, IdVal, StackSizeVal, IsValueTypeVal, MethodTablePointer, IsPointerTypeVal, BaseTypeIdVal, FieldTablePointer, TypeSignatureLiteralLabel, TypeIdLiteralLabel, FieldInformation);
+            ASM.ASMOp newTypeTableOp = (ASM.ASMOp)Activator.CreateInstance(
+                TargetArchitecture.TargetASMOps[ASM.OpCodes.TypeTable], 
+                TypeId, SizeVal, IdVal, StackSizeVal, IsValueTypeVal, MethodTablePointer, IsPointerTypeVal, 
+                BaseTypeIdVal, FieldTablePointer, TypeSignatureLiteralLabel, TypeIdLiteralLabel, FieldInformation);
             TypesTableBlock.Append(newTypeTableOp);
 
             TypesTableBlock.AddExternalLabel(MethodTablePointer);
@@ -356,12 +236,14 @@ namespace Drivers.Compiler.IL
             {
                 if (aFieldInfo.IsStatic)
                 {
-                    string FieldID = aFieldInfo.ID;
                     Types.TypeInfo fieldTypeInfo = TheLibrary.GetTypeInfo(aFieldInfo.FieldType);
-                    int Size = /*fieldTypeInfo.IsValueType ? fieldTypeInfo.SizeOnHeapInBytes : */fieldTypeInfo.SizeOnStackInBytes;
-                    StaticFieldsBlock.Append(new ASM.ASMGeneric() {
-                        Text = string.Format("GLOBAL {0}:data\r\n{0}: times {1} db 0", FieldID, Size)
-                    });
+
+                    string FieldID = aFieldInfo.ID;
+                    string Size = fieldTypeInfo.SizeOnStackInBytes.ToString();
+
+                    ASM.ASMOp newStaticFieldOp = (ASM.ASMOp)Activator.CreateInstance(
+                        TargetArchitecture.TargetASMOps[ASM.OpCodes.StaticField], FieldID, Size);
+                    StaticFieldsBlock.Append(newStaticFieldOp);
                 }
             }
         }
@@ -394,16 +276,6 @@ namespace Drivers.Compiler.IL
                 }
             }
 
-            Types.TypeInfo InformationAboutMethodInfoStruct = ILLibrary.SpecialClasses[typeof(Attributes.MethodInfoStructAttribute)].First();
-            List<Types.FieldInfo> MethodInfoStruct_OrderedFields = InformationAboutMethodInfoStruct.FieldInfos.Where(x => !x.IsStatic).OrderBy(x => x.OffsetInBytes).ToList();
-            List<Tuple<string, int>> MethodInfoStruct_OrderedFieldInfo_Subset = new List<Tuple<string, int>>();
-            foreach (Types.FieldInfo aField in MethodInfoStruct_OrderedFields)
-            {
-                Types.TypeInfo FieldTypeInfo = TheLibrary.GetTypeInfo(aField.FieldType);
-                MethodInfoStruct_OrderedFieldInfo_Subset.Add(new Tuple<string, int>(aField.Name,
-                    FieldTypeInfo.IsValueType ? FieldTypeInfo.SizeOnHeapInBytes : FieldTypeInfo.SizeOnStackInBytes));
-            }
-
             string parentTypeMethodTablePtr = "0";
             bool parentPtrIsExternal = false;
             if (TheTypeInfo.UnderlyingType.BaseType != null)
@@ -428,7 +300,11 @@ namespace Drivers.Compiler.IL
                 AllMethodInfo.Add(new Tuple<string,string>(methodID, methodIDValue));
             }
 
-            ASM.ASMOp newMethodTableOp = (ASM.ASMOp)Activator.CreateInstance(TargetASMOps[ASM.OpCodes.MethodTable], currentTypeId, currentTypeName, AllMethodInfo, MethodInfoStruct_OrderedFieldInfo_Subset);
+            List<Tuple<string, int>> TableEntryFieldInfos = GetSpecialClassFieldInfo(TheLibrary, typeof(Attributes.MethodInfoStructAttribute));
+
+            ASM.ASMOp newMethodTableOp = (ASM.ASMOp)Activator.CreateInstance(
+                TargetArchitecture.TargetASMOps[ASM.OpCodes.MethodTable], 
+                currentTypeId, currentTypeName, AllMethodInfo, TableEntryFieldInfos);
             MethodTablesBlock.Append(newMethodTableOp);
         }
         /// <summary>
@@ -462,16 +338,6 @@ namespace Drivers.Compiler.IL
                 }
             }
 
-            Types.TypeInfo InformationAboutFieldInfoStruct = ILLibrary.SpecialClasses[typeof(Attributes.FieldInfoStructAttribute)].First();
-            List<Types.FieldInfo> FieldInfoStruct_OrderedFields = InformationAboutFieldInfoStruct.FieldInfos.Where(x => !x.IsStatic).OrderBy(x => x.OffsetInBytes).ToList();
-            List<Tuple<string, int>> FieldInfoStruct_OrderedFieldInfo_Subset = new List<Tuple<string, int>>();
-            foreach (Types.FieldInfo aField in FieldInfoStruct_OrderedFields)
-            {
-                Types.TypeInfo FieldTypeInfo = TheLibrary.GetTypeInfo(aField.FieldType);
-                FieldInfoStruct_OrderedFieldInfo_Subset.Add(new Tuple<string, int>(aField.Name,
-                    FieldTypeInfo.IsValueType ? FieldTypeInfo.SizeOnHeapInBytes : FieldTypeInfo.SizeOnStackInBytes));
-            }
-
             string parentTypeFieldTablePtr = "0";
             bool parentPtrIsExternal = false;
             if (TheTypeInfo.UnderlyingType.BaseType != null)
@@ -497,23 +363,26 @@ namespace Drivers.Compiler.IL
                 AllFieldInfo.Add(new Tuple<string, string, string>(fieldOffsetVal, fieldSizeVal, fieldTypeIdVal));
             }
 
-            ASM.ASMOp newFieldTableOp = (ASM.ASMOp)Activator.CreateInstance(TargetASMOps[ASM.OpCodes.FieldTable], currentTypeId, currentTypeName, AllFieldInfo, FieldInfoStruct_OrderedFieldInfo_Subset);
+            List<Tuple<string, int>> TableEntryFieldInfos = GetSpecialClassFieldInfo(TheLibrary, typeof(Attributes.FieldInfoStructAttribute));
+
+            ASM.ASMOp newFieldTableOp = (ASM.ASMOp)Activator.CreateInstance(
+                TargetArchitecture.TargetASMOps[ASM.OpCodes.FieldTable], 
+                currentTypeId, currentTypeName, AllFieldInfo, TableEntryFieldInfos);
             FieldTablesBlock.Append(newFieldTableOp);
         }
 
-        public static string GetAllocStringForSize(int numBytes)
+        private static List<Tuple<string, int>> GetSpecialClassFieldInfo(ILLibrary TheLibrary, Type SpecialClassType)
         {
-            switch (numBytes)
+            Types.TypeInfo InformationAboutInfoStruct = ILLibrary.SpecialClasses[SpecialClassType].First();
+            List<Types.FieldInfo> InfoStruct_OrderedFields = InformationAboutInfoStruct.FieldInfos.Where(x => !x.IsStatic).OrderBy(x => x.OffsetInBytes).ToList();
+            List<Tuple<string, int>> InfoStruct_OrderedFieldInfo_Subset = new List<Tuple<string, int>>();
+            foreach (Types.FieldInfo aField in InfoStruct_OrderedFields)
             {
-                case 1:
-                    return "db";
-                case 2:
-                    return "dw";
-                case 4:
-                    return "dd";
-                default:
-                    return "NOSIZEALLOC";
+                Types.TypeInfo FieldTypeInfo = TheLibrary.GetTypeInfo(aField.FieldType);
+                InfoStruct_OrderedFieldInfo_Subset.Add(new Tuple<string, int>(aField.Name,
+                    FieldTypeInfo.IsValueType ? FieldTypeInfo.SizeOnHeapInBytes : FieldTypeInfo.SizeOnStackInBytes));
             }
+            return InfoStruct_OrderedFieldInfo_Subset;
         }
 
         /// <summary>
@@ -564,25 +433,26 @@ namespace Drivers.Compiler.IL
                 {
                     string commentText = TheASMBlock.GenerateILOpLabel(convState.PositionOf(anOp), "") + "  --  " + anOp.opCode.ToString() + " -- Offset: " + anOp.Offset.ToString("X2");
                     
-                    ASM.ASMOp newCommentOp = (ASM.ASMOp)Activator.CreateInstance(TargetASMOps[ASM.OpCodes.Comment], commentText);
+                    ASM.ASMOp newCommentOp = (ASM.ASMOp)Activator.CreateInstance(
+                        TargetArchitecture.TargetASMOps[ASM.OpCodes.Comment], commentText);
                     TheASMBlock.ASMOps.Add(newCommentOp);
                     
                     int currCount = TheASMBlock.ASMOps.Count;
                     if (anOp is ILOps.MethodStart)
                     {
-                        MethodStartOp.Convert(convState, anOp);
+                        TargetArchitecture.MethodStartOp.Convert(convState, anOp);
                     }
                     else if (anOp is ILOps.MethodEnd)
                     {
-                        MethodEndOp.Convert(convState, anOp);
+                        TargetArchitecture.MethodEndOp.Convert(convState, anOp);
                     }
                     else if (anOp is ILOps.StackSwitch)
                     {
-                        StackSwitchOp.Convert(convState, anOp);
+                        TargetArchitecture.StackSwitchOp.Convert(convState, anOp);
                     }
                     else
                     {
-                        ILOp ConverterOp = TargetILOps[(ILOp.OpCodes)anOp.opCode.Value];
+                        ILOp ConverterOp = TargetArchitecture.TargetILOps[(ILOp.OpCodes)anOp.opCode.Value];
                         ConverterOp.Convert(convState, anOp);
                     }
 

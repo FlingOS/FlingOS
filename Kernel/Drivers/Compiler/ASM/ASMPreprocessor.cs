@@ -114,12 +114,12 @@ namespace Drivers.Compiler.ASM
             string currMethodLabel = theBlock.GenerateMethodLabel();
             if (currMethodLabel != null)
             {
-                ASM.ASMOp newLabelOp = (ASM.ASMOp)Activator.CreateInstance(IL.ILScanner.TargetASMOps[ASM.OpCodes.Label], new object[] { true });
+                ASM.ASMOp newLabelOp = (ASM.ASMOp)Activator.CreateInstance(TargetArchitecture.TargetASMOps[ASM.OpCodes.Label], new object[] { true });
                 theBlock.ASMOps.Insert(0, newLabelOp);
             }
             if (currMethodLabel != null)
             {
-                ASM.ASMOp newGlobalLabelOp = (ASM.ASMOp)Activator.CreateInstance(IL.ILScanner.TargetASMOps[ASM.OpCodes.GlobalLabel], currMethodLabel);
+                ASM.ASMOp newGlobalLabelOp = (ASM.ASMOp)Activator.CreateInstance(TargetArchitecture.TargetASMOps[ASM.OpCodes.GlobalLabel], currMethodLabel);
                 theBlock.ASMOps.Insert(0, newGlobalLabelOp);
             }
             
@@ -127,11 +127,11 @@ namespace Drivers.Compiler.ASM
             {
                 if (anExternalLabel != currMethodLabel)
                 {
-                    ASM.ASMOp newExternalLabelOp = (ASM.ASMOp)Activator.CreateInstance(IL.ILScanner.TargetASMOps[ASM.OpCodes.ExternalLabel], anExternalLabel);
+                    ASM.ASMOp newExternalLabelOp = (ASM.ASMOp)Activator.CreateInstance(TargetArchitecture.TargetASMOps[ASM.OpCodes.ExternalLabel], anExternalLabel);
                     theBlock.ASMOps.Insert(0, newExternalLabelOp);
                 }
             }
-            ASM.ASMOp newHeaderOp = (ASM.ASMOp)Activator.CreateInstance(IL.ILScanner.TargetASMOps[ASM.OpCodes.Header]);
+            ASM.ASMOp newHeaderOp = (ASM.ASMOp)Activator.CreateInstance(TargetArchitecture.TargetASMOps[ASM.OpCodes.Header]);
             theBlock.ASMOps.Insert(0, newHeaderOp);
         }
     }
