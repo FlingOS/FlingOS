@@ -61,5 +61,12 @@ namespace Drivers.Compiler.ASM
         {
             MethodLabel = methodLabel;
         }
+
+        public ASMLabel(int anILPosition, string anExtension)
+        {
+            MethodLabel = false;
+            ILPosition = anILPosition;
+            Extension = anExtension;
+        }
     }
 }

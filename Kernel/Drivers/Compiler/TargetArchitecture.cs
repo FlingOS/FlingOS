@@ -20,7 +20,9 @@ namespace Drivers.Compiler
         /// for the target architecture.
         /// </remarks>
         private static System.Reflection.Assembly TargetArchitectureAssembly = null;
-        
+
+        public static TargetArchitectureFunctions TargetFunctions;
+
         /// <summary>
         /// Map of op codes to IL ops which are loaded from the target architecture.
         /// </summary>
@@ -128,6 +130,10 @@ namespace Drivers.Compiler
                                 TargetASMOps.Add(targetAttr.Target, aType);
                             }
                         }
+                        else if (aType.IsSubclassOf(typeof(TargetArchitectureFunctions)))
+                        {
+                            TargetFunctions = (TargetArchitectureFunctions)Activator.CreateInstance(aType);
+                        }
                     }
                 }
             }
@@ -146,5 +152,20 @@ namespace Drivers.Compiler
         {
             return (ASM.ASMOp)Activator.CreateInstance(TargetASMOps[ASMOpCode], ConstructorArgs);
         }
+    }
+
+    public abstract class TargetArchitectureFunctions
+    {
+        public abstract void CleanUpAssemblyCode(ASM.ASMBlock TheBlock, ref string ASMText);
+
+        /// <summary>
+        /// Executes the assembly code compiler (e.g. NASM) for the specified file.
+        /// </summary>
+        /// <param name="inputFilePath">Path to the ASM file to process.</param>
+        /// <param name="outputFilePath">Path to output the object file to.</param>
+        /// <param name="OnComplete">Handler to call once the external tool has completed. Default: null.</param>
+        /// <param name="state">The state object to use when calling the OnComplete handler. Default: null.</param>
+        /// <returns>True if execution completed successfully. Otherwise false.</returns>
+        public abstract bool ExecuteAssemblyCodeCompiler(string inputFilePath, string outputFilePath, VoidDelegate OnComplete = null, object state = null);
     }
 }

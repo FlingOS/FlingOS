@@ -208,8 +208,8 @@ namespace Drivers.Compiler.App
             // ASM Compiler     - Manages the ASM compile stage
             //      - ASM Preprocessor - Pre-scans the ASM ops to store things like debug info or perform
             //                           optimisation
-            //      - ASM Processor    - Converts ASM ops into ASM text then runs NASM
-            // Link Manager     - Manages the linker stage. Links together all the NASM outputs using "ld".
+            //      - ASM Processor    - Converts ASM ops into ASM text then runs the assembly code compiler (e.g. NASM)
+            // Link Manager     - Manages the linker stage. Links together all the object files using "ld".
 
             // To think about:
             //      - Try-catch-finally blocks

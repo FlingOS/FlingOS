@@ -35,11 +35,18 @@ namespace Drivers.Compiler.Architectures.x86.ASMOps
 {
     public class Label : ASM.ASMLabel
     {
-        public Label() : base()
+        public Label()
+            : base()
         {
         }
 
-        public Label(bool methodLabel) : base(methodLabel)
+        public Label(bool methodLabel)
+            : base(methodLabel)
+        {
+        }
+
+        public Label(int anILPosition, string anExtension)
+            : base(anILPosition, anExtension)
         {
         }
 

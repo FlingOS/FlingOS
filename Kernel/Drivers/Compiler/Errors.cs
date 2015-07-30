@@ -94,9 +94,9 @@ namespace Drivers.Compiler
         /// </summary>
         public const string ASMCompiler_CompileFailed_ErrorCode = "ASMC0001";
         /// <summary>
-        /// Error code for the ASM compiler failing due to NASM reporting an error or crashing.
+        /// Error code for the ASM compiler failing due to the external assembly code compiler (e.g. NASM) reporting an error or crashing.
         /// </summary>
-        public const string ASMCompiler_NASMException_ErrorCode = "ASMC0002";
+        public const string ASMCompiler_ASMCodeCompilerException_ErrorCode = "ASMC0002";
         /// <summary>
         /// Error code for the ASM compiler failing due to an unexpected / unhandled exception.
         /// </summary>
@@ -137,7 +137,7 @@ namespace Drivers.Compiler
             { "ILC0006", "Scanned an IL op which warns the following: {0}" },
             
             { "ASMC0001", "The ASM compiler failed to compile." },
-            { "ASMC0002", "NASM failed to execute for file {0}. Message: {1}" },
+            { "ASMC0002", "Assembly code compiler (e.g. NASM) failed to execute for file {0}. Message: {1}" },
             { "ASMC0003", "The ASM compiler failed to compile due to an unexpected error. {0}\r\n{1}." },
             
             { "LL0001", "The linker failed to link." },
