@@ -81,8 +81,8 @@ In the pursuit quality (and usually to achieve that, performance) hundreds of co
 | Technologies     | Compromise / Differences     | Situations      |
 | :------------- | :------------- |
 | LED, Plasma      | Traditionally (though as of 2015 it may not be true) Plasma displays were able to produce much clearer dark/black images than LED. However, LED displays could consistently create brighter light/white images. | Plasma for home cinema, LED for public displays |
-| PNG, JPEG        | Both are based on compressing and saving colours of pixels in an image but they have very different approaches. PNG uses a colour palette and saves data about large areas/blocks of an image that are the same colour. JPEG is a lossy compression format that uses the Discrete Cosine Transform (DCT). JPEG is good for images where the colour of neighboring pixels varies a lot. | JPEG is best for photographs, PNG is best for logos / web images |
-| Ray tracing, Shading | Ray tracing uses virtual rays of light from light sources and traces them around in 3D space until they hit the "screen". After tracing thousands of rays, the final colour of the virtual screen is used as the image. Ray tracing is computationally expensive but produces highly realistic looking results. Shading uses objects (with surfaces) covered in colour. The colour is varied to give the look of shadows and 3D objects. It is computationally less expensive but produces less realistic (sometimes innacurate) results. | Ray tracing for movies, shading for games (though the two techniques are gradually merging / shifting usage) |
+| PNG, JPEG        | Both are based on compressing and saving colours of pixels in an image but they have very different approaches. PNG uses a colour palette and saves data about large areas/blocks of an image that are the same colour. JPEG is a lossy compression format that uses the Discrete Cosine Transform (DCT). JPEG is good for images where the colour of neighbouring pixels varies a lot. | JPEG is best for photographs, PNG is best for logos / web images |
+| Ray tracing, Shading | Ray tracing uses virtual rays of light from light sources and traces them around in 3D space until they hit the "screen". After tracing thousands of rays, the final colour of the virtual screen is used as the image. Ray tracing is computationally expensive but produces highly realistic looking results. Shading uses objects (with surfaces) covered in colour. The colour is varied to give the look of shadows and 3D objects. It is computationally less expensive but produces less realistic (sometimes inaccurate) results. | Ray tracing for movies, shading for games (though the two techniques are gradually merging / shifting usage) |
 | VGA, HDMI        | HDMI basically replaces VGA. VGA was analogue, HDMI is digital. VGA had limited resolutions, frame rates and quality, HDMI has higher resolutions, frame rates and quality. Ultimately, HDMI has compromises but in almost every aspect it is less compromising than VGA so is thus better than VGA in almost all cases. This is an example of new technology replacing old rather than just adding another competitor. | &nbsp; |
 
 ## How do they all fit together?
@@ -94,7 +94,7 @@ Displays, graphics and video all fit together relatively nicely (when you ignore
 
 What this shows is how an application can use graphics to render 2D and 3D stuff along with video to play an MP4 file. The video is split into video and audio, with audio sent to the speakers. The video part of the MP4 file is merged (by the graphics card) with the application graphics (the image output) and then sent to the display controller. The display controller then uses video (described as type 2 above, e.g. HDMI) to send that to the physical screen.
 
-So graphics and video (type 1) sit alongside eachother. Graphics combines with video to provide the input for display. Display then uses video (type 2) to transmit to the screen and the screen uses a display technology to actually produce the light which a human can see.
+So graphics and video (type 1) sit alongside each other. Graphics combines with video to provide the input for display. Display then uses video (type 2) to transmit to the screen and the screen uses a display technology to actually produce the light which a human can see.
 
 ## So where to start?
 To start working with graphics there are a number of concepts which must be touched upon to provide sufficient understanding for the reader to be able to read other technical documents. The following sections will begin to explain some of the basic terminology.
@@ -131,42 +131,63 @@ Each of these colour systems may also be extended to include an alpha component 
 
 2D graphics makes use of two main types of image. These are pixel images (pixel art) and SVG, both of which have been mentioned briefly earlier. Pixel art images are also known as bitmaps because they specify the colour of every pixel in the image. They may also use an alpha component to "leave out" certain pixels from the image. PNG and JPEG are both methods for saving bitmaps in a compressed format. The alternative is SVG - Scalable Vector Graphics. SVG images do not specify the colour of individual pixels. Instead, they desribe the location, colour and size of lines and shapes. SVG is more abstract data about an image (hence why they are called graphics). A graphics card can interpret the data to set areas of pixels to the correct colour. For example, an SVG file might specify a black rectangle at location (5,5) in the image with width and height 100.
 
-The advantage of bitmaps over SVG is that for highly detailed or varied images (such as a photograph) it uses less space to save all the data. However, for an image that consists of large areas of the same colour (such as a logo), SVG may be better. However, SVG has one key advantage. SVG specifies shapes and relative sizes. So to increase the size of an SVG image, you simply increase all the relative sizes and recalculate which pixels are filled in. This allows it to retain 100% sharpness for basic shapes. For a bitmap, however, when you increase or decrease the size of the image, the image has to be resampled and the computer must guess the colour of the extra (or fewer) pixels. This means bitmap images do not scale as well as SVG. However, if you apply some thought, it should be apparent that SVG would be just as (if not more) useless for a photograph. You wouldn't want each pixel scaled as just a square (which is what SVG would do).
+The advantage of bitmaps over SVG is that for highly detailed or varied images (such as a photograph) it uses less space to save all the data. However, for an image that consists of large areas of the same colour (such as a logo), SVG may be better. However, SVG has one key advantage. SVG specifies shapes and relative sizes. So to increase the size of an SVG image, you simply increase all the relative sizes and recalculate which pixels are filled in. This allows it to retain 100% sharpness for basic shapes. For a bitmap, however, when you increase or decrease the size of the image, the image has to be re-sampled and the computer must guess the colour of the extra (or fewer) pixels. This means bitmap images do not scale as well as SVG. However, if you apply some thought, it should be apparent that SVG would be just as (if not more) useless for a photograph. You wouldn't want each pixel scaled as just a square (which is what SVG would do).
 
 2D graphics makes use of one final key concept - layers. Layers are complete images of the screen except that the background is transparent. Each layer forms one (or more) parts of the final image. Layers are stacked on top of one another, which higher images blocking out lower images. This allows more complex outputs to be produced. Here are two examples of using layers.
 1. Cursor layer and application layer. Allows the computer cursor to be painted on top of the application without affecting the application's image.
 2. Character layer and background layer. Allows a character in a 2D game to be moved around and painted on top of a background.
 
 ### Sprites and textures
-- Sprites:
-	- 2D graphic / image 
-	- Layered together 
-	- Animated
-- Texture:
-	- 2D image
-	- Layered on top by blending
-	- Provides a texture / look 
-	- Can be stretched over a 3D object to provide a "surface" look
+Sprites are small images that are combined with other graphics to form a larger image or the final frame (which is rendered to the screen). For performance, sprites were originally implemented in hardware. The hardware would use separate DMA channels to access the graphics memory which would allow it to "overlay" a sprite onto each frame. This allowed variable-position and/or animated sprites to be rendered. Over time sprites have become largely software-driven. 
+
+All sprites are 2D images. Some sprites are referred to as 3D sprites (or Billboards) because they are 2D images which can be seamlessly incorporated in a 3D rendering. Sprites are layered on top of each other and, more recently, support partial-opacity, allowing the sprites "underneath" to show through. Sprites can consist of a single static image or an animation. For example, an animated GIF file used as a character in a 2D game would constitute an animated sprite. (On its own the GIF animation is just an animation or image).
+
+Sprites are closely related to textures. Textures are also images or animations, but used in very different ways. Unlike a sprite, a texture is only seen in 3D graphics. A texture is applied to a surface (see next section) to give it colour, detail or a particular look. Originally, textures involved wrapping a 2D image around the 3D surface. For instance, imagine printing a picture on a sheet of paper, such that it fitted the net of a cube. Then wrapping the paper (only the net) around the cube. The printed picture would appear to cover the entire cube. This is what happens with textures. Clever image creation can result in the final 3D object wrapper in the image appearing to be highly detailed, even if the model itself is very simple. Textures are blended in much the same sprites are - by layering and using opacity (and, in modern graphics drivers, other more complex blending functions). 
 
 ### 3D
-- 3D space / coordinates
-- Vertices, edges, surfaces
-- Everything is triangles / polygons
-- 3D modelling
-- Hidden surfaces
-- One-sided surfaces
-- Circles and spheres
+3D graphics is probably what everyone thinks of now if you say "graphics" or "CGI" to them. It's sad to say but despite all the impressive work in 2D graphics (that yes, is still happening) 3D graphics seems to be taking over. I imagine it won't be long before we see UIs entirely in 3D (even on 2D displays). So what exactly is 3D graphics?
+
+To start with we need to understand 3D space. A 3D space is, theoretically, just how we perceive the real world. It can be split up into three perpendicular directions. Up/down, left/right and in/out. These directions can be defined in any orientation you like so you can think of up/down as actually going diagonally through your room. The other axes remain perpendicular. These axes form an orthogonal, 3D space. In simple terms, orthogonal means that the axes meet at right angles. It is more useful to note, however, that this means that if you move along one axis, you cannot express that movement as a sum of movements in the other two axes. However, every movement in the space can be described by the combined effect of movements in each of the axes. 
+
+However, an orthogonal set of axis does not on its own provide us with any way to determine location within the space. The best we can do with it is to define a vector, which is defined as the displacement (not distance), in each of the axes, from a point A to a point B. *(Note that displacement is itself a vector quantity - positive or negative distance. Distance is the absolute measurement of the gap between two points).* To create a coordinates system we must define an origin point. All (x,y,z) coordinates are in fact just displacement vectors (as opposed to acceleration vectors or similar) from our chosen origin point. For this reason, the choice of origin is largely irrelevant. A well-chosen origin can simplify the maths (and required computing) but it shouldn't affect the overall result. In fact, it is common to perform animation functions from the origin of a character, and then simply translate the character's origin to the world's origin via a single displacement vector. By doing this, the maths for calculating the character's movements can be both simplified and done in parallel with other processing since it relies on no external knowledge of its own 3D space.
+
+Now that we have defined a 3D space, we can start to think about 3D objects. An object is made up of three things: points (known as vertices or nodes), edges (sometimes called lines) and surfaces. A point is defined by a displacement vector from the origin (or another point). An edge is defined by the shortest straight line joining two points (as opposed to using a curved line or to the theoretically infinite line joining two points by drawing straight lines directly away from the points. Note that in non-Euclidean geometry the concept of a straight line still applies, even if when rendered it appears curved.) A surface is defined as an infinite set of points bounded by a set of edges. In the computer graphics world, the set of points have to form a flat surface. This is generally achieved by defining a surface as the flat surface formed between a set of edges. However, since every 2D shape with four or more edges can be subdivided into triangles, every surface in computer graphics is actually just a set of triangular surfaces i.e. surfaces bounded by three edges. Thus every 3D object in computer graphics is defined by triangles in the 3D space.
+
+It should be apparent then that if every object is made up of flat triangles, you can never achieve a truly circular or smooth object. The best you can hope for is to use lots of very small triangles so that the surface appears smooth to the user. The number of triangles a graphics card is capable of processing in a given time is used as a performance benchmark by many benchmarking software packages.
+
+So what happens when one 3D model is placed behind another? Well, some of the surfaces (or just parts of the surfaces) are hidden. This is called the hidden-surface problem and a solution was pioneered by the University of Utah in the 1970s. Since then a lot of research has been done into both 2D and 3D occlusion algorithms. The problems essentially break down into sorting algorithms, many of which are solved by divide and conquer (for large numbers of primitives that is). The graphics software works out which surfaces are hidden, and then skips rendering those. A similar thing occurs for 2D graphics and sprites - the graphics software will ignore sprites which are hidden by other overlaid sprites.
+
+It is interesting to note that surfaces in 3D graphics are often one-sided. What this means is that if you view it from one side, the graphics software will show you what you'd expect - a solid / coloured / textured surface. If you view it from the "other side", the surface appears transparent. This is because surfaces often define a normal vector which, when combined with lighting (see later), is used to calculate reflection / absorption of the light. If you are looking in line with the normal, the surface will appear totally transparent as the side of the surface you are looking at is non-reflective.
+
+It is useful to note that the University of Utah used the 3D model of an old fashioned teapot as a graphics test which became an industry-wide standard for overall quality and performance testing. The reason being that a teapot has many curves, can be reflective or non-reflective, casts odd shadows and has a number of other graphically-complex features. Essentially, the more realistic your teapot looks, the better your graphics performance or quality! (A rotating teapot was a significant challenge and is still done poorly by badly written software. The current generation of graphics hardware is not able to compensate for poor software by simply applying lots of processing power. This is in contrast to the CPU market where readable, maintainable code is become more popular than optimised code. Though this may also be due to compiler optimisations becoming so good.)
 
 ### 3D Projection
-- Lighting points & shadows
-- Projection
-- Shaders
-- Ray tracing
+In the preceding section we discussed 3D models, surfaces and I briefly mentioned lighting. None of it actually explained how a 3D model gets rendered (i.e. converted) to a 2D image. Rendering involves projection. Projection is when the "view" of a 3D model is traced (including colour) onto a 2D screen. The image formed on the 2D screen becomes the final image for the frame. The 2D screen is called the projection screen, projection plane or projection surface. To understand how projection works, we must first think about light sources and shadows.
+
+There are three types of light source. Spot lights, directional lights and point lights. Spot lights are like spot lights in a theatre - the virtual "rays" of light are emitted at a particular conical angle in a particular direction from the source. Point lights are light sources within the 3D space which emit light in all directions (this is roughly equivalent to a bulb in real life). Directional lights are the strangest. Directional lights are light sources that are an "infinite" distance from the 3D space in question and emit parallel rays of light of equal brightness across the entire space. They are called directional because all the rays of light travel in the same direction i.e. are parallel. In real life, the sun is approximately a directional light as light rays from the sun are approximately parallel for a given small space on earth. Spotlights and point lights emit rays which fall off in intensity with distance from the source. Directional lights have the same intensity everywhere.
+
+The easiest way to understand how lighting works is to imagine rays of light from each light source. These rays of light travel in straight lines. The computer traces the rays from the light source to surfaces of objects. When the rays hit the surface of an object, the rays are either absorbed or partially or wholly reflect. "All" the rays of light from the light sources are traced until either they exit the bounds of 3D space being examined or they hit the projection surface (/screen). When they hit the screen, their colour and position on the screen are recorded to form the colour on that part of the screen. Combining thousands of rays completes the whole image. This method of projection is called ray tracing and is used to produce photo-realistic images. However, due to the number of rays that must be traced and the computation required to trace them, ray tracing is only just becoming used in real-time graphics. Ray tracing is mostly used for CGI or 3D animation/graphics rendered for advertising or films.
+
+There are two alternative methods for rendering a scene. The first is projection, which takes all the vertices of an object and works out where they would appear to the viewer (where the viewer is looking from the projection screen). This introduces the idea of field of view, as the angle out from the edges of the projection screen that the viewer can see. Changing the field of view can, for example, alter the final image to make it appear like the space is being viewed through a fish-eye lens. 
+
+Shaders are (in some ways) a dual concept in graphics. In one sense, they are a technique for colouring, texturing, lighting parts of a 3D model and rendering the model to the screen. However, if you analyse this sense of the word, it is apparent that colouring, texturing, lighting and rendering are all just ways of colouring bits of intermediate images or the final projected image. Thus the second and most accurate meaning of the word "shader", is as a short function for performing a particular algorithm or sequence of mathematical operations. These operations can be used to manipulate any numeric input. Since computers deal only in numbers, shaders can be used to manipulate any data within a computer. Thus shaders can change vertex position, surface colour, lighting or anything else including performing projection/rendering operations.
+
+Shaders have become one of the most important parts of graphics (including 2D graphics) because of their versatility and the fact that they can be highly optimised for graphics hardware. Also, many shaders are designed to be able to work on data in parallel with other shaders. This allows graphics hardware to process lots of shaders simultaneously, thus allowing faster rendering of an entire scene. In engineering and scientific research, shaders have become key to efficient simulation. The shaders are just used as mathematical functions, allowing a simulation engine to run lots of mathematical operations in parallel.
+
+A graphics pipe or pipeline is often expressed as a sequence of shaders (which may be executed synchronously or asynchronously, depending on other requirements and shader compatibility). The many-piped design of a GPU gives it its highly parallel design. This is the key difference between a GPU and a CPU. A CPU is designed to execute steps synchronously, very efficiently. A GPU is designed to execute asynchronous (or parallel) steps very quickly. GPUs are poor general purpose processors because most general processing is a sequence of synchronous steps. Most CPUs are poor mathematical (or graphics) processors, as most mathematical or graphics work can be highly parallelised. 
+
+Lastly, I would like to stress the importance of the fact that (99% of the time) there is no such thing as a "3D image". Images are not 3D, they are 2D. The 2D image may appear to be 3D, but nonetheless the image itself is 2D. The 3D model is the actual 3D thing.
+
+### 4D
+The fourth dimension has been interpreted in many ways. Here are a couple of common ones:
+1. As time - the fourth axis is detached and is a time axis.
+2. As the secondary view used when performing actual 3D rendering/projection. In this case you get two 2D images (projections of the scene) which are taken from slightly different positions and angles. By showing one to one eye of the viewer, and the other to their other eye, what the viewer sees appears truly 3D.
+3. As a genuinely fourth dimension - welcome to the crazy world of higher dimensions... (I shall have to leave it to the mathematicians and physicists to explain this one!)
 
 ### Anti-aliasing
-- Example of issue
-- Why? 
-- How?
+Aliasing is a significant problem in computer graphics that occurs when rendering 2D images or "3D images" (i.e. 2D projection images). The issue occurs when any line (or edge) is at an angle to vertical or horizontal (which is a lot of the time!). The raw edge looks staggered like a set of steps. This issue also occurs when up or down scaling an image. Anti-aliasing is a process that smooths the edge to mask the stepping effect. Essentially it is a clever blurring function that can be applied to an entire image to smooth edges.
+
+If you zoom in to pixel-level on an anti-aliased image, it is apparent what is happening. Instead of defining a hard edge by having an angled line of pixels set to a single solid colour, an anti-aliased image has the main pixels with the solid colour surrounded by one or two "layers" of "faded" pixels thus blurring the edge of the line. When zoomed out the resulting line appears much smoother to the eye.
 
 ### Incorporating animation
 - Background animation
@@ -364,38 +385,19 @@ Lastly, some e-ink displays (primarily electrophoretic-based displays) are benda
 - HDMI : common, taking over
 
 ## Compatibility between hardware
-- None :)
+- None :) Okay probably something...
 
 ---
 
 # Software
 
 ## Overview
-
-## Displays
-
-### Types of display output
-
-### Interaction with hardware
-
-
-## Graphics
-
-### Types of image
-
-### Current graphics technologies
-
-### Interaction with hardware
-
-
-## Video
-
-### Types of video
-
-### Current video technologies
-
-### Interaction with hardware
-
+- Structure of software:
+	- Display Drivers (KM)
+	- Graphics Drivers (KM)
+	- Graphics Drivers (UM)
+	- Video Decode driver (KM/UM)
+	- Video Encode driver(KM/UM)
 
 ## Compatibility and Integration
 
@@ -411,6 +413,7 @@ Lastly, some e-ink displays (primarily electrophoretic-based displays) are benda
 ## "I want to write a graphics driver" - Year 2
 
 ## After the graphics driver (or along the way)
+
 ---
 
 # References
