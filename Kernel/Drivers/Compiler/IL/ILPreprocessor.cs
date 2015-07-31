@@ -344,7 +344,7 @@ namespace Drivers.Compiler.IL
 
                 try
                 {
-                    ILOp ConverterOp = ILScanner.TargetILOps[(ILOp.OpCodes)theOp.opCode.Value];
+                    ILOp ConverterOp = TargetArchitecture.TargetILOps[(ILOp.OpCodes)theOp.opCode.Value];
 
                     ConverterOp.Preprocess(preprosState, theOp);
 
@@ -870,23 +870,23 @@ namespace Drivers.Compiler.IL
 
                         if (currOp is ILOps.MethodStart)
                         {
-                            ILScanner.MethodStartOp.PerformStackOperations(preprocessState, theILBlock.ILOps[opIndx]);
+                            TargetArchitecture.MethodStartOp.PerformStackOperations(preprocessState, theILBlock.ILOps[opIndx]);
                             UseNextOpAsCleanupStart = true;
                         }
                         else if (currOp is ILOps.MethodEnd)
                         {
-                            ILScanner.MethodEndOp.PerformStackOperations(preprocessState, theILBlock.ILOps[opIndx]);
+                            TargetArchitecture.MethodEndOp.PerformStackOperations(preprocessState, theILBlock.ILOps[opIndx]);
                         }
                         else if (currOp is ILOps.StackSwitch)
                         {
-                            ILScanner.StackSwitchOp.PerformStackOperations(preprocessState, theILBlock.ILOps[opIndx]);
+                            TargetArchitecture.StackSwitchOp.PerformStackOperations(preprocessState, theILBlock.ILOps[opIndx]);
                         }
                         else
                         {
                             // Leave unsupported ops for the IL Scanner to deal with (or later code e.g. castclass op)
-                            if (ILScanner.TargetILOps.ContainsKey((ILOp.OpCodes)currOp.opCode.Value))
+                            if (TargetArchitecture.TargetILOps.ContainsKey((ILOp.OpCodes)currOp.opCode.Value))
                             {
-                                ILOp ConverterOp = ILScanner.TargetILOps[(ILOp.OpCodes)currOp.opCode.Value];
+                                ILOp ConverterOp = TargetArchitecture.TargetILOps[(ILOp.OpCodes)currOp.opCode.Value];
                                 ConverterOp.PerformStackOperations(preprocessState, currOp);
                             }
                         }

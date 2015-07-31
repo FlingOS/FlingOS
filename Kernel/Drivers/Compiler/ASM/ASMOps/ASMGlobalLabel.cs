@@ -30,55 +30,57 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Drivers.Compiler.ASM
+namespace Drivers.Compiler.ASM.ASMOps
 {
     /// <summary>
-    /// Represents a label for an external dependency of an ASM block.
+    /// Represents a label which external ASM blocks can depend upon i.e. a global label.
     /// </summary>
-    /// <remarks>
-    /// The Convert method ought to be abstracted to the target architecture library
-    /// since different assembly syntaxes use different syntaxes for denoting external 
-    /// labels. The target architecture determines the syntax.
-    /// </remarks>
-    public class ASMExternalLabel : ASMOp
+    [ASMOpTarget(Target = OpCodes.GlobalLabel)]
+    public abstract class ASMGlobalLabel : ASMOp
     {
         /// <summary>
-        /// The external label.
+        /// The global label.
         /// </summary>
         public string Label;
-
         /// <summary>
-        /// Generates the line of assembly for the external label.
+        /// The type specifier for the label. e.g. "function" or "data".
         /// </summary>
-        /// <param name="theBlock">The block for which the comment is to be generated.</param>
-        /// <returns>The complete line of assembly code.</returns>
-        public override string Convert(ASMBlock theBlock)
+        public string LabelType = "function";
+
+        public ASMGlobalLabel(string label)
         {
-            return "extern " + Label;
+            Label = label;
+        }
+
+        public ASMGlobalLabel(string label, string labelType)
+        {
+            Label = label;
+            LabelType = labelType;
         }
 
         /// <summary>
-        /// Gets a hash code for the external label which can be used for comparison to prevent
-        /// duplicate external labels being added.
+        /// Gets a hash code for the global label which can be used for comparison to prevent
+        /// duplicate global labels being added.
         /// </summary>
         /// <remarks>
-        /// Uses the hash code of the Label field.
+        /// Uses the hash code of (Label + ":" + LabelType).
         /// </remarks>
         /// <returns>The hash code value.</returns>
         public override int GetHashCode()
         {
-            return Label.GetHashCode();
+            return (Label + ":" + LabelType).GetHashCode();
         }
         /// <summary>
-        /// Compares the external label to the specified object.
+        /// Compares the global label to the specified object.
         /// </summary>
         /// <param name="obj">The object to compare to.</param>
-        /// <returns>True if the object is an external label and has the same value for Label. Otherwise, false.</returns>
+        /// <returns>True if the object is a global label and has the same value for Label and LabelType. Otherwise, false.</returns>
         public override bool Equals(object obj)
         {
-            if (obj is ASMExternalLabel)
+            if (obj is ASMGlobalLabel)
             {
-                return Label.Equals(((ASMExternalLabel)obj).Label);
+                return Label.Equals(((ASMGlobalLabel)obj).Label) &&
+                       LabelType.Equals(((ASMGlobalLabel)obj).LabelType);
             }
             return base.Equals(obj);
         }

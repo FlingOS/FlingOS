@@ -29,38 +29,28 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Drivers.Compiler.ASM;
 
 namespace Drivers.Compiler.Architectures.x86.ASMOps
 {
-    public static class ASMUtilities
+    public class GlobalLabel : ASM.ASMOps.ASMGlobalLabel
     {
-        public static string GetOpSizeStr(OperandSize Size)
+        public GlobalLabel(string label) : base(label)
         {
-            return System.Enum.GetName(typeof(OperandSize), Size).ToLower();
         }
 
+        public GlobalLabel(string label, string labelType) : base(label, labelType)
+        {
+        }
 
         /// <summary>
-        /// Gets the allocation string for the specified number of bytes.
+        /// Generates the line of assembly for the global label.
         /// </summary>
-        /// <remarks>
-        /// TODO: Shift this to target architecture library.
-        /// </remarks>
-        /// <param name="numBytes">The number of bytes being allocated.</param>
-        /// <returns>The allocation string.</returns>
-        public static string GetAllocStringForSize(int numBytes)
+        /// <param name="theBlock">The block for which the comment is to be generated.</param>
+        /// <returns>The complete line of assembly code.</returns>
+        public override string Convert(ASMBlock theBlock)
         {
-            switch (numBytes)
-            {
-                case 1:
-                    return "db";
-                case 2:
-                    return "dw";
-                case 4:
-                    return "dd";
-                default:
-                    return "NOSIZEALLOC";
-            }
+            return "global " + Label + ":" + LabelType;
         }
     }
 }

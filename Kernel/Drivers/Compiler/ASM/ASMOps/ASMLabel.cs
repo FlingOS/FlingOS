@@ -30,22 +30,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Drivers.Compiler.ASM
+namespace Drivers.Compiler.ASM.ASMOps
 {
     /// <summary>
     /// Represents a label in assembly code.
     /// </summary>
-    /// <remarks>
-    /// The Convert method ought to be abstracted to the target architecture library
-    /// since different assembly syntaxes use different syntaxes for denoting labels. 
-    /// The target architecture determines the syntax.
-    /// </remarks>
-    /// <remarks>
-    /// The Convert method ought to be abstracted to the target architecture library
-    /// since different assembly syntaxes use different syntaxes for denoting labels. 
-    /// The target architecture determines the syntax.
-    /// </remarks>
-    public class ASMLabel : ASMOp
+    [ASMOpTarget(Target = OpCodes.Label)]
+    public abstract class ASMLabel : ASMOp
     {
         /// <summary>
         /// Whether the label is a method label or not. If it is not a method label, the IL position and 
@@ -62,21 +53,20 @@ namespace Drivers.Compiler.ASM
         /// </summary>
         public string Extension;
 
-        /// <summary>
-        /// Generates the label itself (using the ASM block) and the line of assembly for the label.
-        /// </summary>
-        /// <param name="theBlock">The block for which the comment is to be generated.</param>
-        /// <returns>The complete line of assembly code.</returns>
-        public override string Convert(ASMBlock theBlock)
+        public ASMLabel()
         {
-            if (MethodLabel)
-            {
-                return theBlock.GenerateMethodLabel() + ":";
-            }
-            else
-            {
-                return theBlock.GenerateILOpLabel(ILPosition, Extension) + ":";
-            }
+        }
+
+        public ASMLabel(bool methodLabel)
+        {
+            MethodLabel = methodLabel;
+        }
+
+        public ASMLabel(int anILPosition, string anExtension)
+        {
+            MethodLabel = false;
+            ILPosition = anILPosition;
+            Extension = anExtension;
         }
     }
 }

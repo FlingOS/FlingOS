@@ -30,27 +30,22 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Drivers.Compiler.ASM
+namespace Drivers.Compiler.ASM.ASMOps
 {
-    /// <summary>
-    /// Represents a comment in assembly code.
-    /// </summary>
-    /// <remarks>
-    /// The Convert method ought to be abstracted to the target architecture library
-    /// since different assembly syntaxes use different syntaxes for denoting comments.
-    /// The target architecture determines the syntax.
-    /// </remarks>
-    [ASMOpTarget(Target=OpCodes.Comment)]
-    public abstract class ASMComment : ASMOp
+    [ASMOpTarget(Target = OpCodes.FieldTable)]
+    public abstract class ASMFieldTable : ASMOp
     {
-        /// <summary>
-        /// The single-line text of the comment.
-        /// </summary>
-        public string Text;
+        public string CurrentTypeId;
+        public string CurrentTypeName;
+        public List<Tuple<string, string, string>> AllFieldInfos;
+        public List<Tuple<string, int>> TableEntryFieldInfos;
 
-        public ASMComment(string text)
+        public ASMFieldTable(string currentTypeId, string currentTypeName, List<Tuple<string, string, string>> allFieldInfos, List<Tuple<string, int>> tableEntryFieldInfos)
         {
-            Text = text;
+            CurrentTypeId = currentTypeId;
+            CurrentTypeName = currentTypeName;
+            AllFieldInfos = allFieldInfos;
+            TableEntryFieldInfos = tableEntryFieldInfos;
         }
     }
 }

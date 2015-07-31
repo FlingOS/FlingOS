@@ -30,27 +30,48 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Drivers.Compiler.ASM
+namespace Drivers.Compiler.ASM.ASMOps
 {
     /// <summary>
-    /// Represents generic assembly code. Can be used to output any assembly code you
-    /// like.
+    /// Represents a label for an external dependency of an ASM block.
     /// </summary>
-    public class ASMGeneric : ASMOp
+    [ASMOpTarget(Target = OpCodes.ExternalLabel)]
+    public abstract class ASMExternalLabel : ASMOp
     {
         /// <summary>
-        /// The (valid) assembly code text to output.
+        /// The external label.
         /// </summary>
-        public string Text;
+        public string Label;
+
+        public ASMExternalLabel(string label)
+        {
+            Label = label;
+        }
 
         /// <summary>
-        /// Generates the line of assembly by returning the value of Text.
+        /// Gets a hash code for the external label which can be used for comparison to prevent
+        /// duplicate external labels being added.
         /// </summary>
-        /// <param name="theBlock">The block for which the comment is to be generated.</param>
-        /// <returns>The assembly code (i.e. value of Text).</returns>
-        public override string Convert(ASMBlock theBlock)
+        /// <remarks>
+        /// Uses the hash code of the Label field.
+        /// </remarks>
+        /// <returns>The hash code value.</returns>
+        public override int GetHashCode()
         {
-            return Text;
+            return Label.GetHashCode();
+        }
+        /// <summary>
+        /// Compares the external label to the specified object.
+        /// </summary>
+        /// <param name="obj">The object to compare to.</param>
+        /// <returns>True if the object is an external label and has the same value for Label. Otherwise, false.</returns>
+        public override bool Equals(object obj)
+        {
+            if (obj is ASMExternalLabel)
+            {
+                return Label.Equals(((ASMExternalLabel)obj).Label);
+            }
+            return base.Equals(obj);
         }
     }
 }

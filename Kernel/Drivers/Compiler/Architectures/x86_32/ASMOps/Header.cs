@@ -32,35 +32,12 @@ using System.Threading.Tasks;
 
 namespace Drivers.Compiler.Architectures.x86.ASMOps
 {
-    public static class ASMUtilities
+    public class Header : ASM.ASMOps.ASMHeader
     {
-        public static string GetOpSizeStr(OperandSize Size)
+        public override string Convert(ASM.ASMBlock theBlock)
         {
-            return System.Enum.GetName(typeof(OperandSize), Size).ToLower();
-        }
-
-
-        /// <summary>
-        /// Gets the allocation string for the specified number of bytes.
-        /// </summary>
-        /// <remarks>
-        /// TODO: Shift this to target architecture library.
-        /// </remarks>
-        /// <param name="numBytes">The number of bytes being allocated.</param>
-        /// <returns>The allocation string.</returns>
-        public static string GetAllocStringForSize(int numBytes)
-        {
-            switch (numBytes)
-            {
-                case 1:
-                    return "db";
-                case 2:
-                    return "dw";
-                case 4:
-                    return "dd";
-                default:
-                    return "NOSIZEALLOC";
-            }
+            return @"BITS 32
+SECTION .text";
         }
     }
 }

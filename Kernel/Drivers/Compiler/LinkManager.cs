@@ -195,7 +195,7 @@ SECTIONS {
                 string ISOToolsDirPath = Path.Combine(Options.ToolsPath, @"ISO");
                 string ISODirPath = Path.Combine(Options.OutputPath, @"DriversCompiler\ISO");
                 string LinkScriptPath = Path.Combine(Options.OutputPath, @"DriversCompiler\linker.ld");
-                string BinPath = Path.Combine(Options.OutputPath, @"DriversCompiler\ISO\" + AssemblyName + ".bin");
+                string BinPath = Path.Combine(Options.OutputPath, @"DriversCompiler\ISO\Kernel.bin");
                 string ISOLinuxPath = Path.Combine(Options.OutputPath, @"DriversCompiler\ISO\" + (Options.BuildMode == Options.BuildModes.Debug ? "isolinux-debug.bin" : "isolinux.bin"));
                 string ISOPath = Path.Combine(Options.OutputPath, AssemblyName + ".iso");
                 string MapPath = Path.Combine(Options.OutputPath, AssemblyName + ".map");
@@ -230,9 +230,9 @@ SECTIONS {
    /* The kernel will live at 3GB + 1MB in the virtual
       address space, which will be mapped to 1MB in the
       physical address space. */
-   . = 0xC0100000;
+   . = " + Options.BaseAddress.ToString() + @";
 
-   .text : AT(ADDR(.text) - 0xC0000000) {
+   .text : AT(ADDR(.text) - " + Options.LoadOffset.ToString() + @") {
 ");
 
                 for (int i = 0; i < SequencedASMBlocks.Count; i++)
@@ -248,12 +248,12 @@ SECTIONS {
    }
 
    . = ALIGN(0x1000);
-   .data : AT(ADDR(.data) - 0xC0000000) {
+   .data : AT(ADDR(.data) - " + Options.LoadOffset.ToString() + @") {
           * (.data*);
    }
 
    . = ALIGN(0x1000);
-   .bss : AT(ADDR(.bss) - 0xC0000000) {
+   .bss : AT(ADDR(.bss) - " + Options.LoadOffset.ToString() + @") {
           * (.bss*);
    }
 }

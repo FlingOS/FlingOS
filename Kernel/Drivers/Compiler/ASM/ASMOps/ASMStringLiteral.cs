@@ -30,37 +30,22 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Drivers.Compiler.Architectures.x86.ASMOps
+namespace Drivers.Compiler.ASM.ASMOps
 {
-    public static class ASMUtilities
+    [ASMOpTarget(Target=OpCodes.StringLiteral)]
+    public abstract class ASMStringLiteral : ASMOp
     {
-        public static string GetOpSizeStr(OperandSize Size)
-        {
-            return System.Enum.GetName(typeof(OperandSize), Size).ToLower();
-        }
+        public string Id;
+        public string StringTypeId;
+        public byte[] LengthBytes;
+        public char[] Characters;
 
-
-        /// <summary>
-        /// Gets the allocation string for the specified number of bytes.
-        /// </summary>
-        /// <remarks>
-        /// TODO: Shift this to target architecture library.
-        /// </remarks>
-        /// <param name="numBytes">The number of bytes being allocated.</param>
-        /// <returns>The allocation string.</returns>
-        public static string GetAllocStringForSize(int numBytes)
+        public ASMStringLiteral(string id, string stringTypeId, byte[] lengthBytes, char[] characters)
         {
-            switch (numBytes)
-            {
-                case 1:
-                    return "db";
-                case 2:
-                    return "dw";
-                case 4:
-                    return "dd";
-                default:
-                    return "NOSIZEALLOC";
-            }
+            Id = id;
+            StringTypeId = stringTypeId;
+            LengthBytes = lengthBytes;
+            Characters = characters;
         }
     }
 }

@@ -3,7 +3,7 @@
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
     <ProjectGuid>{8B50B714-6428-4057-836D-E188C719365A}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
@@ -12,7 +12,7 @@
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
@@ -22,8 +22,9 @@
     <WarningLevel>4</WarningLevel>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <PlatformTarget>x86</PlatformTarget>
+	<MachineCodeTarget>x86</MachineCodeTarget>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
@@ -32,6 +33,29 @@
     <WarningLevel>4</WarningLevel>
     <PlatformTarget>x86</PlatformTarget>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+	<MachineCodeTarget>x86</MachineCodeTarget>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|MIPS' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <PlatformTarget>x86</PlatformTarget>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+	<MachineCodeTarget>MIPS</MachineCodeTarget>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|MIPS' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <PlatformTarget>x86</PlatformTarget>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+	<MachineCodeTarget>MIPS</MachineCodeTarget>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -82,7 +106,7 @@
   <Target Name="BeforeBuild">
   </Target>
   <Target Name="AfterBuild">
-    <BuildTask Condition="'$(Configuration)' == 'Debug'" LibraryPath="$(TargetPath)" TargetArchitecture="$(PlatformTarget)" OutputPath="$(TargetDir)" ToolsPath="$(SolutionDir)Kernel\Drivers\Compiler\Tools" DebugBuild="True" ISOLink="False" />
-    <BuildTask Condition="'$(Configuration)' == 'Release'" LibraryPath="$(TargetPath)" TargetArchitecture="$(PlatformTarget)" OutputPath="$(TargetDir)" ToolsPath="$(SolutionDir)Kernel\Drivers\Compiler\Tools" DebugBuild="False" ISOLink="False" />
+    <BuildTask Condition="'$(Configuration)' == 'Debug'" LibraryPath="$(TargetPath)" TargetArchitecture="$(MachineCodeTarget)" OutputPath="$(TargetDir)" ToolsPath="$(SolutionDir)Kernel\Drivers\Compiler\Tools" DebugBuild="True" ISOLink="False" />
+    <BuildTask Condition="'$(Configuration)' == 'Release'" LibraryPath="$(TargetPath)" TargetArchitecture="$(MachineCodeTarget)" OutputPath="$(TargetDir)" ToolsPath="$(SolutionDir)Kernel\Drivers\Compiler\Tools" DebugBuild="False" ISOLink="False" />
   </Target>
 </Project>

@@ -35,7 +35,16 @@ namespace Drivers.Compiler.ASM
     public enum OpCodes
     {
         Any,
-        Comment
+        Comment,
+        ExternalLabel,
+        GlobalLabel,
+        Label,
+        Header,
+        StringLiteral,
+        TypeTable,
+        MethodTable,
+        FieldTable,
+        StaticField
     }
 
     /// <summary>

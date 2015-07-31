@@ -110,18 +110,11 @@ namespace Drivers.Compiler.IL
         {
             CompileResult result = CompileResult.OK;
 
-            if (ILScanner.Init())
-            {
-                ILPreprocessor.Preprocess(TheLibrary);
+            ILPreprocessor.Preprocess(TheLibrary);
 
-                ILPreprocessor.PreprocessSpecialClasses(TheLibrary);
-                ILPreprocessor.PreprocessSpecialMethods(TheLibrary);
-            }
-            else
-            {
-                result = CompileResult.Fail;
-            }
-
+            ILPreprocessor.PreprocessSpecialClasses(TheLibrary);
+            ILPreprocessor.PreprocessSpecialMethods(TheLibrary);
+    
             return result;
         }
 

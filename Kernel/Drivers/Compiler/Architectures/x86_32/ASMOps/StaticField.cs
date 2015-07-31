@@ -32,35 +32,16 @@ using System.Threading.Tasks;
 
 namespace Drivers.Compiler.Architectures.x86.ASMOps
 {
-    public static class ASMUtilities
+    public class StaticField : ASM.ASMOps.ASMStaticField
     {
-        public static string GetOpSizeStr(OperandSize Size)
+        public StaticField(string fieldID, string size)
+            : base(fieldID, size)
         {
-            return System.Enum.GetName(typeof(OperandSize), Size).ToLower();
         }
 
-
-        /// <summary>
-        /// Gets the allocation string for the specified number of bytes.
-        /// </summary>
-        /// <remarks>
-        /// TODO: Shift this to target architecture library.
-        /// </remarks>
-        /// <param name="numBytes">The number of bytes being allocated.</param>
-        /// <returns>The allocation string.</returns>
-        public static string GetAllocStringForSize(int numBytes)
+        public override string Convert(ASM.ASMBlock theBlock)
         {
-            switch (numBytes)
-            {
-                case 1:
-                    return "db";
-                case 2:
-                    return "dw";
-                case 4:
-                    return "dd";
-                default:
-                    return "NOSIZEALLOC";
-            }
+            return string.Format("GLOBAL {0}:data\r\n{0}: times {1} db 0", FieldID, Size);
         }
     }
 }

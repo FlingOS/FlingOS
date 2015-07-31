@@ -47,11 +47,6 @@ namespace Drivers.Compiler.ASM
     /// The ASM Preprocessor also handles injecting IL ops for the method label, the global 
     /// labels and the external labels.
     /// </para>
-    /// <para>
-    /// TODO: The ASM Preprocessor is also injecting compiler directives such as BITS 32, 
-    /// which should be moved into the target architecture library as some form of 
-    /// library-wide preprocessing step.
-    /// </para>
     /// </remarks>
     public static class ASMPreprocessor
     {
@@ -114,23 +109,25 @@ namespace Drivers.Compiler.ASM
             string currMethodLabel = theBlock.GenerateMethodLabel();
             if (currMethodLabel != null)
             {
-                theBlock.ASMOps.Insert(0, new ASMLabel() { MethodLabel = true });
+                ASM.ASMOp newLabelOp = TargetArchitecture.CreateASMOp(ASM.OpCodes.Label, true);
+                theBlock.ASMOps.Insert(0, newLabelOp);
             }
             if (currMethodLabel != null)
             {
-                theBlock.ASMOps.Insert(0, new ASMGlobalLabel() { Label = currMethodLabel });
+                ASM.ASMOp newGlobalLabelOp = TargetArchitecture.CreateASMOp(ASM.OpCodes.GlobalLabel, currMethodLabel);
+                theBlock.ASMOps.Insert(0, newGlobalLabelOp);
             }
             
             foreach (string anExternalLabel in theBlock.ExternalLabels.Distinct())
             {
                 if (anExternalLabel != currMethodLabel)
                 {
-                    theBlock.ASMOps.Insert(0, new ASMExternalLabel() { Label = anExternalLabel });
+                    ASM.ASMOp newExternalLabelOp = TargetArchitecture.CreateASMOp(ASM.OpCodes.ExternalLabel, anExternalLabel);
+                    theBlock.ASMOps.Insert(0, newExternalLabelOp);
                 }
             }
-
-            theBlock.ASMOps.Insert(0, new ASMGeneric() { Text = "SECTION .text" });
-            theBlock.ASMOps.Insert(0, new ASMGeneric() { Text = "BITS 32" });
+            ASM.ASMOp newHeaderOp = TargetArchitecture.CreateASMOp(ASM.OpCodes.Header);
+            theBlock.ASMOps.Insert(0, newHeaderOp);
         }
     }
 }

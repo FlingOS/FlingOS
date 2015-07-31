@@ -33,7 +33,7 @@ using Drivers.Compiler.ASM;
 
 namespace Drivers.Compiler.Architectures.x86.ASMOps
 {
-    public class Comment : ASM.ASMComment
+    public class Comment : ASM.ASMOps.ASMComment
     {
         public Comment(string text)
             : base(text)
@@ -47,7 +47,7 @@ namespace Drivers.Compiler.Architectures.x86.ASMOps
         /// <returns>The complete line of assembly code.</returns>
         public override string Convert(ASMBlock theBlock)
         {
-            return ";" + Text + " I'm a little teapot.";
+            return ";" + Text;
         }
     }
 }
