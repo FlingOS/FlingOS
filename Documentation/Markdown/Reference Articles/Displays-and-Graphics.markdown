@@ -190,15 +190,15 @@ Aliasing is a significant problem in computer graphics that occurs when renderin
 If you zoom in to pixel-level on an anti-aliased image, it is apparent what is happening. Instead of defining a hard edge by having an angled line of pixels set to a single solid colour, an anti-aliased image has the main pixels with the solid colour surrounded by one or two "layers" of "faded" pixels thus blurring the edge of the line. When zoomed out the resulting line appears much smoother to the eye.
 
 ### Incorporating animation
-- Background animation
-- Sprite animation
-- Object animation 
-- Lighting animation 
-- Colour animation 
-- Skeletons
-- Per-vertex animation
-- Animation through physics modelling
+Over the years many methods for incorporating animation have been developed. Largely, the techniques used were aimed at providing the most useful form of animation (not necessarily the most realistic) but suited to the limitations of the hardware. Animation was not an after thought of graphics - it has been in there from the beginning. Forms of video playback (such as frame-by-frame sprites) were one of the earliest methods of animating. Prior to even that though, scrolling backgrounds and then moving sprites were considered animation. Now, we consider those just an ordinary part of rendering a scene. This is probably because we use modelling in which we expect to be able to reorient things to obtain a different view. Animation is, after all, just reorientation to obtain a different view. 
 
+So background scrolling and moving sprites were early forms of 2D animation, which are still in use today all forms of graphics but probably most obviously in online games. When 3D modelling came about, object animation be repositioning (as we mentioned) was introduced. This has been followed by lighting and colour (/shading) animations. It is interesting to note that graphic artists and animators are frequently, whether consciously or not, applying theories of relativity which were pioneered in physics. The idea that perceptually, if you move a person in space or if space moves around a person, they will both appear the same to the person (or to the space itself, if you consider the space an observer). 
+
+Despite there being many techniques for moving "the other half" of a scene to create the illusion of animation, none of them have ever captured true motion. This is because ultimately, the simplest method (and so the best looking though this might be arguable) to animating a character or object, is to animate the object in the scene not the scene around it. This is probably most noticeable with animated 3D characters. Old games eft the character in a fixed location on the screen with no motion, and then moved the scene around the character. Modern games allow the character and "camera" to separate and move fluidly making for more natural apparent movement. Of course this becomes a necessity when limb movement is desired since there is no way to animate the scene such that limbs appear to move, if the limbs don't actually move relative to the rest of the character. 
+
+This leads to the last few forms of animation which are the most recently used and still in research. It starts with the idea that for a 3D model (e.g. of a character) you build a skeleton that describes the basic shape of the object. You give the skeleton joints (or hinges) which allow the various bones to move/rotate relative to each other. This allows a character, for example, to move its hands, arms, legs, feet, etc. in a more realistic motion. However, in most games even now, the body of the character will only move in a fixed pattern. Pre-set animation will be played back when certain in-game interactions happen. There will also be no surface reactions such as skin deforming.
+
+This brings us to the latest in animation. Per-vertex animation and physical modelling. Per-vertex animation creates a large number of vertices across a surface and then animates each of them individually in response to contact with other models in a scene. This can lead to more realistic skin or more obscure things like a bouncy ball which deforms properly on impact. Animation through physics modelling also extends to biological / neurological modelling. You pre-program an object or a character with equations that represent real-world physics. Then, instead of playing back pre-created animations for an interaction, the computer uses the equations to work out what would happen. Biological and neurological modelling take this a step further by adding muscles to a skeleton and using genetic/evolutionary algorithms to teach the character how to react. Significant success has been demonstrated with this technique and it is now being used in applications ranging from games to safety testing. 
 
 ---
 
@@ -274,22 +274,19 @@ Lastly, some e-ink displays (primarily electrophoretic-based displays) are benda
 ## Graphics
 
 ### 1950s
-- First time computer graphics was seen
-- Initial output on oscilloscopes and display scopes (difference?)
-- Interactivity limited but present (finger tracking)
-- Graphics hardware introduced
-- Saving / recalling of images
-- Basis point for solving many graphics problems:
-	- Ivan Sutherland : Long lasting solutions / principles
-	- Picture made up of images of objects not just an image for the whole thing
+The 1950s was the first time computer graphics was seen. This is rather remarkable really given the first transistor based computer was only just being developed and colour CRT had only just hit the shelves. Initially computer graphics was little more than recognisable shapes and animations played back on an oscilloscope display. This rapidly developed, however, with finger-tracking programs which would draw where you touched being developed (yes, ideas about touch-screens have been around and usable since the 1950s. The Apple iPhone wasn't the first and certainly not the last). Naturally though this kind of finger-based drawing was confined to engineering talks and labs and never saw commercial use. 
+
+Graphics hardware was quickly introduced with noticeable and significant differences which remain even to this day. GPUs and CPUs have long been separate entities. Respectively used for highly parallel processing and synchronous (or general or "central") processing. By the late 1950s boffins had created systems which could load and save images (a remarkable achievement given the low amount of storage and processing available at the time). 
+
+The 1950s also saw the development of long-lasting solutions to many graphics problems. Ivan Sutherland, prior to and during his time at the University of Utah, was a pioneer in the field, alongside David C. Evans and his students. In the following decade he would continue his work. Sutherland is widely credited with inventing the field of computer graphics since he provided the first methods for drawing lines, shapes and also for modelling 2D scenes in terms of the objects and their properties instead of just the image's pixels. He is regarded as having created the world's first interactive program (Sketchpad, 1962) and the world's first non-procedural language and object orientated system (all in one year).
 
 ### 1960s
-- "Computer graphics" coined by William Fetter
-- Second video game created. First world wide video game to be played.
-- Scientists / researchers begin to use graphics for simulation / demonstration
-- Renault contribute to study of curves - now called Bézier curves
-- IBM 2250 first graphics terminal
-- University of Utah forms CompSci department employing David C. Evans. World centre of computer graphics research
+The term "computer graphics" was in fact coined by William Fetter in 1960 while working for Boeing. In this decade the world's first commercial, worldwide video game was produced, Spacewar. After development by Steve Russell at MIT, the game floated around the community of the PDP-1 (the system it was written for). Eventually the creators of the PDP-1, DEC, obtained a version of the game and started using it for testing. As a result, it ended up being distributed with PDP-1s.
+
+It was in this decade that scientists and other researchers began to use graphics for modelling, simulation and demonstration. Rather interestingly, Renault contributed significantly to this field be studying curves. The mathematics they developed have since become known as Bézier curves, after the man who developed the field while working for Renault. 
+
+In 1964 IBM released the IBM 2250 Graphics Display Unit which used vector graphics and could be attached to the System/360. The interface had a pen input (much like modern tablets do but it was wired and less accurate at least in part due to the relatively low display resolutions of the day). The University of Utah continued its excellence solidifying its status as the world centre of computer graphics research. 
+
 - First stereoscopic 3D display : Sword of Damocles
 - SIGGRAPH - Special Interest Group on Graphics - formed
 
