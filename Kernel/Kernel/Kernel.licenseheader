@@ -53,7 +53,7 @@ extensions:  .xml .config .xsd .html
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  //
 -->
   
-extensions: .x86_32.asm
+extensions: .x86.asm .MIPS32.asm
 ; - - - - - - - - - - - - - - - - - - - LICENSE - - - - - - - - - - - - - - - - - - - -  ;
 ;
 ;    Fling OS - The educational operating system

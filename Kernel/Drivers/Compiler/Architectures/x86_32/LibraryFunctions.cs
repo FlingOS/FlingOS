@@ -98,5 +98,154 @@ namespace Drivers.Compiler.Architectures.x86
 
             return OK;
         }
+
+        public override bool LinkISO(IL.ILLibrary TheLibrary, LinkInformation LinkInfo)
+        {
+            bool OK = true;
+
+            StreamWriter ASMWriter = new StreamWriter(LinkInfo.ASMPath, false);
+
+            StringBuilder CommandLineArgsBuilder = new StringBuilder();
+            CommandLineArgsBuilder.Append("--fatal-warnings -T \"" + LinkInfo.LinkScriptPath + "\" -o \"" + LinkInfo.BinPath + "\"");
+
+            StringBuilder LinkScript = new StringBuilder();
+            LinkScript.Append(@"ENTRY(Kernel_Start)
+OUTPUT_FORMAT(elf32-i386)
+
+GROUP(");
+
+            LinkScript.Append(string.Join(" ", LinkInfo.SequencedASMBlocks
+                .Where(x => File.Exists(x.OutputFilePath))
+                .Select(x => "\"" + x.OutputFilePath + "\"")));
+
+            LinkScript.AppendLine(@")
+
+SECTIONS {
+   /* The kernel will live at 3GB + 1MB in the virtual
+      address space, which will be mapped to 1MB in the
+      physical address space. */
+   . = 0x" + Options.BaseAddress.ToString("X8") + @";
+
+   .text : AT(ADDR(.text) - " + Options.LoadOffset.ToString() + @") {
+");
+
+            for (int i = 0; i < LinkInfo.SequencedASMBlocks.Count; i++)
+            {
+                LinkScript.AppendLine(string.Format("       \"{0}\" (.text);", LinkInfo.SequencedASMBlocks[i].OutputFilePath));
+                ASMWriter.WriteLine(File.ReadAllText(LinkInfo.SequencedASMBlocks[i].OutputFilePath.Replace("\\Objects", "\\ASM").Replace(".o", ".s")));
+            }
+
+
+            LinkScript.AppendLine(@"
+          * (.text);
+          * (.rodata*);
+   }
+
+   . = ALIGN(0x1000);
+   .data : AT(ADDR(.data) - " + Options.LoadOffset.ToString() + @") {
+          * (.data*);
+   }
+
+   . = ALIGN(0x1000);
+   .bss : AT(ADDR(.bss) - " + Options.LoadOffset.ToString() + @") {
+          * (.bss*);
+   }
+}
+");
+
+            ASMWriter.Close();
+
+            File.WriteAllText(LinkInfo.LinkScriptPath, LinkScript.ToString());
+            OK = Utilities.ExecuteProcess(LinkInfo.LdWorkingDir, Path.Combine(LinkInfo.ToolsPath, @"Cygwin\ld.exe"), CommandLineArgsBuilder.ToString(), "Ld");
+
+            if (OK)
+            {
+                if (File.Exists(LinkInfo.ISOPath))
+                {
+                    File.Delete(LinkInfo.ISOPath);
+                }
+
+                OK = Utilities.ExecuteProcess(Options.OutputPath, LinkInfo.ISOGenPath,
+                    string.Format("4 \"{0}\" \"{1}\" true \"{2}\"", LinkInfo.ISOPath, LinkInfo.ISOLinuxPath, LinkInfo.ISODirPath), "ISO9660Generator");
+
+                if (OK)
+                {
+                    if (File.Exists(LinkInfo.MapPath))
+                    {
+                        File.Delete(LinkInfo.MapPath);
+                    }
+
+                    OK = Utilities.ExecuteProcess(Options.OutputPath, Path.Combine(LinkInfo.ToolsPath, @"Cygwin\objdump.exe"), string.Format("--wide --syms \"{0}\"", LinkInfo.BinPath), "ObjDump", false, LinkInfo.MapPath);
+                }
+            }
+
+            return OK;
+        }
+        public override bool LinkELF(IL.ILLibrary TheLibrary, LinkInformation LinkInfo)
+        {
+            StringBuilder CommandLineArgsBuilder = new StringBuilder();
+            if (!LinkInfo.ExecutableOutput)
+            {
+                CommandLineArgsBuilder.Append("-shared ");
+            }
+            CommandLineArgsBuilder.Append("-L .\\Output -T \"" + LinkInfo.LinkScriptPath + "\" -o \"" + LinkInfo.BinPath + "\"");
+
+            StreamWriter ASMWriter = new StreamWriter(LinkInfo.ASMPath, false);
+
+            StringBuilder LinkScript = new StringBuilder();
+            LinkScript.Append((LinkInfo.ExecutableOutput ? "ENTRY(" + LinkInfo.EntryPoint + ")\r\n" : "") +
+@"GROUP(");
+
+            LinkScript.Append(string.Join(" ", LinkInfo.SequencedASMBlocks
+                .Where(x => File.Exists(x.OutputFilePath))
+                .Select(x => "\"" + x.OutputFilePath + "\"")));
+
+            LinkScript.Append(@")
+
+");
+            if (LinkInfo.depLibNames.Count > 0)
+            {
+                LinkScript.Append("GROUP(");
+                LinkScript.Append(string.Join(" ", LinkInfo.depLibNames.Select(x => "-l" + x)));
+                LinkScript.Append(")");
+            }
+
+            LinkScript.AppendLine(@"
+
+SECTIONS {
+   . = 0x" + (0x40000000 + (LinkInfo.depLibNames.Count * 0x1000)).ToString("X2") + @";
+
+   .text : {
+");
+
+            for (int i = 0; i < LinkInfo.SequencedASMBlocks.Count; i++)
+            {
+                LinkScript.AppendLine(string.Format("       \"{0}\" (.text);", LinkInfo.SequencedASMBlocks[i].OutputFilePath));
+                ASMWriter.WriteLine(File.ReadAllText(LinkInfo.SequencedASMBlocks[i].OutputFilePath.Replace("\\Objects", "\\ASM").Replace(".o", ".s")));
+            }
+
+
+            LinkScript.AppendLine(@"
+          * (.text);
+          * (.rodata*);
+   }
+
+   . = ALIGN(0x1000);
+   .data : AT(ADDR(.data)) {
+          * (.data*);
+   }
+
+   . = ALIGN(0x1000);
+   .bss : AT(ADDR(.bss)) {
+          * (.bss*);
+   }
+}
+");
+            ASMWriter.Close();
+
+            File.WriteAllText(LinkInfo.LinkScriptCmdPath, CommandLineArgsBuilder.ToString());
+            File.WriteAllText(LinkInfo.LinkScriptPath, LinkScript.ToString());
+            return Utilities.ExecuteProcess(LinkInfo.LdWorkingDir, Path.Combine(LinkInfo.ToolsPath, @"Cygwin\ld.exe"), CommandLineArgsBuilder.ToString(), "Ld");
+        }
     }
 }

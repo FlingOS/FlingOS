@@ -205,5 +205,8 @@ namespace Drivers.Compiler
         /// <param name="state">The state object to use when calling the OnComplete handler. Default: null.</param>
         /// <returns>True if execution completed successfully. Otherwise false.</returns>
         public abstract bool ExecuteAssemblyCodeCompiler(string inputFilePath, string outputFilePath, VoidDelegate OnComplete = null, object state = null);
+
+        public abstract bool LinkELF(IL.ILLibrary TheLibrary, LinkInformation LinkInfo);
+        public abstract bool LinkISO(IL.ILLibrary TheLibrary, LinkInformation LinkInfo);
     }
 }

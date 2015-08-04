@@ -70,10 +70,14 @@ namespace Drivers.Compiler.ASM
             {
                 ProcessBlock(aBlock);
 
-                CompilerLabourDivision[num % MaxConcurrentCompilerProcesses].Add(aBlock);
-
-                num++;
+                if (aBlock.OutputFilePath != null)
+                {
+                    CompilerLabourDivision[num % MaxConcurrentCompilerProcesses].Add(aBlock);
+                    num++;
+                }
             }
+
+            TheLibrary.ASMBlocks.RemoveAll(x => x.OutputFilePath == null);
 
 #if COMPILER_ASYNC
             List<bool> Completed = new List<bool>();
@@ -103,7 +107,7 @@ namespace Drivers.Compiler.ASM
             }
 
 #endif
-            
+
             return result;
         }
 
@@ -150,11 +154,18 @@ namespace Drivers.Compiler.ASM
 
             TargetArchitecture.TargetFunctions.CleanUpAssemblyCode(TheBlock, ref ASMText);
 
-            string FileName = Utilities.CleanFileName(Guid.NewGuid().ToString() + "." + Options.TargetArchitecture) + ".asm";
-            string OutputPath = GetASMOutputPath();
-            FileName = Path.Combine(OutputPath, FileName);
-            TheBlock.OutputFilePath = FileName;
-            File.WriteAllText(FileName, ASMText);
+            if (!string.IsNullOrWhiteSpace(ASMText))
+            {
+                string FileName = Utilities.CleanFileName(Guid.NewGuid().ToString() + "." + Options.TargetArchitecture) + ".s";
+                string OutputPath = GetASMOutputPath();
+                FileName = Path.Combine(OutputPath, FileName);
+                TheBlock.OutputFilePath = FileName;
+                File.WriteAllText(FileName, ASMText);
+            }
+            else
+            {
+                TheBlock.OutputFilePath = null;
+            }
         }
 
         /// <summary>
@@ -174,7 +185,7 @@ namespace Drivers.Compiler.ASM
                 if (index < Blocks.Count)
                 {
                     string inputPath = Blocks[index].OutputFilePath;
-                    string outputPath = inputPath.Replace(ASMOutputPath, ObjectsOutputPath).Replace(".asm", ".o");
+                    string outputPath = inputPath.Replace(ASMOutputPath, ObjectsOutputPath).Replace(".s", ".o");
 
                     try
                     {
@@ -208,7 +219,7 @@ namespace Drivers.Compiler.ASM
             for (int index = 0; index < Blocks.Count; index++)
             {
                 string inputPath = Blocks[index].OutputFilePath;
-                string outputPath = inputPath.Replace(ASMOutputPath, ObjectsOutputPath).Replace(".asm", ".o");
+                string outputPath = inputPath.Replace(ASMOutputPath, ObjectsOutputPath).Replace(".s", ".o");
 
                 try
                 {

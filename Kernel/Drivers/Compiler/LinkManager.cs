@@ -64,7 +64,7 @@ namespace Drivers.Compiler
                 foreach (IL.ILLibrary depLib in TheLibrary.Dependencies)
                 {
                     depLibNames.Add(Utilities.CleanFileName(depLib.TheAssembly.GetName().Name));
-                    
+
                     OK = OK && (Link(depLib) == CompileResult.OK);
                     if (!OK)
                     {
@@ -97,84 +97,27 @@ namespace Drivers.Compiler
 
                 string AssemblyName = Utilities.CleanFileName(TheLibrary.TheAssembly.GetName().Name);
 
-                string LdPath = Path.Combine(Options.ToolsPath, @"Cygwin\ld.exe");
-                string ObjdumpPath = Path.Combine(Options.ToolsPath, @"Cygwin\objdump.exe");
-                string LinkScriptCmdPath = Path.Combine(Options.OutputPath, @"DriversCompiler\" + AssemblyName + "_linker_command.txt");
-                string LinkScriptPath = Path.Combine(Options.OutputPath, @"DriversCompiler\" + AssemblyName + "_linker.ld");
-                string BinPath = Path.Combine(Options.OutputPath, "Output\\" + (ExecutableOutput ? AssemblyName + ".elf" : "Lib" + AssemblyName + ".a"));
-                string MapPath = Path.Combine(Options.OutputPath, AssemblyName + ".map");
-                string ASMPath = Path.Combine(Options.OutputPath, AssemblyName + ".new.asm");
-
-                string LdWorkingDir = Path.Combine(Options.OutputPath, "") + "\\";
-
-                if (!Directory.Exists(Path.GetDirectoryName(BinPath)))
+                LinkInformation LinkInfo = new LinkInformation()
                 {
-                    Directory.CreateDirectory(Path.GetDirectoryName(BinPath));
+                    ToolsPath = Options.ToolsPath,
+                    LinkScriptCmdPath = Path.Combine(Options.OutputPath, @"DriversCompiler\" + AssemblyName + "_linker_command.txt"),
+                    LinkScriptPath = Path.Combine(Options.OutputPath, @"DriversCompiler\" + AssemblyName + "_linker.ld"),
+                    BinPath = Path.Combine(Options.OutputPath, "Output\\" + (ExecutableOutput ? AssemblyName + ".elf" : "Lib" + AssemblyName + ".a")),
+                    MapPath = Path.Combine(Options.OutputPath, AssemblyName + ".map"),
+                    ASMPath = Path.Combine(Options.OutputPath, AssemblyName + ".new.asm"),
+                    LdWorkingDir = Path.Combine(Options.OutputPath, "") + "\\",
+                    ExecutableOutput = ExecutableOutput,
+                    EntryPoint = EntryPoint,
+                    SequencedASMBlocks = SequencedASMBlocks,
+                    depLibNames = depLibNames
+                };
+
+                if (!Directory.Exists(Path.GetDirectoryName(LinkInfo.BinPath)))
+                {
+                    Directory.CreateDirectory(Path.GetDirectoryName(LinkInfo.BinPath));
                 }
 
-                StringBuilder CommandLineArgsBuilder = new StringBuilder();
-                if (!ExecutableOutput)
-                {
-                    CommandLineArgsBuilder.Append("-shared ");
-                }
-                CommandLineArgsBuilder.Append("-L .\\Output -T '" + LinkScriptPath + "' -o '" + BinPath + "'");
-
-                StreamWriter ASMWriter = new StreamWriter(ASMPath, false);
-
-                StringBuilder LinkScript = new StringBuilder();
-                LinkScript.Append((ExecutableOutput ? "ENTRY(" + EntryPoint + ")\r\n" : "") + 
-@"GROUP(");
-
-                LinkScript.Append(string.Join(" ", SequencedASMBlocks
-                    .Where(x => File.Exists(x.OutputFilePath))
-                    .Select(x => "\"" + x.OutputFilePath + "\"")));
-                
-                LinkScript.Append(@")
-
-");
-                if (depLibNames.Count > 0)
-                {
-                    LinkScript.Append("GROUP(");
-                    LinkScript.Append(string.Join(" ", depLibNames.Select(x => "-l" + x)));
-                    LinkScript.Append(")");
-                }
-
-                LinkScript.AppendLine(@"
-
-SECTIONS {
-   . = 0x" + (0x40000000 + (depLibNames.Count * 0x1000)).ToString("X2") + @";
-
-   .text : {
-");
-
-                for (int i = 0; i < SequencedASMBlocks.Count; i++)
-                {
-                    LinkScript.AppendLine(string.Format("       \"{0}\" (.text);", SequencedASMBlocks[i].OutputFilePath));
-                    ASMWriter.WriteLine(File.ReadAllText(SequencedASMBlocks[i].OutputFilePath.Replace("\\Objects", "\\ASM").Replace(".o", ".asm")));
-                }
-
-
-                LinkScript.AppendLine(@"
-          * (.text);
-          * (.rodata*);
-   }
-
-   . = ALIGN(0x1000);
-   .data : AT(ADDR(.data)) {
-          * (.data*);
-   }
-
-   . = ALIGN(0x1000);
-   .bss : AT(ADDR(.bss)) {
-          * (.bss*);
-   }
-}
-");
-                ASMWriter.Close();
-
-                File.WriteAllText(LinkScriptCmdPath, CommandLineArgsBuilder.ToString());
-                File.WriteAllText(LinkScriptPath, LinkScript.ToString());
-                OK = Utilities.ExecuteProcess(LdWorkingDir, LdPath, CommandLineArgsBuilder.ToString(), "Ld");
+                OK = TargetArchitecture.TargetFunctions.LinkELF(TheLibrary, LinkInfo);
             }
             else if (Options.LinkMode == Options.LinkModes.ISO)
             {
@@ -188,102 +131,30 @@ SECTIONS {
                 SequencedASMBlocks.Sort(GetOrder);
 
                 string AssemblyName = Utilities.CleanFileName(TheLibrary.TheAssembly.GetName().Name);
-
-                string LdPath = Path.Combine(Options.ToolsPath, @"Cygwin\ld.exe");
-                string ObjdumpPath = Path.Combine(Options.ToolsPath, @"Cygwin\objdump.exe");
-                string ISOGenPath = Path.Combine(Options.ToolsPath, @"ISO9660Generator.exe");
-                string ISOToolsDirPath = Path.Combine(Options.ToolsPath, @"ISO");
-                string ISODirPath = Path.Combine(Options.OutputPath, @"DriversCompiler\ISO");
-                string LinkScriptPath = Path.Combine(Options.OutputPath, @"DriversCompiler\linker.ld");
-                string BinPath = Path.Combine(Options.OutputPath, @"DriversCompiler\ISO\Kernel.bin");
-                string ISOLinuxPath = Path.Combine(Options.OutputPath, @"DriversCompiler\ISO\" + (Options.BuildMode == Options.BuildModes.Debug ? "isolinux-debug.bin" : "isolinux.bin"));
-                string ISOPath = Path.Combine(Options.OutputPath, AssemblyName + ".iso");
-                string MapPath = Path.Combine(Options.OutputPath, AssemblyName + ".map");
-                string ASMPath = Path.Combine(Options.OutputPath, AssemblyName + ".new.asm");
-
-                StreamWriter ASMWriter = new StreamWriter(ASMPath, false);
-
-                string LdWorkingDir = Path.Combine(Options.OutputPath, "DriversCompiler") + "\\";
-
-                if (Directory.Exists(ISODirPath))
+                
+                LinkInformation LinkInfo = new LinkInformation()
                 {
-                    Directory.Delete(ISODirPath, true);
-                }
-                CopyDirectory(ISOToolsDirPath, ISODirPath, true);
+                    ToolsPath = Options.ToolsPath,
+                    ISOGenPath = Path.Combine(Options.ToolsPath, @"ISO9660Generator.exe"),
+                    ISOToolsDirPath = Path.Combine(Options.ToolsPath, @"ISO"),
+                    ISODirPath = Path.Combine(Options.OutputPath, @"DriversCompiler\ISO"),
+                    LinkScriptPath = Path.Combine(Options.OutputPath, @"DriversCompiler\linker.ld"),
+                    BinPath = Path.Combine(Options.OutputPath, @"DriversCompiler\ISO\Kernel.bin"),
+                    ISOLinuxPath = Path.Combine(Options.OutputPath, @"DriversCompiler\ISO\" + (Options.BuildMode == Options.BuildModes.Debug ? "isolinux-debug.bin" : "isolinux.bin")),
+                    ISOPath = Path.Combine(Options.OutputPath, AssemblyName + ".iso"),
+                    MapPath = Path.Combine(Options.OutputPath, AssemblyName + ".map"),
+                    ASMPath = Path.Combine(Options.OutputPath, AssemblyName + ".new.asm"),
+                    LdWorkingDir = Path.Combine(Options.OutputPath, "DriversCompiler") + "\\",
+                    SequencedASMBlocks = SequencedASMBlocks
+                };
 
-                StringBuilder CommandLineArgsBuilder = new StringBuilder();
-                CommandLineArgsBuilder.Append("--fatal-warnings -T '" + LinkScriptPath + "' -o '" + BinPath + "'");
-
-                StringBuilder LinkScript = new StringBuilder();
-                LinkScript.Append(@"ENTRY(Kernel_Start)
-OUTPUT_FORMAT(elf32-i386)
-
-GROUP(");
-
-                LinkScript.Append(string.Join(" ", SequencedASMBlocks
-                    .Where(x => File.Exists(x.OutputFilePath))
-                    .Select(x => "\"" + x.OutputFilePath + "\"")));
-
-                LinkScript.AppendLine(@")
-
-SECTIONS {
-   /* The kernel will live at 3GB + 1MB in the virtual
-      address space, which will be mapped to 1MB in the
-      physical address space. */
-   . = " + Options.BaseAddress.ToString() + @";
-
-   .text : AT(ADDR(.text) - " + Options.LoadOffset.ToString() + @") {
-");
-
-                for (int i = 0; i < SequencedASMBlocks.Count; i++)
+                if (Directory.Exists(LinkInfo.ISODirPath))
                 {
-                    LinkScript.AppendLine(string.Format("       \"{0}\" (.text);", SequencedASMBlocks[i].OutputFilePath));
-                    ASMWriter.WriteLine(File.ReadAllText(SequencedASMBlocks[i].OutputFilePath.Replace("\\Objects", "\\ASM").Replace(".o", ".asm")));
+                    Directory.Delete(LinkInfo.ISODirPath, true);
                 }
+                CopyDirectory(LinkInfo.ISOToolsDirPath, LinkInfo.ISODirPath, true);
 
-
-                LinkScript.AppendLine(@"
-          * (.text);
-          * (.rodata*);
-   }
-
-   . = ALIGN(0x1000);
-   .data : AT(ADDR(.data) - " + Options.LoadOffset.ToString() + @") {
-          * (.data*);
-   }
-
-   . = ALIGN(0x1000);
-   .bss : AT(ADDR(.bss) - " + Options.LoadOffset.ToString() + @") {
-          * (.bss*);
-   }
-}
-");
-
-                ASMWriter.Close();
-
-                File.WriteAllText(LinkScriptPath, LinkScript.ToString());
-                OK = Utilities.ExecuteProcess(LdWorkingDir, LdPath, CommandLineArgsBuilder.ToString(), "Ld");
-
-                if (OK)
-                {
-                    if (File.Exists(ISOPath))
-                    {
-                        File.Delete(ISOPath);
-                    }
-
-                    OK = Utilities.ExecuteProcess(Options.OutputPath, ISOGenPath,
-                        string.Format("4 \"{0}\" \"{1}\" true \"{2}\"", ISOPath, ISOLinuxPath, ISODirPath), "ISO9660Generator");
-
-                    if (OK)
-                    {
-                        if (File.Exists(MapPath))
-                        {
-                            File.Delete(MapPath);
-                        }
-
-                        OK = Utilities.ExecuteProcess(Options.OutputPath, ObjdumpPath, string.Format("--wide --syms \"{0}\"", BinPath), "ObjDump", false, MapPath);
-                    }
-                }
+                OK = TargetArchitecture.TargetFunctions.LinkISO(TheLibrary, LinkInfo);
             }
 
             return OK ? CompileResult.OK : CompileResult.Fail;
@@ -386,5 +257,30 @@ SECTIONS {
             while (CurrentLayerBlocks.Count > 0 &&
                 LastLayerBlocks.Count != CurrentLayerBlocks.Count);
         }
+    }
+
+    public class LinkInformation
+    {
+        /* General link options */
+        public string ToolsPath;
+        public string LdWorkingDir;
+        public string LinkScriptPath;
+        public string BinPath;
+        public string MapPath;
+        public string ASMPath;
+        public List<ASM.ASMBlock> SequencedASMBlocks;
+
+        /* ELF Link options */
+        public string LinkScriptCmdPath;
+        public bool ExecutableOutput;
+        public string EntryPoint;
+        public List<string> depLibNames;
+        
+        /* ISO Link options */
+        public string ISOGenPath;
+        public string ISOToolsDirPath;
+        public string ISODirPath;
+        public string ISOLinuxPath;
+        public string ISOPath;
     }
 }

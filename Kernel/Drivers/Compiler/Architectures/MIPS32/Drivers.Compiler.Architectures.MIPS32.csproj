@@ -39,6 +39,19 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ASMOps\Comment.cs" />
+    <Compile Include="ASMOps\ExternalLabel.cs" />
+    <Compile Include="ASMOps\FieldTable.cs" />
+    <Compile Include="ASMOps\GlobalLabel.cs" />
+    <Compile Include="ASMOps\Header.cs" />
+    <Compile Include="ASMOps\Label.cs" />
+    <Compile Include="ASMOps\MethodTable.cs" />
+    <Compile Include="ASMOps\StaticField.cs" />
+    <Compile Include="ASMOps\StringLiteral.cs" />
+    <Compile Include="ASMOps\TypeTable.cs" />
+    <Compile Include="ILOps\MethodEnd.cs" />
+    <Compile Include="ILOps\MethodStart.cs" />
+    <Compile Include="LibraryFunctions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -52,6 +65,7 @@
       <Link>Kernel.licenseheader</Link>
     </None>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
