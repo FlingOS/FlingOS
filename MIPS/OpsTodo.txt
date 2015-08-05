@@ -4,7 +4,6 @@ Conv_U2			= Convu
 Ldarg_0			= Ldarg
 Ldarg_1			= Ldarg
 Ldarg_2			= Ldarg
-Ldfld			= Ldfld
 Ldind_U2		= Ldind
 Ldind_U4		= Ldind
 Ldloc_0			= Ldloc
