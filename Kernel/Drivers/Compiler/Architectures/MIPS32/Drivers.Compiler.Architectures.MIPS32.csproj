@@ -54,11 +54,15 @@
     <Compile Include="ASMOps\StaticField.cs" />
     <Compile Include="ASMOps\StringLiteral.cs" />
     <Compile Include="ASMOps\TypeTable.cs" />
+    <Compile Include="ASMOps\Xor.cs" />
     <Compile Include="ILOps\Add.cs" />
     <Compile Include="ILOps\Ldc.cs" />
     <Compile Include="ILOps\Br.cs" />
+    <Compile Include="ILOps\Ldfld.cs" />
+    <Compile Include="ILOps\Ldsfld.cs" />
     <Compile Include="ILOps\MethodEnd.cs" />
     <Compile Include="ILOps\MethodStart.cs" />
+    <Compile Include="ILOps\Xor.cs" />
     <Compile Include="LibraryFunctions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
