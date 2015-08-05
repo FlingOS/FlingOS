@@ -610,18 +610,18 @@ namespace Drivers.Compiler.Architectures.MIPS32
                         conversionState.Append(new ASMOps.Pop() { Size = ASMOps.OperandSize.Word, Dest = "$t2" });
                         //Pop the test item A
                         conversionState.Append(new ASMOps.Pop() { Size = ASMOps.OperandSize.Word, Dest = "$t0" });
-                        conversionState.Append(new ASMOps.Pop() { Size = ASMOps.OperandSize.Word, Dest = "$t4" });
+                        conversionState.Append(new ASMOps.Pop() { Size = ASMOps.OperandSize.Word, Dest = "$t3" });
 
                         if(!isNegativeTest)
                         {
                             //Compare test item A high bits to test item B high bits
                             //If they are not equal, abort the testing
-                            conversionState.Append(new ASMOps.Branch() { BranchType = inverseBranchOp, Src1 = "$t4", Src2 = "$t3", DestILPosition = currOpPosition, Extension = "End", UnsignedTest = UnsignedTest });
+                            conversionState.Append(new ASMOps.Branch() { BranchType = inverseBranchOp, Src1 = "$t3", Src2 = "$t2", DestILPosition = currOpPosition, Extension = "End", UnsignedTest = UnsignedTest });
 
                             //Else the igh bits are equal so test low bits
                             //Compare test item A low bits to test item B low bits
                             //Do the specified jump
-                            conversionState.Append(new ASMOps.Branch() { BranchType = branchOp, Src1 = "$t1", Src2 = "$t2", DestILPosition = opToGoToPosition, UnsignedTest = UnsignedTest });
+                            conversionState.Append(new ASMOps.Branch() { BranchType = branchOp, Src1 = "$t1", Src2 = "$t0", DestILPosition = opToGoToPosition, UnsignedTest = UnsignedTest });
 
                             //Insert the end label to be jumped to if condition is not met (see above)
                             conversionState.Append(new ASMOps.Label() { ILPosition = currOpPosition, Extension = "End" });
@@ -630,10 +630,10 @@ namespace Drivers.Compiler.Architectures.MIPS32
                         {
                             //Compare test item A high bits to test item B high bits
                             //Do the specified jump
-                            conversionState.Append(new ASMOps.Branch() { BranchType = branchOp, Src1 = "$t4", Src2 = "$t3", DestILPosition = opToGoToPosition, UnsignedTest = UnsignedTest });
+                            conversionState.Append(new ASMOps.Branch() { BranchType = branchOp, Src1 = "$t3", Src2 = "$t2", DestILPosition = opToGoToPosition, UnsignedTest = UnsignedTest });
                             //Compare test item A low bits to test item B low bits
                             //Do the specified jump
-                            conversionState.Append(new ASMOps.Branch() { BranchType = branchOp, Src1 = "$t1", Src2 = "$t2", DestILPosition = opToGoToPosition, UnsignedTest = UnsignedTest });
+                            conversionState.Append(new ASMOps.Branch() { BranchType = branchOp, Src1 = "$t1", Src2 = "$t0", DestILPosition = opToGoToPosition, UnsignedTest = UnsignedTest });
                         }
                     }
                     else if (itemA.sizeOnStackInBytes == 4)
@@ -644,7 +644,7 @@ namespace Drivers.Compiler.Architectures.MIPS32
                         conversionState.Append(new ASMOps.Pop() { Size = ASMOps.OperandSize.Word, Dest = "$t0" });
                         //Compare test item A to test item B
                         //Do the specified jump
-                        conversionState.Append(new ASMOps.Branch() { BranchType = branchOp, Src1 = "$t1", Src2 = "$t2", DestILPosition = opToGoToPosition, UnsignedTest = UnsignedTest });
+                        conversionState.Append(new ASMOps.Branch() { BranchType = branchOp, Src1 = "$t0", Src2 = "$t1", DestILPosition = opToGoToPosition, UnsignedTest = UnsignedTest });
                     }
                     else
                     {

@@ -10,6 +10,7 @@ namespace Drivers.Compiler.Architectures.MIPS32.ASMOps
     {
         public OperandSize Size;
         public string Dest;
+        public bool SignExtend = false;
 
         public override string Convert(ASM.ASMBlock theBlock)
         {
@@ -18,10 +19,24 @@ namespace Drivers.Compiler.Architectures.MIPS32.ASMOps
             switch(Size)
             {
                 case OperandSize.Byte:
-                    loadOp = "lbu";
+                    if (SignExtend)
+                    {
+                        loadOp = "lb";
+                    }
+                    else
+                    {
+                        loadOp = "lbu";
+                    }
                     break;
                 case OperandSize.Halfword:
-                    loadOp = "lhu";
+                    if (SignExtend)
+                    {
+                        loadOp = "lh";
+                    }
+                    else
+                    {
+                        loadOp = "lhu";
+                    }
                     break;
                 case OperandSize.Word:
                     loadOp = "lw";
