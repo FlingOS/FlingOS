@@ -1,6 +1,0 @@
-Stind_I2		= Stind
-Stind_I4		= Stind
-Stloc_0			= Stloc
-Stloc_1			= Stloc
-Stloc_2			= Stloc
-Stsfld			= Stsfld 	(Total # base ops: 19)
