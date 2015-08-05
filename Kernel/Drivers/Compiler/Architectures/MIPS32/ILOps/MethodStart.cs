@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Drivers.Compiler.IL;
 
-namespace Drivers.Compiler.Architectures.MIPS32.ILOps
+namespace Drivers.Compiler.Architectures.MIPS32
 {
     public class MethodStart : IL.ILOps.MethodStart
     {
