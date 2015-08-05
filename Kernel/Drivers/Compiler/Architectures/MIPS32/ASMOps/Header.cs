@@ -36,7 +36,7 @@ namespace Drivers.Compiler.Architectures.MIPS32.ASMOps
     {
         public override string Convert(ASM.ASMBlock theBlock)
         {
-            return "";
+            return ".text";
         }
     }
 }

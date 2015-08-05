@@ -1,4 +1,6 @@
-﻿/* make it accessible outside */
+﻿.extern %KERNEL_MAIN_METHOD%
+
+/* make it accessible outside */
 .globl Kernel_Start
 /* Tell binutils it's a function */
 .ent Kernel_Start
@@ -10,7 +12,7 @@ Kernel_Start:
 
 	
 	/* And jump to C# */
-	/*jal %KERNEL_MAIN_METHOD%*/
+	jal %KERNEL_MAIN_METHOD%
 	nop
 
 

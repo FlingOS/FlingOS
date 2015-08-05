@@ -39,6 +39,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ASMOps\Add.cs" />
     <Compile Include="ASMOps\Comment.cs" />
     <Compile Include="ASMOps\ExternalLabel.cs" />
     <Compile Include="ASMOps\FieldTable.cs" />
@@ -46,9 +47,13 @@
     <Compile Include="ASMOps\Header.cs" />
     <Compile Include="ASMOps\Label.cs" />
     <Compile Include="ASMOps\MethodTable.cs" />
+    <Compile Include="ASMOps\OperandSizes.cs" />
+    <Compile Include="ASMOps\Pop.cs" />
+    <Compile Include="ASMOps\Push.cs" />
     <Compile Include="ASMOps\StaticField.cs" />
     <Compile Include="ASMOps\StringLiteral.cs" />
     <Compile Include="ASMOps\TypeTable.cs" />
+    <Compile Include="ILOps\Add.cs" />
     <Compile Include="ILOps\MethodEnd.cs" />
     <Compile Include="ILOps\MethodStart.cs" />
     <Compile Include="LibraryFunctions.cs" />
