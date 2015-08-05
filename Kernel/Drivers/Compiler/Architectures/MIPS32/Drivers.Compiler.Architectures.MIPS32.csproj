@@ -83,6 +83,8 @@
     <Compile Include="ILOps\Mul.cs" />
     <Compile Include="ILOps\Ret.cs" />
     <Compile Include="ILOps\StackSwitch.cs" />
+    <Compile Include="ILOps\Stind.cs" />
+    <Compile Include="ILOps\Stloc.cs" />
     <Compile Include="ILOps\Stsfld.cs" />
     <Compile Include="ILOps\Xor.cs" />
     <Compile Include="ILOps\Nop.cs" />
