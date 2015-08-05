@@ -146,7 +146,7 @@ namespace Drivers.Compiler.Architectures.MIPS32
             int bytesDiff = itemToConvert.sizeOnStackInBytes - bytesPopped;
             if (bytesDiff > 0)
             {
-                conversionState.Append(new ASMOps.Add() { Src1 = bytesDiff.ToString(), Src2 = "$sp", Dest = "$sp" });
+                conversionState.Append(new ASMOps.Add() { Src2 = bytesDiff.ToString(), Src1 = "$sp", Dest = "$sp" });
             }
 
             if (pushEDX)

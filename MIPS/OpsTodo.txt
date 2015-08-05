@@ -1,12 +1,3 @@
-Ldarg_0			= Ldarg
-Ldarg_1			= Ldarg
-Ldarg_2			= Ldarg
-Ldfld			= Ldfld
-Ldind_U2		= Ldind
-Ldind_U4		= Ldind
-Ldloc_0			= Ldloc
-Ldloc_1			= Ldloc
-Ldloc_2			= Ldloc
 Stind_I2		= Stind
 Stind_I4		= Stind
 Stloc_0			= Stloc

@@ -66,7 +66,7 @@ namespace Drivers.Compiler.Architectures.MIPS32
                 throw new NotImplementedException("MIPS: Pop does not call GC DecrementRefCount yet!");
             }
 
-            conversionState.Append(new ASMOps.Add() { Src1 = theItem.sizeOnStackInBytes.ToString(), Src2 = "$sp", Dest = "$sp" });
+            conversionState.Append(new ASMOps.Add() { Src2 = theItem.sizeOnStackInBytes.ToString(), Src1 = "$sp", Dest = "$sp" });
         }
     }
 }

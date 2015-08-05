@@ -67,9 +67,12 @@
     <Compile Include="ILOps\And.cs" />
     <Compile Include="ILOps\Convi.cs" />
     <Compile Include="ILOps\Convu.cs" />
+    <Compile Include="ILOps\Ldarg.cs" />
     <Compile Include="ILOps\Ldc.cs" />
     <Compile Include="ILOps\Br.cs" />
     <Compile Include="ILOps\Ldfld.cs" />
+    <Compile Include="ILOps\Ldind.cs" />
+    <Compile Include="ILOps\Ldloc.cs" />
     <Compile Include="ILOps\Ldsfld.cs" />
     <Compile Include="ILOps\MethodEnd.cs" />
     <Compile Include="ILOps\MethodStart.cs" />

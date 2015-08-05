@@ -76,7 +76,7 @@ namespace Drivers.Compiler.Architectures.MIPS32
                     totalBytes += aLocal.TheTypeInfo.SizeOnStackInBytes;
                 }
                 //Move esp past the locals
-                conversionState.Append(new ASMOps.Add() { Src1 = totalBytes.ToString(), Src2 = "$sp", Dest = "$sp" });
+                conversionState.Append(new ASMOps.Add() { Src2 = totalBytes.ToString(), Src1 = "$sp", Dest = "$sp" });
             }
 
             //Restore ebp to previous method's ebp
