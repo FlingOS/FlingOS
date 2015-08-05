@@ -41,6 +41,10 @@
   <ItemGroup>
     <Compile Include="ASMOps\Add.cs" />
     <Compile Include="ASMOps\And.cs" />
+    <Compile Include="ASMOps\Call.cs" />
+    <Compile Include="ASMOps\Mfhi.cs" />
+    <Compile Include="ASMOps\Mul.cs" />
+    <Compile Include="ASMOps\Mflo.cs" />
     <Compile Include="ASMOps\Nop.cs" />
     <Compile Include="ASMOps\Comment.cs" />
     <Compile Include="ASMOps\ExternalLabel.cs" />
@@ -54,11 +58,13 @@
     <Compile Include="ASMOps\OperandSizes.cs" />
     <Compile Include="ASMOps\Pop.cs" />
     <Compile Include="ASMOps\Push.cs" />
+    <Compile Include="ASMOps\Ret.cs" />
     <Compile Include="ASMOps\StaticField.cs" />
     <Compile Include="ASMOps\StringLiteral.cs" />
     <Compile Include="ASMOps\TypeTable.cs" />
     <Compile Include="ASMOps\Xor.cs" />
     <Compile Include="ILOps\Add.cs" />
+    <Compile Include="ILOps\And.cs" />
     <Compile Include="ILOps\Convi.cs" />
     <Compile Include="ILOps\Convu.cs" />
     <Compile Include="ILOps\Ldc.cs" />
@@ -67,6 +73,8 @@
     <Compile Include="ILOps\Ldsfld.cs" />
     <Compile Include="ILOps\MethodEnd.cs" />
     <Compile Include="ILOps\MethodStart.cs" />
+    <Compile Include="ILOps\Mul.cs" />
+    <Compile Include="ILOps\Ret.cs" />
     <Compile Include="ILOps\Xor.cs" />
     <Compile Include="ILOps\Nop.cs" />
     <Compile Include="ILOps\Pop.cs" />

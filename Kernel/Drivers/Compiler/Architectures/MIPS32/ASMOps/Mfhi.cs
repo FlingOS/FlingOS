@@ -33,11 +33,13 @@ using Drivers.Compiler.ASM;
 
 namespace Drivers.Compiler.Architectures.MIPS32.ASMOps
 {
-    public class Nop : ASM.ASMOp
+    public class Mfhi : ASM.ASMOp
     {
+        public string Dest; 
+
         public override string Convert(ASMBlock theBlock)
         {
-            return "nop";
+            return "mfhi " + Dest;
         }
     }
 }

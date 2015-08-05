@@ -109,7 +109,7 @@ namespace Drivers.Compiler.Architectures.x86
                     conversionState.Append(new ASMOps.Pop() { Size = ASMOps.OperandSize.Dword, Dest = "EAX" });
                     //Sign extend A to EAX:EDX
                     conversionState.Append(new ASMOps.Cdq());
-                    //Do the division
+                    //Do the multiplication
                     conversionState.Append(new ASMOps.Mul() { Arg = "EBX", Signed = true });
                     //Result stored in eax
                     conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Dword, Src = "EAX" });

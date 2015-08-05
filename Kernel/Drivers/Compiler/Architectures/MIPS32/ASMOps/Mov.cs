@@ -11,8 +11,8 @@ namespace Drivers.Compiler.Architectures.MIPS32.ASMOps
         public OperandSize Size;
         public string Src;
         public string Dest;
-        bool DestIsMemory = false;
-        bool SrcIsMemory = false;
+        public bool DestIsMemory = false;
+        public bool SrcIsMemory = false;
 
         public override string Convert(ASM.ASMBlock theBlock)
         {

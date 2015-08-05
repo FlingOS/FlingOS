@@ -31,15 +31,16 @@ using System.Text;
 using System.Threading.Tasks;
 using Drivers.Compiler.IL;
 
-namespace Drivers.Compiler.Architectures.x86
+namespace Drivers.Compiler.Architectures.MIPS32
 {
     /// <summary>
     /// See base class documentation.
     /// </summary>
-    public class MethodStart : IL.ILOps.MethodStart
+    public class Ret : IL.ILOps.Ret
     {
         public override void PerformStackOperations(ILPreprocessState conversionState, ILOp theOp)
         {
+            
         }
 
         /// <summary>
@@ -50,34 +51,7 @@ namespace Drivers.Compiler.Architectures.x86
         /// <returns>See base class documentation.</returns>
         public override void Convert(ILConversionState conversionState, ILOp theOp)
         {
-            //Push the previous method's ebp
-            conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Dword, Src = "EBP" });
-            //Set ebp for this method
-            //See calling convention spec - this allows easy access of
-            //args and locals within the method without having to track
-            //temporary values (which would be a nightmare with the
-            //exception handling implementation that the kernel uses!)
-            conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Dword, Src = "ESP", Dest = "EBP" });
-
-            //Allocate stack space for locals
-            //Only bother if there are any locals
-            if (conversionState.Input.TheMethodInfo.LocalInfos.Count > 0)
-            {
-                int totalBytes = 0;
-                foreach (Types.VariableInfo aLocal in conversionState.Input.TheMethodInfo.LocalInfos)
-                {
-                    totalBytes += aLocal.TheTypeInfo.SizeOnStackInBytes;
-                }
-                //We do not use "sub esp, X" (see below) because that leaves
-                //junk memory - we need memory to be "initialised" to 0 
-                //so that local variables are null unless properly initialised.
-                //This prevents errors in the GC.
-                for (int i = 0; i < totalBytes / 4; i++)
-                {
-                    conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Dword, Src = "0" });
-                }
-                //result.AppendLine(string.Format("sub esp, {0}", totalBytes));
-            }
+            conversionState.Append(new ASMOps.Ret());
         }
     }
 }

@@ -29,15 +29,16 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Drivers.Compiler.ASM;
 
 namespace Drivers.Compiler.Architectures.MIPS32.ASMOps
 {
-    public class Nop : ASM.ASMOp
+    public class Call : ASM.ASMOp
     {
-        public override string Convert(ASMBlock theBlock)
+        public string Target;
+
+        public override string Convert(ASM.ASMBlock theBlock)
         {
-            return "nop";
+            return "jal " + Target;
         }
     }
 }

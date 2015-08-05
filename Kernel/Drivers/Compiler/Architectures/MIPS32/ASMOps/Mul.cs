@@ -29,15 +29,25 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Drivers.Compiler.ASM;
 
 namespace Drivers.Compiler.Architectures.MIPS32.ASMOps
 {
-    public class Nop : ASM.ASMOp
+    public class Mul : ASM.ASMOp
     {
-        public override string Convert(ASMBlock theBlock)
+        public string Src1 = null;
+        public string Src2 = null;
+        public bool Signed = false;
+
+        public override string Convert(ASM.ASMBlock theBlock)
         {
-            return "nop";
+            if (Signed)
+            {
+                return "mul " + Src1 + ", " + Src2;
+            }
+            else
+            {
+                return "mulu " + Src1 + ", " + Src2;
+            }
         }
     }
 }
