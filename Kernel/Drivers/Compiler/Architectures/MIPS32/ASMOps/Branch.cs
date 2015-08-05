@@ -45,19 +45,20 @@ namespace Drivers.Compiler.Architectures.MIPS32.ASMOps
         public override string Convert(ASM.ASMBlock theBlock)
         {
             string jmpOp = "";
-            bool includeSourceOperands = true;
+            int numSourceOperands = 2;
             switch (BranchType)
             {
                 case BranchOp.Branch:
                     jmpOp = "b";
-                    includeSourceOperands = false;
+                    numSourceOperands = 0;
                     break;
                 case BranchOp.BranchZero:
                     jmpOp = "beqz";
+                    numSourceOperands = 1;
                     break;
                 case BranchOp.BranchNotZero:
                     jmpOp = "bne";
-                    Src2 = "$0";
+                    Src2 = "$zero";
                     break;
                 case BranchOp.BranchEqual:
                     jmpOp = "beq";
@@ -107,9 +108,13 @@ namespace Drivers.Compiler.Architectures.MIPS32.ASMOps
                     break;
             }
 
-            if (includeSourceOperands)
+            if (numSourceOperands == 2)
             {
                 return jmpOp + " " + Src1 + ", " + Src2 + ", " + theBlock.GenerateILOpLabel(DestILPosition, Extension);
+            }
+            else if (numSourceOperands == 1)
+            {
+                return jmpOp + " " + Src1 + ", " + theBlock.GenerateILOpLabel(DestILPosition, Extension);
             }
             else
             {

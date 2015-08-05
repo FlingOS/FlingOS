@@ -42,7 +42,37 @@ namespace Drivers.Compiler.Architectures.MIPS32.ASMOps
 
         public override string Convert(ASM.ASMBlock theBlock)
         {
-            return "";
+            StringBuilder ASMResult = new StringBuilder();
+            ASMResult.AppendLine("# Field Table - " + CurrentTypeName);
+            ASMResult.AppendLine(".globl " + CurrentTypeId + "_FieldTable");
+            ASMResult.AppendLine(CurrentTypeId + "_FieldTable:");
+
+            foreach (Tuple<string, string, string> aFieldInfo in AllFieldInfos)
+            {
+                string fieldOffsetVal = aFieldInfo.Item1;
+                string fieldSizeVal = aFieldInfo.Item2;
+                string fieldTypeIdVal = aFieldInfo.Item3;
+
+                foreach (Tuple<string, int> anEntryFieldInfo in TableEntryFieldInfos)
+                {
+                    string allocStr = ASMUtilities.GetAllocStringForSize(anEntryFieldInfo.Item2);
+                    switch (anEntryFieldInfo.Item1)
+                    {
+                        case "Offset":
+                            ASMResult.AppendLine(allocStr + " " + fieldOffsetVal);
+                            break;
+                        case "Size":
+                            ASMResult.AppendLine(allocStr + " " + fieldSizeVal);
+                            break;
+                        case "FieldType":
+                            ASMResult.AppendLine(allocStr + " " + fieldTypeIdVal);
+                            break;
+                    }
+                }
+            }
+            ASMResult.AppendLine("# Field Table End - " + CurrentTypeName);
+
+            return ASMResult.ToString();
         }
     }
 }

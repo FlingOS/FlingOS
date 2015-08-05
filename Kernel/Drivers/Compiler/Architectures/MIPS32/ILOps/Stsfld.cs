@@ -45,27 +45,29 @@ namespace Drivers.Compiler.Architectures.MIPS32
                 throw new NotSupportedException("Storing static fields of type float not supported yet!");
             }
 
+            conversionState.Append(new ASMOps.La() { Dest = "$t4", Label = fieldId });
+
             if (size == 1)
             {
                 conversionState.Append(new ASMOps.Pop() { Size = ASMOps.OperandSize.Word, Dest = "$t0" });
-                conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Byte, Src = "$t1", Dest = "0(" + fieldId + ")", DestIsMemory = true });
+                conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Byte, Src = "$t1", Dest = "0($t4)", MoveType = ASMOps.Mov.MoveTypes.SrcRegToDestMemory });
             }
             else if (size == 2)
             {
                 conversionState.Append(new ASMOps.Pop() { Size = ASMOps.OperandSize.Word, Dest = "$t0" });
-                conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Word, Src = "$t1", Dest = "0(" + fieldId + ")", DestIsMemory = true });
+                conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Halfword, Src = "$t1", Dest = "0($t4)", MoveType = ASMOps.Mov.MoveTypes.SrcRegToDestMemory });
             }
             else if (size == 4)
             {
                 conversionState.Append(new ASMOps.Pop() { Size = ASMOps.OperandSize.Word, Dest = "$t0" });
-                conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Word, Src = "$t0", Dest = "0(" + fieldId + ")", DestIsMemory = true });
+                conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Word, Src = "$t0", Dest = "0($t4)", MoveType = ASMOps.Mov.MoveTypes.SrcRegToDestMemory });
             }
             else if (size == 8)
             {
                 conversionState.Append(new ASMOps.Pop() { Size = ASMOps.OperandSize.Word, Dest = "$t0" });
-                conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Word, Src = "$t0", Dest = "0(" + fieldId + ")", DestIsMemory = true });
+                conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Word, Src = "$t0", Dest = "0($t4)", MoveType = ASMOps.Mov.MoveTypes.SrcRegToDestMemory });
                 conversionState.Append(new ASMOps.Pop() { Size = ASMOps.OperandSize.Word, Dest = "$t0" });
-                conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Word, Src = "$t0", Dest = "4(" + fieldId + ")", DestIsMemory = true });
+                conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Word, Src = "$t0", Dest = "4($t4)", MoveType = ASMOps.Mov.MoveTypes.SrcRegToDestMemory });
             }
             else
             {

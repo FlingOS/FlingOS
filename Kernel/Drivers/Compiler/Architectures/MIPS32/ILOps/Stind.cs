@@ -85,8 +85,8 @@ namespace Drivers.Compiler.Architectures.MIPS32
                 conversionState.Append(new ASMOps.Pop() { Size = ASMOps.OperandSize.Word, Dest = "$t1" });
 
                 //Mov [address], value
-                conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Word, Src = "$t3", Dest = "4($t1)", DestIsMemory = true });
-                conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Word, Src = "$t3", Dest = "0($t1)", DestIsMemory = true });
+                conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Word, Src = "$t3", Dest = "4($t1)", MoveType = ASMOps.Mov.MoveTypes.SrcRegToDestMemory });
+                conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Word, Src = "$t3", Dest = "0($t1)", MoveType = ASMOps.Mov.MoveTypes.SrcRegToDestMemory });
             }
             else if (bytesToStore == 4)
             {
@@ -97,7 +97,7 @@ namespace Drivers.Compiler.Architectures.MIPS32
                 conversionState.Append(new ASMOps.Pop() { Size = ASMOps.OperandSize.Word, Dest = "$t1" });
 
                 //Mov [address], value
-                conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Word, Src = "$t0", Dest = "0($t1)", DestIsMemory = true });
+                conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Word, Src = "$t0", Dest = "0($t1)", MoveType = ASMOps.Mov.MoveTypes.SrcRegToDestMemory });
             }
             else if (bytesToStore == 2)
             {
@@ -108,7 +108,7 @@ namespace Drivers.Compiler.Architectures.MIPS32
                 conversionState.Append(new ASMOps.Pop() { Size = ASMOps.OperandSize.Word, Dest = "$t1" });
 
                 //Mov [address], value
-                conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Halfword, Src = "$t2", Dest = "0($t1)", DestIsMemory = true });
+                conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Halfword, Src = "$t2", Dest = "0($t1)", MoveType = ASMOps.Mov.MoveTypes.SrcRegToDestMemory });
             }
             else if (bytesToStore == 1)
             {
@@ -119,7 +119,7 @@ namespace Drivers.Compiler.Architectures.MIPS32
                 conversionState.Append(new ASMOps.Pop() { Size = ASMOps.OperandSize.Word, Dest = "$t1" });
 
                 //Mov [address], value
-                conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Byte, Src = "$t2", Dest = "0($t1)", DestIsMemory = true });
+                conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Byte, Src = "$t2", Dest = "0($t1)", MoveType = ASMOps.Mov.MoveTypes.SrcRegToDestMemory });
             }
         }
     }

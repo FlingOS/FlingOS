@@ -106,7 +106,7 @@ namespace Drivers.Compiler.Architectures.MIPS32
                 //Insert the Else label.
                 conversionState.Append(new ASMOps.Label() { ILPosition = currOpPosition, Extension = "Else" });
                 //Else case - Push false (false=0)
-                conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Word, Src = "$0" });
+                conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Word, Src = "$zero" });
                 
                 //Push the result onto our stack
                 conversionState.CurrentStackFrame.Stack.Push(new StackItem()
@@ -144,7 +144,7 @@ namespace Drivers.Compiler.Architectures.MIPS32
                 //Insert Else case label
                 conversionState.Append(new ASMOps.Label() { ILPosition = currOpPosition, Extension = "Else" });
                 //Else case - Push false (false=0)
-                conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Word, Src = "$0" });
+                conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Word, Src = "$zero" });
 
                 //Push the result onto our stack
                 conversionState.CurrentStackFrame.Stack.Push(new StackItem()

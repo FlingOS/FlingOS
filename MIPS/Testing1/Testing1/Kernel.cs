@@ -4,6 +4,8 @@ namespace Testing1
 {
     public static class Kernel
     {
+        static bool x = false;
+
         [Drivers.Compiler.Attributes.PluggedMethod(ASMFilePath = "ASM\\Kernel")]
         [Drivers.Compiler.Attributes.SequencePriority(Priority = long.MinValue)]
         public static void Boot()
@@ -12,11 +14,16 @@ namespace Testing1
 
         [Drivers.Compiler.Attributes.MainMethod]
         [Drivers.Compiler.Attributes.NoGC]
-        public static void Main()
+        public static unsafe void Main()
         {
+            LED.Blue();
+            Delay();
+            LED.Red();
+            Delay();
+
             UART.Init();
 
-            //UART.Write("Hello, world!\n");
+            //UART.Write("Hello, world!\r\n");
             UART.Write('H');
             UART.Write('e');
             UART.Write('l');
@@ -30,6 +37,8 @@ namespace Testing1
             UART.Write('l');
             UART.Write('d');
             UART.Write('!');
+            UART.Write('\r');
+            UART.Write('\n');
 
             while (true)
             {
@@ -43,16 +52,23 @@ namespace Testing1
                 {
                     LED.Blue();
                 }
-                else
+                else if (c == 'p' || c == 'P')
                 {
-                    for (int i = 0; i < 5; i++)
+                    for (int i = 0; i < 10000 * 2; i++)
                     {
                         LED.Red();
-                        Delay();
                         LED.Blue();
-                        Delay();
                     }
                 }
+                else
+                {
+                    LED.Red();
+                    Delay();
+                    LED.Blue();
+                    Delay();
+                }
+
+                UART.Write(c);
             }
         }
         [Drivers.Compiler.Attributes.CallStaticConstructorsMethod]
@@ -62,10 +78,25 @@ namespace Testing1
 
         private static void Delay()
         {
-            for (int i = 0; i < 100; i++)
+            for (int i = 0; i < 10000; i++)
             {
                 ;
             }
+        }
+
+        [Drivers.Compiler.Attributes.ThrowNullReferenceExceptionMethod]
+        private static void ThrowNullReferenceException(uint eip)
+        {
+            UART.Write('N');
+            UART.Write('u');
+            UART.Write('l');
+            UART.Write('l');
+            UART.Write(' ');
+            UART.Write('r');
+            UART.Write('e');
+            UART.Write('f');
+            UART.Write('\r');
+            UART.Write('\n');
         }
     }
 }

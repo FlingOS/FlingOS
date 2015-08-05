@@ -18,10 +18,10 @@ namespace Drivers.Compiler.Architectures.MIPS32.ASMOps
             switch (Size)
             {
                 case OperandSize.Byte:
-                    storeOp = "sbu";
+                    storeOp = "sb";
                     break;
                 case OperandSize.Halfword:
-                    storeOp = "shu";
+                    storeOp = "sh";
                     break;
                 case OperandSize.Word:
                     storeOp = "sw";

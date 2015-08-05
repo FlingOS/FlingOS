@@ -559,9 +559,9 @@ namespace Drivers.Compiler.Architectures.MIPS32
                         else if (branchOp == ASMOps.BranchOp.BranchZero)
                         {
                             //If the low bits are not zero, jump to the end of these tests as condition has not been met
-                            conversionState.Append(new ASMOps.Branch() { BranchType = ASMOps.BranchOp.BranchNotZero, Src2 = testVal, Src1 = "$t0", DestILPosition = opToGoToPosition, Extension = "End" });
+                            conversionState.Append(new ASMOps.Branch() { BranchType = ASMOps.BranchOp.BranchNotZero, Src1 = "$t0", DestILPosition = opToGoToPosition, Extension = "End" });
                             //If the high bits are zero, do the jump
-                            conversionState.Append(new ASMOps.Branch() { BranchType = branchOp, Src1 = "$t1", Src2 = testVal, DestILPosition = opToGoToPosition });
+                            conversionState.Append(new ASMOps.Branch() { BranchType = branchOp, Src1 = "$t1", DestILPosition = opToGoToPosition });
                             //Insert the end label to be jumped to if condition is not met (see above)
                             conversionState.Append(new ASMOps.Label() { ILPosition = currOpPosition, Extension = "End" });
                         }

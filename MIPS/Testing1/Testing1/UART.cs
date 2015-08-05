@@ -69,15 +69,15 @@ namespace Testing1
         private const uint ExternalClockDivisor = ExternalClockRate / 16 / 115200;
         private const uint BitsPerSecond = 115200;
         
-        private static uint UART_Num = 4;
+        private static uint UART_Num = 0;
         
         private static void InitBoard()
         {
             /* Enable UART 4 GPIOs */
-            *CI20.GPIO(CI20.GPIO_BANK_C, CI20.GPIO_INTC) = CI20.PIN_UART4_TXD | CI20.PIN_UART4_RXD;
-            *CI20.GPIO(CI20.GPIO_BANK_C, CI20.GPIO_MSKC) = CI20.PIN_UART4_TXD | CI20.PIN_UART4_RXD;
-            *CI20.GPIO(CI20.GPIO_BANK_C, CI20.GPIO_PAT1S) = CI20.PIN_UART4_TXD | CI20.PIN_UART4_RXD;
-            *CI20.GPIO(CI20.GPIO_BANK_C, CI20.GPIO_PAT0C) = CI20.PIN_UART4_TXD | CI20.PIN_UART4_RXD;
+            *(uint*)CI20.GPIO(CI20.GPIO_BANK_C, CI20.GPIO_INTC) = CI20.PIN_UART4_TXD | CI20.PIN_UART4_RXD;
+            *(uint*)CI20.GPIO(CI20.GPIO_BANK_C, CI20.GPIO_MSKC) = CI20.PIN_UART4_TXD | CI20.PIN_UART4_RXD;
+            *(uint*)CI20.GPIO(CI20.GPIO_BANK_C, CI20.GPIO_PAT1S) = CI20.PIN_UART4_TXD | CI20.PIN_UART4_RXD;
+            *(uint*)CI20.GPIO(CI20.GPIO_BANK_C, CI20.GPIO_PAT0C) = CI20.PIN_UART4_TXD | CI20.PIN_UART4_RXD;
 
             /* Enable UART4 clock. UARTs are clocked from EXTCLK: no PLL required. */
             *(uint*)CI20.CPM_CLKGR1 = (*(uint*)CI20.CPM_CLKGR1) & ~CI20.CLKGR1_UART4;
@@ -105,14 +105,14 @@ namespace Testing1
             WriteRegister(ULCR, ULCR_WLS_8); 
         }
 
-        //[Drivers.Compiler.Attributes.NoGC]
-        //public static void Write(Testing1.String str)
-        //{
-        //    for (int i = 0; i < str.length; i++)
-        //    {
-        //        Write(str[i]);
-        //    }
-        //}
+        [Drivers.Compiler.Attributes.NoGC]
+        public static void Write(Testing1.String str)
+        {
+            for (int i = 0; i < str.length; i++)
+            {
+                Write(str[i]);
+            }
+        }
         public static void Write(char c)
         {
             while ((ReadRegister(ULSR) & ULSR_TDRQ) == 0) /* Transmit-hold register empty */
@@ -124,22 +124,22 @@ namespace Testing1
         public static char ReadChar()
         {
             while ((ReadRegister(ULSR) & ULSR_DRY) == 0) /* Data-ready register not set */
-                ;
+                 ;
 
             return (char)(ReadRegister(URBR) & 0xFF);
         }
 
-        private static uint* Registers(uint uartNum)
+        private static byte* Registers(uint uartNum)
         {
-            return (uint*)UART_BASE + (uartNum * 0x1000);
+            return (byte*)(UART_BASE + (uartNum * 0x1000));
         }
         private static void WriteRegister(uint addr, uint val)
         {
-            *(Registers(UART_Num) + addr) = val;
+            *(uint*)(Registers(UART_Num) + addr) = val;
         }
         private static uint ReadRegister(uint addr)
         {
-            return *(Registers(UART_Num) + addr);
+            return *(uint*)(Registers(UART_Num) + addr);
         }
     }
 }

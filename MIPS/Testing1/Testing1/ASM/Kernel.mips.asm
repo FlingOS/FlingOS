@@ -1,22 +1,23 @@
 ﻿.extern %KERNEL_MAIN_METHOD%
+.extern %KERNEL_CALL_STATIC_CONSTRUCTORS_METHOD%
 
-/* make it accessible outside */
 .globl Kernel_Start
-/* Tell binutils it's a function */
+.globl GetEIP
+
 .ent Kernel_Start
 .text
 
 Kernel_Start:
 	/* Set up a stack */
 	li $sp, 0xa9000000 
-
-	
-	/* And jump to C# */
-	jal %KERNEL_MAIN_METHOD%
+		
+	jal %KERNEL_CALL_STATIC_CONSTRUCTORS_METHOD%
 	nop
 
+	jal %KERNEL_MAIN_METHOD%
+	nop	
 
-.InfiniteLoop:
+.InfiniteLoop2:
 	
 	li	$3,32768
 	li	$2,-1342111744
@@ -32,7 +33,7 @@ Kernel_Start:
 	jal MyFunction
 	nop
 
-	j .InfiniteLoop
+	j .InfiniteLoop2
 
 	.end Kernel_Start
 
@@ -61,3 +62,8 @@ MyFunction:
 	lw		$fp, 8($sp)		# Set frame pointer to old value
 	addiu	$sp, $sp, 8	# Add space that was used for args, locals and frame pointer
 	j		$31					# Return to return address
+
+GetEIP:
+	addi $sp, $sp, -4
+	sw $ra, 0($sp)
+	j $ra
