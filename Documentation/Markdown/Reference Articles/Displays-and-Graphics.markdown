@@ -287,51 +287,47 @@ It was in this decade that scientists and other researchers began to use graphic
 
 In 1964 IBM released the IBM 2250 Graphics Display Unit which used vector graphics and could be attached to the System/360. The interface had a pen input (much like modern tablets do but it was wired and less accurate at least in part due to the relatively low display resolutions of the day). The University of Utah continued its excellence solidifying its status as the world centre of computer graphics research. 
 
-- First stereoscopic 3D display : Sword of Damocles
-- SIGGRAPH - Special Interest Group on Graphics - formed
+3D displays may seem like a relatively recent phenomenon (though they haven't massively taken off outside of cinemas) but the first technology for them was around in the 1960s. Not all that long ago in historical terms but an age ago relative to the age of the field. The first stereoscopic 3D display was created and named "Sword of Damocles" after the testing machine which apparently looked formidable. Though widely considered to also be first augmented reality display, the Sword of Damocles head mounted display may not have been the first AR system. Philco's HMD from 1961 streamed live video from another room to give a teleprescence experience and also tracked user's head movements. For this reason, some people maintain that Philco's system was the first AR system.
+
+In 1969 SICGRAPH, later to become the Association for Computing Machinery's Special Interest Group on Computer Graphics and Interactive Techniques, was formed by ACM, Sam Matsa (IBM/GM) and Van Dam (Brown University), to bring together people from originally across the USA who had an interest in computer graphics and/or interactive techniques. The organisation now  hosts the world's largest conference in the field each year.
 
 ### 1970s
-- Most important early breakthroughs in this decade - at University of Utah
-- Hidden-surface algorithm & Core invented!
-- Utah Teapot
-- Advances in models, shading and mapping allowing shadows, better 3D and surface textures
-- Pong : 1972
-- Space Invaders : 1978
-	- Both used Intel 8080 microprocessor and Fujitsu MB14241 video shifter to improve 2D sprite rendering
+The 1970s saw most of the significant breakthroughs in the computer graphics field and a large proportion of them were discovered and developed at the University of Utah. For instance, the hidden surface algorithm, which efficiently works out which surfaces in a 3D space/model are hidden by ones in front. The 3D Core Graphics System (or just, Core) was the first graphical standard developed and was created by 25 experts from ACM SIGGRAPH. 
+
+Also in this decade the famous Utah Teapot was created by the University of Utah. The teapot was widely used as a graphics test because of its complex graphical properties. The quality of teapot rendering is used as a test even to this day.
+
+The 1970s saw huge advances in 3D models, shading, new techniques called mapping which in turn allowed rendering of shadows and lastly better 3D and surface textures enabled more realistic and faster-rendered 3D worlds to be created. All of these 3D advances also translated into improved 2D performance, since 3D rendering eventually renders to a 2D plane.
+
+In 1972 one of the world's most famous games was created - Pong. The ping-pong, tennis-like game has been in arcades and recreated online an immense number of times and to this day school kids around the world know and love it. Despite its relative simplicity, there is still something captivating about the game which keeps it at a top-spot on online gaming websites. Of course, Pong wasn't the only game created in the 1970s that's survived the test of time. Space Invaders in 1978 is probably even more famous though less widely recreated. Both games used the Intel 8080 microprocessor with Fujitsu MB14241 video shifter to improve 2D sprite rendering.
 
 ### 1980s
-- Graphics become serious commercial feature
-- Graphics in standalone workstations
-- Orca, Commodore Amiga and Macintosh become popular, serious graphics and design tools
-- Full, animated 3D computer graphics now used commercially
-- First Ray Tracing graphics done by Japan - LINKS-1 Computer Graphics System - super-computer
-- Chroma-keying ("bluescreening") become reasonable / viable
-- Shaders introduced by Pixar
-- Real-time 3D graphics for arcades became commercially viable
+The 1980s was the first truly commercial era of graphics. Graphics started to feature as a selling point on a large number of devices including standalone workstations. Computer systems such as Orca, Commodore Amiga and Macintosh became popular, serious graphics and design tools. Macintosh rapidly became (and still maintains) its standing as the must-have, industry standard tool for graphics and design (though nowadays the tables are slowly turning for Linux and Windows as cross-platform software becomes more prevalent). 
+
+the 1980s also saw the first time animated 3D computer graphics was used commercially with companies such as Pixar created full animated movies. The first ray-tracing system called the LINKS-1 Computer Graphics System was developed by a Japanese company and was also one of the world's earliest super computers. Alongside this chroma-keying (or "bluescreening") and real-time 3D graphics for arcades both became commercially viable. 
+
+In essence, the 1980s saw graphics come out of research and into medium to high cost systems that were commercially viable. For many this was the first time they would use a computer graphics system. Though not strictly related to graphics, it is worth noting that this is around the same time the World Wide Web was invented (1989) by Sir Tim Berners-Lee.
 
 ### 1990s
-- Massive increase in CGI and 3D performance
-- Silicon Graphics decline. Rise of Microsoft Windows and Apple Macintosh
-- First computer graphics TV series made in France
-- 1995 : Toy Story (Pixar)
-- Atari, Nintendo and Sega selling millions
-- Quake, Doom
-- PS1 and Nintendo 64
-- Nvidia - GeForce 256 - First home video card, first actual GPU
-- DirectX and OpenGL popular by end of decade
+The 90s saw continued commercial growth and along with the investment came yet more research and progression. Massive leaps forward in CGI and 3D performance lead to the rise of 3D graphics for individuals not just arcades and companies. Consoles from companies such as Atari, Nintendo, Sony and Sega sold millions of consoles including the PS1 and Nintendo 64. At the same time graphics cards from Nvidia such as the GeForce 256 (which is widely considered the world's first actual GPU though largely only because of its name) introduced graphics to standard home computers such as PCs. Microsoft Windows and Apple Macintosh began to see off Silicon Graphics based systems and PC games such as Quake and Doom became widely popular. Graphics systems still in use today such as DirectX (though now deprecated) and OpenGL (which has newer versions) were developed. CGI improvements also lead to the world-famous Toy Story film by Pixar amongst others.
 
 ### 2000s
-- Graphics, CGI and 3D ubiquitous
-- PS2, PS3, XBox, GameCube, Wii, PC games
-- Finding Nemo (Pixar), Ice Age, Madagascar, Star Wars
-- GPGPU for research improved performance. Bitcoin mining.
-- Uncanny valley
+By the new millennium graphics, CGI and 3D games were becoming (relatively) cheaply available and most home computer systems used graphical interfaces. Windows XP succeeded in maintaining a lot of backwards compatibility meaning famous games such as Quake and Doom continued to be playable. Newer games such as Sims became widely popular and a large number of children had access to some level of gaming either in an arcade or at home. Internet games (largely built using Adobe Flash) also became widely supported (though they never really reached the same level of graphics as native games).
+
+Consoles such as the PlayStation2, PlayStation3, XBox (multiple versions), GameCube (earlier on), Wii and PC graphics cards became very popular with millions sold worldwide. At least a significant number of people started owning two (or occasionally three) games consoles. 
+
+Further advances in CGI and 3D brought about fantastic films such as Finding Nemo, Ice Age, Madagascar and the prequel-sequel trilogy of Star Wars films which maintained the original films' widely respected standing as leaders in use of CGI. 
+
+The GPGPU was also a new invention which allowed general purpose programming for graphical processing units - GP-GPUs. This lead to famous uses such as Bitcoin Mining which are largely maths based systems. Researchers into various medical fields also started distributing software that would use spare CPU and GPU time to do distributed computing to process the large volumes of data (such as analysing DNA or cancers).
+
+Lastly, the latter half of the 2000s to 2010 saw film and visual graphics producers hit the "uncanny valley" problem. This is a psychological theory that says the more realistic an image looks, the more a human observer will empathise with it and thus like or believe it. However, there is a small region between almost realistic and totally realistic which has the total opposite effect. This is where films and images look only very, slightly different from the real thing - they are uncannily close. Observers of such images are repulsed by them. There are a number of theories as to why this is, such as the evolutionary theory that we avoid close lookalikes because viruses and diseases often try to be close lookalikes in order to infect/attack cells and species. The result of this "uncanny valley" phenomenon is that a number of almost photo-realistic films, which were in all respects very good, were complete disasters at the box office. People hated them. Since then, no producers aim for photo-realism for fear of ending up missing the target and being in the uncanny valley. It is easier to produce high quality, slightly unrealistic films which are guaranteed a good reaction by viewers.
 
 ### 2010s
-- Ultra-HD
-- Photorealism
+The 2010s are only halfway through and graphics is continuing to progress. This decade has so far seen the rise of desktop-quality graphics for mobile devices (including 3D graphics) and the further development of HD and Ultra-HD graphics (and displays). Photo-realism for static images is widely used though films still avoid it. We are also starting to see films which are entirely CGI generated but include human actors and animals.
+
 
 ## Video
+
+Video has largely kept pace or been ahead of graphics and displays and so has a less interesting history. A lot of the significant points I will ignore as they are largely about companies battling it out for the right to use one technology or another. Similar battles over encoding in different regions of the world have taken place and the infamous digital rights management debates continue in full force to this day.
 
 ### Connectors
 
