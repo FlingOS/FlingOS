@@ -78,6 +78,7 @@
     <Compile Include="ILOps\MethodStart.cs" />
     <Compile Include="ILOps\Mul.cs" />
     <Compile Include="ILOps\Ret.cs" />
+    <Compile Include="ILOps\Stsfld.cs" />
     <Compile Include="ILOps\Xor.cs" />
     <Compile Include="ILOps\Nop.cs" />
     <Compile Include="ILOps\Pop.cs" />
