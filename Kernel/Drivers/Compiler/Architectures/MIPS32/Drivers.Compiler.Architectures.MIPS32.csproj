@@ -40,6 +40,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ASMOps\Add.cs" />
+    <Compile Include="ASMOps\And.cs" />
+    <Compile Include="ASMOps\Nop.cs" />
     <Compile Include="ASMOps\Comment.cs" />
     <Compile Include="ASMOps\ExternalLabel.cs" />
     <Compile Include="ASMOps\FieldTable.cs" />
@@ -48,6 +50,7 @@
     <Compile Include="ASMOps\Branch.cs" />
     <Compile Include="ASMOps\Label.cs" />
     <Compile Include="ASMOps\MethodTable.cs" />
+    <Compile Include="ASMOps\Mov.cs" />
     <Compile Include="ASMOps\OperandSizes.cs" />
     <Compile Include="ASMOps\Pop.cs" />
     <Compile Include="ASMOps\Push.cs" />
@@ -56,6 +59,8 @@
     <Compile Include="ASMOps\TypeTable.cs" />
     <Compile Include="ASMOps\Xor.cs" />
     <Compile Include="ILOps\Add.cs" />
+    <Compile Include="ILOps\Convi.cs" />
+    <Compile Include="ILOps\Convu.cs" />
     <Compile Include="ILOps\Ldc.cs" />
     <Compile Include="ILOps\Br.cs" />
     <Compile Include="ILOps\Ldfld.cs" />
@@ -63,6 +68,8 @@
     <Compile Include="ILOps\MethodEnd.cs" />
     <Compile Include="ILOps\MethodStart.cs" />
     <Compile Include="ILOps\Xor.cs" />
+    <Compile Include="ILOps\Nop.cs" />
+    <Compile Include="ILOps\Pop.cs" />
     <Compile Include="LibraryFunctions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
