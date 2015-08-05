@@ -122,7 +122,8 @@ namespace Drivers.Compiler.Architectures.MIPS32
             {
                 valueToPush += valueBytes[i].ToString("X2");
             }
-            conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Word, Src = valueToPush });
+            conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Word, Src = valueToPush, Dest = "$t0", MoveType = ASMOps.Mov.MoveTypes.ImmediateToReg });
+            conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Word, Src = "$t0" });
 
             //Push the constant onto our stack
             conversionState.CurrentStackFrame.Stack.Push(new StackItem()

@@ -8,34 +8,36 @@ namespace Drivers.Compiler.Architectures.MIPS32.ASMOps
 {
     public class Mov : ASM.ASMOp
     {
+        public enum MoveTypes
+        {
+            SrcMemoryToDestReg,
+            SrcRegToDestMemory,
+            ImmediateToReg,
+            RegToReg
+        }
+
         public OperandSize Size;
         public string Src;
         public string Dest;
-        public bool DestIsMemory = false;
-        public bool SrcIsMemory = false;
+        public MoveTypes MoveType = MoveTypes.RegToReg;
 
         public override string Convert(ASM.ASMBlock theBlock)
         {
-            if (DestIsMemory && SrcIsMemory)
-            {
-                throw new NotSupportedException("MIPS: Cannot move between memory locations directly! Must go via a register.");
-            }
-
-            if (DestIsMemory)
+            if (MoveType == MoveTypes.SrcRegToDestMemory)
             {
                 switch (Size)
                 {
                     case OperandSize.Byte:
-                        return "sb " + Dest + ", " + Src;
+                        return "sb " + Src + ", " + Dest;
                     case OperandSize.Halfword:
-                        return "sh " + Dest + ", " + Src;
+                        return "sh " + Src + ", " + Dest;
                     case OperandSize.Word:
-                        return "sw " + Dest + ", " + Src;
+                        return "sw " + Src + ", " + Dest;
                     default:
                         throw new NotSupportedException("MIPS: Unrecognised move operand sizes. (DestIsMemory)");
                 }
             }
-            else if (SrcIsMemory)
+            else if (MoveType == MoveTypes.SrcMemoryToDestReg)
             {
                 switch (Size)
                 {
@@ -48,6 +50,10 @@ namespace Drivers.Compiler.Architectures.MIPS32.ASMOps
                     default:
                         throw new NotSupportedException("MIPS: Unrecognised move operand sizes. (SrcIsMemory)");
                 }
+            }
+            else if (MoveType == MoveTypes.ImmediateToReg)
+            {
+                return "add " + Dest + ", $zero, " + Src;
             }
             else
             {

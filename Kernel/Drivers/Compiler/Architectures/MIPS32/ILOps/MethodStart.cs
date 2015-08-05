@@ -38,7 +38,7 @@ namespace Drivers.Compiler.Architectures.MIPS32
                 //This prevents errors in the GC.
                 for (int i = 0; i < totalBytes / 4; i++)
                 {
-                    conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Word, Src = "0" });
+                    conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Word, Src = "$0" });
                 }
                 //result.AppendLine(string.Format("sub esp, {0}", totalBytes));
             }

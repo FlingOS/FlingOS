@@ -43,6 +43,7 @@
     <Compile Include="ASMOps\And.cs" />
     <Compile Include="ASMOps\Call.cs" />
     <Compile Include="ASMOps\Mfhi.cs" />
+    <Compile Include="ASMOps\La.cs" />
     <Compile Include="ASMOps\Mul.cs" />
     <Compile Include="ASMOps\Mflo.cs" />
     <Compile Include="ASMOps\Nop.cs" />
@@ -65,6 +66,9 @@
     <Compile Include="ASMOps\Xor.cs" />
     <Compile Include="ILOps\Add.cs" />
     <Compile Include="ILOps\And.cs" />
+    <Compile Include="ILOps\Call.cs" />
+    <Compile Include="ILOps\Ceq.cs" />
+    <Compile Include="ILOps\Clt.cs" />
     <Compile Include="ILOps\Convi.cs" />
     <Compile Include="ILOps\Convu.cs" />
     <Compile Include="ILOps\Ldarg.cs" />
@@ -78,6 +82,7 @@
     <Compile Include="ILOps\MethodStart.cs" />
     <Compile Include="ILOps\Mul.cs" />
     <Compile Include="ILOps\Ret.cs" />
+    <Compile Include="ILOps\StackSwitch.cs" />
     <Compile Include="ILOps\Stsfld.cs" />
     <Compile Include="ILOps\Xor.cs" />
     <Compile Include="ILOps\Nop.cs" />

@@ -173,7 +173,7 @@ namespace Drivers.Compiler.Architectures.MIPS32
                 {
                     for (int i = bytesOffset - (pushedLocalSizeVal - 4); i <= bytesOffset; i += 4)
                     {
-                        conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Word, Src = "-" + i.ToString() + "($fp)", Dest = "$t0", SrcIsMemory = true });
+                        conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Word, Src = "-" + i.ToString() + "($fp)", Dest = "$t0", MoveType = ASMOps.Mov.MoveTypes.SrcMemoryToDestReg });
                         conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Word, Src = "$t0" });
                     }
                 }

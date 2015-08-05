@@ -113,7 +113,7 @@ namespace Drivers.Compiler.Architectures.MIPS32.ASMOps
             }
             else
             {
-                return jmpOp + theBlock.GenerateILOpLabel(DestILPosition, Extension);
+                return jmpOp + " " + theBlock.GenerateILOpLabel(DestILPosition, Extension);
             }
         }
     }

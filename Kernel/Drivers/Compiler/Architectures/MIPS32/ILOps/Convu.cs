@@ -109,14 +109,14 @@ namespace Drivers.Compiler.Architectures.MIPS32
             {
                 case 1:
                     //Convert to UInt8 (byte)
-                    conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Word, Src = "0", Dest = "$t0" });
+                    conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Word, Src = "0", Dest = "$t0", MoveType = ASMOps.Mov.MoveTypes.ImmediateToReg });
                     conversionState.Append(new ASMOps.Pop() { Size = ASMOps.OperandSize.Halfword, Dest = "$t0" });
                     conversionState.Append(new ASMOps.And() { Src1 = "$t0", Src2 = "0x000000FF", Dest = "$t0" });
                     bytesPopped = 2;
                     break;
                 case 2:
                     //Convert to UInt16 (word)
-                    conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Word, Src = "0", Dest = "$t0" });
+                    conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Word, Src = "0", Dest = "$t0", MoveType = ASMOps.Mov.MoveTypes.ImmediateToReg });
                     conversionState.Append(new ASMOps.Pop() { Size = ASMOps.OperandSize.Halfword, Dest = "$t0" });
                     bytesPopped = 2;
                     break;
@@ -138,7 +138,7 @@ namespace Drivers.Compiler.Architectures.MIPS32
                     {
                         //Result stored in EAX:EDX
                         conversionState.Append(new ASMOps.Pop() { Size = ASMOps.OperandSize.Word, Dest = "$t0" });
-                        conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Word, Src = "0", Dest = "$t3" });
+                        conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Word, Src = "0", Dest = "$t3", MoveType = ASMOps.Mov.MoveTypes.ImmediateToReg });
                         bytesPopped = 4;
                     }
                     pushEDX = true;

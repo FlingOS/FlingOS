@@ -110,14 +110,14 @@ namespace Drivers.Compiler.Architectures.MIPS32
                 case 1:
                     //Convert to Int8 (byte)
                     //Sign extend to dword
-                    conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Word, Src = "0", Dest = "$t0" });
+                    conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Word, Src = "0", Dest = "$t0", MoveType = ASMOps.Mov.MoveTypes.ImmediateToReg });
                     conversionState.Append(new ASMOps.Pop() { Size = ASMOps.OperandSize.Byte, Dest = "$t0", SignExtend = true });
                     bytesPopped = 1;
                     break;
                 case 2:
                     //Convert to Int16 (word)
                     //Sign extend to dword
-                    conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Word, Src = "0", Dest = "$t0" });
+                    conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Word, Src = "0", Dest = "$t0", MoveType = ASMOps.Mov.MoveTypes.ImmediateToReg });
                     conversionState.Append(new ASMOps.Pop() { Size = ASMOps.OperandSize.Halfword, Dest = "$t0", SignExtend = true });
                     bytesPopped = 2;
                     break;

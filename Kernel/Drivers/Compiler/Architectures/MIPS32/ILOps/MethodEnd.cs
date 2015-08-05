@@ -48,15 +48,15 @@ namespace Drivers.Compiler.Architectures.MIPS32
                 else if (retSize == 4)
                 {
                     conversionState.Append(new ASMOps.Pop() { Size = ASMOps.OperandSize.Word, Dest = "$t0" });
-                    conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Word, Dest = "8($fp)", Src = "$t0", DestIsMemory = true });
+                    conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Word, Dest = "8($fp)", Src = "$t0", MoveType = ASMOps.Mov.MoveTypes.SrcRegToDestMemory });
                 }
                 else if (retSize == 8)
                 {
                     conversionState.Append(new ASMOps.Pop() { Size = ASMOps.OperandSize.Word, Dest = "$t0" });
-                    conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Word, Dest = "8($fp)", Src = "$t0", DestIsMemory = true });
+                    conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Word, Dest = "8($fp)", Src = "$t0", MoveType = ASMOps.Mov.MoveTypes.SrcRegToDestMemory });
 
                     conversionState.Append(new ASMOps.Pop() { Size = ASMOps.OperandSize.Word, Dest = "$t0" });
-                    conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Word, Dest = "12($fp)", Src = "$t0", DestIsMemory = true });
+                    conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Word, Dest = "12($fp)", Src = "$t0", MoveType = ASMOps.Mov.MoveTypes.SrcRegToDestMemory });
                 }
                 else
                 {
