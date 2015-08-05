@@ -1,0 +1,11 @@
+﻿.global method_System_Object_RETEND_Kernel_Utilities_ObjectUtilities_DECLEND_GetObject_NAMEEND__System_Void__
+
+.text
+
+.ent method_System_Object_RETEND_Kernel_Utilities_ObjectUtilities_DECLEND_GetObject_NAMEEND__System_Void__
+
+method_System_Object_RETEND_Kernel_Utilities_ObjectUtilities_DECLEND_GetObject_NAMEEND__System_Void__:
+move $v0, $a0
+j $ra
+
+.end method_System_Object_RETEND_Kernel_Utilities_ObjectUtilities_DECLEND_GetObject_NAMEEND__System_Void__
