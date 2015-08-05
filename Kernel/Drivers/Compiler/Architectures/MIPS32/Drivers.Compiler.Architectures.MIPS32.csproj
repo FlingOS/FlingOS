@@ -45,6 +45,7 @@
     <Compile Include="ASMOps\FieldTable.cs" />
     <Compile Include="ASMOps\GlobalLabel.cs" />
     <Compile Include="ASMOps\Header.cs" />
+    <Compile Include="ASMOps\Branch.cs" />
     <Compile Include="ASMOps\Label.cs" />
     <Compile Include="ASMOps\MethodTable.cs" />
     <Compile Include="ASMOps\OperandSizes.cs" />
@@ -55,6 +56,7 @@
     <Compile Include="ASMOps\TypeTable.cs" />
     <Compile Include="ILOps\Add.cs" />
     <Compile Include="ILOps\Ldc.cs" />
+    <Compile Include="ILOps\Br.cs" />
     <Compile Include="ILOps\MethodEnd.cs" />
     <Compile Include="ILOps\MethodStart.cs" />
     <Compile Include="LibraryFunctions.cs" />
