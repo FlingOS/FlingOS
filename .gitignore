@@ -11,3 +11,4 @@ UpgradeLog*.htm
 *.user
 FlingOS.v12.suo
 Kernel/Drivers/Compiler/Tools/syslinux-6.03/
+*.suo
