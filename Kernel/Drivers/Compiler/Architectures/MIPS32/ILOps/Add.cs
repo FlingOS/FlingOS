@@ -7,6 +7,9 @@ using Drivers.Compiler.IL;
 
 namespace Drivers.Compiler.Architectures.MIPS32
 {
+    /// <summary>
+    /// See base class documentation.
+    /// </summary>
     public class Add : IL.ILOps.Add
     {
         public override void PerformStackOperations(ILPreprocessState conversionState, ILOp theOp)
@@ -21,6 +24,16 @@ namespace Drivers.Compiler.Architectures.MIPS32
                 {
                     isFloat = false,
                     sizeOnStackInBytes = 4,
+                    isGCManaged = false
+                });
+            }
+            else if (itemA.sizeOnStackInBytes == 8 &&
+                     itemB.sizeOnStackInBytes == 8)
+            {
+                conversionState.CurrentStackFrame.Stack.Push(new StackItem()
+                {
+                    isFloat = false,
+                    sizeOnStackInBytes = 8,
                     isGCManaged = false
                 });
             }
@@ -87,6 +100,39 @@ namespace Drivers.Compiler.Architectures.MIPS32
                     itemB.sizeOnStackInBytes == 8))
                 {
                     throw new InvalidOperationException("Invalid stack operand sizes! They should be the same size.");
+                }
+                else if (itemA.sizeOnStackInBytes == 8 &&
+                   itemB.sizeOnStackInBytes == 8)
+                {
+                    //Pop item B to $t2:$t1
+                    //Pop low bits
+                    conversionState.Append(new ASMOps.Pop() { Size = ASMOps.OperandSize.Word, Dest = "$t1" });
+                    //Pop high bits
+                    conversionState.Append(new ASMOps.Pop() { Size = ASMOps.OperandSize.Word, Dest = "$t2" });
+                    //Pop item A to $t3:$t0
+                    //Pop low bits
+                    conversionState.Append(new ASMOps.Pop() { Size = ASMOps.OperandSize.Word, Dest = "$t0" });
+                    //Pop high bits
+                    conversionState.Append(new ASMOps.Pop() { Size = ASMOps.OperandSize.Word, Dest = "$t3" });
+                    //Add $t2:$t1 to $t3:$t0
+                    //Add low bits
+                    conversionState.Append(new ASMOps.Add() { Src1 = "$t1", Src2 = "$t0", Dest = "$t0" });
+                    //Add high bits including any carry from 
+                    //when low bits were added
+                    conversionState.Append(new ASMOps.Add() { Src1 = "$t2", Src2 = "$t3", Dest = "$t3", WithCarry = true });
+                    //Push the result
+                    //Push high bits
+                    conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Word, Src = "$t3" });
+                    //Push low bits
+                    conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Word, Src = "$t0" });
+
+                    //Push the result onto our stack
+                    conversionState.CurrentStackFrame.Stack.Push(new StackItem()
+                    {
+                        isFloat = false,
+                        sizeOnStackInBytes = 8,
+                        isGCManaged = false
+                    });
                 }
             }
         }

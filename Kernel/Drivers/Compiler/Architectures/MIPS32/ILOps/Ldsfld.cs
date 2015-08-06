@@ -8,6 +8,9 @@ using Drivers.Compiler.IL;
 
 namespace Drivers.Compiler.Architectures.MIPS32
 {
+    /// <summary>
+    /// See base class documentation.
+    /// </summary>
     public class Ldsfld : IL.ILOps.Ldsfld
     {
         public override void PerformStackOperations(ILPreprocessState conversionState, ILOp theOp)
@@ -79,31 +82,28 @@ namespace Drivers.Compiler.Architectures.MIPS32
                             throw new NotSupportedException("Loading static fields of type float not supported yet!");
                         }
 
+                        conversionState.Append(new ASMOps.La() { Label = fieldID, Dest = "$t1" });
+
                         if (size == 1)
                         {
                             conversionState.Append(new ASMOps.Xor() { Src1 = "$t0", Src2 = "$t0", Dest = "$t0" });
-                            conversionState.Append(new ASMOps.La() { Label = fieldID, Dest = "$t1" });
                             conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Byte, Src = "0($t1)", Dest = "$t0", MoveType = ASMOps.Mov.MoveTypes.SrcMemoryToDestReg });
                             conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Word, Src = "$t0" });
                         }
                         else if (size == 2)
                         {
                             conversionState.Append(new ASMOps.Xor() { Src1 = "$t0", Src2 = "$t0", Dest = "$t0" });
-                            conversionState.Append(new ASMOps.La() { Label = fieldID, Dest = "$t1" });
                             conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Halfword, Src = "0($t1)", Dest = "$t0", MoveType = ASMOps.Mov.MoveTypes.SrcMemoryToDestReg });
                             conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Word, Src = "$t0" });
                         }
                         else if (size == 4)
                         {
-                            conversionState.Append(new ASMOps.La() { Label = fieldID, Dest = "$t1" });
                             conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Word, Src = "0($t1)", Dest = "$t0", MoveType = ASMOps.Mov.MoveTypes.SrcMemoryToDestReg });
                             conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Word, Src = "$t0" });
                         }
                         else if (size == 8)
                         {
-                            conversionState.Append(new ASMOps.La() { Label = fieldID, Dest = "$t1" });
-                            
-                            conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Word, Src = "4($t1)", Dest = "$t0", MoveType = ASMOps.Mov.MoveTypes.SrcMemoryToDestReg });
+                                conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Word, Src = "4($t1)", Dest = "$t0", MoveType = ASMOps.Mov.MoveTypes.SrcMemoryToDestReg });
                             conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Word, Src = "$t0" });
                             conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Word, Src = "0($t1)", Dest = "$t0", MoveType = ASMOps.Mov.MoveTypes.SrcMemoryToDestReg });
                             conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Word, Src = "$t0" });
@@ -123,7 +123,7 @@ namespace Drivers.Compiler.Architectures.MIPS32
                     break;
                 case OpCodes.Ldsflda:
                     //Load the address of the field i.e. address of the ASM label
-                    conversionState.Append(new ASMOps.La() { Dest = "$t0", Label = fieldID });
+                    conversionState.Append(new ASMOps.La() { Label = fieldID, Dest = "$t0" });
                     conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Word, Src = "$t0" });
 
                     conversionState.CurrentStackFrame.Stack.Push(new StackItem()

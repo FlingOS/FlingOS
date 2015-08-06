@@ -5,9 +5,11 @@ using System.Text;
 using System.Threading.Tasks;
 using Drivers.Compiler.IL;
 
-
 namespace Drivers.Compiler.Architectures.MIPS32
 {
+    /// <summary>
+    /// See base class documentation.
+    /// </summary>
     public class Stloc : IL.ILOps.Stloc
     {
         public override void PerformStackOperations(ILPreprocessState conversionState, ILOp theOp)

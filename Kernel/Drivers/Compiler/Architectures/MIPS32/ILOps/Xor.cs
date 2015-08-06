@@ -7,6 +7,9 @@ using Drivers.Compiler.IL;
 
 namespace Drivers.Compiler.Architectures.MIPS32
 {
+    /// <summary>
+    /// See base class documentation.
+    /// </summary>
     public class Xor : IL.ILOps.Xor
     {
         public override void PerformStackOperations(ILPreprocessState conversionState, ILOp theOp)
@@ -14,12 +17,26 @@ namespace Drivers.Compiler.Architectures.MIPS32
             StackItem itemB = conversionState.CurrentStackFrame.Stack.Pop();
             StackItem itemA = conversionState.CurrentStackFrame.Stack.Pop();
 
-            conversionState.CurrentStackFrame.Stack.Push(new StackItem()
+            if (itemA.sizeOnStackInBytes == 4 &&
+                itemB.sizeOnStackInBytes == 4)
             {
-                isFloat = false,
-                sizeOnStackInBytes = 4,
-                isGCManaged = false
-            });
+                conversionState.CurrentStackFrame.Stack.Push(new StackItem()
+                {
+                    isFloat = false,
+                    sizeOnStackInBytes = 4,
+                    isGCManaged = false
+                });
+            }
+            else if (itemA.sizeOnStackInBytes == 8 &&
+                itemB.sizeOnStackInBytes == 8)
+            {
+                conversionState.CurrentStackFrame.Stack.Push(new StackItem()
+                {
+                    isFloat = false,
+                    sizeOnStackInBytes = 8,
+                    isGCManaged = false
+                });
+            }
         }
 
         public override void Convert(ILConversionState conversionState, ILOp theOp)

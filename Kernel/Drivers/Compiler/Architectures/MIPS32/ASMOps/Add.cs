@@ -11,6 +11,7 @@ namespace Drivers.Compiler.Architectures.MIPS32.ASMOps
         public string Src1;
         public string Src2;
         public string Dest;
+        public bool WithCarry = false;
 
         public override string Convert(ASM.ASMBlock theBlock)
         {
