@@ -1,0 +1,12 @@
+﻿.global method_System_Void__RETEND_Testing1_Utilities_ObjectUtilities_DECLEND_GetHandle_NAMEEND__System_Object_
+
+.text
+
+.ent method_System_Void__RETEND_Testing1_Utilities_ObjectUtilities_DECLEND_GetHandle_NAMEEND__System_Object_
+
+method_System_Void__RETEND_Testing1_Utilities_ObjectUtilities_DECLEND_GetHandle_NAMEEND__System_Object_:
+lw $t0, 4($sp)
+sw $t0, 0($sp)
+j $ra
+
+.end method_System_Void__RETEND_Testing1_Utilities_ObjectUtilities_DECLEND_GetHandle_NAMEEND__System_Object_
