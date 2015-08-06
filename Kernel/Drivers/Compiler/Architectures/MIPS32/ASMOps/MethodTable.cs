@@ -45,6 +45,7 @@ namespace Drivers.Compiler.Architectures.MIPS32.ASMOps
             StringBuilder ASMResult = new StringBuilder();
             ASMResult.AppendLine("# Method Table - " + CurrentTypeName);
             ASMResult.AppendLine(".globl " + CurrentTypeId + "_MethodTable");
+            ASMResult.AppendLine(".align 2");
             ASMResult.AppendLine(CurrentTypeId + "_MethodTable:");
 
             foreach (Tuple<string, string> aMethodInfo in AllMethodInfos)

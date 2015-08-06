@@ -51,8 +51,13 @@ namespace Drivers.Compiler.Architectures.MIPS32
         /// <returns>See base class documentation.</returns>
         public override void Convert(ILConversionState conversionState, ILOp theOp)
         {
+            /*
+             * TODO: Remember to use this function if necessary
+             * GlobalMethods.LoadData(conversionState, theOp, "$t2", "$t1", (offset + i - 2), 1);
+             */
+
             int dwordsToRotate = theOp.ValueBytes == null ? 2 : BitConverter.ToInt32(theOp.ValueBytes, 0);
-            
+
             int bytesShift = 0;
             for (int i = 0; i < dwordsToRotate; i++)
             {
@@ -64,11 +69,11 @@ namespace Drivers.Compiler.Architectures.MIPS32
                 }
                 else if (i == dwordsToRotate - 1)
                 {
-                    conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Word, Src = "$t0", Dest = bytesShift.ToString() + "($sp)", MoveType = ASMOps.Mov.MoveTypes.SrcRegToDestMemory });
+                    conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Word, Src = "$t0", Dest = bytesShift + "($sp)", MoveType = ASMOps.Mov.MoveTypes.SrcRegToDestMemory });
                 }
                 else
                 {
-                    conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Word, Src = (bytesShift + 4).ToString() + "$(sp)", Dest = "$t1", MoveType = ASMOps.Mov.MoveTypes.SrcMemoryToDestReg });
+                    conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Word, Src = (bytesShift + 4).ToString() + "($sp)", Dest = "$t1", MoveType = ASMOps.Mov.MoveTypes.SrcMemoryToDestReg });
                     conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Word, Src = "$t1", Dest = bytesShift.ToString() + "($sp)", MoveType = ASMOps.Mov.MoveTypes.SrcRegToDestMemory });
                 }
                 bytesShift += 4;

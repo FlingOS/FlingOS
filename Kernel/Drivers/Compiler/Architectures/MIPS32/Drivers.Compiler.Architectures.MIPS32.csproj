@@ -61,9 +61,12 @@
     <Compile Include="ASMOps\Pop.cs" />
     <Compile Include="ASMOps\Push.cs" />
     <Compile Include="ASMOps\Ret.cs" />
+    <Compile Include="ASMOps\Srl.cs" />
+    <Compile Include="ASMOps\Sll.cs" />
     <Compile Include="ASMOps\StaticField.cs" />
     <Compile Include="ASMOps\StringLiteral.cs" />
     <Compile Include="ASMOps\TypeTable.cs" />
+    <Compile Include="ASMOps\Or.cs" />
     <Compile Include="ASMOps\Xor.cs" />
     <Compile Include="ILOps\Add.cs" />
     <Compile Include="ILOps\And.cs" />
@@ -73,6 +76,7 @@
     <Compile Include="ILOps\Clt.cs" />
     <Compile Include="ILOps\Convi.cs" />
     <Compile Include="ILOps\Convu.cs" />
+    <Compile Include="ILOps\GlobalMethods.cs" />
     <Compile Include="ILOps\Ldarg.cs" />
     <Compile Include="ILOps\Ldc.cs" />
     <Compile Include="ILOps\Br.cs" />

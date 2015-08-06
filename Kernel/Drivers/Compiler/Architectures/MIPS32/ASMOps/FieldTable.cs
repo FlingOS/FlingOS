@@ -45,6 +45,7 @@ namespace Drivers.Compiler.Architectures.MIPS32.ASMOps
             StringBuilder ASMResult = new StringBuilder();
             ASMResult.AppendLine("# Field Table - " + CurrentTypeName);
             ASMResult.AppendLine(".globl " + CurrentTypeId + "_FieldTable");
+            ASMResult.AppendLine(".align 2");
             ASMResult.AppendLine(CurrentTypeId + "_FieldTable:");
 
             foreach (Tuple<string, string, string> aFieldInfo in AllFieldInfos)

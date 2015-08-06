@@ -44,11 +44,12 @@ namespace Drivers.Compiler.Architectures.MIPS32.ASMOps
             StringBuilder LiteralASM = new StringBuilder();
             //This is UTF-16 (Unicode)/ASCII text
             LiteralASM.AppendLine(string.Format(".globl {0}", Id));
+            LiteralASM.AppendLine(".align 2");
             LiteralASM.AppendLine(string.Format("{0}:", Id));
             //Put in type info as FOS_System.String type
             LiteralASM.AppendLine(string.Format(".word {0}", StringTypeId));
             //Put in string length bytes
-            LiteralASM.Append(".byte ");
+            LiteralASM.Append(".align 0\n.byte ");
             for (int i = 0; i < 3; i++)
             {
                 LiteralASM.Append(LengthBytes[i]);
@@ -59,7 +60,7 @@ namespace Drivers.Compiler.Architectures.MIPS32.ASMOps
             if (Characters.Length > 0)
             {
                 //Put in string characters (as words)
-                LiteralASM.Append("\n.hword ");
+                LiteralASM.Append("\n.align 0\n.hword ");
                 for (int i = 0; i < (Characters.Length - 1); i++)
                 {
                     LiteralASM.Append((uint)Characters[i]);

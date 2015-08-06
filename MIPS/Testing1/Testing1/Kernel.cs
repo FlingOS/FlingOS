@@ -23,22 +23,7 @@ namespace Testing1
 
             UART.Init();
 
-            //UART.Write("Hello, world!\r\n");
-            UART.Write('H');
-            UART.Write('e');
-            UART.Write('l');
-            UART.Write('l');
-            UART.Write('o');
-            UART.Write(',');
-            UART.Write(' ');
-            UART.Write('w');
-            UART.Write('o');
-            UART.Write('r');
-            UART.Write('l');
-            UART.Write('d');
-            UART.Write('!');
-            UART.Write('\r');
-            UART.Write('\n');
+            UART.Write("Hello, world!\r\n");
 
             while (true)
             {
@@ -97,6 +82,34 @@ namespace Testing1
             UART.Write('f');
             UART.Write('\r');
             UART.Write('\n');
+
+            while (true)
+            {
+                LED.Red();
+                LED.Blue();
+            }
+        }
+
+        [Drivers.Compiler.Attributes.ThrowIndexOutOfRangeExceptionMethod]
+        private static void ThrowIndexOutOfRangeException(uint eip)
+        {
+            UART.Write('I');
+            UART.Write('n');
+            UART.Write('d');
+            UART.Write('e');
+            UART.Write('x');
+            UART.Write(' ');
+            UART.Write('O');
+            UART.Write('O');
+            UART.Write('R');
+            UART.Write('\r');
+            UART.Write('\n');
+
+            while (true)
+            {
+                LED.Red();
+                LED.Blue();
+            }
         }
     }
 }

@@ -44,6 +44,7 @@ namespace Drivers.Compiler.Architectures.MIPS32.ASMOps
         {
             StringBuilder ASMResult = new StringBuilder();
             ASMResult.AppendLine(".globl " + TypeId);
+            ASMResult.AppendLine(".align 2");
             ASMResult.AppendLine(TypeId + ":");
 
             foreach (Tuple<string, Types.TypeInfo> aFieldInfo in FieldInformation)

@@ -38,7 +38,7 @@ namespace Drivers.Compiler.Architectures.MIPS32.ASMOps
 
         public override string Convert(ASM.ASMBlock theBlock)
         {
-            return "jal " + Target;
+            return "jal " + Target + "\r\nnop";
         }
     }
 }

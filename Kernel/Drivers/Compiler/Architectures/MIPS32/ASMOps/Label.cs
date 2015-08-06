@@ -59,11 +59,11 @@ namespace Drivers.Compiler.Architectures.MIPS32.ASMOps
         {
             if (MethodLabel)
             {
-                return theBlock.GenerateMethodLabel() + ":";
+                return theBlock.GenerateMethodLabel() + ":\r\nnop";
             }
             else
             {
-                return theBlock.GenerateILOpLabel(ILPosition, Extension) + ":";
+                return theBlock.GenerateILOpLabel(ILPosition, Extension) + ":\r\nnop";
             }
         }
     }

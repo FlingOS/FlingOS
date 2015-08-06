@@ -53,11 +53,11 @@ namespace Drivers.Compiler.Architectures.MIPS32.ASMOps
             switch (numBytes)
             {
                 case 1:
-                    return ".byte";
+                    return ".align 0\r\n.byte";
                 case 2:
-                    return ".hword";
+                    return ".align 0\r\n.hword";
                 case 4:
-                    return ".word";
+                    return ".align 0\r\n.word";
                 default:
                     return "NOSIZEALLOC";
             }
