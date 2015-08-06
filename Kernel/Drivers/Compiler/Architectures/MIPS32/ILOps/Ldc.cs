@@ -189,7 +189,8 @@ namespace Drivers.Compiler.Architectures.MIPS32
                 {
                     valueToPush += valueBytes[i].ToString("X2");
                 }
-                conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Word, Src = valueToPush });
+                conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Byte, Src = valueToPush, Dest = "$t0", MoveType = ASMOps.Mov.MoveTypes.ImmediateToReg });
+                conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Word, Src = "$t0" });
 
                 //Then push the low-bits as a dword
                 //See above
@@ -199,7 +200,8 @@ namespace Drivers.Compiler.Architectures.MIPS32
                 {
                     valueToPush += valueBytes[i].ToString("X2");
                 }
-                conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Word, Src = valueToPush });
+                conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Byte, Src = valueToPush, Dest = "$t0", MoveType = ASMOps.Mov.MoveTypes.ImmediateToReg });
+                conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Word, Src = "$t0" });
             }
             else
             {
@@ -210,7 +212,8 @@ namespace Drivers.Compiler.Architectures.MIPS32
                 {
                     valueToPush += valueBytes[i].ToString("X2");
                 }
-                conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Word, Src = valueToPush });
+                conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Byte, Src = valueToPush, Dest = "$t0", MoveType = ASMOps.Mov.MoveTypes.ImmediateToReg });
+                conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Word, Src = "$t0" });
             }
 
             //Push the constant onto our stack
