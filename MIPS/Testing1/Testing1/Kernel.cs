@@ -45,6 +45,25 @@ namespace Testing1
                         LED.Blue();
                     }
                 }
+                else if (c == 'f' || c == 'F')
+                {
+                    int bProp = 0;
+                    for (int i = 0; i < 1000; i++)
+                    {
+                        for (int x = 0; x < 1000; x++)
+                        {
+                            if (bProp < x)
+                            {
+                                LED.Blue();
+                            }
+                            else
+                            {
+                                LED.Red();
+                            }
+                        }
+                        bProp++;
+                    }
+                }
                 else
                 {
                     LED.Red();
