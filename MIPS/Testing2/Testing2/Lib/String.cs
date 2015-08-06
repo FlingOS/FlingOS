@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Testing1
+namespace Testing2
 {
     /// <summary>
     /// Replacement class for methods, properties and fields usually found on standard System.String type.
@@ -62,9 +62,9 @@ namespace Testing1
         /// <param name="x">The value to convert.</param>
         /// <returns>The FOS_System.String value.</returns>
         [Drivers.Compiler.Attributes.NoGC]
-        public static implicit operator Testing1.String(string x)
+        public static implicit operator Testing2.String(string x)
         {
-            return (Testing1.String)(object)x;
+            return (Testing2.String)(object)x;
         }
     }
 }

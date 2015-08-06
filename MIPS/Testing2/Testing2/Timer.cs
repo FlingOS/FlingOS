@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Testing1
+namespace Testing2
 {
     public static class Timer
     {

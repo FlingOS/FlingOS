@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Testing1
+namespace Testing2
 {
     public static unsafe class UART
     {
@@ -105,7 +105,7 @@ namespace Testing1
         }
 
         [Drivers.Compiler.Attributes.NoGC]
-        public static void Write(Testing1.String str)
+        public static void Write(Testing2.String str)
         {
             for (int i = 0; i < str.length; i++)
             {

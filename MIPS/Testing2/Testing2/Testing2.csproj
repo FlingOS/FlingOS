@@ -7,8 +7,8 @@
     <ProjectGuid>{147D169E-C7E5-4FD5-AF54-1AB7CC45E973}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Testing1</RootNamespace>
-    <AssemblyName>Testing1</AssemblyName>
+    <RootNamespace>Testing2</RootNamespace>
+    <AssemblyName>Testing2</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <FlingOSDir>C:\Fling OS\Fling OS\</FlingOSDir>

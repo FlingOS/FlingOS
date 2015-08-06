@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Testing1
+namespace Testing2
 {
     /// <summary>
     /// Represents an object type specification. Please see remarks before using.
@@ -24,11 +24,11 @@ namespace Testing1
         /// <summary>
         /// The compiler-assigned type ID string. This is a hash string which is not the same as the Id.
         /// </summary>
-        public Testing1.String IdString;
+        public Testing2.String IdString;
         /// <summary>
         /// The human readable type signature.
         /// </summary>
-        public Testing1.String Signature;
+        public Testing2.String Signature;
 
         /// <summary>
         /// The size of the object in memory.

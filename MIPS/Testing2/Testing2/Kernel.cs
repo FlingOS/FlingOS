@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Testing1
+namespace Testing2
 {
     public static class Kernel
     {
@@ -22,7 +22,7 @@ namespace Testing1
             DelayLong();
 
             UART.Init();
-            BasicTimer.Init();
+            //BasicTimer.Init();
 
             UART.Write("Hello, world!\r\n");
 
