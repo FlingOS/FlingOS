@@ -141,123 +141,123 @@ namespace Drivers.Compiler.Architectures.MIPS32
                 if (typeof(Delegate).IsAssignableFrom(((MethodInfo)methodToCall).DeclaringType))
                 {
                     throw new NotSupportedException("Delegate calls not supported yet!");
-                    ////Callvirt to delegate method
-                    //// - We only support calls to Invoke at the moment
-                    //if (methodToCall.Name != "Invoke")
-                    //{
-                    //    throw new NotSupportedException("Callvirt to Delegate method not supported! Method name: " + methodToCall.Name);
-                    //}
-                    //int bytesForAllParams = ((MethodInfo)methodToCall).GetParameters().Select(x => conversionState.TheILLibrary.GetTypeInfo(x.ParameterType).SizeOnStackInBytes).Sum();
-                    
-                    //// - Move into $t0 address of function to call from stack - delegate reference is function pointer
+                    //Callvirt to delegate method
+                    // - We only support calls to Invoke at the moment
+                    if (methodToCall.Name != "Invoke")
+                    {
+                        throw new NotSupportedException("Callvirt to Delegate method not supported! Method name: " + methodToCall.Name);
+                    }
+                    int bytesForAllParams = ((MethodInfo)methodToCall).GetParameters().Select(x => conversionState.TheILLibrary.GetTypeInfo(x.ParameterType).SizeOnStackInBytes).Sum();
 
-                    ////All the parameters for the method that was called
-                    //List<Type> allParams = ((MethodInfo)methodToCall).GetParameters().Select(x => x.ParameterType).ToList();
+                    // - Move into $t0 address of function to call from stack - delegate reference is function pointer
 
-                    //int bytesForParams = allParams.Select(x => conversionState.TheILLibrary.GetTypeInfo(x).SizeOnStackInBytes).Sum();
-                    //conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Word, Src = bytesForParams + "($sp)", Dest = "$t0", MoveType = ASMOps.Mov.MoveTypes.SrcMemoryToDestReg });
-                    
+                    //All the parameters for the method that was called
+                    List<Type> allParams = ((MethodInfo)methodToCall).GetParameters().Select(x => x.ParameterType).ToList();
 
-                    ////Allocate space on the stack for the return value as necessary
-                    //Type retType = ((MethodInfo)methodToCall).ReturnType;
-                    //Types.TypeInfo retTypeInfo = conversionState.TheILLibrary.GetTypeInfo(retType);
-                    //StackItem returnItem = new StackItem()
-                    //{
-                    //    isFloat = Utilities.IsFloat(retType),
-                    //    sizeOnStackInBytes = retTypeInfo.SizeOnStackInBytes,
-                    //    isGCManaged = retTypeInfo.IsGCManaged
-                    //};
-                    ////We do not push the return value onto the stack unless it has size > 0
-                    ////We do not push the return value onto our stack at this point - it is pushed after the call is done
-
-                    //if (returnItem.sizeOnStackInBytes != 0)
-                    //{
-                    //    if (returnItem.isFloat)
-                    //    {
-                    //        //SUPPORT - floats
-                    //        throw new NotSupportedException("Cannot handle float return values!");
-                    //    }
-                    //    else if (returnItem.sizeOnStackInBytes == 4)
-                    //    {
-                    //        conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Word, Src = "$zero" });
-                    //    }
-                    //    else if (returnItem.sizeOnStackInBytes == 8)
-                    //    {
-                    //        conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Word, Src = "$zero" });
-                    //        conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Word, Src = "$zero" });
-                    //    }
-                    //    else
-                    //    {
-                    //        throw new NotSupportedException("Invalid return stack operand size!");
-                    //    }
-                    //}
-                    
+                    int bytesForParams = allParams.Select(x => conversionState.TheILLibrary.GetTypeInfo(x).SizeOnStackInBytes).Sum();
+                    conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Word, Src = bytesForParams + "($sp)", Dest = "$t0", MoveType = ASMOps.Mov.MoveTypes.SrcMemoryToDestReg });
 
 
-                    ////Append the actual call
-                    //conversionState.Append(new ASMOps.Call() { Target = "$t0" });
-                    
+                    //Allocate space on the stack for the return value as necessary
+                    Type retType = ((MethodInfo)methodToCall).ReturnType;
+                    Types.TypeInfo retTypeInfo = conversionState.TheILLibrary.GetTypeInfo(retType);
+                    StackItem returnItem = new StackItem()
+                    {
+                        isFloat = Utilities.IsFloat(retType),
+                        sizeOnStackInBytes = retTypeInfo.SizeOnStackInBytes,
+                        isGCManaged = retTypeInfo.IsGCManaged
+                    };
+                    //We do not push the return value onto the stack unless it has size > 0
+                    //We do not push the return value onto our stack at this point - it is pushed after the call is done
 
-                    ////After a call, we need to remove the return value and parameters from the stack
-                    ////This is most easily done by just adding the total number of bytes for params and
-                    ////return value to the stack pointer ($sp register).
+                    if (returnItem.sizeOnStackInBytes != 0)
+                    {
+                        if (returnItem.isFloat)
+                        {
+                            //SUPPORT - floats
+                            throw new NotSupportedException("Cannot handle float return values!");
+                        }
+                        else if (returnItem.sizeOnStackInBytes == 4)
+                        {
+                            conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Word, Src = "$zero" });
+                        }
+                        else if (returnItem.sizeOnStackInBytes == 8)
+                        {
+                            conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Word, Src = "$zero" });
+                            conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Word, Src = "$zero" });
+                        }
+                        else
+                        {
+                            throw new NotSupportedException("Invalid return stack operand size!");
+                        }
+                    }
 
-                    ////Stores the number of bytes to add
-                    //// - Initially at least 4 for the delegate (method) ref/pointer
-                    //int bytesToAdd = 4;
-                    ////Go through all params that must be removed
-                    //foreach (Type aParam in allParams)
-                    //{
-                    //    //Pop the paramter off our stack 
-                    //    //(Note: Return value was never pushed onto our stack. See above)
-                    //    conversionState.CurrentStackFrame.Stack.Pop();
-                    //    //Add the size of the paramter to the total number of bytes to pop
-                    //    bytesToAdd += conversionState.TheILLibrary.GetTypeInfo(aParam).SizeOnStackInBytes;
-                    //}
-                        
-                    ////If there is a return value on the stack
-                    //if (returnItem.sizeOnStackInBytes != 0)
-                    //{
-                    //    //We need to store the return value then pop all the params
 
-                    //    //We now push the return value onto our stack as,
-                    //    //after all is said and done below, it will be the 
-                    //    //top item on the stack
-                    //    conversionState.CurrentStackFrame.Stack.Push(returnItem);
 
-                    //    //SUPPORT - floats (with above)
+                    //Append the actual call
+                    conversionState.Append(new ASMOps.Call() { Target = "$t0" });
 
-                    //    //Pop the return value into the $t0 register
-                    //    //We will push it back on after params are skipped over.
-                    //    if (returnItem.sizeOnStackInBytes == 4)
-                    //    {
-                    //        conversionState.Append(new ASMOps.Pop() { Size = ASMOps.OperandSize.Word, Dest = "$t0" });
-                    //    }
-                    //    else if (returnItem.sizeOnStackInBytes == 8)
-                    //    {
-                    //        conversionState.Append(new ASMOps.Pop() { Size = ASMOps.OperandSize.Word, Dest = "$t0" });
-                    //        conversionState.Append(new ASMOps.Pop() { Size = ASMOps.OperandSize.Word, Dest = "$t3" });
-                    //    }
-                    //}
-                    ////Skip over the params
-                    //conversionState.Append(new ASMOps.Add() { Src2 = bytesToAdd.ToString(), Src1 = "$sp", Dest = "$sp" });
-                    ////If necessary, push the return value onto the stack.
-                    //if (returnItem.sizeOnStackInBytes != 0)
-                    //{
-                    //    //SUPPORT - floats (with above)
 
-                    //    //The return value was stored in $t0
-                    //    //So push it back onto the stack
-                    //    if (returnItem.sizeOnStackInBytes == 4)
-                    //    {
-                    //        conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Word, Src = "$t0" });
-                    //    }
-                    //    else if (returnItem.sizeOnStackInBytes == 8)
-                    //    {
-                    //        conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Word, Src = "$t3" });
-                    //        conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Word, Src = "$t0" });
-                    //    }
-                    //}
+                    //After a call, we need to remove the return value and parameters from the stack
+                    //This is most easily done by just adding the total number of bytes for params and
+                    //return value to the stack pointer ($sp register).
+
+                    //Stores the number of bytes to add
+                    // - Initially at least 4 for the delegate (method) ref/pointer
+                    int bytesToAdd = 4;
+                    //Go through all params that must be removed
+                    foreach (Type aParam in allParams)
+                    {
+                        //Pop the paramter off our stack 
+                        //(Note: Return value was never pushed onto our stack. See above)
+                        conversionState.CurrentStackFrame.Stack.Pop();
+                        //Add the size of the paramter to the total number of bytes to pop
+                        bytesToAdd += conversionState.TheILLibrary.GetTypeInfo(aParam).SizeOnStackInBytes;
+                    }
+
+                    //If there is a return value on the stack
+                    if (returnItem.sizeOnStackInBytes != 0)
+                    {
+                        //We need to store the return value then pop all the params
+
+                        //We now push the return value onto our stack as,
+                        //after all is said and done below, it will be the 
+                        //top item on the stack
+                        conversionState.CurrentStackFrame.Stack.Push(returnItem);
+
+                        //SUPPORT - floats (with above)
+
+                        //Pop the return value into the $t0 register
+                        //We will push it back on after params are skipped over.
+                        if (returnItem.sizeOnStackInBytes == 4)
+                        {
+                            conversionState.Append(new ASMOps.Pop() { Size = ASMOps.OperandSize.Word, Dest = "$t0" });
+                        }
+                        else if (returnItem.sizeOnStackInBytes == 8)
+                        {
+                            conversionState.Append(new ASMOps.Pop() { Size = ASMOps.OperandSize.Word, Dest = "$t0" });
+                            conversionState.Append(new ASMOps.Pop() { Size = ASMOps.OperandSize.Word, Dest = "$t3" });
+                        }
+                    }
+                    //Skip over the params
+                    conversionState.Append(new ASMOps.Add() { Src2 = bytesToAdd.ToString(), Src1 = "$sp", Dest = "$sp" });
+                    //If necessary, push the return value onto the stack.
+                    if (returnItem.sizeOnStackInBytes != 0)
+                    {
+                        //SUPPORT - floats (with above)
+
+                        //The return value was stored in $t0
+                        //So push it back onto the stack
+                        if (returnItem.sizeOnStackInBytes == 4)
+                        {
+                            conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Word, Src = "$t0" });
+                        }
+                        else if (returnItem.sizeOnStackInBytes == 8)
+                        {
+                            conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Word, Src = "$t3" });
+                            conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Word, Src = "$t0" });
+                        }
+                    }
                 }
                 else
                 {

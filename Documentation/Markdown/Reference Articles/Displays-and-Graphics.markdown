@@ -317,11 +317,24 @@ Lastly, some e-ink displays (primarily electrophoretic-based displays) are benda
 
 ### Connectors
 
-1956 : Composite video
-1979 : S-Video
-1987 : VGA
-1999 : DVI
-2003 : HDMI
+There are lots of different connectors and transmission standards, all of which try to balance colour quality, frame rate, minimising interference and various other factors. For the purposes of this article I will mention only the most common (and possibly most significant) standards.
+
+#### 1956 : Composite video
+In 1956 the composite video standard was introduced. Composite video works by ??????????? TODO 
+
+The composite video standard was so significant that it is still in use today. A significant number of televisions and systems still have composite video connectors and there's probably a fair few buildings with the cables still built in. This seems to only be the case in the TV/DVD/Console market, however, since VGA rapidly replaced S-Video and Composite video for traditional workstations.
+
+#### 1979 : S-Video
+In 1979 the S-video standard was introduced as ??? (?an improvement to composite video?). Composite video works by ??????????? TODO 
+???
+
+The S-Video standard has also hung around for a long time with ???
+
+#### 1987 : VGA
+
+
+#### 1999 : DVI
+#### 2003 : HDMI
 
 ### Formats
 

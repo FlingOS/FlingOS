@@ -51,11 +51,6 @@ namespace Drivers.Compiler.Architectures.MIPS32
         /// <returns>See base class documentation.</returns>
         public override void Convert(ILConversionState conversionState, ILOp theOp)
         {
-            /*
-             * TODO: Remember to use this function if necessary
-             * GlobalMethods.LoadData(conversionState, theOp, "$t2", "$t1", (offset + i - 2), 1);
-             */
-
             int dwordsToRotate = theOp.ValueBytes == null ? 2 : BitConverter.ToInt32(theOp.ValueBytes, 0);
 
             int bytesShift = 0;

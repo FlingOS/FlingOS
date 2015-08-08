@@ -73,6 +73,7 @@
     <Compile Include="ILOps\Call.cs" />
     <Compile Include="ILOps\Callvirt.cs" />
     <Compile Include="ILOps\Ceq.cs" />
+    <Compile Include="ILOps\Cgt.cs" />
     <Compile Include="ILOps\Clt.cs" />
     <Compile Include="ILOps\Convi.cs" />
     <Compile Include="ILOps\Convu.cs" />

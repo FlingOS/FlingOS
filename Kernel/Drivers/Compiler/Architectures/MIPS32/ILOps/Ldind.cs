@@ -82,10 +82,10 @@ namespace Drivers.Compiler.Architectures.MIPS32
             //Load indirect
             //Pop address
             //Push [address]
-
+            
             StackItem addressItem = conversionState.CurrentStackFrame.Stack.Pop();
             int bytesToLoad = 0;
-
+            
             switch ((OpCodes)theOp.opCode.Value)
             {
                 case OpCodes.Ldind_U1:
@@ -117,20 +117,64 @@ namespace Drivers.Compiler.Architectures.MIPS32
             }
             else if (bytesToLoad == 2)
             {
-                conversionState.Append(new ASMOps.Xor() { Src1 = "$t0", Src2 = "$t0", Dest = "$t0" });
-                conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Halfword, Src = "0($t1)", Dest = "$t0", MoveType = ASMOps.Mov.MoveTypes.SrcMemoryToDestReg });
+                // Assume half word misaligned
+                conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Byte, Src = "1($t1)", Dest = "$t0", MoveType = ASMOps.Mov.MoveTypes.SrcMemoryToDestReg });
+                conversionState.Append(new ASMOps.Sll() { Src = "$t0", Dest = "$t0", Bits = 8 });
+                conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Byte, Src = "0($t1)", Dest = "$t4", MoveType = ASMOps.Mov.MoveTypes.SrcMemoryToDestReg });
+                conversionState.Append(new ASMOps.Or() { Src1 = "$t4", Src2 = "$t0", Dest = "$t0" });
+
+                // Push the loaded value
                 conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Word, Src = "$t0" });
             }
             else if (bytesToLoad == 4)
             {
-                conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Word, Src = "0($t1)", Dest = "$t0", MoveType = ASMOps.Mov.MoveTypes.SrcMemoryToDestReg });
+                //Assume half word misaligned
+                conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Byte, Src = "3($t1)", Dest = "$t0", MoveType = ASMOps.Mov.MoveTypes.SrcMemoryToDestReg });
+                conversionState.Append(new ASMOps.Sll() { Src = "$t0", Dest = "$t0", Bits = 24 });
+                conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Byte, Src = "2($t1)", Dest = "$t4", MoveType = ASMOps.Mov.MoveTypes.SrcMemoryToDestReg });
+                conversionState.Append(new ASMOps.Sll() { Src = "$t0", Dest = "$t0", Bits = 16 });
+                conversionState.Append(new ASMOps.Or() { Src1 = "$t4", Src2 = "$t0", Dest = "$t0" });
+                conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Byte, Src = "1($t1)", Dest = "$t4", MoveType = ASMOps.Mov.MoveTypes.SrcMemoryToDestReg });
+                conversionState.Append(new ASMOps.Sll() { Src = "$t0", Dest = "$t0", Bits = 8 });
+                conversionState.Append(new ASMOps.Or() { Src1 = "$t4", Src2 = "$t0", Dest = "$t0" });
+                conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Byte, Src = "0($t1)", Dest = "$t4", MoveType = ASMOps.Mov.MoveTypes.SrcMemoryToDestReg });
+                conversionState.Append(new ASMOps.Or() { Src1 = "$t4", Src2 = "$t0", Dest = "$t0" });
+
+                // Push the loaded value
                 conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Word, Src = "$t0" });
             }
             else if (bytesToLoad == 8)
             {
-                conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Word, Src = "4($t1)", Dest = "$t0", MoveType = ASMOps.Mov.MoveTypes.SrcMemoryToDestReg });
+                //TODO: Runtime check for address word alignment
+
+                //Assume half word misaligned
+                conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Byte, Src = "7($t1)", Dest = "$t0", MoveType = ASMOps.Mov.MoveTypes.SrcMemoryToDestReg });
+                conversionState.Append(new ASMOps.Sll() { Src = "$t0", Dest = "$t0", Bits = 24 });
+                conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Byte, Src = "6($t1)", Dest = "$t4", MoveType = ASMOps.Mov.MoveTypes.SrcMemoryToDestReg });
+                conversionState.Append(new ASMOps.Sll() { Src = "$t0", Dest = "$t0", Bits = 16 });
+                conversionState.Append(new ASMOps.Or() { Src1 = "$t4", Src2 = "$t0", Dest = "$t0" });
+                conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Byte, Src = "4($t1)", Dest = "$t4", MoveType = ASMOps.Mov.MoveTypes.SrcMemoryToDestReg });
+                conversionState.Append(new ASMOps.Sll() { Src = "$t0", Dest = "$t0", Bits = 8 });
+                conversionState.Append(new ASMOps.Or() { Src1 = "$t4", Src2 = "$t0", Dest = "$t0" });
+                conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Byte, Src = "5($t1)", Dest = "$t4", MoveType = ASMOps.Mov.MoveTypes.SrcMemoryToDestReg });
+                conversionState.Append(new ASMOps.Or() { Src1 = "$t4", Src2 = "$t0", Dest = "$t0" });
+
+                // Push the loaded value
                 conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Word, Src = "$t0" });
-                conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Word, Src = "0($t1)", Dest = "$t0", MoveType = ASMOps.Mov.MoveTypes.SrcMemoryToDestReg });
+
+                //Assume half word misaligned
+                conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Byte, Src = "3($t1)", Dest = "$t0", MoveType = ASMOps.Mov.MoveTypes.SrcMemoryToDestReg });
+                conversionState.Append(new ASMOps.Sll() { Src = "$t0", Dest = "$t0", Bits = 24 });
+                conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Byte, Src = "2($t1)", Dest = "$t4", MoveType = ASMOps.Mov.MoveTypes.SrcMemoryToDestReg });
+                conversionState.Append(new ASMOps.Sll() { Src = "$t0", Dest = "$t0", Bits = 16 });
+                conversionState.Append(new ASMOps.Or() { Src1 = "$t4", Src2 = "$t0", Dest = "$t0" });
+                conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Byte, Src = "1($t1)", Dest = "$t4", MoveType = ASMOps.Mov.MoveTypes.SrcMemoryToDestReg });
+                conversionState.Append(new ASMOps.Sll() { Src = "$t0", Dest = "$t0", Bits = 8 });
+                conversionState.Append(new ASMOps.Or() { Src1 = "$t4", Src2 = "$t0", Dest = "$t0" });
+                conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Byte, Src = "0($t1)", Dest = "$t4", MoveType = ASMOps.Mov.MoveTypes.SrcMemoryToDestReg });
+                conversionState.Append(new ASMOps.Or() { Src1 = "$t4", Src2 = "$t0", Dest = "$t0" });
+
+                // Push the loaded value
                 conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Word, Src = "$t0" });
             }
 
