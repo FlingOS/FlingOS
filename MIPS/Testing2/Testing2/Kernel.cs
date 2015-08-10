@@ -26,8 +26,8 @@ namespace Testing2
 
             UART.Write("Hello, world!\r\n");
 
-            uint testVal = 0xDEADBEEF;
-            if (testVal != 0xDEADBEEF)
+            UInt64 testVal = 0x2BADB002DEADBEEF;
+            if (testVal != 0x2BADB002DEADBEEF)
             {
                 UART.Write("Test val local not correct!\n");
             }
@@ -36,26 +36,16 @@ namespace Testing2
                 UART.Write("Test val local correct.\n");
             }
 
-            uint* testValPtr = &testVal;
-            if (*testValPtr != 0xDEADBEEF)
+            int shift = 16;
+            UInt64 result = testVal << shift;
+            if (result != 0xB002DEADBEEF0000)
             {
-                UART.Write("Test val not read correctly!\n");
+                UART.Write("result val not correct!\n");
             }
             else
             {
-                UART.Write("Test val read correctly.\n");
+                UART.Write("result val correct.\n");
             }
-
-            *testValPtr = 0x2BADB002;
-            if (*testValPtr != 0x2BADB002)
-            {
-                UART.Write("Test val not written correctly!\n");
-            }
-            else
-            {
-                UART.Write("Test val written correctly.\n");
-            }
-
 
             while (true)
             {

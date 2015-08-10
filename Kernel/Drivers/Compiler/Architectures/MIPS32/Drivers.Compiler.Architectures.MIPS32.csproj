@@ -39,6 +39,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ASMOps\Srlv.cs" />
     <Compile Include="ASMOps\Sub.cs" />
     <Compile Include="ASMOps\Add.cs" />
     <Compile Include="ASMOps\And.cs" />
@@ -62,6 +63,7 @@
     <Compile Include="ASMOps\Pop.cs" />
     <Compile Include="ASMOps\Push.cs" />
     <Compile Include="ASMOps\Ret.cs" />
+    <Compile Include="ASMOps\Sllv.cs" />
     <Compile Include="ASMOps\Srl.cs" />
     <Compile Include="ASMOps\Sll.cs" />
     <Compile Include="ASMOps\StaticField.cs" />
@@ -91,6 +93,7 @@
     <Compile Include="ILOps\MethodStart.cs" />
     <Compile Include="ILOps\Mul.cs" />
     <Compile Include="ILOps\Ret.cs" />
+    <Compile Include="ILOps\Shl.cs" />
     <Compile Include="ILOps\StackSwitch.cs" />
     <Compile Include="ILOps\Stind.cs" />
     <Compile Include="ILOps\Stloc.cs" />
