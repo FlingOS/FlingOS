@@ -39,6 +39,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ASMOps\Sub.cs" />
     <Compile Include="ASMOps\Add.cs" />
     <Compile Include="ASMOps\And.cs" />
     <Compile Include="ASMOps\ASMUtilities.cs" />
