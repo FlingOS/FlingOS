@@ -138,9 +138,7 @@ namespace Drivers.Compiler.Architectures.MIPS32
             {
                 bytesOffset += conversionState.Input.TheMethodInfo.LocalInfos[i].TheTypeInfo.SizeOnStackInBytes;
             }
-            if (localIndex >= conversionState.Input.TheMethodInfo.LocalInfos.Count)
-            {
-            }
+
             Types.VariableInfo theLoc = conversionState.Input.TheMethodInfo.LocalInfos[localIndex];
             if (Utilities.IsFloat(theLoc.UnderlyingType))
             {
@@ -151,7 +149,7 @@ namespace Drivers.Compiler.Architectures.MIPS32
             if (loadAddr)
             {
                 conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Word, Src = "$fp", Dest = "$t0" });
-                conversionState.Append(new ASMOps.Add() { Src2 = bytesOffset.ToString(), Src1 = "$t0", Dest = "$t0" });
+                conversionState.Append(new ASMOps.Sub() { Src2 = bytesOffset.ToString(), Src1 = "$t0", Dest = "$t0" });
                 conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Word, Src = "$t0" });
 
                 conversionState.CurrentStackFrame.Stack.Push(new StackItem()

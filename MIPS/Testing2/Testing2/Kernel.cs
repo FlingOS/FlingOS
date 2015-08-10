@@ -26,6 +26,37 @@ namespace Testing2
 
             UART.Write("Hello, world!\r\n");
 
+            uint testVal = 0xDEADBEEF;
+            if (testVal != 0xDEADBEEF)
+            {
+                UART.Write("Test val local not correct!\n");
+            }
+            else
+            {
+                UART.Write("Test val local correct.\n");
+            }
+
+            uint* testValPtr = &testVal;
+            if (*testValPtr != 0xDEADBEEF)
+            {
+                UART.Write("Test val not read correctly!\n");
+            }
+            else
+            {
+                UART.Write("Test val read correctly.\n");
+            }
+
+            *testValPtr = 0x2BADB002;
+            if (*testValPtr != 0x2BADB002)
+            {
+                UART.Write("Test val not written correctly!\n");
+            }
+            else
+            {
+                UART.Write("Test val written correctly.\n");
+            }
+
+
             while (true)
             {
                 char c = UART.ReadChar();
