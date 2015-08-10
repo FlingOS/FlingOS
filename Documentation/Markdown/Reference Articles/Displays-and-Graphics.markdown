@@ -334,31 +334,46 @@ Video has largely kept pace or been ahead of graphics and displays and so has a 
 There are lots of different connectors and transmission standards, all of which try to balance colour quality, frame rate, minimising interference and various other factors. For the purposes of this article I will mention only the most common (and possibly most significant) standards.
 
 #### 1956 : Composite video
-In 1956 the composite video standard was introduced. Composite video works by ??????????? TODO 
+In 1956 the composite video standard was introduced. Composite video is an analogue transmission standard that can typically reach 480i or 576i quality. It encodes the video data onto a single channel (so only a single cable is required). The exact encoding varies between NTSC, PAL and SECAM but the basic idea is that the HSL and frame sync signals are modulated (i.e. combined) into a single signal. The actual modulation process is more complex than can be described here.
 
 The composite video standard was so significant that it is still in use today. A significant number of televisions and systems still have composite video connectors and there's probably a fair few buildings with the cables still built in. This seems to only be the case in the TV/DVD/Console market, however, since VGA rapidly replaced S-Video and Composite video for traditional workstations.
 
-#### 1979 : S-Video
-In 1979 the S-video standard was introduced as ??? (?an improvement to composite video?). Composite video works by ??????????? TODO 
-???
+#### 1977 : SCART
+SCART (meaning Syndicat des Constructeurs d'Appareils Radiorécepteurs et Téléviseurs) was developed in the 1970s and first appeared on TVs in 1977. It was only ever widely used in Europe (in place of Composite video and S-video). It had chunky 21-pin connector, could carry higher quality video than composite or S-video and also carried audio. However, it was still anologue so recent digital standards have almost entirely replaced it. 
 
-The S-Video standard has also hung around for a long time with ???
+SCART was developed to make connecting video devices much easier. It had a connector which made incorrect connections nearly impossible and also had support for transmitting composite and RGB signals (and, by the end of the 1980s, S-video as well). It also had support for waking devices from standby and automatic detection of input sources. Lastly, it was a bi-directional standard which allowed for chaining devices, recording and encrypted signals. Encrypted signals were frequently used for Pay-to-view TV along with providing basic Digital Rights Management during video-playback (though plenty of ways were developed to circumvent this).
+
+#### 1979 : S-Video
+In 1979 the S-video standard was introduced as a higher-quality version of composite video. S-video stands for Separate Video and is sometimes called Y/C - Luminance / Chroma. It works in essentially the same way as Composite video does but uses separate wires in the cable for the luminance and chroma signals. This allows it to achieve better quality.
+
+The S-Video standard has also hung around for a long time though in many regions TVs and games consoles did not have S-video input or output ports. This was a significant problem in Europe, where SCART cables and connectors were the norm, because games consoles such as Sony's PlayStation were not fitted with SCART output. 
 
 #### 1987 : VGA
+Video Graphics Array (VGA) was introduced in 1987 by IBM alongside the PS2 standard. It was fairly rapidly and widely adopted by the rest of the industry. The name VGA itself has become synonymous with both the hardware and software standards and even the 640x480 resolution which it started with. Later versions of VGA (XGA, SVGA and so on) added higher resolutions but are often referred to simply as VGA. 
 
+VGA became the de-facto standard for graphics and displays for PCs because of its quality and (after a time) widespread support leading to great compatibility. Many manufacturers contributed their own additions and variations but the basic standard and increased levels of quality were always supported. VGA has sufficient bandwidth to support 1080p HD displays and even higher (recently 4K and 8K). However, most current displays remain at 1080p quality.
 
-#### 1999 : DVI
+VGA is so significant that FlingOS dedicates an entire article to just one small subsection of VGA - VGA text-mode. Please see that article for more detail. Other articles, already or will in future, cover VGA graphics in more detail.
+
 #### 2003 : HDMI
+While other standards were developed between VGA and HDMI, none of them stuck and gained anything like the same level of popularity. HDMI stands for High Definition Multimedia Interface and is the second but more significant digital video standard.
 
-### Formats
+HDMI is now beginning to replace VGA and all other video standards. HDMI is now the primary output port and input port for most laptops, consoles and TVs. The data transmitted over HDMI has standard electrical signals and a basic transport protocol. However, the data itself can have a variety of different encoding formats, a large proportion of which are supported by most devices. HDMI includes both audio and video transmission along with a variety of features such as Digital Rights Management controls. 
 
-- Composite
+HDMI is also electrically and software backwards compatible with DVI, the first digital video standard (Digital Video Interface). 
+
+### Formats & Quality
+
+- Composite / Y/C / HSL
 - VHS
 - PAL
 - NTSC
+- RGB
+- sRGB
 - 720p / 720i
 - 1080p / 1080i
-- Ultra-HD TV
+- Ultra-HD TV 
+- 4K / 8K
 
 ### Encode and decode
 - Video codec (hardware) for compress / decompress
@@ -413,12 +428,29 @@ The S-Video standard has also hung around for a long time with ???
 # FAQ & Common Problems
 
 ## "I want to write a graphics driver" - Day 1
+"Woohoo! Excited for this! I'll get it working in no time and have this amazing UI that's going to be so much better than Windows!"
+
+...
+
+No chance. Even getting low-resolution displays with just rectangles and lines is hard work (and will take a few weeks or months). If you want to support more than just a virtual machine (i.e. actual hardware support) then add even more time for working out how the specific, real hardware that you own works. 
+
+Beyond basic VGA support, you then have to consider the entire graphics stack. As a basic example, displaying lines and text to any reasonable quality will require anti-aliasing support, font support, vector graphics (or similar) and if you want to add the cursor, some degree of buffering/layering. All of that is the "relatively simple" stuff. Don't expect to have an entire graphics driver working in a week because you won't. It will take a very long time.
 
 ## "I want to write a graphics driver" - Day 2
+"Naah that can't be right. People must be really good at doing this by now, it won't take long."
+
+You'll realise soon enough.
 
 ## "I want to write a graphics driver" - Year 2
+"Yay! I reached graphics that are vaguely close to Windows graphics. Now then, how do I use the graphics card and/or do video decode and playback...?"
+
+Well done! Impressed you stuck at it. Keep going, I'm sure you don't need advice from me by now.
 
 ## After the graphics driver (or along the way)
+- All the stuff to make use of the graphics
+- Video encode/decode
+- Actually making use of a graphics card
+- UI / UX design and software stack
 
 ---
 
