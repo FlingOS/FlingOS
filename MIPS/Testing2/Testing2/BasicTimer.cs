@@ -27,7 +27,7 @@ namespace Testing2
             *(uint*)Timer.TCU_OSTCNTL = 0;
 
             /* Use EXTCLK as the clock source */
-            *(uint*)Timer.TCU_OSTCSR = *(uint*)Timer.TCU_OSTCSR | *(uint*)Timer.OSTCSR_EXT_EN;
+            *(uint*)Timer.TCU_OSTCSR = *(uint*)Timer.TCU_OSTCSR | Timer.OSTCSR_EXT_EN;
 
             /* Enable the timer*/
             *(uint*)Timer.TESR = Timer.TER_OSTEN;

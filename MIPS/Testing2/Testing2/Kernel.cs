@@ -26,37 +26,14 @@ namespace Testing2
 
             UART.Write("Hello, world!\r\n");
 
+            UInt64 lastCount = BasicTimer.CounterValue;
+            UART.Write("Waiting 10 second(s) [");
+            for(int i = 0; i < 10; i++)
             {
-                UInt64 x = 1;
-                if (x != 1)
-                {
-                    UART.Write("Test val 'x' local not correct!\n");
-                }
-                else
-                {
-                    UART.Write("Test val 'x' local correct.\n");
-                }
-
-                UInt64 y = 0x100000000u;
-                if (y != 0x100000000u)
-                {
-                    UART.Write("Test val 'y' local not correct!\n");
-                }
-                else
-                {
-                    UART.Write("Test val 'y' local correct.\n");
-                }
-
-                UInt64 mulResult = x * y;
-                if (mulResult != 0x100000000u)
-                {
-                    UART.Write("mulResult val not correct!\n");
-                }
-                else
-                {
-                    UART.Write("mulResult val correct.\n");
-                }
+                BasicTimer.Sleep(1000000u);
+                UART.Write(".");
             }
+            UART.Write("]\n");
 
             while (true)
             {
