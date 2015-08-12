@@ -11,7 +11,7 @@ categories: docs reference
 Interrupts, also known as exceptions, traps, gates or (in a debugging context) breakpoints, are an absolute essential to OS development. They are so critical that the vast majority of devices can't even be configured without them. This article will look at what interrupts are and, in a general context, how they are used.
 
 ## Scope of this article
-Interrupts and how interrupts work varies a lot from architecture to architecture but the basic concepts remain the same. This article will cover general ideas about interrupts. Other articles (e.g. the Interrupts Descriptor Table or Programmable Interrupts Controller articles) cover architecture specific implementations of interrupts.
+Interrupts and how interrupts work varies a lot from architecture to architecture but the basic concepts remain the same. This article will cover general ideas about interrupts. Other articles (e.g. the Interrupts Descriptor Table or Programmable Interrupts Controller articles) cover architecture specific implementations of interrupts. Many of the general topics touched upon in this article also have their own dedicated articles (e.g. ISRs and IRQs).
 
 ---
 
@@ -76,39 +76,120 @@ By the time the new millennium came along interrupts were a pretty mature concep
 # Hardware
 
 ## Overview
+ - Internal processor hardware
+ - Interrupt line
+ - Interrupt controllers
+ - Interrupt numbers
 
+ - Level triggered
+ - Edge triggered
+ - Hybrid
+ - Message-signalled
+ - Doorbell
+
+ - Inter-processor Interrupts
+ - Hardware state saving
+ 
+ - Spurious interrupts
+ 
 ## Details : Internals
 
 ## Details : Externals
-
-## Alternatives
-
-## Compatibility
 
 ---
 
 # Software
 
 ## Overview
+Software for dealing with interrupts has two main tasks - configuration and handling. Configuration involves specifying which method the processor should call when an interrupt occurs and also settings such as which privilege levels are allowed to handle (or invoke) which interrupts. 
+
+Handling an interrupt generally involves three steps. The first is to save any processor state or context information which might be changed during the interrupt. The next step is to actually handle the interrupt, which may involve a second stage (implemented in kernel software) determining which methods to call and might also involve notifying devices or the processor that an interrupt has been handled. The final step is to restore any saved state before returning from the interrupt.
+
+In most systems, interrupts are assigned numbers (or vectors) which are used to refer to them. More often than not, these numbers are actually indexes into some form of table which holds all the configuration for each interrupt as an array of information structures. These numbers are referred to as interrupt numbers or ISR numbers.
+
+An ISR is an Interrupt Service Routine. It refers to the method (or "routine") called when an interrupt is invoked ("serviced"). Device interrupts often have a secondary layer of numbering (through an interrupt controller) which numbers the interrupts according to the controller's perspective. These interrupts are known as IRQs meaning Interrupt Requests. An interrupt request number is mapped to an actual ISR number on the processor. There are usually of the order of 16 IRQs and 256 ISRs. Internal interrupts are usually at fixed ISR numbers but IRQs can be remapped if the interrupt controller is programmable (which is usually the case). This means IRQ0 could be mapped to ISR32 (as is often the case on x86 processors).
+
+In many architectures, the name Interrupt Vector is used. This is equivalent to an Interrupt Number so where the term ISR is used below, Interrupt Vector Handler/Routine (IVH/IVR) could replace it.
 
 ## Basic outline
+Generally software is organised into three parts. 
 
-## Technical details
-**Enumerations, classes, other such details**
+The primary part is the interrupt manager which handles registering handlers with the hardware for ISRs. It also handles mapping IRQs to ISRs. 
 
-## Implementation details
-**Methods, steps, etc.**
+The second part are the interrupt handlers themselves. Often, separate methods are used for each exception but all device interrupts will go through a single method. This single method will then use one or more lists to call registered methods. This allows multiple methods to handle a single interrupt. 
 
-## Alternatives
+The third and final part are the actual handler methods for each interrupt. For device interrupts, these will usually be part of drivers and will have to register themselves with the general interrupt handler's list (as described above). Exception and software interrupt handlers will usually be part of the kernel, though they don't have to be.
 
-## Compatibility
+SInce interrupts can occur at any time, the interrupt manager must make sure all updates to the hardware configuration (or to the second-level list of methods) are either atomic, thread-safe or done while interrupts are disabled. Since exception interrupts can't (usually) be disabled, it is best to use thread-safe programming styles. Many architectures don't offer useful atomic operation support and atomic operations may not work in a multi-core environment without also locking the memory bus, which is slow and devastating to performance.
 
----
+## Spurious Interrupts
+One phenomenon that often catches developers out is spurious interrupts. These are also known as ghost interrupts because they do not originate from a device, the processor or software. The most likely cause of such an interrupt is electrical interference causing the interrupt line to appear to signal an interrupt when it hasn't. Modern hardware is much better than it used to be so this is a fairly rare occurrence but Linux statistics do suggest that in a typical day at least one or two will occur. 
 
-# FAQ & Common Problems
+Spurious interrupts must be checked for and handled specially. For example, you may not want to send an End of Interrupt signal to an interrupt controller if a spurious interrupt has occurred as it may cause the interrupt controller to skip the next real interrupt (on the basis that it will "already have been handled"). Furthermore, a spurious interrupt could cause a driver to read from or (possibly worse) write to a device which would have unknown consequences as the device would not be expecting it. 
 
----
+Spurious interrupts can be checked for at two levels. For device interrupts, the interrupt controller can be checked to see if it fired the interrupt. The second level of checking can be done by checking each device that could have caused the interrupt to see if it triggered it. Notably, this second step should be done anyway as multiple devices can trigger the same IRQ (and so same ISR = same interrupt). 
 
-# References
+Spurious interrupts should never (and probably don't ever) occur for exception or software interrupts. For exception interrupts, it would be very difficult to check if it was spurious or not. For software interrupts, you could use a register or memory location to store whether a software interrupt was supposed to occur, but this is neither fool-proof nor efficient and also probably unnecessary.
 
-*[acronym]: details
+## Device interrupts
+Device interrupts require device specific handling. However, some general points can be made. If an interrupt controller exists, it will almost certainly need notifying when the interrupt has finished being handled (but prior to returning from the interrupt).
+
+Device interrupts are usually grouped by type. That is to say, all devices of a given category will trigger the same IRQ number and thus the same interrupt on the processor. This is for both efficiency and space-saving in the hardware design. What this means is that when an IRQ occurs, each device driver's interrupt handler must check which device caused the interrupt. Only devices which have flagged themselves as causing an interrupt should be dealt with. Due to some interrupt coalescing techniques, a single interrupt can occur for multiple devices. Thus all devices must be checked not just until one is found. If none are found to have caused the interrupt, then either:
+a) The kernel does not have a complete list of devices attached to the processor which could have caused the interrupt request,
+b) Or, the interrupt was a spurious interrupt, as described in the previous section.
+
+Device interrupt numbers are often programmable and can be found by inspecting the device's configuration at runtime. For example, any PCI devices which use interrupts will have a register specifying the ISR or IRQ number for the device.
+
+Many device interrupts are just notifications where the main processing must then be deferred to later on (usually to a separate thread). See Deferred Interrupts below.
+
+## Exceptions
+Exception interrupts fall into three categories:
+ - Expected
+ - Unexpected but recoverable
+ - Unexpected and irrecoverable
+ 
+If the language you are programming in has support for try-catch-finally sections then you'll probably find that the majority of exceptions are recoverable. However, that does assume you make proper use of them.
+
+Expected exceptions are exceptions such as page faults and debug breaks which occur as part of normal execution and can be handled such that execution can return and continue without causing another fault. In some, rare cases, an expected exception may occur at an unexpected time, in which case it may cause an irrecoverable situation. For example, such an event usually causes a Blue Screen of Death in Windows or Kernel Panic in Linux.
+
+Unexpected exceptions are exactly as they sound. An exception handling subsystem such as try-catch-finally may allow a program or the kernel to recover. If such a system does not exist then either the program must be terminated or, if the exception was caused by the kernel, the kernel must panic. an irrecoverable error is what causes kernel panic (Linux) or Blue Screen of Death (Windows).
+
+Try-catch-finally systems are generally organised by a program registering a catch-all exception handler method with the kernel. When an exception occurs, the kernel calls this method with information about the exception. The handler method is then internal to the program and can decide what to do. Typically, the program will register and unregister try-catch-finally blocks as it enters or leaves them and, when an exception occurs, the handler method can look up the current closest finally or catch block and jump to it. If none is found, then the handler method would inform the kernel that the exception was unhandled.
+
+## System Calls
+System calls are the most frequent use of software interrupts. They are the primary way for a program to make calls to the kernel. They are normally triggered by using a special interrupt instruction (such as 'int _num_' on x86). These are usually called interrupt gates because programs run in privilege ring 3 (or equivalent on non x86) and kernel runs in ring 0. The gate allows the transition from ring 3 to ring 0.
+
+A system call works by the program putting arguments into registers and then issuing the interrupt instruction. The interrupt instruction will also specify which interrupt number to invoke. This number is kernel-specific and decided by whoever developed the kernel. On Linux the interrupt number (a.k.a. vector) on x86 and x64 systems is 0x80 (128). On Windows the vector is 0x2E (46). 
+
+Typically the first argument to a system call is a number known as the system call number. This number identifies what action or function the program is requesting the kernel to run. The remaining arguments are function-specific, as we would expect. The kernel can usually return one piece of data to the program (as is normal with a function call) and does so using the first parameter register. Often the return value is a handle to a kernel object (i.e. a piece of kernel memory) which the program can use with other system calls to access the data it required or to pass to other system calls.
+
+If more parameters for the system call are required than there are registers, then the mechanism changes slightly. Instead of passing parameters in registers, the program will allocate a chunk of memory for a particular structure. The structure then contains all the parameters. The system call then has only two actual parameters - the call number and a pointer to the structure. This work because kernel mode can access all memory (where as user-mode can usually only access its own memory).
+
+## Deferred interrupts
+Interrupts are wonderful but they create some significant problems. The most significant problems caused are those of cross-thread and locking issues, largely relating to memory. Say, for example, you had a program writing 1024 bytes to memory. An interrupt could occur in the middle of that write, so only 560 bytes had actually been written. If the interrupt code were to try and access that memory, it would read (or write) incorrect values. This means the memory must be locked while it is being accessed. 
+
+Unfortunately, this creates a new problem. If a program locks something and then an interrupt handler waits on that lock to become free, the whole system becomes permanently stalled. This is because while an interrupt handler is executing no (non-exception) interrupts can occur and the program holding the lock can't continue executing. This means the program will never be able to free the lock so the interrupt will be waiting forever. This same problem occurs if you try to allocate memory from a heap. 
+
+There are two important conclusions to this:
+1) Interrupt handlers must:
+	- Not attempt to allocate memory
+	- Must be programmed to be thread-safe (so they don't depend on locks)
+	
+  And all associated software must also be made thread-safe.
+2) Since some interrupts require more complex processing which will require allocating memory, there has to be a method of handling interrupts that won't block programs. This technique is called deferred interrupts.
+
+A deferred interrupt is not really an interrupt at all. What happens is, when the actual interrupt occurs, a record is made of its occurrence and any programs dependent on the result of the interrupt are paused (for example, a program making a system call would be paused). 
+
+A separate thread of the kernel is then used to check the records of interrupts which have occurred. For each record it processes the interrupt and then resumes any waiting programs. In this way, the interrupt processing occurs inside of a thread, meaning it is scheduled alongside all the other programs. Thus the thread can utilise locks and so can do things like memory allocation.
+ 
+Deferred interrupts are comparatively slow which is why for performance critical systems, such as networking and graphics, drivers (or the kernel) will always make sure required memory is allocated ahead of time. The allocated memory can then be used inside the actual interrupt handler.
+
+An interrupt which has to be handled without deferring it is called a critical interrupt. 
+
+## Performance considerations
+Interrupts introduce a lot of performance considerations. The main problem to avoid is called Interrupt Storm. This is when so many interrupts occur that the hardware buffers cannot keep track of all of them and some are lost. It is also when the system spends so much time handling interrupts that normal processing cannot continue causing the system to freeze/lock up/become unresponsive.
+
+There are many patents covering techniques for managing interrupts. These techniques come in three basic forms:
+1) Coalescing of interrupts (combining multiple interrupts into a single event to allow more processing to be done per interrupt handler invocation)
+2) Reducing the number of interrupts (applying optimisations to software and hardware to reduce the number of interrupts required)
+3) Reducing required computation time of interrupts (applying optimisations to both hardware and software to reduce the amount of work (and thus time) required by each interrupt. This frees up time for normal processing).
