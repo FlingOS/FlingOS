@@ -141,7 +141,7 @@ namespace Drivers.Compiler.Architectures.MIPS32
 
                         conversionState.Append(new ASMOps.Pop() { Size = ASMOps.OperandSize.Word, Dest = "$t0" });
                         conversionState.Append(new ASMOps.Mov() { Src = "$t0", Dest = "$t3", MoveType = ASMOps.Mov.MoveTypes.RegToReg, Size = ASMOps.OperandSize.Word });
-                        conversionState.Append(new ASMOps.And() { Src1 = "$t3", Src2 = "0x80000000", Dest = "$t1" });
+                        conversionState.Append(new ASMOps.And() { Src1 = "$t3", Src2 = "0x80000000", Dest = "$t3" });
                         conversionState.Append(new ASMOps.Branch() { Src1 = "$t3", BranchType = ASMOps.BranchOp.BranchZero, DestILPosition = currOpPosition, Extension = "Positive" });
                         conversionState.Append(new ASMOps.Mov() { Src = "0xFFFFFFFF", Dest = "$t3", Size = ASMOps.OperandSize.Word, MoveType = ASMOps.Mov.MoveTypes.ImmediateToReg });
                         conversionState.Append(new ASMOps.Label() { ILPosition = currOpPosition, Extension = "Positive" });

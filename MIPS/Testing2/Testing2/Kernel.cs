@@ -27,8 +27,8 @@ namespace Testing2
             UART.Write("Hello, world!\r\n");
 
             {
-                UInt64 x = 10;
-                if (x != 0x10)
+                UInt64 x = 0x100000000u;
+                if (x != 0x100000000u)
                 {
                     UART.Write("Test val 'x' local not correct!\n");
                 }
@@ -37,8 +37,8 @@ namespace Testing2
                     UART.Write("Test val 'x' local correct.\n");
                 }
 
-                UInt64 y = 100;
-                if (y != 0x100)
+                UInt64 y = 1;
+                if (y != 1)
                 {
                     UART.Write("Test val 'y' local not correct!\n");
                 }
@@ -48,7 +48,7 @@ namespace Testing2
                 }
 
                 UInt64 mulResult = x * y;
-                if (mulResult != 1000)
+                if (mulResult != 0x100000000u)
                 {
                     UART.Write("mulResult val not correct!\n");
                 }
