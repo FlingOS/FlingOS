@@ -76,6 +76,9 @@ By the time the new millennium came along interrupts were a pretty mature concep
 # Hardware
 
 ## Overview
+The processor has in input pin called the interrupt line. By varying the voltage level on the pin, hardware external to the processor can signal an interrupt. Internal interrupts may or may not be generated in the same way - that depends entirely on the internal design of the processor.
+
+
  - Internal processor hardware
  - Interrupt line
  - Interrupt controllers
@@ -92,9 +95,6 @@ By the time the new millennium came along interrupts were a pretty mature concep
  
  - Spurious interrupts
  
-## Details : Internals
-
-## Details : Externals
 
 ---
 
