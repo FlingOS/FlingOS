@@ -27,10 +27,10 @@ namespace Testing2
             UART.Write("Hello, world!\r\n");
 
             UInt64 lastCount = BasicTimer.CounterValue;
-            UART.Write("Waiting 10 second(s) [");
+            UART.Write("Waiting 1 second(s) [");
             for(int i = 0; i < 10; i++)
             {
-                BasicTimer.Sleep(1000000u);
+                BasicTimer.Sleep(100000u);
                 UART.Write(".");
             }
             UART.Write("]\n");
@@ -122,10 +122,11 @@ namespace Testing2
         }
         private static void DelayShort()
         {
-            for (int j = 0; j < 100; j++)
-            {
-                ;
-            }
+            //for (int j = 0; j < 100; j++)
+            //{
+            //    ;
+            //}
+            BasicTimer.Sleep(10ul);
         }
 
         [Drivers.Compiler.Attributes.ThrowNullReferenceExceptionMethod]
