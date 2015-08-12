@@ -22,29 +22,40 @@ namespace Testing2
             DelayLong();
 
             UART.Init();
-            //BasicTimer.Init();
+            BasicTimer.Init();
 
             UART.Write("Hello, world!\r\n");
 
-            UInt64 testVal = 0x2BADB002DEADBEEF;
-            if (testVal != 0x2BADB002DEADBEEF)
             {
-                UART.Write("Test val local not correct!\n");
-            }
-            else
-            {
-                UART.Write("Test val local correct.\n");
-            }
+                UInt64 x = 10;
+                if (x != 0x10)
+                {
+                    UART.Write("Test val 'x' local not correct!\n");
+                }
+                else
+                {
+                    UART.Write("Test val 'x' local correct.\n");
+                }
 
-            int shift = 16;
-            UInt64 result = testVal << shift;
-            if (result != 0xB002DEADBEEF0000)
-            {
-                UART.Write("result val not correct!\n");
-            }
-            else
-            {
-                UART.Write("result val correct.\n");
+                UInt64 y = 100;
+                if (y != 0x100)
+                {
+                    UART.Write("Test val 'y' local not correct!\n");
+                }
+                else
+                {
+                    UART.Write("Test val 'y' local correct.\n");
+                }
+
+                UInt64 mulResult = x * y;
+                if (mulResult != 1000)
+                {
+                    UART.Write("mulResult val not correct!\n");
+                }
+                else
+                {
+                    UART.Write("mulResult val correct.\n");
+                }
             }
 
             while (true)

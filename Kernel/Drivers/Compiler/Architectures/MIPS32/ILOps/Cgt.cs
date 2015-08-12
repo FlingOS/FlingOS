@@ -96,13 +96,14 @@ namespace Drivers.Compiler.Architectures.MIPS32
                 //If A <= B, jump to Else (not-true case)
                 conversionState.Append(new ASMOps.Branch() { Src1 = "$t0", Src2 = "$t1", BranchType = ASMOps.BranchOp.BranchLessThanEqual, DestILPosition = currOpPosition, Extension = "Else", UnsignedTest = unsignedComparison });
                 //Otherwise, A > B, so push true (true=1)
-                conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Word, Src = "1" });
+                conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Word, Dest = "$t4", Src = "1", MoveType = ASMOps.Mov.MoveTypes.ImmediateToReg });
+                conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Word, Src = "$t4" });
                 //And then jump to the end of this IL op.
                 conversionState.Append(new ASMOps.Branch() { BranchType = ASMOps.BranchOp.Branch, DestILPosition = currOpPosition, Extension = "End" });
                 //Insert the Else label.
                 conversionState.Append(new ASMOps.Label() { ILPosition = currOpPosition, Extension = "Else" });
                 //Else case - Push false (false=0)
-                conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Word, Src = "0" });
+                conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Word, Src = "$zero" });
                 
                 //Push the result onto our stack
                 conversionState.CurrentStackFrame.Stack.Push(new StackItem()
@@ -137,13 +138,14 @@ namespace Drivers.Compiler.Architectures.MIPS32
                 //Insert True case label
                 conversionState.Append(new ASMOps.Label() { ILPosition = currOpPosition, Extension = "True" });
                 //True case - Push true (true=1)
-                conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Word, Src = "1" });
+                conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Word, Dest = "$t4", Src = "1", MoveType = ASMOps.Mov.MoveTypes.ImmediateToReg });
+                conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Word, Src = "$t4" });
                 //And then jump to the end of this IL op.
                 conversionState.Append(new ASMOps.Branch() { BranchType = ASMOps.BranchOp.Branch, DestILPosition = currOpPosition, Extension = "End" });
                 //Insert Else case label
                 conversionState.Append(new ASMOps.Label() { ILPosition = currOpPosition, Extension = "Else" });
                 //Else case - Push false (false=0)
-                conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Word, Src = "0" });
+                conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Word, Src = "$zero" });
                 
                 //Push the result onto our stack
                 conversionState.CurrentStackFrame.Stack.Push(new StackItem()
