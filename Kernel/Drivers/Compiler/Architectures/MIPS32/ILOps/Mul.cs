@@ -160,8 +160,10 @@ namespace Drivers.Compiler.Architectures.MIPS32
                     conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Word, Src = "0($sp)", Dest = "$t0", MoveType = ASMOps.Mov.MoveTypes.SrcMemoryToDestReg });
                     // mov $t1, 8($sp) - Load AL
                     conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Word, Src = "8($sp)", Dest = "$t1", MoveType = ASMOps.Mov.MoveTypes.SrcMemoryToDestReg });
-                    // mul $t1           - BL * AL, result in $t0:$t3
+                    // mul $t1           - BL * AL, result in $lo:$hi
                     conversionState.Append(new ASMOps.Mul() { Src1 = "$t0", Src2 = "$t1" });
+                    conversionState.Append(new ASMOps.Mfhi() { Dest = "$t3" });
+                    conversionState.Append(new ASMOps.Mflo() { Dest = "$t0" });
                     // push $t3          - Push result keeping high bits
                     conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Word, Src = "$t3" });
                     // push $t0
@@ -175,8 +177,9 @@ namespace Drivers.Compiler.Architectures.MIPS32
                     conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Word, Src = "0", Dest = "$t3", MoveType = ASMOps.Mov.MoveTypes.ImmediateToReg });
                     // mov $t0 4+8($sp) - Load BH
                     conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Word, Src = "12($sp)", Dest = "$t0", MoveType = ASMOps.Mov.MoveTypes.SrcMemoryToDestReg });
-                    // mul $t1           - BH * AL, result in $t0:$t3
+                    // mul $t1           - BH * AL, result in $lo:$hi
                     conversionState.Append(new ASMOps.Mul() { Src1 = "$t0", Src2 = "$t1" });
+                    conversionState.Append(new ASMOps.Mflo() { Dest = "$t0" });
                     // push $t0          - Push result truncating high bits
                     conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Word, Src = "$t0" });
 
@@ -190,8 +193,9 @@ namespace Drivers.Compiler.Architectures.MIPS32
                     conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Word, Src = "12($sp)", Dest = "$t0", MoveType = ASMOps.Mov.MoveTypes.SrcMemoryToDestReg });
                     // mov $t1, 12+12($sp) - Load AH
                     conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Word, Src = "24($sp)", Dest = "$t0", MoveType = ASMOps.Mov.MoveTypes.SrcMemoryToDestReg });
-                    // mul $t1             - BL * AH, result in $t0:$t3
+                    // mul $t1             - BL * AH, result in $lo:$hi
                     conversionState.Append(new ASMOps.Mul() { Src1 = "$t0", Src2 = "$t1" });
+                    conversionState.Append(new ASMOps.Mflo() { Dest = "$t0" });
                     // push $t0            - Push result truncating high bits
                     conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Word, Src = "$t0" });
 
@@ -209,11 +213,11 @@ namespace Drivers.Compiler.Architectures.MIPS32
                     conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Word, Src = "0", Dest = "$t1", MoveType = ASMOps.Mov.MoveTypes.ImmediateToReg });
                     // mov $t2, 4($sp)   - Load AL * BH
                     conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Word, Src = "4($sp)", Dest = "$t2", MoveType = ASMOps.Mov.MoveTypes.SrcMemoryToDestReg });
-                    // add $t3, $t2       - Add (AL * BL) + (AL * BH), result in $t0:$t3
+                    // add $t3, $t2       - Add (AL * BL) + (AL * BH), result in $lo:$hi
                     conversionState.Append(new ASMOps.Add() { Src1 = "$t2", Src2 = "$t3", Dest = "$t3" });
                     // mov $t2, 0(sp)   - Load AH * BL
                     conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Word, Src = "0($sp)", Dest = "$t2", MoveType = ASMOps.Mov.MoveTypes.SrcMemoryToDestReg });
-                    // add $t3, $t2       - Add ((AL * BL) + (AL * BH)) + (AH * BL), result in $t0:$t3
+                    // add $t3, $t2       - Add ((AL * BL) + (AL * BH)) + (AH * BL), result in $lo:$hi
                     conversionState.Append(new ASMOps.Add() { Src1 = "$t2", Src2 = "$t3", Dest = "$t3" });
 
                     // add esp, 16+16     - Remove temp results and input values from stack
