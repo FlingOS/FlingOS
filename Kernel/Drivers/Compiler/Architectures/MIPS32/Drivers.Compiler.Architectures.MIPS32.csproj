@@ -92,6 +92,7 @@
     <Compile Include="ILOps\MethodEnd.cs" />
     <Compile Include="ILOps\MethodStart.cs" />
     <Compile Include="ILOps\Mul.cs" />
+    <Compile Include="ILOps\Or.cs" />
     <Compile Include="ILOps\Ret.cs" />
     <Compile Include="ILOps\Shl.cs" />
     <Compile Include="ILOps\StackSwitch.cs" />
