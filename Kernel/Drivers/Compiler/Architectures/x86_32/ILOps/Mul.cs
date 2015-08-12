@@ -143,7 +143,7 @@ namespace Drivers.Compiler.Architectures.x86
                                         string.Format(Errors.ErrorMessages[Errors.ILCompiler_ScanILOpCustomWarning_ErrorCode], 
                                         "All 64-bit multiplication is treated as unsigned. Ensure you didn't intend signed 64-bit multiplication. Signed 64-bit multiplication is not supported yet."));
 
-                    //A = item a, B = item B
+                    //A = item A, B = item B
                     //L = low bits, H = high bits
                     // => A = AL + AH, B = BL + BH
                     
@@ -164,7 +164,7 @@ namespace Drivers.Compiler.Architectures.x86
                     // mov edx, 0
                     conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Dword, Src = "0", Dest = "EDX" });
 
-                    // mov eax, [ESP+0]  - Load BL
+                    // mov eax, [ESP+0] - Load BL
                     GlobalMethods.InsertPageFaultDetection(conversionState, "esp", 0, (OpCodes)theOp.opCode.Value);
                     conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Dword, Src = "[ESP+0]", Dest = "EAX" });
                     // mov ebx, [ESP+8] - Load AL
