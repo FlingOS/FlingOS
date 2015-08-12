@@ -76,25 +76,23 @@ By the time the new millennium came along interrupts were a pretty mature concep
 # Hardware
 
 ## Overview
-The processor has in input pin called the interrupt line. By varying the voltage level on the pin, hardware external to the processor can signal an interrupt. Internal interrupts may or may not be generated in the same way - that depends entirely on the internal design of the processor.
+In general, the processor has in input pin called the interrupt line. By varying the voltage level on the pin, hardware external to the processor can signal an interrupt. Internal interrupts may or may not be generated in the same way - that depends entirely on the internal design of the processor. The processor will also contain a mechanism for specifying the number of interrupt that was to be invoked. This is often only an 8-bit value. Between the processor and actual devices, there may also be an interrupt controller which handles prioritising interrupts from different devices and prevent re-interruption of a device interrupt.
 
+The interrupt line itself can use one of several different hardware standards fro detecting an interrupt signal. These techniques all have the same effect and are all subject to issues such as spurious interrupts (which are explained in more detail in the software section).
 
- - Internal processor hardware
- - Interrupt line
- - Interrupt controllers
- - Interrupt numbers
+The first hardware mechanism is level-triggering. This is when holding the interrupt line at a particular voltage level signals the interrupt. This level is considered to be the opposite of the default level and need not be higher, it can be lower. The standard voltage levels used in modern hardware are 0V and 3.3V or 5V (rarely are 3.3V and 5V used as part of the same subsystem of hardware). 0V and 5V are defined to be 0 and 1 or 1 and 0 respectively, depending on the logic convention. Irrespective of the actual voltage value, holding the interrupt line of the processor at '1' will signal an interrupt. 
 
- - Level triggered
- - Edge triggered
- - Hybrid
- - Message-signalled
- - Doorbell
+The second hardware mechanism is edge-triggering. This is where transitioning the interrupt line from 0 to 1 or 1 to 0 (one or the other or both) will signal an interrupt. It is called an edge trigger because a diagram of the voltage signal shows a rising or falling line, which looks like the edge of a cliff. When the processor detects the transition the interrupt is triggered - usually only one direction of transition is detected, the leading or trailing edge. 
 
- - Inter-processor Interrupts
- - Hardware state saving
- 
- - Spurious interrupts
- 
+It is possible to have a hybrid system in which the processor looks for the edge followed by a level hold for a period of time. 
+
+All of the above systems work on the basis that the processor samples the interrupt line at a given frequency. What this means is that is multiple devices share the same interrupt line, then if they are not designed to collaborate, the devices can conflict. In fact, the problem goes a step further because it is a hardware conflict not just a software or timing conflict. This means that devices could physically damage each other if they were not designed to share an interrupt line. 
+
+There are two more mechanisms for signalling interrupts which do not make use of the interrupts line. These are message signalling and doorbells. Messaging signalling works by a device sending a short message over a communication line which the hardware or software reads and interprets as an interrupt trigger. This interrupt notification system can be shared between devices to the extent that the underlying communication medium can be shared, with no additional effort required. Typically, multiple interrupt messages received in quick succession will be merged into a single interrupt signal. PCI, for example, uses message signalled interrupts exclusively. PCI hardware on x86 attaches to the PIC to pass on the signalled interrupts so they appear on the x86 interrupt line.
+
+The second and final mechanism is doorbells. A doorbell works by a device writing to a pre-agreed location in memory when it wants to signal an interrupt. The hardware or software periodically reads that location to check its value. The presence of a pre-agreed value signals an interrupt. Sometimes the doorbell region is hard-wired away form memory and directly to device or processor registers. This allows the interrupt to be signalled directly instead of having to poll a memory region. This is very similar to an interrupt line. 
+
+There is one category of interrupts which has not yet been mentioned. This category is Inter-processor Interrupts. These are interrupts sent between cores of a CPU (or GPU or other multi-core processor) or between physically separate CPUs (or GPUs or other processors). They are used generally for synchronisation such as when memory needs to be flushed or the processor is being shut down. 
 
 ---
 
