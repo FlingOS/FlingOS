@@ -202,7 +202,7 @@ namespace Drivers.Compiler.Architectures.x86
                     conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Dword, Src = "[ESP+12]", Dest = "EAX" });
                     // mov ebx, [ESP+12+12] - Load AH
                     GlobalMethods.InsertPageFaultDetection(conversionState, "esp", 24, (OpCodes)theOp.opCode.Value);
-                    conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Dword, Src = "[ESP+24]", Dest = "EAX" });
+                    conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Dword, Src = "[ESP+24]", Dest = "EBX" });
                     // mul ebx             - BL * AH, result in eax:edx
                     conversionState.Append(new ASMOps.Mul() { Arg = "EBX" });
                     // push eax            - Push result truncating high bits

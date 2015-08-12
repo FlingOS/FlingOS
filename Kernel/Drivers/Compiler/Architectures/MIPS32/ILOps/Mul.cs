@@ -192,7 +192,7 @@ namespace Drivers.Compiler.Architectures.MIPS32
                     // mov $t0, 0+12($sp) - Load BL
                     conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Word, Src = "12($sp)", Dest = "$t0", MoveType = ASMOps.Mov.MoveTypes.SrcMemoryToDestReg });
                     // mov $t1, 12+12($sp) - Load AH
-                    conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Word, Src = "24($sp)", Dest = "$t0", MoveType = ASMOps.Mov.MoveTypes.SrcMemoryToDestReg });
+                    conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Word, Src = "24($sp)", Dest = "$t1", MoveType = ASMOps.Mov.MoveTypes.SrcMemoryToDestReg });
                     // mul $t1             - BL * AH, result in $lo:$hi
                     conversionState.Append(new ASMOps.Mul() { Src1 = "$t0", Src2 = "$t1" });
                     conversionState.Append(new ASMOps.Mflo() { Dest = "$t0" });
