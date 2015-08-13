@@ -80,6 +80,7 @@
     <Compile Include="ILOps\Clt.cs" />
     <Compile Include="ILOps\Convi.cs" />
     <Compile Include="ILOps\Convu.cs" />
+    <Compile Include="ILOps\Dup.cs" />
     <Compile Include="ILOps\GlobalMethods.cs" />
     <Compile Include="ILOps\Ldarg.cs" />
     <Compile Include="ILOps\Ldc.cs" />
