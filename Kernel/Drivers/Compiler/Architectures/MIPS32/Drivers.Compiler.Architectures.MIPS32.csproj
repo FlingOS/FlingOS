@@ -92,6 +92,7 @@
     <Compile Include="ILOps\Ldnull.cs" />
     <Compile Include="ILOps\Ldsfld.cs" />
     <Compile Include="ILOps\Ldstr.cs" />
+    <Compile Include="ILOps\Ldtoken.cs" />
     <Compile Include="ILOps\MethodEnd.cs" />
     <Compile Include="ILOps\MethodStart.cs" />
     <Compile Include="ILOps\Mul.cs" />
