@@ -45,18 +45,16 @@ namespace Testing2
             //0x7fffffffffffffff = 9223372036854775807 (largest +ve 64-bit)
             //0x8000000000000000 = -9223372036854775808 (largest -ve 64-bit)
 
-            Int64 a = 1;
-            Int64 b = -687194767;
-            Int64 res = a + b;
+            UInt64 a = 1;
+            UInt64 b = ~a;
 
-            if (res != -687194766)
+            if (b != 0xFFFFFFFFFFFFFFFE)
             {
-                UART.Write("AddSigned64 res NOT correct");
+                UART.Write("Neg64 res NOT correct");
             }
-
             else
             {
-                UART.Write("AddSigned64 res is correct");
+                UART.Write("Neg64 res is correct");
             }
 
             while (true)

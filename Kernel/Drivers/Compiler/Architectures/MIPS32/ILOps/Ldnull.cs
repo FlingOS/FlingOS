@@ -38,7 +38,7 @@ namespace Drivers.Compiler.Architectures.MIPS32
                 sizeOnStackInBytes = 4,
                 isGCManaged = false
             });
-            conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Word, Src = "0" });
+            conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Word, Src = "$zero" });
         }
     }
 }

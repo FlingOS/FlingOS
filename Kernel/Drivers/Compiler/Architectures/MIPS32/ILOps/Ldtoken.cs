@@ -54,7 +54,8 @@ namespace Drivers.Compiler.Architectures.MIPS32
                 string typeTableId = conversionState.TheILLibrary.GetTypeInfo(theType).ID;
                 conversionState.AddExternalLabel(typeTableId);
 
-                conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Word, Src = typeTableId });
+                conversionState.Append(new ASMOps.La() { Dest = "$t0", Label = typeTableId });
+                conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Word, Src = "$t0" });
 
                 conversionState.CurrentStackFrame.Stack.Push(new StackItem()
                 {
