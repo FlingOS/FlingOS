@@ -35,6 +35,30 @@ namespace Testing2
             }
             UART.Write("]\n");
 
+            //0xffffffff = -1 (32-bit)
+            //0x7fffffff = 2147483647 (largest +ve 32-bit)
+            //0x80000000 = -2147483648 (largest -ve 32-bit)
+            
+            //0xffffffff = 4294967295 (64-bit)
+            //0xffffffffffffffff = -1 (64-bit)
+            //0x80000000 = 2147483648 (64-bit)
+            //0x7fffffffffffffff = 9223372036854775807 (largest +ve 64-bit)
+            //0x8000000000000000 = -9223372036854775808 (largest -ve 64-bit)
+
+            Int64 a = 1;
+            Int64 b = -687194767;
+            Int64 res = a + b;
+
+            if (res != -687194766)
+            {
+                UART.Write("AddSigned64 res NOT correct");
+            }
+
+            else
+            {
+                UART.Write("AddSigned64 res is correct");
+            }
+
             while (true)
             {
                 char c = UART.ReadChar();

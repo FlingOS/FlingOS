@@ -39,6 +39,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ASMOps\Sltu.cs" />
     <Compile Include="ASMOps\Srlv.cs" />
     <Compile Include="ASMOps\Sub.cs" />
     <Compile Include="ASMOps\Add.cs" />
