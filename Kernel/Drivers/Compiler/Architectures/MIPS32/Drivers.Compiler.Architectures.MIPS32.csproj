@@ -86,6 +86,7 @@
     <Compile Include="ILOps\Ldc.cs" />
     <Compile Include="ILOps\Br.cs" />
     <Compile Include="ILOps\Ldfld.cs" />
+    <Compile Include="ILOps\Ldftn.cs" />
     <Compile Include="ILOps\Ldind.cs" />
     <Compile Include="ILOps\Ldloc.cs" />
     <Compile Include="ILOps\Ldsfld.cs" />
