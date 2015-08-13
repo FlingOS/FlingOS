@@ -106,6 +106,7 @@
     <Compile Include="ILOps\Stind.cs" />
     <Compile Include="ILOps\Stloc.cs" />
     <Compile Include="ILOps\Stsfld.cs" />
+    <Compile Include="ILOps\Switch.cs" />
     <Compile Include="ILOps\Xor.cs" />
     <Compile Include="ILOps\Nop.cs" />
     <Compile Include="ILOps\Pop.cs" />

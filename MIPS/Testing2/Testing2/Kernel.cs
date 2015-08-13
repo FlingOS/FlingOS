@@ -45,16 +45,37 @@ namespace Testing2
             //0x7fffffffffffffff = 9223372036854775807 (largest +ve 64-bit)
             //0x8000000000000000 = -9223372036854775808 (largest -ve 64-bit)
 
-            Int64 a = -9223372036854775808;
-            Int64 b = -a;
+            //Int64 a = -9223372036854775808;
+            //Int64 b = -a;
 
-            if (b != -9223372036854775808)
+            //if (b != -9223372036854775808)
+            //{
+            //    UART.Write("Neg64 res NOT correct");
+            //}
+            //else
+            //{
+            //    UART.Write("Neg64 res is correct");
+            //}
+
+            int a1 = 0;
+            int b1 = 1;
+            int c1 = 2;
+            int res = a1 + b1 + c1;
+
+            switch(res)
             {
-                UART.Write("Neg64 res NOT correct");
-            }
-            else
-            {
-                UART.Write("Neg64 res is correct");
+                case 0:
+                    UART.Write("Case 0");
+                    break;
+                case 1:
+                    UART.Write("Case 1");
+                    break;
+                case 2:
+                    UART.Write("Case 2");
+                    break;
+                default:
+                    UART.Write("Case default");
+                    break;
             }
 
             while (true)
