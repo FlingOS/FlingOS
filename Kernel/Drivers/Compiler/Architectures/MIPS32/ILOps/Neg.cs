@@ -10,7 +10,7 @@ namespace Drivers.Compiler.Architectures.MIPS32
     /// <summary>
     /// See base class documentation.
     /// </summary>
-    public class Not : IL.ILOps.Not
+    public class Neg : IL.ILOps.Neg
     {
         public override void PerformStackOperations(ILPreprocessState conversionState, ILOp theOp)
         {
@@ -41,9 +41,10 @@ namespace Drivers.Compiler.Architectures.MIPS32
             if (itemA.sizeOnStackInBytes == 4)
             {
                 conversionState.Append(new ASMOps.Pop() { Size = ASMOps.OperandSize.Word, Dest = "$t0" });
-                //To not, arg Xor -1
+                //To negate, (arg XOR -1) + 1
                 conversionState.Append(new ASMOps.Mov() { Dest = "$t4", Src = "0xFFFFFFFF", MoveType = ASMOps.Mov.MoveTypes.ImmediateToReg });
                 conversionState.Append(new ASMOps.Xor() { Dest = "$t0", Src1 = "$t0", Src2 = "$t4" });
+                conversionState.Append(new ASMOps.Add() { Dest = "$t0", Src1 = "$t0", Src2 = "1"});
                 conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Word, Src = "$t0" });
             }
             else if (itemA.sizeOnStackInBytes == 8)
@@ -53,7 +54,23 @@ namespace Drivers.Compiler.Architectures.MIPS32
                 conversionState.Append(new ASMOps.Mov() { Dest = "$t4", Src = "0xFFFFFFFF", MoveType = ASMOps.Mov.MoveTypes.ImmediateToReg });
                 conversionState.Append(new ASMOps.Xor() { Dest = "$t0", Src1 = "$t0", Src2 = "$t4" });
                 conversionState.Append(new ASMOps.Xor() { Dest = "$t3", Src1 = "$t3", Src2 = "$t4" });
+
+                conversionState.Append(new ASMOps.Mov() { Src = "1", Dest = "$t1", MoveType = ASMOps.Mov.MoveTypes.ImmediateToReg });
+                conversionState.Append(new ASMOps.Mov() { Src = "0", Dest = "$t2", MoveType = ASMOps.Mov.MoveTypes.ImmediateToReg });
+                //Add $t2:$t1 to $t3:$t0
+                //Add low bits
+                conversionState.Append(new ASMOps.Add() { Dest = "$t4", Src1 = "$t1", Src2 = "$t0", Unsigned = true });
+                //Add carry bit to $t5
+                conversionState.Append(new ASMOps.Sltu() { Dest = "$t5", Src1 = "$t4", Src2 = "$t1" });
+                //Add high bits including any carry from 
+                //when low bits were added
+                conversionState.Append(new ASMOps.Add() { Dest = "$t5", Src1 = "$t5", Src2 = "$t3", Unsigned = true });
+                conversionState.Append(new ASMOps.Add() { Dest = "$t3", Src1 = "$t5", Src2 = "$t2", Unsigned = true });
+                conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Word, Src = "$t4", Dest = "$t0", MoveType = ASMOps.Mov.MoveTypes.RegToReg });
+                //Push the result
+                //Push high bits
                 conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Word, Src = "$t3" });
+                //Push low bits
                 conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Word, Src = "$t0" });
             }
             else
