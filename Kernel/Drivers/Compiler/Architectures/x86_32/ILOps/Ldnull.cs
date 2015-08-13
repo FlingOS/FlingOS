@@ -48,6 +48,7 @@ namespace Drivers.Compiler.Architectures.x86
                 isGCManaged = false
             });
         }
+
         /// <summary>
         /// See base class documentation.
         /// </summary>

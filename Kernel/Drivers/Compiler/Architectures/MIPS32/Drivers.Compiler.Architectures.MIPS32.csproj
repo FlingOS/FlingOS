@@ -39,6 +39,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ASMOps\Sltu.cs" />
     <Compile Include="ASMOps\Srlv.cs" />
     <Compile Include="ASMOps\Sub.cs" />
     <Compile Include="ASMOps\Add.cs" />
@@ -86,13 +87,18 @@
     <Compile Include="ILOps\Ldc.cs" />
     <Compile Include="ILOps\Br.cs" />
     <Compile Include="ILOps\Ldfld.cs" />
+    <Compile Include="ILOps\Ldftn.cs" />
     <Compile Include="ILOps\Ldind.cs" />
     <Compile Include="ILOps\Ldloc.cs" />
+    <Compile Include="ILOps\Ldnull.cs" />
     <Compile Include="ILOps\Ldsfld.cs" />
     <Compile Include="ILOps\Ldstr.cs" />
+    <Compile Include="ILOps\Ldtoken.cs" />
     <Compile Include="ILOps\MethodEnd.cs" />
     <Compile Include="ILOps\MethodStart.cs" />
     <Compile Include="ILOps\Mul.cs" />
+    <Compile Include="ILOps\Neg.cs" />
+    <Compile Include="ILOps\Not.cs" />
     <Compile Include="ILOps\Or.cs" />
     <Compile Include="ILOps\Ret.cs" />
     <Compile Include="ILOps\Shl.cs" />
