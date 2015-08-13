@@ -8,8 +8,21 @@
 .text
 
 Kernel_Start:
+	li      $t0, (0xf0000000 | 0xff00 | 0x1) /* CP0_STATUS_CU_ALL | CP0_STATUS_IM_ALL | CP0_STATUS_IE */
+	mtc0    $t0, $12 /* CP0_STATUS */
+	nop
+
+	li      $t0, 0x800000 /* CP0_CAUSE_INITIALISER */
+	mtc0    $t0, $13 /* CP0_CAUSE */
+	nop
+
+	/* Enable caching in kseg0 */
+	li      $t0, 3 /* CACHE_MODE_CACHABLE_NONCOHERENT */
+	mtc0    $t0, $16 /* CP0_CONFIG */
+	nop
+
 	/* Set up a stack */
-	li $sp, 0x89000000 
+	li $sp, 0x8f800000 
 		
 	jal %KERNEL_CALL_STATIC_CONSTRUCTORS_METHOD%
 	nop
@@ -17,51 +30,7 @@ Kernel_Start:
 	jal %KERNEL_MAIN_METHOD%
 	nop	
 
-.InfiniteLoop2:
-	
-	li	$3,32768
-	li	$2,-1342111744
-	sw	$3,1352($2)
-	
-	jal MyFunction
-	nop
-
-	li	$3,32768
-	li	$2,-1342111744
-	sw	$3,1348($2)
-
-	jal MyFunction
-	nop
-
-	j .InfiniteLoop2
-
 	.end Kernel_Start
-
-MyFunction:
-	addiu	$sp, $sp, -8	# Subtract space for storing args (up to first four only, if any), locals (if any), frame pointer and return address (if necessary)
-	sw		$fp, 8($sp)		# Store frame pointer at SP+12 
-	move	$fp, $sp		# Set frame pointer to stack pointer
-
-	li		$t0, 100000
-	
-	.Loop:
-	nop
-	nop
-	nop
-	nop
-	nop
-	addiu	$t0, $t0, -1
-	nop
-	nop
-	nop
-	nop
-	nop
-	bgt		$t0, $0, .Loop
-
-	move	$sp, $fp		# Reset stack pointer to frame pointer
-	lw		$fp, 8($sp)		# Set frame pointer to old value
-	addiu	$sp, $sp, 8	# Add space that was used for args, locals and frame pointer
-	j		$31					# Return to return address
 
 GetEIP:
 	addi $sp, $sp, -4
