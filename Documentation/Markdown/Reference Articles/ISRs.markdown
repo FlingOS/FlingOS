@@ -21,29 +21,34 @@ An ISR is a method which executes when an interrupt is triggered. An ISR can be 
 
 ## What are the types of ISR?
 There are three types of ISR:
+
  - Exception (also called a trap or fault)
  - Device notification (usually handled as an IRQ, please see the IRQs article)
  - Software interrupt (e.g. system call) (also called a gate or trap gate)
 
-Exceptions generally require some change of state in the program which was interrupted. If the program was a user-mode app or driver, then the exception can either be passed to the program or the program must be terminated. Some exceptions are an expected part of processing (such as page faults) and so the program may never need to know the exception occurred. If the program which caused the exception was the kernel then one of two things can happen. A well programmed kernel will be able to handle the exception and either cancel the task it was trying to perform or continue in some way. A less stable kernel will not be able to handle the exception and will result in a kernel panic (or Blue Screen of Death on Windows). One situation in which exceptions are almost never handled in the kernel (and always result in kernel panic) is when an exception occurs during another interrupt (for example, during an IRQ). Please also be aware that kernel panics can be caused by software detecting an invalid state, without ever reaching a hardware fault, so an exception interrupt is not the only cause of panics or BSODs.
+Exceptions generally require some change of state in the program which was interrupted. If the program was a user-mode app or driver, then the exception can either be passed to the program or the program must be terminated. Some exceptions are an expected part of processing (such as page faults) and so the program may never need to know the exception occurred.
+
+If the program which caused the exception was the kernel then one of two things can happen. A well programmed kernel will be able to handle the exception and either cancel the task it was trying to perform or continue in some way. A less stable kernel will not be able to handle the exception and will result in a kernel panic (or Blue Screen of Death on Windows).
+
+One situation in which exceptions are almost never handled in the kernel (and always result in kernel panic) is when an exception occurs during another interrupt (for example, during an IRQ). Please also be aware that kernel panics can be caused by software detecting an invalid state, without ever reaching a hardware fault, so an exception interrupt is not the only cause of panics or BSODs.
 
 ## How are ISRs configured?
-Generally, ISRs are configured by telling the processor where the handler for each ISR is in memory. When the interrupt occurs, the processor may or may not save some state information before jumping to the interrupt handler. The processor will always save, at a minimum, the value of the instruction pointer before jumping to the handler. 
+Generally, ISRs are configured by telling the processor where the handler for each ISR is in memory. When the interrupt occurs, the processor may or may not save some state information before jumping to the interrupt handler. The processor will always save, at a minimum, the value of the instruction pointer before jumping to the handler.
 
 ---
 
 # Software
 
 ## Overview
-Most software is structured to handle exceptions separately from system calls and IRQs. IRQs are dealt with in a separate article. Kernel software often has separate methods for different exceptions and a single method for system calls (and possibly IRQs). For the MIPS32 Creator CI20 platform, only a single exception handler is supported for ISRs and another handler for IRQs. The ISR handler is left the task of calling relevant methods within the kernel. 
+Most software is structured to handle exceptions separately from system calls and IRQs. IRQs are dealt with in a separate article. Kernel software often has separate methods for different exceptions and a single method for system calls (and possibly IRQs). For the MIPS32 Creator CI20 platform, only a single exception handler is supported for ISRs and another handler for IRQs. The ISR handler is left the task of calling relevant methods within the kernel.
 
 ## MIPS
 
 ### Creator CI20 - ISR Setup
-In the MIPS32 Creator CI20 architecture, a single ISR handler is used for all ISRs (and IRQs unless otherwise configured). MIPS interrupt handlers must be located at 0x80000180 in memory. If configured, IRQs can be located at 0x80000200 in memory. The MIPS Coprocessor is used to configure interrupts and also has registers to allow the kernel to know which ISR vector (/number) was triggered. The task of calling separate methods for different ISRs is left to the kernel software. 
+In the MIPS32 Creator CI20 architecture, a single ISR handler is used for all ISRs (and IRQs unless otherwise configured). MIPS interrupt handlers must be located at 0x80000180 in memory. If configured, IRQs can be located at 0x80000200 in memory. The MIPS Coprocessor is used to configure interrupts and also has registers to allow the kernel to know which ISR vector (/number) was triggered. The task of calling separate methods for different ISRs is left to the kernel software.
 
 TODO: How to put a method at a particular location
-TODO: How to handle IRQs and ISRs separately 
+TODO: How to handle IRQs and ISRs separately
 TODO: How to enable global interrupts
 TODO: How to enable / configure timer interrupt (example)
 TODO: Returning from an interrupt
@@ -58,22 +63,63 @@ TODO: Table of vectors with descriptions
 ## x86
 
 ### ISR Setup Overview
-In the x86 architecture, ISRs are configured through the Interrupt Descriptor Table, which is covered in a separate article. It is common for the exception interrupts to be handled individually and all other interrupts to be handled by a single method. This single method then calls relevant methods within the kernel for each different ISR number (/vector). This is closer to how MIPS and ARM interrupts operate. 
+In the x86 architecture, ISRs are configured through the Interrupt Descriptor Table, which is covered in a separate article. It is common for the exception interrupts to be handled individually and all other interrupts to be handled by a single method. This single method then calls relevant methods within the kernel for each different ISR number (/vector). This is closer to how MIPS and ARM interrupts operate.
+
+TODO: How to handle an ISR
+TODO: How to return from an ISR
 
 ### Interrupt Numbers List
 For extreme detail of x86 interrupts, their uses (by BIOS, operating systems, drivers and applications), bugs and workarounds, please refer to Ralf Brown's Interrupt List (TODO: Link) which is probably the most comprehensive documentation of interrupts out there. Ralf Brown's list does not, however, include information about how to handle every interrupt. For the definitive guide on interrupts, please read the Intel x86 Architecture Manual available here: TODO: Link.
 
-TODO: Table of interrupt numbers
+Exceptions are classified as:
+
+- **Faults**: Kernel or program can recover from these and continue executing.
+- **Traps**: Trap interrupts are triggered immediately after the instruction which caused them.
+- **Aborts**: Caused by a severe, unrecoverable state - the program will have to terminate or the kernel will panic.
+
+| # | Name | Type | Error code as param? |
+|:----:|:----------|:--------:|:---------------------------------:|
+| 0 | Divide by zero | Fault | No |
+| 1 | Debug | Trap | No |
+| 2 | Non-maskable Interrupt | Interrupt | No |
+| 3 | Breakpoint | Trap | No |
+| 4 | Overflow | Trap | No |
+| 5 | Bound Range Exceeded | Fault | No |
+| 6 | Invalid Opcode | Fault | No |
+| 7 | Device Not Available | Fault | No |
+| 8 | Double Fault | Abort | Yes |
+| 9 | _(Obsolete)_ Coprocessor Segment Overrun | Fault | No |
+| 10 | Invalid TSS | Fault | Yes |
+| 11 | Segment Not Present | Fault | Yes |
+| 12 | Stack-segment Fault | Fault | Yes |
+| 13 | General Protection Fault | Fault | Yes |
+| 14 | Page Fault | Fault | Yes |
+| 15 | _Reserved_ | - | No |
+| 16 | x87 Floating-Point Exception | Fault | No |
+| 17 | Alignment Check | Fault | Yes |
+| 18 | Machine Check | Abort | No |
+| 19 | SIMD Floating-Point Exception | Fault | No |
+| 20 | Virtualisation Exception | Fault | No |
+| 21-29 | _Reserved_ | - | No |
+| 30 | Security Exception | Fault/Abort | Yes |
+| 31 | _Reserved_ | - | No |
+| 32-47 | Commonly used for IRQS, otherwise free for use | - | No |
+| 31-255 | Free for use | - | No |
+|=========================|
+| **256** | | | |
 
 ### Interrupt Number Descriptions
 TODO: Table of interrupt numbers with descriptions
+
+### Triple Faults
+TODO: Description
 
 ---
 
 # Example Code
 
 ## Overview
-The following downloads provide sample code for configuring interrupts on any x86 platform or the MIPS32-based Creator CI20 platform. The handlers themselves are left mostly blank since the exact handling is kernel-dependent. 
+The following downloads provide sample code for configuring interrupts on any x86 platform or the MIPS32-based Creator CI20 platform. The handlers themselves are left mostly blank since the exact handling is kernel-dependent.
 
 ## Download
 
