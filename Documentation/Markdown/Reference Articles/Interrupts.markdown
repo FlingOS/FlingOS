@@ -133,8 +133,9 @@ Spurious interrupts should never (and probably don't ever) occur for exception o
 Device interrupts require device specific handling. However, some general points can be made. If an interrupt controller exists, it will almost certainly need notifying when the interrupt has finished being handled (but prior to returning from the interrupt).
 
 Device interrupts are usually grouped by type. That is to say, all devices of a given category will trigger the same IRQ number and thus the same interrupt on the processor. This is for both efficiency and space-saving in the hardware design. What this means is that when an IRQ occurs, each device driver's interrupt handler must check which device caused the interrupt. Only devices which have flagged themselves as causing an interrupt should be dealt with. Due to some interrupt coalescing techniques, a single interrupt can occur for multiple devices. Thus all devices must be checked not just until one is found. If none are found to have caused the interrupt, then either:
-a) The kernel does not have a complete list of devices attached to the processor which could have caused the interrupt request,
-b) Or, the interrupt was a spurious interrupt, as described in the previous section.
+
+1. The kernel does not have a complete list of devices attached to the processor which could have caused the interrupt request,
+2. Or, the interrupt was a spurious interrupt, as described in the previous section.
 
 Device interrupt numbers are often programmable and can be found by inspecting the device's configuration at runtime. For example, any PCI devices which use interrupts will have a register specifying the ISR or IRQ number for the device.
 
@@ -142,9 +143,10 @@ Many device interrupts are just notifications where the main processing must the
 
 ## Exceptions
 Exception interrupts fall into three categories:
- - Expected
- - Unexpected but recoverable
- - Unexpected and irrecoverable
+
+- Expected
+- Unexpected but recoverable
+- Unexpected and irrecoverable
  
 If the language you are programming in has support for try-catch-finally sections then you'll probably find that the majority of exceptions are recoverable. However, that does assume you make proper use of them.
 
@@ -169,12 +171,13 @@ Interrupts are wonderful but they create some significant problems. The most sig
 Unfortunately, this creates a new problem. If a program locks something and then an interrupt handler waits on that lock to become free, the whole system becomes permanently stalled. This is because while an interrupt handler is executing no (non-exception) interrupts can occur and the program holding the lock can't continue executing. This means the program will never be able to free the lock so the interrupt will be waiting forever. This same problem occurs if you try to allocate memory from a heap. 
 
 There are two important conclusions to this:
-1) Interrupt handlers must:
+
+1. Interrupt handlers must:
 	- Not attempt to allocate memory
 	- Must be programmed to be thread-safe (so they don't depend on locks)
 	
-  And all associated software must also be made thread-safe.
-2) Since some interrupts require more complex processing which will require allocating memory, there has to be a method of handling interrupts that won't block programs. This technique is called deferred interrupts.
+	And all associated software must also be made thread-safe.
+2. Since some interrupts require more complex processing which will require allocating memory, there has to be a method of handling interrupts that won't block programs. This technique is called deferred interrupts.
 
 A deferred interrupt is not really an interrupt at all. What happens is, when the actual interrupt occurs, a record is made of its occurrence and any programs dependent on the result of the interrupt are paused (for example, a program making a system call would be paused). 
 
@@ -188,6 +191,7 @@ An interrupt which has to be handled without deferring it is called a critical i
 Interrupts introduce a lot of performance considerations. The main problem to avoid is called Interrupt Storm. This is when so many interrupts occur that the hardware buffers cannot keep track of all of them and some are lost. It is also when the system spends so much time handling interrupts that normal processing cannot continue causing the system to freeze/lock up/become unresponsive.
 
 There are many patents covering techniques for managing interrupts. These techniques come in three basic forms:
-1) Coalescing of interrupts (combining multiple interrupts into a single event to allow more processing to be done per interrupt handler invocation)
-2) Reducing the number of interrupts (applying optimisations to software and hardware to reduce the number of interrupts required)
-3) Reducing required computation time of interrupts (applying optimisations to both hardware and software to reduce the amount of work (and thus time) required by each interrupt. This frees up time for normal processing).
+
+1. Coalescing of interrupts (combining multiple interrupts into a single event to allow more processing to be done per interrupt handler invocation)
+2. Reducing the number of interrupts (applying optimisations to software and hardware to reduce the number of interrupts required)
+3. Reducing required computation time of interrupts (applying optimisations to both hardware and software to reduce the amount of work (and thus time) required by each interrupt. This frees up time for normal processing).

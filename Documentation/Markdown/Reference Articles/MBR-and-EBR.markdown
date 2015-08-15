@@ -51,6 +51,7 @@ recognisable format. An unused partition means either the partition entry does n
 MBR has a very simple structure. The first sector of an MBR formatted disk will always have the following layout:
 
 ##### First sector (LBA 0) structure
+
 | Offset      | Description           | Size |
 |:-----------:|:----------------------|:----:|
 | 0x000 (000) | Bootstrap code        |  446 |
@@ -70,6 +71,7 @@ Note also that the bootstrap code area was originally entirely code but subseque
 Each "Partition entry" has the following format:
 
 ##### Partition entry structure
+
 | Offset | Size (bits) | Description |
 |:------:|:-----------:|:------------|
 | 0      | 8           | Bootable indicator flag: 0x00 = inactive, 0x80 = active
@@ -88,7 +90,7 @@ CHS fields are redundant now since practically all disks support (the much bette
 ## EBR structure
 EBR has the same structure as MBR except that the table sector only contains two partition entries instead of four. EBRs reside inside of an MBR partition. Only one MBR partition may contain EBRs. If an MBR partition contains EBRs, the first sector of the MBR partition will always contain an EBR (which includes the same signature bytes as an MBR).
 
- There can be multiple EBRs in the MBR partition. The first EBR will always appear in the first sector of the MBR partition. The EBR will specify only one actual partition, in the first partition entry. If the second partition entry is zero, there are no more EBRs in the MBR partition. If the second partition entry is non-zero, it specifies a new partition which will also start with an EBR as the first sector. Thus EBR partitions can be chained to give a large number of partitions.
+There can be multiple EBRs in the MBR partition. The first EBR will always appear in the first sector of the MBR partition. The EBR will specify only one actual partition, in the first partition entry. If the second partition entry is zero, there are no more EBRs in the MBR partition. If the second partition entry is non-zero, it specifies a new partition which will also start with an EBR as the first sector. Thus EBR partitions can be chained to give a large number of partitions.
 
 ## Boot sector
 The boot sector is the first sector on disk (which is also the sector which contains the MBR). The boot sector provides bootstrap code which the BIOS or other firmware can load as the start of the boot process. Typically this boot sector contains a primary bootloader which, due to its size limitation, is only capable of reading a simple FAT formatted partition. There is more detail on the booting process in other articles.
@@ -102,6 +104,7 @@ Bootable partitions are often referred to as active partitions and have the Acti
 Partitions on a disk usually contain a file system. File system driver software is given a helping hand identifying the type of file system inside of a partition by the System ID found in the partition entry. Equivalents of the System ID field also exist in other partition table standards. The System ID is a (theoretically unique though sometimes abused) identifier that matches a particular file system type. Some of the common System IDs and their respective file system types are listed below. A decently accurate, complete list can be found at [Wikipedia - Partition Type](https://en.wikipedia.org/wiki/Partition_type#List_of_partition_IDs)
 
 ##### Common File System Identifiers (System IDs)
+
 |   ID   | File System Type                                                    |
 |:------:|:--------------------------------------------------------------------|
 | 0x00   | Empty / No Partition
@@ -164,7 +167,7 @@ The basic outline of MBR software is as follows:
     * If not 0xAA55, abort as the disk isn't MBR formatted.
 3. Attempt to parse each partition entry in turn (offsets 0x1BE, 0x1CE, 0x1DE, 0x1EE)
     1. Read SystemID byte
-    2. Check System ID:
+    2. Check System ID: 
         * If zero, partition entry is not valid.
         * If matching an EBR ID, this partition entry should not be used but should be scanned for EBR tables.
         * Otherwise, read start sector LBA and sector count and any other properties (e.g. active/inactive)
@@ -174,6 +177,7 @@ There really isn't much more to it than that. For EBR partitions, you need to re
 ## Software structure
 
 The following classes are recommended:
+
 * File System Manager - to begin scanning of a particular disk by reading in sector data and to follow-up on EBR partitions.
 * MBR - to handle checking signature and methods for interpretting/checking partition entries.
 * EBR - child class of MBR for handling EBR partitions. Shoudl reuse the interpretting/checking methods of parent MBR class.

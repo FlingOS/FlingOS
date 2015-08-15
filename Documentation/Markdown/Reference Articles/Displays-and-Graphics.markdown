@@ -39,6 +39,7 @@ The second part of video is the transmission of display data from a PC to a phys
 
 ## What are the basic display technologies?
 There are a few basic types of display technology, only one of which I imagine the average reader will have thought about. These are:
+
 - Pixel displays (e.g. LED, LCD, Plasma)
 - Pin screens (e.g. Braille displays)
 - Segment displays (e.g. as used in digital clocks/watches)
@@ -48,6 +49,7 @@ Only the first of these really uses pixel displays. The rest may use a similar i
 
 ## What are the basic graphics technologies?
 There are a few basic types of graphics technology in common use nowadays. These are:
+
 - Pixel images (e.g. GIF, JPEG, PNG)
 - Sprite graphics (largely hardware & software specific. Only widespread example: Tiles of Icons combined with CSS)
 - Vector graphics (e.g. SVG)
@@ -60,20 +62,24 @@ There are a few basic types of graphics technology in common use nowadays. These
 
 ## What are the basic video technologies?
 There are a few basic video technologies for each type. For the first type (media streaming/playback):
- - MP4 (incorporating H.264 and MP3)
- - FLV (flash video)
- - WebM
- - ASF
- - ISMA
 
- For the second type (video connections):
- - VGA (Video Graphics Array)
- - HDMI (High Definition Media Interface)
- - Display Port
- Older (rapidly less common) technologies include:
- - Composite Video
- - SCART (Syndicat des Constructeurs d'Appareils Radiorécepteurs et Téléviseurs)
- - S-Video (Separate Video / Super Video / Y/C)
+- MP4 (incorporating H.264 and MP3)
+- FLV (flash video)
+- WebM
+- ASF
+- ISMA
+
+For the second type (video connections):
+ 
+- VGA (Video Graphics Array)
+- HDMI (High Definition Media Interface)
+- Display Port
+ 
+Older (rapidly less common) technologies include:
+ 
+- Composite Video
+- SCART (Syndicat des Constructeurs d'Appareils Radiorécepteurs et Téléviseurs)
+- S-Video (Separate Video / Super Video / Y/C)
 
 ## Why so many different technologies?
 In the pursuit quality (and usually to achieve that, performance) hundreds of compromises are made. For the many different applications and situations that displays, graphics and video are used in, different compromises are made. Here are just a few examples of the different compromises and situations to which they apply.
@@ -107,6 +113,7 @@ Pixels in software are distinct from pixels in hardware primarily because hardwa
 Pixels are a single dot of colour on the screen. The number of pixels which span the width and height of the screen define the resolution. Modern HD displays have a resolution of 1920x1080 pixels. Each pixel consists of three light components - red, green and blue. Mixing red, green and blue can form (almost) any colour. Each component (RGB) has an intensity value with 0 meaning off (no light - not black!) and 255 (max value of a byte) meaning fully on (max brightness/full intensity - not white!). If all the components are 0, you get black. If all the components are 255, you get white. If just the red component was 255 and the others 0, you get bright red. If all the components were 128 you would get a dull grey colour.
 
 There are alternative ways of representing pixel colour (most of which get translated in RGB at some point). The few main ones are listed below.
+
 | Name | Description |
 |:----:|:------------|
 | RGB  | Red, Green, Blue components as intensity values from 0 to 255 (normally) |
@@ -121,6 +128,7 @@ Each of these colour systems may also be extended to include an alpha component 
 2D graphics is conceptually fairly simple. You have an X-Y plane which is blank. Blank in a computing sense just means filled with all one colour. Often this is black but it can be set to any colour you like. During debugging, bright red or blue is often used to make "background leaks" very obvious. The same technique is used in 3D graphics.
 
 2D graphics makes used of the concept of painting. To paint an area, conceptually means to wipe a brush across the entire area. A brush is a thing which defines how to transform the starting value of a pixel to the end value. There are three main types of brush.
+
 | Name     | Description     |
 | :------------- | :------------- |
 | Solid Brush    | Ignores the existing colour of a pixel and just replaces it with a solid colour. Used to fill pixels with a set colour.       |
@@ -134,6 +142,7 @@ Each of these colour systems may also be extended to include an alpha component 
 The advantage of bitmaps over SVG is that for highly detailed or varied images (such as a photograph) it uses less space to save all the data. However, for an image that consists of large areas of the same colour (such as a logo), SVG may be better. However, SVG has one key advantage. SVG specifies shapes and relative sizes. So to increase the size of an SVG image, you simply increase all the relative sizes and recalculate which pixels are filled in. This allows it to retain 100% sharpness for basic shapes. For a bitmap, however, when you increase or decrease the size of the image, the image has to be re-sampled and the computer must guess the colour of the extra (or fewer) pixels. This means bitmap images do not scale as well as SVG. However, if you apply some thought, it should be apparent that SVG would be just as (if not more) useless for a photograph. You wouldn't want each pixel scaled as just a square (which is what SVG would do).
 
 2D graphics makes use of one final key concept - layers. Layers are complete images of the screen except that the background is transparent. Each layer forms one (or more) parts of the final image. Layers are stacked on top of one another, which higher images blocking out lower images. This allows more complex outputs to be produced. Here are two examples of using layers.
+
 1. Cursor layer and application layer. Allows the computer cursor to be painted on top of the application without affecting the application's image.
 2. Character layer and background layer. Allows a character in a 2D game to be moved around and painted on top of a background.
 
@@ -180,6 +189,7 @@ Lastly, I would like to stress the importance of the fact that (99% of the time)
 
 ### 4D
 The fourth dimension has been interpreted in many ways. Here are a couple of common ones:
+
 1. As time - the fourth axis is detached and is a time axis.
 2. As the secondary view used when performing actual 3D rendering/projection. In this case you get two 2D images (projections of the scene) which are taken from slightly different positions and angles. By showing one to one eye of the viewer, and the other to their other eye, what the viewer sees appears truly 3D.
 3. As a genuinely fourth dimension - welcome to the crazy world of higher dimensions... (I shall have to leave it to the mathematicians and physicists to explain this one!)
@@ -234,6 +244,7 @@ Due to manufacturing and construction methods used (and, in my opinion, probably
 
 ### 1971 - LCD
 LCD first made its appearance in 1971 and has since become one of the most popular display technologies. This is probably largely due to three factors:
+
 1. It is more energy efficient than CRT
 2. It produces a better quality of image than plain LED (brighter, better gamut amongst other factors)
 3. LCD screens can be made thinner and lighter than most other screen technologies.
@@ -447,6 +458,7 @@ You'll realise soon enough.
 Well done! Impressed you stuck at it. Keep going, I'm sure you don't need advice from me by now.
 
 ## After the graphics driver (or along the way)
+
 - All the stuff to make use of the graphics
 - Video encode/decode
 - Actually making use of a graphics card
