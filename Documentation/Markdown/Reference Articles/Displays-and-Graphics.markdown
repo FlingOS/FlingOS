@@ -94,9 +94,24 @@ In the pursuit quality (and usually to achieve that, performance) hundreds of co
 ## How do they all fit together?
 Displays, graphics and video all fit together relatively nicely (when you ignore all the incompatible, proprietary interfaces at the technical level). Essentially it's all one big chain of components linked together. It looks roughly like this:
 
-    [Application]-.-->Graphics pipeline (e.g. 2D, 3D rendering)----------------|--->Display controller--->(Video) Cable to display (e.g. HDMI)--->Screen
-                  |-->Video pipeline    (e.g. MP4 file decode)---.-->(Video)---^
-                                                                 |-->(Audio)------->Speaker controller
+``` bash
+[Application]
+      |
+      |
+Graphics pipeline ---------> Video pipeline
+(e.g. 2D/3D rendering)       (e.g. MP4 file decode)
+      |                           |
+      |                           |
+Display controller <--------------^--------------> Audio pipeline 
+      |                                                  |
+      |                                                  |
+(Video) Cable to display                           Speaker controller
+  (e.g. HDMI)
+      |
+      |
+    Screen
+
+```
 
 What this shows is how an application can use graphics to render 2D and 3D stuff along with video to play an MP4 file. The video is split into video and audio, with audio sent to the speakers. The video part of the MP4 file is merged (by the graphics card) with the application graphics (the image output) and then sent to the display controller. The display controller then uses video (described as type 2 above, e.g. HDMI) to send that to the physical screen.
 

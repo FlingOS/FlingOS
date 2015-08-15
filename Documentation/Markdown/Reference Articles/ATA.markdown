@@ -180,22 +180,22 @@ The following will outline all the steps, and in what order they may or must occ
 
 1. Disable IRQs
 2. Enumerate buses:
-  1.  Discover a particular drive (based on which bus and position on bus)
-  2. Check drive type (PATA/PATAPI/SATA/SATAPI)
-  3. Initialise the drive
-    1. Read version / model information
-    2. Read block count (determines drive size)
+	1.  Discover a particular drive (based on which bus and position on bus)
+	2. Check drive type (PATA/PATAPI/SATA/SATAPI)
+	3. Initialise the drive
+		1. Read version / model information
+		2. Read block count (determines drive size)
 3. For a particular drive, A and B can be done in either order:
-  1. **A.** To read:
-    1. Select sector (sets block number to read and size of read)
-    2. Send the read command
-    3. Read the data
-  2. **B.** To write:
-    1. (Read in partial blocks to fill data to write to a whole number of blocks)
-    2. Select sector (sets block number to read and size of read)
-    3. Send the write command
-    4. Write the data
-    5. (Clean drive caches to ensure data written to disk)
+	1. **A.** To read:
+		1. Select sector (sets block number to read and size of read)
+		2. Send the read command
+		3. Read the data
+	2. **B.** To write:
+		1. (Read in partial blocks to fill data to write to a whole number of blocks)
+		2. Select sector (sets block number to read and size of read)
+		3. Send the write command
+		4. Write the data
+		5. (Clean drive caches to ensure data written to disk)
 
 *Please note: The sample driver provided only supports LBA28 mode and not LBA48 mode. This limits the maximum disk size it is capable of accessing to 2^28 bits. LBA48 mode is, essentially, an extension and can be added if required. Some LBA48 information is provided in this article.*
 
@@ -352,7 +352,7 @@ To send a command to a drive (after setup such as selecting the drive) the follo
   1. Wait for 400ns (see "Waiting for 400ns" above).
   2. Read "Status" register (one byte)
   3. Check for an error by checking "error" bit
-  	* If the error bit is set, you must handle the error as you see fit. Aborting the command will require your code to fail gracefully or crash the OS.
+		* If the error bit is set, you must handle the error as you see fit. Aborting the command will require your code to fail gracefully or crash the OS.
 3. Return the Status (for use by the caller)
 
 The Status register returns a value which corresponds to the Status enumerable. (See section above.)

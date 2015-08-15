@@ -9,7 +9,7 @@ categories: docs reference
 
 The Drivers Compiler's sole purpose is to take IL code and to convert it into machine code. It does so via the following steps (the sequence of conversions are shown in increasing levels of detail).
 
-```
+``` bash
 IL                          ->                         Machine Code
 IL              ->          ASM         ->             Machine Code
 IL   ->   Information / Structure   ->   ASM    ->     Machine Code
