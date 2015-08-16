@@ -293,7 +293,7 @@ Classes for doing things are usually `static` and contain `static` methods (ofte
 
 * **`Attributes` Namespace** (`Kernel\Drivers\Compiler\Attributes` folder) - Contains attributes used by the compiler and libraries that are compiled by the compiler to indicate special information or processing directives.
 
-* **Tools folder** - The Tools folder contains programs and files used by the compiler which are pre-built or provided by an external source. For example, this includes programs such as NASM and Ld as well ass the IsoLinux bootloader files.
+* **Tools folder** - The Tools folder contains programs and files used by the compiler which are pre-built or provided by an external source. For example, this includes programs such as NASM and Ld as well as the IsoLinux bootloader files.
 
 ### Drivers.Compiler.Architectures.x86_32
 
