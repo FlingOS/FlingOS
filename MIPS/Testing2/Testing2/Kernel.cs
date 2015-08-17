@@ -12,6 +12,18 @@ namespace Testing2
         {
         }
 
+        static void method(int argument)
+        {
+            if (argument != 123)
+            {
+                UART.Write("Argument bad");
+            }
+            else
+            {
+                UART.Write("Argument good");
+            }
+        }
+
         [Drivers.Compiler.Attributes.MainMethod]
         [Drivers.Compiler.Attributes.NoGC]
         public static unsafe void Main()
@@ -57,26 +69,29 @@ namespace Testing2
             //    UART.Write("Neg64 res is correct");
             //}
 
-            int a1 = 0;
-            int b1 = 1;
-            int c1 = 2;
-            int res = a1 + b1 + c1;
+            //int a1 = 0;
+            //int b1 = 1;
+            //int c1 = 2;
+            //int res = a1 + b1 + c1;
 
-            switch(res)
-            {
-                case 0:
-                    UART.Write("Case 0");
-                    break;
-                case 1:
-                    UART.Write("Case 1");
-                    break;
-                case 2:
-                    UART.Write("Case 2");
-                    break;
-                default:
-                    UART.Write("Case default");
-                    break;
-            }
+            //switch(res)
+            //{
+            //    case 0:
+            //        UART.Write("Case 0");
+            //        break;
+            //    case 1:
+            //        UART.Write("Case 1");
+            //        break;
+            //    case 2:
+            //        UART.Write("Case 2");
+            //        break;
+            //    default:
+            //        UART.Write("Case default");
+            //        break;
+            //}
+
+            int arg = 123;
+            method(arg);
 
             while (true)
             {
