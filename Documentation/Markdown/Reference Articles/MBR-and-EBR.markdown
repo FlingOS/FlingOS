@@ -157,7 +157,7 @@ GPT retains limited compatibility with MBR in that it uses a protective MBR. The
 # Software
 
 ## Overview
-MBR software is relatively simple due to the relatively simple nature of the structure of MBR. By the time an OS comes to read a disk it (hopefully) won't need to worry about the bootcode area. All it really needs to worry about is checking for the signature, checking for GPT and, if it's plain MBR, reading the partition entries. Beyong that point, other OS driver software should handle the various possible file system types within a partition.
+MBR software is relatively simple due to the relatively simple nature of the structure of MBR. By the time an OS comes to read a disk it (hopefully) won't need to worry about the bootcode area. All it really needs to worry about is checking for the signature, checking for GPT and, if it's plain MBR, reading the partition entries. Beyond that point, other OS driver software should handle the various possible file system types within a partition.
 
 ## Software outline
 The basic outline of MBR software is as follows:
@@ -179,8 +179,8 @@ There really isn't much more to it than that. For EBR partitions, you need to re
 The following classes are recommended:
 
 * File System Manager - to begin scanning of a particular disk by reading in sector data and to follow-up on EBR partitions.
-* MBR - to handle checking signature and methods for interpretting/checking partition entries.
-* EBR - child class of MBR for handling EBR partitions. Shoudl reuse the interpretting/checking methods of parent MBR class.
+* MBR - to handle checking signature and methods for interpreting/checking partition entries.
+* EBR - child class of MBR for handling EBR partitions. Should reuse the interpreting/checking methods of parent MBR class.
 * PartitionInfo - to represent partition information (e.g. start sector, sector count and active/inactive)
 
 ---
