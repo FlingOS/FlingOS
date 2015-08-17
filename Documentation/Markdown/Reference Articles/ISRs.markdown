@@ -162,11 +162,12 @@ During an NMI interrupt, the following ports can be read to help determine what 
 *All bits are read/write*
 
 | Bit | Description | Notes |
+|:-----:|:---------------|:---------|
 | 0 | Alternate CPU reset | Value of 1 indicates the alternate CPU reset line was pulsed. |
 | 1 | Alternate gate A20 | Value of 1 indicates A20 mode is active. |
 | 2 | Reserved | - |
 | 3 | Security Lock | |
-| *4* | Watchdog timer status | Value of 1 indicates a watchdog timeout occurred. This is the only case in which the interrupt is not (necessarily) unexpected. |
+| **4** | Watchdog timer status | Value of 1 indicates a watchdog timeout occurred. This is the only case in which the interrupt is not (necessarily) unexpected. |
 | 5 | Reserved | |
 | 6 | HDD 2 drive activity | This (along with bit 7) is tied to the activity light. A value of 1 in either bit switches the light on. |
 | 7 | HDD 1 drive activity | This (along with bit 6) is tied to the activity light. A value of 1 in either bit switches the light on. |
@@ -175,14 +176,15 @@ During an NMI interrupt, the following ports can be read to help determine what 
 *Some of these bits are read/write. Reading gets the status, writing enables or disables.*
 
 | Bit | Description | Notes |
+|:-----:|:---------------|:---------|
 | 0 | PIT Timer 2 : Gate to speaker status/enable (R/W) | |
 | 1 | Speaker data status/enabled (R/W) | |
 | 2 | Parity check status/enabled (R/W) | |
 | 3 | Channel check status/enabled (R/W) | |
 | 4 | Refresh request | Toggles with each request. |
 | 5 | Timer 2 output | Matches the current PIT Timer 2 state. |
-| *6* | Channel check | Value of 1 indicates a failure occurred on the I/O bus which is most likely caused by a device such as a modem, sound card or similar |
-| *7* | Parity check | Value of 1 indicates a failure occurred when reading or writing memory. |
+| **6** | Channel check | Value of 1 indicates a failure occurred on the I/O bus which is most likely caused by a device such as a modem, sound card or similar |
+| **7** | Parity check | Value of 1 indicates a failure occurred when reading or writing memory. |
 
 #### 3 : Breakpoint
 **Type:** Trap
