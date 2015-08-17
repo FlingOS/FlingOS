@@ -43,39 +43,20 @@ The former case will make it appear as though a single IRQ occurs once and then 
 A processor generally only has one physical interrupt line. However, to connect lots of devices to a single line would cause a number of problems. For starters, competing hardware standards for signalling interrupts are not electrically compatible. Then there is the issue that hardware would have to be built into the processor to manage simultaneous IRQs. While all of these is surmountable, it is easier to simply have an external interrupt controller which is board-specific which acts as a middle-man between the processor and the devices.
 
 ## Interrupt Controllers
-Interrupt controllers come in many variations, since they are all board specific. The only architecture with real consistency is the x86 which, for historical reasons, will always have a Programmable Interrupt Controller with the same configuration. The PIC is described in more detail below. Some interrupt controllers are so inflexible that not only are IRQs not remappable, but the actual address that the IRQ interrupt handler has to be at is fixed. This is the case on MIPS based systems. The MIPS-based Creator CI20 system is  described in more detail below.
+Interrupt controllers come in many variations, since they are all board specific. The only architecture with real consistency is the x86 which, for historical reasons, will always have a Programmable Interrupt Controller with the same configuration. The PIC is described in more detail below. Some interrupt controllers are so inflexible that not only are IRQs not re-mappable, but the actual address that the IRQ interrupt handler has to be at is fixed. This is the case on MIPS based systems. The MIPS-based Creator CI20 system is  described in more detail below.
 
 ## MIPS Interrupt Controller
 TODO: Handler addresses
 TODO: Configuration addresses
 
 ## x86 Programmable Interrupt Controller
-The PIC on x86 is a complex piece of hardware. In fact, for legacy reasons, the PIC actually consists of two separate interrupt controllers which are chained as a master and a slave device. The PIC allows the kernel to enable or disable all IRQs, enable or disable individual IRQs and to map IRQs to any ISRs as two sets of 8 interrupt vectors. Tbe PIC has 16 IRQs which are described in more detail later. 
+The PIC on x86 is a complex piece of hardware. In fact, for legacy reasons, the PIC actually consists of two separate interrupt controllers which are chained as a master and a slave device. The PIC allows the kernel to enable or disable all IRQs, enable or disable individual IRQs and to map IRQs to any ISRs as two sets of 8 interrupt vectors. The PIC has 16 IRQs which are described in more detail later. 
 
-The master PIC is what actually signals an interrupt to the processor. IRQ 2 (of the master PIC) is reserved and is used by the slave PIC. Thus IRQ 2 should never be seen by the processor. If it is, it is a spurious IRQ. When the slave PIC receives an interrupt request and wishes to pass it on, it makes an interrupt request to the master PIC. The master PIC then decides whether to pass that on to the processor or not. The master and slaves PICs also queue interrupts. When processing of one completes, the PIC selects the next highest priority IRQ on the queue. The IRQ default priority ordering is as follows:
-
-| IRQ # | Notes |
-|:-----:|:--|
-| 0 | Highest priority |
-| 1 | |
-| 2***\**** | (Chained / Invisible to processor) |
-| 8 | |
-| 9***\**** | (Chained / Invisible to processor) |
-| 10 | |
-| 11 | |
-| 12 | |
-| 13 | |
-| 14 | |
-| 15 | |
-| 3 | |
-| 4 | |
-| 5 | |
-| 6 | |
-| 7 | Lowest priority |
+The master PIC is what actually signals an interrupt to the processor. IRQ 2 (of the master PIC) is reserved and is used by the slave PIC. Thus IRQ 2 should never be seen by the processor. If it is, it is a spurious IRQ. When the slave PIC receives an interrupt request and wishes to pass it on, it makes an interrupt request to the master PIC. The master PIC then decides whether to pass that on to the processor or not. The master and slaves PICs also queue (/buffer) interrupts. When processing of one completes, the PIC selects the next highest priority IRQ on the queue. The IRQ default priority ordering is detailed in the IRQ descriptions.
 
 By default, the BIOS maps IRQs to the following ISRs:
 
-| ISR # | Description |
+| ISR # | Assignment |
 |:-----:|:------------|
 | 0 - 31 | Protected-Mode Exceptions |
 | 8 - 15 | IRQs 0-7 |
@@ -84,7 +65,7 @@ By default, the BIOS maps IRQs to the following ISRs:
 
 Most kernels remap this to the following:
 
-| ISR # | Description |
+| ISR # | Assignment |
 |:-----:|:------------|
 | 0 - 31 | Protected-Mode Exceptions |
 | 32 - 39 | IRQs 0-7 |
@@ -96,9 +77,9 @@ The PIC can be accessed using the following IO ports:
 | Port | Description |
 |:----:|:------------|
 | 0x20 | Control port of the master PIC |
-| 0x21 | IRQ enable/disable mask  port of the master PIC |
+| 0x21 | Data port of the master PIC (IRQ enable/disable mask) |
 | 0xA0 | Control port of the slave PIC |
-| 0xA1 | IRQ enable/disable mask  port of the slave PIC |
+| 0xA1 | Data port of the slave PIC (IRQ enable/disable mask) |
 
 The interrupt enable/disable mask ports contain a single byte bit mask where each bit enables or disables the IRQ of the same number (relative to the actual PIC device). Setting a bit to 1 disables the respective IRQ. Setting a mask bit to 0 enables the respective IRQ. Code for enabling and disabling and remapping can be found below under "x86 IRQ Setup".
 
@@ -114,34 +95,147 @@ The interrupt enable/disable mask ports contain a single byte bit mask where eac
 
 ### Creator CI20 - IRQ List
 
-### Creator CI20 - IRQ Descriptions
-
 ## x86
 
 ### IRQ Setup
+PIC setup is a several step process:
+
+0. Disable maskable interrupts (IRQs) using `cli`
+1. Configuration of interrupt (ISR) handlers
+2. PIC remap
+3. *(Can be done at a later stage)* Enable/disable required IRQs
+4. Enable maskable interrupts (IRQs) using `sti`
+
+For configuration of ISR handlers, please see the ISRs article and the x86 Interrupts Descriptor Table article.
+
+PIC remap involves remapping the master and slave IRQs separately. The following code sample demonstrates how to remap the PIC, assign master and slave PIC devices and also disable all IRQs.
+
+***Note:***
+
+ - ICW = Initialisation Command Word
+ - OCW = Operational Command Word
+
+``` x86asm
+PIC_Remap:
+    ; Remap IRQs 0-7   to ISRs 32-39
+    ; and   IRQs 8-15  to ISRs 40-47
+
+    cli ; Disable maskable interrupts
+		
+    ; Interrupt Vectors 0x20 for IRQ 0 to 7 
+    ;               and 0x28 for IRQ 8 to 15
+    mov al, 0x11        ; INIT command (ICW1 + ICW4)
+    out 0x20, al        ; Send INIT to PIC1
+    out 0xA0, al        ; Send INIT to PIC2
+
+    mov al, 0x20        ; PIC1 interrupts start at 0x20
+    out 0x21, al        ; Send the value to PIC1 DATA
+    mov al, 0x28        ; PIC2 interrupts start at 0x28
+    out 0xA1, al        ; Send the value to PIC2 DATA
+
+    mov al, 0x04        ; MASTER identifier
+    out 0x21, al        ; set PIC1 as MASTER
+    mov al, 0x02        ; SLAVE identifier
+    out 0xA1, al        ; set PIC2 as SLAVE
+
+    mov al, 0x01        ; This is the x86 mode code for both 8259 PIC chips
+    out 0x21, al        ; Set PIC1 mode
+    out 0xA1, al        ; Set PIC2 mode
+    
+    mov ax, 0xFFFF      ; Set interrupt mask to disable all interrupts
+    out 0x21, al        ; Set mask of PIC1_DATA
+    xchg al, ah	        ; Switch low and high byte of the mask so we can send the high byte
+                        ;	In this particular case, 0xFF is switched with 0xFF so it has no consequence
+    out 0xA1, al        ; Set mask of PIC2_DATA
+
+    sti                 ; Enable maskable interrupts
+    nop                 ; Required - STI takes effect after the next instruction runs
+```
+
+The following code snippet demonstrates how to enable a particular IRQ number:
+
+``` x86asm
+EnableIRQ:
+	; Assumes the number of the IRQ to enable is in ECX register
+	
+	; Load existing mask
+	in al, 0xA1
+	xchg al, ah
+	in al, 0x21
+	
+	; Clear the relevant bit
+	mov ebx, 1
+	shl bx, cl
+	not bx
+	and ax, cx
+	
+	; Set the new mask
+	out al, 0x21
+	xchg al, ah
+	in al, 0xA1
+```
+
+The following code snippet demonstrates how to disable a particular IRQ number:
+
+``` x86asm
+DisableIRQ:
+	; Assumes the number of the IRQ to enable is in ECX register
+	
+	; Load existing mask
+	in al, 0xA1
+	xchg al, ah
+	in al, 0x21
+	
+	; Set the relevant bit
+	mov ebx, 1
+	shl bx, cl
+	or ax, cx
+	
+	; Set the new mask
+	out al, 0x21
+	xchg al, ah
+	in al, 0xA1
+```
+
+Prior to returning from an IRQ handler, the PIC must be notified that the interrupt has been handled (otherwise no further IRQs will be signalled). This is called the End of Interrupt notification. For IRQs 0-7, only the master PIC must be notified. For IRQs 8-15, both the master and slave PICs must be notified. The following code demonstrates how to send the end of interrupt command:
+
+``` x86asm
+EndOfInterrupt:
+	; Assumes the number of the IRQ being handled is in EAX register
+	
+	; 0x20 is EoI command number
+	
+	cmp eax, 8 ; Determine whether the EoI is for Slave + Master PICs or just Master PIC
+	jl .MasterOnly
+	out 0xA0, 0x20 ; Send EoI to Slave PIC command port
+	.MasterOnly:
+	out 0x20, 0x20 ; Send EoI to Master PIC command port
+```
+
+For more detail, please see the Programming the 8259 section of [this specification document](http://pdos.csail.mit.edu/6.828/2014/readings/hardware/8259A.pdf).
 
 ### IRQ List
 
+*0 = Highest priority, 15 = Lowest priority*
+
 | IRQ | Priority | Use |
 |:---:|:--------:|:------------|
-| 0 | Programmable Interval Timer |
-| 1 | Keyboard (PS2) (often emulated from USB) |
-| 2 | Cascade / Internal |
-| 3 | Serial Port 1 (COM1) (if enabled) |
-| 4 | Serial Port 2 (COM2) (if enabled) |
-| 5 | Parallel Port 2 & 3 (if enabled) or Sound Card |
-| 6 | Floppy Disk |
-| 7 | Parallel Port 1, Printer or Secondary Sound Card |
-| 8 | Real-time clock (RTC) (if enabled) |
-| 9 | ACPI on Intel, Any on non-Intel e.g. PCI / legacy SCSI / NIC devices |
-| 10 | Any e.g. PCI / SCSI / NIC devices  |
-| 11 | Any e.g. PCI / SCSI / NIC devices |
-| 12 | Mouse (PS2) (often emulated from USB) |
-| 13 | FPU / Coprocessor / Inter-processor |
-| 14 | Primary ATA |
-| 15 | Secondary ATA |
-
-### IRQ Descriptions
+| 0 | 0 | Programmable Interval Timer |
+| 1 | 1 | Keyboard (PS2) (often emulated from USB) |
+| 2 | 2 | Cascade / Internal |
+| 3 | 11 | Serial Port 1 (COM1) (if enabled) |
+| 4 | 12 | Serial Port 2 (COM2) (if enabled) |
+| 5 | 13 | Parallel Port 2 & 3 (if enabled) or Sound Card |
+| 6 | 14 | Floppy Disk |
+| 7 | 15 | Parallel Port 1, Printer or Secondary Sound Card |
+| 8 | 3 | Real-time clock (RTC) (if enabled) |
+| 9 | 4 | ACPI on Intel, Any on non-Intel e.g. PCI / legacy SCSI / NIC devices |
+| 10 | 5 | Any e.g. PCI / SCSI / NIC devices  |
+| 11 | 6 | Any e.g. PCI / SCSI / NIC devices |
+| 12 | 7 | Mouse (PS2) (often emulated from USB) |
+| 13 | 8 | FPU / Coprocessor / Inter-processor |
+| 14 | 9 | Primary ATA |
+| 15 | 10 | Secondary ATA |
 
 ### Spurious IRQs
 TODO: General spurious IRQs
