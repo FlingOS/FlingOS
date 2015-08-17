@@ -4,25 +4,23 @@ namespace Testing2
 {
     public static class Kernel
     {
-        static bool x = false;
-
         [Drivers.Compiler.Attributes.PluggedMethod(ASMFilePath = "ASM\\Kernel")]
         [Drivers.Compiler.Attributes.SequencePriority(Priority = long.MinValue)]
         public static void Boot()
         {
         }
 
-        static void method(int argument)
-        {
-            if (argument != 123)
-            {
-                UART.Write("Argument bad");
-            }
-            else
-            {
-                UART.Write("Argument good");
-            }
-        }
+        //static void method(int argument)
+        //{
+        //    if (argument != 123)
+        //    {
+        //        UART.Write("Argument bad");
+        //    }
+        //    else
+        //    {
+        //        UART.Write("Argument good");
+        //    }
+        //}
 
         [Drivers.Compiler.Attributes.MainMethod]
         [Drivers.Compiler.Attributes.NoGC]
@@ -46,6 +44,21 @@ namespace Testing2
                 UART.Write(".");
             }
             UART.Write("]\n");
+
+            // BEGIN - Test: Right logical shift
+            UInt64 bitString = 576460752303423488;
+            int dist = 10;
+            bitString = bitString >> dist;
+
+            if (bitString != 562949953421312)
+            {
+                UART.Write("Bad right LOGICAL shift");
+            }
+            else
+            {
+                UART.Write("Good right LOGICAL shift");
+            }
+            // END - Test: Right logical shift
 
             //0xffffffff = -1 (32-bit)
             //0x7fffffff = 2147483647 (largest +ve 32-bit)
@@ -90,8 +103,8 @@ namespace Testing2
             //        break;
             //}
 
-            int arg = 123;
-            method(arg);
+            //int arg = 123;
+            //method(arg);
 
             while (true)
             {
