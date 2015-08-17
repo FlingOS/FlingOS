@@ -9,7 +9,7 @@ categories: docs reference
 Interrupt Service Routines, henceforth referred to as ISRs, are the methods (/routines) which execute when an interrupt occurs. ISRs vary from platform to platform in terms of what they are triggered for, how many are available and how they must be handled. This article will look in detail at the MIPS and x86 platforms' ISRs and describe how to handle each of them. For a general description of interrupts please read the Interrupts article. For specific detail about how to configure interrupts on a given platform, please see that platform's setup article.
 
 ## Scope of this article
-This article will look at ISRs for the MIPS Creator CI20 and x86 platforms. It provides a list of interrupts for each platform followed by a description of each. It also includes specific processing details required for each ISR.
+This article will look at ISRs for the MIPS Creator CI20 and x86 platforms. It provides a list of interrupts for each platform followed by a description of each. It also includes sample code for generic handling of ISRs.
 
 ---
 
