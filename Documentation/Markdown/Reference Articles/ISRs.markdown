@@ -65,8 +65,232 @@ TODO: Table of vectors with descriptions
 ### ISR Setup Overview
 In the x86 architecture, ISRs are configured through the Interrupt Descriptor Table, which is covered in a separate article. It is common for the exception interrupts to be handled individually and all other interrupts to be handled by a single method. This single method then calls relevant methods within the kernel for each different ISR number (/vector). This is closer to how MIPS and ARM interrupts operate.
 
-TODO: How to handle an ISR (Note: Has to be done in assembly code because compiler won't understand inline assembly properly / won't understand the stack manipulation
-TODO: How to return from an ISR
+ISR routines have to be written in raw assembly code. They cannot be written using inline assembly in C, for example. This is because the C compiler will inject assembly operations at the start and end of the method which will interfere with the required functionality. An ISR handler has to save register values to the stack prior to any other instructions being executed. At the end of the handler, the register values must be restored from the stack and the IRet instruction must be executed (not the normal Ret instruction). 
+
+The following assembly code can be used as a stub for handling an ISR (it is written in NASM assembly syntax). The first version is a simple stub that must be expanded upon later. The second version is much more complex and handles creating interrupt handlers for multiple interrupt numbers, storing thread state, handling UM/KM differences and switching to a separate stack for interrupt handling in kernel mode. It also depends upon some external TSS / threading setup, which has been documented in the code.
+
+##### Simple version
+
+``` x86asm
+
+InterruptHandler:
+	pushad
+	push ds
+	push es
+	push fs
+	push gs
+
+	cli
+	
+	call MyCOrCSharpOrOtherLangauage_InterruptHandler
+	
+	sti
+		
+	pop gs
+	pop fs
+	pop es
+	pop ds
+	popad
+
+	IRet
+	
+```
+
+##### Complex version
+
+``` x86asm
+%define KERNEL_MODE_DPL 0
+%define USER_MODE_DPL 3
+
+%macro ENABLE_INTERRUPTS 0
+sti
+%endmacro
+
+%macro DISABLE_INTERRUPTS 0
+cli
+nop
+%endmacro
+
+%macro INTERRUPTS_STORE_STATE 1
+; Store registers and segment selectors on current thread stack
+pushad
+push ds
+push es
+push fs
+push gs
+
+; Switch the segment selectors to kernel mode selectors
+mov ax, 0x10 ; TODO: Change this to your kernel's segment selector index
+mov gs, ax
+mov fs, ax
+mov es, ax
+mov ds, ax
+
+; Load pointer to current thread state
+mov dword eax, [TODO: Load a pointer to current stack state - can be null / zero]
+; Test for null
+cmp eax, 0
+; If null, skip sotring thread state
+jz INTERRUPTS_STORE_STATE_SKIP_%1
+
+; Check for UserMode process. If UM, we are already
+;	on the kernel stack so don't change it or we will
+;	lose the values saved in pushes above
+; This takes the CS pushed by the processor when it
+;	invoked the interrupt, gets the DPL then sees
+;	if the DPL==3 i.e. User mode
+mov dword ebx, [esp+52]
+and ebx, 0x3
+cmp ebx, 0x3
+je INTERRUPTS_STORE_STATE_COPYACROSS_%1
+
+; Save thread's current stack position
+; TODO: modify the offsets so they match your kernel's thread state structure
+mov dword [eax+1], esp ; Save ESP
+; Load temp kernel stack address
+mov dword ebx, [eax+7] ; Load a pointer for a temporary kernel stack used during interrupt processing. Must be allocated ahead of time by the kernel when the thread is created.
+; Switch to temp. kernel stack
+mov dword esp, ebx
+
+; Now running on a totally empty kernel stack
+
+jmp INTERRUPTS_STORE_STATE_SKIP_%1
+
+INTERRUPTS_STORE_STATE_COPYACROSS_%1:
+; Load thread's UM stack position
+mov dword ebx, [esp+60]
+; Copy across all the values
+sub ebx, 4
+mov dword ecx, [esp+64]
+mov dword [ebx], ecx
+sub ebx, 4
+mov dword ecx, [esp+60]
+mov dword [ebx], ecx
+sub ebx, 4
+mov dword ecx, [esp+56]
+mov dword [ebx], ecx
+sub ebx, 4
+mov dword ecx, [esp+52]
+mov dword [ebx], ecx
+sub ebx, 4
+mov dword ecx, [esp+48]
+mov dword [ebx], ecx
+sub ebx, 4
+mov dword ecx, [esp+44]
+mov dword [ebx], ecx
+sub ebx, 4
+mov dword ecx, [esp+40]
+mov dword [ebx], ecx
+sub ebx, 4
+mov dword ecx, [esp+36]
+mov dword [ebx], ecx
+sub ebx, 4
+mov dword ecx, [esp+32]
+mov dword [ebx], ecx
+sub ebx, 4
+mov dword ecx, [esp+28]
+mov dword [ebx], ecx
+sub ebx, 4
+mov dword ecx, [esp+24]
+mov dword [ebx], ecx
+sub ebx, 4
+mov dword ecx, [esp+20]
+mov dword [ebx], ecx
+sub ebx, 4
+mov dword ecx, [esp+16]
+mov dword [ebx], ecx
+sub ebx, 4
+mov dword ecx, [esp+12]
+mov dword [ebx], ecx
+sub ebx, 4
+mov dword ecx, [esp+8]
+mov dword [ebx], ecx
+sub ebx, 4
+mov dword ecx, [esp+4]
+mov dword [ebx], ecx
+sub ebx, 4
+mov dword ecx, [esp+0]
+mov dword [ebx], ecx
+
+; Store UM stack position
+mov dword [eax+1], ebx
+
+; Restore kernel stack to its proper place
+add esp, 64
+
+; Now running on a totally empty kernel stack
+
+INTERRUPTS_STORE_STATE_SKIP_%1:
+
+; TODO: Any further processing such as configuring exception handling sub system
+
+%endmacro
+
+
+%macro INTERRUPTS_RESTORE_STATE 1
+; Load pointer to current thread state
+mov dword eax, [TODO: Load a pointer to current stack state - can be null / zero]
+; Test for null
+cmp eax, 0
+; If null, skip
+jz INTERRUPTS_RESTORE_STATE_SKIP_%1
+
+
+; Restore esp to thread's esp
+mov dword esp, [eax+1] ; TODO: Replace '+1' with offset for your kernel's thread state structure
+
+; Load address of temp kernel stack
+mov dword ebx, [eax+7] ; TODO: Replace '+7' with offset for your kernel's thread state structure
+; Update TSS with kernel stack pointer for next task switch
+mov dword [_NATIVE_TSS+4], ebx
+
+; TODO: Any further processing such as restoring configuration of exception handling sub system
+
+jmp INTERRUPTS_RESTORE_STATE_SKIP_END_%1
+
+INTERRUPTS_RESTORE_STATE_SKIP_%1:
+
+; TODO: Any further processing such as restoring configuration of exception handling sub system. Should be similar to above.
+
+INTERRUPTS_RESTORE_STATE_SKIP_END_%1:
+
+; Restore segment selectors and register values
+pop gs
+pop fs
+pop es
+pop ds
+popad
+%endmacro
+
+
+%assign STORE_STATE_SKIP_NUM 0
+%assign RESTORE_STATE_SKIP_NUM 0
+
+%macro CommonInterruptHandlerMacro 1
+CommonInterruptHandler%1:
+
+	DISABLE_INTERRUPTS
+
+	INTERRUPTS_STORE_STATE STORE_STATE_SKIP_NUM
+	%assign STORE_STATE_SKIP_NUM STORE_STATE_SKIP_NUM+1
+
+	push dword %1
+    call method_System_Void_RETEND_Kernel_Hardware_Interrupts_Interrupts_DECLEND_CommonISR_NAMEEND__System_UInt32_ ; TODO: Insert your own generic interrupt handler method call.
+    add esp, 4
+
+	INTERRUPTS_RESTORE_STATE RESTORE_STATE_SKIP_NUM
+	%assign RESTORE_STATE_SKIP_NUM RESTORE_STATE_SKIP_NUM+1
+	
+    IRetd
+%endmacro
+; Create interrupt handlers for interrupts 17 through 255 (inclusive)
+%assign handlernum2 17
+%rep (256-17)
+    CommonInterruptHandlerMacro handlernum2
+    %assign handlernum2 handlernum2+1
+%endrep
+
+```
 
 ### Interrupt Numbers List
 For extreme detail of x86 interrupts, their uses (by BIOS, operating systems, drivers and applications), bugs and workarounds, please refer to [Ralf Brown's Interrupt List](http://www.ctyme.com/rbrown.htm), which is probably the most comprehensive documentation of interrupts out there. Ralf Brown's list does not, however, include information about how to handle every interrupt. For the definitive guide on interrupts, please read the [Intel x86/x64 Architecture Manual](http://www.intel.com/content/dam/www/public/us/en/documents/manuals/64-ia-32-architectures-software-developer-manual-325462.pdf).
