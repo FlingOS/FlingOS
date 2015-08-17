@@ -112,7 +112,9 @@ Exceptions are classified as:
 TODO: Table of interrupt numbers with descriptions
 
 ### Triple Faults
-TODO: Description
+A triple fault is not actually an interrupt in and of itself. In fact a triple fault results in a processor reset (or shutdown or similar hard-fault action depending on the exact hardware and configuration). A triple fault occurs when an exception occurs during the handling of a double fault. There are several common situations in which this can occur, for example, if the kernel has paged-out (i.e. unmapped / marked as not present) the page containing the double fault exception handler. In this case, when a double fault exception occurs, a page fault exception then occurs (since the handler's page is not present) and thus a triple fault is caused. Triple faults usually indicate something is wrong with the exception handling system, the IDT or GDT setup or the kernel's stack has overflown into an unmapped page. A triple fault occurs because the processor will try to save state to the stack for every exception, and since the kernel stack entered a not present page, the result is a near immediate chain of faults leading to a triple fault.
+
+There is no explicit way to handle a triple fault nor a general way to avoid them. The best practice is just to write sensible, well structured and tested code in the first place. One recommendation is that a separate TSS, stack and pages be used for the double fault handler (and its stack) and to keep the double fault handler very simple - just display a message and the fault status and then halt or shutdown.
 
 ---
 
