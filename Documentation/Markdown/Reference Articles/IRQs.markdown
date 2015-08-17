@@ -238,9 +238,11 @@ For more detail, please see the Programming the 8259 section of [this specificat
 | 15 | 10 | Secondary ATA |
 
 ### Spurious IRQs
-TODO: General spurious IRQs
-TODO: Spurious IRQ 2
-TODO: Spurious IRQ 7 (Usually spurious whenever this is triggered)
+Spurious interrupts are discussed in more detail in the Interrupts article. This section discusses only specific spurious IRQs.
+
+When an IRQ occurs, ideal code would check the PIC to verify the IRQ is supposed to currently be triggered. If it is, processing continues as normal. If not the IRQ is ignored and, crucially, the End of Interrupt signal is not sent. Send the EoI to either PIC would result in the next IRQ from that PIC being skipped. Any IRQ 2 received by the processor is guaranteed to be spurious since IRQ 2 is used purely internally and is never passed to the processor. 
+
+Spurious IRQ 7s occur in two common situations. IRQ 7s are sent in by the PIC in response to invalid conditions (such as sending an interrupt acknowledgement for a different spurious IRQ). The first situation is when the processor's interrupt line is the subject of electrical interference. This can cause the processor (or kernel) to send an incorrect IRQ acknowledgement and so the PIC responds with a spurious IRQ 7. The second case occurs if an IRQ is unmasked prior to the same IRQ input being deasserted, a spurious IRQ can end up being passed through to the processor.
 
 ---
 
@@ -255,10 +257,9 @@ TODO: Spurious IRQ 7 (Usually spurious whenever this is triggered)
 # FAQ & Common Problems
 
 ## x86 : Testing IRQ setup
-TODO: Keyboard-based testing
-| 0x60 | Data port from the keyboard controller (used for reading characters) |
-| 64h | command port for keyboard controller - use to enable/disable kbd interrupts, etc. |
+Testing IRQs on x86 can be a tricky process. The first step is to ensure your interrupt handlers are configured properly. This is generally achieved by causing divide by zero exceptions to test your IDT Entry structure setup followed by using "int x" (where x is a number from 0 to 255) to trigger software interrupts. This lets you test IDT entry setting and test individual interrupt configuration (since not all of them will have the same configuration). 
 
+The keyboard IRQ is often used to test IRQs as it requires no additional configuration beyond enabling the IRQ. Most hardware emulates PS2 signals/interrupts for USB keyboards while the USB device isn't being driven by OS software. This means that after booting and initialising the PIC, just typing on the keyboard should generate keyboard IRQs (if the IRQ has been enabled). This is sufficient to receive a single keyboard IRQ. To receive further keystrokes requires reading the key stroke from the PS2 Keyboard Data port. This involves reading a single byte from the port 0x60. 
 
 ---
 
