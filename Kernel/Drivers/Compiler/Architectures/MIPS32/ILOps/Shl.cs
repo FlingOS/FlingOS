@@ -91,7 +91,7 @@ namespace Drivers.Compiler.Architectures.MIPS32
                     conversionState.Append(new ASMOps.Pop() { Size = ASMOps.OperandSize.Word, Dest = "$t2" });
                     //Pop item A
                     conversionState.Append(new ASMOps.Pop() { Size = ASMOps.OperandSize.Word, Dest = "$t0" });
-                    conversionState.Append(new ASMOps.Sllv() { Src = "$t2", BitsReg = "$t0", Dest = "$t0" });
+                    conversionState.Append(new ASMOps.Sllv() { Dest = "$t0", Src = "$t2", BitsReg = "$t0" });
                     conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Word, Src = "$t0" });
 
                     conversionState.CurrentStackFrame.Stack.Push(new StackItem()
@@ -102,12 +102,12 @@ namespace Drivers.Compiler.Architectures.MIPS32
                     });
                 }
                 else if ((itemA.sizeOnStackInBytes == 4 &&
-                    itemB.sizeOnStackInBytes == 8))
+                          itemB.sizeOnStackInBytes == 8))
                 {
                     throw new InvalidOperationException("Invalid stack operand sizes! 4,8 not supported.");
                 }
                 else if ((itemA.sizeOnStackInBytes == 8 &&
-                    itemB.sizeOnStackInBytes == 4))
+                          itemB.sizeOnStackInBytes == 4))
                 {
                     //Pop item B
                     conversionState.Append(new ASMOps.Pop() { Size = ASMOps.OperandSize.Word, Dest = "$t2" });
@@ -122,19 +122,23 @@ namespace Drivers.Compiler.Architectures.MIPS32
                     //Works for shifting 64 bit values
                     //Left shift high bits ($t3) by $t2
                     conversionState.Append(new ASMOps.Sllv() { Src = "$t3", BitsReg = "$t2", Dest = "$t3" });
-                    //Right shift low bits ($t0) by (32-$t2)
+                    //Right shift low bits ($t0) by (32-$t2) into temp ($t1)
                     conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Word, Src = "32", Dest = "$t1", MoveType = ASMOps.Mov.MoveTypes.ImmediateToReg });
                     conversionState.Append(new ASMOps.Sub() { Src1 = "$t1", Src2 = "$t2", Dest = "$t1" });       
                     conversionState.Append(new ASMOps.Srlv() { Src = "$t0", BitsReg = "$t1", Dest = "$t1" });   //$t1 = temp
                     //Copy temp to high bits
                     conversionState.Append(new ASMOps.Or() { Src1 = "$t1", Src2 = "$t3",  Dest = "$t3"});
+                    //Left shift low bytes by $t2
                     conversionState.Append(new ASMOps.Sllv() { Src = "$t0", BitsReg = "$t2", Dest = "$t0" });
                     conversionState.Append(new ASMOps.Branch() { BranchType = ASMOps.BranchOp.Branch, DestILPosition = currOpPosition, Extension = "End" });
 
                     //Shld (>= 32)
                     conversionState.Append(new ASMOps.Label() { ILPosition = currOpPosition, Extension = "ShiftMoreThan32" });
+                    //Move low bits ($t0) to high bits ($t3)
                     conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Word, Src = "$t0", Dest = "$t3", MoveType = ASMOps.Mov.MoveTypes.RegToReg });
+                    //Zero out low bits
                     conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Word, Src = "0", Dest = "$t0", MoveType = ASMOps.Mov.MoveTypes.ImmediateToReg });
+                    //Left shift high bits by (t2-32)
                     conversionState.Append(new ASMOps.Sub() { Src1 = "$t2", Src2 = "32", Dest = "$t2" });
                     conversionState.Append(new ASMOps.Sllv() { Src = "$t3", BitsReg = "$t2", Dest = "$t3" });
 
@@ -160,7 +164,7 @@ namespace Drivers.Compiler.Architectures.MIPS32
                     //      Except we must check the high bytes for non-zero value. If they are non-zero, we simply
                     //          push a result of zero.
 
-                    //Pop item B
+                    //Pop item B (8 bytes)
                     conversionState.Append(new ASMOps.Pop() { Size = ASMOps.OperandSize.Word, Dest = "$t2" });
                     conversionState.Append(new ASMOps.Pop() { Size = ASMOps.OperandSize.Word, Dest = "$t1" });
                     //Pop item A (8 bytes)
@@ -189,8 +193,11 @@ namespace Drivers.Compiler.Architectures.MIPS32
 
                     //Shl (>= 32)
                     conversionState.Append(new ASMOps.Label() { ILPosition = currOpPosition, Extension = "ShiftMoreThan32" });
+                    //Move low bits ($t0) to high bits ($t3)
                     conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Word, Src = "$t0", Dest = "$t3", MoveType = ASMOps.Mov.MoveTypes.RegToReg });
+                    //Zero out low bits
                     conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Word, Src = "0", Dest = "$t0", MoveType = ASMOps.Mov.MoveTypes.ImmediateToReg });
+                    //Left shift high bits by (t2-32)
                     conversionState.Append(new ASMOps.Sub() { Src1 = "$t2", Src2 = "32", Dest = "$t2" });
                     conversionState.Append(new ASMOps.Sllv() { Src = "$t3", BitsReg = "$t2", Dest = "$t3" });
 

@@ -40,6 +40,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ASMOps\Sltu.cs" />
+    <Compile Include="ASMOps\Srav.cs" />
     <Compile Include="ASMOps\Srlv.cs" />
     <Compile Include="ASMOps\Sub.cs" />
     <Compile Include="ASMOps\Add.cs" />
@@ -102,10 +103,14 @@
     <Compile Include="ILOps\Or.cs" />
     <Compile Include="ILOps\Ret.cs" />
     <Compile Include="ILOps\Shl.cs" />
+    <Compile Include="ILOps\Shr.cs" />
     <Compile Include="ILOps\StackSwitch.cs" />
+    <Compile Include="ILOps\Starg.cs" />
+    <Compile Include="ILOps\Stfld.cs" />
     <Compile Include="ILOps\Stind.cs" />
     <Compile Include="ILOps\Stloc.cs" />
     <Compile Include="ILOps\Stsfld.cs" />
+    <Compile Include="ILOps\Switch.cs" />
     <Compile Include="ILOps\Xor.cs" />
     <Compile Include="ILOps\Nop.cs" />
     <Compile Include="ILOps\Pop.cs" />

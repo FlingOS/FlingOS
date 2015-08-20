@@ -173,7 +173,7 @@ namespace Drivers.Compiler.Architectures.x86
                         conversionState.Append(new ASMOps.Cmp() { Arg1 = "ECX", Arg2 = "32" });
                         conversionState.Append(new ASMOps.Jmp() { JumpType = ASMOps.JmpOp.JumpGreaterThanEqual, DestILPosition = currOpPosition, Extension = "ShiftMoreThan32", UnsignedTest = true });
                     
-                        //Shrd (< 32)
+                        //Shr (< 32)
                         conversionState.Append(new ASMOps.Shr() { Src = "EDX", Dest = "EAX", Count = "CL" });
                         conversionState.Append(new ASMOps.Shr() { Src = "CL", Dest = "EDX" });
                         conversionState.Append(new ASMOps.Jmp() { JumpType = ASMOps.JmpOp.Jump, DestILPosition = currOpPosition, Extension = "End" });
