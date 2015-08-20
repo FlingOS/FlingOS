@@ -115,13 +115,13 @@ namespace Drivers.Compiler.Architectures.MIPS32
                     bytesPopped = 2;
                     break;
                 case 2:
-                    //Convert to UInt16 (word)
+                    //Convert to UInt16 (halfword)
                     conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Word, Src = "0", Dest = "$t0", MoveType = ASMOps.Mov.MoveTypes.ImmediateToReg });
                     conversionState.Append(new ASMOps.Pop() { Size = ASMOps.OperandSize.Halfword, Dest = "$t0" });
                     bytesPopped = 2;
                     break;
                 case 4:
-                    //Convert to UInt32 (dword)
+                    //Convert to UInt32 (word)
                     conversionState.Append(new ASMOps.Pop() { Size = ASMOps.OperandSize.Word, Dest = "$t0" });
                     bytesPopped = 4;
                     break;
@@ -129,14 +129,14 @@ namespace Drivers.Compiler.Architectures.MIPS32
                     //Convert to UInt64
                     if (itemToConvert.sizeOnStackInBytes == 8)
                     {
-                        //Result stored in EAX:EDX
+                        //Result stored in $t0:$t3
                         conversionState.Append(new ASMOps.Pop() { Size = ASMOps.OperandSize.Word, Dest = "$t0" });
                         conversionState.Append(new ASMOps.Pop() { Size = ASMOps.OperandSize.Word, Dest = "$t3" });
                         bytesPopped = 8;
                     }
                     else
                     {
-                        //Result stored in EAX:EDX
+                        //Result stored in $t0:$t3
                         conversionState.Append(new ASMOps.Pop() { Size = ASMOps.OperandSize.Word, Dest = "$t0" });
                         conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Word, Src = "0", Dest = "$t3", MoveType = ASMOps.Mov.MoveTypes.ImmediateToReg });
                         bytesPopped = 4;
