@@ -104,11 +104,11 @@ namespace Testing2
 
             if (a11 != 5)
             {
-                UART.Write("Bad signed (+)32-bit - (-)32-bit\n");
+                UART.Write("Bad signed (+)32-bit - (+)32-bit\n");
             }
             else
             {
-                UART.Write("Good signed (+)32-bit - (-)32-bit\n");
+                UART.Write("Good signed (+)32-bit - (+)32-bit\n");
             }
 
             //---
@@ -124,6 +124,46 @@ namespace Testing2
             {
                 UART.Write("***Good unsigned 64-bit - 32-bit\n");
             }
+
+            Int64 a12 = 0;
+            Int32 b12 = 4;
+            a12 = a12 - b12;
+
+            if (a12 != -4)
+            {
+                UART.Write("***Bad unsigned zero 64-bit - 32-bit\n");
+            }
+            else
+            {
+                UART.Write("***Good unsigned zero 64-bit - 32-bit\n");
+            }
+
+            Int64 a13 = 1080863910568919040;
+            Int64 b13 = 4;
+            a13 = a13 - b13;
+
+            if (a13 != 1080863910568919036)
+            {
+                UART.Write("***Bad unsigned 64-bit - 64-bit\n");
+            }
+            else
+            {
+                UART.Write("***Good unsigned 64-bit - 64-bit\n");
+            }
+
+            Int64 a14 = 0;
+            Int64 b14 = 4;
+            a14 = a14 - b14;
+
+            if (a14 != -4)
+            {
+                UART.Write("***Bad unsigned zero 64-bit - 64-bit\n");
+            }
+            else
+            {
+                UART.Write("***Good unsigned zero 64-bit - 64-bit\n");
+            }
+
             //---
 
             UInt64 a5 = 1080863910568919040;

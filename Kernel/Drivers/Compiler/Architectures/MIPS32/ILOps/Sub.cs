@@ -127,13 +127,14 @@ namespace Drivers.Compiler.Architectures.MIPS32
                     conversionState.Append(new ASMOps.Pop() { Size = ASMOps.OperandSize.Word, Dest = "$t3" });
                     //Sub $t2:$t1 from $t3:$t0
                     //Check for borrow
-                    conversionState.Append(new ASMOps.Sltu() { Dest = "$t5", Src1 = "$t0", Src2 = "$t1" });
+                    conversionState.Append(new ASMOps.Sltu() { Src1 = "$t0", Src2 = "$t1", Dest = "$t5" });
                     //Sub low bits
-                    conversionState.Append(new ASMOps.Sub() {  Dest = "$t0", Src1 = "$t0", Src2 = "$t1", Unsigned = true });
+                    conversionState.Append(new ASMOps.Sub() { Src1 = "$t0", Src2 = "$t1", Dest = "$t0", Unsigned = true });
                     //Sub high bits including any borrow from
                     //when low bits were subtracted
-                    conversionState.Append(new ASMOps.Add() { Dest = "$t3", Src1 = "$t5", Src2 = "$t3", Unsigned = true });
-                    conversionState.Append(new ASMOps.Sub() { Dest = "$t3", Src1 = "$t3",  Src2 = "$t2", Unsigned = true });
+                    //borrow must be added to high bits of second operand ($t2)
+                    conversionState.Append(new ASMOps.Add() { Src1 = "$t5", Src2 = "$t2", Dest = "$t2", Unsigned = true });
+                    conversionState.Append(new ASMOps.Sub() { Src1 = "$t3", Src2 = "$t2", Dest = "$t3", Unsigned = true });
                     //Push the result
                     //Push high bits
                     conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Word, Src = "$t3" });
