@@ -233,10 +233,21 @@ namespace Drivers.Compiler.Architectures.MIPS32
                         conversionState.Append(new ASMOps.Label() { ILPosition = currOpPosition, Extension = "ShiftMoreThan32" });
                         //Move high bits ($t3) to low bits ($t0)
                         conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Word, Src = "$t3", Dest = "$t0", MoveType = ASMOps.Mov.MoveTypes.RegToReg });
-                        //Right shift (arithmetic) high bits by 32 to conserv sign
-                        conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Word, Src = "32", Dest = "$t1", MoveType = ASMOps.Mov.MoveTypes.ImmediateToReg });
-                        conversionState.Append(new ASMOps.Srav() { Src = "$t3", BitsReg = "$t1", Dest = "$t3" });                        
+                        //Conserve sign
+                        //And $t3 with 0b10000...
+                        conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Word, Src = "0x80000000", Dest = "$t1", MoveType = ASMOps.Mov.MoveTypes.ImmediateToReg });
+                        conversionState.Append(new ASMOps.And() { Src1 = "$t3", Src2 = "$t1", Dest = "$t3" });
+                        conversionState.Append(new ASMOps.Branch() { Src1 = "$t3", BranchType = ASMOps.BranchOp.BranchZero, DestILPosition = currOpPosition, Extension = "Pos" });
+                        //If $t3 is -ve, fill it with 1s
+                        conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Word, Src = "0xFFFFFFFF", Dest = "$t3", MoveType = ASMOps.Mov.MoveTypes.ImmediateToReg });
+                                                
+                        //Right shift (arithmetic) high bits by 32 to conserve sign
+                        //conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Word, Src = "32", Dest = "$t1", MoveType = ASMOps.Mov.MoveTypes.ImmediateToReg });
+                        //conversionState.Append(new ASMOps.Srav() { Src = "$t3", BitsReg = "$t1", Dest = "$t3" });                        
+
+                        conversionState.Append(new ASMOps.Label() { ILPosition = currOpPosition, Extension = "Pos" });
                         //Right shift (arithmetic) low bits by (t2-32)
+                        conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Word, Src = "32", Dest = "$t1", MoveType = ASMOps.Mov.MoveTypes.ImmediateToReg });
                         conversionState.Append(new ASMOps.Sub() { Src1 = "$t2", Src2 = "$t1", Dest = "$t2" });
                         conversionState.Append(new ASMOps.Srav() { Src = "$t0", BitsReg = "$t2", Dest = "$t0" });
 
@@ -351,10 +362,21 @@ namespace Drivers.Compiler.Architectures.MIPS32
                         conversionState.Append(new ASMOps.Label() { ILPosition = currOpPosition, Extension = "ShiftMoreThan32" });
                         //Move high bits ($t3) to low bits ($t0)
                         conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Word, Src = "$t3", Dest = "$t0", MoveType = ASMOps.Mov.MoveTypes.RegToReg });
-                        //Right shift (arithmetic) high bits by 32 to conserv sign
-                        conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Word, Src = "32", Dest = "$t1", MoveType = ASMOps.Mov.MoveTypes.ImmediateToReg });
-                        conversionState.Append(new ASMOps.Srav() { Src = "$t3", BitsReg = "$t1", Dest = "$t3" });
+                        //Conserve sign
+                        //And $t3 with 0x80000000
+                        conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Word, Src = "0x80000000", Dest = "$t1", MoveType = ASMOps.Mov.MoveTypes.ImmediateToReg });
+                        conversionState.Append(new ASMOps.And() { Src1 = "$t3", Src2 = "$t1", Dest = "$t3" });
+                        conversionState.Append(new ASMOps.Branch() { Src1 = "$t3", BranchType = ASMOps.BranchOp.BranchZero, DestILPosition = currOpPosition, Extension = "Pos" });
+                        //If $t3 is -ve, fill it with 1s
+                        conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Word, Src = "0xFFFFFFFF", Dest = "$t3", MoveType = ASMOps.Mov.MoveTypes.ImmediateToReg });
+
+                        //Right shift (arithmetic) high bits by 32 to conserve sign
+                        //conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Word, Src = "32", Dest = "$t1", MoveType = ASMOps.Mov.MoveTypes.ImmediateToReg });
+                        //conversionState.Append(new ASMOps.Srav() { Src = "$t3", BitsReg = "$t1", Dest = "$t3" });                        
+
+                        conversionState.Append(new ASMOps.Label() { ILPosition = currOpPosition, Extension = "Pos" });
                         //Right shift (arithmetic) low bits by (t2-32)
+                        conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Word, Src = "32", Dest = "$t1", MoveType = ASMOps.Mov.MoveTypes.ImmediateToReg });
                         conversionState.Append(new ASMOps.Sub() { Src1 = "$t2", Src2 = "$t1", Dest = "$t2" });
                         conversionState.Append(new ASMOps.Srav() { Src = "$t0", BitsReg = "$t2", Dest = "$t0" });
 
