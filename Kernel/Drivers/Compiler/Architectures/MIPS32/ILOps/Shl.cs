@@ -102,12 +102,12 @@ namespace Drivers.Compiler.Architectures.MIPS32
                     });
                 }
                 else if ((itemA.sizeOnStackInBytes == 4 &&
-                    itemB.sizeOnStackInBytes == 8))
+                          itemB.sizeOnStackInBytes == 8))
                 {
                     throw new InvalidOperationException("Invalid stack operand sizes! 4,8 not supported.");
                 }
                 else if ((itemA.sizeOnStackInBytes == 8 &&
-                    itemB.sizeOnStackInBytes == 4))
+                          itemB.sizeOnStackInBytes == 4))
                 {
                     //Pop item B
                     conversionState.Append(new ASMOps.Pop() { Size = ASMOps.OperandSize.Word, Dest = "$t2" });

@@ -46,18 +46,216 @@ namespace Testing2
             UART.Write("]\n");
 
             // BEGIN - Test: Right logical shift
+
             UInt64 bitString = 576460752303423488;
             int dist = 10;
             bitString = bitString >> dist;
 
             if (bitString != 562949953421312)
             {
-                UART.Write("Bad right LOGICAL shift");
+                UART.Write("Bad right LOGICAL shift\n");
             }
             else
             {
-                UART.Write("Good right LOGICAL shift");
+                UART.Write("Good right LOGICAL shift\n");
             }
+
+            //Signed 4-4
+            Int32 s44String = -28416;    
+            Int32 s44Dist = 6;         
+            s44String = s44String >> s44Dist;
+
+            if (s44String != -444)      
+            {
+                UART.Write("Bad right s44 shift\n");
+            }
+            else
+            {
+                UART.Write("Good right s44 shift\n");
+            }
+
+            //Unsigned 4-4
+            UInt32 u44String = 4352;
+            Int32 u44Dist = 6;
+            u44String = u44String >> u44Dist;
+
+            if (u44String != 68)
+            {
+                UART.Write("Bad right u44 shift\n");
+            }
+            else
+            {
+                UART.Write("Good right u44 shift\n");
+            }
+
+            //Signed 8-4 $t2<32
+            Int64 s84StringL = -9185091440022126524;
+            Int32 s84DistL = 6;
+            s84StringL = s84StringL >> s84DistL;
+
+            if (s84StringL != -143517053750345727)
+            {
+                UART.Write("Bad right s84L shift\n");
+            }
+            else
+            {
+                UART.Write("Good right s84L shift\n");
+            }
+
+            //Signed 8-4 $t2>=32
+            Int64 s84StringG = -9187343239835811840;
+            Int32 s84DistG = 40;
+            s84StringG = s84StringG >> s84DistG;
+
+            if (s84StringG != -8355840)
+            {
+                UART.Write("Bad right s84G shift\n");
+            }
+            else
+            {
+                UART.Write("Good right s84G shift\n");
+            }
+
+            //Signed 8-4 $t2>=32 right shift max +ve 
+            Int64 s84StringP = 9223372036854775807;
+            Int32 s84DistP = 40;
+            s84StringP = s84StringP >> s84DistP;
+
+            if (s84StringP != 8388607)
+            {
+                UART.Write("Bad right s84G shift max +ve\n");
+            }
+            else
+            {
+                UART.Write("Good right s84G shift max +ve\n");
+            }
+
+            //Signed 8-4 $t2>=32 right shift max -ve 
+            Int64 s84StringN = -9223372036854775808;
+            Int32 s84DistN = 40;
+            s84StringN = s84StringN >> s84DistN;
+
+            if (s84StringN != -8388608)
+            {
+                UART.Write("Bad right s84G shift max -ve\n");
+            }
+            else
+            {
+                UART.Write("Good right s84G shift max -ve\n");
+            }
+
+            //Signed 63-bit right shift of all 1s 
+            Int64 sNStringN = -1;
+            Int32 sNDistN = 63;     
+            sNStringN = sNStringN >> sNDistN;
+
+            if (sNStringN != -1)
+            {
+                UART.Write("Bad 63-bit right shift\n");
+            }
+            else
+            {
+                UART.Write("Good 63-bit right shift\n");
+            }
+
+            //Unsigned 63-bit right shift of all 1s
+            UInt64 uNStringN = 18446744073709551615;
+            Int32 uNDistN = 63;     
+            uNStringN = uNStringN >> uNDistN;
+
+            if (uNStringN != 1)
+            {
+                UART.Write("Bad 63-bit right shift\n");
+            }
+            else
+            {
+                UART.Write("Good 63-bit right shift\n");
+            }
+
+            //Signed 8-8 $t2<32
+            Int64 s88stringL = -8646911284551352320;
+            Int32 s88distL = 6;       
+            s88stringL = s88stringL >> s88distL;
+
+            if (s88stringL != -135107988821114880)
+            {
+                UART.Write("Bad right s88l shift\n");
+            }
+            else
+            {
+                UART.Write("Good right s88l shift\n");
+            }
+
+            //Signed 8-8 $t2>=32
+            Int64 s88StringG = -123456789123456789;
+            Int32 s88DistG = 40;       
+            s88StringG = s88StringG >> s88DistG;
+
+            if (s88StringG != -112284)
+            {
+                UART.Write("Bad right s88G shift\n");
+            }
+            else
+            {
+                UART.Write("Good right s88G shift\n");
+            }
+
+            //Unsigned 8-4 $t2<32
+            UInt64 u84StringL = 4899916394579099648;
+            Int32 u84DistL = 6;
+            u84StringL = u84StringL >> u84DistL;
+
+            if (u84StringL != 76561193665298432)
+            {
+                UART.Write("Bad right u84L shift\n");
+            }
+            else
+            {
+                UART.Write("Good right u84L shift\n");
+            }
+
+            //Unsigned 8-4 $t2>=32
+            UInt64 u84StringG = 4899916394579099648;
+            Int32 u84DistG = 40;
+            u84StringG = u84StringG >> u84DistG;
+
+            if (u84StringG != 4456448)
+            {
+                UART.Write("Bad right u84G shift\n");
+            }
+            else
+            {
+                UART.Write("Good right u84G shift\n");
+            }
+
+            //Unsigned 8-8 $t2<32
+            UInt64 u88StringL = 4899916394579099648;
+            Int32 u88DistL = 6;     
+            u88StringL = u88StringL >> u88DistL;
+
+            if (u88StringL != 76561193665298432)
+            {
+                UART.Write("Bad right u88L shift\n");
+            }
+            else
+            {
+                UART.Write("Good right u88L shift\n");
+            }
+
+            //Unsigned 8-8 $t2>=32
+            UInt64 u88StringG = 4899916394579099648;
+            Int32 u88DistG = 40;
+            u88StringG = u88StringG >> u88DistG;
+
+            if (u88StringG != 4456448)
+            {
+                UART.Write("Bad right u88G shift\n");
+            }
+            else
+            {
+                UART.Write("Good right u88G shift\n");
+            }
+
             // END - Test: Right logical shift
 
             //0xffffffff = -1 (32-bit)
