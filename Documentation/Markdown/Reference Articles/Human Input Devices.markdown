@@ -20,16 +20,16 @@ Human Input Devices date back to long before true computers were invented. Our i
 The mouse was first developed by the Standard Research Laboratory (now called SRI) in 1965 (not by Apple, as is commonly believed). It was intended to be a cheap replacement for Sutherland's light pens and many of the current mouse interactions were demonstrated by Doug Engelbert in 1968. Since then the mouse has not changed a great deal in terms of how it functions. Extra side buttons have been added to some devices, laser light instead of roller balls for movement tracking, ergonomic changes and some changes in software use (such as pointer speed, immersive gaming interaction and similar) but ultimately it still just moves a small icon around the screen. Arguably the biggest change to the mouse was the introduction of the touch pad on laptop devices. 
 Xerox and Apple were the first commercial organisations to use and distribute the mouse as part of a computer package. Their machines the Xerox Star (1981), the Apple Lisa (1982) and Apple Macintosh (1984) lead the way in human interaction and Apple, to this day, have a reputation for good UI, UX and human input device designs.
 
-The keyboard was really originally a typewriter but the first origins of the modern computer keyboard are really in teletype and punchcard technologies from the late 1800s to early 1900s. The modern keyboard layout originates from these devices and they were the first electronic systems where a user could type something and it would be printed out. The first teletype systems were commercially used for transmitting stock market data. The user would type and the text would be printed out on ticker tape at the destination. The first computer keyboard as we know it, however, was targeted at programmers so was almost entirely functional and aesthetically awful but was sufficient for inputting programs on the text-only displays of the 1970s. In the late 1970s Radio Shack, Commodore and Apple all saw the potential of the keyboard and started mass production. Since then, output functions, such as capslock lights, have been added and the look and feel of keyboards has changed wildely. Just like the mouse, however, the basic function (inputting keystrokes) has remained the same.
+The keyboard was really originally a typewriter but the first origins of the modern computer keyboard are really in teletype and punchcard technologies from the late 1800s to early 1900s. The modern keyboard layout originates from these devices and they were the first electronic systems where a user could type something and it would be printed out. The first teletype systems were commercially used for transmitting stock market data. The user would type and the text would be printed out on ticker tape at the destination. The first computer keyboard as we know it, however, was targeted at programmers so was almost entirely functional and aesthetically awful but was sufficient for inputting programs on the text-only displays of the 1970s. In the late 1970s Radio Shack, Commodore and Apple all saw the potential of the keyboard and started mass production. Since then, output functions, such as capslock lights, have been added and the look and feel of keyboards has changed wildly. Just like the mouse, however, the basic function (inputting keystrokes) has remained the same.
 
-You might imagine that is the end of the story. What other devices do we really use to input to a computer? Plenty others. Joysticks and, more commonly these days, game controllers are a necessity for using games consoles and for PC gaming. IR remotes for TVs, wireless pointing devices such as pens, Wii remotes and even Ultra Haptics (developed at the University of Bristol, UK) and of course, touch-screens have all become or are soon to be major input devices. Most of these technologies (with the exclusion of Wii remotes and Ultra Haptics) have origins in work from the 1950s and 1960s. It is important to realise that many of the seemingly innovative input technologies nowadays are not actually that new. The difference now to back then is the graphical ibteraction is vastly improved, the accuracy of devices is much higher and the speed and low-cost of the devices means they can be sold to a mass market. Technologies that were previously confined to the lab are being brought out and produced in large volumes.
+You might imagine that is the end of the story. What other devices do we really use to input to a computer? Plenty others. Joysticks and, more commonly these days, game controllers are a necessity for using games consoles and for PC gaming. IR remotes for TVs, wireless pointing devices such as pens, Wii remotes and even Ultra Haptics (developed at the University of Bristol, UK) and of course, touch-screens have all become or are soon to be major input devices. Most of these technologies (with the exclusion of Wii remotes and Ultra Haptics) have origins in work from the 1950s and 1960s. It is important to realise that many of the seemingly innovative input technologies nowadays are not actually that new. The difference now to back then is the graphical interaction is vastly improved, the accuracy of devices is much higher and the speed and low-cost of the devices means they can be sold to a mass market. Technologies that were previously confined to the lab are being brought out and produced in large volumes.
 
 ---
 
 # Overview
 
 ## What is a Human Input Device?
-A human input device is any device which is primarily aimed at taking user input and passing it to the machine. Such devices include mice, keyboards, game controllers, TV remotes and more. The devices may have some limited output features as well (such as lights and vibtration) but they will not usually constitute the primary output device. One exception to this wouild be Braille keyboards which have both the keyboard input and character output in a single device. 
+A human input device is any device which is primarily aimed at taking user input and passing it to the machine. Such devices include mice, keyboards, game controllers, TV remotes and more. The devices may have some limited output features as well (such as lights and vibration) but they will not usually constitute the primary output device. One exception to this wouild be Braille keyboards which have both the keyboard input and character output in a single device. 
 
 A human input device is not the same as a human interface device. "Human interface device (HID)" refers to two possible meanings:
 
@@ -37,11 +37,11 @@ A human input device is not the same as a human interface device. "Human interfa
 2. The USB HID specification and class of devices (which largely deals with input-based devices many of which are Human Input Devices.)
 
 ## How do Human Input Devices work?
-This is a very broad question and the answer varies wildely from one device (or type of device) to another. However, there are a few general points which can be made:
+This is a very broad question and the answer varies wildly from one device (or type of device) to another. However, there are a few general points which can be made:
 
 1. Generally, an input device consists of between zero and three axis of movement (a keyboard is zero, a scroll wheel is one, a mouse is two, a game controller has 3 (or, depending on how you think about it, 6))
-2. A significant number of input devices also have buttons which are either inputs in their own right or act as modifiers. Often there is a common set of buttons between types of device. (e.g. keyboard layouts, game controller pads, mouse forwward/backward buttons)
-3. Generally, input devices have to be very fast to contend with the real-time response expectation that humans have. (This is not just due to impatience. Humans actually feel nauseous (think: sea-sick) if the delay between an input action and the visual response is a fraction too delayed (e.g. a 5ms to 30ms delay) but may not appear to lag noticably. If you delay it even further the feeling goes away and the whole thing just appears to lag.)
+2. A significant number of input devices also have buttons which are either inputs in their own right or act as modifiers. Often there is a common set of buttons between types of device. (e.g. keyboard layouts, game controller pads, mouse forward/backward buttons)
+3. Generally, input devices have to be very fast to contend with the real-time response expectation that humans have. (This is not just due to impatience. Humans actually feel nauseous (think: sea-sick) if the delay between an input action and the visual response is a fraction too delayed (e.g. a 5ms to 30ms delay) but may not appear to lag noticeably. If you delay it even further the feeling goes away and the whole thing just appears to lag.)
 4. Generally, input devices will take only the latest input. If some piece of input fails to transmit, it will be left out entirely. However, inputs from a user will (or should) always arrive in order.
 
 ---
@@ -54,9 +54,24 @@ There are two major bits of hardware to know about when it comes to input device
 ## PS2 (Mouse &amp; Keyboard)
 PS2, properly written as PS/2, gets its name from IBM's Personal System/2 which was the computer system that introduced the standard for the first time in 1987. PS/2 was electrically compatible with and the communication protocol was the same as, the existing 5-pin DIN connectors. However, keyboards and mice for DIN used a different set of software commands to PS/2 so the two may not have worked together, depending on the particular system and and keyboard/mouse pair. 
 
+The PS/2 connector is a 6-pin mini-DIN connector which uses serial, synchronous, bi-directional communication. What this means is that the basic protocol is serial i.e. every byte is sent in order and received in order. The protocol is synchronous meaning you cannot read and write simultaneously and bi-directional means bytes can be sent both to and from the keyboard. The six pins are assigned as follows (with the slot of the female connector at the bottom, numbers run across the rows, left to right, down the rows and have 1-based indexing).
 
+| Pin | Name | Use |
+|:-----:|:---------|:-------|
+| 1  | +Data | Data pin for primary device (either mouse or keyboard) |
+| 2  | Not connected  | Not connected except on some systems which allow the use of a splitter cable. In that case, this is the data pin for the secondary (opposite type to primary) device. |
+| 3  | GND | Ground / 0V pin used as a reference |
+| 4  | Vcc | +5V reference pin at 275mA |
+| 5  | +CLK | Clock signal (for synchronising communication) |
+| 6  | Not connected | Not connected except on some systems which allow the use of a splitter cable. In that case, this is the clock signal pin for the secondary (opposite type to primary) device. |
 
-PS/2 mice and keyboards have basically gone now, though many traditional desktop machines still come with PS/2 connectors. The history and use of PS/2 keyboards and mice is discussed in more detail in their respective articles. (At the time of wiritng, only the "PS/2 Keyboards" article was available.) Sufficed to say, PS/2 keyboards and mice are still the easiest and fastest way for an OS developer to get input from a user (particularly keyboards). Most USB hardware retains support for emulating PS/2 keyboards and mice from USB mice/keyboards (provided the individual devices are never initialised or reset by a USB driver).
+Convention dictates that keyboard ports are coloured purple and mouse ports are coloured green. While the two are identical in firmware and hardware, the actual ports used to communicate from the processor to the device will be different. This means most software won't, for example, be able to understand a keyboard device plugged into a mouse port. However, because both keyboard and mouse are (usually) handled by a single micro-controller (to save hardware costs) inside the host PC, if either device behaves erratically resulting in confusion at both ends, both keyboard and mouse may appear to be broken. This can lead to misdiagnosis, however, it is a rare situation to be in. An easy test is to shutdown, unplug one of the devices and then restart.
+
+Shutting down and then unplugging is necessary because PS/2 is not (generally) hot pluggable. While for most modern hardware this will not cause any physical problems (though it could easily damage old hardware), most software will not detect the change of device. This means that switching device types on a port or unplugging a mouse/keyboard and plugging in a different model will usually result in the device not working. Due to the PS/2 Reset command (a legacy protocol allowing a single keyboard combination to reset the processor), hot plugging devices can confuse the on-board micro-controller unintentionally resulting in a reset command. 
+
+Most PS/2 connectors were not designed to be unplugged and plugged back in frequently. This means frequent use causes the pins to break which are next to impossible to replace. As a result, leaving a device plugged in is recommended where possible. 
+
+PS/2 mice and keyboards have basically gone now, though many traditional desktop machines still come with PS/2 connectors. The history and use of PS/2 keyboards and mice is discussed in more detail in their respective articles. (At the time of writing, only the "PS/2 Keyboards" article was available.) Sufficed to say, PS/2 keyboards and mice are still the easiest and fastest way for an OS developer to get input from a user (particularly keyboards). Most USB hardware retains support for emulating PS/2 keyboards and mice from USB mice/keyboards (provided the individual devices are never initialised or reset by a USB driver).
 
 ## Joytsicks &amp; Game Controllers
 
@@ -73,9 +88,7 @@ PS/2 mice and keyboards have basically gone now, though many traditional desktop
 
 ## Overview
 
-## Mice
-
-## Keyboards
+## Mice &amp; Keyboards
 
 ## Joytsicks &amp; Game Controllers
 
