@@ -29,7 +29,7 @@ You might imagine that is the end of the story. What other devices do we really 
 # Overview
 
 ## What is a Human Input Device?
-A human input device is any device which is primarily aimed at taking user input and passing it to the machine. Such devices include mice, keyboards, game controllers, TV remotes and more. The devices may have some limited output features as well (such as lights and vibration) but they will not usually constitute the primary output device. One exception to this wouild be Braille keyboards which have both the keyboard input and character output in a single device. 
+A human input device is any device which is primarily aimed at taking user input and passing it to the machine. Such devices include mice, keyboards, game controllers, TV remotes and more. The devices may have some limited output features as well (such as lights and vibration) but they will not usually constitute the primary output device. One exception to this would be Braille keyboards which have both the keyboard input and character output in a single device. 
 
 A human input device is not the same as a human interface device. "Human interface device (HID)" refers to two possible meanings:
 
@@ -73,26 +73,35 @@ Most PS/2 connectors were not designed to be unplugged and plugged back in frequ
 
 PS/2 mice and keyboards have basically gone now, though many traditional desktop machines still come with PS/2 connectors. The history and use of PS/2 keyboards and mice is discussed in more detail in their respective articles. (At the time of writing, only the "PS/2 Keyboards" article was available.) Sufficed to say, PS/2 keyboards and mice are still the easiest and fastest way for an OS developer to get input from a user (particularly keyboards). Most USB hardware retains support for emulating PS/2 keyboards and mice from USB mice/keyboards (provided the individual devices are never initialised or reset by a USB driver).
 
-## Joytsicks &amp; Game Controllers
-
-
-## Touch &amp; Pens
-
 ## USB (HID)
 
-## Compatibility
 
 ---
 
 # Software
 
 ## Overview
+Most Human Input Device driver software is interrupt driven. This means that when the user provides input, the input device signals an Interrupt Request (IRQ) notifying the host processor. The processor calls the interrupt routine which has choice. Either to handle the input data from the device immediately or to defer processing to later. This all happens within the driver.
+
+Software stacks vary a lot but in general drivers queue input data and can then notify applications the data is available. Applications will generally have a separate thread reserved entirely for input and user-interface processing. The thread will be woken by the notification from the driver and the scheduler will subsequently switch execution to that thread. The thread will then dequeue the input data from the driver and handle it.
 
 ## Mice &amp; Keyboards
+PS/2 mice and keyboards have relatively simple software. The key parts are:
 
-## Joytsicks &amp; Game Controllers
+1. Initialisation
+2. Handling interrupts from the device
+3. Reading and interpreting data from the device
+4. Sending back any necessary responses or output (e.g. caps lock light enable/disable)
 
-## Touch &amp; Pens
+A keyboard, for example, will send an interrupt request whenever a key is pressed, released or held down for a period of time. The keyboard software can then read something called a scancode to determine which key was pressed. The scancode is often a single byte which uniquely identifies all the keys and whether the shift key was pressed. The scancode usually  consist of bits denoting the row of the key and bits denoting the column of the key. Given a full sized keyboard has around 6 rows an 21 columns (including the numpad and home group) the total number of keys (without shift) is 104. Double that for the shift key and you get 208, which easily fits inside the range of a single byte (0-255). The scancodes are generally mapped by software to a kernel keycode representation and the modifier keys are kept track of. Those keycodes can then be translated into character codes (taking into account the modifier keys).
+
+Thus far the function of the keyboard and mouse have been described as per what PS/2 would do. An observant reader will realise that many keyboards have additional features (for example, volume control). Clearly such a function goes outside the normal range of a PS/2 keyboard. Such keyboards will be USB keyboards. While their main functionality can be emulated to PS/2, additional functions cannot. Furthermore, the functions may be non-standard, in which case a USb driver specifically for the particular device will be required.
+
+The key part of a mouse is clearly its 2D movement function. A mouse generally sends a movement as an x/y vector indicating how much the mouse was moved by. It does this at a high frequency meaning even small movements can be detected. 
+
+Mice have DPI (Dots per Inch) values which can be configured in two places - the mouse itself (often this value is fixed) and in software. Software (often the mouse driver) can scale the value received from the mouse as it chooses. A higher DPI means the mouse will indicate a greater distance moved for the same physical movement. 
+
+To draw a cursor on the screen requires a moderately complex graphics driver capable of handling at least two rendering layers (also known as buffers) which can exist in hardware or software. One layer holds the normal, unmodified screen image. The upper-most layer holds the cursor image which consists of a transparent (or solid-colour depending on the blending mode) layer along with the cursor itself. The two layers are composited to produce the final image for the screen. When the cursor moves, the graphics driver's cursor layer is updated without needing to redraw the entire rest of the screen.
 
 ## USB HID
 
@@ -112,10 +121,21 @@ Find the specification for your specific mouse's hardware then read it and work 
 Depends on which keys you mean. The normal function keys and such like should be part of the standard keyboard mapping. Extra keys (such as macro keys on gaming keyboards) may well require specialist USB drivers. In which case you need the spec for the keyboard. No spec? Touch luck. You might be able to ask the manufacturer or design company, but the reason there isn't a spec is usually because they want to keep their designs secret. Failing that, try online forums, see if you can find someone else who's written a driver for your device and ask if you can port it.
 
 ## How do I support my keyboard's special lights and whizzy things?
-Caps lock, num lock and scroll lock lights are easy to support (even PS/2 emulation supports them). Just read the PS/2 keyboard article for basic examples. Supporting any additional lights (or, for example, controlling keyboard backling) will usually require special USB drivers. In some cases, the keyboard is a totally separate device (when examined on the PCI bus) from the backlighting device. Either way, you will need the spec for the specific device.  No spec? Tough luck. You might be able to ask the manufacturer or design company, but the reason there isn't a spec is usually because they want to keep their designs secret.  Failing that, try online forums, see if you can find someone else who's written a driver for your device and ask if you can port it.
+Caps lock, num lock and scroll lock lights are easy to support (even PS/2 emulation supports them). Just read the PS/2 keyboard article for basic examples. Supporting any additional lights (or, for example, controlling keyboard backlight) will usually require special USB drivers. In some cases, the keyboard is a totally separate device (when examined on the PCI bus) from the backlighting device. Either way, you will need the spec for the specific device.  No spec? Tough luck. You might be able to ask the manufacturer or design company, but the reason there isn't a spec is usually because they want to keep their designs secret.  Failing that, try online forums, see if you can find someone else who's written a driver for your device and ask if you can port it.
 
 ---
 
 # References
+
+* [Hexus.net - Human Input Devices](http://hexus.net/tech/tech-explained/peripherals/18459-human-input-devices-hids/)
+* [Wikipedia - PS/2 Port](https://en.wikipedia.org/wiki/PS/2_port)
+* [Wikipedia - Human Interface Device](https://en.wikipedia.org/wiki/Human_interface_device)
+* [USB Human Interface Device class](https://en.wikipedia.org/wiki/USB_human_interface_device_class)
+* [MSDN - HID Architecture](https://msdn.microsoft.com/en-us/library/windows/hardware/jj126193(v=vs.85).aspx)
+* [USB.org - HID](http://www.usb.org/developers/hidpage/)
+* [Techopedia - Human Interface Device](http://www.techopedia.com/definition/19781/human-interface-device-hid)
+* [HowStuffWorks.com - How computer mice work](http://computer.howstuffworks.com/mouse.htm)
+* [HowStuffWorks.com - How computer keyboards work](http://computer.howstuffworks.com/keyboard.htm)
+* [Youtube.com - What inside a keyboard and How a keyboard works? by Surrounding Science](https://www.youtube.com/watch?v=chSzoovWtzU)
 
 *[acronym]: details
