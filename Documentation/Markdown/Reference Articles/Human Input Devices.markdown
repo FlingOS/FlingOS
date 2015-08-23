@@ -74,7 +74,37 @@ Most PS/2 connectors were not designed to be unplugged and plugged back in frequ
 PS/2 mice and keyboards have basically gone now, though many traditional desktop machines still come with PS/2 connectors. The history and use of PS/2 keyboards and mice is discussed in more detail in their respective articles. (At the time of writing, only the "PS/2 Keyboards" article was available.) Sufficed to say, PS/2 keyboards and mice are still the easiest and fastest way for an OS developer to get input from a user (particularly keyboards). Most USB hardware retains support for emulating PS/2 keyboards and mice from USB mice/keyboards (provided the individual devices are never initialised or reset by a USB driver).
 
 ## USB (HID)
+In the context of USB, HID stands for Human Interface Device(s) and is a class of device within the USB standard. Human Interface Devices include both input and output devices meaning all of the following types of device are encompassed in the USB HID specification:
 
+##### Output Technologies
+
+- Computer monitors (/screens/displays)
+- Braille displays
+- Loudspeakers
+- Headsets
+- Haptic technology (/vibrate features)
+- And more...
+
+##### Input Technologies
+
+- Keyboards (&amp; Braille displays)
+- Pointing devices inc. mice, touch pads, pointing sticks and light pens
+- Touch screens
+- Magnetic Strip Readers
+- Joysticks, Gamepads, Wii Remotes and similar
+- Webcams
+- Fingerprint scanners
+- And more...
+
+The HID specification provides a common system for communication with and discovery of HID devices (as per the purpose of USB). Also arising from the design of USB, USB HID devices are usually plug and play devices meaning they can be attached and detached from the system at any time without requiring a system restart or system reset. 
+
+For any given type of device (such as a keyboard or mouse) there is usually a standard software protocol for discovering information about the device (such as supported features) and for controlling standard features of the device (such as handling keystrokes from a keyboard and obtaining movement information from a mouse). This means that any device of a given type should be supported by a common, basic USB HID driver for that type. 
+
+When we look at human input, it is usually more important that the latest information arrives as fast as possible, even if that means missing out some previous information. The USB standard takes this into account and offers three methods of communication for devices: bulk transfers, isochronous transfers and interrupt transfers (these are available in all versions of USB to at least some degree though clearly later versions have more powerful/mature support). 
+
+For HID devices, interrupt transfers or isochronous transfers are usually used since they prioritise the timely arrival of the latest information and allow easier and more efficient setup of recurring transfers (since they are time-synced not readiness-synced). If the host has not read old data from an isochronous transfer list, then the old data is simply ignored. Isochronous transfers require there to always be data to send on the interval, where as interrupt transfers do not necessarily.
+
+Isochronous transfers are useful for audio/video applications where dropping small bits of data will not be noticed by the user but waiting on missing data will be (it would cause audible/visible jittering/sticking). Interrupt transfers are generally used for pointing devices since they allow periodic polling for data with a guaranteed transfer latency but do not rely on there always being data.
 
 ---
 
@@ -95,7 +125,7 @@ PS/2 mice and keyboards have relatively simple software. The key parts are:
 
 A keyboard, for example, will send an interrupt request whenever a key is pressed, released or held down for a period of time. The keyboard software can then read something called a scancode to determine which key was pressed. The scancode is often a single byte which uniquely identifies all the keys and whether the shift key was pressed. The scancode usually  consist of bits denoting the row of the key and bits denoting the column of the key. Given a full sized keyboard has around 6 rows an 21 columns (including the numpad and home group) the total number of keys (without shift) is 104. Double that for the shift key and you get 208, which easily fits inside the range of a single byte (0-255). The scancodes are generally mapped by software to a kernel keycode representation and the modifier keys are kept track of. Those keycodes can then be translated into character codes (taking into account the modifier keys).
 
-Thus far the function of the keyboard and mouse have been described as per what PS/2 would do. An observant reader will realise that many keyboards have additional features (for example, volume control). Clearly such a function goes outside the normal range of a PS/2 keyboard. Such keyboards will be USB keyboards. While their main functionality can be emulated to PS/2, additional functions cannot. Furthermore, the functions may be non-standard, in which case a USb driver specifically for the particular device will be required.
+Thus far the function of the keyboard and mouse have been described as per what PS/2 would do. An observant reader will realise that many keyboards have additional features (for example, volume control). Clearly such a function goes outside the normal range of a PS/2 keyboard. Such keyboards will be USB keyboards. While their main functionality can be emulated to PS/2, additional functions cannot. Furthermore, the functions may be non-standard, in which case a USB driver specifically for the particular device will be required.
 
 The key part of a mouse is clearly its 2D movement function. A mouse generally sends a movement as an x/y vector indicating how much the mouse was moved by. It does this at a high frequency meaning even small movements can be detected. 
 
@@ -104,8 +134,9 @@ Mice have DPI (Dots per Inch) values which can be configured in two places - the
 To draw a cursor on the screen requires a moderately complex graphics driver capable of handling at least two rendering layers (also known as buffers) which can exist in hardware or software. One layer holds the normal, unmodified screen image. The upper-most layer holds the cursor image which consists of a transparent (or solid-colour depending on the blending mode) layer along with the cursor itself. The two layers are composited to produce the final image for the screen. When the cursor moves, the graphics driver's cursor layer is updated without needing to redraw the entire rest of the screen.
 
 ## USB HID
+USB HID devices require a complete USB stack included Host Controller Interface (HCI) drivers, USB manager (of some form) and USB device drivers. The first two are device independent and must exist in any form of USB software stack. The device drivers should consist of a base driver for each type of device (which provides standard functions such as handling keystrokes) and then derived specialist drivers for particular manufacturers/models of device.
 
-## Compatibility
+Any USB HID driver will need to integrate with the rest of the system's software stack to provide a common interface for applications (and other drivers) for accessing HID data. For example, a keyboard will need to integrate PS/2 drivers to allow either type of device to be used without the software knowing which (i.e. make the management seamless to the applications). This is often part of the system ABI or API.
 
 ---
 
@@ -137,5 +168,22 @@ Caps lock, num lock and scroll lock lights are easy to support (even PS/2 emulat
 * [HowStuffWorks.com - How computer mice work](http://computer.howstuffworks.com/mouse.htm)
 * [HowStuffWorks.com - How computer keyboards work](http://computer.howstuffworks.com/keyboard.htm)
 * [Youtube.com - What inside a keyboard and How a keyboard works? by Surrounding Science](https://www.youtube.com/watch?v=chSzoovWtzU)
+* [Keill.com - USB Interrupt Transfers](http://www.keil.com/pack/doc/mw/USB/html/_u_s_b__interrupt__transfers.html)
+* [Keill.com - USB Isochronous Transfers](http://www.keil.com/pack/doc/mw/USB/html/_u_s_b__isochronous__transfers.html)
+* [BeyondLogic.org - USB Nutshell page 4](http://www.beyondlogic.org/usbnutshell/usb4.shtml)
+* [USBMadeSimple.co.uk - Page 5 - Example device : Mouse](http://www.usbmadesimple.co.uk/ums_5.htm)
 
-*[acronym]: details
+
+*[HID]: Human Interface Device
+*[USB]: Universal Serial Bus
+*[PC]: Personal Computer
+*[IR]: Infra-red
+*[TV]: Television
+*[HCI]: Host Controller Interface
+*[PCI]: Peripheral Component Interconnect
+*[PS]: Personal System(/2)
+*[PS/2]: Personal System /2
+*[PS2]: Personal System /2
+*[ABI]: Application Binary Interface
+*[API]: Application Programming Interface
+*[FAQ]: Frequently Asked Question
