@@ -56,7 +56,8 @@ namespace Drivers.Compiler.Architectures.MIPS32
             conversionState.Append(new ASMOps.Label() { ILPosition = currOpPosition, Extension = "False1" });
 
             // 2. Load object type
-            conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Word, Src = "0($t0)", Dest = "$t1", MoveType = ASMOps.Mov.MoveTypes.SrcMemoryToDestReg });
+            //conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Word, Src = "0($t0)", Dest = "$t1", MoveType = ASMOps.Mov.MoveTypes.SrcMemoryToDestReg });
+            GlobalMethods.LoadData(conversionState, theOp, "$t0", "$t1", 0, 4);
 
             // 3. Test if object type == provided type:
             int metadataToken = Utilities.ReadInt32(theOp.ValueBytes, 0);
@@ -80,7 +81,9 @@ namespace Drivers.Compiler.Architectures.MIPS32
 
             //      3.2.1. Move to base type
             int baseTypeOffset = conversionState.GetTypeFieldOffset("TheBaseType");
-            conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Word, Src = baseTypeOffset + "($t1)", Dest = "$t1" });
+            //conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Word, Src = baseTypeOffset + "($t1)", Dest = "$t1" });
+            GlobalMethods.LoadData(conversionState, theOp, "$t1", "$t1", baseTypeOffset, 4);
+
 
             //      3.2.2. Test if base type null:
             //      3.2.2.2   False: Jump back to (3)

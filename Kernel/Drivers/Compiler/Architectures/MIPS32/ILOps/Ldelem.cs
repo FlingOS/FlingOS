@@ -253,7 +253,9 @@ namespace Drivers.Compiler.Architectures.MIPS32
             //              - Move array ref into $t1
             conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Word, Src = "4($sp)", Dest = "$t1", MoveType = ASMOps.Mov.MoveTypes.SrcMemoryToDestReg });
             //              - Move length value (offset($t1)]) into $t1
-            conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Word, Src = lengthOffset.ToString() + "($t1)", Dest = "$t1", MoveType = ASMOps.Mov.MoveTypes.SrcMemoryToDestReg });
+            //conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Word, Src = lengthOffset.ToString() + "($t1)", Dest = "$t1", MoveType = ASMOps.Mov.MoveTypes.SrcMemoryToDestReg });
+            GlobalMethods.LoadData(conversionState, theOp, "$t1", "$t1", lengthOffset, 4);
+
             //      3.2. Compare $t0 to 0
             //      3.3. Jump if greater than to next test condition (3.5)
             conversionState.Append(new ASMOps.Branch() { Src1 = "$t0", Src2 = "0", BranchType = ASMOps.BranchOp.BranchGreaterThanEqual, DestILPosition = currOpPosition, Extension = "Continue3_1", UnsignedTest = true });
@@ -285,22 +287,26 @@ namespace Drivers.Compiler.Architectures.MIPS32
             //      4.2. Move array ref into $t0
             conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Word, Src = "0($sp)", Dest = "$t0", MoveType = ASMOps.Mov.MoveTypes.SrcMemoryToDestReg });
             //      4.3. Move element type ref (from array ref) into $t0
-            conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Word, Src = elemTypeOffset.ToString() + "($t0)", Dest = "$t0", MoveType = ASMOps.Mov.MoveTypes.SrcMemoryToDestReg });
+            //conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Word, Src = elemTypeOffset.ToString() + "($t0)", Dest = "$t0", MoveType = ASMOps.Mov.MoveTypes.SrcMemoryToDestReg });
+            GlobalMethods.LoadData(conversionState, theOp, "$t0", "$t0", elemTypeOffset, 4);
             //      4.4. Move IsValueType (from element ref type) into $t2
             int isValueTypeOffset = conversionState.GetTypeFieldOffset("IsValueType");
             conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Word, Src = "0", Dest = "$t2", MoveType = ASMOps.Mov.MoveTypes.ImmediateToReg });
-            conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Byte, Src = isValueTypeOffset.ToString() + "($t0)", Dest = "$t2", MoveType = ASMOps.Mov.MoveTypes.SrcMemoryToDestReg });
+            //conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Byte, Src = isValueTypeOffset.ToString() + "($t0)", Dest = "$t2", MoveType = ASMOps.Mov.MoveTypes.SrcMemoryToDestReg });
+            GlobalMethods.LoadData(conversionState, theOp, "$t0", "$t2", isValueTypeOffset, 1);
             //      4.5. If IsValueType, continue to 4.6., else goto 4.8.
             conversionState.Append(new ASMOps.Branch() { Src1 = "$t2", Src2 = "0", BranchType = ASMOps.BranchOp.BranchZero, DestILPosition = currOpPosition, Extension = "Continue4_1", UnsignedTest = true });
             //      4.6. Move Size (from element type ref) into $t0
             int sizeOffset = conversionState.GetTypeFieldOffset("Size");
-            conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Word, Src = sizeOffset.ToString() + "($t0)", Dest = "$t0", MoveType = ASMOps.Mov.MoveTypes.SrcMemoryToDestReg });
+            //conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Word, Src = sizeOffset.ToString() + "($t0)", Dest = "$t0", MoveType = ASMOps.Mov.MoveTypes.SrcMemoryToDestReg });
+            GlobalMethods.LoadData(conversionState, theOp, "$t0", "$t0", sizeOffset, 4);
             //      4.7. Skip over 4.8.
             conversionState.Append(new ASMOps.Branch() { BranchType = ASMOps.BranchOp.Branch, DestILPosition = currOpPosition, Extension = "Continue4_2" });
             //      4.8. Move StackSize (from element type ref) into $t0
             conversionState.Append(new ASMOps.Label() { ILPosition = currOpPosition, Extension = "Continue4_1" });
             int stackSizeOffset = conversionState.GetTypeFieldOffset("StackSize");
-            conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Word, Src = stackSizeOffset + "($t0)", Dest = "$t0", MoveType = ASMOps.Mov.MoveTypes.SrcMemoryToDestReg });
+            //conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Word, Src = stackSizeOffset + "($t0)", Dest = "$t0", MoveType = ASMOps.Mov.MoveTypes.SrcMemoryToDestReg });
+            GlobalMethods.LoadData(conversionState, theOp, "$t0", "$t0", stackSizeOffset, 4);
             //      4.9. Mulitply $t0 by $t1 (index by element size)
             conversionState.Append(new ASMOps.Label() { ILPosition = currOpPosition, Extension = "Continue4_2" });
             conversionState.Append(new ASMOps.Mul() { Src1 = "$t0", Src2 = "$t1", Signed = true });
@@ -327,7 +333,8 @@ namespace Drivers.Compiler.Architectures.MIPS32
                 {
                     case 1:
                         conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Word, Src = "0", Dest = "$t1", MoveType = ASMOps.Mov.MoveTypes.ImmediateToReg });
-                        conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Byte, Src = "0($t0)", Dest = "$t1", MoveType = ASMOps.Mov.MoveTypes.SrcMemoryToDestReg });
+                        //conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Byte, Src = "0($t0)", Dest = "$t1", MoveType = ASMOps.Mov.MoveTypes.SrcMemoryToDestReg });
+                        GlobalMethods.LoadData(conversionState, theOp, "$t0", "$t1", 0, 1);
                         if (signExtend)
                         {
                             throw new NotSupportedException("Sign extend byte to 4 bytes in LdElem not supported!");
@@ -335,7 +342,8 @@ namespace Drivers.Compiler.Architectures.MIPS32
                         break;
                     case 2:
                         conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Word, Src = "0", Dest = "$t1", MoveType = ASMOps.Mov.MoveTypes.ImmediateToReg });
-                        conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Halfword, Src = "0($t0)", Dest = "$t1", MoveType = ASMOps.Mov.MoveTypes.SrcMemoryToDestReg });
+                        //conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Halfword, Src = "0($t0)", Dest = "$t1", MoveType = ASMOps.Mov.MoveTypes.SrcMemoryToDestReg });
+                        GlobalMethods.LoadData(conversionState, theOp, "$t0", "$t1", 0, 2);
                         if (signExtend)
                         {
                             //Lookup! -R. 
@@ -343,11 +351,14 @@ namespace Drivers.Compiler.Architectures.MIPS32
                         }
                         break;
                     case 4:
-                        conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Word, Src = "0($t0)", Dest = "$t1", MoveType = ASMOps.Mov.MoveTypes.SrcMemoryToDestReg });
+                        //conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Word, Src = "0($t0)", Dest = "$t1", MoveType = ASMOps.Mov.MoveTypes.SrcMemoryToDestReg });
+                        GlobalMethods.LoadData(conversionState, theOp, "$t0", "$t1", 0, 4);
                         break;
                     case 8:
-                        conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Word, Src = "0($t0)", Dest = "$t1", MoveType = ASMOps.Mov.MoveTypes.SrcMemoryToDestReg });
-                        conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Word, Src = "4($t0)", Dest = "$t2", MoveType = ASMOps.Mov.MoveTypes.SrcMemoryToDestReg });
+                        //conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Word, Src = "0($t0)", Dest = "$t1", MoveType = ASMOps.Mov.MoveTypes.SrcMemoryToDestReg });
+                        GlobalMethods.LoadData(conversionState, theOp, "$t0", "$t1", 0, 4);
+                        //conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Word, Src = "4($t0)", Dest = "$t2", MoveType = ASMOps.Mov.MoveTypes.SrcMemoryToDestReg });
+                        GlobalMethods.LoadData(conversionState, theOp, "$t0", "$t2", 4, 4);
                         break;
                 }
                 if (sizeToPush == 8)
