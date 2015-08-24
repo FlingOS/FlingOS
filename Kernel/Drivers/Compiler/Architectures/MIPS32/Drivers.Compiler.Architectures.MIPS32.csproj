@@ -114,6 +114,7 @@
     <Compile Include="ILOps\Ret.cs" />
     <Compile Include="ILOps\Shl.cs" />
     <Compile Include="ILOps\Shr.cs" />
+    <Compile Include="ILOps\Sizeof.cs" />
     <Compile Include="ILOps\StackSwitch.cs" />
     <Compile Include="ILOps\Starg.cs" />
     <Compile Include="ILOps\Stfld.cs" />
