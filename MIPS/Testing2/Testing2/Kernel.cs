@@ -45,191 +45,324 @@ namespace Testing2
             }
             UART.Write("]\n");
 
-            ////BEGIN - Test: Sub
+            //BEGIN - Test: Div
             UInt32 a1 = 9;
-            UInt32 b1 = 4;
-            a1 = a1 - b1;
+            UInt32 b1 = 3;
+            a1 = a1 / b1;
 
-            if (a1 != 5)
+            if (a1 != 3)
             {
-                UART.Write("Bad unsigned 32-bit - 32-bit\n");
+                UART.Write("Bad unsigned div no rem\n");
             }
             else
             {
-                UART.Write("Good unsigned 32-bit - 32-bit\n");
+                UART.Write("Good unsigned div no rem\n");
             }
 
-            Int32 a2 = -9;
-            Int32 b2 = 4;
-            a2 = a2 - b2;
+            UInt32 a2 = 10;
+            UInt32 b2 = 3;
+            a2 = a2 / b2;
 
-            if (a2 != -13)
+            if (a2 != 3)
             {
-                UART.Write("Bad signed (-)32-bit - (+)32-bit\n");
+                UART.Write("Bad unsigned div with rem\n");
             }
             else
             {
-                UART.Write("Good signed (-)32-bit - (+)32-bit\n");
+                UART.Write("Good unsigned div with rem\n");
             }
 
             Int32 a3 = -9;
-            Int32 b3 = -4;
-            a3 = a3 - b3;
+            Int32 b3 = 3;
+            a3 = a3 / b3;
 
-            if (a3 != -5)
+            if (a3 != -3)
             {
-                UART.Write("Bad signed (-)32-bit - (-)32-bit\n");
+                UART.Write("Bad signed div - + no rem\n");
             }
             else
             {
-                UART.Write("Good signed (-)32-bit - (-)32-bit\n");
+                UART.Write("Good signed div - + no rem\n");
             }
 
-            Int32 a10 = 9;
-            Int32 b10 = -4;
-            a10 = a10 - b10;
+            Int32 a4 = 9;
+            Int32 b4 = -3;
+            a4 = a4 / b4;
 
-            if (a10 != 13)
+            if (a4 != -3)
             {
-                UART.Write("Bad signed (+)32-bit - (-)32-bit\n");
+                UART.Write("Bad signed div + - no rem\n");
             }
             else
             {
-                UART.Write("Good signed (+)32-bit - (-)32-bit\n");
+                UART.Write("Good signed div + - no rem\n");
             }
 
-            Int32 a11 = 9;
-            Int32 b11 = 4;
-            a11 = a11 - b11;
+            Int32 a5 = -9;
+            Int32 b5 = -3;
+            a5 = a5 / b5;
 
-            if (a11 != 5)
+            if (a5 != 3)
             {
-                UART.Write("Bad signed (+)32-bit - (+)32-bit\n");
+                UART.Write("Bad signed div - - no rem\n");
             }
             else
             {
-                UART.Write("Good signed (+)32-bit - (+)32-bit\n");
+                UART.Write("Good signed div - - no rem\n");
             }
 
-            //---
-            Int64 a4 = 1080863910568919040;
-            Int32 b4 = 4;
-            a4 = a4 - b4;
+            Int32 a6 = 9;
+            Int32 b6 = 3;
+            a6 = a6 / b6;
 
-            if (a4 != 1080863910568919036)
+            if (a5 != 3)
             {
-                UART.Write("***Bad unsigned 64-bit - 32-bit\n");
+                UART.Write("Bad signed div + + no rem\n");
             }
             else
             {
-                UART.Write("***Good unsigned 64-bit - 32-bit\n");
+                UART.Write("Good signed div + + no rem\n");
             }
+            //--
 
-            Int64 a12 = 0;
-            Int32 b12 = 4;
-            a12 = a12 - b12;
+            Int32 a7 = -10;
+            Int32 b7 = 3;
+            a7 = a7 / b7;
 
-            if (a12 != -4)
+            if (a7 != -3)
             {
-                UART.Write("***Bad unsigned zero 64-bit - 32-bit\n");
+                UART.Write("Bad signed div - + with rem\n");
             }
             else
             {
-                UART.Write("***Good unsigned zero 64-bit - 32-bit\n");
+                UART.Write("Good signed div - + with rem\n");
             }
 
-            Int64 a13 = 1080863910568919040;
-            Int64 b13 = 4;
-            a13 = a13 - b13;
+            Int32 a8 = 10;
+            Int32 b8 = -3;
+            a8 = a8 / b8;
 
-            if (a13 != 1080863910568919036)
+            if (a8 != -3)
             {
-                UART.Write("***Bad unsigned 64-bit - 64-bit\n");
+                UART.Write("Bad signed div + - with rem\n");
             }
             else
             {
-                UART.Write("***Good unsigned 64-bit - 64-bit\n");
+                UART.Write("Good signed div + - with rem\n");
             }
 
-            Int64 a14 = 0;
-            Int64 b14 = 4;
-            a14 = a14 - b14;
+            Int32 a9 = -10;
+            Int32 b9 = -3;
+            a9 = a9 / b9;
 
-            if (a14 != -4)
+            if (a9 != 3)
             {
-                UART.Write("***Bad unsigned zero 64-bit - 64-bit\n");
+                UART.Write("Bad signed div - - with rem\n");
             }
             else
             {
-                UART.Write("***Good unsigned zero 64-bit - 64-bit\n");
+                UART.Write("Good signed div - - with rem\n");
             }
 
-            //---
+            Int32 a10 = 10;
+            Int32 b10 = 3;
+            a10 = a10 / b10;
 
-            UInt64 a5 = 1080863910568919040;
-            UInt64 b5 = 844424930131968;
-            a5 = a5 - b5;
-
-            if (a5 != 1080019485638787072)
+            if (a10 != 3)
             {
-                UART.Write("Bad unsigned 64-bit - 64-bit\n");
+                UART.Write("Bad signed div + + with rem\n");
             }
             else
             {
-                UART.Write("Good unsigned 64-bit - 64-bit\n");
+                UART.Write("Good signed div + + with rem\n");
             }
+            //END - Test: Div
 
-            Int64 a6 = -1080863910568919040;
-            Int64 b6 = 844424930131968;
-            a6 = a6 - b6;
+            ////BEGIN - Test: Sub
+            //UInt32 a1 = 9;
+            //UInt32 b1 = 4;
+            //a1 = a1 - b1;
 
-            if (a6 != -1081708335499051008)
-            {
-                UART.Write("Bad signed (-)64-bit - (+)64-bit\n");
-            }
-            else
-            {
-                UART.Write("Good signed (-)64-bit - (+)64-bit\n");
-            }
+            //if (a1 != 5)
+            //{
+            //    UART.Write("Bad unsigned 32-bit - 32-bit\n");
+            //}
+            //else
+            //{
+            //    UART.Write("Good unsigned 32-bit - 32-bit\n");
+            //}
 
-            Int64 a7 = -1080863910568919040;
-            Int64 b7 = -844424930131968;
-            a7 = a7 - b7;
+            //Int32 a2 = -9;
+            //Int32 b2 = 4;
+            //a2 = a2 - b2;
 
-            if (a7 != -1080019485638787072)
-            {
-                UART.Write("Bad signed (-)64-bit - (-)64-bit\n");
-            }
-            else
-            {
-                UART.Write("Good signed (-)64-bit - (-)64-bit\n");
-            }
+            //if (a2 != -13)
+            //{
+            //    UART.Write("Bad signed (-)32-bit - (+)32-bit\n");
+            //}
+            //else
+            //{
+            //    UART.Write("Good signed (-)32-bit - (+)32-bit\n");
+            //}
 
-            Int64 a8 = 1080863910568919040;
-            Int64 b8 = -844424930131968;
-            a8 = a8 - b8;
+            //Int32 a3 = -9;
+            //Int32 b3 = -4;
+            //a3 = a3 - b3;
 
-            if (a8 != 1081708335499051008)
-            {
-                UART.Write("Bad signed (+)64-bit - (-)64-bit\n");
-            }
-            else
-            {
-                UART.Write("Good signed (+)64-bit - (-)64-bit\n");
-            }
+            //if (a3 != -5)
+            //{
+            //    UART.Write("Bad signed (-)32-bit - (-)32-bit\n");
+            //}
+            //else
+            //{
+            //    UART.Write("Good signed (-)32-bit - (-)32-bit\n");
+            //}
 
-            Int64 a9 = 1080863910568919040;
-            Int64 b9 = 844424930131968;
-            a9 = a9 - b9;
+            //Int32 a10 = 9;
+            //Int32 b10 = -4;
+            //a10 = a10 - b10;
 
-            if (a9 != 1080019485638787072)
-            {
-                UART.Write("Bad signed (+)64-bit - (+)64-bit\n");
-            }
-            else
-            {
-                UART.Write("Good signed (+)64-bit - (+)64-bit\n");
-            }
+            //if (a10 != 13)
+            //{
+            //    UART.Write("Bad signed (+)32-bit - (-)32-bit\n");
+            //}
+            //else
+            //{
+            //    UART.Write("Good signed (+)32-bit - (-)32-bit\n");
+            //}
+
+            //Int32 a11 = 9;
+            //Int32 b11 = 4;
+            //a11 = a11 - b11;
+
+            //if (a11 != 5)
+            //{
+            //    UART.Write("Bad signed (+)32-bit - (+)32-bit\n");
+            //}
+            //else
+            //{
+            //    UART.Write("Good signed (+)32-bit - (+)32-bit\n");
+            //}
+
+            ////---
+            //Int64 a4 = 1080863910568919040;
+            //Int32 b4 = 4;
+            //a4 = a4 - b4;
+
+            //if (a4 != 1080863910568919036)
+            //{
+            //    UART.Write("***Bad unsigned 64-bit - 32-bit\n");
+            //}
+            //else
+            //{
+            //    UART.Write("***Good unsigned 64-bit - 32-bit\n");
+            //}
+
+            //Int64 a12 = 0;
+            //Int32 b12 = 4;
+            //a12 = a12 - b12;
+
+            //if (a12 != -4)
+            //{
+            //    UART.Write("***Bad unsigned zero 64-bit - 32-bit\n");
+            //}
+            //else
+            //{
+            //    UART.Write("***Good unsigned zero 64-bit - 32-bit\n");
+            //}
+
+            //Int64 a13 = 1080863910568919040;
+            //Int64 b13 = 4;
+            //a13 = a13 - b13;
+
+            //if (a13 != 1080863910568919036)
+            //{
+            //    UART.Write("***Bad unsigned 64-bit - 64-bit\n");
+            //}
+            //else
+            //{
+            //    UART.Write("***Good unsigned 64-bit - 64-bit\n");
+            //}
+
+            //Int64 a14 = 0;
+            //Int64 b14 = 4;
+            //a14 = a14 - b14;
+
+            //if (a14 != -4)
+            //{
+            //    UART.Write("***Bad unsigned zero 64-bit - 64-bit\n");
+            //}
+            //else
+            //{
+            //    UART.Write("***Good unsigned zero 64-bit - 64-bit\n");
+            //}
+
+            ////---
+
+            //UInt64 a5 = 1080863910568919040;
+            //UInt64 b5 = 844424930131968;
+            //a5 = a5 - b5;
+
+            //if (a5 != 1080019485638787072)
+            //{
+            //    UART.Write("Bad unsigned 64-bit - 64-bit\n");
+            //}
+            //else
+            //{
+            //    UART.Write("Good unsigned 64-bit - 64-bit\n");
+            //}
+
+            //Int64 a6 = -1080863910568919040;
+            //Int64 b6 = 844424930131968;
+            //a6 = a6 - b6;
+
+            //if (a6 != -1081708335499051008)
+            //{
+            //    UART.Write("Bad signed (-)64-bit - (+)64-bit\n");
+            //}
+            //else
+            //{
+            //    UART.Write("Good signed (-)64-bit - (+)64-bit\n");
+            //}
+
+            //Int64 a7 = -1080863910568919040;
+            //Int64 b7 = -844424930131968;
+            //a7 = a7 - b7;
+
+            //if (a7 != -1080019485638787072)
+            //{
+            //    UART.Write("Bad signed (-)64-bit - (-)64-bit\n");
+            //}
+            //else
+            //{
+            //    UART.Write("Good signed (-)64-bit - (-)64-bit\n");
+            //}
+
+            //Int64 a8 = 1080863910568919040;
+            //Int64 b8 = -844424930131968;
+            //a8 = a8 - b8;
+
+            //if (a8 != 1081708335499051008)
+            //{
+            //    UART.Write("Bad signed (+)64-bit - (-)64-bit\n");
+            //}
+            //else
+            //{
+            //    UART.Write("Good signed (+)64-bit - (-)64-bit\n");
+            //}
+
+            //Int64 a9 = 1080863910568919040;
+            //Int64 b9 = 844424930131968;
+            //a9 = a9 - b9;
+
+            //if (a9 != 1080019485638787072)
+            //{
+            //    UART.Write("Bad signed (+)64-bit - (+)64-bit\n");
+            //}
+            //else
+            //{
+            //    UART.Write("Good signed (+)64-bit - (+)64-bit\n");
+            //}
 
             // END - Test: Sub
 

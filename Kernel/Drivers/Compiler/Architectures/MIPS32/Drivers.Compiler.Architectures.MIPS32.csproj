@@ -39,6 +39,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ASMOps\Div.cs" />
     <Compile Include="ASMOps\Sltu.cs" />
     <Compile Include="ASMOps\Srav.cs" />
     <Compile Include="ASMOps\Srlv.cs" />
@@ -82,6 +83,7 @@
     <Compile Include="ILOps\Clt.cs" />
     <Compile Include="ILOps\Convi.cs" />
     <Compile Include="ILOps\Convu.cs" />
+    <Compile Include="ILOps\Div.cs" />
     <Compile Include="ILOps\Dup.cs" />
     <Compile Include="ILOps\GlobalMethods.cs" />
     <Compile Include="ILOps\Ldarg.cs" />
