@@ -83,8 +83,8 @@ namespace Drivers.Compiler.Architectures.MIPS32
             //Push type reference
             string typeIdStr = conversionState.TheILLibrary.GetTypeInfo(elementType).ID;
             conversionState.AddExternalLabel(typeIdStr);
-            conversionState.Append(new ASMOps.La() { Label = typeIdStr, Dest = "$t0" });
-            conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Word, Src = "$t0" });
+            conversionState.Append(new ASMOps.La() { Label = typeIdStr, Dest = "$t4" });
+            conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Word, Src = "$t4" });
             //Push a dword for return value (i.e. new array pointer)
             conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Word, Src = "0" });
             //Get the GC.NewArr method ID (i.e. ASM label)

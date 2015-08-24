@@ -65,8 +65,8 @@ namespace Drivers.Compiler.Architectures.MIPS32
             }
 
             //Push the pointer to the function
-            conversionState.Append(new ASMOps.La() { Dest = "$t0", Label = methodID });
-            conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Word, Src = "$t0" });
+            conversionState.Append(new ASMOps.La() { Dest = "$t4", Label = methodID });
+            conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Word, Src = "$t4" });
 
             conversionState.CurrentStackFrame.Stack.Push(new StackItem()
             {
