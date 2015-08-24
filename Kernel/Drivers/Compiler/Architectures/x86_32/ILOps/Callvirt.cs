@@ -190,11 +190,11 @@ namespace Drivers.Compiler.Architectures.x86
                             throw new NotSupportedException("Invalid return stack operand size!");
                         }
                     }
-                    
 
+                  
 
                     //Append the actual call
-                    conversionState.Append(new ASMOps.Call() { Target = "eax" });
+                    conversionState.Append(new ASMOps.Call() { Target = "EAX" });
                     
 
                     //After a call, we need to remove the return value and parameters from the stack
