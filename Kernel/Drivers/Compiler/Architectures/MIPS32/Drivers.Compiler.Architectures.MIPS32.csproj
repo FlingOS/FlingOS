@@ -95,6 +95,7 @@
     <Compile Include="ILOps\Ldfld.cs" />
     <Compile Include="ILOps\Ldftn.cs" />
     <Compile Include="ILOps\Ldind.cs" />
+    <Compile Include="ILOps\Ldlen.cs" />
     <Compile Include="ILOps\Ldloc.cs" />
     <Compile Include="ILOps\Ldnull.cs" />
     <Compile Include="ILOps\Ldsfld.cs" />
