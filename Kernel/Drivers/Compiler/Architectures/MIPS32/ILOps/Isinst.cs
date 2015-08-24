@@ -66,7 +66,7 @@ namespace Drivers.Compiler.Architectures.MIPS32
             string TestTypeId = theTypeInfo.ID;
             conversionState.AddExternalLabel(TestTypeId);
 
-            conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Word, Src = TestTypeId, Dest = "$t2", MoveType = ASMOps.Mov.MoveTypes.ImmediateToReg });
+            conversionState.Append(new ASMOps.La() { Label = TestTypeId, Dest = "$t2" });
 
             conversionState.Append(new ASMOps.Label() { ILPosition = currOpPosition, Extension = "Label3" });
 

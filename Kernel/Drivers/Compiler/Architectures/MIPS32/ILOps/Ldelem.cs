@@ -252,7 +252,7 @@ namespace Drivers.Compiler.Architectures.MIPS32
 
             //              - Move array ref into $t1
             conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Word, Src = "4($sp)", Dest = "$t1", MoveType = ASMOps.Mov.MoveTypes.SrcMemoryToDestReg });
-            //              - Move length value (offset($t1)]) into $t1
+            //              - Move length value (offset($t1)) into $t1
             //conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Word, Src = lengthOffset.ToString() + "($t1)", Dest = "$t1", MoveType = ASMOps.Mov.MoveTypes.SrcMemoryToDestReg });
             GlobalMethods.LoadData(conversionState, theOp, "$t1", "$t1", lengthOffset, 4);
 

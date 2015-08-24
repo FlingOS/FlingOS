@@ -83,7 +83,8 @@ namespace Drivers.Compiler.Architectures.MIPS32
             //Push type reference
             string typeIdStr = conversionState.TheILLibrary.GetTypeInfo(elementType).ID;
             conversionState.AddExternalLabel(typeIdStr);
-            conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Word, Src = typeIdStr });
+            conversionState.Append(new ASMOps.La() { Label = typeIdStr, Dest = "$t0" });
+            conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Word, Src = "$t0" });
             //Push a dword for return value (i.e. new array pointer)
             conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Word, Src = "0" });
             //Get the GC.NewArr method ID (i.e. ASM label)
@@ -97,22 +98,6 @@ namespace Drivers.Compiler.Architectures.MIPS32
             //Check if pointer == 0?
             //If it isn't 0, not out of memory so continue execution
             conversionState.Append(new ASMOps.Branch() { Src1 = "$t0", Src2 = "0", BranchType = ASMOps.BranchOp.BranchNotZero, DestILPosition = currOpPosition, Extension = "NotNullMem", UnsignedTest = true });
-
-            //If we are out of memory, we have a massive problem
-            //Because it means we don't have space to create a new exception object
-            //So ultimately we just have to throw a kernel panic
-            //Throw a panic attack... ( :/ ) by calling kernel Halt(uint lastAddress)
-
-            //result.AppendLine("call GetEIP");
-            //result.AppendLine("push dword esp");
-            //result.AppendLine("push dword ebp");
-            //result.AppendLine("pushad");
-            //result.AppendLine("mov dword eax, 0xDEADBEEF");
-            //result.AppendLine("mov dword ebx, 0x2");
-            //result.AppendLine("mov dword ecx, 1");
-            //result.AppendLine("mov dword [staticfield_System_Boolean_Kernel_FOS_System_GC_Enabled], 1");
-            //result.AppendLine("mov dword [staticfield_System_Boolean_Kernel_FOS_System_Heap_PreventAllocation], 0");
-            //result.AppendLine("jmp method_System_Void_RETEND_Kernel_PreReqs_DECLEND_PageFaultDetection_NAMEEND___Fail");
 
             conversionState.Append(new ASMOps.Call() { Target = "GetEIP" });
             conversionState.AddExternalLabel("GetEIP");
