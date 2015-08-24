@@ -52,32 +52,50 @@ A PS/2 keyboard consists of several key parts described below.
 | Status lights | These are small, low-current, low-power LEDs that usually indicate whether caps-lock is on, whether num-lock is on and whether scroll-lock is on. A lit light indicates the feature is switched on. |
 | Backlighting | Some keyboards come with backlighting. For modern USB keyboards, this may be configurable by the host but will require special USB drivers. PS/2 does not include backlight support so one of two approaches is taken. Either a specialist PS/2 keyboard driver is installed in the host (to remove/override the defaukt one) or the controller processor in the keyboard has firmware which handles controlling the backlight. In this case, the host has no control over the keyboard backlight. The keyboard may include special function keys for enabling/disabling the backlight. These keys will likely not be sent to the host system when pressed. |
 
+The switch membrane and controller processor use a system generically called a Keyboard matrix. These are used in both musical keyboards and number/QWERTY keyboards. The keyboard keys are divided up into rows and columns (though when looking at the actual this may not be apparent). Each switch is placed on the intersection of a column wire and a row wire. Scanning a row or column (as will be mentioned in a moment), means applying a test voltage to the wire for that row or column. When a row or column is not being tested, it is not connected (it is said to be floating. Note: It is not connected to 0V).
+
+The controller processor scans each column at a time. For each column, if a key has been pressed, a small current will be flowing as at least one of the switches will be pressed. If a switch has been pressed for a given column, it must then work out how many and which. It does so by scanning down the rows (looking only at the one column in question) till it finds a pressed row. It then knows the row/column of the pressed key(s) and so which key was pressed. It translates this into a scancode which is then sent to the host.
+
+This technique of scanning can lead to ghost keys (when a key is pressed but the controller does not register it) or phantom presses (when a key is not pressed but the controller registers it mistakenly). This can be solved by adding diodes between switches in the switch membrance but this generally is only done on more expensive keyboards. Without the ghost and phantom key protection hardware, a keyboard cannot properly support n-key rollover. However, most USB keyboards only use the 6-key rollver which is part of the USB standard. While PS/2 supports n-key rollover, the actual keyboard hardware may be a limiting factor.
+
 ## Details : Externals
-- PS/2 connector (& colour coding)
-- Electrical standard
-- Data path inside PC
+The PS/2 connector is a 6-pin mini-DIN connector which uses serial, synchronous, bi-directional communication. What this means is that the basic protocol is serial i.e. every byte is sent in order and received in order. The protocol is synchronous meaning you cannot read and write simultaneously and bi-directional means bytes can be sent both to and from the keyboard. The six pins are assigned as follows (with the slot of the female connector at the bottom, numbers run across the rows, left to right, down the rows and have 1-based indexing).
+
+| Pin | Name | Use |
+|:-----:|:---------|:-------|
+| 1  | +Data | Data pin for primary device (either mouse or keyboard) |
+| 2  | Not connected  | Not connected except on some systems which allow the use of a splitter cable. In that case, this is the data pin for the secondary (opposite type to primary) device. |
+| 3  | GND | Ground / 0V pin used as a reference |
+| 4  | Vcc | +5V reference pin at 275mA |
+| 5  | +CLK | Clock signal (for synchronising communication) |
+| 6  | Not connected | Not connected except on some systems which allow the use of a splitter cable. In that case, this is the clock signal pin for the secondary (opposite type to primary) device. |
+
+Convention dictates that keyboard ports are coloured purple and mouse ports are coloured green. While the two are identical in firmware and hardware, the actual port numbers used to communicate from the processor to the device will be different. This means most software won't, for example, be able to understand a keyboard device plugged into a mouse port. However, because both keyboard and mouse are (usually) handled by a single micro-controller (to save hardware costs) inside the host PC, if either device behaves erratically resulting in confusion at both ends, both keyboard and mouse may appear to be broken. This can lead to misdiagnosis, however, it is a rare situation to be in. An easy test is to shutdown, unplug one of the devices and then restart.
+
+Most PS/2 connectors were not designed to be unplugged and plugged back in frequently. This means frequent use causes the pins to break which are next to impossible to replace. As a result, leaving a device plugged in is recommended where possible. 
 
 ## Alternatives
-- USB keyboards
-- Microphones
-- Cameras
-- Pens and touchscreens
+The main alternative to a PS/2 keyboard is a USB keyboard. The only real differences are the connection type (which also affects the amount of key-rollover) and the fact that USB keyboards can have additional features such as backlight control and special hotkeys. 
+
+Hardware such as microphones, cameras, pens and touchscreens can all be used to provide different input interfaces for creating text. For example, microphones for voice command and pens for handwriting recognition. More description of these is given in the Software - Alternative section.
 
 ## Compatibility
-- Electrical compatbility of PS/2 to DIN
-- Software incompatibility of PS/2 to DIN devices
-- No hot plugging
+PS/2 is electrically compatible with old, large, 5-pin DIN connectors and a passive wiring converter could be used to change from one connector type to other. However, the software protocols and pin ordering were completely different. Some PS/2 keyboards were designed to autodetect which type of port (PS/2 or DIN) they were connected to (based on the clock signal) and switch as appropriate. However, it is doubtful that any of these types of device still exist nowadays. A host with only DIN or only PS/2 ports cannot be made to support the other type without adding extra hardware (such as a special PCI card to do the job!).
+
+Shutting down and then unplugging is necessary because PS/2 is not (generally) hot pluggable. While for most modern hardware this will not cause any physical problems (though it could easily damage old hardware), most software will not detect the change of device. This means that switching device types on a port or unplugging a mouse/keyboard and plugging in a different model will usually result in the device not working. Due to the PS/2 Reset command (a legacy protocol allowing a single keyboard combination to reset the processor), hot plugging devices can confuse the on-board micro-controller unintentionally resulting in a reset command. 
 
 ---
 
 # Software
 
 ## Overview
-- Main purpose is to handle receiving and buffering keys for other drivers/apps to use
-- Must maintain compatbility with other drivers in the system : Coomon HID data access API/ABI
-- Pre-allocation or deferring of interrupts to be able to queue keys
+The main function of PS/2 keyboard driver software is to handle receiving scancodes from a PS/2 keyboard and bufferring (/queueing) them until other drivers or applications request them. In order to be compatible with other HID driver software, the kernel or drivers must provide a common functions in the API or ABI for accessing HID data such as queued scancodes. PS/2 driver software should be designed so it can work alongside USB driver software as (for whatever reason the user may wish to plug in multiple keyboards.
 
-- Difference between scancode, key(code) and (key)char
+There are two main techniques for handling data from a keyboard. The first (more common one) is to pre-allocate an array for use as a buffer. When a keyboard interrupt occurs, the driver reads in the scancode and then puts it in the next empty slot in the array. If the array is full then it is likely that the system has frozen or crashed but in any case, the scancode should still be read and then discarded. 
+
+The second approach is to defer the interrupt and then use some form of list-like system to create an ever-expanding queue of scancodes. This has two disadvantages: it is slower and the user pressing and holding a key when the system is not frequently dequeueing scancodes can quickly eat up large amounts of memory.
+
+A scancode is the unique number that identifies which key was pressed (along with whether the shift key was pressed. The caps lock key must be kept track of separately by the driver.) The scancode is not actually what most applications won't, however. Instead they want a code representing just the key, or the character for the key, that was pressed. This gives rise to two other representations of pressed keys: keycodes and characters. Keycodes just represent the key that was pressed without modifier keys and covers all keys, not just alphanumeric keys. Characters cover only the alpha-numeric and escaped-character keys (such as 'a', 'b' and return (being '\n')). A keyboard driver should provide methods for accessing all three forms of the repersentation. Internally, onlt scancodes should be stored and they should be dequeued from a single buffer. If the key code or character is required, a scancode should be dequeued and then converted and returned. This prevents calls to getting scancodes and other forms from becoming out of sync.
 
 ## Basic outline
 - Driver initialises
@@ -118,8 +136,10 @@ A PS/2 keyboard consists of several key parts described below.
 # Example Code
 
 ## Overview
+TODO
 
 ## Download
+TODO
 
 ---
 
@@ -138,5 +158,6 @@ A PS/2 keyboard consists of several key parts described below.
 - http://www.computer-engineering.org/ps2protocol/
 - http://www.computer-engineering.org/ps2keyboard/
 - https://www.pjrc.com/teensy/td_libs_PS2Keyboard.html
+- https://en.wikipedia.org/wiki/Keyboard_matrix_circuit
 
 *[acronym]: details
