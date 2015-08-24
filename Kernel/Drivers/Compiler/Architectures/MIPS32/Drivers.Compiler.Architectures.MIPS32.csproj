@@ -103,6 +103,7 @@
     <Compile Include="ILOps\Neg.cs" />
     <Compile Include="ILOps\Not.cs" />
     <Compile Include="ILOps\Or.cs" />
+    <Compile Include="ILOps\Rem.cs" />
     <Compile Include="ILOps\Ret.cs" />
     <Compile Include="ILOps\Shl.cs" />
     <Compile Include="ILOps\Shr.cs" />

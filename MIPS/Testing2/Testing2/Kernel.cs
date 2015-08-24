@@ -45,137 +45,268 @@ namespace Testing2
             }
             UART.Write("]\n");
 
-            //BEGIN - Test: Div
+            //BEGIN - Test: Rem
             UInt32 a1 = 9;
             UInt32 b1 = 3;
-            a1 = a1 / b1;
+            a1 = a1 % b1;
 
-            if (a1 != 3)
+            if (a1 != 0)
             {
-                UART.Write("Bad unsigned div no rem\n");
+                UART.Write("Bad unsigned zero modulus\n");
             }
             else
             {
-                UART.Write("Good unsigned div no rem\n");
+                UART.Write("Good unsigned zero modulus\n");
             }
 
             UInt32 a2 = 10;
             UInt32 b2 = 3;
-            a2 = a2 / b2;
+            a2 = a2 % b2;
 
-            if (a2 != 3)
+            if (a2 != 1)
             {
-                UART.Write("Bad unsigned div with rem\n");
+                UART.Write("Bad unsigned non-zero modulus\n");
             }
             else
             {
-                UART.Write("Good unsigned div with rem\n");
+                UART.Write("Good unsigned non-zero modulus\n");
             }
 
             Int32 a3 = -9;
             Int32 b3 = 3;
-            a3 = a3 / b3;
+            a3 = a3 % b3;
 
-            if (a3 != -3)
+            if (a3 != 0)
             {
-                UART.Write("Bad signed div - + no rem\n");
+                UART.Write("Bad signed div - + zero modulus\n");
             }
             else
             {
-                UART.Write("Good signed div - + no rem\n");
+                UART.Write("Good signed div - + zero modulus\n");
             }
 
             Int32 a4 = 9;
             Int32 b4 = -3;
-            a4 = a4 / b4;
+            a4 = a4 % b4;
 
-            if (a4 != -3)
+            if (a4 != 0)
             {
-                UART.Write("Bad signed div + - no rem\n");
+                UART.Write("Bad signed div + - zero modulus\n");
             }
             else
             {
-                UART.Write("Good signed div + - no rem\n");
+                UART.Write("Good signed div + - zero modulus\n");
             }
 
             Int32 a5 = -9;
             Int32 b5 = -3;
-            a5 = a5 / b5;
+            a5 = a5 % b5;
 
-            if (a5 != 3)
+            if (a5 != 0)
             {
-                UART.Write("Bad signed div - - no rem\n");
+                UART.Write("Bad signed div - - zero modulus\n");
             }
             else
             {
-                UART.Write("Good signed div - - no rem\n");
+                UART.Write("Good signed div - - zero modulus\n");
             }
 
             Int32 a6 = 9;
             Int32 b6 = 3;
-            a6 = a6 / b6;
+            a6 = a6 % b6;
 
-            if (a5 != 3)
+            if (a5 != 0)
             {
-                UART.Write("Bad signed div + + no rem\n");
+                UART.Write("Bad signed div + + zero modulus\n");
             }
             else
             {
-                UART.Write("Good signed div + + no rem\n");
+                UART.Write("Good signed div + + zero modulus\n");
             }
-            //--
 
             Int32 a7 = -10;
             Int32 b7 = 3;
-            a7 = a7 / b7;
+            a7 = a7 % b7;
 
-            if (a7 != -3)
+            if (a7 != -1)
             {
-                UART.Write("Bad signed div - + with rem\n");
+                UART.Write("Bad signed div - + non-zero modulus\n");
             }
             else
             {
-                UART.Write("Good signed div - + with rem\n");
+                UART.Write("Good signed div - + non-zero modulus\n");
             }
 
             Int32 a8 = 10;
             Int32 b8 = -3;
-            a8 = a8 / b8;
+            a8 = a8 % b8;
 
-            if (a8 != -3)
+            if (a8 != 1)
             {
-                UART.Write("Bad signed div + - with rem\n");
+                UART.Write("Bad signed div + - non-zero modulus\n");
             }
             else
             {
-                UART.Write("Good signed div + - with rem\n");
+                UART.Write("Good signed div + - non-zero modulus\n");
             }
 
             Int32 a9 = -10;
             Int32 b9 = -3;
-            a9 = a9 / b9;
+            a9 = a9 % b9;
 
-            if (a9 != 3)
+            if (a9 != -1)
             {
-                UART.Write("Bad signed div - - with rem\n");
+                UART.Write("Bad signed div - - non-zero modulus\n");
             }
             else
             {
-                UART.Write("Good signed div - - with rem\n");
+                UART.Write("Good signed div - - non-zero modulus\n");
             }
 
             Int32 a10 = 10;
             Int32 b10 = 3;
-            a10 = a10 / b10;
+            a10 = a10 % b10;
 
-            if (a10 != 3)
+            if (a10 != 1)
             {
-                UART.Write("Bad signed div + + with rem\n");
+                UART.Write("Bad signed div + + non-zero modulus\n");
             }
             else
             {
-                UART.Write("Good signed div + + with rem\n");
+                UART.Write("Good signed div + + non-zero modulus\n");
             }
+            //END - Test: Rem
+
+            //BEGIN - Test: Div
+            //UInt32 a1 = 9;
+            //UInt32 b1 = 3;
+            //a1 = a1 / b1;
+
+            //if (a1 != 3)
+            //{
+            //    UART.Write("Bad unsigned div no rem\n");
+            //}
+            //else
+            //{
+            //    UART.Write("Good unsigned div no rem\n");
+            //}
+
+            //UInt32 a2 = 10;
+            //UInt32 b2 = 3;
+            //a2 = a2 / b2;
+
+            //if (a2 != 3)
+            //{
+            //    UART.Write("Bad unsigned div with rem\n");
+            //}
+            //else
+            //{
+            //    UART.Write("Good unsigned div with rem\n");
+            //}
+
+            //Int32 a3 = -9;
+            //Int32 b3 = 3;
+            //a3 = a3 / b3;
+
+            //if (a3 != -3)
+            //{
+            //    UART.Write("Bad signed div - + no rem\n");
+            //}
+            //else
+            //{
+            //    UART.Write("Good signed div - + no rem\n");
+            //}
+
+            //Int32 a4 = 9;
+            //Int32 b4 = -3;
+            //a4 = a4 / b4;
+
+            //if (a4 != -3)
+            //{
+            //    UART.Write("Bad signed div + - no rem\n");
+            //}
+            //else
+            //{
+            //    UART.Write("Good signed div + - no rem\n");
+            //}
+
+            //Int32 a5 = -9;
+            //Int32 b5 = -3;
+            //a5 = a5 / b5;
+
+            //if (a5 != 3)
+            //{
+            //    UART.Write("Bad signed div - - no rem\n");
+            //}
+            //else
+            //{
+            //    UART.Write("Good signed div - - no rem\n");
+            //}
+
+            //Int32 a6 = 9;
+            //Int32 b6 = 3;
+            //a6 = a6 / b6;
+
+            //if (a5 != 3)
+            //{
+            //    UART.Write("Bad signed div + + no rem\n");
+            //}
+            //else
+            //{
+            //    UART.Write("Good signed div + + no rem\n");
+            //}
+
+            //Int32 a7 = -10;
+            //Int32 b7 = 3;
+            //a7 = a7 / b7;
+
+            //if (a7 != -3)
+            //{
+            //    UART.Write("Bad signed div - + with rem\n");
+            //}
+            //else
+            //{
+            //    UART.Write("Good signed div - + with rem\n");
+            //}
+
+            //Int32 a8 = 10;
+            //Int32 b8 = -3;
+            //a8 = a8 / b8;
+
+            //if (a8 != -3)
+            //{
+            //    UART.Write("Bad signed div + - with rem\n");
+            //}
+            //else
+            //{
+            //    UART.Write("Good signed div + - with rem\n");
+            //}
+
+            //Int32 a9 = -10;
+            //Int32 b9 = -3;
+            //a9 = a9 / b9;
+
+            //if (a9 != 3)
+            //{
+            //    UART.Write("Bad signed div - - with rem\n");
+            //}
+            //else
+            //{
+            //    UART.Write("Good signed div - - with rem\n");
+            //}
+
+            //Int32 a10 = 10;
+            //Int32 b10 = 3;
+            //a10 = a10 / b10;
+
+            //if (a10 != 3)
+            //{
+            //    UART.Write("Bad signed div + + with rem\n");
+            //}
+            //else
+            //{
+            //    UART.Write("Good signed div + + with rem\n");
+            //}
             //END - Test: Div
 
             ////BEGIN - Test: Sub
