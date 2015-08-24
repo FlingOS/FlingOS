@@ -86,6 +86,8 @@
     <Compile Include="ILOps\Div.cs" />
     <Compile Include="ILOps\Dup.cs" />
     <Compile Include="ILOps\GlobalMethods.cs" />
+    <Compile Include="ILOps\Initobj.cs" />
+    <Compile Include="ILOps\Isinst.cs" />
     <Compile Include="ILOps\Ldarg.cs" />
     <Compile Include="ILOps\Ldc.cs" />
     <Compile Include="ILOps\Br.cs" />
