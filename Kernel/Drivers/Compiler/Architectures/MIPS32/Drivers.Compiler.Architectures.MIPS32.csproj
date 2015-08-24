@@ -98,6 +98,7 @@
     <Compile Include="ILOps\Ldlen.cs" />
     <Compile Include="ILOps\Ldloc.cs" />
     <Compile Include="ILOps\Ldnull.cs" />
+    <Compile Include="ILOps\Ldobj.cs" />
     <Compile Include="ILOps\Ldsfld.cs" />
     <Compile Include="ILOps\Ldstr.cs" />
     <Compile Include="ILOps\Ldtoken.cs" />

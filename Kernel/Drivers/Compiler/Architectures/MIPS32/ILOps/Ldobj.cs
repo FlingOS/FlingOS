@@ -23,7 +23,7 @@
 //
 // ------------------------------------------------------------------------------ //
 #endregion
-    
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -32,7 +32,7 @@ using System.Threading.Tasks;
 using System.Reflection;
 using Drivers.Compiler.IL;
 
-namespace Drivers.Compiler.Architectures.x86
+namespace Drivers.Compiler.Architectures.MIPS32
 {
     /// <summary>
     /// See base class documentation.
@@ -77,19 +77,19 @@ namespace Drivers.Compiler.Architectures.x86
             int size = theTypeInfo.SizeOnStackInBytes;
 
             //Load the object onto the stack
-            conversionState.Append(new ASMOps.Pop() { Size = ASMOps.OperandSize.Dword, Dest = "ECX" });
+            conversionState.Append(new ASMOps.Pop() { Size = ASMOps.OperandSize.Word, Dest = "$t2" });
             for (int i = size - 4; i >= 0; i -= 4)
             {
-                GlobalMethods.InsertPageFaultDetection(conversionState, "ECX", i, (OpCodes)theOp.opCode.Value);
-                conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Dword, Src = "[ECX+" + i.ToString() + "]", Dest = "EAX" });
-                conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Dword, Src = "EAX" });
+                //conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Word, Src = i.ToString() + "($t2)", Dest = "$t0" });
+                GlobalMethods.LoadData(conversionState, theOp, "$t2", "$t0", i, 4);
+                conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Word, Src = "$t0" });
             }
             int extra = size % 4;
             for (int i = extra - 1; i >= 0; i--)
             {
-                GlobalMethods.InsertPageFaultDetection(conversionState, "ECX", i, (OpCodes)theOp.opCode.Value);
-                conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Byte, Src = "[ECX+" + i.ToString() + "]", Dest = "AL" });
-                conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Byte, Src = "AL" });
+                //conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Byte, Src = i.ToString() + "($t2)", Dest = "$t0" });
+                GlobalMethods.LoadData(conversionState, theOp, "$t2", "$t0", i, 1);
+                conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Byte, Src = "$t0" });
             }
 
             conversionState.CurrentStackFrame.Stack.Push(new StackItem()
