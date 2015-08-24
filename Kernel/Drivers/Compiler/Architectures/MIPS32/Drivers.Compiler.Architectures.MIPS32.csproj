@@ -104,6 +104,7 @@
     <Compile Include="ILOps\MethodStart.cs" />
     <Compile Include="ILOps\Mul.cs" />
     <Compile Include="ILOps\Neg.cs" />
+    <Compile Include="ILOps\NewArr.cs" />
     <Compile Include="ILOps\Not.cs" />
     <Compile Include="ILOps\Or.cs" />
     <Compile Include="ILOps\Rem.cs" />
