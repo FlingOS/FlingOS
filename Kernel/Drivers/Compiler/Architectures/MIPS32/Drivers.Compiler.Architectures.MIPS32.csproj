@@ -117,6 +117,7 @@
     <Compile Include="ILOps\Sizeof.cs" />
     <Compile Include="ILOps\StackSwitch.cs" />
     <Compile Include="ILOps\Starg.cs" />
+    <Compile Include="ILOps\Stelem.cs" />
     <Compile Include="ILOps\Stfld.cs" />
     <Compile Include="ILOps\Stind.cs" />
     <Compile Include="ILOps\Stloc.cs" />
