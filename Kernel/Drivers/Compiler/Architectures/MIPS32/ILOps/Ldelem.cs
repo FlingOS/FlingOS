@@ -258,13 +258,13 @@ namespace Drivers.Compiler.Architectures.MIPS32
 
             //      3.2. Compare $t0 to 0
             //      3.3. Jump if greater than to next test condition (3.5)
-            conversionState.Append(new ASMOps.Branch() { Src1 = "$t0", Src2 = "0", BranchType = ASMOps.BranchOp.BranchGreaterThanEqual, DestILPosition = currOpPosition, Extension = "Continue3_1", UnsignedTest = true });
+            conversionState.Append(new ASMOps.Branch() { Src1 = "$t0", Src2 = "0", BranchType = ASMOps.BranchOp.BranchGreaterThanEqual, DestILPosition = currOpPosition, Extension = "Continue3_1", UnsignedTest = false });
             //      3.4. Otherwise, call Exceptions.ThrowIndexOutOfRangeException
             conversionState.Append(new ASMOps.Call() { Target = conversionState.GetThrowIndexOutOfRangeExceptionMethodInfo().ID });
             conversionState.Append(new ASMOps.Label() { ILPosition = currOpPosition, Extension = "Continue3_1" });
             //      3.5. Compare $t0 to $t1
             //      3.6. Jump if less than to continue execution further down
-            conversionState.Append(new ASMOps.Branch() { Src1 = "$t0", Src2 = "$t1", BranchType = ASMOps.BranchOp.BranchLessThan, DestILPosition = currOpPosition, Extension = "Continue3_2", UnsignedTest = true });
+            conversionState.Append(new ASMOps.Branch() { Src1 = "$t0", Src2 = "$t1", BranchType = ASMOps.BranchOp.BranchLessThan, DestILPosition = currOpPosition, Extension = "Continue3_2", UnsignedTest = false });
             //      3.7. Otherwise, call Exceptions.ThrowIndexOutOfRangeException
             conversionState.Append(new ASMOps.Call() { Target = conversionState.GetThrowIndexOutOfRangeExceptionMethodInfo().ID });
             conversionState.Append(new ASMOps.Label() { ILPosition = currOpPosition, Extension = "Continue3_2" });
@@ -321,7 +321,7 @@ namespace Drivers.Compiler.Architectures.MIPS32
                 allFieldsOffset = highestOffsetFieldInfo.OffsetInBytes + (fieldTypeInfo.IsValueType ? fieldTypeInfo.SizeOnHeapInBytes : fieldTypeInfo.SizeOnStackInBytes);
             }
             #endregion
-            conversionState.Append(new ASMOps.Add() { Src1 = allFieldsOffset.ToString(), Src2 = "$t1", Dest = "$t1" });
+            conversionState.Append(new ASMOps.Add() { Src2 = allFieldsOffset.ToString(), Src1 = "$t1", Dest = "$t1" });
             //      4.12. Add $t0 and $t1 (array ref + fields + (index * element size))
             conversionState.Append(new ASMOps.Add() { Src1 = "$t1", Src2 = "$t0", Dest = "$t0" });
 

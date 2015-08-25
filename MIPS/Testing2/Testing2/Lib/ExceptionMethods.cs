@@ -421,30 +421,30 @@ namespace Testing2
             //}
         }
         
-        internal static unsafe byte* StackPointer
-        {
-            [Drivers.Compiler.Attributes.PluggedMethod(ASMFilePath=@"ASM\Exceptions\StackPointer")]
-            get
-            {
-                return null;
-            }
-            [Drivers.Compiler.Attributes.PluggedMethod(ASMFilePath=null)]
-            set
-            {
-            }
-        }
-        internal static unsafe byte* BasePointer
-        {
-            [Drivers.Compiler.Attributes.PluggedMethod(ASMFilePath = @"ASM\Exceptions\BasePointer")]
-            get
-            {
-                return null;
-            }
-            [Drivers.Compiler.Attributes.PluggedMethod(ASMFilePath = null)]
-            set
-            {
-            }
-        }
+        //internal static unsafe byte* StackPointer
+        //{
+        //    [Drivers.Compiler.Attributes.PluggedMethod(ASMFilePath=@"ASM\Exceptions\StackPointer")]
+        //    get
+        //    {
+        //        return null;
+        //    }
+        //    [Drivers.Compiler.Attributes.PluggedMethod(ASMFilePath=null)]
+        //    set
+        //    {
+        //    }
+        //}
+        //internal static unsafe byte* BasePointer
+        //{
+        //    [Drivers.Compiler.Attributes.PluggedMethod(ASMFilePath = @"ASM\Exceptions\BasePointer")]
+        //    get
+        //    {
+        //        return null;
+        //    }
+        //    [Drivers.Compiler.Attributes.PluggedMethod(ASMFilePath = null)]
+        //    set
+        //    {
+        //    }
+        //}
 
         //[Drivers.Compiler.Attributes.PluggedMethod(ASMFilePath = @"ASM\Exceptions\ShiftStack")]
         //private static void ShiftStack(byte* From_High, uint Dist)

@@ -292,7 +292,7 @@ namespace Drivers.Compiler.Architectures.MIPS32
                 allFieldsOffset = highestOffsetFieldInfo.OffsetInBytes + (fieldTypeInfo.IsValueType ? fieldTypeInfo.SizeOnHeapInBytes : fieldTypeInfo.SizeOnStackInBytes);
             }
             #endregion
-            conversionState.Append(new ASMOps.Add() { Src1 = allFieldsOffset.ToString(), Src2 = "$t3", Dest = "$t3" });
+            conversionState.Append(new ASMOps.Add() { Src2 = allFieldsOffset.ToString(), Src1 = "$t3", Dest = "$t3" });
             //      4.15. Add $t0 and $t3 (array ref + fields + (index * element size))
             conversionState.Append(new ASMOps.Add() { Src1 = "$t3", Src2 = "$t0", Dest = "$t0" });
 
@@ -301,24 +301,24 @@ namespace Drivers.Compiler.Architectures.MIPS32
             if (sizeToPop == 8)
             {
                 //conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Word, Src = "$t2", Dest = "0($t0)" });
-                GlobalMethods.StoreData(conversionState, theOp, "$t2", "$t0", 0, 4);
+                GlobalMethods.StoreData(conversionState, theOp, "$t0", "$t2", 0, 4);
                 //conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Word, Src = "$t1", Dest = "4($t0)" });
-                GlobalMethods.StoreData(conversionState, theOp, "$t1", "$t0", 4, 4);
+                GlobalMethods.StoreData(conversionState, theOp, "$t0", "$t1", 4, 4);
             }
             else if (sizeToPop == 4)
             {
                 //conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Word, Src = "$t2", Dest = "0($t0)" });
-                GlobalMethods.StoreData(conversionState, theOp, "$t2", "$t0", 0, 4);
+                GlobalMethods.StoreData(conversionState, theOp, "$t0", "$t2", 0, 4);
             }
             else if (sizeToPop == 2)
             {
                 //conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Halfword, Src = "$t2", Dest = "0($t0)" });
-                GlobalMethods.StoreData(conversionState, theOp, "$t2", "$t0", 0, 2);
+                GlobalMethods.StoreData(conversionState, theOp, "$t0", "$t2", 0, 2);
             }
             else if (sizeToPop == 1)
             {
                 //conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Byte, Src = "$t2", Dest = "0($t0)" });
-                GlobalMethods.StoreData(conversionState, theOp, "$t2", "$t0", 0, 1);
+                GlobalMethods.StoreData(conversionState, theOp, "$t0", "$t2", 0, 1);
             }
 
             //      5.2. Pop index, array ref and value from our stack

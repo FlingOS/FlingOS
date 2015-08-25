@@ -45,7 +45,7 @@ namespace Testing2
             }
             UART.Write("]\n");
 
-            #region XYZ
+            #region Old Tests
 
             //BEGIN - Test: Rem
             //UInt32 a1 = 9;
@@ -758,6 +758,13 @@ namespace Testing2
             //int arg = 123;
             //method(arg);
             #endregion 
+
+            /* 
+             * New stuff to test:
+             *   - Sizeof = Structs & sizeof(struct type)
+             *   - NewArr/Ldelem/Stelem/Ldlen = Arrays
+             *   - NewObj/Initobj/Ldobj/Stobj/Isinst = Objects & types
+             */
 
             while (true)
             {

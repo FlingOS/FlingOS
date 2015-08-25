@@ -53,23 +53,23 @@ namespace Drivers.Compiler.Architectures.MIPS32
             }
 
             //Get object pointer
-            conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Word, Src = stackSize.ToString() + "$sp", Dest = "$t3" });
+            conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Word, Src = stackSize.ToString() + "($sp)", Dest = "$t3", MoveType = ASMOps.Mov.MoveTypes.SrcMemoryToDestReg });
             //Pop and mov value
             for (int i = 0; i < memSize; i += 2)
             {
                 if (memSize - i == 1)
                 {
                     conversionState.Append(new ASMOps.Pop() { Size = ASMOps.OperandSize.Halfword, Dest = "$t0" });
-                    conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Byte, Src = "$t0", Dest = (offset + i).ToString() + "($t3)", MoveType = ASMOps.Mov.MoveTypes.SrcMemoryToDestReg });
+                    GlobalMethods.StoreData(conversionState, theOp, "$t3", "$t0", offset + i, 1);
                 }
                 else
                 {
                     conversionState.Append(new ASMOps.Pop() { Size = ASMOps.OperandSize.Halfword, Dest = "$t0" });
-                    conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Halfword, Src = "$t0", Dest = (offset + i).ToString() + "($t3)", MoveType = ASMOps.Mov.MoveTypes.SrcMemoryToDestReg });
+                    GlobalMethods.StoreData(conversionState, theOp, "$t3", "$t0", offset + i, 2);
                 }
             }
             //                                                           Rounds down             || Pop object pointer
-            conversionState.Append(new ASMOps.Add() { Src1 = ((((stackSize - memSize) / 2) * 2) + 4).ToString(), Src2 = "$sp", Dest = "$sp" });
+            conversionState.Append(new ASMOps.Add() { Src2 = ((((stackSize - memSize) / 2) * 2) + 4).ToString(), Src1 = "$sp", Dest = "$sp" });
         }
     }
 }

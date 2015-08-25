@@ -49,7 +49,7 @@ namespace Drivers.Compiler.Architectures.MIPS32
             conversionState.Append(new ASMOps.Branch() { Src1 = "$t0", Src2 = "0", BranchType = ASMOps.BranchOp.BranchNotEqual, DestILPosition = currOpPosition, Extension = "False1", UnsignedTest = true });
 
             // 1.1.1 True: Push null and continue
-            conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Word, Src = "0" });
+            conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Word, Src = "$zero" });
             conversionState.Append(new ASMOps.Branch() { BranchType = ASMOps.BranchOp.Branch, DestILPosition = currOpPosition, Extension = "End" });
 
             // 1.1.2 False: Go to 2
@@ -90,7 +90,7 @@ namespace Drivers.Compiler.Architectures.MIPS32
             conversionState.Append(new ASMOps.Branch() { Src1 = "$t1", Src2 = "0", BranchType = ASMOps.BranchOp.BranchNotEqual, DestILPosition = currOpPosition, Extension = "Label3", UnsignedTest = true });
 
             //      3.2.2.1   True: Push null and continue
-            conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Word, Src = "0" });
+            conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Word, Src = "$zero" });
 
             conversionState.Append(new ASMOps.Label() { ILPosition = currOpPosition, Extension = "End" });
         }
