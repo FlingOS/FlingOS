@@ -98,7 +98,10 @@ namespace Drivers.Compiler.Architectures.MIPS32
             //Check if pointer == 0?
             //If it isn't 0, not out of memory so continue execution
             conversionState.Append(new ASMOps.Branch() { Src1 = "$t0", Src2 = "0", BranchType = ASMOps.BranchOp.BranchNotZero, DestILPosition = currOpPosition, Extension = "NotNullMem", UnsignedTest = true });
-
+            //If we are out of memory, we have a massive problem
+            //Because it means we don't have space to create a new exception object
+            //So ultimately we just have to throw a kernel panic
+            //Throw a panic attack... ( :/ ) by calling kernel Halt(uint lastAddress)
             conversionState.Append(new ASMOps.Call() { Target = "GetEIP" });
             conversionState.AddExternalLabel("GetEIP");
             conversionState.Append(new ASMOps.Call() { Target = conversionState.GetThrowNullReferenceExceptionMethodInfo().ID });

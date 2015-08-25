@@ -95,7 +95,7 @@ namespace Drivers.Compiler.Architectures.MIPS32
             //  - Pop array ref
             conversionState.Append(new ASMOps.Pop() { Size = ASMOps.OperandSize.Word, Dest = "$t2" });
             //  - Load length from array ref
-            //conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Word, Src = lengthOffset.ToString() + "($t2)", Dest = "$t0" });
+            //conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Word, Src = lengthOffset.ToString() + "($t2)", Dest = "$t0" }); 
             GlobalMethods.LoadData(conversionState, theOp, "$t2", "$t0", lengthOffset, 4);
             //  - Push array length
             conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Word, Src = "$t0" });

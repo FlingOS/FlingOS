@@ -59,7 +59,7 @@ namespace Drivers.Compiler.Architectures.MIPS32
             int metadataToken = Utilities.ReadInt32(theOp.ValueBytes, 0);
             Type theType = conversionState.Input.TheMethodInfo.UnderlyingInfo.Module.ResolveType(metadataToken);
             Types.TypeInfo theTypeInfo = conversionState.TheILLibrary.GetTypeInfo(theType);
-            conversionState.Append(new ASMOps.La() { Dest = "$t4", Label = theTypeInfo.SizeOnStackInBytes.ToString() });
+            conversionState.Append(new ASMOps.Mov() { Src = theTypeInfo.SizeOnStackInBytes.ToString(), Dest = "$t4", MoveType = ASMOps.Mov.MoveTypes.ImmediateToReg });
             conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Word, Src = "$t4" });
 
             conversionState.CurrentStackFrame.Stack.Push(new StackItem()

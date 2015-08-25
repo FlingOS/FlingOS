@@ -277,10 +277,10 @@ namespace Drivers.Compiler.Architectures.MIPS32
             int stackSizeOffset = conversionState.GetTypeFieldOffset("StackSize");
             //conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Word, Src = stackSizeOffset.ToString() + "($t0)", Dest = "$t0" });
             GlobalMethods.LoadData(conversionState, theOp, "$t0", "$t0", stackSizeOffset, 4);
-            //      4.12. Mulitply $t3 by $t1 (index by element size)
+            //      4.12. Mulitply $t0 by $t3 (index by element size)
             conversionState.Append(new ASMOps.Label() { ILPosition = currOpPosition, Extension = "Continue4_2" });
-            conversionState.Append(new ASMOps.Mul() { Src1 = "$t3", Src2= "$t1"});
-            conversionState.Append(new ASMOps.Mflo() { Dest = "$t3" });
+            conversionState.Append(new ASMOps.Mul() { Src1 = "$t3", Src2= "$t0"});
+            conversionState.Append(new ASMOps.Mflo() { Dest = "$t0" });
             //      4.13. Pop array ref into $t3
             conversionState.Append(new ASMOps.Pop() { Size = ASMOps.OperandSize.Word, Dest = "$t3" });
             //      4.14. Add enough to go past Kernel.FOS_System.Array fields
@@ -297,23 +297,28 @@ namespace Drivers.Compiler.Architectures.MIPS32
             conversionState.Append(new ASMOps.Add() { Src1 = "$t3", Src2 = "$t0", Dest = "$t0" });
 
             // 5. Pop the element from the stack to array
-            //      5.1. Move value in $t1:$t2 to [$t0]
+            //      5.1. Move value in $t1:$t2 to 0($t0)
             if (sizeToPop == 8)
             {
-                conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Word, Src = "$t2", Dest = "[$t0]" });
-                conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Word, Src = "$t1", Dest = "[$t0+4]" });
+                //conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Word, Src = "$t2", Dest = "0($t0)" });
+                GlobalMethods.StoreData(conversionState, theOp, "$t2", "$t0", 0, 4);
+                //conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Word, Src = "$t1", Dest = "4($t0)" });
+                GlobalMethods.StoreData(conversionState, theOp, "$t1", "$t0", 4, 4);
             }
             else if (sizeToPop == 4)
             {
-                conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Word, Src = "$t2", Dest = "[$t0]" });
+                //conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Word, Src = "$t2", Dest = "0($t0)" });
+                GlobalMethods.StoreData(conversionState, theOp, "$t2", "$t0", 0, 4);
             }
             else if (sizeToPop == 2)
             {
-                conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Halfword, Src = "$t2", Dest = "[$t0]" });
+                //conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Halfword, Src = "$t2", Dest = "0($t0)" });
+                GlobalMethods.StoreData(conversionState, theOp, "$t2", "$t0", 0, 2);
             }
             else if (sizeToPop == 1)
             {
-                conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Byte, Src = "$t2", Dest = "[$t0]" });
+                //conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Byte, Src = "$t2", Dest = "0($t0)" });
+                GlobalMethods.StoreData(conversionState, theOp, "$t2", "$t0", 0, 1);
             }
 
             //      5.2. Pop index, array ref and value from our stack
