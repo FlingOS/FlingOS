@@ -208,27 +208,19 @@ Values for ACK, Resend and other special bytes which are referred to in this tab
 | 0xEE | None | Echo (for diagnostic purposes, and useful for device removal detection) | Echo (0xEE) or Resend |
 | 0xF0 | Sub-commands: 0=Get current scan code set, 1=Set scan code set 1, 2=Set scan code set 2, 3=Set scan code set 3. | Get/set current scan code. | ACK or Resend if scan code is being set; ACK then the scan code set number, Resend if you're getting the scancode. |
 | 0xF2 | None | Identify keyboard | ACK followed by zero or more ID bytes (used when detecting device types). |
-| 0xF3 | Typematic byte:
-Bit/s | Meaning
-0 to 4 | Repeat rate (00000b = 30 Hz, ..., 11111b = 2 Hz) |
-| 5 to 6 | Delay before keys repeat (00b = 250 ms, 01b = 500 ms, 10b = 750 ms, 11b = 1000 ms)
-7 | Must be zero
-Set typematic rate and delay | 0xFA (ACK) or 0xFE (Resend) |
-| 0xF4 | None | Enable scanning (keyboard will send scan codes) | 0xFA (ACK) or 0xFE (Resend) |
-0xF5	None	| Disable scanning (keyboard won't send scan codes)
-Note: May also restore default parameters
-0xFA (ACK) or 0xFE (Resend)
-0xF6 | None | Set default parameters | 0xFA (ACK) or 0xFE (Resend) |
-| 0xF7 | None | Set all keys to typematic/autorepeat only (scancode set 3 only) | 0xFA (ACK) or 0xFE (Resend) |
-| 0xF8 | None | Set all keys to make/release (scancode set 3 only) | 0xFA (ACK) or 0xFE (Resend) |
-| 0xF9 | None | Set all keys to make only (scancode set 3 only) | 0xFA (ACK) or 0xFE (Resend) |
-| 0xFA | None | Set all keys to typematic/autorepeat/make/release (scancode set 3 only) | 0xFA (ACK) or 0xFE (Resend) |
-| 0xFB | Scancode for key | Set specific key to typematic/autorepeat only (scancode set 3 only) | 0xFA (ACK) or 0xFE (Resend) |
-| 0xFC | Scancode for key | Set specific key to make/release (scancode set 3 only) | 0xFA (ACK) or 0xFE (Resend) |
-| 0xFD | Scancode for key | Set specific key to make only (scancode set 3 only) | 0xFA (ACK) or 0xFE (Resend) |
-| 0xFE | None | Resend last byte | Previously sent byte or 0xFE (Resend) |
-| 0xFF | None | Reset and start self-test | 0xAA (self-test passed), 0xFC or 0xFD (self test failed), or 0xFE (Resend) |
-
+| 0xF3 | Typematic byte: Bits: 0 to 4=Repeat rate (00000b = 30 Hz, ..., 11111b = 2 Hz), 5 to 6=Delay before keys repeat (00b = 250 ms, 01b = 500 ms, 10b = 750 ms, 11b = 1000 ms), 7=Must be zero | Set typematic rate and delay | ACK or Resend |
+| 0xF4 | None | Enable scanning meaning the keyboard will send scancodes when a key is pressed. | ACK or Resend |
+| 0xF5 | None | Disable scanning meaning the keyboard won't send scancodes when a key is pressed. Note that this may also restore default parameters. | ACK or Resend |
+| 0xF6 | None | Set default parameters | ACK or Resend |
+| 0xF7 | None | Set all keys to typematic/autorepeat only (scancode set 3 only) | ACK or Resend |
+| 0xF8 | None | Set all keys to make/release (scancode set 3 only) | ACK or Resend |
+| 0xF9 | None | Set all keys to make only (scancode set 3 only) | ACK or Resend |
+| 0xFA | None | Set all keys to typematic/autorepeat/make/release (scancode set 3 only) | ACK or Resend |
+| 0xFB | Scancode for key | Set specific key to typematic/autorepeat only (scancode set 3 only) | ACK or Resend |
+| 0xFC | Scancode for key | Set specific key to make/release (scancode set 3 only) | ACK or Resend |
+| 0xFD | Scancode for key | Set specific key to make only (scancode set 3 only) | ACK or Resend |
+| 0xFE | None | Resend last byte | Previously sent byte or Resend |
+| 0xFF | None | Reset and start self-test | 0xAA (self-test passed), 0xFC or 0xFD (self test failed) or Resend |
 
 ##### Keyboard Special Bytes
 
@@ -244,33 +236,235 @@ The keyboard sends bytes to the host system. Most of the bytes are scancodes but
 | 0xFE | Resend keyboard command (Indicates the controller should repeat the last command it sent.) |
 | 0xFF | Key detection error or internal buffer overrun |
 
-##### Scancode Sets
+### Scancode Sets
+
+Notes: 
+
+* *There is no scan code for "pause key released" (it behaves as if it is released as soon as it's pressed)*
+* *For most character codes, the basic form means the key is pressed. If the high bit is set it indicates the key was released.*
+
+##### Scancode Set 1
+
+| Scancode | Key | Scancode | Key | Scancode | Key | Scancode | Key |
+|:-------------:|:-------:|:-------------:|:-------:|:-------------:|:-------:|:-------------:|:------:|
+| 0x01 | Esc pressed | 0x02 | 1 pressed | 0x03 | 2 pressed | 0x04 | 3 pressed |
+| 0x05 | 4 pressed  | 0x06 | 5 pressed | 0x07 | 6 pressed | 0x08 | 7 pressed | 
+| 0x09 | 8 pressed  | 0x0A | 9 pressed | 0x0B | 0 pressed | 0x0C | - pressed | 
+| 0x0D | = pressed  | 0x0E | Backspace pressed | 0x0F | Tab pressed | 0x10 | Q pressed |
+| 0x11 | W pressed  | 0x12 | E pressed | 0x13 | R pressed | 0x14 | T pressed | 
+| 0x15 | Y pressed  | 0x16 | U pressed | 0x17 | I pressed | 0x18 | O pressed | 
+| 0x19 | P pressed |  0x1A | \[ pressed | 0x1B | \] pressed | 0x1C | Enter pressed 
+| 0x1D | Left control pressed | 0x1E | A pressed | 0x1F | S pressed | 0x20 | D pressed |
+| 0x21 | F pressed |  0x22 | G pressed | 0x23 | H pressed | 0x24 | J pressed | 
+| 0x25 |  K pressed |  0x26 | L pressed | 0x27 |  ; pressed | 0x28 | ' pressed | 
+| 0x29 |  \` pressed | 0x2A | Left shift pressed | 0x2B | \ pressed | 0x2C | Z pressed | 
+| 0x2D | X pressed | 0x2E | C pressed | 0x2F | V pressed | 0x30 | B pressed |
+| 0x31 | N pressed | 0x32 | M pressed | 0x33 | , pressed | 0x34 | . pressed |
+| 0x35 | / pressed | 0x36 | Right shift pressed | 0x37 | Keypad * pressed | 0x38 | left alt pressed |
+| 0x39 | Space pressed | 0x3A | Caps-lock pressed | 0x3B | F1 pressed | 0x3C | F2 pressed |
+| 0x3D | F3 pressed | 0x3E | F4 pressed | 0x3F | F5 pressed | 0x40 | F6 pressed |
+| 0x41 | F7 pressed | 0x42 | F8 pressed | 0x43 | F9 pressed | 0x44 | F10 pressed |
+| 0x45 | Num-lock pressed | 0x46 | Scroll-lock pressed | 0x47 | Keypad 7 pressed | 0x48 | Keypad 8 pressed | 
+| 0x49 | Keypad 9 pressed | 0x4A | Keypad - pressed | 0x4B | Keypad 4 pressed | 0x4C | Keypad 5 pressed | 
+| 0x4D | Keypad 6 pressed | 0x4E | Keypad + pressed | 0x4F | Keypad 1 pressed | 0x50 | Keypad 2 pressed |
+| 0x51 | Keypad 3 pressed | 0x52 | Keypad 0 pressed | 0x53 | Keypad . pressed | 0x54 | | 
+| 0x55 | | 0x56 | | 0x57 | F11 pressed | 0x58 | F12 pressed |
+| 0x59 | | 0x5A | | 0x5B | | 0x5C | | 
+| 0x5D | | 0x5E | | 0x5F | | 0x60 | | 
+| 0x61 | | 0x62 | | 0x63 | | 0x64 | | 
+| 0x65 | | 0x66 | | 0x67 | | 0x68 | | 
+| 0x69 | | 0x6A | | 0x6B | | 0x6C | | 
+| 0x6D | | 0x6E | | 0x6F | | 0x70 | | 
+| 0x71 | | 0x72 | | 0x73 | | 0x74 | | 
+| 0x75 | | 0x76 | | 0x77 | | 0x78 | | 
+| 0x79 | | 0x7A | | 0x7B | | 0x7C | | 
+| 0x7D | | 0x7E | | 0x7F | | 0x80 | |
+| 0x81 | Escape released | 0x82 | 1 released | 0x83 | 2 released | 0x84 | 3 released | 
+| 0x85 | 4 released | 0x86 | 5 released | 0x87 | 6 released | 0x88 | 7 released | 
+| 0x89 | 8 released | 0x8A | 9 released | 0x8B | 0 released | 0x8C | - released | 
+| 0x8D | = released | 0x8E | Backspace released | 0x8F | Tab released | 0x90 | Q released | 
+| 0x91 | W released | 0x92 | E released | 0x93 | R released | 0x94 | T released | 
+| 0x95 | Y released | 0x96 | U released | 0x97 | I released | 0x98 | O released | 
+| 0x99 | P released | 0x9A | \[ released | 0x9B | \] released | 0x9C | Enter released | 
+| 0x9D | Left control released | 0x9E | A released | 0x9F | S released | 0xA0 | D released | 
+| 0xA1 | F released | 0xA2 | G released | 0xA3 | H released | 0xA4 | J released | 
+| 0xA5 | K released | 0xA6 | L released | 0xA7 | ; released | 0xA8 | ' released | 
+| 0xA9 |  \` released | 0xAA | Left shift released | 0xAB | \ released | 0xAC | Z released | 
+| 0xAD | X released | 0xAE | C released | 0xAF | V released | 0xB0 | B released |
+| 0xB1 | N released | 0xB2 | M released | 0xB3 | , released | 0xB4 | . released |
+| 0xB5 | / released | 0xB6 | Right shift released | 0xB7 | Keypad * released | 0xB8 | Left alt released | 
+| 0xB9 | Space released | 0xBA | Caps-lock released | 0xBB | F1 released | 0xBC | F2 released | 
+| 0xBD | F3 released | 0xBE | F4 released | 0xBF | F5 released | 0xC0 | F6 released | 
+| 0xC1 | F7 released | 0xC2 | F8 released | 0xC3 | F9 released | 0xC4 | F10 released | 
+| 0xC5 | Num-lock released | 0xC6 | Scroll-lock released | 0xC7 | Keypad 7 released | 0xC8 | Keypad 8 released |
+| 0xC9 | Keypad 9 released | 0xCA | Keypad - released | 0xCB | Keypad 4 released | 0xCC | Keypad 5 released | 
+| 0xCD | Keypad 6 released | 0xCE | Keypad + released | 0xCF | Keypad 1 released | 0xD0 | Keypad 2 released | 
+| 0xD1 | Keypad 3 released | 0xD2 | Keypad 0 released | 0xD3 | Keypad . released | 0xD4 | |
+| 0xD5 |  | 0xD6 |  | 0xD7 | F11 released | 0xD8 | F12 released |  
+| 0xD9 |  | 0xDA |  | 0xDB |  | 0xDC |  |
+| 0xDD |  | 0xDE |  | 0xDF |  | 0xE0 | This is a prefix byte and is followed by an additional byte |
+|  |  |  |  |  |
+| 0xE0, 0x1C | Keypad enter pressed | 0xE0, 0x1D | Right control pressed | 0xE0, 0x35 | Keypad / pressed | 0xE0, 0x38 | Right alt (or altGr) pressed |
+| 0xE0, 0x47	| Home pressed | 0xE0, 0x48 | Cursor up pressed | 0xE0, 0x49 | Page up pressed | 0xE0, 0x4B | Cursor left pressed |
+| 0xE0, 0x4D | Cursor right pressed | 0xE0, 0x4F | End pressed | 0xE0, 0x50 | Cursor down pressed | 0xE0, 0x51 | Page down pressed | 
+| 0xE0, 0x52 | Insert pressed | 0xE0, 0x53 | Delete pressed | 0xE0, 0x5B | Left GUI pressed | 0xE0, 0x5C | Right GUI pressed | 
+| 0xE0, 0x5D | "Apps" pressed | 0xE0, 0x9C | Keypad enter released | 0xE0, 0x9D | Right control released | 0xE0, 0xB5 | Keypad / released | 
+| 0xE0, 0xB8 | Right alt (or altGr) released | 0xE0, 0xC7	| Home released | 0xE0, 0xC8 | Cursor up released | 0xE0, 0xC9 | Page up released |
+| 0xE0, 0xCB | Cursor left released | 0xE0, 0xCD | Cursor right released | 0xE0, 0xCF | End released | 0xE0, 0xD0 | Cursor down released | 
+| 0xE0, 0xD1 | Page down released | 0xE0, 0xD2 | Insert released | 0xE0, 0xD3 | Delete released | 0xE0, 0xDB | Left GUI released |
+| 0xE0, 0xDC | Right GUI released | 0xE0, 0xDD | "Apps" released | | | | |
+|  |  |  |  |  |
+| 0xE0, 0x2A, 0xE0, 0x37 | Print screen pressed |  |  |  |  |  |  |
+| 0xE0, 0xB7, 0xE0, 0xAA | Print screen released |  |  |  |  |  |  |
+| 0xE1, 0x1D, 0x45, 0xE1, 0x9D, 0xC5 | Pause pressed |  |  |  |  |  |  |
+
+##### Scancode Set 2
+
+| Scancode | Key | Scancode | Key | Scancode | Key | Scancode | Key |
+|:-------------:|:-------:|:-------------:|:-------:|:-------------:|:-------:|:-------------:|:------:|
+| 0x01 | F9 pressed | 0x02 |   | 0x03 | F5 pressed | 0x04 | F3 pressed |
+| 0x05 | F1 pressed | 0x06 | F2 pressed | 0x07 | F12 pressed | 0x08 |   |
+| 0x09 | F10 pressed | 0x0A | F8 pressed | 0x0B | F6 pressed | 0x0C | F4 pressed |
+| 0x0D | Tab pressed | 0x0E | \` pressed | 0x0F |  | 0x10 |   |
+| 0x11 | Left alt pressed | 0x12 | Left shift pressed | 0x13 |   | 0x14 | Left control pressed |
+| 0x15 | Q pressed | 0x16 | 1 pressed | 0x17 |   |  0x18 |   |
+| 0x19 |   | 0x1A | Z pressed | 0x1B | S pressed | 0x1C | A pressed |
+| 0x1D | W pressed | 0x1E | 2 pressed | 0x1F |   | 0x20 |   |
+| 0x21 | C pressed | 0x22 | X pressed | 0x23 | D pressed | 0x24 | E pressed |
+| 0x25 | 4 pressed | 0x26 | 3 pressed | 0x27 |   | 0x28 |   |
+| 0x29 | Space pressed | 0x2A | V pressed | 0x2B | F pressed | 0x2C | T pressed |
+| 0x2D | R pressed | 0x2E | 5 pressed | 0x2F |   |  | 0x30 |
+| 0x31 | N pressed | 0x32 | B pressed | 0x33 | H pressed | 0x34 | G pressed |
+| 0x35 | Y pressed | 0x36 | 6 pressed | 0x37 |   | 0x38 |   |
+| 0x39 |   | 0x3A | M pressed | 0x3B | J pressed | 0x3C | U pressed |
+| 0x3D | 7 pressed | 0x3E | 8 pressed | 0x3F  |   | 0x40 |   |
+| 0x41 | , pressed | 0x42 | K pressed | 0x43 | I pressed | 0x44 | O pressed |
+| 0x45 | 0 pressed | 0x46 | 9 pressed | 0x47 |   | 0x48  |   |
+| 0x49 | . pressed | 0x4A | / pressed | 0x4B | L pressed | 0x4C |  ; pressed |
+| 0x4D | P pressed | 0x4E | - pressed | 0x4F |   | 0x50  |   |
+| 0x51 |   | 0x52 | ' pressed | 0x53  |   | 0x54 | [ pressed |
+| 0x55 | = pressed | 0x56 |   | 0x57  |   | 0x58 | Caps-lock pressed |
+| 0x59 | Right shift pressed | 0x5A | enter pressed | 0x5B | ] pressed | 0x5C  |  |
+| 0x5D | \ pressed | 0x5E  |   | 0x5F |   | 0x60 |   |
+| 0x61 |  | 0x62  |   | 0x63 |   | 0x64 |   |
+| 0x65 |   | 0x66 | Backspace pressed | 0x67 |   | 0x68 |   |
+| 0x69 | Keypad 1 pressed | 0x6A |   | 0x6B | Keypad 4 pressed | 0x6C | Keypad 7 pressed |
+| 0x6D |   | 0x6E |   | 0x6F |   | 0x70 | Keypad 0 pressed |
+| 0x71 | Keypad . pressed | 0x72 | Keypad 2 pressed | 0x73 | Keypad 5 pressed | 0x74 | Keypad 6 pressed |
+| 0x75 | Keypad 8 pressed | 0x76 | Escape pressed | 0x77 | Num-lock pressed | 0x78 | F11 pressed |
+| 0x79 | Keypad + pressed | 0x7A | Keypad 3 pressed | 0x7B | Keypad - pressed | 0x7C | Keypad * pressed |
+| 0x7D | Keypad 9 pressed | 0x7E | Scroll-lock pressed | 0x7F  |   | 0x80 |   |
+| 0x81 |  | 0x82  |  | 0x83 | F7 pressed | 0x84 |  |
+|  |  |  |  |  |  |  |  |
+| 0xE0, 0x10 | WWW search pressed | 0xE0, 0x11 | Right alt pressed |
+| 0xE0, 0x14 | Right control pressed | 0xE0, 0x15 | Previous track pressed |
+| 0xE0, 0x18 | WWW favourites pressed |
+| 0xE0, 0x1F | Left GUI pressed |
+| 0xE0, 0x20 | WWW refresh pressed | 0xE0, 0x21 | Volume down pressed | 0xE0, 0x22 |  | 0xE0, 0x23 | Mute pressed |
+| 0xE0, 0x27 | Right GUI pressed |
+| 0xE0, 0x28 | WWW stop pressed |
+| 0xE0, 0x2B | Calculator pressed |
+| 0xE0, 0x2F | Apps pressed |
+| 0xE0, 0x30 | WWW forward pressed | 0xE0, 0x31 |  | 0xE0, 0x32 | Volume up pressed |
+| 0xE0, 0x34 | Play/pause pressed | 0xE0, 0x35 |  | 0xE0, 0x36 |  | 0xE0, 0x37 | (ACPI) Power pressed |
+| 0xE0, 0x38 | WWW back pressed | 0xE0, 0x39 |  | 0xE0, 0x3A | WWW home pressed | 0xE0, 0x3B | Stop pressed |
+| 0xE0, 0x3F | (ACPI) sleep pressed | 0xE0, 0x40 | My computer pressed |
+| 0xE0, 0x48 | Email pressed | 0xE0, 0x49 |  | 0xE0, 0x4A | Keypad / pressed |
+| 0xE0, 0x4D | Next track pressed	| 
+| 0xE0, 0x50 | Media select pressed |
+| 0xE0, 0x5A | Keypad enter pressed |
+| 0xE0, 0x5E | (ACPI) Wake pressed |
+| 0xE0, 0x69 | End pressed |
+| 0xE0, 0x6B | Cursor left pressed | 0xE0, 0x6C | Home pressed |
+| 0xE0, 0x70 | Insert pressed | 0xE0, 0x71 | Delete pressed | 0xE0, 0x72 | Cursor down pressed |
+| 0xE0, 0x74 | Cursor right pressed | 0xE0, 0x75 | Cursor up pressed |
+| 0xE0, 0x7A | Page down pressed |  | 
+| 0xE0, 0x7D | Page up pressed |
+|  |  |  |  |  |  |  |  |
+| 0xF0, 0x01 | F9 released | 0xF0, 0x02 |  | 0xF0, 0x03	| F5 released | 0xF0, 0x04 | F3 released | 
+| 0xF0, 0x05 | F1 released | 0xF0, 0x06 | F2 released | 0xF0, 0x07 | F12 released |
+| 0xF0, 0x09 | F10 released | 0xF0, 0x0A | F8 released | 0xF0, 0x0B	| F6 released | 0xF0, 0x0C | F4 released | 
+| 0xF0, 0x0D | Tab released | 0xF0, 0x0E | \` released |
+| 0xF0, 0x11 | Left alt released | 0xF0, 0x12 | Left shift released |
+| 0xF0, 0x14 | Left control released | 0xF0, 0x15 | Q released | 0xF0, 0x16 | 1 released |  |  |
+| 0xF0, 0x1A | Z released | 0xF0, 0x1B | S released | 0xF0, 0x1C | A released | 0xF0, 0x1D | W released | 
+| 0xF0, 0x1E | 2 released |
+| 0xF0, 0x21 | C released | 0xF0, 0x22 | X released | 0xF0, 0x23 | D released | 0xF0, 0x24 | E released | 
+| 0xF0, 0x25 | 4 released | 0xF0, 0x26 | 3 released |
+| 0xF0, 0x29 | Space released | 0xF0, 0x2A | V released | 0xF0, 0x2B | F released | 0xF0, 0x2C | T released | 
+| 0xF0, 0x2D | R released | 0xF0, 0x2E | 5 released |
+| 0xF0, 0x31 | N released | 0xF0, 0x32 | B released | 0xF0, 0x33 | H released | 0xF0, 0x34 | G released | 
+| 0xF0, 0x35 | Y released | 0xF0, 0x36 | 6 released |
+| 0xF0, 0x3A | M released | 0xF0, 0x3B | J released | 0xF0, 0x3C | U released | 0xF0, 0x3D | 7 released | 
+| 0xF0, 0x3E | 8 released |
+| 0xF0, 0x41 | , released | 0xF0, 0x42 | K released | 0xF0, 0x43 | I released | 0xF0, 0x44 | O released | 
+| 0xF0, 0x45 | 0 released | 0xF0, 0x46 | 9 released |
+| 0xF0, 0x49 | . released | 0xF0, 0x4A | / released | 0xF0, 0x4B | L released | 0xF0, 0x4C | ; released | 
+| 0xF0, 0x4D | P released | 0xF0, 0x4E | - released |
+| 0xF0, 0x52 | ' released |
+| 0xF0, 0x54 | \[ released | 0xF0, 0x55 | = released |  |  |  |  |
+| 0xF0, 0x58 | Caps-lock released | 0xF0, 0x59 | Right shift released | 0xF0, 0x5A | Enter released | 0xF0, 0x5B | \] released |
+| 0xF0, 0x5D | \ released |
+| 0xF0, 0x66 | Backspace released |
+| 0xF0, 0x69 | Keypad 1 released | 0xF0, 0x6B | Keypad 4 released |
+| 0xF0, 0x6C | Keypad 7 released |
+| 0xF0, 0x70 | Keypad 0 released | 0xF0, 0x71 | Keypad . released | 0xF0, 0x72 | Keypad 2 released | 0xF0, 0x73 | Keypad 5 released |
+| 0xF0, 0x74 | Keypad 6 released | 0xF0, 0x75 | Keypad 8 released | 0xF0, 0x76 | escape released | 0xF0, 0x77 | Num-lock released |
+| 0xF0, 0x78 | F11 released | 0xF0, 0x79 | Keypad + released | 0xF0, 0x7A | Keypad 3 released | 0xF0, 0x7B | Keypad - released |
+| 0xF0, 0x7C | Keypad * released | 0xF0, 0x7D | Keypad 9 released | 0xF0, 0x7E | ScrollLock released |  |  |
+| 0xF0, 0x83 | F7 released |
+| 0xE0, 0x12, 0xE0, 0x7C | Print screen pressed |
+| 0xE0, 0xF0, 0x10 | WWW search released | 0xE0, 0xF0, 0x11 | Right alt released |
+| 0xE0, 0xF0, 0x14 | Right control released | 0xE0, 0xF0, 0x15 | Previous track released |
+| 0xE0, 0xF0, 0x18 | WWW favourites released |
+| 0xE0, 0xF0, 0x1F | Left GUI released | 0xE0, 0xF0, 0x20 | WWW refresh released | 0xE0, 0xF0, 0x21 | Volume down released |
+| 0xE0, 0xF0, 0x23 | Mute released |
+| 0xE0, 0xF0, 0x27 | Right GUI released | 0xE0, 0xF0, 0x28 | WWW stop released |
+| 0xE0, 0xF0, 0x2B | Calculator released |
+| 0xE0, 0xF0, 0x2F | Apps released |
+| 0xE0, 0xF0, 0x30 | WWW forward released |  |  | 0xE0, 0xF0, 0x32 | Volume up released |
+| 0xE0, 0xF0, 0x34 | Play/pause released |  |  |  |  | 0xE0, 0xF0, 0x37 | (ACPI) Power released |
+| 0xE0, 0xF0, 0x38 | WWW back released |  |  | 0xE0, 0xF0, 0x3A | WWW home released | 0xE0, 0xF0, 0x3B | Stop released |
+| 0xE0, 0xF0, 0x3F | (ACPI) sleep released |
+| 0xE0, 0xF0, 0x40 | My computer released |
+| 0xE0, 0xF0, 0x48 | Email released |  |  | 0xE0, 0xF0, 0x4A | Keypad / released |
+| 0xE0, 0xF0, 0x4D | Next track released | 
+| 0xE0, 0xF0, 0x50 | Media select released |
+| 0xE0, 0xF0, 0x5A | Keypad enter released |
+| 0xE0, 0xF0, 0x5E | (ACPI) Wake released |
+| 0xE0, 0xF0, 0x69 | End released |  |  | 0xE0, 0xF0, 0x6B | Cursor left released | 0xE0, 0xF0, 0x6C | Home released |
+| 0xE0, 0xF0, 0x70 | Insert released | 0xE0, 0xF0, 0x71 | Delete released | 0xE0, 0xF0, 0x72 | Cursor down released |
+| 0xE0, 0xF0, 0x74 | Cursor right released | 0xE0, 0xF0, 0x75 | Cursor up released |
+| 0xE0, 0xF0, 0x7A | Page down released |  |  |  |  | 0xE0, 0xF0, 0x7D | Page up released |
+| 0xE0, 0xF0, 0x7C, 0xE0, 0xF0, 0x12 | Print screen released |
+| 0xE1, 0x14, 0x77, 0xE1, 0xF0, 0x14, 0xF0, 0x77 | Pause pressed |
+
+##### Scancode Set 3
+
+A table for scancode set 3 can be found here: [http://www.computer-engineering.org/ps2keyboard/scancodes3.html](http://www.computer-engineering.org/ps2keyboard/scancodes3.html)
 
 ## Implementation details
 
 ### Basic keyboard driver
+
+It is possible to implement a basic PS/2 keyboard driver that works without needing to do all the complex initialisation described below. The basic driver performs only the following steps (which are described in detail lower down as part of the full driver description).
+
 - Driver initialisation:
   - Preallocate key buffer (if that approach is being taken)
   - Register & enable IRQ
-- Handle IRQ:
-  - See below
+- Handle IRQ
 - Read scancode/key/char methods
-  - See below
-- Caps-lock, num-lock, scroll-lock tracking
-  - See below
-- Changing caps-lock, num-lock and scroll-lock lights
-  - See below
+- Caps-lock tracking
 
 ### Driver using polling
+
+A driver which intends to use polling needs to perform all the same steps as an IRQ-based driver except for enabling and registering the IRQ handler. Furthermore, the driver must have a polling method (which will be blocking) and which is either called by a separate thread or when a scancode is requested.
+
 - Driver initialisation
-  - See below
-- Polling &amp; timeout
+- Polling (with timeout)
 - Read scancode/key/char methods
-  - See below
 - Caps-lock, num-lock, scroll-lock tracking
-  - See below
 - Changing caps-lock, num-lock and scroll-lock lights
-  - See below
 
 ### Driver using interrupts
 - Driver initialisation:
@@ -302,13 +496,7 @@ Reading the data port (after an IRQ has occurred) provides the single-byte scanc
 ### CPU Reset
 
 ## Alternatives
-- Voice command
-- Text recognition
-- Handwriting recognition
-
-## Compatibility
-- Common scancode sets to most keyboard devices dating back to ???
-- International keyboard software
+There are several alternatives for text input to the traditional keyboard. A microphone can be used for voice recognition, cameras and touch screens can be used for text and handwriting recognition.
 
 ---
 
@@ -325,9 +513,10 @@ TODO
 # FAQ & Common Problems
 
 ## I only ever receive one key press / scancode?
+You are probably not reading any or enough of the scancode bytes from the Data port when the first IRQ occurs. If you don't empty the Data port buffer, the PS/2 controller won't signal another interrupt when another key is pressed.
 
 ## My IRQ handler hangs or enters an infinite loop or locking condition?
-
+You probably tried to perform a memory allocation (or use some other forbidden function) from within the IRQ handler. You must either pre-allocate memory or defer the interrupt handling using a separate thread. Alternatively, use polling.
 
 ---
 
@@ -345,5 +534,6 @@ TODO
 - http://wiki.osdev.org/%228042%22_PS/2_Controller
 - http://wiki.osdev.org/PS/2_Keyboard
 - http://stanislavs.org/helppc/8042.html
+- http://www.computer-engineering.org/ps2keyboard/scancodes3.html
 
 *[acronym]: details
