@@ -23,7 +23,7 @@
 //
 // ------------------------------------------------------------------------------ //
 #endregion
-    
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -32,7 +32,7 @@ using System.Threading.Tasks;
 using System.Reflection;
 using Drivers.Compiler.IL;
 
-namespace Drivers.Compiler.Architectures.x86
+namespace Drivers.Compiler.Architectures.MIPS32
 {
     /// <summary>
     /// See base class documentation.
@@ -71,22 +71,20 @@ namespace Drivers.Compiler.Architectures.x86
             int currOpPosition = conversionState.PositionOf(theOp);
 
             conversionState.AddExternalLabel(conversionState.GetThrowNullReferenceExceptionMethodInfo().ID);
-            
+
             // 1. Check array reference is not null
-            //      1.1. Move array ref into eax
-            //      1.2. Compare eax (array ref) to 0
+            //      1.1. Move array ref into $t0
+            //      1.2. Compare $t0 (array ref) to 0
             //      1.3. If not zero, jump to continue execution further down
             //      1.4. Otherwise, call Exceptions.ThrowNullReferenceException
             // 2. Load array length
 
-            
+
             //      1.1. Move array ref into eax
-            GlobalMethods.InsertPageFaultDetection(conversionState, "ESP", 0, (OpCodes)theOp.opCode.Value);
-            conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Dword, Src = "[ESP]", Dest = "EAX" });
+            conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Word, Src = "0($sp)", Dest = "$t0", MoveType = ASMOps.Mov.MoveTypes.SrcMemoryToDestReg });
             //      1.2. Compare eax (array ref) to 0
-            conversionState.Append(new ASMOps.Cmp() { Arg1 = "EAX", Arg2 = "0" });
             //      1.3. If not zero, jump to continue execution further down
-            conversionState.Append(new ASMOps.Jmp() { JumpType = ASMOps.JmpOp.JumpNotZero, DestILPosition = currOpPosition, Extension = "ContinueExecution1" });
+            conversionState.Append(new ASMOps.Branch() { Src1 = "$t0", Src2 = "0", BranchType = ASMOps.BranchOp.BranchNotZero, DestILPosition = currOpPosition, Extension = "ContinueExecution1", UnsignedTest = true });
             //      1.4. Otherwise, call Exceptions.ThrowNullReferenceException
             conversionState.Append(new ASMOps.Call() { Target = "GetEIP" });
             conversionState.AddExternalLabel("GetEIP");
@@ -95,12 +93,12 @@ namespace Drivers.Compiler.Architectures.x86
 
             //2. Load array length
             //  - Pop array ref
-            conversionState.Append(new ASMOps.Pop() { Size = ASMOps.OperandSize.Dword, Dest = "ECX" });
+            conversionState.Append(new ASMOps.Pop() { Size = ASMOps.OperandSize.Word, Dest = "$t2" });
             //  - Load length from array ref
-            GlobalMethods.InsertPageFaultDetection(conversionState, "ECX", lengthOffset, (OpCodes)theOp.opCode.Value);
-            conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Dword, Src = "[ECX+" + lengthOffset.ToString() + "]", Dest = "EAX" });
+            //conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Word, Src = lengthOffset.ToString() + "($t2)", Dest = "$t0" }); 
+            GlobalMethods.LoadData(conversionState, theOp, "$t2", "$t0", lengthOffset, 4);
             //  - Push array length
-            conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Dword, Src = "EAX" });
+            conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Word, Src = "$t0" });
 
             conversionState.CurrentStackFrame.Stack.Push(new StackItem()
             {

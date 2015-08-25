@@ -23,7 +23,7 @@
 //
 // ------------------------------------------------------------------------------ //
 #endregion
-    
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -36,15 +36,15 @@ namespace Drivers.Compiler.Architectures.MIPS32
     /// <summary>
     /// See base class documentation.
     /// </summary>
-    public class Ldstr : IL.ILOps.Ldstr
+    public class Sizeof : IL.ILOps.Sizeof
     {
         public override void PerformStackOperations(ILPreprocessState conversionState, ILOp theOp)
         {
             conversionState.CurrentStackFrame.Stack.Push(new StackItem()
             {
-                sizeOnStackInBytes = 4,
                 isFloat = false,
-                isGCManaged = true
+                sizeOnStackInBytes = 4,
+                isGCManaged = false
             });
         }
 
@@ -56,25 +56,17 @@ namespace Drivers.Compiler.Architectures.MIPS32
         /// <returns>See base class documentation.</returns>
         public override void Convert(ILConversionState conversionState, ILOp theOp)
         {
-            //Load a string literal (- fixed string i.e. one programmed as "a string in code")
-
-            //Get the string metadata token used to get the string from the assembly
-            int StringMetadataToken = Utilities.ReadInt32(theOp.ValueBytes, 0);
-            //Get the value of the string to load
-            string theString = conversionState.Input.TheMethodInfo.UnderlyingInfo.Module.ResolveString(StringMetadataToken);
-            //Add the string literal and get its ID
-            string theStringID = conversionState.TheILLibrary.AddStringLiteral(theString);
-            conversionState.AddExternalLabel(theStringID);
-
-            //Push the address of the string (i.e. address of ID - ASM label)
-            conversionState.Append(new ASMOps.La() { Dest = "$t4", Label = theStringID });
+            int metadataToken = Utilities.ReadInt32(theOp.ValueBytes, 0);
+            Type theType = conversionState.Input.TheMethodInfo.UnderlyingInfo.Module.ResolveType(metadataToken);
+            Types.TypeInfo theTypeInfo = conversionState.TheILLibrary.GetTypeInfo(theType);
+            conversionState.Append(new ASMOps.Mov() { Src = theTypeInfo.SizeOnStackInBytes.ToString(), Dest = "$t4", MoveType = ASMOps.Mov.MoveTypes.ImmediateToReg });
             conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Word, Src = "$t4" });
 
             conversionState.CurrentStackFrame.Stack.Push(new StackItem()
             {
-                sizeOnStackInBytes = 4,
                 isFloat = false,
-                isGCManaged = true
+                sizeOnStackInBytes = 4,
+                isGCManaged = false
             });
         }
     }

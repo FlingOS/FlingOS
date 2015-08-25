@@ -123,8 +123,8 @@ namespace Drivers.Compiler.Architectures.MIPS32
                     break;
                 case OpCodes.Ldsflda:
                     //Load the address of the field i.e. address of the ASM label
-                    conversionState.Append(new ASMOps.La() { Label = fieldID, Dest = "$t0" });
-                    conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Word, Src = "$t0" });
+                    conversionState.Append(new ASMOps.La() { Label = fieldID, Dest = "$t4" });
+                    conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Word, Src = "$t4" });
 
                     conversionState.CurrentStackFrame.Stack.Push(new StackItem()
                     {
