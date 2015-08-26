@@ -1,7 +1,15 @@
-﻿using System;
+﻿using System; 
 
 namespace Testing2
 {
+    public struct AStruct
+    {
+        public byte a;      //1 byte - 4 bytes on stack
+        public short b;     //2 bytes - 4 bytes on stack
+        public int c;       //4 bytes - 4 bytes on stack
+        public long d;      //8 bytes - 8 bytes on stack
+    }
+
     public static class Kernel
     {
         [Drivers.Compiler.Attributes.PluggedMethod(ASMFilePath = "ASM\\Kernel")]
@@ -38,6 +46,7 @@ namespace Testing2
 
             UInt64 lastCount = BasicTimer.CounterValue;
             UART.Write("Waiting 1 second(s) [");
+            UART.Write("---- HERE ----");
             for(int i = 0; i < 10; i++)
             {
                 BasicTimer.Sleep(100000u);
@@ -765,6 +774,26 @@ namespace Testing2
              *   - NewArr/Ldelem/Stelem/Ldlen = Arrays
              *   - NewObj/Initobj/Ldobj/Stobj/Isinst = Objects & types
              */
+
+            //BEGIN - Test:Structs
+
+            AStruct Inst = new AStruct();
+            //Inst.a = 1;
+            //Inst.b = 2;
+            //Inst.c = 4;
+            //Inst.d = 8;
+            //int size = sizeof(AStruct);
+
+            //if (size != 20)
+            //{
+            //    UART.Write("Bad size\n");
+            //}
+            //else
+            //{
+            //    UART.Write("Good size\n");
+            //}
+
+            //END - Test:Structs
 
             while (true)
             {

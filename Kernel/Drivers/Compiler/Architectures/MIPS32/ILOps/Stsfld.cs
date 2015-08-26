@@ -79,7 +79,7 @@ namespace Drivers.Compiler.Architectures.MIPS32
 
             if (value.sizeOnStackInBytes - size > 0)
             {
-                conversionState.Append(new ASMOps.Add() { Src1 = (value.sizeOnStackInBytes - size).ToString(), Src2 = "$sp", Dest = "$sp" });
+                conversionState.Append(new ASMOps.Add() { Src1 = "$sp", Src2 = (value.sizeOnStackInBytes - size).ToString(), Dest = "$sp" });
             }
         }
     }

@@ -26,7 +26,7 @@ namespace Drivers.Compiler.Architectures.MIPS32
         {
             //Ignore for now
             //TODO: Do we need to do any proper initialisation?
-            conversionState.Append(new ASMOps.Add() { Src1 = "4", Src2 = "$sp", Dest = "$sp", Unsigned = false});
+            conversionState.Append(new ASMOps.Add() { Src1 = "$sp", Src2 = "4", Dest = "$sp", Unsigned = false});
         }
     }
 }

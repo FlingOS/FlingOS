@@ -86,7 +86,7 @@ namespace Drivers.Compiler.Architectures.MIPS32
             conversionState.Append(new ASMOps.La() { Label = typeIdStr, Dest = "$t4" });
             conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Word, Src = "$t4" });
             //Push a dword for return value (i.e. new array pointer)
-            conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Word, Src = "0" });
+            conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Word, Src = "$zero" });
             //Get the GC.NewArr method ID (i.e. ASM label)
             string methodLabel = conversionState.GetNewArrMethodInfo().ID;
             //Call GC.NewArr
@@ -94,7 +94,7 @@ namespace Drivers.Compiler.Architectures.MIPS32
             //Pop the return value (i.e. new array pointer)
             conversionState.Append(new ASMOps.Pop() { Size = ASMOps.OperandSize.Word, Dest = "$t0" });
             //Remove args from stack
-            conversionState.Append(new ASMOps.Add() { Src1 = "8", Src2 = "$sp", Dest = "$sp" });
+            conversionState.Append(new ASMOps.Add() { Src1 = "$sp", Src2 = "8", Dest = "$sp" });
             //Check if pointer == 0?
             //If it isn't 0, not out of memory so continue execution
             conversionState.Append(new ASMOps.Branch() { Src1 = "$t0", Src2 = "0", BranchType = ASMOps.BranchOp.BranchNotZero, DestILPosition = currOpPosition, Extension = "NotNullMem", UnsignedTest = true });

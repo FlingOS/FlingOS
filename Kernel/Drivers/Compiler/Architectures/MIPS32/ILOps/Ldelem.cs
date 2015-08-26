@@ -321,7 +321,7 @@ namespace Drivers.Compiler.Architectures.MIPS32
                 allFieldsOffset = highestOffsetFieldInfo.OffsetInBytes + (fieldTypeInfo.IsValueType ? fieldTypeInfo.SizeOnHeapInBytes : fieldTypeInfo.SizeOnStackInBytes);
             }
             #endregion
-            conversionState.Append(new ASMOps.Add() { Src2 = allFieldsOffset.ToString(), Src1 = "$t1", Dest = "$t1" });
+            conversionState.Append(new ASMOps.Add() { Src1 = "$t1", Src2 = allFieldsOffset.ToString(), Dest = "$t1" });
             //      4.12. Add $t0 and $t1 (array ref + fields + (index * element size))
             conversionState.Append(new ASMOps.Add() { Src1 = "$t1", Src2 = "$t0", Dest = "$t0" });
 

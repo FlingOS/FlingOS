@@ -135,13 +135,13 @@ namespace Drivers.Compiler.Architectures.x86
                     if (sizeToSub != sizeNotInMem)
                     {
                         conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Word, Src = "0", Dest = "AX" });
-                        GlobalMethods.InsertPageFaultDetection(conversionState, "ecx", offset + i - 2, (OpCodes)theOp.opCode.Value);
+                        GlobalMethods.InsertPageFaultDetection(conversionState, "ECX", offset + i - 2, (OpCodes)theOp.opCode.Value);
                         conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Byte, Src = "[ECX+" + (offset + i - 2).ToString() + "]", Dest = "AL" });
                         conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Word, Src = "AX" });
                     }
                     else
                     {
-                        GlobalMethods.InsertPageFaultDetection(conversionState, "ecx", offset + i - 2, (OpCodes)theOp.opCode.Value);
+                        GlobalMethods.InsertPageFaultDetection(conversionState, "ECX", offset + i - 2, (OpCodes)theOp.opCode.Value);
                         conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Word, Src = "[ECX+" + (offset + i - 2).ToString() + "]", Dest = "AX" });
                         conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Word, Src = "AX" });
                     }

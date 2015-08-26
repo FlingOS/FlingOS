@@ -85,7 +85,7 @@ namespace Drivers.Compiler.Architectures.MIPS32
             conversionState.Append(new ASMOps.Pop() { Size = ASMOps.OperandSize.Word, Dest = "$t2" });
             if ((OpCodes)theOp.opCode.Value == OpCodes.Ldflda)
             {
-                conversionState.Append(new ASMOps.Add() { Src1 = offset.ToString(), Src2 = "$t2", Dest = "$t2" });
+                conversionState.Append(new ASMOps.Add() { Src1 = "$t2", Src2 = offset.ToString(), Dest = "$t2" });
                 conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Word, Src = "$t2" });
 
                 conversionState.CurrentStackFrame.Stack.Push(new StackItem()
@@ -109,14 +109,14 @@ namespace Drivers.Compiler.Architectures.MIPS32
                     if (sizeToSub != sizeNotInMem)
                     {
                         conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Halfword, Src = "0", Dest = "$t0", MoveType = ASMOps.Mov.MoveTypes.ImmediateToReg });
-                        GlobalMethods.LoadData(conversionState, theOp, "$t2", "$t1", (offset + i - 2), 1);
-                        //conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Byte, Src = (offset + i - 2).ToString() + "($t2)", Dest = "$t1", MoveType = ASMOps.Mov.MoveTypes.SrcMemoryToDestReg });
+                        //conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Byte, Src = (offset + i - 2).ToString() + "($t2)", Dest = "$t0", MoveType = ASMOps.Mov.MoveTypes.SrcMemoryToDestReg });
+                        GlobalMethods.LoadData(conversionState, theOp, "$t2", "$t0", (offset + i - 2), 1);
                         conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Halfword, Src = "$t0" });
                     }
                     else
                     {
-                        GlobalMethods.LoadData(conversionState, theOp, "$t2", "$t0", (offset + i - 2), 2);
                         //conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Halfword, Src = (offset + i - 2).ToString() + "($t2)", Dest = "$t0", MoveType = ASMOps.Mov.MoveTypes.SrcMemoryToDestReg });
+                        GlobalMethods.LoadData(conversionState, theOp, "$t2", "$t0", (offset + i - 2), 2);
                         conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Halfword, Src = "$t0" });
                     }
                 }

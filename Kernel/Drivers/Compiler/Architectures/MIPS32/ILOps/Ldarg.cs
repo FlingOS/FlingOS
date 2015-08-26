@@ -189,8 +189,8 @@ namespace Drivers.Compiler.Architectures.MIPS32
             {
                 //Push the address of the argument onto the stack
 
-                conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Word, Src = "$fp", Dest = "$t2" });
-                conversionState.Append(new ASMOps.Add() { Src2 = BytesOffsetFromEBP.ToString(), Src1 = "$t2", Dest = "$t2" });
+                conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Word, Src = "$fp", Dest = "$t2", MoveType = ASMOps.Mov.MoveTypes.RegToReg });
+                conversionState.Append(new ASMOps.Add() { Src1 = "$t2", Src2 = BytesOffsetFromEBP.ToString(), Dest = "$t2" });
                 conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Word, Src = "$t2" });
 
                 //Push the address onto our stack

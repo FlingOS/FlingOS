@@ -125,7 +125,7 @@ namespace Drivers.Compiler.Architectures.MIPS32
             // 5. Pop the value from the stack into the element
 
             //Stack setup upon entering this op: (top-most downwards)
-            // 0. Value to store (word or 2 dwords)
+            // 0. Value to store (word or 2 words)
             // 1. Index of element to get as Int32 (word)
             // 2. Array object reference as address (word)
 
@@ -168,19 +168,19 @@ namespace Drivers.Compiler.Architectures.MIPS32
 
             //    //      - Move value (which is a ref) into $t0
             //    GlobalMethods.CheckAddrFromRegister(conversionState, "$sp", 0);
-            //    result.AppendLine("mov $t0, [$sp]");
+            //    result.AppendLine("mov $t0, 0($sp)");
             //    //      - Move value type ref (from value (ref)) into $t0
             //    GlobalMethods.CheckAddrFromRegister(conversionState, "$t0", typeOffset);
-            //    result.AppendLine(string.Format("mov $t0, [$t0+{0}]", typeOffset));
+            //    result.AppendLine(string.Format("mov $t0, {0}($t0)", typeOffset));
             //}
             ////      2.2. Move element type ref from array object into $t1
             ////              - Move array ref into $t1
             //GlobalMethods.CheckAddrFromRegister(conversionState, "$sp", sizeToPop == 8 ? 12 : 8);
-            //result.AppendLine(string.Format("mov $t1, [$sp+{0}]", sizeToPop == 8 ? 12 : 8));
-            ////              - Move elemType ref ([$t1+offset]) into $t1
+            //result.AppendLine(string.Format("mov $t1, {0}($sp)", sizeToPop == 8 ? 12 : 8));
+            ////              - Move elemType ref (offset($t1)) into $t1
             int elemTypeOffset = conversionState.TheILLibrary.GetFieldInfo(arrayTypeInfo, "elemType").OffsetInBytes;
             //GlobalMethods.CheckAddrFromRegister(conversionState, "$t1", elemTypeOffset);
-            //result.AppendLine(string.Format("mov $t1, [$t1+{0}]", elemTypeOffset));
+            //result.AppendLine(string.Format("mov $t1, {0}($t1)", elemTypeOffset));
             ////      2.3. Compare $t0 to $t1
             //result.AppendLine("cmp $t0, $t1");
             ////      2.4. If the same, jump to continue execution further down
@@ -292,7 +292,7 @@ namespace Drivers.Compiler.Architectures.MIPS32
                 allFieldsOffset = highestOffsetFieldInfo.OffsetInBytes + (fieldTypeInfo.IsValueType ? fieldTypeInfo.SizeOnHeapInBytes : fieldTypeInfo.SizeOnStackInBytes);
             }
             #endregion
-            conversionState.Append(new ASMOps.Add() { Src2 = allFieldsOffset.ToString(), Src1 = "$t3", Dest = "$t3" });
+            conversionState.Append(new ASMOps.Add() { Src1 = "$t3", Src2 = allFieldsOffset.ToString(), Dest = "$t3" });
             //      4.15. Add $t0 and $t3 (array ref + fields + (index * element size))
             conversionState.Append(new ASMOps.Add() { Src1 = "$t3", Src2 = "$t0", Dest = "$t0" });
 

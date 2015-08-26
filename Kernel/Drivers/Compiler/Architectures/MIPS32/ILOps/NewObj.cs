@@ -97,7 +97,7 @@ namespace Drivers.Compiler.Architectures.MIPS32
 
                 conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Word, Src = "0($sp)", Dest = "$t0", MoveType = ASMOps.Mov.MoveTypes.SrcMemoryToDestReg });
                 conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Word, Src = "$t0", Dest = "4($sp)", MoveType = ASMOps.Mov.MoveTypes.SrcRegToDestMemory });
-                conversionState.Append(new ASMOps.Add() { Src1 = "4", Src2 = "$sp", Dest = "$sp" });
+                conversionState.Append(new ASMOps.Add() { Src1 = "$sp", Src2 = "4", Dest = "$sp" });
                 return;
             }
 
@@ -120,7 +120,7 @@ namespace Drivers.Compiler.Architectures.MIPS32
             conversionState.AddExternalLabel(typeIdStr);
             conversionState.Append(new ASMOps.La() { Dest = "$t4", Label = typeIdStr });
             conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Word, Src = "$t4" });
-            //Push a dword for return value (i.e. new object pointer)
+            //Push a word for return value (i.e. new object pointer)
             conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Word, Src = "0" });
             //Get the GC.NewObj method ID (i.e. ASM label)
             string methodLabel = conversionState.GetNewObjMethodInfo().ID;
@@ -129,7 +129,7 @@ namespace Drivers.Compiler.Architectures.MIPS32
             //Pop the return value (i.e. new object pointer)
             conversionState.Append(new ASMOps.Pop() { Size = ASMOps.OperandSize.Word, Dest = "$t0" });
             //Remove arg 0 from stack
-            conversionState.Append(new ASMOps.Add() { Src1 = "4", Src2 = "$sp", Dest = "$sp" });
+            conversionState.Append(new ASMOps.Add() { Src1 = "$sp", Src2 = "4", Dest = "$sp" });
             //Check if pointer == 0?
             //If it isn't 0, not out of memory so continue execution
             conversionState.Append(new ASMOps.Branch() { BranchType = ASMOps.BranchOp.BranchNotZero, Src1 = "$t0", DestILPosition = currOpPosition, Extension = "NotNullMem" });
@@ -169,7 +169,7 @@ namespace Drivers.Compiler.Architectures.MIPS32
                 sizeOfArgs += conversionState.TheILLibrary.GetTypeInfo(aParam.ParameterType).SizeOnStackInBytes;
                 conversionState.CurrentStackFrame.Stack.Pop();
             }
-            conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Word, Src = "$sp", Dest = "$t1" });
+            conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Word, Src = "$sp", Dest = "$t1", MoveType = ASMOps.Mov.MoveTypes.RegToReg });
             if (sizeOfArgs > 0)
             {
                 if (sizeOfArgs % 4 != 0)
@@ -181,15 +181,18 @@ namespace Drivers.Compiler.Architectures.MIPS32
                 conversionState.Append(new ASMOps.Label() { ILPosition = currOpPosition, Extension = "ShiftArgsLoop" });
                 //Decrement counter ($t2)
                 conversionState.Append(new ASMOps.Sub() {Src1 = "$t2", Src2 = "1", Dest = "$t2"});
-                conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Word, Src = "4($t1)", Dest = "$t3" });
-                conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Word, Dest = "0($t1)", Src = "$t3" });
-                conversionState.Append(new ASMOps.Add() { Src1 = "4", Src2 = "$t1", Dest = "$t1" });
+                //conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Word, Src = "4($t1)", Dest = "$t3" });
+                GlobalMethods.LoadData(conversionState, theOp, "$t1", "$t3", 4, 4);
+                //conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Word, Src = "$t3", Dest = "0($t1)" });
+                GlobalMethods.StoreData(conversionState, theOp, "$t1", "$t3", 0, 4);
+                conversionState.Append(new ASMOps.Add() { Src1 = "$t1",Src2 = "4", Dest = "$t1" });
                 conversionState.Append(new ASMOps.Branch() { BranchType = ASMOps.BranchOp.BranchNotZero, Src1 = "$t2", DestILPosition = currOpPosition, Extension = "ShiftArgsLoop" });
             }
-            conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Word, Dest = "0($t1)", Src = "$t0" });
+            //conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Word, Src = "$t0", Dest = "0($t1)" });
+            GlobalMethods.StoreData(conversionState, theOp, "$t1", "$t0", 0, 4);
             conversionState.Append(new ASMOps.Call() { Target = constructorMethodInfo.ID });
             //Only remove args from stack - we want the object pointer to remain on the stack
-            conversionState.Append(new ASMOps.Add() { Src1 = sizeOfArgs.ToString(), Src2 = "$sp", Dest = "$sp" });
+            conversionState.Append(new ASMOps.Add() { Src1 = "$sp", Src2 = sizeOfArgs.ToString(), Dest = "$sp" });
 
             conversionState.CurrentStackFrame.Stack.Push(new StackItem()
             {

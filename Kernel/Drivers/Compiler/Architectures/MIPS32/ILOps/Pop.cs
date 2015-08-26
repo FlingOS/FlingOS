@@ -65,7 +65,7 @@ namespace Drivers.Compiler.Architectures.MIPS32
                 conversionState.Append(new ASMOps.Call() { Target = methodID });
             }
 
-            conversionState.Append(new ASMOps.Add() { Src2 = theItem.sizeOnStackInBytes.ToString(), Src1 = "$sp", Dest = "$sp" });
+            conversionState.Append(new ASMOps.Add() { Src1 = "$sp", Src2 = theItem.sizeOnStackInBytes.ToString(), Dest = "$sp" });
         }
     }
 }

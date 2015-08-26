@@ -181,14 +181,14 @@ namespace Drivers.Compiler.Architectures.x86
 
                 conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Dword, Src = (sizeOfArgs / 4).ToString(), Dest = "ECX" });
                 conversionState.Append(new ASMOps.Label() { ILPosition = currOpPosition, Extension = "ShiftArgsLoop" });
-                GlobalMethods.InsertPageFaultDetection(conversionState, "ebx", 4, (OpCodes)theOp.opCode.Value);
+                GlobalMethods.InsertPageFaultDetection(conversionState, "EBX", 4, (OpCodes)theOp.opCode.Value);
                 conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Dword, Src = "[EBX+4]", Dest = "EDX" });
-                GlobalMethods.InsertPageFaultDetection(conversionState, "ebx", 0, (OpCodes)theOp.opCode.Value);
+                GlobalMethods.InsertPageFaultDetection(conversionState, "EBX", 0, (OpCodes)theOp.opCode.Value);
                 conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Dword, Dest = "[EBX]", Src = "EDX" });
                 conversionState.Append(new ASMOps.Add() { Src = "4", Dest = "EBX" });
                 conversionState.Append(new ASMOps.Loop() { ILPosition = currOpPosition, Extension = "ShiftArgsLoop" });
             }
-            GlobalMethods.InsertPageFaultDetection(conversionState, "ebx", 0, (OpCodes)theOp.opCode.Value);
+            GlobalMethods.InsertPageFaultDetection(conversionState, "EBX", 0, (OpCodes)theOp.opCode.Value);
             conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Dword, Dest = "[EBX]", Src = "EAX" });
             conversionState.Append(new ASMOps.Call() { Target = constructorMethodInfo.ID });    
             //Only remove args from stack - we want the object pointer to remain on the stack
