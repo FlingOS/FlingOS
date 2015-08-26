@@ -102,7 +102,7 @@ namespace Drivers.Compiler.Architectures.MIPS32
                 int sizeToSub = (sizeNotInMem / 2) * 2; //Rounds down
                 for (int i = 0; i < sizeToSub; i += 2)
                 {
-                    conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Word, Src = "$zero" });
+                    conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Halfword, Src = "$zero" });
                 }
                 for (int i = memSize + (memSize % 2); i > 0; i -= 2)
                 {

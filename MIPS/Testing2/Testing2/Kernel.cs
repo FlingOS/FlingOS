@@ -44,11 +44,6 @@ namespace Testing2
 
             //BEGIN - Test:Structs
 
-            //AStruct Inst = new AStruct();
-            //Inst.a = 1;
-            //Inst.b = 2;
-            //Inst.c = 4;
-            //Inst.d = 8;
             int size = sizeof(AStruct);
 
             if (size != 15)
@@ -60,9 +55,51 @@ namespace Testing2
                 UART.Write("Good size\n");
             }
 
+            AStruct Inst = new AStruct();
+            Inst.a = 1;
+            Inst.b = 2;
+            Inst.c = 4;
+            Inst.d = 8;
+
+            if (Inst.a != 1)
+            {
+                UART.Write("Inst.a wrong\n");
+            }
+            else
+            {
+                UART.Write("Inst.a right\n");
+            }
+            if (Inst.b != 2)
+            {
+                UART.Write("Inst.b wrong\n");
+            }
+            else
+            {
+                UART.Write("Inst.b right\n");
+            }
+            if (Inst.c != 4)
+            {
+                UART.Write("Inst.c wrong\n");
+            }
+            else
+            {
+                UART.Write("Inst.c right\n");
+            }
+            if (Inst.d != 8)
+            {
+                UART.Write("Inst.d wrong\n");
+            }
+            else
+            {
+                UART.Write("Inst.d right\n");
+            }
+
             //END - Test:Structs
 
-            while (true)
+            UART.Write("Okay");
+
+            bool OK = true;
+            while (OK)
             {
                 ;
             }
