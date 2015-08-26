@@ -398,7 +398,14 @@ namespace Drivers.Compiler.Types
                         result += GetSizeOnHeapInBytes(anInfo.FieldType);
                     }
 
+                    // Min struct size of 4
                     result = Math.Max(result, 4);
+
+                    // Round struct size up to multiple of 4 (ensures 4-byte stack alignment)
+                    if (result % 4 != 0)
+                    {
+                        result += 4 - (result % 4);
+                    }
                 }
             }
 
