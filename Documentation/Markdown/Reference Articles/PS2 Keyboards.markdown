@@ -9,7 +9,7 @@ categories: docs reference
 The PS/2 keyboard is probably one of the most significant devices in computer history. For at least a decade and a half it was the most used interface for providing input to a computer and even provided a means for communicating between computers. PS/2 is a hardware and software standard for connecting a computer keyboard (or mouse) to a computer. It also includes control of things like the caps-lock status light. The PS/2 keyboard standard is so widely used and supported that even most newer USB hardware supports PS/2 emulation.
  
 ## Scope of this article
-This article will cover the PS/2 computer keyboard as created by IBM in 1987 as part of their Personal System/2 computer along with its newer advances. This article will also include information about USB enulation of PS/2 and how to write PS/2 drivers. It will not, however, include general information about keyboards and Human Input Devices. For more broad topical information and background on Human Input Devices, please read the Human Input Devices article.
+This article will cover the PS/2 computer keyboard as created by IBM in 1987 as part of their Personal System/2 computer along with its newer advances. This article will also include information about USB emulation of PS/2 and how to write PS/2 drivers. It will not, however, include general information about keyboards and Human Input Devices. For more broad topical information and background on Human Input Devices, please read the Human Input Devices article.
 
 ---
 
@@ -28,7 +28,7 @@ In the past decade USB has slowly taken over from PS/2. However, USB still maint
 PS/2 is a hardware and software standard for connecting keyboards (and mice) to a computer. It specifies the connector type, electrical signals and the communication protocol (which also impacts the internal mechanism of the host device, usually a PC). 
 
 ## Why does PS/2 exist?
-PS/2 has existed from 1987 and was designed to replace the large 5-pin DIN connectors. It took over as the de-facto keyboard (and mouse) connector for PCs during the 1990s and early 2000s. In the last decade it has largely been replaced bu USB but there are still plenty of places where PS/2 can be found. USB also support legacy emulation for PS/2. PS/2 is still the most reliable way to get keyboard input to a PC.
+PS/2 has existed from 1987 and was designed to replace the large 5-pin DIN connectors. It took over as the de-facto keyboard (and mouse) connector for PCs during the 1990s and early 2000s. In the last decade it has largely been replaced by USB but there are still plenty of places where PS/2 can be found. USB also support legacy emulation for PS/2. PS/2 is still the most reliable way to get keyboard input to a PC.
 
 ## How does PS/2 work?
 PS/2 works through an interrupts mechanism. PS/2 is not enumerated on a PCI or USB bus so cannot be detected. As such, PS/2 device cannot be hot-plugged - the host system must be shut down when a PS/2 device is attached or detached. When the system starts, the system will attempt to initialise all PS/2 ports and will use any devices that respond at that time. From then on, PS/2 works by interrupting the host processor when the user provides input (for instance, when a key is pressed). The host system is required to process the data. For example, if a key press is not processed, no further interrupts will occur until the host system reads the data about which key was pressed. This is a common cause of complaint by OS developer who are just starting out as it can make it appear as though the PS/2 keyboard interrupt will only ever occur once. Please read the FAQ section for more detail on this issue.
@@ -139,9 +139,9 @@ This register is write-only and is written with the controller command bytes lis
 
 | Command | Meaning | Response Byte (in Data port) |
 |:--------------:|:-------------|:---------------------:|
-| 0x20 | Read Command byte ("byte 0") from controller. Value placed in Data port. | Controller Configuration Byte (see below) |
+| 0x20 | Read Configuration byte ("byte 0") from controller. Value placed in Data port. | Controller Configuration Byte (see below) |
 | 0x21 to 0x3F | Read "byte N" from controller internal RAM (where 'N' is the command byte & 0x1F) | Unknown (only the first byte of internal RAM has a standard purpose) |
-| 0x60 | Write next byte as Command byte ("byte 0") of controller. This should be a Controller Configuration Byte, see below. | None |
+| 0x60 | Write next byte as Configuration byte ("byte 0") of controller. This should be a Controller Configuration Byte, see below. | None |
 | 0x61 to 0x7F | Write next byte as "byte N" of controller internal RAM (where 'N' is the command byte & 0x1F) | None |
 | 0xA4 | Password Installed Test: returned data can be read from Data port. (0xFA=Password installed, 0xF1=No password) | None |
 | 0xA5 | Load Security: bytes written to Data port will be read until a null (0) is found. | None |
@@ -174,7 +174,7 @@ This register is write-only and is written with the controller command bytes lis
 | 3 | 1=Override keyboard inhibit, 0=Allow inhibit. Probably should always be zero. |
 | 4 | First PS/2 port clock enable (1=Disabled, 0=Enabled) |
 | 5 | Second PS/2 port clock enable (1=Disabled, 0=Enabled, only if 2 PS/2 ports supported) |
-| 6 | First PS/2 port scancode translation (1=Enabled, tranlsate to PC/XT, 0=Disabled, standard AT) |
+| 6 | First PS/2 port scancode translation (1=Enabled, translate to PC/XT, 0=Disabled, standard AT) |
 | 7 | Reserved. Must be zero. |
 
 ##### Controller Output Port
@@ -220,20 +220,20 @@ Values for ACK, Resend and other special bytes which are referred to in this tab
 | 0xFC | Scancode for key | Set specific key to make/release (scancode set 3 only) | ACK or Resend |
 | 0xFD | Scancode for key | Set specific key to make only (scancode set 3 only) | ACK or Resend |
 | 0xFE | None | Resend last byte | Previously sent byte or Resend |
-| 0xFF | None | Reset and start self-test | 0xAA (self-test passed), 0xFC or 0xFD (self test failed) or Resend |
+| 0xFF | None | Reset and start self-test | 0xAA followed by 0xFA (self-test passed) or 0xFC/0xFD (self test failed) or Resend |
 
 ##### Keyboard Special Bytes
 
-The keyboard sends bytes to the host system. Most of the bytes are scancodes but there are a few special bytes. These special bytes are detailed below.
+PS/2 devices send bytes to the host system. Most of the bytes are scancodes but there are a few special bytes. These special bytes are detailed below.
 
 | Response | Meaning |
 |:-------------:|:-------------|
 | 0x00 | Key detection error or internal buffer overrun |
-| 0xAA | Self test passed (sent after reset command or keyboard power up) |
-| 0xEE | Response to echo keyboard command |
-| 0xFA | Keyboard command acknowledged (ACK) |
-| 0xFC, 0xFD | Self test failed (sent after reset command or keyboard power up) |
-| 0xFE | Resend keyboard command (Indicates the controller should repeat the last command it sent.) |
+| 0xAA | Self test passed (sent after reset command or device power up) |
+| 0xEE | Response to echo command |
+| 0xFA | Command acknowledged (ACK) |
+| 0xFC, 0xFD | Self test failed (sent after reset command or device power up) |
+| 0xFE | Resend command (Indicates the controller should repeat the last command it sent.) |
 | 0xFF | Key detection error or internal buffer overrun |
 
 ### Scancode Sets
@@ -449,51 +449,176 @@ A table for scancode set 3 can be found here: [http://www.computer-engineering.o
 
 It is possible to implement a basic PS/2 keyboard driver that works without needing to do all the complex initialisation described below. The basic driver performs only the following steps (which are described in detail lower down as part of the full driver description).
 
-- Driver initialisation:
-  - Preallocate key buffer (if that approach is being taken)
-  - Register & enable IRQ
-- Handle IRQ
-- Read scancode/key/char methods
-- Caps-lock tracking
+1. Driver initialisation:
+  1. Preallocate key buffer (if that approach is being taken)
+  2. Register & enable IRQ
+2. Handle IRQ
+3. Read scancode/key/char methods
+4. Caps-lock tracking
 
 ### Driver using polling
 
 A driver which intends to use polling needs to perform all the same steps as an IRQ-based driver except for enabling and registering the IRQ handler. Furthermore, the driver must have a polling method (which will be blocking) and which is either called by a separate thread or when a scancode is requested.
 
-- Driver initialisation
-- Polling (with timeout)
-- Read scancode/key/char methods
-- Caps-lock, num-lock, scroll-lock tracking
-- Changing caps-lock, num-lock and scroll-lock lights
+1. Driver initialisation (see Driver using interrupts)
+2. Polling (with timeout)
+3. Read scancode/key/char methods (see Driver using interrupts)
+4. Caps-lock, num-lock, scroll-lock tracking (see Driver using interrupts)
+5. Changing caps-lock, num-lock and scroll-lock lights (see Driver using interrupts)
+
+#### 2. Polling (with timeout)
+A polling-based driver needs to have a method that will poll the PS/2 controller to see if data is available (i.e. if a key has been pressed). This method can be run in a separate thread or called when a scancode is requested (remembering that requesting a keycode or char will need to request a scancode for conversion). 
+
+To poll the PS/2 controller for data, read the status register and wait for the Controller Output Buffer Full bit (bit 0) to become set, indicating that data is available in the Data port. Read the byte of data from the Data port (port 0x60) and repeat until the complete scancode has been read.
+
+Unfortunately, aside from the usual issues with polling, there is another issue for PS/2 polling. If the PS/2 controller has two devices attached (mouse and keyboard) they are both able to send data simultaneously. The data will arrive in the controller output buffer mixed together. Using polling, there is no way to distinguish the two reliably. Even using the 2nd port's output buffer status does not eliminate the race condition. The only two options are to disable one of the two devices (in this case, it would probably be the mouse) or to use IRQs (which guarantee you know which device's data will be read next from the buffer).
 
 ### Driver using interrupts
-- Driver initialisation:
-  - [Check for USB]
-  - Reset &amp; disable
-  - Flush buffers
-  - Perform PS/2 controller self-test
-  - Determine number of channels
-  - Perform channel (/interface) tests
-  - Preallocate key buffer (if that approach is being taken)
-  - Register & enable IRQ
-  - Enable devices
-  - Reset devices
-- Device type detection:
-  - Disable scanning
-  - Use identify command
-- Handle IRQ:
-  - Defer if going to be using queuing which needs memory allocation 
-  - Deferred or not: 
-    - Read scancode (necessary to receive further interrupts)
-    - Queue/buffer scancode
-- Read scancode/key/char methods
-- Caps-lock, num-lock, scroll-lock tracking
-- Changing caps-lock, num-lock and scroll-lock lights
-- USB Legacy Support
+1. Driver initialisation:
+    0. [Check for USB]
+    1. Reset &amp; disable
+    2. Flush buffers
+    3. Set Controller Configuration
+    4. Perform PS/2 controller self-test
+    5. Determine number of channels
+    6. Perform channel (/interface) tests
+    7. Preallocate key buffer (if that approach is being taken)
+    8. Register & enable IRQ
+    9. Enable devices
+    10. Reset devices
+    11. Device type detection:
+        1. Disable scanning
+        2. Use identify command
+2. Handle IRQ:
+    1. Defer if going to be using queuing which needs memory allocation 
+    2. Deferred or not: 
+        1. Read scancode (necessary to receive further interrupts)
+        2. Queue/buffer scancode
+3. Read scancode/key/char methods
+4. Caps-lock, num-lock, scroll-lock tracking
+5. Changing caps-lock, num-lock and scroll-lock lights
+6. USB Legacy Support
 
-Reading the data port (after an IRQ has occurred) provides the single-byte scancode of the key that was pressed (or released).
+Reading the data port (after an IRQ has occurred) provides the single-byte scancode of the key that was pressed (or released). Note that if two devices are attached to the PS/2 controller, data from either device could be received mixed together from the data port. The IRQ is the only reliable way to know which device's data will be read next from the buffer. 
+
+#### Sending commands to the PS/2 Controller
+Whenever the PS/2 driver wishes to send a command to the PS/2 controller, it should wait for the Input Buffer Full flag to clear in the Status register. This may require some form of timeout and error condition in case the PS/2 controller hangs/fails to processor a command. Commands are written as single bytes for the Command Register via the Command Port (0x64) which is write-only. 
+
+#### Sending commands to PS/2 Devices
+Whenever the PS/2 driver wishes to send a command to a PS/2 device, it must wait for the Controller Input Buffer to be empty. This means polling the Input Buffer Full flag bit (bit 1) in the Status register until it clears. 
+
+Once the input buffer is empty, to send a command to a device on the first port, just write the command to the Data port. To send a command to a device on the second port, you must first send the Write to Second Channel Input Buffer command (0xD4) then write the command to the data port. 
+
+In almost all cases, the driver should then wait for the command to send the ACK response (the exception is for device reset commands or commands with no response). In all cases, the driver should check for the Resend response (0xFE). If Resend is received from the device, the last command sent to the device should be resent.
+
+If you send the Write to Second Channel Input Buffer command (0xD4) when a second channel is not supported by the PS/2 controller, the command will be ignored. Any data subsequently written to the Data port will then be sent to the first PS/2 channel, which could cause confusion. Make sure, therefore, that the PS/2 Controller actually supports two channels before trying to write to the second one.
+
+#### 1. Initialisation
+
+0. ***Check for USB*** - The PS/2 controller should check whether USB drivers are enabled and, if so, whether they support a USB Keyboard HID driver. If they do, USB Legacy Support should be disabled. The PS/2 controller can then continue as normal. If there are no USB drivers, then the PS/2 controller can assume USB Legacy Support is enabled.
+1. ***Reset &amp; disable*** - The PS/2 controller could be in any state (after the BIOS and bootloader have run) so it is important to reset it. In practice, this just means disabling any/all devices (/ports) so they can't interfere with the rest of the initialisation process. To disable devices send the disable first and disable second PS/2 port commands (0xAD and 0xA7 respectively). PS/2 controller with only a single port will ignore the second command. There is no way to determine at this stage, whether there are one or two ports attached to the PS/2 controller.
+2. ***Flush buffers*** - Since the driver is in the processor of clearing the PS/2 controller setup, it is possible that the PS/2 controller was sent some data between the bootloader ending and the driver starting. This data would be sitting in the output buffer without us knowing and we would not receive any further data (or IRQs) until it is cleared. This can be achieved by polling the Output Buffer Full bit (bit 0) of the status register until it becomes clear (/zero). While the bit remains set, the driver should read bytes from the output buffer (by reading the Data port) and just discarding the data read.
+3. ***Set Controller Configuration*** - The PS/2 Controller is in an unknown configuration so the driver has two options. Either to rely on the configuration set by the bootloader or BIOS, or to reconfigure the controller for itself. If you want to leave the configuration as-is then fine but it may produce variable results on different hardware or in different virtual machines. To update the controller configuration, the driver should read the existing configuration byte, change the necessary bits then write the new value back. 
+    
+    This involves sending the Read Configuration command (0x20) then reading the response from the Data port. This gives you the existing config byte. At this stage, you should disable all IRQs and disable translation by clearing bits 0, 1 and 6. Write the new value back by sending the Write Configuration command (0x60) followed by the config byte written to the Data port.
+4. ***PS/2 controller self-test*** - This is to make sure the PS/2 controller is functioning properly and prevents the driver from becoming stuck later if the PS/2 controller is faulty. Perform the self-test by sending the self-test command (0xAA) then reading the response. It should be 0x55. If it is not, abort the driver initialisation and disable the PS/2 driver in the kernel.
+5. ***Determine number of channels*** - This tells the driver whether one or two PS/2 devices (/channels) are supported by the PS/2 controller. First the driver must enable the second port then read the Controller Configuration byte to determine if a second device is supported (but not necessarily attached). If the second channel exists, the driver should disable it again afterwards.
+    
+    To enable the second port, the driver should send the Enable Second Port command (0xA8). It should then read the config byte (as before) by sending the Read Configuration command (0x20) and read the value from the data port. The Second PS/2 Port Clock Enable bit (bit 5) should be clear if the second PS/2 device is supported. If the bit is clear, the driver should send the Disable Second PS/2 Port command (0xA7) to re-disable the port (so that it doesn't interfere with the remainder of the setup process). 
+6. ***Perform channel (/interface) tests*** - This determines whether any of the interfaces are broken or not. If one interface is broken, the other can still be used. If all interfaces are broken then the PS/2 driver should abort. 
+    
+    Test the first interface by send the Test First PS/2 Port command (0xAB) and checking the response. It should be 0x00 if the test passed. Otherwise, keep track that the first port is broken. If a second port exists (as determined by previous step) then send the Test Second PS/2 command (0xA9) and again check the result is zero. 
+7. ***Preallocate key buffer*** (if that approach is being taken) - If the driver will be using a pre-allocated scancode buffer, it should be allocated at this stage. 
+8. Register & enable IRQ - If the driver is going to use IRQs (which ideally it should), this is the point at which the IRQ handler should be registered and enabled. This will rely on the kernel's IRQ and interrupt handling system, which is described in separate articles. The IRQ for the first PS/2 port (which is almost always the keyboard) is IRQ1 and the IRQ for the second PS/2 channel is IRQ12 (almost always the PS/2 mouse). 
+9. ***Enable devices*** - At this stage the driver should enable one or both PS/2 ports (depending on how many are available and whether polling is being used). Do so by sending the relevant PS/2 Port Enable commands (0xAE for 1st, 0xA8 for second) and, if IRQs are being used, enable the channel interrupts by reading the config byte (using the Read command - 0x20), setting the interrupt enable bits (bit 0 for 1st, bit 1 for second) and then writing the config byte (using the Write command - 0x60). 
+10. ***Reset devices*** - All attached PS/2 devices should be reset to make sure they are starting from a clean state. This stage also allows the driver to detect if any devices are actually plugged in or not. If hot plugging is supported, this step (and the next) can be repeated later to detect newly plugged-in devices. 
+    
+    To reset a device, send the Reset Device command (which is a command for the device, not the Controller). The Reset Device command (0xFF) also starts a self test. If the device is attached it will respond with 0xAA. If 0xAA is not received, then no device is plugged in and the channel should be ignored. If 0xAA is received then a device is attached and one more byte should be received. This additional byte is the result of the self-test and should be Self-Test Passed (which is also the ACK response - 0xFA). A value of 0xFC or 0xFD indicates the self-test failed and the device should be disabled.
+11. ***Device type detection*** - If a device resets and self-tests successfully then the driver can proceed to test the device type using the following steps.
+      1. ***Disable scanning*** - This prevents the device from sending scanning data mixed in with the command response data (which would otherwise be indistinguishable). To disable scanning, send the Disable Scanning command (0xF5) and wait for the ACK response.
+      2. **Identify device*** - Do this by sending the Identify Device command (0xF2). Wait for the ACK response and then read zero, one or two ID bytes. The driver will need to use a timeout to determine how many bytes have been sent. The values of the identification bytes are shown in the table below.
+      3. ***Re-enable scanning*** - To enable scanning again, send the Enable Scanning command (0xF4) to the device and wait for the ACK response.
+  
+| Byte(s) | Device Type |
+|:----------:|:------------------|
+| None  | Very old AT keyboard with translation enabled in the PS/Controller (which is not possible for the second PS/2 port.) |
+| 0x00  | Mouse |
+| 0x03  | Mouse with scroll wheel |
+| 0x04  | 5-button mouse |
+| 0xAB, 0x41 or 0xAB, 0xC1 | MF2 keyboard with translation enabled in the PS/Controller (which is not possible for the second PS/2 port.) |
+| 0xAB, 0x83 | MF2 keyboard |
+
+#### 2. Handling the IRQ
+Handling the keyboard IRQ is straightforward. Alongside all the normal IRQ handling (such as End of Interrupt notifications), the IRQ handler must read the scancode byte(s) from the Data port.
+
+The IRQ handler should read a single byte from the Data port. It should then check this to see if the scancode is a multi-byte scancode or not. If it is a multi-byte scancode, the remaining scancode bytes should be read. Once the complete scancode has been read, the IRQ handler should queue (/buffer) the scancode. No further work is necessary.
+
+Later steps will expand upon the IRQ handler to show how modifier keys can be tracked and status lights updated.
+
+#### 3. Reading a scancode
+Reading a scancode (after the IRQ handler has read all the scancode bytes and queued them) involves checking the scancode bytes to determine which key was involved and whether the key was pressed or released. It may also be desired that the shift-key modifier be removed from the scancode. 
+
+To read a scancode, check it against the relevant scancode table above. Most modern keyboards use scancode set 2 (sometimes 3) by default. International or non-US keyboards may require a different mapping. There is no easy way to auto-detect key mapping without user-input at runtime. 
+
+If the highest bit of the scancode byte is set, then the key was released, otherwise it was pressed. This bit can be cleared and its value kept track of elsewhere. The resulting scancode will only match "pressed" scancodes. 
+
+To keep track of whether a key was pressed while the shift key was pressed, it is possible to expand the scancode to a 32-bit value (rather than just one byte). Then, if the shift key was pressed, left shift the value by 16 bits. This allows the keyboard driver to distinguish between upper-case and lower-case key presses. The raw scancode from the keyboard does not include any modification for the shift key.
+
+#### 4. Caps-lock, num-lock and scroll-lock tracking
+Caps-lock, num-lock and scroll-lock must be kept track of by the driver. These key's scancodes should be detected during the IRQ and flags in the driver set/cleared as appropriate. 
+
+#### 5. Status lights
+When the caps-lock, num-lock or scroll-lock on/off status changes, it is useful (for the user) if the driver switches on/off the relevant status lights. This can be achieved by sending the Status Lights command with the relevant option bits set. See the Keyboard Commands table for details.
+
+#### 6. USB Legacy Support
+Many modern PCs do not come with PS/2 ports (or even Controllers). The USB Host Controller built onto the motherboard emulates USB Keyboards and Mice as PS/2 keyboards/mice. If USB Host Controller drivers exist and USB Keyboard (or Mouse) HID drivers exist, they should be initialised before the PS/2 driver. USB Legacy Support should be disabled by the USB Host Controller driver (prior to device driver initialisation) if USB HID drivers exist.
+
+Contrary to popular opinion, it is not required that USB Legacy Support be disabled if a USB driver exists. The USB driver must simply be well-coded. The USB driver must keep track of which USB ports are being used by devices which are under PS/2 emulation and simply take precautions not to reset those ports at any stage after the PS/2 driver has been initialised. It must also avoid resetting the entire host controller at any stage after the PS/2 driver has been initialised (unless the PS/2 driver is disabled before the reset and re-initialised afterwards).
 
 ### CPU Reset
+CPU Reset can be achieved by pulsing the CPU Reset line. This is line 0 of the PS/2 controller output (the other lines do not have standardised connections). The pulse line 0, send the Pulse Output Line command (0xF0) to the PS/2 controller, with bit 0 clear and bits 1 to 3 set. A set bit indicates a line should not be pulsed, a clear bit indicates a line should be pulsed. Thus the actual value to send should be 0xFE. This should be written as a single byte to the command register. It will cause the CPU to reset. When the pulse ends, the CPU will restart to the BIOS and continue as though it had just powered-on for the first time.
+
+The following code snippet demonstrates how to send the CPU Reset pulse in NASM assembly code. As with any command, the code waits for the PS/2 controller input buffer to be empty before sending the command.
+
+``` x86asm
+CPUReset:
+  ; Wait for the PS/2 controller Input Buffer to be empty
+  Wait:
+    in AL, 0x64   ; Read the Status register value
+    test AL, 0x2  ; Test bit 1 of the Status register (Input Buffer Full bit. 0=Empty, 1=Full)
+    jnz Wait      ; While it's still full, loop back around
+
+  ; Send the Pulse Output Lines command to the PS/2 controller.
+  ; Command=0xF0, Options=0x0E thus command value = 0xFE
+  mov AL, 0xFE   ; Load the value to send
+  out 0x64, AL   ; Write the value to the command register
+  
+  ; This method will never return because the CPU will reset.
+```
+
+The following is from the FlingOS Kernel.Hardware.Keyboards.PS2.Reset method and provides a C# sample.
+
+``` csharp
+[Compiler.NoGC]
+[Compiler.NoDebug]
+public void Reset()
+{
+    // If the driver is enabled
+    if (enabled)
+    {
+        // Wait for the Input Buffer Full flag to clear
+        byte StatusRegValue = 0x02;
+        while ((StatusRegValue & 0x02) != 0)
+        {
+            StatusRegValue = CommandPort.Read_Byte();
+        }
+
+        // Send the command | options 
+        //          (0xF0   | 0x0E    - pulse only line 0 - CPU reset line)
+        CommandPort.Write_Byte(0xFE);
+    }
+}
+```
 
 ## Alternatives
 There are several alternatives for text input to the traditional keyboard. A microphone can be used for voice recognition, cameras and touch screens can be used for text and handwriting recognition.
@@ -521,19 +646,24 @@ You probably tried to perform a memory allocation (or use some other forbidden f
 ---
 
 # References
-- https://en.wikipedia.org/wiki/PS/2_port
-- https://en.wikipedia.org/wiki/Mini-DIN_connector
-- https://en.wikipedia.org/wiki/DIN_connector
-- https://en.wikipedia.org/wiki/Computer_keyboard#Control_processor
-- http://www.computerhope.com/jargon/p/ps2.htm
-- http://www.computer-engineering.org/ps2protocol/
-- http://www.computer-engineering.org/ps2keyboard/
-- https://www.pjrc.com/teensy/td_libs_PS2Keyboard.html
-- http://pcbheaven.com/wikipages/How_Key_Matrices_Works/
-- https://en.wikipedia.org/wiki/Keyboard_matrix_circuit
-- http://wiki.osdev.org/%228042%22_PS/2_Controller
-- http://wiki.osdev.org/PS/2_Keyboard
-- http://stanislavs.org/helppc/8042.html
-- http://www.computer-engineering.org/ps2keyboard/scancodes3.html
+All links referenced were valid as of 2015-08-26.
 
-*[acronym]: details
+- [Wikipedia.org - PS/2 Port](https://en.wikipedia.org/wiki/PS/2_port)
+- [Wikipedia.org - Mini-DIN connector](https://en.wikipedia.org/wiki/Mini-DIN_connector)
+- [Wikipedia.org - DIN connector](https://en.wikipedia.org/wiki/DIN_connector)
+- [Wikipedia.org - Computer Keyboard : Control Processor](https://en.wikipedia.org/wiki/Computer_keyboard#Control_processor)
+- [ComputerHope.com - PS2](http://www.computerhope.com/jargon/p/ps2.htm)
+- [Computer-engineering.org - PS2 Protocol](http://www.computer-engineering.org/ps2protocol/)
+- [Computer-engineering.org - PS2 Keyboard](http://www.computer-engineering.org/ps2keyboard/)
+- [Pjrc.com - PS2 Keyboard](https://www.pjrc.com/teensy/td_libs_PS2Keyboard.html)
+- [PCBHeaven.com - How Key Matrices Work](http://pcbheaven.com/wikipages/How_Key_Matrices_Works/)
+- [Wikipedia.org - Keyboard Matrix Cicuit](https://en.wikipedia.org/wiki/Keyboard_matrix_circuit)
+- [OSDev.org - "8042" PS/2 Controller](http://wiki.osdev.org/%228042%22_PS/2_Controller)
+- [OSDev.org - PS/2 Keyboard](http://wiki.osdev.org/PS/2_Keyboard)
+- [Stanislavs.org - 8042 PS/2 Controller](http://stanislavs.org/helppc/8042.html)
+- [Computer-engineering.org - Scancode Set 3](http://www.computer-engineering.org/ps2keyboard/scancodes3.html)
+
+*[PS2]: IBM Personal System/2 (or PlayStation 2 depending on context)
+*[PS/2]: IBM Personal System/2
+*[USB]: Universal Serial Bus
+*[FAQ]: Frequently Asked Question(s)

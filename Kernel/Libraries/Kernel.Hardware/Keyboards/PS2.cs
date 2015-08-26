@@ -159,11 +159,18 @@ namespace Kernel.Hardware.Keyboards
         [Compiler.NoDebug]
         public void Reset()
         {
+            // If the driver is enabled
             if (enabled)
             {
-                byte good = 0x02;
-                while ((good & 0x02) != 0)
-                    good = CommandPort.Read_Byte();
+                // Wait for the Input Buffer Full flag to clear
+                byte StatusRegValue = 0x02;
+                while ((StatusRegValue & 0x02) != 0)
+                {
+                    StatusRegValue = CommandPort.Read_Byte();
+                }
+
+                // Send the command | options 
+                //          (0xF0   | 0x0E    - pulse only line 0 - CPU reset line)
                 CommandPort.Write_Byte(0xFE);
             }
         }
