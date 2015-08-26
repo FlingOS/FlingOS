@@ -42,7 +42,7 @@ namespace Testing2
              *   - NewObj/Initobj/Ldobj/Stobj/Isinst = Objects & types
              */
 
-            //BEGIN - Test:Structs
+            #region Struct Tests
 
             int size = sizeof(AStruct);
 
@@ -94,7 +94,55 @@ namespace Testing2
                 UART.Write("Inst.d right\n");
             }
 
-            //END - Test:Structs
+            AStruct* HeapInst = (AStruct*)Heap.AllocZeroed((uint)sizeof(AStruct), "Kernel:Main");
+            if (HeapInst == null)
+            {
+                UART.Write("HeapInst null\n");
+            }
+            else
+            {
+                UART.Write("HeapInst not null\n");
+            }
+
+            HeapInst->a = 1;
+            HeapInst->b = 2;
+            HeapInst->c = 4;
+            HeapInst->d = 8;
+
+            if (HeapInst->a != 1)
+            {
+                UART.Write("HeapInst->a wrong\n");
+            }
+            else
+            {
+                UART.Write("HeapInst->a right\n");
+            }
+            if (HeapInst->b != 2)
+            {
+                UART.Write("HeapInst->b wrong\n");
+            }
+            else
+            {
+                UART.Write("HeapInst->b right\n");
+            }
+            if (HeapInst->c != 4)
+            {
+                UART.Write("HeapInst->c wrong\n");
+            }
+            else
+            {
+                UART.Write("HeapInst->c right\n");
+            }
+            if (HeapInst->d != 8)
+            {
+                UART.Write("HeapInst->d wrong\n");
+            }
+            else
+            {
+                UART.Write("HeapInst->d right\n");
+            }
+
+            #endregion
 
             UART.Write("Okay");
 
