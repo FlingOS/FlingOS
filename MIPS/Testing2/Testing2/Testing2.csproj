@@ -64,6 +64,18 @@
     <Compile Include="UART.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="ASM\Exceptions\ArbitaryReturn.mips.asm">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="ASM\Exceptions\BasePointer.mips.asm">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="ASM\Exceptions\ShiftStack.mips.asm">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="ASM\Exceptions\StackPointer.mips.asm">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="ASM\Heap\GetFixedHeapPtr.mips.asm">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>

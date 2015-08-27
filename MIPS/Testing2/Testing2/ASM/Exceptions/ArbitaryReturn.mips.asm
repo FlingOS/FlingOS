@@ -1,0 +1,14 @@
+﻿.text
+
+.global method_System_Void_RETEND_Testing2_ExceptionMethods_DECLEND_ArbitaryReturn_NAMEEND__System_UInt32_System_UInt32_System_Byte__
+
+.ent method_System_Void_RETEND_Testing2_ExceptionMethods_DECLEND_ArbitaryReturn_NAMEEND__System_UInt32_System_UInt32_System_Byte__
+method_System_Void_RETEND_Testing2_ExceptionMethods_DECLEND_ArbitaryReturn_NAMEEND__System_UInt32_System_UInt32_System_Byte__:
+
+lw $ra, 0($sp)
+
+sw $fp, 8($sp)
+sw $sp, 4($sp)
+
+j $ra
+.end method_System_Void_RETEND_Testing2_ExceptionMethods_DECLEND_ArbitaryReturn_NAMEEND__System_UInt32_System_UInt32_System_Byte__

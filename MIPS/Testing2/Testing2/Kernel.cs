@@ -260,48 +260,5 @@ namespace Testing2
             //}
             BasicTimer.Sleep(10ul);
         }
-
-        [Drivers.Compiler.Attributes.ThrowNullReferenceExceptionMethod]
-        private static void ThrowNullReferenceException(uint eip)
-        {
-            UART.Write('N');
-            UART.Write('u');
-            UART.Write('l');
-            UART.Write('l');
-            UART.Write(' ');
-            UART.Write('r');
-            UART.Write('e');
-            UART.Write('f');
-            UART.Write('\r');
-            UART.Write('\n');
-
-            while (true)
-            {
-                LED.Red();
-                LED.Blue();
-            }
-        }
-
-        [Drivers.Compiler.Attributes.ThrowIndexOutOfRangeExceptionMethod]
-        private static void ThrowIndexOutOfRangeException(uint eip)
-        {
-            UART.Write('I');
-            UART.Write('n');
-            UART.Write('d');
-            UART.Write('e');
-            UART.Write('x');
-            UART.Write(' ');
-            UART.Write('O');
-            UART.Write('O');
-            UART.Write('R');
-            UART.Write('\r');
-            UART.Write('\n');
-
-            while (true)
-            {
-                LED.Red();
-                LED.Blue();
-            }
-        }
     }
 }

@@ -92,57 +92,57 @@ namespace Testing2
             void* handlerPtr,
             void* filterPtr)
         {
-            //if (State == null)
-            //{
-            //    BasicConsole.SetTextColour(BasicConsole.error_colour);
-            //    BasicConsole.WriteLine("Error! ExceptionMethods.State is null.");
-            //    BasicConsole.DelayOutput(10);
-            //    BasicConsole.SetTextColour(BasicConsole.default_colour);
-            //}
+            if (State == null)
+            {
+                BasicConsole.SetTextColour(BasicConsole.error_colour);
+                BasicConsole.WriteLine("Error! ExceptionMethods.State is null.");
+                BasicConsole.DelayOutput(10);
+                BasicConsole.SetTextColour(BasicConsole.default_colour);
+            }
 
-            //AddExceptionHandlerInfo_EntryStackState* BasePtr = (AddExceptionHandlerInfo_EntryStackState*)BasePointer;
+            AddExceptionHandlerInfo_EntryStackState* BasePtr = (AddExceptionHandlerInfo_EntryStackState*)BasePointer;
 
-            //uint LocalsSize = (uint)BasePtr - (uint)StackPointer;
+            uint LocalsSize = (uint)BasePtr - (uint)StackPointer;
 
-            //// Create space for setting up handler info
-            //StackPointer -= sizeof(ExceptionHandlerInfo);
+            // Create space for setting up handler info
+            StackPointer -= sizeof(ExceptionHandlerInfo);
 
-            //// Setup handler info
-            //ExceptionHandlerInfo* ExHndlrPtr = (ExceptionHandlerInfo*)StackPointer;
-            //ExHndlrPtr->EBP = BasePtr->EBP;
-            ////                  EBP + 8 (for ret addr, ebp) + 8 (for args) - sizeof(ExceptionHandlerInfo)
-            //ExHndlrPtr->ESP = (uint)BasePtr + 8 + 8 - (uint)sizeof(ExceptionHandlerInfo);
-            //ExHndlrPtr->FilterAddress = (byte*)filterPtr;
-            //ExHndlrPtr->HandlerAddress = (byte*)handlerPtr;
-            //ExHndlrPtr->PrevHandlerPtr = State->CurrentHandlerPtr;
-            //ExHndlrPtr->InHandler = 0;
-            //ExHndlrPtr->ExPending = 0;
-            //ExHndlrPtr->Ex = null;
+            // Setup handler info
+            ExceptionHandlerInfo* ExHndlrPtr = (ExceptionHandlerInfo*)StackPointer;
+            ExHndlrPtr->EBP = BasePtr->EBP;
+            //                  EBP + 8 (for ret addr, ebp) + 8 (for args) - sizeof(ExceptionHandlerInfo)
+            ExHndlrPtr->ESP = (uint)BasePtr + 8 + 8 - (uint)sizeof(ExceptionHandlerInfo);
+            ExHndlrPtr->FilterAddress = (byte*)filterPtr;
+            ExHndlrPtr->HandlerAddress = (byte*)handlerPtr;
+            ExHndlrPtr->PrevHandlerPtr = State->CurrentHandlerPtr;
+            ExHndlrPtr->InHandler = 0;
+            ExHndlrPtr->ExPending = 0;
+            ExHndlrPtr->Ex = null;
 
-            //State->CurrentHandlerPtr = (ExceptionHandlerInfo*)((byte*)ExHndlrPtr + (LocalsSize + 12));
+            State->CurrentHandlerPtr = (ExceptionHandlerInfo*)((byte*)ExHndlrPtr + (LocalsSize + 12));
 
-            //StackPointer -= 8; // For duplicate (empty) args
-            //StackPointer -= 8; // For duplicate ebp, ret addr
+            StackPointer -= 8; // For duplicate (empty) args
+            StackPointer -= 8; // For duplicate ebp, ret addr
 
-            //// Setup the duplicate stack data
-            ////  - Nothing to do for args - duplicate values don't matter
-            ////  - Copy over ebp and return address
-            //uint* DuplicateValsStackPointer = (uint*)StackPointer;
-            //*DuplicateValsStackPointer = BasePtr->EBP;
-            //*(DuplicateValsStackPointer + 1) = BasePtr->RetAddr;
+            // Setup the duplicate stack data
+            //  - Nothing to do for args - duplicate values don't matter
+            //  - Copy over ebp and return address
+            uint* DuplicateValsStackPointer = (uint*)StackPointer;
+            *DuplicateValsStackPointer = BasePtr->EBP;
+            *(DuplicateValsStackPointer + 1) = BasePtr->RetAddr;
             
-            //ShiftStack((byte*)ExHndlrPtr + sizeof(ExceptionHandlerInfo) - 4, LocalsSize + 12);
+            ShiftStack((byte*)ExHndlrPtr + sizeof(ExceptionHandlerInfo) - 4, LocalsSize + 12);
 
-            //// Shift stack pointer to correct position - eliminates "empty space" of duplicates
-            //StackPointer += 16;
+            // Shift stack pointer to correct position - eliminates "empty space" of duplicates
+            StackPointer += 16;
 
-            //// MethodEnd will:
-            ////      - Add size of locals to esp
-            ////      - Pop EBP
-            ////      - Ret to ret address
-            //// Caller will:
-            ////      - Add size of args to esp
-            //// Which should leave the stack at the bottom of the (shifted up) ex handler info
+            // MethodEnd will:
+            //      - Add size of locals to esp
+            //      - Pop EBP
+            //      - Ret to ret address
+            // Caller will:
+            //      - Add size of args to esp
+            // Which should leave the stack at the bottom of the (shifted up) ex handler info
         }
         private struct AddExceptionHandlerInfo_EntryStackState
         {
@@ -160,32 +160,32 @@ namespace Testing2
         [Drivers.Compiler.Attributes.NoGC]
         public static unsafe void Throw(Testing2.Exception ex)
         {
-            //Kernel.Testing2.GC.IncrementRefCount(ex);
+            Testing2.GC.IncrementRefCount(ex);
 
-            //BasicConsole.WriteLine("Exception thrown:");
-            //BasicConsole.WriteLine(ex.Message);
+            BasicConsole.WriteLine("Exception thrown:");
+            BasicConsole.WriteLine(ex.Message);
 
-            //if (State->CurrentHandlerPtr->Ex != null)
-            //{
-            //    //GC ref count remains consistent because the Ex pointer below is going to be replaced but
-            //    //  same pointer stored in InnerException.
-            //    // Result is ref count goes: +1 here, -1 below
-            //    ex.InnerException = (Kernel.Testing2.Exception)Utilities.ObjectUtilities.GetObject(State->CurrentHandlerPtr->Ex);
-            //}
-            //if (ex.InstructionAddress == 0)
-            //{
-            //    ex.InstructionAddress = *((uint*)BasePointer + 1);
-            //}
-            //State->CurrentHandlerPtr->Ex = Utilities.ObjectUtilities.GetHandle(ex);
-            //State->CurrentHandlerPtr->ExPending = 1;
+            if (State->CurrentHandlerPtr->Ex != null)
+            {
+                //GC ref count remains consistent because the Ex pointer below is going to be replaced but
+                //  same pointer stored in InnerException.
+                // Result is ref count goes: +1 here, -1 below
+                ex.InnerException = (Testing2.Exception)Utilities.ObjectUtilities.GetObject(State->CurrentHandlerPtr->Ex);
+            }
+            if (ex.InstructionAddress == 0)
+            {
+                ex.InstructionAddress = *((uint*)BasePointer + 1);
+            }
+            State->CurrentHandlerPtr->Ex = Utilities.ObjectUtilities.GetHandle(ex);
+            State->CurrentHandlerPtr->ExPending = 1;
 
-            //HandleException();
+            HandleException();
 
-            //// We never expect to get here...
-            //HaltReason = "HandleException returned!";
-            //BasicConsole.WriteLine(HaltReason);
-            //// Try to cause fault
-            //*((byte*)0x800000000) = 0;
+            // We never expect to get here...
+            HaltReason = "HandleException returned!";
+            BasicConsole.WriteLine(HaltReason);
+            // Try to cause fault
+            *((byte*)0xDEADBEEF) = 0;
         }
         /// <summary>
         /// Throws the specified exception. Implementation used is exactly the 
@@ -193,15 +193,13 @@ namespace Testing2
         /// throw an exception.
         /// </summary>
         /// <param name="exPtr">The pointer to the exception to throw.</param>
-        //[Compiler.PluggedMethod(ASMFilePath = null)]
-        //[Drivers.Compiler.Attributes.PluggedMethod(ASMFilePath = null)]
         [Drivers.Compiler.Attributes.NoDebug]
         [Drivers.Compiler.Attributes.NoGC]
         public static void ThrowFromPtr(UInt32* exPtr)
         {
-            //Testing2.Exception ex = (Testing2.Exception)Utilities.ObjectUtilities.GetObject(exPtr);
-            //ex.InstructionAddress = *((uint*)BasePointer + 1);
-            //Throw(ex);
+            Testing2.Exception ex = (Testing2.Exception)Utilities.ObjectUtilities.GetObject(exPtr);
+            ex.InstructionAddress = *((uint*)BasePointer + 1);
+            Throw(ex);
         }
 
         /// <summary>
@@ -212,45 +210,45 @@ namespace Testing2
         [Drivers.Compiler.Attributes.NoGC]
         public static unsafe void HandleException()
         {
-            //if(State != null)
-            //{
-            //    if (State->CurrentHandlerPtr != null)
-            //    {
-            //        if (State->CurrentHandlerPtr->InHandler != 0)
-            //        {
-            //            State->CurrentHandlerPtr->InHandler = 0;
-            //            if (State->CurrentHandlerPtr->PrevHandlerPtr != null)
-            //            {
-            //                State->CurrentHandlerPtr->PrevHandlerPtr->Ex = State->CurrentHandlerPtr->Ex;
-            //                State->CurrentHandlerPtr->PrevHandlerPtr->ExPending = State->CurrentHandlerPtr->ExPending;
-            //            }
-            //            State->CurrentHandlerPtr = State->CurrentHandlerPtr->PrevHandlerPtr;
-            //        }
-            //    }
+            if (State != null)
+            {
+                if (State->CurrentHandlerPtr != null)
+                {
+                    if (State->CurrentHandlerPtr->InHandler != 0)
+                    {
+                        State->CurrentHandlerPtr->InHandler = 0;
+                        if (State->CurrentHandlerPtr->PrevHandlerPtr != null)
+                        {
+                            State->CurrentHandlerPtr->PrevHandlerPtr->Ex = State->CurrentHandlerPtr->Ex;
+                            State->CurrentHandlerPtr->PrevHandlerPtr->ExPending = State->CurrentHandlerPtr->ExPending;
+                        }
+                        State->CurrentHandlerPtr = State->CurrentHandlerPtr->PrevHandlerPtr;
+                    }
+                }
 
-            //    ExceptionHandlerInfo* CurrHandlerPtr = State->CurrentHandlerPtr;
-            //    if (CurrHandlerPtr != null)
-            //    {
-            //        if ((uint)CurrHandlerPtr->HandlerAddress != 0x00000000u)
-            //        {
-            //            if ((uint)CurrHandlerPtr->FilterAddress != 0x00000000u)
-            //            {
-            //                //Catch handler
-            //                CurrHandlerPtr->ExPending = 0;
-            //            }
+                ExceptionHandlerInfo* CurrHandlerPtr = State->CurrentHandlerPtr;
+                if (CurrHandlerPtr != null)
+                {
+                    if ((uint)CurrHandlerPtr->HandlerAddress != 0x00000000u)
+                    {
+                        if ((uint)CurrHandlerPtr->FilterAddress != 0x00000000u)
+                        {
+                            //Catch handler
+                            CurrHandlerPtr->ExPending = 0;
+                        }
 
-            //            CurrHandlerPtr->InHandler = 1;
+                        CurrHandlerPtr->InHandler = 1;
 
-            //            ArbitaryReturn(CurrHandlerPtr->EBP, CurrHandlerPtr->ESP, CurrHandlerPtr->HandlerAddress);
-            //        }
-            //    }
-            //}
-            
-            //// If we get to here, it's an unhandled exception
-            //HaltReason = "Unhandled / improperly handled exception!";
-            //BasicConsole.WriteLine(HaltReason);
-            //// Try to cause fault
-            //*((byte*)0x800000000) = 0;
+                        ArbitaryReturn(CurrHandlerPtr->EBP, CurrHandlerPtr->ESP, CurrHandlerPtr->HandlerAddress);
+                    }
+                }
+            }
+
+            // If we get to here, it's an unhandled exception
+            HaltReason = "Unhandled / improperly handled exception!";
+            BasicConsole.WriteLine(HaltReason);
+            // Try to cause fault
+            *((byte*)0xDEADBEEF) = 0;
         }
         /// <summary>
         /// Handles cleanly leaving a critical section (i.e. try or catch block)
@@ -261,116 +259,116 @@ namespace Testing2
         [Drivers.Compiler.Attributes.NoGC]
         public static unsafe void HandleLeave(void* continuePtr)
         {
-            //if (State == null || 
-            //    State->CurrentHandlerPtr == null)
-            //{
-            //    // If we get to here, it's an unhandled exception
-            //    HaltReason = "Cannot leave on null handler! Address: 0x        ";
+            if (State == null ||
+                State->CurrentHandlerPtr == null)
+            {
+                // If we get to here, it's an unhandled exception
+                HaltReason = "Cannot leave on null handler! Address: 0x        ";
 
-            //    uint y = *((uint*)(BasePointer + 4));
-            //    int offset = 48;
-            //    #region Address
-            //    while (offset > 40)
-            //    {
-            //        uint rem = y & 0xFu;
-            //        switch (rem)
-            //        {
-            //            case 0:
-            //                HaltReason[offset] = '0';
-            //                break;
-            //            case 1:
-            //                HaltReason[offset] = '1';
-            //                break;
-            //            case 2:
-            //                HaltReason[offset] = '2';
-            //                break;
-            //            case 3:
-            //                HaltReason[offset] = '3';
-            //                break;
-            //            case 4:
-            //                HaltReason[offset] = '4';
-            //                break;
-            //            case 5:
-            //                HaltReason[offset] = '5';
-            //                break;
-            //            case 6:
-            //                HaltReason[offset] = '6';
-            //                break;
-            //            case 7:
-            //                HaltReason[offset] = '7';
-            //                break;
-            //            case 8:
-            //                HaltReason[offset] = '8';
-            //                break;
-            //            case 9:
-            //                HaltReason[offset] = '9';
-            //                break;
-            //            case 10:
-            //                HaltReason[offset] = 'A';
-            //                break;
-            //            case 11:
-            //                HaltReason[offset] = 'B';
-            //                break;
-            //            case 12:
-            //                HaltReason[offset] = 'C';
-            //                break;
-            //            case 13:
-            //                HaltReason[offset] = 'D';
-            //                break;
-            //            case 14:
-            //                HaltReason[offset] = 'E';
-            //                break;
-            //            case 15:
-            //                HaltReason[offset] = 'F';
-            //                break;
-            //        }
-            //        y >>= 4;
-            //        offset--;
-            //    }
+                uint y = *((uint*)(BasePointer + 4));
+                int offset = 48;
+                #region Address
+                while (offset > 40)
+                {
+                    uint rem = y & 0xFu;
+                    switch (rem)
+                    {
+                        case 0:
+                            HaltReason[offset] = '0';
+                            break;
+                        case 1:
+                            HaltReason[offset] = '1';
+                            break;
+                        case 2:
+                            HaltReason[offset] = '2';
+                            break;
+                        case 3:
+                            HaltReason[offset] = '3';
+                            break;
+                        case 4:
+                            HaltReason[offset] = '4';
+                            break;
+                        case 5:
+                            HaltReason[offset] = '5';
+                            break;
+                        case 6:
+                            HaltReason[offset] = '6';
+                            break;
+                        case 7:
+                            HaltReason[offset] = '7';
+                            break;
+                        case 8:
+                            HaltReason[offset] = '8';
+                            break;
+                        case 9:
+                            HaltReason[offset] = '9';
+                            break;
+                        case 10:
+                            HaltReason[offset] = 'A';
+                            break;
+                        case 11:
+                            HaltReason[offset] = 'B';
+                            break;
+                        case 12:
+                            HaltReason[offset] = 'C';
+                            break;
+                        case 13:
+                            HaltReason[offset] = 'D';
+                            break;
+                        case 14:
+                            HaltReason[offset] = 'E';
+                            break;
+                        case 15:
+                            HaltReason[offset] = 'F';
+                            break;
+                    }
+                    y >>= 4;
+                    offset--;
+                }
 
-            //    #endregion
+                #endregion
 
-            //    BasicConsole.WriteLine(HaltReason);
-            //    BasicConsole.DelayOutput(5);
+                BasicConsole.WriteLine(HaltReason);
+                BasicConsole.DelayOutput(5);
 
-            //    // Try to cause fault
-            //    *((byte*)0x800000000) = 0;
-            //}
+                // Try to cause fault
+                *((byte*)0xDEADBEEF) = 0;
+            }
 
-            //// Leaving a critical section cleanly
-            //// We need to handle 2 cases:
-            //// Case 1 : Leaving "try" or "catch" of a try-catch
-            //// Case 2 : Leaving the "try" of a try-finally
+            // Leaving a critical section cleanly
+            // We need to handle 2 cases:
+            // Case 1 : Leaving "try" or "catch" of a try-catch
+            // Case 2 : Leaving the "try" of a try-finally
 
-            //if ((uint)State->CurrentHandlerPtr->FilterAddress != 0x0u)
-            //{
-            //    // Case 1 : Leaving "try" or "catch" of a try-catch
-            
-            //    if (State->CurrentHandlerPtr->Ex != null)
-            //    {
-            //        Testing2.GC.DecrementRefCount((Testing2.Object)Utilities.ObjectUtilities.GetObject(State->CurrentHandlerPtr->Ex));
-            //        State->CurrentHandlerPtr->Ex = null;
-            //    }
+            if ((uint)State->CurrentHandlerPtr->FilterAddress != 0x0u)
+            {
+                // Case 1 : Leaving "try" or "catch" of a try-catch
 
-            //    State->CurrentHandlerPtr->InHandler = 0;
+                if (State->CurrentHandlerPtr->Ex != null)
+                {
+                    Testing2.GC.DecrementRefCount((Testing2.Object)Utilities.ObjectUtilities.GetObject(State->CurrentHandlerPtr->Ex));
+                    State->CurrentHandlerPtr->Ex = null;
+                }
 
-            //    uint EBP = State->CurrentHandlerPtr->EBP;
-            //    uint ESP = State->CurrentHandlerPtr->ESP;
+                State->CurrentHandlerPtr->InHandler = 0;
 
-            //    State->CurrentHandlerPtr = State->CurrentHandlerPtr->PrevHandlerPtr;
-                
-            //    ArbitaryReturn(EBP, ESP + (uint)sizeof(ExceptionHandlerInfo), (byte*)continuePtr);
-            //}
-            //else
-            //{
-            //    // Case 2 : Leaving the "try" of a try-finally
-                
-            //    State->CurrentHandlerPtr->InHandler = 1;
+                uint EBP = State->CurrentHandlerPtr->EBP;
+                uint ESP = State->CurrentHandlerPtr->ESP;
 
-            //    ArbitaryReturn(State->CurrentHandlerPtr->EBP,
-            //                   State->CurrentHandlerPtr->ESP,
-            //                   State->CurrentHandlerPtr->HandlerAddress);
-            //}
+                State->CurrentHandlerPtr = State->CurrentHandlerPtr->PrevHandlerPtr;
+
+                ArbitaryReturn(EBP, ESP + (uint)sizeof(ExceptionHandlerInfo), (byte*)continuePtr);
+            }
+            else
+            {
+                // Case 2 : Leaving the "try" of a try-finally
+
+                State->CurrentHandlerPtr->InHandler = 1;
+
+                ArbitaryReturn(State->CurrentHandlerPtr->EBP,
+                               State->CurrentHandlerPtr->ESP,
+                               State->CurrentHandlerPtr->HandlerAddress);
+            }
         }
         /// <summary>
         /// Handles cleanly leaving a "finally" critical section (i.e. finally block). 
@@ -381,79 +379,79 @@ namespace Testing2
         [Drivers.Compiler.Attributes.NoGC]
         public static unsafe void HandleEndFinally()
         {
-            //if (State == null ||
-            //    State->CurrentHandlerPtr == null)
-            //{
-            //    // If we get to here, it's an unhandled exception
-            //    HaltReason = "Cannot end finally on null handler!";
-            //    BasicConsole.WriteLine(HaltReason);
-            //    BasicConsole.DelayOutput(5);
-                
-            //    // Try to cause fault
-            //    *((byte*)0x800000000) = 0;
-            //}
+            if (State == null ||
+                State->CurrentHandlerPtr == null)
+            {
+                // If we get to here, it's an unhandled exception
+                HaltReason = "Cannot end finally on null handler!";
+                BasicConsole.WriteLine(HaltReason);
+                BasicConsole.DelayOutput(5);
 
-            //// Leaving a "finally" critical section cleanly
-            //// We need to handle 2 cases:
-            //// Case 1 : Pending exception
-            //// Case 2 : No pending exception
+                // Try to cause fault
+                *((byte*)0xDEADBEEF) = 0;
+            }
 
-            //if (State->CurrentHandlerPtr->ExPending != 0)
-            //{
-            //    // Case 1 : Pending exception
-                
-            //    HandleException();
-            //}
-            //else
-            //{
-            //    // Case 2 : No pending exception
-                
-            //    State->CurrentHandlerPtr->InHandler = 0;
+            // Leaving a "finally" critical section cleanly
+            // We need to handle 2 cases:
+            // Case 1 : Pending exception
+            // Case 2 : No pending exception
 
-            //    uint EBP = State->CurrentHandlerPtr->EBP;
-            //    uint ESP = State->CurrentHandlerPtr->ESP;
-                           
-            //    State->CurrentHandlerPtr = State->CurrentHandlerPtr->PrevHandlerPtr;
+            if (State->CurrentHandlerPtr->ExPending != 0)
+            {
+                // Case 1 : Pending exception
 
-            //    ArbitaryReturn(EBP,
-            //        ESP + (uint)sizeof(ExceptionHandlerInfo),
-            //        (byte*)*((uint*)(BasePointer + 4)));
-            //}
+                HandleException();
+            }
+            else
+            {
+                // Case 2 : No pending exception
+
+                State->CurrentHandlerPtr->InHandler = 0;
+
+                uint EBP = State->CurrentHandlerPtr->EBP;
+                uint ESP = State->CurrentHandlerPtr->ESP;
+
+                State->CurrentHandlerPtr = State->CurrentHandlerPtr->PrevHandlerPtr;
+
+                ArbitaryReturn(EBP,
+                    ESP + (uint)sizeof(ExceptionHandlerInfo),
+                    (byte*)*((uint*)(BasePointer + 4)));
+            }
         }
-        
-        //internal static unsafe byte* StackPointer
-        //{
-        //    [Drivers.Compiler.Attributes.PluggedMethod(ASMFilePath=@"ASM\Exceptions\StackPointer")]
-        //    get
-        //    {
-        //        return null;
-        //    }
-        //    [Drivers.Compiler.Attributes.PluggedMethod(ASMFilePath=null)]
-        //    set
-        //    {
-        //    }
-        //}
-        //internal static unsafe byte* BasePointer
-        //{
-        //    [Drivers.Compiler.Attributes.PluggedMethod(ASMFilePath = @"ASM\Exceptions\BasePointer")]
-        //    get
-        //    {
-        //        return null;
-        //    }
-        //    [Drivers.Compiler.Attributes.PluggedMethod(ASMFilePath = null)]
-        //    set
-        //    {
-        //    }
-        //}
 
-        //[Drivers.Compiler.Attributes.PluggedMethod(ASMFilePath = @"ASM\Exceptions\ShiftStack")]
-        //private static void ShiftStack(byte* From_High, uint Dist)
-        //{
-        //}
-        //[Drivers.Compiler.Attributes.PluggedMethod(ASMFilePath = @"ASM\Exceptions\ArbitaryReturn")]
-        //private static void ArbitaryReturn(uint EBP, uint ESP, byte* RetAddr)
-        //{
-        //}
+        internal static unsafe byte* StackPointer
+        {
+            [Drivers.Compiler.Attributes.PluggedMethod(ASMFilePath = @"ASM\Exceptions\StackPointer")]
+            get
+            {
+                return null;
+            }
+            [Drivers.Compiler.Attributes.PluggedMethod(ASMFilePath = null)]
+            set
+            {
+            }
+        }
+        internal static unsafe byte* BasePointer
+        {
+            [Drivers.Compiler.Attributes.PluggedMethod(ASMFilePath = @"ASM\Exceptions\BasePointer")]
+            get
+            {
+                return null;
+            }
+            [Drivers.Compiler.Attributes.PluggedMethod(ASMFilePath = null)]
+            set
+            {
+            }
+        }
+
+        [Drivers.Compiler.Attributes.PluggedMethod(ASMFilePath = @"ASM\Exceptions\ShiftStack")]
+        private static void ShiftStack(byte* From_High, uint Dist)
+        {
+        }
+        [Drivers.Compiler.Attributes.PluggedMethod(ASMFilePath = @"ASM\Exceptions\ArbitaryReturn")]
+        private static void ArbitaryReturn(uint FP, uint SP, byte* RetAddr)
+        {
+        }
 
         /// <summary>
         /// Rethrows the current exception.
