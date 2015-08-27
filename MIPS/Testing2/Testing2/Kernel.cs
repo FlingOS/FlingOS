@@ -146,7 +146,7 @@ namespace Testing2
 
             #endregion
 
-            #region Array Tests
+            #region Array Tests Value Types
 
             //int[] array = new int[4];
 
@@ -201,6 +201,176 @@ namespace Testing2
             //{
             //    UART.Write("array[3] right\n");
             //}
+
+            #endregion
+
+            #region Array Tests Using Structs
+
+            //AStruct[] arr = new AStruct[3];
+            //int length = arr.Length;
+
+            //if (length != 3)
+            //{
+            //    UART.Write("Struct array length wrong\n");
+            //}
+            //else
+            //{
+            //    UART.Write("Struct array length right\n");
+            //}
+
+            //arr[0].a = 255;
+            //arr[0].b = 32767;
+            //arr[0].c = 2147483647;
+            //arr[0].d = 9223372036854775807;
+
+            //if (arr[0].a != 255)
+            //{
+            //    UART.Write("arr[0].a wrong\n");
+            //}
+            //else
+            //{
+            //    UART.Write("arr[0].a right\n");
+            //}
+            //if (arr[0].b != 32767)
+            //{
+            //    UART.Write("arr[0].b wrong\n");
+            //}
+            //else
+            //{
+            //    UART.Write("arr[0].b right\n");
+            //}
+            //if (arr[0].c != 2147483647)
+            //{
+            //    UART.Write("arr[0].c wrong\n");
+            //}
+            //else
+            //{
+            //    UART.Write("arr[0].c right\n");
+            //}
+            //if (arr[0].d != 9223372036854775807)
+            //{
+            //    UART.Write("arr[0].d wrong\n");
+            //}
+            //else
+            //{
+            //    UART.Write("arr[0].d right\n");
+            //}
+
+            //arr[1].a = 0;
+            //arr[1].b = 1;
+            //arr[1].c = 2;
+            //arr[1].d = 3;
+
+            //if (arr[1].a != 0)
+            //{
+            //    UART.Write("arr[1].a wrong\n");
+            //}
+            //else
+            //{
+            //    UART.Write("arr[1].a right\n");
+            //}
+            //if (arr[1].b != 1)
+            //{
+            //    UART.Write("arr[1].b wrong\n");
+            //}
+            //else
+            //{
+            //    UART.Write("arr[1].b right\n");
+            //}
+            //if (arr[1].c != 2)
+            //{
+            //    UART.Write("arr[1].c wrong\n");
+            //}
+            //else
+            //{
+            //    UART.Write("arr[1].c right\n");
+            //}
+            //if (arr[1].d != 3)
+            //{
+            //    UART.Write("arr[1].d wrong\n");
+            //}
+            //else
+            //{
+            //    UART.Write("arr[1].d right\n");
+            //}
+
+            //arr[2].a = 100;
+            //arr[2].b = 3000;
+            //arr[2].c = 5777;
+            //arr[2].d = 99876;
+
+            //if (arr[2].a != 100)
+            //{
+            //    UART.Write("arr[2].a wrong\n");
+            //}
+            //else
+            //{
+            //    UART.Write("arr[2].a right\n");
+            //}
+            //if (arr[2].b != 3000)
+            //{
+            //    UART.Write("arr[2].b wrong\n");
+            //}
+            //else
+            //{
+            //    UART.Write("arr[2].b right\n");
+            //}
+            //if (arr[2].c != 5777)
+            //{
+            //    UART.Write("arr[2].c wrong\n");
+            //}
+            //else
+            //{
+            //    UART.Write("arr[2].c right\n");
+            //}
+            //if (arr[2].d != 99876)
+            //{
+            //    UART.Write("arr[2].d wrong\n");
+            //}
+            //else
+            //{
+            //    UART.Write("arr[2].d right\n");
+            //}
+
+            #endregion
+
+            #region Objects
+
+            TestClass aClass = new TestClass();
+            int fld = aClass.aField;
+
+            if (fld != 9)
+            {
+                UART.Write("Class field wrong\n");
+            }
+            else
+            {
+                UART.Write("Class field right\n");
+            }
+
+            int arg = 10;
+            int arg1 = aClass.aMethodInt(arg);
+
+            if (arg1 != 30)
+            {
+                UART.Write("Class method int wrong\n");
+            }
+            else
+            {
+                UART.Write("Class method int right\n");
+            }
+
+            aClass.aMethodVoid();
+            int arg2 = aClass.aMethodField(arg);
+
+            if (arg2 != 90)
+            {
+                UART.Write("Class method field wrong\n");
+            }
+            else
+            {
+                UART.Write("Class method field right\n");
+            }
 
             #endregion
 
@@ -259,6 +429,29 @@ namespace Testing2
             //    ;
             //}
             BasicTimer.Sleep(10ul);
+        }
+    }
+
+    public class TestClass : Testing2.Object
+    {
+        public int aField = 9;
+
+        [Drivers.Compiler.Attributes.NoGC]
+        public int aMethodInt(int arg)
+        {
+            return arg * 3;
+        }
+
+        [Drivers.Compiler.Attributes.NoGC]
+        public void aMethodVoid()
+        {
+            UART.Write("Class method void right\n");
+        }
+
+        [Drivers.Compiler.Attributes.NoGC]
+        public int aMethodField(int arg)
+        {
+            return arg * aField;
         }
     }
 }

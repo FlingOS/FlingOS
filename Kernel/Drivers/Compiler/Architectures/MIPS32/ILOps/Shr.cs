@@ -276,8 +276,8 @@ namespace Drivers.Compiler.Architectures.MIPS32
                         conversionState.Append(new ASMOps.Pop() { Size = ASMOps.OperandSize.Word, Dest = "$t3" });
                         //Check high 4 bytes of second param     
                         conversionState.Append(new ASMOps.Branch() { Src1 = "$t1", BranchType = ASMOps.BranchOp.BranchZero, DestILPosition = currOpPosition, Extension = "Zero" });
-                        conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Word, Src = "0" });
-                        conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Word, Src = "0" });
+                        conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Word, Src = "$zero" });
+                        conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Word, Src = "$zero" });
                         conversionState.Append(new ASMOps.Branch() { BranchType = ASMOps.BranchOp.Branch, DestILPosition = currOpPosition, Extension = "End2" });
                         conversionState.Append(new ASMOps.Label() { ILPosition = currOpPosition, Extension = "Zero" });
                         conversionState.Append(new ASMOps.Branch() { Src1 = "$t2", Src2 = "32", BranchType = ASMOps.BranchOp.BranchGreaterThanEqual, DestILPosition = currOpPosition, Extension = "ShiftMoreThan32", UnsignedTest = true });
@@ -330,10 +330,10 @@ namespace Drivers.Compiler.Architectures.MIPS32
                         conversionState.Append(new ASMOps.Pop() { Size = ASMOps.OperandSize.Word, Dest = "$t3" });
                         //Check high 4 bytes of second param     
                         conversionState.Append(new ASMOps.Branch() { Src1 = "$t1", BranchType = ASMOps.BranchOp.BranchZero, DestILPosition = currOpPosition, Extension = "Zero" });
-                        conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Word, Src = "0" });
-                        conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Word, Src = "0" });
+                        conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Word, Src = "$zero" });
+                        conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Word, Src = "$zero" });
                         conversionState.Append(new ASMOps.Branch() { BranchType = ASMOps.BranchOp.Branch, DestILPosition = currOpPosition, Extension = "End2" });
-                        conversionState.Append(new ASMOps.Label() { ILPosition = currOpPosition, Extension = "Zero" });
+                        conversionState.Append(new ASMOps.Label() { ILPosition = currOpPosition, Extension = "zero" });
                         conversionState.Append(new ASMOps.Branch() { Src1 = "$t2", Src2 = "32", BranchType = ASMOps.BranchOp.BranchGreaterThanEqual, DestILPosition = currOpPosition, Extension = "ShiftMoreThan32", UnsignedTest = true });
 
                         //Shrd (< 32)
