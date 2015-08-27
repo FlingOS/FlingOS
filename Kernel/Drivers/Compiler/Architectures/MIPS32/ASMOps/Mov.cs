@@ -20,6 +20,7 @@ namespace Drivers.Compiler.Architectures.MIPS32.ASMOps
         public string Src;
         public string Dest;
         public MoveTypes MoveType = MoveTypes.RegToReg;
+        public bool SignExtend = false;
 
         public override string Convert(ASM.ASMBlock theBlock)
         {
@@ -39,16 +40,33 @@ namespace Drivers.Compiler.Architectures.MIPS32.ASMOps
             }
             else if (MoveType == MoveTypes.SrcMemoryToDestReg)
             {
-                switch (Size)
+                if (SignExtend)
                 {
-                    case OperandSize.Byte:
-                        return "lbu " + Dest + ", " + Src;
-                    case OperandSize.Halfword:
-                        return "lhu " + Dest + ", " + Src;
-                    case OperandSize.Word:
-                        return "lw " + Dest + ", " + Src;
-                    default:
-                        throw new NotSupportedException("MIPS: Unrecognised move operand sizes. (SrcIsMemory)");
+                    switch (Size)
+                    {
+                        case OperandSize.Byte:
+                            return "lb " + Dest + ", " + Src;
+                        case OperandSize.Halfword:
+                            return "lh " + Dest + ", " + Src;
+                        case OperandSize.Word:
+                            return "lw " + Dest + ", " + Src;
+                        default:
+                            throw new NotSupportedException("MIPS: Unrecognised move operand sizes. (SrcIsMemory)");
+                    }
+                }
+                else
+                {
+                    switch (Size)
+                    {
+                        case OperandSize.Byte:
+                            return "lbu " + Dest + ", " + Src;
+                        case OperandSize.Halfword:
+                            return "lhu " + Dest + ", " + Src;
+                        case OperandSize.Word:
+                            return "lw " + Dest + ", " + Src;
+                        default:
+                            throw new NotSupportedException("MIPS: Unrecognised move operand sizes. (SrcIsMemory)");
+                    }
                 }
             }
             else if (MoveType == MoveTypes.ImmediateToReg)
