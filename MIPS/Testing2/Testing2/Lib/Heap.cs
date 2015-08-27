@@ -83,6 +83,8 @@ namespace Testing2
         /// </summary>
         public static HeapBlock* FBlock
         {
+            [Drivers.Compiler.Attributes.NoDebug]
+            [Drivers.Compiler.Attributes.NoGC]
             get
             {
                 return fblock;
@@ -93,6 +95,8 @@ namespace Testing2
         /// Calculates the total amount of memory in the heap.
         /// </summary>
         /// <returns>The total amount of memory in the heap.</returns>
+        [Drivers.Compiler.Attributes.NoDebug]
+        [Drivers.Compiler.Attributes.NoGC]
         public static UInt32 GetTotalMem()
         {
             HeapBlock* cBlock = fblock;
@@ -108,6 +112,8 @@ namespace Testing2
         /// Calculates the total amount of used memory in the heap.
         /// </summary>
         /// <returns>The total amount of used memory in the heap.</returns>
+        [Drivers.Compiler.Attributes.NoDebug]
+        [Drivers.Compiler.Attributes.NoGC]
         public static UInt32 GetTotalUsedMem()
         {
             HeapBlock* cBlock = fblock;
@@ -123,6 +129,8 @@ namespace Testing2
         /// Calculates the total amount of free memory in the heap.
         /// </summary>
         /// <returns>The total amount of free memory in the heap.</returns>
+        [Drivers.Compiler.Attributes.NoDebug]
+        [Drivers.Compiler.Attributes.NoGC]
         public static UInt32 GetTotalFreeMem()
         {
             HeapBlock* cBlock = fblock;
@@ -139,6 +147,8 @@ namespace Testing2
         /// </summary>
         /// <param name="aBlock">The block to calculate used mem of.</param>
         /// <returns>The amount of used memory in bytes.</returns>
+        [Drivers.Compiler.Attributes.NoDebug]
+        [Drivers.Compiler.Attributes.NoGC]
         public static UInt32 GetUsedMem(HeapBlock* aBlock)
         {
             return (aBlock->used * aBlock->bsize);
@@ -148,6 +158,8 @@ namespace Testing2
         /// </summary>
         /// <param name="aBlock">The block to calculate free mem of.</param>
         /// <returns>The amount of free memory in bytes.</returns>
+        [Drivers.Compiler.Attributes.NoDebug]
+        [Drivers.Compiler.Attributes.NoGC]
         public static UInt32 GetFreeMem(HeapBlock* aBlock)
         {
             return aBlock->size - (aBlock->used * aBlock->bsize);
@@ -297,6 +309,8 @@ namespace Testing2
         /// <param name="size"></param>
         /// <param name="boundary"></param>
         /// <returns></returns>
+        [Drivers.Compiler.Attributes.NoDebug]
+        [Drivers.Compiler.Attributes.NoGC]
         public static void* AllocZeroedAPB(UInt32 size, UInt32 boundary, Testing2.String caller)
         {
             void* result = null;

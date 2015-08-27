@@ -171,7 +171,7 @@ namespace Kernel
                 {
                     BasicConsole.WriteLine("Startup error! " + ExceptionMethods.CurrentException.Message);
                 }
-                BasicConsole.WriteLine("Fling OS forced to halt!");
+                BasicConsole.WriteLine("FlingOS forced to halt!");
                 BasicConsole.SetTextColour(BasicConsole.default_colour);
             }
 

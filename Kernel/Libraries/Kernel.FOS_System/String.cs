@@ -35,7 +35,7 @@ namespace Kernel.FOS_System
     [Kernel.Compiler.PluggedClass]
     [Kernel.Compiler.StringClass]
     [Drivers.Compiler.Attributes.StringClass]
-    public class String : Object
+    public sealed class String : Object
     {
         /* If you add more fields here, remember to update the compiler and all the ASM files that depend on the string
            class structure ( i.e. do all the hard work! ;) )

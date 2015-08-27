@@ -11,7 +11,7 @@ lw $t0, 0($sp)
 /* Load current (i.e. start) pointer */
 lw $t1, 4($sp)
 
-.Loop:
+method_System_Void_RETEND_Testing2_ExceptionMethods_DECLEND_ShiftStack_NAMEEND__System_Byte__System_UInt32_.Loop:
 
 /* Load value to copy */
 lw $t2, 0($t1)
@@ -22,12 +22,12 @@ add $t3, $t3, $t0
 sw $t2, 0($t3)
 
 /* Shift to next dword */
-addi $t1, -4
+addi $t1, $t1, -4
 
 /* Is current pointer == end pointer
  *		i.e. Is ebx == esp
  */
-bne $t1, $sp, .Loop
+bne $t1, $sp, method_System_Void_RETEND_Testing2_ExceptionMethods_DECLEND_ShiftStack_NAMEEND__System_Byte__System_UInt32_.Loop
 
 j $ra
 .end method_System_Void_RETEND_Testing2_ExceptionMethods_DECLEND_ShiftStack_NAMEEND__System_Byte__System_UInt32_

@@ -83,6 +83,8 @@ namespace Testing2
         {
             Heap.InitFixedHeap();
 
+            ExceptionMethods.State = ExceptionMethods.DefaultState = (ExceptionState*)Heap.AllocZeroed((uint)sizeof(ExceptionState), "GC()");
+
             Enabled = true;
         }
 
