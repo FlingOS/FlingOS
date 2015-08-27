@@ -121,7 +121,7 @@ namespace Drivers.Compiler.Architectures.MIPS32
             conversionState.Append(new ASMOps.La() { Dest = "$t4", Label = typeIdStr });
             conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Word, Src = "$t4" });
             //Push a word for return value (i.e. new object pointer)
-            conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Word, Src = "0" });
+            conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Word, Src = "$zero" });
             //Get the GC.NewObj method ID (i.e. ASM label)
             string methodLabel = conversionState.GetNewObjMethodInfo().ID;
             //Call GC.NewObj
@@ -161,7 +161,7 @@ namespace Drivers.Compiler.Architectures.MIPS32
             // - Move all args down by one dword
             // - Move object reference into dword as first arg
             // - Call constructor
-            conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Word, Src = "0" });
+            conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Word, Src = "$zero" });
             int sizeOfArgs = 0;
             ParameterInfo[] allParams = constructorMethod.GetParameters();
             foreach (ParameterInfo aParam in allParams)
@@ -185,7 +185,7 @@ namespace Drivers.Compiler.Architectures.MIPS32
                 GlobalMethods.LoadData(conversionState, theOp, "$t1", "$t3", 4, 4);
                 //conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Word, Src = "$t3", Dest = "0($t1)" });
                 GlobalMethods.StoreData(conversionState, theOp, "$t1", "$t3", 0, 4);
-                conversionState.Append(new ASMOps.Add() { Src1 = "$t1",Src2 = "4", Dest = "$t1" });
+                conversionState.Append(new ASMOps.Add() { Src1 = "$t1", Src2 = "4", Dest = "$t1" });
                 conversionState.Append(new ASMOps.Branch() { BranchType = ASMOps.BranchOp.BranchNotZero, Src1 = "$t2", DestILPosition = currOpPosition, Extension = "ShiftArgsLoop" });
             }
             //conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Word, Src = "$t0", Dest = "0($t1)" });
