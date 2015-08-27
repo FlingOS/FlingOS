@@ -211,7 +211,7 @@ namespace Drivers.Compiler.Architectures.MIPS32
             GlobalMethods.LoadData(conversionState, theOp, "$t1", "$t1", lengthOffset, 4);
             //      3.2. Compare $t0 to 0
             //      3.3. Jump if greater than to next test condition (3.5)
-            conversionState.Append(new ASMOps.Branch() { BranchType = ASMOps.BranchOp.BranchGreaterThanEqual, Src1 = "$t0", Src2 = "0", DestILPosition = currOpPosition, Extension = "Continue3_1" });
+            conversionState.Append(new ASMOps.Branch() { BranchType = ASMOps.BranchOp.BranchGreaterThanEqual, Src1 = "$t0", Src2 = "$zero", DestILPosition = currOpPosition, Extension = "Continue3_1" });
             //      3.4. Otherwise, call Exceptions.ThrowIndexOutOfRangeException
             conversionState.Append(new ASMOps.Call() { Target = conversionState.GetThrowIndexOutOfRangeExceptionMethodInfo().ID });
             conversionState.Append(new ASMOps.Label() { ILPosition = currOpPosition, Extension = "Continue3_1" });

@@ -216,7 +216,7 @@ namespace Drivers.Compiler.Architectures.MIPS32
             conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Word, Src = "4($sp)", Dest = "$t0", MoveType = ASMOps.Mov.MoveTypes.SrcMemoryToDestReg });
             //      1.2. Compare $t0 (array ref) to 0
             //      1.3. If not zero, jump to continue execution further down
-            conversionState.Append(new ASMOps.Branch() { Src1 = "$t0", Src2 = "0", BranchType = ASMOps.BranchOp.BranchNotZero, DestILPosition = currOpPosition, Extension = "Continue1", UnsignedTest = true });
+            conversionState.Append(new ASMOps.Branch() { Src1 = "$t0", BranchType = ASMOps.BranchOp.BranchNotZero, DestILPosition = currOpPosition, Extension = "Continue1", UnsignedTest = true });
             //      1.4. Otherwise, call Exceptions.ThrowNullReferenceException
             conversionState.Append(new ASMOps.Call() { Target = "GetEIP" });
             conversionState.AddExternalLabel("GetEIP");
@@ -255,10 +255,9 @@ namespace Drivers.Compiler.Architectures.MIPS32
             //              - Move length value (offset($t1)) into $t1
             //conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Word, Src = lengthOffset.ToString() + "($t1)", Dest = "$t1", MoveType = ASMOps.Mov.MoveTypes.SrcMemoryToDestReg });
             GlobalMethods.LoadData(conversionState, theOp, "$t1", "$t1", lengthOffset, 4);
-
             //      3.2. Compare $t0 to 0
             //      3.3. Jump if greater than to next test condition (3.5)
-            conversionState.Append(new ASMOps.Branch() { Src1 = "$t0", Src2 = "0", BranchType = ASMOps.BranchOp.BranchGreaterThanEqual, DestILPosition = currOpPosition, Extension = "Continue3_1", UnsignedTest = false });
+            conversionState.Append(new ASMOps.Branch() { Src1 = "$t0", Src2 = "$zero", BranchType = ASMOps.BranchOp.BranchGreaterThanEqual, DestILPosition = currOpPosition, Extension = "Continue3_1", UnsignedTest = false });
             //      3.4. Otherwise, call Exceptions.ThrowIndexOutOfRangeException
             conversionState.Append(new ASMOps.Call() { Target = conversionState.GetThrowIndexOutOfRangeExceptionMethodInfo().ID });
             conversionState.Append(new ASMOps.Label() { ILPosition = currOpPosition, Extension = "Continue3_1" });
@@ -295,7 +294,7 @@ namespace Drivers.Compiler.Architectures.MIPS32
             //conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Byte, Src = isValueTypeOffset.ToString() + "($t0)", Dest = "$t2", MoveType = ASMOps.Mov.MoveTypes.SrcMemoryToDestReg });
             GlobalMethods.LoadData(conversionState, theOp, "$t0", "$t2", isValueTypeOffset, 1);
             //      4.5. If IsValueType, continue to 4.6., else goto 4.8.
-            conversionState.Append(new ASMOps.Branch() { Src1 = "$t2", Src2 = "0", BranchType = ASMOps.BranchOp.BranchZero, DestILPosition = currOpPosition, Extension = "Continue4_1", UnsignedTest = true });
+            conversionState.Append(new ASMOps.Branch() { Src1 = "$t2", BranchType = ASMOps.BranchOp.BranchZero, DestILPosition = currOpPosition, Extension = "Continue4_1", UnsignedTest = true });
             //      4.6. Move Size (from element type ref) into $t0
             int sizeOffset = conversionState.GetTypeFieldOffset("Size");
             //conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Word, Src = sizeOffset.ToString() + "($t0)", Dest = "$t0", MoveType = ASMOps.Mov.MoveTypes.SrcMemoryToDestReg });
@@ -309,8 +308,9 @@ namespace Drivers.Compiler.Architectures.MIPS32
             GlobalMethods.LoadData(conversionState, theOp, "$t0", "$t0", stackSizeOffset, 4);
             //      4.9. Mulitply $t0 by $t1 (index by element size)
             conversionState.Append(new ASMOps.Label() { ILPosition = currOpPosition, Extension = "Continue4_2" });
-            conversionState.Append(new ASMOps.Mul() { Src1 = "$t0", Src2 = "$t1", Signed = true });
+            conversionState.Append(new ASMOps.Mul() { Src1 = "$t1", Src2 = "$t0", Signed = true });
             //      4.10. Pop array ref into $t1
+            conversionState.Append(new ASMOps.Mflo() { Dest = "$t0" });
             conversionState.Append(new ASMOps.Pop() { Size = ASMOps.OperandSize.Word, Dest = "$t1" });
             //      4.11. Add enough to go past Kernel.FOS_System.Array fields
             int allFieldsOffset = 0;

@@ -96,6 +96,59 @@ namespace Testing2
 
             //END - Test:Structs
 
+            //BEGIN - Test:Arrays
+
+            int[] array = new int[4] {5, 10, 15, 20};
+
+            int len = array.Length;
+
+            if (len != 4)
+            {
+                UART.Write("Array length wrong\n");
+            }
+            else
+            {
+                UART.Write("Array length right\n");
+            }
+
+            if (array[0] != 5)
+            {
+                UART.Write("array[0] wrong\n");
+            }
+            else
+            {
+                UART.Write("array[0] right\n");
+            }
+
+            if (array[1] != 10)
+            {
+                UART.Write("array[1] wrong\n");
+            }
+            else
+            {
+                UART.Write("array[1] right\n");
+            }
+
+            if (array[2] != 15)
+            {
+                UART.Write("array[2] wrong\n");
+            }
+            else
+            {
+                UART.Write("array[2] right\n");
+            }
+
+            if (array[3] != 20)
+            {
+                UART.Write("array[3] wrong\n");
+            }
+            else
+            {
+                UART.Write("array[3] right\n");
+            }
+            
+            //END - Test:Arrays
+
             UART.Write("Okay");
 
             bool OK = true;
