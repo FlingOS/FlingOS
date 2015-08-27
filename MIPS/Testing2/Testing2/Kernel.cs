@@ -211,28 +211,28 @@ namespace Testing2
             int testNum = 5;
 
             Testing2.String ATestString = "Hello, world!";
-            UART.Write(ATestString);
-            UART.Write("\n");
-
+            BasicConsole.WriteLine(ATestString);
+            
             if (ATestString != "Hello, world!")
             {
-                UART.Write("String equality does not work!\n");
+                BasicConsole.WriteLine("String equality does not work!");
             }
             else
             {
-                UART.Write("String equality works.\n");
+                BasicConsole.WriteLine("String equality works.");
             }
 
             ATestString += " But wait! There's more...";
-            BasicConsole.WriteLine("Concatenated.");
-            UART.Write(ATestString);
+            BasicConsole.WriteLine(ATestString);
 
-            //ATestString += " We can even append numbers: " + (Testing2.String)testNum;
-            //UART.Write(ATestString);
+            ATestString += " We can even append numbers: " + (Testing2.String)testNum;
+            BasicConsole.WriteLine(ATestString);
+
+            BasicConsole.DumpMemory((byte*)Utilities.ObjectUtilities.GetHandle(ATestString) - sizeof(GCHeader), (int)(ATestString.length + Testing2.String.FieldsBytesSize + sizeof(GCHeader)));
 
             #endregion
 
-            UART.Write("Okay");
+            BasicConsole.WriteLine("Okay");
 
             bool OK = true;
             while (OK)

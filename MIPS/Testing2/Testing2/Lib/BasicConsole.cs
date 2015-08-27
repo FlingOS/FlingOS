@@ -318,21 +318,21 @@ namespace Testing2
             }
         }
 
-        //public static void DumpMemory(void* ptr, int size)
-        //{
-        //    if (!Initialised) return;
-        //    uint* uPtr = (uint*)ptr;
-        //    if ((size % 4) != 0)
-        //    {
-        //        size += 3;
-        //    }
-        //    size /= 4;
-        //    for (int i = 0; i < size; i++)
-        //    {
-        //        Write(*(uPtr + i));
-        //        Write(" ");
-        //    }
-        //    WriteLine();
-        //}
+        public static void DumpMemory(void* ptr, int size)
+        {
+            if (!Initialised) return;
+            uint* uPtr = (uint*)ptr;
+            if ((size % 4) != 0)
+            {
+                size += 3;
+            }
+            size /= 4;
+            for (int i = 0; i < size; i++)
+            {
+                Write(*(uPtr + i));
+                Write(" ");
+            }
+            WriteLine();
+        }
     }
 }
