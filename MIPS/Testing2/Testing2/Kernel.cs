@@ -42,6 +42,8 @@ namespace Testing2
              *   - NewObj/Initobj/Ldobj/Stobj/Isinst = Objects & types
              */
 
+            BasicConsole.Init();
+
             #region Struct Tests
 
             //int size = sizeof(AStruct);
@@ -144,63 +146,91 @@ namespace Testing2
 
             #endregion
 
-            //BEGIN - Test:Arrays
+            #region Array Tests
 
-            int[] array = new int[4];
+            //int[] array = new int[4];
 
-            int len = array.Length;
+            //int len = array.Length;
 
-            if (len != 4)
+            //if (len != 4)
+            //{
+            //    UART.Write("Array length wrong\n");
+            //}
+            //else
+            //{
+            //    UART.Write("Array length right\n");
+            //}
+
+            //array[0] = 5;
+            //array[1] = 10;
+            //array[2] = 15;
+            //array[3] = 20;
+
+            //if (array[0] != 5)
+            //{
+            //    UART.Write("array[0] wrong\n");
+            //}
+            //else
+            //{
+            //    UART.Write("array[0] right\n");
+            //}
+
+            //if (array[1] != 10)
+            //{
+            //    UART.Write("array[1] wrong\n");
+            //}
+            //else
+            //{
+            //    UART.Write("array[1] right\n");
+            //}
+
+            //if (array[2] != 15)
+            //{
+            //    UART.Write("array[2] wrong\n");
+            //}
+            //else
+            //{
+            //    UART.Write("array[2] right\n");
+            //}
+
+            //if (array[3] != 20)
+            //{
+            //    UART.Write("array[3] wrong\n");
+            //}
+            //else
+            //{
+            //    UART.Write("array[3] right\n");
+            //}
+
+            #endregion
+
+            #region String Tests
+
+            BasicConsole.WriteLine("Test BasicConsole write line!");
+
+            int testNum = 5;
+
+            Testing2.String ATestString = "Hello, world!";
+            UART.Write(ATestString);
+            UART.Write("\n");
+
+            if (ATestString != "Hello, world!")
             {
-                UART.Write("Array length wrong\n");
+                UART.Write("String equality does not work!\n");
             }
             else
             {
-                UART.Write("Array length right\n");
+                UART.Write("String equality works.\n");
             }
 
-            array[0] = 5;
-            array[1] = 10;
-            array[2] = 15;
-            array[3] = 20;
+            ATestString += " But wait! There's more...";
+            BasicConsole.WriteLine("Concatenated.");
+            UART.Write(ATestString);
 
-            if (array[0] != 5)
-            {
-                UART.Write("array[0] wrong\n");
-            }
-            else
-            {
-                UART.Write("array[0] right\n");
-            }
+            //ATestString += " We can even append numbers: " + (Testing2.String)testNum;
+            //UART.Write(ATestString);
 
-            if (array[1] != 10)
-            {
-                UART.Write("array[1] wrong\n");
-            }
-            else
-            {
-                UART.Write("array[1] right\n");
-            }
-
-            if (array[2] != 15)
-            {
-                UART.Write("array[2] wrong\n");
-            }
-            else
-            {
-                UART.Write("array[2] right\n");
-            }
-
-            if (array[3] != 20)
-            {
-                UART.Write("array[3] wrong\n");
-            }
-            else
-            {
-                UART.Write("array[3] right\n");
-            }
-            
-            //END - Test:Arrays
+            #endregion
 
             UART.Write("Okay");
 

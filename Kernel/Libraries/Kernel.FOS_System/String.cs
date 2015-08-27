@@ -54,19 +54,6 @@ namespace Kernel.FOS_System
         /*   ----------- DO NOT CREATE A CONSTRUCTOR FOR THIS CLASS - IT WILL NEVER BE CALLED IF YOU DO ----------- */
 
         /// <summary>
-        /// Gets the length of the specified string.
-        /// </summary>
-        /// <param name="aString">The string to get the length of.</param>
-        /// <returns>The length of the specified string.</returns>
-        [Compiler.PluggedMethod(ASMFilePath=@"ASM\String\GetLength")]
-        [Drivers.Compiler.Attributes.PluggedMethod(ASMFilePath = @"ASM\String\GetLength")]
-        public static int GetLength(string aString)
-        {
-            //Stub for use by testing frameworks.
-            return aString.Length;
-        }
-
-        /// <summary>
         /// Creates a new, blank FOS_System.String of specified length.
         /// IMPORTANT NOTE: You MUST assign the return value of this to a variable / local / arg / 
         /// field etc. You may not use IL or C# that results in an IL Pop op of the return value
