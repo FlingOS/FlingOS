@@ -334,21 +334,13 @@ namespace Drivers.Compiler.Architectures.MIPS32
                     case 1:
                         conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Word, Src = "0", Dest = "$t1", MoveType = ASMOps.Mov.MoveTypes.ImmediateToReg });
                         //conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Byte, Src = "0($t0)", Dest = "$t1", MoveType = ASMOps.Mov.MoveTypes.SrcMemoryToDestReg });
-                        GlobalMethods.LoadData(conversionState, theOp, "$t0", "$t1", 0, 1);
-                        if (signExtend)
-                        {
-                            throw new NotSupportedException("Sign extend byte to 4 bytes in LdElem not supported!");
-                        }
+                        GlobalMethods.LoadData(conversionState, theOp, "$t0", "$t1", 0, 1, signExtend);
                         break;
                     case 2:
                         conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Word, Src = "0", Dest = "$t1", MoveType = ASMOps.Mov.MoveTypes.ImmediateToReg });
                         //conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Halfword, Src = "0($t0)", Dest = "$t1", MoveType = ASMOps.Mov.MoveTypes.SrcMemoryToDestReg });
-                        GlobalMethods.LoadData(conversionState, theOp, "$t0", "$t1", 0, 2);
-                        if (signExtend)
-                        {
-                            //Lookup! -R. 
-                            //conversionState.Append(new ASMOps.Cwde());
-                        }
+                        GlobalMethods.LoadData(conversionState, theOp, "$t0", "$t1", 0, 2, signExtend);
+
                         break;
                     case 4:
                         //conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Word, Src = "0($t0)", Dest = "$t1", MoveType = ASMOps.Mov.MoveTypes.SrcMemoryToDestReg });
