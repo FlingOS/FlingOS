@@ -44,109 +44,109 @@ namespace Testing2
 
             #region Struct Tests
 
-            int size = sizeof(AStruct);
+            //int size = sizeof(AStruct);
 
-            if (size != 15)
-            {
-                UART.Write("Bad size\n");
-            }
-            else
-            {
-                UART.Write("Good size\n");
-            }
+            //if (size != 15)
+            //{
+            //    UART.Write("Bad size\n");
+            //}
+            //else
+            //{
+            //    UART.Write("Good size\n");
+            //}
 
-            AStruct Inst = new AStruct();
-            Inst.a = 1;
-            Inst.b = 2;
-            Inst.c = 4;
-            Inst.d = 8;
+            //AStruct Inst = new AStruct();
+            //Inst.a = 1;
+            //Inst.b = 2;
+            //Inst.c = 4;
+            //Inst.d = 8;
 
-            if (Inst.a != 1)
-            {
-                UART.Write("Inst.a wrong\n");
-            }
-            else
-            {
-                UART.Write("Inst.a right\n");
-            }
-            if (Inst.b != 2)
-            {
-                UART.Write("Inst.b wrong\n");
-            }
-            else
-            {
-                UART.Write("Inst.b right\n");
-            }
-            if (Inst.c != 4)
-            {
-                UART.Write("Inst.c wrong\n");
-            }
-            else
-            {
-                UART.Write("Inst.c right\n");
-            }
-            if (Inst.d != 8)
-            {
-                UART.Write("Inst.d wrong\n");
-            }
-            else
-            {
-                UART.Write("Inst.d right\n");
-            }
+            //if (Inst.a != 1)
+            //{
+            //    UART.Write("Inst.a wrong\n");
+            //}
+            //else
+            //{
+            //    UART.Write("Inst.a right\n");
+            //}
+            //if (Inst.b != 2)
+            //{
+            //    UART.Write("Inst.b wrong\n");
+            //}
+            //else
+            //{
+            //    UART.Write("Inst.b right\n");
+            //}
+            //if (Inst.c != 4)
+            //{
+            //    UART.Write("Inst.c wrong\n");
+            //}
+            //else
+            //{
+            //    UART.Write("Inst.c right\n");
+            //}
+            //if (Inst.d != 8)
+            //{
+            //    UART.Write("Inst.d wrong\n");
+            //}
+            //else
+            //{
+            //    UART.Write("Inst.d right\n");
+            //}
 
-            AStruct* HeapInst = (AStruct*)Heap.AllocZeroed((uint)sizeof(AStruct), "Kernel:Main");
-            if (HeapInst == null)
-            {
-                UART.Write("HeapInst null\n");
-            }
-            else
-            {
-                UART.Write("HeapInst not null\n");
-            }
+            //AStruct* HeapInst = (AStruct*)Heap.AllocZeroed((uint)sizeof(AStruct), "Kernel:Main");
+            //if (HeapInst == null)
+            //{
+            //    UART.Write("HeapInst null\n");
+            //}
+            //else
+            //{
+            //    UART.Write("HeapInst not null\n");
+            //}
 
-            HeapInst->a = 1;
-            HeapInst->b = 2;
-            HeapInst->c = 4;
-            HeapInst->d = 8;
+            //HeapInst->a = 1;
+            //HeapInst->b = 2;
+            //HeapInst->c = 4;
+            //HeapInst->d = 8;
 
-            if (HeapInst->a != 1)
-            {
-                UART.Write("HeapInst->a wrong\n");
-            }
-            else
-            {
-                UART.Write("HeapInst->a right\n");
-            }
-            if (HeapInst->b != 2)
-            {
-                UART.Write("HeapInst->b wrong\n");
-            }
-            else
-            {
-                UART.Write("HeapInst->b right\n");
-            }
-            if (HeapInst->c != 4)
-            {
-                UART.Write("HeapInst->c wrong\n");
-            }
-            else
-            {
-                UART.Write("HeapInst->c right\n");
-            }
-            if (HeapInst->d != 8)
-            {
-                UART.Write("HeapInst->d wrong\n");
-            }
-            else
-            {
-                UART.Write("HeapInst->d right\n");
-            }
+            //if (HeapInst->a != 1)
+            //{
+            //    UART.Write("HeapInst->a wrong\n");
+            //}
+            //else
+            //{
+            //    UART.Write("HeapInst->a right\n");
+            //}
+            //if (HeapInst->b != 2)
+            //{
+            //    UART.Write("HeapInst->b wrong\n");
+            //}
+            //else
+            //{
+            //    UART.Write("HeapInst->b right\n");
+            //}
+            //if (HeapInst->c != 4)
+            //{
+            //    UART.Write("HeapInst->c wrong\n");
+            //}
+            //else
+            //{
+            //    UART.Write("HeapInst->c right\n");
+            //}
+            //if (HeapInst->d != 8)
+            //{
+            //    UART.Write("HeapInst->d wrong\n");
+            //}
+            //else
+            //{
+            //    UART.Write("HeapInst->d right\n");
+            //}
 
             #endregion
 
             //BEGIN - Test:Arrays
 
-            int[] array = new int[4] {5, 10, 15, 20};
+            int[] array = new int[4];
 
             int len = array.Length;
 
@@ -158,6 +158,11 @@ namespace Testing2
             {
                 UART.Write("Array length right\n");
             }
+
+            array[0] = 5;
+            array[1] = 10;
+            array[2] = 15;
+            array[3] = 20;
 
             if (array[0] != 5)
             {
