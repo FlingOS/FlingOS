@@ -224,14 +224,7 @@ namespace Testing2
                 return;
             }
 
-            int strLength = str.length;
-            int i = 0;
-                
-            //This block outputs the string in the current foreground / background colours.
-            while (i < strLength)
-            {
-                UART.Write(str[i++]);
-            }
+            UART.Write(str);
         }
         /// <summary>
         /// Writes the specified string to the output at the current offset then moves the offset to the end of the line.
@@ -252,6 +245,7 @@ namespace Testing2
 
             //This outputs the string
             Write(str);
+            Write("\n");
         }
 
         /// <summary>
@@ -262,9 +256,7 @@ namespace Testing2
         public static void WriteLine()
         {
             if (!Initialised) return;
-            //We must write at least 1 character, so we just write a space since that
-            //  is any empty character.
-            WriteLine(" ");
+            Write("\n");
         }
 
         /// <summary>
@@ -278,12 +270,7 @@ namespace Testing2
             //  test that strings and the video memory output work.
 
             Testing2.String str = "1234567890!\"£$%^&*()qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM[];'#,./{}:@~<>?\\|`¬¦";
-            int strLength = str.length;
-            int i = 0;
-            while (i < strLength)
-            {
-                UART.Write(str[i++]);
-            }
+            UART.Write(str);
         }
 
         /// <summary>

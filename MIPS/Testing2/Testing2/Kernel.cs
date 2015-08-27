@@ -42,6 +42,8 @@ namespace Testing2
              *   - NewObj/Initobj/Ldobj/Stobj/Isinst = Objects & types
              */
 
+            BasicConsole.Init();
+
             #region Struct Tests
 
             //int size = sizeof(AStruct);
@@ -371,7 +373,35 @@ namespace Testing2
             }
 
             #endregion
-            
+
+            #region String Tests
+
+            BasicConsole.WriteLine("Test BasicConsole write line!");
+
+            int testNum = 5;
+
+            Testing2.String ATestString = "Hello, world!";
+            UART.Write(ATestString);
+            UART.Write("\n");
+
+            if (ATestString != "Hello, world!")
+            {
+                UART.Write("String equality does not work!\n");
+            }
+            else
+            {
+                UART.Write("String equality works.\n");
+            }
+
+            ATestString += " But wait! There's more...";
+            BasicConsole.WriteLine("Concatenated.");
+            UART.Write(ATestString);
+
+            //ATestString += " We can even append numbers: " + (Testing2.String)testNum;
+            //UART.Write(ATestString);
+
+            #endregion
+
             UART.Write("Okay");
 
             bool OK = true;

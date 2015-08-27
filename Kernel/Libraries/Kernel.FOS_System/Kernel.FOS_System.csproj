@@ -151,9 +151,6 @@
     <Content Include="ASM\Processes\Synchronisation\SpinLock.x86_32.asm">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="ASM\String\GetLength.x86_32.asm">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\Kernel\Kernel.licenseheader">
