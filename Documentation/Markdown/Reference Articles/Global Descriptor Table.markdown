@@ -93,7 +93,7 @@ You can't "just use paging". Everything runs through the GDT/segmentation model,
 ## How do I create a GDT?
 You allocate some memory as an array of GDT Entry structures (usually statically allocated in assembly code) and then fill in the entries. For statically allocated GDTs it is possible to define the values in the code without needing a separate method to fill them in.
 
-## How does the CPU know where my GDT is?
+## How does the CPU know where the GDT is?
 The kernel provides the processor with the address of (i.e. a pointer to) a GDT Pointer structure. The GDT Pointer structure is a special structure which must also be allocated in memory. It consists of a two-byte length specifying the length (in bytes) of the GDT Table followed by 4-bytes for the address of the GDT Table itself.
 
 ## What's the Local Descriptor Table?
