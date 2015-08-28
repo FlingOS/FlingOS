@@ -11,12 +11,75 @@ namespace Testing2
                             // Total : 15 bytes
     }
 
-    public static class Kernel
+    public static unsafe class Kernel
     {
         [Drivers.Compiler.Attributes.PluggedMethod(ASMFilePath = "ASM\\Kernel")]
         [Drivers.Compiler.Attributes.SequencePriority(Priority = long.MinValue)]
         public static void Boot()
         {
+        }
+
+        [Drivers.Compiler.Attributes.PluggedMethod(ASMFilePath = null)]
+        public static void EnableInterrupts()
+        {
+        }
+
+        [Drivers.Compiler.Attributes.PluggedMethod(ASMFilePath = null)]
+        public static byte* GetExceptionHandlerStart()
+        {
+            return null;
+        }
+        [Drivers.Compiler.Attributes.PluggedMethod(ASMFilePath = null)]
+        public static byte* GetExceptionHandlerEnd()
+        {
+            return null;
+        }
+        [Drivers.Compiler.Attributes.PluggedMethod(ASMFilePath = null)]
+        public static byte* GetIRQHandlerStart()
+        {
+            return null;
+        }
+        [Drivers.Compiler.Attributes.PluggedMethod(ASMFilePath = null)]
+        public static byte* GetIRQHandlerEnd()
+        {
+            return null;
+        }
+
+        [Drivers.Compiler.Attributes.PluggedMethod(ASMFilePath = null)]
+        public static void MainInterruptHandler()
+        {
+        }
+        [Drivers.Compiler.Attributes.PluggedMethod(ASMFilePath = null)]
+        public static void DoSyscall()
+        {
+        }
+
+        public static void MemSet(byte val, byte* to, uint length)
+        {
+            BasicConsole.WriteLine(((Testing2.String)"Setting ") + (uint)to + " to " + val + ", size: " + length);
+            BasicConsole.DumpMemory(to, (int)length);
+
+            uint tempLength = length;
+            while (tempLength-- > 0)
+            {
+                *to++ = val;
+            }
+
+            BasicConsole.DumpMemory(to - length, (int)length);
+        }
+        public static void MemCpy(byte* from, byte* to, uint length)
+        {
+            BasicConsole.WriteLine(((Testing2.String)"Copying from ") + (uint)from + " to " + (uint)to + ", size: " + length);
+            BasicConsole.DumpMemory(from, (int)length);
+            BasicConsole.DumpMemory(to, (int)length);
+
+            uint tempLength = length;
+            while (tempLength-- > 0)
+            {
+                *to++ = *from++;
+            }
+
+            BasicConsole.DumpMemory(to - length, (int)length);
         }
 
         //static void method(int argument)
@@ -33,22 +96,52 @@ namespace Testing2
 
         [Drivers.Compiler.Attributes.MainMethod]
         [Drivers.Compiler.Attributes.NoGC]
-        public static unsafe void Main()
+        public static void Main()
         {
             ExceptionMethods.AddExceptionHandlerInfo(null, null);
-
-            /* 
-             * New stuff to test:
-             *   - Sizeof = Structs & sizeof(struct type)
-             *   - NewArr/Ldelem/Stelem/Ldlen = Arrays
-             *   - NewObj/Initobj/Ldobj/Stobj/Isinst = Objects & types
-             */
 
             BasicConsole.Init();
             BasicConsole.WriteLine("Kernel executing...");
 
             try
             {
+                MemSet(0x0, (byte*)0x80000000, 0x1000);
+
+                BasicConsole.WriteLine("Copying exception handler...");
+                byte* ExHndlrStart = GetExceptionHandlerStart();
+                byte* ExHndlrEnd = GetExceptionHandlerEnd();
+                MemCpy(ExHndlrStart, (byte*)0x80000180, (uint)ExHndlrEnd - (uint)ExHndlrStart);
+
+                BasicConsole.WriteLine("Copying IRQ handler...");
+                byte* IRQHndlrStart = GetIRQHandlerStart();
+                byte* IRQHndlrEnd = GetIRQHandlerEnd();
+                MemCpy(IRQHndlrStart, (byte*)0x80000200, (uint)IRQHndlrEnd - (uint)IRQHndlrStart);
+
+                BasicConsole.WriteLine("Enabling interrupts...");
+
+                for (int i = 0; i < 100000; i++)
+                {
+                    LED.Blue();
+                    DelayShort();
+                    LED.Red();
+                    DelayShort();
+                }
+                LED.Blue();
+                for (int i = 0; i < 100; i++)
+                {
+                    DelayLong();
+                }
+
+                //ExceptionMethods.ArbitaryReturn((uint)ExceptionMethods.BasePointer, (uint)ExceptionMethods.StackPointer, (byte*)0x80000200);
+
+                EnableInterrupts();
+
+                BasicConsole.WriteLine("Testing interrupts...");
+
+                DoSyscall();
+
+                BasicConsole.WriteLine("Continuing execution.");
+
                 #region Struct Tests
 
                 //int size = sizeof(AStruct);
@@ -341,70 +434,70 @@ namespace Testing2
 
                 #region String Tests
 
-                BasicConsole.WriteLine("Test BasicConsole write line!");
+                //BasicConsole.WriteLine("Test BasicConsole write line!");
 
-                int testNum = 5;
+                //int testNum = 5;
 
-                Testing2.String ATestString = "Hello, world!";
-                BasicConsole.WriteLine(ATestString);
+                //Testing2.String ATestString = "Hello, world!";
+                //BasicConsole.WriteLine(ATestString);
 
-                if (ATestString != "Hello, world!")
-                {
-                    BasicConsole.WriteLine("String equality does not work!");
-                }
-                else
-                {
-                    BasicConsole.WriteLine("String equality works.");
-                }
+                //if (ATestString != "Hello, world!")
+                //{
+                //    BasicConsole.WriteLine("String equality does not work!");
+                //}
+                //else
+                //{
+                //    BasicConsole.WriteLine("String equality works.");
+                //}
 
-                ATestString += " But wait! There's more...";
-                BasicConsole.WriteLine(ATestString);
+                //ATestString += " But wait! There's more...";
+                //BasicConsole.WriteLine(ATestString);
 
-                ATestString += " We can even append numbers: " + (Testing2.String)testNum;
-                BasicConsole.WriteLine(ATestString);
+                //ATestString += " We can even append numbers: " + (Testing2.String)testNum;
+                //BasicConsole.WriteLine(ATestString);
 
-                BasicConsole.DumpMemory((byte*)Utilities.ObjectUtilities.GetHandle(ATestString) - sizeof(GCHeader), (int)(ATestString.length + Testing2.String.FieldsBytesSize + sizeof(GCHeader)));
+                //BasicConsole.DumpMemory((byte*)Utilities.ObjectUtilities.GetHandle(ATestString) - sizeof(GCHeader), (int)(ATestString.length + Testing2.String.FieldsBytesSize + sizeof(GCHeader)));
 
                 #endregion
 
                 #region Objects
 
-                TestClass aClass = new TestClass();
-                BasicConsole.WriteLine("Object created!");
-                int fld = aClass.aField;
+                //TestClass aClass = new TestClass();
+                //BasicConsole.WriteLine("Object created!");
+                //int fld = aClass.aField;
 
-                if (fld != 9)
-                {
-                    UART.Write("Class field wrong\n");
-                }
-                else
-                {
-                    UART.Write("Class field right\n");
-                }
+                //if (fld != 9)
+                //{
+                //    UART.Write("Class field wrong\n");
+                //}
+                //else
+                //{
+                //    UART.Write("Class field right\n");
+                //}
 
-                int arg = 10;
-                int arg1 = aClass.aMethodInt(arg);
+                //int arg = 10;
+                //int arg1 = aClass.aMethodInt(arg);
 
-                if (arg1 != 30)
-                {
-                    UART.Write("Class method int wrong\n");
-                }
-                else
-                {
-                    UART.Write("Class method int right\n");
-                }
+                //if (arg1 != 30)
+                //{
+                //    UART.Write("Class method int wrong\n");
+                //}
+                //else
+                //{
+                //    UART.Write("Class method int right\n");
+                //}
 
-                aClass.aMethodVoid();
-                int arg2 = aClass.aMethodField(arg);
+                //aClass.aMethodVoid();
+                //int arg2 = aClass.aMethodField(arg);
 
-                if (arg2 != 90)
-                {
-                    UART.Write("Class method field wrong\n");
-                }
-                else
-                {
-                    UART.Write("Class method field right\n");
-                }
+                //if (arg2 != 90)
+                //{
+                //    UART.Write("Class method field wrong\n");
+                //}
+                //else
+                //{
+                //    UART.Write("Class method field right\n");
+                //}
 
                 #endregion
 
@@ -439,11 +532,11 @@ namespace Testing2
         }
         private static void DelayShort()
         {
-            //for (int j = 0; j < 100; j++)
-            //{
-            //    ;
-            //}
-            BasicTimer.Sleep(10ul);
+            for (int j = 0; j < 100; j++)
+            {
+                ;
+            }
+            //BasicTimer.Sleep(10ul);
         }
     }
 

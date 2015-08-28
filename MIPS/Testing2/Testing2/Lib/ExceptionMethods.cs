@@ -445,11 +445,11 @@ namespace Testing2
         }
 
         [Drivers.Compiler.Attributes.PluggedMethod(ASMFilePath = @"ASM\Exceptions\ShiftStack")]
-        private static void ShiftStack(byte* From_High, uint Dist)
+        internal static void ShiftStack(byte* From_High, uint Dist)
         {
         }
         [Drivers.Compiler.Attributes.PluggedMethod(ASMFilePath = @"ASM\Exceptions\ArbitaryReturn")]
-        private static void ArbitaryReturn(uint FP, uint SP, byte* RetAddr)
+        internal static void ArbitaryReturn(uint FP, uint SP, byte* RetAddr)
         {
         }
 
