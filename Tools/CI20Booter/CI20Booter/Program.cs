@@ -9,6 +9,17 @@ using ELFSharp.ELF;
 
 namespace CI20Booter
 {
+    /// <summary>
+    /// Adapted from Lardcave.net's usbloader.py (my adaptation for Windows fork: https://github.com/EdNutting/ci20-os)
+    /// </summary> 
+    /// <remarks>
+    /// Requires LibUSBDotNet (and its dependency libusb-win32) to be installed. Also requires ELFSharp.
+    /// CI20 device driver must be installed via libusb-win32's ".Inf Install Wizard".
+    /// 
+    /// http://sourceforge.net/projects/libusbdotnet/
+    /// http://sourceforge.net/projects/libusb-win32/
+    /// http://elfsharp.hellsgate.pl/index.shtml
+    /// </remarks>
     class Program
     {
         const int VendorID = 0xA108;
@@ -54,27 +65,18 @@ namespace CI20Booter
 
     public class USBLoader
     {
-        const byte VR_GET_CPU_INFO = 0;
-        const byte VR_SET_DATA_ADDRESS = 1;
-        const byte VR_SET_DATA_LENGTH = 2;
-        const byte VR_FLUSH_CACHES = 3;
-        const byte VR_PROGRAM_START1 = 4;
-        const byte VR_PROGRAM_START2 = 5;
-
-        const byte ENDPOINT_HOST_TO_DEVICE = 0x1;
-	    const byte ENDPOINT_DEVICE_TO_HOST = 0x81;
-
+        const byte VR_GET_CPU_INFO      = 0;
+        const byte VR_SET_DATA_ADDRESS  = 1;
+        const byte VR_SET_DATA_LENGTH   = 2;
+        const byte VR_FLUSH_CACHES      = 3;
+        const byte VR_PROGRAM_START1    = 4;
+        const byte VR_PROGRAM_START2    = 5;
+        
         const byte BM_REQUEST_DEVICE_TO_HOST = 1 << 7;
-        const byte BM_REQUEST_TYPE_CLASS = 1 << 5;
-        const byte BM_REQUEST_TYPE_VENDOR = 2 << 5;
-        const byte BM_REQUEST_RECIPIENT_INTERFACE = 1 << 0;
-        const byte BM_REQUEST_RECIPIENT_ENDPOINT = 2 << 0;
-        const byte BM_REQUEST_RECIPIENT_OTHER = 3 << 0;
-
-        const uint JZ4780_TCSM_START = 0xf4000800;
-        const uint JZ4780_TCSM_END = 0xf4004000;
-
-        const int TCSM_BANK_SIZE = 0x800;
+        
+        const uint JZ4780_TCSM_START     = 0xf4000800;
+        const uint JZ4780_TCSM_END       = 0xf4004000;
+        const int  JZ4780_TCSM_BANK_SIZE = 0x800;
 
 	    static string[] KNOWN_CPUS = { "JZ4780V1" };
 
@@ -104,7 +106,7 @@ namespace CI20Booter
 
                 if (IsAddressInTCSM(segment.Address))
                 {
-                    data = PadData(data, TCSM_BANK_SIZE);
+                    data = PadData(data, JZ4780_TCSM_BANK_SIZE);
                 }
 
                 Console.WriteLine(string.Format("Writing from {0:X8} to {1:X8}", segment.Address, segment.Address + data.Length));
@@ -188,7 +190,11 @@ namespace CI20Booter
             using (var reader = dev.OpenEndpointReader(ReadEndpointID.Ep01))
             {
                 int transferred;
-                reader.Read(data, 10000, out transferred);
+                ErrorCode ec = reader.Read(data, 10000, out transferred);
+                if (ec != ErrorCode.None)
+                {
+                    throw new Exception("Data not transferred! (Read) Error: " + ec.ToString() + " : " + LibUsbDotNet.UsbDevice.LastErrorString);
+                }
                 if (transferred != data.Length)
                 {
                     throw new Exception("Data not fully transferred! (Read)");
