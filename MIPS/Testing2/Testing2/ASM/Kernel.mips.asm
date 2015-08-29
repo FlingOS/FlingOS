@@ -4,14 +4,43 @@
 .text
 .set noreorder
 
-.org 0x180
+.globl Kernel_Start
+.ent Kernel_Start
+Kernel_Start:
+	nop
+	
+	/* Enable caching in kseg0 */
+	li      $t0, 3 /* CACHE_MODE_CACHABLE_NONCOHERENT */
+	mtc0    $t0, $16 /* CP0_CONFIG */
+	nop
+
+	/* Set up a stack */
+	li $sp, 0x8f800000 
+	
+	jal %KERNEL_CALL_STATIC_CONSTRUCTORS_METHOD%
+	nop
+	
+	jal %KERNEL_MAIN_METHOD%
+	nop	
+	
+	j $ra
+	.end Kernel_Start
+
+.globl GetEIP
+.ent GetEIP
+GetEIP:
+	addi $sp, $sp, -4
+	sw $ra, 0($sp)
+	j $ra
+	.end GetEIP
+
+	
+.set noat
 ExceptionHandler:
 	eret
 	ExceptionHandler_End:
 	nop
 	
-.org 0x200
-.set noat
 IRQHandler:
 	sw $at, -4($sp)
 	sw $v0, -8($sp)
@@ -81,33 +110,6 @@ IRQHandler:
 	nop		
 .set at
 
-
-.org 0x1000
-.globl Kernel_Start
-.ent Kernel_Start
-Kernel_Start:
-	nop
-
-	/* Set up a stack */
-	li $sp, 0x8f800000 
-	
-	jal %KERNEL_CALL_STATIC_CONSTRUCTORS_METHOD%
-	nop
-	
-	jal %KERNEL_MAIN_METHOD%
-	nop	
-	
-	j $ra
-	.end Kernel_Start
-
-.globl GetEIP
-.ent GetEIP
-GetEIP:
-	addi $sp, $sp, -4
-	sw $ra, 0($sp)
-	j $ra
-	.end GetEIP
-
 	
 .global method_System_Void_RETEND_Testing2_Kernel_DECLEND_EnableInterrupts_NAMEEND___
 .ent method_System_Void_RETEND_Testing2_Kernel_DECLEND_EnableInterrupts_NAMEEND___
@@ -121,12 +123,45 @@ method_System_Void_RETEND_Testing2_Kernel_DECLEND_EnableInterrupts_NAMEEND___:
 	li      $t0, 0x800000 /* CP0_CAUSE_INITIALISER */
 	mtc0    $t0, $13 /* CP0_CAUSE */
 	nop
-
-	/* Enable caching in kseg0 */
-	li      $t0, 3 /* CACHE_MODE_CACHABLE_NONCOHERENT */
-	mtc0    $t0, $16 /* CP0_CONFIG */
-	nop
-		
+			
 	j $ra
 	.end method_System_Void_RETEND_Testing2_Kernel_DECLEND_EnableInterrupts_NAMEEND___
 
+
+.global method_System_Byte__RETEND_Testing2_Kernel_DECLEND_GetExceptionHandlerStart_NAMEEND___
+.ent method_System_Byte__RETEND_Testing2_Kernel_DECLEND_GetExceptionHandlerStart_NAMEEND___
+method_System_Byte__RETEND_Testing2_Kernel_DECLEND_GetExceptionHandlerStart_NAMEEND___:
+    la $t0, ExceptionHandler
+    sw $t0, 0($sp)
+    j $ra
+    nop
+    .end method_System_Byte__RETEND_Testing2_Kernel_DECLEND_GetExceptionHandlerStart_NAMEEND___
+
+.global method_System_Byte__RETEND_Testing2_Kernel_DECLEND_GetExceptionHandlerEnd_NAMEEND___
+.ent method_System_Byte__RETEND_Testing2_Kernel_DECLEND_GetExceptionHandlerEnd_NAMEEND___
+method_System_Byte__RETEND_Testing2_Kernel_DECLEND_GetExceptionHandlerEnd_NAMEEND___:
+    la $t0, ExceptionHandler_End
+    sw $t0, 0($sp)
+    j $ra
+    nop
+    .end method_System_Byte__RETEND_Testing2_Kernel_DECLEND_GetExceptionHandlerEnd_NAMEEND___
+    
+.global method_System_Byte__RETEND_Testing2_Kernel_DECLEND_GetIRQHandlerStart_NAMEEND___
+.ent method_System_Byte__RETEND_Testing2_Kernel_DECLEND_GetIRQHandlerStart_NAMEEND___
+method_System_Byte__RETEND_Testing2_Kernel_DECLEND_GetIRQHandlerStart_NAMEEND___:
+    la $t0, IRQHandler
+    sw $t0, 0($sp)
+    j $ra
+    nop
+    .end method_System_Byte__RETEND_Testing2_Kernel_DECLEND_GetIRQHandlerStart_NAMEEND___
+    
+.global method_System_Byte__RETEND_Testing2_Kernel_DECLEND_GetIRQHandlerEnd_NAMEEND___
+.ent method_System_Byte__RETEND_Testing2_Kernel_DECLEND_GetIRQHandlerEnd_NAMEEND___
+method_System_Byte__RETEND_Testing2_Kernel_DECLEND_GetIRQHandlerEnd_NAMEEND___:
+    la $t0, IRQHandler_End
+    sw $t0, 0($sp)
+    j $ra
+    nop
+    .end method_System_Byte__RETEND_Testing2_Kernel_DECLEND_GetIRQHandlerEnd_NAMEEND___
+
+.set reorder
