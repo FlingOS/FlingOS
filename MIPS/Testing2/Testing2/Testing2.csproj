@@ -102,7 +102,7 @@
   <Target Name="BeforeBuild">
   </Target>
   <Target Name="AfterBuild">
-    <BuildTask Condition="'$(Configuration)' == 'Debug'" LibraryPath="$(TargetPath)" TargetArchitecture="MIPS" OutputPath="$(TargetDir)" ToolsPath="$(FlingOSDir)Kernel\Drivers\Compiler\Tools" DebugBuild="True" ISOLink="True" BaseAddress="0x88000000" LoadOffset="0x00000000" />
-    <BuildTask Condition="'$(Configuration)' == 'Release'" LibraryPath="$(TargetPath)" TargetArchitecture="MIPS" OutputPath="$(TargetDir)" ToolsPath="$(FlingOSDir)Kernel\Drivers\Compiler\Tools" DebugBuild="False" ISOLink="True" BaseAddress="0x88000000" LoadOffset="0x00000000" />
+    <BuildTask Condition="'$(Configuration)' == 'Debug'" LibraryPath="$(TargetPath)" TargetArchitecture="MIPS" OutputPath="$(TargetDir)" ToolsPath="$(FlingOSDir)Kernel\Drivers\Compiler\Tools" DebugBuild="True" ISOLink="True" BaseAddress="0x80000000" LoadOffset="0x00000000" />
+    <BuildTask Condition="'$(Configuration)' == 'Release'" LibraryPath="$(TargetPath)" TargetArchitecture="MIPS" OutputPath="$(TargetDir)" ToolsPath="$(FlingOSDir)Kernel\Drivers\Compiler\Tools" DebugBuild="False" ISOLink="True" BaseAddress="0x80000000" LoadOffset="0x00000000" />
   </Target>
 </Project>

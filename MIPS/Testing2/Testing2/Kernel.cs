@@ -13,6 +13,8 @@ namespace Testing2
 
     public static unsafe class Kernel
     {
+        static uint count = 0;
+
         [Drivers.Compiler.Attributes.PluggedMethod(ASMFilePath = "ASM\\Kernel")]
         [Drivers.Compiler.Attributes.SequencePriority(Priority = long.MinValue)]
         public static void Boot()
@@ -45,9 +47,11 @@ namespace Testing2
             return null;
         }
 
-        [Drivers.Compiler.Attributes.PluggedMethod(ASMFilePath = null)]
+        //[Drivers.Compiler.Attributes.PluggedMethod(ASMFilePath = null)]
         public static void MainInterruptHandler()
         {
+            count++;
+            *(uint*)Timer.TFCR = Timer.TFR_OSTFLAG;
         }
         [Drivers.Compiler.Attributes.PluggedMethod(ASMFilePath = null)]
         public static void DoSyscall()
@@ -100,47 +104,13 @@ namespace Testing2
         {
             ExceptionMethods.AddExceptionHandlerInfo(null, null);
 
+            UART.Init();
             BasicConsole.Init();
             BasicConsole.WriteLine("Kernel executing...");
 
             try
             {
-                MemSet(0x0, (byte*)0x80000000, 0x1000);
-
-                BasicConsole.WriteLine("Copying exception handler...");
-                byte* ExHndlrStart = GetExceptionHandlerStart();
-                byte* ExHndlrEnd = GetExceptionHandlerEnd();
-                MemCpy(ExHndlrStart, (byte*)0x80000180, (uint)ExHndlrEnd - (uint)ExHndlrStart);
-
-                BasicConsole.WriteLine("Copying IRQ handler...");
-                byte* IRQHndlrStart = GetIRQHandlerStart();
-                byte* IRQHndlrEnd = GetIRQHandlerEnd();
-                MemCpy(IRQHndlrStart, (byte*)0x80000200, (uint)IRQHndlrEnd - (uint)IRQHndlrStart);
-
-                BasicConsole.WriteLine("Enabling interrupts...");
-
-                for (int i = 0; i < 100000; i++)
-                {
-                    LED.Blue();
-                    DelayShort();
-                    LED.Red();
-                    DelayShort();
-                }
-                LED.Blue();
-                for (int i = 0; i < 100; i++)
-                {
-                    DelayLong();
-                }
-
-                //ExceptionMethods.ArbitaryReturn((uint)ExceptionMethods.BasePointer, (uint)ExceptionMethods.StackPointer, (byte*)0x80000200);
-
                 EnableInterrupts();
-
-                BasicConsole.WriteLine("Testing interrupts...");
-
-                DoSyscall();
-
-                BasicConsole.WriteLine("Continuing execution.");
 
                 #region Struct Tests
 
@@ -501,8 +471,22 @@ namespace Testing2
 
                 #endregion
 
+                BasicConsole.WriteLine("Interrupts enabled");
+
+                Timer.Init();
+
                 BasicConsole.WriteLine("Okay");
 
+                bool OK = true;
+                uint lastCount = count;
+                while (OK)
+                {
+                    if (count != lastCount)
+                    {
+                        BasicConsole.WriteLine(count);
+                        lastCount = count;
+                    }
+                }
             }
             catch
             {
@@ -512,8 +496,8 @@ namespace Testing2
                 BasicConsole.SetTextColour(BasicConsole.default_colour);
             }
 
-            bool OK = true;
-            while (OK)
+            bool OK2 = true;
+            while (OK2)
             {
                 ;
             }

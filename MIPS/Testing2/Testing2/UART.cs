@@ -68,7 +68,7 @@ namespace Testing2
         private const uint ExternalClockDivisor = CI20.ExternalClockRate / 16 / 115200;
         private const uint BitsPerSecond = 115200;
         
-        private static uint UART_Num = 0;
+        private static uint UART_Num = 4;
         
         private static void InitBoard()
         {
