@@ -226,3 +226,4 @@ In/out instructions cannot, by default, be used from user-mode. This behaviour c
 *[VGA]: Video Graphics Array
 *[TSS]: Task State Segment (structure)
 *[PS/2]: IBM Personal System/2 (PS/2 keyboards/mice)
+*[BIOS]: Basic Input/Output System
