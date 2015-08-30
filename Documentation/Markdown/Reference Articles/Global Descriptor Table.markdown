@@ -91,7 +91,7 @@ You could, but your system would the least secure, least stable thing in the wor
 You can't "just use paging". Everything runs through the GDT/segmentation model, so it has to be configured. Standard practice is to create segments which cover the entire address space and make enough segments to cover user/kernel mode and code/data combinations. This makes the memory a full-coverage, flat memory model which makes it invisible to the paging system.
 
 ## How do I create a GDT?
-You allocate some memory as an array of GDT Entry structures (usually statically allocated in assembly code) and then fill in the entries. For statically allocated GDTs it is possible to define the values in the code without needing a separate method to fill them in.
+You allocate some memory as an array of GDT Entry structures (which can be statically allocated in assembly code) and then fill in the entries. For statically allocated GDTs it is possible to define the values in the code without needing a separate method to fill them in.
 
 ## How does the CPU know where the GDT is?
 The kernel provides the processor with the address of (i.e. a pointer to) a GDT Pointer structure. The GDT Pointer structure is a special structure which must also be allocated in memory. It consists of a two-byte length specifying the length (in bytes) of the GDT Table followed by 4-bytes for the address of the GDT Table itself.

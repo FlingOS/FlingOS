@@ -67,7 +67,9 @@ In the x86 architecture, ISRs are configured through the Interrupt Descriptor Ta
 
 ISR routines have to be written in raw assembly code. They cannot be written using inline assembly in C, for example. This is because the C compiler will inject assembly operations at the start and end of the method which will interfere with the required functionality. An ISR handler has to save register values to the stack prior to any other instructions being executed. At the end of the handler, the register values must be restored from the stack and the IRet instruction must be executed (not the normal Ret instruction). 
 
-The following assembly code can be used as a stub for handling an ISR (it is written in NASM assembly syntax). The first version is a simple stub that must be expanded upon later. The second version is much more complex and handles creating interrupt handlers for multiple interrupt numbers, storing thread state, handling UM/KM differences and switching to a separate stack for interrupt handling in kernel mode. It also depends upon some external TSS / threading setup, which has been documented in the code.
+The following assembly code can be used as a stub for handling an ISR (it is written in NASM assembly syntax). The first version is a simple stub that must be expanded upon later. The second version is much more complex and handles creating interrupt handlers for multiple interrupt numbers, storing thread state, handling UM/KM differences and switching to a separate stack for interrupt handling in kernel mode. It also depends upon some external TSS / threading setup, which has been documented in the code. 
+
+For exception interrupts which push an error code when the interrupt is called, the error code must be popped from the stack before issuing IRet.
 
 ##### Simple version
 
