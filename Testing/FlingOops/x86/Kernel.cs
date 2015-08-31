@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿#if x86
+using System;
 
 namespace FlingOops.x86
 {
@@ -24,3 +21,4 @@ namespace FlingOops.x86
         }
     }
 }
+#endif
