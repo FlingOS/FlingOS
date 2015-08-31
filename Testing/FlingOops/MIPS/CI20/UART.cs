@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Testing2
+namespace FlingOops.MIPS.CI20
 {
     public static unsafe class UART
     {
@@ -105,7 +105,7 @@ namespace Testing2
         }
 
         [Drivers.Compiler.Attributes.NoGC]
-        public static void Write(Testing2.String str)
+        public static void Write(FlingOops.String str)
         {
             for (int i = 0; i < str.length; i++)
             {

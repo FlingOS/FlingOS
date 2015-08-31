@@ -509,7 +509,7 @@ namespace Testing2
                 if (count > lastCount)
                 {
                     BasicConsole.WriteLine(count);
-                    lastCount = count + 1000;
+                    lastCount = count + 0;
                 }
             }
         }
