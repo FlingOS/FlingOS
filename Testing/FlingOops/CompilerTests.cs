@@ -72,6 +72,7 @@ namespace FlingOops
             Test_DivInt32_9_Neg3();
             Test_DivInt32_Neg9_Neg3();
             Test_DivInt32_9_3();
+            Test_DivInt32_Neg10_3();
 
             Log.WriteLine("Tests completed.");
         }
@@ -492,6 +493,27 @@ namespace FlingOops
             else
             {
                 Log.WriteError("Test_DivInt32_9_3 not okay.");
+            }
+        }
+
+        /// <summary>
+        /// Tests: Division operation using signed 32-bit integers, 
+        /// Inputs: -10, 3, 
+        /// Result: -3
+        /// </summary>
+        [NoGC]
+        public static void Test_DivInt32_Neg10_3()
+        {
+            Int32 a = -10;
+            Int32 b = 3;
+            a = a / b;
+            if (a == -3)
+            {
+                Log.WriteSuccess("Test_DivInt32_Neg10_3 okay.");
+            }
+            else
+            {
+                Log.WriteError("Test_DivInt32_Neg10_3 not okay.");
             }
         }
     }
