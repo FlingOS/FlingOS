@@ -57,6 +57,7 @@ namespace FlingOops
             Test_Instance_Struct();
             Test_Locals_And_Pointers();
             Test_ModUInt32_9_3();
+            Test_ModUInt32_10_3();
 
             Log.WriteLine("Tests completed.");
         }
@@ -145,7 +146,7 @@ namespace FlingOops
         }
 
         /// <summary>
-        /// Tests: Modulus (remainder) operation using unsigned integers, 
+        /// Tests: Modulus (remainder) operation using unsigned 32-bit integers, 
         /// Inputs: 9, 3, 
         /// Result: 0
         /// </summary>
@@ -162,6 +163,27 @@ namespace FlingOops
             else
             {
                 Log.WriteError("Test_ModUInt32_9_3 not okay.");
+            }
+        }
+
+        /// <summary>
+        /// Tests: Modulus (remainder) operation using unsigned 32-bit integers, 
+        /// Inputs: 10, 3, 
+        /// Result: 1
+        /// </summary>
+        [NoGC]
+        public static void Test_ModUInt32_10_3()
+        {
+            UInt32 a = 10;
+            UInt32 b = 3;
+            a = a % b;
+            if (a == 1)
+            {
+                Log.WriteSuccess("Test_ModUInt32_10_3 okay.");
+            }
+            else
+            {
+                Log.WriteError("Test_ModUInt32_10_3 not okay.");
             }
         }
     }
