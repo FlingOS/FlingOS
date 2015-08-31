@@ -76,6 +76,12 @@ namespace Kernel
         static unsafe void Main()
         {
             ExceptionMethods.AddExceptionHandlerInfo(null, null);
+            
+#if MIPS
+            BasicConsole.WriteLine("Running MIPS Kernel");
+#elif x86 || AnyCPU
+            BasicConsole.WriteLine("Running x86 Kernel");
+#endif
 
             try
             {
