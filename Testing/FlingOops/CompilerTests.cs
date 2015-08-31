@@ -67,6 +67,7 @@ namespace FlingOops
             Test_ModInt32_Neg10_Neg3();
             Test_ModInt32_10_3();
             Test_DivUInt32_9_3();
+            Test_DivUInt32_10_3();
 
             Log.WriteLine("Tests completed.");
         }
@@ -382,6 +383,27 @@ namespace FlingOops
             else
             {
                 Log.WriteError("Test_DivUInt32_9_3 not okay.");
+            }
+        }
+
+        /// <summary>
+        /// Tests: Division operation using unsigned 32-bit integers, 
+        /// Inputs: 10, 3, 
+        /// Result: 3
+        /// </summary>
+        [NoGC]
+        public static void Test_DivUInt32_10_3()
+        {
+            UInt32 a = 10;
+            UInt32 b = 3;
+            a = a / b;
+            if (a == 3)
+            {
+                Log.WriteSuccess("Test_DivUInt32_10_3 okay.");
+            }
+            else
+            {
+                Log.WriteError("Test_DivUInt32_10_3 not okay.");
             }
         }
     }
