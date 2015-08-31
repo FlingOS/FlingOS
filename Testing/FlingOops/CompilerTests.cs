@@ -41,7 +41,7 @@ namespace FlingOops
         public short b;     // 2 bytes - 2 bytes on heap
         public int c;       // 4 bytes - 4 bytes on heap
         public long d;      // 8 bytes - 8 bytes on heap
-        // Total : 15 bytes
+                            // Total : 15 bytes
     }
 
     public static class CompilerTests
@@ -54,6 +54,7 @@ namespace FlingOops
         {
             Test_AddUInt32_Zero_Zero();
             Test_Sizeof_Struct();
+            Test_Instance_Struct();
 
             Log.WriteLine("Tests completed.");
         }
@@ -96,6 +97,30 @@ namespace FlingOops
             else
             {
                 Log.WriteError("Test_Sizeof_Struct not okay.");
+            }
+        }
+
+        /// <summary>
+        /// Tests: Elements of a new instance of a struct, 
+        /// Inputs: AStruct, 
+        /// Result: Inst.a == 1 || Inst.b == 2 || Inst.c == 4 || Inst.d == 8
+        /// </summary>
+        [NoGC]
+
+        public static void Test_Instance_Struct()
+        {
+            AStruct Inst = new AStruct();
+            Inst.a = 1;
+            Inst.b = 2;
+            Inst.c = 4;
+            Inst.d = 8;
+            if (Inst.a == 1 || Inst.b == 2 || Inst.c == 4 || Inst.d == 8)
+            {
+                Log.WriteSuccess("Test_Instance_Struct okay.");
+            }
+            else
+            {
+                Log.WriteError("Test_Instance_Struct not okay.");
             }
         }
     }
