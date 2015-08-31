@@ -11,7 +11,7 @@
     <AssemblyName>Testing2</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
-    <FlingOSDir>G:\Fling OS\Fling OS\</FlingOSDir>
+    <FlingOSDir>C:\Fling OS\Fling OS\</FlingOSDir>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
