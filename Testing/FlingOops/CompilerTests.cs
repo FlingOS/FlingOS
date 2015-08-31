@@ -55,6 +55,7 @@ namespace FlingOops
             Test_AddUInt32_Zero_Zero();
             Test_Sizeof_Struct();
             Test_Instance_Struct();
+            Test_Locals_And_Pointers();
 
             Log.WriteLine("Tests completed.");
         }
@@ -83,10 +84,9 @@ namespace FlingOops
         /// <summary>
         /// Tests: Sizeof a struct in bytes, 
         /// Inputs: AStruct, 
-        /// Result: 15
+        /// Result: Sum of the individual elements of the struct in bytes (e.g.: byte = 1, short = 2, int = 4, long = 8)
         /// </summary>
         [NoGC]
-
         public static unsafe void Test_Sizeof_Struct()
         {
             int size = sizeof(AStruct);
@@ -101,12 +101,11 @@ namespace FlingOops
         }
 
         /// <summary>
-        /// Tests: Elements of a new instance of a struct, 
+        /// Tests: Elements of a new instance of a struct stored and read correctly, 
         /// Inputs: AStruct, 
-        /// Result: Inst.a == 1 || Inst.b == 2 || Inst.c == 4 || Inst.d == 8
+        /// Result: Values declared for each element
         /// </summary>
         [NoGC]
-
         public static void Test_Instance_Struct()
         {
             AStruct Inst = new AStruct();
@@ -114,13 +113,33 @@ namespace FlingOops
             Inst.b = 2;
             Inst.c = 4;
             Inst.d = 8;
-            if (Inst.a == 1 || Inst.b == 2 || Inst.c == 4 || Inst.d == 8)
+            if ((Inst.a == 1) && (Inst.b == 2) && (Inst.c == 4) && (Inst.d == 8))
             {
                 Log.WriteSuccess("Test_Instance_Struct okay.");
             }
             else
             {
                 Log.WriteError("Test_Instance_Struct not okay.");
+            }
+        }
+
+        /// <summary>
+        /// Tests: Local variable declaration and pointer dereferencing, 
+        /// Inputs: 0xDEADBEEF, 
+        /// Result: 0xDEADBEEF
+        /// </summary>
+        [NoGC]
+        public static unsafe void Test_Locals_And_Pointers()
+        {
+            uint testVal = 0xDEADBEEF;
+            uint* testValPtr = &testVal;
+            if ((testVal == 0xDEADBEEF) && (*testValPtr == 0xDEADBEEF))
+            {
+                Log.WriteSuccess("Test_Locals_And_Pointers okay.");
+            }
+            else
+            {
+                Log.WriteError("Test_Locals_And_Pointers not okay.");
             }
         }
     }
