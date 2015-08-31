@@ -126,12 +126,25 @@ namespace Drivers.Compiler.ASM
                 if (Options.TargetArchitecture == "x86" &&
                     !File.Exists(ASMPlugPath + "." + Options.TargetArchitecture + ".asm"))
                 {
-                    ASMPlugPath += ".x86_32.asm";
+                    if (!File.Exists(ASMPlugPath + ".x86_32.asm"))
+                    {
+                        throw new FileNotFoundException("Plug file not found! File name: " + ASMPlugPath + "." + Options.TargetArchitecture + ".asm", ASMPlugPath + "." + Options.TargetArchitecture + ".asm");
+                    }
+                    else
+                    {
+                        ASMPlugPath += ".x86_32.asm";
+                    }
                 }
                 else
                 {
                     ASMPlugPath += "." + Options.TargetArchitecture + ".asm";
                 }
+
+                if (!File.Exists(ASMPlugPath))
+                {
+                    throw new FileNotFoundException("Plug file not found! File name: " + ASMPlugPath, ASMPlugPath);
+                }
+
                 ASMText = File.ReadAllText(ASMPlugPath);
 
                 ASMText = ASMText.Replace("%KERNEL_CALL_STATIC_CONSTRUCTORS_METHOD%", IL.ILLibrary.SpecialMethods[typeof(Attributes.CallStaticConstructorsMethodAttribute)].First().ID);

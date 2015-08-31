@@ -940,6 +940,11 @@ namespace FlingOops
             //ex.InstructionAddress = *((uint*)BasePointer + 1);
             //Throw(ex);
         }
+        
+        [Drivers.Compiler.Attributes.PluggedMethod(ASMFilePath = @"ASM\Exceptions\GetEIP")]
+        public static void GetEIP()
+        {
+        }
 
         [Drivers.Compiler.Attributes.NoDebug]
         [Drivers.Compiler.Attributes.NoGC]

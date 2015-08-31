@@ -140,7 +140,6 @@ namespace Drivers.Compiler.Architectures.MIPS32
 
                 if (typeof(Delegate).IsAssignableFrom(((MethodInfo)methodToCall).DeclaringType))
                 {
-                    throw new NotSupportedException("Delegate calls not supported yet!");
                     //Callvirt to delegate method
                     // - We only support calls to Invoke at the moment
                     if (methodToCall.Name != "Invoke")

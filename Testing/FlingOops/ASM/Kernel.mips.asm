@@ -25,11 +25,3 @@ Kernel_Start:
 	
 	j $ra
 	.end Kernel_Start
-
-.globl GetEIP
-.ent GetEIP
-GetEIP:
-	addi $sp, $sp, -4
-	sw $ra, 0($sp)
-	j $ra
-	.end GetEIP
