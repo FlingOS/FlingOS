@@ -220,7 +220,9 @@
   <Target Name="BeforeBuild">
   </Target>
   <Target Name="AfterBuild">
-    <BuildTask Condition="'$(Configuration)' == 'Debug'" LibraryPath="$(TargetPath)" TargetArchitecture="$(MachineCodeTarget)" OutputPath="$(TargetDir)" ToolsPath="$(SolutionDir)Kernel\Drivers\Compiler\Tools" DebugBuild="True" ISOLink="True" BaseAddress="0xC0100000" LoadOffset="0xC0000000" />
-    <BuildTask Condition="'$(Configuration)' == 'Release'" LibraryPath="$(TargetPath)" TargetArchitecture="$(MachineCodeTarget)" OutputPath="$(TargetDir)" ToolsPath="$(SolutionDir)Kernel\Drivers\Compiler\Tools" DebugBuild="False" ISOLink="True" BaseAddress="0xC0100000" LoadOffset="0xC0000000" />
+    <BuildTask Condition="'$(Configuration)|$(MachineCodeTarget)' == 'Debug|x86'" LibraryPath="$(TargetPath)" TargetArchitecture="$(MachineCodeTarget)" OutputPath="$(TargetDir)" ToolsPath="$(SolutionDir)Kernel\Drivers\Compiler\Tools" DebugBuild="True" ISOLink="True" BaseAddress="0xC0100000" LoadOffset="0xC0000000" />
+    <BuildTask Condition="'$(Configuration)|$(MachineCodeTarget)' == 'Release|x86'" LibraryPath="$(TargetPath)" TargetArchitecture="$(MachineCodeTarget)" OutputPath="$(TargetDir)" ToolsPath="$(SolutionDir)Kernel\Drivers\Compiler\Tools" DebugBuild="False" ISOLink="True" BaseAddress="0xC0100000" LoadOffset="0xC0000000" />
+    <BuildTask Condition="'$(Configuration)|$(MachineCodeTarget)' == 'Debug|MIPS'" LibraryPath="$(TargetPath)" TargetArchitecture="$(MachineCodeTarget)" OutputPath="$(TargetDir)" ToolsPath="$(SolutionDir)Kernel\Drivers\Compiler\Tools" DebugBuild="True" ISOLink="True" BaseAddress="0x88000000" LoadOffset="0x00000000" />
+    <BuildTask Condition="'$(Configuration)|$(MachineCodeTarget)' == 'Release|MIPS'" LibraryPath="$(TargetPath)" TargetArchitecture="$(MachineCodeTarget)" OutputPath="$(TargetDir)" ToolsPath="$(SolutionDir)Kernel\Drivers\Compiler\Tools" DebugBuild="False" ISOLink="True" BaseAddress="0x88000000" LoadOffset="0x00000000" />
   </Target>
 </Project>

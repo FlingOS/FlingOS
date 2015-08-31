@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿#if MIPS
+using System;
 
 namespace FlingOops.MIPS.CI20
 {
@@ -23,3 +20,4 @@ namespace FlingOops.MIPS.CI20
         }
     }
 }
+#endif

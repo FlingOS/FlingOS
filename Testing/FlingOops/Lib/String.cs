@@ -123,6 +123,13 @@ namespace FlingOops
             }
         }
 
+        [Drivers.Compiler.Attributes.NoDebug]
+        [Drivers.Compiler.Attributes.NoGC]
+        public unsafe char* GetCharPointer()
+        {
+            return (char*)(((byte*)Utilities.ObjectUtilities.GetHandle(this)) + FieldsBytesSize);
+        }
+
         /// <summary>
         /// Creates a new string and pads the left side of the string with the specified character until the 
         /// whole string is of the specified length or returns the original string if it is longer.

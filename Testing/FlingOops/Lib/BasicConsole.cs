@@ -25,7 +25,11 @@
 #endregion
     
 using System;
+#if MIPS
 using FlingOops.MIPS.CI20;
+#elif x86
+using FlingOops.x86;
+#endif
 
 namespace FlingOops
 {
@@ -79,6 +83,47 @@ namespace FlingOops
     /// </remarks>
     public static unsafe class BasicConsole
     {
+#if x86
+        /// <summary>
+        /// Whether the primary output destination (the screen) is enabled or not. 
+        /// </summary>
+        /// <remarks>
+        /// <para>
+        /// Default value is true i.e. the BasicConsole will output all text to the screen.
+        /// </para>
+        /// <para>
+        /// With lots of trace code enabled the BasicConsole can end up printing a lot of text
+        /// very quickly. This is both impossible to read and untraceable as it cannot be reviewed
+        /// after it disappears from the screen. Add to that the newer multi-processing support
+        /// and the BasicConsole ceases to be useful - in fact it gets in the way.
+        /// </para>
+        /// <para>
+        /// Switching off the primary output reduces the junk outputted to the screen. To retain
+        /// (or rather, obtain) traceable output, use the secondary output to redirect BasicConsole
+        /// printing to a serial port such as COM1. VMWare has a nice option for saving serial port
+        /// output directly to a file.
+        /// </para>
+        /// </remarks>
+        public static bool PrimaryOutputEnabled = true;
+        /// <summary>
+        /// Whether the secondary output destination is enabled or not. 
+        /// </summary>
+        /// <remarks>
+        /// <para>
+        /// Default value is true i.e. the BasicConsole will output all text to the secondary output (if it is not null).
+        /// </para>
+        /// </remarks>
+        /// <seealso cref="SecondaryOutput"/>
+        public static bool SecondaryOutputEnabled = true;
+        /// <summary>
+        /// The secondary output handler. 
+        /// </summary>
+        /// <remarks>
+        /// If <see cref="SecondaryOutputEnabled"/> is set to true, this handler will be called for all Write calls to
+        /// the BasicConsole.
+        /// </remarks>
+        public static SecondaryOutputHandler SecondaryOutput = null;
+#endif
         /// <summary>
         /// Static constructor for the Basic Console.
         /// </summary>
@@ -99,6 +144,34 @@ namespace FlingOops
         /// and thus use of Basic Console before it is ready.
         /// </remarks>
         public static bool Initialised = false;
+
+#if x86
+        /// <summary>
+        /// The offset from the start of the memory (in characters) to write the next character to.
+        /// </summary>
+        /// <remarks>
+        /// This would cause an issue if you changed the line length after already having printed text
+        /// because you'd want to leave the next print location at the start of a new line.
+        /// </remarks>
+        static int offset = 0;
+        /// <summary>
+        /// The offset from the start of the memory (in characters) to write the next character to.
+        /// </summary>
+        /// <remarks>
+        /// </remarks>
+        public static int Offset
+        {
+            get
+            {
+                return offset;
+            }
+        }
+
+        /// <summary>
+        /// A pointer to the start of the (character-based) video memory.
+        /// </summary>
+        public static char* vidMemBasePtr = (char*)0xB8000;
+#endif
 
         /// <summary>
         /// Numbers of rows in the video memory.
@@ -193,10 +266,11 @@ namespace FlingOops
         public static unsafe void Clear()
         {
             if (!Initialised) return;
+
             //Clear out every character on the screen
             int numToClear = rows * cols;
-            //Start at beginning of video memory
-            //char* vidMemPtr = vidMemBasePtr;
+			
+#if MIPS
             //Loop through all video memory
             while (numToClear > 0)
             {
@@ -207,7 +281,26 @@ namespace FlingOops
                 numToClear--;
             }
 
-            WriteLine();
+#elif x86
+            //Start at beginning of video memory
+            char* vidMemPtr = vidMemBasePtr;
+            //Loop through all video memory
+            while (numToClear > 0)
+            {
+                //Set output to no character, no foreground colour, just the 
+                //  background colour.
+                vidMemPtr[0] = bg_colour;
+                //Then move to the next character in
+                //  video memory.
+                vidMemPtr++;
+                //And decrement the count
+                numToClear--;
+            }
+
+            //And set our offset to 0
+            offset = 0;
+#endif
+
         }
         /// <summary>
         /// Writes the specified string to the output at the current offset. 
@@ -222,6 +315,7 @@ namespace FlingOops
         public static unsafe void Write(FlingOops.String str)
         {
             if (!Initialised) return;
+
             //If string is null, just don't write anything
             if (str == null)
             {
@@ -230,8 +324,52 @@ namespace FlingOops
                 //  robust and not throw exceptions.
                 return;
             }
-
+            
+#if MIPS
             UART.Write(str);
+#elif x86
+            if (PrimaryOutputEnabled)
+            {
+                int strLength = str.length;
+                int maxOffset = rows * cols;
+
+                //This block shifts the video memory up the required number of lines.
+                if (offset + strLength > maxOffset)
+                {
+                    int amountToShift = (offset + strLength) - maxOffset;
+                    amountToShift = amountToShift + (80 - (amountToShift % 80));
+                    offset -= amountToShift;
+
+                    char* vidMemPtr_Old = vidMemBasePtr;
+                    char* vidMemPtr_New = vidMemBasePtr + amountToShift;
+                    char* maxVidMemPtr = vidMemBasePtr + (cols * rows);
+                    while (vidMemPtr_New < maxVidMemPtr)
+                    {
+                        vidMemPtr_Old[0] = vidMemPtr_New[0];
+                        vidMemPtr_Old++;
+                        vidMemPtr_New++;
+                    }
+                }
+
+                //This block outputs the string in the current foreground / background colours.
+                char* vidMemPtr = vidMemBasePtr + offset;
+                char* strPtr = str.GetCharPointer();
+                while (strLength > 0)
+                {
+                    vidMemPtr[0] = (char)((*strPtr & 0x00FF) | colour);
+
+                    strLength--;
+                    vidMemPtr++;
+                    strPtr++;
+                    offset++;
+                }
+            }
+
+            if (SecondaryOutput != null && SecondaryOutputEnabled)
+            {
+                SecondaryOutput(str);
+            }
+#endif
         }
         /// <summary>
         /// Writes the specified string to the output at the current offset then moves the offset to the end of the line.
@@ -249,10 +387,59 @@ namespace FlingOops
             {
                 return;
             }
-
+#if MIPS
             //This outputs the string
             Write(str);
             Write("\n");
+#elif x86
+            if (PrimaryOutputEnabled)
+            {
+                //This block shifts the video memory up the required number of lines.
+                if (offset == cols * rows)
+                {
+                    char* vidMemPtr_Old = vidMemBasePtr;
+                    char* vidMemPtr_New = vidMemBasePtr + cols;
+                    char* maxVidMemPtr = vidMemBasePtr + (cols * rows);
+                    while (vidMemPtr_New < maxVidMemPtr)
+                    {
+                        vidMemPtr_Old[0] = vidMemPtr_New[0];
+                        vidMemPtr_Old++;
+                        vidMemPtr_New++;
+                    }
+                    offset -= cols;
+                }
+            }
+
+            //This outputs the string
+            Write(str);
+
+            if (PrimaryOutputEnabled)
+            {
+                //This block "writes" the new line by filling in the remainder (if any) of the
+                //  line with blank characters and correct background colour. 
+                int diff = offset;
+                while (diff > cols)
+                {
+                    diff -= cols;
+                }
+                diff = cols - diff;
+
+                char* vidMemPtr = vidMemBasePtr + offset;
+                while (diff > 0)
+                {
+                    vidMemPtr[0] = bg_colour;
+
+                    diff--;
+                    vidMemPtr++;
+                    offset++;
+                }
+            }
+
+            if (SecondaryOutput != null && SecondaryOutputEnabled)
+            {
+                SecondaryOutput("\r\n");
+            }
+#endif
         }
 
         /// <summary>
@@ -263,7 +450,13 @@ namespace FlingOops
         public static void WriteLine()
         {
             if (!Initialised) return;
+#if MIPS
             Write("\n");
+#elif x86
+            //We must write at least 1 character, so we just write a space since that
+            //  is any empty character.
+            WriteLine(" ");
+#endif
         }
 
         /// <summary>
@@ -277,7 +470,21 @@ namespace FlingOops
             //  test that strings and the video memory output work.
 
             FlingOops.String str = "1234567890!\"£$%^&*()qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM[];'#,./{}:@~<>?\\|`¬¦";
+#if MIPS
             UART.Write(str);
+#elif x86
+            int strLength = str.length;
+            char* strPtr = str.GetCharPointer();
+            char* vidMemPtr = vidMemBasePtr;
+            while (strLength > 0)
+            {
+                vidMemPtr[0] = (char)((*strPtr & 0x00FF) | colour);
+
+                strPtr++;
+                vidMemPtr++;
+                strLength--;
+            }
+#endif
         }
 
         /// <summary>
@@ -302,12 +509,14 @@ namespace FlingOops
             }
 
 
+#if MIPS
             //This method prints "." ".." "..." and so on until 
             //  ".........." (or some other length) is printed and
             //  then it resets the line to blank and repeats. Thus, 
             //  it creates a waiting bar.
 
             WriteLine();
+
             int a = 0;
             amount *= 5000000;
             for (int i = 0; i < amount; i++)
@@ -323,6 +532,46 @@ namespace FlingOops
                     a++;
                 }
             }
+#elif x86
+            if (PrimaryOutputEnabled)
+            {
+                bool SecondaryOutputWasEnabled = SecondaryOutputEnabled;
+                SecondaryOutputEnabled = false;
+
+                //This method prints "." ".." "..." and so on until 
+                //  ".........." (or some other length) is printed and
+                //  then it resets the line to blank and repeats. Thus, 
+                //  it creates a waiting bar.
+
+                WriteLine();
+                int a = 0;
+                amount *= 5000000;
+                for (int i = 0; i < amount; i++)
+                {
+                    if (i % 500000 == 0)
+                    {
+                        if (a == 10)
+                        {
+                            a = 0;
+                            offset -= 10;
+                            Write("          ");
+                            offset -= 10;
+                        }
+                        Write(".");
+                        a++;
+                    }
+                }
+                offset -= a;
+                for (int i = 0; i < a; i++)
+                {
+                    Write(" ");
+                }
+                offset -= a;
+                offset -= 80;
+
+                SecondaryOutputEnabled = SecondaryOutputWasEnabled;
+            }
+#endif
         }
 
         public static void DumpMemory(void* ptr, int size)
@@ -345,13 +594,13 @@ namespace FlingOops
 
         public static void WriteSuccess(FlingOops.String message)
         {
-            SetTextColour(error_colour);
+            SetTextColour(success_colour);
             WriteLine(message);
             SetTextColour(default_colour);
         }
         public static void WriteError(FlingOops.String message)
         {
-            SetTextColour(success_colour);
+            SetTextColour(error_colour);
             WriteLine(message);
             SetTextColour(default_colour);
         }
