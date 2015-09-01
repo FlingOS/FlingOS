@@ -78,9 +78,12 @@ namespace FlingOops
             Test_DivInt32_10_3();
             Test_SubUInt32_9_4();
             Test_SubInt32_Neg9_4();
+            Test_SubInt32_Neg9_Neg4();
 
             Log.WriteLine("Tests completed.");
         }
+
+        #region Addition
 
         /// <summary>
         /// Tests: Adding two UInt32s, 
@@ -102,6 +105,8 @@ namespace FlingOops
                 Log.WriteError("Test_AddUInt32_Zero_Zero not okay.");
             }
         }
+
+        #endregion
 
         #region Struct
 
@@ -642,6 +647,27 @@ namespace FlingOops
             else
             {
                 Log.WriteError("Test_SubInt32_Neg9_4 not okay.");
+            }
+        }
+
+        /// <summary>
+        /// Tests: Subtraction operation using signed 32-bit integers, 
+        /// Inputs: -9, -4, 
+        /// Result: -5
+        /// </summary>
+        [NoGC]
+        public static void Test_SubInt32_Neg9_Neg4()
+        {
+            Int32 a = -9;
+            Int32 b = -4;
+            a = a - b;
+            if (a == -5)
+            {
+                Log.WriteSuccess("Test_SubInt32_Neg9_Neg4 okay.");
+            }
+            else
+            {
+                Log.WriteError("Test_SubInt32_Neg9_Neg4 not okay.");
             }
         }
 
