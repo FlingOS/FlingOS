@@ -50,6 +50,7 @@ When an exception occurs, items may still be on the stack which need removing be
 
 ## What alternatives are there to a stack?
 
+
 ## What is a stack machine?
 
 ## Why is a stack useful?
@@ -105,6 +106,10 @@ When an exception occurs, items may still be on the stack which need removing be
 
 - https://en.wikipedia.org/wiki/Stack_(abstract_data_type)
 - https://en.wikipedia.org/wiki/Stack_machine
-- 
+- http://worldwide.espacenet.com/publicationDetails/originalDocument?CC=DE&NR=1094019&KC=&FT=E
+- http://www.cs.cmu.edu/~adamchik/15-121/lectures/Stacks%20and%20Queues/Stacks%20and%20Queues.html
+- http://www.i-programmer.info/babbages-bag/263-stacks.html
+- http://www.allisons.org/ll/AlgDS/Stack/
+- http://wiki.osdev.org/Stack
 
 *[acronym]: details
