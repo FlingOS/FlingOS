@@ -121,6 +121,7 @@ namespace FlingOops
             Test_Sub_UInt64_Large_UInt64_Large();
             Log.WriteLine("  Signed");
             Test_Sub_Int64_LargePos_Int64_4();
+            Test_Sub_Int64_LargePos_Int64_LargeNeg();
             Test_Sub_Int64_LargeNeg_Int64_LargePos();
             Test_Sub_Int64_LargeNeg_Int64_LargeNeg();
             Test_Sub_Int64_Zero_Int64_4();
@@ -1088,6 +1089,34 @@ namespace FlingOops
             else
             {
                 Log.WriteError("Test_Sub_Int64_LargeNeg_Int64_LargeNeg not okay.");
+            }
+        }
+
+        /// <summary>
+        /// Tests: Subtraction operation using signed 64-bit integers, 
+        /// Inputs: Large +ve, Large -ve, 
+        /// Result: Large +ve
+        /// </summary>
+        /// <remarks>
+        /// <para> 
+        /// Here a 64-bit signed integer is subtracted from a 64-bit signed integer producing a 64-bit signed value. 
+        /// A large +ve value is used for op1 and a large -ve for op2, here the result is a large +ve. 
+        /// While testing subtraction using 64-bit integers, it is important to handle the "borrow-bit" correctly. 
+        /// </para>
+        /// </remarks>
+        [NoGC]
+        public static void Test_Sub_Int64_LargePos_Int64_LargeNeg()
+        {
+            Int64 a = 1080863910568919040;
+            Int64 b = -844424930131968;
+            a = a - b;
+            if (a == 1081708335499051008)
+            {
+                Log.WriteSuccess("Test_Sub_Int64_LargePos_Int64_LargeNeg okay.");
+            }
+            else
+            {
+                Log.WriteError("Test_Sub_Int64_LargePos_Int64_LargeNeg not okay.");
             }
         }
 
