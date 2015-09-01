@@ -21,7 +21,7 @@ namespace FlingOops
     /// <para>
     /// As a result, the tests provided cannot be run in an automated fashion. The compiler
     /// tester/developer will need to select which tests to run, execute them and observe
-    /// the output to determine if it has worked or not. If not, manual debugging will be
+    /// the output to determine if it has worked or NOT. If NOT, manual debugging will be
     /// required.
     /// </para>
     /// <para>
@@ -52,6 +52,8 @@ namespace FlingOops
         [NoGC]
         public static void RunTests()
         {
+            #region Addition calls
+
             Log.WriteLine(" ");
             Log.WriteLine("---Addition:");
             Log.WriteLine("  Unsigned");
@@ -60,14 +62,26 @@ namespace FlingOops
 
             Log.WriteLine(" ");
 
+            #endregion
+
+            #region Struct calls
+
             Log.WriteLine("---Struct:");
             Test_Sizeof_Struct();
             Test_Instance_Struct();
             Log.WriteLine(" ");
 
+            #endregion
+
+            #region Variables and pointers calls
+
             Log.WriteLine("---Variables and pointers:");
             Test_Locals_And_Pointers();
             Log.WriteLine(" ");
+
+            #endregion
+
+            #region Modulus calls
 
             Log.WriteLine("---Modulus:");
             Log.WriteLine("  Unsigned");
@@ -84,6 +98,10 @@ namespace FlingOops
             Test_Mod_Int32_Neg10_Int32_Neg3();            
             Log.WriteLine(" ");
 
+            #endregion
+
+            #region Division calls 
+
             Log.WriteLine("Division:");
             Log.WriteLine("  Unsigned");
             Test_Div_UInt32_9_UInt32_3();
@@ -99,6 +117,10 @@ namespace FlingOops
             Test_Div_Int32_Neg10_Int32_Neg3();
             Log.WriteLine(" ");
 
+            #endregion
+
+            #region Subtraction calls
+
             Log.WriteLine("Subtraction:");
             Log.WriteLine(" 32-32");
             Log.WriteLine("  Unsigned");
@@ -110,12 +132,13 @@ namespace FlingOops
             Test_Sub_Int32_Neg9_Int32_Neg4();
             Log.WriteLine(" 64-32");
             Log.WriteLine("  Unsigned");
-            Test_Sub_UInt64_Large_UInt32_4();
+            Test_Sub_UInt64_LargestPos_UInt32_4();
             Log.WriteLine("  Signed");
-            Test_Sub_Int64_LargePos_Int32_4();
+            Test_Sub_Int64_LargestNeg_Int32_4();
+            Test_Sub_Int64_LargestPos_Int32_4();
             Test_Sub_Int64_Zero_Int32_4();
-            Test_Sub_Int64_Zero_Int32_LargePos();
-            Test_Sub_Int64_Zero_Int32_LargeNeg();
+            Test_Sub_Int64_Zero_Int32_LargestPos();
+            Test_Sub_Int64_Zero_Int32_LargestNeg();
             Log.WriteLine(" 64-64");
             Log.WriteLine("  Unsigned");
             Test_Sub_UInt64_Large_UInt64_Large();
@@ -123,13 +146,19 @@ namespace FlingOops
             Test_Sub_Int64_LargePos_Int64_4();
             Test_Sub_Int64_LargePos_Int64_LargePos();
             Test_Sub_Int64_LargePos_Int64_LargeNeg();
-            Test_Sub_Int64_LargeNeg_Int64_LargePos();
+            Test_Sub_Int64_LargestNeg_Int64_1();
             Test_Sub_Int64_LargeNeg_Int64_LargeNeg();
             Test_Sub_Int64_Zero_Int64_4();
             Test_Sub_Int64_Zero_Int64_LargePos();
             Test_Sub_Int64_Zero_Int64_LargeNeg();
             Log.WriteLine(" ");
-            
+
+            #endregion
+
+            #region Right shift
+
+            #endregion
+
             Log.WriteLine("Tests completed.");
         }
 
@@ -152,7 +181,7 @@ namespace FlingOops
             }
             else
             {
-                Log.WriteError("Test_Add_UInt32_Zero_UInt32_Zero not okay.");
+                Log.WriteError("Test_Add_UInt32_Zero_UInt32_Zero NOT okay.");
             }
         }
 
@@ -175,7 +204,7 @@ namespace FlingOops
             }
             else
             {
-                Log.WriteError("Test_Sizeof_Struct not okay.");
+                Log.WriteError("Test_Sizeof_Struct NOT okay.");
             }
         }
 
@@ -198,7 +227,7 @@ namespace FlingOops
             }
             else
             {
-                Log.WriteError("Test_Instance_Struct not okay.");
+                Log.WriteError("Test_Instance_Struct NOT okay.");
             }
         }
 
@@ -222,7 +251,7 @@ namespace FlingOops
             }
             else
             {
-                Log.WriteError("Test_Locals_And_Pointers not okay.");
+                Log.WriteError("Test_Locals_And_Pointers NOT okay.");
             }
         }
 
@@ -247,7 +276,7 @@ namespace FlingOops
             }
             else
             {
-                Log.WriteError("Test_Mod_UInt32_9_UInt32_3 not okay.");
+                Log.WriteError("Test_Mod_UInt32_9_UInt32_3 NOT okay.");
             }
         }
 
@@ -268,7 +297,7 @@ namespace FlingOops
             }
             else
             {
-                Log.WriteError("Test_Mod_UInt32_10_UInt32_3 not okay.");
+                Log.WriteError("Test_Mod_UInt32_10_UInt32_3 NOT okay.");
             }
         }
 
@@ -289,7 +318,7 @@ namespace FlingOops
             }
             else
             {
-                Log.WriteError("Test_Mod_Int32_Neg9_Int32_3 not okay.");
+                Log.WriteError("Test_Mod_Int32_Neg9_Int32_3 NOT okay.");
             }
         }
 
@@ -310,7 +339,7 @@ namespace FlingOops
             }
             else
             {
-                Log.WriteError("Test_Mod_Int32_9_Int32_Neg3 not okay.");
+                Log.WriteError("Test_Mod_Int32_9_Int32_Neg3 NOT okay.");
             }
         }
 
@@ -331,7 +360,7 @@ namespace FlingOops
             }
             else
             {
-                Log.WriteError("Test_Mod_Int32_Neg9_Int32_Neg3 not okay.");
+                Log.WriteError("Test_Mod_Int32_Neg9_Int32_Neg3 NOT okay.");
             }
         }
 
@@ -352,7 +381,7 @@ namespace FlingOops
             }
             else
             {
-                Log.WriteError("Test_Mod_Int32_9_Int32_3 not okay.");
+                Log.WriteError("Test_Mod_Int32_9_Int32_3 NOT okay.");
             }
         }
 
@@ -373,7 +402,7 @@ namespace FlingOops
             }
             else
             {
-                Log.WriteError("Test_Mod_Int32_Neg10_Int32_3 not okay.");
+                Log.WriteError("Test_Mod_Int32_Neg10_Int32_3 NOT okay.");
             }
         }
 
@@ -394,7 +423,7 @@ namespace FlingOops
             }
             else
             {
-                Log.WriteError("Test_Mod_Int32_10_Int32_Neg3 not okay.");
+                Log.WriteError("Test_Mod_Int32_10_Int32_Neg3 NOT okay.");
             }
         }
 
@@ -415,7 +444,7 @@ namespace FlingOops
             }
             else
             {
-                Log.WriteError("Test_Mod_Int32_Neg10_Int32_Neg3 not okay.");
+                Log.WriteError("Test_Mod_Int32_Neg10_Int32_Neg3 NOT okay.");
             }
         }
 
@@ -436,7 +465,7 @@ namespace FlingOops
             }
             else
             {
-                Log.WriteError("Test_Mod_Int32_10_Int32_3 not okay.");
+                Log.WriteError("Test_Mod_Int32_10_Int32_3 NOT okay.");
             }
         }
 
@@ -461,7 +490,7 @@ namespace FlingOops
             }
             else
             {
-                Log.WriteError("Test_Div_UInt32_9_UInt32_3 not okay.");
+                Log.WriteError("Test_Div_UInt32_9_UInt32_3 NOT okay.");
             }
         }
 
@@ -482,7 +511,7 @@ namespace FlingOops
             }
             else
             {
-                Log.WriteError("Test_Div_UInt32_10_UInt32_3 not okay.");
+                Log.WriteError("Test_Div_UInt32_10_UInt32_3 NOT okay.");
             }
         }
 
@@ -503,7 +532,7 @@ namespace FlingOops
             }
             else
             {
-                Log.WriteError("Test_Div_Int32_Neg9_Int32_3 not okay.");
+                Log.WriteError("Test_Div_Int32_Neg9_Int32_3 NOT okay.");
             }
         }
 
@@ -524,7 +553,7 @@ namespace FlingOops
             }
             else
             {
-                Log.WriteError("Test_Div_Int32_9_Int32_Neg3 not okay.");
+                Log.WriteError("Test_Div_Int32_9_Int32_Neg3 NOT okay.");
             }
         }
 
@@ -545,7 +574,7 @@ namespace FlingOops
             }
             else
             {
-                Log.WriteError("Test_Div_Int32_Neg9_Int32_Neg3 not okay.");
+                Log.WriteError("Test_Div_Int32_Neg9_Int32_Neg3 NOT okay.");
             }
         }
 
@@ -566,7 +595,7 @@ namespace FlingOops
             }
             else
             {
-                Log.WriteError("Test_Div_Int32_9_Int32_3 not okay.");
+                Log.WriteError("Test_Div_Int32_9_Int32_3 NOT okay.");
             }
         }
 
@@ -587,7 +616,7 @@ namespace FlingOops
             }
             else
             {
-                Log.WriteError("Test_Div_Int32_Neg10_Int32_3 not okay.");
+                Log.WriteError("Test_Div_Int32_Neg10_Int32_3 NOT okay.");
             }
         }
 
@@ -608,7 +637,7 @@ namespace FlingOops
             }
             else
             {
-                Log.WriteError("Test_Div_Int32_10_Int32_Neg3 not okay.");
+                Log.WriteError("Test_Div_Int32_10_Int32_Neg3 NOT okay.");
             }
         }
 
@@ -629,7 +658,7 @@ namespace FlingOops
             }
             else
             {
-                Log.WriteError("Test_Div_Int32_Neg10_Int32_Neg3 not okay.");
+                Log.WriteError("Test_Div_Int32_Neg10_Int32_Neg3 NOT okay.");
             }
         }
 
@@ -650,7 +679,7 @@ namespace FlingOops
             }
             else
             {
-                Log.WriteError("Test_Div_Int32_10_Int32_3 not okay.");
+                Log.WriteError("Test_Div_Int32_10_Int32_3 NOT okay.");
             }
         }
 
@@ -675,7 +704,7 @@ namespace FlingOops
             }
             else
             {
-                Log.WriteError("Test_Sub_UInt32_9_UInt32_4 not okay.");
+                Log.WriteError("Test_Sub_UInt32_9_UInt32_4 NOT okay.");
             }
         }
 
@@ -696,7 +725,7 @@ namespace FlingOops
             }
             else
             {
-                Log.WriteError("Test_Sub_Int32_Neg9_Int32_4 not okay.");
+                Log.WriteError("Test_Sub_Int32_Neg9_Int32_4 NOT okay.");
             }
         }
 
@@ -717,7 +746,7 @@ namespace FlingOops
             }
             else
             {
-                Log.WriteError("Test_Sub_Int32_Neg9_Int32_Neg4 not okay.");
+                Log.WriteError("Test_Sub_Int32_Neg9_Int32_Neg4 NOT okay.");
             }
         }
 
@@ -738,7 +767,7 @@ namespace FlingOops
             }
             else
             {
-                Log.WriteError("Test_Sub_Int32_9_Int32_Neg4 not okay.");
+                Log.WriteError("Test_Sub_Int32_9_Int32_Neg4 NOT okay.");
             }
         }
 
@@ -759,58 +788,93 @@ namespace FlingOops
             }
             else
             {
-                Log.WriteError("Test_Sub_Int32_9_Int32_4 not okay.");
+                Log.WriteError("Test_Sub_Int32_9_Int32_4 NOT okay.");
             }
         } 
 
         /// <summary>
         /// Tests: Subtraction operation using unsigned 64- and 32-bit integers, 
-        /// Inputs: Large, 4, 
-        /// Result: Large
+        /// Inputs: Largest +ve, 4, 
+        /// Result: (Largest +ve - 4)
         /// </summary>
         [NoGC]
-        public static void Test_Sub_UInt64_Large_UInt32_4()
+        public static void Test_Sub_UInt64_LargestPos_UInt32_4()
         {
-            UInt64 a = 1080863910568919030;
+            UInt64 a = 18446744073709551615;
             UInt32 b = 4;
             a = a - b;
-            if (a == 1080863910568919026)
+            if (a == 18446744073709551611)
             {
-                Log.WriteSuccess("Test_Sub_UInt64_Large_UInt32_4 okay.");
+                Log.WriteSuccess("Test_Sub_UInt64_LargestPos_UInt32_4 okay.");
             }
             else
             {
-                Log.WriteError("Test_Sub_UInt64_Large_UInt32_4 not okay.");
+                Log.WriteError("Test_Sub_UInt64_LargestPos_UInt32_4 NOT okay.");
             }
         }
 
         /// <summary>
         /// Tests: Subtraction operation using signed 64- and 32-bit integers, 
-        /// Inputs: Large +ve, 4, 
-        /// Result: Large +ve
+        /// Inputs: Largest +ve, 4, 
+        /// Result: (Largest +ve - 4)
         /// </summary>
         /// <remarks>
         /// <para> 
         /// Here a 32-bit signed integer is subtracted from a 64-bit signed integer producing a 64-bit signed value. 
-        /// A large value is used for the first operand to ensure that the high 32-bits are non-zero, result is large +ve. 
+        /// A largest +ve value is used for the first operand, result is (Largest +ve - 4). 
         /// While testing subtraction using 64-bit integers, it is important to handle the "borrow-bit" correctly. 
         /// </para>
         /// </remarks>
         [NoGC]
-        public static void Test_Sub_Int64_LargePos_Int32_4()
+        public static void Test_Sub_Int64_LargestPos_Int32_4()
         {
-            Int64 a = 1080863910568919040;
+            Int64 a = 9223372036854775807;
             Int32 b = 4;
             a = a - b;
-            if (a == 1080863910568919036)
+            if (a == 9223372036854775803)
             {
-                Log.WriteSuccess("Test_Sub_Int64_LargePos_Int32_4 okay.");
+                Log.WriteSuccess("Test_Sub_Int64_LargestPos_Int32_4 okay.");
             }
             else
             {
-                Log.WriteError("Test_Sub_Int64_LargePos_Int32_4 not okay.");
+                Log.WriteError("Test_Sub_Int64_LargestPos_Int32_4 NOT okay.");
             }
         }
+
+
+
+        /// <summary>
+        /// Tests: Subtraction operation using signed 64- and 32-bit integers, 
+        /// Inputs: Largest -ve, 4, 
+        /// Result: (Largest +ve - 3)
+        /// </summary>
+        /// <remarks>
+        /// <para> 
+        /// Here a 32-bit signed integer is subtracted from a 64-bit signed integer producing a 64-bit signed value. 
+        /// The largest -ve value is used for the first operand. Correct result should be (Largest +ve - 3) because of the 
+        /// circular nature of signed numbers in two's complement.
+        /// While testing subtraction using 64-bit integers, it is important to handle the "borrow-bit" correctly. 
+        /// </para>
+        /// </remarks>
+        [NoGC]
+        public static void Test_Sub_Int64_LargestNeg_Int32_4()
+        {
+            Int64 a = -9223372036854775808;
+            Int64 d = 9223372036854775807;
+            Int32 b = 4;
+            a = a - b;
+            if (a == 9223372036854775804)
+            {
+                Log.WriteSuccess("Test_Sub_Int64_LargestNeg_Int32_4 okay.");
+            }
+            else
+            {
+                Log.WriteError("Test_Sub_Int64_LargestNeg_Int32_4 NOT okay.");
+            }
+        }
+
+
+
 
         /// <summary>
         /// Tests: Subtraction operation using signed 64- and 32-bit integers, 
@@ -836,63 +900,63 @@ namespace FlingOops
             }
             else
             {
-                Log.WriteError("Test_Sub_Int64_Zero_Int32_4 not okay.");
+                Log.WriteError("Test_Sub_Int64_Zero_Int32_4 NOT okay.");
             }
         }
         
         /// <summary>
         /// Tests: Subtraction operation using signed 64- and 32-bit integers, 
-        /// Inputs: 0, Large +ve, 
+        /// Inputs: 0, Largest +ve, 
         /// Result: Large -ve
         /// </summary>
         /// <remarks>
         /// <para> 
         /// Here a 32-bit signed integer is subtracted from a 64-bit signed integer producing a 64-bit signed value. 
-        /// Zero is used for the first operand and the 64-bit negative result must be a large -ve. 
+        /// Zero is used for the first operand and the 64-bit result must be equal to -(op2). 
         /// While testing subtraction using 64-bit integers, it is important to handle the "borrow-bit" correctly. 
         /// </para>
         /// </remarks>
         [NoGC]
-        public static void Test_Sub_Int64_Zero_Int32_LargePos()
+        public static void Test_Sub_Int64_Zero_Int32_LargestPos()
         {
             Int64 a = 0;
-            Int32 b = 429496729;
+            Int32 b = 2147483647;
             a = a - b;
-            if (a == -429496729)
+            if (a == -2147483647)
             {
-                Log.WriteSuccess("Test_Sub_Int64_Zero_Int32_LargePos okay.");
+                Log.WriteSuccess("Test_Sub_Int64_Zero_Int32_LargestPos okay.");
             }
             else
             {
-                Log.WriteError("Test_Sub_Int64_Zero_Int32_LargePos not okay.");
+                Log.WriteError("Test_Sub_Int64_Zero_Int32_LargestPos NOT okay.");
             }
         }
 
         /// <summary>
         /// Tests: Subtraction operation using signed 64- and 32-bit integers, 
-        /// Inputs: 0, Large -ve, 
-        /// Result: Large +ve
+        /// Inputs: 0, (Largest -ve - 1), 
+        /// Result: Largest +ve
         /// </summary>
         /// <remarks>
         /// <para> 
         /// Here a 32-bit signed integer is subtracted from a 64-bit signed integer producing a 64-bit signed value. 
-        /// Zero is used for the first operand and the 64-bit result must be a large +ve. 
+        /// Zero is used for the first operand and the 64-bit result must be equal to -(op2). 
         /// While testing subtraction using 64-bit integers, it is important to handle the "borrow-bit" correctly. 
         /// </para>
         /// </remarks>
         [NoGC]
-        public static void Test_Sub_Int64_Zero_Int32_LargeNeg()
+        public static void Test_Sub_Int64_Zero_Int32_LargestNeg()
         {
             Int64 a = 0;
-            Int32 b = -429496729;
+            Int32 b = -2147483647;
             a = a - b;
-            if (a == 429496729)
+            if (a == 2147483647)
             {
-                Log.WriteSuccess("Test_Sub_Int64_Zero_Int32_LargeNeg okay.");
+                Log.WriteSuccess("Test_Sub_Int64_Zero_Int32_LargestNeg okay.");
             }
             else
             {
-                Log.WriteError("Test_Sub_Int64_Zero_Int32_LargeNeg not okay.");
+                Log.WriteError("Test_Sub_Int64_Zero_Int32_LargestNeg NOT okay.");
             }
         }
         
@@ -920,7 +984,7 @@ namespace FlingOops
             }
             else
             {
-                Log.WriteError("Test_Sub_Int64_LargePos_Int64_4 not okay.");
+                Log.WriteError("Test_Sub_Int64_LargePos_Int64_4 NOT okay.");
             }
         }
 
@@ -948,7 +1012,7 @@ namespace FlingOops
             }
             else
             {
-                Log.WriteError("Test_Sub_Int64_Zero_Int64_4 not okay.");
+                Log.WriteError("Test_Sub_Int64_Zero_Int64_4 NOT okay.");
             }
         }
 
@@ -976,35 +1040,35 @@ namespace FlingOops
             }
             else
             {
-                Log.WriteError("Test_Sub_UInt64_Large_UInt64_Large not okay.");
+                Log.WriteError("Test_Sub_UInt64_Large_UInt64_Large NOT okay.");
             }
         }
 
         /// <summary>
         /// Tests: Subtraction operation using signed 64-bit integers, 
-        /// Inputs: Large -ve, Large +ve, 
-        /// Result: Large -ve
+        /// Inputs: Largest -ve, 1, 
+        /// Result: Largest +ve
         /// </summary>
         /// <remarks>
         /// <para> 
         /// Here a 64-bit signed integer is subtracted from a 64-bit signed integer producing a 64-bit signed value. 
-        /// Both operands are large values but op1 is -ve while op2 is +ve, therefore result must be a large -ve. 
+        /// The first operand is the largest -ve value, while op2 = 1. The result should be the largest +ve.
         /// While testing subtraction using 64-bit integers, it is important to handle the "borrow-bit" correctly. 
         /// </para>
         /// </remarks>
         [NoGC]
-        public static void Test_Sub_Int64_LargeNeg_Int64_LargePos()
+        public static void Test_Sub_Int64_LargestNeg_Int64_1()
         {
-            Int64 a = -1080863910568919040;
-            Int64 b = 844424930131968;
+            Int64 a = -9223372036854775808;
+            Int64 b = 1;
             a = a - b;
-            if (a == -1081708335499051008)
+            if (a == 9223372036854775807)
             {
-                Log.WriteSuccess("Test_Sub_Int64_LargeNeg_Int64_LargePos okay.");
+                Log.WriteSuccess("Test_Sub_Int64_LargestNeg_Int64_1 okay.");
             }
             else
             {
-                Log.WriteError("Test_Sub_Int64_LargeNeg_Int64_LargePos not okay.");
+                Log.WriteError("Test_Sub_Int64_LargestNeg_Int64_1 NOT okay.");
             }
         }
 
@@ -1032,7 +1096,7 @@ namespace FlingOops
             }
             else
             {
-                Log.WriteError("Test_Sub_Int64_Zero_Int64_LargePos not okay.");
+                Log.WriteError("Test_Sub_Int64_Zero_Int64_LargePos NOT okay.");
             }
         }
 
@@ -1060,7 +1124,7 @@ namespace FlingOops
             }
             else
             {
-                Log.WriteError("Test_Sub_Int64_Zero_Int64_LargeNeg not okay.");
+                Log.WriteError("Test_Sub_Int64_Zero_Int64_LargeNeg NOT okay.");
             }
         }
 
@@ -1088,7 +1152,7 @@ namespace FlingOops
             }
             else
             {
-                Log.WriteError("Test_Sub_Int64_LargeNeg_Int64_LargeNeg not okay.");
+                Log.WriteError("Test_Sub_Int64_LargeNeg_Int64_LargeNeg NOT okay.");
             }
         }
 
@@ -1116,7 +1180,7 @@ namespace FlingOops
             }
             else
             {
-                Log.WriteError("Test_Sub_Int64_LargePos_Int64_LargeNeg not okay.");
+                Log.WriteError("Test_Sub_Int64_LargePos_Int64_LargeNeg NOT okay.");
             }
         }
 
@@ -1144,9 +1208,13 @@ namespace FlingOops
             }
             else
             {
-                Log.WriteError("Test_Sub_Int64_LargePos_Int64_LargePos not okay.");
+                Log.WriteError("Test_Sub_Int64_LargePos_Int64_LargePos NOT okay.");
             }
         }
+
+        #endregion
+
+        #region Right shift
 
         #endregion
     }
