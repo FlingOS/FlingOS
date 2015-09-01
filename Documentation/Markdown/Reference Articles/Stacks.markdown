@@ -10,7 +10,7 @@ categories: docs reference
 ## Scope of this article
 - General explanation of history of stacks and concepts
 - Primary focus on hardware stacks (since they are most relevant to OS Dev)
-- 
+- Covers setup / use on x86 and MIPS
 
 ---
 
@@ -42,6 +42,8 @@ categories: docs reference
 
 ## What alternatives are there to a stack?
 
+## What is a stack machine?
+
 ## Why is a stack useful?
 
 ## Why is the stack necessary?
@@ -57,8 +59,14 @@ categories: docs reference
 ## Overview
 
 ## MIPS Stack
+- Setup
+- Use 
+- Alignment
 
 ## x86 Stack
+- Setup
+- Use
+- Optional alignment
 
 ---
 
@@ -86,5 +94,9 @@ categories: docs reference
 ---
 
 # References
+
+- https://en.wikipedia.org/wiki/Stack_(abstract_data_type)
+- https://en.wikipedia.org/wiki/Stack_machine
+- 
 
 *[acronym]: details
