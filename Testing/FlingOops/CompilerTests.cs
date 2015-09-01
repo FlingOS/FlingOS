@@ -77,6 +77,7 @@ namespace FlingOops
             Test_DivInt32_Neg10_Neg3();
             Test_DivInt32_10_3();
             Test_SubUInt32_9_4();
+            Test_SubInt32_Neg9_4();
 
             Log.WriteLine("Tests completed.");
         }
@@ -620,6 +621,27 @@ namespace FlingOops
             else
             {
                 Log.WriteError("Test_SubUInt32_9_4 not okay.");
+            }
+        }
+
+        /// <summary>
+        /// Tests: Subtraction operation using signed 32-bit integers, 
+        /// Inputs: -9, 4, 
+        /// Result: -13
+        /// </summary>
+        [NoGC]
+        public static void Test_SubInt32_Neg9_4()
+        {
+            Int32 a = -9;
+            Int32 b = 4;
+            a = a - b;
+            if (a == -13)
+            {
+                Log.WriteSuccess("Test_SubInt32_Neg9_4 okay.");
+            }
+            else
+            {
+                Log.WriteError("Test_SubInt32_Neg9_4 not okay.");
             }
         }
 
