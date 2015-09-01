@@ -74,14 +74,14 @@ namespace FlingOops
             Test_Mod_UInt32_9_UInt32_3();
             Test_Mod_UInt32_10_UInt32_3();
             Log.WriteLine("  Signed");
-            Test_Mod_Int32_Neg9_Int32_3();
-            Test_Mod_Int32_9_Int32_Neg3();
-            Test_Mod_Int32_Neg9_Int32_Neg3();
             Test_Mod_Int32_9_Int32_3();
-            Test_Mod_Int32_Neg10_Int32_3();
-            Test_Mod_Int32_10_Int32_Neg3();
-            Test_Mod_Int32_Neg10_Int32_Neg3();
+            Test_Mod_Int32_9_Int32_Neg3();
             Test_Mod_Int32_10_Int32_3();
+            Test_Mod_Int32_10_Int32_Neg3();
+            Test_Mod_Int32_Neg9_Int32_3();
+            Test_Mod_Int32_Neg9_Int32_Neg3();
+            Test_Mod_Int32_Neg10_Int32_3();
+            Test_Mod_Int32_Neg10_Int32_Neg3();            
             Log.WriteLine(" ");
 
             Log.WriteLine("Division:");
@@ -89,14 +89,14 @@ namespace FlingOops
             Test_Div_UInt32_9_UInt32_3();
             Test_Div_UInt32_10_UInt32_3();
             Log.WriteLine("  Signed");
-            Test_Div_Int32_Neg9_Int32_3();
-            Test_Div_Int32_9_Int32_Neg3();
-            Test_Div_Int32_Neg9_Int32_Neg3();
             Test_Div_Int32_9_Int32_3();
-            Test_Div_Int32_Neg10_Int32_3();
-            Test_Div_Int32_10_Int32_Neg3();
-            Test_Div_Int32_Neg10_Int32_Neg3();
+            Test_Div_Int32_9_Int32_Neg3();
             Test_Div_Int32_10_Int32_3();
+            Test_Div_Int32_10_Int32_Neg3();
+            Test_Div_Int32_Neg9_Int32_3();
+            Test_Div_Int32_Neg9_Int32_Neg3();
+            Test_Div_Int32_Neg10_Int32_3();
+            Test_Div_Int32_Neg10_Int32_Neg3();
             Log.WriteLine(" ");
 
             Log.WriteLine("Subtraction:");
@@ -104,10 +104,10 @@ namespace FlingOops
             Log.WriteLine("  Unsigned");
             Test_Sub_UInt32_9_UInt32_4();
             Log.WriteLine("  Signed");
+            Test_Sub_Int32_9_Int32_4();
+            Test_Sub_Int32_9_Int32_Neg4();
             Test_Sub_Int32_Neg9_Int32_4();
             Test_Sub_Int32_Neg9_Int32_Neg4();
-            Test_Sub_Int32_9_Int32_Neg4();
-            Test_Sub_Int32_9_Int32_4();
             Log.WriteLine(" 64-32");
             Log.WriteLine("  Unsigned");
             Test_Sub_UInt64_Large_UInt32_4();
@@ -121,13 +121,13 @@ namespace FlingOops
             Test_Sub_UInt64_Large_UInt64_Large();
             Log.WriteLine("  Signed");
             Test_Sub_Int64_LargePos_Int64_4();
+            Test_Sub_Int64_LargePos_Int64_LargePos();
             Test_Sub_Int64_LargePos_Int64_LargeNeg();
             Test_Sub_Int64_LargeNeg_Int64_LargePos();
             Test_Sub_Int64_LargeNeg_Int64_LargeNeg();
             Test_Sub_Int64_Zero_Int64_4();
             Test_Sub_Int64_Zero_Int64_LargePos();
             Test_Sub_Int64_Zero_Int64_LargeNeg();
-
             Log.WriteLine(" ");
             
             Log.WriteLine("Tests completed.");
@@ -1117,6 +1117,34 @@ namespace FlingOops
             else
             {
                 Log.WriteError("Test_Sub_Int64_LargePos_Int64_LargeNeg not okay.");
+            }
+        }
+
+        /// <summary>
+        /// Tests: Subtraction operation using signed 64-bit integers, 
+        /// Inputs: Large +ve, Large +ve, 
+        /// Result: Large +ve
+        /// </summary>
+        /// <remarks>
+        /// <para> 
+        /// Here a 64-bit signed integer is subtracted from a 64-bit signed integer producing a 64-bit signed value. 
+        /// A large +ve value is used for both operands, here the result is a large +ve. 
+        /// While testing subtraction using 64-bit integers, it is important to handle the "borrow-bit" correctly. 
+        /// </para>
+        /// </remarks>
+        [NoGC]
+        public static void Test_Sub_Int64_LargePos_Int64_LargePos()
+        {
+            Int64 a = 1080863910568919040;
+            Int64 b = 844424930131968;
+            a = a - b;
+            if (a == 1080019485638787072)
+            {
+                Log.WriteSuccess("Test_Sub_Int64_LargePos_Int64_LargePos okay.");
+            }
+            else
+            {
+                Log.WriteError("Test_Sub_Int64_LargePos_Int64_LargePos not okay.");
             }
         }
 
