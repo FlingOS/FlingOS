@@ -76,6 +76,7 @@ namespace FlingOops
             Test_DivInt32_10_Neg3();
             Test_DivInt32_Neg10_Neg3();
             Test_DivInt32_10_3();
+            Test_SubUInt32_9_4();
 
             Log.WriteLine("Tests completed.");
         }
@@ -100,6 +101,8 @@ namespace FlingOops
                 Log.WriteError("Test_AddUInt32_Zero_Zero not okay.");
             }
         }
+
+        #region Struct
 
         /// <summary>
         /// Tests: Sizeof a struct in bytes, 
@@ -143,6 +146,10 @@ namespace FlingOops
             }
         }
 
+        #endregion
+
+        #region Variables and pointers
+
         /// <summary>
         /// Tests: Local variable declaration and pointer dereferencing, 
         /// Inputs: 0xDEADBEEF, 
@@ -162,6 +169,10 @@ namespace FlingOops
                 Log.WriteError("Test_Locals_And_Pointers not okay.");
             }
         }
+
+        #endregion
+
+        #region Modulus
 
         /// <summary>
         /// Tests: Modulus (remainder) operation using unsigned 32-bit integers, 
@@ -373,6 +384,10 @@ namespace FlingOops
             }
         }
 
+        #endregion
+
+        #region Division
+
         /// <summary>
         /// Tests: Division operation using unsigned 32-bit integers, 
         /// Inputs: 9, 3, 
@@ -582,5 +597,32 @@ namespace FlingOops
                 Log.WriteError("Test_DivInt32_10_3 not okay.");
             }
         }
+
+        #endregion
+
+        #region Subtraction
+
+        /// <summary>
+        /// Tests: Subtraction operation using unsigned 32-bit integers, 
+        /// Inputs: 9, 4, 
+        /// Result: 5
+        /// </summary>
+        [NoGC]
+        public static void Test_SubUInt32_9_4()
+        {
+            UInt32 a = 9;
+            UInt32 b = 4;
+            a = a - b;
+            if (a == 5)
+            {
+                Log.WriteSuccess("Test_SubUInt32_9_4 okay.");
+            }
+            else
+            {
+                Log.WriteError("Test_SubUInt32_9_4 not okay.");
+            }
+        }
+
+        #endregion
     }
 }
