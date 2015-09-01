@@ -52,12 +52,28 @@ namespace FlingOops
         [NoGC]
         public static void RunTests()
         {
+            Log.WriteLine(" ");
+            Log.WriteLine("---Addition:");
+            Log.WriteLine("  Unsigned");
             Test_Add_UInt32_Zero_UInt32_Zero();
+            Log.WriteLine("  Signed");
+
+            Log.WriteLine(" ");
+
+            Log.WriteLine("---Struct:");
             Test_Sizeof_Struct();
             Test_Instance_Struct();
+            Log.WriteLine(" ");
+
+            Log.WriteLine("---Variables and pointers:");
             Test_Locals_And_Pointers();
+            Log.WriteLine(" ");
+
+            Log.WriteLine("---Modulus:");
+            Log.WriteLine("  Unsigned");
             Test_Mod_UInt32_9_UInt32_3();
             Test_Mod_UInt32_10_UInt32_3();
+            Log.WriteLine("  Signed");
             Test_Mod_Int32_Neg9_Int32_3();
             Test_Mod_Int32_9_Int32_Neg3();
             Test_Mod_Int32_Neg9_Int32_Neg3();
@@ -66,8 +82,13 @@ namespace FlingOops
             Test_Mod_Int32_10_Int32_Neg3();
             Test_Mod_Int32_Neg10_Int32_Neg3();
             Test_Mod_Int32_10_Int32_3();
+            Log.WriteLine(" ");
+
+            Log.WriteLine("Division:");
+            Log.WriteLine("  Unsigned");
             Test_Div_UInt32_9_UInt32_3();
             Test_Div_UInt32_10_UInt32_3();
+            Log.WriteLine("  Signed");
             Test_Div_Int32_Neg9_Int32_3();
             Test_Div_Int32_9_Int32_Neg3();
             Test_Div_Int32_Neg9_Int32_Neg3();
@@ -76,20 +97,36 @@ namespace FlingOops
             Test_Div_Int32_10_Int32_Neg3();
             Test_Div_Int32_Neg10_Int32_Neg3();
             Test_Div_Int32_10_Int32_3();
+            Log.WriteLine(" ");
+
+            Log.WriteLine("Subtraction:");
+            Log.WriteLine(" 32-32");
+            Log.WriteLine("  Unsigned");
             Test_Sub_UInt32_9_UInt32_4();
+            Log.WriteLine("  Signed");
             Test_Sub_Int32_Neg9_Int32_4();
             Test_Sub_Int32_Neg9_Int32_Neg4();
             Test_Sub_Int32_9_Int32_Neg4();
             Test_Sub_Int32_9_Int32_4();
-            Test_Sub_Int64_Large_Int32_4();
+            Log.WriteLine(" 64-32");
+            Log.WriteLine("  Unsigned");
+
+            Log.WriteLine("  Signed");
+            Test_Sub_Int64_LargePos_Int32_4();
             Test_Sub_Int64_Zero_Int32_4();
             Test_Sub_Int64_Zero_Int32_LargePos();
             Test_Sub_Int64_Zero_Int32_LargeNeg();
-            Test_Sub_Int64_Large_Int64_4();
-            Test_Sub_Int64_Zero_Int64_4();
+            Log.WriteLine(" 64-64");
+            Log.WriteLine("  Unsigned");
             Test_Sub_UInt64_Large_UInt64_Large();
+            Log.WriteLine("  Signed");
+            Test_Sub_Int64_LargePos_Int64_4();
+            Test_Sub_Int64_Zero_Int64_4();
             Test_Sub_Int64_LargeNeg_Int64_LargePos();
             Test_Sub_Int64_Zero_Int64_LargePos();
+            Test_Sub_Int64_Zero_Int64_LargeNeg();
+
+            Log.WriteLine(" ");
             
             Log.WriteLine("Tests completed.");
         }
@@ -737,18 +774,18 @@ namespace FlingOops
         /// </para>
         /// </remarks>
         [NoGC]
-        public static void Test_Sub_Int64_Large_Int32_4()
+        public static void Test_Sub_Int64_LargePos_Int32_4()
         {
             Int64 a = 1080863910568919040;
             Int32 b = 4;
             a = a - b;
             if (a == 1080863910568919036)
             {
-                Log.WriteSuccess("Test_Sub_Int64_Large_Int32_4 okay.");
+                Log.WriteSuccess("Test_Sub_Int64_LargePos_Int32_4 okay.");
             }
             else
             {
-                Log.WriteError("Test_Sub_Int64_Large_Int32_4 not okay.");
+                Log.WriteError("Test_Sub_Int64_LargePos_Int32_4 not okay.");
             }
         }
 
@@ -849,18 +886,18 @@ namespace FlingOops
         /// </para>
         /// </remarks>
         [NoGC]
-        public static void Test_Sub_Int64_Large_Int64_4()
+        public static void Test_Sub_Int64_LargePos_Int64_4()
         {
             Int64 a = 1080863910568919040;
             Int64 b = 4;
             a = a - b;
             if (a == 1080863910568919036)
             {
-                Log.WriteSuccess("Test_Sub_Int64_Large_Int64_4 okay.");
+                Log.WriteSuccess("Test_Sub_Int64_LargePos_Int64_4 okay.");
             }
             else
             {
-                Log.WriteError("Test_Sub_Int64_Large_Int64_4 not okay.");
+                Log.WriteError("Test_Sub_Int64_LargePos_Int64_4 not okay.");
             }
         }
 
@@ -973,6 +1010,34 @@ namespace FlingOops
             else
             {
                 Log.WriteError("Test_Sub_Int64_Zero_Int64_LargePos not okay.");
+            }
+        }
+
+        /// <summary>
+        /// Tests: Subtraction operation using signed 64-bit integers, 
+        /// Inputs: 0, Large -ve, 
+        /// Result: Large +ve
+        /// </summary>
+        /// <remarks>
+        /// <para> 
+        /// Here a 64-bit signed integer is subtracted from a 64-bit signed integer producing a 64-bit signed value. 
+        /// Zero is used for the first operand and the 64-bit result must be a large +ve. 
+        /// While testing subtraction using 64-bit integers, it is important to handle the "borrow-bit" correctly. 
+        /// </para>
+        /// </remarks>
+        [NoGC]
+        public static void Test_Sub_Int64_Zero_Int64_LargeNeg()
+        {
+            Int64 a = 0;
+            Int64 b = -844424930131968;
+            a = a - b;
+            if (a == 844424930131968)
+            {
+                Log.WriteSuccess("Test_Sub_Int64_Zero_Int64_LargeNeg okay.");
+            }
+            else
+            {
+                Log.WriteError("Test_Sub_Int64_Zero_Int64_LargeNeg not okay.");
             }
         }
 
