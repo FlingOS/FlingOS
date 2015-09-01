@@ -52,34 +52,37 @@ namespace FlingOops
         [NoGC]
         public static void RunTests()
         {
-            Test_AddUInt32_Zero_Zero();
+            Test_Add_UInt32_Zero_UInt32_Zero();
             Test_Sizeof_Struct();
             Test_Instance_Struct();
             Test_Locals_And_Pointers();
-            Test_ModUInt32_9_3();
-            Test_ModUInt32_10_3();
-            Test_ModInt32_Neg9_3();
-            Test_ModInt32_9_Neg3();
-            Test_ModInt32_Neg9_Neg3();
-            Test_ModInt32_9_3();
-            Test_ModInt32_Neg10_3();
-            Test_ModInt32_10_Neg3();
-            Test_ModInt32_Neg10_Neg3();
-            Test_ModInt32_10_3();
-            Test_DivUInt32_9_3();
-            Test_DivUInt32_10_3();
-            Test_DivInt32_Neg9_3();
-            Test_DivInt32_9_Neg3();
-            Test_DivInt32_Neg9_Neg3();
-            Test_DivInt32_9_3();
-            Test_DivInt32_Neg10_3();
-            Test_DivInt32_10_Neg3();
-            Test_DivInt32_Neg10_Neg3();
-            Test_DivInt32_10_3();
-            Test_SubUInt32_9_4();
-            Test_SubInt32_Neg9_4();
-            Test_SubInt32_Neg9_Neg4();
-            Test_SubInt32_9_Neg4();
+            Test_Mod_UInt32_9_UInt32_3();
+            Test_Mod_UInt32_10_UInt32_3();
+            Test_Mod_Int32_Neg9_Int32_3();
+            Test_Mod_Int32_9_Int32_Neg3();
+            Test_Mod_Int32_Neg9_Int32_Neg3();
+            Test_Mod_Int32_9_Int32_3();
+            Test_Mod_Int32_Neg10_Int32_3();
+            Test_Mod_Int32_10_Int32_Neg3();
+            Test_Mod_Int32_Neg10_Int32_Neg3();
+            Test_Mod_Int32_10_Int32_3();
+            Test_Div_UInt32_9_UInt32_3();
+            Test_Div_UInt32_10_UInt32_3();
+            Test_Div_Int32_Neg9_Int32_3();
+            Test_Div_Int32_9_Int32_Neg3();
+            Test_Div_Int32_Neg9_Int32_Neg3();
+            Test_Div_Int32_9_Int32_3();
+            Test_Div_Int32_Neg10_Int32_3();
+            Test_Div_Int32_10_Int32_Neg3();
+            Test_Div_Int32_Neg10_Int32_Neg3();
+            Test_Div_Int32_10_Int32_3();
+            Test_Sub_UInt32_9_UInt32_4();
+            Test_Sub_Int32_Neg9_Int32_4();
+            Test_Sub_Int32_Neg9_Int32_Neg4();
+            Test_Sub_Int32_9_Int32_Neg4();
+            Test_Sub_Int32_9_Int32_4();
+            Test_Sub_Int64_Large_Int32_4();
+            
 
             Log.WriteLine("Tests completed.");
         }
@@ -92,18 +95,18 @@ namespace FlingOops
         /// Result: 0
         /// </summary>
         [NoGC]
-        public static void Test_AddUInt32_Zero_Zero()
+        public static void Test_Add_UInt32_Zero_UInt32_Zero()
         {
             uint x = 0;
             uint y = 0;
             uint z = x + y;
             if (z == 0)
             {
-                Log.WriteSuccess("Test_AddUInt32_Zero_Zero okay.");
+                Log.WriteSuccess("Test_Add_UInt32_Zero_UInt32_Zero okay.");
             }
             else
             {
-                Log.WriteError("Test_AddUInt32_Zero_Zero not okay.");
+                Log.WriteError("Test_Add_UInt32_Zero_UInt32_Zero not okay.");
             }
         }
 
@@ -187,18 +190,18 @@ namespace FlingOops
         /// Result: 0
         /// </summary>
         [NoGC]
-        public static void Test_ModUInt32_9_3()
+        public static void Test_Mod_UInt32_9_UInt32_3()
         {
             UInt32 a = 9;
             UInt32 b = 3;
             a = a % b;
             if(a == 0)
             {
-                Log.WriteSuccess("Test_ModUInt32_9_3 okay.");
+                Log.WriteSuccess("Test_Mod_UInt32_9_UInt32_3 okay.");
             }
             else
             {
-                Log.WriteError("Test_ModUInt32_9_3 not okay.");
+                Log.WriteError("Test_Mod_UInt32_9_UInt32_3 not okay.");
             }
         }
 
@@ -208,18 +211,18 @@ namespace FlingOops
         /// Result: 1
         /// </summary>
         [NoGC]
-        public static void Test_ModUInt32_10_3()
+        public static void Test_Mod_UInt32_10_UInt32_3()
         {
             UInt32 a = 10;
             UInt32 b = 3;
             a = a % b;
             if (a == 1)
             {
-                Log.WriteSuccess("Test_ModUInt32_10_3 okay.");
+                Log.WriteSuccess("Test_Mod_UInt32_10_UInt32_3 okay.");
             }
             else
             {
-                Log.WriteError("Test_ModUInt32_10_3 not okay.");
+                Log.WriteError("Test_Mod_UInt32_10_UInt32_3 not okay.");
             }
         }
 
@@ -229,18 +232,18 @@ namespace FlingOops
         /// Result: 0
         /// </summary>
         [NoGC]
-        public static void Test_ModInt32_Neg9_3()
+        public static void Test_Mod_Int32_Neg9_Int32_3()
         {
             Int32 a = -9;
             Int32 b = 3;
             a = a % b;
             if (a == 0)
             {
-                Log.WriteSuccess("Test_ModInt32_Neg9_3 okay.");
+                Log.WriteSuccess("Test_Mod_Int32_Neg9_Int32_3 okay.");
             }
             else
             {
-                Log.WriteError("Test_ModInt32_Neg9_3 not okay.");
+                Log.WriteError("Test_Mod_Int32_Neg9_Int32_3 not okay.");
             }
         }
 
@@ -250,18 +253,18 @@ namespace FlingOops
         /// Result: 0
         /// </summary>
         [NoGC]
-        public static void Test_ModInt32_9_Neg3()
+        public static void Test_Mod_Int32_9_Int32_Neg3()
         {
             Int32 a = 9;
             Int32 b = -3;
             a = a % b;
             if (a == 0)
             {
-                Log.WriteSuccess("Test_ModInt32_9_Neg3 okay.");
+                Log.WriteSuccess("Test_Mod_Int32_9_Int32_Neg3 okay.");
             }
             else
             {
-                Log.WriteError("Test_ModInt32_9_Neg3 not okay.");
+                Log.WriteError("Test_Mod_Int32_9_Int32_Neg3 not okay.");
             }
         }
 
@@ -271,18 +274,18 @@ namespace FlingOops
         /// Result: 0
         /// </summary>
         [NoGC]
-        public static void Test_ModInt32_Neg9_Neg3()
+        public static void Test_Mod_Int32_Neg9_Int32_Neg3()
         {
             Int32 a = -9;
             Int32 b = -3;
             a = a % b;
             if (a == 0)
             {
-                Log.WriteSuccess("Test_ModInt32_Neg9_Neg3 okay.");
+                Log.WriteSuccess("Test_Mod_Int32_Neg9_Int32_Neg3 okay.");
             }
             else
             {
-                Log.WriteError("Test_ModInt32_Neg9_Neg3 not okay.");
+                Log.WriteError("Test_Mod_Int32_Neg9_Int32_Neg3 not okay.");
             }
         }
 
@@ -292,18 +295,18 @@ namespace FlingOops
         /// Result: 0
         /// </summary>
         [NoGC]
-        public static void Test_ModInt32_9_3()
+        public static void Test_Mod_Int32_9_Int32_3()
         {
             Int32 a = 9;
             Int32 b = 3;
             a = a % b;
             if (a == 0)
             {
-                Log.WriteSuccess("Test_ModInt32_9_3 okay.");
+                Log.WriteSuccess("Test_Mod_Int32_9_Int32_3 okay.");
             }
             else
             {
-                Log.WriteError("Test_ModInt32_9_3 not okay.");
+                Log.WriteError("Test_Mod_Int32_9_Int32_3 not okay.");
             }
         }
 
@@ -313,18 +316,18 @@ namespace FlingOops
         /// Result: -1
         /// </summary>
         [NoGC]
-        public static void Test_ModInt32_Neg10_3()
+        public static void Test_Mod_Int32_Neg10_Int32_3()
         {
             Int32 a = -10;
             Int32 b = 3;
             a = a % b;
             if (a == -1)
             {
-                Log.WriteSuccess("Test_ModInt32_Neg10_3 okay.");
+                Log.WriteSuccess("Test_Mod_Int32_Neg10_Int32_3 okay.");
             }
             else
             {
-                Log.WriteError("Test_ModInt32_Neg10_3 not okay.");
+                Log.WriteError("Test_Mod_Int32_Neg10_Int32_3 not okay.");
             }
         }
 
@@ -334,18 +337,18 @@ namespace FlingOops
         /// Result: 1
         /// </summary>
         [NoGC]
-        public static void Test_ModInt32_10_Neg3()
+        public static void Test_Mod_Int32_10_Int32_Neg3()
         {
             Int32 a = 10;
             Int32 b = -3;
             a = a % b;
             if (a == 1)
             {
-                Log.WriteSuccess("Test_ModInt32_10_Neg3 okay.");
+                Log.WriteSuccess("Test_Mod_Int32_10_Int32_Neg3 okay.");
             }
             else
             {
-                Log.WriteError("Test_ModInt32_10_Neg3 not okay.");
+                Log.WriteError("Test_Mod_Int32_10_Int32_Neg3 not okay.");
             }
         }
 
@@ -355,18 +358,18 @@ namespace FlingOops
         /// Result: -1
         /// </summary>
         [NoGC]
-        public static void Test_ModInt32_Neg10_Neg3()
+        public static void Test_Mod_Int32_Neg10_Int32_Neg3()
         {
             Int32 a = -10;
             Int32 b = -3;
             a = a % b;
             if (a == -1)
             {
-                Log.WriteSuccess("Test_ModInt32_Neg10_Neg3 okay.");
+                Log.WriteSuccess("Test_Mod_Int32_Neg10_Int32_Neg3 okay.");
             }
             else
             {
-                Log.WriteError("Test_ModInt32_Neg10_Neg3 not okay.");
+                Log.WriteError("Test_Mod_Int32_Neg10_Int32_Neg3 not okay.");
             }
         }
 
@@ -376,18 +379,18 @@ namespace FlingOops
         /// Result: 1
         /// </summary>
         [NoGC]
-        public static void Test_ModInt32_10_3()
+        public static void Test_Mod_Int32_10_Int32_3()
         {
             Int32 a = 10;
             Int32 b = 3;
             a = a % b;
             if (a == 1)
             {
-                Log.WriteSuccess("Test_ModInt32_10_3 okay.");
+                Log.WriteSuccess("Test_Mod_Int32_10_Int32_3 okay.");
             }
             else
             {
-                Log.WriteError("Test_ModInt32_10_3 not okay.");
+                Log.WriteError("Test_Mod_Int32_10_Int32_3 not okay.");
             }
         }
 
@@ -401,18 +404,18 @@ namespace FlingOops
         /// Result: 3
         /// </summary>
         [NoGC]
-        public static void Test_DivUInt32_9_3()
+        public static void Test_Div_UInt32_9_UInt32_3()
         {
             UInt32 a = 9;
             UInt32 b = 3;
             a = a / b;
             if(a == 3)
             {
-                Log.WriteSuccess("Test_DivUInt32_9_3 okay.");
+                Log.WriteSuccess("Test_Div_UInt32_9_UInt32_3 okay.");
             }
             else
             {
-                Log.WriteError("Test_DivUInt32_9_3 not okay.");
+                Log.WriteError("Test_Div_UInt32_9_UInt32_3 not okay.");
             }
         }
 
@@ -422,18 +425,18 @@ namespace FlingOops
         /// Result: 3
         /// </summary>
         [NoGC]
-        public static void Test_DivUInt32_10_3()
+        public static void Test_Div_UInt32_10_UInt32_3()
         {
             UInt32 a = 10;
             UInt32 b = 3;
             a = a / b;
             if (a == 3)
             {
-                Log.WriteSuccess("Test_DivUInt32_10_3 okay.");
+                Log.WriteSuccess("Test_Div_UInt32_10_UInt32_3 okay.");
             }
             else
             {
-                Log.WriteError("Test_DivUInt32_10_3 not okay.");
+                Log.WriteError("Test_Div_UInt32_10_UInt32_3 not okay.");
             }
         }
 
@@ -443,18 +446,18 @@ namespace FlingOops
         /// Result: -3
         /// </summary>
         [NoGC]
-        public static void Test_DivInt32_Neg9_3()
+        public static void Test_Div_Int32_Neg9_Int32_3()
         {
             Int32 a = -9;
             Int32 b = 3;
             a = a / b;
             if (a == -3)
             {
-                Log.WriteSuccess("Test_DivInt32_Neg9_3 okay.");
+                Log.WriteSuccess("Test_Div_Int32_Neg9_Int32_3 okay.");
             }
             else
             {
-                Log.WriteError("Test_DivInt32_Neg9_3 not okay.");
+                Log.WriteError("Test_Div_Int32_Neg9_Int32_3 not okay.");
             }
         }
 
@@ -464,18 +467,18 @@ namespace FlingOops
         /// Result: -3
         /// </summary>
         [NoGC]
-        public static void Test_DivInt32_9_Neg3()
+        public static void Test_Div_Int32_9_Int32_Neg3()
         {
             Int32 a = 9;
             Int32 b = -3;
             a = a / b;
             if (a == -3)
             {
-                Log.WriteSuccess("Test_DivInt32_9_Neg3 okay.");
+                Log.WriteSuccess("Test_Div_Int32_9_Int32_Neg3 okay.");
             }
             else
             {
-                Log.WriteError("Test_DivInt32_9_Neg3 not okay.");
+                Log.WriteError("Test_Div_Int32_9_Int32_Neg3 not okay.");
             }
         }
 
@@ -485,18 +488,18 @@ namespace FlingOops
         /// Result: 3
         /// </summary>
         [NoGC]
-        public static void Test_DivInt32_Neg9_Neg3()
+        public static void Test_Div_Int32_Neg9_Int32_Neg3()
         {
             Int32 a = -9;
             Int32 b = -3;
             a = a / b;
             if (a == 3)
             {
-                Log.WriteSuccess("Test_DivInt32_Neg9_Neg3 okay.");
+                Log.WriteSuccess("Test_Div_Int32_Neg9_Int32_Neg3 okay.");
             }
             else
             {
-                Log.WriteError("Test_DivInt32_Neg9_Neg3 not okay.");
+                Log.WriteError("Test_Div_Int32_Neg9_Int32_Neg3 not okay.");
             }
         }
 
@@ -506,18 +509,18 @@ namespace FlingOops
         /// Result: 3
         /// </summary>
         [NoGC]
-        public static void Test_DivInt32_9_3()
+        public static void Test_Div_Int32_9_Int32_3()
         {
             Int32 a = 9;
             Int32 b = 3;
             a = a / b;
             if (a == 3)
             {
-                Log.WriteSuccess("Test_DivInt32_9_3 okay.");
+                Log.WriteSuccess("Test_Div_Int32_9_Int32_3 okay.");
             }
             else
             {
-                Log.WriteError("Test_DivInt32_9_3 not okay.");
+                Log.WriteError("Test_Div_Int32_9_Int32_3 not okay.");
             }
         }
 
@@ -527,18 +530,18 @@ namespace FlingOops
         /// Result: -3
         /// </summary>
         [NoGC]
-        public static void Test_DivInt32_Neg10_3()
+        public static void Test_Div_Int32_Neg10_Int32_3()
         {
             Int32 a = -10;
             Int32 b = 3;
             a = a / b;
             if (a == -3)
             {
-                Log.WriteSuccess("Test_DivInt32_Neg10_3 okay.");
+                Log.WriteSuccess("Test_Div_Int32_Neg10_Int32_3 okay.");
             }
             else
             {
-                Log.WriteError("Test_DivInt32_Neg10_3 not okay.");
+                Log.WriteError("Test_Div_Int32_Neg10_Int32_3 not okay.");
             }
         }
 
@@ -548,18 +551,18 @@ namespace FlingOops
         /// Result: -3
         /// </summary>
         [NoGC]
-        public static void Test_DivInt32_10_Neg3()
+        public static void Test_Div_Int32_10_Int32_Neg3()
         {
             Int32 a = 10;
             Int32 b = -3;
             a = a / b;
             if (a == -3)
             {
-                Log.WriteSuccess("Test_DivInt32_10_Neg3 okay.");
+                Log.WriteSuccess("Test_Div_Int32_10_Int32_Neg3 okay.");
             }
             else
             {
-                Log.WriteError("Test_DivInt32_10_Neg3 not okay.");
+                Log.WriteError("Test_Div_Int32_10_Int32_Neg3 not okay.");
             }
         }
 
@@ -569,18 +572,18 @@ namespace FlingOops
         /// Result: 3
         /// </summary>
         [NoGC]
-        public static void Test_DivInt32_Neg10_Neg3()
+        public static void Test_Div_Int32_Neg10_Int32_Neg3()
         {
             Int32 a = -10;
             Int32 b = -3;
             a = a / b;
             if (a == 3)
             {
-                Log.WriteSuccess("Test_DivInt32_Neg10_Neg3 okay.");
+                Log.WriteSuccess("Test_Div_Int32_Neg10_Int32_Neg3 okay.");
             }
             else
             {
-                Log.WriteError("Test_DivInt32_Neg10_Neg3 not okay.");
+                Log.WriteError("Test_Div_Int32_Neg10_Int32_Neg3 not okay.");
             }
         }
 
@@ -590,18 +593,18 @@ namespace FlingOops
         /// Result: 3
         /// </summary>
         [NoGC]
-        public static void Test_DivInt32_10_3()
+        public static void Test_Div_Int32_10_Int32_3()
         {
             Int32 a = 10;
             Int32 b = 3;
             a = a / b;
             if (a == 3)
             {
-                Log.WriteSuccess("Test_DivInt32_10_3 okay.");
+                Log.WriteSuccess("Test_Div_Int32_10_Int32_3 okay.");
             }
             else
             {
-                Log.WriteError("Test_DivInt32_10_3 not okay.");
+                Log.WriteError("Test_Div_Int32_10_Int32_3 not okay.");
             }
         }
 
@@ -615,18 +618,18 @@ namespace FlingOops
         /// Result: 5
         /// </summary>
         [NoGC]
-        public static void Test_SubUInt32_9_4()
+        public static void Test_Sub_UInt32_9_UInt32_4()
         {
             UInt32 a = 9;
             UInt32 b = 4;
             a = a - b;
             if (a == 5)
             {
-                Log.WriteSuccess("Test_SubUInt32_9_4 okay.");
+                Log.WriteSuccess("Test_Sub_UInt32_9_UInt32_4 okay.");
             }
             else
             {
-                Log.WriteError("Test_SubUInt32_9_4 not okay.");
+                Log.WriteError("Test_Sub_UInt32_9_UInt32_4 not okay.");
             }
         }
 
@@ -636,18 +639,18 @@ namespace FlingOops
         /// Result: -13
         /// </summary>
         [NoGC]
-        public static void Test_SubInt32_Neg9_4()
+        public static void Test_Sub_Int32_Neg9_Int32_4()
         {
             Int32 a = -9;
             Int32 b = 4;
             a = a - b;
             if (a == -13)
             {
-                Log.WriteSuccess("Test_SubInt32_Neg9_4 okay.");
+                Log.WriteSuccess("Test_Sub_Int32_Neg9_Int32_4 okay.");
             }
             else
             {
-                Log.WriteError("Test_SubInt32_Neg9_4 not okay.");
+                Log.WriteError("Test_Sub_Int32_Neg9_Int32_4 not okay.");
             }
         }
 
@@ -657,18 +660,18 @@ namespace FlingOops
         /// Result: -5
         /// </summary>
         [NoGC]
-        public static void Test_SubInt32_Neg9_Neg4()
+        public static void Test_Sub_Int32_Neg9_Int32_Neg4()
         {
             Int32 a = -9;
             Int32 b = -4;
             a = a - b;
             if (a == -5)
             {
-                Log.WriteSuccess("Test_SubInt32_Neg9_Neg4 okay.");
+                Log.WriteSuccess("Test_Sub_Int32_Neg9_Int32_Neg4 okay.");
             }
             else
             {
-                Log.WriteError("Test_SubInt32_Neg9_Neg4 not okay.");
+                Log.WriteError("Test_Sub_Int32_Neg9_Int32_Neg4 not okay.");
             }
         }
 
@@ -678,18 +681,65 @@ namespace FlingOops
         /// Result: 13
         /// </summary>
         [NoGC]
-        public static void Test_SubInt32_9_Neg4()
+        public static void Test_Sub_Int32_9_Int32_Neg4()
         {
             Int32 a = 9;
             Int32 b = -4;
             a = a - b;
             if (a == 13)
             {
-                Log.WriteSuccess("Test_SubInt32_9_Neg4 okay.");
+                Log.WriteSuccess("Test_Sub_Int32_9_Int32_Neg4 okay.");
             }
             else
             {
-                Log.WriteError("Test_SubInt32_9_Neg4 not okay.");
+                Log.WriteError("Test_Sub_Int32_9_Int32_Neg4 not okay.");
+            }
+        }
+
+        /// <summary>
+        /// Tests: Subtraction operation using signed 32-bit integers, 
+        /// Inputs: 9, 4, 
+        /// Result: 5
+        /// </summary>
+        [NoGC]
+        public static void Test_Sub_Int32_9_Int32_4()
+        {
+            Int32 a = 9;
+            Int32 b = 4;
+            a = a - b;
+            if (a == 5)
+            {
+                Log.WriteSuccess("Test_Sub_Int32_9_Int32_4 okay.");
+            }
+            else
+            {
+                Log.WriteError("Test_Sub_Int32_9_Int32_4 not okay.");
+            }
+        }
+
+        /// <summary>
+        /// Tests: Subtraction operation using signed 64- and 32-bit integers, 
+        /// <para> 
+        /// Here a 32-bit signed integer is subtracted from a 64-bit signed integer. A small value is subtracted from a large value. 
+        /// A large value is used for the first operand to ensure that the high 32-bits are non-zero.
+        /// While testing subtraction using 64-bit integers, it is important to handle the "borrow-bit" correctly. 
+        /// </para>
+        /// Inputs: 1080863910568919040, 4, 
+        /// Result: 1080863910568919036
+        /// </summary>
+        [NoGC]
+        public static void Test_Sub_Int64_Large_Int32_4()
+        {
+            Int64 a = 1080863910568919040;
+            Int32 b = 4;
+            a = a - b;
+            if (a == 1080863910568919036)
+            {
+                Log.WriteSuccess("Test_Sub_Int64_Large_Int32_4 okay.");
+            }
+            else
+            {
+                Log.WriteError("Test_Sub_Int64_Large_Int32_4 not okay.");
             }
         }
 
