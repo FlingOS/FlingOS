@@ -110,7 +110,7 @@ namespace FlingOops
             Test_Sub_Int32_9_Int32_4();
             Log.WriteLine(" 64-32");
             Log.WriteLine("  Unsigned");
-
+            Test_Sub_UInt64_Large_UInt32_4();
             Log.WriteLine("  Signed");
             Test_Sub_Int64_LargePos_Int32_4();
             Test_Sub_Int64_Zero_Int32_4();
@@ -758,6 +758,27 @@ namespace FlingOops
             else
             {
                 Log.WriteError("Test_Sub_Int32_9_Int32_4 not okay.");
+            }
+        } 
+
+        /// <summary>
+        /// Tests: Subtraction operation using unsigned 64- and 32-bit integers, 
+        /// Inputs: Large, 4, 
+        /// Result: Large
+        /// </summary>
+        [NoGC]
+        public static void Test_Sub_UInt64_Large_UInt32_4()
+        {
+            UInt64 a = 1080863910568919030;
+            UInt32 b = 4;
+            a = a - b;
+            if (a == 1080863910568919026)
+            {
+                Log.WriteSuccess("Test_Sub_UInt64_Large_UInt32_4 okay.");
+            }
+            else
+            {
+                Log.WriteError("Test_Sub_UInt64_Large_UInt32_4 not okay.");
             }
         }
 
