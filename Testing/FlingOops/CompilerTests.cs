@@ -83,12 +83,13 @@ namespace FlingOops
             Test_Sub_Int32_9_Int32_4();
             Test_Sub_Int64_Large_Int32_4();
             Test_Sub_Int64_Zero_Int32_4();
-            Test_Sub_Int64_Zero_Int32_Large();
+            Test_Sub_Int64_Zero_Int32_LargePos();
             Test_Sub_Int64_Large_Int64_4();
             Test_Sub_Int64_Zero_Int64_4();
             Test_Sub_UInt64_Large_UInt64_Large();
             Test_Sub_Int64_LargeNeg_Int64_LargePos();
-
+            Test_Sub_Int64_Zero_Int64_LargePos();
+            
             Log.WriteLine("Tests completed.");
         }
 
@@ -791,18 +792,18 @@ namespace FlingOops
         /// </para>
         /// </remarks>
         [NoGC]
-        public static void Test_Sub_Int64_Zero_Int32_Large()
+        public static void Test_Sub_Int64_Zero_Int32_LargePos()
         {
             Int64 a = 0;
             Int32 b = 429496729;
             a = a - b;
             if (a == -429496729)
             {
-                Log.WriteSuccess("Test_Sub_Int64_Zero_Int32_Large okay.");
+                Log.WriteSuccess("Test_Sub_Int64_Zero_Int32_LargePos okay.");
             }
             else
             {
-                Log.WriteError("Test_Sub_Int64_Zero_Int32_Large not okay.");
+                Log.WriteError("Test_Sub_Int64_Zero_Int32_LargePos not okay.");
             }
         }
 
@@ -915,6 +916,34 @@ namespace FlingOops
             else
             {
                 Log.WriteError("Test_Sub_Int64_LargeNeg_Int64_LargePos not okay.");
+            }
+        }
+
+        /// <summary>
+        /// Tests: Subtraction operation using signed 64-bit integers, 
+        /// Inputs: 0, Large +ve, 
+        /// Result: Large -ve
+        /// </summary>
+        /// <remarks>
+        /// <para> 
+        /// Here a 64-bit signed integer is subtracted from a 64-bit signed integer producing a 64-bit signed value. 
+        /// Zero is used for the first operand and the 64-bit negative result must be large. 
+        /// While testing subtraction using 64-bit integers, it is important to handle the "borrow-bit" correctly. 
+        /// </para>
+        /// </remarks>
+        [NoGC]
+        public static void Test_Sub_Int64_Zero_Int64_LargePos()
+        {
+            Int64 a = 0;
+            Int64 b = 844424930131968;
+            a = a - b;
+            if (a == -844424930131968)
+            {
+                Log.WriteSuccess("Test_Sub_Int64_Zero_Int64_LargePos okay.");
+            }
+            else
+            {
+                Log.WriteError("Test_Sub_Int64_Zero_Int64_LargePos not okay.");
             }
         }
 
