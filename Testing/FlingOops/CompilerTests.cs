@@ -85,6 +85,7 @@ namespace FlingOops
             Test_Sub_Int64_Zero_Int32_4();
             Test_Sub_Int64_Large_Int64_4();
             Test_Sub_Int64_Zero_Int64_4();
+            Test_Sub_UInt64_Large_UInt64_Large();
 
             Log.WriteLine("Tests completed.");
         }
@@ -722,7 +723,7 @@ namespace FlingOops
         /// <summary>
         /// Tests: Subtraction operation using signed 64- and 32-bit integers, 
         /// Inputs: Large +ve, 4, 
-        /// Result: 1080863910568919036
+        /// Result: Large +ve
         /// </summary>
         /// <remarks>
         /// <para> 
@@ -778,7 +779,7 @@ namespace FlingOops
         /// <summary>
         /// Tests: Subtraction operation using signed 64-bit integers, 
         /// Inputs: Large +ve, 4, 
-        /// Result: 1080863910568919036
+        /// Result: Large +ve
         /// </summary>
         /// <remarks>
         /// <para> 
@@ -828,6 +829,34 @@ namespace FlingOops
             else
             {
                 Log.WriteError("Test_Sub_Int64_Zero_Int64_4 not okay.");
+            }
+        }
+
+        /// <summary>
+        /// Tests: Subtraction operation using unsigned 64-bit integers, 
+        /// Inputs: Large +ve, Large +ve, 
+        /// Result: +ve
+        /// </summary>
+        /// <remarks>
+        /// <para> 
+        /// Here a 64-bit unsigned integer is subtracted from a 64-bit unsigned integer producing a 64-bit unsigned value. 
+        /// Both operands are large values but op1 > op2, therefore result must be +ve. 
+        /// While testing subtraction using 64-bit integers, it is important to handle the "borrow-bit" correctly. 
+        /// </para>
+        /// </remarks>
+        [NoGC]
+        public static void Test_Sub_UInt64_Large_UInt64_Large()
+        {
+            UInt64 a = 1080863910568919040;
+            UInt64 b = 844424930131968;
+            a = a - b;
+            if (a == 1080019485638787072)
+            {
+                Log.WriteSuccess("Test_Sub_UInt64_Large_UInt64_Large okay.");
+            }
+            else
+            {
+                Log.WriteError("Test_Sub_UInt64_Large_UInt64_Large not okay.");
             }
         }
 
