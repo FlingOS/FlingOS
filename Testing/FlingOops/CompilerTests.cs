@@ -21,7 +21,7 @@ namespace FlingOops
     /// <para>
     /// As a result, the tests provided cannot be run in an automated fashion. The compiler
     /// tester/developer will need to select which tests to run, execute them and observe
-    /// the output to determine if it has worked or NOT. If NOT, manual debugging will be
+    /// the output to determine if it has worked or not. If not, manual debugging will be
     /// required.
     /// </para>
     /// <para>
@@ -155,7 +155,20 @@ namespace FlingOops
 
             #endregion
 
-            #region Right shift
+            #region Right shift calls
+
+            Log.WriteLine("Right shift:");
+            Log.WriteLine(" 32");
+            Log.WriteLine("  Unsigned");
+  
+            Log.WriteLine("  Signed");
+
+            Log.WriteLine(" 64");
+            Log.WriteLine("  Unsigned");
+            Test_RShift_UInt64_Large_Int32_10();
+            Log.WriteLine("  Signed");
+
+            Log.WriteLine(" ");
 
             #endregion
 
@@ -860,7 +873,6 @@ namespace FlingOops
         public static void Test_Sub_Int64_LargestNeg_Int32_4()
         {
             Int64 a = -9223372036854775808;
-            Int64 d = 9223372036854775807;
             Int32 b = 4;
             a = a - b;
             if (a == 9223372036854775804)
@@ -1215,6 +1227,33 @@ namespace FlingOops
         #endregion
 
         #region Right shift
+
+        /// <summary>
+        /// Tests: Right shift operation shifting an unsigned 64-bit value, 
+        /// Inputs: Large, 10, 
+        /// Result: Correctly right shifted by 10.
+        /// </summary>
+        /// <remarks>
+        /// <para>
+        /// C# requires that the distance value is a signed 32-bit integer. 
+        /// Only low order 5-bit is used when a 32-bit values is shifted, while low order 6-bit if a 64-bit value is shifted.
+        /// </para>
+        /// </remarks>
+        [NoGC]
+        public static void Test_RShift_UInt64_Large_Int32_10()
+        {
+            UInt64 a = 576460752303423488;
+            Int32 b = 10;
+            a = a >> b;
+            if (a == 562949953421312)
+            {
+                Log.WriteSuccess("Test_RShift_UInt64_Large_Int32_10 okay.");
+            }
+            else
+            {
+                Log.WriteError("Test_RShift_UInt64_Large_Int32_10 NOT okay.");
+            }
+        }
 
         #endregion
     }
