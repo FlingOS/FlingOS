@@ -3,6 +3,13 @@ using System;
 
 namespace FlingOops.MIPS.CI20
 {
+    /// <summary>
+    /// <remarks>
+    /// <para>
+    /// See CompilerTests class remarks for notes on UART setup for MIPS.
+    /// </para>
+    /// </remarks>
+    /// </summary>
     public static class Kernel
     {
         [Drivers.Compiler.Attributes.NoGC]

@@ -30,6 +30,9 @@ namespace FlingOops
     /// has been fixed, it should be documented thoroughly for future reference. The architecture
     /// specific test class should then be removed.
     /// </para>
+    /// <para>
+    /// For MIPS UART_Num is set to 0 for UBoot serial booting and is set to 4 for UBS OTG booting.
+    /// </para>
     /// </remarks>
 
     /// <summary>
