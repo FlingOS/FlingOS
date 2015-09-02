@@ -226,13 +226,11 @@ Unsurprisingly, given the number of people in the world, there were some who tho
 
 # References
 
-- https://en.wikipedia.org/wiki/Stack_(abstract_data_type)
-- https://en.wikipedia.org/wiki/Stack_machine
-- http://worldwide.espacenet.com/publicationDetails/originalDocument?CC=DE&NR=1094019&KC=&FT=E
-- http://www.cs.cmu.edu/~adamchik/15-121/lectures/Stacks%20and%20Queues/Stacks%20and%20Queues.html
-- http://www.i-programmer.info/babbages-bag/263-stacks.html
-- http://www.allisons.org/ll/AlgDS/Stack/
-- http://wiki.osdev.org/Stack
-- https://en.wikipedia.org/wiki/Register_machine
-
-*[acronym]: details
+- [Wikipedia.org - Stack (abstract data type)](https://en.wikipedia.org/wiki/Stack_(abstract_data_type))
+- [Wikipedia.org - Stack Machine](https://en.wikipedia.org/wiki/Stack_machine)
+- [EspaceNet.com - Patent](http://worldwide.espacenet.com/publicationDetails/originalDocument?CC=DE&NR=1094019&KC=&FT=E)
+- [CMU.edu - Stacks and Queues](http://www.cs.cmu.edu/~adamchik/15-121/lectures/Stacks%20and%20Queues/Stacks%20and%20Queues.html)
+- [I-Programmer.info - Stacks](http://www.i-programmer.info/babbages-bag/263-stacks.html)
+- [Allisons.org - Stack](http://www.allisons.org/ll/AlgDS/Stack/)
+- [OSDev.org - Stack](http://wiki.osdev.org/Stack)
+- [Wikipedia.org - Register machine](https://en.wikipedia.org/wiki/Register_machine)
