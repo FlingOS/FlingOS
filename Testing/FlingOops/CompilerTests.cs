@@ -190,8 +190,8 @@ namespace FlingOops
 
             Log.WriteLine("Left shift:");
             Log.WriteLine(" 32");
-            //Log.WriteLine("  Unsigned");
-            //Test_RShift_UInt32_Small_Int32_6();
+            Log.WriteLine("  Unsigned");
+            Test_LShift_UInt32_Small_Int32_6();
             //Test_RShift_UInt32_Largest_Int32_6();
             Log.WriteLine("  Signed");
             //Test_RShift_Int32_SmallPos_Int32_6();
@@ -1727,33 +1727,33 @@ namespace FlingOops
             }
         }
 
-        ///// <summary>
-        ///// Tests: Right shift operation shifting an unsigned 32-bit value, 
-        ///// Inputs: 32-bit, 6, 
-        ///// Result: 32-bit.
-        ///// </summary>
-        ///// <remarks>
-        ///// <para>
-        ///// C# requires that the distance value is a signed 32-bit integer. 
-        ///// Only low order 5-bit is used when a 32-bit values is shifted, while low order 6-bit if a 64-bit value is shifted.
-        ///// In other words, a 32-/64-bit value cannot be pushed by more than 31/63 bits.
-        ///// </para>
-        ///// </remarks>
-        //[NoGC]
-        //public static void Test_RShift_UInt32_Small_Int32_6()
-        //{
-        //    UInt32 a = 4352;
-        //    Int32 b = 6;
-        //    a = a >> b;
-        //    if (a == 68)
-        //    {
-        //        Log.WriteSuccess("Test_RShift_UInt32_Small_Int32_6 okay.");
-        //    }
-        //    else
-        //    {
-        //        Log.WriteError("Test_RShift_UInt32_Small_Int32_6 NOT okay.");
-        //    }
-        //}
+        /// <summary>
+        /// Tests: Right shift operation shifting an unsigned 32-bit value, 
+        /// Inputs: 32-bit, 6, 
+        /// Result: 32-bit.
+        /// </summary>
+        /// <remarks>
+        /// <para>
+        /// C# requires that the distance value is a signed 32-bit integer. 
+        /// Only low order 5-bit is used when a 32-bit values is shifted, while low order 6-bit if a 64-bit value is shifted.
+        /// In other words, a 32-/64-bit value cannot be pushed by more than 31/63 bits.
+        /// </para>
+        /// </remarks>
+        [NoGC]
+        public static void Test_LShift_UInt32_Small_Int32_6()
+        {
+            UInt32 a = 4352;
+            Int32 b = 6;
+            a = a << b;
+            if (a == 278528)
+            {
+                Log.WriteSuccess("Test_LShift_UInt32_Small_Int32_6 okay.");
+            }
+            else
+            {
+                Log.WriteError("Test_LShift_UInt32_Small_Int32_6 NOT okay.");
+            }
+        }
 
         ///// <summary>
         ///// Tests: Right shift operation shifting a signed 64-bit value, 
