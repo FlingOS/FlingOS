@@ -209,7 +209,7 @@ namespace FlingOops
             Log.WriteLine("   dist<32");
             Test_LShift_Int64_LargeNeg_Int32_6();
             Log.WriteLine("   dist>=32");
-            //Test_RShift_Int64_LargestPos_Int32_40();
+            Test_LShift_Int64_LargestPos_Int32_40();
             //Test_LShift_Int64_LargestNeg_Int32_40();
             Test_LShift_Int64_LargeNeg_Int32_40();
             //Test_RShift_Int64_Neg1_Int32_63();
@@ -1812,33 +1812,33 @@ namespace FlingOops
             }
         }
 
-        ///// <summary>
-        ///// Tests: Right shift operation shifting a signed 64-bit value, 
-        ///// Inputs: Largest 64-bit +ve, 40, 
-        ///// Result: 32-bit +ve (stored as 64-bit padded with 0s).
-        ///// </summary>
-        ///// <remarks>
-        ///// <para>
-        ///// C# requires that the distance value is a signed 32-bit integer. 
-        ///// Only low order 5-bit is used when a 32-bit values is shifted, while low order 6-bit if a 64-bit value is shifted.
-        ///// In other words, a 32-/64-bit value cannot be pushed by more than 31/63 bits.
-        ///// </para>
-        ///// </remarks>
-        //[NoGC]
-        //public static void Test_RShift_Int64_LargestPos_Int32_40()
-        //{
-        //    Int64 a = 9223372036854775807;
-        //    Int32 b = 40;
-        //    a = a >> b;
-        //    if (a == 8388607)
-        //    {
-        //        Log.WriteSuccess("Test_RShift_Int64_LargestPos_Int32_40 okay.");
-        //    }
-        //    else
-        //    {
-        //        Log.WriteError("Test_RShift_Int64_LargestPos_Int32_40 NOT okay.");
-        //    }
-        //}
+        /// <summary>
+        /// Tests: Left shift operation shifting a signed 64-bit value, 
+        /// Inputs: Largest 64-bit +ve, 40, 
+        /// Result: 64-bit +ve.
+        /// </summary>
+        /// <remarks>
+        /// <para>
+        /// C# requires that the distance value is a signed 32-bit integer. 
+        /// Only low order 5-bit is used when a 32-bit values is shifted, while low order 6-bit if a 64-bit value is shifted.
+        /// In other words, a 32-/64-bit value cannot be pushed by more than 31/63 bits.
+        /// </para>
+        /// </remarks>
+        [NoGC]
+        public static void Test_LShift_Int64_LargestPos_Int32_40()
+        {
+            Int64 a = 9223372036854775807;
+            Int32 b = 40;
+            a = a << b;
+            if (a == -1099511627776)
+            {
+                Log.WriteSuccess("Test_LShift_Int64_LargestPos_Int32_40 okay.");
+            }
+            else
+            {
+                Log.WriteError("Test_LShift_Int64_LargestPos_Int32_40 NOT okay.");
+            }
+        }
 
         ///// <summary>
         ///// Tests: Right shift operation shifting a signed 64-bit value, 
