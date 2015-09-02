@@ -65,7 +65,7 @@ namespace FlingOops.MIPS.CI20
         private const uint ExternalClockDivisor = CI20.ExternalClockRate / 16 / 115200;
         private const uint BitsPerSecond = 115200;
         
-        private static uint UART_Num = 0;
+        private static uint UART_Num = 4;
         
         private static void InitBoard()
         {
@@ -136,6 +136,32 @@ namespace FlingOops.MIPS.CI20
         private static uint ReadRegister(uint addr)
         {
             return *(uint*)(Registers(UART_Num) + addr);
+        }
+
+        public static void SetColour_Red()
+        {
+            Write((char)27);
+            Write("[0;31m");
+        }
+        public static void SetColour_Yellow()
+        {
+            Write((char)27);
+            Write("[1;33m");
+        }
+        public static void SetColour_Green()
+        {
+            Write((char)27);
+            Write("[0;32m");
+        }
+        public static void SetColour_White()
+        {
+            Write((char)27);
+            Write("[1;37m");
+        }
+        public static void SetColour_Black()
+        {
+            Write((char)27);
+            Write("[0;30m");
         }
     }
 }
