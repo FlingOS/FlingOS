@@ -162,11 +162,13 @@ namespace FlingOops
             Log.WriteLine("  Unsigned");
             Test_RShift_UInt32_Small_Int32_6();
             Log.WriteLine("  Signed");
-            Test_RShift_Int32_Neg_Int32_6();
+            Test_RShift_Int32_SmallNeg_Int32_6();
             Log.WriteLine(" 64");
             Log.WriteLine("  Unsigned");
             Test_RShift_UInt64_Large_Int32_10();
             Log.WriteLine("  Signed");
+            Log.WriteLine("   dist<32");
+            Test_RShift_Int64_LargeNeg_Int32_6();
 
             Log.WriteLine(" ");
 
@@ -1231,7 +1233,7 @@ namespace FlingOops
         /// <summary>
         /// Tests: Right shift operation shifting an unsigned 64-bit value, 
         /// Inputs: Large, 10, 
-        /// Result: Correctly right shifted.
+        /// Result: Large.
         /// </summary>
         /// <remarks>
         /// <para>
@@ -1258,8 +1260,8 @@ namespace FlingOops
 
         /// <summary>
         /// Tests: Right shift operation shifting a signed 32-bit value, 
-        /// Inputs: -ve, 6, 
-        /// Result: Correctly right shifted.
+        /// Inputs: Small -ve, 6, 
+        /// Result: Small -ve.
         /// </summary>
         /// <remarks>
         /// <para>
@@ -1269,25 +1271,25 @@ namespace FlingOops
         /// </para>
         /// </remarks>
         [NoGC]
-        public static void Test_RShift_Int32_Neg_Int32_6()
+        public static void Test_RShift_Int32_SmallNeg_Int32_6()
         {
             Int32 a = -28416;
             Int32 b = 6;
             a = a >> b;
             if (a == -444)
             {
-                Log.WriteSuccess("Test_RShift_Int32_Neg_Int32_6 okay.");
+                Log.WriteSuccess("Test_RShift_Int32_SmallNeg_Int32_6 okay.");
             }
             else
             {
-                Log.WriteError("Test_RShift_Int32_Neg_Int32_6 NOT okay.");
+                Log.WriteError("Test_RShift_Int32_SmallNeg_Int32_6 NOT okay.");
             }
         }
 
         /// <summary>
         /// Tests: Right shift operation shifting an unsigned 32-bit value, 
         /// Inputs: Small, 6, 
-        /// Result: Correctly right shifted.
+        /// Result: Small.
         /// </summary>
         /// <remarks>
         /// <para>
@@ -1309,6 +1311,34 @@ namespace FlingOops
             else
             {
                 Log.WriteError("Test_RShift_UInt32_Small_Int32_6 NOT okay.");
+            }
+        }
+
+        /// <summary>
+        /// Tests: Right shift operation shifting a signed 64-bit value, 
+        /// Inputs: Large -ve, 6, 
+        /// Result: Large -ve.
+        /// </summary>
+        /// <remarks>
+        /// <para>
+        /// C# requires that the distance value is a signed 32-bit integer. 
+        /// Only low order 5-bit is used when a 32-bit values is shifted, while low order 6-bit if a 64-bit value is shifted.
+        /// In other words, a 32-/64-bit value cannot be pushed by more than 31/63 bits.
+        /// </para>
+        /// </remarks>
+        [NoGC]
+        public static void Test_RShift_Int64_LargeNeg_Int32_6()
+        {
+            Int64 a = -9185091440022126524;
+            Int32 b = 6;
+            a = a >> b;
+            if (a == -143517053750345727)
+            {
+                Log.WriteSuccess("Test_RShift_Int64_LargeNeg_Int32_6 okay.");
+            }
+            else
+            {
+                Log.WriteError("Test_RShift_Int64_LargeNeg_Int32_6 NOT okay.");
             }
         }
 
