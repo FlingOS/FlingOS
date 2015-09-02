@@ -232,6 +232,11 @@ namespace FlingOops
             colour = (char)(bg_colour | default_colour);
 
             Initialised = true;
+
+#if MIPS
+            //Reset output (/terminal) colour
+            BasicConsole.SetTextColour(BasicConsole.default_colour);
+#endif
         }
 
         /// <summary>
@@ -243,7 +248,31 @@ namespace FlingOops
         public static void SetTextColour(char aText_colour)
         {
             if (!Initialised) return;
+
+#if MIPS
+            if (aText_colour == 0x0400)
+            {
+                UART.SetColour_Red();
+            }
+            else if (aText_colour == 0x0E00)
+            {
+                UART.SetColour_Yellow();
+            }
+            else if (aText_colour == 0x0200)
+            {
+                UART.SetColour_Green();
+            }
+            else if (aText_colour == 0x0F00)
+            {
+                UART.SetColour_White();
+            }
+            else if (aText_colour == 0x0000)
+            {
+                UART.SetColour_Black();
+            }
+#elif x86
             colour = (char)(bg_colour | (aText_colour & 0x0F00));
+#endif
         }
         /// <summary>
         /// Sets the console background colour.
