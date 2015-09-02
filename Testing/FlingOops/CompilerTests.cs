@@ -222,6 +222,20 @@ namespace FlingOops
             
             #endregion
 
+            #region Negation calls
+
+            Log.WriteLine("Negation:");
+            Log.WriteLine(" 32");
+            Log.WriteLine("  Unsigned");
+            Log.WriteLine("  Signed");
+            Test_Neg_Int32_SmallNeg();            
+            Log.WriteLine(" 64");
+            Log.WriteLine("  Unsigned");
+            Log.WriteLine("  Signed");
+            Test_Neg_Int64_LargestNeg();
+            Log.WriteLine(" ");
+            #endregion
+
             Log.WriteLine("Tests completed.");
         }
 
@@ -2063,6 +2077,50 @@ namespace FlingOops
             else
             {
                 Log.WriteError("Test_LShift_UInt64_Largest_Int32_10 NOT okay.");
+            }
+        }
+
+        #endregion
+
+        #region Negation
+
+        /// <summary>
+        /// Tests: Negation operation using a signed 64-bit value, 
+        /// Input: 64-bit (Largest -ve -1), 
+        /// Result: 64-bit Largest +ve.
+        /// </summary>
+        [NoGC]
+        public static void Test_Neg_Int64_LargestNeg()
+        {
+            Int64 a = -9223372036854775807;
+            Int64 b = -a;
+            if (b == 9223372036854775807)
+            {
+                Log.WriteSuccess("Test_Neg_Int64_LargestNeg okay.");
+            }
+            else
+            {
+                Log.WriteError("Test_Neg_Int64_LargestNeg NOT okay.");
+            }
+        }
+
+        /// <summary>
+        /// Tests: Negation operation using a signed 32-bit value, 
+        /// Input: 32-bit Small -ve, 
+        /// Result: 32-bit Small +ve.
+        /// </summary>
+        [NoGC]
+        public static void Test_Neg_Int32_SmallNeg()
+        {
+            Int32 a = -100;
+            Int32 b = -a;
+            if (b == 100)
+            {
+                Log.WriteSuccess("Test_Neg_Int32_SmallNeg okay.");
+            }
+            else
+            {
+                Log.WriteError("Test_Neg_Int32_SmallNeg NOT okay.");
             }
         }
 
