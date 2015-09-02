@@ -217,7 +217,7 @@ namespace Drivers.Compiler.Architectures.x86
                         //Shr (>= 32)
                         conversionState.Append(new ASMOps.Label() { ILPosition = currOpPosition, Extension = "ShiftMoreThan32" });
                         conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Dword, Src = "EDX", Dest = "EAX" });
-                        conversionState.Append(new ASMOps.Shr() { Src = "32", Dest = "EDX", Signed = true });
+                        conversionState.Append(new ASMOps.Shr() { Src = "31", Dest = "EDX", Signed = true });
                         conversionState.Append(new ASMOps.Sub() { Src = "32", Dest = "ECX" });
                         conversionState.Append(new ASMOps.Shr() { Src = "CL", Dest = "EAX", Signed = true });
                         
