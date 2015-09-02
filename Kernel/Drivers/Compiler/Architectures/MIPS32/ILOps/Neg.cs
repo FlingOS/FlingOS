@@ -38,6 +38,9 @@ namespace Drivers.Compiler.Architectures.MIPS32
                 throw new NotSupportedException("Negate float vals not suppported yet!");
             }
 
+            // Two's Complement negation
+            //  - "Not" value then add 1
+
             if (itemA.sizeOnStackInBytes == 4)
             {
                 conversionState.Append(new ASMOps.Pop() { Size = ASMOps.OperandSize.Word, Dest = "$t0" });
@@ -51,10 +54,12 @@ namespace Drivers.Compiler.Architectures.MIPS32
             {
                 conversionState.Append(new ASMOps.Pop() { Size = ASMOps.OperandSize.Word, Dest = "$t0" });
                 conversionState.Append(new ASMOps.Pop() { Size = ASMOps.OperandSize.Word, Dest = "$t3" });
+                // "Not" the value (using XOR with 0xFFFFFFFF)
                 conversionState.Append(new ASMOps.Mov() { Src = "0xFFFFFFFF",  Dest = "$t4", MoveType = ASMOps.Mov.MoveTypes.ImmediateToReg });
                 conversionState.Append(new ASMOps.Xor() { Src1 = "$t0", Src2 = "$t4", Dest = "$t0" });
                 conversionState.Append(new ASMOps.Xor() { Src1 = "$t3", Src2 = "$t4", Dest = "$t3" });
 
+                // Then add 1
                 conversionState.Append(new ASMOps.Mov() { Src = "1", Dest = "$t1", MoveType = ASMOps.Mov.MoveTypes.ImmediateToReg });
                 conversionState.Append(new ASMOps.Mov() { Src = "0", Dest = "$t2", MoveType = ASMOps.Mov.MoveTypes.ImmediateToReg });
                 //Add $t2:$t1 to $t3:$t0
