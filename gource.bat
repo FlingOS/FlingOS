@@ -1,0 +1,1 @@
+gource --seconds-per-day 1 --auto-skip-seconds 1 --file-idle-time 0.5 --max-file-lag 0.05 --key  --title "FlingOS" --hide filenames,mouse,usernames --logo "..\Images\FlingOS-Logo-Blue-Small.png" -f
