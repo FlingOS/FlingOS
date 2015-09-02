@@ -91,7 +91,7 @@ namespace Drivers.Compiler.Architectures.MIPS32
                     conversionState.Append(new ASMOps.Pop() { Size = ASMOps.OperandSize.Word, Dest = "$t2" });
                     //Pop item A
                     conversionState.Append(new ASMOps.Pop() { Size = ASMOps.OperandSize.Word, Dest = "$t0" });
-                    conversionState.Append(new ASMOps.Sllv() { Dest = "$t0", Src = "$t2", BitsReg = "$t0" });
+                    conversionState.Append(new ASMOps.Sllv() { Src = "$t0", BitsReg = "$t2", Dest = "$t0",  });
                     conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Word, Src = "$t0" });
 
                     conversionState.CurrentStackFrame.Stack.Push(new StackItem()
