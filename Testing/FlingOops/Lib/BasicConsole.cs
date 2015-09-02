@@ -632,6 +632,10 @@ namespace FlingOops
             SetTextColour(error_colour);
             WriteLine(message);
             SetTextColour(default_colour);
+
+#if x86
+            DelayOutput(20);
+#endif
         }
     }
 }
