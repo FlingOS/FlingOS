@@ -173,6 +173,7 @@ namespace FlingOops
             Test_RShift_Int64_LargestPos_Int32_40();
             Test_RShift_Int64_LargestNeg_Int32_40();
             Test_RShift_Int64_LargeNeg_Int32_40();
+            Test_RShift_Int64_Neg1_Int32_63();
             Log.WriteLine(" ");
 
             #endregion
@@ -1264,7 +1265,7 @@ namespace FlingOops
         /// <summary>
         /// Tests: Right shift operation shifting a signed 32-bit value, 
         /// Inputs: 32-bit -ve, 6, 
-        /// Result: 32-bit -ve.
+        /// Result: 32-bit -ve (padded with 1s).
         /// </summary>
         /// <remarks>
         /// <para>
@@ -1320,7 +1321,7 @@ namespace FlingOops
         /// <summary>
         /// Tests: Right shift operation shifting a signed 64-bit value, 
         /// Inputs: 64-bit -ve, 6, 
-        /// Result: 64-bit -ve.
+        /// Result: 64-bit -ve (stored as 64-bit padded with 1s).
         /// </summary>
         /// <remarks>
         /// <para>
@@ -1348,7 +1349,7 @@ namespace FlingOops
         /// <summary>
         /// Tests: Right shift operation shifting a signed 64-bit value, 
         /// Inputs: 64-bit -ve, 40, 
-        /// Result: 32-bit -ve (stored as 64-bit padded with 0s).
+        /// Result: 32-bit -ve (stored as 64-bit padded with 1s).
         /// </summary>
         /// <remarks>
         /// <para>
@@ -1404,7 +1405,7 @@ namespace FlingOops
         /// <summary>
         /// Tests: Right shift operation shifting a signed 64-bit value, 
         /// Inputs: Largest 64-bit -ve, 40, 
-        /// Result: 32-bit -ve (stored as 64-bit padded with 0s).
+        /// Result: 32-bit -ve (stored as 64-bit padded with 1s).
         /// </summary>
         /// <remarks>
         /// <para>
@@ -1426,6 +1427,34 @@ namespace FlingOops
             else
             {
                 Log.WriteError("Test_RShift_Int64_LargestNeg_Int32_40 NOT okay.");
+            }
+        }
+
+        /// <summary>
+        /// Tests: Right shift operation shifting a signed 64-bit value, 
+        /// Inputs: -1, 63, 
+        /// Result: -1 because of circular nature of two's complement.
+        /// </summary>
+        /// <remarks>
+        /// <para>
+        /// C# requires that the distance value is a signed 32-bit integer. 
+        /// Only low order 5-bit is used when a 32-bit values is shifted, while low order 6-bit if a 64-bit value is shifted.
+        /// In other words, a 32-/64-bit value cannot be pushed by more than 31/63 bits.
+        /// </para>
+        /// </remarks>
+        [NoGC]
+        public static void Test_RShift_Int64_Neg1_Int32_63()
+        {
+            Int64 a = -1;
+            Int32 b = 63;
+            a = a >> b;
+            if (a == -1)
+            {
+                Log.WriteSuccess("Test_RShift_Int64_Neg1_Int32_63 okay.");
+            }
+            else
+            {
+                Log.WriteError("Test_RShift_Int64_Neg1_Int32_63 NOT okay.");
             }
         }
 
