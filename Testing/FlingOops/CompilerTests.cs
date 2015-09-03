@@ -277,8 +277,8 @@ namespace FlingOops
             Log.WriteLine("  Unsigned");
             Test_Add_UInt64_LargestPos_UInt32_4();
             Log.WriteLine("  Signed");
-            Test_Add_Int64_LargestNeg_Int32_4();
             Test_Add_Int64_LargestPos_Int32_4();
+            Test_Add_Int64_LargestNeg_Int32_4();
             //Test_Add_Int64_Zero_Int32_LargestPos();
             Test_Add_Int64_Zero_Int32_LargestNeg();
             Log.WriteLine(" 64-64");
@@ -287,7 +287,7 @@ namespace FlingOops
             Log.WriteLine("  Signed");
             Test_Add_Int64_LargePos_Int64_4();
             //Test_Add_Int64_LargePos_Int64_LargePos();
-            //Test_Add_Int64_LargePos_Int64_LargeNeg();
+            Test_Add_Int64_LargePos_Int64_LargeNeg();
             Test_Add_Int64_LargestNeg_Int64_Neg1();
             Test_Add_Int64_LargeNeg_Int64_LargeNeg();
             Test_Add_Int64_Zero_Int64_Neg4();
@@ -2994,33 +2994,31 @@ namespace FlingOops
             }
         }
 
-        ///// <summary>
-        ///// Tests: Subtraction operation using signed 64-bit integers, 
-        ///// Inputs: Large +ve, Large -ve, 
-        ///// Result: Large +ve
-        ///// </summary>
-        ///// <remarks>
-        ///// <para> 
-        ///// Here a 64-bit signed integer is subtracted from a 64-bit signed integer producing a 64-bit signed value. 
-        ///// A large +ve value is used for op1 and a large -ve for op2, here the result is a large +ve. 
-        ///// While testing subtraction using 64-bit integers, it is important to handle the "borrow-bit" correctly. 
-        ///// </para>
-        ///// </remarks>
-        //[NoGC]
-        //public static void Test_Sub_Int64_LargePos_Int64_LargeNeg()
-        //{
-        //    Int64 a = 1080863910568919040;
-        //    Int64 b = -844424930131968;
-        //    a = a - b;
-        //    if (a == 1081708335499051008)
-        //    {
-        //        Log.WriteSuccess("Test_Sub_Int64_LargePos_Int64_LargeNeg okay.");
-        //    }
-        //    else
-        //    {
-        //        Log.WriteError("Test_Sub_Int64_LargePos_Int64_LargeNeg NOT okay.");
-        //    }
-        //}
+        /// <summary>
+        /// Tests: Addition operation using signed 64-bit integers, 
+        /// Inputs: Large +ve, Large -ve, 
+        /// Result: Large +ve
+        /// </summary>
+        /// <remarks>
+        /// <para>
+        /// When adding 64-bit values, care must be taken to handle the carry-bit correctly
+        /// </para>
+        /// </remarks>
+        [NoGC]
+        public static void Test_Add_Int64_LargePos_Int64_LargeNeg()
+        {
+            Int64 a = 1080863910568919040;
+            Int64 b = -844424930131968;
+            a = a + b;
+            if (a == 1080019485638787072)
+            {
+                Log.WriteSuccess("Test_Add_Int64_LargePos_Int64_LargeNeg okay.");
+            }
+            else
+            {
+                Log.WriteError("Test_Add_Int64_LargePos_Int64_LargeNeg NOT okay.");
+            }
+        }
 
         ///// <summary>
         ///// Tests: Subtraction operation using signed 64-bit integers, 
