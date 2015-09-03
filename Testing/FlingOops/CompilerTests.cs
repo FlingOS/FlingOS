@@ -227,12 +227,14 @@ namespace FlingOops
             Log.WriteLine("Negation:");
             Log.WriteLine(" 32");
             Log.WriteLine("  Unsigned");
+            Test_Neg_UInt32_Largest_Int64();
             Log.WriteLine("  Signed");
-            Test_Neg_Int32_SmallNeg();            
+            Test_Neg_Int64_LargestPos_Int64();
+            Test_Neg_Int32_SmallNeg_Int32();            
             Log.WriteLine(" 64");
             Log.WriteLine("  Unsigned");
             Log.WriteLine("  Signed");
-            Test_Neg_Int64_LargestNeg();
+            Test_Neg_Int64_LargestNeg_Int64();
             Log.WriteLine(" ");
             #endregion
 
@@ -2086,21 +2088,21 @@ namespace FlingOops
 
         /// <summary>
         /// Tests: Negation operation using a signed 64-bit value, 
-        /// Input: 64-bit (Largest -ve -1), 
+        /// Input: 64-bit (Largest -ve) - 1, 
         /// Result: 64-bit Largest +ve.
         /// </summary>
         [NoGC]
-        public static void Test_Neg_Int64_LargestNeg()
+        public static void Test_Neg_Int64_LargestNeg_Int64()
         {
             Int64 a = -9223372036854775807;
             Int64 b = -a;
             if (b == 9223372036854775807)
             {
-                Log.WriteSuccess("Test_Neg_Int64_LargestNeg okay.");
+                Log.WriteSuccess("Test_Neg_Int64_LargestNeg_Int64 okay.");
             }
             else
             {
-                Log.WriteError("Test_Neg_Int64_LargestNeg NOT okay.");
+                Log.WriteError("Test_Neg_Int64_LargestNeg_Int64 NOT okay.");
             }
         }
 
@@ -2110,17 +2112,57 @@ namespace FlingOops
         /// Result: 32-bit Small +ve.
         /// </summary>
         [NoGC]
-        public static void Test_Neg_Int32_SmallNeg()
+        public static void Test_Neg_Int32_SmallNeg_Int32()
         {
             Int32 a = -100;
             Int32 b = -a;
             if (b == 100)
             {
-                Log.WriteSuccess("Test_Neg_Int32_SmallNeg okay.");
+                Log.WriteSuccess("Test_Neg_Int32_SmallNeg_Int32 okay.");
             }
             else
             {
-                Log.WriteError("Test_Neg_Int32_SmallNeg NOT okay.");
+                Log.WriteError("Test_Neg_Int32_SmallNeg_Int32 NOT okay.");
+            }
+        }
+
+        /// <summary>
+        /// Tests: Negation operation using an unsigned 32-bit value, 
+        /// Input: 32-bit Largest, 
+        /// Result: 64-bit -ve.
+        /// </summary>
+        [NoGC]
+        public static void Test_Neg_UInt32_Largest_Int64()
+        {
+            UInt32 a = 4294967295;
+            Int64 b = -a;
+            if (b == -4294967295)
+            {
+                Log.WriteSuccess("Test_Neg_UInt32_Largest_Int64 okay.");
+            }
+            else
+            {
+                Log.WriteError("Test_Neg_UInt32_Largest_Int64 NOT okay.");
+            }
+        }
+
+        /// <summary>
+        /// Tests: Negation operation using a signed 64-bit value, 
+        /// Input: 64-bit Largest +ve 
+        /// Result: 64-bit (Largest -ve) - 1.
+        /// </summary>
+        [NoGC]
+        public static void Test_Neg_Int64_LargestPos_Int64()
+        {
+            Int64 a = 9223372036854775807;
+            Int64 b = -a;
+            if (b == -9223372036854775807)
+            {
+                Log.WriteSuccess("Test_Neg_Int64_LargestPos_Int64 okay.");
+            }
+            else
+            {
+                Log.WriteError("Test_Neg_Int64_LargestPos_Int64 NOT okay.");
             }
         }
 
