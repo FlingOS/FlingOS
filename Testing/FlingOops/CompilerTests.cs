@@ -262,6 +262,7 @@ namespace FlingOops
             Test_Not_Int32_LargeNeg_Int64();
             Log.WriteLine(" 64");
             Log.WriteLine("  Unsigned");
+            Test_Not_UInt64_Smallest_UInt64();
             Test_Not_UInt64_Largest_UInt64();
             Log.WriteLine("  Signed");
             Test_Not_Int64_LargePos_Int64();
@@ -2560,6 +2561,26 @@ namespace FlingOops
             else
             {
                 Log.WriteError("Test_Not_UInt64_Largest_UInt64 NOT okay.");
+            }
+        }
+
+        /// <summary>
+        /// Tests: Not operation using an unsigned 64-bit value, 
+        /// Input: 64-bit Smallest, 
+        /// Result: 64-bit Largest.
+        /// </summary>
+        [NoGC]
+        public static void Test_Not_UInt64_Smallest_UInt64()
+        {
+            UInt64 a = 0;
+            UInt64 b = ~a;
+            if (b == 18446744073709551615)
+            {
+                Log.WriteSuccess("Test_Not_UInt64_Smallest_UInt64 okay.");
+            }
+            else
+            {
+                Log.WriteError("Test_Not_UInt64_Smallest_UInt64 NOT okay.");
             }
         }
 
