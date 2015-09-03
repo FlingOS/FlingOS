@@ -229,12 +229,14 @@ namespace FlingOops
             Log.WriteLine("  Unsigned");
             Test_Neg_UInt32_Largest_Int64();
             Log.WriteLine("  Signed");
-            Test_Neg_Int64_LargestPos_Int64();
+            Test_Neg_Int32_SmallPos_Int32();
             Test_Neg_Int32_SmallNeg_Int32();            
             Log.WriteLine(" 64");
             Log.WriteLine("  Unsigned");
+            Log.WriteLine("UInt64 cannot be negated in C#.");
             Log.WriteLine("  Signed");
             Test_Neg_Int64_LargePos_Int64();
+            Test_Neg_Int64_LargestPos_Int64();
             Test_Neg_Int64_LargestNeg_Int64();
             Log.WriteLine(" ");
             #endregion
@@ -2184,6 +2186,26 @@ namespace FlingOops
             else
             {
                 Log.WriteError("Test_Neg_Int64_LargePos_Int64 NOT okay.");
+            }
+        }
+
+        /// <summary>
+        /// Tests: Negation operation using a signed 32-bit value, 
+        /// Input: 32-bit Small +ve, 
+        /// Result: 32-bit Small -ve.
+        /// </summary>
+        [NoGC]
+        public static void Test_Neg_Int32_SmallPos_Int32()
+        {
+            Int32 a = 100;
+            Int32 b = -a;
+            if (b == -100)
+            {
+                Log.WriteSuccess("Test_Neg_Int32_SmallPos_Int32 okay.");
+            }
+            else
+            {
+                Log.WriteError("Test_Neg_Int32_SmallPos_Int32 NOT okay.");
             }
         }
 
