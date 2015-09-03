@@ -269,7 +269,7 @@ namespace FlingOops
             Test_Add_UInt32_Zero_UInt32_Zero();
             Test_Add_UInt32_9_UInt32_4();
             Log.WriteLine("  Signed");
-            //Test_Add_Int32_9_Int32_4();
+            Test_Add_Int32_9_Int32_4();
             Test_Add_Int32_9_Int32_Neg4();
             Test_Add_Int32_Neg9_Int32_4();
             Test_Add_Int32_Neg9_Int32_Neg4();
@@ -2693,26 +2693,26 @@ namespace FlingOops
             }
         }
 
-        ///// <summary>
-        ///// Tests: Subtraction operation using signed 32-bit integers, 
-        ///// Inputs: 9, 4, 
-        ///// Result: 5
-        ///// </summary>
-        //[NoGC]
-        //public static void Test_Sub_Int32_9_Int32_4()
-        //{
-        //    Int32 a = 9;
-        //    Int32 b = 4;
-        //    a = a - b;
-        //    if (a == 5)
-        //    {
-        //        Log.WriteSuccess("Test_Sub_Int32_9_Int32_4 okay.");
-        //    }
-        //    else
-        //    {
-        //        Log.WriteError("Test_Sub_Int32_9_Int32_4 NOT okay.");
-        //    }
-        //}
+        /// <summary>
+        /// Tests: Addition operation using signed 32-bit integers, 
+        /// Inputs: Small +ve, Small +ve, 
+        /// Result: Small +ve
+        /// </summary>
+        [NoGC]
+        public static void Test_Add_Int32_9_Int32_4()
+        {
+            Int32 a = 9;
+            Int32 b = 4;
+            a = a + b;
+            if (a == 13)
+            {
+                Log.WriteSuccess("Test_Add_Int32_9_Int32_4 okay.");
+            }
+            else
+            {
+                Log.WriteError("Test_Add_Int32_9_Int32_4 NOT okay.");
+            }
+        }
 
         ///// <summary>
         ///// Tests: Subtraction operation using unsigned 64- and 32-bit integers, 
