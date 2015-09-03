@@ -275,7 +275,7 @@ namespace FlingOops
             Test_Add_Int32_Neg9_Int32_Neg4();
             Log.WriteLine(" 64-32");
             Log.WriteLine("  Unsigned");
-            //Test_Add_UInt64_LargestPos_UInt32_4();
+            Test_Add_UInt64_LargestPos_UInt32_4();
             Log.WriteLine("  Signed");
             //Test_Add_Int64_LargestNeg_Int32_4();
             //Test_Add_Int64_LargestPos_Int32_4();
@@ -2714,26 +2714,31 @@ namespace FlingOops
             }
         }
 
-        ///// <summary>
-        ///// Tests: Subtraction operation using unsigned 64- and 32-bit integers, 
-        ///// Inputs: Largest +ve, 4, 
-        ///// Result: (Largest +ve - 4)
-        ///// </summary>
-        //[NoGC]
-        //public static void Test_Sub_UInt64_LargestPos_UInt32_4()
-        //{
-        //    UInt64 a = 18446744073709551615;
-        //    UInt32 b = 4;
-        //    a = a - b;
-        //    if (a == 18446744073709551611)
-        //    {
-        //        Log.WriteSuccess("Test_Sub_UInt64_LargestPos_UInt32_4 okay.");
-        //    }
-        //    else
-        //    {
-        //        Log.WriteError("Test_Sub_UInt64_LargestPos_UInt32_4 NOT okay.");
-        //    }
-        //}
+        /// <summary>
+        /// Tests: Addition operation using unsigned 64- and 32-bit integers, 
+        /// Inputs: Largest - 4, 4, 
+        /// Result: Largest
+        /// </summary>
+        /// <remarks>
+        /// <para>
+        /// When adding 64-bit values, care must be taken to handle the carry-bit correctly
+        /// </para>
+        /// </remarks>
+        [NoGC]
+        public static void Test_Add_UInt64_LargestPos_UInt32_4()
+        {
+            UInt64 a = 18446744073709551611;
+            UInt32 b = 4;
+            a = a + b;
+            if (a == 18446744073709551615)
+            {
+                Log.WriteSuccess("Test_Add_UInt64_LargestPos_UInt32_4 okay.");
+            }
+            else
+            {
+                Log.WriteError("Test_Add_UInt64_LargestPos_UInt32_4 NOT okay.");
+            }
+        }
 
         ///// <summary>
         ///// Tests: Subtraction operation using signed 64- and 32-bit integers, 
