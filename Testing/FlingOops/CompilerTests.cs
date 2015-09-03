@@ -55,18 +55,6 @@ namespace FlingOops
         [NoGC]
         public static void RunTests()
         {
-            #region Addition calls
-
-            Log.WriteLine(" ");
-            Log.WriteLine("---Addition:");
-            Log.WriteLine("  Unsigned");
-            Test_Add_UInt32_Zero_UInt32_Zero();
-            Log.WriteLine("  Signed");
-
-            Log.WriteLine(" ");
-
-            #endregion
-
             #region Struct calls
 
             Log.WriteLine("---Struct:");
@@ -273,33 +261,45 @@ namespace FlingOops
 
             #endregion
 
+            #region Addition calls
+            
+            Log.WriteLine("Addition:");
+            Log.WriteLine(" 32-32");
+            Log.WriteLine("  Unsigned");
+            Test_Add_UInt32_Zero_UInt32_Zero();
+            Test_Add_UInt32_9_UInt32_4();
+            Log.WriteLine("  Signed");
+            //Test_Add_Int32_9_Int32_4();
+            //Test_Add_Int32_9_Int32_Neg4();
+            //Test_Add_Int32_Neg9_Int32_4();
+            //Test_Add_Int32_Neg9_Int32_Neg4();
+            Log.WriteLine(" 64-32");
+            Log.WriteLine("  Unsigned");
+            //Test_Add_UInt64_LargestPos_UInt32_4();
+            Log.WriteLine("  Signed");
+            //Test_Add_Int64_LargestNeg_Int32_4();
+            //Test_Add_Int64_LargestPos_Int32_4();
+            //Test_Add_Int64_Zero_Int32_4();
+            //Test_Add_Int64_Zero_Int32_LargestPos();
+            //Test_Add_Int64_Zero_Int32_LargestNeg();
+            Log.WriteLine(" 64-64");
+            Log.WriteLine("  Unsigned");
+            //Test_Add_UInt64_Large_UInt64_Large();
+            Log.WriteLine("  Signed");
+            //Test_Add_Int64_LargePos_Int64_4();
+            //Test_Add_Int64_LargePos_Int64_LargePos();
+            //Test_Add_Int64_LargePos_Int64_LargeNeg();
+            //Test_Add_Int64_LargestNeg_Int64_1();
+            //Test_Add_Int64_LargeNeg_Int64_LargeNeg();
+            //Test_Add_Int64_Zero_Int64_4();
+            //Test_Add_Int64_Zero_Int64_LargePos();
+            //Test_Add_Int64_Zero_Int64_LargeNeg();
+            Log.WriteLine(" ");
+
+            #endregion
+
             Log.WriteLine("Tests completed.");
         }
-
-        #region Addition
-
-        /// <summary>
-        /// Tests: Addition operation using unsigned 32-bit integers, 
-        /// Inputs: 0, 0, 
-        /// Result: 0
-        /// </summary>
-        [NoGC]
-        public static void Test_Add_UInt32_Zero_UInt32_Zero()
-        {
-            UInt32 a = 0;
-            UInt32 b = 0;
-            a = a + b;
-            if (a == 0)
-            {
-                Log.WriteSuccess("Test_Add_UInt32_Zero_UInt32_Zero okay.");
-            }
-            else
-            {
-                Log.WriteError("Test_Add_UInt32_Zero_UInt32_Zero NOT okay.");
-            }
-        }
-
-        #endregion
 
         #region Struct
 
@@ -2583,6 +2583,555 @@ namespace FlingOops
                 Log.WriteError("Test_Not_UInt64_Smallest_UInt64 NOT okay.");
             }
         }
+
+        #endregion
+
+        #region Addition
+
+        /// <summary>
+        /// Tests: Addition operation using unsigned 32-bit integers, 
+        /// Inputs: 0, 0, 
+        /// Result: 0
+        /// </summary>
+        [NoGC]
+        public static void Test_Add_UInt32_Zero_UInt32_Zero()
+        {
+            UInt32 a = 0;
+            UInt32 b = 0;
+            a = a + b;
+            if (a == 0)
+            {
+                Log.WriteSuccess("Test_Add_UInt32_Zero_UInt32_Zero okay.");
+            }
+            else
+            {
+                Log.WriteError("Test_Add_UInt32_Zero_UInt32_Zero NOT okay.");
+            }
+        }
+
+        /// <summary>
+        /// Tests: Addition operation using unsigned 32-bit integers, 
+        /// Inputs: Small, Small, 
+        /// Result: Small
+        /// </summary>
+        [NoGC]
+        public static void Test_Add_UInt32_9_UInt32_4()
+        {
+            UInt32 a = 9;
+            UInt32 b = 4;
+            a = a + b;
+            if (a == 13)
+            {
+                Log.WriteSuccess("Test_Add_UInt32_9_UInt32_4 okay.");
+            }
+            else
+            {
+                Log.WriteError("Test_Add_UInt32_9_UInt32_4 NOT okay.");
+            }
+        }
+
+        ///// <summary>
+        ///// Tests: Subtraction operation using signed 32-bit integers, 
+        ///// Inputs: -9, 4, 
+        ///// Result: -13
+        ///// </summary>
+        //[NoGC]
+        //public static void Test_Sub_Int32_Neg9_Int32_4()
+        //{
+        //    Int32 a = -9;
+        //    Int32 b = 4;
+        //    a = a - b;
+        //    if (a == -13)
+        //    {
+        //        Log.WriteSuccess("Test_Sub_Int32_Neg9_Int32_4 okay.");
+        //    }
+        //    else
+        //    {
+        //        Log.WriteError("Test_Sub_Int32_Neg9_Int32_4 NOT okay.");
+        //    }
+        //}
+
+        ///// <summary>
+        ///// Tests: Subtraction operation using signed 32-bit integers, 
+        ///// Inputs: -9, -4, 
+        ///// Result: -5
+        ///// </summary>
+        //[NoGC]
+        //public static void Test_Sub_Int32_Neg9_Int32_Neg4()
+        //{
+        //    Int32 a = -9;
+        //    Int32 b = -4;
+        //    a = a - b;
+        //    if (a == -5)
+        //    {
+        //        Log.WriteSuccess("Test_Sub_Int32_Neg9_Int32_Neg4 okay.");
+        //    }
+        //    else
+        //    {
+        //        Log.WriteError("Test_Sub_Int32_Neg9_Int32_Neg4 NOT okay.");
+        //    }
+        //}
+
+        ///// <summary>
+        ///// Tests: Subtraction operation using signed 32-bit integers, 
+        ///// Inputs: 9, -4, 
+        ///// Result: 13
+        ///// </summary>
+        //[NoGC]
+        //public static void Test_Sub_Int32_9_Int32_Neg4()
+        //{
+        //    Int32 a = 9;
+        //    Int32 b = -4;
+        //    a = a - b;
+        //    if (a == 13)
+        //    {
+        //        Log.WriteSuccess("Test_Sub_Int32_9_Int32_Neg4 okay.");
+        //    }
+        //    else
+        //    {
+        //        Log.WriteError("Test_Sub_Int32_9_Int32_Neg4 NOT okay.");
+        //    }
+        //}
+
+        ///// <summary>
+        ///// Tests: Subtraction operation using signed 32-bit integers, 
+        ///// Inputs: 9, 4, 
+        ///// Result: 5
+        ///// </summary>
+        //[NoGC]
+        //public static void Test_Sub_Int32_9_Int32_4()
+        //{
+        //    Int32 a = 9;
+        //    Int32 b = 4;
+        //    a = a - b;
+        //    if (a == 5)
+        //    {
+        //        Log.WriteSuccess("Test_Sub_Int32_9_Int32_4 okay.");
+        //    }
+        //    else
+        //    {
+        //        Log.WriteError("Test_Sub_Int32_9_Int32_4 NOT okay.");
+        //    }
+        //}
+
+        ///// <summary>
+        ///// Tests: Subtraction operation using unsigned 64- and 32-bit integers, 
+        ///// Inputs: Largest +ve, 4, 
+        ///// Result: (Largest +ve - 4)
+        ///// </summary>
+        //[NoGC]
+        //public static void Test_Sub_UInt64_LargestPos_UInt32_4()
+        //{
+        //    UInt64 a = 18446744073709551615;
+        //    UInt32 b = 4;
+        //    a = a - b;
+        //    if (a == 18446744073709551611)
+        //    {
+        //        Log.WriteSuccess("Test_Sub_UInt64_LargestPos_UInt32_4 okay.");
+        //    }
+        //    else
+        //    {
+        //        Log.WriteError("Test_Sub_UInt64_LargestPos_UInt32_4 NOT okay.");
+        //    }
+        //}
+
+        ///// <summary>
+        ///// Tests: Subtraction operation using signed 64- and 32-bit integers, 
+        ///// Inputs: Largest +ve, 4, 
+        ///// Result: (Largest +ve - 4)
+        ///// </summary>
+        ///// <remarks>
+        ///// <para> 
+        ///// Here a 32-bit signed integer is subtracted from a 64-bit signed integer producing a 64-bit signed value. 
+        ///// A largest +ve value is used for the first operand, result is (Largest +ve - 4). 
+        ///// While testing subtraction using 64-bit integers, it is important to handle the "borrow-bit" correctly. 
+        ///// </para>
+        ///// </remarks>
+        //[NoGC]
+        //public static void Test_Sub_Int64_LargestPos_Int32_4()
+        //{
+        //    Int64 a = 9223372036854775807;
+        //    Int32 b = 4;
+        //    a = a - b;
+        //    if (a == 9223372036854775803)
+        //    {
+        //        Log.WriteSuccess("Test_Sub_Int64_LargestPos_Int32_4 okay.");
+        //    }
+        //    else
+        //    {
+        //        Log.WriteError("Test_Sub_Int64_LargestPos_Int32_4 NOT okay.");
+        //    }
+        //}
+
+
+
+        ///// <summary>
+        ///// Tests: Subtraction operation using signed 64- and 32-bit integers, 
+        ///// Inputs: Largest -ve, 4, 
+        ///// Result: (Largest +ve - 3)
+        ///// </summary>
+        ///// <remarks>
+        ///// <para> 
+        ///// Here a 32-bit signed integer is subtracted from a 64-bit signed integer producing a 64-bit signed value. 
+        ///// The largest -ve value is used for the first operand. Correct result should be (Largest +ve - 3) because of the 
+        ///// circular nature of signed numbers in two's complement.
+        ///// While testing subtraction using 64-bit integers, it is important to handle the "borrow-bit" correctly. 
+        ///// </para>
+        ///// </remarks>
+        //[NoGC]
+        //public static void Test_Sub_Int64_LargestNeg_Int32_4()
+        //{
+        //    Int64 a = -9223372036854775808;
+        //    Int32 b = 4;
+        //    a = a - b;
+        //    if (a == 9223372036854775804)
+        //    {
+        //        Log.WriteSuccess("Test_Sub_Int64_LargestNeg_Int32_4 okay.");
+        //    }
+        //    else
+        //    {
+        //        Log.WriteError("Test_Sub_Int64_LargestNeg_Int32_4 NOT okay.");
+        //    }
+        //}
+
+
+
+
+        ///// <summary>
+        ///// Tests: Subtraction operation using signed 64- and 32-bit integers, 
+        ///// Inputs: 0, 4, 
+        ///// Result: -4
+        ///// </summary>
+        ///// <remarks>
+        ///// <para> 
+        ///// Here a 32-bit signed integer is subtracted from a 64-bit signed integer producing a 64-bit signed value. 
+        ///// Zero is used for the first operand to ensure that the 64-bit negative result is produced correctly. 
+        ///// While testing subtraction using 64-bit integers, it is important to handle the "borrow-bit" correctly. 
+        ///// </para>
+        ///// </remarks>
+        //[NoGC]
+        //public static void Test_Sub_Int64_Zero_Int32_4()
+        //{
+        //    Int64 a = 0;
+        //    Int32 b = 4;
+        //    a = a - b;
+        //    if (a == -4)
+        //    {
+        //        Log.WriteSuccess("Test_Sub_Int64_Zero_Int32_4 okay.");
+        //    }
+        //    else
+        //    {
+        //        Log.WriteError("Test_Sub_Int64_Zero_Int32_4 NOT okay.");
+        //    }
+        //}
+
+        ///// <summary>
+        ///// Tests: Subtraction operation using signed 64- and 32-bit integers, 
+        ///// Inputs: 0, Largest +ve, 
+        ///// Result: Large -ve
+        ///// </summary>
+        ///// <remarks>
+        ///// <para> 
+        ///// Here a 32-bit signed integer is subtracted from a 64-bit signed integer producing a 64-bit signed value. 
+        ///// Zero is used for the first operand and the 64-bit result must be equal to -(op2). 
+        ///// While testing subtraction using 64-bit integers, it is important to handle the "borrow-bit" correctly. 
+        ///// </para>
+        ///// </remarks>
+        //[NoGC]
+        //public static void Test_Sub_Int64_Zero_Int32_LargestPos()
+        //{
+        //    Int64 a = 0;
+        //    Int32 b = 2147483647;
+        //    a = a - b;
+        //    if (a == -2147483647)
+        //    {
+        //        Log.WriteSuccess("Test_Sub_Int64_Zero_Int32_LargestPos okay.");
+        //    }
+        //    else
+        //    {
+        //        Log.WriteError("Test_Sub_Int64_Zero_Int32_LargestPos NOT okay.");
+        //    }
+        //}
+
+        ///// <summary>
+        ///// Tests: Subtraction operation using signed 64- and 32-bit integers, 
+        ///// Inputs: 0, (Largest -ve - 1), 
+        ///// Result: Largest +ve
+        ///// </summary>
+        ///// <remarks>
+        ///// <para> 
+        ///// Here a 32-bit signed integer is subtracted from a 64-bit signed integer producing a 64-bit signed value. 
+        ///// Zero is used for the first operand and the 64-bit result must be equal to -(op2). 
+        ///// While testing subtraction using 64-bit integers, it is important to handle the "borrow-bit" correctly. 
+        ///// </para>
+        ///// </remarks>
+        //[NoGC]
+        //public static void Test_Sub_Int64_Zero_Int32_LargestNeg()
+        //{
+        //    Int64 a = 0;
+        //    Int32 b = -2147483647;
+        //    a = a - b;
+        //    if (a == 2147483647)
+        //    {
+        //        Log.WriteSuccess("Test_Sub_Int64_Zero_Int32_LargestNeg okay.");
+        //    }
+        //    else
+        //    {
+        //        Log.WriteError("Test_Sub_Int64_Zero_Int32_LargestNeg NOT okay.");
+        //    }
+        //}
+
+        ///// <summary>
+        ///// Tests: Subtraction operation using signed 64-bit integers, 
+        ///// Inputs: Large +ve, 4, 
+        ///// Result: Large +ve
+        ///// </summary>
+        ///// <remarks>
+        ///// <para> 
+        ///// Here a 64-bit signed integer is subtracted from a 64-bit signed integer producing a 64-bit signed value. 
+        ///// A large value is used for the first operand to ensure that the 64-bit result is produced correctly, result is large +ve. 
+        ///// While testing subtraction using 64-bit integers, it is important to handle the "borrow-bit" correctly. 
+        ///// </para>
+        ///// </remarks>
+        //[NoGC]
+        //public static void Test_Sub_Int64_LargePos_Int64_4()
+        //{
+        //    Int64 a = 1080863910568919040;
+        //    Int64 b = 4;
+        //    a = a - b;
+        //    if (a == 1080863910568919036)
+        //    {
+        //        Log.WriteSuccess("Test_Sub_Int64_LargePos_Int64_4 okay.");
+        //    }
+        //    else
+        //    {
+        //        Log.WriteError("Test_Sub_Int64_LargePos_Int64_4 NOT okay.");
+        //    }
+        //}
+
+        ///// <summary>
+        ///// Tests: Subtraction operation using signed 64-bit integers, 
+        ///// Inputs: 0, 4, 
+        ///// Result: -4
+        ///// </summary>
+        ///// <remarks>
+        ///// <para> 
+        ///// Here a 64-bit signed integer is subtracted from a 64-bit signed integer producing a 64-bit signed value. 
+        ///// Zero is used for the first operand to ensure that the 64-bit negative result is produced correctly. 
+        ///// While testing subtraction using 64-bit integers, it is important to handle the "borrow-bit" correctly. 
+        ///// </para>
+        ///// </remarks>
+        //[NoGC]
+        //public static void Test_Sub_Int64_Zero_Int64_4()
+        //{
+        //    Int64 a = 0;
+        //    Int64 b = 4;
+        //    a = a - b;
+        //    if (a == -4)
+        //    {
+        //        Log.WriteSuccess("Test_Sub_Int64_Zero_Int64_4 okay.");
+        //    }
+        //    else
+        //    {
+        //        Log.WriteError("Test_Sub_Int64_Zero_Int64_4 NOT okay.");
+        //    }
+        //}
+
+        ///// <summary>
+        ///// Tests: Subtraction operation using unsigned 64-bit integers, 
+        ///// Inputs: Large +ve, Large +ve, 
+        ///// Result: +ve
+        ///// </summary>
+        ///// <remarks>
+        ///// <para> 
+        ///// Here a 64-bit unsigned integer is subtracted from a 64-bit unsigned integer producing a 64-bit unsigned value. 
+        ///// Both operands are large values but op1 > op2, therefore result must be +ve. 
+        ///// While testing subtraction using 64-bit integers, it is important to handle the "borrow-bit" correctly. 
+        ///// </para>
+        ///// </remarks>
+        //[NoGC]
+        //public static void Test_Sub_UInt64_Large_UInt64_Large()
+        //{
+        //    UInt64 a = 1080863910568919040;
+        //    UInt64 b = 844424930131968;
+        //    a = a - b;
+        //    if (a == 1080019485638787072)
+        //    {
+        //        Log.WriteSuccess("Test_Sub_UInt64_Large_UInt64_Large okay.");
+        //    }
+        //    else
+        //    {
+        //        Log.WriteError("Test_Sub_UInt64_Large_UInt64_Large NOT okay.");
+        //    }
+        //}
+
+        ///// <summary>
+        ///// Tests: Subtraction operation using signed 64-bit integers, 
+        ///// Inputs: Largest -ve, 1, 
+        ///// Result: Largest +ve
+        ///// </summary>
+        ///// <remarks>
+        ///// <para> 
+        ///// Here a 64-bit signed integer is subtracted from a 64-bit signed integer producing a 64-bit signed value. 
+        ///// The first operand is the largest -ve value, while op2 = 1. The result should be the largest +ve.
+        ///// While testing subtraction using 64-bit integers, it is important to handle the "borrow-bit" correctly. 
+        ///// </para>
+        ///// </remarks>
+        //[NoGC]
+        //public static void Test_Sub_Int64_LargestNeg_Int64_1()
+        //{
+        //    Int64 a = -9223372036854775808;
+        //    Int64 b = 1;
+        //    a = a - b;
+        //    if (a == 9223372036854775807)
+        //    {
+        //        Log.WriteSuccess("Test_Sub_Int64_LargestNeg_Int64_1 okay.");
+        //    }
+        //    else
+        //    {
+        //        Log.WriteError("Test_Sub_Int64_LargestNeg_Int64_1 NOT okay.");
+        //    }
+        //}
+
+        ///// <summary>
+        ///// Tests: Subtraction operation using signed 64-bit integers, 
+        ///// Inputs: 0, Large +ve, 
+        ///// Result: Large -ve
+        ///// </summary>
+        ///// <remarks>
+        ///// <para> 
+        ///// Here a 64-bit signed integer is subtracted from a 64-bit signed integer producing a 64-bit signed value. 
+        ///// Zero is used for the first operand and the 64-bit negative result must be large. 
+        ///// While testing subtraction using 64-bit integers, it is important to handle the "borrow-bit" correctly. 
+        ///// </para>
+        ///// </remarks>
+        //[NoGC]
+        //public static void Test_Sub_Int64_Zero_Int64_LargePos()
+        //{
+        //    Int64 a = 0;
+        //    Int64 b = 844424930131968;
+        //    a = a - b;
+        //    if (a == -844424930131968)
+        //    {
+        //        Log.WriteSuccess("Test_Sub_Int64_Zero_Int64_LargePos okay.");
+        //    }
+        //    else
+        //    {
+        //        Log.WriteError("Test_Sub_Int64_Zero_Int64_LargePos NOT okay.");
+        //    }
+        //}
+
+        ///// <summary>
+        ///// Tests: Subtraction operation using signed 64-bit integers, 
+        ///// Inputs: 0, Large -ve, 
+        ///// Result: Large +ve
+        ///// </summary>
+        ///// <remarks>
+        ///// <para> 
+        ///// Here a 64-bit signed integer is subtracted from a 64-bit signed integer producing a 64-bit signed value. 
+        ///// Zero is used for the first operand and the 64-bit result must be a large +ve. 
+        ///// While testing subtraction using 64-bit integers, it is important to handle the "borrow-bit" correctly. 
+        ///// </para>
+        ///// </remarks>
+        //[NoGC]
+        //public static void Test_Sub_Int64_Zero_Int64_LargeNeg()
+        //{
+        //    Int64 a = 0;
+        //    Int64 b = -844424930131968;
+        //    a = a - b;
+        //    if (a == 844424930131968)
+        //    {
+        //        Log.WriteSuccess("Test_Sub_Int64_Zero_Int64_LargeNeg okay.");
+        //    }
+        //    else
+        //    {
+        //        Log.WriteError("Test_Sub_Int64_Zero_Int64_LargeNeg NOT okay.");
+        //    }
+        //}
+
+        ///// <summary>
+        ///// Tests: Subtraction operation using signed 64-bit integers, 
+        ///// Inputs: Large -ve, Large -ve, 
+        ///// Result: Large -ve
+        ///// </summary>
+        ///// <remarks>
+        ///// <para> 
+        ///// Here a 64-bit signed integer is subtracted from a 64-bit signed integer producing a 64-bit signed value. 
+        ///// A large -ve value is used for both operands, result must be a large -ve. 
+        ///// While testing subtraction using 64-bit integers, it is important to handle the "borrow-bit" correctly. 
+        ///// </para>
+        ///// </remarks>
+        //[NoGC]
+        //public static void Test_Sub_Int64_LargeNeg_Int64_LargeNeg()
+        //{
+        //    Int64 a = -1080863910568919040;
+        //    Int64 b = -844424930131968;
+        //    a = a - b;
+        //    if (a == -1080019485638787072)
+        //    {
+        //        Log.WriteSuccess("Test_Sub_Int64_LargeNeg_Int64_LargeNeg okay.");
+        //    }
+        //    else
+        //    {
+        //        Log.WriteError("Test_Sub_Int64_LargeNeg_Int64_LargeNeg NOT okay.");
+        //    }
+        //}
+
+        ///// <summary>
+        ///// Tests: Subtraction operation using signed 64-bit integers, 
+        ///// Inputs: Large +ve, Large -ve, 
+        ///// Result: Large +ve
+        ///// </summary>
+        ///// <remarks>
+        ///// <para> 
+        ///// Here a 64-bit signed integer is subtracted from a 64-bit signed integer producing a 64-bit signed value. 
+        ///// A large +ve value is used for op1 and a large -ve for op2, here the result is a large +ve. 
+        ///// While testing subtraction using 64-bit integers, it is important to handle the "borrow-bit" correctly. 
+        ///// </para>
+        ///// </remarks>
+        //[NoGC]
+        //public static void Test_Sub_Int64_LargePos_Int64_LargeNeg()
+        //{
+        //    Int64 a = 1080863910568919040;
+        //    Int64 b = -844424930131968;
+        //    a = a - b;
+        //    if (a == 1081708335499051008)
+        //    {
+        //        Log.WriteSuccess("Test_Sub_Int64_LargePos_Int64_LargeNeg okay.");
+        //    }
+        //    else
+        //    {
+        //        Log.WriteError("Test_Sub_Int64_LargePos_Int64_LargeNeg NOT okay.");
+        //    }
+        //}
+
+        ///// <summary>
+        ///// Tests: Subtraction operation using signed 64-bit integers, 
+        ///// Inputs: Large +ve, Large +ve, 
+        ///// Result: Large +ve
+        ///// </summary>
+        ///// <remarks>
+        ///// <para> 
+        ///// Here a 64-bit signed integer is subtracted from a 64-bit signed integer producing a 64-bit signed value. 
+        ///// A large +ve value is used for both operands, here the result is a large +ve. 
+        ///// While testing subtraction using 64-bit integers, it is important to handle the "borrow-bit" correctly. 
+        ///// </para>
+        ///// </remarks>
+        //[NoGC]
+        //public static void Test_Sub_Int64_LargePos_Int64_LargePos()
+        //{
+        //    Int64 a = 1080863910568919040;
+        //    Int64 b = 844424930131968;
+        //    a = a - b;
+        //    if (a == 1080019485638787072)
+        //    {
+        //        Log.WriteSuccess("Test_Sub_Int64_LargePos_Int64_LargePos okay.");
+        //    }
+        //    else
+        //    {
+        //        Log.WriteError("Test_Sub_Int64_LargePos_Int64_LargePos NOT okay.");
+        //    }
+        //}
 
         #endregion
     }
