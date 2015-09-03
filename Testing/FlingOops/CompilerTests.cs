@@ -254,7 +254,7 @@ namespace FlingOops
             Log.WriteLine("  Unsigned");
             //Log.WriteLine("UInt32 cannot be negated into Int32, only into Int64 in C#.");
             //Test_Not_UInt32_Small_Int64();
-            //Test_Not_UInt32_Largest_Int64();
+            Test_Not_UInt32_Largest_Int64();
             Log.WriteLine("  Signed");
             //Test_Not_Int32_SmallPos_Int32();
             Test_Not_Int32_SmallNeg_Int32();
@@ -2364,25 +2364,25 @@ namespace FlingOops
             }
         }
 
-        ///// <summary>
-        ///// Tests: Not operation using an unsigned 32-bit value, 
-        ///// Input: 32-bit Largest, 
-        ///// Result: 64-bit -ve.
-        ///// </summary>
-        //[NoGC]
-        //public static void Test_Not_UInt32_Largest_Int64()
-        //{
-        //    UInt32 a = 4294967295;
-        //    Int64 b = ~a;
-        //    if (b == -4294967296)
-        //    {
-        //        Log.WriteSuccess("Test_Not_UInt32_Largest_Int64 okay.");
-        //    }
-        //    else
-        //    {
-        //        Log.WriteError("Test_Not_UInt32_Largest_Int64 NOT okay.");
-        //    }
-        //}
+        /// <summary>
+        /// Tests: Not operation using an unsigned 32-bit value, 
+        /// Input: 32-bit Largest, 
+        /// Result: 64-bit -ve.
+        /// </summary>
+        [NoGC]
+        public static void Test_Not_UInt32_Largest_Int64()
+        {
+            UInt32 a = 4294967295;
+            Int64 b = ~a;
+            if (b == 0)
+            {
+                Log.WriteSuccess("Test_Not_UInt32_Largest_Int64 okay.");
+            }
+            else
+            {
+                Log.WriteError("Test_Not_UInt32_Largest_Int64 NOT okay.");
+            }
+        }
 
         /// <summary>
         /// Tests: Not operation using a signed 64-bit value, 
