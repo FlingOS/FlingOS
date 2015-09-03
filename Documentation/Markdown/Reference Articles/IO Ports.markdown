@@ -2,7 +2,7 @@
 layout: reference-article
 title: IO Ports
 date: 2015-08-30 16:12:00
-categories: docs reference
+categories: [ docs, reference ]
 ---
 
 # Introduction

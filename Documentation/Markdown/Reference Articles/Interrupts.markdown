@@ -2,7 +2,7 @@
 layout: reference-article
 title: Interrupts
 date: 2015-08-10 15:15:00
-categories: docs reference
+categories: [ docs, reference ]
 ---
 
 # Introduction

@@ -2,7 +2,7 @@
 layout: reference-article
 title: Stacks
 date: 2015-09-01 11:14:00
-categories: docs reference
+categories: [ docs, reference ]
 ---
 
 # Introduction
@@ -16,7 +16,7 @@ This article will explain the brief history of stacks and a range of concepts su
 
 # History
 
-The concept of a stack was first proposed by Alan M. Turing in 1946 (using the terms "bury" and "unbury" instead of modern day "push" and "pop"). Alan Turing's suggested application was for storing the return address of a method call to implement subroutines (which had been invented by Konrad Zuse a year earlier as part of the Z4). In 1955 the idea resurfaced with Dr. Friedrich Ludwig Bauer and Dr. Klaus Samelson (30 March 1957). In 1957 they patented the use of stacks in computers in Germany under "Verfahren zur automatischen Verarbeitung von kodierten Daten und Rechenmaschine zur Ausübung des Verfahrens" (Munich: Deutsches Patentamt. Retrieved 2010-10-01.). This title translates as "The method of automatically processing coded data and computers for implementing the method". 
+The concept of a stack was first proposed by Alan M. Turing in 1946 (using the terms "bury" and "unbury" instead of modern day "push" and "pop"). Alan Turing's suggested application was for storing the return address of a method call to implement subroutines (which had been invented by Konrad Zuse a year earlier as part of the Z4). In 1955 the idea resurfaced with Dr. Friedrich Ludwig Bauer and Dr. Klaus Samelson (30 March 1957). In 1957 they patented the use of stacks in computers in Germany under "Verfahren zur automatischen Verarbeitung von kodierten Daten und Rechenmaschine zur AusÃ¼bung des Verfahrens" (Munich: Deutsches Patentamt. Retrieved 2010-10-01.). This title translates as "The method of automatically processing coded data and computers for implementing the method". 
 
 ---
 
@@ -211,6 +211,7 @@ popfd  ; Pop value into EFlags register
 pushad ; Push all/many of the register values as dwords
 popad  ; Pop values into all/many of the registers
 ```
+
 
 ---
 

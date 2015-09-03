@@ -2,7 +2,7 @@
 layout: reference-article
 title: ISRs
 date: 2015-08-14 00:04:00
-categories: docs reference
+categories: [ docs, reference ]
 ---
 
 # Introduction

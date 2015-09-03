@@ -2,7 +2,7 @@
 layout: reference-article
 title: Displays & Graphics
 date: 2015-07-23 12:20:00
-categories: docs reference
+categories: [ docs, reference ]
 ---
 
 # Introduction

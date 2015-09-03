@@ -2,7 +2,7 @@
 layout: reference-article
 title: Drivers Compiler
 date: 2015-07-29 11:32:00
-categories: docs reference
+categories: [ docs, reference ]
 ---
 
 ## IL to Machine Code

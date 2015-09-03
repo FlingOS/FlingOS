@@ -2,7 +2,7 @@
 layout: reference-article
 title: ATA
 date: 2015-07-20 11:40:00
-categories: docs reference
+categories: [ docs, reference ]
 ---
 
 # Introduction

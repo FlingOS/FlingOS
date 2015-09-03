@@ -2,7 +2,7 @@
 layout: reference-article
 title: Partitions
 date: 2015-07-22 22:44:00
-categories: docs reference
+categories: [ docs, reference ]
 ---
 
 # Introduction

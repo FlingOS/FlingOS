@@ -2,7 +2,7 @@
 layout: reference-article
 title: IRQs
 date: 2015-08-17 12:05:00
-categories: docs reference
+categories: [ docs, reference ]
 ---
 
 # Introduction

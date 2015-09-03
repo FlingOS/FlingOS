@@ -2,7 +2,7 @@
 layout: reference-article
 title: Interrupt Descriptors Table
 date: 2015-08-28 16:54:00
-categories: docs reference
+categories: [ docs, reference ]
 ---
 
 # Introduction
@@ -182,7 +182,7 @@ You have misconfigured an interrupt handler and, if you are getting triple fault
 
 # References
 
-- [Intel Architecture Manual](http://www.intel.co.uk/content/dam/www/public/us/en/documents/manuals/64-ia-32-architectures-software-developer-manual-325462.pdf
+- [Intel Architecture Manual](http://www.intel.co.uk/content/dam/www/public/us/en/documents/manuals/64-ia-32-architectures-software-developer-manual-325462.pdf)
 - [Wikipedia.org - Interrupt Descriptor Table](https://en.wikipedia.org/wiki/Interrupt_descriptor_table)
 - [Independent-Software.com - IDT](http://www.independent-software.com/writing-your-own-toy-operating-system-setting-up-the-interrupt-descriptor-table-idt/)
 - [OSDev.org - Interrupt Descriptor Table](http://wiki.osdev.org/Interrupt_Descriptor_Table)

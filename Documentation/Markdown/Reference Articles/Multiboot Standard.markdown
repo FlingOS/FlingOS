@@ -2,7 +2,7 @@
 layout: reference-article
 title: Multiboot Standard
 date: 2015-09-03 16:16:00
-categories: docs reference
+categories: [ docs, reference ]
 ---
 
 # Introduction

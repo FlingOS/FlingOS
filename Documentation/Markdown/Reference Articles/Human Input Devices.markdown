@@ -2,7 +2,7 @@
 layout: reference-article
 title: Human Input Devices
 date: 2015-08-17 23:51:00
-categories: docs reference
+categories: [ docs, reference ]
 ---
 
 # Introduction

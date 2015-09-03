@@ -2,7 +2,7 @@
 layout: reference-article
 title: Getting Started
 date: 2015-08-30 20:21:00
-categories: docs reference
+categories: [ docs, reference ]
 ---
 
 # Where to start

@@ -2,7 +2,7 @@
 layout: reference-article
 title: Serial Ports
 date: 2015-08-30 19:53:00
-categories: docs reference
+categories: [ docs, reference ]
 ---
 
 # Introduction
