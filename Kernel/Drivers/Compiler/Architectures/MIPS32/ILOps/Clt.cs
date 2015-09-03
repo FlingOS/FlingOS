@@ -128,7 +128,7 @@ namespace Drivers.Compiler.Architectures.MIPS32
                 //A high bytes < B high bytes? Branch to true case.
                 conversionState.Append(new ASMOps.Branch() { BranchType = ASMOps.BranchOp.BranchLessThan, Src1 = "$t3", Src2 = "$t2", DestILPosition = currOpPosition, Extension = "True", UnsignedTest = unsignedComparison });
                 //A high bytes > B high bytes? Branch to else case.
-                conversionState.Append(new ASMOps.Branch() { BranchType = ASMOps.BranchOp.BranchGreaterThan, DestILPosition = currOpPosition, Extension = "Else", UnsignedTest = unsignedComparison });
+                conversionState.Append(new ASMOps.Branch() { BranchType = ASMOps.BranchOp.BranchGreaterThan, Src1 = "$t3", Src2 = "$t2", DestILPosition = currOpPosition, Extension = "Else", UnsignedTest = unsignedComparison });
                 //Otherwise, A high bytes = B high bytes
                 //A low bytes >= B low bytes? Branch to else case.
                 conversionState.Append(new ASMOps.Branch() { BranchType = ASMOps.BranchOp.BranchGreaterThanEqual, Src1 = "$t0", Src2 = "$t1", DestILPosition = currOpPosition, Extension = "Else", UnsignedTest = unsignedComparison });

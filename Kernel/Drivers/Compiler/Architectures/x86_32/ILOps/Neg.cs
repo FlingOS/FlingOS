@@ -63,7 +63,10 @@ namespace Drivers.Compiler.Architectures.x86
                 //SUPPORT - floats
                 throw new NotSupportedException("Negate float vals not suppported yet!");
             }
-            
+
+            // Two's Complement negation
+            //  - "Not" value then add 1
+
             if(itemA.sizeOnStackInBytes == 4)
             {
                 conversionState.Append(new ASMOps.Pop() { Size = ASMOps.OperandSize.Dword, Dest = "EAX" });
@@ -74,8 +77,21 @@ namespace Drivers.Compiler.Architectures.x86
             {
                 conversionState.Append(new ASMOps.Pop() { Size = ASMOps.OperandSize.Dword, Dest = "EAX" });
                 conversionState.Append(new ASMOps.Pop() { Size = ASMOps.OperandSize.Dword, Dest = "EDX" });
-                conversionState.Append(new ASMOps.Neg() { Arg = "EAX" });
-                conversionState.Append(new ASMOps.Neg() { Arg = "EDX" });
+                // Not the value
+                conversionState.Append(new ASMOps.Not() { Dest = "EAX" });
+                conversionState.Append(new ASMOps.Not() { Dest = "EDX" });
+
+                // Then add 1
+                conversionState.Append(new ASMOps.Mov() { Src = "1", Dest = "EBX", Size = ASMOps.OperandSize.Dword });
+                conversionState.Append(new ASMOps.Mov() { Src = "0", Dest = "ECX", Size = ASMOps.OperandSize.Dword });
+
+                //Add ecx:ebx to edx:eax
+                //Add low bits
+                conversionState.Append(new ASMOps.Add() { Src = "EBX", Dest = "EAX" });
+                //Add high bits including any carry from 
+                //when low bits were added
+                conversionState.Append(new ASMOps.Add() { Src = "ECX", Dest = "EDX", WithCarry = true });
+
                 conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Dword, Src = "EDX" });
                 conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Dword, Src = "EAX" });
             }

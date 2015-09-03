@@ -21,7 +21,7 @@ namespace Drivers.Compiler.Architectures.MIPS32
             //Push the previous method's fp
             conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Word, Src = "$fp" });
             //Set fp for this method
-            conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Word, Src = "$sp", Dest = "$fp" });
+            conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Word, Src = "$sp", Dest = "$fp", MoveType = ASMOps.Mov.MoveTypes.RegToReg });
 
             //Allocate stack space for locals
             //Only bother if there are any locals

@@ -140,7 +140,6 @@ namespace Drivers.Compiler.Architectures.MIPS32
 
                 if (typeof(Delegate).IsAssignableFrom(((MethodInfo)methodToCall).DeclaringType))
                 {
-                    throw new NotSupportedException("Delegate calls not supported yet!");
                     //Callvirt to delegate method
                     // - We only support calls to Invoke at the moment
                     if (methodToCall.Name != "Invoke")
@@ -240,7 +239,7 @@ namespace Drivers.Compiler.Architectures.MIPS32
                         }
                     }
                     //Skip over the params
-                    conversionState.Append(new ASMOps.Add() { Src2 = bytesToAdd.ToString(), Src1 = "$sp", Dest = "$sp" });
+                    conversionState.Append(new ASMOps.Add() { Src1 = "$sp", Src2 = bytesToAdd.ToString(), Dest = "$sp" });
                     //If necessary, push the return value onto the stack.
                     if (returnItem.sizeOnStackInBytes != 0)
                     {
@@ -293,38 +292,38 @@ namespace Drivers.Compiler.Architectures.MIPS32
                     //Get type ref
                     int typeOffset = conversionState.TheILLibrary.GetFieldInfo(declaringTypeInfo, "_Type").OffsetInBytes;
                     //conversionState.Append(new ASMOps.La() { Dest = "$t1", Label = "type_Testing1_String" });
-                    GlobalMethods.LoadData(conversionState, theOp, "$t0", "$t0", typeOffset, 4);
                     //conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Word, Src = typeOffset.ToString() + "($t0)", Dest = "$t0", MoveType = ASMOps.Mov.MoveTypes.SrcMemoryToDestReg });
+                    GlobalMethods.LoadData(conversionState, theOp, "$t0", "$t0", typeOffset, 4);
                     
                     //Get method table ref
                     int methodTablePtrOffset = conversionState.GetTypeFieldOffset("MethodTablePtr");
                     //conversionState.Append(new ASMOps.La() { Dest = "$t0", Label = "type_Testing1_String_MethodTable" });
+                    //conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Word, Src = methodTablePtrOffset.ToString() + "($t0)", Dest = "$t0", MoveType = ASMOps.Mov.MoveTypes.SrcMemoryToDestReg });
                     GlobalMethods.LoadData(conversionState, theOp, "$t0", "$t0", methodTablePtrOffset, 4);
-                    //conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Word, Src = methodTablePtrOffset.ToString() + "($t1)", Dest = "$t0", MoveType = ASMOps.Mov.MoveTypes.SrcMemoryToDestReg });
                     
                     //Loop through entries
                     conversionState.Append(new ASMOps.Label() { ILPosition = currOpPosition, Extension = "LoopMethodTable" });
                     //Load ID Val for current entry
-                    GlobalMethods.LoadData(conversionState, theOp, "$t0", "$t1", 0, 4);
                     //conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Word, Src = "0($t0)", Dest = "$t1", MoveType = ASMOps.Mov.MoveTypes.SrcMemoryToDestReg });
+                    GlobalMethods.LoadData(conversionState, theOp, "$t0", "$t1", 0, 4);
                     //Compare to wanted ID value
-                    conversionState.Append(new ASMOps.Mov() { Dest = "$t4", Src = methodIDValueWanted, MoveType = ASMOps.Mov.MoveTypes.ImmediateToReg });
+                    conversionState.Append(new ASMOps.Mov() { Src = methodIDValueWanted,  Dest = "$t4", MoveType = ASMOps.Mov.MoveTypes.ImmediateToReg });
                     //If equal, load method address into $t0
                     conversionState.Append(new ASMOps.Branch() { BranchType = ASMOps.BranchOp.BranchNotEqual, Src1 = "$t1", Src2 = "$t4", DestILPosition = currOpPosition, Extension = "NotEqual" });
-                    GlobalMethods.LoadData(conversionState, theOp, "$t0", "$t0", 4, 4);
                     //conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Word, Src = "4($t0)", Dest = "$t0", MoveType = ASMOps.Mov.MoveTypes.SrcMemoryToDestReg });
+                    GlobalMethods.LoadData(conversionState, theOp, "$t0", "$t0", 4, 4);
                     conversionState.Append(new ASMOps.Branch() { BranchType = ASMOps.BranchOp.Branch, DestILPosition = currOpPosition, Extension = "Call" });
                     conversionState.Append(new ASMOps.Label() { ILPosition = currOpPosition, Extension = "NotEqual" });
                     //Else, compare to 0 to check for end of table
                     conversionState.Append(new ASMOps.Branch() { BranchType = ASMOps.BranchOp.BranchZero, Src1 = "$t1", DestILPosition = currOpPosition, Extension = "EndOfTable" });
                     //Not 0? Move to next entry then loop again
-                    conversionState.Append(new ASMOps.Add() { Src2 = "8", Src1 = "$t0", Dest = "$t0" });
+                    conversionState.Append(new ASMOps.Add() { Src1 = "$t0", Src2 = "8", Dest = "$t0" });
                     conversionState.Append(new ASMOps.Branch() { BranchType = ASMOps.BranchOp.Branch, DestILPosition = currOpPosition, Extension = "LoopMethodTable" });
                     conversionState.Append(new ASMOps.Label() { ILPosition = currOpPosition, Extension = "EndOfTable" });
                     //Compare address value to 0
                     //If not zero, there is a parent method table to check
-                    GlobalMethods.LoadData(conversionState, theOp, "$t0", "$t1", 4, 4);
                     //conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Word, Src = "4($t0)", Dest = "$t1", MoveType = ASMOps.Mov.MoveTypes.SrcMemoryToDestReg });
+                    GlobalMethods.LoadData(conversionState, theOp, "$t0", "$t1", 4, 4);
                     conversionState.Append(new ASMOps.Branch() { BranchType = ASMOps.BranchOp.BranchZero, Src1 = "$t1", DestILPosition = currOpPosition, Extension = "NotFound" });
                     //Load parent method table and loop 
                     conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Word, Src = "$t1", Dest = "$t0", MoveType = ASMOps.Mov.MoveTypes.RegToReg });
@@ -426,7 +425,7 @@ namespace Drivers.Compiler.Architectures.MIPS32
                             }
                         }
                         //Skip over the params
-                        conversionState.Append(new ASMOps.Add() { Src2 = bytesToAdd.ToString(), Src1 = "$sp", Dest = "$sp" });
+                        conversionState.Append(new ASMOps.Add() { Src1 = "$sp", Src2 = bytesToAdd.ToString(), Dest = "$sp" });
                         //If necessary, push the return value onto the stack.
                         if (returnItem.sizeOnStackInBytes != 0)
                         {

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Testing2
 {
-    public static class Timer
+    public static unsafe class Timer
     {
         /* TCU, the Timer and Counter Unit peripheral */
         public const uint TCU_BASE = 0xb0002000;
@@ -137,5 +137,33 @@ namespace Testing2
          * the desired amount of usecs. For this to be at all meaningful, OS_TIMER_HZ
          * must be an integer multiple of 1000000. */
         public const uint OS_TIMER_USEC_DIV = (OS_TIMER_HZ / 1000000);
+
+        public static void Init()
+        {
+            /* Timer wraps when it hits comparison value */
+            *(uint*)TCU_OSTCSR = OSTCSR_PRESCALE_16;
+
+            /* Counter initial value. */
+            *(uint*)TCU_OSTCNTH = 0;
+            *(uint*)TCU_OSTCNTL = 0;
+
+            /* Use EXTCLK as the clock source */
+            *(uint*)TCU_OSTCSR = *(uint*)TCU_OSTCSR | OSTCSR_EXT_EN;
+
+            /* Comparison value -- once every MS. */
+            *(uint*)TCU_OSTDR = OS_TIMER_HZ / 1000;
+
+            /* Enable the timer*/
+            *(uint*)TESR = TER_OSTEN;
+
+            /* Register for interrupts */
+            //intc_register_handler_tcu0(ostimer_interrupt);
+
+            /* Unmask timer IRQ, in TCU */
+            *(uint*)TMCR = TMR_OSTMASK;
+
+            /* Unmask timer IRQ, in interrupt controller */
+            *(uint*)CI20.INTC_ICMCR0 = (1 << 27);
+        }
     }
 }

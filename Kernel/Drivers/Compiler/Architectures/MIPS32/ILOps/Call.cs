@@ -203,7 +203,7 @@ namespace Drivers.Compiler.Architectures.MIPS32
                         }
                     }   
                     //Skip over the params
-                    conversionState.Append(new ASMOps.Add() { Src2 = bytesToAdd.ToString(), Src1 = "$sp", Dest = "$sp" });
+                    conversionState.Append(new ASMOps.Add() { Src1 = "$sp", Src2 = bytesToAdd.ToString(), Dest = "$sp" });
                     //If necessary, push the return value onto the stack.
                     if (returnItem.sizeOnStackInBytes != 0)
                     {
@@ -268,7 +268,7 @@ namespace Drivers.Compiler.Architectures.MIPS32
                     if (bytesToAdd > 0)
                     {
                         //Skip over the params
-                        conversionState.Append(new ASMOps.Add() { Src2 = bytesToAdd.ToString(), Src1 = "$sp", Dest = "$sp" });
+                        conversionState.Append(new ASMOps.Add() { Src1 = "$sp", Src2 = bytesToAdd.ToString(), Dest = "$sp" });
                     }
                 }
             }

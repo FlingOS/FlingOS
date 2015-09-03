@@ -99,7 +99,7 @@ namespace Drivers.Compiler.Architectures.x86
                         //Unsigned extend A to EAX:EDX
                         conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Dword, Src = "0", Dest = "EDX" });
                         //Do the division
-                        conversionState.Append(new ASMOps.Div() { Arg = "ebx" });
+                        conversionState.Append(new ASMOps.Div() { Arg = "EBX" });
                     }
                     else
                     {

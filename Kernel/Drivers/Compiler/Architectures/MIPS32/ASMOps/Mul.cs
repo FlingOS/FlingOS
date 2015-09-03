@@ -42,11 +42,11 @@ namespace Drivers.Compiler.Architectures.MIPS32.ASMOps
         {
             if (Signed)
             {
-                return "mul " + Src1 + ", " + Src2;
+                return "mult " + Src1 + ", " + Src2;
             }
             else
             {
-                return "mulu " + Src1 + ", " + Src2;
+                return "multu " + Src1 + ", " + Src2;
             }
         }
     }

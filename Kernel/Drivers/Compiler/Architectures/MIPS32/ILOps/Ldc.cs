@@ -179,7 +179,7 @@ namespace Drivers.Compiler.Architectures.MIPS32
             //If pushing Int64:
             if (numBytes == 8)
             {
-                //Push the high-bits as a dword
+                //Push the high-bits as a word
 
                 //Start the push (0x indicates what follows is a hex number)
                 string valueToPush = "0x";
@@ -192,7 +192,7 @@ namespace Drivers.Compiler.Architectures.MIPS32
                 conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Byte, Src = valueToPush, Dest = "$t0", MoveType = ASMOps.Mov.MoveTypes.ImmediateToReg });
                 conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Word, Src = "$t0" });
 
-                //Then push the low-bits as a dword
+                //Then push the low-bits as a word
                 //See above
                 valueToPush = "0x";
                 //Low bits

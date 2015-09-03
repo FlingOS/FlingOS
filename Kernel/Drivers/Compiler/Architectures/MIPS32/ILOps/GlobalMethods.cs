@@ -11,21 +11,21 @@ namespace Drivers.Compiler.Architectures.MIPS32
     public static class GlobalMethods
     {
         public static void LoadData(ILConversionState conversionState, ILOp theOp,
-            string addressReg, string valueReg, int offset, int size)
+            string addressReg, string valueReg, int offset, int size, bool SignExtend = false)
         {
             if (size == 1)
             {
-                conversionState.Append(new ASMOps.Mov() { Src = offset + "(" + addressReg + ")", Dest = "$t6", MoveType = ASMOps.Mov.MoveTypes.SrcMemoryToDestReg, Size = ASMOps.OperandSize.Byte });
+                conversionState.Append(new ASMOps.Mov() { Src = offset + "(" + addressReg + ")", Dest = "$t6", MoveType = ASMOps.Mov.MoveTypes.SrcMemoryToDestReg, Size = ASMOps.OperandSize.Byte, SignExtend = SignExtend });
             }
-            else 
+            else
             {
                 conversionState.Append(new ASMOps.Xor() { Src1 = "$t6", Src2 = "$t6", Dest = "$t6" });
                 int shiftBits = 0;
-                if(offset % 2 == 1)
+                if (offset % 2 == 1)
                 {
                     conversionState.Append(new ASMOps.Mov() { Src = offset + "(" + addressReg + ")", Dest = "$t7", MoveType = ASMOps.Mov.MoveTypes.SrcMemoryToDestReg, Size = ASMOps.OperandSize.Byte });
                     conversionState.Append(new ASMOps.Or() { Src1 = "$t7", Src2 = "$t6", Dest = "$t6" });
-                    
+
                     size -= 1;
                     offset += 1;
                     shiftBits += 8;
@@ -33,13 +33,13 @@ namespace Drivers.Compiler.Architectures.MIPS32
 
                 while (size > 1)
                 {
-                    conversionState.Append(new ASMOps.Mov() { Src = offset + "(" + addressReg + ")", Dest = "$t7", MoveType = ASMOps.Mov.MoveTypes.SrcMemoryToDestReg, Size = ASMOps.OperandSize.Halfword });
+                    conversionState.Append(new ASMOps.Mov() { Src = offset + "(" + addressReg + ")", Dest = "$t7", MoveType = ASMOps.Mov.MoveTypes.SrcMemoryToDestReg, Size = ASMOps.OperandSize.Halfword, SignExtend = (SignExtend && size == 2) });
                     if (shiftBits > 0)
                     {
                         conversionState.Append(new ASMOps.Sll() { Src = "$t7", Dest = "$t7", Bits = shiftBits });
                     }
                     conversionState.Append(new ASMOps.Or() { Src1 = "$t7", Src2 = "$t6", Dest = "$t6" });
-                    
+
                     size -= 2;
                     offset += 2;
                     shiftBits += 16;
@@ -47,7 +47,7 @@ namespace Drivers.Compiler.Architectures.MIPS32
 
                 if (size == 1)
                 {
-                    conversionState.Append(new ASMOps.Mov() { Src = offset + "(" + addressReg + ")", Dest = "$t7", MoveType = ASMOps.Mov.MoveTypes.SrcMemoryToDestReg, Size = ASMOps.OperandSize.Byte });
+                    conversionState.Append(new ASMOps.Mov() { Src = offset + "(" + addressReg + ")", Dest = "$t7", MoveType = ASMOps.Mov.MoveTypes.SrcMemoryToDestReg, Size = ASMOps.OperandSize.Byte, SignExtend = SignExtend });
                     if (shiftBits > 0)
                     {
                         conversionState.Append(new ASMOps.Sll() { Src = "$t7", Dest = "$t7", Bits = shiftBits });

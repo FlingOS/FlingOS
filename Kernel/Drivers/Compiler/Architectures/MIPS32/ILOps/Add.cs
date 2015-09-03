@@ -39,6 +39,16 @@ namespace Drivers.Compiler.Architectures.MIPS32
             }
         }
 
+        /// <summary>
+        /// See base class documentation.
+        /// </summary>
+        /// <returns>See base class documentation.</returns>
+        /// <exception cref="System.NotSupportedException">
+        /// Thrown if attempt to add a floating point number since floats are not supported yet.
+        /// </exception>
+        /// <exception cref="System.InvalidOperationException">
+        /// Thrown if either stack argument is &lt; 4 bytes in size.
+        /// </exception>
         public override void Convert(ILConversionState conversionState, ILOp theOp)
         {
             //Pop the operands from our stack in reverse order
@@ -116,10 +126,14 @@ namespace Drivers.Compiler.Architectures.MIPS32
                     conversionState.Append(new ASMOps.Pop() { Size = ASMOps.OperandSize.Word, Dest = "$t3" });
                     //Add $t2:$t1 to $t3:$t0
                     //Add low bits
-                    conversionState.Append(new ASMOps.Add() { Src1 = "$t1", Src2 = "$t0", Dest = "$t0" });
+                    conversionState.Append(new ASMOps.Add() { Src1 = "$t1", Src2 = "$t0", Dest = "$t4", Unsigned = true });
+                    //Add carry bit to $t5
+                    conversionState.Append(new ASMOps.Sltu() { Src1 = "$t4", Src2 = "$t1", Dest = "$t5" });
                     //Add high bits including any carry from 
                     //when low bits were added
-                    conversionState.Append(new ASMOps.Add() { Src1 = "$t2", Src2 = "$t3", Dest = "$t3", WithCarry = true });
+                    conversionState.Append(new ASMOps.Add() { Src1 = "$t5", Src2 = "$t3", Dest = "$t5", Unsigned = true });
+                    conversionState.Append(new ASMOps.Add() { Src1 = "$t5", Src2 = "$t2", Dest = "$t3", Unsigned = true });
+                    conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Word, Src = "$t4", Dest = "$t0", MoveType = ASMOps.Mov.MoveTypes.RegToReg });
                     //Push the result
                     //Push high bits
                     conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Word, Src = "$t3" });

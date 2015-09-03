@@ -148,8 +148,8 @@ namespace Drivers.Compiler.Architectures.MIPS32
 
             if (loadAddr)
             {
-                conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Word, Src = "$fp", Dest = "$t0" });
-                conversionState.Append(new ASMOps.Sub() { Src2 = bytesOffset.ToString(), Src1 = "$t0", Dest = "$t0" });
+                conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Word, Src = "$fp", Dest = "$t0", MoveType = ASMOps.Mov.MoveTypes.RegToReg });
+                conversionState.Append(new ASMOps.Sub() { Src1 = "$t0", Src2 = bytesOffset.ToString(), Dest = "$t0" });
                 conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Word, Src = "$t0" });
 
                 conversionState.CurrentStackFrame.Stack.Push(new StackItem()

@@ -76,6 +76,12 @@ namespace Kernel
         static unsafe void Main()
         {
             ExceptionMethods.AddExceptionHandlerInfo(null, null);
+            
+#if MIPS
+            BasicConsole.WriteLine("Running MIPS Kernel");
+#elif x86 || AnyCPU
+            BasicConsole.WriteLine("Running x86 Kernel");
+#endif
 
             try
             {
@@ -171,7 +177,7 @@ namespace Kernel
                 {
                     BasicConsole.WriteLine("Startup error! " + ExceptionMethods.CurrentException.Message);
                 }
-                BasicConsole.WriteLine("Fling OS forced to halt!");
+                BasicConsole.WriteLine("FlingOS forced to halt!");
                 BasicConsole.SetTextColour(BasicConsole.default_colour);
             }
 

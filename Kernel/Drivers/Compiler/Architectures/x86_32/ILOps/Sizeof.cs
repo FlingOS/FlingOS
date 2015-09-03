@@ -59,7 +59,8 @@ namespace Drivers.Compiler.Architectures.x86
             int metadataToken = Utilities.ReadInt32(theOp.ValueBytes, 0);
             Type theType = conversionState.Input.TheMethodInfo.UnderlyingInfo.Module.ResolveType(metadataToken);
             Types.TypeInfo theTypeInfo = conversionState.TheILLibrary.GetTypeInfo(theType);
-            conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Dword, Src = theTypeInfo.SizeOnStackInBytes.ToString() });
+            conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Dword, 
+                Src = (theTypeInfo.IsValueType ? theTypeInfo.SizeOnHeapInBytes : theTypeInfo.SizeOnStackInBytes).ToString() });
             
             conversionState.CurrentStackFrame.Stack.Push(new StackItem()
             {

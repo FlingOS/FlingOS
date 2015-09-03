@@ -108,17 +108,19 @@ namespace Drivers.Compiler.Architectures.MIPS32.ASMOps
                     break;
             }
 
+            string label = theBlock.GenerateMethodLabel() + theBlock.GenerateILOpLabel(DestILPosition, Extension);
+
             if (numSourceOperands == 2)
             {
-                return jmpOp + " " + Src1 + ", " + Src2 + ", " + theBlock.GenerateILOpLabel(DestILPosition, Extension);
+                return jmpOp + " " + Src1 + ", " + Src2 + ", " + label;
             }
             else if (numSourceOperands == 1)
             {
-                return jmpOp + " " + Src1 + ", " + theBlock.GenerateILOpLabel(DestILPosition, Extension);
+                return jmpOp + " " + Src1 + ", " + label;
             }
             else
             {
-                return jmpOp + " " + theBlock.GenerateILOpLabel(DestILPosition, Extension);
+                return jmpOp + " " + label;
             }
         }
     }
