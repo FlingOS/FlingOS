@@ -125,8 +125,8 @@ namespace FlingOops
             Log.WriteLine("  Unsigned");
             Test_Sub_UInt64_LargestPos_UInt32_4();
             Log.WriteLine("  Signed");
-            Test_Sub_Int64_LargestNeg_Int32_4();
             Test_Sub_Int64_LargestPos_Int32_4();
+            Test_Sub_Int64_LargestNeg_Int32_4();
             Test_Sub_Int64_Zero_Int32_4();
             Test_Sub_Int64_Zero_Int32_LargestPos();
             Test_Sub_Int64_Zero_Int32_LargestNeg();
@@ -277,8 +277,8 @@ namespace FlingOops
             Log.WriteLine("  Unsigned");
             Test_Add_UInt64_LargestPos_UInt32_4();
             Log.WriteLine("  Signed");
-            //Test_Add_Int64_LargestNeg_Int32_4();
             Test_Add_Int64_LargestPos_Int32_4();
+            Test_Add_Int64_LargestNeg_Int32_4();
             //Test_Add_Int64_Zero_Int32_4();
             //Test_Add_Int64_Zero_Int32_LargestPos();
             //Test_Add_Int64_Zero_Int32_LargestNeg();
@@ -954,9 +954,7 @@ namespace FlingOops
                 Log.WriteError("Test_Sub_Int64_LargestPos_Int32_4 NOT okay.");
             }
         }
-
-
-
+        
         /// <summary>
         /// Tests: Subtraction operation using signed 64- and 32-bit integers, 
         /// Inputs: Largest -ve, 4, 
@@ -985,10 +983,7 @@ namespace FlingOops
                 Log.WriteError("Test_Sub_Int64_LargestNeg_Int32_4 NOT okay.");
             }
         }
-
-
-
-
+        
         /// <summary>
         /// Tests: Subtraction operation using signed 64- and 32-bit integers, 
         /// Inputs: 0, 4, 
@@ -2745,6 +2740,11 @@ namespace FlingOops
         /// Inputs: Largest +ve, Small +ve, 
         /// Result: (Largest +ve) + 4 = (Largest -ve) + 3 - circularity of two's complement 
         /// </summary>
+        /// <remarks>
+        /// <para>
+        /// When adding 64-bit values, care must be taken to handle the carry-bit correctly
+        /// </para>
+        /// </remarks>
         [NoGC]
         public static void Test_Add_Int64_LargestPos_Int32_4()
         {
@@ -2760,41 +2760,33 @@ namespace FlingOops
                 Log.WriteError("Test_Add_Int64_LargestPos_Int32_4 NOT okay.");
             }
         }
-
-
-
-        ///// <summary>
-        ///// Tests: Subtraction operation using signed 64- and 32-bit integers, 
-        ///// Inputs: Largest -ve, 4, 
-        ///// Result: (Largest +ve - 3)
-        ///// </summary>
-        ///// <remarks>
-        ///// <para> 
-        ///// Here a 32-bit signed integer is subtracted from a 64-bit signed integer producing a 64-bit signed value. 
-        ///// The largest -ve value is used for the first operand. Correct result should be (Largest +ve - 3) because of the 
-        ///// circular nature of signed numbers in two's complement.
-        ///// While testing subtraction using 64-bit integers, it is important to handle the "borrow-bit" correctly. 
-        ///// </para>
-        ///// </remarks>
-        //[NoGC]
-        //public static void Test_Sub_Int64_LargestNeg_Int32_4()
-        //{
-        //    Int64 a = -9223372036854775808;
-        //    Int32 b = 4;
-        //    a = a - b;
-        //    if (a == 9223372036854775804)
-        //    {
-        //        Log.WriteSuccess("Test_Sub_Int64_LargestNeg_Int32_4 okay.");
-        //    }
-        //    else
-        //    {
-        //        Log.WriteError("Test_Sub_Int64_LargestNeg_Int32_4 NOT okay.");
-        //    }
-        //}
-
-
-
-
+        
+        /// <summary>
+        /// Tests: Addition operation using signed 64- and 32-bit integers, 
+        /// Inputs: Largest -ve, Small +ve, 
+        /// Result: (Largest -ve) + 4
+        /// </summary>
+        /// <remarks>
+        /// <para>
+        /// When adding 64-bit values, care must be taken to handle the carry-bit correctly
+        /// </para>
+        /// </remarks>
+        [NoGC]
+        public static void Test_Add_Int64_LargestNeg_Int32_4()
+        {
+            Int64 a = -9223372036854775808;
+            Int32 b = 4;
+            a = a + b;
+            if (a == -9223372036854775804)
+            {
+                Log.WriteSuccess("Test_Add_Int64_LargestNeg_Int32_4 okay.");
+            }
+            else
+            {
+                Log.WriteError("Test_Add_Int64_LargestNeg_Int32_4 NOT okay.");
+            }
+        }
+        
         ///// <summary>
         ///// Tests: Subtraction operation using signed 64- and 32-bit integers, 
         ///// Inputs: 0, 4, 
