@@ -264,7 +264,7 @@ namespace FlingOops
             Log.WriteLine("  Unsigned");
             //Log.WriteLine("UInt64 cannot be negated in C#.");
             Log.WriteLine("  Signed");
-            //Test_Not_Int64_LargePos_Int64();
+            Test_Not_Int64_LargePos_Int64();
             //Test_Not_Int64_LargeNeg_Int64();
             Test_Not_Int64_LargestPos_Int64();
             Test_Not_Int64_LargestNeg_Int64();
@@ -2404,25 +2404,25 @@ namespace FlingOops
             }
         }
 
-        ///// <summary>
-        ///// Tests: Negation operation using a signed 64-bit value, 
-        ///// Input: 64-bit Large +ve, 
-        ///// Result: 64-bit Large -ve.
-        ///// </summary>
-        //[NoGC]
-        //public static void Test_Neg_Int64_LargePos_Int64()
-        //{
-        //    Int64 a = 372036854775807;
-        //    Int64 b = -a;
-        //    if (b == -372036854775807)
-        //    {
-        //        Log.WriteSuccess("Test_Neg_Int64_LargePos_Int64 okay.");
-        //    }
-        //    else
-        //    {
-        //        Log.WriteError("Test_Neg_Int64_LargePos_Int64 NOT okay.");
-        //    }
-        //}
+        /// <summary>
+        /// Tests: Not operation using a signed 64-bit value, 
+        /// Input: 64-bit Large +ve, 
+        /// Result: 64-bit Large -ve.
+        /// </summary>
+        [NoGC]
+        public static void Test_Not_Int64_LargePos_Int64()
+        {
+            Int64 a = 372036854775807;
+            Int64 b = ~a;
+            if (b == -372036854775808)
+            {
+                Log.WriteSuccess("Test_Not_Int64_LargePos_Int64 okay.");
+            }
+            else
+            {
+                Log.WriteError("Test_Not_Int64_LargePos_Int64 NOT okay.");
+            }
+        }
 
         ///// <summary>
         ///// Tests: Negation operation using a signed 32-bit value, 
