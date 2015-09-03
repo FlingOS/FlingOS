@@ -278,7 +278,7 @@ namespace FlingOops
             Test_Add_UInt64_LargestPos_UInt32_4();
             Log.WriteLine("  Signed");
             //Test_Add_Int64_LargestNeg_Int32_4();
-            //Test_Add_Int64_LargestPos_Int32_4();
+            Test_Add_Int64_LargestPos_Int32_4();
             //Test_Add_Int64_Zero_Int32_4();
             //Test_Add_Int64_Zero_Int32_LargestPos();
             //Test_Add_Int64_Zero_Int32_LargestNeg();
@@ -2740,33 +2740,26 @@ namespace FlingOops
             }
         }
 
-        ///// <summary>
-        ///// Tests: Subtraction operation using signed 64- and 32-bit integers, 
-        ///// Inputs: Largest +ve, 4, 
-        ///// Result: (Largest +ve - 4)
-        ///// </summary>
-        ///// <remarks>
-        ///// <para> 
-        ///// Here a 32-bit signed integer is subtracted from a 64-bit signed integer producing a 64-bit signed value. 
-        ///// A largest +ve value is used for the first operand, result is (Largest +ve - 4). 
-        ///// While testing subtraction using 64-bit integers, it is important to handle the "borrow-bit" correctly. 
-        ///// </para>
-        ///// </remarks>
-        //[NoGC]
-        //public static void Test_Sub_Int64_LargestPos_Int32_4()
-        //{
-        //    Int64 a = 9223372036854775807;
-        //    Int32 b = 4;
-        //    a = a - b;
-        //    if (a == 9223372036854775803)
-        //    {
-        //        Log.WriteSuccess("Test_Sub_Int64_LargestPos_Int32_4 okay.");
-        //    }
-        //    else
-        //    {
-        //        Log.WriteError("Test_Sub_Int64_LargestPos_Int32_4 NOT okay.");
-        //    }
-        //}
+        /// <summary>
+        /// Tests: Addition operation using signed 64- and 32-bit integers, 
+        /// Inputs: Largest +ve, Small +ve, 
+        /// Result: (Largest +ve) + 4 = (Largest -ve) + 3 - circularity of two's complement 
+        /// </summary>
+        [NoGC]
+        public static void Test_Add_Int64_LargestPos_Int32_4()
+        {
+            Int64 a = 9223372036854775807;
+            Int32 b = 4;
+            a = a + b;
+            if (a == -9223372036854775805)
+            {
+                Log.WriteSuccess("Test_Add_Int64_LargestPos_Int32_4 okay.");
+            }
+            else
+            {
+                Log.WriteError("Test_Add_Int64_LargestPos_Int32_4 NOT okay.");
+            }
+        }
 
 
 
