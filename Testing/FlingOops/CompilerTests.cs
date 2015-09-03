@@ -252,17 +252,17 @@ namespace FlingOops
             Log.WriteLine("Not:");
             Log.WriteLine(" 32");
             Log.WriteLine("  Unsigned");
-            //Log.WriteLine("UInt32 cannot be negated into Int32, only into Int64 in C#.");
+            Log.WriteLine("UInt32 cannot be not-ed into Int32, only into Int64 in C#.");
             Test_Not_UInt32_Small_Int64();
             Test_Not_UInt32_Largest_Int64();
             Log.WriteLine("  Signed");
             Test_Not_Int32_SmallPos_Int32();
             Test_Not_Int32_SmallNeg_Int32();
             Test_Not_Int32_LargePos_Int64();
-            //Test_Not_Int32_LargeNeg_Int64();
+            Test_Not_Int32_LargeNeg_Int64();
             Log.WriteLine(" 64");
             Log.WriteLine("  Unsigned");
-            //Log.WriteLine("UInt64 cannot be negated in C#.");
+            Test_Not_UInt64_Largest_UInt64();
             Log.WriteLine("  Signed");
             Test_Not_Int64_LargePos_Int64();
             Test_Not_Int64_LargeNeg_Int64();
@@ -2516,25 +2516,52 @@ namespace FlingOops
             }
         }
 
-        ///// <summary>
-        ///// Tests: Negation operation using a signed 32-bit value, 
-        ///// Input: 32-bit Large -ve, 
-        ///// Result: 32-bit Large +ve as a 64-bit value.
-        ///// </summary>
-        //[NoGC]
-        //public static void Test_Neg_Int32_LargeNeg_Int64()
-        //{
-        //    Int32 a = -1000000000;
-        //    Int64 b = -a;
-        //    if (b == 1000000000)
-        //    {
-        //        Log.WriteSuccess("Test_Neg_Int32_LargeNeg_Int64 okay.");
-        //    }
-        //    else
-        //    {
-        //        Log.WriteError("Test_Neg_Int32_LargeNeg_Int64 NOT okay.");
-        //    }
-        //}
+        /// <summary>
+        /// Tests: Not operation using a signed 32-bit value, 
+        /// Input: 32-bit Large -ve, 
+        /// Result: 32-bit Large +ve as a 64-bit value.
+        /// </summary>
+        /// /// <remarks>
+        /// <para>
+        /// First the not operation is applied to the 32-bit value then it is expanded to 64-bit by padding the high 32 bits with 0s.
+        /// In this case it is padded with 0s because not(a)'s highest bit is set to 0, therefore C# expands the value to 64-bit according to the
+        /// sign of the not-ed value. I.e.: not(+ve) is padded with 1s, while not(-ve) is padded with 0s.
+        /// </para>
+        /// </remarks>
+        [NoGC]
+        public static void Test_Not_Int32_LargeNeg_Int64()
+        {
+            Int32 a = -1000000000;
+            Int64 b = ~a;
+            if (b == 999999999)
+            {
+                Log.WriteSuccess("Test_Not_Int32_LargeNeg_Int64 okay.");
+            }
+            else
+            {
+                Log.WriteError("Test_Not_Int32_LargeNeg_Int64 NOT okay.");
+            }
+        }
+
+        /// <summary>
+        /// Tests: Not operation using an unsigned 64-bit value, 
+        /// Input: 64-bit Largest, 
+        /// Result: 64-bit Smallest.
+        /// </summary>
+        [NoGC]
+        public static void Test_Not_UInt64_Largest_UInt64()
+        {
+            UInt64 a = 0xFFFFFFFFFFFFFFFF;
+            UInt64 b = ~a;
+            if (b == 0)
+            {
+                Log.WriteSuccess("Test_Not_UInt64_Largest_UInt64 okay.");
+            }
+            else
+            {
+                Log.WriteError("Test_Not_UInt64_Largest_UInt64 NOT okay.");
+            }
+        }
 
         #endregion
     }
