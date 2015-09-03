@@ -256,7 +256,7 @@ namespace FlingOops
             //Test_Not_UInt32_Small_Int64();
             Test_Not_UInt32_Largest_Int64();
             Log.WriteLine("  Signed");
-            //Test_Not_Int32_SmallPos_Int32();
+            Test_Not_Int32_SmallPos_Int32();
             Test_Not_Int32_SmallNeg_Int32();
             //Test_Not_Int32_LargePos_Int64();
             //Test_Not_Int32_LargeNeg_Int64();
@@ -2424,25 +2424,25 @@ namespace FlingOops
             }
         }
 
-        ///// <summary>
-        ///// Tests: Negation operation using a signed 32-bit value, 
-        ///// Input: 32-bit Small +ve, 
-        ///// Result: 32-bit Small -ve.
-        ///// </summary>
-        //[NoGC]
-        //public static void Test_Neg_Int32_SmallPos_Int32()
-        //{
-        //    Int32 a = 100;
-        //    Int32 b = -a;
-        //    if (b == -100)
-        //    {
-        //        Log.WriteSuccess("Test_Neg_Int32_SmallPos_Int32 okay.");
-        //    }
-        //    else
-        //    {
-        //        Log.WriteError("Test_Neg_Int32_SmallPos_Int32 NOT okay.");
-        //    }
-        //}
+        /// <summary>
+        /// Tests: Not operation using a signed 32-bit value, 
+        /// Input: 32-bit Small +ve, 
+        /// Result: 32-bit Small -ve.
+        /// </summary>
+        [NoGC]
+        public static void Test_Not_Int32_SmallPos_Int32()
+        {
+            Int32 a = 100;
+            Int32 b = ~a;
+            if (b == -101)
+            {
+                Log.WriteSuccess("Test_Not_Int32_SmallPos_Int32 okay.");
+            }
+            else
+            {
+                Log.WriteError("Test_Not_Int32_SmallPos_Int32 NOT okay.");
+            }
+        }
 
         ///// <summary>
         ///// Tests: Negation operation using a signed 64-bit value, 
