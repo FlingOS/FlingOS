@@ -173,7 +173,6 @@
     <Folder Include="icons\" />
     <Folder Include="Images" />
     <Folder Include="Specs" />
-    <Folder Include="Source Samples" />
     <Folder Include="Tutorials\" />
     <Folder Include="Reference Articles\" />
     <Folder Include="Conceptual" />
@@ -254,9 +253,6 @@
     <None Include="Conceptual\Kernel\Kernel Sections\Built-in\Pre-reqs.aml" />
     <None Include="Conceptual\Kernel\Kernel.aml" />
     <None Include="Conceptual\Setup for Development.aml" />
-    <Content Include="Source Samples\ASM x86 Interrupt Debugging - 2014-11-03.zip" />
-    <Content Include="Source Samples\1. Setting up a bootstrap.zip" />
-    <Content Include="Source Samples\ATA - 2015-02-03.zip" />
     <None Include="Specs\XML Comment Specifications.aml" />
     <None Include="Welcome.aml" />
   </ItemGroup>
