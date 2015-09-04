@@ -98,8 +98,8 @@ The IDT is an array of IDT Entries. Each entry's index corresponds to the interr
 
 | Byte(s) | Size | Name | Description |
 |:----------:|:--------|:----------|:----------------|
-| 0,1    | 2   | Size  | Specifies the size of the GDT minus 1. The subtracted 1 is because the processor adds the size of the Offset value and treats that as the maximum (inclusive) address of the table. i.e. the address of the last byte in the table. |
-| 2-5    | 4   | Offset | The linear address (/offset) of the GDT table. Paging does apply to this address. |
+| 0,1    | 2   | Size  | Specifies the size of the IDT minus 1. The subtracted 1 is because the processor adds the size of the Offset value and treats that as the maximum (inclusive) address of the table. i.e. the address of the last byte in the table. |
+| 2-5    | 4   | Offset | The linear address (/offset) of the IDT table. Paging does apply to this address. |
 
 ## Implementation details
 
