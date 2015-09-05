@@ -3,6 +3,7 @@ layout: reference-article
 title: Typical Design Routes
 date: 2015-09-02 12:04:00
 categories: [ docs, reference ]
+parent_name: Getting Started
 ---
 
 # Introduction

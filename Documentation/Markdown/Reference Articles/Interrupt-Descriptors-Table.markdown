@@ -3,6 +3,7 @@ layout: reference-article
 title: Interrupt Descriptors Table
 date: 2015-08-28 16:54:00
 categories: [ docs, reference ]
+parent_name: Interrupts
 ---
 
 # Introduction

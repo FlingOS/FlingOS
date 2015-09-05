@@ -3,6 +3,7 @@ layout: reference-article
 title: Consoles
 date: 2015-09-03 10:50:00
 categories: [ docs, reference ]
+parent_name: Displays & Graphics
 ---
 
 # Introduction

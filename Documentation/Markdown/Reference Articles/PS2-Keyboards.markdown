@@ -3,6 +3,7 @@ layout: reference-article
 title: PS2 Keyboards
 date: 2015-08-24 00:15:00
 categories: [ docs, reference ]
+parent_name: Human Input Devices
 ---
 
 # Introduction

@@ -3,6 +3,7 @@ layout: reference-article
 title: Global Descriptor Table
 date: 2015-08-27 21:24:00
 categories: [ docs, reference ]
+parent_name: Memory
 ---
 
 # Introduction
