@@ -736,7 +736,7 @@ void Reset()
 }
 ```
 
-# References
+# Further Reading
 The following links are additional references to those supplied within the main body of the article.
 
 - [OSDev.org - CPUID](http://wiki.osdev.org/CPUID)

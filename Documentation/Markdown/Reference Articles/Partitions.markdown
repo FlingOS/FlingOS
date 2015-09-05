@@ -120,7 +120,7 @@ It seems strange but a significant number of developers confuse partitioning wit
 
 ---
 
-# References
+# Further Reading
 
 *[GPT]: GUID Partition Table
 *[MBR]: Master Boot Record

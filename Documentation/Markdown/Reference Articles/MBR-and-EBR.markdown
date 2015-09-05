@@ -196,7 +196,7 @@ TODO
 
 ---
 
-# References
+# Further Reading
 
 *[MBR]: Master Boot Record
 *[EBR]: Extended Boot Record

@@ -645,7 +645,7 @@ You probably tried to perform a memory allocation (or use some other forbidden f
 
 ---
 
-# References
+# Further Reading
 All links referenced were valid as of 2015-08-26.
 
 - [Wikipedia.org - PS/2 Port](https://en.wikipedia.org/wiki/PS/2_port)

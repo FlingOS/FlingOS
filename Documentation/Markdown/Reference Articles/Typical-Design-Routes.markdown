@@ -192,6 +192,6 @@ If you can't decide which toolchain to use, pick the one you are most familiar w
 
 ---
 
-# References
+# Further Reading
 
 - [OSDev.org - What order should I make things in](http://wiki.osdev.org/What_order_should_I_make_things_in) and associated articles for each paradigm.

@@ -185,7 +185,7 @@ There are lots of (free) tools for creating bootable USB sticks which include su
 
 ---
 
-# References
+# Further Reading
 
 - [GNU.org - Multiboot Specification v0.6.96](https://www.gnu.org/software/grub/manual/multiboot/multiboot.html)
 - [OSDev.org - Multiboot](http://wiki.osdev.org/Multiboot)

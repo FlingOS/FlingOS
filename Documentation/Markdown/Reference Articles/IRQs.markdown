@@ -264,6 +264,6 @@ The keyboard IRQ is often used to test IRQs as it requires no additional configu
 
 ---
 
-# References
+# Further Reading
 
 *[acronym]: details

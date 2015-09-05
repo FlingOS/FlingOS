@@ -156,7 +156,7 @@ Caps lock, num lock and scroll lock lights are easy to support (even PS/2 emulat
 
 ---
 
-# References
+# Further Reading
 
 * [Hexus.net - Human Input Devices](http://hexus.net/tech/tech-explained/peripherals/18459-human-input-devices-hids/)
 * [Wikipedia - PS/2 Port](https://en.wikipedia.org/wiki/PS/2_port)

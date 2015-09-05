@@ -3,6 +3,8 @@ layout: reference-article
 title: Stacks
 date: 2015-09-01 11:14:00
 categories: [ docs, reference ]
+parent_name: Memory
+description: Describes hardware and software stacks and their use in MIPS and x86 architectures.
 ---
 
 # Introduction
@@ -225,7 +227,7 @@ Unsurprisingly, given the number of people in the world, there were some who tho
 
 ---
 
-# References
+# Further Reading
 
 - [Wikipedia.org - Stack (abstract data type)](https://en.wikipedia.org/wiki/Stack_(abstract_data_type))
 - [Wikipedia.org - Stack Machine](https://en.wikipedia.org/wiki/Stack_machine)

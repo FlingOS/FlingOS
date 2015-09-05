@@ -269,7 +269,7 @@ TODO
 
 ---
 
-# References
+# Further Reading
 The following links were valid as of 19th March 2015.
 
 - [Wikipedia.org - Guid Partition Table](http://en.wikipedia.org/wiki/GUID_Partition_Table)

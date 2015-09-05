@@ -180,7 +180,7 @@ You have misconfigured an interrupt handler and, if you are getting triple fault
 
 ---
 
-# References
+# Further Reading
 
 - [Intel Architecture Manual](http://www.intel.co.uk/content/dam/www/public/us/en/documents/manuals/64-ia-32-architectures-software-developer-manual-325462.pdf)
 - [Wikipedia.org - Interrupt Descriptor Table](https://en.wikipedia.org/wiki/Interrupt_descriptor_table)

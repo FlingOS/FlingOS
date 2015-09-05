@@ -85,6 +85,6 @@ This document provides the basic standard and Markdown content for FlingOS refer
 
     ---
 
-    # References
+    # Further Reading
 
     *[acronym]: details

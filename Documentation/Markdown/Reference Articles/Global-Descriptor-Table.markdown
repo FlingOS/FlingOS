@@ -213,7 +213,8 @@ The following code samples demonstrate how to allocate and configure a full-cove
 NASM assembly code for allocating GDT and TSS:
 
 ``` x86asm
-; This is the GDT table pre-filled with the entries required to make the entire address space accessible from user and kernel mode for both data and code.
+; This is the GDT table pre-filled with the entries required to make the entire address space accessible 
+;   from user and kernel mode for both data and code.
 GDT_Contents:
   db 0, 0, 0, 0, 0, 0, 0, 0            ; Offset: 0  - Null selector - required 
   db 255, 255, 0, 0, 0, 0x9A, 0xCF, 0  ; Offset: 8  - KM Code selector - covers the entire 4GiB address range
@@ -321,7 +322,7 @@ If you're getting general protection faults then either the segment selectors ar
 
 ---
 
-# References
+# Further Reading
 
 - [Intel Architecture Manuals]( http://www.intel.com/content/www/us/en/processors/architectures-software-developer-manuals.html)
 - [Wikipedia.org - Global Descriptor Table](https://en.wikipedia.org/wiki/Global_Descriptor_Table)
