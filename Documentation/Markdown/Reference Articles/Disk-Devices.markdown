@@ -52,7 +52,7 @@ ATA (AT Attachment) devices (or derivatives) are probably the second most common
 ATA is the easiest way for a hobby OS developer to access the main hard disk drive (and CD drive if present) in a PC. Getting ATA working is often one of the first things to do so you can begin reading in more OS code and setting up processes.
 
 ## Further reading
-ATA, ATAPio and IDE are discussed in more detail in the [main ATA article](/docs/reference-articles/ATA) in the Disk Devices section.
+ATA, ATAPio and IDE are discussed in more detail in the [main ATA article](/docs/reference/ATA) in the Disk Devices section.
  
 # USB devices
 
@@ -81,9 +81,9 @@ Mast Boot Record (MBR), Extended Boot Record (EBR) and Guid Partition Table (GPT
 
 Partitions in general and MBR/EBR and GPT are all discussed in their respective articles:
 
-- [Partitions](/docs/reference-articles/Partitions)
-- [MBR and EBR](/docs/reference-articles/MBR-and-EBR)
-- [GPT](/docs/reference-articles/GPT)
+- [Partitions](/docs/reference/Partitions)
+- [MBR and EBR](/docs/reference/MBR-and-EBR)
+- [GPT](/docs/reference/GPT)
 
 # Code structure advice
 Disk devices form a core part of OS operation as they underpin file systems. However, in general, the file system used is independent of the disk device type. Furthermore, most of the time, the specific type of disk device is irrelevant. All that really matters is the read, write and get size functions. So, it is highly recommended that you structure your code so that you have a generic disk device class, from which all specific disk device types are inherit. This will allow you to pass any disk device into a file system to be used for storage, without the file system code having to worry about the specific type of disk device.
@@ -92,8 +92,8 @@ Disk devices form a core part of OS operation as they underpin file systems. How
 
 ## Other Resources
 
-- [ATA](/docs/reference-articles/ATA)
-- [USB](/docs/reference-articles/USB)
-- [Partitions](/docs/reference-articles/Partitions)
-- [MBR and EBR](/docs/reference-articles/MBR-and-EBR)
-- [GPT](/docs/reference-articles/GPT)
+- [ATA](/docs/reference/ATA)
+- [USB](/docs/reference/USB)
+- [Partitions](/docs/reference/Partitions)
+- [MBR and EBR](/docs/reference/MBR-and-EBR)
+- [GPT](/docs/reference/GPT)

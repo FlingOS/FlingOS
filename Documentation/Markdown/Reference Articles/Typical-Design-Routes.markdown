@@ -26,7 +26,7 @@ The most core functions you will want are for printing strings (to the screen or
 
 ---
 
-*The following titles loosely describe the type of developer who would take the described design route. *
+*The following titles loosely describe the type of developer who would take the described design route.*
 
 ***Please note that some of the design routes are highlighting ones which people try to take but which are annoying for other OS developers or simply do not work in practice.***
 

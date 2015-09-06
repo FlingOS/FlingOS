@@ -3,11 +3,12 @@ layout: reference-article
 title: Getting Started
 date: 2015-08-30 20:21:00
 categories: [ docs, reference ]
+order: 0
 ---
 
 # Where to start
 
-Want to create your own operating system? Or just to learn low-level development? To get you started with OS or low-level development, FlingOS has created a series of ***10 tutorial videos, each ~20 minutes long***. These videos will take you from only knowing how to program (in C or C#) to knowing all the basics of OS development and a having basic x86 operating system running on real hardware or in a virtual machine).
+Want to create your own operating system? Or just to learn low-level development? To get you started with OS or low-level development, FlingOS has created a series of ***10 tutorial videos, each ~20 minutes long***. These videos will take you from only knowing how to program (in C or C#) to knowing all the basics of OS development and a having basic x86 operating system running on real hardware or in a virtual machine.
 
 Once you've gone through the tutorials to get started with the basics, it's a good idea to decide on what platform you want to build an OS for or work out which platform you will be low-level dev'ing on. The easiest (and most common) choice is x86. The x86 architecture is found in every PC worldwide and all Apple Macs (since 2006). Alternative platforms (which are primarily embedded platforms) are the Creator CI20 (the MIPS-based development board from Imagination Technologies) and the Raspberry Pi (the most popular ARM-based development board).
 
@@ -15,7 +16,7 @@ Once you've gone through the tutorials to get started with the basics, it's a go
 
 # Next steps
 
-Having decided on your platform, create a basic kernel that matches the feature set of the FlingOS Example Kernel (which you should have created by watching the tutorial videos). After that, there are many different routes you can take. To find out what they are and to decide which you would like to follow, please read the "Typical design routes" article. After you've decided your design route, you can begin to follow the steps for building your own OS.
+Having decided on your platform, create a basic kernel that matches the feature set of the FlingOS Example Kernel (which you should have created by watching the tutorial videos). After that, there are many different routes you can take. To find out what they are and to decide which you would like to follow, please read the **[Typical design routes](/docs/reference/Typical-Design-Routes)** article. After you've decided your design route, you can begin to follow the steps for building your own OS.
 
 Each design route starts with the same basic set of steps (as you should have already read). You can work on your OS at this stage without having a primary aim. Our advice is to follow the design route to create a basic kernel and set of interfaces. Following on from that you can create a basic set of drivers which will underpin your entire system. If you're looking to create a serious OS you will need to spend a decent amount of time planning, implementing and optimising the core kernel and drivers.
 
@@ -68,7 +69,7 @@ Most OS and low-level dev is done within the closed walls of companies. This mea
 Largely because developers are lazy and often poor technical writers. Very few developers will (or can) take the time to document things openly and freely online (many choose to do so as part of expensive books). Furthermore, many developers are not very good writers (or English is not their native language) which can mean articles are poorly written, confusing and often misleading purely due to incorrect use of language.
 
 ## I don't want to pay for information. What should I do?
-Sadly, a lot of the best sources of knowledge about OS and low-level dev are held in expensive books or behind pay walls. You can't get around this (other than perhaps by finding deals of (legal) free versions). You will just have to research online further to find the knowledge for free. Once you've found it, you can make life easier for others by sending a link to FlingOS or contributing to FlingOS by writing.
+Sadly, a lot of the best sources of knowledge about OS and low-level dev are held in expensive books or behind pay walls. You can't get around this (other than perhaps by finding deals for (legal) free versions). You will just have to research online further to find the knowledge for free. Once you've found it, you can make life easier for others by sending a link to FlingOS or contributing to FlingOS by writing.
 
 ## Why are specifications so hard to read/useless?
 Companies write specifications as technical references (often from a hardware not a software) perspective. Specifications are designed to tell you anything and everything about the features or technical points of a technology but without bias. They are almost never written to explain how to use a technology nor how to implement software for it. It's all very well knowing all the features but companies need to realise they need to write documentation that explains how the features fit together and what control sequences are required to use the technology. If you find good documentation about something, please send a link to FlingOS so we can pass it on to others.
