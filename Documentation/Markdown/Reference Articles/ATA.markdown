@@ -9,7 +9,7 @@ description: This is an article
 
 # Introduction
 
-## Scope of the article
+## Scope of this article
 This article covers all the aspects of the ATA specification to at least a general/broad level. It goes into detail about ATA as PATA/IDE but provides limited information for PATAPI, SATA and SATAPI drives.
 
 This article includes a useful but relatively brief history of ATA and includes basic information about the hardware that ATA specifies. The article then includes a detailed description of how to implement a PATA driver along with complete sample code.

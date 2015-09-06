@@ -197,7 +197,7 @@ The MIPS memory layout is not as straightforward as x86 because some areas of ma
 ### Data Alignment
 MIPS requires data to be aligned to the size you intend to access. I.e. accessing one byte requires no alignment, accessing a halfword (2-bytes) requires two 2-byte alignment and accessing a word (4-bytes) requires 4-byte alignment. If you are using the GCC compiler, it will try to keep data and fields aligned for you. However, your heap is a dynamic, runtime structure that GCC knows nothing about so cannot help you with. Best practice is to keep all allocations 4-byte aligned so far as possible. When unaligned access is required you will have to use software to do individual/split-up loads/stores of the bytes of your value.
 
-MIPS includes a misaligned access exception (interrupt). This can be used to catch misaligned accesses and correct them in software. However, the optimised Linux software for doing this claims to be 1000 times slower than a properly aligned access to catching misaligned accesses like this is a bad thing to rely on. (See [Linux-mips.org - Alignment])(https://www.linux-mips.org/wiki/Alignment#Transparent_fixing_by_the_kernel)).
+MIPS includes a misaligned access exception (interrupt). This can be used to catch misaligned accesses and correct them in software. However, the optimised Linux software for doing this claims to be 1000 times slower than a properly aligned access to catching misaligned accesses like this is a bad thing to rely on. (See [Linux-mips.org - Alignment](https://www.linux-mips.org/wiki/Alignment)).
 
 ## x86
 

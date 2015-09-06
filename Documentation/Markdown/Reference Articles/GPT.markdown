@@ -18,7 +18,7 @@ GPT is fairly simple to understand though an understanding of data layout on a h
 ## How important / useful is GPT?
 GPT is fast becoming the default / most popular way to format hard disks (especially in modern laptops / tablets) so it is both important and useful.
 
-## Scope of the article
+## Scope of this article
 This article will cover background as to what GPT is, where it comes from and what problems GPT solves which previous partitioning scheme failed to. This article will then move on to a practical understanding of GPT concepts, how GOT organizes data on a disk and lastly software implementation details.
 
 ---
@@ -158,7 +158,7 @@ The primary GPT header is the main copy of the GPT header. If it becomes corrupt
 to (and/or restored using) the secondary GPT header (see Secondary Header). The GPT header contains
 global information about the disk and data on the disk.
 
-# Primary Partition Table
+## Primary Partition Table
 The primary partition table contains the main copy of the partition table. It can be found at the LBA
 specified in the header (offset 72, size 8 bytes). However, the standard sets this value at 2 for the
 primary partition table and header. The table can be treated as an array of partition entries

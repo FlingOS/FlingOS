@@ -37,7 +37,7 @@ They are kept separate because it allows any terminal to be "plugged into" any s
 ## Why is a console necessary?
 When first starting out in OS dev, you will not be able to get a full graphics driver or other I/O system working quickly (probably not even within a year). A console is simple to set up and provides arguably the most powerful interface to a computer (if you understand how to use it, which you will since you're going to be writing it!). So a console allows you to control your OS without requiring lots of complex coding to support it. Also, consoles are very useful for debugging and in an embedded environment, a display of any form may not be available. Embedded devices usually use serial/UART connections for their consoles.
 
-## How to I implement a console?
+## How do I implement a console?
 The steps to implement a console are fairly simple:
 
 1. Write a VGA text-mode driver (x86) or a serial port driver (x86) or a UART driver (MIPS). All three of these drivers are simple and require very few lines of code.
