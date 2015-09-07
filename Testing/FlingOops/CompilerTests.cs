@@ -377,7 +377,7 @@ namespace FlingOops
             #region Object calls
 
             Log.WriteLine("---Object:");
-
+            Test_Objects();
             Log.WriteLine(" ");
 
             #endregion
@@ -4032,7 +4032,7 @@ namespace FlingOops
         /// </para>
         /// </remarks>
         [NoGC]
-        public static unsafe void Test_Strings()
+        public static void Test_Strings()
         {
             Int32 a = 5;
             Log.WriteLine("Test Console write line!");
@@ -4061,11 +4061,77 @@ namespace FlingOops
 
         #endregion
 
-        #region Object
+        #region Objects
 
-
+        /// <summary>
+        /// Tests: Objects, 
+        /// Inputs: New object, fields, arguments, 
+        /// Result: Object created and arguments are returned as expected.
+        /// </summary>
+        [NoGC]
+        public static void Test_Objects()
+        {
+            TestClass aClass = new TestClass();
+            int fld = aClass.aField;
+            if (fld != 9)
+            {
+                Log.WriteError("Class field wrong.");
+            }
+            else
+            {
+                Log.WriteSuccess("Class field right.");
+            }
+            int arg = 10;
+            int arg1 = aClass.aMethodInt(arg);
+            if (arg1 != 30)
+            {
+                Log.WriteError("Class method int wrong.");
+            }
+            else
+            {
+                Log.WriteSuccess("Class method int right.");
+            }
+            aClass.aMethodVoid();
+            int arg2 = aClass.aMethodField(arg);
+            if (arg2 != 90)
+            {
+                Log.WriteError("Class method field wrong.");
+            }
+            else
+            {
+                Log.WriteSuccess("Class method field right.");
+            }
+        }
 
         #endregion
 
+    }
+}
+
+/// <summary>
+/// Test class for testing objects.
+/// </summary>
+/// <remarks>
+/// <para>
+/// Class must inherit from the FlingOS object type using FlingOops.Object.
+/// </para>
+/// </remarks>
+public class TestClass : FlingOops.Object
+{
+    public int aField = 9;
+
+    public int aMethodInt(int arg)
+    {
+        return arg * 3;
+    }
+
+    public void aMethodVoid()
+    {
+        Log.WriteSuccess("Class method void right.");
+    }
+
+    public int aMethodField(int arg)
+    {
+        return arg * aField;
     }
 }
