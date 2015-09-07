@@ -316,6 +316,27 @@ namespace FlingOops
 
             #endregion
 
+            #region Argument calls
+
+            // Variables used as arguments to test methods
+            {
+                Int32 sign32 = 6;
+                Int64 sign64 = 1441151880758558720;
+                UInt32 unsign32 = 100;
+                UInt64 unsign64 = 10223372036854775807;
+                FlingOops.String str = "I am a string";
+
+                Log.WriteLine("---Argument:");
+                Test_Arg_Int32(sign32);
+                Test_Arg_Int64(sign64);
+                Test_Arg_UInt32(unsign32);
+                Test_Arg_UInt64(unsign64);
+                Test_Arg_String(str);
+                Log.WriteLine(" ");
+            }
+
+            #endregion
+
             Log.WriteLine("Tests completed.");
         }
 
@@ -3313,5 +3334,98 @@ namespace FlingOops
 
         #endregion
 
+        #region Argument
+
+        /// <summary>
+        /// Tests: Passing signed 32-bit integer argument to method, 
+        /// Input: Small, 
+        /// Result: Argument correctly passed to method.
+        /// </summary>
+        [NoGC]
+        public static void Test_Arg_Int32(Int32 a)
+        {
+            if (a == 6)
+            {
+                Log.WriteSuccess("Test_Arg_Int32 okay.");
+            }
+            else
+            {
+                Log.WriteError("Test_Arg_Int32 NOT okay.");
+            }
+        }
+
+        /// <summary>
+        /// Tests: Passing signed 64-bit integer argument to method, 
+        /// Input: Large, 
+        /// Result: Argument correctly passed to method.
+        /// </summary>
+        [NoGC]
+        public static void Test_Arg_Int64(Int64 a)
+        {
+            if (a == 1441151880758558720)
+            {
+                Log.WriteSuccess("Test_Arg_Int64 okay.");
+            }
+            else
+            {
+                Log.WriteError("Test_Arg_Int64 NOT okay.");
+            }
+        }
+
+        /// <summary>
+        /// Tests: Passing unsigned 32-bit integer argument to method, 
+        /// Input: Small, 
+        /// Result: Argument correctly passed to method.
+        /// </summary>
+        [NoGC]
+        public static void Test_Arg_UInt32(UInt32 a)
+        {
+            if (a == 100)
+            {
+                Log.WriteSuccess("Test_Arg_UInt32 okay.");
+            }
+            else
+            {
+                Log.WriteError("Test_Arg_UInt32 NOT okay.");
+            }
+        }
+
+        /// <summary>
+        /// Tests: Passing unsigned 64-bit integer argument to method, 
+        /// Input: Large, 
+        /// Result: Argument correctly passed to method.
+        /// </summary>
+        [NoGC]
+        public static void Test_Arg_UInt64(UInt64 a)
+        {
+            if (a == 10223372036854775807)
+            {
+                Log.WriteSuccess("Test_Arg_UInt64 okay.");
+            }
+            else
+            {
+                Log.WriteError("Test_Arg_UInt64 NOT okay.");
+            }
+        }
+
+        /// <summary>
+        /// Tests: Passing string argument to method, 
+        /// Input: A string, 
+        /// Result: Argument correctly passed to method.
+        /// </summary>
+        [NoGC]
+        public static void Test_Arg_String(FlingOops.String a)
+        {
+            if (a == "I am a string")
+            {
+                Log.WriteSuccess("Test_Arg_String okay.");
+            }
+            else
+            {
+                Log.WriteError("Test_Arg_String NOT okay.");
+            }
+        }
+
+        #endregion
     }
 }
