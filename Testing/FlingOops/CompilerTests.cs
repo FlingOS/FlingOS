@@ -55,62 +55,42 @@ namespace FlingOops
         [NoGC]
         public static void RunTests()
         {
-            #region Struct calls
+            #region 1. Addition calls
 
-            Log.WriteLine("---Struct:");
-            Test_Sizeof_Struct();
-            Test_Instance_Struct();
-            Log.WriteLine(" ");
-
-            #endregion
-
-            #region Variables and pointers calls
-
-            Log.WriteLine("---Variables and pointers:");
-            Test_Locals_And_Pointers();
-            Log.WriteLine(" ");
-
-            #endregion
-
-            #region Modulus calls
-
-            Log.WriteLine("---Modulus:");
+            Log.WriteLine("---Addition:");
+            Log.WriteLine(" 32-32");
             Log.WriteLine("  Unsigned");
-            Test_Mod_UInt32_9_UInt32_3();
-            Test_Mod_UInt32_10_UInt32_3();
+            Test_Add_UInt32_Zero_UInt32_Zero();
+            Test_Add_UInt32_9_UInt32_4();
             Log.WriteLine("  Signed");
-            Test_Mod_Int32_9_Int32_3();
-            Test_Mod_Int32_9_Int32_Neg3();
-            Test_Mod_Int32_10_Int32_3();
-            Test_Mod_Int32_10_Int32_Neg3();
-            Test_Mod_Int32_Neg9_Int32_3();
-            Test_Mod_Int32_Neg9_Int32_Neg3();
-            Test_Mod_Int32_Neg10_Int32_3();
-            Test_Mod_Int32_Neg10_Int32_Neg3();
-            Log.WriteLine(" ");
-
-            #endregion
-
-            #region Division calls
-
-            Log.WriteLine("---Division:");
+            Test_Add_Int32_9_Int32_4();
+            Test_Add_Int32_9_Int32_Neg4();
+            Test_Add_Int32_Neg9_Int32_4();
+            Test_Add_Int32_Neg9_Int32_Neg4();
+            Log.WriteLine(" 64-32");
             Log.WriteLine("  Unsigned");
-            Test_Div_UInt32_9_UInt32_3();
-            Test_Div_UInt32_10_UInt32_3();
+            Test_Add_UInt64_LargestPos_UInt32_4();
             Log.WriteLine("  Signed");
-            Test_Div_Int32_9_Int32_3();
-            Test_Div_Int32_9_Int32_Neg3();
-            Test_Div_Int32_10_Int32_3();
-            Test_Div_Int32_10_Int32_Neg3();
-            Test_Div_Int32_Neg9_Int32_3();
-            Test_Div_Int32_Neg9_Int32_Neg3();
-            Test_Div_Int32_Neg10_Int32_3();
-            Test_Div_Int32_Neg10_Int32_Neg3();
+            Test_Add_Int64_LargestPos_Int32_4();
+            Test_Add_Int64_LargestNeg_Int32_4();
+            Test_Add_Int64_Zero_Int32_LargestNeg();
+            Log.WriteLine(" 64-64");
+            Log.WriteLine("  Unsigned");
+            Test_Add_UInt64_Large_UInt64_Large();
+            Log.WriteLine("  Signed");
+            Test_Add_Int64_LargePos_Int64_4();
+            Test_Add_Int64_LargePos_Int64_LargePos();
+            Test_Add_Int64_LargePos_Int64_LargeNeg();
+            Test_Add_Int64_LargestNeg_Int64_Neg1();
+            Test_Add_Int64_LargeNeg_Int64_LargeNeg();
+            Test_Add_Int64_Zero_Int64_Neg4();
+            Test_Add_Int64_Zero_Int64_LargePos();
+            Test_Add_Int64_Zero_Int64_LargeNeg();
             Log.WriteLine(" ");
 
             #endregion
 
-            #region Subtraction calls
+            #region 2. Subtraction calls
 
             Log.WriteLine("---Subtraction:");
             Log.WriteLine(" 32-32");
@@ -146,7 +126,151 @@ namespace FlingOops
 
             #endregion
 
-            #region Right shift calls
+            // TODO
+            #region 3. Multiplication calls
+
+            #endregion
+
+            #region 4. Division calls
+
+            Log.WriteLine("---Division:");
+            Log.WriteLine("  Unsigned");
+            Test_Div_UInt32_9_UInt32_3();
+            Test_Div_UInt32_10_UInt32_3();
+            Log.WriteLine("  Signed");
+            Test_Div_Int32_9_Int32_3();
+            Test_Div_Int32_9_Int32_Neg3();
+            Test_Div_Int32_10_Int32_3();
+            Test_Div_Int32_10_Int32_Neg3();
+            Test_Div_Int32_Neg9_Int32_3();
+            Test_Div_Int32_Neg9_Int32_Neg3();
+            Test_Div_Int32_Neg10_Int32_3();
+            Test_Div_Int32_Neg10_Int32_Neg3();
+            Log.WriteLine(" ");
+
+            #endregion
+
+            #region 5. Modulus calls
+
+            Log.WriteLine("---Modulus:");
+            Log.WriteLine("  Unsigned");
+            Test_Mod_UInt32_9_UInt32_3();
+            Test_Mod_UInt32_10_UInt32_3();
+            Log.WriteLine("  Signed");
+            Test_Mod_Int32_9_Int32_3();
+            Test_Mod_Int32_9_Int32_Neg3();
+            Test_Mod_Int32_10_Int32_3();
+            Test_Mod_Int32_10_Int32_Neg3();
+            Test_Mod_Int32_Neg9_Int32_3();
+            Test_Mod_Int32_Neg9_Int32_Neg3();
+            Test_Mod_Int32_Neg10_Int32_3();
+            Test_Mod_Int32_Neg10_Int32_Neg3();
+            Log.WriteLine(" ");
+
+            #endregion
+
+            #region 6. Negation calls
+
+            Log.WriteLine("---Negation:");
+            Log.WriteLine(" 32");
+            Log.WriteLine("  Unsigned");
+            Log.WriteLine("UInt32 cannot be negated into Int32, only into Int64 in C#.");
+            Test_Neg_UInt32_Small_Int64();
+            Test_Neg_UInt32_Largest_Int64();
+            Log.WriteLine("  Signed");
+            Test_Neg_Int32_SmallPos_Int32();
+            Test_Neg_Int32_SmallNeg_Int32();
+            Test_Neg_Int32_LargePos_Int64();
+            Test_Neg_Int32_LargeNeg_Int64();
+            Log.WriteLine(" 64");
+            Log.WriteLine("  Unsigned");
+            Log.WriteLine("UInt64 cannot be negated in C#.");
+            Log.WriteLine("  Signed");
+            Test_Neg_Int64_LargePos_Int64();
+            Test_Neg_Int64_LargeNeg_Int64();
+            Test_Neg_Int64_LargestPos_Int64();
+            Test_Neg_Int64_LargestNeg_Int64();
+            Log.WriteLine(" ");
+
+            #endregion
+
+            #region 7. Not calls
+
+            Log.WriteLine("---Not:");
+            Log.WriteLine(" 32");
+            Log.WriteLine("  Unsigned");
+            Log.WriteLine("UInt32 cannot be not-ed into Int32, only into Int64 in C#.");
+            Test_Not_UInt32_Small_Int64();
+            Test_Not_UInt32_Largest_Int64();
+            Log.WriteLine("  Signed");
+            Test_Not_Int32_SmallPos_Int32();
+            Test_Not_Int32_SmallNeg_Int32();
+            Test_Not_Int32_LargePos_Int64();
+            Test_Not_Int32_LargeNeg_Int64();
+            Log.WriteLine(" 64");
+            Log.WriteLine("  Unsigned");
+            Test_Not_UInt64_Smallest_UInt64();
+            Test_Not_UInt64_Largest_UInt64();
+            Log.WriteLine("  Signed");
+            Test_Not_Int64_LargePos_Int64();
+            Test_Not_Int64_LargeNeg_Int64();
+            Test_Not_Int64_LargestPos_Int64();
+            Test_Not_Int64_LargestNeg_Int64();
+            Log.WriteLine(" ");
+
+            #endregion
+
+            #region 8. Array calls
+
+            Log.WriteLine("---Array:");
+            Log.WriteLine(" 32");
+            Log.WriteLine("  Unsigned");
+            Test_Array_UInt32();
+            Log.WriteLine("  Signed");
+            Test_Array_Int32();
+            Log.WriteLine(" 64");
+            Log.WriteLine("  Unsigned");
+            Test_Array_UInt64();
+            Log.WriteLine("  Signed");
+            Test_Array_Int64();
+            Log.WriteLine(" Strings");
+            Test_Array_String();
+            Log.WriteLine(" Structs");
+            Test_Array_Struct();
+            Log.WriteLine(" ");
+
+            #endregion
+
+            #region 9. Strings calls
+
+            Log.WriteLine("---String:");
+            Test_Strings();
+            Log.WriteLine(" ");
+
+            #endregion
+
+            #region 10. Argument calls
+
+            // Variables used as arguments to test methods
+            {
+                Int32 sign32 = 6;
+                Int64 sign64 = 1441151880758558720;
+                UInt32 unsign32 = 100;
+                UInt64 unsign64 = 10223372036854775807;
+                FlingOops.String str = "I am a string";
+
+                Log.WriteLine("---Argument:");
+                Test_Arg_Int32(sign32);
+                Test_Arg_Int64(sign64);
+                Test_Arg_UInt32(unsign32);
+                Test_Arg_UInt64(unsign64);
+                Test_Arg_String(str);
+                Log.WriteLine(" ");
+            }
+
+            #endregion
+
+            #region 11. Right shift calls
 
             Log.WriteLine("---Right shift:");
             Log.WriteLine(" 32");
@@ -177,7 +301,7 @@ namespace FlingOops
 
             #endregion
 
-            #region Left shift calls
+            #region 12. Left shift calls
 
             Log.WriteLine("---Left shift:");
             Log.WriteLine(" 32");
@@ -210,93 +334,24 @@ namespace FlingOops
 
             #endregion
 
-            #region Negation calls
+            #region 13. Struct calls
 
-            Log.WriteLine("---Negation:");
-            Log.WriteLine(" 32");
-            Log.WriteLine("  Unsigned");
-            Log.WriteLine("UInt32 cannot be negated into Int32, only into Int64 in C#.");
-            Test_Neg_UInt32_Small_Int64();
-            Test_Neg_UInt32_Largest_Int64();
-            Log.WriteLine("  Signed");
-            Test_Neg_Int32_SmallPos_Int32();
-            Test_Neg_Int32_SmallNeg_Int32();
-            Test_Neg_Int32_LargePos_Int64();
-            Test_Neg_Int32_LargeNeg_Int64();
-            Log.WriteLine(" 64");
-            Log.WriteLine("  Unsigned");
-            Log.WriteLine("UInt64 cannot be negated in C#.");
-            Log.WriteLine("  Signed");
-            Test_Neg_Int64_LargePos_Int64();
-            Test_Neg_Int64_LargeNeg_Int64();
-            Test_Neg_Int64_LargestPos_Int64();
-            Test_Neg_Int64_LargestNeg_Int64();
+            Log.WriteLine("---Struct:");
+            Test_Sizeof_Struct();
+            Test_Instance_Struct();
             Log.WriteLine(" ");
 
             #endregion
 
-            #region Not calls
+            #region 14. Variables and pointers calls
 
-            Log.WriteLine("---Not:");
-            Log.WriteLine(" 32");
-            Log.WriteLine("  Unsigned");
-            Log.WriteLine("UInt32 cannot be not-ed into Int32, only into Int64 in C#.");
-            Test_Not_UInt32_Small_Int64();
-            Test_Not_UInt32_Largest_Int64();
-            Log.WriteLine("  Signed");
-            Test_Not_Int32_SmallPos_Int32();
-            Test_Not_Int32_SmallNeg_Int32();
-            Test_Not_Int32_LargePos_Int64();
-            Test_Not_Int32_LargeNeg_Int64();
-            Log.WriteLine(" 64");
-            Log.WriteLine("  Unsigned");
-            Test_Not_UInt64_Smallest_UInt64();
-            Test_Not_UInt64_Largest_UInt64();
-            Log.WriteLine("  Signed");
-            Test_Not_Int64_LargePos_Int64();
-            Test_Not_Int64_LargeNeg_Int64();
-            Test_Not_Int64_LargestPos_Int64();
-            Test_Not_Int64_LargestNeg_Int64();
+            Log.WriteLine("---Variables and pointers:");
+            Test_Locals_And_Pointers();
             Log.WriteLine(" ");
 
             #endregion
 
-            #region Addition calls
-
-            Log.WriteLine("---Addition:");
-            Log.WriteLine(" 32-32");
-            Log.WriteLine("  Unsigned");
-            Test_Add_UInt32_Zero_UInt32_Zero();
-            Test_Add_UInt32_9_UInt32_4();
-            Log.WriteLine("  Signed");
-            Test_Add_Int32_9_Int32_4();
-            Test_Add_Int32_9_Int32_Neg4();
-            Test_Add_Int32_Neg9_Int32_4();
-            Test_Add_Int32_Neg9_Int32_Neg4();
-            Log.WriteLine(" 64-32");
-            Log.WriteLine("  Unsigned");
-            Test_Add_UInt64_LargestPos_UInt32_4();
-            Log.WriteLine("  Signed");
-            Test_Add_Int64_LargestPos_Int32_4();
-            Test_Add_Int64_LargestNeg_Int32_4();
-            Test_Add_Int64_Zero_Int32_LargestNeg();
-            Log.WriteLine(" 64-64");
-            Log.WriteLine("  Unsigned");
-            Test_Add_UInt64_Large_UInt64_Large();
-            Log.WriteLine("  Signed");
-            Test_Add_Int64_LargePos_Int64_4();
-            Test_Add_Int64_LargePos_Int64_LargePos();
-            Test_Add_Int64_LargePos_Int64_LargeNeg();
-            Test_Add_Int64_LargestNeg_Int64_Neg1();
-            Test_Add_Int64_LargeNeg_Int64_LargeNeg();
-            Test_Add_Int64_Zero_Int64_Neg4();
-            Test_Add_Int64_Zero_Int64_LargePos();
-            Test_Add_Int64_Zero_Int64_LargeNeg();
-            Log.WriteLine(" ");
-
-            #endregion
-
-            #region Switch calls
+            #region 15. Switch calls
 
             Log.WriteLine("---Switch:");
             Log.WriteLine(" Integers");
@@ -316,65 +371,15 @@ namespace FlingOops
 
             #endregion
 
-            #region Argument calls
-
-            // Variables used as arguments to test methods
-            {
-                Int32 sign32 = 6;
-                Int64 sign64 = 1441151880758558720;
-                UInt32 unsign32 = 100;
-                UInt64 unsign64 = 10223372036854775807;
-                FlingOops.String str = "I am a string";
-
-                Log.WriteLine("---Argument:");
-                Test_Arg_Int32(sign32);
-                Test_Arg_Int64(sign64);
-                Test_Arg_UInt32(unsign32);
-                Test_Arg_UInt64(unsign64);
-                Test_Arg_String(str);
-                Log.WriteLine(" ");
-            }
-
-            #endregion
-
-            #region Array calls
-
-            Log.WriteLine("---Array:");
-            Log.WriteLine(" 32");
-            Log.WriteLine("  Unsigned");
-            Test_Array_UInt32();
-            Log.WriteLine("  Signed");
-            Test_Array_Int32();
-            Log.WriteLine(" 64");
-            Log.WriteLine("  Unsigned");
-            Test_Array_UInt64();
-            Log.WriteLine("  Signed");
-            Test_Array_Int64();            
-            Log.WriteLine(" Strings");
-            Test_Array_String();
-            Log.WriteLine(" Structs");
-            Test_Array_Struct();
-            Log.WriteLine(" ");
-
-            #endregion
-
-            #region Heap calls
+            #region 16. Heap calls
 
             Log.WriteLine("---Heap:");
             Test_Heap();
             Log.WriteLine(" ");
 
             #endregion
-
-            #region Strings calls
-
-            Log.WriteLine("---String:");
-            Test_Strings();
-            Log.WriteLine(" ");
-
-            #endregion
-
-            #region Object calls
+            
+            #region 17. Object calls
 
             Log.WriteLine("---Object:");
             Test_Objects();
@@ -385,505 +390,475 @@ namespace FlingOops
             Log.WriteLine("Tests completed.");
         }
 
-        #region Struct
+        #region 1. Addition
 
         /// <summary>
-        /// Tests: Sizeof a struct in bytes, 
-        /// Inputs: AStruct, 
-        /// Result: Sum of the individual elements of the struct in bytes (e.g.: byte = 1, short = 2, int = 4, long = 8)
-        /// </summary>
-        [NoGC]
-        public static unsafe void Test_Sizeof_Struct()
-        {
-            int size = sizeof(AStruct);
-            if (size == 15)
-            {
-                Log.WriteSuccess("Test_Sizeof_Struct okay.");
-            }
-            else
-            {
-                Log.WriteError("Test_Sizeof_Struct NOT okay.");
-            }
-        }
-
-        /// <summary>
-        /// Tests: Elements of a new instance of a struct stored and read correctly, 
-        /// Inputs: AStruct, 
-        /// Result: Values declared for each element
-        /// </summary>
-        [NoGC]
-        public static void Test_Instance_Struct()
-        {
-            AStruct Inst = new AStruct();
-            Inst.a = 1;
-            Inst.b = 2;
-            Inst.c = 4;
-            Inst.d = 8;
-            if ((Inst.a == 1) && (Inst.b == 2) && (Inst.c == 4) && (Inst.d == 8))
-            {
-                Log.WriteSuccess("Test_Instance_Struct okay.");
-            }
-            else
-            {
-                Log.WriteError("Test_Instance_Struct NOT okay.");
-            }
-        }
-
-        #endregion
-
-        #region Variables and pointers
-
-        /// <summary>
-        /// Tests: Local variable declaration and pointer dereferencing, 
-        /// Inputs: 0xDEADBEEF, 
-        /// Result: 0xDEADBEEF
-        /// </summary>
-        [NoGC]
-        public static unsafe void Test_Locals_And_Pointers()
-        {
-            uint testVal = 0xDEADBEEF;
-            uint* testValPtr = &testVal;
-            if ((testVal == 0xDEADBEEF) && (*testValPtr == 0xDEADBEEF))
-            {
-                Log.WriteSuccess("Test_Locals_And_Pointers okay.");
-            }
-            else
-            {
-                Log.WriteError("Test_Locals_And_Pointers NOT okay.");
-            }
-        }
-
-        #endregion
-
-        #region Modulus
-
-        /// <summary>
-        /// Tests: Modulus (remainder) operation using unsigned 32-bit integers, 
-        /// Inputs: 9, 3, 
+        /// Tests: Addition operation using unsigned 32-bit integers, 
+        /// Inputs: 0, 0, 
         /// Result: 0
         /// </summary>
         [NoGC]
-        public static void Test_Mod_UInt32_9_UInt32_3()
+        public static void Test_Add_UInt32_Zero_UInt32_Zero()
+        {
+            UInt32 a = 0;
+            UInt32 b = 0;
+            a = a + b;
+            if (a == 0)
+            {
+                Log.WriteSuccess("Test_Add_UInt32_Zero_UInt32_Zero okay.");
+            }
+            else
+            {
+                Log.WriteError("Test_Add_UInt32_Zero_UInt32_Zero NOT okay.");
+            }
+        }
+
+        /// <summary>
+        /// Tests: Addition operation using unsigned 32-bit integers, 
+        /// Inputs: Small, Small, 
+        /// Result: Small
+        /// </summary>
+        [NoGC]
+        public static void Test_Add_UInt32_9_UInt32_4()
         {
             UInt32 a = 9;
-            UInt32 b = 3;
-            a = a % b;
-            if (a == 0)
+            UInt32 b = 4;
+            a = a + b;
+            if (a == 13)
             {
-                Log.WriteSuccess("Test_Mod_UInt32_9_UInt32_3 okay.");
+                Log.WriteSuccess("Test_Add_UInt32_9_UInt32_4 okay.");
             }
             else
             {
-                Log.WriteError("Test_Mod_UInt32_9_UInt32_3 NOT okay.");
+                Log.WriteError("Test_Add_UInt32_9_UInt32_4 NOT okay.");
             }
         }
 
         /// <summary>
-        /// Tests: Modulus (remainder) operation using unsigned 32-bit integers, 
-        /// Inputs: 10, 3, 
-        /// Result: 1
+        /// Tests: Addition operation using signed 32-bit integers, 
+        /// Inputs: Small -ve, Small +ve, 
+        /// Result: Small -ve
         /// </summary>
         [NoGC]
-        public static void Test_Mod_UInt32_10_UInt32_3()
-        {
-            UInt32 a = 10;
-            UInt32 b = 3;
-            a = a % b;
-            if (a == 1)
-            {
-                Log.WriteSuccess("Test_Mod_UInt32_10_UInt32_3 okay.");
-            }
-            else
-            {
-                Log.WriteError("Test_Mod_UInt32_10_UInt32_3 NOT okay.");
-            }
-        }
-
-        /// <summary>
-        /// Tests: Modulus (remainder) operation using signed 32-bit integers, 
-        /// Inputs: -9, 3, 
-        /// Result: 0
-        /// </summary>
-        [NoGC]
-        public static void Test_Mod_Int32_Neg9_Int32_3()
+        public static void Test_Add_Int32_Neg9_Int32_4()
         {
             Int32 a = -9;
-            Int32 b = 3;
-            a = a % b;
-            if (a == 0)
+            Int32 b = 4;
+            a = a + b;
+            if (a == -5)
             {
-                Log.WriteSuccess("Test_Mod_Int32_Neg9_Int32_3 okay.");
+                Log.WriteSuccess("Test_Add_Int32_Neg9_Int32_4 okay.");
             }
             else
             {
-                Log.WriteError("Test_Mod_Int32_Neg9_Int32_3 NOT okay.");
+                Log.WriteError("Test_Add_Int32_Neg9_Int32_4 NOT okay.");
             }
         }
 
         /// <summary>
-        /// Tests: Modulus (remainder) operation using signed 32-bit integers, 
-        /// Inputs: 9, -3, 
-        /// Result: 0
+        /// Tests: Addition operation using signed 32-bit integers, 
+        /// Inputs: Small -ve, Small -ve, 
+        /// Result: Small -ve
         /// </summary>
         [NoGC]
-        public static void Test_Mod_Int32_9_Int32_Neg3()
-        {
-            Int32 a = 9;
-            Int32 b = -3;
-            a = a % b;
-            if (a == 0)
-            {
-                Log.WriteSuccess("Test_Mod_Int32_9_Int32_Neg3 okay.");
-            }
-            else
-            {
-                Log.WriteError("Test_Mod_Int32_9_Int32_Neg3 NOT okay.");
-            }
-        }
-
-        /// <summary>
-        /// Tests: Modulus (remainder) operation using signed 32-bit integers, 
-        /// Inputs: -9, -3, 
-        /// Result: 0
-        /// </summary>
-        [NoGC]
-        public static void Test_Mod_Int32_Neg9_Int32_Neg3()
+        public static void Test_Add_Int32_Neg9_Int32_Neg4()
         {
             Int32 a = -9;
-            Int32 b = -3;
-            a = a % b;
-            if (a == 0)
+            Int32 b = -4;
+            a = a + b;
+            if (a == -13)
             {
-                Log.WriteSuccess("Test_Mod_Int32_Neg9_Int32_Neg3 okay.");
+                Log.WriteSuccess("Test_Add_Int32_Neg9_Int32_Neg4 okay.");
             }
             else
             {
-                Log.WriteError("Test_Mod_Int32_Neg9_Int32_Neg3 NOT okay.");
+                Log.WriteError("Test_Add_Int32_Neg9_Int32_Neg4 NOT okay.");
             }
         }
 
         /// <summary>
-        /// Tests: Modulus (remainder) operation using signed 32-bit integers, 
-        /// Inputs: 9, 3, 
-        /// Result: 0
+        /// Tests: Addition operation using signed 32-bit integers, 
+        /// Inputs: Small +ve, Small-ve, 
+        /// Result: Small +ve
         /// </summary>
         [NoGC]
-        public static void Test_Mod_Int32_9_Int32_3()
+        public static void Test_Add_Int32_9_Int32_Neg4()
         {
             Int32 a = 9;
-            Int32 b = 3;
-            a = a % b;
-            if (a == 0)
+            Int32 b = -4;
+            a = a + b;
+            if (a == 5)
             {
-                Log.WriteSuccess("Test_Mod_Int32_9_Int32_3 okay.");
+                Log.WriteSuccess("Test_Add_Int32_9_Int32_Neg4 okay.");
             }
             else
             {
-                Log.WriteError("Test_Mod_Int32_9_Int32_3 NOT okay.");
+                Log.WriteError("Test_Add_Int32_9_Int32_Neg4 NOT okay.");
             }
         }
 
         /// <summary>
-        /// Tests: Modulus (remainder) operation using signed 32-bit integers, 
-        /// Inputs: -10, 3, 
-        /// Result: -1
+        /// Tests: Addition operation using signed 32-bit integers, 
+        /// Inputs: Small +ve, Small +ve, 
+        /// Result: Small +ve
         /// </summary>
         [NoGC]
-        public static void Test_Mod_Int32_Neg10_Int32_3()
+        public static void Test_Add_Int32_9_Int32_4()
         {
-            Int32 a = -10;
-            Int32 b = 3;
-            a = a % b;
-            if (a == -1)
+            Int32 a = 9;
+            Int32 b = 4;
+            a = a + b;
+            if (a == 13)
             {
-                Log.WriteSuccess("Test_Mod_Int32_Neg10_Int32_3 okay.");
+                Log.WriteSuccess("Test_Add_Int32_9_Int32_4 okay.");
             }
             else
             {
-                Log.WriteError("Test_Mod_Int32_Neg10_Int32_3 NOT okay.");
+                Log.WriteError("Test_Add_Int32_9_Int32_4 NOT okay.");
             }
         }
 
         /// <summary>
-        /// Tests: Modulus (remainder) operation using signed 32-bit integers, 
-        /// Inputs: 10, -3, 
-        /// Result: 1
+        /// Tests: Addition operation using unsigned 64- and 32-bit integers, 
+        /// Inputs: Largest - 4, 4, 
+        /// Result: Largest
         /// </summary>
+        /// <remarks>
+        /// <para>
+        /// When adding 64-bit values, care must be taken to handle the carry-bit correctly
+        /// </para>
+        /// </remarks>
         [NoGC]
-        public static void Test_Mod_Int32_10_Int32_Neg3()
+        public static void Test_Add_UInt64_LargestPos_UInt32_4()
         {
-            Int32 a = 10;
-            Int32 b = -3;
-            a = a % b;
-            if (a == 1)
+            UInt64 a = 18446744073709551611;
+            UInt32 b = 4;
+            a = a + b;
+            if (a == 18446744073709551615)
             {
-                Log.WriteSuccess("Test_Mod_Int32_10_Int32_Neg3 okay.");
+                Log.WriteSuccess("Test_Add_UInt64_LargestPos_UInt32_4 okay.");
             }
             else
             {
-                Log.WriteError("Test_Mod_Int32_10_Int32_Neg3 NOT okay.");
+                Log.WriteError("Test_Add_UInt64_LargestPos_UInt32_4 NOT okay.");
             }
         }
 
         /// <summary>
-        /// Tests: Modulus (remainder) operation using signed 32-bit integers, 
-        /// Inputs: -10, -3, 
-        /// Result: -1
+        /// Tests: Addition operation using signed 64- and 32-bit integers, 
+        /// Inputs: Largest +ve, Small +ve, 
+        /// Result: (Largest +ve) + 4 = (Largest -ve) + 3 - circularity of two's complement 
         /// </summary>
+        /// <remarks>
+        /// <para>
+        /// When adding 64-bit values, care must be taken to handle the carry-bit correctly
+        /// </para>
+        /// </remarks>
         [NoGC]
-        public static void Test_Mod_Int32_Neg10_Int32_Neg3()
+        public static void Test_Add_Int64_LargestPos_Int32_4()
         {
-            Int32 a = -10;
-            Int32 b = -3;
-            a = a % b;
-            if (a == -1)
+            Int64 a = 9223372036854775807;
+            Int32 b = 4;
+            a = a + b;
+            if (a == -9223372036854775805)
             {
-                Log.WriteSuccess("Test_Mod_Int32_Neg10_Int32_Neg3 okay.");
+                Log.WriteSuccess("Test_Add_Int64_LargestPos_Int32_4 okay.");
             }
             else
             {
-                Log.WriteError("Test_Mod_Int32_Neg10_Int32_Neg3 NOT okay.");
+                Log.WriteError("Test_Add_Int64_LargestPos_Int32_4 NOT okay.");
             }
         }
 
         /// <summary>
-        /// Tests: Modulus (remainder) operation using signed 32-bit integers, 
-        /// Inputs: 10, 3, 
-        /// Result: 1
+        /// Tests: Addition operation using signed 64- and 32-bit integers, 
+        /// Inputs: Largest -ve, Small +ve, 
+        /// Result: (Largest -ve) + 4
         /// </summary>
+        /// <remarks>
+        /// <para>
+        /// When adding 64-bit values, care must be taken to handle the carry-bit correctly
+        /// </para>
+        /// </remarks>
         [NoGC]
-        public static void Test_Mod_Int32_10_Int32_3()
+        public static void Test_Add_Int64_LargestNeg_Int32_4()
         {
-            Int32 a = 10;
-            Int32 b = 3;
-            a = a % b;
-            if (a == 1)
+            Int64 a = -9223372036854775808;
+            Int32 b = 4;
+            a = a + b;
+            if (a == -9223372036854775804)
             {
-                Log.WriteSuccess("Test_Mod_Int32_10_Int32_3 okay.");
+                Log.WriteSuccess("Test_Add_Int64_LargestNeg_Int32_4 okay.");
             }
             else
             {
-                Log.WriteError("Test_Mod_Int32_10_Int32_3 NOT okay.");
+                Log.WriteError("Test_Add_Int64_LargestNeg_Int32_4 NOT okay.");
+            }
+        }
+
+        /// <summary>
+        /// Tests: Addition operation using signed 64- and 32-bit integers, 
+        /// Inputs: 0, Largest -ve, 
+        /// Result: Largest +ve
+        /// </summary>
+        /// <remarks>
+        /// <para>
+        /// When adding 64-bit values, care must be taken to handle the carry-bit correctly
+        /// </para>
+        /// </remarks>
+        [NoGC]
+        public static void Test_Add_Int64_Zero_Int32_LargestNeg()
+        {
+            Int64 a = 0;
+            Int32 b = -2147483648;
+            a = a + b;
+            if (a == -2147483648)
+            {
+                Log.WriteSuccess("Test_Add_Int64_Zero_Int32_LargestNeg okay.");
+            }
+            else
+            {
+                Log.WriteError("Test_Add_Int64_Zero_Int32_LargestNeg NOT okay.");
+            }
+        }
+
+        /// <summary>
+        /// Tests: Addition operation using signed 64-bit integers, 
+        /// Inputs: Large +ve, 4, 
+        /// Result: Large +ve
+        /// </summary>
+        /// <remarks>
+        /// <para>
+        /// When adding 64-bit values, care must be taken to handle the carry-bit correctly
+        /// </para>
+        /// </remarks>
+        [NoGC]
+        public static void Test_Add_Int64_LargePos_Int64_4()
+        {
+            Int64 a = 1080863910568919040;
+            Int64 b = 4;
+            a = a + b;
+            if (a == 1080863910568919044)
+            {
+                Log.WriteSuccess("Test_Add_Int64_LargePos_Int64_4 okay.");
+            }
+            else
+            {
+                Log.WriteError("Test_Add_Int64_LargePos_Int64_4 NOT okay.");
+            }
+        }
+
+        /// <summary>
+        /// Tests: Addition operation using signed 64-bit integers, 
+        /// Inputs: 0, -4, 
+        /// Result: -4
+        /// </summary>
+        /// <remarks>
+        /// <para>
+        /// When adding 64-bit values, care must be taken to handle the carry-bit correctly
+        /// </para>
+        /// </remarks>
+        [NoGC]
+        public static void Test_Add_Int64_Zero_Int64_Neg4()
+        {
+            Int64 a = 0;
+            Int64 b = -4;
+            a = a + b;
+            if (a == -4)
+            {
+                Log.WriteSuccess("Test_Add_Int64_Zero_Int64_Neg4 okay.");
+            }
+            else
+            {
+                Log.WriteError("Test_Add_Int64_Zero_Int64_Neg4 NOT okay.");
+            }
+        }
+
+        /// <summary>
+        /// Tests: Addition operation using unsigned 64-bit integers, 
+        /// Inputs: Large +ve, Large +ve, 
+        /// Result: +ve
+        /// </summary>
+        /// <remarks>
+        /// <para>
+        /// When adding 64-bit values, care must be taken to handle the carry-bit correctly
+        /// </para>
+        /// </remarks>
+        [NoGC]
+        public static void Test_Add_UInt64_Large_UInt64_Large()
+        {
+            UInt64 a = 108086391056891904;
+            UInt64 b = 844424930131968;
+            a = a + b;
+            if (a == 108930815987023872)
+            {
+                Log.WriteSuccess("Test_Add_UInt64_Large_UInt64_Large okay.");
+            }
+            else
+            {
+                Log.WriteError("Test_Add_UInt64_Large_UInt64_Large NOT okay.");
+            }
+        }
+
+        /// <summary>
+        /// Tests: Addition operation using signed 64-bit integers, 
+        /// Inputs: Largest -ve, -1, 
+        /// Result: Largest +ve
+        /// </summary>
+        /// <remarks>
+        /// <para>
+        /// When adding 64-bit values, care must be taken to handle the carry-bit correctly
+        /// </para>
+        /// </remarks>
+        [NoGC]
+        public static void Test_Add_Int64_LargestNeg_Int64_Neg1()
+        {
+            Int64 a = -9223372036854775808;
+            Int64 b = -1;
+            a = a + b;
+            if (a == 9223372036854775807)
+            {
+                Log.WriteSuccess("Test_Add_Int64_LargestNeg_Int64_Neg1 okay.");
+            }
+            else
+            {
+                Log.WriteError("Test_Add_Int64_LargestNeg_Int64_Neg1 NOT okay.");
+            }
+        }
+
+        /// <summary>
+        /// Tests: Addition operation using signed 64-bit integers, 
+        /// Inputs: 0, Large +ve, 
+        /// Result: Large +ve
+        /// </summary>
+        /// <remarks>
+        /// <para>
+        /// When adding 64-bit values, care must be taken to handle the carry-bit correctly
+        /// </para>
+        /// </remarks>
+        [NoGC]
+        public static void Test_Add_Int64_Zero_Int64_LargePos()
+        {
+            Int64 a = 0;
+            Int64 b = 844424930131968;
+            a = a + b;
+            if (a == 844424930131968)
+            {
+                Log.WriteSuccess("Test_Add_Int64_Zero_Int64_LargePos okay.");
+            }
+            else
+            {
+                Log.WriteError("Test_Add_Int64_Zero_Int64_LargePos NOT okay.");
+            }
+        }
+
+        /// <summary>
+        /// Tests: Addition operation using signed 64-bit integers, 
+        /// Inputs: 0, Large -ve, 
+        /// Result: Large -ve
+        /// </summary>
+        /// <remarks>
+        /// <para>
+        /// When adding 64-bit values, care must be taken to handle the carry-bit correctly
+        /// </para>
+        /// </remarks>
+        [NoGC]
+        public static void Test_Add_Int64_Zero_Int64_LargeNeg()
+        {
+            Int64 a = 0;
+            Int64 b = -844424930131968;
+            a = a + b;
+            if (a == -844424930131968)
+            {
+                Log.WriteSuccess("Test_Add_Int64_Zero_Int64_LargeNeg okay.");
+            }
+            else
+            {
+                Log.WriteError("Test_Add_Int64_Zero_Int64_LargeNeg NOT okay.");
+            }
+        }
+
+        /// <summary>
+        /// Tests: Addition operation using signed 64-bit integers, 
+        /// Inputs: Large -ve, Large -ve, 
+        /// Result: Large -ve
+        /// </summary>
+        /// <remarks>
+        /// <para>
+        /// When adding 64-bit values, care must be taken to handle the carry-bit correctly
+        /// </para>
+        /// </remarks>
+        [NoGC]
+        public static void Test_Add_Int64_LargeNeg_Int64_LargeNeg()
+        {
+            Int64 a = -1080863910568919040;
+            Int64 b = -844424930131968;
+            a = a + b;
+            if (a == -1081708335499051008)
+            {
+                Log.WriteSuccess("Test_Add_Int64_LargeNeg_Int64_LargeNeg okay.");
+            }
+            else
+            {
+                Log.WriteError("Test_Add_Int64_LargeNeg_Int64_LargeNeg NOT okay.");
+            }
+        }
+
+        /// <summary>
+        /// Tests: Addition operation using signed 64-bit integers, 
+        /// Inputs: Large +ve, Large -ve, 
+        /// Result: Large +ve
+        /// </summary>
+        /// <remarks>
+        /// <para>
+        /// When adding 64-bit values, care must be taken to handle the carry-bit correctly
+        /// </para>
+        /// </remarks>
+        [NoGC]
+        public static void Test_Add_Int64_LargePos_Int64_LargeNeg()
+        {
+            Int64 a = 1080863910568919040;
+            Int64 b = -844424930131968;
+            a = a + b;
+            if (a == 1080019485638787072)
+            {
+                Log.WriteSuccess("Test_Add_Int64_LargePos_Int64_LargeNeg okay.");
+            }
+            else
+            {
+                Log.WriteError("Test_Add_Int64_LargePos_Int64_LargeNeg NOT okay.");
+            }
+        }
+
+        /// <summary>
+        /// Tests: Addition operation using signed 64-bit integers, 
+        /// Inputs: Large +ve, Large +ve, 
+        /// Result: Large +ve
+        /// </summary>
+        /// <remarks>
+        /// <para>
+        /// When adding 64-bit values, care must be taken to handle the carry-bit correctly
+        /// </para>
+        /// </remarks>
+        [NoGC]
+        public static void Test_Add_Int64_LargePos_Int64_LargePos()
+        {
+            Int64 a = 1080863910568919040;
+            Int64 b = 844424930131968;
+            a = a + b;
+            if (a == 1081708335499051008)
+            {
+                Log.WriteSuccess("Test_Add_Int64_LargePos_Int64_LargePos okay.");
+            }
+            else
+            {
+                Log.WriteError("Test_Add_Int64_LargePos_Int64_LargePos NOT okay.");
             }
         }
 
         #endregion
 
-        #region Division
-
-        /// <summary>
-        /// Tests: Division operation using unsigned 32-bit integers, 
-        /// Inputs: 9, 3, 
-        /// Result: 3
-        /// </summary>
-        [NoGC]
-        public static void Test_Div_UInt32_9_UInt32_3()
-        {
-            UInt32 a = 9;
-            UInt32 b = 3;
-            a = a / b;
-            if (a == 3)
-            {
-                Log.WriteSuccess("Test_Div_UInt32_9_UInt32_3 okay.");
-            }
-            else
-            {
-                Log.WriteError("Test_Div_UInt32_9_UInt32_3 NOT okay.");
-            }
-        }
-
-        /// <summary>
-        /// Tests: Division operation using unsigned 32-bit integers, 
-        /// Inputs: 10, 3, 
-        /// Result: 3
-        /// </summary>
-        [NoGC]
-        public static void Test_Div_UInt32_10_UInt32_3()
-        {
-            UInt32 a = 10;
-            UInt32 b = 3;
-            a = a / b;
-            if (a == 3)
-            {
-                Log.WriteSuccess("Test_Div_UInt32_10_UInt32_3 okay.");
-            }
-            else
-            {
-                Log.WriteError("Test_Div_UInt32_10_UInt32_3 NOT okay.");
-            }
-        }
-
-        /// <summary>
-        /// Tests: Division operation using signed 32-bit integers, 
-        /// Inputs: -9, 3, 
-        /// Result: -3
-        /// </summary>
-        [NoGC]
-        public static void Test_Div_Int32_Neg9_Int32_3()
-        {
-            Int32 a = -9;
-            Int32 b = 3;
-            a = a / b;
-            if (a == -3)
-            {
-                Log.WriteSuccess("Test_Div_Int32_Neg9_Int32_3 okay.");
-            }
-            else
-            {
-                Log.WriteError("Test_Div_Int32_Neg9_Int32_3 NOT okay.");
-            }
-        }
-
-        /// <summary>
-        /// Tests: Division operation using signed 32-bit integers, 
-        /// Inputs: 9, -3, 
-        /// Result: -3
-        /// </summary>
-        [NoGC]
-        public static void Test_Div_Int32_9_Int32_Neg3()
-        {
-            Int32 a = 9;
-            Int32 b = -3;
-            a = a / b;
-            if (a == -3)
-            {
-                Log.WriteSuccess("Test_Div_Int32_9_Int32_Neg3 okay.");
-            }
-            else
-            {
-                Log.WriteError("Test_Div_Int32_9_Int32_Neg3 NOT okay.");
-            }
-        }
-
-        /// <summary>
-        /// Tests: Division operation using signed 32-bit integers, 
-        /// Inputs: -9, -3, 
-        /// Result: 3
-        /// </summary>
-        [NoGC]
-        public static void Test_Div_Int32_Neg9_Int32_Neg3()
-        {
-            Int32 a = -9;
-            Int32 b = -3;
-            a = a / b;
-            if (a == 3)
-            {
-                Log.WriteSuccess("Test_Div_Int32_Neg9_Int32_Neg3 okay.");
-            }
-            else
-            {
-                Log.WriteError("Test_Div_Int32_Neg9_Int32_Neg3 NOT okay.");
-            }
-        }
-
-        /// <summary>
-        /// Tests: Division operation using signed 32-bit integers, 
-        /// Inputs: 9, 3, 
-        /// Result: 3
-        /// </summary>
-        [NoGC]
-        public static void Test_Div_Int32_9_Int32_3()
-        {
-            Int32 a = 9;
-            Int32 b = 3;
-            a = a / b;
-            if (a == 3)
-            {
-                Log.WriteSuccess("Test_Div_Int32_9_Int32_3 okay.");
-            }
-            else
-            {
-                Log.WriteError("Test_Div_Int32_9_Int32_3 NOT okay.");
-            }
-        }
-
-        /// <summary>
-        /// Tests: Division operation using signed 32-bit integers, 
-        /// Inputs: -10, 3, 
-        /// Result: -3
-        /// </summary>
-        [NoGC]
-        public static void Test_Div_Int32_Neg10_Int32_3()
-        {
-            Int32 a = -10;
-            Int32 b = 3;
-            a = a / b;
-            if (a == -3)
-            {
-                Log.WriteSuccess("Test_Div_Int32_Neg10_Int32_3 okay.");
-            }
-            else
-            {
-                Log.WriteError("Test_Div_Int32_Neg10_Int32_3 NOT okay.");
-            }
-        }
-
-        /// <summary>
-        /// Tests: Division operation using signed 32-bit integers, 
-        /// Inputs: 10, -3, 
-        /// Result: -3
-        /// </summary>
-        [NoGC]
-        public static void Test_Div_Int32_10_Int32_Neg3()
-        {
-            Int32 a = 10;
-            Int32 b = -3;
-            a = a / b;
-            if (a == -3)
-            {
-                Log.WriteSuccess("Test_Div_Int32_10_Int32_Neg3 okay.");
-            }
-            else
-            {
-                Log.WriteError("Test_Div_Int32_10_Int32_Neg3 NOT okay.");
-            }
-        }
-
-        /// <summary>
-        /// Tests: Division operation using signed 32-bit integers, 
-        /// Inputs: -10, -3, 
-        /// Result: 3
-        /// </summary>
-        [NoGC]
-        public static void Test_Div_Int32_Neg10_Int32_Neg3()
-        {
-            Int32 a = -10;
-            Int32 b = -3;
-            a = a / b;
-            if (a == 3)
-            {
-                Log.WriteSuccess("Test_Div_Int32_Neg10_Int32_Neg3 okay.");
-            }
-            else
-            {
-                Log.WriteError("Test_Div_Int32_Neg10_Int32_Neg3 NOT okay.");
-            }
-        }
-
-        /// <summary>
-        /// Tests: Division operation using signed 32-bit integers, 
-        /// Inputs: 10, 3, 
-        /// Result: 3
-        /// </summary>
-        [NoGC]
-        public static void Test_Div_Int32_10_Int32_3()
-        {
-            Int32 a = 10;
-            Int32 b = 3;
-            a = a / b;
-            if (a == 3)
-            {
-                Log.WriteSuccess("Test_Div_Int32_10_Int32_3 okay.");
-            }
-            else
-            {
-                Log.WriteError("Test_Div_Int32_10_Int32_3 NOT okay.");
-            }
-        }
-
-        #endregion
-
-        #region Subtraction
+        #region 2. Subtraction
 
         /// <summary>
         /// Tests: Subtraction operation using unsigned 32-bit integers, 
@@ -1406,799 +1381,440 @@ namespace FlingOops
 
         #endregion
 
-        #region Right shift
+        // TODO
+        #region 3. Multiplication
+
+        #endregion
+
+        #region 4. Division
 
         /// <summary>
-        /// Tests: Right shift operation shifting an unsigned 64-bit value, 
-        /// Inputs: 64-bit, 10, 
-        /// Result: 64-bit.
+        /// Tests: Division operation using unsigned 32-bit integers, 
+        /// Inputs: 9, 3, 
+        /// Result: 3
         /// </summary>
-        /// <remarks>
-        /// <para>
-        /// C# requires that the distance value is a signed 32-bit integer. 
-        /// Only low order 5-bit is used when a 32-bit values is shifted, while low order 6-bit if a 64-bit value is shifted.
-        /// In other words, a 32-/64-bit value cannot be pushed by more than 31/63 bits.
-        /// </para>
-        /// </remarks>
         [NoGC]
-        public static void Test_RShift_UInt64_Large_Int32_10()
+        public static void Test_Div_UInt32_9_UInt32_3()
         {
-            UInt64 a = 576460752303423488;
-            Int32 b = 10;
-            a = a >> b;
-            if (a == 562949953421312)
-            {
-                Log.WriteSuccess("Test_RShift_UInt64_Large_Int32_10 okay.");
-            }
-            else
-            {
-                Log.WriteError("Test_RShift_UInt64_Large_Int32_10 NOT okay.");
-            }
-        }
-
-        /// <summary>
-        /// Tests: Right shift operation shifting a signed 32-bit value, 
-        /// Inputs: 32-bit -ve, 6, 
-        /// Result: 32-bit -ve (padded with 1s).
-        /// </summary>
-        /// <remarks>
-        /// <para>
-        /// C# requires that the distance value is a signed 32-bit integer. 
-        /// Only low order 5-bit is used when a 32-bit values is shifted, while low order 6-bit if a 64-bit value is shifted.
-        /// In other words, a 32-/64-bit value cannot be pushed by more than 31/63 bits.
-        /// </para>
-        /// </remarks>
-        [NoGC]
-        public static void Test_RShift_Int32_SmallNeg_Int32_6()
-        {
-            Int32 a = -28416;
-            Int32 b = 6;
-            a = a >> b;
-            if (a == -444)
-            {
-                Log.WriteSuccess("Test_RShift_Int32_SmallNeg_Int32_6 okay.");
-            }
-            else
-            {
-                Log.WriteError("Test_RShift_Int32_SmallNeg_Int32_6 NOT okay.");
-            }
-        }
-
-        /// <summary>
-        /// Tests: Right shift operation shifting an unsigned 32-bit value, 
-        /// Inputs: 32-bit, 6, 
-        /// Result: 32-bit.
-        /// </summary>
-        /// <remarks>
-        /// <para>
-        /// C# requires that the distance value is a signed 32-bit integer. 
-        /// Only low order 5-bit is used when a 32-bit values is shifted, while low order 6-bit if a 64-bit value is shifted.
-        /// In other words, a 32-/64-bit value cannot be pushed by more than 31/63 bits.
-        /// </para>
-        /// </remarks>
-        [NoGC]
-        public static void Test_RShift_UInt32_Small_Int32_6()
-        {
-            UInt32 a = 4352;
-            Int32 b = 6;
-            a = a >> b;
-            if (a == 68)
-            {
-                Log.WriteSuccess("Test_RShift_UInt32_Small_Int32_6 okay.");
-            }
-            else
-            {
-                Log.WriteError("Test_RShift_UInt32_Small_Int32_6 NOT okay.");
-            }
-        }
-
-        /// <summary>
-        /// Tests: Right shift operation shifting a signed 64-bit value, 
-        /// Inputs: 64-bit -ve, 6, 
-        /// Result: 64-bit -ve (stored as 64-bit padded with 1s).
-        /// </summary>
-        /// <remarks>
-        /// <para>
-        /// C# requires that the distance value is a signed 32-bit integer. 
-        /// Only low order 5-bit is used when a 32-bit values is shifted, while low order 6-bit if a 64-bit value is shifted.
-        /// In other words, a 32-/64-bit value cannot be pushed by more than 31/63 bits.
-        /// </para>
-        /// </remarks>
-        [NoGC]
-        public static void Test_RShift_Int64_LargeNeg_Int32_6()
-        {
-            Int64 a = -9185091440022126524;
-            Int32 b = 6;
-            a = a >> b;
-            if (a == -143517053750345727)
-            {
-                Log.WriteSuccess("Test_RShift_Int64_LargeNeg_Int32_6 okay.");
-            }
-            else
-            {
-                Log.WriteError("Test_RShift_Int64_LargeNeg_Int32_6 NOT okay.");
-            }
-        }
-
-        /// <summary>
-        /// Tests: Right shift operation shifting a signed 64-bit value, 
-        /// Inputs: 64-bit -ve, 40, 
-        /// Result: 32-bit -ve (stored as 64-bit padded with 1s).
-        /// </summary>
-        /// <remarks>
-        /// <para>
-        /// C# requires that the distance value is a signed 32-bit integer. 
-        /// Only low order 5-bit is used when a 32-bit values is shifted, while low order 6-bit if a 64-bit value is shifted.
-        /// In other words, a 32-/64-bit value cannot be pushed by more than 31/63 bits.
-        /// </para>
-        /// </remarks>
-        [NoGC]
-        public static void Test_RShift_Int64_LargeNeg_Int32_40()
-        {
-            Int64 a = -9187343239835811840;
-            Int32 b = 40;
-            a = a >> b;
-            if (a == -8355840)
-            {
-                Log.WriteSuccess("Test_RShift_Int64_LargeNeg_Int32_40 okay.");
-            }
-            else
-            {
-                Log.WriteError("Test_RShift_Int64_LargeNeg_Int32_40 NOT okay.");
-            }
-        }
-
-        /// <summary>
-        /// Tests: Right shift operation shifting a signed 64-bit value, 
-        /// Inputs: Largest 64-bit +ve, 40, 
-        /// Result: 32-bit +ve (stored as 64-bit padded with 0s).
-        /// </summary>
-        /// <remarks>
-        /// <para>
-        /// C# requires that the distance value is a signed 32-bit integer. 
-        /// Only low order 5-bit is used when a 32-bit values is shifted, while low order 6-bit if a 64-bit value is shifted.
-        /// In other words, a 32-/64-bit value cannot be pushed by more than 31/63 bits.
-        /// </para>
-        /// </remarks>
-        [NoGC]
-        public static void Test_RShift_Int64_LargestPos_Int32_40()
-        {
-            Int64 a = 9223372036854775807;
-            Int32 b = 40;
-            a = a >> b;
-            if (a == 8388607)
-            {
-                Log.WriteSuccess("Test_RShift_Int64_LargestPos_Int32_40 okay.");
-            }
-            else
-            {
-                Log.WriteError("Test_RShift_Int64_LargestPos_Int32_40 NOT okay.");
-            }
-        }
-
-        /// <summary>
-        /// Tests: Right shift operation shifting a signed 64-bit value, 
-        /// Inputs: Largest 64-bit -ve, 40, 
-        /// Result: 32-bit -ve (stored as 64-bit padded with 1s).
-        /// </summary>
-        /// <remarks>
-        /// <para>
-        /// C# requires that the distance value is a signed 32-bit integer. 
-        /// Only low order 5-bit is used when a 32-bit values is shifted, while low order 6-bit if a 64-bit value is shifted.
-        /// In other words, a 32-/64-bit value cannot be pushed by more than 31/63 bits.
-        /// </para>
-        /// </remarks>
-        [NoGC]
-        public static void Test_RShift_Int64_LargestNeg_Int32_40()
-        {
-            Int64 a = -9223372036854775808;
-            Int32 b = 40;
-            a = a >> b;
-            if (a == -8388608)
-            {
-                Log.WriteSuccess("Test_RShift_Int64_LargestNeg_Int32_40 okay.");
-            }
-            else
-            {
-                Log.WriteError("Test_RShift_Int64_LargestNeg_Int32_40 NOT okay.");
-            }
-        }
-
-        /// <summary>
-        /// Tests: Right shift operation shifting a signed 64-bit value, 
-        /// Inputs: -1, 63, 
-        /// Result: -1 because of circular nature of two's complement.
-        /// </summary>
-        /// <remarks>
-        /// <para>
-        /// C# requires that the distance value is a signed 32-bit integer. 
-        /// Only low order 5-bit is used when a 32-bit values is shifted, while low order 6-bit if a 64-bit value is shifted.
-        /// In other words, a 32-/64-bit value cannot be pushed by more than 31/63 bits.
-        /// </para>
-        /// </remarks>
-        [NoGC]
-        public static void Test_RShift_Int64_Neg1_Int32_63()
-        {
-            Int64 a = -1;
-            Int32 b = 63;
-            a = a >> b;
-            if (a == -1)
-            {
-                Log.WriteSuccess("Test_RShift_Int64_Neg1_Int32_63 okay.");
-            }
-            else
-            {
-                Log.WriteError("Test_RShift_Int64_Neg1_Int32_63 NOT okay.");
-            }
-        }
-
-        /// <summary>
-        /// Tests: Right shift operation shifting an unsigned 64-bit value, 
-        /// Inputs: Largest, 63, 
-        /// Result: 1.
-        /// </summary>
-        /// <remarks>
-        /// <para>
-        /// C# requires that the distance value is a signed 32-bit integer. 
-        /// Only low order 5-bit is used when a 32-bit values is shifted, while low order 6-bit if a 64-bit value is shifted.
-        /// In other words, a 32-/64-bit value cannot be pushed by more than 31/63 bits.
-        /// </para>
-        /// </remarks>
-        [NoGC]
-        public static void Test_RShift_UInt64_Largest_Int32_63()
-        {
-            UInt64 a = 18446744073709551615;
-            Int32 b = 63;
-            a = a >> b;
-            if (a == 1)
-            {
-                Log.WriteSuccess("Test_RShift_UInt64_Largest_Int32_63 okay.");
-            }
-            else
-            {
-                Log.WriteError("Test_RShift_UInt64_Largest_Int32_63 NOT okay.");
-            }
-        }
-
-        /// <summary>
-        /// Tests: Right shift operation shifting an unsigned 32-bit value, 
-        /// Inputs: Largest, 6, 
-        /// Result: 32-bit.
-        /// </summary>
-        /// <remarks>
-        /// <para>
-        /// C# requires that the distance value is a signed 32-bit integer. 
-        /// Only low order 5-bit is used when a 32-bit values is shifted, while low order 6-bit if a 64-bit value is shifted.
-        /// In other words, a 32-/64-bit value cannot be pushed by more than 31/63 bits.
-        /// </para>
-        /// </remarks>
-        [NoGC]
-        public static void Test_RShift_UInt32_Largest_Int32_6()
-        {
-            UInt32 a = 4294967295;
-            Int32 b = 6;
-            a = a >> b;
-            if (a == 67108863)
-            {
-                Log.WriteSuccess("Test_RShift_UInt32_Largest_Int32_6 okay.");
-            }
-            else
-            {
-                Log.WriteError("Test_RShift_UInt32_Largest_Int32_6 NOT okay.");
-            }
-        }
-
-        /// <summary>
-        /// Tests: Right shift operation shifting a signed 32-bit value, 
-        /// Inputs: Small +ve, 6, 
-        /// Result: 32-bit.
-        /// </summary>
-        /// <remarks>
-        /// <para>
-        /// C# requires that the distance value is a signed 32-bit integer. 
-        /// Only low order 5-bit is used when a 32-bit values is shifted, while low order 6-bit if a 64-bit value is shifted.
-        /// In other words, a 32-/64-bit value cannot be pushed by more than 31/63 bits.
-        /// </para>
-        /// </remarks>
-        [NoGC]
-        public static void Test_RShift_Int32_SmallPos_Int32_6()
-        {
-            Int32 a = 255;
-            Int32 b = 6;
-            a = a >> b;
+            UInt32 a = 9;
+            UInt32 b = 3;
+            a = a / b;
             if (a == 3)
             {
-                Log.WriteSuccess("Test_RShift_Int32_SmallPos_Int32_6 okay.");
+                Log.WriteSuccess("Test_Div_UInt32_9_UInt32_3 okay.");
             }
             else
             {
-                Log.WriteError("Test_RShift_Int32_SmallPos_Int32_6 NOT okay.");
+                Log.WriteError("Test_Div_UInt32_9_UInt32_3 NOT okay.");
             }
         }
 
         /// <summary>
-        /// Tests: Right shift operation shifting a signed 32-bit value, 
-        /// Inputs: Largest +ve, 6, 
-        /// Result: 32-bit.
+        /// Tests: Division operation using unsigned 32-bit integers, 
+        /// Inputs: 10, 3, 
+        /// Result: 3
         /// </summary>
-        /// <remarks>
-        /// <para>
-        /// C# requires that the distance value is a signed 32-bit integer. 
-        /// Only low order 5-bit is used when a 32-bit values is shifted, while low order 6-bit if a 64-bit value is shifted.
-        /// In other words, a 32-/64-bit value cannot be pushed by more than 31/63 bits.
-        /// </para>
-        /// </remarks>
         [NoGC]
-        public static void Test_RShift_Int32_LargestPos_Int32_6()
+        public static void Test_Div_UInt32_10_UInt32_3()
         {
-            Int32 a = 2147483647;
-            Int32 b = 6;
-            a = a >> b;
-            if (a == 33554431)
+            UInt32 a = 10;
+            UInt32 b = 3;
+            a = a / b;
+            if (a == 3)
             {
-                Log.WriteSuccess("Test_RShift_Int32_LargestPos_Int32_6 okay.");
+                Log.WriteSuccess("Test_Div_UInt32_10_UInt32_3 okay.");
             }
             else
             {
-                Log.WriteError("Test_RShift_Int32_LargestPos_Int32_6 NOT okay.");
+                Log.WriteError("Test_Div_UInt32_10_UInt32_3 NOT okay.");
             }
         }
 
         /// <summary>
-        /// Tests: Right shift operation shifting a signed 32-bit value, 
-        /// Inputs: Largest -ve, 6, 
-        /// Result: 32-bit.
+        /// Tests: Division operation using signed 32-bit integers, 
+        /// Inputs: -9, 3, 
+        /// Result: -3
         /// </summary>
-        /// <remarks>
-        /// <para>
-        /// C# requires that the distance value is a signed 32-bit integer. 
-        /// Only low order 5-bit is used when a 32-bit values is shifted, while low order 6-bit if a 64-bit value is shifted.
-        /// In other words, a 32-/64-bit value cannot be pushed by more than 31/63 bits.
-        /// </para>
-        /// </remarks>
         [NoGC]
-        public static void Test_RShift_Int32_LargestNeg_Int32_6()
+        public static void Test_Div_Int32_Neg9_Int32_3()
         {
-            Int32 a = -2147483648;
-            Int32 b = 6;
-            a = a >> b;
-            if (a == -33554432)
+            Int32 a = -9;
+            Int32 b = 3;
+            a = a / b;
+            if (a == -3)
             {
-                Log.WriteSuccess("Test_RShift_Int32_LargestNeg_Int32_6 okay.");
+                Log.WriteSuccess("Test_Div_Int32_Neg9_Int32_3 okay.");
             }
             else
             {
-                Log.WriteError("Test_RShift_Int32_LargestNeg_Int32_6 NOT okay.");
+                Log.WriteError("Test_Div_Int32_Neg9_Int32_3 NOT okay.");
             }
         }
 
         /// <summary>
-        /// Tests: Right shift operation shifting an unsigned 64-bit value, 
-        /// Inputs: Largest, 10, 
-        /// Result: 64-bit.
+        /// Tests: Division operation using signed 32-bit integers, 
+        /// Inputs: 9, -3, 
+        /// Result: -3
         /// </summary>
-        /// <remarks>
-        /// <para>
-        /// C# requires that the distance value is a signed 32-bit integer. 
-        /// Only low order 5-bit is used when a 32-bit values is shifted, while low order 6-bit if a 64-bit value is shifted.
-        /// In other words, a 32-/64-bit value cannot be pushed by more than 31/63 bits.
-        /// </para>
-        /// </remarks>
         [NoGC]
-        public static void Test_RShift_UInt64_Largest_Int32_10()
+        public static void Test_Div_Int32_9_Int32_Neg3()
         {
-            UInt64 a = 18446744073709551615;
-            Int32 b = 10;
-            a = a >> b;
-            if (a == 18014398509481983)
+            Int32 a = 9;
+            Int32 b = -3;
+            a = a / b;
+            if (a == -3)
             {
-                Log.WriteSuccess("Test_RShift_UInt64_Largest_Int32_10 okay.");
+                Log.WriteSuccess("Test_Div_Int32_9_Int32_Neg3 okay.");
             }
             else
             {
-                Log.WriteError("Test_RShift_UInt64_Largest_Int32_10 NOT okay.");
+                Log.WriteError("Test_Div_Int32_9_Int32_Neg3 NOT okay.");
+            }
+        }
+
+        /// <summary>
+        /// Tests: Division operation using signed 32-bit integers, 
+        /// Inputs: -9, -3, 
+        /// Result: 3
+        /// </summary>
+        [NoGC]
+        public static void Test_Div_Int32_Neg9_Int32_Neg3()
+        {
+            Int32 a = -9;
+            Int32 b = -3;
+            a = a / b;
+            if (a == 3)
+            {
+                Log.WriteSuccess("Test_Div_Int32_Neg9_Int32_Neg3 okay.");
+            }
+            else
+            {
+                Log.WriteError("Test_Div_Int32_Neg9_Int32_Neg3 NOT okay.");
+            }
+        }
+
+        /// <summary>
+        /// Tests: Division operation using signed 32-bit integers, 
+        /// Inputs: 9, 3, 
+        /// Result: 3
+        /// </summary>
+        [NoGC]
+        public static void Test_Div_Int32_9_Int32_3()
+        {
+            Int32 a = 9;
+            Int32 b = 3;
+            a = a / b;
+            if (a == 3)
+            {
+                Log.WriteSuccess("Test_Div_Int32_9_Int32_3 okay.");
+            }
+            else
+            {
+                Log.WriteError("Test_Div_Int32_9_Int32_3 NOT okay.");
+            }
+        }
+
+        /// <summary>
+        /// Tests: Division operation using signed 32-bit integers, 
+        /// Inputs: -10, 3, 
+        /// Result: -3
+        /// </summary>
+        [NoGC]
+        public static void Test_Div_Int32_Neg10_Int32_3()
+        {
+            Int32 a = -10;
+            Int32 b = 3;
+            a = a / b;
+            if (a == -3)
+            {
+                Log.WriteSuccess("Test_Div_Int32_Neg10_Int32_3 okay.");
+            }
+            else
+            {
+                Log.WriteError("Test_Div_Int32_Neg10_Int32_3 NOT okay.");
+            }
+        }
+
+        /// <summary>
+        /// Tests: Division operation using signed 32-bit integers, 
+        /// Inputs: 10, -3, 
+        /// Result: -3
+        /// </summary>
+        [NoGC]
+        public static void Test_Div_Int32_10_Int32_Neg3()
+        {
+            Int32 a = 10;
+            Int32 b = -3;
+            a = a / b;
+            if (a == -3)
+            {
+                Log.WriteSuccess("Test_Div_Int32_10_Int32_Neg3 okay.");
+            }
+            else
+            {
+                Log.WriteError("Test_Div_Int32_10_Int32_Neg3 NOT okay.");
+            }
+        }
+
+        /// <summary>
+        /// Tests: Division operation using signed 32-bit integers, 
+        /// Inputs: -10, -3, 
+        /// Result: 3
+        /// </summary>
+        [NoGC]
+        public static void Test_Div_Int32_Neg10_Int32_Neg3()
+        {
+            Int32 a = -10;
+            Int32 b = -3;
+            a = a / b;
+            if (a == 3)
+            {
+                Log.WriteSuccess("Test_Div_Int32_Neg10_Int32_Neg3 okay.");
+            }
+            else
+            {
+                Log.WriteError("Test_Div_Int32_Neg10_Int32_Neg3 NOT okay.");
+            }
+        }
+
+        /// <summary>
+        /// Tests: Division operation using signed 32-bit integers, 
+        /// Inputs: 10, 3, 
+        /// Result: 3
+        /// </summary>
+        [NoGC]
+        public static void Test_Div_Int32_10_Int32_3()
+        {
+            Int32 a = 10;
+            Int32 b = 3;
+            a = a / b;
+            if (a == 3)
+            {
+                Log.WriteSuccess("Test_Div_Int32_10_Int32_3 okay.");
+            }
+            else
+            {
+                Log.WriteError("Test_Div_Int32_10_Int32_3 NOT okay.");
             }
         }
 
         #endregion
 
-        #region Left shift
+        #region 5. Modulus
 
         /// <summary>
-        /// Tests: Left shift operation shifting an unsigned 64-bit value, 
-        /// Inputs: 64-bit, 2, 
-        /// Result: 64-bit.
+        /// Tests: Modulus (remainder) operation using unsigned 32-bit integers, 
+        /// Inputs: 9, 3, 
+        /// Result: 0
         /// </summary>
-        /// <remarks>
-        /// <para>
-        /// C# requires that the distance value is a signed 32-bit integer. 
-        /// Only low order 5-bit is used when a 32-bit values is shifted, while low order 6-bit if a 64-bit value is shifted.
-        /// In other words, a 32-/64-bit value cannot be pushed by more than 31/63 bits.
-        /// </para>
-        /// </remarks>
         [NoGC]
-        public static void Test_LShift_UInt64_Large_Int32_2()
+        public static void Test_Mod_UInt32_9_UInt32_3()
         {
-            UInt64 a = 576460752303423488;
-            Int32 b = 2;
-            a = a << b;
-            if (a == 2305843009213693952)
-            {
-                Log.WriteSuccess("Test_LShift_UInt64_Large_Int32_2 okay.");
-            }
-            else
-            {
-                Log.WriteError("Test_LShift_UInt64_Large_Int32_2 NOT okay.");
-            }
-        }
-
-        /// <summary>
-        /// Tests: Left shift operation shifting a signed 32-bit value, 
-        /// Inputs: 32-bit -ve, 6, 
-        /// Result: 32-bit -ve.
-        /// </summary>
-        /// <remarks>
-        /// <para>
-        /// C# requires that the distance value is a signed 32-bit integer. 
-        /// Only low order 5-bit is used when a 32-bit values is shifted, while low order 6-bit if a 64-bit value is shifted.
-        /// In other words, a 32-/64-bit value cannot be pushed by more than 31/63 bits.
-        /// </para>
-        /// </remarks>
-        [NoGC]
-        public static void Test_LShift_Int32_SmallNeg_Int32_6()
-        {
-            Int32 a = -28416;
-            Int32 b = 6;
-            a = a << b;
-            if (a == -1818624)
-            {
-                Log.WriteSuccess("Test_LShift_Int32_SmallNeg_Int32_6 okay.");
-            }
-            else
-            {
-                Log.WriteError("Test_LShift_Int32_SmallNeg_Int32_6 NOT okay.");
-            }
-        }
-
-        /// <summary>
-        /// Tests: Right shift operation shifting an unsigned 32-bit value, 
-        /// Inputs: 32-bit, 6, 
-        /// Result: 32-bit.
-        /// </summary>
-        /// <remarks>
-        /// <para>
-        /// C# requires that the distance value is a signed 32-bit integer. 
-        /// Only low order 5-bit is used when a 32-bit values is shifted, while low order 6-bit if a 64-bit value is shifted.
-        /// In other words, a 32-/64-bit value cannot be pushed by more than 31/63 bits.
-        /// </para>
-        /// </remarks>
-        [NoGC]
-        public static void Test_LShift_UInt32_Small_Int32_6()
-        {
-            UInt32 a = 4352;
-            Int32 b = 6;
-            a = a << b;
-            if (a == 278528)
-            {
-                Log.WriteSuccess("Test_LShift_UInt32_Small_Int32_6 okay.");
-            }
-            else
-            {
-                Log.WriteError("Test_LShift_UInt32_Small_Int32_6 NOT okay.");
-            }
-        }
-
-        /// <summary>
-        /// Tests: Left shift operation shifting a signed 64-bit value, 
-        /// Inputs: 64-bit -ve, 6, 
-        /// Result: 64-bit +ve.
-        /// </summary>
-        /// <remarks>
-        /// <para>
-        /// C# requires that the distance value is a signed 32-bit integer. 
-        /// Only low order 5-bit is used when a 32-bit values is shifted, while low order 6-bit if a 64-bit value is shifted.
-        /// In other words, a 32-/64-bit value cannot be pushed by more than 31/63 bits.
-        /// </para>
-        /// </remarks>
-        [NoGC]
-        public static void Test_LShift_Int64_LargeNeg_Int32_6()
-        {
-            Int64 a = -9185091440022126524;
-            Int32 b = 6;
-            a = a << b;
-            if (a == 2449958197289554176)
-            {
-                Log.WriteSuccess("Test_LShift_Int64_LargeNeg_Int32_6 okay.");
-            }
-            else
-            {
-                Log.WriteError("Test_LShift_Int64_LargeNeg_Int32_6 NOT okay.");
-            }
-        }
-
-        /// <summary>
-        /// Tests: Left shift operation shifting a signed 64-bit value, 
-        /// Inputs: 64-bit -ve, 40, 
-        /// Result: 32-bit +ve.
-        /// </summary>
-        /// <remarks>
-        /// <para>
-        /// C# requires that the distance value is a signed 32-bit integer. 
-        /// Only low order 5-bit is used when a 32-bit values is shifted, while low order 6-bit if a 64-bit value is shifted.
-        /// In other words, a 32-/64-bit value cannot be pushed by more than 31/63 bits.
-        /// </para>
-        /// </remarks>
-        [NoGC]
-        public static void Test_LShift_Int64_LargeNeg_Int32_40()
-        {
-            Int64 a = -9187343239835811832;
-            Int32 b = 40;
-            a = a << b;
-            if (a == 8796093022208)
-            {
-                Log.WriteSuccess("Test_LShift_Int64_LargeNeg_Int32_40 okay.");
-            }
-            else
-            {
-                Log.WriteError("Test_LShift_Int64_LargeNeg_Int32_40 NOT okay.");
-            }
-        }
-
-        /// <summary>
-        /// Tests: Left shift operation shifting a signed 64-bit value, 
-        /// Inputs: Largest 64-bit +ve, 40, 
-        /// Result: 64-bit -ve.
-        /// </summary>
-        /// <remarks>
-        /// <para>
-        /// C# requires that the distance value is a signed 32-bit integer. 
-        /// Only low order 5-bit is used when a 32-bit values is shifted, while low order 6-bit if a 64-bit value is shifted.
-        /// In other words, a 32-/64-bit value cannot be pushed by more than 31/63 bits.
-        /// </para>
-        /// </remarks>
-        [NoGC]
-        public static void Test_LShift_Int64_LargestPos_Int32_40()
-        {
-            Int64 a = 9223372036854775807;
-            Int32 b = 40;
-            a = a << b;
-            if (a == -1099511627776)
-            {
-                Log.WriteSuccess("Test_LShift_Int64_LargestPos_Int32_40 okay.");
-            }
-            else
-            {
-                Log.WriteError("Test_LShift_Int64_LargestPos_Int32_40 NOT okay.");
-            }
-        }
-
-        /// <summary>
-        /// Tests: Left shift operation shifting a signed 64-bit value, 
-        /// Inputs: Largest -ve, 40, 
-        /// Result: 0.
-        /// </summary>
-        /// <remarks>
-        /// <para>
-        /// C# requires that the distance value is a signed 32-bit integer. 
-        /// Only low order 5-bit is used when a 32-bit values is shifted, while low order 6-bit if a 64-bit value is shifted.
-        /// In other words, a 32-/64-bit value cannot be pushed by more than 31/63 bits.
-        /// </para>
-        /// </remarks>
-        [NoGC]
-        public static void Test_LShift_Int64_LargestNeg_Int32_40()
-        {
-            Int64 a = -9223372036854775808;
-            Int32 b = 40;
-            a = a << b;
+            UInt32 a = 9;
+            UInt32 b = 3;
+            a = a % b;
             if (a == 0)
             {
-                Log.WriteSuccess("Test_LShift_Int64_LargestNeg_Int32_40 okay.");
+                Log.WriteSuccess("Test_Mod_UInt32_9_UInt32_3 okay.");
             }
             else
             {
-                Log.WriteError("Test_LShift_Int64_LargestNeg_Int32_40 NOT okay.");
+                Log.WriteError("Test_Mod_UInt32_9_UInt32_3 NOT okay.");
             }
         }
 
         /// <summary>
-        /// Tests: Left shift operation shifting a signed 64-bit value, 
-        /// Inputs: -1, 63, 
-        /// Result: Largest -ve.
+        /// Tests: Modulus (remainder) operation using unsigned 32-bit integers, 
+        /// Inputs: 10, 3, 
+        /// Result: 1
         /// </summary>
-        /// <remarks>
-        /// <para>
-        /// C# requires that the distance value is a signed 32-bit integer. 
-        /// Only low order 5-bit is used when a 32-bit values is shifted, while low order 6-bit if a 64-bit value is shifted.
-        /// In other words, a 32-/64-bit value cannot be pushed by more than 31/63 bits.
-        /// </para>
-        /// </remarks>
         [NoGC]
-        public static void Test_LShift_Int64_Neg1_Int32_63()
+        public static void Test_Mod_UInt32_10_UInt32_3()
         {
-            Int64 a = -1;
-            Int32 b = 63;
-            a = a << b;
-            if (a == -9223372036854775808)
+            UInt32 a = 10;
+            UInt32 b = 3;
+            a = a % b;
+            if (a == 1)
             {
-                Log.WriteSuccess("Test_LShift_Int64_Neg1_Int32_63 okay.");
+                Log.WriteSuccess("Test_Mod_UInt32_10_UInt32_3 okay.");
             }
             else
             {
-                Log.WriteError("Test_LShift_Int64_Neg1_Int32_63 NOT okay.");
+                Log.WriteError("Test_Mod_UInt32_10_UInt32_3 NOT okay.");
             }
         }
 
         /// <summary>
-        /// Tests: Left shift operation shifting an unsigned 64-bit value, 
-        /// Inputs: Largest, 63, 
-        /// Result: 0x8000000000000000 (Highest bit set to 1).
+        /// Tests: Modulus (remainder) operation using signed 32-bit integers, 
+        /// Inputs: -9, 3, 
+        /// Result: 0
         /// </summary>
-        /// <remarks>
-        /// <para>
-        /// C# requires that the distance value is a signed 32-bit integer. 
-        /// Only low order 5-bit is used when a 32-bit values is shifted, while low order 6-bit if a 64-bit value is shifted.
-        /// In other words, a 32-/64-bit value cannot be pushed by more than 31/63 bits.
-        /// </para>
-        /// </remarks>
         [NoGC]
-        public static void Test_LShift_UInt64_Largest_Int32_63()
+        public static void Test_Mod_Int32_Neg9_Int32_3()
         {
-            UInt64 a = 18446744073709551615;
-            Int32 b = 63;
-            a = a << b;
-            if (a == 0x8000000000000000)
-            {
-                Log.WriteSuccess("Test_LShift_UInt64_Largest_Int32_63 okay.");
-            }
-            else
-            {
-                Log.WriteError("Test_LShift_UInt64_Largest_Int32_63 NOT okay.");
-            }
-        }
-
-        /// <summary>
-        /// Tests: Left shift operation shifting an unsigned 32-bit value, 
-        /// Inputs: Largest, 6, 
-        /// Result: 32-bit.
-        /// </summary>
-        /// <remarks>
-        /// <para>
-        /// C# requires that the distance value is a signed 32-bit integer. 
-        /// Only low order 5-bit is used when a 32-bit values is shifted, while low order 6-bit if a 64-bit value is shifted.
-        /// In other words, a 32-/64-bit value cannot be pushed by more than 31/63 bits.
-        /// </para>
-        /// </remarks>
-        [NoGC]
-        public static void Test_LShift_UInt32_Largest_Int32_6()
-        {
-            UInt32 a = 4294967295;
-            Int32 b = 6;
-            a = a << b;
-            if (a == 4294967232)
-            {
-                Log.WriteSuccess("Test_LShift_UInt32_Largest_Int32_6 okay.");
-            }
-            else
-            {
-                Log.WriteError("Test_LShift_UInt32_Largest_Int32_6 NOT okay.");
-            }
-        }
-
-        /// <summary>
-        /// Tests: Right shift operation shifting a signed 32-bit value, 
-        /// Inputs: Small +ve, 6, 
-        /// Result: 32-bit.
-        /// </summary>
-        /// <remarks>
-        /// <para>
-        /// C# requires that the distance value is a signed 32-bit integer. 
-        /// Only low order 5-bit is used when a 32-bit values is shifted, while low order 6-bit if a 64-bit value is shifted.
-        /// In other words, a 32-/64-bit value cannot be pushed by more than 31/63 bits.
-        /// </para>
-        /// </remarks>
-        [NoGC]
-        public static void Test_LShift_Int32_SmallPos_Int32_6()
-        {
-            Int32 a = 255;
-            Int32 b = 6;
-            a = a << b;
-            if (a == 16320)
-            {
-                Log.WriteSuccess("Test_LShift_Int32_SmallPos_Int32_6 okay.");
-            }
-            else
-            {
-                Log.WriteError("Test_LShift_Int32_SmallPos_Int32_6 NOT okay.");
-            }
-        }
-
-        /// <summary>
-        /// Tests: Left shift operation shifting a signed 32-bit value, 
-        /// Inputs: Largest +ve, 6, 
-        /// Result: 32-bit -ve.
-        /// </summary>
-        /// <remarks>
-        /// <para>
-        /// C# requires that the distance value is a signed 32-bit integer. 
-        /// Only low order 5-bit is used when a 32-bit values is shifted, while low order 6-bit if a 64-bit value is shifted.
-        /// In other words, a 32-/64-bit value cannot be pushed by more than 31/63 bits.
-        /// </para>
-        /// </remarks>
-        [NoGC]
-        public static void Test_LShift_Int32_LargestPos_Int32_6()
-        {
-            Int32 a = 2147483647;
-            Int32 b = 6;
-            a = a << b;
-            if (a == -64)
-            {
-                Log.WriteSuccess("Test_LShift_Int32_LargestPos_Int32_6 okay.");
-            }
-            else
-            {
-                Log.WriteError("Test_LShift_Int32_LargestPos_Int32_6 NOT okay.");
-            }
-        }
-
-        /// <summary>
-        /// Tests: Right shift operation shifting a signed 32-bit value, 
-        /// Inputs: Largest -ve, 6, 
-        /// Result: 0.
-        /// </summary>
-        /// <remarks>
-        /// <para>
-        /// C# requires that the distance value is a signed 32-bit integer. 
-        /// Only low order 5-bit is used when a 32-bit values is shifted, while low order 6-bit if a 64-bit value is shifted.
-        /// In other words, a 32-/64-bit value cannot be pushed by more than 31/63 bits.
-        /// </para>
-        /// </remarks>
-        [NoGC]
-        public static void Test_LShift_Int32_LargestNeg_Int32_6()
-        {
-            Int32 a = -2147483648;
-            Int32 b = 1;
-            a = a << b;
+            Int32 a = -9;
+            Int32 b = 3;
+            a = a % b;
             if (a == 0)
             {
-                Log.WriteSuccess("Test_LShift_Int32_LargestNeg_Int32_6 okay.");
+                Log.WriteSuccess("Test_Mod_Int32_Neg9_Int32_3 okay.");
             }
             else
             {
-                Log.WriteError("Test_LShift_Int32_LargestNeg_Int32_6 NOT okay.");
+                Log.WriteError("Test_Mod_Int32_Neg9_Int32_3 NOT okay.");
             }
         }
 
         /// <summary>
-        /// Tests: Right shift operation shifting an unsigned 64-bit value, 
-        /// Inputs: Largest, 10, 
-        /// Result: 64-bit.
+        /// Tests: Modulus (remainder) operation using signed 32-bit integers, 
+        /// Inputs: 9, -3, 
+        /// Result: 0
         /// </summary>
-        /// <remarks>
-        /// <para>
-        /// C# requires that the distance value is a signed 32-bit integer. 
-        /// Only low order 5-bit is used when a 32-bit values is shifted, while low order 6-bit if a 64-bit value is shifted.
-        /// In other words, a 32-/64-bit value cannot be pushed by more than 31/63 bits.
-        /// </para>
-        /// </remarks>
         [NoGC]
-        public static void Test_LShift_UInt64_Largest_Int32_10()
+        public static void Test_Mod_Int32_9_Int32_Neg3()
         {
-            UInt64 a = 18446744073709551615;
-            Int32 b = 10;
-            a = a << b;
-            if (a == 18446744073709550592)
+            Int32 a = 9;
+            Int32 b = -3;
+            a = a % b;
+            if (a == 0)
             {
-                Log.WriteSuccess("Test_LShift_UInt64_Largest_Int32_10 okay.");
+                Log.WriteSuccess("Test_Mod_Int32_9_Int32_Neg3 okay.");
             }
             else
             {
-                Log.WriteError("Test_LShift_UInt64_Largest_Int32_10 NOT okay.");
+                Log.WriteError("Test_Mod_Int32_9_Int32_Neg3 NOT okay.");
+            }
+        }
+
+        /// <summary>
+        /// Tests: Modulus (remainder) operation using signed 32-bit integers, 
+        /// Inputs: -9, -3, 
+        /// Result: 0
+        /// </summary>
+        [NoGC]
+        public static void Test_Mod_Int32_Neg9_Int32_Neg3()
+        {
+            Int32 a = -9;
+            Int32 b = -3;
+            a = a % b;
+            if (a == 0)
+            {
+                Log.WriteSuccess("Test_Mod_Int32_Neg9_Int32_Neg3 okay.");
+            }
+            else
+            {
+                Log.WriteError("Test_Mod_Int32_Neg9_Int32_Neg3 NOT okay.");
+            }
+        }
+
+        /// <summary>
+        /// Tests: Modulus (remainder) operation using signed 32-bit integers, 
+        /// Inputs: 9, 3, 
+        /// Result: 0
+        /// </summary>
+        [NoGC]
+        public static void Test_Mod_Int32_9_Int32_3()
+        {
+            Int32 a = 9;
+            Int32 b = 3;
+            a = a % b;
+            if (a == 0)
+            {
+                Log.WriteSuccess("Test_Mod_Int32_9_Int32_3 okay.");
+            }
+            else
+            {
+                Log.WriteError("Test_Mod_Int32_9_Int32_3 NOT okay.");
+            }
+        }
+
+        /// <summary>
+        /// Tests: Modulus (remainder) operation using signed 32-bit integers, 
+        /// Inputs: -10, 3, 
+        /// Result: -1
+        /// </summary>
+        [NoGC]
+        public static void Test_Mod_Int32_Neg10_Int32_3()
+        {
+            Int32 a = -10;
+            Int32 b = 3;
+            a = a % b;
+            if (a == -1)
+            {
+                Log.WriteSuccess("Test_Mod_Int32_Neg10_Int32_3 okay.");
+            }
+            else
+            {
+                Log.WriteError("Test_Mod_Int32_Neg10_Int32_3 NOT okay.");
+            }
+        }
+
+        /// <summary>
+        /// Tests: Modulus (remainder) operation using signed 32-bit integers, 
+        /// Inputs: 10, -3, 
+        /// Result: 1
+        /// </summary>
+        [NoGC]
+        public static void Test_Mod_Int32_10_Int32_Neg3()
+        {
+            Int32 a = 10;
+            Int32 b = -3;
+            a = a % b;
+            if (a == 1)
+            {
+                Log.WriteSuccess("Test_Mod_Int32_10_Int32_Neg3 okay.");
+            }
+            else
+            {
+                Log.WriteError("Test_Mod_Int32_10_Int32_Neg3 NOT okay.");
+            }
+        }
+
+        /// <summary>
+        /// Tests: Modulus (remainder) operation using signed 32-bit integers, 
+        /// Inputs: -10, -3, 
+        /// Result: -1
+        /// </summary>
+        [NoGC]
+        public static void Test_Mod_Int32_Neg10_Int32_Neg3()
+        {
+            Int32 a = -10;
+            Int32 b = -3;
+            a = a % b;
+            if (a == -1)
+            {
+                Log.WriteSuccess("Test_Mod_Int32_Neg10_Int32_Neg3 okay.");
+            }
+            else
+            {
+                Log.WriteError("Test_Mod_Int32_Neg10_Int32_Neg3 NOT okay.");
+            }
+        }
+
+        /// <summary>
+        /// Tests: Modulus (remainder) operation using signed 32-bit integers, 
+        /// Inputs: 10, 3, 
+        /// Result: 1
+        /// </summary>
+        [NoGC]
+        public static void Test_Mod_Int32_10_Int32_3()
+        {
+            Int32 a = 10;
+            Int32 b = 3;
+            a = a % b;
+            if (a == 1)
+            {
+                Log.WriteSuccess("Test_Mod_Int32_10_Int32_3 okay.");
+            }
+            else
+            {
+                Log.WriteError("Test_Mod_Int32_10_Int32_3 NOT okay.");
             }
         }
 
         #endregion
 
-        #region Negation
+        #region 6. Negation
 
         /// <summary>
         /// Tests: Negation operation using a signed 64-bit value, 
@@ -2402,7 +2018,7 @@ namespace FlingOops
 
         #endregion
 
-        #region Not
+        #region 7. Not
 
         /// <summary>
         /// Tests: Not operation using a signed 64-bit value, 
@@ -2665,815 +2281,7 @@ namespace FlingOops
 
         #endregion
 
-        #region Addition
-
-        /// <summary>
-        /// Tests: Addition operation using unsigned 32-bit integers, 
-        /// Inputs: 0, 0, 
-        /// Result: 0
-        /// </summary>
-        [NoGC]
-        public static void Test_Add_UInt32_Zero_UInt32_Zero()
-        {
-            UInt32 a = 0;
-            UInt32 b = 0;
-            a = a + b;
-            if (a == 0)
-            {
-                Log.WriteSuccess("Test_Add_UInt32_Zero_UInt32_Zero okay.");
-            }
-            else
-            {
-                Log.WriteError("Test_Add_UInt32_Zero_UInt32_Zero NOT okay.");
-            }
-        }
-
-        /// <summary>
-        /// Tests: Addition operation using unsigned 32-bit integers, 
-        /// Inputs: Small, Small, 
-        /// Result: Small
-        /// </summary>
-        [NoGC]
-        public static void Test_Add_UInt32_9_UInt32_4()
-        {
-            UInt32 a = 9;
-            UInt32 b = 4;
-            a = a + b;
-            if (a == 13)
-            {
-                Log.WriteSuccess("Test_Add_UInt32_9_UInt32_4 okay.");
-            }
-            else
-            {
-                Log.WriteError("Test_Add_UInt32_9_UInt32_4 NOT okay.");
-            }
-        }
-
-        /// <summary>
-        /// Tests: Addition operation using signed 32-bit integers, 
-        /// Inputs: Small -ve, Small +ve, 
-        /// Result: Small -ve
-        /// </summary>
-        [NoGC]
-        public static void Test_Add_Int32_Neg9_Int32_4()
-        {
-            Int32 a = -9;
-            Int32 b = 4;
-            a = a + b;
-            if (a == -5)
-            {
-                Log.WriteSuccess("Test_Add_Int32_Neg9_Int32_4 okay.");
-            }
-            else
-            {
-                Log.WriteError("Test_Add_Int32_Neg9_Int32_4 NOT okay.");
-            }
-        }
-
-        /// <summary>
-        /// Tests: Addition operation using signed 32-bit integers, 
-        /// Inputs: Small -ve, Small -ve, 
-        /// Result: Small -ve
-        /// </summary>
-        [NoGC]
-        public static void Test_Add_Int32_Neg9_Int32_Neg4()
-        {
-            Int32 a = -9;
-            Int32 b = -4;
-            a = a + b;
-            if (a == -13)
-            {
-                Log.WriteSuccess("Test_Add_Int32_Neg9_Int32_Neg4 okay.");
-            }
-            else
-            {
-                Log.WriteError("Test_Add_Int32_Neg9_Int32_Neg4 NOT okay.");
-            }
-        }
-
-        /// <summary>
-        /// Tests: Addition operation using signed 32-bit integers, 
-        /// Inputs: Small +ve, Small-ve, 
-        /// Result: Small +ve
-        /// </summary>
-        [NoGC]
-        public static void Test_Add_Int32_9_Int32_Neg4()
-        {
-            Int32 a = 9;
-            Int32 b = -4;
-            a = a + b;
-            if (a == 5)
-            {
-                Log.WriteSuccess("Test_Add_Int32_9_Int32_Neg4 okay.");
-            }
-            else
-            {
-                Log.WriteError("Test_Add_Int32_9_Int32_Neg4 NOT okay.");
-            }
-        }
-
-        /// <summary>
-        /// Tests: Addition operation using signed 32-bit integers, 
-        /// Inputs: Small +ve, Small +ve, 
-        /// Result: Small +ve
-        /// </summary>
-        [NoGC]
-        public static void Test_Add_Int32_9_Int32_4()
-        {
-            Int32 a = 9;
-            Int32 b = 4;
-            a = a + b;
-            if (a == 13)
-            {
-                Log.WriteSuccess("Test_Add_Int32_9_Int32_4 okay.");
-            }
-            else
-            {
-                Log.WriteError("Test_Add_Int32_9_Int32_4 NOT okay.");
-            }
-        }
-
-        /// <summary>
-        /// Tests: Addition operation using unsigned 64- and 32-bit integers, 
-        /// Inputs: Largest - 4, 4, 
-        /// Result: Largest
-        /// </summary>
-        /// <remarks>
-        /// <para>
-        /// When adding 64-bit values, care must be taken to handle the carry-bit correctly
-        /// </para>
-        /// </remarks>
-        [NoGC]
-        public static void Test_Add_UInt64_LargestPos_UInt32_4()
-        {
-            UInt64 a = 18446744073709551611;
-            UInt32 b = 4;
-            a = a + b;
-            if (a == 18446744073709551615)
-            {
-                Log.WriteSuccess("Test_Add_UInt64_LargestPos_UInt32_4 okay.");
-            }
-            else
-            {
-                Log.WriteError("Test_Add_UInt64_LargestPos_UInt32_4 NOT okay.");
-            }
-        }
-
-        /// <summary>
-        /// Tests: Addition operation using signed 64- and 32-bit integers, 
-        /// Inputs: Largest +ve, Small +ve, 
-        /// Result: (Largest +ve) + 4 = (Largest -ve) + 3 - circularity of two's complement 
-        /// </summary>
-        /// <remarks>
-        /// <para>
-        /// When adding 64-bit values, care must be taken to handle the carry-bit correctly
-        /// </para>
-        /// </remarks>
-        [NoGC]
-        public static void Test_Add_Int64_LargestPos_Int32_4()
-        {
-            Int64 a = 9223372036854775807;
-            Int32 b = 4;
-            a = a + b;
-            if (a == -9223372036854775805)
-            {
-                Log.WriteSuccess("Test_Add_Int64_LargestPos_Int32_4 okay.");
-            }
-            else
-            {
-                Log.WriteError("Test_Add_Int64_LargestPos_Int32_4 NOT okay.");
-            }
-        }
-
-        /// <summary>
-        /// Tests: Addition operation using signed 64- and 32-bit integers, 
-        /// Inputs: Largest -ve, Small +ve, 
-        /// Result: (Largest -ve) + 4
-        /// </summary>
-        /// <remarks>
-        /// <para>
-        /// When adding 64-bit values, care must be taken to handle the carry-bit correctly
-        /// </para>
-        /// </remarks>
-        [NoGC]
-        public static void Test_Add_Int64_LargestNeg_Int32_4()
-        {
-            Int64 a = -9223372036854775808;
-            Int32 b = 4;
-            a = a + b;
-            if (a == -9223372036854775804)
-            {
-                Log.WriteSuccess("Test_Add_Int64_LargestNeg_Int32_4 okay.");
-            }
-            else
-            {
-                Log.WriteError("Test_Add_Int64_LargestNeg_Int32_4 NOT okay.");
-            }
-        }
-
-        /// <summary>
-        /// Tests: Addition operation using signed 64- and 32-bit integers, 
-        /// Inputs: 0, Largest -ve, 
-        /// Result: Largest +ve
-        /// </summary>
-        /// <remarks>
-        /// <para>
-        /// When adding 64-bit values, care must be taken to handle the carry-bit correctly
-        /// </para>
-        /// </remarks>
-        [NoGC]
-        public static void Test_Add_Int64_Zero_Int32_LargestNeg()
-        {
-            Int64 a = 0;
-            Int32 b = -2147483648;
-            a = a + b;
-            if (a == -2147483648)
-            {
-                Log.WriteSuccess("Test_Add_Int64_Zero_Int32_LargestNeg okay.");
-            }
-            else
-            {
-                Log.WriteError("Test_Add_Int64_Zero_Int32_LargestNeg NOT okay.");
-            }
-        }
-
-        /// <summary>
-        /// Tests: Addition operation using signed 64-bit integers, 
-        /// Inputs: Large +ve, 4, 
-        /// Result: Large +ve
-        /// </summary>
-        /// <remarks>
-        /// <para>
-        /// When adding 64-bit values, care must be taken to handle the carry-bit correctly
-        /// </para>
-        /// </remarks>
-        [NoGC]
-        public static void Test_Add_Int64_LargePos_Int64_4()
-        {
-            Int64 a = 1080863910568919040;
-            Int64 b = 4;
-            a = a + b;
-            if (a == 1080863910568919044)
-            {
-                Log.WriteSuccess("Test_Add_Int64_LargePos_Int64_4 okay.");
-            }
-            else
-            {
-                Log.WriteError("Test_Add_Int64_LargePos_Int64_4 NOT okay.");
-            }
-        }
-
-        /// <summary>
-        /// Tests: Addition operation using signed 64-bit integers, 
-        /// Inputs: 0, -4, 
-        /// Result: -4
-        /// </summary>
-        /// <remarks>
-        /// <para>
-        /// When adding 64-bit values, care must be taken to handle the carry-bit correctly
-        /// </para>
-        /// </remarks>
-        [NoGC]
-        public static void Test_Add_Int64_Zero_Int64_Neg4()
-        {
-            Int64 a = 0;
-            Int64 b = -4;
-            a = a + b;
-            if (a == -4)
-            {
-                Log.WriteSuccess("Test_Add_Int64_Zero_Int64_Neg4 okay.");
-            }
-            else
-            {
-                Log.WriteError("Test_Add_Int64_Zero_Int64_Neg4 NOT okay.");
-            }
-        }
-
-        /// <summary>
-        /// Tests: Addition operation using unsigned 64-bit integers, 
-        /// Inputs: Large +ve, Large +ve, 
-        /// Result: +ve
-        /// </summary>
-        /// <remarks>
-        /// <para>
-        /// When adding 64-bit values, care must be taken to handle the carry-bit correctly
-        /// </para>
-        /// </remarks>
-        [NoGC]
-        public static void Test_Add_UInt64_Large_UInt64_Large()
-        {
-            UInt64 a = 108086391056891904;
-            UInt64 b = 844424930131968;
-            a = a + b;
-            if (a == 108930815987023872)
-            {
-                Log.WriteSuccess("Test_Add_UInt64_Large_UInt64_Large okay.");
-            }
-            else
-            {
-                Log.WriteError("Test_Add_UInt64_Large_UInt64_Large NOT okay.");
-            }
-        }
-
-        /// <summary>
-        /// Tests: Addition operation using signed 64-bit integers, 
-        /// Inputs: Largest -ve, -1, 
-        /// Result: Largest +ve
-        /// </summary>
-        /// <remarks>
-        /// <para>
-        /// When adding 64-bit values, care must be taken to handle the carry-bit correctly
-        /// </para>
-        /// </remarks>
-        [NoGC]
-        public static void Test_Add_Int64_LargestNeg_Int64_Neg1()
-        {
-            Int64 a = -9223372036854775808;
-            Int64 b = -1;
-            a = a + b;
-            if (a == 9223372036854775807)
-            {
-                Log.WriteSuccess("Test_Add_Int64_LargestNeg_Int64_Neg1 okay.");
-            }
-            else
-            {
-                Log.WriteError("Test_Add_Int64_LargestNeg_Int64_Neg1 NOT okay.");
-            }
-        }
-
-        /// <summary>
-        /// Tests: Addition operation using signed 64-bit integers, 
-        /// Inputs: 0, Large +ve, 
-        /// Result: Large +ve
-        /// </summary>
-        /// <remarks>
-        /// <para>
-        /// When adding 64-bit values, care must be taken to handle the carry-bit correctly
-        /// </para>
-        /// </remarks>
-        [NoGC]
-        public static void Test_Add_Int64_Zero_Int64_LargePos()
-        {
-            Int64 a = 0;
-            Int64 b = 844424930131968;
-            a = a + b;
-            if (a == 844424930131968)
-            {
-                Log.WriteSuccess("Test_Add_Int64_Zero_Int64_LargePos okay.");
-            }
-            else
-            {
-                Log.WriteError("Test_Add_Int64_Zero_Int64_LargePos NOT okay.");
-            }
-        }
-
-        /// <summary>
-        /// Tests: Addition operation using signed 64-bit integers, 
-        /// Inputs: 0, Large -ve, 
-        /// Result: Large -ve
-        /// </summary>
-        /// <remarks>
-        /// <para>
-        /// When adding 64-bit values, care must be taken to handle the carry-bit correctly
-        /// </para>
-        /// </remarks>
-        [NoGC]
-        public static void Test_Add_Int64_Zero_Int64_LargeNeg()
-        {
-            Int64 a = 0;
-            Int64 b = -844424930131968;
-            a = a + b;
-            if (a == -844424930131968)
-            {
-                Log.WriteSuccess("Test_Add_Int64_Zero_Int64_LargeNeg okay.");
-            }
-            else
-            {
-                Log.WriteError("Test_Add_Int64_Zero_Int64_LargeNeg NOT okay.");
-            }
-        }
-
-        /// <summary>
-        /// Tests: Addition operation using signed 64-bit integers, 
-        /// Inputs: Large -ve, Large -ve, 
-        /// Result: Large -ve
-        /// </summary>
-        /// <remarks>
-        /// <para>
-        /// When adding 64-bit values, care must be taken to handle the carry-bit correctly
-        /// </para>
-        /// </remarks>
-        [NoGC]
-        public static void Test_Add_Int64_LargeNeg_Int64_LargeNeg()
-        {
-            Int64 a = -1080863910568919040;
-            Int64 b = -844424930131968;
-            a = a + b;
-            if (a == -1081708335499051008)
-            {
-                Log.WriteSuccess("Test_Add_Int64_LargeNeg_Int64_LargeNeg okay.");
-            }
-            else
-            {
-                Log.WriteError("Test_Add_Int64_LargeNeg_Int64_LargeNeg NOT okay.");
-            }
-        }
-
-        /// <summary>
-        /// Tests: Addition operation using signed 64-bit integers, 
-        /// Inputs: Large +ve, Large -ve, 
-        /// Result: Large +ve
-        /// </summary>
-        /// <remarks>
-        /// <para>
-        /// When adding 64-bit values, care must be taken to handle the carry-bit correctly
-        /// </para>
-        /// </remarks>
-        [NoGC]
-        public static void Test_Add_Int64_LargePos_Int64_LargeNeg()
-        {
-            Int64 a = 1080863910568919040;
-            Int64 b = -844424930131968;
-            a = a + b;
-            if (a == 1080019485638787072)
-            {
-                Log.WriteSuccess("Test_Add_Int64_LargePos_Int64_LargeNeg okay.");
-            }
-            else
-            {
-                Log.WriteError("Test_Add_Int64_LargePos_Int64_LargeNeg NOT okay.");
-            }
-        }
-
-        /// <summary>
-        /// Tests: Addition operation using signed 64-bit integers, 
-        /// Inputs: Large +ve, Large +ve, 
-        /// Result: Large +ve
-        /// </summary>
-        /// <remarks>
-        /// <para>
-        /// When adding 64-bit values, care must be taken to handle the carry-bit correctly
-        /// </para>
-        /// </remarks>
-        [NoGC]
-        public static void Test_Add_Int64_LargePos_Int64_LargePos()
-        {
-            Int64 a = 1080863910568919040;
-            Int64 b = 844424930131968;
-            a = a + b;
-            if (a == 1081708335499051008)
-            {
-                Log.WriteSuccess("Test_Add_Int64_LargePos_Int64_LargePos okay.");
-            }
-            else
-            {
-                Log.WriteError("Test_Add_Int64_LargePos_Int64_LargePos NOT okay.");
-            }
-        }
-
-        #endregion
-
-        #region Switch
-
-        /// <summary>
-        /// Tests: Switch statement using signed 32-bit integers, 
-        /// Inputs: 0, 1, 2, 
-        /// Result: Case 0
-        /// </summary>
-        [NoGC]
-        public static void Test_Switch_Int32_Case_0()
-        {
-            Int32 a = 0;
-            Int32 b = 1;
-            Int32 c = 2;
-            int res = a;
-            switch (res)
-            {
-                case 0:
-                    Log.WriteSuccess("Test_Switch_Int32_Case_0 okay.");
-                    break;
-                case 1:
-                    Log.WriteError("Test_Switch_Int32_Case_0 NOT okay.");
-                    break;
-                case 2:
-                    Log.WriteError("Test_Switch_Int32_Case_0 NOT okay.");
-                    break;
-                default:
-                    Log.WriteError("Test_Switch_Int32_Case_0 NOT okay.");
-                    break;
-            }
-        }
-
-        /// <summary>
-        /// Tests: Switch statement using signed 32-bit integers, 
-        /// Inputs: 0, 1, 2, 
-        /// Result: Case 1
-        /// </summary>
-        [NoGC]
-        public static void Test_Switch_Int32_Case_1()
-        {
-            Int32 a = 0;
-            Int32 b = 1;
-            Int32 c = 2;
-            int res = b;
-            switch (res)
-            {
-                case 0:
-                    Log.WriteError("Test_Switch_Int32_Case_1 NOT okay.");
-                    break;
-                case 1:
-                    Log.WriteSuccess("Test_Switch_Int32_Case_1 okay.");
-                    break;
-                case 2:
-                    Log.WriteError("Test_Switch_Int32_Case_1 NOT okay.");
-                    break;
-                default:
-                    Log.WriteError("Test_Switch_Int32_Case_1 NOT okay.");
-                    break;
-            }
-        }
-
-        /// <summary>
-        /// Tests: Switch statement using signed 32-bit integers, 
-        /// Inputs: 0, 1, 2, 
-        /// Result: Case 2
-        /// </summary>
-        [NoGC]
-        public static void Test_Switch_Int32_Case_2()
-        {
-            Int32 a = 0;
-            Int32 b = 1;
-            Int32 c = 2;
-            int res = c;
-            switch (res)
-            {
-                case 0:
-                    Log.WriteError("Test_Switch_Int32_Case_2 NOT okay.");
-                    break;
-                case 1:
-                    Log.WriteError("Test_Switch_Int32_Case_2 NOT okay.");
-                    break;
-                case 2:
-                    Log.WriteSuccess("Test_Switch_Int32_Case_2 okay.");
-                    break;
-                default:
-                    Log.WriteError("Test_Switch_Int32_Case_2 NOT okay.");
-                    break;
-            }
-        }
-
-        /// <summary>
-        /// Tests: Switch statement using signed 32-bit integers, 
-        /// Inputs: 0, 1, 2, 
-        /// Result: Case default
-        /// </summary>
-        [NoGC]
-        public static void Test_Switch_Int32_Case_Default()
-        {
-            Int32 a = 0;
-            Int32 b = 1;
-            Int32 c = 2;
-            int res = a + b + c;
-            switch (res)
-            {
-                case 0:
-                    Log.WriteError("Test_Switch_Int32_Case_Default NOT okay.");
-                    break;
-                case 1:
-                    Log.WriteError("Test_Switch_Int32_Case_Default NOT okay.");
-                    break;
-                case 2:
-                    Log.WriteError("Test_Switch_Int32_Case_Default NOT okay.");
-                    break;
-                default:
-                    Log.WriteSuccess("Test_Switch_Int32_Case_Default okay.");
-                    break;
-            }
-        }
-
-        /// <summary>
-        /// Tests: Switch statement using signed 32-bit integers and return statement with no value, 
-        /// Inputs: 0, 1, 2, 
-        /// Result: Case 0
-        /// </summary>
-        [NoGC]
-        public static void Test_Switch_Int32_Case_0_Ret_NoValue()
-        {
-            Int32 a = 0;
-            Int32 b = 1;
-            Int32 c = 2;
-            int res = a;
-            switch (res)
-            {
-                case 0:
-                    Log.WriteSuccess("Test_Switch_Int32_Case_0_Ret_NoValue okay.");
-                    return;
-                case 1:
-                    Log.WriteError("Test_Switch_Int32_Case_0_Ret_NoValue NOT okay.");
-                    return;
-                case 2:
-                    Log.WriteError("Test_Switch_Int32_Case_0_Ret_NoValue NOT okay.");
-                    return;
-                default:
-                    Log.WriteError("Test_Switch_Int32_Case_0_Ret_NoValue NOT okay.");
-                    return;
-            }
-        }
-
-        /// <summary>
-        /// Tests: Switch statement using signed 32-bit integers and return statement with value, 
-        /// Inputs: 0, 1, 2, 
-        /// Result: Case 0
-        /// </summary>
-        [NoGC]
-        public static int Test_Switch_Int32_Case_0_Ret_IntValue()
-        {
-            Int32 a = 0;
-            Int32 b = 1;
-            Int32 c = 2;
-            int res = a;
-            switch (res)
-            {
-                case 0:
-                    Log.WriteSuccess("Test_Switch_Int32_Case_0_Ret_IntValue okay.");
-                    return 0;
-                case 1:
-                    Log.WriteError("Test_Switch_Int32_Case_0_Ret_IntValue NOT okay.");
-                    return 0;
-                case 2:
-                    Log.WriteError("Test_Switch_Int32_Case_0_Ret_IntValue NOT okay.");
-                    return 0;
-                default:
-                    Log.WriteError("Test_Switch_Int32_Case_0_Ret_IntValue NOT okay.");
-                    return 0;
-            }
-        }
-
-        /// <summary>
-        /// Tests: Switch statement using signed 32-bit integers and return statement with value, 
-        /// Inputs: 0, 1, 2, 
-        /// Result: Case 0
-        /// </summary>
-        [NoGC]
-        public static string Test_Switch_Int32_Case_0_Ret_StringValue()
-        {
-            Int32 a = 0;
-            Int32 b = 1;
-            Int32 c = 2;
-            int res = a;
-            switch (res)
-            {
-                case 0:
-                    Log.WriteSuccess("Test_Switch_Int32_Case_0_Ret_StringValue okay.");
-                    return "I shall return";
-                case 1:
-                    Log.WriteError("Test_Switch_Int32_Case_0_Ret_StringValue NOT okay.");
-                    return "I shall return";
-                case 2:
-                    Log.WriteError("Test_Switch_Int32_Case_0_Ret_StringValue NOT okay.");
-                    return "I shall return";
-                default:
-                    Log.WriteError("Test_Switch_Int32_Case_0_Ret_StringValue NOT okay.");
-                    return "I shall return";
-            }
-        }
-
-        /// <summary>
-        /// Tests: Switch statement using strings, 
-        /// Inputs: "zero", "one", "two", 
-        /// Result: Case 0
-        /// </summary>
-        /// <remarks>
-        /// <para>
-        /// Standard strings are allowed to be used in a switch statement but FlingOS does not use the .NET framework to generate strings. 
-        /// FlingOS's string type is an object type which is not allowed to be used in a switch statement by C#. 
-        /// Therefore in FlingOS, strings cannot be used in a switch statement. 
-        /// </para>
-        /// </remarks>
-        [NoGC]
-        public static void Test_Switch_String_Case_0()
-        {
-            Log.WriteLine("  Test_Switch_String_Case_0() is not allowed, see remarks.");
-            return;
-
-            string a = "zero";
-            string b = "one";
-            string c = "two";
-            string res = a;
-            switch (res)
-            {
-                case "zero":
-                    Log.WriteSuccess("Test_Switch_String_Case_0 okay.");
-                    break;
-                case "one":
-                    Log.WriteError("Test_Switch_String_Case_0 NOT okay.");
-                    break;
-                case "two":
-                    Log.WriteError("Test_Switch_String_Case_0 NOT okay.");
-                    break;
-                default:
-                    Log.WriteError("Test_Switch_String_Case_0 NOT okay.");
-                    break;
-            }
-        }
-
-        #endregion
-
-        #region Argument
-
-        /// <summary>
-        /// Tests: Passing signed 32-bit integer argument to method, 
-        /// Input: Small, 
-        /// Result: Argument correctly passed to method.
-        /// </summary>
-        [NoGC]
-        public static void Test_Arg_Int32(Int32 a)
-        {
-            if (a == 6)
-            {
-                Log.WriteSuccess("Test_Arg_Int32 okay.");
-            }
-            else
-            {
-                Log.WriteError("Test_Arg_Int32 NOT okay.");
-            }
-        }
-
-        /// <summary>
-        /// Tests: Passing signed 64-bit integer argument to method, 
-        /// Input: Large, 
-        /// Result: Argument correctly passed to method.
-        /// </summary>
-        [NoGC]
-        public static void Test_Arg_Int64(Int64 a)
-        {
-            if (a == 1441151880758558720)
-            {
-                Log.WriteSuccess("Test_Arg_Int64 okay.");
-            }
-            else
-            {
-                Log.WriteError("Test_Arg_Int64 NOT okay.");
-            }
-        }
-
-        /// <summary>
-        /// Tests: Passing unsigned 32-bit integer argument to method, 
-        /// Input: Small, 
-        /// Result: Argument correctly passed to method.
-        /// </summary>
-        [NoGC]
-        public static void Test_Arg_UInt32(UInt32 a)
-        {
-            if (a == 100)
-            {
-                Log.WriteSuccess("Test_Arg_UInt32 okay.");
-            }
-            else
-            {
-                Log.WriteError("Test_Arg_UInt32 NOT okay.");
-            }
-        }
-
-        /// <summary>
-        /// Tests: Passing unsigned 64-bit integer argument to method, 
-        /// Input: Large, 
-        /// Result: Argument correctly passed to method.
-        /// </summary>
-        [NoGC]
-        public static void Test_Arg_UInt64(UInt64 a)
-        {
-            if (a == 10223372036854775807)
-            {
-                Log.WriteSuccess("Test_Arg_UInt64 okay.");
-            }
-            else
-            {
-                Log.WriteError("Test_Arg_UInt64 NOT okay.");
-            }
-        }
-
-        /// <summary>
-        /// Tests: Passing string argument to method, 
-        /// Input: A string, 
-        /// Result: Argument correctly passed to method.
-        /// </summary>
-        [NoGC]
-        public static void Test_Arg_String(FlingOops.String a)
-        {
-            if (a == "I am a string")
-            {
-                Log.WriteSuccess("Test_Arg_String okay.");
-            }
-            else
-            {
-                Log.WriteError("Test_Arg_String NOT okay.");
-            }
-        }
-
-        #endregion
-
-        #region Arrays
+        #region 8. Arrays
 
         /// <summary>
         /// Tests: Array declaration using signed 32-bit elements, 
@@ -3959,7 +2767,1252 @@ namespace FlingOops
 
         #endregion
 
-        #region Heaps
+        #region 9. Strings
+
+        /// <summary>
+        /// Tests: String operations, 
+        /// Inputs: Character strings, 
+        /// Result: Strings correctly stored and displayed.
+        /// </summary>
+        /// <remarks> 
+        /// <para>
+        /// In testing kernel, strings must be declaired as FlingOops.String to use the built-in string type of FlingOS. 
+        /// Integer value is displayed as a hexadecimal in console.
+        /// </para>
+        /// </remarks>
+        [NoGC]
+        public static void Test_Strings()
+        {
+            Int32 a = 5;
+            Log.WriteLine("Test Console write line!");
+            Log.WriteLine(" ");
+            FlingOops.String ATestString = "Hello, world!";
+            Log.WriteLine("Display stored string ATestString:");
+            Log.WriteLine(ATestString);
+            Log.WriteLine(" ");
+            if (ATestString != "Hello, world!")
+            {
+                Log.WriteError("String equality does not work!");
+            }
+            else
+            {
+                Log.WriteSuccess("String equality works.");
+            }
+            ATestString += " But wait! There's more...";
+            Log.WriteLine(" ");
+            Log.WriteLine("Concatenate to ATestString:");
+            Log.WriteLine(ATestString);
+            Log.WriteLine(" ");
+            ATestString += " We can even append numbers: " + (FlingOops.String)a;
+            Log.WriteLine("Concatenate value stored in variable to ATestString:");
+            Log.WriteLine(ATestString);
+        }
+
+        #endregion
+
+        #region 10. Argument
+
+        /// <summary>
+        /// Tests: Passing signed 32-bit integer argument to method, 
+        /// Input: Small, 
+        /// Result: Argument correctly passed to method.
+        /// </summary>
+        [NoGC]
+        public static void Test_Arg_Int32(Int32 a)
+        {
+            if (a == 6)
+            {
+                Log.WriteSuccess("Test_Arg_Int32 okay.");
+            }
+            else
+            {
+                Log.WriteError("Test_Arg_Int32 NOT okay.");
+            }
+        }
+
+        /// <summary>
+        /// Tests: Passing signed 64-bit integer argument to method, 
+        /// Input: Large, 
+        /// Result: Argument correctly passed to method.
+        /// </summary>
+        [NoGC]
+        public static void Test_Arg_Int64(Int64 a)
+        {
+            if (a == 1441151880758558720)
+            {
+                Log.WriteSuccess("Test_Arg_Int64 okay.");
+            }
+            else
+            {
+                Log.WriteError("Test_Arg_Int64 NOT okay.");
+            }
+        }
+
+        /// <summary>
+        /// Tests: Passing unsigned 32-bit integer argument to method, 
+        /// Input: Small, 
+        /// Result: Argument correctly passed to method.
+        /// </summary>
+        [NoGC]
+        public static void Test_Arg_UInt32(UInt32 a)
+        {
+            if (a == 100)
+            {
+                Log.WriteSuccess("Test_Arg_UInt32 okay.");
+            }
+            else
+            {
+                Log.WriteError("Test_Arg_UInt32 NOT okay.");
+            }
+        }
+
+        /// <summary>
+        /// Tests: Passing unsigned 64-bit integer argument to method, 
+        /// Input: Large, 
+        /// Result: Argument correctly passed to method.
+        /// </summary>
+        [NoGC]
+        public static void Test_Arg_UInt64(UInt64 a)
+        {
+            if (a == 10223372036854775807)
+            {
+                Log.WriteSuccess("Test_Arg_UInt64 okay.");
+            }
+            else
+            {
+                Log.WriteError("Test_Arg_UInt64 NOT okay.");
+            }
+        }
+
+        /// <summary>
+        /// Tests: Passing string argument to method, 
+        /// Input: A string, 
+        /// Result: Argument correctly passed to method.
+        /// </summary>
+        [NoGC]
+        public static void Test_Arg_String(FlingOops.String a)
+        {
+            if (a == "I am a string")
+            {
+                Log.WriteSuccess("Test_Arg_String okay.");
+            }
+            else
+            {
+                Log.WriteError("Test_Arg_String NOT okay.");
+            }
+        }
+
+        #endregion
+
+        #region 11. Right shift
+
+        /// <summary>
+        /// Tests: Right shift operation shifting an unsigned 64-bit value, 
+        /// Inputs: 64-bit, 10, 
+        /// Result: 64-bit.
+        /// </summary>
+        /// <remarks>
+        /// <para>
+        /// C# requires that the distance value is a signed 32-bit integer. 
+        /// Only low order 5-bit is used when a 32-bit values is shifted, while low order 6-bit if a 64-bit value is shifted.
+        /// In other words, a 32-/64-bit value cannot be pushed by more than 31/63 bits.
+        /// </para>
+        /// </remarks>
+        [NoGC]
+        public static void Test_RShift_UInt64_Large_Int32_10()
+        {
+            UInt64 a = 576460752303423488;
+            Int32 b = 10;
+            a = a >> b;
+            if (a == 562949953421312)
+            {
+                Log.WriteSuccess("Test_RShift_UInt64_Large_Int32_10 okay.");
+            }
+            else
+            {
+                Log.WriteError("Test_RShift_UInt64_Large_Int32_10 NOT okay.");
+            }
+        }
+
+        /// <summary>
+        /// Tests: Right shift operation shifting a signed 32-bit value, 
+        /// Inputs: 32-bit -ve, 6, 
+        /// Result: 32-bit -ve (padded with 1s).
+        /// </summary>
+        /// <remarks>
+        /// <para>
+        /// C# requires that the distance value is a signed 32-bit integer. 
+        /// Only low order 5-bit is used when a 32-bit values is shifted, while low order 6-bit if a 64-bit value is shifted.
+        /// In other words, a 32-/64-bit value cannot be pushed by more than 31/63 bits.
+        /// </para>
+        /// </remarks>
+        [NoGC]
+        public static void Test_RShift_Int32_SmallNeg_Int32_6()
+        {
+            Int32 a = -28416;
+            Int32 b = 6;
+            a = a >> b;
+            if (a == -444)
+            {
+                Log.WriteSuccess("Test_RShift_Int32_SmallNeg_Int32_6 okay.");
+            }
+            else
+            {
+                Log.WriteError("Test_RShift_Int32_SmallNeg_Int32_6 NOT okay.");
+            }
+        }
+
+        /// <summary>
+        /// Tests: Right shift operation shifting an unsigned 32-bit value, 
+        /// Inputs: 32-bit, 6, 
+        /// Result: 32-bit.
+        /// </summary>
+        /// <remarks>
+        /// <para>
+        /// C# requires that the distance value is a signed 32-bit integer. 
+        /// Only low order 5-bit is used when a 32-bit values is shifted, while low order 6-bit if a 64-bit value is shifted.
+        /// In other words, a 32-/64-bit value cannot be pushed by more than 31/63 bits.
+        /// </para>
+        /// </remarks>
+        [NoGC]
+        public static void Test_RShift_UInt32_Small_Int32_6()
+        {
+            UInt32 a = 4352;
+            Int32 b = 6;
+            a = a >> b;
+            if (a == 68)
+            {
+                Log.WriteSuccess("Test_RShift_UInt32_Small_Int32_6 okay.");
+            }
+            else
+            {
+                Log.WriteError("Test_RShift_UInt32_Small_Int32_6 NOT okay.");
+            }
+        }
+
+        /// <summary>
+        /// Tests: Right shift operation shifting a signed 64-bit value, 
+        /// Inputs: 64-bit -ve, 6, 
+        /// Result: 64-bit -ve (stored as 64-bit padded with 1s).
+        /// </summary>
+        /// <remarks>
+        /// <para>
+        /// C# requires that the distance value is a signed 32-bit integer. 
+        /// Only low order 5-bit is used when a 32-bit values is shifted, while low order 6-bit if a 64-bit value is shifted.
+        /// In other words, a 32-/64-bit value cannot be pushed by more than 31/63 bits.
+        /// </para>
+        /// </remarks>
+        [NoGC]
+        public static void Test_RShift_Int64_LargeNeg_Int32_6()
+        {
+            Int64 a = -9185091440022126524;
+            Int32 b = 6;
+            a = a >> b;
+            if (a == -143517053750345727)
+            {
+                Log.WriteSuccess("Test_RShift_Int64_LargeNeg_Int32_6 okay.");
+            }
+            else
+            {
+                Log.WriteError("Test_RShift_Int64_LargeNeg_Int32_6 NOT okay.");
+            }
+        }
+
+        /// <summary>
+        /// Tests: Right shift operation shifting a signed 64-bit value, 
+        /// Inputs: 64-bit -ve, 40, 
+        /// Result: 32-bit -ve (stored as 64-bit padded with 1s).
+        /// </summary>
+        /// <remarks>
+        /// <para>
+        /// C# requires that the distance value is a signed 32-bit integer. 
+        /// Only low order 5-bit is used when a 32-bit values is shifted, while low order 6-bit if a 64-bit value is shifted.
+        /// In other words, a 32-/64-bit value cannot be pushed by more than 31/63 bits.
+        /// </para>
+        /// </remarks>
+        [NoGC]
+        public static void Test_RShift_Int64_LargeNeg_Int32_40()
+        {
+            Int64 a = -9187343239835811840;
+            Int32 b = 40;
+            a = a >> b;
+            if (a == -8355840)
+            {
+                Log.WriteSuccess("Test_RShift_Int64_LargeNeg_Int32_40 okay.");
+            }
+            else
+            {
+                Log.WriteError("Test_RShift_Int64_LargeNeg_Int32_40 NOT okay.");
+            }
+        }
+
+        /// <summary>
+        /// Tests: Right shift operation shifting a signed 64-bit value, 
+        /// Inputs: Largest 64-bit +ve, 40, 
+        /// Result: 32-bit +ve (stored as 64-bit padded with 0s).
+        /// </summary>
+        /// <remarks>
+        /// <para>
+        /// C# requires that the distance value is a signed 32-bit integer. 
+        /// Only low order 5-bit is used when a 32-bit values is shifted, while low order 6-bit if a 64-bit value is shifted.
+        /// In other words, a 32-/64-bit value cannot be pushed by more than 31/63 bits.
+        /// </para>
+        /// </remarks>
+        [NoGC]
+        public static void Test_RShift_Int64_LargestPos_Int32_40()
+        {
+            Int64 a = 9223372036854775807;
+            Int32 b = 40;
+            a = a >> b;
+            if (a == 8388607)
+            {
+                Log.WriteSuccess("Test_RShift_Int64_LargestPos_Int32_40 okay.");
+            }
+            else
+            {
+                Log.WriteError("Test_RShift_Int64_LargestPos_Int32_40 NOT okay.");
+            }
+        }
+
+        /// <summary>
+        /// Tests: Right shift operation shifting a signed 64-bit value, 
+        /// Inputs: Largest 64-bit -ve, 40, 
+        /// Result: 32-bit -ve (stored as 64-bit padded with 1s).
+        /// </summary>
+        /// <remarks>
+        /// <para>
+        /// C# requires that the distance value is a signed 32-bit integer. 
+        /// Only low order 5-bit is used when a 32-bit values is shifted, while low order 6-bit if a 64-bit value is shifted.
+        /// In other words, a 32-/64-bit value cannot be pushed by more than 31/63 bits.
+        /// </para>
+        /// </remarks>
+        [NoGC]
+        public static void Test_RShift_Int64_LargestNeg_Int32_40()
+        {
+            Int64 a = -9223372036854775808;
+            Int32 b = 40;
+            a = a >> b;
+            if (a == -8388608)
+            {
+                Log.WriteSuccess("Test_RShift_Int64_LargestNeg_Int32_40 okay.");
+            }
+            else
+            {
+                Log.WriteError("Test_RShift_Int64_LargestNeg_Int32_40 NOT okay.");
+            }
+        }
+
+        /// <summary>
+        /// Tests: Right shift operation shifting a signed 64-bit value, 
+        /// Inputs: -1, 63, 
+        /// Result: -1 because of circular nature of two's complement.
+        /// </summary>
+        /// <remarks>
+        /// <para>
+        /// C# requires that the distance value is a signed 32-bit integer. 
+        /// Only low order 5-bit is used when a 32-bit values is shifted, while low order 6-bit if a 64-bit value is shifted.
+        /// In other words, a 32-/64-bit value cannot be pushed by more than 31/63 bits.
+        /// </para>
+        /// </remarks>
+        [NoGC]
+        public static void Test_RShift_Int64_Neg1_Int32_63()
+        {
+            Int64 a = -1;
+            Int32 b = 63;
+            a = a >> b;
+            if (a == -1)
+            {
+                Log.WriteSuccess("Test_RShift_Int64_Neg1_Int32_63 okay.");
+            }
+            else
+            {
+                Log.WriteError("Test_RShift_Int64_Neg1_Int32_63 NOT okay.");
+            }
+        }
+
+        /// <summary>
+        /// Tests: Right shift operation shifting an unsigned 64-bit value, 
+        /// Inputs: Largest, 63, 
+        /// Result: 1.
+        /// </summary>
+        /// <remarks>
+        /// <para>
+        /// C# requires that the distance value is a signed 32-bit integer. 
+        /// Only low order 5-bit is used when a 32-bit values is shifted, while low order 6-bit if a 64-bit value is shifted.
+        /// In other words, a 32-/64-bit value cannot be pushed by more than 31/63 bits.
+        /// </para>
+        /// </remarks>
+        [NoGC]
+        public static void Test_RShift_UInt64_Largest_Int32_63()
+        {
+            UInt64 a = 18446744073709551615;
+            Int32 b = 63;
+            a = a >> b;
+            if (a == 1)
+            {
+                Log.WriteSuccess("Test_RShift_UInt64_Largest_Int32_63 okay.");
+            }
+            else
+            {
+                Log.WriteError("Test_RShift_UInt64_Largest_Int32_63 NOT okay.");
+            }
+        }
+
+        /// <summary>
+        /// Tests: Right shift operation shifting an unsigned 32-bit value, 
+        /// Inputs: Largest, 6, 
+        /// Result: 32-bit.
+        /// </summary>
+        /// <remarks>
+        /// <para>
+        /// C# requires that the distance value is a signed 32-bit integer. 
+        /// Only low order 5-bit is used when a 32-bit values is shifted, while low order 6-bit if a 64-bit value is shifted.
+        /// In other words, a 32-/64-bit value cannot be pushed by more than 31/63 bits.
+        /// </para>
+        /// </remarks>
+        [NoGC]
+        public static void Test_RShift_UInt32_Largest_Int32_6()
+        {
+            UInt32 a = 4294967295;
+            Int32 b = 6;
+            a = a >> b;
+            if (a == 67108863)
+            {
+                Log.WriteSuccess("Test_RShift_UInt32_Largest_Int32_6 okay.");
+            }
+            else
+            {
+                Log.WriteError("Test_RShift_UInt32_Largest_Int32_6 NOT okay.");
+            }
+        }
+
+        /// <summary>
+        /// Tests: Right shift operation shifting a signed 32-bit value, 
+        /// Inputs: Small +ve, 6, 
+        /// Result: 32-bit.
+        /// </summary>
+        /// <remarks>
+        /// <para>
+        /// C# requires that the distance value is a signed 32-bit integer. 
+        /// Only low order 5-bit is used when a 32-bit values is shifted, while low order 6-bit if a 64-bit value is shifted.
+        /// In other words, a 32-/64-bit value cannot be pushed by more than 31/63 bits.
+        /// </para>
+        /// </remarks>
+        [NoGC]
+        public static void Test_RShift_Int32_SmallPos_Int32_6()
+        {
+            Int32 a = 255;
+            Int32 b = 6;
+            a = a >> b;
+            if (a == 3)
+            {
+                Log.WriteSuccess("Test_RShift_Int32_SmallPos_Int32_6 okay.");
+            }
+            else
+            {
+                Log.WriteError("Test_RShift_Int32_SmallPos_Int32_6 NOT okay.");
+            }
+        }
+
+        /// <summary>
+        /// Tests: Right shift operation shifting a signed 32-bit value, 
+        /// Inputs: Largest +ve, 6, 
+        /// Result: 32-bit.
+        /// </summary>
+        /// <remarks>
+        /// <para>
+        /// C# requires that the distance value is a signed 32-bit integer. 
+        /// Only low order 5-bit is used when a 32-bit values is shifted, while low order 6-bit if a 64-bit value is shifted.
+        /// In other words, a 32-/64-bit value cannot be pushed by more than 31/63 bits.
+        /// </para>
+        /// </remarks>
+        [NoGC]
+        public static void Test_RShift_Int32_LargestPos_Int32_6()
+        {
+            Int32 a = 2147483647;
+            Int32 b = 6;
+            a = a >> b;
+            if (a == 33554431)
+            {
+                Log.WriteSuccess("Test_RShift_Int32_LargestPos_Int32_6 okay.");
+            }
+            else
+            {
+                Log.WriteError("Test_RShift_Int32_LargestPos_Int32_6 NOT okay.");
+            }
+        }
+
+        /// <summary>
+        /// Tests: Right shift operation shifting a signed 32-bit value, 
+        /// Inputs: Largest -ve, 6, 
+        /// Result: 32-bit.
+        /// </summary>
+        /// <remarks>
+        /// <para>
+        /// C# requires that the distance value is a signed 32-bit integer. 
+        /// Only low order 5-bit is used when a 32-bit values is shifted, while low order 6-bit if a 64-bit value is shifted.
+        /// In other words, a 32-/64-bit value cannot be pushed by more than 31/63 bits.
+        /// </para>
+        /// </remarks>
+        [NoGC]
+        public static void Test_RShift_Int32_LargestNeg_Int32_6()
+        {
+            Int32 a = -2147483648;
+            Int32 b = 6;
+            a = a >> b;
+            if (a == -33554432)
+            {
+                Log.WriteSuccess("Test_RShift_Int32_LargestNeg_Int32_6 okay.");
+            }
+            else
+            {
+                Log.WriteError("Test_RShift_Int32_LargestNeg_Int32_6 NOT okay.");
+            }
+        }
+
+        /// <summary>
+        /// Tests: Right shift operation shifting an unsigned 64-bit value, 
+        /// Inputs: Largest, 10, 
+        /// Result: 64-bit.
+        /// </summary>
+        /// <remarks>
+        /// <para>
+        /// C# requires that the distance value is a signed 32-bit integer. 
+        /// Only low order 5-bit is used when a 32-bit values is shifted, while low order 6-bit if a 64-bit value is shifted.
+        /// In other words, a 32-/64-bit value cannot be pushed by more than 31/63 bits.
+        /// </para>
+        /// </remarks>
+        [NoGC]
+        public static void Test_RShift_UInt64_Largest_Int32_10()
+        {
+            UInt64 a = 18446744073709551615;
+            Int32 b = 10;
+            a = a >> b;
+            if (a == 18014398509481983)
+            {
+                Log.WriteSuccess("Test_RShift_UInt64_Largest_Int32_10 okay.");
+            }
+            else
+            {
+                Log.WriteError("Test_RShift_UInt64_Largest_Int32_10 NOT okay.");
+            }
+        }
+
+        #endregion
+
+        #region 12. Left shift
+
+        /// <summary>
+        /// Tests: Left shift operation shifting an unsigned 64-bit value, 
+        /// Inputs: 64-bit, 2, 
+        /// Result: 64-bit.
+        /// </summary>
+        /// <remarks>
+        /// <para>
+        /// C# requires that the distance value is a signed 32-bit integer. 
+        /// Only low order 5-bit is used when a 32-bit values is shifted, while low order 6-bit if a 64-bit value is shifted.
+        /// In other words, a 32-/64-bit value cannot be pushed by more than 31/63 bits.
+        /// </para>
+        /// </remarks>
+        [NoGC]
+        public static void Test_LShift_UInt64_Large_Int32_2()
+        {
+            UInt64 a = 576460752303423488;
+            Int32 b = 2;
+            a = a << b;
+            if (a == 2305843009213693952)
+            {
+                Log.WriteSuccess("Test_LShift_UInt64_Large_Int32_2 okay.");
+            }
+            else
+            {
+                Log.WriteError("Test_LShift_UInt64_Large_Int32_2 NOT okay.");
+            }
+        }
+
+        /// <summary>
+        /// Tests: Left shift operation shifting a signed 32-bit value, 
+        /// Inputs: 32-bit -ve, 6, 
+        /// Result: 32-bit -ve.
+        /// </summary>
+        /// <remarks>
+        /// <para>
+        /// C# requires that the distance value is a signed 32-bit integer. 
+        /// Only low order 5-bit is used when a 32-bit values is shifted, while low order 6-bit if a 64-bit value is shifted.
+        /// In other words, a 32-/64-bit value cannot be pushed by more than 31/63 bits.
+        /// </para>
+        /// </remarks>
+        [NoGC]
+        public static void Test_LShift_Int32_SmallNeg_Int32_6()
+        {
+            Int32 a = -28416;
+            Int32 b = 6;
+            a = a << b;
+            if (a == -1818624)
+            {
+                Log.WriteSuccess("Test_LShift_Int32_SmallNeg_Int32_6 okay.");
+            }
+            else
+            {
+                Log.WriteError("Test_LShift_Int32_SmallNeg_Int32_6 NOT okay.");
+            }
+        }
+
+        /// <summary>
+        /// Tests: Right shift operation shifting an unsigned 32-bit value, 
+        /// Inputs: 32-bit, 6, 
+        /// Result: 32-bit.
+        /// </summary>
+        /// <remarks>
+        /// <para>
+        /// C# requires that the distance value is a signed 32-bit integer. 
+        /// Only low order 5-bit is used when a 32-bit values is shifted, while low order 6-bit if a 64-bit value is shifted.
+        /// In other words, a 32-/64-bit value cannot be pushed by more than 31/63 bits.
+        /// </para>
+        /// </remarks>
+        [NoGC]
+        public static void Test_LShift_UInt32_Small_Int32_6()
+        {
+            UInt32 a = 4352;
+            Int32 b = 6;
+            a = a << b;
+            if (a == 278528)
+            {
+                Log.WriteSuccess("Test_LShift_UInt32_Small_Int32_6 okay.");
+            }
+            else
+            {
+                Log.WriteError("Test_LShift_UInt32_Small_Int32_6 NOT okay.");
+            }
+        }
+
+        /// <summary>
+        /// Tests: Left shift operation shifting a signed 64-bit value, 
+        /// Inputs: 64-bit -ve, 6, 
+        /// Result: 64-bit +ve.
+        /// </summary>
+        /// <remarks>
+        /// <para>
+        /// C# requires that the distance value is a signed 32-bit integer. 
+        /// Only low order 5-bit is used when a 32-bit values is shifted, while low order 6-bit if a 64-bit value is shifted.
+        /// In other words, a 32-/64-bit value cannot be pushed by more than 31/63 bits.
+        /// </para>
+        /// </remarks>
+        [NoGC]
+        public static void Test_LShift_Int64_LargeNeg_Int32_6()
+        {
+            Int64 a = -9185091440022126524;
+            Int32 b = 6;
+            a = a << b;
+            if (a == 2449958197289554176)
+            {
+                Log.WriteSuccess("Test_LShift_Int64_LargeNeg_Int32_6 okay.");
+            }
+            else
+            {
+                Log.WriteError("Test_LShift_Int64_LargeNeg_Int32_6 NOT okay.");
+            }
+        }
+
+        /// <summary>
+        /// Tests: Left shift operation shifting a signed 64-bit value, 
+        /// Inputs: 64-bit -ve, 40, 
+        /// Result: 32-bit +ve.
+        /// </summary>
+        /// <remarks>
+        /// <para>
+        /// C# requires that the distance value is a signed 32-bit integer. 
+        /// Only low order 5-bit is used when a 32-bit values is shifted, while low order 6-bit if a 64-bit value is shifted.
+        /// In other words, a 32-/64-bit value cannot be pushed by more than 31/63 bits.
+        /// </para>
+        /// </remarks>
+        [NoGC]
+        public static void Test_LShift_Int64_LargeNeg_Int32_40()
+        {
+            Int64 a = -9187343239835811832;
+            Int32 b = 40;
+            a = a << b;
+            if (a == 8796093022208)
+            {
+                Log.WriteSuccess("Test_LShift_Int64_LargeNeg_Int32_40 okay.");
+            }
+            else
+            {
+                Log.WriteError("Test_LShift_Int64_LargeNeg_Int32_40 NOT okay.");
+            }
+        }
+
+        /// <summary>
+        /// Tests: Left shift operation shifting a signed 64-bit value, 
+        /// Inputs: Largest 64-bit +ve, 40, 
+        /// Result: 64-bit -ve.
+        /// </summary>
+        /// <remarks>
+        /// <para>
+        /// C# requires that the distance value is a signed 32-bit integer. 
+        /// Only low order 5-bit is used when a 32-bit values is shifted, while low order 6-bit if a 64-bit value is shifted.
+        /// In other words, a 32-/64-bit value cannot be pushed by more than 31/63 bits.
+        /// </para>
+        /// </remarks>
+        [NoGC]
+        public static void Test_LShift_Int64_LargestPos_Int32_40()
+        {
+            Int64 a = 9223372036854775807;
+            Int32 b = 40;
+            a = a << b;
+            if (a == -1099511627776)
+            {
+                Log.WriteSuccess("Test_LShift_Int64_LargestPos_Int32_40 okay.");
+            }
+            else
+            {
+                Log.WriteError("Test_LShift_Int64_LargestPos_Int32_40 NOT okay.");
+            }
+        }
+
+        /// <summary>
+        /// Tests: Left shift operation shifting a signed 64-bit value, 
+        /// Inputs: Largest -ve, 40, 
+        /// Result: 0.
+        /// </summary>
+        /// <remarks>
+        /// <para>
+        /// C# requires that the distance value is a signed 32-bit integer. 
+        /// Only low order 5-bit is used when a 32-bit values is shifted, while low order 6-bit if a 64-bit value is shifted.
+        /// In other words, a 32-/64-bit value cannot be pushed by more than 31/63 bits.
+        /// </para>
+        /// </remarks>
+        [NoGC]
+        public static void Test_LShift_Int64_LargestNeg_Int32_40()
+        {
+            Int64 a = -9223372036854775808;
+            Int32 b = 40;
+            a = a << b;
+            if (a == 0)
+            {
+                Log.WriteSuccess("Test_LShift_Int64_LargestNeg_Int32_40 okay.");
+            }
+            else
+            {
+                Log.WriteError("Test_LShift_Int64_LargestNeg_Int32_40 NOT okay.");
+            }
+        }
+
+        /// <summary>
+        /// Tests: Left shift operation shifting a signed 64-bit value, 
+        /// Inputs: -1, 63, 
+        /// Result: Largest -ve.
+        /// </summary>
+        /// <remarks>
+        /// <para>
+        /// C# requires that the distance value is a signed 32-bit integer. 
+        /// Only low order 5-bit is used when a 32-bit values is shifted, while low order 6-bit if a 64-bit value is shifted.
+        /// In other words, a 32-/64-bit value cannot be pushed by more than 31/63 bits.
+        /// </para>
+        /// </remarks>
+        [NoGC]
+        public static void Test_LShift_Int64_Neg1_Int32_63()
+        {
+            Int64 a = -1;
+            Int32 b = 63;
+            a = a << b;
+            if (a == -9223372036854775808)
+            {
+                Log.WriteSuccess("Test_LShift_Int64_Neg1_Int32_63 okay.");
+            }
+            else
+            {
+                Log.WriteError("Test_LShift_Int64_Neg1_Int32_63 NOT okay.");
+            }
+        }
+
+        /// <summary>
+        /// Tests: Left shift operation shifting an unsigned 64-bit value, 
+        /// Inputs: Largest, 63, 
+        /// Result: 0x8000000000000000 (Highest bit set to 1).
+        /// </summary>
+        /// <remarks>
+        /// <para>
+        /// C# requires that the distance value is a signed 32-bit integer. 
+        /// Only low order 5-bit is used when a 32-bit values is shifted, while low order 6-bit if a 64-bit value is shifted.
+        /// In other words, a 32-/64-bit value cannot be pushed by more than 31/63 bits.
+        /// </para>
+        /// </remarks>
+        [NoGC]
+        public static void Test_LShift_UInt64_Largest_Int32_63()
+        {
+            UInt64 a = 18446744073709551615;
+            Int32 b = 63;
+            a = a << b;
+            if (a == 0x8000000000000000)
+            {
+                Log.WriteSuccess("Test_LShift_UInt64_Largest_Int32_63 okay.");
+            }
+            else
+            {
+                Log.WriteError("Test_LShift_UInt64_Largest_Int32_63 NOT okay.");
+            }
+        }
+
+        /// <summary>
+        /// Tests: Left shift operation shifting an unsigned 32-bit value, 
+        /// Inputs: Largest, 6, 
+        /// Result: 32-bit.
+        /// </summary>
+        /// <remarks>
+        /// <para>
+        /// C# requires that the distance value is a signed 32-bit integer. 
+        /// Only low order 5-bit is used when a 32-bit values is shifted, while low order 6-bit if a 64-bit value is shifted.
+        /// In other words, a 32-/64-bit value cannot be pushed by more than 31/63 bits.
+        /// </para>
+        /// </remarks>
+        [NoGC]
+        public static void Test_LShift_UInt32_Largest_Int32_6()
+        {
+            UInt32 a = 4294967295;
+            Int32 b = 6;
+            a = a << b;
+            if (a == 4294967232)
+            {
+                Log.WriteSuccess("Test_LShift_UInt32_Largest_Int32_6 okay.");
+            }
+            else
+            {
+                Log.WriteError("Test_LShift_UInt32_Largest_Int32_6 NOT okay.");
+            }
+        }
+
+        /// <summary>
+        /// Tests: Right shift operation shifting a signed 32-bit value, 
+        /// Inputs: Small +ve, 6, 
+        /// Result: 32-bit.
+        /// </summary>
+        /// <remarks>
+        /// <para>
+        /// C# requires that the distance value is a signed 32-bit integer. 
+        /// Only low order 5-bit is used when a 32-bit values is shifted, while low order 6-bit if a 64-bit value is shifted.
+        /// In other words, a 32-/64-bit value cannot be pushed by more than 31/63 bits.
+        /// </para>
+        /// </remarks>
+        [NoGC]
+        public static void Test_LShift_Int32_SmallPos_Int32_6()
+        {
+            Int32 a = 255;
+            Int32 b = 6;
+            a = a << b;
+            if (a == 16320)
+            {
+                Log.WriteSuccess("Test_LShift_Int32_SmallPos_Int32_6 okay.");
+            }
+            else
+            {
+                Log.WriteError("Test_LShift_Int32_SmallPos_Int32_6 NOT okay.");
+            }
+        }
+
+        /// <summary>
+        /// Tests: Left shift operation shifting a signed 32-bit value, 
+        /// Inputs: Largest +ve, 6, 
+        /// Result: 32-bit -ve.
+        /// </summary>
+        /// <remarks>
+        /// <para>
+        /// C# requires that the distance value is a signed 32-bit integer. 
+        /// Only low order 5-bit is used when a 32-bit values is shifted, while low order 6-bit if a 64-bit value is shifted.
+        /// In other words, a 32-/64-bit value cannot be pushed by more than 31/63 bits.
+        /// </para>
+        /// </remarks>
+        [NoGC]
+        public static void Test_LShift_Int32_LargestPos_Int32_6()
+        {
+            Int32 a = 2147483647;
+            Int32 b = 6;
+            a = a << b;
+            if (a == -64)
+            {
+                Log.WriteSuccess("Test_LShift_Int32_LargestPos_Int32_6 okay.");
+            }
+            else
+            {
+                Log.WriteError("Test_LShift_Int32_LargestPos_Int32_6 NOT okay.");
+            }
+        }
+
+        /// <summary>
+        /// Tests: Right shift operation shifting a signed 32-bit value, 
+        /// Inputs: Largest -ve, 6, 
+        /// Result: 0.
+        /// </summary>
+        /// <remarks>
+        /// <para>
+        /// C# requires that the distance value is a signed 32-bit integer. 
+        /// Only low order 5-bit is used when a 32-bit values is shifted, while low order 6-bit if a 64-bit value is shifted.
+        /// In other words, a 32-/64-bit value cannot be pushed by more than 31/63 bits.
+        /// </para>
+        /// </remarks>
+        [NoGC]
+        public static void Test_LShift_Int32_LargestNeg_Int32_6()
+        {
+            Int32 a = -2147483648;
+            Int32 b = 1;
+            a = a << b;
+            if (a == 0)
+            {
+                Log.WriteSuccess("Test_LShift_Int32_LargestNeg_Int32_6 okay.");
+            }
+            else
+            {
+                Log.WriteError("Test_LShift_Int32_LargestNeg_Int32_6 NOT okay.");
+            }
+        }
+
+        /// <summary>
+        /// Tests: Right shift operation shifting an unsigned 64-bit value, 
+        /// Inputs: Largest, 10, 
+        /// Result: 64-bit.
+        /// </summary>
+        /// <remarks>
+        /// <para>
+        /// C# requires that the distance value is a signed 32-bit integer. 
+        /// Only low order 5-bit is used when a 32-bit values is shifted, while low order 6-bit if a 64-bit value is shifted.
+        /// In other words, a 32-/64-bit value cannot be pushed by more than 31/63 bits.
+        /// </para>
+        /// </remarks>
+        [NoGC]
+        public static void Test_LShift_UInt64_Largest_Int32_10()
+        {
+            UInt64 a = 18446744073709551615;
+            Int32 b = 10;
+            a = a << b;
+            if (a == 18446744073709550592)
+            {
+                Log.WriteSuccess("Test_LShift_UInt64_Largest_Int32_10 okay.");
+            }
+            else
+            {
+                Log.WriteError("Test_LShift_UInt64_Largest_Int32_10 NOT okay.");
+            }
+        }
+
+        #endregion
+
+        #region 13. Struct
+
+        /// <summary>
+        /// Tests: Sizeof a struct in bytes, 
+        /// Inputs: AStruct, 
+        /// Result: Sum of the individual elements of the struct in bytes (e.g.: byte = 1, short = 2, int = 4, long = 8)
+        /// </summary>
+        [NoGC]
+        public static unsafe void Test_Sizeof_Struct()
+        {
+            int size = sizeof(AStruct);
+            if (size == 15)
+            {
+                Log.WriteSuccess("Test_Sizeof_Struct okay.");
+            }
+            else
+            {
+                Log.WriteError("Test_Sizeof_Struct NOT okay.");
+            }
+        }
+
+        /// <summary>
+        /// Tests: Elements of a new instance of a struct stored and read correctly, 
+        /// Inputs: AStruct, 
+        /// Result: Values declared for each element
+        /// </summary>
+        [NoGC]
+        public static void Test_Instance_Struct()
+        {
+            AStruct Inst = new AStruct();
+            Inst.a = 1;
+            Inst.b = 2;
+            Inst.c = 4;
+            Inst.d = 8;
+            if ((Inst.a == 1) && (Inst.b == 2) && (Inst.c == 4) && (Inst.d == 8))
+            {
+                Log.WriteSuccess("Test_Instance_Struct okay.");
+            }
+            else
+            {
+                Log.WriteError("Test_Instance_Struct NOT okay.");
+            }
+        }
+
+        #endregion
+
+        #region 14. Variables and pointers
+
+        /// <summary>
+        /// Tests: Local variable declaration and pointer dereferencing, 
+        /// Inputs: 0xDEADBEEF, 
+        /// Result: 0xDEADBEEF
+        /// </summary>
+        [NoGC]
+        public static unsafe void Test_Locals_And_Pointers()
+        {
+            uint testVal = 0xDEADBEEF;
+            uint* testValPtr = &testVal;
+            if ((testVal == 0xDEADBEEF) && (*testValPtr == 0xDEADBEEF))
+            {
+                Log.WriteSuccess("Test_Locals_And_Pointers okay.");
+            }
+            else
+            {
+                Log.WriteError("Test_Locals_And_Pointers NOT okay.");
+            }
+        }
+
+        #endregion
+
+        #region 15. Switch
+
+        /// <summary>
+        /// Tests: Switch statement using signed 32-bit integers, 
+        /// Inputs: 0, 1, 2, 
+        /// Result: Case 0
+        /// </summary>
+        [NoGC]
+        public static void Test_Switch_Int32_Case_0()
+        {
+            Int32 a = 0;
+            Int32 b = 1;
+            Int32 c = 2;
+            int res = a;
+            switch (res)
+            {
+                case 0:
+                    Log.WriteSuccess("Test_Switch_Int32_Case_0 okay.");
+                    break;
+                case 1:
+                    Log.WriteError("Test_Switch_Int32_Case_0 NOT okay.");
+                    break;
+                case 2:
+                    Log.WriteError("Test_Switch_Int32_Case_0 NOT okay.");
+                    break;
+                default:
+                    Log.WriteError("Test_Switch_Int32_Case_0 NOT okay.");
+                    break;
+            }
+        }
+
+        /// <summary>
+        /// Tests: Switch statement using signed 32-bit integers, 
+        /// Inputs: 0, 1, 2, 
+        /// Result: Case 1
+        /// </summary>
+        [NoGC]
+        public static void Test_Switch_Int32_Case_1()
+        {
+            Int32 a = 0;
+            Int32 b = 1;
+            Int32 c = 2;
+            int res = b;
+            switch (res)
+            {
+                case 0:
+                    Log.WriteError("Test_Switch_Int32_Case_1 NOT okay.");
+                    break;
+                case 1:
+                    Log.WriteSuccess("Test_Switch_Int32_Case_1 okay.");
+                    break;
+                case 2:
+                    Log.WriteError("Test_Switch_Int32_Case_1 NOT okay.");
+                    break;
+                default:
+                    Log.WriteError("Test_Switch_Int32_Case_1 NOT okay.");
+                    break;
+            }
+        }
+
+        /// <summary>
+        /// Tests: Switch statement using signed 32-bit integers, 
+        /// Inputs: 0, 1, 2, 
+        /// Result: Case 2
+        /// </summary>
+        [NoGC]
+        public static void Test_Switch_Int32_Case_2()
+        {
+            Int32 a = 0;
+            Int32 b = 1;
+            Int32 c = 2;
+            int res = c;
+            switch (res)
+            {
+                case 0:
+                    Log.WriteError("Test_Switch_Int32_Case_2 NOT okay.");
+                    break;
+                case 1:
+                    Log.WriteError("Test_Switch_Int32_Case_2 NOT okay.");
+                    break;
+                case 2:
+                    Log.WriteSuccess("Test_Switch_Int32_Case_2 okay.");
+                    break;
+                default:
+                    Log.WriteError("Test_Switch_Int32_Case_2 NOT okay.");
+                    break;
+            }
+        }
+
+        /// <summary>
+        /// Tests: Switch statement using signed 32-bit integers, 
+        /// Inputs: 0, 1, 2, 
+        /// Result: Case default
+        /// </summary>
+        [NoGC]
+        public static void Test_Switch_Int32_Case_Default()
+        {
+            Int32 a = 0;
+            Int32 b = 1;
+            Int32 c = 2;
+            int res = a + b + c;
+            switch (res)
+            {
+                case 0:
+                    Log.WriteError("Test_Switch_Int32_Case_Default NOT okay.");
+                    break;
+                case 1:
+                    Log.WriteError("Test_Switch_Int32_Case_Default NOT okay.");
+                    break;
+                case 2:
+                    Log.WriteError("Test_Switch_Int32_Case_Default NOT okay.");
+                    break;
+                default:
+                    Log.WriteSuccess("Test_Switch_Int32_Case_Default okay.");
+                    break;
+            }
+        }
+
+        /// <summary>
+        /// Tests: Switch statement using signed 32-bit integers and return statement with no value, 
+        /// Inputs: 0, 1, 2, 
+        /// Result: Case 0
+        /// </summary>
+        [NoGC]
+        public static void Test_Switch_Int32_Case_0_Ret_NoValue()
+        {
+            Int32 a = 0;
+            Int32 b = 1;
+            Int32 c = 2;
+            int res = a;
+            switch (res)
+            {
+                case 0:
+                    Log.WriteSuccess("Test_Switch_Int32_Case_0_Ret_NoValue okay.");
+                    return;
+                case 1:
+                    Log.WriteError("Test_Switch_Int32_Case_0_Ret_NoValue NOT okay.");
+                    return;
+                case 2:
+                    Log.WriteError("Test_Switch_Int32_Case_0_Ret_NoValue NOT okay.");
+                    return;
+                default:
+                    Log.WriteError("Test_Switch_Int32_Case_0_Ret_NoValue NOT okay.");
+                    return;
+            }
+        }
+
+        /// <summary>
+        /// Tests: Switch statement using signed 32-bit integers and return statement with value, 
+        /// Inputs: 0, 1, 2, 
+        /// Result: Case 0
+        /// </summary>
+        [NoGC]
+        public static int Test_Switch_Int32_Case_0_Ret_IntValue()
+        {
+            Int32 a = 0;
+            Int32 b = 1;
+            Int32 c = 2;
+            int res = a;
+            switch (res)
+            {
+                case 0:
+                    Log.WriteSuccess("Test_Switch_Int32_Case_0_Ret_IntValue okay.");
+                    return 0;
+                case 1:
+                    Log.WriteError("Test_Switch_Int32_Case_0_Ret_IntValue NOT okay.");
+                    return 0;
+                case 2:
+                    Log.WriteError("Test_Switch_Int32_Case_0_Ret_IntValue NOT okay.");
+                    return 0;
+                default:
+                    Log.WriteError("Test_Switch_Int32_Case_0_Ret_IntValue NOT okay.");
+                    return 0;
+            }
+        }
+
+        /// <summary>
+        /// Tests: Switch statement using signed 32-bit integers and return statement with value, 
+        /// Inputs: 0, 1, 2, 
+        /// Result: Case 0
+        /// </summary>
+        [NoGC]
+        public static string Test_Switch_Int32_Case_0_Ret_StringValue()
+        {
+            Int32 a = 0;
+            Int32 b = 1;
+            Int32 c = 2;
+            int res = a;
+            switch (res)
+            {
+                case 0:
+                    Log.WriteSuccess("Test_Switch_Int32_Case_0_Ret_StringValue okay.");
+                    return "I shall return";
+                case 1:
+                    Log.WriteError("Test_Switch_Int32_Case_0_Ret_StringValue NOT okay.");
+                    return "I shall return";
+                case 2:
+                    Log.WriteError("Test_Switch_Int32_Case_0_Ret_StringValue NOT okay.");
+                    return "I shall return";
+                default:
+                    Log.WriteError("Test_Switch_Int32_Case_0_Ret_StringValue NOT okay.");
+                    return "I shall return";
+            }
+        }
+
+        /// <summary>
+        /// Tests: Switch statement using strings, 
+        /// Inputs: "zero", "one", "two", 
+        /// Result: Case 0
+        /// </summary>
+        /// <remarks>
+        /// <para>
+        /// Standard strings are allowed to be used in a switch statement but FlingOS does not use the .NET framework to generate strings. 
+        /// FlingOS's string type is an object type which is not allowed to be used in a switch statement by C#. 
+        /// Therefore in FlingOS, strings cannot be used in a switch statement. 
+        /// </para>
+        /// </remarks>
+        [NoGC]
+        public static void Test_Switch_String_Case_0()
+        {
+            Log.WriteLine("  Test_Switch_String_Case_0() is not allowed, see remarks.");
+            return;
+
+            string a = "zero";
+            string b = "one";
+            string c = "two";
+            string res = a;
+            switch (res)
+            {
+                case "zero":
+                    Log.WriteSuccess("Test_Switch_String_Case_0 okay.");
+                    break;
+                case "one":
+                    Log.WriteError("Test_Switch_String_Case_0 NOT okay.");
+                    break;
+                case "two":
+                    Log.WriteError("Test_Switch_String_Case_0 NOT okay.");
+                    break;
+                default:
+                    Log.WriteError("Test_Switch_String_Case_0 NOT okay.");
+                    break;
+            }
+        }
+
+        #endregion
+
+        #region 16. Heaps
 
         /// <summary>
         /// Tests: Heap management, 
@@ -4018,50 +4071,7 @@ namespace FlingOops
 
         #endregion
 
-        #region Strings
-
-        /// <summary>
-        /// Tests: String operations, 
-        /// Inputs: Character strings, 
-        /// Result: Strings correctly stored and displayed.
-        /// </summary>
-        /// <remarks> 
-        /// <para>
-        /// In testing kernel, strings must be declaired as FlingOops.String to use the built-in string type of FlingOS. 
-        /// Integer value is displayed as a hexadecimal in console.
-        /// </para>
-        /// </remarks>
-        [NoGC]
-        public static void Test_Strings()
-        {
-            Int32 a = 5;
-            Log.WriteLine("Test Console write line!");
-            Log.WriteLine(" ");
-            FlingOops.String ATestString = "Hello, world!";
-            Log.WriteLine("Display stored string ATestString:");
-            Log.WriteLine(ATestString);
-            Log.WriteLine(" ");
-            if (ATestString != "Hello, world!")
-            {
-                Log.WriteError("String equality does not work!");
-            }
-            else
-            {
-                Log.WriteSuccess("String equality works.");
-            }
-            ATestString += " But wait! There's more...";
-            Log.WriteLine(" ");
-            Log.WriteLine("Concatenate to ATestString:");
-            Log.WriteLine(ATestString);
-            Log.WriteLine(" ");
-            ATestString += " We can even append numbers: " + (FlingOops.String)a;
-            Log.WriteLine("Concatenate value stored in variable to ATestString:");
-            Log.WriteLine(ATestString);
-        }
-
-        #endregion
-
-        #region Objects
+        #region 17. Objects
 
         /// <summary>
         /// Tests: Objects, 
@@ -4104,7 +4114,6 @@ namespace FlingOops
         }
 
         #endregion
-
     }
 }
 
