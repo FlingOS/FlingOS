@@ -16,9 +16,9 @@ KERNEL_PAGE_NUMBER equ (KERNEL_VIRTUAL_BASE >> 22)
 
 ; BEGIN - Kernel Start
 
-Kernel_Start equ (_Kernel_Start - KERNEL_VIRTUAL_BASE)
+; Kernel_Start equ (_Kernel_Start - KERNEL_VIRTUAL_BASE)
 
-_Kernel_Start:
+Kernel_Start:
 
 	cli
 	
