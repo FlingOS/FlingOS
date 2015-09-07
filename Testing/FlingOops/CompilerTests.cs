@@ -305,12 +305,13 @@ namespace FlingOops
             Test_Switch_Int32_Case_2();
             Test_Switch_Int32_Case_Default();
             Test_Switch_Int32_Case_0_Ret_NoValue();
-            Log.WriteLine(" Successfully returned from Test_Switch_Int32_Case_0_Ret_NoValue()");
+            Log.WriteLine("  Successfully returned from Test_Switch_Int32_Case_0_Ret_NoValue()");
             Test_Switch_Int32_Case_0_Ret_IntValue();
-            Log.WriteLine(" Successfully returned from Test_Switch_Int32_Case_0_Ret_IntValue()");
+            Log.WriteLine("  Successfully returned from Test_Switch_Int32_Case_0_Ret_IntValue()");
             Test_Switch_Int32_Case_0_Ret_StringValue();
-            Log.WriteLine(" Successfully returned from Test_Switch_Int32_Case_0_Ret_StringValue()");
+            Log.WriteLine("  Successfully returned from Test_Switch_Int32_Case_0_Ret_StringValue()");
             Log.WriteLine(" Strings");
+            Test_Switch_String_Case_0();
             Log.WriteLine(" ");
 
             #endregion
@@ -3268,6 +3269,45 @@ namespace FlingOops
                 default:
                     Log.WriteError("Test_Switch_Int32_Case_0_Ret_StringValue NOT okay.");
                     return "I shall return";
+            }
+        }
+
+        /// <summary>
+        /// Tests: Switch statement using strings, 
+        /// Inputs: "zero", "one", "two", 
+        /// Result: Case 0
+        /// </summary>
+        /// <remarks>
+        /// <para>
+        /// Standard strings are allowed to be used in a switch statement but FlingOS does not use the .NET framework to generate strings. 
+        /// FlingOS's string type is an object type which is not allowed to be used in a switch statement by C#. 
+        /// Therefore in FlingOS, strings cannot be used in a switch statement. 
+        /// </para>
+        /// </remarks>
+        [NoGC]
+        public static void Test_Switch_String_Case_0()
+        {
+            Log.WriteLine("  Test_Switch_String_Case_0() is not allowed, see remarks.");
+            return;
+
+            string a = "zero";
+            string b = "one";
+            string c = "two";
+            string res = a;
+            switch (res)
+            {
+                case "zero":
+                    Log.WriteSuccess("Test_Switch_String_Case_0 okay.");
+                    break;
+                case "one":
+                    Log.WriteError("Test_Switch_String_Case_0 NOT okay.");
+                    break;
+                case "two":
+                    Log.WriteError("Test_Switch_String_Case_0 NOT okay.");
+                    break;
+                default:
+                    Log.WriteError("Test_Switch_String_Case_0 NOT okay.");
+                    break;
             }
         }
 
