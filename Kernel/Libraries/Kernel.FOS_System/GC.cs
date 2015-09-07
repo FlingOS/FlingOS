@@ -45,7 +45,6 @@ namespace Kernel.FOS_System
     /// declaration (/name).
     /// </remarks>
     [Compiler.PluggedClass]
-    [Drivers.Compiler.Attributes.PluggedClass]
     public static unsafe class GC
     {
         /// <summary>

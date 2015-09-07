@@ -97,7 +97,7 @@ namespace Drivers.Compiler.Architectures.x86
                     break;
             }
 
-            if(isFloat)
+            if (isFloat)
             {
                 //SUPPORT - floats
                 throw new NotSupportedException("Floats not supported yet!");

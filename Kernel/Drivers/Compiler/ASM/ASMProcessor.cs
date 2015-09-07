@@ -24,8 +24,8 @@
 // ------------------------------------------------------------------------------ //
 #endregion
     
-#define NASM_ASYNC
-#undef NASM_ASYNC
+#define COMPILER_ASYNC
+#undef COMPILER_ASYNC
 
 using System;
 using System.Collections.Generic;
@@ -33,11 +33,21 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.IO;
+using Drivers.Compiler.ASM.ASMOps;
 
 namespace Drivers.Compiler.ASM
 {
+    /// <summary>
+    /// The ASM Processor manages converting ASM blocks into actual assembly code, saving that code
+    /// to files and then executing a build tool to convert assembly code into ELF binaries.
+    /// </summary>
     public static class ASMProcessor
     {
+        /// <summary>
+        /// Processes the given ASM library.
+        /// </summary>
+        /// <param name="TheLibrary">The library to process.</param>
+        /// <returns>Always CompileResult.OK. In all other cases, exceptions are thrown.</returns>
         public static CompileResult Process(ASMLibrary TheLibrary)
         {
             CompileResult result = CompileResult.OK;
@@ -48,11 +58,11 @@ namespace Drivers.Compiler.ASM
             }
             TheLibrary.ASMProcessed = true;
             
-            int MaxConcurrentNASMProcesses = Environment.ProcessorCount;
-            List<List<ASMBlock>> NASMLabourDivision = new List<List<ASMBlock>>();
-            for (int i = 0; i < MaxConcurrentNASMProcesses; i++)
+            int MaxConcurrentCompilerProcesses = Environment.ProcessorCount;
+            List<List<ASMBlock>> CompilerLabourDivision = new List<List<ASMBlock>>();
+            for (int i = 0; i < MaxConcurrentCompilerProcesses; i++)
             {
-                NASMLabourDivision.Add(new List<ASMBlock>());
+                CompilerLabourDivision.Add(new List<ASMBlock>());
             }
 
             int num = 0;
@@ -60,17 +70,21 @@ namespace Drivers.Compiler.ASM
             {
                 ProcessBlock(aBlock);
 
-                NASMLabourDivision[num % MaxConcurrentNASMProcesses].Add(aBlock);
-
-                num++;
+                if (aBlock.OutputFilePath != null)
+                {
+                    CompilerLabourDivision[num % MaxConcurrentCompilerProcesses].Add(aBlock);
+                    num++;
+                }
             }
 
-#if NASM_ASYNC
+            TheLibrary.ASMBlocks.RemoveAll(x => x.OutputFilePath == null);
+
+#if COMPILER_ASYNC
             List<bool> Completed = new List<bool>();
-            for (int i = 0; i < MaxConcurrentNASMProcesses; i++)
+            for (int i = 0; i < MaxConcurrentCompilerProcesses; i++)
             {
                 Completed.Add(false);
-                ExecuteNASMAsync(NASMLabourDivision[i],
+                ExecuteAssemblyCodeCompilerAsync(CompilerLabourDivision[i],
                     delegate(object state)
                     {
                         Completed[(int)state] = true;
@@ -78,7 +92,7 @@ namespace Drivers.Compiler.ASM
                     i);
             }
 
-            for (int i = 0; i < MaxConcurrentNASMProcesses; i++)
+            for (int i = 0; i < MaxConcurrentCompilerProcesses; i++)
             {
                 while (!Completed[i])
                 {
@@ -87,16 +101,20 @@ namespace Drivers.Compiler.ASM
             }
 #else
 
-            for (int i = 0; i < MaxConcurrentNASMProcesses; i++)
+            for (int i = 0; i < MaxConcurrentCompilerProcesses; i++)
             {
-                ExecuteNASMSync(NASMLabourDivision[i]);
+                ExecuteAssemblyCodeCompilerSync(CompilerLabourDivision[i]);
             }
 
 #endif
-            
+
             return result;
         }
 
+        /// <summary>
+        /// Processes the given ASM block.
+        /// </summary>
+        /// <param name="TheBlock">The ASM block to process.</param>
         private static void ProcessBlock(ASMBlock TheBlock)
         {
             string ASMText = "";
@@ -108,12 +126,25 @@ namespace Drivers.Compiler.ASM
                 if (Options.TargetArchitecture == "x86" &&
                     !File.Exists(ASMPlugPath + "." + Options.TargetArchitecture + ".asm"))
                 {
-                    ASMPlugPath += ".x86_32.asm";
+                    if (!File.Exists(ASMPlugPath + ".x86_32.asm"))
+                    {
+                        throw new FileNotFoundException("Plug file not found! File name: " + ASMPlugPath + "." + Options.TargetArchitecture + ".asm", ASMPlugPath + "." + Options.TargetArchitecture + ".asm");
+                    }
+                    else
+                    {
+                        ASMPlugPath += ".x86_32.asm";
+                    }
                 }
                 else
                 {
                     ASMPlugPath += "." + Options.TargetArchitecture + ".asm";
                 }
+
+                if (!File.Exists(ASMPlugPath))
+                {
+                    throw new FileNotFoundException("Plug file not found! File name: " + ASMPlugPath, ASMPlugPath);
+                }
+
                 ASMText = File.ReadAllText(ASMPlugPath);
 
                 ASMText = ASMText.Replace("%KERNEL_CALL_STATIC_CONSTRUCTORS_METHOD%", IL.ILLibrary.SpecialMethods[typeof(Attributes.CallStaticConstructorsMethodAttribute)].First().ID);
@@ -128,40 +159,35 @@ namespace Drivers.Compiler.ASM
                 {
                     if (anASMOp.RequiresILLabel)
                     {
-                        ASMText += TheBlock.GenerateILOpLabel(anASMOp.ILLabelPosition, "") + ":\r\n";
+                        ASMText += ((ASMLabel)TargetArchitecture.CreateASMOp(OpCodes.Label, anASMOp.ILLabelPosition, "")).Convert(TheBlock) + "\r\n";
                     }
                     ASMText += anASMOp.Convert(TheBlock) + "\r\n";
                 }
             }
 
-            // Create lists of extern and global labels
-            TheBlock.ExternalLabels.Clear();
-            List<string> ExternLines = ASMText.Replace("\r", "")
-                                              .Split('\n')
-                                              .Where(x => x.ToLower().Contains("extern "))
-                                              .Select(x => x.Split(' ')[1].Split(':')[0])
-                                              .ToList();
-            TheBlock.ExternalLabels.AddRange(ExternLines);
+            TargetArchitecture.TargetFunctions.CleanUpAssemblyCode(TheBlock, ref ASMText);
 
-            TheBlock.GlobalLabels.Clear();
-            List<string> GlobalLines = ASMText.Replace("\r", "")
-                                              .Split('\n')
-                                              .Where(x => x.ToLower().Contains("global "))
-                                              .Select(x => x.Split(' ')[1].Split(':')[0])
-                                              .ToList();
-            TheBlock.GlobalLabels.AddRange(GlobalLines);
-
-            ASMText = ASMText.Replace("GLOBAL ", "global ");
-            ASMText = ASMText.Replace("EXTERN ", "extern ");
-
-            string FileName = Utilities.CleanFileName(Guid.NewGuid().ToString() + "." + Options.TargetArchitecture) + ".asm";
-            string OutputPath = GetASMOutputPath();
-            FileName = Path.Combine(OutputPath, FileName);
-            TheBlock.OutputFilePath = FileName;
-            File.WriteAllText(FileName, ASMText);
+            if (!string.IsNullOrWhiteSpace(ASMText))
+            {
+                string FileName = Utilities.CleanFileName(Guid.NewGuid().ToString() + "." + Options.TargetArchitecture) + ".s";
+                string OutputPath = GetASMOutputPath();
+                FileName = Path.Combine(OutputPath, FileName);
+                TheBlock.OutputFilePath = FileName;
+                File.WriteAllText(FileName, ASMText);
+            }
+            else
+            {
+                TheBlock.OutputFilePath = null;
+            }
         }
 
-        private static void ExecuteNASMAsync(List<ASMBlock> Blocks, VoidDelegate OnComplete, object aState)
+        /// <summary>
+        /// Executes the target architecture's assembly code compiler (e.g. NASM) asynchronously.
+        /// </summary>
+        /// <param name="Blocks">The blocks to execute the compiler tool for.</param>
+        /// <param name="OnComplete">Method to call when the compiler tool has finished executing for all the blocks.</param>
+        /// <param name="aState">The state object to use when calling the OnComplete method.</param>
+        private static void ExecuteAssemblyCodeCompilerAsync(List<ASMBlock> Blocks, VoidDelegate OnComplete, object aState)
         {
             string ASMOutputPath = GetASMOutputPath();
             string ObjectsOutputPath = GetObjectsOutputPath();
@@ -172,18 +198,18 @@ namespace Drivers.Compiler.ASM
                 if (index < Blocks.Count)
                 {
                     string inputPath = Blocks[index].OutputFilePath;
-                    string outputPath = inputPath.Replace(ASMOutputPath, ObjectsOutputPath).Replace(".asm", ".o");
+                    string outputPath = inputPath.Replace(ASMOutputPath, ObjectsOutputPath).Replace(".s", ".o");
 
                     try
                     {
-                        ExecuteNASM(inputPath, outputPath, onComplete, index + 1);
+                        TargetArchitecture.TargetFunctions.ExecuteAssemblyCodeCompiler(inputPath, outputPath, onComplete, index + 1);
 
                         Blocks[index].OutputFilePath = outputPath;
                     }
                     catch (Exception ex)
                     {
-                        Logger.LogError(Errors.ASMCompiler_NASMException_ErrorCode, inputPath, 0,
-                            string.Format(Errors.ErrorMessages[Errors.ASMCompiler_NASMException_ErrorCode], inputPath));
+                        Logger.LogError(Errors.ASMCompiler_ASMCodeCompilerException_ErrorCode, inputPath, 0,
+                            string.Format(Errors.ErrorMessages[Errors.ASMCompiler_ASMCodeCompilerException_ErrorCode], inputPath, ex.Message));
                     }
                 }
                 else
@@ -194,7 +220,11 @@ namespace Drivers.Compiler.ASM
             onComplete(0);
         }
 
-        private static void ExecuteNASMSync(List<ASMBlock> Blocks)
+        /// <summary>
+        /// Executes the target architecture's assembly code compiler (e.g. NASM) synchronously.
+        /// </summary>
+        /// <param name="Blocks">The blocks to execute the compiler tool for.</param>
+        private static void ExecuteAssemblyCodeCompilerSync(List<ASMBlock> Blocks)
         {
             string ASMOutputPath = GetASMOutputPath();
             string ObjectsOutputPath = GetObjectsOutputPath();
@@ -202,23 +232,39 @@ namespace Drivers.Compiler.ASM
             for (int index = 0; index < Blocks.Count; index++)
             {
                 string inputPath = Blocks[index].OutputFilePath;
-                string outputPath = inputPath.Replace(ASMOutputPath, ObjectsOutputPath).Replace(".asm", ".o");
+                string outputPath = inputPath.Replace(ASMOutputPath, ObjectsOutputPath).Replace(".s", ".o");
 
                 try
                 {
-                    ExecuteNASM(inputPath, outputPath);
+                    TargetArchitecture.TargetFunctions.ExecuteAssemblyCodeCompiler(inputPath, outputPath);
 
                     Blocks[index].OutputFilePath = outputPath;
                 }
-                catch(Exception ex)
+                catch (Exception ex)
                 {
-                    Logger.LogError(Errors.ASMCompiler_NASMException_ErrorCode, inputPath, 0,
-                        string.Format(Errors.ErrorMessages[Errors.ASMCompiler_NASMException_ErrorCode], inputPath));
+                    Logger.LogError(Errors.ASMCompiler_ASMCodeCompilerException_ErrorCode, inputPath, 0,
+                        string.Format(Errors.ErrorMessages[Errors.ASMCompiler_ASMCodeCompilerException_ErrorCode], inputPath, ex.Message));
                 }
             }
         }
 
+        /// <summary>
+        /// Whether the output ASM folder has been cleaned or not.
+        /// </summary>
+        /// <remarks>
+        /// Prevents the compiler cleaning the output folder half-way through the compile process
+        /// i.e. between processing libraries.
+        /// </remarks>
         private static bool CleanedASMOutputFolder = false;
+        /// <summary>
+        /// Gets the output path for the directory to save the ASM files into. Also, creates the output 
+        /// directory if it doesn't exist or cleans the output directory if it hasn't already been cleaned.
+        /// </summary>
+        /// <remarks>
+        /// Currently, the path provided is the build directory (e.g. "bin\Debug") added to "DriversCompiler\ASM" 
+        /// giving: "bin\Debug\DriversCompiler\ASM". 
+        /// </remarks>
+        /// <returns>The path.</returns>
         private static string GetASMOutputPath()
         {
             string OutputPath = Path.Combine(Options.OutputPath, "DriversCompiler\\ASM");
@@ -237,7 +283,23 @@ namespace Drivers.Compiler.ASM
             }
             return OutputPath;
         }
+        /// <summary>
+        /// Whether the output Objects folder has been cleaned or not.
+        /// </summary>
+        /// <remarks>
+        /// Prevents the compiler cleaning the output folder half-way through the compile process
+        /// i.e. between processing libraries.
+        /// </remarks>
         private static bool CleanedObjectsOutputFolder = false;
+        /// <summary>
+        /// Gets the output path for the directory to save the object files into. Also, creates the output 
+        /// directory if it doesn't exist or cleans the output directory if it hasn't already been cleaned.
+        /// </summary>
+        /// <remarks>
+        /// Currently, the path provided is the build directory (e.g. "bin\Debug") added to "DriversCompiler\Objects" 
+        /// giving: "bin\Debug\DriversCompiler\Objects". 
+        /// </remarks>
+        /// <returns>The path.</returns>
         private static string GetObjectsOutputPath()
         {
             string OutputPath = Path.Combine(Options.OutputPath, "DriversCompiler\\Objects");
@@ -256,36 +318,6 @@ namespace Drivers.Compiler.ASM
             }
             return OutputPath;
         }
-
-
-        /// <summary>
-        /// Executes NASM on the output file. It is assumed the output file now exists.
-        /// </summary>
-        /// <returns>True if execution completed successfully. Otherwise false.</returns>
-        private static bool ExecuteNASM(string inputFilePath, string outputFilePath, VoidDelegate OnComplete = null, object state = null)
-        {
-            bool OK = true;
-
-            //Compile the .ASM file to .BIN file
-            string NasmPath = Path.Combine(Options.ToolsPath, @"NASM\nasm.exe");
-            //Delete an existing output file so we start from scratch
-            if (File.Exists(outputFilePath))
-            {
-                File.Delete(outputFilePath);
-            }
-
-            OK = Utilities.ExecuteProcess(Path.GetDirectoryName(outputFilePath), NasmPath, String.Format("-g -f {0} -o \"{1}\" -D{3}_COMPILATION \"{2}\"",
-                                                  "elf",
-                                                  outputFilePath,
-                                                  inputFilePath,
-                                                  "ELF"), "NASM",
-                                                  false,
-                                                  null,
-                                                  OnComplete,
-                                                  state);
-
-            return OK;
-        }
-
+        
     }
 }

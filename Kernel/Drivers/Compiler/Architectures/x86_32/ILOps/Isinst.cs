@@ -43,6 +43,7 @@ namespace Drivers.Compiler.Architectures.x86
         {
             //Weirdly this is not a true/false returning op - it actually returns a null or object ref.
         } 
+
         /// <summary>
         /// See base class documentation.
         /// </summary>
@@ -72,7 +73,6 @@ namespace Drivers.Compiler.Architectures.x86
             
             // 1.1. Test if object ref is null:
             conversionState.Append(new ASMOps.Cmp() { Arg1 = "EAX", Arg2 = "0" });
-
             conversionState.Append(new ASMOps.Jmp() { JumpType = ASMOps.JmpOp.JumpNotEqual, DestILPosition = currOpPosition, Extension = "False1" });
             
             // 1.1.1 True: Push null and continue
@@ -83,10 +83,9 @@ namespace Drivers.Compiler.Architectures.x86
             conversionState.Append(new ASMOps.Label() { ILPosition = currOpPosition, Extension = "False1" });
             
             // 2. Load object type
-            GlobalMethods.InsertPageFaultDetection(conversionState, "eax", 0, (OpCodes)theOp.opCode.Value);
+            GlobalMethods.InsertPageFaultDetection(conversionState, "EAX", 0, (OpCodes)theOp.opCode.Value);
             conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Dword, Src = "[EAX]", Dest = "EBX" });
             
-
             // 3. Test if object type == provided type:
             int metadataToken = Utilities.ReadInt32(theOp.ValueBytes, 0);
             Type theType = conversionState.Input.TheMethodInfo.UnderlyingInfo.Module.ResolveType(metadataToken);
@@ -110,11 +109,12 @@ namespace Drivers.Compiler.Architectures.x86
             
             //      3.2.1. Move to base type
             int baseTypeOffset = conversionState.GetTypeFieldOffset("TheBaseType");
-            GlobalMethods.InsertPageFaultDetection(conversionState, "ebx", baseTypeOffset, (OpCodes)theOp.opCode.Value);
+            GlobalMethods.InsertPageFaultDetection(conversionState, "EBX", baseTypeOffset, (OpCodes)theOp.opCode.Value);
             conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Dword, Src = "[EBX+"+baseTypeOffset+"]", Dest = "EBX" });
             
             //      3.2.2. Test if base type null:
             conversionState.Append(new ASMOps.Cmp() { Arg1 = "EBX", Arg2 = "0" });
+
             //      3.2.2.2   False: Jump back to (3)
             conversionState.Append(new ASMOps.Jmp() { JumpType = ASMOps.JmpOp.JumpNotEqual, DestILPosition = currOpPosition, Extension = "Label3" });
             

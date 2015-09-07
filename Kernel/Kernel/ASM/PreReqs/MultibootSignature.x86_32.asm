@@ -61,7 +61,7 @@ db 0x67,  0, 0, 0, 0, 0xE9, 0x00, 0	; Offset: 40 - TSS Selector - Pointer to the
 ;					   Size = Total bytes in GDT - 1
 _NATIVE_GDT_Pointer db 47, 0, 0, 0, 0, 0
 _NATIVE_IDT_Contents: TIMES 2048 db 0
-_NATIVE_IDT_Pointer db 15, 15, 0, 0, 0, 0
+_NATIVE_IDT_Pointer db 0xFF, 0x7, 0, 0, 0, 0
 
 _NATIVE_TSS:
 TIMES 104 db 0

@@ -189,7 +189,7 @@ namespace Kernel.FOS_System.IO.Disk
 #if MBR_TRACE
             BasicConsole.WriteLine("MBR: 13");
 #endif
-            //Attempt to parse the seocnd entry
+            //Attempt to parse the second entry
             partInfo = ParsePartition(aMBR, 0x1CE);
             if (partInfo != null)
             {

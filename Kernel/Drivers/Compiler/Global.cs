@@ -32,10 +32,22 @@ using System.Threading.Tasks;
 
 namespace Drivers.Compiler
 {
+    /// <summary>
+    /// Possible compilation results used throughout the compiler.
+    /// </summary>
     public enum CompileResult
     {
+        /// <summary>
+        /// A compilation operation failed and compilation should stop.
+        /// </summary>
         Fail,
+        /// <summary>
+        /// Compilation succeeded without error.
+        /// </summary>
         OK,
+        /// <summary>
+        /// A compilation operation failed but compilation should continue.
+        /// </summary>
         PartialFailure
     }
 }

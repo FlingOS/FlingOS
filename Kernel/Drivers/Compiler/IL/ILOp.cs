@@ -33,8 +33,28 @@ using System.Reflection.Emit;
 
 namespace Drivers.Compiler.IL
 {
+    /// <summary>
+    /// Represents any IL op in an IL block and acts as a base class 
+    /// for IL ops in a target architecture library. This class has 
+    /// dual purposes.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// For representing IL ops in an IL block this class is used normally, to create objects.
+    /// </para>
+    /// <para>
+    /// For representing IL ops in a target architecture library, this class is used as a base
+    /// class with the Convert and Preprocess methods overridden.
+    /// </para>
+    /// </remarks>
     public class ILOp
     {
+        /// <summary>
+        /// All possible IL op codes.
+        /// </summary>
+        /// <remarks>
+        /// Directly corresponds to <see cref="System.Reflection.Emit.OpCodes"/> value's.
+        /// </remarks>
         public enum OpCodes : ushort
         {
             #region Values
@@ -719,19 +739,52 @@ namespace Drivers.Compiler.IL
             #endregion
         }
 
+        /// <summary>
+        /// The op code for the IL op.
+        /// </summary>
         public OpCode opCode;
+        /// <summary>
+        /// The offset of the IL op (in bytes) from the start of the method.
+        /// </summary>
         public int Offset;
+        /// <summary>
+        /// The size of the IL op (in bytes).
+        /// </summary>
         public int BytesSize;
+        /// <summary>
+        /// The value bytes of the IL op. Excludes the op code bytes. Usually contains a metadata value.
+        /// </summary>
         public byte[] ValueBytes;
+        /// <summary>
+        /// The method to call if the op is a call operation. Used to override or inject call ops.
+        /// </summary>
         public System.Reflection.MethodBase MethodToCall;
-
+        /// <summary>
+        /// The IL offset to call within the method to call or the IL offset to load within the method
+        /// which contains the IL op.
+        /// </summary>
+        public int LoadAtILOffset = int.MaxValue;
+        
+        /// <summary>
+        /// Whether the IL op must be preceded by an IL op local label in the assembly code.
+        /// </summary>
         public bool LabelRequired = false;
+        /// <summary>
+        /// Whether the IL op is for debug purposes only or not.
+        /// </summary>
         public bool IsDebugOp = false;
 
-        public int LoadAtILOffset = int.MaxValue;
-
+        /// <summary>
+        /// The number of items to rotate on the stack. Used by the StackSwitch (custom) IL op. 
+        /// </summary>
         public int StackSwitch_Items = 0;
 
+        /// <summary>
+        /// The offset of the next IL op.
+        /// </summary>
+        /// <value>
+        /// Calculated as Offset + BytesSize even if no "next op" exists.
+        /// </value>
         public int NextOffset
         {
             get
@@ -740,16 +793,39 @@ namespace Drivers.Compiler.IL
             }
         }
 
+        /// <summary>
+        /// Performs only the op's stack operations on the specified conversion state.
+        /// </summary>
+        /// <param name="conversionState">The conversion state to perform stack operations on.</param>
+        /// <param name="theOp">The op being processed.</param>
         public virtual void PerformStackOperations(ILPreprocessState conversionState, ILOp theOp)
         {
         }
+        /// <summary>
+        /// Preprocesses the specified IL op.
+        /// </summary>
+        /// <param name="preprocessState">The preprocessor state to perform preprocessing on.</param>
+        /// <param name="theOp">The op being processed.</param>
         public virtual void Preprocess(ILPreprocessState preprocessState, ILOp theOp)
         {
         }
+        /// <summary>
+        /// Converts the op using the specified conversion state.
+        /// </summary>
+        /// <param name="conversionState">The current conversion state.</param>
+        /// <param name="theOp">The op to convert.</param>
         public virtual void Convert(ILConversionState conversionState, ILOp theOp)
         {
         }
 
+        /// <summary>
+        /// Converts the IL op to a human-readable representation.
+        /// </summary>
+        /// <remarks>
+        /// Uses the name of the IL op from the ILOp.OpCodes enumerable or the name of the 
+        /// custom op if it is a custom IL op.
+        /// </remarks>
+        /// <returns>The human-readable representation of the IL op.</returns>
         public override string ToString()
         {
             if (this.GetType().Name != "ILOp")

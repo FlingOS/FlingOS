@@ -40,7 +40,6 @@ namespace Kernel.Debug
     /// kernel compiler is broken, the debugger will still work.
     /// </remarks>
     [Compiler.PluggedClass]
-    [Drivers.Compiler.Attributes.PluggedClass]
     public static class BasicDebug
     {
         /// <summary>

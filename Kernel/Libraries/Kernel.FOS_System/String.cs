@@ -34,9 +34,8 @@ namespace Kernel.FOS_System
     /// </summary>
     [Kernel.Compiler.PluggedClass]
     [Kernel.Compiler.StringClass]
-    [Drivers.Compiler.Attributes.PluggedClass]
     [Drivers.Compiler.Attributes.StringClass]
-    public class String : Object
+    public sealed class String : Object
     {
         /* If you add more fields here, remember to update the compiler and all the ASM files that depend on the string
            class structure ( i.e. do all the hard work! ;) )
@@ -53,19 +52,6 @@ namespace Kernel.FOS_System
         public int length;
 
         /*   ----------- DO NOT CREATE A CONSTRUCTOR FOR THIS CLASS - IT WILL NEVER BE CALLED IF YOU DO ----------- */
-
-        /// <summary>
-        /// Gets the length of the specified string.
-        /// </summary>
-        /// <param name="aString">The string to get the length of.</param>
-        /// <returns>The length of the specified string.</returns>
-        [Compiler.PluggedMethod(ASMFilePath=@"ASM\String\GetLength")]
-        [Drivers.Compiler.Attributes.PluggedMethod(ASMFilePath = @"ASM\String\GetLength")]
-        public static int GetLength(string aString)
-        {
-            //Stub for use by testing frameworks.
-            return aString.Length;
-        }
 
         /// <summary>
         /// Creates a new, blank FOS_System.String of specified length.

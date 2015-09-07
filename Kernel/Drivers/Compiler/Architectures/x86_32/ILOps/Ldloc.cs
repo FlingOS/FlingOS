@@ -138,9 +138,7 @@ namespace Drivers.Compiler.Architectures.x86
             {
                 bytesOffset += conversionState.Input.TheMethodInfo.LocalInfos[i].TheTypeInfo.SizeOnStackInBytes;
             }
-            if (localIndex >= conversionState.Input.TheMethodInfo.LocalInfos.Count)
-            {
-            }
+
             Types.VariableInfo theLoc = conversionState.Input.TheMethodInfo.LocalInfos[localIndex];
             if (Utilities.IsFloat(theLoc.UnderlyingType))
             {

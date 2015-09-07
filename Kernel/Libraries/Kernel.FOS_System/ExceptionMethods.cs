@@ -38,7 +38,6 @@ namespace Kernel
     /// Implements the lowest-level kernel exception handling.
     /// </summary>
     [Compiler.PluggedClass]
-    [Drivers.Compiler.Attributes.PluggedClass]
     public static unsafe class ExceptionMethods
     {
         /// <summary>

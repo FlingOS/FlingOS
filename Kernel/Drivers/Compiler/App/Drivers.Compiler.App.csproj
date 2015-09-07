@@ -21,6 +21,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <DocumentationFile>bin\Debug\Drivers.Compiler.App.XML</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -30,6 +31,7 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <DocumentationFile>bin\Release\Drivers.Compiler.App.XML</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -50,6 +52,10 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Architectures\MIPS32\Drivers.Compiler.Architectures.MIPS32.csproj">
+      <Project>{b18ebb5f-cc63-43cd-be7b-188901e2016a}</Project>
+      <Name>Drivers.Compiler.Architectures.MIPS32</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Architectures\x86_32\Drivers.Compiler.Architectures.x86.csproj">
       <Project>{eebec7b2-9f93-4a8a-bcb7-c9f8f79fa77e}</Project>
       <Name>Drivers.Compiler.Architectures.x86</Name>
