@@ -44,7 +44,7 @@ namespace FlingOops
         public short b;     // 2 bytes - 2 bytes on heap
         public int c;       // 4 bytes - 4 bytes on heap
         public long d;      // 8 bytes - 8 bytes on heap
-                            // Total : 15 bytes
+        // Total : 15 bytes
     }
 
     public static class CompilerTests
@@ -86,12 +86,12 @@ namespace FlingOops
             Test_Mod_Int32_Neg9_Int32_3();
             Test_Mod_Int32_Neg9_Int32_Neg3();
             Test_Mod_Int32_Neg10_Int32_3();
-            Test_Mod_Int32_Neg10_Int32_Neg3();            
+            Test_Mod_Int32_Neg10_Int32_Neg3();
             Log.WriteLine(" ");
 
             #endregion
 
-            #region Division calls 
+            #region Division calls
 
             Log.WriteLine("---Division:");
             Log.WriteLine("  Unsigned");
@@ -207,7 +207,7 @@ namespace FlingOops
             Log.WriteLine(" ");
 
 
-            
+
             #endregion
 
             #region Negation calls
@@ -262,7 +262,7 @@ namespace FlingOops
             #endregion
 
             #region Addition calls
-            
+
             Log.WriteLine("---Addition:");
             Log.WriteLine(" 32-32");
             Log.WriteLine("  Unsigned");
@@ -293,12 +293,25 @@ namespace FlingOops
             Test_Add_Int64_Zero_Int64_LargePos();
             Test_Add_Int64_Zero_Int64_LargeNeg();
             Log.WriteLine(" ");
-            
+
             #endregion
 
             #region Switch calls
 
-
+            Log.WriteLine("---Switch:");
+            Log.WriteLine(" Integers");
+            Test_Switch_Int32_Case_0();
+            Test_Switch_Int32_Case_1();
+            Test_Switch_Int32_Case_2();
+            Test_Switch_Int32_Case_Default();
+            Test_Switch_Int32_Case_0_Ret_NoValue();
+            Log.WriteLine(" Successfully returned from Test_Switch_Int32_Case_0_Ret_NoValue()");
+            Test_Switch_Int32_Case_0_Ret_IntValue();
+            Log.WriteLine(" Successfully returned from Test_Switch_Int32_Case_0_Ret_IntValue()");
+            Test_Switch_Int32_Case_0_Ret_StringValue();
+            Log.WriteLine(" Successfully returned from Test_Switch_Int32_Case_0_Ret_StringValue()");
+            Log.WriteLine(" Strings");
+            Log.WriteLine(" ");
 
             #endregion
 
@@ -388,7 +401,7 @@ namespace FlingOops
             UInt32 a = 9;
             UInt32 b = 3;
             a = a % b;
-            if(a == 0)
+            if (a == 0)
             {
                 Log.WriteSuccess("Test_Mod_UInt32_9_UInt32_3 okay.");
             }
@@ -602,7 +615,7 @@ namespace FlingOops
             UInt32 a = 9;
             UInt32 b = 3;
             a = a / b;
-            if(a == 3)
+            if (a == 3)
             {
                 Log.WriteSuccess("Test_Div_UInt32_9_UInt32_3 okay.");
             }
@@ -908,7 +921,7 @@ namespace FlingOops
             {
                 Log.WriteError("Test_Sub_Int32_9_Int32_4 NOT okay.");
             }
-        } 
+        }
 
         /// <summary>
         /// Tests: Subtraction operation using unsigned 64- and 32-bit integers, 
@@ -958,7 +971,7 @@ namespace FlingOops
                 Log.WriteError("Test_Sub_Int64_LargestPos_Int32_4 NOT okay.");
             }
         }
-        
+
         /// <summary>
         /// Tests: Subtraction operation using signed 64- and 32-bit integers, 
         /// Inputs: Largest -ve, 4, 
@@ -987,7 +1000,7 @@ namespace FlingOops
                 Log.WriteError("Test_Sub_Int64_LargestNeg_Int32_4 NOT okay.");
             }
         }
-        
+
         /// <summary>
         /// Tests: Subtraction operation using signed 64- and 32-bit integers, 
         /// Inputs: 0, 4, 
@@ -1015,7 +1028,7 @@ namespace FlingOops
                 Log.WriteError("Test_Sub_Int64_Zero_Int32_4 NOT okay.");
             }
         }
-        
+
         /// <summary>
         /// Tests: Subtraction operation using signed 64- and 32-bit integers, 
         /// Inputs: 0, Largest +ve, 
@@ -1071,7 +1084,7 @@ namespace FlingOops
                 Log.WriteError("Test_Sub_Int64_Zero_Int32_LargestNeg NOT okay.");
             }
         }
-        
+
         /// <summary>
         /// Tests: Subtraction operation using signed 64-bit integers, 
         /// Inputs: Large +ve, 4, 
@@ -2764,7 +2777,7 @@ namespace FlingOops
                 Log.WriteError("Test_Add_Int64_LargestPos_Int32_4 NOT okay.");
             }
         }
-        
+
         /// <summary>
         /// Tests: Addition operation using signed 64- and 32-bit integers, 
         /// Inputs: Largest -ve, Small +ve, 
@@ -3055,7 +3068,208 @@ namespace FlingOops
 
         #region Switch
 
+        /// <summary>
+        /// Tests: Switch statement using signed 32-bit integers, 
+        /// Inputs: 0, 1, 2, 
+        /// Result: Case 0
+        /// </summary>
+        [NoGC]
+        public static void Test_Switch_Int32_Case_0()
+        {
+            Int32 a = 0;
+            Int32 b = 1;
+            Int32 c = 2;
+            int res = a;
+            switch (res)
+            {
+                case 0:
+                    Log.WriteSuccess("Test_Switch_Int32_Case_0 okay.");
+                    break;
+                case 1:
+                    Log.WriteError("Test_Switch_Int32_Case_0 NOT okay.");
+                    break;
+                case 2:
+                    Log.WriteError("Test_Switch_Int32_Case_0 NOT okay.");
+                    break;
+                default:
+                    Log.WriteError("Test_Switch_Int32_Case_0 NOT okay.");
+                    break;
+            }
+        }
 
+        /// <summary>
+        /// Tests: Switch statement using signed 32-bit integers, 
+        /// Inputs: 0, 1, 2, 
+        /// Result: Case 1
+        /// </summary>
+        [NoGC]
+        public static void Test_Switch_Int32_Case_1()
+        {
+            Int32 a = 0;
+            Int32 b = 1;
+            Int32 c = 2;
+            int res = b;
+            switch (res)
+            {
+                case 0:
+                    Log.WriteError("Test_Switch_Int32_Case_1 NOT okay.");
+                    break;
+                case 1:
+                    Log.WriteSuccess("Test_Switch_Int32_Case_1 okay.");
+                    break;
+                case 2:
+                    Log.WriteError("Test_Switch_Int32_Case_1 NOT okay.");
+                    break;
+                default:
+                    Log.WriteError("Test_Switch_Int32_Case_1 NOT okay.");
+                    break;
+            }
+        }
+
+        /// <summary>
+        /// Tests: Switch statement using signed 32-bit integers, 
+        /// Inputs: 0, 1, 2, 
+        /// Result: Case 2
+        /// </summary>
+        [NoGC]
+        public static void Test_Switch_Int32_Case_2()
+        {
+            Int32 a = 0;
+            Int32 b = 1;
+            Int32 c = 2;
+            int res = c;
+            switch (res)
+            {
+                case 0:
+                    Log.WriteError("Test_Switch_Int32_Case_2 NOT okay.");
+                    break;
+                case 1:
+                    Log.WriteError("Test_Switch_Int32_Case_2 NOT okay.");
+                    break;
+                case 2:
+                    Log.WriteSuccess("Test_Switch_Int32_Case_2 okay.");
+                    break;
+                default:
+                    Log.WriteError("Test_Switch_Int32_Case_2 NOT okay.");
+                    break;
+            }
+        }
+
+        /// <summary>
+        /// Tests: Switch statement using signed 32-bit integers, 
+        /// Inputs: 0, 1, 2, 
+        /// Result: Case default
+        /// </summary>
+        [NoGC]
+        public static void Test_Switch_Int32_Case_Default()
+        {
+            Int32 a = 0;
+            Int32 b = 1;
+            Int32 c = 2;
+            int res = a + b + c;
+            switch (res)
+            {
+                case 0:
+                    Log.WriteError("Test_Switch_Int32_Case_Default NOT okay.");
+                    break;
+                case 1:
+                    Log.WriteError("Test_Switch_Int32_Case_Default NOT okay.");
+                    break;
+                case 2:
+                    Log.WriteError("Test_Switch_Int32_Case_Default NOT okay.");
+                    break;
+                default:
+                    Log.WriteSuccess("Test_Switch_Int32_Case_Default okay.");
+                    break;
+            }
+        }
+
+        /// <summary>
+        /// Tests: Switch statement using signed 32-bit integers and return statement with no value, 
+        /// Inputs: 0, 1, 2, 
+        /// Result: Case 0
+        /// </summary>
+        [NoGC]
+        public static void Test_Switch_Int32_Case_0_Ret_NoValue()
+        {
+            Int32 a = 0;
+            Int32 b = 1;
+            Int32 c = 2;
+            int res = a;
+            switch (res)
+            {
+                case 0:
+                    Log.WriteSuccess("Test_Switch_Int32_Case_0_Ret_NoValue okay.");
+                    return;
+                case 1:
+                    Log.WriteError("Test_Switch_Int32_Case_0_Ret_NoValue NOT okay.");
+                    return;
+                case 2:
+                    Log.WriteError("Test_Switch_Int32_Case_0_Ret_NoValue NOT okay.");
+                    return;
+                default:
+                    Log.WriteError("Test_Switch_Int32_Case_0_Ret_NoValue NOT okay.");
+                    return;
+            }
+        }
+
+        /// <summary>
+        /// Tests: Switch statement using signed 32-bit integers and return statement with value, 
+        /// Inputs: 0, 1, 2, 
+        /// Result: Case 0
+        /// </summary>
+        [NoGC]
+        public static int Test_Switch_Int32_Case_0_Ret_IntValue()
+        {
+            Int32 a = 0;
+            Int32 b = 1;
+            Int32 c = 2;
+            int res = a;
+            switch (res)
+            {
+                case 0:
+                    Log.WriteSuccess("Test_Switch_Int32_Case_0_Ret_IntValue okay.");
+                    return 0;
+                case 1:
+                    Log.WriteError("Test_Switch_Int32_Case_0_Ret_IntValue NOT okay.");
+                    return 0;
+                case 2:
+                    Log.WriteError("Test_Switch_Int32_Case_0_Ret_IntValue NOT okay.");
+                    return 0;
+                default:
+                    Log.WriteError("Test_Switch_Int32_Case_0_Ret_IntValue NOT okay.");
+                    return 0;
+            }
+        }
+
+        /// <summary>
+        /// Tests: Switch statement using signed 32-bit integers and return statement with value, 
+        /// Inputs: 0, 1, 2, 
+        /// Result: Case 0
+        /// </summary>
+        [NoGC]
+        public static string Test_Switch_Int32_Case_0_Ret_StringValue()
+        {
+            Int32 a = 0;
+            Int32 b = 1;
+            Int32 c = 2;
+            int res = a;
+            switch (res)
+            {
+                case 0:
+                    Log.WriteSuccess("Test_Switch_Int32_Case_0_Ret_StringValue okay.");
+                    return "I shall return";
+                case 1:
+                    Log.WriteError("Test_Switch_Int32_Case_0_Ret_StringValue NOT okay.");
+                    return "I shall return";
+                case 2:
+                    Log.WriteError("Test_Switch_Int32_Case_0_Ret_StringValue NOT okay.");
+                    return "I shall return";
+                default:
+                    Log.WriteError("Test_Switch_Int32_Case_0_Ret_StringValue NOT okay.");
+                    return "I shall return";
+            }
+        }
 
         #endregion
 
