@@ -44,7 +44,7 @@ namespace FlingOops
         public short b;     // 2 bytes - 2 bytes on heap
         public int c;       // 4 bytes - 4 bytes on heap
         public long d;      // 8 bytes - 8 bytes on heap
-        // Total : 15 bytes
+                            // Total : 15 bytes
     }
 
     public static class CompilerTests
@@ -334,6 +334,27 @@ namespace FlingOops
                 Test_Arg_String(str);
                 Log.WriteLine(" ");
             }
+
+            #endregion
+
+            #region Arrays calls
+
+            Log.WriteLine("---Array:");
+            Log.WriteLine(" 32");
+            Log.WriteLine("  Unsigned");
+            Test_Array_UInt32();
+            Log.WriteLine("  Signed");
+            Test_Array_Int32();
+            Log.WriteLine(" 64");
+            Log.WriteLine("  Unsigned");
+            Test_Array_UInt64();
+            Log.WriteLine("  Signed");
+            Test_Array_Int64();            
+            Log.WriteLine(" Strings");
+            Test_Array_String();
+            Log.WriteLine(" Structs");
+            Test_Array_Struct();
+            Log.WriteLine(" ");
 
             #endregion
 
@@ -3423,6 +3444,492 @@ namespace FlingOops
             else
             {
                 Log.WriteError("Test_Arg_String NOT okay.");
+            }
+        }
+
+        #endregion
+
+        #region Arrays
+
+        /// <summary>
+        /// Tests: Array declaration using signed 32-bit elements, 
+        /// Input: An array with four elements, 
+        /// Result: Correct values for each element.
+        /// </summary>
+        /// <remarks>
+        /// <para>
+        /// FlingOS does allow array declaration of the form: 
+        /// int[] array = new int[4] {5, 10, 15, 20} or 
+        /// int[] array = new int[] {5, 10, 15, 20}. 
+        /// Array elements must be explicitly declared as in this test case. 
+        /// </para>
+        /// </remarks>
+        [NoGC]
+        public static void Test_Array_Int32()
+        {
+            Int32[] array = new Int32[4];
+            array[0] = 5;
+            array[1] = -10;
+            array[2] = -15;
+            array[3] = 20;
+            Int32 a = array.Length;
+            if (a == 4)
+            {
+                Log.WriteSuccess("Test_Array_Length_Int32 okay.");
+            }
+            else
+            {
+                Log.WriteError("Test_Array_Length_Int32 NOT okay.");
+            }
+            if (array[0] == 5)
+            {
+                Log.WriteSuccess("Test_Array_Decl_Int32[0] okay.");
+            }
+            else
+            {
+                Log.WriteError("Test_Array_Decl_Int32[0] Not okay.");
+            }
+
+            if (array[1] == -10)
+            {
+                Log.WriteSuccess("Test_Array_Decl_Int32[1] okay.");
+            }
+            else
+            {
+                Log.WriteError("Test_Array_Decl_Int32[1] Not okay");
+            }
+
+            if (array[2] == -15)
+            {
+                Log.WriteSuccess("Test_Array_Decl_Int32[2] okay.");
+            }
+            else
+            {
+                Log.WriteError("Test_Array_Decl_Int32[2] Not okay");
+            }
+
+            if (array[3] == 20)
+            {
+                Log.WriteSuccess("Test_Array_Decl_Int32[3] okay.");
+            }
+            else
+            {
+                Log.WriteError("Test_Array_Decl_Int32[3] Not okay");
+            }
+        }
+
+        /// <summary>
+        /// Tests: Array declaration using signed 64-bit elements, 
+        /// Input: An array with four elements, 
+        /// Result: Correct values for each element.
+        /// </summary>
+        /// <remarks>
+        /// <para>
+        /// FlingOS does allow array declaration of the form: 
+        /// int[] array = new int[4] {5, 10, 15, 20} or 
+        /// int[] array = new int[] {5, 10, 15, 20}. 
+        /// Array elements must be explicitly declared as in this test case. 
+        /// </para>
+        /// </remarks>
+        [NoGC]
+        public static void Test_Array_Int64()
+        {
+            Int64[] array = new Int64[4];
+            array[0] = 4611686018427387903;
+            array[1] = -4611686018427387905;
+            array[2] = -15;
+            array[3] = 20;
+            Int32 a = array.Length;
+            if (a == 4)
+            {
+                Log.WriteSuccess("Test_Array_Length_Int64 okay.");
+            }
+            else
+            {
+                Log.WriteError("Test_Array_Length_Int64 NOT okay.");
+            }
+            if (array[0] == 4611686018427387903)
+            {
+                Log.WriteSuccess("Test_Array_Decl_Int64[0] okay.");
+            }
+            else
+            {
+                Log.WriteError("Test_Array_Decl_Int64[0] Not okay.");
+            }
+
+            if (array[1] == -4611686018427387905)
+            {
+                Log.WriteSuccess("Test_Array_Decl_Int64[1] okay.");
+            }
+            else
+            {
+                Log.WriteError("Test_Array_Decl_Int64[1] Not okay");
+            }
+
+            if (array[2] == -15)
+            {
+                Log.WriteSuccess("Test_Array_Decl_Int64[2] okay.");
+            }
+            else
+            {
+                Log.WriteError("Test_Array_Decl_Int64[2] Not okay");
+            }
+
+            if (array[3] == 20)
+            {
+                Log.WriteSuccess("Test_Array_Decl_Int64[3] okay.");
+            }
+            else
+            {
+                Log.WriteError("Test_Array_Decl_Int64[3] Not okay");
+            }
+        }
+
+        /// <summary>
+        /// Tests: Array declaration using unsigned 64-bit elements, 
+        /// Input: An array with four elements, 
+        /// Result: Correct values for each element.
+        /// </summary>
+        /// <remarks>
+        /// <para>
+        /// FlingOS does allow array declaration of the form: 
+        /// int[] array = new int[4] {5, 10, 15, 20} or 
+        /// int[] array = new int[] {5, 10, 15, 20}. 
+        /// Array elements must be explicitly declared as in this test case. 
+        /// </para>
+        /// </remarks>
+        [NoGC]
+        public static void Test_Array_UInt64()
+        {
+            UInt64[] array = new UInt64[4];
+            array[0] = 4611686018427387903;
+            array[1] = 18446744073709551615;
+            array[2] = 0;
+            array[3] = 20;
+            Int32 a = array.Length;
+            if (a == 4)
+            {
+                Log.WriteSuccess("Test_Array_Length_UInt64 okay.");
+            }
+            else
+            {
+                Log.WriteError("Test_Array_Length_UInt64 NOT okay.");
+            }
+            if (array[0] == 4611686018427387903)
+            {
+                Log.WriteSuccess("Test_Array_Decl_UInt64[0] okay.");
+            }
+            else
+            {
+                Log.WriteError("Test_Array_Decl_UInt64[0] Not okay.");
+            }
+
+            if (array[1] == 18446744073709551615)
+            {
+                Log.WriteSuccess("Test_Array_Decl_UInt64[1] okay.");
+            }
+            else
+            {
+                Log.WriteError("Test_Array_Decl_UInt64[1] Not okay");
+            }
+
+            if (array[2] == 0)
+            {
+                Log.WriteSuccess("Test_Array_Decl_UInt64[2] okay.");
+            }
+            else
+            {
+                Log.WriteError("Test_Array_Decl_UInt64[2] Not okay");
+            }
+
+            if (array[3] == 20)
+            {
+                Log.WriteSuccess("Test_Array_Decl_UInt64[3] okay.");
+            }
+            else
+            {
+                Log.WriteError("Test_Array_Decl_UInt64[3] Not okay");
+            }
+        }
+
+        /// <summary>
+        /// Tests: Array declaration using usigned 32-bit elements, 
+        /// Input: An array with four elements, 
+        /// Result: Correct values for each element.
+        /// </summary>
+        /// <remarks>
+        /// <para>
+        /// FlingOS does allow array declaration of the form: 
+        /// int[] array = new int[4] {5, 10, 15, 20} or 
+        /// int[] array = new int[] {5, 10, 15, 20}. 
+        /// Array elements must be explicitly declared as in this test case. 
+        /// </para>
+        /// </remarks>
+        [NoGC]
+        public static void Test_Array_UInt32()
+        {
+            UInt32[] array = new UInt32[4];
+            array[0] = 4294967295;
+            array[1] = 4294967294;
+            array[2] = 0;
+            array[3] = 20;
+            Int32 a = array.Length;
+            if (a == 4)
+            {
+                Log.WriteSuccess("Test_Array_Length_UInt32 okay.");
+            }
+            else
+            {
+                Log.WriteError("Test_Array_Length_UInt32 NOT okay.");
+            }
+            if (array[0] == 4294967295)
+            {
+                Log.WriteSuccess("Test_Array_Decl_UInt32[0] okay.");
+            }
+            else
+            {
+                Log.WriteError("Test_Array_Decl_UInt32[0] Not okay.");
+            }
+
+            if (array[1] == 4294967294)
+            {
+                Log.WriteSuccess("Test_Array_Decl_UInt32[1] okay.");
+            }
+            else
+            {
+                Log.WriteError("Test_Array_Decl_UInt32[1] Not okay");
+            }
+
+            if (array[2] == 0)
+            {
+                Log.WriteSuccess("Test_Array_Decl_UInt32[2] okay.");
+            }
+            else
+            {
+                Log.WriteError("Test_Array_Decl_UInt32[2] Not okay");
+            }
+
+            if (array[3] == 20)
+            {
+                Log.WriteSuccess("Test_Array_Decl_UInt32[3] okay.");
+            }
+            else
+            {
+                Log.WriteError("Test_Array_Decl_UInt32[3] Not okay");
+            }
+        }
+
+        /// <summary>
+        /// Tests: Array declaration using strings as elements, 
+        /// Input: An array with four elements, 
+        /// Result: Correct values for each element.
+        /// </summary>
+        /// <remarks>
+        /// <para>
+        /// FlingOS does allow array declaration of the form: 
+        /// int[] array = new int[4] {5, 10, 15, 20} or 
+        /// int[] array = new int[] {5, 10, 15, 20}. 
+        /// Array elements must be explicitly declared as in this test case. 
+        /// To declare an array of strings, we need to use the FlingOS built-in string type, NOT just string because that is part of .NET.
+        /// </para>
+        /// </remarks>
+        [NoGC]
+        public static void Test_Array_String()
+        {
+            FlingOops.String[] array = new FlingOops.String[4];
+            array[0] = "elementZero";
+            array[1] = "elementOne";
+            array[2] = "elementTwo";
+            array[3] = "elementThree";
+            Int32 a = array.Length;
+            if (a == 4)
+            {
+                Log.WriteSuccess("Test_Array_Length_String okay.");
+            }
+            else
+            {
+                Log.WriteError("Test_Array_Length_String NOT okay.");
+            }
+            if (array[0] == "elementZero")
+            {
+                Log.WriteSuccess("Test_Array_Decl_String[0] okay.");
+            }
+            else
+            {
+                Log.WriteError("Test_Array_Decl_String[0] Not okay.");
+            }
+
+            if (array[1] == "elementOne")
+            {
+                Log.WriteSuccess("Test_Array_Decl_String[1] okay.");
+            }
+            else
+            {
+                Log.WriteError("Test_Array_Decl_String[1] Not okay");
+            }
+
+            if (array[2] == "elementTwo")
+            {
+                Log.WriteSuccess("Test_Array_Decl_String[2] okay.");
+            }
+            else
+            {
+                Log.WriteError("Test_Array_Decl_String[2] Not okay");
+            }
+
+            if (array[3] == "elementThree")
+            {
+                Log.WriteSuccess("Test_Array_Decl_String[3] okay.");
+            }
+            else
+            {
+                Log.WriteError("Test_Array_Decl_String[3] Not okay");
+            }
+        }
+
+        /// <summary>
+        /// Tests: Array declaration using structs as elements, 
+        /// Input: An array with four elements, 
+        /// Result: Correct values for each element.
+        /// </summary>
+        /// <remarks>
+        /// <para>
+        /// FlingOS does allow array declaration of the form: 
+        /// int[] array = new int[4] {5, 10, 15, 20} or 
+        /// int[] array = new int[] {5, 10, 15, 20}. 
+        /// Array elements must be explicitly declared as in this test case. 
+        /// To declare an array of strings, we need to use the FlingOS built-in string type, NOT just string because that is part of .NET.
+        /// </para>
+        /// </remarks>
+        [NoGC]
+        public static unsafe void Test_Array_Struct()
+        {
+            AStruct[] array = new AStruct[3];
+            array[0].a = 1;
+            array[0].b = 2;
+            array[0].c = 4;
+            array[0].d = 8;
+            array[1].a = 10;
+            array[1].b = 20;
+            array[1].c = 40;
+            array[1].d = 80;
+            array[2].a = 100;
+            array[2].b = 200;
+            array[2].c = 400;
+            array[2].d = 800;
+            Int32 a = array.Length;
+            if (a == 3)
+            {
+                Log.WriteSuccess("Test_Array_Length_Struct okay.");
+            }
+            else
+            {
+                Log.WriteError("Test_Array_Length_Struct NOT okay.");
+            }
+            if (array[0].a == 1)
+            {
+                Log.WriteSuccess("Test_Array_Decl_Struct[0].a okay.");
+            }
+            else
+            {
+                Log.WriteError("Test_Array_Decl_Struct[0].a Not okay.");
+            }
+
+            if (array[0].b == 2)
+            {
+                Log.WriteSuccess("Test_Array_Decl_Struct[0].b okay.");
+            }
+            else
+            {
+                Log.WriteError("Test_Array_Decl_Struct[0].b Not okay");
+            }
+
+            if (array[0].c == 4)
+            {
+                Log.WriteSuccess("Test_Array_Decl_Struct[0].c okay.");
+            }
+            else
+            {
+                Log.WriteError("Test_Array_Decl_Struct[0].c Not okay");
+            }
+
+            if (array[0].d == 8)
+            {
+                Log.WriteSuccess("Test_Array_Decl_Struct[0].d okay.");
+            }
+            else
+            {
+                Log.WriteError("Test_Array_Decl_Struct[0].d Not okay");
+            }
+            if (array[1].a == 10)
+            {
+                Log.WriteSuccess("Test_Array_Decl_Struct[1].a okay.");
+            }
+            else
+            {
+                Log.WriteError("Test_Array_Decl_Struct[1].a Not okay.");
+            }
+
+            if (array[1].b == 20)
+            {
+                Log.WriteSuccess("Test_Array_Decl_Struct[1].b okay.");
+            }
+            else
+            {
+                Log.WriteError("Test_Array_Decl_Struct[1].b Not okay");
+            }
+
+            if (array[1].c == 40)
+            {
+                Log.WriteSuccess("Test_Array_Decl_Struct[1].c okay.");
+            }
+            else
+            {
+                Log.WriteError("Test_Array_Decl_Struct[1].c Not okay");
+            }
+
+            if (array[1].d == 80)
+            {
+                Log.WriteSuccess("Test_Array_Decl_Struct[1].d okay.");
+            }
+            else
+            {
+                Log.WriteError("Test_Array_Decl_Struct[1].d Not okay");
+            }
+            if (array[2].a == 100)
+            {
+                Log.WriteSuccess("Test_Array_Decl_Struct[2].a okay.");
+            }
+            else
+            {
+                Log.WriteError("Test_Array_Decl_Struct[2].a Not okay.");
+            }
+
+            if (array[2].b == 200)
+            {
+                Log.WriteSuccess("Test_Array_Decl_Struct[2].b okay.");
+            }
+            else
+            {
+                Log.WriteError("Test_Array_Decl_Struct[2].b Not okay");
+            }
+
+            if (array[2].c == 400)
+            {
+                Log.WriteSuccess("Test_Array_Decl_Struct[2].c okay.");
+            }
+            else
+            {
+                Log.WriteError("Test_Array_Decl_Struct[2].c Not okay");
+            }
+
+            if (array[2].d == 800)
+            {
+                Log.WriteSuccess("Test_Array_Decl_Struct[2].d okay.");
+            }
+            else
+            {
+                Log.WriteError("Test_Array_Decl_Struct[2].d Not okay");
             }
         }
 
