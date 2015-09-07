@@ -44,11 +44,11 @@ If you'd just like to use our ahead-of-time compiler to write your own C#, VB.Ne
     - ***Kernel.FOS_System.IO*** : Contains classes for I/O in a similar way to .NET Framework System.IO namespace does (not direct replacements).
     - ***Kernel.Hardware*** : Contains built-in drivers for specific hardware along with some higher features such as scheduling.
     - ***Kernel.Shared*** : Contains classes shared between the kernel and drivers. This is essentially the ABI/API from kernel to drivers.
-- MIPS : Contains our two preliminray MIPS-targetted testing kernels. 
-  - Testing1 : A very basic kernel for UBoot Kermit-booting over serial that just uses the LED.
-  - Testing2 : A second, slightly more advanced kernel for UBoot Kermit or USB OTG booting that implements a timer setup and interrupt handlers.
-- Releases : Contains previous releases of FlingOS. 
-- Testing : Contains unit and behavioural testing of FlingOS.
-  - FlingOops™ : Our cross-platform compiler verification kernel (utilises behavioural testing).
-- Tools : Assorted tools written by FlingOS developers to make their lives easier. Speak to Ed Nutting for details.
-  - CI20Booter : USB OTG boot tool (uses LibUsb-Win32) for the Creator CI20 board.
+- ***MIPS*** : Contains our two preliminray MIPS-targetted testing kernels. 
+  - ***Testing1*** : A very basic kernel for UBoot Kermit-booting over serial that just uses the LED.
+  - ***Testing2*** : A second, slightly more advanced kernel for UBoot Kermit or USB OTG booting that implements a timer setup and interrupt handlers.
+- ***Releases*** : Contains previous releases of FlingOS. 
+- ***Testing*** : Contains unit and behavioural testing of FlingOS.
+  - ***FlingOops™*** : Our cross-platform compiler verification kernel (utilises behavioural testing).
+- ***Tools*** : Assorted tools written by FlingOS developers to make their lives easier. Speak to Ed Nutting for details.
+  - ***CI20Booter*** : USB OTG boot tool (uses LibUsb-Win32) for the Creator CI20 board.
