@@ -337,7 +337,7 @@ namespace FlingOops
 
             #endregion
 
-            #region Arrays calls
+            #region Array calls
 
             Log.WriteLine("---Array:");
             Log.WriteLine(" 32");
@@ -354,6 +354,14 @@ namespace FlingOops
             Test_Array_String();
             Log.WriteLine(" Structs");
             Test_Array_Struct();
+            Log.WriteLine(" ");
+
+            #endregion
+
+            #region Heap calls
+
+            Log.WriteLine("---Heap:");
+            Test_Heap();
             Log.WriteLine(" ");
 
             #endregion
@@ -3934,5 +3942,64 @@ namespace FlingOops
         }
 
         #endregion
+
+        #region Heaps
+
+        /// <summary>
+        /// Tests: Heap management, 
+        /// Inputs:A struct, 
+        /// Result: Struct allocated on heap correctly. 
+        /// </summary>
+        [NoGC]
+        public static unsafe void Test_Heap()
+        {
+            AStruct* HeapInst = (AStruct*)Heap.AllocZeroed((uint)sizeof(AStruct), "Kernel:Main");
+            if (HeapInst == null)
+            {
+                Log.WriteError("HeapInst null\n");
+            }
+            else
+            {
+                Log.WriteSuccess("HeapInst not null");
+            }
+            HeapInst->a = 1;
+            HeapInst->b = 2;
+            HeapInst->c = 4;
+            HeapInst->d = 8;
+            if (HeapInst->a == 1)
+            {
+               Log.WriteSuccess("HeapInst->a not null");
+            }
+            else
+            {
+                Log.WriteError("HeapInst->a null\n");
+            }
+            if (HeapInst->b == 2)
+            {
+                Log.WriteSuccess("HeapInst->b not null");
+            }
+            else
+            {
+                Log.WriteError("HeapInst->b null\n");
+            }
+            if (HeapInst->c == 4)
+            {
+                Log.WriteSuccess("HeapInst->c not null");
+            }
+            else
+            {
+                Log.WriteError("HeapInst->c null\n");
+            }
+            if (HeapInst->d == 8)
+            {
+                Log.WriteSuccess("HeapInst->d not null");
+            }
+            else
+            {
+                Log.WriteError("HeapInst->d null\n");
+            }
+        }
+
+        #endregion Heaps
     }
 }
