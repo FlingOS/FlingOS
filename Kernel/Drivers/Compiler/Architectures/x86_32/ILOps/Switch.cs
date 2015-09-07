@@ -80,7 +80,6 @@ namespace Drivers.Compiler.Architectures.x86
                 throw new NotSupportedException("Switch for non-int32s not supported!");
             }
 
-            
             conversionState.Append(new ASMOps.Pop() { Size = ASMOps.OperandSize.Dword, Dest = "EAX" });
             for (int i = 0; i < theOp.ValueBytes.Length / 4; i++)
             {

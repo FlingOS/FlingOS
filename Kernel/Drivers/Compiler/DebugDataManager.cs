@@ -32,6 +32,9 @@ using System.Threading.Tasks;
 
 namespace Drivers.Compiler
 {
+    /// <summary>
+    /// This class has yet to be implemented.
+    /// </summary>
     static class DebugDataManager
     {
     }

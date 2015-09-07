@@ -56,6 +56,7 @@ namespace Drivers.Compiler.IL
         /// <summary>
         /// Returns the first node representing of the specified constructor - full-depth search.
         /// </summary>
+        /// <value>Searches the complete tree looking for the node.</value>
         /// <param name="inf">The constructor to search for.</param>
         /// <returns>The first node representing of the specified constructor - full-depth search.</returns>
         public StaticConstructorDependency this[ConstructorInfo inf]

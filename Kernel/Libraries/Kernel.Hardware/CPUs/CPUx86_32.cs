@@ -36,7 +36,6 @@ namespace Kernel.Hardware.CPUs
     /// Represents an x86 32-bit CPU.
     /// </summary>
     [Compiler.PluggedClass]
-    [Drivers.Compiler.Attributes.PluggedClass]
     public class CPUx86_32 : Devices.CPU
     {
         /// <summary>

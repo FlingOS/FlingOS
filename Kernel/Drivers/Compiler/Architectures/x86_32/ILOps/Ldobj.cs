@@ -80,14 +80,14 @@ namespace Drivers.Compiler.Architectures.x86
             conversionState.Append(new ASMOps.Pop() { Size = ASMOps.OperandSize.Dword, Dest = "ECX" });
             for (int i = size - 4; i >= 0; i -= 4)
             {
-                GlobalMethods.InsertPageFaultDetection(conversionState, "ecx", i, (OpCodes)theOp.opCode.Value);
+                GlobalMethods.InsertPageFaultDetection(conversionState, "ECX", i, (OpCodes)theOp.opCode.Value);
                 conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Dword, Src = "[ECX+" + i.ToString() + "]", Dest = "EAX" });
                 conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Dword, Src = "EAX" });
             }
             int extra = size % 4;
             for (int i = extra - 1; i >= 0; i--)
             {
-                GlobalMethods.InsertPageFaultDetection(conversionState, "ecx", i, (OpCodes)theOp.opCode.Value);
+                GlobalMethods.InsertPageFaultDetection(conversionState, "ECX", i, (OpCodes)theOp.opCode.Value);
                 conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Byte, Src = "[ECX+" + i.ToString() + "]", Dest = "AL" });
                 conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Byte, Src = "AL" });
             }

@@ -79,7 +79,7 @@ namespace Drivers.Compiler.Architectures.x86
             }
 
             //Get object pointer
-            GlobalMethods.InsertPageFaultDetection(conversionState, "esp", stackSize, (OpCodes)theOp.opCode.Value);
+            GlobalMethods.InsertPageFaultDetection(conversionState, "ESP", stackSize, (OpCodes)theOp.opCode.Value);
             conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Dword, Src = "[ESP+" + stackSize.ToString() + "]", Dest = "ECX" });
             //Pop and mov value
             for (int i = 0; i < memSize; i += 2)
@@ -87,13 +87,13 @@ namespace Drivers.Compiler.Architectures.x86
                 if (memSize - i == 1)
                 {
                     conversionState.Append(new ASMOps.Pop() { Size = ASMOps.OperandSize.Word, Dest = "AX" });
-                    GlobalMethods.InsertPageFaultDetection(conversionState, "ecx", offset + i, (OpCodes)theOp.opCode.Value);
+                    GlobalMethods.InsertPageFaultDetection(conversionState, "ECX", offset + i, (OpCodes)theOp.opCode.Value);
                     conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Byte, Src = "AL", Dest = "[ECX+" + (offset + i).ToString() + "]" });
                 }
                 else
                 {
                     conversionState.Append(new ASMOps.Pop() { Size = ASMOps.OperandSize.Word, Dest = "AX" });
-                    GlobalMethods.InsertPageFaultDetection(conversionState, "ecx", offset + i, (OpCodes)theOp.opCode.Value);
+                    GlobalMethods.InsertPageFaultDetection(conversionState, "ECX", offset + i, (OpCodes)theOp.opCode.Value);
                     conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Word, Src = "AX", Dest = "[ECX+" + (offset + i).ToString() + "]" });
                 }
             }

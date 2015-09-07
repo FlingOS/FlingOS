@@ -28,43 +28,94 @@ using System;
 
 namespace Kernel
 {
+    /// <summary>
+    /// Delegate type for secondary output handlers for the BasicConsole.
+    /// </summary>
+    /// <remarks>
+    /// Secondary output handlers can be used to copy or completely redirect all output from the BasicConsole
+    /// from the screen to an alternative destination. For example, output can be redirected from the screen
+    /// to a serial port. That output can then be saved to a text file for post-execution review.
+    /// </remarks>
+    /// <param name="str">The string to output.</param>
     public delegate void SecondaryOutputHandler(FOS_System.String str);
 
     /// <summary>
     /// A basic console implementation - uses the BIOS's fixed text-video memory to output ASCII text.
     /// </summary>
     /// <remarks>
+    /// <para>
     /// This class is a very basic console. It uses the default, x86 setup for
     /// VGA text-mode graphics and simply outputs text to graphics memory.
     /// When a new line is required, it simply shifts the graphics memory up
     /// one line and discards any video memory shifted off the top of the screen.
     /// Scrolling back down is thus not possible as the information is lost.
-
+    /// </para>
+    /// <para>
     /// For a better console implementation see Console and AdvancedConsole classes in
     /// Kernel.Core library (/namespace)
-
+    /// </para>
+    /// <para>
     /// Some of the code used appears inefficient or needlessly expanded. That's 
     /// because it is. Deliberately so. The reason is that the code used uses the 
     /// minimum of IL ops and the simpler IL ops making the initial compiler work
     /// much smaller and simpler to do. It also means that if the compiler breaks
     /// in any way, the BasicConsole class is likely to still work thus making it
     /// the most useful debugging tool.
-
+    /// </para>
+    /// <para>
     /// All of this code has been thoroughly used and abused, which means it is 
     /// well tested i.e. reliable and robust. Do not alter the code in any way!
     /// Really, this code does not need modifying and if you do so, you're more 
     /// likely to break it than fix or improve it.
-
+    /// </para>
+    /// <para>
     /// This code is specifically designed for 80x25 VGA text-mode. In theory you 
     /// could change the "rows" and "cols" values, but this would actually break 
     /// the code because some of it has values of 80, 25, 160 and 50 hard-coded
     /// which you would need to change. I am reluctant to go changing these hard
     /// coded values for the reasons given in prior notes.
+    /// </para>
     /// </remarks>
     public static unsafe class BasicConsole
     {
+        /// <summary>
+        /// Whether the primary output destination (the screen) is enabled or not. 
+        /// </summary>
+        /// <remarks>
+        /// <para>
+        /// Default value is true i.e. the BasicConsole will output all text to the screen.
+        /// </para>
+        /// <para>
+        /// With lots of trace code enabled the BasicConsole can end up printing a lot of text
+        /// very quickly. This is both impossible to read and untraceable as it cannot be reviewed
+        /// after it disappears from the screen. Add to that the newer multi-processing support
+        /// and the BasicConsole ceases to be useful - in fact it gets in the way.
+        /// </para>
+        /// <para>
+        /// Switching off the primary output reduces the junk outputted to the screen. To retain
+        /// (or rather, obtain) traceable output, use the secondary output to redirect BasicConsole
+        /// printing to a serial port such as COM1. VMWare has a nice option for saving serial port
+        /// output directly to a file.
+        /// </para>
+        /// </remarks>
         public static bool PrimaryOutputEnabled = true;
+        /// <summary>
+        /// Whether the secondary output destination is enabled or not. 
+        /// </summary>
+        /// <remarks>
+        /// <para>
+        /// Default value is true i.e. the BasicConsole will output all text to the secondary output (if it is not null).
+        /// </para>
+        /// </remarks>
+        /// <seealso cref="SecondaryOutput"/>
         public static bool SecondaryOutputEnabled = true;
+        /// <summary>
+        /// The secondary output handler. 
+        /// </summary>
+        /// <remarks>
+        /// If <see cref="SecondaryOutputEnabled"/> is set to true, this handler will be called for all Write calls to
+        /// the BasicConsole.
+        /// </remarks>
         public static SecondaryOutputHandler SecondaryOutput = null;
 
         /// <summary>

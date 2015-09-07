@@ -124,7 +124,6 @@ namespace Kernel.Hardware.Interrupts
     /// Provides methods for handling hardware and software interrupts (excluding interrupts 0 through 16).
     /// </summary>
     [Compiler.PluggedClass]
-    [Drivers.Compiler.Attributes.PluggedClass]
     public unsafe static class Interrupts
     {
         //TODO - This lot is all x86 specific. It needs to be abstracted into a separate x86

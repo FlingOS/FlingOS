@@ -32,11 +32,27 @@ using System.Threading.Tasks;
 
 namespace Drivers.Compiler.ASM
 {
+    /// <summary>
+    /// Represents a library (or executable) as a set of ASM blocks.
+    /// </summary>
     public class ASMLibrary
     {
+        /// <summary>
+        /// Whether the ASM Preprocess step has already be run for the library or not. 
+        /// Prevents the ASM Compiler from executing the Preprocessing step more than 
+        /// once for a given library.
+        /// </summary>
         public bool ASMPreprocessed = false;
+        /// <summary>
+        /// Whether the ASM Process step has already be run for the library or not. 
+        /// Prevents the ASM Compiler from executing the Processing step more than 
+        /// once for a given library.
+        /// </summary>
         public bool ASMProcessed = false;
 
+        /// <summary>
+        /// The ASM blocks which make up the library.
+        /// </summary>
         public List<ASMBlock> ASMBlocks = new List<ASMBlock>();
     }
 }

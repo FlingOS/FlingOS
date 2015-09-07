@@ -56,7 +56,7 @@ namespace Drivers.Compiler.Architectures.x86
             //See calling convention spec - this allows easy access of
             //args and locals within the method without having to track
             //temporary values (which would be a nightmare with the
-            //exception handling implmentation that the kernel uses!)
+            //exception handling implementation that the kernel uses!)
             conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Dword, Src = "ESP", Dest = "EBP" });
 
             //Allocate stack space for locals

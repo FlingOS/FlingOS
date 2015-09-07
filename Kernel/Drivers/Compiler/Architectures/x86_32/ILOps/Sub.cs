@@ -105,7 +105,7 @@ namespace Drivers.Compiler.Architectures.x86
                 //  - Then push the result onto the stack and mark it as float
                 // Note: Check but I think floating point arithmetic is done using 
                 //       XMM registers and their specific ops.
-                throw new NotSupportedException("Add floats is unsupported!");
+                throw new NotSupportedException("Sub floats is unsupported!");
             }
             else
             {

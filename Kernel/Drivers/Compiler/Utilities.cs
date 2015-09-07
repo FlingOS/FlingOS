@@ -34,10 +34,27 @@ using System.Diagnostics;
 
 namespace Drivers.Compiler
 {
+    /// <summary>
+    /// Basic delegate for a void method with a single state object.
+    /// </summary>
+    /// <remarks>
+    /// This is used in various places within the compiler. The most obvious example
+    /// is in executing external processes asynchronously. The delegate is used as 
+    /// completion handler.
+    /// </remarks>
+    /// <param name="state">The object supplied with the handler.</param>
     public delegate void VoidDelegate(object state);
 
+    /// <summary>
+    /// Contains static utility methods used in various places in the compiler.
+    /// </summary>
     public static class Utilities
     {
+        /// <summary>
+        /// Determiens whether the specified type is a floating point number type or not.
+        /// </summary>
+        /// <param name="aType">The type to check.</param>
+        /// <returns>True if the type is a floating point number type. Otherwise, false.</returns>
         public static bool IsFloat(Type aType)
         {
             bool isFloat = false;
@@ -112,7 +129,11 @@ namespace Drivers.Compiler
             return (double)(BitConverter.ToDouble(bytes, 0));
         }
 
-
+        /// <summary>
+        /// Cleans up the specified file name of any illegal characters.
+        /// </summary>
+        /// <param name="filename">The file name to clean up.</param>
+        /// <returns>The cleaned up file name.</returns>
         public static string CleanFileName(string filename)
         {
             foreach (char c in System.IO.Path.GetInvalidFileNameChars())
@@ -122,8 +143,27 @@ namespace Drivers.Compiler
             return filename;
         }
 
-
+        /// <summary>
+        /// Treated as a character array of all identifiers that are illegal to use in a label name.
+        /// </summary>
+        /// <remarks>
+        /// <para>
+        /// One or two of the characters may be valid but by eliminating them, labels in the FlingOS
+        /// output have much more consistency.
+        /// </para>
+        /// <para>
+        /// The invalid characters are "&amp;,+$&lt;&gt;{}-`\'/\\ ()[]*!=."
+        /// </para>
+        /// </remarks>
         public const string IllegalIdentifierChars = "&,+$<>{}-`\'/\\ ()[]*!=.";
+        /// <summary>
+        /// Filters the specified identifier (/assembly code label) for invalid characters.
+        /// </summary>
+        /// <remarks>
+        /// Imvalid characters are replaced by underscores.
+        /// </remarks>
+        /// <param name="x">The string to filter.</param>
+        /// <returns>The filtered string.</returns>
         public static string FilterIdentifierForInvalidChars(string x)
         {
             string xTempResult = x;
@@ -137,8 +177,20 @@ namespace Drivers.Compiler
             return String.Intern(xTempResult);
         }
 
+        /// <summary>
+        /// A list of all processes started by the compiler.
+        /// </summary>
+        /// <remarks>
+        /// Maps processes' unique identifiers to the process objects themselves.
+        /// </remarks>
         private static Dictionary<int, Process> Processes = new Dictionary<int, Process>();
+        /// <summary>
+        /// Callbacks to be called when processes finish executing.
+        /// </summary>
         private static Dictionary<int, Tuple<VoidDelegate, object>> OnCompleteCallbacks = new Dictionary<int, Tuple<VoidDelegate, object>>();
+        /// <summary>
+        /// Lock used to prevent multiple threads updating the OnCompleteCallbacks dictionary simultaneously.
+        /// </summary>
         private static Object CallbacksLock = new Object();
 
         /// <summary>
@@ -153,6 +205,8 @@ namespace Drivers.Compiler
         /// <param name="ignoreErrors">Whether to ignore messages and errors from the process or not.</param>
         /// <param name="outputMessagesToFileName">A file path to output error and standard messages to instead of the console window. 
         /// Ignore errors should be set to false.</param>
+        /// <param name="OnComplete">Callback to call when the process finishes executing.</param>
+        /// <param name="state">The state object to use when calling the OnComplete callback.</param>
         /// <returns>True if process executed successfully without errors. Otherwise false.</returns>
         public static bool ExecuteProcess(string workingDir,
             string processFile,

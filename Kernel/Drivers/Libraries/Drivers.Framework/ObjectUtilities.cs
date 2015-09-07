@@ -35,7 +35,6 @@ namespace Drivers.Framework.Utilities
     /// <summary>
     /// Utility methods for object manipulation.
     /// </summary>
-    [Drivers.Compiler.Attributes.PluggedClass]
     public static class ObjectUtilities
     {
         /// <summary>

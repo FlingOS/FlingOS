@@ -32,14 +32,33 @@ using System.Threading.Tasks;
 
 namespace Drivers.Compiler.Types
 {
+    /// <summary>
+    /// Container for information about a method loaded from an IL library being compiled.
+    /// </summary>
     public class MethodInfo
     {
+        /// <summary>
+        /// The underlying System.Reflection.MethodInfo obtained from the library's Assembly.
+        /// </summary>
         public System.Reflection.MethodBase UnderlyingInfo;
+        /// <summary>
+        /// The plug attribute obtained applied to the method (null if it was not applied).
+        /// </summary>
         public Attributes.PluggedMethodAttribute PlugAttribute = null;
 
+        /// <summary>
+        /// List of information about the arguments of the method.
+        /// </summary>
         public List<VariableInfo> ArgumentInfos = new List<VariableInfo>();
+        /// <summary>
+        /// List of information about the local variables of the method.
+        /// </summary>
         public List<VariableInfo> LocalInfos = new List<VariableInfo>();
 
+        /// <summary>
+        /// Whether to apply the garbage collector modifications to the method or not.
+        /// </summary>
+        /// <value>Gets whether the method had the NoGC attribute applied or not.</value>
         public bool ApplyGC
         {
             get
@@ -47,6 +66,10 @@ namespace Drivers.Compiler.Types
                 return UnderlyingInfo.GetCustomAttributes(typeof(Attributes.NoGCAttribute), false).Length == 0;
             }
         }
+        /// <summary>
+        /// Whether to apply the debug modifications to the method or not.
+        /// </summary>
+        /// <value>Gets whether the method had the NoDebug attribute applied or not.</value>
         public bool ApplyDebug
         {
             get
@@ -54,11 +77,30 @@ namespace Drivers.Compiler.Types
                 return UnderlyingInfo.GetCustomAttributes(typeof(Attributes.NoDebugAttribute), false).Length == 0;
             }
         }
+        /// <summary>
+        /// Whether the method is plugged or not.
+        /// </summary>
+        /// <value>Gets whether the method had the PluggedMethod attribute applied or not.</value>
         public bool IsPlugged { get { return PlugAttribute != null; } }
+        /// <summary>
+        /// Whether the method is a constructor or not.
+        /// </summary>
+        /// <value>Gets whether the underlying info is System.Reflection.ConstructorInfo or not.</value>
         public bool IsConstructor { get { return UnderlyingInfo is System.Reflection.ConstructorInfo; } }
+        /// <summary>
+        /// Whether the method is static or not.
+        /// </summary>
+        /// <value>Gets the value of the underlying info's IsStatic property.</value>
         public bool IsStatic { get { return UnderlyingInfo.IsStatic; } }
 
+        /// <summary>
+        /// The method body (i.e. IL bytes) extracted from the underlying method base.
+        /// </summary>
         private System.Reflection.MethodBody methodBody;
+        /// <summary>
+        /// The method body (i.e. IL bytes) extracted from the underlying method base.
+        /// </summary>
+        /// <value>Gets the value of the methodBody field or generates the value if it is null.</value>
         public System.Reflection.MethodBody MethodBody
         {
             get
@@ -71,7 +113,14 @@ namespace Drivers.Compiler.Types
             }
         }
 
+        /// <summary>
+        /// The ID of the method (can also be used as a label).
+        /// </summary>
         private string id = null;
+        /// <summary>
+        /// The ID of the method (can also be used as a label).
+        /// </summary>
+        /// <value>Gets the value of the id field or generates the value if it is null.</value>
         public string ID
         {
             get
@@ -84,7 +133,14 @@ namespace Drivers.Compiler.Types
             }
         }
 
+        /// <summary>
+        /// The signature of the method (used to construct to ID).
+        /// </summary>
         public string signature = null;
+        /// <summary>
+        /// The signature of the method (used to construct to ID).
+        /// </summary>
+        /// <value>Gets the value of the signature field or generates the value if it is null.</value>
         public string Signature
         {
             get
@@ -97,9 +153,19 @@ namespace Drivers.Compiler.Types
             }
         }
 
+        /// <summary>
+        /// The unique identifier of the method (within a type).
+        /// </summary>
         public int IDValue = -1;
 
+        /// <summary>
+        /// The priority value of the method (if any).
+        /// </summary>
         private long? priority = null;
+        /// <summary>
+        /// The priority value of the method (if any).
+        /// </summary>
+        /// <value>Gets the value of the priority field or generates the value if it is null.</value>
         public long Priority
         {
             get
@@ -121,8 +187,21 @@ namespace Drivers.Compiler.Types
             }
         }
 
+        /// <summary>
+        /// Whether the method has been preprocessed or not.
+        /// </summary>
+        /// <remarks>
+        /// Used to prevent the IL preprocessor executing more than once for the same method.
+        /// </remarks>
         public bool Preprocessed = false;
 
+        /// <summary>
+        /// Gets a human-readable representation of the method.
+        /// </summary>
+        /// <remarks>
+        /// Generates a nice, human-readable name of the form NameSpace.DeclaringType.MethodName(ArgumentType, ArgumentType).
+        /// </remarks>
+        /// <returns>The string representation.</returns>
         public override string ToString()
         {
             string result = UnderlyingInfo.DeclaringType.FullName + "." + UnderlyingInfo.Name + "(";
@@ -137,6 +216,11 @@ namespace Drivers.Compiler.Types
             return result;
         }
 
+        /// <summary>
+        /// Generates the signature string for the specified method.
+        /// </summary>
+        /// <param name="aMethod">The method to generate the signature of.</param>
+        /// <returns>The signature string.</returns>
         private static string GetMethodSignature(System.Reflection.MethodBase aMethod)
         {
             string[] paramTypes = aMethod.GetParameters().Select(x => x.ParameterType).Select(x => x.FullName).ToArray();
@@ -158,6 +242,14 @@ namespace Drivers.Compiler.Types
 
             return GetMethodSignature(returnType, declaringType, methodName, paramTypes);
         }
+        /// <summary>
+        /// Generates a signature string using the specified parts.
+        /// </summary>
+        /// <param name="declaringType">The type which declares the method.</param>
+        /// <param name="methodName">The name of the method.</param>
+        /// <param name="paramTypes">The list of the types of the method's arguments.</param>
+        /// <param name="returnType">The return type of the method.</param>
+        /// <returns>The signature string.</returns>
         private static string GetMethodSignature(string returnType, string declaringType, string methodName, string[] paramTypes)
         {
             string aMethodSignature = "";
@@ -176,6 +268,11 @@ namespace Drivers.Compiler.Types
             aMethodSignature += ")";
             return aMethodSignature;
         }
+        /// <summary>
+        /// Generates an ID (which can be used as a label) from the specified signature.
+        /// </summary>
+        /// <param name="methodSignature">The signature to use to generate the label.</param>
+        /// <returns>The ID.</returns>
         private static string CreateMethodID(string methodSignature)
         {
             return "method_" + Utilities.FilterIdentifierForInvalidChars(methodSignature);

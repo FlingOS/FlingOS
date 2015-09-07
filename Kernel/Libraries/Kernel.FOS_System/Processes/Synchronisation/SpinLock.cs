@@ -33,7 +33,6 @@ using System.Threading.Tasks;
 namespace Kernel.FOS_System.Processes.Synchronisation
 {
     [Compiler.PluggedClass]
-    [Drivers.Compiler.Attributes.PluggedClass]
     public class SpinLock : FOS_System.Object
     {
         private int id;

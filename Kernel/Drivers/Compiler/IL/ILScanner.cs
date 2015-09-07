@@ -32,94 +32,27 @@ using System.Threading.Tasks;
 
 namespace Drivers.Compiler.IL
 {
+    /// <summary>
+    /// The IL Sanner manages scanning types, fields and methods to generate the final assembly code.
+    /// </summary>
     public static class ILScanner
     {
-        private static System.Reflection.Assembly TargetArchitectureAssembly = null;
-        public static Dictionary<ILOp.OpCodes, ILOp> TargetILOps = new Dictionary<ILOp.OpCodes, ILOp>();
-        public static ILOps.MethodStart MethodStartOp;
-        public static ILOps.MethodEnd MethodEndOp;
-        public static ILOps.StackSwitch StackSwitchOp;
-
-        public static bool Init()
-        {
-            bool OK = true;
-
-            OK = LoadTargetArchiecture();
-
-            return OK;
-        }
-        private static bool LoadTargetArchiecture()
-        {
-            bool OK = false;
-
-            try
-            {
-                switch (Options.TargetArchitecture)
-                {
-                    case "x86":
-                        {
-                            string dir = System.IO.Path.GetDirectoryName(typeof(ILCompiler).Assembly.Location);
-                            string fileName = System.IO.Path.Combine(dir, @"Drivers.Compiler.Architectures.x86.dll");
-                            fileName = System.IO.Path.GetFullPath(fileName);
-                            TargetArchitectureAssembly = System.Reflection.Assembly.LoadFrom(fileName);
-                            OK = true;
-                        }
-                        break;
-                    default:
-                        OK = false;
-                        throw new ArgumentException("Unrecognised target architecture!");
-                }
-
-                if (OK)
-                {
-                    Type[] AllTypes = TargetArchitectureAssembly.GetTypes();
-                    foreach (Type aType in AllTypes)
-                    {
-                        if (aType.IsSubclassOf(typeof(ILOp)))
-                        {
-                            if (aType.IsSubclassOf(typeof(ILOps.MethodStart)))
-                            {
-                                MethodStartOp = (ILOps.MethodStart)aType.GetConstructor(new Type[0]).Invoke(new object[0]);
-                            }
-                            else if (aType.IsSubclassOf(typeof(ILOps.MethodEnd)))
-                            {
-                                MethodEndOp = (ILOps.MethodEnd)aType.GetConstructor(new Type[0]).Invoke(new object[0]);
-                            }
-                            else if (aType.IsSubclassOf(typeof(ILOps.StackSwitch)))
-                            {
-                                StackSwitchOp = (ILOps.StackSwitch)aType.GetConstructor(new Type[0]).Invoke(new object[0]);
-                            }
-                            else
-                            {
-                                ILOps.ILOpTargetAttribute[] targetAttrs = (ILOps.ILOpTargetAttribute[])aType.GetCustomAttributes(typeof(ILOps.ILOpTargetAttribute), true);
-                                if (targetAttrs == null || targetAttrs.Length == 0)
-                                {
-                                    throw new Exception("ILScanner could not load target architecture ILOp because target attribute was not specified!");
-                                }
-                                else
-                                {
-                                    foreach (ILOps.ILOpTargetAttribute targetAttr in targetAttrs)
-                                    {
-                                        TargetILOps.Add(targetAttr.Target, (ILOp)aType.GetConstructor(new Type[0]).Invoke(new object[0]));
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                OK = false;
-                Logger.LogError(Errors.ILCompiler_LoadTargetArchError_ErrorCode, "", 0, 
-                    string.Format(Errors.ErrorMessages[Errors.ILCompiler_LoadTargetArchError_ErrorCode],
-                                    ex.Message));
-            }
-
-            return OK;
-        }
-
+        /// <summary>
+        /// Map of type IDs to the library from which they originated. 
+        /// </summary>
+        /// <remarks>
+        /// Used to detect when types are external to the library being compiled.
+        /// </remarks>
         private static Dictionary<string, ILLibrary> ScannedTypes = new Dictionary<string, ILLibrary>();
+        /// <summary>
+        /// Scans the specified library and any dependencies.
+        /// </summary>
+        /// <param name="TheLibrary">The library to scan.</param>
+        /// <returns>
+        /// CompileResult.OK if completed successfully. 
+        /// Otherwise CompileResult.PartialFail or CompileResult.Error depending on 
+        /// the extent of the problem.
+        /// </returns>
         public static CompileResult Scan(ILLibrary TheLibrary)
         {
             CompileResult result = CompileResult.OK;
@@ -211,39 +144,12 @@ namespace Drivers.Compiler.IL
             foreach (KeyValuePair<string, string> aStringLiteral in TheLibrary.StringLiterals)
             {
                 string value = aStringLiteral.Value;
-                Encoding xEncoding = Encoding.ASCII;
-                var NumBytes = xEncoding.GetByteCount(value);
-                var stringData = new byte[4 + NumBytes];
-                Array.Copy(BitConverter.GetBytes(value.Length), 0, stringData, 0, 4);
-                Array.Copy(xEncoding.GetBytes(value), 0, stringData, 4, NumBytes);
+                byte[] lengthBytes = BitConverter.GetBytes(value.Length);
 
-                StringBuilder LiteralASM = new StringBuilder();
-                //This is UTF-16 (Unicode)/ASCII text
-                LiteralASM.AppendLine(string.Format("GLOBAL {0}:data", aStringLiteral.Key));
-                LiteralASM.AppendLine(string.Format("{0}:", aStringLiteral.Key));
-                //Put in type info as FOS_System.String type
-                LiteralASM.AppendLine(string.Format("dd {0}", StringTypeId));
-                //Put in string length bytes
-                LiteralASM.Append("db ");
-                for (int i = 0; i < 3; i++)
-                {
-                    LiteralASM.Append(stringData[i]);
-                    LiteralASM.Append(", ");
-                }
-                LiteralASM.Append(stringData[3]);
-                //Put in string characters (as words)
-                LiteralASM.Append("\ndw ");
-                for (int i = 4; i < (stringData.Length - 1); i++)
-                {
-                    LiteralASM.Append(stringData[i]);
-                    LiteralASM.Append(", ");
-                }
-                LiteralASM.Append(stringData.Last());
-                LiteralASM.AppendLine();
-                StringLiteralsBlock.Append(new ASM.ASMGeneric()
-                {
-                    Text = LiteralASM.ToString()
-                });
+                ASM.ASMOp newLiteralOp = TargetArchitecture.CreateASMOp(ASM.OpCodes.StringLiteral, 
+                    aStringLiteral.Key, StringTypeId, lengthBytes, value.ToCharArray());
+
+                StringLiteralsBlock.Append(newLiteralOp);
             }
 
             #endregion
@@ -251,7 +157,19 @@ namespace Drivers.Compiler.IL
             return result;
         }
 
+        /// <summary>
+        /// The number of types scanned.
+        /// </summary>
+        /// <remarks>
+        /// Used as an ID generator for the types table(s).
+        /// </remarks>
         private static int TypesScanned = 1;
+        /// <summary>
+        /// Scans the specified type (excludes fields and methods).
+        /// </summary>
+        /// <param name="TheLibrary">The library currently being compiled.</param>
+        /// <param name="TheTypeInfo">The type to scan.</param>
+        /// <param name="TypesTableBlock">The ASM block for the types table for the library currently being compiled.</param>
         private static void ScanType(ILLibrary TheLibrary, Types.TypeInfo TheTypeInfo, ASM.ASMBlock TypesTableBlock)
         {
             string TypeId = TheTypeInfo.ID;
@@ -281,115 +199,72 @@ namespace Drivers.Compiler.IL
             string TypeSignatureLiteralLabel = TheLibrary.AddStringLiteral(TheTypeInfo.UnderlyingType.FullName); // Legacy
             string TypeIdLiteralLabel = TheLibrary.AddStringLiteral(TheTypeInfo.ID);
 
-            StringBuilder ASMResult = new StringBuilder();
-            ASMResult.AppendLine("GLOBAL " + TypeId + ":data");
-            ASMResult.AppendLine(TypeId + ":");
-            
             Types.TypeInfo typeTypeInfo = ILLibrary.SpecialClasses[typeof(Attributes.TypeClassAttribute)].First();
             List<Types.FieldInfo> OrderedFields = typeTypeInfo.FieldInfos.Where(x => !x.IsStatic).OrderBy(x => x.OffsetInBytes).ToList();
+            List<Tuple<string, Types.TypeInfo>> FieldInformation = new List<Tuple<string, Types.TypeInfo>>();
             foreach (Types.FieldInfo aTypeField in OrderedFields)
             {
                 Types.TypeInfo FieldTypeInfo = TheLibrary.GetTypeInfo(aTypeField.FieldType);
-                string allocStr = GetAllocStringForSize(
-                    FieldTypeInfo.IsValueType ? FieldTypeInfo.SizeOnHeapInBytes : FieldTypeInfo.SizeOnStackInBytes);
-                switch (aTypeField.Name)
-                {
-                    case "Size":
-                        ASMResult.AppendLine(allocStr + " " + SizeVal);
-                        break;
-                    case "Id":
-                        ASMResult.AppendLine(allocStr + " " + IdVal);
-                        break;
-                    case "StackSize":
-                        ASMResult.AppendLine(allocStr + " " + StackSizeVal);
-                        break;
-                    case "IsValueType":
-                        ASMResult.AppendLine(allocStr + " " + IsValueTypeVal);
-                        break;
-                    case "MethodTablePtr":
-                        ASMResult.AppendLine(allocStr + " " + MethodTablePointer);
-                        break;
-                    case "IsPointer":
-                        ASMResult.AppendLine(allocStr + " " + IsPointerTypeVal);
-                        break;
-                    case "TheBaseType":
-                        ASMResult.AppendLine(allocStr + " " + BaseTypeIdVal);
-                        break;
-                    case "FieldTablePtr":
-                        ASMResult.AppendLine(allocStr + " " + FieldTablePointer);
-                        break;
-                    case "Signature":
-                        ASMResult.AppendLine(allocStr + " " + TypeSignatureLiteralLabel);
-                        break;
-                    case "IdString":
-                        ASMResult.AppendLine(allocStr + " " + TypeIdLiteralLabel);
-                        break;
-                }
+                FieldInformation.Add(new Tuple<string, Types.TypeInfo>(aTypeField.Name, FieldTypeInfo));
             }
-            ASMResult.AppendLine();
 
-            TypesTableBlock.Append(new ASM.ASMGeneric()
-            {
-                Text = ASMResult.ToString()
-            });
+            ASM.ASMOp newTypeTableOp = TargetArchitecture.CreateASMOp(ASM.OpCodes.TypeTable, 
+                TypeId, SizeVal, IdVal, StackSizeVal, IsValueTypeVal, MethodTablePointer, IsPointerTypeVal, 
+                BaseTypeIdVal, FieldTablePointer, TypeSignatureLiteralLabel, TypeIdLiteralLabel, FieldInformation);
+            TypesTableBlock.Append(newTypeTableOp);
+
             TypesTableBlock.AddExternalLabel(MethodTablePointer);
             TypesTableBlock.AddExternalLabel(FieldTablePointer);
             TypesTableBlock.AddExternalLabel(TypeSignatureLiteralLabel);
             TypesTableBlock.AddExternalLabel(TypeIdLiteralLabel);
         }
+        /// <summary>
+        /// Scans the specified type's static fields.
+        /// </summary>
+        /// <param name="TheLibrary">The library currently being compiled.</param>
+        /// <param name="TheTypeInfo">The type to scan the static fields of.</param>
+        /// <param name="StaticFieldsBlock">The ASM block for the static fields for the library currently being compiled.</param>
         private static void ScanStaticFields(ILLibrary TheLibrary, Types.TypeInfo TheTypeInfo, ASM.ASMBlock StaticFieldsBlock)
         {
             foreach (Types.FieldInfo aFieldInfo in TheTypeInfo.FieldInfos)
             {
                 if (aFieldInfo.IsStatic)
                 {
-                    string FieldID = aFieldInfo.ID;
                     Types.TypeInfo fieldTypeInfo = TheLibrary.GetTypeInfo(aFieldInfo.FieldType);
-                    int Size = /*fieldTypeInfo.IsValueType ? fieldTypeInfo.SizeOnHeapInBytes : */fieldTypeInfo.SizeOnStackInBytes;
-                    StaticFieldsBlock.Append(new ASM.ASMGeneric() {
-                        Text = string.Format("GLOBAL {0}:data\r\n{0}: times {1} db 0", FieldID, Size)
-                    });
+
+                    string FieldID = aFieldInfo.ID;
+                    string Size = fieldTypeInfo.SizeOnStackInBytes.ToString();
+
+                    ASM.ASMOp newStaticFieldOp = TargetArchitecture.CreateASMOp(ASM.OpCodes.StaticField, FieldID, Size);
+                    StaticFieldsBlock.Append(newStaticFieldOp);
                 }
             }
         }
+        /// <summary>
+        /// Scans the specified type's methods.
+        /// </summary>
+        /// <param name="TheLibrary">The library currently being compiled.</param>
+        /// <param name="TheTypeInfo">The type to scan the methods of.</param>
+        /// <param name="MethodTablesBlock">The ASM block for the methods table for the library currently being compiled.</param>
         private static void ScanMethods(ILLibrary TheLibrary, Types.TypeInfo TheTypeInfo, ASM.ASMBlock MethodTablesBlock)
         {
             string currentTypeId = TheTypeInfo.ID;
-            StringBuilder ASMResult = new StringBuilder();
+            string currentTypeName = TheTypeInfo.UnderlyingType.FullName;
 
-            ASMResult.AppendLine("; Method Table - " + TheTypeInfo.UnderlyingType.FullName);
-            ASMResult.AppendLine("GLOBAL " + currentTypeId + "_MethodTable:data");
-            ASMResult.AppendLine(currentTypeId + "_MethodTable:");
-
-            Types.TypeInfo typeTypeInfo = ILLibrary.SpecialClasses[typeof(Attributes.MethodInfoStructAttribute)].First();
-            List<Types.FieldInfo> OrderedFields = typeTypeInfo.FieldInfos.Where(x => !x.IsStatic).OrderBy(x => x.OffsetInBytes).ToList();
-
+            List<Tuple<string, string>> AllMethodInfo = new List<Tuple<string, string>>();
+            
             if (TheTypeInfo.UnderlyingType.BaseType == null || TheTypeInfo.UnderlyingType.BaseType.FullName != "System.Array")
             {
-                foreach (Types.MethodInfo anOwnMethod in TheTypeInfo.MethodInfos)
+                foreach (Types.MethodInfo aMethodInfo in TheTypeInfo.MethodInfos)
                 {
-                    if (!anOwnMethod.IsStatic && !anOwnMethod.UnderlyingInfo.IsAbstract)
+                    if (!aMethodInfo.IsStatic && !aMethodInfo.UnderlyingInfo.IsAbstract)
                     {
-                        string methodID = anOwnMethod.ID;
-                        string methodIDValue = anOwnMethod.IDValue.ToString();
+                        string methodID = aMethodInfo.ID;
+                        string methodIDValue = aMethodInfo.IDValue.ToString();
 
                         MethodTablesBlock.AddExternalLabel(methodID);
 
-                        foreach (Types.FieldInfo aTypeField in OrderedFields)
-                        {
-                            Types.TypeInfo FieldTypeInfo = TheLibrary.GetTypeInfo(aTypeField.FieldType);
-                            string allocStr = GetAllocStringForSize(
-                                FieldTypeInfo.IsValueType ? FieldTypeInfo.SizeOnHeapInBytes : FieldTypeInfo.SizeOnStackInBytes);
-                            switch (aTypeField.Name)
-                            {
-                                case "MethodID":
-                                    ASMResult.AppendLine(allocStr + " " + methodIDValue);
-                                    break;
-                                case "MethodPtr":
-                                    ASMResult.AppendLine(allocStr + " " + methodID);
-                                    break;
-                            }
-                        }
+                        AllMethodInfo.Add(new Tuple<string, string>(methodID, methodIDValue));
                     }
                 }
             }
@@ -415,41 +290,26 @@ namespace Drivers.Compiler.IL
                     MethodTablesBlock.AddExternalLabel(methodID);
                 }
 
-                foreach (Types.FieldInfo aTypeField in OrderedFields)
-                {
-                    Types.TypeInfo FieldTypeInfo = TheLibrary.GetTypeInfo(aTypeField.FieldType);
-                    string allocStr = GetAllocStringForSize(
-                        FieldTypeInfo.IsValueType ? FieldTypeInfo.SizeOnHeapInBytes : FieldTypeInfo.SizeOnStackInBytes);
-                    switch (aTypeField.Name)
-                    {
-                        case "MethodID":
-                            ASMResult.AppendLine(allocStr + " " + methodIDValue);
-                            break;
-                        case "MethodPtr":
-                            ASMResult.AppendLine(allocStr + " " + methodID);
-                            break;
-                    }
-                }
+                AllMethodInfo.Add(new Tuple<string,string>(methodID, methodIDValue));
             }
-            
-            ASMResult.AppendLine("; Method Table End - " + TheTypeInfo.UnderlyingType.FullName);
 
-            MethodTablesBlock.Append(new ASM.ASMGeneric()
-            {
-                Text = ASMResult.ToString()
-            });
+            List<Tuple<string, int>> TableEntryFieldInfos = GetSpecialClassFieldInfo(TheLibrary, typeof(Attributes.MethodInfoStructAttribute));
+
+            ASM.ASMOp newMethodTableOp = TargetArchitecture.CreateASMOp(ASM.OpCodes.MethodTable, 
+                currentTypeId, currentTypeName, AllMethodInfo, TableEntryFieldInfos);
+            MethodTablesBlock.Append(newMethodTableOp);
         }
+        /// <summary>
+        /// Scans the specified type's non-static fields.
+        /// </summary>
+        /// <param name="TheLibrary">The library currently being compiled.</param>
+        /// <param name="TheTypeInfo">The type to scan the non-static fields of.</param>
+        /// <param name="FieldTablesBlock">The ASM block for the fields table for the library currently being compiled.</param>
         private static void ScanFields(ILLibrary TheLibrary, Types.TypeInfo TheTypeInfo, ASM.ASMBlock FieldTablesBlock)
         {
             string currentTypeId = TheTypeInfo.ID;
-            StringBuilder ASMResult = new StringBuilder();
-
-            ASMResult.AppendLine("; Field Table - " + TheTypeInfo.UnderlyingType.FullName);
-            ASMResult.AppendLine("GLOBAL " + currentTypeId + "_FieldTable:data");
-            ASMResult.AppendLine(currentTypeId + "_FieldTable:");
-
-            Types.TypeInfo typeTypeInfo = ILLibrary.SpecialClasses[typeof(Attributes.FieldInfoStructAttribute)].First();
-            List<Types.FieldInfo> OrderedFields = typeTypeInfo.FieldInfos.Where(x => !x.IsStatic).OrderBy(x => x.OffsetInBytes).ToList();
+            string currentTypeName = TheTypeInfo.UnderlyingType.FullName;
+            List<Tuple<string, string, string>> AllFieldInfo = new List<Tuple<string, string, string>>();
 
             if (TheTypeInfo.UnderlyingType.BaseType == null || (TheTypeInfo.UnderlyingType.BaseType.FullName != "System.Array" &&
                                                                 TheTypeInfo.UnderlyingType.BaseType.FullName != "System.MulticastDelegate"))
@@ -465,25 +325,7 @@ namespace Drivers.Compiler.IL
                         string fieldTypeIdVal = FieldTypeInfo.ID;
 
                         FieldTablesBlock.AddExternalLabel(fieldTypeIdVal);
-
-                        foreach (Types.FieldInfo aTypeField in OrderedFields)
-                        {
-                            Types.TypeInfo structFieldTypeInfo = TheLibrary.GetTypeInfo(aTypeField.FieldType);
-                            string allocStr = GetAllocStringForSize(
-                                structFieldTypeInfo.IsValueType ? structFieldTypeInfo.SizeOnHeapInBytes : structFieldTypeInfo.SizeOnStackInBytes);
-                            switch (aTypeField.Name)
-                            {
-                                case "Offset":
-                                    ASMResult.AppendLine(allocStr + " " + fieldOffsetVal);
-                                    break;
-                                case "Size":
-                                    ASMResult.AppendLine(allocStr + " " + fieldSizeVal);
-                                    break;
-                                case "FieldType":
-                                    ASMResult.AppendLine(allocStr + " " + fieldTypeIdVal);
-                                    break;
-                            }
-                        }
+                        AllFieldInfo.Add(new Tuple<string, string, string>(fieldOffsetVal, fieldSizeVal, fieldTypeIdVal));
                     }
                 }
             }
@@ -510,53 +352,37 @@ namespace Drivers.Compiler.IL
                     FieldTablesBlock.AddExternalLabel(fieldTypeIdVal);
                 }
 
-                foreach (Types.FieldInfo aTypeField in OrderedFields)
-                {
-                    Types.TypeInfo structFieldTypeInfo = TheLibrary.GetTypeInfo(aTypeField.FieldType);
-                    string allocStr = GetAllocStringForSize(
-                        structFieldTypeInfo.IsValueType ? structFieldTypeInfo.SizeOnHeapInBytes : structFieldTypeInfo.SizeOnStackInBytes);
-                    switch (aTypeField.Name)
-                    {
-                        case "Offset":
-                            ASMResult.AppendLine(allocStr + " " + fieldOffsetVal);
-                            break;
-                        case "Size":
-                            ASMResult.AppendLine(allocStr + " " + fieldSizeVal);
-                            break;
-                        case "FieldType":
-                            ASMResult.AppendLine(allocStr + " " + fieldTypeIdVal);
-                            break;
-                    }
-                }
+                AllFieldInfo.Add(new Tuple<string, string, string>(fieldOffsetVal, fieldSizeVal, fieldTypeIdVal));
             }
 
-            ASMResult.AppendLine("; Field Table End - " + TheTypeInfo.UnderlyingType.FullName);
+            List<Tuple<string, int>> TableEntryFieldInfos = GetSpecialClassFieldInfo(TheLibrary, typeof(Attributes.FieldInfoStructAttribute));
 
-            FieldTablesBlock.Append(new ASM.ASMGeneric()
-            {
-                Text = ASMResult.ToString()
-            });
+            ASM.ASMOp newFieldTableOp = TargetArchitecture.CreateASMOp(ASM.OpCodes.FieldTable, 
+                currentTypeId, currentTypeName, AllFieldInfo, TableEntryFieldInfos);
+            FieldTablesBlock.Append(newFieldTableOp);
         }
 
-        private static string GetAllocStringForSize(int numBytes)
+        private static List<Tuple<string, int>> GetSpecialClassFieldInfo(ILLibrary TheLibrary, Type SpecialClassType)
         {
-            switch (numBytes)
+            Types.TypeInfo InformationAboutInfoStruct = ILLibrary.SpecialClasses[SpecialClassType].First();
+            List<Types.FieldInfo> InfoStruct_OrderedFields = InformationAboutInfoStruct.FieldInfos.Where(x => !x.IsStatic).OrderBy(x => x.OffsetInBytes).ToList();
+            List<Tuple<string, int>> InfoStruct_OrderedFieldInfo_Subset = new List<Tuple<string, int>>();
+            foreach (Types.FieldInfo aField in InfoStruct_OrderedFields)
             {
-                case 1:
-                    return "db";
-                    break;
-                case 2:
-                    return "dw";
-                    break;
-                case 4:
-                    return "dd";
-                    break;
-                default:
-                    return "NOSIZEALLOC";
-                    break;
+                Types.TypeInfo FieldTypeInfo = TheLibrary.GetTypeInfo(aField.FieldType);
+                InfoStruct_OrderedFieldInfo_Subset.Add(new Tuple<string, int>(aField.Name,
+                    FieldTypeInfo.IsValueType ? FieldTypeInfo.SizeOnHeapInBytes : FieldTypeInfo.SizeOnStackInBytes));
             }
+            return InfoStruct_OrderedFieldInfo_Subset;
         }
 
+        /// <summary>
+        /// Scans the specified plugged IL block.
+        /// </summary>
+        /// <param name="TheLibrary">The library currently being compiled.</param>
+        /// <param name="theMethodInfo">The method which generated the IL block.</param>
+        /// <param name="theILBlock">The IL block to scan.</param>
+        /// <returns>CompileResult.OK.</returns>
         private static CompileResult ScanPluggedILBlock(ILLibrary TheLibrary, Types.MethodInfo theMethodInfo, ILBlock theILBlock)
         {
             TheLibrary.TheASMLibrary.ASMBlocks.Add(new ASM.ASMBlock()
@@ -568,6 +394,13 @@ namespace Drivers.Compiler.IL
 
             return CompileResult.OK;
         }
+        /// <summary>
+        /// Scans the specified non-plugged IL block.
+        /// </summary>
+        /// <param name="TheLibrary">The library currently being compiled.</param>
+        /// <param name="theMethodInfo">The method which generated the IL block.</param>
+        /// <param name="theILBlock">The IL block to scan.</param>
+        /// <returns>CompileResult.OK.</returns>
         private static CompileResult ScanNonpluggedILBlock(ILLibrary TheLibrary, Types.MethodInfo theMethodInfo, ILBlock theILBlock)
         {
             CompileResult result = CompileResult.OK;
@@ -589,24 +422,27 @@ namespace Drivers.Compiler.IL
             {
                 try
                 {
-                    TheASMBlock.ASMOps.Add(new ASM.ASMComment() { Text = TheASMBlock.GenerateILOpLabel(convState.PositionOf(anOp), "") + "  --  " + anOp.opCode.ToString() + " -- Offset: " + anOp.Offset.ToString("X2") });
-
+                    string commentText = TheASMBlock.GenerateILOpLabel(convState.PositionOf(anOp), "") + "  --  " + anOp.opCode.ToString() + " -- Offset: " + anOp.Offset.ToString("X2");
+                    
+                    ASM.ASMOp newCommentOp = TargetArchitecture.CreateASMOp(ASM.OpCodes.Comment, commentText);
+                    TheASMBlock.ASMOps.Add(newCommentOp);
+                    
                     int currCount = TheASMBlock.ASMOps.Count;
                     if (anOp is ILOps.MethodStart)
                     {
-                        MethodStartOp.Convert(convState, anOp);
+                        TargetArchitecture.MethodStartOp.Convert(convState, anOp);
                     }
                     else if (anOp is ILOps.MethodEnd)
                     {
-                        MethodEndOp.Convert(convState, anOp);
+                        TargetArchitecture.MethodEndOp.Convert(convState, anOp);
                     }
                     else if (anOp is ILOps.StackSwitch)
                     {
-                        StackSwitchOp.Convert(convState, anOp);
+                        TargetArchitecture.StackSwitchOp.Convert(convState, anOp);
                     }
                     else
                     {
-                        ILOp ConverterOp = TargetILOps[(ILOp.OpCodes)anOp.opCode.Value];
+                        ILOp ConverterOp = TargetArchitecture.TargetILOps[(ILOp.OpCodes)anOp.opCode.Value];
                         ConverterOp.Convert(convState, anOp);
                     }
 

@@ -32,14 +32,36 @@ using System.Threading.Tasks;
 
 namespace Drivers.Compiler.Types
 {
+    /// <summary>
+    /// Container for information about a field loaded from a type in a library being compiled.
+    /// </summary>
     public class FieldInfo
     {
+        /// <summary>
+        /// The underlying System.Reflection.FieldInfo obtained from the library's Assembly.
+        /// </summary>
         public System.Reflection.FieldInfo UnderlyingInfo;
+        /// <summary>
+        /// The type of the field.
+        /// </summary>
+        /// <value>Gets the value of underlying info's FieldType property.</value>
         public Type FieldType { get { return UnderlyingInfo.FieldType; } }
+        /// <summary>
+        /// Whether the field is static or not.
+        /// </summary>
+        /// <value>Gets the value of underlying info's IsStatic property.</value>
         public bool IsStatic { get { return UnderlyingInfo.IsStatic; } }
 
+        /// <summary>
+        /// The offset to the beginning of the field from the start of the type, in bytes.
+        /// </summary>
+        /// <value>Gets/sets an implicitly defined field.</value>
         public int OffsetInBytes { get; set; }
 
+        /// <summary>
+        /// Generates a unique ID for the field (which can also be used as a label in assembly code).
+        /// </summary>
+        /// <value>Generates the ID from the field information and filters it to make it valid for use as an ASM label.</value>
         public string ID
         {
             get
@@ -54,8 +76,19 @@ namespace Drivers.Compiler.Types
                 }
             }
         }
+        /// <summary>
+        /// Gets the name of the field.
+        /// </summary>
+        /// <value>Gets the value of underlying info's Name property.</value>
         public string Name { get { return UnderlyingInfo.Name; } }
 
+        /// <summary>
+        /// Gets a human-readable representation of the field.
+        /// </summary>
+        /// <remarks>
+        /// Uses the field's name.
+        /// </remarks>
+        /// <returns>The string representation.</returns>
         public override string ToString()
         {
             return UnderlyingInfo.Name;
