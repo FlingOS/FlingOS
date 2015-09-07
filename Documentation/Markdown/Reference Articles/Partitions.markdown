@@ -2,7 +2,8 @@
 layout: reference-article
 title: Partitions
 date: 2015-07-22 22:44:00
-categories: docs reference
+categories: [ docs, reference ]
+parent_name: Disk Devices
 ---
 
 # Introduction
@@ -21,6 +22,7 @@ This article will cover disk partitioning in general and make mention of the var
 Partitions have a modest amount of history, most of which relates to any single partitioning scheme (particularly MBR on PCs). However, there is something to be said for where partitions came from.
 
 Before hard disk drives existed there were essentially two alternative storage mediums; these were floppy discs and tape drives. Neither of the two mediums could store large amounts of data (by modern standards - I'm sure it was large at the time!) so there were two significant things nobody wanted to store on them:
+
 1. More data than necessary - File systems were often highly optimised to minimise the amount of space wasted on file and folder descriptors.
 2. A second operating system - Dual booting wasn't that widespread and was very expensive. Add to that the fact that despite the wide range of operating systems, they would often only work on one model of hardware and dual booting wasn't really an option.
 
@@ -37,6 +39,7 @@ A partitioning scheme a system for dividing up the space on a storage device int
 
 ## Why is a partitioning scheme useful? (Advantages)
 Partitions are logically entirely separate (even if they reside next to each other on disk). This means you can have different file systems in each partition. This is useful for a number of reasons:
+
 1. Multiple operating systems, which may require different file systems, can be installed.
 2. Certain sets of data can be kept separate thus reducing risk of corruption or security breaches.
 3. One partition could contain ordinary data while another contains an encrypted file system. One for the OS (or bootcode) and another for the user's files.
@@ -48,6 +51,7 @@ Typically, a partitioning scheme consists of a table of entries where each entry
 
 ## Disadvantages
 There are several disadvantages to partitioning schemes, particularly if using lots of partitions. These are:
+
 1. The partition table (and partition alignment requirements) reduce the space available on the disk for use by file systems.
 2. If the OS (or user) frequently accesses two or more partitions on a single disk, it can reduce performance as the read/write head has to move relatively large distances back and forth to read from the separate areas.
 3. Disk fragmentation (which is a measure of the largest available contiguous block of storage space) is made worse since the maximum contiguous block is reduced the to size of the largest partition (or even the maximum size of a file inside any of the file systems in any of the partitions).
@@ -81,11 +85,13 @@ There is little to no compatibility between most partitioning schemes. The only 
 
 ## Overview
 Partitioning software consist of three significant parts:
+
 1. Reader: Reading partition tables to access file systems
 2. Formatter: Formatting a drive (or reformatting a drive) to a new partitioning scheme or to add new partitions
 3. Recovery: Recovering corrupted or otherwise lost data from a drive (which can include corruption of the partition table itself)
 
 At a hobby OS level, only steps 1 and 2 need be implemented (and often step 2 can be avoided by using virtual disk editing software). Step 1 is clearly necessary. Step 2 is only necessary if there is no alternative way to format the storage device in question. Examples of alternative methods for formatting include:
+
 * Piggy-backing a hard drive on a Linux, Windows or OSX machine to format it
 * Plugging in a USB stick and formatting it as normal
 * Using virtual disk software to format a virtual hard drive for use in a virtual machine
@@ -114,7 +120,7 @@ It seems strange but a significant number of developers confuse partitioning wit
 
 ---
 
-# References
+# Further Reading
 
 *[GPT]: GUID Partition Table
 *[MBR]: Master Boot Record

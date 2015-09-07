@@ -2,7 +2,7 @@
 layout: reference-article
 title: Displays & Graphics
 date: 2015-07-23 12:20:00
-categories: docs reference
+categories: [ docs, reference ]
 ---
 
 # Introduction
@@ -39,6 +39,7 @@ The second part of video is the transmission of display data from a PC to a phys
 
 ## What are the basic display technologies?
 There are a few basic types of display technology, only one of which I imagine the average reader will have thought about. These are:
+
 - Pixel displays (e.g. LED, LCD, Plasma)
 - Pin screens (e.g. Braille displays)
 - Segment displays (e.g. as used in digital clocks/watches)
@@ -48,6 +49,7 @@ Only the first of these really uses pixel displays. The rest may use a similar i
 
 ## What are the basic graphics technologies?
 There are a few basic types of graphics technology in common use nowadays. These are:
+
 - Pixel images (e.g. GIF, JPEG, PNG)
 - Sprite graphics (largely hardware & software specific. Only widespread example: Tiles of Icons combined with CSS)
 - Vector graphics (e.g. SVG)
@@ -60,20 +62,24 @@ There are a few basic types of graphics technology in common use nowadays. These
 
 ## What are the basic video technologies?
 There are a few basic video technologies for each type. For the first type (media streaming/playback):
- - MP4 (incorporating H.264 and MP3)
- - FLV (flash video)
- - WebM
- - ASF
- - ISMA
 
- For the second type (video connections):
- - VGA (Video Graphics Array)
- - HDMI (High Definition Media Interface)
- - Display Port
- Older (rapidly less common) technologies include:
- - Composite Video
- - SCART (Syndicat des Constructeurs d'Appareils Radiorécepteurs et Téléviseurs)
- - S-Video (Separate Video / Super Video / Y/C)
+- MP4 (incorporating H.264 and MP3)
+- FLV (flash video)
+- WebM
+- ASF
+- ISMA
+
+For the second type (video connections):
+ 
+- VGA (Video Graphics Array)
+- HDMI (High Definition Media Interface)
+- Display Port
+ 
+Older (rapidly less common) technologies include:
+ 
+- Composite Video
+- SCART (Syndicat des Constructeurs d'Appareils Radiorécepteurs et Téléviseurs)
+- S-Video (Separate Video / Super Video / Y/C)
 
 ## Why so many different technologies?
 In the pursuit quality (and usually to achieve that, performance) hundreds of compromises are made. For the many different applications and situations that displays, graphics and video are used in, different compromises are made. Here are just a few examples of the different compromises and situations to which they apply.
@@ -88,9 +94,24 @@ In the pursuit quality (and usually to achieve that, performance) hundreds of co
 ## How do they all fit together?
 Displays, graphics and video all fit together relatively nicely (when you ignore all the incompatible, proprietary interfaces at the technical level). Essentially it's all one big chain of components linked together. It looks roughly like this:
 
-    [Application]-.-->Graphics pipeline (e.g. 2D, 3D rendering)----------------|--->Display controller--->(Video) Cable to display (e.g. HDMI)--->Screen
-                  |-->Video pipeline    (e.g. MP4 file decode)---.-->(Video)---^
-                                                                 |-->(Audio)------->Speaker controller
+``` bash
+[Application]
+      |
+      |
+Graphics pipeline ---------> Video pipeline
+(e.g. 2D/3D rendering)       (e.g. MP4 file decode)
+      |                           |
+      |                           |
+Display controller <--------------^--------------> Audio pipeline 
+      |                                                  |
+      |                                                  |
+(Video) Cable to display                           Speaker controller
+  (e.g. HDMI)
+      |
+      |
+    Screen
+
+```
 
 What this shows is how an application can use graphics to render 2D and 3D stuff along with video to play an MP4 file. The video is split into video and audio, with audio sent to the speakers. The video part of the MP4 file is merged (by the graphics card) with the application graphics (the image output) and then sent to the display controller. The display controller then uses video (described as type 2 above, e.g. HDMI) to send that to the physical screen.
 
@@ -107,6 +128,7 @@ Pixels in software are distinct from pixels in hardware primarily because hardwa
 Pixels are a single dot of colour on the screen. The number of pixels which span the width and height of the screen define the resolution. Modern HD displays have a resolution of 1920x1080 pixels. Each pixel consists of three light components - red, green and blue. Mixing red, green and blue can form (almost) any colour. Each component (RGB) has an intensity value with 0 meaning off (no light - not black!) and 255 (max value of a byte) meaning fully on (max brightness/full intensity - not white!). If all the components are 0, you get black. If all the components are 255, you get white. If just the red component was 255 and the others 0, you get bright red. If all the components were 128 you would get a dull grey colour.
 
 There are alternative ways of representing pixel colour (most of which get translated in RGB at some point). The few main ones are listed below.
+
 | Name | Description |
 |:----:|:------------|
 | RGB  | Red, Green, Blue components as intensity values from 0 to 255 (normally) |
@@ -121,6 +143,7 @@ Each of these colour systems may also be extended to include an alpha component 
 2D graphics is conceptually fairly simple. You have an X-Y plane which is blank. Blank in a computing sense just means filled with all one colour. Often this is black but it can be set to any colour you like. During debugging, bright red or blue is often used to make "background leaks" very obvious. The same technique is used in 3D graphics.
 
 2D graphics makes used of the concept of painting. To paint an area, conceptually means to wipe a brush across the entire area. A brush is a thing which defines how to transform the starting value of a pixel to the end value. There are three main types of brush.
+
 | Name     | Description     |
 | :------------- | :------------- |
 | Solid Brush    | Ignores the existing colour of a pixel and just replaces it with a solid colour. Used to fill pixels with a set colour.       |
@@ -134,6 +157,7 @@ Each of these colour systems may also be extended to include an alpha component 
 The advantage of bitmaps over SVG is that for highly detailed or varied images (such as a photograph) it uses less space to save all the data. However, for an image that consists of large areas of the same colour (such as a logo), SVG may be better. However, SVG has one key advantage. SVG specifies shapes and relative sizes. So to increase the size of an SVG image, you simply increase all the relative sizes and recalculate which pixels are filled in. This allows it to retain 100% sharpness for basic shapes. For a bitmap, however, when you increase or decrease the size of the image, the image has to be re-sampled and the computer must guess the colour of the extra (or fewer) pixels. This means bitmap images do not scale as well as SVG. However, if you apply some thought, it should be apparent that SVG would be just as (if not more) useless for a photograph. You wouldn't want each pixel scaled as just a square (which is what SVG would do).
 
 2D graphics makes use of one final key concept - layers. Layers are complete images of the screen except that the background is transparent. Each layer forms one (or more) parts of the final image. Layers are stacked on top of one another, which higher images blocking out lower images. This allows more complex outputs to be produced. Here are two examples of using layers.
+
 1. Cursor layer and application layer. Allows the computer cursor to be painted on top of the application without affecting the application's image.
 2. Character layer and background layer. Allows a character in a 2D game to be moved around and painted on top of a background.
 
@@ -180,6 +204,7 @@ Lastly, I would like to stress the importance of the fact that (99% of the time)
 
 ### 4D
 The fourth dimension has been interpreted in many ways. Here are a couple of common ones:
+
 1. As time - the fourth axis is detached and is a time axis.
 2. As the secondary view used when performing actual 3D rendering/projection. In this case you get two 2D images (projections of the scene) which are taken from slightly different positions and angles. By showing one to one eye of the viewer, and the other to their other eye, what the viewer sees appears truly 3D.
 3. As a genuinely fourth dimension - welcome to the crazy world of higher dimensions... (I shall have to leave it to the mathematicians and physicists to explain this one!)
@@ -234,6 +259,7 @@ Due to manufacturing and construction methods used (and, in my opinion, probably
 
 ### 1971 - LCD
 LCD first made its appearance in 1971 and has since become one of the most popular display technologies. This is probably largely due to three factors:
+
 1. It is more energy efficient than CRT
 2. It produces a better quality of image than plain LED (brighter, better gamut amongst other factors)
 3. LCD screens can be made thinner and lighter than most other screen technologies.
@@ -334,31 +360,46 @@ Video has largely kept pace or been ahead of graphics and displays and so has a 
 There are lots of different connectors and transmission standards, all of which try to balance colour quality, frame rate, minimising interference and various other factors. For the purposes of this article I will mention only the most common (and possibly most significant) standards.
 
 #### 1956 : Composite video
-In 1956 the composite video standard was introduced. Composite video works by ??????????? TODO 
+In 1956 the composite video standard was introduced. Composite video is an analogue transmission standard that can typically reach 480i or 576i quality. It encodes the video data onto a single channel (so only a single cable is required). The exact encoding varies between NTSC, PAL and SECAM but the basic idea is that the HSL and frame sync signals are modulated (i.e. combined) into a single signal. The actual modulation process is more complex than can be described here.
 
 The composite video standard was so significant that it is still in use today. A significant number of televisions and systems still have composite video connectors and there's probably a fair few buildings with the cables still built in. This seems to only be the case in the TV/DVD/Console market, however, since VGA rapidly replaced S-Video and Composite video for traditional workstations.
 
-#### 1979 : S-Video
-In 1979 the S-video standard was introduced as ??? (?an improvement to composite video?). Composite video works by ??????????? TODO 
-???
+#### 1977 : SCART
+SCART (meaning Syndicat des Constructeurs d'Appareils Radiorécepteurs et Téléviseurs) was developed in the 1970s and first appeared on TVs in 1977. It was only ever widely used in Europe (in place of Composite video and S-video). It had chunky 21-pin connector, could carry higher quality video than composite or S-video and also carried audio. However, it was still anologue so recent digital standards have almost entirely replaced it. 
 
-The S-Video standard has also hung around for a long time with ???
+SCART was developed to make connecting video devices much easier. It had a connector which made incorrect connections nearly impossible and also had support for transmitting composite and RGB signals (and, by the end of the 1980s, S-video as well). It also had support for waking devices from standby and automatic detection of input sources. Lastly, it was a bi-directional standard which allowed for chaining devices, recording and encrypted signals. Encrypted signals were frequently used for Pay-to-view TV along with providing basic Digital Rights Management during video-playback (though plenty of ways were developed to circumvent this).
+
+#### 1979 : S-Video
+In 1979 the S-video standard was introduced as a higher-quality version of composite video. S-video stands for Separate Video and is sometimes called Y/C - Luminance / Chroma. It works in essentially the same way as Composite video does but uses separate wires in the cable for the luminance and chroma signals. This allows it to achieve better quality.
+
+The S-Video standard has also hung around for a long time though in many regions TVs and games consoles did not have S-video input or output ports. This was a significant problem in Europe, where SCART cables and connectors were the norm, because games consoles such as Sony's PlayStation were not fitted with SCART output. 
 
 #### 1987 : VGA
+Video Graphics Array (VGA) was introduced in 1987 by IBM alongside the PS2 standard. It was fairly rapidly and widely adopted by the rest of the industry. The name VGA itself has become synonymous with both the hardware and software standards and even the 640x480 resolution which it started with. Later versions of VGA (XGA, SVGA and so on) added higher resolutions but are often referred to simply as VGA. 
 
+VGA became the de-facto standard for graphics and displays for PCs because of its quality and (after a time) widespread support leading to great compatibility. Many manufacturers contributed their own additions and variations but the basic standard and increased levels of quality were always supported. VGA has sufficient bandwidth to support 1080p HD displays and even higher (recently 4K and 8K). However, most current displays remain at 1080p quality.
 
-#### 1999 : DVI
+VGA is so significant that FlingOS dedicates an entire article to just one small subsection of VGA - VGA text-mode. Please see that article for more detail. Other articles, already or will in future, cover VGA graphics in more detail.
+
 #### 2003 : HDMI
+While other standards were developed between VGA and HDMI, none of them stuck and gained anything like the same level of popularity. HDMI stands for High Definition Multimedia Interface and is the second but more significant digital video standard.
 
-### Formats
+HDMI is now beginning to replace VGA and all other video standards. HDMI is now the primary output port and input port for most laptops, consoles and TVs. The data transmitted over HDMI has standard electrical signals and a basic transport protocol. However, the data itself can have a variety of different encoding formats, a large proportion of which are supported by most devices. HDMI includes both audio and video transmission along with a variety of features such as Digital Rights Management controls. 
 
-- Composite
+HDMI is also electrically and software backwards compatible with DVI, the first digital video standard (Digital Video Interface). 
+
+### Formats & Quality
+
+- Composite / Y/C / HSL
 - VHS
 - PAL
 - NTSC
+- RGB
+- sRGB
 - 720p / 720i
 - 1080p / 1080i
-- Ultra-HD TV
+- Ultra-HD TV 
+- 4K / 8K
 
 ### Encode and decode
 - Video codec (hardware) for compress / decompress
@@ -413,15 +454,33 @@ The S-Video standard has also hung around for a long time with ???
 # FAQ & Common Problems
 
 ## "I want to write a graphics driver" - Day 1
+"Woohoo! Excited for this! I'll get it working in no time and have this amazing UI that's going to be so much better than Windows!"
+
+...
+
+No chance. Even getting low-resolution displays with just rectangles and lines is hard work (and will take a few weeks or months). If you want to support more than just a virtual machine (i.e. actual hardware support) then add even more time for working out how the specific, real hardware that you own works. 
+
+Beyond basic VGA support, you then have to consider the entire graphics stack. As a basic example, displaying lines and text to any reasonable quality will require anti-aliasing support, font support, vector graphics (or similar) and if you want to add the cursor, some degree of buffering/layering. All of that is the "relatively simple" stuff. Don't expect to have an entire graphics driver working in a week because you won't. It will take a very long time.
 
 ## "I want to write a graphics driver" - Day 2
+"Naah that can't be right. People must be really good at doing this by now, it won't take long."
+
+You'll realise soon enough.
 
 ## "I want to write a graphics driver" - Year 2
+"Yay! I reached graphics that are vaguely close to Windows graphics. Now then, how do I use the graphics card and/or do video decode and playback...?"
+
+Well done! Impressed you stuck at it. Keep going, I'm sure you don't need advice from me by now.
 
 ## After the graphics driver (or along the way)
 
+- All the stuff to make use of the graphics
+- Video encode/decode
+- Actually making use of a graphics card
+- UI / UX design and software stack
+
 ---
 
-# References
+# Further Reading
 
 *[acronym]: meaning
