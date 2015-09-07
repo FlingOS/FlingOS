@@ -41,9 +41,15 @@ namespace Kernel.Hardware.ATA
         /// The data port.
         /// </summary>
         public readonly IO.IOPort Data;
-        
-        // Error Register: BAR0 + 1; // Read Only
-        // Features Register: BAR0 + 1; // Write Only
+
+        /// <summary>
+        /// Error register - read only.
+        /// </summary>
+        public readonly IO.IOPort Error;
+        /// <summary>
+        /// Features register - write only.
+        /// </summary>
+        public readonly IO.IOPort Features;
         
         /// <summary>
         /// The sector count.
@@ -103,6 +109,8 @@ namespace Kernel.Hardware.ATA
             //BAR of alternative registers
             UInt16 xBAR1 = (UInt16)(isSecondary ? 0x0374 : 0x03F4);
             Data = new IO.IOPort(xBAR0);
+            Error = new IO.IOPort(xBAR0, 1);
+            Features = new IO.IOPort(xBAR0, 1);
             SectorCount = new IO.IOPort(xBAR0, 2);
             //Logical block address
             LBA0 = new IO.IOPort(xBAR0, 3); //Lo-bits

@@ -42,6 +42,10 @@ namespace Kernel.Hardware.Keyboards
         /// </summary>
         protected IO.IOPort DataPort = new IO.IOPort(0x60);
         /// <summary>
+        /// The keyboard command port.
+        /// </summary>
+        protected IO.IOPort CommandPort = new IO.IOPort(0x64);
+        /// <summary>
         /// The interrupt handler Id returned when the interrupt handler is set.
         /// Use to remove the interrupt handler when disabling.
         /// </summary>
@@ -56,7 +60,7 @@ namespace Kernel.Hardware.Keyboards
             //  because then any one scancode would be processed multiple times!
             if (!enabled)
             {
-                InterruptHandlerId = Interrupts.Interrupts.AddIRQHandler(1, InterruptHandler, this, false, false, "PS2");
+                InterruptHandlerId = Interrupts.Interrupts.AddIRQHandler(1, InterruptHandler, this, true, false, "PS2");
                 DeviceManager.AddDevice(this);
                 enabled = true;
             }
@@ -148,6 +152,26 @@ namespace Kernel.Hardware.Keyboards
                         }
                         break;
                     }
+            }
+        }
+
+        [Compiler.NoGC]
+        [Compiler.NoDebug]
+        public void Reset()
+        {
+            // If the driver is enabled
+            if (enabled)
+            {
+                // Wait for the Input Buffer Full flag to clear
+                byte StatusRegValue = 0x02;
+                while ((StatusRegValue & 0x02) != 0)
+                {
+                    StatusRegValue = CommandPort.Read_Byte();
+                }
+
+                // Send the command | options 
+                //          (0xF0   | 0x0E    - pulse only line 0 - CPU reset line)
+                CommandPort.Write_Byte(0xFE);
             }
         }
 

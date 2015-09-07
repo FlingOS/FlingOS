@@ -391,7 +391,7 @@
                     protocol which allows commands for other drive types to be controlled. 
                   </para>
                   <para>
-                    Fling OS currently only supports PATA (hard disk) devices and not PATAPI (CD ROM) 
+                    FlingOS currently only supports PATA (hard disk) devices and not PATAPI (CD ROM) 
                     devices. However, many modern laptops and PCs do not come with CD drives and 
                     external drives are usually attached via USB. This means that CD drive support is 
                     fairly unnecessary for a hobby OS.
@@ -720,7 +720,7 @@
                   <para>
                     A number of enumerables are used in the implementation so their details are 
                     presented here. All of these enumerations can be found in the places specified 
-                    in the Fling OS code.
+                    in the FlingOS code.
                   </para>
                   <code lang="" tabSize="4">
 ControllerID (inside ATA class)
@@ -1242,7 +1242,7 @@ IO.LBA2.Write_Byte((byte)((aSectorNo &amp; 0xFF0000) &gt;&gt; 16));
                     disks. It also includes code for cleanly handling PATAPI, SATA and SATAPI devices.
                   </para>
                   <para>
-                    The code is a direct copy of the Fling OS source code from 3rd February 2015. Most is in C# but
+                    The code is a direct copy of the FlingOS source code from 3rd February 2015. Most is in C# but
                     for reference the IO Port x86-32bit assembler code is included.
                   </para>
               </content>
@@ -1304,7 +1304,7 @@ IO.LBA2.Write_Byte((byte)((aSectorNo &amp; 0xFF0000) &gt;&gt; 16));
                   <para>
                     Some hard-disk and CD drives come with locking or security mechanisms which 
                     prevent them being read and/or written to until the lock is switched off or 
-                    a security code is passed. Fling OS currently does not handle these devices. 
+                    a security code is passed. FlingOS currently does not handle these devices. 
                     However, I have yet to come across one "in the wild" so if you've found one, 
                     good work! Google just became your best friend... ;)
                   </para>
@@ -1316,7 +1316,7 @@ IO.LBA2.Write_Byte((byte)((aSectorNo &amp; 0xFF0000) &gt;&gt; 16));
                   <para>
                     Take a look at the sample code which demonstrates how to detect and avoid 
                     PATAPI/SATA/SATAPI devices. If you want PATAPI/SATA/SATAPI/RAID support, 
-                    please check the other Fling OS reference articles or research further online.
+                    please check the other FlingOS reference articles or research further online.
                   </para>
               </content>
           </section>

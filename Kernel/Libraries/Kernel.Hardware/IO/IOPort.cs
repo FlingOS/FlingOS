@@ -36,7 +36,6 @@ namespace Kernel.Hardware.IO
     /// Represents an IO port.
     /// </summary>
     [Compiler.PluggedClass]
-    [Drivers.Compiler.Attributes.PluggedClass]
     public class IOPort : FOS_System.Object
     {
         /// <summary>

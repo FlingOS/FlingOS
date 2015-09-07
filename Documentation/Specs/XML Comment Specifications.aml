@@ -1,0 +1,868 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<topic id="f046a193-a8bd-43e0-b401-8a964a1445bf" revisionNumber="1">
+  <developerConceptualDocument
+    xmlns="http://ddue.schemas.microsoft.com/authoring/2003/5"
+    xmlns:xlink="http://www.w3.org/1999/xlink">
+
+    <!--
+    <summary>
+      <para>Optional summary abstract</para>
+    </summary>
+    -->
+
+    <introduction>
+      <autoOutline />
+
+      <para>
+        This document lays out specifications for the use of XML comment documentation and the various tag
+        types in the FlingOS™ source code.
+      </para>
+    </introduction>
+
+    <!-- 
+      - Types of tag
+            - c
+            - Code
+            - Example
+            - Exception
+            - List
+            - Para
+            - Param
+            - Paramref
+            - Remarks
+            - Returns
+            - See
+            - Seealso
+            - Summary
+            - Value
+      - When to use tags
+      - Where to use tags
+      - Which tags to use
+      - Tag specifications:
+            - c
+            - Code
+            - Example
+            - Exception
+            - List
+            - Para
+            - Param
+            - Paramref
+            - Remarks
+            - Returns
+            - See
+            - Seealso
+            - Summary
+            - Value
+    -->
+      
+    <section address="TypesOfTag">
+      <title>Types of XML Comment Tag</title>
+      <content>
+        <para>
+          This section outlines the types of tag and briefly summarises their expected use. A full specification
+          with examples is given later. This topic is not  often discussed online but many people have different 
+          opinions. The MSDN documentation is thin at best and newer versions of SHFB also output warnings about 
+          missing tags despite the MSDN documentation's specification.
+        </para>
+      </content>
+      <sections>
+        <section address="TypesOfTag_c">
+          <title>c</title>
+          <content>
+            <para>
+              This tag should be used to mark a single line or few words as code. It should be used inside
+              summary, remark and example tags.
+            </para>
+            <code language="xml" title="e.g.">
+              &lt;c&gt;int x = 1;&lt;/c&gt;
+            </code>
+          </content>
+        </section>
+      
+        <section address="TypesOfTag_Code">
+          <title>Code</title>
+          <content>
+            <para>
+              This tag should be used to mark multiple lines as code. It should be used inside remark or 
+              example tags.
+            </para>
+            <code language="xml" title="e.g.">
+              &lt;code&gt;
+                // The code goes here
+              &lt;/code&gt;
+            </code>
+          </content>
+        </section>
+          
+        <section address="TypesOfTag_Example">
+          <title>Example</title>
+          <content>
+            <para>
+              This tag should be used to provide example code for using a type, property or method. It should be 
+              applied to classes and methods and occasionally on properties.
+            </para>
+            <code language="xml" title="e.g.">
+              &lt;example&gt;
+                &lt;para&gt;
+                  Description of the example.
+                &lt;/para&gt;
+                &lt;para&gt;
+                  Explanation of the example.
+                &lt;/para&gt;
+                &lt;code&gt;
+                  // The example code goes here
+                &lt;/code&gt;
+              &lt;/example&gt;
+            </code>
+          </content>
+        </section>
+        
+        <section address="TypesOfTag_Exception">
+          <title>Exception</title>
+          <content>
+            <para>
+              This tag should be used to give details of any exceptions deliberately / actively thrown 
+              by a method. This is especially important in FlingOS, since FlingOS does not use the 
+              traditional exception handling mechanisms in the kernel. The <codeInline>cref</codeInline>
+              attribute should be set to link to the type of the exception.
+            </para>
+            <code language="xml" title="e.g.">
+              &lt;exception cref="Kernel.FOS_System.Exception"&gt;Description of the exception&lt;/exception&gt;
+            </code>
+          </content>
+        </section>
+                
+        <section address="TypesOfTag_List">
+          <title>List</title>
+          <content>
+            <para>
+              This tag should be used to create a bulleted or numbered list of items in a description. It
+              should be used inside summary, remarks or example tags and occasionally inside param tags. 
+              See full specification for how to create a table rather than a simple list (as shown below).
+            </para>
+            <code language="xml" title="e.g.">
+              &lt;list type="bullet|number"&gt;
+                &lt;item&gt;
+                  &lt;description&gt;A bullet item 1&lt;/description&gt;
+                &lt;/item&gt;
+                &lt;item&gt;
+                  &lt;description&gt;A bullet item 2&lt;/description&gt;
+                &lt;/item&gt;
+              &lt;/list&gt;
+            </code>
+          </content>
+        </section>
+        
+        <section address="TypesOfTag_Para">
+          <title>Para</title>
+          <content>
+            <para>
+              This tag should be used to create paragraphs within a description. Paragraphs should be used
+              as per normal English grammar, to make text more easily readable. This tag should be used
+              inside of summary, remarks, example, param, returns, value, list->description and exception tags
+              as appropriate.
+            </para>
+            <code language="xml" title="e.g.">
+              &lt;para&gt;
+                A paragraph of text. (Always start body of text on a new line from the para tag.)
+              &lt;/para&gt;
+            </code>
+          </content>
+        </section>
+        
+        <section address="TypesOfTag_Param">
+          <title>Param</title>
+          <content>
+            <para>
+              This tag should be used to provide a description of a parameter of a method. It should be applied
+              only to methods. Try to keep the description as succinct as possible but make sure it's useful.
+              When possible, supply more information than just what the parameter name says.
+            </para>
+            <code language="xml" title="e.g.">
+              &lt;param name="TheParamName"&gt;Description of the parameter.&lt;/param&gt;
+            </code>
+          </content>
+        </section>
+        
+        <section address="TypesOfTag_Paramref">
+          <title>Paramref</title>
+          <content>
+            <para>
+              This tag should be used to make references to parameters of a method into links. This tag 
+              should be used whenever a parameter is mentioned in a description. This tag should be used
+              only on methods and only inside summary, remarks, example param, returns and exception tags.
+            </para>
+            <code language="xml" title="e.g.">
+              &lt;paramref name="TheParamName"/&gt;
+            </code>
+          </content>
+        </section>
+        
+        <section address="TypesOfTag_Remarks">
+          <title>Remarks</title>
+          <content>
+            <para>
+              This tag should be used to provide additional notes or information about a class, method, field
+              or property. Temporary notes should be placed in this tag not inside block quotes inside a class 
+              or method.
+            </para>
+            <code language="xml" title="e.g.">
+              &lt;remarks&gt;
+                &lt;para&gt;
+                  A note or piece of information.
+                &lt;/para&gt;
+              &lt;/remarks&gt;
+            </code>
+          </content>
+        </section>
+  
+        <section address="TypesOfTag_Returns">
+          <title>Returns</title>
+          <content>
+            <para>
+              This tag should be used to provide a description of the return value of a method or property. When
+              possible, provide more information than the method summary provides.
+            </para>
+            <code language="xml" title="e.g.">
+              &lt;returns&gt;A description of the return value.&lt;/returns&gt;
+            </code>
+          </content>
+        </section>
+
+        <section address="TypesOfTag_See">
+          <title>See</title>
+          <content>
+            <para>
+              This tag should be used to create links within a description between classes, methods, 
+              properties or fields which a developer may find useful to know about. These links should only 
+              be put in when they provide useful understanding or insight about the target. This tag should 
+              only be used from within summary, remarks, example, param, returns or exception tags.
+            </para>
+            <code language="xml" title="e.g.">
+              &lt;see cref="Namespace.Class.Method(Namespace.Class,Namespace.Class)" /&gt;
+            </code>
+          </content>
+        </section>
+
+        <section address="TypesOfTag_Seealso">
+          <title>Seealso</title>
+          <content>
+            <para>
+              This tag should be used to create links between classes, methods, properties or fields
+              which a developer might find useful to know about. These links should only 
+              be put in when they provide useful understanding or insight about the target. This tag
+              puts the links in the <quoteInline>See Also</quoteInline> section of the documentation page.
+            </para>
+            <code language="xml" title="e.g.">
+              &lt;seealso cref="Namespace.Class.Member" /&gt;
+            </code>
+          </content>
+        </section>
+
+        <section address="TypesOfTag_Summary">
+          <title>Summary</title>
+          <content>
+            <para>
+              This tag should be used to provide a useful, succinct description of a class, method, property
+              or field. If only one paragraph is necessary, the <codeInline>para</codeInline> tag is optional.
+            </para>
+            <code language="xml" title="e.g.">
+              &lt;summary&gt;
+                Description goes here
+              &lt;/summary&gt;
+            </code>
+          </content>
+        </section>
+
+        <section address="TypesOfTag_Value">
+          <title>Value</title>
+          <content>
+            <para>
+              This tag should be used to provide description of the actual value or internal workings of a 
+              property. 
+            </para>
+            <code language="xml" title="e.g.">
+              &lt;value&gt;
+                The Capacity property gets/sets the capacity of the list. If the capacity is set, it
+                calls the &lt;see cref="ExpandCapacity(System.Int32)"/&gt; method as necessary.
+              &lt;/value&gt;
+            </code>
+          </content>
+        </section>
+      
+      </sections>
+    </section>
+
+    <section address="WhenToUseTags">
+      <title>When to use tags</title>
+      <content>
+        <para>
+          Some tags should always be used, others should only be used when they provide useful information. 
+          This section lays out the conditions for use of top-level tags only. Sub-tags (such as para, code, etc.)
+          should be used as appropriate according to their specifications.
+        </para>
+        <list class="bullet">
+          <listItem>
+            <para>Always apply:</para>
+            <list class="nobullet">
+              <listItem>
+                <para>Summary,</para>
+              </listItem>
+              <listItem>
+                <para>Remarks,</para>
+              </listItem>
+              <listItem>
+                <para>Exception (if any),</para>
+              </listItem>
+              <listItem>
+                <para>Param (if any),</para>
+              </listItem>
+              <listItem>
+                <para>Returns (if not void),</para>
+              </listItem>
+            </list>
+          </listItem>
+          <listItem>
+            <para>Apply if useful:</para>
+            <list class="nobullet">
+              <listItem>
+                <para>Example,</para>
+              </listItem>
+              <listItem>
+                <para>Seealso,</para>
+              </listItem>
+              <listItem>
+                <para>Value</para>
+              </listItem>
+            </list>
+          </listItem>
+        </list>
+      </content>
+    </section>
+    
+    <section address="WhereAndHowToUseTags">
+      <title>Where and how to use tags</title>
+      <content>
+        <para>
+          Each tag type specifies which code elements it can be applied to. However, there are a few
+          generic location and formatting related requirements for XML comments in FlingOS code. 
+          These are as follows.
+        </para>
+        <list class="bullet">
+          <listItem>
+            <para>XML comments should always come before attributes.</para>
+            <code language="c#" title="e.g.">
+              /// &lt;summary&gt;
+              ///   A summary description
+              /// &lt;/summary&gt;
+              [AnAttribute()]
+              public class X 
+              {
+                  /// &lt;summary&gt;
+                  ///   Another summary description
+                  /// &lt;/summary&gt;
+                  [ASecondAttribute()]
+                  public void AMethod() 
+                  {
+                  }
+              }
+            </code>
+          </listItem>
+          <listItem>
+            <para>
+              XML comments should always be vertically aligned with the element to which they are applied.
+            </para>
+            <code language="c#" title="e.g. This is OK">
+              /// &lt;summary&gt;
+              ///   A summary description
+              /// &lt;/summary&gt;
+              public class X 
+              {
+                  /// &lt;summary&gt;
+                  ///   Another summary description
+                  /// &lt;/summary&gt;
+                  public void AMethod() 
+                  {
+                  }
+              }
+            </code>
+            <code language="c#" title="e.g. This is not OK">
+              /// &lt;summary&gt;
+              ///   A summary description
+              /// &lt;/summary&gt;
+              public class X 
+              {
+              /// &lt;summary&gt;
+              ///   Another summary description
+              /// &lt;/summary&gt;
+                  public void AMethod() 
+                  {
+                  }
+              }
+            </code>
+          </listItem>
+          <listItem>
+            <para>Block content should be 4-space or tab indented each time a new block starts.</para>
+            <code language="c#" title="e.g. This is OK">
+              /// &lt;summary&gt;
+              ///   A summary description
+              /// &lt;/summary&gt;
+              public class X 
+              {
+              }
+            </code>
+            <code language="c#" title="e.g. This is not OK">
+              /// &lt;summary&gt;
+              /// A summary description
+              /// &lt;/summary&gt;
+              public class X 
+              {
+              }
+            </code>
+          </listItem>
+          <listItem>
+            <para>
+              Block content should always start on a new line from the start tag. The end tag should also be 
+              on a new line.
+            </para>
+            <code language="c#" title="e.g. This is OK">
+              /// &lt;summary&gt;
+              ///   A summary description
+              /// &lt;/summary&gt;
+              public class X 
+              {
+              }
+            </code>
+            <code language="c#" title="e.g. This is not OK">
+              /// &lt;summary&gt;A summary description
+              /// &lt;/summary&gt;
+              public class X 
+              {
+              }
+            </code>
+            <code language="c#" title="e.g. This is not OK">
+              /// &lt;summary&gt;A summary description&lt;/summary&gt;
+              public class X 
+              {
+              }
+            </code>
+            <code language="c#" title="e.g. This is not OK">
+              /// &lt;summary&gt;
+              /// A summary description&lt;/summary&gt;
+              public class X 
+              {
+              }
+            </code>
+          </listItem>
+        </list>
+      </content>
+    </section>
+         
+    <section address="TagSpecifications">
+      <title>Tag Specifications</title>
+      <sections>
+        <section address="TagSpecifications_c">
+          <title>c</title>
+          <content>
+            <para>
+              This tag should be used to mark a single line or few words as code. It should be used inside
+              summary, remark and example tags.
+            </para>
+            <para>
+              Single-line code marked with this tag should be of at least one of the following forms:
+            </para>
+            <list class="bullet">
+              <listItem>
+                <para>A complete statement (including semi-colon. If it includes a comment, include the double slash) or</para>
+              </listItem>
+              <listItem>
+                <para>A single variable's name or</para>
+              </listItem>
+              <listItem>
+                <para>A complete value (e.g. an integer or a full array. Use "..." in a list to indicate further items).</para>
+              </listItem>
+            </list>
+            <code language="xml" title="e.g.">
+              &lt;c&gt;int x = 1;&lt;/c&gt;
+            </code>
+          </content>
+        </section>
+      
+        <section address="TagSpecifications_Code">
+          <title>Code</title>
+          <content>
+            <para>
+              This tag should be used to mark multiple lines as code. It should be used inside remark or 
+              example tags.
+            </para>
+            <para>
+              Multi-line code marked with this tag should be well-formatted, fully-formed code (such that it could be 
+              copy/pasted). Almost all code such as this will appear inside example tags and as such should be tested 
+              to make sure it works. The code should have at least one line of description associated with it. If the 
+              code depends upon other methods or specific context, a note of that context should be included in
+              comments in the code.
+            </para>
+            <code language="xml" title="e.g.">
+              &lt;code&gt;
+                // The code goes here
+              &lt;/code&gt;
+            </code>
+          </content>
+        </section>
+          
+        <section address="TagSpecifications_Example">
+          <title>Example</title>
+          <content>
+            <para>
+              This tag should be used to provide example code for using a type, property or method. It should be 
+              applied to classes and methods and occasionally on properties.
+            </para>
+            <para>
+              Examples should consist of the following:
+            </para>
+            <list class="ordered">
+              <listItem>
+                <para>
+                  One paragraph describing what the example demonstrates,
+                </para>
+              </listItem>
+              <listItem>
+                <para>
+                  One or more paragraphs explaining how the example works and/or the design theory used for the example,
+                </para>
+              </listItem>
+              <listItem>
+                <para>
+                  A list of external dependencies such as methods or types by name (this is so the example can be copy/pasted 
+                  and checked or updated at a later date when external code will inevitably have changed.
+                </para>
+              </listItem>
+              <listItem>
+                <para>
+                  One or more code blocks containing the example code.
+                </para>
+              </listItem>
+            </list>
+            <code language="xml" title="e.g.">
+              &lt;example&gt;
+                &lt;para&gt;
+                  Description of the example.
+                &lt;/para&gt;
+                &lt;para&gt;
+                  Explanation of the example.
+                &lt;/para&gt;
+                &lt;code&gt;
+                  // The example code goes here
+                &lt;/code&gt;
+              &lt;/example&gt;
+            </code>
+            <code language="xml" title="e.g.">
+              &lt;example&gt;
+                &lt;para&gt;
+                  This example demonstrates how to safely create and concatenate two strings using the FlingOS Kernel framework.
+                &lt;/para&gt;
+                &lt;para&gt;
+                  Strings are statically stored in the FlingOS system image and are mutable. When you assign a normal 
+                  &lt;c&gt;System.String&lt;/c&gt; to an &lt;c&gt;FOS_System.String&lt;/c&gt;, no actual conversion 
+                  takes place. All &lt;c&gt;System.String&lt;/c&gt;s are in fact &lt;c&gt;FOS_System.String&lt;/c&gt;s.
+                &lt;/para&gt;
+                &lt;para&gt;
+                  The normal plus (&lt;c&gt;+&lt;/c&gt;) operator which acts on &lt;c&gt;System.String&lt;/c&gt;s calls
+                  a method in the MsCorLib library to perform the concatenation. This function does not exist within FlingOS so we
+                  must cast the strings to &lt;c&gt;FOS_System.String&lt;/c&gt;s and then perform the concatenation.
+                &lt;/para&gt;
+                &lt;para&gt;
+                  This is the long-winded example:
+                &lt;/para&gt;                
+                &lt;code&gt;
+                  string AString = "Hello, ";
+                  string BString = "World!";
+                  Kernel.FOS_System.String AString_FOS = (Kernel.FOS_System.String)AString;
+                  Kernel.FOS_System.String BString_FOS = (Kernel.FOS_System.String)BString;
+                  Kernel.FOS_System.String ABString_FOS = AString_FOS + BString_FOS;
+                  string BAString = (System.String)ABString_FOS;
+                &lt;/code&gt;
+                &lt;para&gt;
+                  This is a more typical situation:
+                &lt;/para&gt;
+                &lt;para&gt;
+                  Note: &lt;c&gt;") + anInteger&lt;/c&gt; implicitly casts the integer to &lt;c&gt;FOS_System.String&lt;/c&gt;.
+                  You could also put the explicit cast on the integer and not the string which would implicitly cast the 
+                  &lt;c&gt;System.String&lt;/c&gt; to &lt;c&gt;FOS_System.String&lt;/c&gt;. If no explicit cast were included,
+                  the integer would be cast to a &lt;c&gt;System.String&lt;/c&gt; and then two &lt;c&gt;System.String&lt;/c&gt;s
+                  would be concatenated which would result in a compile-time error.
+                &lt;/para&gt;
+                &lt;code&gt;
+                  int anInteger = 5;
+                  Kernel.BasicConsole.WriteLine(((Kernel.FOS_System.String)"anInteger is: ") + anInteger);
+                &lt;/code&gt;
+              &lt;/example&gt;
+            </code>
+          </content>
+        </section>
+        
+        <section address="TagSpecifications_Exception">
+          <title>Exception</title>
+          <content>
+            <para>
+              This tag should be used to give details of any exceptions deliberately / actively thrown 
+              by a method. This is especially important in FlingOS, since FlingOS does not use the 
+              traditional exception handling mechanisms in the kernel. The <codeInline>cref</codeInline>
+              attribute should be set to link to the type of the exception.
+            </para>
+            <para>
+              This should only be applied if the method actually throws the exception and does not catch
+              it in a try-catch block. If only a try-finally block is used, this tag should be used. 
+              This tag should not be applied just because a method called internally might throw an exception.
+            </para>
+            <para>
+              If more than one exception of the same type is thrown with different exception messages, add 
+              multiple of this tag, one for each different message.
+            </para>
+            <code language="xml" title="e.g.">
+              &lt;exception cref="Kernel.FOS_System.Exception"&gt;Description of the exception&lt;/exception&gt;
+            </code>
+            <para>Here are some common samples:</para>
+            <code language="xml" title="Basic exception">
+              &lt;exception cref="Kernel.FOS_System.Exception"&gt;
+                Description of the exception (probably just the exception's message).
+              &lt;/exception&gt;
+            </code>
+            <code language="xml" title="Argument exception">
+              &lt;exception cref="Kernel.FOS_System.Exceptions.ArgumentException"&gt;
+                &lt;para&gt;
+                  [arg] may have an invalid value. Valid values are:
+                &lt;/para&gt;
+                &lt;list type="bullet"&gt;
+                  &lt;item&gt;
+                    &lt;description&gt;
+                      [Valid value 1]
+                    &lt;/description&gt;
+                  &lt;/item&gt;
+                  &lt;item&gt;
+                    &lt;description&gt;
+                      [Valid value 2]
+                    &lt;/description&gt;
+                  &lt;/item&gt;
+                &lt;/list&gt;
+              &lt;/exception&gt;
+            </code>
+            <code language="xml" title="Index out of range exception">
+              &lt;exception cref="Kernel.FOS_System.Exceptions.IndexOutOfRangeExceptionn"&gt;
+                [origin of index] may be out of the [details of the range].
+              &lt;/exception&gt;
+            </code>
+          </content>
+        </section>
+                
+        <section address="TagSpecifications_List">
+          <title>List</title>
+          <content>
+            <para>
+              This tag should be used to create a bulleted or numbered list of items in a description. It
+              should be used inside summary, remarks, example or exception tags and occasionally inside param 
+              tags.
+            </para>
+            <para>
+              There may be occasion to create a table. If you wish to create a table, you can use the this
+              tag. Follow the guide below.
+            </para>
+            <para>
+              This example is for a basic bulleted or numbered list:
+            </para>
+            <code language="xml" title="e.g.">
+              &lt;list type="bullet|number"&gt;
+                &lt;item&gt;
+                  &lt;description&gt;A bullet item 1&lt;/description&gt;
+                &lt;/item&gt;
+                &lt;item&gt;
+                  &lt;description&gt;A bullet item 2&lt;/description&gt;
+                &lt;/item&gt;
+              &lt;/list&gt;
+            </code>
+            <para>
+              This example is for a table:
+            </para>
+            <code language="xml" title="e.g.">
+              &lt;list type="table"&gt;
+                &lt;listheader&gt;
+                    &lt;term&gt;term&lt;/term&gt;
+                    &lt;description&gt;[Optional description]&lt;/description&gt;
+                &lt;/listheader&gt;
+                &lt;listheader&gt;
+                    &lt;term&gt;term&lt;/term&gt;
+                    &lt;description&gt;[Optional description]&lt;/description&gt;
+                &lt;/listheader&gt;
+                &lt;item&gt;
+                    &lt;description&gt;description&lt;/description&gt;
+                &lt;/item&gt;
+                &lt;item&gt;
+                    &lt;description&gt;description&lt;/description&gt;
+                &lt;/item&gt;
+                &lt;item&gt;
+                    &lt;description&gt;description&lt;/description&gt;
+                &lt;/item&gt;
+                &lt;item&gt;
+                    &lt;description&gt;description&lt;/description&gt;
+                &lt;/item&gt;
+              &lt;/list&gt;
+            </code>
+          </content>
+        </section>
+        
+        <section address="TagSpecifications_Para">
+          <title>Para</title>
+          <content>
+            <para>
+              This tag should be used to create paragraphs within a description. Paragraphs should be used
+              as per normal English grammar, to make text more easily readable. This tag should be used
+              inside of summary, remarks, example, param, returns, value, list->description and exception tags
+              as appropriate.
+            </para>
+            <code language="xml" title="e.g.">
+              &lt;para&gt;
+                A paragraph of text. (Always start body of text on a new line from the para tag.)
+              &lt;/para&gt;
+            </code>
+          </content>
+        </section>
+        
+        <section address="TagSpecifications_Param">
+          <title>Param</title>
+          <content>
+            <para>
+              This tag should be used to provide a description of a parameter of a method. It should be applied
+              only to methods. Try to keep the description as succinct as possible but make sure it's useful.
+              When possible, supply more information than just what the parameter name says.
+            </para>
+            <code language="xml" title="e.g.">
+              &lt;param name="TheParamName"&gt;Description of the parameter.&lt;/param&gt;
+            </code>
+            <code language="xml" title="e.g.">
+              &lt;param name="handlerPtr"&gt;A pointer to the first op of the catch or finally handler.&lt;/param&gt;
+            </code>
+            <code language="xml" title="e.g.">
+              &lt;param name="filterPtr"&gt;
+                0 = finally handler, 0xFFFFFFFF = catch handler with no filter.
+                Original intended use was as a pointer to the first op of the catch filter but it was never implemented like that.
+              &lt;/param&gt;
+            </code>
+          </content>
+        </section>
+        
+        <section address="TagSpecifications_Paramref">
+          <title>Paramref</title>
+          <content>
+            <para>
+              This tag should be used to make references to parameters of a method into links. This tag 
+              should be used whenever a parameter is mentioned in a description. This tag should be used
+              only on methods and only inside summary, remarks, example param, returns and exception tags.
+            </para>
+            <code language="xml" title="e.g.">
+              &lt;paramref name="TheParamName"/&gt;
+            </code>
+          </content>
+        </section>
+        
+        <section address="TagSpecifications_Remarks">
+          <title>Remarks</title>
+          <content>
+            <para>
+              This tag should be used to provide additional notes or information about a class, method, field
+              or property. Temporary notes should be placed in this tag not inside block quotes inside a class 
+              or method.
+            </para>
+            <code language="xml" title="e.g.">
+              &lt;remarks&gt;
+                &lt;para&gt;
+                  A note or piece of information.
+                &lt;/para&gt;
+              &lt;/remarks&gt;
+            </code>
+          </content>
+        </section>
+  
+        <section address="TagSpecifications_Returns">
+          <title>Returns</title>
+          <content>
+            <para>
+              This tag should be used to provide a description of the return value of a method or property. When
+              possible, provide more information than the method summary provides.
+            </para>
+            <code language="xml" title="e.g.">
+              &lt;returns&gt;A description of the return value.&lt;/returns&gt;
+            </code>
+            <code language="xml" title="e.g.">
+              &lt;returns&gt;Returns the element from the dictionary or null if the key was not found.&lt;/returns&gt;
+            </code>
+          </content>
+        </section>
+
+        <section address="TagSpecifications_See">
+          <title>See</title>
+          <content>
+            <para>
+              This tag should be used to create links within a description between classes, methods, 
+              properties or fields which a developer may find useful to know about. These links should only 
+              be put in when they provide useful understanding or insight about the target. This tag should 
+              only be used from within summary, remarks, example, param, returns or exception tags.
+            </para>
+            <code language="xml" title="e.g.">
+              &lt;see cref="Namespace.Class.Method(Namespace.Class,Namespace.Class)" /&gt;
+            </code>
+          </content>
+        </section>
+
+        <section address="TagSpecifications_Seealso">
+          <title>Seealso</title>
+          <content>
+            <para>
+              This tag should be used to create links between classes, methods, properties or fields
+              which a developer might find useful to know about. These links should only 
+              be put in when they provide useful understanding or insight about the target. This tag
+              puts the links in the <quoteInline>See Also</quoteInline> section of the documentation page.
+            </para>
+            <code language="xml" title="e.g.">
+              &lt;seealso cref="Namespace.Class.Member" /&gt;
+            </code>
+          </content>
+        </section>
+
+        <section address="TagSpecifications_Summary">
+          <title>Summary</title>
+          <content>
+            <para>
+              This tag should be used to provide a useful, succinct description of a class, method, property
+              or field. If only one paragraph is necessary, the <codeInline>para</codeInline> tag is optional.
+            </para>
+            <code language="xml" title="e.g.">
+              &lt;summary&gt;
+                Description goes here
+              &lt;/summary&gt;
+            </code>
+          </content>
+        </section>
+
+        <section address="TagSpecifications_Value">
+          <title>Value</title>
+          <content>
+            <para>
+              This tag should be used to provide description of the actual value or internal workings of a 
+              property. 
+            </para>
+            <code language="xml" title="e.g.">
+              &lt;value&gt;
+                The Capacity property gets/sets the capacity of the list. If the capacity is set, it
+                calls the &lt;see cref="ExpandCapacity(System.Int32)"/&gt; method as necessary.
+              &lt;/value&gt;
+            </code>
+          </content>
+        </section>
+      
+      </sections>
+    </section>
+      
+    <relatedTopics>
+    </relatedTopics>
+  </developerConceptualDocument>
+</topic>

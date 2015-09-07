@@ -35,6 +35,8 @@ namespace Kernel.Hardware.Processes
         
     public unsafe class Thread : FOS_System.Object
     {
+        public const int IndefiniteSleep = -1;
+
         public uint Id;
         
         public ThreadState* State;
@@ -52,7 +54,9 @@ namespace Kernel.Hardware.Processes
         /// Units of ms
         /// </remarks>
         public int TimeToSleep = 0;
-        
+
+        public bool WaitingOnDeferredSystemCall = false;
+
         public Thread(ThreadStartMethod StartMethod, uint AnId, bool UserMode)
         {
 #if THREAD_TRACE
@@ -62,7 +66,7 @@ namespace Kernel.Hardware.Processes
             #if THREAD_TRACE
             BasicConsole.WriteLine("Allocating state memory...");
 #endif
-            State = (ThreadState*)FOS_System.Heap.Alloc((uint)sizeof(ThreadState));
+            State = (ThreadState*)FOS_System.Heap.Alloc((uint)sizeof(ThreadState), "Thread : Thread() (1)");
 
             // Init Id and EIP
             //  Set EIP to the first instruction of the main method
@@ -118,7 +122,7 @@ namespace Kernel.Hardware.Processes
             State->Started = false;
 
             // Init Exception State
-            State->ExState = (ExceptionState*)FOS_System.Heap.AllocZeroed((uint)sizeof(ExceptionState));
+            State->ExState = (ExceptionState*)FOS_System.Heap.AllocZeroed((uint)sizeof(ExceptionState), "Thread : Thread() (2)");
         }
 
         public UInt32 EAXFromInterruptStack
@@ -140,7 +144,7 @@ namespace Kernel.Hardware.Processes
             }
             set
             {
-                *(UInt32*)(State->ESP + 44) = value;
+                *(UInt32*)(State->ESP + 32) = value;
             }
         }
         public UInt32 ECXFromInterruptStack
@@ -151,7 +155,7 @@ namespace Kernel.Hardware.Processes
             }
             set
             {
-                *(UInt32*)(State->ESP + 44) = value;
+                *(UInt32*)(State->ESP + 40) = value;
             }
         }
         public UInt32 EDXFromInterruptStack
@@ -162,7 +166,80 @@ namespace Kernel.Hardware.Processes
             }
             set
             {
-                *(UInt32*)(State->ESP + 44) = value;
+                *(UInt32*)(State->ESP + 36) = value;
+            }
+        }
+
+        public UInt32 SysCallNumber
+        {
+            get
+            {
+                return EAXFromInterruptStack;
+            }
+        }
+        public UInt32 Param1
+        {
+            get
+            {
+                return EBXFromInterruptStack;
+            }
+        }
+        public UInt32 Param2
+        {
+            get
+            {
+                return ECXFromInterruptStack;
+            }
+        }
+        public UInt32 Param3
+        {
+            get
+            {
+                return EDXFromInterruptStack;
+            }
+        }
+        public UInt32 Return1
+        {
+            get
+            {
+                return EAXFromInterruptStack;
+            }
+            set
+            {
+                EAXFromInterruptStack = value;
+            }
+        }
+        public UInt32 Return2
+        {
+            get
+            {
+                return EBXFromInterruptStack;
+            }
+            set
+            {
+                EBXFromInterruptStack = value;
+            }
+        }
+        public UInt32 Return3
+        {
+            get
+            {
+                return ECXFromInterruptStack;
+            }
+            set
+            {
+                ECXFromInterruptStack = value;
+            }
+        }
+        public UInt32 Return4
+        {
+            get
+            {
+                return EDXFromInterruptStack;
+            }
+            set
+            {
+                EDXFromInterruptStack = value;
             }
         }
 
@@ -250,7 +327,7 @@ namespace Kernel.Hardware.Processes
         [Drivers.Compiler.Attributes.NoGC]
         public bool _Sleep_Indefinitely()
         {
-            return this._Sleep(-1);
+            return this._Sleep(IndefiniteSleep);
         }
         [Compiler.NoGC]
         [Drivers.Compiler.Attributes.NoGC]

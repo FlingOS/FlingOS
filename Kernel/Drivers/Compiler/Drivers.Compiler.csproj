@@ -20,6 +20,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <DocumentationFile>bin\Debug\Drivers.Compiler.XML</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -28,6 +29,7 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <DocumentationFile>bin\Release\Drivers.Compiler.XML</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -40,12 +42,18 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ASM\ASMCompiler.cs" />
-    <Compile Include="ASM\ASMComment.cs" />
-    <Compile Include="ASM\ASMGlobalLabel.cs" />
-    <Compile Include="ASM\ASMExternalLabel.cs" />
+    <Compile Include="ASM\ASMOps\ASMComment.cs" />
+    <Compile Include="ASM\ASMOps\ASMFieldTable.cs" />
+    <Compile Include="ASM\ASMOps\ASMGlobalLabel.cs" />
+    <Compile Include="ASM\ASMOps\ASMExternalLabel.cs" />
     <Compile Include="ASM\ASMLibrary.cs" />
-    <Compile Include="ASM\ASMLabel.cs" />
-    <Compile Include="ASM\ASMGeneric.cs" />
+    <Compile Include="ASM\ASMOps\ASMHeader.cs" />
+    <Compile Include="ASM\ASMOps\ASMLabel.cs" />
+    <Compile Include="ASM\ASMOps\ASMMethodTable.cs" />
+    <Compile Include="ASM\ASMOps\ASMOpTargetAttribute.cs" />
+    <Compile Include="ASM\ASMOps\ASMStaticField.cs" />
+    <Compile Include="ASM\ASMOps\ASMStringLiteral.cs" />
+    <Compile Include="ASM\ASMOps\ASMTypeTable.cs" />
     <Compile Include="ASM\ASMPreprocessor.cs" />
     <Compile Include="ASM\ASMProcessor.cs" />
     <Compile Include="ASM\ASMBlock.cs" />
@@ -75,7 +83,6 @@
     <Compile Include="IL\ILOps\ILOpTargetAttribute.cs" />
     <Compile Include="Attributes\NoDebugAttribute.cs" />
     <Compile Include="Attributes\NoGCAttribute.cs" />
-    <Compile Include="Attributes\PluggedClassAttribute.cs" />
     <Compile Include="Attributes\PluggedMethodAttribute.cs" />
     <Compile Include="DebugDataManager.cs" />
     <Compile Include="Errors.cs" />
@@ -145,6 +152,7 @@
     <Compile Include="Logger.cs" />
     <Compile Include="Options.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="TargetArchitecture.cs" />
     <Compile Include="Types\FieldInfo.cs" />
     <Compile Include="Types\MethodInfo.cs" />
     <Compile Include="Types\TypeInfo.cs" />
@@ -157,26 +165,102 @@
     <None Include="..\..\Kernel\Kernel.licenseheader">
       <Link>Kernel.licenseheader</Link>
     </None>
+    <None Include="Tools\ISO\astamp.dat">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Tools\ISO\isolinux-debug.bin">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="Tools\ISO\isolinux.bin">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Tools\ISO\ldlinux.c32">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Tools\ISO\libcom32.c32">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="Tools\ISO\mboot.c32">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Tools\ISO\memdisk">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Tools\ISO\pxechain.cbt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Tools\ISO\pxelinux.0">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Tools\ISO\pxeserva.0">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Tools\ISO\pxeserva.cfg\F1">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="Tools\ISO\syslinux.cfg">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Tools\ISO\vesamenu.c32">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
   <ItemGroup>
     <Content Include="IL\ILOps\AllIlOps.txt" />
+    <Content Include="Tools\Cygwin\cygiconv-2.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Tools\Cygwin\cygintl-3.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Tools\Cygwin\cygwin1.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="Tools\Cygwin\ld.exe">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Tools\Cygwin\objdump.exe">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Tools\ISO9660Generator.exe" />
-    <Content Include="Tools\NASM\nasm.exe" />
+    <Content Include="Tools\ISO9660Generator.exe">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <None Include="Tools\ISO\pxelinux.cfg\default">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <Content Include="Tools\ISO\dir.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Tools\ISO\NWA_PXE\ServaReadme.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Tools\ISO\pxeserva.cfg\menu.def">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Tools\ISO\WIA_RIS\ServaReadme.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Tools\ISO\WIA_WDS\ServaReadme.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Tools\MIPS\mips-linux-gnu-as.exe">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Tools\MIPS\mips-linux-gnu-ld.exe">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Tools\MIPS\mips-linux-gnu-objcopy.exe">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Tools\MIPS\mips-linux-gnu-objdump.exe">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Tools\Mosa.Utility.IsoImage.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Tools\NASM\nasm.exe">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

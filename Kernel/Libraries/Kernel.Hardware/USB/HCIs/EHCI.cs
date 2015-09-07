@@ -283,7 +283,7 @@ namespace Kernel.Hardware.USB.HCIs
         /// Constant to set the number of times that software should re-attempt to send a transfer 
         /// in the async schedule.
         /// </summary>
-        public static uint NumAsyncListRetries = 3;
+        public static uint NumAsyncListRetries = 1; //Min val. = 1
     }
     /// <summary>
     /// The types of queue head (under EHCI): IN, OUT or SETUP.
@@ -707,14 +707,40 @@ namespace Kernel.Hardware.USB.HCIs
         /// </summary>
         protected EHCI_QueueHead_Struct* TailQueueHead = null;
 
+        protected int AsyncDoorbellIntCount = 0;
+
+        private int IRQHandlerID = 0;
+
+        private int hostSystemErrors = 0;
         /// <summary>
         /// Whether the EHCI has hit a host system error or not.
         /// </summary>
-        public bool HostSystemError = false;
+        public int HostSystemErrors
+        {
+            get
+            {
+                return hostSystemErrors;
+            }
+            protected set
+            {
+                hostSystemErrors = value;
+                if (value != 0)
+                {
+                    Status = HCIStatus.Dead;
+                    USBManager.NotifyDevicesNeedUpdate();
+                }
+            }
+        }
         /// <summary>
         /// Whether the EHCI has hit an unrecoverable error or not.
         /// </summary>
-        public bool IrrecoverableError = false;
+        public bool IrrecoverableError
+        {
+            get
+            {
+                return HostSystemErrors >= 1;
+            }
+        }
 
         /// <summary>
         /// Initialises a new EHCI device using the specified PCI device. Includes starting the host controller.
@@ -801,7 +827,7 @@ namespace Kernel.Hardware.USB.HCIs
             DBGMSG("HCIVersion: " + (FOS_System.String)HCIVersion);
             DBGMSG("HCSParams: " + (FOS_System.String)HCSParams);
             DBGMSG("HCCParams: " + (FOS_System.String)HCCParams);
-            DBGMSG("HCSPPortRouteDesc: " + (FOS_System.String)HCSPPortRouteDesc);
+            //DBGMSG("HCSPPortRouteDesc: " + (FOS_System.String)HCSPPortRouteDesc);
             DBGMSG("OpRegAddr: " + (FOS_System.String)(uint)OpRegAddr);
 #endif
             // Number of root ports 
@@ -821,10 +847,24 @@ namespace Kernel.Hardware.USB.HCIs
             //  if the HC has utterly crashed...
             if(IrrecoverableError)
             {
-#if EHCI_TRACE
+//#if EHCI_TRACE
+                BasicConsole.SetTextColour(BasicConsole.warning_colour);
                 BasicConsole.WriteLine("EHCI controller has hit an irrecoverable error!");
                 BasicConsole.DelayOutput(10);
-#endif
+                BasicConsole.SetTextColour(BasicConsole.default_colour);
+//#endif
+            }
+            else if (HostSystemErrors == 1)
+            {
+//#if EHCI_TRACE
+                BasicConsole.SetTextColour(BasicConsole.warning_colour);
+                BasicConsole.WriteLine("EHCI Host System error occurred!");
+                BasicConsole.DelayOutput(10);
+                BasicConsole.SetTextColour(BasicConsole.default_colour);
+//#endif
+
+                // Attempt to restart the HC
+                Start();
             }
             // Otherwise, if any ports have changed status (e.g. device connected / disconnected):
             else if (AnyPortsChanged)
@@ -840,12 +880,17 @@ namespace Kernel.Hardware.USB.HCIs
         /// </summary>
         protected void Start()
         {
+            int hcErrors = HostSystemErrors;
+
             //Initialise the host controller
             InitHC();
             //Reset the host controller (to a known, stable, startup state)
             ResetHC();
             //Start the host controller
             StartHC();
+
+            Status = HCIStatus.Active;
+
             //Initialise the Async Schedule of the host controller
             InitializeAsyncSchedule();
 
@@ -861,13 +906,18 @@ namespace Kernel.Hardware.USB.HCIs
                 
                 // So we attempt to enable and initialise all the ports on the HC.
                 EnablePorts();
+
+                if (HostSystemErrors == hcErrors)
+                {
+                    HostSystemErrors = 0;
+                }
 #if EHCI_TRACE
                 DBGMSG("USB ports enabled.");
 #endif
             }
             else
             {
-                IrrecoverableError = true;
+                HostSystemErrors++;
                 ExceptionMethods.Throw(new FOS_System.Exception("EHCI halted even after start requested! Cannot start EHCI driver!"));
             }
         }
@@ -884,8 +934,11 @@ namespace Kernel.Hardware.USB.HCIs
 #if EHCI_TRACE
             DBGMSG("Hooking IRQ...");
 #endif
-            // Setup the interrupt handler (IRQ number = PCIDevice.InterruptLine)
-            Interrupts.Interrupts.AddIRQHandler(pciDevice.InterruptLine, EHCI.InterruptHandler, this, false, true, "EHCI");
+            if (IRQHandlerID == 0)
+            {
+                // Setup the interrupt handler (IRQ number = PCIDevice.InterruptLine)
+                IRQHandlerID = Interrupts.Interrupts.AddIRQHandler(pciDevice.InterruptLine, EHCI.InterruptHandler, this, false, true, "EHCI");
+            }
 #if EHCI_TRACE
             DBGMSG("Hooked IRQ.");
 #endif
@@ -1323,29 +1376,18 @@ namespace Kernel.Hardware.USB.HCIs
                 //  during the restart, we will just get another error interrupt as we try to
                 //  restart. If we don't have the check condition below, we hit an infinite loop
                 //  of "Start HC -> (Host Error) -> Interrupt -> Start HC -> ..."
-                if (HostSystemError)
-                {
-                    // Mark that this HC has hit an irrecoverable error and so cannot be
-                    //  used for the remainder of the time that the OS is running.
-                    IrrecoverableError = true;
-
-#if EHCI_TRACE
-                    BasicConsole.WriteLine("EHCI controller has hit an irrecoverable error!");
-#endif
-                }
-                
+                                
                 // If we haven't tried to reset the HC once already...
                 if (!IrrecoverableError)
                 {
                     // Store that we have already hit HC error once before.
-                    HostSystemError = true;
-                    // And then attempt to restart the HC
-                    Start();
+                    HostSystemErrors++;
+                    // HC Restart will occur the next time Update is called.
                 }
             }
             else
             {
-                HostSystemError = false;
+                HostSystemErrors = 0;
             }
 
             // If the interrupt signals the completion of the last transaction of 
@@ -1363,7 +1405,24 @@ namespace Kernel.Hardware.USB.HCIs
                     USBIntCount--;
                 }
 #if EHCI_TRACE
-                DBGMSG(((FOS_System.String)"EHCI: USB Interrupt occurred! USBIntCount: ") + USBIntCount);
+                //DBGMSG(((FOS_System.String)"EHCI: USB Interrupt occurred! USBIntCount: ") + USBIntCount);
+                DBGMSG("EHCI: USB Interrupt occurred!");
+#endif
+            }
+
+            if ((val & EHCI_Consts.STS_AsyncInterrupt) != 0u)
+            {
+                // And we were expecting an Async Doorbell to occur i.e. we were expecting this interrupt
+                //  to occur.
+                //  Note: Without this condition, a spurious interrupt could cause us to decrement 
+                //        unsigned 0, which would result in 0xFFFFFFFF and cause an infinite loop in _IssueTransfer.
+                if (AsyncDoorbellIntCount != 0)
+                {
+                    // Decrement our expected interrupt count.
+                    AsyncDoorbellIntCount--;
+                }
+#if EHCI_TRACE
+                DBGMSG("EHCI: Async Doorbell interrupt occurred!");
 #endif
             }
 
@@ -1556,7 +1615,7 @@ namespace Kernel.Hardware.USB.HCIs
             // Note: This sets the virtual address. This allows it to be accessed and freed by the 
             //       driver. However, when passing the address to the HC, it must be converted to
             //       a physical address.
-            transfer.underlyingTransferData = (EHCI_QueueHead_Struct*)FOS_System.Heap.AllocZeroed((uint)sizeof(EHCI_QueueHead_Struct), 32);
+            transfer.underlyingTransferData = (EHCI_QueueHead_Struct*)FOS_System.Heap.AllocZeroedAPB((uint)sizeof(EHCI_QueueHead_Struct), 32, "EHCI : _SetupTransfer");
         }
         /// <summary>
         /// Sets up a SETUP transaction and adds it to the specified transfer.
@@ -1621,25 +1680,14 @@ namespace Kernel.Hardware.USB.HCIs
 #if EHCI_TRACE
             DBGMSG(((FOS_System.String)"IN Transaction : buffer=") + (uint)buffer);
 
-            DBGMSG(((FOS_System.String)"IN Transaction : Before CreateQTD : bufferPtr=&qTDBuffer=") + (uint)bufferPtr + 
-                                        ", *bufferPtr=" + (uint)(*bufferPtr));
+            DBGMSG(((FOS_System.String)"IN Transaction : Before CreateQTD : bufferPtr=&qTDBuffer=") + (uint)buffer);
 #endif
 
             // Create and initialise the IN queue transfer descriptor
             eTransaction.qTD = CreateQTD_IO(null, 1, toggle, length, length);
 
 #if EHCI_TRACE
-            DBGMSG(((FOS_System.String)"IN Transaction : After CreateQTD : bufferPtr=&qTDBuffer=") + (uint)bufferPtr +
-                                        ", *bufferPtr=" + (uint)(*bufferPtr) + ", Buffer0=" + (uint)qtd.Buffer0);
-            for (int i = 0; i < length; i++)
-            {
-                ((byte*)eTransaction.qTDBuffer)[i] = 0xDE;
-                ((byte*)buffer)[i] = 0xBF;
-            }
-            for (int i = length; i < 0x1000; i++)
-            {
-                ((byte*)eTransaction.qTDBuffer)[i] = 0x56;
-            }
+            DBGMSG(((FOS_System.String)"IN Transaction : After CreateQTD : bufferPtr=&qTDBuffer=") + (uint)buffer + ", Buffer0=" + (uint)eTransaction.qTD.Buffer0);
 #endif
             // If the number of existing transactions is greater than 0
             //  i.e. some transactions have already been added. 
@@ -1687,6 +1735,11 @@ namespace Kernel.Hardware.USB.HCIs
                 //  where as there is no guarantee the output buffer passed to us has been so we
                 //  must copy the data across.
                 Utilities.MemoryUtils.MemCpy_32(theQTD.Buffer0VirtAddr, (byte*)buffer, length);
+
+#if EHCI_TRACE
+                BasicConsole.WriteLine("EHCI: OUTTransaction - Buffer0:");
+                BasicConsole.DumpMemory(theQTD.Buffer0VirtAddr, length);
+#endif
             }
 
             // If the number of existing transactions is greater than 0
@@ -1711,6 +1764,15 @@ namespace Kernel.Hardware.USB.HCIs
         /// <param name="transfer">The transfer to issue.</param>
         protected override void _IssueTransfer(USBTransfer transfer)
         {
+            if (HostSystemErrors > 0 || IrrecoverableError)
+            {
+                ExceptionMethods.Throw(new FOS_System.Exception("Cannot issue transfer through EHCI because the host controller has encountered a host system error."));
+            }
+            else if (HCHalted)
+            {
+                ExceptionMethods.Throw(new FOS_System.Exception("Cannot issue transfer through EHCI because the host controller is currently halted."));
+            }
+
             // Please note: The word "completed" is not synonymous with "succeeded". 
             //              "Completed" means the hardware, firmware or software finished
             //              processing something.
@@ -1731,11 +1793,39 @@ namespace Kernel.Hardware.USB.HCIs
             {
                 EHCITransaction transaction1 = (EHCITransaction)((USBTransaction)transfer.transactions[k]).underlyingTz;
                 EHCITransaction transaction2 = (EHCITransaction)((USBTransaction)transfer.transactions[k + 1]).underlyingTz;
-                EHCI_qTD qtd1 = new EHCI_qTD(transaction1.qTD);
-                treeOK = treeOK && (qtd1.NextqTDPointer == transaction2.qTD) && !qtd1.NextqTDPointerTerminate;
+                EHCI_qTD qtd1 = transaction1.qTD;
+                treeOK = treeOK && (qtd1.NextqTDPointer == VirtMemManager.GetPhysicalAddress(transaction2.qTD.qtd)) && !qtd1.NextqTDPointerTerminate;
+                if (!treeOK)
+                {
+                    BasicConsole.Write(((FOS_System.String)"Incorrect tansfer index: ") + k);
+                    if (qtd1.NextqTDPointer != VirtMemManager.GetPhysicalAddress(transaction2.qTD.qtd))
+                    {
+                        BasicConsole.WriteLine(((FOS_System.String)"    > Pointers incorrect! QTD1.NextPtr=") + (uint)qtd1.NextqTDPointer + ", &QTD2=" + (uint)VirtMemManager.GetPhysicalAddress(transaction2.qTD.qtd));
+                    }
+                    else if (qtd1.NextqTDPointerTerminate)
+                    {
+                        BasicConsole.WriteLine("    > QTD1.NextTerminate incorrect!");
+                    }
+                    else
+                    {
+                        BasicConsole.WriteLine("    > Previous transaction was incorrect.");
+                    }
+                }
             }
             {
                 treeOK = treeOK && lastQTD.NextqTDPointerTerminate;
+                if (!treeOK)
+                {
+                    BasicConsole.WriteLine("Incorrect tansfer index: last");
+                    if (!lastQTD.NextqTDPointerTerminate)
+                    {
+                        BasicConsole.WriteLine("    > LastQTD.NextTerminate incorrect!");
+                    }
+                    else
+                    {
+                        BasicConsole.WriteLine("    > Previous transaction was incorrect.");
+                    }
+                }
             }
             DBGMSG(((FOS_System.String)"Transfer transactions tree OK: ") + treeOK);
             BasicConsole.DelayOutput(10);
@@ -1762,7 +1852,7 @@ namespace Kernel.Hardware.USB.HCIs
                 for (int k = 0; k < transfer.transactions.Count; k++)
                 {
                     EHCITransaction transaction = (EHCITransaction)((USBTransaction)transfer.transactions[k]).underlyingTz;
-                    byte status = new EHCI_qTD(transaction.qTD).Status;
+                    byte status = transaction.qTD.Status;
                     transfer.success = transfer.success && (status == 0 || status == Utils.BIT(0));
 
                     DBGMSG(((FOS_System.String)"PRE Issue: Transaction ") + k + " status: " + status);
@@ -1823,17 +1913,34 @@ namespace Kernel.Hardware.USB.HCIs
                     {
                         DBGMSG(((FOS_System.String)"EHCI: Retry transfer: ") + (i + 1));
                         BasicConsole.DelayOutput(2);
+
+                        // Reset the status bits so the transactions are active again
+                        for (int k = 0; k < transfer.transactions.Count; k++)
+                        {
+                            EHCITransaction transaction = (EHCITransaction)((USBTransaction)transfer.transactions[k]).underlyingTz;
+                            byte status = transaction.qTD.Status;
+                            if (!(status == 0 || status == Utils.BIT(0)))
+                            {
+                                transaction.qTD.Status = 0x80;
+                            }
+                        }
                     }
 #endif
                 }
             }
 
             // After the transfer has completed, we can free the underlying queue head memory.
-            //  TODO: At this point we should use the Async Doorbell to confirm the
+            //        At this point we use the Async Doorbell to confirm the
             //        HC has finished using the queue head and that all caches of 
             //        pointers to the queue head have been released. 
-            // However, the implementation of transfers presented here is sufficiently
-            //  slow that I highly doubt there would ever be any cached transfers.
+
+            AsyncDoorbellIntCount = 1;
+            USBCMD |= EHCI_Consts.CMD_AsyncInterruptDoorbellMask;
+            while (AsyncDoorbellIntCount > 0)
+            {
+                Hardware.Processes.Thread.Sleep(5);
+            }
+
             FOS_System.Heap.Free(transfer.underlyingTransferData);
             // Loop through each transaction in the transfer
             for (int k = 0; k < transfer.transactions.Count; k++)
@@ -1852,17 +1959,17 @@ namespace Kernel.Hardware.USB.HCIs
                 {
 #if EHCI_TRACE
                     DBGMSG(((FOS_System.String)"Doing MemCpy of in data... inBuffer=") + (uint)transaction.inBuffer + 
-                                               ", qTDBuffer=" + (uint)transaction.qTDBuffer + 
+                                               ", qTDBuffer=" + (uint)transaction.qTD.qtd + 
                                                ", inLength=" + transaction.inLength + ", Data to copy: ");
 #endif
                     // Copy the memory
                     Utilities.MemoryUtils.MemCpy_32((byte*)transaction.inBuffer, theQTD.Buffer0VirtAddr, transaction.inLength);
 
 #if EHCI_TRACE
-                    for (int i = 0; i < transaction.inLength; i++)
-                    {
-                        DBGMSG(((FOS_System.String)"i=") + i + ", qTDBuffer[i]=" + ((byte*)transaction.qTDBuffer)[i] + ", inBuffer[i]=" + ((byte*)transaction.inBuffer)[i]);
-                    }
+                    //for (int i = 0; i < transaction.inLength; i++)
+                    //{
+                    //    DBGMSG(((FOS_System.String)"i=") + i + ", qTDBuffer[i]=" + ((byte*)transaction.qTD.qtd)[i] + ", inBuffer[i]=" + ((byte*)transaction.inBuffer)[i]);
+                    //}
 #endif
 #if EHCI_TRACE
                     DBGMSG("Done.");
@@ -1985,17 +2092,26 @@ namespace Kernel.Hardware.USB.HCIs
             tailQH.HorizontalLinkPointer = (EHCI_QueueHead_Struct*)VirtMemManager.GetPhysicalAddress(IdleQueueHead);
             // Insert the queue head into the queue as an element behind old queue head
             oldTailQH.HorizontalLinkPointer = (EHCI_QueueHead_Struct*)VirtMemManager.GetPhysicalAddress(TailQueueHead);
-            
-            //TODO: You may want to add a timeout to this while loop, though it won't do much good because
-            //      then you have to work out how on earth to handle the error!
-            while (USBIntCount > 0 && !IrrecoverableError)
+
+            int timeout = 100;
+            while (USBIntCount > 0 && (HostSystemErrors == 0) && !IrrecoverableError && --timeout > 0)
             {
-                ;
-                // Note: I attempted to use Devices.Timer.Default.Wait in here BUT
-                //       that breaks the code! I suspect because the USB interrupt screws up the timer. 
-                //       Either way round, you cannot currently attempt to sleep in here so we must busy-wait.
+                Processes.Thread.Sleep(50);
+#if EHCI_TRACE
+                if (timeout % 10 == 0)
+                {
+                    BasicConsole.WriteLine("Waiting for transfer to complete...");
+                }
+#endif
             }
-            
+
+#if EHCI_TRACE
+            if (timeout == 0)
+            {
+                BasicConsole.WriteLine("Transfer timed out.");
+            }
+#endif
+
             // Restore the link of the old tail queue head to the idle queue head
             oldTailQH.HorizontalLinkPointer = (EHCI_QueueHead_Struct*)VirtMemManager.GetPhysicalAddress(IdleQueueHead);
             // Queue head done. 
@@ -2103,7 +2219,7 @@ namespace Kernel.Hardware.USB.HCIs
             return td;
         }
         /// <summary>
-        /// Allocates memory for a new qTD and does intialisation common to all qTD types.
+        /// Allocates memory for a new qTD and does initialisation common to all qTD types.
         /// </summary>
         /// <param name="next">A pointer to the next qTD in the linked list or 1 to specify no pointer.</param>
         /// <returns>The new qTD.</returns>
@@ -2136,7 +2252,7 @@ namespace Kernel.Hardware.USB.HCIs
         /// <returns>A pointer to the new buffer.</returns>
         protected static void* AllocQTDbuffer(EHCI_qTD td)
         {
-            byte* result = (byte*)FOS_System.Heap.AllocZeroed(0x1000u, 0x1000u);
+            byte* result = (byte*)FOS_System.Heap.AllocZeroedAPB(0x1000u, 0x1000u, "EHCI : AllocQTDBuffer");
             td.Buffer0 = (byte*)VirtMemManager.GetPhysicalAddress(result);
             td.CurrentPage = 0;
             td.CurrentOffset = 0;
@@ -2679,7 +2795,7 @@ namespace Kernel.Hardware.USB.HCIs
         /// </summary>
         public EHCI_qTD()
         {
-            qtd = (EHCI_qTD_Struct*)FOS_System.Heap.AllocZeroed((uint)sizeof(EHCI_qTD_Struct), 32);
+            qtd = (EHCI_qTD_Struct*)FOS_System.Heap.AllocZeroedAPB((uint)sizeof(EHCI_qTD_Struct), 32, "EHCI : EHCI_qtd()");
         }
         /// <summary>
         /// Initializes a qTD with specified underlying data structure.
@@ -3150,7 +3266,7 @@ namespace Kernel.Hardware.USB.HCIs
         /// </summary>
         public EHCI_QueueHead()
         {
-            queueHead = (EHCI_QueueHead_Struct*)FOS_System.Heap.AllocZeroed((uint)sizeof(EHCI_QueueHead_Struct), 32);
+            queueHead = (EHCI_QueueHead_Struct*)FOS_System.Heap.AllocZeroedAPB((uint)sizeof(EHCI_QueueHead_Struct), 32, "EHCI : EHCI_QueueHead()");
         }
         /// <summary>
         /// Initializes a new queue head with specified underlying memory structure.

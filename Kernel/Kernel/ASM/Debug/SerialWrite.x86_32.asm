@@ -27,6 +27,7 @@ GLOBAL BasicDebug_SerialWrite16:function
 GLOBAL BasicDebug_SerialWrite8:function
 
 EXTERN BasicDebug_Serial_ComPortMemAddr
+EXTERN BasicDebug_Enabled
 
 ; BEGIN - Basic Debug : Serial Write
 
@@ -34,6 +35,12 @@ method_System_Void_Kernel_Debug_BasicDebug_Serial_WriteUInt32_System_UInt32_:
 
 push dword ebp
 mov dword ebp, esp
+
+pushad
+
+mov eax, [BasicDebug_Enabled]
+cmp eax, 0
+jz .End
 
 ; Load the int to write
 mov dword eax, [ebp+8]
@@ -44,6 +51,10 @@ mov dword esi, esp
 call BasicDebug_SerialWrite32
 pop dword eax
 
+.End:
+
+popad
+
 pop dword ebp
 
 ret
@@ -52,6 +63,12 @@ method_System_Void_Kernel_Debug_BasicDebug_Serial_WriteUInt16_System_UInt16_:
 
 push dword ebp
 mov dword ebp, esp
+
+pushad
+
+mov eax, [BasicDebug_Enabled]
+cmp eax, 0
+jz .End
 
 ; Load the int to write
 mov eax, 0
@@ -63,6 +80,10 @@ mov dword esi, esp
 call BasicDebug_SerialWrite16
 pop dword eax
 
+.End:
+
+popad
+
 pop dword ebp
 
 ret
@@ -71,6 +92,12 @@ method_System_Void_Kernel_Debug_BasicDebug_Serial_WriteByte_System_Byte_:
 
 push dword ebp
 mov dword ebp, esp
+
+pushad
+
+mov eax, [BasicDebug_Enabled]
+cmp eax, 0
+jz .End
 
 ; Load the int to write
 mov eax, 0
@@ -81,6 +108,10 @@ push dword eax
 mov dword esi, esp
 call BasicDebug_SerialWrite8
 pop dword eax
+
+.End:
+
+popad
 
 pop dword ebp
 

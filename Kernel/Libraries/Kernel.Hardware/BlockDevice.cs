@@ -44,7 +44,7 @@ namespace Kernel.Hardware
         /// <summary>
         /// The number of logical blocks in the device.
         /// </summary>
-        public UInt64 BlockCount
+        public virtual UInt64 BlockCount
         {
             get { return blockCount; }
         }
@@ -56,7 +56,7 @@ namespace Kernel.Hardware
         /// <summary>
         /// The size of the logical blocks.
         /// </summary>
-        public UInt64 BlockSize
+        public virtual UInt64 BlockSize
         {
             get { return blockSize; }
         }
@@ -88,7 +88,7 @@ namespace Kernel.Hardware
         {
             //TODO - Err..this cast here is really really bad practice but it's just because 
             //  we can't do 64 bit x 64 bit multiplication nor support the conv.ovf.i.un op
-            return new byte[aBlockCount * (UInt32)blockSize];
+            return new byte[aBlockCount * (UInt32)BlockSize];
         }
     }
 }

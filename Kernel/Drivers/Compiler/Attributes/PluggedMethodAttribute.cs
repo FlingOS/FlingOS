@@ -32,9 +32,35 @@ using System.Threading.Tasks;
 
 namespace Drivers.Compiler.Attributes
 {
+    /// <summary>
+    /// <para>
+    /// Indicates a method is plugged. Use the ASMFilePath property to specify the path to the
+    /// ASM plug file. 
+    /// </para>
+    /// <para>
+    /// The path should be relative to the build directory and not include an
+    /// extension. 
+    /// </para>
+    /// <para>
+    /// e.g. @"ASM\ExampleFolder\Example" would result in the following path being
+    /// used: @"{ProjectDirectory}\bin\{BuildMode}\ASM\ExampleFolder\Example.{TargetArch}.asm"
+    /// so for an x86 debug build that would be: 
+    /// @"{ProjectDirectory}\bin\Debug\ASM\ExampleFolder\Example.x86.asm"
+    /// </para>
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// For backwards compatibility with the Kernel Compiler, for x86 32-bit builds, the file
+    /// extension ".x86_32.asm" is also recognised along with the new ".x86.asm" extension.
+    /// </para>
+    /// </remarks>
     [AttributeUsage(AttributeTargets.Method, AllowMultiple = false, Inherited = false)]
     public class PluggedMethodAttribute : Attribute
     {
+        /// <summary>
+        /// The path (relative to the build directory, excluding extension - see attribute summary) to the plug file.
+        /// </summary>
+        /// <value>Gets/sets an implicitly defined field.</value>
         public string ASMFilePath
         {
             get;

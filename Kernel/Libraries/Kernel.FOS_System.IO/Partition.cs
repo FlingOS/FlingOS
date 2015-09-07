@@ -48,6 +48,21 @@ namespace Kernel.FOS_System.IO
         /// </summary>
         internal UInt64 StartingSector;
 
+        public override ulong BlockCount
+        {
+            get
+            {
+                return TheDiskDevice.BlockCount;
+            }
+        }
+        public override ulong BlockSize
+        {
+            get
+            {
+                return TheDiskDevice.BlockSize;
+            }
+        }
+
         public bool Mapped = false;
 
         /// <summary>
@@ -65,8 +80,6 @@ namespace Kernel.FOS_System.IO
         {
             TheDiskDevice = aDiskDevice;
             StartingSector = aStartingSector;
-            blockCount = aSectorCount;
-            blockSize = aDiskDevice.BlockSize;
         }
 
         /// <summary>
@@ -77,8 +90,8 @@ namespace Kernel.FOS_System.IO
         /// <param name="aData">The buffer to read into.</param>
         public override void ReadBlock(UInt64 aBlockNo, UInt32 aBlockCount, byte[] aData)
         {
-            UInt64 xHostBlockNo = StartingSector + aBlockNo;
-            TheDiskDevice.ReadBlock(xHostBlockNo, aBlockCount, aData);
+            UInt64 DiskBlockNo = StartingSector + aBlockNo;
+            TheDiskDevice.ReadBlock(DiskBlockNo, aBlockCount, aData);
         }
 
         /// <summary>

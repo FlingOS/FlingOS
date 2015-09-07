@@ -35,7 +35,6 @@ using Kernel.Hardware.VirtMem;
 namespace Kernel.Hardware.Processes
 {
     [Compiler.PluggedClass]
-    [Drivers.Compiler.Attributes.PluggedClass]
     public unsafe class Process : FOS_System.Object
     {
         public List Threads = new List();
@@ -49,6 +48,8 @@ namespace Kernel.Hardware.Processes
         protected uint ThreadIdGenerator = 1;
         
         public readonly bool UserMode;
+
+        public bool ContainsThreadsWaitingOnDeferredSystemCall = false;
 
         public Process(ThreadStartMethod MainMethod, uint AnId, FOS_System.String AName, bool userMode)
         {

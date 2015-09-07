@@ -36,7 +36,6 @@ namespace Kernel
     /// The main class (containing the kernel entry point) for the Fling OS kernel.
     /// </summary>
     [Compiler.PluggedClass]
-    [Drivers.Compiler.Attributes.PluggedClass]
     public static class Kernel
     {
         /// <summary>
@@ -48,7 +47,7 @@ namespace Kernel
         {
             BasicConsole.Init();
             BasicConsole.Clear();
-
+            
 #if DEBUG
             //Debug.BasicDebug.Init();
 #endif
@@ -76,65 +75,78 @@ namespace Kernel
         [Drivers.Compiler.Attributes.NoDebug]
         static unsafe void Main()
         {
-            BasicConsole.WriteLine("Fling OS  Copyright (C) 2015  Edward Nutting");
-            BasicConsole.WriteLine("This program comes with ABSOLUTELY NO WARRANTY;.");
-            BasicConsole.WriteLine("This is free software, and you are welcome to redistribute it");
-            BasicConsole.WriteLine("under certain conditions; See GPL V2 for details, a copy of");
-            BasicConsole.WriteLine("which should have been provided with the executable.");
-        
-            BasicConsole.WriteLine("Fling OS Running...");
-
-            // DO NOT REMOVE THE FOLLOWING LINE -- ednutting
-            PreReqs.PageFaultDetection_Initialised = true;
+            ExceptionMethods.AddExceptionHandlerInfo(null, null);
             
+#if MIPS
+            BasicConsole.WriteLine("Running MIPS Kernel");
+#elif x86 || AnyCPU
+            BasicConsole.WriteLine("Running x86 Kernel");
+#endif
+
             try
             {
+                Hardware.IO.Serial.Serial.InitCOM1();
+                Hardware.IO.Serial.Serial.InitCOM2();
+                BasicConsole.SecondaryOutput = BasicConsole_SecondaryOutput;
+                BasicConsole.SecondaryOutputEnabled = true;
+
+                BasicConsole.WriteLine("Fling OS  Copyright (C) 2015  Edward Nutting");
+                BasicConsole.WriteLine("This program comes with ABSOLUTELY NO WARRANTY;.");
+                BasicConsole.WriteLine("This is free software, and you are welcome to redistribute it");
+                BasicConsole.WriteLine("under certain conditions; See GPL V2 for details, a copy of");
+                BasicConsole.WriteLine("which should have been provided with the executable.");
+
+                BasicConsole.WriteLine("Fling OS Running...");
+
+                // DO NOT REMOVE THE FOLLOWING LINE -- ednutting
+
+                PreReqs.PageFaultDetection_Initialised = true;
+            
                 Hardware.VirtMemManager.Init();
                 Hardware.Devices.CPU.InitDefault();
                 Hardware.Devices.Timer.InitDefault();
-                Core.Processes.SystemCalls.Init();
 
-                uint bpm = 140;
-                Hardware.Timers.PIT.ThePIT.PlayNote(
-                    Hardware.Timers.PIT.MusicalNote.C4,
-                    Hardware.Timers.PIT.MusicalNoteValue.Quaver,
-                    bpm);
-                Hardware.Timers.PIT.ThePIT.PlayNote(
-                    Hardware.Timers.PIT.MusicalNote.Silent,
-                    Hardware.Timers.PIT.MusicalNoteValue.Minim,
-                    bpm);
-                Hardware.Timers.PIT.ThePIT.PlayNote(
-                    Hardware.Timers.PIT.MusicalNote.E4,
-                    Hardware.Timers.PIT.MusicalNoteValue.Quaver,
-                    bpm);
-                Hardware.Timers.PIT.ThePIT.PlayNote(
-                    Hardware.Timers.PIT.MusicalNote.Silent,
-                    Hardware.Timers.PIT.MusicalNoteValue.Minim,
-                    bpm);
-                Hardware.Timers.PIT.ThePIT.PlayNote(
-                    Hardware.Timers.PIT.MusicalNote.G4,
-                    Hardware.Timers.PIT.MusicalNoteValue.Quaver,
-                    bpm);
-                Hardware.Timers.PIT.ThePIT.PlayNote(
-                    Hardware.Timers.PIT.MusicalNote.Silent,
-                    Hardware.Timers.PIT.MusicalNoteValue.Minim,
-                    bpm);
-                Hardware.Timers.PIT.ThePIT.PlayNote(
-                    Hardware.Timers.PIT.MusicalNote.C5,
-                    Hardware.Timers.PIT.MusicalNoteValue.Minim,
-                    bpm);
-                Hardware.Timers.PIT.ThePIT.PlayNote(
-                    Hardware.Timers.PIT.MusicalNote.Silent,
-                    Hardware.Timers.PIT.MusicalNoteValue.Minim,
-                    bpm);
-                Hardware.Timers.PIT.ThePIT.PlayNote(
-                    Hardware.Timers.PIT.MusicalNote.G4,
-                    Hardware.Timers.PIT.MusicalNoteValue.Minim,
-                    bpm);
-                Hardware.Timers.PIT.ThePIT.PlayNote(
-                    Hardware.Timers.PIT.MusicalNote.C5,
-                    Hardware.Timers.PIT.MusicalNoteValue.Minim,
-                    bpm);
+                //uint bpm = 140;
+                //Hardware.Timers.PIT.ThePIT.PlayNote(
+                //    Hardware.Timers.PIT.MusicalNote.C4,
+                //    Hardware.Timers.PIT.MusicalNoteValue.Quaver,
+                //    bpm);
+                //Hardware.Timers.PIT.ThePIT.PlayNote(
+                //    Hardware.Timers.PIT.MusicalNote.Silent,
+                //    Hardware.Timers.PIT.MusicalNoteValue.Minim,
+                //    bpm);
+                //Hardware.Timers.PIT.ThePIT.PlayNote(
+                //    Hardware.Timers.PIT.MusicalNote.E4,
+                //    Hardware.Timers.PIT.MusicalNoteValue.Quaver,
+                //    bpm);
+                //Hardware.Timers.PIT.ThePIT.PlayNote(
+                //    Hardware.Timers.PIT.MusicalNote.Silent,
+                //    Hardware.Timers.PIT.MusicalNoteValue.Minim,
+                //    bpm);
+                //Hardware.Timers.PIT.ThePIT.PlayNote(
+                //    Hardware.Timers.PIT.MusicalNote.G4,
+                //    Hardware.Timers.PIT.MusicalNoteValue.Quaver,
+                //    bpm);
+                //Hardware.Timers.PIT.ThePIT.PlayNote(
+                //    Hardware.Timers.PIT.MusicalNote.Silent,
+                //    Hardware.Timers.PIT.MusicalNoteValue.Minim,
+                //    bpm);
+                //Hardware.Timers.PIT.ThePIT.PlayNote(
+                //    Hardware.Timers.PIT.MusicalNote.C5,
+                //    Hardware.Timers.PIT.MusicalNoteValue.Minim,
+                //    bpm);
+                //Hardware.Timers.PIT.ThePIT.PlayNote(
+                //    Hardware.Timers.PIT.MusicalNote.Silent,
+                //    Hardware.Timers.PIT.MusicalNoteValue.Minim,
+                //    bpm);
+                //Hardware.Timers.PIT.ThePIT.PlayNote(
+                //    Hardware.Timers.PIT.MusicalNote.G4,
+                //    Hardware.Timers.PIT.MusicalNoteValue.Minim,
+                //    bpm);
+                //Hardware.Timers.PIT.ThePIT.PlayNote(
+                //    Hardware.Timers.PIT.MusicalNote.C5,
+                //    Hardware.Timers.PIT.MusicalNoteValue.Minim,
+                //    bpm);
                 
                 Process ManagedMainProcess = ProcessManager.CreateProcess(ManagedMain, "Managed Main", false);                
                 Thread ManagedMain_MainThread = ((Thread)ManagedMainProcess.Threads[0]);
@@ -165,7 +177,7 @@ namespace Kernel
                 {
                     BasicConsole.WriteLine("Startup error! " + ExceptionMethods.CurrentException.Message);
                 }
-                BasicConsole.WriteLine("Fling OS forced to halt!");
+                BasicConsole.WriteLine("FlingOS forced to halt!");
                 BasicConsole.SetTextColour(BasicConsole.default_colour);
             }
 
@@ -205,6 +217,8 @@ namespace Kernel
         [Drivers.Compiler.Attributes.NoGC]
         public static void Halt(uint lastAddress)
         {
+            BasicConsole.PrimaryOutputEnabled = true;
+
             try
             {
                 Hardware.Devices.Keyboard.CleanDefault();
@@ -323,6 +337,9 @@ namespace Kernel
 
             try
             {
+                BasicConsole.WriteLine(" > Initialising system calls...");
+                Core.Processes.SystemCalls.Init();
+
                 BasicConsole.WriteLine(" > Starting GC Cleanup task...");
                 ProcessManager.CurrentProcess.CreateThread(Core.Tasks.GCCleanupTask.Main);
 
@@ -344,7 +361,10 @@ namespace Kernel
                 Hardware.Devices.Keyboard.InitDefault();
                 Core.Console.InitDefault();
                 Core.Shell.InitDefault();
+
+                BasicConsole.PrimaryOutputEnabled = false;
                 Core.Shell.Default.Execute();
+                BasicConsole.PrimaryOutputEnabled = true;
 
                 if (!Core.Shell.Default.Terminating)
                 {
@@ -359,6 +379,7 @@ namespace Kernel
             }
             catch
             {
+                BasicConsole.PrimaryOutputEnabled = true;
                 OutputCurrentExceptionInfo();
             }
             
@@ -389,6 +410,13 @@ namespace Kernel
         private static void OutputDivider()
         {
             BasicConsole.WriteLine("---------------------");
+        }
+
+        [Drivers.Compiler.Attributes.NoGC]
+        [Drivers.Compiler.Attributes.NoDebug]
+        private static void BasicConsole_SecondaryOutput(FOS_System.String str)
+        {
+            Hardware.IO.Serial.Serial.COM1.Write(str);
         }
 
         public static void OutputAddressDetectedMethod(uint EIP, uint OpNum)

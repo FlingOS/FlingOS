@@ -34,9 +34,8 @@ namespace Kernel.FOS_System
     /// </summary>
     [Kernel.Compiler.PluggedClass]
     [Kernel.Compiler.StringClass]
-    [Drivers.Compiler.Attributes.PluggedClass]
     [Drivers.Compiler.Attributes.StringClass]
-    public class String : Object
+    public sealed class String : Object
     {
         /* If you add more fields here, remember to update the compiler and all the ASM files that depend on the string
            class structure ( i.e. do all the hard work! ;) )
@@ -53,19 +52,6 @@ namespace Kernel.FOS_System
         public int length;
 
         /*   ----------- DO NOT CREATE A CONSTRUCTOR FOR THIS CLASS - IT WILL NEVER BE CALLED IF YOU DO ----------- */
-
-        /// <summary>
-        /// Gets the length of the specified string.
-        /// </summary>
-        /// <param name="aString">The string to get the length of.</param>
-        /// <returns>The length of the specified string.</returns>
-        [Compiler.PluggedMethod(ASMFilePath=@"ASM\String\GetLength")]
-        [Drivers.Compiler.Attributes.PluggedMethod(ASMFilePath = @"ASM\String\GetLength")]
-        public static int GetLength(string aString)
-        {
-            //Stub for use by testing frameworks.
-            return aString.Length;
-        }
 
         /// <summary>
         /// Creates a new, blank FOS_System.String of specified length.
@@ -85,7 +71,12 @@ namespace Kernel.FOS_System
             {
                 ExceptionMethods.Throw(new Exceptions.ArgumentException("Parameter \"length\" cannot be less than 0 in FOS_System.String.New(int length)."));
             }
-            return (FOS_System.String)Utilities.ObjectUtilities.GetObject(GC.NewString(length));
+            FOS_System.String result = (FOS_System.String)Utilities.ObjectUtilities.GetObject(GC.NewString(length));
+            if (result == null)
+            {
+                ExceptionMethods.Throw(new Exceptions.NullReferenceException());
+            }
+            return result;
         }
 
         /// <summary>
@@ -116,6 +107,30 @@ namespace Kernel.FOS_System
         /// <param name="index">The index of the character to get.</param>
         /// <returns>The character at the specified index.</returns>
         public unsafe char this[int index]
+        {
+            [Compiler.NoDebug]
+            [Drivers.Compiler.Attributes.NoDebug]
+            get
+            {
+                byte* thisPtr = (byte*)Utilities.ObjectUtilities.GetHandle(this);
+                thisPtr += 8; /*For fields inc. inherited*/
+                return ((char*)thisPtr)[index];
+            }
+            [Compiler.NoDebug]
+            [Drivers.Compiler.Attributes.NoDebug]
+            set
+            {
+                byte* thisPtr = (byte*)Utilities.ObjectUtilities.GetHandle(this);
+                thisPtr += 8; /*For fields inc. inherited*/
+                ((char*)thisPtr)[index] = value;
+            }
+        }
+        /// <summary>
+        /// Gets the character at the specified index.
+        /// </summary>
+        /// <param name="index">The index of the character to get.</param>
+        /// <returns>The character at the specified index.</returns>
+        public unsafe char this[uint index]
         {
             [Compiler.NoDebug]
             [Drivers.Compiler.Attributes.NoDebug]
@@ -292,7 +307,7 @@ namespace Kernel.FOS_System
                 {
                     return New(0);
                 }
-                ExceptionMethods.Throw_IndexOutOfRangeException();
+                ExceptionMethods.Throw(new Exceptions.IndexOutOfRangeException(startIndex, this.length));
             }
             else if (aLength > length - startIndex)
             {

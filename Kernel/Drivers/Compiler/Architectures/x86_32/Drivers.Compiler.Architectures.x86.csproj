@@ -20,6 +20,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <DocumentationFile>bin\Debug\Drivers.Compiler.Architectures.x86.XML</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -28,6 +29,7 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <DocumentationFile>bin\Release\Drivers.Compiler.Architectures.x86.XML</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -39,7 +41,14 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ASMOps\ExternalLabel.cs" />
+    <Compile Include="ASMOps\FieldTable.cs" />
+    <Compile Include="ASMOps\GlobalLabel.cs" />
+    <Compile Include="ASMOps\Header.cs" />
+    <Compile Include="ASMOps\MethodTable.cs" />
     <Compile Include="ASMOps\Neg.cs" />
+    <Compile Include="ASMOps\StaticField.cs" />
+    <Compile Include="ASMOps\StringLiteral.cs" />
     <Compile Include="ASMOps\Test.cs" />
     <Compile Include="ASMOps\Shr.cs" />
     <Compile Include="ASMOps\Shl.cs" />
@@ -51,6 +60,7 @@
     <Compile Include="ASMOps\Nop.cs" />
     <Compile Include="ASMOps\Not.cs" />
     <Compile Include="ASMOps\Or.cs" />
+    <Compile Include="ASMOps\TypeTable.cs" />
     <Compile Include="ASMOps\Xor.cs" />
     <Compile Include="ASMOps\Div.cs" />
     <Compile Include="ASMOps\Cdq.cs" />
@@ -156,6 +166,7 @@
     <Compile Include="ILOps\Xor.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="LibraryFunctions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

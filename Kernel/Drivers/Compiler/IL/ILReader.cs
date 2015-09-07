@@ -34,13 +34,28 @@ using System.Reflection.Emit;
 
 namespace Drivers.Compiler.IL
 {
+    /// <summary>
+    /// The IL Reader manages reading in both plugged and non-plugged methods from an IL library.
+    /// </summary>
     public static class ILReader
     {
+        /// <summary>
+        /// List of all the possible IL op codes (whether supported or not).
+        /// </summary>
         public static OpCode[] AllOpCodes = new OpCode[ushort.MaxValue];
+        /// <summary>
+        /// Initialises the IL reader.
+        /// </summary>
+        /// <remarks>
+        /// Calls <see cref="LoadILOpTypes"/>.
+        /// </remarks>
         static ILReader()
         {
             LoadILOpTypes();
         }
+        /// <summary>
+        /// Loads all the possible IL ops (whether supported by the Drivers Compiler or not).
+        /// </summary>
         private static void LoadILOpTypes()
         {
             //Get the list of ILOps from the fields in OpCodes (all the fields in OpCodes are the ILOps)
@@ -54,8 +69,12 @@ namespace Drivers.Compiler.IL
                 AllOpCodes[index] = anOpCode;
             }
         }
-
-
+        
+        /// <summary>
+        /// Reads the specified method.
+        /// </summary>
+        /// <param name="aMethodInfo">The method to read.</param>
+        /// <returns>The new IL block for the method.</returns>
         public static ILBlock Read(Types.MethodInfo aMethodInfo)
         {
             if (aMethodInfo.IsPlugged)
@@ -68,6 +87,11 @@ namespace Drivers.Compiler.IL
             }
         }
 
+        /// <summary>
+        /// Reads a plugged method.
+        /// </summary>
+        /// <param name="aMethodInfo">The method to read.</param>
+        /// <returns>The new IL block for the method.</returns>
         public static ILBlock ReadPlugged(Types.MethodInfo aMethodInfo)
         {
             string PlugPath = aMethodInfo.PlugAttribute.ASMFilePath;
@@ -77,6 +101,11 @@ namespace Drivers.Compiler.IL
                 TheMethodInfo = aMethodInfo
             };
         }
+        /// <summary>
+        /// Reads a non-plugged method.
+        /// </summary>
+        /// <param name="aMethodInfo">The method to read.</param>
+        /// <returns>The new IL block for the method.</returns>
         public static ILBlock ReadNonPlugged(Types.MethodInfo aMethodInfo)
         {
             ILBlock result = new ILBlock()

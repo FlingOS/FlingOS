@@ -553,7 +553,7 @@
                       considered as challenging as writing an OS! A large instruction set or specialist ops or few general purpose
                       registers will make writing a good compiler more challenging. This is because your compiler will have to pay
                       much closer attention to what is happening to the data and how/when it can use specialist ops or reuse registers.
-                      A discussion of compiler design is not included in the Fling OS articles, but given the existence of GCC, MSBuild
+                      A discussion of compiler design is not included in the FlingOS articles, but given the existence of GCC, MSBuild
                       and numerous other open-source compilers for just about every language, you should be able to find one that
                       works for you somewhere.
                     </para>
@@ -753,7 +753,7 @@
                   <content>
                     <para>
                       The x86 architecture has a significantly large number of resources (especially by comparison to ARM). As an OS
-                      developer this will be vital. Additionally, Fling OS currently only targets x86 so all resources and examples are
+                      developer this will be vital. Additionally, FlingOS currently only targets x86 so all resources and examples are
                       written from an x86 perspective.
                     </para>
                   </content>
@@ -911,7 +911,7 @@
                   </listItem>
                 </list>
                 <para>
-                  Please note: At the time of writing, Fling OS primarily used VMWare Player for testing.
+                  Please note: At the time of writing, FlingOS primarily used VMWare Player for testing.
                 </para>
               </content>
             </section>
@@ -1603,7 +1603,7 @@
               <content>
                 <para>
                   There are a number of different syntaxes used for writing assembly code. Which you use is determined by your
-                  compiler. The syntax used by Fling OS is primarily NASM (since Fling OS uses the NASM compiler).
+                  compiler. The syntax used by FlingOS is primarily NASM (since FlingOS uses the NASM compiler).
 
                   Which assembler you use is determined by your compiler. Which compiler you used is broadly determined by:
                 </para>
@@ -1663,10 +1663,10 @@
           <title>NASM</title>
           <sections>
             <section address="CPUArchitecture_NASM_Notes">
-              <title>Notes about NASM &amp; Fling OS</title>
+              <title>Notes about NASM &amp; FlingOS</title>
               <content>
                 <para>
-                  As previously mentioned, Fling OS uses the NASM compiler and thus NASM syntax. Assembler samples are given in
+                  As previously mentioned, FlingOS uses the NASM compiler and thus NASM syntax. Assembler samples are given in
                   NASM syntax. If you are using a different syntax, you must be very careful when converting samples. Particular
                   attention should be paid to parameter order, since a failure to switch parameters will entirely break code.
                 </para>

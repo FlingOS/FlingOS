@@ -112,27 +112,27 @@ namespace Drivers.Compiler.Architectures.x86
             if (bytesToLoad == 1)
             {
                 conversionState.Append(new ASMOps.Xor() { Src = "EAX", Dest = "EAX" });
-                GlobalMethods.InsertPageFaultDetection(conversionState, "ebx", 0, (OpCodes)theOp.opCode.Value);
+                GlobalMethods.InsertPageFaultDetection(conversionState, "EBX", 0, (OpCodes)theOp.opCode.Value);
                 conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Byte, Src = "[EBX]", Dest = "AL" });
                 conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Dword, Src = "EAX" });
             }
             else if (bytesToLoad == 2)
             {
                 conversionState.Append(new ASMOps.Xor() { Src = "EAX", Dest = "EAX" });
-                GlobalMethods.InsertPageFaultDetection(conversionState, "ebx", 0, (OpCodes)theOp.opCode.Value);
+                GlobalMethods.InsertPageFaultDetection(conversionState, "EBX", 0, (OpCodes)theOp.opCode.Value);
                 conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Word, Src = "[EBX]", Dest = "AX" });
                 conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Dword, Src = "EAX" });
             }
             else if (bytesToLoad == 4)
             {
-                GlobalMethods.InsertPageFaultDetection(conversionState, "ebx", 0, (OpCodes)theOp.opCode.Value);
+                GlobalMethods.InsertPageFaultDetection(conversionState, "EBX", 0, (OpCodes)theOp.opCode.Value);
                 conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Dword, Src = "[EBX]" });
             }
             else if (bytesToLoad == 8)
             {
-                GlobalMethods.InsertPageFaultDetection(conversionState, "ebx", 4, (OpCodes)theOp.opCode.Value);
+                GlobalMethods.InsertPageFaultDetection(conversionState, "EBX", 4, (OpCodes)theOp.opCode.Value);
                 conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Dword, Src = "[EBX+4]" });
-                GlobalMethods.InsertPageFaultDetection(conversionState, "ebx", 0, (OpCodes)theOp.opCode.Value);
+                GlobalMethods.InsertPageFaultDetection(conversionState, "EBX", 0, (OpCodes)theOp.opCode.Value);
                 conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Dword, Src = "[EBX]" });
             }
 

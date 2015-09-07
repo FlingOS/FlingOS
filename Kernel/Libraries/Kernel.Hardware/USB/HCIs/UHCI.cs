@@ -133,6 +133,8 @@ namespace Kernel.Hardware.USB.HCIs
 
         protected UHCI_QueueHead_Struct* qhPointer;
 
+        protected int IRQHandlerID = 0;
+
         public UHCI(PCI.PCIDeviceNormal aPCIDevice)
             : base(aPCIDevice)
         {
@@ -210,7 +212,10 @@ namespace Kernel.Hardware.USB.HCIs
             // bit 2: Bus Master               // cf. http://forum.osdev.org/viewtopic.php?f=1&t=20255&start=0
             pciDevice.Command = pciDevice.Command | PCI.PCIDevice.PCICommand.IO | PCI.PCIDevice.PCICommand.Master;
 
-            Interrupts.Interrupts.AddIRQHandler(pciDevice.InterruptLine, UHCI.InterruptHandler, this, false, true, "UHCI");
+            if (IRQHandlerID == 0)
+            {
+                IRQHandlerID = Interrupts.Interrupts.AddIRQHandler(pciDevice.InterruptLine, UHCI.InterruptHandler, this, false, true, "UHCI");
+            }
 
             ResetHC();
         }
@@ -333,7 +338,7 @@ namespace Kernel.Hardware.USB.HCIs
             BasicConsole.DelayOutput(1);
 #endif
 
-            UHCI_QueueHead_Struct* qh = (UHCI_QueueHead_Struct*)FOS_System.Heap.Alloc((uint)sizeof(UHCI_QueueHead_Struct), 16);
+            UHCI_QueueHead_Struct* qh = (UHCI_QueueHead_Struct*)FOS_System.Heap.AllocZeroedAPB((uint)sizeof(UHCI_QueueHead_Struct), 32, "UHCI : ResetHC");
             qh->next = (UHCI_QueueHead_Struct*)UHCI_Consts.BIT_T;
             qh->transfer = (UHCI_qTD_Struct*)UHCI_Consts.BIT_T;
             qh->q_first = null;
@@ -436,6 +441,8 @@ namespace Kernel.Hardware.USB.HCIs
             {
                 if ((USBSTS.Read_UInt16() & UHCI_Consts.STS_HCHALTED) == 0)
                 {
+                    Status = HCIStatus.Active;
+
                     EnablePorts(); // attaches the ports
                 }
                 else
@@ -466,8 +473,6 @@ namespace Kernel.Hardware.USB.HCIs
 #endif
                 AnalysePortStatus(j, val);
             }
-
-            //TODO: Shift this EnabledPorts = true; to this location
         }
         public override void ResetPort(byte port)
         {
@@ -540,10 +545,12 @@ namespace Kernel.Hardware.USB.HCIs
         }
         protected void InterruptHandler()
         {
+#if UHCI_TRACE
             BasicConsole.SetTextColour(BasicConsole.warning_colour);
             BasicConsole.WriteLine("UHCI: Interrupt handler");
             BasicConsole.SetTextColour(BasicConsole.default_colour);
             BasicConsole.DelayOutput(20);
+#endif
 
             ushort val = USBSTS.Read_UInt16();
 
@@ -558,49 +565,67 @@ namespace Kernel.Hardware.USB.HCIs
             //}
 
             //textColor(IMPORTANT);
-
+            
+#if UHCI_TRACE
             BasicConsole.SetTextColour(BasicConsole.warning_colour);
+#endif
 
             if ((val & UHCI_Consts.STS_USBINT) != 0)
             {
+#if UHCI_TRACE
                 BasicConsole.WriteLine(((FOS_System.String)"UHCI Frame: ") + FRNUM.Read_UInt16() + " - USB transaction completed");
+#endif
                 USBSTS.Write_UInt16(UHCI_Consts.STS_USBINT); // reset interrupt
                 TransactionsCompleted++;
             }
 
             if ((val & UHCI_Consts.STS_RESUME_DETECT) != 0)
             {
+#if UHCI_TRACE
                 BasicConsole.WriteLine("UHCI: Resume Detect");
+#endif
                 USBSTS.Write_UInt16(UHCI_Consts.STS_RESUME_DETECT); // reset interrupt
             }
-
+            
+#if UHCI_TRACE
             BasicConsole.SetTextColour(BasicConsole.error_colour);
+#endif
 
             if ((val & UHCI_Consts.STS_HCHALTED) != 0)
             {
+#if UHCI_TRACE
                 BasicConsole.WriteLine("UHCI: Host Controller Halted");
+#endif
                 USBSTS.Write_UInt16(UHCI_Consts.STS_HCHALTED); // reset interrupt
             }
 
             if ((val & UHCI_Consts.STS_HC_PROCESS_ERROR) != 0)
             {
+#if UHCI_TRACE
                 BasicConsole.WriteLine("UHCI: Host Controller Process Error");
+#endif
                 USBSTS.Write_UInt16(UHCI_Consts.STS_HC_PROCESS_ERROR); // reset interrupt
             }
 
             if ((val & UHCI_Consts.STS_USB_ERROR) != 0)
             {
+#if UHCI_TRACE
                 BasicConsole.WriteLine("UHCI: USB Error");
+#endif
                 USBSTS.Write_UInt16(UHCI_Consts.STS_USB_ERROR); // reset interrupt
             }
 
             if ((val & UHCI_Consts.STS_HOST_SYSTEM_ERROR) != 0)
             {
+#if UHCI_TRACE
                 BasicConsole.WriteLine("UHCI: Host System Error");
+#endif
                 USBSTS.Write_UInt16(UHCI_Consts.STS_HOST_SYSTEM_ERROR); // reset interrupt
             }
-
+            
+#if UHCI_TRACE
             BasicConsole.SetTextColour(BasicConsole.default_colour);
+#endif
         }
         
         protected void AnalysePortStatus(byte j, ushort val)
@@ -950,7 +975,7 @@ namespace Kernel.Hardware.USB.HCIs
             BasicConsole.DelayOutput(5);
 #endif
 
-            UHCI_qTD_Struct* td = (UHCI_qTD_Struct*)FOS_System.Heap.Alloc((uint)sizeof(UHCI_qTD_Struct), 16);
+            UHCI_qTD_Struct* td = (UHCI_qTD_Struct*)FOS_System.Heap.AllocZeroedAPB((uint)sizeof(UHCI_qTD_Struct), 32, "UHCI : AllocQTD");
 
             if ((uint)next != Utils.BIT(0))
             {
@@ -975,8 +1000,7 @@ namespace Kernel.Hardware.USB.HCIs
             BasicConsole.DelayOutput(5);
 #endif
 
-            td->virtBuffer = FOS_System.Heap.Alloc(1024);
-            MemoryUtils.ZeroMem(td->virtBuffer, 1024);
+            td->virtBuffer = FOS_System.Heap.AllocZeroedAPB(0x1000, 0x1000, "UHCI : AllocQTDBuffer");
             td->buffer = (uint*)VirtMemManager.GetPhysicalAddress(td->virtBuffer);
 
             return td->virtBuffer;
@@ -1105,7 +1129,7 @@ namespace Kernel.Hardware.USB.HCIs
     }
 
     // Transfer Descriptors (TD) are always aligned on 16-byte boundaries.
-    // All transfer descriptors have the same basic, 32-byte structure.
+    // All transfer descriptors have the same basic, 1024-byte structure.
     // The last 4 DWORDs are for software use.
     [System.Runtime.InteropServices.StructLayout(System.Runtime.InteropServices.LayoutKind.Sequential, Pack = 1)]
     public unsafe struct UHCI_qTD_Struct

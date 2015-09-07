@@ -36,7 +36,6 @@ namespace Kernel.Utilities
     /// Utility methods for object manipulation.
     /// </summary>
     [Compiler.PluggedClass]
-    [Drivers.Compiler.Attributes.PluggedClass]
     public static class ObjectUtilities
     {
         /// <summary>

@@ -43,16 +43,34 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Exceptions.cs" />
+    <Compile Include="GC.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SystemCalls.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="ASM\SystemCalls.x86_32.asm" />
+    <Content Include="ASM\SystemCalls.x86_32.asm">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\..\Kernel\Kernel.licenseheader">
       <Link>Kernel.licenseheader</Link>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\Libraries\Kernel.Shared\Kernel.Shared.csproj">
+      <Project>{93584240-da57-4e22-8fc8-e25cdff1e872}</Project>
+      <Name>Kernel.Shared</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Compiler\Drivers.Compiler.csproj">
+      <Project>{1fb0e622-d2c6-4a5c-b5b6-d2bb5e502af1}</Project>
+      <Name>Drivers.Compiler</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Drivers.Framework\Drivers.Framework.csproj">
+      <Project>{f9da529f-d53a-4f0c-9f45-7ddddc648099}</Project>
+      <Name>Drivers.Framework</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

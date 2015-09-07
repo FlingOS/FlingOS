@@ -354,7 +354,7 @@ namespace Kernel.Compiler
                         {
                             foreach (ILOpTargetAttribute targetAttr in targetAttrs)
                             {
-                                TargetILOps.Add(targetAttr.Target, (ILOps.ILOp)aType.GetConstructor(new Type[0]).Invoke(new object[0]));
+                                TargetILOps.Add(targetAttr.Target, (ILOps.ILOp)Activator.CreateInstance(aType));
                             }
                         }
                     }

@@ -127,7 +127,6 @@ namespace Drivers.Compiler.Architectures.x86
             MethodBase methodToCall = theOp.MethodToCall;
             Types.MethodInfo methodToCallInfo = conversionState.TheILLibrary.GetMethodInfo(methodToCall);
 
-            conversionState.AddExternalLabel(conversionState.GetHaltMethodInfo().ID);
             conversionState.AddExternalLabel(conversionState.GetThrowNullReferenceExceptionMethodInfo().ID);
 
             //The method to call is a method base
@@ -154,7 +153,7 @@ namespace Drivers.Compiler.Architectures.x86
                     List<Type> allParams = ((MethodInfo)methodToCall).GetParameters().Select(x => x.ParameterType).ToList();
 
                     int bytesForParams = allParams.Select(x => conversionState.TheILLibrary.GetTypeInfo(x).SizeOnStackInBytes).Sum();
-                    GlobalMethods.InsertPageFaultDetection(conversionState, "esp", bytesForParams, (OpCodes)theOp.opCode.Value);
+                    GlobalMethods.InsertPageFaultDetection(conversionState, "ESP", bytesForParams, (OpCodes)theOp.opCode.Value);
                     conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Dword, Src = "[ESP+" + bytesForParams + "]", Dest = "EAX" });
                     
 
@@ -191,11 +190,11 @@ namespace Drivers.Compiler.Architectures.x86
                             throw new NotSupportedException("Invalid return stack operand size!");
                         }
                     }
-                    
 
+                  
 
                     //Append the actual call
-                    conversionState.Append(new ASMOps.Call() { Target = "eax" });
+                    conversionState.Append(new ASMOps.Call() { Target = "EAX" });
                     
 
                     //After a call, we need to remove the return value and parameters from the stack
@@ -280,37 +279,37 @@ namespace Drivers.Compiler.Architectures.x86
 
                     //Get object ref
                     int bytesForAllParams = ((MethodInfo)methodToCall).GetParameters().Select(x => conversionState.TheILLibrary.GetTypeInfo(x.ParameterType).SizeOnStackInBytes).Sum();
-                    GlobalMethods.InsertPageFaultDetection(conversionState, "esp", bytesForAllParams, (OpCodes)theOp.opCode.Value);
+                    GlobalMethods.InsertPageFaultDetection(conversionState, "ESP", bytesForAllParams, (OpCodes)theOp.opCode.Value);
                     conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Dword, Src = "[ESP+" + bytesForAllParams + "]", Dest = "EAX" });
                     
                     //Check object ref
-                    conversionState.Append(new ASMOps.Cmp() { Arg2 = "0", Arg1 = "eax" });
+                    conversionState.Append(new ASMOps.Cmp() { Arg1 = "EAX", Arg2 = "0" });
                     conversionState.Append(new ASMOps.Jmp() { JumpType = ASMOps.JmpOp.JumpNotZero, DestILPosition = currOpPosition, Extension = "NotNull" });
                     conversionState.Append(new ASMOps.Call() { Target = "GetEIP" });
                     conversionState.AddExternalLabel("GetEIP");
-                    conversionState.Append(new ASMOps.Call() { Target = conversionState.GetHaltMethodInfo().ID });
+                    conversionState.Append(new ASMOps.Call() { Target = conversionState.GetThrowNullReferenceExceptionMethodInfo().ID });
                     conversionState.Append(new ASMOps.Label() { ILPosition = currOpPosition, Extension = "NotNull" });
 
                     //Get type ref
                     int typeOffset = conversionState.TheILLibrary.GetFieldInfo(declaringTypeInfo, "_Type").OffsetInBytes;
-                    GlobalMethods.InsertPageFaultDetection(conversionState, "eax", typeOffset, (OpCodes)theOp.opCode.Value);
+                    GlobalMethods.InsertPageFaultDetection(conversionState, "EAX", typeOffset, (OpCodes)theOp.opCode.Value);
                     conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Dword, Src = "[EAX+" + typeOffset.ToString() + "]", Dest = "EAX" });
                     
                     //Get method table ref
                     int methodTablePtrOffset = conversionState.GetTypeFieldOffset("MethodTablePtr");
-                    GlobalMethods.InsertPageFaultDetection(conversionState, "eax", methodTablePtrOffset, (OpCodes)theOp.opCode.Value);
+                    GlobalMethods.InsertPageFaultDetection(conversionState, "EAX", methodTablePtrOffset, (OpCodes)theOp.opCode.Value);
                     conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Dword, Src = "[EAX+" + methodTablePtrOffset.ToString() + "]", Dest = "EAX" });
                     
                     //Loop through entries
                     conversionState.Append(new ASMOps.Label() { ILPosition = currOpPosition, Extension = "LoopMethodTable" });
                     //Load ID Val for current entry
-                    GlobalMethods.InsertPageFaultDetection(conversionState, "eax", 0, (OpCodes)theOp.opCode.Value);
+                    GlobalMethods.InsertPageFaultDetection(conversionState, "EAX", 0, (OpCodes)theOp.opCode.Value);
                     conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Dword, Src = "[EAX]", Dest = "EBX" });
                     //Compare to wanted ID value
                     conversionState.Append(new ASMOps.Cmp() { Arg1 = "EBX", Arg2 = methodIDValueWanted });
-                    //If equal, load method address into eax
+                    //If equal, load method address into EAX
                     conversionState.Append(new ASMOps.Jmp() { JumpType = ASMOps.JmpOp.JumpNotEqual, DestILPosition = currOpPosition, Extension = "NotEqual" });
-                    GlobalMethods.InsertPageFaultDetection(conversionState, "eax", 4, (OpCodes)theOp.opCode.Value);
+                    GlobalMethods.InsertPageFaultDetection(conversionState, "EAX", 4, (OpCodes)theOp.opCode.Value);
                     conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Dword, Src = "[EAX+4]", Dest = "EAX" });
                     conversionState.Append(new ASMOps.Jmp() { JumpType = ASMOps.JmpOp.Jump, DestILPosition = currOpPosition, Extension = "Call" });
                     conversionState.Append(new ASMOps.Label() { ILPosition = currOpPosition, Extension = "NotEqual" });
@@ -323,7 +322,7 @@ namespace Drivers.Compiler.Architectures.x86
                     conversionState.Append(new ASMOps.Label() { ILPosition = currOpPosition, Extension = "EndOfTable" });
                     //Compare address value to 0
                     //If not zero, there is a parent method table to check
-                    GlobalMethods.InsertPageFaultDetection(conversionState, "eax", 4, (OpCodes)theOp.opCode.Value);
+                    GlobalMethods.InsertPageFaultDetection(conversionState, "EAX", 4, (OpCodes)theOp.opCode.Value);
                     conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Dword, Src = "[EAX+4]", Dest = "EBX" });
                     conversionState.Append(new ASMOps.Cmp() { Arg1 = "EBX", Arg2 = "0" });
                     conversionState.Append(new ASMOps.Jmp() { JumpType = ASMOps.JmpOp.JumpZero, DestILPosition = currOpPosition, Extension = "NotFound" });
@@ -332,6 +331,8 @@ namespace Drivers.Compiler.Architectures.x86
                     conversionState.Append(new ASMOps.Jmp() { JumpType = ASMOps.JmpOp.Jump, DestILPosition = currOpPosition, Extension = "LoopMethodTable" });
                     conversionState.Append(new ASMOps.Label() { ILPosition = currOpPosition, Extension = "NotFound" });
                     //Throw exception!
+                    conversionState.Append(new ASMOps.Call() { Target = "GetEIP" });
+                    conversionState.AddExternalLabel("GetEIP");
                     conversionState.Append(new ASMOps.Call() { Target = conversionState.GetThrowNullReferenceExceptionMethodInfo().ID });
 
                     conversionState.Append(new ASMOps.Label() { ILPosition = currOpPosition, Extension = "Call" });

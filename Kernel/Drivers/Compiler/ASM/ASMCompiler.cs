@@ -32,15 +32,33 @@ using System.Threading.Tasks;
 
 namespace Drivers.Compiler.ASM
 {
+    /// <summary>
+    /// The ASM Compiler is the high-level class which manages the ASM compilation step
+    /// including executing the ASM Preprocessor and the ASM Processor. 
+    /// </summary>
+    /// <remarks>
+    /// The ASM compiler itself does very little work. It is mostly a wrapper to ensure
+    /// that the processing steps (i.e. preprocess followed by process) happen in the 
+    /// correct order and are hidden from other parts of the compiler. It also allows
+    /// additional ASM processing steps to be added more easily later.
+    /// </remarks>
     public static class ASMCompiler
     {
+        /// <summary>
+        /// Compiles the specified IL Library and any dependencies using the ASM Preprocesor and ASM Processor.
+        /// </summary>
+        /// <remarks>
+        /// The ASM Compiler's steps convert the ASM into machine code.
+        /// </remarks>
+        /// <param name="TheILLibrary">The library to compile.</param>
+        /// <returns>CompileResult.OK if all steps complete successfully.</returns>
         public static CompileResult Compile(IL.ILLibrary TheILLibrary)
         {
             CompileResult Result = CompileResult.OK;
 
             foreach(IL.ILLibrary depLib in TheILLibrary.Dependencies)
             {
-                Compile(depLib);
+                Result = Result == CompileResult.OK ? Compile(depLib) : Result;
             }
 
             Result = Result == CompileResult.OK ? ExecuteASMPreprocessor(TheILLibrary.TheASMLibrary) : Result;
@@ -53,11 +71,21 @@ namespace Drivers.Compiler.ASM
             return Result;
         }
 
+        /// <summary>
+        /// Executes the ASM Preprocessor for the specified library.
+        /// </summary>
+        /// <param name="TheLibrary">The library to execute the preprocessor on.</param>
+        /// <returns>The return value from the ASMPreprocessor.Preprocess method.</returns>
         private static CompileResult ExecuteASMPreprocessor(ASMLibrary TheLibrary)
         {
             return ASMPreprocessor.Preprocess(TheLibrary);
         }
 
+        /// <summary>
+        /// Executes the ASM Processor for the specified library.
+        /// </summary>
+        /// <param name="TheLibrary">The library to execute the processor on.</param>
+        /// <returns>The return value from the ASMProcessor.Process method.</returns>
         private static CompileResult ExecuteASMProcessor(ASMLibrary TheLibrary)
         {
             return ASMProcessor.Process(TheLibrary);

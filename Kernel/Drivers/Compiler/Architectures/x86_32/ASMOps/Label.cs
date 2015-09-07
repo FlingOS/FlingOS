@@ -29,10 +29,42 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Drivers.Compiler.ASM;
 
 namespace Drivers.Compiler.Architectures.x86.ASMOps
 {
-    public class Label : ASM.ASMLabel
+    public class Label : ASM.ASMOps.ASMLabel
     {
+        public Label()
+            : base()
+        {
+        }
+
+        public Label(bool methodLabel)
+            : base(methodLabel)
+        {
+        }
+
+        public Label(int anILPosition, string anExtension)
+            : base(anILPosition, anExtension)
+        {
+        }
+
+        /// <summary>
+        /// Generates the label itself (using the ASM block) and the line of assembly for the label.
+        /// </summary>
+        /// <param name="theBlock">The block for which the comment is to be generated.</param>
+        /// <returns>The complete line of assembly code.</returns>
+        public override string Convert(ASMBlock theBlock)
+        {
+            if (MethodLabel)
+            {
+                return theBlock.GenerateMethodLabel() + ":";
+            }
+            else
+            {
+                return theBlock.GenerateILOpLabel(ILPosition, Extension) + ":";
+            }
+        }
     }
 }

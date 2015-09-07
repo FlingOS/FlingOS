@@ -43,7 +43,7 @@
       <content>
         <para>
           Microsoft’s C# development tools come with the standard set of Windows-based libraries
-          such as the System library. Clearly, these libraries are not available on Fling OS and
+          such as the System library. Clearly, these libraries are not available on FlingOS and
           so they must be programmed as part of the kernel.
         </para>
         <para>
@@ -67,7 +67,7 @@
           </listItem>
         </list>
         <para>
-          The conclusion drawn from the above dicussions is that Fling OS will use Approach 1 - DIY 
+          The conclusion drawn from the above dicussions is that FlingOS will use Approach 1 - DIY 
           as it offers the best long-term prospects though use the Microsoft standard C# 
           libraries as a rough guide / aid.
         </para>

@@ -73,6 +73,10 @@ namespace Kernel.FOS_System.IO.Streams
             {
                 return new FAT.FATFileStream((IO.FAT.FATFile)aFile, false);
             }
+            else if (aFile is IO.ISO9660.ISO9660File)
+            {
+                return new ISO9660.ISO9660FileStream((IO.ISO9660.ISO9660File)aFile);
+            }
             else
             {
                 return null;

@@ -38,10 +38,34 @@ namespace Kernel.FOS_System.Exceptions
     public class IndexOutOfRangeException : FOS_System.Exception
     {
         /// <summary>
-        /// Sets the message to "Index out of range exception."
+        /// Sets the message to "Index out of range exception. Index: 0xXXXXXXXX, Range: 0xXXXXXXXX"
         /// </summary>
-        public IndexOutOfRangeException() 
-            : base("Index out of range exception.")
+        public IndexOutOfRangeException(int index, int range) 
+            : base("Index out of range exception. Index: " + (FOS_System.String)index + ", Range: " + range)
+        {
+        }
+
+        /// <summary>
+        /// Sets the message to "Index out of range exception. Index: 0xXXXXXXXX, Range: 0xXXXXXXXX"
+        /// </summary>
+        public IndexOutOfRangeException(uint index, uint range)
+            : base("Index out of range exception. Index: " + (FOS_System.String)index + ", Range: " + range)
+        {
+        }
+
+        /// <summary>
+        /// Sets the message to "Index out of range exception. Index: 0xXXXXXXXX, Range: 0xXXXXXXXX"
+        /// </summary>
+        public IndexOutOfRangeException(long index, long range)
+            : base("Index out of range exception. Index: " + (FOS_System.String)index + ", Range: " + range)
+        {
+        }
+
+        /// <summary>
+        /// Sets the message to "Index out of range exception. Index: 0xXXXXXXXX, Range: 0xXXXXXXXX"
+        /// </summary>
+        public IndexOutOfRangeException(ulong index, ulong range)
+            : base("Index out of range exception. Index: " + (FOS_System.String)index + ", Range: " + range)
         {
         }
     }

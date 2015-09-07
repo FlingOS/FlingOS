@@ -29,17 +29,44 @@ using System.IO;
 
 namespace Drivers.Compiler.App
 {
+    /// <summary>
+    /// The main compiler process for the command line app.
+    /// </summary>
     public class CompilerProcess
     {
+        /// <summary>
+        /// Summary error codes that can be returned by the Main method upon completion.
+        /// </summary>
         public enum ErrorCode : int
         {
+            /// <summary>
+            /// Indicates no errors occurred during execution.
+            /// </summary>
             NoError = 0,
+            /// <summary>
+            /// Indicates one or more of the options specified on the command line are invalid.
+            /// </summary>
             InvalidOptions = 1,
+            /// <summary>
+            /// Indicates the IL compiler step failed.
+            /// </summary>
             ILCompilerFailed = 2,
+            /// <summary>
+            /// Indicates the ASM compiler step failed.
+            /// </summary>
             ASMCompilerFailed = 3,
+            /// <summary>
+            /// Indicates the linker step failed.
+            /// </summary>
             LinkerFailed = 4
         }
         
+        /// <summary>
+        /// The main entry point of the program.
+        /// </summary>
+        /// <param name="args">The arguments specified on the command line.</param>
+        /// <returns>Returns an error code.</returns>
+        /// <seealso cref="ErrorCode"/>
         static int Main(string[] args)
         {
             Console.ForegroundColor = ConsoleColor.Gray;
@@ -56,6 +83,16 @@ namespace Drivers.Compiler.App
                 Options.LinkMode = (args[5].ToLower() == "iso" ? Options.LinkModes.ISO : Options.LinkModes.ELF);
                 Options.TargetArchitecture = args[4];
 
+                if (args.Length >= 7)
+                {
+                    Options.BaseAddress = Convert.ToUInt64(args[6], 16);
+
+                    if (args.Length >= 8)
+                    {
+                        Options.LoadOffset = Convert.ToInt64(args[7], 16);
+                    }
+                }
+
                 result = (int)Execute(
                     Logger_OnLogMessage,
                     Logger_OnLogWarning,
@@ -68,9 +105,14 @@ namespace Drivers.Compiler.App
 
             return result;
         }
+        /// <summary>
+        /// Validates the specified command line arguments.
+        /// </summary>
+        /// <param name="args">The arguments to validate.</param>
+        /// <returns>True if the arguments appear to be valid, otherwise false.</returns>
         static bool ValidateArguments(string[] args)
         {
-            if (args.Length != 6)
+            if (args.Length < 6)
             {
                 Console.ForegroundColor = ConsoleColor.Red;
                 Console.WriteLine("Expected 5 arguments:");
@@ -78,8 +120,10 @@ namespace Drivers.Compiler.App
 1 : Output Path - The path to the output directory.
 2 : Tools Path - The path to the tools directory.
 3 : Build Mode - Debug or Release.
-4 : Target Architecture - e.g. x86, x64
+4 : Target Architecture - e.g. x86, x64, MIPS
 5 : Link Mode - ISO or ELF.
+6 : [Optional] ISO Kernel base address
+7 : [Optional] ISO Kernel load offset (subtracted from ISO Kernel base address)
 ");
                 Console.ForegroundColor = ConsoleColor.Gray;
 
@@ -103,10 +147,16 @@ namespace Drivers.Compiler.App
 
                 return false;
             }
-            
             return true;
         }
 
+        /// <summary>
+        /// Executes the Drivers Compiler using the specified logging methods.
+        /// </summary>
+        /// <param name="messageHandler">The handler for outputting ordinary messages.</param>
+        /// <param name="warningHandler">The handler for outputting warning messages.</param>
+        /// <param name="errorHandler">The handler for outputting error messages.</param>
+        /// <returns>Returns an error code.</returns>
         public static ErrorCode Execute(
             Logger.LogMessageEventHandler messageHandler, 
             Logger.LogWarningEventHandler warningHandler,
@@ -127,7 +177,9 @@ namespace Drivers.Compiler.App
             Logger.LogMessage("", 0, "Tools path               = \"" + Options.ToolsPath + "\"");
             Logger.LogMessage("", 0, "Target architecture      = \"" + Options.TargetArchitecture + "\"");
             Logger.LogMessage("", 0, "Build mode               = "   + Enum.GetName(typeof(Options.BuildModes), Options.BuildMode));
-            Logger.LogMessage("", 0, "Link mode               = " + Enum.GetName(typeof(Options.LinkModes), Options.LinkMode));
+            Logger.LogMessage("", 0, "Link mode                = " + Enum.GetName(typeof(Options.LinkModes), Options.LinkMode));
+            Logger.LogMessage("", 0, "Base address             = " + Options.BaseAddress.ToString());
+            Logger.LogMessage("", 0, "Load offset              = " + Options.LoadOffset.ToString());
 
             // IL Library       - In a list of libraries returned to the higher-level control app (this app)
             //                    from Library Loader
@@ -156,8 +208,8 @@ namespace Drivers.Compiler.App
             // ASM Compiler     - Manages the ASM compile stage
             //      - ASM Preprocessor - Pre-scans the ASM ops to store things like debug info or perform
             //                           optimisation
-            //      - ASM Processor    - Converts ASM ops into ASM text then runs NASM
-            // Link Manager     - Manages the linker stage. Links together all the NASM outputs using "ld".
+            //      - ASM Processor    - Converts ASM ops into ASM text then runs the assembly code compiler (e.g. NASM)
+            // Link Manager     - Manages the linker stage. Links together all the object files using "ld".
 
             // To think about:
             //      - Try-catch-finally blocks
@@ -179,6 +231,8 @@ namespace Drivers.Compiler.App
             {
                 try
                 {
+                    TargetArchitecture.Init();
+
                     IL.ILLibrary TheLibrary = LibraryLoader.LoadILLibrary(Options.LibraryPath);
                     
                     CompileResult ILCompileResult = IL.ILCompiler.Compile(TheLibrary);
@@ -261,18 +315,38 @@ namespace Drivers.Compiler.App
             return result;
         }
 
+        /// <summary>
+        /// Logs an error message.
+        /// </summary>
+        /// <param name="errorCode">The error code.</param>
+        /// <param name="file">The file associated with the error.</param>
+        /// <param name="lineNumber">The line number in the file associated with the error.</param>
+        /// <param name="message">The error message.</param>
         private static void Logger_OnLogError(string errorCode, string file, int lineNumber, string message)
         {
             Console.ForegroundColor = ConsoleColor.Red;
             Console.WriteLine("Error : " + errorCode + ": " + message + " in " + file + ":" + lineNumber);
             Console.ForegroundColor = ConsoleColor.Gray;
         }
+        /// <summary>
+        /// Logs an warning message.
+        /// </summary>
+        /// <param name="warningCode">The warning code.</param>
+        /// <param name="file">The file associated with the warning.</param>
+        /// <param name="lineNumber">The line number in the file associated with the warning.</param>
+        /// <param name="message">The warning message.</param>
         private static void Logger_OnLogWarning(string warningCode, string file, int lineNumber, string message)
         {
             Console.ForegroundColor = ConsoleColor.Yellow;
             Console.WriteLine("Warning : " + warningCode + ": " + message + " in " + file + ":" + lineNumber);
             Console.ForegroundColor = ConsoleColor.Gray;
         }
+        /// <summary>
+        /// Logs a message.
+        /// </summary>
+        /// <param name="file">The file associated with the message.</param>
+        /// <param name="lineNumber">The line number in the file associated with the message.</param>
+        /// <param name="message">The message.</param>
         private static void Logger_OnLogMessage(string file, int lineNumber, string message)
         {
             Console.ForegroundColor = ConsoleColor.White;

@@ -34,8 +34,15 @@ using System.Reflection;
 
 namespace Drivers.Compiler.Types
 {
+    /// <summary>
+    /// Manages scanning the types in an IL library.
+    /// </summary>
     public static class TypeScanner
     {
+        /// <summary>
+        /// Scans the library for types.
+        /// </summary>
+        /// <param name="TheLibrary">The library to scan.</param>
         public static void ScanTypes(IL.ILLibrary TheLibrary)
         {
             if (TheLibrary == null)
@@ -112,6 +119,13 @@ namespace Drivers.Compiler.Types
             }
         }
 
+        /// <summary>
+        /// Scans a type to generate type info for the type. Also scans methods and constructors of the type
+        /// amongst some other information.
+        /// </summary>
+        /// <param name="TheLibrary">The library from which the type originated.</param>
+        /// <param name="aType">The type to scan.</param>
+        /// <returns>The new type info.</returns>
         public static TypeInfo ScanType(IL.ILLibrary TheLibrary, Type aType)
         {
             if(TheLibrary.TypeInfos.Where(x => x.UnderlyingType.Equals(aType)).Count() > 0)
@@ -122,8 +136,7 @@ namespace Drivers.Compiler.Types
             string typeName = aType.Name;
             TypeInfo newTypeInfo = new TypeInfo()
             {
-                UnderlyingType = aType,
-                ContainsPlugs = aType.GetCustomAttribute(typeof(Attributes.PluggedClassAttribute)) != null
+                UnderlyingType = aType
             };
 
             TheLibrary.TypeInfos.Add(newTypeInfo);
@@ -190,9 +203,9 @@ namespace Drivers.Compiler.Types
                 }
 
                 // Plugged / unplugged Constructors
-                ConstructorInfo[] staticConstructors = aType.GetConstructors(BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic)
+                ConstructorInfo[] allConstructors = aType.GetConstructors(BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic)
                                                .ToArray();
-                foreach (ConstructorInfo aConstructorInfo in staticConstructors)
+                foreach (ConstructorInfo aConstructorInfo in allConstructors)
                 {
                     if (aConstructorInfo.DeclaringType.Equals(aType))
                     {
@@ -221,6 +234,11 @@ namespace Drivers.Compiler.Types
 
             return newTypeInfo;
         }
+        /// <summary>
+        /// Processes the specified type info to fill in the required data.
+        /// </summary>
+        /// <param name="TheLibrary">The library from which the type originated.</param>
+        /// <param name="theTypeInfo">The type info to process.</param>
         public static void ProcessType(IL.ILLibrary TheLibrary, TypeInfo theTypeInfo)
         {
             if(theTypeInfo.Processed)
@@ -266,6 +284,11 @@ namespace Drivers.Compiler.Types
                 }
             }
         }
+        /// <summary>
+        /// Processes the specified type's fields to fill in required data.
+        /// </summary>
+        /// <param name="TheLibrary">The library from which the type originated.</param>
+        /// <param name="theTypeInfo">The type info to process.</param>
         public static void ProcessTypeFields(IL.ILLibrary TheLibrary, TypeInfo theTypeInfo)
         {
             if (theTypeInfo.ProcessedFields)
@@ -298,10 +321,16 @@ namespace Drivers.Compiler.Types
             }
         }
 
+        /// <summary>
+        /// Gets the size, in bytes, of the specified type when it is represented on the stack.
+        /// </summary>
+        /// <param name="theType">The type to determine the stack size of.</param>
+        /// <returns>The size in bytes.</returns>
         private static int GetSizeOnStackInBytes(Type theType)
         {
             //Assume its a pointer/reference unless it is:
             // - A value type
+            string name = theType.Name;
             int result = Options.AddressSizeInBytes;
 
             if (theType.IsValueType)
@@ -369,12 +398,24 @@ namespace Drivers.Compiler.Types
                         result += GetSizeOnHeapInBytes(anInfo.FieldType);
                     }
 
+                    // Min struct size of 4
                     result = Math.Max(result, 4);
+
+                    // Round struct size up to multiple of 4 (ensures 4-byte stack alignment)
+                    if (result % 4 != 0)
+                    {
+                        result += 4 - (result % 4);
+                    }
                 }
             }
 
             return result;
         }
+        /// <summary>
+        /// Gets the size, in bytes, of the specified type when it is allocated on the heap.
+        /// </summary>
+        /// <param name="theType">The type to determine the heap size of.</param>
+        /// <returns>The size in bytes.</returns>
         private static int GetSizeOnHeapInBytes(Type theType)
         {
             //Assume its a pointer/reference unless it is:
@@ -439,6 +480,10 @@ namespace Drivers.Compiler.Types
                 {
                     result = 4;
                 }
+                else if (theType.Name.Contains("FixedBuffer"))
+                {
+                    return theType.StructLayoutAttribute.Size;
+                }
                 else
                 {
                     List<System.Reflection.FieldInfo> AllFields = theType.GetFields(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic).ToList();
@@ -458,6 +503,11 @@ namespace Drivers.Compiler.Types
 
             return result;
         }
+        /// <summary>
+        /// Determines whether the specified type is managed by the garbage collector or not.
+        /// </summary>
+        /// <param name="theType">The type to check.</param>
+        /// <returns>True if it is managed by the GC. Otherwise, false.</returns>
         private static bool GetIsGCManaged(Type theType)
         {
             bool isGCManaged = true;

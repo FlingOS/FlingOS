@@ -36,7 +36,6 @@ namespace Kernel.Hardware.VirtMem
     /// Provides methods for setting up paged virtual memory.
     /// </summary>
     [Compiler.PluggedClass]
-    [Drivers.Compiler.Attributes.PluggedClass]
     public unsafe class x86 : VirtMemImpl
     {
         [Flags]

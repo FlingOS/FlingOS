@@ -158,12 +158,20 @@ namespace Kernel.Core
                 //  and move current position to the next character.
                 else
                 {
-                    //The character must also be or'ed with the current attribute so it appears the correct
-                    //  colour. 
-                    //Strings in the core kernel are stored as 2-byte unicode but we output only ASCII
-                    //  so the character must be and'ed with 0xFF to clear the top byte else it would
-                    //  interfere with the attribute (colour).
-                    ((FOS_System.String)Buffer[CurrentLine])[CurrentChar++] = (char)((str[i] & 0xFF) | CurrentAttr);
+                    // Check for tab character - if so, output four spaces (rudimentary tab support)
+                    if (str[i] == '\t')
+                    {
+                        Write("    ");
+                    }
+                    else
+                    {
+                        //The character must also be or'ed with the current attribute so it appears the correct
+                        //  colour. 
+                        //Strings in the core kernel are stored as 2-byte unicode but we output only ASCII
+                        //  so the character must be and'ed with 0xFF to clear the top byte else it would
+                        //  interfere with the attribute (colour).
+                        ((FOS_System.String)Buffer[CurrentLine])[CurrentChar++] = (char)((str[i] & 0xFF) | CurrentAttr);
+                    }
                 }
             }
             //Call update to update the screen with the new text.
@@ -503,6 +511,17 @@ namespace Kernel.Core
                 {
                     //Scroll down the screen 1 line
                     Scroll(1);
+                }
+                //If the key pressed is tab key
+                else if (c.Key == Hardware.Devices.KeyboardKey.Tab)
+                {
+                    int currentChar = CurrentChar;
+                    //Add four spaces
+                    for (int i = currentChar; i < currentChar + 4; i++)
+                    {
+                        result += ' ';
+                        Write(' ');
+                    }
                 }
                 //If the key has a character representation
                 else if (c.Value != '\0')

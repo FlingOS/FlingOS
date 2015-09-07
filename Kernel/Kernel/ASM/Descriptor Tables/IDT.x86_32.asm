@@ -21,6 +21,11 @@ EXTERN staticfield_Kernel_ExceptionState__Kernel_ExceptionMethods_DefaultState
 EXTERN _NATIVE_TSS
 EXTERN BasicDebug_InterruptHandler
 
+
+	; See comment at start of Main Entrypoint
+	mov dword ecx, 0x0
+
+
 %define KERNEL_MODE_DPL 0
 %define USER_MODE_DPL 3
 
@@ -612,11 +617,7 @@ pic_remap:
     dec al              ; al is now 1. This is the x86 mode code for both 8259 PIC chips
     out 0x21, al        ; set PIC1
     out 0xA1, al        ; set PIC2
-
-    dec al              ; al is now 0.
-    out 0x21, al        ; set PIC1
-    out 0xA1, al        ; set PIC2
-
+	
 	mov ax, 0xFFFF		; Set interrupt mask to disable all interrupts
     out 0x21, al        ; Set mask of PIC1_DATA
     xchg al, ah
@@ -624,3 +625,25 @@ pic_remap:
 
 	sti					; Enable interrupts
 	nop					; Required - STI takes effect after the next instruction runs
+
+	
+	; IDT initialised.
+	mov byte [0xB8320], 0x49
+	mov byte [0xB8322], 0x44
+	mov byte [0xB8324], 0x54
+	mov byte [0xB8326], 0x20
+	mov byte [0xB8328], 0x69
+	mov byte [0xB832A], 0x6e
+	mov byte [0xB832C], 0x69
+	mov byte [0xB832E], 0x74
+	mov byte [0xB8330], 0x69
+	mov byte [0xB8332], 0x61
+	mov byte [0xB8334], 0x6c
+	mov byte [0xB8336], 0x69
+	mov byte [0xB8338], 0x73
+	mov byte [0xB833A], 0x65
+	mov byte [0xB833C], 0x64
+	mov byte [0xB833E], 0x2e	
+	mov ecx, 0x00F00000
+	.Loop1:
+	loop .Loop1

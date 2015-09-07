@@ -42,7 +42,6 @@ namespace Drivers.Compiler.Architectures.x86
         public override void PerformStackOperations(ILPreprocessState conversionState, ILOp theOp)
         {
             MethodBase constructorMethod = theOp.MethodToCall;
-            Types.MethodInfo constructorMethodInfo = conversionState.TheILLibrary.GetMethodInfo(constructorMethod);
             Type objectType = constructorMethod.DeclaringType;
 
             if (typeof(Delegate).IsAssignableFrom(objectType))
@@ -52,7 +51,9 @@ namespace Drivers.Compiler.Architectures.x86
                 conversionState.CurrentStackFrame.Stack.Push(funcPtrItem);
                 return;
             }
-
+            
+            Types.MethodInfo constructorMethodInfo = conversionState.TheILLibrary.GetMethodInfo(constructorMethod);
+            
             ParameterInfo[] allParams = constructorMethod.GetParameters();
             foreach (ParameterInfo aParam in allParams)
             {
@@ -77,12 +78,7 @@ namespace Drivers.Compiler.Architectures.x86
         public override void Convert(ILConversionState conversionState, ILOp theOp)
         {
             MethodBase constructorMethod = theOp.MethodToCall;
-            Types.MethodInfo constructorMethodInfo = conversionState.TheILLibrary.GetMethodInfo(constructorMethod);
             Type objectType = constructorMethod.DeclaringType;
-
-            conversionState.AddExternalLabel(conversionState.GetHaltMethodInfo().ID);
-            conversionState.AddExternalLabel(conversionState.GetNewObjMethodInfo().ID);
-            conversionState.AddExternalLabel(constructorMethodInfo.ID);
 
             //New obj must:
             // - Ignore for creation of Delegates
@@ -92,7 +88,7 @@ namespace Drivers.Compiler.Architectures.x86
             
             if (typeof(Delegate).IsAssignableFrom(objectType))
             {
-                conversionState.Append(new ASMOps.Comment() { Text = "Ignore newobj calls for Delegates" });
+                conversionState.Append(new ASMOps.Comment("Ignore newobj calls for Delegates"));
                 //Still need to: 
                 // - Remove the "object" param but preserve the "function pointer"
                 StackItem funcPtrItem = conversionState.CurrentStackFrame.Stack.Pop(); ;
@@ -106,7 +102,13 @@ namespace Drivers.Compiler.Architectures.x86
                 conversionState.Append(new ASMOps.Add() { Src = "4", Dest = "ESP" });
                 return;
             }
+
+            Types.MethodInfo constructorMethodInfo = conversionState.TheILLibrary.GetMethodInfo(constructorMethod);
             
+            conversionState.AddExternalLabel(conversionState.GetNewObjMethodInfo().ID);
+            conversionState.AddExternalLabel(conversionState.GetThrowNullReferenceExceptionMethodInfo().ID);
+            conversionState.AddExternalLabel(constructorMethodInfo.ID);
+
             int currOpPosition = conversionState.PositionOf(theOp);
 
             //Attempt to allocate memory on the heap for the new object
@@ -151,7 +153,7 @@ namespace Drivers.Compiler.Architectures.x86
 
             conversionState.Append(new ASMOps.Call() { Target = "GetEIP" });
             conversionState.AddExternalLabel("GetEIP");
-            conversionState.Append(new ASMOps.Call() { Target = conversionState.GetHaltMethodInfo().ID });
+            conversionState.Append(new ASMOps.Call() { Target = conversionState.GetThrowNullReferenceExceptionMethodInfo().ID });
             //Insert the not null label
             conversionState.Append(new ASMOps.Label() { ILPosition = currOpPosition, Extension = "NotNullMem" });
 
@@ -179,14 +181,14 @@ namespace Drivers.Compiler.Architectures.x86
 
                 conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Dword, Src = (sizeOfArgs / 4).ToString(), Dest = "ECX" });
                 conversionState.Append(new ASMOps.Label() { ILPosition = currOpPosition, Extension = "ShiftArgsLoop" });
-                GlobalMethods.InsertPageFaultDetection(conversionState, "ebx", 4, (OpCodes)theOp.opCode.Value);
+                GlobalMethods.InsertPageFaultDetection(conversionState, "EBX", 4, (OpCodes)theOp.opCode.Value);
                 conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Dword, Src = "[EBX+4]", Dest = "EDX" });
-                GlobalMethods.InsertPageFaultDetection(conversionState, "ebx", 0, (OpCodes)theOp.opCode.Value);
+                GlobalMethods.InsertPageFaultDetection(conversionState, "EBX", 0, (OpCodes)theOp.opCode.Value);
                 conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Dword, Dest = "[EBX]", Src = "EDX" });
                 conversionState.Append(new ASMOps.Add() { Src = "4", Dest = "EBX" });
                 conversionState.Append(new ASMOps.Loop() { ILPosition = currOpPosition, Extension = "ShiftArgsLoop" });
             }
-            GlobalMethods.InsertPageFaultDetection(conversionState, "ebx", 0, (OpCodes)theOp.opCode.Value);
+            GlobalMethods.InsertPageFaultDetection(conversionState, "EBX", 0, (OpCodes)theOp.opCode.Value);
             conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Dword, Dest = "[EBX]", Src = "EAX" });
             conversionState.Append(new ASMOps.Call() { Target = constructorMethodInfo.ID });    
             //Only remove args from stack - we want the object pointer to remain on the stack

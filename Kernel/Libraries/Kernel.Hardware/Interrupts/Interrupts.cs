@@ -124,7 +124,6 @@ namespace Kernel.Hardware.Interrupts
     /// Provides methods for handling hardware and software interrupts (excluding interrupts 0 through 16).
     /// </summary>
     [Compiler.PluggedClass]
-    [Drivers.Compiler.Attributes.PluggedClass]
     public unsafe static class Interrupts
     {
         //TODO - This lot is all x86 specific. It needs to be abstracted into a separate x86
@@ -150,7 +149,14 @@ namespace Kernel.Hardware.Interrupts
                 {
                     FOS_System.Heap.PreventReason = "[NONE]";
                 }
-                FOS_System.GC.Enabled = !value;
+                if (value)
+                {
+                    FOS_System.GC.Disable("InsideCriticalHandler");
+                }
+                else
+                {
+                    FOS_System.GC.Enable("InsideCriticalHandler");
+                }
             }
         }
 
@@ -158,7 +164,7 @@ namespace Kernel.Hardware.Interrupts
 
         static Interrupts()
         {
-            /*ExceptionMethods.InterruptsState = */InterruptsExState = (ExceptionState*)FOS_System.Heap.AllocZeroed((uint)sizeof(ExceptionState));
+            /*ExceptionMethods.InterruptsState = */InterruptsExState = (ExceptionState*)FOS_System.Heap.AllocZeroed((uint)sizeof(ExceptionState), "Interrupts : Interrupts()");
         }
 
         /// <summary>
@@ -257,6 +263,11 @@ namespace Kernel.Hardware.Interrupts
                                         bool CriticalHandler,
                                         FOS_System.String Name)
         {
+            if (!IgnoreProcessState && !CriticalHandler)
+            {
+                //See AddISRHandler for explanation
+                ExceptionMethods.Throw(new FOS_System.Exceptions.NotSupportedException("Cannot have non-critical IRQ which is process-dependent!"));
+            }
             //In this OS's implementation, IRQs 0-15 are mapped to ISRs 32-47
             int result = AddISRHandler(num + 32, handler, data, IgnoreProcessState, CriticalHandler, Name);
             EnableIRQ((byte)num);
@@ -292,6 +303,22 @@ namespace Kernel.Hardware.Interrupts
                                         bool CriticalHandler,
                                         FOS_System.String Name)
         {
+            if (!IgnoreProcessState && !CriticalHandler)
+            {
+                // Non-critical interrupts get executed in the non-critical interrupts thread
+                //  The non-critical interrupts thread does not support switching process because it would be
+                //  very difficult to guarantee the processes'/thread's state didn't becom corrupted. Primarily,
+                //  we would need to store the general purpose registers (and others) and restore their values
+                //  before allowing return to the original process.
+                ExceptionMethods.Throw(new FOS_System.Exceptions.NotSupportedException("Cannot have non-critical interrupt which is process-dependent!"));
+            }
+
+#if INTERRUPTS_TRACE
+            BasicConsole.Write("Adding ISR handler for ");
+            BasicConsole.WriteLine(Name);
+            BasicConsole.DelayOutput(20);
+#endif 
+
             if (Handlers[num] == null)
             {
 #if INTERRUPTS_TRACE
@@ -299,9 +326,11 @@ namespace Kernel.Hardware.Interrupts
 #endif
                 Handlers[num] = new InterruptHandlers();
             }
+
 #if INTERRUPTS_TRACE
             BasicConsole.WriteLine(((FOS_System.String)"Adding new HandlerDescriptor... ISR: ") + num);
 #endif
+
             InterruptHandlers handlers = Handlers[num];
             int id = handlers.IdGenerator++;
             handlers.HandlerDescrips.Add(new HandlerDescriptor()
@@ -314,9 +343,11 @@ namespace Kernel.Hardware.Interrupts
                 CriticalHandler = CriticalHandler,
                 Name = Name
             });
+
 #if INTERRUPTS_TRACE
             BasicConsole.WriteLine("Added.");
 #endif
+
             return id;
         }
         /// <summary>
@@ -362,6 +393,26 @@ namespace Kernel.Hardware.Interrupts
 
             try
             {
+                HandleISR(ISRNum);
+            }
+            finally
+            {
+                InsideCriticalHandler = false;
+            }
+
+#if INTERRUPTS_TRACE
+            //if (Processes.ProcessManager.Processes.Count > 1)
+            //if (ISRNum == 33)
+                BasicConsole.WriteLine("Interrupts: 19");
+#endif
+        }
+
+        private static void HandleISR(uint ISRNum)
+        {
+            try
+            {
+                InsideCriticalHandler = true;
+
 #if INTERRUPTS_TRACE
                 if (print && lastisr != ISRNum || ISRNum != 0x20)
                 {
@@ -422,7 +473,7 @@ namespace Kernel.Hardware.Interrupts
                     currThreadId = Processes.ProcessManager.CurrentThread.Id;
                 }
                 bool switched = false;
-                
+
 #if INTERRUPTS_TRACE
                 //if (Processes.ProcessManager.Processes.Count > 1)
                 //if (ISRNum == 33)
@@ -460,7 +511,7 @@ namespace Kernel.Hardware.Interrupts
 #endif
 
                             InterruptHandler func = descrip.handler;
-                
+
 #if INTERRUPTS_TRACE
                             //if (Processes.ProcessManager.Processes.Count > 1)
                             //if (ISRNum == 33)
@@ -487,7 +538,7 @@ namespace Kernel.Hardware.Interrupts
                                     switched = true;
                                 }
                             }
-                
+
 #if INTERRUPTS_TRACE
                             //if (Processes.ProcessManager.Processes.Count > 1)
                             //if (ISRNum == 33)
@@ -499,7 +550,7 @@ namespace Kernel.Hardware.Interrupts
 #endif
 
                             func(descrip.data);
-                
+
 #if INTERRUPTS_TRACE
                             //if (Processes.ProcessManager.Processes.Count > 1)
                             //if (ISRNum == 33)
@@ -511,7 +562,7 @@ namespace Kernel.Hardware.Interrupts
                             NonCriticalDetected = true;
                         }
                     }
-                
+
 #if INTERRUPTS_TRACE
                     //if (Processes.ProcessManager.Processes.Count > 1)
                     //if (ISRNum == 33)
@@ -531,7 +582,7 @@ namespace Kernel.Hardware.Interrupts
                             handlers.QueuedOccurrences = 0;
                         }
                         handlers.QueuedOccurrences++;
-                
+
 #if INTERRUPTS_TRACE
                         //if (Processes.ProcessManager.Processes.Count > 1)
                         //if (ISRNum == 33)
@@ -550,7 +601,7 @@ namespace Kernel.Hardware.Interrupts
                             Tasks.NonCriticalInterruptsTask.Awake = true;
                             Tasks.NonCriticalInterruptsTask.OwnerThread._Wake();
                         }
-                
+
 #if INTERRUPTS_TRACE
                         //if (Processes.ProcessManager.Processes.Count > 1)
                         //if (ISRNum == 33)
@@ -569,7 +620,7 @@ namespace Kernel.Hardware.Interrupts
 
                     Processes.ProcessManager.SwitchProcess(currProcessId, (int)currThreadId);
                 }
-                
+
 #if INTERRUPTS_TRACE
                 //if (Processes.ProcessManager.Processes.Count > 1)
                 //if (ISRNum == 33)
@@ -603,18 +654,15 @@ namespace Kernel.Hardware.Interrupts
                 {
                     BasicConsole.WriteLine(ExceptionMethods.CurrentException.Message);
                 }
+                BasicConsole.DelayOutput(10);
                 BasicConsole.SetTextColour(BasicConsole.default_colour);
                 InsideCriticalHandler = true;
 #endif
             }
-
-            InsideCriticalHandler = false;
-
-#if INTERRUPTS_TRACE
-            //if (Processes.ProcessManager.Processes.Count > 1)
-            //if (ISRNum == 33)
-                BasicConsole.WriteLine("Interrupts: 19");
-#endif
+            finally
+            {
+                InsideCriticalHandler = false;
+            }
         }
         /// <summary>
         /// Sends the End of Interrupt to the PIC to signify the end of an IRQ.

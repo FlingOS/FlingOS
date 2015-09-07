@@ -601,7 +601,7 @@
               <title>VMWare</title>
               <content>
                   <para>
-		    		        Fling OS uses VMWare as its main virtual machine (specifically the free, non-commercial version of  VMWare Player). VMWare
+		    		        FlingOS uses VMWare as its main virtual machine (specifically the free, non-commercial version of  VMWare Player). VMWare
 					          is one of the easiest to use software packages with a reasonable level of configuration and it is easy to add and connect
 		 			          peripherals such as USB hubs and serial ports (the latter being particularly important for debugging). However, it is 
 					          less versatile than Virtual Box by virtue of the fact that it is a stripped-down version of the full VMWare Workstation.
@@ -609,7 +609,7 @@
 					          systems which admins need to manage on-mass.
 		    	        </para>
 		    	        <para>
-					          Fling OS uses VMWare because it happens to come with a convenient library which can be referenced / loaded from C# for
+					          FlingOS uses VMWare because it happens to come with a convenient library which can be referenced / loaded from C# for
 					          controlling VMWare. This made writing an automated debugger that starts and stops the target virtual machine much easier.
                   </para>
               </content>
@@ -624,7 +624,7 @@
 					          peripherals. This makes Virtual Box a better offering to the OS dev world than VMWare.
 		    	        </para>
 		    	        <para>
-					          Fling OS chose not to use Virtual Box due to its lack of easy C# interfacing. This may not be the case or may have changed
+					          FlingOS chose not to use Virtual Box due to its lack of easy C# interfacing. This may not be the case or may have changed
 					          since the decision was made, but there is little to no gain from changing now (at the time of writing).
                   </para>
               </content>
@@ -691,7 +691,7 @@
               <content>
                   <para>
 					          Integration with your integrated development environment is useful, that's why IDEs were invented. But it is only a 
-					          convenience. Fling OS's debugger is not integrated (for reasons mentioned earlier in this article, regarding Visual Studio).
+					          convenience. FlingOS's debugger is not integrated (for reasons mentioned earlier in this article, regarding Visual Studio).
 		 			          Integration can be easy or hard to achieve, depending on how your IDE was designed. Probably the most extensible IDE (so much 
 					          so, it has now become an industry standard piece of software), is Eclipse. If you want an IDE to integrate with, Eclipse is
 					          probably your best bet. Eclipse also has plugins for just about every language.
@@ -810,7 +810,7 @@
             <para>
               The trick with VGA text-mode programming is not to get caught up on all the BIOS-interrupt stuff. Half of the 
               BIOS interrupt stuff stops working once you set up your own interrupts and are in protected mode. The following
-              examples will show you how to output text to the screen (in assembly and C#). Fling OS contains several console implementations of varying complexity which are made available
+              examples will show you how to output text to the screen (in assembly and C#). FlingOS contains several console implementations of varying complexity which are made available
               to the reader to learn from. They include complex tasks such as scrolling and backspace. Further information
               and examples on outputting to the screen can be found in the "Display / Video / Graphics" section.
             </para>
@@ -818,7 +818,7 @@
                 ; NASM, x86 (32-bit)
                 ; - - - - - - - - - - - - - - - - VGA Text-mode : String Output Example - - - - - - - - - - - - - - - -
 		    				
-                ; Code taken from Fling OS source: Kernel\ASM\WriteDebugVideo.x86_32.asm
+                ; Code taken from FlingOS source: Kernel\ASM\WriteDebugVideo.x86_32.asm
                 ; 2014-11-03
                 
                 ; BEGIN - Write Debug Video
@@ -880,7 +880,7 @@
               // Microsoft C# .Net 4.5, x86 (32-bit)
               /******************** VGA Text-mode : String Output Example ********************/
 
-              // Code taken from Fling OS source: Kernel.Core\Consoles\AdvancedConsole.cs
+              // Code taken from FlingOS source: Kernel.Core\Consoles\AdvancedConsole.cs
               // 2014-11-03
 
               // Notes to the reader:
@@ -942,7 +942,7 @@
             <para>
               Interrupt debugging vies for top-spot as x86's most useful debugging tool. This article has made little attempt
               at actually explaining the nitty-gritty of how interrupt debugging works, largely because there is no one way.
-              However, the code sample below demonstrate the basic way (which Fling OS uses).
+              However, the code sample below demonstrate the basic way (which FlingOS uses).
             </para>
             <para>
               Essentially what happens is when the OS starts, the interrupt table is set up with Int1 and Int3 handlers. When

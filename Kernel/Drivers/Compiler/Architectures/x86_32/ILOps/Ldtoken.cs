@@ -73,7 +73,7 @@ namespace Drivers.Compiler.Architectures.x86
             try
             {
                 Type theType = conversionState.Input.TheMethodInfo.UnderlyingInfo.Module.ResolveType(metadataToken);
-                if(theType == null)
+                if (theType == null)
                 {
                     throw new NullReferenceException();
                 }

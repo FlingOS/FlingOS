@@ -32,6 +32,10 @@ using System.Threading.Tasks;
 
 namespace Drivers.Compiler.IL
 {
+    /// <summary>
+    /// The IL preprocessor manages prehandling of special methods and classes and injection
+    /// of IL ops for specfic situations (such as GC handling).
+    /// </summary>
     public static class ILPreprocessor
     {
         /* Tasks of the IL Preprocessor:
@@ -45,6 +49,10 @@ namespace Drivers.Compiler.IL
          *      - Inject IL ops for try-catch-finally
          */
 
+        /// <summary>
+        /// Preprocesses the specified IL library and any dependencies.
+        /// </summary>
+        /// <param name="TheLibrary">The library to preprocess.</param>
         public static void Preprocess(ILLibrary TheLibrary)
         {
             if (TheLibrary == null)
@@ -70,20 +78,31 @@ namespace Drivers.Compiler.IL
 
             foreach (Types.MethodInfo aMethodInfo in TheLibrary.ILBlocks.Keys)
             {
-                DealWithCatchHandlers(aMethodInfo, TheLibrary.ILBlocks[aMethodInfo]);
-                InjectGeneral1(aMethodInfo, TheLibrary.ILBlocks[aMethodInfo]);
-                InjectGC(TheLibrary, aMethodInfo, TheLibrary.ILBlocks[aMethodInfo]);
-                InjectGeneral2(aMethodInfo, TheLibrary.ILBlocks[aMethodInfo]);
-                InjectTryCatchFinally(aMethodInfo, TheLibrary.ILBlocks[aMethodInfo]);
-                
-                PreprocessILOps(TheLibrary, aMethodInfo, TheLibrary.ILBlocks[aMethodInfo]);
+                if (!aMethodInfo.IsPlugged)
+                {
+                    DealWithCatchHandlers(aMethodInfo, TheLibrary.ILBlocks[aMethodInfo]);
+                    InjectGeneral1(aMethodInfo, TheLibrary.ILBlocks[aMethodInfo]);
+                    InjectGC(TheLibrary, aMethodInfo, TheLibrary.ILBlocks[aMethodInfo]);
+                    InjectGeneral2(aMethodInfo, TheLibrary.ILBlocks[aMethodInfo]);
+                    InjectTryCatchFinally(aMethodInfo, TheLibrary.ILBlocks[aMethodInfo]);
+
+                    PreprocessILOps(TheLibrary, aMethodInfo, TheLibrary.ILBlocks[aMethodInfo]);
+                }
             }
         }
 
+        /// <summary>
+        /// Preprocesses any special classes within the specified library.
+        /// </summary>
+        /// <param name="RootLibrary">The root library being compiled.</param>
         public static void PreprocessSpecialClasses(ILLibrary RootLibrary)
         {
             //Is there anything to do here?
         }
+        /// <summary>
+        /// Preprocesses any special methods within the specified library.
+        /// </summary>
+        /// <param name="RootLibrary">The root library being compiled.</param>
         public static void PreprocessSpecialMethods(ILLibrary RootLibrary)
         {
             // Setup calls to Static Constructors
@@ -103,6 +122,11 @@ namespace Drivers.Compiler.IL
             }
         }
 
+        /// <summary>
+        /// Preprocesses the specified method.
+        /// </summary>
+        /// <param name="TheLibrary">The library being compiled.</param>
+        /// <param name="theMethodInfo">The method to preprocess.</param>
         private static void PreprocessMethodInfo(ILLibrary TheLibrary, Types.MethodInfo theMethodInfo)
         {
             if (theMethodInfo.Preprocessed)
@@ -191,11 +215,29 @@ namespace Drivers.Compiler.IL
                 theMethodInfo.ArgumentInfos[i].Offset = offset;
             }
         }
+        /// <summary>
+        /// Gets the next unique ID for a method of the specified type.
+        /// </summary>
+        /// <remarks>
+        /// Used for generatign IDs to go in the method tables for use in virtual calls (callvirt Il ops).
+        /// </remarks>
+        /// <param name="TheLibrary">The IL library being compiled.</param>
+        /// <param name="aType">The type to get the next method ID from.</param>
+        /// <returns>The next unique method ID.</returns>
         private static int GetMethodIDGenerator(ILLibrary TheLibrary, Type aType)
         {
             Types.TypeInfo aTypeInfo = TheLibrary.GetTypeInfo(aType);
             return GetMethodIDGenerator(TheLibrary, aTypeInfo);
         }
+        /// <summary>
+        /// Gets the next unique ID for a method of the specified type.
+        /// </summary>
+        /// <remarks>
+        /// Used for generatign IDs to go in the method tables for use in virtual calls (callvirt Il ops).
+        /// </remarks>
+        /// <param name="TheLibrary">The IL library being compiled.</param>
+        /// <param name="aTypeInfo">The type to get the next method ID from.</param>
+        /// <returns>The next unique method ID.</returns>
         private static int GetMethodIDGenerator(ILLibrary TheLibrary, Types.TypeInfo aTypeInfo)
         {
             int totalGen = aTypeInfo.MethodIDGenerator;
@@ -208,6 +250,12 @@ namespace Drivers.Compiler.IL
             }
             return totalGen;
         }
+        /// <summary>
+        /// Preprocesses the IL ops of the specified method/IL block.
+        /// </summary>
+        /// <param name="TheLibrary">The library being compiled.</param>
+        /// <param name="theMethodInfo">The method to preprocess.</param>
+        /// <param name="theILBlock">The IL block for the method to preprocess.</param>
         private static void PreprocessILOps(ILLibrary TheLibrary, Types.MethodInfo theMethodInfo, ILBlock theILBlock)
         {
             StaticConstructorDependency staticConstructorDependencyRoot = null;
@@ -296,7 +344,7 @@ namespace Drivers.Compiler.IL
 
                 try
                 {
-                    ILOp ConverterOp = ILScanner.TargetILOps[(ILOp.OpCodes)theOp.opCode.Value];
+                    ILOp ConverterOp = TargetArchitecture.TargetILOps[(ILOp.OpCodes)theOp.opCode.Value];
 
                     ConverterOp.Preprocess(preprosState, theOp);
 
@@ -371,6 +419,14 @@ namespace Drivers.Compiler.IL
                 }
             }
         }
+        /// <summary>
+        /// Injects the first set of general IL ops.
+        /// </summary>
+        /// <remarks>
+        /// Ops that must be inserted before the GC ops are inserted.
+        /// </remarks>
+        /// <param name="theMethodInfo">The method to inject ops into.</param>
+        /// <param name="theILBlock">The IL block for the method to inject ops into.</param>
         private static void InjectGeneral1(Types.MethodInfo theMethodInfo, ILBlock theILBlock)
         {
             // Inject MethodStart op
@@ -379,6 +435,14 @@ namespace Drivers.Compiler.IL
                     Offset = -1
                 });
         }
+        /// <summary>
+        /// Injects the second set of general IL ops.
+        /// </summary>
+        /// <remarks>
+        /// Ops that must be inserted after the GC ops are inserted.
+        /// </remarks>
+        /// <param name="theMethodInfo">The method to inject ops into.</param>
+        /// <param name="theILBlock">The IL block for the method to inject ops into.</param>
         private static void InjectGeneral2(Types.MethodInfo theMethodInfo, ILBlock theILBlock)
         {
             // Inject MethodEnd op just before anywhere where there is a ret
@@ -398,6 +462,12 @@ namespace Drivers.Compiler.IL
                 }
             }
         }
+        /// <summary>
+        /// Injects the garbage collector related IL ops into the specified method.
+        /// </summary>
+        /// <param name="TheLibrary">The library being compiled.</param>
+        /// <param name="theMethodInfo">The method to inject ops into.</param>
+        /// <param name="theILBlock">The IL block for the method to inject ops into.</param>
         private static void InjectGC(ILLibrary TheLibrary, Types.MethodInfo theMethodInfo, ILBlock theILBlock)
         {
             if (theMethodInfo.ApplyGC)
@@ -800,23 +870,23 @@ namespace Drivers.Compiler.IL
 
                         if (currOp is ILOps.MethodStart)
                         {
-                            ILScanner.MethodStartOp.PerformStackOperations(preprocessState, theILBlock.ILOps[opIndx]);
+                            TargetArchitecture.MethodStartOp.PerformStackOperations(preprocessState, theILBlock.ILOps[opIndx]);
                             UseNextOpAsCleanupStart = true;
                         }
                         else if (currOp is ILOps.MethodEnd)
                         {
-                            ILScanner.MethodEndOp.PerformStackOperations(preprocessState, theILBlock.ILOps[opIndx]);
+                            TargetArchitecture.MethodEndOp.PerformStackOperations(preprocessState, theILBlock.ILOps[opIndx]);
                         }
                         else if (currOp is ILOps.StackSwitch)
                         {
-                            ILScanner.StackSwitchOp.PerformStackOperations(preprocessState, theILBlock.ILOps[opIndx]);
+                            TargetArchitecture.StackSwitchOp.PerformStackOperations(preprocessState, theILBlock.ILOps[opIndx]);
                         }
                         else
                         {
                             // Leave unsupported ops for the IL Scanner to deal with (or later code e.g. castclass op)
-                            if (ILScanner.TargetILOps.ContainsKey((ILOp.OpCodes)currOp.opCode.Value))
+                            if (TargetArchitecture.TargetILOps.ContainsKey((ILOp.OpCodes)currOp.opCode.Value))
                             {
-                                ILOp ConverterOp = ILScanner.TargetILOps[(ILOp.OpCodes)currOp.opCode.Value];
+                                ILOp ConverterOp = TargetArchitecture.TargetILOps[(ILOp.OpCodes)currOp.opCode.Value];
                                 ConverterOp.PerformStackOperations(preprocessState, currOp);
                             }
                         }
@@ -1049,6 +1119,11 @@ namespace Drivers.Compiler.IL
                 }
             }
         }
+        /// <summary>
+        /// Handles catch handles (of exception blocks) for the specified method.
+        /// </summary>
+        /// <param name="theMethodInfo">The method to handle.</param>
+        /// <param name="theILBlock">The IL block for the method to handle.</param>
         private static void DealWithCatchHandlers(Types.MethodInfo theMethodInfo, ILBlock theILBlock)
         {
             foreach (ExceptionHandledBlock exBlock in theILBlock.ExceptionHandledBlocks)
@@ -1074,6 +1149,11 @@ namespace Drivers.Compiler.IL
             }
         }
 
+        /// <summary>
+        /// Injects the try-catch-finally related IL ops into the specified method.
+        /// </summary>
+        /// <param name="theMethodInfo">The method to inject ops into.</param>
+        /// <param name="theILBlock">The IL block for the method to inject ops into.</param>
         private static void InjectTryCatchFinally(Types.MethodInfo theMethodInfo, ILBlock theILBlock)
         {
             // Replace Leave and Leave_S ops

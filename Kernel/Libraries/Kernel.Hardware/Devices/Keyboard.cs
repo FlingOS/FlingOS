@@ -115,8 +115,9 @@ namespace Kernel.Hardware.Devices
         /// Initialises a new keyboard instance including setting up the default 
         /// key mappings if they have not already been initialised.
         /// To change the keyboard mapping, define a compile time symbol
-        /// For US Keyboard, define USKEYBOARD and undefine UKKEYBOARD
-        /// For UK Keyboard, define UKKEYBOARD and undefine USKEYBOARD
+        /// For US Keyboard, define USKEYBOARD and undefine UKKEYBOARD or SPKEYBOARD
+        /// For UK Keyboard, define UKKEYBOARD and undefine USKEYBOARD or SPKEYBOARD
+        /// For Spanish Keyboard, define SPKEYBOARD and undefine UKKEYBOARD or USKEYBOARD
         /// This definition is present in the project properties
         /// </summary>
         public Keyboard()
@@ -124,12 +125,15 @@ namespace Kernel.Hardware.Devices
             // The type of keyboard mapping to use
             ///Define UKKEYBOARD in project properties // Use UK Keyboard layout
             // Define USKEYBOARD in project properties // Use US Keyboard layout
+            // Define SPKEYBOARD in project properties // Use SP Keyboard layout
             if (KeyMappings == null)
             {
 #if UKKEYBOARD
                 CreateUKKeymap();
 #elif USKEYBOARD
                 CreateUSKeymap();
+#elif SPKEYBOARD
+                CreateSPKeymap();
 #else
                 BasicConsole.WriteLine("No default keymap specified at compile time! Using UK keymap.");
                 CreateUKKeymap();
@@ -216,9 +220,22 @@ namespace Kernel.Hardware.Devices
         public uint Dequeue()
         {
             //Pops the first item off the top of the queue
-            uint result = scancodeBuffer[0];
-            scancodeBuffer.RemoveAt(0);
-            return result;
+            try
+            {
+                uint result = scancodeBuffer[0];
+                scancodeBuffer.RemoveAt(0);
+                return result;
+            }
+            catch
+            {
+                for (int i = 0; i < 20; i++)
+                {
+                    BasicConsole.WriteLine(ExceptionMethods.CurrentException.Message);
+                    BasicConsole.DelayOutput(1);
+                }
+                ExceptionMethods.Rethrow();
+            }
+            return 0xFFFFFFFF;
         }
 
         /// <summary>

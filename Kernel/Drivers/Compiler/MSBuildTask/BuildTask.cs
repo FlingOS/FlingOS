@@ -30,8 +30,15 @@ using Microsoft.Build.Utilities;
 
 namespace Drivers.Compiler.MSBuildTask
 {
+    /// <summary>
+    /// The main compiler process for the MSBuild task interface.
+    /// </summary>
     public class BuildTask : Task
     {
+        /// <summary>
+        /// The path to the library to compile.
+        /// </summary>
+        /// <value>Gets/sets an implicitly defined field.</value>
         [Required]
         public string LibraryPath
         {
@@ -39,37 +46,72 @@ namespace Drivers.Compiler.MSBuildTask
             set;
         }
 
+        /// <summary>
+        /// The name of the target architecture.
+        /// </summary>
+        /// <value>Gets/sets an implicitly defined field.</value>
         [Required]
         public string TargetArchitecture
         {
             get;
             set;
         }
+        /// <summary>
+        /// The path to the output folder.
+        /// </summary>
+        /// <value>Gets/sets an implicitly defined field.</value>
         [Required]
         public string OutputPath
         {
             get;
             set;
         }
+        /// <summary>
+        /// The path to the compiler's tools folder.
+        /// </summary>
+        /// <value>Gets/sets an implicitly defined field.</value>
         [Required]
         public string ToolsPath
         {
             get;
             set;
         }
+        /// <summary>
+        /// Whether to perform a debug build or not.
+        /// </summary>
+        /// <value>Gets/sets an implicitly defined field.</value>
         [Required]
         public bool DebugBuild
         {
             get;
             set;
         }
+        /// <summary>
+        /// Whether to link to a .ISO file or not. (Otherwise it links to a .ELF and .A's)
+        /// </summary>
+        /// <value>Gets/sets an implicitly defined field.</value>
         [Required]
         public bool ISOLink
         {
             get;
             set;
         }
-        
+
+        public string BaseAddress
+        {
+            get;
+            set;
+        }
+        public string LoadOffset
+        {
+            get;
+            set;
+        }
+
+        /// <summary>
+        /// Executes the compiler.
+        /// </summary>
+        /// <returns>True if the build task completes successfully. Otherwise, false.</returns>
         public override bool Execute()
         {
             Options.LibraryPath = LibraryPath;
@@ -79,21 +121,44 @@ namespace Drivers.Compiler.MSBuildTask
             Options.BuildMode = DebugBuild ? Options.BuildModes.Debug : Options.BuildModes.Release;
             Options.LinkMode = ISOLink ? Options.LinkModes.ISO : Options.LinkModes.ELF;
             Options.TargetArchitecture = TargetArchitecture;
-            
+
+            Options.BaseAddress = Convert.ToUInt64(BaseAddress, 16);
+            Options.LoadOffset = Convert.ToInt64(LoadOffset, 16);
+
             return App.CompilerProcess.Execute(
                     Logger_OnLogMessage,
                     Logger_OnLogWarning,
                     Logger_OnLogError) == App.CompilerProcess.ErrorCode.NoError;
         }
 
+        /// <summary>
+        /// Logs an error message.
+        /// </summary>
+        /// <param name="errorCode">The error code.</param>
+        /// <param name="file">The file associated with the error.</param>
+        /// <param name="lineNumber">The line number in the file associated with the error.</param>
+        /// <param name="message">The error message.</param>
         private void Logger_OnLogError(string errorCode, string file, int lineNumber, string message)
         {
             Log.LogError(String.Empty, errorCode, String.Empty, file, lineNumber, 0, lineNumber, 0, message);
         }
+        /// <summary>
+        /// Logs an warning message.
+        /// </summary>
+        /// <param name="warningCode">The warning code.</param>
+        /// <param name="file">The file associated with the warning.</param>
+        /// <param name="lineNumber">The line number in the file associated with the warning.</param>
+        /// <param name="message">The warning message.</param>
         private void Logger_OnLogWarning(string warningCode, string file, int lineNumber, string message)
         {
             Log.LogWarning(String.Empty, warningCode, String.Empty, file, lineNumber, 0, lineNumber, 0, message);
         }
+        /// <summary>
+        /// Logs a message.
+        /// </summary>
+        /// <param name="file">The file associated with the message.</param>
+        /// <param name="lineNumber">The line number in the file associated with the message.</param>
+        /// <param name="message">The message.</param>
         private void Logger_OnLogMessage(string file, int lineNumber, string message)
         {
             Log.LogMessage(String.Empty, String.Empty, String.Empty, file, lineNumber, 0, lineNumber, 0, MessageImportance.High, message);

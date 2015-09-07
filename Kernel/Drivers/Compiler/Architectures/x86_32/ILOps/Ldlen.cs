@@ -81,13 +81,15 @@ namespace Drivers.Compiler.Architectures.x86
 
             
             //      1.1. Move array ref into eax
-            GlobalMethods.InsertPageFaultDetection(conversionState, "esp", 0, (OpCodes)theOp.opCode.Value);
+            GlobalMethods.InsertPageFaultDetection(conversionState, "ESP", 0, (OpCodes)theOp.opCode.Value);
             conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Dword, Src = "[ESP]", Dest = "EAX" });
             //      1.2. Compare eax (array ref) to 0
             conversionState.Append(new ASMOps.Cmp() { Arg1 = "EAX", Arg2 = "0" });
             //      1.3. If not zero, jump to continue execution further down
             conversionState.Append(new ASMOps.Jmp() { JumpType = ASMOps.JmpOp.JumpNotZero, DestILPosition = currOpPosition, Extension = "ContinueExecution1" });
             //      1.4. Otherwise, call Exceptions.ThrowNullReferenceException
+            conversionState.Append(new ASMOps.Call() { Target = "GetEIP" });
+            conversionState.AddExternalLabel("GetEIP");
             conversionState.Append(new ASMOps.Call() { Target = conversionState.GetThrowNullReferenceExceptionMethodInfo().ID });
             conversionState.Append(new ASMOps.Label() { ILPosition = currOpPosition, Extension = "ContinueExecution1" });
 
@@ -95,7 +97,7 @@ namespace Drivers.Compiler.Architectures.x86
             //  - Pop array ref
             conversionState.Append(new ASMOps.Pop() { Size = ASMOps.OperandSize.Dword, Dest = "ECX" });
             //  - Load length from array ref
-            GlobalMethods.InsertPageFaultDetection(conversionState, "ecx", lengthOffset, (OpCodes)theOp.opCode.Value);
+            GlobalMethods.InsertPageFaultDetection(conversionState, "ECX", lengthOffset, (OpCodes)theOp.opCode.Value);
             conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Dword, Src = "[ECX+" + lengthOffset.ToString() + "]", Dest = "EAX" });
             //  - Push array length
             conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Dword, Src = "EAX" });

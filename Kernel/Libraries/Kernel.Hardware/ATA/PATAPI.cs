@@ -24,6 +24,9 @@
 // ------------------------------------------------------------------------------ //
 #endregion
     
+#define PATAPI_TRACE
+#undef PATAPI_TRACE
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -49,13 +52,34 @@ namespace Kernel.Hardware.ATA
             get { return BaseDevice.ModelNo; }
         }
 
+        public override ulong BlockCount
+        {
+            get
+            {
+                return BaseDevice.BlockCount;
+            }
+        }
+        public override ulong BlockSize
+        {
+            get
+            {
+                return BaseDevice.BlockSize;
+            }
+        }
+
+        public UInt32 MaxWritePioBlocks
+        {
+            get
+            {
+                return BaseDevice.MaxWritePioBlocks;
+            }
+        }
+
         private bool IRQInvoked = false;
 
         public PATAPI(PATABase baseDevice)
         {
             BaseDevice = baseDevice;
-
-            blockSize = BaseDevice.BlockSize;
 
             // Enable IRQs - required for PATAPI
             BaseDevice.SelectDrive(0, false);
@@ -77,8 +101,10 @@ namespace Kernel.Hardware.ATA
         }
         private void IRQHandler()
         {
-            //BasicConsole.WriteLine("PATAPI IRQ occurred!");
-            //BasicConsole.DelayOutput(10);
+#if PATAPI_TRACE
+            BasicConsole.WriteLine("PATAPI IRQ occurred!");
+            BasicConsole.DelayOutput(10);
+#endif
             IRQInvoked = true;
         }
 
@@ -93,28 +119,36 @@ namespace Kernel.Hardware.ATA
 
         public override void ReadBlock(ulong aBlockNo, uint aBlockCount, byte[] aData)
         {
-            ExceptionMethods.Throw(new FOS_System.Exceptions.NotSupportedException("Cannot read from PATAPI device (yet)!"));
+            //ExceptionMethods.Throw(new FOS_System.Exceptions.NotSupportedException("Cannot read from PATAPI device (yet)!"));
 
             // Reset IRQ (by reading status register)
-            //BasicConsole.WriteLine("Reset IRQ");
+#if PATAPI_TRACE
+            BasicConsole.WriteLine("Reset IRQ");
+#endif
             BaseDevice.IO.Status.Read_Byte();
             IRQInvoked = false;
 
             // Select the drive
-            //BasicConsole.WriteLine("Select drive");
+#if PATAPI_TRACE
+            BasicConsole.WriteLine("Select drive");
+#endif
             BaseDevice.SelectDrive(0, false);
 
             // Read the data
             for(uint i = 0; i < aBlockCount; i++)
             {
-                //BasicConsole.WriteLine("Read block");
-                _ReadBlock(aBlockNo + i, aData, (uint)(i * blockSize));
+#if PATAPI_TRACE
+                BasicConsole.WriteLine("Read block");
+#endif
+                _ReadBlock(aBlockNo + i, aData, (uint)(i * BlockSize));
             }
         }
         private void _ReadBlock(ulong aBlockNo, byte[] aData, uint DataOffset)
         {
             // Setup the packet
-            //BasicConsole.WriteLine("Setup ATAPI packet");
+#if PATAPI_TRACE
+            BasicConsole.WriteLine("Setup ATAPI packet");
+#endif
             byte[] atapi_packet = new byte[12];
             atapi_packet[0] = 0xA8;
             atapi_packet[1] = 0x0;
@@ -129,64 +163,80 @@ namespace Kernel.Hardware.ATA
             atapi_packet[10] = 0x0;
             atapi_packet[11] = 0x0;
 
+            // Inform the controller we are using PIO mode
+#if PATAPI_TRACE
+            BasicConsole.WriteLine("Tell controller we are using PIO mode");
+#endif
+            BaseDevice.IO.Features.Write_Byte(0);
+
             // Tell the drive the buffer size
-            //BasicConsole.WriteLine("Tell drive the buffer size");
-            BaseDevice.IO.LBA1.Write_Byte((byte)blockSize); // Low byte
-            BaseDevice.IO.LBA1.Write_Byte((byte)(blockSize >> 8)); // High byte
+#if PATAPI_TRACE
+            BasicConsole.WriteLine("Tell drive the buffer size");
+#endif
+            BaseDevice.IO.LBA1.Write_Byte((byte)BlockSize); // Low byte
+            BaseDevice.IO.LBA1.Write_Byte((byte)(BlockSize >> 8)); // High byte
 
-            // Send the packet command
-            //BasicConsole.WriteLine("Send Packet command");
-            BaseDevice.SendCmd(PATABase.Cmd.Packet);
-
-            // Wait till the device is not busy
-            //BasicConsole.WriteLine("Wait till not busy");
-            PATABase.Status xStatus;
-            int timeout = 1000;
-            do
-            {
-                BaseDevice.Wait();
-                xStatus = (PATABase.Status)BaseDevice.IO.Control.Read_Byte();
-            } while ((xStatus & PATABase.Status.Busy) != 0 &&
-                     (xStatus & PATABase.Status.Error) == 0 &&
-                     timeout-- > 0);
+            // Send the packet command (includes the wait)
+#if PATAPI_TRACE
+            BasicConsole.WriteLine("Send Packet command");
+#endif
+            PATABase.Status xStatus = BaseDevice.SendCmd(PATABase.Cmd.Packet);
 
             // Error occurred
-            //BasicConsole.WriteLine("Check for error");
-            if ((xStatus & PATABase.Status.Error) != 0 || timeout == 0)
+#if PATAPI_TRACE
+            BasicConsole.WriteLine("Check for error");
+#endif
+            if ((xStatus & PATABase.Status.Error) != 0)
             {
-                //BasicConsole.WriteLine("Error detected");
+#if PATAPI_TRACE
+                BasicConsole.WriteLine("Error detected");
+#endif
                 ExceptionMethods.Throw(new FOS_System.Exception("ATAPI read error! Status bits incorrect in first check."));
             }
 
-            // Check if that invoke an IRQ - it shouldn't have
-            //BasicConsole.WriteLine("Check if IRQ invoked");
+            // Check if that invoked an IRQ - it shouldn't have
+#if PATAPI_TRACE
+            BasicConsole.WriteLine("Check if IRQ invoked");
+#endif
             if (IRQInvoked)
             {
-                //BasicConsole.WriteLine("IRQ had been invoked");
+#if PATAPI_TRACE
+                BasicConsole.WriteLine("IRQ had been invoked");
+#endif
                 // Allow future IRQs by reading Status register
                 BaseDevice.IO.Status.Read_Byte();
                 IRQInvoked = false;
             }
 
             // Send the data
-            //BasicConsole.WriteLine("Write packet data");
+#if PATAPI_TRACE
+            BasicConsole.WriteLine("Write packet data");
+#endif
             BaseDevice.IO.Data.Write_UInt16s(atapi_packet);
 
             // Wait a bit
-            //BasicConsole.WriteLine("Brief wait");
+#if PATAPI_TRACE
+            BasicConsole.WriteLine("Brief wait");
+#endif
             BaseDevice.Wait();
 
             // Wait for the IRQ
-            //BasicConsole.WriteLine("Wait for IRQ");
+#if PATAPI_TRACE
+            BasicConsole.WriteLine("Wait for IRQ");
+#endif
             if (WaitForIRQ())
             {
-                //BasicConsole.WriteLine("Error! Wait for IRQ timed out.");
-                //BasicConsole.DelayOutput(5);
+#if PATAPI_TRACE
+                BasicConsole.WriteLine("Error! Wait for IRQ timed out.");
+                BasicConsole.DelayOutput(5);
+#endif
             }
 
             // Wait for Busy to clear and check alternate status
-            //BasicConsole.WriteLine("Wait till not busy");
-            timeout = 1000;
+#if PATAPI_TRACE
+            BasicConsole.WriteLine("Wait till not busy");
+#endif
+            uint timeout = 0xF0000000;
             do
             {
                 BaseDevice.Wait();
@@ -196,47 +246,66 @@ namespace Kernel.Hardware.ATA
                      timeout-- > 0);
 
             // Read status reg to clear IRQ
-            //BasicConsole.WriteLine("Read status");
+#if PATAPI_TRACE
+            BasicConsole.WriteLine("Read status");
+#endif
             xStatus = (PATABase.Status)BaseDevice.IO.Status.Read_Byte();
             IRQInvoked = false;
 
             // Error occurred
-            //BasicConsole.WriteLine("Check for error");
+#if PATAPI_TRACE
+            BasicConsole.WriteLine("Check for error");
+#endif
             if ((xStatus & (PATABase.Status.Error | PATABase.Status.ATA_SR_DF)) != 0 ||
                 (xStatus & PATABase.Status.DRQ) == 0)
             {
-                //BasicConsole.WriteLine("Error detected");
+#if PATAPI_TRACE
+                BasicConsole.WriteLine("Error detected");
+#endif
                 ExceptionMethods.Throw(new FOS_System.Exception("ATAPI read error! Status bits incorrect in first check."));
             }
 
             // Read the data
-            //BasicConsole.WriteLine("Read the data");
-            //BasicConsole.WriteLine("Length: " + (FOS_System.String)aData.Length);
+#if PATAPI_TRACE
+            BasicConsole.WriteLine("Read the data");
+            BasicConsole.WriteLine("Length: " + (FOS_System.String)aData.Length);
+#endif
+            uint offset = DataOffset + 1;
             uint i = 0;
-            for(; i < blockSize && i < aData.Length; i += 2)
+            for(; i < BlockSize && offset < aData.Length; i += 2, offset += 2)
             {
                 UInt16 val = BaseDevice.IO.Data.Read_UInt16();
-                //BasicConsole.WriteLine(i + 1);
-                aData[DataOffset + i] = (byte)(val);
-                aData[DataOffset + i + 1] = (byte)(val >> 8);
+                aData[offset - 1] = (byte)(val);
+                aData[offset] = (byte)(val >> 8);
             }
             // Clear out any remaining data
-            for (; i < blockSize; i++)
+            for (; i < BlockSize; i++)
             {
                 BaseDevice.IO.Data.Read_UInt16();
             }
 
-            // Wait for IRQ
-            //BasicConsole.WriteLine("Wait for IRQ");
-            if(WaitForIRQ())
+#if PATAPI_TRACE
+            unsafe
             {
-                //BasicConsole.WriteLine("Error! Wait for IRQ timed out. (1)");
-                //BasicConsole.DelayOutput(5);
+                BasicConsole.DumpMemory((byte*)Utilities.ObjectUtilities.GetHandle(aData) + FOS_System.Array.FieldsBytesSize, aData.Length);
+            }
+
+            BasicConsole.WriteLine("Wait for IRQ");
+#endif
+            // Wait for IRQ
+            if (WaitForIRQ())
+            {
+#if PATAPI_TRACE
+                BasicConsole.WriteLine("Error! Wait for IRQ timed out. (1)");
+                BasicConsole.DelayOutput(5);
+#endif
             }
 
             // Wait for Busy and DRQ to clear and check status
-            //BasicConsole.WriteLine("Wait till not busy");
-            timeout = 1000;
+#if PATAPI_TRACE
+            BasicConsole.WriteLine("Wait till not busy");
+#endif
+            timeout = 0xF0000000;
             do
             {
                 BaseDevice.Wait();
@@ -246,25 +315,32 @@ namespace Kernel.Hardware.ATA
                      timeout-- > 0);
 
             // Error occurred
-            //BasicConsole.WriteLine("Check for error");
+#if PATAPI_TRACE
+            BasicConsole.WriteLine("Check for error");
+#endif
             if ((xStatus & (PATABase.Status.Error | PATABase.Status.ATA_SR_DF)) != 0 ||
-                (xStatus & (PATABase.Status.DRQ)) == 0)
+                (xStatus & (PATABase.Status.DRQ)) != 0)
             {
-                //BasicConsole.WriteLine("Error detected");
+#if PATAPI_TRACE
+                BasicConsole.WriteLine("Error detected");
+#endif
                 ExceptionMethods.Throw(new FOS_System.Exception("ATAPI read error! Status bits incorrect in second check."));
             }
 
-            //BasicConsole.WriteLine("Complete");
-            //BasicConsole.DelayOutput(10);
+#if PATAPI_TRACE
+            BasicConsole.WriteLine("Complete");
+            BasicConsole.DelayOutput(10);
+#endif
         }
 
         public override void WriteBlock(ulong aBlockNo, uint aBlockCount, byte[] aData)
         {
-            ExceptionMethods.Throw(new FOS_System.Exceptions.NotSupportedException("Cannot write to PATAPI device (yet)!"));
+            ExceptionMethods.Throw(new FOS_System.Exceptions.NotSupportedException("Cannot write to PATAPI device!"));
         }
 
         public override void CleanCaches()
         {
+            //TODO - Look at this when Write is implemented
         }
     }
 }

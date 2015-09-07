@@ -3,7 +3,7 @@
   <developerConceptualDocument xmlns="http://ddue.schemas.microsoft.com/authoring/2003/5" xmlns:xlink="http://www.w3.org/1999/xlink">
     
     <summary>
-      <para>List of sources and credits for Fling OS</para>
+      <para>List of sources and credits for FlingOS</para>
     </summary>
     
     <introduction>
@@ -17,7 +17,7 @@
       <content>
         <para>
         	If you feel I have infringed your copyright in any way or have any other grievance, please get in touch via a (polite) email 
-        	and I will endeavour to correct any such issues. Contact details can be found on the main Fling OS website at 
+        	and I will endeavour to correct any such issues. Contact details can be found on the main FlingOS website at 
         	http://www.flingos.co.uk/Contact
         </para>
       </content>
@@ -36,7 +36,7 @@
 					</externalLink>
 	         	</para>
 	         	<para>
-	         		The Pretty OS source code provided a basis for much of the workings of the Fling OS UHCI, EHCI, USB and 
+	         		The Pretty OS source code provided a basis for much of the workings of the FlingOS UHCI, EHCI, USB and 
               USB Mass Storage Device drivers.
 	         	</para>
          		<para>
@@ -44,7 +44,7 @@
               I would like to point out to other developers that the Pretty OS code is fundamentally broken (barely ever working 
               even in simplified test conditions) and in many places did not match clear USB specifications. I would, therefore,
               not recommend their code base as a basis for your own work. It took a lot of research and programming on my part to 
-              make the Fling OS UHCI, EHCI, USB and MSD drivers work.
+              make the FlingOS UHCI, EHCI, USB and MSD drivers work.
 	         	</para>
           	</listItem>
       		<listItem>
@@ -65,7 +65,7 @@
 					to handling ASM plugs.
 				</para>
 				<para>
-					Cosmos' FAT 12/16/32 driver design was reasonable so I used their structure as a basis for the Fling OS driver. 
+					Cosmos' FAT 12/16/32 driver design was reasonable so I used their structure as a basis for the FlingOS driver. 
 				</para>
 				<para>
 					Cosmos' keyboard driver was also a good basis and I did directly copy the keyboard mapping setup code initially
