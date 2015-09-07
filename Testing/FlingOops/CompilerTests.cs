@@ -366,6 +366,22 @@ namespace FlingOops
 
             #endregion
 
+            #region Strings calls
+
+            Log.WriteLine("---String:");
+            Test_Strings();
+            Log.WriteLine(" ");
+
+            #endregion
+
+            #region Object calls
+
+            Log.WriteLine("---Object:");
+
+            Log.WriteLine(" ");
+
+            #endregion
+
             Log.WriteLine("Tests completed.");
         }
 
@@ -3956,11 +3972,11 @@ namespace FlingOops
             AStruct* HeapInst = (AStruct*)Heap.AllocZeroed((uint)sizeof(AStruct), "Kernel:Main");
             if (HeapInst == null)
             {
-                Log.WriteError("HeapInst null\n");
+                Log.WriteError("HeapInst null.");
             }
             else
             {
-                Log.WriteSuccess("HeapInst not null");
+                Log.WriteSuccess("HeapInst not null.");
             }
             HeapInst->a = 1;
             HeapInst->b = 2;
@@ -3968,27 +3984,27 @@ namespace FlingOops
             HeapInst->d = 8;
             if (HeapInst->a == 1)
             {
-               Log.WriteSuccess("HeapInst->a not null");
+               Log.WriteSuccess("HeapInst->a not null.");
             }
             else
             {
-                Log.WriteError("HeapInst->a null\n");
+                Log.WriteError("HeapInst->a null.");
             }
             if (HeapInst->b == 2)
             {
-                Log.WriteSuccess("HeapInst->b not null");
+                Log.WriteSuccess("HeapInst->b not null.");
             }
             else
             {
-                Log.WriteError("HeapInst->b null\n");
+                Log.WriteError("HeapInst->b null.");
             }
             if (HeapInst->c == 4)
             {
-                Log.WriteSuccess("HeapInst->c not null");
+                Log.WriteSuccess("HeapInst->c not null.");
             }
             else
             {
-                Log.WriteError("HeapInst->c null\n");
+                Log.WriteError("HeapInst->c null.");
             }
             if (HeapInst->d == 8)
             {
@@ -3996,10 +4012,60 @@ namespace FlingOops
             }
             else
             {
-                Log.WriteError("HeapInst->d null\n");
+                Log.WriteError("HeapInst->d null.");
             }
         }
 
-        #endregion Heaps
+        #endregion
+
+        #region Strings
+
+        /// <summary>
+        /// Tests: String operations, 
+        /// Inputs: Character strings, 
+        /// Result: Strings correctly stored and displayed.
+        /// </summary>
+        /// <remarks> 
+        /// <para>
+        /// In testing kernel, strings must be declaired as FlingOops.String to use the built-in string type of FlingOS. 
+        /// Integer value is displayed as a hexadecimal in console.
+        /// </para>
+        /// </remarks>
+        [NoGC]
+        public static unsafe void Test_Strings()
+        {
+            Int32 a = 5;
+            Log.WriteLine("Test Console write line!");
+            Log.WriteLine(" ");
+            FlingOops.String ATestString = "Hello, world!";
+            Log.WriteLine("Display stored string ATestString:");
+            Log.WriteLine(ATestString);
+            Log.WriteLine(" ");
+            if (ATestString != "Hello, world!")
+            {
+                Log.WriteError("String equality does not work!");
+            }
+            else
+            {
+                Log.WriteSuccess("String equality works.");
+            }
+            ATestString += " But wait! There's more...";
+            Log.WriteLine(" ");
+            Log.WriteLine("Concatenate to ATestString:");
+            Log.WriteLine(ATestString);
+            Log.WriteLine(" ");
+            ATestString += " We can even append numbers: " + (FlingOops.String)a;
+            Log.WriteLine("Concatenate value stored in variable to ATestString:");
+            Log.WriteLine(ATestString);
+        }
+
+        #endregion
+
+        #region Object
+
+
+
+        #endregion
+
     }
 }
