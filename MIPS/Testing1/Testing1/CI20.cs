@@ -194,9 +194,9 @@ namespace Testing1
         /* Pin names: GPIO bank F */
         public const uint PIN_LED_PIN = (1 << 15);
 
-        public static uint* GPIO(uint bank, uint name)
+        public static byte* GPIO(uint bank, uint name)
         {
-            return (uint*)(GPIO_BASE + bank + name);
+            return (byte*)(GPIO_BASE + bank + name);
         }
     }
 }

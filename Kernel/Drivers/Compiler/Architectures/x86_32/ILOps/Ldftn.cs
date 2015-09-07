@@ -75,7 +75,7 @@ namespace Drivers.Compiler.Architectures.x86
             bool addExternalLabel = methodID != conversionState.Input.TheMethodInfo.ID;
             
             //If we want to load the pointer at a specified IL op number:
-            if(theOp.LoadAtILOffset != int.MaxValue)
+            if (theOp.LoadAtILOffset != int.MaxValue)
             {
                 //Append the IL sub-label to the ID
                 ILBlock anILBlock = conversionState.TheILLibrary.GetILBlock(methodInfo);

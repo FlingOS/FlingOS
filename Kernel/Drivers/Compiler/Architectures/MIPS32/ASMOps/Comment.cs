@@ -47,7 +47,7 @@ namespace Drivers.Compiler.Architectures.MIPS32.ASMOps
         /// <returns>The complete line of assembly code.</returns>
         public override string Convert(ASMBlock theBlock)
         {
-            return "";
+            return "#" + Text;
         }
     }
 }

@@ -132,15 +132,15 @@ namespace Drivers.Compiler.Architectures.x86
             Types.TypeInfo arrayTypeInfo = conversionState.GetArrayTypeInfo();
 
             // 1. Check array reference is not null
-            //      1.1. Move array ref into eax
-            //      1.2. Compare eax (array ref) to 0
+            //      1.1. Move array ref into EAX
+            //      1.2. Compare EAX (array ref) to 0
             //      1.3. If not zero, jump to continue execution further down
             //      1.4. Otherwise, call Exceptions.ThrowNullReferenceException
 
-            //      1.1. Move array ref into eax
-            GlobalMethods.InsertPageFaultDetection(conversionState, "esp", sizeToPop == 8 ? 12 : 8, (OpCodes)theOp.opCode.Value);
+            //      1.1. Move array ref into EAX
+            GlobalMethods.InsertPageFaultDetection(conversionState, "ESP", sizeToPop == 8 ? 12 : 8, (OpCodes)theOp.opCode.Value);
             conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Dword, Src = "[ESP+" + (sizeToPop == 8 ? 12 : 8).ToString() + "]", Dest = "EAX" });
-            //      1.2. Compare eax (array ref) to 0
+            //      1.2. Compare EAX (array ref) to 0
             conversionState.Append(new ASMOps.Cmp() { Arg1 = "EAX", Arg2 = "0" });
             //      1.3. If not zero, jump to continue execution further down
             conversionState.Append(new ASMOps.Jmp() { JumpType = ASMOps.JmpOp.JumpNotZero, DestILPosition = currOpPosition, Extension = "Continue1" });
@@ -151,40 +151,40 @@ namespace Drivers.Compiler.Architectures.x86
             conversionState.Append(new ASMOps.Label() { ILPosition = currOpPosition, Extension = "Continue1" });
 
             // 2. Check array element type is correct
-            //      2.1. Move element type ref into eax
-            //      2.2. Move element type ref from array object into ebx
-            //      2.3. Compare eax to ebx
+            //      2.1. Move element type ref into EAX
+            //      2.2. Move element type ref from array object into EBX
+            //      2.3. Compare EAX to EBX
             //      2.4. If the same, jump to continue execution further down
             //      2.5. Otherwise, call Exceptions.ThrowArrayTypeMismatchException
 
             //string ContinueExecutionLabel2 = ContinueExecutionLabelBase + "2";
-            ////      2.1. Move element type ref into eax
+            ////      2.1. Move element type ref into EAX
             //if (elementType != null)
             //{
-            //    result.AppendLine(string.Format("mov eax, {0}", conversionState.GetTypeIdString(conversionState.GetTypeID(elementType))));
+            //    result.AppendLine(string.Format("mov EAX, {0}", conversionState.GetTypeIdString(conversionState.GetTypeID(elementType))));
             //}
             //else
             //{
             //    //Should be the same for all classes since they are (indirectly) derived from ObjectWithType
             //    int typeOffset = conversionState.GetFieldOffset(arrayDBType, "_Type");
 
-            //    //      - Move value (which is a ref) into eax
-            //    GlobalMethods.CheckAddrFromRegister(conversionState, "esp", 0);
-            //    result.AppendLine("mov eax, [esp]");
-            //    //      - Move value type ref (from value (ref)) into eax
-            //    GlobalMethods.CheckAddrFromRegister(conversionState, "eax", typeOffset);
-            //    result.AppendLine(string.Format("mov eax, [eax+{0}]", typeOffset));
+            //    //      - Move value (which is a ref) into EAX
+            //    GlobalMethods.CheckAddrFromRegister(conversionState, "ESP", 0);
+            //    result.AppendLine("mov EAX, [ESP]");
+            //    //      - Move value type ref (from value (ref)) into EAX
+            //    GlobalMethods.CheckAddrFromRegister(conversionState, "EAX", typeOffset);
+            //    result.AppendLine(string.Format("mov EAX, [EAX+{0}]", typeOffset));
             //}
-            ////      2.2. Move element type ref from array object into ebx
-            ////              - Move array ref into ebx
-            //GlobalMethods.CheckAddrFromRegister(conversionState, "esp", sizeToPop == 8 ? 12 : 8);
-            //result.AppendLine(string.Format("mov ebx, [esp+{0}]", sizeToPop == 8 ? 12 : 8));
-            ////              - Move elemType ref ([ebx+offset]) into ebx
+            ////      2.2. Move element type ref from array object into EBX
+            ////              - Move array ref into EBX
+            //GlobalMethods.CheckAddrFromRegister(conversionState, "ESP", sizeToPop == 8 ? 12 : 8);
+            //result.AppendLine(string.Format("mov EBX, [ESP+{0}]", sizeToPop == 8 ? 12 : 8));
+            ////              - Move elemType ref ([EBX+offset]) into EBX
             int elemTypeOffset = conversionState.TheILLibrary.GetFieldInfo(arrayTypeInfo, "elemType").OffsetInBytes;
-            //GlobalMethods.CheckAddrFromRegister(conversionState, "ebx", elemTypeOffset);
-            //result.AppendLine(string.Format("mov ebx, [ebx+{0}]", elemTypeOffset));
-            ////      2.3. Compare eax to ebx
-            //result.AppendLine("cmp eax, ebx");
+            //GlobalMethods.CheckAddrFromRegister(conversionState, "EBX", elemTypeOffset);
+            //result.AppendLine(string.Format("mov EBX, [EBX+{0}]", elemTypeOffset));
+            ////      2.3. Compare EAX to EBX
+            //result.AppendLine("cmp EAX, EBX");
             ////      2.4. If the same, jump to continue execution further down
             //result.AppendLine("je " + ContinueExecutionLabel2);
             ////      2.5. Otherwise, call Exceptions.ThrowArrayTypeMismatchException
@@ -192,35 +192,35 @@ namespace Drivers.Compiler.Architectures.x86
             //result.AppendLine(ContinueExecutionLabel2 + ":");
 
             // 3. Check index to get is > -1 and < array length
-            //      3.1. Move index into eax
-            //      3.2. Move array length into ebx
-            //      3.2. Compare eax to 0
+            //      3.1. Move index into EAX
+            //      3.2. Move array length into EBX
+            //      3.2. Compare EAX to 0
             //      3.3. Jump if greater than to next test condition (3.5)
             //      3.4. Otherwise, call Exceptions.ThrowIndexOutOfRangeException
-            //      3.5. Compare eax to ebx
+            //      3.5. Compare EAX to EBX
             //      3.6. Jump if less than to continue execution further down
             //      3.7. Otherwise, call Exceptions.ThrowIndexOutOfRangeException
 
-            //      3.1. Move index into eax
-            GlobalMethods.InsertPageFaultDetection(conversionState, "esp", sizeToPop == 8 ? 8 : 4, (OpCodes)theOp.opCode.Value);
+            //      3.1. Move index into EAX
+            GlobalMethods.InsertPageFaultDetection(conversionState, "ESP", sizeToPop == 8 ? 8 : 4, (OpCodes)theOp.opCode.Value);
             conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Dword, Src = "[ESP+" + (sizeToPop == 8 ? 8 : 4).ToString() + "]", Dest = "EAX" });
-            //      3.2. Move array length into ecx
+            //      3.2. Move array length into ECX
             //              - Calculate the offset of the field from the start of the array object
             int lengthOffset = conversionState.TheILLibrary.GetFieldInfo(arrayTypeInfo, "length").OffsetInBytes;
-            //              - Move array ref into ebx
-            GlobalMethods.InsertPageFaultDetection(conversionState, "esp", sizeToPop == 8 ? 12 : 8, (OpCodes)theOp.opCode.Value);
+            //              - Move array ref into EBX
+            GlobalMethods.InsertPageFaultDetection(conversionState, "ESP", sizeToPop == 8 ? 12 : 8, (OpCodes)theOp.opCode.Value);
             conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Dword, Src = "[ESP+" + (sizeToPop == 8 ? 12 : 8).ToString() + "]", Dest = "EBX" });
-            //              - Move length value ([ebx+offset]) into ebx
-            GlobalMethods.InsertPageFaultDetection(conversionState, "ebx", lengthOffset, (OpCodes)theOp.opCode.Value);
+            //              - Move length value ([EBX+offset]) into EBX
+            GlobalMethods.InsertPageFaultDetection(conversionState, "EBX", lengthOffset, (OpCodes)theOp.opCode.Value);
             conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Dword, Src = "[EBX+" + lengthOffset.ToString() + "]", Dest = "EBX" });
-            //      3.2. Compare eax to 0
+            //      3.2. Compare EAX to 0
             conversionState.Append(new ASMOps.Cmp() { Arg1 = "EAX", Arg2 = "0" });
             //      3.3. Jump if greater than to next test condition (3.5)
             conversionState.Append(new ASMOps.Jmp() { JumpType = ASMOps.JmpOp.JumpGreaterThanEqual, DestILPosition = currOpPosition, Extension = "Continue3_1" });
             //      3.4. Otherwise, call Exceptions.ThrowIndexOutOfRangeException
             conversionState.Append(new ASMOps.Call() { Target = conversionState.GetThrowIndexOutOfRangeExceptionMethodInfo().ID });
             conversionState.Append(new ASMOps.Label() { ILPosition = currOpPosition, Extension = "Continue3_1" });
-            //      3.5. Compare eax to ebx
+            //      3.5. Compare EAX to EBX
             conversionState.Append(new ASMOps.Cmp() { Arg1 = "EAX", Arg2 = "EBX" });
             //      3.6. Jump if less than to continue execution further down
             conversionState.Append(new ASMOps.Jmp() { JumpType = ASMOps.JmpOp.JumpLessThan, DestILPosition = currOpPosition, Extension = "Continue3_2" });
@@ -229,65 +229,65 @@ namespace Drivers.Compiler.Architectures.x86
             conversionState.Append(new ASMOps.Label() { ILPosition = currOpPosition, Extension = "Continue3_2" });
             
             // 4. Calculate address of element
-            //      4.0. Pop value into ecx:ebx
-            //      4.1. Pop index into edx
-            //      4.2. Pop array ref into eax
-            //      4.3. Move element type ref (from array ref) into eax
-            //      4.4. Push eax
-            //      4.5. Move IsValueType (from element ref type) into eax
+            //      4.0. Pop value into ECX:EBX
+            //      4.1. Pop index into EDX
+            //      4.2. Pop array ref into EAX
+            //      4.3. Move element type ref (from array ref) into EAX
+            //      4.4. Push EAX
+            //      4.5. Move IsValueType (from element ref type) into EAX
             //      4.6. If IsValueType, continue to 4.6., else goto 4.9.
-            //      4.7. Pop eax
-            //      4.8. Move Size (from element type ref) into eax
+            //      4.7. Pop EAX
+            //      4.8. Move Size (from element type ref) into EAX
             //      4.9. Skip over 4.9. and 4.10.
-            //      4.10. Pop eax
-            //      4.11. Move StackSize (from element type ref) into eax
-            //      4.12. Mulitply eax by edx (index by element size)
-            //      4.13. Move array ref into edx
+            //      4.10. Pop EAX
+            //      4.11. Move StackSize (from element type ref) into EAX
+            //      4.12. Mulitply EAX by EDX (index by element size)
+            //      4.13. Move array ref into EDX
             //      4.14. Add enough to go past Kernel.FOS_System.Array fields
-            //      4.15. Add eax and ebx (array ref + fields + (index * element size))
+            //      4.15. Add EAX and EBX (array ref + fields + (index * element size))
 
-            //      4.0. Pop value into ecx:ebx
+            //      4.0. Pop value into ECX:EBX
             conversionState.Append(new ASMOps.Pop() { Size = ASMOps.OperandSize.Dword, Dest = "ECX" });
             if (sizeToPop == 8)
             {
                 conversionState.Append(new ASMOps.Pop() { Size = ASMOps.OperandSize.Dword, Dest = "EBX" });
             }
-            //      4.1. Pop index into ebx
+            //      4.1. Pop index into EDX
             conversionState.Append(new ASMOps.Pop() { Size = ASMOps.OperandSize.Dword, Dest = "EDX" });
-            //      4.2. Move array ref into eax
-            GlobalMethods.InsertPageFaultDetection(conversionState, "esp", 0, (OpCodes)theOp.opCode.Value);
+            //      4.2. Move array ref into EAX
+            GlobalMethods.InsertPageFaultDetection(conversionState, "ESP", 0, (OpCodes)theOp.opCode.Value);
             conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Dword, Src = "[ESP]", Dest = "EAX" });
-            //      4.3. Move element type ref (from array ref) into eax
-            GlobalMethods.InsertPageFaultDetection(conversionState, "eax", elemTypeOffset, (OpCodes)theOp.opCode.Value);
+            //      4.3. Move element type ref (from array ref) into EAX
+            GlobalMethods.InsertPageFaultDetection(conversionState, "EAX", elemTypeOffset, (OpCodes)theOp.opCode.Value);
             conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Dword, Src = "[EAX+" + elemTypeOffset.ToString() + "]", Dest = "EAX" });
-            //      4.4. Push eax
+            //      4.4. Push EAX
             conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Dword, Src = "EAX" });
-            //      4.5. Move IsValueType (from element ref type) into eax
+            //      4.5. Move IsValueType (from element ref type) into EAX
             int isValueTypeOffset = conversionState.GetTypeFieldOffset("IsValueType");
-            GlobalMethods.InsertPageFaultDetection(conversionState, "eax", isValueTypeOffset, (OpCodes)theOp.opCode.Value);
+            GlobalMethods.InsertPageFaultDetection(conversionState, "EAX", isValueTypeOffset, (OpCodes)theOp.opCode.Value);
             conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Byte, Src = "[EAX+" + isValueTypeOffset.ToString() + "]", Dest = "AL" });
             //      4.6. If IsValueType, continue to 4.7., else goto 4.9.
             conversionState.Append(new ASMOps.Test() { Arg1 = "EAX", Arg2 = "1" });
             conversionState.Append(new ASMOps.Jmp() { JumpType = ASMOps.JmpOp.JumpZero, DestILPosition = currOpPosition, Extension = "Continue4_1" });
-            //      4.7. Pop eax
+            //      4.7. Pop EAX
             conversionState.Append(new ASMOps.Pop() { Size = ASMOps.OperandSize.Dword, Dest = "EAX" });
-            //      4.8. Move Size (from element type ref) into eax
+            //      4.8. Move Size (from element type ref) into EAX
             int sizeOffset = conversionState.GetTypeFieldOffset("Size");
-            GlobalMethods.InsertPageFaultDetection(conversionState, "eax", sizeOffset, (OpCodes)theOp.opCode.Value);
+            GlobalMethods.InsertPageFaultDetection(conversionState, "EAX", sizeOffset, (OpCodes)theOp.opCode.Value);
             conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Dword, Src = "[EAX+" + sizeOffset.ToString() + "]", Dest = "EAX" });
             //      4.9. Skip over 4.9. and 4.10.
             conversionState.Append(new ASMOps.Jmp() { JumpType = ASMOps.JmpOp.Jump, DestILPosition = currOpPosition, Extension = "Continue4_2" });
-            //      4.10. Pop eax
+            //      4.10. Pop EAX
             conversionState.Append(new ASMOps.Label() { ILPosition = currOpPosition, Extension = "Continue4_1" });
             conversionState.Append(new ASMOps.Pop() { Size = ASMOps.OperandSize.Dword, Dest = "EAX" });
-            //      4.11. Move StackSize (from element type ref) into eax
+            //      4.11. Move StackSize (from element type ref) into EAX
             int stackSizeOffset = conversionState.GetTypeFieldOffset("StackSize");
-            GlobalMethods.InsertPageFaultDetection(conversionState, "eax", stackSizeOffset, (OpCodes)theOp.opCode.Value);
+            GlobalMethods.InsertPageFaultDetection(conversionState, "EAX", stackSizeOffset, (OpCodes)theOp.opCode.Value);
             conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Dword, Src = "[EAX+" + stackSizeOffset.ToString() + "]", Dest = "EAX" });
-            //      4.12. Mulitply eax by ebx (index by element size)
+            //      4.12. Mulitply EAX by EDX (index by element size)
             conversionState.Append(new ASMOps.Label() { ILPosition = currOpPosition, Extension = "Continue4_2" });
             conversionState.Append(new ASMOps.Mul() { Arg = "EDX" });
-            //      4.13. Pop array ref into ebx
+            //      4.13. Pop array ref into EDX
             conversionState.Append(new ASMOps.Pop() { Size = ASMOps.OperandSize.Dword, Dest = "EDX" });
             //      4.14. Add enough to go past Kernel.FOS_System.Array fields
             int allFieldsOffset = 0;
@@ -299,31 +299,31 @@ namespace Drivers.Compiler.Architectures.x86
             }
             #endregion
             conversionState.Append(new ASMOps.Add() { Src = allFieldsOffset.ToString(), Dest = "EDX" });
-            //      4.15. Add eax and ebx (array ref + fields + (index * element size))
+            //      4.15. Add EAX and EDX (array ref + fields + (index * element size))
             conversionState.Append(new ASMOps.Add() { Src = "EDX", Dest = "EAX" });
 
             // 5. Pop the element from the stack to array
-            //      5.1. Move value in edx:ecx to [eax]
+            //      5.1. Move value in EBX:ECX to [EAX]
             if (sizeToPop == 8)
             {
-                GlobalMethods.InsertPageFaultDetection(conversionState, "eax", 0, (OpCodes)theOp.opCode.Value);
+                GlobalMethods.InsertPageFaultDetection(conversionState, "EAX", 0, (OpCodes)theOp.opCode.Value);
                 conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Dword, Src = "ECX", Dest = "[EAX]" });
-                GlobalMethods.InsertPageFaultDetection(conversionState, "eax", 4, (OpCodes)theOp.opCode.Value);
+                GlobalMethods.InsertPageFaultDetection(conversionState, "EAX", 4, (OpCodes)theOp.opCode.Value);
                 conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Dword, Src = "EBX", Dest = "[EAX+4]" });
             }
             else if(sizeToPop == 4)
             {
-                GlobalMethods.InsertPageFaultDetection(conversionState, "eax", 0, (OpCodes)theOp.opCode.Value);
+                GlobalMethods.InsertPageFaultDetection(conversionState, "EAX", 0, (OpCodes)theOp.opCode.Value);
                 conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Dword, Src = "ECX", Dest = "[EAX]" });
             }
             else if (sizeToPop == 2)
             {
-                GlobalMethods.InsertPageFaultDetection(conversionState, "eax", 0, (OpCodes)theOp.opCode.Value);
+                GlobalMethods.InsertPageFaultDetection(conversionState, "EAX", 0, (OpCodes)theOp.opCode.Value);
                 conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Word, Src = "CX", Dest = "[EAX]" });
             }
             else if (sizeToPop == 1)
             {
-                GlobalMethods.InsertPageFaultDetection(conversionState, "eax", 0, (OpCodes)theOp.opCode.Value);
+                GlobalMethods.InsertPageFaultDetection(conversionState, "EAX", 0, (OpCodes)theOp.opCode.Value);
                 conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Byte, Src = "CL", Dest = "[EAX]" });
             }
 

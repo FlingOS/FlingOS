@@ -2,12 +2,14 @@
 layout: reference-article
 title: ATA
 date: 2015-07-20 11:40:00
-categories: docs reference
+categories: [ docs, reference ]
+parent_name: Disk Devices
+description: This is an article
 ---
 
 # Introduction
 
-## Scope of the article
+## Scope of this article
 This article covers all the aspects of the ATA specification to at least a general/broad level. It goes into detail about ATA as PATA/IDE but provides limited information for PATAPI, SATA and SATAPI drives.
 
 This article includes a useful but relatively brief history of ATA and includes basic information about the hardware that ATA specifies. The article then includes a detailed description of how to implement a PATA driver along with complete sample code.
@@ -37,6 +39,7 @@ Western Digital co-developed, along with Control Data Corporation and Compaq Com
 
 ## ATA now has many acronyms
 Due to its long history and many versions, ATA now has many acronyms associated with it. The common ones have already been mentioned (ATA, ATAPI and IDE) but it is worth mentioning these few too:
+
 * EIDE - Enhanced IDE (Western Digital, IDE version 2, ATA 2 and 3 compatible)
 * Fast ATA, Fast IDE - All ATA-2 related versions developed by manufacturers.
 * Ultra ATA - associated with ATA version 2 and 4 to 7 with assorted suffixes.
@@ -107,6 +110,7 @@ Note, many manufacturers or specifications list drives as IDE. As discussed prev
 ATA is important as it has long been the standard for hard disk and CD drive control. So much so, that the only successful alternative connector for storage mediums (excluding Ethernet, for obvious reasons) has been USB.
 
 For a hobby OS developer, ATA is important as it (meaning PATA) is the easiest route to accessing permanent storage. The only 4 other viable alternatives are:
+
 * Network stack to access cloud files,
 * Serial connection to a file stored on a connected or host computer,
 * Firewire connection to a file stored on a connected or host computer,
@@ -178,30 +182,30 @@ The following will outline all the steps, and in what order they may or must occ
 
 1. Disable IRQs
 2. Enumerate buses:
-  1.  Discover a particular drive (based on which bus and position on bus)
-  2. Check drive type (PATA/PATAPI/SATA/SATAPI)
-  3. Initialise the drive
-    1. Read version / model information
-    2. Read block count (determines drive size)
+	1.  Discover a particular drive (based on which bus and position on bus)
+	2. Check drive type (PATA/PATAPI/SATA/SATAPI)
+	3. Initialise the drive
+		1. Read version / model information
+		2. Read block count (determines drive size)
 3. For a particular drive, A and B can be done in either order:
-  1. **A.** To read:
-    1. Select sector (sets block number to read and size of read)
-    2. Send the read command
-    3. Read the data
-  2. **B.** To write:
-    1. (Read in partial blocks to fill data to write to a whole number of blocks)
-    2. Select sector (sets block number to read and size of read)
-    3. Send the write command
-    4. Write the data
-    5. (Clean drive caches to ensure data written to disk)
+	1. **A.** To read:
+		1. Select sector (sets block number to read and size of read)
+		2. Send the read command
+		3. Read the data
+	2. **B.** To write:
+		1. (Read in partial blocks to fill data to write to a whole number of blocks)
+		2. Select sector (sets block number to read and size of read)
+		3. Send the write command
+		4. Write the data
+		5. (Clean drive caches to ensure data written to disk)
 
 *Please note: The sample driver provided only supports LBA28 mode and not LBA48 mode. This limits the maximum disk size it is capable of accessing to 2^28 bits. LBA48 mode is, essentially, an extension and can be added if required. Some LBA48 information is provided in this article.*
 
 ## Main classes
 The recommended classes are:
+
 * *ATA* : Abstract base class for all ATA drive types. Contains properties common to all devices (i.e. bus, bus position (often called Controller ID))
 * *ATAIOPorts* : Groups together IO Port objects needed to read/write the ATA specific IO ports.
-
   This allows an instance of ATAIOPorts to be passed to the driver so it needn't worry about which IO Ports to use. It just accesses them through this class. This class creates IO Port objects which point to the correct ports when it is initialised. The ports for primary and secondary bus are different.
 * *ATAManager* : Handles overall ATA functionality such as bus enumeration and
 initialising all drive types not just PATA.
@@ -350,7 +354,7 @@ To send a command to a drive (after setup such as selecting the drive) the follo
   1. Wait for 400ns (see "Waiting for 400ns" above).
   2. Read "Status" register (one byte)
   3. Check for an error by checking "error" bit
-    * If the error bit is set, you must handle the error as you see fit. Aborting the command will require your code to fail gracefully or crash the OS.
+		* If the error bit is set, you must handle the error as you see fit. Aborting the command will require your code to fail gracefully or crash the OS.
 3. Return the Status (for use by the caller)
 
 The Status register returns a value which corresponds to the Status enumerable. (See section above.)
@@ -372,10 +376,15 @@ To perform Drive Select you should write the selection byte to the Drive Select 
 
 * If the next command is not the Identify command, the LBA (Logical Block Address) bit should be set and the value used as follows:
 
-      DriveSelectValue.Default | DriveSelectValue.LBA | (busPosition == BusPosition.Slave ? DriveSelectValue.Slave : 0)) | LBAHigh4Bits
+```
+DriveSelectValue.Default | DriveSelectValue.LBA | (busPosition == BusPosition.Slave ? DriveSelectValue.Slave : 0)) | LBAHigh4Bits
+```
 
 * Otherwise, the selection byte should be this:
-      DriveSelectValue.Default | (busPosition == BusPosition.Slave ? DriveSelectValue.Slave : 0)) | LBAHigh4Bits
+
+```
+DriveSelectValue.Default | (busPosition == BusPosition.Slave ? DriveSelectValue.Slave : 0)) | LBAHigh4Bits
+```
 
 Where LBAHigh4Bits is the value of the high four bits of the 28-bit sector number to be accessed. This should be set to 0 during Drive Discovery. I am uncertain how these bits are treated in LBA48 mode. If you know more, please provide feedback via the link at the bottom of the page.
 
@@ -384,22 +393,24 @@ Drive Discovery should be a very simple process but it is made more complicated 
 
 The following steps should be followed for Drive Discovery. Drive Discovery should be immediately followed by Drive Init if a PATA device is found. There should be no commands sent over ATA between Drive Discovery and Drive Init if a PATA device is detected.
 
-1. Select Drive (set LBAHigh4Bits to 0, LBA bit should NOT be set)
+1. Select Drive (set `LBAHigh4Bits` to 0, LBA bit should NOT be set)
 2. Write "0" to SectorCount, LBA0, LBA1 and LBA2 registers
 3. Send the Identify command, store the Status value returned by Send Command
 4. Check to see if the Error bit is set. If it is:
-The device is not a PATA drive. An error flag is the expected response from
-PATAPI, SATA and SATAPI devices.
-  * Return the combined value from LBA1 and LBA2 (e.g. LBA2 << 8 | LBA1). The combined value tells you the Specification Level of the device (see SpecLevel enumerable).
+   The device is not a PATA drive. An error flag is the expected response from PATAPI, SATA and SATAPI devices.
+   
+   * Return the combined value from LBA1 and LBA2 (e.g. LBA2 << 8 &#124; LBA1). The combined value tells you the Specification Level of the device (see SpecLevel enumerable).
 5. Check to see if Status is "0". If it is:
-  * No drive is attached. Return SpecLevel.Null.
+	
+   * No drive is attached. Return SpecLevel.Null.
 6. Check the Status value for other SpecLevel Id's:
-    This is due to non-conformant devices which don't throw an error even if they are non-PATA devices.
-    * Compare the combined value from LBA1 and LBA2 (e.g. LBA2 << 8 | LBA1) to non-arbitrary
+   This is due to non-conformant devices which don't throw an error even if they are non-PATA devices.
+   
+   * Compare the combined value from LBA1 and LBA2 (e.g. LBA2 << 8 &#124; LBA1) to non-arbitrary
 values in the SpecLevel enumerable. If one is found, that is the spec level of the device
 so return it.
-  * If the combined value from LBA1 & LAB2 is non-zero, return SpecLevel.Null.
-  * Otherwise, continue.
+   * If the combined value from LBA1 & LAB2 is non-zero, return SpecLevel.Null.
+   * Otherwise, continue.
 6. Do-while loop:
   1. Wait 400ns
   2. Read Status register (one-byte)
@@ -427,20 +438,25 @@ The following details the indices (in the UInt16 array) and sizes of the values 
 | Block Count (size) | ULong        | 100 | 4 | LBA48 - See below  |
 
 In LBA48 mode, the Block Count LBA28 Mode above should be ignored if:
-  (UInt16Array[82] & 0x0400) != 0
+
+```
+(UInt16Array[82] & 0x0400) != 0
+```
 
 Thus:
 
-    bool LBA48Capable = (buffer[83] & 0x400) != 0;
-    if (LBA48Capable)
-    {
-      blockCount = (buffer[103] << 48 | buffer[102] << 32 | buffer[101] << 16 | buffer[100]) - 1;
-      LBA48Mode = true;
-    }
-    else
-    {
-      blockCount = (buffer[61] << 16 | buffer[60]) - 1;
-    }
+```
+bool LBA48Capable = (buffer[83] & 0x400) != 0;
+if (LBA48Capable)
+{
+  blockCount = (buffer[103] << 48 | buffer[102] << 32 | buffer[101] << 16 | buffer[100]) - 1;
+  LBA48Mode = true;
+}
+else
+{
+  blockCount = (buffer[61] << 16 | buffer[60]) - 1;
+}
+```
 
 ## Select Sector
 
@@ -456,10 +472,11 @@ To select a sector, the following steps must be performed:
 3. Write the sector count (as a byte) to the SectorCount register.
 4. Write the sector number (LBA) to the LBA registers. The LBA is written as single bytes to each LBA port. For LBA28 the following code sample demonstrates the necessary steps:
 
-
-    IO.LBA0.Write_Byte((byte)(aSectorNo & 0xFF));
-    IO.LBA1.Write_Byte((byte)((aSectorNo & 0xFF00) >> 8));
-    IO.LBA2.Write_Byte((byte)((aSectorNo & 0xFF0000) >> 16));
+```
+IO.LBA0.Write_Byte((byte)(aSectorNo & 0xFF));
+IO.LBA1.Write_Byte((byte)((aSectorNo & 0xFF00) >> 8));
+IO.LBA2.Write_Byte((byte)((aSectorNo & 0xFF0000) >> 16));
+```
 
 ## Reading & Writing
 
@@ -506,8 +523,7 @@ Take a look at the sample code which demonstrates how to detect and avoid PATAPI
 
 ---
 
-# References
-
+# Further Reading
 The following links were valid as of 27th January 2015.
 
 * [Wikipedia - Parallel ATA](http://en.wikipedia.org/wiki/Parallel_ATA)

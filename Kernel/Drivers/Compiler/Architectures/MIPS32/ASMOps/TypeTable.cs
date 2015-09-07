@@ -42,7 +42,52 @@ namespace Drivers.Compiler.Architectures.MIPS32.ASMOps
 
         public override string Convert(ASM.ASMBlock theBlock)
         {
-            return "";
+            StringBuilder ASMResult = new StringBuilder();
+            ASMResult.AppendLine(".globl " + TypeId);
+            ASMResult.AppendLine(".align 2");
+            ASMResult.AppendLine(TypeId + ":");
+
+            foreach (Tuple<string, Types.TypeInfo> aFieldInfo in FieldInformation)
+            {
+                string allocStr = ASMUtilities.GetAllocStringForSize(
+                    aFieldInfo.Item2.IsValueType ? aFieldInfo.Item2.SizeOnHeapInBytes : aFieldInfo.Item2.SizeOnStackInBytes);
+                switch (aFieldInfo.Item1)
+                {
+                    case "Size":
+                        ASMResult.AppendLine(allocStr + " " + SizeVal);
+                        break;
+                    case "Id":
+                        ASMResult.AppendLine(allocStr + " " + IdVal);
+                        break;
+                    case "StackSize":
+                        ASMResult.AppendLine(allocStr + " " + StackSizeVal);
+                        break;
+                    case "IsValueType":
+                        ASMResult.AppendLine(allocStr + " " + IsValueTypeVal);
+                        break;
+                    case "MethodTablePtr":
+                        ASMResult.AppendLine(allocStr + " " + MethodTablePointer);
+                        break;
+                    case "IsPointer":
+                        ASMResult.AppendLine(allocStr + " " + IsPointerTypeVal);
+                        break;
+                    case "TheBaseType":
+                        ASMResult.AppendLine(allocStr + " " + BaseTypeIdVal);
+                        break;
+                    case "FieldTablePtr":
+                        ASMResult.AppendLine(allocStr + " " + FieldTablePointer);
+                        break;
+                    case "Signature":
+                        ASMResult.AppendLine(allocStr + " " + TypeSignatureLiteralLabel);
+                        break;
+                    case "IdString":
+                        ASMResult.AppendLine(allocStr + " " + TypeIdLiteralLabel);
+                        break;
+                }
+            }
+            ASMResult.AppendLine();
+
+            return ASMResult.ToString();
         }
     }
 }

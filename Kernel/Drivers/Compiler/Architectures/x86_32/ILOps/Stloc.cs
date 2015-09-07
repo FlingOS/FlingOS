@@ -90,7 +90,7 @@ namespace Drivers.Compiler.Architectures.x86
             }
 
             int locSize = conversionState.Input.TheMethodInfo.LocalInfos.ElementAt(localIndex).TheTypeInfo.SizeOnStackInBytes;
-            if(locSize == 0)
+            if (locSize == 0)
             {
                 conversionState.Append(new ASMOps.Comment("0 pop size (?!)"));
             }

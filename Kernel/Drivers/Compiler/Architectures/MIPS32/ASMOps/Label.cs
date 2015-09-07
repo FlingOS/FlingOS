@@ -57,7 +57,14 @@ namespace Drivers.Compiler.Architectures.MIPS32.ASMOps
         /// <returns>The complete line of assembly code.</returns>
         public override string Convert(ASMBlock theBlock)
         {
-            return "";
+            if (MethodLabel)
+            {
+                return theBlock.GenerateMethodLabel() + ":\r\nnop";
+            }
+            else
+            {
+                return theBlock.GenerateMethodLabel() + theBlock.GenerateILOpLabel(ILPosition, Extension) + ":\r\nnop";
+            }
         }
     }
 }
