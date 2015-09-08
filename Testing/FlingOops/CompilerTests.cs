@@ -303,6 +303,12 @@ namespace FlingOops
                 Test_Arg_UInt32(unsign32);
                 Test_Arg_UInt64(unsign64);
                 Test_Arg_String(str);
+                AStruct Inst = new AStruct();
+                Inst.a = 1;
+                Inst.b = 2;
+                Inst.c = 3;
+                Inst.d = 4;
+                Test_Arg_Struct(Inst);
                 Log.WriteLine(" ");
             }
 
@@ -3684,6 +3690,24 @@ namespace FlingOops
             else
             {
                 Log.WriteError("Test_Arg_String NOT okay.");
+            }
+        }
+
+        /// <summary>
+        /// Tests: Passing struct argument to method, 
+        /// Input: A struct, 
+        /// Result: Argument correctly passed to method.
+        /// </summary>
+        [NoGC]
+        public static void Test_Arg_Struct(AStruct struc)
+        {
+            if ((struc.a == 1) && (struc.b == 2) && (struc.c == 3) && (struc.d == 4))
+            {
+                Log.WriteSuccess("Test_Arg_Struct okay.");
+            }
+            else
+            {
+                Log.WriteError("Test_Arg_Struct NOT okay.");
             }
         }
 
