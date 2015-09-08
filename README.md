@@ -14,9 +14,12 @@ The FlingOS project is a three part approach to teaching OS and low-level develo
 ### Interested in learning OS/low-level development?
 Take a look at our [Getting Started](http://www.flingos.co.uk/docs/reference/Getting-Started) article to learn how to write your own operating system.
 
+### How do I learn from the FlingOS source code?
+The FlingOS source code is here for you to look at, read and compare to. By reading the FlingOS articles and taking a look at our implementations, you should be able to write your own fairly easily.
+
 ### Interested in developing FlingOS?
 
-[Join the team](http://www.flingos.co.uk/Develop#Join-the-team) and then [Setup for Development article](http://www.flingos.co.uk/docs/reference/FlingOS).
+[Join the team](http://www.flingos.co.uk/Develop#Join-the-team) and then [setup for development](http://www.flingos.co.uk/docs/reference/FlingOS).
 
 ### Interested in our ahead-of-time compiler?
 
@@ -52,3 +55,9 @@ If you'd just like to use our ahead-of-time compiler to write your own C#, VB.Ne
   - ***FlingOops™*** : Our cross-platform compiler verification kernel (utilises behavioural testing).
 - ***Tools*** : Assorted tools written by FlingOS developers to make their lives easier. Speak to Ed Nutting for details.
   - ***CI20Booter*** : USB OTG boot tool (uses LibUsb-Win32) for the Creator CI20 board.
+
+### A note on licenses
+FlingOS is released under GPLv2 under UK law. This means you can't just copy and paste our code without keeping our copyright notice and you have to release your work as open-source if it includes our code. Our source code is also released without warranty and we accept no liability (within the restrictions of UK law). Please do not use our code for anything (particularly production or safety critical work) without testing and verifying it yourself.
+
+##### Why did we choose GPLv2 not BSD, MIT or another, more permissive license? 
+FlingOS is here for people to learn from by reading and comparing. We are not here to just supply out-of-the-box code so we don't allow people to just reuse our work. Also, we are providing a learning resource not a reference sample. By restricitng the use of our code it helps to prevent the widercommunity accidentally treating us a reference codebase.
