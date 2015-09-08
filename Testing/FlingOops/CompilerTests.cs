@@ -4807,7 +4807,7 @@ namespace FlingOops
         [NoGC]
         public static unsafe void Test_Heap()
         {
-            AStruct* HeapInst = (AStruct*)Heap.AllocZeroed((uint)sizeof(AStruct), "Kernel:Main");
+            AStruct* HeapInst = (AStruct*)Heap.AllocZeroed((uint)sizeof(AStruct), "FlingOops:Test_Heap");
             if (HeapInst == null)
             {
                 Log.WriteError("HeapInst null.");
