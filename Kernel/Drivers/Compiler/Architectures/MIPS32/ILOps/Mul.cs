@@ -161,7 +161,7 @@ namespace Drivers.Compiler.Architectures.MIPS32
                     // mov $t1, 8($sp) - Load AL
                     conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Word, Src = "8($sp)", Dest = "$t1", MoveType = ASMOps.Mov.MoveTypes.SrcMemoryToDestReg });
                     // mul $t1           - BL * AL, result in $lo:$hi
-                    conversionState.Append(new ASMOps.Mul() { Src1 = "$t0", Src2 = "$t1" });
+                    conversionState.Append(new ASMOps.Mul() { Src1 = "$t0", Src2 = "$t1", Signed = false });
                     conversionState.Append(new ASMOps.Mfhi() { Dest = "$t3" });
                     conversionState.Append(new ASMOps.Mflo() { Dest = "$t0" });
                     // push $t3          - Push result keeping high bits
@@ -215,12 +215,12 @@ namespace Drivers.Compiler.Architectures.MIPS32
                     conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Word, Src = "4($sp)", Dest = "$t2", MoveType = ASMOps.Mov.MoveTypes.SrcMemoryToDestReg });
                     // add $t3, $t2       - Add (AL * BL) + (AL * BH), result in $lo:$hi
                     conversionState.Append(new ASMOps.Add() { Src1 = "$t2", Src2 = "$t3", Dest = "$t3" });
-                    // mov $t2, 0(sp)   - Load AH * BL
+                    // mov $t2, 0($sp)   - Load AH * BL
                     conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Word, Src = "0($sp)", Dest = "$t2", MoveType = ASMOps.Mov.MoveTypes.SrcMemoryToDestReg });
                     // add $t3, $t2       - Add ((AL * BL) + (AL * BH)) + (AH * BL), result in $lo:$hi
                     conversionState.Append(new ASMOps.Add() { Src1 = "$t2", Src2 = "$t3", Dest = "$t3" });
 
-                    // add esp, 16+16     - Remove temp results and input values from stack
+                    // add $sp, 16+16     - Remove temp results and input values from stack
                     conversionState.Append(new ASMOps.Add() { Src1 = "$sp", Src2 = "32", Dest = "$sp" });
 
                     // push $t3           - Push final result
