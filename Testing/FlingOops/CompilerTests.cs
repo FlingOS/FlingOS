@@ -428,7 +428,7 @@ namespace FlingOops
             #region 18. Try-Catch-Finally calls
 
             Log.WriteLine("---Try-Catch-Finally:");
-
+            Test_TCF();
             Log.WriteLine(" ");
 
             #endregion
@@ -4890,6 +4890,29 @@ namespace FlingOops
         #endregion
 
         #region 18. Try-Catch-Finally
+
+        /// <summary>
+        /// Tests: Testing Try-catch-finally blocks, 
+        /// Inputs: 6 / 0, 
+        /// Result: Divide-by-zero exception
+        /// </summary>
+        [NoGC]
+        public static void Test_TCF()
+        {
+            try
+            {
+                Log.WriteSuccess("Entered try.");
+                ExceptionMethods.Throw(new Exception("Exception"));
+            }
+            catch
+            {
+                Log.WriteSuccess("Entered catch.");
+            }
+            finally
+            {
+                Log.WriteSuccess("Entered finally.");
+            }
+        }
 
         #endregion
 
