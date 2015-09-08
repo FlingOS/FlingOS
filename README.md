@@ -19,7 +19,7 @@ The FlingOS source code is here for you to look at, read and compare to. By read
 
 ### Interested in developing FlingOS?
 
-[Join the team](http://www.flingos.co.uk/Develop#Join-the-team) and then [Setup for Development article](http://www.flingos.co.uk/docs/reference/FlingOS).
+[Join the team](http://www.flingos.co.uk/Develop#Join-the-team) and then [setup for development](http://www.flingos.co.uk/docs/reference/FlingOS).
 
 ### Interested in our ahead-of-time compiler?
 
