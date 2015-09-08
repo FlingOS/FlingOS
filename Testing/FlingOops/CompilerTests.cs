@@ -428,8 +428,18 @@ namespace FlingOops
             #region 18. Try-Catch-Finally calls
 
             Log.WriteLine("---Try-Catch-Finally:");
+            Log.WriteLine(" TCF 0");
             Test_TCF_0();
+            Log.WriteLine(" TCF 1");
             Test_TCF_1();
+            Log.WriteLine(" TCF 2");
+            Test_TCF_2();
+            Log.WriteLine(" TCF 3");
+            Test_TCF_3();
+            Log.WriteLine(" TCF 4");
+            Test_TCF_4();
+            Log.WriteLine(" TCF 5");
+            Test_TCF_5();
             Log.WriteLine(" ");
 
             #endregion
@@ -4913,15 +4923,16 @@ namespace FlingOops
         }
 
         /// <summary>
-        /// Tests: Testing Try-catch-finally blocks. 
+        /// Tests: Testing throwing exceptions within catch section of Try-catch-finally blocks. 
         /// </summary>
         [NoGC]
-        public static void Test_TCF_1()
+        public static unsafe void Test_TCF_1()
         {
             try
             {
                 Log.WriteSuccess("Entered try.");
-                ExceptionMethods.Throw(new Exception("Exception"));
+
+                subMethod1();
             }
             catch
             {
@@ -4930,20 +4941,207 @@ namespace FlingOops
             finally
             {
                 Log.WriteSuccess("Entered finally.");
-                subMethod();
             }
+
+            Log.WriteSuccess("Executed end of test cleanly.");
         }
-        public static void subMethod()
+        public static void subMethod1()
         {
             try
             {
-                Log.WriteSuccess("Entered subMethod try.");
+                Log.WriteSuccess("Entered subMethod1 try.");
+                ExceptionMethods.Throw(new Exception("Exception 1"));
+            }
+            catch
+            {
+                Log.WriteSuccess("Entered subMethod1 catch.");
+                ExceptionMethods.Throw(new Exception("Exception 2"));
             }
             finally
             {
-                Log.WriteSuccess("Entered subMethod finally.");
-                ExceptionMethods.Throw(new Exception("Exception"));
+                Log.WriteSuccess("Entered subMethod1 finally.");
             }
+
+            Log.WriteError("Executed end of subMethod1 which shouldn't have!");
+        }
+
+        /// <summary>
+        /// Tests: Testing Try-catch-finally blocks. 
+        /// </summary>
+        [NoGC]
+        public static unsafe void Test_TCF_2()
+        {
+            try
+            {
+                Log.WriteSuccess("Entered try.");
+
+                subMethod2();
+            }
+            catch
+            {
+                Log.WriteSuccess("Entered catch.");
+            }
+            finally
+            {
+                Log.WriteSuccess("Entered finally.");
+            }
+
+            Log.WriteSuccess("Executed end of test cleanly.");
+        }
+        public static void subMethod2()
+        {
+            try
+            {
+                Log.WriteSuccess("Entered subMethod2 try.");
+                ExceptionMethods.Throw(new Exception("Exception 1"));
+            }
+            catch
+            {
+                Log.WriteSuccess("Entered subMethod2 catch.");
+            }
+            finally
+            {
+                Log.WriteSuccess("Entered subMethod2 finally.");
+                ExceptionMethods.Throw(new Exception("Exception 2"));
+            }
+
+            Log.WriteError("Executed end of subMethod2 which shouldn't have!");
+        }
+        
+        /// <summary>
+        /// Tests: Testing Try-catch-finally blocks. 
+        /// </summary>
+        [NoGC]
+        public static unsafe void Test_TCF_3()
+        {
+            try
+            {
+                Log.WriteSuccess("Entered try.");
+
+                subMethod3();
+            }
+            catch
+            {
+                Log.WriteSuccess("Entered catch.");
+            }
+            finally
+            {
+                Log.WriteSuccess("Entered finally.");
+            }
+
+            Log.WriteSuccess("Executed end of test cleanly.");
+        }
+        public static void subMethod3()
+        {
+            try
+            {
+                Log.WriteSuccess("Entered subMethod3 try.");
+                ExceptionMethods.Throw(new Exception("Exception 1"));
+            }
+            finally
+            {
+                Log.WriteSuccess("Entered subMethod3 finally.");
+            }
+
+            Log.WriteError("Executed end of subMethod3 which shouldn't have!");
+        }
+
+        /// <summary>
+        /// Tests: Testing Try-catch-finally blocks. 
+        /// </summary>
+        [NoGC]
+        public static unsafe void Test_TCF_4()
+        {
+            try
+            {
+                Log.WriteSuccess("Entered try.");
+
+                subMethod4();
+            }
+            catch
+            {
+                Log.WriteError("Entered catch when we shouldn't have any unhandled exceptions.");
+            }
+            finally
+            {
+                Log.WriteSuccess("Entered finally.");
+            }
+
+            Log.WriteSuccess("Executed end of test cleanly.");
+        }
+        public static void subMethod4()
+        {
+            try
+            {
+                Log.WriteSuccess("Entered subMethod4 try 1.");
+                try
+                {
+                    Log.WriteSuccess("Entered subMethod4 try 2.");
+
+                    ExceptionMethods.Throw(new Exception("Exception 1"));
+                }
+                finally
+                {
+                    Log.WriteSuccess("Entered subMethod4 try 2 finally.");
+                }
+                
+                Log.WriteError("Continued execution of subMethod4 try 2!");
+            }
+            catch
+            {
+                Log.WriteSuccess("Entered subMethod4 try 1 catch.");
+            }
+
+            Log.WriteSuccess("Executed end of subMethod4 correctly.");
+        }
+
+        /// <summary>
+        /// Tests: Testing Try-catch-finally blocks. 
+        /// </summary>
+        [NoGC]
+        public static unsafe void Test_TCF_5()
+        {
+            try
+            {
+                Log.WriteSuccess("Entered try.");
+
+                subMethod5();
+            }
+            catch
+            {
+                Log.WriteError("Entered catch when we shouldn't have any unhandled exceptions.");
+            }
+            finally
+            {
+                Log.WriteSuccess("Entered finally.");
+            }
+
+            Log.WriteSuccess("Executed end of test cleanly.");
+        }
+        public static void subMethod5()
+        {
+            try
+            {
+                Log.WriteSuccess("Entered subMethod5 try 1.");
+                try
+                {
+                    Log.WriteSuccess("Entered subMethod5 try 2.");
+
+                    ExceptionMethods.Throw(new Exception("Exception 1"));
+                }
+                catch
+                {
+                    Log.WriteSuccess("Entered subMethod5 try 2 catch.");
+                }
+
+                Log.WriteSuccess("Continued execution of subMethod5 try 2.");
+            }
+            catch
+            {
+                Log.WriteError("Entered subMethod5 try 1 catch.");
+            }
+
+            Log.WriteSuccess("Executed end of subMethod5 correctly.");
         }
 
         #endregion
