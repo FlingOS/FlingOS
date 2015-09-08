@@ -3561,7 +3561,7 @@ namespace FlingOops
         /// </summary>
         /// <remarks> 
         /// <para>
-        /// In testing kernel, strings must be declaired as FlingOops.String to use the built-in string type of FlingOS. 
+        /// In testing kernel, strings must be declared as FlingOops.String to use the built-in string type of FlingOS. 
         /// Integer value is displayed as a hexadecimal in console.
         /// </para>
         /// </remarks>
@@ -4816,11 +4816,11 @@ namespace FlingOops
             {
                 Log.WriteSuccess("HeapInst not null.");
             }
-            HeapInst->a = 1;
-            HeapInst->b = 2;
-            HeapInst->c = 4;
-            HeapInst->d = 8;
-            if (HeapInst->a == 1)
+            HeapInst->a = 85;
+            HeapInst->b = 30720;
+            HeapInst->c = 806092800;
+            HeapInst->d = 1085086035219578880;
+            if (HeapInst->a == 85)
             {
                Log.WriteSuccess("HeapInst->a not null.");
             }
@@ -4828,7 +4828,7 @@ namespace FlingOops
             {
                 Log.WriteError("HeapInst->a null.");
             }
-            if (HeapInst->b == 2)
+            if (HeapInst->b == 30720)
             {
                 Log.WriteSuccess("HeapInst->b not null.");
             }
@@ -4836,7 +4836,7 @@ namespace FlingOops
             {
                 Log.WriteError("HeapInst->b null.");
             }
-            if (HeapInst->c == 4)
+            if (HeapInst->c == 806092800)
             {
                 Log.WriteSuccess("HeapInst->c not null.");
             }
@@ -4844,7 +4844,7 @@ namespace FlingOops
             {
                 Log.WriteError("HeapInst->c null.");
             }
-            if (HeapInst->d == 8)
+            if (HeapInst->d == 1085086035219578880)
             {
                 Log.WriteSuccess("HeapInst->d not null");
             }
@@ -5222,7 +5222,7 @@ namespace FlingOops
 /// </remarks>
 public class TestClass : FlingOops.Object
 {
-    public int aField0 = 0;
+    public int aField0 = 0; 
     public int aField1 = 1;
     public int aField2 = 2;
     public int aField3 = 3;
