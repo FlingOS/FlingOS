@@ -126,8 +126,46 @@ namespace FlingOops
 
             #endregion
 
-            // TODO
             #region 3. Multiplication calls
+
+            Log.WriteLine("---Multiplication:");
+            Log.WriteLine(" 32-32");
+            Log.WriteLine("  Unsigned");
+            Test_Mul_UInt32_Zero_UInt3_Zero();
+            Test_Mul_UInt32_9_UInt32_4();
+            Log.WriteLine("  Signed");
+            Test_Mul_Int32_9_Int32_4();
+            Test_Mul_Int32_9_Int32_Neg4();
+            Test_Mul_Int32_Neg9_Int32_4();
+            Test_Mul_Int32_Neg9_Int32_Neg4();
+            Log.WriteLine(" 64-32");
+            Log.WriteLine("  Unsigned");
+            Test_Mul_UInt64_Zero_UInt32_Zero();
+            Test_Mul_UInt64_Large_UInt32_4();
+            Log.WriteLine("  Signed");
+            Test_Mul_Int64_Zero_Int32_LargestNeg();
+            Test_Mul_Int64_Zero_Int32_LargestPos();
+            Test_Mul_Int64_LargestPos_Int32_4();
+            Test_Mul_Int64_LargestPos_Int32_Neg4();
+            Test_Mul_Int64_LargestNeg_Int32_4();
+            Test_Mul_Int64_LargestNeg_Int32_Neg4();
+            Log.WriteLine(" 64-64");
+            Log.WriteLine("  Unsigned");
+            Test_Mul_UInt64_Large_UInt64_Large();
+            Log.WriteLine("  Signed");
+            Test_Mul_Int64_Zero_Int64_LargePos();
+            Test_Mul_Int64_Zero_Int64_Neg4();
+            Test_Mul_Int64_LargePos_Int64_4();
+            Test_Mul_Int64_LargePos_Int64_Neg4();
+            Test_Mul_Int64_LargeNeg_Int64_4();
+            Test_Mul_Int64_LargeNeg_Int64_Neg4();
+            Test_Mul_Int64_LargePos_Int64_1000();
+            Test_Mul_Int64_LargeNeg_Int64_1000();
+            Test_Mul_Int64_Neg1_Int64_LargePos();
+            Test_Mul_Int64_Neg1_Int64_LargeNeg();
+            Test_Mul_Int64_LargestPos_Int64_Neg4();
+            Test_Mul_Int64_LargestNeg_Int64_Neg4();
+            Log.WriteLine(" ");
 
             #endregion
 
@@ -383,6 +421,14 @@ namespace FlingOops
 
             Log.WriteLine("---Object:");
             Test_Objects();
+            Log.WriteLine(" ");
+
+            #endregion
+            
+            #region 18. Try-Catch-Finally calls
+
+            Log.WriteLine("---Try-Catch-Finally:");
+
             Log.WriteLine(" ");
 
             #endregion
@@ -1381,8 +1427,736 @@ namespace FlingOops
 
         #endregion
 
-        // TODO
         #region 3. Multiplication
+
+        /// <summary>
+        /// Tests: Multiplication operation using unsigned 32-bit integers, 
+        /// Inputs: 0, 0, 
+        /// Result: 0.
+        /// </summary>
+        /// <remarks>
+        /// <para>
+        /// FlingOS treats all 32-/64-bit multiplication as signed/unsigned. 
+        /// Different operand sizes.
+        /// </para>
+        /// </remarks>
+        public static void Test_Mul_UInt32_Zero_UInt3_Zero()
+        {
+            UInt32 a = 0;
+            UInt32 b = 0;
+            a = a * b;
+            if (a == 0)
+            {
+                Log.WriteSuccess("Test_Mul_UInt32_Zero_Zero okay.");
+            }
+            else
+            {
+                Log.WriteError("Test_Mul_UInt32_Zero_Zero NOT okay.");
+            }
+        }
+
+        /// <summary>
+        /// Tests: Multiplication operation using unsigned 32-bit integers, 
+        /// Inputs: Small, Small, 
+        /// Result: Small.
+        /// </summary>
+        /// <remarks>
+        /// <para>
+        /// FlingOS treats all 32-/64-bit multiplication as signed/unsigned. 
+        /// Different operand sizes aren't allowed.
+        /// </para>
+        /// </remarks>
+        [NoGC]
+        public static void Test_Mul_UInt32_9_UInt32_4()
+        {
+            UInt32 a = 9;
+            UInt32 b = 4;
+            a = a * b;
+            if (a == 36)
+            {
+                Log.WriteSuccess("Test_Mul_UInt32_9_UInt32_4 okay.");
+            }
+            else
+            {
+                Log.WriteError("Test_Mul_UInt32_9_UInt32_4 NOT okay.");
+            }
+        }
+
+        /// <summary>
+        /// Tests: Multiplication operation using signed 32-bit integers, 
+        /// Inputs: Small -ve, Small +ve, 
+        /// Result: Small -ve.
+        /// </summary>
+        /// <remarks>
+        /// <para>
+        /// FlingOS treats all 32-/64-bit multiplication as signed/unsigned. 
+        /// Different operand sizes aren't allowed.
+        /// </para>
+        /// </remarks>
+        [NoGC]
+        public static void Test_Mul_Int32_Neg9_Int32_4()
+        {
+            Int32 a = -9;
+            Int32 b = 4;
+            a = a * b;
+            if (a == -36)
+            {
+                Log.WriteSuccess("Test_Mul_Int32_Neg9_Int32_4 okay.");
+            }
+            else
+            {
+                Log.WriteError("Test_Mul_Int32_Neg9_Int32_4 NOT okay.");
+            }
+        }
+
+        /// <summary>
+        /// Tests: Multiplication operation using signed 32-bit integers, 
+        /// Inputs: Small -ve, Small -ve, 
+        /// Result: Small +ve.
+        /// </summary>
+        /// <remarks>
+        /// <para>
+        /// FlingOS treats all 32-/64-bit multiplication as signed/unsigned. 
+        /// Different operand sizes aren't allowed.
+        /// </para>
+        /// </remarks>
+        [NoGC]
+        public static void Test_Mul_Int32_Neg9_Int32_Neg4()
+        {
+            Int32 a = -9;
+            Int32 b = -4;
+            a = a * b;
+            if (a == 36)
+            {
+                Log.WriteSuccess("Test_Mul_Int32_Neg9_Int32_Neg4 okay.");
+            }
+            else
+            {
+                Log.WriteError("Test_Mul_Int32_Neg9_Int32_Neg4 NOT okay.");
+            }
+        }
+
+        /// <summary>
+        /// Tests: Multiplication operation using signed 32-bit integers, 
+        /// Inputs: Small +ve, Small-ve, 
+        /// Result: Small -ve.
+        /// </summary>
+        /// <remarks>
+        /// <para>
+        /// FlingOS treats all 32-/64-bit multiplication as signed/unsigned. 
+        /// Different operand sizes aren't allowed.
+        /// </para>
+        /// </remarks>
+        [NoGC]
+        public static void Test_Mul_Int32_9_Int32_Neg4()
+        {
+            Int32 a = 9;
+            Int32 b = -4;
+            a = a * b;
+            if (a == -36)
+            {
+                Log.WriteSuccess("Test_Mul_Int32_9_Int32_Neg4 okay.");
+            }
+            else
+            {
+                Log.WriteError("Test_Mul_Int32_9_Int32_Neg4 NOT okay.");
+            }
+        }
+
+        /// <summary>
+        /// Tests: Multiplication operation using signed 32-bit integers, 
+        /// Inputs: Small +ve, Small +ve, 
+        /// Result: Small +ve.
+        /// </summary>
+        /// <remarks>
+        /// <para>
+        /// FlingOS treats all 32-/64-bit multiplication as signed/unsigned. 
+        /// Different operand sizes aren't allowed.
+        /// </para>
+        /// </remarks>
+        [NoGC]
+        public static void Test_Mul_Int32_9_Int32_4()
+        {
+            Int32 a = 9;
+            Int32 b = 4;
+            a = a * b;
+            if (a == 36)
+            {
+                Log.WriteSuccess("Test_Mul_Int32_9_Int32_4 okay.");
+            }
+            else
+            {
+                Log.WriteError("Test_Mul_Int32_9_Int32_4 NOT okay.");
+            }
+        }
+
+        /// <summary>
+        /// Tests: Multiplication operation using unsigned 64- and 32-bit integers, 
+        /// Inputs: Large, 4, 
+        /// Result: Large.
+        /// </summary>
+        /// <remarks>
+        /// <para>
+        /// FlingOS treats all 32-/64-bit multiplication as signed/unsigned. 
+        /// Different operand sizes aren't allowed.
+        /// </para>
+        /// </remarks>
+        [NoGC]
+        public static void Test_Mul_UInt64_Large_UInt32_4()
+        {
+            UInt64 a = 184467440737095516;
+            UInt32 b = 4;
+            a = a * b;
+            if (a == 737869762948382064)
+            {
+                Log.WriteSuccess("Test_Mul_UInt64_Large_UInt32_4 okay.");
+            }
+            else
+            {
+                Log.WriteError("Test_Mul_UInt64_Large_UInt32_4 NOT okay.");
+            }
+        }
+
+        /// <summary>
+        /// Tests: Multiplication operation using signed 64- and 32-bit integers, 
+        /// Inputs: Largest +ve, 4, 
+        /// Result: -4 (Overflow).
+        /// </summary>
+        /// <remarks>
+        /// <para>
+        /// FlingOS treats all 32-/64-bit multiplication as signed/unsigned. 
+        /// Different operand sizes aren't allowed.
+        /// </para>
+        /// </remarks>
+        [NoGC]
+        public static void Test_Mul_Int64_LargestPos_Int32_4()
+        {
+            Int64 a = 9223372036854775807;
+            Int32 b = 4;
+            a = a * b;
+            if (a == -4)
+            {
+                Log.WriteSuccess("Test_Mul_Int64_LargestPos_Int32_4 okay.");
+            }
+            else
+            {
+                Log.WriteError("Test_Mul_Int64_LargestPos_Int32_4 NOT okay.");
+            }
+        }
+
+        /// <summary>
+        /// Tests: Multiplication operation using signed 64- and 32-bit integers, 
+        /// Inputs: Largest -ve, 4, 
+        /// Result: 0 (Overflow).
+        /// </summary>
+        /// <remarks>
+        /// <para>
+        /// FlingOS treats all 32-/64-bit multiplication as signed/unsigned. 
+        /// Different operand sizes aren't allowed.
+        /// </para>
+        /// </remarks>
+        [NoGC]
+        public static void Test_Mul_Int64_LargestNeg_Int32_4()
+        {
+            Int64 a = -9223372036854775808;
+            Int32 b = 4;
+            a = a * b;
+            if (a == 0)
+            {
+                Log.WriteSuccess("Test_Mul_Int64_LargestNeg_Int32_4 okay.");
+            }
+            else
+            {
+                Log.WriteError("Test_Mul_Int64_LargestNeg_Int32_4 NOT okay.");
+            }
+        }
+
+        /// <summary>
+        /// Tests: Multiplication operation using signed 64- and 32-bit integers, 
+        /// Inputs: 0, Largest -ve, 
+        /// Result: 0.
+        /// </summary>
+        /// <remarks>
+        /// <para>
+        /// FlingOS treats all 32-/64-bit multiplication as signed/unsigned. 
+        /// Different operand sizes aren't allowed.
+        /// </para>
+        /// </remarks>
+        [NoGC]
+        public static void Test_Mul_Int64_Zero_Int32_LargestNeg()
+        {
+            Int64 a = 0;
+            Int32 b = -2147483648;
+            a = a * b;
+            if (a == 0)
+            {
+                Log.WriteSuccess("Test_Mul_Int64_Zero_Int32_LargestNeg okay.");
+            }
+            else
+            {
+                Log.WriteError("Test_Mul_Int64_Zero_Int32_LargestNeg NOT okay.");
+            }
+        }
+
+        /// <summary>
+        /// Tests: Multiplication operation using signed 64-bit integers, 
+        /// Inputs: Large +ve, 4, 
+        /// Result: Large +ve.
+        /// </summary>
+        /// <remarks>
+        /// <para>
+        /// FlingOS treats all 32-/64-bit multiplication as signed/unsigned. 
+        /// Different operand sizes aren't allowed.
+        /// </para>
+        /// </remarks>
+        [NoGC]
+        public static void Test_Mul_Int64_LargePos_Int64_4()
+        {
+            Int64 a = 1080863910568919040;
+            Int64 b = 4;
+            a = a * b;
+            if (a == 4323455642275676160)
+            {
+                Log.WriteSuccess("Test_Mul_Int64_LargePos_Int64_4 okay.");
+            }
+            else
+            {
+                Log.WriteError("Test_Mul_Int64_LargePos_Int64_4 NOT okay.");
+            }
+        }
+
+        /// <summary>
+        /// Tests: Multiplication operation using signed 64-bit integers, 
+        /// Inputs: 0, -4, 
+        /// Result: -4.
+        /// </summary>
+        /// <remarks>
+        /// <para>
+        /// FlingOS treats all 32-/64-bit multiplication as signed/unsigned. 
+        /// Different operand sizes aren't allowed.
+        /// </para>
+        /// </remarks>
+        [NoGC]
+        public static void Test_Mul_Int64_Zero_Int64_Neg4()
+        {
+            Int64 a = 0;
+            Int64 b = -4;
+            a = a * b;
+            if (a == 0)
+            {
+                Log.WriteSuccess("Test_Mul_Int64_Zero_Int64_Neg4 okay.");
+            }
+            else
+            {
+                Log.WriteError("Test_Mul_Int64_Zero_Int64_Neg4 NOT okay.");
+            }
+        }
+
+        /// <summary>
+        /// Tests: Multiplication operation using unsigned 64-bit integers, 
+        /// Inputs: Large +ve, 4, 
+        /// Result: Large +ve.
+        /// </summary>
+        /// <remarks>
+        /// <para>
+        /// FlingOS treats all 32-/64-bit multiplication as signed/unsigned. 
+        /// Different operand sizes aren't allowed.
+        /// </para>
+        /// </remarks>
+        [NoGC]
+        public static void Test_Mul_UInt64_Large_UInt64_Large()
+        {
+            UInt64 a = 108086391056891904;
+            UInt64 b = 4;
+            a = a * b;
+            if (a == 432345564227567616)
+            {
+                Log.WriteSuccess("Test_Mul_UInt64_Large_UInt64_Large okay.");
+            }
+            else
+            {
+                Log.WriteError("Test_Mul_UInt64_Large_UInt64_Large NOT okay.");
+            }
+        }
+
+        /// <summary>
+        /// Tests: Multiplication operation using signed 64-bit integers, 
+        /// Inputs: Largest -ve, -4, 
+        /// Result: 0 (Overflow).
+        /// </summary>
+        /// <remarks>
+        /// <para>
+        /// FlingOS treats all 32-/64-bit multiplication as signed/unsigned. 
+        /// Different operand sizes aren't allowed.
+        /// </para>
+        /// </remarks>
+        [NoGC]
+        public static void Test_Mul_Int64_LargestNeg_Int64_Neg4()
+        {
+            Int64 a = -9223372036854775808;
+            Int64 b = -4;
+            a = a * b;
+            if (a == 0)
+            {
+                Log.WriteSuccess("Test_Mul_Int64_LargestNeg_Int64_Neg4 okay.");
+            }
+            else
+            {
+                Log.WriteError("Test_Mul_Int64_LargestNeg_Int64_Neg4 NOT okay.");
+            }
+        }
+
+        /// <summary>
+        /// Tests: Multiplication operation using signed 64-bit integers, 
+        /// Inputs: 0, Large +ve, 
+        /// Result: 0.
+        /// </summary>
+        /// <remarks>
+        /// <para>
+        /// FlingOS treats all 32-/64-bit multiplication as signed/unsigned. 
+        /// Different operand sizes aren't allowed.
+        /// </para>
+        /// </remarks>
+        [NoGC]
+        public static void Test_Mul_Int64_Zero_Int64_LargePos()
+        {
+            Int64 a = 0;
+            Int64 b = 844424930131968;
+            a = a * b;
+            if (a == 0)
+            {
+                Log.WriteSuccess("Test_Mul_Int64_Zero_Int64_LargePos okay.");
+            }
+            else
+            {
+                Log.WriteError("Test_Mul_Int64_Zero_Int64_LargePos NOT okay.");
+            }
+        }
+
+        /// <summary>
+        /// Tests: Multiplication operation using signed 64-bit integers, 
+        /// Inputs: -1, Large -ve, 
+        /// Result: Large +ve.
+        /// </summary>
+        /// <remarks>
+        /// <para>
+        /// FlingOS treats all 32-/64-bit multiplication as signed/unsigned. 
+        /// Different operand sizes aren't allowed.
+        /// </para>
+        /// </remarks>
+        [NoGC]
+        public static void Test_Mul_Int64_Neg1_Int64_LargeNeg()
+        {
+            Int64 a = -1;
+            Int64 b = -844424930131968;
+            a = a * b;
+            if (a == 844424930131968)
+            {
+                Log.WriteSuccess("Test_Mul_Int64_Neg1_Int64_LargeNeg okay.");
+            }
+            else
+            {
+                Log.WriteError("Test_Mul_Int64_Neg1_Int64_LargeNeg NOT okay.");
+            }
+        }
+
+        /// <summary>
+        /// Tests: Multiplication operation using signed 64-bit integers, 
+        /// Inputs: -1, Large +ve, 
+        /// Result: Large -ve.
+        /// </summary>
+        /// <remarks>
+        /// <para>
+        /// FlingOS treats all 32-/64-bit multiplication as signed/unsigned. 
+        /// Different operand sizes aren't allowed.
+        /// </para>
+        /// </remarks>
+        [NoGC]
+        public static void Test_Mul_Int64_Neg1_Int64_LargePos()
+        {
+            Int64 a = -1;
+            Int64 b = 844424930131968;
+            a = a * b;
+            if (a == -844424930131968)
+            {
+                Log.WriteSuccess("Test_Mul_Int64_Neg1_Int64_LargePos okay.");
+            }
+            else
+            {
+                Log.WriteError("Test_Mul_Int64_Neg1_Int64_LargePos NOT okay.");
+            }
+        }
+
+        /// <summary>
+        /// Tests: Multiplication operation using signed 64-bit integers, 
+        /// Inputs: Large +ve, 1000, 
+        /// Result: Large -ve (Overflow).
+        /// </summary>
+        /// <remarks>
+        /// <para>
+        /// FlingOS treats all 32-/64-bit multiplication as signed/unsigned. 
+        /// Different operand sizes aren't allowed.
+        /// </para>
+        /// </remarks>
+        [NoGC]
+        public static void Test_Mul_Int64_LargePos_Int64_1000()
+        {
+            Int64 a = 1080863910568919040;
+            Int64 b = 1000;
+            a = a * b;
+            if (a == -7493989779944505344)
+            {
+                Log.WriteSuccess("Test_Mul_Int64_LargePos_Int64_1000 okay.");
+            }
+            else
+            {
+                Log.WriteError("Test_Mul_Int64_LargePos_Int64_1000 NOT okay.");
+            }
+        }
+
+        /// <summary>
+        /// Tests: Multiplication operation using signed 64-bit integers, 
+        /// Inputs: Large -ve, 1000, 
+        /// Result: Large +ve
+        /// </summary>
+        /// <remarks>
+        /// <para>
+        /// FlingOS treats all 32-/64-bit multiplication as signed/unsigned. 
+        /// Different operand sizes aren't allowed.
+        /// </para>
+        /// </remarks>
+        [NoGC]
+        public static void Test_Mul_Int64_LargeNeg_Int64_1000()
+        {
+            Int64 a = -1080863910568919040;
+            Int64 b = 1000;
+            a = a * b;
+            if (a == 7493989779944505344)
+            {
+                Log.WriteSuccess("Test_Mul_Int64_LargeNeg_Int64_1000 okay.");
+            }
+            else
+            {
+                Log.WriteError("Test_Mul_Int64_LargeNeg_Int64_1000 NOT okay.");
+            }
+        }
+
+
+        /// <summary>
+        /// Tests: Multiplication operation using signed 64- and 32-bit integers, 
+        /// Inputs: Largest +ve, -4, 
+        /// Result: 4 (Overflow).
+        /// </summary>
+        /// <remarks>
+        /// <para>
+        /// FlingOS treats all 32-/64-bit multiplication as signed/unsigned. 
+        /// Different operand sizes aren't allowed.
+        /// </para>
+        /// </remarks>
+        [NoGC]
+        public static void Test_Mul_Int64_LargestPos_Int32_Neg4()
+        {
+            Int64 a = 9223372036854775807;
+            Int32 b = -4;
+            a = a * b;
+            if (a == 4)
+            {
+                Log.WriteSuccess("Test_Mul_Int64_LargestPos_Int32_Neg4 okay.");
+            }
+            else
+            {
+                Log.WriteError("Test_Mul_Int64_LargestPos_Int32_Neg4 NOT okay.");
+            }
+        }
+
+        /// <summary>
+        /// Tests: Multiplication operation using signed 64- and 32-bit integers, 
+        /// Inputs: Largest -ve, -4, 
+        /// Result: 0 (Overflow).
+        /// </summary>
+        /// <remarks>
+        /// <para>
+        /// FlingOS treats all 32-/64-bit multiplication as signed/unsigned. 
+        /// Different operand sizes aren't allowed.
+        /// </para>
+        /// </remarks>
+        [NoGC]
+        public static void Test_Mul_Int64_LargestNeg_Int32_Neg4()
+        {
+            Int64 a = -9223372036854775808;
+            Int32 b = -4;
+            a = a * b;
+            if (a == 0)
+            {
+                Log.WriteSuccess("Test_Mul_Int64_LargestNeg_Int32_Neg4 okay.");
+            }
+            else
+            {
+                Log.WriteError("Test_Mul_Int64_LargestNeg_Int32_Neg4 NOT okay.");
+            }
+        }
+
+        /// <summary>
+        /// Tests: Multiplication operation using signed 64-bit integers, 
+        /// Inputs: Large -ve, 4, 
+        /// Result: Large -ve.
+        /// </summary>
+        /// <remarks>
+        /// <para>
+        /// FlingOS treats all 32-/64-bit multiplication as signed/unsigned. 
+        /// Different operand sizes aren't allowed.
+        /// </para>
+        /// </remarks>
+        [NoGC]
+        public static void Test_Mul_Int64_LargeNeg_Int64_4()
+        {
+            Int64 a = -1080863910568919040;
+            Int64 b = 4;
+            a = a * b;
+            if (a == -4323455642275676160)
+            {
+                Log.WriteSuccess("Test_Mul_Int64_LargeNeg_Int64_4 okay.");
+            }
+            else
+            {
+                Log.WriteError("Test_Mul_Int64_LargeNeg_Int64_4 NOT okay.");
+            }
+        }
+
+        /// <summary>
+        /// Tests: Multiplication operation using unsigned 64- and 32-bit integers, 
+        /// Inputs: 0, 0, 
+        /// Result: 0.
+        /// </summary>
+        /// <remarks>
+        /// <para>
+        /// FlingOS treats all 32-/64-bit multiplication as signed/unsigned. 
+        /// Different operand sizes aren't allowed.
+        /// </para>
+        /// </remarks>
+        [NoGC]
+        public static void Test_Mul_UInt64_Zero_UInt32_Zero()
+        {
+            UInt64 a = 0;
+            UInt32 b = 0;
+            a = a * b;
+            if (a == 0)
+            {
+                Log.WriteSuccess("Test_Mul_UInt64_Zero_UInt32_Zero okay.");
+            }
+            else
+            {
+                Log.WriteError("Test_Mul_UInt64_Zero_UInt32_Zero NOT okay.");
+            }
+        }
+
+        /// <summary>
+        /// Tests: Multiplication operation using signed 64- and 32-bit integers, 
+        /// Inputs: 0, Largest +ve, 
+        /// Result: 0.
+        /// </summary>
+        /// <remarks>
+        /// <para>
+        /// FlingOS treats all 32-/64-bit multiplication as signed/unsigned. 
+        /// Different operand sizes aren't allowed.
+        /// </para>
+        /// </remarks>
+        [NoGC]
+        public static void Test_Mul_Int64_Zero_Int32_LargestPos()
+        {
+            Int64 a = 0;
+            Int32 b = 2147483647;
+            a = a * b;
+            if (a == 0)
+            {
+                Log.WriteSuccess("Test_Mul_Int64_Zero_Int32_LargestPos okay.");
+            }
+            else
+            {
+                Log.WriteError("Test_Mul_Int64_Zero_Int32_LargestPos NOT okay.");
+            }
+        }
+
+        /// <summary>
+        /// Tests: Multiplication operation using signed 64-bit integers, 
+        /// Inputs: Largest +ve, -4, 
+        /// Result: 4 (Overflow).
+        /// </summary>
+        /// <remarks>
+        /// <para>
+        /// FlingOS treats all 32-/64-bit multiplication as signed/unsigned. 
+        /// Different operand sizes aren't allowed.
+        /// </para>
+        /// </remarks>
+        [NoGC]
+        public static void Test_Mul_Int64_LargestPos_Int64_Neg4()
+        {
+            Int64 a = 9223372036854775807;
+            Int64 b = -4;
+            a = a * b;
+            if (a == 4)
+            {
+                Log.WriteSuccess("Test_Mul_Int64_LargestPos_Int64_Neg4 okay.");
+            }
+            else
+            {
+                Log.WriteError("Test_Mul_Int64_LargestPos_Int64_Neg4 NOT okay.");
+            }
+        }
+
+        /// <summary>
+        /// Tests: Multiplication operation using signed 64-bit integers, 
+        /// Inputs: Large +ve, -4, 
+        /// Result: Large -ve.
+        /// </summary>
+        /// <remarks>
+        /// <para>
+        /// FlingOS treats all 32-/64-bit multiplication as signed/unsigned. 
+        /// Different operand sizes aren't allowed.
+        /// </para>
+        /// </remarks>
+        [NoGC]
+        public static void Test_Mul_Int64_LargePos_Int64_Neg4()
+        {
+            Int64 a = 1080863910568919040;
+            Int64 b = -4;
+            a = a * b;
+            if (a == -4323455642275676160)
+            {
+                Log.WriteSuccess("Test_Mul_Int64_LargePos_Int64_Neg4 okay.");
+            }
+            else
+            {
+                Log.WriteError("Test_Mul_Int64_LargePos_Int64_Neg4 NOT okay.");
+            }
+        }
+
+        /// <summary>
+        /// Tests: Multiplication operation using signed 64-bit integers, 
+        /// Inputs: Large -ve, -4, 
+        /// Result: Large +ve.
+        /// </summary>
+        /// <remarks>
+        /// <para>
+        /// FlingOS treats all 32-/64-bit multiplication as signed/unsigned. 
+        /// Different operand sizes aren't allowed.
+        /// </para>
+        /// </remarks>
+        [NoGC]
+        public static void Test_Mul_Int64_LargeNeg_Int64_Neg4()
+        {
+            Int64 a = -1080863910568919040;
+            Int64 b = -4;
+            a = a * b;
+            if (a == 4323455642275676160)
+            {
+                Log.WriteSuccess("Test_Mul_Int64_LargeNeg_Int64_Neg4 okay.");
+            }
+            else
+            {
+                Log.WriteError("Test_Mul_Int64_LargeNeg_Int64_Neg4 NOT okay.");
+            }
+        }
 
         #endregion
 
@@ -4114,6 +4888,11 @@ namespace FlingOops
         }
 
         #endregion
+
+        #region 18. Try-Catch-Finally
+
+        #endregion
+
     }
 }
 
