@@ -5517,6 +5517,9 @@ namespace FlingOops
             Int32 sign32_b;
             Int64 sign64_a;
             Int64 sign64_b;
+
+            #region 32-32
+
             Log.WriteLine(" 32-32");
             Log.WriteLine("  Unsigned");
             
@@ -5678,18 +5681,230 @@ namespace FlingOops
 
             Log.WriteLine("  Signed");
 
-            Log.WriteLine(" 32-64");
-            Log.WriteLine("  Unsigned");
+            #endregion
 
-            Log.WriteLine("  Signed");
+            #region 64-32
 
             Log.WriteLine(" 64-32");
             Log.WriteLine("  Unsigned");
 
+            // 0 ^ 0
+            unsign64_a = 0;
+            unsign32_b = 0;
+            unsign64_a = unsign64_a ^ unsign32_b;
+            if (unsign64_a == 0)
+            {
+                Log.WriteSuccess("Test_Xor_UInt64_0_UInt32_0 okay.");
+            }
+            else
+            {
+                Log.WriteError("Test_Xor_UInt64_0_UInt32_0 not okay.");
+            }
+
+            // 0 ^ 1
+            unsign64_a = 0;
+            unsign32_b = 1;
+            unsign64_a = unsign64_a ^ unsign32_b;
+            if (unsign64_a == 1)
+            {
+                Log.WriteSuccess("Test_Xor_UInt64_0_UInt32_1 okay.");
+            }
+            else
+            {
+                Log.WriteError("Test_Xor_UInt64_0_UInt32_1 not okay.");
+            }
+
+            // 1 ^ 0
+            unsign64_a = 1;
+            unsign32_b = 0;
+            unsign64_a = unsign64_a ^ unsign32_b;
+            if (unsign64_a == 1)
+            {
+                Log.WriteSuccess("Test_Xor_UInt64_1_UInt32_0 okay.");
+            }
+            else
+            {
+                Log.WriteError("Test_Xor_UInt64_1_UInt32_0 not okay.");
+            }
+
+            // 1 ^ 1
+            unsign64_a = 1;
+            unsign32_b = 1;
+            unsign64_a = unsign64_a ^ unsign32_b;
+            if (unsign64_a == 0)
+            {
+                Log.WriteSuccess("Test_Xor_UInt64_1_UInt32_1 okay.");
+            }
+            else
+            {
+                Log.WriteError("Test_Xor_UInt64_1_UInt32_1 not okay.");
+            }
+
+            // 0xFFFFFFFFFFFFFFFF ^ 0
+            unsign64_a = 0xFFFFFFFFFFFFFFFF;
+            unsign32_b = 0;
+            unsign64_a = unsign64_a ^ unsign32_b;
+            if (unsign64_a == 0xFFFFFFFFFFFFFFFF)
+            {
+                Log.WriteSuccess("Test_Xor_UInt64_0xFFFFFFFFFFFFFFFF_UInt32_0 okay.");
+            }
+            else
+            {
+                Log.WriteError("Test_Xor_UInt64_0xFFFFFFFFFFFFFFFF_UInt32_0 not okay.");
+            }
+
+            // 0 ^ 0xFFFFFFFF
+            unsign64_a = 0;
+            unsign32_b = 0xFFFFFFFF;
+            unsign64_a = unsign64_a ^ unsign32_b;
+            if (unsign64_a == 0xFFFFFFFF)
+            {
+                Log.WriteSuccess("Test_Xor_UInt64_0_UInt32_0xFFFFFFFF okay.");
+            }
+            else
+            {
+                Log.WriteError("Test_Xor_UInt64_0_UInt32_0xFFFFFFFF not okay.");
+            }
+
+            // 0xFFFFFFFFFFFFFFFF ^ 1
+            unsign64_a = 0xFFFFFFFFFFFFFFFF;
+            unsign32_b = 1;
+            unsign64_a = unsign64_a ^ unsign32_b;
+            if (unsign64_a == 0xFFFFFFFFFFFFFFFE)
+            {
+                Log.WriteSuccess("Test_Xor_UInt64_0xFFFFFFFFFFFFFFFF_UInt32_1 okay.");
+            }
+            else
+            {
+                Log.WriteError("Test_Xor_UInt64_0xFFFFFFFFFFFFFFFF_UInt32_1 not okay.");
+            }
+
+            // 1 ^ 0xFFFFFFFF
+            unsign64_a = 1;
+            unsign32_b = 0xFFFFFFFF;
+            unsign64_a = unsign64_a ^ unsign32_b;
+            if (unsign64_a == 0xFFFFFFFE)
+            {
+                Log.WriteSuccess("Test_Xor_UInt64_1_UInt32_0xFFFFFFFF okay.");
+            }
+            else
+            {
+                Log.WriteError("Test_Xor_UInt64_1_UInt32_0xFFFFFFFF not okay.");
+            }
+
+            // 0xFFFFFFFFFFFFFFFF ^ 0xFFFFFFFF
+            unsign64_a = 0xFFFFFFFFFFFFFFFF;
+            unsign32_b = 0xFFFFFFFF;
+            unsign64_a = unsign64_a ^ unsign32_b;
+            if (unsign64_a == 0xFFFFFFFF00000000)
+            {
+                Log.WriteSuccess("Test_Xor_UInt64_0xFFFFFFFFFFFFFFFF_UInt32_0xFFFFFFFF okay.");
+            }
+            else
+            {
+                Log.WriteError("Test_Xor_UInt64_0xFFFFFFFFFFFFFFFF_UInt32_0xFFFFFFFF not okay.");
+            }
+
+            // 0xFFFFFFFFFFFFFFFF ^ 0x44444444
+            unsign64_a = 0xFFFFFFFFFFFFFFFF;
+            unsign32_b = 0x44444444;
+            unsign64_a = unsign64_a ^ unsign32_b;
+            if (unsign64_a == 0xFFFFFFFFBBBBBBBB)
+            {
+                Log.WriteSuccess("Test_Xor_UInt64_0xFFFFFFFFFFFFFFFF_UInt32_0x44444444 okay.");
+            }
+            else
+            {
+                Log.WriteError("Test_Xor_UInt64_0xFFFFFFFFFFFFFFFF_UInt32_0x44444444 not okay.");
+            }
+
+            // 0xFFFFFFFFFFFFFFFF ^ 0x08000800
+            unsign64_a = 0xFFFFFFFFFFFFFFFF;
+            unsign32_b = 0x08000800;
+            unsign64_a = unsign64_a ^ unsign32_b;
+            if (unsign64_a == 0xFFFFFFFFF7FFF7FF)
+            {
+                Log.WriteSuccess("Test_Xor_UInt64_0xFFFFFFFFFFFFFFFF_UInt32_0x08000800 okay.");
+            }
+            else
+            {
+                Log.WriteError("Test_Xor_UInt64_0xFFFFFFFFFFFFFFFF_UInt32_0x08000800 not okay.");
+            }
+
+            // 0 ^ 0x44444444
+            unsign64_a = 0;
+            unsign32_b = 0x44444444;
+            unsign64_a = unsign64_a ^ unsign32_b;
+            if (unsign64_a == 0x44444444)
+            {
+                Log.WriteSuccess("Test_Xor_UInt64_0_UInt32_0x44444444 okay.");
+            }
+            else
+            {
+                Log.WriteError("Test_Xor_UInt64_0_UInt32_0x44444444 not okay.");
+            }
+
+            // 0x4444444444444444 ^ 0
+            unsign64_a = 0x4444444444444444;
+            unsign32_b = 0;
+            unsign64_a = unsign64_a ^ unsign32_b;
+            if (unsign64_a == 0x4444444444444444)
+            {
+                Log.WriteSuccess("Test_Xor_UInt64_0x4444444444444444_UInt32_0 okay.");
+            }
+            else
+            {
+                Log.WriteError("Test_Xor_UInt64_0x4444444444444444_UInt32_0 not okay.");
+            }
+
+            // 0 ^ 0x08000800
+            unsign64_a = 0;
+            unsign32_b = 0x08000800;
+            unsign64_a = unsign64_a ^ unsign32_b;
+            if (unsign64_a == 0x08000800)
+            {
+                Log.WriteSuccess("Test_Xor_UInt64_0_UInt32_0x08000800 okay.");
+            }
+            else
+            {
+                Log.WriteError("Test_Xor_UInt64_0_UInt32_0x08000800 not okay.");
+            }
+
+            // 0x0800080008000800 ^ 0
+            unsign64_a = 0x0800080008000800;
+            unsign32_b = 0;
+            unsign64_a = unsign64_a ^ unsign32_b;
+            if (unsign64_a == 0x0800080008000800)
+            {
+                Log.WriteSuccess("Test_Xor_UInt64_0x0800080008000800_UInt32_0 okay.");
+            }
+            else
+            {
+                Log.WriteError("Test_Xor_UInt64_0x0800080008000800_UInt32_0 not okay.");
+            }
+
+            // 0x0800080008000800 ^ 0x44444444
+            unsign64_a = 0x0800080008000800;
+            unsign64_b = 0x44444444;
+            unsign64_a = unsign64_a ^ unsign64_b;
+            if (unsign64_a == 0x080008004C444C44)
+            {
+                Log.WriteSuccess("Test_Xor_UInt64_0x0800080008000800_UInt32_0x44444444 okay.");
+            }
+            else
+            {
+                Log.WriteError("Test_Xor_UInt64_0x0800080008000800_UInt32_0x44444444 not okay.");
+            }
+
             Log.WriteLine("  Signed");
+
+            #endregion
+
+            #region 64-64
 
             Log.WriteLine(" 64-64");
             Log.WriteLine("  Unsigned");
+            
             // 0 ^ 0
             unsign64_a = 0;
             unsign64_b = 0;
@@ -5781,7 +5996,7 @@ namespace FlingOops
                 Log.WriteError("Test_Xor_UInt64_0xFFFFFFFFFFFFFFFF_UInt64_0xFFFFFFFFFFFFFFFF not okay.");
             }
 
-            // 0xFFFFFFFFFFFFFFFF ^ 0x44444444
+            // 0xFFFFFFFFFFFFFFFF ^ 0x4444444444444444
             unsign64_a = 0xFFFFFFFFFFFFFFFF;
             unsign64_b = 0x4444444444444444;
             unsign64_a = unsign64_a ^ unsign64_b;
@@ -5845,7 +6060,10 @@ namespace FlingOops
             {
                 Log.WriteError("Test_Xor_UInt64_0x0800080008000800_UInt64_0x4444444444444444 not okay.");
             }
+
             Log.WriteLine("  Signed");
+
+            #endregion
 
         }
 
