@@ -461,6 +461,14 @@ namespace FlingOops
 
             #endregion
 
+            #region 20. Properties
+
+            Log.WriteLine("---Properties:");
+            Test_Properties();
+            Log.WriteLine(" ");
+
+            #endregion
+
             Log.WriteLine("Tests completed.");
         }
 
@@ -6129,6 +6137,55 @@ namespace FlingOops
 
         #endregion
 
+        #region 20. Properties
+
+        /// <summary>
+        /// Tests: Properties, 
+        /// Inputs: Integers, strings, 
+        /// Result: Properties correctly accessed and set.
+        /// </summary>
+        [NoGC]
+        public static void Test_Properties()
+        {
+            TestClassProperties Properties = new TestClassProperties();
+            if (Properties.Str == "I am a string")
+            {
+                Log.WriteSuccess("Property_String_Read okay.");
+            }
+            else
+            {
+                Log.WriteError("Property_String_Read not okay.");
+            }
+            if (Properties.Num == 1279544388)
+            {
+                Log.WriteSuccess("Property_Int_Read okay.");
+            }
+            else
+            {
+                Log.WriteError("Property_Int_Read not okay.");
+            }
+            Properties.Str = "I am a new string";
+            Properties.Num = 2135182404;
+            if (Properties.Str == "I am a new string")
+            {
+                Log.WriteSuccess("Property_String_Write okay.");
+            }
+            else
+            {
+                Log.WriteError("Property_String_Write not okay.");
+            }
+            if (Properties.Num == 2135182404)
+            {
+                Log.WriteSuccess("Property_Int_Write okay.");
+            }
+            else
+            {
+                Log.WriteError("Property_Int_Write not okay.");
+            }
+        }
+
+        #endregion
+
     }
 }
 
@@ -6164,5 +6221,41 @@ public class TestClass : FlingOops.Object
     public int aMethodField(int arg)
     {
         return arg * aField6;
+    }
+}
+
+/// <summary>
+/// Test class for testing properties.
+/// </summary>
+/// <remarks>
+/// <para>
+/// Class must inherit from the FlingOS object type using FlingOops.Object.
+/// </para>
+/// </remarks>
+public class TestClassProperties : FlingOops.Object
+{
+    private FlingOops.String myStr = "I am a string";
+    private int myNum = 1279544388;
+    public FlingOops.String Str
+    {
+        get
+        {
+            return myStr;
+        }
+        set
+        {
+            myStr = value;
+        }
+    }
+    public int Num
+    {
+        get
+        {
+            return myNum;
+        }
+        set
+        {
+            myNum = value;
+        }
     }
 }
