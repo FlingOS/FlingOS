@@ -275,6 +275,8 @@ namespace FlingOops
             Test_Array_String();
             Log.WriteLine(" Structs");
             Test_Array_Struct();
+            Log.WriteLine(" Objects");
+            Test_Array_Object();
             Log.WriteLine(" ");
 
             #endregion
@@ -3554,6 +3556,243 @@ namespace FlingOops
             else
             {
                 Log.WriteError("Test_Array_Decl_Struct[2].d Not okay");
+            }
+        }
+
+        /// <summary>
+        /// Tests: Array declaration using objects as elements, 
+        /// Input: An array with two elements, 
+        /// Result: Correct values for each element.
+        /// </summary>
+        /// <remarks>
+        /// <para>
+        /// FlingOS does allow array declaration of the form: 
+        /// int[] array = new int[4] {5, 10, 15, 20} or 
+        /// int[] array = new int[] {5, 10, 15, 20}. 
+        /// Array elements must be explicitly declared as in this test case. 
+        /// </para>
+        /// </remarks>
+        [NoGC]
+        public static void Test_Array_Object()
+        {
+            TestClass[] aClass = new TestClass[2];
+            Int32 a = aClass.Length;
+            if (a == 2)
+            {
+                Log.WriteSuccess("Test_Array_Length_Object okay.");
+            }
+            else
+            {
+                Log.WriteError("Test_Array_Length_Object NOT okay.");
+            }
+
+            // aClass[0]
+            aClass[0] = new TestClass();
+            aClass[0].aField0 = -1111111111;
+            aClass[0].aField1 = -1222222222;
+            aClass[0].aField2 = -1333333333;
+            aClass[0].aField3 = -1444444444;
+            aClass[0].aField4 = 1111111111;
+            aClass[0].aField5 = 1222222222;
+            aClass[0].aField6 = 1333333333;
+            aClass[0].aField7 = 1444444444;
+
+            int fld0 = aClass[0].aField0;
+            if (fld0 != -1111111111)
+            {
+                Log.WriteError("Class[0] field0 wrong.");
+            }
+            else
+            {
+                Log.WriteSuccess("Class[0] field0 right.");
+            }
+            int fld1 = aClass[0].aField1;
+            if (fld1 != -1222222222)
+            {
+                Log.WriteError("Class[0] field1 wrong.");
+            }
+            else
+            {
+                Log.WriteSuccess("Class[0] field1 right.");
+            }
+            int fld2 = aClass[0].aField2;
+            if (fld2 != -1333333333)
+            {
+                Log.WriteError("Class[0] field2 wrong.");
+            }
+            else
+            {
+                Log.WriteSuccess("Class[0] field2 right.");
+            }
+            int fld3 = aClass[0].aField3;
+            if (fld3 != -1444444444)
+            {
+                Log.WriteError("Class[0] field3 wrong.");
+            }
+            else
+            {
+                Log.WriteSuccess("Class[0] field3 right.");
+            }
+            int fld4 = aClass[0].aField4;
+            if (fld4 != 1111111111)
+            {
+                Log.WriteError("Class[0] field4 wrong.");
+            }
+            else
+            {
+                Log.WriteSuccess("Class[0] field4 right.");
+            }
+            int fld5 = aClass[0].aField5;
+            if (fld5 != 1222222222)
+            {
+                Log.WriteError("Class[0] field5 wrong.");
+            }
+            else
+            {
+                Log.WriteSuccess("Class[0] field5 right.");
+            }
+            int fld6 = aClass[0].aField6;
+            if (fld6 != 1333333333)
+            {
+                Log.WriteError("Class[0] field6 wrong.");
+            }
+            else
+            {
+                Log.WriteSuccess("Class[0] field6 right.");
+            }
+            int fld7 = aClass[0].aField7;
+            if (fld7 != 1444444444)
+            {
+                Log.WriteError("Class[0] field7 wrong.");
+            }
+            else
+            {
+                Log.WriteSuccess("Class[0] field7 right.");
+            }
+            int arg = 1431655765;
+            int arg1 = aClass[0].aMethodInt(arg);
+            if (arg1 != -1)
+            {
+                Log.WriteError("Class[0] method int wrong.");
+            }
+            else
+            {
+                Log.WriteSuccess("Class[0] method int right.");
+            }
+            aClass[0].aMethodVoid();
+            int arg2 = aClass[0].aMethodField(arg);
+            if (arg2 != 987211321)
+            {
+                Log.WriteError("Class[0] method field wrong.");
+            }
+            else
+            {
+                Log.WriteSuccess("Class[0] method field right.");
+            }
+
+            //aClass[1]
+            aClass[1] = new TestClass();
+            aClass[1].aField0 = -1234567890;
+            aClass[1].aField1 = -1987654321;
+            aClass[1].aField2 = -1928374650;
+            aClass[1].aField3 = -1657483920;
+            aClass[1].aField4 = 1234567890;
+            aClass[1].aField5 = 1987654321;
+            aClass[1].aField6 = 1928374650;
+            aClass[1].aField7 = 1657483920;
+
+            fld0 = aClass[1].aField0;
+            if (fld0 != -1234567890)
+            {
+                Log.WriteError("Class[1] field0 wrong.");
+            }
+            else
+            {
+                Log.WriteSuccess("Class[1] field0 right.");
+            }
+            fld1 = aClass[1].aField1;
+            if (fld1 != -1987654321)
+            {
+                Log.WriteError("Class[1] field1 wrong.");
+            }
+            else
+            {
+                Log.WriteSuccess("Class[1] field1 right.");
+            }
+            fld2 = aClass[1].aField2;
+            if (fld2 != -1928374650)
+            {
+                Log.WriteError("Class[1] field2 wrong.");
+            }
+            else
+            {
+                Log.WriteSuccess("Class[1] field2 right.");
+            }
+            fld3 = aClass[1].aField3;
+            if (fld3 != -1657483920)
+            {
+                Log.WriteError("Class[1] field3 wrong.");
+            }
+            else
+            {
+                Log.WriteSuccess("Class[1] field3 right.");
+            }
+            fld4 = aClass[1].aField4;
+            if (fld4 != 1234567890)
+            {
+                Log.WriteError("Class[1] field4 wrong.");
+            }
+            else
+            {
+                Log.WriteSuccess("Class[1] field4 right.");
+            }
+            fld5 = aClass[1].aField5;
+            if (fld5 != 1987654321)
+            {
+                Log.WriteError("Class[1] field5 wrong.");
+            }
+            else
+            {
+                Log.WriteSuccess("Class[1] field5 right.");
+            }
+            fld6 = aClass[1].aField6;
+            if (fld6 != 1928374650)
+            {
+                Log.WriteError("Class[1] field6 wrong.");
+            }
+            else
+            {
+                Log.WriteSuccess("Class[1] field6 right.");
+            }
+            fld7 = aClass[1].aField7;
+            if (fld7 != 1657483920)
+            {
+                Log.WriteError("Class[1] field7 wrong.");
+            }
+            else
+            {
+                Log.WriteSuccess("Class[1] field7 right.");
+            }
+
+            arg = 223344556;
+            arg1 = aClass[1].aMethodInt(arg);
+            if (arg1 != 670033668)
+            {
+                Log.WriteError("Class[1] method int wrong.");
+            }
+            else
+            {
+                Log.WriteSuccess("Class[1] method int right.");
+            }
+            aClass[1].aMethodVoid();
+            arg2 = aClass[1].aMethodField(arg);
+            if (arg2 != -337865736)
+            {
+                Log.WriteError("Class[1] method field wrong.");
+            }
+            else
+            {
+                Log.WriteSuccess("Class[1] method field right.");
             }
         }
 
