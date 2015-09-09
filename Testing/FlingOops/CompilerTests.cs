@@ -469,6 +469,14 @@ namespace FlingOops
 
             #endregion
 
+            #region 21. Inheritance calls
+
+            Log.WriteLine("---Inheritance:");
+            Test_Inheritance();
+            Log.WriteLine(" ");
+
+            #endregion
+
             Log.WriteLine("Tests completed.");
         }
 
@@ -6186,6 +6194,39 @@ namespace FlingOops
 
         #endregion
 
+        #region 21. Inheritance
+
+        /// <summary>
+        /// Tests: Inheritance, 
+        /// Inputs: TestClassInherit, 
+        /// Result: Child class inherits as expected.
+        /// </summary>
+        public static void Test_Inheritance()
+        {
+            TestClassInherit Child = new TestClassInherit();
+            int a = Child.aMethodInt(100);
+            if (a == 300)
+            {
+                Log.WriteSuccess("Parent method aMethodInt() returned okay.");
+            }
+            else
+            {
+                Log.WriteError("Parent method aMethodInt() returned NOT okay.");
+            }
+            Child.aMethodVoid();
+            a = Child.aMethodField(3);
+            if (a == 1500)
+            {
+                Log.WriteSuccess("Parent method aMethodField() returned okay.");
+            }
+            else
+            {
+                Log.WriteError("Parent method aMethodField() returned NOT okay.");
+            }
+        }
+
+        #endregion
+
     }
 }
 
@@ -6257,5 +6298,21 @@ public class TestClassProperties : FlingOops.Object
         {
             myNum = value;
         }
+    }
+}
+
+/// <summary>
+/// Test class for testing Inheritance.
+/// </summary>
+/// <remarks>
+/// <para>
+/// Class inherits from TestClass.
+/// </para>
+/// </remarks>
+public class TestClassInherit : TestClass
+{
+    public void CallParentMethods()
+    {
+        aField6 = 500;
     }
 }
