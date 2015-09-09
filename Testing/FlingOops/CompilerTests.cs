@@ -453,6 +453,14 @@ namespace FlingOops
 
             #endregion
 
+            #region Xor calls
+
+            Log.WriteLine("---Xor:");
+            Test_Xor_Int();
+            Log.WriteLine(" ");
+
+            #endregion
+
             Log.WriteLine("Tests completed.");
         }
 
@@ -5487,6 +5495,203 @@ namespace FlingOops
             }
 
             Log.WriteSuccess("Executed end of subMethod5 correctly.");
+        }
+
+        #endregion
+
+        #region Xor
+
+        /// <summary>
+        /// Tests: Xor operation using integer operands, 
+        /// Inputs:  , 
+        /// Result: Correct bit pattern produced by Xor.
+        /// </summary>
+        [NoGC]
+        public static void Test_Xor_Int()
+        {
+            UInt32 unsign32_a;
+            UInt32 unsign32_b;
+            UInt64 unsign64_a;
+            UInt64 unsign64_b;
+            Int32 sign32_a;
+            Int32 sign32_b;
+            Int64 sign64_a;
+            Int64 sign64_b;
+            Log.WriteLine(" 32-32");
+            Log.WriteLine("  Unsigned");
+            // 0 ^ 0
+            unsign32_a = 0;
+            unsign32_b = 0;
+            unsign32_a = unsign32_a ^ unsign32_b;
+            if (unsign32_a == 0)
+            {
+                Log.WriteSuccess("Test_Xor_UInt32_0_UInt32_0 okay.");
+            }
+            else
+            {
+                Log.WriteError("Test_Xor_UInt32_0_UInt32_0 not okay.");
+            }
+
+            // 0 ^ 1
+            unsign32_a = 0;
+            unsign32_b = 1;
+            unsign32_a = unsign32_a ^ unsign32_b;
+            if (unsign32_a == 1)
+            {
+                Log.WriteSuccess("Test_Xor_UInt32_0_UInt32_1 okay.");
+            }
+            else
+            {
+                Log.WriteError("Test_Xor_UInt32_0_UInt32_1 not okay.");
+            }
+
+            // 1 ^ 0
+            unsign32_a = 1;
+            unsign32_b = 0;
+            unsign32_a = unsign32_a ^ unsign32_b;
+            if (unsign32_a == 1)
+            {
+                Log.WriteSuccess("Test_Xor_UInt32_1_UInt32_0 okay.");
+            }
+            else
+            {
+                Log.WriteError("Test_Xor_UInt32_1_UInt32_0 not okay.");
+            }
+
+            // 1 ^ 1
+            unsign32_a = 1;
+            unsign32_b = 1;
+            unsign32_a = unsign32_a ^ unsign32_b;
+            if (unsign32_a == 0)
+            {
+                Log.WriteSuccess("Test_Xor_UInt32_1_UInt32_1 okay.");
+            }
+            else
+            {
+                Log.WriteError("Test_Xor_UInt32_1_UInt32_1 not okay.");
+            }
+
+            // 0xFFFFFFFF ^ 0
+            unsign32_a = 0xFFFFFFFF;
+            unsign32_b = 0;
+            unsign32_a = unsign32_a ^ unsign32_b;
+            if (unsign32_a == 0xFFFFFFFF)
+            {
+                Log.WriteSuccess("Test_Xor_UInt32_0xFFFFFFFF_UInt32_0 okay.");
+            }
+            else
+            {
+                Log.WriteError("Test_Xor_UInt32_0xFFFFFFFF_UInt32_0 not okay.");
+            }
+
+            // 0xFFFFFFFF ^ 1
+            unsign32_a = 0xFFFFFFFF;
+            unsign32_b = 1;
+            unsign32_a = unsign32_a ^ unsign32_b;
+            if (unsign32_a == 0xFFFFFFFE)
+            {
+                Log.WriteSuccess("Test_Xor_UInt32_0xFFFFFFFF_UInt32_1 okay.");
+            }
+            else
+            {
+                Log.WriteError("Test_Xor_UInt32_0xFFFFFFFF_UInt32_1 not okay.");
+            }
+
+            // 0xFFFFFFFF ^ 0xFFFFFFFF
+            unsign32_a = 0xFFFFFFFF;
+            unsign32_b = 0xFFFFFFFF;
+            unsign32_a = unsign32_a ^ unsign32_b;
+            if (unsign32_a == 0)
+            {
+                Log.WriteSuccess("Test_Xor_UInt32_0xFFFFFFFF_UInt32_0xFFFFFFFF okay.");
+            }
+            else
+            {
+                Log.WriteError("Test_Xor_UInt32_0xFFFFFFFF_UInt32_0xFFFFFFFF not okay.");
+            }
+
+            // 0xFFFFFFFF ^ 0x44444444
+            unsign32_a = 0xFFFFFFFF;
+            unsign32_b = 0x44444444;
+            unsign32_a = unsign32_a ^ unsign32_b;
+            if (unsign32_a == 0xBBBBBBBB)
+            {
+                Log.WriteSuccess("Test_Xor_UInt32_0xFFFFFFFF_UInt32_0x44444444 okay.");
+            }
+            else
+            {
+                Log.WriteError("Test_Xor_UInt32_0xFFFFFFFF_UInt32_0x44444444 not okay.");
+            }
+
+            // 0xFFFFFFFF ^ 1000
+            unsign32_a = 0xFFFFFFFF;
+            unsign32_b = 1000;
+            unsign32_a = unsign32_a ^ unsign32_b;
+            if (unsign32_a == 0xFFFFFC17)
+            {
+                Log.WriteSuccess("Test_Xor_UInt32_0xFFFFFFFF_UInt32_1000 okay.");
+            }
+            else
+            {
+                Log.WriteError("Test_Xor_UInt32_0xFFFFFFFF_UInt32_1000 not okay.");
+            }
+
+            // 0 ^ 0x44444444
+            unsign32_a = 0;
+            unsign32_b = 0x44444444;
+            unsign32_a = unsign32_a ^ unsign32_b;
+            if (unsign32_a == 0x44444444)
+            {
+                Log.WriteSuccess("Test_Xor_UInt32_0_UInt32_0x44444444 okay.");
+            }
+            else
+            {
+                Log.WriteError("Test_Xor_UInt32_0_UInt32_0x44444444 not okay.");
+            }
+
+            // 0 ^ 1000
+            unsign32_a = 0;
+            unsign32_b = 1000;
+            unsign32_a = unsign32_a ^ unsign32_b;
+            if (unsign32_a == 1000)
+            {
+                Log.WriteSuccess("Test_Xor_UInt32_0_UInt32_1000 okay.");
+            }
+            else
+            {
+                Log.WriteError("Test_Xor_UInt32_0_UInt32_1000 not okay.");
+            }
+
+            // 1000 ^ 0x44444444
+            unsign32_a = 1000;
+            unsign32_b = 0x44444444;
+            unsign32_a = unsign32_a ^ unsign32_b;
+            if (unsign32_a == 0x444447AC)
+            {
+                Log.WriteSuccess("Test_Xor_UInt32_1000_UInt32_0x44444444 okay.");
+            }
+            else
+            {
+                Log.WriteError("Test_Xor_UInt32_1000_UInt32_0x44444444 not okay.");
+            }
+
+            Log.WriteLine("  Signed");
+
+            Log.WriteLine(" 32-64");
+            Log.WriteLine("  Unsigned");
+
+            Log.WriteLine("  Signed");
+
+            Log.WriteLine(" 64-32");
+            Log.WriteLine("  Unsigned");
+
+            Log.WriteLine("  Signed");
+
+            Log.WriteLine(" 64-64");
+            Log.WriteLine("  Unsigned");
+
+            Log.WriteLine("  Signed");
+
         }
 
         #endregion
