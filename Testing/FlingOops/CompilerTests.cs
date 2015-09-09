@@ -4831,14 +4831,28 @@ namespace FlingOops
             uint* testValPtr = &testVal;
             if ((testVal == 0xDEADBEEF) && (*testValPtr == 0xDEADBEEF))
             {
-                Log.WriteSuccess("Test_Locals_And_Pointers okay.");
+                Log.WriteSuccess("Test_Pointer_To_Local okay.");
             }
             else
             {
-                Log.WriteError("Test_Locals_And_Pointers NOT okay.");
+                Log.WriteError("Test_Pointer_To_Local NOT okay.");
+            }
+            uint a = 0xABCDABCD;
+            aMethod(a);
+        }
+        public static unsafe void aMethod(uint arg)
+        {
+            uint* argPointer = &arg;
+            *argPointer = 0x2BADDEED;
+            if (arg == 0x2BADDEED)
+            {
+                Log.WriteSuccess("Test_Pointer_To_Arg okay.");
+            }
+            else
+            {
+                Log.WriteError("Test_Pointer_To_Arg NOT okay.");
             }
         }
-
         #endregion
 
         #region 15. Switch
