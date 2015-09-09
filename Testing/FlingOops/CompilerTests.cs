@@ -4892,7 +4892,7 @@ namespace FlingOops
         {
             TestClass aClass = new TestClass();
             int fld0 = aClass.aField0;
-            if (fld0 != 0)
+            if (fld0 != 2013265920)
             {
                 Log.WriteError("Class field0 wrong.");
             }
@@ -4901,7 +4901,7 @@ namespace FlingOops
                 Log.WriteSuccess("Class field0 right.");
             }
             int fld1 = aClass.aField1;
-            if (fld1 != 1)
+            if (fld1 != 1717567488)
             {
                 Log.WriteError("Class field1 wrong.");
             }
@@ -4910,7 +4910,7 @@ namespace FlingOops
                 Log.WriteSuccess("Class field1 right.");
             }
             int fld2 = aClass.aField2;
-            if (fld2 != 2)
+            if (fld2 != -2040528896)
             {
                 Log.WriteError("Class field2 wrong.");
             }
@@ -4919,7 +4919,7 @@ namespace FlingOops
                 Log.WriteSuccess("Class field2 right.");
             }
             int fld3 = aClass.aField3;
-            if (fld3 != 3)
+            if (fld3 != -16777216)
             {
                 Log.WriteError("Class field3 wrong.");
             }
@@ -4928,7 +4928,7 @@ namespace FlingOops
                 Log.WriteSuccess("Class field3 right.");
             }
             int fld4 = aClass.aField4;
-            if (fld4 != 4)
+            if (fld4 != -16448112)
             {
                 Log.WriteError("Class field4 wrong.");
             }
@@ -4937,7 +4937,7 @@ namespace FlingOops
                 Log.WriteSuccess("Class field4 right.");
             }
             int fld5 = aClass.aField5;
-            if (fld5 != 5)
+            if (fld5 != 2133914880)
             {
                 Log.WriteError("Class field5 wrong.");
             }
@@ -4946,7 +4946,7 @@ namespace FlingOops
                 Log.WriteSuccess("Class field5 right.");
             }
             int fld6 = aClass.aField6;
-            if (fld6 != 6)
+            if (fld6 != 1879105792)
             {
                 Log.WriteError("Class field6 wrong.");
             }
@@ -4955,7 +4955,7 @@ namespace FlingOops
                 Log.WriteSuccess("Class field6 right.");
             }
             int fld7 = aClass.aField7;
-            if (fld7 != 7)
+            if (fld7 != 1894834447)
             {
                 Log.WriteError("Class field7 wrong.");
             }
@@ -4963,9 +4963,9 @@ namespace FlingOops
             {
                 Log.WriteSuccess("Class field7 right.");
             }
-            int arg = 10;
+            int arg = 1431655765;
             int arg1 = aClass.aMethodInt(arg);
-            if (arg1 != 30)
+            if (arg1 != -1)
             {
                 Log.WriteError("Class method int wrong.");
             }
@@ -4975,7 +4975,7 @@ namespace FlingOops
             }
             aClass.aMethodVoid();
             int arg2 = aClass.aMethodField(arg);
-            if (arg2 != 60)
+            if (arg2 != 805287168)
             {
                 Log.WriteError("Class method field wrong.");
             }
@@ -5246,14 +5246,14 @@ namespace FlingOops
 /// </remarks>
 public class TestClass : FlingOops.Object
 {
-    public int aField0 = 0; 
-    public int aField1 = 1;
-    public int aField2 = 2;
-    public int aField3 = 3;
-    public int aField4 = 4;
-    public int aField5 = 5;
-    public int aField6 = 6;
-    public int aField7 = 7;
+    public int aField0 = 2013265920;
+    public int aField1 = 1717567488;
+    public int aField2 = -2040528896;
+    public int aField3 = -16777216;
+    public int aField4 = -16448112;
+    public int aField5 = 2133914880;
+    public int aField6 = 1879105792;
+    public int aField7 = 1894834447;
     
     public int aMethodInt(int arg)
     {
