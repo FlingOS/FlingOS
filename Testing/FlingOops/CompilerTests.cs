@@ -5502,8 +5502,8 @@ namespace FlingOops
         #region 19. Xor
 
         /// <summary>
-        /// Tests: Xor operation using integer operands, 
-        /// Inputs:  , 
+        /// Tests: Xor operation using integer and boolean operands, 
+        /// Inputs: Integers and boolean values, 
         /// Result: Correct bit pattern produced by Xor.
         /// </summary>
         [NoGC]
@@ -6053,7 +6053,7 @@ namespace FlingOops
             #endregion
 
             #region Boolean
-
+            Log.WriteLine(" Boolean");
             bool a;
             bool b;
 
