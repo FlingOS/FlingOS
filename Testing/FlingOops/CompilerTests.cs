@@ -453,7 +453,7 @@ namespace FlingOops
 
             #endregion
 
-            #region Xor calls
+            #region 19. Xor calls
 
             Log.WriteLine("---Xor:");
             Test_Xor_Int();
@@ -5499,7 +5499,7 @@ namespace FlingOops
 
         #endregion
 
-        #region Xor
+        #region 19. Xor
 
         /// <summary>
         /// Tests: Xor operation using integer operands, 
@@ -5513,15 +5513,10 @@ namespace FlingOops
             UInt32 unsign32_b;
             UInt64 unsign64_a;
             UInt64 unsign64_b;
-            Int32 sign32_a;
-            Int32 sign32_b;
-            Int64 sign64_a;
-            Int64 sign64_b;
 
             #region 32-32
 
             Log.WriteLine(" 32-32");
-            Log.WriteLine("  Unsigned");
             
             // 0 ^ 0
             unsign32_a = 0;
@@ -5679,14 +5674,11 @@ namespace FlingOops
                 Log.WriteError("Test_Xor_UInt32_1000_UInt32_0x44444444 not okay.");
             }
 
-            Log.WriteLine("  Signed");
-
             #endregion
 
             #region 64-32
 
             Log.WriteLine(" 64-32");
-            Log.WriteLine("  Unsigned");
 
             // 0 ^ 0
             unsign64_a = 0;
@@ -5896,14 +5888,11 @@ namespace FlingOops
                 Log.WriteError("Test_Xor_UInt64_0x0800080008000800_UInt32_0x44444444 not okay.");
             }
 
-            Log.WriteLine("  Signed");
-
             #endregion
 
             #region 64-64
 
             Log.WriteLine(" 64-64");
-            Log.WriteLine("  Unsigned");
             
             // 0 ^ 0
             unsign64_a = 0;
@@ -6061,7 +6050,64 @@ namespace FlingOops
                 Log.WriteError("Test_Xor_UInt64_0x0800080008000800_UInt64_0x4444444444444444 not okay.");
             }
 
-            Log.WriteLine("  Signed");
+            #endregion
+
+            #region Boolean
+
+            bool a;
+            bool b;
+
+            // false ^ false
+            a = false;
+            b = false;
+            a = a ^ b;
+            if (a == false)
+            {
+                Log.WriteSuccess("Test_Xor_Bool_False_False okay.");
+            }
+            else
+            {
+                Log.WriteError("Test_Xor_Bool_False_False not okay.");
+            }
+
+            // false ^ true
+            a = false;
+            b = true;
+            a = a ^ b;
+            if (a == true)
+            {
+                Log.WriteSuccess("Test_Xor_Bool_False_True okay.");
+            }
+            else
+            {
+                Log.WriteError("Test_Xor_Bool_False_True not okay.");
+            }
+
+            // true ^ false
+            a = true;
+            b = false;
+            a = a ^ b;
+            if (a == true)
+            {
+                Log.WriteSuccess("Test_Xor_Bool_True_False okay.");
+            }
+            else
+            {
+                Log.WriteError("Test_Xor_Bool_True_False not okay.");
+            }
+
+            // true ^ true
+            a = true;
+            b = true;
+            a = a ^ b;
+            if (a == false)
+            {
+                Log.WriteSuccess("Test_Xor_Bool_True_True okay.");
+            }
+            else
+            {
+                Log.WriteError("Test_Xor_Bool_True_True not okay.");
+            }
 
             #endregion
 
