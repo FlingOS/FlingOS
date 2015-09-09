@@ -56,7 +56,7 @@ If you'd just like to use our ahead-of-time compiler to write your own C#, VB.Ne
 - ***Tools*** : Assorted tools written by FlingOS developers to make their lives easier. Speak to Ed Nutting for details.
   - ***CI20Booter*** : USB OTG boot tool (uses LibUsb-Win32) for the Creator CI20 board.
 
-### A note on licenses
+## A note on licenses
 FlingOS is released under GPLv2 under UK law. This means you can't just copy and paste our code without keeping our copyright notice and you have to release your work as open-source if it includes our code. Our source code is also released without warranty and we accept no liability (within the restrictions of UK law). Please do not use our code for anything (particularly production or safety critical work) without testing and verifying it yourself.
 
 ##### Why did we choose GPLv2 not BSD, MIT or another, more permissive license? 
