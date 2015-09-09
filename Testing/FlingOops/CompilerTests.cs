@@ -296,7 +296,7 @@ namespace FlingOops
                 UInt32 unsign32 = 100;
                 UInt64 unsign64 = 10223372036854775807;
                 FlingOops.String str = "I am a string";
-
+                FlingOops.String str2 = "I am a string too";
                 Log.WriteLine("---Argument:");
                 Test_Arg_Int32(sign32);
                 Test_Arg_Int64(sign64);
@@ -309,6 +309,7 @@ namespace FlingOops
                 Inst.c = 3;
                 Inst.d = 4;
                 Test_Arg_Struct(Inst);
+                Test_Arg_Param(sign32, sign64, unsign32, unsign64, str, str2); 
                 Log.WriteLine(" ");
             }
 
@@ -3708,6 +3709,24 @@ namespace FlingOops
             else
             {
                 Log.WriteError("Test_Arg_Struct NOT okay.");
+            }
+        }
+
+        /// <summary>
+        /// Tests: Passing multiple arguments to method, 
+        /// Input: Six arguments, 
+        /// Result: Argument correctly passed to method.
+        /// </summary>
+        [NoGC]
+        public static void Test_Arg_Param(Int32 sign32, Int64 sign64, UInt32 unsign32, UInt64 unsign64, FlingOops.String str, FlingOops.String str2)
+        {
+            if ((sign32 == 6) && (sign64 == 1441151880758558720) && (unsign32 == 100) && (unsign64 == 10223372036854775807) && (str == "I am a string") && (str2 == "I am a string too"))
+            {
+                Log.WriteSuccess("Test_Arg_Param okay.");
+            }
+            else
+            {
+                Log.WriteError("Test_Arg_Param NOT okay.");
             }
         }
 
