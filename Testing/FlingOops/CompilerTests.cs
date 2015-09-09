@@ -6204,6 +6204,8 @@ namespace FlingOops
         public static void Test_Inheritance()
         {
             TestClassInherit Child = new TestClassInherit();
+            Child.Test_Field6();
+
             int a = Child.aMethodInt(100);
             if (a == 300)
             {
@@ -6311,8 +6313,20 @@ public class TestClassProperties : FlingOops.Object
 /// </remarks>
 public class TestClassInherit : TestClass
 {
-    public void CallParentMethods()
+    public TestClassInherit()
     {
         aField6 = 500;
+    }
+
+    public void Test_Field6()
+    {
+        if (aField6 != 500)
+        {
+            Log.WriteError("aField6 NOT okay!");
+        }
+        else
+        {
+            Log.WriteSuccess("aField6 okay");
+        }
     }
 }
