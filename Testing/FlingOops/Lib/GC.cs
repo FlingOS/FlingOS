@@ -25,7 +25,7 @@
 #endregion
     
 #define GC_TRACE
-//#undef GC_TRACE
+#undef GC_TRACE
 
 using System;
 using System.Collections.Generic;

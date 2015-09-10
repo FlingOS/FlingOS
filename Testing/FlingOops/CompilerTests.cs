@@ -6205,7 +6205,6 @@ namespace FlingOops
         {
             TestClassInherit Child = new TestClassInherit();
             Child.Test_Field6();
-
             int a = Child.aMethodInt(100);
             if (a == 300)
             {
