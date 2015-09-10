@@ -3114,7 +3114,6 @@ namespace FlingOops
         /// Array elements must be explicitly declared as in this test case. 
         /// </para>
         /// </remarks>
-        [NoGC]
         public static void Test_Array_Int32()
         {
             Int32[] array = new Int32[4];
@@ -3181,7 +3180,6 @@ namespace FlingOops
         /// Array elements must be explicitly declared as in this test case. 
         /// </para>
         /// </remarks>
-        [NoGC]
         public static void Test_Array_Int64()
         {
             Int64[] array = new Int64[4];
@@ -3248,7 +3246,6 @@ namespace FlingOops
         /// Array elements must be explicitly declared as in this test case. 
         /// </para>
         /// </remarks>
-        [NoGC]
         public static void Test_Array_UInt64()
         {
             UInt64[] array = new UInt64[4];
@@ -3315,7 +3312,6 @@ namespace FlingOops
         /// Array elements must be explicitly declared as in this test case. 
         /// </para>
         /// </remarks>
-        [NoGC]
         public static void Test_Array_UInt32()
         {
             UInt32[] array = new UInt32[4];
@@ -3383,7 +3379,6 @@ namespace FlingOops
         /// To declare an array of strings, we need to use the FlingOS built-in string type, NOT just string because that is part of .NET.
         /// </para>
         /// </remarks>
-        [NoGC]
         public static void Test_Array_String()
         {
             FlingOops.String[] array = new FlingOops.String[4];
@@ -3451,7 +3446,6 @@ namespace FlingOops
         /// To declare an array of strings, we need to use the FlingOS built-in string type, NOT just string because that is part of .NET.
         /// </para>
         /// </remarks>
-        [NoGC]
         public static unsafe void Test_Array_Struct()
         {
             AStruct[] array = new AStruct[3];
@@ -3596,7 +3590,6 @@ namespace FlingOops
         /// Array elements must be explicitly declared as in this test case. 
         /// </para>
         /// </remarks>
-        [NoGC]
         public static void Test_Array_Object()
         {
             TestClass[] aClass = new TestClass[2];
@@ -3835,7 +3828,6 @@ namespace FlingOops
         /// Integer value is displayed as a hexadecimal in console.
         /// </para>
         /// </remarks>
-        [NoGC]
         public static void Test_Strings()
         {
             Int32 a = 5;
@@ -5183,7 +5175,6 @@ namespace FlingOops
         /// Inputs: New object, fields, arguments, 
         /// Result: Object created and arguments are returned as expected.
         /// </summary>
-        [NoGC]
         public static void Test_Objects()
         {
             TestClass aClass = new TestClass();
@@ -6152,7 +6143,6 @@ namespace FlingOops
         /// Inputs: Integers, strings, 
         /// Result: Properties correctly accessed and set.
         /// </summary>
-        [NoGC]
         public static void Test_Properties()
         {
             TestClassProperties Properties = new TestClassProperties();
