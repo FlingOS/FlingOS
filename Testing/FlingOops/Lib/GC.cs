@@ -25,7 +25,7 @@
 #endregion
     
 #define GC_TRACE
-#undef GC_TRACE
+//#undef GC_TRACE
 
 using System;
 using System.Collections.Generic;
@@ -482,7 +482,7 @@ namespace FlingOops
                 if (gcHeaderPtr->RefCount == 0)
                 {
 #if GC_TRACE
-                    BasicConsole.WriteLine("Cleaned up object.");
+                    BasicConsole.WriteLine("Cleaning up object...");
 #endif
 
                     FlingOops.Object obj = (FlingOops.Object)Utilities.ObjectUtilities.GetObject(objPtr);
@@ -517,7 +517,7 @@ namespace FlingOops
                                 DecrementRefCount(theFieldObj, true);
 
 #if GC_TRACE
-                            BasicConsole.WriteLine("Cleaned up field.");
+                                BasicConsole.WriteLine("Cleaned up field.");
 #endif
                             }
                             
@@ -530,7 +530,15 @@ namespace FlingOops
                         }
                     }
 
+#if GC_TRACE
+                    BasicConsole.WriteLine("Adding object to clean up...");
+#endif
                     AddObjectToCleanup(gcHeaderPtr, objPtr);
+
+#if GC_TRACE
+                    BasicConsole.WriteLine("Completed decrement ref count processing.");
+#endif
+
                 }
             }
         }
@@ -649,8 +657,15 @@ namespace FlingOops
                 newObjToCleanupPtr->objHeaderPtr = objHeaderPtr;
                 newObjToCleanupPtr->objPtr = objPtr;
 
-                newObjToCleanupPtr->prevPtr = CleanupList;
-                CleanupList->nextPtr = newObjToCleanupPtr;
+                if (CleanupList != null)
+                {
+                    newObjToCleanupPtr->prevPtr = CleanupList;
+                    CleanupList->nextPtr = newObjToCleanupPtr;
+                }
+                else
+                {
+                    newObjToCleanupPtr->prevPtr = null;
+                }
 
                 CleanupList = newObjToCleanupPtr;
             }
