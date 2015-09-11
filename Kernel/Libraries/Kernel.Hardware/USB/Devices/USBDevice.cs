@@ -82,6 +82,9 @@ namespace Kernel.Hardware.USB.Devices
         /// The host controller to which the device is attached.
         /// </summary>
         public HCIs.HCI hc;
+
+        public List Configurations;
+        public List Interfaces;
         /// <summary>
         /// The list of "Endpoint"s that has been detected on the USB device.
         /// </summary>
@@ -126,7 +129,7 @@ namespace Kernel.Hardware.USB.Devices
         /// <summary>
         /// The serial number string Id.
         /// </summary>
-        public byte serNumberStringID;
+        public byte serialNumberStringID;
         /// <summary>
         /// The number of configurations reported by the device.
         /// </summary>
@@ -141,10 +144,9 @@ namespace Kernel.Hardware.USB.Devices
         /// </summary>
         public byte InterfaceSubclass;
 
-        /// <summary>
-        /// The decoded serial number string from the device.
-        /// </summary>
-        public FOS_System.String SerialNumber;
+        public UnicodeString ManufacturerString;
+        public UnicodeString ProductString;
+        public UnicodeString SerialNumberString;
 
         /// <summary>
         /// The mass storage bulk-transfer interface number, if any and only if the device is an MSD.
