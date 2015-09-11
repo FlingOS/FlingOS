@@ -2038,7 +2038,8 @@ which should have been provided with the executable.");
                 }
                 catch
                 {
-                    if (!(ExceptionMethods.CurrentException is FOS_System.Exceptions.NotSupportedException))
+                    if (!(ExceptionMethods.CurrentException is FOS_System.Exceptions.NotSupportedException) &&
+                        !(ExceptionMethods.CurrentException is Hardware.Exceptions.NoDiskException))
                     {
                         console.ErrorColour();
                         console.WriteLine("Error initialising disk device:");

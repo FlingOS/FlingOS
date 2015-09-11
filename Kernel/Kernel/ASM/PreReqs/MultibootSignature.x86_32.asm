@@ -28,9 +28,7 @@ GLOBAL TSS_POINTER:data
 MultibootSignature dd 464367618
 MultibootFlags dd 3
 MultibootChecksum dd -464367621
-MultibootGraphicsRuntime_VbeModeInfoAddr dd 2147483647
-MultibootGraphicsRuntime_VbeControlInfoAddr dd 2147483647
-MultibootGraphicsRuntime_VbeMode dd 2147483647
+
 MultiBootInfo_Memory_High dd 0
 MultiBootInfo_Memory_Low dd 0
 
