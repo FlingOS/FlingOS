@@ -38,12 +38,15 @@ namespace Drivers.Compiler
     /// </summary>
     public static class LinkManager
     {
+        static Dictionary<string, string> DependencyNameMapping = new Dictionary<string, string>();
+        static int NameGenerator = 0;
+
         /// <summary>
         /// Performs the link.
         /// </summary>
         /// <param name="TheLibrary">The root library to link.</param>
         /// <returns>CompileResult.OK if the link succeeded. Otherwise, CompileResult.Fail.</returns>
-        public static CompileResult Link(IL.ILLibrary TheLibrary)
+        public static CompileResult Link(IL.ILLibrary TheLibrary, bool dependency = false, string Name = null)
         {
             bool OK = true;
             
@@ -63,9 +66,19 @@ namespace Drivers.Compiler
                 List<string> depLibNames = new List<string>();
                 foreach (IL.ILLibrary depLib in TheLibrary.Dependencies)
                 {
-                    depLibNames.Add(Utilities.CleanFileName(depLib.TheAssembly.GetName().Name));
+                    string depLibName = Utilities.CleanFileName(depLib.TheAssembly.GetName().Name);
+                    if (Options.ShortenDependencyNames)
+                    {
+                        if (!DependencyNameMapping.ContainsKey(depLibName))
+                        {
+                            DependencyNameMapping.Add(depLibName, (NameGenerator++).ToString());
+                        }
 
-                    OK = OK && (Link(depLib) == CompileResult.OK);
+                        depLibName = DependencyNameMapping[depLibName];
+                    }
+                    depLibNames.Add(depLibName);
+
+                    OK = OK && (Link(depLib, true, depLibName) == CompileResult.OK);
                     if (!OK)
                     {
                         break;
@@ -95,7 +108,12 @@ namespace Drivers.Compiler
                     }
                 }
 
-                string AssemblyName = Utilities.CleanFileName(TheLibrary.TheAssembly.GetName().Name);
+                if (Options.ShortenDependencyNames && string.IsNullOrWhiteSpace(Name))
+                {
+                    Name = "Driver";
+                }
+
+                string AssemblyName = string.IsNullOrWhiteSpace(Name) ? Utilities.CleanFileName(TheLibrary.TheAssembly.GetName().Name) : Name;
 
                 LinkInformation LinkInfo = new LinkInformation()
                 {

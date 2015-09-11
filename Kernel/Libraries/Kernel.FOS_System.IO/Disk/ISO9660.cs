@@ -258,31 +258,30 @@ namespace Kernel.FOS_System.IO.Disk
         {
             public enum FileFlags : byte
             {
-
                 /// <summary>
-                ///	If set, the existence of this file need not be made known to the user (basically a 'hidden' flag).
+                /// If set, the existence of this file need not be made known to the user (basically a 'hidden' flag).
                 /// </summary>
-                Hidden = 0,
+                Hidden = 0x1,
                 /// <summary>
                 /// If set, this record describes a directory (in other words, it is a subdirectory extent).
                 /// </summary>
-                Directory = 1,
+                Directory = 0x2,
                 /// <summary>
                 /// If set, this file is an "Associated File".
                 /// </summary>
-                AssociatedFile = 2,
+                AssociatedFile = 0x4,
                 /// <summary>
                 /// If set, the extended attribute record contains information about the format of this file.
                 /// </summary>
-                ExtAttrContainsFormatInfo = 3,
+                ExtAttrContainsFormatInfo = 0x8,
                 /// <summary>
                 /// If set, owner and group permissions are set in the extended attribute record.
                 /// </summary>
-                ExtAttrContainsOwnerAndGroupPermissions = 4,
+                ExtAttrContainsOwnerAndGroupPermissions = 0x10,
                 /// <summary>
                 /// If set, this is not the final directory record for this file (for files spanning several extents, for example files over 4GiB long.
                 /// </summary>
-                RemainingRecords = 7,
+                RemainingRecords = 0x80,
             }
 
             public byte RecordLength;
