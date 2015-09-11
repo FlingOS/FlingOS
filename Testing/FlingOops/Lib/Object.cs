@@ -11,11 +11,6 @@ namespace FlingOops
     /// </summary>
     public class Object : ObjectWithType
     {
-        [Drivers.Compiler.Attributes.NoGC]
-        [Drivers.Compiler.Attributes.NoDebug]
-        public Object()
-        {
-        }
     }
     /// <summary>
     /// Represents an object with a type. You should use the <see cref="Kernel.FOS_System.Object"/> class.
@@ -30,11 +25,5 @@ namespace FlingOops
         /// The underlying, specific type of the object specified when it was created.
         /// </summary>
         public Type _Type;
-
-        [Drivers.Compiler.Attributes.NoGC]
-        [Drivers.Compiler.Attributes.NoDebug]
-        public ObjectWithType()
-        {
-        }
     }
 }

@@ -768,8 +768,15 @@ namespace Kernel.FOS_System
                 newObjToCleanupPtr->objHeaderPtr = objHeaderPtr;
                 newObjToCleanupPtr->objPtr = objPtr;
 
-                newObjToCleanupPtr->prevPtr = CleanupList;
-                CleanupList->nextPtr = newObjToCleanupPtr;
+                if (CleanupList != null)
+                {
+                    newObjToCleanupPtr->prevPtr = CleanupList;
+                    CleanupList->nextPtr = newObjToCleanupPtr;
+                }
+                else
+                {
+                    newObjToCleanupPtr->prevPtr = null;
+                }
 
                 CleanupList = newObjToCleanupPtr;
             }
