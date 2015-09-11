@@ -1106,7 +1106,7 @@ namespace Drivers.Compiler.IL
                                 }
                                 else
                                 {
-                                    theILBlock.ILOps.Insert(opIndx + 1, new ILOp()
+                                    theILBlock.ILOps.Insert(opIndx, new ILOp()
                                     {
                                         Offset = ARetOp.Offset,
                                         opCode = System.Reflection.Emit.OpCodes.Leave,
