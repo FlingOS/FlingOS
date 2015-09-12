@@ -70,10 +70,13 @@ VGA text-mode uses a 4000 byte section at address 0xB8000. Every two bytes forms
 
 Each character byte is an ASCII character code - the ASCII table is provided below. Each colour byte consists of 4 low bits and 4 high bits which specify the foreground and background colour respectively. The colour table is provided below.
 
+### ASCII Table
+
 *The following table is provided by Wikipedia and is licensed under the Creative Commons Attribution/Share-Alike License v3.0*
 
 ![Wikipedia.org - ASCII Table](https://upload.wikimedia.org/wikipedia/commons/thumb/1/1b/ASCII-Table-wide.svg/2000px-ASCII-Table-wide.svg.png)
 
+### Colour table
 
 | Number | Name | Number + bright bit | Name |
 |:-----------:|:--------:|:---------------------------:|:---------:|
@@ -88,15 +91,68 @@ Each character byte is an ASCII character code - the ASCII table is provided bel
 
 ## Implementation details
 
-- Outputting character
-- Setting colours
-- Moving cursor
+The following C# code samples demonstrate how to set a character in VGA text-mode memory, set the colour of a character and update the cursor position.
+
+### Set Character
+
+``` csharp
+unsafe static void SetCharacter(int line, int col, char value)
+{
+    byte* DisplayPtr = (byte*)0xB8000;
+    DisplayPtr[(line * 80 + col) * 2] = (byte)(value & 0xFF);
+}
+```
+
+### Set Colour
+
+``` csharp
+unsafe static void SetColour(int line, int col, byte colour)
+{
+    byte* DisplayPtr = (byte*)0xB8000;
+    DisplayPtr[(line * 80 + col) * 2 + 1] = (byte)(colour & 0xFF);
+}
+```
+
+### Set Cursor Position
+
+``` csharp
+/// <summary>
+/// The command port for manipulating the VGA text-mode cursor.
+/// </summary>
+protected Hardware.IO.IOPort CursorCmdPort = new Hardware.IO.IOPort(0x3D4);
+/// <summary>
+/// The data port for manipulating the VGA text-mode cursor.
+/// </summary>
+protected Hardware.IO.IOPort CursorDataPort = new Hardware.IO.IOPort(0x3D5);
+
+/// <summary>
+/// Sets the displayed position of the cursor.
+/// </summary>
+/// <param name="character">
+/// The 0-based offset from the start of a line to the character to display the cursor on.
+/// </param>
+/// <param name="line">The 0-based index of the line to display the cursor on.</param>
+public override void SetCursorPosition(ushort line, ushort col)
+{
+    //Offset is in number of characters from start of video memory 
+    //  (not number of bytes).
+    ushort offset = (ushort)((line * ScreenLineWidth) + character);
+    //Output the high-byte
+    CursorCmdPort.Write_Byte((byte)14);
+    CursorDataPort.Write_Byte((byte)(offset >> 8));
+    //Output the low-byte
+    CursorCmdPort.Write_Byte((byte)15);
+    CursorDataPort.Write_Byte((byte)(offset));
+}
+```
 
 ## Alternatives
-- Serial
+
+Instead, or in addition to, outputting to the screen, many developers choose to output to serial/UART ports. This has advantages including being able to store the output for later reference. However, often a serial port is not available or accessible on real hardware, in which case the screen is the only easily available output.
 
 ## Compatibility
-- Almost all PCs (even HDMI) emulate
+
+Almost all PCs (including laptops) support VGA text-mode output since it has been used by BIOS (and UEFI) for a long time as the primary output. VAG text-mode is often emulated by firmware, including HDMI devices.
 
 ---
 
@@ -112,15 +168,15 @@ TODO
 
 # Further Reading
 
-- https://en.wikipedia.org/wiki/VGA-compatible_text_mode
-- https://en.wikipedia.org/wiki/Video_Graphics_Array
-- http://wiki.osdev.org/Text_UI
-- http://wiki.osdev.org/Text_Mode_Cursor
-- http://www.osdever.net/FreeVGA/vga/vgatext.htm
-- http://www.osdever.net/bkerndev/Docs/printing.htm
-- http://web.stanford.edu/class/cs140/projects/pintos/specs/freevga/vga/textcur.htm
-- http://www.osdata.com/system/physical/memmap.htm
-- http://www.brokenthorn.com/Resources/OSDev10.html
+- [Wikipedia.org - VGA Compatible text-mode](https://en.wikipedia.org/wiki/VGA-compatible_text_mode)
+- [Wikipedia.org - Video Graphics Array](https://en.wikipedia.org/wiki/Video_Graphics_Array)
+- [OSDev.org - Text UI](http://wiki.osdev.org/Text_UI)
+- [OSDev.org - Text Mode Cursor](http://wiki.osdev.org/Text_Mode_Cursor)
+- [OSDever.net - VGA Text](http://www.osdever.net/FreeVGA/vga/vgatext.htm)
+- [OSDever.net - Printing](http://www.osdever.net/bkerndev/Docs/printing.htm)
+- [Stanford.edu - Text Cursor](http://web.stanford.edu/class/cs140/projects/pintos/specs/freevga/vga/textcur.htm)
+- [OSData.com - Memory Maps](http://www.osdata.com/system/physical/memmap.htm)
+- [BrokenThorn.com - VGA Text-mode](http://www.brokenthorn.com/Resources/OSDev10.html)
 
 *[MDA]: Monochrome Display Adapter
 *[CGA]: Colour Graphics Adapter
