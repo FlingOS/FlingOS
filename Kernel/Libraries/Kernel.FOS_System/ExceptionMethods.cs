@@ -102,6 +102,15 @@ namespace Kernel
                 BasicConsole.SetTextColour(BasicConsole.default_colour);
             }
 
+            //if (filterPtr != null)
+            //{
+            //    BasicConsole.WriteLine("Enter try-catch block");
+            //}
+            //else
+            //{
+            //    BasicConsole.WriteLine("Enter try-finally block");
+            //}
+
             AddExceptionHandlerInfo_EntryStackState* BasePtr = (AddExceptionHandlerInfo_EntryStackState*)BasePointer;
 
             uint LocalsSize = (uint)BasePtr - (uint)StackPointer;
@@ -216,7 +225,9 @@ namespace Kernel
         [Drivers.Compiler.Attributes.NoGC]
         public static unsafe void HandleException()
         {
-            if(State != null)
+            //BasicConsole.WriteLine("Handle exception");
+
+            if (State != null)
             {
                 if (State->CurrentHandlerPtr != null)
                 {
@@ -372,9 +383,19 @@ namespace Kernel
                 
                 State->CurrentHandlerPtr->InHandler = 1;
 
+                byte* handlerAddress = State->CurrentHandlerPtr->HandlerAddress;
+
+                //BasicConsole.WriteLine("Leave try of try-finally");
+                //BasicConsole.Write("Handler address: ");
+                //BasicConsole.WriteLine((uint)handlerAddress);
+                //BasicConsole.Write("Continue ptr: ");
+                //BasicConsole.WriteLine((uint)continuePtr);
+
+                State->CurrentHandlerPtr->HandlerAddress = (byte*)continuePtr;
+
                 ArbitaryReturn(State->CurrentHandlerPtr->EBP,
                                State->CurrentHandlerPtr->ESP,
-                               State->CurrentHandlerPtr->HandlerAddress);
+                               handlerAddress);
             }
 
         }
@@ -419,12 +440,18 @@ namespace Kernel
 
                 uint EBP = State->CurrentHandlerPtr->EBP;
                 uint ESP = State->CurrentHandlerPtr->ESP;
-                           
+                byte* retAddr = State->CurrentHandlerPtr->HandlerAddress;//(byte*)*((uint*)(BasePointer + 4));
+
+                //BasicConsole.Write("Continue ptr (from HandlerAddress): ");
+                //BasicConsole.WriteLine((uint)State->CurrentHandlerPtr->HandlerAddress);
+                //BasicConsole.Write("Actual continue addr (from EBP): ");
+                //BasicConsole.WriteLine(*((uint*)(BasePointer + 4)));
+
                 State->CurrentHandlerPtr = State->CurrentHandlerPtr->PrevHandlerPtr;
 
                 ArbitaryReturn(EBP,
                     ESP + (uint)sizeof(ExceptionHandlerInfo),
-                    (byte*)*((uint*)(BasePointer + 4)));
+                    retAddr);
             }
         }
         

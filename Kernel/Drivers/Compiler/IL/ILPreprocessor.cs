@@ -961,8 +961,9 @@ namespace Drivers.Compiler.IL
                             }
                         }
 
+                        ILOp leaveOp;
                         // Add the Leave op of the try-block
-                        theILBlock.ILOps.Insert(lastOpIndex, new ILOp()
+                        theILBlock.ILOps.Insert(lastOpIndex, leaveOp = new ILOp()
                         {
                             opCode = System.Reflection.Emit.OpCodes.Leave,
                             Offset = lastOpOffset,
@@ -1040,7 +1041,7 @@ namespace Drivers.Compiler.IL
                         }
 
                         // Add end finally op
-                        theILBlock.ILOps.Insert(lastOpIndex, new ILOp()
+                        theILBlock.ILOps.Insert(lastOpIndex, leaveOp.LoadAtILOpAfterOp = new ILOp()
                         {
                             opCode = System.Reflection.Emit.OpCodes.Endfinally,
                             Offset = cleanupOpsOffset,
@@ -1048,7 +1049,7 @@ namespace Drivers.Compiler.IL
                         });
                         cleanupOpsOffset++;
                         lastOpIndex++;
-
+                        
                         CleanupFinallyBlock.Length++;
 
                         // Add restore return value op
@@ -1101,7 +1102,8 @@ namespace Drivers.Compiler.IL
                                     {
                                         Offset = ARetOp.Offset,
                                         opCode = System.Reflection.Emit.OpCodes.Leave,
-                                        ValueBytes = BitConverter.GetBytes(CleanupFinallyBlock.Offset - ARetOp.Offset)
+                                        ValueBytes = BitConverter.GetBytes(0),
+                                        LoadAtILOpAfterOp = leaveOp.LoadAtILOpAfterOp
                                     });
                                 }
                                 else
@@ -1110,7 +1112,8 @@ namespace Drivers.Compiler.IL
                                     {
                                         Offset = ARetOp.Offset,
                                         opCode = System.Reflection.Emit.OpCodes.Leave,
-                                        ValueBytes = BitConverter.GetBytes(CleanupFinallyBlock.Offset - ARetOp.Offset)
+                                        ValueBytes = BitConverter.GetBytes(0),
+                                        LoadAtILOpAfterOp = leaveOp.LoadAtILOpAfterOp
                                     });
                                 }
                             }
@@ -1167,13 +1170,16 @@ namespace Drivers.Compiler.IL
                     theILBlock.ILOps.RemoveAt(i);
 
                     int ILOffset = 0;
-                    if ((int)theOp.opCode.Value == (int)ILOp.OpCodes.Leave)
+                    if (theOp.LoadAtILOpAfterOp == null)
                     {
-                        ILOffset = BitConverter.ToInt32(theOp.ValueBytes, 0);
-                    }
-                    else
-                    {
-                        ILOffset = (int)theOp.ValueBytes[0];
+                        if ((int)theOp.opCode.Value == (int)ILOp.OpCodes.Leave)
+                        {
+                            ILOffset = BitConverter.ToInt32(theOp.ValueBytes, 0);
+                        }
+                        else
+                        {
+                            ILOffset = (int)theOp.ValueBytes[0];
+                        }
                     }
 
                     theILBlock.ILOps.Insert(i, new ILOp()
@@ -1182,6 +1188,7 @@ namespace Drivers.Compiler.IL
                         BytesSize = theOp.BytesSize,
                         opCode = System.Reflection.Emit.OpCodes.Ldftn,
                         LoadAtILOffset = theOp.NextOffset + ILOffset,
+                        LoadAtILOpAfterOp = theOp.LoadAtILOpAfterOp,
                         MethodToCall = theILBlock.TheMethodInfo.UnderlyingInfo
                     });
                     theILBlock.ILOps.Insert(i + 1, new ILOp()
@@ -1201,13 +1208,24 @@ namespace Drivers.Compiler.IL
                     //Endfinally is handled by inserting a call to the Exceptions.HandleEndFinally method
 
                     theILBlock.ILOps.RemoveAt(i);
-                    theILBlock.ILOps.Insert(i, new ILOp()
+
+                    ILOp newOp;
+                    theILBlock.ILOps.Insert(i, newOp = new ILOp()
                     {
                         Offset = theOp.Offset,
                         BytesSize = theOp.BytesSize,
                         opCode = System.Reflection.Emit.OpCodes.Call,
                         MethodToCall = ILLibrary.SpecialMethods[typeof(Attributes.ExceptionsHandleEndFinallyMethodAttribute)].First().UnderlyingInfo
                     });
+
+                    //Replace references to this endfinally op
+                    for (int j = 0; j < theILBlock.ILOps.Count; j++)
+                    {
+                        if (theILBlock.ILOps[j].LoadAtILOpAfterOp == theOp)
+                        {
+                            theILBlock.ILOps[j].LoadAtILOpAfterOp = newOp;
+                        }
+                    }
                 }
             }
 

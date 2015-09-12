@@ -27,7 +27,14 @@ namespace Drivers.Compiler.Architectures.MIPS32
         {
             Types.MethodInfo methodInfo = preprocessState.TheILLibrary.GetMethodInfo(theOp.MethodToCall);
 
-            if (theOp.LoadAtILOffset != int.MaxValue)
+            if (theOp.LoadAtILOpAfterOp != null)
+            {
+                ILBlock anILBlock = preprocessState.TheILLibrary.GetILBlock(methodInfo);
+                int index = anILBlock.ILOps.IndexOf(theOp.LoadAtILOpAfterOp);
+                index++;
+                anILBlock.ILOps[index].LabelRequired = true;
+            }
+            else if (theOp.LoadAtILOffset != int.MaxValue)
             {
                 int offset = theOp.LoadAtILOffset;
                 ILOp theLoadedOp = preprocessState.TheILLibrary.GetILBlock(methodInfo).At(offset);
@@ -49,7 +56,19 @@ namespace Drivers.Compiler.Architectures.MIPS32
             bool addExternalLabel = methodID != conversionState.Input.TheMethodInfo.ID;
 
             //If we want to load the pointer at a specified IL op number:
-            if (theOp.LoadAtILOffset != int.MaxValue)
+            if (theOp.LoadAtILOpAfterOp != null)
+            {
+                ILBlock anILBlock = conversionState.TheILLibrary.GetILBlock(methodInfo);
+                int index = anILBlock.ILOps.IndexOf(theOp.LoadAtILOpAfterOp);
+                if (index == -1)
+                {
+                    throw new NullReferenceException("LoadAtILOpAfterOp not found in IL block!");
+                }
+
+                index++;
+                methodID = ASM.ASMBlock.GenerateLabel(methodID, anILBlock.PositionOf(anILBlock.ILOps[index]));
+            }
+            else if (theOp.LoadAtILOffset != int.MaxValue)
             {
                 //Append the IL sub-label to the ID
                 ILBlock anILBlock = conversionState.TheILLibrary.GetILBlock(methodInfo);

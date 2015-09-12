@@ -258,62 +258,11 @@ namespace FlingOops
 
             #endregion
 
-            #region 8. Array calls
+            #region 19. Xor calls
 
-            Log.WriteLine("---Array:");
-            Log.WriteLine(" 32");
-            Log.WriteLine("  Unsigned");
-            Test_Array_UInt32();
-            Log.WriteLine("  Signed");
-            Test_Array_Int32();
-            Log.WriteLine(" 64");
-            Log.WriteLine("  Unsigned");
-            Test_Array_UInt64();
-            Log.WriteLine("  Signed");
-            Test_Array_Int64();
-            Log.WriteLine(" Strings");
-            Test_Array_String();
-            Log.WriteLine(" Structs");
-            Test_Array_Struct();
-            Log.WriteLine(" Objects");
-            Test_Array_Object();
+            Log.WriteLine("---Xor:");
+            Test_Xor_Int();
             Log.WriteLine(" ");
-
-            #endregion
-
-            #region 9. Strings calls
-
-            Log.WriteLine("---String:");
-            Test_Strings();
-            Log.WriteLine(" ");
-
-            #endregion
-
-            #region 10. Argument calls
-
-            // Variables used as arguments to test methods
-            {
-                Int32 sign32 = 6;
-                Int64 sign64 = 1441151880758558720;
-                UInt32 unsign32 = 100;
-                UInt64 unsign64 = 10223372036854775807;
-                FlingOops.String str = "I am a string";
-                FlingOops.String str2 = "I am a string too";
-                Log.WriteLine("---Argument:");
-                Test_Arg_Int32(sign32);
-                Test_Arg_Int64(sign64);
-                Test_Arg_UInt32(unsign32);
-                Test_Arg_UInt64(unsign64);
-                Test_Arg_String(str);
-                AStruct Inst = new AStruct();
-                Inst.a = 1;
-                Inst.b = 2;
-                Inst.c = 3;
-                Inst.d = 4;
-                Test_Arg_Struct(Inst);
-                Test_Arg_Param(sign32, sign64, unsign32, unsign64, str, str2); 
-                Log.WriteLine(" ");
-            }
 
             #endregion
 
@@ -381,19 +330,70 @@ namespace FlingOops
 
             #endregion
 
+            #region 18. Try-Catch-Finally calls
+
+            Log.WriteLine("---Try-Catch-Finally:");
+            Log.WriteLine(" TCF 0");
+            Test_TCF_0();
+            Log.WriteLine(" TCF 1");
+            Test_TCF_1();
+            Log.WriteLine(" TCF 2");
+            Test_TCF_2();
+            Log.WriteLine(" TCF 3");
+            Test_TCF_3();
+            Log.WriteLine(" TCF 4");
+            Test_TCF_4();
+            Log.WriteLine(" TCF 5");
+            Test_TCF_5();
+            Log.WriteLine(" TCF 6");
+            Test_TCF_6();
+            Log.WriteLine(" TCF 7");
+            Test_TCF_7();
+            Log.WriteLine(" ");
+
+            #endregion
+            
+            #region 10. Argument calls
+
+            // Variables used as arguments to test methods
+            {
+                Int32 sign32 = 6;
+                Int64 sign64 = 1441151880758558720;
+                UInt32 unsign32 = 100;
+                UInt64 unsign64 = 10223372036854775807;
+                FlingOops.String str = "I am a string";
+                FlingOops.String str2 = "I am a string too";
+                Log.WriteLine("---Argument:");
+                Test_Arg_Int32(sign32);
+                Test_Arg_Int64(sign64);
+                Test_Arg_UInt32(unsign32);
+                Test_Arg_UInt64(unsign64);
+                Test_Arg_String(str);
+                AStruct Inst = new AStruct();
+                Inst.a = 1;
+                Inst.b = 2;
+                Inst.c = 3;
+                Inst.d = 4;
+                Test_Arg_Struct(Inst);
+                Test_Arg_Param(sign32, sign64, unsign32, unsign64, str, str2); 
+                Log.WriteLine(" ");
+            }
+
+            #endregion
+                        
+            #region 14. Variables and pointers calls
+
+            Log.WriteLine("---Variables and pointers:");
+            Test_Locals_And_Pointers();
+            Log.WriteLine(" ");
+
+            #endregion
+
             #region 13. Struct calls
 
             Log.WriteLine("---Struct:");
             Test_Sizeof_Struct();
             Test_Instance_Struct();
-            Log.WriteLine(" ");
-
-            #endregion
-
-            #region 14. Variables and pointers calls
-
-            Log.WriteLine("---Variables and pointers:");
-            Test_Locals_And_Pointers();
             Log.WriteLine(" ");
 
             #endregion
@@ -433,33 +433,6 @@ namespace FlingOops
             Log.WriteLine(" ");
 
             #endregion
-            
-            #region 18. Try-Catch-Finally calls
-
-            Log.WriteLine("---Try-Catch-Finally:");
-            Log.WriteLine(" TCF 0");
-            Test_TCF_0();
-            Log.WriteLine(" TCF 1");
-            Test_TCF_1();
-            Log.WriteLine(" TCF 2");
-            Test_TCF_2();
-            Log.WriteLine(" TCF 3");
-            Test_TCF_3();
-            Log.WriteLine(" TCF 4");
-            Test_TCF_4();
-            Log.WriteLine(" TCF 5");
-            Test_TCF_5();
-            Log.WriteLine(" ");
-
-            #endregion
-
-            #region 19. Xor calls
-
-            Log.WriteLine("---Xor:");
-            Test_Xor_Int();
-            Log.WriteLine(" ");
-
-            #endregion
 
             #region 20. Properties
 
@@ -473,6 +446,37 @@ namespace FlingOops
 
             Log.WriteLine("---Inheritance:");
             Test_Inheritance();
+            Log.WriteLine(" ");
+
+            #endregion
+
+            #region 8. Array calls
+
+            Log.WriteLine("---Array:");
+            Log.WriteLine(" 32");
+            Log.WriteLine("  Unsigned");
+            Test_Array_UInt32();
+            Log.WriteLine("  Signed");
+            Test_Array_Int32();
+            Log.WriteLine(" 64");
+            Log.WriteLine("  Unsigned");
+            Test_Array_UInt64();
+            Log.WriteLine("  Signed");
+            Test_Array_Int64();
+            Log.WriteLine(" Strings");
+            Test_Array_String();
+            Log.WriteLine(" Structs");
+            Test_Array_Struct();
+            Log.WriteLine(" Objects");
+            Test_Array_Object();
+            Log.WriteLine(" ");
+
+            #endregion
+
+            #region 9. Strings calls
+
+            Log.WriteLine("---String:");
+            Test_Strings();
             Log.WriteLine(" ");
 
             #endregion
@@ -5304,20 +5308,21 @@ namespace FlingOops
         {
             try
             {
-                Log.WriteSuccess("Entered try.");
+                Log.WriteSuccess("Entered TCF 1 try.");
 
+                //ExceptionMethods.Throw(new Exception("Exception 1"));
                 subMethod1();
             }
             catch
             {
-                Log.WriteSuccess("Entered catch.");
+                Log.WriteSuccess("Entered TCF 1 catch.");
             }
             finally
             {
-                Log.WriteSuccess("Entered finally.");
+                Log.WriteSuccess("Entered TCF 1 finally.");
             }
 
-            Log.WriteSuccess("Executed end of test cleanly.");
+            Log.WriteSuccess("Executed end of TCF 1 test cleanly.");
         }
         public static void subMethod1()
         {
@@ -5517,6 +5522,115 @@ namespace FlingOops
 
             Log.WriteSuccess("Executed end of subMethod5 correctly.");
         }
+
+        /// <summary>
+        /// Tests: Testing Try-catch-finally blocks. 
+        /// </summary>
+        [NoGC]
+        public static unsafe void Test_TCF_6()
+        {
+            try
+            {
+                Log.WriteSuccess("Entered try.");
+
+                subMethod6(true);
+
+                Log.WriteSuccess("Step 1 done.");
+
+                subMethod6(false);
+
+                Log.WriteSuccess("Step 2 done.");
+            }
+            catch
+            {
+                Log.WriteError("Entered catch when we shouldn't have any unhandled exceptions.");
+            }
+            finally
+            {
+                Log.WriteSuccess("Entered finally.");
+            }
+
+            Log.WriteSuccess("Executed end of test cleanly.");
+        }
+        public static void subMethod6(bool testVal)
+        {
+            try
+            {
+                if (testVal)
+                {
+                    return;
+                }
+
+                Log.WriteSuccess("Continued execution of subMethod6 try 1.");
+            }
+            finally
+            {
+                Log.WriteSuccess("Entered subMethod6 try 1 finally.");
+            }
+
+            Log.WriteSuccess("Executed end of subMethod6 correctly.");
+        }
+
+        /// <summary>
+        /// Tests: Testing Try-catch-finally blocks. 
+        /// </summary>
+        [NoGC]
+        public static unsafe void Test_TCF_7()
+        {
+            try
+            {
+                Log.WriteSuccess("Entered try.");
+
+                if (subMethod7(true) != 5)
+                {
+                    Log.WriteError("Return value 1 NOT OK!");
+                }
+                else
+                {
+                    Log.WriteSuccess("Return value 1 OK.");
+                }
+
+                if (subMethod7(false) != 10)
+                {
+                    Log.WriteError("Return value 2 NOT OK!");
+                }
+                else
+                {
+                    Log.WriteSuccess("Return value 2 OK.");
+                }
+            }
+            catch
+            {
+                Log.WriteError("Entered catch when we shouldn't have any unhandled exceptions.");
+            }
+            finally
+            {
+                Log.WriteSuccess("Entered finally.");
+            }
+
+            Log.WriteSuccess("Executed end of test cleanly.");
+        }
+        public static int subMethod7(bool testVal)
+        {
+            try
+            {
+                if (testVal)
+                {
+                    return 5;
+                }
+
+                Log.WriteSuccess("Continued execution of subMethod7 try 1.");
+            }
+            finally
+            {
+                Log.WriteSuccess("Entered subMethod7 try 1 finally.");
+            }
+
+            Log.WriteSuccess("Executed end of subMethod7 correctly.");
+
+            return 10;
+        }
+
 
         #endregion
 
