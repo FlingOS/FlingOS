@@ -163,8 +163,8 @@ namespace Kernel.Hardware.USB.Devices
         protected void Setup()
         {
             // Start with correct endpoint toggles
-            ((Endpoint)DeviceInfo.Endpoints[DeviceInfo.MSD_OUTEndpointID]).toggle = false;
-            ((Endpoint)DeviceInfo.Endpoints[DeviceInfo.MSD_INEndpointID]).toggle = false;
+            ((Endpoint)DeviceInfo.Endpoints[DeviceInfo.MSD_OUTEndpointID]).Toggle = false;
+            ((Endpoint)DeviceInfo.Endpoints[DeviceInfo.MSD_INEndpointID]).Toggle = false;
 
             // Reset the main MSD interface
             BulkReset(DeviceInfo.MSD_InterfaceNum);
@@ -1350,8 +1350,8 @@ namespace Kernel.Hardware.USB.Devices
         public void ResetRecoveryMSD()
         {
             // Start with correct endpoint toggles and reset interface
-            ((Endpoint)DeviceInfo.Endpoints[DeviceInfo.MSD_OUTEndpointID]).toggle = false;
-            ((Endpoint)DeviceInfo.Endpoints[DeviceInfo.MSD_INEndpointID]).toggle = false;
+            ((Endpoint)DeviceInfo.Endpoints[DeviceInfo.MSD_OUTEndpointID]).Toggle = false;
+            ((Endpoint)DeviceInfo.Endpoints[DeviceInfo.MSD_INEndpointID]).Toggle = false;
             // Reset Interface
             BulkReset(DeviceInfo.MSD_InterfaceNum);
 
