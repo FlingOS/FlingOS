@@ -390,64 +390,74 @@ HDMI is also electrically and software backwards compatible with DVI, the first 
 
 ### Formats & Quality
 
+The following is a brief list of major past and present video formats and quality standards:
+
 - Composite / Y/C / HSL
 - VHS
 - PAL
 - NTSC
 - RGB
 - sRGB
-- 720p / 720i
-- 1080p / 1080i
-- Ultra-HD TV 
+- 720p / 720i - Most common online video quality
+- 1080p / 1080i - Current benchmark display quality
+- Ultra-HD TV / 2K
 - 4K / 8K
 
 ### Encode and decode
-- Video codec (hardware) for compress / decompress
-- Files / streaming
-	- H.264 / MP4
-	- WMV
-	- Quicktime H.264
-	- Google On2 codecs (VP9)
+
+There are a wide variety of codecs for representing and compressing video and also wrapping video with additional information. Quite often, the performance or popularity of a particular codec is dictated by whether hardware manufacturers (or design companies) include hardware decoders (and/or encoders) for a particularly format. Hardware (de)compression is invariably faster, smoother and consumes less power than equivalent software implementations. 
+
+The following formats (both container and data) are commonly seen for video files and online streaming:
+
+- H.264 (lossy-versions most common)
+- MP4 / AVI / MKV / WebM
+- WMV
+- Quicktime H.264
+- Google On2 codecs (VP9)
 
 ---
 
 # Hardware
 
 ## Overview
-- Many competing standards
-- Always a compromise
-- VGA most common and probably easiest
-- HDMI taking over
+
+There are many different, competing graphics, display and video standards. Each standard generally has lots of sub-versions to accommodate different requirements, since every situation is a different compromise. As such, there is no easy way for hardware designers nor software programmers to support everything. The following sections briefly outline current technologies.
 
 ## Current display technologies
+
+Current display technologies include: 
+
 - Plasma
-- LCD LED
-- OLED
+- LCD LED (most common on desktop/laptop/mobile)
+- OLED (increasingly common on high-end mobile & tablet)
 
 ## Current graphics technologies
-- Whatever graphics card you own
+
+We cannot really say what the "current" graphics technology is. The two competing libraries for graphics are essentially OpenGL/OpenGL ES (for all major platforms) and DirectX/Direct3D on Windows. However, each of these requires dedicated software at the kernel-mode (and often user-mode) driver levels to support a given graphics card. As such, there is no single, major graphics technology. Your best bet is to just pick whatever real (or virtual/emulated) hardware you own and try to support that.
 
 ## Current video technologies
+
+Current video hardware technologies include:
+
 - VGA : common, easier, more docs
 - HDMI : common, taking over
 
-## Compatibility between hardware
-- None :) Okay probably something...
+We recommend, for x86, that you stick to VGA for connecting to your display; It will cover a vast number of PCs, laptops, virtual machines and emulators and is the easiest to start with. However, HDMI is gradually taking over so this may change. For video technology, you'll need to get display and graphics working first, which is no small feat unto itself.
 
 ---
 
 # Software
 
 ## Overview
-- Structure of software:
-	- Display Drivers (KM)
-	- Graphics Drivers (KM)
-	- Graphics Drivers (UM)
-	- Video Decode driver (KM/UM)
-	- Video Encode driver(KM/UM)
 
-## Compatibility and Integration
+FlingOS itself has yet to implement a graphics stack, so we can't recommend any particular software structure. However, our developers' experiences allow us to provide the following outline of common graphics stacks:
 
+1. Display Drivers (KM) : Handles displaying a provided image on the screen (often also handles the cursor display too)
+2. Graphics Drivers (KM) : Handles communication with a specific graphics card and passing frames to the display driver
+3. Graphics Drivers (UM) : Handles interfacing between the KM graphics driver and applications along with communication with video drivers. Often this layer performs basic processing and manipulation of data from applications to provide data in a common format for one design company's graphics hardware (making the KM graphics driver simpler to develop).
+4. Video Encode/Decode drivers (KM/UM) : Depending on whether specific hardware is available or not, video encode/decode drivers can be done in KM or UM. They are often bundled as part of the graphics driver(s) since a single graphics card will usually include video encode/decode cores as well.
+
+We'll update this further when we've got our own graphics stack. For now, try taking a look at the [VGA text-mode article](/docs/reference/VGA-Text-Mode) which will get you started with a basic console interface using VGA.
 
 ---
 
@@ -483,4 +493,4 @@ Well done! Impressed you stuck at it. Keep going, I'm sure you don't need advice
 
 # Further Reading
 
-*[acronym]: meaning
+This topic is huge so just try taking any of the names from the article above and Googling them. You'll soon find hundreds of interesting articles.

@@ -162,18 +162,6 @@
       <Link>Kernel.licenseheader</Link>
     </None>
     <None Include="ClassDiagram1.cd" />
-<<<<<<< HEAD
-    <None Include="Dia2Dump\Dia2Dump.log">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="Dia2Dump\dia2dump.obj">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="Dia2Dump\PrintSymbol.obj">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-=======
->>>>>>> master
     <None Include="ISO\isolinux.bin">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
@@ -185,18 +173,6 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-<<<<<<< HEAD
-    <Content Include="cygwin\cygintl-3.dll">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Dia2Dump\Dia2Dump.exe">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Dia2Dump\ReadMe.txt">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-=======
->>>>>>> master
     <Content Include="ILOps\AllIlOps.txt" />
     <Content Include="Mosa.Utility.IsoImage.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>

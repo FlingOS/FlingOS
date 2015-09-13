@@ -127,7 +127,13 @@
 <NamespaceSummaryItem name="MissingTagProcessor" isDocumented="False" />
 <NamespaceSummaryItem name="TestDriver" isDocumented="True">A sample driver for testing against. Does very little but useful for testing Kernel's ELF loading and ABI.</NamespaceSummaryItem>
 <NamespaceSummaryItem name="KernelABI" isDocumented="True">Contains classes for driver or application side access to the Kernel's Application Binary Interface.</NamespaceSummaryItem>
-<NamespaceSummaryItem name="CI20Booter" isDocumented="False" /></NamespaceSummaries>
+<NamespaceSummaryItem name="CI20Booter" isDocumented="False" />
+<NamespaceSummaryItem name="Drivers.Compiler.Architectures.MIPS32" isDocumented="True">Contains namespaces and classes for targetting the MIPS (32 bit) processor architecture.</NamespaceSummaryItem>
+<NamespaceSummaryItem name="Drivers.Compiler.Architectures.MIPS32.ASMOps" isDocumented="True">Contains classes representing all the MIPS operations used by the compiler when targetting the MIPS (32-bit) architecture.</NamespaceSummaryItem>
+<NamespaceSummaryItem name="Drivers.Compiler.ASM.ASMOps" isDocumented="True">Contains base class ASM ops for identifying types of ASM ops within target architecture libraries.</NamespaceSummaryItem>
+<NamespaceSummaryItem name="FlingOops" isDocumented="True">The cross-platform compiler verification kernel.</NamespaceSummaryItem>
+<NamespaceSummaryItem name="FlingOops.x86" isDocumented="True">x86-specific implementations for supporting the testing framework.</NamespaceSummaryItem>
+<NamespaceSummaryItem name="Kernel.Hardware.Exceptions" isDocumented="True">Contains exceptions used by the hardware drivers.</NamespaceSummaryItem></NamespaceSummaries>
     <ApiFilter>
       <Filter entryType="Namespace" fullName="" isExposed="False" />
 <Filter entryType="Namespace" fullName="Kernel.Compiler" isExposed="False" />
