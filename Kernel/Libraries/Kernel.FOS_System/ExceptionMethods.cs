@@ -361,7 +361,8 @@ namespace Kernel
             if ((uint)State->CurrentHandlerPtr->FilterAddress != 0x0u)
             {
                 // Case 1 : Leaving "try" or "catch" of a try-catch
-            
+                //BasicConsole.WriteLine("Leave try or catch of try-catch");
+
                 if (State->CurrentHandlerPtr->Ex != null)
                 {
                     FOS_System.GC.DecrementRefCount((FOS_System.Object)Utilities.ObjectUtilities.GetObject(State->CurrentHandlerPtr->Ex));
@@ -425,6 +426,8 @@ namespace Kernel
             // We need to handle 2 cases:
             // Case 1 : Pending exception
             // Case 2 : No pending exception
+
+            //BasicConsole.WriteLine("Handle end finally");
 
             if (State->CurrentHandlerPtr->ExPending != 0)
             {
