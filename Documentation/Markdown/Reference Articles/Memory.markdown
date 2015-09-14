@@ -72,9 +72,11 @@ Many systems (e.g. USB) use 4KiB blocks as a base size for buffers since they ex
 
 ## x86 Real vs. Protected mode
 
-  - What is real mode
-  - What is protected mode
-  - Why is protected mode necessary
+Real mode is the original mode (or design) of the x86 processor. In real mode you cannot use the full extent of memory and virtual memory is not available. 
+
+Protected mode can (and should) be switched to after your OS boots. In protected mode, virtual memory is available and other processor features too. Protected mode was introduced to allow isolation of programs from one another and to allow the kernel to strictly control what programs can and can't do; Hence why it is called Protected mode.
+
+Protected mode was necessary because in real mode, any program could read or write another program's memory. This made systems very susceptible to viruses and just plain buggy programs. A simple buffer overrun could be sufficient to crash a real-mode system. Protected mode allows the kernel to prevent this and to get early warning notices (i.e. interrupts) when a program starts to go wrong.
   
 ---
 
