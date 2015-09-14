@@ -3,7 +3,7 @@ layout: reference-article
 title: Disk Devices
 date: 2015-09-04 00:39:00
 categories: [ docs, reference ]
-description: This article covers disk devices in general with brief overviews of common disk devices.
+description: Describes disk devices in general with brief overviews of common disk devices.
 ---
 
 # Introduction

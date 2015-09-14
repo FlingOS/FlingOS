@@ -3,7 +3,7 @@ layout: reference-article
 title: Debugging
 date: 2015-09-04 02:14:00
 categories: [ docs, reference ]
-description: This article looks at a variety of common techniques used in both general and OS-specific debugging.
+description: Describes a variety of common techniques used in both general and OS-specific debugging.
 ---
 
 # Introduction

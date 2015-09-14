@@ -4,6 +4,7 @@ title: Global Descriptors Table
 date: 2015-08-27 21:24:00
 categories: [ docs, reference ]
 parent_name: Memory
+description: Describes the x86 Global Descriptors Table and how to use it.
 ---
 
 # Introduction

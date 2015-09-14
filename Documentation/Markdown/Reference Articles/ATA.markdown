@@ -4,7 +4,7 @@ title: ATA
 date: 2015-07-20 11:40:00
 categories: [ docs, reference ]
 parent_name: Disk Devices
-description: This is an article
+description: Describes ATA in general and gives detailed description of how to use Parallel ATA (PATA) drives.
 ---
 
 # Introduction

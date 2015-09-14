@@ -3,6 +3,7 @@ layout: reference-article
 title: Human Input Devices
 date: 2015-08-17 23:51:00
 categories: [ docs, reference ]
+description: Describes the class of devices known as human input devices.
 ---
 
 # Introduction

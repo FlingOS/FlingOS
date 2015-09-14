@@ -3,6 +3,7 @@ layout: reference-article
 title: Displays & Graphics
 date: 2015-07-23 12:20:00
 categories: [ docs, reference ]
+description: Describes what Displays, Graphics and Video are, a summary of their histories and how they link together.
 ---
 
 # Introduction

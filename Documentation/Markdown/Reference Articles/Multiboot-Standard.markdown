@@ -3,6 +3,7 @@ layout: reference-article
 title: Multiboot Standard
 date: 2015-09-03 16:16:00
 categories: [ docs, reference ]
+description: Describes the Multiboot standard and gives examples of how to use it.
 ---
 
 # Introduction

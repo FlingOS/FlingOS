@@ -4,7 +4,7 @@ title: VGA Text-mode
 date: 2015-09-11 11:21:00
 categories: [ docs, reference ]
 parent_name: Displays & Graphics
-description: A description
+description: Describes VGA text-mode as used on the x86 PC platform. 
 ---
 
 # Introduction

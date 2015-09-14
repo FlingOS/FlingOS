@@ -4,6 +4,7 @@ title: Consoles
 date: 2015-09-03 10:50:00
 categories: [ docs, reference ]
 parent_name: Displays & Graphics
+description: Describes consoles (in relation to terminals and shells) and details about using VGA text-mode or serial ports to create a console interface.
 ---
 
 # Introduction

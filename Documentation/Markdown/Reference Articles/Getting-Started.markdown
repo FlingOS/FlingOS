@@ -4,6 +4,7 @@ title: Getting Started
 date: 2015-08-30 20:21:00
 categories: [ docs, reference ]
 order: 0
+description: Start here! Get started with your own OS by following this article.
 ---
 
 # Where to start

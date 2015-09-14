@@ -4,6 +4,7 @@ title: Typical Design Routes
 date: 2015-09-02 12:04:00
 categories: [ docs, reference ]
 parent_name: Getting Started
+description: Describes typical design routes taken by new OS developers.
 ---
 
 # Introduction

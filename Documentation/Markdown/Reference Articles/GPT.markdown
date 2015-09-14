@@ -4,7 +4,7 @@ title: GPT
 date: 2015-09-04 00:52:00
 categories: [ docs, reference ]
 parent_name: Disk Devices
-description: This article covers the Guid Partition Table partitioning scheme (commonly referred to as GPT).
+description: Describes the GUID Partition Table partitioning scheme (commonly referred to as GPT).
 ---
 
 # Introduction

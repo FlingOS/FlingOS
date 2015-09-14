@@ -4,6 +4,7 @@ title: MBR and EBR
 date: 2015-07-21 11:38:00
 categories: [ docs, reference ]
 parent_name: Disk Devices
+description: Describes the Master Boot Record (MBR) and Extended Boot Record (EBR) partitioning schemes.
 ---
 
 # Introduction

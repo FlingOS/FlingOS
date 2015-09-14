@@ -3,6 +3,7 @@ layout: reference-article
 title: IO Ports
 date: 2015-08-30 16:12:00
 categories: [ docs, reference ]
+description: Describes Input/Output ports in general and has specific details for the x86 architecture (including common port assignments).
 ---
 
 # Introduction

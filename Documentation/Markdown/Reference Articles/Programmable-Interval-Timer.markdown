@@ -4,7 +4,7 @@ title: Programmable Interval Timer
 date: 2015-09-06 12:36:00
 categories: [ docs, reference ]
 parent_name: Timers
-description: A description of the Intel 8253/8254 PIT and links to useful articles about its operation.
+description: Describes the Intel 8253/8254 PIT and links to useful articles about its operation.
 ---
 
 # Introduction
