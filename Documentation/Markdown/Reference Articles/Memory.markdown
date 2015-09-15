@@ -92,7 +92,7 @@ One technology which might start to change this is Solid State Drives (SSDs). Th
 
 RAM actually comes in various physical forms. There are two fundamental types of Random Access Memory: Dynamic RAM (DRAM) and Static RAM (SRAM). The latter is more expensive and physically complex (meaning it can achieve as high data density) but is faster much faster and so is usually used for CPU caches. DRAM requires more power, is a bit slower but is cheaper and (because of its physical simplicity) can achieve higher data density. 
 
- The most basic DRAM commonly in use was SDRAM (Synchronous DRAM) but this has been rapidly replaced by Double Data Rate SDRAM (DDR SDRAM). There have been multiple versions of DDR up to and including the latest DDR4. RamBus DRAM is the most recent, popular development which is even more expensive but significantly faster than DDR.
+ The most basic DRAM commonly in use was SDRAM (Synchronous DRAM) but this has been rapidly replaced by Double Data Rate SDRAM (DDR SDRAM). There have been multiple versions of DDR up to and including the latest DDR4. Rambus DRAM is the most recent, popular development which is even more expensive but significantly faster than DDR.
   
 ## Memory Management Unit (MMU)
 
@@ -109,10 +109,12 @@ One or more levels may be split for data fetches and instruction fetches. This m
 Some architectures provide special flush or sync instructions to flush the instruction and/or data caches. On MIPS, the Synci instruction can be used to flush the data cache and clear the instruction cache. MIPS also has a segment (kseg1) which maps to the same area of physical memory as kseg0 but doesn't go through the processor caches. On x86, the caches are maintained automatically.
 
 ## Detecting memory size
- 
-  - Use BIOS
-  - Or use bootloader
-  - Or use another system
+
+Detecting memory size is a common task that an OS has to perform (since the amount of physical RAM is going to be one of the biggest constraints on the system). Unfortunately, there aren't many easy or reliable ways to do this. The recommended route is to use BIOS calls to get the BIOS to tell you how much RAM is available. Unfortunately, if your OS switches to protected mode almost as soon as it starts (which is also recommended) then you won't be able to use BIOS calls. The only alternative is to use a bootloader which supports reporting of RAM size. 
+
+There are alternative techniques which involve probing RAM (which is best done in ASM) but it is not guaranteed to work on all systems especially older ones in which ISA video cards might be present (which extend the amount of apparently accessible RAM).
+
+A practical article covering this topic in detail can be found on OSDev.org : [http://wiki.osdev.org/Detecting_Memory_(x86)](http://wiki.osdev.org/Detecting_Memory_(x86)).
 
 ---
 
@@ -120,53 +122,80 @@ Some architectures provide special flush or sync instructions to flush the instr
 
 ## Overview
 
+Memory management software, as has been described, comes in three layers. The central, large scale manager that should reside within the kernel. Small-scale managers (called heaps) which exist per-process (including the kernel process) and are allocated from the large scale manager. Lastly, stacks (which exist per thread and are allocated by the large-scale manager). 
+
 ## Basic outline
 
-- Memory Management
-    - Large area management
-        - Pages/segments
-    - Small area management
-        - Heap
-        - Stack
-        - Garbage Collection
-- Configuring virtual memory
-- Cache flushing
+When your operating system first starts it will no doubt be running in real mode and without virtual memory. Thus your initial tasks are the following:
+
+1. Switch to protected mode
+2. Initialise a stack using statically allocated memory (i.e. memory allocated in the .bss section of your binary)
+2. Configure a GDT (with segments covering all attribute types and DPLs across the entire 4GiB address space (even if using 64bit mode))
+3. Set up page directory and page table structures
+4. Load the process with the page directory
+
+If you're using a higher-half kernel, you will probably need multiple stages of virtual memory initialisation. Once to temporarily patch the memory followed by jumping to the higher half and then another stage to load your actual virtual memory setup.
+
+Once virtual memory is executing normally, your system should follow these steps:
+
+1. Initialise a small heap using some statically allocated memory (i.e. memory allocated in the .bss section of your binary)
+2. Initialise your large-scale manager using memory from the small heap
+3. Mark your existing small heap memory and stack memory as used within the large scale manager
+4. Grow the small heap by allocating pages from your large scale manager
+
+Your system should now be set up to function following normal princples (as described in other articles covering stacks, heaps and memory management). 
+
+## Garbage Collection
+
+It would be wrong of us not to mention garbage collection, since it is core to any C# system. There are many people who argue that garbage collection at the OS/kernel-level is impossible. It is obvious that FlingOS (and Microsoft's own Singularity C# OS) have disproven this from a "yes it can be done" stand point.
+
+There are still valid arguments against garbage collection at the low-level. At least in comparison to well-written code which manually manages memory, garbage collection will never perform as well. GCs also imply more wasted memory since the GC has to keep track of stuff which in and of itself uses more memory.
+
+However, a lot of time and effort goes into debugging manually memory managed software and a well written garbage collector can help eliminate this. Furthermore, there has yet to be any definitive research into whether a garbage collector on a modern, full-scale processor actually has a noticeable performance penalty. It is clear though that on embedded devices, where only small (kibibyte) amounts of RAM are available, a garbage collected system would be vastly inefficient.
 
 ## Technical details
 **Enumerations, classes, other such details**
 
-- Memory Maps
-  - x86
-  - MIPS
+The x86 standard memory (usage) map can be found at: [wiki.osdev.org/Memory_Map_(x86)](http://wiki.osdev.org/Memory_Map_(x86)) and its external links. 
+
+A very useful reference for the MIPS address space can be found at: [JonLoomis.org - PIC32 Memory](http://www.johnloomis.org/microchip/pic32/memory/memory.html).
   
 ## Implementation details
 **Methods, steps, etc.**
+
+Large scale managers will need the following basic functions:
+
+- Internal: Allocate physical page (allocates (i.e. gets and marks used) a free page of the physical address space)
+- Internal: Allocate virtual page (allocates (i.e. gets and marks used) a free page of the virtual address space)
+- External: Map free page (maps a free page of virtual memory to a free page of physical memory)
+- External: Unmap page
+- Internal or external: Map virtual to physical page (may be required for mapping memory-mapped devices)
+
+Small-scale managers (heaps) are described in the [Heaps article.](/docs/reference/Heaps) Stacks are described in [their respective article](/docs/reference/Stacks) too.
 
 ---
 
 # Further Reading
 
-- http://wiki.osdev.org/Memory_management
-- http://wiki.osdev.org/Detecting_Memory_(x86)
-- http://wiki.osdev.org/Memory_Management_Unit
-- http://wiki.osdev.org/Page_Frame_Allocation
-- http://wiki.osdev.org/Writing_a_memory_manager
-- http://wiki.osdev.org/Garbage_collection
-- http://wiki.osdev.org/Paging
-- http://www.eecs.harvard.edu/~mdw/course/cs61/mediawiki/images/0/0b/Lectures-virtmem.pdf
-- https://en.wikipedia.org/wiki/Virtual_memory
-- http://www.pcmag.com/encyclopedia/term/46788/memory-types
-- http://www.geek.com/chips/difference-between-real-mode-and-protected-mode-574665/
-- http://www.brokenthorn.com/Resources/OSDev4.html
-- http://www.on-time.com/rtos-32-docs/rttarget-32/programming-manual/x86-cpu/real-address-mode.htm
-- https://access.redhat.com/documentation/en-US/Red_Hat_Enterprise_Linux/3/html/Introduction_to_System_Administration/s1-memory-virt-details.html
-- http://www.tutorialspoint.com/operating_system/os_virtual_memory.htm
-- http://duartes.org/gustavo/blog/post/memory-translation-and-segmentation/
-- http://www.c-jump.com/CIS77/ASM/Memory/lecture.html
-- http://www.cs.columbia.edu/~junfeng/12sp-w4118/lectures/l05-mem.pdf
-- http://www.computermemoryupgrade.net/types-of-computer-memory-common-uses.html
-- https://en.wikipedia.org/wiki/Dynamic_random-access_memory#Double_data_rate_.28DDR.29
-- http://uk.pcmag.com/cpus-components-products/66029/feature/ddr-vs-ddr2-vs-ddr3-types-of-ram-explained
-- https://www.technibble.com/types-of-ram-how-to-identify-and-their-specifications/
-
-*[acronym]: details
+- [OSDev.org - Memory Management](http://wiki.osdev.org/Memory_management)
+- [OSDev.org - Detecting memory (x86)](http://wiki.osdev.org/Detecting_Memory_(x86))
+- [OSDev.org - Memory Management Unit](http://wiki.osdev.org/Memory_Management_Unit)
+- [OSDev.org - Page Frame Allocation](http://wiki.osdev.org/Page_Frame_Allocation)
+- [OSDev.org - Writing a memory manager](http://wiki.osdev.org/Writing_a_memory_manager)
+- [OSDev.org - Garbage Collection](http://wiki.osdev.org/Garbage_collection)
+- [OSDev.org - Paging](http://wiki.osdev.org/Paging)
+- [Hardvard.edu - Virtual Memory](http://www.eecs.harvard.edu/~mdw/course/cs61/mediawiki/images/0/0b/Lectures-virtmem.pdf)
+- [Wikipedia.org - Virtual Memory](https://en.wikipedia.org/wiki/Virtual_memory)
+- [PCMag.com - Types of memory](http://www.pcmag.com/encyclopedia/term/46788/memory-types)
+- [Geek.com - Deifference between real mode and protected mode](http://www.geek.com/chips/difference-between-real-mode-and-protected-mode-574665/)
+- [BrokenThorn.com - Processor Modes](http://www.brokenthorn.com/Resources/OSDev4.html)
+- [On-time.com - Real Address Mode](http://www.on-time.com/rtos-32-docs/rttarget-32/programming-manual/x86-cpu/real-address-mode.htm)
+- [RedHat.com - Virtual memory](https://access.redhat.com/documentation/en-US/Red_Hat_Enterprise_Linux/3/html/Introduction_to_System_Administration/s1-memory-virt-details.html)
+- [TutorialsPoint.com - Virtual memory](http://www.tutorialspoint.com/operating_system/os_virtual_memory.htm)
+- [Duartes.org - Memory translation and segmentation](http://duartes.org/gustavo/blog/post/memory-translation-and-segmentation/)
+- [C-Jump.com - Memmory modes](http://www.c-jump.com/CIS77/ASM/Memory/lecture.html)
+- [Columbia.edu - Segmentation and Paging](http://www.cs.columbia.edu/~junfeng/12sp-w4118/lectures/l05-mem.pdf)
+- [ComputerMemoryUpgrade.net - Types of computer memory and common uses](http://www.computermemoryupgrade.net/types-of-computer-memory-common-uses.html)
+- [Wikipedia.org - Dynamic random access memory](https://en.wikipedia.org/wiki/Dynamic_random-access_memory#Double_data_rate_.28DDR.29)
+- [PCMag.com - Types of RAM](http://uk.pcmag.com/cpus-components-products/66029/feature/ddr-vs-ddr2-vs-ddr3-types-of-ram-explained)
+- [Technibble.com - Types of RAM](https://www.technibble.com/types-of-ram-how-to-identify-and-their-specifications/)
