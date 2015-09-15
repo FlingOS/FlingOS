@@ -9,7 +9,7 @@ description: Start here! Get started with your own OS by following this article.
 
 # Where to start
 
-Want to create your own operating system? Or just to learn low-level development? To get you started with OS or low-level development, FlingOS has created a series of ***[10 tutorial videos](https://www.youtube.com/playlist?list=PLKbvCgwMcH7BX6Z8Bk1EuFwDa0WGkMnrz)***, each ~20 minutes long***. These videos will take you from only knowing how to program (in C or C#) to knowing all the basics of OS development and a having basic x86 operating system running on real hardware or in a virtual machine.
+Want to create your own operating system? Or just to learn low-level development? To get you started with OS or low-level development, FlingOS has created a series of [10 tutorial videos](https://www.youtube.com/playlist?list=PLKbvCgwMcH7BX6Z8Bk1EuFwDa0WGkMnrz), each ~20 minutes long. These videos will take you from only knowing how to program (in C or C#) to knowing all the basics of OS development and a having basic x86 operating system running on real hardware or in a virtual machine.
 
 Once you've gone through [the tutorials](https://www.youtube.com/playlist?list=PLKbvCgwMcH7BX6Z8Bk1EuFwDa0WGkMnrz) to get started with the basics, it's a good idea to decide on what platform you want to build an OS for or work out which platform you will be low-level dev'ing on. The easiest (and most common) choice is x86. The x86 architecture is found in every PC worldwide and all Apple Macs (since 2006). Alternative platforms (which are primarily embedded platforms) are the Creator CI20 (the MIPS-based development board from Imagination Technologies) and the Raspberry Pi (the most popular ARM-based development board).
 
