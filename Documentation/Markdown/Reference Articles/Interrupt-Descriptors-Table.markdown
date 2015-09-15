@@ -159,10 +159,7 @@ There are only two real alternatives to interrupts which are polling and hardwar
 # Example Code
 
 ## Overview
-TODO
-
-## Download
-TODO
+The FlingOS Interrupt Descriptors Table code is mainly contained in its Pre-requisite (i.e. initialisation) ASM code. The main file is available at: [https://github.com/FlingOS/FlingOS/blob/master/Kernel/Kernel/ASM/Descriptor%20Tables/IDT.x86_32.asm](https://github.com/FlingOS/FlingOS/blob/master/Kernel/Kernel/ASM/Descriptor%20Tables/IDT.x86_32.asm)
 
 ---
 

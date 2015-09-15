@@ -18,10 +18,7 @@ Since there is so much good stuff out there, we aren't writing our own documenta
 # Example Code
 
 ## Overview
-TODO
-
-## Download
-TODO
+The FlingOS Programmable Interval Timer implementation (including support for the PC speaker) can be found at: [https://github.com/FlingOS/FlingOS/blob/master/Kernel/Libraries/Kernel.Hardware/Timers/PIT.cs](https://github.com/FlingOS/FlingOS/blob/master/Kernel/Libraries/Kernel.Hardware/Timers/PIT.cs)
 
 ---
 

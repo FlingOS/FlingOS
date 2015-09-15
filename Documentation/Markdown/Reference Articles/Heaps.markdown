@@ -306,10 +306,17 @@ KernelFixedHeap_End:
 # Example Code
 
 ## Overview
-TODO
+The FlingOS Heap implementation is a basic, block-based binary heap with thread protection and support for allocation on boundaries. It has not been optimised so is relatively slow but should be reasonably simple to understand and re-implement in other languages. Care should be taken when using pointer arithmetic since C and C# handle this differently. The following line of C# would result in 8 being added to the address not 2:
 
-## Download
-TODO
+``` csharp
+unsafe 
+{
+    uint* pointer = (uint*)0x10000000;  // Set address
+    pointer += 2;                       // Add 2 * sizeof(uint) to address = 8
+}
+```
+
+The latest stable FlingOS heap implementation can be found at: [https://github.com/FlingOS/FlingOS/blob/master/Kernel/Libraries/Kernel.FOS_System/Heap.cs](https://github.com/FlingOS/FlingOS/blob/master/Kernel/Libraries/Kernel.FOS_System/Heap.cs).
 
 ---
 

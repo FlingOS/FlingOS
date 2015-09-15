@@ -159,10 +159,11 @@ Almost all PCs (including laptops) support VGA text-mode output since it has bee
 # Example Code
 
 ## Overview
-TODO
+FlingOS has multiple VGA text-mode implementations. The BasicConsole is a well-tested, zero-dependency implementation with support for a secondary output to a serial port and setting text colour buyt not scrolling. The AdvancedConsole is a well-tested but more system-dependent implementation which supports scrolling, backspace and other more advanced features.
 
-## Download
-TODO
+The BasicConsole can be found at: [https://github.com/FlingOS/FlingOS/blob/master/Kernel/Libraries/Kernel.FOS_System/BasicConsole.cs](https://github.com/FlingOS/FlingOS/blob/master/Kernel/Libraries/Kernel.FOS_System/BasicConsole.cs)
+
+The AdvancedConsole, and its base class Console, can be found at: [https://github.com/FlingOS/FlingOS/blob/master/Kernel/Libraries/Kernel.Core/Consoles/AdvancedConsole.cs](https://github.com/FlingOS/FlingOS/blob/master/Kernel/Libraries/Kernel.Core/Consoles/AdvancedConsole.cs) and [https://github.com/FlingOS/FlingOS/blob/master/Kernel/Libraries/Kernel.Core/Console.cs](https://github.com/FlingOS/FlingOS/blob/master/Kernel/Libraries/Kernel.Core/Console.cs).
 
 ---
 

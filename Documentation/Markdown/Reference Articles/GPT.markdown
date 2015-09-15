@@ -262,10 +262,7 @@ cannot be used for representing GPT and MBR partitions for general I/O use.
 # Example Code
 
 ## Overview
-TODO
-
-## Download
-TODO
+The FlingOS GPT implementation can be found at: [https://github.com/FlingOS/FlingOS/blob/master/Kernel/Libraries/Kernel.FOS_System.IO/Disk/GPT.cs](https://github.com/FlingOS/FlingOS/blob/master/Kernel/Libraries/Kernel.FOS_System.IO/Disk/GPT.cs)
 
 ---
 

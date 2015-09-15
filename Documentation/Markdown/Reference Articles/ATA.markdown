@@ -493,13 +493,9 @@ To read or write one or more sectors, the following steps should be performed:
 # Example Code
 
 ## Overview
-TODO
-The sample code provided here contains everything required to implement PATA support for hard disks. It also includes code for cleanly handling PATAPI, SATA and SATAPI devices.
+The FlingOS ATA driver is split amongst multiple files and classes to provide suitable levels of abstraction. At the time of writing (2015-09-15) the ATA driver had support for reading and writing PATA hard disk drives, reading PATAPI CD/DVD drives and detecting SATA/SATAPI devices. 
 
-The code is a direct copy of the FlingOS source code from 3rd February 2015. Most is in C# but for reference the IO Port x86-32bit assembler code is included.
-
-## Download
-TODO
+The FlingOS ATA driver(s) can be found at: [https://github.com/FlingOS/FlingOS/tree/master/Kernel/Libraries/Kernel.Hardware/ATA](https://github.com/FlingOS/FlingOS/tree/master/Kernel/Libraries/Kernel.Hardware/ATA)
 
 ---
 
