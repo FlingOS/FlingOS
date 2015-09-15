@@ -84,15 +84,35 @@ Protected mode was necessary because in real mode, any program could read or wri
 
 ## RAM vs other types
 
+There are lots of types of data storage within a computer. Fast, temporary storage used for program execution and data manipulation is RAM but long-term (often referred to as permanent) storage, used usually for large volumes of data, includes Hard Disk Drives, Flash memory sticks and CD/DVDs. The two key differences between long term and short term (which can also be described as non-volatile and volatile) storage are that with volatile memory you can access any single byte at any time very quickly but the value will only stay there for as long as the memory has power. Non-volatile storage does not require constant power but you can usually only access blocks (512 bytes or larger) at a time. 
+
+One technology which might start to change this is Solid State Drives (SSDs). These use a form of flash storage for very fast read/write access. However, they still use large block sizes for accessing so cannot be used for RAM yet.
+
 ## Types of RAM hardware
 
-  - Flash
+RAM actually comes in various physical forms. There are two fundamental types of Random Access Memory: Dynamic RAM (DRAM) and Static RAM (SRAM). The latter is more expensive and physically complex (meaning it can achieve as high data density) but is faster much faster and so is usually used for CPU caches. DRAM requires more power, is a bit slower but is cheaper and (because of its physical simplicity) can achieve higher data density. 
+
+ The most basic DRAM commonly in use was SDRAM (Synchronous DRAM) but this has been rapidly replaced by Double Data Rate SDRAM (DDR SDRAM). There have been multiple versions of DDR up to and including the latest DDR4. RamBus DRAM is the most recent, popular development which is even more expensive but significantly faster than DDR.
   
 ## Memory Management Unit (MMU)
 
+The Memory Management Unit is the piece of hardware which translates a virtual address to a physical address. Every memory reference made by CPU instructions is passed through the MMU. On x86 hardware, the MMU also handles I/O port addressing by accepting extra information from in/out instructions. The MMU may also be linked to a cache known as a Translation Lookaside Buffer (TLB for short) which acts as a fast cache of the most recently looked up virtual to physical translations. 
+
+The MMU requires to aspects of programming. The first is the configuration of whatever virtual memory system is in use whether that be segmentation or paging. This is what configures the translations from virtual to physicall addresses. The second aspect is flushing of the TLB (or equivalent cache). This has to occur whenever a virtual to physical translation is changed in the translation table since the cache may contain a copy of the translation. On some architectures the cache is automatically flushed for some changes. Also, it is often possible to flush a particular translation rather than the entire table (which would be a costly process).
+
 ## Caches
 
+CPU caches are generally made of SRAM and sit between the processor and the actual memory. How caches function depend very much on the system on chip (SoC). It is common for three levels of caches to exists, known as Level 1 (L1), Level 2 (L2) and Level 3 (L3) caches. They are layered and generally increase in size and effective distance from the processor. Thus L3 is slightly slower than L1. 
+
+One or more levels may be split for data fetches and instruction fetches. This means there are effectively two separate caches. One is used for instruction fetches and the other for data read/write. This means that modifying code in memory (which is done via data fetches) goes through a separate set of caches to instruction fetches. Thus both the data and instruction caches must be flushed or cleared in order for new code to be fetched.
+
+Some architectures provide special flush or sync instructions to flush the instruction and/or data caches. On MIPS, the Synci instruction can be used to flush the data cache and clear the instruction cache. MIPS also has a segment (kseg1) which maps to the same area of physical memory as kseg0 but doesn't go through the processor caches. On x86, the caches are maintained automatically.
+
 ## Detecting memory size
+ 
+  - Use BIOS
+  - Or use bootloader
+  - Or use another system
 
 ---
 
@@ -125,5 +145,28 @@ Protected mode was necessary because in real mode, any program could read or wri
 ---
 
 # Further Reading
+
+- http://wiki.osdev.org/Memory_management
+- http://wiki.osdev.org/Detecting_Memory_(x86)
+- http://wiki.osdev.org/Memory_Management_Unit
+- http://wiki.osdev.org/Page_Frame_Allocation
+- http://wiki.osdev.org/Writing_a_memory_manager
+- http://wiki.osdev.org/Garbage_collection
+- http://wiki.osdev.org/Paging
+- http://www.eecs.harvard.edu/~mdw/course/cs61/mediawiki/images/0/0b/Lectures-virtmem.pdf
+- https://en.wikipedia.org/wiki/Virtual_memory
+- http://www.pcmag.com/encyclopedia/term/46788/memory-types
+- http://www.geek.com/chips/difference-between-real-mode-and-protected-mode-574665/
+- http://www.brokenthorn.com/Resources/OSDev4.html
+- http://www.on-time.com/rtos-32-docs/rttarget-32/programming-manual/x86-cpu/real-address-mode.htm
+- https://access.redhat.com/documentation/en-US/Red_Hat_Enterprise_Linux/3/html/Introduction_to_System_Administration/s1-memory-virt-details.html
+- http://www.tutorialspoint.com/operating_system/os_virtual_memory.htm
+- http://duartes.org/gustavo/blog/post/memory-translation-and-segmentation/
+- http://www.c-jump.com/CIS77/ASM/Memory/lecture.html
+- http://www.cs.columbia.edu/~junfeng/12sp-w4118/lectures/l05-mem.pdf
+- http://www.computermemoryupgrade.net/types-of-computer-memory-common-uses.html
+- https://en.wikipedia.org/wiki/Dynamic_random-access_memory#Double_data_rate_.28DDR.29
+- http://uk.pcmag.com/cpus-components-products/66029/feature/ddr-vs-ddr2-vs-ddr3-types-of-ram-explained
+- https://www.technibble.com/types-of-ram-how-to-identify-and-their-specifications/
 
 *[acronym]: details

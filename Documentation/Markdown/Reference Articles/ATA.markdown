@@ -493,13 +493,13 @@ To read or write one or more sectors, the following steps should be performed:
 # Example Code
 
 ## Overview
+TODO
 The sample code provided here contains everything required to implement PATA support for hard disks. It also includes code for cleanly handling PATAPI, SATA and SATAPI devices.
 
 The code is a direct copy of the FlingOS source code from 3rd February 2015. Most is in C# but for reference the IO Port x86-32bit assembler code is included.
 
 ## Download
-
-[ATA - 2015-02-03](/Source%20Samples/ATA%20-%202015-02-03.zip)
+TODO
 
 ---
 
