@@ -3,6 +3,7 @@ layout: reference-article
 title: Interrupts
 date: 2015-08-10 15:15:00
 categories: [ docs, reference ]
+description: Describes interrupts in general along with many of the considerations that must be made when using interrupts.
 ---
 
 # Introduction

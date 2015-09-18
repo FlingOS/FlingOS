@@ -1,9 +1,10 @@
 ---
 layout: reference-article
-title: Global Descriptor Table
+title: Global Descriptors Table
 date: 2015-08-27 21:24:00
 categories: [ docs, reference ]
 parent_name: Memory
+description: Describes the x86 Global Descriptors Table and how to use it.
 ---
 
 # Introduction
@@ -300,10 +301,8 @@ Segmentation and paging are compatible and, uniquely to x86, can be used simulta
 # Example Code
 
 ## Overview
-TODO
+The FlingOS Global Descriptors Table code is mainly contained in its Pre-requisite (i.e. initialisation) ASM code. The main files are available at: [https://github.com/FlingOS/FlingOS/blob/master/Kernel/Kernel/ASM/Descriptor%20Tables/GDT.x86_32.asm](https://github.com/FlingOS/FlingOS/blob/master/Kernel/Kernel/ASM/Descriptor%20Tables/GDT.x86_32.asm) and [https://github.com/FlingOS/FlingOS/blob/master/Kernel/Kernel/ASM/PreReqs/MultibootSignature.x86_32.asm](https://github.com/FlingOS/FlingOS/blob/master/Kernel/Kernel/ASM/PreReqs/MultibootSignature.x86_32.asm) (the latter contains the static allocations for the GDT).
 
-## Download
-TODO
 
 ---
 

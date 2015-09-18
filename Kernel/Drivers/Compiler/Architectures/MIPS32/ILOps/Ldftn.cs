@@ -1,4 +1,30 @@
-﻿using System;
+﻿#region LICENSE
+// ---------------------------------- LICENSE ---------------------------------- //
+//
+//    Fling OS - The educational operating system
+//    Copyright (C) 2015 Edward Nutting
+//
+//    This program is free software: you can redistribute it and/or modify
+//    it under the terms of the GNU General Public License as published by
+//    the Free Software Foundation, either version 2 of the License, or
+//    (at your option) any later version.
+//
+//    This program is distributed in the hope that it will be useful,
+//    but WITHOUT ANY WARRANTY; without even the implied warranty of
+//    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//    GNU General Public License for more details.
+//
+//    You should have received a copy of the GNU General Public License
+//    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+//
+//  Project owner: 
+//		Email: edwardnutting@outlook.com
+//		For paper mail address, please contact via email for details.
+//
+// ------------------------------------------------------------------------------ //
+#endregion
+    
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -27,7 +53,14 @@ namespace Drivers.Compiler.Architectures.MIPS32
         {
             Types.MethodInfo methodInfo = preprocessState.TheILLibrary.GetMethodInfo(theOp.MethodToCall);
 
-            if (theOp.LoadAtILOffset != int.MaxValue)
+            if (theOp.LoadAtILOpAfterOp != null)
+            {
+                ILBlock anILBlock = preprocessState.TheILLibrary.GetILBlock(methodInfo);
+                int index = anILBlock.ILOps.IndexOf(theOp.LoadAtILOpAfterOp);
+                index++;
+                anILBlock.ILOps[index].LabelRequired = true;
+            }
+            else if (theOp.LoadAtILOffset != int.MaxValue)
             {
                 int offset = theOp.LoadAtILOffset;
                 ILOp theLoadedOp = preprocessState.TheILLibrary.GetILBlock(methodInfo).At(offset);
@@ -49,7 +82,19 @@ namespace Drivers.Compiler.Architectures.MIPS32
             bool addExternalLabel = methodID != conversionState.Input.TheMethodInfo.ID;
 
             //If we want to load the pointer at a specified IL op number:
-            if (theOp.LoadAtILOffset != int.MaxValue)
+            if (theOp.LoadAtILOpAfterOp != null)
+            {
+                ILBlock anILBlock = conversionState.TheILLibrary.GetILBlock(methodInfo);
+                int index = anILBlock.ILOps.IndexOf(theOp.LoadAtILOpAfterOp);
+                if (index == -1)
+                {
+                    throw new NullReferenceException("LoadAtILOpAfterOp not found in IL block!");
+                }
+
+                index++;
+                methodID = ASM.ASMBlock.GenerateLabel(methodID, anILBlock.PositionOf(anILBlock.ILOps[index]));
+            }
+            else if (theOp.LoadAtILOffset != int.MaxValue)
             {
                 //Append the IL sub-label to the ID
                 ILBlock anILBlock = conversionState.TheILLibrary.GetILBlock(methodInfo);

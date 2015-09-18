@@ -4,6 +4,7 @@ title: Drivers Compiler
 date: 2015-07-29 11:32:00
 categories: [ docs, reference ]
 parent_name: FlingOS™
+description: Describes the internal workings of the FlingOS Ahead-of-time Compiler known internally as the Drivers Compiler.
 ---
 
 ## IL to Machine Code

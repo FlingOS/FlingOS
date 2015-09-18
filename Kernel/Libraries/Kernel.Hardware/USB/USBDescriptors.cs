@@ -28,23 +28,73 @@ using System;
 
 namespace Kernel.Hardware.USB
 {
-    /// <summary>
-    /// The types of USB endpoint.
-    /// </summary>
-    public enum EndpointType
+    public class Configuration : FOS_System.Object
+    {
+        [Flags]
+        public enum Attributes : byte
+        {
+            RemoteWakeup = 0x20,
+            SelfPowered = 0x40,
+            BusPowered = 0x80
+        }
+
+        /// <summary>
+        /// The number of interfaces for this configuration.
+        /// </summary>
+        public byte NumInterfaces;
+        /// <summary>
+        /// The value to use as an argument to select this configuration.
+        /// </summary>
+        public byte Selector;
+        /// <summary>
+        /// Description of this configuration.
+        /// </summary>
+        public UnicodeString Description;
+        /// <summary>
+        /// Bit 7: Reserved, set to 1. (USB 1.0 Bus Powered).
+        /// Bit 6: Self Powered.
+        /// Bit 5: Remote Wakeup.
+        /// Bits 4..0: Reserved, set to 0.
+        /// </summary>
+        public Attributes Attribs;
+        /// <summary>
+        /// Maximum power consumption as a multiple of 2mA units.
+        /// </summary>
+        public byte MaxPower;
+    }
+    public class Interface : FOS_System.Object
     {
         /// <summary>
-        /// An endpoint that sends data.
+        /// The index of this interface.
         /// </summary>
-        OUT,
+        public byte InterfaceNumber;
         /// <summary>
-        /// An endpoint that receives data.
+        /// A value used to select the alternative setting.
         /// </summary>
-        IN, 
+        public byte AlternateSetting;
         /// <summary>
-        /// A bidirectional endpoint that sends or receives data.
+        /// The number of endpoints the interface has.
         /// </summary>
-        BIDIR
+        public byte NumEndpoints;
+        /// <summary>
+        /// The interface class code.
+        /// </summary>
+        /// <see cref="!:http://www.usb.org/developers/defined_class" />
+        public byte Class;
+        /// <summary>
+        /// The interface sub-class code.
+        /// </summary>
+        /// <see cref="!:http://www.usb.org/developers/defined_class" />
+        public byte Subclass;
+        /// <summary>
+        /// The interface protocol code.
+        /// </summary>
+        /// <see cref="!:http://www.usb.org/developers/defined_class" />
+        public byte Protocol;
+        /// <summary>
+        /// Description this interface.
+        /// </summary>
+        public UnicodeString Description;
     }
     /// <summary>
     /// Represents a device endpoint.
@@ -52,18 +102,100 @@ namespace Kernel.Hardware.USB
     public class Endpoint : FOS_System.Object
     {
         /// <summary>
+        /// The types of USB endpoint.
+        /// </summary>
+        public enum Types
+        {
+            /// <summary>
+            /// An endpoint that sends data.
+            /// </summary>
+            OUT,
+            /// <summary>
+            /// An endpoint that receives data.
+            /// </summary>
+            IN,
+            /// <summary>
+            /// A bidirectional endpoint that sends or receives data.
+            /// </summary>
+            BIDIR
+        }
+
+        /// <summary>
         /// The maximum packet size to use when transferring data to-from 
         /// the endpoint.
         /// </summary>
-        public ushort mps;
+        public ushort MPS;
         /// <summary>
         /// The toggle state of the last transaction sent to the endpoint.
         /// </summary>
-        public bool toggle;
+        public bool Toggle;
         /// <summary>
         /// The endpoint type.
         /// </summary>
-        public EndpointType type;
+        public Types Type;
+
+        /// <summary>
+        /// The endpoint's address.
+        /// Bit 7: Direction (0 = Out, 1 = In, ignored for Control endpoints). 
+        /// Bits 4..6: Reserved. Set to Zero. 
+        /// Bits 0..3: Endpoint number. 
+        /// </summary>
+        public byte Address;
+        /// <summary>
+        /// Endpoint attributes. See remarks for details.
+        /// </summary>
+        /// <remarks>
+        /// <list type="bullet">
+        ///     <item>
+        ///         <term>Bits 0..1 - Transfer Type</term>
+        ///         <description>
+        ///             <list type="bullet">
+        ///                 <item><term>00</term><description>Control</description></item>
+        ///                 <item><term>01</term><description>Isochronous</description></item>
+        ///                 <item><term>10</term><description>Bulk</description></item>
+        ///                 <item><term>11</term><description>Interrupt</description></item>
+        ///             </list>
+        ///         </description>
+        ///     </item>
+        ///     
+        ///     <item>
+        ///         <term>Bits 2..7</term>
+        ///         <description>Reserved except if isochronous endpoint (see below).</description>
+        ///     </item>
+        ///     
+        ///     <item>
+        ///         <term>(If Isochronous endpoint) - Bits 3..2 - Synchronisation Type</term>
+        ///         <description>
+        ///             <list type="bullet">
+        ///                 <item><term>00</term><description>No Synchonisation</description></item>
+        ///                 <item><term>01</term><description>Asynchronous</description></item>
+        ///                 <item><term>10</term><description>Adaptive</description></item>
+        ///                 <item><term>11</term><description>Synchronous</description></item>
+        ///             </list>
+        ///         </description>
+        ///     </item>
+        ///     
+        ///     <item>
+        ///         <term>(If Isochronous endpoint) - Bits 5..4 - Usage Type</term>
+        ///         <description>
+        ///             <list type="bullet">
+        ///                 <item><term>00</term><description>Data Endpoint</description></item>
+        ///                 <item><term>01</term><description>Feedback Endpoint</description></item>
+        ///                 <item><term>10</term><description>Explicit Feedback Data Endpoint</description></item>
+        ///                 <item><term>11</term><description>Reserved</description></item>
+        ///             </list>
+        ///         </description>
+        ///     </item>
+        /// </list>
+        /// </remarks>
+        public byte Attributes;
+        /// <summary>
+        /// Interval for polling endpoint data transfers. Value in frame counts. See remarks for more info.
+        /// </summary>
+        /// <remarks>
+        /// Ignored for Bulk &amp; Control Endpoints. Isochronous must equal 1 and field may range from 1 to 255 for interrupt endpoints.
+        /// </remarks>
+        public byte Interval;
     }
     /// <summary>
     /// The USB Device Descriptor structure received from a device.
@@ -218,7 +350,7 @@ namespace Kernel.Hardware.USB
         /// <summary>
         /// Index of the string descriptor describing this interface.
         /// </summary>
-        public byte Interface;
+        public byte StringIndex;
     }
     /// <summary>
     /// The USB Endpoint Descriptor structure received from a device.
@@ -302,6 +434,157 @@ namespace Kernel.Hardware.USB
         /// </remarks>
         public byte interval;
     }
+    public class StringInfo : FOS_System.Object
+    {
+        public ushort[] LanguageIds;
+
+        public static FOS_System.String GetLanguageName(ushort languageId)
+        {
+            switch (languageId)
+            {
+                case 0x400:
+                    return "Neutral";
+                case 0x401:
+                    return "Arabic";
+                case 0x402:
+                    return "Bulgarian";
+                case 0x403:
+                    return "Catalan";
+                case 0x404:
+                    return "Chinese";
+                case 0x405:
+                    return "Czech";
+                case 0x406:
+                    return "Danish";
+                case 0x407:
+                    return "German";
+                case 0x408:
+                    return "Greek";
+                case 0x409:
+                    return "English";
+                case 0x40a:
+                    return "Spanish";
+                case 0x40b:
+                    return "Finnish";
+                case 0x40c:
+                    return "French";
+                case 0x40d:
+                    return "Hebrew";
+                case 0x40e:
+                    return "Hungarian";
+                case 0x40f:
+                    return "Icelandic";
+                case 0x410:
+                    return "Italian";
+                case 0x411:
+                    return "Japanese";
+                case 0x412:
+                    return "Korean";
+                case 0x413:
+                    return "Dutch";
+                case 0x414:
+                    return "Norwegian";
+                case 0x415:
+                    return "Polish";
+                case 0x416:
+                    return "Portuguese";
+                case 0x418:
+                    return "Romanian";
+                case 0x419:
+                    return "Russian";
+                case 0x41a:
+                    return "Croatian";
+                //case 0x41a: - Same as previous...hmm...
+                //TODO - Find out the actual language code for Serbian or Croatian (whichever is wrong)
+                //    return "Serbian";
+                //    break; 
+                case 0x41b:
+                    return "Slovak";
+                case 0x41c:
+                    return "Albanian";
+                case 0x41d:
+                    return "Swedish";
+                case 0x41e:
+                    return "Thai";
+                case 0x41f:
+                    return "Turkish";
+                case 0x420:
+                    return "Urdu";
+                case 0x421:
+                    return "Indonesian";
+                case 0x422:
+                    return "Ukrainian";
+                case 0x423:
+                    return "Belarusian";
+                case 0x424:
+                    return "Slovenian";
+                case 0x425:
+                    return "Estonian";
+                case 0x426:
+                    return "Latvian";
+                case 0x427:
+                    return "Lithuanian";
+                case 0x429:
+                    return "Farsi";
+                case 0x42a:
+                    return "Vietnamese";
+                case 0x42b:
+                    return "Armenian";
+                case 0x42c:
+                    return "Azeri";
+                case 0x42d:
+                    return "Basque";
+                case 0x42f:
+                    return "Macedonian";
+                case 0x436:
+                    return "Afrikaans";
+                case 0x437:
+                    return "Georgian";
+                case 0x438:
+                    return "Faeroese";
+                case 0x439:
+                    return "Hindi";
+                case 0x43e:
+                    return "Malay";
+                case 0x43f:
+                    return "Kazak";
+                case 0x440:
+                    return "Kyrgyz";
+                case 0x441:
+                    return "Swahili";
+                case 0x443:
+                    return "Uzbek";
+                case 0x444:
+                    return "Tatar";
+                case 0x446:
+                    return "Punjabi";
+                case 0x447:
+                    return "Gujarati";
+                case 0x449:
+                    return "Tamil";
+                case 0x44a:
+                    return "Telugu";
+                case 0x44b:
+                    return "Kannada";
+                case 0x44e:
+                    return "Marathi";
+                case 0x44f:
+                    return "Sanskrit";
+                case 0x450:
+                    return "Mongolian";
+                case 0x456:
+                    return "Galician";
+                case 0x457:
+                    return "Konkani";
+                case 0x45a:
+                    return "Syriac";
+                case 0x465:
+                    return "Divehi";
+                default:
+                    return "Language code: " + (FOS_System.String)languageId;
+            }
+        }
+    }
     /// <summary>
     /// The USB String Descriptor structure received from a device. Use this or the unicode version as appropriate.
     /// </summary>
@@ -321,6 +604,11 @@ namespace Kernel.Hardware.USB
         /// This has been determined, through testing, to require a max length 10 bytes. Not sure if this is proper though.
         /// </summary>
         public fixed ushort languageID[10];
+    }
+    public class UnicodeString : FOS_System.Object
+    {
+        public byte StringType;
+        public FOS_System.String Value;
     }
     /// <summary>
     /// A USB Unicode String Description structure received from a device. Use this or the unicode version as appropriate.

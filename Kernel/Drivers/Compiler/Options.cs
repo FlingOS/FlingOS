@@ -85,6 +85,7 @@ namespace Drivers.Compiler
             AddressSizeInBytes = 4;
             BaseAddress = 0;
             LoadOffset = 0;
+            ShortenDependencyNames = true;
         }
 
         /// <summary>
@@ -173,6 +174,12 @@ namespace Drivers.Compiler
             set;
         }
         public static long LoadOffset
+        {
+            get;
+            set;
+        }
+
+        public static bool ShortenDependencyNames
         {
             get;
             set;

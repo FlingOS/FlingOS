@@ -768,8 +768,15 @@ namespace Kernel.FOS_System
                 newObjToCleanupPtr->objHeaderPtr = objHeaderPtr;
                 newObjToCleanupPtr->objPtr = objPtr;
 
-                newObjToCleanupPtr->prevPtr = CleanupList;
-                CleanupList->nextPtr = newObjToCleanupPtr;
+                if (CleanupList != null)
+                {
+                    newObjToCleanupPtr->prevPtr = CleanupList;
+                    CleanupList->nextPtr = newObjToCleanupPtr;
+                }
+                else
+                {
+                    newObjToCleanupPtr->prevPtr = null;
+                }
 
                 CleanupList = newObjToCleanupPtr;
             }
@@ -820,12 +827,22 @@ namespace Kernel.FOS_System
         {
             ObjectToCleanup* prevPtr = objToCleanupPtr->prevPtr;
             ObjectToCleanup* nextPtr = objToCleanupPtr->nextPtr;
-            prevPtr->nextPtr = nextPtr;
+            if (prevPtr != null)
+            {
+                prevPtr->nextPtr = nextPtr;
+            }
             nextPtr->prevPtr = prevPtr;
 
             if(CleanupList == objToCleanupPtr)
             {
-                CleanupList = prevPtr;
+                if (prevPtr != null)
+                {
+                    CleanupList = prevPtr;
+                }
+                else
+                {
+                    CleanupList = nextPtr;
+                }
             }
             
             Heap.Free(objToCleanupPtr);

@@ -621,12 +621,14 @@ namespace FlingOops
         }
 
 
+        [Drivers.Compiler.Attributes.NoGC]
         public static void WriteSuccess(FlingOops.String message)
         {
             SetTextColour(success_colour);
             WriteLine(message);
             SetTextColour(default_colour);
         }
+        [Drivers.Compiler.Attributes.NoGC]
         public static void WriteError(FlingOops.String message)
         {
             SetTextColour(error_colour);

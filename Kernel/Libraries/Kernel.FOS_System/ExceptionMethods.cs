@@ -79,6 +79,13 @@ namespace Kernel
             }
         }
 
+        private struct AddExceptionHandlerInfo_EntryStackState
+        {
+            public uint EBP;
+            public uint RetAddr;
+            public uint FilterPtr;
+            public uint HandlerPtr;
+        }
         /// <summary>
         /// Adds a new Exception Handler Info structure to the stack and sets 
         /// it as the current handler.
@@ -101,6 +108,17 @@ namespace Kernel
                 BasicConsole.DelayOutput(10);
                 BasicConsole.SetTextColour(BasicConsole.default_colour);
             }
+
+            State->depth++;
+
+            //if (filterPtr != null)
+            //{
+            //    BasicConsole.WriteLine("Enter try-catch block");
+            //}
+            //else
+            //{
+            //    BasicConsole.WriteLine("Enter try-finally block");
+            //}
 
             AddExceptionHandlerInfo_EntryStackState* BasePtr = (AddExceptionHandlerInfo_EntryStackState*)BasePointer;
 
@@ -145,13 +163,6 @@ namespace Kernel
             // Caller will:
             //      - Add size of args to esp
             // Which should leave the stack at the bottom of the (shifted up) ex handler info
-        }
-        private struct AddExceptionHandlerInfo_EntryStackState
-        {
-            public uint EBP;
-            public uint RetAddr;
-            public uint FilterPtr;
-            public uint HandlerPtr;
         }
 
         /// <summary>
@@ -216,7 +227,9 @@ namespace Kernel
         [Drivers.Compiler.Attributes.NoGC]
         public static unsafe void HandleException()
         {
-            if(State != null)
+            //BasicConsole.WriteLine("Handle exception");
+
+            if (State != null)
             {
                 if (State->CurrentHandlerPtr != null)
                 {
@@ -229,6 +242,12 @@ namespace Kernel
                             State->CurrentHandlerPtr->PrevHandlerPtr->ExPending = State->CurrentHandlerPtr->ExPending;
                         }
                         State->CurrentHandlerPtr = State->CurrentHandlerPtr->PrevHandlerPtr;
+                        State->depth--;
+                        State->history[State->history_pos++] = (uint)State->CurrentHandlerPtr->HandlerAddress;
+                        if (State->history_pos > 31)
+                        {
+                            State->history_pos = 0;
+                        }
                     }
                 }
 
@@ -270,7 +289,20 @@ namespace Kernel
                 State->CurrentHandlerPtr == null)
             {
                 // If we get to here, it's an unhandled exception
-                HaltReason = "Cannot leave on null handler! Address: 0x        ";
+                HaltReason = "";
+                if (State == null)
+                {
+                    HaltReason = "Cannot leave on null handler! Address: 0x         - Null state";
+                }
+                else if (State->CurrentHandlerPtr == null)
+                {
+                    HaltReason = "Cannot leave on null handler! Address: 0x         - Null handler";                
+                }
+                else
+                {
+                    HaltReason = "Cannot leave on null handler! Address: 0x         - Unexpected reason";
+                }
+
 
                 uint y = *((uint*)(BasePointer + 4));
                 int offset = 48;
@@ -336,6 +368,37 @@ namespace Kernel
                 #endregion
 
                 BasicConsole.WriteLine(HaltReason);
+
+                if (State != null)
+                {
+                    if (State->depth > 0)
+                    {
+                        BasicConsole.WriteLine("    -- Positive depth");
+                    }
+                    else if (State->depth == 0)
+                    {
+                        BasicConsole.WriteLine("    -- Zero depth");
+                    }
+                    else if (State->depth < 0)
+                    {
+                        BasicConsole.WriteLine("    -- Negative depth");
+                    }
+
+                    int pos = State->history_pos;
+                    do
+                    {
+                        BasicConsole.Write(State->history[pos]);
+                        BasicConsole.Write(" ");
+
+                        pos--;
+                        if (pos == -1)
+                        {
+                            pos = 31;
+                        }
+                    }
+                    while (pos != State->history_pos);
+                }
+
                 BasicConsole.DelayOutput(5);
 
                 // Try to cause fault
@@ -350,7 +413,8 @@ namespace Kernel
             if ((uint)State->CurrentHandlerPtr->FilterAddress != 0x0u)
             {
                 // Case 1 : Leaving "try" or "catch" of a try-catch
-            
+                //BasicConsole.WriteLine("Leave try or catch of try-catch");
+
                 if (State->CurrentHandlerPtr->Ex != null)
                 {
                     FOS_System.GC.DecrementRefCount((FOS_System.Object)Utilities.ObjectUtilities.GetObject(State->CurrentHandlerPtr->Ex));
@@ -363,7 +427,13 @@ namespace Kernel
                 uint ESP = State->CurrentHandlerPtr->ESP;
 
                 State->CurrentHandlerPtr = State->CurrentHandlerPtr->PrevHandlerPtr;
-                
+                State->depth--;
+                State->history[State->history_pos++] = (uint)State->CurrentHandlerPtr->HandlerAddress;
+                if (State->history_pos > 31)
+                {
+                    State->history_pos = 0;
+                }
+
                 ArbitaryReturn(EBP, ESP + (uint)sizeof(ExceptionHandlerInfo), (byte*)continuePtr);
             }
             else
@@ -372,9 +442,19 @@ namespace Kernel
                 
                 State->CurrentHandlerPtr->InHandler = 1;
 
+                byte* handlerAddress = State->CurrentHandlerPtr->HandlerAddress;
+
+                //BasicConsole.WriteLine("Leave try of try-finally");
+                //BasicConsole.Write("Handler address: ");
+                //BasicConsole.WriteLine((uint)handlerAddress);
+                //BasicConsole.Write("Continue ptr: ");
+                //BasicConsole.WriteLine((uint)continuePtr);
+
+                State->CurrentHandlerPtr->HandlerAddress = (byte*)continuePtr;
+
                 ArbitaryReturn(State->CurrentHandlerPtr->EBP,
                                State->CurrentHandlerPtr->ESP,
-                               State->CurrentHandlerPtr->HandlerAddress);
+                               handlerAddress);
             }
 
         }
@@ -392,7 +472,18 @@ namespace Kernel
                 State->CurrentHandlerPtr == null)
             {
                 // If we get to here, it's an unhandled exception
-                HaltReason = "Cannot end finally on null handler!";
+                if (State == null)
+                {
+                    HaltReason = "Cannot end finally in null state!";
+                }
+                else if (State->CurrentHandlerPtr == null)
+                {
+                    HaltReason = "Cannot end finally on null handler!";
+                }
+                else
+                {
+                    HaltReason = "Cannot end finally for unexpected reason!";
+                }
                 BasicConsole.WriteLine(HaltReason);
                 BasicConsole.DelayOutput(5);
                 
@@ -404,6 +495,8 @@ namespace Kernel
             // We need to handle 2 cases:
             // Case 1 : Pending exception
             // Case 2 : No pending exception
+
+            //BasicConsole.WriteLine("Handle end finally");
 
             if (State->CurrentHandlerPtr->ExPending != 0)
             {
@@ -419,12 +512,24 @@ namespace Kernel
 
                 uint EBP = State->CurrentHandlerPtr->EBP;
                 uint ESP = State->CurrentHandlerPtr->ESP;
-                           
+                byte* retAddr = State->CurrentHandlerPtr->HandlerAddress;//(byte*)*((uint*)(BasePointer + 4));
+
+                //BasicConsole.Write("Continue ptr (from HandlerAddress): ");
+                //BasicConsole.WriteLine((uint)State->CurrentHandlerPtr->HandlerAddress);
+                //BasicConsole.Write("Actual continue addr (from EBP): ");
+                //BasicConsole.WriteLine(*((uint*)(BasePointer + 4)));
+
                 State->CurrentHandlerPtr = State->CurrentHandlerPtr->PrevHandlerPtr;
+                State->depth--;
+                State->history[State->history_pos++] = (uint)State->CurrentHandlerPtr->HandlerAddress;
+                if (State->history_pos > 31)
+                {
+                    State->history_pos = 0;
+                }
 
                 ArbitaryReturn(EBP,
                     ESP + (uint)sizeof(ExceptionHandlerInfo),
-                    (byte*)*((uint*)(BasePointer + 4)));
+                    retAddr);
             }
         }
         
@@ -1031,6 +1136,9 @@ namespace Kernel
     public unsafe struct ExceptionState
     {
         public ExceptionHandlerInfo* CurrentHandlerPtr;
+        public int depth;
+        public fixed uint history[32];
+        public int history_pos;
     }
     /// <summary>
     /// Represents an Exception Handler Info.

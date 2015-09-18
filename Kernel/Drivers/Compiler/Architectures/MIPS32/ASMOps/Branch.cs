@@ -112,15 +112,15 @@ namespace Drivers.Compiler.Architectures.MIPS32.ASMOps
 
             if (numSourceOperands == 2)
             {
-                return jmpOp + " " + Src1 + ", " + Src2 + ", " + label;
+                return jmpOp + " " + Src1 + ", " + Src2 + ", " + label + "\nnop";
             }
             else if (numSourceOperands == 1)
             {
-                return jmpOp + " " + Src1 + ", " + label;
+                return jmpOp + " " + Src1 + ", " + label + "\nnop";
             }
             else
             {
-                return jmpOp + " " + label;
+                return jmpOp + " " + label + "\nnop";
             }
         }
     }

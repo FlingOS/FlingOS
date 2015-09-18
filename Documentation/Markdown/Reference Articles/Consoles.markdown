@@ -4,6 +4,7 @@ title: Consoles
 date: 2015-09-03 10:50:00
 categories: [ docs, reference ]
 parent_name: Displays & Graphics
+description: Describes consoles (in relation to terminals and shells) and details about using VGA text-mode or serial ports to create a console interface.
 ---
 
 # Introduction
@@ -184,10 +185,7 @@ This only applies to VGA text-mode. Screen subdivision can be achieved by using 
 # Example Code
 
 ## Overview
-TODO
-
-## Download
-TODO
+FlingOS has multiple VGA text-mode console implementations. Details can be found in the [Example Code section of the VGA Text-mode article](/docs/reference/VGA-Text-mode#Example-code). The BasicConsole also supports writing to serial ports.
 
 ---
 

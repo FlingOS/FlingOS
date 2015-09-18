@@ -372,6 +372,13 @@ namespace FlingOops
             UInt32 bneed;
             byte nid;
 
+#if MIPS
+            if (boundary < 4)
+            {
+                boundary = 4;
+            }
+#endif
+
             if (boundary > 1)
             {
                 size += (boundary - 1);

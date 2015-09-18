@@ -106,6 +106,7 @@
     <Compile Include="Devices\Key Maps\SPKeymap.cs" />
     <Compile Include="Devices\Key Maps\USKeymap.cs" />
     <Compile Include="Devices\Timer.cs" />
+    <Compile Include="Exceptions\NoDiskException.cs" />
     <Compile Include="Interrupts\Interrupts.cs" />
     <Compile Include="IO\Serial\Serial.cs" />
     <Compile Include="Tasks\DeviceManagerTask.cs" />

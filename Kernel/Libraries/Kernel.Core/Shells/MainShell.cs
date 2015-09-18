@@ -243,7 +243,7 @@ namespace Kernel.Core.Shells
                                     }
                                     else if (opt1 == "usb")
                                     {
-                                        OuptutUSB();
+                                        OutputUSB();
                                     }
                                     else if (opt1 == "fs")
                                     {
@@ -1763,7 +1763,7 @@ which should have been provided with the executable.");
         /// <summary>
         /// Outputs the USB system information.
         /// </summary>
-        private void OuptutUSB()
+        private void OutputUSB()
         {
             console.WriteLine(((FOS_System.String)"USB system initialised.        HCIs : ") + Hardware.USB.USBManager.HCIDevices.Count);
             console.WriteLine(((FOS_System.String)"                              UHCIs : ") + Hardware.USB.USBManager.NumUHCIDevices);
@@ -1868,24 +1868,24 @@ which should have been provided with the executable.");
                         }
                     }
 
-                    console.Write("endpoint 0 mps: ");
-                    console.Write_AsDecimal(((Hardware.USB.Endpoint)usbDeviceInfo.Endpoints[0]).mps);
+                    console.Write("Endpoint 0 mps: ");
+                    console.Write_AsDecimal(((Hardware.USB.Endpoint)usbDeviceInfo.Endpoints[0]).MPS);
                     console.WriteLine(" byte.");
-                    console.Write("vendor:            ");
-                    console.WriteLine_AsDecimal(usbDeviceInfo.vendor);
-                    console.Write("product:           ");
-                    console.WriteLine_AsDecimal(usbDeviceInfo.product);
-                    console.Write("release number:    ");
+                    console.Write("Vendor:            ");
+                    console.WriteLine(usbDeviceInfo.vendor);
+                    console.Write("Product:           ");
+                    console.WriteLine(usbDeviceInfo.product);
+                    console.Write("Release number:    ");
                     console.Write_AsDecimal((usbDeviceInfo.releaseNumber >> 8) & 0xFF);
                     console.Write(".");
                     console.WriteLine_AsDecimal(usbDeviceInfo.releaseNumber & 0xFF);
-                    console.Write("manufacturer:      ");
-                    console.WriteLine_AsDecimal(usbDeviceInfo.manufacturerStringID);
-                    console.Write("product:           ");
-                    console.WriteLine_AsDecimal(usbDeviceInfo.productStringID);
-                    console.Write("serial number:     ");
-                    console.WriteLine_AsDecimal(usbDeviceInfo.serNumberStringID);
-                    console.Write("number of config.: ");
+                    console.Write("Manufacturer:      ");
+                    console.WriteLine(usbDeviceInfo.ManufacturerString.Value);
+                    console.Write("Product:           ");
+                    console.WriteLine(usbDeviceInfo.ProductString.Value);
+                    console.Write("Serial number:     ");
+                    console.WriteLine(usbDeviceInfo.SerialNumberString.Value);
+                    console.Write("Number of config.: ");
                     console.WriteLine_AsDecimal(usbDeviceInfo.numConfigurations); // number of possible configurations
                     console.Write("MSDInterfaceNum:   ");
                     console.WriteLine_AsDecimal(usbDeviceInfo.MSD_InterfaceNum);
@@ -2038,7 +2038,8 @@ which should have been provided with the executable.");
                 }
                 catch
                 {
-                    if (!(ExceptionMethods.CurrentException is FOS_System.Exceptions.NotSupportedException))
+                    if (!(ExceptionMethods.CurrentException is FOS_System.Exceptions.NotSupportedException) &&
+                        !(ExceptionMethods.CurrentException is Hardware.Exceptions.NoDiskException))
                     {
                         console.ErrorColour();
                         console.WriteLine("Error initialising disk device:");

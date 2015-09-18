@@ -4,7 +4,7 @@ title: GPT
 date: 2015-09-04 00:52:00
 categories: [ docs, reference ]
 parent_name: Disk Devices
-description: This article covers the Guid Partition Table partitioning scheme (commonly referred to as GPT).
+description: Describes the GUID Partition Table partitioning scheme (commonly referred to as GPT).
 ---
 
 # Introduction
@@ -262,10 +262,7 @@ cannot be used for representing GPT and MBR partitions for general I/O use.
 # Example Code
 
 ## Overview
-TODO
-
-## Download
-TODO
+The FlingOS GPT implementation can be found at: [https://github.com/FlingOS/FlingOS/blob/master/Kernel/Libraries/Kernel.FOS_System.IO/Disk/GPT.cs](https://github.com/FlingOS/FlingOS/blob/master/Kernel/Libraries/Kernel.FOS_System.IO/Disk/GPT.cs)
 
 ---
 

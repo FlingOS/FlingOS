@@ -3,7 +3,7 @@ layout: reference-article
 title: FlingOS™
 date: 2015-09-06 20:05:00
 categories: [ docs, reference ]
-description: Describes the FlingOS™ operating system.
+description: Describes the FlingOS™ operating system (including how to get set up for development of FlingOS).
 ---
 
 # Introduction
