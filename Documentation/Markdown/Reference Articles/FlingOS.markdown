@@ -94,7 +94,7 @@ Ensure you have the following required software installed:
     In the configurations drop-down select Debug (you should also see Release and Docs modes). Select the "AnyCPU" platform for now. 
 5. To build the kernel, follow these steps (in this order!!):
 
-    1. Open Kernel\Debug folder and build Kernel.Debug.Data followed by Kernel.Debug.Debugger.
+    1. Open Kernel\Debug folder and build Kernel.Debug.Data. (Note: Building the Kernel.Debug.Debugger is unnecessary and will probably just cause build errors / missing package / missing executable exceptions. It is not expected to work at this time.)
     2. Open Kernel\Compiler folder and build Kernel.Compiler followed by Architectures\Kernel.Compiler.Architectures.x86_32 followed by Kernel.Compiler.App.
     3. Open Drivers\Compiler folder and build Drivers.Compiler.MSBuildTask
     4. Select the "x86" platform
