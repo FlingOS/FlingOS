@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="479.0" height="780.0" viewBox="50.0 310.0 479.0 780.0" version="1.1">
+<rect x="50.0" y="310.0" width="479.0" height="780.0" fill="rgb(255,255,255)"/>
+<polygon id="s29639351" points="80.00065,340.0 499.9997,340.0 499.99982,1059.9999 79.99999,1060.0 " fill="none" stroke-width="2.0" stroke="rgb(0,0,0)" stroke-dasharray="7.0 7.0">
+<g id="t29639351">
+<text x="153.99991" y="367.28748" font-family="Helvetica" font-weight="bold" fill="rgb(0,0,0)" font-size="25" textLength="272.0">Device Manager Process</text>
+<path id="s412618368" d="M 153.99991,368.28748 425.99988,368.28748 " fill="none" stroke-width="2.0" stroke="rgb(0,0,0)"/>
+</g>
+</polygon>
+<g id="s378965879">
+<polygon id="s378965879" points="220.00002,400.0 319.99988,400.0 320.0,460.0 220.00002,459.99985 " fill="none" stroke-width="2.0" stroke="rgb(0,0,0)"/>
+<g id="t378965879">
+<text x="255.0" y="434.447" font-family="Helvetica" fill="rgb(0,0,0)" font-size="14" textLength="30.0">Start</text>
+</g>
+</g>
+<g id="s714046838">
+<polygon id="s714046838" points="179.99998,500.0 359.99982,500.0 359.9992,540.0 179.99998,539.99994 " fill="none" stroke-width="2.0" stroke="rgb(0,0,0)"/>
+<g id="t714046838">
+<text x="197.99991" y="524.447" font-family="Helvetica" fill="rgb(0,0,0)" font-size="14" textLength="144.0">Register Syscall handler</text>
+</g>
+</g>
+<g id="s320258051">
+<polygon id="s320258051" points="140.0,660.0 400.0,660.0 399.99988,700.0 140.0,699.99945 " fill="none" stroke-width="2.0" stroke="rgb(0,0,0)"/>
+<g id="t320258051">
+<text x="171.5" y="684.447" font-family="Helvetica" fill="rgb(0,0,0)" font-size="14" textLength="197.0">Scan PCI/ATA busses for device</text>
+</g>
+</g>
+<g id="s550645037">
+<polygon id="s550645037" points="160.0,740.0 379.99988,740.0 379.99988,780.0 160.0,780.0 " fill="none" stroke-width="2.0" stroke="rgb(0,0,0)"/>
+<g id="t550645037">
+<text x="183.49994" y="764.447" font-family="Helvetica" fill="rgb(0,0,0)" font-size="14" textLength="173.0">Start relevant driver process</text>
+</g>
+</g>
+<g id="s219601073">
+<polygon id="s219601073" points="160.00003,820.0 380.0,820.0 379.99957,859.99976 160.00003,860.0 " fill="none" stroke-width="2.0" stroke="rgb(0,0,0)"/>
+<g id="t219601073">
+<text x="185.5" y="844.447" font-family="Helvetica" fill="rgb(0,0,0)" font-size="14" textLength="169.0">Create pipe to device driver</text>
+</g>
+</g>
+<g id="s437560992">
+<polygon id="s437560992" points="160.0,900.0 380.0,900.0 379.9997,940.0 160.0,939.9999 " fill="none" stroke-width="2.0" stroke="rgb(0,0,0)"/>
+<g id="t437560992">
+<text x="192.5" y="924.447" font-family="Helvetica" fill="rgb(0,0,0)" font-size="14" textLength="155.0">Hand off device to driver</text>
+</g>
+</g>
+<g id="s83586396">
+<polygon id="s83586396" points="199.99998,580.0 339.99988,580.0 339.9995,620.0 199.99998,619.99994 " fill="none" stroke-width="2.0" stroke="rgb(0,0,0)"/>
+<g id="t83586396">
+<text x="211.99994" y="604.447" font-family="Helvetica" fill="rgb(0,0,0)" font-size="14" textLength="116.0">Create output pipe</text>
+</g>
+</g>
+<g id="s798402897">
+<polygon id="s798402897" points="180.0,980.0 360.0,980.0 359.99997,1020.0 180.0,1020.0 " fill="none" stroke-width="2.0" stroke="rgb(0,0,0)"/>
+<g id="t798402897">
+<text x="212.0" y="1004.447" font-family="Helvetica" fill="rgb(0,0,0)" font-size="14" textLength="116.0">Output device info</text>
+</g>
+</g>
+<g id="la495286289">
+<path id="s495286289" d="M 270.0,459.99994 269.9999,500.0 " fill="none" stroke-width="2.0" stroke="rgb(0,0,0)"/>
+</g>
+<g id="la442550340">
+<path id="s442550340" d="M 269.99994,699.99976 269.99994,740.0 " fill="none" stroke-width="2.0" stroke="rgb(0,0,0)"/>
+</g>
+<g id="la89038680">
+<path id="s89038680" d="M 269.99994,780.0 270.0,820.0 " fill="none" stroke-width="2.0" stroke="rgb(0,0,0)"/>
+</g>
+<g id="la624051107">
+<path id="s624051107" d="M 269.99982,859.9999 270.0,900.0 " fill="none" stroke-width="2.0" stroke="rgb(0,0,0)"/>
+</g>
+<g id="la277430223">
+<path id="s277430223" d="M 269.9996,540.0 269.99994,580.0 " fill="none" stroke-width="2.0" stroke="rgb(0,0,0)"/>
+</g>
+<g id="la811791798">
+<path id="s811791798" d="M 269.99976,620.0 270.0,660.0 " fill="none" stroke-width="2.0" stroke="rgb(0,0,0)"/>
+</g>
+<g id="la970903160">
+<path id="s970903160" d="M 269.99985,939.99994 269.99994,980.0 " fill="none" stroke-width="2.0" stroke="rgb(0,0,0)"/>
+</g>
+<g id="la313862249">
+<path id="s313862249" d="M 360.0,1000.0 460.0,1000.0 460.0,680.0 400.0,680.0 " fill="none" stroke-width="2.0" stroke="rgb(0,0,0)"/>
+<path id="s69819577" d="M 409.1781,672.2694 400.0,680.0 409.1781,687.7306 " fill="none" stroke-width="2.0" stroke="rgb(0,0,0)"/>
+</g>
+</svg>
