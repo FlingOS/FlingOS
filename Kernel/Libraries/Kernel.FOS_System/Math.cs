@@ -32,7 +32,6 @@ namespace Kernel.FOS_System
     /// Provides constants and static methods for common mathematical functions and some operations not supported by 
     /// IL code.
     /// </summary>
-    [Compiler.PluggedClass]
     public static class Math
     {
         /// <summary>
@@ -41,7 +40,6 @@ namespace Kernel.FOS_System
         /// <param name="dividend">The UInt64 to be divided.</param>
         /// <param name="divisor">The UInt32 to divide by.</param>
         /// <returns>The quotient of the division.</returns>
-        [Compiler.PluggedMethod(ASMFilePath = @"ASM\Math\Divide")]
         [Drivers.Compiler.Attributes.PluggedMethod(ASMFilePath = @"ASM\Math\Divide")]
         public static ulong Divide(ulong dividend, uint divisor)
         {

@@ -302,7 +302,6 @@ namespace Kernel.Hardware.PCI
         /// <param name="bus">The PCI bus number.</param>
         /// <param name="slot">The PCI slot number.</param>
         /// <param name="function">The PCI function number.</param>
-        [Compiler.NoDebug]
         [Drivers.Compiler.Attributes.NoDebug]
         public PCIDevice(uint bus, uint slot, uint function)
         {
@@ -346,7 +345,6 @@ namespace Kernel.Hardware.PCI
         /// <param name="aSlot">PCI slot number.</param>
         /// <param name="aFunction">PCI function number.</param>
         /// <returns>The base address.</returns>
-        [Compiler.NoDebug]
         [Drivers.Compiler.Attributes.NoDebug]
         protected static UInt32 GetAddressBase(uint aBus, uint aSlot, uint aFunction)
         {
@@ -415,7 +413,6 @@ namespace Kernel.Hardware.PCI
         /// </summary>
         /// <param name="aRegister">The register to read.</param>
         /// <returns>The byte that has been read.</returns>
-        [Compiler.NoDebug]
         [Drivers.Compiler.Attributes.NoDebug]
         internal byte ReadRegister8(byte aRegister)
         {
@@ -429,7 +426,6 @@ namespace Kernel.Hardware.PCI
         /// </summary>
         /// <param name="aRegister">The register to write.</param>
         /// <param name="value">The value to write.</param>
-        [Compiler.NoDebug]
         [Drivers.Compiler.Attributes.NoDebug]
         internal void WriteRegister8(byte aRegister, byte value)
         {
@@ -443,7 +439,6 @@ namespace Kernel.Hardware.PCI
         /// </summary>
         /// <param name="aRegister">The register to read.</param>
         /// <returns>The UInt16 that has been read.</returns>
-        [Compiler.NoDebug]
         [Drivers.Compiler.Attributes.NoDebug]
         internal UInt16 ReadRegister16(byte aRegister)
         {
@@ -457,7 +452,6 @@ namespace Kernel.Hardware.PCI
         /// </summary>
         /// <param name="aRegister">The register to write.</param>
         /// <param name="value">The value to write.</param>
-        [Compiler.NoDebug]
         [Drivers.Compiler.Attributes.NoDebug]
         internal void WriteRegister16(byte aRegister, ushort value)
         {
@@ -471,7 +465,6 @@ namespace Kernel.Hardware.PCI
         /// </summary>
         /// <param name="aRegister">The register to read.</param>
         /// <returns>The UInt32 that has been read.</returns>
-        [Compiler.NoDebug]
         [Drivers.Compiler.Attributes.NoDebug]
         internal UInt32 ReadRegister32(byte aRegister)
         {
@@ -485,7 +478,6 @@ namespace Kernel.Hardware.PCI
         /// </summary>
         /// <param name="aRegister">The register to write.</param>
         /// <param name="value">The value to write.</param>
-        [Compiler.NoDebug]
         [Drivers.Compiler.Attributes.NoDebug]
         internal void WriteRegister32(byte aRegister, uint value)
         {

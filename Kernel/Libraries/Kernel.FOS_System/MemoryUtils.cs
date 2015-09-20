@@ -31,7 +31,6 @@ namespace Kernel.Utilities
     /// <summary>
     /// Static utility methods for memory manipulation.
     /// </summary>
-    [Compiler.PluggedClass]
     public static unsafe class MemoryUtils
     {
         /// <summary>
@@ -40,9 +39,7 @@ namespace Kernel.Utilities
         /// <param name="dest">The destination memory.</param>
         /// <param name="src">The source memory.</param>
         /// <param name="length">The amount of memory to copy.</param>
-        [Compiler.NoGC]
         [Drivers.Compiler.Attributes.NoGC]
-        [Compiler.NoDebug]
         [Drivers.Compiler.Attributes.NoDebug]
         public static void MemCpy_32(byte* dest, byte* src, uint length)
         {
@@ -57,9 +54,7 @@ namespace Kernel.Utilities
         /// <param name="dest">The destination memory.</param>
         /// <param name="src">The source memory.</param>
         /// <param name="length">The amount of memory to copy.</param>
-        [Compiler.NoGC]
         [Drivers.Compiler.Attributes.NoGC]
-        [Compiler.NoDebug]
         [Drivers.Compiler.Attributes.NoDebug]
         public static void MemCpy(byte* dest, byte* src, ulong length)
         {
@@ -75,9 +70,7 @@ namespace Kernel.Utilities
         /// <param name="ptr">Pointer to the start of the memory to set to zero.</param>
         /// <param name="size">The length of memory to set to zeroes.</param>
         /// <returns>The original pointer.</returns>
-        [Compiler.NoGC]
         [Drivers.Compiler.Attributes.NoGC]
-        [Compiler.NoDebug]
         [Drivers.Compiler.Attributes.NoDebug]
         public static void* ZeroMem(void* ptr, uint size)
         {
@@ -101,9 +94,7 @@ namespace Kernel.Utilities
         /// </param>
         /// <param name="len">The length of the field in bits.</param>
         /// <returns>The field value.</returns>
-        [Compiler.NoGC]
         [Drivers.Compiler.Attributes.NoGC]
-        [Compiler.NoDebug]
         [Drivers.Compiler.Attributes.NoDebug]
         public static byte GetField(byte* addr, byte byteNum, byte shift, byte len) 
         {
@@ -115,7 +106,6 @@ namespace Kernel.Utilities
         /// </summary>
         /// <param name="aUInt32">The value to convert.</param>
         /// <returns>The converted value.</returns>
-        [Compiler.PluggedMethod(ASMFilePath=@"ASM\MemoryUtils")]
         [Drivers.Compiler.Attributes.PluggedMethod(ASMFilePath=@"ASM\MemoryUtils")]
         public static uint htonl(uint aUInt32)
         {

@@ -1034,8 +1034,6 @@ namespace Kernel.Core.Shells
         /// Handler for the periodic reboot timer event.
         /// </summary>
         /// <param name="state">The state object. Should be null.</param>
-        [Compiler.NoGC]
-        [Compiler.NoDebug]
         private void TriggerPeriodicReboot(object state)
         {
             ((MainShell)state).Reboot();
@@ -1043,8 +1041,6 @@ namespace Kernel.Core.Shells
         /// <summary>
         /// Reboots the computer
         /// </summary>
-        [Compiler.NoGC]
-        [Compiler.NoDebug]
         private void Reboot()
         {
             if (Hardware.Keyboards.PS2.ThePS2 != null)
@@ -2159,7 +2155,6 @@ which should have been provided with the executable.");
         /// <summary>
         /// Tests all interrupts in the range 17 to 255 by firing them.
         /// </summary>
-        [Compiler.NoGC]
         [Drivers.Compiler.Attributes.NoGC]
         private void InterruptsTest()
         {
@@ -2172,7 +2167,6 @@ which should have been provided with the executable.");
         /// <summary>
         /// Tests delegates.
         /// </summary>
-        [Compiler.NoGC]
         [Drivers.Compiler.Attributes.NoGC]
         private void DelegateTest()
         {
@@ -2600,8 +2594,7 @@ which should have been provided with the executable.");
         /// <example>
         /// public int x
         /// {
-        ///     [Compiler.NoGC]
-        ///     get
+        ///        ///     get
         ///     {
         ///         return 0;
         ///     }

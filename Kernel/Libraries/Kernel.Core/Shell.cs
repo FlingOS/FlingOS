@@ -73,7 +73,6 @@ namespace Kernel.Core
         /// <summary>
         /// Outputs informations about the current exception, if any.
         /// </summary>
-        [Compiler.NoDebug]
         [Drivers.Compiler.Attributes.NoDebug]
         protected void OutputExceptionInfo(FOS_System.Exception Ex)
         {
@@ -97,7 +96,6 @@ namespace Kernel.Core
         /// <summary>
         /// Outputs a divider line.
         /// </summary>
-        [Compiler.NoDebug]
         [Drivers.Compiler.Attributes.NoDebug]
         protected void OutputDivider()
         {
