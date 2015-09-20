@@ -38,9 +38,7 @@ namespace Kernel.Utilities
         /// </summary>
         /// <param name="bitNum">The bit index to mask.</param>
         /// <returns>The mask.</returns>
-        [Compiler.NoDebug]
         [Drivers.Compiler.Attributes.NoDebug]
-        [Compiler.NoGC]
         [Drivers.Compiler.Attributes.NoGC]
         public static uint BIT(int bitNum)
         {

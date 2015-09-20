@@ -35,7 +35,6 @@ namespace Kernel.FOS_System
     /// <summary>
     /// Represents the underlying type of any array within the Kernel.
     /// </summary>
-    [Compiler.ArrayClass]
     [Drivers.Compiler.Attributes.ArrayClass]
     public unsafe class Array : Object
     {
@@ -63,9 +62,7 @@ namespace Kernel.FOS_System
         /// </summary>
         /// <param name="x">The System.Array to convert.</param>
         /// <returns>The FOS_System.Array (a reference to the exact same object).</returns>
-        [Compiler.NoGC]
         [Drivers.Compiler.Attributes.NoGC]
-        [Compiler.NoDebug]
         [Drivers.Compiler.Attributes.NoDebug]
         public static implicit operator FOS_System.Array(object[] x)
         {
@@ -80,9 +77,7 @@ namespace Kernel.FOS_System
         /// <param name="dest">The array to copy elements to.</param>
         /// <param name="destOffset">The offset in the destination array to start copying to.</param>
         /// <param name="count">The number of elements to copy.</param>
-        [Compiler.NoGC]
         [Drivers.Compiler.Attributes.NoGC]
-        [Compiler.NoDebug]
         [Drivers.Compiler.Attributes.NoDebug]
         public static void Copy(byte[] source, int sourceOffset, byte[] dest, int destOffset, int count)
         {

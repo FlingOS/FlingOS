@@ -63,7 +63,6 @@ namespace Kernel.Hardware.PCI
         /// <summary>
         /// Enumerates all connected PCI devices.
         /// </summary>
-        [Compiler.NoDebug]
         [Drivers.Compiler.Attributes.NoDebug]
         private static void EnumerateDevices()
         {
@@ -75,7 +74,6 @@ namespace Kernel.Hardware.PCI
         /// </summary>
         /// <param name="bus">The bus to enumerate.</param>
         /// <param name="step">The number of steps from the root bus.</param>
-        [Compiler.NoDebug]
         [Drivers.Compiler.Attributes.NoDebug]
         private static void EnumerateBus(uint bus, uint step)
         {
@@ -114,7 +112,6 @@ namespace Kernel.Hardware.PCI
         /// </summary>
         /// <param name="device">The device to add.</param>
         /// <param name="step">The number of steps from the root bus.</param>
-        [Compiler.NoDebug]
         [Drivers.Compiler.Attributes.NoDebug]
         private static void AddDevice(PCIDevice device, uint step)
         {

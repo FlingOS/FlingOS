@@ -112,10 +112,6 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\Compiler\Kernel.Compiler.csproj">
-      <Project>{061e5f53-5eff-4e12-94ee-9e18459e5cf4}</Project>
-      <Name>Kernel.Compiler</Name>
-    </ProjectReference>
     <ProjectReference Include="..\Kernel.Debug.Data\Kernel.Debug.Data.csproj">
       <Project>{fb67cee3-2563-43d2-9124-e1357b836ceb}</Project>
       <Name>Kernel.Debug.Data</Name>

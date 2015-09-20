@@ -40,7 +40,6 @@ namespace Kernel.FOS_System
     /// Do not use any of the members, properties or methods which are inherited from the base
     /// class!
     /// </remarks>
-    [Compiler.TypeClass]
     [Drivers.Compiler.Attributes.TypeClass]
     public unsafe abstract class Type : System.Type
     {
@@ -96,9 +95,7 @@ namespace Kernel.FOS_System
         /// <param name="x">The first type to compare with the second.</param>
         /// <param name="y">The second type to compare with the first.</param>
         /// <returns>True if they are equal, otherwise false.</returns>
-        [Compiler.NoDebug]
         [Drivers.Compiler.Attributes.NoDebug]
-        [Compiler.NoGC]
         [Drivers.Compiler.Attributes.NoGC]
         public static bool operator ==(Type x, Type y)
         {
@@ -121,9 +118,7 @@ namespace Kernel.FOS_System
         /// <param name="x">The first type to compare with the second.</param>
         /// <param name="y">The second type to compare with the first.</param>
         /// <returns>True if they are not equal, otherwise false.</returns>
-        [Compiler.NoDebug]
         [Drivers.Compiler.Attributes.NoDebug]
-        [Compiler.NoGC]
         [Drivers.Compiler.Attributes.NoGC]
         public static bool operator !=(Type x, Type y)
         {
@@ -134,7 +129,6 @@ namespace Kernel.FOS_System
     /// <summary>
     /// Represents the information in the methods type table.
     /// </summary>
-    [Compiler.MethodInfoStruct]
     [Drivers.Compiler.Attributes.MethodInfoStruct]
     [System.Runtime.InteropServices.StructLayout(System.Runtime.InteropServices.LayoutKind.Sequential, Pack = 1)]
     public unsafe struct MethodInfo
@@ -155,7 +149,6 @@ namespace Kernel.FOS_System
     /// <summary>
     /// Represents the information in the fields type table.
     /// </summary>
-    [Compiler.FieldInfoStruct]
     [Drivers.Compiler.Attributes.FieldInfoStruct]
     [System.Runtime.InteropServices.StructLayout(System.Runtime.InteropServices.LayoutKind.Sequential, Pack = 1)]
     public unsafe struct FieldInfo

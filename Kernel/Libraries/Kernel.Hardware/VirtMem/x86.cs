@@ -35,7 +35,6 @@ namespace Kernel.Hardware.VirtMem
     /// <summary>
     /// Provides methods for setting up paged virtual memory.
     /// </summary>
-    [Compiler.PluggedClass]
     public unsafe class x86 : VirtMemImpl
     {
         [Flags]
@@ -64,7 +63,6 @@ namespace Kernel.Hardware.VirtMem
         /// <summary>
         /// Initialises the new x86 object.
         /// </summary>
-        [Compiler.NoDebug]
         [Drivers.Compiler.Attributes.NoDebug]
         public x86()
         {
@@ -138,7 +136,6 @@ namespace Kernel.Hardware.VirtMem
             BasicConsole.DelayOutput(5);
         }
 
-        [Compiler.NoDebug]
         [Drivers.Compiler.Attributes.NoDebug]
         public override uint FindFreePhysPageAddr()
         {
@@ -149,7 +146,6 @@ namespace Kernel.Hardware.VirtMem
             }
             return (uint)(result * 4096);
         }
-        [Compiler.NoDebug]
         [Drivers.Compiler.Attributes.NoDebug]
         public override uint FindFreeVirtPageAddr()
         {
@@ -166,7 +162,6 @@ namespace Kernel.Hardware.VirtMem
         /// </summary>
         /// <param name="pAddr">The physical address to map to.</param>
         /// <param name="vAddr">The virtual address to map.</param>
-        [Compiler.NoDebug]
         [Drivers.Compiler.Attributes.NoDebug]
         public override void Map(uint pAddr, uint vAddr, PageFlags flags, UpdateUsedPagesFlags UpdateUsedPages = UpdateUsedPagesFlags.Both)
         {
@@ -185,7 +180,6 @@ namespace Kernel.Hardware.VirtMem
             }
             Map(pAddr, vAddr, pteFlags, UpdateUsedPages);
         }
-        [Compiler.NoDebug]
         [Drivers.Compiler.Attributes.NoDebug]
         private void Map(uint pAddr, uint vAddr, PTEFlags flags, UpdateUsedPagesFlags UpdateUsedPages = UpdateUsedPagesFlags.Both)
         {
@@ -229,7 +223,6 @@ namespace Kernel.Hardware.VirtMem
             //Invalidate the page table entry so that mapping isn't CPU cached.
             InvalidatePTE(vAddr);
         }
-        [Compiler.NoDebug]
         [Drivers.Compiler.Attributes.NoDebug]
         public override void Unmap(uint vAddr, UpdateUsedPagesFlags UpdateUsedPages = UpdateUsedPagesFlags.Both)
         {
@@ -262,7 +255,6 @@ namespace Kernel.Hardware.VirtMem
         /// <remarks>
         /// This has an undefined return value and behaviour if the virtual address is not mapped.
         /// </remarks>
-        [Compiler.NoDebug]
         [Drivers.Compiler.Attributes.NoDebug]
         public override uint GetPhysicalAddress(uint vAddr)
         {
@@ -282,7 +274,6 @@ namespace Kernel.Hardware.VirtMem
         /// <summary>
         /// Maps in the main kernel memory.
         /// </summary>
-        [Compiler.NoDebug]
         [Drivers.Compiler.Attributes.NoDebug]
         public override void MapKernel()
         {
@@ -357,7 +348,6 @@ namespace Kernel.Hardware.VirtMem
         /// </summary>
         /// <param name="pageNum">The page number (directory index) of the page table to get.</param>
         /// <returns>A uint pointer to the page table.</returns>
-        [Compiler.NoDebug]
         [Drivers.Compiler.Attributes.NoDebug]
         private uint* GetFixedPage(uint pageNum)
         {
@@ -369,7 +359,6 @@ namespace Kernel.Hardware.VirtMem
         /// <param name="pageTablePtr">The page table to set the value in.</param>
         /// <param name="entry">The entry index (page table index) of the entry to set.</param>
         /// <param name="addr">The physical address to map the entry to.</param>
-        [Compiler.NoDebug]
         [Drivers.Compiler.Attributes.NoDebug]
         private void SetPageEntry(uint* pageTablePtr, uint entry, uint addr, PTEFlags flags)
         {
@@ -394,7 +383,6 @@ namespace Kernel.Hardware.VirtMem
         /// </summary>
         /// <param name="pageNum">The page number (directory index) of the entry to set.</param>
         /// <param name="pageTablePhysPtr">The physical address of the page table to set the entry to point at.</param>
-        [Compiler.NoDebug]
         [Drivers.Compiler.Attributes.NoDebug]
         private void SetDirectoryEntry(uint pageNum, uint* pageTablePhysPtr)
         {
@@ -418,9 +406,7 @@ namespace Kernel.Hardware.VirtMem
         /// Invalidates the cache of the specified page table entry.
         /// </summary>
         /// <param name="entry">The entry to invalidate.</param>
-        [Compiler.PluggedMethod(ASMFilePath = @"ASM\VirtMem\x86")]
         [Drivers.Compiler.Attributes.PluggedMethod(ASMFilePath = @"ASM\VirtMem\x86")]
-        [Compiler.SequencePriority(Priority = long.MaxValue)]
         [Drivers.Compiler.Attributes.SequencePriority(Priority = long.MaxValue)]
         private void InvalidatePTE(uint entry)
         {
@@ -435,7 +421,6 @@ namespace Kernel.Hardware.VirtMem
         /// This is the difference between the virtual address and the 
         /// physical address at which the bootloader loaded the kernel.
         /// </remarks>
-        [Compiler.PluggedMethod(ASMFilePath = null)]
         [Drivers.Compiler.Attributes.PluggedMethod(ASMFilePath = null)]
         public static uint GetKernelVirtToPhysOffset()
         {
@@ -445,7 +430,6 @@ namespace Kernel.Hardware.VirtMem
         /// Gets the page directory memory pointer.
         /// </summary>
         /// <returns>The pointer.</returns>
-        [Compiler.PluggedMethod(ASMFilePath = null)]
         [Drivers.Compiler.Attributes.PluggedMethod(ASMFilePath = null)]
         private static uint* GetPageDirectoryPtr()
         {
@@ -455,7 +439,6 @@ namespace Kernel.Hardware.VirtMem
         /// Gets a pointer to the page table that is the first page table.
         /// </summary>
         /// <returns>The pointer.</returns>
-        [Compiler.PluggedMethod(ASMFilePath = null)]
         [Drivers.Compiler.Attributes.PluggedMethod(ASMFilePath = null)]
         private static uint* GetFirstPageTablePtr()
         {
@@ -465,7 +448,6 @@ namespace Kernel.Hardware.VirtMem
         /// Gets a pointer to the start of the kernel in memory.
         /// </summary>
         /// <returns>The pointer.</returns>
-        [Compiler.PluggedMethod(ASMFilePath = null)]
         [Drivers.Compiler.Attributes.PluggedMethod(ASMFilePath = null)]
         private static uint* GetKernelMemStartPtr()
         {
@@ -475,7 +457,6 @@ namespace Kernel.Hardware.VirtMem
         /// Gets a pointer to the end of the kernel in memory.
         /// </summary>
         /// <returns>The pointer.</returns>
-        [Compiler.PluggedMethod(ASMFilePath = null)]
         [Drivers.Compiler.Attributes.PluggedMethod(ASMFilePath = null)]
         private static uint* GetKernelMemEndPtr()
         {
@@ -483,7 +464,6 @@ namespace Kernel.Hardware.VirtMem
         }
 
 
-        [Compiler.PluggedMethod(ASMFilePath = null)]
         [Drivers.Compiler.Attributes.PluggedMethod(ASMFilePath = null)]
         public static uint GetCR3()
         {

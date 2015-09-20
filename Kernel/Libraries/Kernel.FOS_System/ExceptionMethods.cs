@@ -37,7 +37,6 @@ namespace Kernel
     /// <summary>
     /// Implements the lowest-level kernel exception handling.
     /// </summary>
-    [Compiler.PluggedClass]
     public static unsafe class ExceptionMethods
     {
         /// <summary>
@@ -93,7 +92,6 @@ namespace Kernel
         /// <param name="handlerPtr">A pointer to the first op of the catch or finally handler.</param>
         /// <param name="filterPtr">0 = finally handler, 0xFFFFFFFF = catch handler with no filter. 
         /// Original intended use was as a pointer to the first op of the catch filter but never implemented like this.</param>
-        [Compiler.AddExceptionHandlerInfoMethod]
         [Drivers.Compiler.Attributes.AddExceptionHandlerInfoMethod]
         [Drivers.Compiler.Attributes.NoDebug]
         [Drivers.Compiler.Attributes.NoGC]
@@ -169,7 +167,6 @@ namespace Kernel
         /// Throws the specified exception.
         /// </summary>
         /// <param name="ex">The exception to throw.</param>
-        [Compiler.ThrowExceptionMethod]
         [Drivers.Compiler.Attributes.NoDebug]
         [Drivers.Compiler.Attributes.NoGC]
         public static unsafe void Throw(FOS_System.Exception ex)
@@ -207,8 +204,7 @@ namespace Kernel
         /// throw an exception.
         /// </summary>
         /// <param name="exPtr">The pointer to the exception to throw.</param>
-        //[Compiler.PluggedMethod(ASMFilePath = null)]
-        //[Drivers.Compiler.Attributes.PluggedMethod(ASMFilePath = null)]
+        //        //[Drivers.Compiler.Attributes.PluggedMethod(ASMFilePath = null)]
         [Drivers.Compiler.Attributes.NoDebug]
         [Drivers.Compiler.Attributes.NoGC]
         public static void ThrowFromPtr(UInt32* exPtr)
@@ -221,7 +217,6 @@ namespace Kernel
         /// <summary>
         /// Handles the current pending exception.
         /// </summary>
-        [Compiler.HandleExceptionMethod]
         [Drivers.Compiler.Attributes.HandleExceptionMethod]
         [Drivers.Compiler.Attributes.NoDebug]
         [Drivers.Compiler.Attributes.NoGC]
@@ -279,7 +274,6 @@ namespace Kernel
         /// Handles cleanly leaving a critical section (i.e. try or catch block)
         /// </summary>
         /// <param name="continuePtr">A pointer to the instruction to continue execution at.</param>
-        [Compiler.ExceptionsHandleLeaveMethod]
         [Drivers.Compiler.Attributes.ExceptionsHandleLeaveMethod]
         [Drivers.Compiler.Attributes.NoDebug]
         [Drivers.Compiler.Attributes.NoGC]
@@ -462,7 +456,6 @@ namespace Kernel
         /// Handles cleanly leaving a "finally" critical section (i.e. finally block). 
         /// This may result in an exception being passed to the next handler if it has not been caught &amp; handled yet.
         /// </summary>
-        [Compiler.ExceptionsHandleEndFinallyMethod]
         [Drivers.Compiler.Attributes.ExceptionsHandleEndFinallyMethod]
         [Drivers.Compiler.Attributes.NoDebug]
         [Drivers.Compiler.Attributes.NoGC]
@@ -1016,7 +1009,6 @@ namespace Kernel
         /// <remarks>
         /// Used by compiler to handle the creation of the exception object and calling Throw.
         /// </remarks>
-        [Compiler.ThrowNullReferenceExceptionMethod]
         [Drivers.Compiler.Attributes.ThrowNullReferenceExceptionMethod]
         public static void Throw_NullReferenceException(uint address)
         {
@@ -1039,7 +1031,6 @@ namespace Kernel
         /// <remarks>
         /// Used by compiler to handle the creation of the exception object and calling Throw.
         /// </remarks>
-        [Compiler.ThrowArrayTypeMismatchExceptionMethod]
         //[Drivers.Compiler.Attributes.ThrowArrayTypeMismatchExceptionMethod]
         public static void Throw_ArrayTypeMismatchException()
         {
@@ -1052,7 +1043,6 @@ namespace Kernel
         /// <remarks>
         /// Used by compiler to handle the creation of the exception object and calling Throw.
         /// </remarks>
-        [Compiler.ThrowIndexOutOfRangeExceptionMethod]
         [Drivers.Compiler.Attributes.ThrowIndexOutOfRangeExceptionMethod]
         public static void Throw_IndexOutOfRangeException()
         {
