@@ -264,7 +264,7 @@ namespace Kernel.FOS_System
             if (!FixedHeapInitialised)
             {
                 Heap.Init();
-                Heap.AddBlock((UInt32)Heap.GetFixedHeapPtr(), Heap.GetFixedHeapSize(), 16);
+                Heap.AddBlock((UInt32)Heap.GetFixedHeapPtr(), Heap.GetFixedHeapSize(), 32);
                 FixedHeapInitialised = true;
             }
         }
@@ -277,7 +277,7 @@ namespace Kernel.FOS_System
         [Drivers.Compiler.Attributes.NoGC]
         public static void Init()
         {
-            fblock = (HeapBlock*)0;
+            fblock = null;
         }
         /// <summary>
         /// Adds a contiguous block of memory to the heap so it can be used for allocating memory to objects.
