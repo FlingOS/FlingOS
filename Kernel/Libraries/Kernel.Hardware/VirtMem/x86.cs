@@ -277,10 +277,6 @@ namespace Kernel.Hardware.VirtMem
         [Drivers.Compiler.Attributes.NoDebug]
         public override void MapKernel()
         {
-            //By mapping memory in reverse order we optimise the use
-            // of the underlying stack (and thus list) making it vastly more
-            // efficient
-
 #if PAGING_TRACE
             BasicConsole.Write("Mapping 1st 1MiB...");
 #endif

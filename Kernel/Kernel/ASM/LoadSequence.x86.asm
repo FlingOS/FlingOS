@@ -46,6 +46,8 @@ GLOBAL IDT_Pointer:data
 GLOBAL TSS_Contents:data
 GLOBAL TSS_POINTER:data
 
+Kernel_MemStart:
+
 ; BEGIN - Multiboot Signature
 MultibootSignature dd 464367618
 MultibootFlags dd 3
@@ -54,15 +56,13 @@ MultibootChecksum dd -464367621
 MultiBootInfo_Memory_High dd 0
 MultiBootInfo_Memory_Low dd 0
 
-
-KERNEL_VIRTUAL_BASE equ 0xC0000000					; 3GiB
-KERNEL_PAGE_NUMBER equ (KERNEL_VIRTUAL_BASE >> 22)
-
-Kernel_MemStart:
-
 Before_Kernel_Stack: TIMES 65535 db 0
 Kernel_Stack:
 
+EXTERN Kernel_MemEnd
+
+KERNEL_VIRTUAL_BASE equ 0xC0000000					; 3GiB
+KERNEL_PAGE_NUMBER equ (KERNEL_VIRTUAL_BASE >> 22)
 
 MultiBootInfo_Structure dd 0
 
@@ -198,29 +198,61 @@ EXTERN Page_Directory
 
 
 ; 1. Map virtual memory for physical address execution
+;		This means create pages such that:
+; 
+;		0x00000000			->	0x00000000
+;		0x00100000			->	0x00100000
+;		...
+;		0x0-End of kernel	->	0x0-End of kernel
 
-; TODO - Unhack this identity mapping shizzle
+; Calculate number of pages for the kernel
+mov eax, Kernel_MemEnd
+sub eax, 0 ; Kernel_MemStart
+mov edx, 0
+mov ebx, 4096
+div ebx
+mov ecx, eax
+add ecx, 1
 
+; Identity map low pages to low pages
 lea eax, [Page_Table1 - KERNEL_VIRTUAL_BASE]
 mov ebx, 7
-mov ecx, (256 * 1024)
 .VirtMem_Loop1:
 mov [eax], ebx
 add eax, 4
 add ebx, 4096
 loop .VirtMem_Loop1
 
+
+; 2. Map virtual memory for virtual address execution
+;		This means create pages such that:
+; 
+;		0xC0000000			->	0x00000000
+;		0xC0100000			->	0x00100000
+;		...
+;		0xC-End of kernel	->	0x0-End of kernel
+
+; Calculate number of pages for the kernel
+mov eax, Kernel_MemEnd
+sub eax, 0 ; Kernel_MemStart
+mov edx, 0
+mov ebx, 4096
+div ebx
+mov ecx, eax
+add ecx, 1
+
+; Map high pages to low pages
 lea eax, [Page_Table1 - KERNEL_VIRTUAL_BASE]
 add eax, 0x300000 ; Moves pointer to page table for 3GiB mark ((0xC0000000 / (4096 * 1024)) * (1024*4))
 mov ebx, 7
-mov ecx, (256 * 1024)
 .VirtMem_Loop2:
 mov [eax], ebx
 add eax, 4
 add ebx, 4096
 loop .VirtMem_Loop2
 
-
+; 3. Set page directory
+;	- Load page directory entries
 lea ebx, [Page_Table1 - KERNEL_VIRTUAL_BASE]
 lea edx, [Page_Directory - KERNEL_VIRTUAL_BASE]
 or ebx, 7
@@ -232,20 +264,8 @@ add ebx, 4096
 loop .VirtMem_Loop3
 
 
-; 2. Map virtual memory for virtual address execution
-;		This means create pages such that:
-; 
-;		0xC0000000			->	0x00000000
-;		0xC0100000			->	0x00100000
-;		...
-;		0xC-End of kernel	->	0x0-End of kernel
-
-; The above step is hardcoded in code above.
-
-
-; 3. Set page directory
-;		This requires us to load the physical address of the page directory
-;		then move it into cr3
+; Load the physical address of the page directory 
+;	then move it into cr3
 
 lea ecx, [Page_Directory - KERNEL_VIRTUAL_BASE]
 mov cr3, ecx
@@ -1311,8 +1331,6 @@ EXTERN method_System_Void_RETEND_Kernel_BasicConsole_DECLEND_WriteLine_NAMEEND__
 EXTERN method_System_Void_RETEND_Kernel_BasicConsole_DECLEND_Write_NAMEEND__Kernel_FOS_System_String_
 EXTERN method_System_Void_RETEND_Kernel_BasicConsole_DECLEND_DelayOutput_NAMEEND__System_Int32_
 EXTERN method_Kernel_FOS_System_String_RETEND_Kernel_FOS_System_String_DECLEND_op_Implicit_NAMEEND__System_UInt32_
-
-EXTERN Kernel_MemEnd
 
 method_System_Void_RETEND_Kernel_PreReqs_DECLEND_PageFaultDetection_NAMEEND___:
 
