@@ -46,3 +46,7 @@ The documentation on this page is prelimenary. It is still in the design stage a
 | 28 | Wait on Pipe Create | Waits for a pipe to be created to the specified endpoint of the current process. |
 | 29 | Read Pipe | Reads data from a pipe. |
 | 30 | Write Pipe | Writes data to a pipe. |
+| 31 | Register Device | Registers the existence of a new device. |
+| 32 | Deregister Device | Deregisters the existence of a specified device. It must be assigned to the process which attempts to deregister it. |
+| 33 | Assign Device | Assigns a known device to be managed by a specific driver. |
+| 34 | Release Device | Releases a specified device so that it can be assigned to another driver. |

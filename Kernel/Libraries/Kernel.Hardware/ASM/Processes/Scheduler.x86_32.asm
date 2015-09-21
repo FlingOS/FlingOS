@@ -5,7 +5,7 @@ SECTION .text
 GLOBAL method_System_Void_RETEND_Kernel_Hardware_Processes_Scheduler_DECLEND_LoadTR_NAMEEND___:function
 GLOBAL method_Kernel_Hardware_Processes_TSS__RETEND_Kernel_Hardware_Processes_Scheduler_DECLEND_GetTSSPointer_NAMEEND___:function
 
-EXTERN _NATIVE_TSS
+EXTERN TSS_Contents
 
 method_System_Void_RETEND_Kernel_Hardware_Processes_Scheduler_DECLEND_LoadTR_NAMEEND___:
 
@@ -26,7 +26,7 @@ method_Kernel_Hardware_Processes_TSS__RETEND_Kernel_Hardware_Processes_Scheduler
 push dword ebp
 mov dword ebp, esp
 
-mov dword [ebp+8], _NATIVE_TSS
+mov dword [ebp+8], TSS_Contents
 
 pop dword ebp
 
