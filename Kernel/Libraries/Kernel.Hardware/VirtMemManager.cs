@@ -43,9 +43,9 @@ namespace Kernel.Hardware
         /// <summary>
         /// Initialises the virtual memory manager.
         /// </summary>
-        public static void Init()
+        public static void Init(VirtMemImpl anImpl)
         {
-            impl = new x86();
+            impl = anImpl;
 
             // Map in the kernel pages.
             //   - Technically this has already been done in "VirtMemInit.x86_32.asm", however,
@@ -57,19 +57,34 @@ namespace Kernel.Hardware
 
         public static uint FindFreePhysPage()
         {
-            return impl.FindFreePhysPageAddr();
+            return impl.FindFreePhysPageAddrs(1);
         }
         public static uint FindFreeVirtPage()
         {
-            return impl.FindFreeVirtPageAddr();
+            return impl.FindFreeVirtPageAddrs(1);
+        }
+        public static uint FindFreePhysPages(int num)
+        {
+            return impl.FindFreePhysPageAddrs(num);
+        }
+        public static uint FindFreeVirtPages(int num)
+        {
+            return impl.FindFreeVirtPageAddrs(num);
         }
         public static void* MapFreePage(VirtMemImpl.PageFlags flags)
         {
-            uint physAddr = impl.FindFreePhysPageAddr();
-            uint virtAddr = impl.FindFreeVirtPageAddr();
+            return MapFreePages(flags, 1);
+        }
+        public static void* MapFreePages(VirtMemImpl.PageFlags flags, int numPages)
+        {
+            uint physAddrsStart = impl.FindFreePhysPageAddrs(numPages);
+            uint virtAddrsStart = impl.FindFreeVirtPageAddrs(numPages);
             //BasicConsole.WriteLine(((FOS_System.String)"Mapping free page. physAddr=") + physAddr + ", virtAddr=" + virtAddr);
-            Map(physAddr, virtAddr, 4096, flags);
-            return (void*)virtAddr;
+            for (uint i = 0; i < numPages; i++)
+            {
+                Map(physAddrsStart + (i * 4096), virtAddrsStart + (i * 4096), 4096, flags);
+            }
+            return (void*)virtAddrsStart;
         }
 
         /// <summary>

@@ -34,8 +34,8 @@ namespace Kernel.Hardware.VirtMem
 {
     public class MemoryLayout : FOS_System.Object
     {
-        public UInt32Dictionary CodePages = new UInt32Dictionary();
-        public UInt32Dictionary DataPages = new UInt32Dictionary();
+        public UInt32Dictionary CodePages = new UInt32Dictionary(64);
+        public UInt32Dictionary DataPages = new UInt32Dictionary(64);
 
         [Drivers.Compiler.Attributes.NoDebug]
         public void AddCodePage(uint pAddr, uint vAddr)

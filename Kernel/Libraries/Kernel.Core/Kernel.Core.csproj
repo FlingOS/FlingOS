@@ -99,13 +99,17 @@
     <Compile Include="Processes\ELF\ELFSegments.cs" />
     <Compile Include="Processes\ELF\ELFSharedObject.cs" />
     <Compile Include="Processes\ELF\ELFStringTable.cs" />
+    <Compile Include="Processes\SystemCallMethods.cs" />
     <Compile Include="Processes\SystemCalls.cs" />
+    <Compile Include="Tasks\WindowManagerTask.cs" />
+    <Compile Include="Tasks\DeviceManagerTask.cs" />
     <Compile Include="Tasks\EasterTask.cs" />
     <Compile Include="Tasks\GCCleanupTask.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Shell.cs" />
     <Compile Include="Shells\MainShell.cs" />
     <Compile Include="Tasks\IdleTask.cs" />
+    <Compile Include="Tasks\KernelTask.cs" />
     <Compile Include="Tasks\SampleTask.cs" />
     <Compile Include="Tasks\SystemStatusTask.cs" />
   </ItemGroup>
@@ -126,15 +130,16 @@
       <Project>{f59b042c-435d-48ed-ad7b-23666931a952}</Project>
       <Name>Kernel.Hardware</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Kernel.Shared\Kernel.Shared.csproj">
-      <Project>{93584240-da57-4e22-8fc8-e25cdff1e872}</Project>
-      <Name>Kernel.Shared</Name>
-    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\Kernel\Kernel.licenseheader">
       <Link>Kernel.licenseheader</Link>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="ASM\SystemCallMethods.x86_32.asm">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

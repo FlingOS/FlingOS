@@ -33,6 +33,6 @@ pop ebp
 ret
 
 SECTION .bss
-; 524288 bytes = 512KiB
-KernelFixedHeap_Start: resb 524288
+; (524288 * 20) bytes = 10MiB
+KernelFixedHeap_Start: resb (524288 * 20)
 KernelFixedHeap_End:

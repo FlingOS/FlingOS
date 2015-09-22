@@ -37,6 +37,11 @@ namespace Kernel.Hardware.VirtMem
     /// </summary>
     public unsafe class x86 : VirtMemImpl
     {
+        static x86()
+        {
+            VirtMemManager.Init(new x86());
+        }
+
         [Flags]
         public enum PTEFlags : uint
         {
@@ -137,23 +142,31 @@ namespace Kernel.Hardware.VirtMem
         }
 
         [Drivers.Compiler.Attributes.NoDebug]
-        public override uint FindFreePhysPageAddr()
+        public override uint FindFreePhysPageAddrs(int num)
         {
-            int result = UsedPhysPages.FindFirstClearEntry();
+            int result = UsedPhysPages.FindContiguousClearEntries(num);
             if (result == -1)
             {
+                BasicConsole.WriteLine("Error finding free physical pages!");
+                BasicConsole.DelayOutput(10);
+
                 ExceptionMethods.Throw(new FOS_System.Exceptions.OutOfMemoryException("Could not find any more free physical pages."));
             }
+            
             return (uint)(result * 4096);
         }
         [Drivers.Compiler.Attributes.NoDebug]
-        public override uint FindFreeVirtPageAddr()
+        public override uint FindFreeVirtPageAddrs(int num)
         {
-            int result = UsedVirtPages.FindFirstClearEntry();
+            int result = UsedVirtPages.FindContiguousClearEntries(num);
             if (result == -1)
             {
+                BasicConsole.WriteLine("Error finding free virtual pages!");
+                BasicConsole.DelayOutput(10);
+                
                 ExceptionMethods.Throw(new FOS_System.Exceptions.OutOfMemoryException("Could not find any more free virtual pages."));
             }
+
             return (uint)(result * 4096);
         }
 

@@ -34,6 +34,12 @@ using Kernel.Hardware.VirtMem;
 
 namespace Kernel.Hardware.Processes
 {
+    public delegate int ISRHanderDelegate(uint isrNumber);
+    public delegate int IRQHanderDelegate(uint irqNumber);
+    public delegate int SyscallHanderDelegate(uint syscallNumber, uint param1, uint param2, uint param3, 
+            ref uint Return2, ref uint Return3, ref uint Return4,
+            uint callerProcesId, uint callerThreadId);
+
     public unsafe class Process : FOS_System.Object
     {
         public List Threads = new List();
@@ -49,6 +55,13 @@ namespace Kernel.Hardware.Processes
         public readonly bool UserMode;
 
         public bool ContainsThreadsWaitingOnDeferredSystemCall = false;
+
+        public Bitmap ISRsToHandle = new Bitmap(256);
+        public ISRHanderDelegate ISRHandler = null;
+        public Bitmap IRQsToHandle = new Bitmap(256);
+        public IRQHanderDelegate IRQHandler = null;
+        public Bitmap SyscallsToHandle = new Bitmap(256);
+        public SyscallHanderDelegate SyscallHandler = null;
 
         public Process(ThreadStartMethod MainMethod, uint AnId, FOS_System.String AName, bool userMode)
         {

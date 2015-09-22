@@ -139,8 +139,11 @@ namespace Kernel.Core.Tasks
                         //StatusConsole.Write_AsDecimal(Heap.GetTotalUsedMem());
                         //StatusConsole.Write(" / ");
                         //StatusConsole.Write_AsDecimal(Heap.GetTotalMem());
-                        StatusConsole.Write_AsDecimal(Heap.GetTotalUsedMem() / (Heap.GetTotalMem() / 100));
-                        StatusConsole.Write("%");
+                        uint totalMem = Heap.GetTotalMem();
+                        StatusConsole.Write_AsDecimal(Heap.GetTotalUsedMem() / (totalMem / 100));
+                        StatusConsole.Write("% / ");
+                        StatusConsole.Write_AsDecimal(totalMem / 1024);
+                        StatusConsole.Write(" KiB");
                     }
                 }
                 catch

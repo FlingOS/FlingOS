@@ -34,11 +34,26 @@ namespace Kernel.FOS_System.Collections
 {
     public class UInt32Dictionary : FOS_System.Object
     {
-        public UInt32List Keys = new UInt32List();
-        public UInt32List Values = new UInt32List();
+        public UInt32List Keys;
+        public UInt32List Values;
 
-        public UInt32Dictionary()
+        public UInt32Dictionary(int capacity = 5)
         {
+            Keys = new UInt32List(capacity);
+            Values = new UInt32List(capacity);
+        }
+
+        public int Capacity
+        {
+            get
+            {
+                return Keys.Capacity;
+            }
+            set
+            {
+                Keys.Capacity = value;
+                Values.Capacity = value;
+            }
         }
 
         public void Add(UInt32 key, UInt32 value)

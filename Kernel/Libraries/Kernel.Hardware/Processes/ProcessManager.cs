@@ -92,6 +92,29 @@ namespace Kernel.Hardware.Processes
             //}
         }
 
+        public static Process GetProcessById(uint processId)
+        {
+            for (int i = 0; i < Processes.Count; i++)
+            {
+                if (((Process)Processes[i]).Id == processId)
+                {
+                    return ((Process)Processes[i]);
+                }
+            }
+            return null;
+        }
+        public static Thread GetThreadById(uint threadId, Process parent)
+        {
+            for (int i = 0; i < parent.Threads.Count; i++)
+            {
+                if (((Thread)parent.Threads[i]).Id == threadId)
+                {
+                    return (Thread)parent.Threads[i];
+                }
+            }
+            return null;
+        }
+
         /// <remarks>
         /// Specifying threadId=-1 accepts any thread from the specified process.
         /// No guarantees are made about the thread chosen. This is used when you
@@ -132,16 +155,7 @@ namespace Kernel.Hardware.Processes
 #endif
                 CurrentProcess.UnloadMemLayout();
 
-                CurrentProcess = null;
-                
-                for (int i = 0; i < Processes.Count; i++)
-                {
-                    if (((Process)Processes[i]).Id == processId)
-                    {
-                        CurrentProcess = ((Process)Processes[i]);
-                        break;
-                    }
-                }
+                CurrentProcess = GetProcessById(processId);
 
                 // Process not found
                 if (CurrentProcess == null)
@@ -168,14 +182,7 @@ namespace Kernel.Hardware.Processes
             }
             else
             {
-                for (int i = 0; i < CurrentProcess.Threads.Count; i++)
-                {
-                    if (((Thread)CurrentProcess.Threads[i]).Id == threadId)
-                    {
-                        CurrentThread = (Thread)CurrentProcess.Threads[i];
-                        break;
-                    }
-                }
+                CurrentThread = GetThreadById((uint)threadId, CurrentProcess);
             }
 
             // No threads in the process (?!) or process not found

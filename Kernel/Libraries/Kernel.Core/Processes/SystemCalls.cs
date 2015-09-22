@@ -23,15 +23,18 @@
 //
 // ------------------------------------------------------------------------------ //
 #endregion
-    
+
+#define SYSCALLS_TRACE
+#undef SYSCALLS_TRACE
+
 using System;
+using Kernel.FOS_System;
 using Kernel.FOS_System.Collections;
 using Kernel.Hardware.Processes;
-using Kernel.Shared;
 
 namespace Kernel.Core.Processes
 {
-    public static class SystemCalls
+    public static unsafe class SystemCalls
     {
         private static Thread DeferredSystemCallsHandlerThread;
         private static bool DeferredSystemCallsHandlerThread_Awake = false;
@@ -48,11 +51,6 @@ namespace Kernel.Core.Processes
                 // We want to ignore process state so that we handle the interrupt in the context of
                 //  the calling process.
                 Int48HandlerId = Hardware.Interrupts.Interrupts.AddISRHandler(48, Int48, null, true, true, "Sys Call");
-            }
-
-            if (DeferredSystemCallsHandlerThread == null)
-            {
-                DeferredSystemCallsHandlerThread = ProcessManager.CurrentProcess.CreateThread(DeferredSystemCallsHandler);
             }
         }
 
@@ -73,32 +71,101 @@ namespace Kernel.Core.Processes
             //FOS_System.GC.Disable("System calls : Int48 (1)");
             //FOS_System.Heap.PreventAllocation = true;
 
+#if SYSCALLS_TRACE
+            BasicConsole.WriteLine();
+            BasicConsole.WriteLine("----- Syscall -----");
             BasicConsole.WriteLine(ProcessManager.CurrentProcess.Name);
-            switch ((Kernel.Shared.SystemCalls)ProcessManager.CurrentThread.SysCallNumber)
+#endif 
+
+            Process currProcess = ProcessManager.CurrentProcess;
+            Thread currThread = ProcessManager.CurrentThread;
+            bool switched = false;
+
+#if SYSCALLS_TRACE
+            BasicConsole.WriteLine("Getting param values...");
+#endif
+
+            uint syscallNumber = currThread.SysCallNumber;
+            uint param1 = currThread.Param1;
+            uint param2 = currThread.Param2;
+            uint param3 = currThread.Param3;
+
+            int result = -1;
+            uint Return2 = 0;
+            uint Return3 = 0;
+            uint Return4 = 0;
+            
+#if SYSCALLS_TRACE
+            BasicConsole.WriteLine("Enumerating processes...");
+#endif
+
+            for (int i = 0; i < ProcessManager.Processes.Count; i++)
             {
-                case Kernel.Shared.SystemCalls.INVALID:
-                    BasicConsole.WriteLine("Error! INVALID System Call made.");
-                    break;
-                case Kernel.Shared.SystemCalls.Sleep:
-                    BasicConsole.WriteLine("System call : Sleep");
-                    SysCall_Sleep((int)ProcessManager.CurrentThread.Param1);
-                    break;
-                case Kernel.Shared.SystemCalls.PlayNote:
-                    //BasicConsole.WriteLine("System call : PlayNote");
-                    DeferSystemCall();
-                    break;
-                case Kernel.Shared.SystemCalls.Semaphore:
-                    //BasicConsole.WriteLine("System call : Semaphore");
-                    DeferSystemCall();
-                    break;
-                case Kernel.Shared.SystemCalls.Thread:
-                    //BasicConsole.WriteLine("System call : Thread");
-                    DeferSystemCall();
-                    break;
-                default:
-                    BasicConsole.WriteLine("System call : Unrecognised");
-                    break;
+                Process process = (Process)ProcessManager.Processes[i];
+                if (process.SyscallsToHandle.IsSet((int)syscallNumber))
+                {
+                    ProcessManager.SwitchProcess(process.Id, -1);
+                    switched = true;
+                    
+#if SYSCALLS_TRACE
+                    BasicConsole.WriteLine("Calling handler...");
+
+                    //if (process == null)
+                    //{
+                    //    BasicConsole.WriteLine(" > process is null?!");
+                    //}
+                    //else if (process.SyscallHandler == null)
+                    //{
+                    //    BasicConsole.WriteLine(" > process.SysCallHandler is null?!");
+                    //}
+#endif
+
+                    result = process.SyscallHandler(syscallNumber,
+                        param1, param2, param3,
+                        ref Return2, ref Return3, ref Return4, 
+                        currProcess.Id, currThread.Id);
+
+                    if (result != -1)
+                    {
+#if SYSCALLS_TRACE
+                        BasicConsole.WriteLine("Result achieved.");
+#endif
+
+                        break;
+                    }
+                }
             }
+
+            if (switched)
+            {
+#if SYSCALLS_TRACE
+                BasicConsole.WriteLine("Switching back...");
+#endif
+
+                ProcessManager.SwitchProcess(currProcess.Id, (int)currThread.Id);
+            }
+            
+#if SYSCALLS_TRACE
+            BasicConsole.WriteLine("Setting result values...");
+#endif
+
+            currThread.Return1 = (uint)result;
+            currThread.Return2 = Return2;
+            currThread.Return3 = Return3;
+            currThread.Return4 = Return4;
+            
+            if (currThread.TimeToSleep != 0)
+            {
+#if SYSCALLS_TRACE
+                BasicConsole.WriteLine("Updating thread state...");
+#endif
+                Scheduler.UpdateCurrentState();
+            }
+            
+#if SYSCALLS_TRACE
+            BasicConsole.WriteLine("Syscall handled.");
+            BasicConsole.WriteLine("---------------");
+#endif
 
             //FOS_System.GC.Enable("System calls : Int48 (2)");
             //FOS_System.Heap.PreventAllocation = false;
@@ -112,6 +179,106 @@ namespace Kernel.Core.Processes
             //FOS_System.GC.Disable("System calls : Int48 (2)");
             //FOS_System.Heap.PreventAllocation = true;
         }
+
+        public static int HandleSystemCallForKernel(uint syscallNumber, 
+            uint param1, uint param2, uint param3, 
+            ref uint Return2, ref uint Return3, ref uint Return4,
+            uint callerProcesId, uint callerThreadId)
+        {
+            int result = -1;
+            
+            switch ((SystemCallNumbers)syscallNumber)
+            {
+                case SystemCallNumbers.Sleep:
+#if SYSCALLS_TRACE
+                    BasicConsole.WriteLine("System call : Sleep");
+#endif
+                    SysCall_Sleep((int)param1, callerProcesId, callerThreadId);
+                    result = 0;
+                    break;
+                case SystemCallNumbers.RegisterSyscallHandler:
+#if SYSCALLS_TRACE
+                    BasicConsole.WriteLine("System call : Register Syscall Handler");
+#endif
+                    SysCall_RegisterSyscallHandler((int)param1, param2, callerProcesId);
+                    result = 0;
+                    break;
+                case SystemCallNumbers.DeregisterSyscallHandler:
+#if SYSCALLS_TRACE
+                    BasicConsole.WriteLine("System call : Deregister Syscall Handler");
+#endif
+                    SysCall_DeregisterSyscallHandler((int)param1, callerProcesId);
+                    result = 0;
+                    break;
+#if SYSCALLS_TRACE
+                default:
+                    BasicConsole.WriteLine("System call unrecognised/unhandled by Kernel Task.");
+                    break;
+#endif
+            }
+
+            return result;
+        }
+
+        private static void SysCall_Sleep(int ms, uint callerProcessId, uint callerThreadId)
+        {
+#if SYSCALLS_TRACE
+            BasicConsole.WriteLine("Sleeping thread...");
+#endif
+            ProcessManager.GetThreadById(callerThreadId, ProcessManager.GetProcessById(callerProcessId))._EnterSleep(ms);
+        }
+        private static void SysCall_RegisterSyscallHandler(int syscallNum, uint handlerAddr, uint callerProcessId)
+        {
+#if SYSCALLS_TRACE
+            BasicConsole.WriteLine("Registering syscall handler...");
+#endif
+            Process theProcess = ProcessManager.GetProcessById(callerProcessId);
+
+            if (handlerAddr != 0xFFFFFFFF)
+            {
+                theProcess.SyscallHandler = (Hardware.Processes.SyscallHanderDelegate)Utilities.ObjectUtilities.GetObject((void*)handlerAddr);
+            }
+
+            theProcess.SyscallsToHandle.Set(syscallNum);
+        }
+        private static void SysCall_DeregisterSyscallHandler(int syscallNum, uint callerProcessId)
+        {
+#if SYSCALLS_TRACE
+            BasicConsole.WriteLine("Deregistering syscall handler...");
+#endif
+            ProcessManager.GetProcessById(callerProcessId).SyscallsToHandle.Clear(syscallNum);
+        }
+
+
+        private static unsafe void SysCall_RequestPages(int numPages, uint callerProcessId, uint callerThreadId)
+        {
+            if (numPages > 0)
+            {
+                BasicConsole.WriteLine("Finding free pages...");
+                uint blockPtr = (uint)Hardware.VirtMemManager.MapFreePages(Hardware.VirtMem.VirtMemImpl.PageFlags.KernelOnly, numPages);
+                BasicConsole.WriteLine("Reserving spcace for pages in data layout...");
+                DeferredSystemCalls_CurrentProcess.TheMemoryLayout.DataPages.Capacity += numPages;
+                BasicConsole.WriteLine("Adding pages to data layout...");
+                for (uint i = 0; i < numPages; i++)
+                {
+                    uint vAddr = blockPtr + (i * 4096);
+                    DeferredSystemCalls_CurrentProcess.TheMemoryLayout.AddDataPage(
+                        Hardware.VirtMemManager.GetPhysicalAddress(vAddr),
+                        vAddr);
+                }
+                BasicConsole.WriteLine("Done.");
+                DeferredSystemCalls_CurrentThread.Return1 = blockPtr;
+            }
+            else
+            {
+                DeferredSystemCalls_CurrentThread.Return1 = 0;
+            }
+
+            DeferredSystemCalls_CurrentThread.Return2 = 0;
+            DeferredSystemCalls_CurrentThread.Return3 = 0;
+            DeferredSystemCalls_CurrentThread.Return4 = 0;
+        }
+
 
         private static void DeferSystemCall()
         {
@@ -161,7 +328,7 @@ namespace Kernel.Core.Processes
                         //BasicConsole.WriteLine(aProcess.TheMemoryLayout.ToString());
                         ProcessManager.CurrentProcess.TheMemoryLayout = ProcessManager.CurrentProcess.TheMemoryLayout.Merge(aProcess.TheMemoryLayout);
                         //BasicConsole.WriteLine(ProcessManager.CurrentProcess.TheMemoryLayout.ToString());
-                        
+
                         Scheduler.Disable();
                         ProcessManager.CurrentProcess.TheMemoryLayout.Load(false);
                         Scheduler.Enable();
@@ -201,22 +368,26 @@ namespace Kernel.Core.Processes
                                 //BasicConsole.WriteLine(((FOS_System.String)" > Param2: ") + DeferredSystemCalls_CurrentThread.Param2);
                                 //BasicConsole.WriteLine(((FOS_System.String)" > Param3: ") + DeferredSystemCalls_CurrentThread.Param3);
 
-                                switch ((Kernel.Shared.SystemCalls)sysCallNum)
+                                switch ((SystemCallNumbers)sysCallNum)
                                 {
-                                    case Kernel.Shared.SystemCalls.INVALID:
+                                    case SystemCallNumbers.INVALID:
                                         BasicConsole.WriteLine("Error! INVALID (deferred) system call made.");
                                         break;
-                                    case Kernel.Shared.SystemCalls.PlayNote:
+                                    case SystemCallNumbers.PlayNote:
                                         BasicConsole.WriteLine("PlayNote deferred system calls.");
                                         SysCall_PlayNote((Hardware.Timers.PIT.MusicalNote)param1, (Hardware.Timers.PIT.MusicalNoteValue)param2, param3);
                                         break;
-                                    case Kernel.Shared.SystemCalls.Semaphore:
+                                    case SystemCallNumbers.Semaphore:
                                         BasicConsole.WriteLine("Semaphore deferred system calls.");
                                         SysCall_Semaphore((SemaphoreRequests)param1, (int)param2, param3);
                                         break;
-                                    case Kernel.Shared.SystemCalls.Thread:
+                                    case SystemCallNumbers.Thread:
                                         BasicConsole.WriteLine("Thread deferred system calls.");
                                         SysCall_Thread((ThreadRequests)param1, param2);
+                                        break;
+                                    case SystemCallNumbers.RequestPages:
+                                        BasicConsole.WriteLine("Request pages deferred system call.");
+                                        //SysCall_RequestPages((int)param1);
                                         break;
                                     default:
                                         BasicConsole.WriteLine("Unrecognised deferred system call.");
@@ -254,17 +425,10 @@ namespace Kernel.Core.Processes
             }
         }
 
-        private static void SysCall_Sleep(int ms)
-        {
-            Thread.EnterSleep(ms);
-            Scheduler.UpdateCurrentState();
-        }
-
         private static void SysCall_PlayNote(Hardware.Timers.PIT.MusicalNote note, Hardware.Timers.PIT.MusicalNoteValue duration, uint bpm)
         {
             Hardware.Tasks.PlayNotesTask.RequestNote(note, duration, bpm);
         }
-
         private static void SysCall_Semaphore(SemaphoreRequests request, int id, uint limitOrProcessId)
         {
             SemaphoreResponses response = SemaphoreResponses.INVALID;
@@ -312,7 +476,6 @@ namespace Kernel.Core.Processes
             DeferredSystemCalls_CurrentThread.Return3 = 0;
             DeferredSystemCalls_CurrentThread.Return4 = 0;
         }
-
         private static void SysCall_Thread(ThreadRequests request, uint startMethod)
         {
             ThreadResponses response = ThreadResponses.INVALID;
@@ -351,4 +514,222 @@ namespace Kernel.Core.Processes
             DeferredSystemCalls_CurrentThread.Return4 = 0;
         }
     }
+
+    public enum SystemCallNumbers : uint
+    {
+        INVALID = 0,
+        Sleep = 1,
+        PlayNote = 2,
+        Semaphore = 3,
+        Thread = 4,
+        RequestPages = 5,
+        RegisterISRHandler,
+        DeregisterISRHandler,
+        RegisterIRQHandler,
+        DeregisterIRQHandler,
+        RegisterSyscallHandler,
+        DeregisterSyscallHandler
+    }
+
+    public enum SemaphoreRequests
+    {
+        INVALID = 0,
+        Allocate = 1,
+        Deallocate = 2,
+        Wait = 3,
+        Signal = 4,
+        AddOwner = 5
+    }
+    public enum SemaphoreResponses
+    {
+        Error = -1,
+        INVALID = 0,
+        Success = 1,
+        Fail = 2
+    }
+
+    public enum ThreadRequests
+    {
+        INVALID = 0,
+        Create = 1
+    }
+    public enum ThreadResponses
+    {
+        Error = -1,
+        INVALID = 0,
+        Success = 1
+    }
+
+    #region Play Note
+
+    public enum MusicalNote : int
+    {
+        Silent = 0,
+        C0 = 16,
+        Cs0 = 17,
+        Db0 = 17,
+        D0 = 18,
+        Ds0 = 19,
+        Eb0 = 19,
+        E0 = 20,
+        F0 = 21,
+        Fs0 = 23,
+        Gb0 = 23,
+        G0 = 24,
+        Gs0 = 25,
+        Ab0 = 25,
+        A0 = 27,
+        As0 = 29,
+        Bb0 = 29,
+        B0 = 30,
+        C1 = 32,
+        Cs1 = 34,
+        Db1 = 34,
+        D1 = 36,
+        Ds1 = 38,
+        Eb1 = 38,
+        E1 = 41,
+        F1 = 43,
+        Fs1 = 46,
+        Gb1 = 46,
+        G1 = 49,
+        Gs1 = 51,
+        Ab1 = 51,
+        A1 = 55,
+        As1 = 58,
+        Bb1 = 58,
+        B1 = 61,
+        C2 = 65,
+        Cs2 = 69,
+        Db2 = 69,
+        D2 = 73,
+        Ds2 = 77,
+        Eb2 = 77,
+        E2 = 82,
+        F2 = 87,
+        Fs2 = 92,
+        Gb2 = 92,
+        G2 = 98,
+        Gs2 = 103,
+        Ab2 = 103,
+        A2 = 110,
+        As2 = 116,
+        Bb2 = 116,
+        B2 = 123,
+        C3 = 130,
+        Cs3 = 138,
+        Db3 = 138,
+        D3 = 146,
+        Ds3 = 155,
+        Eb3 = 155,
+        E3 = 164,
+        F3 = 174,
+        Fs3 = 185,
+        Gb3 = 185,
+        G3 = 196,
+        Gs3 = 207,
+        Ab3 = 207,
+        A3 = 220,
+        As3 = 233,
+        Bb3 = 233,
+        B3 = 246,
+        C4 = 261,
+        Cs4 = 277,
+        Db4 = 277,
+        D4 = 293,
+        Ds4 = 311,
+        Eb4 = 311,
+        E4 = 329,
+        F4 = 349,
+        Fs4 = 369,
+        Gb4 = 369,
+        G4 = 392,
+        Gs4 = 415,
+        Ab4 = 415,
+        A4 = 440,
+        As4 = 466,
+        Bb4 = 466,
+        B4 = 493,
+        C5 = 523,
+        Cs5 = 554,
+        Db5 = 554,
+        D5 = 587,
+        Ds5 = 622,
+        Eb5 = 622,
+        E5 = 659,
+        F5 = 698,
+        Fs5 = 739,
+        Gb5 = 739,
+        G5 = 783,
+        Gs5 = 830,
+        Ab5 = 830,
+        A5 = 880,
+        As5 = 932,
+        Bb5 = 932,
+        B5 = 987,
+        C6 = 1046,
+        Cs6 = 1108,
+        Db6 = 1108,
+        D6 = 1174,
+        Ds6 = 1244,
+        Eb6 = 1244,
+        E6 = 1318,
+        F6 = 1396,
+        Fs6 = 1479,
+        Gb6 = 1479,
+        G6 = 1567,
+        Gs6 = 1661,
+        Ab6 = 1661,
+        A6 = 1760,
+        As6 = 1864,
+        Bb6 = 1864,
+        B6 = 1975,
+        C7 = 2093,
+        Cs7 = 2217,
+        Db7 = 2217,
+        D7 = 2349,
+        Ds7 = 2489,
+        Eb7 = 2489,
+        E7 = 2637,
+        F7 = 2793,
+        Fs7 = 2959,
+        Gb7 = 2959,
+        G7 = 3135,
+        Gs7 = 3322,
+        Ab7 = 3322,
+        A7 = 3520,
+        As7 = 3729,
+        Bb7 = 3729,
+        B7 = 3951,
+        C8 = 4186,
+        Cs8 = 4434,
+        Db8 = 4434,
+        D8 = 4698,
+        Ds8 = 4978,
+        Eb8 = 4978,
+        E8 = 5274,
+        F8 = 5587,
+        Fs8 = 5919,
+        Gb8 = 5919,
+        G8 = 6271,
+        Gs8 = 6644,
+        Ab8 = 6644,
+        A8 = 7040,
+        As8 = 7458,
+        Bb8 = 7458,
+        B8 = 7902
+    }
+    public enum MusicalNoteValue : uint
+    {
+        Semiquaver = 1,     //  1/16
+        Quaver = 2,         //  1/8
+        Crotchet = 4,       //  1/4
+        Minim = 8,          //  1/2
+        Semibreve = 16,     //  1
+        Breve = 32,         //  2
+        Longa = 64,         //  4
+        Maxima = 128        //  8
+    }
+
+    #endregion
 }
