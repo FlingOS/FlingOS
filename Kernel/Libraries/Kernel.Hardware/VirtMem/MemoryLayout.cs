@@ -77,6 +77,10 @@ namespace Kernel.Hardware.VirtMem
             //    Processes.Scheduler.Enable();
             //}
         }
+        public void AddDataPages(uint vAddrStart, uint[] pAddrs)
+        {
+            DataPages.AddRange(vAddrStart, 4096, pAddrs);
+        }
         [Drivers.Compiler.Attributes.NoDebug]
         public void RemovePage(uint vAddr)
         {

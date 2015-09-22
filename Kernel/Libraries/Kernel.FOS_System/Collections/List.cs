@@ -513,6 +513,19 @@ namespace Kernel.FOS_System.Collections
             return -1;
         }
 
+        public bool ContainsItemInRange(UInt32 start, UInt32 end)
+        {
+            for (int i = 0; i < currIndex; i++)
+            {
+                UInt32 elem = _array[i];
+                if (elem >= start && elem < end)
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+
         /// <summary>
         /// Expands the capacity of the internel array that stores the UInt32s.
         /// </summary>

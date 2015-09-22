@@ -25,10 +25,11 @@
 #endregion
     
 #define PROCESS_TRACE
-#undef PROCESS_TRACE
+//#undef PROCESS_TRACE
 
 using System;
 using Kernel.FOS_System.Collections;
+using Kernel.FOS_System.Processes.Synchronisation;
 using Kernel.Hardware;
 using Kernel.Hardware.VirtMem;
 
@@ -47,15 +48,11 @@ namespace Kernel.Hardware.Processes
 
         public uint Id;
         public FOS_System.String Name;
-
         public Scheduler.Priority Priority;
-
-        protected uint ThreadIdGenerator = 1;
-        
         public readonly bool UserMode;
 
-        public bool ContainsThreadsWaitingOnDeferredSystemCall = false;
-
+        protected uint ThreadIdGenerator = 1;
+                
         public Bitmap ISRsToHandle = new Bitmap(256);
         public ISRHanderDelegate ISRHandler = null;
         public Bitmap IRQsToHandle = new Bitmap(256);
@@ -63,7 +60,14 @@ namespace Kernel.Hardware.Processes
         public Bitmap SyscallsToHandle = new Bitmap(256);
         public SyscallHanderDelegate SyscallHandler = null;
 
-        public Process(ThreadStartMethod MainMethod, uint AnId, FOS_System.String AName, bool userMode)
+        public FOS_System.HeapBlock* HeapPtr = null;
+        public SpinLock HeapLock = null;
+        public FOS_System.ObjectToCleanup* GCCleanupListPtr = null;
+        public SpinLock GCLock = null;
+        public bool InsideGC = false;
+        public bool OutputMemTrace = false;
+
+        public Process(ThreadStartMethod MainMethod, uint AnId, FOS_System.String AName, bool userMode, bool createHeap)
         {
 #if PROCESS_TRACE
             BasicConsole.WriteLine("Constructing process object...");
@@ -76,6 +80,11 @@ namespace Kernel.Hardware.Processes
             BasicConsole.WriteLine("Creating thread...");
 #endif
             CreateThread(MainMethod);
+
+            if (createHeap)
+            {
+                CreateHeap();
+            }
         }
 
         public virtual Thread CreateThread(ThreadStartMethod MainMethod)
@@ -110,6 +119,75 @@ namespace Kernel.Hardware.Processes
             //}
 
             return newThread;
+        }
+
+        private void CreateHeap()
+        {
+#if PROCESS_TRACE
+            BasicConsole.WriteLine("Creating new heap lock...");
+#endif
+
+            // Create new heap lock
+            HeapLock = new SpinLock(-1);
+            
+#if PROCESS_TRACE
+            BasicConsole.WriteLine("Creating new GC lock...");
+#endif
+
+            // Create new heap lock
+            GCLock = new SpinLock(-1);
+            
+#if PROCESS_TRACE
+            BasicConsole.WriteLine("Allocating memory for heap...");
+#endif
+            // Allocate memory for new heap
+            FOS_System.HeapBlock* heapPtr = (FOS_System.HeapBlock*)VirtMemManager.MapFreePages(
+                                UserMode ? VirtMemImpl.PageFlags.None :
+                                           VirtMemImpl.PageFlags.KernelOnly, 256); // 1 MiB, page-aligned
+
+
+            // Add allocated memory to layout
+            uint endPtr = (uint)(heapPtr + (256 * 4096));
+#if PROCESS_TRACE
+            BasicConsole.WriteLine("Adding memory to layout...");
+#endif
+            uint[] pAddrs = new uint[256];
+            for(uint currPtr = (uint)heapPtr, i = 0; i < 256; currPtr += 4096, i++)
+            {
+                pAddrs[i] = VirtMemManager.GetPhysicalAddress(currPtr);
+            }
+            TheMemoryLayout.AddDataPages((uint)heapPtr, pAddrs);
+
+#if PROCESS_TRACE
+            BasicConsole.WriteLine("Initialising heap...");
+#endif
+            // Initialise the heap
+            FOS_System.Heap.InitBlock(heapPtr, 256 * 4096, 32);
+
+#if PROCESS_TRACE
+            BasicConsole.WriteLine("Setting heap pointer...");
+#endif
+            // Set heap pointer
+            HeapPtr = heapPtr;
+        }
+        public void UnloadHeap()
+        {
+            InsideGC = FOS_System.GC.InsideGC;
+
+            FOS_System.Heap.OutputTrace = OutputMemTrace;
+            FOS_System.GC.OutputTrace = OutputMemTrace;
+        }
+        public void LoadHeap()
+        {
+            FOS_System.Heap.OutputTrace = OutputMemTrace;
+            FOS_System.GC.OutputTrace = OutputMemTrace;
+
+            if (HeapPtr != null)
+            {
+                FOS_System.GC.InsideGC = InsideGC;
+                FOS_System.Heap.LoadHeap(HeapPtr, HeapLock);
+                FOS_System.GC.LoadGC(GCCleanupListPtr, GCLock);
+            }
         }
 
         public virtual void LoadMemLayout()

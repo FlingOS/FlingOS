@@ -28,6 +28,7 @@
 #undef HEAP_TRACE
     
 using System;
+using Kernel.FOS_System.Processes.Synchronisation;
 
 namespace Kernel.FOS_System
 {
@@ -70,6 +71,8 @@ namespace Kernel.FOS_System
         public static bool PreventAllocation = false;
         public static FOS_System.String PreventReason = "[NONE]";
 
+        public static bool OutputTrace = false;
+
         [Drivers.Compiler.Attributes.NoDebug]
         [Drivers.Compiler.Attributes.NoGC]
         static Heap()
@@ -94,24 +97,24 @@ namespace Kernel.FOS_System
             }
         }
 
-        internal static Processes.Synchronisation.SpinLock HeapAccessLock;
-        internal static bool HeapAccessLockInitialised = false;
+        public static SpinLock AccessLock;
+        internal static bool AccessLockInitialised = false;
 
         [Drivers.Compiler.Attributes.NoDebug]
         [Drivers.Compiler.Attributes.NoGC]
         private static void EnterCritical(FOS_System.String caller)
         {
             //BasicConsole.WriteLine("Entering critical section...");
-            if (HeapAccessLockInitialised)
+            if (AccessLockInitialised)
             {
-                if (HeapAccessLock == null)
+                if (AccessLock == null)
                 {
                     BasicConsole.WriteLine("HeapAccessLock is initialised but null?!");
                     BasicConsole.DelayOutput(10);
                 }
                 else
                 {
-                    if (HeapAccessLock.Locked)
+                    if (AccessLock.Locked && OutputTrace)
                     {
                         BasicConsole.SetTextColour(BasicConsole.warning_colour);
                         BasicConsole.WriteLine("Warning: Heap about to try to re-enter spin lock...");
@@ -119,7 +122,8 @@ namespace Kernel.FOS_System
                         BasicConsole.WriteLine(caller);
                         BasicConsole.SetTextColour(BasicConsole.default_colour);
                     }
-                    HeapAccessLock.Enter();
+
+                    AccessLock.Enter();
                 }
             }
             //else
@@ -133,16 +137,16 @@ namespace Kernel.FOS_System
         private static void ExitCritical()
         {
             //BasicConsole.WriteLine("Exiting critical section...");
-            if (HeapAccessLockInitialised)
+            if (AccessLockInitialised)
             {
-                if (HeapAccessLock == null)
+                if (AccessLock == null)
                 {
                     BasicConsole.WriteLine("HeapAccessLock is initialised but null?!");
                     BasicConsole.DelayOutput(10);
                 }
                 else
                 {
-                    HeapAccessLock.Exit();
+                    AccessLock.Exit();
                 }
             }
             //else
@@ -264,11 +268,20 @@ namespace Kernel.FOS_System
             if (!FixedHeapInitialised)
             {
                 Heap.Init();
-                Heap.AddBlock((UInt32)Heap.GetFixedHeapPtr(), Heap.GetFixedHeapSize(), 32);
+                
+                HeapBlock* heapPtr = (HeapBlock*)Heap.GetFixedHeapPtr();
+                Heap.InitBlock(heapPtr, Heap.GetFixedHeapSize(), 32);
+                Heap.AddBlock(heapPtr);
+
                 FixedHeapInitialised = true;
             }
         }
 
+        public static void LoadHeap(HeapBlock* heapPtr, SpinLock heapLock)
+        {
+            fblock = heapPtr;
+            AccessLock = heapLock;
+        }
 
         /// <summary>
         /// Intialises the heap.
@@ -279,6 +292,38 @@ namespace Kernel.FOS_System
         {
             fblock = null;
         }
+        [Drivers.Compiler.Attributes.NoDebug]
+        [Drivers.Compiler.Attributes.NoGC]
+        public static int InitBlock(HeapBlock* b, UInt32 size, UInt32 bsize)
+        {
+            UInt32 bcnt;
+            
+            b->size = size - (UInt32)sizeof(HeapBlock);
+            b->bsize = bsize;
+
+            bcnt = size / bsize;
+            byte* bm = (byte*)&b[1];
+
+            /* clear bitmap */
+            for (uint x = 0; x < bcnt; ++x)
+            {
+                bm[x] = 0;
+            }
+
+            /* reserve room for bitmap */
+            bcnt = (bcnt / bsize) * bsize < bcnt ? bcnt / bsize + 1 : bcnt / bsize;
+            for (uint x = 0; x < bcnt; ++x)
+            {
+                bm[x] = 5;
+            }
+
+            b->lfb = bcnt - 1;
+
+            b->used = bcnt;
+            b->next = null;
+            
+            return 1;
+        }
         /// <summary>
         /// Adds a contiguous block of memory to the heap so it can be used for allocating memory to objects.
         /// </summary>
@@ -288,39 +333,14 @@ namespace Kernel.FOS_System
         /// <returns>Returns 1 if the block was added successfully.</returns>
         [Drivers.Compiler.Attributes.NoDebug]
         [Drivers.Compiler.Attributes.NoGC]
-        public static int AddBlock(UInt32 addr, UInt32 size, UInt32 bsize)
+        public static int AddBlock(HeapBlock* b)
         {
-            HeapBlock* b;
-            UInt32 bcnt;
-            UInt32 x;
-            byte* bm;
-
-            b = (HeapBlock*)addr;
-            b->size = size - (UInt32)sizeof(HeapBlock);
-            b->bsize = bsize;
+            EnterCritical("AddBlock");
 
             b->next = fblock;
             fblock = b;
 
-            bcnt = size / bsize;
-            bm = (byte*)&b[1];
-
-            /* clear bitmap */
-            for (x = 0; x < bcnt; ++x)
-            {
-                bm[x] = 0;
-            }
-
-            /* reserve room for bitmap */
-            bcnt = (bcnt / bsize) * bsize < bcnt ? bcnt / bsize + 1 : bcnt / bsize;
-            for (x = 0; x < bcnt; ++x)
-            {
-                bm[x] = 5;
-            }
-
-            b->lfb = bcnt - 1;
-
-            b->used = bcnt;
+            ExitCritical();
 
             return 1;
         }
@@ -423,9 +443,12 @@ namespace Kernel.FOS_System
         public static void* Alloc(UInt32 size, UInt32 boundary, FOS_System.String caller)
         {
 #if HEAP_TRACE
-            BasicConsole.SetTextColour(BasicConsole.warning_colour);
-            BasicConsole.WriteLine("Attempt to alloc mem....");
-            BasicConsole.SetTextColour(BasicConsole.default_colour);
+            if (OutputTrace)
+            {
+                BasicConsole.SetTextColour(BasicConsole.warning_colour);
+                BasicConsole.WriteLine("Attempt to alloc mem....");
+                BasicConsole.SetTextColour(BasicConsole.default_colour);
+            }
 #endif
 
             if (PreventAllocation)
@@ -504,11 +527,11 @@ namespace Kernel.FOS_System
                                 {
                                     result = (void*)((((UInt32)result) + (boundary - 1)) & ~(boundary - 1));
 
-#if HEAP_TRACE
-                                    ExitCritical();
-                                    BasicConsole.WriteLine(((FOS_System.String)"Allocated address ") + (uint)result + " on boundary " + boundary + " for " + caller);
-                                    EnterCritical("Alloc:Boundary condition");
-#endif
+//#if HEAP_TRACE
+//                                    ExitCritical();
+//                                    BasicConsole.WriteLine(((FOS_System.String)"Allocated address ") + (uint)result + " on boundary " + boundary + " for " + caller);
+//                                    EnterCritical("Alloc:Boundary condition");
+//#endif
                                 }
 
                                 ExitCritical();
@@ -522,13 +545,6 @@ namespace Kernel.FOS_System
                     }
                 }
             }
-
-#if HEAP_TRACE
-            BasicConsole.SetTextColour(BasicConsole.error_colour);
-            BasicConsole.WriteLine("!!Heap out of memory!!");
-            BasicConsole.SetTextColour(BasicConsole.default_colour);
-            BasicConsole.DelayOutput(2);
-#endif
 
             {
                 bool BCPOEnabled = BasicConsole.PrimaryOutputEnabled;

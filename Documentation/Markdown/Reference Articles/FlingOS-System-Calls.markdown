@@ -50,3 +50,4 @@ The documentation on this page is prelimenary. It is still in the design stage a
 | 32 | Deregister Device | Deregisters the existence of a specified device. It must be assigned to the process which attempts to deregister it. |
 | 33 | Assign Device | Assigns a known device to be managed by a specific driver. |
 | 34 | Release Device | Releases a specified device so that it can be assigned to another driver. |
+| 35 | Sleep | Sleeps the current thread for the specified number of milliseconds. "-1" results in an indefinite sleep until an external event wakes the thread. |

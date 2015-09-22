@@ -11,6 +11,8 @@ namespace Kernel.Core.Tasks
 
         public static void Main()
         {
+            BasicConsole.WriteLine("Window Manager: Started.");
+
             int loops = 0;
 
             ScreenOutput = new Consoles.AdvancedConsole();
@@ -19,16 +21,31 @@ namespace Kernel.Core.Tasks
 
             while (true)
             {
-                ScreenOutput.Write("Window Manager Task (");
-                ScreenOutput.Write_AsDecimal(loops);
-                ScreenOutput.WriteLine(")");
+                try
+                {
+                    ScreenOutput.Clear();
+                    ScreenOutput.Write("Window Manager Task (");
+                    ScreenOutput.Write_AsDecimal(loops);
+                    ScreenOutput.WriteLine(")");
 
-                ScreenOutput.Write(" > Pings : ");
-                ScreenOutput.WriteLine_AsDecimal(Pings);
+                    ScreenOutput.Write("WM > Pings : ");
+                    ScreenOutput.WriteLine_AsDecimal(Pings);
 
-                SystemCallMethods.Sleep(1000);
+                    ScreenOutput.Write("WM Heap: ");
+                    uint totalMem = Heap.GetTotalMem();
+                    ScreenOutput.Write_AsDecimal(Heap.GetTotalUsedMem() / (totalMem / 100));
+                    ScreenOutput.Write("% / ");
+                    ScreenOutput.Write_AsDecimal(totalMem / 1024);
+                    ScreenOutput.WriteLine(" KiB");
 
-                loops++;
+                    SystemCallMethods.Sleep(100);
+
+                    loops++;
+                }
+                catch
+                {
+                    BasicConsole.WriteLine("Exception running window manager.");
+                }
             }
         }
 
@@ -36,13 +53,17 @@ namespace Kernel.Core.Tasks
             ref uint Return2, ref uint Return3, ref uint Return4,
             uint callerProcesId, uint callerThreadId)
         {
+            SystemCallResults result = SystemCallResults.Unhandled;
+
             switch((SystemCallNumbers)syscallNumber)
             {
                 case SystemCallNumbers.Semaphore:
                     Pings++;
-                    return 0;
+                    result = SystemCallResults.OK;
+                    break;
             }
-            return -1;
+
+            return (int)result;
         }
     }
 }

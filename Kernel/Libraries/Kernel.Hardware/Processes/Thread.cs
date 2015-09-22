@@ -55,8 +55,6 @@ namespace Kernel.Hardware.Processes
         /// </remarks>
         public int TimeToSleep = 0;
 
-        public bool WaitingOnDeferredSystemCall = false;
-
         public Thread(ThreadStartMethod StartMethod, uint AnId, bool UserMode)
         {
 #if THREAD_TRACE

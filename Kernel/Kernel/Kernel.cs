@@ -184,15 +184,30 @@ namespace Kernel
                 //    Hardware.Timers.PIT.MusicalNote.C5,
                 //    Hardware.Timers.PIT.MusicalNoteValue.Minim,
                 //    bpm);
-                
-                Process ManagedMainProcess = ProcessManager.CreateProcess(Core.Tasks.KernelTask.Main, "Kernel Task", false);                
+
+                BasicConsole.WriteLine("Creating kernel process...");
+                Process ManagedMainProcess = ProcessManager.CreateProcess(Core.Tasks.KernelTask.Main, "Kernel Task", false);
+                BasicConsole.WriteLine("Creating kernel thread...");
                 Thread ManagedMain_MainThread = ((Thread)ManagedMainProcess.Threads[0]);
+
+                BasicConsole.WriteLine("Initialising kernel thread stack...");
                 Hardware.VirtMemManager.Unmap(ManagedMain_MainThread.State->ThreadStackTop - 4092);
                 ManagedMainProcess.TheMemoryLayout.RemovePage((uint)ManagedMain_MainThread.State->ThreadStackTop - 4092);
                 ManagedMain_MainThread.State->ThreadStackTop = GetKernelStackPtr();
                 ManagedMain_MainThread.State->ESP = (uint)ManagedMain_MainThread.State->ThreadStackTop;
+
+                BasicConsole.WriteLine("Initialising kernel process heap...");
+                ManagedMainProcess.HeapLock = Heap.AccessLock;
+                ManagedMainProcess.HeapPtr = Heap.FBlock;
+
+                BasicConsole.WriteLine("Initialising kernel process GC...");
+                ManagedMainProcess.GCLock = FOS_System.GC.AccessLock;
+                ManagedMainProcess.GCCleanupListPtr = FOS_System.GC.CleanupList;
+
+                BasicConsole.WriteLine("Registering kernel process...");
                 ProcessManager.RegisterProcess(ManagedMainProcess, Scheduler.Priority.Normal);
 
+                BasicConsole.WriteLine("Initialising scheduler...");
                 Scheduler.Init();
 
                 // Busy wait until the scheduler interrupts us. 

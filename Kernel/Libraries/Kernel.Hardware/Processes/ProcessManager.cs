@@ -51,10 +51,14 @@ namespace Kernel.Hardware.Processes
 
         public static Process CreateProcess(ThreadStartMethod MainMethod, FOS_System.String Name, bool UserMode)
         {
+            return CreateProcess(MainMethod, Name, UserMode, false);
+        }
+        public static Process CreateProcess(ThreadStartMethod MainMethod, FOS_System.String Name, bool UserMode, bool CreateHeap)
+        {
 #if PROCESSMANAGER_TRACE
             BasicConsole.WriteLine("Creating process object...");
 #endif
-            return new Process(MainMethod, ProcessIdGenerator++, Name, UserMode);
+            return new Process(MainMethod, ProcessIdGenerator++, Name, UserMode, CreateHeap);
         }
         public static void RegisterProcess(Process process, Scheduler.Priority priority)
         {
@@ -151,8 +155,10 @@ namespace Kernel.Hardware.Processes
             if (!dontSwitchOutIn)
             {
 #if PROCESSMANAGER_SWITCH_TRACE
-                BasicConsole.WriteLine("Switching out: " + CurrentProcess.Name);
+                BasicConsole.Write("Switching out: ");
+                BasicConsole.WriteLine(CurrentProcess.Name);
 #endif
+                CurrentProcess.UnloadHeap();
                 CurrentProcess.UnloadMemLayout();
 
                 CurrentProcess = GetProcessById(processId);
@@ -165,9 +171,13 @@ namespace Kernel.Hardware.Processes
 #endif
                     return;
                 }
+
 #if PROCESSMANAGER_SWITCH_TRACE
-                BasicConsole.WriteLine("Process found. " + CurrentProcess.Name);
+                BasicConsole.Write("Switching in: ");
+                BasicConsole.WriteLine(CurrentProcess.Name);
 #endif
+                CurrentProcess.LoadMemLayout();
+                CurrentProcess.LoadHeap();
             }
 
             CurrentThread = null;
@@ -201,14 +211,6 @@ namespace Kernel.Hardware.Processes
 #if PROCESSMANAGER_SWITCH_TRACE
             BasicConsole.WriteLine("Thread state updated.");
 #endif
-            
-            if (!dontSwitchOutIn)
-            {
-#if PROCESSMANAGER_SWITCH_TRACE
-                BasicConsole.WriteLine("Switching in: " + CurrentProcess.Name);
-#endif
-                CurrentProcess.LoadMemLayout();
-            }
         }
 
         public static bool WakeProcess(uint processId, uint threadId)

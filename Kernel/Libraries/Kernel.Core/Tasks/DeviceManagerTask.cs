@@ -8,6 +8,8 @@ namespace Kernel.Core.Tasks
     {
         public static void Main()
         {
+            BasicConsole.WriteLine("Device Manager started.");
+
             while (true)
             {
                 //TODO

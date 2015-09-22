@@ -61,10 +61,13 @@ namespace Kernel.FOS_System
         /// </summary>
         public static bool InsideGC = false;
 
+        public static bool OutputTrace = false;
+
         private static FOS_System.String lastEnabler = "";
         private static FOS_System.String lastDisabler = "";
+        private static FOS_System.String lastLocker = "[NEVER SET]";
 
-        private static SpinLock GCAccessLock;
+        public static SpinLock AccessLock;
         private static bool GCAccessLockInitialised = false;
 
         /// <summary>
@@ -75,7 +78,7 @@ namespace Kernel.FOS_System
         /// <summary>
         /// The linked-list of objects to clean up.
         /// </summary>
-        private static ObjectToCleanup* CleanupList;
+        public static ObjectToCleanup* CleanupList;
 
         //TODO - GC needs an object reference tree to do a thorough scan to find reference loops
 
@@ -92,10 +95,10 @@ namespace Kernel.FOS_System
 
             Enabled = true;
 
-            Heap.HeapAccessLock = new SpinLock(-1);
-            Heap.HeapAccessLockInitialised = true;
+            Heap.AccessLock = new SpinLock(-1);
+            Heap.AccessLockInitialised = true;
 
-            GCAccessLock = new SpinLock(-1);
+            AccessLock = new SpinLock(-1);
             GCAccessLockInitialised = true;
         }
 
@@ -125,22 +128,31 @@ namespace Kernel.FOS_System
             //BasicConsole.WriteLine("Entering critical section...");
             if (GCAccessLockInitialised)
             {
-                if (GCAccessLock == null)
+                if (AccessLock == null)
                 {
                     BasicConsole.WriteLine("GCAccessLock is initialised but null?!");
                     BasicConsole.DelayOutput(10);
                 }
                 else
                 {
-                    //if (GCAccessLock.Locked)
-                    //{
-                    //    BasicConsole.SetTextColour(BasicConsole.warning_colour);
-                    //    BasicConsole.WriteLine("Warning: GC about to try to re-enter spin lock...");
-                    //    BasicConsole.Write("Enter lock caller: ");
-                    //    BasicConsole.WriteLine(caller);
-                    //    BasicConsole.SetTextColour(BasicConsole.default_colour);
-                    //}
-                    GCAccessLock.Enter();
+#if GC_TRACE
+                    if (AccessLock.Locked && OutputTrace)
+                    {
+                        BasicConsole.SetTextColour(BasicConsole.warning_colour);
+                        BasicConsole.WriteLine("Warning: GC about to try to re-enter spin lock...");
+                        BasicConsole.Write("Enter lock caller: ");
+                        BasicConsole.WriteLine(caller);
+                        BasicConsole.Write("Previous caller: ");
+                        BasicConsole.WriteLine(lastLocker);
+                        BasicConsole.SetTextColour(BasicConsole.default_colour);
+                    }
+#endif
+
+                    AccessLock.Enter();
+
+#if GC_TRACE
+                    lastLocker = caller;
+#endif
                 }
             }
             //else
@@ -156,14 +168,14 @@ namespace Kernel.FOS_System
             //BasicConsole.WriteLine("Exiting critical section...");
             if (GCAccessLockInitialised)
             {
-                if (GCAccessLock == null)
+                if (AccessLock == null)
                 {
                     BasicConsole.WriteLine("GCAccessLock is initialised but null?!");
                     BasicConsole.DelayOutput(10);
                 }
                 else
                 {
-                    GCAccessLock.Exit();
+                    AccessLock.Exit();
                 }
             }
             //else
@@ -171,6 +183,12 @@ namespace Kernel.FOS_System
             //    BasicConsole.WriteLine("GCAccessLock not initialised - ignoring lock conditions.");
             //    BasicConsole.DelayOutput(5);
             //}
+        }
+
+        public static void LoadGC(ObjectToCleanup* cleanupList, SpinLock accessLock)
+        {
+            CleanupList = cleanupList;
+            AccessLock = accessLock;
         }
 
         /// <summary>
@@ -194,6 +212,13 @@ namespace Kernel.FOS_System
 
                 return null;
             }
+
+#if GC_TRACE
+            if (OutputTrace)
+            {
+                BasicConsole.WriteLine("NewObj");
+            }
+#endif
 
             EnterCritical("NewObj");
 
@@ -267,6 +292,13 @@ namespace Kernel.FOS_System
 
                 return null;
             }
+
+#if GC_TRACE
+            if (OutputTrace)
+            {
+                BasicConsole.WriteLine("NewArr");
+            }
+#endif
 
             EnterCritical("NewArr");
 
@@ -354,6 +386,13 @@ namespace Kernel.FOS_System
 
                 return null;
             }
+
+#if GC_TRACE
+            if (OutputTrace)
+            {
+                BasicConsole.WriteLine("NewString");
+            }
+#endif
 
             EnterCritical("NewString");
 
@@ -561,7 +600,10 @@ namespace Kernel.FOS_System
                 if (gcHeaderPtr->RefCount == 0)
                 {
 #if GC_TRACE
-                    BasicConsole.WriteLine("Cleaned up object.");
+                    if (OutputTrace)
+                    {
+                        BasicConsole.WriteLine("Cleaned up object.");
+                    }
 #endif
 
                     FOS_System.Object obj = (FOS_System.Object)Utilities.ObjectUtilities.GetObject(objPtr);
@@ -596,7 +638,10 @@ namespace Kernel.FOS_System
                                 DecrementRefCount(theFieldObj, true);
 
 #if GC_TRACE
-                            BasicConsole.WriteLine("Cleaned up field.");
+                                if (OutputTrace)
+                                {
+                                    BasicConsole.WriteLine("Cleaned up field.");
+                                }
 #endif
                             }
                             
@@ -660,8 +705,8 @@ namespace Kernel.FOS_System
                 InsideGC = true;
 
 #if GC_TRACE
-            int startNumObjs = NumObjs;
-            int startNumStrings = NumStrings;
+                int startNumObjs = NumObjs;
+                int startNumStrings = NumStrings;
 #endif
 
                 ObjectToCleanup* currObjToCleanupPtr = CleanupList;
@@ -691,7 +736,10 @@ namespace Kernel.FOS_System
                 InsideGC = false;
 
 #if GC_TRACE
-            PrintCleanupData(startNumObjs, startNumStrings);
+                if (OutputTrace)
+                {
+                    PrintCleanupData(startNumObjs, startNumStrings);
+                }
 #endif
             }
             finally

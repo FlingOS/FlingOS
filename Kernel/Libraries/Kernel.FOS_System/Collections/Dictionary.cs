@@ -67,6 +67,25 @@ namespace Kernel.FOS_System.Collections
             Keys.Add(key);
             Values.Add(value);
         }
+        public void AddRange(UInt32 keyStart, UInt32 keyStep, UInt32[] values)
+        {
+            if (Keys.ContainsItemInRange(keyStart, keyStart + ((uint)values.Length * keyStep)))
+            {
+                ExceptionMethods.Throw(new FOS_System.Exception(
+                    "Cannot add duplicate key to the dictionary!"));
+            }
+
+            Capacity += values.Length;
+
+            UInt32 keyVal = keyStart;
+            for (uint i = 0; i < values.Length; i++)
+            {
+                Keys.Add(keyVal);
+                Values.Add(values[i]);
+
+                keyVal += keyStep;
+            }
+        }
         public void Remove(UInt32 key)
         {
             int index = Keys.IndexOf(key);
