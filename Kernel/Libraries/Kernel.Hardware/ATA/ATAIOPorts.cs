@@ -100,7 +100,6 @@ namespace Kernel.Hardware.ATA
         /// Initialises a new ATA IO device including the various ports.
         /// </summary>
         /// <param name="isSecondary">Whether the device is a secondary ATA device.</param>
-        [Compiler.NoDebug]
         [Drivers.Compiler.Attributes.NoDebug]
         internal ATAIOPorts(bool isSecondary)
         {

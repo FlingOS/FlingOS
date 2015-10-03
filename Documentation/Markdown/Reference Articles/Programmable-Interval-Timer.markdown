@@ -4,7 +4,7 @@ title: Programmable Interval Timer
 date: 2015-09-06 12:36:00
 categories: [ docs, reference ]
 parent_name: Timers
-description: A description of the Intel 8253/8254 PIT and links to useful articles about its operation.
+description: Describes the Intel 8253/8254 PIT and links to useful articles about its operation.
 ---
 
 # Introduction
@@ -12,6 +12,13 @@ description: A description of the Intel 8253/8254 PIT and links to useful articl
 For some reason, that we can't quite understand, the Programmable Interval Timer (made by Intel) primarily for x86/x64 processors, has literally hundreds of pretty good, if not great, articles describing it and how to use it. Unlike many devices in OS and embedded development, the PIT has plenty of good documentation and sample code. 
 
 Since there is so much good stuff out there, we aren't writing our own documentation on the PIT for now as there are plenty of other things we can write about that don't have good documentation. As such, this article just contains a list of links to articles we found helpful or think are good. If you have any more (particularly better ones), please send them to us!
+
+---
+
+# Example Code
+
+## Overview
+The FlingOS Programmable Interval Timer implementation (including support for the PC speaker) can be found at: [https://github.com/FlingOS/FlingOS/blob/master/Kernel/Libraries/Kernel.Hardware/Timers/PIT.cs](https://github.com/FlingOS/FlingOS/blob/master/Kernel/Libraries/Kernel.Hardware/Timers/PIT.cs)
 
 ---
 

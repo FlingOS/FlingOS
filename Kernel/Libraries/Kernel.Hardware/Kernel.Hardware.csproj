@@ -106,6 +106,7 @@
     <Compile Include="Devices\Key Maps\SPKeymap.cs" />
     <Compile Include="Devices\Key Maps\USKeymap.cs" />
     <Compile Include="Devices\Timer.cs" />
+    <Compile Include="Exceptions\NoDiskException.cs" />
     <Compile Include="Interrupts\Interrupts.cs" />
     <Compile Include="IO\Serial\Serial.cs" />
     <Compile Include="Tasks\DeviceManagerTask.cs" />
@@ -150,10 +151,6 @@
     <Compile Include="USB\USBTransfer.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\Compiler\Kernel.Compiler.csproj">
-      <Project>{061e5f53-5eff-4e12-94ee-9e18459e5cf4}</Project>
-      <Name>Kernel.Compiler</Name>
-    </ProjectReference>
     <ProjectReference Include="..\..\Drivers\Compiler\Drivers.Compiler.csproj">
       <Project>{1fb0e622-d2c6-4a5c-b5b6-d2bb5e502af1}</Project>
       <Name>Drivers.Compiler</Name>

@@ -794,6 +794,11 @@ namespace Drivers.Compiler.IL
         }
 
         /// <summary>
+        /// Overrides the LoadAtILOffset value with reference to a specific IL op.
+        /// </summary>
+        public ILOp LoadAtILOpAfterOp = null;
+
+        /// <summary>
         /// Performs only the op's stack operations on the specified conversion state.
         /// </summary>
         /// <param name="conversionState">The conversion state to perform stack operations on.</param>

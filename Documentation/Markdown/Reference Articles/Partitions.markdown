@@ -4,6 +4,7 @@ title: Partitions
 date: 2015-07-22 22:44:00
 categories: [ docs, reference ]
 parent_name: Disk Devices
+description: Describes disk partitioning schemes in general along with information about common standards.
 ---
 
 # Introduction

@@ -4,6 +4,7 @@ title: Interrupt Descriptors Table
 date: 2015-08-28 16:54:00
 categories: [ docs, reference ]
 parent_name: Interrupts
+description: Describes the x86 Interrupt Descriptors Table and how to use it.
 ---
 
 # Introduction
@@ -158,10 +159,7 @@ There are only two real alternatives to interrupts which are polling and hardwar
 # Example Code
 
 ## Overview
-TODO
-
-## Download
-TODO
+The FlingOS Interrupt Descriptors Table code is mainly contained in its Pre-requisite (i.e. initialisation) ASM code. The main file is available at: [https://github.com/FlingOS/FlingOS/blob/master/Kernel/Kernel/ASM/Descriptor%20Tables/IDT.x86_32.asm](https://github.com/FlingOS/FlingOS/blob/master/Kernel/Kernel/ASM/Descriptor%20Tables/IDT.x86_32.asm)
 
 ---
 

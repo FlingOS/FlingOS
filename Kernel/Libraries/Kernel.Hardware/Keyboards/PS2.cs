@@ -155,8 +155,6 @@ namespace Kernel.Hardware.Keyboards
             }
         }
 
-        [Compiler.NoGC]
-        [Compiler.NoDebug]
         public void Reset()
         {
             // If the driver is enabled

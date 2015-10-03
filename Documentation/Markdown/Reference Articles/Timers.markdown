@@ -3,7 +3,7 @@ layout: reference-article
 title: Timers
 date: 2015-09-06 11:50:00
 categories: [ docs, reference ]
-description: A description of timer devices (interval and watchdog), their operation and uses.
+description: Describes a variety of timer devices (including interval and watchdog timers), their operation and uses.
 ---
 
 # Introduction

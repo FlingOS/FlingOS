@@ -65,7 +65,6 @@ namespace Kernel.FOS_System
     /// <summary>
     /// The kernel heap - currently a very simple implementation.
     /// </summary>
-    [Compiler.PluggedClass]
     public static unsafe class Heap
     {
         public static bool PreventAllocation = false;
@@ -98,9 +97,7 @@ namespace Kernel.FOS_System
         internal static Processes.Synchronisation.SpinLock HeapAccessLock;
         internal static bool HeapAccessLockInitialised = false;
 
-        [Compiler.NoDebug]
         [Drivers.Compiler.Attributes.NoDebug]
-        [Compiler.NoGC]
         [Drivers.Compiler.Attributes.NoGC]
         private static void EnterCritical(FOS_System.String caller)
         {
@@ -131,9 +128,7 @@ namespace Kernel.FOS_System
             //    BasicConsole.DelayOutput(5);
             //}
         }
-        [Compiler.NoDebug]
         [Drivers.Compiler.Attributes.NoDebug]
-        [Compiler.NoGC]
         [Drivers.Compiler.Attributes.NoGC]
         private static void ExitCritical()
         {
@@ -241,7 +236,6 @@ namespace Kernel.FOS_System
         /// Gets a pointer to the block of memory to allocate to the kernel's fixed heap.
         /// </summary>
         /// <returns>The pointer to the block of memory.</returns>
-        [Compiler.PluggedMethod(ASMFilePath=@"ASM\Heap\GetFixedHeapPtr")]
         [Drivers.Compiler.Attributes.PluggedMethod(ASMFilePath=@"ASM\Heap\GetFixedHeapPtr")]
         public static UInt32* GetFixedHeapPtr()
         {
@@ -252,7 +246,6 @@ namespace Kernel.FOS_System
         /// Gets the size of the block of memory to allocate to the kernel's fixed heap.
         /// </summary>
         /// <returns>The size of the block of memory.</returns>
-        [Compiler.PluggedMethod(ASMFilePath = null)]
         [Drivers.Compiler.Attributes.PluggedMethod(ASMFilePath = null)]
         public static UInt32 GetFixedHeapSize()
         {
@@ -264,9 +257,7 @@ namespace Kernel.FOS_System
         /// <summary>
         /// Intialises the kernel's fixed heap.
         /// </summary>
-        [Compiler.NoDebug]
         [Drivers.Compiler.Attributes.NoDebug]
-        [Compiler.NoGC]
         [Drivers.Compiler.Attributes.NoGC]
         public static void InitFixedHeap()
         {
@@ -282,9 +273,7 @@ namespace Kernel.FOS_System
         /// <summary>
         /// Intialises the heap.
         /// </summary>
-        [Compiler.NoDebug]
         [Drivers.Compiler.Attributes.NoDebug]
-        [Compiler.NoGC]
         [Drivers.Compiler.Attributes.NoGC]
         public static void Init()
         {
@@ -297,9 +286,7 @@ namespace Kernel.FOS_System
         /// <param name="size">The size of the block of memory to add.</param>
         /// <param name="bsize">The size of the chunks to use when allocating memory.</param>
         /// <returns>Returns 1 if the block was added successfully.</returns>
-        [Compiler.NoDebug]
         [Drivers.Compiler.Attributes.NoDebug]
-        [Compiler.NoGC]
         [Drivers.Compiler.Attributes.NoGC]
         public static int AddBlock(UInt32 addr, UInt32 size, UInt32 bsize)
         {
@@ -344,9 +331,7 @@ namespace Kernel.FOS_System
         /// <param name="a">Umm...</param>
         /// <param name="b">Umm...</param>
         /// <returns>Umm...the NID I guess... :)</returns>
-        [Compiler.NoDebug]
         [Drivers.Compiler.Attributes.NoDebug]
-        [Compiler.NoGC]
         [Drivers.Compiler.Attributes.NoGC]
         public static byte GetNID(byte a, byte b)
         {
@@ -361,9 +346,7 @@ namespace Kernel.FOS_System
         /// <param name="size">The amount of memory to try and allocate.</param>
         /// <returns>A pointer to the start of the allocated memory or a null pointer if not enough 
         /// contiguous memory is available.</returns>
-        [Compiler.NoDebug]
         [Drivers.Compiler.Attributes.NoDebug]
-        [Compiler.NoGC]
         [Drivers.Compiler.Attributes.NoGC]
         public static void* Alloc(UInt32 size, FOS_System.String caller)
         {
@@ -375,9 +358,7 @@ namespace Kernel.FOS_System
         /// <param name="size">The amount of memory to try and allocate.</param>
         /// <returns>A pointer to the start of the allocated memory or a null pointer if not enough 
         /// contiguous memory is available.</returns>
-        [Compiler.NoDebug]
         [Drivers.Compiler.Attributes.NoDebug]
-        [Compiler.NoGC]
         [Drivers.Compiler.Attributes.NoGC]
         public static void* AllocZeroed(UInt32 size, FOS_System.String caller)
         {
@@ -419,9 +400,7 @@ namespace Kernel.FOS_System
         /// <param name="boundary">The boundary on which the data must be allocated. 1 = no boundary. Must be power of 2.</param>
         /// <returns>A pointer to the start of the allocated memory or a null pointer if not enough 
         /// contiguous memory is available.</returns>
-        [Compiler.NoDebug]
         [Drivers.Compiler.Attributes.NoDebug]
-        [Compiler.NoGC]
         [Drivers.Compiler.Attributes.NoGC]
         public static void* AllocZeroed(UInt32 size, UInt32 boundary, FOS_System.String caller)
         {
@@ -439,9 +418,7 @@ namespace Kernel.FOS_System
         /// <param name="boundary">The boundary on which the data must be allocated. 1 = no boundary. Must be power of 2.</param>
         /// <returns>A pointer to the start of the allocated memory or a null pointer if not enough 
         /// contiguous memory is available.</returns>
-        [Compiler.NoDebug]
         [Drivers.Compiler.Attributes.NoDebug]
-        [Compiler.NoGC]
         [Drivers.Compiler.Attributes.NoGC]
         public static void* Alloc(UInt32 size, UInt32 boundary, FOS_System.String caller)
         {
@@ -568,9 +545,7 @@ namespace Kernel.FOS_System
         /// Frees the specified memory giving it back to the heap.
         /// </summary>
         /// <param name="ptr">A pointer to the memory to free.</param>
-        [Compiler.NoDebug]
         [Drivers.Compiler.Attributes.NoDebug]
-        [Compiler.NoGC]
         [Drivers.Compiler.Attributes.NoGC]
         public static void Free(void* ptr)
         {

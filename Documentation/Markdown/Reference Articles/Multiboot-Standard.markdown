@@ -3,6 +3,7 @@ layout: reference-article
 title: Multiboot Standard
 date: 2015-09-03 16:16:00
 categories: [ docs, reference ]
+description: Describes the Multiboot standard and gives examples of how to use it.
 ---
 
 # Introduction
@@ -81,9 +82,6 @@ The following is a sample multiboot header written in NASM syntax:
 MultibootSignature dd 464367618
 MultibootFlags dd 3
 MultibootChecksum dd -464367621
-MultibootGraphicsRuntime_VbeModeInfoAddr dd 2147483647
-MultibootGraphicsRuntime_VbeControlInfoAddr dd 2147483647
-MultibootGraphicsRuntime_VbeMode dd 2147483647
 ```
 
 The following is a sample for checking the multiboot signature, handling it if it is wrong and loading data from the multiboot info structure. It was written for the configuration provided above which has flags set the require the bootloader to always include the Upper and Lower memory information in the multiboot info structure.

@@ -4,7 +4,7 @@ title: ATA
 date: 2015-07-20 11:40:00
 categories: [ docs, reference ]
 parent_name: Disk Devices
-description: This is an article
+description: Describes ATA in general and gives detailed description of how to use Parallel ATA (PATA) drives.
 ---
 
 # Introduction
@@ -493,13 +493,9 @@ To read or write one or more sectors, the following steps should be performed:
 # Example Code
 
 ## Overview
-The sample code provided here contains everything required to implement PATA support for hard disks. It also includes code for cleanly handling PATAPI, SATA and SATAPI devices.
+The FlingOS ATA driver is split amongst multiple files and classes to provide suitable levels of abstraction. At the time of writing (2015-09-15) the ATA driver had support for reading and writing PATA hard disk drives, reading PATAPI CD/DVD drives and detecting SATA/SATAPI devices. 
 
-The code is a direct copy of the FlingOS source code from 3rd February 2015. Most is in C# but for reference the IO Port x86-32bit assembler code is included.
-
-## Download
-
-[ATA - 2015-02-03](/Source%20Samples/ATA%20-%202015-02-03.zip)
+The FlingOS ATA driver(s) can be found at: [https://github.com/FlingOS/FlingOS/tree/master/Kernel/Libraries/Kernel.Hardware/ATA](https://github.com/FlingOS/FlingOS/tree/master/Kernel/Libraries/Kernel.Hardware/ATA)
 
 ---
 

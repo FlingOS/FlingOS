@@ -32,7 +32,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using Kernel.Debug.Data;
 using System.IO;
-using Kernel.Compiler;
 
 namespace Kernel.Debug.Debugger
 {

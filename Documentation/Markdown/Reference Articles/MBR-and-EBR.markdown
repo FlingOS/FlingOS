@@ -4,6 +4,7 @@ title: MBR and EBR
 date: 2015-07-21 11:38:00
 categories: [ docs, reference ]
 parent_name: Disk Devices
+description: Describes the Master Boot Record (MBR) and Extended Boot Record (EBR) partitioning schemes.
 ---
 
 # Introduction
@@ -189,10 +190,7 @@ The following classes are recommended:
 # Example Code
 
 ## Overview
-TODO
-
-## Download
-TODO
+The FlingOS MBR and EBR implementations can be found in the Disks folder of the FOS_System.IO library at: [https://github.com/FlingOS/FlingOS/tree/master/Kernel/Libraries/Kernel.FOS_System.IO/Disk](https://github.com/FlingOS/FlingOS/tree/master/Kernel/Libraries/Kernel.FOS_System.IO/Disk)
 
 ---
 

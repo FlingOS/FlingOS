@@ -44,7 +44,6 @@ namespace Kernel.FOS_System
     /// get-set property methods! Apply the attribute to the get/set keywords not the property
     /// declaration (/name).
     /// </remarks>
-    [Compiler.PluggedClass]
     public static unsafe class GC
     {
         /// <summary>
@@ -83,9 +82,7 @@ namespace Kernel.FOS_System
         /// <summary>
         /// Intialises the GC.
         /// </summary>
-        [Compiler.NoDebug]
         [Drivers.Compiler.Attributes.NoDebug]
-        [Compiler.NoGC]
         [Drivers.Compiler.Attributes.NoGC]
         static GC()
         {
@@ -121,9 +118,7 @@ namespace Kernel.FOS_System
             GC.Enabled = false;
         }
 
-        [Compiler.NoDebug]
         [Drivers.Compiler.Attributes.NoDebug]
-        [Compiler.NoGC]
         [Drivers.Compiler.Attributes.NoGC]
         private static void EnterCritical(FOS_System.String caller)
         {
@@ -154,9 +149,7 @@ namespace Kernel.FOS_System
             //    BasicConsole.DelayOutput(5);
             //}
         }
-        [Compiler.NoDebug]
         [Drivers.Compiler.Attributes.NoDebug]
-        [Compiler.NoGC]
         [Drivers.Compiler.Attributes.NoGC]
         private static void ExitCritical()
         {
@@ -185,11 +178,8 @@ namespace Kernel.FOS_System
         /// </summary>
         /// <param name="theType">The type of object to create.</param>
         /// <returns>A pointer to the new object in memory.</returns>
-        [Compiler.NewObjMethod]
         [Drivers.Compiler.Attributes.NewObjMethod]
-        [Compiler.NoDebug]
         [Drivers.Compiler.Attributes.NoDebug]
-        [Compiler.NoGC]
         [Drivers.Compiler.Attributes.NoGC]
         public static void* NewObj(FOS_System.Type theType)
         {
@@ -261,11 +251,8 @@ namespace Kernel.FOS_System
         /// <param name="length">The length of the array to create.</param>
         /// <param name="elemType">The type of element in the array to create.</param>
         /// <returns>A pointer to the new array in memory.</returns>
-        [Compiler.NewArrMethod]
         [Drivers.Compiler.Attributes.NewArrMethod]
-        [Compiler.NoDebug]
         [Drivers.Compiler.Attributes.NoDebug]
-        [Compiler.NoGC]
         [Drivers.Compiler.Attributes.NoGC]
         public static void* NewArr(int length, FOS_System.Type elemType)
         {
@@ -352,9 +339,7 @@ namespace Kernel.FOS_System
         /// </summary>
         /// <param name="length">The length of the string to create.</param>
         /// <returns>A pointer to the new string in memory.</returns>
-        [Compiler.NoDebug]
         [Drivers.Compiler.Attributes.NoDebug]
-        [Compiler.NoGC]
         [Drivers.Compiler.Attributes.NoGC]
         public static void* NewString(int length)
         {
@@ -449,11 +434,8 @@ namespace Kernel.FOS_System
         /// Uses underlying increment ref count method.
         /// </remarks>
         /// <param name="anObj">The object to increment the ref count of.</param>
-        [Compiler.IncrementRefCountMethod]
         [Drivers.Compiler.Attributes.IncrementRefCountMethod]
-        [Compiler.NoDebug]
         [Drivers.Compiler.Attributes.NoDebug]
-        [Compiler.NoGC]
         [Drivers.Compiler.Attributes.NoGC]
         public static void IncrementRefCount(FOS_System.Object anObj)
         {
@@ -477,9 +459,7 @@ namespace Kernel.FOS_System
         /// so string literals and the like don't accidentally get treated as normal GC managed strings.
         /// </remarks>
         /// <param name="objPtr">Pointer to the object to increment the ref count of.</param>
-        [Compiler.NoDebug]
         [Drivers.Compiler.Attributes.NoDebug]
-        [Compiler.NoGC]
         [Drivers.Compiler.Attributes.NoGC]
         public static void _IncrementRefCount(byte* objPtr)
         {
@@ -512,11 +492,8 @@ namespace Kernel.FOS_System
         /// so string literals and the like don't accidentally get treated as normal GC managed strings.
         /// </remarks>
         /// <param name="anObj">The object to decrement the ref count of.</param>
-        [Compiler.DecrementRefCountMethod]
         [Drivers.Compiler.Attributes.DecrementRefCountMethod]
-        [Compiler.NoDebug]
         [Drivers.Compiler.Attributes.NoDebug]
-        [Compiler.NoGC]
         [Drivers.Compiler.Attributes.NoGC]
         public static void DecrementRefCount(FOS_System.Object anObj)
         {
@@ -531,9 +508,7 @@ namespace Kernel.FOS_System
         /// </remarks>
         /// <param name="anObj">The object to decrement the ref count of.</param>
         /// <param name="overrideInside">Whether to ignore the InsideGC test or not.</param>
-        [Compiler.NoDebug]
         [Drivers.Compiler.Attributes.NoDebug]
-        [Compiler.NoGC]
         [Drivers.Compiler.Attributes.NoGC]
         public static void DecrementRefCount(FOS_System.Object anObj, bool overrideInside)
         {
@@ -563,9 +538,7 @@ namespace Kernel.FOS_System
         /// so string literals and the like don't accidentally get treated as normal GC managed strings.
         /// </remarks>
         /// <param name="objPtr">A pointer to the object to decrement the ref count of.</param>
-        [Compiler.NoDebug]
         [Drivers.Compiler.Attributes.NoDebug]
-        [Compiler.NoGC]
         [Drivers.Compiler.Attributes.NoGC]
         public static void _DecrementRefCount(byte* objPtr)
         {
@@ -646,9 +619,7 @@ namespace Kernel.FOS_System
         /// </summary>
         /// <param name="headerPtr">A pointer to the header to check.</param>
         /// <returns>True if the signature is found and is correct.</returns>
-        [Compiler.NoDebug]
         [Drivers.Compiler.Attributes.NoDebug]
-        [Compiler.NoGC]
         [Drivers.Compiler.Attributes.NoGC]
         public static unsafe bool CheckSignature(GCHeader* headerPtr)
         {
@@ -661,9 +632,7 @@ namespace Kernel.FOS_System
         /// Sets the GC signature in the specified GC header.
         /// </summary>
         /// <param name="headerPtr">A pointer to the header to set the signature in.</param>
-        [Compiler.NoDebug]
         [Drivers.Compiler.Attributes.NoDebug]
-        [Compiler.NoGC]
         [Drivers.Compiler.Attributes.NoGC]
         public static void SetSignature(GCHeader* headerPtr)
         {
@@ -675,9 +644,7 @@ namespace Kernel.FOS_System
         /// <summary>
         /// Scans the CleanupList to free objects from memory.
         /// </summary>
-        [Compiler.NoDebug]
         [Drivers.Compiler.Attributes.NoDebug]
-        [Compiler.NoGC]
         [Drivers.Compiler.Attributes.NoGC]
         public static void Cleanup()
         {
@@ -754,9 +721,7 @@ namespace Kernel.FOS_System
         /// </summary>
         /// <param name="objHeaderPtr">A pointer to the object's header.</param>
         /// <param name="objPtr">A pointer to the object.</param>
-        [Compiler.NoDebug]
         [Drivers.Compiler.Attributes.NoDebug]
-        [Compiler.NoGC]
         [Drivers.Compiler.Attributes.NoGC]
         private static void AddObjectToCleanup(GCHeader* objHeaderPtr, void* objPtr)
         {
@@ -789,9 +754,7 @@ namespace Kernel.FOS_System
         /// Removes an object from the cleanup list.
         /// </summary>
         /// <param name="objHeaderPtr">A pointer to the object's header.</param>
-        [Compiler.NoDebug]
         [Drivers.Compiler.Attributes.NoDebug]
-        [Compiler.NoGC]
         [Drivers.Compiler.Attributes.NoGC]
         private static void RemoveObjectToCleanup(GCHeader* objHeaderPtr)
         {
@@ -819,20 +782,28 @@ namespace Kernel.FOS_System
         /// Removes an object from the cleanup list.
         /// </summary>
         /// <param name="objToCleanupPtr">A pointer to the cleanup-list element.</param>
-        [Compiler.NoDebug]
         [Drivers.Compiler.Attributes.NoDebug]
-        [Compiler.NoGC]
         [Drivers.Compiler.Attributes.NoGC]
         private static void RemoveObjectToCleanup(ObjectToCleanup* objToCleanupPtr)
         {
             ObjectToCleanup* prevPtr = objToCleanupPtr->prevPtr;
             ObjectToCleanup* nextPtr = objToCleanupPtr->nextPtr;
-            prevPtr->nextPtr = nextPtr;
+            if (prevPtr != null)
+            {
+                prevPtr->nextPtr = nextPtr;
+            }
             nextPtr->prevPtr = prevPtr;
 
             if(CleanupList == objToCleanupPtr)
             {
-                CleanupList = prevPtr;
+                if (prevPtr != null)
+                {
+                    CleanupList = prevPtr;
+                }
+                else
+                {
+                    CleanupList = nextPtr;
+                }
             }
             
             Heap.Free(objToCleanupPtr);

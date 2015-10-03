@@ -70,7 +70,14 @@ namespace Kernel.FOS_System.IO
             }
             else
             {
-                return (Directory)baseListing;
+                if (baseListing is Directory)
+                {
+                    return (Directory)baseListing;
+                }
+                else
+                {
+                    return null;
+                }
             }
         }
 

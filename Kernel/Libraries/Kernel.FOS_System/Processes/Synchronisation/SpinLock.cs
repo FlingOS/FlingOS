@@ -32,15 +32,12 @@ using System.Threading.Tasks;
 
 namespace Kernel.FOS_System.Processes.Synchronisation
 {
-    [Compiler.PluggedClass]
     public class SpinLock : FOS_System.Object
     {
         private int id;
         public int Id
         {
-            [Compiler.NoGC]
             [Drivers.Compiler.Attributes.NoGC]
-            [Compiler.NoDebug]
             [Drivers.Compiler.Attributes.NoDebug]
             get
             {
@@ -51,9 +48,7 @@ namespace Kernel.FOS_System.Processes.Synchronisation
         private UInt16 locked = 0;
         public bool Locked
         {
-            [Compiler.NoGC]
             [Drivers.Compiler.Attributes.NoGC]
-            [Compiler.NoDebug]
             [Drivers.Compiler.Attributes.NoDebug]
             get
             {
@@ -61,27 +56,22 @@ namespace Kernel.FOS_System.Processes.Synchronisation
             }
         }
 
-        [Compiler.NoDebug]
         [Drivers.Compiler.Attributes.NoDebug]
         public SpinLock(int anId)
         {
             id = anId;
         }
 
-        [Compiler.PluggedMethod(ASMFilePath=@"ASM\Processes\Synchronisation\SpinLock")]
         [Drivers.Compiler.Attributes.PluggedMethod(ASMFilePath=@"ASM\Processes\Synchronisation\SpinLock")]
         private void _Enter()
         {
         }
-        [Compiler.PluggedMethod(ASMFilePath=null)]
         [Drivers.Compiler.Attributes.PluggedMethod(ASMFilePath=null)]
         private void _Exit()
         {
         }
 
-        [Compiler.NoGC]
         [Drivers.Compiler.Attributes.NoGC]
-        [Compiler.NoDebug]
         [Drivers.Compiler.Attributes.NoDebug]
         public void Enter()
         {
@@ -89,9 +79,7 @@ namespace Kernel.FOS_System.Processes.Synchronisation
             _Enter();
             //BasicConsole.WriteLine("Lock acquired.");
         }
-        [Compiler.NoGC]
         [Drivers.Compiler.Attributes.NoGC]
-        [Compiler.NoDebug]
         [Drivers.Compiler.Attributes.NoDebug]
         public void Exit()
         {

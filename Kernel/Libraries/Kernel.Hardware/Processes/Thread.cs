@@ -252,7 +252,6 @@ namespace Kernel.Hardware.Processes
         /// Kernel.Hardware.Processes.Scheduler.UpdateCurrentState()
         /// after calling this to immediately update the thread to return to.
         /// </remarks>
-        [Compiler.NoGC]
         [Drivers.Compiler.Attributes.NoGC]
         public void _EnterSleep(int ms)
         {
@@ -300,7 +299,6 @@ namespace Kernel.Hardware.Processes
             //}
             //}
         }
-        [Compiler.NoGC]
         [Drivers.Compiler.Attributes.NoGC]
         public bool _Sleep(int ms)
         {
@@ -323,13 +321,11 @@ namespace Kernel.Hardware.Processes
 
             return true;
         }
-        [Compiler.NoGC]
         [Drivers.Compiler.Attributes.NoGC]
         public bool _Sleep_Indefinitely()
         {
             return this._Sleep(IndefiniteSleep);
         }
-        [Compiler.NoGC]
         [Drivers.Compiler.Attributes.NoGC]
         public void _Wake()
         {
@@ -346,7 +342,6 @@ namespace Kernel.Hardware.Processes
             //}
         }
 
-        [Compiler.NoGC]
         [Drivers.Compiler.Attributes.NoGC]
         public static void EnterSleep(int ms)
         {
@@ -357,7 +352,6 @@ namespace Kernel.Hardware.Processes
             }
             ProcessManager.CurrentThread._EnterSleep(ms);
         }
-        [Compiler.NoGC]
         [Drivers.Compiler.Attributes.NoGC]
         public static bool Sleep(int ms)
         {
@@ -368,7 +362,6 @@ namespace Kernel.Hardware.Processes
             }
             return ProcessManager.CurrentThread._Sleep(ms);
         }
-        [Compiler.NoGC]
         [Drivers.Compiler.Attributes.NoGC]
         public static bool Sleep_Indefinitely()
         {
@@ -379,7 +372,6 @@ namespace Kernel.Hardware.Processes
             }
             return ProcessManager.CurrentThread._Sleep_Indefinitely();
         }
-        [Compiler.NoGC]
         [Drivers.Compiler.Attributes.NoGC]
         public static void Wake()
         {

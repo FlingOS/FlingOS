@@ -100,6 +100,15 @@ namespace FlingOops
                 BasicConsole.SetTextColour(BasicConsole.default_colour);
             }
 
+            //if (filterPtr != null)
+            //{
+            //    BasicConsole.WriteLine("Enter try-catch block");
+            //}
+            //else
+            //{
+            //    BasicConsole.WriteLine("Enter try-finally block");
+            //}
+
             AddExceptionHandlerInfo_EntryStackState* BasePtr = (AddExceptionHandlerInfo_EntryStackState*)BasePointer;
 
             uint LocalsSize = (uint)BasePtr - (uint)StackPointer;
@@ -162,7 +171,7 @@ namespace FlingOops
         {
             FlingOops.GC.IncrementRefCount(ex);
 
-            BasicConsole.WriteLine("Exception thrown:");
+            BasicConsole.WriteLine("Exception thrown");
             BasicConsole.WriteLine(ex.Message);
 
             if (State->CurrentHandlerPtr->Ex != null)
@@ -210,6 +219,8 @@ namespace FlingOops
         [Drivers.Compiler.Attributes.NoGC]
         public static unsafe void HandleException()
         {
+            //BasicConsole.WriteLine("Handle exception");
+
             if (State != null)
             {
                 if (State->CurrentHandlerPtr != null)
@@ -355,6 +366,9 @@ namespace FlingOops
                 uint EBP = State->CurrentHandlerPtr->EBP;
                 uint ESP = State->CurrentHandlerPtr->ESP;
 
+                //BasicConsole.WriteLine("Leave try or catch of try-catch");
+                //BasicConsole.WriteLine((uint)continuePtr);
+
                 State->CurrentHandlerPtr = State->CurrentHandlerPtr->PrevHandlerPtr;
 
                 ArbitaryReturn(EBP, ESP + (uint)sizeof(ExceptionHandlerInfo), (byte*)continuePtr);
@@ -365,9 +379,19 @@ namespace FlingOops
 
                 State->CurrentHandlerPtr->InHandler = 1;
 
+                byte* handlerAddress = State->CurrentHandlerPtr->HandlerAddress;
+
+                //BasicConsole.WriteLine("Leave try of try-finally");
+                //BasicConsole.Write("Handler address: ");
+                //BasicConsole.WriteLine((uint)handlerAddress);
+                //BasicConsole.Write("Continue ptr: ");
+                //BasicConsole.WriteLine((uint)continuePtr);
+
+                State->CurrentHandlerPtr->HandlerAddress = (byte*)continuePtr;
+
                 ArbitaryReturn(State->CurrentHandlerPtr->EBP,
                                State->CurrentHandlerPtr->ESP,
-                               State->CurrentHandlerPtr->HandlerAddress);
+                               handlerAddress);
             }
         }
         /// <summary>
@@ -390,7 +414,7 @@ namespace FlingOops
                 // Try to cause fault
                 *((byte*)0xDEADBEEF) = 0;
             }
-
+            
             // Leaving a "finally" critical section cleanly
             // We need to handle 2 cases:
             // Case 1 : Pending exception
@@ -400,22 +424,32 @@ namespace FlingOops
             {
                 // Case 1 : Pending exception
 
+                //BasicConsole.WriteLine("End finally with ex");
+
                 HandleException();
             }
             else
             {
                 // Case 2 : No pending exception
 
+                //BasicConsole.WriteLine("End finally without ex");
+
                 State->CurrentHandlerPtr->InHandler = 0;
 
                 uint EBP = State->CurrentHandlerPtr->EBP;
                 uint ESP = State->CurrentHandlerPtr->ESP;
+                byte* retAddr = State->CurrentHandlerPtr->HandlerAddress;//(byte*)*((uint*)(BasePointer + 4));
+
+                //BasicConsole.Write("Continue ptr (from HandlerAddress): ");
+                //BasicConsole.WriteLine((uint)State->CurrentHandlerPtr->HandlerAddress);
+                //BasicConsole.Write("Actual continue addr (from EBP): ");
+                //BasicConsole.WriteLine(*((uint*)(BasePointer + 4)));
 
                 State->CurrentHandlerPtr = State->CurrentHandlerPtr->PrevHandlerPtr;
 
                 ArbitaryReturn(EBP,
                     ESP + (uint)sizeof(ExceptionHandlerInfo),
-                    (byte*)*((uint*)(BasePointer + 4)));
+                    retAddr);
             }
         }
 

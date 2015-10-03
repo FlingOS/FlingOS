@@ -7,7 +7,6 @@ Database.ldf
 Documentation/Help/
 UpgradeLog*.htm
 *.mp4
-*.zip
 *.user
 FlingOS.v12.suo
 Kernel/Drivers/Compiler/Tools/syslinux-6.03/

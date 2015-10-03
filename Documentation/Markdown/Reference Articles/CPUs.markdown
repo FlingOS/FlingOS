@@ -3,6 +3,7 @@ layout: reference-article
 title: CPUs
 date: 2015-09-03 22:44:00
 categories: [ docs, reference ]
+description: Describes CPUs in detail including a comparison of RISC vs. CISC architectures.
 ---
 
 # Introduction

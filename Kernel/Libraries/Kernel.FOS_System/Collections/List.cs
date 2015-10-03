@@ -84,7 +84,6 @@ namespace Kernel.FOS_System.Collections
         /// <summary>
         /// Creates a new list with initial capacity of 5.
         /// </summary>
-        [Compiler.NoDebug]
         [Drivers.Compiler.Attributes.NoDebug]
         public List()
             : this(5)
@@ -94,7 +93,6 @@ namespace Kernel.FOS_System.Collections
         /// Creates a new list with specified initial capacity. Use this to optimise memory usage.
         /// </summary>
         /// <param name="capacity">The initial capacity of the list.</param>
-        [Compiler.NoDebug]
         [Drivers.Compiler.Attributes.NoDebug]
         public List(int capacity)
             : this(capacity, 5)
@@ -105,7 +103,6 @@ namespace Kernel.FOS_System.Collections
         /// </summary>
         /// <param name="capacity">The initial capacity of the list.</param>
         /// <param name="expandAmount">The amount to expand the list capacity by each time the capacity must be increased.</param>
-        [Compiler.NoDebug]
         [Drivers.Compiler.Attributes.NoDebug]
         public List(int capacity, int expandAmount)
         {
@@ -118,7 +115,6 @@ namespace Kernel.FOS_System.Collections
         /// Adds the specified object to the list.
         /// </summary>
         /// <param name="obj">The object to add.</param>
-        [Compiler.NoDebug]
         [Drivers.Compiler.Attributes.NoDebug]
         public void Add(FOS_System.Object obj)
         {
@@ -137,7 +133,6 @@ namespace Kernel.FOS_System.Collections
         /// Removes the specified object from the list.
         /// </summary>
         /// <param name="obj">The object to remove.</param>
-        [Compiler.NoDebug]
         [Drivers.Compiler.Attributes.NoDebug]
         public void Remove(FOS_System.Object obj)
         {
@@ -199,7 +194,6 @@ namespace Kernel.FOS_System.Collections
         /// The removes the object at the specified index from the list.
         /// </summary>
         /// <param name="index">The index of the object to remove.</param>
-        [Compiler.NoDebug]
         [Drivers.Compiler.Attributes.NoDebug]
         public void RemoveAt(int index)
         {
@@ -278,7 +272,6 @@ namespace Kernel.FOS_System.Collections
         /// <summary>
         /// Empties the list of all objects but does not alter the list capacity.
         /// </summary>
-        [Compiler.NoDebug]
         [Drivers.Compiler.Attributes.NoDebug]
         public void Empty()
         {
@@ -295,7 +288,6 @@ namespace Kernel.FOS_System.Collections
         /// Expands the capacity of the internel array that stores the objects.
         /// </summary>
         /// <param name="amount">The amount to expand the capacity by.</param>
-        [Compiler.NoDebug]
         [Drivers.Compiler.Attributes.NoDebug]
         private void ExpandCapacity(int amount)
         {
@@ -325,7 +317,6 @@ namespace Kernel.FOS_System.Collections
         /// </exception>
         public FOS_System.Object this[int index]
         {
-            [Compiler.NoDebug]
             [Drivers.Compiler.Attributes.NoDebug]
             get
             {
@@ -343,7 +334,6 @@ namespace Kernel.FOS_System.Collections
 
                 return _array[index];
             }
-            [Compiler.NoDebug]
             [Drivers.Compiler.Attributes.NoDebug]
             set
             {
@@ -392,7 +382,6 @@ namespace Kernel.FOS_System.Collections
         /// </summary>
         public int Count
         {
-            [Compiler.NoDebug]
             [Drivers.Compiler.Attributes.NoDebug]
             get
             {
@@ -418,7 +407,6 @@ namespace Kernel.FOS_System.Collections
         /// <summary>
         /// Creates a new list with initial capacity of 5.
         /// </summary>
-        [Compiler.NoDebug]
         [Drivers.Compiler.Attributes.NoDebug]
         public UInt32List()
         {
@@ -428,7 +416,6 @@ namespace Kernel.FOS_System.Collections
         /// Creates a new list with specified initial capacity. Use this to optimise memory usage.
         /// </summary>
         /// <param name="capacity">The initial capacity of the list.</param>
-        [Compiler.NoDebug]
         [Drivers.Compiler.Attributes.NoDebug]
         public UInt32List(int capacity)
         {
@@ -439,7 +426,6 @@ namespace Kernel.FOS_System.Collections
         /// Adds the specified UInt32 to the list.
         /// </summary>
         /// <param name="obj">The UInt32 to add.</param>
-        [Compiler.NoDebug]
         [Drivers.Compiler.Attributes.NoDebug]
         public void Add(UInt32 obj)
         {
@@ -454,7 +440,6 @@ namespace Kernel.FOS_System.Collections
         /// Removes the first equal value of the specified UInt32 from the list.
         /// </summary>
         /// <param name="obj">The UInt32 to remove.</param>
-        [Compiler.NoDebug]
         [Drivers.Compiler.Attributes.NoDebug]
         public void Remove(UInt32 obj)
         {
@@ -486,7 +471,6 @@ namespace Kernel.FOS_System.Collections
         /// The removes the UInt32 at the specified index from the list.
         /// </summary>
         /// <param name="index">The index of the UInt32 to remove.</param>
-        [Compiler.NoDebug]
         [Drivers.Compiler.Attributes.NoDebug]
         public void RemoveAt(int index)
         {
@@ -533,7 +517,6 @@ namespace Kernel.FOS_System.Collections
         /// Expands the capacity of the internel array that stores the UInt32s.
         /// </summary>
         /// <param name="amount">The amount to expand the capacity by.</param>
-        [Compiler.NoDebug]
         [Drivers.Compiler.Attributes.NoDebug]
         private void ExpandCapacity(int amount)
         {
@@ -555,7 +538,6 @@ namespace Kernel.FOS_System.Collections
         /// </exception>
         public UInt32 this[int index]
         {
-            [Compiler.NoDebug]
             [Drivers.Compiler.Attributes.NoDebug]
             get
             {
@@ -570,7 +552,6 @@ namespace Kernel.FOS_System.Collections
 
                 return _array[index];
             }
-            [Compiler.NoDebug]
             [Drivers.Compiler.Attributes.NoDebug]
             set
             {
@@ -610,7 +591,6 @@ namespace Kernel.FOS_System.Collections
         /// </summary>
         public int Count
         {
-            [Compiler.NoDebug]
             [Drivers.Compiler.Attributes.NoDebug]
             get
             {
@@ -636,7 +616,6 @@ namespace Kernel.FOS_System.Collections
         /// <summary>
         /// Creates a new list with initial capacity of 5.
         /// </summary>
-        [Compiler.NoDebug]
         [Drivers.Compiler.Attributes.NoDebug]
         public UInt64List()
         {
@@ -646,7 +625,6 @@ namespace Kernel.FOS_System.Collections
         /// Creates a new list with specified initial capacity. Use this to optimise memory usage.
         /// </summary>
         /// <param name="capacity">The initial capacity of the list.</param>
-        [Compiler.NoDebug]
         [Drivers.Compiler.Attributes.NoDebug]
         public UInt64List(int capacity)
         {
@@ -657,7 +635,6 @@ namespace Kernel.FOS_System.Collections
         /// Adds the specified UInt64 to the list.
         /// </summary>
         /// <param name="obj">The UInt64 to add.</param>
-        [Compiler.NoDebug]
         [Drivers.Compiler.Attributes.NoDebug]
         public void Add(UInt64 obj)
         {
@@ -672,7 +649,6 @@ namespace Kernel.FOS_System.Collections
         /// Removes the first equal value of the specified UInt64 from the list.
         /// </summary>
         /// <param name="obj">The UInt64 to remove.</param>
-        [Compiler.NoDebug]
         [Drivers.Compiler.Attributes.NoDebug]
         public void Remove(UInt64 obj)
         {
@@ -704,7 +680,6 @@ namespace Kernel.FOS_System.Collections
         /// The removes the UInt64 at the specified index from the list.
         /// </summary>
         /// <param name="index">The index of the UInt64 to remove.</param>
-        [Compiler.NoDebug]
         [Drivers.Compiler.Attributes.NoDebug]
         public void RemoveAt(int index)
         {
@@ -751,7 +726,6 @@ namespace Kernel.FOS_System.Collections
         /// Expands the capacity of the internel array that stores the UInt64s.
         /// </summary>
         /// <param name="amount">The amount to expand the capacity by.</param>
-        [Compiler.NoDebug]
         [Drivers.Compiler.Attributes.NoDebug]
         private void ExpandCapacity(int amount)
         {
@@ -773,7 +747,6 @@ namespace Kernel.FOS_System.Collections
         /// </exception>
         public UInt64 this[int index]
         {
-            [Compiler.NoDebug]
             [Drivers.Compiler.Attributes.NoDebug]
             get
             {
@@ -788,7 +761,6 @@ namespace Kernel.FOS_System.Collections
 
                 return _array[index];
             }
-            [Compiler.NoDebug]
             [Drivers.Compiler.Attributes.NoDebug]
             set
             {
@@ -828,7 +800,6 @@ namespace Kernel.FOS_System.Collections
         /// </summary>
         public int Count
         {
-            [Compiler.NoDebug]
             [Drivers.Compiler.Attributes.NoDebug]
             get
             {
@@ -839,7 +810,6 @@ namespace Kernel.FOS_System.Collections
         /// <summary>
         /// Creates a new list with initial capacity of 5.
         /// </summary>
-        [Compiler.NoDebug]
         [Drivers.Compiler.Attributes.NoDebug]
         public DelegateList()
         {
@@ -849,7 +819,6 @@ namespace Kernel.FOS_System.Collections
         /// Creates a new list with specified initial capacity. Use this to optimise memory usage.
         /// </summary>
         /// <param name="capacity">The initial capacity of the list.</param>
-        [Compiler.NoDebug]
         [Drivers.Compiler.Attributes.NoDebug]
         public DelegateList(int capacity)
         {
@@ -860,7 +829,6 @@ namespace Kernel.FOS_System.Collections
         /// Adds the specified Delegate to the list.
         /// </summary>
         /// <param name="obj">The Delegate to add.</param>
-        [Compiler.NoDebug]
         [Drivers.Compiler.Attributes.NoDebug]
         public void Add(Delegate obj)
         {
@@ -874,7 +842,6 @@ namespace Kernel.FOS_System.Collections
         /// Removes the first equal value of the specified Delegate from the list.
         /// </summary>
         /// <param name="obj">The Delegate to remove.</param>
-        [Compiler.NoDebug]
         [Drivers.Compiler.Attributes.NoDebug]
         public void Remove(Delegate obj)
         {
@@ -907,7 +874,6 @@ namespace Kernel.FOS_System.Collections
         /// Expands the capacity of the internel array that stores the Delegates.
         /// </summary>
         /// <param name="amount">The amount to expand the capacity by.</param>
-        [Compiler.NoDebug]
         [Drivers.Compiler.Attributes.NoDebug]
         private void ExpandCapacity(int amount)
         {
@@ -929,7 +895,6 @@ namespace Kernel.FOS_System.Collections
         /// </exception>
         public Delegate this[int index]
         {
-            [Compiler.NoDebug]
             [Drivers.Compiler.Attributes.NoDebug]
             get
             {
@@ -944,7 +909,6 @@ namespace Kernel.FOS_System.Collections
 
                 return _array[index];
             }
-            [Compiler.NoDebug]
             [Drivers.Compiler.Attributes.NoDebug]
             set
             {

@@ -63,7 +63,6 @@ namespace Kernel.FOS_System.Collections
         /// <summary>
         /// Creates a new stack with initial capacity of 5.
         /// </summary>
-        [Compiler.NoDebug]
         [Drivers.Compiler.Attributes.NoDebug]
         public Stack()
             : this(5)
@@ -73,7 +72,6 @@ namespace Kernel.FOS_System.Collections
         /// Creates a new stack with specified initial capacity. Use this to optimise memory usage.
         /// </summary>
         /// <param name="capacity">The initial capacity of the list.</param>
-        [Compiler.NoDebug]
         [Drivers.Compiler.Attributes.NoDebug]
         public Stack(int capacity)
         {
@@ -148,7 +146,6 @@ namespace Kernel.FOS_System.Collections
         /// <summary>
         /// Creates a new stack with initial capacity of 5.
         /// </summary>
-        [Compiler.NoDebug]
         [Drivers.Compiler.Attributes.NoDebug]
         public UInt32Stack()
             : this(5)
@@ -158,7 +155,6 @@ namespace Kernel.FOS_System.Collections
         /// Creates a new stack with specified initial capacity. Use this to optimise memory usage.
         /// </summary>
         /// <param name="capacity">The initial capacity of the list.</param>
-        [Compiler.NoDebug]
         [Drivers.Compiler.Attributes.NoDebug]
         public UInt32Stack(int capacity)
         {

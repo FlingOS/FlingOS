@@ -4,6 +4,7 @@ title: PS2 Keyboards
 date: 2015-08-24 00:15:00
 categories: [ docs, reference ]
 parent_name: Human Input Devices
+description: Describes PS/2 Keyboards in detail along with how to use them.
 ---
 
 # Introduction
@@ -629,10 +630,9 @@ There are several alternatives for text input to the traditional keyboard. A mic
 # Example Code
 
 ## Overview
-TODO
+The FlingOS PS/2 Keyboard driver can be found at: [https://github.com/FlingOS/FlingOS/blob/master/Kernel/Libraries/Kernel.Hardware/Keyboards/PS2.cs](https://github.com/FlingOS/FlingOS/blob/master/Kernel/Libraries/Kernel.Hardware/Keyboards/PS2.cs)
 
-## Download
-TODO
+It also relies on the base Keyboard class which is itself a partial class to allow a compile-time choice of keyboard layout. The base and partial classes can be found in: [https://github.com/FlingOS/FlingOS/blob/master/Kernel/Libraries/Kernel.Hardware/Devices/Keyboard.cs](https://github.com/FlingOS/FlingOS/blob/master/Kernel/Libraries/Kernel.Hardware/Devices/Keyboard.cs) and [https://github.com/FlingOS/FlingOS/tree/master/Kernel/Libraries/Kernel.Hardware/Devices/Key%20Maps](https://github.com/FlingOS/FlingOS/tree/master/Kernel/Libraries/Kernel.Hardware/Devices/Key%20Maps).
 
 ---
 

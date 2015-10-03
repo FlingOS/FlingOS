@@ -4,6 +4,7 @@ title: ISRs
 date: 2015-08-14 00:04:00
 categories: [ docs, reference ]
 parent_name: Interrupts
+description: Describes Interrupt Service Routines and has a list of x86 reserved/special ISRs with descriptions of each.
 ---
 
 # Introduction

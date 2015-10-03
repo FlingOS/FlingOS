@@ -32,7 +32,6 @@ namespace Kernel
     /// Contains plugged methos that are pre-requisites for the kernel to boot.
     /// For example, the Multiboot Signature.
     /// </summary>
-    [Compiler.PluggedClass]
     public static class PreReqs
     {
         //These methods are listed in the order they are included
@@ -46,9 +45,7 @@ namespace Kernel
         /// <summary>
         /// Inserts the multiboot signature at the start of the file.
         /// </summary>
-        [Compiler.PluggedMethod(ASMFilePath = @"ASM\PreReqs\MultibootSignature")]
         [Drivers.Compiler.Attributes.PluggedMethod(ASMFilePath = @"ASM\PreReqs\MultibootSignature")]
-        [Compiler.SequencePriority(Priority = long.MinValue + 0)]
         [Drivers.Compiler.Attributes.SequencePriority(Priority = long.MinValue + 0)]
         private static void MultibootSignature()
         {
@@ -57,9 +54,7 @@ namespace Kernel
         /// <summary>
         /// Inserts the pre-entrypoint kernel start method plug.
         /// </summary>
-        [Compiler.PluggedMethod(ASMFilePath = @"ASM\PreReqs\Kernel_Start")]
         [Drivers.Compiler.Attributes.PluggedMethod(ASMFilePath = @"ASM\PreReqs\Kernel_Start")]
-        [Compiler.SequencePriority(Priority = long.MinValue + 1)]
         [Drivers.Compiler.Attributes.SequencePriority(Priority = long.MinValue + 1)]
         private static void Kernel_Start()
         {
@@ -68,9 +63,7 @@ namespace Kernel
         /// <summary>
         /// Initialises virtual memory (i.e. shifts to higher-half kernel).
         /// </summary>
-        [Compiler.PluggedMethod(ASMFilePath = @"ASM\PreReqs\VirtualMemInit")]
         [Drivers.Compiler.Attributes.PluggedMethod(ASMFilePath = @"ASM\PreReqs\VirtualMemInit")]
-        [Compiler.SequencePriority(Priority = long.MinValue + 2)]
         [Drivers.Compiler.Attributes.SequencePriority(Priority = long.MinValue + 2)]
         private static void VirtualMemInit()
         {
@@ -81,9 +74,7 @@ namespace Kernel
         /// Kernel stack space is currently hard-coded into the 
         /// Multiboot Signature asm.
         /// </summary>
-        [Compiler.PluggedMethod(ASMFilePath = @"ASM\PreReqs\InitStack")]
         [Drivers.Compiler.Attributes.PluggedMethod(ASMFilePath = @"ASM\PreReqs\InitStack")]
-        [Compiler.SequencePriority(Priority = long.MinValue + 3)]
         [Drivers.Compiler.Attributes.SequencePriority(Priority = long.MinValue + 3)]
         private static void InitStack()
         {
@@ -92,9 +83,7 @@ namespace Kernel
         /// <summary>
         /// Initialises the Global Descriptor Table.
         /// </summary>
-        [Compiler.PluggedMethod(ASMFilePath = @"ASM\Descriptor Tables\GDT")]
         [Drivers.Compiler.Attributes.PluggedMethod(ASMFilePath = @"ASM\Descriptor Tables\GDT")]
-        [Compiler.SequencePriority(Priority = long.MinValue + 4)]
         [Drivers.Compiler.Attributes.SequencePriority(Priority = long.MinValue + 4)]
         private static void InitGDT()
         {
@@ -103,9 +92,7 @@ namespace Kernel
         /// <summary>
         /// Initialises the Interrupt Descriptor Table.
         /// </summary>
-        [Compiler.PluggedMethod(ASMFilePath = @"ASM\Descriptor Tables\IDT")]
         [Drivers.Compiler.Attributes.PluggedMethod(ASMFilePath = @"ASM\Descriptor Tables\IDT")]
-        [Compiler.SequencePriority(Priority = long.MinValue + 5)]
         [Drivers.Compiler.Attributes.SequencePriority(Priority = long.MinValue + 5)]
         private static void InitIDT()
         {
@@ -115,9 +102,7 @@ namespace Kernel
         /// Inserts the method that handles what happens when the Multiboot
         /// Signature is invalid or undetected.
         /// </summary>
-        [Compiler.PluggedMethod(ASMFilePath = @"ASM\PreReqs\HandleNoMultiboot")]
         [Drivers.Compiler.Attributes.PluggedMethod(ASMFilePath = @"ASM\PreReqs\HandleNoMultiboot")]
-        [Compiler.SequencePriority(Priority = long.MinValue + 7)]
         [Drivers.Compiler.Attributes.SequencePriority(Priority = long.MinValue + 8)]
         private static void HandleNoMultiboot()
         {
@@ -126,9 +111,7 @@ namespace Kernel
         /// <summary>
         /// Inserts the stub that calls the main kernel entrypoint.
         /// </summary>
-        [Compiler.PluggedMethod(ASMFilePath = @"ASM\PreReqs\MainEntrypoint")]
         [Drivers.Compiler.Attributes.PluggedMethod(ASMFilePath = @"ASM\PreReqs\MainEntrypoint")]
-        [Compiler.SequencePriority(Priority = long.MinValue + 8)]
         [Drivers.Compiler.Attributes.SequencePriority(Priority = long.MinValue + 7)]
         private static void MainEntrypoint()
         {
@@ -137,9 +120,7 @@ namespace Kernel
         /// <summary>
         /// Resets the OS / CPU / etc. i.e. terminates the OS
         /// </summary>
-        [Compiler.PluggedMethod(ASMFilePath = @"ASM\PreReqs\Reset")]
         [Drivers.Compiler.Attributes.PluggedMethod(ASMFilePath = @"ASM\PreReqs\Reset")]
-        [Compiler.SequencePriority(Priority = long.MinValue + 9)]
         [Drivers.Compiler.Attributes.SequencePriority(Priority = long.MinValue + 9)]
         public static void Reset()
         {
@@ -151,9 +132,7 @@ namespace Kernel
         /// </summary>
         /// <param name="aText">The text to write. First dword should be the length of the string. (Inserted by compiler for string literals)</param>
         /// <param name="aColour">The foreground/background (DOS) colour to write in - 0xXY where X is background colour and Y is foreground colour.</param>
-        [Compiler.PluggedMethod(ASMFilePath = @"ASM\PreReqs\WriteDebugVideo")]
         [Drivers.Compiler.Attributes.PluggedMethod(ASMFilePath = @"ASM\PreReqs\WriteDebugVideo")]
-        [Compiler.SequencePriority(Priority = long.MinValue + 10)]
         [Drivers.Compiler.Attributes.SequencePriority(Priority = long.MinValue + 10)]
         private static void WriteDebugVideo(string aText, UInt32 aColour)
         {
@@ -163,9 +142,7 @@ namespace Kernel
         public static string PageFaultDetection_SeparatorString = "  ";
         public static bool PageFaultDetection_Initialised = false;
         public static bool PageFaultDetection_LoopPrevention = false;
-        [Compiler.PluggedMethod(ASMFilePath = @"ASM\PreReqs\PageFaultDetection")]
         [Drivers.Compiler.Attributes.PluggedMethod(ASMFilePath = @"ASM\PreReqs\PageFaultDetection")]
-        [Compiler.SequencePriority(Priority = long.MinValue + 11)]
         [Drivers.Compiler.Attributes.SequencePriority(Priority = long.MinValue + 11)]
         private static void PageFaultDetection() { }
     }

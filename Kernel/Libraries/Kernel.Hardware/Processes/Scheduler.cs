@@ -34,7 +34,6 @@ using System;
 
 namespace Kernel.Hardware.Processes
 {
-    [Compiler.PluggedClass]
     public static unsafe class Scheduler
     {
         public enum Priority : int 
@@ -112,12 +111,10 @@ namespace Kernel.Hardware.Processes
 
             Enable();
         }
-        [Compiler.PluggedMethod(ASMFilePath = @"ASM\Processes\Scheduler")]
         [Drivers.Compiler.Attributes.PluggedMethod(ASMFilePath = @"ASM\Processes\Scheduler")]
         private static void LoadTR()
         {
         }
-        [Compiler.PluggedMethod(ASMFilePath = null)]
         [Drivers.Compiler.Attributes.PluggedMethod(ASMFilePath = null)]
         private static TSS* GetTSSPointer()
         {
@@ -217,9 +214,7 @@ namespace Kernel.Hardware.Processes
         static bool wasum = false;
         public static bool print = false;
 #endif
-        [Compiler.NoDebug]
         [Drivers.Compiler.Attributes.NoDebug]
-        [Compiler.NoGC]
         [Drivers.Compiler.Attributes.NoGC]
         private static void OnTimerInterrupt(FOS_System.Object state)
         {
@@ -230,9 +225,7 @@ namespace Kernel.Hardware.Processes
 
             UpdateCurrentState();
         }
-        [Compiler.NoDebug]
         [Drivers.Compiler.Attributes.NoDebug]
-        [Compiler.NoGC]
         [Drivers.Compiler.Attributes.NoGC]
         public static void UpdateCurrentState()
         {
@@ -358,9 +351,7 @@ namespace Kernel.Hardware.Processes
             BasicConsole.SetTextColour(BasicBasicConsole_colour);
 #endif
         }
-        [Compiler.NoDebug]
         [Drivers.Compiler.Attributes.NoDebug]
-        [Compiler.NoGC]
         [Drivers.Compiler.Attributes.NoGC]
         private static void NextProcess(ref int threadIdx, ref int processIdx)
         {
@@ -374,9 +365,7 @@ namespace Kernel.Hardware.Processes
 
             threadIdx = NextThread(-1, processIdx);
         }
-        [Compiler.NoDebug]
         [Drivers.Compiler.Attributes.NoDebug]
-        [Compiler.NoGC]
         [Drivers.Compiler.Attributes.NoGC]
         private static int NextThread(int threadIdx, int processIdx)
         {
@@ -398,7 +387,6 @@ namespace Kernel.Hardware.Processes
         {
             ProcessManager.CurrentThread.TimeToRun--;
         }
-        [Compiler.NoDebug]
         [Drivers.Compiler.Attributes.NoDebug]
         [Drivers.Compiler.Attributes.NoGC]
         private static void UpdateSleepingThreads()
@@ -423,7 +411,6 @@ namespace Kernel.Hardware.Processes
                 }
             }
         }
-        [Compiler.NoDebug]
         [Drivers.Compiler.Attributes.NoDebug]
         private static void SetupThreadForStart()
         {
@@ -582,7 +569,6 @@ namespace Kernel.Hardware.Processes
             }
         }
 
-        [Compiler.NoDebug]
         [Drivers.Compiler.Attributes.NoDebug]
         public static void Enable()
         {
@@ -591,7 +577,6 @@ namespace Kernel.Hardware.Processes
             Enabled = true;
             //Hardware.Interrupts.Interrupts.EnableInterrupts();
         }
-        [Compiler.NoDebug]
         [Drivers.Compiler.Attributes.NoDebug]
         public static void Disable()
         {

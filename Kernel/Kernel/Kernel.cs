@@ -35,13 +35,11 @@ namespace Kernel
     /// <summary>
     /// The main class (containing the kernel entry point) for the Fling OS kernel.
     /// </summary>
-    [Compiler.PluggedClass]
     public static class Kernel
     {
         /// <summary>
         /// Initialises static stuff within the kernel (such as calling GC.Init and BasicDebug.Init)
         /// </summary>
-        [Compiler.NoDebug]
         [Drivers.Compiler.Attributes.NoDebug]
         static Kernel()
         {
@@ -58,7 +56,6 @@ namespace Kernel
         /// <summary>
         /// Filled-in by the compiler.
         /// </summary>
-        [Compiler.CallStaticConstructorsMethod]
         [Drivers.Compiler.Attributes.CallStaticConstructorsMethod]
         public static void CallStaticConstructors()
         {
@@ -67,44 +64,76 @@ namespace Kernel
         /// <summary>
         /// Main kernel entry point
         /// </summary>
-        [Compiler.KernelMainMethod]
         [Drivers.Compiler.Attributes.MainMethod]
-        [Compiler.NoGC]
         [Drivers.Compiler.Attributes.NoGC]
-        [Compiler.NoDebug]
         [Drivers.Compiler.Attributes.NoDebug]
         static unsafe void Main()
         {
             ExceptionMethods.AddExceptionHandlerInfo(null, null);
-            
-#if MIPS
-            BasicConsole.WriteLine("Running MIPS Kernel");
-#elif x86 || AnyCPU
-            BasicConsole.WriteLine("Running x86 Kernel");
-#endif
+      
 
             try
             {
                 Hardware.IO.Serial.Serial.InitCOM1();
                 Hardware.IO.Serial.Serial.InitCOM2();
+
                 BasicConsole.SecondaryOutput = BasicConsole_SecondaryOutput;
                 BasicConsole.SecondaryOutputEnabled = true;
 
-                BasicConsole.WriteLine("Fling OS  Copyright (C) 2015  Edward Nutting");
+                // DO NOT REMOVE THE FOLLOWING LINE -- ednutting
+                PreReqs.PageFaultDetection_Initialised = true;
+
+                Hardware.VirtMemManager.Init();
+                Hardware.Devices.CPU.InitDefault();
+                Hardware.Devices.Timer.InitDefault();
+
+                BasicConsole.PrimaryOutputEnabled = true;
+                BasicConsole.SecondaryOutputEnabled = false;
+                BasicConsole.WriteLine();
+                BasicConsole.WriteLine();
+                BasicConsole.WriteLine(TextSplashScreen);
+                
+                BasicConsole.SecondaryOutputEnabled = true;
+                BasicConsole.PrimaryOutputEnabled = false;
+                
+                for(int i = 0; i < TextSplashScreen.length; i += 80)
+                {
+                    TextSplashScreen[i] = '\n';
+                }
+                BasicConsole.WriteLine(TextSplashScreen);
+
+                BasicConsole.PrimaryOutputEnabled = true;
+                BasicConsole.SecondaryOutputEnabled = true;
+
+                for (int i = 0; i < 38; i++)
+                {
+                    BasicConsole.Write(' ');
+                }
+                char num = '1';
+                for (int i = 0; i < 3; i++)
+                {
+                    BasicConsole.Write(num++);
+                    Hardware.Devices.Timer.Default.Wait(1000);
+                    BasicConsole.Write(' ');
+                }
+                BasicConsole.WriteLine();
+
+                BasicConsole.WriteLine("FlingOS(TM)");
+                BasicConsole.WriteLine("Copyright (C) 2014-15 Edward Nutting");
                 BasicConsole.WriteLine("This program comes with ABSOLUTELY NO WARRANTY;.");
                 BasicConsole.WriteLine("This is free software, and you are welcome to redistribute it");
                 BasicConsole.WriteLine("under certain conditions; See GPL V2 for details, a copy of");
                 BasicConsole.WriteLine("which should have been provided with the executable.");
 
                 BasicConsole.WriteLine("Fling OS Running...");
+                BasicConsole.WriteLine();
 
-                // DO NOT REMOVE THE FOLLOWING LINE -- ednutting
-
-                PreReqs.PageFaultDetection_Initialised = true;
-            
-                Hardware.VirtMemManager.Init();
-                Hardware.Devices.CPU.InitDefault();
-                Hardware.Devices.Timer.InitDefault();
+#if MIPS
+            BasicConsole.WriteLine("MIPS Kernel");
+#elif x86 || AnyCPU
+                BasicConsole.WriteLine("x86 Kernel");
+#endif
+                BasicConsole.WriteLine();
 
                 //uint bpm = 140;
                 //Hardware.Timers.PIT.ThePIT.PlayNote(
@@ -211,9 +240,7 @@ namespace Kernel
         /// Halts the kernel and halts the CPU.
         /// </summary>
         /// <param name="lastAddress">The address of the last line of code which ran or 0xFFFFFFFF.</param>
-        [Compiler.HaltMethod]
         [Drivers.Compiler.Attributes.HaltMethod]
-        [Compiler.NoGC]
         [Drivers.Compiler.Attributes.NoGC]
         public static void Halt(uint lastAddress)
         {
@@ -328,7 +355,6 @@ namespace Kernel
         /// The actual main method for the kernel - by this point, all memory management, exception handling 
         /// etc has been set up properly.
         /// </summary>
-        [Compiler.NoDebug]
         [Drivers.Compiler.Attributes.NoDebug]
         private static unsafe void ManagedMain()
         {
@@ -395,7 +421,6 @@ namespace Kernel
         /// <summary>
         /// Outputs the current exception information.
         /// </summary>
-        [Compiler.NoDebug]
         [Drivers.Compiler.Attributes.NoDebug]
         private static void OutputCurrentExceptionInfo()
         {
@@ -430,30 +455,32 @@ namespace Kernel
             }
             BasicConsole.DelayOutput(1000);
         }
-        [Compiler.PluggedMethod(ASMFilePath = null)]
         [Drivers.Compiler.Attributes.PluggedMethod(ASMFilePath = null)]
         public static uint GetStackValue(uint offset)
         {
             return 0;
         }
-        [Compiler.PluggedMethod(ASMFilePath = null)]
         [Drivers.Compiler.Attributes.PluggedMethod(ASMFilePath = null)]
         public static uint GetESP()
         {
             return 0;
         }
 
-        [Compiler.PluggedMethod(ASMFilePath=@"ASM\Kernel")]
         [Drivers.Compiler.Attributes.PluggedMethod(ASMFilePath=@"ASM\Kernel")]
         private static unsafe void* GetManagedMainMethodPtr()
         {
             return null;
         }
-        [Compiler.PluggedMethod(ASMFilePath=null)]
         [Drivers.Compiler.Attributes.PluggedMethod(ASMFilePath=null)]
         private static unsafe byte* GetKernelStackPtr()
         {
             return null;
         }
+
+        #region Text Splash Screen
+        
+        private static FOS_System.String TextSplashScreen = @"                                                                           TM      oooooooooooo oooo   o8o                           .oooooo.    .oooooo..o        `888'     `8 `888   `''                          d8P'  `Y8b  d8P'    `Y8         888          888  oooo  ooo. .oo.    .oooooooo 888      888 Y88bo.              888oooo8     888  `888  `888P'Y88b  888' `88b  888      888  `'Y8888o.          888    '     888   888   888   888  888   888  888      888      `'Y88b         888          888   888   888   888  `88bod8P'  `88b    d88' oo     .d8P        o888o        o888o o888o o888o o888o `8oooooo.   `Y8bood8P'  8''88888P'                                                   YD                                                                      'Y88888P'                                                                                                                    _____ _                 _              _   _               _      ___  ___     |_   _| |_  ___    ___ __| |_  _ __ __ _| |_(_)___ _ _  __ _| |   / _ \/ __|      | | | ' \/ -_)  / -_) _` | || / _/ _` |  _| / _ \ ' \/ _` | |  | (_) \__ \      |_| |_||_\___|  \___\__,_|\_,_\__\__,_|\__|_\___/_||_\__,_|_|   \___/|___/                                                                                           http://www.flingos.co.uk, Copyright (C) Edward Nutting 2014-15                                      Licensed under GPLv2                                ";
+        
+        #endregion
     }
 }

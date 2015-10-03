@@ -37,7 +37,6 @@ namespace Kernel.Hardware.VirtMem
         public UInt32Dictionary CodePages = new UInt32Dictionary();
         public UInt32Dictionary DataPages = new UInt32Dictionary();
 
-        [Compiler.NoDebug]
         [Drivers.Compiler.Attributes.NoDebug]
         public void AddCodePage(uint pAddr, uint vAddr)
         {
@@ -58,7 +57,6 @@ namespace Kernel.Hardware.VirtMem
             //    Processes.Scheduler.Enable();
             //}
         }
-        [Compiler.NoDebug]
         [Drivers.Compiler.Attributes.NoDebug]
         public void AddDataPage(uint pAddr, uint vAddr)
         {
@@ -79,7 +77,6 @@ namespace Kernel.Hardware.VirtMem
             //    Processes.Scheduler.Enable();
             //}
         }
-        [Compiler.NoDebug]
         [Drivers.Compiler.Attributes.NoDebug]
         public void RemovePage(uint vAddr)
         {
@@ -101,7 +98,6 @@ namespace Kernel.Hardware.VirtMem
 
         //bool loadPrint = true;
         //bool unloadPrint = true;
-        [Compiler.NoDebug]
         [Drivers.Compiler.Attributes.NoDebug]
         public void Load(bool ProcessIsUM)
         {
@@ -145,7 +141,6 @@ namespace Kernel.Hardware.VirtMem
             //    loadPrint = false;
             //}
         }
-        [Compiler.NoDebug]
         [Drivers.Compiler.Attributes.NoDebug]
         public void Unload()
         {

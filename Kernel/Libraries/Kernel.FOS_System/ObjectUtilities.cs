@@ -35,7 +35,6 @@ namespace Kernel.Utilities
     /// <summary>
     /// Utility methods for object manipulation.
     /// </summary>
-    [Compiler.PluggedClass]
     public static class ObjectUtilities
     {
         /// <summary>
@@ -46,11 +45,8 @@ namespace Kernel.Utilities
         /// </remarks>
         /// <param name="anObj">The object to get a handle of.</param>
         /// <returns>The pointer to the object.</returns>
-        [Compiler.PluggedMethod(ASMFilePath = @"ASM\ObjectUtilities\GetHandle")]
         [Drivers.Compiler.Attributes.PluggedMethod(ASMFilePath = @"ASM\ObjectUtilities\GetHandle")]
-        [Compiler.NoDebug]
         [Drivers.Compiler.Attributes.NoDebug]
-        [Compiler.NoGC]
         [Drivers.Compiler.Attributes.NoGC]
         public static unsafe void* GetHandle(object anObj)
         {
@@ -64,11 +60,8 @@ namespace Kernel.Utilities
         /// </remarks>
         /// <param name="anObjPtr">The pointer to get an object of.</param>
         /// <returns>The object the pointer points to.</returns>
-        [Compiler.PluggedMethod(ASMFilePath = @"ASM\ObjectUtilities\GetObject")]
         [Drivers.Compiler.Attributes.PluggedMethod(ASMFilePath = @"ASM\ObjectUtilities\GetObject")]
-        [Compiler.NoDebug]
         [Drivers.Compiler.Attributes.NoDebug]
-        [Compiler.NoGC]
         [Drivers.Compiler.Attributes.NoGC]
         public static unsafe object GetObject(void* anObjPtr)
         {

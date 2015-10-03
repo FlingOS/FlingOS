@@ -191,7 +191,7 @@ namespace Kernel.Hardware.ATA
 #if PATAPI_TRACE
                 BasicConsole.WriteLine("Error detected");
 #endif
-                ExceptionMethods.Throw(new FOS_System.Exception("ATAPI read error! Status bits incorrect in first check."));
+                ExceptionMethods.Throw(new Exceptions.NoDiskException("ATAPI read error! Status bits incorrect in first check."));
             }
 
             // Check if that invoked an IRQ - it shouldn't have
@@ -262,7 +262,7 @@ namespace Kernel.Hardware.ATA
 #if PATAPI_TRACE
                 BasicConsole.WriteLine("Error detected");
 #endif
-                ExceptionMethods.Throw(new FOS_System.Exception("ATAPI read error! Status bits incorrect in first check."));
+                ExceptionMethods.Throw(new Exceptions.NoDiskException("ATAPI read error! Status bits incorrect in second check."));
             }
 
             // Read the data
@@ -324,7 +324,7 @@ namespace Kernel.Hardware.ATA
 #if PATAPI_TRACE
                 BasicConsole.WriteLine("Error detected");
 #endif
-                ExceptionMethods.Throw(new FOS_System.Exception("ATAPI read error! Status bits incorrect in second check."));
+                ExceptionMethods.Throw(new FOS_System.Exception("ATAPI read error! Status bits incorrect in third check."));
             }
 
 #if PATAPI_TRACE

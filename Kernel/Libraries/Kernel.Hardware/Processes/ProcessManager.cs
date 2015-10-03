@@ -64,7 +64,7 @@ namespace Kernel.Hardware.Processes
 #endif
             if (process == null)
             {
-                return;
+                ExceptionMethods.Throw(new FOS_System.Exception("Attempted to register null process!"));
             }
 
             //bool reenable = Scheduler.Enabled;

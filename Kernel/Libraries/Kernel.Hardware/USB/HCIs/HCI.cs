@@ -112,7 +112,7 @@ namespace Kernel.Hardware.USB.HCIs
 #if HCI_TRACE
             BasicConsole.WriteLine(((FOS_System.String)"SetupTransfer: maxLength=") + maxLength + ", endpoint=" + endpoint + ", mps=" + ((Endpoint)usbDevice.Endpoints[endpoint]).mps);
 #endif
-            transfer.packetSize = FOS_System.Math.Min(maxLength, ((Endpoint)usbDevice.Endpoints[endpoint]).mps);
+            transfer.packetSize = FOS_System.Math.Min(maxLength, ((Endpoint)usbDevice.Endpoints[endpoint]).MPS);
 #if HCI_TRACE
             BasicConsole.WriteLine(((FOS_System.String)"SetupTransfer: packetSize=") + transfer.packetSize);
 #endif
@@ -142,7 +142,7 @@ namespace Kernel.Hardware.USB.HCIs
 
             transfer.transactions.Add(transaction);
 
-            ((Endpoint)transfer.device.Endpoints[transfer.endpoint]).toggle = true;
+            ((Endpoint)transfer.device.Endpoints[transfer.endpoint]).Toggle = true;
         }
         /// <summary>
         /// Sets up an IN transaction and adds it to the specified transfer.
@@ -178,7 +178,7 @@ namespace Kernel.Hardware.USB.HCIs
 
             if (controlHandshake) // Handshake transaction of control transfers always have toggle set to 1
             {
-                ((Endpoint)transfer.device.Endpoints[transfer.endpoint]).toggle = true;
+                ((Endpoint)transfer.device.Endpoints[transfer.endpoint]).Toggle = true;
             }
 
 #if HCI_TRACE
@@ -186,7 +186,7 @@ namespace Kernel.Hardware.USB.HCIs
             BasicConsole.DelayOutput(1);
 #endif
 
-            _INTransaction(transfer, transaction, ((Endpoint)transfer.device.Endpoints[transfer.endpoint]).toggle, buffer, clampedLength);
+            _INTransaction(transfer, transaction, ((Endpoint)transfer.device.Endpoints[transfer.endpoint]).Toggle, buffer, clampedLength);
 
 #if HCI_TRACE
             BasicConsole.WriteLine("Done.");
@@ -195,7 +195,7 @@ namespace Kernel.Hardware.USB.HCIs
 
             transfer.transactions.Add(transaction);
 
-            ((Endpoint)transfer.device.Endpoints[transfer.endpoint]).toggle = !((Endpoint)transfer.device.Endpoints[transfer.endpoint]).toggle; // Switch toggle
+            ((Endpoint)transfer.device.Endpoints[transfer.endpoint]).Toggle = !((Endpoint)transfer.device.Endpoints[transfer.endpoint]).Toggle; // Switch toggle
 
             if (remainingTransactions > 0)
             {
@@ -222,14 +222,14 @@ namespace Kernel.Hardware.USB.HCIs
 
             if (controlHandshake) // Handshake transaction of control transfers always have toggle set to 1
             {
-                ((Endpoint)transfer.device.Endpoints[transfer.endpoint]).toggle = true;
+                ((Endpoint)transfer.device.Endpoints[transfer.endpoint]).Toggle = true;
             }
 
-            _OUTTransaction(transfer, transaction, ((Endpoint)transfer.device.Endpoints[transfer.endpoint]).toggle, buffer, clampedLength);
+            _OUTTransaction(transfer, transaction, ((Endpoint)transfer.device.Endpoints[transfer.endpoint]).Toggle, buffer, clampedLength);
 
             transfer.transactions.Add(transaction);
 
-            ((Endpoint)transfer.device.Endpoints[transfer.endpoint]).toggle = !((Endpoint)transfer.device.Endpoints[transfer.endpoint]).toggle; // Switch toggle
+            ((Endpoint)transfer.device.Endpoints[transfer.endpoint]).Toggle = !((Endpoint)transfer.device.Endpoints[transfer.endpoint]).Toggle; // Switch toggle
 
             if (remainingTransactions > 0)
             {

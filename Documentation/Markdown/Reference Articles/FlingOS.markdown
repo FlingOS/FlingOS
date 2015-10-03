@@ -3,7 +3,7 @@ layout: reference-article
 title: FlingOS™
 date: 2015-09-06 20:05:00
 categories: [ docs, reference ]
-description: Describes the FlingOS™ operating system.
+description: Describes the FlingOS™ operating system (including how to get set up for development of FlingOS).
 ---
 
 # Introduction
@@ -23,27 +23,26 @@ If you are going to be developing mockups, you should not be following the tutor
 ## Become a developer
 
 1. You should already have got in touch with Edward Nutting or another FlingOS coordinator to register your interest in developing FlingOS.
-2. If you haven't already, sign up to BitBucket.org and send your username to the lead developer Edward Nutting to be added to the source control system and development team.
-  
-    ***Warning: FlingOS is about to shift to GitHub so by the time you read this, this may no longer be correct.***
-3. Follow FlingOS on Twitter and Facebook. Please also send your Twitter username to Ed Nutting (or follow via @EdNutting).
+2. If you haven't already, sign up to GitHub.com and send your username to the lead developer Edward Nutting to be added to the source control system and development team.
+3. Follow FlingOS on Twitter and Facebook. Please also send your Twitter username to Ed Nutting (or follow via @EdNutting) so he can add you to the Developers list.
 4. Add Ed Nutting on Skype. Username / email details provided upon request.
+5. Sign up to the [FlingOS Community](http://community.flingos.co.uk)
 
 At this point you should have access to all the bits of the FlingOS project you need to be able to develop the main operating system.
 
 ## Pre-requisites
 Ensure you have the following required software installed:
 
-1. Visual Studio 2013 Pro/Premium/Ultimate
+1. Visual Studio 2013 (any version)
 2. Atlassian Source Tree
 3. VMWare Player or VirtualBox or HyperVisor
-4. IL Spy
-5. Skype
+4. ILSpy (Visual Studio plugin)
+5. Skype (optional)
 
 ## Keep in contact
 
 1. You should have installed Skype to keep in contact with the team. Please add the lead developer Edward Nutting and he will add you to the relevant group conversations. Feel free to contact him directly for help especially during setup.
-2. Add Edward Nutting's email to your contacts and safe-senders list: edwardnutting@outlook.com. Also add the other FlingOS email addresses (flingos@outook.com and contact@flingos.co.uk).
+2. Add Edward Nutting's email to your contacts and safe-senders list. Also add the other FlingOS email addresses (flingos@outook.com, contact@flingos.co.uk and github@flingos.co.uk).
 
 ## Install Sandcastle Help File Builder (SHFB)
 
@@ -69,41 +68,39 @@ Ensure you have the following required software installed:
     - Make sure the following is set (in either system or user variables):
       
       ``` bash
-      SHFBROOT = %Path to Sandcastle Help File Builder exe%
+      SHFBROOT = %Path to Sandcastle Help File Builder exe directory%
       ```
       
       Sample value: C:\Program Files (x86)\EWSoftware\Sandcastle Help File Builder\
 
 ## Clone and build the source
 
-1. Clone the FlingOS source from BitBucket (***possibly GutHub by now***) using SourceTree. To do this, you will need to add the repository in BitBucket. Allow it to save your credentials. Please put your name as either:
+1. Clone the FlingOS source from GitHub using SourceTree. To do this, you will need to add the repository in SourceTree. Allow it to save your credentials. Please put your name as either:
     
     - Your Twitter username
     - Or your full name without any spaces
     
-    All commit messages are posted live to the FlingOS Twitter feed with @YourName inserted so people can see the progress we are making. For this reason, all commit messages must be "Politically correct"/polite! Commit messages should also be informative about the feature added, how and why or the issue fixed and how. Try to use proper English grammar (that means full sentences and punctuation).
+    Please remember that all commit messages and code are public, so must be "Politically correct"/polite! Commit messages should also be informative about the feature added, how and why or the issue fixed and how. Try to use proper English grammar (that means full sentences and punctuation).
     
     You can clone it to any local or network path and the path is allowed to contain spaces with the following requirement; your path must end in the following form: "PATH_TO_DEV_FOLDER\FlingOS\FlingOS\CLONE_TO_HERE".
     
     The reason for this duplication of folder/sub-folder name will become clear later.
     
     If later, during the build process, you receive a "path dependency" type of error, please contact Ed Nutting. There aren't any path dependencies, except if the OS is built in the wrong order. Your user account will, however, need read and write access to the "C" drive. (If you haven't got a C drive then...erm...all hell is going to break loose).
-2. You should now switch to the "develop" branch then create a new branch from "develop". Call your new branch the same as your BitBucket username. This will be referred to as your "personal develop(ment) branch".
+2. You should now switch to the "develop" branch then create a new branch from "develop". Call your new branch the same as your GitHub username. This will be referred to as your "personal develop(ment) branch".
 3. Locate and open the solution file: "...\FlingOS\FlingOS\FlingOS.sln". The solution should open without any errors (aside from potentially Untrusted Location warnings which can be ignored).
-4. The solution contains solution folders which clearly sub-divide the project into its respective areas. For now, we will just want to try and build a release version of the OS.
+4. The solution contains solution folders which clearly sub-divide the project into its respective areas. For now, we will just want to try and build a debug version of the OS.
   
-    In the configurations drop-down select Debug (you should also see Release and Docs modes). Select the "AnyCPU" platform for now. 
+    In the configurations drop-down select Debug (you should also see Release and Docs modes).
 5. To build the kernel, follow these steps (in this order!!):
 
-    1. Open Kernel\Debug folder and build Kernel.Debug.Data followed by Kernel.Debug.Debugger.
-    2. Open Kernel\Compiler folder and build Kernel.Compiler followed by Architectures\Kernel.Compiler.Architectures.x86_32 followed by Kernel.Compiler.App.
-    3. Open Drivers\Compiler folder and build Drivers.Compiler.MSBuildTask
-    4. Select the "x86" platform
-    5. Then build the Kernel project.
-6. The OS should now build. This usually takes 80 seconds (on 1.7 to 2.5GHz processor), Expect at least one of your processor's cores to be maxed-out and high disk activity.
+    1. Select the "x86" platform
+    2. Open Drivers\Compiler folder and build Drivers.Compiler.MSBuildTask
+    3. Then build the Kernel project (in the Kernel folder).
+    4. The OS should now build. This usually takes 80 seconds (on 1.7 to 2.5GHz processor), Expect at least one of your processor's cores to be maxed-out and high disk activity.
   
-    In future you only need to "rebuild" the Kernel project.
-7. In windows explorer you should now be able to navigate to "...\FlingOS\FlingOS\Kernel\Kernel\bin\Release" within which there should be a Kernel.iso. If this is not the case, or you get a build error, contact Edward Nutting for help.
+    In future you should only need to "rebuild" the Kernel project (or if the compiler is updated, Rebuild to Drivers.Compiler.MSBuildTask project). Using Rebuild will be more reliable. If the build fails, you will have to use Rebuild as VS does not recoginse FlingOS Compiler errors as a failure (annoyingly).
+7. In windows explorer you should now be able to navigate to "...\FlingOS\FlingOS\Kernel\Kernel\bin\Debug" within which there should be a Kernel.iso. If this is not the case, or you get a build error, contact Edward Nutting for help.
 
 ## Setup debug-mode VM in VMWare Player
 
@@ -112,7 +109,7 @@ Ensure you have the following required software installed:
 3. Select "File->New virtual machine..." from the Player menu.
 4. Select "Installer disc image file" from the options then browse for the Kernel.iso file in "...\FlingOS\FlingOS\Kernel\Kernel\bin\Debug\".
 5. Ignore the "could not detect OS" message then click Next. Ensure it says "Other" then click Next again.
-6. Name the virtual machine "FlingOS - Debug". Change the VM path to "...\FlingOS\VMWare\Debug". A common path for storing files allows other developers to help more easily as they are familiar with the directory structure.
+6. Name the virtual machine "FlingOS - Debug". Change the VM path to "...\FlingOS\VMWare\Debug". A common path for storing files allows other developers to help more easily as they are familiar with the directory structure. Note: This folder is not inside the FlingOS repo folder, it's the one above that.
 7. Click Next. Set the maximum disk size to 1GB opt for splitting the disk into multiple files. Click Next.
 8. Click Finish. Your new VM should appear in the list.
 9. Right click on the new VM and click "Settings".
