@@ -106,6 +106,15 @@ namespace Kernel.FOS_System
             [Drivers.Compiler.Attributes.NoDebug]
             get
             {
+                if (index >= length)
+                {
+                    ExceptionMethods.Throw(new Exceptions.IndexOutOfRangeException(index, length));
+                }
+                else if (index < 0)
+                {
+                    ExceptionMethods.Throw(new Exceptions.IndexOutOfRangeException(index, length));
+                }
+
                 byte* thisPtr = (byte*)Utilities.ObjectUtilities.GetHandle(this);
                 thisPtr += 8; /*For fields inc. inherited*/
                 return ((char*)thisPtr)[index];
@@ -113,6 +122,15 @@ namespace Kernel.FOS_System
             [Drivers.Compiler.Attributes.NoDebug]
             set
             {
+                if (index >= length)
+                {
+                    ExceptionMethods.Throw(new Exceptions.IndexOutOfRangeException(index, length));
+                }
+                else if (index < 0)
+                {
+                    ExceptionMethods.Throw(new Exceptions.IndexOutOfRangeException(index, length));
+                }
+
                 byte* thisPtr = (byte*)Utilities.ObjectUtilities.GetHandle(this);
                 thisPtr += 8; /*For fields inc. inherited*/
                 ((char*)thisPtr)[index] = value;
@@ -128,6 +146,11 @@ namespace Kernel.FOS_System
             [Drivers.Compiler.Attributes.NoDebug]
             get
             {
+                if (index >= length)
+                {
+                    ExceptionMethods.Throw(new Exceptions.IndexOutOfRangeException(index, length));
+                }
+
                 byte* thisPtr = (byte*)Utilities.ObjectUtilities.GetHandle(this);
                 thisPtr += 8; /*For fields inc. inherited*/
                 return ((char*)thisPtr)[index];
@@ -135,6 +158,11 @@ namespace Kernel.FOS_System
             [Drivers.Compiler.Attributes.NoDebug]
             set
             {
+                if (index >= length)
+                {
+                    ExceptionMethods.Throw(new Exceptions.IndexOutOfRangeException(index, length));
+                }
+
                 byte* thisPtr = (byte*)Utilities.ObjectUtilities.GetHandle(this);
                 thisPtr += 8; /*For fields inc. inherited*/
                 ((char*)thisPtr)[index] = value;
