@@ -56,15 +56,10 @@ namespace Drivers.Compiler.Architectures.x86
                 };
                 
                 int bytesToAdd = 0;
-                List<Type> allParams = ((MethodInfo)methodToCall).GetParameters().Select(x => x.ParameterType).ToList();
-                if (!methodToCall.IsStatic)
-                {
-                    allParams.Insert(0, methodToCall.DeclaringType);
-                }
-                foreach (Type aParam in allParams)
+                foreach (Types.VariableInfo argInfo in methodToCallInfo.ArgumentInfos)
                 {
                     conversionState.CurrentStackFrame.Stack.Pop();
-                    bytesToAdd += conversionState.TheILLibrary.GetTypeInfo(aParam).SizeOnStackInBytes;
+                    bytesToAdd += argInfo.TheTypeInfo.SizeOnStackInBytes;
                 }
                 if (bytesToAdd > 0)
                 {
@@ -161,19 +156,13 @@ namespace Drivers.Compiler.Architectures.x86
                 //Stores the number of bytes to add
                 int bytesToAdd = 0;
                 //All the parameters for the method that was called
-                List<Type> allParams = ((MethodInfo)methodToCall).GetParameters().Select(x => x.ParameterType).ToList();
-                //Go through each one
-                if (!methodToCall.IsStatic)
+                foreach (Types.VariableInfo aParam in methodToCallInfo.ArgumentInfos)
                 {
-                    allParams.Insert(0, methodToCall.DeclaringType);
-                }
-                foreach (Type aParam in allParams)
-                {
-                    //Pop the paramter off our stack 
+                    //Pop the parameter off our stack 
                     //(Note: Return value was never pushed onto our stack. See above)
                     conversionState.CurrentStackFrame.Stack.Pop();
                     //Add the size of the paramter to the total number of bytes to pop
-                    bytesToAdd += conversionState.TheILLibrary.GetTypeInfo(aParam).SizeOnStackInBytes;
+                    bytesToAdd += aParam.TheTypeInfo.SizeOnStackInBytes;
                 }
                 //If the number of bytes to add to skip over params is > 0
                 if (bytesToAdd > 0)

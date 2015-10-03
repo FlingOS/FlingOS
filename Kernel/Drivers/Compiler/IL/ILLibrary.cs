@@ -218,6 +218,11 @@ namespace Drivers.Compiler.IL
         /// <returns>The method info or null if not found.</returns>
         public Types.MethodInfo GetMethodInfo(MethodBase theMethod)
         {
+            if (theMethod.DeclaringType.AssemblyQualifiedName.Contains("mscorlib"))
+            {
+                throw new InvalidOperationException("Cannot use methods from mscorlib!");
+            }
+
             foreach (Types.TypeInfo aTypeInfo in TypeInfos)
             {
                 foreach (Types.MethodInfo aMethodInfo in aTypeInfo.MethodInfos)

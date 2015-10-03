@@ -48,8 +48,6 @@ namespace Drivers.Compiler.Architectures.MIPS32
             {
                 if (typeof(Delegate).IsAssignableFrom(((MethodInfo)methodToCall).DeclaringType))
                 {
-                    List<Type> allParams = ((MethodInfo)methodToCall).GetParameters().Select(x => x.ParameterType).ToList();
-                    
                     Type retType = ((MethodInfo)methodToCall).ReturnType;
                     Types.TypeInfo retTypeInfo = conversionState.TheILLibrary.GetTypeInfo(retType);
                     StackItem returnItem = new StackItem()
@@ -59,7 +57,7 @@ namespace Drivers.Compiler.Architectures.MIPS32
                         isGCManaged = retTypeInfo.IsGCManaged
                     };
 
-                    
+                    List<Type> allParams = ((MethodInfo)methodToCall).GetParameters().Select(x => x.ParameterType).ToList();
                     int bytesToAdd = 4;
                     foreach (Type aParam in allParams)
                     {
@@ -89,15 +87,10 @@ namespace Drivers.Compiler.Architectures.MIPS32
                     };
                     
                     int bytesToAdd = 0;
-                    List<Type> allParams = ((MethodInfo)methodToCall).GetParameters().Select(x => x.ParameterType).ToList();
-                    if (!methodToCall.IsStatic)
-                    {
-                        allParams.Insert(0, methodToCall.DeclaringType);
-                    }
-                    foreach (Type aParam in allParams)
+                    foreach (Types.VariableInfo aParam in methodToCallInfo.ArgumentInfos)
                     {
                         conversionState.CurrentStackFrame.Stack.Pop();
-                        bytesToAdd += conversionState.TheILLibrary.GetTypeInfo(aParam).SizeOnStackInBytes;
+                        bytesToAdd += aParam.TheTypeInfo.SizeOnStackInBytes;
                     }
                     if (bytesToAdd > 0)
                     {
@@ -155,7 +148,6 @@ namespace Drivers.Compiler.Architectures.MIPS32
 
                     int bytesForParams = allParams.Select(x => conversionState.TheILLibrary.GetTypeInfo(x).SizeOnStackInBytes).Sum();
                     conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Word, Src = bytesForParams + "($sp)", Dest = "$t0", MoveType = ASMOps.Mov.MoveTypes.SrcMemoryToDestReg });
-
 
                     //Allocate space on the stack for the return value as necessary
                     Type retType = ((MethodInfo)methodToCall).ReturnType;
@@ -383,19 +375,13 @@ namespace Drivers.Compiler.Architectures.MIPS32
                     //Stores the number of bytes to add
                     int bytesToAdd = 0;
                     //All the parameters for the method that was called
-                    List<Type> allParams = ((MethodInfo)methodToCall).GetParameters().Select(x => x.ParameterType).ToList();
-                    //Go through each one
-                    if (!methodToCall.IsStatic)
-                    {
-                        allParams.Insert(0, methodToCall.DeclaringType);
-                    }
-                    foreach (Type aParam in allParams)
+                    foreach (Types.VariableInfo aParam in methodToCallInfo.ArgumentInfos)
                     {
                         //Pop the parameter off our stack 
                         //(Note: Return value was never pushed onto our stack. See above)
                         conversionState.CurrentStackFrame.Stack.Pop();
                         //Add the size of the parameter to the total number of bytes to pop
-                        bytesToAdd += conversionState.TheILLibrary.GetTypeInfo(aParam).SizeOnStackInBytes;
+                        bytesToAdd += aParam.TheTypeInfo.SizeOnStackInBytes;
                     }
                     //If the number of bytes to add to skip over params is > 0
                     if (bytesToAdd > 0)
