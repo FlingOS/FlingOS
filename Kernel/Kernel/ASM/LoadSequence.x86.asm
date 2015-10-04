@@ -1314,11 +1314,61 @@ add dword edx, 1		; Move to next character in string
 ; Uses ecx - loops till ecx = 0 i.e. till all characters gone through
 loop .Reset_Loop2
 
+
+
+; Load string length
+mov eax, [ebp+12]	 ; Load string address
+mov dword ecx, [eax] ; String length is first dword of string
+
+mov edx, [ebp+12]	; Load string address
+add edx, 4			; Skip first dword because that is the length not a character
+
+.Reset_Loop3:
+mov byte al, [edx]		; Get current character of string
+call WaitToWriteSerial
+call WriteSerial
+add dword edx, 1		; Move to next character in string
+loop .Reset_Loop3
+
 ; MethodEnd
 pop dword ebp
 
 ret
 ; END - Write Debug Video
+
+WaitToWriteSerial:
+	push eax
+	push ebx
+	push ecx
+	push edx
+
+	mov dx, 0x3FD
+
+	.NotEmpty:
+	mov ax, [0xB8000]
+	add ah, 1
+	mov [0xB8000], ax
+
+	in al, dx
+	test al, 0x20
+	jnz .NotEmpty	
+
+	pop edx
+	pop ecx
+	pop ebx
+	pop eax
+ret
+
+WriteSerial:
+	push eax
+	push edx
+
+	mov dx, 0x3F8
+	out dx, al
+
+	pop edx
+	pop eax
+ret
 
 GLOBAL method_System_Void_RETEND_Kernel_PreReqs_DECLEND_PageFaultDetection_NAMEEND___:function
 
