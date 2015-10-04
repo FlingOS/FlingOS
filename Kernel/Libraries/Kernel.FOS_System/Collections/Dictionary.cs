@@ -95,6 +95,15 @@ namespace Kernel.FOS_System.Collections
                 Keys.RemoveAt(index);
             }
         }
+        public void RemoveRange(UInt32 keyStart, UInt32 keyStep, UInt32 numKeys)
+        {
+            // Remove in reverse order - it's significantly faster
+            for (int i = (int)(numKeys - 1); i >= 0; i--)
+            {
+                UInt32 currKey = (keyStart + ((UInt32)i * keyStep));
+                Remove(currKey);
+            }
+        }
 
         public bool Contains(UInt32 key)
         {

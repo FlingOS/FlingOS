@@ -6,16 +6,27 @@ namespace Kernel.Core.Tasks
 {
     public static unsafe class DeviceManagerTask
     {
+        public static bool Terminating = false;
+
         public static void Main()
         {
             BasicConsole.WriteLine("Device Manager started.");
 
-            while (true)
+            //if (SystemCallMethods.CreateThread(GCCleanupTask.Main) != SystemCallResults.OK)
+            //{
+            //    BasicConsole.WriteLine("Device Manager: GC thread failed to create!");
+            //}
+
+            while (!Terminating)
             {
                 //TODO
 
-                SystemCallMethods.Sleep(-1);
+                SystemCallMethods.Sleep(100);
             }
         }
+    }
+
+    class testclass : FOS_System.Object
+    {
     }
 }

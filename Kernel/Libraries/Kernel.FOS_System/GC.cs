@@ -697,7 +697,7 @@ namespace Kernel.FOS_System
             {
                 return;
             }
-
+            
             EnterCritical("Cleanup");
 
             try
@@ -708,29 +708,115 @@ namespace Kernel.FOS_System
                 int startNumObjs = NumObjs;
                 int startNumStrings = NumStrings;
 #endif
+                if (OutputTrace)
+                {
+                    BasicConsole.WriteLine(" > Inside GC & Cleaning...");
+                }
 
                 ObjectToCleanup* currObjToCleanupPtr = CleanupList;
                 ObjectToCleanup* prevObjToCleanupPtr = null;
+                
+                if (OutputTrace)
+                {
+                    BasicConsole.WriteLine(" > Got list...");
+                }
+                
                 while (currObjToCleanupPtr != null)
                 {
+                    if (OutputTrace)
+                    {
+                        BasicConsole.WriteLine(" > Item not null.");
+
+                        ExitCritical();
+                        BasicConsole.Write(" > Item: ");
+                        BasicConsole.WriteLine((uint)currObjToCleanupPtr);
+                        BasicConsole.Write(" > Prev: ");
+                        BasicConsole.WriteLine((uint)currObjToCleanupPtr->prevPtr);
+                        EnterCritical("Cleanup - Post write");
+                    }
+
                     GCHeader* objHeaderPtr = currObjToCleanupPtr->objHeaderPtr;
                     void* objPtr = currObjToCleanupPtr->objPtr;
+
+                    if (OutputTrace)
+                    {
+                        BasicConsole.WriteLine(" > Got object handles.");
+                    }
+
                     if (objHeaderPtr->RefCount <= 0)
                     {
+                        if (OutputTrace)
+                        {
+                            BasicConsole.WriteLine("   > Ref count zero or lower.");
+                        }
+
                         FOS_System.Object obj = (FOS_System.Object)Utilities.ObjectUtilities.GetObject(objPtr);
+
+                        if (OutputTrace)
+                        {
+                            BasicConsole.WriteLine("   > Got object.");
+                        }
+
                         if (obj is FOS_System.String)
                         {
+                            if (OutputTrace)
+                            {
+                                BasicConsole.WriteLine("   > (It's a string).");
+                            }
+
                             NumStrings--;
+                        }
+
+                        if (OutputTrace)
+                        {
+                            BasicConsole.WriteLine("   > About to free object...");
                         }
 
                         Heap.Free(objHeaderPtr);
 
+                        if (OutputTrace)
+                        {
+                            BasicConsole.WriteLine("   > Object freed.");
+                        }
+
                         NumObjs--;
+
+                        if (OutputTrace)
+                        {
+                            BasicConsole.WriteLine("   > Done.");
+                        }
+                    }
+
+                    if (OutputTrace)
+                    {
+                        BasicConsole.WriteLine(" > Shifting to next item...");
                     }
 
                     prevObjToCleanupPtr = currObjToCleanupPtr;
                     currObjToCleanupPtr = currObjToCleanupPtr->prevPtr;
+
+                    if ((uint)currObjToCleanupPtr == 0xFFFFFFFF)
+                    {
+                        if (OutputTrace)
+                        {
+                            BasicConsole.WriteLine(" > Resetting ptr to null because it's 0xFFFFFFFF...");
+                        }
+
+                        currObjToCleanupPtr = null;
+                    }
+
+                    if (OutputTrace)
+                    {
+                        BasicConsole.WriteLine(" > Removing object to cleanup...");
+                    }
+   
                     RemoveObjectToCleanup(prevObjToCleanupPtr);
+
+                    if (OutputTrace)
+                    {
+                        BasicConsole.WriteLine(" > Done.");
+                        BasicConsole.WriteLine(" > Loop back...");
+                    }
                 }
 
                 InsideGC = false;
@@ -791,6 +877,17 @@ namespace Kernel.FOS_System
                     newObjToCleanupPtr->prevPtr = null;
                 }
 
+                if ((uint)newObjToCleanupPtr->prevPtr == 0xFFFFFFFF)
+                {
+                    //ExitCritical();
+                    //BasicConsole.WriteLine("!!!! Add : Prev pointer was set to 0xFFFFFFFF !!!!");
+                    //BasicConsole.Write("Item: ");
+                    //BasicConsole.WriteLine((uint)newObjToCleanupPtr);
+                    //EnterCritical("AddObjectToCleanup - re-enter");
+
+                    newObjToCleanupPtr->prevPtr = null;
+                }
+
                 CleanupList = newObjToCleanupPtr;
             }
             finally
@@ -841,6 +938,17 @@ namespace Kernel.FOS_System
                 prevPtr->nextPtr = nextPtr;
             }
             nextPtr->prevPtr = prevPtr;
+
+            if ((uint)nextPtr->prevPtr == 0xFFFFFFFF)
+            {
+                //ExitCritical();
+                //BasicConsole.WriteLine("!!!! Remove : Next->Prev pointer was set to 0xFFFFFFFF !!!!");
+                //BasicConsole.Write("Item: ");
+                //BasicConsole.WriteLine((uint)nextPtr);
+                //EnterCritical("RemoveObjectToCleanup - re-enter");
+
+                nextPtr->prevPtr = null;
+            }
 
             if(CleanupList == objToCleanupPtr)
             {

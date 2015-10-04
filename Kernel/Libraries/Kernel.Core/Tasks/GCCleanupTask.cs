@@ -25,7 +25,7 @@
 #endregion
     
 #define GCTASK_TRACE
-#undef GCTASK_TRACE
+//#undef GCTASK_TRACE
 
 using System;
 using System.Collections.Generic;
@@ -54,11 +54,13 @@ namespace Kernel.Core.Tasks
 
 #if GCTASK_TRACE
                     BasicConsole.SetTextColour(BasicConsole.warning_colour);
-                    BasicConsole.WriteLine("GC cleaning...");
+                    BasicConsole.Write("GC cleaning...");
+                    BasicConsole.WriteLine(Hardware.Processes.ProcessManager.CurrentProcess.Name);
                     BasicConsole.SetTextColour(BasicConsole.default_colour);
 #endif
-                    FOS_System.GC.Cleanup();
 
+                    FOS_System.GC.Cleanup();
+                
 #if GCTASK_TRACE
                     BasicConsole.SetTextColour(BasicConsole.warning_colour);
                     BasicConsole.WriteLine("GC stopped (1).");
@@ -84,7 +86,7 @@ namespace Kernel.Core.Tasks
                 //{
                 //    Hardware.Processes.Scheduler.Enable();
                 //}
-                Hardware.Processes.Thread.Sleep(1000);
+                Processes.SystemCallMethods.Sleep(200);
             }
         }
     }

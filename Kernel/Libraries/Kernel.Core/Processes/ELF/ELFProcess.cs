@@ -75,10 +75,10 @@ namespace Kernel.Core.Processes.ELF
                 theProcess = ProcessManager.CreateProcess(
                     mainMethod, theFile.TheFile.Name, UserMode);
 
-                ProcessManager.CurrentProcess.TheMemoryLayout.AddDataPage(
-                    (uint)Hardware.VirtMemManager.GetPhysicalAddress(((Thread)theProcess.Threads[0]).State->ThreadStackTop - 4092),
-                    (uint)((Thread)theProcess.Threads[0]).State->ThreadStackTop - 4092);
-
+                uint threadStackVirtAddr = (uint)((Thread)theProcess.Threads[0]).State->ThreadStackTop - 4092;
+                uint threadStackPhysAddr = (uint)Hardware.VirtMemManager.GetPhysicalAddress(threadStackVirtAddr);
+                ProcessManager.CurrentProcess.TheMemoryLayout.AddDataPage(threadStackPhysAddr, threadStackVirtAddr);
+                
                 // Load the ELF segments (i.e. the program code and data)
                 BaseAddress = theFile.BaseAddress;
                 LoadSegments(theFile, ref OK, ref DynamicLinkingRequired, BaseAddress);
@@ -468,8 +468,7 @@ namespace Kernel.Core.Processes.ELF
 
                 #endregion
 
-                ProcessManager.CurrentProcess.TheMemoryLayout.RemovePage(
-                    (uint)((Thread)theProcess.Threads[0]).State->ThreadStackTop - 4092);
+                ProcessManager.CurrentProcess.TheMemoryLayout.RemovePage(threadStackVirtAddr);
 
             }
             finally

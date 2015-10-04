@@ -55,35 +55,60 @@ namespace Kernel.Hardware
             impl.MapKernel();
         }
 
+        [Obsolete]
         public static uint FindFreePhysPage()
         {
             return impl.FindFreePhysPageAddrs(1);
         }
+        [Obsolete]
         public static uint FindFreeVirtPage()
         {
             return impl.FindFreeVirtPageAddrs(1);
         }
+        [Obsolete]
         public static uint FindFreePhysPages(int num)
         {
             return impl.FindFreePhysPageAddrs(num);
         }
+        [Obsolete]
         public static uint FindFreeVirtPages(int num)
         {
             return impl.FindFreeVirtPageAddrs(num);
         }
+
+        private static FOS_System.Processes.Synchronisation.SpinLock MapFreePagesLock = new FOS_System.Processes.Synchronisation.SpinLock(-1);
+        
         public static void* MapFreePage(VirtMemImpl.PageFlags flags)
         {
             return MapFreePages(flags, 1);
         }
         public static void* MapFreePages(VirtMemImpl.PageFlags flags, int numPages)
         {
-            uint physAddrsStart = impl.FindFreePhysPageAddrs(numPages);
-            uint virtAddrsStart = impl.FindFreeVirtPageAddrs(numPages);
-            //BasicConsole.WriteLine(((FOS_System.String)"Mapping free page. physAddr=") + physAddr + ", virtAddr=" + virtAddr);
-            for (uint i = 0; i < numPages; i++)
+            uint virtAddrsStart = 0xDEADBEEF;
+            try
             {
-                Map(physAddrsStart + (i * 4096), virtAddrsStart + (i * 4096), 4096, flags);
+                MapFreePagesLock.Enter();
+
+                BasicConsole.WriteLine("Mapping free pages:");
+
+                uint physAddrsStart = impl.FindFreePhysPageAddrs(numPages);
+                virtAddrsStart = impl.FindFreeVirtPageAddrs(numPages);
+                BasicConsole.Write(" -- Phys start: ");
+                BasicConsole.WriteLine(physAddrsStart);
+                BasicConsole.Write(" -- Virt start: ");
+                BasicConsole.WriteLine(virtAddrsStart);
+                BasicConsole.Write(" -- Num pages: ");
+                BasicConsole.WriteLine(numPages);
+                for (uint i = 0; i < numPages; i++)
+                {
+                    Map(physAddrsStart + (i * 4096), virtAddrsStart + (i * 4096), 4096, flags);
+                }
             }
+            finally
+            {
+                MapFreePagesLock.Exit();
+            }
+
             return (void*)virtAddrsStart;
         }
 

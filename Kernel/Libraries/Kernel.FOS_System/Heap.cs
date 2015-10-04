@@ -97,6 +97,8 @@ namespace Kernel.FOS_System
             }
         }
 
+        public static FOS_System.String name = "[UNINITIALISED]";
+
         public static SpinLock AccessLock;
         internal static bool AccessLockInitialised = false;
 
@@ -549,7 +551,28 @@ namespace Kernel.FOS_System
             {
                 bool BCPOEnabled = BasicConsole.PrimaryOutputEnabled;
                 BasicConsole.PrimaryOutputEnabled = true;
-                BasicConsole.WriteLine("Heap out of memory!");
+                BasicConsole.Write("Heap (");
+                BasicConsole.Write(name);
+                BasicConsole.WriteLine(") out of memory!");
+                if (fblock == null)
+                {
+                    BasicConsole.WriteLine(" !! fblock == null");
+                }
+                else if (GetTotalFreeMem() < size)
+                {
+                    if (GetTotalMem() == 0)
+                    {
+                        BasicConsole.WriteLine(" !! Out of free mem because total mem is zero.");
+                    }
+                    else if (GetTotalMem() <= 8092)
+                    {
+                        BasicConsole.WriteLine(" !! Out of free mem because total mem is <= 8092 bytes.");
+                    }
+                    else
+                    {
+                        BasicConsole.WriteLine(" !! Genuinely out of memory.");
+                    }
+                }
                 BasicConsole.PrimaryOutputEnabled = BCPOEnabled;
             }
 

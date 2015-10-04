@@ -8,10 +8,12 @@ namespace Kernel.Core.Tasks
 {
     public unsafe static class KernelTask
     {
-        public static bool Terminate = false;
+        public static bool Terminating = false;
         private static CircularBuffer DeferredSyscallsInfo_Unqueued;
         private static CircularBuffer DeferredSyscallsInfo_Queued;
 
+        private static Thread DeferredSyscallsThread;
+        
         private class DeferredSyscallInfo : FOS_System.Object
         {
             public uint ProcessId; 
@@ -25,7 +27,6 @@ namespace Kernel.Core.Tasks
 
             DeferredSyscallsInfo_Unqueued = new CircularBuffer(256, false);
             DeferredSyscallsInfo_Queued = new CircularBuffer(DeferredSyscallsInfo_Unqueued.Size, false);
-
             for (int i = 0; i < DeferredSyscallsInfo_Unqueued.Size; i++)
             {
                 DeferredSyscallsInfo_Unqueued.Push(new DeferredSyscallInfo());
@@ -40,27 +41,28 @@ namespace Kernel.Core.Tasks
                 ProcessManager.CurrentProcess.SyscallsToHandle.Set((int)SystemCallNumbers.Sleep);
                 ProcessManager.CurrentProcess.SyscallsToHandle.Set((int)SystemCallNumbers.RegisterSyscallHandler);
                 ProcessManager.CurrentProcess.SyscallsToHandle.Set((int)SystemCallNumbers.DeregisterSyscallHandler);
+                ProcessManager.CurrentProcess.SyscallsToHandle.Set((int)SystemCallNumbers.CreateThread);
+                
+                //ProcessManager.CurrentProcess.OutputMemTrace = true;
 
                 BasicConsole.WriteLine(" > Starting deferred syscalls thread...");
-                ProcessManager.CurrentProcess.CreateThread(DeferredSyscallsThread);
+                DeferredSyscallsThread = ProcessManager.CurrentProcess.CreateThread(DeferredSyscallsThread_Main);
 
                 BasicConsole.WriteLine(" > Starting GC Cleanup thread...");
-                ProcessManager.CurrentProcess.CreateThread(Core.Tasks.GCCleanupTask.Main);
+                //ProcessManager.CurrentProcess.CreateThread(Core.Tasks.GCCleanupTask.Main);
 
                 BasicConsole.WriteLine(" > Starting Idle thread...");
                 ProcessManager.CurrentProcess.CreateThread(Core.Tasks.IdleTask.Main);
 
                 BasicConsole.WriteLine(" > Starting Device Manager...");
-                ProcessManager.RegisterProcess(
-                    ProcessManager.CreateProcess(DeviceManagerTask.Main, "Device Manager", false, true), 
-                    Scheduler.Priority.Normal);
+                Process DeviceManagerProcess = ProcessManager.CreateProcess(DeviceManagerTask.Main, "Device Manager", false, true);
+                //DeviceManagerProcess.OutputMemTrace = true;
+                ProcessManager.RegisterProcess(DeviceManagerProcess, Scheduler.Priority.Normal);
 
                 BasicConsole.WriteLine(" > Starting Window Manager...");
                 Process WindowManagerProcess = ProcessManager.CreateProcess(WindowManagerTask.Main, "Window Manager", false, true);
-                //WindowManagerProcess.OutputMemTrace = true;
-                ProcessManager.RegisterProcess(
-                    WindowManagerProcess,
-                    Scheduler.Priority.Normal);
+                WindowManagerProcess.OutputMemTrace = true;
+                ProcessManager.RegisterProcess(WindowManagerProcess, Scheduler.Priority.Normal);
 
                 //TODO: Main task for commands etc
 
@@ -68,13 +70,14 @@ namespace Kernel.Core.Tasks
 
                 BasicConsole.PrimaryOutputEnabled = false;
 
-                while (!Terminate)
+                int x = 0;
+                while (!Terminating)
                 {
                     SystemCallMethods.Sleep(100);
 
                     if (SystemCallMethods.Ping() == SystemCallResults.Unhandled)
                     {
-                        BasicConsole.WriteLine("Ping failed.");
+                        BasicConsole.WriteLine("Ping failed. (" + (FOS_System.String)x++ + ")");
                     }
                 }
 
@@ -127,12 +130,74 @@ namespace Kernel.Core.Tasks
             //TODO: Exit syscall
         }
 
-        public static void DeferredSyscallsThread()
+        public static void DeferredSyscallsThread_Main()
         {
-            while (true)
+            while (!Terminating)
             {
-                //TODO: Processing
+                if (DeferredSyscallsInfo_Queued.Count == 0)
+                {
+                    Thread.Sleep_Indefinitely();
+                }
+
+                while (DeferredSyscallsInfo_Queued.Count > 0)
+                {
+                    BasicConsole.WriteLine("DSC: Popping queued info object...");
+                    DeferredSyscallInfo info = (DeferredSyscallInfo)DeferredSyscallsInfo_Queued.Pop();
+
+                    BasicConsole.WriteLine("DSC: Getting process & thread...");
+                    Process CallerProcess = ProcessManager.GetProcessById(info.ProcessId);
+                    Thread CallerThread = ProcessManager.GetThreadById(info.ThreadId, CallerProcess);
+
+                    BasicConsole.WriteLine("DSC: Getting data & calling...");
+                    uint Return2 = CallerThread.Return2;
+                    uint Return3 = CallerThread.Return3;
+                    uint Return4 = CallerThread.Return4;
+                    SystemCallResults result = HandleDeferredSystemCall(
+                        CallerProcess, CallerThread,
+                        (SystemCallNumbers)CallerThread.SysCallNumber, CallerThread.Param1, CallerThread.Param2, CallerThread.Param3,
+                        ref Return2, ref Return3, ref Return4);
+
+                    BasicConsole.WriteLine("DSC: Ending call...");
+                    EndDeferredSystemCall(CallerThread, result, Return2, Return3, Return4);
+
+                    BasicConsole.WriteLine("DSC: Resetting & queuing info object...");
+                    info.ProcessId = 0;
+                    info.ThreadId = 0;
+                    DeferredSyscallsInfo_Unqueued.Push(info);
+                }
             }
+        }
+        public static SystemCallResults HandleDeferredSystemCall(
+            Process CallerProcess, Thread CallerThread,
+            SystemCallNumbers syscallNumber, uint Param1, uint Param2, uint Param3,
+            ref uint Return2, ref uint Return3, ref uint Return4)
+        {
+            SystemCallResults result = SystemCallResults.Unhandled;
+
+            switch (syscallNumber)
+            {
+                case SystemCallNumbers.CreateThread:
+                    BasicConsole.WriteLine("DSC: Create Thread");
+                    CallerProcess.CreateThread((ThreadStartMethod)Utilities.ObjectUtilities.GetObject((void*)Param1));
+                    BasicConsole.WriteLine("DSC: Create Thread - done.");
+                    result = SystemCallResults.OK;
+                    break;
+                default:
+                    BasicConsole.WriteLine("DSC: Unrecognised call number.");
+                    BasicConsole.WriteLine((uint)syscallNumber);
+                    break;
+            }
+
+            return result;
+        }
+        public static void EndDeferredSystemCall(Thread CallerThread, SystemCallResults result, uint Return2, uint Return3, uint Return4)
+        {
+            CallerThread.Return1 = (uint)result;
+            CallerThread.Return2 = Return2;
+            CallerThread.Return3 = Return3;
+            CallerThread.Return4 = Return4;
+
+            CallerThread._Wake();
         }
 
         public static int SyscallHandler(uint syscallNumber, uint param1, uint param2, uint param3, 
@@ -146,10 +211,18 @@ namespace Kernel.Core.Tasks
 
             if (result == SystemCallResults.Deferred)
             {
+                BasicConsole.WriteLine("Deferring syscall...");
+                BasicConsole.WriteLine("Popping unqueued info object...");
                 DeferredSyscallInfo info = (DeferredSyscallInfo)DeferredSyscallsInfo_Unqueued.Pop();
+                BasicConsole.WriteLine("Setting info...");
                 info.ProcessId = callerProcessId;
                 info.ThreadId = callerThreadId;
+
+                BasicConsole.WriteLine("Queuing info object...");
                 DeferredSyscallsInfo_Queued.Push(info);
+
+                BasicConsole.WriteLine("Waking deferred syscalls thread...");
+                DeferredSyscallsThread._Wake();
             }
 
             return (int)result;

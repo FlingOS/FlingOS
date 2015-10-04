@@ -103,10 +103,14 @@ namespace Kernel.Hardware.Processes
             BasicConsole.WriteLine("Adding data page...");
 #endif
             // Add the page to the processes memory layout
-            TheMemoryLayout.AddDataPage(
-                (uint)VirtMemManager.GetPhysicalAddress(newThread.State->ThreadStackTop - 4092),
-                (uint)newThread.State->ThreadStackTop - 4092);
-            
+            uint threadStackVirtAddr = (uint)newThread.State->ThreadStackTop - 4092;
+            uint threadStackPhysAddr = (uint)VirtMemManager.GetPhysicalAddress(newThread.State->ThreadStackTop - 4092);
+            TheMemoryLayout.AddDataPage(threadStackPhysAddr, threadStackVirtAddr);
+            if (ProcessManager.KernelProcess != null)
+            {
+                ProcessManager.KernelProcess.TheMemoryLayout.AddDataPage(threadStackPhysAddr, threadStackVirtAddr);
+            }
+
 #if PROCESS_TRACE
             BasicConsole.WriteLine("Adding thread...");
 #endif
@@ -144,25 +148,43 @@ namespace Kernel.Hardware.Processes
             FOS_System.HeapBlock* heapPtr = (FOS_System.HeapBlock*)VirtMemManager.MapFreePages(
                                 UserMode ? VirtMemImpl.PageFlags.None :
                                            VirtMemImpl.PageFlags.KernelOnly, 256); // 1 MiB, page-aligned
-
-
-            // Add allocated memory to layout
-            uint endPtr = (uint)(heapPtr + (256 * 4096));
 #if PROCESS_TRACE
-            BasicConsole.WriteLine("Adding memory to layout...");
+            BasicConsole.WriteLine("Generating physical addresses...");
 #endif
             uint[] pAddrs = new uint[256];
-            for(uint currPtr = (uint)heapPtr, i = 0; i < 256; currPtr += 4096, i++)
+            for (uint currPtr = (uint)heapPtr, i = 0; i < 256; currPtr += 4096, i++)
             {
                 pAddrs[i] = VirtMemManager.GetPhysicalAddress(currPtr);
             }
-            TheMemoryLayout.AddDataPages((uint)heapPtr, pAddrs);
+
+#if PROCESS_TRACE
+            BasicConsole.WriteLine("Adding memory to current process (kernel task) layout...");
+#endif
+            // Add heap memory to current (kernel) process's memory
+            //  - Makes sure it won't be mapped out during initialisation
+            ProcessManager.CurrentProcess.TheMemoryLayout.AddDataPages((uint)heapPtr, pAddrs);
+            // Brief pause to make the scheduler (unload/)load the data layout
+            Thread.Sleep(1000);
 
 #if PROCESS_TRACE
             BasicConsole.WriteLine("Initialising heap...");
 #endif
             // Initialise the heap
             FOS_System.Heap.InitBlock(heapPtr, 256 * 4096, 32);
+
+#if PROCESS_TRACE
+            BasicConsole.WriteLine("Adding memory to layout...");
+#endif
+            // Add allocated new process's memory to layout
+            TheMemoryLayout.AddDataPages((uint)heapPtr, pAddrs);
+
+#if PROCESS_TRACE
+            BasicConsole.WriteLine("Removing memory from current process (kernel task) layout...");
+#endif
+            // Remove heap memory from current (kernel) process's memory
+            ProcessManager.CurrentProcess.TheMemoryLayout.RemovePages((uint)heapPtr, 256);
+            // Brief pause to make the scheduler (unload/)load the data layout
+            Thread.Sleep(1000);
 
 #if PROCESS_TRACE
             BasicConsole.WriteLine("Setting heap pointer...");
@@ -179,6 +201,7 @@ namespace Kernel.Hardware.Processes
         }
         public void LoadHeap()
         {
+            FOS_System.Heap.name = ProcessManager.CurrentProcess.Name;
             FOS_System.Heap.OutputTrace = OutputMemTrace;
             FOS_System.GC.OutputTrace = OutputMemTrace;
 

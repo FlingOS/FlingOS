@@ -8,6 +8,9 @@ namespace Kernel.Core.Tasks
     {
         private static Console ScreenOutput;
         private static int Pings = 0;
+        private static int TestThread_Loops = 0;
+        private static int TestThread2_Loops = 0;
+        private static bool Terminating = false;
 
         public static void Main()
         {
@@ -19,11 +22,24 @@ namespace Kernel.Core.Tasks
 
             SystemCallMethods.RegisterSyscallHandler(SystemCallNumbers.Semaphore, SyscallHandler);
 
-            while (true)
+            if (SystemCallMethods.CreateThread(TestThread) != SystemCallResults.OK)
+            {
+                BasicConsole.WriteLine("Window Manager: Test thread failed to create!");
+            }
+            if (SystemCallMethods.CreateThread(TestThread2) != SystemCallResults.OK)
+            {
+                BasicConsole.WriteLine("Window Manager: Test thread 2 failed to create!");
+            }
+            //if (SystemCallMethods.CreateThread(GCCleanupTask.Main) != SystemCallResults.OK)
+            //{
+            //    BasicConsole.WriteLine("Window Manager: GC thread failed to create!");
+            //}
+
+            while (!Terminating)
             {
                 try
                 {
-                    ScreenOutput.Clear();
+                    //ScreenOutput.Clear();
                     ScreenOutput.Write("Window Manager Task (");
                     ScreenOutput.Write_AsDecimal(loops);
                     ScreenOutput.WriteLine(")");
@@ -31,7 +47,13 @@ namespace Kernel.Core.Tasks
                     ScreenOutput.Write("WM > Pings : ");
                     ScreenOutput.WriteLine_AsDecimal(Pings);
 
-                    ScreenOutput.Write("WM Heap: ");
+                    ScreenOutput.Write("WM > Test Thread loops : ");
+                    ScreenOutput.WriteLine_AsDecimal(Pings);
+
+                    ScreenOutput.Write("WM > Test Thread 2 loops : ");
+                    ScreenOutput.WriteLine_AsDecimal(Pings);
+
+                    ScreenOutput.Write("WM > Heap: ");
                     uint totalMem = Heap.GetTotalMem();
                     ScreenOutput.Write_AsDecimal(Heap.GetTotalUsedMem() / (totalMem / 100));
                     ScreenOutput.Write("% / ");
@@ -49,6 +71,40 @@ namespace Kernel.Core.Tasks
             }
         }
 
+        public static void TestThread()
+        {
+            while (!Terminating)
+            {
+                try
+                {
+                    //BasicConsole.WriteLine("WM > Test Thread");
+                    TestThread_Loops++;
+                    SystemCallMethods.Sleep(100);
+                }
+                catch
+                {
+                    BasicConsole.WriteLine("Error in test thread!");
+                }
+            }
+        }
+
+        public static void TestThread2()
+        {
+            while (!Terminating)
+            {
+                try
+                {
+                    //BasicConsole.WriteLine("WM > Test Thread 2");
+                    TestThread2_Loops++;
+                    SystemCallMethods.Sleep(100);
+                }
+                catch
+                {
+                    BasicConsole.WriteLine("Error in test thread 2!");
+                }
+            }
+        }
+        
         public static int SyscallHandler(uint syscallNumber, uint param1, uint param2, uint param3,
             ref uint Return2, ref uint Return3, ref uint Return4,
             uint callerProcesId, uint callerThreadId)

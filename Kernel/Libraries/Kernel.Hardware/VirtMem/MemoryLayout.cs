@@ -99,6 +99,11 @@ namespace Kernel.Hardware.VirtMem
             //    Processes.Scheduler.Enable();
             //}
         }
+        public void RemovePages(uint vAddrStart, uint numPages)
+        {
+            CodePages.RemoveRange(vAddrStart, 4096, numPages);
+            DataPages.RemoveRange(vAddrStart, 4096, numPages);
+        }
 
         //bool loadPrint = true;
         //bool unloadPrint = true;
@@ -159,7 +164,7 @@ namespace Kernel.Hardware.VirtMem
                 //    BasicConsole.WriteLine(((FOS_System.String)"Unloading code page v->p: ") + CodePages.Keys[i]);
                 //}
 
-                VirtMemManager.Unmap(CodePages.Keys[i], UpdateUsedPagesFlags.Virtual);
+                VirtMemManager.Unmap(CodePages.Keys[i], UpdateUsedPagesFlags.None);
             }
             for (int i = 0; i < DataPages.Keys.Count && i < DataPages.Values.Count; i++)
             {
@@ -172,7 +177,7 @@ namespace Kernel.Hardware.VirtMem
                 //    BasicConsole.WriteLine(((FOS_System.String)"Unloading data page v->p: ") + DataPages.Keys[i]);
                 //}
 
-               VirtMemManager.Unmap(DataPages.Keys[i], UpdateUsedPagesFlags.Virtual);
+               VirtMemManager.Unmap(DataPages.Keys[i], UpdateUsedPagesFlags.None);
             }
 
             //if (unloadPrint)

@@ -74,14 +74,14 @@ namespace Kernel
 
             try
             {                
-                FOS_System.GC.Cleanup();
+                //FOS_System.GC.Cleanup();
                 
-                BasicConsole.WriteLine("Virtual memory initialised.");
-                BasicConsole.Write("Heap memory use: ");
-                BasicConsole.Write(Heap.GetTotalUsedMem());
-                BasicConsole.Write(" / ");
-                BasicConsole.WriteLine(Heap.GetTotalMem());
-                BasicConsole.DelayOutput(5);
+                //BasicConsole.WriteLine("Virtual memory initialised.");
+                //BasicConsole.Write("Heap memory use: ");
+                //BasicConsole.Write(Heap.GetTotalUsedMem());
+                //BasicConsole.Write(" / ");
+                //BasicConsole.WriteLine(Heap.GetTotalMem());
+                //BasicConsole.DelayOutput(5);
                 
                 Hardware.IO.Serial.Serial.InitCOM1();
                 Hardware.IO.Serial.Serial.InitCOM2();
@@ -113,7 +113,7 @@ namespace Kernel
                 BasicConsole.PrimaryOutputEnabled = true;
                 BasicConsole.SecondaryOutputEnabled = true;
 
-                for (int i = 0; i < 38; i++)
+                for (int i = 0; i < 37; i++)
                 {
                     BasicConsole.Write(' ');
                 }
@@ -186,26 +186,28 @@ namespace Kernel
                 //    bpm);
 
                 BasicConsole.WriteLine("Creating kernel process...");
-                Process ManagedMainProcess = ProcessManager.CreateProcess(Core.Tasks.KernelTask.Main, "Kernel Task", false);
+                Process KernelProcess = ProcessManager.CreateProcess(Core.Tasks.KernelTask.Main, "Kernel Task", false);
+                ProcessManager.KernelProcess = KernelProcess;
+
                 BasicConsole.WriteLine("Creating kernel thread...");
-                Thread ManagedMain_MainThread = ((Thread)ManagedMainProcess.Threads[0]);
+                Thread KernelThread = ((Thread)KernelProcess.Threads[0]);
 
                 BasicConsole.WriteLine("Initialising kernel thread stack...");
-                Hardware.VirtMemManager.Unmap(ManagedMain_MainThread.State->ThreadStackTop - 4092);
-                ManagedMainProcess.TheMemoryLayout.RemovePage((uint)ManagedMain_MainThread.State->ThreadStackTop - 4092);
-                ManagedMain_MainThread.State->ThreadStackTop = GetKernelStackPtr();
-                ManagedMain_MainThread.State->ESP = (uint)ManagedMain_MainThread.State->ThreadStackTop;
+                Hardware.VirtMemManager.Unmap(KernelThread.State->ThreadStackTop - 4092);
+                KernelProcess.TheMemoryLayout.RemovePage((uint)KernelThread.State->ThreadStackTop - 4092);
+                KernelThread.State->ThreadStackTop = GetKernelStackPtr();
+                KernelThread.State->ESP = (uint)KernelThread.State->ThreadStackTop;
 
                 BasicConsole.WriteLine("Initialising kernel process heap...");
-                ManagedMainProcess.HeapLock = Heap.AccessLock;
-                ManagedMainProcess.HeapPtr = Heap.FBlock;
+                KernelProcess.HeapLock = Heap.AccessLock;
+                KernelProcess.HeapPtr = Heap.FBlock;
 
                 BasicConsole.WriteLine("Initialising kernel process GC...");
-                ManagedMainProcess.GCLock = FOS_System.GC.AccessLock;
-                ManagedMainProcess.GCCleanupListPtr = FOS_System.GC.CleanupList;
+                KernelProcess.GCLock = FOS_System.GC.AccessLock;
+                KernelProcess.GCCleanupListPtr = FOS_System.GC.CleanupList;
 
                 BasicConsole.WriteLine("Registering kernel process...");
-                ProcessManager.RegisterProcess(ManagedMainProcess, Scheduler.Priority.Normal);
+                ProcessManager.RegisterProcess(KernelProcess, Scheduler.Priority.Normal);
 
                 BasicConsole.WriteLine("Initialising scheduler...");
                 Scheduler.Init();

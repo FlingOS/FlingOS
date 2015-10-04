@@ -44,6 +44,8 @@ namespace Kernel.Hardware.Processes
         public static Thread CurrentThread = null;
         public static ThreadState* CurrentThread_State = null;
 
+        public static Process KernelProcess = null;
+
         private static uint ProcessIdGenerator = 1;
 
         private static List Semaphores = new List(1024, 1024);
