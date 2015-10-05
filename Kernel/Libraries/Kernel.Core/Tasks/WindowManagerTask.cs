@@ -40,7 +40,7 @@ namespace Kernel.Core.Tasks
             {
                 try
                 {
-                    //ScreenOutput.Clear();
+                    ScreenOutput.Clear();
                     ScreenOutput.Write("Window Manager Task (");
                     ScreenOutput.Write_AsDecimal(loops);
                     ScreenOutput.WriteLine(")");
@@ -54,6 +54,8 @@ namespace Kernel.Core.Tasks
                     ScreenOutput.Write("WM > Test Thread 2 loops : ");
                     ScreenOutput.WriteLine_AsDecimal(Pings);
 
+                    ScreenOutput.WriteLine();
+
                     ScreenOutput.Write("WM > Heap: ");
                     uint totalMem = Heap.GetTotalMem();
                     ScreenOutput.Write_AsDecimal(Heap.GetTotalUsedMem() / (totalMem / 100));
@@ -61,7 +63,14 @@ namespace Kernel.Core.Tasks
                     ScreenOutput.Write_AsDecimal(totalMem / 1024);
                     ScreenOutput.WriteLine(" KiB");
 
-                    SystemCallMethods.Sleep(100);
+                    ScreenOutput.WriteLine();
+
+                    ScreenOutput.Write("WM > Number of objects: ");
+                    ScreenOutput.WriteLine_AsDecimal(FOS_System.GC.NumObjs);
+                    ScreenOutput.Write("WM > Number of strings: ");
+                    ScreenOutput.WriteLine_AsDecimal(FOS_System.GC.NumStrings);
+
+                    SystemCallMethods.Sleep(500);
 
                     loops++;
                 }

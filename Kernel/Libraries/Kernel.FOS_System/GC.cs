@@ -438,7 +438,6 @@ namespace Kernel.FOS_System
                     return null;
                 }
 
-                NumObjs++;
                 NumStrings++;
 
                 //Initialise the GCHeader
@@ -452,7 +451,7 @@ namespace Kernel.FOS_System
                 //        decremented by managed code. OR the variable will stay in a static var until
                 //        the OS exits...
 
-                newObjPtr->RefCount = -1;
+                newObjPtr->RefCount = 0;
 
                 FOS_System.String newStr = (FOS_System.String)Utilities.ObjectUtilities.GetObject(newObjPtr + 1);
                 newStr._Type = (FOS_System.Type)typeof(FOS_System.String);
@@ -771,6 +770,15 @@ namespace Kernel.FOS_System
 
                             NumStrings--;
                         }
+                        else
+                        {
+                            if (OutputTrace)
+                            {
+                                BasicConsole.WriteLine("   > (It's NOT a string).");
+                            }
+
+                            NumObjs--;
+                        }
 
                         if (OutputTrace)
                         {
@@ -783,8 +791,6 @@ namespace Kernel.FOS_System
                         {
                             BasicConsole.WriteLine("   > Object freed.");
                         }
-
-                        NumObjs--;
 
                         if (OutputTrace)
                         {
