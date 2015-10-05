@@ -256,6 +256,11 @@ namespace Kernel.Core
             if (num != 0)
             {
                 bool neg = num < 0;
+                if (neg)
+                {
+                    num = -num;
+                }
+
                 while (num > 0)
                 {
                     int rem = num % 10;
