@@ -60,8 +60,7 @@ namespace Kernel.FOS_System.Collections
         {
             if (Keys.IndexOf(key) > -1)
             {
-                ExceptionMethods.Throw(new FOS_System.Exception(
-                    "Cannot add duplicate key to the dictionary!"));
+                ExceptionMethods.Throw(new FOS_System.Exception("Cannot add duplicate key to the dictionary!"));
             }
 
             Keys.Add(key);
@@ -71,8 +70,7 @@ namespace Kernel.FOS_System.Collections
         {
             if (Keys.ContainsItemInRange(keyStart, keyStart + ((uint)values.Length * keyStep)))
             {
-                ExceptionMethods.Throw(new FOS_System.Exception(
-                    "Cannot add duplicate key to the dictionary!"));
+                ExceptionMethods.Throw(new FOS_System.Exception("Cannot add duplicate key to the dictionary!"));
             }
 
             Capacity += values.Length;
@@ -114,17 +112,23 @@ namespace Kernel.FOS_System.Collections
         {
             get
             {
-                return Values[Keys.IndexOf(key)];
+                int keyIdx = Keys.IndexOf(key);
+                if (keyIdx == -1)
+                {
+                    ExceptionMethods.Throw(new Exceptions.ArgumentException("Key not found in dictionary!"));
+                }
+                return Values[keyIdx];
             }
             set
             {
-                if (Keys.IndexOf(key) == -1)
+                int keyIdx = Keys.IndexOf(key);
+                if (keyIdx == -1)
                 {
                     Add(key, value);
                 }
                 else
                 {
-                    Values[Keys.IndexOf(key)] = value;
+                    Values[keyIdx] = value;
                 }
             }
         }

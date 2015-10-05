@@ -261,6 +261,13 @@ namespace Kernel.Hardware.Processes
                 uint processId = ProcessManager.CurrentProcess.Id;
 
                 int processIdx = ProcessManager.Processes.IndexOf(ProcessManager.CurrentProcess);
+                if (processIdx == -1)
+                {
+                    BasicConsole.WriteLine("!!! PANIC !!!");
+                    BasicConsole.WriteLine("Scheduler.UpdateCurrentState (Scheduler.cs:Line 267) - Index of current process came back as -1 - Unfound!");
+                    BasicConsole.WriteLine("!-!-!-!-!-!-!");
+                }
+
                 int threadIdx = ProcessManager.CurrentProcess.Threads.IndexOf(ProcessManager.CurrentThread);
                 
                 threadIdx = NextThread(threadIdx, processIdx);

@@ -320,7 +320,7 @@ namespace Kernel.Hardware.Processes
             if (id > -1 && id < Semaphores.Count && Semaphores[id] != null)
             {
                 Semaphore theSemaphore = ((Semaphore)Semaphores[id]);
-                return theSemaphore.OwnerProcesses.IndexOf(aProcess.Id) >= 0;
+                return theSemaphore.OwnerProcesses.IndexOf(aProcess.Id) > -1;
             }
             return false;
         }
