@@ -49,7 +49,7 @@ namespace Kernel.Core.Tasks
                 DeferredSyscallsThread = ProcessManager.CurrentProcess.CreateThread(DeferredSyscallsThread_Main);
 
                 BasicConsole.WriteLine(" > Starting GC Cleanup thread...");
-                //ProcessManager.CurrentProcess.CreateThread(Core.Tasks.GCCleanupTask.Main);
+                ProcessManager.CurrentProcess.CreateThread(Core.Tasks.GCCleanupTask.Main);
 
                 BasicConsole.WriteLine(" > Starting Idle thread...");
                 ProcessManager.CurrentProcess.CreateThread(Core.Tasks.IdleTask.Main);

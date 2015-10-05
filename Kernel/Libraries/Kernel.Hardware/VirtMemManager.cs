@@ -109,6 +109,13 @@ namespace Kernel.Hardware
                 MapFreePagesLock.Exit();
             }
 
+            if (virtAddrsStart == 0xDEADBEEF)
+            {
+                BasicConsole.WriteLine("!!! PANIC !!!");
+                BasicConsole.WriteLine("VirtMemManager.MapFreePages returning 0xDEADBEEF!");
+                BasicConsole.WriteLine("!-!-!-!-!-!-!");
+            }
+
             return (void*)virtAddrsStart;
         }
 

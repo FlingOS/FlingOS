@@ -475,7 +475,6 @@ namespace Kernel.FOS_System
         /// <param name="y">The second string.</param>
         /// <returns>The new contenated string.</returns>
         [Drivers.Compiler.Attributes.NoDebug]
-        [Drivers.Compiler.Attributes.NoGC]
         public static FOS_System.String operator +(FOS_System.String x, FOS_System.String y)
         {
             if (x == null)

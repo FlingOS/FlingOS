@@ -126,21 +126,7 @@ namespace Kernel.Hardware.Processes
         }
 
         private void CreateHeap()
-        {
-#if PROCESS_TRACE
-            BasicConsole.WriteLine("Creating new heap lock...");
-#endif
-
-            // Create new heap lock
-            HeapLock = new SpinLock();
-            
-#if PROCESS_TRACE
-            BasicConsole.WriteLine("Creating new GC lock...");
-#endif
-
-            // Create new heap lock
-            GCLock = new SpinLock();
-            
+        {            
 #if PROCESS_TRACE
             BasicConsole.WriteLine("Allocating memory for heap...");
 #endif
@@ -208,8 +194,8 @@ namespace Kernel.Hardware.Processes
             if (HeapPtr != null)
             {
                 FOS_System.GC.InsideGC = InsideGC;
-                FOS_System.Heap.LoadHeap(HeapPtr, HeapLock);
-                FOS_System.GC.LoadGC(GCCleanupListPtr, GCLock);
+                FOS_System.Heap.Load(HeapPtr, HeapLock);
+                FOS_System.GC.Load(GCCleanupListPtr, GCLock);
             }
         }
 

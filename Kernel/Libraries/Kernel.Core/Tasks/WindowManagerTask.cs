@@ -16,8 +16,13 @@ namespace Kernel.Core.Tasks
         {
             BasicConsole.WriteLine("Window Manager: Started.");
 
-            int loops = 0;
+            FOS_System.GC.Init();
+            if (SystemCallMethods.CreateThread(GCCleanupTask.Main) != SystemCallResults.OK)
+            {
+                BasicConsole.WriteLine("Window Manager: GC thread failed to create!");
+            }
 
+            int loops = 0;
             ScreenOutput = new Consoles.AdvancedConsole();
 
             SystemCallMethods.RegisterSyscallHandler(SystemCallNumbers.Semaphore, SyscallHandler);
@@ -30,10 +35,6 @@ namespace Kernel.Core.Tasks
             {
                 BasicConsole.WriteLine("Window Manager: Test thread 2 failed to create!");
             }
-            //if (SystemCallMethods.CreateThread(GCCleanupTask.Main) != SystemCallResults.OK)
-            //{
-            //    BasicConsole.WriteLine("Window Manager: GC thread failed to create!");
-            //}
 
             while (!Terminating)
             {

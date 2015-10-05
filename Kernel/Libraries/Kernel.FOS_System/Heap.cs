@@ -279,10 +279,11 @@ namespace Kernel.FOS_System
             }
         }
 
-        public static void LoadHeap(HeapBlock* heapPtr, SpinLock heapLock)
+        public static void Load(HeapBlock* heapPtr, SpinLock heapLock)
         {
             fblock = heapPtr;
             AccessLock = heapLock;
+            AccessLockInitialised = (AccessLock != null);
         }
 
         /// <summary>

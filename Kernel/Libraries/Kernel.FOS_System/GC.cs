@@ -68,7 +68,7 @@ namespace Kernel.FOS_System
         private static FOS_System.String lastLocker = "[NEVER SET]";
 
         public static SpinLock AccessLock;
-        private static bool GCAccessLockInitialised = false;
+        private static bool AccessLockInitialised = false;
 
         /// <summary>
         /// The number of strings currently allocated on the heap.
@@ -95,11 +95,22 @@ namespace Kernel.FOS_System
 
             Enabled = true;
 
+            Init();
+        }
+
+        public static void Init()
+        {
             Heap.AccessLock = new SpinLock();
             Heap.AccessLockInitialised = true;
 
-            AccessLock = new SpinLock();
-            GCAccessLockInitialised = true;
+            GC.AccessLock = new SpinLock();
+            GC.AccessLockInitialised = true;
+        }
+        public static void Load(ObjectToCleanup* cleanupList, SpinLock accessLock)
+        {
+            CleanupList = cleanupList;
+            AccessLock = accessLock;
+            AccessLockInitialised = (AccessLock != null);
         }
 
         public static void Enable(FOS_System.String caller)
@@ -126,7 +137,7 @@ namespace Kernel.FOS_System
         private static void EnterCritical(FOS_System.String caller)
         {
             //BasicConsole.WriteLine("Entering critical section...");
-            if (GCAccessLockInitialised)
+            if (AccessLockInitialised)
             {
                 if (AccessLock == null)
                 {
@@ -166,7 +177,7 @@ namespace Kernel.FOS_System
         private static void ExitCritical()
         {
             //BasicConsole.WriteLine("Exiting critical section...");
-            if (GCAccessLockInitialised)
+            if (AccessLockInitialised)
             {
                 if (AccessLock == null)
                 {
@@ -183,12 +194,6 @@ namespace Kernel.FOS_System
             //    BasicConsole.WriteLine("GCAccessLock not initialised - ignoring lock conditions.");
             //    BasicConsole.DelayOutput(5);
             //}
-        }
-
-        public static void LoadGC(ObjectToCleanup* cleanupList, SpinLock accessLock)
-        {
-            CleanupList = cleanupList;
-            AccessLock = accessLock;
         }
 
         /// <summary>
@@ -447,7 +452,7 @@ namespace Kernel.FOS_System
                 //        decremented by managed code. OR the variable will stay in a static var until
                 //        the OS exits...
 
-                newObjPtr->RefCount = 0;
+                newObjPtr->RefCount = -1;
 
                 FOS_System.String newStr = (FOS_System.String)Utilities.ObjectUtilities.GetObject(newObjPtr + 1);
                 newStr._Type = (FOS_System.Type)typeof(FOS_System.String);
@@ -795,16 +800,6 @@ namespace Kernel.FOS_System
                     prevObjToCleanupPtr = currObjToCleanupPtr;
                     currObjToCleanupPtr = currObjToCleanupPtr->prevPtr;
 
-                    if ((uint)currObjToCleanupPtr == 0xFFFFFFFF)
-                    {
-                        if (OutputTrace)
-                        {
-                            BasicConsole.WriteLine(" > Resetting ptr to null because it's 0xFFFFFFFF...");
-                        }
-
-                        currObjToCleanupPtr = null;
-                    }
-
                     if (OutputTrace)
                     {
                         BasicConsole.WriteLine(" > Removing object to cleanup...");
@@ -875,19 +870,9 @@ namespace Kernel.FOS_System
                 else
                 {
                     newObjToCleanupPtr->prevPtr = null;
+                    newObjToCleanupPtr->nextPtr = null;
                 }
-
-                if ((uint)newObjToCleanupPtr->prevPtr == 0xFFFFFFFF)
-                {
-                    //ExitCritical();
-                    //BasicConsole.WriteLine("!!!! Add : Prev pointer was set to 0xFFFFFFFF !!!!");
-                    //BasicConsole.Write("Item: ");
-                    //BasicConsole.WriteLine((uint)newObjToCleanupPtr);
-                    //EnterCritical("AddObjectToCleanup - re-enter");
-
-                    newObjToCleanupPtr->prevPtr = null;
-                }
-
+                
                 CleanupList = newObjToCleanupPtr;
             }
             finally
@@ -938,17 +923,6 @@ namespace Kernel.FOS_System
                 prevPtr->nextPtr = nextPtr;
             }
             nextPtr->prevPtr = prevPtr;
-
-            if ((uint)nextPtr->prevPtr == 0xFFFFFFFF)
-            {
-                //ExitCritical();
-                //BasicConsole.WriteLine("!!!! Remove : Next->Prev pointer was set to 0xFFFFFFFF !!!!");
-                //BasicConsole.Write("Item: ");
-                //BasicConsole.WriteLine((uint)nextPtr);
-                //EnterCritical("RemoveObjectToCleanup - re-enter");
-
-                nextPtr->prevPtr = null;
-            }
 
             if(CleanupList == objToCleanupPtr)
             {
