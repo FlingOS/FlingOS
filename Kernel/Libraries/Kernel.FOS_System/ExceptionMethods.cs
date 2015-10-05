@@ -611,7 +611,7 @@ namespace Kernel
             BasicConsole.SetTextColour(BasicConsole.error_colour);
             BasicConsole.WriteLine(HaltReason);
             BasicConsole.SetTextColour(BasicConsole.default_colour);
-            Throw(new FOS_System.Exceptions.OverflowException());
+            Throw(new FOS_System.Exceptions.OverflowException("Processor reported an overflow."));
         }
         /// <summary>
         /// Throws an invalid op code exception.

@@ -29,17 +29,11 @@ using System;
 namespace Kernel.FOS_System.Collections
 {
     /// <summary>
-    /// Represents a weakly typed list of objects (which must be derived from FOS_System.Object) that can be accessed by 
+    /// Represents a strongly typed list of UInt64s that can be accessed by 
     /// index. Provides methods to search and manipulate lists.
     /// </summary>
-    /// <remarks>
-    /// The job of knowing which type of object is contained within the list is left to the developer. This is a 
-    /// significant issue but one which we can't solve yet since generics aren't supported properly yet.
-    /// </remarks>
-    public class List : FOS_System.Object
+    public class UInt64List : FOS_System.Object
     {
-        //Note: The "capacity" of the list is the length of the internal array.
-
         /// <summary>
         /// The underlying object array.
         /// </summary>
@@ -49,9 +43,9 @@ namespace Kernel.FOS_System.Collections
         /// the list. Adding an entry extends the list downwards by one. Removing an 
         /// entry shifts the remaining items up by one.
         /// </remarks>
-        protected FOS_System.Object[] _array;
+        protected UInt64[] _array;
         /// <summary>
-        /// The "nextIndex" is the index to insert the next new item.
+        /// The "currentIndex" is the index to insert the next new item.
         /// It is the index immediately after the last-set item in the array.
         /// It thus also acts as an item count.
         /// </summary>
@@ -69,6 +63,7 @@ namespace Kernel.FOS_System.Collections
                 return nextIndex;
             }
         }
+
         public int Capacity
         {
             [Drivers.Compiler.Attributes.NoGC]
@@ -92,7 +87,7 @@ namespace Kernel.FOS_System.Collections
         /// Creates a new list with initial capacity of 5.
         /// </summary>
         [Drivers.Compiler.Attributes.NoDebug]
-        public List()
+        public UInt64List()
             : this(5)
         {
         }
@@ -101,7 +96,7 @@ namespace Kernel.FOS_System.Collections
         /// </summary>
         /// <param name="capacity">The initial capacity of the list.</param>
         [Drivers.Compiler.Attributes.NoDebug]
-        public List(int capacity)
+        public UInt64List(int capacity)
             : this(capacity, 5)
         {
         }
@@ -111,19 +106,19 @@ namespace Kernel.FOS_System.Collections
         /// <param name="capacity">The initial capacity of the list.</param>
         /// <param name="expandAmount">The amount to expand the list capacity by each time the capacity must be increased.</param>
         [Drivers.Compiler.Attributes.NoDebug]
-        public List(int capacity, int expandAmount)
+        public UInt64List(int capacity, int expandAmount)
         {
             //Create the internal array with specified capacity.
-            _array = new FOS_System.Object[capacity];
+            _array = new UInt64[capacity];
             ExpandAmount = expandAmount;
         }
 
         /// <summary>
-        /// Adds the specified object to the list.
+        /// Adds the specified UInt32 to the list.
         /// </summary>
-        /// <param name="obj">The object to add.</param>
+        /// <param name="obj">The UInt32 to add.</param>
         [Drivers.Compiler.Attributes.NoDebug]
-        public void Add(FOS_System.Object obj)
+        public void Add(UInt64 obj)
         {
             //If the next index to insert an item at is beyond the capacity of
             //  the array, we need to expand the array.
@@ -131,114 +126,66 @@ namespace Kernel.FOS_System.Collections
             {
                 ExpandCapacity(ExpandAmount);
             }
-            //Insert the object at the next index in the internal array then increment
+            //Insert the value at the next index in the internal array then increment
             //  next index 
             _array[nextIndex] = obj;
             nextIndex++;
         }
         /// <summary>
-        /// Removes the specified object from the list.
+        /// Removes the first equal value of the specified UInt64 from the list.
         /// </summary>
-        /// <param name="obj">The object to remove.</param>
+        /// <param name="obj">The UInt64 to remove.</param>
         [Drivers.Compiler.Attributes.NoDebug]
-        public void Remove(FOS_System.Object obj)
+        public void Remove(UInt64 obj)
         {
-            //Determines whether we should be setting the array entries
-            //  to null or not. After we have removed an item and shifted
-            //  existing items up in the array, all remaining unused entries
-            //  must be set to null.
             bool setObjectToNull = false;
-            //Store the current index. There is no point looping through the whole capacity
-            //  of the array, but we must at least loop through everything that has been set
-            //  including the last entry even after higher entries have been shifted or removed.
-            //Note: It would be invalid to use nextIndex+1 because that assumes an entry will 
-            //      be removed but if the object to remove is not in the list, it will not be
-            //      found and so nextIndex+1 would over-run the capacity of the list.
             int origNextIndex = nextIndex;
-            //Loop through all items in the array that have had a value set.
             for (int i = 0; i < origNextIndex; i++)
             {
-                //There are two scenarios here:
-                //  1) We are searching from the start of the list until we find
-                //     the item to be removed. Until we find the item, we don't need
-                //     to make any changes to the internal array.
-                //  2) Or, we have found the item to be removed and are in the process
-                //     of shifting entries up 1 in the array to remove the item.
                 if (_array[i] == obj || setObjectToNull)
                 {
-                    //If we are not setting objects to null, then "_array[i] == obj" must
-                    //  have been true i.e. the current search index is the index of the
-                    //  object to be removed. 
-                    //Note: This if block is just a more efficient way of writing:
-                    //                      if (_array[i] == obj)
                     if (!setObjectToNull)
                     {
-                        //Removing the object reduces the total count of objects by 1
                         nextIndex--;
                     }
 
-                    //We should now start shifting objects and setting entries to null
                     setObjectToNull = true;
 
-                    //If we are still within the (new) count of objects then simply shift the 
-                    //  next object up one in the list
                     if (i < nextIndex)
                     {
-                        //Set current index to next value in the list.
                         _array[i] = _array[i + 1];
                     }
                     else
                     {
-                        //Otherwise, just set the entry to null.
-                        //  This ensures values aren't randomly left with entries 
-                        //  in the top of the list.
-                        _array[i] = null;
+                        _array[i] = 0;
                     }
                 }
             }
         }
         /// <summary>
-        /// The removes the object at the specified index from the list.
+        /// The removes the UInt64 at the specified index from the list.
         /// </summary>
-        /// <param name="index">The index of the object to remove.</param>
+        /// <param name="index">The index of the UInt64 to remove.</param>
         [Drivers.Compiler.Attributes.NoDebug]
         public void RemoveAt(int index)
         {
-            //Throw and exception if the index to remove
-            //  at is beyond the length of the list
-            //Note: Beyond the length of the list not the capacity of the list.
             if (index >= nextIndex)
             {
                 ExceptionMethods.Throw(new Exceptions.IndexOutOfRangeException(index, nextIndex));
             }
 
-            //Note: Because we know our starting index, this algorithm is both different
-            //      and more efficient than the one in "Remove(obj)"
-
-            //Loop through all items that have had a value set, starting at index
-            //  through to the end of the list.
-            //Note: Because we decrement nextIndex after the loop has completed, this
-            //      loop will also cover the very last entry that had a value set which
-            //      must be set to null.
             for (int i = index; i < nextIndex; i++)
             {
-                //While there is an item after the current one
                 if (i < nextIndex - 1)
                 {
-                    //Shift the next item into the current one.
-                    //  Note: The first iteration of the loop thus removes the entry for the
-                    //        index to be removed. Subsequent iterations have the effect of
-                    //        moving all the items up the list by one.
                     _array[i] = _array[i + 1];
                 }
                 else
                 {
-                    //The last entry that was set must now be set to null.
-                    _array[i] = null;
+                    _array[i] = 0;
                 }
             }
 
-            //Now decrement the count (length of the list) by one
             nextIndex--;
         }
 
@@ -248,29 +195,37 @@ namespace Kernel.FOS_System.Collections
         /// </summary>
         /// <param name="obj">The object to search for.</param>
         /// <returns>The index or -1 if not found.</returns>
-        public int IndexOf(FOS_System.Object obj)
+        public int IndexOf(UInt64 obj)
         {
-            //This is a straight forward search. Other search algorithms
-            //  may be faster but quite frankly who cares. Optimising the compiler
-            //  ASM output would have a far greater effect than changing this
-            //  nice, simple algorithm.
             for (int i = 0; i < nextIndex; i++)
             {
-                if(_array[i] == obj)
+                if (_array[i] == obj)
                 {
                     return i;
                 }
             }
 
-            //As per C# (perhaps C?) standard (convention?)
             return -1;
         }
 
-        public FOS_System.Object Last()
+        public bool ContainsItemInRange(UInt64 start, UInt64 end)
+        {
+            for (int i = 0; i < nextIndex; i++)
+            {
+                UInt64 elem = _array[i];
+                if (elem >= start && elem < end)
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        public UInt64 Last()
         {
             if (nextIndex == 0)
             {
-                return null;
+                return 0;
             }
 
             return _array[nextIndex - 1];
@@ -284,10 +239,10 @@ namespace Kernel.FOS_System.Collections
         {
             //Reset the count to 0
             nextIndex = 0;
-            //Nice and simple again - just set everything to null :)
+            //Nice and simple again - just set everything to 0 :)
             for (int i = 0; i < nextIndex; i++)
             {
-                _array[i] = null;
+                _array[i] = 0;
             }
         }
 
@@ -298,38 +253,27 @@ namespace Kernel.FOS_System.Collections
         [Drivers.Compiler.Attributes.NoDebug]
         private void ExpandCapacity(int amount)
         {
-            //We need to expand the size of the internal array. Unfortunately, dynamic
-            //  expansion of an array to non-contiguous memory is not supported by my OS
-            //  or compiler because it's just too darn complicated. So, we must allocate
-            //  a new array and copy everything across.
-            
-            //Allocate the new, larger array
-            FOS_System.Object[] newArray = new FOS_System.Object[_array.Length + amount];
-            //Copy all the values across
+            UInt64[] newArray = new UInt64[_array.Length + amount];
             for (int i = 0; i < _array.Length; i++)
             {
                 newArray[i] = _array[i];
             }
-            //And set the internal array to the new, large array
             _array = newArray;
         }
 
         /// <summary>
-        /// Gets the object at the specified index.
+        /// Gets the UInt64 at the specified index.
         /// </summary>
-        /// <param name="index">The index of the object to get.</param>
-        /// <returns>The object at the specified index.</returns>
+        /// <param name="index">The index of the UInt64 to get.</param>
+        /// <returns>The UInt64 at the specified index.</returns>
         /// <exception cref="Kernel.FOS_System.Exceptions.IndexOutOfRangeException">
         /// Throws IndexOutOfRangeException if "index" is &lt; 0 or greater than the length of the list.
         /// </exception>
-        public FOS_System.Object this[int index]
+        public UInt64 this[int index]
         {
             [Drivers.Compiler.Attributes.NoDebug]
             get
             {
-                //Throw an exception if the index to get is beyond the length of
-                //  the list.
-                //Note: Beyond the length of the list not the capacity!
                 if (index >= nextIndex)
                 {
                     ExceptionMethods.Throw(new Exceptions.IndexOutOfRangeException(index, nextIndex));
