@@ -57,6 +57,11 @@ namespace Kernel.FOS_System.Processes.Synchronisation
         }
 
         [Drivers.Compiler.Attributes.NoDebug]
+        public SpinLock()
+            : this(-1)
+        {
+        }
+        [Drivers.Compiler.Attributes.NoDebug]
         public SpinLock(int anId)
         {
             id = anId;

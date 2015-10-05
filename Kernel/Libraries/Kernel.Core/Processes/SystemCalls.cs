@@ -106,7 +106,7 @@ namespace Kernel.Core.Processes
                 handlerProcess = (Process)ProcessManager.Processes[i];
                 if (handlerProcess.SyscallsToHandle.IsSet((int)syscallNumber))
                 {
-                    ProcessManager.SwitchProcess(handlerProcess.Id, -1);
+                    ProcessManager.SwitchProcess(handlerProcess.Id, ProcessManager.THREAD_DONT_CARE);
                     switched = true;
                     
 #if SYSCALLS_TRACE

@@ -306,7 +306,7 @@ namespace Kernel.Hardware.Processes
                 {
                     while (threadIdx >= ProcessManager.CurrentProcess.Threads.Count)
                     {
-                        threadIdx = NextThread(-1, processIdx);
+                        threadIdx = NextThread(ProcessManager.THREAD_DONT_CARE, processIdx);
 
                         if (threadIdx >= ProcessManager.CurrentProcess.Threads.Count)
                         {
@@ -363,7 +363,7 @@ namespace Kernel.Hardware.Processes
                 processIdx = 0;
             }
 
-            threadIdx = NextThread(-1, processIdx);
+            threadIdx = NextThread(ProcessManager.THREAD_DONT_CARE, processIdx);
         }
         [Drivers.Compiler.Attributes.NoDebug]
         [Drivers.Compiler.Attributes.NoGC]

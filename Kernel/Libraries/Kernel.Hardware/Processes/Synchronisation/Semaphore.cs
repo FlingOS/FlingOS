@@ -59,7 +59,7 @@ namespace Kernel.Hardware.Processes.Synchronisation
             }
         }
 
-        SpinLock ExclLock = new SpinLock(-1);
+        SpinLock ExclLock = new SpinLock();
         UInt64List WaitingThreads = new UInt64List();
 
         public UInt32List OwnerProcesses = new UInt32List(2);

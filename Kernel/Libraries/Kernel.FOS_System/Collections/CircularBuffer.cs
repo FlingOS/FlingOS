@@ -61,7 +61,7 @@ namespace Kernel.FOS_System.Collections
             }
         }
 
-        private Processes.Synchronisation.SpinLock AccessLock = new Processes.Synchronisation.SpinLock(-1);
+        private Processes.Synchronisation.SpinLock AccessLock = new Processes.Synchronisation.SpinLock();
 
         public CircularBuffer(int size)
             : this(size, true)

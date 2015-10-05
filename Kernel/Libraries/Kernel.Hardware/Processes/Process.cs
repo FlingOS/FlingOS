@@ -132,14 +132,14 @@ namespace Kernel.Hardware.Processes
 #endif
 
             // Create new heap lock
-            HeapLock = new SpinLock(-1);
+            HeapLock = new SpinLock();
             
 #if PROCESS_TRACE
             BasicConsole.WriteLine("Creating new GC lock...");
 #endif
 
             // Create new heap lock
-            GCLock = new SpinLock(-1);
+            GCLock = new SpinLock();
             
 #if PROCESS_TRACE
             BasicConsole.WriteLine("Allocating memory for heap...");

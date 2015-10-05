@@ -39,6 +39,8 @@ namespace Kernel.Hardware.Processes
 {
     public static unsafe class ProcessManager
     {
+        public const int THREAD_DONT_CARE = -1;
+
         public static List Processes = new List();
         public static Process CurrentProcess = null;
         public static Thread CurrentThread = null;
@@ -49,7 +51,7 @@ namespace Kernel.Hardware.Processes
         private static uint ProcessIdGenerator = 1;
 
         private static List Semaphores = new List(1024, 1024);
-        private static SpinLock SemaphoresLock = new SpinLock(-1);
+        private static SpinLock SemaphoresLock = new SpinLock();
 
         public static Process CreateProcess(ThreadStartMethod MainMethod, FOS_System.String Name, bool UserMode)
         {
@@ -138,7 +140,7 @@ namespace Kernel.Hardware.Processes
                 CurrentProcess.Id == processId)
             {
                 if (CurrentThread != null &&
-                    (CurrentThread.Id == threadId || threadId == -1))
+                    (CurrentThread.Id == threadId || threadId == THREAD_DONT_CARE))
                 {
 #if PROCESSMANAGER_SWITCH_TRACE
                     BasicConsole.WriteLine("No switch. (1)");
@@ -185,7 +187,7 @@ namespace Kernel.Hardware.Processes
             CurrentThread = null;
             CurrentThread_State = null;
 
-            if (threadId == -1)
+            if (threadId == THREAD_DONT_CARE)
             {
                 if (CurrentProcess.Threads.Count > 0)
                 {

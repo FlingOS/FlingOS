@@ -95,10 +95,10 @@ namespace Kernel.FOS_System
 
             Enabled = true;
 
-            Heap.AccessLock = new SpinLock(-1);
+            Heap.AccessLock = new SpinLock();
             Heap.AccessLockInitialised = true;
 
-            AccessLock = new SpinLock(-1);
+            AccessLock = new SpinLock();
             GCAccessLockInitialised = true;
         }
 
