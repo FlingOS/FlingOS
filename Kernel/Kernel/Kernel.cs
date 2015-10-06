@@ -203,9 +203,8 @@ namespace Kernel
                 KernelProcess.HeapPtr = Heap.FBlock;
 
                 BasicConsole.WriteLine("Initialising kernel process GC...");
-                KernelProcess.GCLock = FOS_System.GC.AccessLock;
-                KernelProcess.GCCleanupListPtr = FOS_System.GC.CleanupList;
-
+                KernelProcess.TheGCState = FOS_System.GC.State;
+                
                 BasicConsole.WriteLine("Registering kernel process...");
                 ProcessManager.RegisterProcess(KernelProcess, Scheduler.Priority.Normal);
 

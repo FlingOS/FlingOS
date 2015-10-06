@@ -46,41 +46,243 @@ namespace Kernel.FOS_System
     /// </remarks>
     public static unsafe class GC
     {
-        /// <summary>
-        /// The total number of objects currently allocated by the GC.
-        /// </summary>
-        public static int NumObjs = 0;
+        //TODO - GC needs an object reference tree to do a thorough scan to find reference loops
+
         /// <summary>
         /// Whether the GC has been initialised yet or not.
         /// Used to prevent the GC running before it has been initialised properly.
         /// </summary>
-        private static bool Enabled = false;
-        /// <summary>
-        /// Whether the GC is currently executing. Used to prevent the GC calling itself (or ending up in loops with
-        /// called methods re-calling the GC!)
-        /// </summary>
-        public static bool InsideGC = false;
+        public static bool Enabled = false;
 
-        public static bool OutputTrace = false;
+        private static GCState state;
+        public static GCState State
+        {
+            get
+            {
+                return state;
+            }
+            set
+            {
+                state = value;
+            }
+        }
 
-        private static FOS_System.String lastEnabler = "";
-        private static FOS_System.String lastDisabler = "";
-        private static FOS_System.String lastLocker = "[NEVER SET]";
+        private static bool StateInitialised
+        {
+            [Drivers.Compiler.Attributes.NoGC]
+            get
+            {
+                return state != null;
+            }
+        }
+        public static bool OutputTrace
+        {
+            [Drivers.Compiler.Attributes.NoGC]
+            get
+            {
+                if (StateInitialised)
+                {
+                    return state.OutputTrace;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+            [Drivers.Compiler.Attributes.NoGC]
+            set
+            {
+                if (StateInitialised)
+                {
+                    state.OutputTrace = value;
+                }
+            }
+        }
+        public static bool InsideGC
+        {
+            [Drivers.Compiler.Attributes.NoGC]
+            get
+            {
+                if (StateInitialised)
+                {
+                    return state.InsideGC;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+            [Drivers.Compiler.Attributes.NoGC]
+            set
+            {
+                if (StateInitialised)
+                {
+                    state.InsideGC = value;
+                }
+            }
+        }
+        public static bool AccessLockInitialised
+        {
+            [Drivers.Compiler.Attributes.NoGC]
+            get
+            {
+                if (StateInitialised)
+                {
+                    return state.AccessLockInitialised;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+        }
+        public static SpinLock AccessLock
+        {
+            [Drivers.Compiler.Attributes.NoGC]
+            get
+            {
+                if (StateInitialised)
+                {
+                    return state.AccessLock;
+                }
+                return null;
+            }
+        }
 
-        public static SpinLock AccessLock;
-        private static bool AccessLockInitialised = false;
+        public static int NumObjs
+        {
+            [Drivers.Compiler.Attributes.NoGC]
+            get
+            {
+                if (StateInitialised)
+                {
+                    return state.NumObjs;
+                }
+                else
+                {
+                    return 0;
+                }
+            }
+            [Drivers.Compiler.Attributes.NoGC]
+            set
+            {
+                if (StateInitialised)
+                {
+                    state.NumObjs = value;
+                }
+            }
+        }
+        public static int NumStrings
+        {
+            [Drivers.Compiler.Attributes.NoGC]
+            get
+            {
+                if (StateInitialised)
+                {
+                    return state.NumStrings;
+                }
+                else
+                {
+                    return 0;
+                }
+            }
+            [Drivers.Compiler.Attributes.NoGC]
+            set
+            {
+                if (StateInitialised)
+                {
+                    state.NumStrings = value;
+                }
+            }
+        }
 
-        /// <summary>
-        /// The number of strings currently allocated on the heap.
-        /// </summary>
-        public static int NumStrings = 0;
+        public static FOS_System.String lastEnabler
+        {
+            get
+            {
+                if (StateInitialised)
+                {
+                    return state.lastEnabler;
+                }
+                else
+                {
+                    return "";
+                }
+            }
+            set
+            {
+                if (StateInitialised)
+                {
+                    state.lastEnabler = value;
+                }
+            }
+        }
+        public static FOS_System.String lastDisabler
+        {
+            get
+            {
+                if (StateInitialised)
+                {
+                    return state.lastDisabler;
+                }
+                else
+                {
+                    return "";
+                }
+            }
+            set
+            {
+                if (StateInitialised)
+                {
+                    state.lastDisabler = value;
+                }
+            }
+        }
+        public static FOS_System.String lastLocker
+        {
+            get
+            {
+                if (StateInitialised)
+                {
+                    return state.lastLocker;
+                }
+                else
+                {
+                    return "";
+                }
+            }
+            set
+            {
+                if (StateInitialised)
+                {
+                    state.lastLocker = value;
+                }
+            }
+        }
 
-        /// <summary>
-        /// The linked-list of objects to clean up.
-        /// </summary>
-        public static ObjectToCleanup* CleanupList;
-
-        //TODO - GC needs an object reference tree to do a thorough scan to find reference loops
+        public static ObjectToCleanup* CleanupList
+        {
+            [Drivers.Compiler.Attributes.NoGC]
+            get
+            {
+                if (StateInitialised)
+                {
+                    return state.CleanupList;
+                }
+                else
+                {
+                    return null;
+                }
+            }
+            [Drivers.Compiler.Attributes.NoGC]
+            set
+            {
+                if (StateInitialised)
+                {
+                    state.CleanupList = value;
+                }
+            }
+        }
 
         /// <summary>
         /// Intialises the GC.
@@ -95,22 +297,24 @@ namespace Kernel.FOS_System
 
             Enabled = true;
 
-            Init();
-        }
-
-        public static void Init()
-        {
             Heap.AccessLock = new SpinLock();
             Heap.AccessLockInitialised = true;
 
-            GC.AccessLock = new SpinLock();
-            GC.AccessLockInitialised = true;
+            GC.state = new GCState();
+            GC.state.AccessLock = new SpinLock();
+            GC.state.AccessLockInitialised = true;
+
+            if ((uint)GC.state.CleanupList == 0xFFFFFFFF)
+            {
+                BasicConsole.WriteLine(" !!! PANIC !!! ");
+                BasicConsole.WriteLine(" GC.state.CleanupList is 0xFFFFFFFF NOT null!");
+                BasicConsole.WriteLine(" !-!-!-!-!-!-! ");
+            }
         }
-        public static void Load(ObjectToCleanup* cleanupList, SpinLock accessLock)
+
+        public static void Load(GCState newState)
         {
-            CleanupList = cleanupList;
-            AccessLock = accessLock;
-            AccessLockInitialised = (AccessLock != null);
+            state = newState;
         }
 
         public static void Enable(FOS_System.String caller)
@@ -731,12 +935,12 @@ namespace Kernel.FOS_System
                     {
                         BasicConsole.WriteLine(" > Item not null.");
 
-                        ExitCritical();
-                        BasicConsole.Write(" > Item: ");
-                        BasicConsole.WriteLine((uint)currObjToCleanupPtr);
-                        BasicConsole.Write(" > Prev: ");
-                        BasicConsole.WriteLine((uint)currObjToCleanupPtr->prevPtr);
-                        EnterCritical("Cleanup - Post write");
+                        FOS_System.String str1 = " > Item: 0x        ";
+                        FOS_System.String str2 = " > Prev: 0x        ";
+                        ExceptionMethods.FillString((uint)currObjToCleanupPtr, 18, str1);
+                        ExceptionMethods.FillString((uint)currObjToCleanupPtr->prevPtr, 18, str2);
+                        BasicConsole.WriteLine(str1);
+                        BasicConsole.WriteLine(str2);
                     }
 
                     GCHeader* objHeaderPtr = currObjToCleanupPtr->objHeaderPtr;
@@ -864,7 +1068,7 @@ namespace Kernel.FOS_System
 
             try
             {
-                ObjectToCleanup* newObjToCleanupPtr = (ObjectToCleanup*)Heap.Alloc((uint)sizeof(ObjectToCleanup), "GC : AddObjectToCleanup");
+                ObjectToCleanup* newObjToCleanupPtr = (ObjectToCleanup*)Heap.AllocZeroed((uint)sizeof(ObjectToCleanup), "GC : AddObjectToCleanup");
                 newObjToCleanupPtr->objHeaderPtr = objHeaderPtr;
                 newObjToCleanupPtr->objPtr = objPtr;
 
@@ -944,6 +1148,37 @@ namespace Kernel.FOS_System
             
             Heap.Free(objToCleanupPtr);
         }
+    }
+    public unsafe class GCState : FOS_System.Object
+    {
+        /// <summary>
+        /// Whether the GC is currently executing. Used to prevent the GC calling itself (or ending up in loops with
+        /// called methods re-calling the GC!)
+        /// </summary>
+        public bool InsideGC = false;
+
+        public bool OutputTrace = false;
+
+        public FOS_System.String lastEnabler = "";
+        public FOS_System.String lastDisabler = "";
+        public FOS_System.String lastLocker = "[NEVER SET]";
+
+        public SpinLock AccessLock = null;
+        public bool AccessLockInitialised = false;
+
+        /// <summary>
+        /// The total number of objects currently allocated by the GC.
+        /// </summary>
+        public int NumObjs = 0;
+        /// <summary>
+        /// The number of strings currently allocated on the heap.
+        /// </summary>
+        public int NumStrings = 0;
+
+        /// <summary>
+        /// The linked-list of objects to clean up.
+        /// </summary>
+        public ObjectToCleanup* CleanupList = null;
     }
     
     /// <summary>

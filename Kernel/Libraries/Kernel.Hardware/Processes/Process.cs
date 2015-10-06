@@ -62,9 +62,7 @@ namespace Kernel.Hardware.Processes
 
         public FOS_System.HeapBlock* HeapPtr = null;
         public SpinLock HeapLock = null;
-        public FOS_System.ObjectToCleanup* GCCleanupListPtr = null;
-        public SpinLock GCLock = null;
-        public bool InsideGC = false;
+        public FOS_System.GCState TheGCState = null;
         public bool OutputMemTrace = false;
 
         public Process(ThreadStartMethod MainMethod, uint AnId, FOS_System.String AName, bool userMode, bool createHeap)
@@ -178,25 +176,75 @@ namespace Kernel.Hardware.Processes
             // Set heap pointer
             HeapPtr = heapPtr;
         }
+        public void InitHeap()
+        {
+#if PROCESS_TRACE
+            BasicConsole.WriteLine(" > Initialising process heap...");
+            if (FOS_System.GC.State != null)
+            {
+                BasicConsole.WriteLine(" > !! GC State not null!");
+            }
+            else
+            {
+                BasicConsole.WriteLine(" > GC State null as expected.");
+            }
+
+            BasicConsole.WriteLine(" >> Creating heap lock...");
+#endif
+            HeapLock = new SpinLock();
+#if PROCESS_TRACE
+            BasicConsole.WriteLine(" >> Setting heap lock...");
+#endif
+            FOS_System.Heap.AccessLock = HeapLock;
+#if PROCESS_TRACE
+            BasicConsole.WriteLine(" >> Setting heap lock initialised...");
+#endif
+            FOS_System.Heap.AccessLockInitialised = true;
+            
+#if PROCESS_TRACE
+            BasicConsole.WriteLine(" >> Creating new GC state...");
+#endif
+            TheGCState = new FOS_System.GCState();
+
+            if ((uint)TheGCState.CleanupList == 0xFFFFFFFF)
+            {
+                BasicConsole.WriteLine(" !!! PANIC !!! ");
+                BasicConsole.WriteLine(" GC.state.CleanupList is 0xFFFFFFFF NOT null!");
+                BasicConsole.WriteLine(" !-!-!-!-!-!-! ");
+            }
+#if PROCESS_TRACE
+            BasicConsole.WriteLine(" >> Creating new GC lock...");
+#endif
+            TheGCState.AccessLock = new SpinLock();
+#if PROCESS_TRACE
+            BasicConsole.WriteLine(" >> Setting GC lock initialised...");
+#endif
+            TheGCState.AccessLockInitialised = true;
+#if PROCESS_TRACE
+            BasicConsole.WriteLine(" >> Setting GC state...");
+#endif
+            FOS_System.GC.State = TheGCState;
+#if PROCESS_TRACE
+            BasicConsole.WriteLine(" >> Done.");
+#endif
+        }
         public void UnloadHeap()
         {
-            InsideGC = FOS_System.GC.InsideGC;
-
             FOS_System.Heap.OutputTrace = OutputMemTrace;
             FOS_System.GC.OutputTrace = OutputMemTrace;
         }
         public void LoadHeap()
         {
-            FOS_System.Heap.name = ProcessManager.CurrentProcess.Name;
-            FOS_System.Heap.OutputTrace = OutputMemTrace;
-            FOS_System.GC.OutputTrace = OutputMemTrace;
-
             if (HeapPtr != null)
             {
-                FOS_System.GC.InsideGC = InsideGC;
                 FOS_System.Heap.Load(HeapPtr, HeapLock);
-                FOS_System.GC.Load(GCCleanupListPtr, GCLock);
+                FOS_System.GC.Load(TheGCState);
+
+                FOS_System.GC.OutputTrace = OutputMemTrace;
             }
+
+            FOS_System.Heap.name = ProcessManager.CurrentProcess.Name;
+            FOS_System.Heap.OutputTrace = OutputMemTrace;
         }
 
         public virtual void LoadMemLayout()

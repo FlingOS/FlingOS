@@ -12,15 +12,16 @@ namespace Kernel.Core.Tasks
         {
             BasicConsole.WriteLine("Device Manager started.");
 
-            //FOS_System.GC.Init();
-            //if (SystemCallMethods.CreateThread(GCCleanupTask.Main) != SystemCallResults.OK)
-            //{
-            //    BasicConsole.WriteLine("Device Manager: GC thread failed to create!");
-            //}
+            Hardware.Processes.ProcessManager.CurrentProcess.InitHeap();
+            if (SystemCallMethods.CreateThread(GCCleanupTask.Main) != SystemCallResults.OK)
+            {
+                BasicConsole.WriteLine("Window Manager: GC thread failed to create!");
+            }
 
             while (!Terminating)
             {
                 //TODO
+                testclass x = new testclass();
 
                 SystemCallMethods.Sleep(10000);
             }

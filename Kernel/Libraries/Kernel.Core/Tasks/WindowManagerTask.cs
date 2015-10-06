@@ -16,7 +16,7 @@ namespace Kernel.Core.Tasks
         {
             BasicConsole.WriteLine("Window Manager: Started.");
 
-            FOS_System.GC.Init();
+            Hardware.Processes.ProcessManager.CurrentProcess.InitHeap();
             if (SystemCallMethods.CreateThread(GCCleanupTask.Main) != SystemCallResults.OK)
             {
                 BasicConsole.WriteLine("Window Manager: GC thread failed to create!");

@@ -61,7 +61,7 @@ namespace Kernel.Core.Tasks
 
                 BasicConsole.WriteLine(" > Starting Window Manager...");
                 Process WindowManagerProcess = ProcessManager.CreateProcess(WindowManagerTask.Main, "Window Manager", false, true);
-                WindowManagerProcess.OutputMemTrace = true;
+                //WindowManagerProcess.OutputMemTrace = true;
                 ProcessManager.RegisterProcess(WindowManagerProcess, Scheduler.Priority.Normal);
 
                 //TODO: Main task for commands etc

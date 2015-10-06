@@ -100,7 +100,7 @@ namespace Kernel.FOS_System
         public static FOS_System.String name = "[UNINITIALISED]";
 
         public static SpinLock AccessLock;
-        internal static bool AccessLockInitialised = false;
+        public static bool AccessLockInitialised = false;
 
         [Drivers.Compiler.Attributes.NoDebug]
         [Drivers.Compiler.Attributes.NoGC]
