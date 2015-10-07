@@ -38,7 +38,7 @@ namespace Kernel.Core.Tasks
                 Core.Processes.SystemCalls.Init();
 
                 ProcessManager.CurrentProcess.SyscallHandler = SyscallHandler;
-                ProcessManager.CurrentProcess.SyscallsToHandle.Set((int)SystemCallNumbers.Sleep);
+                ProcessManager.CurrentProcess.SyscallsToHandle.Set((int)SystemCallNumbers.SleepThread);
                 ProcessManager.CurrentProcess.SyscallsToHandle.Set((int)SystemCallNumbers.RegisterSyscallHandler);
                 ProcessManager.CurrentProcess.SyscallsToHandle.Set((int)SystemCallNumbers.DeregisterSyscallHandler);
                 ProcessManager.CurrentProcess.SyscallsToHandle.Set((int)SystemCallNumbers.StartThread);
@@ -73,12 +73,7 @@ namespace Kernel.Core.Tasks
                 int x = 0;
                 while (!Terminating)
                 {
-                    SystemCallMethods.Sleep(100);
-
-                    if (SystemCallMethods.Ping() == SystemCallResults.Unhandled)
-                    {
-                        BasicConsole.WriteLine("Ping failed. (" + (FOS_System.String)x++ + ")");
-                    }
+                    SystemCallMethods.SleepThread(1000);
                 }
 
                 //BasicConsole.WriteLine(" > Starting Non-critical interrupts task...");

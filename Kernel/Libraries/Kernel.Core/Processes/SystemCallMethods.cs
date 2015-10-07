@@ -4,12 +4,6 @@ namespace Kernel.Core.Processes
 {
     public static unsafe class SystemCallMethods
     {
-        [Drivers.Compiler.Attributes.NoDebug]
-        [Drivers.Compiler.Attributes.NoGC]
-        static SystemCallMethods()
-        {
-        }
-
         [Drivers.Compiler.Attributes.PluggedMethod(ASMFilePath = @"ASM\SystemCallMethods")]
         public static void Call(SystemCallNumbers callNumber,
             uint Param1,
@@ -21,19 +15,7 @@ namespace Kernel.Core.Processes
             ref uint Return4)
         {
         }
-
-        [Drivers.Compiler.Attributes.NoDebug]
-        [Drivers.Compiler.Attributes.NoGC]
-        public static SystemCallResults Sleep(int ms)
-        {
-            uint Return1 = 0;
-            uint Return2 = 0;
-            uint Return3 = 0;
-            uint Return4 = 0;
-            Call(SystemCallNumbers.Sleep, (uint)ms, 0, 0, ref Return1, ref Return2, ref Return3, ref Return4);
-            return (SystemCallResults)Return1;
-        }
-
+        
         [Drivers.Compiler.Attributes.NoDebug]
         [Drivers.Compiler.Attributes.NoGC]
         public static SystemCallResults RegisterSyscallHandler(SystemCallNumbers syscall)
@@ -70,7 +52,7 @@ namespace Kernel.Core.Processes
 
         [Drivers.Compiler.Attributes.NoDebug]
         [Drivers.Compiler.Attributes.NoGC]
-        public static SystemCallResults CreateThread(Kernel.Hardware.Processes.ThreadStartMethod startMethod)
+        public static SystemCallResults StartThread(Kernel.Hardware.Processes.ThreadStartMethod startMethod)
         {
             uint Return1 = 0;
             uint Return2 = 0;
@@ -79,18 +61,18 @@ namespace Kernel.Core.Processes
             Call(SystemCallNumbers.StartThread, (uint)Utilities.ObjectUtilities.GetHandle(startMethod), 0, 0, ref Return1, ref Return2, ref Return3, ref Return4);
             return (SystemCallResults)Return1;
         }
-
         [Drivers.Compiler.Attributes.NoDebug]
         [Drivers.Compiler.Attributes.NoGC]
-        public static SystemCallResults Ping()
+        public static SystemCallResults SleepThread(int ms)
         {
             uint Return1 = 0;
             uint Return2 = 0;
             uint Return3 = 0;
             uint Return4 = 0;
-            Call(SystemCallNumbers.Semaphore, 0, 0, 0, ref Return1, ref Return2, ref Return3, ref Return4);
+            Call(SystemCallNumbers.SleepThread, (uint)ms, 0, 0, ref Return1, ref Return2, ref Return3, ref Return4);
             return (SystemCallResults)Return1;
         }
+        
 
 
 
@@ -101,17 +83,16 @@ namespace Kernel.Core.Processes
 
 
 
-
-        [Drivers.Compiler.Attributes.NoDebug]
-        [Drivers.Compiler.Attributes.NoGC]
-        public static uint RequestPages(int numPages)
-        {
-            uint Return1 = 0;
-            uint Return2 = 0;
-            uint Return3 = 0;
-            uint Return4 = 0;
-            Call(SystemCallNumbers.RequestPages, (uint)numPages, 0, 0, ref Return1, ref Return2, ref Return3, ref Return4);
-            return Return1;
-        }
+        //[Drivers.Compiler.Attributes.NoDebug]
+        //[Drivers.Compiler.Attributes.NoGC]
+        //public static uint RequestPages(int numPages)
+        //{
+        //    uint Return1 = 0;
+        //    uint Return2 = 0;
+        //    uint Return3 = 0;
+        //    uint Return4 = 0;
+        //    Call(SystemCallNumbers.RequestPages, (uint)numPages, 0, 0, ref Return1, ref Return2, ref Return3, ref Return4);
+        //    return Return1;
+        //}
     }
 }

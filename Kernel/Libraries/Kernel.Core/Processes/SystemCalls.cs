@@ -201,7 +201,7 @@ namespace Kernel.Core.Processes
             
             switch ((SystemCallNumbers)syscallNumber)
             {
-                case SystemCallNumbers.Sleep:
+                case SystemCallNumbers.SleepThread:
 #if SYSCALLS_TRACE
                     BasicConsole.WriteLine("System call : Sleep");
 #endif

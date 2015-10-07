@@ -17,7 +17,7 @@ namespace Kernel.Core.Tasks
             BasicConsole.WriteLine("Window Manager: Started.");
 
             Hardware.Processes.ProcessManager.CurrentProcess.InitHeap();
-            if (SystemCallMethods.CreateThread(GCCleanupTask.Main) != SystemCallResults.OK)
+            if (SystemCallMethods.StartThread(GCCleanupTask.Main) != SystemCallResults.OK)
             {
                 BasicConsole.WriteLine("Window Manager: GC thread failed to create!");
             }
@@ -25,13 +25,13 @@ namespace Kernel.Core.Tasks
             int loops = 0;
             ScreenOutput = new Consoles.AdvancedConsole();
 
-            SystemCallMethods.RegisterSyscallHandler(SystemCallNumbers.Semaphore, SyscallHandler);
+            //SystemCallMethods.RegisterSyscallHandler(SystemCallNumbers.Semaphore, SyscallHandler);
 
-            if (SystemCallMethods.CreateThread(TestThread) != SystemCallResults.OK)
+            if (SystemCallMethods.StartThread(TestThread) != SystemCallResults.OK)
             {
                 BasicConsole.WriteLine("Window Manager: Test thread failed to create!");
             }
-            if (SystemCallMethods.CreateThread(TestThread2) != SystemCallResults.OK)
+            if (SystemCallMethods.StartThread(TestThread2) != SystemCallResults.OK)
             {
                 BasicConsole.WriteLine("Window Manager: Test thread 2 failed to create!");
             }
@@ -70,7 +70,7 @@ namespace Kernel.Core.Tasks
                     ScreenOutput.Write("WM > Number of strings: ");
                     ScreenOutput.WriteLine_AsDecimal(FOS_System.GC.NumStrings);
 
-                    SystemCallMethods.Sleep(500);
+                    SystemCallMethods.SleepThread(500);
 
                     loops++;
                 }
@@ -89,7 +89,7 @@ namespace Kernel.Core.Tasks
                 {
                     //BasicConsole.WriteLine("WM > Test Thread");
                     TestThread_Loops++;
-                    SystemCallMethods.Sleep(100);
+                    SystemCallMethods.SleepThread(100);
                 }
                 catch
                 {
@@ -106,7 +106,7 @@ namespace Kernel.Core.Tasks
                 {
                     //BasicConsole.WriteLine("WM > Test Thread 2");
                     TestThread2_Loops++;
-                    SystemCallMethods.Sleep(100);
+                    SystemCallMethods.SleepThread(100);
                 }
                 catch
                 {
@@ -123,10 +123,10 @@ namespace Kernel.Core.Tasks
 
             switch((SystemCallNumbers)syscallNumber)
             {
-                case SystemCallNumbers.Semaphore:
-                    Pings++;
-                    result = SystemCallResults.OK;
-                    break;
+                //case SystemCallNumbers.Semaphore:
+                //    Pings++;
+                //    result = SystemCallResults.OK;
+                //    break;
             }
 
             return (int)result;

@@ -95,6 +95,7 @@
     <Compile Include="Collections\DelegateList.cs" />
     <Compile Include="Collections\Dictionary.cs" />
     <Compile Include="Collections\List.cs" />
+    <Compile Include="Collections\Queue.cs" />
     <Compile Include="Collections\Stack.cs" />
     <Compile Include="Collections\UInt32List.cs" />
     <Compile Include="Collections\UInt64List.cs" />

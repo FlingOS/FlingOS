@@ -13,7 +13,7 @@ namespace Kernel.Core.Tasks
             BasicConsole.WriteLine("Device Manager started.");
 
             Hardware.Processes.ProcessManager.CurrentProcess.InitHeap();
-            if (SystemCallMethods.CreateThread(GCCleanupTask.Main) != SystemCallResults.OK)
+            if (SystemCallMethods.StartThread(GCCleanupTask.Main) != SystemCallResults.OK)
             {
                 BasicConsole.WriteLine("Window Manager: GC thread failed to create!");
             }
@@ -23,7 +23,7 @@ namespace Kernel.Core.Tasks
                 //TODO
                 testclass x = new testclass();
 
-                SystemCallMethods.Sleep(10000);
+                SystemCallMethods.SleepThread(10000);
             }
         }
     }
