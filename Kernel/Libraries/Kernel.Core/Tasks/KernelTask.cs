@@ -41,7 +41,7 @@ namespace Kernel.Core.Tasks
                 ProcessManager.CurrentProcess.SyscallsToHandle.Set((int)SystemCallNumbers.Sleep);
                 ProcessManager.CurrentProcess.SyscallsToHandle.Set((int)SystemCallNumbers.RegisterSyscallHandler);
                 ProcessManager.CurrentProcess.SyscallsToHandle.Set((int)SystemCallNumbers.DeregisterSyscallHandler);
-                ProcessManager.CurrentProcess.SyscallsToHandle.Set((int)SystemCallNumbers.CreateThread);
+                ProcessManager.CurrentProcess.SyscallsToHandle.Set((int)SystemCallNumbers.StartThread);
                 
                 //ProcessManager.CurrentProcess.OutputMemTrace = true;
 
@@ -176,7 +176,7 @@ namespace Kernel.Core.Tasks
 
             switch (syscallNumber)
             {
-                case SystemCallNumbers.CreateThread:
+                case SystemCallNumbers.StartThread:
                     BasicConsole.WriteLine("DSC: Create Thread");
                     CallerProcess.CreateThread((ThreadStartMethod)Utilities.ObjectUtilities.GetObject((void*)Param1));
                     BasicConsole.WriteLine("DSC: Create Thread - done.");

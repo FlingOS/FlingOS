@@ -222,7 +222,7 @@ namespace Kernel.Core.Processes
                     SysCall_DeregisterSyscallHandler((int)param1, callerProcesId);
                     result = SystemCallResults.OK;
                     break;
-                case SystemCallNumbers.CreateThread:
+                case SystemCallNumbers.StartThread:
 #if SYSCALLS_TRACE
                     BasicConsole.WriteLine("System call : Create Thread");
 #endif
@@ -353,18 +353,39 @@ namespace Kernel.Core.Processes
     public enum SystemCallNumbers : uint
     {
         INVALID = 0,
-        Sleep = 1,
-        PlayNote = 2,
-        Semaphore = 3,
-        Thread = 4,
-        RequestPages = 5,
         RegisterISRHandler,
         DeregisterISRHandler,
         RegisterIRQHandler,
         DeregisterIRQHandler,
         RegisterSyscallHandler,
         DeregisterSyscallHandler,
-        CreateThread
+        RequestPage,
+        UnmapPage,
+        SharePage,
+        StartProcess,
+        EndProcess,
+        SetProcessAttributes,
+        GetProcessList,
+        WaitOnProcess,
+        StartThread,
+        EndThread,
+        SetThreadAttributes,
+        GetThreadList,
+        WaitOnThread,
+        SleepThread,
+        CreateSemaphore,
+        ReleaseSemaphore,
+        WaitSemaphore,
+        SignalSemaphore,
+        GetTime,
+        SetTime,
+        GetUpTime,
+        RegisterPipeEndpoint,
+        GetPipeEndpoints,
+        CreatePipe,
+        WaitOnPipeCreate,
+        ReadPipe,
+        WritePipe
     }
     public enum SystemCallResults : int
     {
@@ -372,6 +393,8 @@ namespace Kernel.Core.Processes
         OK = 0,
         Deferred = 1
     }
+
+
 
     public enum SemaphoreRequests
     {

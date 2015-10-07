@@ -76,7 +76,7 @@ namespace Kernel.Core.Processes
             uint Return2 = 0;
             uint Return3 = 0;
             uint Return4 = 0;
-            Call(SystemCallNumbers.CreateThread, (uint)Utilities.ObjectUtilities.GetHandle(startMethod), 0, 0, ref Return1, ref Return2, ref Return3, ref Return4);
+            Call(SystemCallNumbers.StartThread, (uint)Utilities.ObjectUtilities.GetHandle(startMethod), 0, 0, ref Return1, ref Return2, ref Return3, ref Return4);
             return (SystemCallResults)Return1;
         }
 
