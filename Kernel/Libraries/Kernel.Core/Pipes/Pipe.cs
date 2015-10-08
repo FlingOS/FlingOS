@@ -57,4 +57,16 @@ namespace Kernel.Core.Pipes
             return false;
         }
     }
+
+    public struct CreatePipeRequest
+    {
+        public int BufferSize;
+        public PipeClasses Class;
+        public PipeSubclasses Subclass;
+        public PipeDescriptor Result;
+    }
+    public struct PipeDescriptor
+    {
+        public int Id;
+    }
 }

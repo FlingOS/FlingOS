@@ -106,10 +106,51 @@ namespace Kernel.Core.Pipes
             return true;
         }
         
-        public static bool CreatePipe(uint InProcessId, uint OutProcessId, PipeClasses Class, PipeSubclasses Subclass, out Pipe pipe)
+        public static bool CreatePipe(uint InProcessId, uint OutProcessId, CreatePipeRequest* request)
         {
-            pipe = null;
-            return false;
+            // Validate inputs
+            if (ProcessManager.GetProcessById(InProcessId) == null)
+            {
+                return false;
+            }
+            else if (ProcessManager.GetProcessById(InProcessId) == null)
+            {
+                return false;
+            }
+            
+            // Find the outpoint
+            PipeOutpoint outpoint = null;
+            for (int i = 0; i < PipeOutpoints.Count; i++)
+            {
+                PipeOutpoint anOutpoint = (PipeOutpoint)PipeOutpoints[i];
+
+                if (anOutpoint.ProcessId == OutProcessId &&
+                    anOutpoint.Class == request->Class &&
+                    anOutpoint.Subclass == request->Subclass)
+                {
+                    outpoint = anOutpoint;
+                    break;
+                }
+            }
+
+            // Check that we actually found the outpoint
+            if (outpoint == null)
+            {
+                return false;
+            }
+
+            // Create new inpoint
+            PipeInpoint inpoint = new PipeInpoint(InProcessId, request->Class, request->Subclass);
+
+            // Create new pipe
+            Pipe pipe = new Pipe(PipeIdGenerator++, outpoint, inpoint, request->BufferSize);
+            // Add new pipe to list of pipes
+            Pipes.Add(pipe);
+
+            // Set result information
+            request->Result.Id = pipe.Id;
+
+            return true;
         }
         public static bool WaitOnPipeCreate(uint OutProcessId, PipeClasses Class, PipeSubclasses Subclass)
         {

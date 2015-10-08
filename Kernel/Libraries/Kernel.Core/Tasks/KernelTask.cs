@@ -217,9 +217,11 @@ namespace Kernel.Core.Tasks
                 case SystemCallNumbers.GetPipeOutpoints:
                     {
                         BasicConsole.WriteLine("DSC: Get Pipe Outpoints");
+                        
+                        // Need access to calling process' memory to be able to set values in request structure(s)
                         MemoryLayout OriginalMemoryLayout = EnableAccessToMemoryOfProcess(CallerProcess);
-                        Pipes.PipeOutpointsRequest* RequestPtr = (Pipes.PipeOutpointsRequest*)Param3;
-                        bool obtained = Pipes.PipeManager.GetPipeOutpoints((Pipes.PipeClasses)Param1, (Pipes.PipeSubclasses)Param2, RequestPtr);
+
+                        bool obtained = Pipes.PipeManager.GetPipeOutpoints((Pipes.PipeClasses)Param1, (Pipes.PipeSubclasses)Param2, (Pipes.PipeOutpointsRequest*)Param3);
                         if (obtained)
                         {
                             result = SystemCallResults.OK;
@@ -228,7 +230,31 @@ namespace Kernel.Core.Tasks
                         {
                             result = SystemCallResults.Fail;
                         }
+                        
                         DisableAccessToMemoryOfProcess(OriginalMemoryLayout);
+                        
+                        BasicConsole.WriteLine("DSC: Get Pipe Outpoints - done");
+                    }
+                    break;
+                case SystemCallNumbers.CreatePipe:
+                    {
+                        BasicConsole.WriteLine("DSC: Create Pipe");
+
+                        // Need access to calling process' memory to be able to set values in request structure(s)
+                        MemoryLayout OriginalMemoryLayout = EnableAccessToMemoryOfProcess(CallerProcess);
+
+                        bool created = Pipes.PipeManager.CreatePipe(CallerProcess.Id, Param1, (Pipes.CreatePipeRequest*)Param2);
+                        if (created)
+                        {
+                            result = SystemCallResults.OK;
+                        }
+                        else
+                        {
+                            result = SystemCallResults.Fail;
+                        }
+
+                        DisableAccessToMemoryOfProcess(OriginalMemoryLayout);
+
                         BasicConsole.WriteLine("DSC: Get Pipe Outpoints - done");
                     }
                     break;
