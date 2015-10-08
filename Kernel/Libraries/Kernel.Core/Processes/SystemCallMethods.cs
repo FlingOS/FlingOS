@@ -4,6 +4,8 @@ namespace Kernel.Core.Processes
 {
     public static unsafe class SystemCallMethods
     {
+        public const int IndefiniteSleepThread = Hardware.Processes.Thread.IndefiniteSleep;
+
         [Drivers.Compiler.Attributes.PluggedMethod(ASMFilePath = @"ASM\SystemCallMethods")]
         public static void Call(SystemCallNumbers callNumber,
             uint Param1,
@@ -49,7 +51,7 @@ namespace Kernel.Core.Processes
             Call(SystemCallNumbers.DeregisterSyscallHandler, (uint)syscall, 0, 0, ref Return1, ref Return2, ref Return3, ref Return4);
             return (SystemCallResults)Return1;
         }
-
+        
         [Drivers.Compiler.Attributes.NoDebug]
         [Drivers.Compiler.Attributes.NoGC]
         public static SystemCallResults StartThread(Kernel.Hardware.Processes.ThreadStartMethod startMethod)
@@ -73,7 +75,40 @@ namespace Kernel.Core.Processes
             return (SystemCallResults)Return1;
         }
         
-
+        [Drivers.Compiler.Attributes.NoDebug]
+        [Drivers.Compiler.Attributes.NoGC]
+        public static SystemCallResults RegisterPipeOutpoint(Pipes.PipeClasses Class, Pipes.PipeSubclasses Subclass, int MaxConnections)
+        {
+            uint Return1 = 0;
+            uint Return2 = 0;
+            uint Return3 = 0;
+            uint Return4 = 0;
+            Call(SystemCallNumbers.RegisterPipeOutpoint, (uint)Class, (uint)Subclass, (uint)MaxConnections, ref Return1, ref Return2, ref Return3, ref Return4);
+            return (SystemCallResults)Return1;
+        }
+        [Drivers.Compiler.Attributes.NoDebug]
+        [Drivers.Compiler.Attributes.NoGC]
+        public static SystemCallResults GetNumPipeOutpoints(Pipes.PipeClasses Class, Pipes.PipeSubclasses Subclass, out int NumOutpoints)
+        {
+            uint Return1 = 0;
+            uint Return2 = 0;
+            uint Return3 = 0;
+            uint Return4 = 0;
+            Call(SystemCallNumbers.GetNumPipeOutpoints, (uint)Class, (uint)Subclass, 0, ref Return1, ref Return2, ref Return3, ref Return4);
+            NumOutpoints = (int)Return2;
+            return (SystemCallResults)Return1;
+        }
+        [Drivers.Compiler.Attributes.NoDebug]
+        [Drivers.Compiler.Attributes.NoGC]
+        public static SystemCallResults GetPipeOutpoints(Pipes.PipeClasses Class, Pipes.PipeSubclasses Subclass, ref Pipes.PipeOutpoint[] Outpoints)
+        {
+            uint Return1 = 0;
+            uint Return2 = 0;
+            uint Return3 = 0;
+            uint Return4 = 0;
+            Call(SystemCallNumbers.GetPipeOutpoints, (uint)Class, (uint)Subclass, ((uint)Utilities.ObjectUtilities.GetHandle(Outpoints)) + FOS_System.Array.FieldsBytesSize, ref Return1, ref Return2, ref Return3, ref Return4);
+            return (SystemCallResults)Return1;
+        }
 
 
 

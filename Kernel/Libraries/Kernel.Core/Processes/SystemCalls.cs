@@ -228,6 +228,24 @@ namespace Kernel.Core.Processes
 #endif
                     result = SystemCallResults.Deferred;
                     break;
+                case SystemCallNumbers.RegisterPipeOutpoint:
+#if SYSCALLS_TRACE
+                    BasicConsole.WriteLine("System call : Register Pipe Outpoint");
+#endif
+                    result = SystemCallResults.Deferred;
+                    break;
+                case SystemCallNumbers.GetNumPipeOutpoints:
+#if SYSCALLS_TRACE
+                    BasicConsole.WriteLine("System call : Get Num Pipe Outpoints");
+#endif
+                    result = SystemCallResults.Deferred;
+                    break;
+                case SystemCallNumbers.GetPipeOutpoints:
+#if SYSCALLS_TRACE
+                    BasicConsole.WriteLine("System call : Get Pipe Outpoints");
+#endif
+                    result = SystemCallResults.Deferred;
+                    break;
 #if SYSCALLS_TRACE
                 default:
                     BasicConsole.WriteLine("System call unrecognised/unhandled by Kernel Task.");
@@ -380,8 +398,9 @@ namespace Kernel.Core.Processes
         GetTime,
         SetTime,
         GetUpTime,
-        RegisterPipeEndpoint,
-        GetPipeEndpoints,
+        RegisterPipeOutpoint,
+        GetNumPipeOutpoints,
+        GetPipeOutpoints,
         CreatePipe,
         WaitOnPipeCreate,
         ReadPipe,
@@ -391,7 +410,8 @@ namespace Kernel.Core.Processes
     {
         Unhandled = -1,
         OK = 0,
-        Deferred = 1
+        Deferred = 1,
+        Fail = 2
     }
 
 

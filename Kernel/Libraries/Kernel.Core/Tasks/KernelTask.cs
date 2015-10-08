@@ -38,10 +38,13 @@ namespace Kernel.Core.Tasks
                 Core.Processes.SystemCalls.Init();
 
                 ProcessManager.CurrentProcess.SyscallHandler = SyscallHandler;
-                ProcessManager.CurrentProcess.SyscallsToHandle.Set((int)SystemCallNumbers.SleepThread);
                 ProcessManager.CurrentProcess.SyscallsToHandle.Set((int)SystemCallNumbers.RegisterSyscallHandler);
                 ProcessManager.CurrentProcess.SyscallsToHandle.Set((int)SystemCallNumbers.DeregisterSyscallHandler);
                 ProcessManager.CurrentProcess.SyscallsToHandle.Set((int)SystemCallNumbers.StartThread);
+                ProcessManager.CurrentProcess.SyscallsToHandle.Set((int)SystemCallNumbers.SleepThread);
+                ProcessManager.CurrentProcess.SyscallsToHandle.Set((int)SystemCallNumbers.RegisterPipeOutpoint);
+                ProcessManager.CurrentProcess.SyscallsToHandle.Set((int)SystemCallNumbers.GetNumPipeOutpoints);
+                ProcessManager.CurrentProcess.SyscallsToHandle.Set((int)SystemCallNumbers.GetPipeOutpoints);
                 
                 //ProcessManager.CurrentProcess.OutputMemTrace = true;
 
@@ -162,7 +165,7 @@ namespace Kernel.Core.Tasks
                 }
             }
         }
-        public static SystemCallResults HandleDeferredSystemCall(
+        public static unsafe SystemCallResults HandleDeferredSystemCall(
             Process CallerProcess, Thread CallerThread,
             SystemCallNumbers syscallNumber, uint Param1, uint Param2, uint Param3,
             ref uint Return2, ref uint Return3, ref uint Return4)
@@ -176,6 +179,48 @@ namespace Kernel.Core.Tasks
                     CallerProcess.CreateThread((ThreadStartMethod)Utilities.ObjectUtilities.GetObject((void*)Param1));
                     BasicConsole.WriteLine("DSC: Create Thread - done.");
                     result = SystemCallResults.OK;
+                    break;
+                case SystemCallNumbers.RegisterPipeOutpoint:
+                    {
+                        BasicConsole.WriteLine("DSC: Register Pipe Outpoint");
+                        Pipes.PipeOutpoint outpoint;
+                        bool registered = Pipes.PipeManager.RegisterPipeOutpoint(CallerProcess.Id, (Pipes.PipeClasses)Param1, (Pipes.PipeSubclasses)Param2, (int)Param3, out outpoint);
+                        if (registered)
+                        {
+                            result = SystemCallResults.OK;
+                        }
+                        else
+                        {
+                            result = SystemCallResults.Fail;
+                        }
+                        BasicConsole.WriteLine("DSC: Register Pipe Outpoint - done.");
+                    }
+                    break;
+                case SystemCallNumbers.GetNumPipeOutpoints:
+                    {
+                        BasicConsole.WriteLine("DSC: Get Num Pipe Outpoints");
+                        int numOutpoints;
+                        bool obtained = Pipes.PipeManager.GetNumPipeOutpoints((Pipes.PipeClasses)Param1, (Pipes.PipeSubclasses)Param2, out numOutpoints);
+                        if (obtained)
+                        {
+                            result = SystemCallResults.OK;
+                            Return2 = (uint)numOutpoints;
+                        }
+                        else
+                        {
+                            result = SystemCallResults.Fail;
+                        }
+                        BasicConsole.WriteLine("DSC: Get Num Pipe Outpoints - done");
+                    }
+                    break;
+                case SystemCallNumbers.GetPipeOutpoints:
+                    {
+                        BasicConsole.WriteLine("DSC: Get Pipe Outpoints");
+                        //TODO
+                        uint OutpointsArrayPtr = Param1;
+                        result = SystemCallResults.Unhandled;
+                        BasicConsole.WriteLine("DSC: Get Pipe Outpoints - done");
+                    }
                     break;
                 default:
                     BasicConsole.WriteLine("DSC: Unrecognised call number.");
