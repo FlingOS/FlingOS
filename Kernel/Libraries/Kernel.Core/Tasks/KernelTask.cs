@@ -3,6 +3,7 @@ using Kernel.FOS_System;
 using Kernel.FOS_System.Collections;
 using Kernel.Core.Processes;
 using Kernel.Hardware.Processes;
+using Kernel.Hardware.VirtMem;
 
 namespace Kernel.Core.Tasks
 {
@@ -216,9 +217,18 @@ namespace Kernel.Core.Tasks
                 case SystemCallNumbers.GetPipeOutpoints:
                     {
                         BasicConsole.WriteLine("DSC: Get Pipe Outpoints");
-                        //TODO
-                        uint OutpointsArrayPtr = Param1;
-                        result = SystemCallResults.Unhandled;
+                        MemoryLayout OriginalMemoryLayout = EnableAccessToMemoryOfProcess(CallerProcess);
+                        Pipes.PipeOutpointsRequest* RequestPtr = (Pipes.PipeOutpointsRequest*)Param3;
+                        bool obtained = Pipes.PipeManager.GetPipeOutpoints((Pipes.PipeClasses)Param1, (Pipes.PipeSubclasses)Param2, RequestPtr);
+                        if (obtained)
+                        {
+                            result = SystemCallResults.OK;
+                        }
+                        else
+                        {
+                            result = SystemCallResults.Fail;
+                        }
+                        DisableAccessToMemoryOfProcess(OriginalMemoryLayout);
                         BasicConsole.WriteLine("DSC: Get Pipe Outpoints - done");
                     }
                     break;
@@ -238,6 +248,19 @@ namespace Kernel.Core.Tasks
             CallerThread.Return4 = Return4;
 
             CallerThread._Wake();
+        }
+        public static MemoryLayout EnableAccessToMemoryOfProcess(Process ProcessToAccess)
+        {
+            MemoryLayout OriginalMemoryLayout = ProcessManager.CurrentProcess.TheMemoryLayout;
+            MemoryLayout NewMemoryLayout = ProcessManager.CurrentProcess.TheMemoryLayout.Merge(ProcessToAccess.TheMemoryLayout);
+            ProcessManager.CurrentProcess.TheMemoryLayout = NewMemoryLayout;
+            NewMemoryLayout.Load(ProcessManager.CurrentProcess.UserMode);
+            return OriginalMemoryLayout;
+        }
+        public static void DisableAccessToMemoryOfProcess(MemoryLayout OriginalMemoryLayout)
+        {
+            ProcessManager.CurrentProcess.TheMemoryLayout = OriginalMemoryLayout;
+            OriginalMemoryLayout.Load(ProcessManager.CurrentProcess.UserMode);
         }
 
         public static int SyscallHandler(uint syscallNumber, uint param1, uint param2, uint param3, 

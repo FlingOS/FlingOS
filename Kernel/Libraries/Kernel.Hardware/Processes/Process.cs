@@ -129,14 +129,15 @@ namespace Kernel.Hardware.Processes
             BasicConsole.WriteLine("Allocating memory for heap...");
 #endif
             // Allocate memory for new heap
+            uint heapPages = 256; // 1MiB, page-aligned
             FOS_System.HeapBlock* heapPtr = (FOS_System.HeapBlock*)VirtMemManager.MapFreePages(
                                 UserMode ? VirtMemImpl.PageFlags.None :
-                                           VirtMemImpl.PageFlags.KernelOnly, 256); // 1 MiB, page-aligned
+                                           VirtMemImpl.PageFlags.KernelOnly, (int)heapPages);
 #if PROCESS_TRACE
             BasicConsole.WriteLine("Generating physical addresses...");
 #endif
-            uint[] pAddrs = new uint[256];
-            for (uint currPtr = (uint)heapPtr, i = 0; i < 256; currPtr += 4096, i++)
+            uint[] pAddrs = new uint[heapPages];
+            for (uint currPtr = (uint)heapPtr, i = 0; i < heapPages; currPtr += 4096, i++)
             {
                 pAddrs[i] = VirtMemManager.GetPhysicalAddress(currPtr);
             }
@@ -147,14 +148,14 @@ namespace Kernel.Hardware.Processes
             // Add heap memory to current (kernel) process's memory
             //  - Makes sure it won't be mapped out during initialisation
             ProcessManager.CurrentProcess.TheMemoryLayout.AddDataPages((uint)heapPtr, pAddrs);
-            // Brief pause to make the scheduler (unload/)load the data layout
-            Thread.Sleep(1000);
+            // Force reload of the memory layout
+            ProcessManager.CurrentProcess.TheMemoryLayout.Load(ProcessManager.CurrentProcess.UserMode);
 
 #if PROCESS_TRACE
             BasicConsole.WriteLine("Initialising heap...");
 #endif
             // Initialise the heap
-            FOS_System.Heap.InitBlock(heapPtr, 256 * 4096, 32);
+            FOS_System.Heap.InitBlock(heapPtr, heapPages * 4096, 32);
 
 #if PROCESS_TRACE
             BasicConsole.WriteLine("Adding memory to layout...");
@@ -166,9 +167,7 @@ namespace Kernel.Hardware.Processes
             BasicConsole.WriteLine("Removing memory from current process (kernel task) layout...");
 #endif
             // Remove heap memory from current (kernel) process's memory
-            ProcessManager.CurrentProcess.TheMemoryLayout.RemovePages((uint)heapPtr, 256);
-            // Brief pause to make the scheduler (unload/)load the data layout
-            Thread.Sleep(1000);
+            ProcessManager.CurrentProcess.TheMemoryLayout.RemovePages((uint)heapPtr, heapPages);
 
 #if PROCESS_TRACE
             BasicConsole.WriteLine("Setting heap pointer...");

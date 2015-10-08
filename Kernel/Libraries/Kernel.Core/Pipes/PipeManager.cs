@@ -13,7 +13,7 @@ namespace Kernel.Core.Pipes
 
         public static bool RegisterPipeOutpoint(uint OutProcessId, PipeClasses Class, PipeSubclasses Subclass, int MaxConnections, out PipeOutpoint outpoint)
         {
-            // Vaildate inputs
+            // Validate inputs
             //  - Check process exists (if it doesn't then hmm...)
             //  - Check MaxConnections > 0 (0 or negative number of connections would be insane)
             if (ProcessManager.GetProcessById(OutProcessId) == null)
@@ -53,8 +53,10 @@ namespace Kernel.Core.Pipes
 
         public static bool GetNumPipeOutpoints(PipeClasses Class, PipeSubclasses Subclass, out int numOutpoints)
         {
+            // Initialise count to zero
             numOutpoints = 0;
 
+            // Search for outpoints of correct class and subclass, incrementing count as we go
             for (int i = 0; i < PipeOutpoints.Count; i++)
             {
                 PipeOutpoint anOutpoint = (PipeOutpoint)PipeOutpoints[i];
@@ -66,14 +68,40 @@ namespace Kernel.Core.Pipes
                 }
             }
 
+            // This method will always succeed unless it throws an exception
+            //  - A count result of zero is valid / success
             return true;
         }
-        public static bool GetPipeOutpoints(PipeClasses Class, PipeSubclasses Subclass, out PipeOutpoint[] outpoints)
+        public static bool GetPipeOutpoints(PipeClasses Class, PipeSubclasses Subclass, PipeOutpointsRequest* request)
         {
-            outpoints = new PipeOutpoint[PipeOutpoints.Count];
-            for (int i = 0; i < PipeOutpoints.Count; i++)
+            // Validate inputs
+            if (request == null)
             {
-                outpoints[i] = (PipeOutpoint)PipeOutpoints[i];
+                // Should have been pre-allocated by the calling thread (/process)
+                return false;
+            }
+            else if (request->Outpoints == null)
+            {
+                // Should have been pre-allocated by the calling thread (/process)
+                return false;
+            }
+            else if (request->MaxDescriptors == 0)
+            {
+                // Not technically an error but let's not waste time processing 0 descriptors
+                return true;
+            }
+
+            // Search for all outpoints of correct class and subclass
+            int maxDescriptors = request->MaxDescriptors;
+            for (int i = 0, j = 0; i < PipeOutpoints.Count && j < maxDescriptors; i++)
+            {
+                PipeOutpoint anOutpoint = (PipeOutpoint)PipeOutpoints[i];
+
+                if (anOutpoint.Class == Class &&
+                    anOutpoint.Subclass == Subclass)
+                {
+                    request->Outpoints[j++].ProcessId = anOutpoint.ProcessId;
+                }
             }
             return true;
         }

@@ -22,4 +22,14 @@ namespace Kernel.Core.Pipes
             MaxConnections = MaximumConnections;
         }
     }
+
+    public struct PipeOutpointDescriptor
+    {
+        public uint ProcessId;
+    }
+    public unsafe struct PipeOutpointsRequest
+    {
+        public int MaxDescriptors;
+        public PipeOutpointDescriptor* Outpoints;
+    }
 }

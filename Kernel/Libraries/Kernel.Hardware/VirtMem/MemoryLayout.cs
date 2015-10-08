@@ -164,6 +164,9 @@ namespace Kernel.Hardware.VirtMem
                 //    BasicConsole.WriteLine(((FOS_System.String)"Unloading code page v->p: ") + CodePages.Keys[i]);
                 //}
 
+                //TODO: Revert to the following line of code and then work out why it results in so many page faults
+                //          VirtMemManager.Unmap(CodePages.Keys[i], UpdateUsedPagesFlags.Virtual);
+                //      Also see the similar line further down
                 VirtMemManager.Unmap(CodePages.Keys[i], UpdateUsedPagesFlags.None);
             }
             for (int i = 0; i < DataPages.Keys.Count && i < DataPages.Values.Count; i++)
@@ -177,7 +180,8 @@ namespace Kernel.Hardware.VirtMem
                 //    BasicConsole.WriteLine(((FOS_System.String)"Unloading data page v->p: ") + DataPages.Keys[i]);
                 //}
 
-               VirtMemManager.Unmap(DataPages.Keys[i], UpdateUsedPagesFlags.None);
+                //TODO: Revert line - see above
+                VirtMemManager.Unmap(DataPages.Keys[i], UpdateUsedPagesFlags.None);
             }
 
             //if (unloadPrint)

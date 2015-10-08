@@ -100,13 +100,13 @@ namespace Kernel.Core.Processes
         }
         [Drivers.Compiler.Attributes.NoDebug]
         [Drivers.Compiler.Attributes.NoGC]
-        public static SystemCallResults GetPipeOutpoints(Pipes.PipeClasses Class, Pipes.PipeSubclasses Subclass, ref Pipes.PipeOutpoint[] Outpoints)
+        public static SystemCallResults GetPipeOutpoints(Pipes.PipeClasses Class, Pipes.PipeSubclasses Subclass, Pipes.PipeOutpointsRequest* RequestPtr)
         {
             uint Return1 = 0;
             uint Return2 = 0;
             uint Return3 = 0;
             uint Return4 = 0;
-            Call(SystemCallNumbers.GetPipeOutpoints, (uint)Class, (uint)Subclass, ((uint)Utilities.ObjectUtilities.GetHandle(Outpoints)) + FOS_System.Array.FieldsBytesSize, ref Return1, ref Return2, ref Return3, ref Return4);
+            Call(SystemCallNumbers.GetPipeOutpoints, (uint)Class, (uint)Subclass, (uint)RequestPtr, ref Return1, ref Return2, ref Return3, ref Return4);
             return (SystemCallResults)Return1;
         }
 
