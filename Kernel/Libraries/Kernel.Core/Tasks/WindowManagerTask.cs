@@ -150,19 +150,19 @@ namespace Kernel.Core.Tasks
                 BasicConsole.WriteLine("WM > Cannot create pipe!");
             }
 
-            int loops = 0;
+            //int loops = 0;
             ScreenOutput = new Consoles.AdvancedConsole();
 
             //SystemCallMethods.RegisterSyscallHandler(SystemCallNumbers.Semaphore, SyscallHandler);
 
-            if (SystemCallMethods.StartThread(TestThread) != SystemCallResults.OK)
-            {
-                BasicConsole.WriteLine("Window Manager: Test thread failed to create!");
-            }
-            if (SystemCallMethods.StartThread(TestThread2) != SystemCallResults.OK)
-            {
-                BasicConsole.WriteLine("Window Manager: Test thread 2 failed to create!");
-            }
+            //if (SystemCallMethods.StartThread(TestThread) != SystemCallResults.OK)
+            //{
+            //    BasicConsole.WriteLine("Window Manager: Test thread failed to create!");
+            //}
+            //if (SystemCallMethods.StartThread(TestThread2) != SystemCallResults.OK)
+            //{
+            //    BasicConsole.WriteLine("Window Manager: Test thread 2 failed to create!");
+            //}
 
             Pipes.ReadPipeRequest* ReadPipeRequestPtr = (Pipes.ReadPipeRequest*)Heap.AllocZeroed((uint)sizeof(Pipes.ReadPipeRequest), "Window Manager : Alloc ReadPipeRequest");
             try
@@ -170,7 +170,7 @@ namespace Kernel.Core.Tasks
                 bool CanReadPipe = ReadPipeRequestPtr != null;
                 if (CanReadPipe)
                 {
-                    ReadPipeRequestPtr->length = 256;
+                    ReadPipeRequestPtr->length = 2000;
                     ReadPipeRequestPtr->offset = 0;
                     ReadPipeRequestPtr->PipeId = CreatedPipeId;
                     ReadPipeRequestPtr->outBuffer = (byte*)Heap.AllocZeroed((uint)ReadPipeRequestPtr->length, "Window Manager : Alloc read pipe buffer");
@@ -185,35 +185,35 @@ namespace Kernel.Core.Tasks
                 {
                     try
                     {
-                        ScreenOutput.Clear();
-                        ScreenOutput.Write("Window Manager Task (");
-                        ScreenOutput.Write_AsDecimal(loops);
-                        ScreenOutput.WriteLine(")");
+                        //ScreenOutput.Clear();
+                        //ScreenOutput.Write("Window Manager Task (");
+                        //ScreenOutput.Write_AsDecimal(loops);
+                        //ScreenOutput.WriteLine(")");
 
-                        ScreenOutput.Write("WM > Pings : ");
-                        ScreenOutput.WriteLine_AsDecimal(Pings);
+                        //ScreenOutput.Write("WM > Pings : ");
+                        //ScreenOutput.WriteLine_AsDecimal(Pings);
 
-                        ScreenOutput.Write("WM > Test Thread loops : ");
-                        ScreenOutput.WriteLine_AsDecimal(Pings);
+                        //ScreenOutput.Write("WM > Test Thread loops : ");
+                        //ScreenOutput.WriteLine_AsDecimal(TestThread_Loops);
 
-                        ScreenOutput.Write("WM > Test Thread 2 loops : ");
-                        ScreenOutput.WriteLine_AsDecimal(Pings);
+                        //ScreenOutput.Write("WM > Test Thread 2 loops : ");
+                        //ScreenOutput.WriteLine_AsDecimal(TestThread2_Loops);
 
-                        ScreenOutput.WriteLine();
+                        //ScreenOutput.WriteLine();
 
-                        ScreenOutput.Write("WM > Heap: ");
-                        uint totalMem = Heap.GetTotalMem();
-                        ScreenOutput.Write_AsDecimal(Heap.GetTotalUsedMem() / (totalMem / 100));
-                        ScreenOutput.Write("% / ");
-                        ScreenOutput.Write_AsDecimal(totalMem / 1024);
-                        ScreenOutput.WriteLine(" KiB");
+                        //ScreenOutput.Write("WM > Heap: ");
+                        //uint totalMem = Heap.GetTotalMem();
+                        //ScreenOutput.Write_AsDecimal(Heap.GetTotalUsedMem() / (totalMem / 100));
+                        //ScreenOutput.Write("% / ");
+                        //ScreenOutput.Write_AsDecimal(totalMem / 1024);
+                        //ScreenOutput.WriteLine(" KiB");
 
-                        ScreenOutput.WriteLine();
+                        //ScreenOutput.WriteLine();
 
-                        ScreenOutput.Write("WM > Number of objects: ");
-                        ScreenOutput.WriteLine_AsDecimal(FOS_System.GC.NumObjs);
-                        ScreenOutput.Write("WM > Number of strings: ");
-                        ScreenOutput.WriteLine_AsDecimal(FOS_System.GC.NumStrings);
+                        //ScreenOutput.Write("WM > Number of objects: ");
+                        //ScreenOutput.WriteLine_AsDecimal(FOS_System.GC.NumObjs);
+                        //ScreenOutput.Write("WM > Number of strings: ");
+                        //ScreenOutput.WriteLine_AsDecimal(FOS_System.GC.NumStrings);
 
                         if (CanReadPipe)
                         {
@@ -225,23 +225,24 @@ namespace Kernel.Core.Tasks
                                     ScreenOutput.WriteLine("WM > ReadPipe: Unhandled!");
                                     break;
                                 case SystemCallResults.Fail:
-                                    ScreenOutput.WriteLine("WM > ReadPipe: Failed!");
+                                    // - Failure is OK, it just means no data was in the pipe
+                                    //ScreenOutput.WriteLine("WM > ReadPipe: Failed!");
                                     break;
                                 case SystemCallResults.OK:
-                                    ScreenOutput.WriteLine("WM > ReadPipe: Succeeded.");
-                                    ScreenOutput.Write("WM > Bytes read: ");
-                                    ScreenOutput.WriteLine(BytesRead);
+                                    //ScreenOutput.WriteLine("WM > ReadPipe: Succeeded.");
+                                    //ScreenOutput.Write("WM > Bytes read: ");
+                                    //ScreenOutput.WriteLine(BytesRead);
 
-                                    ScreenOutput.Write("WM > Message: ");
+                                    //ScreenOutput.Write("WM > Message: ");
                                     if (BytesRead > 0)
                                     {
                                         FOS_System.String message = ByteConverter.GetASCIIStringFromASCII(ReadPipeRequestPtr->outBuffer, 0, (uint)BytesRead);
-                                        ScreenOutput.WriteLine(message);
+                                        ScreenOutput.Write(message);
                                     }
-                                    else
-                                    {
-                                        ScreenOutput.WriteLine("[NO MESSAGE]");
-                                    }
+                                    //else
+                                    //{
+                                    //    ScreenOutput.WriteLine("[NO MESSAGE]");
+                                    //}
                                     break;
                                 default:
                                     BasicConsole.WriteLine("WM > ReadPipe: Unexpected system call result!");
@@ -249,9 +250,9 @@ namespace Kernel.Core.Tasks
                             }
                         }
 
-                        SystemCallMethods.SleepThread(500);
+                        //SystemCallMethods.SleepThread(500);
 
-                        loops++;
+                        //loops++;
                     }
                     catch
                     {
@@ -265,55 +266,55 @@ namespace Kernel.Core.Tasks
             }
         }
 
-        public static void TestThread()
-        {
-            while (!Terminating)
-            {
-                try
-                {
-                    //BasicConsole.WriteLine("WM > Test Thread");
-                    TestThread_Loops++;
-                    SystemCallMethods.SleepThread(100);
-                }
-                catch
-                {
-                    BasicConsole.WriteLine("Error in test thread!");
-                }
-            }
-        }
+        //public static void TestThread()
+        //{
+        //    while (!Terminating)
+        //    {
+        //        try
+        //        {
+        //            //BasicConsole.WriteLine("WM > Test Thread");
+        //            TestThread_Loops++;
+        //            SystemCallMethods.SleepThread(100);
+        //        }
+        //        catch
+        //        {
+        //            BasicConsole.WriteLine("Error in test thread!");
+        //        }
+        //    }
+        //}
 
-        public static void TestThread2()
-        {
-            while (!Terminating)
-            {
-                try
-                {
-                    //BasicConsole.WriteLine("WM > Test Thread 2");
-                    TestThread2_Loops++;
-                    SystemCallMethods.SleepThread(100);
-                }
-                catch
-                {
-                    BasicConsole.WriteLine("Error in test thread 2!");
-                }
-            }
-        }
+        //public static void TestThread2()
+        //{
+        //    while (!Terminating)
+        //    {
+        //        try
+        //        {
+        //            //BasicConsole.WriteLine("WM > Test Thread 2");
+        //            TestThread2_Loops++;
+        //            SystemCallMethods.SleepThread(100);
+        //        }
+        //        catch
+        //        {
+        //            BasicConsole.WriteLine("Error in test thread 2!");
+        //        }
+        //    }
+        //}
         
-        public static int SyscallHandler(uint syscallNumber, uint param1, uint param2, uint param3,
-            ref uint Return2, ref uint Return3, ref uint Return4,
-            uint callerProcesId, uint callerThreadId)
-        {
-            SystemCallResults result = SystemCallResults.Unhandled;
+        //public static int SyscallHandler(uint syscallNumber, uint param1, uint param2, uint param3,
+        //    ref uint Return2, ref uint Return3, ref uint Return4,
+        //    uint callerProcesId, uint callerThreadId)
+        //{
+        //    SystemCallResults result = SystemCallResults.Unhandled;
 
-            switch((SystemCallNumbers)syscallNumber)
-            {
-                //case SystemCallNumbers.Semaphore:
-                //    Pings++;
-                //    result = SystemCallResults.OK;
-                //    break;
-            }
+        //    switch((SystemCallNumbers)syscallNumber)
+        //    {
+        //        //case SystemCallNumbers.Semaphore:
+        //        //    Pings++;
+        //        //    result = SystemCallResults.OK;
+        //        //    break;
+        //    }
 
-            return (int)result;
-        }
+        //    return (int)result;
+        //}
     }
 }

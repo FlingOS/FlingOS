@@ -69,7 +69,7 @@ namespace Kernel.Core.Tasks
                 uint loops = 0;
                 while (!Terminating)
                 {
-                    byte[] messageBytes = ByteConverter.GetASCIIBytes("Hello, world! (" + (FOS_System.String)loops++ + ")");
+                    byte[] messageBytes = ByteConverter.GetASCIIBytes("Hello, world! (" + (FOS_System.String)loops++ + ")\n");
                     WritePipeRequestPtr->length = messageBytes.Length;
                     WritePipeRequestPtr->inBuffer = (byte*)Utilities.ObjectUtilities.GetHandle(messageBytes) + FOS_System.Array.FieldsBytesSize;
                     SysCallResult = SystemCallMethods.WritePipe(WritePipeRequestPtr);
@@ -89,7 +89,7 @@ namespace Kernel.Core.Tasks
                             break;
                     }
 
-                    SystemCallMethods.SleepThread(1000);
+                    //SystemCallMethods.SleepThread(1000);
                 }
             }
             finally
@@ -97,9 +97,5 @@ namespace Kernel.Core.Tasks
 
             }
         }
-    }
-
-    class testclass : FOS_System.Object
-    {
     }
 }
