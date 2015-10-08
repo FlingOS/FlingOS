@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Kernel.FOS_System.Collections;
 
 namespace Kernel.Core.Pipes
 {
@@ -14,12 +11,16 @@ namespace Kernel.Core.Pipes
         public int MaxConnections;
         public int NumConnections;
 
+        public UInt64List WaitingThreads;
+
         public PipeOutpoint(uint OwnerProcessId, PipeClasses pipeClass, PipeSubclasses pipeSubclass, int MaximumConnections)
         {
             ProcessId = OwnerProcessId;
             Class = pipeClass;
             Subclass = pipeSubclass;
             MaxConnections = MaximumConnections;
+
+            WaitingThreads = new UInt64List();
         }
     }
 

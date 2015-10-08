@@ -6,6 +6,10 @@ using System.Threading.Tasks;
 
 namespace Kernel.Core.Pipes
 {
+    public static class PipeConstants
+    {
+        public const int UnlimitedConnections = -1;
+    }
     public enum PipeClasses : uint
     {
         Display = 0xDEADBEEF

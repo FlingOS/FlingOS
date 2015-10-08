@@ -120,6 +120,41 @@ namespace Kernel.Core.Processes
             Call(SystemCallNumbers.CreatePipe, OutProcessId, (uint)RequestPtr, 0, ref Return1, ref Return2, ref Return3, ref Return4);
             return (SystemCallResults)Return1;
         }
+        [Drivers.Compiler.Attributes.NoDebug]
+        [Drivers.Compiler.Attributes.NoGC]
+        public static SystemCallResults WaitOnPipeCreate(Pipes.PipeClasses Class, Pipes.PipeSubclasses Subclass, out int NewPipeId)
+        {
+            uint Return1 = 0;
+            uint Return2 = 0;
+            uint Return3 = 0;
+            uint Return4 = 0;
+            Call(SystemCallNumbers.WaitOnPipeCreate, (uint)Class, (uint)Subclass, 0, ref Return1, ref Return2, ref Return3, ref Return4);
+            NewPipeId = (int)Return2;
+            return (SystemCallResults)Return1;
+        }
+        [Drivers.Compiler.Attributes.NoDebug]
+        [Drivers.Compiler.Attributes.NoGC]
+        public static SystemCallResults ReadPipe(Pipes.ReadPipeRequest* Request, out int BytesRead)
+        {
+            uint Return1 = 0;
+            uint Return2 = 0;
+            uint Return3 = 0;
+            uint Return4 = 0;
+            Call(SystemCallNumbers.ReadPipe, (uint)Request, 0, 0, ref Return1, ref Return2, ref Return3, ref Return4);
+            BytesRead = (int)Return2;
+            return (SystemCallResults)Return1;
+        }
+        [Drivers.Compiler.Attributes.NoDebug]
+        [Drivers.Compiler.Attributes.NoGC]
+        public static SystemCallResults WritePipe(Pipes.WritePipeRequest* Request)
+        {
+            uint Return1 = 0;
+            uint Return2 = 0;
+            uint Return3 = 0;
+            uint Return4 = 0;
+            Call(SystemCallNumbers.WritePipe, (uint)Request, 0, 0, ref Return1, ref Return2, ref Return3, ref Return4);
+            return (SystemCallResults)Return1;
+        }
 
 
 

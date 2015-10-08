@@ -36,140 +36,65 @@ namespace Kernel.Core.Tasks
                     break;
             }
 
-            int numOutpoints;
-            SysCallResult = SystemCallMethods.GetNumPipeOutpoints(Pipes.PipeClasses.Display, Pipes.PipeSubclasses.Display_Text_ASCII, out numOutpoints);
+            int ThePipeId;
+            SysCallResult = SystemCallMethods.WaitOnPipeCreate(Pipes.PipeClasses.Display, Pipes.PipeSubclasses.Display_Text_ASCII, out ThePipeId);
             switch (SysCallResult)
             {
                 case SystemCallResults.Unhandled:
-                    BasicConsole.WriteLine("DM > GetNumPipeOutpoints: Unhandled!");
+                    BasicConsole.WriteLine("DM > WaitOnPipeCreate: Unhandled!");
                     break;
                 case SystemCallResults.Fail:
-                    BasicConsole.WriteLine("DM > GetNumPipeOutpoints: Failed!");
+                    BasicConsole.WriteLine("DM > WaitOnPipeCreate: Failed!");
                     break;
                 case SystemCallResults.OK:
-                    BasicConsole.WriteLine("DM > GetNumPipeOutpoints: Succeeded.");
+                    BasicConsole.WriteLine("DM > WaitOnPipeCreate: Succeeded.");
+                    BasicConsole.Write("DM > New pipe id: ");
+                    BasicConsole.WriteLine(ThePipeId);
                     break;
                 default:
-                    BasicConsole.WriteLine("DM > GetNumPipeOutpoints: Unexpected system call result!");
+                    BasicConsole.WriteLine("DM > WaitOnPipeCreate: Unexpected system call result!");
                     break;
             }
-            BasicConsole.Write("DM > Num pipe outpoints of class: Display, subclass: Display_Text_ASCII = ");
-            BasicConsole.WriteLine(numOutpoints);
-
-            uint WantedOutpointProcessId = 0;
-            if (SysCallResult == SystemCallResults.OK && numOutpoints > 0)
+            
+            Pipes.WritePipeRequest* WritePipeRequestPtr = (Pipes.WritePipeRequest*)Heap.AllocZeroed((uint)sizeof(Pipes.WritePipeRequest), "Window Manager : Alloc WritePipeRequest");
+            try
             {
-                Pipes.PipeOutpointsRequest* RequestPtr = (Pipes.PipeOutpointsRequest*)Heap.AllocZeroed((uint)sizeof(Pipes.PipeOutpointsRequest), "Device Manager : Alloc PipeOutpointsRequest");
-                if (RequestPtr != null)
+                bool CanWritePipe = WritePipeRequestPtr != null;
+                if (CanWritePipe)
                 {
-                    try
-                    {
-                        RequestPtr->MaxDescriptors = numOutpoints;
-                        RequestPtr->Outpoints = (Pipes.PipeOutpointDescriptor*)Heap.AllocZeroed((uint)numOutpoints * (uint)sizeof(Pipes.PipeOutpointDescriptor), "Device Manager : Alloc PipeOutpointDescriptor(s)");
-                        if (RequestPtr->Outpoints != null)
-                        {
-                            try
-                            {
-                                SysCallResult = SystemCallMethods.GetPipeOutpoints(Pipes.PipeClasses.Display, Pipes.PipeSubclasses.Display_Text_ASCII, RequestPtr);
-                                switch (SysCallResult)
-                                {
-                                    case SystemCallResults.Unhandled:
-                                        BasicConsole.WriteLine("DM > GetPipeOutpoints: Unhandled!");
-                                        break;
-                                    case SystemCallResults.Fail:
-                                        BasicConsole.WriteLine("DM > GetPipeOutpoints: Failed!");
-                                        break;
-                                    case SystemCallResults.OK:
-                                        BasicConsole.WriteLine("DM > GetPipeOutpoints: Succeeded.");
-                                        WantedOutpointProcessId = RequestPtr->Outpoints[0].ProcessId;
-
-                                        BasicConsole.Write("DM > Outpoint[0].ProcessId: ");
-                                        BasicConsole.WriteLine(WantedOutpointProcessId);
-                                        break;
-                                    default:
-                                        BasicConsole.WriteLine("DM > GetPipeOutpoints: Unexpected system call result!");
-                                        break;
-                                }
-                            }
-                            finally
-                            {
-                                Heap.Free(RequestPtr->Outpoints);
-                            }
-                        }
-                        else
-                        {
-                            BasicConsole.WriteLine("DM > RequestPtr->Outpoints null! No memory allocated.");
-                        }
-                    }
-                    finally
-                    {
-                        Heap.Free(RequestPtr);
-                    }
+                    WritePipeRequestPtr->offset = 0;
+                    WritePipeRequestPtr->PipeId = ThePipeId;
                 }
-                else
+
+                uint loops = 0;
+                while (!Terminating)
                 {
-                    BasicConsole.WriteLine("DM > RequestPtr null! No memory allocated.");
+                    byte[] messageBytes = ByteConverter.GetASCIIBytes("Hello, world! (" + (FOS_System.String)loops++ + ")");
+                    WritePipeRequestPtr->length = messageBytes.Length;
+                    WritePipeRequestPtr->inBuffer = (byte*)Utilities.ObjectUtilities.GetHandle(messageBytes) + FOS_System.Array.FieldsBytesSize;
+                    SysCallResult = SystemCallMethods.WritePipe(WritePipeRequestPtr);
+                    switch (SysCallResult)
+                    {
+                        case SystemCallResults.Unhandled:
+                            BasicConsole.WriteLine("DM > WritePipe: Unhandled!");
+                            break;
+                        case SystemCallResults.Fail:
+                            BasicConsole.WriteLine("DM > WritePipe: Failed!");
+                            break;
+                        case SystemCallResults.OK:
+                            BasicConsole.WriteLine("DM > WritePipe: Succeeded.");
+                            break;
+                        default:
+                            BasicConsole.WriteLine("DM > WritePipe: Unexpected system call result!");
+                            break;
+                    }
+
+                    SystemCallMethods.SleepThread(1000);
                 }
             }
-            else
+            finally
             {
-                BasicConsole.WriteLine("DM > Cannot get outpoints!");
-            }
 
-            int CreatedPipeId = 0;
-            if (SysCallResult == SystemCallResults.OK)
-            {
-                Pipes.CreatePipeRequest* RequestPtr = (Pipes.CreatePipeRequest*)Heap.AllocZeroed((uint)sizeof(Pipes.CreatePipeRequest), "Device Manager : Alloc CreatePipeRequest");
-                if (RequestPtr != null)
-                {
-                    try
-                    {
-                        RequestPtr->BufferSize = 4096;
-                        RequestPtr->Class = Pipes.PipeClasses.Display;
-                        RequestPtr->Subclass = Pipes.PipeSubclasses.Display_Text_ASCII;
-
-                        SysCallResult = SystemCallMethods.CreatePipe(WantedOutpointProcessId, RequestPtr);
-                        switch (SysCallResult)
-                        {
-                            case SystemCallResults.Unhandled:
-                                BasicConsole.WriteLine("DM > CreatePipe: Unhandled!");
-                                break;
-                            case SystemCallResults.Fail:
-                                BasicConsole.WriteLine("DM > CreatePipe: Failed!");
-                                break;
-                            case SystemCallResults.OK:
-                                BasicConsole.WriteLine("DM > CreatePipe: Succeeded.");
-                                CreatedPipeId = RequestPtr->Result.Id;
-
-                                BasicConsole.Write("DM > New pipe id: ");
-                                BasicConsole.WriteLine(CreatedPipeId);
-                                break;
-                            default:
-                                BasicConsole.WriteLine("DM > CreatePipe: Unexpected system call result!");
-                                break;
-                        }
-                    }
-                    finally
-                    {
-                        Heap.Free(RequestPtr);
-                    }
-                }
-                else
-                {
-                    BasicConsole.WriteLine("DM > RequestPtr null! No memory allocated.");
-                }
-            }
-            else
-            {
-                BasicConsole.WriteLine("DM > Cannot create pipe!");
-            }
-
-            while (!Terminating)
-            {
-                //TODO
-                testclass x = new testclass();
-
-                SystemCallMethods.SleepThread(SystemCallMethods.IndefiniteSleepThread);
             }
         }
     }

@@ -252,6 +252,24 @@ namespace Kernel.Core.Processes
 #endif
                     result = SystemCallResults.Deferred;
                     break;
+                case SystemCallNumbers.WaitOnPipeCreate:
+#if SYSCALLS_TRACE
+                    BasicConsole.WriteLine("System call : Wait On Pipe Create");
+#endif
+                    result = SystemCallResults.Deferred;
+                    break;
+                case SystemCallNumbers.ReadPipe:
+#if SYSCALLS_TRACE
+                    BasicConsole.WriteLine("System call : Read Pipe");
+#endif
+                    result = SystemCallResults.Deferred;
+                    break;
+                case SystemCallNumbers.WritePipe:
+#if SYSCALLS_TRACE
+                    BasicConsole.WriteLine("System call : Write Pipe");
+#endif
+                    result = SystemCallResults.Deferred;
+                    break;
 #if SYSCALLS_TRACE
                 default:
                     BasicConsole.WriteLine("System call unrecognised/unhandled by Kernel Task.");

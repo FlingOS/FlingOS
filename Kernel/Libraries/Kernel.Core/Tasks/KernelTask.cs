@@ -46,6 +46,9 @@ namespace Kernel.Core.Tasks
                 ProcessManager.CurrentProcess.SyscallsToHandle.Set((int)SystemCallNumbers.RegisterPipeOutpoint);
                 ProcessManager.CurrentProcess.SyscallsToHandle.Set((int)SystemCallNumbers.GetNumPipeOutpoints);
                 ProcessManager.CurrentProcess.SyscallsToHandle.Set((int)SystemCallNumbers.GetPipeOutpoints);
+                ProcessManager.CurrentProcess.SyscallsToHandle.Set((int)SystemCallNumbers.WaitOnPipeCreate);
+                ProcessManager.CurrentProcess.SyscallsToHandle.Set((int)SystemCallNumbers.ReadPipe);
+                ProcessManager.CurrentProcess.SyscallsToHandle.Set((int)SystemCallNumbers.WritePipe);
                 
                 //ProcessManager.CurrentProcess.OutputMemTrace = true;
 
@@ -62,6 +65,10 @@ namespace Kernel.Core.Tasks
                 Process DeviceManagerProcess = ProcessManager.CreateProcess(DeviceManagerTask.Main, "Device Manager", false, true);
                 //DeviceManagerProcess.OutputMemTrace = true;
                 ProcessManager.RegisterProcess(DeviceManagerProcess, Scheduler.Priority.Normal);
+
+                BasicConsole.WriteLine(" > [Pausing 500ms]");
+                // Delay before starting the Window Manager so the Device Manager has time to create the pipe outpoint
+                Thread.Sleep(500);
 
                 BasicConsole.WriteLine(" > Starting Window Manager...");
                 Process WindowManagerProcess = ProcessManager.CreateProcess(WindowManagerTask.Main, "Window Manager", false, true);
@@ -157,7 +164,10 @@ namespace Kernel.Core.Tasks
                         ref Return2, ref Return3, ref Return4);
 
                     BasicConsole.WriteLine("DSC: Ending call...");
-                    EndDeferredSystemCall(CallerThread, result, Return2, Return3, Return4);
+                    if (result != SystemCallResults.Deferred)
+                    {
+                        EndDeferredSystemCall(CallerThread, result, Return2, Return3, Return4);
+                    }
 
                     BasicConsole.WriteLine("DSC: Resetting & queuing info object...");
                     info.ProcessId = 0;
@@ -255,7 +265,70 @@ namespace Kernel.Core.Tasks
 
                         DisableAccessToMemoryOfProcess(OriginalMemoryLayout);
 
-                        BasicConsole.WriteLine("DSC: Get Pipe Outpoints - done");
+                        BasicConsole.WriteLine("DSC: Create Pipe - done");
+                    }
+                    break;
+                case SystemCallNumbers.WaitOnPipeCreate:
+                    {
+                        BasicConsole.WriteLine("DSC: Wait On Pipe Create");
+
+                        bool waiting = Pipes.PipeManager.WaitOnPipeCreate(CallerProcess.Id, CallerThread.Id, (Pipes.PipeClasses)Param1, (Pipes.PipeSubclasses)Param2);
+                        if (waiting)
+                        {
+                            result = SystemCallResults.Deferred;
+                        }
+                        else
+                        {
+                            result = SystemCallResults.Fail;
+                        }
+
+                        BasicConsole.WriteLine("DSC: Wait On Pipe Create - done");
+                    }
+                    break;
+                case SystemCallNumbers.ReadPipe:
+                    {
+                        BasicConsole.WriteLine("DSC: Read Pipe");
+                        
+                        // Need access to calling process' memory to be able to set values in request structure(s)
+                        MemoryLayout OriginalMemoryLayout = EnableAccessToMemoryOfProcess(CallerProcess);
+
+                        int BytesRead;
+                        bool read = Pipes.PipeManager.ReadPipe((Pipes.ReadPipeRequest*)Param1, CallerProcess.Id, out BytesRead);
+                        if (read)
+                        {
+                            result = SystemCallResults.OK;
+                            Return2 = (uint)BytesRead;
+                        }
+                        else
+                        {
+                            result = SystemCallResults.Fail;
+                        }
+
+                        DisableAccessToMemoryOfProcess(OriginalMemoryLayout);
+
+                        BasicConsole.WriteLine("DSC: Read Pipe - done");
+                    }
+                    break;
+                case SystemCallNumbers.WritePipe:
+                    {
+                        BasicConsole.WriteLine("DSC: Write Pipe");
+
+                        // Need access to calling process' memory to be able to set values in request structure(s)
+                        MemoryLayout OriginalMemoryLayout = EnableAccessToMemoryOfProcess(CallerProcess);
+
+                        bool written = Pipes.PipeManager.WritePipe((Pipes.WritePipeRequest*)Param1, CallerProcess.Id);
+                        if (written)
+                        {
+                            result = SystemCallResults.OK;
+                        }
+                        else
+                        {
+                            result = SystemCallResults.Fail;
+                        }
+
+                        DisableAccessToMemoryOfProcess(OriginalMemoryLayout);
+
+                        BasicConsole.WriteLine("DSC: Write Pipe - done");
                     }
                     break;
                 default:
