@@ -64,7 +64,9 @@ namespace Kernel.Core.Pipes
                 PipeOutpoint anOutpoint = (PipeOutpoint)PipeOutpoints[i];
 
                 if (anOutpoint.Class == Class &&
-                    anOutpoint.Subclass == Subclass)
+                    anOutpoint.Subclass == Subclass &&
+                    (   anOutpoint.NumConnections == PipeConstants.UnlimitedConnections || 
+                        anOutpoint.NumConnections < anOutpoint.MaxConnections))
                 {
                     numOutpoints++;
                 }
@@ -116,7 +118,9 @@ namespace Kernel.Core.Pipes
                     PipeOutpoint anOutpoint = (PipeOutpoint)PipeOutpoints[i];
 
                     if (anOutpoint.Class == Class &&
-                        anOutpoint.Subclass == Subclass)
+                        anOutpoint.Subclass == Subclass &&
+                        (   anOutpoint.NumConnections == PipeConstants.UnlimitedConnections ||
+                            anOutpoint.NumConnections < anOutpoint.MaxConnections))
                     {
                         // Set the resultant values
                         request->Outpoints[j++].ProcessId = anOutpoint.ProcessId;
