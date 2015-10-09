@@ -147,8 +147,15 @@ namespace Kernel.Core.Tasks
 
                 while (DeferredSyscallsInfo_Queued.Count > 0)
                 {
+                    // Scheduler must be disabled during pop/push from circular buffer or we can
+                    //  end up in an infinite lock. Consider what happens if a process invokes 
+                    //  a deferred system call during the pop/push here and at the end of this loop.
+                    BasicConsole.WriteLine("DSC: Pausing scheduler...");
+                    Scheduler.Disable();
                     BasicConsole.WriteLine("DSC: Popping queued info object...");
                     DeferredSyscallInfo info = (DeferredSyscallInfo)DeferredSyscallsInfo_Queued.Pop();
+                    BasicConsole.WriteLine("DSC: Resuming scheduler...");
+                    Scheduler.Enable();
 
                     BasicConsole.WriteLine("DSC: Getting process & thread...");
                     Process CallerProcess = ProcessManager.GetProcessById(info.ProcessId);
@@ -169,10 +176,17 @@ namespace Kernel.Core.Tasks
                         EndDeferredSystemCall(CallerThread, result, Return2, Return3, Return4);
                     }
 
-                    BasicConsole.WriteLine("DSC: Resetting & queuing info object...");
+                    BasicConsole.WriteLine("DSC: Resetting info object...");
                     info.ProcessId = 0;
                     info.ThreadId = 0;
+
+                    // See comment at top of loop for why this is necessary
+                    BasicConsole.WriteLine("DSC: Pausing scheduler...");
+                    Scheduler.Disable();
+                    BasicConsole.WriteLine("DSC: Queuing info object...");
                     DeferredSyscallsInfo_Unqueued.Push(info);
+                    BasicConsole.WriteLine("DSC: Resuming scheduler...");
+                    Scheduler.Enable();
                 }
             }
         }
@@ -228,10 +242,7 @@ namespace Kernel.Core.Tasks
                     {
                         BasicConsole.WriteLine("DSC: Get Pipe Outpoints");
                         
-                        // Need access to calling process' memory to be able to set values in request structure(s)
-                        MemoryLayout OriginalMemoryLayout = EnableAccessToMemoryOfProcess(CallerProcess);
-
-                        bool obtained = Pipes.PipeManager.GetPipeOutpoints((Pipes.PipeClasses)Param1, (Pipes.PipeSubclasses)Param2, (Pipes.PipeOutpointsRequest*)Param3);
+                        bool obtained = Pipes.PipeManager.GetPipeOutpoints(CallerProcess, (Pipes.PipeClasses)Param1, (Pipes.PipeSubclasses)Param2, (Pipes.PipeOutpointsRequest*)Param3);
                         if (obtained)
                         {
                             result = SystemCallResults.OK;
@@ -241,17 +252,12 @@ namespace Kernel.Core.Tasks
                             result = SystemCallResults.Fail;
                         }
                         
-                        DisableAccessToMemoryOfProcess(OriginalMemoryLayout);
-                        
                         BasicConsole.WriteLine("DSC: Get Pipe Outpoints - done");
                     }
                     break;
                 case SystemCallNumbers.CreatePipe:
                     {
                         BasicConsole.WriteLine("DSC: Create Pipe");
-
-                        // Need access to calling process' memory to be able to set values in request structure(s)
-                        MemoryLayout OriginalMemoryLayout = EnableAccessToMemoryOfProcess(CallerProcess);
 
                         bool created = Pipes.PipeManager.CreatePipe(CallerProcess.Id, Param1, (Pipes.CreatePipeRequest*)Param2);
                         if (created)
@@ -262,8 +268,6 @@ namespace Kernel.Core.Tasks
                         {
                             result = SystemCallResults.Fail;
                         }
-
-                        DisableAccessToMemoryOfProcess(OriginalMemoryLayout);
 
                         BasicConsole.WriteLine("DSC: Create Pipe - done");
                     }
@@ -288,23 +292,14 @@ namespace Kernel.Core.Tasks
                 case SystemCallNumbers.ReadPipe:
                     {
                         BasicConsole.WriteLine("DSC: Read Pipe");
-                        
+
                         // Need access to calling process' memory to be able to set values in request structure(s)
-                        MemoryLayout OriginalMemoryLayout = EnableAccessToMemoryOfProcess(CallerProcess);
+                        MemoryLayout OriginalMemoryLayout = SystemCallsHelpers.EnableAccessToMemoryOfProcess(CallerProcess);
 
-                        int BytesRead;
-                        bool read = Pipes.PipeManager.ReadPipe((Pipes.ReadPipeRequest*)Param1, CallerProcess.Id, out BytesRead);
-                        if (read)
-                        {
-                            result = SystemCallResults.OK;
-                            Return2 = (uint)BytesRead;
-                        }
-                        else
-                        {
-                            result = SystemCallResults.Fail;
-                        }
+                        Pipes.PipeManager.ReadPipe(((Pipes.ReadPipeRequest*)Param1)->PipeId, CallerProcess, CallerThread);
+                        result = SystemCallResults.Deferred;
 
-                        DisableAccessToMemoryOfProcess(OriginalMemoryLayout);
+                        SystemCallsHelpers.DisableAccessToMemoryOfProcess(OriginalMemoryLayout);
 
                         BasicConsole.WriteLine("DSC: Read Pipe - done");
                     }
@@ -314,19 +309,12 @@ namespace Kernel.Core.Tasks
                         BasicConsole.WriteLine("DSC: Write Pipe");
 
                         // Need access to calling process' memory to be able to set values in request structure(s)
-                        MemoryLayout OriginalMemoryLayout = EnableAccessToMemoryOfProcess(CallerProcess);
+                        MemoryLayout OriginalMemoryLayout = SystemCallsHelpers.EnableAccessToMemoryOfProcess(CallerProcess);
 
-                        bool written = Pipes.PipeManager.WritePipe((Pipes.WritePipeRequest*)Param1, CallerProcess.Id);
-                        if (written)
-                        {
-                            result = SystemCallResults.OK;
-                        }
-                        else
-                        {
-                            result = SystemCallResults.Fail;
-                        }
+                        Pipes.PipeManager.WritePipe(((Pipes.WritePipeRequest*)Param1)->PipeId, CallerProcess, CallerThread);
+                        result = SystemCallResults.Deferred;
 
-                        DisableAccessToMemoryOfProcess(OriginalMemoryLayout);
+                        SystemCallsHelpers.DisableAccessToMemoryOfProcess(OriginalMemoryLayout);
 
                         BasicConsole.WriteLine("DSC: Write Pipe - done");
                     }
@@ -348,20 +336,8 @@ namespace Kernel.Core.Tasks
 
             CallerThread._Wake();
         }
-        public static MemoryLayout EnableAccessToMemoryOfProcess(Process ProcessToAccess)
-        {
-            MemoryLayout OriginalMemoryLayout = ProcessManager.CurrentProcess.TheMemoryLayout;
-            MemoryLayout NewMemoryLayout = ProcessManager.CurrentProcess.TheMemoryLayout.Merge(ProcessToAccess.TheMemoryLayout);
-            ProcessManager.CurrentProcess.TheMemoryLayout = NewMemoryLayout;
-            NewMemoryLayout.Load(ProcessManager.CurrentProcess.UserMode);
-            return OriginalMemoryLayout;
-        }
-        public static void DisableAccessToMemoryOfProcess(MemoryLayout OriginalMemoryLayout)
-        {
-            ProcessManager.CurrentProcess.TheMemoryLayout = OriginalMemoryLayout;
-            OriginalMemoryLayout.Load(ProcessManager.CurrentProcess.UserMode);
-        }
 
+        
         public static int SyscallHandler(uint syscallNumber, uint param1, uint param2, uint param3, 
             ref uint Return2, ref uint Return3, ref uint Return4,
             uint callerProcessId, uint callerThreadId)

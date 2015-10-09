@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Kernel.FOS_System.Collections;
 
 namespace Kernel.Core.Pipes
 {
@@ -16,14 +13,21 @@ namespace Kernel.Core.Pipes
         private byte[] Buffer;
         private int DataAvailable;
         private int DataOffset;
-        
+
+        private UInt32Queue ThreadsWaitingToWrite;
+        private UInt32Queue ThreadsWaitingToRead;
+
         public Pipe(int AnId, PipeOutpoint outpoint, PipeInpoint inpoint, int BufferSize)
         {
             Id = AnId;
             Outpoint = outpoint;
             Inpoint = inpoint;
+
             Buffer = new byte[BufferSize];
             DataAvailable = 0;
+
+            ThreadsWaitingToRead = new UInt32Queue();
+            ThreadsWaitingToWrite = new UInt32Queue();
         }
 
         public bool CanRead()
@@ -35,22 +39,23 @@ namespace Kernel.Core.Pipes
             return DataAvailable == 0;
         }
 
-        public int Read(byte* outBuffer, int offset, int length)
+        public bool Read(byte* outBuffer, int offset, int length, out int BytesRead)
         {
             if (!CanRead())
             {
-                return -1;
+                BytesRead = -1;
+                return false;
             }
 
-            int BytesRead = 0;
+            BytesRead = 0;
             for (BytesRead = 0; BytesRead < DataAvailable && BytesRead < length; BytesRead++)
             {
                 outBuffer[offset++] = Buffer[DataOffset++];
             }
 
             DataAvailable -= BytesRead;
-            
-            return BytesRead;
+
+            return true;
         }
         public bool Write(byte* inBuffer, int offset, int length)
         {
@@ -68,6 +73,51 @@ namespace Kernel.Core.Pipes
             DataAvailable = length;
 
             return true;
+        }
+
+        public bool QueueToRead(UInt32 ThreadId)
+        {
+            ThreadsWaitingToRead.Push(ThreadId);
+            return true;
+        }
+        public bool QueueToWrite(UInt32 ThreadId)
+        {
+            ThreadsWaitingToWrite.Push(ThreadId);
+            return true;
+        }
+        public bool DequeueToRead(out UInt32 ThreadId)
+        {
+            if (ThreadsWaitingToRead.Count > 0)
+            {
+                ThreadId = ThreadsWaitingToRead.Pop();
+                return true;
+            }
+            else
+            {
+                ThreadId = 0;
+                return false;
+            }
+        }
+        public bool DequeueToWrite(out UInt32 ThreadId)
+        {
+            if (ThreadsWaitingToWrite.Count > 0)
+            {
+                ThreadId = ThreadsWaitingToWrite.Pop();
+                return true;
+            }
+            else
+            {
+                ThreadId = 0;
+                return false;
+            }
+        }
+        public bool AreThreadsWaitingToRead()
+        {
+            return ThreadsWaitingToRead.Count > 0;
+        }
+        public bool AreThreadsWaitingToWrite()
+        {
+            return ThreadsWaitingToWrite.Count > 0;
         }
     }
 

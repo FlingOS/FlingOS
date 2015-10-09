@@ -1,6 +1,8 @@
 ﻿using System;
+using Kernel.Core.Processes;
 using Kernel.FOS_System.Collections;
 using Kernel.Hardware.Processes;
+using Kernel.Hardware.VirtMem;
 
 namespace Kernel.Core.Pipes
 {
@@ -72,42 +74,59 @@ namespace Kernel.Core.Pipes
             //  - A count result of zero is valid / success
             return true;
         }
-        public static bool GetPipeOutpoints(PipeClasses Class, PipeSubclasses Subclass, PipeOutpointsRequest* request)
+        public static bool GetPipeOutpoints(Process CallerProcess, PipeClasses Class, PipeSubclasses Subclass, PipeOutpointsRequest* request)
         {
-            // Validate inputs
+            // Validate inputs & get caller process
+            if (CallerProcess == null)
+            {
+                return false;
+            }
+
+            // Merge memory layouts 
+            //  so we can access the request structure
+            MemoryLayout OriginalMemoryLayout = SystemCallsHelpers.EnableAccessToMemoryOfProcess(CallerProcess);
+            bool OK = true;
+
+            // More validate inputs
             //  - Check request exists (should've been pre-allocated by caller)
             //  - Check request->Outpoints exists (should've been pre-allocated by caller)
             //  - Check request->MaxDescriptors was set correctly
             if (request == null)
             {
                 // Should have been pre-allocated by the calling thread (/process)
-                return false;
+                OK = false;
             }
             else if (request->Outpoints == null)
             {
                 // Should have been pre-allocated by the calling thread (/process)
-                return false;
+                OK = false;
             }
             else if (request->MaxDescriptors == 0)
             {
                 // Not technically an error but let's not waste time processing 0 descriptors
-                return true;
+                OK = true;
             }
 
-            // Search for all outpoints of correct class and subclass
-            int maxDescriptors = request->MaxDescriptors;
-            for (int i = 0, j = 0; i < PipeOutpoints.Count && j < maxDescriptors; i++)
+            if (OK)
             {
-                PipeOutpoint anOutpoint = (PipeOutpoint)PipeOutpoints[i];
-
-                if (anOutpoint.Class == Class &&
-                    anOutpoint.Subclass == Subclass)
+                // Search for all outpoints of correct class and subclass
+                int maxDescriptors = request->MaxDescriptors;
+                for (int i = 0, j = 0; i < PipeOutpoints.Count && j < maxDescriptors; i++)
                 {
-                    // Set the resultant values
-                    request->Outpoints[j++].ProcessId = anOutpoint.ProcessId;
+                    PipeOutpoint anOutpoint = (PipeOutpoint)PipeOutpoints[i];
+
+                    if (anOutpoint.Class == Class &&
+                        anOutpoint.Subclass == Subclass)
+                    {
+                        // Set the resultant values
+                        request->Outpoints[j++].ProcessId = anOutpoint.ProcessId;
+                    }
                 }
             }
-            return true;
+
+            SystemCallsHelpers.DisableAccessToMemoryOfProcess(OriginalMemoryLayout);
+
+            return OK;
         }
         
         public static bool CreatePipe(uint InProcessId, uint OutProcessId, CreatePipeRequest* request)
@@ -116,11 +135,12 @@ namespace Kernel.Core.Pipes
             //  - Check out process exists
             //  - Check in process exists
             //  - Check request isn't null (should've been pre-allocated)
-            if (ProcessManager.GetProcessById(OutProcessId) == null)
+            Process InProcess = ProcessManager.GetProcessById(InProcessId);
+            if (InProcess == null)
             {
                 return false;
             }
-            else if (ProcessManager.GetProcessById(InProcessId) == null)
+            else if (ProcessManager.GetProcessById(OutProcessId) == null)
             {
                 return false;
             }
@@ -128,40 +148,53 @@ namespace Kernel.Core.Pipes
             {
                 return false;
             }
-            
+
+            // Merge memory layouts 
+            //  so we can access the request structure
+            MemoryLayout OriginalMemoryLayout = SystemCallsHelpers.EnableAccessToMemoryOfProcess(InProcess);
+            bool OK = true;
+
             // Find the outpoint
             PipeOutpoint outpoint = GetOutpoint(OutProcessId, request->Class, request->Subclass);
 
             // Check that we actually found the outpoint
             if (outpoint == null)
             {
-                return false;
+                OK = false;
             }
 
-            // Check there are sufficient connections available
-            if (outpoint.NumConnections >= outpoint.MaxConnections &&
-                outpoint.MaxConnections != PipeConstants.UnlimitedConnections)
+            if (OK)
             {
-                return false;
+                // Check there are sufficient connections available
+                if (outpoint.NumConnections >= outpoint.MaxConnections &&
+                    outpoint.MaxConnections != PipeConstants.UnlimitedConnections)
+                {
+                    OK = false;
+                }
+
+                if (OK)
+                {
+                    // Create new inpoint
+                    PipeInpoint inpoint = new PipeInpoint(InProcessId, request->Class, request->Subclass);
+
+                    // Create new pipe
+                    Pipe pipe = new Pipe(PipeIdGenerator++, outpoint, inpoint, request->BufferSize);
+                    // Add new pipe to list of pipes
+                    Pipes.Add(pipe);
+                    // Increment number of connections to the outpoint
+                    outpoint.NumConnections++;
+
+                    // Set result information
+                    request->Result.Id = pipe.Id;
+
+                    // Wake any threads (/processes) which were waiting on a pipe to be created
+                    WakeWaitingThreads(outpoint, pipe.Id);
+                }
             }
 
-            // Create new inpoint
-            PipeInpoint inpoint = new PipeInpoint(InProcessId, request->Class, request->Subclass);
+            SystemCallsHelpers.DisableAccessToMemoryOfProcess(OriginalMemoryLayout);
 
-            // Create new pipe
-            Pipe pipe = new Pipe(PipeIdGenerator++, outpoint, inpoint, request->BufferSize);
-            // Add new pipe to list of pipes
-            Pipes.Add(pipe);
-            // Increment number of connections to the outpoint
-            outpoint.NumConnections++;
-
-            // Set result information
-            request->Result.Id = pipe.Id;
-
-            // Wake any threads (/processes) which were waiting on a pipe to be created
-            WakeWaitingThreads(outpoint, pipe.Id);
-
-            return true;
+            return OK;
         }
         public static void WakeWaitingThreads(PipeOutpoint outpoint, int newPipeId)
         {
@@ -176,7 +209,7 @@ namespace Kernel.Core.Pipes
                 Process process = ProcessManager.GetProcessById(processId);
                 Thread thread = ProcessManager.GetThreadById(threadId, process);
 
-                thread.Return1 = (uint)Processes.SystemCallResults.OK;
+                thread.Return1 = (uint)SystemCallResults.OK;
                 thread.Return2 = (uint)newPipeId;
                 thread.Return3 = 0;
                 thread.Return4 = 0;
@@ -222,51 +255,207 @@ namespace Kernel.Core.Pipes
         {
             return ThePipe.Outpoint.ProcessId == CallerProcessId;
         }
-        public static bool ReadPipe(ReadPipeRequest* request, uint CallerProcessId, out int BytesRead)
+        public static void ReadPipe(int PipeId, Process CallerProcess, Thread CallerThread)
         {
-            // Vaildate inputs
+            BasicConsole.WriteLine("ReadPipe: Validating inputs");
+            // Validate inputs
             //  - Check pipe exists
-            Pipe pipe = GetPipe(request->PipeId);
+            Pipe pipe = GetPipe(PipeId);
             if (pipe == null)
             {
-                // -1 = Failed to read
-                BytesRead = -1;
-                return false;
+                return;
             }
 
+            BasicConsole.WriteLine("ReadPipe: Checking caller allowed to write");
             // Check the caller is allowed to access the pipe
-            if (!AllowedToReadPipe(pipe, CallerProcessId))
+            if (!AllowedToReadPipe(pipe, CallerProcess.Id))
             {
-                BytesRead = -1;
-                return false;
+                return;
             }
 
-            // Read the pipe
-            BytesRead = pipe.Read(request->outBuffer, request->offset, request->length);
+            BasicConsole.WriteLine("ReadPipe: Getting out process");
+            // Get outpoint process
+            Process OutProcess = ProcessManager.GetProcessById(pipe.Outpoint.ProcessId);
+            if (OutProcess == null)
+            {
+                return;
+            }
 
-            // -1         = Failed to read
-            //  0 or more = Read nothing or something, both are valid
-            return BytesRead >= 0;
+            BasicConsole.WriteLine("ReadPipe: Getting in process");
+            // Get inpoint process
+            Process InProcess = ProcessManager.GetProcessById(pipe.Inpoint.ProcessId);
+            if (InProcess == null)
+            {
+                return;
+            }
+
+            BasicConsole.WriteLine("ReadPipe: Merging memory layouts");
+            // Merge memory layouts of out process (in process should have already been done by caller)
+            //  so we can access the request structure(s) and buffers
+            MemoryLayout OriginalMemoryLayout = SystemCallsHelpers.EnableAccessToMemoryOfProcess(OutProcess);
+
+            BasicConsole.WriteLine("ReadPipe: Adding caller to read queue");
+            // Add caller thread to the read queue
+            pipe.QueueToRead(CallerThread.Id);
+
+            BasicConsole.WriteLine("ReadPipe: Processing pipe queue");
+            // Process the pipe queue
+            ProcessPipeQueue(pipe, OutProcess, InProcess);
+
+            BasicConsole.WriteLine("ReadPipe: Unmerging memory layouts");
+            // Unmerge memory layouts
+            SystemCallsHelpers.DisableAccessToMemoryOfProcess(OriginalMemoryLayout);
         }
-        public static bool WritePipe(WritePipeRequest* request, uint CallerProcessId)
+        public static void WritePipe(int PipeId, Process CallerProcess, Thread CallerThread)
         {
-            // Vaildate inputs
+            BasicConsole.WriteLine("WritePipe: Validating inputs");
+            // Validate inputs
             //  - Check pipe exists
-            Pipe pipe = GetPipe(request->PipeId);
+            Pipe pipe = GetPipe(PipeId);
             if (pipe == null)
             {
-                return false;
+                return;
             }
 
+            BasicConsole.WriteLine("WritePipe: Checking caller allowed to write");
             // Check the caller is allowed to access the pipe
-            if (!AllowedToWritePipe(pipe, CallerProcessId))
+            if (!AllowedToWritePipe(pipe, CallerProcess.Id))
             {
-                return false;
+                return;
             }
 
-            return pipe.Write(request->inBuffer, request->offset, request->length);
-        }
+            BasicConsole.WriteLine("WritePipe: Getting out process");
+            // Get outpoint process
+            Process OutProcess = ProcessManager.GetProcessById(pipe.Outpoint.ProcessId);
+            if (OutProcess == null)
+            {
+                return;
+            }
 
+            BasicConsole.WriteLine("WritePipe: Getting in process");
+            // Get inpoint process
+            Process InProcess = ProcessManager.GetProcessById(pipe.Inpoint.ProcessId);
+            if (InProcess == null)
+            {
+                return;
+            }
+
+            BasicConsole.WriteLine("WritePipe: Merging memory layouts");
+            // Merge memory layouts of in process (out process should already have been done by caller)
+            //  so we can access the request structure(s) and buffers
+            MemoryLayout OriginalMemoryLayout = SystemCallsHelpers.EnableAccessToMemoryOfProcess(InProcess);
+
+            BasicConsole.WriteLine("WritePipe: Adding caller to write queue");
+            // Add caller thread to the write queue
+            pipe.QueueToWrite(CallerThread.Id);
+
+            BasicConsole.WriteLine("WritePipe: Processing pipe queue");
+            // Process the pipe queue
+            ProcessPipeQueue(pipe, OutProcess, InProcess);
+
+            BasicConsole.WriteLine("WritePipe: Unmerging memory layouts");
+            // Unmerge memory layouts
+            SystemCallsHelpers.DisableAccessToMemoryOfProcess(OriginalMemoryLayout);
+        }
+        private static void ProcessPipeQueue(Pipe pipe, Process OutProcess, Process InProcess)
+        {
+            BasicConsole.WriteLine("ProcessPipeQueue: Checking first loop condition");
+            while ((pipe.AreThreadsWaitingToWrite() && pipe.CanWrite()) || (pipe.AreThreadsWaitingToRead() && pipe.CanRead()))
+            {
+                BasicConsole.WriteLine("ProcessPipeQueue: Loop start");
+                if (pipe.CanWrite())
+                {
+                    BasicConsole.WriteLine("ProcessPipeQueue: Pipe can write");
+
+                    /*  - Dequeue thread to write
+                     *  - Find thread to write
+                     *  - Load pointer to request structure from thread's stack
+                     *  - Write pipe
+                     *  - Setup return values for thread
+                     *  - Wake thread
+                     *  - Loop back
+                     */
+
+                    BasicConsole.WriteLine("ProcessPipeQueue: Dequeuing out thread id");
+                    UInt32 ThreadId;
+                    if (!pipe.DequeueToWrite(out ThreadId))
+                    {
+                        break;
+                    }
+
+                    BasicConsole.WriteLine("ProcessPipeQueue: Getting out thread");
+                    Thread WriteThread = ProcessManager.GetThreadById(ThreadId, OutProcess);
+                    if (WriteThread == null)
+                    {
+                        break;
+                    }
+
+                    BasicConsole.WriteLine("ProcessPipeQueue: Writing pipe");
+                    WritePipeRequest* Request = (WritePipeRequest*)WriteThread.Param1;
+                    bool Successful = pipe.Write(Request->inBuffer, Request->offset, Request->length);
+                    if (Successful)
+                    {
+                        BasicConsole.WriteLine("ProcessPipeQueue: Write successful");
+                        WriteThread.Return1 = (uint)SystemCallResults.OK;
+                        WriteThread._Wake();
+                    }
+                    else
+                    {
+                        BasicConsole.WriteLine("ProcessPipeQueue: Write failed");
+                        WriteThread.Return1 = (uint)SystemCallResults.Fail;
+                        WriteThread._Wake();
+                    }
+                }
+                else if (pipe.CanRead())
+                {
+                    BasicConsole.WriteLine("ProcessPipeQueue: Pipe can read");
+
+                    /*  - Dequeue thread to read
+                     *  - Find thread to read
+                     *  - Load pointer to request structure from thread's stack
+                     *  - Read pipe
+                     *  - Setup return values for thread
+                     *  - Wake thread
+                     *  - Loop back
+                    */
+
+                    BasicConsole.WriteLine("ProcessPipeQueue: Dequeuing in thread id");
+                    UInt32 ThreadId;
+                    if (!pipe.DequeueToRead(out ThreadId))
+                    {
+                        break;
+                    }
+
+                    BasicConsole.WriteLine("ProcessPipeQueue: Getting in thread");
+                    Thread ReadThread = ProcessManager.GetThreadById(ThreadId, InProcess);
+                    if (ReadThread == null)
+                    {
+                        break;
+                    }
+
+                    BasicConsole.WriteLine("ProcessPipeQueue: Reading pipe");
+                    ReadPipeRequest* Request = (ReadPipeRequest*)ReadThread.Param1;
+                    int BytesRead;
+                    bool Successful = pipe.Read(Request->outBuffer, Request->offset, Request->length, out BytesRead);
+                    if (Successful)
+                    {
+                        BasicConsole.WriteLine("ProcessPipeQueue: Read successful");
+                        ReadThread.Return1 = (uint)SystemCallResults.OK;
+                        ReadThread.Return2 = (uint)BytesRead;
+                        ReadThread._Wake();
+                    }
+                    else
+                    {
+                        BasicConsole.WriteLine("ProcessPipeQueue: Read failed");
+                        ReadThread.Return1 = (uint)SystemCallResults.Fail;
+                        ReadThread._Wake();
+                    }
+                }
+
+                BasicConsole.WriteLine("ProcessPipeQueue: Looping...");
+            }
+        }
+        
         private static PipeOutpoint GetOutpoint(uint OutProcessId, PipeClasses Class, PipeSubclasses Subclass)
         {
             PipeOutpoint outpoint = null;

@@ -129,7 +129,7 @@ namespace Kernel.Hardware.Processes
             BasicConsole.WriteLine("Allocating memory for heap...");
 #endif
             // Allocate memory for new heap
-            uint heapPages = 256; // 1MiB, page-aligned
+            uint heapPages = 64; // 256KiB, page-aligned
             FOS_System.HeapBlock* heapPtr = (FOS_System.HeapBlock*)VirtMemManager.MapFreePages(
                                 UserMode ? VirtMemImpl.PageFlags.None :
                                            VirtMemImpl.PageFlags.KernelOnly, (int)heapPages);

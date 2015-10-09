@@ -34,8 +34,18 @@ namespace Kernel.Hardware.VirtMem
 {
     public class MemoryLayout : FOS_System.Object
     {
-        public UInt32Dictionary CodePages = new UInt32Dictionary(64);
-        public UInt32Dictionary DataPages = new UInt32Dictionary(64);
+        public UInt32Dictionary CodePages;
+        public UInt32Dictionary DataPages;
+
+        public MemoryLayout()
+            : this(16, 64)
+        {
+        }
+        public MemoryLayout(int InitialCodeCapacity, int InitialDataCapacity)
+        {
+            CodePages = new UInt32Dictionary(InitialCodeCapacity);
+            DataPages = new UInt32Dictionary(InitialDataCapacity);
+        }
 
         [Drivers.Compiler.Attributes.NoDebug]
         public void AddCodePage(uint pAddr, uint vAddr)
@@ -193,7 +203,10 @@ namespace Kernel.Hardware.VirtMem
 
         public MemoryLayout Merge(MemoryLayout y)
         {
-            MemoryLayout result = new MemoryLayout();
+            MemoryLayout result = new MemoryLayout(
+                CodePages.Keys.Count + y.CodePages.Keys.Count, 
+                DataPages.Keys.Count + y.DataPages.Keys.Count);
+            
 
             for (int i = 0; i < CodePages.Keys.Count; i++)
             {

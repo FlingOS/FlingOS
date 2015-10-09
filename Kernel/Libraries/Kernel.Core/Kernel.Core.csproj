@@ -106,6 +106,7 @@
     <Compile Include="Processes\ELF\ELFStringTable.cs" />
     <Compile Include="Processes\SystemCallMethods.cs" />
     <Compile Include="Processes\SystemCalls.cs" />
+    <Compile Include="Processes\SystemCallsHelpers.cs" />
     <Compile Include="Tasks\WindowManagerTask.cs" />
     <Compile Include="Tasks\DeviceManagerTask.cs" />
     <Compile Include="Tasks\EasterTask.cs" />

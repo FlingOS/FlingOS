@@ -94,7 +94,7 @@ namespace Kernel.Core.Tasks
             }
             finally
             {
-
+                Heap.Free(WritePipeRequestPtr);
             }
         }
     }
