@@ -10,7 +10,7 @@ namespace Kernel.Core.Tasks
 
         private static uint GCThreadId;
 
-        private static Pipes.Standard.StandardOutPipe StdOut;
+        private static Pipes.Standard.StandardOutpoint StdOut;
 
         public static void Main()
         {
@@ -25,7 +25,7 @@ namespace Kernel.Core.Tasks
 
             try
             {
-                StdOut = new Pipes.Standard.StandardOutPipe();
+                StdOut = new Pipes.Standard.StandardOutpoint(true);
                 StdOut.WaitForConnect();
 
                 uint loops = 0;

@@ -243,6 +243,20 @@ namespace Kernel.Core.Processes
                     SysCall_Wake(callerProcesId, param1);
                     result = SystemCallResults.OK;
                     break;
+                case SystemCallNumbers.RegisterIRQHandler:
+#if SYSCALLS_TRACE
+                    BasicConsole.WriteLine("System call : Register IRQ Handler");
+#endif
+                    SysCall_RegisterIRQHandler((int)param1, param2, callerProcesId);
+                    result = SystemCallResults.OK;
+                    break;
+                case SystemCallNumbers.DeregisterIRQHandler:
+#if SYSCALLS_TRACE
+                    BasicConsole.WriteLine("System call : Deregister IRQ Handler");
+#endif
+                    SysCall_DeregisterIRQHandler((int)param1, callerProcesId);
+                    result = SystemCallResults.OK;
+                    break;
                 case SystemCallNumbers.RegisterSyscallHandler:
 #if SYSCALLS_TRACE
                     BasicConsole.WriteLine("System call : Register Syscall Handler");
@@ -328,6 +342,27 @@ namespace Kernel.Core.Processes
             BasicConsole.WriteLine("Waking thread...");
 #endif
             ProcessManager.GetThreadById(threadToWakeId, ProcessManager.GetProcessById(callerProcessId))._Wake();
+        }
+        private static void SysCall_RegisterIRQHandler(int IRQNum, uint handlerAddr, uint callerProcessId)
+        {
+#if SYSCALLS_TRACE
+            BasicConsole.WriteLine("Registering IRQ handler...");
+#endif
+            Process theProcess = ProcessManager.GetProcessById(callerProcessId);
+
+            if (handlerAddr != 0xFFFFFFFF)
+            {
+                theProcess.IRQHandler = (Hardware.Processes.IRQHanderDelegate)Utilities.ObjectUtilities.GetObject((void*)handlerAddr);
+            }
+
+            theProcess.IRQsToHandle.Set(IRQNum);
+        }
+        private static void SysCall_DeregisterIRQHandler(int IRQNum, uint callerProcessId)
+        {
+#if SYSCALLS_TRACE
+            BasicConsole.WriteLine("Deregistering IRQ handler...");
+#endif
+            ProcessManager.GetProcessById(callerProcessId).IRQsToHandle.Clear(IRQNum);
         }
         private static void SysCall_RegisterSyscallHandler(int syscallNum, uint handlerAddr, uint callerProcessId)
         {

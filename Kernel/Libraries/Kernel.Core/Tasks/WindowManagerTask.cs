@@ -1,7 +1,8 @@
 ﻿using System;
+using Kernel.Core.Processes;
 using Kernel.FOS_System;
 using Kernel.FOS_System.Collections;
-using Kernel.Core.Processes;
+using Kernel.Hardware.Devices;
 
 namespace Kernel.Core.Tasks
 {
@@ -9,8 +10,7 @@ namespace Kernel.Core.Tasks
     {
         private class PipeInfo : FOS_System.Object
         {
-            public int Id;
-            public uint OutProcessId;
+            public Pipes.Standard.StandardInpoint StdIn;
             public Console ScreenOutput = new Consoles.AdvancedConsole();
         }
 
@@ -28,7 +28,6 @@ namespace Kernel.Core.Tasks
         private static uint MainThreadId = 1;
         private static uint GCThreadId;
         private static uint ProcessingThreadId;
-
         private static bool ProcessingThreadAwake = false;
 
         public static void Main()
@@ -58,78 +57,43 @@ namespace Kernel.Core.Tasks
 
             SystemCallMethods.RegisterSyscallHandler(SystemCallNumbers.RegisterPipeOutpoint, SyscallHandler);
 
-            Pipes.ReadPipeRequest* ReadPipeRequestPtr = (Pipes.ReadPipeRequest*)Heap.AllocZeroed((uint)sizeof(Pipes.ReadPipeRequest), "Window Manager : Alloc ReadPipeRequest");
-            try
+            // Wait for pipe to be created
+            SystemCallMethods.SleepThread(SystemCallMethods.IndefiniteSleepThread);
+
+            SystemCallMethods.RegisterIRQHandler(1, HandleIRQ);
+            Keyboard.InitDefault();
+
+            while (!Terminating)
             {
-                bool CanReadPipe = ReadPipeRequestPtr != null;
-                if (CanReadPipe)
+                try
                 {
-                    ReadPipeRequestPtr->length = 2000;
-                    ReadPipeRequestPtr->outBuffer = (byte*)Heap.AllocZeroed((uint)ReadPipeRequestPtr->length, "Window Manager : Alloc read pipe buffer");
-                    if (ReadPipeRequestPtr->outBuffer == null)
+                    if (CurrentPipeIdx > -1)
                     {
-                        CanReadPipe = false;
-                        Heap.Free(ReadPipeRequestPtr);
-                    }
-                }
+                        PipeInfo CurrentPipeInfo = ((PipeInfo)ConnectedPipes[CurrentPipeIdx]);
 
-                // Wait for pipe to be created
-                SystemCallMethods.SleepThread(SystemCallMethods.IndefiniteSleepThread);
+                        CurrentPipeInfo.ScreenOutput.Write(CurrentPipeInfo.StdIn.Read());
 
-                while (!Terminating)
-                {
-                    try
-                    {
-                        if (CanReadPipe && CurrentPipeIdx > -1)
+                        bool AltPressed = Keyboard.Default.AltPressed;
+                        KeyboardKey Key;
+                        bool GotKey = Keyboard.Default.GetKey(out Key);
+                        if (GotKey)
                         {
-                            PipeInfo CurrentPipeInfo = ((PipeInfo)ConnectedPipes[CurrentPipeIdx]);
-
-                            ReadPipeRequestPtr->offset = 0;
-                            ReadPipeRequestPtr->PipeId = CurrentPipeInfo.Id;
-
-                            int BytesRead;
-                            SystemCallResults SysCallResult = SystemCallMethods.ReadPipe(ReadPipeRequestPtr, out BytesRead);
-                            switch (SysCallResult)
+                            if (AltPressed && Key == KeyboardKey.Tab)
                             {
-                                case SystemCallResults.Unhandled:
-                                    CurrentPipeInfo.ScreenOutput.WriteLine("WM > ReadPipe: Unhandled!");
-                                    break;
-                                case SystemCallResults.Fail:
-                                    CurrentPipeInfo.ScreenOutput.WriteLine("WM > ReadPipe: Failed!");
-                                    break;
-                                case SystemCallResults.OK:
-                                    //ScreenOutput.WriteLine("WM > ReadPipe: Succeeded.");
-                                    //ScreenOutput.Write("WM > Bytes read: ");
-                                    //ScreenOutput.WriteLine(BytesRead);
-
-                                    if (BytesRead > 0)
-                                    {
-                                        FOS_System.String message = ByteConverter.GetASCIIStringFromASCII(ReadPipeRequestPtr->outBuffer, 0, (uint)BytesRead);
-                                        CurrentPipeInfo.ScreenOutput.Write(message);
-                                    }
-                                    break;
-                                default:
-                                    CurrentPipeInfo.ScreenOutput.WriteLine("WM > ReadPipe: Unexpected system call result!");
-                                    break;
-                            }
-
-                            CurrentPipeIdx++;
-                            if (CurrentPipeIdx >= ConnectedPipes.Count)
-                            {
-                                CurrentPipeIdx = 0;
+                                CurrentPipeIdx++;
+                                if (CurrentPipeIdx >= ConnectedPipes.Count)
+                                {
+                                    CurrentPipeIdx = 0;
+                                }
                             }
                         }
                     }
-                    catch
-                    {
-                        BasicConsole.WriteLine("WM > Exception running window manager.");
-                        BasicConsole.WriteLine(ExceptionMethods.CurrentException.Message);
-                    }
                 }
-            }
-            finally
-            {
-                Heap.Free(ReadPipeRequestPtr);
+                catch
+                {
+                    BasicConsole.WriteLine("WM > Exception running window manager.");
+                    BasicConsole.WriteLine(ExceptionMethods.CurrentException.Message);
+                }
             }
         }
 
@@ -145,94 +109,56 @@ namespace Kernel.Core.Tasks
 
                 BasicConsole.WriteLine("WM > Processing thread runnning...");
 
+                // Delay to allow time for Register Outpoint Deferred System Call to complete
+                SystemCallMethods.SleepThread(500);
+
                 int numOutpoints;
                 SystemCallResults SysCallResult;
-                GetNumPipeOutpoints(out numOutpoints, out SysCallResult);
+                Pipes.BasicServerHelpers.GetNumPipeOutpoints(out numOutpoints, out SysCallResult, Pipes.PipeClasses.Standard, Pipes.PipeSubclasses.Standard_Out);
 
                 if (SysCallResult == SystemCallResults.OK && numOutpoints > 0)
                 {
-                    Pipes.PipeOutpointDescriptor[] OutpointDescriptors = null;
-                    GetOutpointDescriptors(numOutpoints, ref SysCallResult, ref OutpointDescriptors);
+                    Pipes.PipeOutpointDescriptor[] OutpointDescriptors;
+                    Pipes.BasicServerHelpers.GetOutpointDescriptors(numOutpoints, ref SysCallResult, out OutpointDescriptors, Pipes.PipeClasses.Standard, Pipes.PipeSubclasses.Standard_Out);
 
                     if (SysCallResult == SystemCallResults.OK)
                     {
-                        Pipes.CreatePipeRequest* RequestPtr = (Pipes.CreatePipeRequest*)Heap.AllocZeroed((uint)sizeof(Pipes.CreatePipeRequest), "Device Manager : Alloc CreatePipeRequest");
-                        if (RequestPtr != null)
+                        for (int i = 0; i < OutpointDescriptors.Length; i++)
                         {
-                            try
+                            Pipes.PipeOutpointDescriptor Descriptor = OutpointDescriptors[i];
+                            bool PipeExists = false;
+
+                            for (int j = 0; j < ConnectedPipes.Count; j++)
                             {
-                                RequestPtr->BufferSize = 4000; // 2000 chars * 2 bytes per char
-                                RequestPtr->Class = Pipes.PipeClasses.Standard;
-                                RequestPtr->Subclass = Pipes.PipeSubclasses.Standard_Out;
-
-                                for (int i = 0; i < OutpointDescriptors.Length; i++)
+                                PipeInfo ExistingPipeInfo = (PipeInfo)ConnectedPipes[j];
+                                if (ExistingPipeInfo.StdIn.OutProcessId == Descriptor.ProcessId)
                                 {
-                                    try
-                                    {
-                                        Pipes.PipeOutpointDescriptor Descriptor = OutpointDescriptors[i];
-                                        bool PipeExists = false;
-
-                                        for (int j = 0; j < ConnectedPipes.Count; j++)
-                                        {
-                                            PipeInfo ExistingPipeInfo = (PipeInfo)ConnectedPipes[j];
-                                            if (ExistingPipeInfo.OutProcessId == Descriptor.ProcessId)
-                                            {
-                                                PipeExists = true;
-                                                break;
-                                            }
-                                        }
-
-                                        if (!PipeExists)
-                                        {
-                                            SysCallResult = SystemCallMethods.CreatePipe(Descriptor.ProcessId, RequestPtr);
-                                            switch (SysCallResult)
-                                            {
-                                                case SystemCallResults.Unhandled:
-                                                    BasicConsole.WriteLine("WM > CreatePipe: Unhandled!");
-                                                    break;
-                                                case SystemCallResults.Fail:
-                                                    BasicConsole.WriteLine("WM > CreatePipe: Failed!");
-                                                    break;
-                                                case SystemCallResults.OK:
-                                                    BasicConsole.WriteLine("WM > CreatePipe: Succeeded.");
-                                                    int CreatedPipeId = RequestPtr->Result.Id;
-
-                                                    BasicConsole.Write("WM > New pipe id: ");
-                                                    BasicConsole.WriteLine(CreatedPipeId);
-
-                                                    ConnectedPipes.Add(new PipeInfo()
-                                                    {
-                                                        Id = CreatedPipeId,
-                                                        OutProcessId = Descriptor.ProcessId
-                                                    });
-
-                                                    if (CurrentPipeIdx == -1)
-                                                    {
-                                                        CurrentPipeIdx = 0;
-                                                        SystemCallMethods.WakeThread(MainThreadId);
-                                                    }
-                                                    break;
-                                                default:
-                                                    BasicConsole.WriteLine("WM > CreatePipe: Unexpected system call result!");
-                                                    break;
-                                            }
-                                        }
-                                    }
-                                    catch
-                                    {
-                                        BasicConsole.WriteLine("WM > Error occurred while trying to create pipe!");
-                                        BasicConsole.WriteLine(ExceptionMethods.CurrentException.Message);
-                                    }
+                                    PipeExists = true;
+                                    break;
                                 }
                             }
-                            finally
+
+                            if(!PipeExists)
                             {
-                                Heap.Free(RequestPtr);
+                                try
+                                {
+                                    ConnectedPipes.Add(new PipeInfo()
+                                    {
+                                        StdIn = new Pipes.Standard.StandardInpoint(Descriptor.ProcessId, 2000, true), // 2000 ASCII characters = 2000 bytes
+                                    });
+
+                                    if (CurrentPipeIdx == -1)
+                                    {
+                                        CurrentPipeIdx = 0;
+                                        SystemCallMethods.WakeThread(MainThreadId);
+                                    }
+                                }
+                                catch
+                                {
+                                    BasicConsole.WriteLine("WM > Error creating new pipe!");
+                                    BasicConsole.WriteLine(ExceptionMethods.CurrentException.Message);
+                                }
                             }
-                        }
-                        else
-                        {
-                            BasicConsole.WriteLine("WM > RequestPtr null! No memory allocated.");
                         }
                     }
                     else
@@ -246,75 +172,6 @@ namespace Kernel.Core.Tasks
                 }
             }
         }
-        private static void GetNumPipeOutpoints(out int numOutpoints, out SystemCallResults SysCallResult)
-        {
-            SysCallResult = SystemCallMethods.GetNumPipeOutpoints(Pipes.PipeClasses.Standard, Pipes.PipeSubclasses.Standard_Out, out numOutpoints);
-            switch (SysCallResult)
-            {
-                case SystemCallResults.Unhandled:
-                    BasicConsole.WriteLine("WM > GetNumPipeOutpoints: Unhandled!");
-                    break;
-                case SystemCallResults.Fail:
-                    BasicConsole.WriteLine("WM > GetNumPipeOutpoints: Failed!");
-                    break;
-                case SystemCallResults.OK:
-                    BasicConsole.WriteLine("WM > GetNumPipeOutpoints: Succeeded.");
-
-                    BasicConsole.Write("WM > Num pipe outpoints of class: Standard, subclass: Standard_Out = ");
-                    BasicConsole.WriteLine(numOutpoints);
-                    break;
-                default:
-                    BasicConsole.WriteLine("WM > GetNumPipeOutpoints: Unexpected system call result!");
-                    break;
-            }
-        }
-        private static void GetOutpointDescriptors(int numOutpoints, ref SystemCallResults SysCallResult, ref Pipes.PipeOutpointDescriptor[] OutpointDescriptors)
-        {
-            OutpointDescriptors = new Pipes.PipeOutpointDescriptor[numOutpoints];
-
-            Pipes.PipeOutpointsRequest* RequestPtr = (Pipes.PipeOutpointsRequest*)Heap.AllocZeroed((uint)sizeof(Pipes.PipeOutpointsRequest), "Device Manager : Alloc PipeOutpointsRequest");
-            if (RequestPtr != null)
-            {
-                try
-                {
-                    RequestPtr->MaxDescriptors = numOutpoints;
-                    RequestPtr->Outpoints = (Pipes.PipeOutpointDescriptor*)((byte*)Utilities.ObjectUtilities.GetHandle(OutpointDescriptors) + FOS_System.Array.FieldsBytesSize);
-                    if (RequestPtr->Outpoints != null)
-                    {
-                        SysCallResult = SystemCallMethods.GetPipeOutpoints(Pipes.PipeClasses.Standard, Pipes.PipeSubclasses.Standard_Out, RequestPtr);
-                        switch (SysCallResult)
-                        {
-                            case SystemCallResults.Unhandled:
-                                BasicConsole.WriteLine("WM > GetPipeOutpoints: Unhandled!");
-                                break;
-                            case SystemCallResults.Fail:
-                                BasicConsole.WriteLine("WM > GetPipeOutpoints: Failed!");
-                                break;
-                            case SystemCallResults.OK:
-                                BasicConsole.WriteLine("WM > GetPipeOutpoints: Succeeded.");
-                                break;
-                            default:
-                                BasicConsole.WriteLine("WM > GetPipeOutpoints: Unexpected system call result!");
-                                break;
-                        }
-                    }
-                    else
-                    {
-                        BasicConsole.WriteLine("WM > RequestPtr->Outpoints null! No memory allocated.");
-                    }
-                }
-                finally
-                {
-                    Heap.Free(RequestPtr);
-                }
-            }
-            else
-            {
-                BasicConsole.WriteLine("WM > RequestPtr null! No memory allocated.");
-            }
-        }
-
-
         public static int SyscallHandler(uint syscallNumber, uint param1, uint param2, uint param3,
             ref uint Return2, ref uint Return3, ref uint Return4,
             uint callerProcesId, uint callerThreadId)
@@ -339,6 +196,16 @@ namespace Kernel.Core.Tasks
             }
 
             return (int)result;
+        }
+
+        private static int HandleIRQ(uint IRQNum)
+        {
+            if (IRQNum == 1)
+            {
+                ((Hardware.Keyboards.PS2)Keyboard.Default).InterruptHandler();
+                return 0;
+            }
+            return -1;
         }
     }
 }

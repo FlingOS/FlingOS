@@ -65,7 +65,7 @@ namespace Kernel.Core.Pipes
 
                 if (anOutpoint.Class == Class &&
                     anOutpoint.Subclass == Subclass &&
-                    (   anOutpoint.NumConnections == PipeConstants.UnlimitedConnections || 
+                    (   anOutpoint.MaxConnections == PipeConstants.UnlimitedConnections || 
                         anOutpoint.NumConnections < anOutpoint.MaxConnections))
                 {
                     numOutpoints++;
@@ -119,7 +119,7 @@ namespace Kernel.Core.Pipes
 
                     if (anOutpoint.Class == Class &&
                         anOutpoint.Subclass == Subclass &&
-                        (   anOutpoint.NumConnections == PipeConstants.UnlimitedConnections ||
+                        (   anOutpoint.MaxConnections == PipeConstants.UnlimitedConnections ||
                             anOutpoint.NumConnections < anOutpoint.MaxConnections))
                     {
                         // Set the resultant values

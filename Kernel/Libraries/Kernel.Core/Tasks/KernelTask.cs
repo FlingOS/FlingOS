@@ -21,8 +21,10 @@ namespace Kernel.Core.Tasks
 
         private static Thread DeferredSyscallsThread;
 
-        private static Pipes.Standard.StandardOutPipe StdOut;
-        
+        private static Pipes.Standard.StandardOutpoint StdOut;
+
+        private static int IRQ1HandlerId;
+
         public static void Main()
         {
             BasicConsole.WriteLine("Kernel task! ");
@@ -52,7 +54,10 @@ namespace Kernel.Core.Tasks
                 ProcessManager.CurrentProcess.SyscallsToHandle.Set((int)SystemCallNumbers.WaitOnPipeCreate);
                 ProcessManager.CurrentProcess.SyscallsToHandle.Set((int)SystemCallNumbers.ReadPipe);
                 ProcessManager.CurrentProcess.SyscallsToHandle.Set((int)SystemCallNumbers.WritePipe);
-                
+
+                BasicConsole.WriteLine(" > Initialising IRQ handling...");
+                IRQ1HandlerId = Hardware.Interrupts.Interrupts.AddIRQHandler(1, IRQ1, null, true, true, "KernelTask : IRQ1");
+
                 //ProcessManager.CurrentProcess.OutputMemTrace = true;
 
                 BasicConsole.WriteLine(" > Starting deferred syscalls thread...");
@@ -87,7 +92,7 @@ namespace Kernel.Core.Tasks
 
                 try
                 {
-                    StdOut = new Pipes.Standard.StandardOutPipe();
+                    StdOut = new Pipes.Standard.StandardOutpoint(true);
                     StdOut.WaitForConnect();
 
                     uint loops = 0;
@@ -112,19 +117,9 @@ namespace Kernel.Core.Tasks
                     BasicConsole.WriteLine(ExceptionMethods.CurrentException.Message);
                 }
 
-                //BasicConsole.WriteLine(" > Starting Non-critical interrupts task...");
-                //ProcessManager.CurrentProcess.CreateThread(Hardware.Tasks.NonCriticalInterruptsTask.Main);
-
-                //BasicConsole.WriteLine(" > Starting System Status task...");
-                //ProcessManager.CurrentProcess.CreateThread(Core.Tasks.SystemStatusTask.Main);
-
-                //BasicConsole.WriteLine(" > Starting Device Manager task...");
-                //ProcessManager.CurrentProcess.CreateThread(Hardware.Tasks.DeviceManagerTask.Main);
-
                 //BasicConsole.WriteLine(" > Starting Play Notes task...");
                 //ProcessManager.CurrentProcess.CreateThread(Hardware.Tasks.PlayNotesTask.Main);
 
-                //Hardware.Devices.Keyboard.InitDefault();
                 //Core.Console.InitDefault();
                 //Core.Shell.InitDefault();
 
@@ -362,6 +357,38 @@ namespace Kernel.Core.Tasks
             CallerThread._Wake();
         }
 
+        public static void IRQ1(FOS_System.Object state)
+        {
+            BasicConsole.WriteLine(" ---- IRQ 1 ---- ");
+            HandleIRQ(1);
+            BasicConsole.WriteLine(" --------------- ");
+        }
+        private static void HandleIRQ(uint num)
+        {
+            Process currProcess = ProcessManager.CurrentProcess;
+            Thread currThread = ProcessManager.CurrentThread;
+            bool switched = false;
+            
+            Process handlerProcess = null;
+            for (int i = 0; i < ProcessManager.Processes.Count; i++)
+            {
+                handlerProcess = (Process)ProcessManager.Processes[i];
+                if (handlerProcess.IRQsToHandle.IsSet((int)num))
+                {
+                    ProcessManager.SwitchProcess(handlerProcess.Id, ProcessManager.THREAD_DONT_CARE);
+                    switched = true;
+                    if (handlerProcess.IRQHandler(num) == 0)
+                    {
+                        break;
+                    }
+                }
+            }
+
+            if (switched)
+            {
+                ProcessManager.SwitchProcess(currProcess.Id, (int)currThread.Id);
+            }
+        }
         
         public static int SyscallHandler(uint syscallNumber, uint param1, uint param2, uint param3, 
             ref uint Return2, ref uint Return3, ref uint Return4,
