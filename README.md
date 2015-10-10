@@ -1,13 +1,11 @@
 # [FlingOS™](http://www.flingos.co.uk)
 
-***FlingOS is launching on September 17th, in Bristol, UK. [Find out more here](http://www.flingos.co.uk).***
-
-*The following documentation is being written in preparation for our launch which includes a new website. As such, some of the links may not work yet.*
+***FlingOS launched on September 17th, in Bristol, UK. [Find out more here](http://www.flingos.co.uk/Launch).***
 
 Welcome! This is the main repository for the FlingOS™ project. We used to be over on BitBucket but have recently shifted across. 
-The FlingOS project is an educational operating system aiming to provide high-quality resources for learning OS and low-level development. You can find out more on our website over at [www.flingos.co.uk](http://www.flingos.co.uk). There you'll also find our [documentation](http://www.flingos.co.uk/docs/) and links to our tutorial videos.
+The FlingOS project is an educational operating system aiming to provide high-quality resources for learning OS and low-level development. You can find out more on our website over at [www.flingos.co.uk](http://www.flingos.co.uk). There you'll also find our [documentation](http://www.flingos.co.uk/docs/) and links to our tutorial videos. If you're wondering why we use C#, take a look at [this article](http://www.flingos.co.uk/docs/reference/Why-CSharp).
 
-The FlingOS project is a three part approach to teaching OS and low-level development. You're currently looking at just one part - the code itself. The code acts as a reference codebase for people to learn and compare to. The second part is our reference articles, which explain all the OS and low-level technology is detail. The third part is our tutorials which are free, ~20min videos with complete resources, available on YouTube. You can find the links on our [main website](http://www.flingos.co.uk).
+The FlingOS project is a three part approach to teaching OS and low-level development. You're currently looking at just one part - the code itself. The code acts as a sample codebase for people to learn from and compare to. The second part is our [conceptual articles](http://www.flingos.co.uk/docs), which explain all the OS and low-level technology in detail. The third part is our tutorials which are free, ~20min videos with complete resources, [available on YouTube](https://www.youtube.com/playlist?list=PLKbvCgwMcH7BX6Z8Bk1EuFwDa0WGkMnrz). You can find all these links and more on our [main website](http://www.flingos.co.uk).
 
 ## Getting Started
 
@@ -27,7 +25,7 @@ If you'd just like to use our ahead-of-time compiler to write your own C#, VB.Ne
 
 ## Structure
 
-- ***Documentation*** : Contains the SHFB documentation project and reference articles. The latest build of the documentation is available onto view [on the website](http://www.flingos.co.uk/docs).
+- ***Documentation*** : Contains the SHFB documentation project and reference articles. The latest build of the documentation is available to view [on the website](http://www.flingos.co.uk/docs).
   - ***Markdown*** : Contains the markdown-syntax reference articles.
 - ***Kernel*** : Contains the main kernel code.
   - ***Compiler*** : *Deprecated* This is the old FlingOS Compiler. It will be deleted soon. Instead, see Drivers/Compiler for the new compiler which can compile both the kernel and drivers.
