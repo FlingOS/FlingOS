@@ -219,28 +219,19 @@ namespace Kernel.Hardware.Processes
 
         public static bool WakeProcess(uint processId, uint threadId)
         {
+            return WakeThread(GetProcessById(processId), threadId);
+        }
+        public static bool WakeThread(Process theProcess, uint threadId)
+        {
             bool Woken = false;
-            Process theProcess = null;
-            
-            for (int i = 0; i < Processes.Count; i++)
-            {
-                Process aProcess = ((Process)Processes[i]);
-                if (aProcess.Id == processId)
-                {
-                    theProcess = aProcess;
-                }
-            }
 
             if (theProcess != null)
             {
-                for (int i = 0; i < theProcess.Threads.Count; i++)
+                Thread theThread = GetThreadById(threadId, theProcess);
+                if (theThread != null)
                 {
-                    Thread aThread = ((Thread)theProcess.Threads[i]);
-                    if (aThread.Id == threadId)
-                    {
-                        aThread._Wake();
-                        Woken = true;
-                    }
+                    theThread._Wake();
+                    Woken = true;
                 }
             }
 

@@ -9,18 +9,20 @@ namespace Kernel.Core.Tasks
 {
     public unsafe static class KernelTask
     {
+        private class DeferredSyscallInfo : FOS_System.Object
+        {
+            public uint ProcessId;
+            public uint ThreadId;
+        }
+
         public static bool Terminating = false;
         private static CircularBuffer DeferredSyscallsInfo_Unqueued;
         private static CircularBuffer DeferredSyscallsInfo_Queued;
 
         private static Thread DeferredSyscallsThread;
-        
-        private class DeferredSyscallInfo : FOS_System.Object
-        {
-            public uint ProcessId; 
-            public uint ThreadId;
-        }
 
+        private static Pipes.Standard.StandardOutPipe StdOut;
+        
         public static void Main()
         {
             BasicConsole.WriteLine("Kernel task! ");
@@ -43,6 +45,7 @@ namespace Kernel.Core.Tasks
                 ProcessManager.CurrentProcess.SyscallsToHandle.Set((int)SystemCallNumbers.DeregisterSyscallHandler);
                 ProcessManager.CurrentProcess.SyscallsToHandle.Set((int)SystemCallNumbers.StartThread);
                 ProcessManager.CurrentProcess.SyscallsToHandle.Set((int)SystemCallNumbers.SleepThread);
+                ProcessManager.CurrentProcess.SyscallsToHandle.Set((int)SystemCallNumbers.WakeThread);
                 ProcessManager.CurrentProcess.SyscallsToHandle.Set((int)SystemCallNumbers.RegisterPipeOutpoint);
                 ProcessManager.CurrentProcess.SyscallsToHandle.Set((int)SystemCallNumbers.GetNumPipeOutpoints);
                 ProcessManager.CurrentProcess.SyscallsToHandle.Set((int)SystemCallNumbers.GetPipeOutpoints);
@@ -61,30 +64,52 @@ namespace Kernel.Core.Tasks
                 BasicConsole.WriteLine(" > Starting Idle thread...");
                 ProcessManager.CurrentProcess.CreateThread(Core.Tasks.IdleTask.Main);
 
-                BasicConsole.WriteLine(" > Starting Device Manager...");
-                Process DeviceManagerProcess = ProcessManager.CreateProcess(DeviceManagerTask.Main, "Device Manager", false, true);
-                //DeviceManagerProcess.OutputMemTrace = true;
-                ProcessManager.RegisterProcess(DeviceManagerProcess, Scheduler.Priority.Normal);
-
-                BasicConsole.WriteLine(" > [Pausing 500ms]");
-                // Delay before starting the Window Manager so the Device Manager has time to create the pipe outpoint
-                Thread.Sleep(500);
-
                 BasicConsole.WriteLine(" > Starting Window Manager...");
                 Process WindowManagerProcess = ProcessManager.CreateProcess(WindowManagerTask.Main, "Window Manager", false, true);
                 //WindowManagerProcess.OutputMemTrace = true;
                 ProcessManager.RegisterProcess(WindowManagerProcess, Scheduler.Priority.Normal);
+
+                BasicConsole.WriteLine(" > [Pausing 500ms]");
+                Thread.Sleep(500);
+
+                BasicConsole.WriteLine(" > Starting Device Manager...");
+                Process DeviceManagerProcess = ProcessManager.CreateProcess(DeviceManagerTask.Main, "Device Manager", false, true);
+                //DeviceManagerProcess.OutputMemTrace = true;
+                ProcessManager.RegisterProcess(DeviceManagerProcess, Scheduler.Priority.Normal);
+                
 
                 //TODO: Main task for commands etc
 
                 BasicConsole.WriteLine("Started.");
 
                 BasicConsole.PrimaryOutputEnabled = false;
+                BasicConsole.SecondaryOutputEnabled = false;
 
-                int x = 0;
-                while (!Terminating)
+                try
                 {
-                    SystemCallMethods.SleepThread(1000);
+                    StdOut = new Pipes.Standard.StandardOutPipe();
+                    StdOut.WaitForConnect();
+
+                    uint loops = 0;
+                    while (!Terminating)
+                    {
+                        try
+                        {
+                            StdOut.Write("Kernel: Hello, processor! (" + (FOS_System.String)loops++ + ")\n");
+                        }
+                        catch
+                        {
+                            BasicConsole.WriteLine("KT > Error writing to StdOut!");
+                            BasicConsole.WriteLine(ExceptionMethods.CurrentException.Message);
+                        }
+
+                        //SystemCallMethods.SleepThread(-1);
+                    }
+                }
+                catch
+                {
+                    BasicConsole.WriteLine("KT > Error initialising!");
+                    BasicConsole.WriteLine(ExceptionMethods.CurrentException.Message);
                 }
 
                 //BasicConsole.WriteLine(" > Starting Non-critical interrupts task...");
@@ -200,9 +225,9 @@ namespace Kernel.Core.Tasks
             switch (syscallNumber)
             {
                 case SystemCallNumbers.StartThread:
-                    BasicConsole.WriteLine("DSC: Create Thread");
-                    CallerProcess.CreateThread((ThreadStartMethod)Utilities.ObjectUtilities.GetObject((void*)Param1));
-                    BasicConsole.WriteLine("DSC: Create Thread - done.");
+                    BasicConsole.WriteLine("DSC: Start Thread");
+                    Return2 = CallerProcess.CreateThread((ThreadStartMethod)Utilities.ObjectUtilities.GetObject((void*)Param1)).Id;
+                    BasicConsole.WriteLine("DSC: Start Thread - done.");
                     result = SystemCallResults.OK;
                     break;
                 case SystemCallNumbers.RegisterPipeOutpoint:
@@ -347,7 +372,7 @@ namespace Kernel.Core.Tasks
                 ref Return2, ref Return3, ref Return4,
                 callerProcessId, callerThreadId);
 
-            if (result == SystemCallResults.Deferred)
+            if (result == SystemCallResults.Deferred || result == SystemCallResults.Deferred_PermitActions)
             {
                 BasicConsole.WriteLine("Deferring syscall...");
                 BasicConsole.WriteLine("Popping unqueued info object...");

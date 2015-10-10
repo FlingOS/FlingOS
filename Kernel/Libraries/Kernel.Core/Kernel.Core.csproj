@@ -96,6 +96,7 @@
     <Compile Include="Pipes\PipeInpoint.cs" />
     <Compile Include="Pipes\PipeManager.cs" />
     <Compile Include="Pipes\PipeOutpoint.cs" />
+    <Compile Include="Pipes\Standard\StandardOutPipe.cs" />
     <Compile Include="Processes\DynamicLinkerLoader.cs" />
     <Compile Include="Processes\ELF\ELFFile.cs" />
     <Compile Include="Processes\ELF\ELFHeader.cs" />

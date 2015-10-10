@@ -101,6 +101,7 @@ namespace Kernel.Core.Processes
             BasicConsole.WriteLine("Enumerating processes...");
 #endif
 
+            bool PermitActionResulted = false;
             for (int i = 0; i < ProcessManager.Processes.Count; i++)
             {
                 handlerProcess = (Process)ProcessManager.Processes[i];
@@ -122,18 +123,45 @@ namespace Kernel.Core.Processes
                     //}
 #endif
 
-                    result = (SystemCallResults)handlerProcess.SyscallHandler(syscallNumber,
+                    uint TempReturn2 = 0;
+                    uint TempReturn3 = 0;
+                    uint TempReturn4 = 0;
+                    SystemCallResults tempResult = (SystemCallResults)handlerProcess.SyscallHandler(syscallNumber,
                         param1, param2, param3,
-                        ref Return2, ref Return3, ref Return4, 
+                        ref TempReturn2, ref TempReturn3, ref TempReturn4, 
                         currProcess.Id, currThread.Id);
 
-                    if (result != SystemCallResults.Unhandled)
+                    if (tempResult == SystemCallResults.RequestAction_WakeThread)
+                    {
+                        BasicConsole.WriteLine("System calls : Performing action - wake thread");
+                        ProcessManager.WakeThread(handlerProcess, TempReturn2);
+                        tempResult = SystemCallResults.Unhandled;
+                    }
+
+                    if (tempResult != SystemCallResults.Unhandled && !PermitActionResulted)
                     {
 #if SYSCALLS_TRACE
                         BasicConsole.WriteLine("Result achieved.");
 #endif
+                        Return2 = TempReturn2;
+                        Return3 = TempReturn3;
+                        Return4 = TempReturn4;
 
-                        break;
+                        if (tempResult == SystemCallResults.OK_PermitActions)
+                        {
+                            result = SystemCallResults.OK;
+                            PermitActionResulted = true;
+                        }
+                        else if (tempResult == SystemCallResults.Deferred_PermitActions)
+                        {
+                            result = SystemCallResults.Deferred;
+                            PermitActionResulted = true;
+                        }
+                        else
+                        {
+                            result = tempResult;
+                            break;
+                        }
                     }
                 }
             }
@@ -203,9 +231,16 @@ namespace Kernel.Core.Processes
             {
                 case SystemCallNumbers.SleepThread:
 #if SYSCALLS_TRACE
-                    BasicConsole.WriteLine("System call : Sleep");
+                    BasicConsole.WriteLine("System call : Sleep Thread");
 #endif
                     SysCall_Sleep((int)param1, callerProcesId, callerThreadId);
+                    result = SystemCallResults.OK;
+                    break;
+                case SystemCallNumbers.WakeThread:
+#if SYSCALLS_TRACE
+                    BasicConsole.WriteLine("System call : Wake Thread");
+#endif
+                    SysCall_Wake(callerProcesId, param1);
                     result = SystemCallResults.OK;
                     break;
                 case SystemCallNumbers.RegisterSyscallHandler:
@@ -224,7 +259,7 @@ namespace Kernel.Core.Processes
                     break;
                 case SystemCallNumbers.StartThread:
 #if SYSCALLS_TRACE
-                    BasicConsole.WriteLine("System call : Create Thread");
+                    BasicConsole.WriteLine("System call : Start Thread");
 #endif
                     result = SystemCallResults.Deferred;
                     break;
@@ -232,7 +267,7 @@ namespace Kernel.Core.Processes
 #if SYSCALLS_TRACE
                     BasicConsole.WriteLine("System call : Register Pipe Outpoint");
 #endif
-                    result = SystemCallResults.Deferred;
+                    result = SystemCallResults.Deferred_PermitActions;
                     break;
                 case SystemCallNumbers.GetNumPipeOutpoints:
 #if SYSCALLS_TRACE
@@ -286,6 +321,13 @@ namespace Kernel.Core.Processes
             BasicConsole.WriteLine("Sleeping thread...");
 #endif
             ProcessManager.GetThreadById(callerThreadId, ProcessManager.GetProcessById(callerProcessId))._EnterSleep(ms);
+        }
+        private static void SysCall_Wake(uint callerProcessId, uint threadToWakeId)
+        {
+#if SYSCALLS_TRACE
+            BasicConsole.WriteLine("Waking thread...");
+#endif
+            ProcessManager.GetThreadById(threadToWakeId, ProcessManager.GetProcessById(callerProcessId))._Wake();
         }
         private static void SysCall_RegisterSyscallHandler(int syscallNum, uint handlerAddr, uint callerProcessId)
         {
@@ -415,6 +457,7 @@ namespace Kernel.Core.Processes
         GetThreadList,
         WaitOnThread,
         SleepThread,
+        WakeThread,
         CreateSemaphore,
         ReleaseSemaphore,
         WaitSemaphore,
@@ -435,7 +478,10 @@ namespace Kernel.Core.Processes
         Unhandled = -1,
         OK = 0,
         Deferred = 1,
-        Fail = 2
+        Fail = 2,
+        OK_PermitActions,
+        Deferred_PermitActions,
+        RequestAction_WakeThread
     }
 
 

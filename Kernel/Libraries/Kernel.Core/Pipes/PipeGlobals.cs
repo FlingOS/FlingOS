@@ -12,10 +12,11 @@ namespace Kernel.Core.Pipes
     }
     public enum PipeClasses : uint
     {
-        Display = 0xDEADBEEF
+        Standard
     }
     public enum PipeSubclasses : uint
     {
-        Display_Text_ASCII = 0x2BADB002
+        Standard_Out,
+        Standard_In
     }
 }

@@ -54,13 +54,14 @@ namespace Kernel.Core.Processes
         
         [Drivers.Compiler.Attributes.NoDebug]
         [Drivers.Compiler.Attributes.NoGC]
-        public static SystemCallResults StartThread(Kernel.Hardware.Processes.ThreadStartMethod startMethod)
+        public static SystemCallResults StartThread(Kernel.Hardware.Processes.ThreadStartMethod startMethod, out uint NewThreadId)
         {
             uint Return1 = 0;
             uint Return2 = 0;
             uint Return3 = 0;
             uint Return4 = 0;
             Call(SystemCallNumbers.StartThread, (uint)Utilities.ObjectUtilities.GetHandle(startMethod), 0, 0, ref Return1, ref Return2, ref Return3, ref Return4);
+            NewThreadId = (uint)Return2;
             return (SystemCallResults)Return1;
         }
         [Drivers.Compiler.Attributes.NoDebug]
@@ -72,6 +73,17 @@ namespace Kernel.Core.Processes
             uint Return3 = 0;
             uint Return4 = 0;
             Call(SystemCallNumbers.SleepThread, (uint)ms, 0, 0, ref Return1, ref Return2, ref Return3, ref Return4);
+            return (SystemCallResults)Return1;
+        }
+        [Drivers.Compiler.Attributes.NoDebug]
+        [Drivers.Compiler.Attributes.NoGC]
+        public static SystemCallResults WakeThread(uint ThreadId)
+        {
+            uint Return1 = 0;
+            uint Return2 = 0;
+            uint Return3 = 0;
+            uint Return4 = 0;
+            Call(SystemCallNumbers.WakeThread, ThreadId, 0, 0, ref Return1, ref Return2, ref Return3, ref Return4);
             return (SystemCallResults)Return1;
         }
         
