@@ -51,7 +51,7 @@ namespace Kernel.Core.Tasks
                 {
                     try
                     {
-                        StdOut.Write(StdOutPipeId, "Hello, world! (" + (FOS_System.String)loops++ + ")\n");
+                        StdOut.Write(StdOutPipeId, "Hello, world! (" + (FOS_System.String)loops++ + ")\n", true);
                     }
                     catch
                     {

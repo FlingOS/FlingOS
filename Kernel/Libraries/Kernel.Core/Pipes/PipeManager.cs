@@ -8,6 +8,13 @@ namespace Kernel.Core.Pipes
 {
     public unsafe static class PipeManager
     {
+        public enum RWResults
+        {
+            Error,
+            Complete,
+            Queued
+        }
+
         public static List PipeOutpoints = new List(256, 256);
         public static List Pipes = new List(20);
         
@@ -259,7 +266,7 @@ namespace Kernel.Core.Pipes
         {
             return ThePipe.Outpoint.ProcessId == CallerProcessId;
         }
-        public static void ReadPipe(int PipeId, Process CallerProcess, Thread CallerThread)
+        public static RWResults ReadPipe(int PipeId, bool Blocking, Process CallerProcess, Thread CallerThread)
         {
             BasicConsole.WriteLine("ReadPipe: Validating inputs");
             // Validate inputs
@@ -267,14 +274,14 @@ namespace Kernel.Core.Pipes
             Pipe pipe = GetPipe(PipeId);
             if (pipe == null)
             {
-                return;
+                return RWResults.Error;
             }
 
             BasicConsole.WriteLine("ReadPipe: Checking caller allowed to write");
             // Check the caller is allowed to access the pipe
             if (!AllowedToReadPipe(pipe, CallerProcess.Id))
             {
-                return;
+                return RWResults.Error;
             }
 
             BasicConsole.WriteLine("ReadPipe: Getting out process");
@@ -282,7 +289,7 @@ namespace Kernel.Core.Pipes
             Process OutProcess = ProcessManager.GetProcessById(pipe.Outpoint.ProcessId);
             if (OutProcess == null)
             {
-                return;
+                return RWResults.Error;
             }
 
             BasicConsole.WriteLine("ReadPipe: Getting in process");
@@ -290,7 +297,7 @@ namespace Kernel.Core.Pipes
             Process InProcess = ProcessManager.GetProcessById(pipe.Inpoint.ProcessId);
             if (InProcess == null)
             {
-                return;
+                return RWResults.Error;
             }
 
             BasicConsole.WriteLine("ReadPipe: Merging memory layouts");
@@ -302,15 +309,29 @@ namespace Kernel.Core.Pipes
             // Add caller thread to the read queue
             pipe.QueueToRead(CallerThread.Id);
 
+            // Set up initial failure return value
+            CallerThread.Return1 = (uint)SystemCallResults.Fail;
+
             BasicConsole.WriteLine("ReadPipe: Processing pipe queue");
             // Process the pipe queue
             ProcessPipeQueue(pipe, OutProcess, InProcess);
-
+            
             BasicConsole.WriteLine("ReadPipe: Unmerging memory layouts");
             // Unmerge memory layouts
             SystemCallsHelpers.DisableAccessToMemoryOfProcess(OriginalMemoryLayout);
+
+            bool Completed = pipe.AreThreadsWaitingToRead();
+            if (!Blocking)
+            {
+                if (!Completed)
+                {
+                    uint temp;
+                    pipe.DequeueToRead(out temp);
+                }
+            }
+            return Completed ? RWResults.Queued : RWResults.Complete;
         }
-        public static void WritePipe(int PipeId, Process CallerProcess, Thread CallerThread)
+        public static RWResults WritePipe(int PipeId, bool Blocking, Process CallerProcess, Thread CallerThread)
         {
             BasicConsole.WriteLine("WritePipe: Validating inputs");
             // Validate inputs
@@ -318,14 +339,14 @@ namespace Kernel.Core.Pipes
             Pipe pipe = GetPipe(PipeId);
             if (pipe == null)
             {
-                return;
+                return RWResults.Error;
             }
 
             BasicConsole.WriteLine("WritePipe: Checking caller allowed to write");
             // Check the caller is allowed to access the pipe
             if (!AllowedToWritePipe(pipe, CallerProcess.Id))
             {
-                return;
+                return RWResults.Error;
             }
 
             BasicConsole.WriteLine("WritePipe: Getting out process");
@@ -333,7 +354,7 @@ namespace Kernel.Core.Pipes
             Process OutProcess = ProcessManager.GetProcessById(pipe.Outpoint.ProcessId);
             if (OutProcess == null)
             {
-                return;
+                return RWResults.Error;
             }
 
             BasicConsole.WriteLine("WritePipe: Getting in process");
@@ -341,7 +362,7 @@ namespace Kernel.Core.Pipes
             Process InProcess = ProcessManager.GetProcessById(pipe.Inpoint.ProcessId);
             if (InProcess == null)
             {
-                return;
+                return RWResults.Error;
             }
 
             BasicConsole.WriteLine("WritePipe: Merging memory layouts");
@@ -353,6 +374,9 @@ namespace Kernel.Core.Pipes
             // Add caller thread to the write queue
             pipe.QueueToWrite(CallerThread.Id);
 
+            // Set up initial failure return value
+            CallerThread.Return1 = (uint)SystemCallResults.Fail;
+
             BasicConsole.WriteLine("WritePipe: Processing pipe queue");
             // Process the pipe queue
             ProcessPipeQueue(pipe, OutProcess, InProcess);
@@ -360,6 +384,17 @@ namespace Kernel.Core.Pipes
             BasicConsole.WriteLine("WritePipe: Unmerging memory layouts");
             // Unmerge memory layouts
             SystemCallsHelpers.DisableAccessToMemoryOfProcess(OriginalMemoryLayout);
+
+            bool Completed = pipe.AreThreadsWaitingToWrite();
+            if (!Blocking)
+            {
+                if (!Completed)
+                {
+                    uint temp;
+                    pipe.DequeueToWrite(out temp);
+                }
+            }
+            return Completed ? RWResults.Queued : RWResults.Complete;
         }
         private static void ProcessPipeQueue(Pipe pipe, Process OutProcess, Process InProcess)
         {

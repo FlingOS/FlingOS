@@ -106,7 +106,7 @@ namespace Kernel.Core.Pipes
             }
         }
 
-        public int Read(byte[] data, int offset, int length)
+        public int Read(byte[] data, int offset, int length, bool blocking)
         {
             int BytesRead = 0;
 
@@ -119,24 +119,25 @@ namespace Kernel.Core.Pipes
                     ReadPipeRequestPtr->offset = offset;
                     ReadPipeRequestPtr->length = FOS_System.Math.Min(data.Length - offset, length);
                     ReadPipeRequestPtr->outBuffer = (byte*)Utilities.ObjectUtilities.GetHandle(data) + FOS_System.Array.FieldsBytesSize;
+                    ReadPipeRequestPtr->blocking = blocking;
 
                     SystemCallResults SysCallResult = SystemCallMethods.ReadPipe(ReadPipeRequestPtr, out BytesRead);
                     switch (SysCallResult)
                     {
                         case SystemCallResults.Unhandled:
                             BasicConsole.WriteLine("BasicInPipe > ReadPipe: Unhandled!");
-                            ExceptionMethods.Throw(new FOS_System.Exceptions.ArgumentException("BasicInPipe : Read Pipe unexpected unhandled!"));
+                            ExceptionMethods.Throw(new Exceptions.RWUnhandledException("BasicInPipe : Read Pipe unexpected unhandled!"));
                             break;
                         case SystemCallResults.Fail:
                             BasicConsole.WriteLine("BasicInPipe > ReadPipe: Failed!");
-                            ExceptionMethods.Throw(new FOS_System.Exceptions.ArgumentException("BasicInPipe : Read Pipe unexpected failed!"));
+                            ExceptionMethods.Throw(new Exceptions.RWFailedException("BasicInPipe : Read Pipe unexpected failed!"));
                             break;
                         case SystemCallResults.OK:
                             BasicConsole.WriteLine("BasicInPipe > ReadPipe: Succeeded.");
                             break;
                         default:
                             BasicConsole.WriteLine("BasicInPipe > ReadPipe: Unexpected system call result!");
-                            ExceptionMethods.Throw(new FOS_System.Exceptions.ArgumentException("BasicInPipe : Read Pipe unexpected result!"));
+                            ExceptionMethods.Throw(new Exceptions.RWUnhandledException("BasicInPipe : Read Pipe unexpected result!"));
                             break;
                     }
                 }

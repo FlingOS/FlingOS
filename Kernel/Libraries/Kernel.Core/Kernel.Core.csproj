@@ -91,6 +91,8 @@
     <Compile Include="CommandHelp.cs" />
     <Compile Include="Console.cs" />
     <Compile Include="Consoles\AdvancedConsole.cs" />
+    <Compile Include="Pipes\Exceptions\RWUnhandledException.cs" />
+    <Compile Include="Pipes\Exceptions\RWFailedException.cs" />
     <Compile Include="Pipes\Pipe.cs" />
     <Compile Include="Pipes\PipeGlobals.cs" />
     <Compile Include="Pipes\PipeInpoint.cs" />

@@ -103,7 +103,7 @@ namespace Kernel.Core.Tasks
                     {
                         try
                         {
-                            StdOut.Write(StdOutPipeId, StdIn.Read());
+                            StdOut.Write(StdOutPipeId, StdIn.Read(true), true);
                             //StdOut.Write(StdOutPipeId, "Kernel: Hello, processor! (" + (FOS_System.String)loops++ + ")\n");
                         }
                         catch
@@ -320,8 +320,27 @@ namespace Kernel.Core.Tasks
                         // Need access to calling process' memory to be able to set values in request structure(s)
                         MemoryLayout OriginalMemoryLayout = SystemCallsHelpers.EnableAccessToMemoryOfProcess(CallerProcess);
 
-                        Pipes.PipeManager.ReadPipe(((Pipes.ReadPipeRequest*)Param1)->PipeId, CallerProcess, CallerThread);
-                        result = SystemCallResults.Deferred;
+                        Pipes.ReadPipeRequest* RequestPtr = (Pipes.ReadPipeRequest*)Param1;
+                        Pipes.PipeManager.RWResults RWResult = Pipes.PipeManager.ReadPipe(RequestPtr->PipeId, RequestPtr->blocking, CallerProcess, CallerThread);
+
+                        // If the request was blocking:
+                        if (RequestPtr->blocking)
+                        {
+                            // Then returning Deferred state from here will leave the caller thread
+                            //  in whatever state ReadPipe decided it should be in.
+                            result = SystemCallResults.Deferred;
+                        }
+                        else
+                        {
+                            if (RWResult == Pipes.PipeManager.RWResults.Complete)
+                            {
+                                result = SystemCallResults.OK;
+                            }
+                            else
+                            {
+                                result = SystemCallResults.Fail;
+                            }
+                        }
 
                         SystemCallsHelpers.DisableAccessToMemoryOfProcess(OriginalMemoryLayout);
 
@@ -335,8 +354,26 @@ namespace Kernel.Core.Tasks
                         // Need access to calling process' memory to be able to set values in request structure(s)
                         MemoryLayout OriginalMemoryLayout = SystemCallsHelpers.EnableAccessToMemoryOfProcess(CallerProcess);
 
-                        Pipes.PipeManager.WritePipe(((Pipes.WritePipeRequest*)Param1)->PipeId, CallerProcess, CallerThread);
-                        result = SystemCallResults.Deferred;
+                        Pipes.WritePipeRequest* RequestPtr = (Pipes.WritePipeRequest*)Param1;
+                        Pipes.PipeManager.RWResults RWResult = Pipes.PipeManager.WritePipe(RequestPtr->PipeId, RequestPtr->blocking, CallerProcess, CallerThread);
+                        // If the request was blocking:
+                        if (RequestPtr->blocking)
+                        {
+                            // Then returning Deferred state from here will leave the caller thread
+                            //  in whatever state WritePipe decided it should be in.
+                            result = SystemCallResults.Deferred;
+                        }
+                        else
+                        {
+                            if (RWResult == Pipes.PipeManager.RWResults.Complete)
+                            {
+                                result = SystemCallResults.OK;
+                            }
+                            else
+                            {
+                                result = SystemCallResults.Fail;
+                            }
+                        }
 
                         SystemCallsHelpers.DisableAccessToMemoryOfProcess(OriginalMemoryLayout);
 

@@ -83,13 +83,20 @@ namespace Kernel.Core.Tasks
                     {
                         PipeInfo CurrentPipeInfo = ((PipeInfo)ConnectedPipes[CurrentPipeIdx]);
 
-                        CurrentPipeInfo.TheConsole.Write(CurrentPipeInfo.StdOut.Read());
+                        CurrentPipeInfo.TheConsole.Write(CurrentPipeInfo.StdOut.Read(false));
                     }
                 }
                 catch
                 {
-                    BasicConsole.WriteLine("WM > Exception running window manager.");
-                    BasicConsole.WriteLine(ExceptionMethods.CurrentException.Message);
+                    if (ExceptionMethods.CurrentException is Pipes.Exceptions.RWFailedException)
+                    {
+                        SystemCallMethods.SleepThread(100);
+                    }
+                    else
+                    {
+                        BasicConsole.WriteLine("WM > Exception running window manager.");
+                        BasicConsole.WriteLine(ExceptionMethods.CurrentException.Message);
+                    }
                 }
             }
         }
@@ -227,7 +234,7 @@ namespace Kernel.Core.Tasks
                                 }
 
                                 CurrentPipeInfo = ((PipeInfo)ConnectedPipes[CurrentPipeIdx]);
-                                SystemCallMethods.WakeThread(1);
+                                CurrentPipeInfo.TheConsole.Update();
                             }
                             else
                             {
@@ -238,7 +245,18 @@ namespace Kernel.Core.Tasks
 
                                     if (line.length > 0 && line[line.length - 1] == '\n')
                                     {
-                                        StdIn.Write(CurrentPipeInfo.StdInPipeId, line);
+                                        try
+                                        {
+                                            StdIn.Write(CurrentPipeInfo.StdInPipeId, line, false);
+                                        }
+                                        catch
+                                        {
+                                            if (!(ExceptionMethods.CurrentException is Pipes.Exceptions.RWFailedException))
+                                            {
+                                                BasicConsole.WriteLine("WM > Error writing to StdIn!");
+                                                BasicConsole.WriteLine(ExceptionMethods.CurrentException.Message);
+                                            }
+                                        }
                                         line = "";
                                     }
                                 }

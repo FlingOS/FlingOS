@@ -25,32 +25,18 @@
 #endregion
     
 using System;
-using Kernel.Core.Processes;
-using Kernel.FOS_System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
-namespace Kernel.Core.Pipes.Standard
+namespace Kernel.Core.Pipes.Exceptions
 {
-    public class StandardInpoint : BasicInpoint
+    public class RWFailedException : FOS_System.Exception
     {
-        protected byte[] ReadBuffer;
-
-        public StandardInpoint(uint aOutProcessId, bool OutputPipe)
-            : base(aOutProcessId, PipeClasses.Standard, (OutputPipe ? PipeSubclasses.Standard_Out : PipeSubclasses.Standard_In), 800)
+        public RWFailedException(FOS_System.String extraMessage)
+            : base("Pipe Read/Write Failed : " + extraMessage)
         {
-            ReadBuffer = new byte[BufferSize];
-        }
-
-        public unsafe FOS_System.String Read(bool blocking)
-        {
-            int bytesRead = base.Read(ReadBuffer, 0, ReadBuffer.Length, blocking);
-            if (bytesRead > 0)
-            {
-                return ByteConverter.GetASCIIStringFromASCII(ReadBuffer, 0, (uint)bytesRead);
-            }
-            else
-            {
-                return "";
-            }
         }
     }
 }

@@ -134,6 +134,7 @@ namespace Kernel.Core.Pipes
         public byte* outBuffer;
         public int offset;
         public int length;
+        public bool blocking;
     }
     public unsafe struct WritePipeRequest
     {
@@ -141,6 +142,7 @@ namespace Kernel.Core.Pipes
         public byte* inBuffer;
         public int offset;
         public int length;
+        public bool blocking;
     }
 
     public struct PipeDescriptor

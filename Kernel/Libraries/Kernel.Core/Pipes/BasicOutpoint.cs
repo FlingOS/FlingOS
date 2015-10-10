@@ -96,7 +96,7 @@ namespace Kernel.Core.Pipes
             return aPipeId;
         }
 
-        public void Write(int PipeId, byte[] data, int offset, int length)
+        public void Write(int PipeId, byte[] data, int offset, int length, bool blocking)
         {
             Pipes.WritePipeRequest* WritePipeRequestPtr = (Pipes.WritePipeRequest*)Heap.AllocZeroed((uint)sizeof(Pipes.WritePipeRequest), "BasicOutPipe : Alloc WritePipeRequest");
             try
@@ -107,23 +107,25 @@ namespace Kernel.Core.Pipes
                     WritePipeRequestPtr->PipeId = PipeId;
                     WritePipeRequestPtr->length = FOS_System.Math.Min(data.Length - offset, length);
                     WritePipeRequestPtr->inBuffer = (byte*)Utilities.ObjectUtilities.GetHandle(data) + FOS_System.Array.FieldsBytesSize;
+                    WritePipeRequestPtr->blocking = blocking;
+
                     SystemCallResults SysCallResult = SystemCallMethods.WritePipe(WritePipeRequestPtr);
                     switch (SysCallResult)
                     {
                         case SystemCallResults.Unhandled:
                             BasicConsole.WriteLine("BasicOutPipe > WritePipe: Unhandled!");
-                            ExceptionMethods.Throw(new FOS_System.Exceptions.ArgumentException("BasicOutPipe : Write Pipe unexpected unhandled!"));
+                            ExceptionMethods.Throw(new Exceptions.RWUnhandledException("BasicOutPipe : Write Pipe unexpected unhandled!"));
                             break;
                         case SystemCallResults.Fail:
                             BasicConsole.WriteLine("BasicOutPipe > WritePipe: Failed!");
-                            ExceptionMethods.Throw(new FOS_System.Exceptions.ArgumentException("BasicOutPipe : Write Pipe unexpected failed!"));
+                            ExceptionMethods.Throw(new Exceptions.RWFailedException("BasicOutPipe : Write Pipe unexpected failed!"));
                             break;
                         case SystemCallResults.OK:
                             BasicConsole.WriteLine("BasicOutPipe > WritePipe: Succeeded.");
                             break;
                         default:
                             BasicConsole.WriteLine("BasicOutPipe > WritePipe: Unexpected system call result!");
-                            ExceptionMethods.Throw(new FOS_System.Exceptions.ArgumentException("BasicOutPipe : Write Pipe unexpected result!"));
+                            ExceptionMethods.Throw(new Exceptions.RWUnhandledException("BasicOutPipe : Write Pipe unexpected result!"));
                             break;
                     }
                 }
