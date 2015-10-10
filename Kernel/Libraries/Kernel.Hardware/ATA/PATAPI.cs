@@ -87,11 +87,11 @@ namespace Kernel.Hardware.ATA
 
             if (BaseDevice.controllerId == ATA.ControllerID.Primary)
             {
-                Interrupts.Interrupts.AddIRQHandler(14, PATAPI.IRQHandler, this, true, true, "PATAPI IRQ 14");
+                Interrupts.Interrupts.AddIRQHandler(14, PATAPI.IRQHandler, this, "PATAPI IRQ 14");
             }
             else
             {
-                Interrupts.Interrupts.AddIRQHandler(15, PATAPI.IRQHandler, this, true, true, "PATAPI IRQ 15");
+                Interrupts.Interrupts.AddIRQHandler(15, PATAPI.IRQHandler, this, "PATAPI IRQ 15");
             }
         }
 

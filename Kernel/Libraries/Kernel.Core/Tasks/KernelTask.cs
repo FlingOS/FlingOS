@@ -57,7 +57,7 @@ namespace Kernel.Core.Tasks
                 ProcessManager.CurrentProcess.SyscallsToHandle.Set((int)SystemCallNumbers.WritePipe);
 
                 BasicConsole.WriteLine(" > Initialising IRQ handling...");
-                IRQ1HandlerId = Hardware.Interrupts.Interrupts.AddIRQHandler(1, IRQ1, null, true, true, "KernelTask : IRQ1");
+                IRQ1HandlerId = Hardware.Interrupts.Interrupts.AddIRQHandler(1, IRQ1, null, "KernelTask : IRQ1");
 
                 //ProcessManager.CurrentProcess.OutputMemTrace = true;
 

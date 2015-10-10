@@ -214,7 +214,7 @@ namespace Kernel.Hardware.USB.HCIs
 
             if (IRQHandlerID == 0)
             {
-                IRQHandlerID = Interrupts.Interrupts.AddIRQHandler(pciDevice.InterruptLine, UHCI.InterruptHandler, this, false, true, "UHCI");
+                IRQHandlerID = Interrupts.Interrupts.AddIRQHandler(pciDevice.InterruptLine, UHCI.InterruptHandler, this, "UHCI");
             }
 
             ResetHC();

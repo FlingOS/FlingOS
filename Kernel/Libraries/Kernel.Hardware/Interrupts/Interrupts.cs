@@ -106,12 +106,7 @@ namespace Kernel.Hardware.Interrupts
         /// trying to remove its handler twice.
         /// </remarks>
         public int id;
-
-        public bool IgnoreProcessId;
-        public uint ProcessId;
-
-        public bool CriticalHandler;
-
+        
         public FOS_System.String Name;
     }
     /// <summary>
@@ -255,18 +250,10 @@ namespace Kernel.Hardware.Interrupts
         /// <param name="handler">The handler method to call when the interrupt occurs (must be a static).</param>
         /// <param name="data">The state object to pass the handler when the interrupt occurs.</param>
         /// <returns>The Id of the new handler. Save and use for removal. An Id of 0 s invalid.</returns>
-        public static int AddIRQHandler(int num, InterruptHandler handler,
-                                        FOS_System.Object data, bool IgnoreProcessState,
-                                        bool CriticalHandler,
-                                        FOS_System.String Name)
+        public static int AddIRQHandler(int num, InterruptHandler handler, FOS_System.Object data, FOS_System.String Name)
         {
-            if (!IgnoreProcessState && !CriticalHandler)
-            {
-                //See AddISRHandler for explanation
-                ExceptionMethods.Throw(new FOS_System.Exceptions.NotSupportedException("Cannot have non-critical IRQ which is process-dependent!"));
-            }
             //In this OS's implementation, IRQs 0-15 are mapped to ISRs 32-47
-            int result = AddISRHandler(num + 32, handler, data, IgnoreProcessState, CriticalHandler, Name);
+            int result = AddISRHandler(num + 32, handler, data, Name);
             EnableIRQ((byte)num);
             return result;
         }
@@ -295,21 +282,8 @@ namespace Kernel.Hardware.Interrupts
         /// <param name="handler">The handler method to call when the interrupt occurs (must be a static).</param>
         /// <param name="data">The state object to pass the handler when the interrupt occurs.</param>
         /// <returns>The Id of the new handler. Save and use for removal.</returns>
-        public static int AddISRHandler(int num, InterruptHandler handler,
-                                        FOS_System.Object data, bool IgnoreProcessState,
-                                        bool CriticalHandler,
-                                        FOS_System.String Name)
+        public static int AddISRHandler(int num, InterruptHandler handler, FOS_System.Object data, FOS_System.String Name)
         {
-            if (!IgnoreProcessState && !CriticalHandler)
-            {
-                // Non-critical interrupts get executed in the non-critical interrupts thread
-                //  The non-critical interrupts thread does not support switching process because it would be
-                //  very difficult to guarantee the processes'/thread's state didn't becom corrupted. Primarily,
-                //  we would need to store the general purpose registers (and others) and restore their values
-                //  before allowing return to the original process.
-                ExceptionMethods.Throw(new FOS_System.Exceptions.NotSupportedException("Cannot have non-critical interrupt which is process-dependent!"));
-            }
-
 #if INTERRUPTS_TRACE
             BasicConsole.Write("Adding ISR handler for ");
             BasicConsole.WriteLine(Name);
@@ -335,9 +309,6 @@ namespace Kernel.Hardware.Interrupts
                 handler = handler,
                 data = data,
                 id = id,
-                IgnoreProcessId = IgnoreProcessState,
-                ProcessId = Processes.ProcessManager.CurrentProcess.Id,
-                CriticalHandler = CriticalHandler,
                 Name = Name
             });
 
@@ -461,21 +432,6 @@ namespace Kernel.Hardware.Interrupts
                     BasicConsole.WriteLine("Interrupts: 1");
 #endif
 
-                uint currProcessId = 0;
-                uint currThreadId = 0;
-                if (Processes.ProcessManager.CurrentProcess != null)
-                {
-                    currProcessId = Processes.ProcessManager.CurrentProcess.Id;
-                    currThreadId = Processes.ProcessManager.CurrentThread.Id;
-                }
-                bool switched = false;
-
-#if INTERRUPTS_TRACE
-                //if (Processes.ProcessManager.Processes.Count > 1)
-                //if (ISRNum == 33)
-                    BasicConsole.WriteLine("Interrupts: 2");
-#endif
-
                 //Go through any handlers and fire them
                 InterruptHandlers handlers = Handlers[ISRNum];
                 if (handlers != null)
@@ -485,8 +441,6 @@ namespace Kernel.Hardware.Interrupts
                     //if (ISRNum == 33)
                         BasicConsole.WriteLine("Interrupts: 3");
 #endif
-
-                    bool NonCriticalDetected = false;
 
                     for (int i = 0; i < handlers.HandlerDescrips.Count; i++)
                     {
@@ -498,8 +452,6 @@ namespace Kernel.Hardware.Interrupts
 
                         HandlerDescriptor descrip = (HandlerDescriptor)handlers.HandlerDescrips[i];
 
-                        if (descrip.CriticalHandler)
-                        {
 #if INTERRUPTS_TRACE
                             //if (Processes.ProcessManager.Processes.Count > 1)
                             //if (ISRNum == 33)
@@ -513,38 +465,6 @@ namespace Kernel.Hardware.Interrupts
                             //if (ISRNum == 33)
                                 BasicConsole.WriteLine("Interrupts: 6");
 #endif
-
-                            if (Processes.ProcessManager.CurrentProcess != null)
-                            {
-#if INTERRUPTS_TRACE
-                                //if (Processes.ProcessManager.Processes.Count > 1)
-                                //if (ISRNum == 33)
-                                    BasicConsole.WriteLine("Interrupts: 7");
-#endif
-
-                                if (!descrip.IgnoreProcessId)
-                                {
-#if INTERRUPTS_TRACE
-                                    //if (Processes.ProcessManager.Processes.Count > 1)
-                                    //if (ISRNum == 33)
-                                        BasicConsole.WriteLine("Interrupts: 8");
-#endif
-
-                                    Processes.ProcessManager.SwitchProcess(descrip.ProcessId, -1);
-                                    switched = true;
-                                }
-                            }
-
-#if INTERRUPTS_TRACE
-                            //if (Processes.ProcessManager.Processes.Count > 1)
-                            //if (ISRNum == 33)
-                            {
-                                BasicConsole.WriteLine("Interrupts: 9");
-                                BasicConsole.Write("Handler function name: ");
-                                BasicConsole.WriteLine(descrip.Name);
-                            }
-#endif
-
                             func(descrip.data);
 
 #if INTERRUPTS_TRACE
@@ -552,11 +472,6 @@ namespace Kernel.Hardware.Interrupts
                             //if (ISRNum == 33)
                                 BasicConsole.WriteLine("Interrupts: 10");
 #endif
-                        }
-                        else
-                        {
-                            NonCriticalDetected = true;
-                        }
                     }
 
 #if INTERRUPTS_TRACE
@@ -564,57 +479,6 @@ namespace Kernel.Hardware.Interrupts
                     //if (ISRNum == 33)
                         BasicConsole.WriteLine("Interrupts: 11");
 #endif
-
-                    if (NonCriticalDetected)
-                    {
-#if INTERRUPTS_TRACE
-                        //if (Processes.ProcessManager.Processes.Count > 1)
-                        //if (ISRNum == 33)
-                            BasicConsole.WriteLine("Interrupts: 12");
-#endif
-
-                        if (handlers.QueuedOccurrences == FOS_System.Int32.MaxValue)
-                        {
-                            handlers.QueuedOccurrences = 0;
-                        }
-                        handlers.QueuedOccurrences++;
-
-#if INTERRUPTS_TRACE
-                        //if (Processes.ProcessManager.Processes.Count > 1)
-                        //if (ISRNum == 33)
-                            BasicConsole.WriteLine("Interrupts: 13");
-#endif
-
-                        if (Tasks.NonCriticalInterruptsTask.OwnerThread != null)
-                        {
-#if INTERRUPTS_TRACE
-                            //if (Processes.ProcessManager.Processes.Count > 1)
-                            //if (ISRNum == 33)
-                                BasicConsole.WriteLine("Interrupts: 14");
-#endif
-
-                            //BasicConsole.WriteLine("Waking non-critical interrupts thread...");
-                            Tasks.NonCriticalInterruptsTask.Awake = true;
-                            Tasks.NonCriticalInterruptsTask.OwnerThread._Wake();
-                        }
-
-#if INTERRUPTS_TRACE
-                        //if (Processes.ProcessManager.Processes.Count > 1)
-                        //if (ISRNum == 33)
-                            BasicConsole.WriteLine("Interrupts: 15");
-#endif
-                    }
-                }
-
-                if (switched)
-                {
-#if INTERRUPTS_TRACE
-                    //if (Processes.ProcessManager.Processes.Count > 1)
-                    //if (ISRNum == 33)
-                        BasicConsole.WriteLine("Interrupts: 16");
-#endif
-
-                    Processes.ProcessManager.SwitchProcess(currProcessId, (int)currThreadId);
                 }
 
 #if INTERRUPTS_TRACE
