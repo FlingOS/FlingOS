@@ -95,7 +95,7 @@ namespace Kernel
                 Hardware.Devices.CPU.InitDefault();
                 
                 BasicConsole.WriteLine("Creating kernel process...");
-                Process KernelProcess = ProcessManager.CreateProcess(Core.Tasks.KernelTask.Main, "Kernel Task", false);
+                Process KernelProcess = ProcessManager.CreateProcess(Tasks.KernelTask.Main, "Kernel Task", false);
                 ProcessManager.KernelProcess = KernelProcess;
 
                 BasicConsole.WriteLine("Creating kernel thread...");
@@ -118,12 +118,12 @@ namespace Kernel
                 ProcessManager.RegisterProcess(KernelProcess, Scheduler.Priority.Normal);
 
                 BasicConsole.WriteLine("Initialising kernel ISRs...");
-                KernelProcess.ISRHandler = Core.Tasks.KernelTask.HandleISR;
+                KernelProcess.ISRHandler = Tasks.KernelTask.HandleISR;
                 KernelProcess.SwitchProcessForISRs = false;
                 KernelProcess.ISRsToHandle.Set(48);
 
                 BasicConsole.WriteLine("Initialising kernel IRQs...");
-                KernelProcess.IRQHandler = Core.Tasks.KernelTask.HandleIRQ;
+                KernelProcess.IRQHandler = Tasks.KernelTask.HandleIRQ;
                 KernelProcess.SwitchProcessForIRQs = false;
                 KernelProcess.IRQsToHandle.Set(0);
 
