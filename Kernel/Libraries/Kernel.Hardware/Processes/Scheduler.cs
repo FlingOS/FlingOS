@@ -109,6 +109,8 @@ namespace Kernel.Hardware.Processes
             /*1000000*/
             Hardware.Devices.Timer.Default.RegisterHandler(OnTimerInterrupt, /* MSFreq * 1000000 */ 5000000, true, null);
 
+            Interrupts.Interrupts.EnableProcessSwitching = true;
+
             Enable();
         }
         [Drivers.Compiler.Attributes.PluggedMethod(ASMFilePath = @"ASM\Processes\Scheduler")]
@@ -355,7 +357,7 @@ namespace Kernel.Hardware.Processes
             if (Processes.ProcessManager.Processes.Count > 1)
                 BasicConsole.WriteLine("Scheduler interrupt ended.");
 
-            BasicConsole.SetTextColour(BasicBasicConsole_colour);
+            BasicConsole.SetTextColour(BasicConsole.default_colour);
 #endif
         }
         [Drivers.Compiler.Attributes.NoDebug]

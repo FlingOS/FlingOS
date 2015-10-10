@@ -332,17 +332,9 @@ namespace Kernel.Hardware.Timers
         }
 
         /// <summary>
-        /// The internal timer 0 interrupt handler static wrapper.
-        /// </summary>
-        /// <param name="state">The PIT object state.</param>
-        protected static void InterruptHandler(FOS_System.Object state)
-        {
-            ((PIT)state).InterruptHandler();
-        }
-        /// <summary>
         /// The internal timer 0 interrupt handler.
         /// </summary>
-        protected void InterruptHandler()
+        public void InterruptHandler()
         {
             //if (Processes.ProcessManager.Processes.Count > 1)
             //    BasicConsole.WriteLine("PIT: 1");
@@ -401,12 +393,13 @@ namespace Kernel.Hardware.Timers
                 //Ignore the process state for timer interrupts. Timer interrupts occur so frequently
                 //  that to continually switch state would be massively inefficient. Also, switching
                 //  state isn't necessary for the handlers queued in the timer.
-                InterruptHandlerId = Interrupts.Interrupts.AddIRQHandler(0, InterruptHandler, this, "PIT");
                 DeviceManager.AddDevice(this);
                 enabled = true;
                 
                 T0RateGen = true;
                 T0Reload = _T0Reload;
+
+                Interrupts.Interrupts.EnableIRQ(0);
             }
         }
         /// <summary>
@@ -417,11 +410,12 @@ namespace Kernel.Hardware.Timers
             if (enabled)
             {
                 DeviceManager.Devices.Remove(this);
-                Interrupts.Interrupts.RemoveIRQHandler(0, InterruptHandlerId);
                 //As per requirements, set temp sote store of id to 0 to prevent
                 //  accidental multiple removal.
                 InterruptHandlerId = 0;
                 enabled = false;
+
+                Interrupts.Interrupts.DisableIRQ(0);
             }
         }
 

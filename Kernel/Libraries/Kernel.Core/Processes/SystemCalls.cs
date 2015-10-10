@@ -42,19 +42,8 @@ namespace Kernel.Core.Processes
         private static Process DeferredSystemCalls_CurrentProcess;
         private static Thread DeferredSystemCalls_CurrentThread;
         private static bool DeferredSystemCalls_WakeCurrentThread = true;
-
-        private static int Int48HandlerId = 0;
-        public static void Init()
-        {
-            if (Int48HandlerId == 0)
-            {
-                // We want to ignore process state so that we handle the interrupt in the context of
-                //  the calling process.
-                Int48HandlerId = Hardware.Interrupts.Interrupts.AddISRHandler(48, Int48, null, "Sys Call");
-            }
-        }
-
-        private static void Int48(FOS_System.Object state)
+        
+        public static void Int48()
         {
             //FOS_System.GC.Enable("System calls : Int48 (1)");
             //FOS_System.Heap.PreventAllocation = false;
@@ -243,12 +232,38 @@ namespace Kernel.Core.Processes
                     SysCall_Wake(callerProcesId, param1);
                     result = SystemCallResults.OK;
                     break;
+                case SystemCallNumbers.RegisterISRHandler:
+#if SYSCALLS_TRACE
+                    BasicConsole.WriteLine("System call : Register ISR Handler");
+#endif
+                    if (SysCall_RegisterISRHandler((int)param1, param2, callerProcesId))
+                    {
+                        result = SystemCallResults.OK;
+                    }
+                    else
+                    {
+                        result = SystemCallResults.Fail;
+                    }
+                    break;
+                case SystemCallNumbers.DeregisterISRHandler:
+#if SYSCALLS_TRACE
+                    BasicConsole.WriteLine("System call : Deregister ISR Handler");
+#endif
+                    SysCall_DeregisterISRHandler((int)param1, callerProcesId);
+                    result = SystemCallResults.OK;
+                    break;
                 case SystemCallNumbers.RegisterIRQHandler:
 #if SYSCALLS_TRACE
                     BasicConsole.WriteLine("System call : Register IRQ Handler");
 #endif
-                    SysCall_RegisterIRQHandler((int)param1, param2, callerProcesId);
-                    result = SystemCallResults.OK;
+                    if (SysCall_RegisterIRQHandler((int)param1, param2, callerProcesId))
+                    {
+                        result = SystemCallResults.OK;
+                    }
+                    else
+                    {
+                        result = SystemCallResults.Fail;
+                    }
                     break;
                 case SystemCallNumbers.DeregisterIRQHandler:
 #if SYSCALLS_TRACE
@@ -261,8 +276,14 @@ namespace Kernel.Core.Processes
 #if SYSCALLS_TRACE
                     BasicConsole.WriteLine("System call : Register Syscall Handler");
 #endif
-                    SysCall_RegisterSyscallHandler((int)param1, param2, callerProcesId);
-                    result = SystemCallResults.OK;
+                    if (SysCall_RegisterSyscallHandler((int)param1, param2, callerProcesId))
+                    {
+                        result = SystemCallResults.OK;
+                    }
+                    else
+                    {
+                        result = SystemCallResults.Fail;
+                    }
                     break;
                 case SystemCallNumbers.DeregisterSyscallHandler:
 #if SYSCALLS_TRACE
@@ -343,8 +364,41 @@ namespace Kernel.Core.Processes
 #endif
             ProcessManager.GetThreadById(threadToWakeId, ProcessManager.GetProcessById(callerProcessId))._Wake();
         }
-        private static void SysCall_RegisterIRQHandler(int IRQNum, uint handlerAddr, uint callerProcessId)
+        private static bool SysCall_RegisterISRHandler(int ISRNum, uint handlerAddr, uint callerProcessId)
         {
+            if (ISRNum < 49)
+            {
+                return false;
+            }
+
+#if SYSCALLS_TRACE
+            BasicConsole.WriteLine("Registering ISR handler...");
+#endif
+            Process theProcess = ProcessManager.GetProcessById(callerProcessId);
+
+            if (handlerAddr != 0xFFFFFFFF)
+            {
+                theProcess.ISRHandler = (Hardware.Processes.ISRHanderDelegate)Utilities.ObjectUtilities.GetObject((void*)handlerAddr);
+            }
+
+            theProcess.ISRsToHandle.Set(ISRNum);
+
+            return true;
+        }
+        private static void SysCall_DeregisterISRHandler(int ISRNum, uint callerProcessId)
+        {
+#if SYSCALLS_TRACE
+            BasicConsole.WriteLine("Deregistering ISR handler...");
+#endif
+            ProcessManager.GetProcessById(callerProcessId).ISRsToHandle.Clear(ISRNum);
+        }
+        private static bool SysCall_RegisterIRQHandler(int IRQNum, uint handlerAddr, uint callerProcessId)
+        {
+            if (IRQNum > 15)
+            {
+                return false;
+            }
+
 #if SYSCALLS_TRACE
             BasicConsole.WriteLine("Registering IRQ handler...");
 #endif
@@ -356,6 +410,10 @@ namespace Kernel.Core.Processes
             }
 
             theProcess.IRQsToHandle.Set(IRQNum);
+
+            Hardware.Interrupts.Interrupts.EnableIRQ((byte)IRQNum);
+
+            return true;
         }
         private static void SysCall_DeregisterIRQHandler(int IRQNum, uint callerProcessId)
         {
@@ -364,7 +422,7 @@ namespace Kernel.Core.Processes
 #endif
             ProcessManager.GetProcessById(callerProcessId).IRQsToHandle.Clear(IRQNum);
         }
-        private static void SysCall_RegisterSyscallHandler(int syscallNum, uint handlerAddr, uint callerProcessId)
+        private static bool SysCall_RegisterSyscallHandler(int syscallNum, uint handlerAddr, uint callerProcessId)
         {
 #if SYSCALLS_TRACE
             BasicConsole.WriteLine("Registering syscall handler...");
@@ -377,6 +435,8 @@ namespace Kernel.Core.Processes
             }
 
             theProcess.SyscallsToHandle.Set(syscallNum);
+
+            return true;
         }
         private static void SysCall_DeregisterSyscallHandler(int syscallNum, uint callerProcessId)
         {

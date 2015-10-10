@@ -93,7 +93,44 @@ namespace Kernel
                 PreReqs.PageFaultDetection_Initialised = true;
 
                 Hardware.Devices.CPU.InitDefault();
+                
+                BasicConsole.WriteLine("Creating kernel process...");
+                Process KernelProcess = ProcessManager.CreateProcess(Core.Tasks.KernelTask.Main, "Kernel Task", false);
+                ProcessManager.KernelProcess = KernelProcess;
+
+                BasicConsole.WriteLine("Creating kernel thread...");
+                Thread KernelThread = ((Thread)KernelProcess.Threads[0]);
+
+                BasicConsole.WriteLine("Initialising kernel thread stack...");
+                Hardware.VirtMemManager.Unmap(KernelThread.State->ThreadStackTop - 4092);
+                KernelProcess.TheMemoryLayout.RemovePage((uint)KernelThread.State->ThreadStackTop - 4092);
+                KernelThread.State->ThreadStackTop = GetKernelStackPtr();
+                KernelThread.State->ESP = (uint)KernelThread.State->ThreadStackTop;
+
+                BasicConsole.WriteLine("Initialising kernel process heap...");
+                KernelProcess.HeapLock = Heap.AccessLock;
+                KernelProcess.HeapPtr = Heap.FBlock;
+
+                BasicConsole.WriteLine("Initialising kernel process GC...");
+                KernelProcess.TheGCState = FOS_System.GC.State;
+
+                BasicConsole.WriteLine("Registering kernel process...");
+                ProcessManager.RegisterProcess(KernelProcess, Scheduler.Priority.Normal);
+
+                BasicConsole.WriteLine("Initialising kernel ISRs...");
+                KernelProcess.ISRHandler = Core.Tasks.KernelTask.HandleISR;
+                KernelProcess.SwitchProcessForISRs = false;
+                KernelProcess.ISRsToHandle.Set(48);
+
+                BasicConsole.WriteLine("Initialising kernel IRQs...");
+                KernelProcess.IRQHandler = Core.Tasks.KernelTask.HandleIRQ;
+                KernelProcess.SwitchProcessForIRQs = false;
+                KernelProcess.IRQsToHandle.Set(0);
+
+                BasicConsole.WriteLine("Initialising default timer...");
                 Hardware.Devices.Timer.InitDefault();
+
+
 
                 BasicConsole.PrimaryOutputEnabled = true;
                 BasicConsole.SecondaryOutputEnabled = false;
@@ -184,29 +221,6 @@ namespace Kernel
                 //    Hardware.Timers.PIT.MusicalNote.C5,
                 //    Hardware.Timers.PIT.MusicalNoteValue.Minim,
                 //    bpm);
-
-                BasicConsole.WriteLine("Creating kernel process...");
-                Process KernelProcess = ProcessManager.CreateProcess(Core.Tasks.KernelTask.Main, "Kernel Task", false);
-                ProcessManager.KernelProcess = KernelProcess;
-
-                BasicConsole.WriteLine("Creating kernel thread...");
-                Thread KernelThread = ((Thread)KernelProcess.Threads[0]);
-
-                BasicConsole.WriteLine("Initialising kernel thread stack...");
-                Hardware.VirtMemManager.Unmap(KernelThread.State->ThreadStackTop - 4092);
-                KernelProcess.TheMemoryLayout.RemovePage((uint)KernelThread.State->ThreadStackTop - 4092);
-                KernelThread.State->ThreadStackTop = GetKernelStackPtr();
-                KernelThread.State->ESP = (uint)KernelThread.State->ThreadStackTop;
-
-                BasicConsole.WriteLine("Initialising kernel process heap...");
-                KernelProcess.HeapLock = Heap.AccessLock;
-                KernelProcess.HeapPtr = Heap.FBlock;
-
-                BasicConsole.WriteLine("Initialising kernel process GC...");
-                KernelProcess.TheGCState = FOS_System.GC.State;
-                
-                BasicConsole.WriteLine("Registering kernel process...");
-                ProcessManager.RegisterProcess(KernelProcess, Scheduler.Priority.Normal);
 
                 BasicConsole.WriteLine("Initialising scheduler...");
                 Scheduler.Init();

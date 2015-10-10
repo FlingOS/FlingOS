@@ -41,8 +41,6 @@ namespace Kernel.Core.Tasks
             try
             {
                 BasicConsole.WriteLine(" > Initialising system calls...");
-                Core.Processes.SystemCalls.Init();
-
                 ProcessManager.CurrentProcess.SyscallHandler = SyscallHandler;
                 ProcessManager.CurrentProcess.SyscallsToHandle.Set((int)SystemCallNumbers.RegisterSyscallHandler);
                 ProcessManager.CurrentProcess.SyscallsToHandle.Set((int)SystemCallNumbers.DeregisterSyscallHandler);
@@ -55,9 +53,6 @@ namespace Kernel.Core.Tasks
                 ProcessManager.CurrentProcess.SyscallsToHandle.Set((int)SystemCallNumbers.WaitOnPipeCreate);
                 ProcessManager.CurrentProcess.SyscallsToHandle.Set((int)SystemCallNumbers.ReadPipe);
                 ProcessManager.CurrentProcess.SyscallsToHandle.Set((int)SystemCallNumbers.WritePipe);
-
-                BasicConsole.WriteLine(" > Initialising IRQ handling...");
-                IRQ1HandlerId = Hardware.Interrupts.Interrupts.AddIRQHandler(1, IRQ1, null, "KernelTask : IRQ1");
 
                 //ProcessManager.CurrentProcess.OutputMemTrace = true;
 
@@ -89,7 +84,7 @@ namespace Kernel.Core.Tasks
                 BasicConsole.WriteLine("Started.");
 
                 BasicConsole.PrimaryOutputEnabled = false;
-                BasicConsole.SecondaryOutputEnabled = false;
+                //BasicConsole.SecondaryOutputEnabled = false;
 
                 try
                 {
@@ -398,39 +393,25 @@ namespace Kernel.Core.Tasks
             CallerThread._Wake();
         }
 
-        public static void IRQ1(FOS_System.Object state)
+        public static int HandleISR(uint ISRNum)
         {
-            BasicConsole.WriteLine(" ---- IRQ 1 ---- ");
-            HandleIRQ(1);
-            BasicConsole.WriteLine(" --------------- ");
-        }
-        private static void HandleIRQ(uint num)
-        {
-            Process currProcess = ProcessManager.CurrentProcess;
-            Thread currThread = ProcessManager.CurrentThread;
-            bool switched = false;
-            
-            Process handlerProcess = null;
-            for (int i = 0; i < ProcessManager.Processes.Count; i++)
+            if (ISRNum == 48)
             {
-                handlerProcess = (Process)ProcessManager.Processes[i];
-                if (handlerProcess.IRQsToHandle.IsSet((int)num))
-                {
-                    ProcessManager.SwitchProcess(handlerProcess.Id, ProcessManager.THREAD_DONT_CARE);
-                    switched = true;
-                    if (handlerProcess.IRQHandler(num) == 0)
-                    {
-                        break;
-                    }
-                }
+                SystemCalls.Int48();
+                return 0;
             }
+            return -1;
+        }
+        public static int HandleIRQ(uint IRQNum)
+        {
+            if (IRQNum == 0)
+            {
+                Hardware.Timers.PIT.ThePIT.InterruptHandler();
+                return 0;
+            }
+            return -1;
+        }
 
-            if (switched)
-            {
-                ProcessManager.SwitchProcess(currProcess.Id, (int)currThread.Id);
-            }
-        }
-        
         public static int SyscallHandler(uint syscallNumber, uint param1, uint param2, uint param3, 
             ref uint Return2, ref uint Return3, ref uint Return4,
             uint callerProcessId, uint callerThreadId)

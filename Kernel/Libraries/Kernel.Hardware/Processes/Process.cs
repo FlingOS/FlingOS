@@ -52,9 +52,11 @@ namespace Kernel.Hardware.Processes
         public readonly bool UserMode;
 
         protected uint ThreadIdGenerator = 1;
-                
+
+        public bool SwitchProcessForISRs = true;
         public Bitmap ISRsToHandle = new Bitmap(256);
         public ISRHanderDelegate ISRHandler = null;
+        public bool SwitchProcessForIRQs = true;
         public Bitmap IRQsToHandle = new Bitmap(256);
         public IRQHanderDelegate IRQHandler = null;
         public Bitmap SyscallsToHandle = new Bitmap(256);
