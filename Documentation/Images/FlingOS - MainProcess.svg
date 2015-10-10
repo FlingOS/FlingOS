@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="280.0" height="1200.0" viewBox="170.0 -50.0 280.0 1200.0" version="1.1">
+<rect x="170.0" y="-50.0" width="280.0" height="1200.0" fill="rgb(255,255,255)"/>
+<polygon id="s628370533" points="200.0204,-19.999977 420.00006,-19.999977 419.9927,1119.9998 199.99998,1120.0 " fill="none" stroke-width="2.0" stroke="rgb(0,0,0)" stroke-dasharray="7.0 7.0">
+<g id="t628370533">
+<text x="236.00003" y="7.2874756" font-family="Helvetica" font-weight="bold" fill="rgb(0,0,0)" font-size="25" textLength="148.0">Main Process</text>
+<path id="s638924734" d="M 236.00003,8.287476 384.00003,8.287476 " fill="none" stroke-width="2.0" stroke="rgb(0,0,0)"/>
+</g>
+</polygon>
+<g id="s751588408">
+<polygon id="s751588408" points="260.0124,60.000023 360.0125,60.000023 360.01245,79.99996 260.0124,80.00002 " fill="none" stroke-width="2.0" stroke="rgb(0,0,0)"/>
+<g id="t751588408">
+<text x="295.01245" y="74.44702" font-family="Helvetica" fill="rgb(0,0,0)" font-size="14" textLength="30.0">Start</text>
+</g>
+</g>
+<g id="s616281058">
+<polygon id="s616281058" points="240.0123,119.99999 380.0124,119.99999 380.0124,219.99997 240.0123,219.99997 " fill="none" stroke-width="2.0" stroke="rgb(0,0,0)"/>
+<g id="t616281058">
+<text x="263.01233" y="165.01799" font-family="Helvetica" fill="rgb(0,0,0)" font-size="14" textLength="94.0">Take control of</text>
+<text x="276.51233" y="183.87599" font-family="Helvetica" fill="rgb(0,0,0)" font-size="14" textLength="67.0">static heap</text>
+</g>
+</g>
+<g id="s613218552">
+<polygon id="s613218552" points="240.0123,259.99997 380.0124,259.99997 380.0124,359.9999 240.0123,359.9999 " fill="none" stroke-width="2.0" stroke="rgb(0,0,0)"/>
+<g id="t613218552">
+<text x="261.51233" y="314.44693" font-family="Helvetica" fill="rgb(0,0,0)" font-size="14" textLength="97.0">Start GC thread</text>
+</g>
+</g>
+<g id="s1027144554">
+<polygon id="s1027144554" points="240.01231,540.00006 380.01233,540.00006 380.01233,640.00006 240.01231,640.00006 " fill="none" stroke-width="2.0" stroke="rgb(0,0,0)"/>
+<g id="t1027144554">
+<text x="254.51233" y="585.018" font-family="Helvetica" fill="rgb(0,0,0)" font-size="14" textLength="111.0">Start System Calls</text>
+<text x="290.01233" y="603.87604" font-family="Helvetica" fill="rgb(0,0,0)" font-size="14" textLength="40.0">thread</text>
+</g>
+</g>
+<g id="s198805595">
+<polygon id="s198805595" points="240.0123,399.99997 380.0124,399.99997 380.0124,499.99997 240.0123,499.99997 " fill="none" stroke-width="2.0" stroke="rgb(0,0,0)"/>
+<g id="t198805595">
+<text x="260.01233" y="454.44696" font-family="Helvetica" fill="rgb(0,0,0)" font-size="14" textLength="100.0">Start Idle thread</text>
+</g>
+</g>
+<g id="s182988795">
+<polygon id="s182988795" points="240.0123,680.00006 380.0124,680.00006 380.0124,780.00006 240.0123,780.00006 " fill="none" stroke-width="2.0" stroke="rgb(0,0,0)"/>
+<g id="t182988795">
+<text x="272.01233" y="725.018" font-family="Helvetica" fill="rgb(0,0,0)" font-size="14" textLength="76.0">Start Device</text>
+<text x="257.51233" y="743.87604" font-family="Helvetica" fill="rgb(0,0,0)" font-size="14" textLength="105.0">Manager process</text>
+</g>
+</g>
+<g id="s234448982">
+<polygon id="s234448982" points="240.0123,820.00006 380.0124,820.00006 380.0124,920.0002 240.0123,920.0002 " fill="none" stroke-width="2.0" stroke="rgb(0,0,0)"/>
+<g id="t234448982">
+<text x="266.51233" y="865.0181" font-family="Helvetica" fill="rgb(0,0,0)" font-size="14" textLength="87.0">Start Window</text>
+<text x="257.51233" y="883.87616" font-family="Helvetica" fill="rgb(0,0,0)" font-size="14" textLength="105.0">Manager process</text>
+</g>
+</g>
+<g id="s964677847">
+<polygon id="s964677847" points="240.0123,960.0002 380.0124,960.0002 380.0124,1060.0002 240.0123,1060.0002 " fill="none" stroke-width="2.0" stroke="rgb(0,0,0)"/>
+<g id="t964677847">
+<text x="265.51233" y="1005.01825" font-family="Helvetica" fill="rgb(0,0,0)" font-size="14" textLength="89.0">Call Main Task</text>
+<text x="286.01233" y="1023.8763" font-family="Helvetica" fill="rgb(0,0,0)" font-size="14" textLength="48.0">method</text>
+</g>
+</g>
+<g id="la394699635">
+<path id="s394699635" d="M 310.01245,79.99999 310.0124,119.99999 " fill="none" stroke-width="2.0" stroke="rgb(0,0,0)"/>
+</g>
+<g id="la586683565">
+<path id="s586683565" d="M 310.0124,219.99997 310.0124,259.99997 " fill="none" stroke-width="2.0" stroke="rgb(0,0,0)"/>
+</g>
+<g id="la173514180">
+<path id="s173514180" d="M 310.0124,359.9999 310.0124,399.99997 " fill="none" stroke-width="2.0" stroke="rgb(0,0,0)"/>
+</g>
+<g id="la550722549">
+<path id="s550722549" d="M 310.0124,499.99997 310.0124,540.00006 " fill="none" stroke-width="2.0" stroke="rgb(0,0,0)"/>
+</g>
+<g id="la880868746">
+<path id="s880868746" d="M 310.0124,640.00006 310.0124,680.00006 " fill="none" stroke-width="2.0" stroke="rgb(0,0,0)"/>
+</g>
+<g id="la983373848">
+<path id="s983373848" d="M 310.0124,780.00006 310.0124,820.00006 " fill="none" stroke-width="2.0" stroke="rgb(0,0,0)"/>
+</g>
+<g id="la214614641">
+<path id="s214614641" d="M 310.0124,920.0002 310.0124,960.0002 " fill="none" stroke-width="2.0" stroke="rgb(0,0,0)"/>
+</g>
+</svg>

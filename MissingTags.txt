@@ -64,365 +64,365 @@ Field	Kernel.PreReqs.PageFaultDetection_ErrorString	<summary>
 Field	Kernel.PreReqs.PageFaultDetection_Initialised	<summary>
 Field	Kernel.PreReqs.PageFaultDetection_LoopPrevention	<summary>
 Field	Kernel.PreReqs.PageFaultDetection_SeparatorString	<summary>
-Field	Kernel.Core.CommandDescription.CommandName	<summary>
-Field	Kernel.Core.CommandDescription.CommandNameLower	<summary>
-Field	Kernel.Core.CommandDescription.Description	<summary>
-Field	Kernel.Core.CommandHelp.CommandDescriptions	<summary>
-Field	Kernel.Core.Console.ScreenHeightInLines	<summary>
-Field	Kernel.Core.Console.ScreenLineWidth	<summary>
-Field	Kernel.Core.Console.ScreenStartLine	<summary>
-Field	Kernel.Core.Console.ScreenStartLineOffset	<summary>
-Field	Kernel.Core.Console.UpdateCursorPosition	<summary>
-Method	Kernel.Core.Shell.OutputExceptionInfo(Kernel.FOS_System.Exception)	"<param name=""Ex""/>"
-Property	Kernel.Core.Shell.Terminating	<value>
-Method	Kernel.Core.Consoles.AdvancedConsole.DrawBottomBorder	<summary>
-Method	Kernel.Core.Consoles.AdvancedConsole.DrawLeftBorder	<summary>
-Property	Kernel.Core.Consoles.AdvancedConsole.vidMemBasePtr	<value>
-Type	Kernel.Core.Processes.DynamicLinkerLoader	<summary>
-Method	"Kernel.Core.Processes.DynamicLinkerLoader.LoadLibrary_FromELFSO(Kernel.FOS_System.IO.File,Kernel.Core.Processes.ELF.ELFProcess)"	<summary>
-Method	"Kernel.Core.Processes.DynamicLinkerLoader.LoadLibrary_FromELFSO(Kernel.FOS_System.IO.File,Kernel.Core.Processes.ELF.ELFProcess)"	<returns>
-Method	"Kernel.Core.Processes.DynamicLinkerLoader.LoadLibrary_FromELFSO(Kernel.FOS_System.IO.File,Kernel.Core.Processes.ELF.ELFProcess)"	"<param name=""ELFSharedObjectFile""/>"
-Method	"Kernel.Core.Processes.DynamicLinkerLoader.LoadLibrary_FromELFSO(Kernel.FOS_System.IO.File,Kernel.Core.Processes.ELF.ELFProcess)"	"<param name=""theProcess""/>"
-Method	"Kernel.Core.Processes.DynamicLinkerLoader.LoadProcess_FromELFExe(Kernel.FOS_System.IO.File,System.Boolean)"	<summary>
-Method	"Kernel.Core.Processes.DynamicLinkerLoader.LoadProcess_FromELFExe(Kernel.FOS_System.IO.File,System.Boolean)"	<returns>
-Method	"Kernel.Core.Processes.DynamicLinkerLoader.LoadProcess_FromELFExe(Kernel.FOS_System.IO.File,System.Boolean)"	"<param name=""ELFExeFile""/>"
-Method	"Kernel.Core.Processes.DynamicLinkerLoader.LoadProcess_FromELFExe(Kernel.FOS_System.IO.File,System.Boolean)"	"<param name=""UserMode""/>"
-Method	"Kernel.Core.Processes.DynamicLinkerLoader.LoadProcess_FromRawExe(Kernel.FOS_System.IO.File,System.Boolean)"	<summary>
-Method	"Kernel.Core.Processes.DynamicLinkerLoader.LoadProcess_FromRawExe(Kernel.FOS_System.IO.File,System.Boolean)"	<returns>
-Method	"Kernel.Core.Processes.DynamicLinkerLoader.LoadProcess_FromRawExe(Kernel.FOS_System.IO.File,System.Boolean)"	"<param name=""RawExeFile""/>"
-Method	"Kernel.Core.Processes.DynamicLinkerLoader.LoadProcess_FromRawExe(Kernel.FOS_System.IO.File,System.Boolean)"	"<param name=""UserMode""/>"
-Type	Kernel.Core.Processes.SystemCalls	<summary>
-Field	Kernel.Core.Processes.SystemCalls.DeferredSystemCalls_CurrentProcess	<summary>
-Field	Kernel.Core.Processes.SystemCalls.DeferredSystemCalls_CurrentThread	<summary>
-Field	Kernel.Core.Processes.SystemCalls.DeferredSystemCalls_WakeCurrentThread	<summary>
-Method	Kernel.Core.Processes.SystemCalls.DeferredSystemCallsHandler	<summary>
-Field	Kernel.Core.Processes.SystemCalls.DeferredSystemCallsHandlerThread	<summary>
-Field	Kernel.Core.Processes.SystemCalls.DeferredSystemCallsHandlerThread_Awake	<summary>
-Field	Kernel.Core.Processes.SystemCalls.DeferredSystemCallsHandlerThread_Terminate	<summary>
-Method	Kernel.Core.Processes.SystemCalls.DeferSystemCall	<summary>
-Method	Kernel.Core.Processes.SystemCalls.Init	<summary>
-Method	Kernel.Core.Processes.SystemCalls.Int48(Kernel.FOS_System.Object)	<summary>
-Method	Kernel.Core.Processes.SystemCalls.Int48(Kernel.FOS_System.Object)	"<param name=""state""/>"
-Field	Kernel.Core.Processes.SystemCalls.Int48HandlerId	<summary>
-Method	"Kernel.Core.Processes.SystemCalls.SysCall_PlayNote(Kernel.Hardware.Timers.PIT.MusicalNote,Kernel.Hardware.Timers.PIT.MusicalNoteValue,System.UInt32)"	<summary>
-Method	"Kernel.Core.Processes.SystemCalls.SysCall_PlayNote(Kernel.Hardware.Timers.PIT.MusicalNote,Kernel.Hardware.Timers.PIT.MusicalNoteValue,System.UInt32)"	"<param name=""note""/>"
-Method	"Kernel.Core.Processes.SystemCalls.SysCall_PlayNote(Kernel.Hardware.Timers.PIT.MusicalNote,Kernel.Hardware.Timers.PIT.MusicalNoteValue,System.UInt32)"	"<param name=""duration""/>"
-Method	"Kernel.Core.Processes.SystemCalls.SysCall_PlayNote(Kernel.Hardware.Timers.PIT.MusicalNote,Kernel.Hardware.Timers.PIT.MusicalNoteValue,System.UInt32)"	"<param name=""bpm""/>"
-Method	"Kernel.Core.Processes.SystemCalls.SysCall_Semaphore(Kernel.Shared.SemaphoreRequests,System.Int32,System.UInt32)"	<summary>
-Method	"Kernel.Core.Processes.SystemCalls.SysCall_Semaphore(Kernel.Shared.SemaphoreRequests,System.Int32,System.UInt32)"	"<param name=""request""/>"
-Method	"Kernel.Core.Processes.SystemCalls.SysCall_Semaphore(Kernel.Shared.SemaphoreRequests,System.Int32,System.UInt32)"	"<param name=""id""/>"
-Method	"Kernel.Core.Processes.SystemCalls.SysCall_Semaphore(Kernel.Shared.SemaphoreRequests,System.Int32,System.UInt32)"	"<param name=""limitOrProcessId""/>"
-Method	Kernel.Core.Processes.SystemCalls.SysCall_Sleep(System.Int32)	<summary>
-Method	Kernel.Core.Processes.SystemCalls.SysCall_Sleep(System.Int32)	"<param name=""ms""/>"
-Method	"Kernel.Core.Processes.SystemCalls.SysCall_Thread(Kernel.Shared.ThreadRequests,System.UInt32)"	<summary>
-Method	"Kernel.Core.Processes.SystemCalls.SysCall_Thread(Kernel.Shared.ThreadRequests,System.UInt32)"	"<param name=""request""/>"
-Method	"Kernel.Core.Processes.SystemCalls.SysCall_Thread(Kernel.Shared.ThreadRequests,System.UInt32)"	"<param name=""startMethod""/>"
-Type	Kernel.Core.Processes.ELF.ELFDataEncoding	<summary>
-Type	Kernel.Core.Processes.ELF.ELFDynamicSection	<summary>
-Method	Kernel.Core.Processes.ELF.ELFDynamicSection.#ctor(Kernel.Core.Processes.ELF.ELFSectionHeader)	"<param name=""header""/>"
-Field	Kernel.Core.Processes.ELF.ELFDynamicSection.dynamics	<summary>
-Property	Kernel.Core.Processes.ELF.ELFDynamicSection.Dynamics	<summary>
-Property	Kernel.Core.Processes.ELF.ELFDynamicSection.Dynamics	<value>
-Property	Kernel.Core.Processes.ELF.ELFDynamicSection.Item(System.UInt32)	<summary>
-Property	Kernel.Core.Processes.ELF.ELFDynamicSection.Item(System.UInt32)	<value>
-Method	Kernel.Core.Processes.ELF.ELFDynamicSection.Read(Kernel.FOS_System.IO.Streams.FileStream)	<summary>
-Method	Kernel.Core.Processes.ELF.ELFDynamicSection.Read(Kernel.FOS_System.IO.Streams.FileStream)	<returns>
-Method	Kernel.Core.Processes.ELF.ELFDynamicSection.Read(Kernel.FOS_System.IO.Streams.FileStream)	"<param name=""stream""/>"
-Property	Kernel.Core.Processes.ELF.ELFDynamicSection.StrTabDynamic	<summary>
-Property	Kernel.Core.Processes.ELF.ELFDynamicSection.StrTabDynamic	<value>
-Property	Kernel.Core.Processes.ELF.ELFDynamicSection.StrTabSizeDynamic	<summary>
-Property	Kernel.Core.Processes.ELF.ELFDynamicSection.StrTabSizeDynamic	<value>
-Type	Kernel.Core.Processes.ELF.ELFDynamicSection.Dynamic	<summary>
-Field	Kernel.Core.Processes.ELF.ELFDynamicSection.Dynamic.Tag	<summary>
-Field	Kernel.Core.Processes.ELF.ELFDynamicSection.Dynamic.Val_Ptr	<summary>
-Type	Kernel.Core.Processes.ELF.ELFDynamicSection.DynamicTag	<summary>
-Type	Kernel.Core.Processes.ELF.ELFDynamicSymbolTableSection	<summary>
-Method	Kernel.Core.Processes.ELF.ELFDynamicSymbolTableSection.#ctor(Kernel.Core.Processes.ELF.ELFSectionHeader)	"<param name=""header""/>"
-Type	Kernel.Core.Processes.ELF.ELFFile	<summary>
-Method	Kernel.Core.Processes.ELF.ELFFile.#ctor(Kernel.FOS_System.IO.File)	"<param name=""file""/>"
-Field	Kernel.Core.Processes.ELF.ELFFile.baseAddress	<summary>
-Property	Kernel.Core.Processes.ELF.ELFFile.BaseAddress	<summary>
-Property	Kernel.Core.Processes.ELF.ELFFile.BaseAddress	<value>
-Method	Kernel.Core.Processes.ELF.ELFFile.CheckDataEncoding	<summary>
-Method	Kernel.Core.Processes.ELF.ELFFile.CheckDataEncoding	<returns>
-Method	Kernel.Core.Processes.ELF.ELFFile.CheckFileClass	<summary>
-Method	Kernel.Core.Processes.ELF.ELFFile.CheckFileClass	<returns>
-Method	Kernel.Core.Processes.ELF.ELFFile.CheckFileType	<summary>
-Method	Kernel.Core.Processes.ELF.ELFFile.CheckFileType	<returns>
-Method	Kernel.Core.Processes.ELF.ELFFile.CheckMachine	<summary>
-Method	Kernel.Core.Processes.ELF.ELFFile.CheckMachine	<returns>
-Method	Kernel.Core.Processes.ELF.ELFFile.CheckSiganture	<summary>
-Method	Kernel.Core.Processes.ELF.ELFFile.CheckSiganture	<returns>
-Field	Kernel.Core.Processes.ELF.ELFFile.DynamicSection	<summary>
-Field	Kernel.Core.Processes.ELF.ELFFile.DynamicSymbolsSection	<summary>
-Field	Kernel.Core.Processes.ELF.ELFFile.FoundBaseAddress	<summary>
-Field	Kernel.Core.Processes.ELF.ELFFile.header	<summary>
-Property	Kernel.Core.Processes.ELF.ELFFile.Header	<summary>
-Property	Kernel.Core.Processes.ELF.ELFFile.Header	<value>
-Method	Kernel.Core.Processes.ELF.ELFFile.IsExecutable	<summary>
-Method	Kernel.Core.Processes.ELF.ELFFile.IsExecutable	<returns>
-Method	Kernel.Core.Processes.ELF.ELFFile.IsSharedObject	<summary>
-Method	Kernel.Core.Processes.ELF.ELFFile.IsSharedObject	<returns>
-Method	Kernel.Core.Processes.ELF.ELFFile.IsValidFile	<summary>
-Method	Kernel.Core.Processes.ELF.ELFFile.IsValidFile	<returns>
-Method	Kernel.Core.Processes.ELF.ELFFile.LoadExecutable(System.Boolean)	<summary>
-Method	Kernel.Core.Processes.ELF.ELFFile.LoadExecutable(System.Boolean)	<returns>
-Method	Kernel.Core.Processes.ELF.ELFFile.LoadExecutable(System.Boolean)	"<param name=""UserMode""/>"
-Method	Kernel.Core.Processes.ELF.ELFFile.LoadSharedObject(Kernel.Core.Processes.ELF.ELFProcess)	<summary>
-Method	Kernel.Core.Processes.ELF.ELFFile.LoadSharedObject(Kernel.Core.Processes.ELF.ELFProcess)	<returns>
-Method	Kernel.Core.Processes.ELF.ELFFile.LoadSharedObject(Kernel.Core.Processes.ELF.ELFProcess)	"<param name=""theProcess""/>"
-Field	Kernel.Core.Processes.ELF.ELFFile.NamesTable	<summary>
-Method	Kernel.Core.Processes.ELF.ELFFile.ReadHeader	<summary>
-Method	Kernel.Core.Processes.ELF.ELFFile.ReadSectionHeaders	<summary>
-Method	Kernel.Core.Processes.ELF.ELFFile.ReadSegmentHeaders	<summary>
-Field	Kernel.Core.Processes.ELF.ELFFile.Sections	<summary>
-Field	Kernel.Core.Processes.ELF.ELFFile.Segments	<summary>
-Field	Kernel.Core.Processes.ELF.ELFFile.theFile	<summary>
-Property	Kernel.Core.Processes.ELF.ELFFile.TheFile	<summary>
-Property	Kernel.Core.Processes.ELF.ELFFile.TheFile	<value>
-Field	Kernel.Core.Processes.ELF.ELFFile.theStream	<summary>
-Property	Kernel.Core.Processes.ELF.ELFFile.TheStream	<summary>
-Property	Kernel.Core.Processes.ELF.ELFFile.TheStream	<value>
-Type	Kernel.Core.Processes.ELF.ELFFileClass	<summary>
-Type	Kernel.Core.Processes.ELF.ELFFileType	<summary>
-Type	Kernel.Core.Processes.ELF.ELFFlags	<summary>
-Type	Kernel.Core.Processes.ELF.ELFHeader	<summary>
-Method	Kernel.Core.Processes.ELF.ELFHeader.#ctor(System.Byte[])	"<param name=""data""/>"
-Property	Kernel.Core.Processes.ELF.ELFHeader.DataEncoding	<summary>
-Property	Kernel.Core.Processes.ELF.ELFHeader.DataEncoding	<value>
-Field	Kernel.Core.Processes.ELF.ELFHeader.ELFHeaderSize	<summary>
-Field	Kernel.Core.Processes.ELF.ELFHeader.EntryPoint	<summary>
-Property	Kernel.Core.Processes.ELF.ELFHeader.FileClass	<summary>
-Property	Kernel.Core.Processes.ELF.ELFHeader.FileClass	<value>
-Field	Kernel.Core.Processes.ELF.ELFHeader.FileType	<summary>
-Field	Kernel.Core.Processes.ELF.ELFHeader.flags	<summary>
-Field	Kernel.Core.Processes.ELF.ELFHeader.HEADER_SIZE	<summary>
-Property	Kernel.Core.Processes.ELF.ELFHeader.HeaderVersion	<summary>
-Property	Kernel.Core.Processes.ELF.ELFHeader.HeaderVersion	<value>
-Field	Kernel.Core.Processes.ELF.ELFHeader.ident	<summary>
-Field	Kernel.Core.Processes.ELF.ELFHeader.Machine	<summary>
-Field	Kernel.Core.Processes.ELF.ELFHeader.ProgHeaderEntrySize	<summary>
-Field	Kernel.Core.Processes.ELF.ELFHeader.ProgHeaderNumEntries	<summary>
-Field	Kernel.Core.Processes.ELF.ELFHeader.ProgHeaderTableOffset	<summary>
-Field	Kernel.Core.Processes.ELF.ELFHeader.SecHeaderEntrySize	<summary>
-Field	Kernel.Core.Processes.ELF.ELFHeader.SecHeaderIdxForSecNameStrings	<summary>
-Field	Kernel.Core.Processes.ELF.ELFHeader.SecHeaderNumEntries	<summary>
-Field	Kernel.Core.Processes.ELF.ELFHeader.SecHeaderTableOffset	<summary>
-Property	Kernel.Core.Processes.ELF.ELFHeader.SignatureOK	<summary>
-Property	Kernel.Core.Processes.ELF.ELFHeader.SignatureOK	<value>
-Field	Kernel.Core.Processes.ELF.ELFHeader.Version	<summary>
-Type	Kernel.Core.Processes.ELF.ELFMachines	<summary>
-Type	Kernel.Core.Processes.ELF.ELFProcess	<summary>
-Method	Kernel.Core.Processes.ELF.ELFProcess.#ctor(Kernel.Core.Processes.ELF.ELFFile)	"<param name=""anELFFile""/>"
-Field	Kernel.Core.Processes.ELF.ELFProcess.BaseAddress	<summary>
-Method	"Kernel.Core.Processes.ELF.ELFProcess.GetSymbolAddress(Kernel.Core.Processes.ELF.ELFSymbolTableSection.Symbol,Kernel.FOS_System.String)"	<summary>
-Method	"Kernel.Core.Processes.ELF.ELFProcess.GetSymbolAddress(Kernel.Core.Processes.ELF.ELFSymbolTableSection.Symbol,Kernel.FOS_System.String)"	<returns>
-Method	"Kernel.Core.Processes.ELF.ELFProcess.GetSymbolAddress(Kernel.Core.Processes.ELF.ELFSymbolTableSection.Symbol,Kernel.FOS_System.String)"	"<param name=""theSymbol""/>"
-Method	"Kernel.Core.Processes.ELF.ELFProcess.GetSymbolAddress(Kernel.Core.Processes.ELF.ELFSymbolTableSection.Symbol,Kernel.FOS_System.String)"	"<param name=""theSymbolName""/>"
-Method	"Kernel.Core.Processes.ELF.ELFProcess.GetSymbolAddressAndSize(Kernel.Core.Processes.ELF.ELFSymbolTableSection.Symbol,Kernel.FOS_System.String,System.UInt32@,System.UInt32@)"	<summary>
-Method	"Kernel.Core.Processes.ELF.ELFProcess.GetSymbolAddressAndSize(Kernel.Core.Processes.ELF.ELFSymbolTableSection.Symbol,Kernel.FOS_System.String,System.UInt32@,System.UInt32@)"	<returns>
-Method	"Kernel.Core.Processes.ELF.ELFProcess.GetSymbolAddressAndSize(Kernel.Core.Processes.ELF.ELFSymbolTableSection.Symbol,Kernel.FOS_System.String,System.UInt32@,System.UInt32@)"	"<param name=""theSymbol""/>"
-Method	"Kernel.Core.Processes.ELF.ELFProcess.GetSymbolAddressAndSize(Kernel.Core.Processes.ELF.ELFSymbolTableSection.Symbol,Kernel.FOS_System.String,System.UInt32@,System.UInt32@)"	"<param name=""theSymbolName""/>"
-Method	"Kernel.Core.Processes.ELF.ELFProcess.GetSymbolAddressAndSize(Kernel.Core.Processes.ELF.ELFSymbolTableSection.Symbol,Kernel.FOS_System.String,System.UInt32@,System.UInt32@)"	"<param name=""address""/>"
-Method	"Kernel.Core.Processes.ELF.ELFProcess.GetSymbolAddressAndSize(Kernel.Core.Processes.ELF.ELFSymbolTableSection.Symbol,Kernel.FOS_System.String,System.UInt32@,System.UInt32@)"	"<param name=""size""/>"
-Method	Kernel.Core.Processes.ELF.ELFProcess.Load(System.Boolean)	<summary>
-Method	Kernel.Core.Processes.ELF.ELFProcess.Load(System.Boolean)	"<param name=""UserMode""/>"
-Method	"Kernel.Core.Processes.ELF.ELFProcess.LoadSegments(Kernel.Core.Processes.ELF.ELFFile,System.Boolean@,System.Boolean@,System.UInt32)"	<summary>
-Method	"Kernel.Core.Processes.ELF.ELFProcess.LoadSegments(Kernel.Core.Processes.ELF.ELFFile,System.Boolean@,System.Boolean@,System.UInt32)"	"<param name=""fileToLoadFrom""/>"
-Method	"Kernel.Core.Processes.ELF.ELFProcess.LoadSegments(Kernel.Core.Processes.ELF.ELFFile,System.Boolean@,System.Boolean@,System.UInt32)"	"<param name=""OK""/>"
-Method	"Kernel.Core.Processes.ELF.ELFProcess.LoadSegments(Kernel.Core.Processes.ELF.ELFFile,System.Boolean@,System.Boolean@,System.UInt32)"	"<param name=""DynamicLinkingRequired""/>"
-Method	"Kernel.Core.Processes.ELF.ELFProcess.LoadSegments(Kernel.Core.Processes.ELF.ELFFile,System.Boolean@,System.Boolean@,System.UInt32)"	"<param name=""memBaseAddress""/>"
-Field	Kernel.Core.Processes.ELF.ELFProcess.SharedObjectDependencies	<summary>
-Field	Kernel.Core.Processes.ELF.ELFProcess.SharedObjectDependencyFilePaths	<summary>
-Field	Kernel.Core.Processes.ELF.ELFProcess.theFile	<summary>
-Property	Kernel.Core.Processes.ELF.ELFProcess.TheFile	<summary>
-Property	Kernel.Core.Processes.ELF.ELFProcess.TheFile	<value>
-Field	Kernel.Core.Processes.ELF.ELFProcess.theProcess	<summary>
-Property	Kernel.Core.Processes.ELF.ELFProcess.TheProcess	<summary>
-Property	Kernel.Core.Processes.ELF.ELFProcess.TheProcess	<value>
-Type	Kernel.Core.Processes.ELF.ELFRelocationAddendTableSection	<summary>
-Method	Kernel.Core.Processes.ELF.ELFRelocationAddendTableSection.#ctor(Kernel.Core.Processes.ELF.ELFSectionHeader)	"<param name=""header""/>"
-Property	Kernel.Core.Processes.ELF.ELFRelocationAddendTableSection.Item(System.UInt32)	<summary>
-Property	Kernel.Core.Processes.ELF.ELFRelocationAddendTableSection.Item(System.UInt32)	<value>
-Method	Kernel.Core.Processes.ELF.ELFRelocationAddendTableSection.Read(Kernel.FOS_System.IO.Streams.FileStream)	<summary>
-Method	Kernel.Core.Processes.ELF.ELFRelocationAddendTableSection.Read(Kernel.FOS_System.IO.Streams.FileStream)	<returns>
-Method	Kernel.Core.Processes.ELF.ELFRelocationAddendTableSection.Read(Kernel.FOS_System.IO.Streams.FileStream)	"<param name=""stream""/>"
-Field	Kernel.Core.Processes.ELF.ELFRelocationAddendTableSection.relocations	<summary>
-Property	Kernel.Core.Processes.ELF.ELFRelocationAddendTableSection.Relocations	<summary>
-Property	Kernel.Core.Processes.ELF.ELFRelocationAddendTableSection.Relocations	<value>
-Property	Kernel.Core.Processes.ELF.ELFRelocationAddendTableSection.SectionToRelocateIndex	<summary>
-Property	Kernel.Core.Processes.ELF.ELFRelocationAddendTableSection.SectionToRelocateIndex	<value>
-Property	Kernel.Core.Processes.ELF.ELFRelocationAddendTableSection.SymbolTableSectionIndex	<summary>
-Property	Kernel.Core.Processes.ELF.ELFRelocationAddendTableSection.SymbolTableSectionIndex	<value>
-Type	Kernel.Core.Processes.ELF.ELFRelocationAddendTableSection.RelocationAddend	<summary>
-Property	Kernel.Core.Processes.ELF.ELFRelocationAddendTableSection.RelocationAddend.Symbol	<summary>
-Property	Kernel.Core.Processes.ELF.ELFRelocationAddendTableSection.RelocationAddend.Symbol	<value>
-Property	Kernel.Core.Processes.ELF.ELFRelocationAddendTableSection.RelocationAddend.Type	<summary>
-Property	Kernel.Core.Processes.ELF.ELFRelocationAddendTableSection.RelocationAddend.Type	<value>
-Type	Kernel.Core.Processes.ELF.ELFRelocationTableSection	<summary>
-Method	Kernel.Core.Processes.ELF.ELFRelocationTableSection.#ctor(Kernel.Core.Processes.ELF.ELFSectionHeader)	"<param name=""header""/>"
-Property	Kernel.Core.Processes.ELF.ELFRelocationTableSection.Item(System.UInt32)	<summary>
-Property	Kernel.Core.Processes.ELF.ELFRelocationTableSection.Item(System.UInt32)	<value>
-Method	Kernel.Core.Processes.ELF.ELFRelocationTableSection.Read(Kernel.FOS_System.IO.Streams.FileStream)	<summary>
-Method	Kernel.Core.Processes.ELF.ELFRelocationTableSection.Read(Kernel.FOS_System.IO.Streams.FileStream)	<returns>
-Method	Kernel.Core.Processes.ELF.ELFRelocationTableSection.Read(Kernel.FOS_System.IO.Streams.FileStream)	"<param name=""stream""/>"
-Field	Kernel.Core.Processes.ELF.ELFRelocationTableSection.relocations	<summary>
-Property	Kernel.Core.Processes.ELF.ELFRelocationTableSection.Relocations	<summary>
-Property	Kernel.Core.Processes.ELF.ELFRelocationTableSection.Relocations	<value>
-Property	Kernel.Core.Processes.ELF.ELFRelocationTableSection.SectionToRelocateIndex	<summary>
-Property	Kernel.Core.Processes.ELF.ELFRelocationTableSection.SectionToRelocateIndex	<value>
-Property	Kernel.Core.Processes.ELF.ELFRelocationTableSection.SymbolTableSectionIndex	<summary>
-Property	Kernel.Core.Processes.ELF.ELFRelocationTableSection.SymbolTableSectionIndex	<value>
-Type	Kernel.Core.Processes.ELF.ELFRelocationTableSection.Relocation	<summary>
-Property	Kernel.Core.Processes.ELF.ELFRelocationTableSection.Relocation.Symbol	<summary>
-Property	Kernel.Core.Processes.ELF.ELFRelocationTableSection.Relocation.Symbol	<value>
-Property	Kernel.Core.Processes.ELF.ELFRelocationTableSection.Relocation.Type	<summary>
-Property	Kernel.Core.Processes.ELF.ELFRelocationTableSection.Relocation.Type	<value>
-Type	Kernel.Core.Processes.ELF.ELFRelocationTableSection.RelocationType	<summary>
-Type	Kernel.Core.Processes.ELF.ELFSection	<summary>
-Method	Kernel.Core.Processes.ELF.ELFSection.#ctor(Kernel.Core.Processes.ELF.ELFSectionHeader)	"<param name=""aHeader""/>"
-Field	Kernel.Core.Processes.ELF.ELFSection.data	<summary>
-Method	Kernel.Core.Processes.ELF.ELFSection.GetSection(Kernel.Core.Processes.ELF.ELFSectionHeader)	<summary>
-Method	Kernel.Core.Processes.ELF.ELFSection.GetSection(Kernel.Core.Processes.ELF.ELFSectionHeader)	<returns>
-Method	Kernel.Core.Processes.ELF.ELFSection.GetSection(Kernel.Core.Processes.ELF.ELFSectionHeader)	"<param name=""header""/>"
-Field	Kernel.Core.Processes.ELF.ELFSection.header	<summary>
-Property	Kernel.Core.Processes.ELF.ELFSection.Header	<summary>
-Property	Kernel.Core.Processes.ELF.ELFSection.Header	<value>
-Method	Kernel.Core.Processes.ELF.ELFSection.Read(Kernel.FOS_System.IO.Streams.FileStream)	<summary>
-Method	Kernel.Core.Processes.ELF.ELFSection.Read(Kernel.FOS_System.IO.Streams.FileStream)	<returns>
-Method	Kernel.Core.Processes.ELF.ELFSection.Read(Kernel.FOS_System.IO.Streams.FileStream)	"<param name=""stream""/>"
-Type	Kernel.Core.Processes.ELF.ELFSectionFlags	<summary>
-Type	Kernel.Core.Processes.ELF.ELFSectionHeader	<summary>
-Method	"Kernel.Core.Processes.ELF.ELFSectionHeader.#ctor(System.Byte[],System.UInt32@)"	"<param name=""header""/>"
-Method	"Kernel.Core.Processes.ELF.ELFSectionHeader.#ctor(System.Byte[],System.UInt32@)"	"<param name=""offset""/>"
-Field	Kernel.Core.Processes.ELF.ELFSectionHeader.AddressAlignment	<summary>
-Field	Kernel.Core.Processes.ELF.ELFSectionHeader.EntrySize	<summary>
-Field	Kernel.Core.Processes.ELF.ELFSectionHeader.Flags	<summary>
-Field	Kernel.Core.Processes.ELF.ELFSectionHeader.Info	<summary>
-Field	Kernel.Core.Processes.ELF.ELFSectionHeader.Link	<summary>
-Field	Kernel.Core.Processes.ELF.ELFSectionHeader.LoadAddress	<summary>
-Field	Kernel.Core.Processes.ELF.ELFSectionHeader.NameIndex	<summary>
-Field	Kernel.Core.Processes.ELF.ELFSectionHeader.SectionFileOffset	<summary>
-Field	Kernel.Core.Processes.ELF.ELFSectionHeader.SectionSize	<summary>
-Field	Kernel.Core.Processes.ELF.ELFSectionHeader.SectionType	<summary>
-Type	Kernel.Core.Processes.ELF.ElfSectionTypes	<summary>
-Type	Kernel.Core.Processes.ELF.ELFSegment	<summary>
-Method	Kernel.Core.Processes.ELF.ELFSegment.#ctor(Kernel.Core.Processes.ELF.ELFSegmentHeader)	"<param name=""aHeader""/>"
-Field	Kernel.Core.Processes.ELF.ELFSegment.data	<summary>
-Property	Kernel.Core.Processes.ELF.ELFSegment.Data	<summary>
-Property	Kernel.Core.Processes.ELF.ELFSegment.Data	<value>
-Method	Kernel.Core.Processes.ELF.ELFSegment.GetSegment(Kernel.Core.Processes.ELF.ELFSegmentHeader)	<summary>
-Method	Kernel.Core.Processes.ELF.ELFSegment.GetSegment(Kernel.Core.Processes.ELF.ELFSegmentHeader)	<returns>
-Method	Kernel.Core.Processes.ELF.ELFSegment.GetSegment(Kernel.Core.Processes.ELF.ELFSegmentHeader)	"<param name=""header""/>"
-Field	Kernel.Core.Processes.ELF.ELFSegment.header	<summary>
-Property	Kernel.Core.Processes.ELF.ELFSegment.Header	<summary>
-Property	Kernel.Core.Processes.ELF.ELFSegment.Header	<value>
-Method	Kernel.Core.Processes.ELF.ELFSegment.Read(Kernel.FOS_System.IO.Streams.FileStream)	<summary>
-Method	Kernel.Core.Processes.ELF.ELFSegment.Read(Kernel.FOS_System.IO.Streams.FileStream)	<returns>
-Method	Kernel.Core.Processes.ELF.ELFSegment.Read(Kernel.FOS_System.IO.Streams.FileStream)	"<param name=""stream""/>"
-Type	Kernel.Core.Processes.ELF.ELFSegmentHeader	<summary>
-Method	"Kernel.Core.Processes.ELF.ELFSegmentHeader.#ctor(System.Byte[],System.UInt32@)"	"<param name=""header""/>"
-Method	"Kernel.Core.Processes.ELF.ELFSegmentHeader.#ctor(System.Byte[],System.UInt32@)"	"<param name=""offset""/>"
-Field	Kernel.Core.Processes.ELF.ELFSegmentHeader.Align	<summary>
-Field	Kernel.Core.Processes.ELF.ELFSegmentHeader.FileOffset	<summary>
-Field	Kernel.Core.Processes.ELF.ELFSegmentHeader.FileSize	<summary>
-Field	Kernel.Core.Processes.ELF.ELFSegmentHeader.Flags	<summary>
-Field	Kernel.Core.Processes.ELF.ELFSegmentHeader.MemSize	<summary>
-Field	Kernel.Core.Processes.ELF.ELFSegmentHeader.PAddr	<summary>
-Field	Kernel.Core.Processes.ELF.ELFSegmentHeader.Type	<summary>
-Field	Kernel.Core.Processes.ELF.ELFSegmentHeader.VAddr	<summary>
-Type	Kernel.Core.Processes.ELF.ELFSegmentType	<summary>
-Type	Kernel.Core.Processes.ELF.ELFSharedObject	<summary>
-Method	"Kernel.Core.Processes.ELF.ELFSharedObject.#ctor(Kernel.Core.Processes.ELF.ELFFile,Kernel.Core.Processes.ELF.ELFProcess)"	"<param name=""anELFFile""/>"
-Method	"Kernel.Core.Processes.ELF.ELFSharedObject.#ctor(Kernel.Core.Processes.ELF.ELFFile,Kernel.Core.Processes.ELF.ELFProcess)"	"<param name=""aProcess""/>"
-Field	Kernel.Core.Processes.ELF.ELFSharedObject.BaseAddress	<summary>
-Method	Kernel.Core.Processes.ELF.ELFSharedObject.Load	<summary>
-Field	Kernel.Core.Processes.ELF.ELFSharedObject.theFile	<summary>
-Property	Kernel.Core.Processes.ELF.ELFSharedObject.TheFile	<summary>
-Property	Kernel.Core.Processes.ELF.ELFSharedObject.TheFile	<value>
-Field	Kernel.Core.Processes.ELF.ELFSharedObject.theProcess	<summary>
-Property	Kernel.Core.Processes.ELF.ELFSharedObject.TheProcess	<summary>
-Property	Kernel.Core.Processes.ELF.ELFSharedObject.TheProcess	<value>
-Type	Kernel.Core.Processes.ELF.ELFStringTable	<summary>
-Method	"Kernel.Core.Processes.ELF.ELFStringTable.#ctor(System.UInt32,System.UInt32)"	"<param name=""anAddress""/>"
-Method	"Kernel.Core.Processes.ELF.ELFStringTable.#ctor(System.UInt32,System.UInt32)"	"<param name=""aSize""/>"
-Field	Kernel.Core.Processes.ELF.ELFStringTable.data	<summary>
-Property	Kernel.Core.Processes.ELF.ELFStringTable.Item(System.UInt32)	<summary>
-Property	Kernel.Core.Processes.ELF.ELFStringTable.Item(System.UInt32)	<value>
-Field	Kernel.Core.Processes.ELF.ELFStringTable.size	<summary>
-Type	Kernel.Core.Processes.ELF.ELFStringTableSection	<summary>
-Method	Kernel.Core.Processes.ELF.ELFStringTableSection.#ctor(Kernel.Core.Processes.ELF.ELFSectionHeader)	"<param name=""header""/>"
-Method	"Kernel.Core.Processes.ELF.ELFStringTableSection.IsMatch(System.UInt32,Kernel.FOS_System.String)"	<summary>
-Method	"Kernel.Core.Processes.ELF.ELFStringTableSection.IsMatch(System.UInt32,Kernel.FOS_System.String)"	<returns>
-Method	"Kernel.Core.Processes.ELF.ELFStringTableSection.IsMatch(System.UInt32,Kernel.FOS_System.String)"	"<param name=""offset""/>"
-Method	"Kernel.Core.Processes.ELF.ELFStringTableSection.IsMatch(System.UInt32,Kernel.FOS_System.String)"	"<param name=""value""/>"
-Property	Kernel.Core.Processes.ELF.ELFStringTableSection.Item(System.UInt32)	<summary>
-Property	Kernel.Core.Processes.ELF.ELFStringTableSection.Item(System.UInt32)	<value>
-Type	Kernel.Core.Processes.ELF.ELFSymbolTableSection	<summary>
-Method	Kernel.Core.Processes.ELF.ELFSymbolTableSection.#ctor(Kernel.Core.Processes.ELF.ELFSectionHeader)	"<param name=""header""/>"
-Property	Kernel.Core.Processes.ELF.ELFSymbolTableSection.Item(System.UInt32)	<summary>
-Property	Kernel.Core.Processes.ELF.ELFSymbolTableSection.Item(System.UInt32)	<value>
-Method	Kernel.Core.Processes.ELF.ELFSymbolTableSection.Read(Kernel.FOS_System.IO.Streams.FileStream)	<summary>
-Method	Kernel.Core.Processes.ELF.ELFSymbolTableSection.Read(Kernel.FOS_System.IO.Streams.FileStream)	<returns>
-Method	Kernel.Core.Processes.ELF.ELFSymbolTableSection.Read(Kernel.FOS_System.IO.Streams.FileStream)	"<param name=""stream""/>"
-Property	Kernel.Core.Processes.ELF.ELFSymbolTableSection.StringsSectionIndex	<summary>
-Property	Kernel.Core.Processes.ELF.ELFSymbolTableSection.StringsSectionIndex	<value>
-Field	Kernel.Core.Processes.ELF.ELFSymbolTableSection.symbols	<summary>
-Property	Kernel.Core.Processes.ELF.ELFSymbolTableSection.Symbols	<summary>
-Property	Kernel.Core.Processes.ELF.ELFSymbolTableSection.Symbols	<value>
-Type	Kernel.Core.Processes.ELF.ELFSymbolTableSection.Symbol	<summary>
-Property	Kernel.Core.Processes.ELF.ELFSymbolTableSection.Symbol.Binding	<summary>
-Property	Kernel.Core.Processes.ELF.ELFSymbolTableSection.Symbol.Binding	<value>
-Field	Kernel.Core.Processes.ELF.ELFSymbolTableSection.Symbol.Info	<summary>
-Field	Kernel.Core.Processes.ELF.ELFSymbolTableSection.Symbol.NameIdx	<summary>
-Field	Kernel.Core.Processes.ELF.ELFSymbolTableSection.Symbol.Other	<summary>
-Field	Kernel.Core.Processes.ELF.ELFSymbolTableSection.Symbol.SectionIndex	<summary>
-Field	Kernel.Core.Processes.ELF.ELFSymbolTableSection.Symbol.Size	<summary>
-Property	Kernel.Core.Processes.ELF.ELFSymbolTableSection.Symbol.Type	<summary>
-Property	Kernel.Core.Processes.ELF.ELFSymbolTableSection.Symbol.Type	<value>
-Field	Kernel.Core.Processes.ELF.ELFSymbolTableSection.Symbol.Value	<summary>
-Type	Kernel.Core.Processes.ELF.ELFSymbolTableSection.SymbolBinding	<summary>
-Type	Kernel.Core.Processes.ELF.ELFSymbolTableSection.SymbolType	<summary>
-Method	Kernel.Core.Shells.MainShell._DeviceManager_DeviceAdded(Kernel.Hardware.Device)	<summary>
-Method	Kernel.Core.Shells.MainShell._DeviceManager_DeviceAdded(Kernel.Hardware.Device)	"<param name=""device""/>"
-Method	Kernel.Core.Shells.MainShell.ATATest	<summary>
-Method	"Kernel.Core.Shells.MainShell.DeviceManager_DeviceAdded(Kernel.FOS_System.Object,Kernel.Hardware.Device)"	<summary>
-Method	"Kernel.Core.Shells.MainShell.DeviceManager_DeviceAdded(Kernel.FOS_System.Object,Kernel.Hardware.Device)"	"<param name=""state""/>"
-Method	"Kernel.Core.Shells.MainShell.DeviceManager_DeviceAdded(Kernel.FOS_System.Object,Kernel.Hardware.Device)"	"<param name=""device""/>"
-Method	Kernel.Core.Shells.MainShell.GCTest	<summary>
-Method	Kernel.Core.Shells.MainShell.HeapTest	<summary>
-Method	Kernel.Core.Shells.MainShell.LongsTest	<summary>
-Method	"Kernel.Core.Shells.MainShell.OutputErrorFromTest(Kernel.FOS_System.String,Kernel.FOS_System.String)"	<summary>
-Method	"Kernel.Core.Shells.MainShell.OutputErrorFromTest(Kernel.FOS_System.String,Kernel.FOS_System.String)"	"<param name=""TestName""/>"
-Method	"Kernel.Core.Shells.MainShell.OutputErrorFromTest(Kernel.FOS_System.String,Kernel.FOS_System.String)"	"<param name=""Message""/>"
-Method	"Kernel.Core.Shells.MainShell.OutputMessageFromTest(Kernel.FOS_System.String,Kernel.FOS_System.String)"	<summary>
-Method	"Kernel.Core.Shells.MainShell.OutputMessageFromTest(Kernel.FOS_System.String,Kernel.FOS_System.String)"	"<param name=""TestName""/>"
-Method	"Kernel.Core.Shells.MainShell.OutputMessageFromTest(Kernel.FOS_System.String,Kernel.FOS_System.String)"	"<param name=""Message""/>"
-Method	"Kernel.Core.Shells.MainShell.OutputWarningFromTest(Kernel.FOS_System.String,Kernel.FOS_System.String)"	<summary>
-Method	"Kernel.Core.Shells.MainShell.OutputWarningFromTest(Kernel.FOS_System.String,Kernel.FOS_System.String)"	"<param name=""TestName""/>"
-Method	"Kernel.Core.Shells.MainShell.OutputWarningFromTest(Kernel.FOS_System.String,Kernel.FOS_System.String)"	"<param name=""Message""/>"
-Method	Kernel.Core.Shells.MainShell.ShowHelp(Kernel.FOS_System.String)	"<param name=""commandName""/>"
-Method	Kernel.Core.Shells.MainShell.ThreadSleepTest	<summary>
-Method	Kernel.Core.Shells.MainShell.UnrecognisedOption(Kernel.FOS_System.String)	"<param name=""value""/>"
-Method	Kernel.Core.Shells.MainShell.USBTest	<summary>
-Type	Kernel.Core.Tasks.EasterTask	<summary>
-Field	Kernel.Core.Tasks.EasterTask.ImageMap	<summary>
-Method	Kernel.Core.Tasks.EasterTask.Main	<summary>
-Type	Kernel.Core.Tasks.GCCleanupTask	<summary>
-Method	Kernel.Core.Tasks.GCCleanupTask.Main	<summary>
-Field	Kernel.Core.Tasks.GCCleanupTask.Terminate	<summary>
-Type	Kernel.Core.Tasks.IdleTask	<summary>
-Method	Kernel.Core.Tasks.IdleTask.Main	<summary>
-Type	Kernel.Core.Tasks.SampleTask	<summary>
-Method	Kernel.Core.Tasks.SampleTask.Main	<summary>
-Type	Kernel.Core.Tasks.SystemStatusTask	<summary>
-Method	"Kernel.Core.Tasks.SystemStatusTask.DeviceManager_DeviceAdded(Kernel.FOS_System.Object,Kernel.Hardware.Device)"	<summary>
-Method	"Kernel.Core.Tasks.SystemStatusTask.DeviceManager_DeviceAdded(Kernel.FOS_System.Object,Kernel.Hardware.Device)"	"<param name=""state""/>"
-Method	"Kernel.Core.Tasks.SystemStatusTask.DeviceManager_DeviceAdded(Kernel.FOS_System.Object,Kernel.Hardware.Device)"	"<param name=""aDevice""/>"
-Method	Kernel.Core.Tasks.SystemStatusTask.Main	<summary>
-Field	Kernel.Core.Tasks.SystemStatusTask.MainConsole	<summary>
-Field	Kernel.Core.Tasks.SystemStatusTask.StatusConsole	<summary>
-Field	Kernel.Core.Tasks.SystemStatusTask.Terminating	<summary>
+Field	Kernel.CommandDescription.CommandName	<summary>
+Field	Kernel.CommandDescription.CommandNameLower	<summary>
+Field	Kernel.CommandDescription.Description	<summary>
+Field	Kernel.CommandHelp.CommandDescriptions	<summary>
+Field	Kernel.Console.ScreenHeightInLines	<summary>
+Field	Kernel.Console.ScreenLineWidth	<summary>
+Field	Kernel.Console.ScreenStartLine	<summary>
+Field	Kernel.Console.ScreenStartLineOffset	<summary>
+Field	Kernel.Console.UpdateCursorPosition	<summary>
+Method	Kernel.Shell.OutputExceptionInfo(Kernel.FOS_System.Exception)	"<param name=""Ex""/>"
+Property	Kernel.Shell.Terminating	<value>
+Method	Kernel.Consoles.AdvancedConsole.DrawBottomBorder	<summary>
+Method	Kernel.Consoles.AdvancedConsole.DrawLeftBorder	<summary>
+Property	Kernel.Consoles.AdvancedConsole.vidMemBasePtr	<value>
+Type	Kernel.Processes.DynamicLinkerLoader	<summary>
+Method	"Kernel.Processes.DynamicLinkerLoader.LoadLibrary_FromELFSO(Kernel.FOS_System.IO.File,Kernel.Processes.ELF.ELFProcess)"	<summary>
+Method	"Kernel.Processes.DynamicLinkerLoader.LoadLibrary_FromELFSO(Kernel.FOS_System.IO.File,Kernel.Processes.ELF.ELFProcess)"	<returns>
+Method	"Kernel.Processes.DynamicLinkerLoader.LoadLibrary_FromELFSO(Kernel.FOS_System.IO.File,Kernel.Processes.ELF.ELFProcess)"	"<param name=""ELFSharedObjectFile""/>"
+Method	"Kernel.Processes.DynamicLinkerLoader.LoadLibrary_FromELFSO(Kernel.FOS_System.IO.File,Kernel.Processes.ELF.ELFProcess)"	"<param name=""theProcess""/>"
+Method	"Kernel.Processes.DynamicLinkerLoader.LoadProcess_FromELFExe(Kernel.FOS_System.IO.File,System.Boolean)"	<summary>
+Method	"Kernel.Processes.DynamicLinkerLoader.LoadProcess_FromELFExe(Kernel.FOS_System.IO.File,System.Boolean)"	<returns>
+Method	"Kernel.Processes.DynamicLinkerLoader.LoadProcess_FromELFExe(Kernel.FOS_System.IO.File,System.Boolean)"	"<param name=""ELFExeFile""/>"
+Method	"Kernel.Processes.DynamicLinkerLoader.LoadProcess_FromELFExe(Kernel.FOS_System.IO.File,System.Boolean)"	"<param name=""UserMode""/>"
+Method	"Kernel.Processes.DynamicLinkerLoader.LoadProcess_FromRawExe(Kernel.FOS_System.IO.File,System.Boolean)"	<summary>
+Method	"Kernel.Processes.DynamicLinkerLoader.LoadProcess_FromRawExe(Kernel.FOS_System.IO.File,System.Boolean)"	<returns>
+Method	"Kernel.Processes.DynamicLinkerLoader.LoadProcess_FromRawExe(Kernel.FOS_System.IO.File,System.Boolean)"	"<param name=""RawExeFile""/>"
+Method	"Kernel.Processes.DynamicLinkerLoader.LoadProcess_FromRawExe(Kernel.FOS_System.IO.File,System.Boolean)"	"<param name=""UserMode""/>"
+Type	Kernel.Processes.SystemCalls	<summary>
+Field	Kernel.Processes.SystemCalls.DeferredSystemCalls_CurrentProcess	<summary>
+Field	Kernel.Processes.SystemCalls.DeferredSystemCalls_CurrentThread	<summary>
+Field	Kernel.Processes.SystemCalls.DeferredSystemCalls_WakeCurrentThread	<summary>
+Method	Kernel.Processes.SystemCalls.DeferredSystemCallsHandler	<summary>
+Field	Kernel.Processes.SystemCalls.DeferredSystemCallsHandlerThread	<summary>
+Field	Kernel.Processes.SystemCalls.DeferredSystemCallsHandlerThread_Awake	<summary>
+Field	Kernel.Processes.SystemCalls.DeferredSystemCallsHandlerThread_Terminate	<summary>
+Method	Kernel.Processes.SystemCalls.DeferSystemCall	<summary>
+Method	Kernel.Processes.SystemCalls.Init	<summary>
+Method	Kernel.Processes.SystemCalls.Int48(Kernel.FOS_System.Object)	<summary>
+Method	Kernel.Processes.SystemCalls.Int48(Kernel.FOS_System.Object)	"<param name=""state""/>"
+Field	Kernel.Processes.SystemCalls.Int48HandlerId	<summary>
+Method	"Kernel.Processes.SystemCalls.SysCall_PlayNote(Kernel.Hardware.Timers.PIT.MusicalNote,Kernel.Hardware.Timers.PIT.MusicalNoteValue,System.UInt32)"	<summary>
+Method	"Kernel.Processes.SystemCalls.SysCall_PlayNote(Kernel.Hardware.Timers.PIT.MusicalNote,Kernel.Hardware.Timers.PIT.MusicalNoteValue,System.UInt32)"	"<param name=""note""/>"
+Method	"Kernel.Processes.SystemCalls.SysCall_PlayNote(Kernel.Hardware.Timers.PIT.MusicalNote,Kernel.Hardware.Timers.PIT.MusicalNoteValue,System.UInt32)"	"<param name=""duration""/>"
+Method	"Kernel.Processes.SystemCalls.SysCall_PlayNote(Kernel.Hardware.Timers.PIT.MusicalNote,Kernel.Hardware.Timers.PIT.MusicalNoteValue,System.UInt32)"	"<param name=""bpm""/>"
+Method	"Kernel.Processes.SystemCalls.SysCall_Semaphore(Kernel.Shared.SemaphoreRequests,System.Int32,System.UInt32)"	<summary>
+Method	"Kernel.Processes.SystemCalls.SysCall_Semaphore(Kernel.Shared.SemaphoreRequests,System.Int32,System.UInt32)"	"<param name=""request""/>"
+Method	"Kernel.Processes.SystemCalls.SysCall_Semaphore(Kernel.Shared.SemaphoreRequests,System.Int32,System.UInt32)"	"<param name=""id""/>"
+Method	"Kernel.Processes.SystemCalls.SysCall_Semaphore(Kernel.Shared.SemaphoreRequests,System.Int32,System.UInt32)"	"<param name=""limitOrProcessId""/>"
+Method	Kernel.Processes.SystemCalls.SysCall_Sleep(System.Int32)	<summary>
+Method	Kernel.Processes.SystemCalls.SysCall_Sleep(System.Int32)	"<param name=""ms""/>"
+Method	"Kernel.Processes.SystemCalls.SysCall_Thread(Kernel.Shared.ThreadRequests,System.UInt32)"	<summary>
+Method	"Kernel.Processes.SystemCalls.SysCall_Thread(Kernel.Shared.ThreadRequests,System.UInt32)"	"<param name=""request""/>"
+Method	"Kernel.Processes.SystemCalls.SysCall_Thread(Kernel.Shared.ThreadRequests,System.UInt32)"	"<param name=""startMethod""/>"
+Type	Kernel.Processes.ELF.ELFDataEncoding	<summary>
+Type	Kernel.Processes.ELF.ELFDynamicSection	<summary>
+Method	Kernel.Processes.ELF.ELFDynamicSection.#ctor(Kernel.Processes.ELF.ELFSectionHeader)	"<param name=""header""/>"
+Field	Kernel.Processes.ELF.ELFDynamicSection.dynamics	<summary>
+Property	Kernel.Processes.ELF.ELFDynamicSection.Dynamics	<summary>
+Property	Kernel.Processes.ELF.ELFDynamicSection.Dynamics	<value>
+Property	Kernel.Processes.ELF.ELFDynamicSection.Item(System.UInt32)	<summary>
+Property	Kernel.Processes.ELF.ELFDynamicSection.Item(System.UInt32)	<value>
+Method	Kernel.Processes.ELF.ELFDynamicSection.Read(Kernel.FOS_System.IO.Streams.FileStream)	<summary>
+Method	Kernel.Processes.ELF.ELFDynamicSection.Read(Kernel.FOS_System.IO.Streams.FileStream)	<returns>
+Method	Kernel.Processes.ELF.ELFDynamicSection.Read(Kernel.FOS_System.IO.Streams.FileStream)	"<param name=""stream""/>"
+Property	Kernel.Processes.ELF.ELFDynamicSection.StrTabDynamic	<summary>
+Property	Kernel.Processes.ELF.ELFDynamicSection.StrTabDynamic	<value>
+Property	Kernel.Processes.ELF.ELFDynamicSection.StrTabSizeDynamic	<summary>
+Property	Kernel.Processes.ELF.ELFDynamicSection.StrTabSizeDynamic	<value>
+Type	Kernel.Processes.ELF.ELFDynamicSection.Dynamic	<summary>
+Field	Kernel.Processes.ELF.ELFDynamicSection.Dynamic.Tag	<summary>
+Field	Kernel.Processes.ELF.ELFDynamicSection.Dynamic.Val_Ptr	<summary>
+Type	Kernel.Processes.ELF.ELFDynamicSection.DynamicTag	<summary>
+Type	Kernel.Processes.ELF.ELFDynamicSymbolTableSection	<summary>
+Method	Kernel.Processes.ELF.ELFDynamicSymbolTableSection.#ctor(Kernel.Processes.ELF.ELFSectionHeader)	"<param name=""header""/>"
+Type	Kernel.Processes.ELF.ELFFile	<summary>
+Method	Kernel.Processes.ELF.ELFFile.#ctor(Kernel.FOS_System.IO.File)	"<param name=""file""/>"
+Field	Kernel.Processes.ELF.ELFFile.baseAddress	<summary>
+Property	Kernel.Processes.ELF.ELFFile.BaseAddress	<summary>
+Property	Kernel.Processes.ELF.ELFFile.BaseAddress	<value>
+Method	Kernel.Processes.ELF.ELFFile.CheckDataEncoding	<summary>
+Method	Kernel.Processes.ELF.ELFFile.CheckDataEncoding	<returns>
+Method	Kernel.Processes.ELF.ELFFile.CheckFileClass	<summary>
+Method	Kernel.Processes.ELF.ELFFile.CheckFileClass	<returns>
+Method	Kernel.Processes.ELF.ELFFile.CheckFileType	<summary>
+Method	Kernel.Processes.ELF.ELFFile.CheckFileType	<returns>
+Method	Kernel.Processes.ELF.ELFFile.CheckMachine	<summary>
+Method	Kernel.Processes.ELF.ELFFile.CheckMachine	<returns>
+Method	Kernel.Processes.ELF.ELFFile.CheckSiganture	<summary>
+Method	Kernel.Processes.ELF.ELFFile.CheckSiganture	<returns>
+Field	Kernel.Processes.ELF.ELFFile.DynamicSection	<summary>
+Field	Kernel.Processes.ELF.ELFFile.DynamicSymbolsSection	<summary>
+Field	Kernel.Processes.ELF.ELFFile.FoundBaseAddress	<summary>
+Field	Kernel.Processes.ELF.ELFFile.header	<summary>
+Property	Kernel.Processes.ELF.ELFFile.Header	<summary>
+Property	Kernel.Processes.ELF.ELFFile.Header	<value>
+Method	Kernel.Processes.ELF.ELFFile.IsExecutable	<summary>
+Method	Kernel.Processes.ELF.ELFFile.IsExecutable	<returns>
+Method	Kernel.Processes.ELF.ELFFile.IsSharedObject	<summary>
+Method	Kernel.Processes.ELF.ELFFile.IsSharedObject	<returns>
+Method	Kernel.Processes.ELF.ELFFile.IsValidFile	<summary>
+Method	Kernel.Processes.ELF.ELFFile.IsValidFile	<returns>
+Method	Kernel.Processes.ELF.ELFFile.LoadExecutable(System.Boolean)	<summary>
+Method	Kernel.Processes.ELF.ELFFile.LoadExecutable(System.Boolean)	<returns>
+Method	Kernel.Processes.ELF.ELFFile.LoadExecutable(System.Boolean)	"<param name=""UserMode""/>"
+Method	Kernel.Processes.ELF.ELFFile.LoadSharedObject(Kernel.Processes.ELF.ELFProcess)	<summary>
+Method	Kernel.Processes.ELF.ELFFile.LoadSharedObject(Kernel.Processes.ELF.ELFProcess)	<returns>
+Method	Kernel.Processes.ELF.ELFFile.LoadSharedObject(Kernel.Processes.ELF.ELFProcess)	"<param name=""theProcess""/>"
+Field	Kernel.Processes.ELF.ELFFile.NamesTable	<summary>
+Method	Kernel.Processes.ELF.ELFFile.ReadHeader	<summary>
+Method	Kernel.Processes.ELF.ELFFile.ReadSectionHeaders	<summary>
+Method	Kernel.Processes.ELF.ELFFile.ReadSegmentHeaders	<summary>
+Field	Kernel.Processes.ELF.ELFFile.Sections	<summary>
+Field	Kernel.Processes.ELF.ELFFile.Segments	<summary>
+Field	Kernel.Processes.ELF.ELFFile.theFile	<summary>
+Property	Kernel.Processes.ELF.ELFFile.TheFile	<summary>
+Property	Kernel.Processes.ELF.ELFFile.TheFile	<value>
+Field	Kernel.Processes.ELF.ELFFile.theStream	<summary>
+Property	Kernel.Processes.ELF.ELFFile.TheStream	<summary>
+Property	Kernel.Processes.ELF.ELFFile.TheStream	<value>
+Type	Kernel.Processes.ELF.ELFFileClass	<summary>
+Type	Kernel.Processes.ELF.ELFFileType	<summary>
+Type	Kernel.Processes.ELF.ELFFlags	<summary>
+Type	Kernel.Processes.ELF.ELFHeader	<summary>
+Method	Kernel.Processes.ELF.ELFHeader.#ctor(System.Byte[])	"<param name=""data""/>"
+Property	Kernel.Processes.ELF.ELFHeader.DataEncoding	<summary>
+Property	Kernel.Processes.ELF.ELFHeader.DataEncoding	<value>
+Field	Kernel.Processes.ELF.ELFHeader.ELFHeaderSize	<summary>
+Field	Kernel.Processes.ELF.ELFHeader.EntryPoint	<summary>
+Property	Kernel.Processes.ELF.ELFHeader.FileClass	<summary>
+Property	Kernel.Processes.ELF.ELFHeader.FileClass	<value>
+Field	Kernel.Processes.ELF.ELFHeader.FileType	<summary>
+Field	Kernel.Processes.ELF.ELFHeader.flags	<summary>
+Field	Kernel.Processes.ELF.ELFHeader.HEADER_SIZE	<summary>
+Property	Kernel.Processes.ELF.ELFHeader.HeaderVersion	<summary>
+Property	Kernel.Processes.ELF.ELFHeader.HeaderVersion	<value>
+Field	Kernel.Processes.ELF.ELFHeader.ident	<summary>
+Field	Kernel.Processes.ELF.ELFHeader.Machine	<summary>
+Field	Kernel.Processes.ELF.ELFHeader.ProgHeaderEntrySize	<summary>
+Field	Kernel.Processes.ELF.ELFHeader.ProgHeaderNumEntries	<summary>
+Field	Kernel.Processes.ELF.ELFHeader.ProgHeaderTableOffset	<summary>
+Field	Kernel.Processes.ELF.ELFHeader.SecHeaderEntrySize	<summary>
+Field	Kernel.Processes.ELF.ELFHeader.SecHeaderIdxForSecNameStrings	<summary>
+Field	Kernel.Processes.ELF.ELFHeader.SecHeaderNumEntries	<summary>
+Field	Kernel.Processes.ELF.ELFHeader.SecHeaderTableOffset	<summary>
+Property	Kernel.Processes.ELF.ELFHeader.SignatureOK	<summary>
+Property	Kernel.Processes.ELF.ELFHeader.SignatureOK	<value>
+Field	Kernel.Processes.ELF.ELFHeader.Version	<summary>
+Type	Kernel.Processes.ELF.ELFMachines	<summary>
+Type	Kernel.Processes.ELF.ELFProcess	<summary>
+Method	Kernel.Processes.ELF.ELFProcess.#ctor(Kernel.Processes.ELF.ELFFile)	"<param name=""anELFFile""/>"
+Field	Kernel.Processes.ELF.ELFProcess.BaseAddress	<summary>
+Method	"Kernel.Processes.ELF.ELFProcess.GetSymbolAddress(Kernel.Processes.ELF.ELFSymbolTableSection.Symbol,Kernel.FOS_System.String)"	<summary>
+Method	"Kernel.Processes.ELF.ELFProcess.GetSymbolAddress(Kernel.Processes.ELF.ELFSymbolTableSection.Symbol,Kernel.FOS_System.String)"	<returns>
+Method	"Kernel.Processes.ELF.ELFProcess.GetSymbolAddress(Kernel.Processes.ELF.ELFSymbolTableSection.Symbol,Kernel.FOS_System.String)"	"<param name=""theSymbol""/>"
+Method	"Kernel.Processes.ELF.ELFProcess.GetSymbolAddress(Kernel.Processes.ELF.ELFSymbolTableSection.Symbol,Kernel.FOS_System.String)"	"<param name=""theSymbolName""/>"
+Method	"Kernel.Processes.ELF.ELFProcess.GetSymbolAddressAndSize(Kernel.Processes.ELF.ELFSymbolTableSection.Symbol,Kernel.FOS_System.String,System.UInt32@,System.UInt32@)"	<summary>
+Method	"Kernel.Processes.ELF.ELFProcess.GetSymbolAddressAndSize(Kernel.Processes.ELF.ELFSymbolTableSection.Symbol,Kernel.FOS_System.String,System.UInt32@,System.UInt32@)"	<returns>
+Method	"Kernel.Processes.ELF.ELFProcess.GetSymbolAddressAndSize(Kernel.Processes.ELF.ELFSymbolTableSection.Symbol,Kernel.FOS_System.String,System.UInt32@,System.UInt32@)"	"<param name=""theSymbol""/>"
+Method	"Kernel.Processes.ELF.ELFProcess.GetSymbolAddressAndSize(Kernel.Processes.ELF.ELFSymbolTableSection.Symbol,Kernel.FOS_System.String,System.UInt32@,System.UInt32@)"	"<param name=""theSymbolName""/>"
+Method	"Kernel.Processes.ELF.ELFProcess.GetSymbolAddressAndSize(Kernel.Processes.ELF.ELFSymbolTableSection.Symbol,Kernel.FOS_System.String,System.UInt32@,System.UInt32@)"	"<param name=""address""/>"
+Method	"Kernel.Processes.ELF.ELFProcess.GetSymbolAddressAndSize(Kernel.Processes.ELF.ELFSymbolTableSection.Symbol,Kernel.FOS_System.String,System.UInt32@,System.UInt32@)"	"<param name=""size""/>"
+Method	Kernel.Processes.ELF.ELFProcess.Load(System.Boolean)	<summary>
+Method	Kernel.Processes.ELF.ELFProcess.Load(System.Boolean)	"<param name=""UserMode""/>"
+Method	"Kernel.Processes.ELF.ELFProcess.LoadSegments(Kernel.Processes.ELF.ELFFile,System.Boolean@,System.Boolean@,System.UInt32)"	<summary>
+Method	"Kernel.Processes.ELF.ELFProcess.LoadSegments(Kernel.Processes.ELF.ELFFile,System.Boolean@,System.Boolean@,System.UInt32)"	"<param name=""fileToLoadFrom""/>"
+Method	"Kernel.Processes.ELF.ELFProcess.LoadSegments(Kernel.Processes.ELF.ELFFile,System.Boolean@,System.Boolean@,System.UInt32)"	"<param name=""OK""/>"
+Method	"Kernel.Processes.ELF.ELFProcess.LoadSegments(Kernel.Processes.ELF.ELFFile,System.Boolean@,System.Boolean@,System.UInt32)"	"<param name=""DynamicLinkingRequired""/>"
+Method	"Kernel.Processes.ELF.ELFProcess.LoadSegments(Kernel.Processes.ELF.ELFFile,System.Boolean@,System.Boolean@,System.UInt32)"	"<param name=""memBaseAddress""/>"
+Field	Kernel.Processes.ELF.ELFProcess.SharedObjectDependencies	<summary>
+Field	Kernel.Processes.ELF.ELFProcess.SharedObjectDependencyFilePaths	<summary>
+Field	Kernel.Processes.ELF.ELFProcess.theFile	<summary>
+Property	Kernel.Processes.ELF.ELFProcess.TheFile	<summary>
+Property	Kernel.Processes.ELF.ELFProcess.TheFile	<value>
+Field	Kernel.Processes.ELF.ELFProcess.theProcess	<summary>
+Property	Kernel.Processes.ELF.ELFProcess.TheProcess	<summary>
+Property	Kernel.Processes.ELF.ELFProcess.TheProcess	<value>
+Type	Kernel.Processes.ELF.ELFRelocationAddendTableSection	<summary>
+Method	Kernel.Processes.ELF.ELFRelocationAddendTableSection.#ctor(Kernel.Processes.ELF.ELFSectionHeader)	"<param name=""header""/>"
+Property	Kernel.Processes.ELF.ELFRelocationAddendTableSection.Item(System.UInt32)	<summary>
+Property	Kernel.Processes.ELF.ELFRelocationAddendTableSection.Item(System.UInt32)	<value>
+Method	Kernel.Processes.ELF.ELFRelocationAddendTableSection.Read(Kernel.FOS_System.IO.Streams.FileStream)	<summary>
+Method	Kernel.Processes.ELF.ELFRelocationAddendTableSection.Read(Kernel.FOS_System.IO.Streams.FileStream)	<returns>
+Method	Kernel.Processes.ELF.ELFRelocationAddendTableSection.Read(Kernel.FOS_System.IO.Streams.FileStream)	"<param name=""stream""/>"
+Field	Kernel.Processes.ELF.ELFRelocationAddendTableSection.relocations	<summary>
+Property	Kernel.Processes.ELF.ELFRelocationAddendTableSection.Relocations	<summary>
+Property	Kernel.Processes.ELF.ELFRelocationAddendTableSection.Relocations	<value>
+Property	Kernel.Processes.ELF.ELFRelocationAddendTableSection.SectionToRelocateIndex	<summary>
+Property	Kernel.Processes.ELF.ELFRelocationAddendTableSection.SectionToRelocateIndex	<value>
+Property	Kernel.Processes.ELF.ELFRelocationAddendTableSection.SymbolTableSectionIndex	<summary>
+Property	Kernel.Processes.ELF.ELFRelocationAddendTableSection.SymbolTableSectionIndex	<value>
+Type	Kernel.Processes.ELF.ELFRelocationAddendTableSection.RelocationAddend	<summary>
+Property	Kernel.Processes.ELF.ELFRelocationAddendTableSection.RelocationAddend.Symbol	<summary>
+Property	Kernel.Processes.ELF.ELFRelocationAddendTableSection.RelocationAddend.Symbol	<value>
+Property	Kernel.Processes.ELF.ELFRelocationAddendTableSection.RelocationAddend.Type	<summary>
+Property	Kernel.Processes.ELF.ELFRelocationAddendTableSection.RelocationAddend.Type	<value>
+Type	Kernel.Processes.ELF.ELFRelocationTableSection	<summary>
+Method	Kernel.Processes.ELF.ELFRelocationTableSection.#ctor(Kernel.Processes.ELF.ELFSectionHeader)	"<param name=""header""/>"
+Property	Kernel.Processes.ELF.ELFRelocationTableSection.Item(System.UInt32)	<summary>
+Property	Kernel.Processes.ELF.ELFRelocationTableSection.Item(System.UInt32)	<value>
+Method	Kernel.Processes.ELF.ELFRelocationTableSection.Read(Kernel.FOS_System.IO.Streams.FileStream)	<summary>
+Method	Kernel.Processes.ELF.ELFRelocationTableSection.Read(Kernel.FOS_System.IO.Streams.FileStream)	<returns>
+Method	Kernel.Processes.ELF.ELFRelocationTableSection.Read(Kernel.FOS_System.IO.Streams.FileStream)	"<param name=""stream""/>"
+Field	Kernel.Processes.ELF.ELFRelocationTableSection.relocations	<summary>
+Property	Kernel.Processes.ELF.ELFRelocationTableSection.Relocations	<summary>
+Property	Kernel.Processes.ELF.ELFRelocationTableSection.Relocations	<value>
+Property	Kernel.Processes.ELF.ELFRelocationTableSection.SectionToRelocateIndex	<summary>
+Property	Kernel.Processes.ELF.ELFRelocationTableSection.SectionToRelocateIndex	<value>
+Property	Kernel.Processes.ELF.ELFRelocationTableSection.SymbolTableSectionIndex	<summary>
+Property	Kernel.Processes.ELF.ELFRelocationTableSection.SymbolTableSectionIndex	<value>
+Type	Kernel.Processes.ELF.ELFRelocationTableSection.Relocation	<summary>
+Property	Kernel.Processes.ELF.ELFRelocationTableSection.Relocation.Symbol	<summary>
+Property	Kernel.Processes.ELF.ELFRelocationTableSection.Relocation.Symbol	<value>
+Property	Kernel.Processes.ELF.ELFRelocationTableSection.Relocation.Type	<summary>
+Property	Kernel.Processes.ELF.ELFRelocationTableSection.Relocation.Type	<value>
+Type	Kernel.Processes.ELF.ELFRelocationTableSection.RelocationType	<summary>
+Type	Kernel.Processes.ELF.ELFSection	<summary>
+Method	Kernel.Processes.ELF.ELFSection.#ctor(Kernel.Processes.ELF.ELFSectionHeader)	"<param name=""aHeader""/>"
+Field	Kernel.Processes.ELF.ELFSection.data	<summary>
+Method	Kernel.Processes.ELF.ELFSection.GetSection(Kernel.Processes.ELF.ELFSectionHeader)	<summary>
+Method	Kernel.Processes.ELF.ELFSection.GetSection(Kernel.Processes.ELF.ELFSectionHeader)	<returns>
+Method	Kernel.Processes.ELF.ELFSection.GetSection(Kernel.Processes.ELF.ELFSectionHeader)	"<param name=""header""/>"
+Field	Kernel.Processes.ELF.ELFSection.header	<summary>
+Property	Kernel.Processes.ELF.ELFSection.Header	<summary>
+Property	Kernel.Processes.ELF.ELFSection.Header	<value>
+Method	Kernel.Processes.ELF.ELFSection.Read(Kernel.FOS_System.IO.Streams.FileStream)	<summary>
+Method	Kernel.Processes.ELF.ELFSection.Read(Kernel.FOS_System.IO.Streams.FileStream)	<returns>
+Method	Kernel.Processes.ELF.ELFSection.Read(Kernel.FOS_System.IO.Streams.FileStream)	"<param name=""stream""/>"
+Type	Kernel.Processes.ELF.ELFSectionFlags	<summary>
+Type	Kernel.Processes.ELF.ELFSectionHeader	<summary>
+Method	"Kernel.Processes.ELF.ELFSectionHeader.#ctor(System.Byte[],System.UInt32@)"	"<param name=""header""/>"
+Method	"Kernel.Processes.ELF.ELFSectionHeader.#ctor(System.Byte[],System.UInt32@)"	"<param name=""offset""/>"
+Field	Kernel.Processes.ELF.ELFSectionHeader.AddressAlignment	<summary>
+Field	Kernel.Processes.ELF.ELFSectionHeader.EntrySize	<summary>
+Field	Kernel.Processes.ELF.ELFSectionHeader.Flags	<summary>
+Field	Kernel.Processes.ELF.ELFSectionHeader.Info	<summary>
+Field	Kernel.Processes.ELF.ELFSectionHeader.Link	<summary>
+Field	Kernel.Processes.ELF.ELFSectionHeader.LoadAddress	<summary>
+Field	Kernel.Processes.ELF.ELFSectionHeader.NameIndex	<summary>
+Field	Kernel.Processes.ELF.ELFSectionHeader.SectionFileOffset	<summary>
+Field	Kernel.Processes.ELF.ELFSectionHeader.SectionSize	<summary>
+Field	Kernel.Processes.ELF.ELFSectionHeader.SectionType	<summary>
+Type	Kernel.Processes.ELF.ElfSectionTypes	<summary>
+Type	Kernel.Processes.ELF.ELFSegment	<summary>
+Method	Kernel.Processes.ELF.ELFSegment.#ctor(Kernel.Processes.ELF.ELFSegmentHeader)	"<param name=""aHeader""/>"
+Field	Kernel.Processes.ELF.ELFSegment.data	<summary>
+Property	Kernel.Processes.ELF.ELFSegment.Data	<summary>
+Property	Kernel.Processes.ELF.ELFSegment.Data	<value>
+Method	Kernel.Processes.ELF.ELFSegment.GetSegment(Kernel.Processes.ELF.ELFSegmentHeader)	<summary>
+Method	Kernel.Processes.ELF.ELFSegment.GetSegment(Kernel.Processes.ELF.ELFSegmentHeader)	<returns>
+Method	Kernel.Processes.ELF.ELFSegment.GetSegment(Kernel.Processes.ELF.ELFSegmentHeader)	"<param name=""header""/>"
+Field	Kernel.Processes.ELF.ELFSegment.header	<summary>
+Property	Kernel.Processes.ELF.ELFSegment.Header	<summary>
+Property	Kernel.Processes.ELF.ELFSegment.Header	<value>
+Method	Kernel.Processes.ELF.ELFSegment.Read(Kernel.FOS_System.IO.Streams.FileStream)	<summary>
+Method	Kernel.Processes.ELF.ELFSegment.Read(Kernel.FOS_System.IO.Streams.FileStream)	<returns>
+Method	Kernel.Processes.ELF.ELFSegment.Read(Kernel.FOS_System.IO.Streams.FileStream)	"<param name=""stream""/>"
+Type	Kernel.Processes.ELF.ELFSegmentHeader	<summary>
+Method	"Kernel.Processes.ELF.ELFSegmentHeader.#ctor(System.Byte[],System.UInt32@)"	"<param name=""header""/>"
+Method	"Kernel.Processes.ELF.ELFSegmentHeader.#ctor(System.Byte[],System.UInt32@)"	"<param name=""offset""/>"
+Field	Kernel.Processes.ELF.ELFSegmentHeader.Align	<summary>
+Field	Kernel.Processes.ELF.ELFSegmentHeader.FileOffset	<summary>
+Field	Kernel.Processes.ELF.ELFSegmentHeader.FileSize	<summary>
+Field	Kernel.Processes.ELF.ELFSegmentHeader.Flags	<summary>
+Field	Kernel.Processes.ELF.ELFSegmentHeader.MemSize	<summary>
+Field	Kernel.Processes.ELF.ELFSegmentHeader.PAddr	<summary>
+Field	Kernel.Processes.ELF.ELFSegmentHeader.Type	<summary>
+Field	Kernel.Processes.ELF.ELFSegmentHeader.VAddr	<summary>
+Type	Kernel.Processes.ELF.ELFSegmentType	<summary>
+Type	Kernel.Processes.ELF.ELFSharedObject	<summary>
+Method	"Kernel.Processes.ELF.ELFSharedObject.#ctor(Kernel.Processes.ELF.ELFFile,Kernel.Processes.ELF.ELFProcess)"	"<param name=""anELFFile""/>"
+Method	"Kernel.Processes.ELF.ELFSharedObject.#ctor(Kernel.Processes.ELF.ELFFile,Kernel.Processes.ELF.ELFProcess)"	"<param name=""aProcess""/>"
+Field	Kernel.Processes.ELF.ELFSharedObject.BaseAddress	<summary>
+Method	Kernel.Processes.ELF.ELFSharedObject.Load	<summary>
+Field	Kernel.Processes.ELF.ELFSharedObject.theFile	<summary>
+Property	Kernel.Processes.ELF.ELFSharedObject.TheFile	<summary>
+Property	Kernel.Processes.ELF.ELFSharedObject.TheFile	<value>
+Field	Kernel.Processes.ELF.ELFSharedObject.theProcess	<summary>
+Property	Kernel.Processes.ELF.ELFSharedObject.TheProcess	<summary>
+Property	Kernel.Processes.ELF.ELFSharedObject.TheProcess	<value>
+Type	Kernel.Processes.ELF.ELFStringTable	<summary>
+Method	"Kernel.Processes.ELF.ELFStringTable.#ctor(System.UInt32,System.UInt32)"	"<param name=""anAddress""/>"
+Method	"Kernel.Processes.ELF.ELFStringTable.#ctor(System.UInt32,System.UInt32)"	"<param name=""aSize""/>"
+Field	Kernel.Processes.ELF.ELFStringTable.data	<summary>
+Property	Kernel.Processes.ELF.ELFStringTable.Item(System.UInt32)	<summary>
+Property	Kernel.Processes.ELF.ELFStringTable.Item(System.UInt32)	<value>
+Field	Kernel.Processes.ELF.ELFStringTable.size	<summary>
+Type	Kernel.Processes.ELF.ELFStringTableSection	<summary>
+Method	Kernel.Processes.ELF.ELFStringTableSection.#ctor(Kernel.Processes.ELF.ELFSectionHeader)	"<param name=""header""/>"
+Method	"Kernel.Processes.ELF.ELFStringTableSection.IsMatch(System.UInt32,Kernel.FOS_System.String)"	<summary>
+Method	"Kernel.Processes.ELF.ELFStringTableSection.IsMatch(System.UInt32,Kernel.FOS_System.String)"	<returns>
+Method	"Kernel.Processes.ELF.ELFStringTableSection.IsMatch(System.UInt32,Kernel.FOS_System.String)"	"<param name=""offset""/>"
+Method	"Kernel.Processes.ELF.ELFStringTableSection.IsMatch(System.UInt32,Kernel.FOS_System.String)"	"<param name=""value""/>"
+Property	Kernel.Processes.ELF.ELFStringTableSection.Item(System.UInt32)	<summary>
+Property	Kernel.Processes.ELF.ELFStringTableSection.Item(System.UInt32)	<value>
+Type	Kernel.Processes.ELF.ELFSymbolTableSection	<summary>
+Method	Kernel.Processes.ELF.ELFSymbolTableSection.#ctor(Kernel.Processes.ELF.ELFSectionHeader)	"<param name=""header""/>"
+Property	Kernel.Processes.ELF.ELFSymbolTableSection.Item(System.UInt32)	<summary>
+Property	Kernel.Processes.ELF.ELFSymbolTableSection.Item(System.UInt32)	<value>
+Method	Kernel.Processes.ELF.ELFSymbolTableSection.Read(Kernel.FOS_System.IO.Streams.FileStream)	<summary>
+Method	Kernel.Processes.ELF.ELFSymbolTableSection.Read(Kernel.FOS_System.IO.Streams.FileStream)	<returns>
+Method	Kernel.Processes.ELF.ELFSymbolTableSection.Read(Kernel.FOS_System.IO.Streams.FileStream)	"<param name=""stream""/>"
+Property	Kernel.Processes.ELF.ELFSymbolTableSection.StringsSectionIndex	<summary>
+Property	Kernel.Processes.ELF.ELFSymbolTableSection.StringsSectionIndex	<value>
+Field	Kernel.Processes.ELF.ELFSymbolTableSection.symbols	<summary>
+Property	Kernel.Processes.ELF.ELFSymbolTableSection.Symbols	<summary>
+Property	Kernel.Processes.ELF.ELFSymbolTableSection.Symbols	<value>
+Type	Kernel.Processes.ELF.ELFSymbolTableSection.Symbol	<summary>
+Property	Kernel.Processes.ELF.ELFSymbolTableSection.Symbol.Binding	<summary>
+Property	Kernel.Processes.ELF.ELFSymbolTableSection.Symbol.Binding	<value>
+Field	Kernel.Processes.ELF.ELFSymbolTableSection.Symbol.Info	<summary>
+Field	Kernel.Processes.ELF.ELFSymbolTableSection.Symbol.NameIdx	<summary>
+Field	Kernel.Processes.ELF.ELFSymbolTableSection.Symbol.Other	<summary>
+Field	Kernel.Processes.ELF.ELFSymbolTableSection.Symbol.SectionIndex	<summary>
+Field	Kernel.Processes.ELF.ELFSymbolTableSection.Symbol.Size	<summary>
+Property	Kernel.Processes.ELF.ELFSymbolTableSection.Symbol.Type	<summary>
+Property	Kernel.Processes.ELF.ELFSymbolTableSection.Symbol.Type	<value>
+Field	Kernel.Processes.ELF.ELFSymbolTableSection.Symbol.Value	<summary>
+Type	Kernel.Processes.ELF.ELFSymbolTableSection.SymbolBinding	<summary>
+Type	Kernel.Processes.ELF.ELFSymbolTableSection.SymbolType	<summary>
+Method	Kernel.Shells.MainShell._DeviceManager_DeviceAdded(Kernel.Hardware.Device)	<summary>
+Method	Kernel.Shells.MainShell._DeviceManager_DeviceAdded(Kernel.Hardware.Device)	"<param name=""device""/>"
+Method	Kernel.Shells.MainShell.ATATest	<summary>
+Method	"Kernel.Shells.MainShell.DeviceManager_DeviceAdded(Kernel.FOS_System.Object,Kernel.Hardware.Device)"	<summary>
+Method	"Kernel.Shells.MainShell.DeviceManager_DeviceAdded(Kernel.FOS_System.Object,Kernel.Hardware.Device)"	"<param name=""state""/>"
+Method	"Kernel.Shells.MainShell.DeviceManager_DeviceAdded(Kernel.FOS_System.Object,Kernel.Hardware.Device)"	"<param name=""device""/>"
+Method	Kernel.Shells.MainShell.GCTest	<summary>
+Method	Kernel.Shells.MainShell.HeapTest	<summary>
+Method	Kernel.Shells.MainShell.LongsTest	<summary>
+Method	"Kernel.Shells.MainShell.OutputErrorFromTest(Kernel.FOS_System.String,Kernel.FOS_System.String)"	<summary>
+Method	"Kernel.Shells.MainShell.OutputErrorFromTest(Kernel.FOS_System.String,Kernel.FOS_System.String)"	"<param name=""TestName""/>"
+Method	"Kernel.Shells.MainShell.OutputErrorFromTest(Kernel.FOS_System.String,Kernel.FOS_System.String)"	"<param name=""Message""/>"
+Method	"Kernel.Shells.MainShell.OutputMessageFromTest(Kernel.FOS_System.String,Kernel.FOS_System.String)"	<summary>
+Method	"Kernel.Shells.MainShell.OutputMessageFromTest(Kernel.FOS_System.String,Kernel.FOS_System.String)"	"<param name=""TestName""/>"
+Method	"Kernel.Shells.MainShell.OutputMessageFromTest(Kernel.FOS_System.String,Kernel.FOS_System.String)"	"<param name=""Message""/>"
+Method	"Kernel.Shells.MainShell.OutputWarningFromTest(Kernel.FOS_System.String,Kernel.FOS_System.String)"	<summary>
+Method	"Kernel.Shells.MainShell.OutputWarningFromTest(Kernel.FOS_System.String,Kernel.FOS_System.String)"	"<param name=""TestName""/>"
+Method	"Kernel.Shells.MainShell.OutputWarningFromTest(Kernel.FOS_System.String,Kernel.FOS_System.String)"	"<param name=""Message""/>"
+Method	Kernel.Shells.MainShell.ShowHelp(Kernel.FOS_System.String)	"<param name=""commandName""/>"
+Method	Kernel.Shells.MainShell.ThreadSleepTest	<summary>
+Method	Kernel.Shells.MainShell.UnrecognisedOption(Kernel.FOS_System.String)	"<param name=""value""/>"
+Method	Kernel.Shells.MainShell.USBTest	<summary>
+Type	Kernel.Tasks.EasterTask	<summary>
+Field	Kernel.Tasks.EasterTask.ImageMap	<summary>
+Method	Kernel.Tasks.EasterTask.Main	<summary>
+Type	Kernel.Tasks.GCCleanupTask	<summary>
+Method	Kernel.Tasks.GCCleanupTask.Main	<summary>
+Field	Kernel.Tasks.GCCleanupTask.Terminate	<summary>
+Type	Kernel.Tasks.IdleTask	<summary>
+Method	Kernel.Tasks.IdleTask.Main	<summary>
+Type	Kernel.Tasks.SampleTask	<summary>
+Method	Kernel.Tasks.SampleTask.Main	<summary>
+Type	Kernel.Tasks.SystemStatusTask	<summary>
+Method	"Kernel.Tasks.SystemStatusTask.DeviceManager_DeviceAdded(Kernel.FOS_System.Object,Kernel.Hardware.Device)"	<summary>
+Method	"Kernel.Tasks.SystemStatusTask.DeviceManager_DeviceAdded(Kernel.FOS_System.Object,Kernel.Hardware.Device)"	"<param name=""state""/>"
+Method	"Kernel.Tasks.SystemStatusTask.DeviceManager_DeviceAdded(Kernel.FOS_System.Object,Kernel.Hardware.Device)"	"<param name=""aDevice""/>"
+Method	Kernel.Tasks.SystemStatusTask.Main	<summary>
+Field	Kernel.Tasks.SystemStatusTask.MainConsole	<summary>
+Field	Kernel.Tasks.SystemStatusTask.StatusConsole	<summary>
+Field	Kernel.Tasks.SystemStatusTask.Terminating	<summary>
 Field	Kernel.FOS_System.Exception.InnerException	<summary>
 Field	Kernel.FOS_System.Exception.InstructionAddress	<summary>
 Field	Kernel.FOS_System.Exception.message	<summary>

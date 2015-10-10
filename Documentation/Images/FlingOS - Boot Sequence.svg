@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="UTF-8"?><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="820.0" height="2040.0" viewBox="50.0 170.0 820.0 2040.0" version="1.1">
+<rect x="50.0" y="170.0" width="820.0" height="2040.0" fill="rgb(255,255,255)"/>
+<polygon id="s256555465" points="80.00937,200.0 840.0001,200.0 839.99927,2179.9988 80.0,2180.0 " fill="none" stroke-width="2.0" stroke="rgb(0,0,0)" stroke-dasharray="7.0 7.0">
+<g id="t256555465">
+<text x="377.00006" y="227.28754" font-family="Helvetica" font-weight="bold" fill="rgb(0,0,0)" font-size="25" textLength="166.0">Boot Sequence</text>
+<path id="s226800212" d="M 377.00006,228.28754 543.00006,228.28754 " fill="none" stroke-width="2.0" stroke="rgb(0,0,0)"/>
+</g>
+</polygon>
+<g id="g410277621">
+<polygon id="s818787837" points="259.99994,280.0 379.99976,280.0 379.9999,320.0 259.99994,319.99997 " fill="none"/>
+<path id="s867681010" d="M 284.0,280.0 259.99994,280.0 259.99994,319.99997 284.00003,319.99994 " fill="none" stroke-width="2.0" stroke="rgb(0,0,0)"/>
+<g id="t410277621">
+<text x="285.99994" y="304.447" font-family="Helvetica" fill="rgb(0,0,0)" font-size="14" textLength="68.0">Bootloader</text>
+</g>
+</g>
+<g id="g188603436">
+<polygon id="s1003482435" points="300.0,280.0 379.9997,280.0 379.9997,319.99994 300.0,320.0 " fill="none"/>
+<path id="s379887552" d="M 363.9997,280.0 379.9997,280.0 379.9997,319.99994 363.9997,320.0 " fill="none" stroke-width="2.0" stroke="rgb(0,0,0)"/>
+<g id="t188603436"/>
+</g>
+<g id="s930814134">
+<polygon id="s930814134" points="219.99998,380.0 420.0,380.0 419.99994,440.0 219.99998,440.0 " fill="none" stroke-width="2.0" stroke="rgb(0,0,0)"/>
+<g id="t930814134">
+<text x="239.0" y="414.447" font-family="Helvetica" fill="rgb(0,0,0)" font-size="14" textLength="162.0">Check multiboot signature</text>
+</g>
+</g>
+<g id="s364130472">
+<polygon id="s364130472" points="200.00002,500.0 440.0,500.0 439.99942,580.0 200.00002,579.9998 " fill="none" stroke-width="2.0" stroke="rgb(0,0,0)"/>
+<g id="t364130472">
+<text x="223.0" y="535.018" font-family="Helvetica" fill="rgb(0,0,0)" font-size="14" textLength="194.0">Map higher half virtual memory</text>
+<text x="243.0" y="553.87604" font-family="Helvetica" fill="rgb(0,0,0)" font-size="14" textLength="154.0">using page directory only</text>
+</g>
+</g>
+<g id="s391413941">
+<polygon id="s391413941" points="240.0,640.0 400.00006,640.0 400.00012,699.99976 240.0,700.0 " fill="none" stroke-width="2.0" stroke="rgb(0,0,0)"/>
+<g id="t391413941">
+<text x="260.00006" y="674.447" font-family="Helvetica" fill="rgb(0,0,0)" font-size="14" textLength="120.0">Jump to higher half</text>
+</g>
+</g>
+<g id="s1013139300">
+<polygon id="s1013139300" points="240.0,760.0 400.0,760.0 399.99985,819.99994 240.0,820.0 " fill="none" stroke-width="2.0" stroke="rgb(0,0,0)"/>
+<g id="t1013139300">
+<text x="292.0" y="794.447" font-family="Helvetica" fill="rgb(0,0,0)" font-size="14" textLength="56.0">Init stack</text>
+</g>
+</g>
+<g id="s890486345">
+<polygon id="s890486345" points="240.0,880.0 399.99997,880.0 400.0,939.99994 240.0,940.0 " fill="none" stroke-width="2.0" stroke="rgb(0,0,0)"/>
+<g id="t890486345">
+<text x="293.5" y="914.447" font-family="Helvetica" fill="rgb(0,0,0)" font-size="14" textLength="53.0">Init GDT</text>
+</g>
+</g>
+<g id="s766491728">
+<polygon id="s766491728" points="240.00002,1000.0 400.00003,1000.0 399.99997,1060.0 240.00002,1059.9993 " fill="none" stroke-width="2.0" stroke="rgb(0,0,0)"/>
+<g id="t766491728">
+<text x="275.00003" y="1034.447" font-family="Helvetica" fill="rgb(0,0,0)" font-size="14" textLength="90.0">Init empty IDT</text>
+</g>
+</g>
+<g id="s437383007">
+<polygon id="s437383007" points="220.0,1120.0 420.00006,1120.0 419.99994,1199.9998 220.0,1200.0 " fill="none" stroke-width="2.0" stroke="rgb(0,0,0)"/>
+<g id="t437383007">
+<text x="247.50003" y="1164.447" font-family="Helvetica" fill="rgb(0,0,0)" font-size="14" textLength="145.0">Call Static Constructors</text>
+</g>
+</g>
+<g id="s122972789">
+<polygon id="s122972789" points="540.0,1120.0 720.0,1120.0 720.0,1199.9998 540.0,1200.0 " fill="none" stroke-width="2.0" stroke="rgb(0,0,0)"/>
+<g id="t122972789">
+<text x="565.5" y="1164.447" font-family="Helvetica" fill="rgb(0,0,0)" font-size="14" textLength="129.0">Init small, static heap</text>
+</g>
+</g>
+<g id="s369903445">
+<polygon id="s369903445" points="560.0,1260.0 699.9998,1260.0 700.0,1319.9998 560.0,1320.0 " fill="none" stroke-width="2.0" stroke="rgb(0,0,0)"/>
+<g id="t369903445">
+<text x="608.5" y="1294.447" font-family="Helvetica" fill="rgb(0,0,0)" font-size="14" textLength="43.0">Init GC</text>
+</g>
+</g>
+<g id="s121098764">
+<polygon id="s121098764" points="500.0,1380.0 760.0,1380.0 759.9999,1460.0 500.0,1459.9987 " fill="none" stroke-width="2.0" stroke="rgb(0,0,0)"/>
+<g id="t121098764">
+<text x="541.0" y="1405.589" font-family="Helvetica" fill="rgb(0,0,0)" font-size="14" textLength="178.0">Init virtual memory manager:</text>
+<text x="583.5" y="1424.447" font-family="Helvetica" fill="rgb(0,0,0)" font-size="14" textLength="93.0">- Map in kernel</text>
+<text x="555.0" y="1443.305" font-family="Helvetica" fill="rgb(0,0,0)" font-size="14" textLength="150.0">- Use proper page tables</text>
+</g>
+</g>
+<g id="s494342547">
+<polygon id="s494342547" points="260.0,1380.0 399.99982,1380.0 400.0,1460.0 260.0,1459.9999 " fill="none" stroke-width="2.0" stroke="rgb(0,0,0)"/>
+<g id="t494342547">
+<text x="284.5" y="1424.447" font-family="Helvetica" fill="rgb(0,0,0)" font-size="14" textLength="91.0">Init serial ports</text>
+</g>
+</g>
+<g id="s250233403">
+<polygon id="s250233403" points="260.0,1520.0 400.0,1520.0 400.0,1580.0 260.0,1580.0 " fill="none" stroke-width="2.0" stroke="rgb(0,0,0)"/>
+<g id="t250233403">
+<text x="304.5" y="1554.447" font-family="Helvetica" fill="rgb(0,0,0)" font-size="14" textLength="51.0">Init CPU</text>
+</g>
+</g>
+<g id="s542306506">
+<polygon id="s542306506" points="260.0,1640.0 399.99994,1640.0 399.99988,1699.9996 260.0,1700.0 " fill="none" stroke-width="2.0" stroke="rgb(0,0,0)"/>
+<g id="t542306506">
+<text x="287.99997" y="1674.447" font-family="Helvetica" fill="rgb(0,0,0)" font-size="14" textLength="84.0">Init interrupts</text>
+</g>
+</g>
+<g id="s1025425073">
+<polygon id="s1025425073" points="260.0,1760.0 400.0,1760.0 400.0,1820.0 260.0,1819.999 " fill="none" stroke-width="2.0" stroke="rgb(0,0,0)"/>
+<g id="t1025425073">
+<text x="302.0" y="1794.447" font-family="Helvetica" fill="rgb(0,0,0)" font-size="14" textLength="56.0">Init timer</text>
+</g>
+</g>
+<g id="s485827228">
+<polygon id="s485827228" points="200.0,1900.0 459.99994,1900.0 459.99994,1980.0 200.0,1980.0 " fill="none" stroke-width="2.0" stroke="rgb(0,0,0)"/>
+<g id="t485827228">
+<text x="220.99997" y="1944.447" font-family="Helvetica" fill="rgb(0,0,0)" font-size="14" textLength="218.0">Init process manager and scheduler</text>
+</g>
+</g>
+<g id="s320229622">
+<polygon id="s320229622" points="260.0,2060.0 400.0,2060.0 399.99988,2119.9998 260.0,2120.0 " fill="none" stroke-width="2.0" stroke="rgb(0,0,0)"/>
+<g id="t320229622">
+<text x="272.5" y="2094.447" font-family="Helvetica" fill="rgb(0,0,0)" font-size="14" textLength="115.0">Start main process</text>
+</g>
+</g>
+<g id="la792557649">
+<path id="s792557649" d="M 319.99985,320.0 320.0,380.0 " fill="none" stroke-width="2.0" stroke="rgb(0,0,0)"/>
+</g>
+<g id="la245436619">
+<path id="s245436619" d="M 319.99997,440.0 319.99994,500.0 " fill="none" stroke-width="2.0" stroke="rgb(0,0,0)"/>
+</g>
+<g id="la197235948">
+<path id="s197235948" d="M 319.99973,579.9999 320.00003,640.0 " fill="none" stroke-width="2.0" stroke="rgb(0,0,0)"/>
+</g>
+<g id="la125466285">
+<path id="s125466285" d="M 320.00006,700.0 319.99976,760.0 " fill="none" stroke-width="2.0" stroke="rgb(0,0,0)"/>
+</g>
+<g id="la24091895">
+<path id="s24091895" d="M 319.99994,820.0 319.99957,880.0 " fill="none" stroke-width="2.0" stroke="rgb(0,0,0)"/>
+</g>
+<g id="la175792659">
+<path id="s175792659" d="M 320.0,940.0 320.0,1000.0 " fill="none" stroke-width="2.0" stroke="rgb(0,0,0)"/>
+</g>
+<g id="la166611966">
+<path id="s166611966" d="M 320.0,1059.9996 320.00003,1120.0 " fill="none" stroke-width="2.0" stroke="rgb(0,0,0)"/>
+</g>
+<g id="la319557036">
+<path id="s319557036" d="M 420.0,1159.9999 540.0,1160.0 " fill="none" stroke-width="2.0" stroke="rgb(0,0,0)"/>
+</g>
+<g id="la291376589">
+<path id="s291376589" d="M 630.0,1199.9999 630.00055,1260.0 " fill="none" stroke-width="2.0" stroke="rgb(0,0,0)"/>
+</g>
+<g id="la100305215">
+<path id="s100305215" d="M 630.0,1319.9999 630.0001,1380.0 " fill="none" stroke-width="2.0" stroke="rgb(0,0,0)"/>
+</g>
+<g id="la114198146">
+<path id="s114198146" d="M 500.0,1419.9993 399.9999,1420.0 " fill="none" stroke-width="2.0" stroke="rgb(0,0,0)"/>
+</g>
+<g id="la1035957712">
+<path id="s1035957712" d="M 330.0,1460.0 330.0,1520.0 " fill="none" stroke-width="2.0" stroke="rgb(0,0,0)"/>
+</g>
+<g id="la775164981">
+<path id="s775164981" d="M 330.0,1580.0 329.99997,1640.0 " fill="none" stroke-width="2.0" stroke="rgb(0,0,0)"/>
+</g>
+<g id="la781081944">
+<path id="s781081944" d="M 329.99994,1699.9998 330.0,1760.0 " fill="none" stroke-width="2.0" stroke="rgb(0,0,0)"/>
+</g>
+<g id="la984580623">
+<path id="s984580623" d="M 330.0,1819.9995 329.99997,1900.0 " fill="none" stroke-width="2.0" stroke="rgb(0,0,0)"/>
+</g>
+<g id="la912091537">
+<path id="s912091537" d="M 329.99997,1980.0 330.0,2060.0 " fill="none" stroke-width="2.0" stroke="rgb(0,0,0)"/>
+</g>
+</svg>

@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="480.0" height="1000.0" viewBox="9.0 70.0 480.0 1000.0" version="1.1">
+<rect x="9.0" y="70.0" width="480.0" height="1000.0" fill="rgb(255,255,255)"/>
+<polygon id="s387289049" points="40.00369,100.00003 459.9911,100.00003 459.9922,1039.9943 39.992115,1040.0 " fill="none" stroke-width="2.0" stroke="rgb(0,0,0)" stroke-dasharray="7.0 7.0">
+<g id="t387289049">
+<text x="145.49214" y="127.287476" font-family="Helvetica" font-weight="bold" fill="rgb(0,0,0)" font-size="25" textLength="209.0">Main Task Method</text>
+<path id="s96011611" d="M 145.49214,128.28748 354.49213,128.28748 " fill="none" stroke-width="2.0" stroke="rgb(0,0,0)"/>
+</g>
+</polygon>
+<g id="s391899272">
+<polygon id="s391899272" points="180.00334,180.00003 320.00336,180.00003 320.00336,280.00003 180.00334,280.00003 " fill="none" stroke-width="2.0" stroke="rgb(0,0,0)"/>
+<g id="t391899272">
+<text x="235.00336" y="234.44704" font-family="Helvetica" fill="rgb(0,0,0)" font-size="14" textLength="30.0">Start</text>
+</g>
+</g>
+<g id="s282123386">
+<polygon id="s282123386" points="180.00333,340.0 320.0033,340.0 320.0033,440.00003 180.00333,440.00003 " fill="none" stroke-width="2.0" stroke="rgb(0,0,0)"/>
+<g id="t282123386">
+<text x="203.00331" y="385.018" font-family="Helvetica" fill="rgb(0,0,0)" font-size="14" textLength="94.0">Register Syscall</text>
+<text x="227.00331" y="403.876" font-family="Helvetica" fill="rgb(0,0,0)" font-size="14" textLength="46.0">handler</text>
+</g>
+</g>
+<g id="s209140779">
+<polygon id="s209140779" points="180.00333,500.0001 320.00336,500.0001 320.00336,599.9998 180.00333,599.9998 " fill="none" stroke-width="2.0" stroke="rgb(0,0,0)"/>
+<g id="t209140779">
+<text x="204.00334" y="545.0179" font-family="Helvetica" fill="rgb(0,0,0)" font-size="14" textLength="92.0">Create pipe for</text>
+<text x="202.50334" y="563.8759" font-family="Helvetica" fill="rgb(0,0,0)" font-size="14" textLength="95.0">window output</text>
+</g>
+</g>
+<g id="s423033398">
+<polygon id="s423033398" points="180.00334,659.9998 320.00336,659.9998 320.00336,759.9998 180.00334,759.9998 " fill="none" stroke-width="2.0" stroke="rgb(0,0,0)"/>
+<g id="t423033398">
+<text x="204.00336" y="705.01776" font-family="Helvetica" fill="rgb(0,0,0)" font-size="14" textLength="92.0">Create pipe for</text>
+<text x="203.50336" y="723.8758" font-family="Helvetica" fill="rgb(0,0,0)" font-size="14" textLength="93.0">keyboard input</text>
+</g>
+</g>
+<g id="s735965137">
+<polygon id="s735965137" points="80.00338,819.9998 420.00342,819.9998 420.00183,919.9992 80.00335,919.9998 " fill="none" stroke-width="2.0" stroke="rgb(0,0,0)"/>
+<g id="t735965137">
+<text x="183.00339" y="846.1597" font-family="Helvetica" fill="rgb(0,0,0)" font-size="14" textLength="134.0">Read from input pipe,</text>
+<text x="104.00339" y="865.01776" font-family="Helvetica" fill="rgb(0,0,0)" font-size="14" textLength="292.0">Perform commands (may require creating more</text>
+<text x="173.00339" y="883.8758" font-family="Helvetica" fill="rgb(0,0,0)" font-size="14" textLength="154.0">pipes or issuing sys calls),</text>
+<text x="186.00339" y="902.7338" font-family="Helvetica" fill="rgb(0,0,0)" font-size="14" textLength="128.0">Write to output pipe</text>
+</g>
+</g>
+<g id="la956792476">
+<path id="s956792476" d="M 250.00334,280.00003 250.00331,340.0 " fill="none" stroke-width="2.0" stroke="rgb(0,0,0)"/>
+</g>
+<g id="la426549413">
+<path id="s426549413" d="M 250.00331,440.00003 250.00334,500.0001 " fill="none" stroke-width="2.0" stroke="rgb(0,0,0)"/>
+</g>
+<g id="la338403873">
+<path id="s338403873" d="M 250.00334,599.9998 250.00334,659.9998 " fill="none" stroke-width="2.0" stroke="rgb(0,0,0)"/>
+</g>
+<g id="la573906680">
+<path id="s573906680" d="M 250.00334,759.9998 250.0034,819.9998 " fill="none" stroke-width="2.0" stroke="rgb(0,0,0)"/>
+</g>
+<g id="la313296078">
+<path id="s313296078" d=" M335.0022,919.9993  C335.0022,1019.06 165.00298,1019.06 165.00298,919.9997 " fill="none" stroke-width="2.0" stroke="rgb(0,0,0)"/>
+<polygon id="s248197624" points="335.0022,919.9993 339.81668,930.9912 328.35416,929.98956 " fill="rgb(0,0,0)" stroke-width="2.0" stroke="rgb(0,0,0)"/>
+</g>
+</svg>

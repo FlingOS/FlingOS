@@ -92,9 +92,13 @@
     <Compile Include="ByteConverter.cs" />
     <Compile Include="Collections\Bitmap.cs" />
     <Compile Include="Collections\CircularBuffer.cs" />
+    <Compile Include="Collections\DelegateList.cs" />
     <Compile Include="Collections\Dictionary.cs" />
     <Compile Include="Collections\List.cs" />
+    <Compile Include="Collections\Queue.cs" />
     <Compile Include="Collections\Stack.cs" />
+    <Compile Include="Collections\UInt32List.cs" />
+    <Compile Include="Collections\UInt64List.cs" />
     <Compile Include="ConstantsUtils.cs" />
     <Compile Include="Exception.cs" />
     <Compile Include="ExceptionMethods.cs" />

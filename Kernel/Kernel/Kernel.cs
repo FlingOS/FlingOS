@@ -73,7 +73,16 @@ namespace Kernel
       
 
             try
-            {
+            {                
+                //FOS_System.GC.Cleanup();
+                
+                //BasicConsole.WriteLine("Virtual memory initialised.");
+                //BasicConsole.Write("Heap memory use: ");
+                //BasicConsole.Write(Heap.GetTotalUsedMem());
+                //BasicConsole.Write(" / ");
+                //BasicConsole.WriteLine(Heap.GetTotalMem());
+                //BasicConsole.DelayOutput(5);
+                
                 Hardware.IO.Serial.Serial.InitCOM1();
                 Hardware.IO.Serial.Serial.InitCOM2();
 
@@ -83,9 +92,45 @@ namespace Kernel
                 // DO NOT REMOVE THE FOLLOWING LINE -- ednutting
                 PreReqs.PageFaultDetection_Initialised = true;
 
-                Hardware.VirtMemManager.Init();
                 Hardware.Devices.CPU.InitDefault();
+                
+                BasicConsole.WriteLine("Creating kernel process...");
+                Process KernelProcess = ProcessManager.CreateProcess(Tasks.KernelTask.Main, "Kernel Task", false);
+                ProcessManager.KernelProcess = KernelProcess;
+
+                BasicConsole.WriteLine("Creating kernel thread...");
+                Thread KernelThread = ((Thread)KernelProcess.Threads[0]);
+
+                BasicConsole.WriteLine("Initialising kernel thread stack...");
+                Hardware.VirtMemManager.Unmap(KernelThread.State->ThreadStackTop - 4092);
+                KernelProcess.TheMemoryLayout.RemovePage((uint)KernelThread.State->ThreadStackTop - 4092);
+                KernelThread.State->ThreadStackTop = GetKernelStackPtr();
+                KernelThread.State->ESP = (uint)KernelThread.State->ThreadStackTop;
+
+                BasicConsole.WriteLine("Initialising kernel process heap...");
+                KernelProcess.HeapLock = Heap.AccessLock;
+                KernelProcess.HeapPtr = Heap.FBlock;
+
+                BasicConsole.WriteLine("Initialising kernel process GC...");
+                KernelProcess.TheGCState = FOS_System.GC.State;
+
+                BasicConsole.WriteLine("Registering kernel process...");
+                ProcessManager.RegisterProcess(KernelProcess, Scheduler.Priority.Normal);
+
+                BasicConsole.WriteLine("Initialising kernel ISRs...");
+                KernelProcess.ISRHandler = Tasks.KernelTask.HandleISR;
+                KernelProcess.SwitchProcessForISRs = false;
+                KernelProcess.ISRsToHandle.Set(48);
+
+                BasicConsole.WriteLine("Initialising kernel IRQs...");
+                KernelProcess.IRQHandler = Tasks.KernelTask.HandleIRQ;
+                KernelProcess.SwitchProcessForIRQs = false;
+                KernelProcess.IRQsToHandle.Set(0);
+
+                BasicConsole.WriteLine("Initialising default timer...");
                 Hardware.Devices.Timer.InitDefault();
+
+
 
                 BasicConsole.PrimaryOutputEnabled = true;
                 BasicConsole.SecondaryOutputEnabled = false;
@@ -105,7 +150,7 @@ namespace Kernel
                 BasicConsole.PrimaryOutputEnabled = true;
                 BasicConsole.SecondaryOutputEnabled = true;
 
-                for (int i = 0; i < 38; i++)
+                for (int i = 0; i < 37; i++)
                 {
                     BasicConsole.Write(' ');
                 }
@@ -176,15 +221,8 @@ namespace Kernel
                 //    Hardware.Timers.PIT.MusicalNote.C5,
                 //    Hardware.Timers.PIT.MusicalNoteValue.Minim,
                 //    bpm);
-                
-                Process ManagedMainProcess = ProcessManager.CreateProcess(ManagedMain, "Managed Main", false);                
-                Thread ManagedMain_MainThread = ((Thread)ManagedMainProcess.Threads[0]);
-                Hardware.VirtMemManager.Unmap(ManagedMain_MainThread.State->ThreadStackTop - 4092);
-                ManagedMainProcess.TheMemoryLayout.RemovePage((uint)ManagedMain_MainThread.State->ThreadStackTop - 4092);
-                ManagedMain_MainThread.State->ThreadStackTop = GetKernelStackPtr();
-                ManagedMain_MainThread.State->ESP = (uint)ManagedMain_MainThread.State->ThreadStackTop;
-                ProcessManager.RegisterProcess(ManagedMainProcess, Scheduler.Priority.Normal);
 
+                BasicConsole.WriteLine("Initialising scheduler...");
                 Scheduler.Init();
 
                 // Busy wait until the scheduler interrupts us. 
@@ -350,93 +388,7 @@ namespace Kernel
             BasicConsole.SetTextColour(BasicConsole.default_colour);
             PreReqs.Reset();
         }
-
-        /// <summary>
-        /// The actual main method for the kernel - by this point, all memory management, exception handling 
-        /// etc has been set up properly.
-        /// </summary>
-        [Drivers.Compiler.Attributes.NoDebug]
-        private static unsafe void ManagedMain()
-        {
-            BasicConsole.WriteLine(" Managed Main! ");
-            BasicConsole.WriteLine(" > Executing normally...");
-
-            try
-            {
-                BasicConsole.WriteLine(" > Initialising system calls...");
-                Core.Processes.SystemCalls.Init();
-
-                BasicConsole.WriteLine(" > Starting GC Cleanup task...");
-                ProcessManager.CurrentProcess.CreateThread(Core.Tasks.GCCleanupTask.Main);
-
-                BasicConsole.WriteLine(" > Starting Idle task...");
-                ProcessManager.CurrentProcess.CreateThread(Core.Tasks.IdleTask.Main);
-
-                BasicConsole.WriteLine(" > Starting Non-critical interrupts task...");
-                ProcessManager.CurrentProcess.CreateThread(Hardware.Tasks.NonCriticalInterruptsTask.Main);
-
-                BasicConsole.WriteLine(" > Starting System Status task...");
-                ProcessManager.CurrentProcess.CreateThread(Core.Tasks.SystemStatusTask.Main);
-
-                BasicConsole.WriteLine(" > Starting Device Manager task...");
-                ProcessManager.CurrentProcess.CreateThread(Hardware.Tasks.DeviceManagerTask.Main);
-                
-                BasicConsole.WriteLine(" > Starting Play Notes task...");
-                ProcessManager.CurrentProcess.CreateThread(Hardware.Tasks.PlayNotesTask.Main);
-                
-                Hardware.Devices.Keyboard.InitDefault();
-                Core.Console.InitDefault();
-                Core.Shell.InitDefault();
-
-                BasicConsole.PrimaryOutputEnabled = false;
-                Core.Shell.Default.Execute();
-                BasicConsole.PrimaryOutputEnabled = true;
-
-                if (!Core.Shell.Default.Terminating)
-                {
-                    Core.Console.Default.WarningColour();
-                    Core.Console.Default.WriteLine("Abnormal shell shutdown!");
-                    Core.Console.Default.DefaultColour();
-                }
-                else
-                {
-                    Core.Console.Default.Clear();
-                }
-            }
-            catch
-            {
-                BasicConsole.PrimaryOutputEnabled = true;
-                OutputCurrentExceptionInfo();
-            }
-            
-            BasicConsole.WriteLine();
-            OutputDivider();
-            BasicConsole.WriteLine();
-            BasicConsole.WriteLine("End of managed main.");
-
-            ExceptionMethods.HaltReason = "Managed main thread ended.";
-            Halt(0);
-        }
-
-        /// <summary>
-        /// Outputs the current exception information.
-        /// </summary>
-        [Drivers.Compiler.Attributes.NoDebug]
-        private static void OutputCurrentExceptionInfo()
-        {
-            BasicConsole.SetTextColour(BasicConsole.warning_colour);
-            BasicConsole.WriteLine(ExceptionMethods.CurrentException.Message);
-            BasicConsole.SetTextColour(BasicConsole.default_colour);
-        }
-
-        /// <summary>
-        /// Outputs a divider line.
-        /// </summary>
-        private static void OutputDivider()
-        {
-            BasicConsole.WriteLine("---------------------");
-        }
-
+        
         [Drivers.Compiler.Attributes.NoGC]
         [Drivers.Compiler.Attributes.NoDebug]
         private static void BasicConsole_SecondaryOutput(FOS_System.String str)
@@ -466,12 +418,7 @@ namespace Kernel
             return 0;
         }
 
-        [Drivers.Compiler.Attributes.PluggedMethod(ASMFilePath=@"ASM\Kernel")]
-        private static unsafe void* GetManagedMainMethodPtr()
-        {
-            return null;
-        }
-        [Drivers.Compiler.Attributes.PluggedMethod(ASMFilePath=null)]
+        [Drivers.Compiler.Attributes.PluggedMethod(ASMFilePath = @"ASM\Kernel")]
         private static unsafe byte* GetKernelStackPtr()
         {
             return null;

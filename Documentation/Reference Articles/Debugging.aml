@@ -880,7 +880,7 @@
               // Microsoft C# .Net 4.5, x86 (32-bit)
               /******************** VGA Text-mode : String Output Example ********************/
 
-              // Code taken from FlingOS source: Kernel.Core\Consoles\AdvancedConsole.cs
+              // Code taken from FlingOS source: Kernel\Consoles\AdvancedConsole.cs
               // 2014-11-03
 
               // Notes to the reader:

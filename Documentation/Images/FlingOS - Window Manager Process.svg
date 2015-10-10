@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8"?><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="1259.0" height="820.0" viewBox="70.0 490.0 1259.0 820.0" version="1.1">
+<rect x="70.0" y="490.0" width="1259.0" height="820.0" fill="rgb(255,255,255)"/>
+<polygon id="s576492788" points="100.0,520.0 1299.9982,520.0 1299.9999,1280.0 100.0,1279.9998 " fill="none" stroke-width="2.0" stroke="rgb(0,0,0)" stroke-dasharray="7.0 7.0">
+<g id="t576492788">
+<text x="554.99994" y="547.2875" font-family="Helvetica" font-weight="bold" fill="rgb(0,0,0)" font-size="25" textLength="290.0">Window Manager Process</text>
+<path id="s19891538" d="M 554.99994,548.2875 844.99994,548.2875 " fill="none" stroke-width="2.0" stroke="rgb(0,0,0)"/>
+</g>
+</polygon>
+<g id="s651106578">
+<polygon id="s651106578" points="219.99998,620.0 340.0,620.0 339.99988,679.99994 219.99998,680.0 " fill="none" stroke-width="2.0" stroke="rgb(0,0,0)"/>
+<g id="t651106578">
+<text x="265.0" y="654.447" font-family="Helvetica" fill="rgb(0,0,0)" font-size="14" textLength="30.0">Start</text>
+</g>
+</g>
+<g id="s116216692">
+<polygon id="s116216692" points="179.99998,740.00006 380.0,740.00006 379.99994,800.0 179.99998,800.0 " fill="none" stroke-width="2.0" stroke="rgb(0,0,0)"/>
+<g id="t116216692">
+<text x="203.5" y="774.447" font-family="Helvetica" fill="rgb(0,0,0)" font-size="14" textLength="153.0">Create Processing thread</text>
+</g>
+</g>
+<g id="s836754054">
+<polygon id="s836754054" points="180.0,840.0 379.99976,840.0 379.99982,899.99994 180.0,900.0 " fill="none" stroke-width="2.0" stroke="rgb(0,0,0)"/>
+<g id="t836754054">
+<text x="207.99991" y="874.447" font-family="Helvetica" fill="rgb(0,0,0)" font-size="14" textLength="144.0">Register Syscall handler</text>
+</g>
+</g>
+<g id="s900321992">
+<polygon id="s900321992" points="180.00002,940.0 379.99988,940.0 380.0,1000.0 180.00002,1000.0 " fill="none" stroke-width="2.0" stroke="rgb(0,0,0)"/>
+<g id="t900321992">
+<text x="214.5" y="974.447" font-family="Helvetica" fill="rgb(0,0,0)" font-size="14" textLength="131.0">Create idle input pipe</text>
+</g>
+</g>
+<g id="s758361274">
+<polygon id="s758361274" points="180.00002,1040.0 380.00006,1040.0 380.00006,1100.0 180.00002,1099.9999 " fill="none" stroke-width="2.0" stroke="rgb(0,0,0)"/>
+<g id="t758361274">
+<text x="207.00003" y="1074.447" font-family="Helvetica" fill="rgb(0,0,0)" font-size="14" textLength="146.0">Read current input pipe</text>
+</g>
+</g>
+<g id="s1070828005">
+<polygon id="s1070828005" points="200.00002,1140.0 359.9993,1140.0 360.0,1200.0 200.00002,1199.9979 " fill="none" stroke-width="2.0" stroke="rgb(0,0,0)"/>
+<g id="t1070828005">
+<text x="232.0" y="1174.447" font-family="Helvetica" fill="rgb(0,0,0)" font-size="14" textLength="96.0">Write to screen</text>
+</g>
+</g>
+<g id="s850386629">
+<polygon id="s850386629" points="540.0,620.0 680.0,620.0 680.0,679.99963 540.0,680.0 " fill="none" stroke-width="2.0" stroke="rgb(0,0,0)"/>
+<g id="t850386629">
+<text x="554.0" y="654.447" font-family="Helvetica" fill="rgb(0,0,0)" font-size="14" textLength="112.0">Processing Thread</text>
+</g>
+</g>
+<g id="s263610684">
+<polygon id="s263610684" points="499.99997,720.0 719.99994,720.0 719.9998,779.9998 499.99997,780.0 " fill="none" stroke-width="2.0" stroke="rgb(0,0,0)"/>
+<g id="t263610684">
+<text x="522.99994" y="754.447" font-family="Helvetica" fill="rgb(0,0,0)" font-size="14" textLength="174.0">Wait for pipe create request</text>
+</g>
+</g>
+<g id="s872593854">
+<polygon id="s872593854" points="540.0,820.0 679.9999,820.0 680.0,880.0 540.0,879.9999 " fill="none" stroke-width="2.0" stroke="rgb(0,0,0)"/>
+<g id="t872593854">
+<text x="575.0" y="854.447" font-family="Helvetica" fill="rgb(0,0,0)" font-size="14" textLength="70.0">Create pipe</text>
+</g>
+</g>
+<g id="s501406320">
+<polygon id="s501406320" points="479.99997,920.0 739.99994,920.0 740.0,979.9999 479.99997,980.0 " fill="none" stroke-width="2.0" stroke="rgb(0,0,0)"/>
+<g id="t501406320">
+<text x="509.0" y="954.447" font-family="Helvetica" fill="rgb(0,0,0)" font-size="14" textLength="202.0">Return result via deferred handle</text>
+</g>
+</g>
+<g id="s425297753">
+<polygon id="s425297753" points="920.0,620.0 1100.0,620.0 1100.0,680.0 920.0,680.0 " fill="none" stroke-width="2.0" stroke="rgb(0,0,0)"/>
+<g id="t425297753">
+<text x="963.0" y="654.447" font-family="Helvetica" fill="rgb(0,0,0)" font-size="14" textLength="94.0">Syscall Handler</text>
+</g>
+</g>
+<g id="s652081353">
+<polygon id="s652081353" points="920.00006,720.0 1100.0012,720.0 1100.0012,759.99994 920.00006,760.0 " fill="none" stroke-width="2.0" stroke="rgb(0,0,0)"/>
+<g id="t652081353">
+<text x="941.5006" y="744.447" font-family="Helvetica" fill="rgb(0,0,0)" font-size="14" textLength="137.0">Based on Syscall type:</text>
+</g>
+</g>
+<g id="s792673428">
+<polygon id="s792673428" points="840.00006,880.0 999.9998,880.0 1000.00006,960.0 840.00006,960.0 " fill="none" stroke-width="2.0" stroke="rgb(0,0,0)"/>
+<g id="t792673428">
+<text x="866.00006" y="924.447" font-family="Helvetica" fill="rgb(0,0,0)" font-size="14" textLength="108.0">Switch input pipe</text>
+</g>
+</g>
+<g id="s248477014">
+<polygon id="s248477014" points="1020.0001,880.0 1220.0002,880.0 1220.0005,960.0 1020.0001,960.0 " fill="none" stroke-width="2.0" stroke="rgb(0,0,0)"/>
+<g id="t248477014">
+<text x="1027.0002" y="915.018" font-family="Helvetica" fill="rgb(0,0,0)" font-size="14" textLength="186.0">Defer pipe creation but return</text>
+<text x="1071.0002" y="933.87604" font-family="Helvetica" fill="rgb(0,0,0)" font-size="14" textLength="98.0">intent to accept</text>
+</g>
+</g>
+<g id="la36835485">
+<path id="s36835485" d="M 280.00006,679.9997 280.0,740.00006 " fill="none" stroke-width="2.0" stroke="rgb(0,0,0)"/>
+</g>
+<g id="la982060871">
+<path id="s982060871" d="M 279.99997,800.0 279.99988,840.0 " fill="none" stroke-width="2.0" stroke="rgb(0,0,0)"/>
+</g>
+<g id="la641195873">
+<path id="s641195873" d="M 279.9999,900.0 279.99994,940.0 " fill="none" stroke-width="2.0" stroke="rgb(0,0,0)"/>
+</g>
+<g id="la259876715">
+<path id="s259876715" d="M 280.0,1000.0 280.00003,1040.0 " fill="none" stroke-width="2.0" stroke="rgb(0,0,0)"/>
+</g>
+<g id="la654263516">
+<path id="s654263516" d="M 280.00003,1100.0 279.99948,1140.0 " fill="none" stroke-width="2.0" stroke="rgb(0,0,0)"/>
+</g>
+<g id="la654972719">
+<path id="s654972719" d="M 610.0,679.9998 610.0,720.0 " fill="none" stroke-width="2.0" stroke="rgb(0,0,0)"/>
+</g>
+<g id="la542791801">
+<path id="s542791801" d="M 609.9999,779.9999 609.99994,820.0 " fill="none" stroke-width="2.0" stroke="rgb(0,0,0)"/>
+</g>
+<g id="la7120051">
+<path id="s7120051" d="M 610.0,879.99994 610.0003,920.0 " fill="none" stroke-width="2.0" stroke="rgb(0,0,0)"/>
+</g>
+<g id="la1043106529">
+<path id="s1043106529" d="M 610.0,980.0 610.0,1020.0 780.0,1020.0 780.0,750.0 719.99994,750.0 " fill="none" stroke-width="2.0" stroke="rgb(0,0,0)"/>
+<path id="s726069283" d="M 729.17804,742.2694 719.99994,750.0 729.17804,757.7306 " fill="none" stroke-width="2.0" stroke="rgb(0,0,0)"/>
+</g>
+<g id="la1017925840">
+<path id="s1017925840" d="M 1009.9998,680.0 1010.0005,720.0 " fill="none" stroke-width="2.0" stroke="rgb(0,0,0)"/>
+</g>
+<g id="la200960231">
+<path id="s200960231" d="M 1010.0005,760.0 1010.0005,820.0 919.99994,820.0 919.99994,880.0 " fill="none" stroke-width="2.0" stroke="rgb(0,0,0)"/>
+</g>
+<g id="la70050673">
+<path id="s70050673" d="M 1010.0005,760.0 1010.0005,820.0 1120.0002,820.0 1120.0002,880.0 " fill="none" stroke-width="2.0" stroke="rgb(0,0,0)"/>
+</g>
+</svg>
