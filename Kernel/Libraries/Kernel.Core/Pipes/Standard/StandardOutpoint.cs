@@ -37,10 +37,10 @@ namespace Kernel.Core.Pipes.Standard
         {
         }
 
-        public unsafe void Write(FOS_System.String message)
+        public unsafe void Write(int PipeId, FOS_System.String message)
         {
             byte[] data = ByteConverter.GetASCIIBytes(message);
-            base.Write(data, 0, data.Length);
+            base.Write(PipeId, data, 0, data.Length);
         }
     }
 }

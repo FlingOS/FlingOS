@@ -10,8 +10,9 @@ namespace Kernel.Core.Tasks
     {
         private class PipeInfo : FOS_System.Object
         {
-            public Pipes.Standard.StandardInpoint StdIn;
-            public Console ScreenOutput = new Consoles.AdvancedConsole();
+            public Pipes.Standard.StandardInpoint StdOut;
+            public int StdInPipeId;
+            public Console TheConsole = new Consoles.AdvancedConsole();
         }
 
         private static bool Terminating = false;
@@ -27,8 +28,11 @@ namespace Kernel.Core.Tasks
         /// </remarks>
         private static uint MainThreadId = 1;
         private static uint GCThreadId;
-        private static uint ProcessingThreadId;
-        private static bool ProcessingThreadAwake = false;
+        private static uint InputProcessingThreadId;
+        private static bool InputProcessingThreadAwake = false;
+        private static uint OutputProcessingThreadId;
+
+        private static Pipes.Standard.StandardOutpoint StdIn;
 
         public static void Main()
         {
@@ -46,22 +50,30 @@ namespace Kernel.Core.Tasks
             // Initialise connected pipes list
             ConnectedPipes = new List();
 
-            // Start thread for handling background processing
-            if (SystemCallMethods.StartThread(Processing, out ProcessingThreadId) != SystemCallResults.OK)
+            // Start thread for handling background input processing
+            if (SystemCallMethods.StartThread(InputProcessing, out InputProcessingThreadId) != SystemCallResults.OK)
             {
-                BasicConsole.WriteLine("Window Manager: Processing thread failed to create!");
+                BasicConsole.WriteLine("Window Manager: InputProcessing thread failed to create!");
             }
 
-            BasicConsole.Write("WM > Processing thread id: ");
-            BasicConsole.WriteLine(ProcessingThreadId);
+            // Start thread for handling background output processing
+            if (SystemCallMethods.StartThread(OutputProcessing, out OutputProcessingThreadId) != SystemCallResults.OK)
+            {
+                BasicConsole.WriteLine("Window Manager: OutputProcessing thread failed to create!");
+            }
+
+            BasicConsole.Write("WM > InputProcessing thread id: ");
+            BasicConsole.WriteLine(InputProcessingThreadId);
+
+            StdIn = new Pipes.Standard.StandardOutpoint(false);
+
+            Keyboard.InitDefault();
+            SystemCallMethods.RegisterIRQHandler(1, HandleIRQ);
 
             SystemCallMethods.RegisterSyscallHandler(SystemCallNumbers.RegisterPipeOutpoint, SyscallHandler);
-
+            
             // Wait for pipe to be created
             SystemCallMethods.SleepThread(SystemCallMethods.IndefiniteSleepThread);
-
-            SystemCallMethods.RegisterIRQHandler(1, HandleIRQ);
-            Keyboard.InitDefault();
 
             while (!Terminating)
             {
@@ -71,22 +83,7 @@ namespace Kernel.Core.Tasks
                     {
                         PipeInfo CurrentPipeInfo = ((PipeInfo)ConnectedPipes[CurrentPipeIdx]);
 
-                        CurrentPipeInfo.ScreenOutput.Write(CurrentPipeInfo.StdIn.Read());
-
-                        bool AltPressed = Keyboard.Default.AltPressed;
-                        KeyboardKey Key;
-                        bool GotKey = Keyboard.Default.GetKey(out Key);
-                        if (GotKey)
-                        {
-                            if (AltPressed && Key == KeyboardKey.Tab)
-                            {
-                                CurrentPipeIdx++;
-                                if (CurrentPipeIdx >= ConnectedPipes.Count)
-                                {
-                                    CurrentPipeIdx = 0;
-                                }
-                            }
-                        }
+                        CurrentPipeInfo.TheConsole.Write(CurrentPipeInfo.StdOut.Read());
                     }
                 }
                 catch
@@ -97,17 +94,17 @@ namespace Kernel.Core.Tasks
             }
         }
 
-        public static void Processing()
+        public static void InputProcessing()
         {
             while (!Terminating)
             {
-                if (!ProcessingThreadAwake)
+                if (!InputProcessingThreadAwake)
                 {
                     SystemCallMethods.SleepThread(SystemCallMethods.IndefiniteSleepThread);
                 }
-                ProcessingThreadAwake = false;
+                InputProcessingThreadAwake = false;
 
-                BasicConsole.WriteLine("WM > Processing thread runnning...");
+                BasicConsole.WriteLine("WM > InputProcessing thread runnning...");
 
                 // Delay to allow time for Register Outpoint Deferred System Call to complete
                 SystemCallMethods.SleepThread(500);
@@ -131,7 +128,7 @@ namespace Kernel.Core.Tasks
                             for (int j = 0; j < ConnectedPipes.Count; j++)
                             {
                                 PipeInfo ExistingPipeInfo = (PipeInfo)ConnectedPipes[j];
-                                if (ExistingPipeInfo.StdIn.OutProcessId == Descriptor.ProcessId)
+                                if (ExistingPipeInfo.StdOut.OutProcessId == Descriptor.ProcessId)
                                 {
                                     PipeExists = true;
                                     break;
@@ -142,15 +139,17 @@ namespace Kernel.Core.Tasks
                             {
                                 try
                                 {
-                                    ConnectedPipes.Add(new PipeInfo()
-                                    {
-                                        StdIn = new Pipes.Standard.StandardInpoint(Descriptor.ProcessId, 2000, true), // 2000 ASCII characters = 2000 bytes
-                                    });
+                                    PipeInfo NewPipeInfo = new PipeInfo();
+                                    NewPipeInfo.StdOut = new Pipes.Standard.StandardInpoint(Descriptor.ProcessId, true); // 2000 ASCII characters = 2000 bytes
+                                    NewPipeInfo.StdInPipeId = StdIn.WaitForConnect();
+
+                                    ConnectedPipes.Add(NewPipeInfo);
 
                                     if (CurrentPipeIdx == -1)
                                     {
                                         CurrentPipeIdx = 0;
                                         SystemCallMethods.WakeThread(MainThreadId);
+                                        SystemCallMethods.WakeThread(OutputProcessingThreadId);
                                     }
                                 }
                                 catch
@@ -189,13 +188,70 @@ namespace Kernel.Core.Tasks
                     {
                         BasicConsole.WriteLine("WM > IH > Register Pipe Outpoint has desired pipe class and subclass.");
                         result = SystemCallResults.RequestAction_WakeThread;
-                        Return2 = ProcessingThreadId;
-                        ProcessingThreadAwake = true;
+                        Return2 = InputProcessingThreadId;
+                        InputProcessingThreadAwake = true;
                     }
                     break;
             }
 
             return (int)result;
+        }
+
+        public static void OutputProcessing()
+        {
+            // Wait for pipe to be created
+            SystemCallMethods.SleepThread(SystemCallMethods.IndefiniteSleepThread);
+
+            FOS_System.String line = "";
+
+            PipeInfo CurrentPipeInfo = ((PipeInfo)ConnectedPipes[CurrentPipeIdx]);
+
+            while (!Terminating)
+            {
+                try
+                {
+                    bool AltPressed = Keyboard.Default.AltPressed;
+                    uint Scancode;
+                    bool GotScancode = Keyboard.Default.GetScancode(out Scancode);
+                    if (GotScancode)
+                    {
+                        KeyboardKey Key;
+                        if (Keyboard.Default.GetKeyValue(Scancode, out Key))
+                        {
+                            if (AltPressed && Key == KeyboardKey.Tab)
+                            {
+                                CurrentPipeIdx++;
+                                if (CurrentPipeIdx >= ConnectedPipes.Count)
+                                {
+                                    CurrentPipeIdx = 0;
+                                }
+
+                                CurrentPipeInfo = ((PipeInfo)ConnectedPipes[CurrentPipeIdx]);
+                                SystemCallMethods.WakeThread(1);
+                            }
+                            else
+                            {
+                                char Character;
+                                if (Keyboard.Default.GetCharValue(Scancode, out Character))
+                                {
+                                    line += Character;
+
+                                    if (line.length > 0 && line[line.length - 1] == '\n')
+                                    {
+                                        StdIn.Write(CurrentPipeInfo.StdInPipeId, line);
+                                        line = "";
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                catch
+                {
+                    BasicConsole.WriteLine("WM > Error during output processing!");
+                    BasicConsole.WriteLine(ExceptionMethods.CurrentException.Message);
+                }
+            }
         }
 
         private static int HandleIRQ(uint IRQNum)

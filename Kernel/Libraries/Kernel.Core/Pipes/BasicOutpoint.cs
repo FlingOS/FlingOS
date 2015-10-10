@@ -32,11 +32,6 @@ namespace Kernel.Core.Pipes
 {
     public unsafe class BasicOutpoint : FOS_System.Object
     {
-        public int PipeId
-        {
-            get;
-            protected set;
-        }
         public PipeClasses Class
         {
             get;
@@ -90,20 +85,18 @@ namespace Kernel.Core.Pipes
                     break;
                 case SystemCallResults.OK:
                     BasicConsole.WriteLine("BasicOutPipe > WaitOnPipeCreate: Succeeded.");
-                    PipeId = aPipeId;
-
                     BasicConsole.Write("BasicOutPipe > New pipe id: ");
-                    BasicConsole.WriteLine(PipeId);
+                    BasicConsole.WriteLine(aPipeId);
                     break;
                 default:
                     BasicConsole.WriteLine("BasicOutPipe > WaitOnPipeCreate: Unexpected system call result!");
                     ExceptionMethods.Throw(new FOS_System.Exceptions.ArgumentException("BasicOutPipe : Wait On Pipe Create unexpected result!"));
                     break;
             }
-            return PipeId;
+            return aPipeId;
         }
 
-        public void Write(byte[] data, int offset, int length)
+        public void Write(int PipeId, byte[] data, int offset, int length)
         {
             Pipes.WritePipeRequest* WritePipeRequestPtr = (Pipes.WritePipeRequest*)Heap.AllocZeroed((uint)sizeof(Pipes.WritePipeRequest), "BasicOutPipe : Alloc WritePipeRequest");
             try

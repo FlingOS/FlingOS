@@ -11,6 +11,7 @@ namespace Kernel.Core.Tasks
         private static uint GCThreadId;
 
         private static Pipes.Standard.StandardOutpoint StdOut;
+        private static Pipes.Standard.StandardInpoint StdIn;
 
         public static void Main()
         {
@@ -26,14 +27,31 @@ namespace Kernel.Core.Tasks
             try
             {
                 StdOut = new Pipes.Standard.StandardOutpoint(true);
-                StdOut.WaitForConnect();
+                int StdOutPipeId = StdOut.WaitForConnect();
+
+                int numOutpoints;
+                Pipes.BasicServerHelpers.GetNumPipeOutpoints(out numOutpoints, out SysCallResult, Pipes.PipeClasses.Standard, Pipes.PipeSubclasses.Standard_In);
+                if (SysCallResult == SystemCallResults.OK && numOutpoints > 0)
+                {
+                    Pipes.PipeOutpointDescriptor[] OutpointDescriptors;
+                    Pipes.BasicServerHelpers.GetOutpointDescriptors(numOutpoints, ref SysCallResult, out OutpointDescriptors, Pipes.PipeClasses.Standard, Pipes.PipeSubclasses.Standard_In);
+
+                    if (SysCallResult == SystemCallResults.OK)
+                    {
+                        for (int i = 0; i < OutpointDescriptors.Length; i++)
+                        {
+                            Pipes.PipeOutpointDescriptor Descriptor = OutpointDescriptors[i];
+                            StdIn = new Pipes.Standard.StandardInpoint(Descriptor.ProcessId, false);
+                        }
+                    }
+                }
 
                 uint loops = 0;
                 while (!Terminating)
                 {
                     try
                     {
-                        StdOut.Write("Hello, world! (" + (FOS_System.String)loops++ + ")\n");
+                        StdOut.Write(StdOutPipeId, "Hello, world! (" + (FOS_System.String)loops++ + ")\n");
                     }
                     catch
                     {
@@ -41,7 +59,7 @@ namespace Kernel.Core.Tasks
                         BasicConsole.WriteLine(ExceptionMethods.CurrentException.Message);
                     }
 
-                    //SystemCallMethods.SleepThread(1000);
+                    SystemCallMethods.SleepThread(1000);
                 }
             }
             catch

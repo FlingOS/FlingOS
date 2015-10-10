@@ -96,10 +96,11 @@
     <Compile Include="Pipes\PipeInpoint.cs" />
     <Compile Include="Pipes\PipeManager.cs" />
     <Compile Include="Pipes\PipeOutpoint.cs" />
-    <Compile Include="Pipes\Standard\BasicInpoint.cs" />
-    <Compile Include="Pipes\Standard\BasicOutpoint.cs" />
-    <Compile Include="Pipes\Standard\StandardInPipe.cs" />
-    <Compile Include="Pipes\Standard\StandardOutPipe.cs" />
+    <Compile Include="Pipes\BasicInpoint.cs" />
+    <Compile Include="Pipes\BasicOutpoint.cs" />
+    <Compile Include="Pipes\BasicServerHelpers.cs" />
+    <Compile Include="Pipes\Standard\StandardInpoint.cs" />
+    <Compile Include="Pipes\Standard\StandardOutpoint.cs" />
     <Compile Include="Processes\DynamicLinkerLoader.cs" />
     <Compile Include="Processes\ELF\ELFFile.cs" />
     <Compile Include="Processes\ELF\ELFHeader.cs" />

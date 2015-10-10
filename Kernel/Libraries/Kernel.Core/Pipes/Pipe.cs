@@ -26,8 +26,8 @@ namespace Kernel.Core.Pipes
             Buffer = new byte[BufferSize];
             DataAvailable = 0;
 
-            ThreadsWaitingToRead = new UInt32Queue();
-            ThreadsWaitingToWrite = new UInt32Queue();
+            ThreadsWaitingToRead = new UInt32Queue(5, true);
+            ThreadsWaitingToWrite = new UInt32Queue(5, true);
         }
 
         public bool CanRead()

@@ -34,10 +34,10 @@ namespace Kernel.Core.Pipes.Standard
     {
         protected byte[] ReadBuffer;
 
-        public StandardInpoint(uint aOutProcessId, int aBufferSize, bool OutputPipe)
-            : base(aOutProcessId, PipeClasses.Standard, (OutputPipe ? PipeSubclasses.Standard_Out : PipeSubclasses.Standard_In), aBufferSize)
+        public StandardInpoint(uint aOutProcessId, bool OutputPipe)
+            : base(aOutProcessId, PipeClasses.Standard, (OutputPipe ? PipeSubclasses.Standard_Out : PipeSubclasses.Standard_In), 800)
         {
-            ReadBuffer = new byte[aBufferSize];
+            ReadBuffer = new byte[BufferSize];
         }
 
         public unsafe FOS_System.String Read()

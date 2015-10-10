@@ -16,12 +16,13 @@ namespace Kernel.Core.Tasks
         }
 
         public static bool Terminating = false;
-        private static CircularBuffer DeferredSyscallsInfo_Unqueued;
-        private static CircularBuffer DeferredSyscallsInfo_Queued;
+        private static Queue DeferredSyscallsInfo_Unqueued;
+        private static Queue DeferredSyscallsInfo_Queued;
 
         private static Thread DeferredSyscallsThread;
 
         private static Pipes.Standard.StandardOutpoint StdOut;
+        private static Pipes.Standard.StandardInpoint StdIn;
 
         private static int IRQ1HandlerId;
 
@@ -30,9 +31,9 @@ namespace Kernel.Core.Tasks
             BasicConsole.WriteLine("Kernel task! ");
             BasicConsole.WriteLine(" > Executing normally...");
 
-            DeferredSyscallsInfo_Unqueued = new CircularBuffer(256, false);
-            DeferredSyscallsInfo_Queued = new CircularBuffer(DeferredSyscallsInfo_Unqueued.Size, false);
-            for (int i = 0; i < DeferredSyscallsInfo_Unqueued.Size; i++)
+            DeferredSyscallsInfo_Unqueued = new Queue(256, false);
+            DeferredSyscallsInfo_Queued = new Queue(DeferredSyscallsInfo_Unqueued.Capacity, false);
+            for (int i = 0; i < DeferredSyscallsInfo_Unqueued.Capacity; i++)
             {
                 DeferredSyscallsInfo_Unqueued.Push(new DeferredSyscallInfo());
             }
@@ -93,14 +94,17 @@ namespace Kernel.Core.Tasks
                 try
                 {
                     StdOut = new Pipes.Standard.StandardOutpoint(true);
-                    StdOut.WaitForConnect();
+                    int StdOutPipeId = StdOut.WaitForConnect();
 
+                    StdIn = new Pipes.Standard.StandardInpoint(WindowManagerProcess.Id, false);
+                    
                     uint loops = 0;
                     while (!Terminating)
                     {
                         try
                         {
-                            StdOut.Write("Kernel: Hello, processor! (" + (FOS_System.String)loops++ + ")\n");
+                            StdOut.Write(StdOutPipeId, StdIn.Read());
+                            //StdOut.Write(StdOutPipeId, "Kernel: Hello, processor! (" + (FOS_System.String)loops++ + ")\n");
                         }
                         catch
                         {
@@ -171,11 +175,11 @@ namespace Kernel.Core.Tasks
                     //  end up in an infinite lock. Consider what happens if a process invokes 
                     //  a deferred system call during the pop/push here and at the end of this loop.
                     BasicConsole.WriteLine("DSC: Pausing scheduler...");
-                    Scheduler.Disable();
+                    //Scheduler.Disable();
                     BasicConsole.WriteLine("DSC: Popping queued info object...");
                     DeferredSyscallInfo info = (DeferredSyscallInfo)DeferredSyscallsInfo_Queued.Pop();
                     BasicConsole.WriteLine("DSC: Resuming scheduler...");
-                    Scheduler.Enable();
+                    //Scheduler.Enable();
 
                     BasicConsole.WriteLine("DSC: Getting process & thread...");
                     Process CallerProcess = ProcessManager.GetProcessById(info.ProcessId);
@@ -202,11 +206,11 @@ namespace Kernel.Core.Tasks
 
                     // See comment at top of loop for why this is necessary
                     BasicConsole.WriteLine("DSC: Pausing scheduler...");
-                    Scheduler.Disable();
+                    //Scheduler.Disable();
                     BasicConsole.WriteLine("DSC: Queuing info object...");
                     DeferredSyscallsInfo_Unqueued.Push(info);
                     BasicConsole.WriteLine("DSC: Resuming scheduler...");
-                    Scheduler.Enable();
+                    //Scheduler.Enable();
                 }
             }
         }
