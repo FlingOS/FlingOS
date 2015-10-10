@@ -56,20 +56,20 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Libraries", "Libraries", "{
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Architectures", "Architectures", "{8B0975AB-3B75-458D-94A6-2B263366661B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KernelABI", "Kernel\Drivers\Libraries\KernelABI\KernelABI.csproj", "{CDABF909-4548-46EA-9870-A5F79C890962}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KernelABI", "Drivers\Libraries\KernelABI\KernelABI.csproj", "{CDABF909-4548-46EA-9870-A5F79C890962}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Drivers.Framework", "Kernel\Drivers\Libraries\Drivers.Framework\Drivers.Framework.csproj", "{F9DA529F-D53A-4F0C-9F45-7DDDDC648099}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Drivers.Framework", "Drivers\Libraries\Drivers.Framework\Drivers.Framework.csproj", "{F9DA529F-D53A-4F0C-9F45-7DDDDC648099}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Drivers.Compiler.Architectures.x86", "Kernel\Drivers\Compiler\Architectures\x86_32\Drivers.Compiler.Architectures.x86.csproj", "{EEBEC7B2-9F93-4A8A-BCB7-C9F8F79FA77E}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Drivers.Compiler.Architectures.x86", "Drivers\Compiler\Architectures\x86_32\Drivers.Compiler.Architectures.x86.csproj", "{EEBEC7B2-9F93-4A8A-BCB7-C9F8F79FA77E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Drivers.Compiler", "Kernel\Drivers\Compiler\Drivers.Compiler.csproj", "{1FB0E622-D2C6-4A5C-B5B6-D2BB5E502AF1}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Drivers.Compiler", "Drivers\Compiler\Drivers.Compiler.csproj", "{1FB0E622-D2C6-4A5C-B5B6-D2BB5E502AF1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Drivers.Compiler.App", "Kernel\Drivers\Compiler\App\Drivers.Compiler.App.csproj", "{4E28A467-4D90-4315-9113-AE93F54280B0}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Drivers.Compiler.App", "Drivers\Compiler\App\Drivers.Compiler.App.csproj", "{4E28A467-4D90-4315-9113-AE93F54280B0}"
 	ProjectSection(ProjectDependencies) = postProject
 		{EEBEC7B2-9F93-4A8A-BCB7-C9F8F79FA77E} = {EEBEC7B2-9F93-4A8A-BCB7-C9F8F79FA77E}
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Drivers.Compiler.MSBuildTask", "Kernel\Drivers\Compiler\MSBuildTask\Drivers.Compiler.MSBuildTask.csproj", "{4A6F3FA1-CA27-442A-AA2E-5C036A54209D}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Drivers.Compiler.MSBuildTask", "Drivers\Compiler\MSBuildTask\Drivers.Compiler.MSBuildTask.csproj", "{4A6F3FA1-CA27-442A-AA2E-5C036A54209D}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{32E1F38F-0F50-411D-B32C-B9D99DFBB238}"
 	ProjectSection(SolutionItems) = preProject
@@ -83,9 +83,9 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MissingTagProcessor", "Tool
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MemoryAllocationAnalyser", "Tools\Kernel\MemoryAllocationAnalyser\MemoryAllocationAnalyser.csproj", "{3E707BE6-FC33-434A-AAA7-B47D0D9AE499}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestDriver", "Kernel\Drivers\TestDriver\TestDriver.csproj", "{8B50B714-6428-4057-836D-E188C719365A}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestDriver", "Drivers\TestDriver\TestDriver.csproj", "{8B50B714-6428-4057-836D-E188C719365A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Drivers.Compiler.Architectures.MIPS32", "Kernel\Drivers\Compiler\Architectures\MIPS32\Drivers.Compiler.Architectures.MIPS32.csproj", "{B18EBB5F-CC63-43CD-BE7B-188901E2016A}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Drivers.Compiler.Architectures.MIPS32", "Drivers\Compiler\Architectures\MIPS32\Drivers.Compiler.Architectures.MIPS32.csproj", "{B18EBB5F-CC63-43CD-BE7B-188901E2016A}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CI20Booter", "Tools\CI20Booter\CI20Booter\CI20Booter.csproj", "{ACFF5152-FC19-4F4B-AD36-E326FF478F72}"
 EndProject

@@ -140,7 +140,7 @@
     <Compile Include="Tasks\WindowManagerTask.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Drivers\Compiler\Drivers.Compiler.csproj">
+    <ProjectReference Include="..\..\Drivers\Compiler\Drivers.Compiler.csproj">
       <Project>{1fb0e622-d2c6-4a5c-b5b6-d2bb5e502af1}</Project>
       <Name>Drivers.Compiler</Name>
     </ProjectReference>
@@ -214,18 +214,14 @@
   <Target Name="BeforeBuild">
   </Target>
   -->
-  <!--<Target Name="AfterBuild">
-    <KernelCompiler Condition="'$(Configuration)' == 'Debug'" InputFile="$(TargetPath)" TargetArchitecture="$(PlatformTarget)" OutputFile="$(TargetDir)$(TargetName)" ToolsPath="$(SolutionDir)Kernel\Compiler\App\bin\Debug" DebugBuild="True" />
-    <KernelCompiler Condition="'$(Configuration)' == 'Release'" InputFile="$(TargetPath)" TargetArchitecture="$(PlatformTarget)" OutputFile="$(TargetDir)$(TargetName)" ToolsPath="$(SolutionDir)Kernel\Compiler\App\bin\Release" />
-  </Target>-->
-  <UsingTask Condition="'$(Configuration)' == 'Debug'" AssemblyFile="$(SolutionDir)Kernel\Drivers\Compiler\MSBuildTask\bin\Debug\Drivers.Compiler.MSBuildTask.dll" TaskName="MSBuildTask.BuildTask" />
-  <UsingTask Condition="'$(Configuration)' == 'Release'" AssemblyFile="$(SolutionDir)Kernel\Drivers\Compiler\MSBuildTask\bin\Release\Drivers.Compiler.MSBuildTask.dll" TaskName="MSBuildTask.BuildTask" />
+  <UsingTask Condition="'$(Configuration)' == 'Debug'" AssemblyFile="$(SolutionDir)Drivers\Compiler\MSBuildTask\bin\Debug\Drivers.Compiler.MSBuildTask.dll" TaskName="MSBuildTask.BuildTask" />
+  <UsingTask Condition="'$(Configuration)' == 'Release'" AssemblyFile="$(SolutionDir)Drivers\Compiler\MSBuildTask\bin\Release\Drivers.Compiler.MSBuildTask.dll" TaskName="MSBuildTask.BuildTask" />
   <Target Name="BeforeBuild">
   </Target>
   <Target Name="AfterBuild">
-    <BuildTask Condition="'$(Configuration)|$(MachineCodeTarget)' == 'Debug|x86'" LibraryPath="$(TargetPath)" TargetArchitecture="$(MachineCodeTarget)" OutputPath="$(TargetDir)" ToolsPath="$(SolutionDir)Kernel\Drivers\Compiler\Tools" DebugBuild="True" ISOLink="True" BaseAddress="0xC0100000" LoadOffset="0xC0000000" />
-    <BuildTask Condition="'$(Configuration)|$(MachineCodeTarget)' == 'Release|x86'" LibraryPath="$(TargetPath)" TargetArchitecture="$(MachineCodeTarget)" OutputPath="$(TargetDir)" ToolsPath="$(SolutionDir)Kernel\Drivers\Compiler\Tools" DebugBuild="False" ISOLink="True" BaseAddress="0xC0100000" LoadOffset="0xC0000000" />
-    <BuildTask Condition="'$(Configuration)|$(MachineCodeTarget)' == 'Debug|MIPS'" LibraryPath="$(TargetPath)" TargetArchitecture="$(MachineCodeTarget)" OutputPath="$(TargetDir)" ToolsPath="$(SolutionDir)Kernel\Drivers\Compiler\Tools" DebugBuild="True" ISOLink="True" BaseAddress="0x88000000" LoadOffset="0x00000000" />
-    <BuildTask Condition="'$(Configuration)|$(MachineCodeTarget)' == 'Release|MIPS'" LibraryPath="$(TargetPath)" TargetArchitecture="$(MachineCodeTarget)" OutputPath="$(TargetDir)" ToolsPath="$(SolutionDir)Kernel\Drivers\Compiler\Tools" DebugBuild="False" ISOLink="True" BaseAddress="0x88000000" LoadOffset="0x00000000" />
+    <BuildTask Condition="'$(Configuration)|$(MachineCodeTarget)' == 'Debug|x86'" LibraryPath="$(TargetPath)" TargetArchitecture="$(MachineCodeTarget)" OutputPath="$(TargetDir)" ToolsPath="$(SolutionDir)Drivers\Compiler\Tools" DebugBuild="True" ISOLink="True" BaseAddress="0xC0100000" LoadOffset="0xC0000000" />
+    <BuildTask Condition="'$(Configuration)|$(MachineCodeTarget)' == 'Release|x86'" LibraryPath="$(TargetPath)" TargetArchitecture="$(MachineCodeTarget)" OutputPath="$(TargetDir)" ToolsPath="$(SolutionDir)Drivers\Compiler\Tools" DebugBuild="False" ISOLink="True" BaseAddress="0xC0100000" LoadOffset="0xC0000000" />
+    <BuildTask Condition="'$(Configuration)|$(MachineCodeTarget)' == 'Debug|MIPS'" LibraryPath="$(TargetPath)" TargetArchitecture="$(MachineCodeTarget)" OutputPath="$(TargetDir)" ToolsPath="$(SolutionDir)Drivers\Compiler\Tools" DebugBuild="True" ISOLink="True" BaseAddress="0x88000000" LoadOffset="0x00000000" />
+    <BuildTask Condition="'$(Configuration)|$(MachineCodeTarget)' == 'Release|MIPS'" LibraryPath="$(TargetPath)" TargetArchitecture="$(MachineCodeTarget)" OutputPath="$(TargetDir)" ToolsPath="$(SolutionDir)Drivers\Compiler\Tools" DebugBuild="False" ISOLink="True" BaseAddress="0x88000000" LoadOffset="0x00000000" />
   </Target>
 </Project>
