@@ -39,8 +39,9 @@ namespace Drivers.Compiler.IL.ILOps
     /// <see cref="System.Reflection.Emit.OpCodes.Ldind_U4"/>,  
     /// <see cref="System.Reflection.Emit.OpCodes.Ldind_I1"/>,  
     /// <see cref="System.Reflection.Emit.OpCodes.Ldind_I2"/>,  
-    /// <see cref="System.Reflection.Emit.OpCodes.Ldind_I4"/> and 
-    /// <see cref="System.Reflection.Emit.OpCodes.Ldind_I8"/> IL ops.
+    /// <see cref="System.Reflection.Emit.OpCodes.Ldind_I4"/>,  
+    /// <see cref="System.Reflection.Emit.OpCodes.Ldind_I8"/> and 
+    /// <see cref="System.Reflection.Emit.OpCodes.Ldind_Ref"/> IL ops.
     /// </summary>
     /// <remarks>
     /// See MSDN for details of these ops.
@@ -53,6 +54,7 @@ namespace Drivers.Compiler.IL.ILOps
     /// <seealso cref="System.Reflection.Emit.OpCodes.Ldind_I2"/>
     /// <seealso cref="System.Reflection.Emit.OpCodes.Ldind_I4"/>
     /// <seealso cref="System.Reflection.Emit.OpCodes.Ldind_I8"/>
+    /// <seealso cref="System.Reflection.Emit.OpCodes.Ldind_Ref"/>
     [ILOpTarget(Target = ILOp.OpCodes.Ldind_U1)]
     [ILOpTarget(Target = ILOp.OpCodes.Ldind_U2)]
     [ILOpTarget(Target = ILOp.OpCodes.Ldind_U4)]
@@ -61,6 +63,7 @@ namespace Drivers.Compiler.IL.ILOps
     [ILOpTarget(Target = ILOp.OpCodes.Ldind_I2)]
     [ILOpTarget(Target = ILOp.OpCodes.Ldind_I4)]
     [ILOpTarget(Target = ILOp.OpCodes.Ldind_I8)]
+    [ILOpTarget(Target = ILOp.OpCodes.Ldind_Ref)]
     public abstract class Ldind : ILOp
     {
     }

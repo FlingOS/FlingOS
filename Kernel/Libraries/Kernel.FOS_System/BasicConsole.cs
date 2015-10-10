@@ -52,7 +52,7 @@ namespace Kernel
     /// </para>
     /// <para>
     /// For a better console implementation see Console and AdvancedConsole classes in
-    /// Kernel.Core library (/namespace)
+    /// Kernel library (/namespace)
     /// </para>
     /// <para>
     /// Some of the code used appears inefficient or needlessly expanded. That's 
@@ -197,9 +197,7 @@ namespace Kernel
         /// <summary>
         /// Initialises the BasicConsole class.
         /// </summary>
-        [Compiler.NoDebug]
         [Drivers.Compiler.Attributes.NoDebug]
-        [Compiler.NoGC]
         [Drivers.Compiler.Attributes.NoGC]
         public static void Init()
         {
@@ -226,9 +224,7 @@ namespace Kernel
         /// Sets the console text colour.
         /// </summary>
         /// <param name="aText_colour">The text colour to use.</param>
-        [Compiler.NoDebug]
         [Drivers.Compiler.Attributes.NoDebug]
-        [Compiler.NoGC]
         [Drivers.Compiler.Attributes.NoGC]
         public static void SetTextColour(char aText_colour)
         {
@@ -239,9 +235,7 @@ namespace Kernel
         /// Sets the console background colour.
         /// </summary>
         /// <param name="aBg_colour">The background colour to use.</param>
-        [Compiler.NoDebug]
         [Drivers.Compiler.Attributes.NoDebug]
-        [Compiler.NoGC]
         [Drivers.Compiler.Attributes.NoGC]
         public static void SetBgColour(char aBg_colour)
         {
@@ -253,9 +247,7 @@ namespace Kernel
         /// <summary>
         /// Clears the output to all black.
         /// </summary>
-        [Compiler.NoDebug]
         [Drivers.Compiler.Attributes.NoDebug]
-        [Compiler.NoGC]
         [Drivers.Compiler.Attributes.NoGC]
         public static unsafe void Clear()
         {
@@ -288,9 +280,7 @@ namespace Kernel
         /// If necessary, this method will move all existing text up the necessary number of lines to fit the new text on the bottom 
         /// of the screen.
         /// </remarks>
-        [Compiler.NoDebug]
         [Drivers.Compiler.Attributes.NoDebug]
-        [Compiler.NoGC]
         [Drivers.Compiler.Attributes.NoGC]
         public static unsafe void Write(FOS_System.String str)
         {
@@ -353,9 +343,7 @@ namespace Kernel
         /// <remarks>
         /// This also blanks out the rest of the line to make sure no artifacts are left behind.
         /// </remarks>
-        [Compiler.NoDebug]
         [Drivers.Compiler.Attributes.NoDebug]
-        [Compiler.NoGC]
         [Drivers.Compiler.Attributes.NoGC]
         public static unsafe void WriteLine(FOS_System.String str)
         {
@@ -417,9 +405,7 @@ namespace Kernel
         /// <summary>
         /// Writes a blank line (line with a space).
         /// </summary>
-        [Compiler.NoDebug]
         [Drivers.Compiler.Attributes.NoDebug]
-        [Compiler.NoGC]
         [Drivers.Compiler.Attributes.NoGC]
         public static void WriteLine()
         {
@@ -432,7 +418,6 @@ namespace Kernel
         /// <summary>
         /// Prints the test string (all the keyboard characters) to the start of the output - overwrites any existing text.
         /// </summary>
-        [Compiler.NoGC]
         [Drivers.Compiler.Attributes.NoGC]
         public static unsafe void PrintTestString()
         {

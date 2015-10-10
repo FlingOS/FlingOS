@@ -45,11 +45,6 @@ namespace Kernel.Hardware.Keyboards
         /// The keyboard command port.
         /// </summary>
         protected IO.IOPort CommandPort = new IO.IOPort(0x64);
-        /// <summary>
-        /// The interrupt handler Id returned when the interrupt handler is set.
-        /// Use to remove the interrupt handler when disabling.
-        /// </summary>
-        protected int InterruptHandlerId;
         
         /// <summary>
         /// Enables the PS2 keyboard.
@@ -60,7 +55,6 @@ namespace Kernel.Hardware.Keyboards
             //  because then any one scancode would be processed multiple times!
             if (!enabled)
             {
-                InterruptHandlerId = Interrupts.Interrupts.AddIRQHandler(1, InterruptHandler, this, true, false, "PS2");
                 DeviceManager.AddDevice(this);
                 enabled = true;
             }
@@ -73,26 +67,16 @@ namespace Kernel.Hardware.Keyboards
             if (enabled)
             {
                 DeviceManager.Devices.Remove(this);
-                Interrupts.Interrupts.RemoveIRQHandler(1, InterruptHandlerId);
                 //As per requirements, set temp sote store of id to 0 to prevent
                 //  accidental multiple removal.
-                InterruptHandlerId = 0;
                 enabled = false;
             }
         }
 
         /// <summary>
-        /// The internal interrupt handler static wrapper.
-        /// </summary>
-        /// <param name="data">The PS2 keyboard state object.</param>
-        private static void InterruptHandler(FOS_System.Object data)
-        {
-            ((PS2)data).InterruptHandler();
-        }
-        /// <summary>
         /// The internal interrupt handler.
         /// </summary>
-        private void InterruptHandler()
+        public void InterruptHandler()
         {
             byte scanCode = DataPort.Read_Byte();
             
@@ -155,8 +139,6 @@ namespace Kernel.Hardware.Keyboards
             }
         }
 
-        [Compiler.NoGC]
-        [Compiler.NoDebug]
         public void Reset()
         {
             // If the driver is enabled

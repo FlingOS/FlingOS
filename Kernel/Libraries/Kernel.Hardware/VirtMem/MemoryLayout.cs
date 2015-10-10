@@ -34,10 +34,19 @@ namespace Kernel.Hardware.VirtMem
 {
     public class MemoryLayout : FOS_System.Object
     {
-        public UInt32Dictionary CodePages = new UInt32Dictionary();
-        public UInt32Dictionary DataPages = new UInt32Dictionary();
+        public UInt32Dictionary CodePages;
+        public UInt32Dictionary DataPages;
 
-        [Compiler.NoDebug]
+        public MemoryLayout()
+            : this(16, 64)
+        {
+        }
+        public MemoryLayout(int InitialCodeCapacity, int InitialDataCapacity)
+        {
+            CodePages = new UInt32Dictionary(InitialCodeCapacity);
+            DataPages = new UInt32Dictionary(InitialDataCapacity);
+        }
+
         [Drivers.Compiler.Attributes.NoDebug]
         public void AddCodePage(uint pAddr, uint vAddr)
         {
@@ -58,7 +67,6 @@ namespace Kernel.Hardware.VirtMem
             //    Processes.Scheduler.Enable();
             //}
         }
-        [Compiler.NoDebug]
         [Drivers.Compiler.Attributes.NoDebug]
         public void AddDataPage(uint pAddr, uint vAddr)
         {
@@ -79,7 +87,10 @@ namespace Kernel.Hardware.VirtMem
             //    Processes.Scheduler.Enable();
             //}
         }
-        [Compiler.NoDebug]
+        public void AddDataPages(uint vAddrStart, uint[] pAddrs)
+        {
+            DataPages.AddRange(vAddrStart, 4096, pAddrs);
+        }
         [Drivers.Compiler.Attributes.NoDebug]
         public void RemovePage(uint vAddr)
         {
@@ -98,10 +109,14 @@ namespace Kernel.Hardware.VirtMem
             //    Processes.Scheduler.Enable();
             //}
         }
+        public void RemovePages(uint vAddrStart, uint numPages)
+        {
+            CodePages.RemoveRange(vAddrStart, 4096, numPages);
+            DataPages.RemoveRange(vAddrStart, 4096, numPages);
+        }
 
         //bool loadPrint = true;
         //bool unloadPrint = true;
-        [Compiler.NoDebug]
         [Drivers.Compiler.Attributes.NoDebug]
         public void Load(bool ProcessIsUM)
         {
@@ -145,7 +160,6 @@ namespace Kernel.Hardware.VirtMem
             //    loadPrint = false;
             //}
         }
-        [Compiler.NoDebug]
         [Drivers.Compiler.Attributes.NoDebug]
         public void Unload()
         {
@@ -160,7 +174,10 @@ namespace Kernel.Hardware.VirtMem
                 //    BasicConsole.WriteLine(((FOS_System.String)"Unloading code page v->p: ") + CodePages.Keys[i]);
                 //}
 
-                VirtMemManager.Unmap(CodePages.Keys[i], UpdateUsedPagesFlags.Virtual);
+                //TODO: Revert to the following line of code and then work out why it results in so many page faults
+                //          VirtMemManager.Unmap(CodePages.Keys[i], UpdateUsedPagesFlags.Virtual);
+                //      Also see the similar line further down
+                VirtMemManager.Unmap(CodePages.Keys[i], UpdateUsedPagesFlags.None);
             }
             for (int i = 0; i < DataPages.Keys.Count && i < DataPages.Values.Count; i++)
             {
@@ -173,7 +190,8 @@ namespace Kernel.Hardware.VirtMem
                 //    BasicConsole.WriteLine(((FOS_System.String)"Unloading data page v->p: ") + DataPages.Keys[i]);
                 //}
 
-               VirtMemManager.Unmap(DataPages.Keys[i], UpdateUsedPagesFlags.Virtual);
+                //TODO: Revert line - see above
+                VirtMemManager.Unmap(DataPages.Keys[i], UpdateUsedPagesFlags.None);
             }
 
             //if (unloadPrint)
@@ -185,7 +203,10 @@ namespace Kernel.Hardware.VirtMem
 
         public MemoryLayout Merge(MemoryLayout y)
         {
-            MemoryLayout result = new MemoryLayout();
+            MemoryLayout result = new MemoryLayout(
+                CodePages.Keys.Count + y.CodePages.Keys.Count, 
+                DataPages.Keys.Count + y.DataPages.Keys.Count);
+            
 
             for (int i = 0; i < CodePages.Keys.Count; i++)
             {

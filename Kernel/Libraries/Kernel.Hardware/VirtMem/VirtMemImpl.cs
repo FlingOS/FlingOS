@@ -64,15 +64,14 @@ namespace Kernel.Hardware.VirtMem
         /// </summary>
         public abstract void PrintUsedPages();
 
-        public abstract uint FindFreePhysPageAddr();
-        public abstract uint FindFreeVirtPageAddr();
+        public abstract uint FindFreePhysPageAddrs(int num);
+        public abstract uint FindFreeVirtPageAddrs(int num);
 
         /// <summary>
         /// Maps the specified virtual address to the specified physical address.
         /// </summary>
         /// <param name="pAddr">The physical address to map to.</param>
         /// <param name="vAddr">The virtual address to map.</param>
-        [Compiler.NoDebug]
         [Drivers.Compiler.Attributes.NoDebug]
         public virtual void Map(uint pAddr, uint vAddr, UpdateUsedPagesFlags UpdateUsedPages = UpdateUsedPagesFlags.Both)
         {

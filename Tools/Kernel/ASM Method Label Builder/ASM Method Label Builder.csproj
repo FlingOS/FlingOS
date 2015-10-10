@@ -61,12 +61,6 @@
     </None>
     <None Include="App.config" />
   </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\..\..\Kernel\Compiler\Kernel.Compiler.csproj">
-      <Project>{061e5f53-5eff-4e12-94ee-9e18459e5cf4}</Project>
-      <Name>Kernel.Compiler</Name>
-    </ProjectReference>
-  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

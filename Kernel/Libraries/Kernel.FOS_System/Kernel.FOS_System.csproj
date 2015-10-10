@@ -92,9 +92,13 @@
     <Compile Include="ByteConverter.cs" />
     <Compile Include="Collections\Bitmap.cs" />
     <Compile Include="Collections\CircularBuffer.cs" />
+    <Compile Include="Collections\DelegateList.cs" />
     <Compile Include="Collections\Dictionary.cs" />
     <Compile Include="Collections\List.cs" />
+    <Compile Include="Collections\Queue.cs" />
     <Compile Include="Collections\Stack.cs" />
+    <Compile Include="Collections\UInt32List.cs" />
+    <Compile Include="Collections\UInt64List.cs" />
     <Compile Include="ConstantsUtils.cs" />
     <Compile Include="Exception.cs" />
     <Compile Include="ExceptionMethods.cs" />
@@ -125,10 +129,6 @@
     <Compile Include="UInt32.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\Compiler\Kernel.Compiler.csproj">
-      <Project>{061e5f53-5eff-4e12-94ee-9e18459e5cf4}</Project>
-      <Name>Kernel.Compiler</Name>
-    </ProjectReference>
     <ProjectReference Include="..\..\Drivers\Compiler\Drivers.Compiler.csproj">
       <Project>{1fb0e622-d2c6-4a5c-b5b6-d2bb5e502af1}</Project>
       <Name>Drivers.Compiler</Name>

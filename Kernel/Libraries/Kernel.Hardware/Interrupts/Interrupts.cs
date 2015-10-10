@@ -29,6 +29,7 @@
 
 using System;
 using Kernel.FOS_System.Collections;
+using Kernel.Hardware.Processes;
 
 namespace Kernel.Hardware.Interrupts
 {
@@ -106,12 +107,7 @@ namespace Kernel.Hardware.Interrupts
         /// trying to remove its handler twice.
         /// </remarks>
         public int id;
-
-        public bool IgnoreProcessId;
-        public uint ProcessId;
-
-        public bool CriticalHandler;
-
+        
         public FOS_System.String Name;
     }
     /// <summary>
@@ -123,7 +119,6 @@ namespace Kernel.Hardware.Interrupts
     /// <summary>
     /// Provides methods for handling hardware and software interrupts (excluding interrupts 0 through 16).
     /// </summary>
-    [Compiler.PluggedClass]
     public unsafe static class Interrupts
     {
         //TODO - This lot is all x86 specific. It needs to be abstracted into a separate x86
@@ -160,6 +155,8 @@ namespace Kernel.Hardware.Interrupts
             }
         }
 
+        public static bool EnableProcessSwitching = false;
+
         public static ExceptionState* InterruptsExState;
 
         static Interrupts()
@@ -167,20 +164,10 @@ namespace Kernel.Hardware.Interrupts
             /*ExceptionMethods.InterruptsState = */InterruptsExState = (ExceptionState*)FOS_System.Heap.AllocZeroed((uint)sizeof(ExceptionState), "Interrupts : Interrupts()");
         }
 
-        /// <summary>
-        /// The full list of interrupt handlers. This array has an entry for all 256 interrupt numbers.
-        /// If an entry is empty, then it does not have (/has never had) any handlers attached.
-        /// Note: Interrupts 0 to 16 (inclusive) are set up in the IDT assembler and do not call the 
-        /// common handler in this class so cannot be handled without code-modifications.
-        /// </summary>
-        public static InterruptHandlers[] Handlers = new InterruptHandlers[256];
-
-        [Compiler.PluggedMethod(ASMFilePath=null)]
         [Drivers.Compiler.Attributes.PluggedMethod(ASMFilePath=null)]
         public static void EnableInterrupts()
         {
         }
-        [Compiler.PluggedMethod(ASMFilePath = null)]
         [Drivers.Compiler.Attributes.PluggedMethod(ASMFilePath = null)]
         public static void DisableInterrupts()
         {
@@ -251,141 +238,111 @@ namespace Kernel.Hardware.Interrupts
                 IO.IOPort.doWrite_Byte(0x21, mask);
             }
         }
-        /// <summary>
-        /// Adds a handler to the specified IRQ and enables the IRQ.
-        /// </summary>
-        /// <param name="num">The IRQ number (0-15) to add a handler for.</param>
-        /// <param name="handler">The handler method to call when the interrupt occurs (must be a static).</param>
-        /// <param name="data">The state object to pass the handler when the interrupt occurs.</param>
-        /// <returns>The Id of the new handler. Save and use for removal. An Id of 0 s invalid.</returns>
-        public static int AddIRQHandler(int num, InterruptHandler handler,
-                                        FOS_System.Object data, bool IgnoreProcessState,
-                                        bool CriticalHandler,
-                                        FOS_System.String Name)
-        {
-            if (!IgnoreProcessState && !CriticalHandler)
-            {
-                //See AddISRHandler for explanation
-                ExceptionMethods.Throw(new FOS_System.Exceptions.NotSupportedException("Cannot have non-critical IRQ which is process-dependent!"));
-            }
-            //In this OS's implementation, IRQs 0-15 are mapped to ISRs 32-47
-            int result = AddISRHandler(num + 32, handler, data, IgnoreProcessState, CriticalHandler, Name);
-            EnableIRQ((byte)num);
-            return result;
-        }
-        /// <summary>
-        /// Removes the handler with the specified Id and disables the IRQ if there are no handlers left.
-        /// You should set any temporary store of <paramref name="id"/> to 0 since 0 is an invalid Id
-        /// it will prevent you from accidentally trying to remove the handler twice.
-        /// </summary>
-        /// <param name="num">The IRQ number to remove from.</param>
-        /// <param name="id">The id of the handler to remove.</param>
-        public static void RemoveIRQHandler(int num, int id)
-        {
-            //In this OS's implementation, IRQs 0-15 are mapped to ISRs 32-47
-            RemoveISRHandler(num + 32, id);
+//        /// <summary>
+//        /// Adds a handler to the specified IRQ and enables the IRQ.
+//        /// </summary>
+//        /// <param name="num">The IRQ number (0-15) to add a handler for.</param>
+//        /// <param name="handler">The handler method to call when the interrupt occurs (must be a static).</param>
+//        /// <param name="data">The state object to pass the handler when the interrupt occurs.</param>
+//        /// <returns>The Id of the new handler. Save and use for removal. An Id of 0 s invalid.</returns>
+//        public static int AddIRQHandler(int num, InterruptHandler handler, FOS_System.Object data, FOS_System.String Name)
+//        {
+//            //In this OS's implementation, IRQs 0-15 are mapped to ISRs 32-47
+//            int result = AddISRHandler(num + 32, handler, data, Name);
+//            EnableIRQ((byte)num);
+//            return result;
+//        }
+//        /// <summary>
+//        /// Removes the handler with the specified Id and disables the IRQ if there are no handlers left.
+//        /// You should set any temporary store of <paramref name="id"/> to 0 since 0 is an invalid Id
+//        /// it will prevent you from accidentally trying to remove the handler twice.
+//        /// </summary>
+//        /// <param name="num">The IRQ number to remove from.</param>
+//        /// <param name="id">The id of the handler to remove.</param>
+//        public static void RemoveIRQHandler(int num, int id)
+//        {
+//            //In this OS's implementation, IRQs 0-15 are mapped to ISRs 32-47
+//            RemoveISRHandler(num + 32, id);
 
-            //We only want to disable the IRQ if nothing is handling it
-            if (Handlers[num + 32].HandlerDescrips.Count == 0)
-            {
-                DisableIRQ((byte)num);
-            }
-        }
-        /// <summary>
-        /// Adds a handler to the specified interrupt number.
-        /// </summary>
-        /// <param name="num">The interrupt to add a handler for.</param>
-        /// <param name="handler">The handler method to call when the interrupt occurs (must be a static).</param>
-        /// <param name="data">The state object to pass the handler when the interrupt occurs.</param>
-        /// <returns>The Id of the new handler. Save and use for removal.</returns>
-        public static int AddISRHandler(int num, InterruptHandler handler,
-                                        FOS_System.Object data, bool IgnoreProcessState,
-                                        bool CriticalHandler,
-                                        FOS_System.String Name)
-        {
-            if (!IgnoreProcessState && !CriticalHandler)
-            {
-                // Non-critical interrupts get executed in the non-critical interrupts thread
-                //  The non-critical interrupts thread does not support switching process because it would be
-                //  very difficult to guarantee the processes'/thread's state didn't becom corrupted. Primarily,
-                //  we would need to store the general purpose registers (and others) and restore their values
-                //  before allowing return to the original process.
-                ExceptionMethods.Throw(new FOS_System.Exceptions.NotSupportedException("Cannot have non-critical interrupt which is process-dependent!"));
-            }
+//            //We only want to disable the IRQ if nothing is handling it
+//            if (Handlers[num + 32].HandlerDescrips.Count == 0)
+//            {
+//                DisableIRQ((byte)num);
+//            }
+//        }
+//        /// <summary>
+//        /// Adds a handler to the specified interrupt number.
+//        /// </summary>
+//        /// <param name="num">The interrupt to add a handler for.</param>
+//        /// <param name="handler">The handler method to call when the interrupt occurs (must be a static).</param>
+//        /// <param name="data">The state object to pass the handler when the interrupt occurs.</param>
+//        /// <returns>The Id of the new handler. Save and use for removal.</returns>
+//        public static int AddISRHandler(int num, InterruptHandler handler, FOS_System.Object data, FOS_System.String Name)
+//        {
+//#if INTERRUPTS_TRACE
+//            BasicConsole.Write("Adding ISR handler for ");
+//            BasicConsole.WriteLine(Name);
+//            BasicConsole.DelayOutput(20);
+//#endif 
 
-#if INTERRUPTS_TRACE
-            BasicConsole.Write("Adding ISR handler for ");
-            BasicConsole.WriteLine(Name);
-            BasicConsole.DelayOutput(20);
-#endif 
+//            if (Handlers[num] == null)
+//            {
+//#if INTERRUPTS_TRACE
+//                BasicConsole.WriteLine("Creating new InterruptHandlers...");
+//#endif
+//                Handlers[num] = new InterruptHandlers();
+//            }
 
-            if (Handlers[num] == null)
-            {
-#if INTERRUPTS_TRACE
-                BasicConsole.WriteLine("Creating new InterruptHandlers...");
-#endif
-                Handlers[num] = new InterruptHandlers();
-            }
+//#if INTERRUPTS_TRACE
+//            BasicConsole.WriteLine(((FOS_System.String)"Adding new HandlerDescriptor... ISR: ") + num);
+//#endif
 
-#if INTERRUPTS_TRACE
-            BasicConsole.WriteLine(((FOS_System.String)"Adding new HandlerDescriptor... ISR: ") + num);
-#endif
+//            InterruptHandlers handlers = Handlers[num];
+//            int id = handlers.IdGenerator++;
+//            handlers.HandlerDescrips.Add(new HandlerDescriptor()
+//            {
+//                handler = handler,
+//                data = data,
+//                id = id,
+//                Name = Name
+//            });
 
-            InterruptHandlers handlers = Handlers[num];
-            int id = handlers.IdGenerator++;
-            handlers.HandlerDescrips.Add(new HandlerDescriptor()
-            {
-                handler = handler,
-                data = data,
-                id = id,
-                IgnoreProcessId = IgnoreProcessState,
-                ProcessId = Processes.ProcessManager.CurrentProcess.Id,
-                CriticalHandler = CriticalHandler,
-                Name = Name
-            });
+//#if INTERRUPTS_TRACE
+//            BasicConsole.WriteLine("Added.");
+//#endif
 
-#if INTERRUPTS_TRACE
-            BasicConsole.WriteLine("Added.");
-#endif
+//            return id;
+//        }
+//        /// <summary>
+//        /// Removes the handler with the specified Id.
+//        /// </summary>
+//        /// <param name="num">The interrupt number to remove from.</param>
+//        /// <param name="id">The id of the handler to remove.</param>
+//        public static void RemoveISRHandler(int num, int id)
+//        {
+//            if (Handlers[num] != null)
+//            {
+//                InterruptHandlers handlers = Handlers[num];
 
-            return id;
-        }
-        /// <summary>
-        /// Removes the handler with the specified Id.
-        /// </summary>
-        /// <param name="num">The interrupt number to remove from.</param>
-        /// <param name="id">The id of the handler to remove.</param>
-        public static void RemoveISRHandler(int num, int id)
-        {
-            if (Handlers[num] != null)
-            {
-                InterruptHandlers handlers = Handlers[num];
+//                //Search for the handler with the specified id.
+//                //  Note: Id does not correspond to index since we could have removed
+//                //        handlers with lower ids already.
 
-                //Search for the handler with the specified id.
-                //  Note: Id does not correspond to index since we could have removed
-                //        handlers with lower ids already.
-
-                for (int i = 0; i < handlers.HandlerDescrips.Count; i++)
-                {
-                    HandlerDescriptor descrip = (HandlerDescriptor)handlers.HandlerDescrips[i];
-                    if (descrip.id == id)
-                    {
-                        handlers.HandlerDescrips.RemoveAt(i);
-                    }
-                }
-            }
-        }
+//                for (int i = 0; i < handlers.HandlerDescrips.Count; i++)
+//                {
+//                    HandlerDescriptor descrip = (HandlerDescriptor)handlers.HandlerDescrips[i];
+//                    if (descrip.id == id)
+//                    {
+//                        handlers.HandlerDescrips.RemoveAt(i);
+//                    }
+//                }
+//            }
+//        }
         
-#if INTERRUPTS_TRACE
-        public static bool print = true;
-        public static uint lastisr = 0;
-#endif
-
         /// <summary>
         /// Common method called to handle all interrupts (excluding numbers 0-16 inclusive).
         /// </summary>
         /// <param name="ISRNum">The number of the interrupt which occurred.</param>
-        [Compiler.NoGC]
         [Drivers.Compiler.Attributes.NoGC]
         private static void CommonISR(uint ISRNum)
         {
@@ -393,7 +350,22 @@ namespace Kernel.Hardware.Interrupts
 
             try
             {
-                HandleISR(ISRNum);
+                try
+                {
+                    if (ISRNum > 31 && ISRNum < 48)
+                    {
+                        HandleIRQ(ISRNum - 32);
+                    }
+                    else
+                    {
+                        HandleISR(ISRNum);
+                    }
+                }
+                catch
+                {
+                    BasicConsole.WriteLine("Error processing ISR/IRQ!");
+                    BasicConsole.WriteLine(ExceptionMethods.CurrentException.Message);
+                }
             }
             finally
             {
@@ -406,269 +378,70 @@ namespace Kernel.Hardware.Interrupts
                 BasicConsole.WriteLine("Interrupts: 19");
 #endif
         }
-
         private static void HandleISR(uint ISRNum)
         {
-            try
+            Process currProcess = ProcessManager.CurrentProcess;
+            Thread currThread = ProcessManager.CurrentThread;
+            bool switched = false;
+
+            Process handlerProcess = null;
+            for (int i = 0; i < ProcessManager.Processes.Count; i++)
             {
-                InsideCriticalHandler = true;
-
-#if INTERRUPTS_TRACE
-                if (print && lastisr != ISRNum || ISRNum != 0x20)
+                handlerProcess = (Process)ProcessManager.Processes[i];
+                if (handlerProcess.ISRsToHandle.IsSet((int)ISRNum))
                 {
-                    lastisr = ISRNum;
-                    BasicConsole.SetTextColour(BasicConsole.warning_colour);
-                    if (ISRNum == 0x20)
+                    if (handlerProcess.SwitchProcessForISRs && EnableProcessSwitching)
                     {
-                        BasicConsole.WriteLine("ISR: 0x20");
+                        ProcessManager.SwitchProcess(handlerProcess.Id, ProcessManager.THREAD_DONT_CARE);
+                        switched = true;
                     }
-                    else if (ISRNum == 0x21)
+                    if (handlerProcess.ISRHandler(ISRNum) == 0)
                     {
-                        BasicConsole.WriteLine("ISR: 0x21");
-                    }
-                    else
-                    {
-                        BasicConsole.WriteLine("ISR: Unrecognised");
-                    }
-                    //BasicConsole.WriteLine(((FOS_System.String)"ISR: ") + ISRNum);
-                    BasicConsole.SetTextColour(BasicConsole.default_colour);
-                }
-#endif
-                //  --- Useful for UHCI driver testing ---
-                //if (ISRNum == (32 + 0x10) ||
-                //    ISRNum == (32 + 0x11) ||
-                //    ISRNum == (32 + 0x0A) ||
-                //    ISRNum == (32 + 0x0B))
-                //{
-                //    //HACK
-                //    InsideCriticalHandler = false;
-                //    BasicConsole.SetTextColour(BasicConsole.warning_colour);
-                //    BasicConsole.WriteLine(((FOS_System.String)"ISR: ") + ISRNum);
-                //    BasicConsole.SetTextColour(BasicConsole.default_colour);
-                //    InsideCriticalHandler = true;
-                //}
-
-                //  --- Useful for PS2 driver testing ---
-                ////if (ISRNum == 33)
-                //{
-                //    //HACK
-                //    InsideCriticalHandler = false;
-                //    BasicConsole.SetTextColour(BasicConsole.warning_colour);
-                //    BasicConsole.WriteLine(((FOS_System.String)"ISR: ") + ISRNum);
-                //    BasicConsole.SetTextColour(BasicConsole.default_colour);
-                //    InsideCriticalHandler = true;
-                //}
-
-#if INTERRUPTS_TRACE
-                //if(Processes.ProcessManager.Processes.Count > 1)
-                //if (ISRNum == 33)
-                    BasicConsole.WriteLine("Interrupts: 1");
-#endif
-
-                uint currProcessId = 0;
-                uint currThreadId = 0;
-                if (Processes.ProcessManager.CurrentProcess != null)
-                {
-                    currProcessId = Processes.ProcessManager.CurrentProcess.Id;
-                    currThreadId = Processes.ProcessManager.CurrentThread.Id;
-                }
-                bool switched = false;
-
-#if INTERRUPTS_TRACE
-                //if (Processes.ProcessManager.Processes.Count > 1)
-                //if (ISRNum == 33)
-                    BasicConsole.WriteLine("Interrupts: 2");
-#endif
-
-                //Go through any handlers and fire them
-                InterruptHandlers handlers = Handlers[ISRNum];
-                if (handlers != null)
-                {
-#if INTERRUPTS_TRACE
-                    //if (Processes.ProcessManager.Processes.Count > 1)
-                    //if (ISRNum == 33)
-                        BasicConsole.WriteLine("Interrupts: 3");
-#endif
-
-                    bool NonCriticalDetected = false;
-
-                    for (int i = 0; i < handlers.HandlerDescrips.Count; i++)
-                    {
-#if INTERRUPTS_TRACE
-                        //if (Processes.ProcessManager.Processes.Count > 1)
-                        //if (ISRNum == 33)
-                            BasicConsole.WriteLine("Interrupts: 4");
-#endif
-
-                        HandlerDescriptor descrip = (HandlerDescriptor)handlers.HandlerDescrips[i];
-
-                        if (descrip.CriticalHandler)
-                        {
-#if INTERRUPTS_TRACE
-                            //if (Processes.ProcessManager.Processes.Count > 1)
-                            //if (ISRNum == 33)
-                                BasicConsole.WriteLine("Interrupts: 5");
-#endif
-
-                            InterruptHandler func = descrip.handler;
-
-#if INTERRUPTS_TRACE
-                            //if (Processes.ProcessManager.Processes.Count > 1)
-                            //if (ISRNum == 33)
-                                BasicConsole.WriteLine("Interrupts: 6");
-#endif
-
-                            if (Processes.ProcessManager.CurrentProcess != null)
-                            {
-#if INTERRUPTS_TRACE
-                                //if (Processes.ProcessManager.Processes.Count > 1)
-                                //if (ISRNum == 33)
-                                    BasicConsole.WriteLine("Interrupts: 7");
-#endif
-
-                                if (!descrip.IgnoreProcessId)
-                                {
-#if INTERRUPTS_TRACE
-                                    //if (Processes.ProcessManager.Processes.Count > 1)
-                                    //if (ISRNum == 33)
-                                        BasicConsole.WriteLine("Interrupts: 8");
-#endif
-
-                                    Processes.ProcessManager.SwitchProcess(descrip.ProcessId, -1);
-                                    switched = true;
-                                }
-                            }
-
-#if INTERRUPTS_TRACE
-                            //if (Processes.ProcessManager.Processes.Count > 1)
-                            //if (ISRNum == 33)
-                            {
-                                BasicConsole.WriteLine("Interrupts: 9");
-                                BasicConsole.Write("Handler function name: ");
-                                BasicConsole.WriteLine(descrip.Name);
-                            }
-#endif
-
-                            func(descrip.data);
-
-#if INTERRUPTS_TRACE
-                            //if (Processes.ProcessManager.Processes.Count > 1)
-                            //if (ISRNum == 33)
-                                BasicConsole.WriteLine("Interrupts: 10");
-#endif
-                        }
-                        else
-                        {
-                            NonCriticalDetected = true;
-                        }
-                    }
-
-#if INTERRUPTS_TRACE
-                    //if (Processes.ProcessManager.Processes.Count > 1)
-                    //if (ISRNum == 33)
-                        BasicConsole.WriteLine("Interrupts: 11");
-#endif
-
-                    if (NonCriticalDetected)
-                    {
-#if INTERRUPTS_TRACE
-                        //if (Processes.ProcessManager.Processes.Count > 1)
-                        //if (ISRNum == 33)
-                            BasicConsole.WriteLine("Interrupts: 12");
-#endif
-
-                        if (handlers.QueuedOccurrences == FOS_System.Int32.MaxValue)
-                        {
-                            handlers.QueuedOccurrences = 0;
-                        }
-                        handlers.QueuedOccurrences++;
-
-#if INTERRUPTS_TRACE
-                        //if (Processes.ProcessManager.Processes.Count > 1)
-                        //if (ISRNum == 33)
-                            BasicConsole.WriteLine("Interrupts: 13");
-#endif
-
-                        if (Tasks.NonCriticalInterruptsTask.OwnerThread != null)
-                        {
-#if INTERRUPTS_TRACE
-                            //if (Processes.ProcessManager.Processes.Count > 1)
-                            //if (ISRNum == 33)
-                                BasicConsole.WriteLine("Interrupts: 14");
-#endif
-
-                            //BasicConsole.WriteLine("Waking non-critical interrupts thread...");
-                            Tasks.NonCriticalInterruptsTask.Awake = true;
-                            Tasks.NonCriticalInterruptsTask.OwnerThread._Wake();
-                        }
-
-#if INTERRUPTS_TRACE
-                        //if (Processes.ProcessManager.Processes.Count > 1)
-                        //if (ISRNum == 33)
-                            BasicConsole.WriteLine("Interrupts: 15");
-#endif
+                        break;
                     }
                 }
-
-                if (switched)
-                {
-#if INTERRUPTS_TRACE
-                    //if (Processes.ProcessManager.Processes.Count > 1)
-                    //if (ISRNum == 33)
-                        BasicConsole.WriteLine("Interrupts: 16");
-#endif
-
-                    Processes.ProcessManager.SwitchProcess(currProcessId, (int)currThreadId);
-                }
-
-#if INTERRUPTS_TRACE
-                //if (Processes.ProcessManager.Processes.Count > 1)
-                //if (ISRNum == 33)
-                    BasicConsole.WriteLine("Interrupts: 17");
-#endif
-
-                //If the ISR is actually an IRQ, we must also notify the PIC(s)
-                //  that the IRQ has completed / been handled by sending the 
-                //  End IRQ notification.
-                if (ISRNum >= 32 && ISRNum <= 47)
-                {
-                    EndIRQ(ISRNum > 39);
-                }
-
-#if INTERRUPTS_TRACE
-                //if (Processes.ProcessManager.Processes.Count > 1)
-                //if (ISRNum == 33)
-                    BasicConsole.WriteLine("Interrupts: 18");
-#endif
             }
-            catch
+
+            if (switched)
             {
-#if DEBUG
-                BasicConsole.WriteLine("Error processing ISR!");
+                ProcessManager.SwitchProcess(currProcess.Id, (int)currThread.Id);
+            }
+        }
+        private static void HandleIRQ(uint IRQNum)
+        {
+            Process currProcess = ProcessManager.CurrentProcess;
+            Thread currThread = ProcessManager.CurrentThread;
+            bool switched = false;
 
-                //Hack
-                InsideCriticalHandler = false;
-                BasicConsole.SetTextColour(BasicConsole.error_colour);
-                BasicConsole.WriteLine(((FOS_System.String)"Error processing ISR: ") + ISRNum);
-                if (ExceptionMethods.CurrentException != null)
-                {
-                    BasicConsole.WriteLine(ExceptionMethods.CurrentException.Message);
-                }
-                BasicConsole.DelayOutput(10);
-                BasicConsole.SetTextColour(BasicConsole.default_colour);
-                InsideCriticalHandler = true;
-#endif
-            }
-            finally
+            Process handlerProcess = null;
+            for (int i = 0; i < ProcessManager.Processes.Count; i++)
             {
-                InsideCriticalHandler = false;
+                handlerProcess = (Process)ProcessManager.Processes[i];
+                if (handlerProcess.IRQsToHandle.IsSet((int)IRQNum))
+                {
+                    if (handlerProcess.SwitchProcessForIRQs && EnableProcessSwitching)
+                    {
+                        ProcessManager.SwitchProcess(handlerProcess.Id, ProcessManager.THREAD_DONT_CARE);
+                        switched = true;
+                    }
+                    if (handlerProcess.IRQHandler(IRQNum) == 0)
+                    {
+                        break;
+                    }
+                }
             }
+
+            if (switched)
+            {
+                ProcessManager.SwitchProcess(currProcess.Id, (int)currThread.Id);
+            }
+
+            EndIRQ(IRQNum > 7);
         }
         /// <summary>
         /// Sends the End of Interrupt to the PIC to signify the end of an IRQ.
         /// </summary>
         /// <param name="slave">Whether to send the EOI to the slave PIC too.</param>
-        [Compiler.PluggedMethod(ASMFilePath = null)]
         [Drivers.Compiler.Attributes.PluggedMethod(ASMFilePath = null)]
         private static void EndIRQ(bool slave)
         {
@@ -678,7 +451,6 @@ namespace Kernel.Hardware.Interrupts
         /// Gets a pointer to the interrupt descriptor table.
         /// </summary>
         /// <returns>The pointer to the IDT.</returns>
-        [Compiler.PluggedMethod(ASMFilePath=@"ASM\Interrupts\Interrupts")]
         [Drivers.Compiler.Attributes.PluggedMethod(ASMFilePath=@"ASM\Interrupts\Interrupts")]
         private static InterruptDescriptor* GetIDTPtr()
         {
@@ -691,7 +463,6 @@ namespace Kernel.Hardware.Interrupts
         /// in exception logic or page fault logic being executed!
         /// </summary>
         /// <param name="IntNum">The interrupt number to fire.</param>
-        [Compiler.PluggedMethod(ASMFilePath = null)]
         [Drivers.Compiler.Attributes.PluggedMethod(ASMFilePath = null)]
         public static void InvokeInterrupt(uint IntNum)
         {

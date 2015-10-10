@@ -8,7 +8,7 @@ GLOBAL method_Kernel_Hardware_Interrupts_InterruptDescriptor__RETEND_Kernel_Hard
 GLOBAL method_System_Void_RETEND_Kernel_Hardware_Interrupts_Interrupts_DECLEND_EndIRQ_NAMEEND__System_Boolean_:function
 GLOBAL method_System_Void_RETEND_Kernel_Hardware_Interrupts_Interrupts_DECLEND_InvokeInterrupt_NAMEEND__System_UInt32_:function
 
-EXTERN _NATIVE_IDT_Contents
+EXTERN IDT_Contents
 
 method_System_Void_RETEND_Kernel_Hardware_Interrupts_Interrupts_DECLEND_EnableInterrupts_NAMEEND___:
 sti
@@ -25,7 +25,7 @@ method_Kernel_Hardware_Interrupts_InterruptDescriptor__RETEND_Kernel_Hardware_In
 push dword ebp
 mov dword ebp, esp
 
-mov dword [ebp+8], _NATIVE_IDT_Contents
+mov dword [ebp+8], IDT_Contents
 
 pop dword ebp
 

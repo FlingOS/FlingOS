@@ -91,7 +91,7 @@ Ensure you have the following required software installed:
 3. Locate and open the solution file: "...\FlingOS\FlingOS\FlingOS.sln". The solution should open without any errors (aside from potentially Untrusted Location warnings which can be ignored).
 4. The solution contains solution folders which clearly sub-divide the project into its respective areas. For now, we will just want to try and build a debug version of the OS.
   
-    In the configurations drop-down select Debug (you should also see Release and Docs modes). Select the "AnyCPU" platform for now. 
+    In the configurations drop-down select Debug (you should also see Release and Docs modes).
 5. To build the kernel, follow these steps (in this order!!):
 
     1. Open Kernel\Debug folder and build Kernel.Debug.Data. (Note: Building the Kernel.Debug.Debugger is unnecessary and will probably just cause build errors / missing package / missing executable exceptions. It is not expected to work at this time.)
@@ -101,7 +101,7 @@ Ensure you have the following required software installed:
     5. Then build the Kernel project (in the Kernel folder).
 6. The OS should now build. This usually takes 80 seconds (on 1.7 to 2.5GHz processor), Expect at least one of your processor's cores to be maxed-out and high disk activity.
   
-    In future you should only need to "rebuild" the Kernel project (or if the compiler is update, Rebuild to Drivers.Compiler.MSBuildTask project). Using Rebuild will be more reliable. If the build fails, you will have to use Rebuild as VS does not recoginse FlingOS Compiler errors as a failure (annoyingly).
+    In future you should only need to "rebuild" the Kernel project (or if the compiler is updated, Rebuild to Drivers.Compiler.MSBuildTask project). Using Rebuild will be more reliable. If the build fails, you will have to use Rebuild as VS does not recoginse FlingOS Compiler errors as a failure (annoyingly).
 7. In windows explorer you should now be able to navigate to "...\FlingOS\FlingOS\Kernel\Kernel\bin\Debug" within which there should be a Kernel.iso. If this is not the case, or you get a build error, contact Edward Nutting for help.
 
 ## Setup debug-mode VM in VMWare Player

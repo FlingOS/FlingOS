@@ -63,7 +63,6 @@ namespace Kernel.Hardware.PCI
         /// </summary>
         /// <param name="raw">The raw address value.</param>
         /// <param name="aSize">The size of the PCI registers pointed to by the base address.</param>
-        [Compiler.NoDebug]
         [Drivers.Compiler.Attributes.NoDebug]
         internal PCIBaseAddress(uint raw, uint aSize)
         {

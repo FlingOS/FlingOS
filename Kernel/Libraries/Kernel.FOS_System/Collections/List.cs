@@ -23,7 +23,7 @@
 //
 // ------------------------------------------------------------------------------ //
 #endregion
-    
+
 using System;
 
 namespace Kernel.FOS_System.Collections
@@ -77,6 +77,13 @@ namespace Kernel.FOS_System.Collections
             {
                 return _array.Length;
             }
+            set
+            {
+                if (value > _array.Length)
+                {
+                    ExpandCapacity(value - _array.Length);
+                }
+            }
         }
 
         public int ExpandAmount = 5;
@@ -84,7 +91,6 @@ namespace Kernel.FOS_System.Collections
         /// <summary>
         /// Creates a new list with initial capacity of 5.
         /// </summary>
-        [Compiler.NoDebug]
         [Drivers.Compiler.Attributes.NoDebug]
         public List()
             : this(5)
@@ -94,7 +100,6 @@ namespace Kernel.FOS_System.Collections
         /// Creates a new list with specified initial capacity. Use this to optimise memory usage.
         /// </summary>
         /// <param name="capacity">The initial capacity of the list.</param>
-        [Compiler.NoDebug]
         [Drivers.Compiler.Attributes.NoDebug]
         public List(int capacity)
             : this(capacity, 5)
@@ -105,7 +110,6 @@ namespace Kernel.FOS_System.Collections
         /// </summary>
         /// <param name="capacity">The initial capacity of the list.</param>
         /// <param name="expandAmount">The amount to expand the list capacity by each time the capacity must be increased.</param>
-        [Compiler.NoDebug]
         [Drivers.Compiler.Attributes.NoDebug]
         public List(int capacity, int expandAmount)
         {
@@ -118,7 +122,6 @@ namespace Kernel.FOS_System.Collections
         /// Adds the specified object to the list.
         /// </summary>
         /// <param name="obj">The object to add.</param>
-        [Compiler.NoDebug]
         [Drivers.Compiler.Attributes.NoDebug]
         public void Add(FOS_System.Object obj)
         {
@@ -137,7 +140,6 @@ namespace Kernel.FOS_System.Collections
         /// Removes the specified object from the list.
         /// </summary>
         /// <param name="obj">The object to remove.</param>
-        [Compiler.NoDebug]
         [Drivers.Compiler.Attributes.NoDebug]
         public void Remove(FOS_System.Object obj)
         {
@@ -199,7 +201,6 @@ namespace Kernel.FOS_System.Collections
         /// The removes the object at the specified index from the list.
         /// </summary>
         /// <param name="index">The index of the object to remove.</param>
-        [Compiler.NoDebug]
         [Drivers.Compiler.Attributes.NoDebug]
         public void RemoveAt(int index)
         {
@@ -208,7 +209,7 @@ namespace Kernel.FOS_System.Collections
             //Note: Beyond the length of the list not the capacity of the list.
             if (index >= nextIndex)
             {
-                ExceptionMethods.Throw(new Exceptions.OverflowException());
+                ExceptionMethods.Throw(new Exceptions.IndexOutOfRangeException(index, nextIndex));
             }
 
             //Note: Because we know our starting index, this algorithm is both different
@@ -278,24 +279,22 @@ namespace Kernel.FOS_System.Collections
         /// <summary>
         /// Empties the list of all objects but does not alter the list capacity.
         /// </summary>
-        [Compiler.NoDebug]
         [Drivers.Compiler.Attributes.NoDebug]
         public void Empty()
         {
+            //Reset the count to 0
+            nextIndex = 0;
             //Nice and simple again - just set everything to null :)
             for (int i = 0; i < nextIndex; i++)
             {
                 _array[i] = null;
             }
-            //And reset the count to 0
-            nextIndex = 0;
         }
 
         /// <summary>
         /// Expands the capacity of the internel array that stores the objects.
         /// </summary>
         /// <param name="amount">The amount to expand the capacity by.</param>
-        [Compiler.NoDebug]
         [Drivers.Compiler.Attributes.NoDebug]
         private void ExpandCapacity(int amount)
         {
@@ -325,7 +324,6 @@ namespace Kernel.FOS_System.Collections
         /// </exception>
         public FOS_System.Object this[int index]
         {
-            [Compiler.NoDebug]
             [Drivers.Compiler.Attributes.NoDebug]
             get
             {
@@ -343,7 +341,6 @@ namespace Kernel.FOS_System.Collections
 
                 return _array[index];
             }
-            [Compiler.NoDebug]
             [Drivers.Compiler.Attributes.NoDebug]
             set
             {
@@ -357,604 +354,6 @@ namespace Kernel.FOS_System.Collections
                 else if (index < 0)
                 {
                     ExceptionMethods.Throw(new Exceptions.IndexOutOfRangeException(index, nextIndex));
-                }
-
-                _array[index] = value;
-            }
-        }
-    }
-
-    //These list class implementations work almost exactly the same as the 
-    //  original except that:
-    //  a) They are for specific value-types
-    //  b) Not all methods have been ported from List
-    //  c) Some minor updates from List have not been ported 
-
-    /// <summary>
-    /// Represents a strongly typed list of UInt32s that can be accessed by 
-    /// index. Provides methods to search and manipulate lists.
-    /// </summary>
-    public class UInt32List : FOS_System.Object
-    {
-        /// <summary>
-        /// The underlying object array.
-        /// </summary>
-        protected UInt32[] _array;
-        /// <summary>
-        /// The "currentIndex" is the index to insert the next new item.
-        /// It is the index immediately after the last-set item in the array.
-        /// It thus also acts as an item count.
-        /// </summary>
-        protected int currIndex = 0;
-
-        /// <summary>
-        /// The number of elements in the list.
-        /// </summary>
-        public int Count
-        {
-            [Compiler.NoDebug]
-            [Drivers.Compiler.Attributes.NoDebug]
-            get
-            {
-                return currIndex;
-            }
-        }
-
-        public int Capacity
-        {
-            get
-            {
-                return _array.Length;
-            }
-            set
-            {
-                if (value > _array.Length)
-                {
-                    ExpandCapacity(value - _array.Length);
-                }
-            }
-        }
-
-        /// <summary>
-        /// Creates a new list with initial capacity of 5.
-        /// </summary>
-        [Compiler.NoDebug]
-        [Drivers.Compiler.Attributes.NoDebug]
-        public UInt32List()
-        {
-            _array = new UInt32[5];
-        }
-        /// <summary>
-        /// Creates a new list with specified initial capacity. Use this to optimise memory usage.
-        /// </summary>
-        /// <param name="capacity">The initial capacity of the list.</param>
-        [Compiler.NoDebug]
-        [Drivers.Compiler.Attributes.NoDebug]
-        public UInt32List(int capacity)
-        {
-            _array = new UInt32[capacity];
-        }
-
-        /// <summary>
-        /// Adds the specified UInt32 to the list.
-        /// </summary>
-        /// <param name="obj">The UInt32 to add.</param>
-        [Compiler.NoDebug]
-        [Drivers.Compiler.Attributes.NoDebug]
-        public void Add(UInt32 obj)
-        {
-            if (currIndex >= _array.Length)
-            {
-                ExpandCapacity(5);
-            }
-            _array[currIndex] = obj;
-            currIndex++;
-        }
-        /// <summary>
-        /// Removes the first equal value of the specified UInt32 from the list.
-        /// </summary>
-        /// <param name="obj">The UInt32 to remove.</param>
-        [Compiler.NoDebug]
-        [Drivers.Compiler.Attributes.NoDebug]
-        public void Remove(UInt32 obj)
-        {
-            bool setObjectToNull = false;
-            int origCurrIndex = currIndex;
-            for (int i = 0; i < origCurrIndex; i++)
-            {
-                if (setObjectToNull || _array[i] == obj)
-                {
-                    if (!setObjectToNull)
-                    {
-                        currIndex--;
-                    }
-
-                    setObjectToNull = true;
-
-                    if (i < currIndex)
-                    {
-                        _array[i] = _array[i + 1];
-                    }
-                    else
-                    {
-                        _array[i] = 0;
-                    }
-                }
-            }
-        }
-        /// <summary>
-        /// The removes the UInt32 at the specified index from the list.
-        /// </summary>
-        /// <param name="index">The index of the UInt32 to remove.</param>
-        [Compiler.NoDebug]
-        [Drivers.Compiler.Attributes.NoDebug]
-        public void RemoveAt(int index)
-        {
-            if (index >= currIndex)
-            {
-                ExceptionMethods.Throw(new Exceptions.OverflowException());
-            }
-
-            for (int i = index; i < currIndex; i++)
-            {
-                if (i < currIndex - 1)
-                {
-                    _array[i] = _array[i + 1];
-                }
-                else
-                {
-                    _array[i] = 0;
-                }
-            }
-
-            currIndex--;
-        }
-
-        /// <summary>
-        /// Returns the index of the first instance of the specified object or -1 
-        /// if it is not found.
-        /// </summary>
-        /// <param name="obj">The object to search for.</param>
-        /// <returns>The index or -1 if not found.</returns>
-        public int IndexOf(UInt32 obj)
-        {
-            for (int i = 0; i < currIndex; i++)
-            {
-                if (_array[i] == obj)
-                {
-                    return i;
-                }
-            }
-
-            return -1;
-        }
-
-        /// <summary>
-        /// Expands the capacity of the internel array that stores the UInt32s.
-        /// </summary>
-        /// <param name="amount">The amount to expand the capacity by.</param>
-        [Compiler.NoDebug]
-        [Drivers.Compiler.Attributes.NoDebug]
-        private void ExpandCapacity(int amount)
-        {
-            UInt32[] newArray = new UInt32[_array.Length + amount];
-            for (int i = 0; i < _array.Length; i++)
-            {
-                newArray[i] = _array[i];
-            }
-            _array = newArray;
-        }
-
-        /// <summary>
-        /// Gets the UInt32 at the specified index.
-        /// </summary>
-        /// <param name="index">The index of the UInt32 to get.</param>
-        /// <returns>The UInt32 at the specified index.</returns>
-        /// <exception cref="Kernel.FOS_System.Exceptions.IndexOutOfRangeException">
-        /// Throws IndexOutOfRangeException if "index" is &lt; 0 or greater than the length of the list.
-        /// </exception>
-        public UInt32 this[int index]
-        {
-            [Compiler.NoDebug]
-            [Drivers.Compiler.Attributes.NoDebug]
-            get
-            {
-                if (index >= currIndex)
-                {
-                    ExceptionMethods.Throw(new Exceptions.IndexOutOfRangeException(index, currIndex));
-                }
-                else if (index < 0)
-                {
-                    ExceptionMethods.Throw(new Exceptions.IndexOutOfRangeException(index, currIndex));
-                }
-
-                return _array[index];
-            }
-            [Compiler.NoDebug]
-            [Drivers.Compiler.Attributes.NoDebug]
-            set
-            {
-                if (index >= currIndex)
-                {
-                    ExceptionMethods.Throw(new Exceptions.IndexOutOfRangeException(index, currIndex));
-                }
-                else if (index < 0)
-                {
-                    ExceptionMethods.Throw(new Exceptions.IndexOutOfRangeException(index, currIndex));
-                }
-
-                _array[index] = value;
-            }
-        }
-    }
-
-    /// <summary>
-    /// Represents a strongly typed list of UInt64s that can be accessed by 
-    /// index. Provides methods to search and manipulate lists.
-    /// </summary>
-    public class UInt64List : FOS_System.Object
-    {
-        /// <summary>
-        /// The underlying object array.
-        /// </summary>
-        protected UInt64[] _array;
-        /// <summary>
-        /// The "currentIndex" is the index to insert the next new item.
-        /// It is the index immediately after the last-set item in the array.
-        /// It thus also acts as an item count.
-        /// </summary>
-        protected int currIndex = 0;
-
-        /// <summary>
-        /// The number of elements in the list.
-        /// </summary>
-        public int Count
-        {
-            [Compiler.NoDebug]
-            [Drivers.Compiler.Attributes.NoDebug]
-            get
-            {
-                return currIndex;
-            }
-        }
-
-        public int Capacity
-        {
-            get
-            {
-                return _array.Length;
-            }
-            set
-            {
-                if (value > _array.Length)
-                {
-                    ExpandCapacity(value - _array.Length);
-                }
-            }
-        }
-
-        /// <summary>
-        /// Creates a new list with initial capacity of 5.
-        /// </summary>
-        [Compiler.NoDebug]
-        [Drivers.Compiler.Attributes.NoDebug]
-        public UInt64List()
-        {
-            _array = new UInt64[5];
-        }
-        /// <summary>
-        /// Creates a new list with specified initial capacity. Use this to optimise memory usage.
-        /// </summary>
-        /// <param name="capacity">The initial capacity of the list.</param>
-        [Compiler.NoDebug]
-        [Drivers.Compiler.Attributes.NoDebug]
-        public UInt64List(int capacity)
-        {
-            _array = new UInt64[capacity];
-        }
-
-        /// <summary>
-        /// Adds the specified UInt64 to the list.
-        /// </summary>
-        /// <param name="obj">The UInt64 to add.</param>
-        [Compiler.NoDebug]
-        [Drivers.Compiler.Attributes.NoDebug]
-        public void Add(UInt64 obj)
-        {
-            if (currIndex >= _array.Length)
-            {
-                ExpandCapacity(5);
-            }
-            _array[currIndex] = obj;
-            currIndex++;
-        }
-        /// <summary>
-        /// Removes the first equal value of the specified UInt64 from the list.
-        /// </summary>
-        /// <param name="obj">The UInt64 to remove.</param>
-        [Compiler.NoDebug]
-        [Drivers.Compiler.Attributes.NoDebug]
-        public void Remove(UInt64 obj)
-        {
-            bool setObjectToNull = false;
-            int origCurrIndex = currIndex;
-            for (int i = 0; i < origCurrIndex; i++)
-            {
-                if (setObjectToNull || _array[i] == obj)
-                {
-                    if (!setObjectToNull)
-                    {
-                        currIndex--;
-                    }
-
-                    setObjectToNull = true;
-
-                    if (i < currIndex)
-                    {
-                        _array[i] = _array[i + 1];
-                    }
-                    else
-                    {
-                        _array[i] = 0;
-                    }
-                }
-            }
-        }
-        /// <summary>
-        /// The removes the UInt64 at the specified index from the list.
-        /// </summary>
-        /// <param name="index">The index of the UInt64 to remove.</param>
-        [Compiler.NoDebug]
-        [Drivers.Compiler.Attributes.NoDebug]
-        public void RemoveAt(int index)
-        {
-            if (index >= currIndex)
-            {
-                ExceptionMethods.Throw(new Exceptions.OverflowException());
-            }
-
-            for (int i = index; i < currIndex; i++)
-            {
-                if (i < currIndex - 1)
-                {
-                    _array[i] = _array[i + 1];
-                }
-                else
-                {
-                    _array[i] = 0;
-                }
-            }
-
-            currIndex--;
-        }
-
-        /// <summary>
-        /// Returns the index of the first instance of the specified object or -1 
-        /// if it is not found.
-        /// </summary>
-        /// <param name="obj">The object to search for.</param>
-        /// <returns>The index or -1 if not found.</returns>
-        public int IndexOf(UInt64 obj)
-        {
-            for (int i = 0; i < currIndex; i++)
-            {
-                if (_array[i] == obj)
-                {
-                    return i;
-                }
-            }
-
-            return -1;
-        }
-
-        /// <summary>
-        /// Expands the capacity of the internel array that stores the UInt64s.
-        /// </summary>
-        /// <param name="amount">The amount to expand the capacity by.</param>
-        [Compiler.NoDebug]
-        [Drivers.Compiler.Attributes.NoDebug]
-        private void ExpandCapacity(int amount)
-        {
-            UInt64[] newArray = new UInt64[_array.Length + amount];
-            for (int i = 0; i < _array.Length; i++)
-            {
-                newArray[i] = _array[i];
-            }
-            _array = newArray;
-        }
-
-        /// <summary>
-        /// Gets the UInt64 at the specified index.
-        /// </summary>
-        /// <param name="index">The index of the UInt64 to get.</param>
-        /// <returns>The UInt64 at the specified index.</returns>
-        /// <exception cref="Kernel.FOS_System.Exceptions.IndexOutOfRangeException">
-        /// Throws IndexOutOfRangeException if "index" is &lt; 0 or greater than the length of the list.
-        /// </exception>
-        public UInt64 this[int index]
-        {
-            [Compiler.NoDebug]
-            [Drivers.Compiler.Attributes.NoDebug]
-            get
-            {
-                if (index >= currIndex)
-                {
-                    ExceptionMethods.Throw(new Exceptions.IndexOutOfRangeException(index, currIndex));
-                }
-                else if (index < 0)
-                {
-                    ExceptionMethods.Throw(new Exceptions.IndexOutOfRangeException(index, currIndex));
-                }
-
-                return _array[index];
-            }
-            [Compiler.NoDebug]
-            [Drivers.Compiler.Attributes.NoDebug]
-            set
-            {
-                if (index >= currIndex)
-                {
-                    ExceptionMethods.Throw(new Exceptions.IndexOutOfRangeException(index, currIndex));
-                }
-                else if (index < 0)
-                {
-                    ExceptionMethods.Throw(new Exceptions.IndexOutOfRangeException(index, currIndex));
-                }
-
-                _array[index] = value;
-            }
-        }
-    }
-
-    /// <summary>
-    /// Represents a strongly typed list of Delegates that can be accessed by 
-    /// index. Provides methods to search and manipulate lists.
-    /// </summary>
-    public class DelegateList : FOS_System.Object
-    {
-        /// <summary>
-        /// The underlying object array.
-        /// </summary>
-        protected Delegate[] _array;
-        /// <summary>
-        /// The "currentIndex" is the index to insert the next new item.
-        /// It is the index immediately after the last-set item in the array.
-        /// It thus also acts as an item count.
-        /// </summary>
-        protected int currIndex = 0;
-
-        /// <summary>
-        /// The number of elements in the list.
-        /// </summary>
-        public int Count
-        {
-            [Compiler.NoDebug]
-            [Drivers.Compiler.Attributes.NoDebug]
-            get
-            {
-                return currIndex;
-            }
-        }
-
-        /// <summary>
-        /// Creates a new list with initial capacity of 5.
-        /// </summary>
-        [Compiler.NoDebug]
-        [Drivers.Compiler.Attributes.NoDebug]
-        public DelegateList()
-        {
-            _array = new Delegate[5];
-        }
-        /// <summary>
-        /// Creates a new list with specified initial capacity. Use this to optimise memory usage.
-        /// </summary>
-        /// <param name="capacity">The initial capacity of the list.</param>
-        [Compiler.NoDebug]
-        [Drivers.Compiler.Attributes.NoDebug]
-        public DelegateList(int capacity)
-        {
-            _array = new Delegate[capacity];
-        }
-
-        /// <summary>
-        /// Adds the specified Delegate to the list.
-        /// </summary>
-        /// <param name="obj">The Delegate to add.</param>
-        [Compiler.NoDebug]
-        [Drivers.Compiler.Attributes.NoDebug]
-        public void Add(Delegate obj)
-        {
-            if (currIndex >= _array.Length)
-            {
-                ExpandCapacity(5);
-            }
-            _array[currIndex++] = obj;
-        }
-        /// <summary>
-        /// Removes the first equal value of the specified Delegate from the list.
-        /// </summary>
-        /// <param name="obj">The Delegate to remove.</param>
-        [Compiler.NoDebug]
-        [Drivers.Compiler.Attributes.NoDebug]
-        public void Remove(Delegate obj)
-        {
-            bool setObjectToNull = false;
-            int origCurrIndex = currIndex;
-            for (int i = 0; i < origCurrIndex; i++)
-            {
-                if (setObjectToNull || _array[i] == obj)
-                {
-                    if (!setObjectToNull)
-                    {
-                        currIndex--;
-                    }
-
-                    setObjectToNull = true;
-
-                    if (i < currIndex)
-                    {
-                        _array[i] = _array[i + 1];
-                    }
-                    else
-                    {
-                        _array[i] = null;
-                    }
-                }
-            }
-        }
-
-        /// <summary>
-        /// Expands the capacity of the internel array that stores the Delegates.
-        /// </summary>
-        /// <param name="amount">The amount to expand the capacity by.</param>
-        [Compiler.NoDebug]
-        [Drivers.Compiler.Attributes.NoDebug]
-        private void ExpandCapacity(int amount)
-        {
-            Delegate[] newArray = new Delegate[_array.Length + amount];
-            for (int i = 0; i < _array.Length; i++)
-            {
-                newArray[i] = _array[i];
-            }
-            _array = newArray;
-        }
-
-        /// <summary>
-        /// Gets the Delegate at the specified index.
-        /// </summary>
-        /// <param name="index">The index of the Delegate to get.</param>
-        /// <returns>The Delegate at the specified index.</returns>
-        /// <exception cref="Kernel.FOS_System.Exceptions.IndexOutOfRangeException">
-        /// Throws IndexOutOfRangeException if "index" is &lt; 0 or greater than the length of the list.
-        /// </exception>
-        public Delegate this[int index]
-        {
-            [Compiler.NoDebug]
-            [Drivers.Compiler.Attributes.NoDebug]
-            get
-            {
-                if (index >= currIndex)
-                {
-                    ExceptionMethods.Throw(new Exceptions.IndexOutOfRangeException(index, currIndex));
-                }
-                else if (index < 0)
-                {
-                    ExceptionMethods.Throw(new Exceptions.IndexOutOfRangeException(index, currIndex));
-                }
-
-                return _array[index];
-            }
-            [Compiler.NoDebug]
-            [Drivers.Compiler.Attributes.NoDebug]
-            set
-            {
-                if (index >= currIndex)
-                {
-                    ExceptionMethods.Throw(new Exceptions.IndexOutOfRangeException(index, currIndex));
-                }
-                else if (index < 0)
-                {
-                    ExceptionMethods.Throw(new Exceptions.IndexOutOfRangeException(index, currIndex));
                 }
 
                 _array[index] = value;

@@ -39,22 +39,30 @@ namespace Kernel.Hardware.Processes
 {
     public static unsafe class ProcessManager
     {
+        public const int THREAD_DONT_CARE = -1;
+
         public static List Processes = new List();
         public static Process CurrentProcess = null;
         public static Thread CurrentThread = null;
         public static ThreadState* CurrentThread_State = null;
 
+        public static Process KernelProcess = null;
+
         private static uint ProcessIdGenerator = 1;
 
         private static List Semaphores = new List(1024, 1024);
-        private static SpinLock SemaphoresLock = new SpinLock(-1);
+        private static SpinLock SemaphoresLock = new SpinLock();
 
         public static Process CreateProcess(ThreadStartMethod MainMethod, FOS_System.String Name, bool UserMode)
+        {
+            return CreateProcess(MainMethod, Name, UserMode, false);
+        }
+        public static Process CreateProcess(ThreadStartMethod MainMethod, FOS_System.String Name, bool UserMode, bool CreateHeap)
         {
 #if PROCESSMANAGER_TRACE
             BasicConsole.WriteLine("Creating process object...");
 #endif
-            return new Process(MainMethod, ProcessIdGenerator++, Name, UserMode);
+            return new Process(MainMethod, ProcessIdGenerator++, Name, UserMode, CreateHeap);
         }
         public static void RegisterProcess(Process process, Scheduler.Priority priority)
         {
@@ -92,6 +100,29 @@ namespace Kernel.Hardware.Processes
             //}
         }
 
+        public static Process GetProcessById(uint processId)
+        {
+            for (int i = 0; i < Processes.Count; i++)
+            {
+                if (((Process)Processes[i]).Id == processId)
+                {
+                    return ((Process)Processes[i]);
+                }
+            }
+            return null;
+        }
+        public static Thread GetThreadById(uint threadId, Process parent)
+        {
+            for (int i = 0; i < parent.Threads.Count; i++)
+            {
+                if (((Thread)parent.Threads[i]).Id == threadId)
+                {
+                    return (Thread)parent.Threads[i];
+                }
+            }
+            return null;
+        }
+
         /// <remarks>
         /// Specifying threadId=-1 accepts any thread from the specified process.
         /// No guarantees are made about the thread chosen. This is used when you
@@ -109,7 +140,7 @@ namespace Kernel.Hardware.Processes
                 CurrentProcess.Id == processId)
             {
                 if (CurrentThread != null &&
-                    (CurrentThread.Id == threadId || threadId == -1))
+                    (CurrentThread.Id == threadId || threadId == THREAD_DONT_CARE))
                 {
 #if PROCESSMANAGER_SWITCH_TRACE
                     BasicConsole.WriteLine("No switch. (1)");
@@ -128,20 +159,13 @@ namespace Kernel.Hardware.Processes
             if (!dontSwitchOutIn)
             {
 #if PROCESSMANAGER_SWITCH_TRACE
-                BasicConsole.WriteLine("Switching out: " + CurrentProcess.Name);
+                BasicConsole.Write("Switching out: ");
+                BasicConsole.WriteLine(CurrentProcess.Name);
 #endif
+                CurrentProcess.UnloadHeap();
                 CurrentProcess.UnloadMemLayout();
 
-                CurrentProcess = null;
-                
-                for (int i = 0; i < Processes.Count; i++)
-                {
-                    if (((Process)Processes[i]).Id == processId)
-                    {
-                        CurrentProcess = ((Process)Processes[i]);
-                        break;
-                    }
-                }
+                CurrentProcess = GetProcessById(processId);
 
                 // Process not found
                 if (CurrentProcess == null)
@@ -151,15 +175,19 @@ namespace Kernel.Hardware.Processes
 #endif
                     return;
                 }
+
 #if PROCESSMANAGER_SWITCH_TRACE
-                BasicConsole.WriteLine("Process found. " + CurrentProcess.Name);
+                BasicConsole.Write("Switching in: ");
+                BasicConsole.WriteLine(CurrentProcess.Name);
 #endif
+                CurrentProcess.LoadMemLayout();
+                CurrentProcess.LoadHeap();
             }
 
             CurrentThread = null;
             CurrentThread_State = null;
 
-            if (threadId == -1)
+            if (threadId == THREAD_DONT_CARE)
             {
                 if (CurrentProcess.Threads.Count > 0)
                 {
@@ -168,14 +196,7 @@ namespace Kernel.Hardware.Processes
             }
             else
             {
-                for (int i = 0; i < CurrentProcess.Threads.Count; i++)
-                {
-                    if (((Thread)CurrentProcess.Threads[i]).Id == threadId)
-                    {
-                        CurrentThread = (Thread)CurrentProcess.Threads[i];
-                        break;
-                    }
-                }
+                CurrentThread = GetThreadById((uint)threadId, CurrentProcess);
             }
 
             // No threads in the process (?!) or process not found
@@ -194,40 +215,23 @@ namespace Kernel.Hardware.Processes
 #if PROCESSMANAGER_SWITCH_TRACE
             BasicConsole.WriteLine("Thread state updated.");
 #endif
-            
-            if (!dontSwitchOutIn)
-            {
-#if PROCESSMANAGER_SWITCH_TRACE
-                BasicConsole.WriteLine("Switching in: " + CurrentProcess.Name);
-#endif
-                CurrentProcess.LoadMemLayout();
-            }
         }
 
         public static bool WakeProcess(uint processId, uint threadId)
         {
+            return WakeThread(GetProcessById(processId), threadId);
+        }
+        public static bool WakeThread(Process theProcess, uint threadId)
+        {
             bool Woken = false;
-            Process theProcess = null;
-            
-            for (int i = 0; i < Processes.Count; i++)
-            {
-                Process aProcess = ((Process)Processes[i]);
-                if (aProcess.Id == processId)
-                {
-                    theProcess = aProcess;
-                }
-            }
 
             if (theProcess != null)
             {
-                for (int i = 0; i < theProcess.Threads.Count; i++)
+                Thread theThread = GetThreadById(threadId, theProcess);
+                if (theThread != null)
                 {
-                    Thread aThread = ((Thread)theProcess.Threads[i]);
-                    if (aThread.Id == threadId)
-                    {
-                        aThread._Wake();
-                        Woken = true;
-                    }
+                    theThread._Wake();
+                    Woken = true;
                 }
             }
 
@@ -307,7 +311,7 @@ namespace Kernel.Hardware.Processes
             if (id > -1 && id < Semaphores.Count && Semaphores[id] != null)
             {
                 Semaphore theSemaphore = ((Semaphore)Semaphores[id]);
-                return theSemaphore.OwnerProcesses.IndexOf(aProcess.Id) >= 0;
+                return theSemaphore.OwnerProcesses.IndexOf(aProcess.Id) > -1;
             }
             return false;
         }

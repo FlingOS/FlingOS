@@ -39,7 +39,6 @@ namespace Kernel.FOS_System.Collections
 
         public int Count
         {
-            [Compiler.NoDebug]
             [Drivers.Compiler.Attributes.NoDebug]
             get
             {
@@ -47,21 +46,18 @@ namespace Kernel.FOS_System.Collections
             }
         }
 
-        [Compiler.NoDebug]
         [Drivers.Compiler.Attributes.NoDebug]
         public Bitmap(int size)
         {
             bitmap = new byte[size / 8];
         }
 
-        [Compiler.NoDebug]
         [Drivers.Compiler.Attributes.NoDebug]
         public void Set(int entry)
         {
             bitmap[entry / 8] = (byte)(bitmap[entry / 8] | (1 << (entry % 8)));
             setCount++;
         }
-        [Compiler.NoDebug]
         [Drivers.Compiler.Attributes.NoDebug]
         public void Clear(int entry)
         {
@@ -69,14 +65,12 @@ namespace Kernel.FOS_System.Collections
             setCount--;
         }
 
-        [Compiler.NoDebug]
         [Drivers.Compiler.Attributes.NoDebug]
         public bool IsSet(int entry)
         {
-            return (bitmap[entry / 8] & ~(byte)(entry % 8)) > 0;
+            return (bitmap[entry / 8] & ~(byte)(entry % 8)) != 0;
         }
 
-        [Compiler.NoDebug]
         [Drivers.Compiler.Attributes.NoDebug]
         public int FindFirstClearEntry()
         {
@@ -92,7 +86,6 @@ namespace Kernel.FOS_System.Collections
             }
             return -1;
         }
-        [Compiler.NoDebug]
         [Drivers.Compiler.Attributes.NoDebug]
         public int FindLastClearEntry()
         {
@@ -107,6 +100,40 @@ namespace Kernel.FOS_System.Collections
                 }
             }
             return -1;
+        }
+
+        [Drivers.Compiler.Attributes.NoDebug]
+        public int FindContiguousClearEntries(int num)
+        {
+            int contiguousEntries = 0;
+            int testPos = 0;
+            int startPos = 0;
+            int length = bitmap.Length * 8;
+            while (contiguousEntries != num && testPos < length)
+            {
+                if (!IsSet(testPos))
+                {
+                    if (contiguousEntries == 0)
+                    {
+                        startPos = testPos;
+                    }
+                    
+                    contiguousEntries++;
+                }
+                else
+                {
+                    contiguousEntries = 0;
+                }
+
+                testPos++;
+            }
+
+            if (contiguousEntries != num)
+            {
+                return -1;
+            }
+
+            return startPos;
         }
     }
 }

@@ -61,7 +61,7 @@ namespace Kernel.FOS_System.Collections
             }
         }
 
-        private Processes.Synchronisation.SpinLock AccessLock = new Processes.Synchronisation.SpinLock(-1);
+        private Processes.Synchronisation.SpinLock AccessLock = new Processes.Synchronisation.SpinLock();
 
         public CircularBuffer(int size)
             : this(size, true)
@@ -88,7 +88,7 @@ namespace Kernel.FOS_System.Collections
                 {
                     if (ThrowExceptions)
                     {
-                        ExceptionMethods.Throw(new Exceptions.OverflowException());
+                        ExceptionMethods.Throw(new Exceptions.OverflowException("Circular buffer cannot Push because the buffer is full."));
                     }
                     return false;
                 }
@@ -103,7 +103,7 @@ namespace Kernel.FOS_System.Collections
 
                         if (ThrowExceptions)
                         {
-                            ExceptionMethods.Throw(new Exceptions.OverflowException());
+                            ExceptionMethods.Throw(new Exceptions.OverflowException("Circular buffer cannot Push because the buffer is full."));
                         }
                         return false;
                     }
@@ -130,7 +130,7 @@ namespace Kernel.FOS_System.Collections
                 {
                     if (ThrowExceptions)
                     {
-                        ExceptionMethods.Throw(new Exceptions.OverflowException());
+                        ExceptionMethods.Throw(new Exceptions.OverflowException("Circular buffer cannot Pop because the buffer is empty."));
                     }
                     return null;
                 }
@@ -165,7 +165,7 @@ namespace Kernel.FOS_System.Collections
                 {
                     if (ThrowExceptions)
                     {
-                        ExceptionMethods.Throw(new Exceptions.OverflowException());
+                        ExceptionMethods.Throw(new Exceptions.OverflowException("Circular buffer cannot Peek because the buffer is empty."));
                     }
                     return null;
                 }
