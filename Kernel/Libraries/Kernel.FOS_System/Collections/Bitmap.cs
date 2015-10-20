@@ -68,7 +68,7 @@ namespace Kernel.FOS_System.Collections
         [Drivers.Compiler.Attributes.NoDebug]
         public bool IsSet(int entry)
         {
-            return (bitmap[entry / 8] & ~(byte)(entry % 8)) > 0;
+            return (bitmap[entry / 8] & ~(byte)(entry % 8)) != 0;
         }
 
         [Drivers.Compiler.Attributes.NoDebug]
@@ -100,6 +100,40 @@ namespace Kernel.FOS_System.Collections
                 }
             }
             return -1;
+        }
+
+        [Drivers.Compiler.Attributes.NoDebug]
+        public int FindContiguousClearEntries(int num)
+        {
+            int contiguousEntries = 0;
+            int testPos = 0;
+            int startPos = 0;
+            int length = bitmap.Length * 8;
+            while (contiguousEntries != num && testPos < length)
+            {
+                if (!IsSet(testPos))
+                {
+                    if (contiguousEntries == 0)
+                    {
+                        startPos = testPos;
+                    }
+                    
+                    contiguousEntries++;
+                }
+                else
+                {
+                    contiguousEntries = 0;
+                }
+
+                testPos++;
+            }
+
+            if (contiguousEntries != num)
+            {
+                return -1;
+            }
+
+            return startPos;
         }
     }
 }

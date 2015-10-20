@@ -57,7 +57,7 @@ namespace FlingOops
     /// </para>
     /// <para>
     /// For a better console implementation see Console and AdvancedConsole classes in
-    /// Kernel.Core library (/namespace)
+    /// Kernel library (/namespace)
     /// </para>
     /// <para>
     /// Some of the code used appears inefficient or needlessly expanded. That's 

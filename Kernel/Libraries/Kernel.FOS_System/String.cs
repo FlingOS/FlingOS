@@ -339,7 +339,6 @@ namespace Kernel.FOS_System
         /// <param name="prefix">The string to test for.</param>
         /// <returns>Whether the string starts with the prefix.</returns>
         [Drivers.Compiler.Attributes.NoDebug]
-        [Drivers.Compiler.Attributes.NoGC]
         public bool StartsWith(FOS_System.String prefix)
         {
             if (this.length < prefix.length)
@@ -364,7 +363,6 @@ namespace Kernel.FOS_System
         /// <param name="postfix">The string to test for.</param>
         /// <returns>Whether the string ends with the postfix.</returns>
         [Drivers.Compiler.Attributes.NoDebug]
-        [Drivers.Compiler.Attributes.NoGC]
         public bool EndsWith(FOS_System.String postfix)
         {
             if (this.length < postfix.length)
@@ -391,7 +389,6 @@ namespace Kernel.FOS_System
         /// <param name="splitChar">The char to split with.</param>
         /// <returns>The list of split parts.</returns>
         [Drivers.Compiler.Attributes.NoDebug]
-        [Drivers.Compiler.Attributes.NoGC]
         public Collections.List Split(char splitChar)
         {
             Collections.List result = new Collections.List(1);
@@ -506,7 +503,6 @@ namespace Kernel.FOS_System
         /// <param name="y">The second string.</param>
         /// <returns>The new contenated string.</returns>
         [Drivers.Compiler.Attributes.NoDebug]
-        [Drivers.Compiler.Attributes.NoGC]
         public static FOS_System.String operator +(FOS_System.String x, FOS_System.String y)
         {
             if (x == null)
@@ -589,9 +585,9 @@ namespace Kernel.FOS_System
         /// <returns>The FOS_System.String value.</returns>
         [Drivers.Compiler.Attributes.NoDebug]
         [Drivers.Compiler.Attributes.NoGC]
-        public static implicit operator FOS_System.String(bool x)
+        public static implicit operator FOS_System.String(string x)
         {
-            return x ? "True" : "False";
+            return (FOS_System.String)(object)x;
         }
         /// <summary>
         /// Implicitly converts the specified value to an FOS_System.String.
@@ -599,10 +595,9 @@ namespace Kernel.FOS_System
         /// <param name="x">The value to convert.</param>
         /// <returns>The FOS_System.String value.</returns>
         [Drivers.Compiler.Attributes.NoDebug]
-        [Drivers.Compiler.Attributes.NoGC]
-        public static implicit operator FOS_System.String(string x)
+        public static implicit operator FOS_System.String(bool x)
         {
-            return (FOS_System.String)(object)x;
+            return x ? "True" : "False";
         }
         /// <summary>
         /// Implicitly converts the specified FOS_System.String to a System.String.
@@ -610,7 +605,6 @@ namespace Kernel.FOS_System
         /// <param name="x">The value to convert.</param>
         /// <returns>The System.String.</returns>
         [Drivers.Compiler.Attributes.NoDebug]
-        [Drivers.Compiler.Attributes.NoGC]
         public static explicit operator string(FOS_System.String x)
         {
             return (string)(object)x;
@@ -621,7 +615,6 @@ namespace Kernel.FOS_System
         /// <param name="x">The value to convert.</param>
         /// <returns>The FOS_System.String value.</returns>
         [Drivers.Compiler.Attributes.NoDebug]
-        [Drivers.Compiler.Attributes.NoGC]
         public static implicit operator FOS_System.String(byte x)
         {
             FOS_System.String result = "";
@@ -691,7 +684,6 @@ namespace Kernel.FOS_System
         /// <param name="x">The value to convert.</param>
         /// <returns>The FOS_System.String value.</returns>
         [Drivers.Compiler.Attributes.NoDebug]
-        [Drivers.Compiler.Attributes.NoGC]
         public static implicit operator FOS_System.String(UInt16 x)
         {
             FOS_System.String result = "";
@@ -760,7 +752,6 @@ namespace Kernel.FOS_System
         /// <param name="x">The value to convert.</param>
         /// <returns>The FOS_System.String value.</returns>
         [Drivers.Compiler.Attributes.NoDebug]
-        [Drivers.Compiler.Attributes.NoGC]
         public static implicit operator FOS_System.String(char x)
         {
             FOS_System.String result = FOS_System.String.New(1);
@@ -773,7 +764,6 @@ namespace Kernel.FOS_System
         /// <param name="x">The value to convert.</param>
         /// <returns>The FOS_System.String value.</returns>
         [Drivers.Compiler.Attributes.NoDebug]
-        [Drivers.Compiler.Attributes.NoGC]
         public static implicit operator FOS_System.String(Int16 x)
         {
             return (UInt16)x;
@@ -784,7 +774,6 @@ namespace Kernel.FOS_System
         /// <param name="x">The value to convert.</param>
         /// <returns>The FOS_System.String value.</returns>
         [Drivers.Compiler.Attributes.NoDebug]
-        [Drivers.Compiler.Attributes.NoGC]
         public static implicit operator FOS_System.String(uint x)
         {
             FOS_System.String result = "";
@@ -853,7 +842,6 @@ namespace Kernel.FOS_System
         /// <param name="x">The value to convert.</param>
         /// <returns>The FOS_System.String value.</returns>
         [Drivers.Compiler.Attributes.NoDebug]
-        [Drivers.Compiler.Attributes.NoGC]
         public static implicit operator FOS_System.String(int x)
         {
             return (uint)x;
@@ -864,7 +852,6 @@ namespace Kernel.FOS_System
         /// <param name="x">The value to convert.</param>
         /// <returns>The FOS_System.String value.</returns>
         [Drivers.Compiler.Attributes.NoDebug]
-        [Drivers.Compiler.Attributes.NoGC]
         public static implicit operator FOS_System.String(ulong x)
         {
             uint part1 = (uint)x;
@@ -877,7 +864,6 @@ namespace Kernel.FOS_System
         /// <param name="x">The value to convert.</param>
         /// <returns>The FOS_System.String value.</returns>
         [Drivers.Compiler.Attributes.NoDebug]
-        [Drivers.Compiler.Attributes.NoGC]
         public static implicit operator FOS_System.String(long x)
         {
             return (ulong)x;

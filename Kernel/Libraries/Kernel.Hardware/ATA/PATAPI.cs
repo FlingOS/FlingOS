@@ -85,14 +85,15 @@ namespace Kernel.Hardware.ATA
             BaseDevice.SelectDrive(0, false);
             BaseDevice.IO.Control.Write_Byte((byte)0x00);
 
-            if (BaseDevice.controllerId == ATA.ControllerID.Primary)
-            {
-                Interrupts.Interrupts.AddIRQHandler(14, PATAPI.IRQHandler, this, true, true, "PATAPI IRQ 14");
-            }
-            else
-            {
-                Interrupts.Interrupts.AddIRQHandler(15, PATAPI.IRQHandler, this, true, true, "PATAPI IRQ 15");
-            }
+            //TODO: Use system calls for adding IRQ handler(s)
+            //if (BaseDevice.controllerId == ATA.ControllerID.Primary)
+            //{
+            //    Interrupts.Interrupts.AddIRQHandler(14, PATAPI.IRQHandler, this, "PATAPI IRQ 14");
+            //}
+            //else
+            //{
+            //    Interrupts.Interrupts.AddIRQHandler(15, PATAPI.IRQHandler, this, "PATAPI IRQ 15");
+            //}
         }
 
         private static void IRQHandler(FOS_System.Object state)

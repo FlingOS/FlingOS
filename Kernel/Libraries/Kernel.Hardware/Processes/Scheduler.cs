@@ -109,6 +109,8 @@ namespace Kernel.Hardware.Processes
             /*1000000*/
             Hardware.Devices.Timer.Default.RegisterHandler(OnTimerInterrupt, /* MSFreq * 1000000 */ 5000000, true, null);
 
+            Interrupts.Interrupts.EnableProcessSwitching = true;
+
             Enable();
         }
         [Drivers.Compiler.Attributes.PluggedMethod(ASMFilePath = @"ASM\Processes\Scheduler")]
@@ -261,6 +263,13 @@ namespace Kernel.Hardware.Processes
                 uint processId = ProcessManager.CurrentProcess.Id;
 
                 int processIdx = ProcessManager.Processes.IndexOf(ProcessManager.CurrentProcess);
+                if (processIdx == -1)
+                {
+                    BasicConsole.WriteLine("!!! PANIC !!!");
+                    BasicConsole.WriteLine("Scheduler.UpdateCurrentState (Scheduler.cs:Line 267) - Index of current process came back as -1 - Unfound!");
+                    BasicConsole.WriteLine("!-!-!-!-!-!-!");
+                }
+
                 int threadIdx = ProcessManager.CurrentProcess.Threads.IndexOf(ProcessManager.CurrentThread);
                 
                 threadIdx = NextThread(threadIdx, processIdx);
@@ -306,7 +315,7 @@ namespace Kernel.Hardware.Processes
                 {
                     while (threadIdx >= ProcessManager.CurrentProcess.Threads.Count)
                     {
-                        threadIdx = NextThread(-1, processIdx);
+                        threadIdx = NextThread(ProcessManager.THREAD_DONT_CARE, processIdx);
 
                         if (threadIdx >= ProcessManager.CurrentProcess.Threads.Count)
                         {
@@ -348,7 +357,7 @@ namespace Kernel.Hardware.Processes
             if (Processes.ProcessManager.Processes.Count > 1)
                 BasicConsole.WriteLine("Scheduler interrupt ended.");
 
-            BasicConsole.SetTextColour(BasicBasicConsole_colour);
+            BasicConsole.SetTextColour(BasicConsole.default_colour);
 #endif
         }
         [Drivers.Compiler.Attributes.NoDebug]
@@ -363,7 +372,7 @@ namespace Kernel.Hardware.Processes
                 processIdx = 0;
             }
 
-            threadIdx = NextThread(-1, processIdx);
+            threadIdx = NextThread(ProcessManager.THREAD_DONT_CARE, processIdx);
         }
         [Drivers.Compiler.Attributes.NoDebug]
         [Drivers.Compiler.Attributes.NoGC]

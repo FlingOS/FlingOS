@@ -212,10 +212,11 @@ namespace Kernel.Hardware.USB.HCIs
             // bit 2: Bus Master               // cf. http://forum.osdev.org/viewtopic.php?f=1&t=20255&start=0
             pciDevice.Command = pciDevice.Command | PCI.PCIDevice.PCICommand.IO | PCI.PCIDevice.PCICommand.Master;
 
-            if (IRQHandlerID == 0)
-            {
-                IRQHandlerID = Interrupts.Interrupts.AddIRQHandler(pciDevice.InterruptLine, UHCI.InterruptHandler, this, false, true, "UHCI");
-            }
+            //TODO: Use system calls for adding IRQ handler(s)
+            //if (IRQHandlerID == 0)
+            //{
+            //    IRQHandlerID = Interrupts.Interrupts.AddIRQHandler(pciDevice.InterruptLine, UHCI.InterruptHandler, this, "UHCI");
+            //}
 
             ResetHC();
         }

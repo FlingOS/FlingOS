@@ -43,9 +43,9 @@ namespace Kernel.Hardware
         /// <summary>
         /// Initialises the virtual memory manager.
         /// </summary>
-        public static void Init()
+        public static void Init(VirtMemImpl anImpl)
         {
-            impl = new x86();
+            impl = anImpl;
 
             // Map in the kernel pages.
             //   - Technically this has already been done in "VirtMemInit.x86_32.asm", however,
@@ -55,21 +55,68 @@ namespace Kernel.Hardware
             impl.MapKernel();
         }
 
+        [Obsolete]
         public static uint FindFreePhysPage()
         {
-            return impl.FindFreePhysPageAddr();
+            return impl.FindFreePhysPageAddrs(1);
         }
+        [Obsolete]
         public static uint FindFreeVirtPage()
         {
-            return impl.FindFreeVirtPageAddr();
+            return impl.FindFreeVirtPageAddrs(1);
         }
+        [Obsolete]
+        public static uint FindFreePhysPages(int num)
+        {
+            return impl.FindFreePhysPageAddrs(num);
+        }
+        [Obsolete]
+        public static uint FindFreeVirtPages(int num)
+        {
+            return impl.FindFreeVirtPageAddrs(num);
+        }
+
+        private static FOS_System.Processes.Synchronisation.SpinLock MapFreePagesLock = new FOS_System.Processes.Synchronisation.SpinLock(-1);
+        
         public static void* MapFreePage(VirtMemImpl.PageFlags flags)
         {
-            uint physAddr = impl.FindFreePhysPageAddr();
-            uint virtAddr = impl.FindFreeVirtPageAddr();
-            //BasicConsole.WriteLine(((FOS_System.String)"Mapping free page. physAddr=") + physAddr + ", virtAddr=" + virtAddr);
-            Map(physAddr, virtAddr, 4096, flags);
-            return (void*)virtAddr;
+            return MapFreePages(flags, 1);
+        }
+        public static void* MapFreePages(VirtMemImpl.PageFlags flags, int numPages)
+        {
+            uint virtAddrsStart = 0xDEADBEEF;
+            try
+            {
+                MapFreePagesLock.Enter();
+
+                BasicConsole.WriteLine("Mapping free pages:");
+
+                uint physAddrsStart = impl.FindFreePhysPageAddrs(numPages);
+                virtAddrsStart = impl.FindFreeVirtPageAddrs(numPages);
+                BasicConsole.Write(" -- Phys start: ");
+                BasicConsole.WriteLine(physAddrsStart);
+                BasicConsole.Write(" -- Virt start: ");
+                BasicConsole.WriteLine(virtAddrsStart);
+                BasicConsole.Write(" -- Num pages: ");
+                BasicConsole.WriteLine(numPages);
+                for (uint i = 0; i < numPages; i++)
+                {
+                    Map(physAddrsStart + (i * 4096), virtAddrsStart + (i * 4096), 4096, flags);
+                }
+            }
+            finally
+            {
+                MapFreePagesLock.Exit();
+            }
+
+            if (virtAddrsStart == 0xDEADBEEF)
+            {
+                BasicConsole.WriteLine("!!! PANIC !!!");
+                BasicConsole.WriteLine("VirtMemManager.MapFreePages returning 0xDEADBEEF!");
+                BasicConsole.WriteLine("!-!-!-!-!-!-!");
+            }
+
+            return (void*)virtAddrsStart;
         }
 
         /// <summary>

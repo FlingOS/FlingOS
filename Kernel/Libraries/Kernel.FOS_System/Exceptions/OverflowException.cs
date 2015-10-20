@@ -41,8 +41,8 @@ namespace Kernel.FOS_System.Exceptions
         /// <summary>
         /// Sets the message to "Overflow exception."
         /// </summary>
-        public OverflowException()
-            : base("Overflow exception.")
+        public OverflowException(FOS_System.String message)
+            : base("Overflow exception. " + message)
         {
         }
     }

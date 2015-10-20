@@ -46,38 +46,243 @@ namespace Kernel.FOS_System
     /// </remarks>
     public static unsafe class GC
     {
-        /// <summary>
-        /// The total number of objects currently allocated by the GC.
-        /// </summary>
-        public static int NumObjs = 0;
+        //TODO - GC needs an object reference tree to do a thorough scan to find reference loops
+
         /// <summary>
         /// Whether the GC has been initialised yet or not.
         /// Used to prevent the GC running before it has been initialised properly.
         /// </summary>
-        private static bool Enabled = false;
-        /// <summary>
-        /// Whether the GC is currently executing. Used to prevent the GC calling itself (or ending up in loops with
-        /// called methods re-calling the GC!)
-        /// </summary>
-        public static bool InsideGC = false;
+        public static bool Enabled = false;
 
-        private static FOS_System.String lastEnabler = "";
-        private static FOS_System.String lastDisabler = "";
+        private static GCState state;
+        public static GCState State
+        {
+            get
+            {
+                return state;
+            }
+            set
+            {
+                state = value;
+            }
+        }
 
-        private static SpinLock GCAccessLock;
-        private static bool GCAccessLockInitialised = false;
+        private static bool StateInitialised
+        {
+            [Drivers.Compiler.Attributes.NoGC]
+            get
+            {
+                return state != null;
+            }
+        }
+        public static bool OutputTrace
+        {
+            [Drivers.Compiler.Attributes.NoGC]
+            get
+            {
+                if (StateInitialised)
+                {
+                    return state.OutputTrace;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+            [Drivers.Compiler.Attributes.NoGC]
+            set
+            {
+                if (StateInitialised)
+                {
+                    state.OutputTrace = value;
+                }
+            }
+        }
+        public static bool InsideGC
+        {
+            [Drivers.Compiler.Attributes.NoGC]
+            get
+            {
+                if (StateInitialised)
+                {
+                    return state.InsideGC;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+            [Drivers.Compiler.Attributes.NoGC]
+            set
+            {
+                if (StateInitialised)
+                {
+                    state.InsideGC = value;
+                }
+            }
+        }
+        public static bool AccessLockInitialised
+        {
+            [Drivers.Compiler.Attributes.NoGC]
+            get
+            {
+                if (StateInitialised)
+                {
+                    return state.AccessLockInitialised;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+        }
+        public static SpinLock AccessLock
+        {
+            [Drivers.Compiler.Attributes.NoGC]
+            get
+            {
+                if (StateInitialised)
+                {
+                    return state.AccessLock;
+                }
+                return null;
+            }
+        }
 
-        /// <summary>
-        /// The number of strings currently allocated on the heap.
-        /// </summary>
-        public static int NumStrings = 0;
+        public static int NumObjs
+        {
+            [Drivers.Compiler.Attributes.NoGC]
+            get
+            {
+                if (StateInitialised)
+                {
+                    return state.NumObjs;
+                }
+                else
+                {
+                    return 0;
+                }
+            }
+            [Drivers.Compiler.Attributes.NoGC]
+            set
+            {
+                if (StateInitialised)
+                {
+                    state.NumObjs = value;
+                }
+            }
+        }
+        public static int NumStrings
+        {
+            [Drivers.Compiler.Attributes.NoGC]
+            get
+            {
+                if (StateInitialised)
+                {
+                    return state.NumStrings;
+                }
+                else
+                {
+                    return 0;
+                }
+            }
+            [Drivers.Compiler.Attributes.NoGC]
+            set
+            {
+                if (StateInitialised)
+                {
+                    state.NumStrings = value;
+                }
+            }
+        }
 
-        /// <summary>
-        /// The linked-list of objects to clean up.
-        /// </summary>
-        private static ObjectToCleanup* CleanupList;
+        public static FOS_System.String lastEnabler
+        {
+            get
+            {
+                if (StateInitialised)
+                {
+                    return state.lastEnabler;
+                }
+                else
+                {
+                    return "";
+                }
+            }
+            set
+            {
+                if (StateInitialised)
+                {
+                    state.lastEnabler = value;
+                }
+            }
+        }
+        public static FOS_System.String lastDisabler
+        {
+            get
+            {
+                if (StateInitialised)
+                {
+                    return state.lastDisabler;
+                }
+                else
+                {
+                    return "";
+                }
+            }
+            set
+            {
+                if (StateInitialised)
+                {
+                    state.lastDisabler = value;
+                }
+            }
+        }
+        public static FOS_System.String lastLocker
+        {
+            get
+            {
+                if (StateInitialised)
+                {
+                    return state.lastLocker;
+                }
+                else
+                {
+                    return "";
+                }
+            }
+            set
+            {
+                if (StateInitialised)
+                {
+                    state.lastLocker = value;
+                }
+            }
+        }
 
-        //TODO - GC needs an object reference tree to do a thorough scan to find reference loops
+        public static ObjectToCleanup* CleanupList
+        {
+            [Drivers.Compiler.Attributes.NoGC]
+            get
+            {
+                if (StateInitialised)
+                {
+                    return state.CleanupList;
+                }
+                else
+                {
+                    return null;
+                }
+            }
+            [Drivers.Compiler.Attributes.NoGC]
+            set
+            {
+                if (StateInitialised)
+                {
+                    state.CleanupList = value;
+                }
+            }
+        }
 
         /// <summary>
         /// Intialises the GC.
@@ -92,11 +297,24 @@ namespace Kernel.FOS_System
 
             Enabled = true;
 
-            Heap.HeapAccessLock = new SpinLock(-1);
-            Heap.HeapAccessLockInitialised = true;
+            Heap.AccessLock = new SpinLock();
+            Heap.AccessLockInitialised = true;
 
-            GCAccessLock = new SpinLock(-1);
-            GCAccessLockInitialised = true;
+            GC.state = new GCState();
+            GC.state.AccessLock = new SpinLock();
+            GC.state.AccessLockInitialised = true;
+
+            if ((uint)GC.state.CleanupList == 0xFFFFFFFF)
+            {
+                BasicConsole.WriteLine(" !!! PANIC !!! ");
+                BasicConsole.WriteLine(" GC.state.CleanupList is 0xFFFFFFFF NOT null!");
+                BasicConsole.WriteLine(" !-!-!-!-!-!-! ");
+            }
+        }
+
+        public static void Load(GCState newState)
+        {
+            state = newState;
         }
 
         public static void Enable(FOS_System.String caller)
@@ -123,24 +341,33 @@ namespace Kernel.FOS_System
         private static void EnterCritical(FOS_System.String caller)
         {
             //BasicConsole.WriteLine("Entering critical section...");
-            if (GCAccessLockInitialised)
+            if (AccessLockInitialised)
             {
-                if (GCAccessLock == null)
+                if (AccessLock == null)
                 {
                     BasicConsole.WriteLine("GCAccessLock is initialised but null?!");
                     BasicConsole.DelayOutput(10);
                 }
                 else
                 {
-                    //if (GCAccessLock.Locked)
-                    //{
-                    //    BasicConsole.SetTextColour(BasicConsole.warning_colour);
-                    //    BasicConsole.WriteLine("Warning: GC about to try to re-enter spin lock...");
-                    //    BasicConsole.Write("Enter lock caller: ");
-                    //    BasicConsole.WriteLine(caller);
-                    //    BasicConsole.SetTextColour(BasicConsole.default_colour);
-                    //}
-                    GCAccessLock.Enter();
+#if GC_TRACE
+                    if (AccessLock.Locked && OutputTrace)
+                    {
+                        BasicConsole.SetTextColour(BasicConsole.warning_colour);
+                        BasicConsole.WriteLine("Warning: GC about to try to re-enter spin lock...");
+                        BasicConsole.Write("Enter lock caller: ");
+                        BasicConsole.WriteLine(caller);
+                        BasicConsole.Write("Previous caller: ");
+                        BasicConsole.WriteLine(lastLocker);
+                        BasicConsole.SetTextColour(BasicConsole.default_colour);
+                    }
+#endif
+
+                    AccessLock.Enter();
+
+#if GC_TRACE
+                    lastLocker = caller;
+#endif
                 }
             }
             //else
@@ -154,16 +381,16 @@ namespace Kernel.FOS_System
         private static void ExitCritical()
         {
             //BasicConsole.WriteLine("Exiting critical section...");
-            if (GCAccessLockInitialised)
+            if (AccessLockInitialised)
             {
-                if (GCAccessLock == null)
+                if (AccessLock == null)
                 {
                     BasicConsole.WriteLine("GCAccessLock is initialised but null?!");
                     BasicConsole.DelayOutput(10);
                 }
                 else
                 {
-                    GCAccessLock.Exit();
+                    AccessLock.Exit();
                 }
             }
             //else
@@ -194,6 +421,13 @@ namespace Kernel.FOS_System
 
                 return null;
             }
+
+#if GC_TRACE
+            if (OutputTrace)
+            {
+                BasicConsole.WriteLine("NewObj");
+            }
+#endif
 
             EnterCritical("NewObj");
 
@@ -267,6 +501,13 @@ namespace Kernel.FOS_System
 
                 return null;
             }
+
+#if GC_TRACE
+            if (OutputTrace)
+            {
+                BasicConsole.WriteLine("NewArr");
+            }
+#endif
 
             EnterCritical("NewArr");
 
@@ -355,6 +596,13 @@ namespace Kernel.FOS_System
                 return null;
             }
 
+#if GC_TRACE
+            if (OutputTrace)
+            {
+                BasicConsole.WriteLine("NewString");
+            }
+#endif
+
             EnterCritical("NewString");
 
             try
@@ -394,7 +642,6 @@ namespace Kernel.FOS_System
                     return null;
                 }
 
-                NumObjs++;
                 NumStrings++;
 
                 //Initialise the GCHeader
@@ -561,7 +808,10 @@ namespace Kernel.FOS_System
                 if (gcHeaderPtr->RefCount == 0)
                 {
 #if GC_TRACE
-                    BasicConsole.WriteLine("Cleaned up object.");
+                    if (OutputTrace)
+                    {
+                        BasicConsole.WriteLine("Cleaned up object.");
+                    }
 #endif
 
                     FOS_System.Object obj = (FOS_System.Object)Utilities.ObjectUtilities.GetObject(objPtr);
@@ -596,7 +846,10 @@ namespace Kernel.FOS_System
                                 DecrementRefCount(theFieldObj, true);
 
 #if GC_TRACE
-                            BasicConsole.WriteLine("Cleaned up field.");
+                                if (OutputTrace)
+                                {
+                                    BasicConsole.WriteLine("Cleaned up field.");
+                                }
 #endif
                             }
                             
@@ -652,7 +905,7 @@ namespace Kernel.FOS_System
             {
                 return;
             }
-
+            
             EnterCritical("Cleanup");
 
             try
@@ -660,38 +913,124 @@ namespace Kernel.FOS_System
                 InsideGC = true;
 
 #if GC_TRACE
-            int startNumObjs = NumObjs;
-            int startNumStrings = NumStrings;
+                int startNumObjs = NumObjs;
+                int startNumStrings = NumStrings;
 #endif
+                if (OutputTrace)
+                {
+                    BasicConsole.WriteLine(" > Inside GC & Cleaning...");
+                }
 
                 ObjectToCleanup* currObjToCleanupPtr = CleanupList;
                 ObjectToCleanup* prevObjToCleanupPtr = null;
+                
+                if (OutputTrace)
+                {
+                    BasicConsole.WriteLine(" > Got list...");
+                }
+                
                 while (currObjToCleanupPtr != null)
                 {
+                    if (OutputTrace)
+                    {
+                        BasicConsole.WriteLine(" > Item not null.");
+
+                        FOS_System.String str1 = " > Item: 0x        ";
+                        FOS_System.String str2 = " > Prev: 0x        ";
+                        ExceptionMethods.FillString((uint)currObjToCleanupPtr, 18, str1);
+                        ExceptionMethods.FillString((uint)currObjToCleanupPtr->prevPtr, 18, str2);
+                        BasicConsole.WriteLine(str1);
+                        BasicConsole.WriteLine(str2);
+                    }
+
                     GCHeader* objHeaderPtr = currObjToCleanupPtr->objHeaderPtr;
                     void* objPtr = currObjToCleanupPtr->objPtr;
+
+                    if (OutputTrace)
+                    {
+                        BasicConsole.WriteLine(" > Got object handles.");
+                    }
+
                     if (objHeaderPtr->RefCount <= 0)
                     {
+                        if (OutputTrace)
+                        {
+                            BasicConsole.WriteLine("   > Ref count zero or lower.");
+                        }
+
                         FOS_System.Object obj = (FOS_System.Object)Utilities.ObjectUtilities.GetObject(objPtr);
+
+                        if (OutputTrace)
+                        {
+                            BasicConsole.WriteLine("   > Got object.");
+                        }
+
                         if (obj is FOS_System.String)
                         {
+                            if (OutputTrace)
+                            {
+                                BasicConsole.WriteLine("   > (It's a string).");
+                            }
+
                             NumStrings--;
+                        }
+                        else
+                        {
+                            if (OutputTrace)
+                            {
+                                BasicConsole.WriteLine("   > (It's NOT a string).");
+                            }
+
+                            NumObjs--;
+                        }
+
+                        if (OutputTrace)
+                        {
+                            BasicConsole.WriteLine("   > About to free object...");
                         }
 
                         Heap.Free(objHeaderPtr);
 
-                        NumObjs--;
+                        if (OutputTrace)
+                        {
+                            BasicConsole.WriteLine("   > Object freed.");
+                        }
+
+                        if (OutputTrace)
+                        {
+                            BasicConsole.WriteLine("   > Done.");
+                        }
+                    }
+
+                    if (OutputTrace)
+                    {
+                        BasicConsole.WriteLine(" > Shifting to next item...");
                     }
 
                     prevObjToCleanupPtr = currObjToCleanupPtr;
                     currObjToCleanupPtr = currObjToCleanupPtr->prevPtr;
+
+                    if (OutputTrace)
+                    {
+                        BasicConsole.WriteLine(" > Removing object to cleanup...");
+                    }
+   
                     RemoveObjectToCleanup(prevObjToCleanupPtr);
+
+                    if (OutputTrace)
+                    {
+                        BasicConsole.WriteLine(" > Done.");
+                        BasicConsole.WriteLine(" > Loop back...");
+                    }
                 }
 
                 InsideGC = false;
 
 #if GC_TRACE
-            PrintCleanupData(startNumObjs, startNumStrings);
+                if (OutputTrace)
+                {
+                    PrintCleanupData(startNumObjs, startNumStrings);
+                }
 #endif
             }
             finally
@@ -729,7 +1068,7 @@ namespace Kernel.FOS_System
 
             try
             {
-                ObjectToCleanup* newObjToCleanupPtr = (ObjectToCleanup*)Heap.Alloc((uint)sizeof(ObjectToCleanup), "GC : AddObjectToCleanup");
+                ObjectToCleanup* newObjToCleanupPtr = (ObjectToCleanup*)Heap.AllocZeroed((uint)sizeof(ObjectToCleanup), "GC : AddObjectToCleanup");
                 newObjToCleanupPtr->objHeaderPtr = objHeaderPtr;
                 newObjToCleanupPtr->objPtr = objPtr;
 
@@ -741,8 +1080,9 @@ namespace Kernel.FOS_System
                 else
                 {
                     newObjToCleanupPtr->prevPtr = null;
+                    newObjToCleanupPtr->nextPtr = null;
                 }
-
+                
                 CleanupList = newObjToCleanupPtr;
             }
             finally
@@ -808,6 +1148,37 @@ namespace Kernel.FOS_System
             
             Heap.Free(objToCleanupPtr);
         }
+    }
+    public unsafe class GCState : FOS_System.Object
+    {
+        /// <summary>
+        /// Whether the GC is currently executing. Used to prevent the GC calling itself (or ending up in loops with
+        /// called methods re-calling the GC!)
+        /// </summary>
+        public bool InsideGC = false;
+
+        public bool OutputTrace = false;
+
+        public FOS_System.String lastEnabler = "";
+        public FOS_System.String lastDisabler = "";
+        public FOS_System.String lastLocker = "[NEVER SET]";
+
+        public SpinLock AccessLock = null;
+        public bool AccessLockInitialised = false;
+
+        /// <summary>
+        /// The total number of objects currently allocated by the GC.
+        /// </summary>
+        public int NumObjs = 0;
+        /// <summary>
+        /// The number of strings currently allocated on the heap.
+        /// </summary>
+        public int NumStrings = 0;
+
+        /// <summary>
+        /// The linked-list of objects to clean up.
+        /// </summary>
+        public ObjectToCleanup* CleanupList = null;
     }
     
     /// <summary>
