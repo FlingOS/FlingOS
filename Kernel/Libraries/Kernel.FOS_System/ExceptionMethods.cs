@@ -173,8 +173,8 @@ namespace Kernel
         {
             Kernel.FOS_System.GC.IncrementRefCount(ex);
 
-            BasicConsole.WriteLine("Exception thrown:");
-            BasicConsole.WriteLine(ex.Message);
+            //BasicConsole.WriteLine("Exception thrown:");
+            //BasicConsole.WriteLine(ex.Message);
 
             if (State->CurrentHandlerPtr->Ex != null)
             {

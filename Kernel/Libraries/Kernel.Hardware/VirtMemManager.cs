@@ -89,16 +89,16 @@ namespace Kernel.Hardware
             {
                 MapFreePagesLock.Enter();
 
-                BasicConsole.WriteLine("Mapping free pages:");
+                //BasicConsole.WriteLine("Mapping free pages:");
 
                 uint physAddrsStart = impl.FindFreePhysPageAddrs(numPages);
                 virtAddrsStart = impl.FindFreeVirtPageAddrs(numPages);
-                BasicConsole.Write(" -- Phys start: ");
-                BasicConsole.WriteLine(physAddrsStart);
-                BasicConsole.Write(" -- Virt start: ");
-                BasicConsole.WriteLine(virtAddrsStart);
-                BasicConsole.Write(" -- Num pages: ");
-                BasicConsole.WriteLine(numPages);
+                //BasicConsole.Write(" -- Phys start: ");
+                //BasicConsole.WriteLine(physAddrsStart);
+                //BasicConsole.Write(" -- Virt start: ");
+                //BasicConsole.WriteLine(virtAddrsStart);
+                //BasicConsole.Write(" -- Num pages: ");
+                //BasicConsole.WriteLine(numPages);
                 for (uint i = 0; i < numPages; i++)
                 {
                     Map(physAddrsStart + (i * 4096), virtAddrsStart + (i * 4096), 4096, flags);

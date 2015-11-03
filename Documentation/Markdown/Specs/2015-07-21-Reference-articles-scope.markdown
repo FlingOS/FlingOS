@@ -28,60 +28,60 @@ This document outlines the scope of the reference articles as a set of aims and 
 | 14 | - MBR and EBR                 | Complete  | No  | 2015-09 |
 | 15 | - Partitions                  | Complete  | No  | 2015-09 |
 | 16 | Display / Video / Graphics    | Complete   | No  | 2015-09 |
-| 17 | - Consoles                    | Unstarted | N/A | 2015-09 |
+| 17 | - Consoles                    | Complete | No | 2015-09 |
 | 18 | - Shells                      | Unstarted | N/A | 2015-12 |
-| 19 | - VGA - Text-mode             | Unstarted | N/A | 2015-09 |
+| 19 | - VGA - Text-mode             | Complete | No | 2015-09 |
 | 20 | Drivers & Programs            | Unstarted | N/A | 2016-04 |
 | 21 | - Executables & Shared Libraries  | Unstarted | N/A | 2016-04 |
 | 22 | - Linking & Loading          | Unstarted | N/A | 2016-04 |
 | 23 | - ELF                         | Unstarted | N/A | 2016-04 |
 | 24 | Exceptions                    | Unstarted | N/A | 2015-12 |
-| 25 | File Systems                  | Unstarted | N/A | 2015-09 |
-| 26 | - FAT                         | Unstarted | N/A | 2015-09 |
-| 27 | - FAT File Stream             | Unstarted | N/A | 2015-09 |
-| 28 | - File Systems                | Unstarted | N/A | 2015-09 |
+| 25 | File Systems                  | Unstarted | N/A | 2016-04 |
+| 26 | - FAT                         | Unstarted | N/A | 2016-04 |
+| 27 | - FAT File Stream             | Unstarted | N/A | 2016-04 |
+| 28 | - File Systems                | Unstarted | N/A | 2016-04 |
 | 29 | - ISO9660                     | Unstarted | N/A | 2016-04 |
-| 30 | - Streams                     | Unstarted | N/A | 2015-09 |
-| 31 | Human Interface Devices           | Unstarted | N/A | 2015-09 |
-| 32 | - Keyboards & PS2               | Unstarted | N/A | 2015-09 |
-| 33 | Initialisation / Startup      | Unstarted | N/A | 2015-09 |
-| 34 | - Entrypoints                 | Unstarted | N/A | 2015-09 |
-| 35 | - Initialisation              | Unstarted | N/A | 2015-09 |
-| 36 | - Multiboot                   | Unstarted | N/A | 2015-09 |
+| 30 | - Streams                     | Unstarted | N/A | 2016-04 |
+| 31 | Human Input Devices           | Complete | No | 2015-09 |
+| 32 | - Keyboards & PS2               | Complete | No | 2015-09 |
+| 33 | Initialisation / Startup      | Unstarted | N/A | 2016-04 |
+| 34 | - Entrypoints                 | Unstarted | N/A | 2016-04 |
+| 35 | - Initialisation              | Unstarted | N/A | 2016-04 |
+| 36 | - Multiboot                   | Complete | No | 2015-09 |
 | 37 | Interrupts                    | Complete | N/A | 2015-09 |
 | 38 | - ISRs                        | Complete | N/A | 2015-09 |
 | 39 | - IRQs                        | Complete | N/A | 2015-09 |
 | 40 | - Deferred Interrupts         | Unstarted | N/A | 2016-04 |
-| 41 | Languages / Designs           | Unstarted | N/A | 2015-09 |
-| 42 | - Calling Conventions         | Unstarted | N/A | 2015-09 |
+| 41 | Languages / Designs           | Unstarted | N/A | 2015-12 |
+| 42 | - Calling Conventions         | Unstarted | N/A | 2015-12 |
 | 43 | - Objects and Pointers        | Unstarted | N/A | 2015-12 |
 | 44 | - Standard Libraries          | Unstarted | N/A | 2015-12 |
-| 45 | Memory                        | Unstarted | N/A | 2015-09 |
+| 45 | Memory                        | Complete | No | 2015-09 |
 | 46 | - Garbage Collection          | Unstarted | N/A | 2016-04 |
-| 47 | - Heaps                       | Unstarted | N/A | 2015-09 |
-| 48 | - Stacks                      | Unstarted | N/A | 2015-09 |
-| 49 | - Virtual Memory              | Unstarted | N/A | 2015-09 |
-| 50 | - x86 Paging                  | Unstarted | N/A | 2015-09 |
+| 47 | - Heaps                       | Complete | No | 2015-09 |
+| 48 | - Stacks                      | Complete | No | 2015-09 |
+| 49 | - Virtual Memory              | Unstarted | N/A | 2016-04 |
+| 50 | - x86 Paging                  | Unstarted | N/A | 2016-04 |
 | 51 | Processes & Threads           | Unstarted | N/A | 2016-04 |
 | 52 | - Idle task / thread          | Unstarted | N/A | 2016-04 |
 | 53 | - Multi-threading             | Unstarted | N/A | 2016-04 |
 | 54 | - Scheduling                  | Unstarted | N/A | 2016-04 |
 | 55 | - Synchronisation             | Unstarted | N/A | 2016-04 |
 | 56 | - System Calls                | Unstarted | N/A | 2016-04 |
-| 57 | PCI                           | Unstarted | N/A | 2015-09 |
-| 58 | Ports (IO Ports)              | Unstarted | N/A | 2015-09 |
-| 59 | - Serial ports (COM ports)    | Unstarted | N/A | 2015-09 |
-| 60 | Timers                        | Unstarted | N/A | 2015-09 |
-| 61 | - PIT                         | Unstarted | N/A | 2015-09 |
-| 62 | - PC Speaker                  | Unstarted | N/A | 2015-09 |
+| 57 | PCI                           | Unstarted | N/A | 2016-04 |
+| 58 | Ports (IO Ports)              | Complete | No | 2015-09 |
+| 59 | - Serial ports (COM ports)    | In progress | N/A | 2016-04 |
+| 60 | Timers                        | Complete | No | 2015-09 |
+| 61 | - PIT                         | Complete | No | 2015-09 |
+| 62 | - PC Speaker                  | Unstarted | N/A | 2016-04 |
 | 63 | USB                           | Unstarted | N/A | 2015-12 |
 | 64 | - EHCI                        | Unstarted | N/A | 2015-12 |
 | 65 | - UHCI                        | Unstarted | N/A | 2016-04 |
 | 66 | - USB - Driver                | Unstarted | N/A | 2015-12 |
 | 67 | - USB Mass Storage Devices    | Unstarted | N/A | 2015-12 |
-| 68 | x86 Descriptor Tables         | Unstarted | N/A | 2015-09 |
-| 69 | - Global Descriptor Table     | Unstarted | N/A | 2015-09 |
-| 70 | - Interrupts Descriptor Table | Unstarted | N/A | 2015-09 |
+| 68 | x86 Descriptor Tables         | Removed | N/A | N/A |
+| 69 | - Global Descriptor Table     | Complete | No | 2015-09 |
+| 70 | - Interrupts Descriptor Table | Complete | No | 2015-09 |
 |================================================================|
 | 70 |                               |           |     | **2015-09** |
 
@@ -90,8 +90,8 @@ This document outlines the scope of the reference articles as a set of aims and 
 
 | # | Name | Status | Updates? | Release date |
 |:-:|:-----|:------:|:--------:|:------------:|
-| 1 | Getting started       | Unstarted | N/A | 2015-09 |
-| 2 | Typical design routes | Unstarted | N/A | 2015-09 |
+| 1 | Getting started       | Complete | No | 2015-09 |
+| 2 | Typical design routes | Complete | No | 2015-09 |
 |=======================================================|
 | 2 |                       |           |     | **2015-09** |
 

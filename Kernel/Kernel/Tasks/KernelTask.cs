@@ -96,8 +96,13 @@ namespace Kernel.Tasks
                 //WindowManagerProcess.OutputMemTrace = true;
                 ProcessManager.RegisterProcess(WindowManagerProcess, Scheduler.Priority.Normal);
 
-                BasicConsole.WriteLine(" > [Pausing 500ms]");
-                Thread.Sleep(500);
+                BasicConsole.WriteLine(" > Waiting for Window Manager to be ready...");
+                while (!WindowManagerTask.Ready)
+                {
+                    BasicConsole.WriteLine(" > [Wait pause]");
+                    Thread.Sleep(100);
+                }
+                BasicConsole.WriteLine(" > Window Manager reported ready.");
 
                 BasicConsole.WriteLine(" > Starting Device Manager...");
                 Process DeviceManagerProcess = ProcessManager.CreateProcess(DeviceManagerTask.Main, "Device Manager", false, true);
@@ -109,23 +114,32 @@ namespace Kernel.Tasks
 
                 BasicConsole.WriteLine("Started.");
 
-                BasicConsole.PrimaryOutputEnabled = false;
+                //BasicConsole.PrimaryOutputEnabled = false;
                 //BasicConsole.SecondaryOutputEnabled = false;
 
                 try
                 {
+                    BasicConsole.WriteLine("KT > Create outpoint (outpipe)");
                     StdOut = new Pipes.Standard.StandardOutpoint(true);
+                    BasicConsole.WriteLine("KT > Wait for connect");
                     int StdOutPipeId = StdOut.WaitForConnect();
 
+                    BasicConsole.WriteLine("KT > Create inpoint (inpipe)");
                     StdIn = new Pipes.Standard.StandardInpoint(WindowManagerProcess.Id, false);
-                    
+
+                    BasicConsole.WriteLine("KT > Running...");
+
+                    Thread.Sleep_Indefinitely();
+
                     uint loops = 0;
                     while (!Terminating)
                     {
                         try
                         {
-                            StdOut.Write(StdOutPipeId, StdIn.Read(true), true);
-                            //StdOut.Write(StdOutPipeId, "Kernel: Hello, processor! (" + (FOS_System.String)loops++ + ")\n");
+                            //StdOut.Write(StdOutPipeId, StdIn.Read(true), true);
+                            //BasicConsole.WriteLine("KT > Write start");
+                            //StdOut.Write(StdOutPipeId, "Kernel: Hello, processor! (" + (FOS_System.String)loops++ + ")\n", true);
+                            //BasicConsole.WriteLine("KT > Write end");
                         }
                         catch
                         {
@@ -195,18 +209,18 @@ namespace Kernel.Tasks
                     // Scheduler must be disabled during pop/push from circular buffer or we can
                     //  end up in an infinite lock. Consider what happens if a process invokes 
                     //  a deferred system call during the pop/push here and at the end of this loop.
-                    BasicConsole.WriteLine("DSC: Pausing scheduler...");
+                    //BasicConsole.WriteLine("DSC: Pausing scheduler...");
                     //Scheduler.Disable();
-                    BasicConsole.WriteLine("DSC: Popping queued info object...");
+                    //BasicConsole.WriteLine("DSC: Popping queued info object...");
                     DeferredSyscallInfo info = (DeferredSyscallInfo)DeferredSyscallsInfo_Queued.Pop();
-                    BasicConsole.WriteLine("DSC: Resuming scheduler...");
+                    //BasicConsole.WriteLine("DSC: Resuming scheduler...");
                     //Scheduler.Enable();
 
-                    BasicConsole.WriteLine("DSC: Getting process & thread...");
+                    //BasicConsole.WriteLine("DSC: Getting process & thread...");
                     Process CallerProcess = ProcessManager.GetProcessById(info.ProcessId);
                     Thread CallerThread = ProcessManager.GetThreadById(info.ThreadId, CallerProcess);
 
-                    BasicConsole.WriteLine("DSC: Getting data & calling...");
+                    //BasicConsole.WriteLine("DSC: Getting data & calling...");
                     uint Return2 = CallerThread.Return2;
                     uint Return3 = CallerThread.Return3;
                     uint Return4 = CallerThread.Return4;
@@ -215,22 +229,22 @@ namespace Kernel.Tasks
                         (SystemCallNumbers)CallerThread.SysCallNumber, CallerThread.Param1, CallerThread.Param2, CallerThread.Param3,
                         ref Return2, ref Return3, ref Return4);
 
-                    BasicConsole.WriteLine("DSC: Ending call...");
+                    //BasicConsole.WriteLine("DSC: Ending call...");
                     if (result != SystemCallResults.Deferred)
                     {
                         EndDeferredSystemCall(CallerThread, result, Return2, Return3, Return4);
                     }
 
-                    BasicConsole.WriteLine("DSC: Resetting info object...");
+                    //BasicConsole.WriteLine("DSC: Resetting info object...");
                     info.ProcessId = 0;
                     info.ThreadId = 0;
 
                     // See comment at top of loop for why this is necessary
-                    BasicConsole.WriteLine("DSC: Pausing scheduler...");
+                    //BasicConsole.WriteLine("DSC: Pausing scheduler...");
                     //Scheduler.Disable();
-                    BasicConsole.WriteLine("DSC: Queuing info object...");
+                    //BasicConsole.WriteLine("DSC: Queuing info object...");
                     DeferredSyscallsInfo_Unqueued.Push(info);
-                    BasicConsole.WriteLine("DSC: Resuming scheduler...");
+                    //BasicConsole.WriteLine("DSC: Resuming scheduler...");
                     //Scheduler.Enable();
                 }
             }
@@ -245,14 +259,14 @@ namespace Kernel.Tasks
             switch (syscallNumber)
             {
                 case SystemCallNumbers.StartThread:
-                    BasicConsole.WriteLine("DSC: Start Thread");
+                    //BasicConsole.WriteLine("DSC: Start Thread");
                     Return2 = CallerProcess.CreateThread((ThreadStartMethod)Utilities.ObjectUtilities.GetObject((void*)Param1)).Id;
-                    BasicConsole.WriteLine("DSC: Start Thread - done.");
+                    //BasicConsole.WriteLine("DSC: Start Thread - done.");
                     result = SystemCallResults.OK;
                     break;
                 case SystemCallNumbers.RegisterPipeOutpoint:
                     {
-                        BasicConsole.WriteLine("DSC: Register Pipe Outpoint");
+                        //BasicConsole.WriteLine("DSC: Register Pipe Outpoint");
                         Pipes.PipeOutpoint outpoint;
                         bool registered = Pipes.PipeManager.RegisterPipeOutpoint(CallerProcess.Id, (Pipes.PipeClasses)Param1, (Pipes.PipeSubclasses)Param2, (int)Param3, out outpoint);
                         if (registered)
@@ -263,12 +277,12 @@ namespace Kernel.Tasks
                         {
                             result = SystemCallResults.Fail;
                         }
-                        BasicConsole.WriteLine("DSC: Register Pipe Outpoint - done.");
+                        //BasicConsole.WriteLine("DSC: Register Pipe Outpoint - done.");
                     }
                     break;
                 case SystemCallNumbers.GetNumPipeOutpoints:
                     {
-                        BasicConsole.WriteLine("DSC: Get Num Pipe Outpoints");
+                        //BasicConsole.WriteLine("DSC: Get Num Pipe Outpoints");
                         int numOutpoints;
                         bool obtained = Pipes.PipeManager.GetNumPipeOutpoints((Pipes.PipeClasses)Param1, (Pipes.PipeSubclasses)Param2, out numOutpoints);
                         if (obtained)
@@ -280,12 +294,12 @@ namespace Kernel.Tasks
                         {
                             result = SystemCallResults.Fail;
                         }
-                        BasicConsole.WriteLine("DSC: Get Num Pipe Outpoints - done");
+                        //BasicConsole.WriteLine("DSC: Get Num Pipe Outpoints - done");
                     }
                     break;
                 case SystemCallNumbers.GetPipeOutpoints:
                     {
-                        BasicConsole.WriteLine("DSC: Get Pipe Outpoints");
+                        //BasicConsole.WriteLine("DSC: Get Pipe Outpoints");
                         
                         bool obtained = Pipes.PipeManager.GetPipeOutpoints(CallerProcess, (Pipes.PipeClasses)Param1, (Pipes.PipeSubclasses)Param2, (Pipes.PipeOutpointsRequest*)Param3);
                         if (obtained)
@@ -297,12 +311,12 @@ namespace Kernel.Tasks
                             result = SystemCallResults.Fail;
                         }
                         
-                        BasicConsole.WriteLine("DSC: Get Pipe Outpoints - done");
+                        //BasicConsole.WriteLine("DSC: Get Pipe Outpoints - done");
                     }
                     break;
                 case SystemCallNumbers.CreatePipe:
                     {
-                        BasicConsole.WriteLine("DSC: Create Pipe");
+                        //BasicConsole.WriteLine("DSC: Create Pipe");
 
                         bool created = Pipes.PipeManager.CreatePipe(CallerProcess.Id, Param1, (Pipes.CreatePipeRequest*)Param2);
                         if (created)
@@ -314,12 +328,12 @@ namespace Kernel.Tasks
                             result = SystemCallResults.Fail;
                         }
 
-                        BasicConsole.WriteLine("DSC: Create Pipe - done");
+                        //BasicConsole.WriteLine("DSC: Create Pipe - done");
                     }
                     break;
                 case SystemCallNumbers.WaitOnPipeCreate:
                     {
-                        BasicConsole.WriteLine("DSC: Wait On Pipe Create");
+                        //BasicConsole.WriteLine("DSC: Wait On Pipe Create");
 
                         bool waiting = Pipes.PipeManager.WaitOnPipeCreate(CallerProcess.Id, CallerThread.Id, (Pipes.PipeClasses)Param1, (Pipes.PipeSubclasses)Param2);
                         if (waiting)
@@ -331,12 +345,12 @@ namespace Kernel.Tasks
                             result = SystemCallResults.Fail;
                         }
 
-                        BasicConsole.WriteLine("DSC: Wait On Pipe Create - done");
+                        //BasicConsole.WriteLine("DSC: Wait On Pipe Create - done");
                     }
                     break;
                 case SystemCallNumbers.ReadPipe:
                     {
-                        BasicConsole.WriteLine("DSC: Read Pipe");
+                        //BasicConsole.WriteLine("DSC: Read Pipe");
 
                         // Need access to calling process' memory to be able to set values in request structure(s)
                         MemoryLayout OriginalMemoryLayout = SystemCallsHelpers.EnableAccessToMemoryOfProcess(CallerProcess);
@@ -365,12 +379,12 @@ namespace Kernel.Tasks
 
                         SystemCallsHelpers.DisableAccessToMemoryOfProcess(OriginalMemoryLayout);
 
-                        BasicConsole.WriteLine("DSC: Read Pipe - done");
+                        //BasicConsole.WriteLine("DSC: Read Pipe - done");
                     }
                     break;
                 case SystemCallNumbers.WritePipe:
                     {
-                        BasicConsole.WriteLine("DSC: Write Pipe");
+                        //BasicConsole.WriteLine("DSC: Write Pipe");
 
                         // Need access to calling process' memory to be able to set values in request structure(s)
                         MemoryLayout OriginalMemoryLayout = SystemCallsHelpers.EnableAccessToMemoryOfProcess(CallerProcess);
@@ -398,7 +412,7 @@ namespace Kernel.Tasks
 
                         SystemCallsHelpers.DisableAccessToMemoryOfProcess(OriginalMemoryLayout);
 
-                        BasicConsole.WriteLine("DSC: Write Pipe - done");
+                        //BasicConsole.WriteLine("DSC: Write Pipe - done");
                     }
                     break;
                 default:
@@ -449,17 +463,17 @@ namespace Kernel.Tasks
 
             if (result == SystemCallResults.Deferred || result == SystemCallResults.Deferred_PermitActions)
             {
-                BasicConsole.WriteLine("Deferring syscall...");
-                BasicConsole.WriteLine("Popping unqueued info object...");
+                //BasicConsole.WriteLine("Deferring syscall...");
+                //BasicConsole.WriteLine("Popping unqueued info object...");
                 DeferredSyscallInfo info = (DeferredSyscallInfo)DeferredSyscallsInfo_Unqueued.Pop();
-                BasicConsole.WriteLine("Setting info...");
+                //BasicConsole.WriteLine("Setting info...");
                 info.ProcessId = callerProcessId;
                 info.ThreadId = callerThreadId;
 
-                BasicConsole.WriteLine("Queuing info object...");
+                //BasicConsole.WriteLine("Queuing info object...");
                 DeferredSyscallsInfo_Queued.Push(info);
 
-                BasicConsole.WriteLine("Waking deferred syscalls thread...");
+                //BasicConsole.WriteLine("Waking deferred syscalls thread...");
                 DeferredSyscallsThread._Wake();
             }
 

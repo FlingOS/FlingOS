@@ -113,18 +113,25 @@ namespace Kernel.Pipes
                     switch (SysCallResult)
                     {
                         case SystemCallResults.Unhandled:
-                            BasicConsole.WriteLine("BasicOutPipe > WritePipe: Unhandled!");
+                            //BasicConsole.WriteLine("BasicOutPipe > WritePipe: Unhandled!");
                             ExceptionMethods.Throw(new Exceptions.RWUnhandledException("BasicOutPipe : Write Pipe unexpected unhandled!"));
                             break;
                         case SystemCallResults.Fail:
-                            BasicConsole.WriteLine("BasicOutPipe > WritePipe: Failed!");
-                            ExceptionMethods.Throw(new Exceptions.RWFailedException("BasicOutPipe : Write Pipe unexpected failed!"));
+                            //BasicConsole.WriteLine("BasicOutPipe > WritePipe: Failed!");
+                            if (blocking)
+                            {
+                                ExceptionMethods.Throw(new Exceptions.RWFailedException("BasicOutPipe : Write Pipe unexpected failed! (Blocking call)"));
+                            }
+                            else
+                            {
+                                ExceptionMethods.Throw(new Exceptions.RWFailedException("BasicOutPipe : Write Pipe failed. (Non-blocking call)"));
+                            }
                             break;
                         case SystemCallResults.OK:
-                            BasicConsole.WriteLine("BasicOutPipe > WritePipe: Succeeded.");
+                            //BasicConsole.WriteLine("BasicOutPipe > WritePipe: Succeeded.");
                             break;
                         default:
-                            BasicConsole.WriteLine("BasicOutPipe > WritePipe: Unexpected system call result!");
+                            //BasicConsole.WriteLine("BasicOutPipe > WritePipe: Unexpected system call result!");
                             ExceptionMethods.Throw(new Exceptions.RWUnhandledException("BasicOutPipe : Write Pipe unexpected result!"));
                             break;
                     }

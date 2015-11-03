@@ -25,7 +25,7 @@
 #endregion
     
 #define SYSCALLS_TRACE
-//#undef SYSCALLS_TRACE
+#undef SYSCALLS_TRACE
 
 using System;
 using Kernel.FOS_System;
@@ -340,11 +340,11 @@ namespace Kernel.Processes
 #endif
                     result = SystemCallResults.Deferred;
                     break;
-#if SYSCALLS_TRACE
+//#if SYSCALLS_TRACE
                 default:
                     BasicConsole.WriteLine("System call unrecognised/unhandled by Kernel Task.");
                     break;
-#endif
+//#endif
             }
 
             return result;
@@ -568,15 +568,15 @@ namespace Kernel.Processes
         ReadPipe,
         WritePipe
     }
-    public enum SystemCallResults : int
+    public enum SystemCallResults : uint
     {
-        Unhandled = -1,
-        OK = 0,
-        Deferred = 1,
-        Fail = 2,
-        OK_PermitActions,
-        Deferred_PermitActions,
-        RequestAction_WakeThread
+        Unhandled = 0xBAD0C0DE,
+        OK = 0xBAD1C0DE,
+        Deferred = 0xBAD2C0DE,
+        Fail = 0xBAD3C0DE,
+        OK_PermitActions = 0xBAD4C0DE,
+        Deferred_PermitActions = 0xBAD5C0DE,
+        RequestAction_WakeThread = 0xBAD6C0DE
     }
 
 

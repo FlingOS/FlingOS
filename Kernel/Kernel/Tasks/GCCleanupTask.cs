@@ -25,7 +25,7 @@
 #endregion
     
 #define GCTASK_TRACE
-//#undef GCTASK_TRACE
+#undef GCTASK_TRACE
 
 using System;
 using System.Collections.Generic;

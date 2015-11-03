@@ -23,7 +23,10 @@
 //
 // ------------------------------------------------------------------------------ //
 #endregion
-    
+
+#define PIPES_TRACE
+#undef PIPES_TRACE
+
 using System;
 using Kernel.Processes;
 using Kernel.FOS_System.Collections;
@@ -294,7 +297,9 @@ namespace Kernel.Pipes
         }
         public static RWResults ReadPipe(int PipeId, bool Blocking, Process CallerProcess, Thread CallerThread)
         {
+#if PIPES_TRACE
             BasicConsole.WriteLine("ReadPipe: Validating inputs");
+#endif
             // Validate inputs
             //  - Check pipe exists
             Pipe pipe = GetPipe(PipeId);
@@ -303,14 +308,18 @@ namespace Kernel.Pipes
                 return RWResults.Error;
             }
 
+#if PIPES_TRACE
             BasicConsole.WriteLine("ReadPipe: Checking caller allowed to write");
+#endif
             // Check the caller is allowed to access the pipe
             if (!AllowedToReadPipe(pipe, CallerProcess.Id))
             {
                 return RWResults.Error;
             }
 
+#if PIPES_TRACE
             BasicConsole.WriteLine("ReadPipe: Getting out process");
+#endif
             // Get outpoint process
             Process OutProcess = ProcessManager.GetProcessById(pipe.Outpoint.ProcessId);
             if (OutProcess == null)
@@ -318,7 +327,9 @@ namespace Kernel.Pipes
                 return RWResults.Error;
             }
 
+#if PIPES_TRACE
             BasicConsole.WriteLine("ReadPipe: Getting in process");
+#endif
             // Get inpoint process
             Process InProcess = ProcessManager.GetProcessById(pipe.Inpoint.ProcessId);
             if (InProcess == null)
@@ -326,23 +337,31 @@ namespace Kernel.Pipes
                 return RWResults.Error;
             }
 
+#if PIPES_TRACE
             BasicConsole.WriteLine("ReadPipe: Merging memory layouts");
+#endif
             // Merge memory layouts of out process (in process should have already been done by caller)
             //  so we can access the request structure(s) and buffers
             MemoryLayout OriginalMemoryLayout = SystemCallsHelpers.EnableAccessToMemoryOfProcess(OutProcess);
 
+#if PIPES_TRACE
             BasicConsole.WriteLine("ReadPipe: Adding caller to read queue");
+#endif
             // Add caller thread to the read queue
             pipe.QueueToRead(CallerThread.Id);
 
             // Set up initial failure return value
             CallerThread.Return1 = (uint)SystemCallResults.Fail;
 
+#if PIPES_TRACE
             BasicConsole.WriteLine("ReadPipe: Processing pipe queue");
+#endif
             // Process the pipe queue
             ProcessPipeQueue(pipe, OutProcess, InProcess);
             
+#if PIPES_TRACE
             BasicConsole.WriteLine("ReadPipe: Unmerging memory layouts");
+#endif
             // Unmerge memory layouts
             SystemCallsHelpers.DisableAccessToMemoryOfProcess(OriginalMemoryLayout);
 
@@ -359,7 +378,9 @@ namespace Kernel.Pipes
         }
         public static RWResults WritePipe(int PipeId, bool Blocking, Process CallerProcess, Thread CallerThread)
         {
+#if PIPES_TRACE
             BasicConsole.WriteLine("WritePipe: Validating inputs");
+#endif
             // Validate inputs
             //  - Check pipe exists
             Pipe pipe = GetPipe(PipeId);
@@ -368,14 +389,18 @@ namespace Kernel.Pipes
                 return RWResults.Error;
             }
 
+#if PIPES_TRACE
             BasicConsole.WriteLine("WritePipe: Checking caller allowed to write");
+#endif
             // Check the caller is allowed to access the pipe
             if (!AllowedToWritePipe(pipe, CallerProcess.Id))
             {
                 return RWResults.Error;
             }
 
+#if PIPES_TRACE
             BasicConsole.WriteLine("WritePipe: Getting out process");
+#endif
             // Get outpoint process
             Process OutProcess = ProcessManager.GetProcessById(pipe.Outpoint.ProcessId);
             if (OutProcess == null)
@@ -383,7 +408,9 @@ namespace Kernel.Pipes
                 return RWResults.Error;
             }
 
+#if PIPES_TRACE
             BasicConsole.WriteLine("WritePipe: Getting in process");
+#endif
             // Get inpoint process
             Process InProcess = ProcessManager.GetProcessById(pipe.Inpoint.ProcessId);
             if (InProcess == null)
@@ -391,23 +418,31 @@ namespace Kernel.Pipes
                 return RWResults.Error;
             }
 
+#if PIPES_TRACE
             BasicConsole.WriteLine("WritePipe: Merging memory layouts");
+#endif
             // Merge memory layouts of in process (out process should already have been done by caller)
             //  so we can access the request structure(s) and buffers
             MemoryLayout OriginalMemoryLayout = SystemCallsHelpers.EnableAccessToMemoryOfProcess(InProcess);
 
+#if PIPES_TRACE
             BasicConsole.WriteLine("WritePipe: Adding caller to write queue");
+#endif
             // Add caller thread to the write queue
             pipe.QueueToWrite(CallerThread.Id);
 
             // Set up initial failure return value
             CallerThread.Return1 = (uint)SystemCallResults.Fail;
 
+#if PIPES_TRACE
             BasicConsole.WriteLine("WritePipe: Processing pipe queue");
+#endif
             // Process the pipe queue
             ProcessPipeQueue(pipe, OutProcess, InProcess);
 
+#if PIPES_TRACE
             BasicConsole.WriteLine("WritePipe: Unmerging memory layouts");
+#endif
             // Unmerge memory layouts
             SystemCallsHelpers.DisableAccessToMemoryOfProcess(OriginalMemoryLayout);
 
@@ -424,13 +459,19 @@ namespace Kernel.Pipes
         }
         private static void ProcessPipeQueue(Pipe pipe, Process OutProcess, Process InProcess)
         {
+#if PIPES_TRACE
             BasicConsole.WriteLine("ProcessPipeQueue: Checking first loop condition");
+#endif
             while ((pipe.AreThreadsWaitingToWrite() && pipe.CanWrite()) || (pipe.AreThreadsWaitingToRead() && pipe.CanRead()))
             {
+#if PIPES_TRACE
                 BasicConsole.WriteLine("ProcessPipeQueue: Loop start");
+#endif
                 if (pipe.CanWrite())
                 {
+#if PIPES_TRACE
                     BasicConsole.WriteLine("ProcessPipeQueue: Pipe can write");
+#endif
 
                     /*  - Dequeue thread to write
                      *  - Find thread to write
@@ -441,39 +482,51 @@ namespace Kernel.Pipes
                      *  - Loop back
                      */
 
+#if PIPES_TRACE
                     BasicConsole.WriteLine("ProcessPipeQueue: Dequeuing out thread id");
+#endif
                     UInt32 ThreadId;
                     if (!pipe.DequeueToWrite(out ThreadId))
                     {
                         break;
                     }
 
+#if PIPES_TRACE
                     BasicConsole.WriteLine("ProcessPipeQueue: Getting out thread");
+#endif
                     Thread WriteThread = ProcessManager.GetThreadById(ThreadId, OutProcess);
                     if (WriteThread == null)
                     {
                         break;
                     }
 
+#if PIPES_TRACE
                     BasicConsole.WriteLine("ProcessPipeQueue: Writing pipe");
+#endif
                     WritePipeRequest* Request = (WritePipeRequest*)WriteThread.Param1;
                     bool Successful = pipe.Write(Request->inBuffer, Request->offset, Request->length);
                     if (Successful)
                     {
+#if PIPES_TRACE
                         BasicConsole.WriteLine("ProcessPipeQueue: Write successful");
+#endif
                         WriteThread.Return1 = (uint)SystemCallResults.OK;
                         WriteThread._Wake();
                     }
                     else
                     {
+#if PIPES_TRACE
                         BasicConsole.WriteLine("ProcessPipeQueue: Write failed");
+#endif
                         WriteThread.Return1 = (uint)SystemCallResults.Fail;
                         WriteThread._Wake();
                     }
                 }
                 else if (pipe.CanRead())
                 {
+#if PIPES_TRACE
                     BasicConsole.WriteLine("ProcessPipeQueue: Pipe can read");
+#endif
 
                     /*  - Dequeue thread to read
                      *  - Find thread to read
@@ -484,40 +537,52 @@ namespace Kernel.Pipes
                      *  - Loop back
                     */
 
+#if PIPES_TRACE
                     BasicConsole.WriteLine("ProcessPipeQueue: Dequeuing in thread id");
+#endif
                     UInt32 ThreadId;
                     if (!pipe.DequeueToRead(out ThreadId))
                     {
                         break;
                     }
 
+#if PIPES_TRACE
                     BasicConsole.WriteLine("ProcessPipeQueue: Getting in thread");
+#endif
                     Thread ReadThread = ProcessManager.GetThreadById(ThreadId, InProcess);
                     if (ReadThread == null)
                     {
                         break;
                     }
 
+#if PIPES_TRACE
                     BasicConsole.WriteLine("ProcessPipeQueue: Reading pipe");
+#endif
                     ReadPipeRequest* Request = (ReadPipeRequest*)ReadThread.Param1;
                     int BytesRead;
                     bool Successful = pipe.Read(Request->outBuffer, Request->offset, Request->length, out BytesRead);
                     if (Successful)
                     {
+#if PIPES_TRACE
                         BasicConsole.WriteLine("ProcessPipeQueue: Read successful");
+#endif
                         ReadThread.Return1 = (uint)SystemCallResults.OK;
                         ReadThread.Return2 = (uint)BytesRead;
                         ReadThread._Wake();
                     }
                     else
                     {
+#if PIPES_TRACE
                         BasicConsole.WriteLine("ProcessPipeQueue: Read failed");
+#endif
                         ReadThread.Return1 = (uint)SystemCallResults.Fail;
                         ReadThread._Wake();
                     }
                 }
 
+#if PIPES_TRACE
                 BasicConsole.WriteLine("ProcessPipeQueue: Looping...");
+#endif
             }
         }
         

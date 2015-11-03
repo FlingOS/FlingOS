@@ -60,6 +60,15 @@ namespace Kernel.Tasks
 
         private static Pipes.Standard.StandardOutpoint StdIn;
 
+        public static bool Ready
+        {
+            get
+            {
+                return ready_count == 3;
+            }
+        }
+        private static int ready_count = 0;
+
         public static void Main()
         {
             BasicConsole.WriteLine("Window Manager: Started.");
@@ -82,23 +91,30 @@ namespace Kernel.Tasks
                 BasicConsole.WriteLine("Window Manager: InputProcessing thread failed to create!");
             }
 
+            BasicConsole.Write("WM > InputProcessing thread id: ");
+            BasicConsole.WriteLine(InputProcessingThreadId);
+
+            BasicConsole.Write("WM > Register RegisterPipeOutpoint syscall handler");
+            SystemCallMethods.RegisterSyscallHandler(SystemCallNumbers.RegisterPipeOutpoint, SyscallHandler);
+
+
             // Start thread for handling background output processing
             if (SystemCallMethods.StartThread(OutputProcessing, out OutputProcessingThreadId) != SystemCallResults.OK)
             {
                 BasicConsole.WriteLine("Window Manager: OutputProcessing thread failed to create!");
             }
 
-            BasicConsole.Write("WM > InputProcessing thread id: ");
-            BasicConsole.WriteLine(InputProcessingThreadId);
-
+            BasicConsole.Write("WM > Create outpoint (inpipe)");
             StdIn = new Pipes.Standard.StandardOutpoint(false);
 
+            BasicConsole.Write("WM > Init keyboard");
             Keyboard.InitDefault();
+            BasicConsole.Write("WM > Register IRQ 1 handler");
             SystemCallMethods.RegisterIRQHandler(1, HandleIRQ);
 
-            SystemCallMethods.RegisterSyscallHandler(SystemCallNumbers.RegisterPipeOutpoint, SyscallHandler);
-            
+            BasicConsole.Write("WM > Wait for pipe to be created");
             // Wait for pipe to be created
+            ready_count++;
             SystemCallMethods.SleepThread(SystemCallMethods.IndefiniteSleepThread);
 
             while (!Terminating)
@@ -129,6 +145,8 @@ namespace Kernel.Tasks
 
         public static void InputProcessing()
         {
+            ready_count++;
+
             while (!Terminating)
             {
                 if (!InputProcessingThreadAwake)
@@ -138,9 +156,6 @@ namespace Kernel.Tasks
                 InputProcessingThreadAwake = false;
 
                 BasicConsole.WriteLine("WM > InputProcessing thread runnning...");
-
-                // Delay to allow time for Register Outpoint Deferred System Call to complete
-                SystemCallMethods.SleepThread(500);
 
                 int numOutpoints;
                 SystemCallResults SysCallResult;
@@ -232,10 +247,10 @@ namespace Kernel.Tasks
 
         public static void OutputProcessing()
         {
+            ready_count++;
+
             // Wait for pipe to be created
             SystemCallMethods.SleepThread(SystemCallMethods.IndefiniteSleepThread);
-
-            FOS_System.String line = "";
 
             PipeInfo CurrentPipeInfo = ((PipeInfo)ConnectedPipes[CurrentPipeIdx]);
 
@@ -267,23 +282,17 @@ namespace Kernel.Tasks
                                 char Character;
                                 if (Keyboard.Default.GetCharValue(Scancode, out Character))
                                 {
-                                    line += Character;
-
-                                    if (line.length > 0 && line[line.length - 1] == '\n')
+                                    try
                                     {
-                                        try
+                                        StdIn.Write(CurrentPipeInfo.StdInPipeId, Character, false);
+                                    }
+                                    catch
+                                    {
+                                        if (!(ExceptionMethods.CurrentException is Pipes.Exceptions.RWFailedException))
                                         {
-                                            StdIn.Write(CurrentPipeInfo.StdInPipeId, line, false);
+                                            BasicConsole.WriteLine("WM > Error writing to StdIn!");
+                                            BasicConsole.WriteLine(ExceptionMethods.CurrentException.Message);
                                         }
-                                        catch
-                                        {
-                                            if (!(ExceptionMethods.CurrentException is Pipes.Exceptions.RWFailedException))
-                                            {
-                                                BasicConsole.WriteLine("WM > Error writing to StdIn!");
-                                                BasicConsole.WriteLine(ExceptionMethods.CurrentException.Message);
-                                            }
-                                        }
-                                        line = "";
                                     }
                                 }
                             }

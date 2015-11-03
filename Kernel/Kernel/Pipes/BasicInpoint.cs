@@ -125,18 +125,25 @@ namespace Kernel.Pipes
                     switch (SysCallResult)
                     {
                         case SystemCallResults.Unhandled:
-                            BasicConsole.WriteLine("BasicInPipe > ReadPipe: Unhandled!");
+                            //BasicConsole.WriteLine("BasicInPipe > ReadPipe: Unhandled!");
                             ExceptionMethods.Throw(new Exceptions.RWUnhandledException("BasicInPipe : Read Pipe unexpected unhandled!"));
                             break;
                         case SystemCallResults.Fail:
-                            BasicConsole.WriteLine("BasicInPipe > ReadPipe: Failed!");
-                            ExceptionMethods.Throw(new Exceptions.RWFailedException("BasicInPipe : Read Pipe unexpected failed!"));
+                            //BasicConsole.WriteLine("BasicInPipe > ReadPipe: Failed!");
+                            if (blocking)
+                            {
+                                ExceptionMethods.Throw(new Exceptions.RWFailedException("BasicInPipe : Write Pipe unexpected failed! (Blocking call)"));
+                            }
+                            else
+                            {
+                                ExceptionMethods.Throw(new Exceptions.RWFailedException("BasicInPipe : Write Pipe failed. (Non-blocking call)"));
+                            }
                             break;
                         case SystemCallResults.OK:
-                            BasicConsole.WriteLine("BasicInPipe > ReadPipe: Succeeded.");
+                            //BasicConsole.WriteLine("BasicInPipe > ReadPipe: Succeeded.");
                             break;
                         default:
-                            BasicConsole.WriteLine("BasicInPipe > ReadPipe: Unexpected system call result!");
+                            //BasicConsole.WriteLine("BasicInPipe > ReadPipe: Unexpected system call result!");
                             ExceptionMethods.Throw(new Exceptions.RWUnhandledException("BasicInPipe : Read Pipe unexpected result!"));
                             break;
                     }

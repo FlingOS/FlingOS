@@ -37,6 +37,11 @@ namespace Kernel.Pipes.Standard
         {
         }
 
+        public unsafe void Write(int PipeId, char Character, bool blocking)
+        {
+            byte[] data = new byte[1] { (byte)Character };
+            base.Write(PipeId, data, 0, data.Length, blocking);
+        }
         public unsafe void Write(int PipeId, FOS_System.String message, bool blocking)
         {
             byte[] data = ByteConverter.GetASCIIBytes(message);
