@@ -79,7 +79,7 @@ namespace Kernel.Hardware.Processes
 #if PROCESS_TRACE
             BasicConsole.WriteLine("Creating thread...");
 #endif
-            CreateThread(MainMethod);
+            CreateThread(MainMethod, "Main");
 
             if (createHeap)
             {
@@ -87,7 +87,7 @@ namespace Kernel.Hardware.Processes
             }
         }
 
-        public virtual Thread CreateThread(ThreadStartMethod MainMethod)
+        public virtual Thread CreateThread(ThreadStartMethod MainMethod, FOS_System.String Name)
         {
 #if PROCESS_TRACE
             BasicConsole.WriteLine("Creating thread...");
@@ -98,7 +98,7 @@ namespace Kernel.Hardware.Processes
             //    Scheduler.Disable();
             //}
 
-            Thread newThread = new Thread(MainMethod, ThreadIdGenerator++, UserMode);
+            Thread newThread = new Thread(MainMethod, ThreadIdGenerator++, UserMode, Name);
 #if PROCESS_TRACE
             BasicConsole.WriteLine("Adding data page...");
 #endif

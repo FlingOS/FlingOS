@@ -526,7 +526,7 @@ namespace Kernel
             }
         }
         
-        internal static unsafe byte* StackPointer
+        public static unsafe byte* StackPointer
         {
             [Drivers.Compiler.Attributes.PluggedMethod(ASMFilePath=@"ASM\Exceptions\StackPointer")]
             get
@@ -538,7 +538,7 @@ namespace Kernel
             {
             }
         }
-        internal static unsafe byte* BasePointer
+        public static unsafe byte* BasePointer
         {
             [Drivers.Compiler.Attributes.PluggedMethod(ASMFilePath = @"ASM\Exceptions\BasePointer")]
             get
@@ -800,6 +800,7 @@ namespace Kernel
             {
                 BasicConsole.SetTextColour(BasicConsole.error_colour);
                 BasicConsole.WriteLine("Page fault exception!");
+                BasicConsole.DelayOutput(10);
 
                 HaltReason = "Page fault exception. Address: 0x        , errorCode: 0x        , eip: 0x        ";
 

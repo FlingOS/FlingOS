@@ -250,7 +250,7 @@ namespace Drivers.Compiler.Types
         /// <param name="paramTypes">The list of the types of the method's arguments.</param>
         /// <param name="returnType">The return type of the method.</param>
         /// <returns>The signature string.</returns>
-        private static string GetMethodSignature(string returnType, string declaringType, string methodName, string[] paramTypes)
+        public static string GetMethodSignature(string returnType, string declaringType, string methodName, string[] paramTypes)
         {
             string aMethodSignature = "";
             aMethodSignature = returnType + "_RETEND_" + declaringType + "_DECLEND_" + methodName + "_NAMEEND_(";
@@ -273,7 +273,7 @@ namespace Drivers.Compiler.Types
         /// </summary>
         /// <param name="methodSignature">The signature to use to generate the label.</param>
         /// <returns>The ID.</returns>
-        private static string CreateMethodID(string methodSignature)
+        public static string CreateMethodID(string methodSignature)
         {
             return "method_" + Utilities.FilterIdentifierForInvalidChars(methodSignature);
         }

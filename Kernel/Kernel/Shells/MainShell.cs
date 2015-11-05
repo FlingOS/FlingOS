@@ -1000,7 +1000,7 @@ namespace Kernel.Shells
                             {
                                 #region Easter
 
-                                Hardware.Processes.ProcessManager.CurrentProcess.CreateThread(Tasks.EasterTask.Main);
+                                Hardware.Processes.ProcessManager.CurrentProcess.CreateThread(Tasks.EasterTask.Main, "Easter");
 
                                 #endregion
                             }

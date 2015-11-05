@@ -71,6 +71,7 @@ namespace Kernel.Hardware.Devices
         /// <param name="ns">The number of nanoseconds to block.</param>
         public abstract void WaitNS(long ns);
 
+        [Drivers.Compiler.Attributes.NoDebug]
         public abstract int RegisterHandler(TimerHandler handler, long TimeoutNS, bool Recurring, FOS_System.Object state);
         public abstract void UnregisterHandler(int handlerId);
 

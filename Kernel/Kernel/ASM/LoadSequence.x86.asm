@@ -474,6 +474,8 @@ Boot_FlushCsGDT:
 
 ; END - Create GDT
 
+EXTERN method_System_Void_RETEND_Kernel_Debug_Debugger_DECLEND_Int1_NAMEEND___
+EXTERN method_System_Void_RETEND_Kernel_Debug_Debugger_DECLEND_Int3_NAMEEND___
 EXTERN method_System_Void_RETEND_Kernel_Hardware_Interrupts_Interrupts_DECLEND_CommonISR_NAMEEND__System_UInt32_
 EXTERN method_System_Void_RETEND_Kernel_ExceptionMethods_DECLEND_Throw_PageFaultException_NAMEEND__System_UInt32_System_UInt32_System_UInt32_
 EXTERN method_System_Void_RETEND_Kernel_ExceptionMethods_DECLEND_Throw_StackException_NAMEEND___
@@ -674,7 +676,7 @@ popad
 
 ; Set the Int1 handler
 ; Load handler address
-mov dword eax, BasicDebug_InterruptHandler
+mov dword eax, Debug_Int1Handler
 ; Set low address bytes into entry (index) 1 of the table
 mov byte [IDT_Contents + 8], al
 mov byte [IDT_Contents + 9], ah
@@ -687,12 +689,12 @@ mov byte [IDT_Contents + 15], ah
 mov word [IDT_Contents + 10], 0x8
 ; Must always be 0
 mov byte [IDT_Contents + 12], 0x0
-; Set the type and attributes: 0x8F =	   1111		0			00		1
-;										Trap Gate	Always 0	DPL		Present
-mov byte [IDT_Contents + 13], 0x8F
+; Set the type and attributes: 0x8E =	   1111		0			00		1
+;										Interrupt Gate	Always 0	DPL		Present
+mov byte [IDT_Contents + 13], 0x8E
 
 ; Set the Int3 handler
-mov dword eax, BasicDebug_InterruptHandler
+mov dword eax, Debug_Int3Handler
 mov byte [IDT_Contents + 24], al
 mov byte [IDT_Contents + 25], ah
 shr dword eax, 0x10
@@ -700,7 +702,7 @@ mov byte [IDT_Contents + 30], al
 mov byte [IDT_Contents + 31], ah
 mov word [IDT_Contents + 26], 0x8
 mov byte [IDT_Contents + 28], 0x0
-mov byte [IDT_Contents + 29], 0x8F
+mov byte [IDT_Contents + 29], 0x8E
 
 ; Set remaining interrupt handlers
 
@@ -1053,6 +1055,67 @@ CommonInterruptHandler%1:
 
 ; END - Common interrupt handlers
 
+; START - Debug interrupt handlers
+
+EXTERN staticfield_System_Boolean_Kernel_Debug_Debugger_Enabled
+EXTERN staticfield_System_Boolean_Kernel_Hardware_Interrupts_Interrupts_insideCriticalHandler
+
+Debug_Int1Handler:
+	
+	DISABLE_INTERRUPTS
+	
+	push eax
+	mov dword eax, [staticfield_System_Boolean_Kernel_Debug_Debugger_Enabled]
+	cmp eax, 0
+	je Debug_Int1Handler_Skip
+	mov dword eax, [staticfield_System_Boolean_Kernel_Hardware_Interrupts_Interrupts_insideCriticalHandler]
+	cmp eax, 1
+	je Debug_Int1Handler_Skip
+	pop eax
+	
+	INTERRUPTS_STORE_STATE 301
+
+    call method_System_Void_RETEND_Kernel_Debug_Debugger_DECLEND_Int1_NAMEEND___
+    
+	INTERRUPTS_RESTORE_STATE 301
+	
+	jmp Debug_Int1Handler_End
+	Debug_Int1Handler_Skip:
+	pop eax
+	Debug_Int1Handler_End:
+
+IRetd
+
+Debug_Int3Handler:
+	
+	DISABLE_INTERRUPTS
+	
+	push eax
+	mov dword eax, [staticfield_System_Boolean_Kernel_Debug_Debugger_Enabled]
+	cmp eax, 0
+	je Debug_Int3Handler_Skip
+	mov dword eax, [staticfield_System_Boolean_Kernel_Hardware_Interrupts_Interrupts_insideCriticalHandler]
+	cmp eax, 1
+	je Debug_Int3Handler_Skip
+	pop eax
+
+	INTERRUPTS_STORE_STATE 303
+
+    call method_System_Void_RETEND_Kernel_Debug_Debugger_DECLEND_Int3_NAMEEND___
+	
+	INTERRUPTS_RESTORE_STATE 303
+    
+	jmp Debug_Int3Handler_End
+	Debug_Int3Handler_Skip:
+	pop eax
+	Debug_Int3Handler_End:
+
+IRetd
+
+DoNothing:
+ret
+
+; END - Debug interrupt handlers
 
 SkipIDTHandlers:	
 pic_remap:

@@ -83,13 +83,18 @@ namespace Kernel.Tasks
                 //ProcessManager.CurrentProcess.OutputMemTrace = true;
 
                 BasicConsole.WriteLine(" > Starting deferred syscalls thread...");
-                DeferredSyscallsThread = ProcessManager.CurrentProcess.CreateThread(DeferredSyscallsThread_Main);
+                DeferredSyscallsThread = ProcessManager.CurrentProcess.CreateThread(DeferredSyscallsThread_Main, "Deferred Sys Calls");
 
                 BasicConsole.WriteLine(" > Starting GC Cleanup thread...");
-                ProcessManager.CurrentProcess.CreateThread(Tasks.GCCleanupTask.Main);
+                ProcessManager.CurrentProcess.CreateThread(Tasks.GCCleanupTask.Main, "GC Cleanup");
 
                 BasicConsole.WriteLine(" > Starting Idle thread...");
-                ProcessManager.CurrentProcess.CreateThread(Tasks.IdleTask.Main);
+                ProcessManager.CurrentProcess.CreateThread(Tasks.IdleTask.Main, "Idle");
+
+#if DEBUG
+                BasicConsole.WriteLine(" > Starting Debugger thread...");
+                Debug.Debugger.MainThread = ProcessManager.CurrentProcess.CreateThread(Debug.Debugger.Main, "Debugger");
+#endif
 
                 BasicConsole.WriteLine(" > Starting Window Manager...");
                 Process WindowManagerProcess = ProcessManager.CreateProcess(WindowManagerTask.Main, "Window Manager", false, true);
@@ -260,7 +265,7 @@ namespace Kernel.Tasks
             {
                 case SystemCallNumbers.StartThread:
                     //BasicConsole.WriteLine("DSC: Start Thread");
-                    Return2 = CallerProcess.CreateThread((ThreadStartMethod)Utilities.ObjectUtilities.GetObject((void*)Param1)).Id;
+                    Return2 = CallerProcess.CreateThread((ThreadStartMethod)Utilities.ObjectUtilities.GetObject((void*)Param1), "[From sys call]").Id;
                     //BasicConsole.WriteLine("DSC: Start Thread - done.");
                     result = SystemCallResults.OK;
                     break;

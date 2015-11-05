@@ -116,7 +116,7 @@ namespace Kernel.Hardware.VirtMem
         }
 
         //bool loadPrint = true;
-        //bool unloadPrint = true;
+        public bool unloadPrint = false;
         [Drivers.Compiler.Attributes.NoDebug]
         public void Load(bool ProcessIsUM)
         {
@@ -163,6 +163,8 @@ namespace Kernel.Hardware.VirtMem
         [Drivers.Compiler.Attributes.NoDebug]
         public void Unload()
         {
+            //x86.Unmap_Print = unloadPrint;
+
             for (int i = 0; i < CodePages.Keys.Count && i < CodePages.Values.Count; i++)
             {
 #if MEMLAYOUT_TRACE
@@ -171,7 +173,7 @@ namespace Kernel.Hardware.VirtMem
 
                 //if (unloadPrint)
                 //{
-                //    BasicConsole.WriteLine(((FOS_System.String)"Unloading code page v->p: ") + CodePages.Keys[i]);
+                //    BasicConsole.WriteLine("Unloading code page");
                 //}
 
                 //TODO: Revert to the following line of code and then work out why it results in so many page faults
@@ -187,18 +189,26 @@ namespace Kernel.Hardware.VirtMem
 
                 //if (unloadPrint)
                 //{
-                //    BasicConsole.WriteLine(((FOS_System.String)"Unloading data page v->p: ") + DataPages.Keys[i]);
+                //    FOS_System.String str = "Unloading data page 0x--------";
+                //    ExceptionMethods.FillString(DataPages.Keys[i], 29, str);
+                //    BasicConsole.WriteLine(str);
                 //}
 
                 //TODO: Revert line - see above
                 VirtMemManager.Unmap(DataPages.Keys[i], UpdateUsedPagesFlags.None);
-            }
 
+                //if (unloadPrint)
+                //{
+                //    BasicConsole.WriteLine(" > Done.");
+                //}
+            }
+            
             //if (unloadPrint)
             //{
-            //    //BasicConsole.DelayOutput(1);
-            //    unloadPrint = false;
+            //    BasicConsole.WriteLine("Unload complete.");
             //}
+
+            //x86.Unmap_Print = false;
         }
 
         public MemoryLayout Merge(MemoryLayout y)

@@ -78,5 +78,44 @@ namespace Kernel.FOS_System
             }
             return result;
         }
+
+        /// <summary>
+        /// Parses a string as an unsigned hexadecimal integer.
+        /// </summary>
+        /// <param name="str">The string to parse.</param>
+        /// <param name="offset">The offset into the string at which to start parsing.</param>
+        /// <returns>The parsed uint.</returns>
+        public static uint Parse_HexadecimalUnsigned(FOS_System.String str, int offset)
+        {
+            str = str.ToLower();
+
+            if (str.length - offset >= 2)
+            {
+                if (str[offset] == '0' && str[offset + 1] == 'x')
+                {
+                    offset += 2;
+                }
+            }
+
+            uint result = 0;
+            for (int i = offset; i < str.length; i++)
+            {
+                char c = str[i];
+                if ((c < '0' || c > '9') && (c < 'a' || c > 'f'))
+                {
+                    break;
+                }
+                result *= 16;
+                if (c >= '0' && c <= '9')
+                {
+                    result += (uint)(c - '0');
+                }
+                else
+                {
+                    result += (uint)(c - 'a') + 10;
+                }
+            }
+            return result;
+        }
     }
 }

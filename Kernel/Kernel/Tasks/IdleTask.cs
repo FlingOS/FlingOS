@@ -34,7 +34,6 @@ namespace Kernel.Tasks
 {
     public static unsafe class IdleTask
     {
-        [Drivers.Compiler.Attributes.NoDebug]
         [Drivers.Compiler.Attributes.NoGC]
         public static void Main()
         {

@@ -45,12 +45,6 @@ namespace Kernel
         {
             BasicConsole.Init();
             BasicConsole.Clear();
-            
-#if DEBUG
-            //Debug.BasicDebug.Init();
-#endif
-
-            BasicConsole.WriteLine();
         }
 
         /// <summary>
@@ -98,7 +92,7 @@ namespace Kernel
                 Process KernelProcess = ProcessManager.CreateProcess(Tasks.KernelTask.Main, "Kernel Task", false);
                 ProcessManager.KernelProcess = KernelProcess;
 
-                BasicConsole.WriteLine("Creating kernel thread...");
+                BasicConsole.WriteLine("Getting kernel thread...");
                 Thread KernelThread = ((Thread)KernelProcess.Threads[0]);
 
                 BasicConsole.WriteLine("Initialising kernel thread stack...");

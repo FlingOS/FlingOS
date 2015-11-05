@@ -77,6 +77,7 @@ namespace Kernel.FOS_System.Collections
             {
                 return _array.Length;
             }
+            [Drivers.Compiler.Attributes.NoDebug]
             set
             {
                 if (value > _array.Length)
@@ -248,6 +249,7 @@ namespace Kernel.FOS_System.Collections
         /// </summary>
         /// <param name="obj">The object to search for.</param>
         /// <returns>The index or -1 if not found.</returns>
+        [Drivers.Compiler.Attributes.NoDebug]
         public int IndexOf(FOS_System.Object obj)
         {
             //This is a straight forward search. Other search algorithms
@@ -266,6 +268,7 @@ namespace Kernel.FOS_System.Collections
             return -1;
         }
 
+        [Drivers.Compiler.Attributes.NoDebug]
         public FOS_System.Object Last()
         {
             if (nextIndex == 0)

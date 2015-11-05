@@ -65,8 +65,8 @@ namespace ASM_Method_Label_Builder
             Console.WriteLine();
             Console.WriteLine();
 
-            string signature = Kernel.Compiler.Utils.GetMethodSignature(returnType, declaringType, methodName, paramTypes.ToArray());
-            string id = Kernel.Compiler.Utils.CreateMethodID(signature);
+            string signature = Drivers.Compiler.Types.MethodInfo.GetMethodSignature(returnType, declaringType, methodName, paramTypes.ToArray());
+            string id = Drivers.Compiler.Types.MethodInfo.CreateMethodID(signature);
             Console.WriteLine("ASM Label: " + id);
 
             Console.WriteLine();

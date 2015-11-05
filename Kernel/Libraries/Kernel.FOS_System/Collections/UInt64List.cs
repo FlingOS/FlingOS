@@ -195,6 +195,8 @@ namespace Kernel.FOS_System.Collections
         /// </summary>
         /// <param name="obj">The object to search for.</param>
         /// <returns>The index or -1 if not found.</returns>
+        [Drivers.Compiler.Attributes.NoGC]
+        [Drivers.Compiler.Attributes.NoDebug]
         public int IndexOf(UInt64 obj)
         {
             for (int i = 0; i < nextIndex; i++)

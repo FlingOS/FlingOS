@@ -129,6 +129,7 @@ namespace Kernel.Hardware.Processes
         /// mainly want to switch process context and don't care about the specific
         /// thread context e.g. during an interrupt.
         /// </remarks>
+        [Drivers.Compiler.Attributes.NoDebug]
         public static void SwitchProcess(uint processId, int threadId)
         {
             //Switch the current memory layout across.

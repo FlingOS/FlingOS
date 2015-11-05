@@ -170,6 +170,8 @@ namespace Kernel.Hardware.VirtMem
             return (uint)(result * 4096);
         }
 
+        //public static bool Unmap_Print = false;
+
         /// <summary>
         /// Maps the specified virtual address to the specified physical address.
         /// </summary>
@@ -239,14 +241,31 @@ namespace Kernel.Hardware.VirtMem
         [Drivers.Compiler.Attributes.NoDebug]
         public override void Unmap(uint vAddr, UpdateUsedPagesFlags UpdateUsedPages = UpdateUsedPagesFlags.Both)
         {
+            //if (Unmap_Print)
+            //{
+            //    BasicConsole.WriteLine("Getting physical addr...");
+            //}
+
             uint pAddr = GetPhysicalAddress(vAddr);
 
+            //if (Unmap_Print)
+            //{
+            //    BasicConsole.WriteLine("Calculating virt addr parts...");
+            //}
             uint virtPDIdx = vAddr >> 22;
             uint virtPTIdx = (vAddr >> 12) & 0x03FF;
 
+            //if (Unmap_Print)
+            //{
+            //    BasicConsole.WriteLine("Calculating phys addr parts...");
+            //}
             uint physPDIdx = pAddr >> 22;
             uint physPTIdx = (pAddr >> 12) & 0x03FF;
 
+            //if (Unmap_Print)
+            //{
+            //    BasicConsole.WriteLine("Checking flags & stuff...");
+            //}
             if ((UpdateUsedPages & UpdateUsedPagesFlags.Physical) != 0)
             {
                 UsedPhysPages.Clear((int)((physPDIdx * 1024) + physPTIdx));
@@ -256,8 +275,22 @@ namespace Kernel.Hardware.VirtMem
                 UsedVirtPages.Clear((int)((virtPDIdx * 1024) + virtPTIdx));
             }
 
+            //if (Unmap_Print)
+            //{
+            //    BasicConsole.WriteLine("Getting page table...");
+            //}
             uint* virtPTPtr = GetFixedPage(virtPDIdx);
+
+            //if (Unmap_Print)
+            //{
+            //    BasicConsole.WriteLine("Setting page entry...");
+            //}
             SetPageEntry(virtPTPtr, virtPTIdx, 0, PTEFlags.None);
+
+            //if (Unmap_Print)
+            //{
+            //    BasicConsole.WriteLine("Invalidating page table entry...");
+            //}
             InvalidatePTE(vAddr);            
         }
         /// <summary>

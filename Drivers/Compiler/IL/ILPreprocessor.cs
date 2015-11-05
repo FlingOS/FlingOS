@@ -291,9 +291,16 @@ namespace Drivers.Compiler.IL
                     i--;
                     continue;
                 }
+                else if ((ILOp.OpCodes)theOp.opCode.Value == ILOp.OpCodes.Nop)
+                {
+                    if (theMethodInfo.ApplyDebug)
+                    {
+                        theOp.IsDebugOp = true;
+                    }
+                }
                 else if ((ILOp.OpCodes)theOp.opCode.Value == ILOp.OpCodes.Call)
                 {
-                    if (theOp.MethodToCall != null && 
+                    if (theOp.MethodToCall != null &&
                         theOp.MethodToCall.DeclaringType.AssemblyQualifiedName.Contains("mscorlib"))
                     {
                         //We do not want to process ops which attempt to call methods in mscorlib!
@@ -319,7 +326,7 @@ namespace Drivers.Compiler.IL
                             //Then we can presume it was a call to a base-class constructor (e.g. the Object constructor)
                             //  and so we just need to remove any args that were loaded onto the stack.
                             // TODO: result.ASM.AppendLine("; Method to call was constructor so removing params"); // DEBUG INFO
-                            
+
                             //Remove args from stack
                             //If the constructor was non-static, then the first arg is the instance reference.
                             if (!theOp.MethodToCall.IsStatic)

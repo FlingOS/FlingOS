@@ -70,6 +70,7 @@ namespace Kernel.FOS_System
         private static bool StateInitialised
         {
             [Drivers.Compiler.Attributes.NoGC]
+            [Drivers.Compiler.Attributes.NoDebug]
             get
             {
                 return state != null;
@@ -78,6 +79,7 @@ namespace Kernel.FOS_System
         public static bool OutputTrace
         {
             [Drivers.Compiler.Attributes.NoGC]
+            [Drivers.Compiler.Attributes.NoDebug]
             get
             {
                 if (StateInitialised)
@@ -90,6 +92,7 @@ namespace Kernel.FOS_System
                 }
             }
             [Drivers.Compiler.Attributes.NoGC]
+            [Drivers.Compiler.Attributes.NoDebug]
             set
             {
                 if (StateInitialised)
@@ -101,6 +104,7 @@ namespace Kernel.FOS_System
         public static bool InsideGC
         {
             [Drivers.Compiler.Attributes.NoGC]
+            [Drivers.Compiler.Attributes.NoDebug]
             get
             {
                 if (StateInitialised)
@@ -113,6 +117,7 @@ namespace Kernel.FOS_System
                 }
             }
             [Drivers.Compiler.Attributes.NoGC]
+            [Drivers.Compiler.Attributes.NoDebug]
             set
             {
                 if (StateInitialised)
@@ -124,6 +129,7 @@ namespace Kernel.FOS_System
         public static bool AccessLockInitialised
         {
             [Drivers.Compiler.Attributes.NoGC]
+            [Drivers.Compiler.Attributes.NoDebug]
             get
             {
                 if (StateInitialised)
@@ -139,6 +145,7 @@ namespace Kernel.FOS_System
         public static SpinLock AccessLock
         {
             [Drivers.Compiler.Attributes.NoGC]
+            [Drivers.Compiler.Attributes.NoDebug]
             get
             {
                 if (StateInitialised)
@@ -152,6 +159,7 @@ namespace Kernel.FOS_System
         public static int NumObjs
         {
             [Drivers.Compiler.Attributes.NoGC]
+            [Drivers.Compiler.Attributes.NoDebug]
             get
             {
                 if (StateInitialised)
@@ -164,6 +172,7 @@ namespace Kernel.FOS_System
                 }
             }
             [Drivers.Compiler.Attributes.NoGC]
+            [Drivers.Compiler.Attributes.NoDebug]
             set
             {
                 if (StateInitialised)
@@ -198,6 +207,7 @@ namespace Kernel.FOS_System
 
         public static FOS_System.String lastEnabler
         {
+            [Drivers.Compiler.Attributes.NoDebug]
             get
             {
                 if (StateInitialised)
@@ -209,6 +219,7 @@ namespace Kernel.FOS_System
                     return "";
                 }
             }
+            [Drivers.Compiler.Attributes.NoDebug]
             set
             {
                 if (StateInitialised)
@@ -219,6 +230,7 @@ namespace Kernel.FOS_System
         }
         public static FOS_System.String lastDisabler
         {
+            [Drivers.Compiler.Attributes.NoDebug]
             get
             {
                 if (StateInitialised)
@@ -230,6 +242,7 @@ namespace Kernel.FOS_System
                     return "";
                 }
             }
+            [Drivers.Compiler.Attributes.NoDebug]
             set
             {
                 if (StateInitialised)
@@ -240,6 +253,7 @@ namespace Kernel.FOS_System
         }
         public static FOS_System.String lastLocker
         {
+            [Drivers.Compiler.Attributes.NoDebug]
             get
             {
                 if (StateInitialised)
@@ -251,6 +265,7 @@ namespace Kernel.FOS_System
                     return "";
                 }
             }
+            [Drivers.Compiler.Attributes.NoDebug]
             set
             {
                 if (StateInitialised)
@@ -263,6 +278,7 @@ namespace Kernel.FOS_System
         public static ObjectToCleanup* CleanupList
         {
             [Drivers.Compiler.Attributes.NoGC]
+            [Drivers.Compiler.Attributes.NoDebug]
             get
             {
                 if (StateInitialised)
@@ -275,6 +291,7 @@ namespace Kernel.FOS_System
                 }
             }
             [Drivers.Compiler.Attributes.NoGC]
+            [Drivers.Compiler.Attributes.NoDebug]
             set
             {
                 if (StateInitialised)
@@ -317,6 +334,7 @@ namespace Kernel.FOS_System
             state = newState;
         }
 
+        [Drivers.Compiler.Attributes.NoDebug]
         public static void Enable(FOS_System.String caller)
         {
             //BasicConsole.Write(caller);
@@ -326,6 +344,7 @@ namespace Kernel.FOS_System
             lastEnabler = caller;
             GC.Enabled = true;
         }
+        [Drivers.Compiler.Attributes.NoDebug]
         public static void Disable(FOS_System.String caller)
         {
             //BasicConsole.Write(caller);

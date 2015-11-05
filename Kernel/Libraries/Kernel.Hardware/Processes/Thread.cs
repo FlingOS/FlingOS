@@ -35,9 +35,12 @@ namespace Kernel.Hardware.Processes
         
     public unsafe class Thread : FOS_System.Object
     {
+        public bool Debug_Suspend = false;
+
         public const int IndefiniteSleep = -1;
 
         public uint Id;
+        public FOS_System.String Name;
         
         public ThreadState* State;
 
@@ -55,7 +58,7 @@ namespace Kernel.Hardware.Processes
         /// </remarks>
         public int TimeToSleep = 0;
 
-        public Thread(ThreadStartMethod StartMethod, uint AnId, bool UserMode)
+        public Thread(ThreadStartMethod StartMethod, uint AnId, bool UserMode, FOS_System.String AName)
         {
 #if THREAD_TRACE
             BasicConsole.WriteLine("Constructing thread object...");
@@ -72,6 +75,7 @@ namespace Kernel.Hardware.Processes
             BasicConsole.WriteLine("Setting thread info...");
 #endif
             Id = AnId;
+            Name = AName;
             State->StartEIP = (uint)Utilities.ObjectUtilities.GetHandle(StartMethod);
 
             // Allocate kernel memory for the kernel stack for this thread
@@ -123,12 +127,22 @@ namespace Kernel.Hardware.Processes
             State->ExState = (ExceptionState*)FOS_System.Heap.AllocZeroed((uint)sizeof(ExceptionState), "Thread : Thread() (2)");
         }
 
+        /* 
+         * For offsets from ESP used in the properties below, see Scheduler.SetupThreadForStart.
+         * Specifically, the User Mode thread initialisation section has commented offset values.
+         * 
+         * Note: "ESP after switch to UM" and "SS after switch to UM" do not exist for KM processes.
+         *       Be careful not to accidentally cause stack underflow when accessing these.
+         */
+
         public UInt32 EAXFromInterruptStack
         {
+            [Drivers.Compiler.Attributes.NoDebug]
             get
             {
                 return *(UInt32*)(State->ESP + 44);
             }
+            [Drivers.Compiler.Attributes.NoDebug]
             set
             {
                 *(UInt32*)(State->ESP + 44) = value;
@@ -136,10 +150,12 @@ namespace Kernel.Hardware.Processes
         }
         public UInt32 EBXFromInterruptStack
         {
+            [Drivers.Compiler.Attributes.NoDebug]
             get
             {
                 return *(UInt32*)(State->ESP + 32);
             }
+            [Drivers.Compiler.Attributes.NoDebug]
             set
             {
                 *(UInt32*)(State->ESP + 32) = value;
@@ -147,10 +163,12 @@ namespace Kernel.Hardware.Processes
         }
         public UInt32 ECXFromInterruptStack
         {
+            [Drivers.Compiler.Attributes.NoDebug]
             get
             {
                 return *(UInt32*)(State->ESP + 40);
             }
+            [Drivers.Compiler.Attributes.NoDebug]
             set
             {
                 *(UInt32*)(State->ESP + 40) = value;
@@ -158,18 +176,69 @@ namespace Kernel.Hardware.Processes
         }
         public UInt32 EDXFromInterruptStack
         {
+            [Drivers.Compiler.Attributes.NoDebug]
             get
             {
                 return *(UInt32*)(State->ESP + 36);
             }
+            [Drivers.Compiler.Attributes.NoDebug]
             set
             {
                 *(UInt32*)(State->ESP + 36) = value;
             }
         }
 
+        public UInt32 ESPFromInterruptStack
+        {
+            [Drivers.Compiler.Attributes.NoDebug]
+            get
+            {
+                return *(UInt32*)(State->ESP + 28);
+            }
+        }
+        public UInt32 EBPFromInterruptStack
+        {
+            [Drivers.Compiler.Attributes.NoDebug]
+            get
+            {
+                return *(UInt32*)(State->ESP + 24);
+            }
+            [Drivers.Compiler.Attributes.NoDebug]
+            set
+            {
+                *(UInt32*)(State->ESP + 24) = value;
+            }
+        }
+        public UInt32 EIPFromInterruptStack
+        {
+            [Drivers.Compiler.Attributes.NoDebug]
+            get
+            {
+                return *(UInt32*)(State->ESP + 48);
+            }
+            [Drivers.Compiler.Attributes.NoDebug]
+            set
+            {
+                *(UInt32*)(State->ESP + 48) = value;
+            }
+        }
+        public UInt32 EFLAGSFromInterruptStack
+        {
+            [Drivers.Compiler.Attributes.NoDebug]
+            get
+            {
+                return *(UInt32*)(State->ESP + 56);
+            }
+            [Drivers.Compiler.Attributes.NoDebug]
+            set
+            {
+                *(UInt32*)(State->ESP + 56) = value;
+            }
+        }
+        
         public UInt32 SysCallNumber
         {
+            [Drivers.Compiler.Attributes.NoDebug]
             get
             {
                 return EAXFromInterruptStack;
@@ -177,6 +246,7 @@ namespace Kernel.Hardware.Processes
         }
         public UInt32 Param1
         {
+            [Drivers.Compiler.Attributes.NoDebug]
             get
             {
                 return EBXFromInterruptStack;
@@ -184,6 +254,7 @@ namespace Kernel.Hardware.Processes
         }
         public UInt32 Param2
         {
+            [Drivers.Compiler.Attributes.NoDebug]
             get
             {
                 return ECXFromInterruptStack;
@@ -191,6 +262,7 @@ namespace Kernel.Hardware.Processes
         }
         public UInt32 Param3
         {
+            [Drivers.Compiler.Attributes.NoDebug]
             get
             {
                 return EDXFromInterruptStack;
@@ -198,10 +270,12 @@ namespace Kernel.Hardware.Processes
         }
         public UInt32 Return1
         {
+            [Drivers.Compiler.Attributes.NoDebug]
             get
             {
                 return EAXFromInterruptStack;
             }
+            [Drivers.Compiler.Attributes.NoDebug]
             set
             {
                 EAXFromInterruptStack = value;
@@ -209,10 +283,12 @@ namespace Kernel.Hardware.Processes
         }
         public UInt32 Return2
         {
+            [Drivers.Compiler.Attributes.NoDebug]
             get
             {
                 return EBXFromInterruptStack;
             }
+            [Drivers.Compiler.Attributes.NoDebug]
             set
             {
                 EBXFromInterruptStack = value;
@@ -220,10 +296,12 @@ namespace Kernel.Hardware.Processes
         }
         public UInt32 Return3
         {
+            [Drivers.Compiler.Attributes.NoDebug]
             get
             {
                 return ECXFromInterruptStack;
             }
+            [Drivers.Compiler.Attributes.NoDebug]
             set
             {
                 ECXFromInterruptStack = value;
@@ -231,10 +309,12 @@ namespace Kernel.Hardware.Processes
         }
         public UInt32 Return4
         {
+            [Drivers.Compiler.Attributes.NoDebug]
             get
             {
                 return EDXFromInterruptStack;
             }
+            [Drivers.Compiler.Attributes.NoDebug]
             set
             {
                 EDXFromInterruptStack = value;
@@ -251,6 +331,7 @@ namespace Kernel.Hardware.Processes
         /// after calling this to immediately update the thread to return to.
         /// </remarks>
         [Drivers.Compiler.Attributes.NoGC]
+        [Drivers.Compiler.Attributes.NoDebug]
         public void _EnterSleep(int ms)
         {
             //if (EnterSleepPrint)
@@ -298,6 +379,7 @@ namespace Kernel.Hardware.Processes
             //}
         }
         [Drivers.Compiler.Attributes.NoGC]
+        [Drivers.Compiler.Attributes.NoDebug]
         public bool _Sleep(int ms)
         {
             //Prevent getting stuck forever.
@@ -320,11 +402,13 @@ namespace Kernel.Hardware.Processes
             return true;
         }
         [Drivers.Compiler.Attributes.NoGC]
+        [Drivers.Compiler.Attributes.NoDebug]
         public bool _Sleep_Indefinitely()
         {
             return this._Sleep(IndefiniteSleep);
         }
         [Drivers.Compiler.Attributes.NoGC]
+        [Drivers.Compiler.Attributes.NoDebug]
         public void _Wake()
         {
             //bool reenable = Scheduler.Enabled;
@@ -341,6 +425,7 @@ namespace Kernel.Hardware.Processes
         }
 
         [Drivers.Compiler.Attributes.NoGC]
+        [Drivers.Compiler.Attributes.NoDebug]
         public static void EnterSleep(int ms)
         {
             if (ProcessManager.CurrentThread == null)
@@ -351,6 +436,7 @@ namespace Kernel.Hardware.Processes
             ProcessManager.CurrentThread._EnterSleep(ms);
         }
         [Drivers.Compiler.Attributes.NoGC]
+        [Drivers.Compiler.Attributes.NoDebug]
         public static bool Sleep(int ms)
         {
             if (ProcessManager.CurrentThread == null)
@@ -361,6 +447,7 @@ namespace Kernel.Hardware.Processes
             return ProcessManager.CurrentThread._Sleep(ms);
         }
         [Drivers.Compiler.Attributes.NoGC]
+        [Drivers.Compiler.Attributes.NoDebug]
         public static bool Sleep_Indefinitely()
         {
             if (ProcessManager.CurrentThread == null)
@@ -371,6 +458,7 @@ namespace Kernel.Hardware.Processes
             return ProcessManager.CurrentThread._Sleep_Indefinitely();
         }
         [Drivers.Compiler.Attributes.NoGC]
+        [Drivers.Compiler.Attributes.NoDebug]
         public static void Wake()
         {
             if (ProcessManager.CurrentThread == null)

@@ -44,7 +44,6 @@ namespace Kernel.Processes
         {
         }
 
-        [Drivers.Compiler.Attributes.NoDebug]
         [Drivers.Compiler.Attributes.NoGC]
         public static SystemCallResults RegisterISRHandler(uint ISRNum)
         {
@@ -55,7 +54,6 @@ namespace Kernel.Processes
             Call(SystemCallNumbers.RegisterISRHandler, ISRNum, 0xFFFFFFFF, 0, ref Return1, ref Return2, ref Return3, ref Return4);
             return (SystemCallResults)Return1;
         }
-        [Drivers.Compiler.Attributes.NoDebug]
         [Drivers.Compiler.Attributes.NoGC]
         public static SystemCallResults RegisterISRHandler(uint ISRNum, Hardware.Processes.ISRHanderDelegate handler)
         {
@@ -66,7 +64,6 @@ namespace Kernel.Processes
             Call(SystemCallNumbers.RegisterISRHandler, ISRNum, (uint)Utilities.ObjectUtilities.GetHandle(handler), 0, ref Return1, ref Return2, ref Return3, ref Return4);
             return (SystemCallResults)Return1;
         }
-        [Drivers.Compiler.Attributes.NoDebug]
         [Drivers.Compiler.Attributes.NoGC]
         public static SystemCallResults RegisterIRQHandler(uint IRQNum)
         {
@@ -77,7 +74,6 @@ namespace Kernel.Processes
             Call(SystemCallNumbers.RegisterIRQHandler, IRQNum, 0xFFFFFFFF, 0, ref Return1, ref Return2, ref Return3, ref Return4);
             return (SystemCallResults)Return1;
         }
-        [Drivers.Compiler.Attributes.NoDebug]
         [Drivers.Compiler.Attributes.NoGC]
         public static SystemCallResults RegisterIRQHandler(uint IRQNum, Hardware.Processes.IRQHanderDelegate handler)
         {
@@ -88,7 +84,6 @@ namespace Kernel.Processes
             Call(SystemCallNumbers.RegisterIRQHandler, IRQNum, (uint)Utilities.ObjectUtilities.GetHandle(handler), 0, ref Return1, ref Return2, ref Return3, ref Return4);
             return (SystemCallResults)Return1;
         }
-        [Drivers.Compiler.Attributes.NoDebug]
         [Drivers.Compiler.Attributes.NoGC]
         public static SystemCallResults DeregisterIRQHandler(uint IRQNum)
         {
@@ -99,7 +94,6 @@ namespace Kernel.Processes
             Call(SystemCallNumbers.DeregisterIRQHandler, IRQNum, 0, 0, ref Return1, ref Return2, ref Return3, ref Return4);
             return (SystemCallResults)Return1;
         }
-        [Drivers.Compiler.Attributes.NoDebug]
         [Drivers.Compiler.Attributes.NoGC]
         public static SystemCallResults RegisterSyscallHandler(SystemCallNumbers syscall)
         {
@@ -110,7 +104,6 @@ namespace Kernel.Processes
             Call(SystemCallNumbers.RegisterSyscallHandler, (uint)syscall, 0xFFFFFFFF, 0, ref Return1, ref Return2, ref Return3, ref Return4);
             return (SystemCallResults)Return1;
         }
-        [Drivers.Compiler.Attributes.NoDebug]
         [Drivers.Compiler.Attributes.NoGC]
         public static SystemCallResults RegisterSyscallHandler(SystemCallNumbers syscall, Hardware.Processes.SyscallHanderDelegate handler)
         {
@@ -121,7 +114,6 @@ namespace Kernel.Processes
             Call(SystemCallNumbers.RegisterSyscallHandler, (uint)syscall, (uint)Utilities.ObjectUtilities.GetHandle(handler), 0, ref Return1, ref Return2, ref Return3, ref Return4);
             return (SystemCallResults)Return1;
         }
-        [Drivers.Compiler.Attributes.NoDebug]
         [Drivers.Compiler.Attributes.NoGC]
         public static SystemCallResults DeregisterSyscallHandler(SystemCallNumbers syscall)
         {
@@ -133,7 +125,6 @@ namespace Kernel.Processes
             return (SystemCallResults)Return1;
         }
         
-        [Drivers.Compiler.Attributes.NoDebug]
         [Drivers.Compiler.Attributes.NoGC]
         public static SystemCallResults StartThread(Hardware.Processes.ThreadStartMethod startMethod, out uint NewThreadId)
         {
@@ -145,7 +136,6 @@ namespace Kernel.Processes
             NewThreadId = (uint)Return2;
             return (SystemCallResults)Return1;
         }
-        [Drivers.Compiler.Attributes.NoDebug]
         [Drivers.Compiler.Attributes.NoGC]
         public static SystemCallResults SleepThread(int ms)
         {
@@ -156,7 +146,6 @@ namespace Kernel.Processes
             Call(SystemCallNumbers.SleepThread, (uint)ms, 0, 0, ref Return1, ref Return2, ref Return3, ref Return4);
             return (SystemCallResults)Return1;
         }
-        [Drivers.Compiler.Attributes.NoDebug]
         [Drivers.Compiler.Attributes.NoGC]
         public static SystemCallResults WakeThread(uint ThreadId)
         {
@@ -168,7 +157,6 @@ namespace Kernel.Processes
             return (SystemCallResults)Return1;
         }
         
-        [Drivers.Compiler.Attributes.NoDebug]
         [Drivers.Compiler.Attributes.NoGC]
         public static SystemCallResults RegisterPipeOutpoint(Pipes.PipeClasses Class, Pipes.PipeSubclasses Subclass, int MaxConnections)
         {
@@ -179,7 +167,6 @@ namespace Kernel.Processes
             Call(SystemCallNumbers.RegisterPipeOutpoint, (uint)Class, (uint)Subclass, (uint)MaxConnections, ref Return1, ref Return2, ref Return3, ref Return4);
             return (SystemCallResults)Return1;
         }
-        [Drivers.Compiler.Attributes.NoDebug]
         [Drivers.Compiler.Attributes.NoGC]
         public static SystemCallResults GetNumPipeOutpoints(Pipes.PipeClasses Class, Pipes.PipeSubclasses Subclass, out int NumOutpoints)
         {
@@ -191,7 +178,6 @@ namespace Kernel.Processes
             NumOutpoints = (int)Return2;
             return (SystemCallResults)Return1;
         }
-        [Drivers.Compiler.Attributes.NoDebug]
         [Drivers.Compiler.Attributes.NoGC]
         public static SystemCallResults GetPipeOutpoints(Pipes.PipeClasses Class, Pipes.PipeSubclasses Subclass, Pipes.PipeOutpointsRequest* RequestPtr)
         {
@@ -202,7 +188,6 @@ namespace Kernel.Processes
             Call(SystemCallNumbers.GetPipeOutpoints, (uint)Class, (uint)Subclass, (uint)RequestPtr, ref Return1, ref Return2, ref Return3, ref Return4);
             return (SystemCallResults)Return1;
         }
-        [Drivers.Compiler.Attributes.NoDebug]
         [Drivers.Compiler.Attributes.NoGC]
         public static SystemCallResults CreatePipe(uint OutProcessId, Pipes.CreatePipeRequest* RequestPtr)
         {
@@ -213,7 +198,6 @@ namespace Kernel.Processes
             Call(SystemCallNumbers.CreatePipe, OutProcessId, (uint)RequestPtr, 0, ref Return1, ref Return2, ref Return3, ref Return4);
             return (SystemCallResults)Return1;
         }
-        [Drivers.Compiler.Attributes.NoDebug]
         [Drivers.Compiler.Attributes.NoGC]
         public static SystemCallResults WaitOnPipeCreate(Pipes.PipeClasses Class, Pipes.PipeSubclasses Subclass, out int NewPipeId)
         {
@@ -225,7 +209,6 @@ namespace Kernel.Processes
             NewPipeId = (int)Return2;
             return (SystemCallResults)Return1;
         }
-        [Drivers.Compiler.Attributes.NoDebug]
         [Drivers.Compiler.Attributes.NoGC]
         public static SystemCallResults ReadPipe(Pipes.ReadPipeRequest* Request, out int BytesRead)
         {
@@ -237,7 +220,6 @@ namespace Kernel.Processes
             BytesRead = (int)Return2;
             return (SystemCallResults)Return1;
         }
-        [Drivers.Compiler.Attributes.NoDebug]
         [Drivers.Compiler.Attributes.NoGC]
         public static SystemCallResults WritePipe(Pipes.WritePipeRequest* Request)
         {

@@ -293,6 +293,7 @@ namespace Kernel.Hardware.Timers
             }
         }
 
+        [Drivers.Compiler.Attributes.NoDebug]
         public override int RegisterHandler(Devices.TimerHandler handler, long TimeoutNS, bool Recurring, FOS_System.Object state)
         {
             return RegisterHandler(new PITHandler(handler, state, TimeoutNS, Recurring));
@@ -302,6 +303,7 @@ namespace Kernel.Hardware.Timers
         /// </summary>
         /// <param name="handler">The handler to register.</param>
         /// <returns>The Id of the registered handler.</returns>
+        [Drivers.Compiler.Attributes.NoDebug]
         public int RegisterHandler(PITHandler handler)
         {
             if (handler.id != -1)

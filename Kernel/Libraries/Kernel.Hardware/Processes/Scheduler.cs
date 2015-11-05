@@ -52,6 +52,7 @@ namespace Kernel.Hardware.Processes
             process.Priority = priority;
         }
 
+        [Drivers.Compiler.Attributes.NoDebug]
         public static void Init()
         {
             //ExceptionMethods.ThePageFaultHandler = HandlePageFault;
@@ -109,6 +110,9 @@ namespace Kernel.Hardware.Processes
             /*1000000*/
             Hardware.Devices.Timer.Default.RegisterHandler(OnTimerInterrupt, /* MSFreq * 1000000 */ 5000000, true, null);
 
+#if SCHEDULER_TRACE
+            BasicConsole.WriteLine(" > Enabling process switching...");
+#endif
             Interrupts.Interrupts.EnableProcessSwitching = true;
 
             Enable();
@@ -251,14 +255,17 @@ namespace Kernel.Hardware.Processes
 
             if (ProcessManager.CurrentThread.TimeToRun <= 0 ||
                 ProcessManager.CurrentThread.TimeToSleep != 0 ||
-                ProcessManager.CurrentThread_State->Terminated)
+                ProcessManager.CurrentThread_State->Terminated ||
+                ProcessManager.CurrentThread.Debug_Suspend)
             {
 #if SCHEDULER_HANDLER_TRACE
                 if (Processes.ProcessManager.Processes.Count > 1)
                     BasicConsole.WriteLine("Scheduler: Required to switch thread.");
 #endif
-
-                ProcessManager.CurrentThread.TimeToRun = ProcessManager.CurrentThread.TimeToRunReload;
+                if (!ProcessManager.CurrentThread.Debug_Suspend)
+                {
+                    ProcessManager.CurrentThread.TimeToRun = ProcessManager.CurrentThread.TimeToRunReload;
+                }
 
                 uint processId = ProcessManager.CurrentProcess.Id;
 
@@ -384,7 +391,8 @@ namespace Kernel.Hardware.Processes
 
             while (threadIdx < cProcess.Threads.Count &&
                   (((Thread)cProcess.Threads[threadIdx]).State->Terminated ||
-                   ((Thread)cProcess.Threads[threadIdx]).TimeToSleep != 0))
+                   ((Thread)cProcess.Threads[threadIdx]).TimeToSleep != 0 ||
+                   ((Thread)cProcess.Threads[threadIdx]).Debug_Suspend))
             {
                 threadIdx++;
             }
@@ -394,7 +402,10 @@ namespace Kernel.Hardware.Processes
         [Drivers.Compiler.Attributes.NoGC]
         private static void UpdateCurrentThread()
         {
-            ProcessManager.CurrentThread.TimeToRun--;
+            if (!ProcessManager.CurrentThread.Debug_Suspend)
+            {
+                ProcessManager.CurrentThread.TimeToRun--;
+            }
         }
         [Drivers.Compiler.Attributes.NoDebug]
         [Drivers.Compiler.Attributes.NoGC]
@@ -406,7 +417,7 @@ namespace Kernel.Hardware.Processes
                 for (int tIdx = 0; tIdx < p.Threads.Count; tIdx++)
                 {
                     Thread t = (Thread)p.Threads[tIdx];
-                    if (t.TimeToSleep != Thread.IndefiniteSleep)
+                    if (t.TimeToSleep != Thread.IndefiniteSleep && !t.Debug_Suspend)
                     {
                         if (t.TimeToSleep < MSFreq)
                         {
@@ -461,7 +472,7 @@ namespace Kernel.Hardware.Processes
                 uint WantedStackPtr = (uint)stackPtr;
                 *stackPtr-- = 0x23;    //64 - SS after switch to UM
                 *stackPtr-- = WantedStackPtr; // 60 - ESP after switch to UM
-                *stackPtr-- = 0x0202u; // - 56 - IOPL=0
+                *stackPtr-- = 0x0202u; // - 56 - Reserved=1, Interrupt Enable=1, IOPL=0
                 *stackPtr-- = 0x1Bu;   // CS - 52
                 *stackPtr-- = ProcessManager.CurrentThread_State->StartEIP; // - 48
 

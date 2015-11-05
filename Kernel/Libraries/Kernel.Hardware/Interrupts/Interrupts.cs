@@ -127,10 +127,12 @@ namespace Kernel.Hardware.Interrupts
         public static bool insideCriticalHandler = false;
         public static bool InsideCriticalHandler
         {
+            [Drivers.Compiler.Attributes.NoDebug]
             get
             {
                 return insideCriticalHandler;
             }
+            [Drivers.Compiler.Attributes.NoDebug]
             set
             {
                 insideCriticalHandler = value;
@@ -344,6 +346,7 @@ namespace Kernel.Hardware.Interrupts
         /// </summary>
         /// <param name="ISRNum">The number of the interrupt which occurred.</param>
         [Drivers.Compiler.Attributes.NoGC]
+        [Drivers.Compiler.Attributes.NoDebug]
         private static void CommonISR(uint ISRNum)
         {
             InsideCriticalHandler = true;
@@ -378,6 +381,7 @@ namespace Kernel.Hardware.Interrupts
                 BasicConsole.WriteLine("Interrupts: 19");
 #endif
         }
+        [Drivers.Compiler.Attributes.NoDebug]
         private static void HandleISR(uint ISRNum)
         {
             Process currProcess = ProcessManager.CurrentProcess;
@@ -407,6 +411,7 @@ namespace Kernel.Hardware.Interrupts
                 ProcessManager.SwitchProcess(currProcess.Id, (int)currThread.Id);
             }
         }
+        [Drivers.Compiler.Attributes.NoDebug]
         private static void HandleIRQ(uint IRQNum)
         {
             Process currProcess = ProcessManager.CurrentProcess;
