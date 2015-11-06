@@ -38,6 +38,15 @@
             this.ConnectButton = new System.Windows.Forms.Button();
             this.ConnectingProgressBar = new System.Windows.Forms.ProgressBar();
             this.MainPanel = new System.Windows.Forms.Panel();
+            this.SetBreakpointButton = new System.Windows.Forms.Button();
+            this.ClearBreakpointButton = new System.Windows.Forms.Button();
+            this.DebugPointsTreeView = new System.Windows.Forms.TreeView();
+            this.label8 = new System.Windows.Forms.Label();
+            this.label7 = new System.Windows.Forms.Label();
+            this.BreakpointsTreeView = new System.Windows.Forms.TreeView();
+            this.FilterBox = new System.Windows.Forms.TextBox();
+            this.label6 = new System.Windows.Forms.Label();
+            this.MethodLocalLabelLabel = new System.Windows.Forms.Label();
             this.CurrentMethodBox = new System.Windows.Forms.TextBox();
             this.MethodLabelBox = new System.Windows.Forms.TextBox();
             this.label5 = new System.Windows.Forms.Label();
@@ -52,16 +61,11 @@
             this.ProcessesTreeView = new System.Windows.Forms.TreeView();
             this.AbortButton = new System.Windows.Forms.Button();
             this.DestroyButton = new System.Windows.Forms.Button();
-            this.MethodLocalLabelLabel = new System.Windows.Forms.Label();
-            this.label6 = new System.Windows.Forms.Label();
-            this.FilterBox = new System.Windows.Forms.TextBox();
-            this.BreakpointsTreeView = new System.Windows.Forms.TreeView();
-            this.label7 = new System.Windows.Forms.Label();
-            this.label8 = new System.Windows.Forms.Label();
-            this.DebugPointsTreeView = new System.Windows.Forms.TreeView();
-            this.ClearBreakpointButton = new System.Windows.Forms.Button();
-            this.SetBreakpointButton = new System.Windows.Forms.Button();
             this.Thex86RegistersControl = new Drivers.Debugger.App.x86RegistersControl();
+            this.label9 = new System.Windows.Forms.Label();
+            this.ArgumentsBox = new System.Windows.Forms.TextBox();
+            this.LocalsBox = new System.Windows.Forms.TextBox();
+            this.label10 = new System.Windows.Forms.Label();
             this.MainPanel.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -145,6 +149,10 @@
             this.MainPanel.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
+            this.MainPanel.Controls.Add(this.LocalsBox);
+            this.MainPanel.Controls.Add(this.label10);
+            this.MainPanel.Controls.Add(this.ArgumentsBox);
+            this.MainPanel.Controls.Add(this.label9);
             this.MainPanel.Controls.Add(this.SetBreakpointButton);
             this.MainPanel.Controls.Add(this.ClearBreakpointButton);
             this.MainPanel.Controls.Add(this.DebugPointsTreeView);
@@ -172,6 +180,100 @@
             this.MainPanel.Name = "MainPanel";
             this.MainPanel.Size = new System.Drawing.Size(836, 832);
             this.MainPanel.TabIndex = 8;
+            // 
+            // SetBreakpointButton
+            // 
+            this.SetBreakpointButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.SetBreakpointButton.Location = new System.Drawing.Point(286, 800);
+            this.SetBreakpointButton.Name = "SetBreakpointButton";
+            this.SetBreakpointButton.Size = new System.Drawing.Size(75, 23);
+            this.SetBreakpointButton.TabIndex = 21;
+            this.SetBreakpointButton.Text = "Set";
+            this.SetBreakpointButton.UseVisualStyleBackColor = true;
+            this.SetBreakpointButton.Click += new System.EventHandler(this.SetBreakpointButton_Click);
+            // 
+            // ClearBreakpointButton
+            // 
+            this.ClearBreakpointButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.ClearBreakpointButton.Location = new System.Drawing.Point(286, 600);
+            this.ClearBreakpointButton.Name = "ClearBreakpointButton";
+            this.ClearBreakpointButton.Size = new System.Drawing.Size(75, 23);
+            this.ClearBreakpointButton.TabIndex = 20;
+            this.ClearBreakpointButton.Text = "Clear";
+            this.ClearBreakpointButton.UseVisualStyleBackColor = true;
+            this.ClearBreakpointButton.Click += new System.EventHandler(this.ClearBreakpointButton_Click);
+            // 
+            // DebugPointsTreeView
+            // 
+            this.DebugPointsTreeView.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.DebugPointsTreeView.HideSelection = false;
+            this.DebugPointsTreeView.Location = new System.Drawing.Point(286, 654);
+            this.DebugPointsTreeView.Name = "DebugPointsTreeView";
+            this.DebugPointsTreeView.Size = new System.Drawing.Size(547, 140);
+            this.DebugPointsTreeView.TabIndex = 19;
+            this.DebugPointsTreeView.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.DebugPointsTreeView_AfterSelect);
+            // 
+            // label8
+            // 
+            this.label8.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.label8.AutoSize = true;
+            this.label8.Location = new System.Drawing.Point(283, 638);
+            this.label8.Name = "label8";
+            this.label8.Size = new System.Drawing.Size(73, 13);
+            this.label8.TabIndex = 18;
+            this.label8.Text = "Debug points:";
+            // 
+            // label7
+            // 
+            this.label7.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.label7.AutoSize = true;
+            this.label7.Location = new System.Drawing.Point(283, 468);
+            this.label7.Name = "label7";
+            this.label7.Size = new System.Drawing.Size(66, 13);
+            this.label7.TabIndex = 17;
+            this.label7.Text = "Breakpoints:";
+            // 
+            // BreakpointsTreeView
+            // 
+            this.BreakpointsTreeView.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.BreakpointsTreeView.HideSelection = false;
+            this.BreakpointsTreeView.Location = new System.Drawing.Point(286, 484);
+            this.BreakpointsTreeView.Name = "BreakpointsTreeView";
+            this.BreakpointsTreeView.Size = new System.Drawing.Size(547, 109);
+            this.BreakpointsTreeView.TabIndex = 16;
+            this.BreakpointsTreeView.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.BreakpointsTreeView_AfterSelect);
+            // 
+            // FilterBox
+            // 
+            this.FilterBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.FilterBox.Location = new System.Drawing.Point(324, 436);
+            this.FilterBox.Name = "FilterBox";
+            this.FilterBox.Size = new System.Drawing.Size(509, 20);
+            this.FilterBox.TabIndex = 15;
+            this.FilterBox.TextChanged += new System.EventHandler(this.FilterBox_TextChanged);
+            // 
+            // label6
+            // 
+            this.label6.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.label6.AutoSize = true;
+            this.label6.Location = new System.Drawing.Point(283, 439);
+            this.label6.Name = "label6";
+            this.label6.Size = new System.Drawing.Size(35, 13);
+            this.label6.TabIndex = 14;
+            this.label6.Text = "Filter :";
+            // 
+            // MethodLocalLabelLabel
+            // 
+            this.MethodLocalLabelLabel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.MethodLocalLabelLabel.AutoSize = true;
+            this.MethodLocalLabelLabel.Location = new System.Drawing.Point(369, 395);
+            this.MethodLocalLabelLabel.Name = "MethodLocalLabelLabel";
+            this.MethodLocalLabelLabel.Size = new System.Drawing.Size(66, 13);
+            this.MethodLocalLabelLabel.TabIndex = 13;
+            this.MethodLocalLabelLabel.Text = "[NO LOCAL]";
             // 
             // CurrentMethodBox
             // 
@@ -290,7 +392,7 @@
             treeNode1.Text = "Press refresh to start";
             this.ProcessesTreeView.Nodes.AddRange(new System.Windows.Forms.TreeNode[] {
             treeNode1});
-            this.ProcessesTreeView.Size = new System.Drawing.Size(263, 684);
+            this.ProcessesTreeView.Size = new System.Drawing.Size(263, 301);
             this.ProcessesTreeView.TabIndex = 0;
             this.ProcessesTreeView.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.ProcessesTreeView_AfterSelect);
             // 
@@ -316,100 +418,6 @@
             this.DestroyButton.UseVisualStyleBackColor = true;
             this.DestroyButton.Click += new System.EventHandler(this.DestroyButton_Click);
             // 
-            // MethodLocalLabelLabel
-            // 
-            this.MethodLocalLabelLabel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.MethodLocalLabelLabel.AutoSize = true;
-            this.MethodLocalLabelLabel.Location = new System.Drawing.Point(369, 395);
-            this.MethodLocalLabelLabel.Name = "MethodLocalLabelLabel";
-            this.MethodLocalLabelLabel.Size = new System.Drawing.Size(66, 13);
-            this.MethodLocalLabelLabel.TabIndex = 13;
-            this.MethodLocalLabelLabel.Text = "[NO LOCAL]";
-            // 
-            // label6
-            // 
-            this.label6.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(283, 439);
-            this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(35, 13);
-            this.label6.TabIndex = 14;
-            this.label6.Text = "Filter :";
-            // 
-            // FilterBox
-            // 
-            this.FilterBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.FilterBox.Location = new System.Drawing.Point(324, 436);
-            this.FilterBox.Name = "FilterBox";
-            this.FilterBox.Size = new System.Drawing.Size(509, 20);
-            this.FilterBox.TabIndex = 15;
-            this.FilterBox.TextChanged += new System.EventHandler(this.FilterBox_TextChanged);
-            // 
-            // BreakpointsTreeView
-            // 
-            this.BreakpointsTreeView.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.BreakpointsTreeView.HideSelection = false;
-            this.BreakpointsTreeView.Location = new System.Drawing.Point(286, 484);
-            this.BreakpointsTreeView.Name = "BreakpointsTreeView";
-            this.BreakpointsTreeView.Size = new System.Drawing.Size(547, 109);
-            this.BreakpointsTreeView.TabIndex = 16;
-            this.BreakpointsTreeView.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.BreakpointsTreeView_AfterSelect);
-            // 
-            // label7
-            // 
-            this.label7.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.label7.AutoSize = true;
-            this.label7.Location = new System.Drawing.Point(283, 468);
-            this.label7.Name = "label7";
-            this.label7.Size = new System.Drawing.Size(66, 13);
-            this.label7.TabIndex = 17;
-            this.label7.Text = "Breakpoints:";
-            // 
-            // label8
-            // 
-            this.label8.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.label8.AutoSize = true;
-            this.label8.Location = new System.Drawing.Point(283, 638);
-            this.label8.Name = "label8";
-            this.label8.Size = new System.Drawing.Size(73, 13);
-            this.label8.TabIndex = 18;
-            this.label8.Text = "Debug points:";
-            // 
-            // DebugPointsTreeView
-            // 
-            this.DebugPointsTreeView.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.DebugPointsTreeView.HideSelection = false;
-            this.DebugPointsTreeView.Location = new System.Drawing.Point(286, 654);
-            this.DebugPointsTreeView.Name = "DebugPointsTreeView";
-            this.DebugPointsTreeView.Size = new System.Drawing.Size(547, 140);
-            this.DebugPointsTreeView.TabIndex = 19;
-            this.DebugPointsTreeView.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.DebugPointsTreeView_AfterSelect);
-            // 
-            // ClearBreakpointButton
-            // 
-            this.ClearBreakpointButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.ClearBreakpointButton.Location = new System.Drawing.Point(286, 600);
-            this.ClearBreakpointButton.Name = "ClearBreakpointButton";
-            this.ClearBreakpointButton.Size = new System.Drawing.Size(75, 23);
-            this.ClearBreakpointButton.TabIndex = 20;
-            this.ClearBreakpointButton.Text = "Clear";
-            this.ClearBreakpointButton.UseVisualStyleBackColor = true;
-            this.ClearBreakpointButton.Click += new System.EventHandler(this.ClearBreakpointButton_Click);
-            // 
-            // SetBreakpointButton
-            // 
-            this.SetBreakpointButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.SetBreakpointButton.Location = new System.Drawing.Point(286, 800);
-            this.SetBreakpointButton.Name = "SetBreakpointButton";
-            this.SetBreakpointButton.Size = new System.Drawing.Size(75, 23);
-            this.SetBreakpointButton.TabIndex = 21;
-            this.SetBreakpointButton.Text = "Set";
-            this.SetBreakpointButton.UseVisualStyleBackColor = true;
-            this.SetBreakpointButton.Click += new System.EventHandler(this.SetBreakpointButton_Click);
-            // 
             // Thex86RegistersControl
             // 
             this.Thex86RegistersControl.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
@@ -420,10 +428,50 @@
             this.Thex86RegistersControl.EDX = ((uint)(0u));
             this.Thex86RegistersControl.EIP = ((uint)(0u));
             this.Thex86RegistersControl.ESP = ((uint)(0u));
-            this.Thex86RegistersControl.Location = new System.Drawing.Point(4, 693);
+            this.Thex86RegistersControl.Location = new System.Drawing.Point(4, 310);
             this.Thex86RegistersControl.Name = "Thex86RegistersControl";
             this.Thex86RegistersControl.Size = new System.Drawing.Size(255, 136);
             this.Thex86RegistersControl.TabIndex = 6;
+            // 
+            // label9
+            // 
+            this.label9.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.label9.AutoSize = true;
+            this.label9.Location = new System.Drawing.Point(4, 447);
+            this.label9.Name = "label9";
+            this.label9.Size = new System.Drawing.Size(63, 13);
+            this.label9.TabIndex = 22;
+            this.label9.Text = "Arguments :";
+            // 
+            // ArgumentsBox
+            // 
+            this.ArgumentsBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.ArgumentsBox.Location = new System.Drawing.Point(4, 464);
+            this.ArgumentsBox.Multiline = true;
+            this.ArgumentsBox.Name = "ArgumentsBox";
+            this.ArgumentsBox.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
+            this.ArgumentsBox.Size = new System.Drawing.Size(263, 153);
+            this.ArgumentsBox.TabIndex = 23;
+            // 
+            // LocalsBox
+            // 
+            this.LocalsBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.LocalsBox.Location = new System.Drawing.Point(4, 644);
+            this.LocalsBox.Multiline = true;
+            this.LocalsBox.Name = "LocalsBox";
+            this.LocalsBox.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
+            this.LocalsBox.Size = new System.Drawing.Size(263, 179);
+            this.LocalsBox.TabIndex = 25;
+            // 
+            // label10
+            // 
+            this.label10.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.label10.AutoSize = true;
+            this.label10.Location = new System.Drawing.Point(4, 627);
+            this.label10.Name = "label10";
+            this.label10.Size = new System.Drawing.Size(122, 13);
+            this.label10.TabIndex = 24;
+            this.label10.Text = "Locals and temporaries :";
             // 
             // MainForm
             // 
@@ -486,5 +534,9 @@
         private System.Windows.Forms.Label label8;
         private System.Windows.Forms.Button SetBreakpointButton;
         private System.Windows.Forms.Button ClearBreakpointButton;
+        private System.Windows.Forms.TextBox LocalsBox;
+        private System.Windows.Forms.Label label10;
+        private System.Windows.Forms.TextBox ArgumentsBox;
+        private System.Windows.Forms.Label label9;
     }
 }

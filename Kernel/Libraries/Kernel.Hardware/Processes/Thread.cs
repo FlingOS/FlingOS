@@ -193,7 +193,8 @@ namespace Kernel.Hardware.Processes
             [Drivers.Compiler.Attributes.NoDebug]
             get
             {
-                return *(UInt32*)(State->ESP + 28);
+                // +12 to get over return pointer, CS and EFLAGS pushed by hardware on interrupt
+                return *(UInt32*)(State->ESP + 28) + 12;
             }
         }
         public UInt32 EBPFromInterruptStack

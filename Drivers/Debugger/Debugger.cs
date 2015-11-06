@@ -317,6 +317,18 @@ namespace Drivers.Debugger
             }
             return false;
         }
+        public string GetMemoryValues(uint ProcessId, uint Address, int Length, int UnitSize)
+        {
+            try
+            {
+                string[] Lines = ExecuteCommand("mem " + ProcessId.ToString() + " " + Address.ToString("X8") + " " + Length.ToString() + " " + UnitSize.ToString());
+                return Lines[1];
+            }
+            catch
+            {
+            }
+            return "";
+        }
 
         public Tuple<uint, string> GetNearestLabel(uint Address)
         {

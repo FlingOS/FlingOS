@@ -69,9 +69,6 @@ namespace Drivers.Debugger
         /// </summary>
         public event OnConnectedHandler OnConnected;
 
-        Queue<byte> BytesRead = new Queue<byte>();
-        byte[] readBuffer = new byte[4096];
-
         /// <summary>
         /// Disposes of the serial class. Calls <see cref="Disconnect"/>.
         /// </summary>
@@ -100,8 +97,7 @@ namespace Drivers.Debugger
                         try
                         {
                             ThePipe.EndWaitForConnection(result);
-                            BeginRead();
-
+                            
                             if (OnConnected != null)
                             {
                                 OnConnected();
@@ -138,45 +134,7 @@ namespace Drivers.Debugger
 
             return OK;
         }
-
-        private void BeginRead()
-        {
-            if (Connected)
-            {
-                try
-                {
-                    ThePipe.BeginRead(readBuffer, 0, readBuffer.Length, new AsyncCallback(EndRead), null);
-                }
-                catch(NullReferenceException)
-                {
-                    //Ignore - usually occurs when closing...
-                }
-            }
-        }
-        private void EndRead(IAsyncResult result)
-        {
-            try
-            {
-                int numread = ThePipe.EndRead(result);
-
-                if (numread > 0)
-                {
-                    for (int i = 0; i < numread; i++)
-                    {
-                        BytesRead.Enqueue(readBuffer[i]);
-                    }
-                }
-            }
-            catch
-            {
-            }
-
-            if (Connected)
-            {
-                BeginRead();
-            }
-        }
-
+        
         /// <summary>
         /// Reads the specified number of bytes from the pipe.
         /// </summary>
@@ -185,22 +143,11 @@ namespace Drivers.Debugger
         public byte[] ReadBytes(int numToRead)
         {
             AbortRead = false;
-
-            do
-            {
-                System.Threading.Thread.Sleep(10);
-
-                if (AbortRead)
-                {
-                    throw new TimeoutException("Command aborted");
-                }
-            }
-            while (BytesRead.Count < numToRead && Connected);
             
             byte[] readBuffer = new byte[numToRead];
-            for (int i = 0; i < numToRead; i++)
+            for (int i = 0; i < numToRead && !AbortRead; i++)
             {
-                readBuffer[i] = BytesRead.Dequeue();
+                readBuffer[i] = (byte)ThePipe.ReadByte();
             }
             return readBuffer;
         }
@@ -213,39 +160,8 @@ namespace Drivers.Debugger
             char c = '\0';
             do
             {
-                int timeLimit = 100;
-                while (BytesRead.Count == 0)
-                {
-                    System.Threading.Thread.Sleep(10);
-
-                    if (AbortRead)
-                    {
-                        if (result.StartsWith("END OF COM"))
-                        {
-                            result = "END OF COMMAND";
-                            c = '\n';
-                            break;
-                        }
-                        else
-                        {
-                            throw new TimeoutException("Command aborted");
-                        }
-                    }
-                    else if (result.StartsWith("END OF COM"))
-                    {
-                        if (BytesRead.Count == 0 && timeLimit-- == 0)
-                        {
-                            c = '\n';
-                            break;
-                        }
-                    }
-                }
-
-                if ((result != "END OF COMMAND" || timeLimit != 0) && BytesRead.Count != 0)
-                {
-                    c = (char)BytesRead.Dequeue();
-                }
-
+                c = (char)ThePipe.ReadByte();
+            
                 if (c == '\n' || c == '\r')
                 {
                     break;

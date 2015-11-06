@@ -71,6 +71,9 @@ namespace Drivers.Debugger.App
         KeyValuePair<string, string> SelectedDebugPointFullLabel;
         KeyValuePair<string, string> SelectedBreakpointFullLabel;
 
+        string ArgumentsStr = "";
+        string LocalsStr = "";
+
         public MainForm()
         {
             InitializeComponent();
@@ -303,6 +306,40 @@ namespace Drivers.Debugger.App
             }
 
             UpdateNearestLabel();
+
+            RefreshStackData();
+        }
+        private void RefreshStackData()
+        {
+            uint ProcessId = GetSelectedProcessId();
+
+            if (!string.IsNullOrWhiteSpace(CurrentMethodLabel))
+            {
+                // Refresh arguments
+                // - Cannot do yet because the compiler supplies insufficient information
+            }
+            else
+            {
+                ArgumentsStr = "";
+            }
+
+            if (Registers.ContainsKey("ESP") && Registers.ContainsKey("EBP"))
+            {
+                // Refresh locals
+                //  - Can get values as blocks of 4 bytes but not interpret them yet because compiler
+                //    supplies insufficient info
+
+                uint ESP = Registers["ESP"];
+                uint EBP = Registers["EBP"];
+                int NumLocalBytes = (int)(EBP - ESP);
+                LocalsStr = TheDebugger.GetMemoryValues(ProcessId, ESP, NumLocalBytes / 4, 4);
+            }
+            else
+            {
+                LocalsStr = "";
+            }
+
+            UpdateStackData();
 
             PerformingAction = false;
         }
@@ -653,6 +690,18 @@ namespace Drivers.Debugger.App
                 {
                     DebugPointsTreeView.SelectedNode = NodeToSelect;
                 }
+            }
+        }
+        private void UpdateStackData()
+        {
+            if (this.InvokeRequired)
+            {
+                this.Invoke(new VoidDelegate(UpdateStackData));
+            }
+            else
+            {
+                ArgumentsBox.Text = ArgumentsStr;
+                LocalsBox.Text = LocalsStr;
             }
         }
 
