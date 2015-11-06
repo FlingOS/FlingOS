@@ -165,6 +165,33 @@ namespace Drivers.Debugger
                 return new Dictionary<uint, Process>();
             }
         }
+        public Dictionary<string, uint> GetRegisters(uint ProcessId, uint ThreadId)
+        {
+            Dictionary<string, uint> Result = new Dictionary<string, uint>();
+
+            try
+            {
+                string[] Lines = ExecuteCommand("regs " + ProcessId.ToString() + " " + ThreadId.ToString());
+
+                for (int i = 1; i < Lines.Length; i++)
+                {
+                    if (!string.IsNullOrWhiteSpace(Lines[i]))
+                    {
+                        string[] LineParts = Lines[i].Split(':');
+                        string Reg = LineParts[0].Trim().Substring(2);
+                        string ValStr = LineParts[1].Trim();
+                        uint Val = uint.Parse(ValStr.Substring(2), System.Globalization.NumberStyles.HexNumber);
+                        Result.Add(Reg, Val);
+                    }
+                }
+            }
+            catch
+            {
+                Result.Clear();
+            }
+
+            return Result;
+        }
         public bool SuspendThread(uint ProcessId, int ThreadId)
         {
             try

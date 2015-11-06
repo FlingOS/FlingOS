@@ -54,6 +54,18 @@
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="RegisterControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="RegisterControl.Designer.cs">
+      <DependentUpon>RegisterControl.cs</DependentUpon>
+    </Compile>
+    <Compile Include="x86RegistersControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="x86RegistersControl.Designer.cs">
+      <DependentUpon>x86RegistersControl.cs</DependentUpon>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\..\Kernel\Kernel\Kernel.licenseheader">
@@ -70,6 +82,12 @@
   <ItemGroup>
     <EmbeddedResource Include="MainForm.resx">
       <DependentUpon>MainForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="RegisterControl.resx">
+      <DependentUpon>RegisterControl.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="x86RegistersControl.resx">
+      <DependentUpon>x86RegistersControl.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

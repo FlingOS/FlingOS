@@ -39,6 +39,7 @@ namespace Drivers.Debugger.App
     delegate void VoidDelegate();
     delegate int IntDelegate();
     delegate uint UIntDelegate();
+    delegate bool BoolDelegate();
 
     public partial class MainForm : Form
     {
@@ -59,6 +60,7 @@ namespace Drivers.Debugger.App
         }
 
         Dictionary<uint, Process> Processes;
+        Dictionary<string, uint> Registers = new Dictionary<string,uint>();
 
         public MainForm()
         {
@@ -117,7 +119,8 @@ namespace Drivers.Debugger.App
         }
         private void ProcessesTreeView_AfterSelect(object sender, TreeViewEventArgs e)
         {
-            UpdateEnableStates();
+            PerformingAction = true;
+            Task.Run((Action)RefreshRegisters);
         }
 
         private void Init()
@@ -144,6 +147,21 @@ namespace Drivers.Debugger.App
         {
             Processes = TheDebugger.GetThreads();
             UpdateProcessTree();
+
+            PerformingAction = false;
+        }
+        private void RefreshRegisters()
+        {
+            if (IsSelectionSuspended())
+            {
+                Registers = TheDebugger.GetRegisters(GetSelectedProcessId(), (uint)GetSelectedThreadId());
+            }
+            else
+            {
+                Registers.Clear();
+            }
+
+            UpdateRegisters();
 
             PerformingAction = false;
         }
@@ -197,13 +215,7 @@ namespace Drivers.Debugger.App
                         MainPanel.Enabled = true;
 
                         bool NodeSelected = ProcessesTreeView.SelectedNode != null;
-                        bool NodeSuspended = false;
-                        if(NodeSelected)
-                        {
-                            uint SelectedProcessId = GetSelectedProcessId();
-                            int SelectedThreadId = GetSelectedThreadId();
-                            NodeSelected = SelectedThreadId != -1 && Processes[SelectedProcessId].Threads[(uint)SelectedThreadId].State == Thread.States.Suspended;
-                        }
+                        bool NodeSuspended = IsSelectionSuspended();
                         SuspendButton.Enabled = NodeSelected && !NodeSuspended;
                         ResumeButton.Enabled = NodeSelected && NodeSuspended;
                         StepButton.Enabled = NodeSelected && NodeSuspended;
@@ -229,6 +241,25 @@ namespace Drivers.Debugger.App
                 }
             }
         }
+
+        private bool IsSelectionSuspended()
+        {
+            if (this.InvokeRequired)
+            {
+                return (bool)this.Invoke(new BoolDelegate(IsSelectionSuspended));
+            }
+            else
+            {
+                bool NodeSuspended = false;
+                if (ProcessesTreeView.SelectedNode != null)
+                {
+                    uint SelectedProcessId = GetSelectedProcessId();
+                    int SelectedThreadId = GetSelectedThreadId();
+                    NodeSuspended = SelectedThreadId != -1 && Processes[SelectedProcessId].Threads[(uint)SelectedThreadId].State == Thread.States.Suspended;
+                }
+                return NodeSuspended;
+            }
+        }
         private void UpdateProcessTree()
         {
             if (this.InvokeRequired)
@@ -252,6 +283,51 @@ namespace Drivers.Debugger.App
                 }
 
                 ProcessesTreeView.ExpandAll();
+            }
+        }
+        private void UpdateRegisters()
+        {
+            if (this.InvokeRequired)
+            {
+                this.Invoke(new VoidDelegate(UpdateRegisters));
+            }
+            else
+            {
+                Thex86RegistersControl.EAX = 0;
+                Thex86RegistersControl.EBX = 0;
+                Thex86RegistersControl.ECX = 0;
+                Thex86RegistersControl.EDX = 0;
+                Thex86RegistersControl.ESP = 0;
+                Thex86RegistersControl.EBP = 0;
+                Thex86RegistersControl.EIP = 0;
+
+                foreach (KeyValuePair<string, uint> Reg in Registers)
+                {
+                    switch (Reg.Key)
+                    {
+                        case "EAX":
+                            Thex86RegistersControl.EAX = Reg.Value;
+                            break;
+                        case "EBX":
+                            Thex86RegistersControl.EBX = Reg.Value;
+                            break;
+                        case "ECX":
+                            Thex86RegistersControl.ECX = Reg.Value;
+                            break;
+                        case "EDX":
+                            Thex86RegistersControl.EDX = Reg.Value;
+                            break;
+                        case "ESP":
+                            Thex86RegistersControl.ESP = Reg.Value;
+                            break;
+                        case "EBP":
+                            Thex86RegistersControl.EBP = Reg.Value;
+                            break;
+                        case "EIP":
+                            Thex86RegistersControl.EIP = Reg.Value;
+                            break;
+                    }
+                }
             }
         }
 

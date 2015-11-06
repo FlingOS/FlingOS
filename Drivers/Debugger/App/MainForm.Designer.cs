@@ -37,14 +37,15 @@
             this.ConnectButton = new System.Windows.Forms.Button();
             this.ConnectingProgressBar = new System.Windows.Forms.ProgressBar();
             this.MainPanel = new System.Windows.Forms.Panel();
+            this.SingleStepButton = new System.Windows.Forms.Button();
+            this.StepButton = new System.Windows.Forms.Button();
+            this.ResumeButton = new System.Windows.Forms.Button();
+            this.SuspendButton = new System.Windows.Forms.Button();
             this.RefreshButton = new System.Windows.Forms.Button();
             this.ProcessesTreeView = new System.Windows.Forms.TreeView();
             this.AbortButton = new System.Windows.Forms.Button();
-            this.SuspendButton = new System.Windows.Forms.Button();
-            this.ResumeButton = new System.Windows.Forms.Button();
-            this.StepButton = new System.Windows.Forms.Button();
-            this.SingleStepButton = new System.Windows.Forms.Button();
             this.DestroyButton = new System.Windows.Forms.Button();
+            this.Thex86RegistersControl = new Drivers.Debugger.App.x86RegistersControl();
             this.MainPanel.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -99,7 +100,7 @@
             this.BinPathBox.Name = "BinPathBox";
             this.BinPathBox.Size = new System.Drawing.Size(383, 20);
             this.BinPathBox.TabIndex = 5;
-            this.BinPathBox.Text = "G:\\Fling OS\\Fling OS\\Kernel\\Kernel\\bin\\Debug";
+            this.BinPathBox.Text = "C:\\Fling OS\\Fling OS\\Kernel\\Kernel\\bin\\Debug";
             // 
             // ConnectButton
             // 
@@ -126,6 +127,7 @@
             this.MainPanel.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
+            this.MainPanel.Controls.Add(this.Thex86RegistersControl);
             this.MainPanel.Controls.Add(this.SingleStepButton);
             this.MainPanel.Controls.Add(this.StepButton);
             this.MainPanel.Controls.Add(this.ResumeButton);
@@ -137,6 +139,46 @@
             this.MainPanel.Name = "MainPanel";
             this.MainPanel.Size = new System.Drawing.Size(836, 446);
             this.MainPanel.TabIndex = 8;
+            // 
+            // SingleStepButton
+            // 
+            this.SingleStepButton.Location = new System.Drawing.Point(273, 135);
+            this.SingleStepButton.Name = "SingleStepButton";
+            this.SingleStepButton.Size = new System.Drawing.Size(75, 23);
+            this.SingleStepButton.TabIndex = 5;
+            this.SingleStepButton.Text = "Single Step";
+            this.SingleStepButton.UseVisualStyleBackColor = true;
+            this.SingleStepButton.Click += new System.EventHandler(this.SingleStepButton_Click);
+            // 
+            // StepButton
+            // 
+            this.StepButton.Location = new System.Drawing.Point(273, 106);
+            this.StepButton.Name = "StepButton";
+            this.StepButton.Size = new System.Drawing.Size(75, 23);
+            this.StepButton.TabIndex = 4;
+            this.StepButton.Text = "Step";
+            this.StepButton.UseVisualStyleBackColor = true;
+            this.StepButton.Click += new System.EventHandler(this.StepButton_Click);
+            // 
+            // ResumeButton
+            // 
+            this.ResumeButton.Location = new System.Drawing.Point(273, 77);
+            this.ResumeButton.Name = "ResumeButton";
+            this.ResumeButton.Size = new System.Drawing.Size(75, 23);
+            this.ResumeButton.TabIndex = 3;
+            this.ResumeButton.Text = "Resume";
+            this.ResumeButton.UseVisualStyleBackColor = true;
+            this.ResumeButton.Click += new System.EventHandler(this.ResumeButton_Click);
+            // 
+            // SuspendButton
+            // 
+            this.SuspendButton.Location = new System.Drawing.Point(273, 48);
+            this.SuspendButton.Name = "SuspendButton";
+            this.SuspendButton.Size = new System.Drawing.Size(75, 23);
+            this.SuspendButton.TabIndex = 2;
+            this.SuspendButton.Text = "Suspend";
+            this.SuspendButton.UseVisualStyleBackColor = true;
+            this.SuspendButton.Click += new System.EventHandler(this.SuspendButton_Click);
             // 
             // RefreshButton
             // 
@@ -155,7 +197,7 @@
             | System.Windows.Forms.AnchorStyles.Left)));
             this.ProcessesTreeView.Location = new System.Drawing.Point(4, 3);
             this.ProcessesTreeView.Name = "ProcessesTreeView";
-            this.ProcessesTreeView.Size = new System.Drawing.Size(263, 440);
+            this.ProcessesTreeView.Size = new System.Drawing.Size(263, 298);
             this.ProcessesTreeView.TabIndex = 0;
             this.ProcessesTreeView.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.ProcessesTreeView_AfterSelect);
             // 
@@ -170,46 +212,6 @@
             this.AbortButton.UseVisualStyleBackColor = true;
             this.AbortButton.Click += new System.EventHandler(this.AbortButton_Click);
             // 
-            // SuspendButton
-            // 
-            this.SuspendButton.Location = new System.Drawing.Point(273, 48);
-            this.SuspendButton.Name = "SuspendButton";
-            this.SuspendButton.Size = new System.Drawing.Size(75, 23);
-            this.SuspendButton.TabIndex = 2;
-            this.SuspendButton.Text = "Suspend";
-            this.SuspendButton.UseVisualStyleBackColor = true;
-            this.SuspendButton.Click += new System.EventHandler(this.SuspendButton_Click);
-            // 
-            // ResumeButton
-            // 
-            this.ResumeButton.Location = new System.Drawing.Point(273, 77);
-            this.ResumeButton.Name = "ResumeButton";
-            this.ResumeButton.Size = new System.Drawing.Size(75, 23);
-            this.ResumeButton.TabIndex = 3;
-            this.ResumeButton.Text = "Resume";
-            this.ResumeButton.UseVisualStyleBackColor = true;
-            this.ResumeButton.Click += new System.EventHandler(this.ResumeButton_Click);
-            // 
-            // StepButton
-            // 
-            this.StepButton.Location = new System.Drawing.Point(273, 106);
-            this.StepButton.Name = "StepButton";
-            this.StepButton.Size = new System.Drawing.Size(75, 23);
-            this.StepButton.TabIndex = 4;
-            this.StepButton.Text = "Step";
-            this.StepButton.UseVisualStyleBackColor = true;
-            this.StepButton.Click += new System.EventHandler(this.StepButton_Click);
-            // 
-            // SingleStepButton
-            // 
-            this.SingleStepButton.Location = new System.Drawing.Point(273, 135);
-            this.SingleStepButton.Name = "SingleStepButton";
-            this.SingleStepButton.Size = new System.Drawing.Size(75, 23);
-            this.SingleStepButton.TabIndex = 5;
-            this.SingleStepButton.Text = "Single Step";
-            this.SingleStepButton.UseVisualStyleBackColor = true;
-            this.SingleStepButton.Click += new System.EventHandler(this.SingleStepButton_Click);
-            // 
             // DestroyButton
             // 
             this.DestroyButton.Location = new System.Drawing.Point(667, 36);
@@ -219,6 +221,20 @@
             this.DestroyButton.Text = "Destroy";
             this.DestroyButton.UseVisualStyleBackColor = true;
             this.DestroyButton.Click += new System.EventHandler(this.DestroyButton_Click);
+            // 
+            // Thex86RegistersControl
+            // 
+            this.Thex86RegistersControl.EAX = ((uint)(0u));
+            this.Thex86RegistersControl.EBP = ((uint)(0u));
+            this.Thex86RegistersControl.EBX = ((uint)(0u));
+            this.Thex86RegistersControl.ECX = ((uint)(0u));
+            this.Thex86RegistersControl.EDX = ((uint)(0u));
+            this.Thex86RegistersControl.EIP = ((uint)(0u));
+            this.Thex86RegistersControl.ESP = ((uint)(0u));
+            this.Thex86RegistersControl.Location = new System.Drawing.Point(4, 307);
+            this.Thex86RegistersControl.Name = "Thex86RegistersControl";
+            this.Thex86RegistersControl.Size = new System.Drawing.Size(255, 136);
+            this.Thex86RegistersControl.TabIndex = 6;
             // 
             // MainForm
             // 
@@ -264,5 +280,6 @@
         private System.Windows.Forms.Button SingleStepButton;
         private System.Windows.Forms.Button StepButton;
         private System.Windows.Forms.Button DestroyButton;
+        private x86RegistersControl Thex86RegistersControl;
     }
 }
