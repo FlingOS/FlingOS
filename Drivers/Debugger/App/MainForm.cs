@@ -63,7 +63,8 @@ namespace Drivers.Debugger.App
         Dictionary<string, uint> Registers = new Dictionary<string,uint>();
         uint EIP = 0xFFFFFFFF;
         Tuple<uint, string> NearestLabel;
-        string MethodLabel;
+        string CurrentMethodLabel;
+        string CurrentMethodASM;
 
         public MainForm()
         {
@@ -126,6 +127,19 @@ namespace Drivers.Debugger.App
             Task.Run((Action)RefreshRegisters);
         }
 
+        private void FilterBox_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+        private void BreakpointsTreeView_AfterSelect(object sender, TreeViewEventArgs e)
+        {
+
+        }
+        private void DebugPointsTreeView_AfterSelect(object sender, TreeViewEventArgs e)
+        {
+
+        }
+
         private void TheDebugger_NotificationEvent(NotificationEventArgs e, object sender)
         {
             while (PerformingAction)
@@ -184,13 +198,15 @@ namespace Drivers.Debugger.App
             {
                 EIP = Registers["EIP"];
                 NearestLabel = TheDebugger.GetNearestLabel(EIP);
-                MethodLabel = TheDebugger.GetMethodLabel(NearestLabel.Item2);
+                CurrentMethodLabel = TheDebugger.GetMethodLabel(NearestLabel.Item2);
+                CurrentMethodASM = TheDebugger.GetMethodASM(CurrentMethodLabel);
             }
             else
             {
                 EIP = 0xFFFFFFFF;
                 NearestLabel = null;
-                MethodLabel = "";
+                CurrentMethodLabel = "";
+                CurrentMethodASM = "";
             }
 
             UpdateNearestLabel();
@@ -407,12 +423,49 @@ namespace Drivers.Debugger.App
                     NearestLabelAddessBox.Text = NearestLabel.Item1.ToString("X8");
                     NearestLabelBox.Text = NearestLabel.Item2;
 
-                    MethodLabelBox.Text = MethodLabel;
+                    MethodLabelBox.Text = CurrentMethodLabel;
+                    CurrentMethodBox.Text = CurrentMethodASM;
+
+                    if (NearestLabel.Item2.Contains("."))
+                    {
+                        string LocalLabel = "." + NearestLabel.Item2.Split('.')[1];
+                        string[] LocalLabelParts = LocalLabel.Split('_');
+                        if (LocalLabelParts.Length == 3)
+                        {
+                            LocalLabel = LocalLabelParts[0] + "_" + LocalLabelParts[1];
+                        }
+
+                        string OffsetStr = "??";
+
+                        try
+                        {
+                            int LabelIndex = CurrentMethodASM.IndexOf(LocalLabel + "  --");
+                            if (LabelIndex > -1)
+                            {
+                                int EOLIndex = CurrentMethodASM.IndexOf('\n', LabelIndex);
+                                string LabelLine = CurrentMethodASM.Substring(LabelIndex, EOLIndex - LabelIndex);
+                                OffsetStr = LabelLine.Split(':').Last().Trim();
+                            }
+                        }
+                        catch
+                        {
+                        }
+
+                        MethodLocalLabelLabel.Text = LocalLabel + " : 0x" + OffsetStr;
+                    }
+                    else
+                    {
+                        MethodLocalLabelLabel.Text = "[NO LOCAL]";
+                    }
                 }
                 else
                 {
                     NearestLabelAddessBox.Text = "";
                     NearestLabelBox.Text = "";
+                    MethodLocalLabelLabel.Text = "[NO LOCAL]";
+                    MethodLabelBox.Text = "";
+                    CurrentMethodBox.Text = "";
+                    NearestLabelAddessBox.BackColor = Color.White;
                 }
             }
         }

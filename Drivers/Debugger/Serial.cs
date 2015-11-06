@@ -70,7 +70,7 @@ namespace Drivers.Debugger
         public event OnConnectedHandler OnConnected;
 
         Queue<byte> BytesRead = new Queue<byte>();
-        byte[] readBuffer = new byte[512];
+        byte[] readBuffer = new byte[4096];
 
         /// <summary>
         /// Disposes of the serial class. Calls <see cref="Disconnect"/>.
@@ -94,6 +94,7 @@ namespace Drivers.Debugger
                 try
                 {
                     ThePipe = new NamedPipeServerStream(pipe, PipeDirection.InOut, 1, PipeTransmissionMode.Byte, PipeOptions.Asynchronous);
+                    ThePipe.ReadMode = PipeTransmissionMode.Byte;
                     ThePipe.BeginWaitForConnection(new AsyncCallback(delegate(IAsyncResult result)
                     {
                         try
@@ -219,9 +220,18 @@ namespace Drivers.Debugger
 
                     if (AbortRead)
                     {
-                        throw new TimeoutException("Command aborted");
+                        if (result.StartsWith("END OF COM"))
+                        {
+                            result = "END OF COMMAND";
+                            c = '\n';
+                            break;
+                        }
+                        else
+                        {
+                            throw new TimeoutException("Command aborted");
+                        }
                     }
-                    else if (result == "END OF COMMAND")
+                    else if (result.StartsWith("END OF COM"))
                     {
                         if (BytesRead.Count == 0 && timeLimit-- == 0)
                         {
@@ -231,7 +241,7 @@ namespace Drivers.Debugger
                     }
                 }
 
-                if (result != "END OF COMMAND" || BytesRead.Count != 0 || timeLimit != 0)
+                if ((result != "END OF COMMAND" || timeLimit != 0) && BytesRead.Count != 0)
                 {
                     c = (char)BytesRead.Dequeue();
                 }
@@ -241,9 +251,12 @@ namespace Drivers.Debugger
                     break;
                 }
 
-                result += c;
+                if (c != '\0')
+                {
+                    result += c;
+                }
             }
-            while (Connected);
+            while (Connected && !AbortRead);
 
             return result;
         }

@@ -41,6 +41,8 @@ namespace Drivers.Debugger
         public Dictionary<uint, List<string>> AddressMappings = new Dictionary<uint, List<string>>();
         public Dictionary<string, uint> LabelMappings = new Dictionary<string, uint>();
 
+        private Dictionary<string, string> MethodASMCache = new Dictionary<string, string>();
+
         public void ReadDataFiles(string FolderPath, string AssemblyName)
         {
             using (StreamReader MethodFileMappingsStr = new StreamReader(Path.Combine(FolderPath, AssemblyName + "_MethodFileMappings.txt")))
@@ -105,6 +107,22 @@ namespace Drivers.Debugger
                         }
                     }
                 }
+            }
+        }
+
+        public string ReadMethodASM(string MethodLabel)
+        {
+            if (MethodFileMappings.ContainsKey(MethodLabel))
+            {
+                if (!MethodASMCache.ContainsKey(MethodLabel))
+                {
+                    MethodASMCache.Add(MethodLabel, File.ReadAllText(MethodFileMappings[MethodLabel]));
+                }
+                return MethodASMCache[MethodLabel];
+            }
+            else
+            {
+                return "";
             }
         }
     }

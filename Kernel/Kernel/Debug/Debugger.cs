@@ -284,11 +284,14 @@ namespace Kernel.Debug
 
                                     if (TheThread != null)
                                     {
-                                        TheThread.Debug_Suspend = true;
+                                        if (TheThread != MainThread)
+                                        {
+                                            TheThread.Debug_Suspend = true;
 
-                                        MsgPort.Write(" > Suspended ");
-                                        MsgPort.Write(TheThread.Name);
-                                        MsgPort.Write(" thread\n");
+                                            MsgPort.Write(" > Suspended ");
+                                            MsgPort.Write(TheThread.Name);
+                                            MsgPort.Write(" thread\n");
+                                        }
                                     }
                                     else
                                     {

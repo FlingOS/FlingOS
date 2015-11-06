@@ -129,17 +129,13 @@ namespace Drivers.Debugger
         public string[] ExecuteCommand(string cmd)
         {
             MsgSerial.WriteLine(cmd);
+            System.Threading.Thread.Sleep(50);
 
             // First line should be command echo
             {
-                string line = MsgSerial.ReadLine();
-                if (line.Trim().ToLower() != cmd.Trim().ToLower())
+                string line;
+                while ((line = MsgSerial.ReadLine()) != cmd && line != "END OF COMMAND")
                 {
-                    while ((line = MsgSerial.ReadLine()) != "END OF COMMAND")
-                    {
-                    }
-
-                    return null;
                 }
             }
 
@@ -310,12 +306,16 @@ namespace Drivers.Debugger
         {
             return FullLabel.Split('.')[0];
         }
+        public string GetMethodASM(string MethodLabel)
+        {
+            return DebugData.ReadMethodASM(MethodLabel);
+        }
 
         private string[] ReadToEndOfCommand()
         {
             List<string> Result = new List<string>();
             string str;
-            while ((str = MsgSerial.ReadLine()) != "END OF COMMAND")
+            while (!(str = MsgSerial.ReadLine()).StartsWith("END OF COM"))
             {
                 Result.Add(str);
             }
