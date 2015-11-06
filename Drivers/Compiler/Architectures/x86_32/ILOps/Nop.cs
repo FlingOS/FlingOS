@@ -55,7 +55,7 @@ namespace Drivers.Compiler.Architectures.x86
             {
                 int currOpPosition = conversionState.PositionOf(theOp);
 
-                conversionState.Append(new ASMOps.Label() { ILPosition = currOpPosition, Extension = "Debug" });
+                conversionState.Append(new ASMOps.Label() { ILPosition = currOpPosition, Extension = "Debug", IsDebugOp = true });
                 conversionState.Append(new ASMOps.Nop());
                 //conversionState.Append(new ASMOps.Int() { IntNum = "3" });
             }

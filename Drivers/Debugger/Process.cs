@@ -30,12 +30,27 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Drivers.Compiler
+namespace Drivers.Debugger
 {
-    /// <summary>
-    /// This class has yet to be implemented.
-    /// </summary>
-    static class DebugDataManager
+    public class Process
     {
+        public uint Id;
+        public string Name;
+
+        public List<Thread> Threads = new List<Thread>();
+    }
+    public class Thread
+    {
+        public enum States
+        {
+            Running,
+            Waiting,
+            Sleeping,
+            Suspended
+        }
+
+        public uint Id;
+        public string Name;
+        public States State;
     }
 }

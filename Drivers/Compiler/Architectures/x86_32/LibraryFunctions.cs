@@ -115,8 +115,8 @@ OUTPUT_FORMAT(elf32-i386)
 GROUP(");
 
             LinkScript.Append(string.Join(" ", LinkInfo.SequencedASMBlocks
-                .Where(x => File.Exists(x.OutputFilePath))
-                .Select(x => "\"" + x.OutputFilePath + "\"")));
+                .Where(x => File.Exists(x.ObjectOutputFilePath))
+                .Select(x => "\"" + x.ObjectOutputFilePath + "\"")));
 
             LinkScript.AppendLine(@")
 
@@ -131,8 +131,8 @@ SECTIONS {
 
             for (int i = 0; i < LinkInfo.SequencedASMBlocks.Count; i++)
             {
-                LinkScript.AppendLine(string.Format("       \"{0}\" (.text);", LinkInfo.SequencedASMBlocks[i].OutputFilePath));
-                ASMWriter.WriteLine(File.ReadAllText(LinkInfo.SequencedASMBlocks[i].OutputFilePath.Replace("\\Objects", "\\ASM").Replace(".o", ".s")));
+                LinkScript.AppendLine(string.Format("       \"{0}\" (.text);", LinkInfo.SequencedASMBlocks[i].ObjectOutputFilePath));
+                ASMWriter.WriteLine(File.ReadAllText(LinkInfo.SequencedASMBlocks[i].ASMOutputFilePath));
             }
 
 
@@ -197,8 +197,8 @@ SECTIONS {
 @"GROUP(");
 
             LinkScript.Append(string.Join(" ", LinkInfo.SequencedASMBlocks
-                .Where(x => File.Exists(x.OutputFilePath))
-                .Select(x => "\"" + x.OutputFilePath + "\"")));
+                .Where(x => File.Exists(x.ObjectOutputFilePath))
+                .Select(x => "\"" + x.ObjectOutputFilePath + "\"")));
 
             LinkScript.Append(@")
 
@@ -220,8 +220,8 @@ SECTIONS {
 
             for (int i = 0; i < LinkInfo.SequencedASMBlocks.Count; i++)
             {
-                LinkScript.AppendLine(string.Format("       \"{0}\" (.text);", LinkInfo.SequencedASMBlocks[i].OutputFilePath));
-                ASMWriter.WriteLine(File.ReadAllText(LinkInfo.SequencedASMBlocks[i].OutputFilePath.Replace("\\Objects", "\\ASM").Replace(".o", ".s")));
+                LinkScript.AppendLine(string.Format("       \"{0}\" (.text);", LinkInfo.SequencedASMBlocks[i].ObjectOutputFilePath));
+                ASMWriter.WriteLine(File.ReadAllText(LinkInfo.SequencedASMBlocks[i].ASMOutputFilePath));
             }
 
 

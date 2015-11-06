@@ -84,7 +84,7 @@
     <Compile Include="Attributes\NoDebugAttribute.cs" />
     <Compile Include="Attributes\NoGCAttribute.cs" />
     <Compile Include="Attributes\PluggedMethodAttribute.cs" />
-    <Compile Include="DebugDataManager.cs" />
+    <Compile Include="DebugDataWriter.cs" />
     <Compile Include="Errors.cs" />
     <Compile Include="Global.cs" />
     <Compile Include="IL\ILCompiler.cs" />
@@ -162,7 +162,7 @@
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>
-    <None Include="..\..\Kernel\Kernel.licenseheader">
+    <None Include="..\..\Kernel\Kernel\Kernel.licenseheader">
       <Link>Kernel.licenseheader</Link>
     </None>
     <None Include="Tools\ISO\astamp.dat">

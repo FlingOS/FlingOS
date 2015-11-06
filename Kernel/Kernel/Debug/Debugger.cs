@@ -179,10 +179,6 @@ namespace Kernel.Debug
                 {
                     FOS_System.String cmd = (FOS_System.String)lineParts[0];
 
-                    DebugPort.Write("Command: ");
-                    DebugPort.Write(cmd);
-                    DebugPort.Write("\n");
-
                     if (cmd == "ping")
                     {
                         DebugPort.Write("pong\n");
@@ -215,7 +211,7 @@ namespace Kernel.Debug
                             {
                                 Thread AThread = (Thread)AProcess.Threads[j];
 
-                                DebugPort.Write("      - ");
+                                DebugPort.Write("      - Thread : ");
                                 DebugPort.Write((FOS_System.String)AThread.Id);
                                 DebugPort.Write(" : ");
                                 if (AThread.Debug_Suspend)
@@ -666,6 +662,8 @@ namespace Kernel.Debug
                         DebugPort.Write("Unrecognised command. (Note: Backspace not supported!)\n");
                     }
                 }
+
+                DebugPort.Write("END OF COMMAND\n");
             }
         }
         

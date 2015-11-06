@@ -93,7 +93,14 @@ namespace Drivers.Compiler
                 List<ASM.ASMBlock> SequencedASMBlocks = new List<ASM.ASMBlock>();
                 SequencedASMBlocks.AddRange(TheLibrary.TheASMLibrary.ASMBlocks);
                 SequencedASMBlocks.Sort(GetOrder);
-
+                SequencedASMBlocks.ForEach(delegate(ASM.ASMBlock block)
+                {
+                    if (block != null && block.OriginMethodInfo != null)
+                    {
+                        DebugDataWriter.AddMethodMapping(block.OriginMethodInfo.ID, block.ASMOutputFilePath);
+                    }
+                });
+                
                 // Find start method if any, use as ENTRY point
                 bool ExecutableOutput = false;
                 string EntryPoint = null;
@@ -114,6 +121,8 @@ namespace Drivers.Compiler
                 }
 
                 string AssemblyName = string.IsNullOrWhiteSpace(Name) ? Utilities.CleanFileName(TheLibrary.TheAssembly.GetName().Name) : Name;
+
+                DebugDataWriter.SaveDataFiles(Options.OutputPath, AssemblyName);
 
                 LinkInformation LinkInfo = new LinkInformation()
                 {
@@ -136,6 +145,11 @@ namespace Drivers.Compiler
                 }
 
                 OK = TargetArchitecture.TargetFunctions.LinkELF(TheLibrary, LinkInfo);
+
+                if (OK)
+                {
+                    DebugDataWriter.ProcessMapFile(LinkInfo.MapPath);
+                }
             }
             else if (Options.LinkMode == Options.LinkModes.ISO)
             {
@@ -145,11 +159,19 @@ namespace Drivers.Compiler
                 {
                     SequencedASMBlocks.AddRange(depLib.TheASMLibrary.ASMBlocks);
                 }
-                //SortBlocks(SequencedASMBlocks);
                 SequencedASMBlocks.Sort(GetOrder);
-
-                string AssemblyName = Utilities.CleanFileName(TheLibrary.TheAssembly.GetName().Name);
+                SequencedASMBlocks.ForEach(delegate(ASM.ASMBlock block)
+                {
+                    if (block != null && block.OriginMethodInfo != null)
+                    {
+                        DebugDataWriter.AddMethodMapping(block.OriginMethodInfo.ID, block.ASMOutputFilePath);
+                    }
+                });
                 
+                string AssemblyName = Utilities.CleanFileName(TheLibrary.TheAssembly.GetName().Name);
+
+                DebugDataWriter.SaveDataFiles(Options.OutputPath, AssemblyName);
+
                 LinkInformation LinkInfo = new LinkInformation()
                 {
                     ToolsPath = Options.ToolsPath,
@@ -173,6 +195,11 @@ namespace Drivers.Compiler
                 CopyDirectory(LinkInfo.ISOToolsDirPath, LinkInfo.ISODirPath, true);
 
                 OK = TargetArchitecture.TargetFunctions.LinkISO(TheLibrary, LinkInfo);
+
+                if (OK)
+                {
+                    DebugDataWriter.ProcessMapFile(LinkInfo.MapPath);
+                }
             }
 
             return OK ? CompileResult.OK : CompileResult.Fail;

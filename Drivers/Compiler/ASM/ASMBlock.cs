@@ -84,13 +84,13 @@ namespace Drivers.Compiler.ASM
         public bool Plugged { get { return PlugPath != null; } }
 
         /// <summary>
-        /// The path to which the ASM block is outputted. 
+        /// The path to which the ASM block is outputted as ASM text. 
         /// </summary>
-        /// <remarks>
-        /// This changes throughout the build process from the path to the ASM file to the path
-        /// to the object file.
-        /// </remarks>
-        public string OutputFilePath;
+        public string ASMOutputFilePath;
+        /// <summary>
+        /// The path to which the ASM block is outputted as an object file. 
+        /// </summary>
+        public string ObjectOutputFilePath;
 
         /// <summary>
         /// The assembly ops contained within this ASM block.

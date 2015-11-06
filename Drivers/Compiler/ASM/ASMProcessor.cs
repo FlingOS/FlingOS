@@ -70,14 +70,14 @@ namespace Drivers.Compiler.ASM
             {
                 ProcessBlock(aBlock);
 
-                if (aBlock.OutputFilePath != null)
+                if (aBlock.ASMOutputFilePath != null)
                 {
                     CompilerLabourDivision[num % MaxConcurrentCompilerProcesses].Add(aBlock);
                     num++;
                 }
             }
 
-            TheLibrary.ASMBlocks.RemoveAll(x => x.OutputFilePath == null);
+            TheLibrary.ASMBlocks.RemoveAll(x => x.ASMOutputFilePath == null);
 
 #if COMPILER_ASYNC
             List<bool> Completed = new List<bool>();
@@ -161,6 +161,16 @@ namespace Drivers.Compiler.ASM
                     {
                         ASMText += ((ASMLabel)TargetArchitecture.CreateASMOp(OpCodes.Label, anASMOp.ILLabelPosition, "")).Convert(TheBlock) + "\r\n";
                     }
+
+                    if (anASMOp is ASM.ASMOps.ASMLabel)
+                    {
+                        ASMLabel labelOp = (ASM.ASMOps.ASMLabel)anASMOp;
+                        if (labelOp.IsDebugOp)
+                        {
+                            DebugDataWriter.AddDebugOp(TheBlock.OriginMethodInfo.ID, TheBlock.GenerateILOpLabel(labelOp.ILPosition, labelOp.Extension));
+                        }
+                    }
+
                     ASMText += anASMOp.Convert(TheBlock) + "\r\n";
                 }
             }
@@ -172,12 +182,12 @@ namespace Drivers.Compiler.ASM
                 string FileName = Utilities.CleanFileName(Guid.NewGuid().ToString() + "." + Options.TargetArchitecture) + ".s";
                 string OutputPath = GetASMOutputPath();
                 FileName = Path.Combine(OutputPath, FileName);
-                TheBlock.OutputFilePath = FileName;
+                TheBlock.ASMOutputFilePath = FileName;
                 File.WriteAllText(FileName, ASMText);
             }
             else
             {
-                TheBlock.OutputFilePath = null;
+                TheBlock.ASMOutputFilePath = null;
             }
         }
 
@@ -197,14 +207,14 @@ namespace Drivers.Compiler.ASM
                 int index = (int)state;
                 if (index < Blocks.Count)
                 {
-                    string inputPath = Blocks[index].OutputFilePath;
+                    string inputPath = Blocks[index].ASMOutputFilePath;
                     string outputPath = inputPath.Replace(ASMOutputPath, ObjectsOutputPath).Replace(".s", ".o");
 
                     try
                     {
                         TargetArchitecture.TargetFunctions.ExecuteAssemblyCodeCompiler(inputPath, outputPath, onComplete, index + 1);
 
-                        Blocks[index].OutputFilePath = outputPath;
+                        Blocks[index].ObjectOutputFilePath = outputPath;
                     }
                     catch (Exception ex)
                     {
@@ -231,14 +241,14 @@ namespace Drivers.Compiler.ASM
 
             for (int index = 0; index < Blocks.Count; index++)
             {
-                string inputPath = Blocks[index].OutputFilePath;
+                string inputPath = Blocks[index].ASMOutputFilePath;
                 string outputPath = inputPath.Replace(ASMOutputPath, ObjectsOutputPath).Replace(".s", ".o");
 
                 try
                 {
                     TargetArchitecture.TargetFunctions.ExecuteAssemblyCodeCompiler(inputPath, outputPath);
 
-                    Blocks[index].OutputFilePath = outputPath;
+                    Blocks[index].ObjectOutputFilePath = outputPath;
                 }
                 catch (Exception ex)
                 {

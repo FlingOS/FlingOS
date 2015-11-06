@@ -283,7 +283,7 @@ namespace Kernel.Hardware.IO.Serial
         {
             if (COM2 == null)
             {
-                COM2 = new Serial(COMPorts.COM2, DataBits._8, ParityBits.None, StopBits.One, BaudRates._115200, Interrupts.None);
+                COM2 = new Serial(COMPorts.COM2, DataBits._8, ParityBits.None, StopBits.One, BaudRates._19200, Interrupts.None);
                 DeviceManager.AddDevice(COM2);
             }
         }

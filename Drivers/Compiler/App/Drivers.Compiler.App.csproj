@@ -46,7 +46,7 @@
     <Compile Include="CompilerProcess.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\..\..\Kernel\Kernel.licenseheader">
+    <None Include="..\..\..\Kernel\Kernel\Kernel.licenseheader">
       <Link>Kernel.licenseheader</Link>
     </None>
     <None Include="App.config" />

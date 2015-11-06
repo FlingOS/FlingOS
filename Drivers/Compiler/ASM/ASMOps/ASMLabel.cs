@@ -53,6 +53,8 @@ namespace Drivers.Compiler.ASM.ASMOps
         /// </summary>
         public string Extension;
 
+        public bool IsDebugOp = false;
+
         public ASMLabel()
         {
         }

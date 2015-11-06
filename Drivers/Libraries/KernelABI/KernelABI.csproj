@@ -54,11 +54,6 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\..\..\Kernel\Kernel.licenseheader">
-      <Link>Kernel.licenseheader</Link>
-    </None>
-  </ItemGroup>
-  <ItemGroup>
     <ProjectReference Include="..\..\Compiler\Drivers.Compiler.csproj">
       <Project>{1fb0e622-d2c6-4a5c-b5b6-d2bb5e502af1}</Project>
       <Name>Drivers.Compiler</Name>
@@ -67,6 +62,11 @@
       <Project>{f9da529f-d53a-4f0c-9f45-7ddddc648099}</Project>
       <Name>Drivers.Framework</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\..\Kernel\Kernel\Kernel.licenseheader">
+      <Link>Kernel.licenseheader</Link>
+    </None>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

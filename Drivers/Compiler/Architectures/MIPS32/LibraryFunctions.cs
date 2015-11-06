@@ -105,8 +105,8 @@ SECTIONS {
 
             for (int i = 0; i < LinkInfo.SequencedASMBlocks.Count; i++)
             {
-                LinkScript.AppendLine(string.Format("       \"{0}\" (.text);", LinkInfo.SequencedASMBlocks[i].OutputFilePath));
-                ASMWriter.WriteLine(File.ReadAllText(LinkInfo.SequencedASMBlocks[i].OutputFilePath.Replace("\\Objects", "\\ASM").Replace(".o", ".s")));
+                LinkScript.AppendLine(string.Format("       \"{0}\" (.text);", LinkInfo.SequencedASMBlocks[i].ObjectOutputFilePath));
+                ASMWriter.WriteLine(File.ReadAllText(LinkInfo.SequencedASMBlocks[i].ASMOutputFilePath));
             }
 
 
