@@ -287,5 +287,14 @@ namespace Kernel.Hardware.IO.Serial
                 DeviceManager.AddDevice(COM2);
             }
         }
+        public static Serial COM3;
+        public static void InitCOM3()
+        {
+            if (COM3 == null)
+            {
+                COM3 = new Serial(COMPorts.COM3, DataBits._8, ParityBits.None, StopBits.One, BaudRates._19200, Interrupts.None);
+                DeviceManager.AddDevice(COM3);
+            }
+        }
     }
 }

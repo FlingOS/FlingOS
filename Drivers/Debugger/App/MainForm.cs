@@ -61,6 +61,9 @@ namespace Drivers.Debugger.App
 
         Dictionary<uint, Process> Processes;
         Dictionary<string, uint> Registers = new Dictionary<string,uint>();
+        uint EIP = 0xFFFFFFFF;
+        Tuple<uint, string> NearestLabel;
+        string MethodLabel;
 
         public MainForm()
         {
@@ -75,7 +78,7 @@ namespace Drivers.Debugger.App
         private void ConnectButton_Click(object sender, EventArgs e)
         {
             ConnectButton.Enabled = false;
-            Task.Run((Action)Init);
+            Task.Run((Action)Connect);
         }
         private void DestroyButton_Click(object sender, EventArgs e)
         {
@@ -85,7 +88,7 @@ namespace Drivers.Debugger.App
             TheDebugger = null;
             Processes = null;
             UpdateProcessTree();
-            UpdateEnableStates();
+            PerformingAction = false;
         }
         private void AbortButton_Click(object sender, EventArgs e)
         {
@@ -123,9 +126,19 @@ namespace Drivers.Debugger.App
             Task.Run((Action)RefreshRegisters);
         }
 
-        private void Init()
+        private void TheDebugger_NotificationEvent(NotificationEventArgs e, object sender)
+        {
+            while (PerformingAction)
+            {
+                System.Threading.Thread.Sleep(100);
+            }
+            RefreshThreads();
+        }
+
+        private void Connect()
         {
             TheDebugger = new Debugger();
+            TheDebugger.NotificationEvent += TheDebugger_NotificationEvent;
             UpdateEnableStates();
             
             if (!TheDebugger.Init(PipeNameBox.Text, BinPathBox.Text, AssemblyNameBox.Text))
@@ -162,6 +175,25 @@ namespace Drivers.Debugger.App
             }
 
             UpdateRegisters();
+
+            RefreshNearestLabel();
+        }
+        private void RefreshNearestLabel()
+        {
+            if (Registers.ContainsKey("EIP"))
+            {
+                EIP = Registers["EIP"];
+                NearestLabel = TheDebugger.GetNearestLabel(EIP);
+                MethodLabel = TheDebugger.GetMethodLabel(NearestLabel.Item2);
+            }
+            else
+            {
+                EIP = 0xFFFFFFFF;
+                NearestLabel = null;
+                MethodLabel = "";
+            }
+
+            UpdateNearestLabel();
 
             PerformingAction = false;
         }
@@ -268,21 +300,44 @@ namespace Drivers.Debugger.App
             }
             else
             {
+                uint SelectedProcessId = 0;
+                int SelectedThreadId = 0;
+                if (ProcessesTreeView.SelectedNode != null)
+                {
+                    SelectedProcessId = GetSelectedProcessId();
+                    SelectedThreadId = GetSelectedThreadId();
+                }
+
                 ProcessesTreeView.Nodes.Clear();
 
+                TreeNode NodeToSelect = null;
                 if (Processes != null)
                 {
                     foreach (Process AProcess in Processes.Values)
                     {
-                        TreeNode NewNode = ProcessesTreeView.Nodes.Add(AProcess.Id.ToString(), AProcess.Id.ToString() + ": " + AProcess.Name);
+                        TreeNode NewProcessNode = ProcessesTreeView.Nodes.Add(AProcess.Id.ToString(), AProcess.Id.ToString() + ": " + AProcess.Name);
+                        if (AProcess.Id == SelectedProcessId && SelectedThreadId == -1)
+                        {
+                            NodeToSelect = NewProcessNode;
+                        }
+
                         foreach (Thread AThread in AProcess.Threads.Values)
                         {
-                            NewNode.Nodes.Add(AThread.Id.ToString(), AThread.Id.ToString() + ": " + AThread.Name + " : " + AThread.State);
+                            TreeNode NewThreadNode = NewProcessNode.Nodes.Add(AThread.Id.ToString(), AThread.Id.ToString() + ": " + AThread.Name + " : " + AThread.State);
+                            if (AProcess.Id == SelectedProcessId && AThread.Id == SelectedThreadId)
+                            {
+                                NodeToSelect = NewThreadNode;
+                            }
                         }
                     }
                 }
 
                 ProcessesTreeView.ExpandAll();
+
+                if (NodeToSelect != null)
+                {
+                    ProcessesTreeView.SelectedNode = NodeToSelect;
+                }
             }
         }
         private void UpdateRegisters()
@@ -327,6 +382,37 @@ namespace Drivers.Debugger.App
                             Thex86RegistersControl.EIP = Reg.Value;
                             break;
                     }
+                }
+            }
+        }
+        private void UpdateNearestLabel()
+        {
+            if (this.InvokeRequired)
+            {
+                this.Invoke(new VoidDelegate(UpdateNearestLabel));
+            }
+            else
+            {
+                if (NearestLabel != null)
+                {
+                    if (NearestLabel.Item1 == EIP)
+                    {
+                        NearestLabelAddessBox.BackColor = Color.LightGreen;
+                    }
+                    else
+                    {
+                        NearestLabelAddessBox.BackColor = Color.LightBlue;
+                    }
+
+                    NearestLabelAddessBox.Text = NearestLabel.Item1.ToString("X8");
+                    NearestLabelBox.Text = NearestLabel.Item2;
+
+                    MethodLabelBox.Text = MethodLabel;
+                }
+                else
+                {
+                    NearestLabelAddessBox.Text = "";
+                    NearestLabelBox.Text = "";
                 }
             }
         }

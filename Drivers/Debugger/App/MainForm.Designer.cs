@@ -45,7 +45,12 @@
             this.ProcessesTreeView = new System.Windows.Forms.TreeView();
             this.AbortButton = new System.Windows.Forms.Button();
             this.DestroyButton = new System.Windows.Forms.Button();
+            this.label4 = new System.Windows.Forms.Label();
+            this.NearestLabelBox = new System.Windows.Forms.TextBox();
+            this.NearestLabelAddessBox = new System.Windows.Forms.TextBox();
             this.Thex86RegistersControl = new Drivers.Debugger.App.x86RegistersControl();
+            this.label5 = new System.Windows.Forms.Label();
+            this.MethodLabelBox = new System.Windows.Forms.TextBox();
             this.MainPanel.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -100,10 +105,11 @@
             this.BinPathBox.Name = "BinPathBox";
             this.BinPathBox.Size = new System.Drawing.Size(383, 20);
             this.BinPathBox.TabIndex = 5;
-            this.BinPathBox.Text = "C:\\Fling OS\\Fling OS\\Kernel\\Kernel\\bin\\Debug";
+            this.BinPathBox.Text = "G:\\Fling OS\\Fling OS\\Kernel\\Kernel\\bin\\Debug";
             // 
             // ConnectButton
             // 
+            this.ConnectButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.ConnectButton.Location = new System.Drawing.Point(586, 36);
             this.ConnectButton.Name = "ConnectButton";
             this.ConnectButton.Size = new System.Drawing.Size(75, 23);
@@ -114,6 +120,7 @@
             // 
             // ConnectingProgressBar
             // 
+            this.ConnectingProgressBar.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.ConnectingProgressBar.Enabled = false;
             this.ConnectingProgressBar.Location = new System.Drawing.Point(748, 36);
             this.ConnectingProgressBar.MarqueeAnimationSpeed = 50;
@@ -127,6 +134,11 @@
             this.MainPanel.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
+            this.MainPanel.Controls.Add(this.MethodLabelBox);
+            this.MainPanel.Controls.Add(this.label5);
+            this.MainPanel.Controls.Add(this.NearestLabelAddessBox);
+            this.MainPanel.Controls.Add(this.NearestLabelBox);
+            this.MainPanel.Controls.Add(this.label4);
             this.MainPanel.Controls.Add(this.Thex86RegistersControl);
             this.MainPanel.Controls.Add(this.SingleStepButton);
             this.MainPanel.Controls.Add(this.StepButton);
@@ -182,7 +194,6 @@
             // 
             // RefreshButton
             // 
-            this.RefreshButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.RefreshButton.Location = new System.Drawing.Point(273, 3);
             this.RefreshButton.Name = "RefreshButton";
             this.RefreshButton.Size = new System.Drawing.Size(75, 23);
@@ -214,6 +225,7 @@
             // 
             // DestroyButton
             // 
+            this.DestroyButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.DestroyButton.Location = new System.Drawing.Point(667, 36);
             this.DestroyButton.Name = "DestroyButton";
             this.DestroyButton.Size = new System.Drawing.Size(75, 23);
@@ -222,8 +234,34 @@
             this.DestroyButton.UseVisualStyleBackColor = true;
             this.DestroyButton.Click += new System.EventHandler(this.DestroyButton_Click);
             // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.Location = new System.Drawing.Point(369, 8);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(75, 13);
+            this.label4.TabIndex = 7;
+            this.label4.Text = "Nearest label :";
+            // 
+            // NearestLabelBox
+            // 
+            this.NearestLabelBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.NearestLabelBox.Location = new System.Drawing.Point(523, 5);
+            this.NearestLabelBox.Name = "NearestLabelBox";
+            this.NearestLabelBox.Size = new System.Drawing.Size(310, 20);
+            this.NearestLabelBox.TabIndex = 8;
+            // 
+            // NearestLabelAddessBox
+            // 
+            this.NearestLabelAddessBox.Location = new System.Drawing.Point(450, 5);
+            this.NearestLabelAddessBox.Name = "NearestLabelAddessBox";
+            this.NearestLabelAddessBox.Size = new System.Drawing.Size(67, 20);
+            this.NearestLabelAddessBox.TabIndex = 9;
+            // 
             // Thex86RegistersControl
             // 
+            this.Thex86RegistersControl.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.Thex86RegistersControl.EAX = ((uint)(0u));
             this.Thex86RegistersControl.EBP = ((uint)(0u));
             this.Thex86RegistersControl.EBX = ((uint)(0u));
@@ -235,6 +273,24 @@
             this.Thex86RegistersControl.Name = "Thex86RegistersControl";
             this.Thex86RegistersControl.Size = new System.Drawing.Size(255, 136);
             this.Thex86RegistersControl.TabIndex = 6;
+            // 
+            // label5
+            // 
+            this.label5.AutoSize = true;
+            this.label5.Location = new System.Drawing.Point(370, 34);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(74, 13);
+            this.label5.TabIndex = 10;
+            this.label5.Text = "Method label :";
+            // 
+            // MethodLabelBox
+            // 
+            this.MethodLabelBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.MethodLabelBox.Location = new System.Drawing.Point(450, 31);
+            this.MethodLabelBox.Name = "MethodLabelBox";
+            this.MethodLabelBox.Size = new System.Drawing.Size(383, 20);
+            this.MethodLabelBox.TabIndex = 11;
             // 
             // MainForm
             // 
@@ -256,6 +312,7 @@
             this.Text = "FlingOS Debugger";
             this.Load += new System.EventHandler(this.MainForm_Load);
             this.MainPanel.ResumeLayout(false);
+            this.MainPanel.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -281,5 +338,10 @@
         private System.Windows.Forms.Button StepButton;
         private System.Windows.Forms.Button DestroyButton;
         private x86RegistersControl Thex86RegistersControl;
+        private System.Windows.Forms.TextBox NearestLabelBox;
+        private System.Windows.Forms.Label label4;
+        private System.Windows.Forms.TextBox NearestLabelAddessBox;
+        private System.Windows.Forms.TextBox MethodLabelBox;
+        private System.Windows.Forms.Label label5;
     }
 }

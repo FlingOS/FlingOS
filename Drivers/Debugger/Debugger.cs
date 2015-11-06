@@ -32,10 +32,27 @@ using System.Threading.Tasks;
 
 namespace Drivers.Debugger
 {
+    public delegate void NotificationHandler(NotificationEventArgs e, object sender);
+
     public sealed class Debugger : IDisposable
     {
-        private Serial TheSerial;
+        private Serial MsgSerial;
+        private Serial NotifSerial;
         private DebugDataReader DebugData;
+
+        private bool terminating;
+        public bool Terminating
+        {
+            get
+            {
+                return terminating;
+            }
+            set
+            {
+                terminating = true;
+                NotifSerial.AbortRead = true;
+            }
+        }
 
         public bool Ready
         {
@@ -43,14 +60,22 @@ namespace Drivers.Debugger
             private set;
         }
 
+        private bool NotificationReceived = false;
+        private bool WaitingForNotification = false;
+        public event NotificationHandler NotificationEvent;
+
         public Debugger()
         {
-            TheSerial = new Serial();
+            MsgSerial = new Serial();
         }
         public void Dispose()
         {
-            TheSerial.Dispose();
-            TheSerial = null;
+            Terminating = true;
+            
+            MsgSerial.Dispose();
+            MsgSerial = null;
+            NotifSerial.Dispose();
+            NotifSerial = null;
         }
 
         public bool Init(string PipeName, string BinFolderPath, string AssemblyName)
@@ -58,33 +83,59 @@ namespace Drivers.Debugger
             DebugData = new DebugDataReader();
             DebugData.ReadDataFiles(BinFolderPath, AssemblyName);
 
-            TheSerial = new Serial();
-            TheSerial.OnConnected += TheSerial_OnConnected;
-            return TheSerial.Init(PipeName);
+            MsgSerial = new Serial();
+            NotifSerial = new Serial();
+            MsgSerial.OnConnected += MsgSerial_OnConnected;
+            return MsgSerial.Init(PipeName + "_Msg") && NotifSerial.Init(PipeName + "_Notif");
         }
 
-        private void TheSerial_OnConnected()
+        private void MsgSerial_OnConnected()
         {
             string str;
-            while((str = TheSerial.ReadLine()) != "Debug thread :D")
+            while((str = MsgSerial.ReadLine()) != "Debug thread :D")
             {
-                Console.WriteLine(str);
                 System.Threading.Thread.Sleep(100);
             }
-            Console.WriteLine(str);
             Ready = true;
+
+            Task.Run((Action)ProcessNotifications);
+        }
+
+        private void ProcessNotifications()
+        {
+            while (!Terminating)
+            {
+                try
+                {
+                    byte NotifByte = NotifSerial.ReadBytes(1)[0];
+                    if (NotificationEvent != null)
+                    {
+                        NotificationReceived = true;
+                        if (!WaitingForNotification)
+                        {
+                            NotificationEvent.Invoke(new NotificationEventArgs()
+                            {
+                                NotificationByte = NotifByte
+                            }, this);
+                        }
+                    }
+                }
+                catch
+                {
+                }
+            }
         }
 
         public string[] ExecuteCommand(string cmd)
         {
-            TheSerial.WriteLine(cmd);
+            MsgSerial.WriteLine(cmd);
 
             // First line should be command echo
             {
-                string line = TheSerial.ReadLine();
+                string line = MsgSerial.ReadLine();
                 if (line.Trim().ToLower() != cmd.Trim().ToLower())
                 {
-                    while ((line = TheSerial.ReadLine()) != "END OF COMMAND")
+                    while ((line = MsgSerial.ReadLine()) != "END OF COMMAND")
                     {
                     }
 
@@ -92,17 +143,11 @@ namespace Drivers.Debugger
                 }
             }
 
-            string[] Lines = ReadToEndOfCommand();
-            foreach (string line in Lines)
-            {
-                Console.WriteLine(line);
-            }
-
-            return Lines;
+            return ReadToEndOfCommand();
         }
         public void AbortCommand()
         {
-            TheSerial.AbortRead = true;
+            MsgSerial.AbortRead = true;
         }
 
         public bool GetPing()
@@ -220,7 +265,9 @@ namespace Drivers.Debugger
         {
             try
             {
+                BeginWaitForNotification();
                 string[] Lines = ExecuteCommand("step " + ProcessId.ToString() + " " + ThreadId.ToString());
+                EndWaitForNotification();
                 return true;
             }
             catch
@@ -232,7 +279,9 @@ namespace Drivers.Debugger
         {
             try
             {
+                BeginWaitForNotification();
                 string[] Lines = ExecuteCommand("ss " + ProcessId.ToString() + " " + ThreadId.ToString());
+                EndWaitForNotification();
                 return true;
             }
             catch
@@ -241,15 +290,55 @@ namespace Drivers.Debugger
             }
         }
 
+        public Tuple<uint, string> GetNearestLabel(uint Address)
+        {
+            while (!DebugData.AddressMappings.ContainsKey(Address) && Address > 0)
+            {
+                Address--;
+            }
+
+            if (DebugData.AddressMappings.ContainsKey(Address))
+            {
+                return new Tuple<uint, string>(Address, DebugData.AddressMappings[Address].OrderBy(x => x.Length).First());
+            }
+            else
+            {
+                return null;
+            }
+        }
+        public string GetMethodLabel(string FullLabel)
+        {
+            return FullLabel.Split('.')[0];
+        }
+
         private string[] ReadToEndOfCommand()
         {
             List<string> Result = new List<string>();
             string str;
-            while ((str = TheSerial.ReadLine()) != "END OF COMMAND")
+            while ((str = MsgSerial.ReadLine()) != "END OF COMMAND")
             {
                 Result.Add(str);
             }
             return Result.ToArray();
         }
+        private void BeginWaitForNotification()
+        {
+            WaitingForNotification = true;
+            NotificationReceived = false;
+        }
+        private void EndWaitForNotification()
+        {
+            while (!NotificationReceived && !Terminating)
+            {
+                System.Threading.Thread.Sleep(50);
+            }
+
+            WaitingForNotification = false;
+        }
+    }
+
+    public class NotificationEventArgs : EventArgs
+    {
+        public byte NotificationByte;
     }
 }

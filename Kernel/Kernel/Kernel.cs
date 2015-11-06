@@ -79,6 +79,7 @@ namespace Kernel
                 
                 Hardware.IO.Serial.Serial.InitCOM1();
                 Hardware.IO.Serial.Serial.InitCOM2();
+                Hardware.IO.Serial.Serial.InitCOM3();
 
                 BasicConsole.SecondaryOutput = BasicConsole_SecondaryOutput;
                 BasicConsole.SecondaryOutputEnabled = true;
