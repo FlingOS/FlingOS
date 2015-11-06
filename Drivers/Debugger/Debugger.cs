@@ -87,6 +87,8 @@ namespace Drivers.Debugger
                     while ((line = TheSerial.ReadLine()) != "END OF COMMAND")
                     {
                     }
+
+                    return null;
                 }
             }
 
@@ -122,13 +124,13 @@ namespace Drivers.Debugger
                 return false;
             }
         }
-        public List<Process> GetThreads()
+        public Dictionary<uint, Process> GetThreads()
         {
             try
             {
                 string[] Lines = ExecuteCommand("threads");
 
-                List<Process> Processes = new List<Process>();
+                Dictionary<uint, Process> Processes = new Dictionary<uint, Process>();
                 Process CurrentProcess = null;
 
                 foreach (string Line in Lines)
@@ -136,18 +138,20 @@ namespace Drivers.Debugger
                     string[] LineParts = Line.Split(':').Select(x => x.Trim()).ToArray();
                     if (LineParts[0] == "- Process")
                     {
+                        uint Id = uint.Parse(LineParts[1].Substring(2), System.Globalization.NumberStyles.HexNumber);
                         CurrentProcess = new Process()
                         {
-                            Id = uint.Parse(LineParts[1].Substring(2), System.Globalization.NumberStyles.HexNumber),
+                            Id = Id,
                             Name = LineParts[2]
                         };
-                        Processes.Add(CurrentProcess);
+                        Processes.Add(Id, CurrentProcess);
                     }
                     else if (LineParts[0] == "- Thread")
                     {
-                        CurrentProcess.Threads.Add(new Thread()
+                        uint Id = uint.Parse(LineParts[1].Substring(2), System.Globalization.NumberStyles.HexNumber);
+                        CurrentProcess.Threads.Add(Id, new Thread()
                         {
-                            Id = uint.Parse(LineParts[1].Substring(2), System.Globalization.NumberStyles.HexNumber),
+                            Id = Id,
                             Name = LineParts[3],
                             State = (Thread.States)Enum.Parse(typeof(Thread.States), LineParts[2])
                         });
@@ -158,7 +162,7 @@ namespace Drivers.Debugger
             }
             catch
             {
-                return new List<Process>();
+                return new Dictionary<uint, Process>();
             }
         }
         public bool SuspendThread(uint ProcessId, int ThreadId)

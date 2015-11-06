@@ -58,7 +58,7 @@ namespace Drivers.Debugger.App
             }
         }
 
-        List<Process> Processes;
+        Dictionary<uint, Process> Processes;
 
         public MainForm()
         {
@@ -196,10 +196,18 @@ namespace Drivers.Debugger.App
                         ConnectingProgressBar.Value = 100;
                         MainPanel.Enabled = true;
 
-                        SuspendButton.Enabled = ProcessesTreeView.SelectedNode != null;
-                        ResumeButton.Enabled = ProcessesTreeView.SelectedNode != null;
-                        StepButton.Enabled = ProcessesTreeView.SelectedNode != null;
-                        SingleStepButton.Enabled = ProcessesTreeView.SelectedNode != null;
+                        bool NodeSelected = ProcessesTreeView.SelectedNode != null;
+                        bool NodeSuspended = false;
+                        if(NodeSelected)
+                        {
+                            uint SelectedProcessId = GetSelectedProcessId();
+                            int SelectedThreadId = GetSelectedThreadId();
+                            NodeSelected = SelectedThreadId != -1 && Processes[SelectedProcessId].Threads[(uint)SelectedThreadId].State == Thread.States.Suspended;
+                        }
+                        SuspendButton.Enabled = NodeSelected && !NodeSuspended;
+                        ResumeButton.Enabled = NodeSelected && NodeSuspended;
+                        StepButton.Enabled = NodeSelected && NodeSuspended;
+                        SingleStepButton.Enabled = NodeSelected && NodeSuspended;
                     }
                     else
                     {
@@ -233,10 +241,10 @@ namespace Drivers.Debugger.App
 
                 if (Processes != null)
                 {
-                    foreach (Process AProcess in Processes)
+                    foreach (Process AProcess in Processes.Values)
                     {
                         TreeNode NewNode = ProcessesTreeView.Nodes.Add(AProcess.Id.ToString(), AProcess.Id.ToString() + ": " + AProcess.Name);
-                        foreach (Thread AThread in AProcess.Threads)
+                        foreach (Thread AThread in AProcess.Threads.Values)
                         {
                             NewNode.Nodes.Add(AThread.Id.ToString(), AThread.Id.ToString() + ": " + AThread.Name + " : " + AThread.State);
                         }

@@ -37,7 +37,7 @@ namespace Drivers.Debugger
         public uint Id;
         public string Name;
 
-        public List<Thread> Threads = new List<Thread>();
+        public Dictionary<uint, Thread> Threads = new Dictionary<uint, Thread>();
     }
     public class Thread
     {
