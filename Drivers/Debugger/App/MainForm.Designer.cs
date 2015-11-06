@@ -28,7 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.Windows.Forms.TreeNode treeNode3 = new System.Windows.Forms.TreeNode("Press refresh to start");
+            System.Windows.Forms.TreeNode treeNode1 = new System.Windows.Forms.TreeNode("Press refresh to start");
             this.label1 = new System.Windows.Forms.Label();
             this.PipeNameBox = new System.Windows.Forms.TextBox();
             this.label2 = new System.Windows.Forms.Label();
@@ -286,10 +286,10 @@
             this.ProcessesTreeView.HideSelection = false;
             this.ProcessesTreeView.Location = new System.Drawing.Point(4, 3);
             this.ProcessesTreeView.Name = "ProcessesTreeView";
-            treeNode3.Name = "Node0";
-            treeNode3.Text = "Press refresh to start";
+            treeNode1.Name = "Node0";
+            treeNode1.Text = "Press refresh to start";
             this.ProcessesTreeView.Nodes.AddRange(new System.Windows.Forms.TreeNode[] {
-            treeNode3});
+            treeNode1});
             this.ProcessesTreeView.Size = new System.Drawing.Size(263, 684);
             this.ProcessesTreeView.TabIndex = 0;
             this.ProcessesTreeView.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.ProcessesTreeView_AfterSelect);
@@ -350,6 +350,7 @@
             // 
             this.BreakpointsTreeView.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
+            this.BreakpointsTreeView.HideSelection = false;
             this.BreakpointsTreeView.Location = new System.Drawing.Point(286, 484);
             this.BreakpointsTreeView.Name = "BreakpointsTreeView";
             this.BreakpointsTreeView.Size = new System.Drawing.Size(547, 109);
@@ -380,6 +381,7 @@
             // 
             this.DebugPointsTreeView.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
+            this.DebugPointsTreeView.HideSelection = false;
             this.DebugPointsTreeView.Location = new System.Drawing.Point(286, 654);
             this.DebugPointsTreeView.Name = "DebugPointsTreeView";
             this.DebugPointsTreeView.Size = new System.Drawing.Size(547, 140);
@@ -395,6 +397,7 @@
             this.ClearBreakpointButton.TabIndex = 20;
             this.ClearBreakpointButton.Text = "Clear";
             this.ClearBreakpointButton.UseVisualStyleBackColor = true;
+            this.ClearBreakpointButton.Click += new System.EventHandler(this.ClearBreakpointButton_Click);
             // 
             // SetBreakpointButton
             // 
@@ -405,6 +408,7 @@
             this.SetBreakpointButton.TabIndex = 21;
             this.SetBreakpointButton.Text = "Set";
             this.SetBreakpointButton.UseVisualStyleBackColor = true;
+            this.SetBreakpointButton.Click += new System.EventHandler(this.SetBreakpointButton_Click);
             // 
             // Thex86RegistersControl
             // 

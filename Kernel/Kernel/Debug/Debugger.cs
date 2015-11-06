@@ -169,10 +169,11 @@ namespace Kernel.Debug
                 while (c != '\n' && c != '\r')
                 {
                     line += c;
-                    MsgPort.Write((byte)c);
-
                     c = (char)MsgPort.Read();
                 }
+                
+                MsgPort.Write("START OF COMMAND\n");
+                MsgPort.Write(line);
                 MsgPort.Write("\n");
 
                 line = line.Trim().ToLower();

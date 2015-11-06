@@ -66,6 +66,11 @@ namespace Drivers.Debugger.App
         string CurrentMethodLabel;
         string CurrentMethodASM;
 
+        List<KeyValuePair<string, List<string>>> FilteredDebugOps = new List<KeyValuePair<string,List<string>>>();
+        List<KeyValuePair<string, List<string>>> Breakpoints = new List<KeyValuePair<string, List<string>>>();
+        KeyValuePair<string, string> SelectedDebugPointFullLabel;
+        KeyValuePair<string, string> SelectedBreakpointFullLabel;
+
         public MainForm()
         {
             InitializeComponent();
@@ -126,18 +131,42 @@ namespace Drivers.Debugger.App
             PerformingAction = true;
             Task.Run((Action)RefreshRegisters);
         }
-
         private void FilterBox_TextChanged(object sender, EventArgs e)
         {
-
+            if (FilterBox.Text.Length > 10)
+            {
+                RefreshBreakpoints();
+            }
         }
         private void BreakpointsTreeView_AfterSelect(object sender, TreeViewEventArgs e)
         {
+            if (BreakpointsTreeView.SelectedNode != null &&
+                BreakpointsTreeView.SelectedNode.Parent != null)
+            {
+                SelectedBreakpointFullLabel = new KeyValuePair<string,string>(BreakpointsTreeView.SelectedNode.Parent.Text, BreakpointsTreeView.SelectedNode.Text);
+            }
 
+            UpdateEnableStates();
         }
         private void DebugPointsTreeView_AfterSelect(object sender, TreeViewEventArgs e)
         {
+            if (DebugPointsTreeView.SelectedNode != null &&
+                DebugPointsTreeView.SelectedNode.Parent != null)
+            {
+                SelectedDebugPointFullLabel = new KeyValuePair<string,string>(DebugPointsTreeView.SelectedNode.Parent.Text, DebugPointsTreeView.SelectedNode.Text);
+            }
 
+            UpdateEnableStates();
+        }
+        private void ClearBreakpointButton_Click(object sender, EventArgs e)
+        {
+            PerformingAction = true;
+            Task.Run((Action)ClearBreakpoint);
+        }
+        private void SetBreakpointButton_Click(object sender, EventArgs e)
+        {
+            PerformingAction = true;
+            Task.Run((Action)SetBreakpoint);
         }
 
         private void TheDebugger_NotificationEvent(NotificationEventArgs e, object sender)
@@ -170,6 +199,70 @@ namespace Drivers.Debugger.App
 
             UpdateEnableStates();
         }
+        private void SuspendThread()
+        {
+            TheDebugger.SuspendThread(GetSelectedProcessId(), GetSelectedThreadId());
+            
+            RefreshThreads();
+        }
+        private void ResumeThread()
+        {
+            TheDebugger.ResumeThread(GetSelectedProcessId(), GetSelectedThreadId());
+            
+            RefreshThreads();
+        }
+        private void StepThread()
+        {
+            TheDebugger.StepThread(GetSelectedProcessId(), GetSelectedThreadId());
+            
+            RefreshThreads();
+        }
+        private void SingleStepThread()
+        {
+            TheDebugger.SingleStepThread(GetSelectedProcessId(), GetSelectedThreadId());
+            
+            RefreshThreads();
+        }
+        private void ClearBreakpoint()
+        {
+            uint BPAddress = TheDebugger.GetLabelAddress(SelectedBreakpointFullLabel.Key + SelectedBreakpointFullLabel.Value);
+            if (TheDebugger.ClearBreakpoint(BPAddress))
+            {
+                KeyValuePair<string, List<string>> BP = Breakpoints.Where(x => x.Key == SelectedBreakpointFullLabel.Key).First();
+                BP.Value.Remove(SelectedBreakpointFullLabel.Value);
+                if (BP.Value.Count == 0)
+                {
+                    Breakpoints.Remove(BP);
+                }
+
+                UpdateBreakpoints();
+            }
+
+            PerformingAction = false;
+        }
+        private void SetBreakpoint()
+        {
+            uint DPAddress = TheDebugger.GetLabelAddress(SelectedDebugPointFullLabel.Key + SelectedDebugPointFullLabel.Value);
+            if (TheDebugger.SetBreakpoint(DPAddress))
+            {
+                List<KeyValuePair<string, List<string>>> BPs = Breakpoints.Where(x => x.Key == SelectedDebugPointFullLabel.Key).ToList();
+                if (BPs.Count > 0)
+                {
+                    BPs.First().Value.Add(SelectedDebugPointFullLabel.Value);
+                }
+                else
+                {
+                    KeyValuePair<string, List<string>> NewBP = new KeyValuePair<string, List<string>>(SelectedDebugPointFullLabel.Key, new List<string>());
+                    Breakpoints.Add(NewBP);
+                    NewBP.Value.Add(SelectedDebugPointFullLabel.Value);
+                }
+
+                UpdateBreakpoints();
+            }
+
+            PerformingAction = false;
+        }
+
         private void RefreshThreads()
         {
             Processes = TheDebugger.GetThreads();
@@ -213,31 +306,33 @@ namespace Drivers.Debugger.App
 
             PerformingAction = false;
         }
-        private void SuspendThread()
+        private void RefreshBreakpoints()
         {
-            TheDebugger.SuspendThread(GetSelectedProcessId(), GetSelectedThreadId());
-            
-            RefreshThreads();
-        }
-        private void ResumeThread()
-        {
-            TheDebugger.ResumeThread(GetSelectedProcessId(), GetSelectedThreadId());
-            
-            RefreshThreads();
-        }
-        private void StepThread()
-        {
-            TheDebugger.StepThread(GetSelectedProcessId(), GetSelectedThreadId());
-            
-            RefreshThreads();
-        }
-        private void SingleStepThread()
-        {
-            TheDebugger.SingleStepThread(GetSelectedProcessId(), GetSelectedThreadId());
-            
-            RefreshThreads();
+            string Filter = FilterBox.Text;
+            FilteredDebugOps = TheDebugger.GetDebugOps(Filter);
+
+            UpdateBreakpoints();
+            UpdateDebugPoints();
         }
 
+        private bool IsSelectionSuspended()
+        {
+            if (this.InvokeRequired)
+            {
+                return (bool)this.Invoke(new BoolDelegate(IsSelectionSuspended));
+            }
+            else
+            {
+                bool NodeSuspended = false;
+                if (ProcessesTreeView.SelectedNode != null)
+                {
+                    uint SelectedProcessId = GetSelectedProcessId();
+                    int SelectedThreadId = GetSelectedThreadId();
+                    NodeSuspended = SelectedThreadId != -1 && Processes[SelectedProcessId].Threads[(uint)SelectedThreadId].State == Thread.States.Suspended;
+                }
+                return NodeSuspended;
+            }
+        }
         private void UpdateEnableStates()
         {
             if (this.InvokeRequired)
@@ -268,6 +363,12 @@ namespace Drivers.Debugger.App
                         ResumeButton.Enabled = NodeSelected && NodeSuspended;
                         StepButton.Enabled = NodeSelected && NodeSuspended;
                         SingleStepButton.Enabled = NodeSelected && NodeSuspended;
+
+                        NodeSelected = DebugPointsTreeView.SelectedNode != null && DebugPointsTreeView.SelectedNode.Parent != null;
+                        SetBreakpointButton.Enabled = NodeSelected;
+
+                        NodeSelected = BreakpointsTreeView.SelectedNode != null && BreakpointsTreeView.SelectedNode.Parent != null;
+                        ClearBreakpointButton.Enabled = NodeSelected;
                     }
                     else
                     {
@@ -287,25 +388,6 @@ namespace Drivers.Debugger.App
                     ConnectingProgressBar.Value = 0;
                     AbortButton.Enabled = false;
                 }
-            }
-        }
-
-        private bool IsSelectionSuspended()
-        {
-            if (this.InvokeRequired)
-            {
-                return (bool)this.Invoke(new BoolDelegate(IsSelectionSuspended));
-            }
-            else
-            {
-                bool NodeSuspended = false;
-                if (ProcessesTreeView.SelectedNode != null)
-                {
-                    uint SelectedProcessId = GetSelectedProcessId();
-                    int SelectedThreadId = GetSelectedThreadId();
-                    NodeSuspended = SelectedThreadId != -1 && Processes[SelectedProcessId].Threads[(uint)SelectedThreadId].State == Thread.States.Suspended;
-                }
-                return NodeSuspended;
             }
         }
         private void UpdateProcessTree()
@@ -411,7 +493,11 @@ namespace Drivers.Debugger.App
             {
                 if (NearestLabel != null)
                 {
-                    if (NearestLabel.Item1 == EIP)
+                    if (TheDebugger.IsBreakpointAddress(EIP-1))
+                    {
+                        NearestLabelAddessBox.BackColor = Color.Pink;
+                    }
+                    else if (NearestLabel.Item1 == EIP)
                     {
                         NearestLabelAddessBox.BackColor = Color.LightGreen;
                     }
@@ -466,6 +552,106 @@ namespace Drivers.Debugger.App
                     MethodLabelBox.Text = "";
                     CurrentMethodBox.Text = "";
                     NearestLabelAddessBox.BackColor = Color.White;
+                }
+            }
+        }
+        private void UpdateBreakpoints()
+        {
+            if (this.InvokeRequired)
+            {
+                this.Invoke(new VoidDelegate(UpdateBreakpoints));
+            }
+            else
+            {
+                string SelectedLocalLabel = null;
+                string SelectedMethodLabel = null;
+                if (BreakpointsTreeView.SelectedNode != null)
+                {
+                    if (BreakpointsTreeView.SelectedNode.Parent != null)
+                    {
+                        SelectedLocalLabel = BreakpointsTreeView.SelectedNode.Text;
+                        SelectedMethodLabel = BreakpointsTreeView.SelectedNode.Parent.Text;
+                    }
+                    else
+                    {
+                        SelectedMethodLabel = BreakpointsTreeView.SelectedNode.Text;
+                    }
+                }
+
+                BreakpointsTreeView.Nodes.Clear();
+
+                TreeNode NodeToSelect = null;
+                foreach (KeyValuePair<string, List<string>> Breakpoint in Breakpoints)
+                {
+                    TreeNode MethodNode = BreakpointsTreeView.Nodes.Add(Breakpoint.Key, Breakpoint.Key);
+                    if (SelectedMethodLabel == Breakpoint.Key && SelectedLocalLabel == null)
+                    {
+                        NodeToSelect = MethodNode;
+                    }
+
+                    foreach (string LocalLabel in Breakpoint.Value)
+                    {
+                        TreeNode LocalNode = MethodNode.Nodes.Add(LocalLabel, LocalLabel);
+                        if (SelectedMethodLabel == Breakpoint.Key && SelectedLocalLabel == LocalLabel)
+                        {
+                            NodeToSelect = LocalNode;
+                        }
+                    }
+                }
+
+                if (NodeToSelect != null)
+                {
+                    BreakpointsTreeView.SelectedNode = NodeToSelect;
+                }
+            }
+        }
+        private void UpdateDebugPoints()
+        {
+            if (this.InvokeRequired)
+            {
+                this.Invoke(new VoidDelegate(UpdateDebugPoints));
+            }
+            else
+            {
+                string SelectedLocalLabel = null;
+                string SelectedMethodLabel = null;
+                if (DebugPointsTreeView.SelectedNode != null)
+                {
+                    if (DebugPointsTreeView.SelectedNode.Parent != null)
+                    {
+                        SelectedLocalLabel = DebugPointsTreeView.SelectedNode.Text;
+                        SelectedMethodLabel = DebugPointsTreeView.SelectedNode.Parent.Text;
+                    }
+                    else
+                    {
+                        SelectedMethodLabel = DebugPointsTreeView.SelectedNode.Text;
+                    }
+                }
+
+                DebugPointsTreeView.Nodes.Clear();
+
+                TreeNode NodeToSelect = null;
+                foreach (KeyValuePair<string, List<string>> DebuggableMethod in FilteredDebugOps)
+                {
+                    TreeNode MethodNode = DebugPointsTreeView.Nodes.Add(DebuggableMethod.Key, DebuggableMethod.Key);
+                    if (SelectedMethodLabel == DebuggableMethod.Key && SelectedLocalLabel == null)
+                    {
+                        NodeToSelect = MethodNode;
+                    }
+
+                    foreach (string LocalLabel in DebuggableMethod.Value)
+                    {
+                        TreeNode LocalNode = MethodNode.Nodes.Add(LocalLabel, LocalLabel);
+                        if (SelectedMethodLabel == DebuggableMethod.Key && SelectedLocalLabel == LocalLabel)
+                        {
+                            NodeToSelect = LocalNode;
+                        }
+                    }
+                }
+
+                if (NodeToSelect != null)
+                {
+                    DebugPointsTreeView.SelectedNode = NodeToSelect;
                 }
             }
         }

@@ -64,6 +64,8 @@ namespace Drivers.Debugger
         private bool WaitingForNotification = false;
         public event NotificationHandler NotificationEvent;
 
+        private List<uint> BreakpointAddresses = new List<uint>();
+
         public Debugger()
         {
             MsgSerial = new Serial();
@@ -144,6 +146,7 @@ namespace Drivers.Debugger
         public void AbortCommand()
         {
             MsgSerial.AbortRead = true;
+            WaitingForNotification = false;
         }
 
         public bool GetPing()
@@ -285,6 +288,35 @@ namespace Drivers.Debugger
                 return false;
             }
         }
+        public bool ClearBreakpoint(uint Address)
+        {
+            try
+            {
+                string[] Lines = ExecuteCommand("bpc " + Address.ToString("X8"));
+                BreakpointAddresses.Remove(Address);
+                return true;
+            }
+            catch
+            {
+            }
+            return false;
+        }
+        public bool SetBreakpoint(uint Address)
+        {
+            try
+            {
+                if (!BreakpointAddresses.Contains(Address))
+                {
+                    BreakpointAddresses.Add(Address);
+                    string[] Lines = ExecuteCommand("bps " + Address.ToString("X8"));
+                    return true;
+                }
+            }
+            catch
+            {
+            }
+            return false;
+        }
 
         public Tuple<uint, string> GetNearestLabel(uint Address)
         {
@@ -310,6 +342,24 @@ namespace Drivers.Debugger
         {
             return DebugData.ReadMethodASM(MethodLabel);
         }
+        public List<KeyValuePair<string, List<string>>> GetDebugOps(string Filter)
+        {
+            return DebugData.DebugOps.Where(x => x.Key.Contains(Filter)).ToList();
+        }
+        public uint GetLabelAddress(string FullLabel)
+        {
+            if (DebugData.LabelMappings.ContainsKey(FullLabel))
+            {
+                return DebugData.LabelMappings[FullLabel];
+            }
+
+            return 0xFFFFFFFF;
+        }
+
+        public bool IsBreakpointAddress(uint Address)
+        {
+            return BreakpointAddresses.Contains(Address);
+        }
 
         private string[] ReadToEndOfCommand()
         {
@@ -328,7 +378,7 @@ namespace Drivers.Debugger
         }
         private void EndWaitForNotification()
         {
-            while (!NotificationReceived && !Terminating)
+            while (!NotificationReceived && !Terminating && WaitingForNotification)
             {
                 System.Threading.Thread.Sleep(50);
             }
