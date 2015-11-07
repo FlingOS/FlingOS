@@ -71,8 +71,11 @@ namespace Drivers.Debugger.App
         KeyValuePair<string, string> SelectedDebugPointFullLabel;
         KeyValuePair<string, string> SelectedBreakpointFullLabel;
 
-        string ArgumentsStr = "";
-        string LocalsStr = "";
+        List<VariableData> ArgumentDatas = new List<VariableData>();
+        List<VariableData> LocalDatas = new List<VariableData>();
+
+        int ArgumentsDepthLoaded = 1;
+        int LocalsDepthLoaded = 1;
 
         public MainForm()
         {
@@ -102,7 +105,8 @@ namespace Drivers.Debugger.App
         private void AbortButton_Click(object sender, EventArgs e)
         {
             TheDebugger.AbortCommand();
-            UpdateEnableStates();
+
+            PerformingAction = false;
         }
         private void RefreshButton_Click(object sender, EventArgs e)
         {
@@ -170,6 +174,11 @@ namespace Drivers.Debugger.App
         {
             PerformingAction = true;
             Task.Run((Action)SetBreakpoint);
+        }
+        private void LoadLayerButton_Click(object sender, EventArgs e)
+        {
+            PerformingAction = true;
+            Task.Run((Action)LoadNextStackDataLayer);
         }
 
         private void TheDebugger_NotificationEvent(NotificationEventArgs e, object sender)
@@ -269,9 +278,10 @@ namespace Drivers.Debugger.App
         private void RefreshThreads()
         {
             Processes = TheDebugger.GetThreads();
-            UpdateProcessTree();
 
             PerformingAction = false;
+
+            UpdateProcessTree();
         }
         private void RefreshRegisters()
         {
@@ -312,31 +322,182 @@ namespace Drivers.Debugger.App
         private void RefreshStackData()
         {
             uint ProcessId = GetSelectedProcessId();
+            
+            ArgumentDatas.Clear();
+            LocalDatas.Clear();
 
-            if (!string.IsNullOrWhiteSpace(CurrentMethodLabel))
-            {
-                // Refresh arguments
-                // - Cannot do yet because the compiler supplies insufficient information
-            }
-            else
-            {
-                ArgumentsStr = "";
-            }
+            ArgumentsDepthLoaded = 1;
+            LocalsDepthLoaded = 1;
 
-            if (Registers.ContainsKey("ESP") && Registers.ContainsKey("EBP"))
+            if (Registers.ContainsKey("EBP"))
             {
-                // Refresh locals
-                //  - Can get values as blocks of 4 bytes but not interpret them yet because compiler
-                //    supplies insufficient info
-
-                uint ESP = Registers["ESP"];
                 uint EBP = Registers["EBP"];
-                int NumLocalBytes = (int)(EBP - ESP);
-                LocalsStr = TheDebugger.GetMemoryValues(ProcessId, ESP, NumLocalBytes / 4, 4);
-            }
-            else
-            {
-                LocalsStr = "";
+
+                if (!string.IsNullOrWhiteSpace(CurrentMethodLabel))
+                {
+                    // Refresh arguments
+
+                    MethodInfo TheMethod = TheDebugger.GetMethodInfo(CurrentMethodLabel);
+                    if (TheMethod.Arguments.Count > 0)
+                    {
+                        try
+                        {
+                            int MaxOffset = TheMethod.Arguments.Select(x => x.Value.Offset).Max();
+                            string MaxTypeID = TheMethod.Arguments.Where(x => x.Value.Offset == MaxOffset).Select(x => x.Value.TypeID).First();
+                            TypeInfo MaxArgType = TheDebugger.GetTypeInfo(MaxTypeID);
+
+                            //                                                                   +8 for old ebp and return address
+                            //                                                                   +4 or more for return value
+                            uint RetValSize = (uint)TheMethod.ReturnSize;
+                            string ArgumentValuesStr = TheDebugger.GetMemoryValues(ProcessId, EBP + 8 + RetValSize, MaxOffset + MaxArgType.SizeOnStackInBytes, 1);
+                            byte[] ArgumentValuesArr = ArgumentValuesStr.Split(" ".ToCharArray(), StringSplitOptions.RemoveEmptyEntries).Select(x => byte.Parse(x.Substring(2), System.Globalization.NumberStyles.HexNumber)).ToArray();
+                            List<VariableInfo> ArgInfos = TheMethod.Arguments.Values.OrderBy(x => x.Offset).ToList();
+                            foreach (VariableInfo AnArgInfo in ArgInfos)
+                            {
+                                TypeInfo ArgType = TheDebugger.GetTypeInfo(AnArgInfo.TypeID);
+                                VariableData NewVarData = new VariableData()
+                                {
+                                    Address = (uint)(EBP + AnArgInfo.Offset),
+                                    OffsetFromParent = AnArgInfo.Offset,
+                                    Info = ArgType,
+                                    Value = new byte[ArgType.SizeOnStackInBytes]
+                                };
+                                for (int i = 0; i < ArgType.SizeOnStackInBytes; i++)
+                                {
+                                    NewVarData.Value[i] = ArgumentValuesArr[i + AnArgInfo.Offset];
+                                }
+                                ArgumentDatas.Add(NewVarData);
+                            }
+                        }
+                        catch
+                        {
+                            ArgumentDatas.Add(new VariableData()
+                            {
+                                Address = 0xDEADBEEF,
+                                Temporary = true,
+                                Value = BitConverter.GetBytes(0xDEADBEEF)
+                            });
+                        }
+                    }
+
+                    if (Registers.ContainsKey("ESP"))
+                    {
+                        // Refresh locals
+
+                        try
+                        {
+                            int MaxOffset = TheMethod.Locals.Count == 0 ? 0 : TheMethod.Locals.Select(x => x.Value.Offset).Max();
+                            string MaxTypeID = TheMethod.Locals.Count == 0 ? "" : TheMethod.Locals.Where(x => x.Value.Offset == MaxOffset).Select(x => x.Value.TypeID).First();
+                            TypeInfo MaxLocType = TheMethod.Locals.Count == 0 ? null : TheDebugger.GetTypeInfo(MaxTypeID);
+
+                            uint ESP = Registers["ESP"];
+                            int NumLocalBytes = (int)(EBP - ESP);
+                            string LocalValuesStr = TheDebugger.GetMemoryValues(ProcessId, ESP, NumLocalBytes, 1);
+                            byte[] LocalValuesArr = LocalValuesStr.Split(" ".ToCharArray(), StringSplitOptions.RemoveEmptyEntries).Select(x => byte.Parse(x.Substring(2), System.Globalization.NumberStyles.HexNumber)).ToArray();
+
+                            if (LocalValuesArr.Length > 0)
+                            {
+                                int max = LocalValuesArr.Length - (MaxOffset + (TheMethod.Locals.Count == 0 ? 0 : MaxLocType.SizeOnStackInBytes));
+                                for (int i = 0; i < max;  )
+                                {
+                                    VariableData NewVarData = new VariableData()
+                                    {
+                                        Address = (uint)(ESP + i),
+                                        Temporary = true,
+                                        Value = new byte[4],
+                                        OffsetFromParent = i
+                                    };
+                                    LocalDatas.Add(NewVarData);
+
+                                    if (max - i >= 4)
+                                    {
+                                        for (int j = 0; j < 4; j++)
+                                        {
+                                            NewVarData.Value[j] = LocalValuesArr[j + i];
+                                        }
+
+                                        i += 4;
+                                    }
+                                    else
+                                    {
+                                        for (int j = 0; j < (max - i); j++)
+                                        {
+                                            NewVarData.Value[j] = LocalValuesArr[j + i];
+                                        }
+
+                                        i = max;
+                                    }
+                                }
+                                
+                                List<VariableInfo> LocInfos = TheMethod.Locals.Values.OrderBy(x => x.Offset).ToList();
+                                foreach (VariableInfo ALocInfo in LocInfos)
+                                {
+                                    TypeInfo LocType = TheDebugger.GetTypeInfo(ALocInfo.TypeID);
+                                    int position = (LocalValuesArr.Length - (ALocInfo.Offset + LocType.SizeOnStackInBytes));
+                                    VariableData NewVarData = new VariableData()
+                                    {
+                                        Address = (uint)(EBP + ALocInfo.Offset),
+                                        OffsetFromParent = position,
+                                        Info = LocType,
+                                        Value = new byte[LocType.SizeOnStackInBytes]
+                                    };
+                                    for (int i = 0; i < LocType.SizeOnStackInBytes; i++)
+                                    {
+                                        NewVarData.Value[i] = LocalValuesArr[i + position];
+                                    }
+                                    LocalDatas.Add(NewVarData);
+                                }
+                            }
+                        }
+                        catch
+                        {
+                            LocalDatas.Add(new VariableData()
+                            {
+                                Address = 0xDEADBEEF,
+                                Temporary = true,
+                                Value = BitConverter.GetBytes(0xDEADBEEF)
+                            });
+                        }
+                    }
+                }
+                else
+                {
+                    if (Registers.ContainsKey("ESP"))
+                    {
+                        // Refresh locals
+                        //  - Can get values as blocks of 4 bytes but not interpret them because we don't have the method info
+
+                        try
+                        {
+                            uint ESP = Registers["ESP"];
+                            int NumLocalBytes = (int)(EBP - ESP);
+                            string LocalValuesStr = TheDebugger.GetMemoryValues(ProcessId, ESP, NumLocalBytes / 4, 4);
+                            uint[] LocalValuesArr = LocalValuesStr.Split(" ".ToCharArray(), StringSplitOptions.RemoveEmptyEntries).Select(x => uint.Parse(x.Substring(2), System.Globalization.NumberStyles.HexNumber)).ToArray();
+                            int offset = 0;
+                            foreach (uint ALocalVal in LocalValuesArr)
+                            {
+                                LocalDatas.Add(new VariableData()
+                                {
+                                    Address = ESP,
+                                    Temporary = true,
+                                    Value = BitConverter.GetBytes(ALocalVal),
+                                    OffsetFromParent = offset
+                                });
+                                ESP += 4;
+                                offset += 4;
+                            }
+                        }
+                        catch
+                        {
+                            LocalDatas.Add(new VariableData()
+                            {
+                                Address = 0xDEADBEEF,
+                                Temporary = true,
+                                Value = BitConverter.GetBytes(0xDEADBEEF)
+                            });
+                        }
+                    }
+                }
             }
 
             UpdateStackData();
@@ -350,6 +511,27 @@ namespace Drivers.Debugger.App
 
             UpdateBreakpoints();
             UpdateDebugPoints();
+        }
+
+        private void LoadNextStackDataLayer()
+        {
+            uint ProcessId = GetSelectedProcessId();
+
+            foreach (VariableData ArgData in ArgumentDatas)
+            {
+                ArgData.LoadFields(TheDebugger, ProcessId, ArgumentsDepthLoaded);
+            }
+            ArgumentsDepthLoaded++;
+            
+            foreach (VariableData LocData in LocalDatas)
+            {
+                LocData.LoadFields(TheDebugger, ProcessId, LocalsDepthLoaded);
+            }
+            LocalsDepthLoaded++;
+
+            UpdateStackData();
+
+            PerformingAction = false;
         }
 
         private bool IsSelectionSuspended()
@@ -700,8 +882,21 @@ namespace Drivers.Debugger.App
             }
             else
             {
-                ArgumentsBox.Text = ArgumentsStr;
-                LocalsBox.Text = LocalsStr;
+                ArgumentsTreeView.Nodes.Clear();
+                ArgumentDatas = ArgumentDatas.OrderBy(x => x.OffsetFromParent).ToList();
+                foreach (VariableData ArgData in ArgumentDatas)
+                {
+                    ArgumentsTreeView.Nodes.Add(ArgData.ToNode());
+                }
+                ArgumentsTreeView.ExpandAll();
+
+                LocalsTreeView.Nodes.Clear();
+                LocalDatas = LocalDatas.OrderBy(x => x.OffsetFromParent).ToList();
+                foreach (VariableData LocData in LocalDatas)
+                {
+                    LocalsTreeView.Nodes.Add(LocData.ToNode());
+                }
+                LocalsTreeView.ExpandAll();
             }
         }
 
@@ -736,6 +931,153 @@ namespace Drivers.Debugger.App
                 }
                 return int.Parse(ThreadNode.Text.Split(':')[0]);
             }
+        }
+    }
+
+    public class VariableData
+    {
+        public TypeInfo Info;
+        public bool Temporary;
+        public uint Address;
+        public byte[] Value;
+        public int OffsetFromParent;
+        public string Name = "";
+
+        public List<VariableData> Fields = new List<VariableData>();
+
+        public void LoadFields(Debugger TheDebugger, uint ProcessId, int Depth)
+        {
+            if (Depth == 1)
+            {
+                if (Info != null &&
+                    !Info.IsPointer &&
+                    !Info.IsValueType &&
+                    Value.Length == 4)
+                {
+                    uint AddressFromValue = BitConverter.ToUInt32(Value, 0);
+
+                    if (AddressFromValue != 0)
+                    {
+                        string BaseTypeID = Info.BaseTypeID;
+                        while (BaseTypeID != null)
+                        {
+                            TypeInfo BaseInfo = TheDebugger.GetTypeInfo(BaseTypeID);
+
+                            ProcessFields(TheDebugger, ProcessId, AddressFromValue, BaseInfo.Fields.Values.ToList());
+
+                            BaseTypeID = BaseInfo.BaseTypeID;
+                        }
+
+                        ProcessFields(TheDebugger, ProcessId, AddressFromValue, Info.Fields.Values.ToList());
+
+                        if (Info.ID == "type_Kernel_FOS_System_String")
+                        {
+                            // Special treatment
+
+                            // Find the length field
+                            int length = 0;
+                            bool found = false;
+                            foreach(VariableData AField in Fields)
+                            {
+                                if (AField.Name == "length")
+                                {
+                                    found = true;
+                                    length = BitConverter.ToInt32(AField.Value, 0);
+                                    break;
+                                }
+                            }
+
+                            // Load string bytes
+                            //                                                              +8 for bytes for string fields
+                            //                                                                                      *2 - 2 bytes/char
+                            string StringBytesStr = TheDebugger.GetMemoryValues(ProcessId, AddressFromValue + 8, length*2, 1);
+                            byte[] StringBytesArr = StringBytesStr.Split(" ".ToCharArray(), StringSplitOptions.RemoveEmptyEntries).Select(x => byte.Parse(x.Substring(2), System.Globalization.NumberStyles.HexNumber)).ToArray();
+                            string StringVal = Encoding.Unicode.GetString(StringBytesArr);
+                            Fields.Add(new VariableData()
+                            {
+                                Address = AddressFromValue+8,
+                                Info = null,
+                                OffsetFromParent = 8,
+                                Value = new byte[0],
+                                Name = "\"" + StringVal + "\""
+                            });
+                        }
+                    }
+                }
+            }
+
+            if (Depth > 1)
+            {
+                foreach (VariableData Field in Fields)
+                {
+                    Field.LoadFields(TheDebugger, ProcessId, Depth - 1);
+                }
+            }
+        }
+        private void ProcessFields(Debugger TheDebugger, uint ProcessId, uint BaseAddress, List<FieldInfo> FieldsToProcess)
+        {
+            foreach (FieldInfo AFieldInfo in FieldsToProcess)
+            {
+                if (!AFieldInfo.IsStatic)
+                {
+                    uint FieldAddress = (uint)(BaseAddress + AFieldInfo.OffsetInBytes);
+                    TypeInfo FieldTypeInfo = TheDebugger.GetTypeInfo(AFieldInfo.TypeID);
+
+                    if (FieldTypeInfo.SizeOnHeapInBytes > 0)
+                    {
+                        string FieldValueStr = TheDebugger.GetMemoryValues(ProcessId, FieldAddress, FieldTypeInfo.IsValueType ? FieldTypeInfo.SizeOnHeapInBytes : FieldTypeInfo.SizeOnStackInBytes, 1);
+                        byte[] FieldValueArr = FieldValueStr.Split(" ".ToCharArray(), StringSplitOptions.RemoveEmptyEntries).Select(x => byte.Parse(x.Substring(2), System.Globalization.NumberStyles.HexNumber)).ToArray();
+                        Fields.Add(new VariableData()
+                        {
+                            Address = FieldAddress,
+                            Info = FieldTypeInfo,
+                            OffsetFromParent = AFieldInfo.OffsetInBytes,
+                            Value = FieldValueArr,
+                            Name = AFieldInfo.Name
+                        });
+                    }
+                }
+            }
+        }
+
+        public TreeNode ToNode()
+        {
+            string ValueStr = "";
+
+            if (Info != null &&
+                !Info.IsPointer &&
+                !Info.IsValueType &&
+                Value.Length == 4)
+            {
+                uint AddressFromValue = BitConverter.ToUInt32(Value, 0);
+
+                if (AddressFromValue != 0)
+                {
+                    ValueStr = "0x" + AddressFromValue.ToString("X8");
+                }
+                else
+                {
+                    ValueStr = "Null";
+                }
+            }
+            else if (Value.Length > 0)
+            {
+                for (int i = 0; i < Value.Length; i++)
+                {
+                    ValueStr = Value[i].ToString("X2") + ValueStr;
+                }
+                ValueStr = "0x" + ValueStr;
+            }
+
+            TreeNode NewNode = new TreeNode((!string.IsNullOrEmpty(ValueStr) ? ValueStr + " : " : "") + (!string.IsNullOrWhiteSpace(Name) ? Name : "") + (Temporary ? " : Temp" : (Info != null ? " : " + Info.ID : "")));
+
+            Fields = Fields.OrderBy(x => x.OffsetFromParent).ToList();
+            foreach (VariableData Field in Fields)
+            {
+                NewNode.Nodes.Add(Field.ToNode());
+            }
+
+            return NewNode;
         }
     }
 }

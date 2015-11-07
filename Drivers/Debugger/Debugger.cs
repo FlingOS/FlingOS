@@ -50,7 +50,10 @@ namespace Drivers.Debugger
             set
             {
                 terminating = true;
-                NotifSerial.AbortRead = true;
+                if (NotifSerial != null)
+                {
+                    NotifSerial.AbortRead = true;
+                }
             }
         }
 
@@ -84,6 +87,13 @@ namespace Drivers.Debugger
         {
             DebugData = new DebugDataReader();
             DebugData.ReadDataFiles(BinFolderPath, AssemblyName);
+            try
+            {
+                DebugData.ReadLibraryInfo(BinFolderPath, AssemblyName);
+            }
+            catch (Exception ex)
+            {
+            }
 
             MsgSerial = new Serial();
             NotifSerial = new Serial();
@@ -366,6 +376,22 @@ namespace Drivers.Debugger
             }
 
             return 0xFFFFFFFF;
+        }
+        public MethodInfo GetMethodInfo(string MethodLabel)
+        {
+            if (DebugData.Methods.ContainsKey(MethodLabel))
+            {
+                return DebugData.Methods[MethodLabel];
+            }
+            return null;
+        }
+        public TypeInfo GetTypeInfo(string TypeLabel)
+        {
+            if (DebugData.Types.ContainsKey(TypeLabel))
+            {
+                return DebugData.Types[TypeLabel];
+            }
+            return null;
         }
 
         public bool IsBreakpointAddress(uint Address)

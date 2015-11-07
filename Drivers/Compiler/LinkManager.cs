@@ -123,6 +123,7 @@ namespace Drivers.Compiler
                 string AssemblyName = string.IsNullOrWhiteSpace(Name) ? Utilities.CleanFileName(TheLibrary.TheAssembly.GetName().Name) : Name;
 
                 DebugDataWriter.SaveDataFiles(Options.OutputPath, AssemblyName);
+                DebugDataWriter.SaveLibraryInfo(Options.OutputPath, TheLibrary);
 
                 LinkInformation LinkInfo = new LinkInformation()
                 {
@@ -158,6 +159,7 @@ namespace Drivers.Compiler
                 foreach (IL.ILLibrary depLib in FlattenedLibs)
                 {
                     SequencedASMBlocks.AddRange(depLib.TheASMLibrary.ASMBlocks);
+                    DebugDataWriter.SaveLibraryInfo(Options.OutputPath, depLib);
                 }
                 SequencedASMBlocks.Sort(GetOrder);
                 SequencedASMBlocks.ForEach(delegate(ASM.ASMBlock block)
@@ -171,6 +173,7 @@ namespace Drivers.Compiler
                 string AssemblyName = Utilities.CleanFileName(TheLibrary.TheAssembly.GetName().Name);
 
                 DebugDataWriter.SaveDataFiles(Options.OutputPath, AssemblyName);
+                DebugDataWriter.SaveLibraryInfo(Options.OutputPath, TheLibrary);
 
                 LinkInformation LinkInfo = new LinkInformation()
                 {

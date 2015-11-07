@@ -46,9 +46,13 @@
   <ItemGroup>
     <Compile Include="DebugDataReader.cs" />
     <Compile Include="Debugger.cs" />
+    <Compile Include="FieldInfo.cs" />
+    <Compile Include="MethodInfo.cs" />
     <Compile Include="Process.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Serial.cs" />
+    <Compile Include="TypeInfo.cs" />
+    <Compile Include="VariableInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\Kernel\Kernel\Kernel.licenseheader">

@@ -66,7 +66,7 @@ namespace Drivers.Compiler
                 }
             }
 
-            using (StreamWriter DebugOpsStr = new StreamWriter(Path.Combine(FolderPath, AssemblyName + "DebugOps.txt"), false))
+            using (StreamWriter DebugOpsStr = new StreamWriter(Path.Combine(FolderPath, AssemblyName + "_DebugOps.txt"), false))
             {
                 foreach (KeyValuePair<string, List<string>> MethodOps in DebugOps)
                 {
@@ -115,6 +115,93 @@ namespace Drivers.Compiler
 
             File.Delete(FileName);
             File.WriteAllLines(FileName, ResultLines.ToArray());
+        }
+        public static void SaveLibraryInfo(string FolderPath, IL.ILLibrary TheLibrary)
+        {
+            string RootAssemblyName = Utilities.CleanFileName(TheLibrary.TheAssembly.GetName().Name);
+
+            using (StreamWriter Str = new StreamWriter(Path.Combine(FolderPath, RootAssemblyName + "_Dependencies.txt"), false))
+            {
+                foreach (IL.ILLibrary DependencyLibrary in TheLibrary.Dependencies)
+                {
+                    Str.WriteLine(Utilities.CleanFileName(DependencyLibrary.TheAssembly.GetName().Name));
+                }
+            }
+
+            using (StreamWriter Str = new StreamWriter(Path.Combine(FolderPath, RootAssemblyName + "_Library.txt"), false))
+            {
+                foreach (Types.TypeInfo ATypeInfo in TheLibrary.TypeInfos)
+                {
+                    //TypeID
+                    //¬BaseTypeID:[ID]
+                    //¬IsGCManaged:[Boolean]
+                    //¬IsPointer:[Boolean]
+                    //¬IsValueType:[Boolean]
+                    //¬SizeOnHeapInBytes:[Integer]
+                    //¬SizeOnStackInBytes:[Integer]
+                    //|Field:[ID]
+                    //~Type:[TypeID]
+                    //~IsStatic:[Boolean]
+                    //~Name:[String]
+                    //~OffsetInBytes:[Integer]
+                    //|Method:[ID]
+                    //~ApplyDebug:[Boolean]
+                    //~ApplyGC:[Boolean]
+                    //~IDValue:[Integer]
+                    //~IsConstructor:[Boolean]
+                    //~IsPlugged:[Boolean]
+                    //~IsStatic:[Boolean]
+                    //~Signature:[String]
+                    //~Argument:Offset|Position|TypeID
+                    //~Local:Offset|Position|TypeID
+
+                    Str.WriteLine(ATypeInfo.ID);
+                    if (ATypeInfo.UnderlyingType.BaseType != null && 
+                        !ATypeInfo.UnderlyingType.BaseType.AssemblyQualifiedName.Contains("mscorlib"))
+                    {
+                        Str.WriteLine("¬BaseTypeID:" + TheLibrary.GetTypeInfo(ATypeInfo.UnderlyingType.BaseType).ID);
+                    }
+                    Str.WriteLine("¬IsGCManaged:" + ATypeInfo.IsGCManaged.ToString());
+                    Str.WriteLine("¬IsPointer:" + ATypeInfo.IsPointer.ToString());
+                    Str.WriteLine("¬IsValueType:" + ATypeInfo.IsValueType.ToString());
+                    Str.WriteLine("¬SizeOnHeapInBytes:" + ATypeInfo.SizeOnHeapInBytes.ToString());
+                    Str.WriteLine("¬SizeOnStackInBytes:" + ATypeInfo.SizeOnStackInBytes.ToString());
+
+                    foreach (Types.FieldInfo AFieldInfo in ATypeInfo.FieldInfos)
+                    {
+                        Str.WriteLine("|Field:" + AFieldInfo.ID);
+                        Str.WriteLine("~Type:" + TheLibrary.GetTypeInfo(AFieldInfo.FieldType).ID);
+                        Str.WriteLine("~IsStatic:" + AFieldInfo.IsStatic.ToString());
+                        Str.WriteLine("~Name:" + AFieldInfo.Name);
+                        Str.WriteLine("~OffsetInBytes:" + AFieldInfo.OffsetInBytes.ToString());
+                    }
+
+                    foreach (Types.MethodInfo AMethodInfo in ATypeInfo.MethodInfos)
+                    {
+                        Str.WriteLine("|Method:" + AMethodInfo.ID);
+                        Str.WriteLine("~ApplyDebug:" + AMethodInfo.ApplyDebug.ToString());
+                        Str.WriteLine("~ApplyGC:" + AMethodInfo.ApplyGC.ToString());
+                        Str.WriteLine("~IDValue:" + AMethodInfo.IDValue.ToString());
+                        Str.WriteLine("~IsConstructor:" + AMethodInfo.IsConstructor.ToString());
+                        Str.WriteLine("~IsPlugged:" + AMethodInfo.IsPlugged.ToString());
+                        Str.WriteLine("~IsStatic:" + AMethodInfo.IsStatic.ToString());
+                        Str.WriteLine("~Signature:" + AMethodInfo.Signature);
+
+                        Type RetType = (AMethodInfo.IsConstructor ?
+                                            typeof(void) : ((System.Reflection.MethodInfo)AMethodInfo.UnderlyingInfo).ReturnType);
+                        Str.WriteLine("~ReturnSize:" + Types.TypeScanner.GetSizeOnStackInBytes(RetType));
+
+                        foreach (Types.VariableInfo AnArgumentInfo in AMethodInfo.ArgumentInfos)
+                        {
+                            Str.WriteLine("~Argument:" + AnArgumentInfo.Offset.ToString() + "|" + AnArgumentInfo.Position.ToString() + "|" + AnArgumentInfo.TheTypeInfo.ID);
+                        }
+                        foreach (Types.VariableInfo ALocalInfo in AMethodInfo.LocalInfos)
+                        {
+                            Str.WriteLine("~Local:" + ALocalInfo.Offset.ToString() + "|" + ALocalInfo.Position.ToString() + "|" + ALocalInfo.TheTypeInfo.ID);
+                        }
+                    }
+                }
+            }
         }
     }
 }

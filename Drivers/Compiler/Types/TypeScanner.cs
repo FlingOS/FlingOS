@@ -326,7 +326,7 @@ namespace Drivers.Compiler.Types
         /// </summary>
         /// <param name="theType">The type to determine the stack size of.</param>
         /// <returns>The size in bytes.</returns>
-        private static int GetSizeOnStackInBytes(Type theType)
+        public static int GetSizeOnStackInBytes(Type theType)
         {
             //Assume its a pointer/reference unless it is:
             // - A value type
