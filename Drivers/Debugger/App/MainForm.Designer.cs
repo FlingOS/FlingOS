@@ -28,7 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.Windows.Forms.TreeNode treeNode2 = new System.Windows.Forms.TreeNode("Press refresh to start");
+            System.Windows.Forms.TreeNode treeNode1 = new System.Windows.Forms.TreeNode("Press refresh to start");
             this.label1 = new System.Windows.Forms.Label();
             this.PipeNameBox = new System.Windows.Forms.TextBox();
             this.label2 = new System.Windows.Forms.Label();
@@ -38,6 +38,7 @@
             this.ConnectButton = new System.Windows.Forms.Button();
             this.ConnectingProgressBar = new System.Windows.Forms.ProgressBar();
             this.MainPanel = new System.Windows.Forms.Panel();
+            this.ViewBPASMCheckBox = new System.Windows.Forms.CheckBox();
             this.SaveToFileListButton = new System.Windows.Forms.Button();
             this.SetFromFileListButton = new System.Windows.Forms.Button();
             this.LoadLayerButton = new System.Windows.Forms.Button();
@@ -154,6 +155,7 @@
             this.MainPanel.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
+            this.MainPanel.Controls.Add(this.ViewBPASMCheckBox);
             this.MainPanel.Controls.Add(this.SaveToFileListButton);
             this.MainPanel.Controls.Add(this.SetFromFileListButton);
             this.MainPanel.Controls.Add(this.LoadLayerButton);
@@ -188,6 +190,18 @@
             this.MainPanel.Name = "MainPanel";
             this.MainPanel.Size = new System.Drawing.Size(1042, 832);
             this.MainPanel.TabIndex = 8;
+            // 
+            // ViewBPASMCheckBox
+            // 
+            this.ViewBPASMCheckBox.Appearance = System.Windows.Forms.Appearance.Button;
+            this.ViewBPASMCheckBox.AutoSize = true;
+            this.ViewBPASMCheckBox.Location = new System.Drawing.Point(729, 800);
+            this.ViewBPASMCheckBox.Name = "ViewBPASMCheckBox";
+            this.ViewBPASMCheckBox.Size = new System.Drawing.Size(66, 23);
+            this.ViewBPASMCheckBox.TabIndex = 30;
+            this.ViewBPASMCheckBox.Text = "View ASM";
+            this.ViewBPASMCheckBox.UseVisualStyleBackColor = true;
+            this.ViewBPASMCheckBox.CheckedChanged += new System.EventHandler(this.ViewBPASMCheckBox_CheckedChanged);
             // 
             // SaveToFileListButton
             // 
@@ -480,10 +494,10 @@
             this.ProcessesTreeView.HideSelection = false;
             this.ProcessesTreeView.Location = new System.Drawing.Point(4, 3);
             this.ProcessesTreeView.Name = "ProcessesTreeView";
-            treeNode2.Name = "Node0";
-            treeNode2.Text = "Press refresh to start";
+            treeNode1.Name = "Node0";
+            treeNode1.Text = "Press refresh to start";
             this.ProcessesTreeView.Nodes.AddRange(new System.Windows.Forms.TreeNode[] {
-            treeNode2});
+            treeNode1});
             this.ProcessesTreeView.Size = new System.Drawing.Size(263, 301);
             this.ProcessesTreeView.TabIndex = 0;
             this.ProcessesTreeView.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.ProcessesTreeView_AfterSelect);
@@ -588,5 +602,6 @@
         private System.Windows.Forms.OpenFileDialog TheOpenFileDialog;
         private System.Windows.Forms.Button SaveToFileListButton;
         private System.Windows.Forms.SaveFileDialog TheSaveFileDialog;
+        private System.Windows.Forms.CheckBox ViewBPASMCheckBox;
     }
 }

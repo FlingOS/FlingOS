@@ -168,6 +168,8 @@ namespace Drivers.Debugger.App
                 SelectedDebugPointFullLabel = new KeyValuePair<string,string>(DebugPointsTreeView.SelectedNode.Parent.Text, DebugPointsTreeView.SelectedNode.Text);
             }
 
+            LoadASMPreview();
+
             UpdateEnableStates();
         }
         private void ClearBreakpointButton_Click(object sender, EventArgs e)
@@ -217,6 +219,37 @@ namespace Drivers.Debugger.App
                     }
                 }
             }
+        }
+        private void ViewBPASMCheckBox_CheckedChanged(object sender, EventArgs e)
+        {
+            LoadASMPreview();
+        }
+        
+        private void LoadASMPreview()
+        {
+            if (ViewBPASMCheckBox.Checked)
+            {
+                if (DebugPointsTreeView.SelectedNode != null)
+                {
+                    TreeNode TheNode = DebugPointsTreeView.SelectedNode;
+                    if (TheNode.Parent != null)
+                    {
+                        TheNode = TheNode.Parent;
+                    }
+
+                    CurrentMethodASM = TheDebugger.GetMethodASM(TheNode.Text);
+                }
+                else if (CurrentMethodLabel != null)
+                {
+                    CurrentMethodASM = TheDebugger.GetMethodASM(CurrentMethodLabel);
+                }
+            }
+            else if (CurrentMethodLabel != null)
+            {
+                CurrentMethodASM = TheDebugger.GetMethodASM(CurrentMethodLabel);
+            }
+
+            UpdateNearestLabel();
         }
 
         private void TheDebugger_NotificationEvent(NotificationEventArgs e, object sender)
@@ -435,13 +468,11 @@ namespace Drivers.Debugger.App
                                 ArgumentDatas.Add(NewVarData);
                             }
                         }
-                        catch
+                        catch (Exception ex)
                         {
                             ArgumentDatas.Add(new VariableData()
                             {
-                                Address = 0xDEADBEEF,
-                                Temporary = true,
-                                Value = BitConverter.GetBytes(0xDEADBEEF)
+                                Name = "Error! " + ex.Message
                             });
                         }
                     }
@@ -515,13 +546,11 @@ namespace Drivers.Debugger.App
                                 }
                             }
                         }
-                        catch
+                        catch (Exception ex)
                         {
                             LocalDatas.Add(new VariableData()
                             {
-                                Address = 0xDEADBEEF,
-                                Temporary = true,
-                                Value = BitConverter.GetBytes(0xDEADBEEF)
+                                Name = "Error! " + ex.Message
                             });
                         }
                     }
@@ -553,13 +582,11 @@ namespace Drivers.Debugger.App
                                 offset += 4;
                             }
                         }
-                        catch
+                        catch (Exception ex)
                         {
                             LocalDatas.Add(new VariableData()
                             {
-                                Address = 0xDEADBEEF,
-                                Temporary = true,
-                                Value = BitConverter.GetBytes(0xDEADBEEF)
+                                Name = "Error! " + ex.Message
                             });
                         }
                     }
