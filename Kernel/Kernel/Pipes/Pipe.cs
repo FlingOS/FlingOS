@@ -31,16 +31,25 @@ namespace Kernel.Pipes
 {
     public unsafe class Pipe : FOS_System.Object
     {
+        public enum WriteResults : int
+        {
+            BufferFull = -2,
+            CantWrite = -1,
+            OK = 0
+        }
+
         public int Id;
 
         public PipeOutpoint Outpoint;
         public PipeInpoint Inpoint;
 
         private byte[] Buffer;
-        private int DataAvailable;
-        private int DataOffset;
+        private int DataAvailable = 0;
+        private int DataReadOffset = 0;
+        private int DataWriteOffset = 0;
 
         private UInt32Queue ThreadsWaitingToWrite;
+        private UInt32Queue SizesWaitingToWrite;
         private UInt32Queue ThreadsWaitingToRead;
 
         public Pipe(int AnId, PipeOutpoint outpoint, PipeInpoint inpoint, int BufferSize)
@@ -54,6 +63,7 @@ namespace Kernel.Pipes
 
             ThreadsWaitingToRead = new UInt32Queue(5, true);
             ThreadsWaitingToWrite = new UInt32Queue(5, true);
+            SizesWaitingToWrite = new UInt32Queue(5, true);
         }
 
         public bool CanRead()
@@ -62,7 +72,19 @@ namespace Kernel.Pipes
         }
         public bool CanWrite()
         {
-            return DataAvailable == 0;
+            if (SizesWaitingToWrite.Count > 0)
+            {
+                return CanWrite((int)SizesWaitingToWrite.Peek());
+            }
+            else
+            {
+                return CanWrite(0);
+            }
+        }
+        public bool CanWrite(int length)
+        {
+            return DataReadOffset == 0 &&
+                length + DataWriteOffset < Buffer.Length;
         }
 
         public bool Read(byte* outBuffer, int offset, int length, out int BytesRead)
@@ -76,27 +98,33 @@ namespace Kernel.Pipes
             BytesRead = 0;
             for (BytesRead = 0; BytesRead < DataAvailable && BytesRead < length; BytesRead++)
             {
-                outBuffer[offset++] = Buffer[DataOffset++];
+                outBuffer[offset++] = Buffer[DataReadOffset++];
             }
 
             DataAvailable -= BytesRead;
+
+            if (DataAvailable == 0)
+            {
+                DataWriteOffset = 0;
+                DataReadOffset = 0;
+            }
 
             return true;
         }
         public bool Write(byte* inBuffer, int offset, int length)
         {
-            if (!CanWrite())
+            if (!CanWrite(length))
             {
                 return false;
             }
 
             for (int i = 0; i < length; i++)
             {
-                Buffer[i] = inBuffer[i + offset];
+                Buffer[DataWriteOffset++] = inBuffer[i + offset];
             }
 
-            DataOffset = 0;
-            DataAvailable = length;
+            DataReadOffset = 0;
+            DataAvailable += length;
 
             return true;
         }
@@ -106,9 +134,10 @@ namespace Kernel.Pipes
             ThreadsWaitingToRead.Push(ThreadId);
             return true;
         }
-        public bool QueueToWrite(UInt32 ThreadId)
+        public bool QueueToWrite(UInt32 ThreadId, int SizeToBeWritten)
         {
             ThreadsWaitingToWrite.Push(ThreadId);
+            SizesWaitingToWrite.Push((uint)SizeToBeWritten);
             return true;
         }
         public bool DequeueToRead(out UInt32 ThreadId)
@@ -129,6 +158,7 @@ namespace Kernel.Pipes
             if (ThreadsWaitingToWrite.Count > 0)
             {
                 ThreadId = ThreadsWaitingToWrite.Pop();
+                SizesWaitingToWrite.Pop();
                 return true;
             }
             else

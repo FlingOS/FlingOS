@@ -429,7 +429,8 @@ namespace Kernel.Pipes
             BasicConsole.WriteLine("WritePipe: Adding caller to write queue");
 #endif
             // Add caller thread to the write queue
-            pipe.QueueToWrite(CallerThread.Id);
+            WritePipeRequest* Request = (WritePipeRequest*)CallerThread.Param1;
+            pipe.QueueToWrite(CallerThread.Id, Request->length);
 
             // Set up initial failure return value
             CallerThread.Return1 = (uint)SystemCallResults.Fail;
@@ -467,7 +468,7 @@ namespace Kernel.Pipes
 #if PIPES_TRACE
                 BasicConsole.WriteLine("ProcessPipeQueue: Loop start");
 #endif
-                if (pipe.CanWrite())
+                if (pipe.AreThreadsWaitingToWrite() && pipe.CanWrite())
                 {
 #if PIPES_TRACE
                     BasicConsole.WriteLine("ProcessPipeQueue: Pipe can write");
@@ -522,7 +523,7 @@ namespace Kernel.Pipes
                         WriteThread._Wake();
                     }
                 }
-                else if (pipe.CanRead())
+                else if (pipe.AreThreadsWaitingToRead() && pipe.CanRead())
                 {
 #if PIPES_TRACE
                     BasicConsole.WriteLine("ProcessPipeQueue: Pipe can read");
