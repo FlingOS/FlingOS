@@ -69,6 +69,8 @@ namespace Kernel.Tasks
         }
         private static int ready_count = 0;
 
+        private static bool CurrentPipeIndex_Changed = false;
+
         public static void Main()
         {
             BasicConsole.WriteLine("Window Manager: Started.");
@@ -117,13 +119,21 @@ namespace Kernel.Tasks
             ready_count++;
             SystemCallMethods.SleepThread(SystemCallMethods.IndefiniteSleepThread);
 
+            PipeInfo CurrentPipeInfo = null;
+
             while (!Terminating)
             {
                 try
                 {
                     if (CurrentPipeIdx > -1)
                     {
-                        PipeInfo CurrentPipeInfo = ((PipeInfo)ConnectedPipes[CurrentPipeIdx]);
+                        if (CurrentPipeIndex_Changed)
+                        {
+                            CurrentPipeInfo = ((PipeInfo)ConnectedPipes[CurrentPipeIdx]);
+                            CurrentPipeIndex_Changed = false;
+
+                            CurrentPipeInfo.TheConsole.Update();
+                        }
 
                         CurrentPipeInfo.TheConsole.Write(CurrentPipeInfo.StdOut.Read(false));
                     }
@@ -196,6 +206,8 @@ namespace Kernel.Tasks
                                     if (CurrentPipeIdx == -1)
                                     {
                                         CurrentPipeIdx = 0;
+                                        CurrentPipeIndex_Changed = true;
+
                                         SystemCallMethods.WakeThread(MainThreadId);
                                         SystemCallMethods.WakeThread(OutputProcessingThreadId);
                                     }
@@ -275,7 +287,7 @@ namespace Kernel.Tasks
                                 }
 
                                 CurrentPipeInfo = ((PipeInfo)ConnectedPipes[CurrentPipeIdx]);
-                                CurrentPipeInfo.TheConsole.Update();
+                                CurrentPipeIndex_Changed = true;
                             }
                             else
                             {
