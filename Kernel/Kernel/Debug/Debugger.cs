@@ -105,7 +105,15 @@ namespace Kernel.Debug
 #if DEBUGGER_INTERUPT_TRACE
                     DebugPort.Write(" > Checking suspended threads list\n");
 #endif
-                    if (ThreadsToSuspend.IndexOf(ProcessThreadId) > -1)
+
+#if DEBUG
+                    bool ShouldSuspend = ThreadsToSuspend.IndexOf(ProcessThreadId) > -1 ||
+                                         ExceptionMethods.CurrentException != null;
+#else
+                    bool ShouldSuspend = ThreadsToSuspend.IndexOf(ProcessThreadId) > -1;
+#endif
+
+                    if (ShouldSuspend)
                     {
 #if DEBUGGER_INTERUPT_TRACE
                         DebugPort.Write(" > Pausing");
@@ -156,11 +164,11 @@ namespace Kernel.Debug
             MsgPort = Serial.COM2;
             NotifPort = Serial.COM3;
 
-            MsgPort.Write("Enabling...\n");
-            Enabled = true;
-            MsgPort.Write("Enabled.\n");
-
             MsgPort.Write("Debug thread :D\n");
+
+            //MsgPort.Write("Enabling...\n");
+            Enabled = true;
+            //MsgPort.Write("Enabled.\n");
 
             while (!Terminating)
             {

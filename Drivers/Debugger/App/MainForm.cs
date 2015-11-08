@@ -77,6 +77,8 @@ namespace Drivers.Debugger.App
         int ArgumentsDepthLoaded = 1;
         int LocalsDepthLoaded = 1;
 
+        string FileToLoadBreakpointsFrom;
+
         public MainForm()
         {
             InitializeComponent();
@@ -99,7 +101,10 @@ namespace Drivers.Debugger.App
             TheDebugger.Dispose();
             TheDebugger = null;
             Processes = null;
+            Breakpoints.Clear();
+            FilteredDebugOps.Clear();
             UpdateProcessTree();
+            UpdateBreakpoints();
             PerformingAction = false;
         }
         private void AbortButton_Click(object sender, EventArgs e)
@@ -180,6 +185,39 @@ namespace Drivers.Debugger.App
             PerformingAction = true;
             Task.Run((Action)LoadNextStackDataLayer);
         }
+        private void SetFromFileListButton_Click(object sender, EventArgs e)
+        {
+            TheOpenFileDialog.Filter = "Breakpoints List (.txt)|*.txt|All Files (*.*)|*.*";
+            TheOpenFileDialog.InitialDirectory = BinPathBox.Text;
+
+            if (TheOpenFileDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            {
+                FileToLoadBreakpointsFrom = TheOpenFileDialog.FileName;
+
+                PerformingAction = true;
+                Task.Run((Action)SetBreakpointsFromFile);
+            }
+        }
+        private void SaveToFileListButton_Click(object sender, EventArgs e)
+        {
+            TheSaveFileDialog.Filter = "Breakpoints List (.txt)|*.txt|All Files (*.*)|*.*";
+            TheSaveFileDialog.FileName = FileToLoadBreakpointsFrom;
+
+            if (TheSaveFileDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            {
+                using (System.IO.StreamWriter Str = new System.IO.StreamWriter(TheSaveFileDialog.FileName, false))
+                {
+                    foreach (KeyValuePair<string, List<string>> MethodOfBPS in Breakpoints)
+                    {
+                        foreach (string LocalLabel in MethodOfBPS.Value)
+                        {
+                            string FullLabel = MethodOfBPS.Key + LocalLabel;
+                            Str.WriteLine(FullLabel);
+                        }
+                    }
+                }
+            }
+        }
 
         private void TheDebugger_NotificationEvent(NotificationEventArgs e, object sender)
         {
@@ -226,14 +264,14 @@ namespace Drivers.Debugger.App
         private void StepThread()
         {
             TheDebugger.StepThread(GetSelectedProcessId(), GetSelectedThreadId());
-            
-            RefreshThreads();
+
+            PerformingAction = false;
         }
         private void SingleStepThread()
         {
             TheDebugger.SingleStepThread(GetSelectedProcessId(), GetSelectedThreadId());
-            
-            RefreshThreads();
+
+            PerformingAction = false;
         }
         private void ClearBreakpoint()
         {
@@ -254,19 +292,47 @@ namespace Drivers.Debugger.App
         }
         private void SetBreakpoint()
         {
-            uint DPAddress = TheDebugger.GetLabelAddress(SelectedDebugPointFullLabel.Key + SelectedDebugPointFullLabel.Value);
+            DoSetBreakpoint(SelectedDebugPointFullLabel.Key + SelectedDebugPointFullLabel.Value);
+
+            UpdateBreakpoints();
+
+            PerformingAction = false;
+        }
+        private void DoSetBreakpoint(string FullLabel)
+        {
+            uint DPAddress = TheDebugger.GetLabelAddress(FullLabel);
             if (TheDebugger.SetBreakpoint(DPAddress))
             {
-                List<KeyValuePair<string, List<string>>> BPs = Breakpoints.Where(x => x.Key == SelectedDebugPointFullLabel.Key).ToList();
+                List<KeyValuePair<string, List<string>>> BPs = Breakpoints.Where(x => x.Key == FullLabel.Split('.')[0]).ToList();
                 if (BPs.Count > 0)
                 {
-                    BPs.First().Value.Add(SelectedDebugPointFullLabel.Value);
+                    BPs.First().Value.Add("." + FullLabel.Split('.')[1]);
                 }
                 else
                 {
-                    KeyValuePair<string, List<string>> NewBP = new KeyValuePair<string, List<string>>(SelectedDebugPointFullLabel.Key, new List<string>());
+                    KeyValuePair<string, List<string>> NewBP = new KeyValuePair<string, List<string>>(FullLabel.Split('.')[0], new List<string>());
                     Breakpoints.Add(NewBP);
-                    NewBP.Value.Add(SelectedDebugPointFullLabel.Value);
+                    NewBP.Value.Add("." + FullLabel.Split('.')[1]);
+                }
+            }
+        }
+        private void SetBreakpointsFromFile()
+        {
+            if (FileToLoadBreakpointsFrom != null)
+            {
+                string[] LabelsOfBreakpointsToSet = System.IO.File.ReadAllLines(FileToLoadBreakpointsFrom);
+                foreach (string FullLabel in LabelsOfBreakpointsToSet)
+                {
+                    if (!string.IsNullOrWhiteSpace(FullLabel))
+                    {
+                        try
+                        {
+                            DoSetBreakpoint(FullLabel);
+                        }
+                        catch
+                        {
+                        }
+                    }
                 }
 
                 UpdateBreakpoints();

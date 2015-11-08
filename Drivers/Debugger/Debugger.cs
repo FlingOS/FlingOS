@@ -274,9 +274,9 @@ namespace Drivers.Debugger
         {
             try
             {
-                BeginWaitForNotification();
+                //BeginWaitForNotification();
                 string[] Lines = ExecuteCommand("step " + ProcessId.ToString() + " " + ThreadId.ToString());
-                EndWaitForNotification();
+                //EndWaitForNotification();
                 return true;
             }
             catch
@@ -288,9 +288,9 @@ namespace Drivers.Debugger
         {
             try
             {
-                BeginWaitForNotification();
+                //BeginWaitForNotification();
                 string[] Lines = ExecuteCommand("ss " + ProcessId.ToString() + " " + ThreadId.ToString());
-                EndWaitForNotification();
+                //EndWaitForNotification();
                 return true;
             }
             catch

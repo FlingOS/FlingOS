@@ -132,7 +132,7 @@ namespace Kernel.Tasks
                 {
                     if (ExceptionMethods.CurrentException is Pipes.Exceptions.RWFailedException)
                     {
-                        SystemCallMethods.SleepThread(100);
+                        //SystemCallMethods.SleepThread(100);
                     }
                     else
                     {

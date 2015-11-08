@@ -365,7 +365,7 @@ namespace Kernel.Pipes
             // Unmerge memory layouts
             SystemCallsHelpers.DisableAccessToMemoryOfProcess(OriginalMemoryLayout);
 
-            bool Completed = pipe.AreThreadsWaitingToRead();
+            bool Completed = !pipe.AreThreadsWaitingToRead();
             if (!Blocking)
             {
                 if (!Completed)
@@ -374,7 +374,7 @@ namespace Kernel.Pipes
                     pipe.DequeueToRead(out temp);
                 }
             }
-            return Completed ? RWResults.Queued : RWResults.Complete;
+            return Completed ? RWResults.Complete : RWResults.Queued;
         }
         public static RWResults WritePipe(int PipeId, bool Blocking, Process CallerProcess, Thread CallerThread)
         {
@@ -446,7 +446,7 @@ namespace Kernel.Pipes
             // Unmerge memory layouts
             SystemCallsHelpers.DisableAccessToMemoryOfProcess(OriginalMemoryLayout);
 
-            bool Completed = pipe.AreThreadsWaitingToWrite();
+            bool Completed = !pipe.AreThreadsWaitingToWrite();
             if (!Blocking)
             {
                 if (!Completed)
@@ -455,7 +455,7 @@ namespace Kernel.Pipes
                     pipe.DequeueToWrite(out temp);
                 }
             }
-            return Completed ? RWResults.Queued : RWResults.Complete;
+            return Completed ? RWResults.Complete : RWResults.Queued;
         }
         private static void ProcessPipeQueue(Pipe pipe, Process OutProcess, Process InProcess)
         {

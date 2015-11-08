@@ -38,6 +38,9 @@
             this.ConnectButton = new System.Windows.Forms.Button();
             this.ConnectingProgressBar = new System.Windows.Forms.ProgressBar();
             this.MainPanel = new System.Windows.Forms.Panel();
+            this.SaveToFileListButton = new System.Windows.Forms.Button();
+            this.SetFromFileListButton = new System.Windows.Forms.Button();
+            this.LoadLayerButton = new System.Windows.Forms.Button();
             this.LocalsTreeView = new System.Windows.Forms.TreeView();
             this.ArgumentsTreeView = new System.Windows.Forms.TreeView();
             this.label10 = new System.Windows.Forms.Label();
@@ -66,7 +69,8 @@
             this.ProcessesTreeView = new System.Windows.Forms.TreeView();
             this.AbortButton = new System.Windows.Forms.Button();
             this.DestroyButton = new System.Windows.Forms.Button();
-            this.LoadLayerButton = new System.Windows.Forms.Button();
+            this.TheOpenFileDialog = new System.Windows.Forms.OpenFileDialog();
+            this.TheSaveFileDialog = new System.Windows.Forms.SaveFileDialog();
             this.MainPanel.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -150,6 +154,8 @@
             this.MainPanel.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
+            this.MainPanel.Controls.Add(this.SaveToFileListButton);
+            this.MainPanel.Controls.Add(this.SetFromFileListButton);
             this.MainPanel.Controls.Add(this.LoadLayerButton);
             this.MainPanel.Controls.Add(this.LocalsTreeView);
             this.MainPanel.Controls.Add(this.ArgumentsTreeView);
@@ -182,6 +188,37 @@
             this.MainPanel.Name = "MainPanel";
             this.MainPanel.Size = new System.Drawing.Size(1042, 832);
             this.MainPanel.TabIndex = 8;
+            // 
+            // SaveToFileListButton
+            // 
+            this.SaveToFileListButton.Location = new System.Drawing.Point(925, 600);
+            this.SaveToFileListButton.Name = "SaveToFileListButton";
+            this.SaveToFileListButton.Size = new System.Drawing.Size(114, 23);
+            this.SaveToFileListButton.TabIndex = 29;
+            this.SaveToFileListButton.Text = "Save to file list";
+            this.SaveToFileListButton.UseVisualStyleBackColor = true;
+            this.SaveToFileListButton.Click += new System.EventHandler(this.SaveToFileListButton_Click);
+            // 
+            // SetFromFileListButton
+            // 
+            this.SetFromFileListButton.Location = new System.Drawing.Point(925, 800);
+            this.SetFromFileListButton.Name = "SetFromFileListButton";
+            this.SetFromFileListButton.Size = new System.Drawing.Size(114, 23);
+            this.SetFromFileListButton.TabIndex = 28;
+            this.SetFromFileListButton.Text = "Set from file list";
+            this.SetFromFileListButton.UseVisualStyleBackColor = true;
+            this.SetFromFileListButton.Click += new System.EventHandler(this.SetFromFileListButton_Click);
+            // 
+            // LoadLayerButton
+            // 
+            this.LoadLayerButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.LoadLayerButton.Location = new System.Drawing.Point(203, 800);
+            this.LoadLayerButton.Name = "LoadLayerButton";
+            this.LoadLayerButton.Size = new System.Drawing.Size(75, 23);
+            this.LoadLayerButton.TabIndex = 27;
+            this.LoadLayerButton.Text = "Load Layer";
+            this.LoadLayerButton.UseVisualStyleBackColor = true;
+            this.LoadLayerButton.Click += new System.EventHandler(this.LoadLayerButton_Click);
             // 
             // LocalsTreeView
             // 
@@ -473,16 +510,13 @@
             this.DestroyButton.UseVisualStyleBackColor = true;
             this.DestroyButton.Click += new System.EventHandler(this.DestroyButton_Click);
             // 
-            // LoadLayerButton
+            // TheOpenFileDialog
             // 
-            this.LoadLayerButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.LoadLayerButton.Location = new System.Drawing.Point(203, 800);
-            this.LoadLayerButton.Name = "LoadLayerButton";
-            this.LoadLayerButton.Size = new System.Drawing.Size(75, 23);
-            this.LoadLayerButton.TabIndex = 27;
-            this.LoadLayerButton.Text = "Load Layer";
-            this.LoadLayerButton.UseVisualStyleBackColor = true;
-            this.LoadLayerButton.Click += new System.EventHandler(this.LoadLayerButton_Click);
+            this.TheOpenFileDialog.Title = "Load breakpoints";
+            // 
+            // TheSaveFileDialog
+            // 
+            this.TheSaveFileDialog.Title = "Save breakpoints";
             // 
             // MainForm
             // 
@@ -550,5 +584,9 @@
         private System.Windows.Forms.TreeView LocalsTreeView;
         private System.Windows.Forms.TreeView ArgumentsTreeView;
         private System.Windows.Forms.Button LoadLayerButton;
+        private System.Windows.Forms.Button SetFromFileListButton;
+        private System.Windows.Forms.OpenFileDialog TheOpenFileDialog;
+        private System.Windows.Forms.Button SaveToFileListButton;
+        private System.Windows.Forms.SaveFileDialog TheSaveFileDialog;
     }
 }

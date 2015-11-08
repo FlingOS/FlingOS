@@ -570,13 +570,13 @@ namespace Kernel.Processes
     }
     public enum SystemCallResults : uint
     {
-        Unhandled = 0xBAD0C0DE,
-        OK = 0xBAD1C0DE,
-        Deferred = 0xBAD2C0DE,
-        Fail = 0xBAD3C0DE,
-        OK_PermitActions = 0xBAD4C0DE,
-        Deferred_PermitActions = 0xBAD5C0DE,
-        RequestAction_WakeThread = 0xBAD6C0DE
+        Unhandled = 0xC0DEC0DE,
+        OK = 0xC1DEC1DE,
+        Deferred = 0xC2DEC2DE,
+        Fail = 0xC3DEC3DE,
+        OK_PermitActions = 0xC4DEC4DE,
+        Deferred_PermitActions = 0xC5DEC5DE,
+        RequestAction_WakeThread = 0xC6DEC6DE
     }
 
 

@@ -119,7 +119,7 @@ namespace Kernel.Tasks
 
                 BasicConsole.WriteLine("Started.");
 
-                //BasicConsole.PrimaryOutputEnabled = false;
+                BasicConsole.PrimaryOutputEnabled = false;
                 //BasicConsole.SecondaryOutputEnabled = false;
 
                 try
@@ -134,14 +134,12 @@ namespace Kernel.Tasks
 
                     BasicConsole.WriteLine("KT > Running...");
 
-                    Thread.Sleep_Indefinitely();
-
                     uint loops = 0;
                     while (!Terminating)
                     {
                         try
                         {
-                            //StdOut.Write(StdOutPipeId, StdIn.Read(true), true);
+                            StdOut.Write(StdOutPipeId, StdIn.Read(true), true);
                             //BasicConsole.WriteLine("KT > Write start");
                             //StdOut.Write(StdOutPipeId, "Kernel: Hello, processor! (" + (FOS_System.String)loops++ + ")\n", true);
                             //BasicConsole.WriteLine("KT > Write end");
@@ -151,8 +149,6 @@ namespace Kernel.Tasks
                             BasicConsole.WriteLine("KT > Error writing to StdOut!");
                             BasicConsole.WriteLine(ExceptionMethods.CurrentException.Message);
                         }
-
-                        //SystemCallMethods.SleepThread(-1);
                     }
                 }
                 catch
