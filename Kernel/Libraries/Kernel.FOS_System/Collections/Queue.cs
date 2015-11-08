@@ -209,6 +209,23 @@ namespace Kernel.FOS_System.Collections
             }
             return 0;
         }
+        public UInt32 RemoveLast()
+        {
+            if (Count > 0)
+            {
+                if (FrontIdx == 0)
+                {
+                    FrontIdx = InternalArray.Length - 1;
+                }
+                else
+                {
+                    FrontIdx--;
+                }
+
+                return InternalArray[FrontIdx];
+            }
+            return 0;
+        }
 
         public void Expand(int amount)
         {

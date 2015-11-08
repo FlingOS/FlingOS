@@ -371,7 +371,15 @@ namespace Kernel.Pipes
                 if (!Completed)
                 {
                     uint temp;
-                    pipe.DequeueToRead(out temp);
+                    bool removed = pipe.RemoveLastToRead(out temp);
+
+                    if (!removed || temp != CallerThread.Id)
+                    {
+                        BasicConsole.WriteLine("PipeManager: Error! Async read failed and then removing last from queue resulted in thread Id mismatch!");
+                    }
+
+                    CallerThread.Return1 = (uint)SystemCallResults.Fail;
+                    CallerThread._Wake();
                 }
             }
             return Completed ? RWResults.Complete : RWResults.Queued;
@@ -453,7 +461,15 @@ namespace Kernel.Pipes
                 if (!Completed)
                 {
                     uint temp;
-                    pipe.DequeueToWrite(out temp);
+                    bool removed = pipe.RemoveLastToWrite(out temp);
+
+                    if (!removed || temp != CallerThread.Id)
+                    {
+                        BasicConsole.WriteLine("PipeManager: Error! Async write failed and then removing last from queue resulted in thread Id mismatch!");
+                    }
+
+                    CallerThread.Return1 = (uint)SystemCallResults.Fail;
+                    CallerThread._Wake();
                 }
             }
             return Completed ? RWResults.Complete : RWResults.Queued;

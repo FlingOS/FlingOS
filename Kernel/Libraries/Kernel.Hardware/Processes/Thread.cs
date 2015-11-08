@@ -239,7 +239,6 @@ namespace Kernel.Hardware.Processes
         
         public UInt32 SysCallNumber
         {
-            [Drivers.Compiler.Attributes.NoDebug]
             get
             {
                 return EAXFromInterruptStack;
@@ -247,7 +246,6 @@ namespace Kernel.Hardware.Processes
         }
         public UInt32 Param1
         {
-            [Drivers.Compiler.Attributes.NoDebug]
             get
             {
                 return EBXFromInterruptStack;
@@ -255,7 +253,6 @@ namespace Kernel.Hardware.Processes
         }
         public UInt32 Param2
         {
-            [Drivers.Compiler.Attributes.NoDebug]
             get
             {
                 return ECXFromInterruptStack;
@@ -263,7 +260,6 @@ namespace Kernel.Hardware.Processes
         }
         public UInt32 Param3
         {
-            [Drivers.Compiler.Attributes.NoDebug]
             get
             {
                 return EDXFromInterruptStack;
@@ -271,12 +267,10 @@ namespace Kernel.Hardware.Processes
         }
         public UInt32 Return1
         {
-            [Drivers.Compiler.Attributes.NoDebug]
             get
             {
                 return EAXFromInterruptStack;
             }
-            [Drivers.Compiler.Attributes.NoDebug]
             set
             {
                 EAXFromInterruptStack = value;
@@ -284,12 +278,10 @@ namespace Kernel.Hardware.Processes
         }
         public UInt32 Return2
         {
-            [Drivers.Compiler.Attributes.NoDebug]
             get
             {
                 return EBXFromInterruptStack;
             }
-            [Drivers.Compiler.Attributes.NoDebug]
             set
             {
                 EBXFromInterruptStack = value;
@@ -297,12 +289,10 @@ namespace Kernel.Hardware.Processes
         }
         public UInt32 Return3
         {
-            [Drivers.Compiler.Attributes.NoDebug]
             get
             {
                 return ECXFromInterruptStack;
             }
-            [Drivers.Compiler.Attributes.NoDebug]
             set
             {
                 ECXFromInterruptStack = value;
@@ -310,12 +300,10 @@ namespace Kernel.Hardware.Processes
         }
         public UInt32 Return4
         {
-            [Drivers.Compiler.Attributes.NoDebug]
             get
             {
                 return EDXFromInterruptStack;
             }
-            [Drivers.Compiler.Attributes.NoDebug]
             set
             {
                 EDXFromInterruptStack = value;

@@ -61,7 +61,6 @@
             this.NearestLabelAddessBox = new System.Windows.Forms.TextBox();
             this.NearestLabelBox = new System.Windows.Forms.TextBox();
             this.label4 = new System.Windows.Forms.Label();
-            this.Thex86RegistersControl = new Drivers.Debugger.App.x86RegistersControl();
             this.SingleStepButton = new System.Windows.Forms.Button();
             this.StepButton = new System.Windows.Forms.Button();
             this.ResumeButton = new System.Windows.Forms.Button();
@@ -72,6 +71,7 @@
             this.DestroyButton = new System.Windows.Forms.Button();
             this.TheOpenFileDialog = new System.Windows.Forms.OpenFileDialog();
             this.TheSaveFileDialog = new System.Windows.Forms.SaveFileDialog();
+            this.Thex86RegistersControl = new Drivers.Debugger.App.x86RegistersControl();
             this.MainPanel.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -193,6 +193,7 @@
             // 
             // ViewBPASMCheckBox
             // 
+            this.ViewBPASMCheckBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.ViewBPASMCheckBox.Appearance = System.Windows.Forms.Appearance.Button;
             this.ViewBPASMCheckBox.AutoSize = true;
             this.ViewBPASMCheckBox.Location = new System.Drawing.Point(729, 800);
@@ -205,6 +206,7 @@
             // 
             // SaveToFileListButton
             // 
+            this.SaveToFileListButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.SaveToFileListButton.Location = new System.Drawing.Point(925, 600);
             this.SaveToFileListButton.Name = "SaveToFileListButton";
             this.SaveToFileListButton.Size = new System.Drawing.Size(114, 23);
@@ -215,6 +217,7 @@
             // 
             // SetFromFileListButton
             // 
+            this.SetFromFileListButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.SetFromFileListButton.Location = new System.Drawing.Point(925, 800);
             this.SetFromFileListButton.Name = "SetFromFileListButton";
             this.SetFromFileListButton.Size = new System.Drawing.Size(114, 23);
@@ -422,21 +425,6 @@
             this.label4.TabIndex = 7;
             this.label4.Text = "Nearest label :";
             // 
-            // Thex86RegistersControl
-            // 
-            this.Thex86RegistersControl.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.Thex86RegistersControl.EAX = ((uint)(0u));
-            this.Thex86RegistersControl.EBP = ((uint)(0u));
-            this.Thex86RegistersControl.EBX = ((uint)(0u));
-            this.Thex86RegistersControl.ECX = ((uint)(0u));
-            this.Thex86RegistersControl.EDX = ((uint)(0u));
-            this.Thex86RegistersControl.EIP = ((uint)(0u));
-            this.Thex86RegistersControl.ESP = ((uint)(0u));
-            this.Thex86RegistersControl.Location = new System.Drawing.Point(4, 310);
-            this.Thex86RegistersControl.Name = "Thex86RegistersControl";
-            this.Thex86RegistersControl.Size = new System.Drawing.Size(255, 136);
-            this.Thex86RegistersControl.TabIndex = 6;
-            // 
             // SingleStepButton
             // 
             this.SingleStepButton.Location = new System.Drawing.Point(273, 135);
@@ -531,6 +519,21 @@
             // TheSaveFileDialog
             // 
             this.TheSaveFileDialog.Title = "Save breakpoints";
+            // 
+            // Thex86RegistersControl
+            // 
+            this.Thex86RegistersControl.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.Thex86RegistersControl.EAX = ((uint)(0u));
+            this.Thex86RegistersControl.EBP = ((uint)(0u));
+            this.Thex86RegistersControl.EBX = ((uint)(0u));
+            this.Thex86RegistersControl.ECX = ((uint)(0u));
+            this.Thex86RegistersControl.EDX = ((uint)(0u));
+            this.Thex86RegistersControl.EIP = ((uint)(0u));
+            this.Thex86RegistersControl.ESP = ((uint)(0u));
+            this.Thex86RegistersControl.Location = new System.Drawing.Point(4, 310);
+            this.Thex86RegistersControl.Name = "Thex86RegistersControl";
+            this.Thex86RegistersControl.Size = new System.Drawing.Size(255, 136);
+            this.Thex86RegistersControl.TabIndex = 6;
             // 
             // MainForm
             // 

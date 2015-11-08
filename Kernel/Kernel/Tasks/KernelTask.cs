@@ -359,25 +359,17 @@ namespace Kernel.Tasks
                         Pipes.ReadPipeRequest* RequestPtr = (Pipes.ReadPipeRequest*)Param1;
                         Pipes.PipeManager.RWResults RWResult = Pipes.PipeManager.ReadPipe(RequestPtr->PipeId, RequestPtr->blocking, CallerProcess, CallerThread);
 
-                        // If the request was blocking:
-                        if (RequestPtr->blocking)
+                        if (RWResult == Pipes.PipeManager.RWResults.Error)
                         {
-                            // Then returning Deferred state from here will leave the caller thread
-                            //  in whatever state ReadPipe decided it should be in.
-                            result = SystemCallResults.Deferred;
+                            result = SystemCallResults.Fail;
                         }
                         else
                         {
-                            if (RWResult == Pipes.PipeManager.RWResults.Complete)
-                            {
-                                result = SystemCallResults.OK;
-                            }
-                            else
-                            {
-                                result = SystemCallResults.Fail;
-                            }
+                            // Returning Deferred state from here will leave the caller thread
+                            //  in whatever state ReadPipe decided it should be in.
+                            result = SystemCallResults.Deferred;
                         }
-
+                        
                         SystemCallsHelpers.DisableAccessToMemoryOfProcess(OriginalMemoryLayout);
 
                         //BasicConsole.WriteLine("DSC: Read Pipe - done");
@@ -392,25 +384,18 @@ namespace Kernel.Tasks
 
                         Pipes.WritePipeRequest* RequestPtr = (Pipes.WritePipeRequest*)Param1;
                         Pipes.PipeManager.RWResults RWResult = Pipes.PipeManager.WritePipe(RequestPtr->PipeId, RequestPtr->blocking, CallerProcess, CallerThread);
-                        // If the request was blocking:
-                        if (RequestPtr->blocking)
+
+                        if (RWResult == Pipes.PipeManager.RWResults.Error)
                         {
-                            // Then returning Deferred state from here will leave the caller thread
-                            //  in whatever state WritePipe decided it should be in.
-                            result = SystemCallResults.Deferred;
+                            result = SystemCallResults.Fail;
                         }
                         else
                         {
-                            if (RWResult == Pipes.PipeManager.RWResults.Complete)
-                            {
-                                result = SystemCallResults.OK;
-                            }
-                            else
-                            {
-                                result = SystemCallResults.Fail;
-                            }
+                            // Returning Deferred state from here will leave the caller thread
+                            //  in whatever state WritePipe decided it should be in.
+                            result = SystemCallResults.Deferred;
                         }
-
+                        
                         SystemCallsHelpers.DisableAccessToMemoryOfProcess(OriginalMemoryLayout);
 
                         //BasicConsole.WriteLine("DSC: Write Pipe - done");

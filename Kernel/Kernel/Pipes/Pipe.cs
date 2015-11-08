@@ -167,6 +167,33 @@ namespace Kernel.Pipes
                 return false;
             }
         }
+        public bool RemoveLastToRead(out UInt32 ThreadId)
+        {
+            if (ThreadsWaitingToRead.Count > 0)
+            {
+                ThreadId = ThreadsWaitingToRead.RemoveLast();
+                return true;
+            }
+            else
+            {
+                ThreadId = 0;
+                return false;
+            }
+        }
+        public bool RemoveLastToWrite(out UInt32 ThreadId)
+        {
+            if (ThreadsWaitingToWrite.Count > 0)
+            {
+                ThreadId = ThreadsWaitingToWrite.RemoveLast();
+                SizesWaitingToWrite.RemoveLast();
+                return true;
+            }
+            else
+            {
+                ThreadId = 0;
+                return false;
+            }
+        }
         public bool AreThreadsWaitingToRead()
         {
             return ThreadsWaitingToRead.Count > 0;
