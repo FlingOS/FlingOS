@@ -122,7 +122,9 @@ namespace Kernel.Processes
 
                     if (tempResult == SystemCallResults.RequestAction_WakeThread)
                     {
+#if SYSCALLS_TRACE
                         BasicConsole.WriteLine("System calls : Performing action - wake thread");
+#endif
                         ProcessManager.WakeThread(handlerProcess, TempReturn2);
                         tempResult = SystemCallResults.Unhandled;
                     }

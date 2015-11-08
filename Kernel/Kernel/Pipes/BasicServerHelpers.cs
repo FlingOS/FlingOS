@@ -38,19 +38,19 @@ namespace Kernel.Pipes
             switch (SysCallResult)
             {
                 case SystemCallResults.Unhandled:
-                    BasicConsole.WriteLine("BasicServerHelpers > GetNumPipeOutpoints: Unhandled!");
+                    //BasicConsole.WriteLine("BasicServerHelpers > GetNumPipeOutpoints: Unhandled!");
                     break;
                 case SystemCallResults.Fail:
-                    BasicConsole.WriteLine("BasicServerHelpers > GetNumPipeOutpoints: Failed!");
+                    //BasicConsole.WriteLine("BasicServerHelpers > GetNumPipeOutpoints: Failed!");
                     break;
                 case SystemCallResults.OK:
-                    BasicConsole.WriteLine("BasicServerHelpers > GetNumPipeOutpoints: Succeeded.");
+                    //BasicConsole.WriteLine("BasicServerHelpers > GetNumPipeOutpoints: Succeeded.");
 
-                    BasicConsole.Write("BasicServerHelpers > Num pipe outpoints: ");
-                    BasicConsole.WriteLine(numOutpoints);
+                    //BasicConsole.Write("BasicServerHelpers > Num pipe outpoints: ");
+                    //BasicConsole.WriteLine(numOutpoints);
                     break;
                 default:
-                    BasicConsole.WriteLine("BasicServerHelpers > GetNumPipeOutpoints: Unexpected system call result!");
+                    //BasicConsole.WriteLine("BasicServerHelpers > GetNumPipeOutpoints: Unexpected system call result!");
                     break;
             }
         }
@@ -71,22 +71,23 @@ namespace Kernel.Pipes
                         switch (SysCallResult)
                         {
                             case SystemCallResults.Unhandled:
-                                BasicConsole.WriteLine("BasicServerHelpers > GetPipeOutpoints: Unhandled!");
+                                //BasicConsole.WriteLine("BasicServerHelpers > GetPipeOutpoints: Unhandled!");
                                 break;
                             case SystemCallResults.Fail:
-                                BasicConsole.WriteLine("BasicServerHelpers > GetPipeOutpoints: Failed!");
+                                //BasicConsole.WriteLine("BasicServerHelpers > GetPipeOutpoints: Failed!");
                                 break;
                             case SystemCallResults.OK:
-                                BasicConsole.WriteLine("BasicServerHelpers > GetPipeOutpoints: Succeeded.");
+                                //BasicConsole.WriteLine("BasicServerHelpers > GetPipeOutpoints: Succeeded.");
                                 break;
                             default:
-                                BasicConsole.WriteLine("BasicServerHelpers > GetPipeOutpoints: Unexpected system call result!");
+                                //BasicConsole.WriteLine("BasicServerHelpers > GetPipeOutpoints: Unexpected system call result!");
                                 break;
                         }
                     }
                     else
                     {
-                        BasicConsole.WriteLine("BasicServerHelpers > RequestPtr->Outpoints null! No memory allocated.");
+                        ExceptionMethods.Throw(new FOS_System.Exceptions.ArgumentException("BasicServerHelpers : Couldn't allocate memory outpoints list in outpoints request!"));
+                        //BasicConsole.WriteLine("BasicServerHelpers > RequestPtr->Outpoints null! No memory allocated.");
                     }
                 }
                 finally
@@ -96,7 +97,8 @@ namespace Kernel.Pipes
             }
             else
             {
-                BasicConsole.WriteLine("BasicServerHelpers > RequestPtr null! No memory allocated.");
+                //BasicConsole.WriteLine("BasicServerHelpers > RequestPtr null! No memory allocated.");
+                ExceptionMethods.Throw(new FOS_System.Exceptions.ArgumentException("BasicServerHelpers : Couldn't allocate memory get outpoints request!"));
             }
         }
     }

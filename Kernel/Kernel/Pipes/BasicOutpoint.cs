@@ -52,18 +52,18 @@ namespace Kernel.Pipes
             switch (SysCallResult)
             {
                 case SystemCallResults.Unhandled:
-                    BasicConsole.WriteLine("BasicOutPipe > RegisterPipeOutpoint: Unhandled!");
+                    //BasicConsole.WriteLine("BasicOutPipe > RegisterPipeOutpoint: Unhandled!");
                     ExceptionMethods.Throw(new FOS_System.Exceptions.ArgumentException("BasicOutPipe : Register Pipe Outpoint system call unhandled!"));
                     break;
                 case SystemCallResults.Fail:
-                    BasicConsole.WriteLine("BasicOutPipe > RegisterPipeOutpoint: Failed!");
+                    //BasicConsole.WriteLine("BasicOutPipe > RegisterPipeOutpoint: Failed!");
                     ExceptionMethods.Throw(new FOS_System.Exceptions.ArgumentException("BasicOutPipe : Register Pipe Outpoint system call failed!"));
                     break;
                 case SystemCallResults.OK:
-                    BasicConsole.WriteLine("BasicOutPipe > RegisterPipeOutpoint: Succeeded.");
+                    //BasicConsole.WriteLine("BasicOutPipe > RegisterPipeOutpoint: Succeeded.");
                     break;
                 default:
-                    BasicConsole.WriteLine("BasicOutPipe > RegisterPipeOutpoint: Unexpected system call result!");
+                    //BasicConsole.WriteLine("BasicOutPipe > RegisterPipeOutpoint: Unexpected system call result!");
                     ExceptionMethods.Throw(new FOS_System.Exceptions.ArgumentException("BasicOutPipe : Register Pipe Outpoint system call unexpected result!"));
                     break;
             }            
@@ -76,20 +76,20 @@ namespace Kernel.Pipes
             switch (SysCallResult)
             {
                 case SystemCallResults.Unhandled:
-                    BasicConsole.WriteLine("BasicOutPipe > WaitOnPipeCreate: Unhandled!");
+                    //BasicConsole.WriteLine("BasicOutPipe > WaitOnPipeCreate: Unhandled!");
                     ExceptionMethods.Throw(new FOS_System.Exceptions.ArgumentException("BasicOutPipe : Wait On Pipe Create unhandled!"));
                     break;
                 case SystemCallResults.Fail:
-                    BasicConsole.WriteLine("BasicOutPipe > WaitOnPipeCreate: Failed!");
+                    //BasicConsole.WriteLine("BasicOutPipe > WaitOnPipeCreate: Failed!");
                     ExceptionMethods.Throw(new FOS_System.Exceptions.ArgumentException("BasicOutPipe : Wait On Pipe Create failed!"));
                     break;
                 case SystemCallResults.OK:
-                    BasicConsole.WriteLine("BasicOutPipe > WaitOnPipeCreate: Succeeded.");
-                    BasicConsole.Write("BasicOutPipe > New pipe id: ");
-                    BasicConsole.WriteLine(aPipeId);
+                    //BasicConsole.WriteLine("BasicOutPipe > WaitOnPipeCreate: Succeeded.");
+                    //BasicConsole.Write("BasicOutPipe > New pipe id: ");
+                    //BasicConsole.WriteLine(aPipeId);
                     break;
                 default:
-                    BasicConsole.WriteLine("BasicOutPipe > WaitOnPipeCreate: Unexpected system call result!");
+                    //BasicConsole.WriteLine("BasicOutPipe > WaitOnPipeCreate: Unexpected system call result!");
                     ExceptionMethods.Throw(new FOS_System.Exceptions.ArgumentException("BasicOutPipe : Wait On Pipe Create unexpected result!"));
                     break;
             }

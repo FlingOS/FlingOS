@@ -109,12 +109,12 @@ namespace Kernel.Tasks
             BasicConsole.Write("WM > Create outpoint (inpipe)");
             StdIn = new Pipes.Standard.StandardOutpoint(false);
 
-            BasicConsole.Write("WM > Init keyboard");
+            BasicConsole.WriteLine("WM > Init keyboard");
             Keyboard.InitDefault();
-            BasicConsole.Write("WM > Register IRQ 1 handler");
+            BasicConsole.WriteLine("WM > Register IRQ 1 handler");
             SystemCallMethods.RegisterIRQHandler(1, HandleIRQ);
 
-            BasicConsole.Write("WM > Wait for pipe to be created");
+            BasicConsole.WriteLine("WM > Wait for pipe to be created");
             // Wait for pipe to be created
             ready_count++;
             SystemCallMethods.SleepThread(SystemCallMethods.IndefiniteSleepThread);

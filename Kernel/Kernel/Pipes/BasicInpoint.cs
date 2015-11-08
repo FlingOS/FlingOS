@@ -78,20 +78,20 @@ namespace Kernel.Pipes
                     switch (SysCallResult)
                     {
                         case SystemCallResults.Unhandled:
-                            BasicConsole.WriteLine("BasicInPipe > CreatePipe: Unhandled!");
+                            //BasicConsole.WriteLine("BasicInPipe > CreatePipe: Unhandled!");
                             break;
                         case SystemCallResults.Fail:
-                            BasicConsole.WriteLine("BasicInPipe > CreatePipe: Failed!");
+                            //BasicConsole.WriteLine("BasicInPipe > CreatePipe: Failed!");
                             break;
                         case SystemCallResults.OK:
-                            BasicConsole.WriteLine("BasicInPipe > CreatePipe: Succeeded.");
+                            //BasicConsole.WriteLine("BasicInPipe > CreatePipe: Succeeded.");
                             PipeId = RequestPtr->Result.Id;
 
-                            BasicConsole.Write("BasicInPipe > CreatePipe: New pipe id = ");
-                            BasicConsole.WriteLine(PipeId);
+                            //BasicConsole.Write("BasicInPipe > CreatePipe: New pipe id = ");
+                            //BasicConsole.WriteLine(PipeId);
                             break;
                         default:
-                            BasicConsole.WriteLine("BasicInPipe > CreatePipe: Unexpected system call result!");
+                            //BasicConsole.WriteLine("BasicInPipe > CreatePipe: Unexpected system call result!");
                             break;
                     }
                 }
@@ -102,7 +102,8 @@ namespace Kernel.Pipes
             }
             else
             {
-                BasicConsole.WriteLine("BasicInPipe > RequestPtr null! No memory allocated.");
+                ExceptionMethods.Throw(new FOS_System.Exceptions.ArgumentException("BasicInPipe : Couldn't allocate memory to create pipe!"));
+                //BasicConsole.WriteLine("BasicInPipe > RequestPtr null! No memory allocated.");
             }
         }
 
