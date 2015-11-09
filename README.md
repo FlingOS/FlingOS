@@ -74,6 +74,10 @@ Press the Connect button and then start the virtual machine. If all goes well, t
 
 ### Using the debugger
 
+Take a look at the overview video: 
+
+[![YouTube: Overview of GUI Debugger](http://img.youtube.com/vi/cOlJgrq2ZJc/0.jpg)](http://www.youtube.com/watch?v=cOlJgrq2ZJc)
+
 To start with, press the Refresh button to retrieve the list of processes and threads. Selecting a process or thread allows you to suspend it and inspect its state. The rest should be reasonably obvious.
 
 To add breakpoints, type at least 10 characters in the Filter box of the name of the method you wish to add a breakpoint for. Select the available debug point (if any) and click "Set". Suspend the thread you wish to use the breakpoint with and then Step the thread until it reaches the breakpoint.
