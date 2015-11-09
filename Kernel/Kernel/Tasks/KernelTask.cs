@@ -49,9 +49,7 @@ namespace Kernel.Tasks
 
         private static Pipes.Standard.StandardOutpoint StdOut;
         private static Pipes.Standard.StandardInpoint StdIn;
-
-        private static int IRQ1HandlerId;
-
+        
         public static void Main()
         {
             BasicConsole.WriteLine("Kernel task! ");
@@ -134,7 +132,7 @@ namespace Kernel.Tasks
 
                     BasicConsole.WriteLine("KT > Running...");
 
-                    uint loops = 0;
+                    //uint loops = 0;
                     while (!Terminating)
                     {
                         try
@@ -357,7 +355,7 @@ namespace Kernel.Tasks
                         MemoryLayout OriginalMemoryLayout = SystemCallsHelpers.EnableAccessToMemoryOfProcess(CallerProcess);
 
                         Pipes.ReadPipeRequest* RequestPtr = (Pipes.ReadPipeRequest*)Param1;
-                        Pipes.PipeManager.RWResults RWResult = Pipes.PipeManager.ReadPipe(RequestPtr->PipeId, RequestPtr->blocking, CallerProcess, CallerThread);
+                        Pipes.PipeManager.RWResults RWResult = Pipes.PipeManager.ReadPipe(RequestPtr->PipeId, RequestPtr->Blocking, CallerProcess, CallerThread);
 
                         if (RWResult == Pipes.PipeManager.RWResults.Error)
                         {
@@ -383,7 +381,7 @@ namespace Kernel.Tasks
                         MemoryLayout OriginalMemoryLayout = SystemCallsHelpers.EnableAccessToMemoryOfProcess(CallerProcess);
 
                         Pipes.WritePipeRequest* RequestPtr = (Pipes.WritePipeRequest*)Param1;
-                        Pipes.PipeManager.RWResults RWResult = Pipes.PipeManager.WritePipe(RequestPtr->PipeId, RequestPtr->blocking, CallerProcess, CallerThread);
+                        Pipes.PipeManager.RWResults RWResult = Pipes.PipeManager.WritePipe(RequestPtr->PipeId, RequestPtr->Blocking, CallerProcess, CallerThread);
 
                         if (RWResult == Pipes.PipeManager.RWResults.Error)
                         {
@@ -423,7 +421,7 @@ namespace Kernel.Tasks
         {
             if (ISRNum == 48)
             {
-                SystemCalls.Int48();
+                SystemCalls.InterruptHandler();
                 return 0;
             }
             return -1;

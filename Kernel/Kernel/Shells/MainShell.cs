@@ -1065,7 +1065,7 @@ namespace Kernel.Shells
         /// <summary>
         /// Displays command
         /// </summary>
-        /// <param name="option"></param>
+        /// <param name="commandName">Name of the command to show help for or null to show general help / complete list of commands.</param>
         private void ShowHelp(FOS_System.String commandName = null)
         {
             if(commandName != null)

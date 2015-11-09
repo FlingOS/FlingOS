@@ -330,9 +330,6 @@ namespace Kernel.FOS_System
         /// <summary>
         /// Adds a contiguous block of memory to the heap so it can be used for allocating memory to objects.
         /// </summary>
-        /// <param name="addr">The address of the start of the block of memory.</param>
-        /// <param name="size">The size of the block of memory to add.</param>
-        /// <param name="bsize">The size of the chunks to use when allocating memory.</param>
         /// <returns>Returns 1 if the block was added successfully.</returns>
         [Drivers.Compiler.Attributes.NoDebug]
         [Drivers.Compiler.Attributes.NoGC]

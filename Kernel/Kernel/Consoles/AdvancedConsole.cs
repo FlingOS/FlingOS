@@ -136,6 +136,9 @@ namespace Kernel.Consoles
             }
         }
 
+        /// <summary>
+        /// Draws a border on the bottom edge of the console.
+        /// </summary>
         public void DrawBottomBorder()
         {
             char* vidMemPtr = vidMemBasePtr + (ScreenHeightInLines * ScreenLineWidth);
@@ -144,6 +147,9 @@ namespace Kernel.Consoles
                 vidMemPtr[j] = (char)('-' | CurrentAttr);
             }
         }
+        /// <summary>
+        /// Draws a border on the left edge of the console (including one extra line down to line up with bottom border).
+        /// </summary>
         public void DrawLeftBorder()
         {
             char* vidMemPtr = vidMemBasePtr - 1;

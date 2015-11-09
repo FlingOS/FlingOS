@@ -95,9 +95,6 @@ namespace Kernel.Hardware.ATA
         /// <summary>
         /// Initialises a new ATA pio device.
         /// </summary>
-        /// <param name="anIO">The IO ports for the new Pio device.</param>
-        /// <param name="aControllerId">The controller ID for the new device.</param>
-        /// <param name="aBusPosition">The bus position of the new device.</param>
         public PATA(PATABase baseDevice)
         {
             BaseDevice = baseDevice;

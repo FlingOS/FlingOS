@@ -32,8 +32,15 @@ using System.Threading.Tasks;
 
 namespace Kernel.Pipes.Exceptions
 {
+    /// <summary>
+    /// Read/Write Unhandled Exception. Used when a pipe RW method receives anything other than Fail or OK system call results.
+    /// </summary>
     public class RWUnhandledException : FOS_System.Exception
     {
+        /// <summary>
+        /// Creates a new RW Unhandled Exception with the specified extra message.
+        /// </summary>
+        /// <param name="extraMessage">The message to append to "Pipe Read/Write Unhandled : ".</param>
         public RWUnhandledException(FOS_System.String extraMessage)
             : base("Pipe Read/Write Unhandled : " + extraMessage)
         {

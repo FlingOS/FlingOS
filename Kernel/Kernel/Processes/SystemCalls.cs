@@ -36,35 +36,16 @@ namespace Kernel.Processes
 {
     public static unsafe class SystemCalls
     {
-        private static Thread DeferredSystemCallsHandlerThread;
-        private static bool DeferredSystemCallsHandlerThread_Awake = false;
-        private static bool DeferredSystemCallsHandlerThread_Terminate = false;
-        private static Process DeferredSystemCalls_CurrentProcess;
-        private static Thread DeferredSystemCalls_CurrentThread;
-        private static bool DeferredSystemCalls_WakeCurrentThread = true;
-        
-        public static void Int48()
+        /// <summary>
+        /// Main interrupt handler routine for system calls.
+        /// </summary>
+        public static void InterruptHandler()
         {
-            //FOS_System.GC.Enable("System calls : Int48 (1)");
-            //FOS_System.Heap.PreventAllocation = false;
-            //BasicConsole.WriteLine("WARNING: Enabled GC/Heap inside critical interrupt! (SysCalls: Int48 : 1)");
-
-            //BasicConsole.Write("Sys call ");
-            //BasicConsole.Write(ProcessManager.CurrentThread.SysCallNumber);
-            //BasicConsole.Write(" : ");
-            //BasicConsole.WriteLine(ProcessManager.CurrentProcess.Name);
-            //BasicConsole.WriteLine(((FOS_System.String)" > Param1: ") + ProcessManager.CurrentThread.Param1);
-            //BasicConsole.WriteLine(((FOS_System.String)" > Param2: ") + ProcessManager.CurrentThread.Param2);
-            //BasicConsole.WriteLine(((FOS_System.String)" > Param3: ") + ProcessManager.CurrentThread.Param3);
-
-            //FOS_System.GC.Disable("System calls : Int48 (1)");
-            //FOS_System.Heap.PreventAllocation = true;
-
 #if SYSCALLS_TRACE
             BasicConsole.WriteLine();
             BasicConsole.WriteLine("----- Syscall -----");
             BasicConsole.WriteLine(ProcessManager.CurrentProcess.Name);
-#endif 
+#endif
 
             Process currProcess = ProcessManager.CurrentProcess;
             Thread currThread = ProcessManager.CurrentThread;
@@ -197,20 +178,24 @@ namespace Kernel.Processes
             BasicConsole.WriteLine("Syscall handled.");
             BasicConsole.WriteLine("---------------");
 #endif
-
-            //FOS_System.GC.Enable("System calls : Int48 (2)");
-            //FOS_System.Heap.PreventAllocation = false;
-            //BasicConsole.WriteLine("WARNING: Enabled GC/Heap inside critical interrupt! (SysCalls: Int48 : 2)");
-
-            //BasicConsole.WriteLine(((FOS_System.String)" > Return 1: ") + ProcessManager.CurrentThread.Return1);
-            //BasicConsole.WriteLine(((FOS_System.String)" > Return 2: ") + ProcessManager.CurrentThread.Return2);
-            //BasicConsole.WriteLine(((FOS_System.String)" > Return 3: ") + ProcessManager.CurrentThread.Return3);
-            //BasicConsole.WriteLine(((FOS_System.String)" > Return 4: ") + ProcessManager.CurrentThread.Return4);
-
-            //FOS_System.GC.Disable("System calls : Int48 (2)");
-            //FOS_System.Heap.PreventAllocation = true;
         }
 
+        /// <summary>
+        /// Special handler method for system calls recognised/handlded by the kernel task.
+        /// </summary>
+        /// <param name="syscallNumber">The system call number that has been invoked.</param>
+        /// <param name="param1">The value of the first parameter.</param>
+        /// <param name="param2">The value of the second parameter.</param>
+        /// <param name="param3">The value of the third parameter.</param>
+        /// <param name="Return2">Reference to the second return value.</param>
+        /// <param name="Return3">Reference to the third return value.</param>
+        /// <param name="Return4">Reference to the fourth return value.</param>
+        /// <param name="callerProcesId">The Id of the process which invoked the system call.</param>
+        /// <param name="callerThreadId">The Id of the thread which invoked the system call.</param>
+        /// <returns>A system call result indicating what has occurred and what should occur next.</returns>
+        /// <remarks>
+        /// Executes within the interrupt handler. Usual restrictions apply.
+        /// </remarks>
         public static SystemCallResults HandleSystemCallForKernel(uint syscallNumber, 
             uint param1, uint param2, uint param3, 
             ref uint Return2, ref uint Return3, ref uint Return4,
@@ -352,6 +337,12 @@ namespace Kernel.Processes
             return result;
         }
 
+        /// <summary>
+        /// Performs Sleep system call processing for the Kernel Task.
+        /// </summary>
+        /// <param name="ms">The number of milliseconds to sleep for.</param>
+        /// <param name="callerProcessId">The Id of the process to sleep.</param>
+        /// <param name="callerThreadId">The Id of the thread to sleep.</param>
         private static void SysCall_Sleep(int ms, uint callerProcessId, uint callerThreadId)
         {
 #if SYSCALLS_TRACE
@@ -359,6 +350,11 @@ namespace Kernel.Processes
 #endif
             ProcessManager.GetThreadById(callerThreadId, ProcessManager.GetProcessById(callerProcessId))._EnterSleep(ms);
         }
+        /// <summary>
+        /// Performs Wake system call processing for the Kernel Task.
+        /// </summary>
+        /// <param name="callerProcessId">The Id of the process to wake.</param>
+        /// <param name="threadToWakeId">The Id of the thread to wake.</param>
         private static void SysCall_Wake(uint callerProcessId, uint threadToWakeId)
         {
 #if SYSCALLS_TRACE
@@ -366,6 +362,13 @@ namespace Kernel.Processes
 #endif
             ProcessManager.GetThreadById(threadToWakeId, ProcessManager.GetProcessById(callerProcessId))._Wake();
         }
+        /// <summary>
+        /// Performs Register ISR Handler system call processing for the Kernel Task.
+        /// </summary>
+        /// <param name="ISRNum">The ISR number to register the handler for.</param>
+        /// <param name="handlerAddr">The address of the handler function.</param>
+        /// <param name="callerProcessId">The Id of the process to register the handler for.</param>
+        /// <returns>True if the handler was registered successfully. Otherwise, false.</returns>
         private static bool SysCall_RegisterISRHandler(int ISRNum, uint handlerAddr, uint callerProcessId)
         {
             if (ISRNum < 49)
@@ -387,6 +390,11 @@ namespace Kernel.Processes
 
             return true;
         }
+        /// <summary>
+        /// Performs Deregister ISR Handler system call processing for the Kernel Task.
+        /// </summary>
+        /// <param name="ISRNum">The ISR number to deregister.</param>
+        /// <param name="callerProcessId">The Id of the process to deregister the handler of.</param>
         private static void SysCall_DeregisterISRHandler(int ISRNum, uint callerProcessId)
         {
 #if SYSCALLS_TRACE
@@ -394,6 +402,13 @@ namespace Kernel.Processes
 #endif
             ProcessManager.GetProcessById(callerProcessId).ISRsToHandle.Clear(ISRNum);
         }
+        /// <summary>
+        /// Performs Register IRQ Handler system call processing for the Kernel Task.
+        /// </summary>
+        /// <param name="IRQNum">The IRQ number to register the handler for.</param>
+        /// <param name="handlerAddr">The address of the handler function.</param>
+        /// <param name="callerProcessId">The Id of the process to register the handler for.</param>
+        /// <returns>True if the handler was registered successfully. Otherwise, false.</returns>
         private static bool SysCall_RegisterIRQHandler(int IRQNum, uint handlerAddr, uint callerProcessId)
         {
             if (IRQNum > 15)
@@ -417,6 +432,11 @@ namespace Kernel.Processes
 
             return true;
         }
+        /// <summary>
+        /// Performs Deregister IRQ Handler system call processing for the Kernel Task.
+        /// </summary>
+        /// <param name="IRQNum">The IRQ number to deregister.</param>
+        /// <param name="callerProcessId">The Id of the process to deregister the handler of.</param>
         private static void SysCall_DeregisterIRQHandler(int IRQNum, uint callerProcessId)
         {
 #if SYSCALLS_TRACE
@@ -424,6 +444,13 @@ namespace Kernel.Processes
 #endif
             ProcessManager.GetProcessById(callerProcessId).IRQsToHandle.Clear(IRQNum);
         }
+        /// <summary>
+        /// Performs Register System Call Handler system call processing for the Kernel Task.
+        /// </summary>
+        /// <param name="syscallNum">The system call number to register the handler for.</param>
+        /// <param name="handlerAddr">The address of the handler function.</param>
+        /// <param name="callerProcessId">The Id of the process to register the handler for.</param>
+        /// <returns>True if the handler was registered successfully. Otherwise, false.</returns>
         private static bool SysCall_RegisterSyscallHandler(int syscallNum, uint handlerAddr, uint callerProcessId)
         {
 #if SYSCALLS_TRACE
@@ -440,6 +467,11 @@ namespace Kernel.Processes
 
             return true;
         }
+        /// <summary>
+        /// Performs Deregister System Call Handler system call processing for the Kernel Task.
+        /// </summary>
+        /// <param name="syscallNum">The system call number to deregister.</param>
+        /// <param name="callerProcessId">The Id of the process to deregister the handler of.</param>
         private static void SysCall_DeregisterSyscallHandler(int syscallNum, uint callerProcessId)
         {
 #if SYSCALLS_TRACE
@@ -447,9 +479,8 @@ namespace Kernel.Processes
 #endif
             ProcessManager.GetProcessById(callerProcessId).SyscallsToHandle.Clear(syscallNum);
         }
-
-
-        private static unsafe void SysCall_RequestPages(int numPages, uint callerProcessId, uint callerThreadId)
+        
+        /*private static unsafe void SysCall_RequestPages(int numPages, uint callerProcessId, uint callerThreadId)
         {
             if (numPages > 0)
             {
@@ -528,17 +559,70 @@ namespace Kernel.Processes
             DeferredSystemCalls_CurrentThread.Return2 = (uint)id;
             DeferredSystemCalls_CurrentThread.Return3 = 0;
             DeferredSystemCalls_CurrentThread.Return4 = 0;
-        }
+        }*/
     }
 
+    /// <summary>
+    /// The complete list of system calls.
+    /// </summary>
     public enum SystemCallNumbers : uint
     {
+        /// <summary>
+        /// Indicates an invalid system call has been made.
+        /// </summary>
+        /// <remarks>
+        /// Useful for guarding against errors.
+        /// </remarks>
         INVALID = 0,
+        /// <summary>
+        /// Registers a method of the caller process as a handler for an interrupt service routine.
+        /// </summary>
+        /// <remarks>
+        /// <para>
+        /// Cannot register a handler for any ISR less than 49.
+        /// </para>
+        /// <para>
+        /// Only one handler method for all ISRs is accepted. Specify address 0xFFFFFFFF to avoid re-specifying the handler function.
+        /// </para>
+        /// </remarks>
         RegisterISRHandler,
+        /// <summary>
+        /// Deregisters the caller process for handling an interrupt service routine.
+        /// </summary>
         DeregisterISRHandler,
+        /// <summary>
+        /// Registers a method of the caller process as a handler for an interrupt request.
+        /// </summary>
+        /// <remarks>
+        /// <para>
+        /// Cannot register a handler for any IRQ greater than 15.
+        /// </para>
+        /// <para>
+        /// Only one handler method for all IRQs is accepted. Specify address 0xFFFFFFFF to avoid re-specifying the handler function.
+        /// </para>
+        /// </remarks>
         RegisterIRQHandler,
+        /// <summary>
+        /// Deregisters the caller process for handling an interrupt request.
+        /// </summary>
         DeregisterIRQHandler,
+        /// <summary>
+        /// Registers a method of the caller process as a handler for a system call.
+        /// </summary>
+        /// <remarks>
+        /// <para>
+        /// Currently, a handler can be registered for any system call number. However, calling prioritisation
+        /// is implemented so the registered handler may not see all calls if higher priority (/earlier) handlers 
+        /// deicde to handle the call.
+        /// </para>
+        /// <para>
+        /// Only one handler method for all system calls is accepted. Specify address 0xFFFFFFFF to avoid re-specifying the handler function.
+        /// </para>
+        /// </remarks>
         RegisterSyscallHandler,
+        /// <summary>
+        /// Deregisters the caller process for handling a system call.
+        /// </summary>
         DeregisterSyscallHandler,
         RequestPage,
         UnmapPage,
@@ -562,28 +646,111 @@ namespace Kernel.Processes
         GetTime,
         SetTime,
         GetUpTime,
+        /// <summary>
+        /// Registers the process as offering a specific pipe outpoint type.
+        /// </summary>
         RegisterPipeOutpoint,
+        /// <summary>
+        /// Gets the number of available pipe outpoints of a specific type.
+        /// </summary>
         GetNumPipeOutpoints,
+        /// <summary>
+        /// Gets descriptions of the available pipe outpoints of a specific type.
+        /// </summary>
+        /// <remarks>
+        /// Use a GetNumPipeOutpoints system call to determine the number of available outpoints of the wanted type. Then use that
+        /// number to allocate a sufficiently large array.
+        /// </remarks>
         GetPipeOutpoints,
+        /// <summary>
+        /// Creates a pipe, of a specific type, from the caller process to the specified outpoint (of another or the same process).
+        /// </summary>
         CreatePipe,
+        /// <summary>
+        /// Waits for a pipe of a specific type to be created to the caller process.
+        /// </summary>
         WaitOnPipeCreate,
+        /// <summary>
+        /// Reads from the specified pipe. Blocking and non-blocking calls supported on the same pipe.
+        /// </summary>
         ReadPipe,
+        /// <summary>
+        /// Writes to the specified pipe. Blocking and non-blocking calls supported on the same pipe.
+        /// </summary>
         WritePipe
     }
+    /// <summary>
+    /// Results of system calls.
+    /// </summary>
+    /// <remarks>
+    /// Distinct values from the system call numbers are used. This is for debugging purposes since the 
+    /// call number and the result number share a register which can lead to accidental contamination in
+    /// incorrect implementations.
+    /// </remarks>
     public enum SystemCallResults : uint
     {
+        /// <summary>
+        /// The system call was not handled by any process.
+        /// </summary>
         Unhandled = 0xC0DEC0DE,
+        /// <summary>
+        /// The system call was handled successfully.
+        /// </summary>
         OK = 0xC1DEC1DE,
+        /// <summary>
+        /// The system call was deferred for later processing.
+        /// </summary>
+        /// <remarks>
+        /// This is only supposed to be seen within the core OS. A caller should never see this value.
+        /// </remarks>
         Deferred = 0xC2DEC2DE,
+        /// <summary>
+        /// The system call failed.
+        /// </summary>
+        /// <remarks>
+        /// <para>
+        /// In the case of non-blocking system calls, a failure is expected. Unhandled should be used to indicate an error
+        /// in a non-blocking system call. In all other cases, this indicates an error occurred. 
+        /// </para>
+        /// <para>
+        /// Note that an error may be a permissions failure of some description or it may be an actual exception.
+        /// </para>
+        /// </remarks>
         Fail = 0xC3DEC3DE,
+        /// <summary>
+        /// The system call was handled successfully but other system call handlers are also allowed to process the 
+        /// call. 
+        /// </summary>
+        /// <remarks>
+        /// This is only supposed to be seen within the core OS. A caller should never see this value.
+        /// </remarks>
         OK_PermitActions = 0xC4DEC4DE,
+        /// <summary>
+        /// The system call was deferred but other system call handlers are also allowed to process the 
+        /// call. 
+        /// </summary>
+        /// <remarks>
+        /// This is only supposed to be seen within the core OS. A caller should never see this value.
+        /// </remarks>
         Deferred_PermitActions = 0xC5DEC5DE,
+        /// <summary>
+        /// The system call was unhandled but the handler method is requesting another thread is woken.
+        /// </summary>
+        /// <remarks>
+        /// <para>
+        /// This is only supposed to be seen within the core OS. A caller should never see this value.
+        /// </para>
+        /// <para>
+        /// This is used so a system call can be used as a notification to a process. A method returning
+        /// this cannot also handle the system call.
+        /// </para>
+        /// </remarks>
         RequestAction_WakeThread = 0xC6DEC6DE
     }
 
 
 
-    public enum SemaphoreRequests
+    /*public enum SemaphoreRequests
     {
         INVALID = 0,
         Allocate = 1,
@@ -611,6 +778,7 @@ namespace Kernel.Processes
         INVALID = 0,
         Success = 1
     }
+    */
 
     #region Play Note
 
@@ -784,4 +952,5 @@ namespace Kernel.Processes
     }
 
     #endregion
+
 }

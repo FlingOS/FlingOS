@@ -29,16 +29,49 @@ using Kernel.FOS_System.Collections;
 
 namespace Kernel.Pipes
 {
+    /// <summary>
+    /// Represents a pipe outpoint. Used only within the core OS.
+    /// </summary>
+    /// <remarks>
+    /// For outpoints used by processes, see <see cref="BasicOutpoint"/>.
+    /// </remarks>
     public class PipeOutpoint : FOS_System.Object
     {
+        /// <summary>
+        /// The Id of the process which owns the outpoint.
+        /// </summary>
         public uint ProcessId;
+        /// <summary>
+        /// The class of pipe which can connect to the outpoint.
+        /// </summary>
         public PipeClasses Class;
+        /// <summary>
+        /// The subclass of pipe which can connect to the outpoint.
+        /// </summary>
         public PipeSubclasses Subclass;
+        /// <summary>
+        /// The maximum number of connections allowed to the outpoint. Also see <see cref="PipeConstants.UnlimitedConnections"/>.
+        /// </summary>
+        /// <seealso cref="PipeConstants.UnlimitedConnections"/>
         public int MaxConnections;
+        /// <summary>
+        /// The number of pipes currently connected to the outpoint.
+        /// </summary>
         public int NumConnections;
 
+        /// <summary>
+        /// List of threads waiting for a pipe to connect to the outpoint.
+        /// </summary>
         public UInt64List WaitingThreads;
 
+        /// <summary>
+        /// Initialises a new instance of an outpoint.
+        /// </summary>
+        /// <param name="OwnerProcessId">The Id of the process which owns the outpoint.</param>
+        /// <param name="pipeClass">The class of pipe which can connect to the outpoint.</param>
+        /// <param name="pipeSubclass">The subclass of pipe which can connect to the outpoint.</param>
+        /// <param name="MaximumConnections">The maximum number of connections allowed to the outpoint. Also see <see cref="PipeConstants.UnlimitedConnections"/>.</param>
+        /// <seealso cref="PipeConstants.UnlimitedConnections"/>
         public PipeOutpoint(uint OwnerProcessId, PipeClasses pipeClass, PipeSubclasses pipeSubclass, int MaximumConnections)
         {
             ProcessId = OwnerProcessId;
@@ -50,13 +83,28 @@ namespace Kernel.Pipes
         }
     }
 
+    /// <summary>
+    /// Describes an outpoint. Used to return outpoint data from a system call.
+    /// </summary>
     public struct PipeOutpointDescriptor
     {
+        /// <summary>
+        /// The Id of the process which owns the outpoint.
+        /// </summary>
         public uint ProcessId;
     }
+    /// <summary>
+    /// Represents a Get Outpoints request (used in a system call).
+    /// </summary>
     public unsafe struct PipeOutpointsRequest
     {
+        /// <summary>
+        /// The maximum number of outpoint descriptors to return.
+        /// </summary>
         public int MaxDescriptors;
+        /// <summary>
+        /// The requested outpoint descriptors.
+        /// </summary>
         public PipeOutpointDescriptor* Outpoints;
     }
 }

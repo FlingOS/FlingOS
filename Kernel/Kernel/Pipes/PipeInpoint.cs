@@ -32,12 +32,33 @@ using System.Threading.Tasks;
 
 namespace Kernel.Pipes
 {
+    /// <summary>
+    /// Represents a pipe inpoint. Used only within the core OS.
+    /// </summary>
+    /// <remarks>
+    /// For inpoints used by processes, see <see cref="BasicInpoint"/>.
+    /// </remarks>
     public class PipeInpoint : FOS_System.Object
     {
+        /// <summary>
+        /// The Id of the process which owns the inpoint.
+        /// </summary>
         public uint ProcessId;
+        /// <summary>
+        /// The class of pipe connected to the inpoint.
+        /// </summary>
         public PipeClasses Class;
+        /// <summary>
+        /// The subclass of pipe connected to the inpoint.
+        /// </summary>
         public PipeSubclasses Subclass;
 
+        /// <summary>
+        /// Initialises a new inpoint instance.
+        /// </summary>
+        /// <param name="OwnerProcessId">The process which owns the inpoint.</param>
+        /// <param name="pipeClass">The class of pipe connected to the inpoint.</param>
+        /// <param name="pipeSubclass">The subclass of pipe connected to the inpoint.</param>
         public PipeInpoint(uint OwnerProcessId, PipeClasses pipeClass, PipeSubclasses pipeSubclass)
         {
             ProcessId = OwnerProcessId;

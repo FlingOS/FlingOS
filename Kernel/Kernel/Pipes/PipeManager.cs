@@ -35,20 +35,59 @@ using Kernel.Hardware.VirtMem;
 
 namespace Kernel.Pipes
 {
+    /// <summary>
+    /// The main manager for pipes. Used only in the core OS.
+    /// </summary>
     public unsafe static class PipeManager
     {
+        /// <summary>
+        /// Results of read or write requests.
+        /// </summary>
         public enum RWResults
         {
+            /// <summary>
+            /// An error occurred and the R/W request failed.
+            /// </summary>
             Error,
+            /// <summary>
+            /// The R/W request was successful.
+            /// </summary>
             Complete,
+            /// <summary>
+            /// For blocking calls, indicates the R/W request has been queued. For non-blocking calls,
+            /// indicates the R/W request failed because it couldn't be processed immediately.
+            /// </summary>
             Queued
         }
 
+        /// <summary>
+        /// The list of all registered outpoints.
+        /// </summary>
         public static List PipeOutpoints = new List(256, 256);
+        /// <summary>
+        /// The list of all created pipes.
+        /// </summary>
         public static List Pipes = new List(20);
         
+        /// <summary>
+        /// Number used to generate Ids for pipes. 
+        /// </summary>
+        /// <remarks>
+        /// Might overflow back to 1 eventually but creating that number of pipes would be astounding. (The system would run out of memory first and
+        /// there isn't currently a way to destroy pipes).
+        /// </remarks>
         private static int PipeIdGenerator = 1;
 
+        /// <summary>
+        /// Attempts to register a pipe outpoint.
+        /// </summary>
+        /// <param name="OutProcessId">The Id of the process which should own the outpoint.</param>
+        /// <param name="Class">The class of pipe the outpoint will create.</param>
+        /// <param name="Subclass">The subclass of pipe the outpoint will create.</param>
+        /// <param name="MaxConnections">The maximum number of connections allowed to the outpoint. Also see <see cref="PipeConstants.UnlimitedConnections"/>.</param>
+        /// <param name="outpoint">Out : The newly created outpoint (or null if the request fails).</param>
+        /// <returns>True if the request was successful. Otherwise, false.</returns>
+        /// <seealso cref="PipeConstants.UnlimitedConnections"/>
         public static bool RegisterPipeOutpoint(uint OutProcessId, PipeClasses Class, PipeSubclasses Subclass, int MaxConnections, out PipeOutpoint outpoint)
         {
             // Validate inputs
@@ -89,6 +128,13 @@ namespace Kernel.Pipes
             return true;
         }
 
+        /// <summary>
+        /// Attempts to get the number of outpoints of the specified class and subclass.
+        /// </summary>
+        /// <param name="Class">The class of outpoint to search for.</param>
+        /// <param name="Subclass">The subclass of outpoint to search for.</param>
+        /// <param name="numOutpoints">Out : The number of outpoints of the specified class and subclass.</param>
+        /// <returns>True if the request was successful. Otherwise, false.</returns>
         public static bool GetNumPipeOutpoints(PipeClasses Class, PipeSubclasses Subclass, out int numOutpoints)
         {
             // Initialise count to zero
@@ -112,6 +158,14 @@ namespace Kernel.Pipes
             //  - A count result of zero is valid / success
             return true;
         }
+        /// <summary>
+        /// Attempts to get descriptors of the outpoints of the specified class and subclass.
+        /// </summary>
+        /// <param name="CallerProcess">The process which owns the memory containing the <paramref cref="request"/>.</param>
+        /// <param name="Class">The class of outpoint to search for.</param>
+        /// <param name="Subclass">The subclass of outpoint to search for.</param>
+        /// <param name="request">A pointer to the request structure (Also used to store the result(s)).</param>
+        /// <returns>True if the request was successful. Otherwise, false.</returns>
         public static bool GetPipeOutpoints(Process CallerProcess, PipeClasses Class, PipeSubclasses Subclass, PipeOutpointsRequest* request)
         {
             // Validate inputs & get caller process
@@ -169,6 +223,13 @@ namespace Kernel.Pipes
             return OK;
         }
         
+        /// <summary>
+        /// Attempts to create a new pipe.
+        /// </summary>
+        /// <param name="InProcessId">The Id of the target process which owns the inpoint.</param>
+        /// <param name="OutProcessId">The Id of the target process which owns the outpoint.</param>
+        /// <param name="request">A pointer to the request structure (Also used to store the result).</param>
+        /// <returns>True if the request was successful. Otherwise, false.</returns>
         public static bool CreatePipe(uint InProcessId, uint OutProcessId, CreatePipeRequest* request)
         {
             // Validate inputs
@@ -236,7 +297,12 @@ namespace Kernel.Pipes
 
             return OK;
         }
-        public static void WakeWaitingThreads(PipeOutpoint outpoint, int newPipeId)
+        /// <summary>
+        /// Wakes all threads waiting on a pipe to be created for the specified outpoint.
+        /// </summary>
+        /// <param name="outpoint">The outpoint to wake waiting threads of.</param>
+        /// <param name="newPipeId">The Id of the newly created pipe.</param>
+        private static void WakeWaitingThreads(PipeOutpoint outpoint, int newPipeId)
         {
             while (outpoint.WaitingThreads.Count > 0)
             {
@@ -256,6 +322,14 @@ namespace Kernel.Pipes
                 thread._Wake();
             }
         }
+        /// <summary>
+        /// Attempts to add the specified thread to the list of threads waiting on a pipe to be created for the specified outpoint.
+        /// </summary>
+        /// <param name="OutProcessId">The Id of the process which owns the outpoint and the thread to block.</param>
+        /// <param name="OutThreadId">The Id of the thread to block.</param>
+        /// <param name="Class">The class of the outpoint.</param>
+        /// <param name="Subclass">The subclass of the outpoint.</param>
+        /// <returns>True if the request was successful. Otherwise, false.</returns>
         public static bool WaitOnPipeCreate(uint OutProcessId, uint OutThreadId, PipeClasses Class, PipeSubclasses Subclass)
         {
             // Validate inputs
@@ -287,14 +361,38 @@ namespace Kernel.Pipes
             return true;
         }
 
-        public static bool AllowedToReadPipe(Pipe ThePipe, uint CallerProcessId)
+        /// <summary>
+        /// Determines whether the specified process is allowed to read from the specified pipe.
+        /// </summary>
+        /// <param name="ThePipe">The pipe to check.</param>
+        /// <param name="ProcessId">The Id of the process to check.</param>
+        /// <returns>True if the process is allowed. Otherwise, false.</returns>
+        private static bool AllowedToReadPipe(Pipe ThePipe, uint ProcessId)
         {
-            return ThePipe.Inpoint.ProcessId == CallerProcessId;
+            return ThePipe.Inpoint.ProcessId == ProcessId;
         }
-        public static bool AllowedToWritePipe(Pipe ThePipe, uint CallerProcessId)
+        /// <summary>
+        /// Determines whether the specified process is allowed to write to the specified pipe.
+        /// </summary>
+        /// <param name="ThePipe">The pipe to check.</param>
+        /// <param name="ProcessId">The Id of the process to check.</param>
+        /// <returns>True if the process is allowed. Otherwise, false.</returns>
+        private static bool AllowedToWritePipe(Pipe ThePipe, uint ProcessId)
         {
-            return ThePipe.Outpoint.ProcessId == CallerProcessId;
+            return ThePipe.Outpoint.ProcessId == ProcessId;
         }
+        /// <summary>
+        /// Attempts to read from the specified pipe.
+        /// </summary>
+        /// <remarks>
+        /// Note that this function is non-blocking. It will, however, block a system caller thread by simply not returning it from
+        /// the deferred system call.
+        /// </remarks>
+        /// <param name="PipeId">The Id of the pipe to read.</param>
+        /// <param name="Blocking">Whether the read should be blocking or non-blocking.</param>
+        /// <param name="CallerProcess">The process which made the call.</param>
+        /// <param name="CallerThread">The thread which made the call.</param>
+        /// <returns>See descriptions on <see cref="PipeManager.RWResults"/> values.</returns>
         public static RWResults ReadPipe(int PipeId, bool Blocking, Process CallerProcess, Thread CallerThread)
         {
 #if PIPES_TRACE
@@ -384,6 +482,18 @@ namespace Kernel.Pipes
             }
             return Completed ? RWResults.Complete : RWResults.Queued;
         }
+        /// <summary>
+        /// Attempts to write to the specified pipe.
+        /// </summary>
+        /// <remarks>
+        /// Note that this function is non-blocking. It will, however, block a system caller thread by simply not returning it from
+        /// the deferred system call.
+        /// </remarks>
+        /// <param name="PipeId">The Id of the pipe to write.</param>
+        /// <param name="Blocking">Whether the write should be blocking or non-blocking.</param>
+        /// <param name="CallerProcess">The process which made the call.</param>
+        /// <param name="CallerThread">The thread which made the call.</param>
+        /// <returns>See descriptions on <see cref="PipeManager.RWResults"/> values.</returns>
         public static RWResults WritePipe(int PipeId, bool Blocking, Process CallerProcess, Thread CallerThread)
         {
 #if PIPES_TRACE
@@ -438,7 +548,7 @@ namespace Kernel.Pipes
 #endif
             // Add caller thread to the write queue
             WritePipeRequest* Request = (WritePipeRequest*)CallerThread.Param1;
-            pipe.QueueToWrite(CallerThread.Id, Request->length);
+            pipe.QueueToWrite(CallerThread.Id, Request->Length);
 
             // Set up initial failure return value
             CallerThread.Return1 = (uint)SystemCallResults.Fail;
@@ -474,6 +584,12 @@ namespace Kernel.Pipes
             }
             return Completed ? RWResults.Complete : RWResults.Queued;
         }
+        /// <summary>
+        /// Process the read/write queues of the specified pipe.
+        /// </summary>
+        /// <param name="pipe">The pipe to process.</param>
+        /// <param name="OutProcess">The process which owns the pipe's outpoint.</param>
+        /// <param name="InProcess">The process which owns the pipe's inpoint.</param>
         private static void ProcessPipeQueue(Pipe pipe, Process OutProcess, Process InProcess)
         {
 #if PIPES_TRACE
@@ -521,7 +637,7 @@ namespace Kernel.Pipes
                     BasicConsole.WriteLine("ProcessPipeQueue: Writing pipe");
 #endif
                     WritePipeRequest* Request = (WritePipeRequest*)WriteThread.Param1;
-                    bool Successful = pipe.Write(Request->inBuffer, Request->offset, Request->length);
+                    bool Successful = pipe.Write(Request->InBuffer, Request->Offset, Request->Length);
                     if (Successful)
                     {
 #if PIPES_TRACE
@@ -577,7 +693,7 @@ namespace Kernel.Pipes
 #endif
                     ReadPipeRequest* Request = (ReadPipeRequest*)ReadThread.Param1;
                     int BytesRead;
-                    bool Successful = pipe.Read(Request->outBuffer, Request->offset, Request->length, out BytesRead);
+                    bool Successful = pipe.Read(Request->OutBuffer, Request->Offset, Request->Length, out BytesRead);
                     if (Successful)
                     {
 #if PIPES_TRACE
@@ -603,6 +719,13 @@ namespace Kernel.Pipes
             }
         }
         
+        /// <summary>
+        /// Gets the outpoint from the specified process of the desired class and subclass.
+        /// </summary>
+        /// <param name="OutProcessId">The Id of the process which owns the outpoint.</param>
+        /// <param name="Class">The class of the outpoint.</param>
+        /// <param name="Subclass">The subclass of the outpoint.</param>
+        /// <returns>The outpoint or null if not found.</returns>
         private static PipeOutpoint GetOutpoint(uint OutProcessId, PipeClasses Class, PipeSubclasses Subclass)
         {
             PipeOutpoint outpoint = null;
@@ -620,6 +743,11 @@ namespace Kernel.Pipes
             }
             return outpoint;
         }
+        /// <summary>
+        /// Gets the pipe with the specified Id.
+        /// </summary>
+        /// <param name="PipeId">The Id of the pipe to get.</param>
+        /// <returns>The pipe or null if it is not found.</returns>
         private static Pipe GetPipe(int PipeId)
         {
             for (int i = 0; i < Pipes.Count; i++)

@@ -70,14 +70,39 @@ namespace Kernel.Hardware.VirtMem
         /// <summary>
         /// Maps the specified virtual address to the specified physical address.
         /// </summary>
+        /// <remarks>
+        /// Uses the flags Present, KernelOnly and Writeable as defaults.
+        /// </remarks>
         /// <param name="pAddr">The physical address to map to.</param>
         /// <param name="vAddr">The virtual address to map.</param>
+        /// <param name="UpdateUsedPages">Which, if any, of the physical and virtual used pages lists to update.</param>
         [Drivers.Compiler.Attributes.NoDebug]
         public virtual void Map(uint pAddr, uint vAddr, UpdateUsedPagesFlags UpdateUsedPages = UpdateUsedPagesFlags.Both)
         {
             Map(pAddr, vAddr, PageFlags.Present | PageFlags.KernelOnly | PageFlags.Writeable, UpdateUsedPages);
         }
+        /// <summary>
+        /// Maps the specified virtual address to the specified physical address.
+        /// </summary>
+        /// <param name="pAddr">The physical address to map to.</param>
+        /// <param name="vAddr">The virtual address to map.</param>
+        /// <param name="flags">The flags to apply to the allocated pages.</param>
+        /// <param name="UpdateUsedPages">Which, if any, of the physical and virtual used pages lists to update.</param>
         public abstract void Map(uint pAddr, uint vAddr, PageFlags flags, UpdateUsedPagesFlags UpdateUsedPages = UpdateUsedPagesFlags.Both);
+        /// <summary>
+        /// Unmaps the specified page of virtual memory.
+        /// </summary>
+        /// <remarks>
+        /// <para>
+        /// Unmaps means it sets the address to 0 and marks the page as not present.
+        /// </para>
+        /// <para>
+        /// It is common to call this with just UpdateUsedPages set to Virtual, since then the virtual page becomes available for use
+        /// but the physical page remains reserved (though unmapped).
+        /// </para>
+        /// </remarks>
+        /// <param name="vAddr">The virtual address of the page to unmap.</param>
+        /// <param name="UpdateUsedPages">Which, if any, of the physical and virtual used pages lists to update.</param>
         public abstract void Unmap(uint vAddr, UpdateUsedPagesFlags UpdateUsedPages = UpdateUsedPagesFlags.Both);
         /// <summary>
         /// Gets the physical address for the specified virtual address.

@@ -30,22 +30,57 @@ using Kernel.FOS_System;
 
 namespace Kernel.Pipes.Standard
 {
+    /// <summary>
+    /// Represents an outpoint for a standard in or standard out pipe.
+    /// </summary>
     public class StandardOutpoint : BasicOutpoint
     {
+        /// <summary>
+        /// Creates and registers an outpoint as either a Standard In or Standard Out pipe outpoint.
+        /// </summary>
+        /// <param name="OutputPipe">Whether the outpoint is for a Standard Out pipe or (if not) a Standard In pipe.</param>
         public StandardOutpoint(bool OutputPipe)
             : base(PipeClasses.Standard, (OutputPipe ? PipeSubclasses.Standard_Out : PipeSubclasses.Standard_In), PipeConstants.UnlimitedConnections)
         {
         }
 
-        public unsafe void Write(int PipeId, char Character, bool blocking)
+        /// <summary>
+        /// Writes a character to the pipe.
+        /// </summary>
+        /// <param name="PipeId">The Id of the pipe to write to.</param>
+        /// <param name="Character">The character to write.</param>
+        /// <param name="Blocking">Whether the write call should be blocking or not.</param>
+        /// <remarks>
+        /// <para>
+        /// Id required since an outpoint can be connected to multiple pipes.
+        /// </para>
+        /// <para>
+        /// Treats the character as a single ASCII byte. In future, may want to make this UTF16 (two bytes, Unicode).
+        /// </para>
+        /// </remarks>
+        public unsafe void Write(int PipeId, char Character, bool Blocking)
         {
             byte[] data = new byte[1] { (byte)Character };
-            base.Write(PipeId, data, 0, data.Length, blocking);
+            base.Write(PipeId, data, 0, data.Length, Blocking);
         }
-        public unsafe void Write(int PipeId, FOS_System.String message, bool blocking)
+        /// <summary>
+        /// Writes a message to the pipe.
+        /// </summary>
+        /// <param name="PipeId">The Id of the pipe to write to.</param>
+        /// <param name="Message">The message to write.</param>
+        /// <param name="Blocking">Whether the write call should be blocking or not.</param>
+        /// <remarks>
+        /// <para>
+        /// Id required since an outpoint can be connected to multiple pipes.
+        /// </para>
+        /// <para>
+        /// Treats the message as ASCII. In future, may want to make this UTF16 (two bytes, Unicode).
+        /// </para>
+        /// </remarks>
+        public unsafe void Write(int PipeId, FOS_System.String Message, bool Blocking)
         {
-            byte[] data = ByteConverter.GetASCIIBytes(message);
-            base.Write(PipeId, data, 0, data.Length, blocking);
+            byte[] data = ByteConverter.GetASCIIBytes(Message);
+            base.Write(PipeId, data, 0, data.Length, Blocking);
         }
     }
 }

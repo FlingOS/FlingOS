@@ -125,6 +125,8 @@ namespace Kernel.Hardware
         /// <param name="pAddr">The physical address to start mapping at (must be 4KiB aligned).</param>
         /// <param name="vAddr">The virtual address to start mapping at (must be 4KiB aligned).</param>
         /// <param name="size">The amount of memory (in bytes) to map (must be a multiple of 4KiB)</param>
+        /// <param name="flags">The flags to apply to the allocated pages.</param>
+        /// <param name="UpdateUsedPages">Which, if any, of the physical and virtual used pages lists to update.</param>
         public static void Map(void* pAddr, void* vAddr, uint size, VirtMemImpl.PageFlags flags, UpdateUsedPagesFlags UpdateUsedPages = UpdateUsedPagesFlags.Both)
         {
             Map((uint)pAddr, (uint)vAddr, size, flags, UpdateUsedPages);
@@ -135,6 +137,8 @@ namespace Kernel.Hardware
         /// <param name="pAddr">The physical address to start mapping at (must be 4KiB aligned).</param>
         /// <param name="vAddr">The virtual address to start mapping at (must be 4KiB aligned).</param>
         /// <param name="size">The amount of memory (in bytes) to map (must be a multiple of 4KiB)</param>
+        /// <param name="flags">The flags to apply to the allocated pages.</param>
+        /// <param name="UpdateUsedPages">Which, if any, of the physical and virtual used pages lists to update.</param>
         public static void Map(uint pAddr, void* vAddr, uint size, VirtMemImpl.PageFlags flags, UpdateUsedPagesFlags UpdateUsedPages = UpdateUsedPagesFlags.Both)
         {
             Map(pAddr, (uint)vAddr, size, flags, UpdateUsedPages);
@@ -145,6 +149,8 @@ namespace Kernel.Hardware
         /// <param name="pAddr">The physical address to start mapping at (must be 4KiB aligned).</param>
         /// <param name="vAddr">The virtual address to start mapping at (must be 4KiB aligned).</param>
         /// <param name="size">The amount of memory (in bytes) to map (must be a multiple of 4KiB)</param>
+        /// <param name="flags">The flags to apply to the allocated pages.</param>
+        /// <param name="UpdateUsedPages">Which, if any, of the physical and virtual used pages lists to update.</param>
         public static void Map(void* pAddr, uint vAddr, uint size, VirtMemImpl.PageFlags flags, UpdateUsedPagesFlags UpdateUsedPages = UpdateUsedPagesFlags.Both)
         {
             Map((uint)pAddr, vAddr, size, flags, UpdateUsedPages);
@@ -155,6 +161,8 @@ namespace Kernel.Hardware
         /// <param name="pAddr">The physical address to start mapping at (must be 4KiB aligned).</param>
         /// <param name="vAddr">The virtual address to start mapping at (must be 4KiB aligned).</param>
         /// <param name="size">The amount of memory (in bytes) to map (must be a multiple of 4KiB)</param>
+        /// <param name="flags">The flags to apply to the allocated pages.</param>
+        /// <param name="UpdateUsedPages">Which, if any, of the physical and virtual used pages lists to update.</param>
         public static void Map(uint pAddr, uint vAddr, uint size, VirtMemImpl.PageFlags flags, UpdateUsedPagesFlags UpdateUsedPages = UpdateUsedPagesFlags.Both)
         {
             flags |= VirtMemImpl.PageFlags.Present | VirtMemImpl.PageFlags.Writeable;
@@ -167,10 +175,38 @@ namespace Kernel.Hardware
             }
         }
 
+        /// <summary>
+        /// Unmaps the specified page of virtual memory.
+        /// </summary>
+        /// <remarks>
+        /// <para>
+        /// Unmaps means it sets the address to 0 and marks the page as not present.
+        /// </para>
+        /// <para>
+        /// It is common to call this with just UpdateUsedPages set to Virtual, since then the virtual page becomes available for use
+        /// but the physical page remains reserved (though unmapped).
+        /// </para>
+        /// </remarks>
+        /// <param name="vAddr">The virtual address of the page to unmap.</param>
+        /// <param name="UpdateUsedPages">Which, if any, of the physical and virtual used pages lists to update.</param>
         public static void Unmap(void* vAddr, UpdateUsedPagesFlags UpdateUsedPages = UpdateUsedPagesFlags.Both)
         {
             Unmap((uint)vAddr, UpdateUsedPages);
         }
+        /// <summary>
+        /// Unmaps the specified page of virtual memory.
+        /// </summary>
+        /// <remarks>
+        /// <para>
+        /// Unmaps means it sets the address to 0 and marks the page as not present.
+        /// </para>
+        /// <para>
+        /// It is common to call this with just UpdateUsedPages set to Virtual, since then the virtual page becomes available for use
+        /// but the physical page remains reserved (though unmapped).
+        /// </para>
+        /// </remarks>
+        /// <param name="vAddr">The virtual address of the page to unmap.</param>
+        /// <param name="UpdateUsedPages">Which, if any, of the physical and virtual used pages lists to update.</param>
         public static void Unmap(uint vAddr, UpdateUsedPagesFlags UpdateUsedPages = UpdateUsedPagesFlags.Both)
         {
             impl.Unmap(vAddr, UpdateUsedPages);

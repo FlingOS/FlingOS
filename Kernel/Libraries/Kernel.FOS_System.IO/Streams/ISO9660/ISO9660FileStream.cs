@@ -89,7 +89,6 @@ namespace Kernel.FOS_System.IO.Streams.ISO9660
         /// Initializes a new ISO9660 file stream for the specified file.
         /// </summary>
         /// <param name="aFile">The file to create a stream to.</param>
-        /// <param name="ignoreFileSize">Whether to ignore the file size or not. True for directories.</param>
         public ISO9660FileStream(ISO9660File aFile)
             : base(aFile)
         {

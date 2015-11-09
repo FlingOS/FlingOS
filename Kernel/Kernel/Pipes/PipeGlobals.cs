@@ -32,17 +32,38 @@ using System.Threading.Tasks;
 
 namespace Kernel.Pipes
 {
+    /// <summary>
+    /// Global, constant values used in the pipes subsystem.
+    /// </summary>
     public static class PipeConstants
     {
+        /// <summary>
+        /// Value indicating an outpoint accepts an unlimited number of connections.
+        /// </summary>
         public const int UnlimitedConnections = -1;
     }
+    /// <summary>
+    /// The available pipe classes.
+    /// </summary>
     public enum PipeClasses : uint
     {
+        /// <summary>
+        /// Standard pipe used for sending and receiving string data.
+        /// </summary>
         Standard
     }
+    /// <summary>
+    /// The available pipe subclasses.
+    /// </summary>
     public enum PipeSubclasses : uint
     {
+        /// <summary>
+        /// Standard out pipe for sending output data out of a process (e.g. console output to the Window Manager).
+        /// </summary>
         Standard_Out,
+        /// <summary>
+        /// Standard in pipe for receiving input data into a process (e.g. key chars from the Window Manager).
+        /// </summary>
         Standard_In
     }
 }

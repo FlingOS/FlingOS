@@ -32,8 +32,15 @@ using System.Threading.Tasks;
 
 namespace Kernel.Pipes.Exceptions
 {
+    /// <summary>
+    /// Read/Write Failed Exception. Used when a pipe RW method receives a Fail system call result.
+    /// </summary>
     public class RWFailedException : FOS_System.Exception
     {
+        /// <summary>
+        /// Creates a new RW Failed Exception with the specified extra message.
+        /// </summary>
+        /// <param name="extraMessage">The message to append to "Pipe Read/Write Failed : ".</param>
         public RWFailedException(FOS_System.String extraMessage)
             : base("Pipe Read/Write Failed : " + extraMessage)
         {

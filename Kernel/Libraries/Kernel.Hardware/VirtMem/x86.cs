@@ -23,7 +23,9 @@
 //
 // ------------------------------------------------------------------------------ //
 #endregion
-    
+
+#if x86
+   
 #define PAGING_TRACE
 #undef PAGING_TRACE
 
@@ -37,21 +39,62 @@ namespace Kernel.Hardware.VirtMem
     /// </summary>
     public unsafe class x86 : VirtMemImpl
     {
+        /// <summary>
+        /// Initialises virtual memory for the x86.
+        /// </summary>
         static x86()
         {
             VirtMemManager.Init(new x86());
         }
 
+        /// <summary>
+        /// x86-specific Page Table Entry (bit) flags
+        /// </summary>
         [Flags]
         public enum PTEFlags : uint
         {
+            /// <summary>
+            /// No flags.
+            /// </summary>
             None = 0x0,
+            /// <summary>
+            /// Mark the page as present
+            /// </summary>
             Present = 0x1,
+            /// <summary>
+            /// Mark the page as writeable
+            /// </summary>
             Writeable = 0x2,
+            /// <summary>
+            /// Mark the page as user-mode accessible
+            /// </summary>
             UserAllowed = 0x4,
-            PagelevelWriteThrough = 0x8,
+            /// <summary>
+            /// Switches caching from write-back to write-through caching mode.
+            /// </summary>
+            PageLevelWriteThrough = 0x8,
+            /// <summary>
+            /// Disables page level caching.
+            /// </summary>
             PageLevelCacheDisable = 0x10,
-            PAT = 0x80,
+            /// <summary>
+            /// Specifies page table entries refer to 4MiB instead of 4KiB pages.
+            /// </summary>
+            /// <remarks>
+            /// Attribute only set in page directory entries. 0 for page table entries.
+            /// </remarks>
+            Size_FourMiBPages = 0x80,
+            /// <summary>
+            /// Whether the page table entry is global or not. Prevents TLB flush for the associated page when CR3 is changed.
+            /// </summary>
+            /// <remarks>
+            /// <para>
+            /// Requires Global Pages enabled bit in CR4 to be set. 
+            /// </para>
+            /// <para>
+            /// Ignored for page directory entries.
+            /// </para>
+            /// </remarks>
             Global = 0x100
         }
 
@@ -141,6 +184,16 @@ namespace Kernel.Hardware.VirtMem
             BasicConsole.DelayOutput(5);
         }
 
+        /// <summary>
+        /// Finds the specified number of contiguous, free, physical pages.
+        /// </summary>
+        /// <remarks>
+        /// While in most applications the pages needn't be contiguous, some areas require it (e.g. physical pages for USB transactions). 
+        /// A future optimisation would be to create a separate function which enforces contiguous pages and makes this one non-contiguous 
+        /// by default.
+        /// </remarks>
+        /// <param name="num">The number of physical pages to find.</param>
+        /// <returns>The address of the first page.</returns>
         [Drivers.Compiler.Attributes.NoDebug]
         public override uint FindFreePhysPageAddrs(int num)
         {
@@ -155,6 +208,16 @@ namespace Kernel.Hardware.VirtMem
             
             return (uint)(result * 4096);
         }
+        /// <summary>
+        /// Finds the specified number of contiguous, free, virtual pages.
+        /// </summary>
+        /// <remarks>
+        /// Unlike physical pages, virtual pages requested in blocks do normally need to be contiguous (since the contiguous to non-contiguous 
+        /// mapping is part of the point of virtual memory). As a result, it would not be worth optimising calls to this function as most of the
+        /// time they will need contiguous pages.
+        /// </remarks>
+        /// <param name="num">The number of virtual pages to find.</param>
+        /// <returns>The address of the first page.</returns>
         [Drivers.Compiler.Attributes.NoDebug]
         public override uint FindFreeVirtPageAddrs(int num)
         {
@@ -177,6 +240,8 @@ namespace Kernel.Hardware.VirtMem
         /// </summary>
         /// <param name="pAddr">The physical address to map to.</param>
         /// <param name="vAddr">The virtual address to map.</param>
+        /// <param name="flags">The flags to apply to the allocated pages.</param>
+        /// <param name="UpdateUsedPages">Which, if any, of the physical and virtual used pages lists to update.</param>
         [Drivers.Compiler.Attributes.NoDebug]
         public override void Map(uint pAddr, uint vAddr, PageFlags flags, UpdateUsedPagesFlags UpdateUsedPages = UpdateUsedPagesFlags.Both)
         {
@@ -195,6 +260,13 @@ namespace Kernel.Hardware.VirtMem
             }
             Map(pAddr, vAddr, pteFlags, UpdateUsedPages);
         }
+        /// <summary>
+        /// Maps the specified virtual address to the specified physical address.
+        /// </summary>
+        /// <param name="pAddr">The physical address to map to.</param>
+        /// <param name="vAddr">The virtual address to map.</param>
+        /// <param name="flags">The flags to apply to the allocated pages.</param>
+        /// <param name="UpdateUsedPages">Which, if any, of the physical and virtual used pages lists to update.</param>
         [Drivers.Compiler.Attributes.NoDebug]
         private void Map(uint pAddr, uint vAddr, PTEFlags flags, UpdateUsedPagesFlags UpdateUsedPages = UpdateUsedPagesFlags.Both)
         {
@@ -238,6 +310,20 @@ namespace Kernel.Hardware.VirtMem
             //Invalidate the page table entry so that mapping isn't CPU cached.
             InvalidatePTE(vAddr);
         }
+        /// <summary>
+        /// Unmaps the specified page of virtual memory.
+        /// </summary>
+        /// <remarks>
+        /// <para>
+        /// Unmaps means it sets the address to 0 and marks the page as not present.
+        /// </para>
+        /// <para>
+        /// It is common to call this with just UpdateUsedPages set to Virtual, since then the virtual page becomes available for use
+        /// but the physical page remains reserved (though unmapped).
+        /// </para>
+        /// </remarks>
+        /// <param name="vAddr">The virtual address of the page to unmap.</param>
+        /// <param name="UpdateUsedPages">Which, if any, of the physical and virtual used pages lists to update.</param>
         [Drivers.Compiler.Attributes.NoDebug]
         public override void Unmap(uint vAddr, UpdateUsedPagesFlags UpdateUsedPages = UpdateUsedPagesFlags.Both)
         {
@@ -513,3 +599,5 @@ namespace Kernel.Hardware.VirtMem
         }
     }
 }
+
+#endif

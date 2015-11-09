@@ -39,18 +39,59 @@ using NoGC = Drivers.Compiler.Attributes.NoGCAttribute;
 
 namespace Kernel.Debug
 {
+    /// <summary>
+    /// The debugger implementation for kernel level debugging.
+    /// </summary>
     public static unsafe class Debugger
     {
+        /// <summary>
+        /// Set to true to terminate the debugger.
+        /// </summary>
         public static bool Terminating = false;
-        private static bool Enabled = false;
 
+#pragma warning disable 0414
+        /// <summary>
+        /// Whether the debugger is currently enabled or not.
+        /// </summary>
+        /// <remarks>
+        /// MSBuild complains that this variable is unused (because in the C# code it is only ever assigned to).
+        /// However, in reality it is used - in the assembly code for the Int1 and Int3 interrupt routines!
+        /// </remarks>
+        private static bool Enabled = false;
+#pragma warning restore 0414
+
+        /// <summary>
+        /// The serial port used for sending and receiving synchronous messages to/from the host.
+        /// </summary>
         private static Serial MsgPort;
+        /// <summary>
+        /// The serial port used for sending asynchronous notifications to the host.
+        /// </summary>
+        /// <remarks>
+        /// Send 0xFE to indicate a thread has been suspended that wasn't previously.
+        /// </remarks>
         private static Serial NotifPort;
 
+        /// <summary>
+        /// The main thread of the debugger.
+        /// </summary>
+        /// <remarks>
+        /// Set by the kernel task when the debugger is started. Used to prevent the host from suspending the debugger thread (which would result
+        /// in total debugger lock-up and potentially irrecoverable system freeze!)
+        /// </remarks>
         public static Thread MainThread;
 
+        /// <summary>
+        /// List of threads (specified as ProcessId:ThreadId) to suspend if they hit a breakpoint.
+        /// </summary>
         private static UInt64List ThreadsToSuspend = new UInt64List();
 
+        /// <summary>
+        /// Main C# handler function for interrupt 1s (single steps).
+        /// </summary>
+        /// <remarks>
+        /// Called by the ASM handler.
+        /// </remarks>
         [NoDebug]
         [NoGC]
         public static void Int1()
@@ -60,12 +101,24 @@ namespace Kernel.Debug
 
             PauseCurrentThread();
         }
+        /// <summary>
+        /// Main C# handler function for interrupt 3s (breakpoints).
+        /// </summary>
+        /// <remarks>
+        /// Called by the ASM handler.
+        /// </remarks>
         [NoDebug]
         [NoGC]
         public static void Int3()
         {
             PauseCurrentThread();
         }
+        /// <summary>
+        /// Handles processing a debug interrupt including suspending the current thread if it is supposed/allowed to be.
+        /// </summary>
+        /// <remarks>
+        /// This is a critical interrupt handler, so usual restrictions apply.
+        /// </remarks>
         [NoDebug]
         [NoGC]
         private static void PauseCurrentThread()
@@ -146,17 +199,10 @@ namespace Kernel.Debug
                 Hardware.Interrupts.Interrupts.InsideCriticalHandler = false;
             }
         }
-        [NoDebug]
-        [NoGC]
-        private static void PrintCurrentThread()
-        {
-            MsgPort.Write(" ");
-            MsgPort.Write(ProcessManager.CurrentThread.Name);
-            MsgPort.Write(" thread of ");
-            MsgPort.Write(ProcessManager.CurrentProcess.Name);
-            MsgPort.Write("\n");
-        }
         
+        /// <summary>
+        /// Main method for the debugger.
+        /// </summary>
         [NoDebug]
         [NoGC]
         public static void Main()
@@ -680,7 +726,6 @@ namespace Kernel.Debug
 
                 MsgPort.Write("END OF COMMAND\n");
             }
-        }
-        
+        }        
     }
 }

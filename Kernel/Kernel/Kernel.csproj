@@ -101,11 +101,9 @@
     <Compile Include="CommandHelp.cs" />
     <Compile Include="Console.cs" />
     <Compile Include="Consoles\AdvancedConsole.cs" />
-    <Compile Include="Debug\BasicDebug.cs" />
     <Compile Include="Debug\Debugger.cs" />
     <Compile Include="Pipes\BasicInpoint.cs" />
     <Compile Include="Pipes\BasicOutpoint.cs" />
-    <Compile Include="Pipes\BasicServerHelpers.cs" />
     <Compile Include="Pipes\Exceptions\RWFailedException.cs" />
     <Compile Include="Pipes\Exceptions\RWUnhandledException.cs" />
     <Compile Include="Pipes\Pipe.cs" />
@@ -162,36 +160,6 @@
     <Reference Include="System" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="ASM\Debug\Break.x86_32.asm">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="ASM\Debug\Commands.x86_32.asm">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="ASM\Debug\EnableDebug.x86_32.asm">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="ASM\Debug\Execute.x86_32.asm">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="ASM\Debug\InitSerial.x86_32.asm">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="ASM\Debug\InterruptHandler.x86_32.asm">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="ASM\Debug\ReceiveCommands.x86_32.asm">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="ASM\Debug\SendCommands.x86_32.asm">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="ASM\Debug\SerialRead.x86_32.asm">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="ASM\Debug\SerialWrite.x86_32.asm">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
     <Content Include="ASM\Kernel.x86_32.asm">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>

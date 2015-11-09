@@ -169,12 +169,12 @@ namespace Kernel.Tasks
 
                 int numOutpoints;
                 SystemCallResults SysCallResult;
-                Pipes.BasicServerHelpers.GetNumPipeOutpoints(out numOutpoints, out SysCallResult, Pipes.PipeClasses.Standard, Pipes.PipeSubclasses.Standard_Out);
+                Pipes.BasicOutpoint.GetNumPipeOutpoints(out numOutpoints, out SysCallResult, Pipes.PipeClasses.Standard, Pipes.PipeSubclasses.Standard_Out);
 
                 if (SysCallResult == SystemCallResults.OK && numOutpoints > 0)
                 {
                     Pipes.PipeOutpointDescriptor[] OutpointDescriptors;
-                    Pipes.BasicServerHelpers.GetOutpointDescriptors(numOutpoints, ref SysCallResult, out OutpointDescriptors, Pipes.PipeClasses.Standard, Pipes.PipeSubclasses.Standard_Out);
+                    Pipes.BasicOutpoint.GetOutpointDescriptors(numOutpoints, out SysCallResult, out OutpointDescriptors, Pipes.PipeClasses.Standard, Pipes.PipeSubclasses.Standard_Out);
 
                     if (SysCallResult == SystemCallResults.OK)
                     {

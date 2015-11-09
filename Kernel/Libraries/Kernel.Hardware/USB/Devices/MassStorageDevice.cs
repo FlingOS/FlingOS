@@ -1346,7 +1346,6 @@ namespace Kernel.Hardware.USB.Devices
         /// <summary>
         /// Performs the reset-recovery operation on the specified interface.
         /// </summary>
-        /// <param name="Interface">The interface to reset.</param>
         public void ResetRecoveryMSD()
         {
             // Start with correct endpoint toggles and reset interface

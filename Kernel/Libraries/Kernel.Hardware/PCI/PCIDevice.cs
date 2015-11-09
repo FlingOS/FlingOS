@@ -562,7 +562,6 @@ namespace Kernel.Hardware.PCI
                             return "VGA-Compatible unclassified device";
                         }
                         return "Non-VGA unclassified device";
-                        break;
                     case 0x01:
                         #region Mass Storage Controllers
                         if (device.Subclass == 0x00)
