@@ -66,7 +66,9 @@ namespace Drivers.Debugger.App
         string CurrentMethodLabel;
         string CurrentMethodASM;
 
-        List<KeyValuePair<string, List<string>>> FilteredDebugOps = new List<KeyValuePair<string,List<string>>>();
+        string FullLabelToStepTo;
+
+        List<KeyValuePair<string, List<string>>> FilteredLabels = new List<KeyValuePair<string,List<string>>>();
         List<KeyValuePair<string, List<string>>> Breakpoints = new List<KeyValuePair<string, List<string>>>();
         KeyValuePair<string, string> SelectedDebugPointFullLabel;
         KeyValuePair<string, string> SelectedBreakpointFullLabel;
@@ -102,7 +104,7 @@ namespace Drivers.Debugger.App
             TheDebugger = null;
             Processes = null;
             Breakpoints.Clear();
-            FilteredDebugOps.Clear();
+            FilteredLabels.Clear();
             UpdateProcessTree();
             UpdateBreakpoints();
             PerformingAction = false;
@@ -138,6 +140,24 @@ namespace Drivers.Debugger.App
             PerformingAction = true;
             Task.Run((Action)SingleStepThread);
         }
+        private void StepThreadToLabelButton_Click(object sender, EventArgs e)
+        {
+            PerformingAction = true;
+
+            if (LabelsTreeView.SelectedNode != null)
+            {
+                if (LabelsTreeView.SelectedNode.Parent != null)
+                {
+                    FullLabelToStepTo = LabelsTreeView.SelectedNode.Parent.Text + LabelsTreeView.SelectedNode.Text;
+                }
+                else
+                {
+                    FullLabelToStepTo = LabelsTreeView.SelectedNode.Text;
+                }
+            }
+
+            Task.Run((Action)StepThreadToLabel);
+        }
         private void ProcessesTreeView_AfterSelect(object sender, TreeViewEventArgs e)
         {
             PerformingAction = true;
@@ -160,15 +180,16 @@ namespace Drivers.Debugger.App
 
             UpdateEnableStates();
         }
-        private void DebugPointsTreeView_AfterSelect(object sender, TreeViewEventArgs e)
+        private void LabelsTreeView_AfterSelect(object sender, TreeViewEventArgs e)
         {
-            if (DebugPointsTreeView.SelectedNode != null &&
-                DebugPointsTreeView.SelectedNode.Parent != null)
+            if (LabelsTreeView.SelectedNode != null &&
+                LabelsTreeView.SelectedNode.Parent != null)
             {
-                SelectedDebugPointFullLabel = new KeyValuePair<string,string>(DebugPointsTreeView.SelectedNode.Parent.Text, DebugPointsTreeView.SelectedNode.Text);
+                if (TheDebugger.IsDebugLabel(LabelsTreeView.SelectedNode.Parent.Text, LabelsTreeView.SelectedNode.Text))
+                {
+                    SelectedDebugPointFullLabel = new KeyValuePair<string, string>(LabelsTreeView.SelectedNode.Parent.Text, LabelsTreeView.SelectedNode.Text);
+                }
             }
-
-            LoadASMPreview();
 
             UpdateEnableStates();
         }
@@ -229,9 +250,9 @@ namespace Drivers.Debugger.App
         {
             if (ViewBPASMCheckBox.Checked)
             {
-                if (DebugPointsTreeView.SelectedNode != null)
+                if (LabelsTreeView.SelectedNode != null)
                 {
-                    TreeNode TheNode = DebugPointsTreeView.SelectedNode;
+                    TreeNode TheNode = LabelsTreeView.SelectedNode;
                     if (TheNode.Parent != null)
                     {
                         TheNode = TheNode.Parent;
@@ -303,6 +324,12 @@ namespace Drivers.Debugger.App
         private void SingleStepThread()
         {
             TheDebugger.SingleStepThread(GetSelectedProcessId(), GetSelectedThreadId());
+
+            PerformingAction = false;
+        }
+        private void StepThreadToLabel()
+        {
+            TheDebugger.SingleStepThreadToAddress(GetSelectedProcessId(), GetSelectedThreadId(), TheDebugger.GetLabelAddress(FullLabelToStepTo));
 
             PerformingAction = false;
         }
@@ -600,7 +627,7 @@ namespace Drivers.Debugger.App
         private void RefreshBreakpoints()
         {
             string Filter = FilterBox.Text;
-            FilteredDebugOps = TheDebugger.GetDebugOps(Filter);
+            FilteredLabels = TheDebugger.GetLabels(Filter);
 
             UpdateBreakpoints();
             UpdateDebugPoints();
@@ -675,8 +702,11 @@ namespace Drivers.Debugger.App
                         ResumeButton.Enabled = NodeSelected && NodeSuspended;
                         StepButton.Enabled = NodeSelected && NodeSuspended;
                         SingleStepButton.Enabled = NodeSelected && NodeSuspended;
+                        StepThreadToLabelButton.Enabled = NodeSelected && NodeSuspended && LabelsTreeView.SelectedNode != null;
 
-                        NodeSelected = DebugPointsTreeView.SelectedNode != null && DebugPointsTreeView.SelectedNode.Parent != null;
+                        NodeSelected = LabelsTreeView.SelectedNode != null && 
+                            LabelsTreeView.SelectedNode.Parent != null &&
+                            TheDebugger.IsDebugLabel(LabelsTreeView.SelectedNode.Parent.Text, LabelsTreeView.SelectedNode.Text);
                         SetBreakpointButton.Enabled = NodeSelected;
 
                         NodeSelected = BreakpointsTreeView.SelectedNode != null && BreakpointsTreeView.SelectedNode.Parent != null;
@@ -827,12 +857,7 @@ namespace Drivers.Debugger.App
                     if (NearestLabel.Item2.Contains("."))
                     {
                         string LocalLabel = "." + NearestLabel.Item2.Split('.')[1];
-                        string[] LocalLabelParts = LocalLabel.Split('_');
-                        if (LocalLabelParts.Length == 3)
-                        {
-                            LocalLabel = LocalLabelParts[0] + "_" + LocalLabelParts[1];
-                        }
-
+                        
                         string OffsetStr = "??";
 
                         try
@@ -927,34 +952,34 @@ namespace Drivers.Debugger.App
             {
                 string SelectedLocalLabel = null;
                 string SelectedMethodLabel = null;
-                if (DebugPointsTreeView.SelectedNode != null)
+                if (LabelsTreeView.SelectedNode != null)
                 {
-                    if (DebugPointsTreeView.SelectedNode.Parent != null)
+                    if (LabelsTreeView.SelectedNode.Parent != null)
                     {
-                        SelectedLocalLabel = DebugPointsTreeView.SelectedNode.Text;
-                        SelectedMethodLabel = DebugPointsTreeView.SelectedNode.Parent.Text;
+                        SelectedLocalLabel = LabelsTreeView.SelectedNode.Text;
+                        SelectedMethodLabel = LabelsTreeView.SelectedNode.Parent.Text;
                     }
                     else
                     {
-                        SelectedMethodLabel = DebugPointsTreeView.SelectedNode.Text;
+                        SelectedMethodLabel = LabelsTreeView.SelectedNode.Text;
                     }
                 }
 
-                DebugPointsTreeView.Nodes.Clear();
+                LabelsTreeView.Nodes.Clear();
 
                 TreeNode NodeToSelect = null;
-                foreach (KeyValuePair<string, List<string>> DebuggableMethod in FilteredDebugOps)
+                foreach (KeyValuePair<string, List<string>> AMethod in FilteredLabels)
                 {
-                    TreeNode MethodNode = DebugPointsTreeView.Nodes.Add(DebuggableMethod.Key, DebuggableMethod.Key);
-                    if (SelectedMethodLabel == DebuggableMethod.Key && SelectedLocalLabel == null)
+                    TreeNode MethodNode = LabelsTreeView.Nodes.Add(AMethod.Key, AMethod.Key);
+                    if (SelectedMethodLabel == AMethod.Key && SelectedLocalLabel == null)
                     {
                         NodeToSelect = MethodNode;
                     }
 
-                    foreach (string LocalLabel in DebuggableMethod.Value)
+                    foreach (string LocalLabel in AMethod.Value)
                     {
                         TreeNode LocalNode = MethodNode.Nodes.Add(LocalLabel, LocalLabel);
-                        if (SelectedMethodLabel == DebuggableMethod.Key && SelectedLocalLabel == LocalLabel)
+                        if (SelectedMethodLabel == AMethod.Key && SelectedLocalLabel == LocalLabel)
                         {
                             NodeToSelect = LocalNode;
                         }
@@ -963,7 +988,7 @@ namespace Drivers.Debugger.App
 
                 if (NodeToSelect != null)
                 {
-                    DebugPointsTreeView.SelectedNode = NodeToSelect;
+                    LabelsTreeView.SelectedNode = NodeToSelect;
                 }
             }
         }

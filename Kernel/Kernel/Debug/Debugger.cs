@@ -85,6 +85,10 @@ namespace Kernel.Debug
         /// List of threads (specified as ProcessId:ThreadId) to suspend if they hit a breakpoint.
         /// </summary>
         private static UInt64List ThreadsToSuspend = new UInt64List();
+        /// <summary>
+        /// Dictionary of threads (key specified as ProcessId:ThreadId) and addresses to suspend them at.
+        /// </summary>
+        private static UInt64Dictionary ThreadsToSuspendAtAddresses = new UInt64Dictionary();
 
         /// <summary>
         /// Main C# handler function for interrupt 1s (single steps).
@@ -160,8 +164,9 @@ namespace Kernel.Debug
 #endif
 
 #if DEBUG
-                    bool ShouldSuspend = ThreadsToSuspend.IndexOf(ProcessThreadId) > -1 ||
-                                         ExceptionMethods.CurrentException != null;
+                    bool SuspendAtAddessesContains = ThreadsToSuspendAtAddresses.Contains(ProcessThreadId);
+                    bool ShouldSuspend = (!SuspendAtAddessesContains && ThreadsToSuspend.IndexOf(ProcessThreadId) > -1) ||
+                                         (SuspendAtAddessesContains && ThreadsToSuspendAtAddresses[ProcessThreadId] == ProcessManager.CurrentThread.EIPFromInterruptStack);
 #else
                     bool ShouldSuspend = ThreadsToSuspend.IndexOf(ProcessThreadId) > -1;
 #endif
@@ -172,6 +177,11 @@ namespace Kernel.Debug
                         DebugPort.Write(" > Pausing");
                         PrintCurrentThread();
 #endif
+
+                        if (SuspendAtAddessesContains)
+                        {
+                            ThreadsToSuspendAtAddresses.Remove(ProcessThreadId);
+                        }
 
                         ProcessManager.CurrentThread.Debug_Suspend = true;
                         NotifPort.Write(0xFE);
@@ -186,6 +196,10 @@ namespace Kernel.Debug
                         DebugPort.Write(" > New");
                         PrintCurrentThread();
 #endif
+                    }
+                    else if (SuspendAtAddessesContains)
+                    {
+                        ProcessManager.CurrentThread.EFLAGSFromInterruptStack |= 0x0100u;
                     }
                     
 #if DEBUGGER_INTERUPT_TRACE
@@ -250,6 +264,7 @@ namespace Kernel.Debug
                         MsgPort.Write(" - resume (processId) (threadId | -1 for all threads)\n");
                         MsgPort.Write(" - step (processId) (threadId | -1 for all threads)\n");
                         MsgPort.Write(" - ss (processId) (threadId | -1 for all threads)\n");
+                        MsgPort.Write(" - sta (processId) (threadId | -1 for all threads) (address)\n");
                         MsgPort.Write(" - bps (address:hex)\n");
                         MsgPort.Write(" - bpc (address:hex)\n");
                         MsgPort.Write(" - regs (processId) (threadId)\n");
@@ -536,6 +551,85 @@ namespace Kernel.Debug
                                             MsgPort.Write(" > Single stepping ");
                                             MsgPort.Write(TheThread.Name);
                                             MsgPort.Write(" thread\n");
+                                        }
+                                        else
+                                        {
+                                            MsgPort.Write("Thread must be suspended first.\n");
+                                        }
+                                    }
+                                    else
+                                    {
+                                        MsgPort.Write("Thread not found.\n");
+                                    }
+                                }
+                            }
+                            else
+                            {
+                                MsgPort.Write("Process not found.\n");
+                            }
+                        }
+                        else
+                        {
+                            MsgPort.Write("Incorrect arguments, see help.\n");
+                        }
+                    }
+                    else if (cmd == "sta")
+                    {
+                        if (lineParts.Count == 4)
+                        {
+                            uint ProcessId = FOS_System.Int32.Parse_DecimalUnsigned((FOS_System.String)lineParts[1], 0);
+                            int ThreadId = FOS_System.Int32.Parse_DecimalSigned((FOS_System.String)lineParts[2]);
+                            uint Address = FOS_System.Int32.Parse_HexadecimalUnsigned((FOS_System.String)lineParts[3], 0);
+
+                            Process TheProcess = ProcessManager.GetProcessById(ProcessId);
+
+                            if (TheProcess != null)
+                            {
+                                if (ThreadId == -1)
+                                {
+                                    for (int i = 0; i < TheProcess.Threads.Count; i++)
+                                    {
+                                        Thread AThread = ((Thread)TheProcess.Threads[i]);
+
+                                        if (AThread.Debug_Suspend)
+                                        {
+                                            // Set trap flag (int1)
+                                            UInt64 ProcessThreadId = (((UInt64)ProcessId) << 32) | (uint)ThreadId;
+                                            ThreadsToSuspendAtAddresses.Add(ProcessThreadId, Address);
+                                            AThread.EFLAGSFromInterruptStack |= 0x0100;
+                                            AThread.Debug_Suspend = false;
+
+                                            MsgPort.Write(" > Single stepping ");
+                                            MsgPort.Write(AThread.Name);
+                                            MsgPort.Write(" thread to address ");
+                                            MsgPort.Write(Address);
+                                            MsgPort.Write("\n");
+                                        }
+                                        else
+                                        {
+                                            MsgPort.Write("Thread must be suspended first.\n");
+                                        }
+                                    }
+                                }
+                                else
+                                {
+                                    Thread TheThread = ProcessManager.GetThreadById((uint)ThreadId, TheProcess);
+
+                                    if (TheThread != null)
+                                    {
+                                        if (TheThread.Debug_Suspend)
+                                        {
+                                            // Set trap flag (int1)
+                                            UInt64 ProcessThreadId = (((UInt64)ProcessId) << 32) | (uint)ThreadId;
+                                            ThreadsToSuspendAtAddresses.Add(ProcessThreadId, Address);
+                                            TheThread.EFLAGSFromInterruptStack |= 0x0100;
+                                            TheThread.Debug_Suspend = false;
+
+                                            MsgPort.Write(" > Single stepping ");
+                                            MsgPort.Write(TheThread.Name);
+                                            MsgPort.Write(" thread to address ");
+                                            MsgPort.Write(Address);
+                                            MsgPort.Write("\n");
                                         }
                                         else
                                         {

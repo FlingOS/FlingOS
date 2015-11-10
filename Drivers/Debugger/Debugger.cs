@@ -298,6 +298,20 @@ namespace Drivers.Debugger
                 return false;
             }
         }
+        public bool SingleStepThreadToAddress(uint ProcessId, int ThreadId, uint Address)
+        {
+            try
+            {
+                //BeginWaitForNotification();
+                string[] Lines = ExecuteCommand("sta " + ProcessId.ToString() + " " + ThreadId.ToString() + " " + Address.ToString("X8"));
+                //EndWaitForNotification();
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+        }
         public bool ClearBreakpoint(uint Address)
         {
             try
@@ -368,6 +382,24 @@ namespace Drivers.Debugger
         {
             return DebugData.DebugOps.Where(x => x.Key.Contains(Filter)).ToList();
         }
+        public List<KeyValuePair<string, List<string>>> GetLabels(string Filter)
+        {
+            List<KeyValuePair<string, List<string>>> Result = new List<KeyValuePair<string, List<string>>>();
+            List<string> FilteredMethodLabels = DebugData.Methods.Where(x => x.Key.Contains(Filter)).Select(x => x.Key).ToList();
+            foreach (string AMethodLabel in FilteredMethodLabels)
+            {
+                List<string> AllLabels = DebugData.LabelMappings
+                    .Where(delegate(KeyValuePair<string, uint> x)
+                    {
+                        string[] parts = x.Key.Split(".".ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
+                        return parts.Length == 2 && parts[0] == AMethodLabel;
+                    })
+                    .Select(x => "." + x.Key.Split(".".ToCharArray())[1])
+                    .ToList();
+                Result.Add(new KeyValuePair<string, List<string>>(AMethodLabel, AllLabels));
+            }
+            return Result;
+        }
         public uint GetLabelAddress(string FullLabel)
         {
             if (DebugData.LabelMappings.ContainsKey(FullLabel))
@@ -392,6 +424,11 @@ namespace Drivers.Debugger
                 return DebugData.Types[TypeLabel];
             }
             return null;
+        }
+        public bool IsDebugLabel(string MethodLabel, string LocalLabel)
+        {
+            return DebugData.DebugOps.ContainsKey(MethodLabel) &&
+                DebugData.DebugOps[MethodLabel].Contains(LocalLabel);
         }
 
         public bool IsBreakpointAddress(uint Address)

@@ -28,7 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.Windows.Forms.TreeNode treeNode1 = new System.Windows.Forms.TreeNode("Press refresh to start");
+            System.Windows.Forms.TreeNode treeNode2 = new System.Windows.Forms.TreeNode("Press refresh to start");
             this.label1 = new System.Windows.Forms.Label();
             this.PipeNameBox = new System.Windows.Forms.TextBox();
             this.label2 = new System.Windows.Forms.Label();
@@ -38,6 +38,7 @@
             this.ConnectButton = new System.Windows.Forms.Button();
             this.ConnectingProgressBar = new System.Windows.Forms.ProgressBar();
             this.MainPanel = new System.Windows.Forms.Panel();
+            this.StepThreadToLabelButton = new System.Windows.Forms.Button();
             this.ViewBPASMCheckBox = new System.Windows.Forms.CheckBox();
             this.SaveToFileListButton = new System.Windows.Forms.Button();
             this.SetFromFileListButton = new System.Windows.Forms.Button();
@@ -48,7 +49,7 @@
             this.label9 = new System.Windows.Forms.Label();
             this.SetBreakpointButton = new System.Windows.Forms.Button();
             this.ClearBreakpointButton = new System.Windows.Forms.Button();
-            this.DebugPointsTreeView = new System.Windows.Forms.TreeView();
+            this.LabelsTreeView = new System.Windows.Forms.TreeView();
             this.label8 = new System.Windows.Forms.Label();
             this.label7 = new System.Windows.Forms.Label();
             this.BreakpointsTreeView = new System.Windows.Forms.TreeView();
@@ -61,6 +62,7 @@
             this.NearestLabelAddessBox = new System.Windows.Forms.TextBox();
             this.NearestLabelBox = new System.Windows.Forms.TextBox();
             this.label4 = new System.Windows.Forms.Label();
+            this.Thex86RegistersControl = new Drivers.Debugger.App.x86RegistersControl();
             this.SingleStepButton = new System.Windows.Forms.Button();
             this.StepButton = new System.Windows.Forms.Button();
             this.ResumeButton = new System.Windows.Forms.Button();
@@ -71,7 +73,6 @@
             this.DestroyButton = new System.Windows.Forms.Button();
             this.TheOpenFileDialog = new System.Windows.Forms.OpenFileDialog();
             this.TheSaveFileDialog = new System.Windows.Forms.SaveFileDialog();
-            this.Thex86RegistersControl = new Drivers.Debugger.App.x86RegistersControl();
             this.MainPanel.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -155,6 +156,7 @@
             this.MainPanel.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
+            this.MainPanel.Controls.Add(this.StepThreadToLabelButton);
             this.MainPanel.Controls.Add(this.ViewBPASMCheckBox);
             this.MainPanel.Controls.Add(this.SaveToFileListButton);
             this.MainPanel.Controls.Add(this.SetFromFileListButton);
@@ -165,7 +167,7 @@
             this.MainPanel.Controls.Add(this.label9);
             this.MainPanel.Controls.Add(this.SetBreakpointButton);
             this.MainPanel.Controls.Add(this.ClearBreakpointButton);
-            this.MainPanel.Controls.Add(this.DebugPointsTreeView);
+            this.MainPanel.Controls.Add(this.LabelsTreeView);
             this.MainPanel.Controls.Add(this.label8);
             this.MainPanel.Controls.Add(this.label7);
             this.MainPanel.Controls.Add(this.BreakpointsTreeView);
@@ -190,6 +192,16 @@
             this.MainPanel.Name = "MainPanel";
             this.MainPanel.Size = new System.Drawing.Size(1042, 832);
             this.MainPanel.TabIndex = 8;
+            // 
+            // StepThreadToLabelButton
+            // 
+            this.StepThreadToLabelButton.Location = new System.Drawing.Point(273, 164);
+            this.StepThreadToLabelButton.Name = "StepThreadToLabelButton";
+            this.StepThreadToLabelButton.Size = new System.Drawing.Size(75, 50);
+            this.StepThreadToLabelButton.TabIndex = 31;
+            this.StepThreadToLabelButton.Text = "Step to Label";
+            this.StepThreadToLabelButton.UseVisualStyleBackColor = true;
+            this.StepThreadToLabelButton.Click += new System.EventHandler(this.StepThreadToLabelButton_Click);
             // 
             // ViewBPASMCheckBox
             // 
@@ -297,16 +309,16 @@
             this.ClearBreakpointButton.UseVisualStyleBackColor = true;
             this.ClearBreakpointButton.Click += new System.EventHandler(this.ClearBreakpointButton_Click);
             // 
-            // DebugPointsTreeView
+            // LabelsTreeView
             // 
-            this.DebugPointsTreeView.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
+            this.LabelsTreeView.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.DebugPointsTreeView.HideSelection = false;
-            this.DebugPointsTreeView.Location = new System.Drawing.Point(492, 654);
-            this.DebugPointsTreeView.Name = "DebugPointsTreeView";
-            this.DebugPointsTreeView.Size = new System.Drawing.Size(547, 140);
-            this.DebugPointsTreeView.TabIndex = 19;
-            this.DebugPointsTreeView.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.DebugPointsTreeView_AfterSelect);
+            this.LabelsTreeView.HideSelection = false;
+            this.LabelsTreeView.Location = new System.Drawing.Point(492, 654);
+            this.LabelsTreeView.Name = "LabelsTreeView";
+            this.LabelsTreeView.Size = new System.Drawing.Size(547, 140);
+            this.LabelsTreeView.TabIndex = 19;
+            this.LabelsTreeView.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.LabelsTreeView_AfterSelect);
             // 
             // label8
             // 
@@ -314,9 +326,9 @@
             this.label8.AutoSize = true;
             this.label8.Location = new System.Drawing.Point(489, 638);
             this.label8.Name = "label8";
-            this.label8.Size = new System.Drawing.Size(73, 13);
+            this.label8.Size = new System.Drawing.Size(41, 13);
             this.label8.TabIndex = 18;
-            this.label8.Text = "Debug points:";
+            this.label8.Text = "Labels:";
             // 
             // label7
             // 
@@ -425,6 +437,21 @@
             this.label4.TabIndex = 7;
             this.label4.Text = "Nearest label :";
             // 
+            // Thex86RegistersControl
+            // 
+            this.Thex86RegistersControl.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.Thex86RegistersControl.EAX = ((uint)(0u));
+            this.Thex86RegistersControl.EBP = ((uint)(0u));
+            this.Thex86RegistersControl.EBX = ((uint)(0u));
+            this.Thex86RegistersControl.ECX = ((uint)(0u));
+            this.Thex86RegistersControl.EDX = ((uint)(0u));
+            this.Thex86RegistersControl.EIP = ((uint)(0u));
+            this.Thex86RegistersControl.ESP = ((uint)(0u));
+            this.Thex86RegistersControl.Location = new System.Drawing.Point(4, 310);
+            this.Thex86RegistersControl.Name = "Thex86RegistersControl";
+            this.Thex86RegistersControl.Size = new System.Drawing.Size(255, 136);
+            this.Thex86RegistersControl.TabIndex = 6;
+            // 
             // SingleStepButton
             // 
             this.SingleStepButton.Location = new System.Drawing.Point(273, 135);
@@ -482,10 +509,10 @@
             this.ProcessesTreeView.HideSelection = false;
             this.ProcessesTreeView.Location = new System.Drawing.Point(4, 3);
             this.ProcessesTreeView.Name = "ProcessesTreeView";
-            treeNode1.Name = "Node0";
-            treeNode1.Text = "Press refresh to start";
+            treeNode2.Name = "Node0";
+            treeNode2.Text = "Press refresh to start";
             this.ProcessesTreeView.Nodes.AddRange(new System.Windows.Forms.TreeNode[] {
-            treeNode1});
+            treeNode2});
             this.ProcessesTreeView.Size = new System.Drawing.Size(263, 301);
             this.ProcessesTreeView.TabIndex = 0;
             this.ProcessesTreeView.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.ProcessesTreeView_AfterSelect);
@@ -519,21 +546,6 @@
             // TheSaveFileDialog
             // 
             this.TheSaveFileDialog.Title = "Save breakpoints";
-            // 
-            // Thex86RegistersControl
-            // 
-            this.Thex86RegistersControl.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.Thex86RegistersControl.EAX = ((uint)(0u));
-            this.Thex86RegistersControl.EBP = ((uint)(0u));
-            this.Thex86RegistersControl.EBX = ((uint)(0u));
-            this.Thex86RegistersControl.ECX = ((uint)(0u));
-            this.Thex86RegistersControl.EDX = ((uint)(0u));
-            this.Thex86RegistersControl.EIP = ((uint)(0u));
-            this.Thex86RegistersControl.ESP = ((uint)(0u));
-            this.Thex86RegistersControl.Location = new System.Drawing.Point(4, 310);
-            this.Thex86RegistersControl.Name = "Thex86RegistersControl";
-            this.Thex86RegistersControl.Size = new System.Drawing.Size(255, 136);
-            this.Thex86RegistersControl.TabIndex = 6;
             // 
             // MainForm
             // 
@@ -592,7 +604,7 @@
         private System.Windows.Forms.Label label6;
         private System.Windows.Forms.Label label7;
         private System.Windows.Forms.TreeView BreakpointsTreeView;
-        private System.Windows.Forms.TreeView DebugPointsTreeView;
+        private System.Windows.Forms.TreeView LabelsTreeView;
         private System.Windows.Forms.Label label8;
         private System.Windows.Forms.Button SetBreakpointButton;
         private System.Windows.Forms.Button ClearBreakpointButton;
@@ -606,5 +618,6 @@
         private System.Windows.Forms.Button SaveToFileListButton;
         private System.Windows.Forms.SaveFileDialog TheSaveFileDialog;
         private System.Windows.Forms.CheckBox ViewBPASMCheckBox;
+        private System.Windows.Forms.Button StepThreadToLabelButton;
     }
 }
