@@ -327,6 +327,15 @@ namespace Kernel.Processes
 #endif
                     result = SystemCallResults.Deferred;
                     break;
+                case SystemCallNumbers.SendMessage:
+                    BasicConsole.WriteLine("Syscall: Send message");
+                    result = SysCall_SendMessage(callerProcesId, callerThreadId, param1, param2, param3) ? SystemCallResults.OK : SystemCallResults.Fail;
+                    break;
+                case SystemCallNumbers.ReceiveMessage:
+                    BasicConsole.WriteLine("Syscall: Receive message");
+                    //TODO: Validate that the caller process is the window manager task
+                    Tasks.KernelTask.ReceiveKey(param1);
+                    break;
 //#if SYSCALLS_TRACE
                 default:
                     BasicConsole.WriteLine("System call unrecognised/unhandled by Kernel Task.");
@@ -479,7 +488,31 @@ namespace Kernel.Processes
 #endif
             ProcessManager.GetProcessById(callerProcessId).SyscallsToHandle.Clear(syscallNum);
         }
-        
+
+        private static bool SysCall_SendMessage(uint callerProcessId, uint callerThreadId, uint targetProcessId, uint message1, uint message2)
+        {
+            bool Result = false;
+
+            Process CallerProcess = ProcessManager.GetProcessById(callerProcessId);
+            Process TargetProcess = ProcessManager.GetProcessById(targetProcessId);
+            
+            ProcessManager.SwitchProcess(targetProcessId, -1);
+
+            if (TargetProcess.SyscallsToHandle.IsSet((int)SystemCallNumbers.ReceiveMessage) && TargetProcess.SyscallHandler != null)
+            {
+                uint Return2 = 0;
+                uint Return3 = 0;
+                uint Return4 = 0;
+                TargetProcess.SyscallHandler((uint)SystemCallNumbers.ReceiveMessage, message1, message2, 0, ref Return2, ref Return3, ref Return4, callerProcessId, 0xFFFFFFFF);
+
+                Result = true;
+            }
+
+            ProcessManager.SwitchProcess(callerProcessId, (int)callerThreadId);
+
+            return Result;
+        }
+
         /*private static unsafe void SysCall_RequestPages(int numPages, uint callerProcessId, uint callerThreadId)
         {
             if (numPages > 0)
@@ -677,7 +710,9 @@ namespace Kernel.Processes
         /// <summary>
         /// Writes to the specified pipe. Blocking and non-blocking calls supported on the same pipe.
         /// </summary>
-        WritePipe
+        WritePipe,
+        SendMessage,
+        ReceiveMessage
     }
     /// <summary>
     /// Results of system calls.

@@ -32,28 +32,13 @@ using System.Threading.Tasks;
 
 namespace Kernel.Hardware.Keyboards
 {
-    /// <summary>
-    /// Represents a PS2 keyboard device.
-    /// </summary>
-    public class PS2 : Devices.Keyboard
+    public class VirtualKeyboard : Devices.Keyboard
     {
         /// <summary>
-        /// The keyboard data port.
-        /// </summary>
-        protected IO.IOPort DataPort = new IO.IOPort(0x60);
-        /// <summary>
-        /// The keyboard command port.
-        /// </summary>
-        protected IO.IOPort CommandPort = new IO.IOPort(0x64);
-        
-        /// <summary>
-        /// Enables the PS2 keyboard.
+        /// Enables the virtual keyboard.
         /// </summary>
         public override void Enable()
         {
-            //TODO: Looks like this comment is out of date?
-            //We wouldn't want to accidentally add the IRQ handler multiple times
-            //  because then any one scancode would be processed multiple times!
             if (!enabled)
             {
                 DeviceManager.AddDevice(this);
@@ -61,34 +46,18 @@ namespace Kernel.Hardware.Keyboards
             }
         }
         /// <summary>
-        /// Disables the PS2 keyboard.
+        /// Disables the virtual keyboard.
         /// </summary>
         public override void Disable()
         {
             if (enabled)
             {
                 DeviceManager.Devices.Remove(this);
-                //TODO: Looks like this comment is out of date?
-                //As per requirements, set temp sote store of id to 0 to prevent
-                //  accidental multiple removal.
                 enabled = false;
             }
         }
 
-        /// <summary>
-        /// The internal interrupt handler.
-        /// </summary>
-        public void InterruptHandler()
-        {
-            byte scancode = DataPort.Read_Byte();            
-            HandleScancode(scancode);
-        }
-        /// <summary>
-        /// Handles the specified scancode.
-        /// </summary>
-        /// <param name="scancode">The scancode to handle.</param>
-        /// <param name="released">Whether the key has been released or not.</param>
-        private void HandleScancode(uint scancode)
+        public void HandleScancode(uint scancode)
         {
             //Determine whether the key has been released or not
             bool released = (scancode & 0x80) == 0x80;
@@ -98,8 +67,9 @@ namespace Kernel.Hardware.Keyboards
                 //Clear the released bit so we get the correct key scancode
                 scancode = (byte)(scancode ^ 0x80);
             }
-            
+
             //And handle the (now corrected) scancode
+
             switch (scancode)
             {
                 //Left and right shift keys
@@ -140,48 +110,5 @@ namespace Kernel.Hardware.Keyboards
             }
         }
 
-        public void Reset()
-        {
-            // If the driver is enabled
-            if (enabled)
-            {
-                // Wait for the Input Buffer Full flag to clear
-                byte StatusRegValue = 0x02;
-                while ((StatusRegValue & 0x02) != 0)
-                {
-                    StatusRegValue = CommandPort.Read_Byte();
-                }
-
-                // Send the command | options 
-                //          (0xF0   | 0x0E    - pulse only line 0 - CPU reset line)
-                CommandPort.Write_Byte(0xFE);
-            }
-        }
-
-        /// <summary>
-        /// The (only) PS2 keyboard instance.
-        /// </summary>
-        public static PS2 ThePS2 = null;
-        /// <summary>
-        /// Initialises the (only) PS2 instance.
-        /// </summary>
-        public static void Init()
-        {
-            if (ThePS2 == null)
-            {
-                ThePS2 = new PS2();
-            }
-            ThePS2.Enable();
-        }
-        /// <summary>
-        /// Cleans up the (only) PS2 instance.
-        /// </summary>
-        public static void Clean()
-        {
-            if(ThePS2 != null)
-            {
-                ThePS2.Disable();
-            }
-        }
     }
 }

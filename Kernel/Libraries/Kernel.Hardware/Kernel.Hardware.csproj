@@ -109,6 +109,7 @@
     <Compile Include="Exceptions\NoDiskException.cs" />
     <Compile Include="Interrupts\Interrupts.cs" />
     <Compile Include="IO\Serial\Serial.cs" />
+    <Compile Include="Keyboards\VirtualKeyboard.cs" />
     <Compile Include="Tasks\DeviceManagerTask.cs" />
     <Compile Include="Tasks\PlayNotesTask.cs" />
     <Compile Include="IO\IOPort.cs" />

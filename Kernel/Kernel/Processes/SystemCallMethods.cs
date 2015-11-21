@@ -231,6 +231,16 @@ namespace Kernel.Processes
             return (SystemCallResults)Return1;
         }
 
+        [Drivers.Compiler.Attributes.NoGC]
+        public static SystemCallResults SendMessage(uint TargetProcessId, uint message1, uint message2)
+        {
+            uint Return1 = 0;
+            uint Return2 = 0;
+            uint Return3 = 0;
+            uint Return4 = 0;
+            Call(SystemCallNumbers.SendMessage, TargetProcessId, message1, message2, ref Return1, ref Return2, ref Return3, ref Return4);
+            return (SystemCallResults)Return1;
+        }
 
 
 

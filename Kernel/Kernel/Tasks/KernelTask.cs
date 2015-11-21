@@ -77,6 +77,8 @@ namespace Kernel.Tasks
                 ProcessManager.CurrentProcess.SyscallsToHandle.Set((int)SystemCallNumbers.WaitOnPipeCreate);
                 ProcessManager.CurrentProcess.SyscallsToHandle.Set((int)SystemCallNumbers.ReadPipe);
                 ProcessManager.CurrentProcess.SyscallsToHandle.Set((int)SystemCallNumbers.WritePipe);
+                ProcessManager.CurrentProcess.SyscallsToHandle.Set((int)SystemCallNumbers.SendMessage);
+                ProcessManager.CurrentProcess.SyscallsToHandle.Set((int)SystemCallNumbers.ReceiveMessage);
 
                 //ProcessManager.CurrentProcess.OutputMemTrace = true;
 
@@ -137,10 +139,18 @@ namespace Kernel.Tasks
                     {
                         try
                         {
-                            StdOut.Write(StdOutPipeId, StdIn.Read(true), true);
+                            //StdOut.Write(StdOutPipeId, StdIn.Read(true), true);
                             //BasicConsole.WriteLine("KT > Write start");
                             //StdOut.Write(StdOutPipeId, "Kernel: Hello, processor! (" + (FOS_System.String)loops++ + ")\n", true);
                             //BasicConsole.WriteLine("KT > Write end");
+
+                            char Character;
+                            bool GotCharacter = VK.GetChar(out Character);
+                            if (GotCharacter)
+                            {
+                                BasicConsole.Write(Character);
+                                StdOut.Write(StdOutPipeId, Character, true);
+                            }
                         }
                         catch
                         {
@@ -462,6 +472,13 @@ namespace Kernel.Tasks
             }
 
             return (int)result;
+        }
+
+        static Hardware.Keyboards.VirtualKeyboard VK = new Hardware.Keyboards.VirtualKeyboard();
+        public static void ReceiveKey(uint ScanCode)
+        {
+            BasicConsole.WriteLine("KT > Receive key");
+            VK.HandleScancode(ScanCode);
         }
     }
 }
