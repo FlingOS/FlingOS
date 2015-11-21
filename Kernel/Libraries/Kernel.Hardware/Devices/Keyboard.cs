@@ -24,7 +24,6 @@
 // ------------------------------------------------------------------------------ //
 #endregion
     
-using System;
 using Kernel.FOS_System.Collections;
 
 namespace Kernel.Hardware.Devices
@@ -397,60 +396,6 @@ namespace Kernel.Hardware.Devices
             }
 
             return Dequeue();
-        }
-
-        /// <summary>
-        /// Blocking. Reads all the next valid (i.e. not \0) characters from the keyboard and outputs them
-        /// until a new line is entered (using the Enter key). Also supports backspace and escape keys.
-        /// </summary>
-        /// <returns>The line of text.</returns>
-        public virtual FOS_System.String ReadLine()
-        {
-            //Temp store for the result
-            FOS_System.String result = "";
-            //Used to store the last key pressed
-            KeyMapping c;
-            //Loop through getting characters until the enter key is pressed
-            while ((c = ReadMapping()).Key != KeyboardKey.Enter)
-            {
-                //If backspace was pressed:
-                if (c.Key == KeyboardKey.Backspace)
-                {
-                    //If we actually have something to delete:
-                    if (result.length > 0)
-                    {
-                        //Remove the last character
-                        result = result.Substring(0, result.length - 1);
-                    }
-                }
-                else if (c.Key == KeyboardKey.Escape)
-                {
-                    //Clear out the result
-                    result = "";
-                }
-                else if (c.Key == KeyboardKey.UpArrow)
-                {
-                    //Scroll up the screen 1 line
-                    //Scroll(-1);
-                    //TODO: Work out how to handle this in the new context-----------------------------
-                }
-                else if (c.Key == KeyboardKey.DownArrow)
-                {
-                    //Scroll down the screen 1 line
-                    //Scroll(1);
-                    //TODO: Work out how to handle this in the new context
-                }
-                //If the key has a character representation
-                else if (c.Value != '\0')
-                {
-                    //Add the character to the result
-                    result += c.Value;
-                }
-            }
-            result += '\n';
-
-            //Return the resulting line
-            return result;
         }
 
         /// <summary>

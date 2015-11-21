@@ -51,6 +51,9 @@ namespace Kernel.Tasks
         
         private static uint WindowManagerTask_ProcessId;
 
+        private static Hardware.Keyboards.VirtualKeyboard keyboard;
+        private static Consoles.VirtualConsole console;
+
         public static void Main()
         {
             BasicConsole.WriteLine("Kernel task! ");
@@ -126,11 +129,18 @@ namespace Kernel.Tasks
 
                 try
                 {
-                    BasicConsole.WriteLine("KT > Create outpoint (outpipe)");
-                    StdOut = new Pipes.Standard.StandardOutpoint(true);
-                    BasicConsole.WriteLine("KT > Wait for connect");
-                    int StdOutPipeId = StdOut.WaitForConnect();
+                    BasicConsole.WriteLine("KT > Creating virtual keyboard...");
+                    keyboard = new Hardware.Keyboards.VirtualKeyboard();
 
+                    BasicConsole.WriteLine("KT > Creating virtual console...");
+                    console = new Consoles.VirtualConsole();
+
+                    BasicConsole.WriteLine("KT > Connecting virtual console...");
+                    console.Connect();
+
+                    BasicConsole.WriteLine("KT > Creating main shell...");
+                    Shells.MainShell shell = new Shells.MainShell(console, keyboard);
+                                        
                     BasicConsole.WriteLine("KT > Running...");
 
                     //uint loops = 0;
@@ -138,21 +148,11 @@ namespace Kernel.Tasks
                     {
                         try
                         {
-                            //StdOut.Write(StdOutPipeId, StdIn.Read(true), true);
-                            //BasicConsole.WriteLine("KT > Write start");
-                            //StdOut.Write(StdOutPipeId, "Kernel: Hello, processor! (" + (FOS_System.String)loops++ + ")\n", true);
-                            //BasicConsole.WriteLine("KT > Write end");
-
-                            char Character;
-                            bool GotCharacter = VK.GetChar(out Character);
-                            if (GotCharacter)
-                            {
-                                StdOut.Write(StdOutPipeId, Character, true);
-                            }
+                            shell.Execute();
                         }
                         catch
                         {
-                            BasicConsole.WriteLine("KT > Error writing to StdOut!");
+                            BasicConsole.WriteLine("KT > Error executing MainShell!");
                             BasicConsole.WriteLine(ExceptionMethods.CurrentException.Message);
                         }
                     }
@@ -472,7 +472,6 @@ namespace Kernel.Tasks
             return (int)result;
         }
 
-        static Hardware.Keyboards.VirtualKeyboard VK = new Hardware.Keyboards.VirtualKeyboard();
         public static void ReceiveMessage(uint CallerProcessId, uint Message1, uint Message2)
         {
             if (CallerProcessId == WindowManagerTask_ProcessId)
@@ -482,7 +481,10 @@ namespace Kernel.Tasks
         }
         public static void ReceiveKey(uint ScanCode)
         {
-            VK.HandleScancode(ScanCode);
+            if (keyboard != null)
+            {
+                keyboard.HandleScancode(ScanCode);
+            }
         }
     }
 }

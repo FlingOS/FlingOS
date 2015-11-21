@@ -101,6 +101,7 @@
     <Compile Include="CommandHelp.cs" />
     <Compile Include="Console.cs" />
     <Compile Include="Consoles\AdvancedConsole.cs" />
+    <Compile Include="Consoles\VirtualConsole.cs" />
     <Compile Include="Debug\Debugger.cs" />
     <Compile Include="Pipes\BasicInpoint.cs" />
     <Compile Include="Pipes\BasicOutpoint.cs" />

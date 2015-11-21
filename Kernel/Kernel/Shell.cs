@@ -65,6 +65,11 @@ namespace Kernel
             Console.InitDefault();
             console = Console.Default;
         }
+        public Shell(Console AConsole, Keyboard AKeyboard)
+        {
+            console = AConsole;
+            keyboard = AKeyboard;
+        }
 
         /// <summary>
         /// Executes the shell.

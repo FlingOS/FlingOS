@@ -30,6 +30,7 @@ using System;
 using Kernel.FOS_System;
 using Kernel.FOS_System.Collections;
 using Kernel.FOS_System.IO;
+using Kernel.Hardware.Devices;
 
 namespace Kernel.Shells
 {
@@ -43,6 +44,15 @@ namespace Kernel.Shells
         /// </summary>
         protected FOS_System.String CurrentDir = "";
         
+        public MainShell()
+            : base()
+        {
+        }
+        public MainShell(Console AConsole, Keyboard AKeyboard)
+            : base(AConsole, AKeyboard)
+        {
+        }
+        
         /// <summary>
         /// See base class.
         /// </summary>
@@ -55,7 +65,7 @@ namespace Kernel.Shells
                 try
                 {
                     // Auto-init all to save us writing the command
-                    InitPCI();
+                    //InitPCI();
                 }
                 catch
                 {
@@ -67,7 +77,7 @@ namespace Kernel.Shells
                 try
                 {
                     // Auto-init all to save us writing the command
-                    InitATA();
+                    //InitATA();
                 }
                 catch
                 {
@@ -121,7 +131,7 @@ namespace Kernel.Shells
                          */
 
                         //Get the current input line from the user
-                        FOS_System.String line = keyboard.ReadLine();
+                        FOS_System.String line = ReadLine();
                         //Split the input into command, arguments and options
                         //  All parts are in lower case
                         List cmdParts = SplitCommand(line);
@@ -317,7 +327,7 @@ namespace Kernel.Shells
                                     if (Hardware.DeviceManager.Devices[diskNum] is Hardware.Devices.DiskDevice)
                                     {
                                         console.Write("Are you sure you wish to continue? (Y/N) : ");
-                                        FOS_System.String str = keyboard.ReadLine().ToLower();
+                                        FOS_System.String str = ReadLine().ToLower();
                                         if (str == "y")
                                         {
                                             console.Write("Formatting disk ");
@@ -1029,7 +1039,70 @@ namespace Kernel.Shells
             }
             console.WriteLine("Shell exited.");
         }
-        
+
+        /// <summary>
+        /// Blocking. Reads all the next valid (i.e. not \0) characters from the keyboard and outputs them
+        /// until a new line is entered (using the Enter key). Also supports backspace and escape keys.
+        /// </summary>
+        /// <returns>The line of text.</returns>
+        public FOS_System.String ReadLine()
+        {
+            //Temp store for the result
+            FOS_System.String result = "";
+            //Used to store the last key pressed
+            KeyMapping c;
+            //Loop through getting characters until the enter key is pressed
+            while ((c = keyboard.ReadMapping()).Key != KeyboardKey.Enter)
+            {
+                //If backspace was pressed:
+                if (c.Key == KeyboardKey.Backspace)
+                {
+                    //If we actually have something to delete:
+                    if (result.length > 0)
+                    {
+                        //Remove the last character
+                        result = result.Substring(0, result.length - 1);
+
+                        //Print the backspace character
+                        console.Write(c.Value);
+                    }
+                }
+                else if (c.Key == KeyboardKey.Escape)
+                {
+                    //Clear output line
+                    console.Write(((FOS_System.String)"").PadLeft(result.length, '\b'));
+                
+                    //Clear out the result
+                    result = "";
+                }
+                else if (c.Key == KeyboardKey.UpArrow)
+                {
+                    //Scroll up the screen 1 line
+                    //Scroll(-1);
+                    //TODO: Work out how to handle this in the new context-----------------------------
+                }
+                else if (c.Key == KeyboardKey.DownArrow)
+                {
+                    //Scroll down the screen 1 line
+                    //Scroll(1);
+                    //TODO: Work out how to handle this in the new context
+                }
+                //If the key has a character representation
+                else if (c.Value != '\0')
+                {
+                    //Add the character to the result
+                    result += c.Value;
+
+                    //Print the character
+                    console.Write(c.Value);
+                }
+            }
+            console.WriteLine();
+
+            //Return the resulting line
+            return result;
+        }
+
         /// <summary>
         /// Handler for the periodic reboot timer event.
         /// </summary>
@@ -2737,7 +2810,7 @@ which should have been provided with the executable.");
                 Console.Default.Beep();
                 Console.Default.WriteLine("Test write line.");
                 Console.Default.WriteLine("Please write a line: ");
-                FOS_System.String line = keyboard.ReadLine();
+                FOS_System.String line = ReadLine();
                 Console.Default.WriteLine("Your wrote: " + line);
 
                 Console.Default.WriteLine("Pausing for 2 seconds...");
