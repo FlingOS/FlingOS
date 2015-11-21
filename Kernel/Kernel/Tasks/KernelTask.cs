@@ -49,7 +49,9 @@ namespace Kernel.Tasks
 
         private static Pipes.Standard.StandardOutpoint StdOut;
         private static Pipes.Standard.StandardInpoint StdIn;
-        
+
+        private static uint WindowManagerTask_ProcessId;
+
         public static void Main()
         {
             BasicConsole.WriteLine("Kernel task! ");
@@ -98,6 +100,7 @@ namespace Kernel.Tasks
 
                 BasicConsole.WriteLine(" > Starting Window Manager...");
                 Process WindowManagerProcess = ProcessManager.CreateProcess(WindowManagerTask.Main, "Window Manager", false, true);
+                WindowManagerTask_ProcessId = WindowManagerProcess.Id;
                 //WindowManagerProcess.OutputMemTrace = true;
                 ProcessManager.RegisterProcess(WindowManagerProcess, Scheduler.Priority.Normal);
 
@@ -148,7 +151,6 @@ namespace Kernel.Tasks
                             bool GotCharacter = VK.GetChar(out Character);
                             if (GotCharacter)
                             {
-                                BasicConsole.Write(Character);
                                 StdOut.Write(StdOutPipeId, Character, true);
                             }
                         }
@@ -475,9 +477,15 @@ namespace Kernel.Tasks
         }
 
         static Hardware.Keyboards.VirtualKeyboard VK = new Hardware.Keyboards.VirtualKeyboard();
+        public static void ReceiveMessage(uint CallerProcessId, uint Message1, uint Message2)
+        {
+            if (CallerProcessId == WindowManagerTask_ProcessId)
+            {
+                ReceiveKey(Message1);
+            }
+        }
         public static void ReceiveKey(uint ScanCode)
         {
-            BasicConsole.WriteLine("KT > Receive key");
             VK.HandleScancode(ScanCode);
         }
     }

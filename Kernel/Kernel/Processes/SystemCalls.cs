@@ -328,13 +328,16 @@ namespace Kernel.Processes
                     result = SystemCallResults.Deferred;
                     break;
                 case SystemCallNumbers.SendMessage:
+#if SYSCALLS_TRACE
                     BasicConsole.WriteLine("Syscall: Send message");
+#endif
                     result = SysCall_SendMessage(callerProcesId, callerThreadId, param1, param2, param3) ? SystemCallResults.OK : SystemCallResults.Fail;
                     break;
                 case SystemCallNumbers.ReceiveMessage:
+#if SYSCALLS_TRACE
                     BasicConsole.WriteLine("Syscall: Receive message");
-                    //TODO: Validate that the caller process is the window manager task
-                    Tasks.KernelTask.ReceiveKey(param1);
+#endif
+                    Tasks.KernelTask.ReceiveMessage(callerProcesId, param1, param2);
                     break;
 //#if SYSCALLS_TRACE
                 default:

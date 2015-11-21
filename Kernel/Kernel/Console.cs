@@ -154,6 +154,26 @@ namespace Kernel
                 {
                     WriteLine();
                 }
+                //Else if \b (backspace) character is found
+                //  delete a character or line
+                else if (str[i] == '\b')
+                {
+                    //If at very start of a line
+                    if (CurrentChar == 0)
+                    {
+                        //Delete a line
+                        Buffer.RemoveAt(CurrentLine);
+                        CurrentLine--;
+                        CurrentChar = LineLength;
+                    }
+
+                    //Check there is still a line to edit
+                    if (CurrentLine > -1)
+                    {
+                        //Always delete a visible character
+                        ((FOS_System.String)Buffer[CurrentLine])[--CurrentChar] = (char)((' ' & 0xFF) | CurrentAttr);
+                    }
+                }
                 //Otherwise, just output the character to the current position
                 //  and move current position to the next character.
                 else

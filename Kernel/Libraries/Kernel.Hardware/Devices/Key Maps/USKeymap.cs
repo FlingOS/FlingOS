@@ -108,7 +108,7 @@ namespace Kernel.Hardware.Devices
             AddKey(0x320000, 'M', KeyboardKey.M);
             #endregion
 
-            #region digits
+            #region Digits
             AddKey(0x29, '`', KeyboardKey.NoName);
             AddKey(0x290000, (char)170u, KeyboardKey.NoName);
             AddKey(0x2, '1', KeyboardKey.D1);
@@ -135,7 +135,7 @@ namespace Kernel.Hardware.Devices
             #endregion
 
             #region Special
-            AddKeyWithAndWithoutShift(0x0E, '\0', KeyboardKey.Backspace);               //Backspace
+            AddKeyWithAndWithoutShift(0x0E, '\b', KeyboardKey.Backspace);               //Backspace
             AddKeyWithAndWithoutShift(0x0F, '\t', KeyboardKey.Tab);                         //Tabulator
             AddKeyWithAndWithoutShift(0x1C, '\n', KeyboardKey.Enter);                       //Enter
             AddKeyWithAndWithoutShift(0x39, ' ', KeyboardKey.Spacebar);                     //Space

@@ -110,7 +110,7 @@ namespace Kernel.Hardware.Devices
             AddKey(0x320000, 'M', KeyboardKey.M);
             #endregion
 
-            #region digits
+            #region Digits
             AddKey(0x29, 'º', KeyboardKey.NoName);
             AddKey(0x290000, 'ª', KeyboardKey.NoName);
             AddKey(0x2, '1', KeyboardKey.D1);
@@ -137,18 +137,18 @@ namespace Kernel.Hardware.Devices
             #endregion
 
             #region Special
-            AddKeyWithAndWithoutShift(0x0E, '\0', KeyboardKey.Backspace);               //Backspace
-            AddKeyWithAndWithoutShift(0x0F, '\t', KeyboardKey.Tab);                         //Tabulator
-            AddKeyWithAndWithoutShift(0x1C, '\n', KeyboardKey.Enter);                       //Enter
-            AddKeyWithAndWithoutShift(0x39, ' ', KeyboardKey.Spacebar);                     //Space
-            AddKeyWithAndWithoutShift(0x4b, '\u2190', KeyboardKey.LeftArrow);               //Left arrow
-            AddKeyWithAndWithoutShift(0x48, '\u2191', KeyboardKey.UpArrow);                 //Up arrow
-            AddKeyWithAndWithoutShift(0x4d, '\u2192', KeyboardKey.RightArrow);              //Right arrow
-            AddKeyWithAndWithoutShift(0x50, '\u2193', KeyboardKey.DownArrow);               //Down arrow
+            AddKeyWithAndWithoutShift(0x0E, '\b', KeyboardKey.Backspace);         // Backspace
+            AddKeyWithAndWithoutShift(0x0F, '\t', KeyboardKey.Tab);               // Tabulator
+            AddKeyWithAndWithoutShift(0x1C, '\n', KeyboardKey.Enter);             // Enter
+            AddKeyWithAndWithoutShift(0x39, ' ', KeyboardKey.Spacebar);           // Space
+            AddKeyWithAndWithoutShift(0x4b, '\u2190', KeyboardKey.LeftArrow);     // Left arrow
+            AddKeyWithAndWithoutShift(0x48, '\u2191', KeyboardKey.UpArrow);       // Up arrow
+            AddKeyWithAndWithoutShift(0x4d, '\u2192', KeyboardKey.RightArrow);    // Right arrow
+            AddKeyWithAndWithoutShift(0x50, '\u2193', KeyboardKey.DownArrow);     // Down arrow
 
             AddKeyWithShift(0x5b, KeyboardKey.LeftWindows);
             AddKeyWithShift(0x5c, KeyboardKey.RightWindows);
-            //AddKey(0x5d, KeyboardKey.NoName);                                   //Context Menu  
+            //AddKey(0x5d, KeyboardKey.NoName);                                   // Context Menu  
 
             AddKeyWithShift(0x52, KeyboardKey.Insert);
             AddKeyWithShift(0x47, KeyboardKey.Home);
@@ -158,8 +158,8 @@ namespace Kernel.Hardware.Devices
             AddKeyWithShift(0x51, KeyboardKey.PageDown);
 
             AddKeyWithShift(0x37, KeyboardKey.PrintScreen);
-            //AddKeyWithShift(0x46, KeyboardKey.NoName);                          //Scroll Lock
-            //AddKeyWithShift(0x3a, KeyboardKey.NoName);                          //Caps Lock
+            //AddKeyWithShift(0x46, KeyboardKey.NoName);                          // Scroll Lock
+            //AddKeyWithShift(0x3a, KeyboardKey.NoName);                          // Caps Lock
             AddKeyWithShift(0x45, KeyboardKey.Pause);
 
             AddKeyWithShift(0x3b, KeyboardKey.F1);

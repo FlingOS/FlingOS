@@ -292,23 +292,6 @@ namespace Kernel.Tasks
                             else
                             {
                                 SystemCallMethods.SendMessage(1, Scancode, 0);
-
-                                //char Character;
-                                //if (Keyboard.Default.GetCharValue(Scancode, out Character))
-                                //{
-                                //    try
-                                //    {
-                                //        StdIn.Write(CurrentPipeInfo.StdInPipeId, Character, false);
-                                //    }
-                                //    catch
-                                //    {
-                                //        if (!(ExceptionMethods.CurrentException is Pipes.Exceptions.RWFailedException))
-                                //        {
-                                //            BasicConsole.WriteLine("WM > Error writing to StdIn!");
-                                //            BasicConsole.WriteLine(ExceptionMethods.CurrentException.Message);
-                                //        }
-                                //    }
-                                //}
                             }
                         }
                     }
