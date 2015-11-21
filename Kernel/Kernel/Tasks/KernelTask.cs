@@ -48,8 +48,7 @@ namespace Kernel.Tasks
         private static Thread DeferredSyscallsThread;
 
         private static Pipes.Standard.StandardOutpoint StdOut;
-        private static Pipes.Standard.StandardInpoint StdIn;
-
+        
         private static uint WindowManagerTask_ProcessId;
 
         public static void Main()
@@ -131,9 +130,6 @@ namespace Kernel.Tasks
                     StdOut = new Pipes.Standard.StandardOutpoint(true);
                     BasicConsole.WriteLine("KT > Wait for connect");
                     int StdOutPipeId = StdOut.WaitForConnect();
-
-                    BasicConsole.WriteLine("KT > Create inpoint (inpipe)");
-                    StdIn = new Pipes.Standard.StandardInpoint(WindowManagerProcess.Id, false);
 
                     BasicConsole.WriteLine("KT > Running...");
 

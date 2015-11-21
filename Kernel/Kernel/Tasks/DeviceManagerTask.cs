@@ -37,7 +37,7 @@ namespace Kernel.Tasks
         private static uint GCThreadId;
 
         private static Pipes.Standard.StandardOutpoint StdOut;
-        private static Pipes.Standard.StandardInpoint StdIn;
+        //private static Pipes.Standard.StandardInpoint StdIn;
 
         public static void Main()
         {
@@ -55,22 +55,23 @@ namespace Kernel.Tasks
                 StdOut = new Pipes.Standard.StandardOutpoint(true);
                 int StdOutPipeId = StdOut.WaitForConnect();
 
-                int numOutpoints;
-                Pipes.BasicOutpoint.GetNumPipeOutpoints(out numOutpoints, out SysCallResult, Pipes.PipeClasses.Standard, Pipes.PipeSubclasses.Standard_In);
-                if (SysCallResult == SystemCallResults.OK && numOutpoints > 0)
-                {
-                    Pipes.PipeOutpointDescriptor[] OutpointDescriptors;
-                    Pipes.BasicOutpoint.GetOutpointDescriptors(numOutpoints, out SysCallResult, out OutpointDescriptors, Pipes.PipeClasses.Standard, Pipes.PipeSubclasses.Standard_In);
-
-                    if (SysCallResult == SystemCallResults.OK)
-                    {
-                        for (int i = 0; i < OutpointDescriptors.Length; i++)
-                        {
-                            Pipes.PipeOutpointDescriptor Descriptor = OutpointDescriptors[i];
-                            StdIn = new Pipes.Standard.StandardInpoint(Descriptor.ProcessId, false);
-                        }
-                    }
-                }
+                //int numOutpoints;
+                //Pipes.BasicOutpoint.GetNumPipeOutpoints(out numOutpoints, out SysCallResult, Pipes.PipeClasses.Standard, Pipes.PipeSubclasses.Standard_In);
+                //if (SysCallResult == SystemCallResults.OK && numOutpoints > 0)
+                //{
+                //    Pipes.PipeOutpointDescriptor[] OutpointDescriptors;
+                //    Pipes.BasicOutpoint.GetOutpointDescriptors(numOutpoints, out SysCallResult, out OutpointDescriptors, Pipes.PipeClasses.Standard, Pipes.PipeSubclasses.Standard_In);
+                //
+                //    if (SysCallResult == SystemCallResults.OK)
+                //    {
+                //        for (int i = 0; i < OutpointDescriptors.Length; i++)
+                //        {
+                //            Pipes.PipeOutpointDescriptor Descriptor = OutpointDescriptors[i];
+                //            //TODO: Filter to target
+                //            StdIn = new Pipes.Standard.StandardInpoint(Descriptor.ProcessId, false);
+                //        }
+                //    }
+                //}
 
                 uint loops = 0;
                 while (!Terminating)

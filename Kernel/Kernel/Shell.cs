@@ -25,10 +25,7 @@
 #endregion
     
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Kernel.Hardware.Devices;
 
 namespace Kernel
 {
@@ -38,9 +35,13 @@ namespace Kernel
     public abstract class Shell : FOS_System.Object
     {
         /// <summary>
-        /// The console used for input/output.
+        /// The console used for output.
         /// </summary>
         protected Console console;
+        /// <summary>
+        /// The keyboard used for input.
+        /// </summary>
+        protected Keyboard keyboard;
         /// <summary>
         /// Whether the shell is in the process of closing (/terminating) or not.
         /// </summary>

@@ -121,7 +121,7 @@ namespace Kernel.Shells
                          */
 
                         //Get the current input line from the user
-                        FOS_System.String line = console.ReadLine();
+                        FOS_System.String line = keyboard.ReadLine();
                         //Split the input into command, arguments and options
                         //  All parts are in lower case
                         List cmdParts = SplitCommand(line);
@@ -317,7 +317,7 @@ namespace Kernel.Shells
                                     if (Hardware.DeviceManager.Devices[diskNum] is Hardware.Devices.DiskDevice)
                                     {
                                         console.Write("Are you sure you wish to continue? (Y/N) : ");
-                                        FOS_System.String str = console.ReadLine().ToLower();
+                                        FOS_System.String str = keyboard.ReadLine().ToLower();
                                         if (str == "y")
                                         {
                                             console.Write("Formatting disk ");
@@ -2737,7 +2737,7 @@ which should have been provided with the executable.");
                 Console.Default.Beep();
                 Console.Default.WriteLine("Test write line.");
                 Console.Default.WriteLine("Please write a line: ");
-                FOS_System.String line = Console.Default.ReadLine();
+                FOS_System.String line = keyboard.ReadLine();
                 Console.Default.WriteLine("Your wrote: " + line);
 
                 Console.Default.WriteLine("Pausing for 2 seconds...");

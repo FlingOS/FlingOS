@@ -37,7 +37,6 @@ namespace Kernel.Tasks
         private class PipeInfo : FOS_System.Object
         {
             public Pipes.Standard.StandardInpoint StdOut;
-            public int StdInPipeId;
             public Console TheConsole = new Consoles.AdvancedConsole();
         }
 
@@ -57,8 +56,6 @@ namespace Kernel.Tasks
         private static uint InputProcessingThreadId;
         private static bool InputProcessingThreadAwake = false;
         private static uint OutputProcessingThreadId;
-
-        private static Pipes.Standard.StandardOutpoint StdIn;
 
         public static bool Ready
         {
@@ -105,9 +102,6 @@ namespace Kernel.Tasks
             {
                 BasicConsole.WriteLine("Window Manager: OutputProcessing thread failed to create!");
             }
-
-            BasicConsole.Write("WM > Create outpoint (inpipe)");
-            StdIn = new Pipes.Standard.StandardOutpoint(false);
 
             BasicConsole.WriteLine("WM > Init keyboard");
             Keyboard.InitDefault();
@@ -199,8 +193,7 @@ namespace Kernel.Tasks
                                 {
                                     PipeInfo NewPipeInfo = new PipeInfo();
                                     NewPipeInfo.StdOut = new Pipes.Standard.StandardInpoint(Descriptor.ProcessId, true); // 2000 ASCII characters = 2000 bytes
-                                    NewPipeInfo.StdInPipeId = StdIn.WaitForConnect();
-
+                                    
                                     ConnectedPipes.Add(NewPipeInfo);
 
                                     if (CurrentPipeIdx == -1)
@@ -291,7 +284,7 @@ namespace Kernel.Tasks
                             }
                             else
                             {
-                                SystemCallMethods.SendMessage(1, Scancode, 0);
+                                SystemCallMethods.SendMessage(((PipeInfo)ConnectedPipes[CurrentPipeIdx]).StdOut.OutProcessId, Scancode, 0);
                             }
                         }
                     }
