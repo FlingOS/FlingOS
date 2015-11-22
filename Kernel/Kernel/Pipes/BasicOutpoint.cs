@@ -65,7 +65,7 @@ namespace Kernel.Pipes
             Class = aClass;
             Subclass = aSubclass;
 
-            SystemCallResults SysCallResult = SystemCallMethods.RegisterPipeOutpoint(Class, Subclass, MaxConnections);
+            SystemCallResults SysCallResult = SystemCalls.RegisterPipeOutpoint(Class, Subclass, MaxConnections);
             switch (SysCallResult)
             {
                 case SystemCallResults.Unhandled:
@@ -93,7 +93,7 @@ namespace Kernel.Pipes
         public int WaitForConnect()
         {
             int aPipeId;
-            SystemCallResults SysCallResult = SystemCallMethods.WaitOnPipeCreate(Class, Subclass, out aPipeId);
+            SystemCallResults SysCallResult = SystemCalls.WaitOnPipeCreate(Class, Subclass, out aPipeId);
             switch (SysCallResult)
             {
                 case SystemCallResults.Unhandled:
@@ -147,7 +147,7 @@ namespace Kernel.Pipes
                     WritePipeRequestPtr->InBuffer = (byte*)Utilities.ObjectUtilities.GetHandle(Data) + FOS_System.Array.FieldsBytesSize;
                     WritePipeRequestPtr->Blocking = Blocking;
 
-                    SystemCallResults SysCallResult = SystemCallMethods.WritePipe(WritePipeRequestPtr);
+                    SystemCallResults SysCallResult = SystemCalls.WritePipe(WritePipeRequestPtr);
                     switch (SysCallResult)
                     {
                         case SystemCallResults.Unhandled:
@@ -197,7 +197,7 @@ namespace Kernel.Pipes
         /// <param name="Subclass">The subclass of pipe to search for.</param>
         public static void GetNumPipeOutpoints(out int numOutpoints, out SystemCallResults SysCallResult, Pipes.PipeClasses Class, Pipes.PipeSubclasses Subclass)
         {
-            SysCallResult = SystemCallMethods.GetNumPipeOutpoints(Class, Subclass, out numOutpoints);
+            SysCallResult = SystemCalls.GetNumPipeOutpoints(Class, Subclass, out numOutpoints);
             switch (SysCallResult)
             {
                 case SystemCallResults.Unhandled:
@@ -238,7 +238,7 @@ namespace Kernel.Pipes
                     RequestPtr->Outpoints = (Pipes.PipeOutpointDescriptor*)((byte*)Utilities.ObjectUtilities.GetHandle(OutpointDescriptors) + FOS_System.Array.FieldsBytesSize);
                     if (RequestPtr->Outpoints != null)
                     {
-                        SysCallResult = SystemCallMethods.GetPipeOutpoints(Class, Subclass, RequestPtr);
+                        SysCallResult = SystemCalls.GetPipeOutpoints(Class, Subclass, RequestPtr);
                         switch (SysCallResult)
                         {
                             case SystemCallResults.Unhandled:

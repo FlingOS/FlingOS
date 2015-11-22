@@ -86,7 +86,7 @@ namespace Kernel.Tasks
                 //{
                 //    Hardware.Processes.Scheduler.Enable();
                 //}
-                Processes.SystemCallMethods.SleepThread(1000);
+                Processes.SystemCalls.SleepThread(1000);
             }
         }
     }

@@ -34,11 +34,17 @@ using Kernel.Hardware.Processes;
 
 namespace Kernel.Processes
 {
-    public static unsafe class SystemCalls
+    /// <summary>
+    /// Contains callers and handlers for system calls.
+    /// </summary>
+    public static unsafe partial class SystemCalls
     {
         /// <summary>
         /// Main interrupt handler routine for system calls.
         /// </summary>
+        /// <remarks>
+        /// Prevents direct invocation of the Receive Message system call, since that's not allowed.
+        /// </remarks>
         public static void InterruptHandler()
         {
 #if SYSCALLS_TRACE
@@ -65,86 +71,89 @@ namespace Kernel.Processes
             uint Return3 = 0;
             uint Return4 = 0;
 
-            Process handlerProcess = null;
-
-#if SYSCALLS_TRACE
-            BasicConsole.WriteLine("Enumerating processes...");
-#endif
-
-            bool PermitActionResulted = false;
-            for (int i = 0; i < ProcessManager.Processes.Count; i++)
+            if (syscallNumber != (uint)SystemCallNumbers.ReceiveMessage)
             {
-                handlerProcess = (Process)ProcessManager.Processes[i];
-                if (handlerProcess.SyscallsToHandle.IsSet((int)syscallNumber))
+                Process handlerProcess = null;
+
+#if SYSCALLS_TRACE
+                BasicConsole.WriteLine("Enumerating processes...");
+#endif
+
+                bool PermitActionResulted = false;
+                for (int i = 0; i < ProcessManager.Processes.Count; i++)
                 {
-                    ProcessManager.SwitchProcess(handlerProcess.Id, ProcessManager.THREAD_DONT_CARE);
-                    switched = true;
-                    
-#if SYSCALLS_TRACE
-                    BasicConsole.WriteLine("Calling handler...");
-
-                    //if (process == null)
-                    //{
-                    //    BasicConsole.WriteLine(" > process is null?!");
-                    //}
-                    //else if (process.SyscallHandler == null)
-                    //{
-                    //    BasicConsole.WriteLine(" > process.SysCallHandler is null?!");
-                    //}
-#endif
-
-                    uint TempReturn2 = 0;
-                    uint TempReturn3 = 0;
-                    uint TempReturn4 = 0;
-                    SystemCallResults tempResult = (SystemCallResults)handlerProcess.SyscallHandler(syscallNumber,
-                        param1, param2, param3,
-                        ref TempReturn2, ref TempReturn3, ref TempReturn4, 
-                        currProcess.Id, currThread.Id);
-
-                    if (tempResult == SystemCallResults.RequestAction_WakeThread)
+                    handlerProcess = (Process)ProcessManager.Processes[i];
+                    if (handlerProcess.SyscallsToHandle.IsSet((int)syscallNumber))
                     {
-#if SYSCALLS_TRACE
-                        BasicConsole.WriteLine("System calls : Performing action - wake thread");
-#endif
-                        ProcessManager.WakeThread(handlerProcess, TempReturn2);
-                        tempResult = SystemCallResults.Unhandled;
-                    }
+                        ProcessManager.SwitchProcess(handlerProcess.Id, ProcessManager.THREAD_DONT_CARE);
+                        switched = true;
 
-                    if (tempResult != SystemCallResults.Unhandled && !PermitActionResulted)
-                    {
 #if SYSCALLS_TRACE
-                        BasicConsole.WriteLine("Result achieved.");
-#endif
-                        Return2 = TempReturn2;
-                        Return3 = TempReturn3;
-                        Return4 = TempReturn4;
+                        BasicConsole.WriteLine("Calling handler...");
 
-                        if (tempResult == SystemCallResults.OK_PermitActions)
+                        //if (process == null)
+                        //{
+                        //    BasicConsole.WriteLine(" > process is null?!");
+                        //}
+                        //else if (process.SyscallHandler == null)
+                        //{
+                        //    BasicConsole.WriteLine(" > process.SysCallHandler is null?!");
+                        //}
+#endif
+
+                        uint TempReturn2 = 0;
+                        uint TempReturn3 = 0;
+                        uint TempReturn4 = 0;
+                        SystemCallResults tempResult = (SystemCallResults)handlerProcess.SyscallHandler(syscallNumber,
+                            param1, param2, param3,
+                            ref TempReturn2, ref TempReturn3, ref TempReturn4,
+                            currProcess.Id, currThread.Id);
+
+                        if (tempResult == SystemCallResults.RequestAction_WakeThread)
                         {
-                            result = SystemCallResults.OK;
-                            PermitActionResulted = true;
+#if SYSCALLS_TRACE
+                            asicConsole.WriteLine("System calls : Performing action - wake thread");
+#endif
+                            ProcessManager.WakeThread(handlerProcess, TempReturn2);
+                            tempResult = SystemCallResults.Unhandled;
                         }
-                        else if (tempResult == SystemCallResults.Deferred_PermitActions)
+
+                        if (tempResult != SystemCallResults.Unhandled && !PermitActionResulted)
                         {
-                            result = SystemCallResults.Deferred;
-                            PermitActionResulted = true;
-                        }
-                        else
-                        {
-                            result = tempResult;
-                            break;
+#if SYSCALLS_TRACE
+                            BasicConsole.WriteLine("Result achieved.");
+#endif
+                            Return2 = TempReturn2;
+                            Return3 = TempReturn3;
+                            Return4 = TempReturn4;
+
+                            if (tempResult == SystemCallResults.OK_PermitActions)
+                            {
+                                result = SystemCallResults.OK;
+                                PermitActionResulted = true;
+                            }
+                            else if (tempResult == SystemCallResults.Deferred_PermitActions)
+                            {
+                                result = SystemCallResults.Deferred;
+                                PermitActionResulted = true;
+                            }
+                            else
+                            {
+                                result = tempResult;
+                                break;
+                            }
                         }
                     }
                 }
-            }
 
-            if (switched)
-            {
+                if (switched)
+                {
 #if SYSCALLS_TRACE
-                BasicConsole.WriteLine("Switching back...");
+                    BasicConsole.WriteLine("Switching back...");
 #endif
 
-                ProcessManager.SwitchProcess(currProcess.Id, (int)currThread.Id);
+                    ProcessManager.SwitchProcess(currProcess.Id, (int)currThread.Id);
+                }
             }
             
 #if SYSCALLS_TRACE
@@ -491,7 +500,15 @@ namespace Kernel.Processes
 #endif
             ProcessManager.GetProcessById(callerProcessId).SyscallsToHandle.Clear(syscallNum);
         }
-
+        /// <summary>
+        /// Performs Send Message system call processing for the Kernel Task.
+        /// </summary>
+        /// <param name="callerProcessId">The Id of the process sending the message.</param>
+        /// <param name="callerThreadId">The Id of the thread sending the message.</param>
+        /// <param name="targetProcessId">The Id of the process to send the message to.</param>
+        /// <param name="message1">The first value of the message.</param>
+        /// <param name="message2">The second value of the message.</param>
+        /// <returns>True if the message was accepted.</returns>
         private static bool SysCall_SendMessage(uint callerProcessId, uint callerThreadId, uint targetProcessId, uint message1, uint message2)
         {
             bool Result = false;
@@ -597,196 +614,6 @@ namespace Kernel.Processes
             DeferredSystemCalls_CurrentThread.Return4 = 0;
         }*/
     }
-
-    /// <summary>
-    /// The complete list of system calls.
-    /// </summary>
-    public enum SystemCallNumbers : uint
-    {
-        /// <summary>
-        /// Indicates an invalid system call has been made.
-        /// </summary>
-        /// <remarks>
-        /// Useful for guarding against errors.
-        /// </remarks>
-        INVALID = 0,
-        /// <summary>
-        /// Registers a method of the caller process as a handler for an interrupt service routine.
-        /// </summary>
-        /// <remarks>
-        /// <para>
-        /// Cannot register a handler for any ISR less than 49.
-        /// </para>
-        /// <para>
-        /// Only one handler method for all ISRs is accepted. Specify address 0xFFFFFFFF to avoid re-specifying the handler function.
-        /// </para>
-        /// </remarks>
-        RegisterISRHandler,
-        /// <summary>
-        /// Deregisters the caller process for handling an interrupt service routine.
-        /// </summary>
-        DeregisterISRHandler,
-        /// <summary>
-        /// Registers a method of the caller process as a handler for an interrupt request.
-        /// </summary>
-        /// <remarks>
-        /// <para>
-        /// Cannot register a handler for any IRQ greater than 15.
-        /// </para>
-        /// <para>
-        /// Only one handler method for all IRQs is accepted. Specify address 0xFFFFFFFF to avoid re-specifying the handler function.
-        /// </para>
-        /// </remarks>
-        RegisterIRQHandler,
-        /// <summary>
-        /// Deregisters the caller process for handling an interrupt request.
-        /// </summary>
-        DeregisterIRQHandler,
-        /// <summary>
-        /// Registers a method of the caller process as a handler for a system call.
-        /// </summary>
-        /// <remarks>
-        /// <para>
-        /// Currently, a handler can be registered for any system call number. However, calling prioritisation
-        /// is implemented so the registered handler may not see all calls if higher priority (/earlier) handlers 
-        /// deicde to handle the call.
-        /// </para>
-        /// <para>
-        /// Only one handler method for all system calls is accepted. Specify address 0xFFFFFFFF to avoid re-specifying the handler function.
-        /// </para>
-        /// </remarks>
-        RegisterSyscallHandler,
-        /// <summary>
-        /// Deregisters the caller process for handling a system call.
-        /// </summary>
-        DeregisterSyscallHandler,
-        RequestPage,
-        UnmapPage,
-        SharePage,
-        StartProcess,
-        EndProcess,
-        SetProcessAttributes,
-        GetProcessList,
-        WaitOnProcess,
-        StartThread,
-        EndThread,
-        SetThreadAttributes,
-        GetThreadList,
-        WaitOnThread,
-        SleepThread,
-        WakeThread,
-        CreateSemaphore,
-        ReleaseSemaphore,
-        WaitSemaphore,
-        SignalSemaphore,
-        GetTime,
-        SetTime,
-        GetUpTime,
-        /// <summary>
-        /// Registers the process as offering a specific pipe outpoint type.
-        /// </summary>
-        RegisterPipeOutpoint,
-        /// <summary>
-        /// Gets the number of available pipe outpoints of a specific type.
-        /// </summary>
-        GetNumPipeOutpoints,
-        /// <summary>
-        /// Gets descriptions of the available pipe outpoints of a specific type.
-        /// </summary>
-        /// <remarks>
-        /// Use a GetNumPipeOutpoints system call to determine the number of available outpoints of the wanted type. Then use that
-        /// number to allocate a sufficiently large array.
-        /// </remarks>
-        GetPipeOutpoints,
-        /// <summary>
-        /// Creates a pipe, of a specific type, from the caller process to the specified outpoint (of another or the same process).
-        /// </summary>
-        CreatePipe,
-        /// <summary>
-        /// Waits for a pipe of a specific type to be created to the caller process.
-        /// </summary>
-        WaitOnPipeCreate,
-        /// <summary>
-        /// Reads from the specified pipe. Blocking and non-blocking calls supported on the same pipe.
-        /// </summary>
-        ReadPipe,
-        /// <summary>
-        /// Writes to the specified pipe. Blocking and non-blocking calls supported on the same pipe.
-        /// </summary>
-        WritePipe,
-        SendMessage,
-        ReceiveMessage
-    }
-    /// <summary>
-    /// Results of system calls.
-    /// </summary>
-    /// <remarks>
-    /// Distinct values from the system call numbers are used. This is for debugging purposes since the 
-    /// call number and the result number share a register which can lead to accidental contamination in
-    /// incorrect implementations.
-    /// </remarks>
-    public enum SystemCallResults : uint
-    {
-        /// <summary>
-        /// The system call was not handled by any process.
-        /// </summary>
-        Unhandled = 0xC0DEC0DE,
-        /// <summary>
-        /// The system call was handled successfully.
-        /// </summary>
-        OK = 0xC1DEC1DE,
-        /// <summary>
-        /// The system call was deferred for later processing.
-        /// </summary>
-        /// <remarks>
-        /// This is only supposed to be seen within the core OS. A caller should never see this value.
-        /// </remarks>
-        Deferred = 0xC2DEC2DE,
-        /// <summary>
-        /// The system call failed.
-        /// </summary>
-        /// <remarks>
-        /// <para>
-        /// In the case of non-blocking system calls, a failure is expected. Unhandled should be used to indicate an error
-        /// in a non-blocking system call. In all other cases, this indicates an error occurred. 
-        /// </para>
-        /// <para>
-        /// Note that an error may be a permissions failure of some description or it may be an actual exception.
-        /// </para>
-        /// </remarks>
-        Fail = 0xC3DEC3DE,
-        /// <summary>
-        /// The system call was handled successfully but other system call handlers are also allowed to process the 
-        /// call. 
-        /// </summary>
-        /// <remarks>
-        /// This is only supposed to be seen within the core OS. A caller should never see this value.
-        /// </remarks>
-        OK_PermitActions = 0xC4DEC4DE,
-        /// <summary>
-        /// The system call was deferred but other system call handlers are also allowed to process the 
-        /// call. 
-        /// </summary>
-        /// <remarks>
-        /// This is only supposed to be seen within the core OS. A caller should never see this value.
-        /// </remarks>
-        Deferred_PermitActions = 0xC5DEC5DE,
-        /// <summary>
-        /// The system call was unhandled but the handler method is requesting another thread is woken.
-        /// </summary>
-        /// <remarks>
-        /// <para>
-        /// This is only supposed to be seen within the core OS. A caller should never see this value.
-        /// </para>
-        /// <para>
-        /// This is used so a system call can be used as a notification to a process. A method returning
-        /// this cannot also handle the system call.
-        /// </para>
-        /// </remarks>
-        RequestAction_WakeThread = 0xC6DEC6DE
-    }
-
-
 
     /*public enum SemaphoreRequests
     {

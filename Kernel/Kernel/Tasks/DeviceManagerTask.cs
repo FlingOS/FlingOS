@@ -44,7 +44,7 @@ namespace Kernel.Tasks
             BasicConsole.WriteLine("Device Manager started.");
 
             Hardware.Processes.ProcessManager.CurrentProcess.InitHeap();
-            SystemCallResults SysCallResult = SystemCallMethods.StartThread(GCCleanupTask.Main, out GCThreadId);
+            SystemCallResults SysCallResult = SystemCalls.StartThread(GCCleanupTask.Main, out GCThreadId);
             if (SysCallResult != SystemCallResults.OK)
             {
                 BasicConsole.WriteLine("Device Manager: GC thread failed to create!");
@@ -79,7 +79,7 @@ namespace Kernel.Tasks
                     try
                     {
                         //StdOut.Write(StdOutPipeId, "Hello, world! (" + (FOS_System.String)loops++ + ")\n", true);
-                        SystemCallMethods.SleepThread(-1);
+                        SystemCalls.SleepThread(-1);
                     }
                     catch
                     {
@@ -87,7 +87,7 @@ namespace Kernel.Tasks
                         BasicConsole.WriteLine(ExceptionMethods.CurrentException.Message);
                     }
 
-                    SystemCallMethods.SleepThread(1000);
+                    SystemCalls.SleepThread(1000);
                 }
             }
             catch

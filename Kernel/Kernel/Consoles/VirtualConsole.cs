@@ -32,56 +32,87 @@ using System.Threading.Tasks;
 
 namespace Kernel.Consoles
 {
+    /// <summary>
+    /// Implements the more advanced Console class. This is used by processes to handle outputting to the Window Manager Task.
+    /// </summary>
     public class VirtualConsole : Console
     {
+        /// <summary>
+        /// The output pipe to the Window Manager Task.
+        /// </summary>
         protected Pipes.Standard.StandardOutpoint StdOut;
+        /// <summary>
+        /// The Id of the main output pipe.
+        /// </summary>
         protected int StdOutPipeId;
 
+        /// <summary>
+        /// Creates the output pipe and waits for the Window Manager to connect.
+        /// </summary>
         public void Connect()
         {
             StdOut = new Pipes.Standard.StandardOutpoint(true);
             StdOutPipeId = StdOut.WaitForConnect();
         }
 
+        /// <summary>
+        /// Clears the screen (currently by outputting 25 new lines, meaning scrolling back is still possible).
+        /// </summary>
         public override void Clear()
         {
             //25 new lines clear out the screen
             StdOut.Write(StdOutPipeId, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", true);
         }
 
+        /// <summary>
+        /// Required override. Does nothing at the moment.
+        /// </summary>
         public override void Update()
         {
             //Don't think we need to do anything here
         }
 
+        /// <summary>
+        /// Writes the specified text to the output.
+        /// </summary>
+        /// <param name="str">The string to write.</param>
         public override void Write(FOS_System.String str)
         {
             StdOut.Write(StdOutPipeId, str, true);
         }
+        /// <summary>
+        /// Writes a new line to the output.
+        /// </summary>
         public override void WriteLine()
         {
             StdOut.Write(StdOutPipeId, "\n", true);
         }
 
         /// <summary>
-        /// Gets the offset from the current character to where the cursor should be displayed.
+        /// Meaningless for a virtual console. Always returns 0.
         /// </summary>
         /// <returns>The offset to be subtracted.</returns>
         protected override int GetDisplayOffset_Char()
         {
-            return -ScreenStartLineOffset;
+            return 0;
         }
         /// <summary>
-        /// Gets the offset from the current line to where the cursor should be displayed.
+        /// Meaningless for a virtual console. Always returns 0.
         /// </summary>
         /// <returns>The offset to be subtracted.</returns>
         protected override int GetDisplayOffset_Line()
         {
-            //Creates a fixed-position cursor on line 24 (the bottom line of the screen in 25-line
-            //  VGA text-mode)
-            return CurrentLine - (ScreenStartLine + ScreenHeightInLines - 1);
+            return 0;
         }
 
+        /// <summary>
+        /// Currently does not.
+        /// </summary>
+        /// <remarks>
+        /// This requires implementation. Need to use messages to command the Window Manager.
+        /// </remarks>
+        /// <param name="character">The offset from the start of the line to the cursor.</param>
+        /// <param name="line">The line number (from the display perspective, not the buffer perspective) of the cursor.</param>
         public override void SetCursorPosition(ushort character, ushort line)
         {
             //TODO

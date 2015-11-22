@@ -49,6 +49,8 @@ namespace Kernel.Debug
         /// </summary>
         public static bool Terminating = false;
 
+        //The compiler complains about this variable only ever being assigned to BUT
+        //  it is used in the assembly code (which MSBuild doesn't know about / can't detect).
 #pragma warning disable 0414
         /// <summary>
         /// Whether the debugger is currently enabled or not.
@@ -147,16 +149,19 @@ namespace Kernel.Debug
 
                 DebugPort.Write(" > Checking thread is not debugger thread...\n");
 #endif
+                // Prevent pausing of the debugger thread (which can otherwise result in total system lock-up)
                 if (ProcessManager.CurrentThread != MainThread)
                 {
 #if DEBUGGER_INTERUPT_TRACE
                     DebugPort.Write(" > Disabling debugger\n");
 #endif
+                    // Temporarily disable the debugger
                     Enabled = false;
                     
 #if DEBUGGER_INTERUPT_TRACE
                     DebugPort.Write(" > Calculating process id\n");
 #endif
+                    // Generate a unique identifier for the current process / thread pair.
                     UInt64 ProcessThreadId = (((UInt64)ProcessManager.CurrentProcess.Id) << 32) | ProcessManager.CurrentThread.Id;
                     
 #if DEBUGGER_INTERUPT_TRACE
@@ -165,6 +170,9 @@ namespace Kernel.Debug
 
 #if DEBUG
                     bool SuspendAtAddessesContains = ThreadsToSuspendAtAddresses.Contains(ProcessThreadId);
+                    // Should suspend the thread if EITHER: It is in the suspend list and not the suspend at addresses list 
+                    //                                  OR: It is in the suspend at addresses list and the process's current instruction address matches
+                    //      Note: Current instruction address of the paused process not the current interrupt handler routine
                     bool ShouldSuspend = (!SuspendAtAddessesContains && ThreadsToSuspend.IndexOf(ProcessThreadId) > -1) ||
                                          (SuspendAtAddessesContains && ThreadsToSuspendAtAddresses[ProcessThreadId] == ProcessManager.CurrentThread.EIPFromInterruptStack);
 #else
@@ -180,16 +188,20 @@ namespace Kernel.Debug
 
                         if (SuspendAtAddessesContains)
                         {
+                            // Prevent recurring breaks
                             ThreadsToSuspendAtAddresses.Remove(ProcessThreadId);
                         }
 
+                        // Suspend the thread
                         ProcessManager.CurrentThread.Debug_Suspend = true;
+                        // Notify the host debugger that a thread has been suspended
                         NotifPort.Write(0xFE);
                         
 #if DEBUGGER_INTERUPT_TRACE
                         DebugPort.Write(" > Doing scheduler update...\n");
 #endif 
 
+                        // Get the scheduler to do an update so we don't return to the same thread
                         Scheduler.UpdateCurrentState();
                         
 #if DEBUGGER_INTERUPT_TRACE
@@ -197,14 +209,17 @@ namespace Kernel.Debug
                         PrintCurrentThread();
 #endif
                     }
+                    // If the thread shouldn't be suspended, we might still be single-stepping to a particular address
                     else if (SuspendAtAddessesContains)
                     {
+                        // If we are single stepping, (re)set the single step flag (Note: EFLAGS restored by IRet)
                         ProcessManager.CurrentThread.EFLAGSFromInterruptStack |= 0x0100u;
                     }
                     
 #if DEBUGGER_INTERUPT_TRACE
                     DebugPort.Write(" > Enabling debugger\n");
 #endif
+                    // Re-enable the debugger
                     Enabled = true;
                 }
             }
@@ -221,17 +236,27 @@ namespace Kernel.Debug
         [NoGC]
         public static void Main()
         {
+            // The serial ports should have already been initialised
             MsgPort = Serial.COM2;
             NotifPort = Serial.COM3;
 
+            // This looks silly, but the host debugger is actually waiting for this
+            //  to determine the OS has connected and is ready
             MsgPort.Write("Debug thread :D\n");
 
             //MsgPort.Write("Enabling...\n");
+            // Everything is initialised and connected, so enable the debugger
             Enabled = true;
             //MsgPort.Write("Enabled.\n");
 
+            // Note: It doesn't actually matter if the host hasn't connected
+            //  because the debugger has near-zero effective cost to the rest of the system
+            //  unless it is sent a command (unlike the old debugger, which slowed everything
+            //  down to the point of being unusable).
+
             while (!Terminating)
             {
+                // Read in a line from the host
                 FOS_System.String line = "";
                 char c = (char)MsgPort.Read();
                 while (c != '\n' && c != '\r')
@@ -240,12 +265,15 @@ namespace Kernel.Debug
                     c = (char)MsgPort.Read();
                 }
                 
+                // Echo the command back to the host for verification
                 MsgPort.Write("START OF COMMAND\n");
                 MsgPort.Write(line);
                 MsgPort.Write("\n");
 
+                // Filter the line
                 line = line.Trim().ToLower();
                 
+                // Split it up into relevant parts
                 List lineParts = line.Split(' ');
                 if (lineParts.Count > 0)
                 {
@@ -257,6 +285,8 @@ namespace Kernel.Debug
                     }
                     else if (cmd == "help")
                     {
+                        #region Help
+
                         MsgPort.Write("Available commands:\n");
                         MsgPort.Write(" - ping\n");
                         MsgPort.Write(" - threads\n");
@@ -269,9 +299,13 @@ namespace Kernel.Debug
                         MsgPort.Write(" - bpc (address:hex)\n");
                         MsgPort.Write(" - regs (processId) (threadId)\n");
                         MsgPort.Write(" - memory (processId) (address:hex) (length) (units:1,2,4)\n");
+
+                        #endregion
                     }
                     else if (cmd == "threads")
                     {
+                        #region Threads
+
                         for (int i = 0; i < ProcessManager.Processes.Count; i++)
                         {
                             Process AProcess = (Process)ProcessManager.Processes[i];
@@ -308,9 +342,13 @@ namespace Kernel.Debug
                                 MsgPort.Write("\n");
                             }
                         }
+
+                        #endregion
                     }
                     else if (cmd == "suspend")
                     {
+                        #region Suspend
+
                         if (lineParts.Count == 3)
                         {
                             uint ProcessId = FOS_System.Int32.Parse_DecimalUnsigned((FOS_System.String)lineParts[1], 0);
@@ -378,9 +416,13 @@ namespace Kernel.Debug
                         {
                             MsgPort.Write("Incorrect arguments, see help.\n");
                         }
+
+                        #endregion
                     }
                     else if (cmd == "resume")
                     {
+                        #region Resume 
+
                         if (lineParts.Count == 3)
                         {
                             uint ProcessId = FOS_System.Int32.Parse_DecimalUnsigned((FOS_System.String)lineParts[1], 0);
@@ -436,9 +478,13 @@ namespace Kernel.Debug
                         {
                             MsgPort.Write("Incorrect arguments, see help.\n");
                         }
+
+                        #endregion
                     }
                     else if (cmd == "step")
                     {
+                        #region Step
+
                         if (lineParts.Count == 3)
                         {
                             uint ProcessId = FOS_System.Int32.Parse_DecimalUnsigned((FOS_System.String)lineParts[1], 0);
@@ -502,9 +548,13 @@ namespace Kernel.Debug
                         {
                             MsgPort.Write("Incorrect arguments, see help.\n");
                         }
+
+                        #endregion
                     }
                     else if (cmd == "ss")
                     {
+                        #region Single Step
+
                         if (lineParts.Count == 3)
                         {
                             uint ProcessId = FOS_System.Int32.Parse_DecimalUnsigned((FOS_System.String)lineParts[1], 0);
@@ -572,9 +622,13 @@ namespace Kernel.Debug
                         {
                             MsgPort.Write("Incorrect arguments, see help.\n");
                         }
+
+                        #endregion
                     }
                     else if (cmd == "sta")
                     {
+                        #region Step To Address
+
                         if (lineParts.Count == 4)
                         {
                             uint ProcessId = FOS_System.Int32.Parse_DecimalUnsigned((FOS_System.String)lineParts[1], 0);
@@ -651,9 +705,13 @@ namespace Kernel.Debug
                         {
                             MsgPort.Write("Incorrect arguments, see help.\n");
                         }
+
+                        #endregion
                     }
                     else if (cmd == "bps")
                     {
+                        #region Set Breakpoint
+
                         if (lineParts.Count == 2)
                         {
                             uint Address = FOS_System.Int32.Parse_HexadecimalUnsigned((FOS_System.String)lineParts[1], 0);
@@ -668,9 +726,13 @@ namespace Kernel.Debug
                         {
                             MsgPort.Write("Incorrect arguments, see help.\n");
                         }
+
+                        #endregion
                     }
                     else if (cmd == "bpc")
                     {
+                        #region Clear Breakpoint
+
                         if (lineParts.Count == 2)
                         {
                             uint Address = FOS_System.Int32.Parse_HexadecimalUnsigned((FOS_System.String)lineParts[1], 0);
@@ -685,9 +747,13 @@ namespace Kernel.Debug
                         {
                             MsgPort.Write("Incorrect arguments, see help.\n");
                         }
+
+                        #endregion
                     }
                     else if (cmd == "regs")
                     {
+                        #region Registers
+
                         if (lineParts.Count == 3)
                         {
                             uint ProcessId = FOS_System.Int32.Parse_DecimalUnsigned((FOS_System.String)lineParts[1], 0);
@@ -744,9 +810,13 @@ namespace Kernel.Debug
                         {
                             MsgPort.Write("Incorrect arguments, see help.\n");
                         }
+
+                        #endregion
                     }
                     else if (cmd == "mem")
                     {
+                        #region Memory
+
                         if (lineParts.Count == 5)
                         {
                             uint ProcessId = FOS_System.Int32.Parse_DecimalUnsigned((FOS_System.String)lineParts[1], 0);
@@ -811,6 +881,8 @@ namespace Kernel.Debug
                         {
                             MsgPort.Write("Incorrect arguments, see help.\n");
                         }
+
+                        #endregion
                     }
                     else
                     {
@@ -818,6 +890,8 @@ namespace Kernel.Debug
                     }
                 }
 
+                // Always issue end of command signal, even if something else went wrong
+                //  - Keeps the host in sync.
                 MsgPort.Write("END OF COMMAND\n");
             }
         }        

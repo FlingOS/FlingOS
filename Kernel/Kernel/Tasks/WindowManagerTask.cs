@@ -76,7 +76,7 @@ namespace Kernel.Tasks
             Hardware.Processes.ProcessManager.CurrentProcess.InitHeap();
             
             // Start thread for calling GC Cleanup method
-            if (SystemCallMethods.StartThread(GCCleanupTask.Main, out GCThreadId) != SystemCallResults.OK)
+            if (SystemCalls.StartThread(GCCleanupTask.Main, out GCThreadId) != SystemCallResults.OK)
             {
                 BasicConsole.WriteLine("Window Manager: GC thread failed to create!");
             }
@@ -85,7 +85,7 @@ namespace Kernel.Tasks
             ConnectedPipes = new List();
 
             // Start thread for handling background input processing
-            if (SystemCallMethods.StartThread(InputProcessing, out InputProcessingThreadId) != SystemCallResults.OK)
+            if (SystemCalls.StartThread(InputProcessing, out InputProcessingThreadId) != SystemCallResults.OK)
             {
                 BasicConsole.WriteLine("Window Manager: InputProcessing thread failed to create!");
             }
@@ -94,11 +94,11 @@ namespace Kernel.Tasks
             BasicConsole.WriteLine(InputProcessingThreadId);
 
             BasicConsole.Write("WM > Register RegisterPipeOutpoint syscall handler");
-            SystemCallMethods.RegisterSyscallHandler(SystemCallNumbers.RegisterPipeOutpoint, SyscallHandler);
+            SystemCalls.RegisterSyscallHandler(SystemCallNumbers.RegisterPipeOutpoint, SyscallHandler);
 
 
             // Start thread for handling background output processing
-            if (SystemCallMethods.StartThread(OutputProcessing, out OutputProcessingThreadId) != SystemCallResults.OK)
+            if (SystemCalls.StartThread(OutputProcessing, out OutputProcessingThreadId) != SystemCallResults.OK)
             {
                 BasicConsole.WriteLine("Window Manager: OutputProcessing thread failed to create!");
             }
@@ -106,12 +106,12 @@ namespace Kernel.Tasks
             BasicConsole.WriteLine("WM > Init keyboard");
             Keyboard.InitDefault();
             BasicConsole.WriteLine("WM > Register IRQ 1 handler");
-            SystemCallMethods.RegisterIRQHandler(1, HandleIRQ);
+            SystemCalls.RegisterIRQHandler(1, HandleIRQ);
 
             BasicConsole.WriteLine("WM > Wait for pipe to be created");
             // Wait for pipe to be created
             ready_count++;
-            SystemCallMethods.SleepThread(SystemCallMethods.IndefiniteSleepThread);
+            SystemCalls.SleepThread(SystemCalls.IndefiniteSleepThread);
 
             PipeInfo CurrentPipeInfo = null;
 
@@ -136,7 +136,7 @@ namespace Kernel.Tasks
                 {
                     if (ExceptionMethods.CurrentException is Pipes.Exceptions.RWFailedException)
                     {
-                        //SystemCallMethods.SleepThread(100);
+                        //SystemCalls.SleepThread(100);
                     }
                     else
                     {
@@ -155,7 +155,7 @@ namespace Kernel.Tasks
             {
                 if (!InputProcessingThreadAwake)
                 {
-                    SystemCallMethods.SleepThread(SystemCallMethods.IndefiniteSleepThread);
+                    SystemCalls.SleepThread(SystemCalls.IndefiniteSleepThread);
                 }
                 InputProcessingThreadAwake = false;
 
@@ -201,8 +201,8 @@ namespace Kernel.Tasks
                                         CurrentPipeIdx = 0;
                                         CurrentPipeIndex_Changed = true;
 
-                                        SystemCallMethods.WakeThread(MainThreadId);
-                                        SystemCallMethods.WakeThread(OutputProcessingThreadId);
+                                        SystemCalls.WakeThread(MainThreadId);
+                                        SystemCalls.WakeThread(OutputProcessingThreadId);
                                     }
                                 }
                                 catch
@@ -255,7 +255,7 @@ namespace Kernel.Tasks
             ready_count++;
 
             // Wait for pipe to be created
-            SystemCallMethods.SleepThread(SystemCallMethods.IndefiniteSleepThread);
+            SystemCalls.SleepThread(SystemCalls.IndefiniteSleepThread);
 
             PipeInfo CurrentPipeInfo = ((PipeInfo)ConnectedPipes[CurrentPipeIdx]);
 
@@ -284,7 +284,7 @@ namespace Kernel.Tasks
                             }
                             else
                             {
-                                SystemCallMethods.SendMessage(((PipeInfo)ConnectedPipes[CurrentPipeIdx]).StdOut.OutProcessId, Scancode, 0);
+                                SystemCalls.SendMessage(((PipeInfo)ConnectedPipes[CurrentPipeIdx]).StdOut.OutProcessId, Scancode, 0);
                             }
                         }
                     }

@@ -384,6 +384,10 @@ namespace Kernel
             PreReqs.Reset();
         }
         
+        /// <summary>
+        /// Function used for BasicConsole's Secondary Output capability to write BasicConsole output to the first serial port.
+        /// </summary>
+        /// <param name="str">The string to write to the serial port.</param>
         [Drivers.Compiler.Attributes.NoGC]
         [Drivers.Compiler.Attributes.NoDebug]
         private static void BasicConsole_SecondaryOutput(FOS_System.String str)
@@ -391,6 +395,13 @@ namespace Kernel
             Hardware.IO.Serial.Serial.COM1.Write(str);
         }
 
+        /// <summary>
+        /// Gets a pointer to the top of the pre-allocated kernel stack. 
+        /// </summary>
+        /// <remarks>
+        /// The pre-allocated stack is the stack which is built into the kernel's machine code using assembly instructions.
+        /// </remarks>
+        /// <returns>A poinrter to the top of the stack.</returns>
         [Drivers.Compiler.Attributes.PluggedMethod(ASMFilePath = @"ASM\Kernel")]
         private static unsafe byte* GetKernelStackPtr()
         {

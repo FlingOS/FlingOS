@@ -95,15 +95,16 @@ namespace Kernel.Consoles
         }
 
         /// <summary>
-        /// Gets the offset from the current character to where the cursor should be displayed.
+        /// Gets the offset from the current character to the screen-relative position where the cursor should be displayed.
         /// </summary>
         /// <returns>The offset to be subtracted.</returns>
         protected override int GetDisplayOffset_Char()
         {
+            // Fixed offset: Current Char Location (relative to console) + Position of edge of console (relative to screen)
             return -ScreenStartLineOffset;
         }
         /// <summary>
-        /// Gets the offset from the current line to where the cursor should be displayed.
+        /// Gets the offset from the current line to the screen-relative position where the cursor should be displayed.
         /// </summary>
         /// <returns>The offset to be subtracted.</returns>
         protected override int GetDisplayOffset_Line()
@@ -117,9 +118,12 @@ namespace Kernel.Consoles
         /// Sets the displayed position of the cursor.
         /// </summary>
         /// <param name="character">
-        /// The 0-based offset from the start of a line to the character to display the cursor on.
+        /// The 0-based offset from the start of a line to the character to display the cursor on. This should be a screen-relative value
+        /// not a console-relative value.
         /// </param>
-        /// <param name="line">The 0-based index of the line to display the cursor on.</param>
+        /// <param name="line">
+        /// The 0-based index of the line to display the cursor on. This should be a screen-relative value not a console-relative value.
+        /// </param>
         public override void SetCursorPosition(ushort character, ushort line)
         {
             if (UpdateCursorPosition)

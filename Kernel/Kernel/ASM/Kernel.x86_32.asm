@@ -34,6 +34,7 @@ method_System_Byte__RETEND_Kernel_Kernel_DECLEND_GetKernelStackPtr_NAMEEND___:
 push dword ebp
 mov dword ebp, esp
 
+; Move address of top of the pre-allocated kernel stack into the return value
 mov dword [ebp+8], Kernel_Stack
 
 pop dword ebp

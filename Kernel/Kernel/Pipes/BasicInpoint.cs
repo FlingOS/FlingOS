@@ -110,7 +110,7 @@ namespace Kernel.Pipes
                     RequestPtr->Class = aClass;
                     RequestPtr->Subclass = aSubclass;
                                         
-                    SystemCallResults SysCallResult = SystemCallMethods.CreatePipe(anOutProcessId, RequestPtr);
+                    SystemCallResults SysCallResult = SystemCalls.CreatePipe(anOutProcessId, RequestPtr);
                     switch (SysCallResult)
                     {
                         case SystemCallResults.Unhandled:
@@ -166,7 +166,7 @@ namespace Kernel.Pipes
                     ReadPipeRequestPtr->OutBuffer = (byte*)Utilities.ObjectUtilities.GetHandle(Data) + FOS_System.Array.FieldsBytesSize;
                     ReadPipeRequestPtr->Blocking = Blocking;
 
-                    SystemCallResults SysCallResult = SystemCallMethods.ReadPipe(ReadPipeRequestPtr, out BytesRead);
+                    SystemCallResults SysCallResult = SystemCalls.ReadPipe(ReadPipeRequestPtr, out BytesRead);
                     switch (SysCallResult)
                     {
                         case SystemCallResults.Unhandled:
