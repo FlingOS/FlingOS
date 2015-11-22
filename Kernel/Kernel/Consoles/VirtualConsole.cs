@@ -45,10 +45,8 @@ namespace Kernel.Consoles
 
         public override void Clear()
         {
-            StdOut.Write(StdOutPipeId, 
-                //2000 spaces to clear out the screen
-                "                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                ", 
-                true);
+            //25 new lines clear out the screen
+            StdOut.Write(StdOutPipeId, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", true);
         }
 
         public override void Update()

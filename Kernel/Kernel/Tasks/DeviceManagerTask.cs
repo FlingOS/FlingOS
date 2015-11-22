@@ -78,7 +78,8 @@ namespace Kernel.Tasks
                 {
                     try
                     {
-                        StdOut.Write(StdOutPipeId, "Hello, world! (" + (FOS_System.String)loops++ + ")\n", true);
+                        //StdOut.Write(StdOutPipeId, "Hello, world! (" + (FOS_System.String)loops++ + ")\n", true);
+                        SystemCallMethods.SleepThread(-1);
                     }
                     catch
                     {
