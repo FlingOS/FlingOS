@@ -391,28 +391,6 @@ namespace Kernel
             Hardware.IO.Serial.Serial.COM1.Write(str);
         }
 
-        public static void OutputAddressDetectedMethod(uint EIP, uint OpNum)
-        {
-            BasicConsole.WriteLine(((FOS_System.String)"Test address detected! EIP: ") + EIP + ", Op Num: " + OpNum);
-            BasicConsole.DelayOutput(5);
-            BasicConsole.WriteLine(((FOS_System.String)"Stack values: ESP = ") + GetESP() + " (Offset from ESP : Value)");
-            for (uint i = 0x1C; i < 120 /*0x1C + (23 * 4)*/; i += 4)
-            {
-                BasicConsole.WriteLine(((FOS_System.String)i) + " : " + GetStackValue(i));
-            }
-            BasicConsole.DelayOutput(1000);
-        }
-        [Drivers.Compiler.Attributes.PluggedMethod(ASMFilePath = null)]
-        public static uint GetStackValue(uint offset)
-        {
-            return 0;
-        }
-        [Drivers.Compiler.Attributes.PluggedMethod(ASMFilePath = null)]
-        public static uint GetESP()
-        {
-            return 0;
-        }
-
         [Drivers.Compiler.Attributes.PluggedMethod(ASMFilePath = @"ASM\Kernel")]
         private static unsafe byte* GetKernelStackPtr()
         {
