@@ -48,16 +48,16 @@ namespace Kernel.Tasks
             Thread.Sleep(1000);
             
             MainConsole = new Consoles.AdvancedConsole();
-            MainConsole.ScreenHeightInLines = 7;
+            MainConsole.ScreenHeight = 7;
             MainConsole.LineLength = 55;
             MainConsole.ScreenStartLineOffset = 0;
-            MainConsole.UpdateCursorPosition = false;
+            MainConsole.UpdateScreenCursor = false;
 
             StatusConsole = new Consoles.AdvancedConsole();
-            StatusConsole.ScreenHeightInLines = 7;
+            StatusConsole.ScreenHeight = 7;
             StatusConsole.LineLength = 24;
             StatusConsole.ScreenStartLineOffset = 56;
-            StatusConsole.UpdateCursorPosition = false;
+            StatusConsole.UpdateScreenCursor = false;
 
             MainConsole.Clear();
             StatusConsole.Clear();
@@ -67,7 +67,7 @@ namespace Kernel.Tasks
             Hardware.DeviceManager.AddDeviceAddedListener(DeviceManager_DeviceAdded, null);
 
             Thread.Sleep(500);
-            Console.Default.ScreenHeightInLines = 25 - 8;
+            Console.Default.ScreenHeight = 25 - 8;
             Console.Default.ScreenStartLine = 8;
 
             while (!Terminating)

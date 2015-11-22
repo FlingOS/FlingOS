@@ -83,7 +83,6 @@ namespace Drivers.Compiler.Architectures.x86
             conversionState.Append(new ASMOps.Label() { ILPosition = currOpPosition, Extension = "False1" });
             
             // 2. Load object type
-            GlobalMethods.InsertPageFaultDetection(conversionState, "EAX", 0, (OpCodes)theOp.opCode.Value);
             conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Dword, Src = "[EAX]", Dest = "EBX" });
             
             // 3. Test if object type == provided type:
@@ -109,7 +108,6 @@ namespace Drivers.Compiler.Architectures.x86
             
             //      3.2.1. Move to base type
             int baseTypeOffset = conversionState.GetTypeFieldOffset("TheBaseType");
-            GlobalMethods.InsertPageFaultDetection(conversionState, "EBX", baseTypeOffset, (OpCodes)theOp.opCode.Value);
             conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Dword, Src = "[EBX+"+baseTypeOffset+"]", Dest = "EBX" });
             
             //      3.2.2. Test if base type null:

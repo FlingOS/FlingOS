@@ -37,9 +37,18 @@ namespace Kernel
     /// </summary>
     public class CommandDescription : FOS_System.Object
     {
-        public String CommandName;  // Name of the command
-        public String CommandNameLower; // Command name in lower case
-        public FOS_System.String Description; // Description of the command
+        /// <summary>
+        /// Name of the command
+        /// </summary>
+        public String CommandName;
+        /// <summary>
+        /// Command name in lower case
+        /// </summary>
+        public String CommandNameLower;
+        /// <summary>
+        /// Description of the command
+        /// </summary>
+        public FOS_System.String Description;
     }
 
     /// <summary>
@@ -47,7 +56,10 @@ namespace Kernel
     /// </summary>
     public static class CommandHelp
     {
-        public static FOS_System.Collections.List CommandDescriptions = new FOS_System.Collections.List();  // List of descriptions for the available commands
+        /// <summary>
+        /// List of descriptions for the available commands.
+        /// </summary>
+        public static FOS_System.Collections.List CommandDescriptions = new FOS_System.Collections.List(); 
         
         /// <summary>
         /// CommandHelp constructor
@@ -225,8 +237,6 @@ Safely reboots the computer."
             #endregion
         }
         
-
-
         /// <summary>
         /// Returns Description of the command passed to it
         /// </summary>

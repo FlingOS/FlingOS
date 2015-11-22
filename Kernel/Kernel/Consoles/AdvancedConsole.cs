@@ -61,11 +61,11 @@ namespace Kernel.Consoles
         public override void Update()
         {
             //Start at beginning of first line at the bottom of the screen
-            char* vidMemPtr = vidMemBasePtr + ((ScreenHeightInLines - 1) * ScreenLineWidth);
+            char* vidMemPtr = vidMemBasePtr + ((ScreenHeight - 1) * ScreenLineWidth);
             //Start at the current line then move backwards through the buffer
             //  until we've either outputted 25 lines or reached the start of 
             //  the buffer.
-            for (int i = CurrentLine; i > -1 && i > CurrentLine - ScreenHeightInLines; i--)
+            for (int i = CurrentLine; i > -1 && i > CurrentLine - ScreenHeight; i--)
             {
                 //Get a pointer to the start of the current line
                 //  We could index into the string each time, but using a pointer
@@ -111,7 +111,7 @@ namespace Kernel.Consoles
         {
             //Creates a fixed-position cursor on line 24 (the bottom line of the screen in 25-line
             //  VGA text-mode)
-            return CurrentLine - (ScreenStartLine + ScreenHeightInLines - 1);
+            return CurrentLine - (ScreenStartLine + ScreenHeight - 1);
         }
 
         /// <summary>
@@ -126,7 +126,7 @@ namespace Kernel.Consoles
         /// </param>
         public override void SetCursorPosition(ushort character, ushort line)
         {
-            if (UpdateCursorPosition)
+            if (UpdateScreenCursor)
             {
                 //Offset is in number of characters from start of video memory 
                 //  (not number of bytes).
@@ -145,7 +145,7 @@ namespace Kernel.Consoles
         /// </summary>
         public void DrawBottomBorder()
         {
-            char* vidMemPtr = vidMemBasePtr + (ScreenHeightInLines * ScreenLineWidth);
+            char* vidMemPtr = vidMemBasePtr + (ScreenHeight * ScreenLineWidth);
             for (int j = 0; j < LineLength; j++)
             {
                 vidMemPtr[j] = (char)('-' | CurrentAttr);
@@ -157,7 +157,7 @@ namespace Kernel.Consoles
         public void DrawLeftBorder()
         {
             char* vidMemPtr = vidMemBasePtr - 1;
-            for (int j = 0; j < ScreenHeightInLines; j++)
+            for (int j = 0; j < ScreenHeight; j++)
             {
                 *vidMemPtr = (char)('|' | CurrentAttr);
                 vidMemPtr += ScreenLineWidth;

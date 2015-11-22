@@ -68,12 +68,30 @@ namespace Kernel
         /// </summary>
         protected ushort CurrentAttr = 0;
 
+        /// <summary>
+        /// Screen-relative 0-based index of the character in a line the console starts on.
+        /// </summary>
         public int ScreenStartLineOffset = 0;
+        /// <summary>
+        /// Screen-relative width of the console (in number of characters).
+        /// </summary>
         public int ScreenLineWidth = 80;
+        /// <summary>
+        /// Screen-relative 0-based index of the line the console starts on.
+        /// </summary>
         public int ScreenStartLine = 0;
-        public int ScreenHeightInLines = 25;
+        /// <summary>
+        /// Screen-relative height of the console (in number of lines).
+        /// </summary>
+        public int ScreenHeight = 25;
 
-        public bool UpdateCursorPosition = true;
+        /// <summary>
+        /// Whether to update the screen's cursor for this console or not.
+        /// </summary>
+        /// <remarks>
+        /// Should be set to true for at most one instance of a given type of console.
+        /// </remarks>
+        public bool UpdateScreenCursor = true;
 
         /// <summary>
         /// Initialises a new instance of a Console.

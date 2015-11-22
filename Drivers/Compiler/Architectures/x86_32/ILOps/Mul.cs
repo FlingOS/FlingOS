@@ -165,10 +165,8 @@ namespace Drivers.Compiler.Architectures.x86
                     conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Dword, Src = "0", Dest = "EDX" });
 
                     // mov eax, [ESP+0] - Load BL
-                    GlobalMethods.InsertPageFaultDetection(conversionState, "esp", 0, (OpCodes)theOp.opCode.Value);
                     conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Dword, Src = "[ESP+0]", Dest = "EAX" });
                     // mov ebx, [ESP+8] - Load AL
-                    GlobalMethods.InsertPageFaultDetection(conversionState, "esp", 8, (OpCodes)theOp.opCode.Value);
                     conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Dword, Src = "[ESP+8]", Dest = "EBX" });
                     // mul ebx           - BL * AL, result in eax:edx
                     conversionState.Append(new ASMOps.Mul() { Arg = "EBX" });
@@ -184,7 +182,6 @@ namespace Drivers.Compiler.Architectures.x86
                     // mov edx, 0
                     conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Dword, Src = "0", Dest = "EDX" });
                     // mov eax [ESP+4+8] - Load BH
-                    GlobalMethods.InsertPageFaultDetection(conversionState, "esp", 12, (OpCodes)theOp.opCode.Value);
                     conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Dword, Src = "[ESP+12]", Dest = "EAX" });
                     // mul ebx           - BH * AL, result in eax:edx
                     conversionState.Append(new ASMOps.Mul() { Arg = "EBX" });
@@ -198,10 +195,8 @@ namespace Drivers.Compiler.Architectures.x86
                     // mov edx, 0
                     conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Dword, Src = "0", Dest = "EDX" });
                     // mov eax, [ESP+0+12] - Load BL
-                    GlobalMethods.InsertPageFaultDetection(conversionState, "esp", 12, (OpCodes)theOp.opCode.Value);
                     conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Dword, Src = "[ESP+12]", Dest = "EAX" });
                     // mov ebx, [ESP+12+12] - Load AH
-                    GlobalMethods.InsertPageFaultDetection(conversionState, "esp", 24, (OpCodes)theOp.opCode.Value);
                     conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Dword, Src = "[ESP+24]", Dest = "EBX" });
                     // mul ebx             - BL * AH, result in eax:edx
                     conversionState.Append(new ASMOps.Mul() { Arg = "EBX" });
@@ -215,20 +210,16 @@ namespace Drivers.Compiler.Architectures.x86
                     // AH * BL = [ESP+0] , 32 bits - high bits
 
                     // mov eax, [ESP+8]  - Load AL * BL
-                    GlobalMethods.InsertPageFaultDetection(conversionState, "esp", 8, (OpCodes)theOp.opCode.Value);
                     conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Dword, Src = "[ESP+8]", Dest = "EAX" });
                     // mov edx, [ESP+12]
-                    GlobalMethods.InsertPageFaultDetection(conversionState, "esp", 12, (OpCodes)theOp.opCode.Value);
                     conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Dword, Src = "[ESP+12]", Dest = "EDX" });
                     // mov ebx, 0
                     conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Dword, Src = "0", Dest = "EBX" });
                     // mov ecx, [ESP+4]   - Load AL * BH
-                    GlobalMethods.InsertPageFaultDetection(conversionState, "esp", 4, (OpCodes)theOp.opCode.Value);
                     conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Dword, Src = "[ESP+4]", Dest = "ECX" });
                     // add edx, ecx       - Add (AL * BL) + (AL * BH), result in eax:edx
                     conversionState.Append(new ASMOps.Add() { Src = "ECX", Dest = "EDX" });
                     // mov ecx, [ESP+0]   - Load AH * BL
-                    GlobalMethods.InsertPageFaultDetection(conversionState, "esp", 0, (OpCodes)theOp.opCode.Value);
                     conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Dword, Src = "[ESP+0]", Dest = "ECX" });
                     // add edx, ecx       - Add ((AL * BL) + (AL * BH)) + (AH * BL), result in eax:edx
                     conversionState.Append(new ASMOps.Add() { Src = "ECX", Dest = "EDX" });

@@ -68,24 +68,12 @@ namespace Kernel
 
             try
             {                
-                //FOS_System.GC.Cleanup();
-                
-                //BasicConsole.WriteLine("Virtual memory initialised.");
-                //BasicConsole.Write("Heap memory use: ");
-                //BasicConsole.Write(Heap.GetTotalUsedMem());
-                //BasicConsole.Write(" / ");
-                //BasicConsole.WriteLine(Heap.GetTotalMem());
-                //BasicConsole.DelayOutput(5);
-                
                 Hardware.IO.Serial.Serial.InitCOM1();
                 Hardware.IO.Serial.Serial.InitCOM2();
                 Hardware.IO.Serial.Serial.InitCOM3();
 
                 BasicConsole.SecondaryOutput = BasicConsole_SecondaryOutput;
                 BasicConsole.SecondaryOutputEnabled = true;
-
-                // DO NOT REMOVE THE FOLLOWING LINE -- ednutting
-                PreReqs.PageFaultDetection_Initialised = true;
 
                 Hardware.Devices.CPU.InitDefault();
                 
@@ -242,20 +230,6 @@ namespace Kernel
                 BasicConsole.WriteLine("FlingOS forced to halt!");
                 BasicConsole.SetTextColour(BasicConsole.default_colour);
             }
-
-            BasicConsole.WriteLine("Cleaning up...");
-            FOS_System.GC.Cleanup();
-
-            BasicConsole.SetTextColour(BasicConsole.error_colour);
-            BasicConsole.Write("GC num objs: ");
-            BasicConsole.WriteLine(FOS_System.GC.NumObjs);
-            BasicConsole.Write("GC num strings: ");
-            BasicConsole.WriteLine(FOS_System.GC.NumStrings);
-            BasicConsole.Write("Heap memory use: ");
-            BasicConsole.Write(Heap.FBlock->used * Heap.FBlock->bsize);
-            BasicConsole.Write(" / ");
-            BasicConsole.WriteLine(Heap.FBlock->size);
-            BasicConsole.SetTextColour(BasicConsole.default_colour);
 
             BasicConsole.WriteLine("Fling OS Ended.");
 

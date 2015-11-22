@@ -114,9 +114,7 @@ namespace Drivers.Compiler.Architectures.x86
                 conversionState.Append(new ASMOps.Pop() { Size = ASMOps.OperandSize.Dword, Dest = "EBX" });
 
                 //Mov [address], value
-                GlobalMethods.InsertPageFaultDetection(conversionState, "ebx", 4, (OpCodes)theOp.opCode.Value);
                 conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Dword, Src = "EDX", Dest = "[EBX+4]" });
-                GlobalMethods.InsertPageFaultDetection(conversionState, "ebx", 0, (OpCodes)theOp.opCode.Value);
                 conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Dword, Src = "EDX", Dest = "[EBX]" });
             }
             else if (bytesToStore == 4)
@@ -128,7 +126,6 @@ namespace Drivers.Compiler.Architectures.x86
                 conversionState.Append(new ASMOps.Pop() { Size = ASMOps.OperandSize.Dword, Dest = "EBX" });
 
                 //Mov [address], value
-                GlobalMethods.InsertPageFaultDetection(conversionState, "ebx", 0, (OpCodes)theOp.opCode.Value);
                 conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Dword, Src = "EAX", Dest = "[EBX]" });
             }
             else if (bytesToStore == 2)
@@ -140,7 +137,6 @@ namespace Drivers.Compiler.Architectures.x86
                 conversionState.Append(new ASMOps.Pop() { Size = ASMOps.OperandSize.Dword, Dest = "EBX" });
 
                 //Mov [address], value
-                GlobalMethods.InsertPageFaultDetection(conversionState, "ebx", 0, (OpCodes)theOp.opCode.Value);
                 conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Word, Src = "AX", Dest = "[EBX]" });
             }
             else if (bytesToStore == 1)
@@ -152,7 +148,6 @@ namespace Drivers.Compiler.Architectures.x86
                 conversionState.Append(new ASMOps.Pop() { Size = ASMOps.OperandSize.Dword, Dest = "EBX" });
 
                 //Mov [address], value
-                GlobalMethods.InsertPageFaultDetection(conversionState, "ebx", 0, (OpCodes)theOp.opCode.Value);
                 conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Byte, Src = "AL", Dest = "[EBX]" });
             }
         }

@@ -58,23 +58,17 @@ namespace Drivers.Compiler.Architectures.x86
             {
                 if (i == 0)
                 {
-                    GlobalMethods.InsertPageFaultDetection(conversionState, "esp", bytesShift, OpCodes.Unbox);
                     conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Dword, Src = "[ESP+" + bytesShift.ToString() + "]", Dest = "EAX" });
-                    GlobalMethods.InsertPageFaultDetection(conversionState, "esp", bytesShift + 4, OpCodes.Unbox);
                     conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Dword, Src = "[ESP+" + (bytesShift + 4).ToString() + "]", Dest = "EBX" });
-                    GlobalMethods.InsertPageFaultDetection(conversionState, "esp", bytesShift, OpCodes.Unbox);
                     conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Dword, Src = "EBX", Dest = "[ESP+" + bytesShift.ToString() + "]" });
                 }
                 else if (i == dwordsToRotate - 1)
                 {
-                    GlobalMethods.InsertPageFaultDetection(conversionState, "esp", bytesShift, OpCodes.Unbox);
                     conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Dword, Src = "EAX", Dest = "[ESP+" + bytesShift.ToString() + "]" });
                 }
                 else
                 {
-                    GlobalMethods.InsertPageFaultDetection(conversionState, "esp", bytesShift + 4, OpCodes.Unbox);
                     conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Dword, Src = "[ESP+" + (bytesShift + 4).ToString() + "]", Dest = "EBX" });
-                    GlobalMethods.InsertPageFaultDetection(conversionState, "esp", bytesShift, OpCodes.Unbox);
                     conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Dword, Src = "EBX", Dest = "[ESP+" + bytesShift.ToString() + "]" });
                 }
                 bytesShift += 4;
