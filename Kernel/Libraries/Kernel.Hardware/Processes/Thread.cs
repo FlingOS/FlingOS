@@ -32,8 +32,8 @@ using System;
 namespace Kernel.Hardware.Processes
 {
     public delegate void ThreadStartMethod();
-        
-    public unsafe class Thread : FOS_System.Object
+
+    public unsafe class Thread : FOS_System.Collections.Comparable
     {
         public bool Debug_Suspend = false;
 
@@ -58,6 +58,18 @@ namespace Kernel.Hardware.Processes
         /// </remarks>
         public int TimeToSleep = 0;
 
+        public override int Key
+        {
+            get
+            {   
+                return TimeToSleep;
+            }
+            set
+            {
+                TimeToSleep = value;
+            }
+        }
+        
         public Thread(ThreadStartMethod StartMethod, uint AnId, bool UserMode, FOS_System.String AName)
         {
 #if THREAD_TRACE

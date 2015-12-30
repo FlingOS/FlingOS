@@ -82,7 +82,7 @@ namespace Kernel.Hardware.USB
         /// <seealso cref="Kernel.Hardware.USB.USBTransaction"/>
         public List transactions;
         /// <summary>
-        /// Whether the transfer completed succesffuly (in-full) or not.
+        /// Whether the transfer completed successfully (in-full) or not.
         /// </summary>
         public bool success;
     }

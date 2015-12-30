@@ -285,7 +285,7 @@ namespace Drivers.Compiler.App
                     Logger.LogError(Errors.ILCompiler_NullRefException_ErrorCode, "", 0,
                                     string.Format(
                                         Errors.ErrorMessages[Errors.ILCompiler_NullRefException_ErrorCode],
-                                        ex.Message));
+                                        ex.Message, ex.StackTrace));
                     result = ErrorCode.ILCompilerFailed;
                 }
                 catch (Exception ex)

@@ -130,7 +130,7 @@ namespace Drivers.Compiler
             { "LDR0003", "Library Loader encountered an unexpected error. {0}\r\n{1}" },
 
             { "ILC0001", "The IL compiler failed to compile." },
-            { "ILC0002", "The IL compiler failed to compile due to null reference. {0}" },
+            { "ILC0002", "The IL compiler failed to compile due to null reference. {0}\r\n{1}" },
             { "ILC0003", "The IL compiler failed to compile due to an unexpected error. {0}\r\n{1}" },
             { "ILC0004", "The IL scanner failed to load the target architecture. {0}" },
             { "ILC0005", "The IL scanner failed to scan an IL op. {0}" },

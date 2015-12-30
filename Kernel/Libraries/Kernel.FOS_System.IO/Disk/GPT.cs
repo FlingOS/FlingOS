@@ -59,7 +59,7 @@ namespace Kernel.FOS_System.IO.Disk
         /// </summary>
         public ulong HeaderLBA = 0;
         /// <summary>
-        /// The LBA of the backup GPT header. Shoukd be last sector on the disk.
+        /// The LBA of the backup GPT header. Should be last sector on the disk.
         /// </summary>
         public ulong HeaderBackupLBA = 0;
         /// <summary>

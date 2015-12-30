@@ -59,6 +59,37 @@ namespace Kernel.Tasks
             BasicConsole.WriteLine("Kernel task! ");
             BasicConsole.WriteLine(" > Executing normally...");
 
+            try
+            {
+                PriorityQueue queue = new PriorityQueue(20);
+                queue.Insert(new TestComparable(20));
+                queue.Insert(new TestComparable(19));
+                queue.Insert(new TestComparable(18));
+                queue.Insert(new TestComparable(17));
+                queue.Insert(new TestComparable(16));
+                queue.Insert(new TestComparable(15));
+                queue.Insert(new TestComparable(5));
+                queue.Insert(new TestComparable(4));
+                queue.Insert(new TestComparable(3));
+                queue.Insert(new TestComparable(2));
+                queue.Insert(new TestComparable(1));
+
+                BasicConsole.WriteLine(queue.ToString());
+
+                TestComparable minNode = (TestComparable)queue.ExtractMin();
+                while (minNode != null)
+                {
+                    BasicConsole.WriteLine(minNode.Key);
+                    
+                    minNode = (TestComparable)queue.ExtractMin();
+                }
+            }
+            catch
+            {
+                BasicConsole.WriteLine("Error!");
+                BasicConsole.WriteLine(ExceptionMethods.CurrentException.Message);
+            }
+
             DeferredSyscallsInfo_Unqueued = new Queue(256, false);
             DeferredSyscallsInfo_Queued = new Queue(DeferredSyscallsInfo_Unqueued.Capacity, false);
             for (int i = 0; i < DeferredSyscallsInfo_Unqueued.Capacity; i++)
@@ -485,6 +516,17 @@ namespace Kernel.Tasks
             {
                 keyboard.HandleScancode(ScanCode);
             }
+        }
+    }
+
+    public class TestComparable : FOS_System.Collections.Comparable
+    {
+        public TestComparable()
+        {
+        }
+        public TestComparable(int key)
+             : base(key)
+        {
         }
     }
 }

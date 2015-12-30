@@ -24,12 +24,9 @@
 // ------------------------------------------------------------------------------ //
 #endregion
     
-using Kernel.FOS_System.Collections;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+
+using Kernel.FOS_System.Collections;
 
 namespace Kernel.Hardware.Devices
 {

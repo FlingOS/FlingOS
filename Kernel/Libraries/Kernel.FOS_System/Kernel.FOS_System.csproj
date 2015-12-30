@@ -90,10 +90,12 @@
     <Compile Include="Array.cs" />
     <Compile Include="BasicConsole.cs" />
     <Compile Include="ByteConverter.cs" />
+    <Compile Include="Collections\PriorityQueue.cs" />
     <Compile Include="Collections\Bitmap.cs" />
     <Compile Include="Collections\CircularBuffer.cs" />
     <Compile Include="Collections\DelegateList.cs" />
     <Compile Include="Collections\Dictionary.cs" />
+    <Compile Include="Collections\Comparable.cs" />
     <Compile Include="Collections\List.cs" />
     <Compile Include="Collections\Queue.cs" />
     <Compile Include="Collections\Stack.cs" />
