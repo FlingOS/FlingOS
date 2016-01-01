@@ -77,7 +77,7 @@ namespace Kernel.Hardware.Processes
 
             if (process.Registered)
             {
-                return;
+                ExceptionMethods.Throw(new FOS_System.Exception("Attempted to re-register process! Process name: " + process.Name));
             }
 
             //bool reenable = Scheduler.Enabled;

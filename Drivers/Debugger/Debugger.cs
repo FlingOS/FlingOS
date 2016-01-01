@@ -79,8 +79,11 @@ namespace Drivers.Debugger
             
             MsgSerial.Dispose();
             MsgSerial = null;
-            NotifSerial.Dispose();
-            NotifSerial = null;
+            if (NotifSerial != null)
+            {
+                NotifSerial.Dispose();
+                NotifSerial = null;
+            }
         }
 
         public bool Init(string PipeName, string BinFolderPath, string AssemblyName)

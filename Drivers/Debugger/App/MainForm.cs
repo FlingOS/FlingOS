@@ -296,9 +296,15 @@ namespace Drivers.Debugger.App
                 UpdateEnableStates();
             }
 
-            while (!TheDebugger.Ready)
+            try
             {
-                System.Threading.Thread.Sleep(100);
+                while (!TheDebugger.Ready)
+                {
+                    System.Threading.Thread.Sleep(100);
+                }
+            }
+            catch (NullReferenceException)
+            {
             }
 
             UpdateEnableStates();

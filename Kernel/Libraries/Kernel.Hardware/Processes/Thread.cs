@@ -37,7 +37,7 @@ namespace Kernel.Hardware.Processes
     {
         public enum ActiveStates
         {
-            None,
+            NotStarted,
             Suspended,
             Inactive,
             Active,
@@ -111,7 +111,9 @@ namespace Kernel.Hardware.Processes
         {
             get
             {
-                return State->Terminated ? ActiveStates.Terminated : 
+                return 
+                    !State->Started ? ActiveStates.NotStarted : 
+                    State->Terminated ? ActiveStates.Terminated : 
                     Suspended ? ActiveStates.Suspended : 
                     Active ? ActiveStates.Active : 
                     ActiveStates.Inactive;
@@ -153,7 +155,7 @@ namespace Kernel.Hardware.Processes
         
         public Thread(Process AnOwner, ThreadStartMethod StartMethod, uint AnId, bool UserMode, FOS_System.String AName)
         {
-            LastActiveState = ActiveStates.None;
+            LastActiveState = ActiveStates.NotStarted;
             Owner = AnOwner;
 #if THREAD_TRACE
             BasicConsole.WriteLine("Constructing thread object...");

@@ -125,11 +125,11 @@ namespace Kernel.Tasks
 
                 //ProcessManager.CurrentProcess.OutputMemTrace = true;
 
-                BasicConsole.WriteLine(" > Starting deferred syscalls thread...");
-                DeferredSyscallsThread = ProcessManager.CurrentProcess.CreateThread(DeferredSyscallsThread_Main, "Deferred Sys Calls");
+                //BasicConsole.WriteLine(" > Starting deferred syscalls thread...");
+                //DeferredSyscallsThread = ProcessManager.CurrentProcess.CreateThread(DeferredSyscallsThread_Main, "Deferred Sys Calls");
 
-                BasicConsole.WriteLine(" > Starting GC Cleanup thread...");
-                ProcessManager.CurrentProcess.CreateThread(Tasks.GCCleanupTask.Main, "GC Cleanup");
+                //BasicConsole.WriteLine(" > Starting GC Cleanup thread...");
+                //ProcessManager.CurrentProcess.CreateThread(Tasks.GCCleanupTask.Main, "GC Cleanup");
 
                 BasicConsole.WriteLine(" > Starting Idle thread...");
                 ProcessManager.CurrentProcess.CreateThread(Tasks.IdleTask.Main, "Idle");
@@ -138,6 +138,12 @@ namespace Kernel.Tasks
                 BasicConsole.WriteLine(" > Starting Debugger thread...");
                 Debug.Debugger.MainThread = ProcessManager.CurrentProcess.CreateThread(Debug.Debugger.Main, "Debugger");
 #endif
+
+                bool OK = true;
+                while (OK)
+                {
+                    ;
+                }
 
                 BasicConsole.WriteLine(" > Starting Window Manager...");
                 Process WindowManagerProcess = ProcessManager.CreateProcess(WindowManagerTask.Main, "Window Manager", false, true);

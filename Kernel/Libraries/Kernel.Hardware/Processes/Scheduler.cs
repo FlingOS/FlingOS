@@ -24,11 +24,8 @@
 // ------------------------------------------------------------------------------ //
 #endregion
     
-#define SCHEDULER_TRACE
-#undef SCHEDULER_TRACE
-
-#define SCHEDULER_HANDLER_TRACE
-#undef SCHEDULER_HANDLER_TRACE
+//#define SCHEDULER_TRACE
+//#define SCHEDULER_HANDLER_TRACE
 
 using System;
 using Kernel.FOS_System.Collections;
@@ -51,7 +48,7 @@ namespace Kernel.Hardware.Processes
         public static bool Enabled = false;
 
         public const int MSFreq = 5;
-        private static int UpdatePeriod = 25;
+        private static int UpdatePeriod = 15;
         private static int UpdateCountdown;
 
         public static void InitProcess(Process process, Priority priority)
@@ -144,7 +141,7 @@ namespace Kernel.Hardware.Processes
 #if SCHEDULER_TRACE
             BasicConsole.WriteLine(" > Adding timer handler...");
 #endif
-            /*1000000*/
+            /*Multiply by 1000000 to get from ms to ns*/
             Hardware.Devices.Timer.Default.RegisterHandler(OnTimerInterrupt, /* MSFreq * 1000000 */ 5000000, true, null);
 
 #if SCHEDULER_TRACE
@@ -270,12 +267,18 @@ namespace Kernel.Hardware.Processes
             {
                 return;
             }
+            
+            UpdateCountdown -= MSFreq;
 
-            UpdateCurrentState(false);
+            if (UpdateCountdown <= 0)
+            {
+                UpdateCountdown = UpdatePeriod;
+                UpdateCurrentState();
+            }
         }
         [Drivers.Compiler.Attributes.NoDebug]
         [Drivers.Compiler.Attributes.NoGC]
-        public static void UpdateCurrentState(bool GuaranteeUpdate = true)
+        public static void UpdateCurrentState()
         {
 #if SCHEDULER_HANDLER_TRACE
             BasicConsole.SetTextColour(BasicConsole.warning_colour);
@@ -283,38 +286,33 @@ namespace Kernel.Hardware.Processes
             if (Processes.ProcessManager.Processes.Count > 1)
                 BasicConsole.WriteLine("Scheduler interrupt started...");
 #endif
-                
+
             if (ProcessManager.CurrentProcess == null ||
                ProcessManager.CurrentThread == null ||
                ProcessManager.CurrentThread_State == null)
             {
                 return;
             }
-            
-            UpdateCountdown -= MSFreq;
 
-            if (UpdateCountdown <= 0 || GuaranteeUpdate)
+            UpdateInactiveThreads();
+
+            UpdateActiveThreads();
+
+            while (ActiveQueue.Count == 0)
             {
-                UpdateCountdown = UpdatePeriod;
+                //#if SCHEDULER_HANDLER_TRACE
+                BasicConsole.WriteLine("WARNING: Scheduler preventing infinite loop by early-updating sleeping threads.");
+                //#endif
                 UpdateInactiveThreads();
+            }
 
-                UpdateActiveThreads();
+            Thread nextThread = (Thread)ActiveQueue.PeekMin();
+            ProcessManager.SwitchProcess(nextThread.Owner.Id, (int)nextThread.Id);
 
-                while (ActiveQueue.Count == 0)
-                {
-                    //#if SCHEDULER_HANDLER_TRACE
-                    BasicConsole.WriteLine("WARNING: Scheduler preventing infinite loop by early-updating sleeping threads.");
-                    //#endif
-                    UpdateInactiveThreads();
-                }
-
-                Thread nextThread = (Thread)ActiveQueue.PeekMin();
-                ProcessManager.SwitchProcess(nextThread.Owner.Id, (int)nextThread.Id);
-
-                if (!ProcessManager.CurrentThread_State->Started)
-                {
-                    SetupThreadForStart();
-                }
+            if (!ProcessManager.CurrentThread_State->Started)
+            {
+                SetupThreadForStart();
+            }
 
 #if SCHEDULER_HANDLER_TRACE
             if (Processes.ProcessManager.Processes.Count > 1)
@@ -322,7 +320,6 @@ namespace Kernel.Hardware.Processes
 
             BasicConsole.SetTextColour(BasicConsole.default_colour);
 #endif
-            }
         }
         //[Drivers.Compiler.Attributes.NoDebug]
         //[Drivers.Compiler.Attributes.NoGC]
@@ -613,7 +610,7 @@ namespace Kernel.Hardware.Processes
             {
                 switch (t.LastActiveState)
                 {
-                    case Thread.ActiveStates.None:
+                    case Thread.ActiveStates.NotStarted:
                     case Thread.ActiveStates.Terminated:
                         break;
                     case Thread.ActiveStates.Active:
@@ -633,7 +630,9 @@ namespace Kernel.Hardware.Processes
 
             switch (t.ActiveState)
             {
-                case Thread.ActiveStates.None:
+                case Thread.ActiveStates.NotStarted:
+                    ActiveQueue.Insert(t);
+                    break;
                 case Thread.ActiveStates.Terminated:
                     break;
                 case Thread.ActiveStates.Active:

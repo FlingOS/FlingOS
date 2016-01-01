@@ -159,7 +159,7 @@ namespace Kernel.Tasks
                 }
                 InputProcessingThreadAwake = false;
 
-                BasicConsole.WriteLine("WM > InputProcessing thread runnning...");
+                BasicConsole.WriteLine("WM > InputProcessing thread running...");
 
                 int numOutpoints;
                 SystemCallResults SysCallResult;
