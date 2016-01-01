@@ -35,7 +35,30 @@ namespace Kernel.Hardware.Processes
 
     public unsafe class Thread : FOS_System.Collections.Comparable
     {
-        public bool Debug_Suspend = false;
+        public enum ActiveStates
+        {
+            None,
+            Suspended,
+            Inactive,
+            Active,
+            Terminated
+        }
+
+        public Process Owner;
+        private bool debug_Suspend;
+        public bool Debug_Suspend
+        {
+            get
+            {
+                return debug_Suspend;
+            }
+            set
+            {
+                LastActiveState = ActiveState;
+                debug_Suspend = value;
+                Scheduler.UpdateList(this);
+            }
+        }
 
         public const int IndefiniteSleep = -1;
 
@@ -53,25 +76,85 @@ namespace Kernel.Hardware.Processes
         /// </remarks>
         public int TimeToRunReload;
 
+        protected int timeToSleep = 0;
         /// <remarks>
         /// Units of ms
         /// </remarks>
-        public int TimeToSleep = 0;
-
-        public override int Key
+        public int TimeToSleep
         {
             get
-            {   
-                return TimeToSleep;
+            {
+                return timeToSleep;
             }
             set
             {
-                TimeToSleep = value;
+                LastActiveState = ActiveState;
+                timeToSleep = value;
+            }
+        }
+
+        public bool Suspended
+        {
+            get
+            {
+                return Debug_Suspend || TimeToSleep == IndefiniteSleep;
+            }
+        }
+        public bool Active
+        {
+            get
+            {
+                return TimeToSleep == 0;
+            }
+        }
+        public ActiveStates ActiveState
+        {
+            get
+            {
+                return State->Terminated ? ActiveStates.Terminated : 
+                    Suspended ? ActiveStates.Suspended : 
+                    Active ? ActiveStates.Active : 
+                    ActiveStates.Inactive;
+            }
+        }
+        public ActiveStates LastActiveState
+        {
+            get;
+            set;
+        }
+        public override int Key
+        {
+            get
+            {
+                if (TimeToSleep > 0)
+                {
+                    return TimeToSleep;
+                }
+                else
+                {
+                    return TimeToRun;
+                }
+            }
+            set
+            {
+                if (!Debug_Suspend)
+                {
+                    if (TimeToSleep > 0)
+                    {
+                        TimeToSleep = value;
+                    }
+                    else
+                    {
+                        TimeToRun = value;
+                    }
+                }
             }
         }
         
-        public Thread(ThreadStartMethod StartMethod, uint AnId, bool UserMode, FOS_System.String AName)
+        public Thread(Process AnOwner, ThreadStartMethod StartMethod, uint AnId, bool UserMode, FOS_System.String AName)
         {
+            LastActiveState = ActiveStates.None;
+            Owner = AnOwner;
 #if THREAD_TRACE
             BasicConsole.WriteLine("Constructing thread object...");
 #endif
@@ -369,9 +452,9 @@ namespace Kernel.Hardware.Processes
             //{
             //    Scheduler.Disable();
             //}
-            
+
             this.TimeToSleep = ms /* x * 1ms / [Scheduler period in ns] = x * 1 = x */;
-            this.TimeToRun = 1;
+            Scheduler.UpdateList(this);
             
             //if (reenable)
             //{
@@ -417,8 +500,11 @@ namespace Kernel.Hardware.Processes
             //{
             //    Scheduler.Disable();
             //}
+
             this.TimeToSleep = 0;
             this.TimeToRun = this.TimeToRunReload;
+            Scheduler.UpdateList(this);
+            
             //if (reenable)
             //{
             //    Scheduler.Enable();

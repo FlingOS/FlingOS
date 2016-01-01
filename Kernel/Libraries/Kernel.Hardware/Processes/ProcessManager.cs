@@ -75,21 +75,28 @@ namespace Kernel.Hardware.Processes
                 ExceptionMethods.Throw(new FOS_System.Exception("Attempted to register null process!"));
             }
 
+            if (process.Registered)
+            {
+                return;
+            }
+
             //bool reenable = Scheduler.Enabled;
             //if (reenable)
             //{
             //    Scheduler.Disable();
             //}
-#if PROCESSMANAGER_TRACE
-            BasicConsole.WriteLine("Initialising process...");
-#endif
-            Scheduler.InitProcess(process, priority);
 
 #if PROCESSMANAGER_TRACE
             BasicConsole.WriteLine("Adding process...");
 #endif
 
             Processes.Add(process);
+
+#if PROCESSMANAGER_TRACE
+            BasicConsole.WriteLine("Initialising process...");
+#endif
+            Scheduler.InitProcess(process, priority);
+
 
 #if PROCESSMANAGER_TRACE
             BasicConsole.WriteLine("Enabling scheduler...");

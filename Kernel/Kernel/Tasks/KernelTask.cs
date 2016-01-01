@@ -62,6 +62,7 @@ namespace Kernel.Tasks
             try
             {
                 PriorityQueue queue = new PriorityQueue(20);
+                TestComparable toRemove = new TestComparable(2);
                 queue.Insert(new TestComparable(20));
                 queue.Insert(new TestComparable(19));
                 queue.Insert(new TestComparable(18));
@@ -71,8 +72,13 @@ namespace Kernel.Tasks
                 queue.Insert(new TestComparable(5));
                 queue.Insert(new TestComparable(4));
                 queue.Insert(new TestComparable(3));
+                queue.Insert(toRemove);
                 queue.Insert(new TestComparable(2));
                 queue.Insert(new TestComparable(1));
+
+                BasicConsole.WriteLine(queue.ToString());
+
+                queue.Delete(toRemove);
 
                 BasicConsole.WriteLine(queue.ToString());
 
@@ -89,6 +95,8 @@ namespace Kernel.Tasks
                 BasicConsole.WriteLine("Error!");
                 BasicConsole.WriteLine(ExceptionMethods.CurrentException.Message);
             }
+
+            //BasicConsole.DelayOutput(100);
 
             DeferredSyscallsInfo_Unqueued = new Queue(256, false);
             DeferredSyscallsInfo_Queued = new Queue(DeferredSyscallsInfo_Unqueued.Capacity, false);
@@ -141,7 +149,7 @@ namespace Kernel.Tasks
                 while (!WindowManagerTask.Ready)
                 {
                     BasicConsole.WriteLine(" > [Wait pause]");
-                    Thread.Sleep(100);
+                    Thread.Sleep(1000);
                 }
                 BasicConsole.WriteLine(" > Window Manager reported ready.");
 

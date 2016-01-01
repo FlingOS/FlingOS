@@ -67,6 +67,8 @@ namespace Kernel.Hardware.Processes
         public FOS_System.GCState TheGCState = null;
         public bool OutputMemTrace = false;
 
+        public bool Registered = false;
+
         public Process(ThreadStartMethod MainMethod, uint AnId, FOS_System.String AName, bool userMode, bool createHeap)
         {
 #if PROCESS_TRACE
@@ -92,13 +94,8 @@ namespace Kernel.Hardware.Processes
 #if PROCESS_TRACE
             BasicConsole.WriteLine("Creating thread...");
 #endif
-            //bool reenable = Scheduler.Enabled;
-            //if (reenable)
-            //{
-            //    Scheduler.Disable();
-            //}
 
-            Thread newThread = new Thread(MainMethod, ThreadIdGenerator++, UserMode, Name);
+            Thread newThread = new Thread(this, MainMethod, ThreadIdGenerator++, UserMode, Name);
 #if PROCESS_TRACE
             BasicConsole.WriteLine("Adding data page...");
 #endif
@@ -116,11 +113,10 @@ namespace Kernel.Hardware.Processes
 #endif
 
             Threads.Add(newThread);
-
-            //if (reenable)
-            //{
-            //    Scheduler.Enable();
-            //}
+            if (Registered)
+            {
+                Scheduler.InitThread(this, newThread);
+            }
 
             return newThread;
         }
