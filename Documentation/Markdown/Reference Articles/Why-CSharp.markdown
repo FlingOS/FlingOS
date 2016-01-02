@@ -11,7 +11,7 @@ order: 1
 
 FlingOS™ is a free, open-source, industry and university supported project to provide learning resources for students and developers to learn OS and low-level development. The project consists of articles, tutorial videos and a sample code base. The articles are designed to consist of comprehensive background information and technical details. The tutorial videos take developers from general programming to an understanding of computer architecture and OS development. However, all of it links to the FlingOS code base, which is primarily a sample kernel written in C#.
 
-In this article we will discuss the unusual decision to use C# to teach OS and low-level development and some of its advantages and disadvantages. 
+In this article we will discuss the unusual decision to use C# to teach OS and low-level development and some of its advantages and disadvantages. If you are looking for how we make C# work as a OS dev language, please take a look at our [How C#](/docs/reference/How-CSharp) article.
 
 # Background
 
