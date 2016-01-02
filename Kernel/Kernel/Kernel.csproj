@@ -103,17 +103,6 @@
     <Compile Include="Consoles\AdvancedConsole.cs" />
     <Compile Include="Consoles\VirtualConsole.cs" />
     <Compile Include="Debug\Debugger.cs" />
-    <Compile Include="Pipes\BasicInpoint.cs" />
-    <Compile Include="Pipes\BasicOutpoint.cs" />
-    <Compile Include="Pipes\Exceptions\RWFailedException.cs" />
-    <Compile Include="Pipes\Exceptions\RWUnhandledException.cs" />
-    <Compile Include="Pipes\Pipe.cs" />
-    <Compile Include="Pipes\PipeGlobals.cs" />
-    <Compile Include="Pipes\PipeInpoint.cs" />
-    <Compile Include="Pipes\PipeManager.cs" />
-    <Compile Include="Pipes\PipeOutpoint.cs" />
-    <Compile Include="Pipes\Standard\StandardInpoint.cs" />
-    <Compile Include="Pipes\Standard\StandardOutpoint.cs" />
     <Compile Include="PreReqs.cs" />
     <Compile Include="Kernel.cs" />
     <Compile Include="Processes\DynamicLinkerLoader.cs" />
@@ -124,10 +113,6 @@
     <Compile Include="Processes\ELF\ELFSegments.cs" />
     <Compile Include="Processes\ELF\ELFSharedObject.cs" />
     <Compile Include="Processes\ELF\ELFStringTable.cs" />
-    <Compile Include="Processes\SystemCalls_Callers.cs" />
-    <Compile Include="Processes\SystemCalls_Enums.cs" />
-    <Compile Include="Processes\SystemCalls_Handlers.cs" />
-    <Compile Include="Processes\SystemCallsHelpers.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Shell.cs" />
     <Compile Include="Shells\MainShell.cs" />
@@ -166,9 +151,6 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="ASM\LoadSequence.x86.asm">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="ASM\SystemCalls.x86_32.asm">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>

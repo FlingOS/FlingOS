@@ -313,6 +313,22 @@ namespace Kernel.Debug
                             MsgPort.Write((FOS_System.String)AProcess.Id);
                             MsgPort.Write(" : ");
                             MsgPort.Write(AProcess.Name);
+                            MsgPort.Write(" : ");
+                            switch (AProcess.Priority)
+                            {
+                                case Scheduler.Priority.ZeroTimed:
+                                    MsgPort.Write("Zero Timed");
+                                    break;
+                                case Scheduler.Priority.Low:
+                                    MsgPort.Write("Low");
+                                    break;
+                                case Scheduler.Priority.Normal:
+                                    MsgPort.Write("Normal");
+                                    break;
+                                case Scheduler.Priority.High:
+                                    MsgPort.Write("High");
+                                    break;
+                            }
                             MsgPort.Write("\n");
                             for (int j = 0; j < AProcess.Threads.Count; j++)
                             {
@@ -321,22 +337,26 @@ namespace Kernel.Debug
                                 MsgPort.Write("      - Thread : ");
                                 MsgPort.Write((FOS_System.String)AThread.Id);
                                 MsgPort.Write(" : ");
-                                if (AThread.Debug_Suspend)
+
+                                switch (AThread.ActiveState)
                                 {
-                                    MsgPort.Write("Suspended");
+                                    case Thread.ActiveStates.Active:
+                                        MsgPort.Write("Active");
+                                        break;
+                                    case Thread.ActiveStates.Inactive:
+                                        MsgPort.Write("Inactive");
+                                        break;
+                                    case Thread.ActiveStates.NotStarted:
+                                        MsgPort.Write("Not Started");
+                                        break;
+                                    case Thread.ActiveStates.Suspended:
+                                        MsgPort.Write("Suspended");
+                                        break;
+                                    case Thread.ActiveStates.Terminated:
+                                        MsgPort.Write("Terminated");
+                                        break;
                                 }
-                                else if (AThread.TimeToSleep == -1)
-                                {
-                                    MsgPort.Write("Waiting  ");
-                                }
-                                else if (AThread.TimeToSleep > 0)
-                                {
-                                    MsgPort.Write("Sleeping ");
-                                }
-                                else
-                                {
-                                    MsgPort.Write("Running  ");
-                                }
+
                                 MsgPort.Write(" : ");
                                 MsgPort.Write(AThread.Name);
                                 MsgPort.Write("\n");

@@ -515,7 +515,7 @@ namespace Kernel.Processes.ELF
                     BasicConsole.Write((uint)segment.Header.VAddr);
                     BasicConsole.Write(" to ");
                     BasicConsole.WriteLine((uint)destMemPtr);
-                    Hardware.Processes.Thread.Sleep(1000);
+                    SystemCalls.SleepThread(1000);
 
                     uint copyOffset = (uint)(destMemPtr - pageAlignedDestMemPtr);
                     uint copyFromOffset = 0;

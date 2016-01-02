@@ -24,8 +24,7 @@
 // ------------------------------------------------------------------------------ //
 #endregion
     
-#define THREAD_TRACE
-#undef THREAD_TRACE
+//#define THREAD_TRACE
 
 using System;
 
@@ -145,7 +144,8 @@ namespace Kernel.Hardware.Processes
                     {
                         TimeToSleep = value;
                     }
-                    else
+                    // Zero Timed processes never have their time to run decremented
+                    else if (Owner.Priority != Scheduler.Priority.ZeroTimed)
                     {
                         TimeToRun = value;
                     }
@@ -209,19 +209,27 @@ namespace Kernel.Hardware.Processes
             //  User   data segment selector offset (offset in GDT) = 0x23 (32|3)
             //          User data segment selector must also be or'ed with 3 for User Privilege level
 #if THREAD_TRACE
-            Console.Default.WriteLine(" > > > Setting SS...");
+            BasicConsole.WriteLine("Setting SS...");
 #endif
             State->SS = UserMode ? (ushort)0x23 : (ushort)0x10;
 
             // Init Started
             //  Not started yet so set to false
 #if THREAD_TRACE
-            Console.Default.WriteLine(" > > > Setting started...");
+            BasicConsole.WriteLine("Setting started...");
 #endif
             State->Started = false;
 
+#if THREAD_TRACE
+            BasicConsole.WriteLine("Allocating exception state...");
+#endif
+            //TODO: This is currently incorrectly allocated from the current process's heap instead of the heap of the owner process
             // Init Exception State
             State->ExState = (ExceptionState*)FOS_System.Heap.AllocZeroed((uint)sizeof(ExceptionState), "Thread : Thread() (2)");
+
+#if THREAD_TRACE
+            BasicConsole.WriteLine("Done.");
+#endif
         }
 
         /* 

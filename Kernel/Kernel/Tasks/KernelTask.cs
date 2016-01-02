@@ -58,46 +58,7 @@ namespace Kernel.Tasks
         {
             BasicConsole.WriteLine("Kernel task! ");
             BasicConsole.WriteLine(" > Executing normally...");
-
-            try
-            {
-                PriorityQueue queue = new PriorityQueue(20);
-                TestComparable toRemove = new TestComparable(2);
-                queue.Insert(new TestComparable(20));
-                queue.Insert(new TestComparable(19));
-                queue.Insert(new TestComparable(18));
-                queue.Insert(new TestComparable(17));
-                queue.Insert(new TestComparable(16));
-                queue.Insert(new TestComparable(15));
-                queue.Insert(new TestComparable(5));
-                queue.Insert(new TestComparable(4));
-                queue.Insert(new TestComparable(3));
-                queue.Insert(toRemove);
-                queue.Insert(new TestComparable(2));
-                queue.Insert(new TestComparable(1));
-
-                BasicConsole.WriteLine(queue.ToString());
-
-                queue.Delete(toRemove);
-
-                BasicConsole.WriteLine(queue.ToString());
-
-                TestComparable minNode = (TestComparable)queue.ExtractMin();
-                while (minNode != null)
-                {
-                    BasicConsole.WriteLine(minNode.Key);
-                    
-                    minNode = (TestComparable)queue.ExtractMin();
-                }
-            }
-            catch
-            {
-                BasicConsole.WriteLine("Error!");
-                BasicConsole.WriteLine(ExceptionMethods.CurrentException.Message);
-            }
-
-            //BasicConsole.DelayOutput(100);
-
+            
             DeferredSyscallsInfo_Unqueued = new Queue(256, false);
             DeferredSyscallsInfo_Queued = new Queue(DeferredSyscallsInfo_Unqueued.Capacity, false);
             for (int i = 0; i < DeferredSyscallsInfo_Unqueued.Capacity; i++)
@@ -125,37 +86,32 @@ namespace Kernel.Tasks
 
                 //ProcessManager.CurrentProcess.OutputMemTrace = true;
 
-                //BasicConsole.WriteLine(" > Starting deferred syscalls thread...");
-                //DeferredSyscallsThread = ProcessManager.CurrentProcess.CreateThread(DeferredSyscallsThread_Main, "Deferred Sys Calls");
-
-                //BasicConsole.WriteLine(" > Starting GC Cleanup thread...");
-                //ProcessManager.CurrentProcess.CreateThread(Tasks.GCCleanupTask.Main, "GC Cleanup");
-
-                BasicConsole.WriteLine(" > Starting Idle thread...");
-                ProcessManager.CurrentProcess.CreateThread(Tasks.IdleTask.Main, "Idle");
-
+                BasicConsole.WriteLine(" > Starting Idle process...");
+                Process IdleProcess = ProcessManager.CreateProcess(Tasks.IdleTask.Main, "Idle", false, true);
+                ProcessManager.RegisterProcess(IdleProcess, Scheduler.Priority.ZeroTimed);
+                
+                BasicConsole.WriteLine(" > Starting deferred syscalls thread...");
+                DeferredSyscallsThread = ProcessManager.CurrentProcess.CreateThread(DeferredSyscallsThread_Main, "Deferred Sys Calls");
+                
 #if DEBUG
                 BasicConsole.WriteLine(" > Starting Debugger thread...");
                 Debug.Debugger.MainThread = ProcessManager.CurrentProcess.CreateThread(Debug.Debugger.Main, "Debugger");
 #endif
 
-                bool OK = true;
-                while (OK)
-                {
-                    ;
-                }
+                BasicConsole.WriteLine(" > Starting GC Cleanup thread...");
+                ProcessManager.CurrentProcess.CreateThread(Tasks.GCCleanupTask.Main, "GC Cleanup");
 
                 BasicConsole.WriteLine(" > Starting Window Manager...");
                 Process WindowManagerProcess = ProcessManager.CreateProcess(WindowManagerTask.Main, "Window Manager", false, true);
                 WindowManagerTask_ProcessId = WindowManagerProcess.Id;
                 //WindowManagerProcess.OutputMemTrace = true;
                 ProcessManager.RegisterProcess(WindowManagerProcess, Scheduler.Priority.Normal);
-
+                
                 BasicConsole.WriteLine(" > Waiting for Window Manager to be ready...");
                 while (!WindowManagerTask.Ready)
                 {
                     BasicConsole.WriteLine(" > [Wait pause]");
-                    Thread.Sleep(1000);
+                    SystemCalls.SleepThread(1000);
                 }
                 BasicConsole.WriteLine(" > Window Manager reported ready.");
 
@@ -188,11 +144,15 @@ namespace Kernel.Tasks
                                         
                     BasicConsole.WriteLine("KT > Running...");
 
-                    //uint loops = 0;
+                    uint loops = 0;
                     while (!Terminating)
                     {
                         try
                         {
+                            //FOS_System.String msg = "KT > Hello, world! (" + (FOS_System.String)loops++ + ")";
+                            //console.WriteLine(msg);
+                            //BasicConsole.WriteLine(msg);
+                            //SystemCalls.SleepThread(1000);
                             shell.Execute();
                         }
                         catch
@@ -253,7 +213,7 @@ namespace Kernel.Tasks
             {
                 if (DeferredSyscallsInfo_Queued.Count == 0)
                 {
-                    Thread.Sleep_Indefinitely();
+                    SystemCalls.SleepThread(SystemCalls.IndefiniteSleepThread);
                 }
 
                 while (DeferredSyscallsInfo_Queued.Count > 0)
@@ -262,11 +222,11 @@ namespace Kernel.Tasks
                     //  end up in an infinite lock. Consider what happens if a process invokes 
                     //  a deferred system call during the pop/push here and at the end of this loop.
                     //BasicConsole.WriteLine("DSC: Pausing scheduler...");
-                    //Scheduler.Disable();
+                    Scheduler.Disable(/*"DSC 1"*/);
                     //BasicConsole.WriteLine("DSC: Popping queued info object...");
                     DeferredSyscallInfo info = (DeferredSyscallInfo)DeferredSyscallsInfo_Queued.Pop();
                     //BasicConsole.WriteLine("DSC: Resuming scheduler...");
-                    //Scheduler.Enable();
+                    Scheduler.Enable();
 
                     //BasicConsole.WriteLine("DSC: Getting process & thread...");
                     Process CallerProcess = ProcessManager.GetProcessById(info.ProcessId);
@@ -293,11 +253,11 @@ namespace Kernel.Tasks
 
                     // See comment at top of loop for why this is necessary
                     //BasicConsole.WriteLine("DSC: Pausing scheduler...");
-                    //Scheduler.Disable();
+                    Scheduler.Disable(/*"DSC 2"*/);
                     //BasicConsole.WriteLine("DSC: Queuing info object...");
                     DeferredSyscallsInfo_Unqueued.Push(info);
                     //BasicConsole.WriteLine("DSC: Resuming scheduler...");
-                    //Scheduler.Enable();
+                    Scheduler.Enable();
                 }
             }
         }
@@ -493,7 +453,7 @@ namespace Kernel.Tasks
             ref uint Return2, ref uint Return3, ref uint Return4,
             uint callerProcessId, uint callerThreadId)
         {
-            SystemCallResults result = SystemCalls.HandleSystemCallForKernel(syscallNumber, 
+            SystemCallResults result = HandleSystemCallForKernel(syscallNumber, 
                 param1, param2, param3, 
                 ref Return2, ref Return3, ref Return4,
                 callerProcessId, callerThreadId);
@@ -516,6 +476,351 @@ namespace Kernel.Tasks
 
             return (int)result;
         }
+
+        /// <summary>
+        /// Special handler method for system calls recognised/handlded by the kernel task.
+        /// </summary>
+        /// <param name="syscallNumber">The system call number that has been invoked.</param>
+        /// <param name="param1">The value of the first parameter.</param>
+        /// <param name="param2">The value of the second parameter.</param>
+        /// <param name="param3">The value of the third parameter.</param>
+        /// <param name="Return2">Reference to the second return value.</param>
+        /// <param name="Return3">Reference to the third return value.</param>
+        /// <param name="Return4">Reference to the fourth return value.</param>
+        /// <param name="callerProcesId">The Id of the process which invoked the system call.</param>
+        /// <param name="callerThreadId">The Id of the thread which invoked the system call.</param>
+        /// <returns>A system call result indicating what has occurred and what should occur next.</returns>
+        /// <remarks>
+        /// Executes within the interrupt handler. Usual restrictions apply.
+        /// </remarks>
+        public static SystemCallResults HandleSystemCallForKernel(uint syscallNumber,
+            uint param1, uint param2, uint param3,
+            ref uint Return2, ref uint Return3, ref uint Return4,
+            uint callerProcesId, uint callerThreadId)
+        {
+            SystemCallResults result = SystemCallResults.Unhandled;
+
+            switch ((SystemCallNumbers)syscallNumber)
+            {
+                case SystemCallNumbers.SleepThread:
+#if SYSCALLS_TRACE
+                    BasicConsole.WriteLine("System call : Sleep Thread");
+#endif
+                    SysCall_Sleep((int)param1, callerProcesId, callerThreadId);
+                    result = SystemCallResults.OK;
+                    break;
+                case SystemCallNumbers.WakeThread:
+#if SYSCALLS_TRACE
+                    BasicConsole.WriteLine("System call : Wake Thread");
+#endif
+                    SysCall_Wake(callerProcesId, param1);
+                    result = SystemCallResults.OK;
+                    break;
+                case SystemCallNumbers.RegisterISRHandler:
+#if SYSCALLS_TRACE
+                    BasicConsole.WriteLine("System call : Register ISR Handler");
+#endif
+                    if (SysCall_RegisterISRHandler((int)param1, param2, callerProcesId))
+                    {
+                        result = SystemCallResults.OK;
+                    }
+                    else
+                    {
+                        result = SystemCallResults.Fail;
+                    }
+                    break;
+                case SystemCallNumbers.DeregisterISRHandler:
+#if SYSCALLS_TRACE
+                    BasicConsole.WriteLine("System call : Deregister ISR Handler");
+#endif
+                    SysCall_DeregisterISRHandler((int)param1, callerProcesId);
+                    result = SystemCallResults.OK;
+                    break;
+                case SystemCallNumbers.RegisterIRQHandler:
+#if SYSCALLS_TRACE
+                    BasicConsole.WriteLine("System call : Register IRQ Handler");
+#endif
+                    if (SysCall_RegisterIRQHandler((int)param1, param2, callerProcesId))
+                    {
+                        result = SystemCallResults.OK;
+                    }
+                    else
+                    {
+                        result = SystemCallResults.Fail;
+                    }
+                    break;
+                case SystemCallNumbers.DeregisterIRQHandler:
+#if SYSCALLS_TRACE
+                    BasicConsole.WriteLine("System call : Deregister IRQ Handler");
+#endif
+                    SysCall_DeregisterIRQHandler((int)param1, callerProcesId);
+                    result = SystemCallResults.OK;
+                    break;
+                case SystemCallNumbers.RegisterSyscallHandler:
+#if SYSCALLS_TRACE
+                    BasicConsole.WriteLine("System call : Register Syscall Handler");
+#endif
+                    if (SysCall_RegisterSyscallHandler((int)param1, param2, callerProcesId))
+                    {
+                        result = SystemCallResults.OK;
+                    }
+                    else
+                    {
+                        result = SystemCallResults.Fail;
+                    }
+                    break;
+                case SystemCallNumbers.DeregisterSyscallHandler:
+#if SYSCALLS_TRACE
+                    BasicConsole.WriteLine("System call : Deregister Syscall Handler");
+#endif
+                    SysCall_DeregisterSyscallHandler((int)param1, callerProcesId);
+                    result = SystemCallResults.OK;
+                    break;
+                case SystemCallNumbers.StartThread:
+#if SYSCALLS_TRACE
+                    BasicConsole.WriteLine("System call : Start Thread");
+#endif
+                    result = SystemCallResults.Deferred;
+                    break;
+                case SystemCallNumbers.RegisterPipeOutpoint:
+#if SYSCALLS_TRACE
+                    BasicConsole.WriteLine("System call : Register Pipe Outpoint");
+#endif
+                    result = SystemCallResults.Deferred_PermitActions;
+                    break;
+                case SystemCallNumbers.GetNumPipeOutpoints:
+#if SYSCALLS_TRACE
+                    BasicConsole.WriteLine("System call : Get Num Pipe Outpoints");
+#endif
+                    result = SystemCallResults.Deferred;
+                    break;
+                case SystemCallNumbers.GetPipeOutpoints:
+#if SYSCALLS_TRACE
+                    BasicConsole.WriteLine("System call : Get Pipe Outpoints");
+#endif
+                    result = SystemCallResults.Deferred;
+                    break;
+                case SystemCallNumbers.CreatePipe:
+#if SYSCALLS_TRACE
+                    BasicConsole.WriteLine("System call : Create Pipe");
+#endif
+                    result = SystemCallResults.Deferred;
+                    break;
+                case SystemCallNumbers.WaitOnPipeCreate:
+#if SYSCALLS_TRACE
+                    BasicConsole.WriteLine("System call : Wait On Pipe Create");
+#endif
+                    result = SystemCallResults.Deferred;
+                    break;
+                case SystemCallNumbers.ReadPipe:
+#if SYSCALLS_TRACE
+                    BasicConsole.WriteLine("System call : Read Pipe");
+#endif
+                    result = SystemCallResults.Deferred;
+                    break;
+                case SystemCallNumbers.WritePipe:
+#if SYSCALLS_TRACE
+                    BasicConsole.WriteLine("System call : Write Pipe");
+#endif
+                    result = SystemCallResults.Deferred;
+                    break;
+                case SystemCallNumbers.SendMessage:
+#if SYSCALLS_TRACE
+                    BasicConsole.WriteLine("Syscall: Send message");
+#endif
+                    result = SysCall_SendMessage(callerProcesId, callerThreadId, param1, param2, param3) ? SystemCallResults.OK : SystemCallResults.Fail;
+                    break;
+                case SystemCallNumbers.ReceiveMessage:
+#if SYSCALLS_TRACE
+                    BasicConsole.WriteLine("Syscall: Receive message");
+#endif
+                    Tasks.KernelTask.ReceiveMessage(callerProcesId, param1, param2);
+                    break;
+                //#if SYSCALLS_TRACE
+                default:
+                    BasicConsole.WriteLine("System call unrecognised/unhandled by Kernel Task.");
+                    break;
+                //#endif
+            }
+
+            return result;
+        }
+
+        /// <summary>
+        /// Performs Sleep system call processing for the Kernel Task.
+        /// </summary>
+        /// <param name="ms">The number of milliseconds to sleep for.</param>
+        /// <param name="callerProcessId">The Id of the process to sleep.</param>
+        /// <param name="callerThreadId">The Id of the thread to sleep.</param>
+        private static void SysCall_Sleep(int ms, uint callerProcessId, uint callerThreadId)
+        {
+#if SYSCALLS_TRACE
+            BasicConsole.WriteLine("Sleeping thread...");
+#endif
+            ProcessManager.GetThreadById(callerThreadId, ProcessManager.GetProcessById(callerProcessId))._EnterSleep(ms);
+        }
+        /// <summary>
+        /// Performs Wake system call processing for the Kernel Task.
+        /// </summary>
+        /// <param name="callerProcessId">The Id of the process to wake.</param>
+        /// <param name="threadToWakeId">The Id of the thread to wake.</param>
+        private static void SysCall_Wake(uint callerProcessId, uint threadToWakeId)
+        {
+#if SYSCALLS_TRACE
+            BasicConsole.WriteLine("Waking thread...");
+#endif
+            ProcessManager.GetThreadById(threadToWakeId, ProcessManager.GetProcessById(callerProcessId))._Wake();
+        }
+        /// <summary>
+        /// Performs Register ISR Handler system call processing for the Kernel Task.
+        /// </summary>
+        /// <param name="ISRNum">The ISR number to register the handler for.</param>
+        /// <param name="handlerAddr">The address of the handler function.</param>
+        /// <param name="callerProcessId">The Id of the process to register the handler for.</param>
+        /// <returns>True if the handler was registered successfully. Otherwise, false.</returns>
+        private static bool SysCall_RegisterISRHandler(int ISRNum, uint handlerAddr, uint callerProcessId)
+        {
+            if (ISRNum < 49)
+            {
+                return false;
+            }
+
+#if SYSCALLS_TRACE
+            BasicConsole.WriteLine("Registering ISR handler...");
+#endif
+            Process theProcess = ProcessManager.GetProcessById(callerProcessId);
+
+            if (handlerAddr != 0xFFFFFFFF)
+            {
+                theProcess.ISRHandler = (Hardware.Processes.ISRHanderDelegate)Utilities.ObjectUtilities.GetObject((void*)handlerAddr);
+            }
+
+            theProcess.ISRsToHandle.Set(ISRNum);
+
+            return true;
+        }
+        /// <summary>
+        /// Performs Deregister ISR Handler system call processing for the Kernel Task.
+        /// </summary>
+        /// <param name="ISRNum">The ISR number to deregister.</param>
+        /// <param name="callerProcessId">The Id of the process to deregister the handler of.</param>
+        private static void SysCall_DeregisterISRHandler(int ISRNum, uint callerProcessId)
+        {
+#if SYSCALLS_TRACE
+            BasicConsole.WriteLine("Deregistering ISR handler...");
+#endif
+            ProcessManager.GetProcessById(callerProcessId).ISRsToHandle.Clear(ISRNum);
+        }
+        /// <summary>
+        /// Performs Register IRQ Handler system call processing for the Kernel Task.
+        /// </summary>
+        /// <param name="IRQNum">The IRQ number to register the handler for.</param>
+        /// <param name="handlerAddr">The address of the handler function.</param>
+        /// <param name="callerProcessId">The Id of the process to register the handler for.</param>
+        /// <returns>True if the handler was registered successfully. Otherwise, false.</returns>
+        private static bool SysCall_RegisterIRQHandler(int IRQNum, uint handlerAddr, uint callerProcessId)
+        {
+            if (IRQNum > 15)
+            {
+                return false;
+            }
+
+#if SYSCALLS_TRACE
+            BasicConsole.WriteLine("Registering IRQ handler...");
+#endif
+            Process theProcess = ProcessManager.GetProcessById(callerProcessId);
+
+            if (handlerAddr != 0xFFFFFFFF)
+            {
+                theProcess.IRQHandler = (Hardware.Processes.IRQHanderDelegate)Utilities.ObjectUtilities.GetObject((void*)handlerAddr);
+            }
+
+            theProcess.IRQsToHandle.Set(IRQNum);
+
+            Hardware.Interrupts.Interrupts.EnableIRQ((byte)IRQNum);
+
+            return true;
+        }
+        /// <summary>
+        /// Performs Deregister IRQ Handler system call processing for the Kernel Task.
+        /// </summary>
+        /// <param name="IRQNum">The IRQ number to deregister.</param>
+        /// <param name="callerProcessId">The Id of the process to deregister the handler of.</param>
+        private static void SysCall_DeregisterIRQHandler(int IRQNum, uint callerProcessId)
+        {
+#if SYSCALLS_TRACE
+            BasicConsole.WriteLine("Deregistering IRQ handler...");
+#endif
+            ProcessManager.GetProcessById(callerProcessId).IRQsToHandle.Clear(IRQNum);
+        }
+        /// <summary>
+        /// Performs Register System Call Handler system call processing for the Kernel Task.
+        /// </summary>
+        /// <param name="syscallNum">The system call number to register the handler for.</param>
+        /// <param name="handlerAddr">The address of the handler function.</param>
+        /// <param name="callerProcessId">The Id of the process to register the handler for.</param>
+        /// <returns>True if the handler was registered successfully. Otherwise, false.</returns>
+        private static bool SysCall_RegisterSyscallHandler(int syscallNum, uint handlerAddr, uint callerProcessId)
+        {
+#if SYSCALLS_TRACE
+            BasicConsole.WriteLine("Registering syscall handler...");
+#endif
+            Process theProcess = ProcessManager.GetProcessById(callerProcessId);
+
+            if (handlerAddr != 0xFFFFFFFF)
+            {
+                theProcess.SyscallHandler = (Hardware.Processes.SyscallHanderDelegate)Utilities.ObjectUtilities.GetObject((void*)handlerAddr);
+            }
+
+            theProcess.SyscallsToHandle.Set(syscallNum);
+
+            return true;
+        }
+        /// <summary>
+        /// Performs Deregister System Call Handler system call processing for the Kernel Task.
+        /// </summary>
+        /// <param name="syscallNum">The system call number to deregister.</param>
+        /// <param name="callerProcessId">The Id of the process to deregister the handler of.</param>
+        private static void SysCall_DeregisterSyscallHandler(int syscallNum, uint callerProcessId)
+        {
+#if SYSCALLS_TRACE
+            BasicConsole.WriteLine("Deregistering syscall handler...");
+#endif
+            ProcessManager.GetProcessById(callerProcessId).SyscallsToHandle.Clear(syscallNum);
+        }
+        /// <summary>
+        /// Performs Send Message system call processing for the Kernel Task.
+        /// </summary>
+        /// <param name="callerProcessId">The Id of the process sending the message.</param>
+        /// <param name="callerThreadId">The Id of the thread sending the message.</param>
+        /// <param name="targetProcessId">The Id of the process to send the message to.</param>
+        /// <param name="message1">The first value of the message.</param>
+        /// <param name="message2">The second value of the message.</param>
+        /// <returns>True if the message was accepted.</returns>
+        private static bool SysCall_SendMessage(uint callerProcessId, uint callerThreadId, uint targetProcessId, uint message1, uint message2)
+        {
+            bool Result = false;
+
+            Process CallerProcess = ProcessManager.GetProcessById(callerProcessId);
+            Process TargetProcess = ProcessManager.GetProcessById(targetProcessId);
+
+            ProcessManager.SwitchProcess(targetProcessId, -1);
+
+            if (TargetProcess.SyscallsToHandle.IsSet((int)SystemCallNumbers.ReceiveMessage) && TargetProcess.SyscallHandler != null)
+            {
+                uint Return2 = 0;
+                uint Return3 = 0;
+                uint Return4 = 0;
+                TargetProcess.SyscallHandler((uint)SystemCallNumbers.ReceiveMessage, message1, message2, 0, ref Return2, ref Return3, ref Return4, callerProcessId, 0xFFFFFFFF);
+
+                Result = true;
+            }
+
+            ProcessManager.SwitchProcess(callerProcessId, (int)callerThreadId);
+
+            return Result;
+        }
+
 
         public static void ReceiveMessage(uint CallerProcessId, uint Message1, uint Message2)
         {

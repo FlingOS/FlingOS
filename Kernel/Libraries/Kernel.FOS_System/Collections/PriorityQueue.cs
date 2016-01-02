@@ -92,7 +92,7 @@ namespace Kernel.FOS_System.Collections
                 parent = Parent(X);
             }
         }
-        public void Insert(Comparable X)
+        public bool Insert(Comparable X)
         {
             //for (int i = 0; i < ImplicitHeap.Count; i++)
             //{
@@ -101,13 +101,14 @@ namespace Kernel.FOS_System.Collections
             //        BasicConsole.Write(Name);
             //        BasicConsole.Write(" - ");
             //        BasicConsole.WriteLine("Priority queue : Error! Attempted to re-insert item.");
-            //        return;
+            //        return false;
             //    }
             //}
 
             X.Position = ImplicitHeap.Count + 1;
             ImplicitHeap.Add((FOS_System.Object)X);
             DecreaseKey(X, X.Key);
+            return true;
         }
         public Comparable ExtractMin()
         {
@@ -121,7 +122,6 @@ namespace Kernel.FOS_System.Collections
                 if (ImplicitHeap.Count > 1)
                 {
                     Comparable Y = (Comparable)ImplicitHeap.Last();
-
                     ImplicitHeap.RemoveAt(Y.Position-1);
 
                     Y.Position = 1;
@@ -150,26 +150,60 @@ namespace Kernel.FOS_System.Collections
         }
         public void Delete(Comparable X)
         {
+            //BasicConsole.WriteLine("Deleting");
+
+            //bool OK = false;
+            //for (int i = 0; i < ImplicitHeap.Count; i++)
+            //{
+            //    if (ImplicitHeap[i] == X)
+            //    {
+            //        OK = true;
+            //        break;
+            //    }
+            //}
+            //if (!OK)
+            //{
+            //    BasicConsole.WriteLine("Deleting when not present.");
+            //}
+
             if (X.Position <= 0 || X.Position > ImplicitHeap.Count || ImplicitHeap[X.Position - 1] != X)
             {
+                //BasicConsole.WriteLine("No delete");
                 return;
             }
-            
-            Comparable Y = (Comparable)ImplicitHeap.Last();
-            if (X.Position != Y.Position)
+
+            //BasicConsole.WriteLine("Will delete");
+            if (ImplicitHeap.Count > 1)
             {
-                ImplicitHeap.RemoveAt(Y.Position - 1);
+                //BasicConsole.WriteLine("Using last item");
+                Comparable Y = (Comparable)ImplicitHeap.Last();
+                if (X != Y)
+                {
+                    //BasicConsole.WriteLine("X not equal to Y");
+                    //BasicConsole.WriteLine("Removing Y");
+                    ImplicitHeap.RemoveAt(Y.Position - 1);
 
-                Y.Position = X.Position;
-                ImplicitHeap[Y.Position - 1] = (FOS_System.Object)Y;
+                    //BasicConsole.WriteLine("Setting Y position");
+                    Y.Position = X.Position;
+                    //BasicConsole.WriteLine("Setting Y in array");
+                    ImplicitHeap[Y.Position - 1] = (FOS_System.Object)Y;
 
-                Rebalance(Y);
+                    //BasicConsole.WriteLine("Rebalancing");
+                    Rebalance(Y);
+                }
+                else
+                {
+                    //BasicConsole.WriteLine("X is Y, removing X");
+                    ImplicitHeap.RemoveAt(X.Position - 1);
+                }
             }
             else
             {
-                ImplicitHeap.RemoveAt(X.Position - 1);
+                //BasicConsole.WriteLine("Removing at index 0");
+                ImplicitHeap.RemoveAt(0);
             }
 
+            //BasicConsole.WriteLine("Reset position");
             X.Position = 0;
         }
         public void DecreaseAllKeys(int amount, int min)
@@ -184,12 +218,16 @@ namespace Kernel.FOS_System.Collections
 
         private void Rebalance(Comparable Y)
         {
+            //BasicConsole.WriteLine("Rebalance (1)");
+
             Comparable ALeftChild = LeftChild(Y);
             Comparable ARightChild = RightChild(Y);
             
             while ((ALeftChild != null && Y.Key > ALeftChild.Key) ||
                   (ARightChild != null && Y.Key > ARightChild.Key))
             {
+                //BasicConsole.WriteLine("Rebalance (2)");
+
                 if (ALeftChild != null && Y.Key > ALeftChild.Key)
                 {
                     if (ARightChild != null && ARightChild.Key < ALeftChild.Key)

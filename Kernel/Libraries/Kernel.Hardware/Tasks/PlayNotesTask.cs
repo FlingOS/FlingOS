@@ -89,7 +89,7 @@ namespace Kernel.Hardware.Tasks
         {
             OwnerThread = ProcessManager.CurrentThread;
 
-            Thread.Sleep_Indefinitely();
+            Kernel.Processes.SystemCalls.SleepThread(Kernel.Processes.SystemCalls.IndefiniteSleepThread);
 
             while (!Terminate)
             {
@@ -137,7 +137,7 @@ namespace Kernel.Hardware.Tasks
 
                         while (Playing)
                         {
-                            Thread.Sleep(50);
+                            Kernel.Processes.SystemCalls.SleepThread(Kernel.Processes.SystemCalls.IndefiniteSleepThread);
                         }
                     }
                     catch
@@ -165,7 +165,7 @@ namespace Kernel.Hardware.Tasks
                     //BasicConsole.WriteLine("Sleeping non-critical interrupts thread...");
 
                     //Scheduler.Enable();
-                    if (!Thread.Sleep_Indefinitely())
+                    if (Kernel.Processes.SystemCalls.SleepThread(Kernel.Processes.SystemCalls.IndefiniteSleepThread) != Kernel.Processes.SystemCallResults.OK)
                     {
                         BasicConsole.SetTextColour(BasicConsole.error_colour);
                         BasicConsole.WriteLine("Failed to sleep play notes thread!");

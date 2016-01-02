@@ -24,8 +24,7 @@
 // ------------------------------------------------------------------------------ //
 #endregion
     
-#define PROCESS_TRACE
-#undef PROCESS_TRACE
+//#define PROCESS_TRACE
 
 using System;
 using Kernel.FOS_System.Collections;

@@ -41,7 +41,7 @@ namespace Kernel.Hardware.Tasks
         {
             OwnerThread = ProcessManager.CurrentThread;
 
-            Thread.Sleep_Indefinitely();
+            Kernel.Processes.SystemCalls.SleepThread(Kernel.Processes.SystemCalls.IndefiniteSleepThread);
 
             while (!Terminate)
             {
@@ -51,7 +51,7 @@ namespace Kernel.Hardware.Tasks
                 
                 if (!Awake)
                 {
-                    if (!Thread.Sleep_Indefinitely())
+                    if (Kernel.Processes.SystemCalls.SleepThread(Kernel.Processes.SystemCalls.IndefiniteSleepThread) != Kernel.Processes.SystemCallResults.OK)
                     {
                         BasicConsole.SetTextColour(BasicConsole.error_colour);
                         BasicConsole.WriteLine("Failed to sleep device manager thread!");

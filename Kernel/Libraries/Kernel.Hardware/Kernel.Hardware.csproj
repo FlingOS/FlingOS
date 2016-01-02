@@ -34,7 +34,7 @@
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <PlatformTarget>x86</PlatformTarget>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Docs|x86'">
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Docs|x86' ">
     <DebugSymbols>true</DebugSymbols>
     <OutputPath>bin\Docs\</OutputPath>
     <DefineConstants>DEBUG;TRACE;x86;UKKEYBOARD</DefineConstants>
@@ -110,16 +110,31 @@
     <Compile Include="Interrupts\Interrupts.cs" />
     <Compile Include="IO\Serial\Serial.cs" />
     <Compile Include="Keyboards\VirtualKeyboard.cs" />
+    <Compile Include="Pipes\BasicInpoint.cs" />
+    <Compile Include="Pipes\BasicOutpoint.cs" />
+    <Compile Include="Pipes\Exceptions\RWFailedException.cs" />
+    <Compile Include="Pipes\Exceptions\RWUnhandledException.cs" />
+    <Compile Include="Pipes\Pipe.cs" />
+    <Compile Include="Pipes\PipeGlobals.cs" />
+    <Compile Include="Pipes\PipeInpoint.cs" />
+    <Compile Include="Pipes\PipeManager.cs" />
+    <Compile Include="Pipes\PipeOutpoint.cs" />
+    <Compile Include="Pipes\Standard\StandardInpoint.cs" />
+    <Compile Include="Pipes\Standard\StandardOutpoint.cs" />
+    <Compile Include="Processes\Process.cs" />
+    <Compile Include="Processes\ProcessManager.cs" />
+    <Compile Include="Processes\Scheduler.cs" />
+    <Compile Include="Processes\Synchronisation\Semaphore.cs" />
+    <Compile Include="Processes\SystemCallsHelpers.cs" />
+    <Compile Include="Processes\SystemCalls_Callers.cs" />
+    <Compile Include="Processes\SystemCalls_Enums.cs" />
+    <Compile Include="Processes\SystemCalls_Handlers.cs" />
+    <Compile Include="Processes\Thread.cs" />
     <Compile Include="Tasks\DeviceManagerTask.cs" />
     <Compile Include="Tasks\PlayNotesTask.cs" />
     <Compile Include="IO\IOPort.cs" />
     <Compile Include="Devices\Keyboard.cs" />
     <Compile Include="Keyboards\PS2.cs" />
-    <Compile Include="Processes\Process.cs" />
-    <Compile Include="Processes\ProcessManager.cs" />
-    <Compile Include="Processes\Scheduler.cs" />
-    <Compile Include="Processes\Synchronisation\Semaphore.cs" />
-    <Compile Include="Processes\Thread.cs" />
     <Compile Include="Testing\USBTests.cs" />
     <Compile Include="Testing\ATATests.cs" />
     <Compile Include="Testing\ATA\Tests_PATA_RW.cs" />
@@ -127,9 +142,6 @@
     <Compile Include="Testing\USB\Tests_USB_RW.cs" />
     <Compile Include="USB\HCIs\UHCI.cs" />
     <Compile Include="VirtMemManager.cs" />
-    <Compile Include="VirtMem\MemoryLayout.cs" />
-    <Compile Include="VirtMem\VirtMemImpl.cs" />
-    <Compile Include="VirtMem\x86.cs" />
     <Compile Include="PCI\PCI.cs" />
     <Compile Include="PCI\PCIBaseAddress.cs" />
     <Compile Include="PCI\PCIDevice.cs" />
@@ -148,6 +160,9 @@
     <Compile Include="USB\USBRequest.cs" />
     <Compile Include="USB\USBTransaction.cs" />
     <Compile Include="USB\USBTransfer.cs" />
+    <Compile Include="VirtMem\MemoryLayout.cs" />
+    <Compile Include="VirtMem\VirtMemImpl.cs" />
+    <Compile Include="VirtMem\x86.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\Drivers\Compiler\Drivers.Compiler.csproj">
@@ -173,6 +188,9 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="ASM\Processes\Scheduler.x86_32.asm">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="ASM\SystemCalls.x86_32.asm">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="ASM\VirtMem\x86.x86_32.asm">

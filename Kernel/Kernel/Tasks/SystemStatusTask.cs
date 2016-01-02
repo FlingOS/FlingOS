@@ -45,7 +45,7 @@ namespace Kernel.Tasks
             Console.InitDefault();
 
             // Wait for other system startup to occur
-            Thread.Sleep(1000);
+            Processes.SystemCalls.SleepThread(1000);
             
             MainConsole = new Consoles.AdvancedConsole();
             MainConsole.ScreenHeight = 7;
@@ -66,7 +66,7 @@ namespace Kernel.Tasks
 
             Hardware.DeviceManager.AddDeviceAddedListener(DeviceManager_DeviceAdded, null);
 
-            Thread.Sleep(500);
+            Processes.SystemCalls.SleepThread(500);
             Console.Default.ScreenHeight = 25 - 8;
             Console.Default.ScreenStartLine = 8;
 
@@ -160,7 +160,7 @@ namespace Kernel.Tasks
                 MainConsole.Update();
                 StatusConsole.Update();
 
-                Thread.Sleep(500);
+                Processes.SystemCalls.SleepThread(500);
             }
         }
 

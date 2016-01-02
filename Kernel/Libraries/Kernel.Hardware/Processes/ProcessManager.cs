@@ -24,11 +24,8 @@
 // ------------------------------------------------------------------------------ //
 #endregion
     
-#define PROCESSMANAGER_TRACE
-#undef PROCESSMANAGER_TRACE
-
-#define PROCESSMANAGER_SWITCH_TRACE
-#undef PROCESSMANAGER_SWITCH_TRACE
+//#define PROCESSMANAGER_TRACE
+//#define PROCESSMANAGER_SWITCH_TRACE
 
 using System;
 using Kernel.FOS_System.Collections;
@@ -68,7 +65,6 @@ namespace Kernel.Hardware.Processes
         {
 #if PROCESSMANAGER_TRACE
             BasicConsole.WriteLine("Registering process...");
-            BasicConsole.WriteLine("Disabling scheduler...");
 #endif
             if (process == null)
             {
@@ -79,7 +75,10 @@ namespace Kernel.Hardware.Processes
             {
                 ExceptionMethods.Throw(new FOS_System.Exception("Attempted to re-register process! Process name: " + process.Name));
             }
-
+            
+#if PROCESSMANAGER_TRACE
+            //BasicConsole.WriteLine("Disabling scheduler...");
+#endif
             //bool reenable = Scheduler.Enabled;
             //if (reenable)
             //{
@@ -99,7 +98,7 @@ namespace Kernel.Hardware.Processes
 
 
 #if PROCESSMANAGER_TRACE
-            BasicConsole.WriteLine("Enabling scheduler...");
+            //BasicConsole.WriteLine("Enabling scheduler...");
 #endif
             //if (reenable)
             //{

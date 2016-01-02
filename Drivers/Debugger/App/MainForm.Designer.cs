@@ -28,7 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.Windows.Forms.TreeNode treeNode2 = new System.Windows.Forms.TreeNode("Press refresh to start");
+            System.Windows.Forms.TreeNode treeNode1 = new System.Windows.Forms.TreeNode("Press refresh to start");
             this.label1 = new System.Windows.Forms.Label();
             this.PipeNameBox = new System.Windows.Forms.TextBox();
             this.label2 = new System.Windows.Forms.Label();
@@ -127,7 +127,7 @@
             this.BinPathBox.Name = "BinPathBox";
             this.BinPathBox.Size = new System.Drawing.Size(589, 20);
             this.BinPathBox.TabIndex = 5;
-            this.BinPathBox.Text = "G:\\Fling OS\\Fling OS\\Kernel\\Kernel\\bin\\Debug";
+            this.BinPathBox.Text = "C:\\Fling OS\\Fling OS\\Kernel\\Kernel\\bin\\Debug";
             // 
             // ConnectButton
             // 
@@ -509,10 +509,10 @@
             this.ProcessesTreeView.HideSelection = false;
             this.ProcessesTreeView.Location = new System.Drawing.Point(4, 3);
             this.ProcessesTreeView.Name = "ProcessesTreeView";
-            treeNode2.Name = "Node0";
-            treeNode2.Text = "Press refresh to start";
+            treeNode1.Name = "Node0";
+            treeNode1.Text = "Press refresh to start";
             this.ProcessesTreeView.Nodes.AddRange(new System.Windows.Forms.TreeNode[] {
-            treeNode2});
+            treeNode1});
             this.ProcessesTreeView.Size = new System.Drawing.Size(263, 301);
             this.ProcessesTreeView.TabIndex = 0;
             this.ProcessesTreeView.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.ProcessesTreeView_AfterSelect);

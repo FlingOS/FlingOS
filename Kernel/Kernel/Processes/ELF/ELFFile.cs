@@ -330,6 +330,7 @@ namespace Kernel.Processes.ELF
                 //    }
 
                 //    Hardware.Processes.Thread.Sleep(500);
+                //      TODO: Use system call not direct call
                 //}
 
                 #endregion
@@ -385,6 +386,7 @@ namespace Kernel.Processes.ELF
                 //    BasicConsole.WriteLine(theHeader.Align);
 
                 //    Hardware.Processes.Thread.Sleep(500);
+                //      TODO: Use system call not direct call
                 //}
 
                 #endregion

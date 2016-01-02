@@ -54,7 +54,7 @@ namespace Kernel.Tasks
                     VidMemPtr[i] = ImageMap[i];
                 }
 
-                Hardware.Processes.Thread.Sleep(1000);
+                Processes.SystemCalls.SleepThread(1000);
 
                 /*
                  * --------------------------------------------------------------------------------

@@ -1939,7 +1939,7 @@ namespace Kernel.Hardware.USB.HCIs
             USBCMD |= EHCI_Consts.CMD_AsyncInterruptDoorbellMask;
             while (AsyncDoorbellIntCount > 0)
             {
-                Hardware.Processes.Thread.Sleep(5);
+                Kernel.Processes.SystemCalls.SleepThread(5);
             }
 
             FOS_System.Heap.Free(transfer.underlyingTransferData);
@@ -2097,7 +2097,7 @@ namespace Kernel.Hardware.USB.HCIs
             int timeout = 100;
             while (USBIntCount > 0 && (HostSystemErrors == 0) && !IrrecoverableError && --timeout > 0)
             {
-                Processes.Thread.Sleep(50);
+                Kernel.Processes.SystemCalls.SleepThread(50);
 #if EHCI_TRACE
                 if (timeout % 10 == 0)
                 {

@@ -78,8 +78,8 @@ namespace Kernel.Tasks
                 {
                     try
                     {
-                        //StdOut.Write(StdOutPipeId, "Hello, world! (" + (FOS_System.String)loops++ + ")\n", true);
-                        SystemCalls.SleepThread(-1);
+                        StdOut.Write(StdOutPipeId, "DM > Hello, world! (" + (FOS_System.String)loops++ + ")\n", true);
+                        SystemCalls.SleepThread(SystemCalls.IndefiniteSleepThread);
                     }
                     catch
                     {
