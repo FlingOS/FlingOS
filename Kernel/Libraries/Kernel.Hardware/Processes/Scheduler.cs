@@ -52,10 +52,10 @@ namespace Kernel.Hardware.Processes
         public static bool Initialised = false;
 
         public const int MSFreq = 5;
-        private static int UpdatePeriod = 10;
+        private static int UpdatePeriod = 5;
         private static int UpdateCountdown;
 
-        private static int LockupCounter = 0;
+        //private static int LockupCounter = 0;
 
         public static void InitProcess(Process process, Priority priority)
         {
@@ -257,31 +257,31 @@ namespace Kernel.Hardware.Processes
             BasicConsole.Write("T");
 #endif
 
-            LockupCounter++;
+            //LockupCounter++;
 
-            if (LockupCounter > 2000)
-            {
-                Enable();
-            }
+            //if (LockupCounter > 2000)
+            //{
+            //    Enable();
+            //}
 
             if (!Enabled || !Initialised)
             {
                 return;
             }
 
-            LockupCounter = 0;
+            //LockupCounter = 0;
 
 #if SCHEDULER_HANDLER_TRACE || SCHEDULER_HANDLER_MIN_TRACE
             BasicConsole.Write("E");
 #endif
             
-            UpdateCountdown -= MSFreq;
+            //UpdateCountdown -= MSFreq;
 
-            if (UpdateCountdown <= 0)
-            {
-                UpdateCountdown = UpdatePeriod;
+            //if (UpdateCountdown <= 0)
+            //{
+            //    UpdateCountdown = UpdatePeriod;
                 UpdateCurrentState();
-            }
+            //}
         }
         [Drivers.Compiler.Attributes.NoDebug]
         [Drivers.Compiler.Attributes.NoGC]
