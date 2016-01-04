@@ -51,7 +51,8 @@ namespace Drivers.Compiler.Architectures.MIPS32
                 {
                     isFloat = false,
                     sizeOnStackInBytes = 4,
-                    isGCManaged = false
+                    isGCManaged = false,
+                    isValue = itemA.isValue && itemB.isValue
                 });
             }
             else if ((itemA.sizeOnStackInBytes == 8 &&
@@ -63,7 +64,8 @@ namespace Drivers.Compiler.Architectures.MIPS32
                     {
                         isFloat = false,
                         sizeOnStackInBytes = 8,
-                        isGCManaged = false
+                        isGCManaged = false,
+                        isValue = itemA.isValue && itemB.isValue
                     });
                 }
                 else
@@ -72,7 +74,8 @@ namespace Drivers.Compiler.Architectures.MIPS32
                     {
                         isFloat = false,
                         sizeOnStackInBytes = 8,
-                        isGCManaged = false
+                        isGCManaged = false,
+                        isValue = itemA.isValue && itemB.isValue
                     });
                 }
             }
@@ -85,7 +88,8 @@ namespace Drivers.Compiler.Architectures.MIPS32
                     {
                         isFloat = false,
                         sizeOnStackInBytes = 8,
-                        isGCManaged = false
+                        isGCManaged = false,
+                        isValue = itemA.isValue && itemB.isValue
                     });
                 }
                 else
@@ -94,7 +98,8 @@ namespace Drivers.Compiler.Architectures.MIPS32
                     {
                         isFloat = false,
                         sizeOnStackInBytes = 8,
-                        isGCManaged = false
+                        isGCManaged = false,
+                        isValue = itemA.isValue && itemB.isValue
                     });
                 }
             }
@@ -153,7 +158,8 @@ namespace Drivers.Compiler.Architectures.MIPS32
                         {
                             isFloat = false,
                             sizeOnStackInBytes = 4,
-                            isGCManaged = false
+                            isGCManaged = false,
+                            isValue = itemA.isValue && itemB.isValue
                         });
                     }
                     else
@@ -170,7 +176,8 @@ namespace Drivers.Compiler.Architectures.MIPS32
                         {
                             isFloat = false,
                             sizeOnStackInBytes = 4,
-                            isGCManaged = false
+                            isGCManaged = false,
+                            isValue = itemA.isValue && itemB.isValue
                         });
                     }
                 }   
@@ -227,7 +234,8 @@ namespace Drivers.Compiler.Architectures.MIPS32
                         {
                             isFloat = false,
                             sizeOnStackInBytes = 8,
-                            isGCManaged = false
+                            isGCManaged = false,
+                            isValue = itemA.isValue && itemB.isValue
                         });
                     }
                     else
@@ -278,7 +286,8 @@ namespace Drivers.Compiler.Architectures.MIPS32
                         {
                             isFloat = false,
                             sizeOnStackInBytes = 8,
-                            isGCManaged = false
+                            isGCManaged = false,
+                            isValue = itemA.isValue && itemB.isValue
                         });
                     }
                 }
@@ -343,7 +352,8 @@ namespace Drivers.Compiler.Architectures.MIPS32
                         {
                             isFloat = false,
                             sizeOnStackInBytes = 8,
-                            isGCManaged = false
+                            isGCManaged = false,
+                            isValue = itemA.isValue && itemB.isValue
                         });
                     }
                     else
@@ -401,7 +411,8 @@ namespace Drivers.Compiler.Architectures.MIPS32
                         {
                             isFloat = false,
                             sizeOnStackInBytes = 8,
-                            isGCManaged = false
+                            isGCManaged = false,
+                            isValue = itemA.isValue && itemB.isValue
                         });
                     }
                 }

@@ -98,7 +98,8 @@ namespace Drivers.Compiler.Architectures.x86
             {
                 sizeOnStackInBytes = numBytes,
                 isFloat = isFloat,
-                isGCManaged = false
+                isGCManaged = false,
+                isValue = true
             });
         }
         /// <summary>
@@ -243,7 +244,8 @@ namespace Drivers.Compiler.Architectures.x86
             {
                 sizeOnStackInBytes = numBytes,
                 isFloat = isFloat,
-                isGCManaged = false
+                isGCManaged = false,
+                isValue = true
             });
         }
     }

@@ -113,9 +113,9 @@ namespace Drivers.Compiler.Architectures.x86
             }
             else
             {
-                for (int i = 0; i < locSize; i++)
+                for (int i = 0; i < locSize; i += 4)
                 {
-                    conversionState.Append(new ASMOps.Pop() { Size = ASMOps.OperandSize.Byte, Dest = "[EBP-" + (bytesOffset - i).ToString() + "]" });
+                    conversionState.Append(new ASMOps.Pop() { Size = ASMOps.OperandSize.Dword, Dest = "[EBP-" + (bytesOffset - i).ToString() + "]" });
                 }
             }
         }

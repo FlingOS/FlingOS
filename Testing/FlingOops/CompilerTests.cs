@@ -418,6 +418,7 @@ namespace FlingOops
             #region 13. Struct calls
 
             Log.WriteLine("---Struct:");
+            Test_Static_Struct();
             Test_Sizeof_Struct();
             Test_Instance_Struct();
             Log.WriteLine(" ");
@@ -3478,11 +3479,14 @@ namespace FlingOops
         /// </remarks>
         public static unsafe void Test_Array_Struct()
         {
+            AStruct s = new AStruct();
+            s.a = 1;
+            s.b = 2;
+            s.c = 4;
+            s.d = 8;
+
             AStruct[] array = new AStruct[3];
-            array[0].a = 1;
-            array[0].b = 2;
-            array[0].c = 4;
-            array[0].d = 8;
+            array[0] = s;
             array[1].a = 10;
             array[1].b = 20;
             array[1].c = 40;
@@ -4810,6 +4814,63 @@ namespace FlingOops
         #endregion
 
         #region 13. Struct
+
+        static AStruct staticStruct;
+
+        /// <summary>
+        /// Tests: Loading/storing from/to a static variable of type struct, 
+        /// Inputs: AStruct, 
+        /// Result: Fields should be set correctly
+        /// </summary>
+        [NoGC]
+        public static unsafe void Test_Static_Struct()
+        {
+            staticStruct = new AStruct();
+            staticStruct.a = 5;
+            if (staticStruct.a == 5)
+            {
+                Log.WriteSuccess("Test_Static_Struct staticStruct.a is 5.");
+            }
+            else
+            {
+                Log.WriteError("Test_Static_Struct staticStruct.a is not 5.");
+            }
+            AStruct b = staticStruct;
+            if (b.a == 5)
+            {
+                Log.WriteSuccess("Test_Static_Struct b.a is 5.");
+            }
+            else
+            {
+                Log.WriteError("Test_Static_Struct b.a is not 5.");
+            }
+            b.b = 10;
+            if (b.b != 10)
+            {
+                Log.WriteSuccess("Test_Static_Struct b.b is 10.");
+            }
+            else
+            {
+                Log.WriteError("Test_Static_Struct b.b is not 10.");
+            }
+            staticStruct = b;
+            if (staticStruct.a == 5)
+            {
+                Log.WriteSuccess("Test_Static_Struct staticStruct.a is 5 (2).");
+            }
+            else
+            {
+                Log.WriteError("Test_Static_Struct staticStruct.a is not 5 (2).");
+            }
+            if (staticStruct.b == 10)
+            {
+                Log.WriteSuccess("Test_Static_Struct staticStruct.b is 10.");
+            }
+            else
+            {
+                Log.WriteError("Test_Static_Struct staticStruct.b is not 10.");
+            }
+        }
 
         /// <summary>
         /// Tests: Sizeof a struct in bytes, 

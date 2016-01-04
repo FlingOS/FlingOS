@@ -50,7 +50,8 @@ namespace Drivers.Compiler.Architectures.x86
                 {
                     isFloat = false,
                     sizeOnStackInBytes = 4,
-                    isGCManaged = false
+                    isGCManaged = false,
+                    isValue = itemA.isValue && itemB.isValue
                 });
             }
         }
@@ -114,7 +115,8 @@ namespace Drivers.Compiler.Architectures.x86
                     {
                         isFloat = false,
                         sizeOnStackInBytes = 4,
-                        isGCManaged = false
+                        isGCManaged = false,
+                        isValue = itemA.isValue && itemB.isValue
                     });
                 }
                 else if ((itemA.sizeOnStackInBytes == 8 &&

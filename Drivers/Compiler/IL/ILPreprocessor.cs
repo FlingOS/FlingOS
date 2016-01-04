@@ -163,23 +163,10 @@ namespace Drivers.Compiler.IL
                 Types.TypeInfo aTypeInfo = TheLibrary.GetTypeInfo(aVarInfo.UnderlyingType);
                 aVarInfo.TheTypeInfo = aTypeInfo;
                 aVarInfo.Offset = totalLocalsOffset;
-                totalLocalsOffset += aTypeInfo.SizeOnStackInBytes;
+                totalLocalsOffset -= aTypeInfo.SizeOnStackInBytes;
             }
 
             int totalArgsSize = 0;
-            if (!theMethodInfo.IsStatic)
-            {
-                Types.VariableInfo newVarInfo = new Types.VariableInfo()
-                {
-                    UnderlyingType = theMethodInfo.UnderlyingInfo.DeclaringType,
-                    Position = 0,
-                    TheTypeInfo = TheLibrary.GetTypeInfo(theMethodInfo.UnderlyingInfo.DeclaringType)
-                };
-
-                theMethodInfo.ArgumentInfos.Add(newVarInfo);
-
-                totalArgsSize += newVarInfo.TheTypeInfo.SizeOnStackInBytes;
-            }
             System.Reflection.ParameterInfo[] args = theMethodInfo.UnderlyingInfo.GetParameters();
             foreach (System.Reflection.ParameterInfo argItem in args)
             {
@@ -191,6 +178,19 @@ namespace Drivers.Compiler.IL
                 };
 
                 theMethodInfo.ArgumentInfos.Add(newVarInfo);
+                totalArgsSize += newVarInfo.TheTypeInfo.SizeOnStackInBytes;
+            }
+            if (!theMethodInfo.IsStatic)
+            {
+                Types.VariableInfo newVarInfo = new Types.VariableInfo()
+                {
+                    UnderlyingType = theMethodInfo.UnderlyingInfo.DeclaringType,
+                    Position = 0,
+                    TheTypeInfo = TheLibrary.GetTypeInfo(theMethodInfo.UnderlyingInfo.DeclaringType)
+                };
+
+                theMethodInfo.ArgumentInfos.Add(newVarInfo);
+
                 totalArgsSize += newVarInfo.TheTypeInfo.SizeOnStackInBytes;
             }
 
@@ -208,7 +208,7 @@ namespace Drivers.Compiler.IL
             //    totalArgsSize += newVarInfo.TheTypeInfo.SizeOnStackInBytes;
             //}
 
-            int offset = totalArgsSize;
+            int offset = totalArgsSize + 8;
             for (int i = 0; i < theMethodInfo.ArgumentInfos.Count; i++)
             {
                 offset -= theMethodInfo.ArgumentInfos[i].TheTypeInfo.SizeOnStackInBytes;
@@ -951,7 +951,7 @@ namespace Drivers.Compiler.IL
                                     UnderlyingType = returnType,
                                     TheTypeInfo = TheLibrary.GetTypeInfo(returnType),
                                     Position = theMethodInfo.LocalInfos.Count,
-                                    Offset = lastLocalOffset + lastLocalSize
+                                    Offset = lastLocalOffset - lastLocalSize    // Local variable offsets are negative from EBP
                                 });
 
                                 // Add op for storing return value, update op offsets

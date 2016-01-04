@@ -65,7 +65,8 @@ namespace Drivers.Compiler.Architectures.MIPS32
                 isFloat = false,
                 sizeOnStackInBytes = 4,
                 isNewGCObject = true,
-                isGCManaged = true
+                isGCManaged = true,
+                isValue = false
             });
         }
 
@@ -199,7 +200,8 @@ namespace Drivers.Compiler.Architectures.MIPS32
                 isFloat = false,
                 sizeOnStackInBytes = 4,
                 isNewGCObject = true,
-                isGCManaged = true
+                isGCManaged = true,
+                isValue = false
             });
         }
     }

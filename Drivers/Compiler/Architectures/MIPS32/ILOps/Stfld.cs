@@ -45,7 +45,7 @@ namespace Drivers.Compiler.Architectures.MIPS32
             conversionState.CurrentStackFrame.Stack.Pop();
         }
 
-                /// <summary>
+        /// <summary>
         /// See base class documentation.
         /// </summary>
         /// <param name="theOp">See base class documentation.</param>

@@ -50,7 +50,8 @@ namespace Drivers.Compiler.Architectures.MIPS32
             {
                 isFloat = false,
                 sizeOnStackInBytes = size,
-                isGCManaged = false
+                isGCManaged = false,
+                isValue = theTypeInfo.IsValueType
             });
         }
 
@@ -96,7 +97,8 @@ namespace Drivers.Compiler.Architectures.MIPS32
             {
                 isFloat = false,
                 sizeOnStackInBytes = size,
-                isGCManaged = false
+                isGCManaged = false,
+                isValue = theTypeInfo.IsValueType
             });
         }
     }

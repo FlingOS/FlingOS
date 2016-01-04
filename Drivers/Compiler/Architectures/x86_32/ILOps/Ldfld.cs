@@ -43,11 +43,11 @@ namespace Drivers.Compiler.Architectures.x86
         {
             int metadataToken = Utilities.ReadInt32(theOp.ValueBytes, 0);
             FieldInfo theField = conversionState.Input.TheMethodInfo.UnderlyingInfo.Module.ResolveField(metadataToken);
-            
+
             bool valueisFloat = Utilities.IsFloat(theField.FieldType);
             Types.TypeInfo fieldTypeInfo = conversionState.TheILLibrary.GetTypeInfo(theField.FieldType);
             int stackSize = fieldTypeInfo.SizeOnStackInBytes;
-            
+
             StackItem objPointer = conversionState.CurrentStackFrame.Stack.Pop();
 
             if ((OpCodes)theOp.opCode.Value == OpCodes.Ldflda)
@@ -56,7 +56,8 @@ namespace Drivers.Compiler.Architectures.x86
                 {
                     isFloat = false,
                     sizeOnStackInBytes = 4,
-                    isGCManaged = false
+                    isGCManaged = false,
+                    isValue = false
                 });
             }
             else
@@ -65,7 +66,8 @@ namespace Drivers.Compiler.Architectures.x86
                 {
                     isFloat = valueisFloat,
                     sizeOnStackInBytes = stackSize,
-                    isGCManaged = fieldTypeInfo.IsGCManaged
+                    isGCManaged = fieldTypeInfo.IsGCManaged,
+                    isValue = fieldTypeInfo.IsValueType
                 });
             }
         }
@@ -98,8 +100,8 @@ namespace Drivers.Compiler.Architectures.x86
             int memSize = theField.FieldType.IsValueType ? fieldTypeInfo.SizeOnHeapInBytes : stackSize;
 
             //Pop the object pointer from our stack
-            StackItem objPointer = conversionState.CurrentStackFrame.Stack.Pop();
-            
+            StackItem objStackItem = conversionState.CurrentStackFrame.Stack.Pop();
+
             //If the value to load is a float, erm...abort...
             if (valueisFloat)
             {
@@ -107,50 +109,66 @@ namespace Drivers.Compiler.Architectures.x86
                 throw new NotSupportedException("Loading fields of type float not supported yet!");
             }
 
-            //Pop object pointer
-            conversionState.Append(new ASMOps.Pop() { Size = ASMOps.OperandSize.Dword, Dest = "ECX" });
-            if ((OpCodes)theOp.opCode.Value == OpCodes.Ldflda)
+            if (objStackItem.isValue)
             {
-                conversionState.Append(new ASMOps.Add() { Src = offset.ToString(), Dest = "ECX" });
-                conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Dword, Src = "ECX" });
-
-                conversionState.CurrentStackFrame.Stack.Push(new StackItem()
+                if ((OpCodes)theOp.opCode.Value == OpCodes.Ldflda)
                 {
-                    isFloat = false,
-                    sizeOnStackInBytes = 4,
-                    isGCManaged = false
-                });
+
+                }
+                else
+                {
+
+                }
             }
             else
             {
-                //Push value at pointer+offset
-                int sizeNotInMem = stackSize - memSize;
-                int sizeToSub = (sizeNotInMem / 2) * 2; //Rounds down
-                for (int i = 0; i < sizeToSub; i += 2)
+                //Pop object pointer
+                conversionState.Append(new ASMOps.Pop() { Size = ASMOps.OperandSize.Dword, Dest = "ECX" });
+                if ((OpCodes)theOp.opCode.Value == OpCodes.Ldflda)
                 {
-                    conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Word, Src = "0" });
-                }
-                for (int i = memSize + (memSize % 2); i > 0; i -= 2)
-                {
-                    if (sizeToSub != sizeNotInMem)
-                    {
-                        conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Word, Src = "0", Dest = "AX" });
-                        conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Byte, Src = "[ECX+" + (offset + i - 2).ToString() + "]", Dest = "AL" });
-                        conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Word, Src = "AX" });
-                    }
-                    else
-                    {
-                        conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Word, Src = "[ECX+" + (offset + i - 2).ToString() + "]", Dest = "AX" });
-                        conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Word, Src = "AX" });
-                    }
-                }
+                    conversionState.Append(new ASMOps.Add() { Src = offset.ToString(), Dest = "ECX" });
+                    conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Dword, Src = "ECX" });
 
-                conversionState.CurrentStackFrame.Stack.Push(new StackItem()
+                    conversionState.CurrentStackFrame.Stack.Push(new StackItem()
+                    {
+                        isFloat = false,
+                        sizeOnStackInBytes = 4,
+                        isGCManaged = false,
+                        isValue = false
+                    });
+                }
+                else
                 {
-                    isFloat = valueisFloat,
-                    sizeOnStackInBytes = stackSize,
-                    isGCManaged = fieldTypeInfo.IsGCManaged
-                });
+                    //Push value at pointer+offset
+                    int sizeNotInMem = stackSize - memSize;
+                    int sizeToSub = (sizeNotInMem / 2) * 2; //Rounds down
+                    for (int i = 0; i < sizeToSub; i += 2)
+                    {
+                        conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Word, Src = "0" });
+                    }
+                    for (int i = memSize + (memSize % 2); i > 0; i -= 2)
+                    {
+                        if (sizeToSub != sizeNotInMem)
+                        {
+                            conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Word, Src = "0", Dest = "AX" });
+                            conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Byte, Src = "[ECX+" + (offset + i - 2).ToString() + "]", Dest = "AL" });
+                            conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Word, Src = "AX" });
+                        }
+                        else
+                        {
+                            conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Word, Src = "[ECX+" + (offset + i - 2).ToString() + "]", Dest = "AX" });
+                            conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Word, Src = "AX" });
+                        }
+                    }
+
+                    conversionState.CurrentStackFrame.Stack.Push(new StackItem()
+                    {
+                        isFloat = valueisFloat,
+                        sizeOnStackInBytes = stackSize,
+                        isGCManaged = fieldTypeInfo.IsGCManaged,
+                        isValue = fieldTypeInfo.IsValueType
+                    });
+                }
             }
         }
     }

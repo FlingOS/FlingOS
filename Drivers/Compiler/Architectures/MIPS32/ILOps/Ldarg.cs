@@ -83,7 +83,8 @@ namespace Drivers.Compiler.Architectures.MIPS32
                 {
                     sizeOnStackInBytes = 4,
                     isFloat = false,
-                    isGCManaged = false
+                    isGCManaged = false,
+                    isValue = false
                 });
             }
             else
@@ -94,7 +95,8 @@ namespace Drivers.Compiler.Architectures.MIPS32
                 {
                     sizeOnStackInBytes = bytesForArg,
                     isFloat = false,
-                    isGCManaged = paramTypeInfo.IsGCManaged
+                    isGCManaged = paramTypeInfo.IsGCManaged,
+                    isValue = paramTypeInfo.IsValueType
                 });
             }
         }
@@ -151,39 +153,16 @@ namespace Drivers.Compiler.Architectures.MIPS32
                     break;
             }
 
-            //Used to store the number of bytes to add to EBP to get to the arg
-            int BytesOffsetFromEBP = 0;
-            //Get all the params for the current method
-            List<Type> allParams = conversionState.Input.TheMethodInfo.UnderlyingInfo.GetParameters().Select(x => x.ParameterType).ToList();
-            if(!conversionState.Input.TheMethodInfo.IsStatic)
-            {
-                allParams.Insert(0, conversionState.Input.TheMethodInfo.UnderlyingInfo.DeclaringType);
-            }
-            //Check whether the arg we are going to load is float or not
-            if (Utilities.IsFloat(allParams[index]))
+            Types.VariableInfo argInfo = conversionState.Input.TheMethodInfo.ArgumentInfos[index];
+            if (Utilities.IsFloat(argInfo.TheTypeInfo.UnderlyingType))
             {
                 //SUPPORT - floats
                 throw new NotSupportedException("Float arguments not supported yet!");
             }
-            //For all the parameters pushed on the stack after the param we want
-            for (int i = allParams.Count - 1; i > -1 && i > index; i--)
-            {
-                //Add the param stack size to the EBP offset
-                BytesOffsetFromEBP += conversionState.TheILLibrary.GetTypeInfo(allParams[i]).SizeOnStackInBytes;
-            }
 
-            //Add 8 for return address and value of EBP (both pushed at start of method call)
-            BytesOffsetFromEBP += 8;
-
-            //We must check the return value to see if it has a size on the stack
-            //Get the return type
-            Type retType = (conversionState.Input.TheMethodInfo.IsConstructor ?
-                    typeof(void) : ((MethodInfo)conversionState.Input.TheMethodInfo.UnderlyingInfo).ReturnType);
-            //Get the size of the return type
-            int retSize = conversionState.TheILLibrary.GetTypeInfo(retType).SizeOnStackInBytes;
-            //Add it to EBP offset
-            BytesOffsetFromEBP += retSize;
-
+            //Used to store the number of bytes to add to EBP to get to the arg
+            int BytesOffsetFromEBP = argInfo.Offset;
+            
             if ((OpCodes)theOp.opCode.Value == OpCodes.Ldarga ||
                 (OpCodes)theOp.opCode.Value == OpCodes.Ldarga_S)
             {
@@ -198,37 +177,36 @@ namespace Drivers.Compiler.Architectures.MIPS32
                 {
                     sizeOnStackInBytes = 4,
                     isFloat = false,
-                    isGCManaged = false
+                    isGCManaged = false,
+                    isValue = false
                 });
             }
             else
             {
                 //Push the argument onto the stack
-                Types.TypeInfo paramTypeInfo = conversionState.TheILLibrary.GetTypeInfo(allParams[index]);
+                Types.TypeInfo paramTypeInfo = argInfo.TheTypeInfo;
                 int bytesForArg = paramTypeInfo.SizeOnStackInBytes;
-                if (bytesForArg == 4)
+
+                if (bytesForArg % 4 != 0)
                 {
-                    conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Word, Src = BytesOffsetFromEBP.ToString() + "($fp)", Dest = "$t0", MoveType = ASMOps.Mov.MoveTypes.SrcMemoryToDestReg });
-                    conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Word, Src = "$t0" });
-                }
-                else if (bytesForArg == 8)
-                {
-                    conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Word, Src = (BytesOffsetFromEBP + 4).ToString() + "($fp)", Dest = "$t0", MoveType = ASMOps.Mov.MoveTypes.SrcMemoryToDestReg });
-                    conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Word, Src = "$t0" });
-                    conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Word, Src = BytesOffsetFromEBP.ToString() + "($fp)", Dest = "$t0", MoveType = ASMOps.Mov.MoveTypes.SrcMemoryToDestReg });
-                    conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Word, Src = "$t0" });
-                }
-                else
-                {
-                    throw new ArgumentException("Cannot load arg! Don't understand byte size of the arg!");
+                    throw new ArgumentException("Cannot load arg! Don't understand byte size of the arg! Size:" + bytesForArg);
                 }
 
+                while (bytesForArg > 0)
+                {
+                    bytesForArg -= 4;
+
+                    conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Word, Src = (BytesOffsetFromEBP + bytesForArg).ToString() + "($fp)", Dest = "$t0", MoveType = ASMOps.Mov.MoveTypes.SrcMemoryToDestReg });
+                    conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Word, Src = "$t0" });
+                }
+                
                 //Push the arg onto our stack
                 conversionState.CurrentStackFrame.Stack.Push(new StackItem()
                 {
-                    sizeOnStackInBytes = bytesForArg,
+                    sizeOnStackInBytes = paramTypeInfo.SizeOnStackInBytes,
                     isFloat = false,
-                    isGCManaged = paramTypeInfo.IsGCManaged
+                    isGCManaged = paramTypeInfo.IsGCManaged,
+                    isValue = paramTypeInfo.IsValueType
                 });
             }
         }

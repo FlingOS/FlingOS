@@ -49,7 +49,8 @@ namespace Drivers.Compiler.Architectures.x86
                 {
                     isFloat = false,
                     sizeOnStackInBytes = 4,
-                    isGCManaged = false
+                    isGCManaged = false,
+                    isValue = true
                 });
             }
             else if (itemA.sizeOnStackInBytes == 8 && itemB.sizeOnStackInBytes == 8)
@@ -58,7 +59,8 @@ namespace Drivers.Compiler.Architectures.x86
                 {
                     isFloat = false,
                     sizeOnStackInBytes = 4,
-                    isGCManaged = false
+                    isGCManaged = false,
+                    isValue = true
                 });
             }
         }
@@ -111,7 +113,8 @@ namespace Drivers.Compiler.Architectures.x86
                 {
                     isFloat = false,
                     sizeOnStackInBytes = 4,
-                    isGCManaged = false
+                    isGCManaged = false,
+                    isValue = true
                 });
             }
             else if (itemA.sizeOnStackInBytes == 8 && itemB.sizeOnStackInBytes == 8)
@@ -158,7 +161,8 @@ namespace Drivers.Compiler.Architectures.x86
                     // Yes, this is supposed to be 4 - the value that just got pushed was a 
                     // true / false integer
                     sizeOnStackInBytes = 4,
-                    isGCManaged = false
+                    isGCManaged = false,
+                    isValue = true
                 });
             }
             else

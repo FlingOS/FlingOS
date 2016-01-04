@@ -51,9 +51,9 @@ namespace Drivers.Compiler.Architectures.x86
                 conversionState.CurrentStackFrame.Stack.Push(funcPtrItem);
                 return;
             }
-            
+
             Types.MethodInfo constructorMethodInfo = conversionState.TheILLibrary.GetMethodInfo(constructorMethod);
-            
+
             ParameterInfo[] allParams = constructorMethod.GetParameters();
             foreach (ParameterInfo aParam in allParams)
             {
@@ -65,7 +65,8 @@ namespace Drivers.Compiler.Architectures.x86
                 isFloat = false,
                 sizeOnStackInBytes = 4,
                 isNewGCObject = true,
-                isGCManaged = true
+                isGCManaged = true,
+                isValue = false
             });
         }
 
@@ -85,7 +86,7 @@ namespace Drivers.Compiler.Architectures.x86
             // - Allocate memory on the heap for the object
             //          - If no memory is left, throw a panic attack because we're out of memory...
             // - Call the specified constructor
-            
+
             if (typeof(Delegate).IsAssignableFrom(objectType))
             {
                 conversionState.Append(new ASMOps.Comment("Ignore newobj calls for Delegates"));
@@ -102,7 +103,7 @@ namespace Drivers.Compiler.Architectures.x86
             }
 
             Types.MethodInfo constructorMethodInfo = conversionState.TheILLibrary.GetMethodInfo(constructorMethod);
-            
+
             conversionState.AddExternalLabel(conversionState.GetNewObjMethodInfo().ID);
             conversionState.AddExternalLabel(conversionState.GetThrowNullReferenceExceptionMethodInfo().ID);
             conversionState.AddExternalLabel(constructorMethodInfo.ID);
@@ -137,7 +138,7 @@ namespace Drivers.Compiler.Architectures.x86
             //Because it means we don't have space to create a new exception object
             //So ultimately we just have to throw a kernel panic
             //Throw a panic attack... ( :/ ) by calling kernel Halt(uint lastAddress)
-            
+
             //result.AppendLine("call GetEIP");
             //result.AppendLine("push dword esp");
             //result.AppendLine("push dword ebp");
@@ -194,7 +195,8 @@ namespace Drivers.Compiler.Architectures.x86
                 isFloat = false,
                 sizeOnStackInBytes = 4,
                 isNewGCObject = true,
-                isGCManaged = true
+                isGCManaged = true,
+                isValue = false
             });
         }
     }

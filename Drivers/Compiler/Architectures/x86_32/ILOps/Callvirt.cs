@@ -56,7 +56,8 @@ namespace Drivers.Compiler.Architectures.x86
                     {
                         isFloat = Utilities.IsFloat(retType),
                         sizeOnStackInBytes = retTypeInfo.SizeOnStackInBytes,
-                        isGCManaged = retTypeInfo.IsGCManaged
+                        isGCManaged = retTypeInfo.IsGCManaged,
+                        isValue = retTypeInfo.IsValueType
                     };
 
                     
@@ -85,7 +86,8 @@ namespace Drivers.Compiler.Architectures.x86
                     {
                         isFloat = Utilities.IsFloat(retType),
                         sizeOnStackInBytes = retTypeInfo.SizeOnStackInBytes,
-                        isGCManaged = retTypeInfo.IsGCManaged
+                        isGCManaged = retTypeInfo.IsGCManaged,
+                        isValue = retTypeInfo.IsValueType
                     };
                     
                     int bytesToAdd = 0;
@@ -163,7 +165,8 @@ namespace Drivers.Compiler.Architectures.x86
                     {
                         isFloat = Utilities.IsFloat(retType),
                         sizeOnStackInBytes = retTypeInfo.SizeOnStackInBytes,
-                        isGCManaged = retTypeInfo.IsGCManaged
+                        isGCManaged = retTypeInfo.IsGCManaged,
+                        isValue = retTypeInfo.IsValueType
                     };
                     //We do not push the return value onto the stack unless it has size > 0
                     //We do not push the return value onto our stack at this point - it is pushed after the call is done
@@ -337,7 +340,8 @@ namespace Drivers.Compiler.Architectures.x86
                     {
                         isFloat = Utilities.IsFloat(retType),
                         sizeOnStackInBytes = retTypeInfo.SizeOnStackInBytes,
-                        isGCManaged = retTypeInfo.IsGCManaged
+                        isGCManaged = retTypeInfo.IsGCManaged,
+                        isValue = retTypeInfo.IsValueType
                     };
                     //We do not push the return value onto the stack unless it has size > 0
                     //We do not push the return value onto our stack at this point - it is pushed after the call is done

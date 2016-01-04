@@ -103,6 +103,8 @@ namespace Drivers.Compiler.Architectures.x86
                     break;
             }
 
+            Types.TypeInfo elemTypeInfo = elementType == null ? null : conversionState.TheILLibrary.GetTypeInfo(elementType);
+
             //      5.2. Pop index and array ref from our stack
             conversionState.CurrentStackFrame.Stack.Pop();
             conversionState.CurrentStackFrame.Stack.Pop();
@@ -112,7 +114,8 @@ namespace Drivers.Compiler.Architectures.x86
                 sizeOnStackInBytes = sizeToPush > 4 ? 8 : 4,
                 isFloat = isFloat,
                 isNewGCObject = false,
-                isGCManaged = pushValue ? (elementType == null || conversionState.TheILLibrary.GetTypeInfo(elementType).IsGCManaged) : false
+                isGCManaged = pushValue ? (elementType == null || elemTypeInfo.IsGCManaged) : false,
+                isValue = pushValue ? (elementType != null && elemTypeInfo.IsValueType) : false
             });
         }
 
@@ -410,7 +413,9 @@ namespace Drivers.Compiler.Architectures.x86
             {
                 conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Dword, Src = "EAX" });
             }
-            
+
+            Types.TypeInfo elemTypeInfo = elementType == null ? null : conversionState.TheILLibrary.GetTypeInfo(elementType);
+
             //      5.2. Pop index and array ref from our stack
             conversionState.CurrentStackFrame.Stack.Pop();
             conversionState.CurrentStackFrame.Stack.Pop();
@@ -420,7 +425,8 @@ namespace Drivers.Compiler.Architectures.x86
                 sizeOnStackInBytes = sizeToPush > 4 ? 8 : 4,
                 isFloat = isFloat,
                 isNewGCObject = false,
-                isGCManaged = pushValue ? (elementType == null || conversionState.TheILLibrary.GetTypeInfo(elementType).IsGCManaged) : false
+                isGCManaged = pushValue ? (elementType == null || elemTypeInfo.IsGCManaged) : false,
+                isValue = pushValue ? (elementType != null && elemTypeInfo.IsValueType) : false
             });
         }
     }

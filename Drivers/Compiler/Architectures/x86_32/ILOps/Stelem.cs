@@ -60,7 +60,7 @@ namespace Drivers.Compiler.Architectures.x86
             //bool pushValue = true;
             int sizeToPop = 4;
             bool isFloat = false;
-            
+
             int currOpPosition = conversionState.PositionOf(theOp);
 
             conversionState.AddExternalLabel(conversionState.GetThrowNullReferenceExceptionMethodInfo().ID);

@@ -75,7 +75,8 @@ namespace Drivers.Compiler.Architectures.x86
                 {
                     isFloat = false,
                     sizeOnStackInBytes = 4,
-                    isGCManaged = false
+                    isGCManaged = false,
+                    isValue = false
                 });
             }
             else
@@ -86,7 +87,8 @@ namespace Drivers.Compiler.Architectures.x86
                 {
                     isFloat = Utilities.IsFloat(theLoc.UnderlyingType),
                     sizeOnStackInBytes = pushedLocalSizeVal,
-                    isGCManaged = theLoc.TheTypeInfo.IsGCManaged
+                    isGCManaged = theLoc.TheTypeInfo.IsGCManaged,
+                    isValue = theLoc.TheTypeInfo.IsValueType
                 });
             }
         }
@@ -156,7 +158,8 @@ namespace Drivers.Compiler.Architectures.x86
                 {
                     isFloat = false,
                     sizeOnStackInBytes = 4,
-                    isGCManaged = false
+                    isGCManaged = false,
+                    isValue = false
                 });
             }
             else
@@ -179,7 +182,8 @@ namespace Drivers.Compiler.Architectures.x86
                 {
                     isFloat =  Utilities.IsFloat(theLoc.UnderlyingType),
                     sizeOnStackInBytes = pushedLocalSizeVal,
-                    isGCManaged = theLoc.TheTypeInfo.IsGCManaged
+                    isGCManaged = theLoc.TheTypeInfo.IsGCManaged,
+                    isValue = theLoc.TheTypeInfo.IsValueType
                 });
             }
         }

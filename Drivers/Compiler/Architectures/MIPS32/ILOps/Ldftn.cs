@@ -45,7 +45,8 @@ namespace Drivers.Compiler.Architectures.MIPS32
             {
                 isFloat = false,
                 sizeOnStackInBytes = 4,
-                isGCManaged = false
+                isGCManaged = false,
+                isValue = true
             });
         }
 
@@ -57,6 +58,11 @@ namespace Drivers.Compiler.Architectures.MIPS32
             {
                 ILBlock anILBlock = preprocessState.TheILLibrary.GetILBlock(methodInfo);
                 int index = anILBlock.ILOps.IndexOf(theOp.LoadAtILOpAfterOp);
+                if (index == -1)
+                {
+                    throw new NullReferenceException("LoadAtILOpAfterOp not found in IL block!");
+                }
+
                 index++;
                 anILBlock.ILOps[index].LabelRequired = true;
             }
@@ -86,12 +92,8 @@ namespace Drivers.Compiler.Architectures.MIPS32
             {
                 ILBlock anILBlock = conversionState.TheILLibrary.GetILBlock(methodInfo);
                 int index = anILBlock.ILOps.IndexOf(theOp.LoadAtILOpAfterOp);
-                if (index == -1)
-                {
-                    throw new NullReferenceException("LoadAtILOpAfterOp not found in IL block!");
-                }
-
                 index++;
+                
                 methodID = ASM.ASMBlock.GenerateLabel(methodID, anILBlock.PositionOf(anILBlock.ILOps[index]));
             }
             else if (theOp.LoadAtILOffset != int.MaxValue)
@@ -117,7 +119,8 @@ namespace Drivers.Compiler.Architectures.MIPS32
             {
                 isFloat = false,
                 sizeOnStackInBytes = 4,
-                isGCManaged = false
+                isGCManaged = false,
+                isValue = true
             });
         }
     }

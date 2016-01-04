@@ -68,7 +68,8 @@ namespace Drivers.Compiler.Architectures.MIPS32
             {
                 sizeOnStackInBytes = (pushEDX ? 8 : 4),
                 isFloat = false,
-                isGCManaged = false
+                isGCManaged = false,
+                isValue = true
             });
         }
 
@@ -167,7 +168,8 @@ namespace Drivers.Compiler.Architectures.MIPS32
             {
                 sizeOnStackInBytes = (pushEDX ? 8 : 4),
                 isFloat = false,
-                isGCManaged = false
+                isGCManaged = false,
+                isValue = true
             });
         }
     }

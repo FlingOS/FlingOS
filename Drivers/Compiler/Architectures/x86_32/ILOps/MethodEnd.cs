@@ -64,7 +64,7 @@ namespace Drivers.Compiler.Architectures.x86
         {
             //Store the return value
             //Get the return type
-            Type retType = (conversionState.Input.TheMethodInfo.IsConstructor ? 
+            Type retType = (conversionState.Input.TheMethodInfo.IsConstructor ?
                 typeof(void) : ((MethodInfo)conversionState.Input.TheMethodInfo.UnderlyingInfo).ReturnType);
             Types.TypeInfo retTypeInfo = conversionState.TheILLibrary.GetTypeInfo(retType);
             //Get the size of the return type on stack

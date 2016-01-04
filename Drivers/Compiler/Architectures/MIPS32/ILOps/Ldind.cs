@@ -70,7 +70,8 @@ namespace Drivers.Compiler.Architectures.MIPS32
             {
                 sizeOnStackInBytes = bytesToLoad == 8 ? 8 : 4,
                 isFloat = false,
-                isGCManaged = false
+                isGCManaged = false,
+                isValue = (OpCodes)theOp.opCode.Value != OpCodes.Ldind_Ref
             });
         }
 
@@ -255,7 +256,8 @@ namespace Drivers.Compiler.Architectures.MIPS32
             {
                 sizeOnStackInBytes = bytesToLoad == 8 ? 8 : 4,
                 isFloat = false,
-                isGCManaged = false
+                isGCManaged = false,
+                isValue = (OpCodes)theOp.opCode.Value != OpCodes.Ldind_Ref
             });
         }
     }
