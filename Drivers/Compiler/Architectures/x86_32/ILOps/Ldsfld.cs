@@ -122,27 +122,19 @@ namespace Drivers.Compiler.Architectures.x86
                             conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Word, Src = "[" + fieldID + "]", Dest = "AX" });
                             conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Dword, Src = "EAX" });
                         }
-                        else if(size == 4)
-                        {
-                            conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Dword, Src = "[" + fieldID + "]", Dest = "EAX" });
-                            conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Dword, Src = "EAX" });
-                        }
-                        else if (size == 8)
-                        {
-                            conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Dword, Src = "[" + fieldID + " + 4]", Dest = "EAX" });
-                            conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Dword, Src = "EAX" });
-                            conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Dword, Src = "[" + fieldID + "]", Dest = "EAX" });
-                            conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Dword, Src = "EAX" });
-                        }
                         else
                         {
-                            throw new ArgumentOutOfRangeException("Loading static field that has stack size greater than 8 not supported!");
+                            for (int i = size - 4; i >= 0; i -= 4)
+                            {
+                                conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Dword, Src = "[" + fieldID + " + " + i + "]", Dest = "EAX" });
+                                conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Dword, Src = "EAX" });
+                            }
                         }
 
                         conversionState.CurrentStackFrame.Stack.Push(new StackItem()
                         {
                             isFloat = isFloat,
-                            sizeOnStackInBytes = (size == 8 ? 8 : 4),
+                            sizeOnStackInBytes = (size < 4 ? 4 : size),
                             isGCManaged = theTypeInfo.IsGCManaged,
                             isValue = theTypeInfo.IsValueType
                         });

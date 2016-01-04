@@ -57,8 +57,10 @@ namespace Drivers.Compiler.Architectures.x86
         public override void Convert(ILConversionState conversionState, ILOp theOp)
         {
             Type elementType = null;
+            Types.TypeInfo elemTypeInfo = null;
             //bool pushValue = true;
             int sizeToPop = 4;
+            int sizeOnStack = 4;
             bool isFloat = false;
 
             int currOpPosition = conversionState.PositionOf(theOp);
@@ -74,6 +76,9 @@ namespace Drivers.Compiler.Architectures.x86
                         int metadataToken = Utilities.ReadInt32(theOp.ValueBytes, 0);
                         //Get the type info for the element type
                         elementType = conversionState.Input.TheMethodInfo.UnderlyingInfo.Module.ResolveType(metadataToken);
+                        elemTypeInfo = conversionState.TheILLibrary.GetTypeInfo(elementType);
+                        sizeOnStack = elemTypeInfo.SizeOnStackInBytes;
+                        sizeToPop = elemTypeInfo.IsValueType ? elemTypeInfo.SizeOnHeapInBytes : elemTypeInfo.SizeOnStackInBytes;
                     }
                     break;
 
@@ -101,6 +106,7 @@ namespace Drivers.Compiler.Architectures.x86
 
                 case OpCodes.Stelem_I8:
                     sizeToPop = 8;
+                    sizeOnStack = 8;
                     elementType = typeof(Int64);
                     break;
             }
@@ -225,33 +231,27 @@ namespace Drivers.Compiler.Architectures.x86
             conversionState.Append(new ASMOps.Label() { ILPosition = currOpPosition, Extension = "Continue3_2" });
             
             // 4. Calculate address of element
-            //      4.0. Pop value into ECX:EBX
-            //      4.1. Pop index into EDX
-            //      4.2. Pop array ref into EAX
+            //      4.1. -Pop- Move index into EDX
+            //      4.2. -Pop- Move array ref into EAX
             //      4.3. Move element type ref (from array ref) into EAX
             //      4.4. Push EAX
             //      4.5. Move IsValueType (from element ref type) into EAX
-            //      4.6. If IsValueType, continue to 4.6., else goto 4.9.
+            //      4.6. If IsValueType, continue to 4.7., else goto 4.10.
             //      4.7. Pop EAX
             //      4.8. Move Size (from element type ref) into EAX
             //      4.9. Skip over 4.9. and 4.10.
             //      4.10. Pop EAX
             //      4.11. Move StackSize (from element type ref) into EAX
             //      4.12. Mulitply EAX by EDX (index by element size)
-            //      4.13. Move array ref into EDX
+            //      4.13. Move array ref into EDX                       TODO
             //      4.14. Add enough to go past Kernel.FOS_System.Array fields
             //      4.15. Add EAX and EBX (array ref + fields + (index * element size))
-
-            //      4.0. Pop value into ECX:EBX
-            conversionState.Append(new ASMOps.Pop() { Size = ASMOps.OperandSize.Dword, Dest = "ECX" });
-            if (sizeToPop == 8)
-            {
-                conversionState.Append(new ASMOps.Pop() { Size = ASMOps.OperandSize.Dword, Dest = "EBX" });
-            }
-            //      4.1. Pop index into EDX
-            conversionState.Append(new ASMOps.Pop() { Size = ASMOps.OperandSize.Dword, Dest = "EDX" });
+            
+            
+            //      4.1. Move index into EDX
+            conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Dword, Src = "[ESP+" + sizeToPop + "]", Dest = "EDX" });
             //      4.2. Move array ref into EAX
-            conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Dword, Src = "[ESP]", Dest = "EAX" });
+            conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Dword, Src = "[ESP+" + (sizeToPop + 4) + "]", Dest = "EAX" });
             //      4.3. Move element type ref (from array ref) into EAX
             conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Dword, Src = "[EAX+" + elemTypeOffset.ToString() + "]", Dest = "EAX" });
             //      4.4. Push EAX
@@ -279,7 +279,7 @@ namespace Drivers.Compiler.Architectures.x86
             conversionState.Append(new ASMOps.Label() { ILPosition = currOpPosition, Extension = "Continue4_2" });
             conversionState.Append(new ASMOps.Mul() { Arg = "EDX" });
             //      4.13. Pop array ref into EDX
-            conversionState.Append(new ASMOps.Pop() { Size = ASMOps.OperandSize.Dword, Dest = "EDX" });
+            conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Dword, Dest = "EDX" });
             //      4.14. Add enough to go past Kernel.FOS_System.Array fields
             int allFieldsOffset = 0;
             #region Offset calculation
@@ -294,24 +294,27 @@ namespace Drivers.Compiler.Architectures.x86
             conversionState.Append(new ASMOps.Add() { Src = "EDX", Dest = "EAX" });
 
             // 5. Pop the element from the stack to array
-            //      5.1. Move value in EBX:ECX to [EAX]
-            if (sizeToPop == 8)
+            //      5.1. Pop value bytes from stack                     TODO
+            //      5.2. Add 8 to ESP to remove Index and Array ref    TODO
+            switch(sizeToPop)
             {
-                conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Dword, Src = "ECX", Dest = "[EAX]" });
-                conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Dword, Src = "EBX", Dest = "[EAX+4]" });
+                case 1:
+                    conversionState.Append(new ASMOps.Pop() { Size = ASMOps.OperandSize.Byte, Dest = "ECX" });
+                    conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Byte, Src = "CL", Dest = "[EAX]" });
+                    break;
+                case 2:
+                    conversionState.Append(new ASMOps.Pop() { Size = ASMOps.OperandSize.Byte, Dest = "ECX" });
+                    conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Word, Src = "CX", Dest = "[EAX]" });
+                    break;
+                default:
+                    //TODO
+                    conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Dword, Src = "ECX", Dest = "[EAX]" });
+                    conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Dword, Src = "EBX", Dest = "[EAX+4]" });
+                    break;
             }
-            else if(sizeToPop == 4)
-            {
-                conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Dword, Src = "ECX", Dest = "[EAX]" });
-            }
-            else if (sizeToPop == 2)
-            {
-                conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Word, Src = "CX", Dest = "[EAX]" });
-            }
-            else if (sizeToPop == 1)
-            {
-                conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Byte, Src = "CL", Dest = "[EAX]" });
-            }
+
+            //      5.2. Add 8 to ESP to remove Index and Array ref    TODO
+
 
             //      5.2. Pop index, array ref and value from our stack
             conversionState.CurrentStackFrame.Stack.Pop();

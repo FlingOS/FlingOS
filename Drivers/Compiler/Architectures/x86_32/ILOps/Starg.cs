@@ -113,18 +113,9 @@ namespace Drivers.Compiler.Architectures.x86
         
             //Pop the argument value from the stack
             int bytesForArg = conversionState.TheILLibrary.GetTypeInfo(allParams[index]).SizeOnStackInBytes;
-            if(bytesForArg == 4)
+            for (int i = 0; i < bytesForArg; i += 4)
             {
-                conversionState.Append(new ASMOps.Pop() { Size = ASMOps.OperandSize.Dword, Dest = "[EBP+" + BytesOffsetFromEBP.ToString() + "]" });
-            }
-            else if (bytesForArg == 8)
-            {
-                conversionState.Append(new ASMOps.Pop() { Size = ASMOps.OperandSize.Dword, Dest = "[EBP+" + BytesOffsetFromEBP.ToString() + "]" });
-                conversionState.Append(new ASMOps.Pop() { Size = ASMOps.OperandSize.Dword, Dest = "[EBP+" + (BytesOffsetFromEBP + 4).ToString() + "]" });
-            }
-            else
-            {
-                throw new ArgumentException("Cannot store arg! Don't understand byte size of the arg!");
+                conversionState.Append(new ASMOps.Pop() { Size = ASMOps.OperandSize.Dword, Dest = "[EBP+" + i + "]" });
             }
 
             //Pop the arg value from our stack

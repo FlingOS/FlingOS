@@ -111,13 +111,41 @@ namespace Drivers.Compiler.Architectures.x86
 
             if (objStackItem.isValue)
             {
-                if ((OpCodes)theOp.opCode.Value == OpCodes.Ldflda)
-                {
+                // Address = (ESP - Size of object) + Offset to field
 
+                conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Dword, Dest = "EAX", Src = "ESP" });
+                int stackOffset = offset - objStackItem.sizeOnStackInBytes;
+                if (stackOffset < 0)
+                {
+                    conversionState.Append(new ASMOps.Sub() { Dest = "EAX", Src = (-stackOffset).ToString() });
                 }
                 else
                 {
+                    conversionState.Append(new ASMOps.Add() { Dest = "EAX", Src = stackOffset.ToString() });
+                }
 
+                if ((OpCodes)theOp.opCode.Value == OpCodes.Ldflda)
+                {
+                    //Error - How can we load the address of a field which is no longer on the stack??
+                    throw new NotSupportedException("Can't load address of field of value type instance that's no longer on the stack!");
+                }
+                else
+                {
+                    // Move field to top of stack
+                    // Remove everything else
+
+                    if (offset == 0)
+                    {
+                        // Special case
+                        //  - Just remove everything else
+
+                        int sizeToRemove = (objStackItem.sizeOnStackInBytes - fieldTypeInfo.SizeOnHeapInBytes);
+                        conversionState.Append(new ASMOps.Add() { Dest = "ESP", Src = sizeToRemove.ToString() });
+                        //TODO
+                    }
+                    else
+                    {
+                    }
                 }
             }
             else
