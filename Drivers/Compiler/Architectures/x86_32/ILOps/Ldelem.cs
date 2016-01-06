@@ -165,6 +165,7 @@ namespace Drivers.Compiler.Architectures.x86
                         int metadataToken = Utilities.ReadInt32(theOp.ValueBytes, 0);
                         //Get the type info for the element type
                         elementType = conversionState.Input.TheMethodInfo.UnderlyingInfo.Module.ResolveType(metadataToken);
+                        elemTypeInfo = conversionState.TheILLibrary.GetTypeInfo(elementType);
                         sizeToPush = 4;
                         sizeToLoad = 0;
                         pushValue = false;
@@ -180,11 +181,13 @@ namespace Drivers.Compiler.Architectures.x86
                     sizeToPush = 4;
                     sizeToLoad = 1;
                     elementType = typeof(sbyte);
+                    elemTypeInfo = conversionState.TheILLibrary.GetTypeInfo(elementType);
                     break;
                 case OpCodes.Ldelem_I2:
                     sizeToPush = 4;
                     sizeToLoad = 2;
                     elementType = typeof(Int16);
+                    elemTypeInfo = conversionState.TheILLibrary.GetTypeInfo(elementType);
                     break;
 
                 case OpCodes.Ldelem_U1:
@@ -192,17 +195,20 @@ namespace Drivers.Compiler.Architectures.x86
                     sizeToLoad = 1;
                     signExtend = false;
                     elementType = typeof(byte);
+                    elemTypeInfo = conversionState.TheILLibrary.GetTypeInfo(elementType);
                     break;
                 case OpCodes.Ldelem_U2:
                     sizeToPush = 4;
                     sizeToLoad = 2;
                     signExtend = false;
                     elementType = typeof(UInt16);
+                    elemTypeInfo = conversionState.TheILLibrary.GetTypeInfo(elementType);
                     break;
 
                 case OpCodes.Ldelem_Ref:
                     signExtend = false;
                     elementType = null;
+                    elemTypeInfo = null;
                     sizeToPush = 4;
                     sizeToLoad = 4;
                     break;
@@ -210,12 +216,14 @@ namespace Drivers.Compiler.Architectures.x86
                 case OpCodes.Ldelem_U4:
                     signExtend = false;
                     elementType = typeof(UInt32);
+                    elemTypeInfo = conversionState.TheILLibrary.GetTypeInfo(elementType);
                     sizeToPush = 4;
                     sizeToLoad = 4;
                     break;
 
                 case OpCodes.Ldelem_I4:
                     elementType = typeof(Int32);
+                    elemTypeInfo = conversionState.TheILLibrary.GetTypeInfo(elementType);
                     sizeToPush = 4;
                     sizeToLoad = 4;
                     break;
@@ -224,6 +232,7 @@ namespace Drivers.Compiler.Architectures.x86
                     sizeToPush = 8;
                     sizeToLoad = 8;
                     elementType = typeof(Int64);
+                    elemTypeInfo = conversionState.TheILLibrary.GetTypeInfo(elementType);
                     break;
             }
 
@@ -416,26 +425,28 @@ namespace Drivers.Compiler.Architectures.x86
                         break;
                     default:
                         int additionalSpace = sizeToPush - sizeToLoad;
-                        int overhangBytes = 4 - additionalSpace;
+                        int overhangBytes = (4 - additionalSpace) % 4;
                         if (additionalSpace > 0)
                         {
-                            conversionState.Append(new ASMOps.Add() { Src = additionalSpace.ToString(), Dest = "ESP" });
-
                             // Note: The difference will always be < 4 because the only reason the two would be different is a value type
                             //          (i.e. struct) that has had stack size padded to a multiple of 4.
                             switch (overhangBytes)
                             {
                                 case 1:
-                                    conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Byte, Src = "[EAX+" + (sizeToLoad-1) + "]", Dest = "BL" });
-                                    conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Byte, Src = "BL" });
+                                    conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Word, Src = "0" });
+                                    conversionState.Append(new ASMOps.Xor() { Src = "EBX", Dest = "EBX" });
+                                    conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Byte, Src = "[EAX+" + (sizeToLoad - 1) + "]", Dest = "BL" });
+                                    conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Word, Src = "BX" });
                                     break;
                                 case 2:
+                                    conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Word, Src = "0" });
                                     conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Word, Src = "[EAX+" + (sizeToLoad - 2) + "]", Dest = "BX" });
                                     conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Word, Src = "BX" });
                                     break;
                                 case 3:
+                                    conversionState.Append(new ASMOps.Xor() { Src = "EBX", Dest = "EBX" });
                                     conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Byte, Src = "[EAX+" + (sizeToLoad - 1) + "]", Dest = "BL" });
-                                    conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Byte, Src = "BL" });
+                                    conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Word, Src = "BX" });
                                     conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Word, Src = "[EAX+" + (sizeToLoad - 3) + "]", Dest = "BX" });
                                     conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Word, Src = "BX" });
                                     break;
@@ -462,7 +473,7 @@ namespace Drivers.Compiler.Architectures.x86
             //      5.3. Push element onto our stack
             conversionState.CurrentStackFrame.Stack.Push(new StackItem()
             {
-                sizeOnStackInBytes = sizeToPush < 4 ? 4 : sizeToPush,
+                sizeOnStackInBytes = sizeToPush,
                 isFloat = isFloat,
                 isNewGCObject = false,
                 isGCManaged = pushValue ? (elementType == null || elemTypeInfo.IsGCManaged) : false,

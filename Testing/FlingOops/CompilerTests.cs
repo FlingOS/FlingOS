@@ -3519,7 +3519,7 @@ namespace FlingOops
             }
             else
             {
-                Log.WriteError("Test_Array_Decl_Struct[0].b Not okay");
+                Log.WriteError("Test_Array_Decl_Struct[0].b Not okay.");
             }
 
             if (array[0].c == 4)
@@ -3528,7 +3528,7 @@ namespace FlingOops
             }
             else
             {
-                Log.WriteError("Test_Array_Decl_Struct[0].c Not okay");
+                Log.WriteError("Test_Array_Decl_Struct[0].c Not okay.");
             }
 
             if (array[0].d == 8)
@@ -3537,7 +3537,7 @@ namespace FlingOops
             }
             else
             {
-                Log.WriteError("Test_Array_Decl_Struct[0].d Not okay");
+                Log.WriteError("Test_Array_Decl_Struct[0].d Not okay.");
             }
             if (array[1].a == 10)
             {
@@ -3554,7 +3554,7 @@ namespace FlingOops
             }
             else
             {
-                Log.WriteError("Test_Array_Decl_Struct[1].b Not okay");
+                Log.WriteError("Test_Array_Decl_Struct[1].b Not okay.");
             }
 
             if (array[1].c == 40)
@@ -3563,7 +3563,7 @@ namespace FlingOops
             }
             else
             {
-                Log.WriteError("Test_Array_Decl_Struct[1].c Not okay");
+                Log.WriteError("Test_Array_Decl_Struct[1].c Not okay.");
             }
 
             if (array[1].d == 80)
@@ -3572,7 +3572,7 @@ namespace FlingOops
             }
             else
             {
-                Log.WriteError("Test_Array_Decl_Struct[1].d Not okay");
+                Log.WriteError("Test_Array_Decl_Struct[1].d Not okay.");
             }
             if (array[2].a == 100)
             {
@@ -3589,7 +3589,7 @@ namespace FlingOops
             }
             else
             {
-                Log.WriteError("Test_Array_Decl_Struct[2].b Not okay");
+                Log.WriteError("Test_Array_Decl_Struct[2].b Not okay.");
             }
 
             if (array[2].c == 400)
@@ -3598,7 +3598,7 @@ namespace FlingOops
             }
             else
             {
-                Log.WriteError("Test_Array_Decl_Struct[2].c Not okay");
+                Log.WriteError("Test_Array_Decl_Struct[2].c Not okay.");
             }
 
             if (array[2].d == 800)
@@ -3607,7 +3607,7 @@ namespace FlingOops
             }
             else
             {
-                Log.WriteError("Test_Array_Decl_Struct[2].d Not okay");
+                Log.WriteError("Test_Array_Decl_Struct[2].d Not okay.");
             }
         }
 
