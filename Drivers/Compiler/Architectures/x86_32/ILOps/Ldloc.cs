@@ -134,13 +134,7 @@ namespace Drivers.Compiler.Architectures.x86
                     localIndex = (UInt16)theOp.ValueBytes[0];
                     break;
             }
-
-            int bytesOffset = 0;
-            for (int i = 0; i < conversionState.Input.TheMethodInfo.LocalInfos.Count && i <= localIndex; i++)
-            {
-                bytesOffset += conversionState.Input.TheMethodInfo.LocalInfos[i].TheTypeInfo.SizeOnStackInBytes;
-            }
-
+            
             Types.VariableInfo theLoc = conversionState.Input.TheMethodInfo.LocalInfos[localIndex];
             if (Utilities.IsFloat(theLoc.UnderlyingType))
             {
@@ -151,7 +145,7 @@ namespace Drivers.Compiler.Architectures.x86
             if (loadAddr)
             {
                 conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Dword, Src = "EBP", Dest = "EAX" });
-                conversionState.Append(new ASMOps.Sub() { Src = bytesOffset.ToString(), Dest = "EAX" });
+                conversionState.Append(new ASMOps.Sub() { Src = (-theLoc.Offset).ToString(), Dest = "EAX" });
                 conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Dword, Src = "EAX" });
 
                 conversionState.CurrentStackFrame.Stack.Push(new StackItem()
@@ -164,24 +158,24 @@ namespace Drivers.Compiler.Architectures.x86
             }
             else
             {
-                int pushedLocalSizeVal = theLoc.TheTypeInfo.SizeOnStackInBytes;
+                int localSizeOnStack = theLoc.TheTypeInfo.SizeOnStackInBytes;
 
-                if ((pushedLocalSizeVal % 4) != 0)
+                if ((localSizeOnStack % 4) != 0)
                 {
                     throw new NotSupportedException("Invalid local bytes size!");
                 }
                 else
                 {
-                    for (int i = bytesOffset - (pushedLocalSizeVal - 4); i <= bytesOffset; i += 4)
+                    for (int i = theLoc.Offset + (localSizeOnStack - 4); i >= theLoc.Offset; i -= 4)
                     {
-                        conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Dword, Src = "[EBP-" + i.ToString() + "]" });
+                        conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Dword, Src = "[EBP-" + Math.Abs(i).ToString() + "]" });
                     }
                 }
 
                 conversionState.CurrentStackFrame.Stack.Push(new StackItem()
                 {
                     isFloat =  Utilities.IsFloat(theLoc.UnderlyingType),
-                    sizeOnStackInBytes = pushedLocalSizeVal,
+                    sizeOnStackInBytes = localSizeOnStack,
                     isGCManaged = theLoc.TheTypeInfo.IsGCManaged,
                     isValue = theLoc.TheTypeInfo.IsValueType
                 });

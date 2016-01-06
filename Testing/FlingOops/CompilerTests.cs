@@ -4845,7 +4845,7 @@ namespace FlingOops
                 Log.WriteError("Test_Static_Struct b.a is not 5.");
             }
             b.b = 10;
-            if (b.b != 10)
+            if (b.b == 10)
             {
                 Log.WriteSuccess("Test_Static_Struct b.b is 10.");
             }

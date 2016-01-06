@@ -96,8 +96,8 @@ namespace Drivers.Compiler.Architectures.x86
             bool valueisFloat = Utilities.IsFloat(theField.FieldType);
             //Get the size of the value to load (in bytes, as it will appear on the stack)
             Types.TypeInfo fieldTypeInfo = conversionState.TheILLibrary.GetTypeInfo(theField.FieldType);
-            int stackSize = fieldTypeInfo.SizeOnStackInBytes;
-            int memSize = theField.FieldType.IsValueType ? fieldTypeInfo.SizeOnHeapInBytes : stackSize;
+            int fieldStackSize = fieldTypeInfo.SizeOnStackInBytes;
+            int fieldMemSize = theField.FieldType.IsValueType ? fieldTypeInfo.SizeOnHeapInBytes : fieldStackSize;
 
             //Pop the object pointer from our stack
             StackItem objStackItem = conversionState.CurrentStackFrame.Stack.Pop();
@@ -111,19 +111,8 @@ namespace Drivers.Compiler.Architectures.x86
 
             if (objStackItem.isValue)
             {
-                // Address = (ESP - Size of object) + Offset to field
-
-                conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Dword, Dest = "EAX", Src = "ESP" });
-                int stackOffset = offset - objStackItem.sizeOnStackInBytes;
-                if (stackOffset < 0)
-                {
-                    conversionState.Append(new ASMOps.Sub() { Dest = "EAX", Src = (-stackOffset).ToString() });
-                }
-                else
-                {
-                    conversionState.Append(new ASMOps.Add() { Dest = "EAX", Src = stackOffset.ToString() });
-                }
-
+                // Address = ESP + Offset to field
+                
                 if ((OpCodes)theOp.opCode.Value == OpCodes.Ldflda)
                 {
                     //Error - How can we load the address of a field which is no longer on the stack??
@@ -134,18 +123,66 @@ namespace Drivers.Compiler.Architectures.x86
                     // Move field to top of stack
                     // Remove everything else
 
-                    if (offset == 0)
-                    {
-                        // Special case
-                        //  - Just remove everything else
+                    // Stack before:
+                    //  TOP - Value bytes...
+                    //      - Wanted value bytes
+                    //      - ...value bytes
+                    //      - ...rest of stack...
 
-                        int sizeToRemove = (objStackItem.sizeOnStackInBytes - fieldTypeInfo.SizeOnHeapInBytes);
-                        conversionState.Append(new ASMOps.Add() { Dest = "ESP", Src = sizeToRemove.ToString() });
-                        //TODO
-                    }
-                    else
+                    // Stack afterwards:
+                    //  TOP - Wanted value bytes    = ESP - Size of object
+                    //      - Padding bytes         = ESP - Size of object + size of field bytes
+                    //      - ...rest of stack...
+
+                    // Copy value as efficiently as possible (to ESP-Size of object)
+
+                    int i = fieldMemSize;
+                    for (; i >= 4; )
                     {
+                        i -= 4;
+                        conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Dword, Dest = "EBX", Src = "[ESP+" + (offset + i) + "]" });
+                        conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Dword, Dest = "[ESP+" + (objStackItem.sizeOnStackInBytes - fieldStackSize + i) + "]", Src = "EBX" });
                     }
+                    for (; i >= 2;)
+                    {
+                        i -= 2;
+                        conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Word, Dest = "BX", Src = "[ESP+" + (offset + i) + "]" });
+                        conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Word, Dest = "[ESP+" + (objStackItem.sizeOnStackInBytes - fieldStackSize + i) + "]", Src = "BX" });
+                    }
+                    for (; i >= 1;)
+                    {
+                        i -= 1;
+                        conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Byte, Dest = "BL", Src = "[ESP+" + (offset + i) + "]" });
+                        conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Byte, Dest = "[ESP+" + (objStackItem.sizeOnStackInBytes - fieldStackSize + i) + "]", Src = "BL" });
+                    }
+
+                    // Move in padding 0s
+                    int paddingSize = fieldStackSize - fieldMemSize;
+                    switch (paddingSize)
+                    {
+                        case 1:
+                            conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Byte, Dest = "[ESP+" + (objStackItem.sizeOnStackInBytes - paddingSize) + "]", Src = "0" });
+                            break;
+                        case 2:
+                            conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Word, Dest = "[ESP+" + (objStackItem.sizeOnStackInBytes - paddingSize) + "]", Src = "0" });
+                            break;
+                        case 3:
+                            conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Byte, Dest = "[ESP+" + (objStackItem.sizeOnStackInBytes - paddingSize) + "]", Src = "0" });
+                            conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Word, Dest = "[ESP+" + (objStackItem.sizeOnStackInBytes - paddingSize + 1) + "]", Src = "0" });
+                            break;
+                    }
+
+                    // Remove everything else
+                    int sizeToRemove = (objStackItem.sizeOnStackInBytes - fieldStackSize);
+                    conversionState.Append(new ASMOps.Add() { Dest = "ESP", Src = sizeToRemove.ToString() });
+                    
+                    conversionState.CurrentStackFrame.Stack.Push(new StackItem()
+                    {
+                        isFloat = valueisFloat,
+                        sizeOnStackInBytes = fieldStackSize,
+                        isGCManaged = fieldTypeInfo.IsGCManaged,
+                        isValue = fieldTypeInfo.IsValueType
+                    });
                 }
             }
             else
@@ -168,13 +205,13 @@ namespace Drivers.Compiler.Architectures.x86
                 else
                 {
                     //Push value at pointer+offset
-                    int sizeNotInMem = stackSize - memSize;
+                    int sizeNotInMem = fieldStackSize - fieldMemSize;
                     int sizeToSub = (sizeNotInMem / 2) * 2; //Rounds down
                     for (int i = 0; i < sizeToSub; i += 2)
                     {
                         conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Word, Src = "0" });
                     }
-                    for (int i = memSize + (memSize % 2); i > 0; i -= 2)
+                    for (int i = fieldMemSize + (fieldMemSize % 2); i > 0; i -= 2)
                     {
                         if (sizeToSub != sizeNotInMem)
                         {
@@ -192,7 +229,7 @@ namespace Drivers.Compiler.Architectures.x86
                     conversionState.CurrentStackFrame.Stack.Push(new StackItem()
                     {
                         isFloat = valueisFloat,
-                        sizeOnStackInBytes = stackSize,
+                        sizeOnStackInBytes = fieldStackSize,
                         isGCManaged = fieldTypeInfo.IsGCManaged,
                         isValue = fieldTypeInfo.IsValueType
                     });

@@ -157,29 +157,19 @@ namespace Drivers.Compiler.IL
             }
 
             int totalLocalsOffset = 0;
+            theMethodInfo.LocalInfos = theMethodInfo.LocalInfos.OrderBy(x => x.Position).ToList();
             foreach (Types.VariableInfo aVarInfo in theMethodInfo.LocalInfos)
             {
                 //Causes processing of the type - in case it hasn't already been processed
                 Types.TypeInfo aTypeInfo = TheLibrary.GetTypeInfo(aVarInfo.UnderlyingType);
                 aVarInfo.TheTypeInfo = aTypeInfo;
-                aVarInfo.Offset = totalLocalsOffset;
+                // Order of the following two lines matters
+                //      Offset = Cumulative offset - size of current local
                 totalLocalsOffset -= aTypeInfo.SizeOnStackInBytes;
+                aVarInfo.Offset = totalLocalsOffset;
             }
 
             int totalArgsSize = 0;
-            System.Reflection.ParameterInfo[] args = theMethodInfo.UnderlyingInfo.GetParameters();
-            foreach (System.Reflection.ParameterInfo argItem in args)
-            {
-                Types.VariableInfo newVarInfo = new Types.VariableInfo()
-                {
-                    UnderlyingType = argItem.ParameterType,
-                    Position = theMethodInfo.ArgumentInfos.Count,
-                    TheTypeInfo = TheLibrary.GetTypeInfo(argItem.ParameterType)
-                };
-
-                theMethodInfo.ArgumentInfos.Add(newVarInfo);
-                totalArgsSize += newVarInfo.TheTypeInfo.SizeOnStackInBytes;
-            }
             if (!theMethodInfo.IsStatic)
             {
                 Types.VariableInfo newVarInfo = new Types.VariableInfo()
@@ -193,22 +183,36 @@ namespace Drivers.Compiler.IL
 
                 totalArgsSize += newVarInfo.TheTypeInfo.SizeOnStackInBytes;
             }
+            System.Reflection.ParameterInfo[] args = theMethodInfo.UnderlyingInfo.GetParameters();
+            foreach (System.Reflection.ParameterInfo argItem in args)
+            {
+                Types.VariableInfo newVarInfo = new Types.VariableInfo()
+                {
+                    UnderlyingType = argItem.ParameterType,
+                    Position = theMethodInfo.ArgumentInfos.Count,
+                    TheTypeInfo = TheLibrary.GetTypeInfo(argItem.ParameterType)
+                };
 
-            //System.Reflection.ParameterInfo returnArgItem = (theMethodInfo.IsConstructor ? null : ((System.Reflection.MethodInfo)theMethodInfo.UnderlyingInfo).ReturnParameter);
-            //if (returnArgItem != null)
-            //{
-            //    Types.VariableInfo newVarInfo = new Types.VariableInfo()
-            //    {
-            //        UnderlyingType = returnArgItem.ParameterType,
-            //        Position = theMethodInfo.ArgumentInfos.Count,
-            //        TheTypeInfo = TheLibrary.GetTypeInfo(returnArgItem.ParameterType)
-            //    };
+                theMethodInfo.ArgumentInfos.Add(newVarInfo);
+                totalArgsSize += newVarInfo.TheTypeInfo.SizeOnStackInBytes;
+            }
 
-            //    theMethodInfo.ArgumentInfos.Add(newVarInfo);
-            //    totalArgsSize += newVarInfo.TheTypeInfo.SizeOnStackInBytes;
-            //}
+            System.Reflection.ParameterInfo returnArgItem = (theMethodInfo.IsConstructor ? null : ((System.Reflection.MethodInfo)theMethodInfo.UnderlyingInfo).ReturnParameter);
+            if (returnArgItem != null)
+            {
+                Types.VariableInfo newVarInfo = new Types.VariableInfo()
+                {
+                    UnderlyingType = returnArgItem.ParameterType,
+                    Position = theMethodInfo.ArgumentInfos.Count,
+                    TheTypeInfo = TheLibrary.GetTypeInfo(returnArgItem.ParameterType)
+                };
+
+                theMethodInfo.ArgumentInfos.Add(newVarInfo);
+                totalArgsSize += newVarInfo.TheTypeInfo.SizeOnStackInBytes;
+            }
 
             int offset = totalArgsSize + 8;
+            theMethodInfo.ArgumentInfos = theMethodInfo.ArgumentInfos.OrderBy(x => x.Position).ToList();
             for (int i = 0; i < theMethodInfo.ArgumentInfos.Count; i++)
             {
                 offset -= theMethodInfo.ArgumentInfos[i].TheTypeInfo.SizeOnStackInBytes;

@@ -66,8 +66,6 @@ namespace Drivers.Compiler.Architectures.x86
         /// </exception>
         public override void Convert(ILConversionState conversionState, ILOp theOp)
         {
-            //Load static field
-
             //Load the metadata token used to get the type info
             int metadataToken = Utilities.ReadInt32(theOp.ValueBytes, 0);
             //Get the type info for the object to load
@@ -75,26 +73,46 @@ namespace Drivers.Compiler.Architectures.x86
             Types.TypeInfo theTypeInfo = conversionState.TheILLibrary.GetTypeInfo(theType);
 
             //Get the object size information
-            int size = theTypeInfo.SizeOnStackInBytes;
+            int memSize = theTypeInfo.IsValueType ? theTypeInfo.SizeOnHeapInBytes : theTypeInfo.SizeOnStackInBytes;
 
             //Load the object onto the stack
             conversionState.Append(new ASMOps.Pop() { Size = ASMOps.OperandSize.Dword, Dest = "ECX" });
-            for (int i = size - 4; i >= 0; i -= 4)
+            for (int i = memSize - 4; i >= 0; i -= 4)
             {
-                conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Dword, Src = "[ECX+" + i.ToString() + "]", Dest = "EAX" });
-                conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Dword, Src = "EAX" });
+                switch (i)
+                {
+                    case 1:
+                        break;
+                    case 2:
+                        break;
+                    case 3:
+                        break;
+                    default:
+                        conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Dword, Src = "[ECX+" + i.ToString() + "]", Dest = "EAX" });
+                        conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Dword, Src = "EAX" });
+                        break;
+                }
             }
-            int extra = size % 4;
-            for (int i = extra - 1; i >= 0; i--)
+            int paddingSize = 4 - (memSize % 4);
+            switch (paddingSize)
             {
-                conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Byte, Src = "[ECX+" + i.ToString() + "]", Dest = "AL" });
-                conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Byte, Src = "AL" });
+                case 1:
+                    conversionState.Append(new ASMOps.Sub() { Dest = "ESP", Src = "1" });
+                    conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Byte, Dest = "[ESP]", Src = "0" });
+                    break;
+                case 2:
+                    conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Word, Src = "0" });
+                    break;
+                case 3:
+                    conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Dword, Src = "0" });
+                    conversionState.Append(new ASMOps.Add() { Dest = "ESP", Src = "1" });
+                    break;
             }
 
             conversionState.CurrentStackFrame.Stack.Push(new StackItem()
             {
                 isFloat = false,
-                sizeOnStackInBytes = size,
+                sizeOnStackInBytes = memSize,
                 isGCManaged = false,
                 isValue = theTypeInfo.IsValueType
             });

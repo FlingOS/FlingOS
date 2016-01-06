@@ -69,13 +69,7 @@ namespace Drivers.Compiler.Architectures.x86
                     index = (Int16)theOp.ValueBytes[0];
                     break;
             }
-
-            List<Type> allParams = conversionState.Input.TheMethodInfo.UnderlyingInfo.GetParameters().Select(x => x.ParameterType).ToList();
-            if (!conversionState.Input.TheMethodInfo.IsStatic)
-            {
-                allParams.Insert(0, conversionState.Input.TheMethodInfo.UnderlyingInfo.DeclaringType);
-            }
-            
+                        
             if ((OpCodes)theOp.opCode.Value == OpCodes.Ldarga ||
                 (OpCodes)theOp.opCode.Value == OpCodes.Ldarga_S)
             {
@@ -89,7 +83,8 @@ namespace Drivers.Compiler.Architectures.x86
             }
             else
             {
-                Types.TypeInfo paramTypeInfo = conversionState.TheILLibrary.GetTypeInfo(allParams[index]);
+                Types.VariableInfo argInfo = conversionState.Input.TheMethodInfo.ArgumentInfos[index];
+                Types.TypeInfo paramTypeInfo = argInfo.TheTypeInfo;
                 int bytesForArg = paramTypeInfo.SizeOnStackInBytes;
                 conversionState.CurrentStackFrame.Stack.Push(new StackItem()
                 {

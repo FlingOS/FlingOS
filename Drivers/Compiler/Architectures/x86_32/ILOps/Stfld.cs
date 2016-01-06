@@ -75,13 +75,14 @@ namespace Drivers.Compiler.Architectures.x86
             if (value.isFloat)
             {
                 //SUPPORT - floats
-                throw new NotSupportedException("Storing fields of type float not supported yet!");
+                throw new NotSupportedException("Storing fields of type float is not supported yet!");
             }
-
+            
             //Get object pointer
             conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Dword, Src = "[ESP+" + stackSize.ToString() + "]", Dest = "ECX" });
             //Pop and mov value
-            for (int i = 0; i < memSize; i += 2)
+            int i = 0;
+            for (; i < memSize; i += 2)
             {
                 if (memSize - i == 1)
                 {
@@ -94,8 +95,8 @@ namespace Drivers.Compiler.Architectures.x86
                     conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Word, Src = "AX", Dest = "[ECX+" + (offset + i).ToString() + "]" });
                 }
             }
-            //                                                           Rounds down             || Pop object pointer
-            conversionState.Append(new ASMOps.Add() { Src = ((((stackSize - memSize) / 2) * 2) + 4).ToString(), Dest = "ESP" });
+            //                                                       + 4 to pop object pointer
+            conversionState.Append(new ASMOps.Add() { Src = ((i % 4) + 4).ToString(), Dest = "ESP" });
         }
     }
 }
