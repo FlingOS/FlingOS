@@ -24,7 +24,7 @@
 // ------------------------------------------------------------------------------ //
 #endregion
     
-//#define THREAD_TRACE
+#define THREAD_TRACE
 
 using System;
 
@@ -155,11 +155,12 @@ namespace Kernel.Hardware.Processes
         
         public Thread(Process AnOwner, ThreadStartMethod StartMethod, uint AnId, bool UserMode, FOS_System.String AName)
         {
-            LastActiveState = ActiveStates.NotStarted;
-            Owner = AnOwner;
 #if THREAD_TRACE
             BasicConsole.WriteLine("Constructing thread object...");
 #endif
+            LastActiveState = ActiveStates.NotStarted;
+            Owner = AnOwner;
+
             //Init thread state
             #if THREAD_TRACE
             BasicConsole.WriteLine("Allocating state memory...");

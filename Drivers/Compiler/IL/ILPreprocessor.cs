@@ -207,7 +207,7 @@ namespace Drivers.Compiler.IL
                     TheTypeInfo = TheLibrary.GetTypeInfo(returnArgItem.ParameterType)
                 };
 
-                theMethodInfo.ArgumentInfos.Add(newVarInfo);
+                theMethodInfo.ReturnInfo = newVarInfo;
                 totalArgsSize += newVarInfo.TheTypeInfo.SizeOnStackInBytes;
             }
 

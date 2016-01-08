@@ -24,7 +24,7 @@
 // ------------------------------------------------------------------------------ //
 #endregion
     
-//#define PROCESSMANAGER_TRACE
+#define PROCESSMANAGER_TRACE
 //#define PROCESSMANAGER_SWITCH_TRACE
 
 using System;

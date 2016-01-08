@@ -24,7 +24,7 @@
 // ------------------------------------------------------------------------------ //
 #endregion
     
-//#define PROCESS_TRACE
+#define PROCESS_TRACE
 
 using System;
 using Kernel.FOS_System.Collections;
@@ -78,12 +78,15 @@ namespace Kernel.Hardware.Processes
             UserMode = userMode;
 
 #if PROCESS_TRACE
-            BasicConsole.WriteLine("Creating thread...");
+            BasicConsole.WriteLine("Process: ctor: Creating thread...");
 #endif
             CreateThread(MainMethod, "Main");
 
             if (createHeap)
             {
+#if PROCESS_TRACE
+                BasicConsole.WriteLine("Creating heap...");
+#endif
                 CreateHeap();
             }
         }
@@ -91,7 +94,7 @@ namespace Kernel.Hardware.Processes
         public virtual Thread CreateThread(ThreadStartMethod MainMethod, FOS_System.String Name)
         {
 #if PROCESS_TRACE
-            BasicConsole.WriteLine("Creating thread...");
+            BasicConsole.WriteLine("Process: CreateThread: Creating thread...");
 #endif
 
             Thread newThread = new Thread(this, MainMethod, ThreadIdGenerator++, UserMode, Name);
