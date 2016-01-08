@@ -402,6 +402,7 @@ namespace FlingOops
                 Inst.d = 4;
                 Test_Arg_Struct(Inst);
                 Test_Arg_Param(sign32, sign64, unsign32, unsign64, str, str2);
+                Test_Arg_Store(Inst);
                 Log.WriteLine(" ");
             }
 
@@ -4064,6 +4065,31 @@ namespace FlingOops
                 Log.WriteError("Test_Arg_Param NOT okay.");
             }
         }
+        
+        /// <summary>
+        /// Tests: Passing struct argument to method and storing new struct in the argument.
+        /// Input: A struct, 
+        /// Result: Argument correctly set to new struct.
+        /// </summary>
+        [NoGC]
+        public static void Test_Arg_Store(AStruct struc)
+        {
+            AStruct x = new AStruct();
+            x.a = 255;
+            x.b = 254;
+            x.c = 253;
+            x.d = 252;
+            struc = x;
+            if (struc.a == 255 && struc.b == 254 && struc.c == 253 && struc.d == 252)
+            {
+                Log.WriteSuccess("Test_Arg_Store okay.");
+            }
+            else
+            {
+                Log.WriteError("Test_Arg_Store NOT okay.");
+            }
+        }
+
 
         #endregion
 
@@ -6473,7 +6499,7 @@ namespace FlingOops
         /// Result: Returns no value.
         /// </summary>
         [NoGC]
-        private static void Test_Return_Void()
+        public static void Test_Return_Void()
         {
             // No return value
         }
@@ -6484,7 +6510,7 @@ namespace FlingOops
         /// Result: Returns 0xDEADBEEF.
         /// </summary>
         [NoGC]
-        private static UInt32 Test_Return_UInt32()
+        public static UInt32 Test_Return_UInt32()
         {
             return 0xDEADBEEF;
         }
@@ -6495,7 +6521,7 @@ namespace FlingOops
         /// Result: Returns 0xDEADC0DEDEADBEEF.
         /// </summary>
         [NoGC]
-        private static UInt64 Test_Return_UInt64()
+        public static UInt64 Test_Return_UInt64()
         {
             return 0xDEADC0DEDEADBEEF;
         }
@@ -6505,7 +6531,7 @@ namespace FlingOops
         /// Inputs: An instance of a test class (the GC'ed variable).
         /// Result: Returns 0xDEADC0DEDEADBEEF.
         /// </summary>
-        private static UInt64 Test_Return_UInt64_AfterUsingGCedObject(TestClass x)
+        public static UInt64 Test_Return_UInt64_AfterUsingGCedObject(TestClass x)
         {
             return x.Test_Return_UInt64();
         }

@@ -86,7 +86,7 @@ namespace Drivers.Compiler.Architectures.x86
             int bytesForArg = argInfo.TheTypeInfo.SizeOnStackInBytes;
             for (int i = 0; i < bytesForArg; i += 4)
             {
-                conversionState.Append(new ASMOps.Pop() { Size = ASMOps.OperandSize.Dword, Dest = "[EBP+" + i + "]" });
+                conversionState.Append(new ASMOps.Pop() { Size = ASMOps.OperandSize.Dword, Dest = "[EBP+" + (BytesOffsetFromEBP+i) + "]" });
             }
 
             //Pop the arg value from our stack
