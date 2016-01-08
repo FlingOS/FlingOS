@@ -109,6 +109,9 @@ namespace Drivers.Compiler.Architectures.x86
                     break;
             }
 
+            // Pop address
+            conversionState.CurrentStackFrame.Stack.Pop();
+            // Push value
             conversionState.CurrentStackFrame.Stack.Push(new StackItem()
             {
                 isFloat = false,

@@ -949,13 +949,13 @@ namespace Drivers.Compiler.IL
                             {
                                 // Add local variable for storing return value
                                 int lastLocalOffset = theMethodInfo.LocalInfos.Count > 0 ? theMethodInfo.LocalInfos.Last().Offset : 0;
-                                int lastLocalSize = theMethodInfo.LocalInfos.Count > 0 ? theMethodInfo.LocalInfos.Last().TheTypeInfo.SizeOnStackInBytes : 0;
+                                Types.TypeInfo returnTypeInfo = TheLibrary.GetTypeInfo(returnType);
                                 theMethodInfo.LocalInfos.Add(new Types.VariableInfo()
                                 {
                                     UnderlyingType = returnType,
-                                    TheTypeInfo = TheLibrary.GetTypeInfo(returnType),
+                                    TheTypeInfo = returnTypeInfo,
                                     Position = theMethodInfo.LocalInfos.Count,
-                                    Offset = lastLocalOffset - lastLocalSize    // Local variable offsets are negative from EBP
+                                    Offset = lastLocalOffset - returnTypeInfo.SizeOnStackInBytes    // Local variable offsets are negative from EBP
                                 });
 
                                 // Add op for storing return value, update op offsets
