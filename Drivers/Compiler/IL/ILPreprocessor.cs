@@ -175,7 +175,7 @@ namespace Drivers.Compiler.IL
                 Types.VariableInfo newVarInfo = new Types.VariableInfo()
                 {
                     UnderlyingType = theMethodInfo.UnderlyingInfo.DeclaringType,
-                    Position = 0,
+                    Position = theMethodInfo.ArgumentInfos.Count,
                     TheTypeInfo = TheLibrary.GetTypeInfo(theMethodInfo.UnderlyingInfo.DeclaringType)
                 };
 
@@ -228,10 +228,10 @@ namespace Drivers.Compiler.IL
         /// <param name="TheLibrary">The IL library being compiled.</param>
         /// <param name="aType">The type to get the next method ID from.</param>
         /// <returns>The next unique method ID.</returns>
-        private static int GetMethodIDGenerator(ILLibrary TheLibrary, Type aType)
+        private static int GetMethodIDGenerator(ILLibrary TheLibrary, Type aType, bool useMethodCount = false)
         {
             Types.TypeInfo aTypeInfo = TheLibrary.GetTypeInfo(aType);
-            return GetMethodIDGenerator(TheLibrary, aTypeInfo);
+            return GetMethodIDGenerator(TheLibrary, aTypeInfo, useMethodCount);
         }
         /// <summary>
         /// Gets the next unique ID for a method of the specified type.
@@ -242,14 +242,22 @@ namespace Drivers.Compiler.IL
         /// <param name="TheLibrary">The IL library being compiled.</param>
         /// <param name="aTypeInfo">The type to get the next method ID from.</param>
         /// <returns>The next unique method ID.</returns>
-        private static int GetMethodIDGenerator(ILLibrary TheLibrary, Types.TypeInfo aTypeInfo)
+        private static int GetMethodIDGenerator(ILLibrary TheLibrary, Types.TypeInfo aTypeInfo, bool useMethodCount = false)
         {
-            int totalGen = aTypeInfo.MethodIDGenerator;
+            int totalGen = 0;
+            if (useMethodCount)
+            {
+                totalGen = aTypeInfo.MethodInfos.Count;
+            }
+            else
+            {
+                totalGen = aTypeInfo.MethodIDGenerator;
+            }
             if (aTypeInfo.UnderlyingType.BaseType != null)
             {
                 if (!aTypeInfo.UnderlyingType.BaseType.AssemblyQualifiedName.Contains("mscorlib"))
                 {
-                    totalGen += GetMethodIDGenerator(TheLibrary, aTypeInfo.UnderlyingType.BaseType);
+                    totalGen += GetMethodIDGenerator(TheLibrary, aTypeInfo.UnderlyingType.BaseType, true);
                 }
             }
             return totalGen;
