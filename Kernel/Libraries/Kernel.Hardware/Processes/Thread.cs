@@ -24,7 +24,7 @@
 // ------------------------------------------------------------------------------ //
 #endregion
     
-#define THREAD_TRACE
+//#define THREAD_TRACE
 
 using System;
 
