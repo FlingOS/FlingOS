@@ -51,7 +51,7 @@ namespace Kernel.Hardware.Processes
         public static bool Enabled = false;
         public static bool Initialised = false;
 
-        public const int MSFreq = 5;
+        public const uint MSFreq = 5;
         private static int UpdatePeriod = 5;
         private static int UpdateCountdown;
 
