@@ -88,6 +88,7 @@
     <Compile Include="ILOps\Convi.cs" />
     <Compile Include="ILOps\Convu.cs" />
     <Compile Include="ILOps\Div.cs" />
+    <Compile Include="ILOps\Stobj.cs" />
     <Compile Include="ILOps\Neg.cs" />
     <Compile Include="ILOps\Dup.cs" />
     <Compile Include="ILOps\GlobalMethods.cs" />

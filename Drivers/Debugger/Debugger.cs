@@ -79,8 +79,11 @@ namespace Drivers.Debugger
             
             MsgSerial.Dispose();
             MsgSerial = null;
-            NotifSerial.Dispose();
-            NotifSerial = null;
+            if (NotifSerial != null)
+            {
+                NotifSerial.Dispose();
+                NotifSerial = null;
+            }
         }
 
         public bool Init(string PipeName, string BinFolderPath, string AssemblyName)
@@ -196,7 +199,8 @@ namespace Drivers.Debugger
                         CurrentProcess = new Process()
                         {
                             Id = Id,
-                            Name = LineParts[2]
+                            Name = LineParts[2],
+                            Priority = LineParts[3]
                         };
                         Processes.Add(Id, CurrentProcess);
                     }
@@ -207,7 +211,7 @@ namespace Drivers.Debugger
                         {
                             Id = Id,
                             Name = LineParts[3],
-                            State = (Thread.States)Enum.Parse(typeof(Thread.States), LineParts[2])
+                            State = (Thread.States)Enum.Parse(typeof(Thread.States), LineParts[2].Replace(" ", ""))
                         });
                     }
                 }

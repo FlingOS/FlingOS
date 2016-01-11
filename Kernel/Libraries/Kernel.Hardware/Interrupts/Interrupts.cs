@@ -44,6 +44,7 @@ namespace Kernel.Hardware.Interrupts
         /// </summary>
         public ushort OffsetLo;
         /// <summary>
+        /// TODO
         /// Selector...hmm...I dunno and don't have an internet connection at the moment so 
         /// can't look up what the spec says. Meh, I'm sure it's not too important :)
         /// </summary>

@@ -157,13 +157,16 @@ namespace Drivers.Compiler.IL
             }
 
             int totalLocalsOffset = 0;
+            theMethodInfo.LocalInfos = theMethodInfo.LocalInfos.OrderBy(x => x.Position).ToList();
             foreach (Types.VariableInfo aVarInfo in theMethodInfo.LocalInfos)
             {
                 //Causes processing of the type - in case it hasn't already been processed
                 Types.TypeInfo aTypeInfo = TheLibrary.GetTypeInfo(aVarInfo.UnderlyingType);
                 aVarInfo.TheTypeInfo = aTypeInfo;
+                // Order of the following two lines matters
+                //      Offset = Cumulative offset - size of current local
+                totalLocalsOffset -= aTypeInfo.SizeOnStackInBytes;
                 aVarInfo.Offset = totalLocalsOffset;
-                totalLocalsOffset += aTypeInfo.SizeOnStackInBytes;
             }
 
             int totalArgsSize = 0;
@@ -172,7 +175,7 @@ namespace Drivers.Compiler.IL
                 Types.VariableInfo newVarInfo = new Types.VariableInfo()
                 {
                     UnderlyingType = theMethodInfo.UnderlyingInfo.DeclaringType,
-                    Position = 0,
+                    Position = theMethodInfo.ArgumentInfos.Count,
                     TheTypeInfo = TheLibrary.GetTypeInfo(theMethodInfo.UnderlyingInfo.DeclaringType)
                 };
 
@@ -194,21 +197,22 @@ namespace Drivers.Compiler.IL
                 totalArgsSize += newVarInfo.TheTypeInfo.SizeOnStackInBytes;
             }
 
-            //System.Reflection.ParameterInfo returnArgItem = (theMethodInfo.IsConstructor ? null : ((System.Reflection.MethodInfo)theMethodInfo.UnderlyingInfo).ReturnParameter);
-            //if (returnArgItem != null)
-            //{
-            //    Types.VariableInfo newVarInfo = new Types.VariableInfo()
-            //    {
-            //        UnderlyingType = returnArgItem.ParameterType,
-            //        Position = theMethodInfo.ArgumentInfos.Count,
-            //        TheTypeInfo = TheLibrary.GetTypeInfo(returnArgItem.ParameterType)
-            //    };
+            System.Reflection.ParameterInfo returnArgItem = (theMethodInfo.IsConstructor ? null : ((System.Reflection.MethodInfo)theMethodInfo.UnderlyingInfo).ReturnParameter);
+            if (returnArgItem != null)
+            {
+                Types.VariableInfo newVarInfo = new Types.VariableInfo()
+                {
+                    UnderlyingType = returnArgItem.ParameterType,
+                    Position = theMethodInfo.ArgumentInfos.Count,
+                    TheTypeInfo = TheLibrary.GetTypeInfo(returnArgItem.ParameterType)
+                };
 
-            //    theMethodInfo.ArgumentInfos.Add(newVarInfo);
-            //    totalArgsSize += newVarInfo.TheTypeInfo.SizeOnStackInBytes;
-            //}
+                theMethodInfo.ReturnInfo = newVarInfo;
+                totalArgsSize += newVarInfo.TheTypeInfo.SizeOnStackInBytes;
+            }
 
-            int offset = totalArgsSize;
+            int offset = totalArgsSize + 8;
+            theMethodInfo.ArgumentInfos = theMethodInfo.ArgumentInfos.OrderBy(x => x.Position).ToList();
             for (int i = 0; i < theMethodInfo.ArgumentInfos.Count; i++)
             {
                 offset -= theMethodInfo.ArgumentInfos[i].TheTypeInfo.SizeOnStackInBytes;
@@ -224,10 +228,10 @@ namespace Drivers.Compiler.IL
         /// <param name="TheLibrary">The IL library being compiled.</param>
         /// <param name="aType">The type to get the next method ID from.</param>
         /// <returns>The next unique method ID.</returns>
-        private static int GetMethodIDGenerator(ILLibrary TheLibrary, Type aType)
+        private static int GetMethodIDGenerator(ILLibrary TheLibrary, Type aType, bool useMethodCount = false)
         {
             Types.TypeInfo aTypeInfo = TheLibrary.GetTypeInfo(aType);
-            return GetMethodIDGenerator(TheLibrary, aTypeInfo);
+            return GetMethodIDGenerator(TheLibrary, aTypeInfo, useMethodCount);
         }
         /// <summary>
         /// Gets the next unique ID for a method of the specified type.
@@ -238,14 +242,22 @@ namespace Drivers.Compiler.IL
         /// <param name="TheLibrary">The IL library being compiled.</param>
         /// <param name="aTypeInfo">The type to get the next method ID from.</param>
         /// <returns>The next unique method ID.</returns>
-        private static int GetMethodIDGenerator(ILLibrary TheLibrary, Types.TypeInfo aTypeInfo)
+        private static int GetMethodIDGenerator(ILLibrary TheLibrary, Types.TypeInfo aTypeInfo, bool useMethodCount = false)
         {
-            int totalGen = aTypeInfo.MethodIDGenerator;
+            int totalGen = 0;
+            if (useMethodCount)
+            {
+                totalGen = aTypeInfo.MethodInfos.Count;
+            }
+            else
+            {
+                totalGen = aTypeInfo.MethodIDGenerator;
+            }
             if (aTypeInfo.UnderlyingType.BaseType != null)
             {
                 if (!aTypeInfo.UnderlyingType.BaseType.AssemblyQualifiedName.Contains("mscorlib"))
                 {
-                    totalGen += GetMethodIDGenerator(TheLibrary, aTypeInfo.UnderlyingType.BaseType);
+                    totalGen += GetMethodIDGenerator(TheLibrary, aTypeInfo.UnderlyingType.BaseType, true);
                 }
             }
             return totalGen;
@@ -945,13 +957,13 @@ namespace Drivers.Compiler.IL
                             {
                                 // Add local variable for storing return value
                                 int lastLocalOffset = theMethodInfo.LocalInfos.Count > 0 ? theMethodInfo.LocalInfos.Last().Offset : 0;
-                                int lastLocalSize = theMethodInfo.LocalInfos.Count > 0 ? theMethodInfo.LocalInfos.Last().TheTypeInfo.SizeOnStackInBytes : 0;
+                                Types.TypeInfo returnTypeInfo = TheLibrary.GetTypeInfo(returnType);
                                 theMethodInfo.LocalInfos.Add(new Types.VariableInfo()
                                 {
                                     UnderlyingType = returnType,
-                                    TheTypeInfo = TheLibrary.GetTypeInfo(returnType),
+                                    TheTypeInfo = returnTypeInfo,
                                     Position = theMethodInfo.LocalInfos.Count,
-                                    Offset = lastLocalOffset + lastLocalSize
+                                    Offset = lastLocalOffset - returnTypeInfo.SizeOnStackInBytes    // Local variable offsets are negative from EBP
                                 });
 
                                 // Add op for storing return value, update op offsets

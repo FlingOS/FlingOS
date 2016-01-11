@@ -70,7 +70,7 @@ namespace FlingOops
         public short b;     // 2 bytes - 2 bytes on heap
         public int c;       // 4 bytes - 4 bytes on heap
         public long d;      // 8 bytes - 8 bytes on heap
-                            // Total : 15 bytes
+        // Total : 15 bytes
     }
 
     public static class CompilerTests
@@ -378,7 +378,7 @@ namespace FlingOops
             Log.WriteLine(" ");
 
             #endregion
-            
+
             #region 10. Argument calls
 
             // Variables used as arguments to test methods
@@ -401,12 +401,13 @@ namespace FlingOops
                 Inst.c = 3;
                 Inst.d = 4;
                 Test_Arg_Struct(Inst);
-                Test_Arg_Param(sign32, sign64, unsign32, unsign64, str, str2); 
+                Test_Arg_Param(sign32, sign64, unsign32, unsign64, str, str2);
+                Test_Arg_Store(Inst);
                 Log.WriteLine(" ");
             }
 
             #endregion
-                        
+
             #region 14. Variables and pointers calls
 
             Log.WriteLine("---Variables and pointers:");
@@ -418,6 +419,7 @@ namespace FlingOops
             #region 13. Struct calls
 
             Log.WriteLine("---Struct:");
+            Test_Static_Struct();
             Test_Sizeof_Struct();
             Test_Instance_Struct();
             Log.WriteLine(" ");
@@ -451,7 +453,7 @@ namespace FlingOops
             Log.WriteLine(" ");
 
             #endregion
-            
+
             #region 17. Object calls
 
             Log.WriteLine("---Object:");
@@ -504,6 +506,52 @@ namespace FlingOops
             Log.WriteLine("---String:");
             Test_Strings();
             Log.WriteLine(" ");
+
+            #endregion
+
+            #region 22. Return value calls
+
+            Log.WriteLine("---Return:");
+            Log.WriteLine(" Void");
+            {
+                Test_Return_Void();
+                Log.WriteSuccess("Return void test passed.");
+            }
+            Log.WriteLine(" 32");
+            {
+                UInt32 result = Test_Return_UInt32();
+                if (result == 0xDEADBEEF)
+                {
+                    Log.WriteSuccess("Return 32-bit value passed.");
+                }
+                else
+                {
+                    Log.WriteError("Return 32-bit value FAILED.");
+                }
+            }
+            Log.WriteLine(" 64");
+            {
+                UInt64 result = Test_Return_UInt64();
+                if (result == 0xDEADC0DEDEADBEEF)
+                {
+                    Log.WriteSuccess("Return 64-bit value passed.");
+                }
+                else
+                {
+                    Log.WriteError("Return 64-bit value FAILED.");
+                }
+            }
+            {
+                UInt64 result = Test_Return_UInt64_AfterUsingGCedObject(new TestClass());
+                if (result == 0xDEADC0DEDEADBEEF)
+                {
+                    Log.WriteSuccess("Return 64-bit after using GC'ed value passed.");
+                }
+                else
+                {
+                    Log.WriteError("Return 64-bit after using GC'ed value FAILED.");
+                }
+            }
 
             #endregion
 
@@ -3476,13 +3524,16 @@ namespace FlingOops
         /// To declare an array of strings, we need to use the FlingOS built-in string type, NOT just string because that is part of .NET.
         /// </para>
         /// </remarks>
-        public static unsafe void Test_Array_Struct()
+        public static void Test_Array_Struct()
         {
+            AStruct s = new AStruct();
+            s.a = 1;
+            s.b = 2;
+            s.c = 4;
+            s.d = 8;
+
             AStruct[] array = new AStruct[3];
-            array[0].a = 1;
-            array[0].b = 2;
-            array[0].c = 4;
-            array[0].d = 8;
+            array[0] = s;
             array[1].a = 10;
             array[1].b = 20;
             array[1].c = 40;
@@ -3515,7 +3566,7 @@ namespace FlingOops
             }
             else
             {
-                Log.WriteError("Test_Array_Decl_Struct[0].b Not okay");
+                Log.WriteError("Test_Array_Decl_Struct[0].b Not okay.");
             }
 
             if (array[0].c == 4)
@@ -3524,7 +3575,7 @@ namespace FlingOops
             }
             else
             {
-                Log.WriteError("Test_Array_Decl_Struct[0].c Not okay");
+                Log.WriteError("Test_Array_Decl_Struct[0].c Not okay.");
             }
 
             if (array[0].d == 8)
@@ -3533,7 +3584,7 @@ namespace FlingOops
             }
             else
             {
-                Log.WriteError("Test_Array_Decl_Struct[0].d Not okay");
+                Log.WriteError("Test_Array_Decl_Struct[0].d Not okay.");
             }
             if (array[1].a == 10)
             {
@@ -3550,7 +3601,7 @@ namespace FlingOops
             }
             else
             {
-                Log.WriteError("Test_Array_Decl_Struct[1].b Not okay");
+                Log.WriteError("Test_Array_Decl_Struct[1].b Not okay.");
             }
 
             if (array[1].c == 40)
@@ -3559,7 +3610,7 @@ namespace FlingOops
             }
             else
             {
-                Log.WriteError("Test_Array_Decl_Struct[1].c Not okay");
+                Log.WriteError("Test_Array_Decl_Struct[1].c Not okay.");
             }
 
             if (array[1].d == 80)
@@ -3568,7 +3619,7 @@ namespace FlingOops
             }
             else
             {
-                Log.WriteError("Test_Array_Decl_Struct[1].d Not okay");
+                Log.WriteError("Test_Array_Decl_Struct[1].d Not okay.");
             }
             if (array[2].a == 100)
             {
@@ -3585,7 +3636,7 @@ namespace FlingOops
             }
             else
             {
-                Log.WriteError("Test_Array_Decl_Struct[2].b Not okay");
+                Log.WriteError("Test_Array_Decl_Struct[2].b Not okay.");
             }
 
             if (array[2].c == 400)
@@ -3594,7 +3645,7 @@ namespace FlingOops
             }
             else
             {
-                Log.WriteError("Test_Array_Decl_Struct[2].c Not okay");
+                Log.WriteError("Test_Array_Decl_Struct[2].c Not okay.");
             }
 
             if (array[2].d == 800)
@@ -3603,7 +3654,7 @@ namespace FlingOops
             }
             else
             {
-                Log.WriteError("Test_Array_Decl_Struct[2].d Not okay");
+                Log.WriteError("Test_Array_Decl_Struct[2].d Not okay.");
             }
         }
 
@@ -4014,6 +4065,31 @@ namespace FlingOops
                 Log.WriteError("Test_Arg_Param NOT okay.");
             }
         }
+        
+        /// <summary>
+        /// Tests: Passing struct argument to method and storing new struct in the argument.
+        /// Input: A struct, 
+        /// Result: Argument correctly set to new struct.
+        /// </summary>
+        [NoGC]
+        public static void Test_Arg_Store(AStruct struc)
+        {
+            AStruct x = new AStruct();
+            x.a = 255;
+            x.b = 254;
+            x.c = 253;
+            x.d = 252;
+            struc = x;
+            if (struc.a == 255 && struc.b == 254 && struc.c == 253 && struc.d == 252)
+            {
+                Log.WriteSuccess("Test_Arg_Store okay.");
+            }
+            else
+            {
+                Log.WriteError("Test_Arg_Store NOT okay.");
+            }
+        }
+
 
         #endregion
 
@@ -4811,6 +4887,63 @@ namespace FlingOops
 
         #region 13. Struct
 
+        static AStruct staticStruct;
+
+        /// <summary>
+        /// Tests: Loading/storing from/to a static variable of type struct, 
+        /// Inputs: AStruct, 
+        /// Result: Fields should be set correctly
+        /// </summary>
+        [NoGC]
+        public static unsafe void Test_Static_Struct()
+        {
+            staticStruct = new AStruct();
+            staticStruct.a = 5;
+            if (staticStruct.a == 5)
+            {
+                Log.WriteSuccess("Test_Static_Struct staticStruct.a is 5.");
+            }
+            else
+            {
+                Log.WriteError("Test_Static_Struct staticStruct.a is not 5.");
+            }
+            AStruct b = staticStruct;
+            if (b.a == 5)
+            {
+                Log.WriteSuccess("Test_Static_Struct b.a is 5.");
+            }
+            else
+            {
+                Log.WriteError("Test_Static_Struct b.a is not 5.");
+            }
+            b.b = 10;
+            if (b.b == 10)
+            {
+                Log.WriteSuccess("Test_Static_Struct b.b is 10.");
+            }
+            else
+            {
+                Log.WriteError("Test_Static_Struct b.b is not 10.");
+            }
+            staticStruct = b;
+            if (staticStruct.a == 5)
+            {
+                Log.WriteSuccess("Test_Static_Struct staticStruct.a is 5 (2).");
+            }
+            else
+            {
+                Log.WriteError("Test_Static_Struct staticStruct.a is not 5 (2).");
+            }
+            if (staticStruct.b == 10)
+            {
+                Log.WriteSuccess("Test_Static_Struct staticStruct.b is 10.");
+            }
+            else
+            {
+                Log.WriteError("Test_Static_Struct staticStruct.b is not 10.");
+            }
+        }
+
         /// <summary>
         /// Tests: Sizeof a struct in bytes, 
         /// Inputs: AStruct, 
@@ -5164,7 +5297,7 @@ namespace FlingOops
             HeapInst->d = 1085086035219578880;
             if (HeapInst->a == 85)
             {
-               Log.WriteSuccess("HeapInst->a not null.");
+                Log.WriteSuccess("HeapInst->a not null.");
             }
             else
             {
@@ -5412,7 +5545,7 @@ namespace FlingOops
 
             Log.WriteError("Executed end of subMethod2 which shouldn't have!");
         }
-        
+
         /// <summary>
         /// Tests: Testing Try-catch-finally blocks. 
         /// </summary>
@@ -5489,7 +5622,7 @@ namespace FlingOops
                 {
                     Log.WriteSuccess("Entered subMethod4 try 2 finally.");
                 }
-                
+
                 Log.WriteError("Continued execution of subMethod4 try 2!");
             }
             catch
@@ -5678,7 +5811,7 @@ namespace FlingOops
             #region 32-32
 
             Log.WriteLine(" 32-32");
-            
+
             // 0 ^ 0
             unsign32_a = 0;
             unsign32_b = 0;
@@ -6054,7 +6187,7 @@ namespace FlingOops
             #region 64-64
 
             Log.WriteLine(" 64-64");
-            
+
             // 0 ^ 0
             unsign64_a = 0;
             unsign64_b = 0;
@@ -6358,104 +6491,160 @@ namespace FlingOops
 
         #endregion
 
-    }
-}
+        #region 22. Return values
 
-/// <summary>
-/// Test class for testing objects.
-/// </summary>
-/// <remarks>
-/// <para>
-/// Class must inherit from the FlingOS object type using FlingOops.Object.
-/// </para>
-/// </remarks>
-public class TestClass : FlingOops.Object
-{
-    public int aField0 = 2013265920;
-    public int aField1 = 1717567488;
-    public int aField2 = -2040528896;
-    public int aField3 = -16777216;
-    public int aField4 = -16448112;
-    public int aField5 = 2133914880;
-    public int aField6 = 1879105792;
-    public int aField7 = 1894834447;
-    
-    public int aMethodInt(int arg)
-    {
-        return arg * 3;
-    }
-
-    public void aMethodVoid()
-    {
-        Log.WriteSuccess("Class method void right.");
-    }
-
-    public int aMethodField(int arg)
-    {
-        return arg * aField6;
-    }
-}
-
-/// <summary>
-/// Test class for testing properties.
-/// </summary>
-/// <remarks>
-/// <para>
-/// Class must inherit from the FlingOS object type using FlingOops.Object.
-/// </para>
-/// </remarks>
-public class TestClassProperties : FlingOops.Object
-{
-    private FlingOops.String myStr = "I am a string";
-    private int myNum = 1279544388;
-    public FlingOops.String Str
-    {
-        get
+        /// <summary>
+        /// Tests: Void return value
+        /// Inputs: None
+        /// Result: Returns no value.
+        /// </summary>
+        [NoGC]
+        public static void Test_Return_Void()
         {
-            return myStr;
+            // No return value
         }
-        set
-        {
-            myStr = value;
-        }
-    }
-    public int Num
-    {
-        get
-        {
-            return myNum;
-        }
-        set
-        {
-            myNum = value;
-        }
-    }
-}
 
-/// <summary>
-/// Test class for testing Inheritance.
-/// </summary>
-/// <remarks>
-/// <para>
-/// Class inherits from TestClass.
-/// </para>
-/// </remarks>
-public class TestClassInherit : TestClass
-{
-    public TestClassInherit()
-    {
-        aField6 = 500;
+        /// <summary>
+        /// Tests: 32-bit return value
+        /// Inputs: None
+        /// Result: Returns 0xDEADBEEF.
+        /// </summary>
+        [NoGC]
+        public static UInt32 Test_Return_UInt32()
+        {
+            return 0xDEADBEEF;
+        }
+
+        /// <summary>
+        /// Tests: 64-bit return value
+        /// Inputs: None
+        /// Result: Returns 0xDEADC0DEDEADBEEF.
+        /// </summary>
+        [NoGC]
+        public static UInt64 Test_Return_UInt64()
+        {
+            return 0xDEADC0DEDEADBEEF;
+        }
+
+        /// <summary>
+        /// Tests: Returning 64-bit value after using a GC'ed variable.
+        /// Inputs: An instance of a test class (the GC'ed variable).
+        /// Result: Returns 0xDEADC0DEDEADBEEF.
+        /// </summary>
+        public static UInt64 Test_Return_UInt64_AfterUsingGCedObject(TestClass x)
+        {
+            return x.Test_Return_UInt64();
+        }
+
+        #endregion
     }
 
-    public void Test_Field6()
+    public abstract class TestAbstractClass : FlingOops.Object
     {
-        if (aField6 != 500)
+        public abstract UInt64 Test_Return_UInt64();
+    }
+
+    /// <summary>
+    /// Test class for testing objects.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// Class must inherit from the FlingOS object type using FlingOops.Object.
+    /// </para>
+    /// </remarks>
+    public class TestClass : TestAbstractClass
+    {
+        public int aField0 = 2013265920;
+        public int aField1 = 1717567488;
+        public int aField2 = -2040528896;
+        public int aField3 = -16777216;
+        public int aField4 = -16448112;
+        public int aField5 = 2133914880;
+        public int aField6 = 1879105792;
+        public int aField7 = 1894834447;
+
+        public int aMethodInt(int arg)
         {
-            Log.WriteError("aField6 NOT okay!");
+            return arg * 3;
         }
-        else
+
+        public void aMethodVoid()
         {
-            Log.WriteSuccess("aField6 okay");
+            Log.WriteSuccess("Class method void right.");
+        }
+
+        public int aMethodField(int arg)
+        {
+            return arg * aField6;
+        }
+
+        public override UInt64 Test_Return_UInt64()
+        {
+            return 0xDEADC0DEDEADBEEF;
+        }
+    }
+
+    /// <summary>
+    /// Test class for testing properties.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// Class must inherit from the FlingOS object type using FlingOops.Object.
+    /// </para>
+    /// </remarks>
+    public class TestClassProperties : FlingOops.Object
+    {
+        private FlingOops.String myStr = "I am a string";
+        private int myNum = 1279544388;
+        public FlingOops.String Str
+        {
+            get
+            {
+                return myStr;
+            }
+            set
+            {
+                myStr = value;
+            }
+        }
+        public int Num
+        {
+            get
+            {
+                return myNum;
+            }
+            set
+            {
+                myNum = value;
+            }
+        }
+    }
+
+    /// <summary>
+    /// Test class for testing Inheritance.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// Class inherits from TestClass.
+    /// </para>
+    /// </remarks>
+    public class TestClassInherit : TestClass
+    {
+        public TestClassInherit()
+        {
+            aField6 = 500;
+        }
+
+        public void Test_Field6()
+        {
+            if (aField6 != 500)
+            {
+                Log.WriteError("aField6 NOT okay!");
+            }
+            else
+            {
+                Log.WriteSuccess("aField6 okay");
+            }
         }
     }
 }

@@ -51,7 +51,7 @@ namespace Kernel.Hardware.Devices
         /// </summary>
         /// <remarks>
         /// Currently just straight up initialises the x86 CPU class. Should actually detect,
-        /// either at compile time or runtime, which CPU artchitecture the OS is being run on.
+        /// either at compile time or runtime, which CPU architecture the OS is being run on.
         /// </remarks>
         public static void InitDefault()
         {

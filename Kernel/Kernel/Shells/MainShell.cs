@@ -1035,7 +1035,7 @@ namespace Kernel.Shells
                 OutputExceptionInfo(ExceptionMethods.CurrentException);
                 //Pause to give us the chance to read the output. 
                 //  We do not know what the code outside this shell may do.
-                Hardware.Processes.Thread.Sleep(1000);
+                Processes.SystemCalls.SleepThread(1000);
             }
             console.WriteLine("Shell exited.");
         }
@@ -3738,7 +3738,7 @@ which should have been provided with the executable.");
                 console.Write("Sleeping for 5 lot(s) of 1 second(s)");
                 for (int i = 0; i < 5; i++)
                 {
-                    Hardware.Processes.Thread.Sleep(1000);
+                    Processes.SystemCalls.SleepThread(1000);
                     console.Write(".");
                 }
                 console.WriteLine("completed.");
@@ -3747,7 +3747,7 @@ which should have been provided with the executable.");
                 console.Write("Sleeping for 1 lot(s) of 5 second(s)");
                 //for (int i = 0; i < 5; i++)
                 {
-                    Hardware.Processes.Thread.Sleep(5000);
+                    Processes.SystemCalls.SleepThread(5000);
                     console.Write(".");
                 }
                 console.WriteLine("completed.");

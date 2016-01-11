@@ -296,9 +296,15 @@ namespace Drivers.Debugger.App
                 UpdateEnableStates();
             }
 
-            while (!TheDebugger.Ready)
+            try
             {
-                System.Threading.Thread.Sleep(100);
+                while (!TheDebugger.Ready)
+                {
+                    System.Threading.Thread.Sleep(100);
+                }
+            }
+            catch (NullReferenceException)
+            {
             }
 
             UpdateEnableStates();
@@ -755,7 +761,7 @@ namespace Drivers.Debugger.App
                 {
                     foreach (Process AProcess in Processes.Values)
                     {
-                        TreeNode NewProcessNode = ProcessesTreeView.Nodes.Add(AProcess.Id.ToString(), AProcess.Id.ToString() + ": " + AProcess.Name);
+                        TreeNode NewProcessNode = ProcessesTreeView.Nodes.Add(AProcess.Id.ToString(), AProcess.Id.ToString() + ": " + AProcess.Name + " (" + AProcess.Priority + ")");
                         if (AProcess.Id == SelectedProcessId && SelectedThreadId == -1)
                         {
                             NodeToSelect = NewProcessNode;

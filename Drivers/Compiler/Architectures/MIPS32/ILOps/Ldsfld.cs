@@ -56,7 +56,8 @@ namespace Drivers.Compiler.Architectures.MIPS32
                         {
                             isFloat = isFloat,
                             sizeOnStackInBytes = (size == 8 ? 8 : 4),
-                            isGCManaged = theTypeInfo.IsGCManaged
+                            isGCManaged = theTypeInfo.IsGCManaged,
+                            isValue = theTypeInfo.IsValueType
                         });
                     }
                     break;
@@ -65,7 +66,8 @@ namespace Drivers.Compiler.Architectures.MIPS32
                     {
                         isFloat = false,
                         sizeOnStackInBytes = 4,
-                        isGCManaged = false
+                        isGCManaged = false,
+                        isValue = false
                     });
                     break;
             }
@@ -143,7 +145,8 @@ namespace Drivers.Compiler.Architectures.MIPS32
                         {
                             isFloat = isFloat,
                             sizeOnStackInBytes = (size == 8 ? 8 : 4),
-                            isGCManaged = theTypeInfo.IsGCManaged
+                            isGCManaged = theTypeInfo.IsGCManaged,
+                            isValue = theTypeInfo.IsValueType
                         });
                     }
                     break;
@@ -156,7 +159,8 @@ namespace Drivers.Compiler.Architectures.MIPS32
                     {
                         isFloat = false,
                         sizeOnStackInBytes = 4,
-                        isGCManaged = false
+                        isGCManaged = false,
+                        isValue = false
                     });
                     break;
             }

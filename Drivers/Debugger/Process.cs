@@ -36,6 +36,7 @@ namespace Drivers.Debugger
     {
         public uint Id;
         public string Name;
+        public string Priority;
 
         public Dictionary<uint, Thread> Threads = new Dictionary<uint, Thread>();
     }
@@ -43,10 +44,11 @@ namespace Drivers.Debugger
     {
         public enum States
         {
-            Running,
-            Waiting,
-            Sleeping,
-            Suspended
+            Active,
+            Inactive,
+            Suspended,
+            NotStarted,
+            Terminated
         }
 
         public uint Id;

@@ -24,8 +24,7 @@
 // ------------------------------------------------------------------------------ //
 #endregion
     
-#define PROCESS_TRACE
-#undef PROCESS_TRACE
+//#define PROCESS_TRACE
 
 using System;
 using Kernel.FOS_System.Collections;
@@ -67,6 +66,8 @@ namespace Kernel.Hardware.Processes
         public FOS_System.GCState TheGCState = null;
         public bool OutputMemTrace = false;
 
+        public bool Registered = false;
+
         public Process(ThreadStartMethod MainMethod, uint AnId, FOS_System.String AName, bool userMode, bool createHeap)
         {
 #if PROCESS_TRACE
@@ -77,12 +78,15 @@ namespace Kernel.Hardware.Processes
             UserMode = userMode;
 
 #if PROCESS_TRACE
-            BasicConsole.WriteLine("Creating thread...");
+            BasicConsole.WriteLine("Process: ctor: Creating thread...");
 #endif
             CreateThread(MainMethod, "Main");
 
             if (createHeap)
             {
+#if PROCESS_TRACE
+                BasicConsole.WriteLine("Creating heap...");
+#endif
                 CreateHeap();
             }
         }
@@ -90,15 +94,10 @@ namespace Kernel.Hardware.Processes
         public virtual Thread CreateThread(ThreadStartMethod MainMethod, FOS_System.String Name)
         {
 #if PROCESS_TRACE
-            BasicConsole.WriteLine("Creating thread...");
+            BasicConsole.WriteLine("Process: CreateThread: Creating thread...");
 #endif
-            //bool reenable = Scheduler.Enabled;
-            //if (reenable)
-            //{
-            //    Scheduler.Disable();
-            //}
 
-            Thread newThread = new Thread(MainMethod, ThreadIdGenerator++, UserMode, Name);
+            Thread newThread = new Thread(this, MainMethod, ThreadIdGenerator++, UserMode, Name);
 #if PROCESS_TRACE
             BasicConsole.WriteLine("Adding data page...");
 #endif
@@ -116,11 +115,10 @@ namespace Kernel.Hardware.Processes
 #endif
 
             Threads.Add(newThread);
-
-            //if (reenable)
-            //{
-            //    Scheduler.Enable();
-            //}
+            if (Registered)
+            {
+                Scheduler.InitThread(this, newThread);
+            }
 
             return newThread;
         }

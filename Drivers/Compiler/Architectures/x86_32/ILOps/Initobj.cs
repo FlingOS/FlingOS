@@ -40,6 +40,7 @@ namespace Drivers.Compiler.Architectures.x86
     {
         public override void PerformStackOperations(ILPreprocessState conversionState, ILOp theOp)
         {
+            conversionState.CurrentStackFrame.Stack.Pop();
         }
 
         /// <summary>
@@ -51,7 +52,7 @@ namespace Drivers.Compiler.Architectures.x86
         public override void Convert(ILConversionState conversionState, ILOp theOp)
         {
             //Ignore for now
-            //TODO: Do we need to do any proper initialisation?
+            //TODO: Initialise the structure to 0
             conversionState.Append(new ASMOps.Add() { Src = "4", Dest = "ESP" });
         }
     }

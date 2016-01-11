@@ -375,7 +375,7 @@ namespace Kernel
         /// <remarks>
         /// The pre-allocated stack is the stack which is built into the kernel's machine code using assembly instructions.
         /// </remarks>
-        /// <returns>A poinrter to the top of the stack.</returns>
+        /// <returns>A pointer to the top of the stack.</returns>
         [Drivers.Compiler.Attributes.PluggedMethod(ASMFilePath = @"ASM\Kernel")]
         private static unsafe byte* GetKernelStackPtr()
         {

@@ -24,46 +24,69 @@
 // ------------------------------------------------------------------------------ //
 #endregion
     
-#define SCHEDULER_TRACE
-#undef SCHEDULER_TRACE
-
-#define SCHEDULER_HANDLER_TRACE
-#undef SCHEDULER_HANDLER_TRACE
+//#define SCHEDULER_TRACE
+//#define SCHEDULER_HANDLER_TRACE
+//#define SCHEDULER_HANDLER_MIN_TRACE
+//#define SCHEDULER_UPDATE_LIST_TRACE
 
 using System;
+using Kernel.FOS_System.Collections;
 
 namespace Kernel.Hardware.Processes
 {
     public static unsafe class Scheduler
     {
+        private static PriorityQueue ActiveQueue = new PriorityQueue(1024);
+        private static PriorityQueue InactiveQueue = new PriorityQueue(1024);
+        //private static List SuspendedList = new List(1024);
+
         public enum Priority : int 
         {
-            Low = 1,
-            Normal = 2,
+            ZeroTimed = 100,
+            Low = 15,
+            Normal = 10,
             High = 5
         }
 
         public static bool Enabled = false;
+        public static bool Initialised = false;
 
         public const int MSFreq = 5;
+        private static int UpdatePeriod = 5;
+        private static int UpdateCountdown;
+
+        //private static int LockupCounter = 0;
 
         public static void InitProcess(Process process, Priority priority)
         {
             process.Priority = priority;
+            
+            for (int i = 0; i < process.Threads.Count; i++)
+            {
+                Thread t = (Thread)process.Threads[i];
+
+                InitThread(process, t);
+            }
+
+            process.Registered = true;
+        }
+        public static void InitThread(Process process, Thread t)
+        {
+            t.TimeToRunReload = (int)process.Priority;
+            t.TimeToRun = t.TimeToRunReload;
+
+            UpdateList(t, false);
         }
 
         [Drivers.Compiler.Attributes.NoDebug]
         public static void Init()
         {
             //ExceptionMethods.ThePageFaultHandler = HandlePageFault;
+            
+            ActiveQueue.Name = "Active Queue";
+            InactiveQueue.Name = "Inactive Queue";
 
-            //Disable interrupts - critical section
-#if SCHEDULER_TRACE
-            BasicConsole.WriteLine(" > Disabling interrupts...");
-#endif
-            Disable();
-
-            //Load first process and first thread (ManagedMain process)
+            //Load first process and first thread
 #if SCHEDULER_TRACE
             BasicConsole.WriteLine(" > Setting current process...");
 #endif
@@ -107,7 +130,7 @@ namespace Kernel.Hardware.Processes
 #if SCHEDULER_TRACE
             BasicConsole.WriteLine(" > Adding timer handler...");
 #endif
-            /*1000000*/
+            /*Multiply by 1000000 to get from ms to ns*/
             Hardware.Devices.Timer.Default.RegisterHandler(OnTimerInterrupt, /* MSFreq * 1000000 */ 5000000, true, null);
 
 #if SCHEDULER_TRACE
@@ -115,6 +138,12 @@ namespace Kernel.Hardware.Processes
 #endif
             Interrupts.Interrupts.EnableProcessSwitching = true;
 
+//#if SCHEDULER_TRACE
+            BasicConsole.WriteLine(" > Enabling scheduler...");
+//#endif
+            UpdateCountdown = UpdatePeriod;
+
+            Initialised = true;
             Enable();
         }
         [Drivers.Compiler.Attributes.PluggedMethod(ASMFilePath = @"ASM\Processes\Scheduler")]
@@ -224,12 +253,35 @@ namespace Kernel.Hardware.Processes
         [Drivers.Compiler.Attributes.NoGC]
         private static void OnTimerInterrupt(FOS_System.Object state)
         {
-            if (!Enabled)
+#if SCHEDULER_HANDLER_TRACE || SCHEDULER_HANDLER_MIN_TRACE
+            BasicConsole.Write("T");
+#endif
+
+            //LockupCounter++;
+
+            //if (LockupCounter > 2000)
+            //{
+            //    Enable();
+            //}
+
+            if (!Enabled || !Initialised)
             {
                 return;
             }
 
-            UpdateCurrentState();
+            //LockupCounter = 0;
+
+#if SCHEDULER_HANDLER_TRACE || SCHEDULER_HANDLER_MIN_TRACE
+            BasicConsole.Write("E");
+#endif
+            
+            //UpdateCountdown -= MSFreq;
+
+            //if (UpdateCountdown <= 0)
+            //{
+            //    UpdateCountdown = UpdatePeriod;
+                UpdateCurrentState();
+            //}
         }
         [Drivers.Compiler.Attributes.NoDebug]
         [Drivers.Compiler.Attributes.NoGC]
@@ -241,7 +293,7 @@ namespace Kernel.Hardware.Processes
             if (Processes.ProcessManager.Processes.Count > 1)
                 BasicConsole.WriteLine("Scheduler interrupt started...");
 #endif
-                
+
             if (ProcessManager.CurrentProcess == null ||
                ProcessManager.CurrentThread == null ||
                ProcessManager.CurrentThread_State == null)
@@ -249,117 +301,32 @@ namespace Kernel.Hardware.Processes
                 return;
             }
 
-            UpdateSleepingThreads();
+            UpdateInactiveThreads();
 
-            UpdateCurrentThread();
+            UpdateActiveThreads();
 
-            if (ProcessManager.CurrentThread.TimeToRun <= 0 ||
-                ProcessManager.CurrentThread.TimeToSleep != 0 ||
-                ProcessManager.CurrentThread_State->Terminated ||
-                ProcessManager.CurrentThread.Debug_Suspend)
+            while (ActiveQueue.Count == 0)
             {
-#if SCHEDULER_HANDLER_TRACE
-                if (Processes.ProcessManager.Processes.Count > 1)
-                    BasicConsole.WriteLine("Scheduler: Required to switch thread.");
-#endif
-                if (!ProcessManager.CurrentThread.Debug_Suspend)
-                {
-                    ProcessManager.CurrentThread.TimeToRun = ProcessManager.CurrentThread.TimeToRunReload;
-                }
-
-                uint processId = ProcessManager.CurrentProcess.Id;
-
-                int processIdx = ProcessManager.Processes.IndexOf(ProcessManager.CurrentProcess);
-                if (processIdx == -1)
-                {
-                    BasicConsole.WriteLine("!!! PANIC !!!");
-                    BasicConsole.WriteLine("Scheduler.UpdateCurrentState (Scheduler.cs:Line 267) - Index of current process came back as -1 - Unfound!");
-                    BasicConsole.WriteLine("!-!-!-!-!-!-!");
-                }
-
-                int threadIdx = ProcessManager.CurrentProcess.Threads.IndexOf(ProcessManager.CurrentThread);
-                
-                threadIdx = NextThread(threadIdx, processIdx);
-
-                if (ProcessManager.Processes.Count > 1)
-                {
-#if SCHEDULER_HANDLER_TRACE
-                    BasicConsole.WriteLine("Scheduler: Multiple process exist.");
-#endif
-
-                    int startIdx = processIdx;
-                    
-#if SCHEDULER_HANDLER_TRACE
-                    BasicConsole.WriteLine("Trying to find runnable process...");
-#endif
-
-                    while (threadIdx >= ((Process)ProcessManager.Processes[processIdx]).Threads.Count)
-                    {
-#if SCHEDULER_HANDLER_TRACE
-                        BasicConsole.WriteLine("Next process...");
-#endif
-                        NextProcess(ref threadIdx, ref processIdx);
-
-                        //Prevent infinite blocking loop
-                        if (startIdx == processIdx &&
-                            threadIdx >= ((Process)ProcessManager.Processes[processIdx]).Threads.Count)
-                        {
-#if SCHEDULER_HANDLER_TRACE
-                            BasicConsole.WriteLine("Scheduler: WARNING preventing infinite loop by early-updating sleeping threads. (1)");
-#endif
-                            
-                            UpdateSleepingThreads();
-                        }
-                    }
-
-#if SCHEDULER_HANDLER_TRACE
-                    BasicConsole.WriteLine("Scheduler: Found runnable process and thread.");
-#endif
-
-                    processId = ((Process)ProcessManager.Processes[processIdx]).Id;
-                }
-                else
-                {
-                    while (threadIdx >= ProcessManager.CurrentProcess.Threads.Count)
-                    {
-                        threadIdx = NextThread(ProcessManager.THREAD_DONT_CARE, processIdx);
-
-                        if (threadIdx >= ProcessManager.CurrentProcess.Threads.Count)
-                        {
-#if SCHEDULER_HANDLER_TRACE
-                            BasicConsole.WriteLine("WARNING: Scheduler preventing infinite loop by early-updating sleeping threads. (2)");
-#endif
-                            
-                            UpdateSleepingThreads();
-                        }
-                    }
-                }
-                
-#if SCHEDULER_HANDLER_TRACE
-                //if (Processes.ProcessManager.Processes.Count > 1)
-                //{
-                //    BasicConsole.WriteLine("Scheduler: Switching process/thread.");
-                //}
-
-                if (threadIdx >= ((Process)ProcessManager.Processes[processIdx]).Threads.Count)
-                {
-                    BasicConsole.WriteLine("Error! Scheduler has picked a thread index which is out of range!");
-                }
-                else if (threadIdx < 0)
-                {
-                    BasicConsole.WriteLine("Error! Scheduler has picked a thread index less than 0!");
-                }
-#endif
-
-                ProcessManager.SwitchProcess(processId,
-                    (int)((Thread)((Process)ProcessManager.Processes[processIdx]).Threads[threadIdx]).Id);
+                //#if SCHEDULER_HANDLER_TRACE
+                BasicConsole.WriteLine("WARNING: Scheduler preventing infinite loop by early-updating sleeping threads.");
+                //#endif
+                UpdateInactiveThreads();
             }
+
+            Thread nextThread = (Thread)ActiveQueue.PeekMin();
+#if SCHEDULER_HANDLER_TRACE || SCHEDULER_HANDLER_MIN_TRACE
+            BasicConsole.Write("Active: ");
+            BasicConsole.Write(nextThread.Owner.Name);
+            BasicConsole.Write(" - ");
+            BasicConsole.WriteLine(nextThread.Name);
+#endif
+            ProcessManager.SwitchProcess(nextThread.Owner.Id, (int)nextThread.Id);
 
             if (!ProcessManager.CurrentThread_State->Started)
             {
                 SetupThreadForStart();
             }
-            
+
 #if SCHEDULER_HANDLER_TRACE
             if (Processes.ProcessManager.Processes.Count > 1)
                 BasicConsole.WriteLine("Scheduler interrupt ended.");
@@ -367,69 +334,115 @@ namespace Kernel.Hardware.Processes
             BasicConsole.SetTextColour(BasicConsole.default_colour);
 #endif
         }
+        //[Drivers.Compiler.Attributes.NoDebug]
+        //[Drivers.Compiler.Attributes.NoGC]
+        //private static void NextProcess(ref int threadIdx, ref int processIdx)
+        //{
+        //    processIdx++;
+
+        //    if (processIdx >= ProcessManager.Processes.Count)
+        //    {
+        //        //Go back to start of list
+        //        processIdx = 0;
+        //    }
+
+        //    threadIdx = NextThread(ProcessManager.THREAD_DONT_CARE, processIdx);
+        //}
+        //[Drivers.Compiler.Attributes.NoDebug]
+        //[Drivers.Compiler.Attributes.NoGC]
+        //private static int NextThread(int threadIdx, int processIdx)
+        //{
+        //    threadIdx++;
+
+        //    Process cProcess = ((Process)ProcessManager.Processes[processIdx]);
+
+        //    while (threadIdx < cProcess.Threads.Count &&
+        //          (((Thread)cProcess.Threads[threadIdx]).State->Terminated ||
+        //           ((Thread)cProcess.Threads[threadIdx]).TimeToSleep != 0 ||
+        //           ((Thread)cProcess.Threads[threadIdx]).Debug_Suspend))
+        //    {
+        //        threadIdx++;
+        //    }
+        //    return threadIdx;
+        //}
         [Drivers.Compiler.Attributes.NoDebug]
         [Drivers.Compiler.Attributes.NoGC]
-        private static void NextProcess(ref int threadIdx, ref int processIdx)
+        private static void UpdateActiveThreads()
         {
-            processIdx++;
+#if SCHEDULER_HANDLER_TRACE
+            BasicConsole.WriteLine("Scheduler > Updating active threads...");
+            FOS_System.String NumberOfActiveThreadsStr = "Scheduler > Number of active threads: 0x        ";
+            ExceptionMethods.FillString((uint)ActiveQueue.Count, 47, NumberOfActiveThreadsStr);
+            BasicConsole.WriteLine(NumberOfActiveThreadsStr);
 
-            if (processIdx >= ProcessManager.Processes.Count)
+            BasicConsole.WriteLine("Scheduler > Peeking min active thread...");
+#endif
+            Thread minThread = (Thread)ActiveQueue.PeekMin();
+            if (minThread != null &&
+                minThread.Key == 0)
             {
-                //Go back to start of list
-                processIdx = 0;
+#if SCHEDULER_HANDLER_TRACE
+                BasicConsole.WriteLine("Scheduler > Extracting min active thread...");
+#endif
+                ActiveQueue.ExtractMin();
+#if SCHEDULER_HANDLER_TRACE
+                BasicConsole.WriteLine("Scheduler > Setting time to run of min active thread...");
+#endif
+                minThread.TimeToRun = minThread.TimeToRunReload;
+#if SCHEDULER_HANDLER_TRACE
+                BasicConsole.WriteLine("Scheduler > Re-inserting active thread...");
+#endif
+                ActiveQueue.Insert(minThread);
             }
-
-            threadIdx = NextThread(ProcessManager.THREAD_DONT_CARE, processIdx);
+            
+#if SCHEDULER_HANDLER_TRACE
+            BasicConsole.WriteLine("Scheduler > Decreasing keys of all active threads...");
+#endif
+            ActiveQueue.DecreaseAllKeys(1, 0);
+            
+#if SCHEDULER_HANDLER_TRACE
+            BasicConsole.WriteLine("Scheduler > Updated active threads.");
+#endif
         }
         [Drivers.Compiler.Attributes.NoDebug]
         [Drivers.Compiler.Attributes.NoGC]
-        private static int NextThread(int threadIdx, int processIdx)
+        private static void UpdateInactiveThreads()
         {
-            threadIdx++;
+#if SCHEDULER_HANDLER_TRACE
+            BasicConsole.WriteLine("Scheduler > Updating inactive threads...");
+            FOS_System.String NumberOfInactiveThreadsStr = "Scheduler > Number of inactive threads: 0x        ";
+            ExceptionMethods.FillString((uint)InactiveQueue.Count, 49, NumberOfInactiveThreadsStr);
+            BasicConsole.WriteLine(NumberOfInactiveThreadsStr);
 
-            Process cProcess = ((Process)ProcessManager.Processes[processIdx]);
-
-            while (threadIdx < cProcess.Threads.Count &&
-                  (((Thread)cProcess.Threads[threadIdx]).State->Terminated ||
-                   ((Thread)cProcess.Threads[threadIdx]).TimeToSleep != 0 ||
-                   ((Thread)cProcess.Threads[threadIdx]).Debug_Suspend))
+            BasicConsole.WriteLine("Scheduler > Decreasing keys of all inactive threads...");
+#endif
+            InactiveQueue.DecreaseAllKeys(UpdatePeriod, 0);
+            
+#if SCHEDULER_HANDLER_TRACE
+            BasicConsole.WriteLine("Scheduler > Peeking min inactive thread...");
+#endif
+            Thread cThread = (Thread)InactiveQueue.PeekMin();
+            while (cThread != null && cThread.ActiveState != Thread.ActiveStates.Inactive)
             {
-                threadIdx++;
+#if SCHEDULER_HANDLER_TRACE
+                BasicConsole.WriteLine("Scheduler > Extracting min inactive thread...");
+#endif
+                InactiveQueue.ExtractMin();
+                
+#if SCHEDULER_HANDLER_TRACE
+                BasicConsole.WriteLine("Scheduler > Updating min inactive thread's list...");
+#endif
+                UpdateList(cThread, true);
+                
+#if SCHEDULER_HANDLER_TRACE
+                BasicConsole.WriteLine("Scheduler > Moving to next min inactive thread...");
+#endif
+                cThread = (Thread)InactiveQueue.PeekMin();
             }
-            return threadIdx;
-        }
-        [Drivers.Compiler.Attributes.NoDebug]
-        [Drivers.Compiler.Attributes.NoGC]
-        private static void UpdateCurrentThread()
-        {
-            if (!ProcessManager.CurrentThread.Debug_Suspend)
-            {
-                ProcessManager.CurrentThread.TimeToRun--;
-            }
-        }
-        [Drivers.Compiler.Attributes.NoDebug]
-        [Drivers.Compiler.Attributes.NoGC]
-        private static void UpdateSleepingThreads()
-        {
-            for (int pIdx = 0; pIdx < ProcessManager.Processes.Count; pIdx++)
-            {
-                Process p = (Process)ProcessManager.Processes[pIdx];
-                for (int tIdx = 0; tIdx < p.Threads.Count; tIdx++)
-                {
-                    Thread t = (Thread)p.Threads[tIdx];
-                    if (t.TimeToSleep != Thread.IndefiniteSleep && !t.Debug_Suspend)
-                    {
-                        if (t.TimeToSleep < MSFreq)
-                        {
-                            t.TimeToSleep = 0;
-                        }
-                        else
-                        {
-                            t.TimeToSleep -= MSFreq;
-                        }
-                    }
-                }
-            }
+            
+#if SCHEDULER_HANDLER_TRACE
+            BasicConsole.WriteLine("Scheduler > Updated inactive threads.");
+#endif
         }
         [Drivers.Compiler.Attributes.NoDebug]
         private static void SetupThreadForStart()
@@ -440,9 +453,6 @@ namespace Kernel.Hardware.Processes
                 BasicConsole.WriteLine("Marking thread as started...");
             }
 #endif
-            ProcessManager.CurrentThread.TimeToRunReload = (int)ProcessManager.CurrentProcess.Priority;
-            ProcessManager.CurrentThread.TimeToRun = ProcessManager.CurrentThread.TimeToRunReload;
-
             ProcessManager.CurrentThread_State->Started = true;
             ProcessManager.CurrentThread_State->Terminated = false;
 
@@ -540,12 +550,6 @@ namespace Kernel.Hardware.Processes
         private delegate void TerminateMethod();
         private static void ThreadTerminated()
         {
-            bool reenable = Hardware.Processes.Scheduler.Enabled;
-            if (reenable)
-            {
-                Disable();
-            }
-
 //#if SCHEDULER_TRACE
             // START - Trace code
             
@@ -560,7 +564,7 @@ namespace Kernel.Hardware.Processes
             //for (int i = 0; i < 3; i++)
             //{
             //    BasicConsole.Write(".");
-            //    Thread.Sleep(1000);
+            //    SystemCalls.SleepThread(1000);
             //}
             // END - Trace code
 
@@ -572,13 +576,10 @@ namespace Kernel.Hardware.Processes
 
             // Mark thread as terminated. Leave it to the scheduler to stop running
             //  and the process manager can destroy it later.
+            ProcessManager.CurrentThread.LastActiveState = ProcessManager.CurrentThread.ActiveState;
             ProcessManager.CurrentThread_State->Terminated = true;
-
-            if (reenable)
-            {
-                Enable();
-            }
-
+            UpdateList(ProcessManager.CurrentThread);
+            
             //Wait for the scheduler to interrupt us. We will never return here again (inside this thread)
             //  since it has now been terminated.
             while (true)
@@ -598,12 +599,131 @@ namespace Kernel.Hardware.Processes
             //Hardware.Interrupts.Interrupts.EnableInterrupts();
         }
         [Drivers.Compiler.Attributes.NoDebug]
-        public static void Disable()
+        public static void Disable(/*FOS_System.String disabler*/)
         {
             //Hardware.Interrupts.Interrupts.DisableInterrupts();
             Enabled = false;
-            //BasicConsole.WriteLine("Disabled scheduler.");
+            //BasicConsole.Write("Disabled scheduler: ");
+            //BasicConsole.WriteLine(disabler);
             //BasicConsole.DelayOutput(1);
+        }
+
+        public static void UpdateList(Thread t)
+        {
+            UpdateList(t, false);
+        }
+        private static void UpdateList(Thread t, bool skipRemove)
+        {
+            Scheduler.Disable(/*"Scheduler UpdateList"*/);
+
+#if SCHEDULER_UPDATE_LIST_TRACE
+            BasicConsole.Write("S > UpdateList: ");
+            BasicConsole.WriteLine(t.Name);
+#endif
+            if (!skipRemove)
+            {
+#if SCHEDULER_UPDATE_LIST_TRACE
+                    BasicConsole.WriteLine("S > UpdateList: No skip remove");
+#endif
+                switch (t.LastActiveState)
+                {
+                    case Thread.ActiveStates.NotStarted:
+#if SCHEDULER_UPDATE_LIST_TRACE
+                            BasicConsole.WriteLine("S > UpdateList: LastActiveState: NotStarted");
+#endif
+                        ActiveQueue.Delete(t);
+                        break;
+                    case Thread.ActiveStates.Terminated:
+#if SCHEDULER_UPDATE_LIST_TRACE
+                            BasicConsole.WriteLine("S > UpdateList: LastActiveState: Terminated");
+#endif
+                        break;
+                    case Thread.ActiveStates.Active:
+#if SCHEDULER_TRACE
+                        BasicConsole.WriteLine("Scheduler > Deleting thread from Active queue...");
+#endif
+                            //try
+                            //{
+#if SCHEDULER_UPDATE_LIST_TRACE
+                                BasicConsole.WriteLine("S > UpdateList: LastActiveState: Active (1x1)");
+#endif
+                                ActiveQueue.Delete(t);
+#if SCHEDULER_UPDATE_LIST_TRACE
+                                BasicConsole.WriteLine("S > UpdateList: LastActiveState: Active - done.");
+#endif
+                            //}
+                            //catch
+                            //{
+                            //    BasicConsole.WriteLine("Error removing from active list:");
+                            //    BasicConsole.WriteLine(ExceptionMethods.CurrentException.Message);
+                            //}
+                        break;
+                    case Thread.ActiveStates.Inactive:
+#if SCHEDULER_UPDATE_LIST_TRACE
+                            BasicConsole.WriteLine("S > UpdateList: LastActiveState: Inactive");
+#endif
+                        InactiveQueue.Delete(t);
+                        break;
+                    case Thread.ActiveStates.Suspended:
+#if SCHEDULER_UPDATE_LIST_TRACE
+                            BasicConsole.WriteLine("S > UpdateList: LastActiveState: Suspended");
+#endif
+                        //SuspendedList.Remove(t);
+                        break;
+                }
+            }
+
+#if SCHEDULER_UPDATE_LIST_TRACE
+                BasicConsole.WriteLine("S > UpdateList: Handling active state");
+#endif
+            switch (t.ActiveState)
+            {
+                case Thread.ActiveStates.NotStarted:
+#if SCHEDULER_UPDATE_LIST_TRACE
+                        BasicConsole.WriteLine("S > UpdateList: ActiveState: Not Started");
+#endif
+                    //if (!ActiveQueue.Insert(t))
+                    //{
+                    //    BasicConsole.WriteLine(t.Name);
+                    //}
+                    ActiveQueue.Insert(t);
+                    break;
+                case Thread.ActiveStates.Terminated:
+#if SCHEDULER_UPDATE_LIST_TRACE
+                        BasicConsole.WriteLine("S > UpdateList: ActiveState: Terminated");
+#endif
+                    break;
+                case Thread.ActiveStates.Active:
+#if SCHEDULER_UPDATE_LIST_TRACE
+                        BasicConsole.WriteLine("S > UpdateList: ActiveState: Active");
+#endif
+                    //if (!ActiveQueue.Insert(t))
+                    //{
+                    //    BasicConsole.WriteLine(t.Name);
+                    //}
+                    ActiveQueue.Insert(t);
+                    break;
+                case Thread.ActiveStates.Inactive:
+#if SCHEDULER_UPDATE_LIST_TRACE
+                        BasicConsole.WriteLine("S > UpdateList: ActiveState: Inactive");
+#endif
+                    //if (!InactiveQueue.Insert(t))
+                    //{
+                    //    BasicConsole.WriteLine(t.Name);
+                    //}
+                    InactiveQueue.Insert(t);
+                    break;
+                case Thread.ActiveStates.Suspended:
+#if SCHEDULER_UPDATE_LIST_TRACE
+                        BasicConsole.WriteLine("S > UpdateList: ActiveState: Suspended");
+#endif
+                    //SuspendedList.Add(t);
+                    break;
+            }
+#if SCHEDULER_UPDATE_LIST_TRACE
+                BasicConsole.WriteLine("S > UpdateList: Done.");
+#endif
+            Scheduler.Enable();
         }
     }
 

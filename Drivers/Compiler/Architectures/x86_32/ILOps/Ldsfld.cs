@@ -56,7 +56,8 @@ namespace Drivers.Compiler.Architectures.x86
                         {
                             isFloat = isFloat,
                             sizeOnStackInBytes = (size == 8 ? 8 : 4),
-                            isGCManaged = theTypeInfo.IsGCManaged
+                            isGCManaged = theTypeInfo.IsGCManaged,
+                            isValue = theTypeInfo.IsValueType
                         });
                     }
                     break;
@@ -65,7 +66,8 @@ namespace Drivers.Compiler.Architectures.x86
                     {
                         isFloat = false,
                         sizeOnStackInBytes = 4,
-                        isGCManaged = false
+                        isGCManaged = false,
+                        isValue = false
                     });
                     break;
             }
@@ -99,7 +101,7 @@ namespace Drivers.Compiler.Architectures.x86
                 case OpCodes.Ldsfld:
                     {
                         Types.TypeInfo theTypeInfo = conversionState.TheILLibrary.GetTypeInfo(theField.FieldType);
-                        int size = /*theTypeInfo.IsValueType ? theTypeInfo.SizeOnHeapInBytes : */theTypeInfo.SizeOnStackInBytes;
+                        int size = theTypeInfo.IsValueType ? theTypeInfo.SizeOnHeapInBytes : theTypeInfo.SizeOnStackInBytes;
                         bool isFloat = Utilities.IsFloat(theField.FieldType);
                         
                         if (isFloat)
@@ -120,28 +122,46 @@ namespace Drivers.Compiler.Architectures.x86
                             conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Word, Src = "[" + fieldID + "]", Dest = "AX" });
                             conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Dword, Src = "EAX" });
                         }
-                        else if(size == 4)
-                        {
-                            conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Dword, Src = "[" + fieldID + "]", Dest = "EAX" });
-                            conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Dword, Src = "EAX" });
-                        }
-                        else if (size == 8)
-                        {
-                            conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Dword, Src = "[" + fieldID + " + 4]", Dest = "EAX" });
-                            conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Dword, Src = "EAX" });
-                            conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Dword, Src = "[" + fieldID + "]", Dest = "EAX" });
-                            conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Dword, Src = "EAX" });
-                        }
                         else
                         {
-                            throw new ArgumentOutOfRangeException("Loading static field that has stack size greater than 8 not supported!");
+                            for (int i = size; i > 0; )
+                            {
+                                int diff = i % 4;
+                                diff = diff == 0 ? 4 : diff;
+                                i -= diff;
+                                switch (diff)
+                                {
+                                    case 1:
+                                        conversionState.Append(new ASMOps.Xor() { Src = "EAX", Dest = "EAX" });
+                                        conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Byte, Src = "[" + fieldID + " + " + i + "]", Dest = "AL" });
+                                        conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Dword, Src = "EAX" });
+                                        break;
+                                    case 2:
+                                        conversionState.Append(new ASMOps.Xor() { Src = "EAX", Dest = "EAX" });
+                                        conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Word, Src = "[" + fieldID + " + " + i + "]", Dest = "AX" });
+                                        conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Dword, Src = "EAX" });
+                                        break;
+                                    case 3:
+                                        conversionState.Append(new ASMOps.Xor() { Src = "EAX", Dest = "EAX" });
+                                        conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Byte, Src = "[" + fieldID + " + " + i + "]", Dest = "AL" });
+                                        conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Word, Src = "AX" });
+                                        conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Word, Src = "[" + fieldID + " + " + (i+1) + "]", Dest = "AX" });
+                                        conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Word, Src = "AX" });
+                                        break;
+                                    default:
+                                        conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Dword, Src = "[" + fieldID + " + " + i + "]", Dest = "EAX" });
+                                        conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Dword, Src = "EAX" });
+                                        break;
+                                }
+                            }
                         }
 
                         conversionState.CurrentStackFrame.Stack.Push(new StackItem()
                         {
                             isFloat = isFloat,
-                            sizeOnStackInBytes = (size == 8 ? 8 : 4),
-                            isGCManaged = theTypeInfo.IsGCManaged
+                            sizeOnStackInBytes = theTypeInfo.SizeOnStackInBytes,
+                            isGCManaged = theTypeInfo.IsGCManaged,
+                            isValue = theTypeInfo.IsValueType
                         });
                     }
                     break;
@@ -153,7 +173,8 @@ namespace Drivers.Compiler.Architectures.x86
                     {
                         isFloat = false,
                         sizeOnStackInBytes = 4,
-                        isGCManaged = false
+                        isGCManaged = false,
+                        isValue = false
                     });
                     break;
             }

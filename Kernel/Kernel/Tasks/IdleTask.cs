@@ -37,15 +37,18 @@ namespace Kernel.Tasks
         [Drivers.Compiler.Attributes.NoGC]
         public static void Main()
         {
+            //TODO: Use some kind of factory for creating the correct CPU class
+            Hardware.Devices.CPU TheCPU = new Hardware.CPUs.CPUx86_32();
+
             //Note: Do not use Thread.Sleep within this task because this is the idle task. Its purpose
             //      is to be the only thread left awake when all others are slept.
             while (true)
             {
                 *((ushort*)0xB809E) = (0x1F00 | '1');
-                Hardware.Devices.CPU.Default.Halt();
+                TheCPU.Halt();
 
                 *((ushort*)0xB809E) = (0x3F00 | '2');
-                Hardware.Devices.CPU.Default.Halt();
+                TheCPU.Halt();
             }
         }
     }

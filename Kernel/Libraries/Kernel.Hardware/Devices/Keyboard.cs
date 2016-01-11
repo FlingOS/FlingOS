@@ -336,10 +336,7 @@ namespace Kernel.Hardware.Devices
             //Wait until a recognised key mapping is found
             while (!GetKeyMapping(ReadScancode(), out xResult))
             {
-                if (!Processes.Thread.Sleep(50))
-                {
-                    Timer.Default.Wait(50);
-                }
+                //Processes.SystemCalls.SleepThread(50);
             }
             return xResult;
         }
@@ -354,10 +351,7 @@ namespace Kernel.Hardware.Devices
             //Wait until a recognised character is found
             while (!GetCharValue(ReadScancode(), out xResult))
             {
-                if (!Processes.Thread.Sleep(50))
-                {
-                    Timer.Default.Wait(50);
-                }
+                Kernel.Processes.SystemCalls.SleepThread(50);
             }
             return xResult;
         }
@@ -372,10 +366,7 @@ namespace Kernel.Hardware.Devices
             //Wait until a recognised keyboard key is found
             while (!GetKeyValue(ReadScancode(), out xResult))
             {
-                if (!Processes.Thread.Sleep(50))
-                {
-                    Timer.Default.Wait(50);
-                }
+                Kernel.Processes.SystemCalls.SleepThread(50);
             }
             return xResult;
         }
@@ -389,10 +380,7 @@ namespace Kernel.Hardware.Devices
             //Wait until we get a scancode
             while (scancodeBuffer.Count == 0)
             {
-                if (!Processes.Thread.Sleep(50))
-                {
-                    Timer.Default.Wait(50);
-                }
+                Kernel.Processes.SystemCalls.SleepThread(50);
             }
 
             return Dequeue();

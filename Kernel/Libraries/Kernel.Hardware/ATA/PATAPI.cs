@@ -113,7 +113,7 @@ namespace Kernel.Hardware.ATA
         {
             int timeout = 20;
             while (!IRQInvoked && timeout-- > 0)
-                Processes.Thread.Sleep(5);
+                Kernel.Processes.SystemCalls.SleepThread(5);
 
             return timeout == 0;
         }

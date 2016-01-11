@@ -121,10 +121,10 @@ namespace Drivers.Compiler.Architectures.MIPS32
             }
             else
             {
-                for (int i = 0; i < locSize; i++)
+                for (int i = 0; i < locSize; i += 4)
                 {
-                    conversionState.Append(new ASMOps.Pop() { Size = ASMOps.OperandSize.Byte, Dest = "$t0" });
-                    conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Byte, Src = "$t0", Dest = "-" + (bytesOffset - i).ToString() + "($fp)", MoveType = ASMOps.Mov.MoveTypes.SrcRegToDestMemory });
+                    conversionState.Append(new ASMOps.Pop() { Size = ASMOps.OperandSize.Word, Dest = "$t0" });
+                    conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Word, Src = "$t0", Dest = "-" + (bytesOffset - i).ToString() + "($fp)", MoveType = ASMOps.Mov.MoveTypes.SrcRegToDestMemory });
                 }
             }
         }

@@ -137,6 +137,7 @@ namespace Kernel.Hardware.Processes.Synchronisation
 
         //            ExclLock.Exit();
 
+        //              TODO: Hmm system call or not?
         //            Thread.Sleep_Indefinitely();
         //        }
         //    }

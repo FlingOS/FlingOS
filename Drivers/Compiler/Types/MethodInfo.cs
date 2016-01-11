@@ -54,6 +54,10 @@ namespace Drivers.Compiler.Types
         /// List of information about the local variables of the method.
         /// </summary>
         public List<VariableInfo> LocalInfos = new List<VariableInfo>();
+        /// <summary>
+        /// Information about the return value of the method.
+        /// </summary>
+        public VariableInfo ReturnInfo = null;
 
         /// <summary>
         /// Whether to apply the garbage collector modifications to the method or not.

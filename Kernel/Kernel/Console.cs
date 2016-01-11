@@ -51,7 +51,7 @@ namespace Kernel
         /// </summary>
         protected Int32 CurrentLine = 0;
         /// <summary>
-        /// Thge current character in the current line where the cursor is.
+        /// The current character in the current line where the cursor is.
         /// </summary>
         protected Int32 CurrentChar = 0;
 
@@ -60,7 +60,7 @@ namespace Kernel
         /// </summary>
         public Int32 LineLength = 80;
         /// <summary>
-        /// The maxmimum size of the buffer (in lines).
+        /// The maximum size of the buffer (in lines).
         /// </summary>
         protected Int32 MaxBufferSize = 200;
         /// <summary>
@@ -111,7 +111,7 @@ namespace Kernel
             //Create a blank line (all characters set to 0s)
             FOS_System.String str = FOS_System.String.New(LineLength);
 
-            //Set the attr of all characters in the new blank line to
+            //Set the attribute of all characters in the new blank line to
             //  the current character.
             //This is so that typed characters at least appear in current 
             //  colour otherwise they wouldn't show at all.
@@ -129,13 +129,13 @@ namespace Kernel
         /// </summary>
         public abstract void Update();
         /// <summary>
-        /// When overriden in a dervied class, gets the offset from the current line to the actual line position of
+        /// When overridden in a derived class, gets the offset from the current line to the actual line position of
         /// the cursor.
         /// </summary>
         /// <returns>The offset to be subtracted from the current line.</returns>
         protected abstract int GetDisplayOffset_Line();
         /// <summary>
-        /// When overriden in a dervied class, gets the offset from the current character to the actual character 
+        /// When overridden in a derived class, gets the offset from the current character to the actual character 
         /// position of the cursor.
         /// </summary>
         /// <returns>The offset to be subtracted from the current character.</returns>

@@ -77,11 +77,8 @@ namespace Drivers.Compiler.Architectures.x86
                     break;
             }
 
-            int bytesOffset = 0;
-            for (int i = 0; i < conversionState.Input.TheMethodInfo.LocalInfos.Count && i <= localIndex; i++)
-            {
-                bytesOffset += conversionState.Input.TheMethodInfo.LocalInfos.ElementAt(i).TheTypeInfo.SizeOnStackInBytes;
-            }
+            Types.VariableInfo localInfo = conversionState.Input.TheMethodInfo.LocalInfos[localIndex];
+            
             StackItem theItem = conversionState.CurrentStackFrame.Stack.Pop();
             if (theItem.isFloat)
             {
@@ -89,33 +86,16 @@ namespace Drivers.Compiler.Architectures.x86
                 throw new NotSupportedException("Float locals not supported yet!");
             }
 
-            int locSize = conversionState.Input.TheMethodInfo.LocalInfos.ElementAt(localIndex).TheTypeInfo.SizeOnStackInBytes;
+            int locSize = localInfo.TheTypeInfo.SizeOnStackInBytes;
             if (locSize == 0)
             {
                 conversionState.Append(new ASMOps.Comment("0 pop size (?!)"));
             }
-            else if (locSize == 8)
-            {
-                conversionState.Append(new ASMOps.Pop() { Size = ASMOps.OperandSize.Dword, Dest = "[EBP-" + bytesOffset.ToString() + "]" });
-                conversionState.Append(new ASMOps.Pop() { Size = ASMOps.OperandSize.Dword, Dest = "[EBP-" + (bytesOffset - 4).ToString() + "]" });
-            }
-            else if (locSize == 4)
-            {
-                conversionState.Append(new ASMOps.Pop() { Size = ASMOps.OperandSize.Dword, Dest = "[EBP-" + bytesOffset.ToString() + "]" });
-            }
-            else if(locSize == 2)
-            {
-                conversionState.Append(new ASMOps.Pop() { Size = ASMOps.OperandSize.Word, Dest = "[EBP-" + bytesOffset.ToString() + "]" });
-            }
-            else if (locSize == 1)
-            {
-                conversionState.Append(new ASMOps.Pop() { Size = ASMOps.OperandSize.Byte, Dest = "[EBP-" + bytesOffset.ToString() + "]" });
-            }
             else
             {
-                for (int i = 0; i < locSize; i++)
+                for (int i = 0; i < locSize; i += 4)
                 {
-                    conversionState.Append(new ASMOps.Pop() { Size = ASMOps.OperandSize.Byte, Dest = "[EBP-" + (bytesOffset - i).ToString() + "]" });
+                    conversionState.Append(new ASMOps.Pop() { Size = ASMOps.OperandSize.Dword, Dest = "[EBP-" + Math.Abs(localInfo.Offset + i).ToString() + "]" });
                 }
             }
         }

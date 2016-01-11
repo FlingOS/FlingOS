@@ -40,7 +40,7 @@ namespace Drivers.Compiler.Architectures.x86
     {
         public override void PerformStackOperations(ILPreprocessState conversionState, ILOp theOp)
         {
-            
+            //No effect
         }
 
         /// <summary>
@@ -50,12 +50,8 @@ namespace Drivers.Compiler.Architectures.x86
         /// <param name="conversionState">See base class documentation.</param>
         /// <returns>See base class documentation.</returns>
         /// <exception cref="System.NotSupportedException">
-        /// Thrown if either or both values to shift left are floating point values or
+        /// Thrown if either or both values to not are floating point values or
         /// if the values are 8 bytes in size.
-        /// </exception>
-        /// <exception cref="System.InvalidOperationException">
-        /// Thrown if either or both values to multiply are not 4 or 8 bytes
-        /// in size or if the values are of different size.
         /// </exception>
         public override void Convert(ILConversionState conversionState, ILOp theOp)
         {

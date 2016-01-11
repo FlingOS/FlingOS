@@ -24,18 +24,40 @@
 // ------------------------------------------------------------------------------ //
 #endregion
     
-#define THREAD_TRACE
-#undef THREAD_TRACE
+//#define THREAD_TRACE
 
 using System;
 
 namespace Kernel.Hardware.Processes
 {
     public delegate void ThreadStartMethod();
-        
-    public unsafe class Thread : FOS_System.Object
+
+    public unsafe class Thread : FOS_System.Collections.Comparable
     {
-        public bool Debug_Suspend = false;
+        public enum ActiveStates
+        {
+            NotStarted,
+            Suspended,
+            Inactive,
+            Active,
+            Terminated
+        }
+
+        public Process Owner;
+        private bool debug_Suspend;
+        public bool Debug_Suspend
+        {
+            get
+            {
+                return debug_Suspend;
+            }
+            set
+            {
+                LastActiveState = ActiveState;
+                debug_Suspend = value;
+                Scheduler.UpdateList(this);
+            }
+        }
 
         public const int IndefiniteSleep = -1;
 
@@ -53,16 +75,92 @@ namespace Kernel.Hardware.Processes
         /// </remarks>
         public int TimeToRunReload;
 
+        protected int timeToSleep = 0;
         /// <remarks>
         /// Units of ms
         /// </remarks>
-        public int TimeToSleep = 0;
+        public int TimeToSleep
+        {
+            get
+            {
+                return timeToSleep;
+            }
+            set
+            {
+                LastActiveState = ActiveState;
+                timeToSleep = value;
+            }
+        }
 
-        public Thread(ThreadStartMethod StartMethod, uint AnId, bool UserMode, FOS_System.String AName)
+        public bool Suspended
+        {
+            get
+            {
+                return Debug_Suspend || TimeToSleep == IndefiniteSleep;
+            }
+        }
+        public bool Active
+        {
+            get
+            {
+                return TimeToSleep == 0;
+            }
+        }
+        public ActiveStates ActiveState
+        {
+            get
+            {
+                return 
+                    !State->Started ? ActiveStates.NotStarted : 
+                    State->Terminated ? ActiveStates.Terminated : 
+                    Suspended ? ActiveStates.Suspended : 
+                    Active ? ActiveStates.Active : 
+                    ActiveStates.Inactive;
+            }
+        }
+        public ActiveStates LastActiveState
+        {
+            get;
+            set;
+        }
+        public override int Key
+        {
+            get
+            {
+                if (TimeToSleep > 0)
+                {
+                    return TimeToSleep;
+                }
+                else
+                {
+                    return TimeToRun;
+                }
+            }
+            set
+            {
+                if (!Debug_Suspend)
+                {
+                    if (TimeToSleep > 0)
+                    {
+                        TimeToSleep = value;
+                    }
+                    // Zero Timed processes never have their time to run decremented
+                    else if (Owner.Priority != Scheduler.Priority.ZeroTimed)
+                    {
+                        TimeToRun = value;
+                    }
+                }
+            }
+        }
+        
+        public Thread(Process AnOwner, ThreadStartMethod StartMethod, uint AnId, bool UserMode, FOS_System.String AName)
         {
 #if THREAD_TRACE
             BasicConsole.WriteLine("Constructing thread object...");
 #endif
+            LastActiveState = ActiveStates.NotStarted;
+            Owner = AnOwner;
+
             //Init thread state
             #if THREAD_TRACE
             BasicConsole.WriteLine("Allocating state memory...");
@@ -112,19 +210,27 @@ namespace Kernel.Hardware.Processes
             //  User   data segment selector offset (offset in GDT) = 0x23 (32|3)
             //          User data segment selector must also be or'ed with 3 for User Privilege level
 #if THREAD_TRACE
-            Console.Default.WriteLine(" > > > Setting SS...");
+            BasicConsole.WriteLine("Setting SS...");
 #endif
             State->SS = UserMode ? (ushort)0x23 : (ushort)0x10;
 
             // Init Started
             //  Not started yet so set to false
 #if THREAD_TRACE
-            Console.Default.WriteLine(" > > > Setting started...");
+            BasicConsole.WriteLine("Setting started...");
 #endif
             State->Started = false;
 
+#if THREAD_TRACE
+            BasicConsole.WriteLine("Allocating exception state...");
+#endif
+            //TODO: This is currently incorrectly allocated from the current process's heap instead of the heap of the owner process
             // Init Exception State
             State->ExState = (ExceptionState*)FOS_System.Heap.AllocZeroed((uint)sizeof(ExceptionState), "Thread : Thread() (2)");
+
+#if THREAD_TRACE
+            BasicConsole.WriteLine("Done.");
+#endif
         }
 
         /* 
@@ -357,9 +463,9 @@ namespace Kernel.Hardware.Processes
             //{
             //    Scheduler.Disable();
             //}
-            
+
             this.TimeToSleep = ms /* x * 1ms / [Scheduler period in ns] = x * 1 = x */;
-            this.TimeToRun = 1;
+            Scheduler.UpdateList(this);
             
             //if (reenable)
             //{
@@ -405,8 +511,11 @@ namespace Kernel.Hardware.Processes
             //{
             //    Scheduler.Disable();
             //}
+
             this.TimeToSleep = 0;
             this.TimeToRun = this.TimeToRunReload;
+            Scheduler.UpdateList(this);
+            
             //if (reenable)
             //{
             //    Scheduler.Enable();

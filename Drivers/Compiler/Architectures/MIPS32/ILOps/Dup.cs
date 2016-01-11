@@ -46,13 +46,15 @@ namespace Drivers.Compiler.Architectures.MIPS32
             {
                 isFloat = itemA.isFloat,
                 sizeOnStackInBytes = itemA.sizeOnStackInBytes,
-                isGCManaged = itemA.isGCManaged
+                isGCManaged = itemA.isGCManaged,
+                isValue = itemA.isValue
             });
             conversionState.CurrentStackFrame.Stack.Push(new StackItem()
             {
                 isFloat = itemA.isFloat,
                 sizeOnStackInBytes = itemA.sizeOnStackInBytes,
-                isGCManaged = itemA.isGCManaged
+                isGCManaged = itemA.isGCManaged,
+                isValue = itemA.isValue
             });
         }
 
@@ -101,13 +103,15 @@ namespace Drivers.Compiler.Architectures.MIPS32
             {
                 isFloat = itemA.isFloat,
                 sizeOnStackInBytes = itemA.sizeOnStackInBytes,
-                isGCManaged = itemA.isGCManaged
+                isGCManaged = itemA.isGCManaged,
+                isValue = itemA.isValue
             });
             conversionState.CurrentStackFrame.Stack.Push(new StackItem()
             {
                 isFloat = itemA.isFloat,
                 sizeOnStackInBytes = itemA.sizeOnStackInBytes,
-                isGCManaged = itemA.isGCManaged
+                isGCManaged = itemA.isGCManaged,
+                isValue = itemA.isValue
             });
         }
     }

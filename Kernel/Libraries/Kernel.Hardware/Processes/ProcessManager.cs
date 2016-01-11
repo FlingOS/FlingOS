@@ -24,11 +24,8 @@
 // ------------------------------------------------------------------------------ //
 #endregion
     
-#define PROCESSMANAGER_TRACE
-#undef PROCESSMANAGER_TRACE
-
-#define PROCESSMANAGER_SWITCH_TRACE
-#undef PROCESSMANAGER_SWITCH_TRACE
+//#define PROCESSMANAGER_TRACE
+//#define PROCESSMANAGER_SWITCH_TRACE
 
 using System;
 using Kernel.FOS_System.Collections;
@@ -68,22 +65,25 @@ namespace Kernel.Hardware.Processes
         {
 #if PROCESSMANAGER_TRACE
             BasicConsole.WriteLine("Registering process...");
-            BasicConsole.WriteLine("Disabling scheduler...");
 #endif
             if (process == null)
             {
                 ExceptionMethods.Throw(new FOS_System.Exception("Attempted to register null process!"));
             }
 
+            if (process.Registered)
+            {
+                ExceptionMethods.Throw(new FOS_System.Exception("Attempted to re-register process! Process name: " + process.Name));
+            }
+            
+#if PROCESSMANAGER_TRACE
+            //BasicConsole.WriteLine("Disabling scheduler...");
+#endif
             //bool reenable = Scheduler.Enabled;
             //if (reenable)
             //{
             //    Scheduler.Disable();
             //}
-#if PROCESSMANAGER_TRACE
-            BasicConsole.WriteLine("Initialising process...");
-#endif
-            Scheduler.InitProcess(process, priority);
 
 #if PROCESSMANAGER_TRACE
             BasicConsole.WriteLine("Adding process...");
@@ -92,7 +92,13 @@ namespace Kernel.Hardware.Processes
             Processes.Add(process);
 
 #if PROCESSMANAGER_TRACE
-            BasicConsole.WriteLine("Enabling scheduler...");
+            BasicConsole.WriteLine("Initialising process...");
+#endif
+            Scheduler.InitProcess(process, priority);
+
+
+#if PROCESSMANAGER_TRACE
+            //BasicConsole.WriteLine("Enabling scheduler...");
 #endif
             //if (reenable)
             //{

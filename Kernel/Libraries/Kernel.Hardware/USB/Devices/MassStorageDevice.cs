@@ -1173,7 +1173,7 @@ namespace Kernel.Hardware.USB.Devices
                 }
                 else
                 {
-                    Hardware.Processes.Thread.Sleep(50);
+                    Kernel.Processes.SystemCalls.SleepThread(50);
                 }
             }
 
@@ -1321,7 +1321,7 @@ namespace Kernel.Hardware.USB.Devices
             {
                 ;
             }
-            Hardware.Processes.Thread.Sleep(20);
+            Kernel.Processes.SystemCalls.SleepThread(20);
 
             return retries > 0;
         }
@@ -1354,7 +1354,7 @@ namespace Kernel.Hardware.USB.Devices
             // Reset Interface
             BulkReset(DeviceInfo.MSD_InterfaceNum);
 
-            Hardware.Processes.Thread.Sleep(500);
+            Kernel.Processes.SystemCalls.SleepThread(500);
 
             // Clear Feature HALT to the Bulk-In  endpoint
 #if MSD_TRACE
@@ -1383,7 +1383,7 @@ namespace Kernel.Hardware.USB.Devices
                 DBGMSG(((FOS_System.String)"Configuration: ") + config + " (to be: 1)");
             }
 #endif
-            Hardware.Processes.Thread.Sleep(500);
+            Kernel.Processes.SystemCalls.SleepThread(500);
         }
         
         /// <summary>

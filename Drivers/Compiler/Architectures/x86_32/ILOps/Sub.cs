@@ -50,7 +50,8 @@ namespace Drivers.Compiler.Architectures.x86
                 {
                     isFloat = false,
                     sizeOnStackInBytes = 4,
-                    isGCManaged = false
+                    isGCManaged = false,
+                    isValue = itemA.isValue && itemB.isValue
                 });
             }
             else if (itemA.sizeOnStackInBytes == 8 &&
@@ -60,7 +61,8 @@ namespace Drivers.Compiler.Architectures.x86
                 {
                     isFloat = false,
                     sizeOnStackInBytes = 8,
-                    isGCManaged = false
+                    isGCManaged = false,
+                    isValue = itemA.isValue && itemB.isValue
                 });
             }
         }
@@ -128,7 +130,8 @@ namespace Drivers.Compiler.Architectures.x86
                     {
                         isFloat = false,
                         sizeOnStackInBytes = 4,
-                        isGCManaged = false
+                        isGCManaged = false,
+                        isValue = itemA.isValue && itemB.isValue
                     });
                 }
                 //Invalid if the operands are of different sizes.
@@ -170,7 +173,8 @@ namespace Drivers.Compiler.Architectures.x86
                     {
                         isFloat = false,
                         sizeOnStackInBytes = 8,
-                        isGCManaged = false
+                        isGCManaged = false,
+                        isValue = itemA.isValue && itemB.isValue
                     });
                 }
             }

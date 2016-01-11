@@ -104,7 +104,8 @@ namespace Drivers.Compiler.Architectures.x86
             {
                 isFloat = itemA.isFloat,
                 sizeOnStackInBytes = itemA.sizeOnStackInBytes,
-                isGCManaged = itemA.isGCManaged
+                isGCManaged = itemA.isGCManaged,
+                isValue = itemA.isValue
             });
         }
     }
