@@ -131,7 +131,7 @@ namespace Kernel.Hardware.Processes
             BasicConsole.WriteLine(" > Adding timer handler...");
 #endif
             /*Multiply by 1000000 to get from ms to ns*/
-            Hardware.Devices.Timer.Default.RegisterHandler(OnTimerInterrupt, /* MSFreq * 1000000 */ 5000000, true, null);
+            Hardware.Devices.Timer.Default.RegisterHandler(OnTimerInterrupt, MSFreq * 1000000L, true, null);
 
 #if SCHEDULER_TRACE
             BasicConsole.WriteLine(" > Enabling process switching...");

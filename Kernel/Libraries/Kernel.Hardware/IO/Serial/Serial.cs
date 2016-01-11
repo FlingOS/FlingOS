@@ -244,6 +244,7 @@ namespace Kernel.Hardware.IO.Serial
         {
             while (!TransmitReady)
             {
+                Kernel.Processes.SystemCalls.SleepThread(10);
                 //Hardware.Devices.Timer.Default.Wait(10);
             }
             Data.Write_Byte(val);
@@ -254,6 +255,7 @@ namespace Kernel.Hardware.IO.Serial
         {
             while (!ReceiveReady)
             {
+                Kernel.Processes.SystemCalls.SleepThread(10);
                 //Hardware.Devices.Timer.Default.Wait(10);
             }
             return Data.Read_Byte();
