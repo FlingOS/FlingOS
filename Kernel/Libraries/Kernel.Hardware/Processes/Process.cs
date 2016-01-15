@@ -96,7 +96,11 @@ namespace Kernel.Hardware.Processes
 #if PROCESS_TRACE
             BasicConsole.WriteLine("Process: CreateThread: Creating thread...");
 #endif
-
+            //TODO: Wrap EnableKernelAccessToProcessMemory in try-finally blocks
+            
+            // Required so that page allocations by new Thread don't create conflicts
+            ProcessManager.EnableKernelAccessToProcessMemory(this);
+        
             Thread newThread = new Thread(this, MainMethod, ThreadIdGenerator++, UserMode, Name);
 #if PROCESS_TRACE
             BasicConsole.WriteLine("Adding data page...");
@@ -105,26 +109,28 @@ namespace Kernel.Hardware.Processes
             uint threadStackVirtAddr = (uint)newThread.State->ThreadStackTop - 4092;
             uint threadStackPhysAddr = (uint)VirtMemManager.GetPhysicalAddress(newThread.State->ThreadStackTop - 4092);
             TheMemoryLayout.AddDataPage(threadStackPhysAddr, threadStackVirtAddr);
-            if (ProcessManager.KernelProcess != null)
-            {
-                ProcessManager.KernelProcess.TheMemoryLayout.AddDataPage(threadStackPhysAddr, threadStackVirtAddr);
-            }
-
+            
+            ProcessManager.DisableKernelAccessToProcessMemory(this);
+        
 #if PROCESS_TRACE
             BasicConsole.WriteLine("Adding thread...");
 #endif
 
             Threads.Add(newThread);
+
             if (Registered)
             {
                 Scheduler.InitThread(this, newThread);
             }
-
+            
             return newThread;
         }
 
         private void CreateHeap()
-        {            
+        {
+            // Required so that page allocations by new Thread don't create conflicts
+            ProcessManager.EnableKernelAccessToProcessMemory(this);
+        
 #if PROCESS_TRACE
             BasicConsole.WriteLine("Allocating memory for heap...");
 #endif
@@ -166,9 +172,9 @@ namespace Kernel.Hardware.Processes
 #if PROCESS_TRACE
             BasicConsole.WriteLine("Removing memory from current process (kernel task) layout...");
 #endif
-            // Remove heap memory from current (kernel) process's memory
-            ProcessManager.CurrentProcess.TheMemoryLayout.RemovePages((uint)heapPtr, heapPages);
-
+            
+            ProcessManager.DisableKernelAccessToProcessMemory(this);
+        
 #if PROCESS_TRACE
             BasicConsole.WriteLine("Setting heap pointer...");
 #endif

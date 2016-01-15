@@ -182,6 +182,7 @@ namespace Kernel.Hardware.Processes
 #if THREAD_TRACE
             BasicConsole.WriteLine("Allocating kernel stack...");
 #endif
+            // TODO: Allocate using virt mem manager not the heap (see ThreadStackTop below)
             State->KernelStackTop = (byte*)FOS_System.Heap.Alloc(0x1000, 4) + 0xFFC; //4KiB, 4-byte aligned
             
             // Allocate free memory for the user stack for this thread

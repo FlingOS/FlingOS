@@ -322,5 +322,30 @@ namespace Kernel.Hardware.Processes
             }
             return false;
         }
+
+        public static void EnableKernelAccessToProcessMemory(uint TargetProcessId)
+        {
+            EnableKernelAccessToProcessMemory(GetProcessById(TargetProcessId));
+        }
+        public static void DisableKernelAccessToProcessMemory(uint TargetProcessId)
+        {
+            DisableKernelAccessToProcessMemory(GetProcessById(TargetProcessId));
+        }
+        public static void EnableKernelAccessToProcessMemory(Process TargetProcess)
+        {
+            if (KernelProcess != null && KernelProcess != TargetProcess)
+            {
+                KernelProcess.TheMemoryLayout.Merge(TargetProcess.TheMemoryLayout);
+                KernelProcess.TheMemoryLayout.Load(KernelProcess.UserMode);
+            }
+        }
+        public static void DisableKernelAccessToProcessMemory(Process TargetProcess)
+        {
+            if (KernelProcess != null && KernelProcess != TargetProcess)
+            {
+                KernelProcess.TheMemoryLayout.Unmerge(TargetProcess.TheMemoryLayout);
+                TargetProcess.TheMemoryLayout.Unload();
+            }
+        }
     }
 }

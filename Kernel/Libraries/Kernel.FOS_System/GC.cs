@@ -231,25 +231,25 @@ namespace Kernel.FOS_System
         public static FOS_System.String lastDisabler
         {
             [Drivers.Compiler.Attributes.NoDebug]
-            get
-            {
-                if (StateInitialised)
-                {
-                    return state.lastDisabler;
-                }
-                else
-                {
-                    return "";
-                }
-            }
+            get;
+            //{
+            //    if (StateInitialised)
+            //    {
+            //        return state.lastDisabler;
+            //    }
+            //    else
+            //    {
+            //        return "";
+            //    }
+            //}
             [Drivers.Compiler.Attributes.NoDebug]
-            set
-            {
-                if (StateInitialised)
-                {
-                    state.lastDisabler = value;
-                }
-            }
+            set;
+            //{
+            //    if (StateInitialised)
+            //    {
+            //        state.lastDisabler = value;
+            //    }
+            //}
         }
         public static FOS_System.String lastLocker
         {

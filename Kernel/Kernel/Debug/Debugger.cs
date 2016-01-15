@@ -794,21 +794,21 @@ namespace Kernel.Debug
                                         MsgPort.Write(" : \n");
 
                                         MsgPort.Write(" > EAX : ");
-                                        MsgPort.Write((FOS_System.String)TheThread.EAXFromInterruptStack);
+                                        MsgPort.Write(TheThread.EAXFromInterruptStack);
                                         MsgPort.Write("\n > EBX : ");
-                                        MsgPort.Write((FOS_System.String)TheThread.EBXFromInterruptStack);
+                                        MsgPort.Write(TheThread.EBXFromInterruptStack);
                                         MsgPort.Write("\n > ECX : ");
-                                        MsgPort.Write((FOS_System.String)TheThread.ECXFromInterruptStack);
+                                        MsgPort.Write(TheThread.ECXFromInterruptStack);
                                         MsgPort.Write("\n > EDX : ");
-                                        MsgPort.Write((FOS_System.String)TheThread.EDXFromInterruptStack);
+                                        MsgPort.Write(TheThread.EDXFromInterruptStack);
                                         MsgPort.Write("\n");
 
                                         MsgPort.Write("\n > ESP : ");
-                                        MsgPort.Write((FOS_System.String)TheThread.ESPFromInterruptStack);
+                                        MsgPort.Write(TheThread.ESPFromInterruptStack);
                                         MsgPort.Write("\n > EBP : ");
-                                        MsgPort.Write((FOS_System.String)TheThread.EBPFromInterruptStack);
+                                        MsgPort.Write(TheThread.EBPFromInterruptStack);
                                         MsgPort.Write("\n > EIP : ");
-                                        MsgPort.Write((FOS_System.String)TheThread.EIPFromInterruptStack);
+                                        MsgPort.Write(TheThread.EIPFromInterruptStack);
                                         MsgPort.Write("\n");
                                     }
                                     else
@@ -843,10 +843,10 @@ namespace Kernel.Debug
                             
                             Process TheProcess = ProcessManager.GetProcessById(ProcessId);
 
-                            if (TheProcess != null)
+                            if (TheProcess != null && false)
                             {
                                 // Need access to specified process' memory
-                                MemoryLayout OriginalMemoryLayout = SystemCallsHelpers.EnableAccessToMemoryOfProcess(TheProcess);
+                                //TODO: Erm... MemoryLayout OriginalMemoryLayout = SystemCallsHelpers.EnableAccessToMemoryOfProcess(TheProcess);
 
                                 uint Address = FOS_System.Int32.Parse_HexadecimalUnsigned((FOS_System.String)lineParts[2], 0);
                                 int length = FOS_System.Int32.Parse_DecimalSigned((FOS_System.String)lineParts[3]);
@@ -890,7 +890,7 @@ namespace Kernel.Debug
 
                                 MsgPort.Write("\n");
 
-                                SystemCallsHelpers.DisableAccessToMemoryOfProcess(OriginalMemoryLayout);
+                                //TODO: Erm... SystemCallsHelpers.DisableAccessToMemoryOfProcess(OriginalMemoryLayout);
                             }
                             else
                             {

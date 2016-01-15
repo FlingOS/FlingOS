@@ -174,9 +174,9 @@ namespace Kernel.Pipes
                 return false;
             }
 
-            // Merge memory layouts 
-            //  so we can access the request structure
-            MemoryLayout OriginalMemoryLayout = SystemCallsHelpers.EnableAccessToMemoryOfProcess(CallerProcess);
+            // Need access to the request structure
+            ProcessManager.EnableKernelAccessToProcessMemory(CallerProcess);
+
             bool OK = true;
 
             // More validate inputs
@@ -218,7 +218,7 @@ namespace Kernel.Pipes
                 }
             }
 
-            SystemCallsHelpers.DisableAccessToMemoryOfProcess(OriginalMemoryLayout);
+            ProcessManager.DisableKernelAccessToProcessMemory(CallerProcess);
 
             return OK;
         }
@@ -232,6 +232,7 @@ namespace Kernel.Pipes
         /// <returns>True if the request was successful. Otherwise, false.</returns>
         public static bool CreatePipe(uint InProcessId, uint OutProcessId, CreatePipeRequest* request)
         {
+            BasicConsole.WriteLine("PM > CP (1)");
             // Validate inputs
             //  - Check out process exists
             //  - Check in process exists
@@ -250,13 +251,20 @@ namespace Kernel.Pipes
                 return false;
             }
 
-            // Merge memory layouts 
-            //  so we can access the request structure
-            MemoryLayout OriginalMemoryLayout = SystemCallsHelpers.EnableAccessToMemoryOfProcess(InProcess);
+            BasicConsole.WriteLine("PM > CP (2)");
+
+            // Need access to the request structure
+            bool ShouldDisableKernelAccessToProcessMemory = true;
+            ProcessManager.EnableKernelAccessToProcessMemory(InProcessId);
+
+            BasicConsole.WriteLine("PM > CP (3)");
+
             bool OK = true;
 
             // Find the outpoint
             PipeOutpoint outpoint = GetOutpoint(OutProcessId, request->Class, request->Subclass);
+
+            BasicConsole.WriteLine("PM > CP (4)");
 
             // Check that we actually found the outpoint
             if (outpoint == null)
@@ -264,8 +272,12 @@ namespace Kernel.Pipes
                 OK = false;
             }
 
+            BasicConsole.WriteLine("PM > CP (5)");
+
             if (OK)
             {
+                BasicConsole.WriteLine("PM > CP (6)");
+
                 // Check there are sufficient connections available
                 if (outpoint.NumConnections >= outpoint.MaxConnections &&
                     outpoint.MaxConnections != PipeConstants.UnlimitedConnections)
@@ -273,10 +285,16 @@ namespace Kernel.Pipes
                     OK = false;
                 }
 
+                BasicConsole.WriteLine("PM > CP (7)");
+
                 if (OK)
                 {
+                    BasicConsole.WriteLine("PM > CP (8)");
+
                     // Create new inpoint
                     PipeInpoint inpoint = new PipeInpoint(InProcessId, request->Class, request->Subclass);
+
+                    BasicConsole.WriteLine("PM > CP (9)");
 
                     // Create new pipe
                     Pipe pipe = new Pipe(PipeIdGenerator++, outpoint, inpoint, request->BufferSize);
@@ -285,15 +303,33 @@ namespace Kernel.Pipes
                     // Increment number of connections to the outpoint
                     outpoint.NumConnections++;
 
+                    BasicConsole.WriteLine("PM > CP (10)");
+
                     // Set result information
                     request->Result.Id = pipe.Id;
 
+                    BasicConsole.WriteLine("PM > CP (11)");
+
+                    ShouldDisableKernelAccessToProcessMemory = false;
+                    ProcessManager.DisableKernelAccessToProcessMemory(InProcessId);
+
+                    BasicConsole.WriteLine("PM > CP (12)");
+
                     // Wake any threads (/processes) which were waiting on a pipe to be created
                     WakeWaitingThreads(outpoint, pipe.Id);
+
+                    BasicConsole.WriteLine("PM > CP (13)");
                 }
             }
 
-            SystemCallsHelpers.DisableAccessToMemoryOfProcess(OriginalMemoryLayout);
+            if (ShouldDisableKernelAccessToProcessMemory)
+            {
+                BasicConsole.WriteLine("PM > CP (14)");
+
+                ProcessManager.DisableKernelAccessToProcessMemory(InProcessId);
+            }
+
+            BasicConsole.WriteLine("PM > CP (15)");
 
             return OK;
         }
@@ -315,10 +351,12 @@ namespace Kernel.Pipes
                 Process process = ProcessManager.GetProcessById(processId);
                 Thread thread = ProcessManager.GetThreadById(threadId, process);
 
+                ProcessManager.EnableKernelAccessToProcessMemory(process);
                 thread.Return1 = (uint)SystemCallResults.OK;
                 thread.Return2 = (uint)newPipeId;
                 thread.Return3 = 0;
                 thread.Return4 = 0;
+                ProcessManager.DisableKernelAccessToProcessMemory(process);
                 thread._Wake();
             }
         }
@@ -434,22 +472,17 @@ namespace Kernel.Pipes
             {
                 return RWResults.Error;
             }
-
-#if PIPES_TRACE
-            BasicConsole.WriteLine("ReadPipe: Merging memory layouts");
-#endif
-            // Merge memory layouts of out process (in process should have already been done by caller)
-            //  so we can access the request structure(s) and buffers
-            MemoryLayout OriginalMemoryLayout = SystemCallsHelpers.EnableAccessToMemoryOfProcess(OutProcess);
-
+            
 #if PIPES_TRACE
             BasicConsole.WriteLine("ReadPipe: Adding caller to read queue");
 #endif
             // Add caller thread to the read queue
             pipe.QueueToRead(CallerThread.Id);
 
+            ProcessManager.EnableKernelAccessToProcessMemory(CallerProcess);
             // Set up initial failure return value
             CallerThread.Return1 = (uint)SystemCallResults.Fail;
+            ProcessManager.DisableKernelAccessToProcessMemory(CallerProcess);
 
 #if PIPES_TRACE
             BasicConsole.WriteLine("ReadPipe: Processing pipe queue");
@@ -457,12 +490,6 @@ namespace Kernel.Pipes
             // Process the pipe queue
             ProcessPipeQueue(pipe, OutProcess, InProcess);
             
-#if PIPES_TRACE
-            BasicConsole.WriteLine("ReadPipe: Unmerging memory layouts");
-#endif
-            // Unmerge memory layouts
-            SystemCallsHelpers.DisableAccessToMemoryOfProcess(OriginalMemoryLayout);
-
             bool Completed = !pipe.AreThreadsWaitingToRead();
             if (!Blocking)
             {
@@ -476,7 +503,9 @@ namespace Kernel.Pipes
                         BasicConsole.WriteLine("PipeManager: Error! Async read failed and then removing last from queue resulted in thread Id mismatch!");
                     }
 
+                    ProcessManager.EnableKernelAccessToProcessMemory(CallerProcess);
                     CallerThread.Return1 = (uint)SystemCallResults.Fail;
+                    ProcessManager.DisableKernelAccessToProcessMemory(CallerProcess);
                     CallerThread._Wake();
                 }
             }
@@ -537,15 +566,10 @@ namespace Kernel.Pipes
             }
 
 #if PIPES_TRACE
-            BasicConsole.WriteLine("WritePipe: Merging memory layouts");
-#endif
-            // Merge memory layouts of in process (out process should already have been done by caller)
-            //  so we can access the request structure(s) and buffers
-            MemoryLayout OriginalMemoryLayout = SystemCallsHelpers.EnableAccessToMemoryOfProcess(InProcess);
-
-#if PIPES_TRACE
             BasicConsole.WriteLine("WritePipe: Adding caller to write queue");
 #endif
+            ProcessManager.EnableKernelAccessToProcessMemory(CallerProcess);
+
             // Add caller thread to the write queue
             WritePipeRequest* Request = (WritePipeRequest*)CallerThread.Param1;
             pipe.QueueToWrite(CallerThread.Id, Request->Length);
@@ -553,18 +577,14 @@ namespace Kernel.Pipes
             // Set up initial failure return value
             CallerThread.Return1 = (uint)SystemCallResults.Fail;
 
+            ProcessManager.DisableKernelAccessToProcessMemory(CallerProcess);
+
 #if PIPES_TRACE
             BasicConsole.WriteLine("WritePipe: Processing pipe queue");
 #endif
             // Process the pipe queue
             ProcessPipeQueue(pipe, OutProcess, InProcess);
-
-#if PIPES_TRACE
-            BasicConsole.WriteLine("WritePipe: Unmerging memory layouts");
-#endif
-            // Unmerge memory layouts
-            SystemCallsHelpers.DisableAccessToMemoryOfProcess(OriginalMemoryLayout);
-
+            
             bool Completed = !pipe.AreThreadsWaitingToWrite();
             if (!Blocking)
             {
@@ -578,7 +598,10 @@ namespace Kernel.Pipes
                         BasicConsole.WriteLine("PipeManager: Error! Async write failed and then removing last from queue resulted in thread Id mismatch!");
                     }
 
+                    ProcessManager.EnableKernelAccessToProcessMemory(CallerProcess);
                     CallerThread.Return1 = (uint)SystemCallResults.Fail;
+                    ProcessManager.DisableKernelAccessToProcessMemory(CallerProcess);
+
                     CallerThread._Wake();
                 }
             }
@@ -636,6 +659,8 @@ namespace Kernel.Pipes
 #if PIPES_TRACE
                     BasicConsole.WriteLine("ProcessPipeQueue: Writing pipe");
 #endif
+                    ProcessManager.EnableKernelAccessToProcessMemory(OutProcess);
+
                     WritePipeRequest* Request = (WritePipeRequest*)WriteThread.Param1;
                     bool Successful = pipe.Write(Request->InBuffer, Request->Offset, Request->Length);
                     if (Successful)
@@ -644,7 +669,6 @@ namespace Kernel.Pipes
                         BasicConsole.WriteLine("ProcessPipeQueue: Write successful");
 #endif
                         WriteThread.Return1 = (uint)SystemCallResults.OK;
-                        WriteThread._Wake();
                     }
                     else
                     {
@@ -652,8 +676,11 @@ namespace Kernel.Pipes
                         BasicConsole.WriteLine("ProcessPipeQueue: Write failed");
 #endif
                         WriteThread.Return1 = (uint)SystemCallResults.Fail;
-                        WriteThread._Wake();
                     }
+
+                    ProcessManager.DisableKernelAccessToProcessMemory(OutProcess);
+
+                    WriteThread._Wake();
                 }
                 else if (pipe.AreThreadsWaitingToRead() && pipe.CanRead())
                 {
@@ -691,6 +718,8 @@ namespace Kernel.Pipes
 #if PIPES_TRACE
                     BasicConsole.WriteLine("ProcessPipeQueue: Reading pipe");
 #endif
+                    ProcessManager.EnableKernelAccessToProcessMemory(InProcess);
+
                     ReadPipeRequest* Request = (ReadPipeRequest*)ReadThread.Param1;
                     int BytesRead;
                     bool Successful = pipe.Read(Request->OutBuffer, Request->Offset, Request->Length, out BytesRead);
@@ -701,7 +730,6 @@ namespace Kernel.Pipes
 #endif
                         ReadThread.Return1 = (uint)SystemCallResults.OK;
                         ReadThread.Return2 = (uint)BytesRead;
-                        ReadThread._Wake();
                     }
                     else
                     {
@@ -709,8 +737,11 @@ namespace Kernel.Pipes
                         BasicConsole.WriteLine("ProcessPipeQueue: Read failed");
 #endif
                         ReadThread.Return1 = (uint)SystemCallResults.Fail;
-                        ReadThread._Wake();
                     }
+
+                    ProcessManager.DisableKernelAccessToProcessMemory(InProcess);
+
+                    ReadThread._Wake();
                 }
 
 #if PIPES_TRACE

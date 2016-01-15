@@ -34,6 +34,8 @@ namespace Kernel.Hardware.VirtMem
 {
     public class MemoryLayout : FOS_System.Object
     {
+        public bool NoUnload = false;
+
         public UInt32Dictionary CodePages;
         public UInt32Dictionary DataPages;
 
@@ -61,6 +63,13 @@ namespace Kernel.Hardware.VirtMem
             {
                 CodePages.Add(vAddr, pAddr);
             }
+#if DEBUG
+            else
+            {
+                BasicConsole.WriteLine("Cannot add code page to memory layout! Code virtual page already mapped in the memory layout.");
+                ExceptionMethods.Throw(new FOS_System.Exception("Cannot add code page to memory layout! Code virtual page already mapped in the memory layout."));
+            }
+#endif
 
             //if (reenable)
             //{
@@ -81,6 +90,13 @@ namespace Kernel.Hardware.VirtMem
             {
                 DataPages.Add(vAddr, pAddr);
             }
+#if DEBUG
+            else
+            {
+                BasicConsole.WriteLine("Cannot add data page to memory layout! Data virtual page already mapped in the memory layout.");
+                ExceptionMethods.Throw(new FOS_System.Exception("Cannot add data page to memory layout! Data virtual page already mapped in the memory layout."));
+            }
+#endif
 
             //if (reenable)
             //{
@@ -163,6 +179,11 @@ namespace Kernel.Hardware.VirtMem
         [Drivers.Compiler.Attributes.NoDebug]
         public void Unload()
         {
+            if (NoUnload)
+            {
+                return;
+            }
+
             //x86.Unmap_Print = unloadPrint;
 
             for (int i = 0; i < CodePages.Keys.Count && i < CodePages.Values.Count; i++)
@@ -179,7 +200,7 @@ namespace Kernel.Hardware.VirtMem
                 //TODO: Revert to the following line of code and then work out why it results in so many page faults
                 //          VirtMemManager.Unmap(CodePages.Keys[i], UpdateUsedPagesFlags.Virtual);
                 //      Also see the similar line further down
-                VirtMemManager.Unmap(CodePages.Keys[i], UpdateUsedPagesFlags.None);
+                VirtMemManager.Unmap(CodePages.Keys[i], UpdateUsedPagesFlags.Virtual);
             }
             for (int i = 0; i < DataPages.Keys.Count && i < DataPages.Values.Count; i++)
             {
@@ -195,7 +216,7 @@ namespace Kernel.Hardware.VirtMem
                 //}
 
                 //TODO: Revert line - see above
-                VirtMemManager.Unmap(DataPages.Keys[i], UpdateUsedPagesFlags.None);
+                VirtMemManager.Unmap(DataPages.Keys[i], UpdateUsedPagesFlags.Virtual);
 
                 //if (unloadPrint)
                 //{
@@ -211,40 +232,37 @@ namespace Kernel.Hardware.VirtMem
             //x86.Unmap_Print = false;
         }
 
-        public MemoryLayout Merge(MemoryLayout y)
+        public void Merge(MemoryLayout y)
         {
-            MemoryLayout result = new MemoryLayout(
-                CodePages.Keys.Count + y.CodePages.Keys.Count, 
-                DataPages.Keys.Count + y.DataPages.Keys.Count);
-            
-
-            for (int i = 0; i < CodePages.Keys.Count; i++)
-            {
-                uint vAddr = CodePages.Keys[i];
-                uint pAddr = CodePages[vAddr];
-                result.AddCodePage(pAddr, vAddr);
-            }
-            for (int i = 0; i < DataPages.Keys.Count; i++)
-            {
-                uint vAddr = DataPages.Keys[i];
-                uint pAddr = DataPages[vAddr];
-                result.AddDataPage(pAddr, vAddr);
-            }
-
             for (int i = 0; i < y.CodePages.Keys.Count; i++)
             {
                 uint vAddr = y.CodePages.Keys[i];
                 uint pAddr = y.CodePages[vAddr];
-                result.AddCodePage(pAddr, vAddr);
+                
+                AddCodePage(pAddr, vAddr);
             }
             for (int i = 0; i < y.DataPages.Keys.Count; i++)
             {
                 uint vAddr = y.DataPages.Keys[i];
                 uint pAddr = y.DataPages[vAddr];
-                result.AddDataPage(pAddr, vAddr);
+                
+                AddDataPage(pAddr, vAddr);
             }
-
-            return result;
+        }
+        public void Unmerge(MemoryLayout y)
+        {
+            for (int i = 0; i < y.CodePages.Keys.Count; i++)
+            {
+                uint vAddr = y.CodePages.Keys[i];
+                uint pAddr = y.CodePages[vAddr];
+                RemovePage(vAddr);
+            }
+            for (int i = 0; i < y.DataPages.Keys.Count; i++)
+            {
+                uint vAddr = y.DataPages.Keys[i];
+                uint pAddr = y.DataPages[vAddr];
+                RemovePage(vAddr);
+            }
         }
 
         public FOS_System.String ToString()
