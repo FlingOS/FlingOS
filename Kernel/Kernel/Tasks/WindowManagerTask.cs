@@ -102,12 +102,11 @@ namespace Kernel.Tasks
             {
                 BasicConsole.WriteLine("Window Manager: OutputProcessing thread failed to create!");
             }
-            //ready_count++;
-
-            //BasicConsole.WriteLine("WM > Init keyboard");
-            //Keyboard.InitDefault();
-            //BasicConsole.WriteLine("WM > Register IRQ 1 handler");
-            //SystemCalls.RegisterIRQHandler(1, HandleIRQ);
+            
+            BasicConsole.WriteLine("WM > Init keyboard");
+            Keyboard.InitDefault();
+            BasicConsole.WriteLine("WM > Register IRQ 1 handler");
+            SystemCalls.RegisterIRQHandler(1, HandleIRQ);
 
             BasicConsole.WriteLine("WM > Wait for pipe to be created");
             // Wait for pipe to be created

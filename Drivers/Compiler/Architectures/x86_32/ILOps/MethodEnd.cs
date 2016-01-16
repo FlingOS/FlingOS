@@ -84,22 +84,13 @@ namespace Drivers.Compiler.Architectures.x86
                 //Otherwise, store the return value at [ebp+8]
                 //[ebp+8] because that is last "argument"
                 //      - read the calling convention spec
-                else if (retSize == 4)
-                {
-                    conversionState.Append(new ASMOps.Pop() { Size = ASMOps.OperandSize.Dword, Dest = "EAX" });
-                    conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Dword, Dest = "[EBP+8]", Src = "EAX" });
-                }
-                else if (retSize == 8)
-                {
-                    conversionState.Append(new ASMOps.Pop() { Size = ASMOps.OperandSize.Dword, Dest = "EAX" });
-                    conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Dword, Dest = "[EBP+8]", Src = "EAX" });
-
-                    conversionState.Append(new ASMOps.Pop() { Size = ASMOps.OperandSize.Dword, Dest = "EAX" });
-                    conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Dword, Dest = "[EBP+12]", Src = "EAX" });
-                }
                 else
                 {
-                    throw new NotSupportedException("Return type size not supported / invalid!");
+                    for(int i = 0; i < retSize; i += 4)
+                    {
+                        conversionState.Append(new ASMOps.Pop() { Size = ASMOps.OperandSize.Dword, Dest = "EAX" });
+                        conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Dword, Dest = "[EBP+" + (i + 8) + "]", Src = "EAX" });
+                    }
                 }
             }
 

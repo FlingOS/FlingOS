@@ -335,16 +335,23 @@ namespace Kernel.Hardware.Processes
         {
             if (KernelProcess != null && KernelProcess != TargetProcess)
             {
+                //BasicConsole.Write("Enabling Kernel Process access to: ");
+                //BasicConsole.WriteLine(TargetProcess.Name);
                 KernelProcess.TheMemoryLayout.Merge(TargetProcess.TheMemoryLayout);
                 KernelProcess.TheMemoryLayout.Load(KernelProcess.UserMode);
+                //BasicConsole.Write("Access enabled.");
             }
         }
         public static void DisableKernelAccessToProcessMemory(Process TargetProcess)
         {
             if (KernelProcess != null && KernelProcess != TargetProcess)
             {
+                //BasicConsole.Write("Disabling Kernel Process access to: ");
+                //BasicConsole.WriteLine(TargetProcess.Name);
                 KernelProcess.TheMemoryLayout.Unmerge(TargetProcess.TheMemoryLayout);
+                //BasicConsole.WriteLine("DisableKernelAccessToProcessMemory calling MemoryLayout unload");
                 TargetProcess.TheMemoryLayout.Unload();
+                //BasicConsole.Write("Access enabled.");
             }
         }
     }

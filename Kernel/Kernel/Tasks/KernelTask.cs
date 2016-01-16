@@ -59,7 +59,135 @@ namespace Kernel.Tasks
         {
             BasicConsole.WriteLine("Kernel task! ");
             BasicConsole.WriteLine(" > Executing normally...");
-            
+
+            #region Dictionary Test
+            /*try
+            {
+                UInt32Dictionary dic = new UInt32Dictionary();
+
+                for (uint i = 0; i < 9; i += 3)
+                {
+                    BasicConsole.WriteLine("Dictionary test loop");
+                    BasicConsole.WriteLine("--------------------");
+
+                    uint key1 = 0xC0DEC0DEu + (0x100u * i);
+                    uint key2 = 0xC0DEC0DEu + (0x100u * (i+1));
+                    uint key3 = 0xC0DEC0DEu + (0x100u * (i+2));
+
+                    uint value1 = 0xDEADBEE0u + (0x1u * i);
+                    uint value2 = 0xDEADBEE0u + (0x1u * (i+1));
+                    uint value3 = 0xDEADBEE0u + (0x1u * (i+2));
+
+                    dic.Add(key1, value1);
+                    dic.Add(key2, value2);
+                    dic.Add(key3, value3);
+
+                    for(uint j = 50 * i; j < (50 * (i+1))-20; j++)
+                    {
+                        dic.Add(j, j);
+                    }
+
+                    if (!dic.Contains(key1))
+                    {
+                        BasicConsole.WriteLine("Dictionary doesn't contain key 1.");
+                    }
+                    else if (dic[key1] != value1)
+                    {
+                        BasicConsole.WriteLine("Dictionary value for key 1 wrong.");
+                    }
+                    else
+                    {
+                        BasicConsole.WriteLine("Okay (1)");
+                    }
+                    if (!dic.Contains(key2))
+                    {
+                        BasicConsole.WriteLine("Dictionary doesn't contain key1");
+                    }
+                    else if (dic[key2] != value2)
+                    {
+                        BasicConsole.WriteLine("Dictionary value for key1 wrong.");
+                    }
+                    else
+                    {
+                        BasicConsole.WriteLine("Okay (2)");
+                    }
+                    if (!dic.Contains(key3))
+                    {
+                        BasicConsole.WriteLine("Dictionary doesn't contain key1");
+                    }
+                    else if (dic[key3] != value3)
+                    {
+                        BasicConsole.WriteLine("Dictionary value for key1 wrong.");
+                    }
+                    else
+                    {
+                        BasicConsole.WriteLine("Okay (3)");
+                    }
+
+                    dic.Remove(key1);
+
+                    if (dic.Contains(key1))
+                    {
+                        BasicConsole.WriteLine("Dictionary contains key1!");
+                    }
+                    else
+                    {
+                        BasicConsole.WriteLine("Okay (4)");
+                    }
+
+                    BasicConsole.WriteLine("Iterating");
+                    UInt32Dictionary.Iterator itr = dic.GetIterator();
+                    while (itr.HasNext())
+                    {
+                        UInt32Dictionary.KeyValuePair pair = itr.Next();
+                        BasicConsole.WriteLine("Pair: key=" + (FOS_System.String)pair.Key + ", value=" + pair.Value);
+                    }
+
+                    dic.Remove(key2);
+
+                    for (uint j = (50 * i)+30; j < (50 * (i + 1)); j++)
+                    {
+                        dic.Add(j, j);
+                    }
+
+                    if (dic.Contains(key2))
+                    {
+                        BasicConsole.WriteLine("Dictionary contains key2!");
+                    }
+                    else
+                    {
+                        BasicConsole.WriteLine("Okay (5)");
+                    }
+
+
+                    dic.Remove(key3);
+
+                    if (dic.Contains(key3))
+                    {
+                        BasicConsole.WriteLine("Dictionary contains key3!");
+                    }
+                    else
+                    {
+                        BasicConsole.WriteLine("Okay (6)");
+                    }
+
+                    itr = dic.GetIterator();
+                    while (itr.HasNext())
+                    {
+                        UInt32Dictionary.KeyValuePair pair = itr.Next();
+                        BasicConsole.WriteLine("Pair: key=" + (FOS_System.String)pair.Key + ", value=" + pair.Value);
+                    }
+                }
+            }
+            catch
+            {
+                BasicConsole.WriteLine("Error testing UInt32Dictionary.");
+                BasicConsole.WriteLine(ExceptionMethods.CurrentException.Message);
+            }
+            BasicConsole.DelayOutput(5);
+            */
+            #endregion
+
             DeferredSyscallsInfo_Unqueued = new Queue(256, false);
             DeferredSyscallsInfo_Queued = new Queue(DeferredSyscallsInfo_Unqueued.Capacity, false);
             for (int i = 0; i < DeferredSyscallsInfo_Unqueued.Capacity; i++)
@@ -116,11 +244,11 @@ namespace Kernel.Tasks
                 }
                 BasicConsole.WriteLine(" > Window Manager reported ready.");
 
-                //BasicConsole.WriteLine(" > Starting Device Manager...");
-                //Process DeviceManagerProcess = ProcessManager.CreateProcess(DeviceManagerTask.Main, "Device Manager", false, true);
+                BasicConsole.WriteLine(" > Starting Device Manager...");
+                Process DeviceManagerProcess = ProcessManager.CreateProcess(DeviceManagerTask.Main, "Device Manager", false, true);
                 //DeviceManagerProcess.OutputMemTrace = true;
-                //ProcessManager.RegisterProcess(DeviceManagerProcess, Scheduler.Priority.Normal);
-                
+                ProcessManager.RegisterProcess(DeviceManagerProcess, Scheduler.Priority.Normal);
+
 
                 //TODO: Main task for commands etc
 

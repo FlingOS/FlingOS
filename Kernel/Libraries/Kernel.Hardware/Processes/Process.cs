@@ -258,6 +258,7 @@ namespace Kernel.Hardware.Processes
         }
         public virtual void UnloadMemLayout()
         {
+            //BasicConsole.WriteLine("Process Unload calling MemoryLayout unload");
             TheMemoryLayout.Unload();
         }
     }

@@ -163,16 +163,21 @@ namespace Kernel.Hardware.Processes
             Hardware.VirtMem.MemoryLayout memLayout = ProcessManager.CurrentProcess.TheMemoryLayout;
             BasicConsole.WriteLine("Code pages:");
             string TempDisplayString = "0x        ";
-            for (int i = 0; i < memLayout.CodePages.Keys.Count; i++)
+
+            UInt32Dictionary.Iterator iterator = memLayout.CodePages.GetIterator();
+            while(iterator.HasNext())
             {
-                uint vAddr = memLayout.CodePages.Keys[i];
+                UInt32Dictionary.KeyValuePair pair = iterator.Next();
+                uint vAddr = pair.Key;
                 WriteNumber(TempDisplayString, vAddr);
                 BasicConsole.WriteLine(TempDisplayString);
             }
             BasicConsole.WriteLine("Data pages:");
-            for (int i = 0; i < memLayout.DataPages.Keys.Count; i++)
+            iterator = memLayout.DataPages.GetIterator();
+            while (iterator.HasNext())
             {
-                uint vAddr = memLayout.DataPages.Keys[i];
+                UInt32Dictionary.KeyValuePair pair = iterator.Next();
+                uint vAddr = pair.Key;
                 WriteNumber(TempDisplayString, vAddr);
                 BasicConsole.WriteLine(TempDisplayString);
             }

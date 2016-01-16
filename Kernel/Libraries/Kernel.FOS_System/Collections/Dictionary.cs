@@ -32,70 +32,203 @@ using System.Threading.Tasks;
 
 namespace Kernel.FOS_System.Collections
 {
-    public class UInt32Dictionary : FOS_System.Object
+    public unsafe class UInt32Dictionary : Object
     {
-        public UInt32List Keys;
-        public UInt32List Values;
-
-        public UInt32Dictionary(int capacity = 5)
+        public struct KeyValuePair
         {
-            Keys = new UInt32List(capacity);
-            Values = new UInt32List(capacity);
+            public UInt32 Key;
+            public UInt32 Value;
+            internal KeyValuePair* Prev;
+            internal KeyValuePair* Next;
+            internal bool Empty;
         }
 
-        public int Capacity
+        public sealed class Iterator : Object
         {
-            get
+            private KeyValuePair* list;
+
+            public Iterator(KeyValuePair* aList)
             {
-                return Keys.Capacity;
+                list = aList;
             }
-            set
+
+            internal void Reset(KeyValuePair* aList)
             {
-                Keys.Capacity = value;
-                Values.Capacity = value;
+                list = aList;
+            }
+
+            public bool HasNext()
+            {
+                return list != null && !list->Empty;
+            }
+            public KeyValuePair Next()
+            {
+                KeyValuePair result = *list;
+                list = list->Prev;
+                return result;
             }
         }
 
-        public void Add(UInt32 key, UInt32 value)
+        protected KeyValuePair* list;
+        protected Iterator iterator;
+
+        public UInt32Dictionary()
         {
-            if (Keys.IndexOf(key) > -1)
+            list = null;
+            iterator = new Iterator(null);
+
+            Prefill(25);
+        }
+        private void Prefill(int capacity)
+        {
+            while (capacity-- > 0)
             {
-                ExceptionMethods.Throw(new FOS_System.Exception("Cannot add duplicate key to the dictionary!"));
+                KeyValuePair* newItem = (KeyValuePair*)Heap.Alloc((uint)sizeof(KeyValuePair), "UInt32Dictionary.Prefill");
+                newItem->Empty = true;
+                newItem->Key = 0;
+                newItem->Value = 0;
+                newItem->Prev = null;
+                if (list == null)
+                {
+                    newItem->Next = null;
+                    list = newItem;
+                }
+                else
+                {
+                    newItem->Next = list;
+                    list->Prev = newItem;
+                    list = newItem;
+                }
+            }
+        }
+        
+        public void Add(UInt32 key, UInt32 value, bool SkipCheck = false)
+        {
+            if (!SkipCheck)
+            {
+                if (Contains(key))
+                {
+                    ExceptionMethods.Throw(new FOS_System.Exception("Cannot add duplicate key to the dictionary!"));
+                }
             }
 
-            Keys.Add(key);
-            Values.Add(value);
+            KeyValuePair* newItem = null;
+            KeyValuePair* newNext = null;
+            KeyValuePair* newPrev = null;
+            KeyValuePair* newListNext = null;
+            bool Alloc = true;
+            if (list != null)
+            {
+                if (list->Empty)
+                {
+                    newItem = list;
+                    newNext = newItem->Next;
+                    newPrev = null;
+                    newListNext = newItem->Next;
+                    Alloc = false;
+                }
+                else if (list->Next != null)
+                {
+                    newItem = list->Next;
+                    newNext = newItem->Next;
+                    newPrev = newItem->Prev;
+                    newListNext = newItem;
+                    Alloc = false;
+                }
+                else
+                {
+                    Alloc = true;
+                }
+            }
+            if(Alloc)
+            {
+                newItem = (KeyValuePair*)Heap.Alloc((uint)sizeof(KeyValuePair), "UInt32Dictionary.Add");
+                newNext = null;
+                newPrev = list;
+                newListNext = newItem;
+            }
+
+            newItem->Key = key;
+            newItem->Value = value;
+            newItem->Next = newNext;
+            newItem->Prev = newPrev;
+            newItem->Empty = false;
+
+            if (list != null && newItem != list)
+            {
+                list->Next = newListNext;
+            }
+            list = newItem;
         }
         public void AddRange(UInt32 keyStart, UInt32 keyStep, UInt32[] values)
         {
-            if (Keys.ContainsItemInRange(keyStart, keyStart + ((uint)values.Length * keyStep)))
+            if (ContainsItemInRange(keyStart, keyStart + ((uint)values.Length * keyStep)))
             {
                 ExceptionMethods.Throw(new FOS_System.Exception("Cannot add duplicate key to the dictionary!"));
             }
-
-            Capacity += values.Length;
-
+            
             UInt32 keyVal = keyStart;
             for (uint i = 0; i < values.Length; i++)
             {
-                Keys.Add(keyVal);
-                Values.Add(values[i]);
+                Add(keyVal, values[i], true);
 
                 keyVal += keyStep;
             }
         }
         public void Remove(UInt32 key)
         {
-            int index = Keys.IndexOf(key);
-            if (index > -1)
+            KeyValuePair* cPair = list;
+            while(cPair != null)
             {
-                Values.RemoveAt(index);
-                Keys.RemoveAt(index);
+                if(cPair->Key == key)
+                {
+                    KeyValuePair* prev = cPair->Prev;
+                    KeyValuePair* next = cPair->Next;
+
+                    if (prev != null)
+                    {
+                        prev->Next = next;
+                    }
+                    if (next != null)
+                    {
+                        next->Prev = prev;
+                    }
+
+                    if (cPair == list)
+                    {
+                        if (prev == null)
+                        {
+                            list = next;
+                        }
+                        else
+                        {
+                            list = prev;
+                        }
+                    }
+
+                    cPair->Empty = true;
+                    cPair->Key = 0;
+                    cPair->Value = 0;
+                    cPair->Prev = list;
+                    if (list != null)
+                    {
+                        cPair->Next = list->Next;
+                        list->Next = cPair;
+                        cPair->Next->Prev = cPair;
+                    }
+                    else
+                    {
+                        cPair->Next = null;
+                        list = cPair;
+                    }
+
+                    break;
+                }
+                cPair = cPair->Prev;
             }
         }
         public void RemoveRange(UInt32 keyStart, UInt32 keyStep, UInt32 numKeys)
         {
-            // Remove in reverse order - it's significantly faster
             for (int i = (int)(numKeys - 1); i >= 0; i--)
             {
                 UInt32 currKey = (keyStart + ((UInt32)i * keyStep));
@@ -105,99 +238,184 @@ namespace Kernel.FOS_System.Collections
 
         public bool Contains(UInt32 key)
         {
-            return Keys.IndexOf(key) > -1;
+            KeyValuePair* cPair = list;
+            while (cPair != null)
+            {
+                if (!cPair->Empty && cPair->Key == key)
+                {
+                    return true;
+                }
+                cPair = cPair->Prev;
+            }
+            return false;
+        }
+        public bool ContainsItemInRange(UInt32 startKey, UInt32 endKey)
+        {
+            KeyValuePair* cPair = list;
+            while (cPair != null)
+            {
+                if (!cPair->Empty && cPair->Key >= startKey && cPair->Key < endKey)
+                {
+                    return true;
+                }
+                cPair = cPair->Prev;
+            }
+            return false;
         }
 
         public UInt32 this[UInt32 key]
         {
             get
             {
-                int keyIdx = Keys.IndexOf(key);
-                if (keyIdx == -1)
+                KeyValuePair* cPair = list;
+                while (cPair != null)
                 {
-                    ExceptionMethods.Throw(new Exceptions.ArgumentException("Key not found in dictionary!"));
+                    if (cPair->Key == key)
+                    {
+                        return cPair->Value;
+                    }
+                    cPair = cPair->Prev;
                 }
-                return Values[keyIdx];
+                ExceptionMethods.Throw(new Exceptions.ArgumentException("Key not found in dictionary!"));
+                return 0;
             }
             set
             {
-                int keyIdx = Keys.IndexOf(key);
-                if (keyIdx == -1)
+                KeyValuePair* cPair = list;
+                while (cPair != null)
+                {
+                    if (cPair->Key == key)
+                    {
+                        cPair->Value = value;
+                        break;
+                    }
+                    cPair = cPair->Prev;
+                }
+                if(cPair == null)
                 {
                     Add(key, value);
                 }
-                else
-                {
-                    Values[keyIdx] = value;
-                }
             }
+        }
+
+        public Iterator GetIterator()
+        {
+            iterator.Reset(list);
+            return iterator;
+        }
+        public Iterator GetNewIterator()
+        {
+            return new Iterator(list);
         }
     }
 
-    public class UInt64Dictionary : FOS_System.Object
+    public unsafe class UInt64Dictionary : Object
     {
-        public UInt64List Keys;
-        public UInt64List Values;
-
-        public UInt64Dictionary(int capacity = 5)
+        public struct KeyValuePair
         {
-            Keys = new UInt64List(capacity);
-            Values = new UInt64List(capacity);
+            public UInt64 Key;
+            public UInt64 Value;
+            internal KeyValuePair* Prev;
+            internal KeyValuePair* Next;
         }
 
-        public int Capacity
+        public sealed class Iterator : Object
         {
-            get
+            private KeyValuePair* list;
+
+            public Iterator(KeyValuePair* aList)
             {
-                return Keys.Capacity;
+                list = aList;
             }
-            set
+
+            internal void Reset(KeyValuePair* aList)
             {
-                Keys.Capacity = value;
-                Values.Capacity = value;
+                list = aList;
+            }
+
+            public bool HasNext()
+            {
+                return list != null;
+            }
+            public KeyValuePair Next()
+            {
+                KeyValuePair result = *list;
+                list = list->Prev;
+                return result;
             }
         }
 
-        public void Add(UInt64 key, UInt64 value)
+        protected KeyValuePair* list;
+        protected Iterator iterator;
+
+        public UInt64Dictionary()
         {
-            if (Keys.IndexOf(key) > -1)
+            list = null;
+            iterator = new Iterator(list);
+        }
+
+        public void Add(UInt64 key, UInt64 value, bool SkipCheck = false)
+        {
+            if (!SkipCheck)
             {
-                ExceptionMethods.Throw(new FOS_System.Exception("Cannot add duplicate key to the dictionary!"));
+                if (Contains(key))
+                {
+                    ExceptionMethods.Throw(new FOS_System.Exception("Cannot add duplicate key to the dictionary!"));
+                }
             }
 
-            Keys.Add(key);
-            Values.Add(value);
+            KeyValuePair* newItem = (KeyValuePair*)Heap.Alloc((uint)sizeof(KeyValuePair), "UInt64Dictionary.Add");
+            newItem->Key = key;
+            newItem->Value = value;
+            newItem->Next = null;
+            newItem->Prev = list; 
+            if (list != null)
+            {
+                list->Next = newItem;
+            }
+            list = newItem;
         }
         public void AddRange(UInt64 keyStart, UInt64 keyStep, UInt64[] values)
         {
-            if (Keys.ContainsItemInRange(keyStart, keyStart + ((uint)values.Length * keyStep)))
+            if (ContainsItemInRange(keyStart, keyStart + ((uint)values.Length * keyStep)))
             {
                 ExceptionMethods.Throw(new FOS_System.Exception("Cannot add duplicate key to the dictionary!"));
             }
-
-            Capacity += values.Length;
 
             UInt64 keyVal = keyStart;
             for (uint i = 0; i < values.Length; i++)
             {
-                Keys.Add(keyVal);
-                Values.Add(values[i]);
+                Add(keyVal, values[i], true);
 
                 keyVal += keyStep;
             }
         }
         public void Remove(UInt64 key)
         {
-            int index = Keys.IndexOf(key);
-            if (index > -1)
+            KeyValuePair* cPair = list;
+            while (cPair != null)
             {
-                Values.RemoveAt(index);
-                Keys.RemoveAt(index);
+                if (cPair->Key == key)
+                {
+                    KeyValuePair* prev = cPair->Prev;
+                    KeyValuePair* next = cPair->Next;
+                    
+                    if (prev != null)
+                    {
+                        prev->Next = next;
+                    }
+                    if (next != null)
+                    {
+                        next->Prev = prev;
+                    }
+
+                    Heap.Free(cPair);
+                }
+                cPair = cPair->Prev;
             }
         }
         public void RemoveRange(UInt64 keyStart, UInt64 keyStep, UInt64 numKeys)
         {
-            // Remove in reverse order - it's significantly faster
             for (int i = (int)(numKeys - 1); i >= 0; i--)
             {
                 UInt64 currKey = (keyStart + ((UInt64)i * keyStep));
@@ -207,32 +425,74 @@ namespace Kernel.FOS_System.Collections
 
         public bool Contains(UInt64 key)
         {
-            return Keys.IndexOf(key) > -1;
+            KeyValuePair* cPair = list;
+            while (cPair != null)
+            {
+                if (cPair->Key == key)
+                {
+                    return true;
+                }
+                cPair = cPair->Prev;
+            }
+            return false;
+        }
+        public bool ContainsItemInRange(UInt64 startKey, UInt64 endKey)
+        {
+            KeyValuePair* cPair = list;
+            while (cPair != null)
+            {
+                if (cPair->Key >= startKey && cPair->Key < endKey)
+                {
+                    return true;
+                }
+                cPair = cPair->Prev;
+            }
+            return false;
         }
 
         public UInt64 this[UInt64 key]
         {
             get
             {
-                int keyIdx = Keys.IndexOf(key);
-                if (keyIdx == -1)
+                KeyValuePair* cPair = list;
+                while (cPair != null)
                 {
-                    ExceptionMethods.Throw(new Exceptions.ArgumentException("Key not found in dictionary!"));
+                    if (cPair->Key == key)
+                    {
+                        return cPair->Value;
+                    }
+                    cPair = cPair->Prev;
                 }
-                return Values[keyIdx];
+                ExceptionMethods.Throw(new Exceptions.ArgumentException("Key not found in dictionary!"));
+                return 0;
             }
             set
             {
-                int keyIdx = Keys.IndexOf(key);
-                if (keyIdx == -1)
+                KeyValuePair* cPair = list;
+                while (cPair != null)
+                {
+                    if (cPair->Key == key)
+                    {
+                        cPair->Value = value;
+                        break;
+                    }
+                    cPair = cPair->Prev;
+                }
+                if (cPair == null)
                 {
                     Add(key, value);
                 }
-                else
-                {
-                    Values[keyIdx] = value;
-                }
             }
+        }
+
+        public Iterator GetIterator()
+        {
+            iterator.Reset(list);
+            return iterator;
+        }
+        public Iterator GetNewIterator()
+        {
+            return new Iterator(list);
         }
     }
 }

@@ -77,36 +77,32 @@ namespace Drivers.Compiler.Architectures.x86
 
             //Load the object onto the stack
             conversionState.Append(new ASMOps.Pop() { Size = ASMOps.OperandSize.Dword, Dest = "ECX" });
-            for (int i = memSize - 4; i >= 0; i -= 4)
+
+            int irregularSize = memSize % 4;
+            if (irregularSize > 0)
             {
-                switch (i)
+                conversionState.Append(new ASMOps.Xor() { Src = "EAX", Dest = "EAX" });
+                switch (irregularSize)
                 {
                     case 1:
+                        conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Byte, Src = "[ECX+" + (memSize - 1).ToString() + "]", Dest = "AL" });
                         break;
                     case 2:
+                        conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Word, Src = "[ECX+" + (memSize - 2).ToString() + "]", Dest = "AX" });
                         break;
                     case 3:
-                        break;
-                    default:
-                        conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Dword, Src = "[ECX+" + i.ToString() + "]", Dest = "EAX" });
-                        conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Dword, Src = "EAX" });
+                        conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Byte, Src = "[ECX+" + (memSize - 1).ToString() + "]", Dest = "AL" });
+                        conversionState.Append(new ASMOps.Shl() { Dest = "EAX", Src = "16" });
+                        conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Word, Src = "[ECX+" + (memSize - 3).ToString() + "]", Dest = "AX" });
                         break;
                 }
+                conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Dword, Src = "EAX" });
             }
-            int paddingSize = 4 - (memSize % 4);
-            switch (paddingSize)
+
+            for (int i = memSize - irregularSize - 4; i >= 0; i -= 4)
             {
-                case 1:
-                    conversionState.Append(new ASMOps.Sub() { Dest = "ESP", Src = "1" });
-                    conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Byte, Dest = "[ESP]", Src = "0" });
-                    break;
-                case 2:
-                    conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Word, Src = "0" });
-                    break;
-                case 3:
-                    conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Dword, Src = "0" });
-                    conversionState.Append(new ASMOps.Add() { Dest = "ESP", Src = "1" });
-                    break;
+                conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Dword, Src = "[ECX+" + i.ToString() + "]", Dest = "EAX" });
+                conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Dword, Src = "EAX" });
             }
 
             // Pop address
