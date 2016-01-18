@@ -214,9 +214,6 @@ namespace Kernel
             }
             //Call update to update the screen with the new text.
             Update();
-            //Update the cursor position.
-            SetCursorPosition((ushort)(CurrentChar - GetDisplayOffset_Char()),
-                              (ushort)(CurrentLine - GetDisplayOffset_Line()));
         }
         /// <summary>
         /// Writes the specified number as an unsigned decimal string.
@@ -386,10 +383,6 @@ namespace Kernel
             
             //Update the screen
             Update();
-
-            //Update the cursor position
-            SetCursorPosition((ushort)(CurrentChar - GetDisplayOffset_Char()),
-                              (ushort)(CurrentLine - GetDisplayOffset_Line()));
         }
         /// <summary>
         /// Writes the specified string followed by a new line.

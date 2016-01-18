@@ -92,6 +92,10 @@ namespace Kernel.Consoles
                 }
                 vidMemPtr -= ScreenLineWidth;
             }
+            
+            //Update the cursor position
+            SetCursorPosition((ushort)(CurrentChar - GetDisplayOffset_Char()),
+                              (ushort)(CurrentLine - GetDisplayOffset_Line()));
         }
 
         /// <summary>
