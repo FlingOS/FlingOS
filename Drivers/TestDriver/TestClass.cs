@@ -27,7 +27,7 @@
 using System;
 using Drivers.Framework;
 using KernelABI;
-using Kernel.Shared;
+//using Kernel.Shared;
 
 namespace TestDriver
 {
@@ -41,6 +41,7 @@ namespace TestDriver
         /// </summary>
         public static bool Terminating = false;
 
+        /*
         [Drivers.Compiler.Attributes.MainMethod]
         public static unsafe void Test()
         {
@@ -181,5 +182,6 @@ namespace TestDriver
         public static void Halt()
         {
         }
+        */
     }
 }

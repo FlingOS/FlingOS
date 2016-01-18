@@ -32,14 +32,14 @@ using System.Threading.Tasks;
 
 using Drivers.Framework;
 using Drivers.Framework.Utilities;
-using Kernel.Shared;
+//using Kernel.Shared;
 
 namespace KernelABI
 {
     public static class SystemCalls
     {
         public delegate void ThreadStartMethod();
-
+        /*
         [Drivers.Compiler.Attributes.PluggedMethod(ASMFilePath = @"ASM\SystemCalls")]
         public static void Call(Kernel.Shared.SystemCalls callNumber,
             uint Param1,
@@ -122,5 +122,6 @@ namespace KernelABI
             Call(Kernel.Shared.SystemCalls.Thread, (uint)ThreadRequests.Create, (uint)(ObjectUtilities.GetHandle(startMethod)), 0, ref Return1, ref Return2, ref Return3, ref Return4);
             return (ThreadResponses)Return1;
         }
+        */
     }
 }
