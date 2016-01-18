@@ -110,7 +110,7 @@ namespace Kernel.Hardware.USB.Devices
     /// </remarks>
     public unsafe class MassStorageDevice : USBDevice
     {
-        //TODO - Test for ejected, don't send commands if ejected!
+        //TODO: Test for ejected, don't send commands if ejected!
     
         /// <summary>
         /// The underlying disk device that allows the mass storage device to be 

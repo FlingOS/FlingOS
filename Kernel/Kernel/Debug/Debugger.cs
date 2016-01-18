@@ -846,7 +846,8 @@ namespace Kernel.Debug
                             if (TheProcess != null && false)
                             {
                                 // Need access to specified process' memory
-                                //TODO: Erm... MemoryLayout OriginalMemoryLayout = SystemCallsHelpers.EnableAccessToMemoryOfProcess(TheProcess);
+                                //TODO: Debugger needs special access to another process' memory
+                                //MemoryLayout OriginalMemoryLayout = SystemCallsHelpers.EnableAccessToMemoryOfProcess(TheProcess);
 
                                 uint Address = FOS_System.Int32.Parse_HexadecimalUnsigned((FOS_System.String)lineParts[2], 0);
                                 int length = FOS_System.Int32.Parse_DecimalSigned((FOS_System.String)lineParts[3]);
@@ -890,7 +891,8 @@ namespace Kernel.Debug
 
                                 MsgPort.Write("\n");
 
-                                //TODO: Erm... SystemCallsHelpers.DisableAccessToMemoryOfProcess(OriginalMemoryLayout);
+                                //TODO: Debugger needs to remove special access to memory - see TODO further up.
+                                //SystemCallsHelpers.DisableAccessToMemoryOfProcess(OriginalMemoryLayout);
                             }
                             else
                             {

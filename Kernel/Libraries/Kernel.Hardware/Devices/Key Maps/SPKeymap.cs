@@ -44,9 +44,9 @@ namespace Kernel.Hardware.Devices
             //BasicConsole.DelayOutput(3);
             KeyMappings = new List(164);
 
-            //TODO: fn key
-            //TODO: full numpad?
-            //TODO: alt special symbols
+            //TODO: Fn key
+            //TODO: Full numpad?
+            //TODO: Alt special symbols
 
             #region Letters
             AddKey(0x10, 'q', KeyboardKey.Q);

@@ -46,7 +46,7 @@ namespace Kernel.FOS_System
     /// </remarks>
     public static unsafe class GC
     {
-        //TODO - GC needs an object reference tree to do a thorough scan to find reference loops
+        //TODO: GC needs an object reference tree to do a thorough scan to find reference loops
 
         /// <summary>
         /// Whether the GC has been initialised yet or not.

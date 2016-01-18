@@ -1022,7 +1022,8 @@ namespace Kernel.Hardware.USB.HCIs
             UHCI_qTD.SetMaxLength(td, (ushort)(tokenBytes - 1));
             UHCI_qTD.SetC_ERR(td, 0x3);
 
-            //TODO: *buffer = 
+            //TODO: The following todo makes no sense anymore...
+            //T O D O: *buffer = 
             USBRequest* request = (USBRequest*)(AllocQTDbuffer(td));
             request->type = type;
             request->request = req;

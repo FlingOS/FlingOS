@@ -495,7 +495,7 @@ namespace Kernel.Hardware.USB
                 case 0x41a:
                     return "Croatian";
                 //case 0x41a: - Same as previous...hmm...
-                //TODO - Find out the actual language code for Serbian or Croatian (whichever is wrong)
+                //TODO: Find out the actual language code for Serbian or Croatian (whichever is wrong)
                 //    return "Serbian";
                 //    break; 
                 case 0x41b:

@@ -246,10 +246,7 @@ namespace Kernel.Tasks
                 Process DeviceManagerProcess = ProcessManager.CreateProcess(DeviceManagerTask.Main, "Device Manager", false, true);
                 //DeviceManagerProcess.OutputMemTrace = true;
                 ProcessManager.RegisterProcess(DeviceManagerProcess, Scheduler.Priority.Normal);
-
-
-                //TODO: Main task for commands etc
-
+                
                 BasicConsole.WriteLine("Started.");
 
                 BasicConsole.PrimaryOutputEnabled = false;
@@ -294,27 +291,6 @@ namespace Kernel.Tasks
                     BasicConsole.WriteLine("KT > Error initialising!");
                     BasicConsole.WriteLine(ExceptionMethods.CurrentException.Message);
                 }
-
-                //BasicConsole.WriteLine(" > Starting Play Notes task...");
-                //ProcessManager.CurrentProcess.CreateThread(Hardware.Tasks.PlayNotesTask.Main);
-
-                //Console.InitDefault();
-                //Shell.InitDefault();
-
-                //BasicConsole.PrimaryOutputEnabled = false;
-                //Shell.Default.Execute();
-                //BasicConsole.PrimaryOutputEnabled = true;
-
-                //if (!Shell.Default.Terminating)
-                //{
-                //    Console.Default.WarningColour();
-                //    Console.Default.WriteLine("Abnormal shell shutdown!");
-                //    Console.Default.DefaultColour();
-                //}
-                //else
-                //{
-                //    Console.Default.Clear();
-                //}
             }
             catch
             {
@@ -328,10 +304,6 @@ namespace Kernel.Tasks
             BasicConsole.WriteLine("---------------------");
             BasicConsole.WriteLine();
             BasicConsole.WriteLine("End of kernel task.");
-
-            ExceptionMethods.HaltReason = "Managed main thread ended.";
-
-            //TODO: Exit syscall
         }
 
         public static void DeferredSyscallsThread_Main()

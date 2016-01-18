@@ -44,7 +44,7 @@ namespace Kernel.Hardware.USB
     //
     //  For this driver to be 100% proper, it should be modified to include Lunt's practical notes. However,
     //  this is only the low-level USB driver which will be superseded by the proper USB driver in the full 
-    //  Kernel Driver Framework, so for now, this will do.
+    //  Driver Framework, so for now, this will do.
 
     /// <summary>
     /// Provides methods for managing USB access.
@@ -131,7 +131,7 @@ namespace Kernel.Hardware.USB
                                         BasicConsole.WriteLine("xHCI detected.");
 #endif
 
-                            //TODO - Add xHCI support
+                            //TODO: Add xHCI support
                             //Supported by VMWare
                             //  - This is USB 3.0
 
@@ -238,7 +238,7 @@ namespace Kernel.Hardware.USB
                                         BasicConsole.WriteLine("OHCI detected.");
 #endif
 
-                            //TODO - Add OHCI support
+                            //TODO: Add OHCI support
                             //Not supported by VMWare or my laptop 
                             //  so we aren't going to program this any further for now.
 
@@ -275,7 +275,7 @@ namespace Kernel.Hardware.USB
                                         BasicConsole.WriteLine("xHCI detected.");
 #endif
 
-                        //TODO - Add xHCI support
+                        //TODO: Add xHCI support
                         //Supported by VMWare
                         //  - This is USB 3.0
 
@@ -355,7 +355,7 @@ namespace Kernel.Hardware.USB
                                         BasicConsole.WriteLine("OHCI detected.");
 #endif
 
-                        //TODO - Add OHCI support
+                        //TODO: Add OHCI support
                         //Not supported by VMWare or my laptop 
                         //  so we aren't going to program this any further for now.
 

@@ -115,7 +115,7 @@ namespace Kernel.Consoles
         /// <param name="line">The line number (from the display perspective, not the buffer perspective) of the cursor.</param>
         public override void SetCursorPosition(ushort character, ushort line)
         {
-            //TODO
+            //TODO: VirtualConsole cannot SetCursorPosition. Requires Task to Window Manager command system. Links to the Scrolling issue.
         }
     }
 }

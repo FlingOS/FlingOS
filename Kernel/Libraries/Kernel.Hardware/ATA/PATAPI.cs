@@ -75,7 +75,26 @@ namespace Kernel.Hardware.ATA
             }
         }
 
-        private bool IRQInvoked = false;
+        private static bool IRQ14Invoked = false;
+        private static bool IRQ15Invoked = false;
+        private bool IRQInvoked
+        {
+            get
+            {
+                return BaseDevice.controllerId == ATA.ControllerID.Primary ? IRQ14Invoked : IRQ15Invoked;
+            }
+            set
+            {
+                if (BaseDevice.controllerId == ATA.ControllerID.Primary)
+                {
+                    IRQ14Invoked = value;
+                }
+                else
+                {
+                    IRQ15Invoked = value;
+                }
+            }
+        }
 
         public PATAPI(PATABase baseDevice)
         {
@@ -85,28 +104,22 @@ namespace Kernel.Hardware.ATA
             BaseDevice.SelectDrive(0, false);
             BaseDevice.IO.Control.Write_Byte((byte)0x00);
 
-            //TODO: Use system calls for adding IRQ handler(s)
-            //if (BaseDevice.controllerId == ATA.ControllerID.Primary)
-            //{
-            //    Interrupts.Interrupts.AddIRQHandler(14, PATAPI.IRQHandler, this, "PATAPI IRQ 14");
-            //}
-            //else
-            //{
-            //    Interrupts.Interrupts.AddIRQHandler(15, PATAPI.IRQHandler, this, "PATAPI IRQ 15");
-            //}
+            //Note: IRQHandler is called from DeviceManagerTask
         }
 
-        private static void IRQHandler(FOS_System.Object state)
+        public static int IRQHandler(uint irqNumber)
         {
-            ((PATAPI)state).IRQHandler();
-        }
-        private void IRQHandler()
-        {
-#if PATAPI_TRACE
-            BasicConsole.WriteLine("PATAPI IRQ occurred!");
-            BasicConsole.DelayOutput(10);
-#endif
-            IRQInvoked = true;
+            if (irqNumber == 14)
+            {
+                IRQ14Invoked = true;
+                return 0;
+            }
+            else if(irqNumber == 15)
+            {
+                IRQ15Invoked = true;
+                return 0;
+            }
+            return -1;
         }
 
         private bool WaitForIRQ()
@@ -336,12 +349,13 @@ namespace Kernel.Hardware.ATA
 
         public override void WriteBlock(ulong aBlockNo, uint aBlockCount, byte[] aData)
         {
+            //TODO: Implement PATAPI.WriteBlock
             ExceptionMethods.Throw(new FOS_System.Exceptions.NotSupportedException("Cannot write to PATAPI device!"));
         }
 
         public override void CleanCaches()
         {
-            //TODO - Look at this when Write is implemented
+            //TODO: Implement PATAPI.CleanCaches when PATAPI.WriteBlock is implemented
         }
     }
 }

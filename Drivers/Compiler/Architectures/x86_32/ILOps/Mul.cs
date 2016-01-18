@@ -134,13 +134,14 @@ namespace Drivers.Compiler.Architectures.x86
                 else if (itemA.sizeOnStackInBytes == 8 &&
                     itemB.sizeOnStackInBytes == 8)
                 {
-                    //TODO: This long multiplication really doesn't work in practice for signed values... 
-                    //          because we can't tell the computer to treat one value as signed and 
-                    //          another as unsigned in a single multiply. We would need to store the
-                    //          sign bit of the high parts (AH and BH) then make them unsigned.
-                    //          Then do each part of the multiplication unsigned, then apply sign-combination
-                    //          rules to each sub-part to make relevant sub-parts signed, then sum all the 
-                    //          sub-parts.
+                    /*TODO: This long multiplication really doesn't work in practice for signed values... 
+                     *          because we can't tell the computer to treat one value as signed and 
+                     *          another as unsigned in a single multiply. We would need to store the
+                     *          sign bit of the high parts (AH and BH) then make them unsigned.
+                     *          Then do each part of the multiplication unsigned, then apply sign-combination
+                     *          rules to each sub-part to make relevant sub-parts signed, then sum all the 
+                     *          sub-parts.
+                     */
 
                     Logger.LogWarning(Errors.ILCompiler_ScanILOpCustomWarning_ErrorCode, "", 0,
                                         string.Format(Errors.ErrorMessages[Errors.ILCompiler_ScanILOpCustomWarning_ErrorCode], 

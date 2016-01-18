@@ -73,7 +73,8 @@ namespace Kernel.Hardware
 
         public static void NotifyDevicesNeedUpdate()
         {
-            //TODO
+            //TODO: Implement DeviceManager.NotifyDevicesNeedUpdate properly
+
             //if (Tasks.DeviceManagerTask.OwnerThread != null)
             //{
             //    Tasks.DeviceManagerTask.Awake = true;
@@ -83,7 +84,7 @@ namespace Kernel.Hardware
 
         public static void UpdateDevices()
         {
-            //TODO - Any other types of device which need updating?
+            //TODO: Any other classes of device which need updating?
 
             USB.USBManager.Update();
 

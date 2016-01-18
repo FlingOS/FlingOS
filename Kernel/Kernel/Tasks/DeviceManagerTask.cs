@@ -60,6 +60,10 @@ namespace Kernel.Tasks
                 BasicConsole.WriteLine("DM > Registering for Receive Message syscall...");
                 SystemCalls.RegisterSyscallHandler(SystemCallNumbers.ReceiveMessage, SyscallHandler);
 
+                BasicConsole.WriteLine("DM > Registering for IRQs...");
+                SystemCalls.RegisterIRQHandler(14, IRQHandler);
+                SystemCalls.RegisterIRQHandler(15);
+
                 BasicConsole.WriteLine("DM > Creating virtual console...");
                 console = new Consoles.VirtualConsole();
 
@@ -93,6 +97,15 @@ namespace Kernel.Tasks
                 BasicConsole.WriteLine("DM > Error initialising!");
                 BasicConsole.WriteLine(ExceptionMethods.CurrentException.Message);
             }
+        }
+
+        public static int IRQHandler(uint irqNumber)
+        {
+            int result = -1;
+
+            result = result == -1 ? Hardware.ATA.PATAPI.IRQHandler(irqNumber) : result;
+
+            return result;
         }
 
         public static int SyscallHandler(uint syscallNumber, uint param1, uint param2, uint param3,

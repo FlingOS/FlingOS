@@ -328,7 +328,7 @@ namespace Drivers.Compiler.IL
                         //But just to make sure we save ourselves a headache later when
                         //  runtime debugging, output a message saying we ignored the call.
 
-                        // TODO - IL level comments
+                        // TODO: IL level comments
                         // result.ASM.AppendLine("; Call to method defined in MSCorLib ignored:"); // DEBUG INFO
                         // result.ASM.AppendLine("; " + anILOpInfo.MethodToCall.DeclaringType.FullName + "." + anILOpInfo.MethodToCall.Name); // DEBUG INFO
 

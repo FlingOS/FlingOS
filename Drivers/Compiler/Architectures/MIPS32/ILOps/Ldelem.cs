@@ -167,7 +167,7 @@ namespace Drivers.Compiler.Architectures.MIPS32
 
                 case OpCodes.Ldelem_R4:
                 case OpCodes.Ldelem_R8:
-                    //TODO - Add more LdElem op variants support
+                    //TODO: Support floats
                     throw new NotSupportedException("Ldelem op variant not supported yet!");
 
                 case OpCodes.Ldelem_I1:
@@ -212,7 +212,7 @@ namespace Drivers.Compiler.Architectures.MIPS32
 
             if (isFloat)
             {
-                //TODO - Support floats
+                //TODO: Support floats
                 throw new NotSupportedException("LdElem for floats not supported yet!");
             }
 

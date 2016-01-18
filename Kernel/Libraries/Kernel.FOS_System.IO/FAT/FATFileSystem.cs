@@ -52,7 +52,7 @@ namespace Kernel.FOS_System.IO.FAT
         //      utilise sector caching and dirty sector marking.
 
 
-        //TODO - The implementation for FAT12/16 does not fit will with the rest of the file
+        //TODO: The implementation for FAT12/16 does not fit will with the rest of the file
         //       system because there is no way to create a root directory listing (it is 
         //       possible for FAT32). A new listing class should be created to virtualise
         //       (/simulate) a root directory for FAT12/16.

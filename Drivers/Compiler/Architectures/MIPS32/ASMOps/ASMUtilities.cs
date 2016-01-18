@@ -43,9 +43,6 @@ namespace Drivers.Compiler.Architectures.MIPS32.ASMOps
         /// <summary>
         /// Gets the allocation string for the specified number of bytes.
         /// </summary>
-        /// <remarks>
-        /// TODO: Shift this to target architecture library.
-        /// </remarks>
         /// <param name="numBytes">The number of bytes being allocated.</param>
         /// <returns>The allocation string.</returns>
         public static string GetAllocStringForSize(int numBytes)

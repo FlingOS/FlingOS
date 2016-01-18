@@ -108,6 +108,13 @@ namespace Kernel.Hardware.Processes.Synchronisation
             }
             ExclLock.Exit();
         }
+
+        //TODO: Two versions of semaphores required:
+        //          1. Ones used between threads of a single process (so used directly - see commented out functions below)
+        //          2. Ones used across threads of two or more processes (so used indirectly through system calls - see OnBehalf functions above)
+
+        //TODO: Wait and Signal functions below need updating for the latest version of system calls
+
         //public void Wait()
         //{
         //    bool locked = false;
@@ -136,8 +143,7 @@ namespace Kernel.Hardware.Processes.Synchronisation
         //            }
 
         //            ExclLock.Exit();
-
-        //              TODO: Hmm system call or not?
+        
         //            Thread.Sleep_Indefinitely();
         //        }
         //    }

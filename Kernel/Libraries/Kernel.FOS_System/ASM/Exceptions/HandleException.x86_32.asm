@@ -15,7 +15,7 @@ method_System_Void_RETEND_Kernel_ExceptionMethods_DECLEND_HandleException_NAMEEN
 
 ; Handling an exception
 ; We need to get current exception handler
-; TODO - Check current handler filter. 
+; TODO: Check current handler filter. 
 ;		 : If not 0x00000000 or 0xFFFFFFFF then execute it and check return status
 ;		 : Loop until handler found or no handlers left
 ; If handler found:

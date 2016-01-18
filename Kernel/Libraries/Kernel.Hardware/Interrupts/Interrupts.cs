@@ -23,11 +23,7 @@
 //
 // ------------------------------------------------------------------------------ //
 #endregion
-    
-#define INTERRUPTS_TRACE
-#undef INTERRUPTS_TRACE
 
-using System;
 using Kernel.FOS_System.Collections;
 using Kernel.Hardware.Processes;
 
@@ -36,94 +32,41 @@ namespace Kernel.Hardware.Interrupts
     /// <summary>
     /// Strcture for an interrupt descriptor in the Interrupts Descriptor Table (IDT).
     /// </summary>
-    [System.Runtime.InteropServices.StructLayout(System.Runtime.InteropServices.LayoutKind.Sequential, Pack = 1)]
+    /// <remarks>
+    /// See the <a href="http://www.flingos.co.uk/docs/reference/Interrupt-Descriptors-Table/">Interrupt Descriptors Table</a> article for details.
+    /// </remarks>
+    [System.Runtime.InteropServices.StructLayout(System.Runtime.InteropServices.LayoutKind.Sequential, Pack = 1)] 
+    //TODO: Work out whether this attribute is necessary given that the FlingOS Compiler doesnt look for it. It assumes packing of 1 for everything.
     public struct InterruptDescriptor
     {
         /// <summary>
-        /// Handler address low-byte.
+        /// Handler address low-bytes.
         /// </summary>
         public ushort OffsetLo;
         /// <summary>
-        /// TODO
-        /// Selector...hmm...I dunno and don't have an internet connection at the moment so 
-        /// can't look up what the spec says. Meh, I'm sure it's not too important :)
+        /// Segment Selector for destination code segment (i.e. selector for Code Segment that contains the interrupt handler). 
+        /// In most systems this will always be 0.
         /// </summary>
         public ushort Selector;
         /// <summary>
-        /// Like the name says...
+        /// Always 0.
         /// </summary>
         public byte UNUSED;
         /// <summary>
-        /// Interrupt type.
+        /// Gate type, Storage Segment, Descriptor Privilege Level and Present bits.
         /// </summary>
         public byte Type_S_DPL_P;
         /// <summary>
-        /// Handler address high-byte.
+        /// Handler address high-bytes.
         /// </summary>
         public ushort OffsetHi;
     }
-    /// <summary>
-    /// Stores information about the handlers for a given interrupt.
-    /// </summary>
-    public class InterruptHandlers : FOS_System.Object
-    {
-        /// <summary>
-        /// The list of handlers for the interrupt.
-        /// </summary>
-        public List HandlerDescrips = new List(1);
-        /// <summary>
-        /// Used to generate a unique Id number for each interrupt handler for this interrupt.
-        /// </summary>
-        /// <remarks>
-        /// As a safety precaution, all Ids start at one and go upwards. 0 is reserved as an 
-        /// invalid Id. After removing a handler, any temporary store of handler Id should be
-        /// set to 0 so code cannot attempt to remove a handler it does not own by accidentally
-        /// trying to remove its handler twice.
-        /// </remarks>
-        public int IdGenerator = 1;
-
-        public int QueuedOccurrences = 0; 
-        public int QueuedOccurrencesOld = 0;
-    }
-    /// <summary>
-    /// Represents a handler for an interrupt.
-    /// </summary>
-    public class HandlerDescriptor : FOS_System.Object
-    {
-        /// <summary>
-        /// The (static) method to call to handle the interrupt.
-        /// </summary>
-        public InterruptHandler handler;
-        /// <summary>
-        /// The state object to pass the handler.
-        /// </summary>
-        public FOS_System.Object data;
-        /// <summary>
-        /// The Id of this handler. Used primarily for removal.
-        /// </summary>
-        /// <remarks>
-        /// As a safety precaution, all Ids start at one and go upwards. 0 is reserved as an 
-        /// invalid Id. After removing a handler, any temporary store of handler Id should be
-        /// set to 0 so code cannot attempt to remove a handler it does not own by accidentally
-        /// trying to remove its handler twice.
-        /// </remarks>
-        public int id;
-        
-        public FOS_System.String Name;
-    }
-    /// <summary>
-    /// Delegate type for an interrupt handler. Interrupt handlers must be static, like all methods used in 
-    /// delegates in the core kernel.
-    /// </summary>
-    /// <param name="data"></param>
-    public delegate void InterruptHandler(FOS_System.Object data);
     /// <summary>
     /// Provides methods for handling hardware and software interrupts (excluding interrupts 0 through 16).
     /// </summary>
     public unsafe static class Interrupts
     {
-        //TODO - This lot is all x86 specific. It needs to be abstracted into a separate x86
-        //       interrupts class to support new architectures.
+        //TODO: This lot is all x86 specific. It needs to be abstracted into a separate x86 interrupts class to support new architectures.
 
         public static bool insideCriticalHandler = false;
         public static bool InsideCriticalHandler
@@ -158,8 +101,14 @@ namespace Kernel.Hardware.Interrupts
             }
         }
 
+        /// <summary>
+        /// Used to disable attempts to process switch while the OS is initialising.
+        /// </summary>
         public static bool EnableProcessSwitching = false;
 
+        /// <summary>
+        /// Exception state for during interrupt handlers.
+        /// </summary>
         public static ExceptionState* InterruptsExState;
 
         static Interrupts()
@@ -241,106 +190,6 @@ namespace Kernel.Hardware.Interrupts
                 IO.IOPort.doWrite_Byte(0x21, mask);
             }
         }
-//        /// <summary>
-//        /// Adds a handler to the specified IRQ and enables the IRQ.
-//        /// </summary>
-//        /// <param name="num">The IRQ number (0-15) to add a handler for.</param>
-//        /// <param name="handler">The handler method to call when the interrupt occurs (must be a static).</param>
-//        /// <param name="data">The state object to pass the handler when the interrupt occurs.</param>
-//        /// <returns>The Id of the new handler. Save and use for removal. An Id of 0 s invalid.</returns>
-//        public static int AddIRQHandler(int num, InterruptHandler handler, FOS_System.Object data, FOS_System.String Name)
-//        {
-//            //In this OS's implementation, IRQs 0-15 are mapped to ISRs 32-47
-//            int result = AddISRHandler(num + 32, handler, data, Name);
-//            EnableIRQ((byte)num);
-//            return result;
-//        }
-//        /// <summary>
-//        /// Removes the handler with the specified Id and disables the IRQ if there are no handlers left.
-//        /// You should set any temporary store of <paramref name="id"/> to 0 since 0 is an invalid Id
-//        /// it will prevent you from accidentally trying to remove the handler twice.
-//        /// </summary>
-//        /// <param name="num">The IRQ number to remove from.</param>
-//        /// <param name="id">The id of the handler to remove.</param>
-//        public static void RemoveIRQHandler(int num, int id)
-//        {
-//            //In this OS's implementation, IRQs 0-15 are mapped to ISRs 32-47
-//            RemoveISRHandler(num + 32, id);
-
-//            //We only want to disable the IRQ if nothing is handling it
-//            if (Handlers[num + 32].HandlerDescrips.Count == 0)
-//            {
-//                DisableIRQ((byte)num);
-//            }
-//        }
-//        /// <summary>
-//        /// Adds a handler to the specified interrupt number.
-//        /// </summary>
-//        /// <param name="num">The interrupt to add a handler for.</param>
-//        /// <param name="handler">The handler method to call when the interrupt occurs (must be a static).</param>
-//        /// <param name="data">The state object to pass the handler when the interrupt occurs.</param>
-//        /// <returns>The Id of the new handler. Save and use for removal.</returns>
-//        public static int AddISRHandler(int num, InterruptHandler handler, FOS_System.Object data, FOS_System.String Name)
-//        {
-//#if INTERRUPTS_TRACE
-//            BasicConsole.Write("Adding ISR handler for ");
-//            BasicConsole.WriteLine(Name);
-//            BasicConsole.DelayOutput(20);
-//#endif 
-
-//            if (Handlers[num] == null)
-//            {
-//#if INTERRUPTS_TRACE
-//                BasicConsole.WriteLine("Creating new InterruptHandlers...");
-//#endif
-//                Handlers[num] = new InterruptHandlers();
-//            }
-
-//#if INTERRUPTS_TRACE
-//            BasicConsole.WriteLine(((FOS_System.String)"Adding new HandlerDescriptor... ISR: ") + num);
-//#endif
-
-//            InterruptHandlers handlers = Handlers[num];
-//            int id = handlers.IdGenerator++;
-//            handlers.HandlerDescrips.Add(new HandlerDescriptor()
-//            {
-//                handler = handler,
-//                data = data,
-//                id = id,
-//                Name = Name
-//            });
-
-//#if INTERRUPTS_TRACE
-//            BasicConsole.WriteLine("Added.");
-//#endif
-
-//            return id;
-//        }
-//        /// <summary>
-//        /// Removes the handler with the specified Id.
-//        /// </summary>
-//        /// <param name="num">The interrupt number to remove from.</param>
-//        /// <param name="id">The id of the handler to remove.</param>
-//        public static void RemoveISRHandler(int num, int id)
-//        {
-//            if (Handlers[num] != null)
-//            {
-//                InterruptHandlers handlers = Handlers[num];
-
-//                //Search for the handler with the specified id.
-//                //  Note: Id does not correspond to index since we could have removed
-//                //        handlers with lower ids already.
-
-//                for (int i = 0; i < handlers.HandlerDescrips.Count; i++)
-//                {
-//                    HandlerDescriptor descrip = (HandlerDescriptor)handlers.HandlerDescrips[i];
-//                    if (descrip.id == id)
-//                    {
-//                        handlers.HandlerDescrips.RemoveAt(i);
-//                    }
-//                }
-//            }
-//        }
         
         /// <summary>
         /// Common method called to handle all interrupts (excluding numbers 0-16 inclusive).
@@ -375,12 +224,6 @@ namespace Kernel.Hardware.Interrupts
             {
                 InsideCriticalHandler = false;
             }
-
-#if INTERRUPTS_TRACE
-            //if (Processes.ProcessManager.Processes.Count > 1)
-            //if (ISRNum == 33)
-                BasicConsole.WriteLine("Interrupts: 19");
-#endif
         }
         [Drivers.Compiler.Attributes.NoDebug]
         private static void HandleISR(uint ISRNum)

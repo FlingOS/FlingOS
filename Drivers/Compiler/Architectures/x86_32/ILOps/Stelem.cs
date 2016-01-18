@@ -84,7 +84,7 @@ namespace Drivers.Compiler.Architectures.x86
 
                 case OpCodes.Stelem_R4:
                 case OpCodes.Stelem_R8:
-                    //TODO - Add more StElem op variants support
+                    //TODO: Support floats
                     throw new NotSupportedException("Stelem op variant not supported yet!");
 
                 case OpCodes.Stelem_I1:
@@ -113,7 +113,7 @@ namespace Drivers.Compiler.Architectures.x86
 
             if (isFloat)
             {
-                //TODO - Support floats
+                //TODO: Support floats
                 throw new NotSupportedException("StElem for floats not supported yet!");
             }
 

@@ -329,8 +329,7 @@ namespace Kernel.Processes.ELF
                 //        #endregion
                 //    }
 
-                //    Hardware.Processes.Thread.Sleep(500);
-                //      TODO: Use system call not direct call
+                //    Kernel.Processes.SystemCalls.SleepThread(500);
                 //}
 
                 #endregion
@@ -385,8 +384,7 @@ namespace Kernel.Processes.ELF
                 //    BasicConsole.Write(" - Alignment : ");
                 //    BasicConsole.WriteLine(theHeader.Align);
 
-                //    Hardware.Processes.Thread.Sleep(500);
-                //      TODO: Use system call not direct call
+                //    Kernel.Processes.SystemCalls.SleepThread(500);
                 //}
 
                 #endregion
@@ -521,7 +519,7 @@ namespace Kernel.Processes.ELF
             if (header != null)
             {
                 ELFFileClass fileClass = header.FileClass;
-                //TODO - Support 64-bit executables
+                //TODO: Support 64-bit executables
                 return fileClass == ELFFileClass.None || fileClass == ELFFileClass.Class32;
             }
             else

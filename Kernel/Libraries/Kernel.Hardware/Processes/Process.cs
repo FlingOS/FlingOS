@@ -96,34 +96,38 @@ namespace Kernel.Hardware.Processes
 #if PROCESS_TRACE
             BasicConsole.WriteLine("Process: CreateThread: Creating thread...");
 #endif
-            //TODO: Wrap EnableKernelAccessToProcessMemory in try-finally blocks
-            
-            // Required so that page allocations by new Thread don't create conflicts
-            ProcessManager.EnableKernelAccessToProcessMemory(this);
-        
-            Thread newThread = new Thread(this, MainMethod, ThreadIdGenerator++, UserMode, Name);
+
+            try
+            {
+                // Required so that page allocations by new Thread don't create conflicts
+                ProcessManager.EnableKernelAccessToProcessMemory(this);
+
+                Thread newThread = new Thread(this, MainMethod, ThreadIdGenerator++, UserMode, Name);
 #if PROCESS_TRACE
             BasicConsole.WriteLine("Adding data page...");
 #endif
-            // Add the page to the processes memory layout
-            uint threadStackVirtAddr = (uint)newThread.State->ThreadStackTop - 4092;
-            uint threadStackPhysAddr = (uint)VirtMemManager.GetPhysicalAddress(newThread.State->ThreadStackTop - 4092);
-            TheMemoryLayout.AddDataPage(threadStackPhysAddr, threadStackVirtAddr);
-            
-            ProcessManager.DisableKernelAccessToProcessMemory(this);
-        
+                // Add the page to the processes memory layout
+                uint threadStackVirtAddr = (uint)newThread.State->ThreadStackTop - 4092;
+                uint threadStackPhysAddr = (uint)VirtMemManager.GetPhysicalAddress(newThread.State->ThreadStackTop - 4092);
+                TheMemoryLayout.AddDataPage(threadStackPhysAddr, threadStackVirtAddr);
+                
 #if PROCESS_TRACE
             BasicConsole.WriteLine("Adding thread...");
 #endif
 
-            Threads.Add(newThread);
+                Threads.Add(newThread);
 
-            if (Registered)
-            {
-                Scheduler.InitThread(this, newThread);
+                if (Registered)
+                {
+                    Scheduler.InitThread(this, newThread);
+                }
+
+                return newThread;
             }
-            
-            return newThread;
+            finally
+            {
+                ProcessManager.DisableKernelAccessToProcessMemory(this);
+            }
         }
 
         private void CreateHeap()

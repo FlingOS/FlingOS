@@ -44,9 +44,10 @@ namespace Kernel.Hardware.Devices
             //BasicConsole.DelayOutput(3);
             KeyMappings = new List(164);
 
-            //TODO: fn key
-            //TODO: full numpad?
-            //TODO: Other UK keys e.g. backslash
+            //TODO: Fn key
+            //TODO: Full numpad?
+            //TODO: Alt special symbols
+            //TODO: Other US keys e.g. backslash
 
             #region Letters
             AddKey(0x10, 'q', KeyboardKey.Q);

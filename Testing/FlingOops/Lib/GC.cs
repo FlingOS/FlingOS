@@ -72,7 +72,7 @@ namespace FlingOops
         /// </summary>
         private static ObjectToCleanup* CleanupList;
 
-        //TODO - GC needs an object reference tree to do a thorough scan to find reference loops
+        //TODO: GC needs an object reference tree to do a thorough scan to find reference loops
 
         /// <summary>
         /// Intialises the GC.

@@ -91,7 +91,7 @@ namespace Kernel.FOS_System.IO
         /// <param name="aDiskDevice">The disk device to initialize.</param>
         public static void InitDisk(DiskDevice aDiskDevice)
         {
-            //TODO - Add more partitioning schemes.
+            //TODO: Add more partitioning schemes.
 
 
             if (InitAsISO9660(aDiskDevice))

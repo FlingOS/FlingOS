@@ -178,7 +178,7 @@ namespace Kernel.Hardware.ATA
                         }
                     }
                     //TODO: Remove the SATA/SATAPI initialisation from here. It should be done
-                    //  in the ATAManager.Init method.
+                    //  in the ATAManager.Init method when enumerating PCI bus for SATA/SATAPI devices.
                     else if (ThePATABase.DriveType == PATABase.SpecLevel.SATA)
                     {
                         // Add a SATA device

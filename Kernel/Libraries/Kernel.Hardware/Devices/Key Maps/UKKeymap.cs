@@ -48,8 +48,9 @@ namespace Kernel.Hardware.Devices
 
             KeyMappings = new List(164);
 
-            //TODO: fn key
-            //TODO: full numpad?
+            //TODO: Fn key
+            //TODO: Full numpad?
+            //TODO: Alt special symbols
             //TODO: Other UK keys e.g. backslash
 
             #region Letters

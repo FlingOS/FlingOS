@@ -37,7 +37,7 @@ namespace Kernel.Hardware.ATA
     /// </summary>
     public class PATA : Devices.DiskDevice
     {
-        //TODO - This implementation does not support LBA48 mode.
+        //TODO: This implementation does not support LBA48 mode.
 
         protected PATABase BaseDevice;
 
@@ -115,7 +115,7 @@ namespace Kernel.Hardware.ATA
             BaseDevice.IO.LBA0.Write_Byte((byte)(aSectorNo & 0xFF));
             BaseDevice.IO.LBA1.Write_Byte((byte)((aSectorNo & 0xFF00) >> 8));
             BaseDevice.IO.LBA2.Write_Byte((byte)((aSectorNo & 0xFF0000) >> 16));
-            //TODO LBA3  ...
+            //TODO: LBA3  ...
         }
         /// <summary>
         /// Reads contiguous blocks from the drive.
@@ -221,7 +221,7 @@ namespace Kernel.Hardware.ATA
         public override void CleanCaches()
         {
             //TODO: Presumably Drive Select needs to happen first? But does the sector number 
-            //      need to be set?
+            //      need to be set? Cannot find clarification on this anywhere.
             BaseDevice.SelectDrive(0, false);
             BaseDevice.SendCmd(PATABase.Cmd.CacheFlush);
         }

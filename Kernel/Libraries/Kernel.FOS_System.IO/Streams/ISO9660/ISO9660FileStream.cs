@@ -39,7 +39,7 @@ namespace Kernel.FOS_System.IO.Streams.ISO9660
     /// </summary>
     public class ISO9660FileStream : FileStream
     {
-        //TODO - This implementation has no way of shrinking files - only growing them!
+        //TODO: This implementation has no way of shrinking files - only growing them!
 
         /// <summary>
         /// The ISO9660 file system to which the file the stream is for belongs.

@@ -45,8 +45,8 @@ namespace Kernel.Processes
             //    Scheduler.Disable();
             //}
 
-            //TODO - Handle case of EXE being bigger than 4KiB?
-            //          - Would need to map contiguous (virtual) pages.
+            //TODO: Handle case of EXE being bigger than 4KiB
+            //          - Need to map contiguous (virtual) pages.
             
             BasicConsole.WriteLine("Mapping free page for process...");
             byte* destMemPtr = (byte*)Hardware.VirtMemManager.MapFreePage(

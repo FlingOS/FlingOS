@@ -24,7 +24,9 @@ namespace Kernel.Shells
             {
                 DeviceManager.Init();
 
-                //TODO: Do these need transferring from KernelTask memory?
+                //TODO: These need transferring from KernelTask memory (somehow) before we can add them to device manager
+                //      Really they shouldn't be initialised by Kernel Task nor used by Kernel/Debugger Tasks directly.
+                //      But they are needed for from-startup/first-instance/fail-proof debugging.
                 //DeviceManager.AddDevice(Serial.COM1);
                 //DeviceManager.AddDevice(Serial.COM2);
                 //DeviceManager.AddDevice(Serial.COM3);

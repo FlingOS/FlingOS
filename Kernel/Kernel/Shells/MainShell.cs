@@ -103,9 +103,8 @@ namespace Kernel.Shells
                         //List of supported commands
                         /* Command { Req Arg } [Opt Arg] *Default val*:
                          *  - Halt
-                         *  - ExInfo
-                         *  - Init { ALL / PCI / ATA / USB / FS }
-                         *  - Output { PCI / ATA / USB / FS / Memory }
+                         *  - Init { ALL / / FS }
+                         *  - Output { FS / Memory }
                          *  - CheckDisk/ChkD  { Drive# }
                          *  - FormatDisk/FmtD { Drive# }
                          *  - Dir  { List / Open / New / Delete / Copy }
@@ -150,14 +149,6 @@ namespace Kernel.Shells
                                 console.WriteLine("Closing...");
                                 //Halt execution of the current shell
                                 terminating = true;
-                            }
-                            else if (cmd == "exinfo")
-                            {
-                                //Output information about the current exception, if any.
-                                //  TODO - This should be changed to Last exception. 
-                                //          Because of the try-catch block inside the loop, there
-                                //          will never be a current exception to output.
-                                OutputExceptionInfo(ExceptionMethods.CurrentException);
                             }
                             else if (cmd == "init")
                             {
@@ -1044,13 +1035,15 @@ namespace Kernel.Shells
                 {
                     //Scroll up the screen 1 line
                     //Scroll(-1);
-                    //TODO: Work out how to handle this in the new context-----------------------------
+                    //TODO: Work out how to allow Virtual Console to scroll. 
+                    //      See SetCursorPosition - we need a Task to Window Manager command system
                 }
                 else if (c.Key == KeyboardKey.DownArrow)
                 {
                     //Scroll down the screen 1 line
                     //Scroll(1);
-                    //TODO: Work out how to handle this in the new context
+                    //TODO: Work out how to allow Virtual Console to scroll. 
+                    //      See SetCursorPosition - we need a Task to Window Manager command system
                 }
                 //If the key has a character representation
                 else if (c.Value != '\0')

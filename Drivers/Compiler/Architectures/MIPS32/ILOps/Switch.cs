@@ -71,12 +71,12 @@ namespace Drivers.Compiler.Architectures.MIPS32
 
             if (testItem.isFloat)
             {
-                //TODO - Support floats
+                //TODO: Support floats
                 throw new NotSupportedException("Switch for floats no supported!");
             }
             else if (testItem.sizeOnStackInBytes != 4)
             {
-                //TODO - Support other sizes
+                //TODO: Support other sizes
                 throw new NotSupportedException("Switch for non-int32s not supported!");
             }
 

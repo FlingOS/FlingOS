@@ -39,7 +39,7 @@ namespace Kernel.FOS_System.IO.Streams.FAT
     /// </summary>
     public class FATFileStream : FileStream
     {
-        //TODO - This implementation has no way of shrinking files - only growing them!
+        //TODO: This implementation has no way of shrinking files - only growing them!
 
         /// <summary>
         /// The cluster numbers that are part of the file.
@@ -307,44 +307,7 @@ namespace Kernel.FOS_System.IO.Streams.FAT
                     ActualCount -= ReadSize;
                     read += (int)ReadSize;
                 }
-
-//#if FATFileStream_TRACE
-//                BasicConsole.WriteLine("Reading data...");
-//#endif
-//                //Loop reading in the data
-//                while (ActualCount > 0)
-//                {
-//                    UInt32 ClusterIdx = (UInt32)position / ReadClusterSize;
-//                    UInt32 PosInCluster = (UInt32)position % ReadClusterSize;
-//#if FATFileStream_TRACE
-//                    BasicConsole.WriteLine(((FOS_System.String)"Reading cluster ") + ClusterNums[(int)xClusterIdx]);
-//#endif
-//                    TheFS.ReadClusters(ClusterNums[(int)ClusterIdx], ReadClusterBuffer);
-//#if FATFileStream_TRACE
-//                    BasicConsole.WriteLine("Read cluster.");
-//#endif
-//                    uint ReadSize;
-//                    if (PosInCluster + ActualCount > ReadClusterSize)
-//                    {
-//                        ReadSize = ReadClusterSize - PosInCluster;
-//                    }
-//                    else
-//                    {
-//                        ReadSize = (uint)ActualCount;
-//                    }
-
-//                    // TODO: Should we do an argument check here just in case?
-//                    FOS_System.Array.Copy(ReadClusterBuffer, (int)PosInCluster, buffer, offset, (int)ReadSize);
-//                    offset += (int)ReadSize;
-//                    ActualCount -= (ulong)ReadSize;
-//                    read += (int)ReadSize;
-//                    position += ReadSize;
-//                }
-
-//#if FATFileStream_TRACE
-//                BasicConsole.WriteLine("Read data.");
-//#endif
-
+                
                 return read;
             }
             else
