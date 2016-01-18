@@ -136,7 +136,7 @@ namespace Kernel.Tasks
                 {
                     if (ExceptionMethods.CurrentException is Pipes.Exceptions.RWFailedException)
                     {
-                        //SystemCalls.SleepThread(100);
+                        SystemCalls.SleepThread(50);
                     }
                     else
                     {
@@ -153,7 +153,7 @@ namespace Kernel.Tasks
 
             while (!Terminating)
             {
-                BasicConsole.WriteLine("WM > IP : (0)");
+                //BasicConsole.WriteLine("WM > IP : (0)");
 
                 if (!InputProcessingThreadAwake)
                 {
@@ -167,24 +167,24 @@ namespace Kernel.Tasks
                 SystemCallResults SysCallResult;
                 Pipes.BasicOutpoint.GetNumPipeOutpoints(out numOutpoints, out SysCallResult, Pipes.PipeClasses.Standard, Pipes.PipeSubclasses.Standard_Out);
 
-                BasicConsole.WriteLine("WM > IP : (1)");
+                //BasicConsole.WriteLine("WM > IP : (1)");
 
                 if (SysCallResult == SystemCallResults.OK && numOutpoints > 0)
                 {
-                    BasicConsole.WriteLine("WM > IP : (2)");
+                    //BasicConsole.WriteLine("WM > IP : (2)");
 
                     Pipes.PipeOutpointDescriptor[] OutpointDescriptors;
                     Pipes.BasicOutpoint.GetOutpointDescriptors(numOutpoints, out SysCallResult, out OutpointDescriptors, Pipes.PipeClasses.Standard, Pipes.PipeSubclasses.Standard_Out);
 
-                    BasicConsole.WriteLine("WM > IP : (3)");
+                    //BasicConsole.WriteLine("WM > IP : (3)");
 
                     if (SysCallResult == SystemCallResults.OK)
                     {
-                        BasicConsole.WriteLine("WM > IP : (4)");
+                        //BasicConsole.WriteLine("WM > IP : (4)");
 
                         for (int i = 0; i < OutpointDescriptors.Length; i++)
                         {
-                            BasicConsole.WriteLine("WM > IP : (5)");
+                            //BasicConsole.WriteLine("WM > IP : (5)");
 
                             Pipes.PipeOutpointDescriptor Descriptor = OutpointDescriptors[i];
                             bool PipeExists = false;
@@ -203,12 +203,12 @@ namespace Kernel.Tasks
                             {
                                 try
                                 {
-                                    BasicConsole.WriteLine("WM > IP : (6)");
+                                    //BasicConsole.WriteLine("WM > IP : (6)");
 
                                     PipeInfo NewPipeInfo = new PipeInfo();
                                     NewPipeInfo.StdOut = new Pipes.Standard.StandardInpoint(Descriptor.ProcessId, true); // 2000 ASCII characters = 2000 bytes
 
-                                    BasicConsole.WriteLine("WM > IP : (7)");
+                                    //BasicConsole.WriteLine("WM > IP : (7)");
 
                                     ConnectedPipes.Add(NewPipeInfo);
 
@@ -218,10 +218,10 @@ namespace Kernel.Tasks
                                         CurrentPipeIndex_Changed = true;
 
                                         SystemCalls.WakeThread(MainThreadId);
-                                        //SystemCalls.WakeThread(OutputProcessingThreadId);
+                                        SystemCalls.WakeThread(OutputProcessingThreadId);
                                     }
 
-                                    BasicConsole.WriteLine("WM > IP : (8)");
+                                    //BasicConsole.WriteLine("WM > IP : (8)");
 
                                 }
                                 catch
@@ -289,16 +289,16 @@ namespace Kernel.Tasks
                     bool GotScancode = Keyboard.Default.GetScancode(out Scancode);
                     if (GotScancode)
                     {
-                        BasicConsole.WriteLine("WM > OP : (1)");
+                        //BasicConsole.WriteLine("WM > OP : (1)");
 
                         KeyboardKey Key;
                         if (Keyboard.Default.GetKeyValue(Scancode, out Key))
                         {
-                            BasicConsole.WriteLine("WM > OP : (2)");
+                            //BasicConsole.WriteLine("WM > OP : (2)");
 
                             if (AltPressed && Key == KeyboardKey.Tab)
                             {
-                                BasicConsole.WriteLine("WM > OP : (3)");
+                                //BasicConsole.WriteLine("WM > OP : (3)");
 
                                 CurrentPipeIdx++;
                                 if (CurrentPipeIdx >= ConnectedPipes.Count)
@@ -309,15 +309,15 @@ namespace Kernel.Tasks
                                 CurrentPipeInfo = ((PipeInfo)ConnectedPipes[CurrentPipeIdx]);
                                 CurrentPipeIndex_Changed = true;
 
-                                BasicConsole.WriteLine("WM > OP : (4)");
+                                //BasicConsole.WriteLine("WM > OP : (4)");
                             }
                             else
                             {
-                                BasicConsole.WriteLine("WM > OP : (5)");
+                                //BasicConsole.WriteLine("WM > OP : (5)");
 
                                 SystemCalls.SendMessage(((PipeInfo)ConnectedPipes[CurrentPipeIdx]).StdOut.OutProcessId, Scancode, 0);
 
-                                BasicConsole.WriteLine("WM > OP : (6)");
+                                //BasicConsole.WriteLine("WM > OP : (6)");
                             }
                         }
                     }

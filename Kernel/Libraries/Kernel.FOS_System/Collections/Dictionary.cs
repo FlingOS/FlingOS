@@ -46,6 +46,7 @@ namespace Kernel.FOS_System.Collections
         public sealed class Iterator : Object
         {
             private KeyValuePair* list;
+            private KeyValuePair* storedList;
 
             public Iterator(KeyValuePair* aList)
             {
@@ -55,6 +56,15 @@ namespace Kernel.FOS_System.Collections
             internal void Reset(KeyValuePair* aList)
             {
                 list = aList;
+            }
+
+            public void StoreState()
+            {
+                storedList = list;
+            }
+            public void RestoreState()
+            {
+                list = storedList;
             }
 
             public bool HasNext()
@@ -300,6 +310,7 @@ namespace Kernel.FOS_System.Collections
 
         public Iterator GetIterator()
         {
+            iterator.StoreState();
             iterator.Reset(list);
             return iterator;
         }
@@ -322,6 +333,7 @@ namespace Kernel.FOS_System.Collections
         public sealed class Iterator : Object
         {
             private KeyValuePair* list;
+            private KeyValuePair* storedList;
 
             public Iterator(KeyValuePair* aList)
             {
@@ -331,6 +343,15 @@ namespace Kernel.FOS_System.Collections
             internal void Reset(KeyValuePair* aList)
             {
                 list = aList;
+            }
+
+            public void StoreState()
+            {
+                storedList = list;
+            }
+            public void RestoreState()
+            {
+                list = storedList;
             }
 
             public bool HasNext()

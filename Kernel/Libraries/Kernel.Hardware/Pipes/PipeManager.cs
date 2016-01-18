@@ -232,7 +232,6 @@ namespace Kernel.Pipes
         /// <returns>True if the request was successful. Otherwise, false.</returns>
         public static bool CreatePipe(uint InProcessId, uint OutProcessId, CreatePipeRequest* request)
         {
-            BasicConsole.WriteLine("PM > CP (1)");
             // Validate inputs
             //  - Check out process exists
             //  - Check in process exists
@@ -250,87 +249,59 @@ namespace Kernel.Pipes
             {
                 return false;
             }
-
-            BasicConsole.WriteLine("PM > CP (2)");
-
+            
             // Need access to the request structure
             bool ShouldDisableKernelAccessToProcessMemory = true;
             ProcessManager.EnableKernelAccessToProcessMemory(InProcessId);
-
-            BasicConsole.WriteLine("PM > CP (3)");
-
+            
             bool OK = true;
 
             // Find the outpoint
             PipeOutpoint outpoint = GetOutpoint(OutProcessId, request->Class, request->Subclass);
-
-            BasicConsole.WriteLine("PM > CP (4)");
 
             // Check that we actually found the outpoint
             if (outpoint == null)
             {
                 OK = false;
             }
-
-            BasicConsole.WriteLine("PM > CP (5)");
-
+            
             if (OK)
             {
-                BasicConsole.WriteLine("PM > CP (6)");
-
                 // Check there are sufficient connections available
                 if (outpoint.NumConnections >= outpoint.MaxConnections &&
                     outpoint.MaxConnections != PipeConstants.UnlimitedConnections)
                 {
                     OK = false;
                 }
-
-                BasicConsole.WriteLine("PM > CP (7)");
-
+                
                 if (OK)
                 {
-                    BasicConsole.WriteLine("PM > CP (8)");
-
                     // Create new inpoint
                     PipeInpoint inpoint = new PipeInpoint(InProcessId, request->Class, request->Subclass);
-
-                    BasicConsole.WriteLine("PM > CP (9)");
-
+                    
                     // Create new pipe
                     Pipe pipe = new Pipe(PipeIdGenerator++, outpoint, inpoint, request->BufferSize);
                     // Add new pipe to list of pipes
                     Pipes.Add(pipe);
                     // Increment number of connections to the outpoint
                     outpoint.NumConnections++;
-
-                    BasicConsole.WriteLine("PM > CP (10)");
-
+                    
                     // Set result information
                     request->Result.Id = pipe.Id;
-
-                    BasicConsole.WriteLine("PM > CP (11)");
-
+                    
                     ShouldDisableKernelAccessToProcessMemory = false;
                     ProcessManager.DisableKernelAccessToProcessMemory(InProcessId);
-
-                    BasicConsole.WriteLine("PM > CP (12)");
-
+                    
                     // Wake any threads (/processes) which were waiting on a pipe to be created
                     WakeWaitingThreads(outpoint, pipe.Id);
-
-                    BasicConsole.WriteLine("PM > CP (13)");
                 }
             }
 
             if (ShouldDisableKernelAccessToProcessMemory)
             {
-                BasicConsole.WriteLine("PM > CP (14)");
-
                 ProcessManager.DisableKernelAccessToProcessMemory(InProcessId);
             }
-
-            BasicConsole.WriteLine("PM > CP (15)");
-
+            
             return OK;
         }
         /// <summary>

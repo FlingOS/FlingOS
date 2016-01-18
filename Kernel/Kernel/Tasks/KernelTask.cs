@@ -278,11 +278,11 @@ namespace Kernel.Tasks
                     {
                         try
                         {
-                            FOS_System.String msg = "KT > Hello, world! (" + (FOS_System.String)loops++ + ")";
-                            console.WriteLine(msg);
-                            BasicConsole.WriteLine(msg);
-                            SystemCalls.SleepThread(1000);
-                            //shell.Execute();
+                            //FOS_System.String msg = "KT > Hello, world! (" + (FOS_System.String)loops++ + ")";
+                            //console.WriteLine(msg);
+                            //BasicConsole.WriteLine(msg);
+                            //SystemCalls.SleepThread(1000);
+                            shell.Execute();
                         }
                         catch
                         {

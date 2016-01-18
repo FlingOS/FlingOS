@@ -33,19 +33,13 @@ namespace Kernel.Hardware.VirtMem
     public class MemoryLayout : FOS_System.Object
     {
         public bool NoUnload = false;
-
+        
         public UInt32Dictionary CodePages = new UInt32Dictionary();
         public UInt32Dictionary DataPages = new UInt32Dictionary();
         
         [Drivers.Compiler.Attributes.NoDebug]
         public void AddCodePage(uint pAddr, uint vAddr)
         {
-            //bool reenable = Processes.Scheduler.Enabled;
-            //if(reenable)
-            //{
-            //    Processes.Scheduler.Disable();
-            //}
-
             //BasicConsole.WriteLine("Adding code page...");
             if (!CodePages.Contains(vAddr))
             {
@@ -59,21 +53,10 @@ namespace Kernel.Hardware.VirtMem
                 //ExceptionMethods.Throw(new FOS_System.Exception("Cannot add code page to memory layout! Code virtual page already mapped in the memory layout."));
             }
 #endif
-
-            //if (reenable)
-            //{
-            //    Processes.Scheduler.Enable();
-            //}
         }
         [Drivers.Compiler.Attributes.NoDebug]
         public void AddDataPage(uint pAddr, uint vAddr)
         {
-            //bool reenable = Processes.Scheduler.Enabled;
-            //if (reenable)
-            //{
-            //    Processes.Scheduler.Disable();
-            //}
-
             //BasicConsole.WriteLine("Adding data page...");
             if (!DataPages.Contains(vAddr))
             {
@@ -87,11 +70,6 @@ namespace Kernel.Hardware.VirtMem
                 //ExceptionMethods.Throw(new FOS_System.Exception("Cannot add data page to memory layout! Data virtual page already mapped in the memory layout."));
             }
 #endif
-
-            //if (reenable)
-            //{
-            //    Processes.Scheduler.Enable();
-            //}
         }
         public void AddDataPages(uint vAddrStart, uint[] pAddrs)
         {
@@ -100,29 +78,17 @@ namespace Kernel.Hardware.VirtMem
         [Drivers.Compiler.Attributes.NoDebug]
         public void RemovePage(uint vAddr)
         {
-            //bool reenable = Processes.Scheduler.Enabled;
-            //if (reenable)
-            //{
-            //    Processes.Scheduler.Disable();
-            //}
-
             //BasicConsole.WriteLine("Removing page...");
             CodePages.Remove(vAddr);
             DataPages.Remove(vAddr);
-
-            //if (reenable)
-            //{
-            //    Processes.Scheduler.Enable();
-            //}
         }
         public void RemovePages(uint vAddrStart, uint numPages)
         {
+            //BasicConsole.WriteLine("Removing pages...");
             CodePages.RemoveRange(vAddrStart, 4096, numPages);
             DataPages.RemoveRange(vAddrStart, 4096, numPages);
         }
-
-        //bool loadPrint = true;
-        public bool unloadPrint = false;
+        
         [Drivers.Compiler.Attributes.NoDebug]
         public void Load(bool ProcessIsUM)
         {
@@ -138,12 +104,9 @@ namespace Kernel.Hardware.VirtMem
 #if MEMLAYOUT_TRACE
                 BasicConsole.WriteLine("Loading code page...");
 #endif
-                //if (loadPrint)
-                //{
-                //    BasicConsole.WriteLine(((FOS_System.String)"Loading code page v->p: ") + vAddr + " -> " + pAddr);
-                //}
                 VirtMemManager.Map(pAddr, vAddr, 4096, flags, UpdateUsedPagesFlags.Virtual);
             }
+            iterator.RestoreState();
 
             flags = ProcessIsUM ? VirtMemImpl.PageFlags.None : VirtMemImpl.PageFlags.KernelOnly;
             iterator = DataPages.GetIterator();
@@ -156,20 +119,9 @@ namespace Kernel.Hardware.VirtMem
 #if MEMLAYOUT_TRACE
                 BasicConsole.WriteLine("Loading data page...");
 #endif
-
-                //if (loadPrint)
-                //{
-                //    BasicConsole.WriteLine(((FOS_System.String)"Loading data page v->p: ") + vAddr + " -> " + pAddr);
-                //}
-
                 VirtMemManager.Map(pAddr, vAddr, 4096, flags, UpdateUsedPagesFlags.Virtual);
             }
-
-            //if (loadPrint)
-            //{
-            //    //BasicConsole.DelayOutput(1);
-            //    loadPrint = false;
-            //}
+            iterator.RestoreState();
         }
         [Drivers.Compiler.Attributes.NoDebug]
         public void Unload()
@@ -178,8 +130,6 @@ namespace Kernel.Hardware.VirtMem
             {
                 return;
             }
-
-            //x86.Unmap_Print = unloadPrint;
 
             UInt32Dictionary.Iterator iterator = CodePages.GetIterator();
             while (iterator.HasNext())
@@ -190,14 +140,10 @@ namespace Kernel.Hardware.VirtMem
 #if MEMLAYOUT_TRACE
                 BasicConsole.WriteLine("Unloading code page...");
 #endif
-
-                //if (unloadPrint)
-                //{
-                //    BasicConsole.WriteLine("Unloading code page");
-                //}
-                
                 VirtMemManager.Unmap(vAddr, UpdateUsedPagesFlags.Virtual);
             }
+            iterator.RestoreState();
+
             iterator = DataPages.GetIterator();
             while (iterator.HasNext())
             {
@@ -207,28 +153,9 @@ namespace Kernel.Hardware.VirtMem
 #if MEMLAYOUT_TRACE
                 BasicConsole.WriteLine("Unloading data page...");
 #endif
-
-                //if (unloadPrint)
-                //{
-                //    FOS_System.String str = "Unloading data page 0x--------";
-                //    ExceptionMethods.FillString(DataPages.Keys[i], 29, str);
-                //    BasicConsole.WriteLine(str);
-                //}
-                
                 VirtMemManager.Unmap(vAddr, UpdateUsedPagesFlags.Virtual);
-
-                //if (unloadPrint)
-                //{
-                //    BasicConsole.WriteLine(" > Done.");
-                //}
             }
-            
-            //if (unloadPrint)
-            //{
-            //    BasicConsole.WriteLine("Unload complete.");
-            //}
-
-            //x86.Unmap_Print = false;
+            iterator.RestoreState();
         }
 
         public void Merge(MemoryLayout y)
